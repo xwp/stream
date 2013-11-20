@@ -1,0 +1,57 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Look for WordPress readme in current directory or above and convert into markdown readme in same directory
+ * @version 1.0.1
+ * @author Weston Ruter <weston@x-team.com> (@westonruter)
+ * @copyright Copyright (c) 2013, X-Team <http://x-team.com/wordpress/>
+ * @license GPLv2+
+ */
+
+try {
+	if ( php_sapi_name() !== 'cli' ) {
+		throw new Exception( 'Only allowed in CLI mode.' );
+	}
+
+	$readme_txt_path = null;
+	while ( true ) {
+		foreach ( array( 'readme.txt', 'README.txt' ) as $readme_filename ) {
+			if ( file_exists( $readme_filename ) ) {
+				$readme_txt_path = realpath( $readme_filename );
+				break;
+			}
+		}
+
+		$old_cwd = getcwd();
+		if ( ! empty( $readme_txt_path ) || ! chdir( '..' ) || getcwd() === $old_cwd ) {
+			break;
+		}
+	}
+	if ( empty( $readme_txt_path ) ) {
+		throw new Exception( 'Failed to find a readme.txt or README.txt above the current working directory.' );
+	}
+
+	$readme_root = dirname( $readme_txt_path );
+	$readme_md_path = preg_replace( '/txt$/', 'md', $readme_txt_path );
+
+	require_once __DIR__ . '/class-wordpress-readme-parser.php';
+
+	$readme = new WordPress_Readme_Parser( array( 'path' => $readme_txt_path ) );
+
+	$md_args = array();
+	if ( file_exists( $readme_root . '/.travis.yml' ) ) {
+		$md_args['travis_ci_url'] = preg_replace( '/^.+?:(.+)\.git$/', 'https://travis-ci.org/$1', trim( `git config --get remote.origin.url` ) );
+	}
+	$markdown = $readme->to_markdown( $md_args );
+
+	$is_written = file_put_contents( $readme_md_path, $markdown );
+	if ( ! $is_written ) {
+		throw new Exception( sprintf( 'Failed to write to %s', $readme_md_path ) );
+	}
+	fwrite( STDERR, 'Successfully converted WordPress README to Markdown' . PHP_EOL );
+	fwrite( STDOUT, $readme_md_path . PHP_EOL );
+}
+catch( Exception $e ) {
+	fwrite( STDERR, $e->getMessage() . PHP_EOL );
+	exit( 1 );
+}
