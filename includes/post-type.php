@@ -217,12 +217,15 @@ class X_Stream_Post_Type {
 				break;
 			case 'user':
 				global $authordata;
+				$author_ID   = isset( $authordata->ID ) ? $authordata->ID : 0;
+				$author_name = isset( $authordata->display_name ) ? $authordata->display_name : null;
+				$author_role = isset( $authordata->roles[0] ) ? $wp_roles->role_names[$authordata->roles[0]] : null;
 				$out .= sprintf(
 					'<a style="vertical-align:top" href="%s"><span style="float:left;padding-right:5px;">%s</span> %s <small>%s</small></a>',
-					add_query_arg( array( 'post_type' => $post->post_type, 'author' => $authordata->ID ), 'edit.php' ),
-					get_avatar( $authordata->ID, 48 ),
-					$authordata->display_name,
-					$wp_roles->role_names[$authordata->roles[0]]
+					add_query_arg( array( 'post_type' => $post->post_type, 'author' => $author_ID ), 'edit.php' ),
+					get_avatar( $author_ID, 48 ),
+					$author_name,
+					$author_role
 				);
 				break;
 			case 'full_date':
