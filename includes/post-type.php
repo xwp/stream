@@ -137,6 +137,8 @@ class X_Stream_Post_Type {
 		add_filter( 'manage_stream_posts_columns', array( __CLASS__, 'list_table_columns' ), null, 2 );
 		add_filter( 'manage_stream_posts_custom_column', array( __CLASS__, 'list_table_columns_data' ), null, 2 );
 
+		add_filter( 'bulk_actions-edit-stream', '__return_empty_array' );
+
 	}
 
 	public static function list_table_filters() {

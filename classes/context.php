@@ -70,11 +70,11 @@ abstract class X_Stream_Context {
 		$contexts[] = $class::$name;
 
 		// Store args as numbered meta fields
-		$arg_idx = array();
-		foreach ( $args as $i => $_arg ) {
-			$arg_idx[$i] = "_arg_$i";
+		$arg_keys = array_keys( $args );
+		foreach ( $arg_keys as $i => $key ) {
+			$arg_keys[$i] = '_arg_' . $key;
 		}
-		$args = array_combine( $arg_idx, $args );
+		$args = array_combine( $arg_keys, $args );
 
 		$postarr = array(
 			'post_type'   => 'stream',

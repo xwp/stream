@@ -71,8 +71,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 		self::log(
 			__( '%s has registered', 'wp_stream' ),
 			array(
-				$user->email,
-				$user->ID,
+				'email' => $user->email,
 			),
 			$user->ID,
 			'created',
@@ -89,8 +88,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 		self::log(
 			__( '%s has updated his profile', 'wp_stream' ),
 			array(
-				$user->display_name,
-				$user->ID,
+				'display_name' => $user->display_name,
 				),
 			$user->ID,
 			'updated',
@@ -107,8 +105,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 		self::log(
 			__( '%s has reset his password', 'wp_stream' ),
 			array(
-				$user->email,
-				$user->ID,
+				'email' => $user->email,
 			),
 			$user->ID,
 			'password-reset',
@@ -130,8 +127,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 		self::log(
 			__( '%s has requested to reset his password', 'wp_stream' ),
 			array(
-				$user->display_name,
-				$user->ID,
+				'display_name' => $user->display_name,
 			),
 			$user->ID,
 			'forgot-password',
@@ -148,8 +144,8 @@ class X_Stream_Context_User extends X_Stream_Context {
 		self::log(
 			__( '%s logged in from %s', 'wp_stream' ),
 			array(
-				$user->display_name,
-				filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
+				'display_name' => $user->display_name,
+				'ip'           => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 				),
 			$user->ID,
 			'login',
@@ -167,7 +163,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 		self::log(
 			__( '%s logged out', 'wp_stream' ),
 			array(
-				$user->display_name,
+				'display_name' => $user->display_name,
 				),
 			$user->ID,
 			'logout',

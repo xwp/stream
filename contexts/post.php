@@ -134,11 +134,11 @@ class X_Stream_Context_Post extends X_Stream_Context {
 		self::log(
 			$message,
 			array(
-				$post->ID,
-				$post->post_title,
-				$new,
-				$old,
-				$revision_id,
+				'post_id'     => $post->ID,
+				'post_title'  => $post->post_title,
+				'new_status'  => $new,
+				'old_status'  => $old,
+				'revision_id' => $revision_id,
 			),
 			$post->ID,
 			$action
@@ -155,8 +155,8 @@ class X_Stream_Context_Post extends X_Stream_Context {
 		self::log(
 			__( 'Deleted a post "#%d - %s"', 'wp_stream' ),
 			array(
-				$post->ID,
-				$post->post_title,
+				'post_id'     => $post->ID,
+				'post_title'  => $post->post_title,
 			),
 			$post->ID,
 			'deleted'
