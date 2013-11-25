@@ -144,29 +144,44 @@ class X_Stream_Settings {
 	public static function render_page() {
 		?>
 		<div class="wrap">
-			<?php screen_icon( 'tools' ); ?>
-			<h2><?php _e( 'Stream Options', 'wp_stream' ) ?></h2>
 
-			<?php if ( isset( $message ) ) : ?>
-			<div class="updated">
-				<p><?php echo $message // xss okay ?></p>
-			</div>
-			<?php endif ?>
+			<?php screen_icon( 'options-general' ) ?>
+			<h2><?php _e( 'Stream Settings', 'wp_stream' ) ?></h2>
+			<?php settings_errors() ?>
+
+			<?php
+			$sections   = self::get_fields();
+			$active_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : null;
+			?>
 
 			<h2 class="nav-tab-wrapper">
-				<a href="#tab-settings" class="nav-tab">
-					<?php esc_html_e( 'Settings', 'wp_stream' ) ?>
-				</a>
+				<?php $i = 0 ?>
+				<?php foreach ( $sections as $section => $data ) : ?>
+					<?php $i++ ?>
+					<?php $is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section ) ?>
+					<a href="<?php echo add_query_arg( 'tab', $section ) ?>" class="nav-tab<?php echo $is_active ? esc_attr( ' nav-tab-active' ) : null ?>">
+						<?php echo esc_html( $data['title'] ) ?>
+					</a>
+				<?php endforeach; ?>
 			</h2>
+
 			<div class="nav-tab-content" id="tab-content-settings">
 				<form method="post" action="options.php">
 					<?php
-					settings_fields( self::KEY );
-					do_settings_sections( self::KEY );
+					$i = 0;
+					foreach ( $sections as $section => $data ) {
+						$i++;
+						$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
+						if ( $is_active ) {
+							settings_fields( self::KEY );
+							do_settings_sections( self::KEY );
+						}
+					}
 					submit_button();
 					?>
 				</form>
 			</div>
+
 		</div>
 		<?php
 	}
@@ -178,22 +193,22 @@ class X_Stream_Settings {
 	 */
 	public static function get_fields() {
 		return array(
-			'data' => array(
-				'title'  => __( 'Data Settings', 'wp_stream' ),
+			'general' => array(
+				'title'  => __( 'General', 'wp_stream' ),
 				'fields' => array(
 					array(
 						'name'        => 'lifetime',
 						'title'       => __( 'Purge records', 'wp_stream' ),
 						'type'        => 'number',
 						'class'       => 'small-text',
-						'desc'        => __( 'Maximum number of days to keep data. Use -1 to keep them forever.', 'wp_stream' ),
-						'default'     => -1,
+						'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'wp_stream' ),
+						'default'     => 90,
 						'placeholder' => '',
 						'after_field' => __( 'days old', 'wp_stream' ),
-						),
 					),
 				),
-			);
+			),
+		);
 	}
 
 	/**
@@ -221,14 +236,14 @@ class X_Stream_Settings {
 	 */
 	public static function register_settings() {
 
-		$fields = self::get_fields();
+		$sections = self::get_fields();
 
 		register_setting( self::KEY, self::KEY );
 
-		foreach ( $fields as $section_name => $section ) {
+		foreach ( $sections as $section_name => $section ) {
 			add_settings_section(
 				$section_name,
-				$section['title'],
+				null,
 				'__return_false',
 				self::KEY
 			);
