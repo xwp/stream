@@ -41,6 +41,7 @@ class WP_Stream {
 	public function __construct() {
 
 		define( 'X_STREAM_DIR', plugin_dir_path( __FILE__ ) );
+		define( 'X_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'X_STREAM_INC_DIR', X_STREAM_DIR . 'includes/' );
 		define( 'X_STREAM_CLASS_DIR', X_STREAM_DIR . 'classes/' );
 
@@ -56,6 +57,18 @@ class WP_Stream {
 		require_once X_STREAM_INC_DIR . 'contexts.php';
 		add_action( 'init', array( 'X_Stream_Contexts', 'load' ) );
 
+		// Load admin scripts and styles
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
+
+	}
+
+	/**
+	* Enqueue all required admin scripts and styles
+	*
+	* @return void
+	*/
+	static function admin_enqueue_scripts() {
+		wp_enqueue_style( 'stream_admin_css', X_STREAM_URL . 'css/' . 'stream-style.css', '0.1' );
 	}
 
 	/**
