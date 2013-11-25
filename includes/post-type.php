@@ -8,11 +8,12 @@ class X_Stream_Post_Type {
 	}
 
 	public static function register() {
-		$singular = __( 'Drop', 'stream' );
-		$plural   = __( 'Stream', 'stream' );
+		$name     = __( 'Stream', 'stream' );
+		$singular = __( 'Record', 'stream' );
+		$plural   = __( 'Records', 'stream' );
 
 		$labels = array(
-			'name'                => $plural,
+			'name'                => $name,
 			'singular_name'       => $singular,
 			'add_new'             => sprintf( __( 'Add New %s', 'stream' ), $singular ),
 			'add_new_item'        => sprintf( __( 'Add New %s', 'stream' ), $singular ),
@@ -20,10 +21,10 @@ class X_Stream_Post_Type {
 			'new_item'            => sprintf( __( 'New %s', 'stream' ), $singular ),
 			'view_item'           => sprintf( __( 'View %s', 'stream' ), $singular ),
 			'search_items'        => sprintf( __( 'Search %s', 'stream' ), $plural ),
-			'not_found'           => __( 'No results found', 'stream' ),
-			'not_found_in_trash'  => __( 'No results found in Trash', 'stream' ),
+			'not_found'           => sprintf( __( 'No %s found', 'stream' ), $plural ),
+			'not_found_in_trash'  => sprintf( __( 'No %s found in Trash', 'stream' ), $plural ),
 			'parent_item_colon'   => sprintf( __( 'Parent %s:', 'stream' ), $singular ),
-			'menu_name'           => $plural,
+			'menu_name'           => $name,
 		);
 
 		$args = array(
