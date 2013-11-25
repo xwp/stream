@@ -8,21 +8,21 @@ class X_Stream_Post_Type {
 	}
 
 	public static function register() {
-		$singular = __( 'Drop', 'wp_stream' );
-		$plural   = __( 'Stream', 'wp_stream' );
+		$singular = __( 'Drop', 'stream' );
+		$plural   = __( 'Stream', 'stream' );
 
 		$labels = array(
 			'name'                => $plural,
 			'singular_name'       => $singular,
-			'add_new'             => sprintf( __( 'Add New %s', 'wp_stream' ), $singular ),
-			'add_new_item'        => sprintf( __( 'Add New %s', 'wp_stream' ), $singular ),
-			'edit_item'           => sprintf( __( 'Edit %s', 'wp_stream' ), $singular ),
-			'new_item'            => sprintf( __( 'New %s', 'wp_stream' ), $singular ),
-			'view_item'           => sprintf( __( 'View %s', 'wp_stream' ), $singular ),
-			'search_items'        => sprintf( __( 'Search %s', 'wp_stream' ), $plural ),
-			'not_found'           => __( 'No results found', 'wp_stream' ),
-			'not_found_in_trash'  => __( 'No results found in Trash', 'wp_stream' ),
-			'parent_item_colon'   => sprintf( __( 'Parent %s:', 'wp_stream' ), $singular ),
+			'add_new'             => sprintf( __( 'Add New %s', 'stream' ), $singular ),
+			'add_new_item'        => sprintf( __( 'Add New %s', 'stream' ), $singular ),
+			'edit_item'           => sprintf( __( 'Edit %s', 'stream' ), $singular ),
+			'new_item'            => sprintf( __( 'New %s', 'stream' ), $singular ),
+			'view_item'           => sprintf( __( 'View %s', 'stream' ), $singular ),
+			'search_items'        => sprintf( __( 'Search %s', 'stream' ), $plural ),
+			'not_found'           => __( 'No results found', 'stream' ),
+			'not_found_in_trash'  => __( 'No results found in Trash', 'stream' ),
+			'parent_item_colon'   => sprintf( __( 'Parent %s:', 'stream' ), $singular ),
 			'menu_name'           => $plural,
 		);
 
@@ -61,20 +61,20 @@ class X_Stream_Post_Type {
 
 		// Register 'Context' taxonomy
 
-		$tax_singular = __( 'Context', 'wp_stream' );
-		$tax_plural   = __( 'Contexts', 'wp_stream' );
+		$tax_singular = __( 'Context', 'stream' );
+		$tax_plural   = __( 'Contexts', 'stream' );
 
 		$tax_labels = array(
 			'name'              => $tax_plural,
 			'singular_name'     => $tax_singular,
-			'search_items'      => sprintf( __( 'Search %s', 'wp_stream' ), $tax_plural ),
-			'all_items'         => sprintf( __( 'All %s', 'wp_stream' ), $tax_plural ),
-			'parent_item'       => sprintf( __( 'Parent %s', 'wp_stream' ), $tax_singular ),
-			'parent_item_colon' => sprintf( __( 'Parent %s:', 'wp_stream' ), $tax_singular ),
-			'edit_item'         => sprintf( __( 'Edit %s', 'wp_stream' ), $tax_singular ),
-			'update_item'       => sprintf( __( 'Update %s', 'wp_stream' ), $tax_singular ),
-			'add_new_item'      => sprintf( __( 'Add New %s', 'wp_stream' ), $tax_singular ),
-			'new_item_name'     => sprintf( __( 'New %s Name', 'wp_stream' ), $tax_singular ),
+			'search_items'      => sprintf( __( 'Search %s', 'stream' ), $tax_plural ),
+			'all_items'         => sprintf( __( 'All %s', 'stream' ), $tax_plural ),
+			'parent_item'       => sprintf( __( 'Parent %s', 'stream' ), $tax_singular ),
+			'parent_item_colon' => sprintf( __( 'Parent %s:', 'stream' ), $tax_singular ),
+			'edit_item'         => sprintf( __( 'Edit %s', 'stream' ), $tax_singular ),
+			'update_item'       => sprintf( __( 'Update %s', 'stream' ), $tax_singular ),
+			'add_new_item'      => sprintf( __( 'Add New %s', 'stream' ), $tax_singular ),
+			'new_item_name'     => sprintf( __( 'New %s Name', 'stream' ), $tax_singular ),
 			'menu_name'         => $tax_plural,
 		);
 
@@ -94,20 +94,20 @@ class X_Stream_Post_Type {
 
 		// Register 'Action' taxonomy
 
-		$tax_singular = __( 'Action', 'wp_stream' );
-		$tax_plural   = __( 'Actions', 'wp_stream' );
+		$tax_singular = __( 'Action', 'stream' );
+		$tax_plural   = __( 'Actions', 'stream' );
 
 		$tax_labels = array(
 			'name'              => $tax_plural,
 			'singular_name'     => $tax_singular,
-			'search_items'      => sprintf( __( 'Search %s', 'wp_stream' ), $tax_plural ),
-			'all_items'         => sprintf( __( 'All %s', 'wp_stream' ), $tax_plural ),
-			'parent_item'       => sprintf( __( 'Parent %s', 'wp_stream' ), $tax_singular ),
-			'parent_item_colon' => sprintf( __( 'Parent %s:', 'wp_stream' ), $tax_singular ),
-			'edit_item'         => sprintf( __( 'Edit %s', 'wp_stream' ), $tax_singular ),
-			'update_item'       => sprintf( __( 'Update %s', 'wp_stream' ), $tax_singular ),
-			'add_new_item'      => sprintf( __( 'Add New %s', 'wp_stream' ), $tax_singular ),
-			'new_item_name'     => sprintf( __( 'New %s Name', 'wp_stream' ), $tax_singular ),
+			'search_items'      => sprintf( __( 'Search %s', 'stream' ), $tax_plural ),
+			'all_items'         => sprintf( __( 'All %s', 'stream' ), $tax_plural ),
+			'parent_item'       => sprintf( __( 'Parent %s', 'stream' ), $tax_singular ),
+			'parent_item_colon' => sprintf( __( 'Parent %s:', 'stream' ), $tax_singular ),
+			'edit_item'         => sprintf( __( 'Edit %s', 'stream' ), $tax_singular ),
+			'update_item'       => sprintf( __( 'Update %s', 'stream' ), $tax_singular ),
+			'add_new_item'      => sprintf( __( 'Add New %s', 'stream' ), $tax_singular ),
+			'new_item_name'     => sprintf( __( 'New %s Name', 'stream' ), $tax_singular ),
 			'menu_name'         => $tax_plural,
 		);
 
@@ -156,7 +156,7 @@ class X_Stream_Post_Type {
 
 		wp_dropdown_users(
 			array(
-				'show_option_all' => __( 'Show all users', 'wp_stream' ),
+				'show_option_all' => __( 'Show all users', 'stream' ),
 				'who' => 'all',
 				'name' => 'author',
 				'selected' => filter_input( INPUT_GET, 'author' ),
@@ -171,7 +171,7 @@ class X_Stream_Post_Type {
 					'taxonomy' => 'stream_action',
 					'name' => 'stream_action',
 					'selected' => filter_input( INPUT_GET, 'stream_action' ),
-					'show_option_all' => __( 'Show all actions', 'wp_stream' ),
+					'show_option_all' => __( 'Show all actions', 'stream' ),
 				)
 			)
 		);
@@ -183,7 +183,7 @@ class X_Stream_Post_Type {
 					'taxonomy' => 'stream_context',
 					'name' => 'stream_context',
 					'selected' => filter_input( INPUT_GET, 'stream_context' ),
-					'show_option_all' => __( 'Show all contexts', 'wp_stream' ),
+					'show_option_all' => __( 'Show all contexts', 'stream' ),
 				)
 			)
 		);
@@ -192,12 +192,12 @@ class X_Stream_Post_Type {
 
 	public static function list_table_columns( $post_columns ) {
 		$post_columns = array(
-			'full_date' => __( 'Date', 'wp_stream' ),
-			'summary' => __( 'Summary', 'wp_stream' ),
-			'user' => __( 'User', 'wp_stream' ),
-			'taxonomy-stream_action' => __( 'Actions', 'wp_stream' ),
-			'taxonomy-stream_context' => __( 'Contexts', 'wp_stream' ),
-			'ip' => __( 'IP Address', 'wp_stream' ),
+			'full_date' => __( 'Date', 'stream' ),
+			'summary' => __( 'Summary', 'stream' ),
+			'user' => __( 'User', 'stream' ),
+			'taxonomy-stream_action' => __( 'Actions', 'stream' ),
+			'taxonomy-stream_context' => __( 'Contexts', 'stream' ),
+			'ip' => __( 'IP Address', 'stream' ),
 			'id' => __( 'ID' )
 			);
 		$post_columns = apply_filters( 'wp_stream_post_post_columns', $post_columns );

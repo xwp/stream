@@ -23,7 +23,7 @@ class X_Stream_Context_Post extends X_Stream_Context {
 	 * @return string Translated context label
 	 */
 	public static function get_label() {
-		return __( 'Posts', 'wp_stream' );
+		return __( 'Posts', 'stream' );
 	}
 
 	/**
@@ -33,10 +33,10 @@ class X_Stream_Context_Post extends X_Stream_Context {
 	 */
 	public static function get_action_term_labels() {
 		return array(
-			'updated' => __( 'Updated', 'wp_stream' ),
-			'created' => __( 'Created', 'wp_stream' ),
-			'trashed' => __( 'Trashed', 'wp_stream' ),
-			'deleted' => __( 'Deleted', 'wp_stream' ),
+			'updated' => __( 'Updated', 'stream' ),
+			'created' => __( 'Created', 'stream' ),
+			'trashed' => __( 'Trashed', 'stream' ),
+			'deleted' => __( 'Deleted', 'stream' ),
 		);
 	}
 
@@ -56,12 +56,12 @@ class X_Stream_Context_Post extends X_Stream_Context {
 			&&
 			( ! in_array( 'trashed', $actions ) )
 			) {
-			$links[ __( 'Edit', 'wp_stream' ) ] = get_edit_post_link( $object_id );
+			$links[ __( 'Edit', 'stream' ) ] = get_edit_post_link( $object_id );
 		}
 
 		if ( in_array( 'updated', $actions ) ) {
 			if ( $revision_id = get_post_meta( $stream_id, '_arg_4', true ) ) {
-				$links[ __( 'Revision', 'wp_stream' ) ] = get_edit_post_link( $revision_id );
+				$links[ __( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
 			}
 		}
 		return $links;
@@ -89,25 +89,25 @@ class X_Stream_Context_Post extends X_Stream_Context {
 			return;
 		}
 		elseif ( $old == 'auto-draft' && $new == 'draft' ) {
-			$message = __( '"%s" post drafted', 'wp_stream' );
+			$message = __( '"%s" post drafted', 'stream' );
 			$action  = 'created';
 		}
 		elseif ( $old == 'auto-draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = __( '"%s" post published', 'wp_stream' );
+			$message = __( '"%s" post published', 'stream' );
 			$action  = 'created';
 		}
 		elseif ( $old == 'draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = __( '"%s" post published', 'wp_stream' );
+			$message = __( '"%s" post published', 'stream' );
 		}
 		elseif ( $old == 'publish' && ( in_array( $new, array( 'draft' ) ) ) ) {
-			$message = __( '"%s" post unpublished', 'wp_stream' );
+			$message = __( '"%s" post unpublished', 'stream' );
 		}
 		elseif ( $new == 'trash' ) {
-			$message = __( '"%s" post trashed', 'wp_stream' );
+			$message = __( '"%s" post trashed', 'stream' );
 			$action  = 'trashed';
 		}
 		else {
-			$message = __( '"%s" post updated', 'wp_stream' );
+			$message = __( '"%s" post updated', 'stream' );
 		}
 
 		if ( empty( $action ) ) {
@@ -152,7 +152,7 @@ class X_Stream_Context_Post extends X_Stream_Context {
 	public static function callback_deleted_post( $post_id ) {
 		$post = get_post( $post_id );
 		self::log(
-			__( '"%s" post deleted from trash', 'wp_stream' ),
+			__( '"%s" post deleted from trash', 'stream' ),
 			array(
 				'post_title'  => $post->post_title,
 			),

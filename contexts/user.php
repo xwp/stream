@@ -27,7 +27,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 	 * @return string Translated context label
 	 */
 	public static function get_label() {
-		return __( 'Users', 'wp_stream' );
+		return __( 'Users', 'stream' );
 	}
 
 	/**
@@ -37,13 +37,13 @@ class X_Stream_Context_User extends X_Stream_Context {
 	 */
 	public static function get_action_term_labels() {
 		return array(
-			'updated'         => __( 'Updated', 'wp_stream' ),
-			'created'         => __( 'Created', 'wp_stream' ),
-			'deleted'         => __( 'Deleted', 'wp_stream' ),
-			'password-reset'  => __( 'Password Reset', 'wp_stream' ),
-			'forgot-password' => __( 'Forgot Password', 'wp_stream' ),
-			'login'           => __( 'Login', 'wp_stream' ),
-			'logout'          => __( 'Logout', 'wp_stream' ),
+			'updated'         => __( 'Updated', 'stream' ),
+			'created'         => __( 'Created', 'stream' ),
+			'deleted'         => __( 'Deleted', 'stream' ),
+			'password-reset'  => __( 'Password Reset', 'stream' ),
+			'forgot-password' => __( 'Forgot Password', 'stream' ),
+			'login'           => __( 'Login', 'stream' ),
+			'logout'          => __( 'Logout', 'stream' ),
 		);
 	}
 
@@ -69,7 +69,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 	public static function callback_user_register( $user_id ) {
 		$user = get_user_by( 'ID', $user_id );
 		self::log(
-			__( '%s was registered as new user', 'wp_stream' ),
+			__( '%s was registered as new user', 'stream' ),
 			array(
 				'email' => $user->email,
 			),
@@ -86,7 +86,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 	 */
 	public static function callback_profile_update( $user_id, $user ) {
 		self::log(
-			__( '%s\'s profile was updated', 'wp_stream' ),
+			__( '%s\'s profile was updated', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
 				),
@@ -103,7 +103,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 	 */
 	public static function callback_password_reset( $user ) {
 		self::log(
-			__( '%s\'s password was reset', 'wp_stream' ),
+			__( '%s\'s password was reset', 'stream' ),
 			array(
 				'email' => $user->display_name,
 			),
@@ -125,7 +125,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 			$user = get_user_by( 'login', $user_login );
 		}
 		self::log(
-			__( '%s\'s password was requested to be reset', 'wp_stream' ),
+			__( '%s\'s password was requested to be reset', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
 			),
@@ -142,7 +142,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 	 */
 	public static function callback_wp_login( $user_login, $user ) {
 		self::log(
-			__( '%s logged in', 'wp_stream' ),
+			__( '%s logged in', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
 				),
@@ -160,7 +160,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 	public static function callback_clear_auth_cookie() {
 		$user = wp_get_current_user();
 		self::log(
-			__( '%s logged out', 'wp_stream' ),
+			__( '%s logged out', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
 				),

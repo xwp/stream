@@ -81,7 +81,7 @@ class X_Stream_Settings {
 	public static function admin_plugin_action_links( $links, $file ) {
 		if ( plugin_basename( __FILE__ ) === $file ) {
 			$admin_page_url  = admin_url( sprintf( '%s?page=%s', self::ADMIN_PARENT_PAGE, self::ADMIN_PAGE_SLUG ) );
-			$admin_page_link = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'wp_stream' ) );
+			$admin_page_link = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 			array_push( $links, $admin_page_link );
 		}
 		return $links;
@@ -101,8 +101,8 @@ class X_Stream_Settings {
 		}
 
 		add_menu_page(
-			__( 'Stream', 'wp_stream' ),
-			__( 'Stream', 'wp_stream' ),
+			__( 'Stream', 'stream' ),
+			__( 'Stream', 'stream' ),
 			$cap,
 			null,
 			null,
@@ -114,8 +114,8 @@ class X_Stream_Settings {
 
 		self::$screen_id = add_submenu_page(
 			'edit.php?post_type=stream',
-			__( 'Settings', 'wp_stream' ),
-			__( 'Settings', 'wp_stream' ),
+			__( 'Settings', 'stream' ),
+			__( 'Settings', 'stream' ),
 			'manage_options',
 			self::KEY,
 			array( __CLASS__, 'render_page' )
@@ -146,7 +146,7 @@ class X_Stream_Settings {
 		<div class="wrap">
 
 			<?php screen_icon( 'options-general' ) ?>
-			<h2><?php _e( 'Stream Settings', 'wp_stream' ) ?></h2>
+			<h2><?php _e( 'Stream Settings', 'stream' ) ?></h2>
 			<?php settings_errors() ?>
 
 			<?php
@@ -194,17 +194,17 @@ class X_Stream_Settings {
 	public static function get_fields() {
 		return array(
 			'general' => array(
-				'title'  => __( 'General', 'wp_stream' ),
+				'title'  => __( 'General', 'stream' ),
 				'fields' => array(
 					array(
 						'name'        => 'lifetime',
-						'title'       => __( 'Purge records', 'wp_stream' ),
+						'title'       => __( 'Purge records', 'stream' ),
 						'type'        => 'number',
 						'class'       => 'small-text',
-						'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'wp_stream' ),
+						'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
 						'default'     => 90,
 						'placeholder' => '',
-						'after_field' => __( 'days old', 'wp_stream' ),
+						'after_field' => __( 'days old', 'stream' ),
 					),
 				),
 			),
