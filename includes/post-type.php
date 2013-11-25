@@ -20,8 +20,8 @@ class X_Stream_Post_Type {
 			'new_item'            => sprintf( __( 'New %s', 'wp_stream' ), $singular ),
 			'view_item'           => sprintf( __( 'View %s', 'wp_stream' ), $singular ),
 			'search_items'        => sprintf( __( 'Search %s', 'wp_stream' ), $plural ),
-			'not_found'           => sprintf( __( 'No %s found', 'wp_stream' ), $plural ),
-			'not_found_in_trash'  => sprintf( __( 'No %s found in Trash', 'wp_stream' ), $plural ),
+			'not_found'           => __( 'No results found', 'wp_stream' ),
+			'not_found_in_trash'  => __( 'No results found in Trash', 'wp_stream' ),
 			'parent_item_colon'   => sprintf( __( 'Parent %s:', 'wp_stream' ), $singular ),
 			'menu_name'           => $plural,
 		);
@@ -136,6 +136,7 @@ class X_Stream_Post_Type {
 		// Manage list table columns
 		add_filter( 'manage_stream_posts_columns', array( __CLASS__, 'list_table_columns' ), null, 2 );
 		add_filter( 'manage_stream_posts_custom_column', array( __CLASS__, 'list_table_columns_data' ), null, 2 );
+		add_filter( 'manage_edit-stream_sortable_columns', array( __CLASS__, 'list_table_sortable_columns' ), null, 2 );
 
 		add_filter( 'bulk_actions-edit-stream', '__return_empty_array' );
 
@@ -242,6 +243,11 @@ class X_Stream_Post_Type {
 				break;
 		}
 		echo $out; // xss okay
+	}
+
+	public static function list_table_sortable_columns( $columns ) {
+		$columns['full_date'] = 'full_date';
+		return $columns;
 	}
 
 	public static function get_action_links( $post ){
