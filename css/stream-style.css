@@ -1,3 +1,7 @@
+.post-type-stream .tablenav {
+	padding-top: 6px;
+}
+
 .post-type-stream .tablenav .actions {
 	padding: 0;
 }
