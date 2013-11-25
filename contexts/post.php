@@ -43,7 +43,7 @@ class X_Stream_Context_Post extends X_Stream_Context {
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @filter wp_stream_action_links_users
+	 * @filter wp_stream_action_links_posts
 	 * @param  array $links      Previous links registered
 	 * @param  int   $stream_id  Stream drop id
 	 * @param  int   $object_id  Object ( post ) id
