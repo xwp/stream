@@ -21,12 +21,6 @@
 	width: 15%;
 }
 
-.post-type-stream td.summary strong {
-	display: block;
-	margin-bottom: .2em;
-	font-size: 14px;
-}
-
 .post-type-stream .column-user img {
 	float: left;
 	margin-right: 10px;
