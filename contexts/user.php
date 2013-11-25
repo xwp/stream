@@ -32,7 +32,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 
 	/**
 	 * Return translated action term labels
-	 * 
+	 *
 	 * @return array Action terms label translation
 	 */
 	public static function get_action_term_labels() {
@@ -63,7 +63,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 
 	/**
 	 * Log user registrations
-	 * 
+	 *
 	 * @action user_register
 	 */
 	public static function callback_user_register( $user_id ) {
@@ -86,7 +86,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 	 */
 	public static function callback_profile_update( $user_id, $user ) {
 		self::log(
-			__( '%s has updated his profile', 'wp_stream' ),
+			__( 'Profile updated for %s', 'wp_stream' ),
 			array(
 				'display_name' => $user->display_name,
 				),
@@ -103,7 +103,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 	 */
 	public static function callback_password_reset( $user ) {
 		self::log(
-			__( '%s has reset his password', 'wp_stream' ),
+			__( 'Password reset for %s', 'wp_stream' ),
 			array(
 				'email' => $user->email,
 			),
@@ -125,7 +125,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 			$user = get_user_by( 'login', $user_login );
 		}
 		self::log(
-			__( '%s has requested to reset his password', 'wp_stream' ),
+			__( 'Password reset requested for %s', 'wp_stream' ),
 			array(
 				'display_name' => $user->display_name,
 			),
