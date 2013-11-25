@@ -6,6 +6,10 @@
 	padding: 0;
 }
 
+.post-type-stream .view-switch {
+	display: none;
+}
+
 .post-type-stream .column-full_date {
 	width: 10%;
 }
