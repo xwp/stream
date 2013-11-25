@@ -229,7 +229,7 @@ class X_Stream_Post_Type {
 				);
 				break;
 			case 'full_date':
-				$out .= date( 'd/m/Y \<\b\r\/\> h:i:s a' , strtotime( $post->post_date ) );
+				$out .= date( 'Y/m/d \<\b\r\/\> h:i:s A' , strtotime( $post->post_date ) );
 				break;
 			case 'ip':
 				$out .= sprintf(
