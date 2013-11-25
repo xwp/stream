@@ -155,25 +155,13 @@ class X_Stream_Post_Type {
 
 		wp_dropdown_users(
 			array(
-				'show_option_all' => __( 'View all users', 'wp_stream' ),
+				'show_option_all' => __( 'Show all users', 'wp_stream' ),
 				'who' => 'all',
 				'name' => 'author',
 				'selected' => filter_input( INPUT_GET, 'author' ),
 				'include_selected' => true,
 			)
-			);
-
-		wp_dropdown_categories(
-			array_merge(
-				$dropdown_options,
-				array(
-					'taxonomy' => 'stream_context',
-					'name' => 'stream_context',
-					'selected' => filter_input( INPUT_GET, 'stream_context' ),
-					'show_option_all' => __( 'View all contexts', 'wp_stream' ),
-					)
-				)
-			);
+		);
 
 		wp_dropdown_categories(
 			array_merge(
@@ -182,10 +170,22 @@ class X_Stream_Post_Type {
 					'taxonomy' => 'stream_action',
 					'name' => 'stream_action',
 					'selected' => filter_input( INPUT_GET, 'stream_action' ),
-					'show_option_all' => __( 'View all actions', 'wp_stream' ),
-					)
+					'show_option_all' => __( 'Show all actions', 'wp_stream' ),
 				)
-			);
+			)
+		);
+
+		wp_dropdown_categories(
+			array_merge(
+				$dropdown_options,
+				array(
+					'taxonomy' => 'stream_context',
+					'name' => 'stream_context',
+					'selected' => filter_input( INPUT_GET, 'stream_context' ),
+					'show_option_all' => __( 'Show all contexts', 'wp_stream' ),
+				)
+			)
+		);
 
 	}
 
