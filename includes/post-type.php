@@ -223,7 +223,7 @@ class X_Stream_Post_Type {
 				$out .= sprintf(
 					'<a style="vertical-align:top" href="%s"><span style="float:left;padding-right:5px;">%s</span> %s <small>%s</small></a>',
 					add_query_arg( array( 'post_type' => $post->post_type, 'author' => $author_ID ), 'edit.php' ),
-					get_avatar( $author_ID, 48 ),
+					get_avatar( $author_ID, 32 ),
 					$author_name,
 					$author_role
 				);
