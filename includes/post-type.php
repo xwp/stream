@@ -117,7 +117,7 @@ class X_Stream_Post_Type {
 			'show_ui'           => false,
 			'show_admin_column' => true,
 			'query_var'         => true,
-		);
+			);
 
 		register_taxonomy(
 			'stream_action',
@@ -204,7 +204,7 @@ class X_Stream_Post_Type {
 	public static function list_table_columns_data( $column_name, $post_id ) {
 		global $wp_roles;
 		$post = get_post();
-		$out = '';
+		$out  = '';
 		switch ( $column_name ) {
 			case 'summary':
 				$out .= sprintf(
@@ -248,7 +248,7 @@ class X_Stream_Post_Type {
 			$action_links = apply_filters( 'wp_stream_action_links_' . $context->name , array(), $post->ID, $object_id );
 		}
 		if ( $action_links ) {
-			$out .= '<div class="row-actions">';
+			$out  .= '<div class="row-actions">';
 			$links = array();
 			foreach ( $action_links as $al_title => $al_href ) {
 				$links[] = sprintf(
@@ -257,7 +257,7 @@ class X_Stream_Post_Type {
 					$al_title
 					);
 			}
-			$out .= implode(', ', $links);
+			$out .= implode( ', ', $links );
 			$out .= '</div>';
 		}
 		return $out;
@@ -286,7 +286,7 @@ class X_Walker_CategoryDropdown extends Walker {
 	 * @todo Decouple this
 	 * @var array
 	 */
-	var $db_fields = array('parent' => 'parent', 'id' => 'term_id');
+	var $db_fields = array( 'parent' => 'parent', 'id' => 'term_id' );
 
 	/**
 	 * Start the element output.
@@ -303,7 +303,7 @@ class X_Walker_CategoryDropdown extends Walker {
 		$pad = str_repeat( '&nbsp;', $depth * 3 );
 
 		$cat_name = apply_filters( 'list_cats', $category->name, $category );
-		$output .= "\t<option class=\"level-$depth\" value=\"" . $category->slug . '"';
+		$output  .= "\t<option class=\"level-$depth\" value=\"" . $category->slug . '"';
 		if ( $category->slug == $args['selected'] ) {
 			$output .= ' selected="selected"';
 		}

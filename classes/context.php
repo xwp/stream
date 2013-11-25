@@ -3,31 +3,31 @@
 abstract class X_Stream_Context {
 
 	/**
-	 * Name/slug of the context
-	 * @var string
-	 */
-	static $name = null;
+	* Name/slug of the context
+	* @var string
+	*/
+	public static $name = null;
 
 	/**
-	 * Actions this context is hooked to
-	 * @var array
-	 */
-	static $actions = array();
+	* Actions this context is hooked to
+	* @var array
+	*/
+	public static $actions = array();
 
 	/**
-	 * Previous Stream entry in same request
-	 * @var int
-	 */
-	static $prev_stream = null;
+	* Previous Stream entry in same request
+	* @var int
+	*/
+	public static $prev_stream = null;
 
 	/**
-	 * Register required hooks
-	 * @return array   Array of actions to hook into
+	 * Register all context hooks
+	 * 
+	 * @return void
 	 */
 	public static function register() {
 		$class = get_called_class();
-		// Register translated name
-		$class::$name = $class::get_name();
+
 		foreach ( $class::$actions as $action ) {
 			add_action( $action, array( $class, 'callback' ), null, 5 );
 		}
@@ -35,6 +35,12 @@ abstract class X_Stream_Context {
 		add_filter( 'wp_stream_action_links_' . $class::$name, array( $class, 'action_links' ), 10, 3 );
 	}
 
+	/**
+	 * Callback for all registered hooks throughout Stream
+	 * Looks for a class method with the convention: "callback_{action name}"
+	 * 
+	 * @return void
+	 */
 	public static function callback() {
 		$action   = current_filter();
 		$class    = get_called_class();
@@ -44,8 +50,17 @@ abstract class X_Stream_Context {
 		}
 	}
 
+	/**
+	 * Log handler
+	 * @param  string $message   sprintf-ready error message string
+	 * @param  array  $args      sprintf (and extra) arguments to use
+	 * @param  int    $object_id Target object id
+	 * @param  string $action    Action performed (stream_action)
+	 * @param  int    $user_id   User responsible for the action
+	 * @param  array  $contexts  Contexts of the action
+	 * @return void
+	 */
 	public static function log( $message, $args, $object_id, $action, $user_id = null, array $contexts = array() ) {
-		// DO SOMETHING
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
@@ -107,6 +122,15 @@ abstract class X_Stream_Context {
 		}
 	}
 
+	/**
+	 * Add action links to Stream drop row in admin list screen
+	 *
+	 * @filter wp_stream_action_links_{context}
+	 * @param  array $links      Previous links registered
+	 * @param  int   $stream_id  Stream drop id
+	 * @param  int   $object_id  Object id
+	 * @return array             Associative array, eg: ( label => href )
+	 */
 	public static function action_links( $links, $stream_id, $object_id ) {
 		return $links;
 	}
