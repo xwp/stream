@@ -4,7 +4,7 @@
  * Plugin URI: http://x-team.com
  * Description: Stream plugin for WP
  * Version: 0.1
- * Author: X-Team, Weston Ruter, Frankie Jarret, Shady Sharaf
+ * Author: X-Team, Weston Ruter, Frankie Jarrett, Shady Sharaf
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
  * Text Domain: wp-stream
