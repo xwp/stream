@@ -1,13 +1,13 @@
 === Stream ===
-Contributors:      X-team, fjarrett, westonruter, shadyvb
-Tags:              stream, user activity, log, notification 
+Contributors:      x-team, fjarrett, westonruter, shadyvb
+Tags:              stream, activity, analytics, log, users, notification
 Requires at least: 3.6
 Tested up to:      3.7.1
 Stable tag:        trunk
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
-Steam plugin for WordPress
+Track and monitor every change made on your WordPress site. All logged-in user activity is recorded and organized by action and context for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
 
 == Description ==
 
