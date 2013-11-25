@@ -255,16 +255,12 @@ class X_Stream_Settings {
 				add_settings_field(
 					$field['name'],
 					$field['title'],
-					(
-						isset( $field['callback'] )
-						? $field['callback']
-						: array( __CLASS__, 'output_field' )
-						),
+					( isset( $field['callback'] ) ? $field['callback'] : array( __CLASS__, 'output_field' ) ),
 					self::KEY,
 					$section_name,
 					$field + array(
 						'section'   => $section_name,
-						'label_for' => sprintf( '%s_%s_%s', self::KEY, $section_name, $field['name'] ),
+						'label_for' => sprintf( '%s_%s_%s', self::KEY, $section_name, $field['name'] ), // xss ok
 					)
 				);
 			}
@@ -299,10 +295,10 @@ class X_Stream_Settings {
 			case 'checkbox':
 				$output = sprintf(
 					'<input type="checkbox" name="%s[%s_%s]" value="1" %s />',
-					self::KEY,
-					$field['section'],
+					esc_attr( self::KEY ),
+					esc_attr( $field['section'] ),
 					esc_attr( $field['name'] ),
-					checked( self::$options[$field['section'].'_'.$field['name']], 1, false )
+					checked( self::$options[$field['section'] . '_' . $field['name']], 1, false )
 				);
 				break;
 		}
@@ -310,7 +306,7 @@ class X_Stream_Settings {
 		if ( isset( $field['desc'] ) ) {
 			$output .= sprintf(
 				'<p class="description">%s</p>',
-				$field[ 'desc' ]
+				$field['desc'] // xss ok
 			);
 		}
 
