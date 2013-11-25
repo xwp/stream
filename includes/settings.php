@@ -17,14 +17,14 @@ class X_Stream_Settings {
 
 	/**
 	 * Plugin settings
-	 * 
+	 *
 	 * @var array
 	 */
 	public static $options = array();
 
 	/**
 	 * Menu page screen id
-	 * 
+	 *
 	 * @var string
 	 */
 	public static $screen_id;
@@ -124,7 +124,7 @@ class X_Stream_Settings {
 
 	/**
 	 * Enqueue scripts/styles for admin screen
-	 * 
+	 *
 	 * @action admin_enqueue_scripts
 	 * @return void
 	 */
@@ -138,7 +138,7 @@ class X_Stream_Settings {
 
 	/**
 	 * Render settings page
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function render_page() {
@@ -173,7 +173,7 @@ class X_Stream_Settings {
 
 	/**
 	 * Return settings fields
-	 * 
+	 *
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_fields() {
@@ -182,11 +182,14 @@ class X_Stream_Settings {
 				'title'  => __( 'Data Settings', 'wp_stream' ),
 				'fields' => array(
 					array(
-						'name'    => 'lifetime',
-						'title'   => __( 'Data lifetime', 'wp_stream' ),
-						'type'    => 'text',
-						'desc'    => __( 'Maximum number of days to keep data. Use -1 to keep them forever.', 'wp_stream' ),
-						'default' => '-1',
+						'name'        => 'lifetime',
+						'title'       => __( 'Purge records', 'wp_stream' ),
+						'type'        => 'number',
+						'class'       => 'small-text',
+						'desc'        => __( 'Maximum number of days to keep data. Use -1 to keep them forever.', 'wp_stream' ),
+						'default'     => -1,
+						'placeholder' => '',
+						'after_field' => __( 'days old', 'wp_stream' ),
 						),
 					),
 				),
@@ -195,7 +198,7 @@ class X_Stream_Settings {
 
 	/**
 	 * Iterate through registered fields and extract default values
-	 * 
+	 *
 	 * @return array Default option values
 	 */
 	public static function get_defaults() {
@@ -213,7 +216,7 @@ class X_Stream_Settings {
 
 	/**
 	 * Registers settings fields and sections
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function register_settings() {
@@ -244,7 +247,10 @@ class X_Stream_Settings {
 						),
 					self::KEY,
 					$section_name,
-					$field + array( 'section' => $section_name )
+					$field + array(
+						'section'   => $section_name,
+						'label_for' => sprintf( '%s_%s_%s', self::KEY, $section_name, $field['name'] ),
+					)
 				);
 			}
 		}
@@ -252,21 +258,28 @@ class X_Stream_Settings {
 
 	/**
 	 * Compile HTML needed for displaying the field
-	 * 
+	 *
 	 * @param  array  $field  Field settings
 	 * @return string         HTML to be displayed
 	 */
 	public static function render_field( $field ) {
 
 		switch ( $field['type'] ) {
-			case 'text':
+			case 'text' || 'number':
+				$class       = isset( $field['class'] ) ? $field['class'] : null;
+				$placeholder = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
+				$after_field = isset( $field['after_field'] ) ? $field['after_field'] : null;
 				$output = sprintf(
-					'<input type="text" name="%s[%s_%s]" size="50" value="%s" />',
+					'<input type="%1$s" name="%2$s[%3$s_%4$s]" id="%2$s_%3$s_%4$s" class="%5$s" placeholder="%6$s" value="%7$s" /> %8$s',
+					esc_attr( $field['type'] ),
 					self::KEY,
 					$field['section'],
 					esc_attr( $field['name'] ),
-					self::$options[$field['section'].'_'.$field['name']]
-					);
+					esc_attr( $class ),
+					esc_attr( $placeholder ),
+					self::$options[$field['section'].'_'.$field['name']],
+					esc_html( $after_field )
+				);
 				break;
 			case 'checkbox':
 				$output = sprintf(
@@ -275,7 +288,7 @@ class X_Stream_Settings {
 					$field['section'],
 					esc_attr( $field['name'] ),
 					checked( self::$options[$field['section'].'_'.$field['name']], 1, false )
-					);
+				);
 				break;
 		}
 
@@ -291,7 +304,7 @@ class X_Stream_Settings {
 
 	/**
 	 * Render Callback for post_types field
-	 * 
+	 *
 	 * @param $args
 	 * @return void
 	 */
