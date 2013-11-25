@@ -28,7 +28,7 @@ class X_Stream_Context_Post extends X_Stream_Context {
 
 	/**
 	 * Return translated action term labels
-	 * 
+	 *
 	 * @return array Action terms label translation
 	 */
 	public static function get_action_term_labels() {
@@ -69,7 +69,7 @@ class X_Stream_Context_Post extends X_Stream_Context {
 
 	/**
 	 * Log all post status changes ( creating / updating / trashing )
-	 * 
+	 *
 	 * @action transition_post_status
 	 */
 	public static function callback_transition_post_status( $new, $old, $post ) {
@@ -89,25 +89,25 @@ class X_Stream_Context_Post extends X_Stream_Context {
 			return;
 		}
 		elseif ( $old == 'auto-draft' && $new == 'draft' ) {
-			$message = __( 'Drafted a new post "#%d - %s"', 'wp_stream' );
+			$message = __( '"%s" post drafted', 'wp_stream' );
 			$action  = 'created';
 		}
 		elseif ( $old == 'auto-draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = __( 'Published a new post "#%d - %s"', 'wp_stream' );
+			$message = __( '"%s" post published', 'wp_stream' );
 			$action  = 'created';
 		}
 		elseif ( $old == 'draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = __( 'Published a post "#%d - %s"', 'wp_stream' );
+			$message = __( '"%s" post published', 'wp_stream' );
 		}
 		elseif ( $old == 'publish' && ( in_array( $new, array( 'draft' ) ) ) ) {
-			$message = __( 'Unpublished a post "#%d - %s"', 'wp_stream' );
+			$message = __( '"%s" post unpublished', 'wp_stream' );
 		}
 		elseif ( $new == 'trash' ) {
-			$message = __( 'Trashed a post "#%d - %s"', 'wp_stream' );
+			$message = __( '"%s" post trashed', 'wp_stream' );
 			$action  = 'trashed';
 		}
 		else {
-			$message = __( 'Updated post "#%d - %s"', 'wp_stream' );
+			$message = __( '"%s" post updated', 'wp_stream' );
 		}
 
 		if ( empty( $action ) ) {
@@ -147,13 +147,13 @@ class X_Stream_Context_Post extends X_Stream_Context {
 
 	/**
 	 * Log post deletion
-	 * 
+	 *
 	 * @action deleted_post
 	 */
 	public static function callback_deleted_post( $post_id ) {
 		$post = get_post( $post_id );
 		self::log(
-			__( 'Deleted a post "#%d - %s"', 'wp_stream' ),
+			__( '"%s" post deleted from trash', 'wp_stream' ),
 			array(
 				'post_id'     => $post->ID,
 				'post_title'  => $post->post_title,
