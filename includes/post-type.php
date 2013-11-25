@@ -221,7 +221,7 @@ class X_Stream_Post_Type {
 				$author_name = isset( $authordata->display_name ) ? $authordata->display_name : null;
 				$author_role = isset( $authordata->roles[0] ) ? $wp_roles->role_names[$authordata->roles[0]] : null;
 				$out .= sprintf(
-					'<a style="vertical-align:top" href="%s"><span style="float:left;padding-right:5px;">%s</span> %s <small>%s</small></a>',
+					'<a style="vertical-align:top" href="%s"><span style="float:left;padding-right:5px;">%s</span> %s</a><br /><small>%s</small>',
 					add_query_arg( array( 'post_type' => $post->post_type, 'author' => $author_ID ), 'edit.php' ),
 					get_avatar( $author_ID, 32 ),
 					$author_name,
