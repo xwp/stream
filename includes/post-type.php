@@ -9,7 +9,7 @@ class X_Stream_Post_Type {
 
 	public static function register() {
 		$singular = __( 'Drop', 'wp_stream' );
-		$plural   = __( 'Streams', 'wp_stream' );
+		$plural   = __( 'Stream', 'wp_stream' );
 
 		$labels = array(
 			'name'                => $plural,
