@@ -134,7 +134,6 @@ class X_Stream_Context_Post extends X_Stream_Context {
 		self::log(
 			$message,
 			array(
-				'post_id'     => $post->ID,
 				'post_title'  => $post->post_title,
 				'new_status'  => $new,
 				'old_status'  => $old,
@@ -155,7 +154,6 @@ class X_Stream_Context_Post extends X_Stream_Context {
 		self::log(
 			__( '"%s" post deleted from trash', 'wp_stream' ),
 			array(
-				'post_id'     => $post->ID,
 				'post_title'  => $post->post_title,
 			),
 			$post->ID,

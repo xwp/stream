@@ -69,7 +69,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 	public static function callback_user_register( $user_id ) {
 		$user = get_user_by( 'ID', $user_id );
 		self::log(
-			__( '%s has registered', 'wp_stream' ),
+			__( '%s was registered as new user', 'wp_stream' ),
 			array(
 				'email' => $user->email,
 			),
@@ -86,7 +86,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 	 */
 	public static function callback_profile_update( $user_id, $user ) {
 		self::log(
-			__( 'Profile updated for %s', 'wp_stream' ),
+			__( '%s\'s profile was updated', 'wp_stream' ),
 			array(
 				'display_name' => $user->display_name,
 				),
@@ -103,9 +103,9 @@ class X_Stream_Context_User extends X_Stream_Context {
 	 */
 	public static function callback_password_reset( $user ) {
 		self::log(
-			__( 'Password reset for %s', 'wp_stream' ),
+			__( '%s\'s password was reset', 'wp_stream' ),
 			array(
-				'email' => $user->email,
+				'email' => $user->display_name,
 			),
 			$user->ID,
 			'password-reset',
@@ -125,7 +125,7 @@ class X_Stream_Context_User extends X_Stream_Context {
 			$user = get_user_by( 'login', $user_login );
 		}
 		self::log(
-			__( 'Password reset requested for %s', 'wp_stream' ),
+			__( '%s\'s password was requested to be reset', 'wp_stream' ),
 			array(
 				'display_name' => $user->display_name,
 			),
