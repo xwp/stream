@@ -142,10 +142,9 @@ class X_Stream_Context_User extends X_Stream_Context {
 	 */
 	public static function callback_wp_login( $user_login, $user ) {
 		self::log(
-			__( '%s logged in from %s', 'wp_stream' ),
+			__( '%s logged in', 'wp_stream' ),
 			array(
 				'display_name' => $user->display_name,
-				'ip'           => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 				),
 			$user->ID,
 			'login',
