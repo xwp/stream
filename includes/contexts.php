@@ -50,11 +50,14 @@ class WP_Stream_Contexts {
 			$context::register();
 
 			// Add new terms to our label lookup array
-			self::$term_labels['stream_action'] = array_merge(
+			self::$term_labels['stream_action']  = array_merge(
 				self::$term_labels['stream_action'],
-				$context::get_action_term_labels()
+				$context::get_action_labels()
 				);
-			self::$term_labels['stream_context'][$context::$name] = $context::get_label();
+			self::$term_labels['stream_context'] = array_merge(
+				self::$term_labels['stream_context'],
+				$context::get_context_labels()
+				);
 		}
 
 		// Filter taxonomy names to use translated labels

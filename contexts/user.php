@@ -35,7 +35,7 @@ class WP_Stream_Context_User extends WP_Stream_Context {
 	 *
 	 * @return array Action terms label translation
 	 */
-	public static function get_action_term_labels() {
+	public static function get_action_labels() {
 		return array(
 			'updated'         => __( 'Updated', 'stream' ),
 			'created'         => __( 'Created', 'stream' ),
@@ -44,6 +44,17 @@ class WP_Stream_Context_User extends WP_Stream_Context {
 			'forgot-password' => __( 'Forgot Password', 'stream' ),
 			'login'           => __( 'Login', 'stream' ),
 			'logout'          => __( 'Logout', 'stream' ),
+		);
+	}
+
+	/**
+	 * Return translated context labels
+	 *
+	 * @return array Context label translations
+	 */
+	public static function get_context_labels() {
+		return array(
+			'users' => __( 'Users', 'stream' ),
 		);
 	}
 
@@ -74,7 +85,9 @@ class WP_Stream_Context_User extends WP_Stream_Context {
 				'email' => $user->email,
 			),
 			$user->ID,
-			'created',
+			array(
+				'users' => 'created',
+				),
 			$user->ID
 		);
 	}
@@ -91,8 +104,9 @@ class WP_Stream_Context_User extends WP_Stream_Context {
 				'display_name' => $user->display_name,
 				),
 			$user->ID,
-			'updated',
-			$user->ID
+			array(
+				'users' => 'updated',
+				)
 		);
 	}
 
@@ -108,7 +122,9 @@ class WP_Stream_Context_User extends WP_Stream_Context {
 				'email' => $user->display_name,
 			),
 			$user->ID,
-			'password-reset',
+			array(
+				'users' => 'password-reset',
+				),
 			$user->ID
 		);
 	}
@@ -130,7 +146,9 @@ class WP_Stream_Context_User extends WP_Stream_Context {
 				'display_name' => $user->display_name,
 			),
 			$user->ID,
-			'forgot-password',
+			array(
+				'users' => 'forgot-password',
+				),
 			$user->ID
 		);
 	}
@@ -147,7 +165,9 @@ class WP_Stream_Context_User extends WP_Stream_Context {
 				'display_name' => $user->display_name,
 				),
 			$user->ID,
-			'login',
+			array(
+				'users' => 'login',
+				),
 			$user->ID
 			);
 	}
@@ -165,7 +185,9 @@ class WP_Stream_Context_User extends WP_Stream_Context {
 				'display_name' => $user->display_name,
 				),
 			$user->ID,
-			'logout',
+			array(
+				'users' => 'logout',
+				),
 			$user->ID
 			);
 	}

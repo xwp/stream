@@ -2,16 +2,21 @@
 
 class WP_Stream_Install {
 
+	public static $table_prefix;
+
 	/**
 	 * Check db version, create/update table schema accordingly
 	 * 
 	 * @return void
 	 */
 	public static function check() {
+		global $wpdb;
 
 		$current = self::get_version();
 
 		$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+
+		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->prefix );
 
 		if ( empty( $db_version ) ) {
 			self::install();
@@ -41,25 +46,27 @@ class WP_Stream_Install {
 		global $wpdb;
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-		$sql = "CREATE TABLE {$wpdb->base_prefix}stream (
+		$prefix = self::$table_prefix;
+
+		$sql = "CREATE TABLE {$prefix}stream (
 			ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			site_id bigint(20) unsigned NOT NULL DEFAULT '1',
-			record_author bigint(20) unsigned NOT NULL DEFAULT '0',
-			record_date datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-			record_summary longtext NOT NULL,
-			record_visibility varchar(20) NOT NULL DEFAULT 'publish',
-			record_parent bigint(20) unsigned NOT NULL DEFAULT '0',
-			record_type varchar(20) NOT NULL DEFAULT 'stream',
+			author bigint(20) unsigned NOT NULL DEFAULT '0',
+			summary longtext NOT NULL,
+			visibility varchar(20) NOT NULL DEFAULT 'publish',
+			parent bigint(20) unsigned NOT NULL DEFAULT '0',
+			type varchar(20) NOT NULL DEFAULT 'stream',
+			created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 			PRIMARY KEY (ID),
 			KEY site_id (site_id),
-			KEY record_parent (record_parent),
-			KEY record_author (record_author),
-			KEY record_date (record_date)
+			KEY parent (parent),
+			KEY author (author),
+			KEY created (created)
 		);";
 
 		dbDelta( $sql );
 
-		$sql = "CREATE TABLE {$wpdb->base_prefix}stream_tax (
+		$sql = "CREATE TABLE {$prefix}stream_context (
 			meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			record_id bigint(20) unsigned NOT NULL,
 			context varchar(100) NOT NULL,
@@ -73,7 +80,7 @@ class WP_Stream_Install {
 
 		dbDelta( $sql );
 
-		$sql = "CREATE TABLE {$wpdb->base_prefix}stream_meta (
+		$sql = "CREATE TABLE {$prefix}stream_meta (
 			meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			record_id bigint(20) unsigned NOT NULL,
 			meta_key varchar(200) NOT NULL,

@@ -73,15 +73,14 @@ abstract class WP_Stream_Context {
 	 * @param  array  $contexts  Contexts of the action
 	 * @return void
 	 */
-	public static function log( $message, $args, $object_id, $action, $user_id = null, array $contexts = array() ) {
-		return WP_Stream_Log::$instance->log(
+	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
+		return WP_Stream_Log::get_instance()->log(
 			get_called_class(),
 			$message,
 			$args,
 			$object_id,
-			$action,
-			$user_id,
-			$contexts
+			$contexts,
+			$user_id
 			);
 	}
 

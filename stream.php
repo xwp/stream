@@ -64,6 +64,9 @@ class WP_Stream {
 		// Load admin scripts and styles
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
 
+		// Load DB helper class
+		require_once WP_STREAM_INC_DIR . 'db-actions.php';
+
 	}
 
 	/**

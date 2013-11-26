@@ -27,16 +27,27 @@ class WP_Stream_Context_Post extends WP_Stream_Context {
 	}
 
 	/**
-	 * Return translated action term labels
+	 * Return translated action labels
 	 *
-	 * @return array Action terms label translation
+	 * @return array Action label translations
 	 */
-	public static function get_action_term_labels() {
+	public static function get_action_labels() {
 		return array(
 			'updated' => __( 'Updated', 'stream' ),
 			'created' => __( 'Created', 'stream' ),
 			'trashed' => __( 'Trashed', 'stream' ),
 			'deleted' => __( 'Deleted', 'stream' ),
+		);
+	}
+
+	/**
+	 * Return translated context labels
+	 *
+	 * @return array Context label translations
+	 */
+	public static function get_context_labels() {
+		return array(
+			'posts' => __( 'Posts', 'stream' ),
 		);
 	}
 
@@ -140,7 +151,9 @@ class WP_Stream_Context_Post extends WP_Stream_Context {
 				'revision_id' => $revision_id,
 			),
 			$post->ID,
-			$action
+			array(
+				'posts' => $action,
+				)
 		);
 	}
 
@@ -157,7 +170,9 @@ class WP_Stream_Context_Post extends WP_Stream_Context {
 				'post_title'  => $post->post_title,
 			),
 			$post->ID,
-			'deleted'
+			array(
+				'posts' => 'deleted',
+				)
 		);
 	}
 
