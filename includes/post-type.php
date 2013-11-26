@@ -169,10 +169,10 @@ class X_Stream_Post_Type {
 			array_merge(
 				$dropdown_options,
 				array(
-					'taxonomy' => 'stream_action',
-					'name' => 'stream_action',
-					'selected' => filter_input( INPUT_GET, 'stream_action' ),
-					'show_option_all' => __( 'Show all actions', 'stream' ),
+					'taxonomy' => 'stream_context',
+					'name' => 'stream_context',
+					'selected' => filter_input( INPUT_GET, 'stream_context' ),
+					'show_option_all' => __( 'Show all contexts', 'stream' ),
 				)
 			)
 		);
@@ -181,10 +181,10 @@ class X_Stream_Post_Type {
 			array_merge(
 				$dropdown_options,
 				array(
-					'taxonomy' => 'stream_context',
-					'name' => 'stream_context',
-					'selected' => filter_input( INPUT_GET, 'stream_context' ),
-					'show_option_all' => __( 'Show all contexts', 'stream' ),
+					'taxonomy' => 'stream_action',
+					'name' => 'stream_action',
+					'selected' => filter_input( INPUT_GET, 'stream_action' ),
+					'show_option_all' => __( 'Show all actions', 'stream' ),
 				)
 			)
 		);
@@ -196,8 +196,8 @@ class X_Stream_Post_Type {
 			'full_date' => __( 'Date', 'stream' ),
 			'summary' => __( 'Summary', 'stream' ),
 			'user' => __( 'User', 'stream' ),
-			'taxonomy-stream_action' => __( 'Actions', 'stream' ),
-			'taxonomy-stream_context' => __( 'Contexts', 'stream' ),
+			'taxonomy-stream_context' => __( 'Context', 'stream' ),
+			'taxonomy-stream_action' => __( 'Action', 'stream' ),
 			'ip' => __( 'IP Address', 'stream' ),
 			'id' => __( 'ID' )
 			);
