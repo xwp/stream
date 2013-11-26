@@ -49,6 +49,10 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'settings.php';
 		add_action( 'plugins_loaded', array( 'WP_Stream_Settings', 'load' ) );
 
+		// Load logger class
+		require_once WP_STREAM_INC_DIR . 'log.php';
+		add_action( 'plugins_loaded', array( 'WP_Stream_Log', 'load' ) );
+
 		// Add our new post type
 		require_once WP_STREAM_INC_DIR . 'post-type.php';
 		add_action( 'init', array( 'WP_Stream_Post_Type', 'load' ) );

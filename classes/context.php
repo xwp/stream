@@ -51,78 +51,6 @@ abstract class WP_Stream_Context {
 	}
 
 	/**
-	 * Log handler
-	 * @param  string $message   sprintf-ready error message string
-	 * @param  array  $args      sprintf (and extra) arguments to use
-	 * @param  int    $object_id Target object id
-	 * @param  string $action    Action performed (stream_action)
-	 * @param  int    $user_id   User responsible for the action
-	 * @param  array  $contexts  Contexts of the action
-	 * @return void
-	 */
-	public static function log( $message, $args, $object_id, $action, $user_id = null, array $contexts = array() ) {
-		if ( is_null( $user_id ) ) {
-			$user_id = get_current_user_id();
-		}
-		$class = get_called_class();
-
-		// Allow extensions to define more contexts
-		$contexts[] = $class::$name;
-
-		// Store args as numbered meta fields
-		$arg_keys = array_keys( $args );
-		foreach ( $arg_keys as $i => $key ) {
-			$arg_keys[$i] = '_arg_' . $key;
-		}
-		$args = array_combine( $arg_keys, $args );
-
-		$postarr = array(
-			'post_type'   => 'stream',
-			'post_status' => 'publish',
-			'post_title'  => vsprintf( $message, $args ),
-			'post_author' => $user_id,
-			'post_parent' => self::$prev_stream,
-			'post_tax'    => array( // tax_input uses current_user_can which fails on user context!
-				'stream_context' => $contexts,
-				'stream_action'  => $action,
-				),
-			'post_meta'   => array_merge(
-				$args,
-				array(
-					'_object_id'  => $object_id,
-					'_ip_address' => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
-					)
-				),
-			);
-
-		$post_id = wp_insert_post(
-			apply_filters(
-				'wp_stream_post_array',
-				$postarr
-				)
-			);
-
-		if ( is_a( $post_id, 'WP_Error' ) ) {
-			// TODO:: Log error
-			do_action( 'wp_stream_post_insert_error', $post_id, $postarr );
-		} else {
-			self::$prev_stream = $post_id;
-
-			foreach ( $postarr['post_meta'] as $key => $vals ) {
-				foreach ( (array) $vals as $val ) {
-					add_post_meta( $post_id, $key, $val );
-				}
-			}
-
-			foreach ( $postarr['post_tax'] as $key => $vals ) {
-				wp_set_post_terms( $post_id, (array) $vals, $key );
-			}
-
-			do_action( 'wp_stream_post_inserted', $post_id, $postarr );
-		}
-	}
-
-	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
 	 * @filter wp_stream_action_links_{context}
@@ -133,6 +61,28 @@ abstract class WP_Stream_Context {
 	 */
 	public static function action_links( $links, $stream_id, $object_id ) {
 		return $links;
+	}
+
+	/**
+	 * Log handler
+	 * @param  string $message   sprintf-ready error message string
+	 * @param  array  $args      sprintf (and extra) arguments to use
+	 * @param  int    $object_id Target object id
+	 * @param  string $action    Action performed (stream_action)
+	 * @param  int    $user_id   User responsible for the action
+	 * @param  array  $contexts  Contexts of the action
+	 * @return void
+	 */
+	public static function log( $message, $args, $object_id, $action, $user_id = null, array $contexts = array() ) {
+		return WP_Stream_Log::$instance->log(
+			get_called_class(),
+			$message,
+			$args,
+			$object_id,
+			$action,
+			$user_id,
+			$contexts
+			);
 	}
 
 }
