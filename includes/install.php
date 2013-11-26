@@ -39,9 +39,9 @@ class WP_Stream_Install {
 
 	public static function install() {
 		global $wpdb;
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-		$table_name = $wpdb->base_prefix . 'stream';
-		$sql = "CREATE TABLE $table_name (
+		$sql = "CREATE TABLE {$wpdb->base_prefix}stream (
 			ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			site_id bigint(20) unsigned NOT NULL DEFAULT '1',
 			record_author bigint(20) unsigned NOT NULL DEFAULT '0',
@@ -57,11 +57,9 @@ class WP_Stream_Install {
 			KEY record_date (record_date)
 		);";
 
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql );
 
-		$table_name = $wpdb->base_prefix . 'stream_meta';
-		$sql = "CREATE TABLE $table_name (
+		$sql = "CREATE TABLE {$wpdb->base_prefix}stream_tax (
 			meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			record_id bigint(20) unsigned NOT NULL,
 			context varchar(100) NOT NULL,
@@ -73,7 +71,19 @@ class WP_Stream_Install {
 			KEY connector (connector)
 		);";
 
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		dbDelta( $sql );
+
+		$sql = "CREATE TABLE {$wpdb->base_prefix}stream_meta (
+			meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			record_id bigint(20) unsigned NOT NULL,
+			meta_key varchar(200) NOT NULL,
+			meta_value varchar(200) NOT NULL,
+			PRIMARY KEY (meta_id),
+			KEY record_id (record_id),
+			KEY meta_key (meta_key),
+			KEY meta_value (meta_value)
+		);";
+
 		dbDelta( $sql );
 	}
 
