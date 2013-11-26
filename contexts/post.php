@@ -1,6 +1,6 @@
 <?php
 
-class X_Stream_Context_Post extends X_Stream_Context {
+class WP_Stream_Context_Post extends WP_Stream_Context {
 
 	/**
 	 * Context name

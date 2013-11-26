@@ -1,6 +1,6 @@
 <?php
 
-class X_Stream_Contexts {
+class WP_Stream_Contexts {
 
 	/**
 	 * Contexts registered
@@ -34,14 +34,14 @@ class X_Stream_Contexts {
 	 * Load built-in contexts
 	 */
 	public static function load() {
-		require_once X_STREAM_CLASS_DIR . 'context.php';
+		require_once WP_STREAM_CLASS_DIR . 'context.php';
 
 		$classes = array();
-		if ( $found = glob( X_STREAM_DIR . 'contexts/*.php' ) ) {
+		if ( $found = glob( WP_STREAM_DIR . 'contexts/*.php' ) ) {
 			foreach ( $found as $class ) {
 				include_once $class;
 				$class     = ucwords( preg_match( '#(.+)\.php#', basename( $class ), $matches ) ? $matches[1] : '' );
-				$classes[] = "X_Stream_Context_$class";
+				$classes[] = "WP_Stream_Context_$class";
 			}
 		}
 		self::$contexts = apply_filters( 'wp_stream_contexts', $classes );

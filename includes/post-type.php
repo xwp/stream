@@ -1,6 +1,6 @@
 <?php
 
-class X_Stream_Post_Type {
+class WP_Stream_Post_Type {
 
 	public static function load() {
 		self::register();

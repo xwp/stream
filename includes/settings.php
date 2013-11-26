@@ -5,7 +5,7 @@
  * @author X-Team <x-team.com>
  * @author Shady Sharaf <shady@x-team.com>
  */
-class X_Stream_Settings {
+class WP_Stream_Settings {
 
 	/**
 	 * Settings key/identifier
@@ -32,7 +32,7 @@ class X_Stream_Settings {
 	/**
 	 * Public constructor
 	 *
-	 * @return \X_Stream_Settings
+	 * @return \WP_Stream_Settings
 	 */
 	public static function load() {
 
@@ -159,7 +159,7 @@ class X_Stream_Settings {
 				<?php foreach ( $sections as $section => $data ) : ?>
 					<?php $i++ ?>
 					<?php $is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section ) ?>
-					<a href="<?php echo add_query_arg( 'tab', $section ) ?>" class="nav-tab<?php echo $is_active ? esc_attr( ' nav-tab-active' ) : null ?>">
+					<a href="<?php echo esc_url( add_query_arg( 'tab', $section ) ) ?>" class="nav-tab<?php if ( $is_active ) { echo esc_attr( ' nav-tab-active' ); } ?>">
 						<?php echo esc_html( $data['title'] ) ?>
 					</a>
 				<?php endforeach; ?>
