@@ -52,19 +52,15 @@ class WP_Stream_Log {
 		}
 
 		$recordarr = array(
+			'object_id' => $object_id,
 			'author'    => $user_id,
 			'created'   => current_time( 'mysql' ), // TODO: use GMT (get_gmt_from_date)
 			'summary'   => vsprintf( $message, $args ),
 			'parent'    => self::$instance->prev_record,
 			'connector' => $connector,
 			'contexts'  => $contexts,
-			'meta'      => array_merge(
-				$args,
-				array(
-					'object_id'  => $object_id,
-					'ip_address' => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
-					)
-				),
+			'meta'      => $args,
+			'ip'        => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 			);
 
 		$record_id = WP_Stream_DB::get_instance()->insert( $recordarr );
