@@ -49,6 +49,25 @@ class WP_Stream_Query {
 		$where = '';
 
 		/**
+		 * PARSE CORE FILTERS
+		 */
+		if ( $args['object_id'] ) {
+			$where .= ' AND ' . $wpdb->prepare( $wpdb->stream . '.object_id = %d', $args['object_id'] );
+		}
+
+		if ( $args['type'] ) {
+			$where .= ' AND ' . $wpdb->prepare( $wpdb->stream . '.type = %s', $args['type'] );
+		}
+
+		if ( $args['ip'] ) {
+			$where .= ' AND ' . $wpdb->prepare( $wpdb->stream . '.ip = %s', filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
+		}
+
+		if ( $args['search'] ) {
+			$where .= ' AND ' . $wpdb->prepare( $wpdb->stream . '.summary LIKE %s', "%{$args['search']}%" );
+		}
+
+		/**
 		 * PARSE META QUERY PARAMS
 		 */
 		$meta_query = new WP_Meta_Query;
@@ -127,6 +146,7 @@ class WP_Stream_Query {
 			$results = $wpdb->get_results( $sql );
 		}
 
+		return $results;
 	}
 
 }
