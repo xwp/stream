@@ -4,19 +4,23 @@ class WP_Stream_DB {
 
 	public static $instance;
 
-	public $table;
+	public static $table;
 
-	public $table_meta;
+	public static $table_meta;
 
-	public $table_context;
+	public static $table_context;
 
 	public function __construct() {
 		global $wpdb;
 		// Allow devs to alter the tables prefix, default to base_prefix
 		$prefix              = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
-		$this->table         = $prefix . 'stream';
-		$this->table_meta    = $prefix . 'stream_meta';
-		$this->table_context = $prefix . 'stream_context';
+		self::$table         = $prefix . 'stream';
+		self::$table_meta    = $prefix . 'stream_meta';
+		self::$table_context = $prefix . 'stream_context';
+
+		$wpdb->stream        = self::$table;
+		$wpdb->streammeta    = self::$table_meta;
+		$wpdb->streamcontext = self::$table_context;
 	}
 
 	public static function get_instance() {
@@ -45,7 +49,7 @@ class WP_Stream_DB {
 		// TODO Check/Validate *required* fields 
 
 		$result = $wpdb->insert(
-			$this->table,
+			self::$table,
 			$data
 			);
 
@@ -81,7 +85,7 @@ class WP_Stream_DB {
 		global $wpdb;
 
 		$result = $wpdb->insert(
-			$this->table_context,
+			self::$table_context,
 			array(
 				'record_id' => $record_id,
 				'connector' => $connector,
@@ -97,7 +101,7 @@ class WP_Stream_DB {
 		global $wpdb;
 
 		$result = $wpdb->insert(
-			$this->table_meta,
+			self::$table_meta,
 			array(
 				'record_id'  => $record_id,
 				'meta_key'   => $key,

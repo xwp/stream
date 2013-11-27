@@ -36,6 +36,11 @@ class WP_Stream {
 	public $contexts = array();
 
 	/**
+	 * @var WP_Stream_DB
+	 */
+	public $db = null;
+
+	/**
 	 * Class constructor
 	 */
 	public function __construct() {
@@ -66,7 +71,10 @@ class WP_Stream {
 
 		// Load DB helper class
 		require_once WP_STREAM_INC_DIR . 'db-actions.php';
+		$this->db = new WP_Stream_DB;
 
+		// Load query class
+		require_once WP_STREAM_INC_DIR . 'query.php';
 	}
 
 	/**
