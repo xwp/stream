@@ -197,14 +197,20 @@ class WP_Stream_Settings {
 				'title'  => __( 'General', 'stream' ),
 				'fields' => array(
 					array(
-						'name'        => 'lifetime',
-						'title'       => __( 'Purge records', 'stream' ),
+						'name'        => 'records_ttl',
+						'title'       => __( 'Keep Records for', 'stream' ),
 						'type'        => 'number',
 						'class'       => 'small-text',
 						'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
 						'default'     => 90,
-						'placeholder' => '',
-						'after_field' => __( 'days old', 'stream' ),
+						'after_field' => __( 'days', 'stream' ),
+					),
+					array(
+						'name'        => 'delete_all_records',
+						'title'       => __( 'Delete All Records', 'stream' ),
+						'type'        => 'checkbox',
+						'desc'        => __( 'Warning: Saving changes with this field checked will delete all activity records from the database.', 'stream' ),
+						'default'     => 90,
 					),
 				),
 			),
@@ -275,40 +281,47 @@ class WP_Stream_Settings {
 	 */
 	public static function render_field( $field ) {
 
-		switch ( $field['type'] ) {
+		$output = null;
+
+		$type        = isset( $field['type'] ) ? $field['type'] : null;
+		$section     = isset( $field['section'] ) ? $field['section'] : null;
+		$name        = isset( $field['name'] ) ? $field['name'] : null;
+		$class       = isset( $field['class'] ) ? $field['class'] : null;
+		$placeholder = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
+		$description = isset( $field['desc'] ) ? $field['desc'] : null;
+		$after_field = isset( $field['after_field'] ) ? $field['after_field'] : null;
+
+		if ( ! $type || ! $section || ! $name ) {
+			return;
+		}
+
+		switch ( $type ) {
 			case 'text' || 'number':
-				$class       = isset( $field['class'] ) ? $field['class'] : null;
-				$placeholder = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
-				$after_field = isset( $field['after_field'] ) ? $field['after_field'] : null;
 				$output = sprintf(
 					'<input type="%1$s" name="%2$s[%3$s_%4$s]" id="%2$s_%3$s_%4$s" class="%5$s" placeholder="%6$s" value="%7$s" /> %8$s',
-					esc_attr( $field['type'] ),
-					self::KEY,
-					$field['section'],
-					esc_attr( $field['name'] ),
+					esc_attr( $type ),
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name ),
 					esc_attr( $class ),
 					esc_attr( $placeholder ),
-					self::$options[$field['section'].'_'.$field['name']],
+					esc_attr( self::$options[$section . '_' . $name] ),
 					esc_html( $after_field )
 				);
 				break;
 			case 'checkbox':
 				$output = sprintf(
-					'<input type="checkbox" name="%s[%s_%s]" value="1" %s />',
+					'<input type="checkbox" name="%1$s[%2$s_%3$s]" id="%1$s[%2$s_%3$s]" value="1" %4$s /> %5$s',
 					esc_attr( self::KEY ),
-					esc_attr( $field['section'] ),
-					esc_attr( $field['name'] ),
-					checked( self::$options[$field['section'] . '_' . $field['name']], 1, false )
+					esc_attr( $section ),
+					esc_attr( $name ),
+					checked( self::$options[$section . '_' . $name], 1, false ),
+					esc_html( $after_field )
 				);
 				break;
 		}
 
-		if ( isset( $field['desc'] ) ) {
-			$output .= sprintf(
-				'<p class="description">%s</p>',
-				$field['desc'] // xss ok
-			);
-		}
+		$output .= ! empty( $description ) ? sprintf( '<p class="description">%s</p>', $description /* xss ok */ ) : null;
 
 		return $output;
 	}
