@@ -23,22 +23,28 @@ class WP_Stream_Query {
 
 		$defaults = array(
 			// Pagination params
-			'records_per_page' => '10',
-			'page'             => 1,
+			'records_per_page'      => '10',
+			'page'                  => 1,
 			// Search params
-			'search'           => null,
+			'search'                => null,
 			// Stream core fields filtering
-			'type'             => 'stream',
-			'object_id'        => null,
-			'ip'               => null,
+			'type'                  => 'stream',
+			'object_id'             => null,
+			'ip'                    => null,
+			// __in params
+			'record__in'            => array(),
+			'record__not_in'        => array(),
+			'record_parent'         => '',
+			'record_parent__in'     => array(),
+			'record_parent__not_in' => array(),
 			// Order
-			'order'            => 'desc',
-			'orderby'          => 'ID',
+			'order'                 => 'desc',
+			'orderby'               => 'ID',
 			// Meta/Taxonomy sub queries
-			'meta_query'       => array(),
-			'context_query'    => array(),
+			'meta_query'            => array(),
+			'context_query'         => array(),
 			// Fields selection
-			'fields'           => '',
+			'fields'                => '',
 			);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -52,19 +58,54 @@ class WP_Stream_Query {
 		 * PARSE CORE FILTERS
 		 */
 		if ( $args['object_id'] ) {
-			$where .= ' AND ' . $wpdb->prepare( $wpdb->stream . '.object_id = %d', $args['object_id'] );
+			$where .= $wpdb->prepare( " AND $wpdb->stream.object_id = %d", $args['object_id'] );
 		}
 
 		if ( $args['type'] ) {
-			$where .= ' AND ' . $wpdb->prepare( $wpdb->stream . '.type = %s', $args['type'] );
+			$where .= $wpdb->prepare( " AND $wpdb->stream.type = %s", $args['type'] );
 		}
 
 		if ( $args['ip'] ) {
-			$where .= ' AND ' . $wpdb->prepare( $wpdb->stream . '.ip = %s', filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
+			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
 		}
 
 		if ( $args['search'] ) {
-			$where .= ' AND ' . $wpdb->prepare( $wpdb->stream . '.summary LIKE %s', "%{$args['search']}%" );
+			$where .= $wpdb->prepare( " AND $wpdb->stream.summary LIKE %s", "%{$args['search']}%" );
+		}
+
+		/**
+		 * PARSE __IN PARAM FAMILY
+		 */
+		if ( $args['record__in'] ) {
+			$record__in = implode( ',', array_filter( (array) $args['record__in'], 'is_numeric' ) );
+			if ( $record__in ) {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.ID IN ($record__in)", '' );
+			}
+		}
+
+		if ( $args['record__not_in'] ) {
+			$record__not_in = implode( ',', array_filter( (array) $args['record__not_in'], 'is_numeric' ) );
+			if ( strlen( $record__not_in ) ) {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.ID NOT IN ($record__not_in)", '' );
+			}
+		}
+
+		if ( $args['record_parent'] ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.parent = %d", (int) $args['record_parent'] );
+		}
+
+		if ( $args['record_parent__in'] ) {
+			$record_parent__in = implode( ',', array_filter( (array) $args['record_parent__in'], 'is_numeric' ) );
+			if ( strlen( $record_parent__in ) ) {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.parent IN ($record_parent__in)", '' );
+			}
+		}
+
+		if ( $args['record_parent__not_in'] ) {
+			$record_parent__not_in = implode( ',', array_filter( (array) $args['record_parent__not_in'], 'is_numeric' ) );
+			if ( strlen( $record_parent__not_in ) ) {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.parent NOT IN ($record_parent__not_in)", '' );
+			}
 		}
 
 		/**
