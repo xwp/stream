@@ -130,37 +130,41 @@ class WP_Stream_Query {
 		/**
 		 * PARSE PAGINATION PARAMS
 		 */
-		$page   = $args['page'];
-		$pgstrt = ($page - 1) * $args['records_per_page'];
-		$limits = "LIMIT $pgstrt, {$args['records_per_page']}";
+		$page   = intval( $args['page'] );
+		$perpage = intval( $args['records_per_page'] );
+		$pgstrt = ($page - 1) * $perpage;
+		$limits = "LIMIT $pgstrt, {$perpage}";
 
 		/**
 		 * PARSE ORDER PARAMS
 		 */
+		$order   = esc_sql( $args['order'] );
+		$orderby = esc_sql( $args['orderby'] );
+
 		if ( in_array(
-			$args['orderby'],
+			$orderby,
 			array( 'ID', 'site_id', 'object_id', 'author', 'summary', 'visibility', 'parent', 'type', 'created' )
 			) ) {
-			$orderby = $wpdb->stream . '.' . $args['orderby'];
+			$orderby = $wpdb->stream . '.' . $orderby;
 		}
-		elseif ( in_array( $args['orderby'], array( 'connector', 'context', 'action' ) ) ) {
+		elseif ( in_array( $orderby, array( 'connector', 'context', 'action' ) ) ) {
 			$join   .= sprintf(
 				' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
 				$wpdb->streamcontext,
 				$wpdb->stream
 			);
-			$orderby = $wpdb->streamcontext . '.' . $args['orderby'];
+			$orderby = $wpdb->streamcontext . '.' . $orderby;
 		}
-		elseif ( $args['orderby'] == 'meta_value_num' && ! empty( $args['meta_key'] ) ) {
+		elseif ( $orderby == 'meta_value_num' && ! empty( $args['meta_key'] ) ) {
 			$orderby = "CAST($wpdb->streammeta.meta_value AS SIGNED)";
 		}
-		elseif ( $args['orderby'] == 'meta_value' && ! empty( $args['meta_key'] ) ) {
+		elseif ( $orderby == 'meta_value' && ! empty( $args['meta_key'] ) ) {
 			$orderby = "$wpdb->streammeta.meta_value";
 		}
 		else {
 			$orderby = "$wpdb->stream.ID";
 		}
-		$orderby = 'ORDER BY ' . $orderby . ' ' . $args['order'];
+		$orderby = 'ORDER BY ' . $orderby . ' ' . $order;
 
 		/**
 		 * PARSE FIELDS PARAMETER
