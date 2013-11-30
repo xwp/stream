@@ -75,6 +75,7 @@ class WP_Stream {
 
 		// Load query class
 		require_once WP_STREAM_INC_DIR . 'query.php';
+		require_once WP_STREAM_INC_DIR . 'context-query.php';
 	}
 
 	/**

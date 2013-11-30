@@ -114,15 +114,18 @@ class WP_Stream_Query {
 		$meta_query = new WP_Meta_Query;
 		$meta_query->parse_query_vars( $args );
 		if ( ! empty( $meta_query->queries ) ) {
-			$clauses = $meta_query->get_sql( 'stream', $wpdb->stream, 'ID' );
-			$join   .= str_replace( 'stream_id', 'record_id', $clauses['join'] );
-			$where  .= str_replace( 'stream_id', 'record_id', $clauses['where'] );
+			$mclauses = $meta_query->get_sql( 'stream', $wpdb->stream, 'ID' );
+			$join    .= str_replace( 'stream_id', 'record_id', $mclauses['join'] );
+			$where   .= str_replace( 'stream_id', 'record_id', $mclauses['where'] );
 		}
 
 		/**
 		 * PARSE CONTEXT PARAMS
 		 */
-		// TODO
+		$context_query = new WP_Stream_Context_Query( $args );
+		$cclauses      = $context_query->get_sql();
+		$join         .= $cclauses['join'];
+		$where        .= $cclauses['where'];
 
 		/**
 		 * PARSE PAGINATION PARAMS
@@ -180,7 +183,7 @@ class WP_Stream_Query {
 		WHERE 1=1 $where
 		$orderby
 		$limits";
-		
+
 		if ( ! empty( $fields ) ) {
 			$results = $wpdb->get_col( $sql );
 		} else {
