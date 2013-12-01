@@ -16,6 +16,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		'upgrader_process_complete',
 		'activate_plugin',
 		'deactivate_plugin',
+		'switch_theme',
+		'delete_site_transient_update_themes',
 	);
 
 	/**
@@ -37,6 +39,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			'installed' => __( 'Installed', 'stream' ),
 			'activated' => __( 'Activated', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
+			'deleted' => __( 'Deleted', 'stream' ),
 		);
 	}
 
@@ -72,18 +75,18 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @action transition_post_status
 	 */
 	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
-		$type = $extra['type'];
-		$name = $upgrader->skin->api->name;
-		$slug = $upgrader->skin->api->slug;
+		$type    = $extra['type'];
+		$name    = $upgrader->skin->api->name;
+		$slug    = $upgrader->skin->api->slug;
 		$success = ! is_a( $upgrader->skin->result, 'WP_Error' );
-		$error = $success ? null : reset( $upgrader->skin->result->errors )[0];
-		$from = $upgrader->skin->options['type'];
+		$error   = $success ? null : reset( $upgrader->skin->result->errors )[0];
+		$from    = $upgrader->skin->options['type'];
 
 		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
 			return;
 		}
 		
-		$action = 'installed';
+		$action  = 'installed';
 		$context = $type . 's';
 		$message = __( 'Installed %s: %s', 'stream' );
 
@@ -118,6 +121,30 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			compact( 'name', 'network_wide', 'slug' ),
 			null,
 			array( 'plugins' => 'deactivated' )
+			);
+	}
+
+	public static function callback_switch_theme( $name, $theme ) {
+		self::log(
+			__( 'Activated theme: %s', 'stream' ),
+			compact( 'name', 'theme' ),
+			null,
+			array( 'themes' => 'activated' )
+			);
+	}
+
+	public static function callback_delete_site_transient_update_themes() {
+		$stylesheet = filter_input( INPUT_GET, 'stylesheet' );
+		if ( filter_input( INPUT_GET, 'action' ) != 'delete' || ! $stylesheet ) {
+			return;
+		}
+		$theme = $GLOBALS['theme'];
+		$name  = $theme['Name'];
+		self::log(
+			__( 'Deleted theme: %s', 'stream' ),
+			compact( 'name', 'stylesheet' ),
+			null,
+			array( 'themes' => 'deleted' )
 			);
 	}
 
