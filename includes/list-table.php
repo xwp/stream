@@ -114,7 +114,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'summary':
-				$out = $this->column_link( 'object_id', $item->object_id, $item->summary );
+				if ( $item->object_id ) {
+					$out = $this->column_link( 'object_id', $item->object_id, $item->summary );
+				} else {
+					$out = $item->summary;
+				}
 				break;
 
 			case 'user':
@@ -150,7 +154,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'connector':
-				$out = $this->column_link( 'connector', $item->connector, WP_Stream_Connectors::$term_labels['stream_context'][$item->connector] );
+				$out = $this->column_link( 'connector', $item->connector, WP_Stream_Connectors::$term_labels['stream_connector'][$item->connector] );
 				break;
 
 			default:
