@@ -64,9 +64,10 @@ class WP_Stream_Settings {
 					array(
 						'name'        => 'delete_all_records',
 						'title'       => __( 'Delete All Records', 'stream' ),
-						'type'        => 'checkbox',
-						'desc'        => __( 'Warning: Saving changes with this field checked will delete all activity records from the database.', 'stream' ),
-						'default'     => 90,
+						'type'        => 'link',
+						'href'        => admin_url( 'admin-ajax.php?action=wp_stream_reset' ),
+						'desc'        => __( 'Warning: Click this will delete all activity records from the database.', 'stream' ),
+						'default'     => 0,
 					),
 				),
 			),
@@ -145,6 +146,7 @@ class WP_Stream_Settings {
 		$class       = isset( $field['class'] ) ? $field['class'] : null;
 		$placeholder = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
 		$description = isset( $field['desc'] ) ? $field['desc'] : null;
+		$href        = isset( $field['href'] ) ? $field['href'] : null;
 		$after_field = isset( $field['after_field'] ) ? $field['after_field'] : null;
 
 		if ( ! $type || ! $section || ! $name ) {
@@ -152,7 +154,8 @@ class WP_Stream_Settings {
 		}
 
 		switch ( $type ) {
-			case 'text' || 'number':
+			case 'text':
+			case 'number':
 				$output = sprintf(
 					'<input type="%1$s" name="%2$s[%3$s_%4$s]" id="%2$s_%3$s_%4$s" class="%5$s" placeholder="%6$s" value="%7$s" /> %8$s',
 					esc_attr( $type ),
@@ -173,6 +176,17 @@ class WP_Stream_Settings {
 					esc_attr( $name ),
 					checked( self::$options[$section . '_' . $name], 1, false ),
 					esc_html( $after_field )
+				);
+				break;
+			case 'link':
+				$output = sprintf(
+					'<a id="%1$s_%2$s_%3$s" class="%4$s" href="%5$s">%6$s</a>',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name ),
+					esc_attr( $class ),
+					esc_attr( $href ),
+					__( 'Reset Streams database', 'wp_streams' )
 				);
 				break;
 		}

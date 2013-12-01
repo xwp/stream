@@ -22,6 +22,9 @@ class WP_Stream_Admin {
 
 		// Load admin scripts and styles
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
+
+		// Reset Streams database
+		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
 	}
 
 		/**
@@ -114,18 +117,18 @@ class WP_Stream_Admin {
 
 			<div class="nav-tab-content" id="tab-content-settings">
 				<form method="post" action="options.php">
-					<?php
-					$i = 0;
-					foreach ( $sections as $section => $data ) {
-						$i++;
-						$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
-						if ( $is_active ) {
-							settings_fields( WP_Stream_Settings::KEY );
-							do_settings_sections( WP_Stream_Settings::KEY );
-						}
-					}
-					submit_button();
-					?>
+		<?php
+		$i = 0;
+		foreach ( $sections as $section => $data ) {
+			$i++;
+			$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
+			if ( $is_active ) {
+				settings_fields( WP_Stream_Settings::KEY );
+				do_settings_sections( WP_Stream_Settings::KEY );
+			}
+		}
+		submit_button();
+		?>
 				</form>
 			</div>
 
@@ -142,6 +145,18 @@ class WP_Stream_Admin {
 		echo sprintf( '<h2>%s</h2>', __( 'Stream Records', 'wp_stream' ) ); // xss okay
 		$list_table->display();
 		echo '</div>';
+	}
+
+	public static function wp_ajax_reset() {
+		self::erase_stream_records();
+		wp_redirect( admin_url( 'admin.php?page=wp_stream_settings#reset' ) );
+	}
+
+	public static function erase_stream_records() {
+		global $wpdb;
+		foreach ( array( $wpdb->stream, $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
+			$wpdb->query( "DELETE FROM $table" );
+		}
 	}
 
 }
