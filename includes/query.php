@@ -16,7 +16,7 @@ class WP_Stream_Query {
 	 * Query Stream records
 	 *
 	 * @param  array|string $args Query args
-	 * @return [type]             Stream 
+	 * @return array              Stream Records
 	 */
 	public function query( $args ) {
 		global $wpdb;
@@ -24,13 +24,17 @@ class WP_Stream_Query {
 		$defaults = array(
 			// Pagination params
 			'records_per_page'      => '10',
-			'page'                  => 1,
+			'paged'                 => 1,
 			// Search params
 			'search'                => null,
 			// Stream core fields filtering
 			'type'                  => 'stream',
 			'object_id'             => null,
 			'ip'                    => null,
+			// Date-based filters
+			'date'                  => null,
+			'date_from'             => null,
+			'date_to'               => null,
 			// __in params
 			'record__in'            => array(),
 			'record__not_in'        => array(),
@@ -51,7 +55,12 @@ class WP_Stream_Query {
 
 		$args = apply_filters( 'stream_query_args', $args );
 
-		$join  = '';
+		// Always join with context table
+		$join  = sprintf(
+			' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
+			$wpdb->streamcontext,
+			$wpdb->stream
+			);
 		$where = '';
 
 		/**
@@ -71,6 +80,21 @@ class WP_Stream_Query {
 
 		if ( $args['search'] ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.summary LIKE %s", "%{$args['search']}%" );
+		}
+
+		/**
+		 * PARSE DATE FILTERS
+		 */
+		if ( $args['date'] ) {
+			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) = %s", $args['date'] );
+		}
+		else {
+			if ( $args['date_from'] ) {
+				$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) >= %s", $args['date_from'] );
+			}
+			if ( $args['date_to'] ) {
+				$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) <= %s", $args['date_to'] );
+			}
 		}
 
 		/**
@@ -130,10 +154,10 @@ class WP_Stream_Query {
 		/**
 		 * PARSE PAGINATION PARAMS
 		 */
-		$page   = intval( $args['page'] );
+		$page    = intval( $args['paged'] );
 		$perpage = intval( $args['records_per_page'] );
-		$pgstrt = ($page - 1) * $perpage;
-		$limits = "LIMIT $pgstrt, {$perpage}";
+		$pgstrt  = ($page - 1) * $perpage;
+		$limits  = "LIMIT $pgstrt, {$perpage}";
 
 		/**
 		 * PARSE ORDER PARAMS
@@ -148,11 +172,6 @@ class WP_Stream_Query {
 			$orderby = $wpdb->stream . '.' . $orderby;
 		}
 		elseif ( in_array( $orderby, array( 'connector', 'context', 'action' ) ) ) {
-			$join   .= sprintf(
-				' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
-				$wpdb->streamcontext,
-				$wpdb->stream
-			);
 			$orderby = $wpdb->streamcontext . '.' . $orderby;
 		}
 		elseif ( $orderby == 'meta_value_num' && ! empty( $args['meta_key'] ) ) {
@@ -170,7 +189,7 @@ class WP_Stream_Query {
 		 * PARSE FIELDS PARAMETER
 		 */
 		$fields = $args['fields'];
-		$select = "$wpdb->stream.*";
+		$select = "$wpdb->stream.*, $wpdb->streamcontext.context, $wpdb->streamcontext.action, $wpdb->streamcontext.connector";
 		if ( $fields == 'ID' ) {
 			$select = "$wpdb->stream.ID";
 		}
@@ -181,7 +200,7 @@ class WP_Stream_Query {
 		/**
 		 * BUILD UP THE FINAL QUERY
 		 */
-		$sql = "SELECT $select
+		$sql = "SELECT SQL_CALC_FOUND_ROWS $select
 		FROM $wpdb->stream
 		$join
 		WHERE 1=1 $where

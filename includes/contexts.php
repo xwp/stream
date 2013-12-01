@@ -26,8 +26,9 @@ class WP_Stream_Contexts {
 	 * @var array
 	 */
 	public static $term_labels = array(
-		'stream_action'  => array(),
-		'stream_context' => array(),
+		'stream_connector' => array(),
+		'stream_action'    => array(),
+		'stream_context'   => array(),
 		);
 
 	/**
@@ -45,6 +46,10 @@ class WP_Stream_Contexts {
 			}
 		}
 		self::$contexts = apply_filters( 'wp_stream_contexts', $classes );
+
+		foreach ( self::$contexts as $context ) {
+			self::$term_labels['stream_connector'][$context::$name] = $context::get_label();
+		}
 
 		foreach ( self::$contexts as $context ) {
 			$context::register();

@@ -85,7 +85,8 @@ class WP_Stream_Context_Query {
 		
 		$meta_query = new WP_Meta_Query;
 		
-		$join[] = " INNER JOIN $context_table ON $main_table.ID = $context_table.record_id";
+		// Context table is always joined
+		// $join[] = " INNER JOIN $context_table ON $main_table.ID = $context_table.record_id";
 
 		foreach ( $queries as $i => $query ) {
 			foreach ( $query as $key => $args ) {

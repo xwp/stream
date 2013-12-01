@@ -66,9 +66,6 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'contexts.php';
 		add_action( 'init', array( 'WP_Stream_Contexts', 'load' ) );
 
-		// Load admin scripts and styles
-		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
-
 		// Load DB helper class
 		require_once WP_STREAM_INC_DIR . 'db-actions.php';
 		$this->db = new WP_Stream_DB;
@@ -76,6 +73,11 @@ class WP_Stream {
 		// Load query class
 		require_once WP_STREAM_INC_DIR . 'query.php';
 		require_once WP_STREAM_INC_DIR . 'context-query.php';
+
+		if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+			require_once WP_STREAM_INC_DIR . 'admin.php';
+			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
+		}
 	}
 
 	/**
