@@ -24,14 +24,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 		return apply_filters(
 			'wp_stream_list_table_columns',
 			array(
-				'date'      => __( 'Date', 'wp_stream' ),
-				'summary'   => __( 'Summary', 'wp_stream' ),
-				'user'      => __( 'User', 'wp_stream' ),
-				'context'   => __( 'Context', 'wp_stream' ),
-				'action'    => __( 'Action', 'wp_stream' ),
-				'connector' => __( 'Connector', 'wp_stream' ),
-				'ip'        => __( 'IP Address', 'wp_stream' ),
-				'id'        => __( 'ID', 'wp_stream' ),
+				'date'      => __( 'Date', 'stream' ),
+				'summary'   => __( 'Summary', 'stream' ),
+				'user'      => __( 'User', 'stream' ),
+				'context'   => __( 'Context', 'stream' ),
+				'action'    => __( 'Action', 'stream' ),
+				'connector' => __( 'Connector', 'stream' ),
+				'ip'        => __( 'IP Address', 'stream' ),
+				'id'        => __( 'ID', 'stream' ),
 				)
 			);
 	}
@@ -179,22 +179,22 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$users[ $user->ID ] = $user->display_name;
 		}
 		$filters['author'] = array(
-			'title' => __( 'users', 'wp_stream' ),
+			'title' => __( 'users', 'stream' ),
 			'items' => $users,
 			);
 
 		$filters['connector'] = array(
-			'title' => __( 'connectors', 'wp_stream' ),
+			'title' => __( 'connectors', 'stream' ),
 			'items' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			);
 		
 		$filters['context'] = array(
-			'title' => __( 'contexts', 'wp_stream' ),
+			'title' => __( 'contexts', 'stream' ),
 			'items' => WP_Stream_Connectors::$term_labels['stream_context'],
 			);
 		
 		$filters['action'] = array(
-			'title' => __( 'actions', 'wp_stream' ),
+			'title' => __( 'actions', 'stream' ),
 			'items' => WP_Stream_Connectors::$term_labels['stream_action'],
 			);
 
@@ -212,7 +212,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filter_select( $name, $title, $items ) {
-		$options  = array( sprintf( __( '<option value="">Show all %s</option>', 'wp_stream' ), $title ) );
+		$options  = array( sprintf( __( '<option value="">Show all %s</option>', 'stream' ), $title ) );
 		$selected = filter_input( INPUT_GET, $name );
 		foreach ( $items as $v => $label ) {
 			$options[$v] = sprintf(
@@ -237,7 +237,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			<input type="search" id="record-search-input" name="search" value="">
 			<input type="submit" name="" id="search-submit" class="button" value="%1$s">
 			</p>',
-			__( 'Search Records', 'wp_stream' )
+			__( 'Search Records', 'stream' )
 			);
 		return $out;
 	}
