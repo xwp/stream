@@ -1,6 +1,6 @@
 <?php
 
-class WP_Stream_Connector_User extends WP_Stream_Connector {
+class WP_Stream_Connector_Users extends WP_Stream_Connector {
 
 	/**
 	 * Context name
