@@ -33,8 +33,6 @@ class WP_Stream {
 
 	public static $instance;
 
-	public $contexts = array();
-
 	/**
 	 * @var WP_Stream_DB
 	 */
@@ -58,13 +56,9 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'log.php';
 		add_action( 'plugins_loaded', array( 'WP_Stream_Log', 'load' ) );
 
-		// Add our new post type
-		require_once WP_STREAM_INC_DIR . 'post-type.php';
-		add_action( 'init', array( 'WP_Stream_Post_Type', 'load' ) );
-
-		// Load contexts
-		require_once WP_STREAM_INC_DIR . 'contexts.php';
-		add_action( 'init', array( 'WP_Stream_Contexts', 'load' ) );
+		// Load connectors
+		require_once WP_STREAM_INC_DIR . 'connectors.php';
+		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ) );
 
 		// Load DB helper class
 		require_once WP_STREAM_INC_DIR . 'db-actions.php';
@@ -78,15 +72,6 @@ class WP_Stream {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 		}
-	}
-
-	/**
-	* Enqueue all required admin scripts and styles
-	*
-	* @return void
-	*/
-	static function admin_enqueue_scripts() {
-		wp_enqueue_style( 'stream_admin_css', WP_STREAM_URL . 'css/' . 'stream-style.css', '0.1' );
 	}
 
 	/**

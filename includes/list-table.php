@@ -46,9 +46,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function prepare_items() {
 		$screen = get_current_screen();
 
-		$columns = $this->get_columns();
+		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
-		$hidden = array();
+		$hidden   = array();
 
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 		
@@ -109,7 +109,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'date':
-				$out = $this->column_link( 'date', date( 'Y/m/d', strtotime( $item->created ) ),  date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out  = $this->column_link( 'date', date( 'Y/m/d', strtotime( $item->created ) ),  date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= date( "\nh:i:s a", strtotime( $item->created ) );
 				break;
 
@@ -138,7 +138,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			case 'context':
 			case 'action':
-				$out = $this->column_link( $column_name, $item->{$column_name}, WP_Stream_Contexts::$term_labels['stream_'.$column_name][$item->{$column_name}] );
+				$out = $this->column_link( $column_name, $item->{$column_name}, WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}] );
 				break;
 
 			case 'id':
@@ -150,7 +150,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'connector':
-				$out = $this->column_link( 'connector', $item->connector, WP_Stream_Contexts::$term_labels['stream_context'][$item->connector] );
+				$out = $this->column_link( 'connector', $item->connector, WP_Stream_Connectors::$term_labels['stream_context'][$item->connector] );
 				break;
 
 			default:
@@ -180,27 +180,22 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 		$filters['author'] = array(
 			'title' => __( 'users', 'wp_stream' ),
-			'items' => array(1 => 'shady'),
+			'items' => $users,
 			);
-
-		$connectors = array();
-		foreach ( WP_Stream_Contexts::$contexts as $context_class ) {
-			$connectors[ $context_class::$name ] = $context_class::get_label();
-		}
 
 		$filters['connector'] = array(
 			'title' => __( 'connectors', 'wp_stream' ),
-			'items' => $connectors,
+			'items' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			);
 		
 		$filters['context'] = array(
 			'title' => __( 'contexts', 'wp_stream' ),
-			'items' => WP_Stream_Contexts::$term_labels['stream_context'],
+			'items' => WP_Stream_Connectors::$term_labels['stream_context'],
 			);
 		
 		$filters['action'] = array(
 			'title' => __( 'actions', 'wp_stream' ),
-			'items' => WP_Stream_Contexts::$term_labels['stream_action'],
+			'items' => WP_Stream_Connectors::$term_labels['stream_action'],
 			);
 
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
@@ -217,7 +212,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filter_select( $name, $title, $items ) {
-		$options = array( sprintf( __( '<option value="">Show all %s</option>', 'wp_stream' ), $title ) );
+		$options  = array( sprintf( __( '<option value="">Show all %s</option>', 'wp_stream' ), $title ) );
 		$selected = filter_input( INPUT_GET, $name );
 		foreach ( $items as $v => $label ) {
 			$options[$v] = sprintf(
@@ -266,15 +261,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function display_tablenav( $which ) {
 		if ( 'top' == $which )
-?>
+	?>
 	<div class="tablenav <?php echo esc_attr( $which ); ?>">
-<?php
+		<?php
 		$this->extra_tablenav( $which );
 		$this->pagination( $which );
-?>
+		?>
 
 		<br class="clear" />
-	</div>
-<?php
+		</div>
+	<?php
 	}
 }

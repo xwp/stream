@@ -1,6 +1,6 @@
 <?php
 
-abstract class WP_Stream_Context {
+abstract class WP_Stream_Connector {
 
 	/**
 	* Name/slug of the context
