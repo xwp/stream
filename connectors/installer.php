@@ -13,11 +13,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @var array
 	 */
 	public static $actions = array(
-		'upgrader_process_complete',
-		'activate_plugin',
-		'deactivate_plugin',
-		'switch_theme',
-		'delete_site_transient_update_themes',
+		'upgrader_process_complete', // plugins::installed | themes::installed
+		'activate_plugin', // plugins::activated
+		'deactivate_plugin', // plugins::deactivated
+		'switch_theme', // themes::activated
+		'delete_site_transient_update_themes', // themes::deleted
+		'pre_option_uninstall_plugins', // plugins::deleted
+		'pre_set_site_transient_update_plugins',
 	);
 
 	/**
@@ -146,6 +148,42 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			null,
 			array( 'themes' => 'deleted' )
 			);
+	}
+
+	public static function callback_pre_option_uninstall_plugins() {
+		global $plugins;
+		if ( filter_input( INPUT_GET, 'action' ) != 'delete-selected' ) {
+			return;
+		}
+		$_plugins = get_plugins();
+		foreach ( $plugins as $plugin ) {
+			$plugins_to_delete[$plugin] = $_plugins[$plugin];
+		}
+		
+		update_option( 'wp_stream_plugins_to_delete', $plugins_to_delete );
+		return false;
+	}
+
+	public static function callback_pre_set_site_transient_update_plugins( $current ) {
+		if ( ! filter_input( INPUT_POST, 'verify-delete' ) ) {
+			return false;
+		}
+		$plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' );
+		if ( empty( $plugins_to_delete ) ) {
+			return false;
+		}
+		foreach ( $plugins_to_delete as $plugin => $data ) {
+			$name = $data['Name'];
+			$network_wide = $data['Network'] ? 'network wide' : null;
+			self::log(
+				__( 'Deleted plugin: %s', 'stream' ),
+				compact( 'name', 'plugin', 'network_wide' ),
+				null,
+				array( 'plugins' => 'deleted' )
+				);
+		}
+		delete_option( 'wp_stream_plugins_to_delete' );
+		return false;
 	}
 
 	
