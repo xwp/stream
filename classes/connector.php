@@ -46,7 +46,7 @@ abstract class WP_Stream_Connector {
 		$class    = get_called_class();
 		$callback = array( $class, 'callback_' . $action );
 		if ( is_callable( $callback ) ) {
-			call_user_func_array( $callback, func_get_args() );
+			return call_user_func_array( $callback, func_get_args() );
 		}
 	}
 
