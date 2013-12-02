@@ -78,23 +78,40 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 */
 	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
 		$type    = $extra['type'];
-		$name    = $upgrader->skin->api->name;
-		$slug    = $upgrader->skin->api->slug;
+		$action  = $extra['action'];
 		$success = ! is_a( $upgrader->skin->result, 'WP_Error' );
 		$error   = $success ? null : reset( $upgrader->skin->result->errors )[0];
-		$from    = $upgrader->skin->options['type'];
-
+		
 		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
 			return;
 		}
 		
-		$action  = 'installed';
+		if ( $action == 'install' ) {
+			$slug    = $upgrader->skin->api->slug;
+			$name    = $upgrader->skin->api->name;
+			$from    = $upgrader->skin->options['type'];
+			$action  = 'installed';
+			$message = __( 'Installed %s: %s (%s)', 'stream' );
+		} elseif ( $action == 'update' ) {
+			if ( $type == 'plugin' ) {
+				$plugins     = get_plugins();
+				$slug        = $upgrader->skin->plugin;
+				$name        = $plugins[$slug]['Name'];
+				$old_version = $plugins[$slug]['Version'];
+				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
+				$version     = $plugin_data['Version']; 
+			}
+			$action  = 'updated';
+			$message = __( 'Updated %s: %s to %s', 'stream' );
+		} else {
+			return false;
+		}
+
 		$context = $type . 's';
-		$message = __( 'Installed %s: %s', 'stream' );
 
 		self::log(
 			$message,
-			compact( 'type', 'name', 'slug', 'success', 'error', 'from' ),
+			compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'from' , 'old_version' ),
 			null,
 			array(
 				$context => $action,
