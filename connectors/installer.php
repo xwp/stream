@@ -94,12 +94,21 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			$message = __( 'Installed %s: %s (%s)', 'stream' );
 		} elseif ( $action == 'update' ) {
 			if ( $type == 'plugin' ) {
-				$plugins     = get_plugins();
 				$slug        = $upgrader->skin->plugin;
-				$name        = $plugins[$slug]['Name'];
-				$old_version = $plugins[$slug]['Version'];
 				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
+				$name        = $plugin_data[$slug]['Name'];
 				$version     = $plugin_data['Version']; 
+				$plugins     = get_plugins();
+				$old_version = $plugins[$slug]['Version'];
+			}
+			elseif ( $type == 'theme' ) {
+				$slug = $upgrader->skin->theme;
+				$theme = wp_get_theme( $slug );
+				$name = $theme['Name'];
+				$old_version = $theme['Version'];
+				$stylesheet = $theme['Stylesheet Dir'] . '/style.css';
+				$theme_data = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
+				$version = $theme_data['Version'];
 			}
 			$action  = 'updated';
 			$message = __( 'Updated %s: %s to %s', 'stream' );
