@@ -153,7 +153,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_pre_option_uninstall_plugins() {
 		global $plugins;
 		if ( filter_input( INPUT_GET, 'action' ) != 'delete-selected' ) {
-			return;
+			return false;
 		}
 		$_plugins = get_plugins();
 		foreach ( $plugins as $plugin ) {
@@ -164,13 +164,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		return false;
 	}
 
-	public static function callback_pre_set_site_transient_update_plugins( $current ) {
-		if ( ! filter_input( INPUT_POST, 'verify-delete' ) ) {
-			return false;
-		}
-		$plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' );
-		if ( empty( $plugins_to_delete ) ) {
-			return false;
+	public static function callback_pre_set_site_transient_update_plugins( $value ) {
+		if ( ! filter_input( INPUT_POST, 'verify-delete' ) || ! ( $plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' ) ) ) {
+			return $value;
 		}
 		foreach ( $plugins_to_delete as $plugin => $data ) {
 			$name = $data['Name'];
@@ -183,7 +179,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				);
 		}
 		delete_option( 'wp_stream_plugins_to_delete' );
-		return false;
+		return $value;
 	}
 
 	
