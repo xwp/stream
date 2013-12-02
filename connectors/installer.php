@@ -20,6 +20,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		'delete_site_transient_update_themes', // themes::deleted
 		'pre_option_uninstall_plugins', // plugins::deleted
 		'pre_set_site_transient_update_plugins',
+		'wp_redirect',
 	);
 
 	/**
@@ -42,6 +43,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			'activated' => __( 'Activated', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
 			'deleted' => __( 'Deleted', 'stream' ),
+			'edited' => __( 'Edited', 'stream' ),
 		);
 	}
 
@@ -206,6 +208,44 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		}
 		delete_option( 'wp_stream_plugins_to_delete' );
 		return $value;
+	}
+
+	public static function callback_wp_redirect( $location ) {
+		if ( ! preg_match( '#(plugin|theme)-editor.php#', $location, $match ) ) {
+			return $location;
+		}
+
+		$type = $match[1];
+
+		list( $url, $query ) = explode( '?', $location );
+		$query = wp_parse_args( $query );
+		$file  = $query['file'];
+
+		if ( empty( $query['file'] ) ) {
+			return $location;
+		}
+
+		if ( $type == 'theme' ) {
+			if ( empty( $query['updated'] ) ) {
+				return $location;
+			}
+			$theme = wp_get_theme( $query['theme'] );
+			$name  = $theme['Name'];
+		}
+		elseif ( $type == 'plugin' ) {
+			global $plugin, $plugins;
+			$data = $plugins[$plugin];
+			$name = $data['Name'];
+		}
+
+		self::log(
+			__( 'Edited %s: %s', 'domain' ),
+			compact( 'type', 'name', 'file' ),
+			null,
+			array( $type . 's' => 'edited' )
+			);
+
+		return $location;
 	}
 
 	
