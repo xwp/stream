@@ -23,7 +23,7 @@ class WP_Stream_Query {
 
 		$defaults = array(
 			// Pagination params
-			'records_per_page'      => '10',
+			'records_per_page'      => 10,
 			'paged'                 => 1,
 			// Search params
 			'search'                => null,
