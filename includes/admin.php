@@ -76,7 +76,7 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
-		if ( $hook !== self::$screen_id['main'] ) {
+		if ( ! isset( self::$screen_id['main'] ) || $hook !== self::$screen_id['main'] ) {
 			return;
 		}
 		wp_enqueue_script( 'wp-stream-admin', plugins_url( 'ui/admin.js' , dirname( __FILE__ ) ), array( 'jquery' ) );
