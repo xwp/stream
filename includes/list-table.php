@@ -48,7 +48,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
-		$hidden   = array();
+		$hidden   = get_hidden_columns( $screen );
 
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
