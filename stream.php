@@ -48,6 +48,10 @@ class WP_Stream {
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return;
+		}
+
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_INC_DIR . 'settings.php';
 		add_action( 'plugins_loaded', array( 'WP_Stream_Settings', 'load' ) );
