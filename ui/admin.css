@@ -1,33 +1,34 @@
-.post-type-stream .tablenav {
+.toplevel_page_wp_stream .tablenav {
 	padding-top: 6px;
 }
 
-.post-type-stream .tablenav .actions {
+.toplevel_page_wp_stream .tablenav .actions {
 	padding: 0;
 }
 
-.post-type-stream .view-switch {
+.toplevel_page_wp_stream .view-switch {
 	display: none;
 }
 
-.post-type-stream .column-full_date {
-	width: 10%;
-}
-
-.post-type-stream .column-user,
-.post-type-stream .column-taxonomy-stream_action,
-.post-type-stream .column-taxonomy-stream_context,
-.post-type-stream .column-ip {
+.toplevel_page_wp_stream .column-user {
 	width: 15%;
 }
 
-.post-type-stream .column-user img {
+.toplevel_page_wp_stream .column-date,
+.toplevel_page_wp_stream .column-context,
+.toplevel_page_wp_stream .column-action,
+.toplevel_page_wp_stream .column-connector,
+.toplevel_page_wp_stream .column-ip,
+.toplevel_page_wp_stream .column-id {
+	width: 10%;
+}
+
+.toplevel_page_wp_stream .column-user img {
 	float: left;
-	margin-right: 10px;
+	margin-right: 5px;
 	margin-top: 1px;
 }
 
 .alignleft.actions input[type=text] {
 	height: 28px;
 }
-
