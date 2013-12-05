@@ -138,9 +138,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$author_name = isset( $user->display_name ) ? $user->display_name : null;
 					$author_role = isset( $user->roles[0] ) ? $wp_roles->role_names[$user->roles[0]] : null;
 					$out = sprintf(
-						'<a style="vertical-align:top" href="%s"><span style="float:left;padding-right:5px;">%s</span> %s</a><br /><small>%s</small>',
+						'<a href="%s">%s <span>%s</span></a><br /><small>%s</small>',
 						add_query_arg( array( 'author' => $author_ID ), admin_url( 'admin.php?page=wp_stream' ) ),
-						get_avatar( $author_ID, 36 ),
+						get_avatar( $author_ID, 40 ),
 						$author_name,
 						$author_role
 					);
