@@ -69,7 +69,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $stream_id, $object_id ) {
-		
+
 		return $links;
 	}
 
@@ -83,11 +83,11 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		$action  = $extra['action'];
 		$success = ! is_a( $upgrader->skin->result, 'WP_Error' );
 		$error   = $success ? null : reset( $upgrader->skin->result->errors )[0];
-		
+
 		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
 			return;
 		}
-		
+
 		if ( $action == 'install' ) {
 			$slug    = $upgrader->skin->api->slug;
 			$name    = $upgrader->skin->api->name;
@@ -99,7 +99,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				$slug        = $upgrader->skin->plugin;
 				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
 				$name        = $plugin_data[$slug]['Name'];
-				$version     = $plugin_data['Version']; 
+				$version     = $plugin_data['Version'];
 				$plugins     = get_plugins();
 				$old_version = $plugins[$slug]['Version'];
 			}
@@ -133,9 +133,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_activate_plugin( $slug, $network_wide ) {
 		$plugins = get_plugins();
 		$name  = $plugins[$slug]['Name'];
-		$network_wide = $network_wide ? 'network wide' : ''; 
+		$network_wide = $network_wide ? 'network wide' : '';
 		self::log(
-			__( 'Activated plugin: %s %s', 'stream' ),
+			__( '"%s" plugin activated %s', 'stream' ),
 			compact( 'name', 'network_wide', 'slug' ),
 			null,
 			array( 'plugins' => 'activated' )
@@ -145,9 +145,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_deactivate_plugin( $slug, $network_wide ) {
 		$plugins = get_plugins();
 		$name  = $plugins[$slug]['Name'];
-		$network_wide = $network_wide ? 'network wide' : ''; 
+		$network_wide = $network_wide ? 'network wide' : '';
 		self::log(
-			__( 'Deactivated plugin: %s %s', 'stream' ),
+			__( '"%s" plugin deactivated %s', 'stream' ),
 			compact( 'name', 'network_wide', 'slug' ),
 			null,
 			array( 'plugins' => 'deactivated' )
@@ -156,7 +156,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 
 	public static function callback_switch_theme( $name, $theme ) {
 		self::log(
-			__( 'Activated theme: %s', 'stream' ),
+			__( '"%s" theme activated', 'stream' ),
 			compact( 'name', 'theme' ),
 			null,
 			array( 'themes' => 'activated' )
@@ -171,7 +171,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		$theme = $GLOBALS['theme'];
 		$name  = $theme['Name'];
 		self::log(
-			__( 'Deleted theme: %s', 'stream' ),
+			__( '"%s" theme deleted', 'stream' ),
 			compact( 'name', 'stylesheet' ),
 			null,
 			array( 'themes' => 'deleted' )
@@ -187,7 +187,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		foreach ( $plugins as $plugin ) {
 			$plugins_to_delete[$plugin] = $_plugins[$plugin];
 		}
-		
+
 		update_option( 'wp_stream_plugins_to_delete', $plugins_to_delete );
 		return false;
 	}
@@ -200,7 +200,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			$name = $data['Name'];
 			$network_wide = $data['Network'] ? 'network wide' : null;
 			self::log(
-				__( 'Deleted plugin: %s', 'stream' ),
+				__( '"%s" plugin deleted', 'stream' ),
 				compact( 'name', 'plugin', 'network_wide' ),
 				null,
 				array( 'plugins' => 'deleted' )
@@ -248,6 +248,6 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		return $location;
 	}
 
-	
+
 
 }
