@@ -88,7 +88,7 @@ class WP_Stream_Admin {
 	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
-			$admin_page_url  = admin_url( sprintf( '%s?page=%s', self::ADMIN_PARENT_PAGE, self::ADMIN_PAGE_SLUG ) );
+			$admin_page_url  = add_query_arg( array( 'page' => self::ADMIN_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
 			$admin_page_link = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 			array_push( $links, $admin_page_link );
 		}
