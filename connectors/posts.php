@@ -89,7 +89,6 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			apply_filters(
 				'wp_stream_post_exclude_post_types',
 				array(
-					'stream',
 					'nav_menu_item',
 					)
 				)
@@ -130,12 +129,12 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		if ( wp_revisions_enabled( $post ) ) {
 			$revision = get_children(
 				array(
-					'post_type' => 'revision',
-					'post_status' => 'inherit',
-					'post_parent' => $post->ID,
+					'post_type'      => 'revision',
+					'post_status'    => 'inherit',
+					'post_parent'    => $post->ID,
 					'posts_per_page' => 1,
-					'order' => 'desc',
-					'fields' => 'ids',
+					'order'          => 'desc',
+					'fields'         => 'ids',
 					)
 				);
 			if ( $revision ) {
@@ -168,7 +167,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		self::log(
 			__( '"%s" post deleted from trash', 'stream' ),
 			array(
-				'post_title'  => $post->post_title,
+				'post_title' => $post->post_title,
 			),
 			$post->ID,
 			array(
