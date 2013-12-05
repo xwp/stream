@@ -10,6 +10,11 @@
 	display: none;
 }
 
+.toplevel_page_wp_stream #filter-date-range {
+	float: left;
+	margin-right: 6px;
+}
+
 .toplevel_page_wp_stream .column-user {
 	width: 15%;
 }

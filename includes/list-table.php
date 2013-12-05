@@ -268,13 +268,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function filter_search() {
 		$out = sprintf(
 			'<p class="search-box">
-			<label class="screen-reader-text" for="record-search-input">%1$s:</label>
-			<input type="search" id="record-search-input" name="search" value="%2$s">
-			<input type="submit" name="" id="search-submit" class="button" value="%1$s">
+				<label class="screen-reader-text" for="record-search-input">%1$s:</label>
+				<input type="search" id="record-search-input" name="search" value="%2$s" />
+				<input type="submit" name="" id="search-submit" class="button" value="%1$s" />
 			</p>',
-			__( 'Search Records', 'stream' ),
+			esc_attr__( 'Search Records', 'stream' ),
 			isset( $_GET['search'] ) ? esc_attr( $_GET['search'] ) : null
-			);
+		);
+
 		return $out;
 	}
 
@@ -283,8 +284,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 		wp_enqueue_style( 'jquery-ui' );
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		$out  = '<input type="text" name="date_from" class="date-picker" placeholder="Date from:" style="float:left" size="9"/>';
-		$out .= '<input type="text" name="date_to" class="date-picker" placeholder="Date to:" style="float:left" size="9"/>';
+
+		$out = sprintf(
+			'<div id="filter-date-range">
+				<label class="screen-reader-text" for="date_from">%1$s:</label>
+				<input type="text" name="date_from" id="date_from" class="date-picker" placeholder="%1$s" size="9" value="%2$s" />
+				<label class="screen-reader-text" for="date_to">%3$s:</label>
+				<input type="text" name="date_to" id="date_to" class="date-picker" placeholder="%3$s" size="9" value="%4$s" />
+			</div>',
+			esc_attr__( 'Date start', 'stream' ),
+			isset( $_GET['date_from'] ) ? esc_attr( $_GET['date_from'] ) : null,
+			esc_attr__( 'Date end', 'stream' ),
+			isset( $_GET['date_to'] ) ? esc_attr( $_GET['date_to'] ) : null
+		);
+
 		return $out;
 	}
 
