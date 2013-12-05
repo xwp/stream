@@ -44,7 +44,7 @@ abstract class WP_Stream_Connector {
 	public static function callback() {
 		$action   = current_filter();
 		$class    = get_called_class();
-		$callback = array( $class, 'callback_' . $action );
+		$callback = array( $class, 'callback_' . str_replace( '-', '_', $action ) );
 		if ( is_callable( $callback ) ) {
 			return call_user_func_array( $callback, func_get_args() );
 		}
