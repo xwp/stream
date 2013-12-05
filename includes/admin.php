@@ -9,6 +9,12 @@ class WP_Stream_Admin {
 	 */
 	public static $screen_id = array();
 
+	/**
+	 * List table object
+	 * @var WP_Stream_List_Table
+	 */
+	public static $list_table = null;
+
 	const ADMIN_PAGE_SLUG   = 'wp_stream';
 	const ADMIN_PARENT_PAGE = 'options-general.php';
 
@@ -58,6 +64,9 @@ class WP_Stream_Admin {
 			'wp_stream_settings',
 			array( __CLASS__, 'render_page' )
 		);
+
+		// Register the list table early, so it associates the column headers with 'Screen settings'
+		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
 	}
 
 	/**
@@ -136,14 +145,17 @@ class WP_Stream_Admin {
 		<?php
 	}
 
-	public static function stream_page() {
+	public static function register_list_table() {
 		require_once WP_STREAM_INC_DIR . 'list-table.php';
-		$list_table = new WP_Stream_List_Table();
-		$list_table->prepare_items();
+		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::$screen_id['main'] ) );
+	}
+
+	public static function stream_page() {
+		self::$list_table->prepare_items();
 
 		echo '<div class="wrap">';
 		echo sprintf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss okay
-		$list_table->display();
+		self::$list_table->display();
 		echo '</div>';
 	}
 
