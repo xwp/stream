@@ -109,9 +109,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'date':
-				$out  = $this->column_link( date( 'Y/m/d', strtotime( $item->created ) ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out  = sprintf( '<strong>' . __( '%s ago', 'stream' ) . '</strong>', human_time_diff( strtotime( $item->created ) ) );
 				$out .= '<br />';
-				$out .= date( "\nh:i:s A", strtotime( $item->created ) );
+				$out .= $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out .= '<br />';
+				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
 				break;
 
 			case 'summary':
@@ -136,9 +138,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$author_name = isset( $user->display_name ) ? $user->display_name : null;
 					$author_role = isset( $user->roles[0] ) ? $wp_roles->role_names[$user->roles[0]] : null;
 					$out = sprintf(
-						'<a style="vertical-align:top" href="%s"><span style="float:left;padding-right:5px;">%s</span> %s</a><br /><small>%s</small>',
+						'<a href="%s">%s <span>%s</span></a><br /><small>%s</small>',
 						add_query_arg( array( 'author' => $author_ID ), admin_url( 'admin.php?page=wp_stream' ) ),
-						get_avatar( $author_ID, 36 ),
+						get_avatar( $author_ID, 40 ),
 						$author_name,
 						$author_role
 					);
@@ -197,27 +199,39 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$users = array();
 		foreach ( get_users() as $user ) {
-			$users[ $user->ID ] = $user->display_name;
+			$users[$user->ID] = $user->display_name;
 		}
+
+		asort( $users );
+
 		$filters['author'] = array(
 			'title' => __( 'users', 'stream' ),
 			'items' => $users,
-			);
+		);
+
+		$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
+		asort( $connectors );
 
 		$filters['connector'] = array(
 			'title' => __( 'connectors', 'stream' ),
 			'items' => WP_Stream_Connectors::$term_labels['stream_connector'],
-			);
+		);
+
+		$contexts = WP_Stream_Connectors::$term_labels['stream_context'];
+		asort( $contexts );
 
 		$filters['context'] = array(
 			'title' => __( 'contexts', 'stream' ),
-			'items' => WP_Stream_Connectors::$term_labels['stream_context'],
-			);
+			'items' => $contexts,
+		);
+
+		$actions = WP_Stream_Connectors::$term_labels['stream_action'];
+		asort( $actions );
 
 		$filters['action'] = array(
 			'title' => __( 'actions', 'stream' ),
-			'items' => WP_Stream_Connectors::$term_labels['stream_action'],
-			);
+			'items' => $actions,
+		);
 
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
 
@@ -254,13 +268,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function filter_search() {
 		$out = sprintf(
 			'<p class="search-box">
-			<label class="screen-reader-text" for="record-search-input">%1$s:</label>
-			<input type="search" id="record-search-input" name="search" value="%2$s">
-			<input type="submit" name="" id="search-submit" class="button" value="%1$s">
+				<label class="screen-reader-text" for="record-search-input">%1$s:</label>
+				<input type="search" id="record-search-input" name="search" value="%2$s" />
+				<input type="submit" name="" id="search-submit" class="button" value="%1$s" />
 			</p>',
-			__( 'Search Records', 'stream' ),
+			esc_attr__( 'Search Records', 'stream' ),
 			isset( $_GET['search'] ) ? esc_attr( $_GET['search'] ) : null
-			);
+		);
+
 		return $out;
 	}
 
@@ -269,8 +284,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 		wp_enqueue_style( 'jquery-ui' );
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		$out  = '<input type="text" name="date_from" class="date-picker" placeholder="Date from:" style="float:left" size="9"/>';
-		$out .= '<input type="text" name="date_to" class="date-picker" placeholder="Date to:" style="float:left" size="9"/>';
+
+		$out = sprintf(
+			'<div id="filter-date-range">
+				<label class="screen-reader-text" for="date_from">%1$s:</label>
+				<input type="text" name="date_from" id="date_from" class="date-picker" placeholder="%1$s" size="9" value="%2$s" />
+				<label class="screen-reader-text" for="date_to">%3$s:</label>
+				<input type="text" name="date_to" id="date_to" class="date-picker" placeholder="%3$s" size="9" value="%4$s" />
+			</div>',
+			esc_attr__( 'Date start', 'stream' ),
+			isset( $_GET['date_from'] ) ? esc_attr( $_GET['date_from'] ) : null,
+			esc_attr__( 'Date end', 'stream' ),
+			isset( $_GET['date_to'] ) ? esc_attr( $_GET['date_to'] ) : null
+		);
+
 		return $out;
 	}
 

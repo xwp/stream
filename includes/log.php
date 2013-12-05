@@ -16,7 +16,7 @@ class WP_Stream_Log {
 
 	/**
 	 * Load log handler class, filterable by extensions
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function load() {
@@ -54,7 +54,7 @@ class WP_Stream_Log {
 		$recordarr = array(
 			'object_id' => $object_id,
 			'author'    => $user_id,
-			'created'   => current_time( 'mysql' ), // TODO: use GMT (get_gmt_from_date)
+			'created'   => current_time( 'mysql', 1 ),
 			'summary'   => vsprintf( $message, $args ),
 			'parent'    => self::$instance->prev_record,
 			'connector' => $connector,
@@ -64,7 +64,7 @@ class WP_Stream_Log {
 			);
 
 		$record_id = WP_Stream_DB::get_instance()->insert( $recordarr );
-		
+
 		return $record_id;
 	}
 
