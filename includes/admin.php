@@ -15,8 +15,8 @@ class WP_Stream_Admin {
 	 */
 	public static $list_table = null;
 
-	const ADMIN_PAGE_SLUG   = 'wp_stream';
-	const ADMIN_PARENT_PAGE = 'options-general.php';
+	const ADMIN_PAGE_SLUG   = 'wp_stream_settings';
+	const ADMIN_PARENT_PAGE = 'admin.php';
 
 	public static function load() {
 
@@ -87,7 +87,7 @@ class WP_Stream_Admin {
 	 * @filter plugin_action_links
 	 */
 	public static function plugin_action_links( $links, $file ) {
-		if ( plugin_basename( __FILE__ ) === $file ) {
+		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
 			$admin_page_url  = admin_url( sprintf( '%s?page=%s', self::ADMIN_PARENT_PAGE, self::ADMIN_PAGE_SLUG ) );
 			$admin_page_link = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 			array_push( $links, $admin_page_link );
