@@ -199,27 +199,39 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$users = array();
 		foreach ( get_users() as $user ) {
-			$users[ $user->ID ] = $user->display_name;
+			$users[$user->ID] = $user->display_name;
 		}
+
+		asort( $users );
+
 		$filters['author'] = array(
 			'title' => __( 'users', 'stream' ),
 			'items' => $users,
-			);
+		);
+
+		$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
+		asort( $connectors );
 
 		$filters['connector'] = array(
 			'title' => __( 'connectors', 'stream' ),
 			'items' => WP_Stream_Connectors::$term_labels['stream_connector'],
-			);
+		);
+
+		$contexts = WP_Stream_Connectors::$term_labels['stream_context'];
+		asort( $contexts );
 
 		$filters['context'] = array(
 			'title' => __( 'contexts', 'stream' ),
-			'items' => WP_Stream_Connectors::$term_labels['stream_context'],
-			);
+			'items' => $contexts,
+		);
+
+		$actions = WP_Stream_Connectors::$term_labels['stream_action'];
+		asort( $actions );
 
 		$filters['action'] = array(
 			'title' => __( 'actions', 'stream' ),
-			'items' => WP_Stream_Connectors::$term_labels['stream_action'],
-			);
+			'items' => $actions,
+		);
 
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
 
