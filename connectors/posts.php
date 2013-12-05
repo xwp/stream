@@ -90,6 +90,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'wp_stream_post_exclude_post_types',
 				array(
 					'stream',
+					'nav_menu_item',
 					)
 				)
 			)
