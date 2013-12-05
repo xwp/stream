@@ -51,11 +51,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$hidden   = array();
 
 		$this->_column_headers = array( $columns, $hidden, $sortable );
-		
+
 		$this->items = $this->get_records();
 
 		$this->perpage = apply_filters( 'wp_stream_list_table_perpage', 10 );
-		
+
 		$total_items = $this->get_total_found_rows();
 
 		$this->set_pagination_args(
@@ -81,7 +81,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		// Filters
 		$allowed_params = array(
-			'connector', 'context', 'action', 
+			'connector', 'context', 'action',
 			'author', 'object_id', 'search',
 			'date', 'date_from', 'date_to',
 			);
@@ -192,12 +192,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'title' => __( 'connectors', 'stream' ),
 			'items' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			);
-		
+
 		$filters['context'] = array(
 			'title' => __( 'contexts', 'stream' ),
 			'items' => WP_Stream_Connectors::$term_labels['stream_context'],
 			);
-		
+
 		$filters['action'] = array(
 			'title' => __( 'actions', 'stream' ),
 			'items' => WP_Stream_Connectors::$term_labels['stream_action'],
@@ -206,7 +206,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
 
 		$filters_string .= $this->filter_date();
-		
+
 		foreach ( $filters as $name => $data ) {
 			$filters_string .= $this->filter_select( $name, $data['title'], $data['items'] );
 		}
@@ -238,18 +238,19 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function filter_search() {
 		$out = sprintf(
 			'<p class="search-box">
-			<label class="screen-reader-text" for="post-search-input">%1$s:</label>
-			<input type="search" id="record-search-input" name="search" value="">
+			<label class="screen-reader-text" for="record-search-input">%1$s:</label>
+			<input type="search" id="record-search-input" name="search" value="%2$s">
 			<input type="submit" name="" id="search-submit" class="button" value="%1$s">
 			</p>',
-			__( 'Search Records', 'stream' )
+			__( 'Search Records', 'stream' ),
+			isset( $_GET['search'] ) ? esc_attr( $_GET['search'] ) : null
 			);
 		return $out;
 	}
 
 	function filter_date() {
 		wp_register_style( 'jquery-ui', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css' );
-		wp_enqueue_style( 'jquery-ui' );   
+		wp_enqueue_style( 'jquery-ui' );
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 		$out  = '<input type="text" name="date_from" class="date-picker" placeholder="Date from:" style="float:left" size="9"/>';
