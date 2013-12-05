@@ -211,7 +211,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$filters_string .= $this->filter_select( $name, $data['title'], $data['items'] );
 		}
 
-		$filters_string .= sprintf( '<input type="submit" value="%s"/>', __( 'Submit' ) );
+		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
 		$url = admin_url( 'admin.php' );
 		echo sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss okay
 	}
