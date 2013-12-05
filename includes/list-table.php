@@ -109,8 +109,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'date':
-				$out  = $this->column_link( 'date', date( 'Y/m/d', strtotime( $item->created ) ),  date( 'Y/m/d', strtotime( $item->created ) ) );
-				$out .= date( "\nh:i:s a", strtotime( $item->created ) );
+				$out  = $this->column_link( 'date', date( 'Y/m/d', strtotime( $item->created ) ), date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out .= '<br />';
+				$out .= date( "\nh:i:s A", strtotime( $item->created ) );
 				break;
 
 			case 'summary':
