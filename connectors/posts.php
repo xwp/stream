@@ -83,18 +83,10 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 * @action transition_post_status
 	 */
 	public static function callback_transition_post_status( $new, $old, $post ) {
-		if ( in_array(
-			$post->post_type,
-			apply_filters(
-				'wp_stream_post_exclude_post_types',
-				array(
-					'nav_menu_item',
-					)
-				)
-			)
-			) {
+		if ( in_array( $post->post_type, self::get_ignored_post_types() ) ) {
 			return;
 		}
+
 		if ( in_array( $new, array( 'auto-draft', 'inherit' ) ) ) {
 			return;
 		}
@@ -163,6 +155,9 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function callback_deleted_post( $post_id ) {
 		$post = get_post( $post_id );
+		if ( in_array( $post->post_type, self::get_ignored_post_types() ) ) {
+			return;
+		}
 		self::log(
 			__( '"%s" post deleted from trash', 'stream' ),
 			array(
@@ -174,5 +169,15 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				)
 		);
 	}
+
+	public static function get_ignored_post_types() {
+		return apply_filters(
+			'wp_stream_post_exclude_post_types',
+			array(
+				'nav_menu_item',
+				'attachment',
+				)
+			);
+	} 
 
 }
