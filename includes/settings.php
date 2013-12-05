@@ -66,7 +66,7 @@ class WP_Stream_Settings {
 						'title'       => __( 'Delete All Records', 'stream' ),
 						'type'        => 'link',
 						'href'        => admin_url( 'admin-ajax.php?action=wp_stream_reset' ),
-						'desc'        => __( 'Warning: Click this will delete all activity records from the database.', 'stream' ),
+						'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
 						'default'     => 0,
 					),
 				),
