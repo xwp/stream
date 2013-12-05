@@ -109,14 +109,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'date':
-				$out  = $this->column_link( 'date', date( 'Y/m/d', strtotime( $item->created ) ), date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out  = $this->column_link( date( 'Y/m/d', strtotime( $item->created ) ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
 				$out .= date( "\nh:i:s A", strtotime( $item->created ) );
 				break;
 
 			case 'summary':
 				if ( $item->object_id ) {
-					$out = $this->column_link( 'object_id', $item->object_id, $item->summary );
+					$out = $this->column_link(
+						$item->summary,
+						array(
+							'object_id' => $item->object_id,
+							'context' => $item->context,
+							)
+						);
 				} else {
 					$out = $item->summary;
 				}
@@ -143,7 +149,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			case 'context':
 			case 'action':
-				$out = $this->column_link( $column_name, $item->{$column_name}, WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}] );
+				$out = $this->column_link( WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}], $column_name, $item->{$column_name} );
 				break;
 
 			case 'id':
@@ -151,11 +157,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'ip':
-				$out = $this->column_link( 'ip', $item->{$column_name}, $item->{$column_name} );
+				$out = $this->column_link( $item->{$column_name}, 'ip', $item->{$column_name} );
 				break;
 
 			case 'connector':
-				$out = $this->column_link( 'connector', $item->connector, WP_Stream_Connectors::$term_labels['stream_connector'][$item->connector] );
+				$out = $this->column_link( WP_Stream_Connectors::$term_labels['stream_connector'][$item->connector], 'connector', $item->connector );
 				break;
 
 			default:
@@ -165,8 +171,18 @@ class WP_Stream_List_Table extends WP_List_Table {
 		echo $out; //xss okay
 	}
 
-	function column_link( $key, $value, $display ) {
-		$url = add_query_arg( $key, $value, admin_url( 'admin.php?page=wp_stream' ) );
+	function column_link( $display, $key, $value = null ) {
+		$url = admin_url( 'admin.php?page=wp_stream' );
+
+		if ( ! is_array( $key ) ) {
+			$args = array( $key => $value );
+		} else {
+			$args = $key;
+		}
+		foreach ( $args as $k => $v ) {
+			$url = add_query_arg( $k, $v, $url );
+		}
+
 		return sprintf(
 			'<a href="%s">%s</a>',
 			$url,
