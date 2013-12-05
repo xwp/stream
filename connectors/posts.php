@@ -46,9 +46,8 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 * @return array Context label translations
 	 */
 	public static function get_context_labels() {
-		return array(
-			'posts' => __( 'Posts', 'stream' ),
-		);
+		global $wp_post_types;
+		return wp_filter_object_list( $wp_post_types, array(), null, 'label' );
 	}
 
 	/**
@@ -152,7 +151,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			),
 			$post->ID,
 			array(
-				'posts' => $action,
+				$post->post_type => $action,
 				)
 		);
 	}
@@ -171,7 +170,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			),
 			$post->ID,
 			array(
-				'posts' => 'deleted',
+				$post->post_type => 'deleted',
 				)
 		);
 	}
