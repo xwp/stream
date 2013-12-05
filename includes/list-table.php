@@ -109,7 +109,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'date':
-				$out  = $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', get_date_from_gmt( $item->created, 'Y/m/d' ) );
+				$out  = $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
 				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
 				break;
