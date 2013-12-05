@@ -9,8 +9,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 			array(
 				'plural' => 'records',
 				'screen' => isset( $args['screen'] ) ? $args['screen'] : null,
-				)
-			);
+			)
+		);
 
 	}
 
@@ -32,15 +32,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 				'connector' => __( 'Connector', 'stream' ),
 				'ip'        => __( 'IP Address', 'stream' ),
 				'id'        => __( 'ID', 'stream' ),
-				)
-			);
+			)
+		);
 	}
 
 	function get_sortable_columns() {
 		return array(
-			'id' => 'id',
+			'id'   => 'id',
 			'date' => 'date',
-			);
+		);
 	}
 
 	function prepare_items() {
@@ -62,8 +62,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 			array(
 				'total_items' => $total_items,
 				'per_page' => $this->perpage,
-				)
-			);
+			)
+		);
 	}
 
 	function get_records() {
@@ -84,7 +84,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'connector', 'context', 'action',
 			'author', 'object_id', 'search',
 			'date', 'date_from', 'date_to',
-			);
+		);
 		foreach ( $allowed_params as $param ) {
 			if ( $paramval = filter_input( INPUT_GET, $param ) ) {
 				$args[$param] = $paramval;
@@ -189,7 +189,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'<a href="%s">%s</a>',
 			$url,
 			$display
-			); // xss okay
+		); // xss okay
 	}
 
 	function filters_form() {
@@ -255,13 +255,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$v,
 				selected( $v, $selected, false ),
 				$label
-				);
+			);
 		}
 		$out = sprintf(
 			'<select name="%s">%s</select>',
 			$name,
 			implode( '', $options )
-			);
+		);
 		return $out;
 	}
 
