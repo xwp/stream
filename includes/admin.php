@@ -53,7 +53,7 @@ class WP_Stream_Admin {
 			$cap,
 			'wp_stream',
 			array( __CLASS__, 'stream_page' ),
-			null,
+			'div',
 			3
 			);
 
@@ -80,8 +80,8 @@ class WP_Stream_Admin {
 		if ( ! isset( self::$screen_id['main'] ) || $hook !== self::$screen_id['main'] ) {
 			return;
 		}
-		wp_enqueue_script( 'wp-stream-admin', plugins_url( 'ui/admin.js' , dirname( __FILE__ ) ), array( 'jquery' ) );
-		wp_enqueue_style( 'wp-stream-admin', plugins_url( 'ui/admin.css' , dirname( __FILE__ ) ), array() );
+		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery' ) );
+		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 	}
 
 	/**
@@ -91,7 +91,7 @@ class WP_Stream_Admin {
 	 * @return wp_add_inline_style
 	 */
 	public static function admin_menu_css() {
-		wp_register_style( 'wp-stream-icons', plugins_url( 'ui/stream-icons/style.css', dirname( __FILE__ ) ) );
+		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
 
 		// Make sure we're working off a clean version.
 		include( ABSPATH . WPINC . '/version.php' );
@@ -116,7 +116,7 @@ class WP_Stream_Admin {
 		} else {
 			$css = "
 				#toplevel_page_wp_stream .wp-menu-image {
-					background: url( " . plugins_url( 'ul/stream-icons/menuicon-sprite.png', __FILE__ ) . " ) 0 90% no-repeat;
+					background: url( " . WP_STREAM_URL . 'ui/stream-icons/menuicon-sprite.png' . " ) 0 90% no-repeat;
 				}
 				/* Retina Stream Menu Icon */
 				@media  only screen and (-moz-min-device-pixel-ratio: 1.5),
@@ -124,7 +124,7 @@ class WP_Stream_Admin {
 						only screen and (-webkit-min-device-pixel-ratio: 1.5),
 						only screen and (min-device-pixel-ratio: 1.5) {
 					#toplevel_page_wp_stream .wp-menu-image {
-						background: url( " . plugins_url( 'ul/stream-icons/menuicon-sprite-2x.png', __FILE__ ) . " ) 0 90% no-repeat;
+						background: url( " . WP_STREAM_URL . 'ui/stream-icons/menuicon-sprite-2x.png' . " ) 0 90% no-repeat;
 						background-size:30px 64px;
 					}
 				}
