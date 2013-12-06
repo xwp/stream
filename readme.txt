@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:      x-team, fjarrett, westonruter, shadyvb
+Contributors:      x-team, shadyvb, fjarrett
 Tags:              stream, activity, analytics, log, users, notification
 Requires at least: 3.6
 Tested up to:      3.7.1
