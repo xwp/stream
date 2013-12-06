@@ -32,3 +32,12 @@ Stream is built to extend, allowing developers to easily build their own connect
 1. Upload `stream` to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 
+## Changelog ##
+
+### 0.2 ###
+Second iteration build using custom tables data model. First public release.
+
+### 0.1 ###
+Initial concept build using custom post type/taxonomies as the data model.
+
+
