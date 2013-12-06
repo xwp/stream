@@ -27,10 +27,15 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 [![Build Status](https://travis-ci.org/x-team/wp-stream.png)](https://travis-ci.org/x-team/wp-stream)
 
-## Installation ##
+## Screenshots ##
 
-1. Upload `stream` to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
+### Every logged-in user action is logged in the activity stream and organized for easy filtering and searching.
+
+![Every logged-in user action is logged in the activity stream and organized for easy filtering and searching.](assets/screenshot-1.png)
+
+### Determine how long records should live before being purged, or purge them from the database manually at any time.
+
+![Determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-2.png)
 
 ## Changelog ##
 

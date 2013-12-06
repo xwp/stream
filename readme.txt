@@ -23,10 +23,10 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 **Development of this plugin is done [on GitHub](https://github.com/x-team/wp-stream). Pull requests welcome. Please see [issues](https://github.com/x-team/wp-stream/issues) reported there before going to the plugin forum.**
 
-== Installation ==
+== Screenshots ==
 
-1. Upload `stream` to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
+1. Every logged-in user action is logged in the activity stream and organized for easy filtering and searching.
+2. Determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
 
