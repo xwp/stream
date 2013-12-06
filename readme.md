@@ -3,12 +3,12 @@
 
 Track and monitor every change made on your WordPress site in beautifully-organized detail.
 
-**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett)
-**Tags:** [stream](http://wordpress.org/plugins/tags/stream), [activity](http://wordpress.org/plugins/tags/activity), [analytics](http://wordpress.org/plugins/tags/analytics), [log](http://wordpress.org/plugins/tags/log), [users](http://wordpress.org/plugins/tags/users), [notification](http://wordpress.org/plugins/tags/notification), [actions](http://wordpress.org/plugins/tags/actions)
-**Requires at least:** 3.6
-**Tested up to:** 3.7.1
-**Stable tag:** trunk (master)
-**License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)
+**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett)  
+**Tags:** [stream](http://wordpress.org/plugins/tags/stream), [activity](http://wordpress.org/plugins/tags/activity), [analytics](http://wordpress.org/plugins/tags/analytics), [log](http://wordpress.org/plugins/tags/log), [users](http://wordpress.org/plugins/tags/users), [notification](http://wordpress.org/plugins/tags/notification), [actions](http://wordpress.org/plugins/tags/actions)  
+**Requires at least:** 3.6  
+**Tested up to:** 3.7.1  
+**Stable tag:** trunk (master)  
+**License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
 
 ## Description ##
 
