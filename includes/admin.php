@@ -28,6 +28,7 @@ class WP_Stream_Admin {
 
 		// Load admin scripts and styles
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_menu_css' ) );
 
 		// Reset Streams database
 		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
@@ -52,7 +53,7 @@ class WP_Stream_Admin {
 			$cap,
 			'wp_stream',
 			array( __CLASS__, 'stream_page' ),
-			null,
+			'div',
 			3
 			);
 
@@ -79,8 +80,61 @@ class WP_Stream_Admin {
 		if ( ! isset( self::$screen_id['main'] ) || $hook !== self::$screen_id['main'] ) {
 			return;
 		}
-		wp_enqueue_script( 'wp-stream-admin', plugins_url( 'ui/admin.js' , dirname( __FILE__ ) ), array( 'jquery' ) );
-		wp_enqueue_style( 'wp-stream-admin', plugins_url( 'ui/admin.css' , dirname( __FILE__ ) ), array() );
+		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery' ) );
+		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
+	}
+
+	/**
+	 * Add menu styles for various WP Admin skins
+	 *
+	 * @action admin_enqueue_scripts
+	 * @return wp_add_inline_style
+	 */
+	public static function admin_menu_css() {
+		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
+
+		// Make sure we're working off a clean version.
+		include( ABSPATH . WPINC . '/version.php' );
+		if ( version_compare( $wp_version, '3.8-alpha', '>=' ) ) {
+			wp_enqueue_style( 'wp-stream-icons' );
+			$css = "
+				#toplevel_page_wp_stream .wp-menu-image:before {
+					font-family: 'WP Stream' !important;
+					content: '\\73' !important;
+				}
+				#toplevel_page_wp_stream .wp-menu-image {
+					background-repeat: no-repeat;
+				}
+				#menu-posts-feedback .wp-menu-image:before {
+					font-family: dashicons !important;
+					content: '\\f175';
+				}
+				#adminmenu #menu-posts-feedback div.wp-menu-image {
+					background: none !important;
+					background-repeat: no-repeat;
+				}";
+		} else {
+			$css = "
+				#toplevel_page_wp_stream .wp-menu-image {
+					background: url( " . WP_STREAM_URL . 'ui/stream-icons/menuicon-sprite.png' . " ) 0 90% no-repeat;
+				}
+				/* Retina Stream Menu Icon */
+				@media  only screen and (-moz-min-device-pixel-ratio: 1.5),
+						only screen and (-o-min-device-pixel-ratio: 3/2),
+						only screen and (-webkit-min-device-pixel-ratio: 1.5),
+						only screen and (min-device-pixel-ratio: 1.5) {
+					#toplevel_page_wp_stream .wp-menu-image {
+						background: url( " . WP_STREAM_URL . 'ui/stream-icons/menuicon-sprite-2x.png' . " ) 0 90% no-repeat;
+						background-size:30px 64px;
+					}
+				}
+				#toplevel_page_wp_stream.current .wp-menu-image,
+				#toplevel_page_wp_stream.wp-has-current-submenu .wp-menu-image,
+				#toplevel_page_wp_stream:hover .wp-menu-image {
+					background-position: top left;
+				}";
+		}
+		wp_add_inline_style( 'wp-admin', $css );
 	}
 
 	/**
