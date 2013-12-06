@@ -7,7 +7,7 @@ Stable tag:        trunk
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
-Track and monitor every change made on your WordPress site in beautifully-organized detail.
+Track and monitor every change made on your WordPress site in beautifully organized detail.
 
 == Description ==
 
