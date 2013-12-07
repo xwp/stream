@@ -82,6 +82,17 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		$current_user    = wp_get_current_user();
 		$registered_user = get_user_by( 'id', $user_id );
 
+		global $wp_roles;
+
+		$roles       = $wp_roles->get_names();
+		$role_labels = array();
+
+		foreach ( $roles as $role => $label ) {
+			if ( in_array( $role, (array) $registered_user->roles ) ) {
+				$role_labels[] = $label;
+			}
+		}
+
 		if ( ! $current_user->ID ) { // Non logged-in user registered themselves
 			$message     = __( 'New user registration', 'stream' );
 			$user_to_log = $registered_user->ID;
@@ -94,7 +105,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$message,
 			array(
 				'display_name' => ( $registered_user->display_name ) ? $registered_user->display_name : $registered_user->user_login,
-				'roles'        => implode( ', ', $registered_user->roles ),
+				'roles'        => implode( ', ', $role_labels ),
 			),
 			$registered_user->ID,
 			array(
