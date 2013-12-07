@@ -25,7 +25,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 **Development of this plugin is done [on GitHub](https://github.com/x-team/wp-stream). Pull requests welcome. Please see [issues](https://github.com/x-team/wp-stream/issues) reported there before going to the plugin forum.**
 
-[![Build Status](https://travis-ci.org/x-team/wp-stream?branch=master.png)](https://travis-ci.org/x-team/wp-stream?branch=master)
+[![Build Status](https://travis-ci.org/x-team/wp-stream.png)](https://travis-ci.org/x-team/wp-stream?branch=master)
 
 ## Screenshots ##
 
@@ -40,7 +40,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 ## Changelog ##
 
 ### 0.3 ###
-Improved actions for Users context. Action for editing images in Media context. Bug fixes in Menus context.
+Improved actions for Users context. Action for edited images in Media context. Bug fixes in Menus context.
 
 ### 0.2 ###
 Second iteration build using custom tables data model. First public release.

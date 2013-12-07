@@ -31,7 +31,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 == Changelog ==
 
 = 0.3 =
-Improved actions for Users context. Action for editing images in Media context. Bug fixes in Menus context.
+Improved actions for Users context. Action for edited images in Media context. Bug fixes in Menus context.
 
 = 0.2 =
 Second iteration build using custom tables data model. First public release.
