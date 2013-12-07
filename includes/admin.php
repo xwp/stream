@@ -114,9 +114,9 @@ class WP_Stream_Admin {
 					background-repeat: no-repeat;
 				}";
 		} else {
-			$css = "
+			$css = '
 				#toplevel_page_wp_stream .wp-menu-image {
-					background: url( " . WP_STREAM_URL . 'ui/stream-icons/menuicon-sprite.png' . " ) 0 90% no-repeat;
+					background: url( ' . WP_STREAM_URL . 'ui/stream-icons/menuicon-sprite.png ) 0 90% no-repeat;
 				}
 				/* Retina Stream Menu Icon */
 				@media  only screen and (-moz-min-device-pixel-ratio: 1.5),
@@ -124,7 +124,7 @@ class WP_Stream_Admin {
 						only screen and (-webkit-min-device-pixel-ratio: 1.5),
 						only screen and (min-device-pixel-ratio: 1.5) {
 					#toplevel_page_wp_stream .wp-menu-image {
-						background: url( " . WP_STREAM_URL . 'ui/stream-icons/menuicon-sprite-2x.png' . " ) 0 90% no-repeat;
+						background: url( ' . WP_STREAM_URL . 'ui/stream-icons/menuicon-sprite-2x.png ) 0 90% no-repeat;
 						background-size:30px 64px;
 					}
 				}
@@ -132,7 +132,7 @@ class WP_Stream_Admin {
 				#toplevel_page_wp_stream.wp-has-current-submenu .wp-menu-image,
 				#toplevel_page_wp_stream:hover .wp-menu-image {
 					background-position: top left;
-				}";
+				}';
 		}
 		wp_add_inline_style( 'wp-admin', $css );
 	}
