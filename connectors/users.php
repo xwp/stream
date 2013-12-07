@@ -76,19 +76,30 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * Log user registrations
 	 *
 	 * @action user_register
+	 * @user_id int Newly registered user ID
 	 */
 	public static function callback_user_register( $user_id ) {
-		$user = get_user_by( 'ID', $user_id );
+		$current_user    = wp_get_current_user();
+		$registered_user = get_user_by( 'id', $user_id );
+
+		if ( ! $current_user->ID ) { // Non logged-in user tried to register.
+			$message     = __( '%s was registered as new user', 'stream' );
+			$user_to_log = $registered_user->ID;
+		} else { // Current logged-in tried to create a new user.
+			$message     = __( '%s was created as new user', 'stream' );
+			$user_to_log = $current_user->ID;
+		}
+
 		self::log(
-			__( '%s was registered as new user', 'stream' ),
+			$message,
 			array(
-				'email' => $user->email,
+				'email' => $registered_user->user_email,
 			),
-			$user->ID,
+			$registered_user->ID,
 			array(
 				'users' => 'created',
 				),
-			$user->ID
+			$user_to_log
 		);
 	}
 
