@@ -134,35 +134,27 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 		}
 
 		$locations = get_registered_nav_menus();
+		$changed   = array_diff_assoc( $old[$key], $new[$key] ) + array_diff_assoc( $new[$key], $old[$key] );
 
-		if ( $changed = array_diff( $old[$key], $new[$key] ) ) {
+		if ( $changed ) {
 			foreach ( $changed as $location_id => $menu_id ) {
 				$location = $locations[$location_id];
-				$name     = get_term( $menu_id, 'nav_menu' )->name;
-				$action   = 'unassigned';
-				$message  = __( '"%s" has been unassigned from "%s"', 'stream' );
+				if ( empty( $new[$key][$location_id] ) ) {
+					$action  = 'unassigned';
+					$menu_id = $old[$key][$location_id];
+					$message = __( '"%s" has been unassigned from "%s"', 'stream' );
+				} else {
+					$action  = 'assigned';
+					$menu_id = $new[$key][$location_id];
+					$message = __( '"%s" has been assigned to "%s"', 'stream' );
+				}
+				$name = get_term( $menu_id, 'nav_menu' )->name;
 
 				self::log(
 					$message,
 					compact( 'name', 'location', 'location_id', 'menu_id' ),
 					$menu_id,
-					array( 'menus' => 'unassigned' )
-					);
-			}
-		}
-
-		if ( $changed = array_diff( $new[$key], $old[$key] ) ) {
-			foreach ( $changed as $location_id => $menu_id ) {
-				$location = $locations[$location_id];
-				$name     = get_term( $menu_id, 'nav_menu' )->name;
-				$action   = 'assigned';
-				$message  = __( '"%s" has been assigned to "%s"', 'stream' );
-
-				self::log(
-					$message,
-					compact( 'name', 'location', 'location_id', 'menu_id' ),
-					$menu_id,
-					array( 'menus' => 'assigned' )
+					array( 'menus' => $action )
 					);
 			}
 		}
