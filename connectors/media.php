@@ -16,6 +16,8 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		'add_attachment',
 		'edit_attachment',
 		'delete_attachment',
+		'wp_save_image_editor_file',
+		'wp_save_image_file',
 	);
 
 	/**
@@ -130,6 +132,20 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 			$post_id,
 			array( 'media' => 'deleted' )
 			);
+	}
+
+	public static function callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id ) {
+		$name = basename( $filename );
+		self::log(
+			__( 'Edited image "%s"', 'stream' ),
+			compact( 'name', 'filename', 'post_id' ),
+			$post_id,
+			array( 'media' => 'edited' )
+			);
+	}
+
+	public static function callback_wp_save_image_file( $dummy, $filename, $image, $mime_type, $post_id ) {
+		return self::callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id );
 	}
 
 
