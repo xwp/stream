@@ -111,7 +111,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 * @action delete_nav_menu
 	 */
 	public static function callback_delete_nav_menu( $term, $tt_id, $deleted_term ) {
-		$name    = $deleted_term;
+		$name    = $deleted_term->name;
 		$menu_id = $term;
 		self::log(
 			__( 'Deleted "%s"', 'stream' ),
