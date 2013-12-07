@@ -82,7 +82,11 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		$type    = $extra['type'];
 		$action  = $extra['action'];
 		$success = ! is_a( $upgrader->skin->result, 'WP_Error' );
-		$error   = $success ? null : reset( $upgrader->skin->result->errors )[0];
+		$error   = null;
+		if ( ! $success ) {
+			$errors = $upgrader->skin->result->errors;
+			list( $error ) = reset( $errors );
+		}
 
 		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
 			return;
