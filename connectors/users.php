@@ -9,6 +9,14 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	public static $name = 'users';
 
 	/**
+	 * Stores users object before the user being deleted.
+	 *
+	 * @var array
+	 * @access protected
+	 */
+	protected static $_users_object_pre_deleted = array();
+
+	/**
 	 * Actions registered for this context
 	 * @var array
 	 */
@@ -19,6 +27,8 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		'retrieve_password',
 		'wp_login',
 		'clear_auth_cookie',
+		'delete_user',
+		'deleted_user',
 	);
 
 	/**
@@ -201,6 +211,48 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				),
 			$user->ID
 			);
+	}
+
+	/**
+	 * There's no logging in this callback's action, the reason
+	 * behind this hook is so that we can store user objects before
+	 * being deleted. During `deleted_user` hook, our callback
+	 * receives $user_id param but it's useless as the user record
+	 * was already removed from DB.
+	 *
+	 * @action delete_user
+	 * @param int $user_id User ID that maybe deleted
+	 */
+	public static function callback_delete_user( $user_id ) {
+		if ( ! isset( self::$_users_object_pre_deleted[ $user_id ] ) ) {
+			self::$_users_object_pre_deleted[ $user_id ] = get_user_by( 'id', $user_id );
+		}
+	}
+
+	/**
+	 * Log deleted user.
+	 *
+	 * @action deleted_user
+	 * @param int $user_id Deleted user ID
+	 */
+	public static function callback_deleted_user( $user_id ) {
+		if ( isset( self::$_users_object_pre_deleted[ $user_id ] ) ) {
+			$display_name = self::$_users_object_pre_deleted[ $user_id ]->display_name;
+			unset( self::$_users_object_pre_deleted[ $user_id ] );
+		} else {
+			$display_name = sprintf( __( 'with ID %d', 'stream' ), $user_id );
+		}
+
+		self::log(
+			__( 'User %s was deleted', 'stream' ),
+			array(
+				'display_name' => $display_name,
+			),
+			$user_id,
+			array(
+				'users' => 'deleted',
+			)
+		);
 	}
 
 }
