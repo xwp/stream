@@ -86,7 +86,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$message     = __( 'New user registration', 'stream' );
 			$user_to_log = $registered_user->ID;
 		} else { // Current logged-in user created a new user
-			$message     = __( 'New user account created for %s', 'stream' );
+			$message     = __( 'New user account created for %s (%s)', 'stream' );
 			$user_to_log = $current_user->ID;
 		}
 
@@ -94,6 +94,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$message,
 			array(
 				'display_name' => ( $registered_user->display_name ) ? $registered_user->display_name : $registered_user->user_login,
+				'roles'        => implode( ', ', $registered_user->roles ),
 			),
 			$registered_user->ID,
 			array(
