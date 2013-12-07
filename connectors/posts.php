@@ -47,7 +47,9 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		global $wp_post_types;
-		return wp_filter_object_list( $wp_post_types, array(), null, 'label' );
+		$post_types = wp_filter_object_list( $wp_post_types, array(), null, 'label' );
+		$post_types['attachment'] = __( 'Attachments' );
+		return $post_types;
 	}
 
 	/**
