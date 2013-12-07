@@ -36,6 +36,10 @@
 	float: left;
 	margin-right: 10px;
 	margin-top: 1px;
+
+	-webkit-border-radius: 3px;
+	   -moz-border-radius: 3px;
+	        border-radius: 3px;
 }
 
 .alignleft.actions input[type=text] {
