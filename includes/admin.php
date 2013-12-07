@@ -34,7 +34,7 @@ class WP_Stream_Admin {
 		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
 	}
 
-		/**
+	/**
 	 * Register menu page
 	 *
 	 * @action admin_menu

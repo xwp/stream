@@ -4,7 +4,7 @@
 ![Banner](assets/banner-1544x500.png)
 Track and monitor every change made on your WordPress site in beautifully organized detail.
 
-**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett)  
+**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [akeda](http://profiles.wordpress.org/akeda)  
 **Tags:** [stream](http://wordpress.org/plugins/tags/stream), [activity](http://wordpress.org/plugins/tags/activity), [analytics](http://wordpress.org/plugins/tags/analytics), [log](http://wordpress.org/plugins/tags/log), [users](http://wordpress.org/plugins/tags/users), [notification](http://wordpress.org/plugins/tags/notification), [actions](http://wordpress.org/plugins/tags/actions)  
 **Requires at least:** 3.6  
 **Tested up to:** 3.7.1  
@@ -25,7 +25,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 **Development of this plugin is done [on GitHub](https://github.com/x-team/wp-stream). Pull requests welcome. Please see [issues](https://github.com/x-team/wp-stream/issues) reported there before going to the plugin forum.**
 
-[![Build Status](https://travis-ci.org/x-team/wp-stream.png)](https://travis-ci.org/x-team/wp-stream)
+[![Build Status](https://travis-ci.org/x-team/wp-stream.png)](https://travis-ci.org/x-team/wp-stream?branch=master)
 
 ## Screenshots ##
 
@@ -38,6 +38,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 ![Determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-2.png)
 
 ## Changelog ##
+
+### 0.3 ###
+Improved actions for Users context. Action for edited images in Media context. Bug fixes in Menus context.
 
 ### 0.2 ###
 Second iteration build using custom tables data model. First public release.

@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:      X-team, shadyvb, fjarrett
+Contributors:      X-team, shadyvb, fjarrett, akeda
 Tags:              stream, activity, analytics, log, users, notification, actions
 Requires at least: 3.6
 Tested up to:      3.7.1
@@ -29,6 +29,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 2. Determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 0.3 =
+Improved actions for Users context. Action for edited images in Media context. Bug fixes in Menus context.
 
 = 0.2 =
 Second iteration build using custom tables data model. First public release.

@@ -87,7 +87,7 @@ class WordPress_Readme_Parser {
 		$section_formatters = array(
 			'Description' => function ( $body ) use ( $params ) {
 				if ( isset( $params['travis_ci_url'] ) ) {
-					$body .= sprintf( "\n\n[![Build Status](%s.png)](%s)", $params['travis_ci_url'], $params['travis_ci_url'] );
+					$body .= sprintf( "\n\n[![Build Status](%s.png)](%s?branch=master)", $params['travis_ci_url'], $params['travis_ci_url'] );
 				}
 				return $body;
 			},
