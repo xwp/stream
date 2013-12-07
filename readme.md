@@ -4,7 +4,7 @@
 ![Banner](assets/banner-1544x500.png)
 Track and monitor every change made on your WordPress site in beautifully organized detail.
 
-**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [gedex](http://profiles.wordpress.org/gedex)  
+**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [akeda](http://profiles.wordpress.org/akeda)  
 **Tags:** [stream](http://wordpress.org/plugins/tags/stream), [activity](http://wordpress.org/plugins/tags/activity), [analytics](http://wordpress.org/plugins/tags/analytics), [log](http://wordpress.org/plugins/tags/log), [users](http://wordpress.org/plugins/tags/users), [notification](http://wordpress.org/plugins/tags/notification), [actions](http://wordpress.org/plugins/tags/actions)  
 **Requires at least:** 3.6  
 **Tested up to:** 3.7.1  
