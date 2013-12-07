@@ -83,6 +83,35 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Get an array of role lables assigned to a specific user.
+	 *
+	 * @param  object|int $user    User object or user ID to get roles for
+	 * @return array      $labels  An array of role labels
+	 */
+	public static function get_role_labels( $user ) {
+		if ( is_int( $user ) ) {
+			$user = get_user_by( 'id', $user );
+		}
+
+		if ( ! is_a( $user, 'WP_User' ) ) {
+			 return;
+		}
+
+		global $wp_roles;
+
+		$roles  = $wp_roles->get_names();
+		$labels = array();
+
+		foreach ( $roles as $role => $label ) {
+			if ( in_array( $role, (array) $user->roles ) ) {
+				$labels[] = $label;
+			}
+		}
+
+		return $labels;
+	}
+
+	/**
 	 * Log user registrations
 	 *
 	 * @action user_register
@@ -91,17 +120,6 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	public static function callback_user_register( $user_id ) {
 		$current_user    = wp_get_current_user();
 		$registered_user = get_user_by( 'id', $user_id );
-
-		global $wp_roles;
-
-		$roles       = $wp_roles->get_names();
-		$role_labels = array();
-
-		foreach ( $roles as $role => $label ) {
-			if ( in_array( $role, (array) $registered_user->roles ) ) {
-				$role_labels[] = $label;
-			}
-		}
 
 		if ( ! $current_user->ID ) { // Non logged-in user registered themselves
 			$message     = __( 'New user registration', 'stream' );
@@ -115,7 +133,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$message,
 			array(
 				'display_name' => ( $registered_user->display_name ) ? $registered_user->display_name : $registered_user->user_login,
-				'roles'        => implode( ', ', $role_labels ),
+				'roles'        => implode( ', ', self::get_role_labels( $user_id ) ),
 			),
 			$registered_user->ID,
 			array(
@@ -251,17 +269,21 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		$user = wp_get_current_user();
 
 		if ( isset( self::$_users_object_pre_deleted[ $user_id ] ) ) {
+			$message      = __( '%s\'s account was deleted (%s)', 'stream' );
 			$display_name = self::$_users_object_pre_deleted[ $user_id ]->display_name;
+			$deleted_user = self::$_users_object_pre_deleted[ $user_id ];
 			unset( self::$_users_object_pre_deleted[ $user_id ] );
 		} else {
-			$deleted_user = get_user_by( 'id', $user_id );
-			$display_name = $deleted_user->user_login;
+			$message      = __( 'User account #%d was deleted', 'stream' );
+			$display_name = $user_id;
+			$deleted_user = $user_id;
 		}
 
 		self::log(
-			__( '%s\'s account was deleted', 'stream' ),
+			$message,
 			array(
 				'display_name' => $display_name,
+				'roles'        => implode( ', ', self::get_role_labels( $deleted_user ) ),
 			),
 			$user_id,
 			array(
