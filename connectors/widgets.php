@@ -85,7 +85,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		if ( $deactivated = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] ) ) {
 			$action    = 'deactivated';
-			$message   = __( '"%s [%s]" from "%s" has been deactivated.', 'stream' );
+			$message   = __( '"%s %s" from "%s" has been deactivated.', 'stream' );
 			$widget_id = $deactivated[0];
 			$sidebar   = $old;
 
@@ -110,14 +110,14 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				// Added ?
 				if ( $changed = array_diff( $new_widgets, $old_widgets ) ) {
 					$action    = 'added';
-					$message   = __( '"%s [%s]" has been added to "%s".', 'stream' );
+					$message   = __( '"%s %s" has been added to "%s".', 'stream' );
 					$widget_id = $changed[0];
 					$sidebar   = $new;
 				}
 				// Removed
 				elseif ( $changed = array_diff( $old_widgets, $new_widgets ) ) {
 					$action    = 'deleted';
-					$message   = __( '"%s [%s]" has been deleted from "%s".', 'stream' );
+					$message   = __( '"%s %s" has been deleted from "%s".', 'stream' );
 					$widget_id = $changed[0];
 					$sidebar   = $old;
 				}
@@ -166,7 +166,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		// If it wasn't assigned to a sidebar, then its a new thing, skip it
 		if ( $sidebar_name ) {
 			self::log(
-				__( 'Updated "[%s]" on "%s"', 'stream' ),
+				__( 'Updated "%s" on "%s"', 'stream' ),
 				compact( 'name', 'sidebar_name', 'title', 'id_base', 'sidebar', 'widget_id', 'new_instance', 'old_instance' ),
 				null,
 				array( 'widgets' => 'updated' )
