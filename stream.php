@@ -102,7 +102,7 @@ class WP_Stream {
 	 * 
 	 * @return WP_Stream
 	 */
-	public function get_instance() {
+	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
 			$class = __CLASS__;
 			self::$instance = new $class;
@@ -110,6 +110,11 @@ class WP_Stream {
 		return self::$instance;
 	}
 
+	/**
+	 * Display a notice about php version
+	 *
+	 * @action all_admin_notices
+	 */
 	public function php_version_notice() {
 		echo sprintf(
 			'<div class="error"><p>%s</p></div>',
