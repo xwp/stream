@@ -93,25 +93,25 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			return;
 		}
 		elseif ( $old == 'auto-draft' && $new == 'draft' ) {
-			$message = __( '"%s" post drafted', 'stream' );
+			$message = __( '"%s" %s drafted', 'stream' );
 			$action  = 'created';
 		}
 		elseif ( $old == 'auto-draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = __( '"%s" post published', 'stream' );
+			$message = __( '"%s" %s published', 'stream' );
 			$action  = 'created';
 		}
 		elseif ( $old == 'draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = __( '"%s" post published', 'stream' );
+			$message = __( '"%s" %s published', 'stream' );
 		}
 		elseif ( $old == 'publish' && ( in_array( $new, array( 'draft' ) ) ) ) {
-			$message = __( '"%s" post unpublished', 'stream' );
+			$message = __( '"%s" %s unpublished', 'stream' );
 		}
 		elseif ( $new == 'trash' ) {
-			$message = __( '"%s" post trashed', 'stream' );
+			$message = __( '"%s" %s trashed', 'stream' );
 			$action  = 'trashed';
 		}
 		else {
-			$message = __( '"%s" post updated', 'stream' );
+			$message = __( '"%s" %s updated', 'stream' );
 		}
 
 		if ( empty( $action ) ) {
@@ -139,6 +139,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			$message,
 			array(
 				'post_title'  => $post->post_title,
+				'post_type'   => $post->post_type,
 				'new_status'  => $new,
 				'old_status'  => $old,
 				'revision_id' => $revision_id,
@@ -161,9 +162,10 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			return;
 		}
 		self::log(
-			__( '"%s" post deleted from trash', 'stream' ),
+			__( '"%s" %s deleted from trash', 'stream' ),
 			array(
 				'post_title' => $post->post_title,
+				'post_type' => $post->post_type,
 			),
 			$post->ID,
 			array(
