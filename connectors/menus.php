@@ -148,7 +148,13 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 					$menu_id = $new[$key][$location_id];
 					$message = __( '"%s" has been assigned to "%s"', 'stream' );
 				}
-				$name = get_term( $menu_id, 'nav_menu' )->name;
+				$menu = get_term( $menu_id, 'nav_menu' );
+
+				if ( ! $menu || is_a( $menu, 'WP_Error' ) ) {
+					continue; // This is a deleted menu
+				}
+
+				$name = $menu->name;
 
 				self::log(
 					$message,
