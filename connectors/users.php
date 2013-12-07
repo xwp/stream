@@ -108,7 +108,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$registered_user->ID,
 			array(
 				'users' => 'created',
-				),
+			),
 			$user_to_log
 		);
 	}
@@ -123,11 +123,11 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			__( '%s\'s profile was updated', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
-				),
+			),
 			$user->ID,
 			array(
 				'users' => 'updated',
-				)
+			)
 		);
 	}
 
@@ -145,7 +145,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$user->ID,
 			array(
 				'users' => 'password-reset',
-				),
+			),
 			$user->ID
 		);
 	}
@@ -169,7 +169,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$user->ID,
 			array(
 				'users' => 'forgot-password',
-				),
+			),
 			$user->ID
 		);
 	}
@@ -184,13 +184,13 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			__( '%s logged in', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
-				),
+			),
 			$user->ID,
 			array(
 				'users' => 'login',
-				),
+			),
 			$user->ID
-			);
+		);
 	}
 
 	/**
@@ -204,13 +204,13 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			__( '%s logged out', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
-				),
+			),
 			$user->ID,
 			array(
 				'users' => 'logout',
-				),
+			),
 			$user->ID
-			);
+		);
 	}
 
 	/**
@@ -236,22 +236,26 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @param int $user_id Deleted user ID
 	 */
 	public static function callback_deleted_user( $user_id ) {
+		$user = wp_get_current_user();
+
 		if ( isset( self::$_users_object_pre_deleted[ $user_id ] ) ) {
 			$display_name = self::$_users_object_pre_deleted[ $user_id ]->display_name;
 			unset( self::$_users_object_pre_deleted[ $user_id ] );
 		} else {
-			$display_name = sprintf( __( 'with ID %d', 'stream' ), $user_id );
+			$deleted_user = get_user_by( 'id', $user_id );
+			$display_name = $deleted_user->user_login;
 		}
 
 		self::log(
-			__( 'User %s was deleted', 'stream' ),
+			__( '%s\'s account was deleted', 'stream' ),
 			array(
 				'display_name' => $display_name,
 			),
 			$user_id,
 			array(
 				'users' => 'deleted',
-			)
+			),
+			$user->ID
 		);
 	}
 
