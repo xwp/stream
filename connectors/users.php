@@ -80,7 +80,9 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
-			$links [ __( 'Edit Profile', 'stream' ) ] = get_edit_user_link( $record->object_id );
+			if ( $link = get_edit_user_link( $record->object_id ) ) {
+				$links [ __( 'Edit Profile', 'stream' ) ] = $link;
+			}
 		}
 		return $links;
 	}
