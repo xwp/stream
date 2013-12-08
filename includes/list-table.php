@@ -195,7 +195,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					'<span><a href="%s" class="action-link">%s</a>%s</span>',
 					$al_href,
 					$al_title,
-					( count( $action_links ) === $i ) ? null : __( ' | ', 'stream' )
+					( $i === count( $action_links ) ) ? null : ' | '
 				);
 			}
 			$out .= implode( '', $links );
