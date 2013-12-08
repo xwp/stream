@@ -129,6 +129,10 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	public static function callback_update_option_theme_mods( $old, $new )
 	{
 		$key = 'nav_menu_locations';
+		if ( ! isset( $new[$key] ) ) {
+			return; // Switching themes ?
+		}
+		
 		if ( $old[$key] === $new[$key] ) {
 			return;
 		}
