@@ -253,7 +253,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filter_select( $name, $title, $items ) {
-		$options  = array( sprintf( __( '<option value="">Show all %s</option>', 'stream' ), $title ) );
+		$options  = array( sprintf( __( '<option value=""></option>', 'stream' ), $title ) );
 		$selected = filter_input( INPUT_GET, $name );
 		foreach ( $items as $v => $label ) {
 			$options[$v] = sprintf(
@@ -264,8 +264,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 			);
 		}
 		$out = sprintf(
-			'<select name="%s">%s</select>',
+			'<select name="%s" class="chosen-select" data-placeholder="Show all %s">%s</select>',
 			$name,
+			$title,
 			implode( '', $options )
 		);
 		return $out;
