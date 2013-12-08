@@ -80,7 +80,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
-			$links [ __( 'Profile', 'stream' ) ] = get_edit_user_link( $record->object_id );
+			$links [ __( 'Edit Profile', 'stream' ) ] = get_edit_user_link( $record->object_id );
 		}
 		return $links;
 	}
@@ -314,7 +314,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$user ? $user->ID : 0,
 			array( 'users' => 'failed_login' ),
 			$user ? $user->ID : 0
-			);
+		);
 	}
 
 }
