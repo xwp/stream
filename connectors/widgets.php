@@ -105,7 +105,15 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		
 		if ( ! $widget_id ) {
 			foreach ( $new as $sidebar_id => $new_widgets ){
-				if ( ! is_array( $old[$sidebar_id] ) || ! is_array( $new_widgets ) ) {
+				if (
+					( ! isset( $old[$sidebar_id] ) )
+					||
+					( ! isset( $new[$sidebar_id] ) )
+					||
+					( ! is_array( $old[$sidebar_id] ) )
+					||
+					( ! is_array( $new_widgets ) )
+					) {
 					return; // Switching themes ?
 				}
 				$old_widgets = $old[$sidebar_id];
