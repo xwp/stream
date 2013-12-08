@@ -62,9 +62,12 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( get_post( $record->object_id ) ) {
-			$links[ __( 'Edit', 'stream' ) ] = get_edit_post_link( $record->object_id );
-			$links[ __( 'View', 'stream' ) ] = get_permalink( $record->object_id );
-
+			if ( $link = get_edit_post_link( $record->object_id ) ) {
+				$links[ __( 'Edit', 'stream' ) ] = $link;
+			}
+			if ( $link = get_permalink( $record->object_id ) ) {
+				$links[ __( 'View', 'stream' ) ] = $link;
+			}
 			if ( $record->action == 'updated' ) {
 				if ( $revision_id = get_stream_meta( $record->ID, 'revision_id', true ) ) {
 					$links[ __( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
