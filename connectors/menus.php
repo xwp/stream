@@ -68,7 +68,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $stream_id, $object_id ) {
-		
+
 		return $links;
 	}
 
@@ -123,7 +123,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 
 	/**
 	 * Track assignment to menu locations
-	 * 
+	 *
 	 * @action update_option_theme_mods_{$stylesheet}
 	 */
 	public static function callback_update_option_theme_mods( $old, $new )
@@ -148,7 +148,13 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 					$menu_id = $new[$key][$location_id];
 					$message = __( '"%s" has been assigned to "%s"', 'stream' );
 				}
-				$name = get_term( $menu_id, 'nav_menu' )->name;
+				$menu = get_term( $menu_id, 'nav_menu' );
+
+				if ( ! $menu || is_wp_error( $menu ) ) {
+					continue; // This is a deleted menu
+				}
+
+				$name = $menu->name;
 
 				self::log(
 					$message,
