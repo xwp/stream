@@ -68,7 +68,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $stream_id, $object_id ) {
-		
+
 		return $links;
 	}
 
@@ -123,7 +123,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 
 	/**
 	 * Track assignment to menu locations
-	 * 
+	 *
 	 * @action update_option_theme_mods_{$stylesheet}
 	 */
 	public static function callback_update_option_theme_mods( $old, $new )
@@ -150,7 +150,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 				}
 				$menu = get_term( $menu_id, 'nav_menu' );
 
-				if ( ! $menu || is_a( $menu, 'WP_Error' ) ) {
+				if ( ! $menu || is_wp_error( $menu ) ) {
 					continue; // This is a deleted menu
 				}
 
