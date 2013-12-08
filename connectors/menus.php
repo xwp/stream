@@ -68,7 +68,11 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
-			$links[ __( 'Edit', 'stream' ) ] = admin_url( 'nav-menus.php?action=edit&menu=' . $record->object_id );
+			$menus    = wp_get_nav_menus();
+			$menu_ids = wp_list_pluck( $menus, 'term_id' );
+			if ( in_array( $record->object_id, $menu_ids ) ) {
+				$links[ __( 'Edit', 'stream' ) ] = admin_url( 'nav-menus.php?action=edit&menu=' . $record->object_id );
+			}
 		}
 		return $links;
 	}
