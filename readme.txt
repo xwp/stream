@@ -30,11 +30,14 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 == Changelog ==
 
+= 0.4 =
+Improved support for pages and custom post types. Chosen for filter dropdowns. Pagination support in screen options. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
 = 0.3 =
-Improved actions for Users context. Action for edited images in Media context. Bug fixes in Menus context.
+Improved actions for Users context. Action for edited images in Media context. Bug fixes in Menus context. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [akeda](http://profiles.wordpress.org/akeda/)
 
 = 0.2 =
-Second iteration build using custom tables data model. First public release.
+Second iteration build using custom tables data model. First public release. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 = 0.1 =
-Initial concept build using custom post type/taxonomies as the data model.
+Initial concept build using custom post type/taxonomies as the data model. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
