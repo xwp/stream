@@ -64,7 +64,10 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( $sidebar = get_stream_meta( $record->ID, 'sidebar', true ) ) {
-			$links[ __( 'Edit Widget Area', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar );
+			global $wp_registered_sidebars;
+			if ( array_key_exists( $sidebar, $wp_registered_sidebars ) ) {
+				$links[ __( 'Edit Widget Area', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar );
+			}
 		}
 		return $links;
 	}
