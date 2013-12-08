@@ -2,16 +2,26 @@
 
 class WP_Stream_List_Table extends WP_List_Table {
 
-	public $perpage;
-
 	function __construct( $args = array() ) {
 		parent::__construct(
 			array(
+				'post_type' => 'stream',
 				'plural' => 'records',
 				'screen' => isset( $args['screen'] ) ? $args['screen'] : null,
 			)
 		);
 
+		add_screen_option(
+			'per_page',
+			array(
+				'default' => 20,
+				'label'   => __( 'Records per page', 'stream' ),
+				'option'  => 'edit_stream_per_page',
+				)
+			);
+
+		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
+		set_screen_options();
 	}
 
 	function extra_tablenav( $which ) {
@@ -44,24 +54,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function prepare_items() {
-		$screen = get_current_screen();
-
 		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
-		$hidden   = get_hidden_columns( $screen );
+		$hidden   = get_hidden_columns( $this->screen );
 
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
 		$this->items = $this->get_records();
-
-		$this->perpage = apply_filters( 'wp_stream_list_table_perpage', 10 );
 
 		$total_items = $this->get_total_found_rows();
 
 		$this->set_pagination_args(
 			array(
 				'total_items' => $total_items,
-				'per_page' => $this->perpage,
+				'per_page' => $this->get_items_per_page( 'edit_stream_per_page', 20 ),
 			)
 		);
 	}
@@ -93,8 +99,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$args['paged'] = $this->get_pagenum();
 
-		if ( ! isset( $args['record_per_page'] ) ) {
-			$args['record_per_page'] = $this->perpage;
+		if ( ! isset( $args['records_per_page'] ) ) {
+			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
 		$items = stream_query( $args );
@@ -320,5 +326,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 		<br class="clear" />
 		</div>
 	<?php
+	}
+
+
+	static function set_screen_option( $dummy, $option, $value ) {
+		if ( $option == 'edit_stream_per_page' ) {
+			return $value;
+		} else {
+			return $dummy;
+		}
 	}
 }
