@@ -57,14 +57,15 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @filter wp_stream_action_links_posts
+	 * @filter wp_stream_action_links_{connector}
 	 * @param  array $links      Previous links registered
-	 * @param  int   $stream_id  Stream drop id
-	 * @param  int   $object_id  Object ( post ) id
+	 * @param  int   $record     Stream record
 	 * @return array             Action links
 	 */
-	public static function action_links( $links, $stream_id, $object_id ) {
-		
+	public static function action_links( $links, $record ) {
+		if ( $sidebar = get_stream_meta( $record->ID, 'sidebar', true ) ) {
+			$links[ __( 'Sidebar', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar );
+		}
 		return $links;
 	}
 
@@ -207,14 +208,14 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		}
 
 		if ( isset( $changed ) ) {
-			$sidebar_id   = $changed;
+			$sidebar      = $changed;
 			$sidebar_name = $wp_registered_sidebars[$sidebar_id]['name'];
 			// Saving this in a global var, so it can be accessed and 
 			//  executed by self::callback_update_option_sidebars_widgets 
 			//  in case this is ONLY a reorder process
 			$order_operation = array(
 				__( '"%s" has been reordered.', 'stream' ),
-				compact( 'sidebar_name', 'sidebar_id' ),
+				compact( 'sidebar_name', 'sidebar' ),
 				null,
 				array( 'widgets' => 'sorted' ),
 				);

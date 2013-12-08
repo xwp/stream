@@ -221,3 +221,7 @@ class WP_Stream_Query {
 function stream_query( $args ) {
 	return WP_Stream_Query::get_instance()->query( $args );
 }
+
+function get_stream_meta( $record_id, $key = '', $single = false ) {
+	return get_metadata( 'record', $record_id, $key, $single );
+}

@@ -134,6 +134,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				} else {
 					$out = $item->summary;
 				}
+				$out .= $this->get_action_links( $item );
 				break;
 
 			case 'user':
@@ -177,6 +178,27 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 		}
 		echo $out; //xss okay
+	}
+
+
+	public static function get_action_links( $record ){
+		$out          = '';
+		$action_links = apply_filters( 'wp_stream_action_links_' . $record->connector, array(), $record );
+
+		if ( $action_links ) {
+			$out  .= '<div class="row-actions">';
+			$links = array();
+			foreach ( $action_links as $al_title => $al_href ) {
+				$links[] = sprintf(
+					'<span><a href="%s" class="action-link">%s</a></span>',
+					$al_href,
+					$al_title
+					);
+			}
+			$out .= implode( ', ', $links );
+			$out .= '</div>';
+		}
+		return $out;
 	}
 
 	function column_link( $display, $key, $value = null ) {

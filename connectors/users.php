@@ -73,14 +73,15 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @filter wp_stream_action_links_users
+	 * @filter wp_stream_action_links_{connector}
 	 * @param  array $links      Previous links registered
-	 * @param  int   $stream_id  Stream drop id
-	 * @param  int   $object_id  Object ( user ) id
+	 * @param  int   $record     Stream record
 	 * @return array             Action links
 	 */
-	public static function action_links( $links, $stream_id, $object_id ) {
-		$links [ __( 'User profile', 'domain' ) ] = get_edit_user_link( $object_id );
+	public static function action_links( $links, $record ) {
+		if ( $record->object_id ) {
+			$links [ __( 'Profile', 'stream' ) ] = get_edit_user_link( $record->object_id );
+		}
 		return $links;
 	}
 

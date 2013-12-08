@@ -55,27 +55,23 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @filter wp_stream_action_links_posts
+	 * @filter wp_stream_action_links_{connector}
 	 * @param  array $links      Previous links registered
-	 * @param  int   $stream_id  Stream drop id
-	 * @param  int   $object_id  Object ( post ) id
+	 * @param  int   $record     Stream record
 	 * @return array             Action links
 	 */
-	public static function action_links( $links, $stream_id, $object_id ) {
-		$actions = wp_get_post_terms( $stream_id, 'stream_action', 'fields=names' );
-		if (
-			( ! in_array( 'deleted', $actions ) )
-			&&
-			( ! in_array( 'trashed', $actions ) )
-			) {
-			$links[ __( 'Edit', 'stream' ) ] = get_edit_post_link( $object_id );
-		}
+	public static function action_links( $links, $record ) {
+		if ( get_post( $record->object_id ) ) {
+			$links[ __( 'Edit', 'stream' ) ] = get_edit_post_link( $record->object_id );
+			$links[ __( 'View', 'stream' ) ] = get_permalink( $record->object_id );
 
-		if ( in_array( 'updated', $actions ) ) {
-			if ( $revision_id = get_post_meta( $stream_id, '_arg_4', true ) ) {
-				$links[ __( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
+			if ( $record->action == 'updated' ) {
+				if ( $revision_id = get_stream_meta( $record->ID, 'revision_id', true ) ) {
+					$links[ __( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
+				}
 			}
 		}
+
 		return $links;
 	}
 
