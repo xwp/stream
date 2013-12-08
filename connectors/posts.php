@@ -128,26 +128,28 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 					'posts_per_page' => 1,
 					'order'          => 'desc',
 					'fields'         => 'ids',
-					)
-				);
+				)
+			);
 			if ( $revision ) {
 				$revision_id = $revision[0];
 			}
 		}
 
+		$post_type = get_post_type_object( $post->post_type );
+
 		self::log(
 			$message,
 			array(
-				'post_title'  => $post->post_title,
-				'post_type'   => $post->post_type,
-				'new_status'  => $new,
-				'old_status'  => $old,
-				'revision_id' => $revision_id,
+				'post_title'    => $post->post_title,
+				'singular_name' => strtolower( $post_type->labels->singular_name ),
+				'new_status'    => $new,
+				'old_status'    => $old,
+				'revision_id'   => $revision_id,
 			),
 			$post->ID,
 			array(
 				$post->post_type => $action,
-				)
+			)
 		);
 	}
 
@@ -158,19 +160,23 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function callback_deleted_post( $post_id ) {
 		$post = get_post( $post_id );
+
 		if ( in_array( $post->post_type, self::get_ignored_post_types() ) ) {
 			return;
 		}
+
+		$post_type = get_post_type_object( $post->post_type );
+
 		self::log(
 			__( '"%s" %s deleted from trash', 'stream' ),
 			array(
-				'post_title' => $post->post_title,
-				'post_type' => $post->post_type,
+				'post_title'    => $post->post_title,
+				'singular_name' => strtolower( $post_type->labels->singular_name ),
 			),
 			$post->ID,
 			array(
 				$post->post_type => 'deleted',
-				)
+			)
 		);
 	}
 
@@ -182,6 +188,6 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'attachment',
 				)
 			);
-	} 
+	}
 
 }
