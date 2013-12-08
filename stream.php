@@ -46,7 +46,7 @@ class WP_Stream {
 	public function __construct() {
 
 		if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
-			add_action( 'all_admin_notices', array( $this, 'php_version_notice' ) );
+			add_action( 'all_admin_notices', array( __CLASS__, 'php_version_notice' ) );
 			return;
 		}
 
@@ -92,6 +92,10 @@ class WP_Stream {
 	 * @return void
 	 */
 	public static function install() {
+		if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
+			add_action( 'all_admin_notices', array( __CLASS__, 'php_version_notice' ) );
+			return;
+		}
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
 		WP_Stream_Install::check();
@@ -115,7 +119,7 @@ class WP_Stream {
 	 *
 	 * @action all_admin_notices
 	 */
-	public function php_version_notice() {
+	public static function php_version_notice() {
 		echo sprintf(
 			'<div class="error"><p>%s</p></div>',
 			__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
