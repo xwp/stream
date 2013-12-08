@@ -44,7 +44,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	public static function get_context_labels() {
 		return array(
 			'settings' => __( 'Settings', 'stream' ),
-			);
+		);
 	}
 
 	/**
@@ -96,7 +96,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			compact( 'option', 'old_value', 'value' ),
 			null,
 			array(
-				$current_key => 'updated',
+				ucwords( $current_key ) => 'updated',
 			)
 		);
 	}
