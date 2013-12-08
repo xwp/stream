@@ -188,14 +188,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 		if ( $action_links ) {
 			$out  .= '<div class="row-actions">';
 			$links = array();
+			$i = 0;
 			foreach ( $action_links as $al_title => $al_href ) {
+				$i++;
 				$links[] = sprintf(
-					'<span><a href="%s" class="action-link">%s</a></span>',
+					'<span><a href="%s" class="action-link">%s</a>%s</span>',
 					$al_href,
-					$al_title
-					);
+					$al_title,
+					( count( $action_links ) === $i ) ? null : __( ' | ', 'stream' )
+				);
 			}
-			$out .= implode( ', ', $links );
+			$out .= implode( '', $links );
 			$out .= '</div>';
 		}
 		return $out;
