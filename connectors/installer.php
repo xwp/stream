@@ -159,9 +159,10 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	public static function callback_switch_theme( $name, $theme ) {
+		$stylesheet = $theme->get_stylesheet();
 		self::log(
 			__( '"%s" theme activated', 'stream' ),
-			compact( 'name', 'theme' ),
+			compact( 'name', 'stylesheet' ),
 			null,
 			array( 'themes' => 'activated' )
 			);
