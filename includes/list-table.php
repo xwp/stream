@@ -151,7 +151,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			case 'context':
 			case 'action':
-				$out = $this->column_link( WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}], $column_name, $item->{$column_name} );
+				$display_col = isset( WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}] )
+					? WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}]
+					: $item->{$column_name};
+				$out = $this->column_link( $display_col, $column_name, $item->{$column_name} );
 				break;
 
 			case 'id':
