@@ -66,8 +66,12 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
-			$links[ __( 'Edit', 'stream' ) ] = get_edit_post_link( $record->object_id );
-			$links[ __( 'View', 'stream' ) ] = get_permalink( $record->object_id );
+			if ( $link = get_edit_post_link( $record->object_id ) ) {
+				$links[ __( 'Edit', 'stream' ) ] = $link;
+			}
+			if ( $link = get_permalink( $record->object_id ) ) {
+				$links[ __( 'View', 'stream' ) ] = $link;
+			}
 		}
 		return $links;
 	}
