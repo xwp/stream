@@ -5,4 +5,8 @@ jQuery(function($){
 		maxDate: 0
 	});
 
+	$(window).load(function() {
+		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
+	});
+
 });
