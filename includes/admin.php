@@ -77,12 +77,21 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
-		if ( ! isset( self::$screen_id['main'] ) || $hook !== self::$screen_id['main'] ) {
+		if ( ! in_array( $hook, self::$screen_id ) ) {
 			return;
 		}
 		wp_enqueue_script( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.jquery.min.js', array( 'jquery' ), '1.0.0' );
 		wp_enqueue_style( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.min.css', array(), '1.0.0' );
 		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery' ) );
+		wp_localize_script(
+			'wp-stream-admin',
+			'wp_stream',
+			array(
+				'i18n' => array(
+					'confirm_purge' => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+					),
+				)
+			);
 		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 	}
 
