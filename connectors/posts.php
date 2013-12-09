@@ -185,8 +185,8 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			array(
 				'nav_menu_item',
 				'attachment',
-				)
-			);
+			)
+		);
 	}
 
 }
