@@ -32,6 +32,10 @@ class WP_Stream_Admin {
 
 		// Reset Streams database
 		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
+
+		// Auto purge setup
+		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
+		add_action( 'stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
 	}
 
 	/**
@@ -225,6 +229,27 @@ class WP_Stream_Admin {
 		foreach ( array( $wpdb->stream, $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
 			$wpdb->query( "DELETE FROM $table" );
 		}
+	}
+
+	public static function purge_schedule_setup() {
+		if ( ! wp_next_scheduled( 'stream_auto_purge' ) ) {
+			wp_schedule_event( time(), 'daily', 'stream_auto_purge' );
+		}
+	}
+
+	public static function purge_scheduled_action() {
+		global $wpdb;
+		$days = WP_Stream_Settings::$options['general_records_ttl'];
+		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
+		$date->sub( DateInterval::createFromDateString( "$days days" ) );
+		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->stream WHERE created < %s ", $date->format( 'Y-m-d H:i:s' ) ) );
+		
+		if ( ! $ids ) {
+			return;
+		}
+		$wpdb->query( sprintf( "DELETE FROM $wpdb->stream WHERE ID IN (%s)", implode( ',', $ids ) ) );
+		$wpdb->query( sprintf( "DELETE FROM $wpdb->streammeta WHERE record_id IN (%s)", implode( ',', $ids ) ) );
+		$wpdb->query( sprintf( "DELETE FROM $wpdb->streamcontext WHERE record_id IN (%s)", implode( ',', $ids ) ) );
 	}
 
 }
