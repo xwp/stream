@@ -89,7 +89,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		if ( $deactivated = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] ) ) {
 			$action    = 'deactivated';
-			$message   = __( '"%s" from "%s" has been deactivated.', 'stream' );
+			$message   = __( '"%s" from "%s" has been deactivated', 'stream' );
 			$widget_id = $deactivated[0];
 			$sidebar   = $old;
 
@@ -114,14 +114,14 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				// Added ?
 				if ( $changed = array_diff( $new_widgets, $old_widgets ) ) {
 					$action    = 'added';
-					$message   = __( '"%s" has been added to "%s".', 'stream' );
+					$message   = __( '"%s" has been added to "%s"', 'stream' );
 					$widget_id = $changed[0];
 					$sidebar   = $new;
 				}
 				// Removed
 				elseif ( $changed = array_diff( $old_widgets, $new_widgets ) ) {
 					$action    = 'deleted';
-					$message   = __( '"%s" has been deleted from "%s".', 'stream' );
+					$message   = __( '"%s" has been deleted from "%s"', 'stream' );
 					$widget_id = $changed[0];
 					$sidebar   = $old;
 				}
@@ -217,7 +217,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			//  executed by self::callback_update_option_sidebars_widgets
 			//  in case this is ONLY a reorder process
 			$order_operation = array(
-				__( '"%s" widgets were reordered.', 'stream' ),
+				__( '"%s" widgets were reordered', 'stream' ),
 				compact( 'sidebar_name', 'sidebar' ),
 				null,
 				array( 'widgets' => 'sorted' ),
