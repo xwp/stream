@@ -21,6 +21,9 @@ class WP_Stream_DB {
 		$wpdb->stream        = self::$table;
 		$wpdb->streammeta    = self::$table_meta;
 		$wpdb->streamcontext = self::$table_context;
+
+		// Hack for get_metadata
+		$wpdb->recordmeta = self::$table_meta;
 	}
 
 	public static function get_instance() {

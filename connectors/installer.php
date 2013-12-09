@@ -60,20 +60,6 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
-	 *
-	 * @filter wp_stream_action_links_posts
-	 * @param  array $links      Previous links registered
-	 * @param  int   $stream_id  Stream drop id
-	 * @param  int   $object_id  Object ( post ) id
-	 * @return array             Action links
-	 */
-	public static function action_links( $links, $stream_id, $object_id ) {
-
-		return $links;
-	}
-
-	/**
 	 * Log plugin installations
 	 *
 	 * @action transition_post_status
