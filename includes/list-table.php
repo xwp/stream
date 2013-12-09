@@ -37,9 +37,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 				'date'      => __( 'Date', 'stream' ),
 				'summary'   => __( 'Summary', 'stream' ),
 				'user'      => __( 'User', 'stream' ),
+				'connector' => __( 'Connector', 'stream' ),
 				'context'   => __( 'Context', 'stream' ),
 				'action'    => __( 'Action', 'stream' ),
-				'connector' => __( 'Connector', 'stream' ),
 				'ip'        => __( 'IP Address', 'stream' ),
 				'id'        => __( 'ID', 'stream' ),
 			)
