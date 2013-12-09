@@ -88,7 +88,7 @@ class WP_Stream_Admin {
 			'wp_stream',
 			array(
 				'i18n' => array(
-					'confirm_purge' => __( 'Are you sure you want to delete all Stream records from Database ?', 'stream' ),
+					'confirm_purge' => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
 					),
 				)
 			);
