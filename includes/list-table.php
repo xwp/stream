@@ -229,11 +229,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
 		$users = array();
-		foreach ( get_users() as $user ) {
+		foreach ( (array) get_users( array( 'orderby' => 'display_name' ) ) as $user ) {
 			$users[$user->ID] = $user->display_name;
 		}
-
-		asort( $users );
 
 		$filters['author'] = array(
 			'title' => __( 'users', 'stream' ),
