@@ -188,7 +188,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		if ( $action_links ) {
 			$out  .= '<div class="row-actions">';
 			$links = array();
-			$i = 0;
+			$i     = 0;
 			foreach ( $action_links as $al_title => $al_href ) {
 				$i++;
 				$links[] = sprintf(
