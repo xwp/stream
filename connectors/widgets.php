@@ -89,7 +89,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		if ( $deactivated = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] ) ) {
 			$action    = 'deactivated';
-			$message   = __( '"%s %s" from "%s" has been deactivated.', 'stream' );
+			$message   = __( '"%s" from "%s" has been deactivated.', 'stream' );
 			$widget_id = $deactivated[0];
 			$sidebar   = $old;
 
@@ -97,10 +97,10 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 			self::log(
 				$message,
-				compact( 'title', 'name', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
+				compact( 'title', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
 				null,
 				array( 'widgets' => $action )
-				);
+			);
 
 			$order_operation = null;
 
@@ -114,14 +114,14 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				// Added ?
 				if ( $changed = array_diff( $new_widgets, $old_widgets ) ) {
 					$action    = 'added';
-					$message   = __( '"%s %s" has been added to "%s".', 'stream' );
+					$message   = __( '"%s" has been added to "%s".', 'stream' );
 					$widget_id = $changed[0];
 					$sidebar   = $new;
 				}
 				// Removed
 				elseif ( $changed = array_diff( $old_widgets, $new_widgets ) ) {
 					$action    = 'deleted';
-					$message   = __( '"%s %s" has been deleted from "%s".', 'stream' );
+					$message   = __( '"%s" has been deleted from "%s".', 'stream' );
 					$widget_id = $changed[0];
 					$sidebar   = $old;
 				}
@@ -136,10 +136,10 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 				self::log(
 					$message,
-					compact( 'title', 'name', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
+					compact( 'title', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
 					null,
 					array( 'widgets' => $action )
-					);
+				);
 
 				$widget_id = null;
 			}
@@ -174,7 +174,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				compact( 'name', 'sidebar_name', 'title', 'id_base', 'sidebar', 'widget_id', 'new_instance', 'old_instance' ),
 				null,
 				array( 'widgets' => 'updated' )
-				);
+			);
 		}
 
 		return $instance;
@@ -217,11 +217,11 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			//  executed by self::callback_update_option_sidebars_widgets
 			//  in case this is ONLY a reorder process
 			$order_operation = array(
-				__( '"%s" has been reordered.', 'stream' ),
+				__( '"%s" widgets were reordered.', 'stream' ),
 				compact( 'sidebar_name', 'sidebar' ),
 				null,
 				array( 'widgets' => 'sorted' ),
-				);
+			);
 
 		}
 
@@ -239,7 +239,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		$ids = array_combine(
 			wp_list_pluck( $wp_widget_factory->widgets, 'id_base' ),
 			array_keys( $wp_widget_factory->widgets )
-			);
+		);
 
 		$id_base = preg_match( '#(.*)-(\d+)$#', $id, $matches ) ? $matches[1] : null;
 		$number  = $matches[2];
@@ -279,7 +279,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		$ids = array_combine(
 			wp_list_pluck( $wp_widget_factory->widgets, 'id_base' ),
 			array_keys( $wp_widget_factory->widgets )
-			);
+		);
 
 		$instance = $wp_widget_factory->widgets[ $ids[$id_base] ]->get_settings();
 		return isset( $instance[$number] ) ? $instance[$number] : array();
