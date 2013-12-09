@@ -170,7 +170,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		// If it wasn't assigned to a sidebar, then its a new thing, skip it
 		if ( $sidebar_name ) {
 			self::log(
-				__( 'Updated "%s" on "%s"', 'stream' ),
+				__( 'Updated "%s" in "%s"', 'stream' ),
 				compact( 'name', 'sidebar_name', 'title', 'id_base', 'sidebar', 'widget_id', 'new_instance', 'old_instance' ),
 				null,
 				array( 'widgets' => 'updated' )
