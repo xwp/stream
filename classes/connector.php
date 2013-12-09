@@ -32,7 +32,7 @@ abstract class WP_Stream_Connector {
 			add_action( $action, array( $class, 'callback' ), null, 5 );
 		}
 
-		add_filter( 'wp_stream_action_links_' . $class::$name, array( $class, 'action_links' ), 10, 3 );
+		add_filter( 'wp_stream_action_links_' . $class::$name, array( $class, 'action_links' ), 10, 2 );
 	}
 
 	/**
@@ -53,13 +53,12 @@ abstract class WP_Stream_Connector {
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @filter wp_stream_action_links_{context}
+	 * @filter wp_stream_action_links_{connector}
 	 * @param  array $links      Previous links registered
-	 * @param  int   $stream_id  Stream drop id
-	 * @param  int   $object_id  Object id
-	 * @return array             Associative array, eg: ( label => href )
+	 * @param  int   $record     Stream record
+	 * @return array             Action links
 	 */
-	public static function action_links( $links, $stream_id, $object_id ) {
+	public static function action_links( $links, $record ) {
 		return $links;
 	}
 
