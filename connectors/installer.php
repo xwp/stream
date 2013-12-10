@@ -88,7 +88,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			if ( $type == 'plugin' ) {
 				$slug        = $upgrader->skin->plugin;
 				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
-				$name        = $plugin_data[$slug]['Name'];
+				$name        = $plugin_data['Name'];
 				$version     = $plugin_data['Version'];
 				$plugins     = get_plugins();
 				$old_version = $plugins[$slug]['Version'];
