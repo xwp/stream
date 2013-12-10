@@ -38,6 +38,7 @@ Every logged-in user action is logged in an activity stream and organized for ea
  * Custom Taxonomies
  * Settings
  * Comments
+ * Multisite
 
 Built with performance in mind, you can determine how long records should live before being purged (depending on the amount of user activity your site can expect). Stream also won’t pollute your default posts table with records or slow down content querying on your site.
 
