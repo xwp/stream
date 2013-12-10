@@ -48,7 +48,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	public static function get_context_labels() {
 		global $wp_post_types;
 		$post_types = wp_filter_object_list( $wp_post_types, array(), null, 'label' );
-		$post_types['attachment'] = __( 'Attachments' );
+		$post_types = array_diff_key( $post_types, array_flip( self::get_ignored_post_types() ) );
 		return $post_types;
 	}
 
@@ -186,6 +186,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			array(
 				'nav_menu_item',
 				'attachment',
+				'revision',
 			)
 		);
 	}
