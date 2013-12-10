@@ -1,6 +1,6 @@
 === Stream ===
 Contributors:      X-team, shadyvb, fjarrett, akeda
-Tags:              stream, activity, analytics, log, users, notification, actions
+Tags:              actions, activity, admin, analytics, log, users, notification, stream
 Requires at least: 3.6
 Tested up to:      3.7.1
 Stable tag:        trunk
