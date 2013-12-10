@@ -19,6 +19,26 @@ Never be in the dark about WP Admin activity again. Stream allows you to know ex
 
 Every logged-in user action is logged in an activity stream and organized for easy filtering by context, action, and even IP address.
 
+**Recorded activity:**
+
+ * Posts
+ * Pages
+ * Custom Post Types
+ * Users
+ * Themes
+ * Plugins
+ * Menus
+ * Media Library
+ * Widgets
+
+**Coming soon:**
+
+ * Tags
+ * Categories
+ * Custom Taxonomies
+ * Settings
+ * Comments
+
 Built with performance in mind, you can determine how long records should live before being purged (depending on the amount of user activity your site can expect). Stream also won’t pollute your default posts table with records or slow down content querying on your site.
 
 Stream is built to extend, allowing developers to easily build their own connectors to track any type of action in the activity stream (developer documentation coming soon).
