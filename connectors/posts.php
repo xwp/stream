@@ -66,7 +66,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				$post_type = get_post_type_object( get_post_type( $record->object_id ) );
 				$links[ sprintf( __( 'Edit %s', 'stream' ), $post_type->labels->singular_name ) ] = $link;
 			}
-			if ( $link = get_permalink( $record->object_id ) && post_type_exists( get_post_type( $record->object_id ) ) ) {
+			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
 				$links[ __( 'View', 'stream' ) ] = $link;
 			}
 			if ( $record->action == 'updated' ) {
