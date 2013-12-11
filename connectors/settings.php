@@ -178,7 +178,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 		self::log(
 			__( '"%s" setting was updated', 'stream' ),
-			compact( 'label', 'old_value', 'value' ),
+			compact( 'label', 'option', 'old_value', 'value' ),
 			null,
 			array(
 				ucwords( $current_key ) => 'updated',
