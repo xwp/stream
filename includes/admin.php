@@ -32,6 +32,10 @@ class WP_Stream_Admin {
 
 		// Reset Streams database
 		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
+
+		// Auto purge setup
+		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
+		add_action( 'stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
 	}
 
 	/**
@@ -77,10 +81,21 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
-		if ( ! isset( self::$screen_id['main'] ) || $hook !== self::$screen_id['main'] ) {
+		if ( ! in_array( $hook, self::$screen_id ) ) {
 			return;
 		}
+		wp_enqueue_script( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.jquery.min.js', array( 'jquery' ), '1.0.0' );
+		wp_enqueue_style( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.min.css', array(), '1.0.0' );
 		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery' ) );
+		wp_localize_script(
+			'wp-stream-admin',
+			'wp_stream',
+			array(
+				'i18n' => array(
+					'confirm_purge' => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+					),
+				)
+			);
 		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 	}
 
@@ -223,6 +238,27 @@ class WP_Stream_Admin {
 		foreach ( array( $wpdb->stream, $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
 			$wpdb->query( "DELETE FROM $table" );
 		}
+	}
+
+	public static function purge_schedule_setup() {
+		if ( ! wp_next_scheduled( 'stream_auto_purge' ) ) {
+			wp_schedule_event( time(), 'daily', 'stream_auto_purge' );
+		}
+	}
+
+	public static function purge_scheduled_action() {
+		global $wpdb;
+		$days = WP_Stream_Settings::$options['general_records_ttl'];
+		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
+		$date->sub( DateInterval::createFromDateString( "$days days" ) );
+		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->stream WHERE created < %s ", $date->format( 'Y-m-d H:i:s' ) ) );
+		
+		if ( ! $ids ) {
+			return;
+		}
+		$wpdb->query( sprintf( "DELETE FROM $wpdb->stream WHERE ID IN (%s)", implode( ',', $ids ) ) );
+		$wpdb->query( sprintf( "DELETE FROM $wpdb->streammeta WHERE record_id IN (%s)", implode( ',', $ids ) ) );
+		$wpdb->query( sprintf( "DELETE FROM $wpdb->streamcontext WHERE record_id IN (%s)", implode( ',', $ids ) ) );
 	}
 
 }

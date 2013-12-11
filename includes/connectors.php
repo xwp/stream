@@ -15,9 +15,9 @@ class WP_Stream_Connectors {
 	 */
 	public static $term_labels = array(
 		'stream_connector' => array(),
-		'stream_action'    => array(),
 		'stream_context'   => array(),
-		);
+		'stream_action'    => array(),
+	);
 
 	/**
 	 * Load built-in connectors
@@ -46,11 +46,11 @@ class WP_Stream_Connectors {
 			self::$term_labels['stream_action']  = array_merge(
 				self::$term_labels['stream_action'],
 				$connector::get_action_labels()
-				);
+			);
 			self::$term_labels['stream_context'] = array_merge(
 				self::$term_labels['stream_context'],
 				$connector::get_context_labels()
-				);
+			);
 		}
 	}
 

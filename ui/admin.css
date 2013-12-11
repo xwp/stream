@@ -4,6 +4,12 @@
 
 .toplevel_page_wp_stream .tablenav .actions {
 	padding: 0;
+	overflow: visible;
+}
+
+.toplevel_page_wp_stream .chosen-container-single {
+	margin-top: 3px;
+	margin-right: 6px;
 }
 
 .toplevel_page_wp_stream .view-switch {

@@ -2,16 +2,26 @@
 
 class WP_Stream_List_Table extends WP_List_Table {
 
-	public $perpage;
-
 	function __construct( $args = array() ) {
 		parent::__construct(
 			array(
+				'post_type' => 'stream',
 				'plural' => 'records',
 				'screen' => isset( $args['screen'] ) ? $args['screen'] : null,
 			)
 		);
 
+		add_screen_option(
+			'per_page',
+			array(
+				'default' => 20,
+				'label'   => __( 'Records per page', 'stream' ),
+				'option'  => 'edit_stream_per_page',
+				)
+			);
+
+		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
+		set_screen_options();
 	}
 
 	function extra_tablenav( $which ) {
@@ -27,9 +37,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 				'date'      => __( 'Date', 'stream' ),
 				'summary'   => __( 'Summary', 'stream' ),
 				'user'      => __( 'User', 'stream' ),
+				'connector' => __( 'Connector', 'stream' ),
 				'context'   => __( 'Context', 'stream' ),
 				'action'    => __( 'Action', 'stream' ),
-				'connector' => __( 'Connector', 'stream' ),
 				'ip'        => __( 'IP Address', 'stream' ),
 				'id'        => __( 'ID', 'stream' ),
 			)
@@ -44,24 +54,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function prepare_items() {
-		$screen = get_current_screen();
-
 		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
-		$hidden   = get_hidden_columns( $screen );
+		$hidden   = get_hidden_columns( $this->screen );
 
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
 		$this->items = $this->get_records();
-
-		$this->perpage = apply_filters( 'wp_stream_list_table_perpage', 10 );
 
 		$total_items = $this->get_total_found_rows();
 
 		$this->set_pagination_args(
 			array(
 				'total_items' => $total_items,
-				'per_page' => $this->perpage,
+				'per_page' => $this->get_items_per_page( 'edit_stream_per_page', 20 ),
 			)
 		);
 	}
@@ -93,8 +99,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$args['paged'] = $this->get_pagenum();
 
-		if ( ! isset( $args['record_per_page'] ) ) {
-			$args['record_per_page'] = $this->perpage;
+		if ( ! isset( $args['records_per_page'] ) ) {
+			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
 		$items = stream_query( $args );
@@ -128,6 +134,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				} else {
 					$out = $item->summary;
 				}
+				$out .= $this->get_action_links( $item );
 				break;
 
 			case 'user':
@@ -149,6 +156,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 				}
 				break;
 
+			case 'connector':
+				$out = $this->column_link( WP_Stream_Connectors::$term_labels['stream_connector'][$item->connector], 'connector', $item->connector );
+				break;
+
 			case 'context':
 			case 'action':
 				$display_col = isset( WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}] )
@@ -157,16 +168,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$out = $this->column_link( $display_col, $column_name, $item->{$column_name} );
 				break;
 
-			case 'id':
-				$out = intval( $item->ID );
-				break;
-
 			case 'ip':
 				$out = $this->column_link( $item->{$column_name}, 'ip', $item->{$column_name} );
 				break;
 
-			case 'connector':
-				$out = $this->column_link( WP_Stream_Connectors::$term_labels['stream_connector'][$item->connector], 'connector', $item->connector );
+			case 'id':
+				$out = intval( $item->ID );
 				break;
 
 			default:
@@ -174,6 +181,30 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 		}
 		echo $out; //xss okay
+	}
+
+
+	public static function get_action_links( $record ){
+		$out          = '';
+		$action_links = apply_filters( 'wp_stream_action_links_' . $record->connector, array(), $record );
+
+		if ( $action_links ) {
+			$out  .= '<div class="row-actions">';
+			$links = array();
+			$i     = 0;
+			foreach ( $action_links as $al_title => $al_href ) {
+				$i++;
+				$links[] = sprintf(
+					'<span><a href="%s" class="action-link">%s</a>%s</span>',
+					$al_href,
+					$al_title,
+					( $i === count( $action_links ) ) ? null : ' | '
+				);
+			}
+			$out .= implode( '', $links );
+			$out .= '</div>';
+		}
+		return $out;
 	}
 
 	function column_link( $display, $key, $value = null ) {
@@ -201,11 +232,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
 		$users = array();
-		foreach ( get_users() as $user ) {
+		foreach ( (array) get_users( array( 'orderby' => 'display_name' ) ) as $user ) {
 			$users[$user->ID] = $user->display_name;
 		}
-
-		asort( $users );
 
 		$filters['author'] = array(
 			'title' => __( 'users', 'stream' ),
@@ -250,7 +279,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filter_select( $name, $title, $items ) {
-		$options  = array( sprintf( __( '<option value="">Show all %s</option>', 'stream' ), $title ) );
+		$options  = array( sprintf( __( '<option value=""></option>', 'stream' ), $title ) );
 		$selected = filter_input( INPUT_GET, $name );
 		foreach ( $items as $v => $label ) {
 			$options[$v] = sprintf(
@@ -261,8 +290,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 			);
 		}
 		$out = sprintf(
-			'<select name="%s">%s</select>',
+			'<select name="%s" class="chosen-select" data-placeholder="Show all %s">%s</select>',
 			$name,
+			$title,
 			implode( '', $options )
 		);
 		return $out;
@@ -323,5 +353,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 		<br class="clear" />
 		</div>
 	<?php
+	}
+
+
+	static function set_screen_option( $dummy, $option, $value ) {
+		if ( $option == 'edit_stream_per_page' ) {
+			return $value;
+		} else {
+			return $dummy;
+		}
 	}
 }

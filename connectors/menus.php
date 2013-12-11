@@ -61,14 +61,19 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @filter wp_stream_action_links_posts
+	 * @filter wp_stream_action_links_{connector}
 	 * @param  array $links      Previous links registered
-	 * @param  int   $stream_id  Stream drop id
-	 * @param  int   $object_id  Object ( post ) id
+	 * @param  int   $record     Stream record
 	 * @return array             Action links
 	 */
-	public static function action_links( $links, $stream_id, $object_id ) {
-
+	public static function action_links( $links, $record ) {
+		if ( $record->object_id ) {
+			$menus    = wp_get_nav_menus();
+			$menu_ids = wp_list_pluck( $menus, 'term_id' );
+			if ( in_array( $record->object_id, $menu_ids ) ) {
+				$links[ __( 'Edit Menu', 'stream' ) ] = admin_url( 'nav-menus.php?action=edit&menu=' . $record->object_id );
+			}
+		}
 		return $links;
 	}
 
@@ -128,7 +133,14 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 */
 	public static function callback_update_option_theme_mods( $old, $new )
 	{
+		// Disable if we're switching themes
+		if ( did_action( 'after_switch_theme' ) ) return;
+
 		$key = 'nav_menu_locations';
+		if ( ! isset( $new[$key] ) ) {
+			return; // Switching themes ?
+		}
+		
 		if ( $old[$key] === $new[$key] ) {
 			return;
 		}
