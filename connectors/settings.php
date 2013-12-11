@@ -146,7 +146,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( $record->context != 'settings' && in_array( $record->context, array_keys( self::get_context_labels() ) ) ) {
-			$links[ __( 'Edit', 'stream' ) ] = admin_url( 'options-' . $record->context . '.php' );
+			$links[ sprintf( __( 'Edit %s Settings', 'stream' ), self::get_context_labels()[$record->context] ) ] = admin_url( 'options-' . $record->context . '.php' );
 		}
 		return $links;
 	}
