@@ -82,6 +82,9 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 */
 	public static function callback_update_option_sidebars_widgets( $old, $new ) {
 
+		// Disable listener if we're switching themes
+		if ( did_action( 'after_switch_theme' ) ) return;
+
 		global $order_operation;
 
 		$widget_id = null;
