@@ -95,10 +95,10 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 */
 	public static function callback_created_term( $term_id, $tt_id, $taxonomy ) {
 		$term = get_term( $term_id, $taxonomy );
-		$taxonomy_label = self::$context_labels[$taxonomy];
+		$taxonomy_label = self::$singular_labels[$taxonomy];
 		$term_name = $term->name;
 		self::log(
-			__( '"%s" added to %s', 'stream' ),
+			__( '"%s" %s created', 'stream' ),
 			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy' ),
 			$term_id,
 			array( $taxonomy => 'created' )
