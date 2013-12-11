@@ -27,16 +27,16 @@ Every logged-in user action is logged in an activity stream and organized for ea
  * Users
  * Themes
  * Plugins
+ * Tags
+ * Categories
+ * Custom Taxonomies
+ * Settings
  * Menus
  * Media Library
  * Widgets
 
 **Coming soon:**
 
- * Tags
- * Categories
- * Custom Taxonomies
- * Settings
  * Comments
  * Multisite
 
@@ -59,6 +59,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 ![Determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-2.png)
 
 ## Changelog ##
+
+### 0.7 ###
+Added connectors for Taxonomies and Settings. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 ### 0.6 ###
 UX improvements to manual DB purge. Cron event for user-defined TTL of records. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
