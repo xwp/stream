@@ -103,13 +103,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				}
 			}
 			elseif ( $type == 'theme' ) {
-				$slug        = $upgrader->skin->theme;
-				$theme       = wp_get_theme( $slug );
-				$name        = $theme['Name'];
+				$slug = $upgrader->skin->theme;
+				$theme = wp_get_theme( $slug );
+				$name = $theme['Name'];
 				$old_version = $theme['Version'];
-				$stylesheet  = $theme['Stylesheet Dir'] . '/style.css';
-				$theme_data  = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
-				$version     = $theme_data['Version'];
+				$stylesheet = $theme['Stylesheet Dir'] . '/style.css';
+				$theme_data = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
+				$version = $theme_data['Version'];
 			}
 			$action  = 'updated';
 			$message = __( 'Updated %s: %s to %s', 'stream' );
