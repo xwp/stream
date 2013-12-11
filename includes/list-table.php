@@ -161,19 +161,19 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'context':
-				$out = $this->column_link( WP_Stream_Connectors::$term_labels['stream_context'][$item->{$column_name}], $column_name, $item->{$column_name} );
-				break;
-
 			case 'action':
-				$out = $this->column_link( WP_Stream_Connectors::$term_labels['stream_action'][$item->{$column_name}], $column_name, $item->{$column_name} );
-				break;
-
-			case 'id':
-				$out = intval( $item->ID );
+				$display_col = isset( WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}] )
+					? WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}]
+					: $item->{$column_name};
+				$out = $this->column_link( $display_col, $column_name, $item->{$column_name} );
 				break;
 
 			case 'ip':
 				$out = $this->column_link( $item->{$column_name}, 'ip', $item->{$column_name} );
+				break;
+
+			case 'id':
+				$out = intval( $item->ID );
 				break;
 
 			default:
