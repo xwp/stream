@@ -139,13 +139,15 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @filter wp_stream_action_links_posts
+	 * @filter wp_stream_action_links_{connector}
 	 * @param  array $links      Previous links registered
-	 * @param  int   $stream_id  Stream drop id
-	 * @param  int   $object_id  Object ( post ) id
+	 * @param  int   $record     Stream record
 	 * @return array             Action links
 	 */
-	public static function action_links( $links, $stream_id, $object_id ) {
+	public static function action_links( $links, $record ) {
+		if ( $record->context != 'settings' && in_array( $record->context, array_keys( self::get_context_labels() ) ) ) {
+			$links[ __( 'Edit', 'stream' ) ] = admin_url( 'options-' . $record->context . '.php' );
+		}
 		return $links;
 	}
 
