@@ -43,7 +43,13 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'settings' => __( 'Settings', 'stream' ),
+			'settings'   => __( 'Settings', 'stream' ),
+			'general'    => __( 'General', 'stream' ),
+			'writing'    => __( 'Writing', 'stream' ),
+			'reading'    => __( 'Reading', 'stream' ),
+			'discussion' => __( 'Discussion', 'stream' ),
+			'media'      => __( 'Media', 'stream' ),
+			'permalinks' => __( 'Permalinks', 'stream' ),
 		);
 	}
 
@@ -181,7 +187,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			compact( 'label', 'option', 'old_value', 'value' ),
 			null,
 			array(
-				ucwords( $current_key ) => 'updated',
+				$current_key => 'updated',
 			)
 		);
 	}
