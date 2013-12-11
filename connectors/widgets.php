@@ -82,6 +82,9 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 */
 	public static function callback_update_option_sidebars_widgets( $old, $new ) {
 
+		// Disable listener if we're switching themes
+		if ( did_action( 'after_switch_theme' ) ) return;
+
 		global $order_operation;
 
 		$widget_id = null;
@@ -109,6 +112,17 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		if ( ! $widget_id ) {
 			foreach ( $new as $sidebar_id => $new_widgets ){
+				if (
+					( ! isset( $old[$sidebar_id] ) )
+					||
+					( ! isset( $new[$sidebar_id] ) )
+					||
+					( ! is_array( $old[$sidebar_id] ) )
+					||
+					( ! is_array( $new_widgets ) )
+					) {
+					return; // Switching themes ?
+				}
 				$old_widgets = $old[$sidebar_id];
 
 				// Added ?
