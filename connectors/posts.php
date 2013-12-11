@@ -48,34 +48,34 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	public static function get_context_labels() {
 		global $wp_post_types;
 		$post_types = wp_filter_object_list( $wp_post_types, array(), null, 'label' );
-		$post_types['attachment'] = __( 'Attachments' );
+		$post_types = array_diff_key( $post_types, array_flip( self::get_ignored_post_types() ) );
 		return $post_types;
 	}
 
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @filter wp_stream_action_links_posts
+	 * @filter wp_stream_action_links_{connector}
 	 * @param  array $links      Previous links registered
-	 * @param  int   $stream_id  Stream drop id
-	 * @param  int   $object_id  Object ( post ) id
+	 * @param  int   $record     Stream record
 	 * @return array             Action links
 	 */
-	public static function action_links( $links, $stream_id, $object_id ) {
-		$actions = wp_get_post_terms( $stream_id, 'stream_action', 'fields=names' );
-		if (
-			( ! in_array( 'deleted', $actions ) )
-			&&
-			( ! in_array( 'trashed', $actions ) )
-			) {
-			$links[ __( 'Edit', 'stream' ) ] = get_edit_post_link( $object_id );
-		}
-
-		if ( in_array( 'updated', $actions ) ) {
-			if ( $revision_id = get_post_meta( $stream_id, '_arg_4', true ) ) {
-				$links[ __( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
+	public static function action_links( $links, $record ) {
+		if ( get_post( $record->object_id ) ) {
+			if ( $link = get_edit_post_link( $record->object_id ) ) {
+				$post_type = get_post_type_object( get_post_type( $record->object_id ) );
+				$links[ sprintf( __( 'Edit %s', 'stream' ), $post_type->labels->singular_name ) ] = $link;
+			}
+			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
+				$links[ __( 'View', 'stream' ) ] = $link;
+			}
+			if ( $record->action == 'updated' ) {
+				if ( $revision_id = get_stream_meta( $record->ID, 'revision_id', true ) ) {
+					$links[ __( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
+				}
 			}
 		}
+
 		return $links;
 	}
 
@@ -186,8 +186,9 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			array(
 				'nav_menu_item',
 				'attachment',
-				)
-			);
+				'revision',
+			)
+		);
 	}
 
 }

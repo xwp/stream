@@ -59,14 +59,20 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @filter wp_stream_action_links_posts
+	 * @filter wp_stream_action_links_{connector}
 	 * @param  array $links      Previous links registered
-	 * @param  int   $stream_id  Stream drop id
-	 * @param  int   $object_id  Object ( post ) id
+	 * @param  int   $record     Stream record
 	 * @return array             Action links
 	 */
-	public static function action_links( $links, $stream_id, $object_id ) {
-		
+	public static function action_links( $links, $record ) {
+		if ( $record->object_id ) {
+			if ( $link = get_edit_post_link( $record->object_id ) ) {
+				$links[ __( 'Edit Media', 'stream' ) ] = $link;
+			}
+			if ( $link = get_permalink( $record->object_id ) ) {
+				$links[ __( 'View', 'stream' ) ] = $link;
+			}
+		}
 		return $links;
 	}
 
