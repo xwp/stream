@@ -65,6 +65,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @action transition_post_status
 	 */
 	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
+		$logs    = array(); // If doing a bulk update, store log info in an array
 		$type    = $extra['type'];
 		$action  = $extra['action'];
 		$success = ! is_a( $upgrader->skin->result, 'WP_Error' );
@@ -86,12 +87,20 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			$message = __( 'Installed %s: %s (%s)', 'stream' );
 		} elseif ( $action == 'update' ) {
 			if ( $type == 'plugin' ) {
-				$slug        = $upgrader->skin->plugin;
-				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
-				$name        = $plugin_data['Name'];
-				$version     = $plugin_data['Version'];
-				$plugins     = get_plugins();
-				$old_version = $plugins[$slug]['Version'];
+				if ( isset( $extra['bulk'] ) && $extra['bulk'] == true ) {
+					$slugs = $extra['plugins'];
+				} else {
+					$slugs = array( $upgrader->skin->plugin );
+				}
+				$plugins = get_plugins();
+				foreach ( $slugs as $slug ) {
+					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
+					$logs[] = array(
+						'name'        => $plugin_data['Name'],
+						'version'     => $plugin_data['Version'],
+						'old_version' => $plugins[$slug]['Version'],
+						);
+				}
 			}
 			elseif ( $type == 'theme' ) {
 				$slug = $upgrader->skin->theme;
@@ -110,14 +119,20 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 
 		$context = $type . 's';
 
-		self::log(
-			$message,
-			compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'from' , 'old_version' ),
-			null,
-			array(
-				$context => $action,
-				)
-		);
+		// If not doing bulk, simulate one to trigger a log operation
+		if ( ! $logs ) $logs[] = array();
+
+		foreach ( $logs as $log ) {
+			extract( $log );
+			self::log(
+				$message,
+				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'from' , 'old_version' ),
+				null,
+				array(
+					$context => $action,
+					)
+			);
+		}
 	}
 
 	public static function callback_activate_plugin( $slug, $network_wide ) {
