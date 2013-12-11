@@ -186,7 +186,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 
 	public static function callback_pre_option_uninstall_plugins() {
 		global $plugins;
-		if ( filter_input( INPUT_GET, 'action' ) != 'delete-selected' ) {
+		if ( filter_input( INPUT_GET, 'action' ) != 'delete-selected' && filter_input( INPUT_POST, 'action2' ) != 'delete-selected' ) {
 			return false;
 		}
 		$_plugins = get_plugins();
