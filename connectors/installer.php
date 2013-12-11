@@ -112,7 +112,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				$version     = $theme_data['Version'];
 			}
 			$action  = 'updated';
-			$message = __( 'Updated %s: %s to v%s', 'stream' );
+			$message = __( 'Updated %s: %s to %s', 'stream' );
 		} else {
 			return false;
 		}
