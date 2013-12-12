@@ -63,7 +63,7 @@ class WP_Stream_Admin {
 
 		self::$screen_id['settings'] = add_submenu_page(
 			'wp_stream',
-			__( 'Settings', 'stream' ),
+			__( 'Stream Settings', 'stream' ),
 			__( 'Settings', 'stream' ),
 			'manage_options',
 			'wp_stream_settings',
