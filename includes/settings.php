@@ -53,6 +53,14 @@ class WP_Stream_Settings {
 				'title'  => __( 'General', 'stream' ),
 				'fields' => array(
 					array(
+						'name'        => 'role_access',
+						'title'       => __( 'Role Access', 'stream' ),
+						'type'        => 'multi_checkbox',
+						'desc'        => __( 'Users from the selected roles above will be able to access the Stream. Only site Administrator can access Stream Settings.', 'stream' ),
+						'choices'     => self::get_roles(),
+						'default'     => array( 'administrator' ),
+					),
+					array(
 						'name'        => 'records_ttl',
 						'title'       => __( 'Keep Records for', 'stream' ),
 						'type'        => 'number',
@@ -153,6 +161,12 @@ class WP_Stream_Settings {
 			return;
 		}
 
+		if ( 'multi_checkbox' === $type
+			&& ( empty( $field['choices'] ) || ! is_array( $field['choices'] ) )
+		) {
+			return;
+		}
+
 		switch ( $type ) {
 			case 'text':
 			case 'number':
@@ -177,6 +191,31 @@ class WP_Stream_Settings {
 					checked( self::$options[$section . '_' . $name], 1, false ),
 					esc_html( $after_field )
 				);
+				break;
+			case 'multi_checkbox':
+				$current_value = (array) self::$options[$section . '_' . $name];
+
+				$output = sprintf(
+					'<div id="%1$s[%2$s_%3$s]">',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				foreach ( $field['choices'] as $value => $label ) {
+					$output .= sprintf(
+						'<label>%1$s %2$s</label><br />',
+						sprintf(
+							'<input type="checkbox" name="%1$s[%2$s_%3$s][]" value="%4$s" %5$s />',
+							esc_attr( self::KEY ),
+							esc_attr( $section ),
+							esc_attr( $name ),
+							esc_attr( $value ),
+							checked( in_array( $value, $current_value ), true, false )
+						),
+						esc_html( $label )
+					);
+				}
+				$output .= '</div>';
 				break;
 			case 'link':
 				$output = sprintf(
@@ -212,5 +251,19 @@ class WP_Stream_Settings {
 		echo $output; // xss okay
 	}
 
+	/**
+	 * Get translated user roles
+	 *
+	 * @return array
+	 */
+	public static function get_roles() {
+		global $wp_roles;
 
+		$roles = array();
+		foreach ( $wp_roles->role_names as $role_name => $role_label ) {
+			$roles[ $role_name ] = translate_user_role( $role_label );
+		}
+
+		return $roles;
+	}
 }
