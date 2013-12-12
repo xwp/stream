@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:      X-team, shadyvb, fjarrett, akeda
+Contributors:      X-team, shadyvb, fjarrett, akeda, kucrut
 Tags:              actions, activity, admin, analytics, log, users, notification, stream
 Requires at least: 3.6
 Tested up to:      3.7.1
@@ -50,6 +50,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 2. Determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 0.7.1 | 2013-12-12 =
+Hotfix for PHP 5.4 syntax causing sites to break. Props [kucrut](http://profiles.wordpress.org/kucrut/)
 
 = 0.7 | 2013-12-11 =
 Added connectors for Taxonomies and Settings. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)

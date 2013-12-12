@@ -4,7 +4,7 @@
 ![Banner](assets/banner-1544x500.png)
 Track and monitor every change made on your WordPress site in beautifully organized detail.
 
-**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [akeda](http://profiles.wordpress.org/akeda)  
+**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [log](http://wordpress.org/plugins/tags/log), [users](http://wordpress.org/plugins/tags/users), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream)  
 **Requires at least:** 3.6  
 **Tested up to:** 3.7.1  
@@ -59,6 +59,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 ![Determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-2.png)
 
 ## Changelog ##
+
+### 0.7.1 | 2013-12-12 ###
+Hotfix for PHP 5.4 syntax causing sites to break. Props [kucrut](http://profiles.wordpress.org/kucrut/)
 
 ### 0.7 | 2013-12-11 ###
 Added connectors for Taxonomies and Settings. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
