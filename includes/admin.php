@@ -17,8 +17,12 @@ class WP_Stream_Admin {
 
 	const ADMIN_PAGE_SLUG   = 'wp_stream_settings';
 	const ADMIN_PARENT_PAGE = 'admin.php';
+	const VIEW_CAP          = 'view_stream';
 
 	public static function load() {
+		// User and role caps
+		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
+		add_filter( 'user_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
 		// Register settings page
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
@@ -46,20 +50,16 @@ class WP_Stream_Admin {
 	 */
 	public static function register_menu() {
 		global $menu;
-		$cap = apply_filters( 'wp_stream_cap', 'manage_options' );
-		if ( ! current_user_can( $cap ) ) {
-			return;
-		}
 
 		self::$screen_id['main'] = add_menu_page(
 			__( 'Stream', 'stream' ),
 			__( 'Stream', 'stream' ),
-			$cap,
+			self::VIEW_CAP,
 			'wp_stream',
 			array( __CLASS__, 'stream_page' ),
 			'div',
 			3
-			);
+		);
 
 		self::$screen_id['settings'] = add_submenu_page(
 			'wp_stream',
@@ -261,4 +261,46 @@ class WP_Stream_Admin {
 		$wpdb->query( sprintf( "DELETE FROM $wpdb->streamcontext WHERE record_id IN (%s)", implode( ',', $ids ) ) );
 	}
 
+	private static function _role_can_view_stream( $role ) {
+		if ( in_array( $role, WP_Stream_Settings::$options['general_role_access'] ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Filter user caps to dynamically grant our view cap based on allowed roles
+	 *
+	 * @filter user_has_cap
+	 * @return array
+	 */
+	public static function _filter_user_caps( $allcaps, $caps, $args, $user ) {
+		foreach ( $caps as $cap ) {
+			if ( self::VIEW_CAP === $cap ) {
+				foreach ( $user->roles as $role ) {
+					if ( self::_role_can_view_stream( $role ) ) {
+						$allcaps[ $cap ] = true;
+						break 2;
+					}
+				}
+			}
+		}
+
+		return $allcaps;
+	}
+
+	/**
+	 * Filter role caps to dynamically grant our view cap based on allowed roles
+	 *
+	 * @filter role_has_cap
+	 * @return array
+	 */
+	public static function _filter_role_caps( $allcaps, $cap, $role ) {
+		if ( self::VIEW_CAP === $cap && self::_role_can_view_stream( $role ) ) {
+			$allcaps[ $cap ] = true;
+		}
+
+		return $allcaps;
+	}
 }
