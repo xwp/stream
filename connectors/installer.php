@@ -39,11 +39,11 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'installed' => __( 'Installed', 'stream' ),
-			'activated' => __( 'Activated', 'stream' ),
+			'installed'   => __( 'Installed', 'stream' ),
+			'activated'   => __( 'Activated', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
-			'deleted' => __( 'Deleted', 'stream' ),
-			'edited' => __( 'Edited', 'stream' ),
+			'deleted'     => __( 'Deleted', 'stream' ),
+			'edited'      => __( 'Edited', 'stream' ),
 		);
 	}
 
@@ -55,7 +55,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function get_context_labels() {
 		return array(
 			'plugins' => __( 'Plugins', 'stream' ),
-			'themes' => __( 'Themes', 'stream' ),
+			'themes'  => __( 'Themes', 'stream' ),
 		);
 	}
 
@@ -65,9 +65,10 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @action transition_post_status
 	 */
 	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
+		$logs    = array(); // If doing a bulk update, store log info in an array
 		$type    = $extra['type'];
 		$action  = $extra['action'];
-		$success = ! is_a( $upgrader->skin->result, 'WP_Error' );
+		$success = ! is_wp_error( $upgrader->skin->result );
 		$error   = null;
 		if ( ! $success ) {
 			$errors = $upgrader->skin->result->errors;
@@ -83,15 +84,23 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			$name    = $upgrader->skin->api->name;
 			$from    = $upgrader->skin->options['type'];
 			$action  = 'installed';
-			$message = __( 'Installed %s: %s (%s)', 'stream' );
+			$message = __( 'Installed %s: %s %s', 'stream' );
 		} elseif ( $action == 'update' ) {
 			if ( $type == 'plugin' ) {
-				$slug        = $upgrader->skin->plugin;
-				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
-				$name        = $plugin_data[$slug]['Name'];
-				$version     = $plugin_data['Version'];
-				$plugins     = get_plugins();
-				$old_version = $plugins[$slug]['Version'];
+				if ( isset( $extra['bulk'] ) && $extra['bulk'] == true ) {
+					$slugs = $extra['plugins'];
+				} else {
+					$slugs = array( $upgrader->skin->plugin );
+				}
+				$plugins = get_plugins();
+				foreach ( $slugs as $slug ) {
+					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
+					$logs[] = array(
+						'name'        => $plugin_data['Name'],
+						'version'     => $plugin_data['Version'],
+						'old_version' => $plugins[$slug]['Version'],
+					);
+				}
 			}
 			elseif ( $type == 'theme' ) {
 				$slug = $upgrader->skin->theme;
@@ -110,48 +119,54 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 
 		$context = $type . 's';
 
-		self::log(
-			$message,
-			compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'from' , 'old_version' ),
-			null,
-			array(
-				$context => $action,
+		// If not doing bulk, simulate one to trigger a log operation
+		if ( ! $logs ) $logs[] = array();
+
+		foreach ( $logs as $log ) {
+			extract( $log );
+			self::log(
+				$message,
+				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'from' , 'old_version' ),
+				null,
+				array(
+					$context => $action,
 				)
-		);
+			);
+		}
 	}
 
 	public static function callback_activate_plugin( $slug, $network_wide ) {
-		$plugins = get_plugins();
-		$name  = $plugins[$slug]['Name'];
+		$plugins      = get_plugins();
+		$name         = $plugins[$slug]['Name'];
 		$network_wide = $network_wide ? 'network wide' : '';
 		self::log(
 			__( '"%s" plugin activated %s', 'stream' ),
-			compact( 'name', 'network_wide', 'slug' ),
+			compact( 'name', 'network_wide' ),
 			null,
 			array( 'plugins' => 'activated' )
-			);
+		);
 	}
 
 	public static function callback_deactivate_plugin( $slug, $network_wide ) {
-		$plugins = get_plugins();
-		$name  = $plugins[$slug]['Name'];
+		$plugins      = get_plugins();
+		$name         = $plugins[$slug]['Name'];
 		$network_wide = $network_wide ? 'network wide' : '';
 		self::log(
 			__( '"%s" plugin deactivated %s', 'stream' ),
-			compact( 'name', 'network_wide', 'slug' ),
+			compact( 'name', 'network_wide' ),
 			null,
 			array( 'plugins' => 'deactivated' )
-			);
+		);
 	}
 
 	public static function callback_switch_theme( $name, $theme ) {
 		$stylesheet = $theme->get_stylesheet();
 		self::log(
 			__( '"%s" theme activated', 'stream' ),
-			compact( 'name', 'stylesheet' ),
+			compact( 'name' ),
 			null,
 			array( 'themes' => 'activated' )
-			);
+		);
 	}
 
 	public static function callback_delete_site_transient_update_themes() {
@@ -163,15 +178,15 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		$name  = $theme['Name'];
 		self::log(
 			__( '"%s" theme deleted', 'stream' ),
-			compact( 'name', 'stylesheet' ),
+			compact( 'name' ),
 			null,
 			array( 'themes' => 'deleted' )
-			);
+		);
 	}
 
 	public static function callback_pre_option_uninstall_plugins() {
 		global $plugins;
-		if ( filter_input( INPUT_GET, 'action' ) != 'delete-selected' ) {
+		if ( filter_input( INPUT_GET, 'action' ) != 'delete-selected' && filter_input( INPUT_POST, 'action2' ) != 'delete-selected' ) {
 			return false;
 		}
 		$_plugins = get_plugins();
@@ -195,7 +210,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				compact( 'name', 'plugin', 'network_wide' ),
 				null,
 				array( 'plugins' => 'deleted' )
-				);
+			);
 		}
 		delete_option( 'wp_stream_plugins_to_delete' );
 		return $value;
@@ -234,7 +249,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			compact( 'type', 'name', 'file' ),
 			null,
 			array( $type . 's' => 'edited' )
-			);
+		);
 
 		return $location;
 	}
