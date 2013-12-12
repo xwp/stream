@@ -29,6 +29,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		'clear_auth_cookie',
 		'delete_user',
 		'deleted_user',
+		'set_user_role',
 	);
 
 	/**
@@ -155,6 +156,31 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'display_name' => $user->display_name,
 			),
 			$user->ID,
+			array(
+				'users' => 'updated',
+			)
+		);
+	}
+
+	/**
+	 * Log role transition
+	 *
+	 * @action set_user_role
+	 */
+	public static function callback_set_user_role( $user_id, $new_role, $old_roles ) {
+		if ( empty( $old_roles ) ) {
+			return;
+		}
+
+		global $wp_roles;
+		self::log(
+			__( '%s\'s role was changed from %s to %s', 'stream' ),
+			array(
+				'display_name' => get_user_by( 'id', $user_id )->display_name,
+				'old_role'     => translate_user_role( $wp_roles->role_names[ $old_roles[0] ] ),
+				'new_role'     => translate_user_role( $wp_roles->role_names[ $new_role ] ),
+			),
+			$user_id,
 			array(
 				'users' => 'updated',
 			)
