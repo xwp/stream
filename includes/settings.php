@@ -56,7 +56,7 @@ class WP_Stream_Settings {
 						'name'        => 'role_access',
 						'title'       => __( 'Role Access', 'stream' ),
 						'type'        => 'multi_checkbox',
-						'desc'        => __( 'Users from the selected roles above will be able to access the Stream. Only site Administrator can access Stream Settings.', 'stream' ),
+						'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
 						'choices'     => self::get_roles(),
 						'default'     => array( 'administrator' ),
 					),
@@ -196,14 +196,14 @@ class WP_Stream_Settings {
 				$current_value = (array) self::$options[$section . '_' . $name];
 
 				$output = sprintf(
-					'<div id="%1$s[%2$s_%3$s]">',
+					'<div id="%1$s[%2$s_%3$s]"><fieldset>',
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
 				foreach ( $field['choices'] as $value => $label ) {
 					$output .= sprintf(
-						'<label>%1$s %2$s</label><br />',
+						'<label>%1$s <span>%2$s</span></label><br />',
 						sprintf(
 							'<input type="checkbox" name="%1$s[%2$s_%3$s][]" value="%4$s" %5$s />',
 							esc_attr( self::KEY ),
@@ -215,7 +215,7 @@ class WP_Stream_Settings {
 						esc_html( $label )
 					);
 				}
-				$output .= '</div>';
+				$output .= '</fieldset></div>';
 				break;
 			case 'link':
 				$output = sprintf(
