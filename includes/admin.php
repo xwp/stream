@@ -22,7 +22,7 @@ class WP_Stream_Admin {
 	public static function load() {
 		// User and role caps
 		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
-		add_filter( 'user_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
+		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
 		// Register settings page
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
