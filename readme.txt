@@ -1,6 +1,6 @@
 === Stream ===
 Contributors:      X-team, shadyvb, fjarrett, akeda, kucrut
-Tags:              actions, activity, admin, analytics, log, users, notification, stream
+Tags:              actions, activity, admin, analytics, log, notification, stream, users
 Requires at least: 3.6
 Tested up to:      3.8
 Stable tag:        trunk
@@ -51,8 +51,11 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 == Changelog ==
 
+= 0.7.2 =
+**2013/12/12** - Bug fixes for the Installer connector. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
 = 0.7.1 =
-**2013/12/12** - Hotfix for PHP 5.4 syntax causing sites to break. Props [kucrut](http://profiles.wordpress.org/kucrut/)
+**2013/12/12** - Hotfix to remove PHP 5.4-only syntax. Role Access option added to Settings. Props [kucrut](http://profiles.wordpress.org/kucrut/)
 
 = 0.7 =
 **2013/12/11** - Added connectors for Taxonomies and Settings. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)

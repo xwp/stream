@@ -5,7 +5,7 @@
 Track and monitor every change made on your WordPress site in beautifully organized detail.
 
 **Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut)  
-**Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [log](http://wordpress.org/plugins/tags/log), [users](http://wordpress.org/plugins/tags/users), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream)  
+**Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.6  
 **Tested up to:** 3.8  
 **Stable tag:** trunk (master)  
@@ -60,8 +60,11 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 ## Changelog ##
 
+### 0.7.2 ###
+**2013/12/12** - Bug fixes for the Installer connector. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
 ### 0.7.1 ###
-**2013/12/12** - Hotfix for PHP 5.4 syntax causing sites to break. Props [kucrut](http://profiles.wordpress.org/kucrut/)
+**2013/12/12** - Hotfix to remove PHP 5.4-only syntax. Role Access option added to Settings. Props [kucrut](http://profiles.wordpress.org/kucrut/)
 
 ### 0.7 ###
 **2013/12/11** - Added connectors for Taxonomies and Settings. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
