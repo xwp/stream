@@ -17,8 +17,12 @@ class WP_Stream_Admin {
 
 	const ADMIN_PAGE_SLUG   = 'wp_stream_settings';
 	const ADMIN_PARENT_PAGE = 'admin.php';
+	const VIEW_CAP          = 'view_stream';
 
 	public static function load() {
+		// User and role caps
+		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
+		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
 		// Register settings page
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
@@ -32,6 +36,10 @@ class WP_Stream_Admin {
 
 		// Reset Streams database
 		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
+
+		// Auto purge setup
+		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
+		add_action( 'stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
 	}
 
 	/**
@@ -42,24 +50,20 @@ class WP_Stream_Admin {
 	 */
 	public static function register_menu() {
 		global $menu;
-		$cap = apply_filters( 'wp_stream_cap', 'manage_options' );
-		if ( ! current_user_can( $cap ) ) {
-			return;
-		}
 
 		self::$screen_id['main'] = add_menu_page(
 			__( 'Stream', 'stream' ),
 			__( 'Stream', 'stream' ),
-			$cap,
+			self::VIEW_CAP,
 			'wp_stream',
 			array( __CLASS__, 'stream_page' ),
 			'div',
 			3
-			);
+		);
 
 		self::$screen_id['settings'] = add_submenu_page(
 			'wp_stream',
-			__( 'Settings', 'stream' ),
+			__( 'Stream Settings', 'stream' ),
 			__( 'Settings', 'stream' ),
 			'manage_options',
 			'wp_stream_settings',
@@ -77,10 +81,21 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
-		if ( ! isset( self::$screen_id['main'] ) || $hook !== self::$screen_id['main'] ) {
+		if ( ! in_array( $hook, self::$screen_id ) ) {
 			return;
 		}
+		wp_enqueue_script( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.jquery.min.js', array( 'jquery' ), '1.0.0' );
+		wp_enqueue_style( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.min.css', array(), '1.0.0' );
 		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery' ) );
+		wp_localize_script(
+			'wp-stream-admin',
+			'wp_stream',
+			array(
+				'i18n' => array(
+					'confirm_purge' => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+					),
+				)
+			);
 		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 	}
 
@@ -225,4 +240,67 @@ class WP_Stream_Admin {
 		}
 	}
 
+	public static function purge_schedule_setup() {
+		if ( ! wp_next_scheduled( 'stream_auto_purge' ) ) {
+			wp_schedule_event( time(), 'daily', 'stream_auto_purge' );
+		}
+	}
+
+	public static function purge_scheduled_action() {
+		global $wpdb;
+		$days = WP_Stream_Settings::$options['general_records_ttl'];
+		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
+		$date->sub( DateInterval::createFromDateString( "$days days" ) );
+		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->stream WHERE created < %s ", $date->format( 'Y-m-d H:i:s' ) ) );
+		
+		if ( ! $ids ) {
+			return;
+		}
+		$wpdb->query( sprintf( "DELETE FROM $wpdb->stream WHERE ID IN (%s)", implode( ',', $ids ) ) );
+		$wpdb->query( sprintf( "DELETE FROM $wpdb->streammeta WHERE record_id IN (%s)", implode( ',', $ids ) ) );
+		$wpdb->query( sprintf( "DELETE FROM $wpdb->streamcontext WHERE record_id IN (%s)", implode( ',', $ids ) ) );
+	}
+
+	private static function _role_can_view_stream( $role ) {
+		if ( in_array( $role, WP_Stream_Settings::$options['general_role_access'] ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Filter user caps to dynamically grant our view cap based on allowed roles
+	 *
+	 * @filter user_has_cap
+	 * @return array
+	 */
+	public static function _filter_user_caps( $allcaps, $caps, $args, $user ) {
+		foreach ( $caps as $cap ) {
+			if ( self::VIEW_CAP === $cap ) {
+				foreach ( $user->roles as $role ) {
+					if ( self::_role_can_view_stream( $role ) ) {
+						$allcaps[ $cap ] = true;
+						break 2;
+					}
+				}
+			}
+		}
+
+		return $allcaps;
+	}
+
+	/**
+	 * Filter role caps to dynamically grant our view cap based on allowed roles
+	 *
+	 * @filter role_has_cap
+	 * @return array
+	 */
+	public static function _filter_role_caps( $allcaps, $cap, $role ) {
+		if ( self::VIEW_CAP === $cap && self::_role_can_view_stream( $role ) ) {
+			$allcaps[ $cap ] = true;
+		}
+
+		return $allcaps;
+	}
 }

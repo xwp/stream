@@ -29,6 +29,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		'clear_auth_cookie',
 		'delete_user',
 		'deleted_user',
+		'wp_login_failed',
 		'set_user_role',
 	);
 
@@ -55,6 +56,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			'forgot-password' => __( 'Forgot Password', 'stream' ),
 			'login'           => __( 'Login', 'stream' ),
 			'logout'          => __( 'Logout', 'stream' ),
+			'failed_login'    => __( 'Failed Login', 'stream' ),
 		);
 	}
 
@@ -72,14 +74,17 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @filter wp_stream_action_links_users
+	 * @filter wp_stream_action_links_{connector}
 	 * @param  array $links      Previous links registered
-	 * @param  int   $stream_id  Stream drop id
-	 * @param  int   $object_id  Object ( user ) id
+	 * @param  int   $record     Stream record
 	 * @return array             Action links
 	 */
-	public static function action_links( $links, $stream_id, $object_id ) {
-		$links [ __( 'User profile', 'domain' ) ] = get_edit_user_link( $object_id );
+	public static function action_links( $links, $record ) {
+		if ( $record->object_id ) {
+			if ( $link = get_edit_user_link( $record->object_id ) ) {
+				$links [ __( 'Edit Profile', 'stream' ) ] = $link;
+			}
+		}
 		return $links;
 	}
 
@@ -256,6 +261,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function callback_clear_auth_cookie() {
 		$user = wp_get_current_user();
+		// For some reason, ignito mode calls clear_auth_cookie on failed login attempts
+		if ( empty( $user ) ) {
+			return;
+		}
 		self::log(
 			__( '%s logged out', 'stream' ),
 			array(
@@ -316,6 +325,23 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'users' => 'deleted',
 			),
 			$user->ID
+		);
+	}
+
+	/**
+	 * Track failed login attempts
+	 * @param  arary  $errors
+	 * @param  string $redirect_to
+	 * @return array
+	 */
+	public static function callback_wp_login_failed( $username ) {
+		$user = get_user_by( 'login', $username );
+		self::log(
+			__( 'Invalid login attempt for %s', 'stream' ),
+			compact( 'username' ),
+			$user ? $user->ID : 0,
+			array( 'users' => 'failed_login' ),
+			$user ? $user->ID : 0
 		);
 	}
 

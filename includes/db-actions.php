@@ -13,7 +13,7 @@ class WP_Stream_DB {
 	public function __construct() {
 		global $wpdb;
 		// Allow devs to alter the tables prefix, default to base_prefix
-		$prefix              = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
+		$prefix              = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->prefix );
 		self::$table         = $prefix . 'stream';
 		self::$table_meta    = $prefix . 'stream_meta';
 		self::$table_context = $prefix . 'stream_context';
@@ -21,6 +21,9 @@ class WP_Stream_DB {
 		$wpdb->stream        = self::$table;
 		$wpdb->streammeta    = self::$table_meta;
 		$wpdb->streamcontext = self::$table_context;
+
+		// Hack for get_metadata
+		$wpdb->recordmeta = self::$table_meta;
 	}
 
 	public static function get_instance() {
