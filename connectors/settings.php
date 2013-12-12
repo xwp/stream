@@ -146,9 +146,27 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		$context_labels = self::get_context_labels();
-		if ( $record->context != 'settings' && in_array( $record->context, array_keys( $context_labels ) ) ) {
-			$links[ sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] ) ] = admin_url( 'options-' . $record->context . '.php' );
+		if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ) ) ) {
+			global $submenu;
+			if ( ! empty( $submenu['options-general.php'] ) ) {
+				$submenu_slug   = 'options-' . $record->context . '.php';
+				$found_submenus = wp_list_filter(
+					$submenu['options-general.php'],
+					array( 2 => $submenu_slug )
+				);
+
+				if ( ! empty( $found_submenus ) ) {
+					$target_submenu = array_pop( $found_submenus );
+					if ( current_user_can( $target_submenu[1] ) ) {
+						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[$record->context] );
+						$url  = admin_url( $submenu_slug );
+
+						$links[ $text ] = $url;
+					}
+				}
+			}
 		}
+
 		return $links;
 	}
 
