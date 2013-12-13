@@ -252,7 +252,7 @@ class WP_Stream_Admin {
 		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->stream WHERE created < %s ", $date->format( 'Y-m-d H:i:s' ) ) );
-		
+
 		if ( ! $ids ) {
 			return;
 		}

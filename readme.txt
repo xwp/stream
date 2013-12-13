@@ -47,7 +47,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 == Screenshots ==
 
 1. Every logged-in user action is logged in the activity stream and organized for easy filtering and searching.
-2. Determine how long records should live before being purged, or purge them from the database manually at any time.
+2. Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
 

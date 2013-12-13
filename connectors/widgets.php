@@ -17,6 +17,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		'sidebar_admin_setup',
 		'wp_ajax_widgets-order',
 		'widget_update_callback',
+		'wp_ajax_remove_widget_via_droppable',
 	);
 
 	/**
@@ -164,6 +165,26 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			call_user_func_array( array( __CLASS__, 'log' ), $order_operation );
 		}
 
+	}
+
+
+	/**
+	 * Tracks widgets removed via Ajax
+	 *
+	 * @action remove_widget_via_ajax
+	 * @return void
+	 */
+	public static function wp_ajax_remove_widget_via_droppable() {
+		if ( $widget_id = $_POST['widget_id'] ) {
+			list( $id_base, $name, $title, $sidebar, $sidebar_name ) = array_values( self::get_widget_info( $widget_id ) );
+			self::log(
+				$message = __( '"%s" has been deleted from "%s"', 'stream' ),
+				compact( 'title', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
+				null,
+				array( 'widgets' => $action )
+			);
+			wp_send_json( "Done");
+		}
 	}
 
 	/**
