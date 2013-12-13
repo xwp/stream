@@ -51,6 +51,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 == Changelog ==
 
+= 0.7.3 =
+**2013/12/13** - Bug fix for Role Access option. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
 = 0.7.2 =
 **2013/12/12** - Bug fixes for the Installer connector. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
