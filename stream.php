@@ -83,11 +83,13 @@ class WP_Stream {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 		}
+
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 	}
 
 	/**
 	 * Installation / Upgrade checks
-	 * 
+	 *
 	 * @action register_activation_hook
 	 * @return void
 	 */
@@ -103,7 +105,7 @@ class WP_Stream {
 
 	/**
 	 * Return active instance of WP_Stream, create one if it doesn't exist
-	 * 
+	 *
 	 * @return WP_Stream
 	 */
 	public static function get_instance() {
@@ -124,6 +126,27 @@ class WP_Stream {
 			'<div class="error"><p>%s</p></div>',
 			__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
 			); // xss okay
+	}
+
+	/**
+	 * Ajax Widget Removal Sniffer
+	 *
+	 * Checks if widgets are removed via jQuery ui's sortable
+	 *
+	 * @action admin_enqueue_scripts
+	 */
+	public static function enqueue_scripts() {
+		$screen = get_current_screen();
+		if ( 'widgets' == $screen->base ) {
+			wp_enqueue_script( 'wp-stream-widget-remove', WP_STREAM_URL . 'ui/widget-ajax-remove.js', array( 'jquery' ) );
+			wp_localize_script(
+				'wp-stream-widget-remove',
+				'streamWidgetRemove',
+					array(
+						'ajaxurl' => admin_url( 'admin-ajax.php' ),
+					)
+			);
+		};
 	}
 
 }
