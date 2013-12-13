@@ -39,7 +39,7 @@ Example:
 > 2. This is the second step
 > 3. Further steps, etc.
 >
-> Any other information you want to share that is relevant to the issue being reported. This might > include the lines of code that you have identified as causing the bug, and potential solutions >(and your opinions on their merits).
+> Any other information you want to share that is relevant to the issue being reported. This might include the lines of code that you have identified as causing the bug, and potential solutions (and your opinions on their merits).
 
 **Note:** In an effort to keep open issues to a manageable number, we will close any issues that do not provide enough information for us to be able to work on a solution. You will be encouraged to provide the necessary details, after which we will reopen the issue.
 
