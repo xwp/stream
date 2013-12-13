@@ -171,7 +171,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	/**
 	 * Tracks widgets removed via Ajax
 	 *
-	 * @action remove_widget_via_ajax
+	 * @action wp_ajax_remove_widget_via_droppable
 	 * @return void
 	 */
 	public static function wp_ajax_remove_widget_via_droppable() {
