@@ -183,7 +183,6 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				null,
 				array( 'widgets' => $action )
 			);
-			wp_send_json( "Done");
 		}
 	}
 
