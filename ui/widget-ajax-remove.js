@@ -6,9 +6,9 @@ If the mouse is "unclicked" (mouseup) while it has the class "Deleting"
 */
 $(document).ready(function() {
 	$('.widget').mouseup( function() {
-		if ( $( this ).hasClass('deleting') ) {
+		if ( $( this ).hasClass( 'deleting' ) ) {
 			console.log( "Oh Yeah!" );
-			var widgetId = $( this ).attr('id');
+			var widgetId = $( this ).attr( 'id' );
 			//send ajax
 			$.ajax({
 				type: 'post',
