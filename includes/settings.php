@@ -259,8 +259,11 @@ class WP_Stream_Settings {
 	public static function get_roles() {
 		global $wp_roles;
 
+		$role_names = $wp_roles->role_names;
+
 		$roles = array();
-		foreach ( $wp_roles->role_names as $role_name => $role_label ) {
+
+		foreach ( (array) $role_names as $role_name => $role_label ) {
 			$roles[ $role_name ] = translate_user_role( $role_label );
 		}
 
