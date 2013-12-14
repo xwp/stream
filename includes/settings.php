@@ -261,7 +261,7 @@ class WP_Stream_Settings {
 
 		// If a plugin has previously registered roles but that plugin has been deactivated WordPress
 		// will throw a non-object notice here even though those roles will still be returned.
-		//So we'll suppress any notices here just to avoid unnecessary confusion.
+		// So we'll suppress any notices here just to avoid unnecessary confusion.
 		$role_names = @$wp_roles->role_names;
 
 		$roles = array();
