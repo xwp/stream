@@ -107,10 +107,10 @@ class WP_Stream_Feeds {
 					<atom:link href="<?php self_link() ?>" rel="self" type="application/rss+xml" />
 					<link><?php bloginfo_rss( 'url' ) ?></link>
 					<description><?php bloginfo_rss( 'description' ) ?></description>
-					<lastBuildDate><?php echo mysql2date( 'r', $latest_record, false ) ?></lastBuildDate>
+					<lastBuildDate><?php echo esc_html( mysql2date( 'r', $latest_record, false ) ) ?></lastBuildDate>
 					<language><?php bloginfo_rss( 'language' ) ?></language>
-					<sy:updatePeriod><?php echo apply_filters( 'rss_update_period', 'hourly' ) ?></sy:updatePeriod>
-					<sy:updateFrequency><?php echo apply_filters( 'rss_update_frequency', '1' ) ?></sy:updateFrequency>
+					<sy:updatePeriod><?php echo esc_html( 'hourly' ) ?></sy:updatePeriod>
+					<sy:updateFrequency><?php echo absint( 1 ) ?></sy:updateFrequency>
 					<?php do_action( 'rss2_head' ) ?>
 					<?php foreach ( $records as $record ) : ?>
 						<?php
@@ -126,7 +126,7 @@ class WP_Stream_Feeds {
 						?>
 						<item>
 							<title><![CDATA[ <?php echo trim( $record->summary ) // xss ok ?> ]]></title>
-							<pubDate><?php echo mysql2date( 'r', $record->created, false ) ?></pubDate>
+							<pubDate><?php echo esc_html( mysql2date( 'r', $record->created, false ) ) ?></pubDate>
 							<dc:creator><?php echo esc_html( $display_name ) ?></dc:creator>
 							<category domain="connector"><![CDATA[ <?php echo esc_html( $record->connector ) ?> ]]></category>
 							<category domain="context"><![CDATA[ <?php echo esc_html( $record->context ) ?> ]]></category>
