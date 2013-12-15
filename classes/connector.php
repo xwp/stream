@@ -84,4 +84,29 @@ abstract class WP_Stream_Connector {
 			);
 	}
 
+	/**
+	 * Save log data till shutdown, so other callbacks would be able to override
+	 * @param  string $handle Special slug to be shared with other actions
+	 * @param  mixed  $arg1   Extra arguments to sent to log()
+	 * @param  mixed  $arg2, etc..
+	 * @return void
+	 */
+	public static function delayed_log( $handle ) {
+		$args = func_get_args();
+		array_shift( $args );
+
+		self::$delayed[$handle] = $args;
+		add_action( 'shutdown', array( __CLASS__, 'delayed_log_commit' ) );
+	}
+
+	/**
+	 * Commit delayed logs saved by @delayed_log
+	 * @return void
+	 */
+	public static function delayed_log_commit() {
+		foreach ( self::$delayed as $handle => $args ) {
+			call_user_func_array( array( __CLASS__, 'log' ) , $args );
+		}
+	}
+
 }
