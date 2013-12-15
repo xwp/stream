@@ -245,7 +245,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		}
 
 		self::log(
-			__( 'Edited %s: %s', 'domain' ),
+			__( 'Edited %s: %s', 'stream' ),
 			compact( 'type', 'name', 'file' ),
 			null,
 			array( $type . 's' => 'edited' )
