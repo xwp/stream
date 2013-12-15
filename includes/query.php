@@ -31,6 +31,8 @@ class WP_Stream_Query {
 			'type'                  => 'stream',
 			'object_id'             => null,
 			'ip'                    => null,
+			// Author param
+			'author'                => null,
 			// Date-based filters
 			'date'                  => null,
 			'date_from'             => null,
@@ -80,6 +82,10 @@ class WP_Stream_Query {
 
 		if ( $args['search'] ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.summary LIKE %s", "%{$args['search']}%" );
+		}
+
+		if ( $args['author'] ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.author LIKE %d", (int) $args['author'] );
 		}
 
 		/**
