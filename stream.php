@@ -79,6 +79,10 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'query.php';
 		require_once WP_STREAM_INC_DIR . 'context-query.php';
 
+		// Loads support for feeds
+		require_once WP_STREAM_INC_DIR . 'feeds.php';
+		add_action( 'plugins_loaded', array( 'WP_Stream_Feeds', 'load' ) );
+
 		if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
@@ -87,7 +91,7 @@ class WP_Stream {
 
 	/**
 	 * Installation / Upgrade checks
-	 * 
+	 *
 	 * @action register_activation_hook
 	 * @return void
 	 */
@@ -103,7 +107,7 @@ class WP_Stream {
 
 	/**
 	 * Return active instance of WP_Stream, create one if it doesn't exist
-	 * 
+	 *
 	 * @return WP_Stream
 	 */
 	public static function get_instance() {
