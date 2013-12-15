@@ -56,14 +56,14 @@ class WP_Stream_Admin {
 			__( 'Stream', 'stream' ),
 			__( 'Stream', 'stream' ),
 			self::VIEW_CAP,
-			'wp_stream',
+			self::RECORDS_PAGE_SLUG,
 			array( __CLASS__, 'stream_page' ),
 			'div',
 			3
 		);
 
 		self::$screen_id['settings'] = add_submenu_page(
-			'wp_stream',
+			self::RECORDS_PAGE_SLUG,
 			__( 'Stream Settings', 'stream' ),
 			__( 'Settings', 'stream' ),
 			'manage_options',
