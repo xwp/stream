@@ -51,13 +51,14 @@ class WP_Stream_Feeds {
 		if ( ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 			return;
 		}
-		$key = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
+		$key  = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
+		$link = add_query_arg( array( self::FEED_QUERY_VAR => $key ), home_url() );
 		?>
 		<table class="form-table">
 			<tr>
 				<th><label for="stream_feed_url"><?php esc_html_e( 'Stream Feed URL', 'stream' ) ?></label></th>
 				<td>
-					<code><?php echo esc_url( add_query_arg( array( self::FEED_QUERY_VAR => $key ), home_url() ) ) ?></code>
+					<a href="<?php echo esc_url( $link ) ?>" target="_blank"><?php echo esc_url( $link ) ?></a>
 					<p class="description"><?php esc_html_e( 'This is a private URL for you to access your Stream activity.', 'stream' ) ?></p>
 				</td>
 			</tr>
@@ -85,7 +86,7 @@ class WP_Stream_Feeds {
 
 			header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_option( 'blog_charset' ), true );
 
-			$records = stream_query( array( 'records_per_page' => 100 ) );
+			$records = stream_query( array( 'records_per_page' => get_option( 'posts_per_rss' ) ) );
 
 			$latest_record = isset( $records[0]->created ) ? $records[0]->created : null;
 
