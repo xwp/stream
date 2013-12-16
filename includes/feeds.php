@@ -4,10 +4,11 @@ require_once WP_STREAM_INC_DIR . 'admin.php';
 
 class WP_Stream_Feeds {
 
-	const FEED_QUERY_VAR      = 'stream';
-	const FEED_KEY_QUERY_VAR  = 'key';
-	const FEED_TYPE_QUERY_VAR = 'type';
-	const USER_FEED_KEY       = 'stream_user_feed_key';
+	const FEED_QUERY_VAR         = 'stream';
+	const FEED_KEY_QUERY_VAR     = 'key';
+	const FEED_TYPE_QUERY_VAR    = 'type';
+	const USER_FEED_KEY          = 'stream_user_feed_key';
+	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
 
 	public static function load() {
 		add_action( 'show_user_profile', array( __CLASS__, '_save_user_feed_key' ) );
@@ -20,7 +21,7 @@ class WP_Stream_Feeds {
 	}
 
 	public static function _save_user_feed_key( $user ) {
-		if ( $key = get_user_meta( $user->ID, self::USER_FEED_KEY, true ) ) {
+		if ( $key = get_user_meta( $user->ID, self::USER_FEED_KEY, true ) && ! isset( $_GET[self::GENERATE_KEY_QUERY_VAR] ) ) {
 			return;
 		}
 		update_user_meta( $user->ID, self::USER_FEED_KEY, wp_generate_password( 32, false ) );
@@ -46,6 +47,7 @@ class WP_Stream_Feeds {
 				<td>
 					<a href="<?php echo esc_url( $link ) ?>" target="_blank"><?php echo esc_url( $link ) ?></a>
 					<p class="description"><?php esc_html_e( 'This is a private URL for you to access a feed of Stream Records.', 'stream' ) ?></p>
+					<p><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true ) ) ) ?>"><?php esc_html_e( 'Generate New Key', 'stream' ) ?></a></p>
 				</td>
 			</tr>
 		</table>
