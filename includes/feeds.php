@@ -46,7 +46,7 @@ class WP_Stream_Feeds {
 				<th><label for="stream_feed_url"><?php esc_html_e( 'Stream Feed URL', 'stream' ) ?></label></th>
 				<td>
 					<a href="<?php echo esc_url( $link ) ?>" target="_blank"><?php echo esc_url( $link ) ?></a>
-					<p class="description"><?php esc_html_e( 'This is a private URL for you to access a feed of Stream Records.', 'stream' ) ?></p>
+					<p class="description"><?php esc_html_e( 'This is a private URL for you to access a feed of Stream Records. Consider this key a secret and do not share it with other users. If your key has been compromised, you can use the link below to generate a new one. ', 'stream' ) ?></p>
 					<p><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true ) ) ) ?>"><?php esc_html_e( 'Generate New Key', 'stream' ) ?></a></p>
 				</td>
 			</tr>
