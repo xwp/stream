@@ -29,7 +29,7 @@ class WP_Stream_Feeds {
 	 * @return void
 	 */
 	public static function save_user_feed_key( $user ) {
-		if ( $key = get_user_meta( $user->ID, self::USER_FEED_KEY, true ) && ! isset( $_GET[self::GENERATE_KEY_QUERY_VAR] ) ) {
+		if ( get_user_meta( $user->ID, self::USER_FEED_KEY, true ) && ! isset( $_GET[self::GENERATE_KEY_QUERY_VAR] ) ) {
 			return;
 		}
 		update_user_meta( $user->ID, self::USER_FEED_KEY, wp_generate_password( 32, false ) );
