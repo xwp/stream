@@ -47,7 +47,14 @@ class WP_Stream_Feeds {
 			return;
 		}
 		$key  = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
-		$link = add_query_arg( array( self::FEED_KEY_QUERY_VAR => $key ), home_url( sprintf( '/feed/%s/', self::FEED_QUERY_VAR ) ) );
+
+		$pretty_permalinks = get_option( 'permalink_structure' );
+
+		if ( empty( $pretty_permalinks ) ) {
+			$link = add_query_arg( array( 'feed' => self::FEED_QUERY_VAR, self::FEED_KEY_QUERY_VAR => $key ), home_url( '/' ) );
+		} else {
+			$link = add_query_arg( array( self::FEED_KEY_QUERY_VAR => $key ), home_url( sprintf( '/feed/%s/', self::FEED_QUERY_VAR ) ) );
+		}
 		?>
 		<table class="form-table">
 			<tr>
