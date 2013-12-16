@@ -63,7 +63,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	public static function get_context_labels() {
 		return array(
 			'comments' => __( 'Comments', 'stream' ),
-			);
+		);
 	}
 
 	/**
@@ -75,7 +75,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		
+
 		if ( $record->object_id ) {
 			if ( $comment = get_comment( $record->object_id ) ) {
 				$del_nonce = wp_create_nonce( "delete-comment_$comment->comment_ID" );
@@ -87,16 +87,16 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 							'comment.php?action=unapprovecomment&c=%s&_wpnonce=%s',
 							$record->object_id,
 							$approve_nonce
-							)
-						);
+						)
+					);
 				} elseif ( empty( $comment->comment_approved ) ) {
 					$links[ __( 'Approve', 'stream' ) ] = admin_url(
 						sprintf(
 							'comment.php?action=approvecomment&c=%s&_wpnonce=%s',
 							$record->object_id,
 							$approve_nonce
-							)
-						);
+						)
+					);
 				}
 			}
 		}
@@ -116,7 +116,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			compact( 'user_name', 'time_lastcomment', 'time_newcomment' ),
 			null,
 			array( 'comments' => 'created' )
-			);
+		);
 	}
 
 	/**
@@ -133,7 +133,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			compact( 'user_name', 'post_id' ),
 			$comment_id,
 			array( 'comments' => 'created' )
-			);
+		);
 
 		// Adding a second record for 'approved' action if the comment was approved
 		if ( $comment->comment_approved ) {
@@ -142,7 +142,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				compact( 'user_name', 'post_id' ),
 				$comment_id,
 				array( 'comments' => 'approved' )
-				);
+			);
 		}
 
 		// Adding a possibly-third record for 'replied' action if the comment has a parent
@@ -158,7 +158,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				compact( 'user_name', 'parent_author_name', 'post_title', 'parent_author', 'post_id' ),
 				$comment_id,
 				array( 'comments' => 'approved' )
-				);
+			);
 		}
 
 	}
@@ -180,7 +180,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			compact( 'user_name', 'his_or', 'post_id' ),
 			$comment_id,
 			array( 'comments' => 'updated' )
-			);
+		);
 	}
 
 	/**
@@ -200,7 +200,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			compact( 'user_name', 'his_or', 'post_id' ),
 			$comment_id,
 			array( 'comments' => 'deleted' )
-			);
+		);
 	}
 
 	/**
@@ -220,7 +220,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			compact( 'user_name', 'his_or', 'post_id' ),
 			$comment_id,
 			array( 'comments' => 'trashed' )
-			);
+		);
 	}
 
 	/**
@@ -240,7 +240,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			compact( 'user_name', 'his_or', 'post_id' ),
 			$comment_id,
 			array( 'comments' => 'untrashed' )
-			);
+		);
 	}
 
 	/**
@@ -260,7 +260,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			compact( 'user_name', 'his_or', 'post_id' ),
 			$comment_id,
 			array( 'comments' => 'spammed' )
-			);
+		);
 	}
 
 	/**
@@ -280,7 +280,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			compact( 'user_name', 'his_or', 'post_id' ),
 			$comment_id,
 			array( 'comments' => 'unspammed' )
-			);
+		);
 	}
 
 	/**
@@ -302,7 +302,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			compact( 'author_name', 'new_status', 'user_name', 'old_status', 'post_id' ),
 			$comment_id,
 			array( 'comments' => $new_status )
-			);
+		);
 	}
 
 	/**
@@ -327,7 +327,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			compact( 'author_name', 'post_title', 'user_name', 'post_id' ),
 			$comment_id,
 			array( 'comments' => 'duplicate' )
-			);
+		);
 	}
 
 }
