@@ -21,6 +21,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		'pre_option_uninstall_plugins', // plugins::deleted
 		'pre_set_site_transient_update_plugins',
 		'wp_redirect',
+		'_core_updated_successfully',
 	);
 
 	/**
@@ -44,6 +45,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			'deactivated' => __( 'Deactivated', 'stream' ),
 			'deleted'     => __( 'Deleted', 'stream' ),
 			'edited'      => __( 'Edited', 'stream' ),
+			'updated'      => __( 'Edited', 'stream' ),
 		);
 	}
 
@@ -56,6 +58,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		return array(
 			'plugins' => __( 'Plugins', 'stream' ),
 			'themes'  => __( 'Themes', 'stream' ),
+			'wordpress' => __( 'WordPress', 'stream' ),
 		);
 	}
 
@@ -254,6 +257,14 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		return $location;
 	}
 
+	public function callback__core_updated_successfully( $wp_version ) {
+		self::log(
+			__( 'WordPress updated to %s', 'stream' ),
+			compact( 'wp_version' ),
+			null,
+			array( 'wordpress' => 'updated' )
+			);
+	}
 
 
 }
