@@ -46,7 +46,7 @@ class WP_Stream_Feeds {
 		if ( ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 			return;
 		}
-		$key  = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
+		$key = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
 
 		$pretty_permalinks = get_option( 'permalink_structure' );
 
