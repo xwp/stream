@@ -257,7 +257,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		return $location;
 	}
 
-	public function callback__core_updated_successfully( $wp_version ) {
+	public static function callback__core_updated_successfully( $wp_version ) {
 		self::log(
 			__( 'WordPress updated to %s', 'stream' ),
 			compact( 'wp_version' ),
