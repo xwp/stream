@@ -75,10 +75,11 @@ class WP_Stream_Feeds {
 	 * @return xml
 	 */
 	public static function feed_template() {
-		$die_message = __( '<h1>Access Denied</h1><p>You don\'t have permission to view this feed, please contact your site Administrator.</p>', 'stream' );
+		$die_title   = esc_html__( 'Access Denied', 'stream' );
+		$die_message = '<h1>' . $die_title .'</h1><p>' . esc_html__( 'You don\'t have permission to view this feed, please contact your site Administrator.', 'stream' ) . '</p>';
 
 		if ( ! isset( $_GET[self::FEED_KEY_QUERY_VAR] ) || empty( $_GET[self::FEED_KEY_QUERY_VAR] ) ) {
-			wp_die( $die_message );
+			wp_die( $die_message, $die_title );
 		}
 
 		$args = array(
@@ -91,7 +92,7 @@ class WP_Stream_Feeds {
 		$roles = isset( $user[0]->roles ) ? (array) $user[0]->roles : array();
 
 		if ( ! $roles || ! array_intersect( $roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
-			wp_die( $die_message );
+			wp_die( $die_message, $die_title );
 		}
 
 		$args = array(
@@ -164,12 +165,12 @@ class WP_Stream_Feeds {
 			exit;
 		} elseif ( 'json' === get_query_var( self::FEED_TYPE_QUERY_VAR ) ) {
 
-			wp_die( $die_message );
+			wp_die( $die_message, $die_title );
 
 			// TODO: Create template for JSON output
 
 		} else {
-			wp_die( $die_message );
+			wp_die( $die_message, $die_title );
 		}
 	}
 
