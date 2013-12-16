@@ -97,16 +97,16 @@ class WP_Stream_Feeds {
 
 		$args = array(
 			'records_per_page' => isset( $_GET['records_per_page'] ) ? (int) $_GET['records_per_page'] : get_option( 'posts_per_rss' ),
-			'search'           => isset( $_GET['search'] ) ? $_GET['search'] : null,
-			'object_id'        => isset( $_GET['object_id'] ) ? $_GET['object_id'] : null,
-			'ip'               => isset( $_GET['ip'] ) ? $_GET['ip'] : null,
+			'search'           => isset( $_GET['search'] ) ? (string) $_GET['search'] : null,
+			'object_id'        => isset( $_GET['object_id'] ) ? (int) $_GET['object_id'] : null,
+			'ip'               => isset( $_GET['ip'] ) ? (string) $_GET['ip'] : null,
 			'author'           => isset( $_GET['author'] ) ? (int) $_GET['author'] : null,
-			'date'             => isset( $_GET['date'] ) ? $_GET['date'] : null,
-			'date_from'        => isset( $_GET['date_from'] ) ? $_GET['date_from'] : null,
-			'date_to'          => isset( $_GET['date_to'] ) ? $_GET['date_to'] : null,
+			'date'             => isset( $_GET['date'] ) ? (string) $_GET['date'] : null,
+			'date_from'        => isset( $_GET['date_from'] ) ? (string) $_GET['date_from'] : null,
+			'date_to'          => isset( $_GET['date_to'] ) ? (string) $_GET['date_to'] : null,
 			'record_parent'    => isset( $_GET['record_parent'] ) ? (int) $_GET['record_parent'] : null,
-			'order'            => isset( $_GET['order'] ) ? $_GET['order'] : 'desc',
-			'orderby'          => isset( $_GET['orderby'] ) ? $_GET['orderby'] : 'date',
+			'order'            => isset( $_GET['order'] ) ? (string) $_GET['order'] : 'desc',
+			'orderby'          => isset( $_GET['orderby'] ) ? (string) $_GET['orderby'] : 'date',
 		);
 		$records = stream_query( $args );
 
