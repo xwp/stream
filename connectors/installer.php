@@ -274,10 +274,18 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		return $location;
 	}
 
-	public static function callback__core_updated_successfully( $wp_version ) {
+	public static function callback__core_updated_successfully( $new_version ) {
+		global $pagenow, $wp_version;
+		$old_version  = $wp_version;
+		$auto_updated = ( $pagenow != 'update-core.php' );
+		if ( $auto_updated ) {
+			$message = __( 'WordPress was auto updated to %s', 'stream' );
+		} else {
+			$message = __( 'WordPress was updated to %s', 'stream' );
+		}
 		self::log(
-			__( 'WordPress updated to %s', 'stream' ),
-			compact( 'wp_version' ),
+			$message,
+			compact( 'new_version', 'old_version', 'auto_updated' ),
 			null,
 			array( 'wordpress' => 'updated' )
 			);
