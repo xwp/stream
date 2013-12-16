@@ -78,7 +78,10 @@ class WP_Stream_Feeds {
 		);
 		$user = get_users( $args );
 
-		if ( ! isset( $user[0]->roles ) || ! array_intersect( $user[0]->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
+		$user_id = isset( $user[0]->ID ) ? $user[0]->ID : null;
+		$roles   = isset( $user[0]->roles ) ? $user[0]->roles : null;
+
+		if ( ! $roles || ! array_intersect( $roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 			return;
 		}
 
@@ -86,7 +89,7 @@ class WP_Stream_Feeds {
 
 			header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_option( 'blog_charset' ), true );
 
-			$records = stream_query( array( 'records_per_page' => get_option( 'posts_per_rss' ) ) );
+			$records = stream_query( array( 'records_per_page' => get_option( 'posts_per_rss' ), 'author' => $user_id ) );
 
 			$latest_record = isset( $records[0]->created ) ? $records[0]->created : null;
 
