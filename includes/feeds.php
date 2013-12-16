@@ -59,7 +59,7 @@ class WP_Stream_Feeds {
 				<th><label for="stream_feed_url"><?php esc_html_e( 'Stream Feed URL', 'stream' ) ?></label></th>
 				<td>
 					<a href="<?php echo esc_url( $link ) ?>" target="_blank"><?php echo esc_url( $link ) ?></a>
-					<p class="description"><?php esc_html_e( 'This is a private URL for you to access your Stream activity.', 'stream' ) ?></p>
+					<p class="description"><?php esc_html_e( 'This is a private URL for you to access a feed of Stream Records.', 'stream' ) ?></p>
 				</td>
 			</tr>
 		</table>
@@ -78,20 +78,34 @@ class WP_Stream_Feeds {
 		);
 		$user = get_users( $args );
 
-		$user_id = isset( $user[0]->ID ) ? $user[0]->ID : null;
-		$roles   = isset( $user[0]->roles ) ? $user[0]->roles : null;
+		$roles = isset( $user[0]->roles ) ? (array) $user[0]->roles : array();
 
 		if ( ! $roles || ! array_intersect( $roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 			return;
 		}
 
+		$args = array(
+			'records_per_page' => isset( $_GET['records_per_page'] ) ? (int) $_GET['records_per_page'] : get_option( 'posts_per_rss' ),
+			'search'           => isset( $_GET['search'] ) ? $_GET['search'] : null,
+			'object_id'        => isset( $_GET['object_id'] ) ? $_GET['object_id'] : null,
+			'ip'               => isset( $_GET['ip'] ) ? $_GET['ip'] : null,
+			'author'           => isset( $_GET['author'] ) ? (int) $_GET['author'] : null,
+			'date'             => isset( $_GET['date'] ) ? $_GET['date'] : null,
+			'date_from'        => isset( $_GET['date_from'] ) ? $_GET['date_from'] : null,
+			'date_to'          => isset( $_GET['date_to'] ) ? $_GET['date_to'] : null,
+			'record_parent'    => isset( $_GET['record_parent'] ) ? (int) $_GET['record_parent'] : null,
+			'order'            => isset( $_GET['order'] ) ? $_GET['order'] : 'desc',
+			'orderby'          => isset( $_GET['orderby'] ) ? $_GET['orderby'] : 'date',
+		);
+		$records = stream_query( $args );
+
+		$latest_record = isset( $records[0]->created ) ? $records[0]->created : null;
+
+		$records_admin_url = add_query_arg( array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ), admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) );
+
 		if ( ! get_query_var( self::FEED_TYPE_QUERY_VAR ) || 'rss' === get_query_var( self::FEED_TYPE_QUERY_VAR ) ) {
 
 			header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_option( 'blog_charset' ), true );
-
-			$records = stream_query( array( 'records_per_page' => get_option( 'posts_per_rss' ), 'author' => $user_id ) );
-
-			$latest_record = isset( $records[0]->created ) ? $records[0]->created : null;
 
 			echo '<?xml version="1.0" encoding="' . get_option( 'blog_charset' ) . '"?>';
 			?>
@@ -108,7 +122,7 @@ class WP_Stream_Feeds {
 				<channel>
 					<title><?php bloginfo_rss( 'name' ) ?> - <?php esc_html_e( 'Stream Feed', 'stream' ) ?></title>
 					<atom:link href="<?php self_link() ?>" rel="self" type="application/rss+xml" />
-					<link><?php bloginfo_rss( 'url' ) ?></link>
+					<link><?php echo esc_url( $records_admin_url ) ?></link>
 					<description><?php bloginfo_rss( 'description' ) ?></description>
 					<lastBuildDate><?php echo esc_html( mysql2date( 'r', $latest_record, false ) ) ?></lastBuildDate>
 					<language><?php bloginfo_rss( 'language' ) ?></language>
@@ -117,13 +131,7 @@ class WP_Stream_Feeds {
 					<?php do_action( 'rss2_head' ) ?>
 					<?php foreach ( $records as $record ) : ?>
 						<?php
-						$record_link  = add_query_arg(
-							array(
-								'page'       => WP_Stream_Admin::RECORDS_PAGE_SLUG,
-								'record__in' => $record->ID,
-							),
-							admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-						);
+						$record_link  = add_query_arg( array( 'record__in' => (int) $record->ID ), $records_admin_url );
 						$author       = get_userdata( $record->author );
 						$display_name = isset( $author->display_name ) ? $author->display_name : 'N/A';
 						?>
@@ -145,6 +153,11 @@ class WP_Stream_Feeds {
 			</rss>
 			<?php
 			exit;
+		}
+
+		if ( 'json' === get_query_var( self::FEED_TYPE_QUERY_VAR ) ) {
+			return;
+			// TODO: Create template for JSON output
 		}
 	}
 
