@@ -11,13 +11,13 @@ class WP_Stream_Feeds {
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
 
 	public static function load() {
-		add_action( 'show_user_profile', array( __CLASS__, '_save_user_feed_key' ) );
-		add_action( 'edit_user_profile', array( __CLASS__, '_save_user_feed_key' ) );
+		add_action( 'show_user_profile', array( __CLASS__, 'save_user_feed_key' ) );
+		add_action( 'edit_user_profile', array( __CLASS__, 'save_user_feed_key' ) );
 
-		add_action( 'show_user_profile', array( __CLASS__, '_user_feed_key' ) );
-		add_action( 'edit_user_profile', array( __CLASS__, '_user_feed_key' ) );
+		add_action( 'show_user_profile', array( __CLASS__, 'user_feed_key' ) );
+		add_action( 'edit_user_profile', array( __CLASS__, 'user_feed_key' ) );
 
-		add_feed( self::FEED_QUERY_VAR, array( __CLASS__, '_feed_template' ) );
+		add_feed( self::FEED_QUERY_VAR, array( __CLASS__, 'feed_template' ) );
 	}
 
 	/**
@@ -28,7 +28,7 @@ class WP_Stream_Feeds {
 	 * @action edit_user_profile
 	 * @return void
 	 */
-	public static function _save_user_feed_key( $user ) {
+	public static function save_user_feed_key( $user ) {
 		if ( $key = get_user_meta( $user->ID, self::USER_FEED_KEY, true ) && ! isset( $_GET[self::GENERATE_KEY_QUERY_VAR] ) ) {
 			return;
 		}
@@ -42,7 +42,7 @@ class WP_Stream_Feeds {
 	 * @action edit_user_profile
 	 * @return html
 	 */
-	public static function _user_feed_key( $user ) {
+	public static function user_feed_key( $user ) {
 		if ( ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 			return;
 		}
@@ -67,7 +67,7 @@ class WP_Stream_Feeds {
 	 *
 	 * @return xml
 	 */
-	public static function _feed_template() {
+	public static function feed_template() {
 		$die_message = __( '<h1>Access Denied</h1><p>You don\'t have permission to view this feed, please contact your site Administrator.</p>', 'stream' );
 
 		if ( ! isset( $_GET[self::FEED_KEY_QUERY_VAR] ) || empty( $_GET[self::FEED_KEY_QUERY_VAR] ) ) {
