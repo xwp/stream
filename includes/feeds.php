@@ -20,6 +20,14 @@ class WP_Stream_Feeds {
 		add_feed( self::FEED_QUERY_VAR, array( __CLASS__, '_feed_template' ) );
 	}
 
+	/**
+	 * Generates and saves a unique key as user meta if the user does not
+	 * already have a key, or has requested a new one.
+	 *
+	 * @action show_user_profile
+	 * @action edit_user_profile
+	 * @return void
+	 */
 	public static function _save_user_feed_key( $user ) {
 		if ( $key = get_user_meta( $user->ID, self::USER_FEED_KEY, true ) && ! isset( $_GET[self::GENERATE_KEY_QUERY_VAR] ) ) {
 			return;
@@ -28,7 +36,7 @@ class WP_Stream_Feeds {
 	}
 
 	/**
-	 * Add field for RSS feed key to user profiles.
+	 * Output for Stream Feed URL field in user profiles.
 	 *
 	 * @action show_user_profile
 	 * @action edit_user_profile
@@ -54,6 +62,11 @@ class WP_Stream_Feeds {
 		<?php
 	}
 
+	/**
+	 * Output for Stream Records as a feed.
+	 *
+	 * @return xml
+	 */
 	public static function _feed_template() {
 		$die_message = __( '<h1>Access Denied</h1><p>You don\'t have permission to view this feed, please contact your site Administrator.</p>', 'stream' );
 
