@@ -40,7 +40,7 @@ class WP_Stream_Feeds {
 	 *
 	 * @action show_user_profile
 	 * @action edit_user_profile
-	 * @return html
+	 * @return string
 	 */
 	public static function user_feed_key( $user ) {
 		if ( ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
