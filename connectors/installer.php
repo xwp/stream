@@ -63,6 +63,23 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Add action links to Stream drop row in admin list screen
+	 *
+	 * @filter wp_stream_action_links_{connector}
+	 * @param  array $links      Previous links registered
+	 * @param  int   $record     Stream record
+	 * @return array             Action links
+	 */
+	public static function action_links( $links, $record ) {
+		if ( $record->context == 'wordpress' && $record->action == 'updated' ) {
+			$links [ __( 'About', 'stream' ) ] = admin_url( 'about.php?updated' );
+			$version = get_stream_meta( $record->ID, 'wp_version', true );
+			$links [ __( 'View Release Notes', 'stream' ) ] = esc_url( sprintf( 'http://codex.wordpress.org/Version_%s', $version ) );
+		}
+		return $links;
+	}
+
+	/**
 	 * Log plugin installations
 	 *
 	 * @action transition_post_status
