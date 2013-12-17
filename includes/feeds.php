@@ -106,7 +106,8 @@ class WP_Stream_Feeds {
 			'date_to'          => isset( $_GET['date_to'] ) ? (string) $_GET['date_to'] : null,
 			'record_parent'    => isset( $_GET['record_parent'] ) ? (int) $_GET['record_parent'] : null,
 			'order'            => isset( $_GET['order'] ) ? (string) $_GET['order'] : 'desc',
-			'orderby'          => isset( $_GET['orderby'] ) ? (string) $_GET['orderby'] : 'date',
+			'orderby'          => isset( $_GET['orderby'] ) ? (string) $_GET['orderby'] : 'ID',
+			'fields'           => isset( $_GET['fields'] ) ? (string) $_GET['fields'] : '',
 		);
 		$records = stream_query( $args );
 
