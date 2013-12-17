@@ -45,7 +45,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			'deactivated' => __( 'Deactivated', 'stream' ),
 			'deleted'     => __( 'Deleted', 'stream' ),
 			'edited'      => __( 'Edited', 'stream' ),
-			'updated'      => __( 'Edited', 'stream' ),
+			'updated'     => __( 'Updated', 'stream' ),
 		);
 	}
 
@@ -56,8 +56,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'plugins' => __( 'Plugins', 'stream' ),
-			'themes'  => __( 'Themes', 'stream' ),
+			'plugins'   => __( 'Plugins', 'stream' ),
+			'themes'    => __( 'Themes', 'stream' ),
 			'wordpress' => __( 'WordPress', 'stream' ),
 		);
 	}
@@ -288,7 +288,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			compact( 'new_version', 'old_version', 'auto_updated' ),
 			null,
 			array( 'wordpress' => 'updated' )
-			);
+		);
 	}
 
 
