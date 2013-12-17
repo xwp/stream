@@ -6,6 +6,7 @@
  * @author Jonathan Bardo <jonathan.bardo@x-team.com>
  */
 
+//Create our own test case to prevent repeating ourself
 require_once getenv( 'WP_TESTS_DIR' ) . '/includes/functions.php';
 
 tests_add_filter(
@@ -13,19 +14,22 @@ tests_add_filter(
 	function() {
 		// Manually load plugin
 		require dirname( dirname( __FILE__ ) ) . '/stream.php';
+
 		//Call Activate plugin function
 		WP_Stream::install();
 	}
 );
 
-// Removes sql tables on shutdown
+// Removes all sql tables on shutdown
 // Do this action last
 tests_add_filter(
 		'shutdown',
 	function() {
-		//@Todo Trigger uninstall function
+		//Empty all tables so we don't deal with leftovers
+		drop_tables();
 	},
 	999999
 );
 
 require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
+require dirname( __FILE__ ) . '/testcase.php';

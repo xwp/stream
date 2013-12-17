@@ -43,7 +43,7 @@ class WP_Stream {
 	/**
 	 * Class constructor
 	 */
-	public function __construct() {
+	private function __construct() {
 
 		if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
 			add_action( 'all_admin_notices', array( __CLASS__, 'php_version_notice' ) );
@@ -128,5 +128,5 @@ class WP_Stream {
 
 }
 
-$GLOBALS['wp_stream'] = new WP_Stream;
+$GLOBALS['wp_stream'] = WP_Stream::get_instance();
 register_activation_hook( __FILE__, array( 'WP_Stream', 'install' ) );

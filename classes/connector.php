@@ -64,12 +64,14 @@ abstract class WP_Stream_Connector {
 
 	/**
 	 * Log handler
+	 *
 	 * @param  string $message   sprintf-ready error message string
 	 * @param  array  $args      sprintf (and extra) arguments to use
 	 * @param  int    $object_id Target object id
-	 * @param  string $action    Action performed (stream_action)
-	 * @param  int    $user_id   User responsible for the action
 	 * @param  array  $contexts  Contexts of the action
+	 * @param  int    $user_id   User responsible for the action
+	 *
+	 * @internal param string $action Action performed (stream_action)
 	 * @return void
 	 */
 	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
@@ -86,9 +88,11 @@ abstract class WP_Stream_Connector {
 
 	/**
 	 * Save log data till shutdown, so other callbacks would be able to override
+	 *
 	 * @param  string $handle Special slug to be shared with other actions
-	 * @param  mixed  $arg1   Extra arguments to sent to log()
-	 * @param  mixed  $arg2, etc..
+	 *
+	 * @internal param mixed $arg1 Extra arguments to sent to log()
+	 * @internal param mixed $arg2 , etc..
 	 * @return void
 	 */
 	public static function delayed_log( $handle ) {

@@ -49,8 +49,6 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function register_menu() {
-		global $menu;
-
 		self::$screen_id['main'] = add_menu_page(
 			__( 'Stream', 'stream' ),
 			__( 'Stream', 'stream' ),
@@ -78,6 +76,9 @@ class WP_Stream_Admin {
 	 * Enqueue scripts/styles for admin screen
 	 *
 	 * @action admin_enqueue_scripts
+	 *
+	 * @param $hook
+	 *
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
@@ -273,6 +274,12 @@ class WP_Stream_Admin {
 	 * Filter user caps to dynamically grant our view cap based on allowed roles
 	 *
 	 * @filter user_has_cap
+	 *
+	 * @param $allcaps
+	 * @param $caps
+	 * @param $args
+	 * @param $user
+	 *
 	 * @return array
 	 */
 	public static function _filter_user_caps( $allcaps, $caps, $args, $user ) {
@@ -294,6 +301,11 @@ class WP_Stream_Admin {
 	 * Filter role caps to dynamically grant our view cap based on allowed roles
 	 *
 	 * @filter role_has_cap
+	 *
+	 * @param $allcaps
+	 * @param $cap
+	 * @param $role
+	 *
 	 * @return array
 	 */
 	public static function _filter_role_caps( $allcaps, $cap, $role ) {
