@@ -77,6 +77,14 @@ class WP_Stream_Settings {
 						'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
 						'default'     => 0,
 					),
+					array(
+						'name'        => 'private_feeds',
+						'title'       => __( 'Private Feeds', 'stream' ),
+						'type'        => 'checkbox',
+						'desc'        => __( 'Users from the selected roles above will be given a private Feed URL in their User Profile.  Please flush rewrite rules on your site after changing this setting.', 'stream' ),
+						'after_field' => __( 'Enabled' ),
+						'default'     => 0,
+					),
 				),
 			),
 		);
@@ -184,7 +192,7 @@ class WP_Stream_Settings {
 				break;
 			case 'checkbox':
 				$output = sprintf(
-					'<input type="checkbox" name="%1$s[%2$s_%3$s]" id="%1$s[%2$s_%3$s]" value="1" %4$s /> %5$s',
+					'<label><input type="checkbox" name="%1$s[%2$s_%3$s]" id="%1$s[%2$s_%3$s]" value="1" %4$s /> %5$s</label>',
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name ),
