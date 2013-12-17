@@ -152,7 +152,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 						$author_role
 					);
 				} else {
-					$out = 'NA';
+					$out = 'N/A';
 				}
 				break;
 
