@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: http://x-team.com
  * Description: Track and monitor every change made on your WordPress site. All logged-in user activity is recorded and organized by action and context for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 0.7.3
+ * Version: 0.8
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
