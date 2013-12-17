@@ -60,6 +60,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 ## Changelog ##
 
+### 0.8 ###
+**2013/12/16** - Ability to query Stream records in a private RSS feed. Bug fixes. Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
 ### 0.7.3 ###
 **2013/12/13** - Bug fix for Role Access option. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
