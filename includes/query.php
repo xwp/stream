@@ -224,7 +224,7 @@ class WP_Stream_Query {
 
 }
 
-function stream_query( $args ) {
+function stream_query( $args = array() ) {
 	return WP_Stream_Query::get_instance()->query( $args );
 }
 
