@@ -11,6 +11,10 @@ class WP_Stream_Feeds {
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
 
 	public static function load() {
+		if ( ! isset( WP_Stream_Settings::$options['general_private_feeds'] ) || 1 != WP_Stream_Settings::$options['general_private_feeds'] ) {
+			return;
+		}
+
 		add_action( 'show_user_profile', array( __CLASS__, 'save_user_feed_key' ) );
 		add_action( 'edit_user_profile', array( __CLASS__, 'save_user_feed_key' ) );
 
@@ -43,17 +47,7 @@ class WP_Stream_Feeds {
 	 * @return string
 	 */
 	public static function user_feed_key( $user ) {
-
-		// check to see if anything is telling us to turn off the feed url
-		$feeds_disabled = ( 
-			! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] )
-			OR
-			WP_Stream_Settings::$options['general_private_feeds'] === 0
-			OR
-			! isset( WP_Stream_Settings::$options['general_private_feeds'] )
-		);
-
-		if ( $feeds_disabled ) {
+		if ( ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 			return;
 		}
 
