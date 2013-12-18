@@ -268,7 +268,7 @@ class WP_Stream_Admin {
     			AND t1.ID=t3.record_id;
 		";
 
-		$wpdb->query( $query );
+		$wpdb->query( $wpdb->prepare( $query ) );
 	}
 
 	/**
@@ -284,7 +284,7 @@ class WP_Stream_Admin {
 			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
 			// Delete all tables
 			foreach ( array( $wpdb->stream, $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
-				$wpdb->query( "DROP TABLE $table" );
+				$wpdb->query( $wpdb->prepare( "DROP TABLE $table" ) );
 			}
 			//Delete database option
 			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
