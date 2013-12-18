@@ -237,25 +237,18 @@ class WP_Stream_Admin {
 	public static function erase_stream_records() {
 		global $wpdb;
 
-		// first get the ids of the items we want to delete
-		$id_query = $wpdb->get_col( "SELECT `ID` FROM `wp_stream` WHERE `type` = 'stream';" );
+		$query = "
+			DELETE t1, t2, t3
+			FROM {$wpdb->stream} as t1
+    			INNER JOIN {$wpdb->streamcontext} as t2
+    			INNER JOIN {$wpdb->streammeta} as t3
+			WHERE t1.type = 'stream'
+    			AND t1.ID=t2.record_id
+    			AND t1.ID=t3.record_id;
+		";
 
-		// now pack them into a mysql usable string
-		$id_string = implode( ',', $id_query );
+		$wpdb->query( $query );
 
-		// now since the tables have different col names that we need to refer to, we split them into type
-
-		// WHERE `ID`
-		foreach ( array( $wpdb->stream ) as $table ) {
-			$query_by_ID = "DELETE FROM " . $table . " WHERE `ID` IN ( " . $id_string . " )";
-			$wpdb->query( $query_by_ID );
-		}
-
-		// WHERE `record_id`
-		foreach ( array( $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
-			$query_by_record_id = "DELETE FROM " . $table . " WHERE `record_id` IN ( " . $id_string . " )";
-			$wpdb->query( $query_by_record_id );
-		}
 	}
 
 	public static function purge_schedule_setup() {
