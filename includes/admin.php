@@ -41,6 +41,9 @@ class WP_Stream_Admin {
 		// Auto purge setup
 		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
 		add_action( 'stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
+
+		// Load Dashboard widget
+		add_action( 'wp_dashboard_setup', array( __CLASS__, 'stream_dashboard_widget' ) );
 	}
 
 	/**
@@ -304,4 +307,66 @@ class WP_Stream_Admin {
 
 		return $allcaps;
 	}
+
+
+	/**
+	 * Add a widget to the dashboard.
+	 */
+	public static function stream_dashboard_widget() {
+
+		wp_add_dashboard_widget(
+			'stream_dashboard_widget', // Widget slug.
+			__( 'Stream', 'stream' ), // Title.
+			array( __CLASS__, 'stream_dashboard_widget_contents' ) // Display function.
+		);
+	}
+
+	/**
+	 * Outputs the contents of our Dashboard Widget.
+	 */
+	public static function stream_dashboard_widget_contents() {
+
+		$output = '';
+
+		$args = array(
+			'records_per_page' => 1
+		);
+
+		print '<pre>';
+		print_r(stream_query( $args ));
+		print '</pre>';
+
+/*
+		$output .= '<table class="wp-list-table widefat fixed records" cellspacing="0">' . "\n";
+			$output .= '<thead>' . "\n";
+			$output .= '<tr>' . "\n";
+				$output .= '<th scope="col" id="date" class="manage-column column-date asc"  style=""><span>Date</span></th>' . "\n";
+				$output .= '<th scope="col" id="summary" class="manage-column column-summary"  style="">Summary</th>' . "\n";
+				$output .= '<th scope="col" id="author" class="manage-column column-author"  style="">Author</th>' . "\n";
+			$output .= '</tr>' . "\n";
+			$output .= '</thead>' . "\n";
+
+			$output .= '<tfoot>' . "\n";
+			$output .= '<tr>' . "\n";
+				$output .= '<th scope="col" id="date" class="manage-column column-date asc"  style=""><span>Date</span></th>' . "\n";
+				$output .= '<th scope="col" id="summary" class="manage-column column-summary"  style="">Summary</th>' . "\n";
+				$output .= '<th scope="col" id="author" class="manage-column column-author"  style="">Author</th>' . "\n";
+			$output .= '</tr>' . "\n";
+			$output .= '</tfoot>' . "\n";
+
+			$output .= '<tbody id="the-list">' . "\n";
+
+				$output .= '<tr class="alternate">' . "\n";
+					$output .= '<td class="date column-date"><strong>2 hours ago</strong><br /><a href="http://local.wordpress-trunk.dev/wp-admin/admin.php?page=wp_stream&date=2013/12/18">2013/12/18</a><br />02:02:12 PM</td>' . "\n";
+					$output .= '<td class="summary column-summary">"Hello Dolly" plugin activated </td>' . "\n";
+					$output .= '<td class="author column-author"><a href="http://local.wordpress-trunk.dev/wp-admin/admin.php?page=wp_stream&author=1"><img alt="" src="http://0.gravatar.com/avatar/06e92fdf4a9a63441dff65945114b47f?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G" class="avatar avatar-40 photo" height="40" width="40" /> <span>admin</span></a><br /><small>Administrator</small></td>' . "\n";
+				$output .= '</tr>' . "\n";
+		$output .= '</table>' . "\n";
+
+		echo $output;
+
+*/
+
+	} 
+
 }
