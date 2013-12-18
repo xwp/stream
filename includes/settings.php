@@ -61,6 +61,28 @@ class WP_Stream_Settings {
 						'default'     => array( 'administrator' ),
 					),
 					array(
+						'name'        => 'private_feeds',
+						'title'       => __( 'Private Feeds', 'stream' ),
+						'type'        => 'checkbox',
+						'desc'        => sprintf(
+							__( 'Users from the selected roles above will be given a private Feed URL in their %sUser Profile%s. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
+							sprintf(
+								'<a href="%s" title="%s">',
+								admin_url( 'profile.php' ),
+								esc_attr__( 'View Profile', 'stream' )
+							),
+							'</a>',
+							sprintf(
+								'<a href="%s" title="%s" target="_blank">',
+								esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
+								esc_attr__( 'View Codex', 'stream' )
+							),
+							'</a>'
+						),
+						'after_field' => __( 'Enabled' ),
+						'default'     => 0,
+					),
+					array(
 						'name'        => 'records_ttl',
 						'title'       => __( 'Keep Records for', 'stream' ),
 						'type'        => 'number',
@@ -75,14 +97,6 @@ class WP_Stream_Settings {
 						'type'        => 'link',
 						'href'        => admin_url( 'admin-ajax.php?action=wp_stream_reset' ),
 						'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
-						'default'     => 0,
-					),
-					array(
-						'name'        => 'private_feeds',
-						'title'       => __( 'Private Feeds', 'stream' ),
-						'type'        => 'checkbox',
-						'desc'        => __( 'Users from the selected roles above will be given a private Feed URL in their User Profile.  Please flush rewrite rules on your site after changing this setting.', 'stream' ),
-						'after_field' => __( 'Enabled' ),
 						'default'     => 0,
 					),
 				),
