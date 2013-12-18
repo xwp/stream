@@ -99,7 +99,7 @@ class WP_Stream_Settings {
 							array(
 								'action'          => 'wp_stream_reset',
 								'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-							 ),
+							),
 							admin_url( 'admin-ajax.php' )
 						),
 						'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
