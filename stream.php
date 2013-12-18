@@ -79,7 +79,7 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'query.php';
 		require_once WP_STREAM_INC_DIR . 'context-query.php';
 
-		// Loads support for feeds
+		// Load support for feeds
 		require_once WP_STREAM_INC_DIR . 'feeds.php';
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
 

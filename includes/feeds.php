@@ -11,6 +11,10 @@ class WP_Stream_Feeds {
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
 
 	public static function load() {
+		if ( ! isset( WP_Stream_Settings::$options['general_private_feeds'] ) || 1 != WP_Stream_Settings::$options['general_private_feeds'] ) {
+			return;
+		}
+
 		add_action( 'show_user_profile', array( __CLASS__, 'save_user_feed_key' ) );
 		add_action( 'edit_user_profile', array( __CLASS__, 'save_user_feed_key' ) );
 
@@ -46,6 +50,7 @@ class WP_Stream_Feeds {
 		if ( ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 			return;
 		}
+
 		$key = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
 
 		$pretty_permalinks = get_option( 'permalink_structure' );
