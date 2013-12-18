@@ -257,12 +257,18 @@ class WP_Stream_Admin {
 
 	public static function erase_stream_records() {
 		global $wpdb;
-		foreach ( array( $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
-			$wpdb->query( "DELETE FROM $table" );
-		}
 
-		// Delete all stream entries but not others.
-		$wpdb->query( "DELETE FROM $wpdb->stream WHERE type = 'stream' " );
+		$query = "
+			DELETE t1, t2, t3
+			FROM {$wpdb->stream} as t1
+    			INNER JOIN {$wpdb->streamcontext} as t2
+    			INNER JOIN {$wpdb->streammeta} as t3
+			WHERE t1.type = 'stream'
+    			AND t1.ID=t2.record_id
+    			AND t1.ID=t3.record_id;
+		";
+
+		$wpdb->query( $query );
 	}
 
 	/**
@@ -288,6 +294,7 @@ class WP_Stream_Admin {
 		} else {
 			wp_die( "You don't have sufficient priviledges to do this action." );
 		}
+
 	}
 
 	public static function purge_schedule_setup() {
