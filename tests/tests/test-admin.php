@@ -75,7 +75,7 @@ class Test_WP_Stream_Admin extends WP_StreamTestCase {
 		$this->assertTrue( in_array( 'wp_stream', reset( $menu ) ) );
 
 		//Check submenu
-		$this->assertQueryTrue( 'wp_stream_settings', $submenu['wp_stream'][1] );
+		$this->assertTrue( in_array( 'wp_stream_settings', $submenu['wp_stream'][1] ) );
 	}
 
 	/**

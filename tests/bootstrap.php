@@ -6,6 +6,9 @@
  * @author Jonathan Bardo <jonathan.bardo@x-team.com>
  */
 
+//Use in code to trigger custom actions
+define( 'STREAM_TESTS', true );
+
 //Create our own test case to prevent repeating ourself
 require_once getenv( 'WP_TESTS_DIR' ) . '/includes/functions.php';
 
