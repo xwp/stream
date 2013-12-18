@@ -83,7 +83,7 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'feeds.php';
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
 
-		if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 		}
