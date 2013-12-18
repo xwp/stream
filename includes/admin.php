@@ -19,6 +19,7 @@ class WP_Stream_Admin {
 	const SETTINGS_PAGE_SLUG = 'wp_stream_settings';
 	const ADMIN_PARENT_PAGE  = 'admin.php';
 	const VIEW_CAP           = 'view_stream';
+	const SETTINGS_CAP       = 'manage_options';
 
 	public static function load() {
 		// User and role caps
@@ -37,6 +38,9 @@ class WP_Stream_Admin {
 
 		// Reset Streams database
 		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
+
+		// Uninstall Streams and Deactivate plugin
+		add_action( 'wp_ajax_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
 
 		// Auto purge setup
 		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
@@ -66,7 +70,7 @@ class WP_Stream_Admin {
 			self::RECORDS_PAGE_SLUG,
 			__( 'Stream Settings', 'stream' ),
 			__( 'Settings', 'stream' ),
-			'manage_options',
+			self::SETTINGS_CAP,
 			'wp_stream_settings',
 			array( __CLASS__, 'render_page' )
 		);
@@ -82,9 +86,10 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
-		if ( ! in_array( $hook, self::$screen_id ) ) {
+		if ( ! in_array( $hook, self::$screen_id ) && 'plugins.php' !== $hook ) {
 			return;
 		}
+
 		wp_enqueue_script( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.jquery.min.js', array( 'jquery' ), '1.0.0' );
 		wp_enqueue_style( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.min.css', array(), '1.0.0' );
 		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery' ) );
@@ -93,7 +98,8 @@ class WP_Stream_Admin {
 			'wp_stream',
 			array(
 				'i18n' => array(
-					'confirm_purge' => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+					'confirm_uninstall' => __( 'Are you sure you want to delete all of Stream tables from the database? This cannot be undone.', 'stream' ),
 					),
 				)
 			);
@@ -159,9 +165,18 @@ class WP_Stream_Admin {
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
 			$admin_page_url  = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
-			$admin_page_link = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
-			array_push( $links, $admin_page_link );
+			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
+
+			$url = add_query_arg(
+				array(
+					'action'          => 'wp_stream_uninstall',
+					'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+				),
+				admin_url( 'admin-ajax.php' )
+			);
+			$links[] = sprintf( '<span id="wp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall & Deactivate', 'stream' ) );
 		}
+
 		return $links;
 	}
 
@@ -230,14 +245,48 @@ class WP_Stream_Admin {
 	}
 
 	public static function wp_ajax_reset() {
-		self::erase_stream_records();
-		wp_redirect( admin_url( 'admin.php?page=wp_stream_settings#reset' ) );
+		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+		if ( current_user_can( self::SETTINGS_CAP ) ) {
+			self::erase_stream_records();
+			wp_redirect( admin_url( 'admin.php?page=wp_stream_settings#reset' ) );
+			exit;
+		} else {
+			wp_die( "You don't have sufficient priviledges to do this action." );
+		}
 	}
 
 	public static function erase_stream_records() {
 		global $wpdb;
-		foreach ( array( $wpdb->stream, $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
+		foreach ( array( $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
 			$wpdb->query( "DELETE FROM $table" );
+		}
+
+		// Delete all stream entries but not others.
+		$wpdb->query( "DELETE FROM $wpdb->stream WHERE type = 'stream' " );
+	}
+
+	/**
+	 * This function is used to uninstall all custom tables and uninstall the plugin
+	 * It will also uninstall custom actions
+	 */
+	public static function uninstall_plugin(){
+		global $wpdb;
+		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
+		if ( current_user_can( self::SETTINGS_CAP ) ) {
+			// Deactivate the plugin
+			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
+			// Delete all tables
+			foreach ( array( $wpdb->stream, $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
+				$wpdb->query( "DROP TABLE $table" );
+			}
+			//Delete database option
+			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+			//Redirect to plugin page
+			wp_redirect( add_query_arg( array( 'deactivate' => true ) , admin_url( 'plugins.php' ) ) );
+			exit;
+		} else {
+			wp_die( "You don't have sufficient priviledges to do this action." );
 		}
 	}
 

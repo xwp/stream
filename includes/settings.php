@@ -95,7 +95,13 @@ class WP_Stream_Settings {
 						'name'        => 'delete_all_records',
 						'title'       => __( 'Delete All Records', 'stream' ),
 						'type'        => 'link',
-						'href'        => admin_url( 'admin-ajax.php?action=wp_stream_reset' ),
+						'href'        =>  add_query_arg(
+							array(
+								'action'          => 'wp_stream_reset',
+								'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+							 ),
+							admin_url( 'admin-ajax.php' )
+						),
 						'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
 						'default'     => 0,
 					),
