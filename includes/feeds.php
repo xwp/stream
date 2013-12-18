@@ -43,9 +43,20 @@ class WP_Stream_Feeds {
 	 * @return string
 	 */
 	public static function user_feed_key( $user ) {
-		if ( ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
+
+		// check to see if anything is telling us to turn off the feed url
+		$feeds_disabled = ( 
+			! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] )
+			OR
+			WP_Stream_Settings::$options['general_private_feeds'] === 0
+			OR
+			! isset( WP_Stream_Settings::$options['general_private_feeds'] )
+		);
+
+		if ( $feeds_disabled ) {
 			return;
 		}
+
 		$key = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
 
 		$pretty_permalinks = get_option( 'permalink_structure' );
