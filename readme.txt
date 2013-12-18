@@ -33,12 +33,23 @@ Every logged-in user action is logged in an activity stream and organized for ea
  * Media Library
  * Widgets
 
+**Noteworthy features:**
+
+ * Limit who can view activity records by user role
+ * Private RSS feeds of activity records
+ * Set how long records should live before being purged automatically
+ * Option to manually purge all activity records from the database
+
 **Coming soon:**
 
- * Comments
- * Multisite
+ * Comments activity records
+ * Multisite view of all activity records on a network
+ * WordPress core updates tracking
+ * Specify which roles should have their activity logged
+ * Live update of activity records in the Stream
+ * Private JSON feeds of activity records
 
-Built with performance in mind, you can determine how long records should live before being purged (depending on the amount of user activity your site can expect). Stream also won’t pollute your default posts table with records or slow down content querying on your site.
+Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
 Stream is built to extend, allowing developers to easily build their own connectors to track any type of action in the activity stream (developer documentation coming soon).
 
@@ -50,6 +61,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 2. Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 0.8 =
+**2013/12/16** - Ability to query Stream records in a private RSS feed. Bug fixes. Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 = 0.7.3 =
 **2013/12/13** - Bug fix for Role Access option. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)

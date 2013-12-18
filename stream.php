@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: http://x-team.com
  * Description: Track and monitor every change made on your WordPress site. All logged-in user activity is recorded and organized by action and context for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 0.7.3
+ * Version: 0.8
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -79,7 +79,11 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'query.php';
 		require_once WP_STREAM_INC_DIR . 'context-query.php';
 
-		if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+		// Load support for feeds
+		require_once WP_STREAM_INC_DIR . 'feeds.php';
+		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
+
+		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 		}
@@ -87,7 +91,7 @@ class WP_Stream {
 
 	/**
 	 * Installation / Upgrade checks
-	 * 
+	 *
 	 * @action register_activation_hook
 	 * @return void
 	 */
@@ -103,7 +107,7 @@ class WP_Stream {
 
 	/**
 	 * Return active instance of WP_Stream, create one if it doesn't exist
-	 * 
+	 *
 	 * @return WP_Stream
 	 */
 	public static function get_instance() {

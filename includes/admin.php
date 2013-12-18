@@ -15,9 +15,10 @@ class WP_Stream_Admin {
 	 */
 	public static $list_table = null;
 
-	const ADMIN_PAGE_SLUG   = 'wp_stream_settings';
-	const ADMIN_PARENT_PAGE = 'admin.php';
-	const VIEW_CAP          = 'view_stream';
+	const RECORDS_PAGE_SLUG  = 'wp_stream';
+	const SETTINGS_PAGE_SLUG = 'wp_stream_settings';
+	const ADMIN_PARENT_PAGE  = 'admin.php';
+	const VIEW_CAP           = 'view_stream';
 
 	public static function load() {
 		// User and role caps
@@ -53,14 +54,14 @@ class WP_Stream_Admin {
 			__( 'Stream', 'stream' ),
 			__( 'Stream', 'stream' ),
 			self::VIEW_CAP,
-			'wp_stream',
+			self::RECORDS_PAGE_SLUG,
 			array( __CLASS__, 'stream_page' ),
 			'div',
 			3
 		);
 
 		self::$screen_id['settings'] = add_submenu_page(
-			'wp_stream',
+			self::RECORDS_PAGE_SLUG,
 			__( 'Stream Settings', 'stream' ),
 			__( 'Settings', 'stream' ),
 			'manage_options',
@@ -158,7 +159,7 @@ class WP_Stream_Admin {
 	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
-			$admin_page_url  = add_query_arg( array( 'page' => self::ADMIN_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
+			$admin_page_url  = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
 			$admin_page_link = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 			array_push( $links, $admin_page_link );
 		}
@@ -253,7 +254,7 @@ class WP_Stream_Admin {
 		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->stream WHERE created < %s ", $date->format( 'Y-m-d H:i:s' ) ) );
-		
+
 		if ( ! $ids ) {
 			return;
 		}
