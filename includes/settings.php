@@ -61,6 +61,28 @@ class WP_Stream_Settings {
 						'default'     => array( 'administrator' ),
 					),
 					array(
+						'name'        => 'private_feeds',
+						'title'       => __( 'Private Feeds', 'stream' ),
+						'type'        => 'checkbox',
+						'desc'        => sprintf(
+							__( 'Users from the selected roles above will be given a private Feed URL in their %sUser Profile%s. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
+							sprintf(
+								'<a href="%s" title="%s">',
+								admin_url( 'profile.php' ),
+								esc_attr__( 'View Profile', 'stream' )
+							),
+							'</a>',
+							sprintf(
+								'<a href="%s" title="%s" target="_blank">',
+								esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
+								esc_attr__( 'View Codex', 'stream' )
+							),
+							'</a>'
+						),
+						'after_field' => __( 'Enabled' ),
+						'default'     => 0,
+					),
+					array(
 						'name'        => 'records_ttl',
 						'title'       => __( 'Keep Records for', 'stream' ),
 						'type'        => 'number',
@@ -184,7 +206,7 @@ class WP_Stream_Settings {
 				break;
 			case 'checkbox':
 				$output = sprintf(
-					'<input type="checkbox" name="%1$s[%2$s_%3$s]" id="%1$s[%2$s_%3$s]" value="1" %4$s /> %5$s',
+					'<label><input type="checkbox" name="%1$s[%2$s_%3$s]" id="%1$s[%2$s_%3$s]" value="1" %4$s /> %5$s</label>',
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name ),
