@@ -30,6 +30,7 @@
  * tion, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
 class WP_Stream {
 
