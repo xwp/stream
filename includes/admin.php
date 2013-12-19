@@ -99,10 +99,10 @@ class WP_Stream_Admin {
 			array(
 				'i18n' => array(
 					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
-					'confirm_uninstall' => __( 'Are you sure you want to delete all of Stream tables from the database? This cannot be undone.', 'stream' ),
-					),
-				)
-			);
+					'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
+				),
+			)
+		);
 		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 	}
 
@@ -174,7 +174,7 @@ class WP_Stream_Admin {
 				),
 				admin_url( 'admin-ajax.php' )
 			);
-			$links[] = sprintf( '<span id="wp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall & Deactivate', 'stream' ) );
+			$links[] = sprintf( '<span id="wp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall', 'stream' ) );
 		}
 
 		return $links;
