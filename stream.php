@@ -30,8 +30,6 @@
  * tion, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-
 class WP_Stream {
 
 	public static $instance;
@@ -59,6 +57,9 @@ class WP_Stream {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			return;
 		}
+
+		//Load languages
+		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
 
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_INC_DIR . 'settings.php';
@@ -88,6 +89,17 @@ class WP_Stream {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 		}
+	}
+
+	/**
+	 * Loads the translation files.
+	 *
+	 * @access public
+	 * @action plugins_loaded
+	 * @return void
+	 */
+	public static function i18n() {
+		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 	/**
