@@ -48,8 +48,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			'unapproved' => __( 'Unapproved', 'stream' ),
 			'trashed'    => __( 'Trashed', 'stream' ),
 			'untrashed'  => __( 'Restored', 'stream' ),
-			'spammed'    => __( 'Spammed', 'stream' ),
-			'unspammed'  => __( 'Approved', 'stream' ),
+			'spammed'    => __( 'Marked as Spam', 'stream' ),
+			'unspammed'  => __( 'Unmarked as Spam', 'stream' ),
 			'deleted'    => __( 'Deleted', 'stream' ),
 			'duplicate'  => __( 'Deleted', 'stream' ),
 			'throttled'  => __( 'Deleted', 'stream' ),
@@ -324,12 +324,36 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	}
 
 	/**
+	* Track comment status transition
+	*
+	* @action transition_comment_status
+	*/
+	public static function callback_transition_comment_status( $new_status, $old_status, $comment ) {
+		if ( 'approved' !== $new_status && 'unapproved' !== $new_status || 'trash' === $old_status || 'spam' === $old_status ) {
+			return;
+		}
+
+		$user_id    = self::get_comment_author( $comment, 'id' );
+		$user_name  = self::get_comment_author( $comment, 'name' );
+		$post_id    = $comment->comment_post_ID;
+		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
+
+		self::log(
+			__( '%s\'s comment %s', 'stream' ),
+			compact( 'user_name', 'new_status', 'old_status', 'post_title', 'post_id', 'user_id' ),
+			$comment_id,
+			array( 'comments' => $new_status )
+		);
+	}
+
+	/**
 	 * Track attempts to add duplicate comments
 	 *
 	 * @action comment_duplicate_trigger
 	 */
 	public static function callback_comment_duplicate_trigger( $comment_data ) {
 		global $wpdb;
+
 		$comment_id = $wpdb->last_result[0]->comment_ID;
 		$comment    = get_comment( $comment_id );
 		$user_id    = self::get_comment_author( $comment, 'id' );
