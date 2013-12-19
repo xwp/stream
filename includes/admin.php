@@ -258,17 +258,17 @@ class WP_Stream_Admin {
 	public static function erase_stream_records() {
 		global $wpdb;
 
-		$query = "
+		$wpdb->query(
+			"
 			DELETE t1, t2, t3
 			FROM {$wpdb->stream} as t1
-    			INNER JOIN {$wpdb->streamcontext} as t2
-    			INNER JOIN {$wpdb->streammeta} as t3
+				INNER JOIN {$wpdb->streamcontext} as t2
+				INNER JOIN {$wpdb->streammeta} as t3
 			WHERE t1.type = 'stream'
-    			AND t1.ID=t2.record_id
-    			AND t1.ID=t3.record_id;
-		";
-
-		$wpdb->query( $wpdb->prepare( $query ) );
+				AND t1.ID = t2.record_id
+				AND t1.ID = t3.record_id;
+			"
+		);
 	}
 
 	/**
@@ -305,17 +305,26 @@ class WP_Stream_Admin {
 
 	public static function purge_scheduled_action() {
 		global $wpdb;
+
 		$days = WP_Stream_Settings::$options['general_records_ttl'];
 		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
-		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->stream WHERE created < %s ", $date->format( 'Y-m-d H:i:s' ) ) );
 
-		if ( ! $ids ) {
-			return;
-		}
-		$wpdb->query( sprintf( "DELETE FROM $wpdb->stream WHERE ID IN (%s)", implode( ',', $ids ) ) );
-		$wpdb->query( sprintf( "DELETE FROM $wpdb->streammeta WHERE record_id IN (%s)", implode( ',', $ids ) ) );
-		$wpdb->query( sprintf( "DELETE FROM $wpdb->streamcontext WHERE record_id IN (%s)", implode( ',', $ids ) ) );
+		$wpdb->query(
+			$wpdb->prepare(
+				"
+				DELETE t1, t2, t3
+				FROM {$wpdb->stream} as t1
+					INNER JOIN {$wpdb->streamcontext} as t2
+					INNER JOIN {$wpdb->streammeta} as t3
+				WHERE t1.type = 'stream'
+					AND t1.created < %s
+					AND t1.ID = t2.record_id
+					AND t1.ID = t3.record_id;
+				",
+				$date->format( 'Y-m-d H:i:s' )
+			)
+		);
 	}
 
 	private static function _role_can_view_stream( $role ) {
