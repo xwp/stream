@@ -64,8 +64,7 @@ class WP_Stream_Settings {
 						'name'        => 'private_feeds',
 						'title'       => __( 'Private Feeds', 'stream' ),
 						'type'        => 'checkbox',
-						'desc'        => sprintf(
-							__( 'Users from the selected roles above will be given a private Feed URL in their %sUser Profile%s. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
+						'desc'        => sprintf( __( 'Users from the selected roles above will be given a private Feed URL in their %sUser Profile%s. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
 							sprintf(
 								'<a href="%s" title="%s">',
 								admin_url( 'profile.php' ),
