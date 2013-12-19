@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2013-12-19 16:09+0100\n"
-"PO-Revision-Date: 2013-12-19 14:26-0500\n"
+"PO-Revision-Date: 2013-12-19 14:39-0500\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -25,7 +25,7 @@ msgstr ""
 
 #: ../connectors/installer.php:42
 msgid "Installed"
-msgstr ""
+msgstr "Installé"
 
 #: ../connectors/installer.php:43
 msgid "Activated"
@@ -40,11 +40,11 @@ msgstr ""
 #: ../connectors/taxonomies.php:58 ../connectors/users.php:54
 #: ../connectors/widgets.php:39
 msgid "Deleted"
-msgstr ""
+msgstr "Supprimé"
 
 #: ../connectors/installer.php:46
 msgid "Edited"
-msgstr ""
+msgstr "Édité"
 
 #: ../connectors/installer.php:57
 msgid "Plugins"
@@ -482,7 +482,7 @@ msgstr ""
 
 #: ../connectors/users.php:85
 msgid "Edit Profile"
-msgstr ""
+msgstr "Modifier le profil"
 
 #: ../connectors/users.php:131
 msgid "New user registration"
@@ -531,12 +531,12 @@ msgstr ""
 #: ../connectors/users.php:312
 #, php-format
 msgid "User account #%d was deleted"
-msgstr ""
+msgstr "Le compte utilisateur #%d à été supprimé"
 
 #: ../connectors/users.php:340
 #, php-format
 msgid "Invalid login attempt for %s"
-msgstr ""
+msgstr "Tentative de connection invalide pour %s"
 
 #: ../connectors/widgets.php:28 ../connectors/widgets.php:53
 msgid "Widgets"
@@ -544,15 +544,15 @@ msgstr ""
 
 #: ../connectors/widgets.php:38
 msgid "Added"
-msgstr ""
+msgstr "Ajouter"
 
 #: ../connectors/widgets.php:42
 msgid "Sorted"
-msgstr ""
+msgstr "Classer"
 
 #: ../connectors/widgets.php:69
 msgid "Edit Widget Area"
-msgstr ""
+msgstr "Modifier la zone de widget"
 
 #: ../connectors/widgets.php:95
 #, php-format
@@ -585,21 +585,23 @@ msgstr ""
 
 #: ../includes/admin.php:67 ../includes/admin.php:178
 msgid "Stream Settings"
-msgstr ""
+msgstr "Paramètres Stream"
 
 #: ../includes/admin.php:96
 msgid ""
 "Are you sure you want to delete all Stream activity records from the "
 "database? This cannot be undone."
 msgstr ""
+"Êtes-vous sûr de vouloir supprimer tous les enregistrements d'activité de "
+"flux de la base de données? Cela ne peut pas être annulée."
 
 #: ../includes/admin.php:227
 msgid "Stream Records"
-msgstr ""
+msgstr "Registre Stream"
 
 #: ../includes/feeds.php:66
 msgid "Stream Feed URL"
-msgstr ""
+msgstr "URL RSS Stream"
 
 #: ../includes/feeds.php:69
 msgid ""
@@ -607,28 +609,34 @@ msgid ""
 "this key a secret and do not share it with other users. If your key has been "
 "compromised, you can use the link below to generate a new one. "
 msgstr ""
+"Il s'agit d'une URL privée pour vous d'accéder à une alimentation "
+"d'enregistrement Stream. Considérez cette clé secrète et de ne pas le "
+"partager avec d'autres utilisateurs. Si votre clé a été compromise, vous "
+"pouvez utiliser le lien ci-dessous pour en générer un nouveau."
 
 #: ../includes/feeds.php:70
 msgid "Generate New Key"
-msgstr ""
+msgstr "Générer une nouvelle clé"
 
 #: ../includes/feeds.php:83
 msgid "Access Denied"
-msgstr ""
+msgstr "Accès refusé"
 
 #: ../includes/feeds.php:84
 msgid ""
 "You don't have permission to view this feed, please contact your site "
 "Administrator."
 msgstr ""
+"Vous n'avez pas la permission de voir ce flux, s'il vous plaît contactez "
+"votre administrateur du site."
 
 #: ../includes/feeds.php:140
 msgid "Stream Feed"
-msgstr ""
+msgstr "Flux Stream"
 
 #: ../includes/list-table.php:18
 msgid "Records per page"
-msgstr ""
+msgstr "Registres par page"
 
 #: ../includes/list-table.php:37
 msgid "Date"
@@ -636,27 +644,27 @@ msgstr ""
 
 #: ../includes/list-table.php:38
 msgid "Summary"
-msgstr ""
+msgstr "Sommaire"
 
 #: ../includes/list-table.php:39
 msgid "Author"
-msgstr ""
+msgstr "Auteur"
 
 #: ../includes/list-table.php:40
 msgid "Connector"
-msgstr ""
+msgstr "Connecteur"
 
 #: ../includes/list-table.php:41
 msgid "Context"
-msgstr ""
+msgstr "Contexte"
 
 #: ../includes/list-table.php:42
 msgid "Action"
-msgstr ""
+msgstr "Action"
 
 #: ../includes/list-table.php:43
 msgid "IP Address"
-msgstr ""
+msgstr "Adresse IP"
 
 #: ../includes/list-table.php:44
 msgid "ID"
@@ -665,27 +673,27 @@ msgstr ""
 #: ../includes/list-table.php:119
 #, php-format
 msgid "%s ago"
-msgstr ""
+msgstr "il y a %s"
 
 #: ../includes/list-table.php:241
 msgid "authors"
-msgstr ""
+msgstr "auteurs"
 
 #: ../includes/list-table.php:249
 msgid "connectors"
-msgstr ""
+msgstr "connecteurs"
 
 #: ../includes/list-table.php:257
 msgid "contexts"
-msgstr ""
+msgstr "contextes"
 
 #: ../includes/list-table.php:265
 msgid "actions"
-msgstr ""
+msgstr "actions"
 
 #: ../includes/list-table.php:277
 msgid "Filter"
-msgstr ""
+msgstr "Filtre"
 
 #: ../includes/list-table.php:283
 msgid "<option value=\"\"></option>"
@@ -693,29 +701,32 @@ msgstr ""
 
 #: ../includes/list-table.php:309
 msgid "Search Records"
-msgstr ""
+msgstr "Rechercher les registres"
 
 #: ../includes/list-table.php:329
 msgid "Date start"
-msgstr ""
+msgstr "Date de début"
 
 #: ../includes/list-table.php:331
 msgid "Date end"
-msgstr ""
+msgstr "Date de fin"
 
 #: ../includes/settings.php:57
 msgid "Role Access"
-msgstr ""
+msgstr "Accèes aux rôles suivant:"
 
 #: ../includes/settings.php:59
 msgid ""
 "Users from the selected roles above will have permission to view Stream "
 "Records. However, only site Administrators can access Stream Settings."
 msgstr ""
+"Les utilisateurs des rôles sélectionnés ci-dessus auront la permission de "
+"voir les données enregisté par Stream. Cependant, seuls les administrateurs "
+"du site peuvent accéder aux paramètres Stream."
 
 #: ../includes/settings.php:65
 msgid "Private Feeds"
-msgstr ""
+msgstr "RSS privés"
 
 #: ../includes/settings.php:67
 #, php-format
@@ -724,41 +735,48 @@ msgid ""
 "their %sUser Profile%s. Please %sflush rewrite rules%s on your site after "
 "changing this setting."
 msgstr ""
+"Les utilisateurs des rôles sélectionnés ci-dessus seront donnés un flux "
+"privé URL dans leur %sProfil Utilisateur%s. N'oublier pas de %svider la "
+"cache des permaliens%s après avoir modifié ce paramètre."
 
 #: ../includes/settings.php:67
 msgid "View Profile"
-msgstr ""
+msgstr "Visualiser le profil"
 
 #: ../includes/settings.php:67
 msgid "View Codex"
-msgstr ""
+msgstr "Voir Codex"
 
 #: ../includes/settings.php:68
 msgid "Enabled"
-msgstr ""
+msgstr "Actif"
 
 #: ../includes/settings.php:73
 msgid "Keep Records for"
-msgstr ""
+msgstr "Garder les données pour"
 
 #: ../includes/settings.php:76
 msgid ""
 "Maximum number of days to keep activity records. Leave blank to keep records "
 "forever."
 msgstr ""
+"Le nombre maximum de jours de tenir des registres d'activité. Laissez vide "
+"pour conserver des dossiers pour toujours."
 
 #: ../includes/settings.php:78
 msgid "days"
-msgstr ""
+msgstr "jours"
 
 #: ../includes/settings.php:82
 msgid "Delete All Records"
-msgstr ""
+msgstr "Supprimer toutes les données"
 
 #: ../includes/settings.php:85
 msgid ""
 "Warning: Clicking this will delete all activity records from the database."
 msgstr ""
+"Avertissement: la confirmation de cette boîte entraînera la suppression de "
+"tous les entrées de la base de donnée."
 
 #: ../includes/settings.php:236
 msgid "Reset Stream Database"
