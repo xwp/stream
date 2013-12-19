@@ -247,7 +247,7 @@ class WP_Stream_Settings {
 					esc_attr( $name ),
 					esc_attr( $class ),
 					esc_attr( $href ),
-					__( 'Reset Stream Database', 'streams' )
+					__( 'Reset Stream Database', 'stream' )
 				);
 				break;
 		}
