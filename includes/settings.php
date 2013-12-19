@@ -64,21 +64,7 @@ class WP_Stream_Settings {
 						'name'        => 'private_feeds',
 						'title'       => __( 'Private Feeds', 'stream' ),
 						'type'        => 'checkbox',
-						'desc'        => sprintf(
-							__( 'Users from the selected roles above will be given a private Feed URL in their %sUser Profile%s. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
-							sprintf(
-								'<a href="%s" title="%s">',
-								admin_url( 'profile.php' ),
-								esc_attr__( 'View Profile', 'stream' )
-							),
-							'</a>',
-							sprintf(
-								'<a href="%s" title="%s" target="_blank">',
-								esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
-								esc_attr__( 'View Codex', 'stream' )
-							),
-							'</a>'
-						),
+						'desc'        => sprintf( __( 'Users from the selected roles above will be given a private Feed URL in their %sUser Profile%s. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ), sprintf( '<a href="%s" title="%s">', admin_url( 'profile.php' ), esc_attr__( 'View Profile', 'stream' ) ), '</a>', sprintf( '<a href="%s" title="%s" target="_blank">', esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ), esc_attr__( 'View Codex', 'stream' ) ), '</a>' ),
 						'after_field' => __( 'Enabled' ),
 						'default'     => 0,
 					),

@@ -34,11 +34,11 @@
 	width: 10%;
 }
 
-.toplevel_page_wp_stream .column-user a {
+.toplevel_page_wp_stream .column-author a {
 	vertical-align : top;
 }
 
-.toplevel_page_wp_stream .column-user img {
+.toplevel_page_wp_stream .column-author img {
 	float: left;
 	margin-right: 10px;
 	margin-top: 1px;
