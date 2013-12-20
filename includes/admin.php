@@ -47,7 +47,7 @@ class WP_Stream_Admin {
 		add_action( 'stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
 
 		// Load Dashboard widget
-		add_action( 'wp_dashboard_setup', array( __CLASS__, 'stream_dashboard_widget' ) );
+		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
 	}
 
 	/**
@@ -89,6 +89,8 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
+		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
+
 		if ( ! in_array( $hook, self::$screen_id ) && 'plugins.php' !== $hook ) {
 			return;
 		}
@@ -106,7 +108,6 @@ class WP_Stream_Admin {
 				),
 			)
 		);
-		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 	}
 
 	/**
@@ -373,65 +374,102 @@ class WP_Stream_Admin {
 		return $allcaps;
 	}
 
-
 	/**
-	 * Add a widget to the dashboard.
+	 * Add Stream Activity widget to the dashboard
+	 *
+	 * @action wp_dashboard_setup
 	 */
-	public static function stream_dashboard_widget() {
-
+	public static function dashboard_stream_activity() {
 		wp_add_dashboard_widget(
-			'stream_dashboard_widget', // Widget slug.
-			__( 'Stream', 'stream' ), // Title.
-			array( __CLASS__, 'stream_dashboard_widget_contents' ) // Display function.
+			'dashboard_stream_activity',
+			__( 'Stream Activity', 'stream' ),
+			array( __CLASS__, 'dashboard_stream_activity_contents' ),
+			array( __CLASS__, 'dashboard_stream_activity_options' )
 		);
 	}
 
 	/**
-	 * Outputs the contents of our Dashboard Widget.
+	 * Contents of the Stream Activity dashboard widget
 	 */
-	public static function stream_dashboard_widget_contents() {
-
-		$output = '';
+	public static function dashboard_stream_activity_contents() {
+		$options = get_option( 'dashboard_stream_activity_options', array() );
 
 		$args = array(
-			'records_per_page' => 1
+			'records_per_page' => isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5,
 		);
+		$records = stream_query( $args );
 
-		print '<pre>';
-		print_r(stream_query( $args ));
-		print '</pre>';
+		if ( ! $records ) {
+			?>
+			<p class="no-records"><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ) ?></p>
+			<?php
+			return;
+		}
 
-/*
-		$output .= '<table class="wp-list-table widefat fixed records" cellspacing="0">' . "\n";
-			$output .= '<thead>' . "\n";
-			$output .= '<tr>' . "\n";
-				$output .= '<th scope="col" id="date" class="manage-column column-date asc"  style=""><span>Date</span></th>' . "\n";
-				$output .= '<th scope="col" id="summary" class="manage-column column-summary"  style="">Summary</th>' . "\n";
-				$output .= '<th scope="col" id="author" class="manage-column column-author"  style="">Author</th>' . "\n";
-			$output .= '</tr>' . "\n";
-			$output .= '</thead>' . "\n";
+		$i = 0;
 
-			$output .= '<tfoot>' . "\n";
-			$output .= '<tr>' . "\n";
-				$output .= '<th scope="col" id="date" class="manage-column column-date asc"  style=""><span>Date</span></th>' . "\n";
-				$output .= '<th scope="col" id="summary" class="manage-column column-summary"  style="">Summary</th>' . "\n";
-				$output .= '<th scope="col" id="author" class="manage-column column-author"  style="">Author</th>' . "\n";
-			$output .= '</tr>' . "\n";
-			$output .= '</tfoot>' . "\n";
+		echo '<ul>';
 
-			$output .= '<tbody id="the-list">' . "\n";
+		foreach ( $records as $record ) :
+			$i++;
+			$author      = get_userdata( $record->author );
+			$author_link = add_query_arg(
+				array(
+					'page'   => self::RECORDS_PAGE_SLUG,
+					'author' => isset( $author->ID ) ? absint( $author->ID ) : 0,
+				),
+				admin_url( self::ADMIN_PARENT_PAGE )
+			);
 
-				$output .= '<tr class="alternate">' . "\n";
-					$output .= '<td class="date column-date"><strong>2 hours ago</strong><br /><a href="http://local.wordpress-trunk.dev/wp-admin/admin.php?page=wp_stream&date=2013/12/18">2013/12/18</a><br />02:02:12 PM</td>' . "\n";
-					$output .= '<td class="summary column-summary">"Hello Dolly" plugin activated </td>' . "\n";
-					$output .= '<td class="author column-author"><a href="http://local.wordpress-trunk.dev/wp-admin/admin.php?page=wp_stream&author=1"><img alt="" src="http://0.gravatar.com/avatar/06e92fdf4a9a63441dff65945114b47f?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G" class="avatar avatar-40 photo" height="40" width="40" /> <span>admin</span></a><br /><small>Administrator</small></td>' . "\n";
-				$output .= '</tr>' . "\n";
-		$output .= '</table>' . "\n";
+			if ( isset( $author->display_name ) ) {
+				$time_author = sprintf(
+					'%s %s <a href="%s">%s</a>',
+					human_time_diff( strtotime( $record->created ) ),
+					esc_html__( 'ago by', 'stream' ),
+					esc_url( $author_link ),
+					esc_html( $author->display_name )
+				);
+			} else {
+				$time_author = sprintf(
+					__( '%s ago', 'stream' ),
+					human_time_diff( strtotime( $record->created ) )
+				);
+			}
+			?>
+			<li class="<?php if ( $i % 2 ) { echo 'alternate'; } ?>">
+				<span class="record-meta"><?php echo $time_author // xss ok ?></span>
+				<br />
+				<?php echo esc_html( $record->summary ) // xss ok ?>
+			</li>
+			<?php
+		endforeach;
 
-		echo $output;
+		echo '</ul>';
+	}
 
-*/
+	/**
+	 * Configurable options for the Stream Activity dashboard widget
+	 */
+	public static function dashboard_stream_activity_options() {
+		$options = get_option( 'dashboard_stream_activity_options', array() );
 
-	} 
+		if ( 'POST' == $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
+			$options['records_per_page'] = absint( $_POST['dashboard_stream_activity_options']['records_per_page'] );
+			update_option( 'dashboard_stream_activity_options', $options );
+		}
+
+		if ( ! isset( $options['records_per_page'] ) ) {
+			$options['records_per_page'] = 5;
+		}
+
+		?>
+		<div id="dashboard-stream-activity-options">
+			<p>
+				<label for="dashboard_stream_activity_options[records_per_page]"><?php esc_html_e( 'Number of Records', 'stream' ) ?></label>
+				<input type="number" min="1" maxlength="3" class="small-text" name="dashboard_stream_activity_options[records_per_page]" id="dashboard_stream_activity_options[records_per_page]" value="<?php echo absint( $options['records_per_page'] ) ?>">
+			</p>
+		</div>
+		<?php
+	}
 
 }

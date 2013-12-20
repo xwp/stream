@@ -1,3 +1,30 @@
+#dashboard_stream_activity.postbox h3 {
+	border-bottom: 0;
+}
+
+#dashboard_stream_activity.postbox .inside,
+#dashboard_stream_activity ul,
+#dashboard_stream_activity ul li {
+	margin: 0;
+	padding: 0;
+}
+
+#dashboard_stream_activity .dashboard-widget-control-form,
+#dashboard_stream_activity .no-records {
+	padding: 1em 12px;
+}
+
+#dashboard_stream_activity ul li {
+	padding: 1em 12px;
+
+	-webkit-box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
+	        box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+#dashboard_stream_activity ul li .record-meta {
+	color: #666;
+}
+
 .toplevel_page_wp_stream .tablenav {
 	padding-top: 6px;
 }
