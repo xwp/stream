@@ -318,6 +318,7 @@ class WP_Stream_Admin {
 			}
 			//Delete database option
 			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+			delete_option( WP_Stream_Settings::KEY );
 			//Redirect to plugin page
 			wp_redirect( add_query_arg( array( 'deactivate' => true ) , admin_url( 'plugins.php' ) ) );
 			exit;
