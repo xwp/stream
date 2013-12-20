@@ -135,12 +135,13 @@ class WP_Stream_Admin {
 					background: none !important;
 					background-repeat: no-repeat;
 				}
-				.toplevel_page_wp_stream #wpbody-content .wrap h2:before {
+				.toplevel_page_wp_stream #wpbody-content .wrap h2:before,
+				.stream_page_wp_stream_settings #wpbody-content .wrap h2:nth-child(1):before {
 					font-family: 'WP Stream' !important;
 					content: '\\73';
-					padding: 0 10px 0 3px;
+					padding: 0 8px 0 0;
 				}
-				";
+			";
 		} else {
 			$css = '
 				#toplevel_page_wp_stream .wp-menu-image {
@@ -160,7 +161,8 @@ class WP_Stream_Admin {
 				#toplevel_page_wp_stream.wp-has-current-submenu .wp-menu-image,
 				#toplevel_page_wp_stream:hover .wp-menu-image {
 					background-position: top left;
-				}';
+				}
+			';
 		}
 		wp_add_inline_style( 'wp-admin', $css );
 	}
