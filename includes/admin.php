@@ -248,7 +248,7 @@ class WP_Stream_Admin {
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			self::erase_stream_records();
-			wp_redirect( admin_url( 'admin.php?page=wp_stream_settings#reset' ) );
+			wp_redirect( add_query_arg( array( 'page' => 'wp_stream_settings', 'message' => 'data_erased' ), admin_url( 'admin.php' ) ) );
 			exit;
 		} else {
 			wp_die( "You don't have sufficient priviledges to do this action." );
