@@ -53,14 +53,6 @@ class WP_Stream_Settings {
 				'title'  => __( 'General', 'stream' ),
 				'fields' => array(
 					array(
-						'name'        => 'role_access',
-						'title'       => __( 'Role Access', 'stream' ),
-						'type'        => 'multi_checkbox',
-						'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
-						'choices'     => self::get_roles(),
-						'default'     => array( 'administrator' ),
-					),
-					array(
 						'name'        => 'log_activity_for',
 						'title'       => __( 'Log activity for', 'stream' ),
 						'type'        => 'multi_checkbox',
@@ -73,6 +65,14 @@ class WP_Stream_Settings {
 							'contributor',
 							'subscriber',
 						),
+					),
+					array(
+						'name'        => 'role_access',
+						'title'       => __( 'Role Access', 'stream' ),
+						'type'        => 'multi_checkbox',
+						'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
+						'choices'     => self::get_roles(),
+						'default'     => array( 'administrator' ),
 					),
 					array(
 						'name'        => 'private_feeds',
