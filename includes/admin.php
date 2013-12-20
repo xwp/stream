@@ -46,8 +46,27 @@ class WP_Stream_Admin {
 		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
 		add_action( 'stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
 
+		// Admin notices
+		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
+
 		// Load Dashboard widget
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
+	}
+
+	/**
+	 * Output specific update
+	 *
+	 * @action admin_notices
+	 * @return string
+	 */
+	public static function admin_notices() {
+		$message = filter_input( INPUT_GET, 'message' );
+
+		switch ( $message ) {
+			case 'data_erased':
+				printf( '<div class="updated"><p>%s</p></div>', __( 'All records have been successfully erased.', 'stream' ) );
+				break;
+		}
 	}
 
 	/**
@@ -259,7 +278,7 @@ class WP_Stream_Admin {
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			self::erase_stream_records();
-			wp_redirect( admin_url( 'admin.php?page=wp_stream_settings#reset' ) );
+			wp_redirect( add_query_arg( array( 'page' => 'wp_stream_settings', 'message' => 'data_erased' ), admin_url( 'admin.php' ) ) );
 			exit;
 		} else {
 			wp_die( "You don't have sufficient priviledges to do this action." );
