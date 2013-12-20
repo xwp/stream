@@ -49,8 +49,8 @@ Every logged-in user action is logged in an activity stream and organized for ea
 
 **Coming soon:**
 
- * Multisite view of all activity records on a network
  * Specify which roles should have their activity logged
+ * Multisite view of all activity records on a network
  * WordPress core updates tracking
  * Live update of activity records in the Stream
  * Private JSON feeds of activity records
