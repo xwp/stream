@@ -439,7 +439,7 @@ class WP_Stream_Admin {
 			<li class="<?php if ( $i % 2 ) { echo 'alternate'; } ?>">
 				<span class="record-meta"><?php echo $time_author // xss ok ?></span>
 				<br />
-				<?php echo esc_html( $record->summary ) // xss ok ?>
+				<?php echo esc_html( $record->summary ) ?>
 			</li>
 			<?php
 		endforeach;
