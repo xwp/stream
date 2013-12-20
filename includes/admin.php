@@ -45,6 +45,23 @@ class WP_Stream_Admin {
 		// Auto purge setup
 		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
 		add_action( 'stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
+
+		//Admin notices
+		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
+	}
+
+	/**
+	 * Output specific update
+	 * @return string
+	 */
+	public static function admin_notices() {
+		$message = filter_input( INPUT_GET, 'message' );
+
+		switch ( $message ) {
+			case 'data_erased':
+				printf( '<div class="updated"><p>%s</p></div>', __( 'All records have been successfully erased.', 'stream' ) );
+				break;
+		}
 	}
 
 	/**

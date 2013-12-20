@@ -195,11 +195,6 @@ class WP_Stream_Settings {
 			return;
 		}
 
-		$message = filter_input( INPUT_GET, 'message' );
-		if ( 'data_erased' === $message && 'delete_all_records' === $name ) {
-			$type = $message;
-		}
-
 		switch ( $type ) {
 			case 'text':
 			case 'number':
@@ -260,13 +255,6 @@ class WP_Stream_Settings {
 					esc_attr( $href ),
 					__( 'Reset Stream Database', 'stream' )
 				);
-				break;
-			case 'data_erased':
-				$output = sprintf(
-					'<p id="wp_stream_data_erased">%1$s</p>',
-					__( 'All records have been sucessfully erased', 'stream' )
-				);
-				$description = null;
 				break;
 		}
 
