@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Stream
- * Plugin URI: http://x-team.com
+ * Plugin URI: http://wordpress.org/plugins/stream/
  * Description: Track and monitor every change made on your WordPress site. All logged-in user activity is recorded and organized by action and context for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 0.8
+ * Version: 0.8.2
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -29,7 +29,6 @@
  * Founda
  * tion, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
 
 class WP_Stream {
 
@@ -59,6 +58,9 @@ class WP_Stream {
 			return;
 		}
 
+		//Load languages
+		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
+
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_INC_DIR . 'settings.php';
 		add_action( 'plugins_loaded', array( 'WP_Stream_Settings', 'load' ) );
@@ -79,14 +81,25 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'query.php';
 		require_once WP_STREAM_INC_DIR . 'context-query.php';
 
-		// Loads support for feeds
+		// Load support for feeds
 		require_once WP_STREAM_INC_DIR . 'feeds.php';
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
 
-		if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 		}
+	}
+
+	/**
+	 * Loads the translation files.
+	 *
+	 * @access public
+	 * @action plugins_loaded
+	 * @return void
+	 */
+	public static function i18n() {
+		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 	/**

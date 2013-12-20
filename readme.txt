@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:      X-team, shadyvb, fjarrett, akeda, kucrut
+Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, akeda, kucrut, topher1kenobe, pascalklaeres
 Tags:              actions, activity, admin, analytics, log, notification, stream, users
 Requires at least: 3.6
 Tested up to:      3.8
@@ -40,6 +40,12 @@ Every logged-in user action is logged in an activity stream and organized for ea
  * Set how long records should live before being purged automatically
  * Option to manually purge all activity records from the database
 
+**Languages:**
+
+ * English
+ * French
+ * German
+
 **Coming soon:**
 
  * Comments activity records
@@ -61,6 +67,12 @@ Stream is built to extend, allowing developers to easily build their own connect
 2. Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 0.8.2 =
+**2013/12/19** - Language packs for French and German. Option to uninstall database tables. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe/), [pascalklaeres](http://profiles.wordpress.org/pascalklaeres/)
+
+= 0.8.1 =
+**2013/12/18** - Setting to enable/disable private feeds functionality. Additional record logged when a user's role is changed. Bug fixes. Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [kucrut](http://profiles.wordpress.org/kucrut/), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe/), [justinsainton](http://profiles.wordpress.org/justinsainton/)
 
 = 0.8 =
 **2013/12/16** - Ability to query Stream records in a private RSS feed. Bug fixes. Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
