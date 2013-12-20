@@ -134,7 +134,13 @@ class WP_Stream_Admin {
 				#adminmenu #menu-posts-feedback div.wp-menu-image {
 					background: none !important;
 					background-repeat: no-repeat;
-				}";
+				}
+				.toplevel_page_wp_stream #wpbody-content .wrap h2:before {
+					font-family: 'WP Stream' !important;
+					content: '\\73';
+					padding: 0 10px 0 3px;
+				}
+				";
 		} else {
 			$css = '
 				#toplevel_page_wp_stream .wp-menu-image {
@@ -189,7 +195,6 @@ class WP_Stream_Admin {
 		?>
 		<div class="wrap">
 
-			<?php screen_icon( 'options-general' ) ?>
 			<h2><?php _e( 'Stream Settings', 'stream' ) ?></h2>
 			<?php settings_errors() ?>
 
