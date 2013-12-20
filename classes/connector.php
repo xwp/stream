@@ -28,6 +28,11 @@ abstract class WP_Stream_Connector {
 	public static function register() {
 		$class = get_called_class();
 
+		// Check if logging action is enable for user or provide a hook for plugin to override on specific cases
+		if ( ! self::is_logging_enabled_for_user() ) {
+			return;
+		}
+
 		foreach ( $class::$actions as $action ) {
 			add_action( $action, array( $class, 'callback' ), null, 5 );
 		}
@@ -62,14 +67,42 @@ abstract class WP_Stream_Connector {
 		return $links;
 	}
 
+
+	/**
+	 * Check if we need to record action for specific users
+	 *
+	 * @param null $user
+	 *
+	 * @return mixed|void
+	 */
+	public static  function is_logging_enabled_for_user( $user = null ) {
+		if ( is_null( $user ) ){
+			$user = wp_get_current_user();
+		}
+
+		// If the user is not a valid user then we log action
+		if ( ! ( $user instanceof WP_User ) || $user->ID === 0 ) {
+			$bool = true;
+		} else {
+			// If a user is part of a role that we don't want to log, we disable it
+			$user_roles = array_values( $user->roles );
+			$roles_logged = WP_Stream_Settings::$options['general_log_activity_for'];
+			$bool = ! ( count( array_intersect( $user_roles, $roles_logged ) ) === 0 );
+		}
+
+		return apply_filters( 'wp_stream_record_log', $bool, $user, get_called_class() );
+	}
+
 	/**
 	 * Log handler
+	 *
 	 * @param  string $message   sprintf-ready error message string
 	 * @param  array  $args      sprintf (and extra) arguments to use
 	 * @param  int    $object_id Target object id
-	 * @param  string $action    Action performed (stream_action)
-	 * @param  int    $user_id   User responsible for the action
 	 * @param  array  $contexts  Contexts of the action
+	 * @param  int    $user_id   User responsible for the action
+	 *
+	 * @internal param string $action Action performed (stream_action)
 	 * @return void
 	 */
 	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
@@ -86,9 +119,11 @@ abstract class WP_Stream_Connector {
 
 	/**
 	 * Save log data till shutdown, so other callbacks would be able to override
+	 *
 	 * @param  string $handle Special slug to be shared with other actions
-	 * @param  mixed  $arg1   Extra arguments to sent to log()
-	 * @param  mixed  $arg2, etc..
+	 *
+	 * @internal param mixed $arg1 Extra arguments to sent to log()
+	 * @internal param mixed $arg2 , etc..
 	 * @return void
 	 */
 	public static function delayed_log( $handle ) {

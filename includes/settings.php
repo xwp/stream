@@ -61,6 +61,20 @@ class WP_Stream_Settings {
 						'default'     => array( 'administrator' ),
 					),
 					array(
+						'name'        => 'log_activity_for',
+						'title'       => __( 'Log activity for', 'stream' ),
+						'type'        => 'multi_checkbox',
+						'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
+						'choices'     => self::get_roles(),
+						'default'     => array(
+							'administrator',
+							'editor',
+							'author',
+							'contributor',
+							'subscriber',
+						),
+					),
+					array(
 						'name'        => 'private_feeds',
 						'title'       => __( 'Private Feeds', 'stream' ),
 						'type'        => 'checkbox',
@@ -266,7 +280,9 @@ class WP_Stream_Settings {
 	/**
 	 * Render Callback for post_types field
 	 *
-	 * @param $args
+	 * @param array $field
+	 *
+	 * @internal param $args
 	 * @return void
 	 */
 	public static function output_field( $field ) {
