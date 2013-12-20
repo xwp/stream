@@ -14,7 +14,8 @@
 	padding: 1em 12px;
 }
 
-#dashboard_stream_activity ul li {
+#dashboard_stream_activity ul li,
+#dashboard_stream_activity .sub-links {
 	padding: 1em 12px;
 
 	-webkit-box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
@@ -38,6 +39,10 @@
 
 #dashboard_stream_activity .record-meta {
 	color: #666;
+}
+
+#dashboard_stream_activity .sub-links {
+	padding: 12px;
 }
 
 .toplevel_page_wp_stream .tablenav {
@@ -74,6 +79,32 @@
 .toplevel_page_wp_stream .column-ip,
 .toplevel_page_wp_stream .column-id {
 	width: 10%;
+}
+
+@media only screen and (max-width: 900px) {
+	.toplevel_page_wp_stream .fixed .column-context,
+	.toplevel_page_wp_stream .fixed .column-action,
+	.toplevel_page_wp_stream .fixed .column-connector,
+	.toplevel_page_wp_stream .fixed .column-ip,
+	.toplevel_page_wp_stream .fixed .column-id {
+		display: none;
+	}
+	.toplevel_page_wp_stream .fixed .column-date,
+	.toplevel_page_wp_stream .fixed .column-author {
+		display: table-cell;
+	}
+	.toplevel_page_wp_stream .fixed .column-date {
+		width: 100px;
+	}
+	.toplevel_page_wp_stream .fixed .column-author {
+		width: 33%;
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	.toplevel_page_wp_stream .fixed .column-author {
+		display: none;
+	}
 }
 
 .toplevel_page_wp_stream .column-author a {

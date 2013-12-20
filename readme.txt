@@ -32,6 +32,7 @@ Every logged-in user action is logged in an activity stream and organized for ea
  * Menus
  * Media Library
  * Widgets
+ * Comments
 
 **Noteworthy features:**
 
@@ -48,10 +49,9 @@ Every logged-in user action is logged in an activity stream and organized for ea
 
 **Coming soon:**
 
- * Comments activity records
+ * Specify which roles should have their activity logged
  * Multisite view of all activity records on a network
  * WordPress core updates tracking
- * Specify which roles should have their activity logged
  * Live update of activity records in the Stream
  * Private JSON feeds of activity records
 
@@ -67,6 +67,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 2. Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 0.9 =
+**2013/12/20** - Added connector for Comments. Stream activity dashboard widget. UI enhancements. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe/)
 
 = 0.8.2 =
 **2013/12/19** - Language packs for French and German. Option to uninstall database tables. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe/), [pascalklaeres](http://profiles.wordpress.org/pascalklaeres/)
