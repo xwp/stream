@@ -45,6 +45,9 @@ class WP_Stream_Admin {
 		// Auto purge setup
 		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
 		add_action( 'stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
+
+		// Load Dashboard widget
+		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
 	}
 
 	/**
@@ -86,6 +89,8 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
+		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
+
 		if ( ! in_array( $hook, self::$screen_id ) && 'plugins.php' !== $hook ) {
 			return;
 		}
@@ -103,7 +108,6 @@ class WP_Stream_Admin {
 				),
 			)
 		);
-		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 	}
 
 	/**
@@ -376,4 +380,110 @@ class WP_Stream_Admin {
 
 		return $allcaps;
 	}
+
+	/**
+	 * Add Stream Activity widget to the dashboard
+	 *
+	 * @action wp_dashboard_setup
+	 */
+	public static function dashboard_stream_activity() {
+		wp_add_dashboard_widget(
+			'dashboard_stream_activity',
+			__( 'Stream Activity', 'stream' ),
+			array( __CLASS__, 'dashboard_stream_activity_contents' ),
+			array( __CLASS__, 'dashboard_stream_activity_options' )
+		);
+	}
+
+	/**
+	 * Contents of the Stream Activity dashboard widget
+	 */
+	public static function dashboard_stream_activity_contents() {
+		$options = get_option( 'dashboard_stream_activity_options', array() );
+
+		$args = array(
+			'records_per_page' => isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5,
+		);
+		$records = stream_query( $args );
+
+		if ( ! $records ) {
+			?>
+			<p class="no-records"><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ) ?></p>
+			<?php
+			return;
+		}
+
+		$i = 0;
+
+		echo '<ul>';
+
+		foreach ( $records as $record ) :
+			$i++;
+			$author      = get_userdata( $record->author );
+			$author_link = add_query_arg(
+				array(
+					'page'   => self::RECORDS_PAGE_SLUG,
+					'author' => isset( $author->ID ) ? absint( $author->ID ) : 0,
+				),
+				admin_url( self::ADMIN_PARENT_PAGE )
+			);
+
+			if ( $author ) {
+				$time_author = sprintf(
+					'%s %s <a href="%s">%s</a>',
+					human_time_diff( strtotime( $record->created ) ),
+					esc_html__( 'ago by', 'stream' ),
+					esc_url( $author_link ),
+					esc_html( $author->display_name )
+				);
+			} else {
+				$time_author = sprintf(
+					__( '%s ago', 'stream' ),
+					human_time_diff( strtotime( $record->created ) )
+				);
+			}
+			?>
+			<li class="<?php if ( $i % 2 ) { echo 'alternate'; } ?>">
+				<?php if ( $author ) : ?>
+					<div class="record-avatar">
+						<a href="<?php echo esc_url( $author_link ) ?>">
+							<?php echo get_avatar( $author->ID, 36 ) ?>
+						</a>
+					</div>
+				<?php endif; ?>
+				<span class="record-meta"><?php echo $time_author // xss ok ?></span>
+				<br />
+				<?php echo esc_html( $record->summary ) ?>
+			</li>
+			<?php
+		endforeach;
+
+		echo '</ul>';
+	}
+
+	/**
+	 * Configurable options for the Stream Activity dashboard widget
+	 */
+	public static function dashboard_stream_activity_options() {
+		$options = get_option( 'dashboard_stream_activity_options', array() );
+
+		if ( 'POST' == $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
+			$options['records_per_page'] = absint( $_POST['dashboard_stream_activity_options']['records_per_page'] );
+			update_option( 'dashboard_stream_activity_options', $options );
+		}
+
+		if ( ! isset( $options['records_per_page'] ) ) {
+			$options['records_per_page'] = 5;
+		}
+
+		?>
+		<div id="dashboard-stream-activity-options">
+			<p>
+				<label for="dashboard_stream_activity_options[records_per_page]"><?php esc_html_e( 'Number of Records', 'stream' ) ?></label>
+				<input type="number" min="1" maxlength="3" class="small-text" name="dashboard_stream_activity_options[records_per_page]" id="dashboard_stream_activity_options[records_per_page]" value="<?php echo absint( $options['records_per_page'] ) ?>">
+			</p>
+		</div>
+		<?php
+	}
+
 }
