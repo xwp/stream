@@ -21,7 +21,22 @@
 	        box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.06);
 }
 
-#dashboard_stream_activity ul li .record-meta {
+#dashboard_stream_activity .record-avatar {
+	float: left;
+	margin-right: 10px;
+}
+
+#dashboard_stream_activity .record-avatar a {
+	display: block;
+}
+
+#dashboard_stream_activity .record-avatar img {
+	-webkit-border-radius: 3px;
+	   -moz-border-radius: 3px;
+	        border-radius: 3px;
+}
+
+#dashboard_stream_activity .record-meta {
 	color: #666;
 }
 

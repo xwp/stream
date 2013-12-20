@@ -421,7 +421,7 @@ class WP_Stream_Admin {
 				admin_url( self::ADMIN_PARENT_PAGE )
 			);
 
-			if ( isset( $author->display_name ) ) {
+			if ( $author ) {
 				$time_author = sprintf(
 					'%s %s <a href="%s">%s</a>',
 					human_time_diff( strtotime( $record->created ) ),
@@ -437,6 +437,13 @@ class WP_Stream_Admin {
 			}
 			?>
 			<li class="<?php if ( $i % 2 ) { echo 'alternate'; } ?>">
+				<?php if ( $author ) : ?>
+					<div class="record-avatar">
+						<a href="<?php echo esc_url( $author_link ) ?>">
+							<?php echo get_avatar( $author->ID, 36 ) ?>
+						</a>
+					</div>
+				<?php endif; ?>
 				<span class="record-meta"><?php echo $time_author // xss ok ?></span>
 				<br />
 				<?php echo esc_html( $record->summary ) ?>
