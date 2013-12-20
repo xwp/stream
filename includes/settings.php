@@ -58,13 +58,7 @@ class WP_Stream_Settings {
 						'type'        => 'multi_checkbox',
 						'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
 						'choices'     => self::get_roles(),
-						'default'     => array(
-							'administrator',
-							'editor',
-							'author',
-							'contributor',
-							'subscriber',
-						),
+						'default'     => self::get_roles(),
 					),
 					array(
 						'name'        => 'role_access',
