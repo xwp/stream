@@ -76,6 +76,32 @@
 	width: 10%;
 }
 
+@media only screen and (max-width: 900px) {
+	.toplevel_page_wp_stream .fixed .column-context,
+	.toplevel_page_wp_stream .fixed .column-action,
+	.toplevel_page_wp_stream .fixed .column-connector,
+	.toplevel_page_wp_stream .fixed .column-ip,
+	.toplevel_page_wp_stream .fixed .column-id {
+		display: none;
+	}
+	.toplevel_page_wp_stream .fixed .column-date,
+	.toplevel_page_wp_stream .fixed .column-author {
+		display: table-cell;
+	}
+	.toplevel_page_wp_stream .fixed .column-date {
+		width: 100px;
+	}
+	.toplevel_page_wp_stream .fixed .column-author {
+		width: 33%;
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	.toplevel_page_wp_stream .fixed .column-author {
+		display: none;
+	}
+}
+
 .toplevel_page_wp_stream .column-author a {
 	vertical-align : top;
 }
