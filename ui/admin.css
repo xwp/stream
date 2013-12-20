@@ -51,13 +51,3 @@
 .alignleft.actions input[type=text] {
 	height: 28px;
 }
-
-.stream_page_wp_stream_settings #wpbody-content p#wp_stream_data_erased {
-	font-weight: 600;
-	color: #006505;
-}
-
-.stream_page_wp_stream_settings #wpbody-content p#wp_stream_data_erased:before {
-	content:  "\2713 ";
-	padding-right: 10px;
-}
