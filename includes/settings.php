@@ -54,7 +54,7 @@ class WP_Stream_Settings {
 				'fields' => array(
 					array(
 						'name'        => 'log_activity_for',
-						'title'       => __( 'Log activity for', 'stream' ),
+						'title'       => __( 'Log Activity for', 'stream' ),
 						'type'        => 'multi_checkbox',
 						'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
 						'choices'     => self::get_roles(),
