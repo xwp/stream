@@ -53,6 +53,14 @@ class WP_Stream_Settings {
 				'title'  => __( 'General', 'stream' ),
 				'fields' => array(
 					array(
+						'name'        => 'log_activity_for',
+						'title'       => __( 'Log Activity for', 'stream' ),
+						'type'        => 'multi_checkbox',
+						'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
+						'choices'     => self::get_roles(),
+						'default'     => array_keys( self::get_roles() ),
+					),
+					array(
 						'name'        => 'role_access',
 						'title'       => __( 'Role Access', 'stream' ),
 						'type'        => 'multi_checkbox',
@@ -266,7 +274,9 @@ class WP_Stream_Settings {
 	/**
 	 * Render Callback for post_types field
 	 *
-	 * @param $args
+	 * @param array $field
+	 *
+	 * @internal param $args
 	 * @return void
 	 */
 	public static function output_field( $field ) {
@@ -280,24 +290,13 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Get translated user roles
+	 * Get an array of user roles
 	 *
 	 * @return array
 	 */
 	public static function get_roles() {
-		global $wp_roles;
+		$wp_roles = new WP_Roles();
 
-		// If a plugin has previously registered roles but that plugin has been deactivated WordPress
-		// will throw a non-object notice here even though those roles will still be returned.
-		// So we'll suppress any notices here just to avoid unnecessary confusion.
-		$role_names = @$wp_roles->role_names;
-
-		$roles = array();
-
-		foreach ( (array) $role_names as $role_name => $role_label ) {
-			$roles[ $role_name ] = translate_user_role( $role_label );
-		}
-
-		return $roles;
+		return $wp_roles->get_names();
 	}
 }
