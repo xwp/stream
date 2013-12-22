@@ -107,6 +107,7 @@ abstract class WP_Stream_Connector {
 	 */
 	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
 		$class = get_called_class();
+
 		return WP_Stream_Log::get_instance()->log(
 			$class::$name,
 			$message,

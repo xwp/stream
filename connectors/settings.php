@@ -203,6 +203,10 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 		$label = self::get_field_label( $option );
 
+		// Prevent php fatal error when saving array as option
+		$old_value = maybe_serialize( $old_value );
+		$value     = maybe_serialize( $value );
+
 		self::log(
 			__( '"%s" setting was updated', 'stream' ),
 			compact( 'label', 'option', 'old_value', 'value' ),

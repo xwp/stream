@@ -13,6 +13,11 @@ class WP_Stream_Settings {
 	const KEY = 'wp_stream';
 
 	/**
+	 * Transient key name
+	 */
+	const FLUSH_RULES_TRANSIENT = 'wp_stream_flush_rules';
+
+	/**
 	 * Plugin settings
 	 *
 	 * @var array
@@ -73,17 +78,11 @@ class WP_Stream_Settings {
 						'title'       => __( 'Private Feeds', 'stream' ),
 						'type'        => 'checkbox',
 						'desc'        => sprintf(
-							__( 'Users from the selected roles above will be given a private Feed URL in their %sUser Profile%s. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
+							__( 'Users from the selected roles above will be given a private Feed URL in their %sUser Profile%s.', 'stream' ),
 							sprintf(
 								'<a href="%s" title="%s">',
 								admin_url( 'profile.php' ),
 								esc_attr__( 'View Profile', 'stream' )
-							),
-							'</a>',
-							sprintf(
-								'<a href="%s" title="%s" target="_blank">',
-								esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
-								esc_attr__( 'View Codex', 'stream' )
 							),
 							'</a>'
 						),
@@ -145,7 +144,7 @@ class WP_Stream_Settings {
 
 		$sections = self::get_fields();
 
-		register_setting( self::KEY, self::KEY );
+		register_setting( self::KEY, self::KEY, array( __CLASS__, 'stream_tests' ) );
 
 		foreach ( $sections as $section_name => $section ) {
 			add_settings_section(
@@ -172,6 +171,19 @@ class WP_Stream_Settings {
 				);
 			}
 		}
+	}
+
+
+	public static function stream_tests( $input ) {
+		if ( is_array( $input ) ) {
+			$updated_option = ( array_key_exists( 'general_private_feeds', $input ) ) ? $input[ 'general_private_feeds' ] : 0;
+			if ( $updated_option !== WP_Stream_Settings::$options['general_private_feeds'] ) {
+				// Delete transient only once the settings page reload
+				set_transient( self::FLUSH_RULES_TRANSIENT, true );
+			}
+		}
+
+		return $input;
 	}
 
 	/**
