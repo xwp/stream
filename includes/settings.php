@@ -191,7 +191,7 @@ class WP_Stream_Settings {
 			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
 			$old_value = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value['general_private_feeds'] : 0;
 			if ( $new_value !== $old_value ) {
-				add_action( 'init', function() { flush_rewrite_rules(); } );
+				add_action( 'admin_init', function() { flush_rewrite_rules(); }, 999 );
 			}
 		}
 	}
