@@ -108,14 +108,17 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
+		wp_register_script( 'select2', WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
+		wp_register_style( 'select2', WP_STREAM_URL . 'ui/select2/select2.css', null, '3.4.5' );
+
 		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 
 		if ( ! in_array( $hook, self::$screen_id ) && 'plugins.php' !== $hook ) {
 			return;
 		}
 
-		wp_enqueue_script( 'select2', WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5' );
-		wp_enqueue_style( 'select2', WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
+		wp_enqueue_script( 'select2' );
+		wp_enqueue_style( 'select2' );
 		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2' ) );
 		wp_localize_script(
 			'wp-stream-admin',
