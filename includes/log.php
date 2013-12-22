@@ -38,13 +38,16 @@ class WP_Stream_Log {
 
 	/**
 	 * Log handler
+	 *
+	 * @param         $connector
 	 * @param  string $message   sprintf-ready error message string
 	 * @param  array  $args      sprintf (and extra) arguments to use
 	 * @param  int    $object_id Target object id
-	 * @param  string $action    Action performed (stream_action)
-	 * @param  int    $user_id   User responsible for the action
 	 * @param  array  $contexts  Contexts of the action
-	 * @return void
+	 * @param  int    $user_id   User responsible for the action
+	 *
+	 * @internal param string $action Action performed (stream_action)
+	 * @return int
 	 */
 	public function log( $connector, $message, $args, $object_id, $contexts, $user_id = null ) {
 		if ( is_null( $user_id ) ) {

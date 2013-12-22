@@ -140,7 +140,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 		if ( ! isset( $new[$key] ) ) {
 			return; // Switching themes ?
 		}
-		
+
 		if ( $old[$key] === $new[$key] ) {
 			return;
 		}
@@ -153,11 +153,11 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 				$location = $locations[$location_id];
 				if ( empty( $new[$key][$location_id] ) ) {
 					$action  = 'unassigned';
-					$menu_id = $old[$key][$location_id];
+					$menu_id = isset( $old[$key][$location_id] ) ? $old[$key][$location_id] : 0;
 					$message = __( '"%s" has been unassigned from "%s"', 'stream' );
 				} else {
 					$action  = 'assigned';
-					$menu_id = $new[$key][$location_id];
+					$menu_id = isset( $new[$key][$location_id] ) ? $new[$key][$location_id] : 0;
 					$message = __( '"%s" has been assigned to "%s"', 'stream' );
 				}
 				$menu = get_term( $menu_id, 'nav_menu' );

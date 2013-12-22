@@ -30,6 +30,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		'delete_user',
 		'deleted_user',
 		'wp_login_failed',
+		'set_user_role',
 	);
 
 	/**
@@ -167,6 +168,31 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Log role transition
+	 *
+	 * @action set_user_role
+	 */
+	public static function callback_set_user_role( $user_id, $new_role, $old_roles ) {
+		if ( empty( $old_roles ) ) {
+			return;
+		}
+
+		global $wp_roles;
+		self::log(
+			__( '%s\'s role was changed from %s to %s', 'stream' ),
+			array(
+				'display_name' => get_user_by( 'id', $user_id )->display_name,
+				'old_role'     => translate_user_role( $wp_roles->role_names[ $old_roles[0] ] ),
+				'new_role'     => translate_user_role( $wp_roles->role_names[ $new_role ] ),
+			),
+			$user_id,
+			array(
+				'users' => 'updated',
+			)
+		);
+	}
+
+	/**
 	 * Log password reset
 	 *
 	 * @action password_reset
@@ -215,17 +241,19 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @action wp_login
 	 */
 	public static function callback_wp_login( $user_login, $user ) {
-		self::log(
-			__( '%s logged in', 'stream' ),
-			array(
-				'display_name' => $user->display_name,
-			),
-			$user->ID,
-			array(
-				'users' => 'login',
-			),
-			$user->ID
-		);
+		if ( self::is_logging_enabled_for_user( $user ) ) {
+			self::log(
+				__( '%s logged in', 'stream' ),
+				array(
+					'display_name' => $user->display_name,
+				),
+				$user->ID,
+				array(
+					'users' => 'login',
+				),
+				$user->ID
+			);
+		}
 	}
 
 	/**

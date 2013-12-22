@@ -36,7 +36,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			array(
 				'date'      => __( 'Date', 'stream' ),
 				'summary'   => __( 'Summary', 'stream' ),
-				'user'      => __( 'User', 'stream' ),
+				'author'    => __( 'Author', 'stream' ),
 				'connector' => __( 'Connector', 'stream' ),
 				'context'   => __( 'Context', 'stream' ),
 				'action'    => __( 'Action', 'stream' ),
@@ -90,6 +90,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'connector', 'context', 'action',
 			'author', 'object_id', 'search',
 			'date', 'date_from', 'date_to',
+			'record__in',
 		);
 		foreach ( $allowed_params as $param ) {
 			if ( $paramval = filter_input( INPUT_GET, $param ) ) {
@@ -137,7 +138,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$out .= $this->get_action_links( $item );
 				break;
 
-			case 'user':
+			case 'author':
 				$user = get_user_by( 'id', $item->author );
 				if ( $user ) {
 					global $wp_roles;
@@ -152,7 +153,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 						$author_role
 					);
 				} else {
-					$out = 'NA';
+					$out = 'N/A';
 				}
 				break;
 
@@ -237,7 +238,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		$filters['author'] = array(
-			'title' => __( 'users', 'stream' ),
+			'title' => __( 'authors', 'stream' ),
 			'items' => $users,
 		);
 

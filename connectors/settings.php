@@ -14,6 +14,19 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static $actions = array(
 		'whitelist_options',
+		'update_option_permalink_structure',
+		'update_option_category_base',
+		'update_option_tag_base',
+	);
+
+	/**
+	 * Option names used in options-permalink.php
+	 * @var array
+	 */
+	public static $permalink_options = array(
+		'permalink_structure',
+		'category_base',
+		'tag_base',
 	);
 
 	/**
@@ -49,7 +62,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'reading'    => __( 'Reading', 'stream' ),
 			'discussion' => __( 'Discussion', 'stream' ),
 			'media'      => __( 'Media', 'stream' ),
-			'permalinks' => __( 'Permalinks', 'stream' ),
+			'permalink'  => __( 'Permalinks', 'stream' ),
 		);
 	}
 
@@ -124,7 +137,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'large_size_h'                  => __( 'Large Image Size', 'stream' ),
 			'uploads_use_yearmonth_folders' => __( 'Uploading Files Organization', 'stream' ),
 			// Permalinks
-			'selection'                     => __( 'Permalink Structure', 'stream' ),
+			'permalink_structure'           => __( 'Permalink structure', 'stream' ),
 			'category_base'                 => __( 'Category base', 'stream' ),
 			'tag_base'                      => __( 'Tag base', 'stream' ),
 		);
@@ -182,13 +195,44 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Trigger this connector core tracker, only on options-permalink.php page
+	 *
+	 * @action update_option_permalink_structure
+	 */
+	public static function callback_update_option_permalink_structure( $old_value, $value ) {
+		self::callback_updated_option( 'permalink_structure', $old_value, $value );
+	}
+
+	/**
+	 * Trigger this connector core tracker, only on options-permalink.php page
+	 *
+	 * @action update_option_category_base
+	 */
+	public static function callback_update_option_category_base( $old_value, $value ) {
+		self::callback_updated_option( 'category_base', $old_value, $value );
+	}
+
+	/**
+	 * Trigger this connector core tracker, only on options-permalink.php page
+	 *
+	 * @action update_option_tag_base
+	 */
+	public static function callback_update_option_tag_base( $old_value, $value ) {
+		self::callback_updated_option( 'tag_base', $old_value, $value );
+	}
+
+	/**
 	 * Track updated settings
 	 *
 	 * @action updated_option
 	 */
 	public static function callback_updated_option( $option, $old_value, $value ) {
 		global $new_whitelist_options, $whitelist_options;
-		$options = $whitelist_options + $new_whitelist_options;
+		$options = array_merge(
+			(array) $whitelist_options,
+			$new_whitelist_options,
+			array( 'permalink' => self::$permalink_options )
+		);
 
 		foreach ( $options as $key => $opts ) {
 			if ( in_array( $option, $opts ) ) {
@@ -202,6 +246,10 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		}
 
 		$label = self::get_field_label( $option );
+
+		// Prevent php fatal error when saving array as option
+		$old_value = maybe_serialize( $old_value );
+		$value     = maybe_serialize( $value );
 
 		self::log(
 			__( '"%s" setting was updated', 'stream' ),

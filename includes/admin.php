@@ -15,9 +15,11 @@ class WP_Stream_Admin {
 	 */
 	public static $list_table = null;
 
-	const ADMIN_PAGE_SLUG   = 'wp_stream_settings';
-	const ADMIN_PARENT_PAGE = 'admin.php';
-	const VIEW_CAP          = 'view_stream';
+	const RECORDS_PAGE_SLUG  = 'wp_stream';
+	const SETTINGS_PAGE_SLUG = 'wp_stream_settings';
+	const ADMIN_PARENT_PAGE  = 'admin.php';
+	const VIEW_CAP           = 'view_stream';
+	const SETTINGS_CAP       = 'manage_options';
 
 	public static function load() {
 		// User and role caps
@@ -37,9 +39,34 @@ class WP_Stream_Admin {
 		// Reset Streams database
 		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
 
+		// Uninstall Streams and Deactivate plugin
+		add_action( 'wp_ajax_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
+
 		// Auto purge setup
 		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
 		add_action( 'stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
+
+		// Admin notices
+		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
+
+		// Load Dashboard widget
+		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
+	}
+
+	/**
+	 * Output specific update
+	 *
+	 * @action admin_notices
+	 * @return string
+	 */
+	public static function admin_notices() {
+		$message = filter_input( INPUT_GET, 'message' );
+
+		switch ( $message ) {
+			case 'data_erased':
+				printf( '<div class="updated"><p>%s</p></div>', __( 'All records have been successfully erased.', 'stream' ) );
+				break;
+		}
 	}
 
 	/**
@@ -55,17 +82,17 @@ class WP_Stream_Admin {
 			__( 'Stream', 'stream' ),
 			__( 'Stream', 'stream' ),
 			self::VIEW_CAP,
-			'wp_stream',
+			self::RECORDS_PAGE_SLUG,
 			array( __CLASS__, 'stream_page' ),
 			'div',
 			3
 		);
 
 		self::$screen_id['settings'] = add_submenu_page(
-			'wp_stream',
+			self::RECORDS_PAGE_SLUG,
 			__( 'Stream Settings', 'stream' ),
 			__( 'Settings', 'stream' ),
-			'manage_options',
+			self::SETTINGS_CAP,
 			'wp_stream_settings',
 			array( __CLASS__, 'render_page' )
 		);
@@ -81,22 +108,28 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
-		if ( ! in_array( $hook, self::$screen_id ) ) {
+		wp_register_script( 'select2', WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
+		wp_register_style( 'select2', WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
+
+		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
+
+		if ( ! in_array( $hook, self::$screen_id ) && 'plugins.php' !== $hook ) {
 			return;
 		}
-		wp_enqueue_script( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.jquery.min.js', array( 'jquery' ), '1.0.0' );
-		wp_enqueue_style( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.min.css', array(), '1.0.0' );
-		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery' ) );
+
+		wp_enqueue_script( 'select2' );
+		wp_enqueue_style( 'select2' );
+		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2' ) );
 		wp_localize_script(
 			'wp-stream-admin',
 			'wp_stream',
 			array(
 				'i18n' => array(
-					'confirm_purge' => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
-					),
-				)
-			);
-		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
+					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+					'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -127,7 +160,14 @@ class WP_Stream_Admin {
 				#adminmenu #menu-posts-feedback div.wp-menu-image {
 					background: none !important;
 					background-repeat: no-repeat;
-				}";
+				}
+				.toplevel_page_wp_stream #wpbody-content .wrap h2:before,
+				.stream_page_wp_stream_settings #wpbody-content .wrap h2:nth-child(1):before {
+					font-family: 'WP Stream' !important;
+					content: '\\73';
+					padding: 0 8px 0 0;
+				}
+			";
 		} else {
 			$css = '
 				#toplevel_page_wp_stream .wp-menu-image {
@@ -147,7 +187,8 @@ class WP_Stream_Admin {
 				#toplevel_page_wp_stream.wp-has-current-submenu .wp-menu-image,
 				#toplevel_page_wp_stream:hover .wp-menu-image {
 					background-position: top left;
-				}';
+				}
+			';
 		}
 		wp_add_inline_style( 'wp-admin', $css );
 	}
@@ -157,10 +198,19 @@ class WP_Stream_Admin {
 	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
-			$admin_page_url  = add_query_arg( array( 'page' => self::ADMIN_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
-			$admin_page_link = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
-			array_push( $links, $admin_page_link );
+			$admin_page_url  = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
+			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
+
+			$url = add_query_arg(
+				array(
+					'action'          => 'wp_stream_uninstall',
+					'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+				),
+				admin_url( 'admin-ajax.php' )
+			);
+			$links[] = sprintf( '<span id="wp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall', 'stream' ) );
 		}
+
 		return $links;
 	}
 
@@ -173,7 +223,6 @@ class WP_Stream_Admin {
 		?>
 		<div class="wrap">
 
-			<?php screen_icon( 'options-general' ) ?>
 			<h2><?php _e( 'Stream Settings', 'stream' ) ?></h2>
 			<?php settings_errors() ?>
 
@@ -229,15 +278,58 @@ class WP_Stream_Admin {
 	}
 
 	public static function wp_ajax_reset() {
-		self::erase_stream_records();
-		wp_redirect( admin_url( 'admin.php?page=wp_stream_settings#reset' ) );
+		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+		if ( current_user_can( self::SETTINGS_CAP ) ) {
+			self::erase_stream_records();
+			wp_redirect( add_query_arg( array( 'page' => 'wp_stream_settings', 'message' => 'data_erased' ), admin_url( 'admin.php' ) ) );
+			exit;
+		} else {
+			wp_die( "You don't have sufficient priviledges to do this action." );
+		}
 	}
 
 	public static function erase_stream_records() {
 		global $wpdb;
-		foreach ( array( $wpdb->stream, $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
-			$wpdb->query( "DELETE FROM $table" );
+
+		$wpdb->query(
+			"
+			DELETE t1, t2, t3
+			FROM {$wpdb->stream} as t1
+				INNER JOIN {$wpdb->streamcontext} as t2
+				INNER JOIN {$wpdb->streammeta} as t3
+			WHERE t1.type = 'stream'
+				AND t1.ID = t2.record_id
+				AND t1.ID = t3.record_id;
+			"
+		);
+	}
+
+	/**
+	 * This function is used to uninstall all custom tables and uninstall the plugin
+	 * It will also uninstall custom actions
+	 */
+	public static function uninstall_plugin(){
+		global $wpdb;
+		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
+		if ( current_user_can( self::SETTINGS_CAP ) ) {
+			// Deactivate the plugin
+			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
+			// Delete all tables
+			foreach ( array( $wpdb->stream, $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
+				$wpdb->query( "DROP TABLE $table" );
+			}
+			//Delete database option
+			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+			delete_option( WP_Stream_Settings::KEY );
+			delete_option( 'dashboard_stream_activity_options' );
+			//Redirect to plugin page
+			wp_redirect( add_query_arg( array( 'deactivate' => true ) , admin_url( 'plugins.php' ) ) );
+			exit;
+		} else {
+			wp_die( "You don't have sufficient priviledges to do this action." );
 		}
+
 	}
 
 	public static function purge_schedule_setup() {
@@ -248,17 +340,26 @@ class WP_Stream_Admin {
 
 	public static function purge_scheduled_action() {
 		global $wpdb;
+
 		$days = WP_Stream_Settings::$options['general_records_ttl'];
 		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
-		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->stream WHERE created < %s ", $date->format( 'Y-m-d H:i:s' ) ) );
-		
-		if ( ! $ids ) {
-			return;
-		}
-		$wpdb->query( sprintf( "DELETE FROM $wpdb->stream WHERE ID IN (%s)", implode( ',', $ids ) ) );
-		$wpdb->query( sprintf( "DELETE FROM $wpdb->streammeta WHERE record_id IN (%s)", implode( ',', $ids ) ) );
-		$wpdb->query( sprintf( "DELETE FROM $wpdb->streamcontext WHERE record_id IN (%s)", implode( ',', $ids ) ) );
+
+		$wpdb->query(
+			$wpdb->prepare(
+				"
+				DELETE t1, t2, t3
+				FROM {$wpdb->stream} as t1
+					INNER JOIN {$wpdb->streamcontext} as t2
+					INNER JOIN {$wpdb->streammeta} as t3
+				WHERE t1.type = 'stream'
+					AND t1.created < %s
+					AND t1.ID = t2.record_id
+					AND t1.ID = t3.record_id;
+				",
+				$date->format( 'Y-m-d H:i:s' )
+			)
+		);
 	}
 
 	private static function _role_can_view_stream( $role ) {
@@ -303,4 +404,121 @@ class WP_Stream_Admin {
 
 		return $allcaps;
 	}
+
+	/**
+	 * Add Stream Activity widget to the dashboard
+	 *
+	 * @action wp_dashboard_setup
+	 */
+	public static function dashboard_stream_activity() {
+		wp_add_dashboard_widget(
+			'dashboard_stream_activity',
+			__( 'Stream Activity', 'stream' ),
+			array( __CLASS__, 'dashboard_stream_activity_contents' ),
+			array( __CLASS__, 'dashboard_stream_activity_options' )
+		);
+	}
+
+	/**
+	 * Contents of the Stream Activity dashboard widget
+	 */
+	public static function dashboard_stream_activity_contents() {
+		$options = get_option( 'dashboard_stream_activity_options', array() );
+
+		$args = array(
+			'records_per_page' => isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5,
+		);
+		$records = stream_query( $args );
+
+		if ( ! $records ) {
+			?>
+			<p class="no-records"><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ) ?></p>
+			<?php
+			return;
+		}
+
+		$i = 0;
+
+		echo '<ul>';
+
+		foreach ( $records as $record ) :
+			$i++;
+
+			$author = get_userdata( $record->author );
+
+			$records_link = add_query_arg(
+				array( 'page' => self::RECORDS_PAGE_SLUG ),
+				admin_url( self::ADMIN_PARENT_PAGE )
+			);
+
+			$author_link = add_query_arg(
+				array( 'author' => isset( $author->ID ) ? absint( $author->ID ) : 0 ),
+				$records_link
+			);
+
+			if ( $author ) {
+				$time_author = sprintf(
+					'%s %s <a href="%s">%s</a>',
+					human_time_diff( strtotime( $record->created ) ),
+					esc_html__( 'ago by', 'stream' ),
+					esc_url( $author_link ),
+					esc_html( $author->display_name )
+				);
+			} else {
+				$time_author = sprintf(
+					__( '%s ago', 'stream' ),
+					human_time_diff( strtotime( $record->created ) )
+				);
+			}
+			?>
+			<li class="<?php if ( $i % 2 ) { echo 'alternate'; } ?>">
+				<?php if ( $author ) : ?>
+					<div class="record-avatar">
+						<a href="<?php echo esc_url( $author_link ) ?>">
+							<?php echo get_avatar( $author->ID, 36 ) ?>
+						</a>
+					</div>
+				<?php endif; ?>
+				<span class="record-meta"><?php echo $time_author // xss ok ?></span>
+				<br />
+				<?php echo esc_html( $record->summary ) ?>
+			</li>
+			<?php
+		endforeach;
+
+		echo '</ul>';
+
+		echo sprintf(
+			'<div class="sub-links"><a href="%s" title="%s">%s</a></div>',
+			esc_url( $records_link ),
+			esc_attr__( 'View all Stream Records', 'stream' ),
+			esc_html__( 'More', 'stream' )
+		); // xss ok
+	}
+
+	/**
+	 * Configurable options for the Stream Activity dashboard widget
+	 */
+	public static function dashboard_stream_activity_options() {
+		$options = get_option( 'dashboard_stream_activity_options', array() );
+
+		if ( 'POST' == $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
+			$options['records_per_page'] = absint( $_POST['dashboard_stream_activity_options']['records_per_page'] );
+			update_option( 'dashboard_stream_activity_options', $options );
+		}
+
+		if ( ! isset( $options['records_per_page'] ) ) {
+			$options['records_per_page'] = 5;
+		}
+
+		?>
+		<div id="dashboard-stream-activity-options">
+			<p>
+				<label for="dashboard_stream_activity_options[records_per_page]"><?php esc_html_e( 'Number of Records', 'stream' ) ?></label>
+				<input type="number" min="1" maxlength="3" class="small-text" name="dashboard_stream_activity_options[records_per_page]" id="dashboard_stream_activity_options[records_per_page]" value="<?php echo absint( $options['records_per_page'] ) ?>">
+			</p>
+		</div>
+		<?php
+	}
+
 }

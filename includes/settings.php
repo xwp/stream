@@ -40,6 +40,9 @@ class WP_Stream_Settings {
 
 		// Register settings, and fields
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
+
+		// Check if we need to flush rewrites rules
+		add_action( 'updated_option', array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 3 );
 	}
 
 	/**
@@ -53,12 +56,36 @@ class WP_Stream_Settings {
 				'title'  => __( 'General', 'stream' ),
 				'fields' => array(
 					array(
+						'name'        => 'log_activity_for',
+						'title'       => __( 'Log Activity for', 'stream' ),
+						'type'        => 'multi_checkbox',
+						'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
+						'choices'     => self::get_roles(),
+						'default'     => array_keys( self::get_roles() ),
+					),
+					array(
 						'name'        => 'role_access',
 						'title'       => __( 'Role Access', 'stream' ),
 						'type'        => 'multi_checkbox',
 						'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
 						'choices'     => self::get_roles(),
 						'default'     => array( 'administrator' ),
+					),
+					array(
+						'name'        => 'private_feeds',
+						'title'       => __( 'Private Feeds', 'stream' ),
+						'type'        => 'checkbox',
+						'desc'        => sprintf(
+							__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
+							sprintf(
+								'<a href="%s" title="%s">',
+								admin_url( 'profile.php' ),
+								esc_attr__( 'View Profile', 'stream' )
+							),
+							'</a>'
+						),
+						'after_field' => __( 'Enabled' ),
+						'default'     => 0,
 					),
 					array(
 						'name'        => 'records_ttl',
@@ -73,7 +100,13 @@ class WP_Stream_Settings {
 						'name'        => 'delete_all_records',
 						'title'       => __( 'Delete All Records', 'stream' ),
 						'type'        => 'link',
-						'href'        => admin_url( 'admin-ajax.php?action=wp_stream_reset' ),
+						'href'        => add_query_arg(
+							array(
+								'action'          => 'wp_stream_reset',
+								'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+							),
+							admin_url( 'admin-ajax.php' )
+						),
 						'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
 						'default'     => 0,
 					),
@@ -139,6 +172,31 @@ class WP_Stream_Settings {
 	}
 
 	/**
+	 * Check if we have updated a settings that requires rewrite rules to be flushed
+	 *
+	 * @param       $option
+	 * @param array $old_value
+	 * @param array $new_value
+	 *
+	 * @internal param string $option
+	 * @action updated_option
+	 * @return void
+	 */
+	public static function updated_option_trigger_flush_rules( $option, $old_value, $new_value ) {
+		if ( self::KEY !== $option ) {
+			return;
+		}
+
+		if ( is_array( $new_value ) && is_array( $old_value ) ) {
+			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
+			$old_value = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value['general_private_feeds'] : 0;
+			if ( $new_value !== $old_value ) {
+				delete_option( 'rewrite_rules' );
+			}
+		}
+	}
+
+	/**
 	 * Compile HTML needed for displaying the field
 	 *
 	 * @param  array  $field  Field settings
@@ -184,7 +242,7 @@ class WP_Stream_Settings {
 				break;
 			case 'checkbox':
 				$output = sprintf(
-					'<input type="checkbox" name="%1$s[%2$s_%3$s]" id="%1$s[%2$s_%3$s]" value="1" %4$s /> %5$s',
+					'<label><input type="checkbox" name="%1$s[%2$s_%3$s]" id="%1$s[%2$s_%3$s]" value="1" %4$s /> %5$s</label>',
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name ),
@@ -225,7 +283,7 @@ class WP_Stream_Settings {
 					esc_attr( $name ),
 					esc_attr( $class ),
 					esc_attr( $href ),
-					__( 'Reset Stream Database', 'streams' )
+					__( 'Reset Stream Database', 'stream' )
 				);
 				break;
 		}
@@ -238,7 +296,9 @@ class WP_Stream_Settings {
 	/**
 	 * Render Callback for post_types field
 	 *
-	 * @param $args
+	 * @param array $field
+	 *
+	 * @internal param $args
 	 * @return void
 	 */
 	public static function output_field( $field ) {
@@ -252,24 +312,13 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Get translated user roles
+	 * Get an array of user roles
 	 *
 	 * @return array
 	 */
 	public static function get_roles() {
-		global $wp_roles;
+		$wp_roles = new WP_Roles();
 
-		// If a plugin has previously registered roles but that plugin has been deactivated WordPress
-		// will throw a non-object notice here even though those roles will still be returned.
-		// So we'll suppress any notices here just to avoid unnecessary confusion.
-		$role_names = @$wp_roles->role_names;
-
-		$roles = array();
-
-		foreach ( (array) $role_names as $role_name => $role_label ) {
-			$roles[ $role_name ] = translate_user_role( $role_label );
-		}
-
-		return $roles;
+		return $wp_roles->get_names();
 	}
 }
