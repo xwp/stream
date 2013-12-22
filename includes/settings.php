@@ -144,7 +144,7 @@ class WP_Stream_Settings {
 
 		$sections = self::get_fields();
 
-		register_setting( self::KEY, self::KEY, array( __CLASS__, 'stream_tests' ) );
+		register_setting( self::KEY, self::KEY, array( __CLASS__, 'validate_settings' ) );
 
 		foreach ( $sections as $section_name => $section ) {
 			add_settings_section(
@@ -173,8 +173,14 @@ class WP_Stream_Settings {
 		}
 	}
 
-
-	public static function stream_tests( $input ) {
+	/**
+	 * Check if we have updated a settings that requires rewrite rules to be flushed
+	 *
+	 * @param $input
+	 *
+	 * @return mixed
+	 */
+	public static function validate_settings( $input ) {
 		if ( is_array( $input ) ) {
 			$updated_option = ( array_key_exists( 'general_private_feeds', $input ) ) ? $input[ 'general_private_feeds' ] : 0;
 			if ( $updated_option !== WP_Stream_Settings::$options['general_private_feeds'] ) {
