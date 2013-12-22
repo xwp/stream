@@ -36,6 +36,8 @@ Every logged-in user action is logged in an activity stream and organized for ea
 
 **Noteworthy features:**
 
+ * Dashboard widget of most recent activity
+ * Specify which roles should have their activity logged
  * Limit who can view activity records by user role
  * Private RSS feeds of activity records
  * Set how long records should live before being purged automatically
@@ -49,7 +51,6 @@ Every logged-in user action is logged in an activity stream and organized for ea
 
 **Coming soon:**
 
- * Specify which roles should have their activity logged
  * Multisite view of all activity records on a network
  * WordPress core updates tracking
  * Live update of activity records in the Stream
@@ -67,6 +68,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 2. Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 0.9.1 =
+**2013/12/21** - Specify which roles should have their activity logged. Delete all options on uninstall. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 = 0.9 =
 **2013/12/20** - Added connector for Comments. Stream activity dashboard widget. UI enhancements. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe/)
