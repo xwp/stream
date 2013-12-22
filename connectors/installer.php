@@ -71,10 +71,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		if ( $record->context == 'wordpress' && $record->action == 'updated' ) {
-			$links [ __( 'About', 'stream' ) ] = admin_url( 'about.php?updated' );
-			$version = get_stream_meta( $record->ID, 'wp_version', true );
-			$links [ __( 'View Release Notes', 'stream' ) ] = esc_url( sprintf( 'http://codex.wordpress.org/Version_%s', $version ) );
+		if ( 'wordpress' == $record->context && 'updated' == $record->action ) {
+			global $wp_version;
+			$version = get_stream_meta( $record->ID, 'new_version', true );
+			if ( $version === $wp_version ) {
+				$links[ __( 'About', 'stream' ) ] = admin_url( 'about.php?updated' );
+			}
+			$links[ __( 'View Release Notes', 'stream' ) ] = esc_url( sprintf( 'http://codex.wordpress.org/Version_%s', $version ) );
 		}
 		return $links;
 	}
