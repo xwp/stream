@@ -109,7 +109,7 @@ class WP_Stream_Admin {
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
 		wp_register_script( 'select2', WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
-		wp_register_style( 'select2', WP_STREAM_URL . 'ui/select2/select2.css', null, '3.4.5' );
+		wp_register_style( 'select2', WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
 
 		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 
