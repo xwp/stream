@@ -42,7 +42,7 @@ class WP_Stream_Settings {
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 
 		// Check if we need to flush rewrites rules
-		add_action( 'updated_option', array( __CLASS__, 'updated_option' ), 10, 3 );
+		add_action( 'updated_option', array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 3 );
 	}
 
 	/**
@@ -179,21 +179,21 @@ class WP_Stream_Settings {
 	 * @param array $value
 	 *
 	 * @internal param string $option
-	 * @return mixed
+	 * @action updated_option
+	 * @return void
 	 */
-	public static function updated_option( $option_name, $old_value, $value ) {
+	public static function updated_option_trigger_flush_rules( $option_name, $old_value, $value ) {
 		if ( self::KEY !== $option_name ) {
 			return;
 		}
 
 		if ( is_array( $old_value ) && is_array( $value ) ) {
-			$updated_option = ( array_key_exists( 'general_private_feeds', $value ) ) ? $value[ 'general_private_feeds' ] : 0;
-			$old_option     = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value[ 'general_private_feeds' ] : 0;
+			$updated_option = ( array_key_exists( 'general_private_feeds', $value ) ) ? $value['general_private_feeds'] : 0;
+			$old_option     = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value['general_private_feeds'] : 0;
 			if ( $updated_option !== $old_option ) {
 				flush_rewrite_rules();
 			}
 		}
-
 	}
 
 	/**
