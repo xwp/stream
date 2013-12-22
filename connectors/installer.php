@@ -279,9 +279,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		$old_version  = $wp_version;
 		$auto_updated = ( $pagenow != 'update-core.php' );
 		if ( $auto_updated ) {
-			$message = __( 'WordPress was auto updated to %s', 'stream' );
+			$message = __( 'WordPress auto-updated to %s', 'stream' );
 		} else {
-			$message = __( 'WordPress was updated to %s', 'stream' );
+			$message = __( 'WordPress updated to %s', 'stream' );
 		}
 		self::log(
 			$message,
