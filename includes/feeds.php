@@ -120,7 +120,15 @@ class WP_Stream_Feeds {
 
 		$records_admin_url = add_query_arg( array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ), admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) );
 
-		if ( ! get_query_var( self::FEED_TYPE_QUERY_VAR ) || 'rss' === get_query_var( self::FEED_TYPE_QUERY_VAR ) ) {
+		$type = isset( $_GET[self::FEED_TYPE_QUERY_VAR] ) ? $_GET[self::FEED_TYPE_QUERY_VAR] : null;
+
+		if ( 'json' === $type ) {
+			if ( version_compare( PHP_VERSION, '5.4', '>=' ) ) {
+				echo json_encode( $records, JSON_PRETTY_PRINT );
+			} else {
+				echo json_encode( $records );
+			}
+		} else {
 
 			header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_option( 'blog_charset' ), true );
 
@@ -169,14 +177,6 @@ class WP_Stream_Feeds {
 			</rss>
 			<?php
 			exit;
-		} elseif ( 'json' === get_query_var( self::FEED_TYPE_QUERY_VAR ) ) {
-
-			wp_die( $die_message, $die_title );
-
-			// TODO: Create template for JSON output
-
-		} else {
-			wp_die( $die_message, $die_title );
 		}
 	}
 
