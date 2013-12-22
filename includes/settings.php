@@ -188,7 +188,7 @@ class WP_Stream_Settings {
 
 		if ( is_array( $old_value ) && is_array( $value ) ) {
 			$updated_option = ( array_key_exists( 'general_private_feeds', $value ) ) ? $value[ 'general_private_feeds' ] : 0;
-			$old_option = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value[ 'general_private_feeds' ] : 0;
+			$old_option     = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value[ 'general_private_feeds' ] : 0;
 			if ( $updated_option !== $old_option ) {
 				flush_rewrite_rules();
 			}
