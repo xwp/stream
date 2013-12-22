@@ -40,6 +40,9 @@ class WP_Stream_Settings {
 
 		// Register settings, and fields
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
+
+		// Check if we need to flush rewrites rules
+		add_action( 'updated_option', array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 3 );
 	}
 
 	/**
@@ -73,17 +76,11 @@ class WP_Stream_Settings {
 						'title'       => __( 'Private Feeds', 'stream' ),
 						'type'        => 'checkbox',
 						'desc'        => sprintf(
-							__( 'Users from the selected roles above will be given a private Feed URL in their %sUser Profile%s. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
+							__( 'Users from the selected roles above will be given a private Feed URL in their %sUser Profile%s.', 'stream' ),
 							sprintf(
 								'<a href="%s" title="%s">',
 								admin_url( 'profile.php' ),
 								esc_attr__( 'View Profile', 'stream' )
-							),
-							'</a>',
-							sprintf(
-								'<a href="%s" title="%s" target="_blank">',
-								esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
-								esc_attr__( 'View Codex', 'stream' )
 							),
 							'</a>'
 						),
@@ -170,6 +167,31 @@ class WP_Stream_Settings {
 						'label_for' => sprintf( '%s_%s_%s', self::KEY, $section_name, $field['name'] ), // xss ok
 					)
 				);
+			}
+		}
+	}
+
+	/**
+	 * Check if we have updated a settings that requires rewrite rules to be flushed
+	 *
+	 * @param       $option
+	 * @param array $old_value
+	 * @param array $new_value
+	 *
+	 * @internal param string $option
+	 * @action updated_option
+	 * @return void
+	 */
+	public static function updated_option_trigger_flush_rules( $option, $old_value, $new_value ) {
+		if ( self::KEY !== $option ) {
+			return;
+		}
+
+		if ( is_array( $new_value ) && is_array( $old_value ) ) {
+			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
+			$old_value = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value['general_private_feeds'] : 0;
+			if ( $new_value !== $old_value ) {
+				delete_option( 'rewrite_rules' );
 			}
 		}
 	}
