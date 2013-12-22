@@ -114,9 +114,9 @@ class WP_Stream_Admin {
 			return;
 		}
 
-		wp_enqueue_script( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.jquery.min.js', array( 'jquery' ), '1.0.0' );
-		wp_enqueue_style( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.min.css', array(), '1.0.0' );
-		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery' ) );
+		wp_enqueue_script( 'select2', WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5' );
+		wp_enqueue_style( 'select2', WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
+		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2' ) );
 		wp_localize_script(
 			'wp-stream-admin',
 			'wp_stream',
