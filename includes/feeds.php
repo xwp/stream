@@ -120,9 +120,7 @@ class WP_Stream_Feeds {
 
 		$records_admin_url = add_query_arg( array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ), admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) );
 
-		$type = isset( $_GET[self::FEED_TYPE_QUERY_VAR] ) ? $_GET[self::FEED_TYPE_QUERY_VAR] : null;
-
-		if ( 'json' === $type ) {
+		if ( 'json' === filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR ) ) {
 			if ( version_compare( PHP_VERSION, '5.4', '>=' ) ) {
 				echo json_encode( $records, JSON_PRETTY_PRINT );
 			} else {
