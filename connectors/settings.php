@@ -20,7 +20,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Option names used in options-permalinks.php
+	 * Option names used in options-permalink.php
 	 * @var array
 	 */
 	public static $permalink_options = array(
@@ -137,7 +137,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'large_size_h'                  => __( 'Large Image Size', 'stream' ),
 			'uploads_use_yearmonth_folders' => __( 'Uploading Files Organization', 'stream' ),
 			// Permalinks
-			'permalink_structure'           => __( 'Permalink Structure', 'stream' ),
+			'permalink_structure'           => __( 'Permalink structure', 'stream' ),
 			'category_base'                 => __( 'Category base', 'stream' ),
 			'tag_base'                      => __( 'Tag base', 'stream' ),
 		);
@@ -197,7 +197,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	/**
 	 * Trigger this connector core tracker, only on options-permalink.php page
 	 *
-	 * @action updated_option_permalink_structure
+	 * @action update_option_permalink_structure
 	 */
 	public static function callback_update_option_permalink_structure( $old_value, $value ) {
 		self::callback_updated_option( 'permalink_structure', $old_value, $value );
@@ -206,7 +206,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	/**
 	 * Trigger this connector core tracker, only on options-permalink.php page
 	 *
-	 * @action updated_option_category_base
+	 * @action update_option_category_base
 	 */
 	public static function callback_update_option_category_base( $old_value, $value ) {
 		self::callback_updated_option( 'category_base', $old_value, $value );
@@ -215,7 +215,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	/**
 	 * Trigger this connector core tracker, only on options-permalink.php page
 	 *
-	 * @action updated_option_tag_base
+	 * @action update_option_tag_base
 	 */
 	public static function callback_update_option_tag_base( $old_value, $value ) {
 		self::callback_updated_option( 'tag_base', $old_value, $value );
