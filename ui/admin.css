@@ -121,6 +121,23 @@
 	        border-radius: 3px;
 }
 
-.alignleft.actions input[type=text] {
-	height: 28px;
+.toplevel_page_wp_stream .filter-date-range {
+	margin-top: -1px;
+}
+
+.toplevel_page_wp_stream .alignleft.actions input[type=text] {
+	height: 27px;
+}
+
+.toplevel_page_wp_stream .select2-container {
+	margin-right: 6px;
+	margin-bottom: 6px;
+}
+
+.toplevel_page_wp_stream .select2-results li {
+	margin-bottom: 1px;
+}
+
+.toplevel_page_wp_stream .select2-container.select2-allowclear .select2-choice abbr {
+	margin-top: -2px;
 }
