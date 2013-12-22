@@ -217,10 +217,6 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_page() {
-		// Flush transient if we need to on page load
-		if ( delete_transient( WP_Stream_Settings::FLUSH_RULES_TRANSIENT ) ) {
-			flush_rewrite_rules();
-		}
 		?>
 		<div class="wrap">
 
