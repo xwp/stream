@@ -7,9 +7,8 @@
 		<exclude name="WordPress.VIP.SuperGlobalInputUsage"/>
 		<exclude name="WordPress.VIP.ValidatedSanitizedInput"/>
 	</rule>
-	<rule ref="WordPress.NamingConventions.ValidFunctionName">
-		<exclude-pattern>/tests/*</exclude-pattern><!-- because of PHPUnit method names -->
-	</rule>
+
+	<exclude-pattern>/tests/*</exclude-pattern>
 
 	<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
 	<rule ref="Generic.PHP.DisallowShortOpenTag"/>

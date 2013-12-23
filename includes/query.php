@@ -1,7 +1,7 @@
 <?php
 
 class WP_Stream_Query {
-	
+
 	public static $instance;
 
 	public static function get_instance() {

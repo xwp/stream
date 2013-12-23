@@ -50,6 +50,13 @@ abstract class WP_Stream_Connector {
 		$action   = current_filter();
 		$class    = get_called_class();
 		$callback = array( $class, 'callback_' . str_replace( '-', '_', $action ) );
+
+		//For the sake of testing, trigger an action with the name of the callback
+		if ( defined( 'STREAM_TESTS' ) ) {
+			do_action( 'stream_test_' . $callback[1] );
+		}
+
+		//Call the real function
 		if ( is_callable( $callback ) ) {
 			return call_user_func_array( $callback, func_get_args() );
 		}
