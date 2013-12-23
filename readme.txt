@@ -33,6 +33,7 @@ Every logged-in user action is logged in an activity stream and organized for ea
  * Media Library
  * Widgets
  * Comments
+ * WordPress Core Updates
 
 **Noteworthy features:**
 
@@ -53,14 +54,22 @@ Every logged-in user action is logged in an activity stream and organized for ea
 **Coming soon:**
 
  * Multisite view of all activity records on a network
- * WordPress core updates tracking
  * Live update of activity records in the Stream
+ * Leave comments on activity in the Stream
 
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
 Stream is built to extend, allowing developers to easily build their own connectors to track any type of action in the activity stream (developer documentation coming soon).
 
-**Development of this plugin is done [on GitHub](https://github.com/x-team/wp-stream). Pull requests welcome. Please see [issues](https://github.com/x-team/wp-stream/issues) reported there before going to the plugin forum.**
+**See room for improvement?**
+
+Great! There are several ways you can get involved to help make Stream better:
+
+1. **Report Bugs:** If you find a bug, error or other problem, please report it! You can do this by [creating a new topic](http://wordpress.org/support/plugin/stream) in the plugin forum. Once a developer can verify the bug by reproducing it, they will create an official bug report in GitHub where the bug will be worked on.
+2. **Suggest New Features:** Have an awesome idea? Please share it! Simply [create a new topic](http://wordpress.org/support/plugin/stream) in the plugin forum to express your thoughts on why the feature should be included and get a discussion going around your idea.
+3. **Issue Pull Requests:** If you're a developer, the easiest way to get involved is to help out on existing [issues already reported](https://github.com/x-team/wp-stream/issues) in GitHub. Be sure to check out the [contributing guide](https://github.com/x-team/wp-stream/blob/master/contributing.md) for developers.
+
+Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Screenshots ==
 
@@ -68,6 +77,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 2. Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 0.9.4 =
+**2013/12/22** - WordPress context added to Installer connector for core updates. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 = 0.9.3 =
 **2013/12/22** - Replacing Chosen library with Select2. Bug fixes. Props [kucrut](http://profiles.wordpress.org/kucrut/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
