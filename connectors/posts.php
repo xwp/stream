@@ -161,7 +161,8 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	public static function callback_deleted_post( $post_id ) {
 		$post = get_post( $post_id );
 
-		if ( in_array( $post->post_type, self::get_ignored_post_types() ) ) {
+		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing
+		if ( ! ( $post instanceof WP_Post ) || in_array( $post->post_type, self::get_ignored_post_types() )  ) {
 			return;
 		}
 
