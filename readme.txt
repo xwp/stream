@@ -77,7 +77,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
-= 0.9.4 =
+= 0.9.5 =
 **2013/12/22** - WordPress context added to Installer connector for core updates. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 = 0.9.3 =
