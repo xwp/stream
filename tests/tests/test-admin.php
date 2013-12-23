@@ -86,8 +86,8 @@ class Test_WP_Stream_Admin extends WP_StreamTestCase {
 		do_action( 'admin_enqueue_scripts', 'toplevel_page_wp_stream' );
 
 		//Check if chosen is present
-		$this->assertTrue( wp_script_is( 'wp-stream-chosen', 'enqueued' ), 'jQuery Chosen js is not enqueud' );
-		$this->assertTrue( wp_style_is( 'wp-stream-chosen', 'enqueued' ), 'jQuery Chosen css is not enqueud' );
+		$this->assertTrue( wp_script_is( 'select2', 'enqueued' ), 'jQuery Select2 js is not enqueud' );
+		$this->assertTrue( wp_style_is( 'select2', 'enqueued' ), 'jQuery Chosen css is not enqueud' );
 		$this->assertTrue( wp_script_is( 'jquery-core', 'registered' ), 'jQuery is not enqueud' );
 		$this->assertTrue( wp_script_is( 'wp-stream-admin', 'enqueued' ), 'wp-stream-admin is not enqueud' );
 		$this->assertTrue( wp_style_is( 'wp-stream-admin', 'enqueued' ), 'wp-stream-admin is not enqueud' );
