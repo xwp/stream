@@ -57,7 +57,6 @@ Every logged-in user action is logged in an activity stream and organized for ea
 
  * Multisite view of all activity records on a network
  * Live update of activity records in the Stream
- * Leave comments on activity in the Stream
 
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
