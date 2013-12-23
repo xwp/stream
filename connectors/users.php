@@ -241,17 +241,19 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @action wp_login
 	 */
 	public static function callback_wp_login( $user_login, $user ) {
-		self::log(
-			__( '%s logged in', 'stream' ),
-			array(
-				'display_name' => $user->display_name,
-			),
-			$user->ID,
-			array(
-				'users' => 'login',
-			),
-			$user->ID
-		);
+		if ( self::is_logging_enabled_for_user( $user ) ) {
+			self::log(
+				__( '%s logged in', 'stream' ),
+				array(
+					'display_name' => $user->display_name,
+				),
+				$user->ID,
+				array(
+					'users' => 'login',
+				),
+				$user->ID
+			);
+		}
 	}
 
 	/**

@@ -63,11 +63,18 @@ class WP_Stream_Feeds {
 		?>
 		<table class="form-table">
 			<tr>
-				<th><label for="stream_feed_url"><?php esc_html_e( 'Stream Feed URL', 'stream' ) ?></label></th>
+				<th><label for="stream_feed_url"><?php esc_html_e( 'Stream Feeds Key', 'stream' ) ?></label></th>
 				<td>
-					<a href="<?php echo esc_url( $link ) ?>" target="_blank"><?php echo esc_url( $link ) ?></a>
-					<p class="description"><?php esc_html_e( 'This is a private URL for you to access a feed of Stream Records. Consider this key a secret and do not share it with other users. If your key has been compromised, you can use the link below to generate a new one. ', 'stream' ) ?></p>
-					<p><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true ) ) ) ?>"><?php esc_html_e( 'Generate New Key', 'stream' ) ?></a></p>
+					<p>
+						<code><?php echo esc_html( $key ) ?></code>
+						<small><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true ) ) ) ?>"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
+					</p>
+					<p class="description"><?php esc_html_e( 'This is your private key used for accessing feeds of Stream Records securely. You can change your key at any time by generating a new one using the link above.', 'stream' ) ?></p>
+					<p>
+						<a href="<?php echo esc_url( $link ) ?>" target="_blank"><?php echo esc_html_e( 'RSS Feed' ) ?></a>
+						|
+						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'json' ), $link ) ) ?>" target="_blank"><?php echo esc_html_e( 'JSON Feed' ) ?></a>
+					</p>
 				</td>
 			</tr>
 		</table>
@@ -120,7 +127,13 @@ class WP_Stream_Feeds {
 
 		$records_admin_url = add_query_arg( array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ), admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) );
 
-		if ( ! get_query_var( self::FEED_TYPE_QUERY_VAR ) || 'rss' === get_query_var( self::FEED_TYPE_QUERY_VAR ) ) {
+		if ( 'json' === filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR ) ) {
+			if ( version_compare( PHP_VERSION, '5.4', '>=' ) ) {
+				echo json_encode( $records, JSON_PRETTY_PRINT );
+			} else {
+				echo json_encode( $records );
+			}
+		} else {
 
 			header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_option( 'blog_charset' ), true );
 
@@ -169,14 +182,6 @@ class WP_Stream_Feeds {
 			</rss>
 			<?php
 			exit;
-		} elseif ( 'json' === get_query_var( self::FEED_TYPE_QUERY_VAR ) ) {
-
-			wp_die( $die_message, $die_title );
-
-			// TODO: Create template for JSON output
-
-		} else {
-			wp_die( $die_message, $die_title );
 		}
 	}
 

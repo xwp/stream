@@ -1,13 +1,13 @@
 === Stream ===
-Contributors:      X-team, shadyvb, fjarrett, akeda, kucrut
-Tags:              actions, activity, admin, analytics, log, notification, stream, users
+Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, akeda, kucrut, topher1kenobe, pascalklaeres
+Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.6
 Tested up to:      3.8
 Stable tag:        trunk
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
-Track and monitor every change made on your WordPress site in beautifully organized detail.
+Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail.
 
 == Description ==
 
@@ -32,22 +32,29 @@ Every logged-in user action is logged in an activity stream and organized for ea
  * Menus
  * Media Library
  * Widgets
+ * Comments
 
 **Noteworthy features:**
 
+ * Dashboard widget of most recent activity
+ * Specify which roles should have their activity logged
  * Limit who can view activity records by user role
  * Private RSS feeds of activity records
+ * Private JSON feeds of activity records
  * Set how long records should live before being purged automatically
  * Option to manually purge all activity records from the database
 
+**Languages:**
+
+ * English
+ * French
+ * German
+
 **Coming soon:**
 
- * Comments activity records
  * Multisite view of all activity records on a network
  * WordPress core updates tracking
- * Specify which roles should have their activity logged
  * Live update of activity records in the Stream
- * Private JSON feeds of activity records
 
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
@@ -61,6 +68,24 @@ Stream is built to extend, allowing developers to easily build their own connect
 2. Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 0.9.3 =
+**2013/12/22** - Replacing Chosen library with Select2. Bug fixes. Props [kucrut](http://profiles.wordpress.org/kucrut/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 0.9.2 =
+**2013/12/22** - Added support for private feeds in JSON format. Flush rewrite rules automatically for feeds when enabled/disabled. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 0.9.1 =
+**2013/12/21** - Specify which roles should have their activity logged. Delete all options on uninstall. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 0.9 =
+**2013/12/20** - Added connector for Comments. Stream activity dashboard widget. UI enhancements. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe/)
+
+= 0.8.2 =
+**2013/12/19** - Language packs for French and German. Option to uninstall database tables. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe/), [pascalklaeres](http://profiles.wordpress.org/pascalklaeres/)
+
+= 0.8.1 =
+**2013/12/18** - Setting to enable/disable private feeds functionality. Additional record logged when a user's role is changed. Bug fixes. Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [kucrut](http://profiles.wordpress.org/kucrut/), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe/), [justinsainton](http://profiles.wordpress.org/justinsainton/)
 
 = 0.8 =
 **2013/12/16** - Ability to query Stream records in a private RSS feed. Bug fixes. Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/)

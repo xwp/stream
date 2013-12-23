@@ -28,6 +28,11 @@ abstract class WP_Stream_Connector {
 	public static function register() {
 		$class = get_called_class();
 
+		// Check if logging action is enable for user or provide a hook for plugin to override on specific cases
+		if ( ! self::is_logging_enabled_for_user() ) {
+			return;
+		}
+
 		foreach ( $class::$actions as $action ) {
 			add_action( $action, array( $class, 'callback' ), null, 5 );
 		}
@@ -69,6 +74,32 @@ abstract class WP_Stream_Connector {
 		return $links;
 	}
 
+
+	/**
+	 * Check if we need to record action for specific users
+	 *
+	 * @param null $user
+	 *
+	 * @return mixed|void
+	 */
+	public static  function is_logging_enabled_for_user( $user = null ) {
+		if ( is_null( $user ) ){
+			$user = wp_get_current_user();
+		}
+
+		// If the user is not a valid user then we log action
+		if ( ! ( $user instanceof WP_User ) || $user->ID === 0 ) {
+			$bool = true;
+		} else {
+			// If a user is part of a role that we don't want to log, we disable it
+			$user_roles   = array_values( $user->roles );
+			$roles_logged = WP_Stream_Settings::$options['general_log_activity_for'];
+			$bool         = ! ( count( array_intersect( $user_roles, $roles_logged ) ) === 0 );
+		}
+
+		return apply_filters( 'wp_stream_record_log', $bool, $user, get_called_class() );
+	}
+
 	/**
 	 * Log handler
 	 *
@@ -83,6 +114,7 @@ abstract class WP_Stream_Connector {
 	 */
 	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
 		$class = get_called_class();
+
 		return WP_Stream_Log::get_instance()->log(
 			$class::$name,
 			$message,
