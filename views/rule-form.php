@@ -117,7 +117,7 @@
 		        <% }); %>
 			</select>
 		</div>
-		<a href="#" class="delete-trigger">Delete</a>
+		<a href="#" class="delete-trigger">Remove</a>
 	</div>
 </div>
 </script>
@@ -199,6 +199,9 @@
 		-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
 		        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
 	}
+	.group .form-row .delete-trigger {
+		line-height: 29px;
+	}
 	.inside > .group,
 	.inside > .group > .group {
 		margin-left: 0;
@@ -215,6 +218,9 @@
 	.group-meta a {
 		font-size: 10px;
 		padding-left: 5px;
+	}
+	.group-meta a.delete-group {
+		line-height: 28px;
 	}
 	.group .trigger:first-of-type .field.relation,
 	.trigger.first .field.relation {
