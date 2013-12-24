@@ -184,8 +184,9 @@
 	}
 	.group {
 		background: rgba(0, 0, 0, 0.08);
-		padding: 20px;
+		padding: 20px 20px 12px;
 		margin-bottom: 10px;
+		min-height: 16px;
 	}
 	.group .form-row {
 		background: rgba(0, 0, 0, 0.03);
@@ -206,9 +207,9 @@
 	}
 	.group-meta {
 		float: left;
-		margin-top: -25px;
-		margin-left: -20px;
-		padding: 10px;
+		margin-top: -10px;
+		margin-left: -10px;
+		padding: 0 0 12px;
 	}
 	.group-meta a {
 		font-size: 10px;
@@ -228,5 +229,8 @@
 	}
 	.select2-results li {
 		margin-bottom: 2px;
+	}
+	.select2-container .select2-choice > .select2-chosen {
+		font-size: 13px;
 	}
 </style>
