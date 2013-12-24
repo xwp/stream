@@ -142,9 +142,11 @@ class WP_Stream_Notifications {
 				'title'     => __( 'Summary', 'stream' ),
 				'type'      => 'text',
 				'operators' => array(
-					'contains'     => __( 'Contains', 'stream' ),
-					'contains-not' => __( 'Does not contain', 'stream' ),
-					'regex'        => __( 'Regex', 'stream' ),
+					'='            => __( 'is', 'stream' ),
+					'!='           => __( 'is not', 'stream' ),
+					'contains'     => __( 'contains', 'stream' ),
+					'contains-not' => __( 'does not contain', 'stream' ),
+					'regex'        => __( 'regex', 'stream' ),
 				),
 			),
 			'object_type' => array(
@@ -218,12 +220,12 @@ class WP_Stream_Notifications {
 				'title'     => __( 'Date', 'stream' ),
 				'type'      => 'date',
 				'operators' => array(
-					'='  => __( 'on', 'stream' ),
-					'!=' => __( 'not on', 'stream' ),
-					'<'  => __( 'before', 'stream' ),
-					'<=' => __( 'on or before', 'stream' ),
-					'>'  => __( 'after', 'stream' ),
-					'>=' => __( 'on or after', 'stream' ),
+					'='  => __( 'is on', 'stream' ),
+					'!=' => __( 'is not on', 'stream' ),
+					'<'  => __( 'is before', 'stream' ),
+					'<=' => __( 'is on or before', 'stream' ),
+					'>'  => __( 'is after', 'stream' ),
+					'>=' => __( 'is on or after', 'stream' ),
 				),
 			),
 
