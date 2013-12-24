@@ -9,7 +9,7 @@
 
 					<div id="titlediv">
 						<div id="titlewrap">
-							<input type="text" name="title" size="30" value="<?= $rule->name ?>" id="title" autocomplete="off" keyev="true" placeholder="<?= _e( 'Rule title', 'stream_notification' ) ?>">
+							<input type="text" name="summary" size="30" value="<?= $rule->summary ?>" id="title" autocomplete="off" keyev="true" placeholder="<?= _e( 'Rule title', 'stream_notification' ) ?>">
 						</div>
 					</div><!-- /titlediv -->
 				</div><!-- /post-body-content -->
@@ -28,14 +28,11 @@
 										<div id="misc-publishing-actions">
 											<div class="misc-pub-section misc-pub-post-status">
 												<label for="post_status">
-													<?php _e( 'Status', 'stream_notification' ) ?>:
+													<?php _e( 'Active', 'stream_notification' ) ?>
 												</label>
 												<span id="post-status-display">
-													<?php $rule->status == 'active' ? _e( 'Active', 'stream_notification' ) : _e( 'Inactive', 'stream_notification' ) ?>
+													<input type="checkbox" name="visibility" id="post_status" value="1" <?php checked( $rule->visibility, 1 ) ?>>
 												</span>
-												<a href="#post_status" class="edit-post-status hide-if-no-js">
-													<?php $rule->status == 'active' ? _e( 'Deactivate', 'stream_notification' ) : _e( 'Activate', 'stream_notification' ) ?>
-												</a>
 											</div>
 										</div>
 									</div>
@@ -93,18 +90,26 @@
 	</form>
 </div><!-- /wrap -->
 
+<?php if ( $rule->triggers ): ?>
+<script>
+	var triggers = <?php echo json_encode( $rule->triggers ) ?>;
+	var groups   = <?php echo json_encode( $rule->groups ) ?>;
+	var actions  = <?php echo json_encode( $rule->actions ) ?>;
+</script>
+<?php endif ?>
+
 <script type="text/template" id="trigger-template-row">
 <div class="trigger" rel="<%- vars.index %>">
 	<div class="form-row">
-		<input type="hidden" name="rules[<%- vars.index %>][group]" value="<%- vars.group %>" />
+		<input type="hidden" name="triggers[<%- vars.index %>][group]" value="<%- vars.group %>" />
 		<div class="field relation">
-			<select name="rules[<%- vars.index %>][relation]">
+			<select name="triggers[<%- vars.index %>][relation]" class="trigger_relation">
 				<option value="and"><?php _e( 'AND', 'stream_notification' ) ?></option>
 				<option value="or"><?php _e( 'OR', 'stream_notification' ) ?></option>
 			</select>
 		</div>
 		<div class="field type">
-			<select name="rules[<%- vars.index %>][type]" class="rule_type" rel="<%- vars.index %>" placeholder="Choose Rule">
+			<select name="triggers[<%- vars.index %>][type]" class="trigger_type" rel="<%- vars.index %>" placeholder="Choose Rule">
 				<option></option>
 				<% _.each( vars.types, function( type, name ){ %>
 	            <option value="<%- name %>"><%- type.title %></option>
@@ -121,7 +126,7 @@
 	<div class="group-meta">
 		<input type="hidden" name="groups[<%- vars.index %>][group]" value="<%- vars.parent %>" />
 		<div class="field relation">
-			<select name="groups[<%- vars.index %>][relation]">
+			<select name="groups[<%- vars.index %>][relation]" class="group_relation">
 				<option value="and"><?php _e( 'AND', 'stream_notification' ) ?></option>
 				<option value="or"><?php _e( 'OR', 'stream_notification' ) ?></option>
 			</select>
@@ -134,9 +139,9 @@
 </script>
 
 <script type="text/template" id="trigger-template-options">
-<div class="rule_options">
+<div class="trigger_options">
 	<div class="field operator">
-		<select name="rules[<%- vars.index %>][operator]" class="rule_operator">
+		<select name="triggers[<%- vars.index %>][operator]" class="trigger_operator">
 			<% _.each( vars.operators, function( list, name ){ %>
             <option value="<%- name %>"><%- list %></option>
 	        <% }); %>
@@ -144,7 +149,7 @@
 	</div>
 	<div class="field value">
 		<% if ( ['select', 'ajax'].indexOf( vars.type ) != -1 ){ %>
-		<select name="rules[<%- vars.index %>][value]" class="rule_value" data-ajax="<% ( vars.ajax ) %>" <% if ( vars.multiple ){ %>multiple="multiple"<% } %>>
+		<select name="triggers[<%- vars.index %>][value]" class="trigger_value" data-ajax="<% ( vars.ajax ) %>" <% if ( vars.multiple ){ %>multiple="multiple"<% } %>>
 			<option></option>
 			<% if ( vars.options ) { %>
 				<% _.each( vars.options, function( list, name ){ %>
@@ -153,14 +158,14 @@
 	        <% } %>
 		</select>
 		<% } else { %>
-		<input type="text" name="rules[<%- vars.index %>][value]" class="rule_value <% if ( vars.tags ){ %>tags<% } %> <% if ( vars.ajax ){ %>ajax<% } %>">
+		<input type="text" name="triggers[<%- vars.index %>][value]" class="trigger_value <% if ( vars.tags ){ %>tags<% } %> <% if ( vars.ajax ){ %>ajax<% } %>">
 		<% } // endif%>
 	</div>
 </div>
 </script>
 
 <style>
-	.field, .rule_type, .rule_options, .rule_value { float: left; }
+	.field, .trigger_type, .trigger_options, .trigger_value { float: left; }
 	.form-row { clear:both; overflow: hidden; margin-bottom: 10px; background: #eee; padding: 10px; }
 	.group { padding: 20px; background: #ccc; border: 1px solid black; margin: 10px; }
 	.group-meta { float: left;

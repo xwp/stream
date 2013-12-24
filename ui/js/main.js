@@ -1,10 +1,11 @@
-/* globals console, stream_notifications, ajaxurl */
+/* globals stream_notifications, ajaxurl, triggers */
 jQuery(function($){
 	'use strict';
 	
 	_.templateSettings.variable = 'vars';
 
 	var types = stream_notifications.types,
+		i,
 		divTriggers = $('#triggers'), // Trigger Playground
 		btns = {
 			add_trigger: '.add-trigger',
@@ -36,16 +37,15 @@ jQuery(function($){
 						data: function (term) {
 							return {
 								action: 'stream_notification_endpoint',
-								type: $this.parents('.form-row').first().find('select.rule_type').val(),
+								type: $this.parents('.form-row').first().find('select.trigger_type').val(),
 								q: term
 							};
 						},
-						results: function (data, page) {
+						results: function (data) {
 							var r = data.data || [];
 							return {results: r};
 						},
 						formatSelection: function(item) {
-							debugger;
 							return item.title;
 						}
 					};
@@ -97,12 +97,12 @@ jQuery(function($){
 		$this.parents('.group').first().remove();
 	});
 
-	// Reveal rule option after choosing rule type
-	divTriggers.on( 'change.sn', '.rule_type', function() {
-		var $this = $(this),
+	// Reveal rule options after choosing rule type
+	divTriggers.on( 'change.sn', '.trigger_type', function() {
+		var $this   = $(this),
 			options = types[ $this.val() ],
-			index = $this.parents('.trigger').first().attr('rel');
-		$this.next('.rule_options').remove();
+			index   = $this.parents('.trigger').first().attr('rel');
+		$this.next('.trigger_options').remove();
 		
 		if ( ! options ) { return; }
 		
@@ -110,5 +110,40 @@ jQuery(function($){
 		selectify( $this.parent().find('select') );
 		selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
 	});
+
+	// Edit form population
+	if ( triggers ) {
+		
+		for ( i = 0; i < triggers.length; i++ ) {
+			var trigger = triggers[i],
+				groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']'),
+				row,
+				valueField;
+			if ( ! groupDiv.size() ) {
+				var group = groups[trigger.group];
+				$( btns.add_group ).filter('[data-group='+group.group+']').trigger('click');
+				groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']');
+				groupDiv.find('select.group_relation').select2( 'val', group.relation );
+			}
+			divTriggers.find( btns.add_trigger ).filter('[data-group='+trigger.group+']').trigger( 'click' );
+			row = groupDiv.find('.trigger:last');
+			row.find('select.trigger_relation').select2( 'val', trigger.relation ).trigger('change');
+			row.find('select.trigger_type').select2( 'val', trigger.type ).trigger('change');
+			row.find('select.trigger_operator').select2( 'val', trigger.operator ).trigger('change');
+			valueField = row.find('.trigger_value:not(.select2-container)').eq(0);
+			if ( valueField.is('select') || valueField.is('.ajax') ) {
+				valueField.select2( 'val', trigger.value ).trigger('change');
+			} else {
+				valueField.val( trigger.value ).trigger('change');
+			}
+			// if ( triggers.group ) {
+			// 	group = divTriggers.find('.group').eq(0);
+
+			// 	if ( ! group ) {
+			// 		divTriggers.find( btns.add_group ).eq(0)
+			// 	}
+			// }
+		}
+	}
 
 });

@@ -102,6 +102,8 @@ class WP_Stream_Notifications {
 			'wp_stream_notifications',
 			array( $this, 'page' )
 		);
+
+		add_action( 'load-' . self::$screen_id, array( $this, 'page_form_save' ) );
 	}
 
 	/**
@@ -272,9 +274,11 @@ class WP_Stream_Notifications {
 	 */
 	public function page() {
 		$action = filter_input( INPUT_GET, 'action', FILTER_DEFAULT, array( 'default' => 'list' ) );
+		$id     = filter_input( INPUT_GET, 'id', FILTER_DEFAULT );
 		switch ( $action ) {
 			case 'add':
-				$this->page_form();
+			case 'edit':
+				$this->page_form( $id );
 				break;
 			case 'list':
 			default:
@@ -288,12 +292,30 @@ class WP_Stream_Notifications {
 	 * 
 	 * @return void
 	 */
-	public function page_form() {
-		$rule = new WP_Stream_Notification_Rule;
-		if ( $_POST ) {
-			$result = $rule->load_from_array( $_POST )->save();
-		}
+	public function page_form( $id = null ) {
+		$rule = new WP_Stream_Notification_Rule( $id );
 		include WP_STREAM_NOTIFICATIONS_DIR . '/views/rule-form.php';
+	}
+
+	public function page_form_save() {
+		// TODO add nonce, check author/user permission to update record
+		$action = filter_input( INPUT_GET, 'action' );
+		$id = filter_input( INPUT_GET, 'id' );
+
+		$rule = new WP_Stream_Notification_Rule( $id );
+		
+		$data = $_POST;
+
+		if ( $data && in_array( $action, array( 'edit', 'add' ) ) ) {
+
+			if ( ! isset( $data['visibility'] ) ) $data['visibility'] = 0; // Checkbox woraround
+
+			$result = $rule->load_from_array( $data )->save();
+
+			if ( $result && $action != 'edit' ) {
+				wp_redirect( add_query_arg( array( 'action' => 'edit', 'id' => $rule->ID ) ) );
+			}
+		}
 	}
 
 	/**
@@ -302,7 +324,7 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function page_list() {
-		// DEBUG
+		// DEBUG, no listing yet
 		?><script>window.location.href = '<?php echo esc_url_raw( add_query_arg( 'action', 'add' ) ); ?>';</script><?php
 	}
 

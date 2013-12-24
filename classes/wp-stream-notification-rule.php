@@ -2,6 +2,18 @@
 
 class WP_Stream_Notification_Rule {
 
+	private $ID;
+	private $author;
+	private $summary;
+	private $visibility;
+	private $created;
+	
+	private $type = 'notification_rule';	
+
+	private $triggers = array();
+	private $groups = array();
+	private $actions = array();
+
 	function __construct( $id = null ) {
 		if ( $id ) {
 			$this->load( $id );
@@ -9,23 +21,79 @@ class WP_Stream_Notification_Rule {
 	}
 
 	function load( $id ) {
-
+		global $wpdb;
+		$item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->stream WHERE type = 'notification_rule' AND ID = %d", $id ) );
+		if ( $item ) {
+			$meta = get_option( 'stream_notifications_' . $item->ID );
+			if ( ! $meta || ! is_array( $meta ) ) $meta = array();
+			$this->load_from_array( array_merge( (array) $item, $meta ) );
+		}
+		return $this;
 	}
 
 	function load_from_array( array $arr ) {
-		
+		$keys = array( 'ID', 'author', 'summary', 'visibility', 'type', 'created', 'triggers', 'groups', 'actions', );
+		foreach ( $keys as $key ) {
+			if ( isset( $arr[$key] ) ) {
+				$this->{$key} = $arr[$key];
+			}
+		}
 		return $this;
 	}
 
 	function exists() {
-		return (bool) $this->id;
+		return (bool) $this->ID;
 	}
 
 	function save() {
-		{echo '<pre>';var_dump($_POST);echo '</pre>';die();}
+		global $wpdb;
+
+		$defaults  = array(
+			'ID' => null,
+			'author' => wp_get_current_user()->ID,
+			'summary' => null,
+			'visibility' => 0,
+			'type' => 'notfication_rule',
+			'created' => current_time( 'r', 1 ),
+		);
+
+		$data   = $this->to_array();
+		$record = array_intersect_key( $data, $defaults );
+
+		if ( $this->exists() ) {
+			$result  = $wpdb->update( $wpdb->stream, $record, array( 'ID' => $this->ID ) );
+			$success = ( $result !== false );
+		} else {
+			$record  = wp_parse_args( $record, $defaults );
+			$result  = $wpdb->insert( $wpdb->stream, $record );
+			$success = ( is_int( $result ) );
+			if ( $success ) $this->ID = $wpdb->insert_id;
+		}
+
+		if ( $this->ID ) {
+			$meta_keys = array( 'triggers', 'groups', 'actions', );
+			$meta      = array_intersect_key( $data, array_flip( $meta_keys ) );
+			update_option( 'stream_notifications_'.$this->ID, $meta );
+		}
+
+		return $success;
+	}
+
+	function to_array() {
+		$data = array();
+		$keys = array( 'ID', 'author', 'summary', 'visibility', 'type', 'created', 'triggers', 'groups', 'actions', );
+		foreach ( $keys as $key ) {
+			$data[$key] = $this->{$key};
+		}
+		return $data;
 	}
 
 	function __get( $key ) {
-		return 'sample';
+		switch ( $key ) {
+			default:
+				$r = $this->{$key};
+		}
+		return $r;
 	}
+
 }
