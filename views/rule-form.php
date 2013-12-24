@@ -227,7 +227,7 @@
 		display: none;
 	}
 	.trigger.first .field.type {
-		margin-left: 100px;
+		margin-left: 99px;
 	}
 	.delete-trigger { float: right; }
 
@@ -239,5 +239,11 @@
 	}
 	.select2-container .select2-choice > .select2-chosen {
 		font-size: 13px;
+	}
+	.select2-container.trigger_type {
+		width: 180px !important;
+	}
+	.select2-container.trigger_operator {
+		width: 140px !important;
 	}
 </style>
