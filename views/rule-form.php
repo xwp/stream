@@ -178,17 +178,24 @@
 		margin: 10px 0 0;
 		background: none;
 		padding: 0;
+
+		-webkit-box-shadow: none;
+		        box-shadow: none;
 	}
 	.group {
-		background: rgba(0, 0, 0, 0.2);
+		background: rgba(0, 0, 0, 0.08);
 		padding: 20px;
+		margin-bottom: 10px;
 	}
 	.group .form-row {
-		background: rgba(0, 0, 0, 0.08);
+		background: rgba(0, 0, 0, 0.03);
 	}
 	.group,
 	.group .form-row {
 		margin-left: 90px;
+
+		-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+		        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
 	}
 	.inside > .group,
 	.inside > .group > .group {
