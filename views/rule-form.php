@@ -187,6 +187,7 @@
 		padding: 20px 20px 12px;
 		margin-bottom: 10px;
 		min-height: 16px;
+		clear: both;
 	}
 	.group .form-row {
 		background: rgba(0, 0, 0, 0.03);
