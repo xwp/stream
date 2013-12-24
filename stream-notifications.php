@@ -221,9 +221,9 @@ class WP_Stream_Notifications {
 					'='  => __( 'on', 'stream' ),
 					'!=' => __( 'not on', 'stream' ),
 					'<'  => __( 'before', 'stream' ),
-					'<=' => __( 'before or on', 'stream' ),
+					'<=' => __( 'on or before', 'stream' ),
 					'>'  => __( 'after', 'stream' ),
-					'>=' => __( 'after or on', 'stream' ),
+					'>=' => __( 'on or after', 'stream' ),
 				),
 			),
 
