@@ -42,7 +42,7 @@ class WP_Stream_Settings {
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 
 		// Check if we need to flush rewrites rules
-		add_action( 'updated_option', array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 3 );
+		add_action( 'update_option_' . self::KEY  , array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
 	}
 
 	/**
@@ -182,11 +182,8 @@ class WP_Stream_Settings {
 	 * @action updated_option
 	 * @return void
 	 */
-	public static function updated_option_trigger_flush_rules( $option, $old_value, $new_value ) {
-		if ( self::KEY !== $option ) {
-			return;
-		}
 
+	public static function updated_option_trigger_flush_rules( $old_value, $new_value ) {
 		if ( is_array( $new_value ) && is_array( $old_value ) ) {
 			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
 			$old_value = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value['general_private_feeds'] : 0;
