@@ -51,6 +51,9 @@ class WP_Stream_Admin {
 
 		// Load Dashboard widget
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
+
+		add_filter( 'heartbeat_received', array( __CLASS__, 'live_update' ), 10, 2 );
+
 	}
 
 	/**
@@ -116,7 +119,7 @@ class WP_Stream_Admin {
 
 		wp_enqueue_script( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.jquery.min.js', array( 'jquery' ), '1.0.0' );
 		wp_enqueue_style( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.min.css', array(), '1.0.0' );
-		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery' ) );
+		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'heartbeat' ) );
 		wp_localize_script(
 			'wp-stream-admin',
 			'wp_stream',
@@ -516,4 +519,178 @@ class WP_Stream_Admin {
 		<?php
 	}
 
+
+	/**
+	 * Sends Updated Actions to the List Table View
+	 *
+	 * @todo fix reliability issues with sidebar widgets
+	 *
+	 * @uses gather_updated_items
+	 * @uses generate_row
+	 *
+	 * @param  array  Response to heartbeat
+	 * @param  array  Response from heartbeat
+	 * @return array  Data sent to heartbeat
+	 */
+	public static function live_update( $response, $data ) {
+
+		if ( $data['wp-stream-heartbeat'] = 'live-update' ) {
+
+			//get the time of last update.  If not set, use pageload time
+			$curr_time = (int) current_time( 'timestamp', 1 );
+			$last_update_time = $curr_time - 5;
+
+			$updated_items = self::gather_updated_items( $last_update_time );
+
+			if ( empty( $updated_items ) ) {
+				$response['log'] = 'no update';
+			} else {
+				$response['log'] = 'update';
+
+				$table_rows = '';
+				//Generate markup for rows
+				foreach ( $updated_items as $item ) {
+					$table_rows .= self::generate_row( $item );
+				}
+				$response['rows'] = $table_rows;
+			}
+		}
+		return $response;
+	}
+
+
+	/**
+	 * Sends Updated Actions to the List Table View
+	 *
+	 * @param  int    Timestamp of last update
+	 * @return array  Array of recently updated items
+	 */
+	public static function gather_updated_items( $last_update_time = 0 ) {
+
+		$updated_items = array();
+
+		//get logged items
+		$items = stream_query();
+
+		//if logged time is after last update time, add to response array
+		foreach ( (array)$items as $item ) {
+			$item_time = (int) strtotime( $item->created );
+			if ( $item_time >= $last_update_time ) {
+				$updated_items[] = $item;
+			}
+		}
+
+		return $updated_items;
+	}
+
+
+	/**
+	 * Generates each row's markup
+	 *
+	 * Based on WP_Stream_List_Table->column_default()
+	 *
+	 * @param  object  item for which we are generating the row
+	 * @return sring   row markup
+	 */
+	public static function generate_row( $item ) {
+		ob_start(); ?>
+
+		<tr class="alternate new-row">
+
+			<td class="date column-date">
+				<?php
+				$out  = sprintf( '<strong>' . __( '%s ago', 'stream' ) . '</strong>', human_time_diff( strtotime( $item->created ) ) );
+				$out .= '<br />';
+				$out .= self::column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out .= '<br />';
+				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
+				echo $out; ?>
+			</td>
+
+			<td class="summary column-summary">
+				<?php echo esc_html( $item->summary ) ?>
+			</td>
+
+			<td class="author column-author">
+				<?php
+				$user = get_user_by( 'id', $item->author );
+				if ( $user ) { global $wp_roles;
+					$author_ID   = isset( $user->ID ) ? $user->ID : 0;
+					$author_name = isset( $user->display_name ) ? $user->display_name : null;
+					$author_role = isset( $user->roles[0] ) ? $wp_roles->role_names[$user->roles[0]] : null;
+					$out = sprintf(
+						'<a href="%s">%s <span>%s</span></a><br /><small>%s</small>',
+						add_query_arg( array( 'author' => $author_ID ), admin_url( 'admin.php?page=wp_stream' ) ),
+						get_avatar( $author_ID, 40 ),
+						$author_name,
+						$author_role
+					);
+				} else {
+					$out = 'N/A';
+				}
+				echo $out; // xss okay ?>
+			</td>
+
+			<td class="connector column-connector">
+				<?php echo self::column_link( WP_Stream_Connectors::$term_labels['stream_connector'][$item->connector], 'connector', $item->connector ); // xss okay ?>
+			</td>
+
+			<td class="context column-context">
+				<?php $context = isset( WP_Stream_Connectors::$term_labels['stream_context'][$item->context] )
+					? WP_Stream_Connectors::$term_labels['stream_context'][$item->context]
+					: $item->context;
+				echo self::column_link( $context, 'context', $context ) // xss okay ?>
+			</td>
+
+			<td class="action column-action">
+				<?php $action = isset( WP_Stream_Connectors::$term_labels['stream_action'][$item->action] )
+					? WP_Stream_Connectors::$term_labels['stream_action'][$item->action]
+					: $item->action;
+				echo  self::column_link( $action, 'action', $action ) // xss okay ?>
+			</td>
+
+			<td class="ip column-ip">
+			<?php echo self::column_link( $item->ip, 'ip', $item->ip ) // xss okay ?>
+			</td>
+
+			<td class="id column-id">
+			<?php echo $item->ID // xss okay ?>
+			</td>
+
+		</tr>
+
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Generates column link for row items
+	 *
+	 * Based on WP_Stream_List_Table->column_link()
+	 *
+	 * @param  string  text to display
+	 * @param  array   key used in query var
+	 * @param  string  value used in query var
+	 * @return sring   column link
+	 */
+	public static function column_link( $display, $key, $value = null ) {
+		$url = admin_url( 'admin.php?page=wp_stream' );
+
+		if ( ! is_array( $key ) ) {
+			$args = array( $key => $value );
+		} else {
+			$args = $key;
+		}
+		foreach ( $args as $k => $v ) {
+			$url = add_query_arg( $k, $v, $url );
+		}
+
+		return sprintf(
+			'<a href="%s">%s</a>',
+			$url,
+			$display
+		); // xss okay
+	}
 }

@@ -124,3 +124,18 @@
 .alignleft.actions input[type=text] {
 	height: 28px;
 }
+
+/* Live Update */
+
+.toplevel_page_wp_stream .new-row {
+	background-color: #ffffe0;
+	-webkit-transition: background 0.5s linear;
+	-moz-transition: background 0.5s linear;
+	-ms-transition: background 0.5s linear;
+	-o-transition: background 0.5s linear;
+	transition: background 0.5s linear;
+}
+
+.toplevel_page_wp_stream .new-row.fadeout {
+	background-color: transparent;
+}
