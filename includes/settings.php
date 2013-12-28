@@ -174,15 +174,14 @@ class WP_Stream_Settings {
 	/**
 	 * Check if we have updated a settings that requires rewrite rules to be flushed
 	 *
-	 * @param       $option
 	 * @param array $old_value
 	 * @param array $new_value
 	 *
+	 * @internal param $option
 	 * @internal param string $option
-	 * @action updated_option
+	 * @action   updated_option
 	 * @return void
 	 */
-
 	public static function updated_option_trigger_flush_rules( $old_value, $new_value ) {
 		if ( is_array( $new_value ) && is_array( $old_value ) ) {
 			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
