@@ -1,6 +1,46 @@
 <?php
+interface WP_Stream_Connector_Interface {
 
-abstract class WP_Stream_Connector {
+	/**
+	 * Register all context hooks
+	 *
+	 * @return void
+	 */
+	public static function register();
+
+	/**
+	 * Return translated context label
+	 *
+	 * @return string Translated context label
+	 */
+	public static function get_label();
+
+	/**
+	 * Return translated action labels
+	 *
+	 * @return array Action label translations
+	 */
+	public static function get_action_labels();
+
+	/**
+	 * Return translated context labels
+	 *
+	 * @return array Context label translations
+	 */
+	public static function get_context_labels();
+
+	/**
+	 * Add action links to Stream drop row in admin list screen
+	 *
+	 * @filter wp_stream_action_links_{connector}
+	 * @param  array $links      Previous links registered
+	 * @param  int   $record     Stream record
+	 * @return array             Action links
+	 */
+	public static function action_links( $links, $record );
+}
+
+abstract class WP_Stream_Connector implements WP_Stream_Connector_Interface {
 
 	/**
 	* Name/slug of the context
@@ -22,7 +62,7 @@ abstract class WP_Stream_Connector {
 
 	/**
 	 * Register all context hooks
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function register() {
@@ -46,7 +86,7 @@ abstract class WP_Stream_Connector {
 	 * 
 	 * @return void
 	 */
-	public static function callback() {
+	final public static function callback() {
 		$action   = current_filter();
 		$class    = get_called_class();
 		$callback = array( $class, 'callback_' . str_replace( '-', '_', $action ) );
@@ -82,7 +122,7 @@ abstract class WP_Stream_Connector {
 	 *
 	 * @return mixed|void
 	 */
-	public static  function is_logging_enabled_for_user( $user = null ) {
+	final public static function is_logging_enabled_for_user( $user = null ) {
 		if ( is_null( $user ) ){
 			$user = wp_get_current_user();
 		}
@@ -112,7 +152,7 @@ abstract class WP_Stream_Connector {
 	 * @internal param string $action Action performed (stream_action)
 	 * @return void
 	 */
-	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
+	final public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
 		$class = get_called_class();
 
 		return WP_Stream_Log::get_instance()->log(
@@ -134,7 +174,7 @@ abstract class WP_Stream_Connector {
 	 * @internal param mixed $arg2 , etc..
 	 * @return void
 	 */
-	public static function delayed_log( $handle ) {
+	final public static function delayed_log( $handle ) {
 		$args = func_get_args();
 		array_shift( $args );
 
@@ -146,7 +186,7 @@ abstract class WP_Stream_Connector {
 	 * Commit delayed logs saved by @delayed_log
 	 * @return void
 	 */
-	public static function delayed_log_commit() {
+	final public static function delayed_log_commit() {
 		foreach ( self::$delayed as $handle => $args ) {
 			call_user_func_array( array( __CLASS__, 'log' ) , $args );
 		}
