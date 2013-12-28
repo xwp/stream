@@ -34,10 +34,10 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created' => __( 'Created', 'stream' ),
-			'updated' => __( 'Updated', 'stream' ),
-			'deleted' => __( 'Deleted', 'stream' ),
-			'assigned' => __( 'Assigned', 'stream' ),
+			'created'    => __( 'Created', 'stream' ),
+			'updated'    => __( 'Updated', 'stream' ),
+			'deleted'    => __( 'Deleted', 'stream' ),
+			'assigned'   => __( 'Assigned', 'stream' ),
 			'unassigned' => __( 'Unassigned', 'stream' ),
 		);
 	}
@@ -49,7 +49,8 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		$labels = array();
-		$menus = get_terms( 'nav_menu', array( 'hide_empty' => false ) );
+		$menus  = get_terms( 'nav_menu', array( 'hide_empty' => false ) );
+		
 		foreach ( $menus as $menu ) {
 			$labels[ $menu->name ] = $menu->name;
 		}
