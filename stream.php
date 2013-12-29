@@ -40,15 +40,16 @@ class WP_Stream {
 	public $db = null;
 
 	/**
+	 * Admin notices messages
+	 *
+	 * @var array
+	 */
+	public static $messages = array();
+
+	/**
 	 * Class constructor
 	 */
 	private function __construct() {
-
-		if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
-			add_action( 'all_admin_notices', array( __CLASS__, 'php_version_notice' ) );
-			return;
-		}
-
 		define( 'WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
@@ -57,6 +58,17 @@ class WP_Stream {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			return;
 		}
+
+		// Add admin notice action to display all messages
+		add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
+
+		// If php version is not valid, kill plugin
+		if ( ! self::is_valid_php_version() ) {
+			return;
+		}
+
+		// Check database and add message if not present
+		self::verify_database_present();
 
 		//Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -109,13 +121,58 @@ class WP_Stream {
 	 * @return void
 	 */
 	public static function install() {
-		if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
-			add_action( 'all_admin_notices', array( __CLASS__, 'php_version_notice' ) );
+		if ( ! self::is_valid_php_version() ) {
+			add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
 			return;
 		}
+
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
 		WP_Stream_Install::check();
+	}
+
+	private static function verify_database_present() {
+		global $wpdb;
+		foreach ( array( 'stream', 'stream_meta', 'stream_context' ) as $table_name ) {
+			$table_name = $wpdb->prefix . $table_name;
+			if ( $wpdb->get_var( "show tables like '$table_name'" ) !== $table_name ) {
+				self::$messages[] = sprintf(
+					'<div class="error"><p>%s %s</p></div>',
+					sprintf( __( 'The following table is not present in the WordPress database : %s.', 'stream' ), $table_name ),
+					sprintf( __( 'Please <a href="%s">uninstall</a> Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php' ) )
+				); // xss okay
+
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Display a notice about php version
+	 *
+	 * @action all_admin_notices
+	 */
+	public static function is_valid_php_version() {
+		if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
+			self::$messages[] = sprintf(
+				'<div class="error"><p>%s</p></div>',
+				__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
+			); // xss okay
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Display all messages on admin board
+	 *
+	 * @return void
+	 */
+	public static function admin_notices() {
+		foreach ( self::$messages as $message ) {
+			echo $message;// xss okay
+		}
 	}
 
 	/**
@@ -129,18 +186,6 @@ class WP_Stream {
 			self::$instance = new $class;
 		}
 		return self::$instance;
-	}
-
-	/**
-	 * Display a notice about php version
-	 *
-	 * @action all_admin_notices
-	 */
-	public static function php_version_notice() {
-		echo sprintf(
-			'<div class="error"><p>%s</p></div>',
-			__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
-			); // xss okay
 	}
 
 }
