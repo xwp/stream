@@ -151,7 +151,7 @@ class WP_Stream {
 			self::$messages['wp_stream_db_error'] = sprintf(
 				'<div class="error">%s<p>%s</p></div>',
 				$message,
-				sprintf( __( 'Please <a href="%s">uninstall</a> Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) )
+				__( 'Please', 'stream' ) . sprintf( ' <a href="%s">uninstall</a> ', admin_url( 'plugins.php#stream' ) ) . __( 'the Stream plugin and activate it again.', 'stream' )
 			); // xss okay
 		}
 	}
