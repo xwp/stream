@@ -32,6 +32,18 @@
 
 class WP_Stream {
 
+	/**
+	 * Plugin version numver
+	 *
+	 * @const string
+	 */
+	const VERSION = '0.9.5';
+
+	/**
+	 * Hold Stream instance
+	 *
+	 * @var string
+	 */
 	public static $instance;
 
 	/**
