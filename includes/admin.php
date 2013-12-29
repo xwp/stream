@@ -388,7 +388,9 @@ class WP_Stream_Admin {
 	 *
 	 * @return array
 	 */
-	public static function _filter_user_caps( $allcaps, $caps, $args, $user ) {
+	public static function _filter_user_caps( $allcaps, $caps, $args, $user = null ) {
+		$user = is_a( $user, 'WP_User' ) ? $user : wp_get_current_user();
+
 		foreach ( $caps as $cap ) {
 			if ( self::VIEW_CAP === $cap ) {
 				foreach ( $user->roles as $role ) {
