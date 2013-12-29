@@ -314,12 +314,17 @@ class WP_Stream_Admin {
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
 
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
+			// Prevent stream action from being fired on plugin
+			remove_action( 'deactivate_plugin', array( 'WP_Stream_Connector_Installer', 'callback' ), null );
+
 			// Deactivate the plugin
 			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
+
 			// Delete all tables
-			foreach ( array( $wpdb->stream, $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
+			foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
 				$wpdb->query( "DROP TABLE $table" );
 			}
+
 			//Delete database option
 			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 			delete_option( WP_Stream_Settings::KEY );
