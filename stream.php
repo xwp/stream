@@ -55,6 +55,10 @@ class WP_Stream {
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 
+		// Load DB helper class
+		require_once WP_STREAM_INC_DIR . 'db-actions.php';
+		$this->db = new WP_Stream_DB;
+
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			return;
 		}
@@ -68,7 +72,7 @@ class WP_Stream {
 		}
 
 		// Check database and add message if not present
-		self::verify_database_present();
+		$this->verify_database_present();
 
 		//Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -84,10 +88,6 @@ class WP_Stream {
 		// Load connectors
 		require_once WP_STREAM_INC_DIR . 'connectors.php';
 		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ) );
-
-		// Load DB helper class
-		require_once WP_STREAM_INC_DIR . 'db-actions.php';
-		$this->db = new WP_Stream_DB;
 
 		// Load query class
 		require_once WP_STREAM_INC_DIR . 'query.php';
@@ -131,19 +131,28 @@ class WP_Stream {
 		WP_Stream_Install::check();
 	}
 
-	private static function verify_database_present() {
+	/**
+	 * Verify that all needed databases are present and add an error message if not.
+	 *
+	 * @return void
+	 */
+	private function verify_database_present() {
 		global $wpdb;
-		foreach ( array( 'stream', 'stream_meta', 'stream_context' ) as $table_name ) {
-			$table_name = $wpdb->prefix . $table_name;
-			if ( $wpdb->get_var( "show tables like '$table_name'" ) !== $table_name ) {
-				self::$messages[] = sprintf(
-					'<div class="error"><p>%s %s</p></div>',
-					sprintf( __( 'The following table is not present in the WordPress database : %s.', 'stream' ), $table_name ),
-					sprintf( __( 'Please <a href="%s">uninstall</a> Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php' ) )
-				); // xss okay
+		$message = '';
 
-				return;
+		// Check if all needed database is present
+		foreach ( $this->db->get_table_names() as $table_name ) {
+			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
+				$message .= sprintf( '<p>%s %s</p>', __( 'The following table is not present in the WordPress database :', 'stream' ), $table_name );
 			}
+		}
+
+		if ( ! empty( $message ) ) {
+			self::$messages['wp_stream_db_error'] = sprintf(
+				'<div class="error">%s<p>%s</p></div>',
+				$message,
+				sprintf( __( 'Please <a href="%s">uninstall</a> Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) )
+			); // xss okay
 		}
 	}
 
@@ -171,7 +180,7 @@ class WP_Stream {
 	 */
 	public static function admin_notices() {
 		foreach ( self::$messages as $message ) {
-			echo $message;// xss okay
+			echo wp_kses_post( $message );
 		}
 	}
 

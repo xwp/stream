@@ -321,7 +321,7 @@ class WP_Stream_Admin {
 			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
 
 			// Delete all tables
-			foreach ( array( $wpdb->stream, $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
+			foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
 				$wpdb->query( "DROP TABLE $table" );
 			}
 
