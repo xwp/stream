@@ -129,9 +129,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 						$item->summary,
 						array(
 							'object_id' => $item->object_id,
-							'context' => $item->context,
-							)
-						);
+							'context'   => $item->context,
+						),
+						null,
+						__( 'View all records for this object', 'stream' )
+					);
 				} else {
 					$out = $item->summary;
 				}
@@ -208,23 +210,21 @@ class WP_Stream_List_Table extends WP_List_Table {
 		return $out;
 	}
 
-	function column_link( $display, $key, $value = null ) {
+	function column_link( $display, $key, $value = null, $title = null ) {
 		$url = admin_url( 'admin.php?page=wp_stream' );
 
-		if ( ! is_array( $key ) ) {
-			$args = array( $key => $value );
-		} else {
-			$args = $key;
-		}
+		$args = ! is_array( $key ) ? array( $key => $value ) : $key;
+
 		foreach ( $args as $k => $v ) {
 			$url = add_query_arg( $k, $v, $url );
 		}
 
 		return sprintf(
-			'<a href="%s">%s</a>',
-			$url,
-			$display
-		); // xss okay
+			'<a href="%s" title="%s">%s</a>',
+			esc_url( $url ),
+			esc_attr( $title ),
+			esc_html( $display )
+		);
 	}
 
 	function filters_form() {
