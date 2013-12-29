@@ -33,7 +33,7 @@
 class WP_Stream {
 
 	/**
-	 * Plugin version numver
+	 * Plugin version number
 	 *
 	 * @const string
 	 */
