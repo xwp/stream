@@ -38,6 +38,7 @@ class WP_Stream_Query {
 			'date_from'             => null,
 			'date_to'               => null,
 			// __in params
+			'record_greater_than'   => null,
 			'record__in'            => array(),
 			'record__not_in'        => array(),
 			'record_parent'         => '',
@@ -106,6 +107,10 @@ class WP_Stream_Query {
 		/**
 		 * PARSE __IN PARAM FAMILY
 		 */
+		if ( $args['record_greater_than'] ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.ID > %d", (int) $args['record_greater_than'] );
+		}
+
 		if ( $args['record__in'] ) {
 			$record__in = implode( ',', array_filter( (array) $args['record__in'], 'is_numeric' ) );
 			if ( $record__in ) {

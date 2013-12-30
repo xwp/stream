@@ -381,7 +381,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		if ( isset( $option ) ) {
 			$value = $option;
 		};
-		$nonce = wp_create_nonce( 'stream_live_update_nonce' );
+		$nonce  = wp_create_nonce( 'stream_live_update_nonce' );
 		$return = '
 			<fieldset>
 			<h5>Live Updates</h5>

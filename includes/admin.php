@@ -52,6 +52,7 @@ class WP_Stream_Admin {
 		// Load Dashboard widget
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
 
+		// Heartbeat live update
 		add_filter( 'heartbeat_received', array( __CLASS__, 'live_update' ), 10, 2 );
 
 		// Enable/Disable live update per user
@@ -126,7 +127,7 @@ class WP_Stream_Admin {
 
 		wp_enqueue_script( 'select2' );
 		wp_enqueue_style( 'select2' );
-		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2' ) );
+		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ) );
 		wp_localize_script(
 			'wp-stream-admin',
 			'wp_stream',
@@ -135,7 +136,9 @@ class WP_Stream_Admin {
 					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
 					'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
 				),
-				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'current_screen' => $hook,
+				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
+				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
 			)
 		);
 	}
@@ -563,32 +566,33 @@ class WP_Stream_Admin {
 	public static function live_update( $response, $data ) {
 
 		$enable_update = get_user_meta( get_current_user_id(), 'enable_live_update', true );
-
 		$enable_update = isset( $enable_update ) ? $enable_update : '';
 
-		if ( $data['wp-stream-heartbeat'] == 'live-update' && $enable_update == 'on' ) {
+		if ( 'live-update' === $data['wp-stream-heartbeat'] && $enable_update == 'on' ) {
+			// Register list table
+			require_once WP_STREAM_INC_DIR . 'list-table.php';
+			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
 
-			//get the time of last update.  If not set, use pageload time
-			$curr_time = (int) current_time( 'timestamp', 1 );
-			$last_update_time = $curr_time - 5;
-
-			$updated_items = self::gather_updated_items( $last_update_time );
+			$last_id = filter_var( $data['wp-stream-heartbeat-last-id'], FILTER_VALIDATE_INT );
+			$updated_items = self::gather_updated_items( $last_id );
 
 			if ( empty( $updated_items ) ) {
-				$response['log'] = 'no update';
+				$response['wp-stream-heartbeat']['log'] = 'no update';
 			} else {
-				$response['log'] = 'update';
+				$response['wp-stream-heartbeat']['log'] = 'update';
 
-				$table_rows = '';
-				//Generate markup for rows
+				ob_start();
 				foreach ( $updated_items as $item ) {
-					$table_rows .= self::generate_row( $item );
+					self::$list_table->single_row( $item );
 				}
-				$response['rows'] = $table_rows;
+
+				$response['wp-stream-heartbeat']['rows']    = ob_get_clean();
+				$response['wp-stream-heartbeat']['last_id'] = $last_id;
 			}
 		} else {
 			$response['log'] = 'udpates disabled';
 		}
+
 		return $response;
 	}
 
@@ -599,146 +603,37 @@ class WP_Stream_Admin {
 	 * @param  int    Timestamp of last update
 	 * @return array  Array of recently updated items
 	 */
-	public static function gather_updated_items( $last_update_time = 0 ) {
-
-		$updated_items = array();
-
-		//get logged items
-		$items = stream_query();
-
-		//if logged time is after last update time, add to response array
-		foreach ( (array)$items as $item ) {
-			$item_time = (int) strtotime( $item->created );
-			if ( $item_time >= $last_update_time ) {
-				$updated_items[] = $item;
-			}
+	public static function gather_updated_items( $last_id ) {
+		if ( $last_id === false ) {
+			return '';
 		}
+
+		// Get logged items
+		$updated_items = stream_query(
+			array(
+				'record_greater_than' => (int) $last_id,
+			)
+		);
 
 		return $updated_items;
 	}
 
-
 	/**
-	 * Generates each row's markup
-	 *
-	 * Based on WP_Stream_List_Table->column_default()
-	 *
-	 * @todo Respect slected displayed columns in screen options
-	 *
-	 * @param  object  item for which we are generating the row
-	 * @return sring   row markup
+	 * Ajax function to enable/disable live update
+	 * @return void/json
 	 */
-	public static function generate_row( $item ) {
-		ob_start(); ?>
-
-		<tr class="alternate new-row">
-
-			<td class="date column-date">
-				<?php
-				$out  = sprintf( '<strong>' . __( '%s ago', 'stream' ) . '</strong>', human_time_diff( strtotime( $item->created ) ) );
-				$out .= '<br />';
-				$out .= self::column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
-				$out .= '<br />';
-				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
-				echo $out; ?>
-			</td>
-
-			<td class="summary column-summary">
-				<?php echo esc_html( $item->summary ) ?>
-			</td>
-
-			<td class="author column-author">
-				<?php
-				$user = get_user_by( 'id', $item->author );
-				if ( $user ) { global $wp_roles;
-					$author_ID   = isset( $user->ID ) ? $user->ID : 0;
-					$author_name = isset( $user->display_name ) ? $user->display_name : null;
-					$author_role = isset( $user->roles[0] ) ? $wp_roles->role_names[$user->roles[0]] : null;
-					$out = sprintf(
-						'<a href="%s">%s <span>%s</span></a><br /><small>%s</small>',
-						add_query_arg( array( 'author' => $author_ID ), admin_url( 'admin.php?page=wp_stream' ) ),
-						get_avatar( $author_ID, 40 ),
-						$author_name,
-						$author_role
-					);
-				} else {
-					$out = 'N/A';
-				}
-				echo $out; // xss okay ?>
-			</td>
-
-			<td class="connector column-connector">
-				<?php echo self::column_link( WP_Stream_Connectors::$term_labels['stream_connector'][$item->connector], 'connector', $item->connector ); // xss okay ?>
-			</td>
-
-			<td class="context column-context">
-				<?php $context = isset( WP_Stream_Connectors::$term_labels['stream_context'][$item->context] )
-					? WP_Stream_Connectors::$term_labels['stream_context'][$item->context]
-					: $item->context;
-				echo self::column_link( $context, 'context', $context ) // xss okay ?>
-			</td>
-
-			<td class="action column-action">
-				<?php $action = isset( WP_Stream_Connectors::$term_labels['stream_action'][$item->action] )
-					? WP_Stream_Connectors::$term_labels['stream_action'][$item->action]
-					: $item->action;
-				echo  self::column_link( $action, 'action', $action ) // xss okay ?>
-			</td>
-
-			<td class="ip column-ip">
-			<?php echo self::column_link( $item->ip, 'ip', $item->ip ) // xss okay ?>
-			</td>
-
-			<td class="id column-id">
-			<?php echo $item->ID // xss okay ?>
-			</td>
-
-		</tr>
-
-		<?php
-
-		return ob_get_clean();
-	}
-
-
-	/**
-	 * Generates column link for row items
-	 *
-	 * Based on WP_Stream_List_Table->column_link()
-	 *
-	 * @param  string  text to display
-	 * @param  array   key used in query var
-	 * @param  string  value used in query var
-	 * @return sring   column link
-	 */
-	public static function column_link( $display, $key, $value = null ) {
-		$url = admin_url( 'admin.php?page=wp_stream' );
-
-		if ( ! is_array( $key ) ) {
-			$args = array( $key => $value );
-		} else {
-			$args = $key;
-		}
-		foreach ( $args as $k => $v ) {
-			$url = add_query_arg( $k, $v, $url );
-		}
-
-		return sprintf(
-			'<a href="%s">%s</a>',
-			$url,
-			$display
-		); // xss okay
-	}
-
 	public static function enable_live_update() {
+		check_ajax_referer( 'stream_live_update_nonce', 'nonce' );
 
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'stream_live_update_nonce' ) ) {
-			wp_send_json_success( 'Failed nonce verification' );
-		}
+		$input = array(
+			'checked',
+			'user',
+		);
 
-		if ( ! isset( $_POST['checked'] ) || ! isset( $_POST['user'] ) ) {
+		if ( filter_input_array( INPUT_POST, $input ) ) {
 			wp_send_json_success( 'Error in live update checkbox' );
 		}
+
 
 		if ( $_POST['checked'] == 'checked' ) {
 			$checked = 'on';
@@ -756,4 +651,5 @@ class WP_Stream_Admin {
 			wp_send_json_success( 'Live Updates checkbox error' );
 		}
 	}
+
 }
