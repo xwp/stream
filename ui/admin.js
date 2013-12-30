@@ -98,7 +98,7 @@ jQuery(function($){
 
 		//Enable Live Update Checkbox Ajax
 
-		$( '#stream_enable_live_update' ).click( function() {
+		$( '#enable_live_update' ).click( function() {
 			var nonce   = $( '#enable_live_update_nonce' ).val();
 			var user    = $( '#enable_live_update_user' ).val();
 			var checked = 'unchecked';

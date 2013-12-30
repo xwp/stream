@@ -626,29 +626,26 @@ class WP_Stream_Admin {
 		check_ajax_referer( 'stream_live_update_nonce', 'nonce' );
 
 		$input = array(
-			'checked',
-			'user',
+			'checked' => FILTER_SANITIZE_STRING,
+			'user'    => FILTER_SANITIZE_STRING,
 		);
 
-		if ( filter_input_array( INPUT_POST, $input ) ) {
-			wp_send_json_success( 'Error in live update checkbox' );
+		$input = filter_input_array( INPUT_POST, $input );
+
+		if ( false === $input ) {
+			wp_send_json_error( 'Error in live update checkbox' );
 		}
 
+		$checked = ( 'checked' === $input['checked'] ) ? 'on' : 'off';
 
-		if ( $_POST['checked'] == 'checked' ) {
-			$checked = 'on';
-		} else {
-			$checked = 'off';
-		}
-
-		$user = (int) $_POST['user'];
+		$user = (int) $input['user'];
 
 		$success = update_user_meta( $user, 'enable_live_update', $checked );
 
 		if ( $success ) {
 			wp_send_json_success( 'Live Updates Enabled' );
 		} else {
-			wp_send_json_success( 'Live Updates checkbox error' );
+			wp_send_json_error( 'Live Updates checkbox error' );
 		}
 	}
 
