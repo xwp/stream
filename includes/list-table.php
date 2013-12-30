@@ -20,7 +20,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 				)
 			);
 
-		add_filter( 'set-screen-option', array( __CLASS__, 'set_live_update_option' ), 10, 3 );
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
 		set_screen_options();
