@@ -54,6 +54,9 @@ class WP_Stream_Admin {
 
 		add_filter( 'heartbeat_received', array( __CLASS__, 'live_update' ), 10, 2 );
 
+		// Enable/Disable live update per user
+		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
+
 	}
 
 	/**
@@ -132,6 +135,7 @@ class WP_Stream_Admin {
 					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
 					'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
 				),
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			)
 		);
 	}
@@ -558,7 +562,11 @@ class WP_Stream_Admin {
 	 */
 	public static function live_update( $response, $data ) {
 
-		if ( $data['wp-stream-heartbeat'] = 'live-update' ) {
+		$enable_update = get_user_meta( get_current_user_id(), 'enable_live_update', true );
+
+		$enable_update = isset( $enable_update ) ? $enable_update : '';
+
+		if ( $data['wp-stream-heartbeat'] == 'live-update' && $enable_update == 'on' ) {
 
 			//get the time of last update.  If not set, use pageload time
 			$curr_time = (int) current_time( 'timestamp', 1 );
@@ -578,6 +586,8 @@ class WP_Stream_Admin {
 				}
 				$response['rows'] = $table_rows;
 			}
+		} else {
+			$response['log'] = 'udpates disabled';
 		}
 		return $response;
 	}
@@ -612,6 +622,8 @@ class WP_Stream_Admin {
 	 * Generates each row's markup
 	 *
 	 * Based on WP_Stream_List_Table->column_default()
+	 *
+	 * @todo Respect slected displayed columns in screen options
 	 *
 	 * @param  object  item for which we are generating the row
 	 * @return sring   row markup
@@ -716,5 +728,32 @@ class WP_Stream_Admin {
 			$url,
 			$display
 		); // xss okay
+	}
+
+	public static function enable_live_update() {
+
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'stream_live_update_nonce' ) ) {
+			wp_send_json_success( 'Failed nonce verification' );
+		}
+
+		if ( ! isset( $_POST['checked'] ) || ! isset( $_POST['user'] ) ) {
+			wp_send_json_success( 'Error in live update checkbox' );
+		}
+
+		if ( $_POST['checked'] == 'checked' ) {
+			$checked = 'on';
+		} else {
+			$checked = 'off';
+		}
+
+		$user = (int) $_POST['user'];
+
+		$success = update_user_meta( $user, 'enable_live_update', $checked );
+
+		if ( $success ) {
+			wp_send_json_success( 'Live Updates Enabled' );
+		} else {
+			wp_send_json_success( 'Live Updates checkbox error' );
+		}
 	}
 }
