@@ -40,6 +40,9 @@ class WP_Stream_Settings {
 
 		// Register settings, and fields
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
+
+		// Check if we need to flush rewrites rules
+		add_action( 'update_option_' . self::KEY  , array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
 	}
 
 	/**
@@ -53,6 +56,14 @@ class WP_Stream_Settings {
 				'title'  => __( 'General', 'stream' ),
 				'fields' => array(
 					array(
+						'name'        => 'log_activity_for',
+						'title'       => __( 'Log Activity for', 'stream' ),
+						'type'        => 'multi_checkbox',
+						'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
+						'choices'     => self::get_roles(),
+						'default'     => array_keys( self::get_roles() ),
+					),
+					array(
 						'name'        => 'role_access',
 						'title'       => __( 'Role Access', 'stream' ),
 						'type'        => 'multi_checkbox',
@@ -65,17 +76,11 @@ class WP_Stream_Settings {
 						'title'       => __( 'Private Feeds', 'stream' ),
 						'type'        => 'checkbox',
 						'desc'        => sprintf(
-							__( 'Users from the selected roles above will be given a private Feed URL in their %sUser Profile%s. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
+							__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
 							sprintf(
 								'<a href="%s" title="%s">',
 								admin_url( 'profile.php' ),
 								esc_attr__( 'View Profile', 'stream' )
-							),
-							'</a>',
-							sprintf(
-								'<a href="%s" title="%s" target="_blank">',
-								esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
-								esc_attr__( 'View Codex', 'stream' )
 							),
 							'</a>'
 						),
@@ -162,6 +167,27 @@ class WP_Stream_Settings {
 						'label_for' => sprintf( '%s_%s_%s', self::KEY, $section_name, $field['name'] ), // xss ok
 					)
 				);
+			}
+		}
+	}
+
+	/**
+	 * Check if we have updated a settings that requires rewrite rules to be flushed
+	 *
+	 * @param array $old_value
+	 * @param array $new_value
+	 *
+	 * @internal param $option
+	 * @internal param string $option
+	 * @action   updated_option
+	 * @return void
+	 */
+	public static function updated_option_trigger_flush_rules( $old_value, $new_value ) {
+		if ( is_array( $new_value ) && is_array( $old_value ) ) {
+			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
+			$old_value = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value['general_private_feeds'] : 0;
+			if ( $new_value !== $old_value ) {
+				delete_option( 'rewrite_rules' );
 			}
 		}
 	}
@@ -266,7 +292,9 @@ class WP_Stream_Settings {
 	/**
 	 * Render Callback for post_types field
 	 *
-	 * @param $args
+	 * @param array $field
+	 *
+	 * @internal param $args
 	 * @return void
 	 */
 	public static function output_field( $field ) {
@@ -280,24 +308,13 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Get translated user roles
+	 * Get an array of user roles
 	 *
 	 * @return array
 	 */
 	public static function get_roles() {
-		global $wp_roles;
+		$wp_roles = new WP_Roles();
 
-		// If a plugin has previously registered roles but that plugin has been deactivated WordPress
-		// will throw a non-object notice here even though those roles will still be returned.
-		// So we'll suppress any notices here just to avoid unnecessary confusion.
-		$role_names = @$wp_roles->role_names;
-
-		$roles = array();
-
-		foreach ( (array) $role_names as $role_name => $role_label ) {
-			$roles[ $role_name ] = translate_user_role( $role_label );
-		}
-
-		return $roles;
+		return $wp_roles->get_names();
 	}
 }

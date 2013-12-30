@@ -8,9 +8,9 @@ jQuery(function($){
 		});
 	}
 
-	$( '.toplevel_page_wp_stream .chosen-select' ).chosen({
-		disable_search_threshold: 10,
-		allow_single_deselect: true,
+	$( '.toplevel_page_wp_stream .chosen-select' ).select2({
+		minimumResultsForSearch: 10,
+		allowClear: true,
 		width: '165px'
 	});
 

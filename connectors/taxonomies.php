@@ -9,6 +9,14 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	public static $name = 'taxonomies';
 
 	/**
+	 * Holds excluded taxonomies
+	 * @var array
+	 */
+	public static $excluded_taxonomies = array(
+		'nav_menu',
+	);
+
+	/**
 	 * Actions registered for this context
 	 * @var array
 	 */
@@ -94,6 +102,10 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * @action created_term
 	 */
 	public static function callback_created_term( $term_id, $tt_id, $taxonomy ) {
+		if ( in_array( $taxonomy, self::$excluded_taxonomies ) ) {
+			return;
+		}
+
 		$term = get_term( $term_id, $taxonomy );
 		$taxonomy_label = self::$singular_labels[$taxonomy];
 		$term_name = $term->name;
@@ -111,6 +123,10 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * @action delete_term
 	 */
 	public static function callback_delete_term( $term_id, $tt_id, $taxonomy, $deleted_term ) {
+		if ( in_array( $taxonomy, self::$excluded_taxonomies ) ) {
+			return;
+		}
+
 		$term_name = $deleted_term->name;
 		$taxonomy_label = self::$singular_labels[$taxonomy];
 		self::log(
@@ -131,6 +147,10 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	}
 
 	public static function callback_edited_term( $term_id, $tt_id, $taxonomy ) {
+		if ( in_array( $taxonomy, self::$excluded_taxonomies ) ) {
+			return;
+		}
+
 		$term = self::$cached_term_before_update;
 		if ( ! $term ) { // for some reason!
 			$term = get_term( $term_id, $taxonomy );

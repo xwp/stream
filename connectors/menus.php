@@ -34,10 +34,10 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created' => __( 'Created', 'stream' ),
-			'updated' => __( 'Updated', 'stream' ),
-			'deleted' => __( 'Deleted', 'stream' ),
-			'assigned' => __( 'Assigned', 'stream' ),
+			'created'    => __( 'Created', 'stream' ),
+			'updated'    => __( 'Updated', 'stream' ),
+			'deleted'    => __( 'Deleted', 'stream' ),
+			'assigned'   => __( 'Assigned', 'stream' ),
 			'unassigned' => __( 'Unassigned', 'stream' ),
 		);
 	}
@@ -48,9 +48,15 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 * @return array Context label translations
 	 */
 	public static function get_context_labels() {
-		return array(
-			'menus' => __( 'Menus', 'stream' ),
-		);
+		$labels = array();
+		$menus  = get_terms( 'nav_menu', array( 'hide_empty' => false ) );
+
+		foreach ( $menus as $menu ) {
+			$slug          = sanitize_title( $menu->name );
+			$labels[$slug] = $menu->name;
+		}
+
+		return $labels;
 	}
 
 	public static function register() {
@@ -88,8 +94,8 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 			__( 'Created new menu "%s"', 'stream' ),
 			compact( 'name', 'menu_id' ),
 			$menu_id,
-			array( 'menus' => 'created' )
-			);
+			array( sanitize_title( $name ) => 'created' )
+		);
 	}
 
 	/**
@@ -106,8 +112,8 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 			__( 'Updated menu "%s"', 'stream' ),
 			compact( 'name', 'menu_id', 'menu_data' ),
 			$menu_id,
-			array( 'menus' => 'updated' )
-			);
+			array( sanitize_title( $name ) => 'updated' )
+		);
 	}
 
 	/**
@@ -122,8 +128,8 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 			__( 'Deleted "%s"', 'stream' ),
 			compact( 'name', 'menu_id' ),
 			$menu_id,
-			array( 'menus' => 'deleted' )
-			);
+			array( sanitize_title( $name ) => 'deleted' )
+		);
 	}
 
 	/**
@@ -140,7 +146,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 		if ( ! isset( $new[$key] ) ) {
 			return; // Switching themes ?
 		}
-		
+
 		if ( $old[$key] === $new[$key] ) {
 			return;
 		}
@@ -153,11 +159,11 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 				$location = $locations[$location_id];
 				if ( empty( $new[$key][$location_id] ) ) {
 					$action  = 'unassigned';
-					$menu_id = $old[$key][$location_id];
+					$menu_id = isset( $old[$key][$location_id] ) ? $old[$key][$location_id] : 0;
 					$message = __( '"%s" has been unassigned from "%s"', 'stream' );
 				} else {
 					$action  = 'assigned';
-					$menu_id = $new[$key][$location_id];
+					$menu_id = isset( $new[$key][$location_id] ) ? $new[$key][$location_id] : 0;
 					$message = __( '"%s" has been assigned to "%s"', 'stream' );
 				}
 				$menu = get_term( $menu_id, 'nav_menu' );
@@ -172,8 +178,8 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 					$message,
 					compact( 'name', 'location', 'location_id', 'menu_id' ),
 					$menu_id,
-					array( 'menus' => $action )
-					);
+					array( sanitize_title( $name ) => $action )
+				);
 			}
 		}
 

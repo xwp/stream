@@ -34,6 +34,19 @@ class WP_Stream_DB {
 		return self::$instance;
 	}
 
+	/**
+	 * Public getter to return table names;
+	 *
+	 * @return array
+	 */
+	public function get_table_names() {
+		return array(
+			self::$table,
+			self::$table_meta,
+			self::$table_context,
+		);
+	}
+
 	public function insert( $recordarr ) {
 		global $wpdb;
 

@@ -79,8 +79,6 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function register_menu() {
-		global $menu;
-
 		self::$screen_id['main'] = add_menu_page(
 			__( 'Stream', 'stream' ),
 			__( 'Stream', 'stream' ),
@@ -108,18 +106,24 @@ class WP_Stream_Admin {
 	 * Enqueue scripts/styles for admin screen
 	 *
 	 * @action admin_enqueue_scripts
+	 *
+	 * @param $hook
+	 *
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
+		wp_register_script( 'select2', WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
+		wp_register_style( 'select2', WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
+
 		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 
 		if ( ! in_array( $hook, self::$screen_id ) && 'plugins.php' !== $hook ) {
 			return;
 		}
 
-		wp_enqueue_script( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.jquery.min.js', array( 'jquery' ), '1.0.0' );
-		wp_enqueue_style( 'wp-stream-chosen', WP_STREAM_URL . 'ui/chosen/chosen.min.css', array(), '1.0.0' );
-		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'heartbeat' ) );
+		wp_enqueue_script( 'select2' );
+		wp_enqueue_style( 'select2' );
+		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2' ) );
 		wp_localize_script(
 			'wp-stream-admin',
 			'wp_stream',
@@ -313,14 +317,21 @@ class WP_Stream_Admin {
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
 
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
+			// Prevent stream action from being fired on plugin
+			remove_action( 'deactivate_plugin', array( 'WP_Stream_Connector_Installer', 'callback' ), null );
+
 			// Deactivate the plugin
 			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
+
 			// Delete all tables
-			foreach ( array( $wpdb->stream, $wpdb->streamcontext, $wpdb->streammeta ) as $table ) {
+			foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
 				$wpdb->query( "DROP TABLE $table" );
 			}
+
 			//Delete database option
 			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+			delete_option( WP_Stream_Settings::KEY );
+			delete_option( 'dashboard_stream_activity_options' );
 			//Redirect to plugin page
 			wp_redirect( add_query_arg( array( 'deactivate' => true ) , admin_url( 'plugins.php' ) ) );
 			exit;
@@ -372,9 +383,17 @@ class WP_Stream_Admin {
 	 * Filter user caps to dynamically grant our view cap based on allowed roles
 	 *
 	 * @filter user_has_cap
+	 *
+	 * @param $allcaps
+	 * @param $caps
+	 * @param $args
+	 * @param $user
+	 *
 	 * @return array
 	 */
-	public static function _filter_user_caps( $allcaps, $caps, $args, $user ) {
+	public static function _filter_user_caps( $allcaps, $caps, $args, $user = null ) {
+		$user = is_a( $user, 'WP_User' ) ? $user : wp_get_current_user();
+
 		foreach ( $caps as $cap ) {
 			if ( self::VIEW_CAP === $cap ) {
 				foreach ( $user->roles as $role ) {
@@ -393,6 +412,11 @@ class WP_Stream_Admin {
 	 * Filter role caps to dynamically grant our view cap based on allowed roles
 	 *
 	 * @filter role_has_cap
+	 *
+	 * @param $allcaps
+	 * @param $cap
+	 * @param $role
+	 *
 	 * @return array
 	 */
 	public static function _filter_role_caps( $allcaps, $cap, $role ) {

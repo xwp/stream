@@ -21,6 +21,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		'pre_option_uninstall_plugins', // plugins::deleted
 		'pre_set_site_transient_update_plugins',
 		'wp_redirect',
+		'_core_updated_successfully',
 	);
 
 	/**
@@ -44,6 +45,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			'deactivated' => __( 'Deactivated', 'stream' ),
 			'deleted'     => __( 'Deleted', 'stream' ),
 			'edited'      => __( 'Edited', 'stream' ),
+			'updated'     => __( 'Updated', 'stream' ),
 		);
 	}
 
@@ -54,9 +56,30 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'plugins' => __( 'Plugins', 'stream' ),
-			'themes'  => __( 'Themes', 'stream' ),
+			'plugins'   => __( 'Plugins', 'stream' ),
+			'themes'    => __( 'Themes', 'stream' ),
+			'wordpress' => __( 'WordPress', 'stream' ),
 		);
+	}
+
+	/**
+	 * Add action links to Stream drop row in admin list screen
+	 *
+	 * @filter wp_stream_action_links_{connector}
+	 * @param  array $links      Previous links registered
+	 * @param  int   $record     Stream record
+	 * @return array             Action links
+	 */
+	public static function action_links( $links, $record ) {
+		if ( 'wordpress' == $record->context && 'updated' == $record->action ) {
+			global $wp_version;
+			$version = get_stream_meta( $record->ID, 'new_version', true );
+			if ( $version === $wp_version ) {
+				$links[ __( 'About', 'stream' ) ] = admin_url( 'about.php?updated' );
+			}
+			$links[ __( 'View Release Notes', 'stream' ) ] = esc_url( sprintf( 'http://codex.wordpress.org/Version_%s', $version ) );
+		}
+		return $links;
 	}
 
 	/**
@@ -254,6 +277,22 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		return $location;
 	}
 
+	public static function callback__core_updated_successfully( $new_version ) {
+		global $pagenow, $wp_version;
+		$old_version  = $wp_version;
+		$auto_updated = ( $pagenow != 'update-core.php' );
+		if ( $auto_updated ) {
+			$message = __( 'WordPress auto-updated to %s', 'stream' );
+		} else {
+			$message = __( 'WordPress updated to %s', 'stream' );
+		}
+		self::log(
+			$message,
+			compact( 'new_version', 'old_version', 'auto_updated' ),
+			null,
+			array( 'wordpress' => 'updated' )
+		);
+	}
 
 
 }
