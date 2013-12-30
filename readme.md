@@ -19,7 +19,7 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 Never be in the dark about WP Admin activity again. Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
 
-Every logged-in user action is logged in an activity stream and organized for easy filtering by context, action, and even IP address.
+Every logged-in user action is logged in an activity stream and organized for easy filtering by connector, context, action and IP address.
 
 **Recorded activity:**
 
