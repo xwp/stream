@@ -1,4 +1,4 @@
-/* globals confirm, wp_stream */
+/* globals confirm, wp_stream, ajaxurl */
 jQuery(function($){
 
 	if ( jQuery.datepicker ) {
@@ -37,10 +37,8 @@ jQuery(function($){
 
 		// Only run on page 1 when the order is desc and on page wp_stream
 		if(
-				'toplevel_page_wp_stream' !== wp_stream.current_screen
-				||
-				'1' !== wp_stream.current_page
-				||
+				'toplevel_page_wp_stream' !== wp_stream.current_screen ||
+				'1' !== wp_stream.current_page ||
 				'asc' === wp_stream.current_order
 		) {
 			return;
@@ -53,25 +51,25 @@ jQuery(function($){
 
 		$(document).on( 'heartbeat-send.stream', function(e, data) {
 			data['wp-stream-heartbeat']         = 'live-update';
-			data['wp-stream-heartbeat-last-id'] = $( list_sel + " tr:first .column-id").text();
+			data['wp-stream-heartbeat-last-id'] = $( list_sel + ' tr:first .column-id').text();
 		});
 
 		// Listen for "heartbeat-tick" on $(document).
-		$(document).on( 'heartbeat-tick.stream', function( e, data, textStatus, jqXHR ) {
+		$(document).on( 'heartbeat-tick.stream', function( e, data ) {
 
 			// If this no rows return then we kill the script
-			if ( ! data['wp-stream-heartbeat']['rows'] ) {
+			if ( ! data['wp-stream-heartbeat'].rows ) {
 				return;
 			}
 
 			// Get all new rows
-			var $new_items = $(data['wp-stream-heartbeat']['rows']);
+			var $new_items = $(data['wp-stream-heartbeat'].rows);
 
 			// Remove all class to tr added by WP and add new row class
 			$new_items.removeClass().addClass('new-row');
 
 			//Check if first tr has the alternate class
-			var has_class =  ( $( list_sel + " tr:first").hasClass('alternate') );
+			var has_class =  ( $( list_sel + ' tr:first').hasClass('alternate') );
 
 			// Apply the good class to the list
 			if ( $new_items.length === 1 && !has_class ) {
@@ -79,7 +77,7 @@ jQuery(function($){
 			} else {
 				var even_or_odd = ( $new_items.length%2 === 0 && !has_class ) ? 'even':'odd';
 				// Add class to nth child because there is more than one element
-				$new_items.filter(":nth-child("+even_or_odd+")").addClass('alternate');
+				$new_items.filter(':nth-child('+even_or_odd+')').addClass('alternate');
 			}
 
 			// Add element to the dom
@@ -89,7 +87,7 @@ jQuery(function($){
 			setTimeout( function() {
 				$('.new-row').addClass( 'fadeout' );
 				setTimeout( function() {
-					$( list_sel + " tr").removeClass("new-row fadeout");
+					$( list_sel + ' tr').removeClass('new-row fadeout');
 				}, 500);
 			}, 4000);
 
@@ -107,14 +105,14 @@ jQuery(function($){
 			}
 
 			$.ajax({
-				type: "POST",
+				type: 'POST',
 				url: ajaxurl,
-				data: { action: "stream_enable_live_update", nonce : nonce, user : user, checked : checked },
-				dataType: "json",
+				data: { action: 'stream_enable_live_update', nonce : nonce, user : user, checked : checked },
+				dataType: 'json',
 				beforeSend : function() {
 					$( '.stream-live-update-checkbox .spinner' ).show().css( { 'display' : 'inline-block' } );
 				},
-				success : function( response ) {
+				success : function() {
 					$( '.stream-live-update-checkbox .spinner' ).hide();
 				}
 			});
