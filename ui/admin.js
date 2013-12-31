@@ -37,16 +37,16 @@ jQuery(function($){
 
 		// Only run on page 1 when the order is desc and on page wp_stream
 		if(
-				'toplevel_page_wp_stream' !== wp_stream.current_screen ||
-				'1' !== wp_stream.current_page ||
-				'asc' === wp_stream.current_order
+			'toplevel_page_wp_stream' !== wp_stream.current_screen ||
+			'1' !== wp_stream.current_page ||
+			'asc' === wp_stream.current_order
 		) {
 			return;
 		}
 
 		var list_sel = '.toplevel_page_wp_stream #the-list';
 
-		// Set initial beat to fast.  WP is designed to slow this to 15 seconds after 2.5 minutes.
+		// Set initial beat to fast. WP is designed to slow this to 15 seconds after 2.5 minutes.
 		wp.heartbeat.interval( 'fast' );
 
 		$(document).on( 'heartbeat-send.stream', function(e, data) {
@@ -91,13 +91,12 @@ jQuery(function($){
 				setTimeout( function() {
 					$( list_sel + ' tr').removeClass('new-row fadeout');
 				}, 500);
-			}, 4000);
+			}, 3000);
 
 		});
 
 
 		//Enable Live Update Checkbox Ajax
-
 		$( '#enable_live_update' ).click( function() {
 			var nonce   = $( '#enable_live_update_nonce' ).val();
 			var user    = $( '#enable_live_update_user' ).val();
