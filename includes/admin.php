@@ -57,7 +57,6 @@ class WP_Stream_Admin {
 
 		// Enable/Disable live update per user
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
-
 	}
 
 	/**

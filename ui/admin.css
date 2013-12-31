@@ -143,6 +143,9 @@
 }
 
 /* Live Update */
+.toplevel_page_wp_stream .stream-live-update-checkbox .spinner {
+	margin-top: 5px;
+}
 
 .toplevel_page_wp_stream .new-row {
 	background-color: #ffffe0;

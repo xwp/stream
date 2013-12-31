@@ -378,19 +378,22 @@ class WP_Stream_List_Table extends WP_List_Table {
 	static function live_update_checkbox( $status, $args ) {
 		$user_id = get_current_user_id();
 		$option  = get_user_meta( $user_id, 'enable_live_update', true );
-		if ( isset( $option ) ) {
-			$value = $option;
-		};
-		$nonce  = wp_create_nonce( 'stream_live_update_nonce' );
-		$return = '
-			<fieldset>
-			<h5>Live Updates</h5>
-			<div><input type="hidden" name="enable_live_update_nonce" id="enable_live_update_nonce" value="' . $nonce . '" /></div>
-			<div><input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="' . $user_id . '" /></div>
-				<div class="metabox-prefs stream-live-update-checkbox">
-					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" ' . checked( 'on', $value, false ) . '/><label for="edit_stream_live_update">&nbsp;' . esc_html__( 'Enabled', 'wp-stream' ) . '&nbsp;&nbsp;&nbsp;<span class="spinner"></span></label>
-				</div>
-			</fieldset>';
-		return $return;
+		$value   = isset( $option ) ? $option : 'on';
+		$nonce   = wp_create_nonce( 'stream_live_update_nonce' );
+		ob_start();
+		?>
+		<fieldset>
+			<h5><?php esc_html_e( 'Live updates', 'stream' ) ?></h5>
+			<div><input type="hidden" name="enable_live_update_nonce" id="enable_live_update_nonce" value="<?php echo esc_attr( $nonce ) ?>" /></div>
+			<div><input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ) ?>" /></div>
+			<div class="metabox-prefs stream-live-update-checkbox">
+				<label for="enable_live_update">
+					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( 'on', $value ) ?> />
+					<?php esc_html_e( 'Enabled', 'stream' ) ?><span class="spinner"></span>
+				</label>
+			</div>
+		</fieldset>
+		<?php
+		return ob_get_clean();
 	}
 }
