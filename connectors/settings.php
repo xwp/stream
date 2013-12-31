@@ -63,6 +63,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'discussion' => __( 'Discussion', 'stream' ),
 			'media'      => __( 'Media', 'stream' ),
 			'permalink'  => __( 'Permalinks', 'stream' ),
+			'wp_stream'  => __( 'Stream', 'stream' ),
 		);
 	}
 
