@@ -576,18 +576,13 @@ class WP_Stream_Admin {
 			$last_id = filter_var( $data['wp-stream-heartbeat-last-id'], FILTER_VALIDATE_INT );
 			$updated_items = self::gather_updated_items( $last_id );
 
-			if ( empty( $updated_items ) ) {
-				$response['wp-stream-heartbeat']['log'] = 'no update';
-			} else {
-				$response['wp-stream-heartbeat']['log'] = 'update';
-
+			if ( ! empty( $updated_items ) ) {
 				ob_start();
 				foreach ( $updated_items as $item ) {
 					self::$list_table->single_row( $item );
 				}
 
-				$response['wp-stream-heartbeat']['rows']    = ob_get_clean();
-				$response['wp-stream-heartbeat']['last_id'] = $last_id;
+				$response['wp-stream-heartbeat']  = ob_get_clean();
 			}
 		} else {
 			$response['log'] = 'udpates disabled';

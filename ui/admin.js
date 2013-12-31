@@ -51,19 +51,21 @@ jQuery(function($){
 
 		$(document).on( 'heartbeat-send.stream', function(e, data) {
 			data['wp-stream-heartbeat']         = 'live-update';
-			data['wp-stream-heartbeat-last-id'] = $( list_sel + ' tr:first .column-id').text();
+			var last_id = $( list_sel + ' tr:first .column-id').text();
+			last_id = ( '' === last_id ) ? 1 : last_id;
+			data['wp-stream-heartbeat-last-id'] = last_id;
 		});
 
 		// Listen for "heartbeat-tick" on $(document).
 		$(document).on( 'heartbeat-tick.stream', function( e, data ) {
 
 			// If this no rows return then we kill the script
-			if ( ! data['wp-stream-heartbeat'].rows ) {
+			if ( ! data['wp-stream-heartbeat'] ) {
 				return;
 			}
 
 			// Get all new rows
-			var $new_items = $(data['wp-stream-heartbeat'].rows);
+			var $new_items = $(data['wp-stream-heartbeat']);
 
 			// Remove all class to tr added by WP and add new row class
 			$new_items.removeClass().addClass('new-row');
