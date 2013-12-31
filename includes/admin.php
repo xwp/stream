@@ -582,7 +582,7 @@ class WP_Stream_Admin {
 					self::$list_table->single_row( $item );
 				}
 
-				$response['wp-stream-heartbeat']  = ob_get_clean();
+				$response['wp-stream-heartbeat'] = ob_get_clean();
 			}
 		} else {
 			$response['log'] = 'udpates disabled';
