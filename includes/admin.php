@@ -83,7 +83,7 @@ class WP_Stream_Admin {
 			self::RECORDS_PAGE_SLUG,
 			array( __CLASS__, 'stream_page' ),
 			'div',
-			3
+			'2.999999' // Using longtail decimal string to reduce the chance of position conflicts, see Codex
 		);
 
 		self::$screen_id['settings'] = add_submenu_page(
