@@ -50,9 +50,10 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	public static function get_context_labels() {
 		$labels = array();
 		$menus  = get_terms( 'nav_menu', array( 'hide_empty' => false ) );
-		
+
 		foreach ( $menus as $menu ) {
-			$labels[ $menu->name ] = $menu->name;
+			$slug          = sanitize_title( $menu->name );
+			$labels[$slug] = $menu->name;
 		}
 
 		return $labels;
@@ -93,8 +94,8 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 			__( 'Created new menu "%s"', 'stream' ),
 			compact( 'name', 'menu_id' ),
 			$menu_id,
-			array( $name => 'created' )
-			);
+			array( sanitize_title( $name ) => 'created' )
+		);
 	}
 
 	/**
@@ -111,8 +112,8 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 			__( 'Updated menu "%s"', 'stream' ),
 			compact( 'name', 'menu_id', 'menu_data' ),
 			$menu_id,
-			array( $name => 'updated' )
-			);
+			array( sanitize_title( $name ) => 'updated' )
+		);
 	}
 
 	/**
@@ -127,8 +128,8 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 			__( 'Deleted "%s"', 'stream' ),
 			compact( 'name', 'menu_id' ),
 			$menu_id,
-			array( $name => 'deleted' )
-			);
+			array( sanitize_title( $name ) => 'deleted' )
+		);
 	}
 
 	/**
@@ -177,8 +178,8 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 					$message,
 					compact( 'name', 'location', 'location_id', 'menu_id' ),
 					$menu_id,
-					array( $name => $action )
-					);
+					array( sanitize_title( $name ) => $action )
+				);
 			}
 		}
 

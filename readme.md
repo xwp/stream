@@ -13,11 +13,13 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 ## Description ##
 
+[![Play video on YouTube](http://i1.ytimg.com/vi/DtN3DB0rpkM/hqdefault.jpg)](http://www.youtube.com/watch?v=DtN3DB0rpkM)
+
 **Note: This plugin requires PHP 5.3 or higher to be activated.**
 
 Never be in the dark about WP Admin activity again. Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
 
-Every logged-in user action is logged in an activity stream and organized for easy filtering by context, action, and even IP address.
+Every logged-in user action is logged in an activity stream and organized for easy filtering by connector, context, action and IP address.
 
 **Recorded activity:**
 
@@ -72,7 +74,7 @@ Great! There are several ways you can get involved to help make Stream better:
 
 Thank you for wanting to make Stream better for everyone! We salute you.
 
-[![Build Status](https://travis-ci.org/x-team/wp-stream.png)](https://travis-ci.org/x-team/wp-stream?branch=master)
+[![Build Status](https://travis-ci.org/x-team/wp-stream.png?branch=master)](https://travis-ci.org/x-team/wp-stream)
 
 ## Screenshots ##
 
@@ -85,6 +87,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-2.png)
 
 ## Changelog ##
+
+### 0.9.7 ###
+**2013/12/29** - Plugin version available as a constant. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 ### 0.9.6 ###
 **2013/12/29** - Use menu name as context in Menus connector. Warning if required DB tables are missing. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe/)
