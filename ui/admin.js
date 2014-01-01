@@ -83,7 +83,10 @@ jQuery(function($){
 			}
 
 			// Add element to the dom
-			$( list_sel ).prepend( $new_items );
+			$(list_sel).prepend( $new_items );
+
+            // Remove the number of element added to the end of the list table
+            $( list_sel + "  tr").slice(-$new_items.length).remove();
 
 			// Remove background after a certain amount of time
 			setTimeout( function() {
