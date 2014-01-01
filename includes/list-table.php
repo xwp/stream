@@ -93,12 +93,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'date', 'date_from', 'date_to',
 			'record__in',
 		);
+
 		foreach ( $allowed_params as $param ) {
 			if ( $paramval = filter_input( INPUT_GET, $param ) ) {
 				$args[$param] = $paramval;
 			}
 		}
-
 		$args['paged'] = $this->get_pagenum();
 
 		if ( ! isset( $args['records_per_page'] ) ) {

@@ -54,6 +54,7 @@ jQuery(function($){
 			var last_id = $( list_sel + ' tr:first .column-id').text();
 			last_id = ( '' === last_id ) ? 1 : last_id;
 			data['wp-stream-heartbeat-last-id'] = last_id;
+			data['wp-stream-heartbeat-query'] = wp_stream.current_query;
 		});
 
 		// Listen for "heartbeat-tick" on $(document).
@@ -86,7 +87,7 @@ jQuery(function($){
 			$(list_sel).prepend( $new_items );
 
             // Remove the number of element added to the end of the list table
-            $( list_sel + "  tr").slice(-$new_items.length).remove();
+            $( list_sel + ' tr').slice(-$new_items.length).remove();
 
 			// Remove background after a certain amount of time
 			setTimeout( function() {

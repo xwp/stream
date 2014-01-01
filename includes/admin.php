@@ -57,6 +57,7 @@ class WP_Stream_Admin {
 
 		// Enable/Disable live update per user
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
+
 	}
 
 	/**
@@ -138,6 +139,7 @@ class WP_Stream_Admin {
 				'current_screen' => $hook,
 				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
+				'current_query'  => json_encode( $_GET ),
 			)
 		);
 	}
@@ -573,7 +575,12 @@ class WP_Stream_Admin {
 			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
 
 			$last_id = filter_var( $data['wp-stream-heartbeat-last-id'], FILTER_VALIDATE_INT );
-			$updated_items = self::gather_updated_items( $last_id );
+			$query   = filter_var( $data['wp-stream-heartbeat-query'], FILTER_DEFAULT, array( 'options' => array( 'default' => array() ) ) );
+
+			// Decode the query
+			$query = json_decode( wp_kses_stripslashes( $query ) );
+
+			$updated_items = self::gather_updated_items( $last_id, $query );
 
 			if ( ! empty( $updated_items ) ) {
 				ob_start();
@@ -592,24 +599,31 @@ class WP_Stream_Admin {
 
 
 	/**
-	 * Sends Updated Actions to the List Table View
-	 *
-	 * @param  int    Timestamp of last update
-	 * @return array  Array of recently updated items
-	 */
-	public static function gather_updated_items( $last_id ) {
+   * Sends Updated Actions to the List Table View
+   *
+   * @param       int    Timestamp of last update
+   * @param array $query
+   *
+   * @return array  Array of recently updated items
+   */
+	public static function gather_updated_items( $last_id, $query = null ) {
 		if ( $last_id === false ) {
 			return '';
 		}
 
-		// Get logged items
-		$updated_items = stream_query(
-			array(
-				'record_greater_than' => (int) $last_id,
-			)
+		if ( is_null( $query ) ) {
+			$query = array();
+		}
+
+		$default = array(
+			'record_greater_than' => (int) $last_id,
 		);
 
-		return $updated_items;
+		// Filter default
+		$query = wp_parse_args( $query, $default );
+
+		//Run query
+		return stream_query( $query );
 	}
 
 	/**
