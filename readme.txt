@@ -11,7 +11,7 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 == Description ==
 
-[youtube http://www.youtube.com/watch?v=DtN3DB0rpkM]
+[youtube http://www.youtube.com/watch?v=H9TnZMUE_Y8]
 
 **Note: This plugin requires PHP 5.3 or higher to be activated.**
 
