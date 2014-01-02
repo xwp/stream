@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, akeda, kucrut, topher1kenobe, pascalklaeres
+Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, akeda, kucrut, johnregan3, topher1kenobe, pascalklaeres
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.6
 Tested up to:      3.8
@@ -42,6 +42,7 @@ Every logged-in user action is logged in an activity stream and organized for ea
  * Dashboard widget of most recent activity
  * Specify which roles should have their activity logged
  * Limit who can view activity records by user role
+ * Live update of activity records in the Stream
  * Private RSS feeds of activity records
  * Private JSON feeds of activity records
  * Set how long records should live before being purged automatically
@@ -56,7 +57,6 @@ Every logged-in user action is logged in an activity stream and organized for ea
 **Coming soon:**
 
  * Multisite view of all activity records on a network
- * Live update of activity records in the Stream
 
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
@@ -78,6 +78,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 2. Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 0.9.8 =
+**2013/01/01** - Support for live updates in the Stream. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 = 0.9.7 =
 **2013/12/29** - Plugin version available as a constant. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/)

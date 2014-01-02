@@ -4,7 +4,7 @@
 ![Banner](assets/banner-1544x500.png)
 Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail.
 
-**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe), [pascalklaeres](http://profiles.wordpress.org/pascalklaeres)  
+**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [johnregan3](http://profiles.wordpress.org/johnregan3), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe), [pascalklaeres](http://profiles.wordpress.org/pascalklaeres)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.6  
 **Tested up to:** 3.8  
@@ -44,6 +44,7 @@ Every logged-in user action is logged in an activity stream and organized for ea
  * Dashboard widget of most recent activity
  * Specify which roles should have their activity logged
  * Limit who can view activity records by user role
+ * Live update of activity records in the Stream
  * Private RSS feeds of activity records
  * Private JSON feeds of activity records
  * Set how long records should live before being purged automatically
@@ -58,7 +59,6 @@ Every logged-in user action is logged in an activity stream and organized for ea
 **Coming soon:**
 
  * Multisite view of all activity records on a network
- * Live update of activity records in the Stream
 
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
@@ -87,6 +87,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-2.png)
 
 ## Changelog ##
+
+### 0.9.8 ###
+**2013/01/01** - Support for live updates in the Stream. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 ### 0.9.7 ###
 **2013/12/29** - Plugin version available as a constant. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
