@@ -13,7 +13,7 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 ## Description ##
 
-[![Play video on YouTube](http://i1.ytimg.com/vi/DtN3DB0rpkM/hqdefault.jpg)](http://www.youtube.com/watch?v=DtN3DB0rpkM)
+[![Play video on YouTube](http://i1.ytimg.com/vi/H9TnZMUE_Y8/hqdefault.jpg)](http://www.youtube.com/watch?v=H9TnZMUE_Y8)
 
 **Note: This plugin requires PHP 5.3 or higher to be activated.**
 

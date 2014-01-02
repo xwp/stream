@@ -51,6 +51,13 @@ class WP_Stream_Admin {
 
 		// Load Dashboard widget
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
+
+		// Heartbeat live update
+		add_filter( 'heartbeat_received', array( __CLASS__, 'live_update' ), 10, 2 );
+
+		// Enable/Disable live update per user
+		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
+
 	}
 
 	/**
@@ -120,7 +127,7 @@ class WP_Stream_Admin {
 
 		wp_enqueue_script( 'select2' );
 		wp_enqueue_style( 'select2' );
-		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2' ) );
+		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ) );
 		wp_localize_script(
 			'wp-stream-admin',
 			'wp_stream',
@@ -129,6 +136,10 @@ class WP_Stream_Admin {
 					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
 					'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
 				),
+				'current_screen' => $hook,
+				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
+				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
+				'current_query'  => json_encode( $_GET ),
 			)
 		);
 	}
@@ -538,6 +549,112 @@ class WP_Stream_Admin {
 			</p>
 		</div>
 		<?php
+	}
+
+
+	/**
+	 * Sends Updated Actions to the List Table View
+	 *
+	 * @todo fix reliability issues with sidebar widgets
+	 *
+	 * @uses gather_updated_items
+	 * @uses generate_row
+	 *
+	 * @param  array  Response to heartbeat
+	 * @param  array  Response from heartbeat
+	 * @return array  Data sent to heartbeat
+	 */
+	public static function live_update( $response, $data ) {
+
+		$enable_update = get_user_meta( get_current_user_id(), 'enable_live_update', true );
+		$enable_update = isset( $enable_update ) ? $enable_update : '';
+
+		if ( 'live-update' === $data['wp-stream-heartbeat'] && $enable_update == 'on' ) {
+			// Register list table
+			require_once WP_STREAM_INC_DIR . 'list-table.php';
+			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
+
+			$last_id = filter_var( $data['wp-stream-heartbeat-last-id'], FILTER_VALIDATE_INT );
+			$query   = filter_var( $data['wp-stream-heartbeat-query'], FILTER_DEFAULT, array( 'options' => array( 'default' => array() ) ) );
+
+			// Decode the query
+			$query = json_decode( wp_kses_stripslashes( $query ) );
+
+			$updated_items = self::gather_updated_items( $last_id, $query );
+
+			if ( ! empty( $updated_items ) ) {
+				ob_start();
+				foreach ( $updated_items as $item ) {
+					self::$list_table->single_row( $item );
+				}
+
+				$response['wp-stream-heartbeat'] = ob_get_clean();
+			}
+		} else {
+			$response['log'] = 'udpates disabled';
+		}
+
+		return $response;
+	}
+
+
+	/**
+   * Sends Updated Actions to the List Table View
+   *
+   * @param       int    Timestamp of last update
+   * @param array $query
+   *
+   * @return array  Array of recently updated items
+   */
+	public static function gather_updated_items( $last_id, $query = null ) {
+		if ( $last_id === false ) {
+			return '';
+		}
+
+		if ( is_null( $query ) ) {
+			$query = array();
+		}
+
+		$default = array(
+			'record_greater_than' => (int) $last_id,
+		);
+
+		// Filter default
+		$query = wp_parse_args( $query, $default );
+
+		//Run query
+		return stream_query( $query );
+	}
+
+	/**
+	 * Ajax function to enable/disable live update
+	 * @return void/json
+	 */
+	public static function enable_live_update() {
+		check_ajax_referer( 'stream_live_update_nonce', 'nonce' );
+
+		$input = array(
+			'checked' => FILTER_SANITIZE_STRING,
+			'user'    => FILTER_SANITIZE_STRING,
+		);
+
+		$input = filter_input_array( INPUT_POST, $input );
+
+		if ( false === $input ) {
+			wp_send_json_error( 'Error in live update checkbox' );
+		}
+
+		$checked = ( 'checked' === $input['checked'] ) ? 'on' : 'off';
+
+		$user = (int) $input['user'];
+
+		$success = update_user_meta( $user, 'enable_live_update', $checked );
+
+		if ( $success ) {
+			wp_send_json_success( 'Live Updates Enabled' );
+		} else {
+			wp_send_json_error( 'Live Updates checkbox error' );
+		}
 	}
 
 }

@@ -21,6 +21,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			);
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
+		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
 		set_screen_options();
 	}
 
@@ -92,12 +93,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'date', 'date_from', 'date_to',
 			'record__in',
 		);
+
 		foreach ( $allowed_params as $param ) {
 			if ( $paramval = filter_input( INPUT_GET, $param ) ) {
 				$args[$param] = $paramval;
 			}
 		}
-
 		$args['paged'] = $this->get_pagenum();
 
 		if ( ! isset( $args['records_per_page'] ) ) {
@@ -363,5 +364,36 @@ class WP_Stream_List_Table extends WP_List_Table {
 		} else {
 			return $dummy;
 		}
+	}
+
+	static function set_live_update_option( $dummy, $option, $value ) {
+		if ( $option == 'enable_live_update' ) {
+			$value = $_POST['enable_live_update'];
+			return $value;
+		} else {
+			return $dummy;
+		}
+	}
+
+	static function live_update_checkbox( $status, $args ) {
+		$user_id = get_current_user_id();
+		$option  = get_user_meta( $user_id, 'enable_live_update', true );
+		$value   = isset( $option ) ? $option : 'on';
+		$nonce   = wp_create_nonce( 'stream_live_update_nonce' );
+		ob_start();
+		?>
+		<fieldset>
+			<h5><?php esc_html_e( 'Live updates', 'stream' ) ?></h5>
+			<div><input type="hidden" name="enable_live_update_nonce" id="enable_live_update_nonce" value="<?php echo esc_attr( $nonce ) ?>" /></div>
+			<div><input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ) ?>" /></div>
+			<div class="metabox-prefs stream-live-update-checkbox">
+				<label for="enable_live_update">
+					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( 'on', $value ) ?> />
+					<?php esc_html_e( 'Enabled', 'stream' ) ?><span class="spinner"></span>
+				</label>
+			</div>
+		</fieldset>
+		<?php
+		return ob_get_clean();
 	}
 }
