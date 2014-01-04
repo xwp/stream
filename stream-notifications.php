@@ -55,7 +55,7 @@ class WP_Stream_Notifications {
 	/**
 	 * Load our classes, actions/filters, only if our big brother is activated.
 	 * GO GO GO!
-	 * 
+	 *
 	 * @return void
 	 */
 	public function load() {
@@ -114,7 +114,9 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( $hook != self::$screen_id ) return;
+		if ( $hook != self::$screen_id ) {
+			return;
+		}
 
 		wp_enqueue_style( 'select2' );
 		wp_enqueue_script( 'select2' );
@@ -137,22 +139,24 @@ class WP_Stream_Notifications {
 
 		$args['types'] = array(
 			'search' => array(
-				'title' => __( 'Summary', 'stream' ),
-				'type'  => 'text',
+				'title'     => __( 'Summary', 'stream' ),
+				'type'      => 'text',
 				'operators' => array(
-					'contains'     => __( 'Contains', 'stream' ),
-					'contains-not' => __( 'Does not contain', 'stream' ),
-					'regex'        => __( 'Regex', 'stream' ),
+					'='            => __( 'is', 'stream' ),
+					'!='           => __( 'is not', 'stream' ),
+					'contains'     => __( 'contains', 'stream' ),
+					'contains-not' => __( 'does not contain', 'stream' ),
+					'regex'        => __( 'regex', 'stream' ),
 				),
 			),
 			'object_type' => array(
-				'title'   => __( 'Object Type', 'stream' ),
-				'type'    => 'select',
+				'title'     => __( 'Object Type', 'stream' ),
+				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => array(
-					'='  => '=',
-					'!=' => '!=',
-					'in' => __( 'in', 'stream' ),
+					'='      => __( 'is', 'stream' ),
+					'!='     => __( 'is not', 'stream' ),
+					'in'     => __( 'in', 'stream' ),
 					'not_in' => __( 'not in', 'stream' ),
 					),
 				'options' => array( // TODO: Do we have a dynamic way to get this ?
@@ -168,9 +172,9 @@ class WP_Stream_Notifications {
 				'type'      => 'text',
 				'tags'      => true,
 				'operators' => array(
-					'='  => '=',
-					'!=' => '!=',
-					'in' => __( 'in', 'stream' ),
+					'='      => __( 'is', 'stream' ),
+					'!='     => __( 'is not', 'stream' ),
+					'in'     => __( 'in', 'stream' ),
 					'not_in' => __( 'not in', 'stream' ),
 				),
 			),
@@ -180,8 +184,8 @@ class WP_Stream_Notifications {
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => array(
-					'='   => '=',
-					'!='  => '!=',
+					'='   => __( 'is', 'stream' ),
+					'!='  => __( 'is not', 'stream' ),
 					'in'  => __( 'in', 'stream' ),
 					'!in' => __( 'not in', 'stream' ),
 				),
@@ -193,8 +197,8 @@ class WP_Stream_Notifications {
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => array(
-					'='   => '=',
-					'!='  => '!=',
+					'='   => __( 'is', 'stream' ),
+					'!='  => __( 'is not', 'stream' ),
 					'in'  => __( 'in', 'stream' ),
 					'!in' => __( 'not in', 'stream' ),
 				),
@@ -205,58 +209,59 @@ class WP_Stream_Notifications {
 				'type'      => 'text',
 				'tags'      => true,
 				'operators' => array(
-					'='   => '=',
-					'!='  => '!=',
+					'='   => __( 'is', 'stream' ),
+					'!='  => __( 'is not', 'stream' ),
 					'in'  => __( 'in', 'stream' ),
 					'!in' => __( 'not in', 'stream' ),
 				),
 			),
-			
+
 			'date' => array(
-				'title' => __( 'Date', 'stream' ),
-				'type' => 'date',
+				'title'     => __( 'Date', 'stream' ),
+				'type'      => 'date',
 				'operators' => array(
-					'>',
-					'<',
-					'>=',
-					'<=',
-					'!=',
+					'='  => __( 'is on', 'stream' ),
+					'!=' => __( 'is not on', 'stream' ),
+					'<'  => __( 'is before', 'stream' ),
+					'<=' => __( 'is on or before', 'stream' ),
+					'>'  => __( 'is after', 'stream' ),
+					'>=' => __( 'is on or after', 'stream' ),
 				),
 			),
 
-			// TODO: find a way to introduce meta to the rules, problem: not translatable since it is 
+			// TODO: find a way to introduce meta to the rules, problem: not translatable since it is
 			// generated on run time with no prior definition
 			// 'meta_query'            => array(),
-			
+
 			'connector' => array(
-				'title' => __( 'Connector', 'stream' ),
-				'type'  => 'select',
+				'title'     => __( 'Connector', 'stream' ),
+				'type'      => 'select',
 				'operators' => array(
-					'='   => '=',
-					'!='  => '!=',
+					'='   => __( 'is', 'stream' ),
+					'!='  => __( 'is not', 'stream' ),
 					'in'  => __( 'in', 'stream' ),
 					'!in' => __( 'not in', 'stream' ),
 				),
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			),
 			'context' => array(
-				'title' => __( 'Context', 'stream' ),
-				'type'  => 'text',
-				'ajax'  => true,
+				'title'     => __( 'Context', 'stream' ),
+				'type'      => 'text',
+				'ajax'      => true,
 				'operators' => array(
-					'='   => '=',
-					'!='  => '!=',
+					'='   => __( 'is', 'stream' ),
+					'!='  => __( 'is not', 'stream' ),
 					'in'  => __( 'in', 'stream' ),
 					'!in' => __( 'not in', 'stream' ),
 				),
 			),
 			'action' => array(
-				'title' => __( 'Action', 'stream' ),
-				'type'  => 'text',
-				'ajax'  => true,
+				'title'     => __( 'Action', 'stream' ),
+				'type'      => 'text',
+				'ajax'      => true,
 				'operators' => array(
-					'='   => '=',
-					'!='  => '!=',
+					'='   => __( 'is', 'stream' ),
+					'!='  => __( 'is not', 'stream' ),
 					'in'  => __( 'in', 'stream' ),
 					'!in' => __( 'not in', 'stream' ),
 				),
@@ -264,7 +269,7 @@ class WP_Stream_Notifications {
 		);
 
 		return apply_filters( 'stream_notification_js_args', $args );
-	} 
+	}
 
 	/**
 	 * Admin page callback function, redirects to each respective method based
@@ -289,7 +294,7 @@ class WP_Stream_Notifications {
 
 	/**
 	 * Admin page callback for form actions
-	 * 
+	 *
 	 * @return void
 	 */
 	public function page_form( $id = null ) {
@@ -304,7 +309,7 @@ class WP_Stream_Notifications {
 		$id = filter_input( INPUT_GET, 'id' );
 
 		$rule = new WP_Stream_Notification_Rule( $id );
-		
+
 		$data = $_POST;
 
 		if ( $data && in_array( $action, array( 'edit', 'add' ) ) ) {
@@ -321,7 +326,7 @@ class WP_Stream_Notifications {
 
 	/**
 	 * Admin page callback for list action
-	 * 
+	 *
 	 * @return void
 	 */
 	public function page_list() {
@@ -330,7 +335,7 @@ class WP_Stream_Notifications {
 	}
 
 	/**
-	 * Callback for form AJAX operations 
+	 * Callback for form AJAX operations
 	 *
 	 * @action wp_ajax_stream_notifications_endpoint
 	 * @return void

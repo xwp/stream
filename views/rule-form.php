@@ -1,7 +1,7 @@
 <div class="wrap">
-	
+
 	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream_notification' ) : _e( 'Add Notification Rule', 'stream_notification' ); ?></h2>
-	
+
 	<form action="" method="post">
 		<div id="poststuff">
 			<div id="post-body" class="metabox-holder columns-2">
@@ -36,14 +36,14 @@
 											</div>
 										</div>
 									</div>
-									
+
 									<div id="major-publishing-actions">
 										<div id="delete-action">
 											<a class="submitdelete deletion" href="#delete-post">
 												<?php _e( 'Move to Trash', 'stream_notification' ) ?>
 											</a>
 										</div>
-										
+
 										<div id="publishing-action">
 											<span class="spinner"></span>
 											<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php _e( 'Save', 'stream_notification' ) ?>" accesskey="p">
@@ -57,19 +57,20 @@
 				</div><!-- postbox-container-1 -->
 
 				<div id="postbox-container-2" class="postbox-container">
-					
+
 					<div id="normal-sortables" class="meta-box-sortables ui-sortable">
 
 						<div id="triggers" class="postbox">
 							<h3 class="hndle">
 								<span><?php _e( 'Triggers', 'stream_notification' ) ?></span>
-								<a class="add-trigger" href="#add-trigger" data-group="0"><?php _e( 'Add Trigger', 'stream_notification' ) ?></a>
-								<a class="add-trigger-group" href="#add-trigger-group" data-group="0"><?php _e( 'Add Group', 'stream_notification' ) ?></a>
 							</h3>
 							<div class="inside">
-								
+
+								<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php _e( 'Add Trigger', 'stream_notification' ) ?></a>
+								<a class="add-trigger-group button button-secondary" href="#add-trigger-group" data-group="0"><?php _e( 'Add Group', 'stream_notification' ) ?></a>
+
 								<div class="group" rel="0">
-									
+
 								</div>
 
 							</div>
@@ -78,7 +79,7 @@
 						<div id="action" class="postbox">
 							<h3 class="hndle"><span><?php _e( 'Action', 'stream_notification' ) ?></span></h3>
 							<div class="inside">
-								
+
 							</div>
 						</div>
 
@@ -116,7 +117,7 @@
 		        <% }); %>
 			</select>
 		</div>
-		<a href="#" class="delete-trigger">Delete</a>
+		<a href="#" class="delete-trigger">Remove</a>
 	</div>
 </div>
 </script>
@@ -131,8 +132,8 @@
 				<option value="or"><?php _e( 'OR', 'stream_notification' ) ?></option>
 			</select>
 		</div>
-		<a href="#add-trigger" class="add-trigger" data-group="<%- vars.index %>">Add Trigger</a>
-		<a href="#add-trigger-group" class="add-trigger-group" data-group="<%- vars.index %>">Add Group</a>
+		<a href="#add-trigger" class="add-trigger button button-secondary" data-group="<%- vars.index %>">Add Trigger</a>
+		<a href="#add-trigger-group" class="add-trigger-group button button-secondary" data-group="<%- vars.index %>">Add Group</a>
 		<a href="#" class="delete-group">Remove</a>
 	</div>
 </div>
@@ -166,24 +167,83 @@
 
 <style>
 	.field, .trigger_type, .trigger_options, .trigger_value { float: left; }
-	.form-row { clear:both; overflow: hidden; margin-bottom: 10px; background: #eee; padding: 10px; }
-	.group { padding: 20px; background: #ccc; border: 1px solid black; margin: 10px; }
-	.group-meta { float: left;
-		margin-top: -25px;
-		margin-left: -25px;
-		margin-bottom: 20px;
-		background: #fff;
+	.form-row {
+		clear: both;
+		overflow: hidden;
+		margin-bottom: 10px;
+		background: #eee;
 		padding: 10px;
-		border-radius: 5px; }
+	}
+	.inside > .group {
+		margin: 10px 0 0;
+		background: none;
+		padding: 0;
+
+		-webkit-box-shadow: none;
+		        box-shadow: none;
+	}
+	.group {
+		background: rgba(0, 0, 0, 0.08);
+		padding: 20px 20px 12px;
+		margin-bottom: 10px;
+		min-height: 16px;
+		clear: both;
+	}
+	.group .form-row {
+		background: rgba(0, 0, 0, 0.03);
+	}
+	.group,
+	.group .form-row {
+		margin-left: 90px;
+
+		-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+		        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+	}
+	.group .form-row .delete-trigger {
+		line-height: 29px;
+	}
+	.inside > .group,
+	.inside > .group > .group {
+		margin-left: 0;
+	}
+	.inside > .group > .trigger > .form-row {
+		margin-left: 0;
+	}
+	.group-meta {
+		float: left;
+		margin-top: -10px;
+		margin-left: -10px;
+		padding: 0 0 12px;
+	}
 	.group-meta a {
 		font-size: 10px;
 		padding-left: 5px;
+	}
+	.group-meta a.delete-group {
+		line-height: 28px;
 	}
 	.group .trigger:first-of-type .field.relation,
 	.trigger.first .field.relation {
 		display: none;
 	}
+	.trigger.first .field.type {
+		margin-left: 99px;
+	}
 	.delete-trigger { float: right; }
 
-	.field.relation select { width: 50px !important; }
+	.select2-container {
+		margin-right: 6px;
+	}
+	.select2-results li {
+		margin-bottom: 2px;
+	}
+	.select2-container .select2-choice > .select2-chosen {
+		font-size: 13px;
+	}
+	.select2-container.trigger_type {
+		width: 180px !important;
+	}
+	.select2-container.trigger_operator {
+		width: 140px !important;
+	}
 </style>
