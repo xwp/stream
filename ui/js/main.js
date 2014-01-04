@@ -111,7 +111,7 @@ jQuery(function($){
 		selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
 	});
 
-	// Edit form population
+	// Populate form values if it exists
 	if ( triggers ) {
 		
 		for ( i = 0; i < triggers.length; i++ ) {
@@ -119,6 +119,7 @@ jQuery(function($){
 				groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']'),
 				row,
 				valueField;
+
 			// create the group if it doesn't exist
 			if ( ! groupDiv.size() ) {
 				var group = groups[trigger.group];

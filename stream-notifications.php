@@ -299,6 +299,7 @@ class WP_Stream_Notifications {
 
 	public function page_form_save() {
 		// TODO add nonce, check author/user permission to update record
+		// TODO Do not save if no triggers are added
 		$action = filter_input( INPUT_GET, 'action' );
 		$id = filter_input( INPUT_GET, 'id' );
 

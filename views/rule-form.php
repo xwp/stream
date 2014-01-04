@@ -40,7 +40,7 @@
 									<div id="major-publishing-actions">
 										<div id="delete-action">
 											<a class="submitdelete deletion" href="#delete-post">
-												Move to Trash
+												<?php _e( 'Move to Trash', 'stream_notification' ) ?>
 											</a>
 										</div>
 										
