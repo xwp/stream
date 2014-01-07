@@ -316,6 +316,7 @@ class WP_Stream_Notifications {
 
 	public function page_form_save() {
 		// TODO add nonce, check author/user permission to update record
+		// TODO Do not save if no triggers are added
 		$action = filter_input( INPUT_GET, 'action' );
 		$id     = filter_input( INPUT_GET, 'id' );
 
@@ -352,10 +353,11 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function form_ajax_ep() {
-		// BIG TODO: Make the request context-aware,
-		// ie: get other rules, so an author query would check if there
-		// is a author_role rule available to limit the results according to it
-		$type  = filter_input( INPUT_POST, 'type' );
+		// BIG @TODO: Make the request context-aware,
+		// ie: get other rules ( maybe in the same group only ? ), so an author 
+		// query would check if there is a author_role rule available to limit 
+		// the results according to it
+		$type = filter_input( INPUT_POST, 'type' );
 		$query = filter_input( INPUT_POST, 'q' );
 
 		switch ( $type ) {

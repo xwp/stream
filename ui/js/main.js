@@ -111,7 +111,7 @@ jQuery(function($){
 		selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
 	});
 
-	// Edit form population
+	// Populate form values if it exists
 	if ( triggers ) {
 		
 		for ( i = 0; i < triggers.length; i++ ) {
@@ -119,30 +119,34 @@ jQuery(function($){
 				groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']'),
 				row,
 				valueField;
+
+			// create the group if it doesn't exist
 			if ( ! groupDiv.size() ) {
 				var group = groups[trigger.group];
 				$( btns.add_group ).filter('[data-group='+group.group+']').trigger('click');
 				groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']');
 				groupDiv.find('select.group_relation').select2( 'val', group.relation );
 			}
+
+			// create the new row, by clicking the add-trigger button in the appropriate group
 			divTriggers.find( btns.add_trigger ).filter('[data-group='+trigger.group+']').trigger( 'click' );
+
+			// populate values
 			row = groupDiv.find('.trigger:last');
 			row.find('select.trigger_relation').select2( 'val', trigger.relation ).trigger('change');
 			row.find('select.trigger_type').select2( 'val', trigger.type ).trigger('change');
 			row.find('select.trigger_operator').select2( 'val', trigger.operator ).trigger('change');
-			valueField = row.find('.trigger_value:not(.select2-container)').eq(0);
-			if ( valueField.is('select') || valueField.is('.ajax') ) {
-				valueField.select2( 'val', trigger.value ).trigger('change');
-			} else {
-				valueField.val( trigger.value ).trigger('change');
-			}
-			// if ( triggers.group ) {
-			// 	group = divTriggers.find('.group').eq(0);
 
-			// 	if ( ! group ) {
-			// 		divTriggers.find( btns.add_group ).eq(0)
-			// 	}
-			// }
+			// populate the trigger value, according to the trigger type
+			if ( trigger.value ) {
+				valueField = row.find('.trigger_value:not(.select2-container)').eq(0);
+				if ( valueField.is('select') || valueField.is('.ajax') ) {
+					valueField.select2( 'val', trigger.value ).trigger('change');
+				} else {
+					valueField.val( trigger.value ).trigger('change');
+				}
+			}
+			
 		}
 	}
 
