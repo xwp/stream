@@ -15,11 +15,12 @@ class WP_Stream_Admin {
 	 */
 	public static $list_table = null;
 
-	const RECORDS_PAGE_SLUG  = 'wp_stream';
-	const SETTINGS_PAGE_SLUG = 'wp_stream_settings';
-	const ADMIN_PARENT_PAGE  = 'admin.php';
-	const VIEW_CAP           = 'view_stream';
-	const SETTINGS_CAP       = 'manage_options';
+	const RECORDS_PAGE_SLUG    = 'wp_stream';
+	const SETTINGS_PAGE_SLUG   = 'wp_stream_settings';
+	const EXTENSIONS_PAGE_SLUG = 'wp_stream_extensions';
+	const ADMIN_PARENT_PAGE    = 'admin.php';
+	const VIEW_CAP             = 'view_stream';
+	const SETTINGS_CAP         = 'manage_options';
 
 	public static function load() {
 		// User and role caps
@@ -98,8 +99,17 @@ class WP_Stream_Admin {
 			__( 'Stream Settings', 'stream' ),
 			__( 'Settings', 'stream' ),
 			self::SETTINGS_CAP,
-			'wp_stream_settings',
-			array( __CLASS__, 'render_page' )
+			self::SETTINGS_PAGE_SLUG,
+			array( __CLASS__, 'render_settings_page' )
+		);
+
+		self::$screen_id['extensions'] = add_submenu_page(
+			self::RECORDS_PAGE_SLUG,
+			__( 'Stream Extensions', 'stream' ),
+			__( 'Extensions', 'stream' ),
+			self::SETTINGS_CAP,
+			self::EXTENSIONS_PAGE_SLUG,
+			array( __CLASS__, 'render_extensions_page' )
 		);
 
 		// Register the list table early, so it associates the column headers with 'Screen settings'
@@ -174,7 +184,8 @@ class WP_Stream_Admin {
 					background-repeat: no-repeat;
 				}
 				.toplevel_page_wp_stream #wpbody-content .wrap h2:before,
-				.stream_page_wp_stream_settings #wpbody-content .wrap h2:nth-child(1):before {
+				.stream_page_wp_stream_settings #wpbody-content .wrap h2:nth-child(1):before,
+				.stream_page_wp_stream_extensions #wpbody-content .wrap h2:nth-child(1):before {
 					font-family: 'WP Stream' !important;
 					content: '\\73';
 					padding: 0 8px 0 0;
@@ -231,7 +242,7 @@ class WP_Stream_Admin {
 	 *
 	 * @return void
 	 */
-	public static function render_page() {
+	public static function render_settings_page() {
 		?>
 		<div class="wrap">
 
@@ -271,6 +282,19 @@ class WP_Stream_Admin {
 				</form>
 			</div>
 
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render extensions page
+	 *
+	 * @return void
+	 */
+	public static function render_extensions_page() {
+		?>
+		<div class="wrap themes-php">
+			<?php require_once WP_STREAM_INC_DIR . 'extensions.php' ?>
 		</div>
 		<?php
 	}

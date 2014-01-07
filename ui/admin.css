@@ -160,3 +160,14 @@
 .toplevel_page_wp_stream .new-row.fadeout {
 	background-color: transparent;
 }
+
+.stream_page_wp_stream_extensions .theme a {
+	text-decoration: none;
+}
+
+.stream_page_wp_stream_extensions .theme.active .theme-actions {
+	padding-top: 15px;
+	height: 33px;
+	color: #fff;
+	text-transform: uppercase;
+}
