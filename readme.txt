@@ -19,6 +19,10 @@ Never be in the dark about WP Admin activity again. Stream allows you to know ex
 
 Every logged-in user action is logged in an activity stream and organized for easy filtering by connector, context, action and IP address.
 
+Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
+
+Stream is built to extend, allowing developers to easily build their own connectors to track any type of action in the activity stream (developer documentation coming soon).
+
 **Recorded activity:**
 
  * Posts
@@ -58,10 +62,6 @@ Every logged-in user action is logged in an activity stream and organized for ea
 
  * Multisite view of all activity records on a network
  * Language support for Arabic, Czech and Slovak
-
-Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
-
-Stream is built to extend, allowing developers to easily build their own connectors to track any type of action in the activity stream (developer documentation coming soon).
 
 **See room for improvement?**
 
