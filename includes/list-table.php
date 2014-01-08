@@ -340,6 +340,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		echo '<form method="get" action="', esc_attr( admin_url( 'admin.php' ) ), '">';
 		echo $this->filter_search(); // xss okay
 		parent::display();
+		do_action( 'stream-table-footer' );
 		echo '</form>';
 	}
 
