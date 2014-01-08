@@ -83,13 +83,17 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ![Every logged-in user action is logged in the activity stream and organized for easy filtering and searching.](assets/screenshot-1.png)
 
+### Enable live updates in Screen Options to watch your site activity flow into the Stream in real-time.
+
+![Enable live updates in Screen Options to watch your site activity flow into the Stream in real-time.](assets/screenshot-2.png)
+
 ### Control which user roles have their activity tracked and which user roles can access Stream.
 
-![Control which user roles have their activity tracked and which user roles can access Stream.](assets/screenshot-2.png)
+![Control which user roles have their activity tracked and which user roles can access Stream.](assets/screenshot-3.png)
 
 ### Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
-![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-3.png)
+![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
 
