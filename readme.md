@@ -59,6 +59,7 @@ Every logged-in user action is logged in an activity stream and organized for ea
 **Coming soon:**
 
  * Multisite view of all activity records on a network
+ * Language support for Arabic, Czech and Slovak
 
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
