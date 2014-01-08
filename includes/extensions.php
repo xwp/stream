@@ -7,7 +7,6 @@ if ( ! empty( $extensions ) ) {
 	foreach ( $extensions as $extension ) {
 		$plugin_path  = isset( $extension->post_meta->plugin_path[0] ) ? $extension->post_meta->plugin_path[0] : null;
 		$is_installed = ( $plugin_path && ( is_plugin_active( $plugin_path ) || is_plugin_inactive( $plugin_path ) ) );
-
 		if ( $is_installed ) {
 			$count++;
 		}
@@ -35,12 +34,15 @@ if ( ! empty( $extensions ) ) {
 				$is_active    = ( $plugin_path && is_plugin_active( $plugin_path ) );
 				$is_installed = ( $plugin_path && ( $is_active || is_plugin_inactive( $plugin_path ) ) );
 				$action_link  = isset( $extension->post_meta->external_url[0] ) ? $extension->post_meta->external_url[0] : $extension->link;
+				$image_src    = isset( $extension->featured_image->source ) ? $extension->featured_image->source : null;
 				?>
 
 				<div class="theme<?php if ( $is_installed ) { echo esc_attr( ' active' ); } ?>">
 					<a href="<?php echo esc_url( $extension->link ) ?>" target="_blank">
-						<div class="theme-screenshot">
-							<img src="http://local.wordpress-trunk.dev/wp-content/themes/twentyeleven/screenshot.png" alt="<?php echo esc_attr( $extension->title ) ?>">
+						<div class="theme-screenshot<?php if ( ! $image_src ) { echo esc_attr( ' blank' ); } ?>">
+							<?php if ( $image_src ) : ?>
+								<img src="<?php echo esc_url( $image_src ) ?>" alt="<?php echo esc_attr( $extension->title ) ?>">
+							<?php endif; ?>
 						</div>
 						<span class="more-details"><?php esc_html_e( 'View Details', 'stream' ) ?></span>
 						<h3 class="theme-name"><span><?php echo esc_html( $extension->title ) ?></span></h3>
