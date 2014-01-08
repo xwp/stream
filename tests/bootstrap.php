@@ -6,11 +6,11 @@
  * @author Jonathan Bardo <jonathan.bardo@x-team.com>
  */
 
-//Use in code to trigger custom actions
+// Use in code to trigger custom actions
 define( 'STREAM_TESTS', true );
 
-//Create our own test case to prevent repeating ourself
-require_once getenv( 'WP_TESTS_DIR' ) . '/includes/functions.php';
+// Create our own test case to prevent repeating ourself
+require_once getenv( 'WP_TESTS_DIR' ) . 'includes/functions.php';
 
 tests_add_filter(
 	'muplugins_loaded',
@@ -18,7 +18,7 @@ tests_add_filter(
 		// Manually load plugin
 		require dirname( dirname( __FILE__ ) ) . '/stream.php';
 
-		//Call Activate plugin function
+		// Call Activate plugin function
 		WP_Stream::install();
 	}
 );
@@ -28,11 +28,11 @@ tests_add_filter(
 tests_add_filter(
 		'shutdown',
 	function() {
-		//Empty all tables so we don't deal with leftovers
+		// Empty all tables so we don't deal with leftovers
 		drop_tables();
 	},
 	999999
 );
 
-require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
+require getenv( 'WP_TESTS_DIR' ) . 'includes/bootstrap.php';
 require dirname( __FILE__ ) . '/testcase.php';
