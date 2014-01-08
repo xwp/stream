@@ -21,6 +21,10 @@ Never be in the dark about WP Admin activity again. Stream allows you to know ex
 
 Every logged-in user action is logged in an activity stream and organized for easy filtering by connector, context, action and IP address.
 
+Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
+
+Stream is built to extend, allowing developers to easily build their own connectors to track any type of action in the activity stream (developer documentation coming soon).
+
 **Recorded activity:**
 
  * Posts
@@ -59,10 +63,7 @@ Every logged-in user action is logged in an activity stream and organized for ea
 **Coming soon:**
 
  * Multisite view of all activity records on a network
-
-Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
-
-Stream is built to extend, allowing developers to easily build their own connectors to track any type of action in the activity stream (developer documentation coming soon).
+ * Language support for Arabic, Czech and Slovak
 
 **See room for improvement?**
 
@@ -82,11 +83,22 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ![Every logged-in user action is logged in the activity stream and organized for easy filtering and searching.](assets/screenshot-1.png)
 
-### Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
+### Enable live updates in Screen Options to watch your site activity flow into the Stream in real-time.
 
-![Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-2.png)
+![Enable live updates in Screen Options to watch your site activity flow into the Stream in real-time.](assets/screenshot-2.png)
+
+### Control which user roles have their activity tracked and which user roles can access Stream.
+
+![Control which user roles have their activity tracked and which user roles can access Stream.](assets/screenshot-3.png)
+
+### Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
+
+![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
+
+### 0.9.9 ###
+**2014/01/08** - Updated screenshot assets and descriptions. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 ### 0.9.8 ###
 **2014/01/01** - Support for live updates in the Stream. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
