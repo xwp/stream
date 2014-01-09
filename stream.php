@@ -133,12 +133,12 @@ class WP_Stream {
 	 * @return void
 	 */
 	public static function install() {
-		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
+		if ( ! self::is_valid_php_version() ) {
+			add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
 			return;
 		}
 
-		if ( ! self::is_valid_php_version() ) {
-			add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
+		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
 			return;
 		}
 
