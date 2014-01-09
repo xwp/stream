@@ -182,7 +182,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			//Used for Stream Cherry Pick Plugin
 			case 'manage':
-				$out = '<input type="checkbox" />';
+				$out = '<input type="checkbox"  value="' . $item->ID . '" />';
 				break;
 
 			default:
@@ -196,9 +196,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 	public static function get_action_links( $record ){
 		$out          = '';
 		$action_links = apply_filters( 'wp_stream_action_links_' . $record->connector, array(), $record );
+		$custom_links = apply_filters( 'wp_stream_custom_action_links_' . $record->connector, array(), $record );
+
+		if ( $action_links || $custom_links ) {
+			$out .= '<div class="row-actions">';
+		}
 
 		if ( $action_links ) {
-			$out  .= '<div class="row-actions">';
+
 			$links = array();
 			$i     = 0;
 			foreach ( $action_links as $al_title => $al_href ) {
@@ -211,8 +216,26 @@ class WP_Stream_List_Table extends WP_List_Table {
 				);
 			}
 			$out .= implode( '', $links );
+		}
+
+		if ( $action_links && $custom_links ) {
+			$out .= ' | ';
+		}
+
+		if ( $custom_links && is_array( $custom_links ) ) {
+			$last_link = end( $custom_links );
+			foreach ( $custom_links as $key => $link ) {
+				$out .= $link;
+				if ( $key != $last_link ) {
+					$out .= ' | ';
+				}
+			}
+		}
+
+		if ( $action_links || $custom_links ) {
 			$out .= '</div>';
 		}
+
 		return $out;
 	}
 
