@@ -138,6 +138,10 @@ class WP_Stream {
 			return;
 		}
 
+		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
+			return;
+		}
+
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
 		WP_Stream_Install::check();
@@ -149,6 +153,10 @@ class WP_Stream {
 	 * @return void
 	 */
 	private function verify_database_present() {
+		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
+			return;
+		}
+
 		global $wpdb;
 		$message = '';
 
