@@ -180,6 +180,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$out = intval( $item->ID );
 				break;
 
+			//Used for Stream Cherry Pick Plugin
+			case 'manage':
+				$out = '<input type="checkbox" />';
+				break;
+
 			default:
 				$out = $column_name; // xss okay
 				break;
@@ -340,22 +345,31 @@ class WP_Stream_List_Table extends WP_List_Table {
 		echo '<form method="get" action="', esc_attr( admin_url( 'admin.php' ) ), '">';
 		echo $this->filter_search(); // xss okay
 		parent::display();
-		do_action( 'stream-table-footer' );
 		echo '</form>';
 	}
 
 	function display_tablenav( $which ) {
-		if ( 'top' == $which )
-	?>
-	<div class="tablenav <?php echo esc_attr( $which ); ?>">
-		<?php
-		$this->extra_tablenav( $which );
-		$this->pagination( $which );
-		?>
+		if ( 'top' == $which ) : ?>
+			<div class="tablenav <?php echo esc_attr( $which ); ?>">
+				<?php
+				$this->extra_tablenav( $which );
+				$this->pagination( $which );
+				?>
 
-		<br class="clear" />
-		</div>
-	<?php
+				<br class="clear" />
+			</div>
+		<?php  else : ?>
+			<div class="tablenav <?php echo esc_attr( $which ); ?>">
+				<?php
+				do_action( 'stream-table-footer' );
+				$this->extra_tablenav( $which );
+				$this->pagination( $which );
+				?>
+
+				<br class="clear" />
+			</div>
+		<?php
+		endif;
 	}
 
 
