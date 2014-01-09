@@ -182,7 +182,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			//Used for Stream Cherry Pick Plugin
 			case 'manage':
-				$out = '<input type="checkbox"  value="' . $item->ID . '" />';
+				$out = '<input type="checkbox" name="wp_stream_bulk_delete_checkbox[]" id="wp_stream_bulk_delete_checkbox" value="' . $item->ID . '" />';
 				break;
 
 			default:
