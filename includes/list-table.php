@@ -384,7 +384,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		<?php  else : ?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 				<?php
-				do_action( 'stream-table-footer' );
+				do_action( 'wp_stream_after_list_table' );
 				$this->extra_tablenav( $which );
 				$this->pagination( $which );
 				?>
