@@ -181,19 +181,18 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			default:
-				//register inserted column defaults.  Must match a column header from get_columns
+				// Register inserted column defaults. Must match a column header from get_columns.
 				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', $new_columns = array() );
 
 				if ( ! empty( $inserted_columns ) && is_array( $inserted_columns ) ) {
 					foreach ( $inserted_columns as $column_title ) {
 						/**
 						 * If column title inserted via wp_stream_register_column_defaults ($column_title) exists
-						 * among columns registered with get_columns ($column_name)
-						 * and there is an action associated with this column,
-						 * do the action
+						 * among columns registered with get_columns ($column_name) and there is an action associated
+						 * with this column, do the action
 						 *
-						 * Also, note that the action name must include the
-						 * $column_title registered with wp_stream_register_column_defaults
+						 * Also, note that the action name must include the $column_title registered
+						 * with wp_stream_register_column_defaults
 						 */
 						if ( $column_title == $column_name && has_action( 'wp_stream_insert_column_default-' . $column_title ) ) {
 							$out = do_action( 'wp_stream_insert_column_default-' . $column_title, $item );
@@ -207,7 +206,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 		}
 
-		echo $out; //xss okay
+		echo $out; // xss okay
 	}
 
 
