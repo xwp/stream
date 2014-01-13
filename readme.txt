@@ -61,7 +61,8 @@ Stream is built to extend, allowing developers to easily build their own connect
 **Coming soon:**
 
  * Multisite view of all activity records on a network
- * Language support for Arabic, Czech and Slovak
+ * Support for IPv6 addresses
+ * Language support for Arabic, Czech, Slovak and Spanish
 
 **See room for improvement?**
 
