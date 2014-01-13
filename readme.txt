@@ -52,6 +52,9 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Set how long records should live before being purged automatically
  * Option to manually purge all activity records from the database
 
+**Extension plugins:**
+ * [Cherry-Pick](http://wordpress.org/plugins/stream-cherry-pick/): Gives Administrators the ability to delete records from the Stream individually or in bulk.
+
 **Languages:**
 
  * English
