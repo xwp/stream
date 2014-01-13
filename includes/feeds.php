@@ -38,7 +38,7 @@ class WP_Stream_Feeds {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( $_GET['wp_stream_nonce'], 'wp_stream_generate_key' ) ) {
+		if ( ! isset( $_GET['wp_stream_nonce'] ) || ! wp_verify_nonce( $_GET['wp_stream_nonce'], 'wp_stream_generate_key' ) ) {
 			return;
 		}
 
