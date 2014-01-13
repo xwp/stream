@@ -73,6 +73,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 	}
 
+	/**
+	 * Render the checkbox column
+	 *
+	 * @param  array $item Contains all the data for the checkbox column
+	 * @return string Displays a checkbox
+	 */
+	function column_cb( $item ) {
+			return sprintf(
+			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
+			/*$1%s*/ 'wp_stream_checkbox',
+			/*$2%s*/ $item->ID
+		);
+	}
+
 	function get_records() {
 		$args = array();
 
