@@ -73,6 +73,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 	}
 
+	/**
+	 * Render the checkbox column
+	 *
+	 * @param  array $item Contains all the data for the checkbox column
+	 * @return string Displays a checkbox
+	 */
+	function column_cb( $item ) {
+			return sprintf(
+			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
+			/*$1%s*/ 'wp_stream_checkbox',
+			/*$2%s*/ $item->ID
+		);
+	}
+
 	function get_records() {
 		$args = array();
 
@@ -181,19 +195,46 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			default:
-				$out = $column_name; // xss okay
+				// Register inserted column defaults. Must match a column header from get_columns.
+				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', $new_columns = array() );
+
+				if ( ! empty( $inserted_columns ) && is_array( $inserted_columns ) ) {
+					foreach ( $inserted_columns as $column_title ) {
+						/**
+						 * If column title inserted via wp_stream_register_column_defaults ($column_title) exists
+						 * among columns registered with get_columns ($column_name) and there is an action associated
+						 * with this column, do the action
+						 *
+						 * Also, note that the action name must include the $column_title registered
+						 * with wp_stream_register_column_defaults
+						 */
+						if ( $column_title == $column_name && has_action( 'wp_stream_insert_column_default-' . $column_title ) ) {
+							$out = do_action( 'wp_stream_insert_column_default-' . $column_title, $item );
+						} else {
+							$out = $column_name;
+						}
+					}
+				} else {
+					$out = $column_name; // xss okay
+				}
 				break;
 		}
-		echo $out; //xss okay
+
+		echo $out; // xss okay
 	}
 
 
 	public static function get_action_links( $record ){
 		$out          = '';
 		$action_links = apply_filters( 'wp_stream_action_links_' . $record->connector, array(), $record );
+		$custom_links = apply_filters( 'wp_stream_custom_action_links_' . $record->connector, array(), $record );
+
+		if ( $action_links || $custom_links ) {
+			$out .= '<div class="row-actions">';
+		}
 
 		if ( $action_links ) {
-			$out  .= '<div class="row-actions">';
+
 			$links = array();
 			$i     = 0;
 			foreach ( $action_links as $al_title => $al_href ) {
@@ -206,8 +247,26 @@ class WP_Stream_List_Table extends WP_List_Table {
 				);
 			}
 			$out .= implode( '', $links );
+		}
+
+		if ( $action_links && $custom_links ) {
+			$out .= ' | ';
+		}
+
+		if ( $custom_links && is_array( $custom_links ) ) {
+			$last_link = end( $custom_links );
+			foreach ( $custom_links as $key => $link ) {
+				$out .= $link;
+				if ( $key != $last_link ) {
+					$out .= ' | ';
+				}
+			}
+		}
+
+		if ( $action_links || $custom_links ) {
 			$out .= '</div>';
 		}
+
 		return $out;
 	}
 
@@ -344,17 +403,27 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function display_tablenav( $which ) {
-		if ( 'top' == $which )
-	?>
-	<div class="tablenav <?php echo esc_attr( $which ); ?>">
-		<?php
-		$this->extra_tablenav( $which );
-		$this->pagination( $which );
-		?>
+		if ( 'top' == $which ) : ?>
+			<div class="tablenav <?php echo esc_attr( $which ); ?>">
+				<?php
+				$this->extra_tablenav( $which );
+				$this->pagination( $which );
+				?>
 
-		<br class="clear" />
-		</div>
-	<?php
+				<br class="clear" />
+			</div>
+		<?php  else : ?>
+			<div class="tablenav <?php echo esc_attr( $which ); ?>">
+				<?php
+				do_action( 'wp_stream_after_list_table' );
+				$this->extra_tablenav( $which );
+				$this->pagination( $which );
+				?>
+
+				<br class="clear" />
+			</div>
+		<?php
+		endif;
 	}
 
 
