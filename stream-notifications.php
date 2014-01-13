@@ -40,6 +40,12 @@ class WP_Stream_Notifications {
 	public static $screen_id;
 
 	/**
+	 * List of registered adapters
+	 * @var array
+	 */
+	public static $adapters = array();
+
+	/**
 	 * Class constructor
 	 */
 	public function __construct() {
@@ -85,6 +91,10 @@ class WP_Stream_Notifications {
 
 		// AJAX end point for form auto completion
 		add_action( 'wp_ajax_stream_notification_endpoint', array( $this, 'form_ajax_ep' ) );
+
+		// DEBUG, should be loaded dynamically in production
+		include WP_STREAM_NOTIFICATIONS_DIR . '/classes/adapters/email.php';
+		$email = new WP_Stream_Notification_Adapter_Email;
 	}
 
 	/**
