@@ -33,9 +33,15 @@ class WP_Stream_Feeds {
 	 * @return void
 	 */
 	public static function save_user_feed_key( $user ) {
+
 		if ( get_user_meta( $user->ID, self::USER_FEED_KEY, true ) && ! isset( $_GET[self::GENERATE_KEY_QUERY_VAR] ) ) {
 			return;
 		}
+
+		if ( ! wp_verify_nonce( $_GET['wp_stream_nonce'], 'wp_stream_generate_key' ) ) {
+			return;
+		}
+
 		update_user_meta( $user->ID, self::USER_FEED_KEY, wp_generate_password( 32, false ) );
 	}
 
@@ -53,6 +59,8 @@ class WP_Stream_Feeds {
 
 		$key = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
 
+		$nonce = wp_create_nonce( 'wp_stream_generate_key' );
+
 		$pretty_permalinks = get_option( 'permalink_structure' );
 
 		if ( empty( $pretty_permalinks ) ) {
@@ -67,7 +75,7 @@ class WP_Stream_Feeds {
 				<td>
 					<p>
 						<code><?php echo esc_html( $key ) ?></code>
-						<small><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true ) ) ) ?>"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
+						<small><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true, 'wp_stream_nonce' => $nonce ) ) ) ?>"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
 					</p>
 					<p class="description"><?php esc_html_e( 'This is your private key used for accessing feeds of Stream Records securely. You can change your key at any time by generating a new one using the link above.', 'stream' ) ?></p>
 					<p>
