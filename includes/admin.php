@@ -29,6 +29,10 @@ class WP_Stream_Admin {
 		// Register settings page
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
 
+		// Register settings page for network admin
+		if ( is_multisite() ) {
+			add_action( 'network_admin_menu', array( __CLASS__, 'register_menu' ) );
+		}
 		// Plugin action links
 		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
 
@@ -80,9 +84,12 @@ class WP_Stream_Admin {
 	 * Register menu page
 	 *
 	 * @action admin_menu
-	 * @return void
+	 * @return bool|void
 	 */
 	public static function register_menu() {
+		if ( is_network_admin() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) )
+			return false;
+
 		self::$screen_id['main'] = add_menu_page(
 			__( 'Stream', 'stream' ),
 			__( 'Stream', 'stream' ),

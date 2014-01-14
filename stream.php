@@ -62,6 +62,7 @@ class WP_Stream {
 	 * Class constructor
 	 */
 	private function __construct() {
+		define( 'WP_STREAM_PLUGIN', plugin_basename( __FILE__ ) );
 		define( 'WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
