@@ -76,10 +76,11 @@
 							</div>
 						</div>
 
-						<div id="action" class="postbox">
-							<h3 class="hndle"><span><?php _e( 'Action', 'stream_notification' ) ?></span></h3>
+						<div id="alerts" class="postbox">
+							<h3 class="hndle"><span><?php _e( 'Alerts', 'stream_notification' ) ?></span></h3>
 							<div class="inside">
-
+								<a class="add-alert button button-secondary" href="#add-alert"><?php _e( 'Add Alert', 'stream_notification' ) ?></a>
+								
 							</div>
 						</div>
 
@@ -95,7 +96,7 @@
 <script>
 	var triggers = <?php echo json_encode( $rule->triggers ) ?>;
 	var groups   = <?php echo json_encode( $rule->groups ) ?>;
-	var actions  = <?php echo json_encode( $rule->actions ) ?>;
+	var alerts  = <?php echo json_encode( $rule->alerts ) ?>;
 </script>
 <?php endif ?>
 
@@ -165,6 +166,55 @@
 </div>
 </script>
 
+<script type="text/template" id="alert-template-row">
+<div class="alert" rel="<%- vars.index %>">
+	<div class="form-row">
+		<div class="field type">
+			<select name="alerts[<%- vars.index %>][type]" class="alert_type" rel="<%- vars.index %>" placeholder="Choose Type">
+				<option></option>
+				<% _.each( vars.adapters, function( type, name ){ %>
+	            <option value="<%- name %>"><%- type.title %></option>
+		        <% }); %>
+			</select>
+		</div>
+		<a href="#" class="delete-alert">Remove</a>
+	</div>
+</div>
+</script>
+
+<script type="text/template" id="alert-template-options">
+<table class="alert_options form-table">
+	<% for ( field_name in vars.fields ) { var field = vars.fields[field_name]; console.log(field) %>
+		<tr class="form-row">
+			<th>
+				<label><%- field.title %></label>
+			</th>
+			<td>
+				<div class="field value">
+					<% if ( ['select'].indexOf( field.type ) != -1 ){ %>
+					<select name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert_value widefat" data-ajax="<% ( field.ajax ) %>" <% if ( field.multiple ){ %>multiple="multiple"<% } %>>
+						<option></option>
+						<% if ( vars.fields[field] ) { %>
+							<% _.each( vars.fields[field], function( list, name ){ %>
+				            <option value="<%- name %>"><%- list %></option>
+					        <% }); %>
+				        <% } %>
+					</select>
+					<% } else if ( ['textarea'].indexOf( field.type ) != -1 ) { %>
+						<textarea name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert_value widefat" cols=30></textarea>
+					<% } else { %>
+					<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert_value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" data-ajax-key="<% if ( field.ajax && field.key ){ %><%- field.key %><% } %>" >
+					<% } %>
+					<% if ( field.hint ) { %>
+						<p class="description"><%- field.hint %></p>
+					<% } %>
+				</div>
+			</td>
+		</div>
+	<% } %>
+</div>
+</script>
+
 <style>
 	.field, .trigger_type, .trigger_options, .trigger_value { float: left; }
 	.form-row {
@@ -229,7 +279,7 @@
 	.trigger.first .field.type {
 		margin-left: 99px;
 	}
-	.delete-trigger { float: right; }
+	.delete-trigger, .delete-alert { float: right; }
 
 	.select2-container {
 		margin-right: 6px;

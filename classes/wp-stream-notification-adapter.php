@@ -2,18 +2,14 @@
 
 abstract class WP_Stream_Notification_Adapter {
 
-	public $name  = null;
-	public $title = null;
-
-	public $params = null;
-
-	function __construct( $title, $params ) {
-		$this->name = strtolower( str_replace( 'WP_Stream_Notification_Action_', '', get_called_class() ) );
-		$this->title = $title;
+	public static function register( $title ) {
+		$class = get_called_class();
+		$name  = strtolower( str_replace( 'WP_Stream_Notification_Adapter_', '', $class ) );
+		WP_Stream_Notifications::register_adapter( $class, $name, $title );
 	}
 
-	abstract function fields() {
-
+	public static function fields() {
+		return array();
 	}
 
 	function send( $log ) {

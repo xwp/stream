@@ -6,26 +6,37 @@ jQuery(function($){
 
 	var types = stream_notifications.types,
 		i,
+		
 		divTriggers = $('#triggers'), // Trigger Playground
+		divAlerts = $('#alerts'), // Alerts Playground
+		
 		btns = {
 			add_trigger: '.add-trigger',
+			add_alert: '.add-alert',
 			add_group: '.add-trigger-group',
 			del: '#delete-trigger'
 		},
-		tmpl = _.template( $('script#trigger-template-row').html() ),
-		tmpl_group = _.template( $('script#trigger-template-group').html() ),
-		tmpl_options = _.template( $('script#trigger-template-options').html() ),
+
+		tmpl               = _.template( $('script#trigger-template-row').html() ),
+		tmpl_options       = _.template( $('script#trigger-template-options').html() ),
+		tmpl_group         = _.template( $('script#trigger-template-group').html() ),
+		tmpl_alert         = _.template( $('script#alert-template-row').html() ),
+		tmpl_alert_options = _.template( $('script#alert-template-options').html() ),
+
 		select2_args = {
 			allowClear: true,
 			width: '160px'
 		},
+		
 		selectify = function( elements, args ) {
 			args = args || {};
 			$.extend( args, select2_args );
 
 			$(elements).filter(':not(.select2-offscreen)').each( function() {
 				var $this = $(this),
-					elementArgs = args;
+					elementArgs = args,
+					tORa = $this.closest('#alerts, #triggers').attr('id');
+				;
 				elementArgs.width = parseInt( $this.css('width'), 10 ) + 30;
 
 				if ( $this.hasClass('ajax') ) {
@@ -35,9 +46,17 @@ jQuery(function($){
 						type: 'post',
 						dataType: 'json',
 						data: function (term) {
+							var type = '';
+							if ( ! ( type = $this.data( 'ajax-key' ) ) ) {
+								if ( tORa == 'triggers' ) {
+									type = $this.parents('.form-row').first().find('select.trigger_type').val();
+								} else {
+									type = $this.parents('.form-row').eq(1).find('select.alert_type').val();
+								}
+							}
 							return {
 								action: 'stream_notification_endpoint',
-								type: $this.parents('.form-row').first().find('select.trigger_type').val(),
+								type: type,
 								q: term
 							};
 						},
@@ -54,62 +73,64 @@ jQuery(function($){
 			});
 		};
 
-	// Add new rule
-	divTriggers.on( 'click.sn', btns.add_trigger, function(e) {
-		e.preventDefault();
-		var $this = $(this),
-			index = divTriggers.find('.trigger').size(),
-			group = divTriggers.find('.group').eq( $this.data('group') );
+	divTriggers
+		// Add new rule
+		.on( 'click.sn', btns.add_trigger, function(e) {
+			e.preventDefault();
+			var $this = $(this),
+				index = divTriggers.find('.trigger').size(),
+				group = divTriggers.find('.group').eq( $this.data('group') );
 
-		group.append( tmpl( $.extend(
-			{ index: index, group: $this.data('group') },
-			stream_notifications
-			) ) );
-		group.find('.trigger').first().addClass('first');
-		selectify( group.find('select') );
-	});
+			group.append( tmpl( $.extend(
+				{ index: index, group: $this.data('group') },
+				stream_notifications
+				) ) );
+			group.find('.trigger').first().addClass('first');
+			selectify( group.find('select') );
+		})
 	
-	// Add new group
-	divTriggers.on( 'click.sn', btns.add_group, function(e) {
-		e.preventDefault();
-		var $this = $(this),
-			parentGroupIndex = $this.data('group'),
-			group = divTriggers.find('.group').eq(parentGroupIndex),
-			groupIndex = divTriggers.find('.group').size();
+		// Add new group
+		.on( 'click.sn', btns.add_group, function(e) {
+			e.preventDefault();
+			var $this = $(this),
+				parentGroupIndex = $this.data('group'),
+				group = divTriggers.find('.group').eq(parentGroupIndex),
+				groupIndex = divTriggers.find('.group').size();
 
-		group.append( tmpl_group({ index: groupIndex, parent: parentGroupIndex }) );
-		selectify( group.find('.field.relation select') );
-	});
+			group.append( tmpl_group({ index: groupIndex, parent: parentGroupIndex }) );
+			selectify( group.find('.field.relation select') );
+		})
 
-	// Delete a trigger
-	divTriggers.on( 'click.sn', '.delete-trigger', function(e) {
-		e.preventDefault();
-		var $this = $(this);
+		// Delete a trigger
+		.on( 'click.sn', '.delete-trigger', function(e) {
+			e.preventDefault();
+			var $this = $(this);
 
-		$this.parents('.trigger').first().remove();
-	});
+			$this.parents('.trigger').first().remove();
+		})
 
-	// Delete a group
-	divTriggers.on( 'click.sn', '.delete-group', function(e) {
-		e.preventDefault();
-		var $this = $(this);
+		// Delete a group
+		.on( 'click.sn', '.delete-group', function(e) {
+			e.preventDefault();
+			var $this = $(this);
 
-		$this.parents('.group').first().remove();
-	});
+			$this.parents('.group').first().remove();
+		})
 
-	// Reveal rule options after choosing rule type
-	divTriggers.on( 'change.sn', '.trigger_type', function() {
-		var $this   = $(this),
-			options = types[ $this.val() ],
-			index   = $this.parents('.trigger').first().attr('rel');
-		$this.next('.trigger_options').remove();
-		
-		if ( ! options ) { return; }
-		
-		$this.after( tmpl_options( $.extend( options, { index: index } ) ) );
-		selectify( $this.parent().find('select') );
-		selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
-	});
+		// Reveal rule options after choosing rule type
+		.on( 'change.sn', '.trigger_type', function() {
+			var $this   = $(this),
+				options = types[ $this.val() ],
+				index   = $this.parents('.trigger').first().attr('rel');
+			$this.next('.trigger_options').remove();
+			
+			if ( ! options ) { return; }
+			
+			$this.after( tmpl_options( $.extend( options, { index: index } ) ) );
+			selectify( $this.parent().find('select') );
+			selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
+		})
+	;
 
 	// Populate form values if it exists
 	if ( triggers ) {
@@ -149,5 +170,34 @@ jQuery(function($){
 			
 		}
 	}
+
+	divAlerts
+		// Add new alert
+		.on( 'click.sn', btns.add_alert, function(e) {
+			e.preventDefault();
+			var $this = $(this),
+				index = divAlerts.find('.alert').size();
+
+			divAlerts.append( tmpl_alert( $.extend(
+				{ index: index },
+				stream_notifications
+				) ) );
+			selectify( divAlerts.find('.alert select') );
+		})
+
+		// Reveal rule options after choosing rule type
+		.on( 'change.sn', '.alert_type', function() {
+			var $this   = $(this),
+				options = stream_notifications.adapters[ $this.val() ],
+				index   = $this.parents('.alert').first().attr('rel');
+			$this.next('.alert_options').remove();
+			
+			if ( ! options ) { return; }
+
+			$this.after( tmpl_alert_options( $.extend( options, { index: index } ) ) );
+			selectify( $this.parent().find('select') );
+			selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
+		})
+
 
 });

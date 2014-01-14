@@ -86,15 +86,16 @@ class WP_Stream_Notifications {
 			include $class;
 		}
 
+		// Include all adapters
+		foreach ( glob( WP_STREAM_NOTIFICATIONS_DIR . '/classes/adapters/*.php' ) as $class ) {
+			include $class;
+		}
+
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11 );
 
 		// AJAX end point for form auto completion
 		add_action( 'wp_ajax_stream_notification_endpoint', array( $this, 'form_ajax_ep' ) );
-
-		// DEBUG, should be loaded dynamically in production
-		include WP_STREAM_NOTIFICATIONS_DIR . '/classes/adapters/email.php';
-		$email = new WP_Stream_Notification_Adapter_Email;
 	}
 
 	/**
@@ -133,6 +134,13 @@ class WP_Stream_Notifications {
 		wp_enqueue_script( 'underscore' );
 		wp_enqueue_script( 'stream-notifications-main', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/main.js', array( 'underscore', 'select2' ) );
 		wp_localize_script( 'stream-notifications-main', 'stream_notifications', $this->get_js_options() );
+	}
+
+	public static function register_adapter( $adapter, $name, $title ) {
+		self::$adapters[ $name ] = array(
+			'title' => $title,
+			'class' => $adapter
+		);
 	}
 
 	/**
@@ -277,6 +285,15 @@ class WP_Stream_Notifications {
 				),
 			),
 		);
+		
+		$args['adapters'] = array();
+
+		foreach ( self::$adapters as $name => $options ) {
+			$args['adapters'][$name] = array(
+				'title'  => $options['title'],
+				'fields' => $options['class']::fields(),
+			);
+		}
 
 		return apply_filters( 'stream_notification_js_args', $args );
 	}
