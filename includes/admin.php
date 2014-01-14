@@ -55,6 +55,7 @@ class WP_Stream_Admin {
 
 		// Load Dashboard widget
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
+		add_action( 'wp_network_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
 
 		// Heartbeat live update
 		add_filter( 'heartbeat_received', array( __CLASS__, 'live_update' ), 10, 2 );
