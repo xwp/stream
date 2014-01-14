@@ -352,16 +352,15 @@ class WP_Stream_Notifications {
 	 */
 	public function form_ajax_ep() {
 		// BIG TODO: Make the request context-aware,
-		// ie: get other rules ( maybe in the same group only ? ), so an author 
-		// query would check if there is a author_role rule available to limit 
+		// ie: get other rules ( maybe in the same group only ? ), so an author
+		// query would check if there is a author_role rule available to limit
 		// the results according to it
 		$type = filter_input( INPUT_POST, 'type' );
 		$query = filter_input( INPUT_POST, 'q' );
 
 		switch ( $type ) {
 			case 'author':
-				// TODO: This does not autocomplete, only matches, we need to do a manual query
-				$users = get_users( array( 'search' => $query ) );
+				$users = get_users( array( 'search' => '*' . $query . '*' ) );
 				$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
 				break;
 			case 'action':
