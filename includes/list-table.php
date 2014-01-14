@@ -23,12 +23,21 @@ class WP_Stream_List_Table extends WP_List_Table {
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
 		set_screen_options();
+
+		if ( is_network_admin() ) {
+			add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
+		}
 	}
 
 	function extra_tablenav( $which ) {
 		if ( $which == 'top' ){
 			$this->filters_form();
 		}
+	}
+
+	function network_admin_columns( $columns ) {
+		$columns['blog_id'] = __( 'Blog', 'stream' );
+		return $columns;
 	}
 
 	function get_columns(){
@@ -105,7 +114,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'connector', 'context', 'action',
 			'author', 'object_id', 'search',
 			'date', 'date_from', 'date_to',
-			'record__in',
+			'record__in', 'blog_id'
 		);
 
 		foreach ( $allowed_params as $param ) {
@@ -164,7 +173,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$author_role = isset( $user->roles[0] ) ? $wp_roles->role_names[$user->roles[0]] : null;
 					$out = sprintf(
 						'<a href="%s">%s <span>%s</span></a><br /><small>%s</small>',
-						add_query_arg( array( 'author' => $author_ID ), admin_url( 'admin.php?page=wp_stream' ) ),
+						add_query_arg( array( 'author' => $author_ID ), is_network_admin() ? network_admin_url( 'admin.php?page=wp_stream' ) : admin_url( 'admin.php?page=wp_stream' ) ),
 						get_avatar( $author_ID, 40 ),
 						$author_name,
 						$author_role
@@ -192,6 +201,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			case 'id':
 				$out = intval( $item->ID );
+				break;
+
+			case 'blog_id':
+				$blog = get_blog_details( $item->blog_id );
+				$out = sprintf(
+					'<a href="%s"><span>%s</span></a>',
+					add_query_arg( array( 'blog_id' => $blog->blog_id ), network_admin_url( 'admin.php?page=wp_stream' ) ),
+					esc_html( $blog->blogname )
+				);
 				break;
 
 			default:
@@ -271,7 +289,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function column_link( $display, $key, $value = null, $title = null ) {
-		$url = admin_url( 'admin.php?page=wp_stream' );
+		$url = is_network_admin() ? network_admin_url( 'admin.php?page=wp_stream') : admin_url( 'admin.php?page=wp_stream' );
 
 		$args = ! is_array( $key ) ? array( $key => $value ) : $key;
 
@@ -326,6 +344,18 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'items' => $actions,
 		);
 
+		if ( is_network_admin() ) {
+			$blogs = array();
+			foreach( (array) wp_get_sites() as $blog ) {
+				$blogs[$blog['blog_id']] = $blog['domain'];
+			}
+
+			$filters['blog_id'] = array(
+			  'title' => __( 'blogs', 'stream' ),
+			  'items' => $blogs,
+			);
+		}
+
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
 
 		$filters_string .= $this->filter_date();
@@ -335,7 +365,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
-		$url = admin_url( 'admin.php' );
+		$url = is_network_admin() ? network_admin_url( 'admin.php' ) : admin_url( 'admin.php' );
 		echo sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss okay
 	}
 
@@ -396,7 +426,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function display() {
-		echo '<form method="get" action="', esc_attr( admin_url( 'admin.php' ) ), '">';
+		echo '<form method="get" action="', esc_attr( is_network_admin() ? network_admin_url( 'admin.php' ) : admin_url( 'admin.php' ) ), '">';
 		echo $this->filter_search(); // xss okay
 		parent::display();
 		echo '</form>';

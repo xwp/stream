@@ -217,7 +217,7 @@ class WP_Stream_Admin {
 	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
-			$admin_page_url  = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
+			$admin_page_url  = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), is_network_admin() ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE ) );
 			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 
 			$url = add_query_arg(
@@ -300,7 +300,7 @@ class WP_Stream_Admin {
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			self::erase_stream_records();
-			wp_redirect( add_query_arg( array( 'page' => 'wp_stream_settings', 'message' => 'data_erased' ), admin_url( 'admin.php' ) ) );
+			wp_redirect( add_query_arg( array( 'page' => 'wp_stream_settings', 'message' => 'data_erased' ), is_network_admin() ? network_admin_url( 'admin.php' ) : admin_url( 'admin.php' ) ) );
 			exit;
 		} else {
 			wp_die( "You don't have sufficient priviledges to do this action." );
@@ -485,7 +485,7 @@ class WP_Stream_Admin {
 
 			$records_link = add_query_arg(
 				array( 'page' => self::RECORDS_PAGE_SLUG ),
-				admin_url( self::ADMIN_PARENT_PAGE )
+				is_network_admin() ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
 			);
 
 			$author_link = add_query_arg(
