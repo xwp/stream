@@ -229,7 +229,7 @@ class WP_Stream_Query {
 		WHERE 1=1 $where
 		$orderby
 		$limits";
-		var_dump( $sql );
+
 		if ( ! empty( $fields ) ) {
 			$results = $wpdb->get_col( $sql );
 		} else {
