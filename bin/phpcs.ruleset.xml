@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Coding Standards for Plugins">
+	<description>Generally-applicable sniffs for WordPress plugins</description>
+
+	<rule ref="WordPress">
+		<exclude name="WordPress.VIP.RestrictedFunctions"/>
+		<exclude name="WordPress.VIP.SuperGlobalInputUsage"/>
+		<exclude name="WordPress.VIP.ValidatedSanitizedInput"/>
+	</rule>
+	<rule ref="WordPress.NamingConventions.ValidFunctionName">
+		<exclude-pattern>/tests/*</exclude-pattern><!-- because of PHPUnit method names -->
+	</rule>
+
+	<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
+	<rule ref="Generic.PHP.DisallowShortOpenTag"/>
+	<rule ref="Generic.Files.ByteOrderMark"/>
+	<rule ref="Generic.PHP.LowerCaseConstant"/>
+	<rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
+	<rule ref="Generic.PHP.NoSilencedErrors" />
+	<rule ref="Generic.ControlStructures.InlineControlStructure" />
+	<rule ref="Generic.Files.LineEndings">
+		<properties>
+			<property name="eolChar" value="\n"/>
+		</properties>
+	</rule>
+
+</ruleset>

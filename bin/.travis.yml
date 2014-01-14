@@ -1,0 +1,33 @@
+language:
+    - php
+    - node_js
+
+php:
+    - 5.3
+    - 5.4
+
+node_js:
+    - 0.10
+
+env:
+    - WP_VERSION=master WP_MULTISITE=0
+    - WP_VERSION=master WP_MULTISITE=1
+    - WP_VERSION=latest WP_MULTISITE=0
+    - WP_VERSION=latest WP_MULTISITE=1
+
+before_script:
+    - export WP_TESTS_DIR=/tmp/wordpress-tests/
+    - export PLUGIN_DIR=$(pwd)
+    - export PLUGIN_SLUG=$(basename $(pwd) | sed 's/^wp-//')
+    - if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION; cd /tmp/wordpress/wp-content/plugins; ln -s $PLUGIN_DIR $PLUGIN_SLUG; cd $PLUGIN_DIR; fi
+    - pear config-set auto_discover 1
+    - pear install PHP_CodeSniffer
+    - git clone git://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress
+    - phpenv rehash
+    - npm install -g jshint
+
+script:
+    - find . -path ./bin -prune -o \( -name '*.php' -o -name '*.inc' \) -exec php -lf {} \;
+    - if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then phpunit; fi
+    - phpcs --standard=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi) $(find . -name '*.php')
+    - jshint .
