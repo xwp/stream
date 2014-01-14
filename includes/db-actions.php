@@ -13,7 +13,7 @@ class WP_Stream_DB {
 	public function __construct() {
 		global $wpdb;
 		// Allow devs to alter the tables prefix, default to base_prefix
-		$prefix              = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->prefix );
+		$prefix              = apply_filters( 'wp_stream_db_tables_prefix', is_multisite() ? $wpdb->base_prefix : $wpdb->prefix );
 		self::$table         = $prefix . 'stream';
 		self::$table_meta    = $prefix . 'stream_meta';
 		self::$table_context = $prefix . 'stream_context';

@@ -31,6 +31,8 @@ class WP_Stream_Query {
 			'type'                  => 'stream',
 			'object_id'             => null,
 			'ip'                    => null,
+			'site_id'               => get_current_site()->id,
+			'blog_id'               => get_current_blog_id(),
 			// Author param
 			'author'                => null,
 			// Date-based filters
@@ -53,7 +55,6 @@ class WP_Stream_Query {
 			// Fields selection
 			'fields'                => '',
 			);
-
 		$args = wp_parse_args( $args, $defaults );
 
 		$args = apply_filters( 'stream_query_args', $args );
@@ -79,6 +80,17 @@ class WP_Stream_Query {
 
 		if ( $args['ip'] ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
+		}
+
+		if ( is_multisite() ) {
+			if ( $args['site_id'] ) {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.site_id = %d", $args['site_id'] );
+			}
+
+			if ( $args['blog_id'] ) {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.blog_id = %d", $args['blog_id'] );
+			}
+
 		}
 
 		if ( $args['search'] ) {
@@ -178,7 +190,7 @@ class WP_Stream_Query {
 
 		if ( in_array(
 			$orderby,
-			array( 'ID', 'site_id', 'object_id', 'author', 'summary', 'visibility', 'parent', 'type', 'created' )
+			array( 'ID', 'blog_id', 'object_id', 'author', 'summary', 'visibility', 'parent', 'type', 'created' )
 			) ) {
 			$orderby = $wpdb->stream . '.' . $orderby;
 		}
@@ -217,7 +229,7 @@ class WP_Stream_Query {
 		WHERE 1=1 $where
 		$orderby
 		$limits";
-
+		var_dump( $sql );
 		if ( ! empty( $fields ) ) {
 			$results = $wpdb->get_col( $sql );
 		} else {
