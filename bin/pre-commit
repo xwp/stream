@@ -67,8 +67,8 @@ if [ ${#staged_php_files[@]} != 0 ]; then
 fi
 
 # Make sure the readme.md never gets out of sync with the readme.txt
-generate_markdown_readme=$(find . -name generate-markdown-readme -print -quit)
-if [ -n "$generate_markdown_readme" ]; then
-	markdown_readme_path=$($generate_markdown_readme)
-	git add $markdown_readme_path
-fi
+# generate_markdown_readme=$(find . -name generate-markdown-readme -print -quit)
+# if [ -n "$generate_markdown_readme" ]; then
+# 	markdown_readme_path=$($generate_markdown_readme)
+# 	git add $markdown_readme_path
+# fi
