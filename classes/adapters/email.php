@@ -20,4 +20,8 @@ class WP_Stream_Notification_Adapter_Email extends WP_Stream_Notification_Adapte
 		);
 	}
 
+	function fields() {
+
+	}
+
 }

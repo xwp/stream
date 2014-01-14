@@ -12,12 +12,10 @@ abstract class WP_Stream_Notification_Adapter {
 		$this->title = $title;
 	}
 
-	abstract function fields() {
-
-	}
+	abstract function fields();
 
 	function send( $log ) {
-		
+
 	}
 
 }
