@@ -120,7 +120,7 @@ class WP_Stream_Notifications {
 			__( 'Notifications', 'stream' ),
 			__( 'Notifications', 'stream' ),
 			'manage_options',
-			'wp_stream_notifications',
+			self::NOTIFICATIONS_PAGE_SLUG,
 			array( $this, 'page' )
 		);
 
@@ -310,15 +310,15 @@ class WP_Stream_Notifications {
 
 	/**
 	 * Admin page callback function, redirects to each respective method based
-	 * on $_GET['action']
+	 * on $_GET['view']
 	 *
 	 * @return void
 	 */
 	public function page() {
-		$action = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'default' => 'list' ) );
+		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'default' => 'list' ) );
 		$id = filter_input( INPUT_GET, 'id', FILTER_DEFAULT );
 
-		switch ( $action ) {
+		switch ( $view ) {
 			case 'add':
 			case 'edit':
 				$this->page_form( $id );
@@ -341,37 +341,50 @@ class WP_Stream_Notifications {
 	}
 
 	public function page_form_save() {
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'list-table.php';
+		self::$list_table = new WP_Stream_Notifications_List_Table( array( 'screen' => self::$screen_id ) );
+
 		// TODO add nonce, check author/user permission to update record
 		// TODO Do not save if no triggers are added
-		$action = filter_input( INPUT_GET, 'action' );
-		$id     = filter_input( INPUT_GET, 'id' );
+		$view = filter_input( INPUT_GET, 'view' );
+		$id   = filter_input( INPUT_GET, 'id' );
 
 		$rule = new WP_Stream_Notification_Rule( $id );
 
 		$data = $_POST;
 
-		if ( $data && in_array( $action, array( 'edit', 'add' ) ) ) {
+		if ( $data && in_array( $view, array( 'edit', 'add' ) ) ) {
 
 			if ( ! isset( $data['visibility'] ) ) {
-				$data['visibility'] = 0; // Checkbox woraround
+				$data['visibility'] = 'inactive'; // Checkbox woraround
 			}
 
 			$result = $rule->load_from_array( $data )->save();
 
-			if ( $result && $action != 'edit' ) {
-				wp_redirect( add_query_arg( array( 'action' => 'edit', 'id' => $rule->ID ) ) );
+			if ( $result && $view != 'edit' ) {
+				wp_redirect( add_query_arg( array( 'view' => 'edit', 'id' => $rule->ID ) ) );
 			}
 		}
 	}
 
 	/**
-	 * Admin page callback for list action
+	 * Admin page callback for list view
 	 *
 	 * @return void
 	 */
 	public function page_list() {
-		// DEBUG, no listing yet
-		?><script>window.location.href = '<?php echo esc_url_raw( add_query_arg( 'action', 'add' ) ); ?>';</script><?php
+		self::$list_table->prepare_items();
+
+		echo '<div class="wrap">';
+		echo sprintf(
+			'<h2>%s <a href="%s" class="add-new-h2">%s</a></h2>',
+			__( 'Stream Notifications', 'stream' ),
+			admin_url( 'admin.php?page=wp_stream_notifications&view=add' ),
+			__( 'Add New' )
+		); // xss okay
+
+		self::$list_table->display();
+		echo '</div>';
 	}
 
 	/**

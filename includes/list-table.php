@@ -21,13 +21,12 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			);
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
-		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
 		set_screen_options();
 	}
 
 	function extra_tablenav( $which ) {
 		if ( $which == 'top' ){
-			$this->filters_links();
+			$this->filters_form();
 		}
 	}
 
@@ -94,9 +93,22 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		if ( ! $orderby = filter_input( INPUT_GET, 'orderby' ) ) {
 			$orderby = '';
 		}
-		$args['order']   = $order;
-		$args['orderby'] = $orderby;
-		$args['paged']   = $this->get_pagenum();
+		$args['order']          = $order;
+		$args['orderby']        = $orderby;
+		$args['paged']          = $this->get_pagenum();
+		$args['type']           = 'notification_rule';
+		$args['ignore_context'] = true;
+
+		// Filters
+		$allowed_params = array(
+			'search', 'visibility',
+		);
+
+		foreach ( $allowed_params as $param ) {
+			if ( $paramval = filter_input( INPUT_GET, $param ) ) {
+				$args[$param] = $paramval;
+			}
+		}
 
 		if ( ! isset( $args['records_per_page'] ) ) {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_notifications_per_page', 20 );
@@ -119,21 +131,25 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				$out .= $this->get_action_links( $item );
 				break;
 
+			// TODO: The following columns need to pull actual values
 			case 'type':
-				$out = 'Type placeholder';
+				$out = __( 'N/A', 'stream' );
 				break;
 
 			case 'alert':
-				$out = 'Alert placeholder';
+				$out = __( 'N/A', 'stream' );
 				break;
 
-			case 'Occurences':
-				// TODO: This needs to pull
+			case 'occurences':
 				$out = '0';
 				break;
 
 			case 'created':
-				$out = $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out  = $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out .= '<br />';
+				$out .= 'active' == $item->visibility
+					? __( 'Active', 'stream' )
+					: __( 'Inactive', 'stream' );
 				break;
 
 			default:
@@ -177,12 +193,12 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$action_links = array();
 		$action_links[ __( 'Edit', 'stream' ) ] = admin_url(
 			sprintf(
-				'admin.php?page=wp_stream_notifications&action=edit&r=%s',
+				'admin.php?page=wp_stream_notifications&view=edit&id=%s',
 				$record->ID
 			)
 		);
 
-		if ( 1 == $record->visibility ) {
+		if ( 'active' == $record->visibility ) {
 			$action_links[ __( 'Deactivate', 'stream' ) ] = admin_url(
 				sprintf(
 					'admin.php?page=wp_stream_notifications&action=deactivate&r=%s&_wpnonce=%s',
@@ -190,7 +206,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 					$activation_nonce
 				)
 			);
-		} else {
+		} elseif ( 'inactive' == $record->visibility ) {
 			$action_links[ __( 'Activate', 'stream' ) ] = admin_url(
 				sprintf(
 					'admin.php?page=wp_stream_notifications&action=activate&r=%s&_wpnonce=%s',
@@ -251,12 +267,33 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		);
 	}
 
-	function filters_links() {
+	function filters_form() {
+		$filters = array();
+
 		// BIG TODO: The All / Active / Inactive filters go here
+		// Should we perhaps also implement full-fledged filtering (by type, date, alert method) here?
+
+		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG );
+		echo sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss okay
+	}
+
+	function filter_search() {
+		$out = sprintf(
+			'<p class="search-box">
+				<label class="screen-reader-text" for="record-search-input">%1$s:</label>
+				<input type="search" id="record-search-input" name="search" value="%2$s" />
+				<input type="submit" name="" id="search-submit" class="button" value="%1$s" />
+			</p>',
+			esc_attr__( 'Search Notifications', 'stream' ),
+			isset( $_GET['search'] ) ? esc_attr( $_GET['search'] ) : null
+		);
+
+		return $out;
 	}
 
 	function display() {
 		echo '<form method="get" action="', esc_attr( admin_url( 'admin.php' ) ), '">';
+		echo $this->filter_search(); // xss okay
 		parent::display();
 		echo '</form>';
 	}

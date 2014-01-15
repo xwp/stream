@@ -54,7 +54,7 @@ class WP_Stream_Notification_Rule {
 			'ID'         => null,
 			'author'     => wp_get_current_user()->ID,
 			'summary'    => null,
-			'visibility' => 0,
+			'visibility' => 'inactive',
 			'type'       => 'notfication_rule',
 			'created'    => current_time( 'r', 1 ),
 		);

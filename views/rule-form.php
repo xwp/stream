@@ -31,7 +31,7 @@
 													<?php _e( 'Active', 'stream_notification' ) ?>
 												</label>
 												<span id="post-status-display">
-													<input type="checkbox" name="visibility" id="post_status" value="1" <?php checked( $rule->visibility, 1 ) ?>>
+													<input type="checkbox" name="visibility" id="post_status" value="active" <?php checked( $rule->visibility, 'active' ) ?>>
 												</span>
 											</div>
 										</div>
