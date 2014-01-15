@@ -37,6 +37,8 @@ class WP_Stream_Query {
 			'date'                  => null,
 			'date_from'             => null,
 			'date_to'               => null,
+			// Visibility filters
+			'visibility'            => null,
 			// __in params
 			'record_greater_than'   => null,
 			'record__in'            => array(),
@@ -92,6 +94,10 @@ class WP_Stream_Query {
 
 		if ( $args['author'] ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.author LIKE %d", (int) $args['author'] );
+		}
+
+		if ( $args['visibility'] ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.visibility = %s", $args['visibility'] );
 		}
 
 		/**
