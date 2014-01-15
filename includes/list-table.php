@@ -15,7 +15,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'per_page',
 			array(
 				'default' => 20,
-				'label'   => __( 'Records per page', 'stream-notifications' ),
+				'label'   => __( 'Records per page', 'stream' ),
 				'option'  => 'edit_stream_notifications_per_page',
 				)
 			);
@@ -36,11 +36,11 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'wp_stream_notifications_list_table_columns',
 			array(
 				'cb'         => '<span class="check-column"><input type="checkbox" /></span>',
-				'name'       => __( 'Name', 'stream-notifications' ),
-				'type'       => __( 'Type', 'stream-notifications' ),
-				'alert'      => __( 'Alert', 'stream-notifications' ),
-				'occurences' => __( 'Occurences', 'stream-notifications' ),
-				'created'    => __( 'Created', 'stream-notifications' ),
+				'name'       => __( 'Name', 'stream' ),
+				'type'       => __( 'Type', 'stream' ),
+				'alert'      => __( 'Alert', 'stream' ),
+				'occurences' => __( 'Occurences', 'stream' ),
+				'created'    => __( 'Created', 'stream' ),
 			)
 		);
 	}
@@ -175,7 +175,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$activation_nonce = wp_create_nonce( "activate-record_$record->ID" );
 
 		$action_links = array();
-		$action_links[ __( 'Edit', 'stream-notifications' ) ] = admin_url(
+		$action_links[ __( 'Edit', 'stream' ) ] = admin_url(
 			sprintf(
 				'admin.php?page=wp_stream_notifications&action=edit&r=%s',
 				$record->ID
@@ -183,7 +183,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		);
 
 		if ( 1 == $record->visibility ) {
-			$action_links[ __( 'Deactivate', 'stream-notifications' ) ] = admin_url(
+			$action_links[ __( 'Deactivate', 'stream' ) ] = admin_url(
 				sprintf(
 					'admin.php?page=wp_stream_notifications&action=deactivate&r=%s&_wpnonce=%s',
 					$record->ID,
@@ -191,7 +191,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				)
 			);
 		} else {
-			$action_links[ __( 'Activate', 'stream-notifications' ) ] = admin_url(
+			$action_links[ __( 'Activate', 'stream' ) ] = admin_url(
 				sprintf(
 					'admin.php?page=wp_stream_notifications&action=activate&r=%s&_wpnonce=%s',
 					$record->ID,
