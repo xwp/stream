@@ -60,22 +60,22 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	 *
 	 * @return array Context label translations
 	 */
-	public static function get_context_labels() {
-		$blogs = wp_get_sites();
-		$blog_labels = array();
-		foreach( $blogs as $blog ) {
-			$blog_labels[$blog['blog_id']] = array(
-				'domain' => $blog['domain'],
-				'public' => $blog['public'],
-				'last_updated' => $blog['last_updated'],
-				'registered' => $blog['registered'],
-				'archived' => $blog['archived'],
-				'mature' => $blog['mature'],
-				'spam' => $blog['spam'],
-				'deleted' => $blog['deleted'],
-			);
-		}
-	}
+//	public static function get_context_labels() {
+//		$blogs = wp_get_sites();
+//		$blog_labels = array();
+//		foreach( $blogs as $blog ) {
+//			$blog_labels[$blog['blog_id']] = array(
+//				'domain' => $blog['domain'],
+//				'public' => $blog['public'],
+//				'last_updated' => $blog['last_updated'],
+//				'registered' => $blog['registered'],
+//				'archived' => $blog['archived'],
+//				'mature' => $blog['mature'],
+//				'spam' => $blog['spam'],
+//				'deleted' => $blog['deleted'],
+//			);
+//		}
+//	}
 
 	/**
 	 * Add action links to Stream drop row in admin list screen
