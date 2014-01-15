@@ -40,6 +40,16 @@ class WP_Stream_Notifications {
 	public static $screen_id;
 
 	/**
+	 * List table object
+	 * @var WP_Stream_Notifications_List_Table
+	 */
+	public static $list_table = null;
+
+	const NOTIFICATIONS_PAGE_SLUG = 'wp_stream_notifications';
+	// Todo: We should probably check whether the current user has caps to
+	// view and edit the notifications as this can differ from caps to Stream.
+
+	/**
 	 * List of registered adapters
 	 * @var array
 	 */
@@ -144,7 +154,7 @@ class WP_Stream_Notifications {
 		global $wp_roles;
 		$args = array();
 
-		$roles = $wp_roles->roles;
+		$roles     = $wp_roles->roles;
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
 
 		$args['types'] = array(
@@ -288,8 +298,9 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function page() {
-		$action = filter_input( INPUT_GET, 'action', FILTER_DEFAULT, array( 'default' => 'list' ) );
-		$id     = filter_input( INPUT_GET, 'id', FILTER_DEFAULT );
+		$action = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'default' => 'list' ) );
+		$id = filter_input( INPUT_GET, 'id', FILTER_DEFAULT );
+
 		switch ( $action ) {
 			case 'add':
 			case 'edit':
@@ -316,7 +327,7 @@ class WP_Stream_Notifications {
 		// TODO add nonce, check author/user permission to update record
 		// TODO Do not save if no triggers are added
 		$action = filter_input( INPUT_GET, 'action' );
-		$id = filter_input( INPUT_GET, 'id' );
+		$id     = filter_input( INPUT_GET, 'id' );
 
 		$rule = new WP_Stream_Notification_Rule( $id );
 
@@ -324,7 +335,9 @@ class WP_Stream_Notifications {
 
 		if ( $data && in_array( $action, array( 'edit', 'add' ) ) ) {
 
-			if ( ! isset( $data['visibility'] ) ) $data['visibility'] = 0; // Checkbox woraround
+			if ( ! isset( $data['visibility'] ) ) {
+				$data['visibility'] = 0; // Checkbox woraround
+			}
 
 			$result = $rule->load_from_array( $data )->save();
 
@@ -355,7 +368,7 @@ class WP_Stream_Notifications {
 		// ie: get other rules ( maybe in the same group only ? ), so an author
 		// query would check if there is a author_role rule available to limit
 		// the results according to it
-		$type = filter_input( INPUT_POST, 'type' );
+		$type  = filter_input( INPUT_POST, 'type' );
 		$query = filter_input( INPUT_POST, 'q' );
 
 		switch ( $type ) {
@@ -366,7 +379,7 @@ class WP_Stream_Notifications {
 			case 'action':
 				$actions = WP_Stream_Connectors::$term_labels['stream_action'];
 				$actions = preg_grep( sprintf( '/%s/i', $query ), $actions );
-				$data = $this->format_json_for_select2( $actions );
+				$data    = $this->format_json_for_select2( $actions );
 				break;
 		}
 		if ( isset( $data ) ) {
