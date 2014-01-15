@@ -162,10 +162,12 @@ class WP_Stream_Query {
 		/**
 		 * PARSE CONTEXT PARAMS
 		 */
-		$context_query = new WP_Stream_Context_Query( $args );
-		$cclauses      = $context_query->get_sql();
-		$join         .= $cclauses['join'];
-		$where        .= $cclauses['where'];
+		if ( ! $args['ignore_context'] ) {
+			$context_query = new WP_Stream_Context_Query( $args );
+			$cclauses      = $context_query->get_sql();
+			$join         .= $cclauses['join'];
+			$where        .= $cclauses['where'];
+		}
 
 		/**
 		 * PARSE PAGINATION PARAMS
