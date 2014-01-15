@@ -94,9 +94,11 @@
 
 <?php if ( $rule->triggers ): ?>
 <script>
-	var triggers = <?php echo json_encode( $rule->triggers ) ?>;
-	var groups   = <?php echo json_encode( $rule->groups ) ?>;
-	var alerts  = <?php echo json_encode( $rule->alerts ) ?>;
+	var notification_rule = {
+		triggers : <?php echo json_encode( $rule->triggers ) ?>,
+		groups   : <?php echo json_encode( $rule->groups ) ?>,
+		alerts   : <?php echo json_encode( $rule->alerts ) ?>,
+	}
 </script>
 <?php endif ?>
 
@@ -184,7 +186,7 @@
 
 <script type="text/template" id="alert-template-options">
 <table class="alert_options form-table">
-	<% for ( field_name in vars.fields ) { var field = vars.fields[field_name]; console.log(field) %>
+	<% for ( field_name in vars.fields ) { var field = vars.fields[field_name]; %>
 		<tr class="form-row">
 			<th>
 				<label><%- field.title %></label>

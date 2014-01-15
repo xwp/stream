@@ -40,20 +40,20 @@ jQuery(function($){
 				elementArgs.width = parseInt( $this.css('width'), 10 ) + 30;
 
 				if ( $this.hasClass('ajax') ) {
+					var type = '';
+					if ( ! ( type = $this.data( 'ajax-key' ) ) ) {
+						if ( tORa == 'triggers' ) {
+							type = $this.parents('.form-row').first().find('select.trigger_type').val();
+						} else {
+							type = $this.parents('.form-row').eq(1).find('select.alert_type').val();
+						}
+					}
 					elementArgs.minimumInputLength = 3;
 					elementArgs.ajax = {
 						url: ajaxurl,
 						type: 'post',
 						dataType: 'json',
 						data: function (term) {
-							var type = '';
-							if ( ! ( type = $this.data( 'ajax-key' ) ) ) {
-								if ( tORa == 'triggers' ) {
-									type = $this.parents('.form-row').first().find('select.trigger_type').val();
-								} else {
-									type = $this.parents('.form-row').eq(1).find('select.alert_type').val();
-								}
-							}
 							return {
 								action: 'stream_notification_endpoint',
 								type: type,
@@ -68,8 +68,25 @@ jQuery(function($){
 							return item.title;
 						}
 					};
+					elementArgs.initSelection = function(element, callback) {
+						var id = $(element).val();
+				        if ( id !== '' ) {
+				            $.ajax({
+				            	url: ajaxurl,
+				            	type: 'post',
+				                data: {
+				                	action: 'stream_notification_endpoint',
+				                    q : id,
+				                    single: 1,
+				                    type  : type,
+				                },
+				                dataType: "json"
+			            	}).done( function( data ) { callback( data.data ); } );
+				        }
+					};
 				}
-				$this.select2( args );
+
+				$this.select2( elementArgs );
 			});
 		};
 
@@ -132,11 +149,41 @@ jQuery(function($){
 		})
 	;
 
+	divAlerts
+		// Add new alert
+		.on( 'click.sn', btns.add_alert, function(e) {
+			e.preventDefault();
+			var $this = $(this),
+				index = divAlerts.find('.alert').size();
+
+			divAlerts.append( tmpl_alert( $.extend(
+				{ index: index },
+				stream_notifications
+				) ) );
+			selectify( divAlerts.find('.alert select') );
+		})
+
+		// Reveal rule options after choosing rule type
+		.on( 'change.sn', '.alert_type', function() {
+			var $this   = $(this),
+				options = stream_notifications.adapters[ $this.val() ],
+				index   = $this.parents('.alert').first().attr('rel');
+			$this.next('.alert_options').remove();
+
+			if ( ! options ) { return; }
+
+			$this.after( tmpl_alert_options( $.extend( options, { index: index } ) ) );
+			selectify( $this.parent().find('select') );
+			selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
+		})
+	;
+
 	// Populate form values if it exists
-	if ( triggers ) {
-		
-		for ( i = 0; i < triggers.length; i++ ) {
-			var trigger = triggers[i],
+	if ( typeof notification_rule != 'undefined'  ) {
+
+		// Triggers
+		for ( i = 0; i < notification_rule.triggers.length; i++ ) {
+			var trigger = notification_rule.triggers[i],
 				groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']'),
 				row,
 				valueField;
@@ -167,37 +214,33 @@ jQuery(function($){
 					valueField.val( trigger.value ).trigger('change');
 				}
 			}
-			
+		}
+
+		// Alerts
+		for ( i = 0; i < notification_rule.alerts.length; i++ ) {
+			var alert = notification_rule.alerts[i],
+				row,
+				optionFields,
+				valueField;
+
+			// create the new row, by clicking the add-alert button
+			divAlerts.find( btns.add_alert ).trigger( 'click' );
+
+			// populate values
+			row = divAlerts.find('.alert:last');
+			row.find('select.alert_type').select2( 'val', alert.type ).trigger('change');
+			optionFields = row.find('.alert_options');
+			optionFields.find(':input[name]').each(function(i, el){
+				var $this = $(this),
+					name,
+					val;
+				name = $this.attr('name').match('\\[([a-z_\-]+)\\]$')[1];
+				if ( typeof alert[name] != 'undefined' ) {
+					val = alert[name];
+					$this.val( val ).trigger('change');
+				}
+			});
 		}
 	}
-
-	divAlerts
-		// Add new alert
-		.on( 'click.sn', btns.add_alert, function(e) {
-			e.preventDefault();
-			var $this = $(this),
-				index = divAlerts.find('.alert').size();
-
-			divAlerts.append( tmpl_alert( $.extend(
-				{ index: index },
-				stream_notifications
-				) ) );
-			selectify( divAlerts.find('.alert select') );
-		})
-
-		// Reveal rule options after choosing rule type
-		.on( 'change.sn', '.alert_type', function() {
-			var $this   = $(this),
-				options = stream_notifications.adapters[ $this.val() ],
-				index   = $this.parents('.alert').first().attr('rel');
-			$this.next('.alert_options').remove();
-			
-			if ( ! options ) { return; }
-
-			$this.after( tmpl_alert_options( $.extend( options, { index: index } ) ) );
-			selectify( $this.parent().find('select') );
-			selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
-		})
-
 
 });
