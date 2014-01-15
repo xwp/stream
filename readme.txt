@@ -87,6 +87,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 1.0.2 =
+**2014/01/15** - Ensure the dashboard widget repects the Role Access setting. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
 = 1.0.1 =
 **2014/01/15** - Require nonce for generating a new user feed key. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
 
