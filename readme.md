@@ -55,7 +55,8 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Option to manually purge all activity records from the database
 
 **Extension plugins:**
- * [Cherry-Pick](http://wordpress.org/plugins/stream-cherry-pick/): Gives Administrators the ability to delete records from the Stream individually or in bulk.
+
+ * [Cherry-Pick](http://wordpress.org/plugins/stream-cherry-pick/): Allow Administrators to delete records from the Stream individually or in bulk.
 
 **Languages:**
 
@@ -102,7 +103,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ## Changelog ##
 
 ### 1.0.1 ###
-**2014/01/15** - Require nonce for generating a new user feed key. Props [johnregan3](http://profiles.wordpress.org/johnregan3/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+**2014/01/15** - Require nonce for generating a new user feed key. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
 
 ### 1.0 ###
 **2014/01/13** - Allow list table to be exensible. Hook added to prevent tables from being created, if desired. Props [johnregan3](http://profiles.wordpress.org/johnregan3/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/)
