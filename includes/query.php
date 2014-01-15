@@ -52,11 +52,8 @@ class WP_Stream_Query {
 			'context_query'         => array(),
 			// Fields selection
 			'fields'                => '',
+			'ignore_context'        => null,
 			);
-
-		$record_types_using_context = array(
-			'stream',
-		);
 
 		$args = wp_parse_args( $args, $defaults );
 
@@ -66,7 +63,7 @@ class WP_Stream_Query {
 		$where = '';
 
 		// Only join with context table for correct types of records
-		if ( in_array( $args['type'], $record_types_using_context ) ) {
+		if ( ! $args['ignore_context'] ) {
 			$join = sprintf(
 				' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
 				$wpdb->streamcontext,
@@ -209,7 +206,7 @@ class WP_Stream_Query {
 		 */
 		$fields = $args['fields'];
 		$select = "$wpdb->stream.*";
-		if ( in_array( $args['type'], $record_types_using_context ) ) {
+		if ( ! $args['ignore_context'] ) {
 			$select .= ", $wpdb->streamcontext.context, $wpdb->streamcontext.action, $wpdb->streamcontext.connector";
 		}
 		if ( $fields == 'ID' ) {
