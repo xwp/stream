@@ -33,7 +33,6 @@ class WP_Stream_Feeds {
 	 * @return void
 	 */
 	public static function save_user_feed_key( $user ) {
-
 		if ( get_user_meta( $user->ID, self::USER_FEED_KEY, true ) && ! isset( $_GET[self::GENERATE_KEY_QUERY_VAR] ) ) {
 			return;
 		}
@@ -59,8 +58,6 @@ class WP_Stream_Feeds {
 
 		$key = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
 
-		$nonce = wp_create_nonce( 'wp_stream_generate_key' );
-
 		$pretty_permalinks = get_option( 'permalink_structure' );
 
 		if ( empty( $pretty_permalinks ) ) {
@@ -68,6 +65,8 @@ class WP_Stream_Feeds {
 		} else {
 			$link = add_query_arg( array( self::FEED_KEY_QUERY_VAR => $key ), home_url( sprintf( '/feed/%s/', self::FEED_QUERY_VAR ) ) );
 		}
+
+		$nonce = wp_create_nonce( 'wp_stream_generate_key' );
 		?>
 		<table class="form-table">
 			<tr>
