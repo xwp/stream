@@ -149,7 +149,7 @@ class WP_Stream_Notifications {
 	public static function register_adapter( $adapter, $name, $title ) {
 		self::$adapters[ $name ] = array(
 			'title' => $title,
-			'class' => $adapter
+			'class' => $adapter,
 		);
 	}
 
@@ -386,9 +386,9 @@ class WP_Stream_Notifications {
 		// query would check if there is a author_role rule available to limit
 		// the results according to it
 
-		$type = filter_input( INPUT_POST, 'type' );
+		$type      = filter_input( INPUT_POST, 'type' );
 		$is_single = filter_input( INPUT_POST, 'single' );
-		$query = filter_input( INPUT_POST, 'q' );
+		$query     = filter_input( INPUT_POST, 'q' );
 
 		if ( $is_single ) {
 			switch ( $type ) {
@@ -406,7 +406,7 @@ class WP_Stream_Notifications {
 				case 'action':
 					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
 					$actions = preg_grep( sprintf( '/%s/i', $query ), $actions );
-					$data = $this->format_json_for_select2( $actions );
+					$data    = $this->format_json_for_select2( $actions );
 					break;
 			}
 		}
