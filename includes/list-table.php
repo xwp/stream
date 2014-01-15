@@ -204,7 +204,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'blog_id':
-				$blog = get_blog_details( $item->blog_id );
+				$blog = $item->blog_id ? get_blog_details( $item->blog_id ) : self::get_network_blog();
 				$out = sprintf(
 					'<a href="%s"><span>%s</span></a>',
 					add_query_arg( array( 'blog_id' => $blog->blog_id ), network_admin_url( 'admin.php?page=wp_stream' ) ),
@@ -239,6 +239,18 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		echo $out; // xss okay
+	}
+
+	/**
+	 * Builds a stdClass object used when displaying actions done in network administration
+	 * @return stdClass
+	 */
+	public static function get_network_blog() {
+		$blog = new stdClass;
+		$blog->blog_id = 0;
+		$blog->blogname = 'Network Admin';
+
+		return $blog;
 	}
 
 
@@ -349,6 +361,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			foreach( (array) wp_get_sites() as $blog ) {
 				$blogs[$blog['blog_id']] = $blog['domain'];
 			}
+			$blogs[0] =
 
 			$filters['blog_id'] = array(
 			  'title' => __( 'blogs', 'stream' ),

@@ -57,7 +57,7 @@ class WP_Stream_Log {
 		$recordarr = array(
 			'object_id' => $object_id,
 			'site_id'   => get_current_site()->id,
-			'blog_id'   => get_current_blog_id(),
+			'blog_id'   => is_network_admin() ? 0 : get_current_blog_id(),
 			'author'    => $user_id,
 			'created'   => current_time( 'mysql', 1 ),
 			'summary'   => vsprintf( $message, $args ),
