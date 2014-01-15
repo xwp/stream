@@ -13,7 +13,7 @@ abstract class WP_Stream_Notification_Adapter {
 	}
 
 	function send( $log ) {
-		
+
 	}
 
 }
