@@ -441,6 +441,10 @@ class WP_Stream_Admin {
 	 * @action wp_dashboard_setup
 	 */
 	public static function dashboard_stream_activity() {
+		if ( ! current_user_can( self::VIEW_CAP ) ) {
+			return;
+		}
+
 		wp_add_dashboard_widget(
 			'dashboard_stream_activity',
 			__( 'Stream Activity', 'stream' ),
