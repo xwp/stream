@@ -139,11 +139,15 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		wp_enqueue_style( 'select2' );
-		wp_enqueue_script( 'select2' );
-		wp_enqueue_script( 'underscore' );
-		wp_enqueue_script( 'stream-notifications-main', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/main.js', array( 'underscore', 'select2' ) );
-		wp_localize_script( 'stream-notifications-main', 'stream_notifications', $this->get_js_options() );
+		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'default' => 'list' ) );
+
+		if ( $view == 'add' || $view == 'edit' ) {
+			wp_enqueue_style( 'select2' );
+			wp_enqueue_script( 'select2' );
+			wp_enqueue_script( 'underscore' );
+			wp_enqueue_script( 'stream-notifications-main', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/main.js', array( 'underscore', 'select2' ) );
+			wp_localize_script( 'stream-notifications-main', 'stream_notifications', $this->get_js_options() );
+		}
 	}
 
 	public static function register_adapter( $adapter, $name, $title ) {
@@ -346,8 +350,8 @@ class WP_Stream_Notifications {
 
 		// TODO add nonce, check author/user permission to update record
 		// TODO Do not save if no triggers are added
-		$view = filter_input( INPUT_GET, 'view' );
-		$id   = filter_input( INPUT_GET, 'id' );
+		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'default' => 'list' ) );
+		$id = filter_input( INPUT_GET, 'id' );
 
 		$rule = new WP_Stream_Notification_Rule( $id );
 
