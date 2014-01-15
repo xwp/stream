@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, akeda, kucrut, johnregan3, topher1kenobe, pascalklaeres
+Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, johnregan3, akeda, kucrut, topher1kenobe, pascalklaeres
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.6
 Tested up to:      3.8
@@ -52,6 +52,9 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Set how long records should live before being purged automatically
  * Option to manually purge all activity records from the database
 
+**Extension plugins:**
+ * [Cherry-Pick](http://wordpress.org/plugins/stream-cherry-pick/): Gives Administrators the ability to delete records from the Stream individually or in bulk.
+
 **Languages:**
 
  * English
@@ -61,7 +64,8 @@ Stream is built to extend, allowing developers to easily build their own connect
 **Coming soon:**
 
  * Multisite view of all activity records on a network
- * Language support for Arabic, Czech and Slovak
+ * Support for IPv6 addresses
+ * Language support for Arabic, Czech, Slovak and Spanish
 
 **See room for improvement?**
 
@@ -81,6 +85,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.0 =
+**2014/01/13** - Allow list table to be exensible. Hook added to prevent tables from being created, if desired. Props [johnregan3](http://profiles.wordpress.org/johnregan3/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/)
 
 = 0.9.9 =
 **2014/01/08** - Updated screenshot assets and descriptions. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
