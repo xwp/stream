@@ -139,7 +139,7 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'default' => 'list' ) );
+		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 
 		if ( $view == 'add' || $view == 'edit' ) {
 			wp_enqueue_style( 'select2' );
@@ -319,7 +319,7 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function page() {
-		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'default' => 'list' ) );
+		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 		$id = filter_input( INPUT_GET, 'id', FILTER_DEFAULT );
 
 		switch ( $view ) {
@@ -350,7 +350,7 @@ class WP_Stream_Notifications {
 
 		// TODO add nonce, check author/user permission to update record
 		// TODO Do not save if no triggers are added
-		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'default' => 'list' ) );
+		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 		$id = filter_input( INPUT_GET, 'id' );
 
 		$rule = new WP_Stream_Notification_Rule( $id );

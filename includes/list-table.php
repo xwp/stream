@@ -83,8 +83,24 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		);
 	}
 
-	function get_records() {
-		$args = array();
+	function count_records( $args = array() ) {
+		$defaults = array(
+			'records_per_page'  => 1,
+			'ignore_url_params' => true,
+		);
+
+		$args    = wp_parse_args( $args, $defaults );
+		$records = $this->get_records( $args );
+
+		return $this->get_total_found_rows();
+	}
+
+	function get_records( $args = array() ) {
+
+		$defaults = array(
+			'ignore_url_params' => false,
+		);
+		$args = wp_parse_args( $args, $defaults );
 
 		// Parse sorting params
 		if ( ! $order = filter_input( INPUT_GET, 'order' ) ) {
@@ -99,14 +115,15 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$args['type']           = 'notification_rule';
 		$args['ignore_context'] = true;
 
-		// Filters
-		$allowed_params = array(
-			'search', 'visibility',
-		);
+		if ( ! $args['ignore_url_params'] ) {
+			$allowed_params = array(
+				'search', 'visibility',
+			);
 
-		foreach ( $allowed_params as $param ) {
-			if ( $paramval = filter_input( INPUT_GET, $param ) ) {
-				$args[$param] = $paramval;
+			foreach ( $allowed_params as $param ) {
+				if ( $paramval = filter_input( INPUT_GET, $param ) ) {
+					$args[$param] = $paramval;
+				}
 			}
 		}
 
@@ -268,13 +285,72 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	function filters_form() {
-		$filters = array();
-
-		// BIG TODO: The All / Active / Inactive filters go here
-		// Should we perhaps also implement full-fledged filtering (by type, date, alert method) here?
-
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG );
-		echo sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss okay
+
+		echo sprintf(
+			'<ul class="subsubsub">
+				%s
+			</ul>
+			%s
+			<div class="alignleft actions">
+				%s
+			</div>',
+			$this->list_navigation(),
+			$this->filter_search(),
+			$filters_string
+		); // xss okay
+	}
+
+	function list_navigation() {
+		$navigation_items = array(
+			'all' => array(
+				'link_text' => __( 'All', 'stream' ),
+				'url'  => admin_url( sprintf( 'admin.php?page=%s', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) ),
+				'link_class' => null,
+				'li_class'   => null,
+				'count'      => $this->count_records(),
+			),
+			'active' => array(
+				'link_text' => __( 'Active', 'stream' ),
+				'url'  => admin_url( sprintf( 'admin.php?page=%s&visibility=active', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) ),
+				'link_class' => null,
+				'li_class'   => null,
+				'count'      => $this->count_records( array( 'visibility' => 'active' ) ),
+			),
+			'inactive' => array(
+				'link_text' => __( 'Inactive', 'stream' ),
+				'url'  => admin_url( sprintf( 'admin.php?page=%s&visibility=inactive', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) ),
+				'link_class' => null,
+				'li_class'   => null,
+				'count'      => $this->count_records( array( 'visibility' => 'inactive' ) ),
+			),
+		);
+
+		$navigation_items = apply_filters( 'wp_stream_notifications_list_navigation_items', $navigation_items );
+
+		$navigation_links = '';
+		$visibility       = filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT, array( 'options' => array( 'default' => 'all' ) ) );
+
+		$i = 0;
+
+		foreach ( $navigation_items as $visibility_filter => $item ) {
+			$i++;
+			$navigation_links .= sprintf(
+				'<li class="%s"><a href="%s" class="%s">%s%s</a>%s</li>',
+				esc_attr( $item[ 'li_class' ] ),
+				esc_attr( $item[ 'url' ] ),
+				$visibility == $visibility_filter
+					? 'current ' . esc_attr( $item[ 'link_class' ] )
+					: esc_attr( $item[ 'link_class' ] ),
+				esc_html( $item[ 'link_text' ] ),
+				$item[ 'count' ] !== null
+					? sprintf( ' <span class="count">(%s)</span>', esc_html( $item[ 'count' ] ) )
+					: '',
+				$i === count( $navigation_items ) ? '' : ' | '
+			);
+		}
+
+		return apply_filters( 'wp_stream_notifications_list_navigation', $navigation_links );
 	}
 
 	function filter_search() {
@@ -293,7 +369,6 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 	function display() {
 		echo '<form method="get" action="', esc_attr( admin_url( 'admin.php' ) ), '">';
-		echo $this->filter_search(); // xss okay
 		parent::display();
 		echo '</form>';
 	}
@@ -311,7 +386,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		<?php } else { ?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 				<?php
-				do_action( 'wp_stream_after_list_table' );
+				do_action( 'wp_stream_notifications_after_list_table' );
 				$this->extra_tablenav( $which );
 				$this->pagination( $which );
 				?>
