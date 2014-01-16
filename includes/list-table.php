@@ -326,16 +326,17 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			),
 		);
 
-		$navigation_items = apply_filters( 'wp_stream_notifications_list_navigation_items', $navigation_items );
+		$navigation_items = apply_filters( 'wp_stream_notifications_list_navigation_array', $navigation_items );
 
-		$navigation_links = '';
+		$navigation_links = array();
+		$navigation_html  = '';
 		$visibility       = filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT, array( 'options' => array( 'default' => 'all' ) ) );
 
 		$i = 0;
 
 		foreach ( $navigation_items as $visibility_filter => $item ) {
 			$i++;
-			$navigation_links .= sprintf(
+			$navigation_links[] = sprintf(
 				'<li class="%s"><a href="%s" class="%s">%s%s</a>%s</li>',
 				esc_attr( $item[ 'li_class' ] ),
 				esc_attr( $item[ 'url' ] ),
@@ -350,7 +351,10 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			);
 		}
 
-		return apply_filters( 'wp_stream_notifications_list_navigation', $navigation_links );
+		$navigation_links = apply_filters( 'wp_stream_notifications_list_navigation_links', $navigation_links );
+		$navigation_html  = is_array( $navigation_links ) ? implode( "\n", $navigation_links ) : $navigation_links;
+
+		return $navigation_html;
 	}
 
 	function filter_search() {
