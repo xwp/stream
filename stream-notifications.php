@@ -141,7 +141,7 @@ class WP_Stream_Notifications {
 
 		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 
-		if ( $view == 'add' || $view == 'edit' ) {
+		if ( $view == 'rule' ) {
 			wp_enqueue_style( 'select2' );
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_script( 'underscore' );
@@ -323,11 +323,9 @@ class WP_Stream_Notifications {
 		$id = filter_input( INPUT_GET, 'id', FILTER_DEFAULT );
 
 		switch ( $view ) {
-			case 'add':
-			case 'edit':
+			case 'rule':
 				$this->page_form( $id );
 				break;
-			case 'list':
 			default:
 				$this->page_list();
 				break;
@@ -350,23 +348,24 @@ class WP_Stream_Notifications {
 
 		// TODO add nonce, check author/user permission to update record
 		// TODO Do not save if no triggers are added
+
 		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
+		$action = filter_input( INPUT_GET, 'action', FILTER_DEFAULT, array( 'options' => array( 'default' => 'render' ) ) );
 		$id = filter_input( INPUT_GET, 'id' );
 
 		$rule = new WP_Stream_Notification_Rule( $id );
 
 		$data = $_POST;
 
-		if ( $data && in_array( $view, array( 'edit', 'add' ) ) ) {
-
+		if ( $data && 'rule' == $view ) {
 			if ( ! isset( $data['visibility'] ) ) {
 				$data['visibility'] = 'inactive'; // Checkbox woraround
 			}
 
 			$result = $rule->load_from_array( $data )->save();
 
-			if ( $result && $view != 'edit' ) {
-				wp_redirect( add_query_arg( array( 'view' => 'edit', 'id' => $rule->ID ) ) );
+			if ( $result && $action != 'edit' ) {
+				wp_redirect( add_query_arg( array( 'action' => 'edit', 'id' => $rule->ID ) ) );
 			}
 		}
 	}
@@ -383,7 +382,7 @@ class WP_Stream_Notifications {
 		echo sprintf(
 			'<h2>%s <a href="%s" class="add-new-h2">%s</a></h2>',
 			__( 'Stream Notifications', 'stream' ),
-			admin_url( 'admin.php?page=wp_stream_notifications&view=add' ),
+			admin_url( 'admin.php?page=wp_stream_notifications&view=rule' ),
 			__( 'Add New' )
 		); // xss okay
 
@@ -457,6 +456,15 @@ class WP_Stream_Notifications {
 				);
 		}
 		return $return;
+	}
+
+	/*
+	 * Handle the action invoked by the list table
+	 */
+	private function handle_action( $action ) {
+		$data = $_GET;
+
+		wp_redirect( add_query_arg( array( 'view' => false, 'action' => false ) ) );
 	}
 }
 

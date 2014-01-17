@@ -208,7 +208,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$action_links = array();
 		$action_links[ __( 'Edit', 'stream' ) ] = admin_url(
 			sprintf(
-				'admin.php?page=wp_stream_notifications&view=edit&id=%s',
+				'admin.php?page=wp_stream_notifications&view=rule&action=edit&id=%s',
 				$record->ID
 			)
 		);
@@ -316,6 +316,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Return the bulk actions select box, context aware
 	 *
+	 * @todo   Should we utilize WP_List_Table->bulk_actions()?
 	 * @param  string $which Indicates whether to display the box over or under the list [top|bottom]
 	 * @return string Bulk actions select box and a respective submit
 	 */
