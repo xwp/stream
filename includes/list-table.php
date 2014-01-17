@@ -25,9 +25,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	function extra_tablenav( $which ) {
-		if ( $which == 'top' ){
-			$this->filters_form();
-		}
+		$this->filters_form( $which );
 	}
 
 	function get_columns(){
@@ -144,7 +142,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		switch ( $column_name ) {
 
 			case 'name':
-				$out  = $this->column_link( $item->summary, 'name', $item->summary );
+				$out  = $this->column_link( $item->summary, 'name', $item->summary, null, 'row-title' );
 				$out .= $this->get_action_links( $item );
 				break;
 
@@ -267,7 +265,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		return $out;
 	}
 
-	function column_link( $display, $key, $value = null, $title = null ) {
+	function column_link( $display, $key, $value = null, $title = null, $class = null ) {
 		$url = admin_url( 'admin.php?page=' . WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG );
 
 		$args = ! is_array( $key ) ? array( $key => $value ) : $key;
@@ -277,28 +275,80 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		}
 
 		return sprintf(
-			'<a href="%s" title="%s">%s</a>',
+			'<a href="%s" class="%s" title="%s">%s</a>',
 			esc_url( $url ),
+			esc_attr( $class ),
 			esc_attr( $title ),
 			esc_html( $display )
 		);
 	}
 
-	function filters_form() {
-		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG );
+	function filters_form( $which ) {
+		if ( 'top' == $which ) {
+			$filters_string = sprintf(
+				'<input type="hidden" name="page" value="%s"/><input type="hidden" name="_wpnonce" value="%s"/>',
+				WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
+				wp_create_nonce( 'wp_stream_notifications_bulk_actions' )
+			);
 
-		echo sprintf(
-			'<ul class="subsubsub">
-				%s
-			</ul>
-			%s
-			<div class="alignleft actions">
-				%s
-			</div>',
-			$this->list_navigation(),
-			$this->filter_search(),
-			$filters_string
-		); // xss okay
+			echo sprintf(
+				'%s
+				<div class="alignleft actions bulkactions">
+					%s
+				</div>
+				<div class="alignleft actions">
+					%s
+				</div>',
+				$this->filter_search(),
+				$this->stream_notifications_bulk_actions( $which ),
+				$filters_string
+			); // xss okay
+		} else {
+			echo sprintf(
+				'<div class="alignleft actions bulkactions">
+					%s
+				</div>',
+				$this->stream_notifications_bulk_actions( $which )
+			); // xss okay
+		}
+	}
+
+	/**
+	 * Return the bulk actions select box, context aware
+	 *
+	 * @param  string $which Indicates whether to display the box over or under the list [top|bottom]
+	 * @return string Bulk actions select box and a respective submit
+	 */
+	function stream_notifications_bulk_actions( $which ) {
+		$dropdown_name = ( 'top' == $which ) ? 'action' : 'action2';
+		$visibility    = filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT );
+		$options       = array();
+
+		$options[] = '<option value="-1" selected="selected">Bulk Actions</option>';
+
+		if ( 'active' != $visibility ) {
+			$options[] = '<option value="activate">Activate</option>';
+		}
+		if ( 'inactive' != $visibility ) {
+			$options[] = '<option value="deactivate">Deactivate</option>';
+		}
+		if ( 'inactive' == $visibility ) {
+			$options[] = '<option value="delete">Delete permanently</option>';
+		}
+
+		$options      = apply_filters( 'wp_stream_notifications_bulk_action_options', $options, $which, $visibility );
+		$options_html = implode( '', $options );
+
+		$html = sprintf(
+			'<select name="%1$s">
+				%2$s
+			</select>
+			<input type="submit" name="" id="do%1$s" class="button action" value="Apply">',
+			$dropdown_name,
+			$options_html
+		);
+
+		return apply_filters( 'wp_stream_notifications_bulk_actions_html', $html );
 	}
 
 	function list_navigation() {
@@ -372,6 +422,12 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	function display() {
+		echo sprintf(
+			'<ul class="subsubsub">
+				%s
+			</ul>',
+			$this->list_navigation()
+		); // xss ok
 		echo '<form method="get" action="', esc_attr( admin_url( 'admin.php' ) ), '">';
 		parent::display();
 		echo '</form>';
