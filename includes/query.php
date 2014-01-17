@@ -180,8 +180,13 @@ class WP_Stream_Query {
 		 */
 		$page    = intval( $args['paged'] );
 		$perpage = intval( $args['records_per_page'] );
-		$pgstrt  = ($page - 1) * $perpage;
-		$limits  = "LIMIT $pgstrt, {$perpage}";
+
+		if ( $perpage >= 0 ) {
+			$pgstrt = ($page - 1) * $perpage;
+			$limits = "LIMIT $pgstrt, {$perpage}";
+		} else {
+			$limits = '';
+		}
 
 		/**
 		 * PARSE ORDER PARAMS
