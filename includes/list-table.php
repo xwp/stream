@@ -216,7 +216,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		if ( 'active' == $record->visibility ) {
 			$action_links[ __( 'Deactivate', 'stream' ) ] = admin_url(
 				sprintf(
-					'admin.php?page=wp_stream_notifications&action=deactivate&r=%s&_wpnonce=%s',
+					'admin.php?page=wp_stream_notifications&action=deactivate&id=%s&wp_stream_nonce=%s',
 					$record->ID,
 					$activation_nonce
 				)
@@ -224,7 +224,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		} elseif ( 'inactive' == $record->visibility ) {
 			$action_links[ __( 'Activate', 'stream' ) ] = admin_url(
 				sprintf(
-					'admin.php?page=wp_stream_notifications&action=activate&r=%s&_wpnonce=%s',
+					'admin.php?page=wp_stream_notifications&action=activate&id=%s&wp_stream_nonce=%s',
 					$record->ID,
 					$activation_nonce
 				)
@@ -286,7 +286,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	function filters_form( $which ) {
 		if ( 'top' == $which ) {
 			$filters_string = sprintf(
-				'<input type="hidden" name="page" value="%s"/><input type="hidden" name="_wpnonce" value="%s"/>',
+				'<input type="hidden" name="page" value="%s"/><input type="hidden" name="wp_stream_nonce" value="%s"/>',
 				WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
 				wp_create_nonce( 'wp_stream_notifications_bulk_actions' )
 			);
