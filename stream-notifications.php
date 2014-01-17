@@ -139,7 +139,7 @@ class WP_Stream_Notifications {
 	public static function register_adapter( $adapter, $name, $title ) {
 		self::$adapters[ $name ] = array(
 			'title' => $title,
-			'class' => $adapter
+			'class' => $adapter,
 		);
 	}
 
