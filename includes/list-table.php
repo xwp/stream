@@ -404,7 +404,14 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$navigation_links = apply_filters( 'wp_stream_notifications_list_navigation_links', $navigation_links );
 		$navigation_html  = is_array( $navigation_links ) ? implode( "\n", $navigation_links ) : $navigation_links;
 
-		return $navigation_html;
+		$out = sprintf(
+			'<ul class="subsubsub">
+				%s
+			</ul>',
+			$navigation_html
+		);
+
+		return apply_filters( 'wp_stream_notifications_list_navigation_html', $out );
 	}
 
 	function filter_search() {
@@ -422,12 +429,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	function display() {
-		echo sprintf(
-			'<ul class="subsubsub">
-				%s
-			</ul>',
-			$this->list_navigation()
-		); // xss ok
+		echo $this->list_navigation(); // xss ok
 		echo '<form method="get" action="', esc_attr( admin_url( 'admin.php' ) ), '">';
 		parent::display();
 		echo '</form>';
@@ -455,6 +457,19 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			</div>
 		<?php
 		}
+	}
+
+	function single_row( $item ) {
+		static $row_classes = array();
+
+		$row_classes[ 'alternating' ] = in_array( 'alternate', $row_classes ) ? '' : 'alternate';
+		$row_classes[ 'visibility' ]  = $item->visibility;
+
+		$row_class = sprintf( 'class="%s"', implode( ' ', $row_classes ) );
+
+		echo sprintf( '<tr %s>', $row_class ); // xss ok
+		$this->single_row_columns( $item );
+		echo '</tr>';
 	}
 
 	static function set_screen_option( $dummy, $option, $value ) {
