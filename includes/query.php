@@ -21,7 +21,7 @@ class WP_Stream_Query {
 	public function query( $args ) {
 		global $wpdb;
 
-		$site_id = is_multisite() ? get_current_site()->id : 1;
+		$site_id = is_multisite() ? get_current_site()->id : null;
 
 		$defaults = array(
 			// Pagination params
