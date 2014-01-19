@@ -21,6 +21,8 @@ class WP_Stream_Query {
 	public function query( $args ) {
 		global $wpdb;
 
+		$site_id = is_multisite() ? get_current_site()->id : 1;
+
 		$defaults = array(
 			// Pagination params
 			'records_per_page'      => 10,
@@ -31,7 +33,7 @@ class WP_Stream_Query {
 			'type'                  => 'stream',
 			'object_id'             => null,
 			'ip'                    => null,
-			'site_id'               => is_network_admin() ? null : get_current_site()->id,
+			'site_id'               => is_network_admin() ? null : $site_id,
 			'blog_id'               => is_network_admin() ? null : get_current_blog_id(),
 			// Author param
 			'author'                => null,
