@@ -17,8 +17,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 				'default' => 20,
 				'label'   => __( 'Records per page', 'stream' ),
 				'option'  => 'edit_stream_per_page',
-				)
-			);
+			)
+		);
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
@@ -78,7 +78,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$this->set_pagination_args(
 			array(
 				'total_items' => $total_items,
-				'per_page' => $this->get_items_per_page( 'edit_stream_per_page', 20 ),
+				'per_page'    => $this->get_items_per_page( 'edit_stream_per_page', 20 ),
 			)
 		);
 	}
@@ -90,10 +90,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * @return string Displays a checkbox
 	 */
 	function column_cb( $item ) {
-			return sprintf(
+		return sprintf(
 			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
-			/*$1%s*/ 'wp_stream_checkbox',
-			/*$2%s*/ $item->ID
+			'wp_stream_checkbox',
+			$item->ID
 		);
 	}
 
@@ -112,10 +112,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		// Filters
 		$allowed_params = array(
-			'connector', 'context', 'action',
-			'author', 'object_id', 'search',
-			'date', 'date_from', 'date_to',
-			'record__in', 'blog_id'
+			'connector',
+			'context',
+			'action',
+			'author',
+			'object_id',
+			'search',
+			'date',
+			'date_from',
+			'date_to',
+			'record__in',
+			'blog_id',
 		);
 
 		foreach ( $allowed_params as $param ) {
