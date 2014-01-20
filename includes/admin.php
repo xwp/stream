@@ -151,7 +151,7 @@ class WP_Stream_Admin {
 	/**
 	 * Add a specific body class to all Stream admin screens
 	 *
-	 * @action admin_body_class
+	 * @filter admin_body_class
 	 * @param  array $classes
 	 * @return array $classes
 	 */
