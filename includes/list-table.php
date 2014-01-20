@@ -36,6 +36,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function network_admin_columns( $columns ) {
+		unset( $columns['id'] );
 		$columns['blog_id'] = __( 'Blog', 'stream' );
 		return $columns;
 	}
