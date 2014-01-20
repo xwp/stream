@@ -204,42 +204,40 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$out .= '<div class="row-actions">';
 
 		$activation_nonce = wp_create_nonce( "activate-record_$record->ID" );
+		$deletion_nonce   = wp_create_nonce( "delete-record_$record->ID" );
 
 		$action_links = array();
-		$action_links[ __( 'Edit', 'stream' ) ] = admin_url(
-			sprintf(
-				'admin.php?page=wp_stream_notifications&view=rule&action=edit&id=%s',
-				$record->ID
-			)
+		$action_links[ __( 'Edit', 'stream' ) ] = array(
+			'href' => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&view=rule&action=edit&id=%s',	$record->ID	) ),
+			'class' => null,
 		);
 
 		if ( 'active' == $record->visibility ) {
-			$action_links[ __( 'Deactivate', 'stream' ) ] = admin_url(
-				sprintf(
-					'admin.php?page=wp_stream_notifications&action=deactivate&id=%s&wp_stream_nonce=%s',
-					$record->ID,
-					$activation_nonce
-				)
+			$action_links[ __( 'Deactivate', 'stream' ) ] = array(
+				'href' => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&action=deactivate&id=%s&wp_stream_nonce=%s', $record->ID, $activation_nonce )	),
+				'class' => null,
 			);
 		} elseif ( 'inactive' == $record->visibility ) {
-			$action_links[ __( 'Activate', 'stream' ) ] = admin_url(
-				sprintf(
-					'admin.php?page=wp_stream_notifications&action=activate&id=%s&wp_stream_nonce=%s',
-					$record->ID,
-					$activation_nonce
-				)
+			$action_links[ __( 'Activate', 'stream' ) ] = array(
+				'href' => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&action=activate&id=%s&wp_stream_nonce=%s', $record->ID, $activation_nonce ) ),
+				'class' => null,
+			);
+			$action_links[ __( 'Delete Permanently', 'stream' ) ] = array(
+				'href' => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&action=delete&id=%s&wp_stream_nonce=%s', $record->ID, $deletion_nonce ) ),
+				'class' => 'delete',
 			);
 		}
 
 		if ( $action_links ) {
 			$links = array();
 			$i     = 0;
-			foreach ( $action_links as $al_title => $al_href ) {
+			foreach ( $action_links as $link_title => $link_options ) {
 				$i++;
 				$links[] = sprintf(
-					'<span><a href="%s" class="action-link">%s</a>%s</span>',
-					$al_href,
-					$al_title,
+					'<span class="%s"><a href="%s" class="action-link">%s</a>%s</span>',
+					$link_options['class'],
+					$link_options['href'],
+					$link_title,
 					( $i === count( $action_links ) ) ? null : ' | '
 				);
 			}
