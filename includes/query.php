@@ -37,6 +37,8 @@ class WP_Stream_Query {
 			'date'                  => null,
 			'date_from'             => null,
 			'date_to'               => null,
+			// Visibility filters
+			'visibility'            => null,
 			// __in params
 			'record_greater_than'   => null,
 			'record__in'            => array(),
@@ -52,19 +54,24 @@ class WP_Stream_Query {
 			'context_query'         => array(),
 			// Fields selection
 			'fields'                => '',
+			'ignore_context'        => null,
 			);
 
 		$args = wp_parse_args( $args, $defaults );
 
 		$args = apply_filters( 'stream_query_args', $args );
 
-		// Always join with context table
-		$join  = sprintf(
-			' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
-			$wpdb->streamcontext,
-			$wpdb->stream
-			);
+		$join  = '';
 		$where = '';
+
+		// Only join with context table for correct types of records
+		if ( ! $args['ignore_context'] ) {
+			$join = sprintf(
+				' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
+				$wpdb->streamcontext,
+				$wpdb->stream
+				);
+		}
 
 		/**
 		 * PARSE CORE FILTERS
@@ -87,6 +94,10 @@ class WP_Stream_Query {
 
 		if ( $args['author'] ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.author LIKE %d", (int) $args['author'] );
+		}
+
+		if ( $args['visibility'] ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.visibility = %s", $args['visibility'] );
 		}
 
 		/**
@@ -157,10 +168,12 @@ class WP_Stream_Query {
 		/**
 		 * PARSE CONTEXT PARAMS
 		 */
-		$context_query = new WP_Stream_Context_Query( $args );
-		$cclauses      = $context_query->get_sql();
-		$join         .= $cclauses['join'];
-		$where        .= $cclauses['where'];
+		if ( ! $args['ignore_context'] ) {
+			$context_query = new WP_Stream_Context_Query( $args );
+			$cclauses      = $context_query->get_sql();
+			$join         .= $cclauses['join'];
+			$where        .= $cclauses['where'];
+		}
 
 		/**
 		 * PARSE PAGINATION PARAMS
@@ -205,7 +218,10 @@ class WP_Stream_Query {
 		 * PARSE FIELDS PARAMETER
 		 */
 		$fields = $args['fields'];
-		$select = "$wpdb->stream.*, $wpdb->streamcontext.context, $wpdb->streamcontext.action, $wpdb->streamcontext.connector";
+		$select = "$wpdb->stream.*";
+		if ( ! $args['ignore_context'] ) {
+			$select .= ", $wpdb->streamcontext.context, $wpdb->streamcontext.action, $wpdb->streamcontext.connector";
+		}
 		if ( $fields == 'ID' ) {
 			$select = "$wpdb->stream.ID";
 		}
