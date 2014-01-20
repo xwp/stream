@@ -6,7 +6,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		parent::__construct(
 			array(
 				'post_type' => 'stream_notifications',
-				'plural' => 'records',
+				'plural' => 'rules',
 				'screen' => isset( $args['screen'] ) ? $args['screen'] : null,
 			)
 		);
@@ -15,7 +15,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'per_page',
 			array(
 				'default' => 20,
-				'label'   => __( 'Records per page', 'stream' ),
+				'label'   => __( 'Rules per page', 'stream' ),
 				'option'  => 'edit_stream_notifications_per_page',
 				)
 			);
@@ -323,16 +323,28 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$visibility    = filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT );
 		$options       = array();
 
-		$options[] = '<option value="-1" selected="selected">Bulk Actions</option>';
+		$options[] = sprintf(
+			'<option value="-1" selected="selected">%s</option>',
+			esc_html__( 'Bulk Actions', 'stream' )
+		);
 
 		if ( 'active' != $visibility ) {
-			$options[] = '<option value="activate">Activate</option>';
+			$options[] = sprintf(
+				'<option value="activate">%s</option>',
+				esc_html__( 'Activate', 'stream' )
+			);
 		}
 		if ( 'inactive' != $visibility ) {
-			$options[] = '<option value="deactivate">Deactivate</option>';
+			$options[] = sprintf(
+				'<option value="deactivate">%s</option>',
+				esc_html__( 'Deactivate', 'stream' )
+			);
 		}
 		if ( 'inactive' == $visibility ) {
-			$options[] = '<option value="delete">Delete permanently</option>';
+			$options[] = sprintf(
+				'<option value="delete">%s</option>',
+				esc_html__( 'Delete Permanently', 'stream' )
+			);
 		}
 
 		$options      = apply_filters( 'wp_stream_notifications_bulk_action_options', $options, $which, $visibility );
@@ -342,9 +354,10 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'<select name="%1$s">
 				%2$s
 			</select>
-			<input type="submit" name="" id="do%1$s" class="button action" value="Apply">',
+			<input type="submit" name="" id="do%1$s" class="button action" value="%s">',
 			$dropdown_name,
-			$options_html
+			$options_html,
+			esc_attr__( 'Apply', 'stream' )
 		);
 
 		return apply_filters( 'wp_stream_notifications_bulk_actions_html', $html );
