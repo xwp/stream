@@ -570,7 +570,7 @@ class WP_Stream_Admin {
 	 */
 	public static function live_update( $response, $data ) {
 
-		$enable_update = get_user_meta( get_current_user_id(), 'enable_live_update', true );
+		$enable_update = get_user_meta( get_current_user_id(), 'stream_live_update_records', true );
 		$enable_update = isset( $enable_update ) ? $enable_update : '';
 
 		if ( 'live-update' === $data['wp-stream-heartbeat'] && $enable_update == 'on' ) {
@@ -652,7 +652,7 @@ class WP_Stream_Admin {
 
 		$user = (int) $input['user'];
 
-		$success = update_user_meta( $user, 'enable_live_update', $checked );
+		$success = update_user_meta( $user, 'stream_live_update_records', $checked );
 
 		if ( $success ) {
 			wp_send_json_success( 'Live Updates Enabled' );
