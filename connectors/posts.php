@@ -64,7 +64,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		if ( get_post( $record->object_id ) ) {
 			if ( $link = get_edit_post_link( $record->object_id ) ) {
 				$post_type = get_post_type_object( get_post_type( $record->object_id ) );
-				$links[ sprintf( __( 'Edit %s', 'stream' ), $post_type->labels->singular_name ) ] = $link;
+				$links[ sprintf( _x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type->labels->singular_name ) ] = $link;
 			}
 			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
 				$links[ __( 'View', 'stream' ) ] = $link;
@@ -93,25 +93,49 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			return;
 		}
 		elseif ( $old == 'auto-draft' && $new == 'draft' ) {
-			$message = __( '"%s" %s drafted', 'stream' );
+			$message = _x(
+				'"%1$s" %2$s drafted',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 			$action  = 'created';
 		}
 		elseif ( $old == 'auto-draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = __( '"%s" %s published', 'stream' );
+			$message = _x(
+				'"%1$s" %2$s published',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 			$action  = 'created';
 		}
 		elseif ( $old == 'draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = __( '"%s" %s published', 'stream' );
+			$message = _x(
+				'"%1$s" %2$s published',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 		}
 		elseif ( $old == 'publish' && ( in_array( $new, array( 'draft' ) ) ) ) {
-			$message = __( '"%s" %s unpublished', 'stream' );
+			$message = _x(
+				'"%1$s" %2$s unpublished',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 		}
 		elseif ( $new == 'trash' ) {
-			$message = __( '"%s" %s trashed', 'stream' );
+			$message = _x(
+				'"%1$s" %2$s trashed',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 			$action  = 'trashed';
 		}
 		else {
-			$message = __( '"%s" %s updated', 'stream' );
+			$message = _x(
+				'"%1$s" %2$s updated',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 		}
 
 		if ( empty( $action ) ) {
@@ -169,7 +193,11 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		$post_type = get_post_type_object( $post->post_type );
 
 		self::log(
-			__( '"%s" %s deleted from trash', 'stream' ),
+			_x(
+				'"%1$s" %2$s deleted from trash',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			),
 			array(
 				'post_title'    => $post->post_title,
 				'singular_name' => strtolower( $post_type->labels->singular_name ),
