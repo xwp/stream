@@ -1,766 +1,956 @@
+# Copyright (C) 2014 Stream
+# This file is distributed under the same license as the Stream package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Stream\n"
-"POT-Creation-Date: 2013-12-19 16:09+0100\n"
-"PO-Revision-Date: 2013-12-19 16:24+0100\n"
-"Last-Translator: Pascal Kläres <pascal.klaeres@lecking-werbeagentur.de>\n"
-"Language-Team: \n"
-"Language: de_DE\n"
+"Project-Id-Version: Stream 1.0.3\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/stream\n"
+"POT-Creation-Date: 2014-01-21 17:35:57+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.3\n"
-"X-Poedit-Basepath: .\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-KeywordsList: __;_e;_x;_ngettext;_n;_gettext_noop;_nx;_nx_noop;_ex;"
-"esc_attr__;esc_attr_e;esc_attr_x;esc_html__;esc_html_e;esc_html_x;_c;_nc\n"
-"X-Poedit-SearchPath-0: ..\n"
+"PO-Revision-Date: 2014-01-22 01:37+0700\n"
+"Last-Translator: Dzikri Aziz <kvcrvt@gmail.com>\n"
+"Language-Team: X-Team <wordpress@x-team.com>\n"
+"X-Generator: Poedit 1.5.5\n"
+"Language: English\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
-#: ../stream.php:131
-msgid "Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE."
+#: connectors/comments.php:34 connectors/comments.php:66
+msgid "Comments"
 msgstr ""
 
-#: ../connectors/installer.php:32
-msgid "Installer"
-msgstr ""
-
-#: ../connectors/installer.php:42
-msgid "Installed"
-msgstr ""
-
-#: ../connectors/installer.php:43
-msgid "Activated"
-msgstr ""
-
-#: ../connectors/installer.php:44 ../connectors/widgets.php:40
-msgid "Deactivated"
-msgstr ""
-
-#: ../connectors/installer.php:45 ../connectors/media.php:42
-#: ../connectors/menus.php:39 ../connectors/posts.php:39
-#: ../connectors/taxonomies.php:58 ../connectors/users.php:54
-#: ../connectors/widgets.php:39
-msgid "Deleted"
-msgstr ""
-
-#: ../connectors/installer.php:46
-msgid "Edited"
-msgstr ""
-
-#: ../connectors/installer.php:57
-msgid "Plugins"
-msgstr ""
-
-#: ../connectors/installer.php:58
-msgid "Themes"
-msgstr ""
-
-#: ../connectors/installer.php:87
-#, php-format
-msgid "Installed %s: %s %s"
-msgstr ""
-
-#: ../connectors/installer.php:115
-#, php-format
-msgid "Updated %s: %s to %s"
-msgstr ""
-
-#: ../connectors/installer.php:143
-#, php-format
-msgid "\"%s\" plugin activated %s"
-msgstr ""
-
-#: ../connectors/installer.php:155
-#, php-format
-msgid "\"%s\" plugin deactivated %s"
-msgstr ""
-
-#: ../connectors/installer.php:165
-#, php-format
-msgid "\"%s\" theme activated"
-msgstr ""
-
-#: ../connectors/installer.php:180
-#, php-format
-msgid "\"%s\" theme deleted"
-msgstr ""
-
-#: ../connectors/installer.php:209
-#, php-format
-msgid "\"%s\" plugin deleted"
-msgstr ""
-
-#: ../connectors/installer.php:248
-#, php-format
-msgid "Edited %s: %s"
-msgstr ""
-
-#: ../connectors/media.php:29 ../connectors/media.php:55
-#: ../connectors/settings.php:51
-msgid "Media"
-msgstr ""
-
-#: ../connectors/media.php:39
-msgid "Attached"
-msgstr ""
-
-#: ../connectors/media.php:40
-msgid "Uploaded"
-msgstr ""
-
-#: ../connectors/media.php:41 ../connectors/menus.php:38
-#: ../connectors/posts.php:36 ../connectors/settings.php:35
-#: ../connectors/taxonomies.php:57 ../connectors/users.php:52
-#: ../connectors/widgets.php:41
-msgid "Updated"
-msgstr ""
-
-#: ../connectors/media.php:43 ../connectors/menus.php:40
-msgid "Assigned"
-msgstr ""
-
-#: ../connectors/media.php:44 ../connectors/menus.php:41
-msgid "Unassigned"
-msgstr ""
-
-#: ../connectors/media.php:70
-msgid "Edit Media"
-msgstr ""
-
-#: ../connectors/media.php:73 ../connectors/posts.php:70
-#: ../connectors/taxonomies.php:86
-msgid "View"
-msgstr ""
-
-#: ../connectors/media.php:87
-#, php-format
-msgid "Attached \"%s\" to \"%s\""
-msgstr ""
-
-#: ../connectors/media.php:89
-#, php-format
-msgid "Added \"%s\" to Media library"
-msgstr ""
-
-#: ../connectors/media.php:111
-#, php-format
-msgid "Updated \"%s\""
-msgstr ""
-
-#: ../connectors/media.php:131 ../connectors/menus.php:122
-#, php-format
-msgid "Deleted \"%s\""
-msgstr ""
-
-#: ../connectors/media.php:146
-#, php-format
-msgid "Edited image \"%s\""
-msgstr ""
-
-#: ../connectors/menus.php:27 ../connectors/menus.php:52
-msgid "Menus"
-msgstr ""
-
-#: ../connectors/menus.php:37 ../connectors/posts.php:37
-#: ../connectors/taxonomies.php:56 ../connectors/users.php:53
+#: connectors/comments.php:44 connectors/menus.php:37 connectors/posts.php:37
+#: connectors/taxonomies.php:64 connectors/users.php:53
 msgid "Created"
 msgstr ""
 
-#: ../connectors/menus.php:74
-msgid "Edit Menu"
+#: connectors/comments.php:45 connectors/installer.php:47
+msgid "Edited"
 msgstr ""
 
-#: ../connectors/menus.php:88
-#, php-format
-msgid "Created new menu \"%s\""
+#: connectors/comments.php:46
+msgid "Replied"
 msgstr ""
 
-#: ../connectors/menus.php:106
-#, php-format
-msgid "Updated menu \"%s\""
+#: connectors/comments.php:47
+msgid "Approved"
 msgstr ""
 
-#: ../connectors/menus.php:157
-#, php-format
-msgid "\"%s\" has been unassigned from \"%s\""
+#: connectors/comments.php:48
+msgid "Unapproved"
 msgstr ""
 
-#: ../connectors/menus.php:161
-#, php-format
-msgid "\"%s\" has been assigned to \"%s\""
-msgstr ""
-
-#: ../connectors/posts.php:26
-msgid "Posts"
-msgstr ""
-
-#: ../connectors/posts.php:38
+#: connectors/comments.php:49 connectors/posts.php:38
 msgid "Trashed"
 msgstr ""
 
-#: ../connectors/posts.php:67
-#, php-format
-msgid "Edit %s"
+#: connectors/comments.php:50
+msgid "Restored"
 msgstr ""
 
-#: ../connectors/posts.php:74
-msgid "Revision"
+#: connectors/comments.php:51
+msgid "Marked as Spam"
 msgstr ""
 
-#: ../connectors/posts.php:96
-#, php-format
-msgid "\"%s\" %s drafted"
+#: connectors/comments.php:52
+msgid "Unmarked as Spam"
 msgstr ""
 
-#: ../connectors/posts.php:100 ../connectors/posts.php:104
-#, php-format
-msgid "\"%s\" %s published"
+#: connectors/comments.php:53 connectors/installer.php:46
+#: connectors/media.php:42 connectors/menus.php:39 connectors/posts.php:39
+#: connectors/taxonomies.php:66 connectors/users.php:54
+#: connectors/widgets.php:39
+msgid "Deleted"
 msgstr ""
 
-#: ../connectors/posts.php:107
-#, php-format
-msgid "\"%s\" %s unpublished"
+#: connectors/comments.php:54
+msgid "Duplicate"
 msgstr ""
 
-#: ../connectors/posts.php:110
-#, php-format
-msgid "\"%s\" %s trashed"
+#: connectors/comments.php:55
+msgid "Throttled"
 msgstr ""
 
-#: ../connectors/posts.php:114 ../connectors/taxonomies.php:141
-#, php-format
-msgid "\"%s\" %s updated"
-msgstr ""
-
-#: ../connectors/posts.php:171
-#, php-format
-msgid "\"%s\" %s deleted from trash"
-msgstr ""
-
-#: ../connectors/settings.php:25 ../connectors/settings.php:46
-#: ../includes/admin.php:68 ../includes/admin.php:162
-msgid "Settings"
-msgstr ""
-
-#: ../connectors/settings.php:47 ../includes/settings.php:53
-msgid "General"
-msgstr ""
-
-#: ../connectors/settings.php:48
-msgid "Writing"
-msgstr ""
-
-#: ../connectors/settings.php:49
-msgid "Reading"
-msgstr ""
-
-#: ../connectors/settings.php:50
-msgid "Discussion"
-msgstr ""
-
-#: ../connectors/settings.php:52
-msgid "Permalinks"
-msgstr ""
-
-#: ../connectors/settings.php:64
-msgid "Site Title"
-msgstr ""
-
-#: ../connectors/settings.php:65
-msgid "Tagline"
-msgstr ""
-
-#: ../connectors/settings.php:66
-msgid "WordPress Address (URL)"
-msgstr ""
-
-#: ../connectors/settings.php:67
-msgid "Site Address (URL)"
-msgstr ""
-
-#: ../connectors/settings.php:68
-msgid "E-mail Address"
-msgstr ""
-
-#: ../connectors/settings.php:69
-msgid "Membership"
-msgstr ""
-
-#: ../connectors/settings.php:70
-msgid "New User Default Role"
-msgstr ""
-
-#: ../connectors/settings.php:71
-msgid "Timezone"
-msgstr ""
-
-#: ../connectors/settings.php:72
-msgid "Date Format"
-msgstr ""
-
-#: ../connectors/settings.php:73
-msgid "Time Format"
-msgstr ""
-
-#: ../connectors/settings.php:74
-msgid "Week Starts On"
-msgstr ""
-
-#: ../connectors/settings.php:76 ../connectors/settings.php:77
-msgid "Formatting"
-msgstr ""
-
-#: ../connectors/settings.php:78
-msgid "Default Post Category"
-msgstr ""
-
-#: ../connectors/settings.php:79
-msgid "Default Post Format"
-msgstr ""
-
-#: ../connectors/settings.php:80
-msgid "Mail Server Address"
-msgstr ""
-
-#: ../connectors/settings.php:81
-msgid "Mail Server Login Name"
-msgstr ""
-
-#: ../connectors/settings.php:82
-msgid "Mail Server Password"
-msgstr ""
-
-#: ../connectors/settings.php:83
-msgid "Default Mail Category"
-msgstr ""
-
-#: ../connectors/settings.php:84
-msgid "Update Services"
-msgstr ""
-
-#: ../connectors/settings.php:86 ../connectors/settings.php:87
-#: ../connectors/settings.php:88
-msgid "Front page displays"
-msgstr ""
-
-#: ../connectors/settings.php:89
-msgid "Blog pages show at most"
-msgstr ""
-
-#: ../connectors/settings.php:90
-msgid "Syndication feeds show the most recent"
-msgstr ""
-
-#: ../connectors/settings.php:91
-msgid "For each article in a feed, show"
-msgstr ""
-
-#: ../connectors/settings.php:92
-msgid "Search Engine Visibility"
-msgstr ""
-
-#: ../connectors/settings.php:94 ../connectors/settings.php:95
-#: ../connectors/settings.php:96
-msgid "Default article settings"
-msgstr ""
-
-#: ../connectors/settings.php:97 ../connectors/settings.php:98
-#: ../connectors/settings.php:99 ../connectors/settings.php:100
-#: ../connectors/settings.php:101 ../connectors/settings.php:102
-#: ../connectors/settings.php:103 ../connectors/settings.php:104
-#: ../connectors/settings.php:105 ../connectors/settings.php:106
-msgid "Other comment settings"
-msgstr ""
-
-#: ../connectors/settings.php:107 ../connectors/settings.php:108
-msgid "E-mail me whenever"
-msgstr ""
-
-#: ../connectors/settings.php:109 ../connectors/settings.php:110
-msgid "Before a comment appears"
-msgstr ""
-
-#: ../connectors/settings.php:111 ../connectors/settings.php:112
-msgid "Comment Moderation"
-msgstr ""
-
-#: ../connectors/settings.php:113
-msgid "Comment Blacklist"
-msgstr ""
-
-#: ../connectors/settings.php:114
-msgid "Avatar Display"
-msgstr ""
-
-#: ../connectors/settings.php:115
-msgid "Avatar Maximum Rating"
-msgstr ""
-
-#: ../connectors/settings.php:116
-msgid "Default Avatar"
-msgstr ""
-
-#: ../connectors/settings.php:118 ../connectors/settings.php:119
-#: ../connectors/settings.php:120
-msgid "Thumbnail Image Size"
-msgstr ""
-
-#: ../connectors/settings.php:121 ../connectors/settings.php:122
-msgid "Medium Image Size"
-msgstr ""
-
-#: ../connectors/settings.php:123 ../connectors/settings.php:124
-msgid "Large Image Size"
-msgstr ""
-
-#: ../connectors/settings.php:125
-msgid "Uploading Files Organization"
-msgstr ""
-
-#: ../connectors/settings.php:127
-msgid "Permalink Structure"
-msgstr ""
-
-#: ../connectors/settings.php:128
-msgid "Category base"
-msgstr ""
-
-#: ../connectors/settings.php:129
-msgid "Tag base"
-msgstr ""
-
-#: ../connectors/settings.php:161
-#, php-format
-msgid "Edit %s Settings"
-msgstr ""
-
-#: ../connectors/settings.php:207
-#, php-format
-msgid "\"%s\" setting was updated"
-msgstr ""
-
-#: ../connectors/taxonomies.php:46
-msgid "Taxonomies"
-msgstr ""
-
-#: ../connectors/taxonomies.php:85
+#: connectors/comments.php:84 connectors/taxonomies.php:93
 msgid "Edit"
 msgstr ""
 
-#: ../connectors/taxonomies.php:101
-#, php-format
+#: connectors/comments.php:86
+msgid "Unapprove"
+msgstr ""
+
+#: connectors/comments.php:94
+msgid "Approve"
+msgstr ""
+
+#: connectors/comments.php:125
+msgid "Guest"
+msgstr ""
+
+#: connectors/comments.php:161
+msgid "a logged out user"
+msgstr ""
+
+#: connectors/comments.php:165
+msgid "Comment flooding by %s detected and prevented"
+msgstr ""
+
+#: connectors/comments.php:181 connectors/comments.php:224
+#: connectors/comments.php:248 connectors/comments.php:272
+#: connectors/comments.php:296 connectors/comments.php:320
+#: connectors/comments.php:344 connectors/comments.php:371
+#: connectors/comments.php:398
+msgid "a post"
+msgstr ""
+
+#: connectors/comments.php:182
+msgid "approved automatically"
+msgstr ""
+
+#: connectors/comments.php:182
+msgid "pending approval"
+msgstr ""
+
+#: connectors/comments.php:189
+msgctxt ""
+"1: Parent comment's author, 2: Comment author, 3: Post title, 4: Comment "
+"status"
+msgid "Reply to %1$s's comment by %2$s on %3$s %4$s"
+msgstr ""
+
+#: connectors/comments.php:201
+msgctxt "1: Comment author, 2: Post title 3: Comment status"
+msgid "New comment by %1$s on %2$s %3$s"
+msgstr ""
+
+#: connectors/comments.php:227
+msgctxt "1: Comment author, 2: Post title"
+msgid "%1$s's comment on %2$s edited"
+msgstr ""
+
+#: connectors/comments.php:251
+msgid "%1$s's comment on %2$s deleted permanently"
+msgid_plural "1: Comment author, 2: Post title"
+msgstr[0] ""
+msgstr[1] ""
+
+#: connectors/comments.php:275
+msgctxt "1: Comment author, 2: Post title"
+msgid "%1$s's comment on %2$s trashed"
+msgstr ""
+
+#: connectors/comments.php:299
+msgctxt "1: Comment author, 2: Post title"
+msgid "%1$s's comment on %2$s restored"
+msgstr ""
+
+#: connectors/comments.php:323
+msgctxt "1: Comment author, 2: Post title"
+msgid "%1$s's comment on %2$s marked as spam"
+msgstr ""
+
+#: connectors/comments.php:347
+msgctxt "1: Comment author, 2: Post title"
+msgid "%1$s's comment on %2$s unmarked as spam"
+msgstr ""
+
+#: connectors/comments.php:374
+msgctxt "Comment status transition. 1: Comment author, 2: Post title"
+msgid "%1$s's comment %2$s"
+msgstr ""
+
+#: connectors/comments.php:401
+msgctxt "1: Comment author, 2: Post title"
+msgid "Duplicate comment by %1$s prevented on %2$s"
+msgstr ""
+
+#: connectors/installer.php:33
+msgid "Installer"
+msgstr ""
+
+#: connectors/installer.php:43
+msgid "Installed"
+msgstr ""
+
+#: connectors/installer.php:44
+msgid "Activated"
+msgstr ""
+
+#: connectors/installer.php:45 connectors/widgets.php:40
+msgid "Deactivated"
+msgstr ""
+
+#: connectors/installer.php:48 connectors/media.php:41 connectors/menus.php:38
+#: connectors/posts.php:36 connectors/settings.php:48
+#: connectors/taxonomies.php:65 connectors/users.php:52
+#: connectors/widgets.php:41
+msgid "Updated"
+msgstr ""
+
+#: connectors/installer.php:59
+msgid "Plugins"
+msgstr ""
+
+#: connectors/installer.php:60
+msgid "Themes"
+msgstr ""
+
+#: connectors/installer.php:61
+msgid "WordPress"
+msgstr ""
+
+#: connectors/installer.php:78
+msgid "About"
+msgstr ""
+
+#: connectors/installer.php:80
+msgid "View Release Notes"
+msgstr ""
+
+#: connectors/installer.php:110
+msgid "Installed %s: %s %s"
+msgstr ""
+
+#: connectors/installer.php:138
+msgid "Updated %s: %s to %s"
+msgstr ""
+
+#: connectors/installer.php:166
+msgid "\"%s\" plugin activated %s"
+msgstr ""
+
+#: connectors/installer.php:178
+msgid "\"%s\" plugin deactivated %s"
+msgstr ""
+
+#: connectors/installer.php:188
+msgid "\"%s\" theme activated"
+msgstr ""
+
+#: connectors/installer.php:203
+msgid "\"%s\" theme deleted"
+msgstr ""
+
+#: connectors/installer.php:232
+msgid "\"%s\" plugin deleted"
+msgstr ""
+
+#: connectors/installer.php:271
+msgid "Edited %s: %s"
+msgstr ""
+
+#: connectors/installer.php:285
+msgid "WordPress auto-updated to %s"
+msgstr ""
+
+#: connectors/installer.php:287
+msgid "WordPress updated to %s"
+msgstr ""
+
+#: connectors/media.php:29 connectors/media.php:55 connectors/settings.php:64
+msgid "Media"
+msgstr ""
+
+#: connectors/media.php:39
+msgid "Attached"
+msgstr ""
+
+#: connectors/media.php:40
+msgid "Uploaded"
+msgstr ""
+
+#: connectors/media.php:43 connectors/menus.php:40
+msgid "Assigned"
+msgstr ""
+
+#: connectors/media.php:44 connectors/menus.php:41
+msgid "Unassigned"
+msgstr ""
+
+#: connectors/media.php:70
+msgid "Edit Media"
+msgstr ""
+
+#: connectors/media.php:73 connectors/posts.php:70
+#: connectors/taxonomies.php:94
+msgid "View"
+msgstr ""
+
+#: connectors/media.php:87
+msgid "Attached \"%s\" to \"%s\""
+msgstr ""
+
+#: connectors/media.php:89
+msgid "Added \"%s\" to Media library"
+msgstr ""
+
+#: connectors/media.php:111
+msgid "Updated \"%s\""
+msgstr ""
+
+#: connectors/media.php:131 connectors/menus.php:128
+msgid "Deleted \"%s\""
+msgstr ""
+
+#: connectors/media.php:146
+msgid "Edited image \"%s\""
+msgstr ""
+
+#: connectors/menus.php:27
+msgid "Menus"
+msgstr ""
+
+#: connectors/menus.php:80
+msgid "Edit Menu"
+msgstr ""
+
+#: connectors/menus.php:94
+msgid "Created new menu \"%s\""
+msgstr ""
+
+#: connectors/menus.php:112
+msgid "Updated menu \"%s\""
+msgstr ""
+
+#: connectors/menus.php:163
+msgid "\"%s\" has been unassigned from \"%s\""
+msgstr ""
+
+#: connectors/menus.php:167
+msgid "\"%s\" has been assigned to \"%s\""
+msgstr ""
+
+#: connectors/posts.php:26
+msgid "Posts"
+msgstr ""
+
+#: connectors/posts.php:67
+msgid "Edit %s"
+msgstr ""
+
+#: connectors/posts.php:74
+msgid "Revision"
+msgstr ""
+
+#: connectors/posts.php:96
+msgid "\"%s\" %s drafted"
+msgstr ""
+
+#: connectors/posts.php:100 connectors/posts.php:104
+msgid "\"%s\" %s published"
+msgstr ""
+
+#: connectors/posts.php:107
+msgid "\"%s\" %s unpublished"
+msgstr ""
+
+#: connectors/posts.php:110
+msgid "\"%s\" %s trashed"
+msgstr ""
+
+#: connectors/posts.php:114 connectors/taxonomies.php:161
+msgid "\"%s\" %s updated"
+msgstr ""
+
+#: connectors/posts.php:172
+msgid "\"%s\" %s deleted from trash"
+msgstr ""
+
+#: connectors/settings.php:38 connectors/settings.php:59 includes/admin.php:99
+#: includes/admin.php:214
+msgid "Settings"
+msgstr ""
+
+#: connectors/settings.php:60 includes/settings.php:56
+msgid "General"
+msgstr ""
+
+#: connectors/settings.php:61
+msgid "Writing"
+msgstr ""
+
+#: connectors/settings.php:62
+msgid "Reading"
+msgstr ""
+
+#: connectors/settings.php:63
+msgid "Discussion"
+msgstr ""
+
+#: connectors/settings.php:65
+msgid "Permalinks"
+msgstr ""
+
+#: connectors/settings.php:77
+msgid "Site Title"
+msgstr ""
+
+#: connectors/settings.php:78
+msgid "Tagline"
+msgstr ""
+
+#: connectors/settings.php:79
+msgid "WordPress Address (URL)"
+msgstr ""
+
+#: connectors/settings.php:80
+msgid "Site Address (URL)"
+msgstr ""
+
+#: connectors/settings.php:81
+msgid "E-mail Address"
+msgstr ""
+
+#: connectors/settings.php:82
+msgid "Membership"
+msgstr ""
+
+#: connectors/settings.php:83
+msgid "New User Default Role"
+msgstr ""
+
+#: connectors/settings.php:84
+msgid "Timezone"
+msgstr ""
+
+#: connectors/settings.php:85
+msgid "Date Format"
+msgstr ""
+
+#: connectors/settings.php:86
+msgid "Time Format"
+msgstr ""
+
+#: connectors/settings.php:87
+msgid "Week Starts On"
+msgstr ""
+
+#: connectors/settings.php:89 connectors/settings.php:90
+msgid "Formatting"
+msgstr ""
+
+#: connectors/settings.php:91
+msgid "Default Post Category"
+msgstr ""
+
+#: connectors/settings.php:92
+msgid "Default Post Format"
+msgstr ""
+
+#: connectors/settings.php:93
+msgid "Mail Server Address"
+msgstr ""
+
+#: connectors/settings.php:94
+msgid "Mail Server Login Name"
+msgstr ""
+
+#: connectors/settings.php:95
+msgid "Mail Server Password"
+msgstr ""
+
+#: connectors/settings.php:96
+msgid "Default Mail Category"
+msgstr ""
+
+#: connectors/settings.php:97
+msgid "Update Services"
+msgstr ""
+
+#: connectors/settings.php:99 connectors/settings.php:100
+#: connectors/settings.php:101
+msgid "Front page displays"
+msgstr ""
+
+#: connectors/settings.php:102
+msgid "Blog pages show at most"
+msgstr ""
+
+#: connectors/settings.php:103
+msgid "Syndication feeds show the most recent"
+msgstr ""
+
+#: connectors/settings.php:104
+msgid "For each article in a feed, show"
+msgstr ""
+
+#: connectors/settings.php:105
+msgid "Search Engine Visibility"
+msgstr ""
+
+#: connectors/settings.php:107 connectors/settings.php:108
+#: connectors/settings.php:109
+msgid "Default article settings"
+msgstr ""
+
+#: connectors/settings.php:110 connectors/settings.php:111
+#: connectors/settings.php:112 connectors/settings.php:113
+#: connectors/settings.php:114 connectors/settings.php:115
+#: connectors/settings.php:116 connectors/settings.php:117
+#: connectors/settings.php:118 connectors/settings.php:119
+msgid "Other comment settings"
+msgstr ""
+
+#: connectors/settings.php:120 connectors/settings.php:121
+msgid "E-mail me whenever"
+msgstr ""
+
+#: connectors/settings.php:122 connectors/settings.php:123
+msgid "Before a comment appears"
+msgstr ""
+
+#: connectors/settings.php:124 connectors/settings.php:125
+msgid "Comment Moderation"
+msgstr ""
+
+#: connectors/settings.php:126
+msgid "Comment Blacklist"
+msgstr ""
+
+#: connectors/settings.php:127
+msgid "Avatar Display"
+msgstr ""
+
+#: connectors/settings.php:128
+msgid "Avatar Maximum Rating"
+msgstr ""
+
+#: connectors/settings.php:129
+msgid "Default Avatar"
+msgstr ""
+
+#: connectors/settings.php:131 connectors/settings.php:132
+#: connectors/settings.php:133
+msgid "Thumbnail Image Size"
+msgstr ""
+
+#: connectors/settings.php:134 connectors/settings.php:135
+msgid "Medium Image Size"
+msgstr ""
+
+#: connectors/settings.php:136 connectors/settings.php:137
+msgid "Large Image Size"
+msgstr ""
+
+#: connectors/settings.php:138
+msgid "Uploading Files Organization"
+msgstr ""
+
+#: connectors/settings.php:140
+msgid "Permalink structure"
+msgstr ""
+
+#: connectors/settings.php:141
+msgid "Category base"
+msgstr ""
+
+#: connectors/settings.php:142
+msgid "Tag base"
+msgstr ""
+
+#: connectors/settings.php:174
+msgid "Edit %s Settings"
+msgstr ""
+
+#: connectors/settings.php:255
+msgid "\"%s\" setting was updated"
+msgstr ""
+
+#: connectors/taxonomies.php:54
+msgid "Taxonomies"
+msgstr ""
+
+#: connectors/taxonomies.php:113
 msgid "\"%s\" %s created"
 msgstr ""
 
-#: ../connectors/taxonomies.php:117
-#, php-format
+#: connectors/taxonomies.php:133
 msgid "\"%s\" %s deleted"
 msgstr ""
 
-#: ../connectors/users.php:42 ../connectors/users.php:70
+#: connectors/users.php:42 connectors/users.php:70
 msgid "Users"
 msgstr ""
 
-#: ../connectors/users.php:55
+#: connectors/users.php:55
 msgid "Password Reset"
 msgstr ""
 
-#: ../connectors/users.php:56
+#: connectors/users.php:56
 msgid "Forgot Password"
 msgstr ""
 
-#: ../connectors/users.php:57
+#: connectors/users.php:57
 msgid "Login"
 msgstr ""
 
-#: ../connectors/users.php:58
+#: connectors/users.php:58
 msgid "Logout"
 msgstr ""
 
-#: ../connectors/users.php:59
+#: connectors/users.php:59
 msgid "Failed Login"
 msgstr ""
 
-#: ../connectors/users.php:85
+#: connectors/users.php:85
 msgid "Edit Profile"
 msgstr ""
 
-#: ../connectors/users.php:131
+#: connectors/users.php:131
 msgid "New user registration"
 msgstr ""
 
-#: ../connectors/users.php:134
-#, php-format
+#: connectors/users.php:134
 msgid "New user account created for %s (%s)"
 msgstr ""
 
-#: ../connectors/users.php:159
-#, php-format
+#: connectors/users.php:159
 msgid "%s's profile was updated"
 msgstr ""
 
-#: ../connectors/users.php:182
-#, php-format
+#: connectors/users.php:182
 msgid "%s's role was changed from %s to %s"
 msgstr ""
 
-#: ../connectors/users.php:202
-#, php-format
+#: connectors/users.php:202
 msgid "%s's password was reset"
 msgstr ""
 
-#: ../connectors/users.php:226
-#, php-format
+#: connectors/users.php:226
 msgid "%s's password was requested to be reset"
 msgstr ""
 
-#: ../connectors/users.php:245
-#, php-format
+#: connectors/users.php:246
 msgid "%s logged in"
 msgstr ""
 
-#: ../connectors/users.php:269
-#, php-format
+#: connectors/users.php:271
 msgid "%s logged out"
 msgstr ""
 
-#: ../connectors/users.php:307
-#, php-format
+#: connectors/users.php:309
 msgid "%s's account was deleted (%s)"
 msgstr ""
 
-#: ../connectors/users.php:312
-#, php-format
+#: connectors/users.php:314
 msgid "User account #%d was deleted"
 msgstr ""
 
-#: ../connectors/users.php:340
-#, php-format
+#: connectors/users.php:342
 msgid "Invalid login attempt for %s"
 msgstr ""
 
-#: ../connectors/widgets.php:28 ../connectors/widgets.php:53
+#: connectors/widgets.php:28 connectors/widgets.php:53
 msgid "Widgets"
 msgstr ""
 
-#: ../connectors/widgets.php:38
+#: connectors/widgets.php:38
 msgid "Added"
 msgstr ""
 
-#: ../connectors/widgets.php:42
+#: connectors/widgets.php:42
 msgid "Sorted"
 msgstr ""
 
-#: ../connectors/widgets.php:69
+#: connectors/widgets.php:69
 msgid "Edit Widget Area"
 msgstr ""
 
-#: ../connectors/widgets.php:95
-#, php-format
+#: connectors/widgets.php:95
 msgid "\"%s\" from \"%s\" has been deactivated"
 msgstr ""
 
-#: ../connectors/widgets.php:131
-#, php-format
+#: connectors/widgets.php:131
 msgid "\"%s\" has been added to \"%s\""
 msgstr ""
 
-#: ../connectors/widgets.php:138
-#, php-format
+#: connectors/widgets.php:138
 msgid "\"%s\" has been deleted from \"%s\""
 msgstr ""
 
-#: ../connectors/widgets.php:187
-#, php-format
+#: connectors/widgets.php:187
 msgid "Updated \"%s\" in \"%s\""
 msgstr ""
 
-#: ../connectors/widgets.php:234
-#, php-format
+#: connectors/widgets.php:234
 msgid "\"%s\" widgets were reordered"
 msgstr ""
 
-#: ../includes/admin.php:56 ../includes/admin.php:57
+#: includes/admin.php:74
+msgid "All records have been successfully erased."
+msgstr ""
+
+#. #-#-#-#-#  stream.pot (Stream 1.0.3)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: includes/admin.php:87 includes/admin.php:88
 msgid "Stream"
 msgstr ""
 
-#: ../includes/admin.php:67 ../includes/admin.php:178
+#: includes/admin.php:98 includes/admin.php:238
 msgid "Stream Settings"
 msgstr ""
 
-#: ../includes/admin.php:96
+#: includes/admin.php:136
 msgid ""
 "Are you sure you want to delete all Stream activity records from the "
 "database? This cannot be undone."
 msgstr ""
 
-#: ../includes/admin.php:227
+#: includes/admin.php:137
+msgid ""
+"Are you sure you want to uninstall and deactivate Stream? This will delete "
+"all Stream tables from the database and cannot be undone."
+msgstr ""
+
+#: includes/admin.php:223
+msgid "Uninstall"
+msgstr ""
+
+#: includes/admin.php:287
 msgid "Stream Records"
 msgstr ""
 
-#: ../includes/feeds.php:66
-msgid "Stream Feed URL"
+#: includes/admin.php:450
+msgid "Stream Activity"
 msgstr ""
 
-#: ../includes/feeds.php:69
+#: includes/admin.php:469
+msgid "Sorry, no activity records were found."
+msgstr ""
+
+#: includes/admin.php:497
+msgid "ago by"
+msgstr ""
+
+#: includes/admin.php:503 includes/list-table.php:134
+msgid "%s ago"
+msgstr ""
+
+#: includes/admin.php:528
+msgid "View all Stream Records"
+msgstr ""
+
+#: includes/admin.php:529
+msgid "More"
+msgstr ""
+
+#: includes/admin.php:551
+msgid "Number of Records"
+msgstr ""
+
+#: includes/feeds.php:73
+msgid "Stream Feeds Key"
+msgstr ""
+
+#: includes/feeds.php:77
+msgid "Generate new key"
+msgstr ""
+
+#: includes/feeds.php:79
 msgid ""
-"This is a private URL for you to access a feed of Stream Records. Consider "
-"this key a secret and do not share it with other users. If your key has been "
-"compromised, you can use the link below to generate a new one. "
+"This is your private key used for accessing feeds of Stream Records "
+"securely. You can change your key at any time by generating a new one using "
+"the link above."
 msgstr ""
 
-#: ../includes/feeds.php:70
-msgid "Generate New Key"
+#: includes/feeds.php:81
+msgid "RSS Feed"
 msgstr ""
 
-#: ../includes/feeds.php:83
+#: includes/feeds.php:83
+msgid "JSON Feed"
+msgstr ""
+
+#: includes/feeds.php:97
 msgid "Access Denied"
 msgstr ""
 
-#: ../includes/feeds.php:84
+#: includes/feeds.php:98
 msgid ""
 "You don't have permission to view this feed, please contact your site "
 "Administrator."
 msgstr ""
 
-#: ../includes/feeds.php:140
+#: includes/feeds.php:160
 msgid "Stream Feed"
 msgstr ""
 
-#: ../includes/list-table.php:18
+#: includes/list-table.php:18
 msgid "Records per page"
 msgstr ""
 
-#: ../includes/list-table.php:37
+#: includes/list-table.php:38
 msgid "Date"
 msgstr ""
 
-#: ../includes/list-table.php:38
+#: includes/list-table.php:39
 msgid "Summary"
 msgstr ""
 
-#: ../includes/list-table.php:39
+#: includes/list-table.php:40
 msgid "Author"
 msgstr ""
 
-#: ../includes/list-table.php:40
+#: includes/list-table.php:41
 msgid "Connector"
 msgstr ""
 
-#: ../includes/list-table.php:41
+#: includes/list-table.php:42
 msgid "Context"
 msgstr ""
 
-#: ../includes/list-table.php:42
+#: includes/list-table.php:43
 msgid "Action"
 msgstr ""
 
-#: ../includes/list-table.php:43
+#: includes/list-table.php:44
 msgid "IP Address"
 msgstr ""
 
-#: ../includes/list-table.php:44
+#: includes/list-table.php:45
 msgid "ID"
 msgstr ""
 
-#: ../includes/list-table.php:119
-#, php-format
-msgid "%s ago"
+#: includes/list-table.php:150
+msgid "View all records for this object"
 msgstr ""
 
-#: ../includes/list-table.php:241
+#: includes/list-table.php:301
 msgid "authors"
 msgstr ""
 
-#: ../includes/list-table.php:249
+#: includes/list-table.php:309
 msgid "connectors"
 msgstr ""
 
-#: ../includes/list-table.php:257
+#: includes/list-table.php:317
 msgid "contexts"
 msgstr ""
 
-#: ../includes/list-table.php:265
+#: includes/list-table.php:325
 msgid "actions"
 msgstr ""
 
-#: ../includes/list-table.php:277
+#: includes/list-table.php:337
 msgid "Filter"
 msgstr ""
 
-#: ../includes/list-table.php:283
+#: includes/list-table.php:343
 msgid "<option value=\"\"></option>"
 msgstr ""
 
-#: ../includes/list-table.php:309
+#: includes/list-table.php:356
+msgid "Show all %s"
+msgstr ""
+
+#: includes/list-table.php:369
 msgid "Search Records"
 msgstr ""
 
-#: ../includes/list-table.php:329
+#: includes/list-table.php:389
 msgid "Date start"
 msgstr ""
 
-#: ../includes/list-table.php:331
+#: includes/list-table.php:391
 msgid "Date end"
 msgstr ""
 
-#: ../includes/settings.php:57
+#: includes/list-table.php:455
+msgid "Live updates"
+msgstr ""
+
+#: includes/list-table.php:461 includes/settings.php:87
+msgid "Enabled"
+msgstr ""
+
+#: includes/settings.php:60
+msgid "Log Activity for"
+msgstr ""
+
+#: includes/settings.php:62
+msgid "Only the selected roles above will have their activity logged."
+msgstr ""
+
+#: includes/settings.php:68
 msgid "Role Access"
 msgstr ""
 
-#: ../includes/settings.php:59
+#: includes/settings.php:70
 msgid ""
 "Users from the selected roles above will have permission to view Stream "
 "Records. However, only site Administrators can access Stream Settings."
 msgstr ""
 
-#: ../includes/settings.php:65
+#: includes/settings.php:76
 msgid "Private Feeds"
 msgstr ""
 
-#: ../includes/settings.php:67
-#, php-format
+#: includes/settings.php:79
 msgid ""
-"Users from the selected roles above will be given a private Feed URL in "
-"their %sUser Profile%s. Please %sflush rewrite rules%s on your site after "
-"changing this setting."
+"Users from the selected roles above will be given a private key found in "
+"their %suser profile%s to access feeds of Stream Records securely."
 msgstr ""
 
-#: ../includes/settings.php:67
+#: includes/settings.php:83
 msgid "View Profile"
 msgstr ""
 
-#: ../includes/settings.php:67
-msgid "View Codex"
-msgstr ""
-
-#: ../includes/settings.php:68
-msgid "Enabled"
-msgstr ""
-
-#: ../includes/settings.php:73
+#: includes/settings.php:92
 msgid "Keep Records for"
 msgstr ""
 
-#: ../includes/settings.php:76
+#: includes/settings.php:95
 msgid ""
 "Maximum number of days to keep activity records. Leave blank to keep records "
 "forever."
 msgstr ""
 
-#: ../includes/settings.php:78
+#: includes/settings.php:97
 msgid "days"
 msgstr ""
 
-#: ../includes/settings.php:82
+#: includes/settings.php:101
 msgid "Delete All Records"
 msgstr ""
 
-#: ../includes/settings.php:85
+#: includes/settings.php:110
 msgid ""
 "Warning: Clicking this will delete all activity records from the database."
 msgstr ""
 
-#: ../includes/settings.php:236
+#: includes/settings.php:282
 msgid "Reset Stream Database"
+msgstr ""
+
+#: stream.php:166
+msgid "The following table is not present in the WordPress database :"
+msgstr ""
+
+#: stream.php:174
+msgid ""
+"Please <a href=\"%s\">uninstall</a> the Stream plugin and activate it again."
+msgstr ""
+
+#: stream.php:188
+msgid "Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE."
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://wordpress.org/plugins/stream/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Stream tracks logged-in user activity so you can monitor every change made "
+"on your WordPress site in beautifully organized detail. All activity is "
+"organized by context, action and IP address for easy filtering. Developers "
+"can extend Stream with custom connectors to log any kind of action."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "X-Team"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://x-team.com/wordpress/"
 msgstr ""
