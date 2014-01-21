@@ -110,7 +110,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 
 		foreach ( $roles as $role => $label ) {
 			if ( in_array( $role, (array) $user->roles ) ) {
-				$labels[] = $label;
+				$labels[] = translate_user_role( $label );
 			}
 		}
 

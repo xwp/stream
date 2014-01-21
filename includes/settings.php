@@ -314,7 +314,12 @@ class WP_Stream_Settings {
 	 */
 	public static function get_roles() {
 		$wp_roles = new WP_Roles();
+		$roles    = array();
 
-		return $wp_roles->get_names();
+		foreach ( $wp_roles->get_names() as $role => $label ) {
+			$roles[ $role ] = translate_user_role( $label );
+		}
+
+		return $roles;
 	}
 }
