@@ -46,6 +46,12 @@ class WP_Stream_Notifications {
 	public static $adapters = array();
 
 	/**
+	 * Matcher object
+	 * @var  WP_Stream_Notification_Rule_Matcher
+	 */
+	public $matcher;
+
+	/**
 	 * Class constructor
 	 */
 	public function __construct() {
@@ -96,6 +102,9 @@ class WP_Stream_Notifications {
 
 		// AJAX end point for form auto completion
 		add_action( 'wp_ajax_stream_notification_endpoint', array( $this, 'form_ajax_ep' ) );
+
+		// Load Matcher
+		$this->matcher = new WP_Stream_Notification_Rule_Matcher();
 	}
 
 	/**
@@ -344,6 +353,12 @@ class WP_Stream_Notifications {
 			if ( ! isset( $data['visibility'] ) ) $data['visibility'] = 0; // Checkbox woraround
 
 			$result = $rule->load_from_array( $data )->save();
+
+			if ( $result ) {
+				// Should not follow the WP naming convention, to avoid conflicts
+				// if/when Stream migrates to using WP tables
+				do_action( 'saved_stream_notification_rule', $rule );
+			}
 
 			if ( $result && $action != 'edit' ) {
 				wp_redirect( add_query_arg( array( 'action' => 'edit', 'id' => $rule->ID ) ) );

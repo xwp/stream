@@ -50,7 +50,7 @@ class WP_Stream_Notification_Rule {
 
 		$defaults  = array(
 			'ID' => null,
-			'author' => wp_get_current_user()->ID,
+			'author' => get_current_user_id(),
 			'summary' => null,
 			'visibility' => 0,
 			'type' => 'notfication_rule',
