@@ -95,8 +95,13 @@ jQuery(function($){
 		.on( 'click.sn', btns.add_trigger, function(e) {
 			e.preventDefault();
 			var $this = $(this),
-				index = divTriggers.find('.trigger').size(),
-				group = divTriggers.find('.group').eq( $this.data('group') );
+				index = 0,
+				lastItem  = null,
+				group = divTriggers.find('.group').filter( '[rel=' + $this.data('group') + ']' );
+
+			if ( ( lastItem = divTriggers.find('.trigger').last() ) && lastItem.size() ) {
+				index = parseInt( lastItem.attr('rel') ) + 1;
+			}
 
 			group.append( tmpl( $.extend(
 				{ index: index, group: $this.data('group') },
@@ -107,12 +112,17 @@ jQuery(function($){
 		})
 	
 		// Add new group
-		.on( 'click.sn', btns.add_group, function(e) {
+		.on( 'click.sn', btns.add_group, function(e, groupIndex) {
 			e.preventDefault();
 			var $this = $(this),
+				lastItem = null,
 				parentGroupIndex = $this.data('group'),
-				group = divTriggers.find('.group').eq(parentGroupIndex),
-				groupIndex = divTriggers.find('.group').size();
+				group = divTriggers.find('.group').eq(parentGroupIndex);
+			if ( ! groupIndex ) {
+				if ( ( lastItem = divTriggers.find('.group').last() ) && lastItem.size() ) {
+					groupIndex = parseInt( lastItem.attr('rel') ) + 1;
+				}
+			}
 
 			group.append( tmpl_group({ index: groupIndex, parent: parentGroupIndex }) );
 			selectify( group.find('.field.relation select') );
@@ -182,22 +192,22 @@ jQuery(function($){
 	if ( typeof notification_rule != 'undefined'  ) {
 
 		// Triggers
-		for ( i = 0; i < notification_rule.triggers.length; i++ ) {
-			var trigger = notification_rule.triggers[i],
-				groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']'),
+		jQuery.each( notification_rule.triggers, function(i, trigger) {
+			var groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']'),
 				row,
 				valueField;
 
 			// create the group if it doesn't exist
 			if ( ! groupDiv.size() ) {
-				var group = groups[trigger.group];
-				$( btns.add_group ).filter('[data-group='+group.group+']').trigger('click');
+				var group = notification_rule.groups[trigger.group];
+				$( btns.add_group ).filter('[data-group='+group.group+']').trigger('click', trigger.group);
 				groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']');
 				groupDiv.find('select.group_relation').select2( 'val', group.relation );
 			}
 
 			// create the new row, by clicking the add-trigger button in the appropriate group
 			divTriggers.find( btns.add_trigger ).filter('[data-group='+trigger.group+']').trigger( 'click' );
+			// debugger; # DEBUG
 
 			// populate values
 			row = groupDiv.find('.trigger:last');
@@ -214,7 +224,7 @@ jQuery(function($){
 					valueField.val( trigger.value ).trigger('change');
 				}
 			}
-		}
+		} );
 
 		// Alerts
 		for ( i = 0; i < notification_rule.alerts.length; i++ ) {
