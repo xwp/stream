@@ -76,13 +76,9 @@ class WP_Stream_Settings {
 						'title'       => __( 'Private Feeds', 'stream' ),
 						'type'        => 'checkbox',
 						'desc'        => sprintf(
-							__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
-							sprintf(
-								'<a href="%s" title="%s">',
-								admin_url( 'profile.php' ),
-								esc_attr__( 'View Profile', 'stream' )
-							),
-							'</a>'
+							__( 'Users from the selected roles above will be given a private key found in their <a href="%s" title="%s">user profile</a> to access feeds of Stream Records securely.', 'stream' ),
+							admin_url( 'profile.php' ),
+							esc_attr__( 'View Profile', 'stream' )
 						),
 						'after_field' => __( 'Enabled' ),
 						'default'     => 0,
