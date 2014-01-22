@@ -90,8 +90,78 @@ class WP_Stream_Notification_Rule_Matcher {
 	}
 
 	public function match_trigger( $trigger, $log ) {
-		# DEBUG
-		return ( in_array( $trigger['type'], array( 'author_role' ) ) );
+		$needle = $trigger['value'];
+		$operator = $trigger['operator'];
+		$negative = ( $operator[0] == '!' );
+		
+		switch ( $trigger['type'] ) {
+			case 'search':
+				$haystack = $log['summary'];
+				break;
+			case 'object_id':
+				$haystack = $log['object_id'];
+			case 'author':
+				$haystack = $log['author'];
+			case 'author_role':
+				$user = get_userdata( $log['author'] );
+				$haystack = ( $user->exists() && $user->roles ) ? $user->roles[0] : false;
+				break;
+			case 'ip':
+				$haystack = $log['ip'];
+				break;
+			case 'date':
+				$haystack = date( 'Ymd', $log['created'] );
+				$needle = date( 'Ymd', strtotime( $needle ) );
+				break;
+			case 'connector':
+				$haystack = $log['connector'];
+				break;
+			case 'context':
+				$haystack = key( $log['contexts'] );
+				break;
+			case 'action':
+				$haystack = reset( $log['contexts'] );
+				break;
+		}
+
+		$match = false;
+		switch ( $trigger['operator'] ) {
+			case '=':
+			case '!=':
+			case '>=':
+			case '<=':
+				$match = ( $haystack == $needle );
+				break;
+			case 'in':
+			case '!in':
+				$match = array_filter(
+					$needle,
+					function( $value ) use ( $haystack ) {
+						return $value == $haystack;
+					}
+				);
+				break;
+			// string special comparison operators
+			case 'contains':
+			case '!contains':
+				$match = ( false !== strpos( $haystack, $needle ) );
+				break;
+			case 'regex':
+				$match = preg_match( $needle, $haystack ) > 0;
+				break;
+			// date operators
+			case '<':
+			case '<=':
+				$match = $match || ( $haystack < $needle );
+				break;
+			case '>':
+			case '>=':
+				$match = $match || ( $haystack > $needle );
+				break;
+		}
+		$result = ( $match == ! $negative );
+
+		return $result;
 	}
 
 	/**

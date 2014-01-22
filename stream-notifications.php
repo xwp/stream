@@ -172,26 +172,26 @@ class WP_Stream_Notifications {
 					'='            => __( 'is', 'stream' ),
 					'!='           => __( 'is not', 'stream' ),
 					'contains'     => __( 'contains', 'stream' ),
-					'contains-not' => __( 'does not contain', 'stream' ),
+					'!contains'    => __( 'does not contain', 'stream' ),
 					'regex'        => __( 'regex', 'stream' ),
 				),
 			),
-			'object_type' => array(
-				'title'     => __( 'Object Type', 'stream' ),
-				'type'      => 'select',
-				'multiple'  => true,
-				'operators' => array(
-					'='      => __( 'is', 'stream' ),
-					'!='     => __( 'is not', 'stream' ),
-					'in'     => __( 'in', 'stream' ),
-					'not_in' => __( 'not in', 'stream' ),
-					),
-				'options' => array( // TODO: Do we have a dynamic way to get this ?
-					'user'    => __( 'User', 'stream' ),
-					'post'    => __( 'Post', 'stream' ),
-					'comment' => __( 'Comment', 'stream' ),
-				),
-			),
+			// 'object_type' => array(
+			// 	'title'     => __( 'Object Type', 'stream' ),
+			// 	'type'      => 'select',
+			// 	'multiple'  => true,
+			// 	'operators' => array(
+			// 		'='      => __( 'is', 'stream' ),
+			// 		'!='     => __( 'is not', 'stream' ),
+			// 		'in'     => __( 'in', 'stream' ),
+			// 		'not_in' => __( 'not in', 'stream' ),
+			// 		),
+			// 	'options' => array( // TODO: Do we have a dynamic way to get this ?: Answer: NO, use 'Context'
+			// 		'user'    => __( 'User', 'stream' ),
+			// 		'post'    => __( 'Post', 'stream' ),
+			// 		'comment' => __( 'Comment', 'stream' ),
+			// 	),
+			// ),
 
 			// TODO: Show object title in front end if both object type / id are set
 			'object_id' => array(
