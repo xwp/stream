@@ -313,7 +313,15 @@ class WP_Stream_Notification_Rule_Matcher {
 	}
 
 	private function alert( $rules, $log ) {
-		{echo '<pre>';var_dump( 'alerts via ' . implode( ',', array_keys( $rules ) ) );echo '</pre>';die();}
+		foreach ( $rules as $rule_id => $rule ) {
+			foreach ( $rule['alerts'] as $alert ) {
+				if ( ! isset( WP_Stream_Notifications::$adapters[$alert['type']] ) ) {
+					continue;
+				}
+				$adapter = new WP_Stream_Notifications::$adapters[$alert['type']]['class'];
+				$adapter->send( $log );
+			}
+		}
 	}
 
 }

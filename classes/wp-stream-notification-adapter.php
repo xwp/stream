@@ -12,8 +12,64 @@ abstract class WP_Stream_Notification_Adapter {
 		return array();
 	}
 
-	function send( $log ) {
+	/**
+	 * Replace placeholders in alert[field]s with proper info from the log
+	 * @param  string $haystack Text to replace in
+	 * @param  array  $log      Log array
+	 * @return string
+	 */
+	public static function replace( $haystack, $log ) {
+		if ( preg_match_all( '#%%([^%]+)%%#', $haystack, $placeholders ) > 1 ) {
 
+			foreach ( $placeholders as $placeholder ) {
+				$value = false;
+				switch ( $placeholder ) {
+					case 'summary':
+					case 'object_id':
+					case 'author':
+					case 'created':
+						$value = $log[$placeholder];
+						break;
+					case ( strpos( $placeholder, 'meta.' ) !== false ):
+						$meta_key = substr( $placeholder, 5 );
+						if ( isset( $log['meta'][ $meta_key ] ) ) {
+							$value = $log['meta'][ $meta_key ];
+						}
+						break;
+					case ( strpos( $placeholder, 'author.' ) !== false ):
+						$meta_key = substr( $placeholder, 7 );
+						$author = get_userdata( $log['author'] );
+						if ( $author && isset( $author->{$meta_key} ) ) {
+							$value = $author->{$meta_key};
+						}
+						break;
+					// TODO Move this part to Stream base, and abstract it
+					case ( strpos( $placeholder, 'object.' ) !== false ):
+						$meta_key = substr( $placeholder, 7 );
+						$context = key( $log['contexts'] );
+						// can only guess the object type, since there is no
+						// actual reference here
+						switch ( $context ) {
+							case 'post':
+								$object = get_post( $log['object_id'] );
+								break;
+							case 'user':
+								$object = get_userdata( $log['object_id'] );
+								break;
+						}
+						if ( isset( $object->{$meta_key} ) ) {
+							$value = $object->{$meta_key};
+						}
+						break;
+				}
+				if ( $value ) {
+					$haystack = str_replace( "%%$placeholder%%", $value, $haystack );
+				}
+			}
+		}
+		return $haystack;
 	}
+
+	abstract function send( $log );
 
 }

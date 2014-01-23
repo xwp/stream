@@ -193,7 +193,6 @@ class WP_Stream_Notifications {
 			// 	),
 			// ),
 
-			// TODO: Show object title in front end if both object type / id are set
 			'object_id' => array(
 				'title'     => __( 'Object ID', 'stream' ),
 				'type'      => 'text',
