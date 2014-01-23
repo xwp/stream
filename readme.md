@@ -4,7 +4,7 @@
 ![Banner](assets/banner-1544x500.png)
 Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail.
 
-**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [johnregan3](http://profiles.wordpress.org/johnregan3), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe), [pascalklaeres](http://profiles.wordpress.org/pascalklaeres)  
+**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [johnregan3](http://profiles.wordpress.org/johnregan3), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.6  
 **Tested up to:** 3.8  
@@ -63,12 +63,13 @@ Stream is built to extend, allowing developers to easily build their own connect
  * English
  * French
  * German
+ * Spanish
 
 **Coming soon:**
 
  * Multisite view of all activity records on a network
  * Support for IPv6 addresses
- * Language support for Arabic, Czech, Slovak and Spanish
+ * Language support for Arabic, Czech, Slovak and Polish
 
 **See room for improvement?**
 
@@ -101,6 +102,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
+
+### 1.0.3 ###
+**2014/01/19** - Language pack for Spanish. Bug fixes. Props [omniwired](https://github.com/omniwired), [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 ### 1.0.2 ###
 **2014/01/15** - Ensure the dashboard widget repects the Role Access setting. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)

@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, johnregan3, akeda, kucrut, topher1kenobe, pascalklaeres
+Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, johnregan3, akeda, kucrut, topher1kenobe
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.6
 Tested up to:      3.8
@@ -61,12 +61,13 @@ Stream is built to extend, allowing developers to easily build their own connect
  * English
  * French
  * German
+ * Spanish
 
 **Coming soon:**
 
  * Multisite view of all activity records on a network
  * Support for IPv6 addresses
- * Language support for Arabic, Czech, Slovak and Spanish
+ * Language support for Arabic, Czech, Slovak and Polish
 
 **See room for improvement?**
 
@@ -86,6 +87,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.0.3 =
+**2014/01/19** - Language pack for Spanish. Bug fixes. Props [omniwired](https://github.com/omniwired), [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 = 1.0.2 =
 **2014/01/15** - Ensure the dashboard widget repects the Role Access setting. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
