@@ -64,12 +64,13 @@ Stream is built to extend, allowing developers to easily build their own connect
  * French
  * German
  * Spanish
+ * Polish
 
 **Coming soon:**
 
  * Multisite view of all activity records on a network
  * Support for IPv6 addresses
- * Language support for Arabic, Czech, Slovak and Polish
+ * Language support for Arabic, Czech, and Slovak
 
 **See room for improvement?**
 
@@ -102,6 +103,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
+
+### 1.0.4 ###
+**2014/01/23** - Language pack for Polish. Bug fixes. Props [powelski](https://github.com/powelski), [fjarrett](http://profiles.wordpress.org/fjarrett/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [kucrut](http://profiles.wordpress.org/kucrut/)
 
 ### 1.0.3 ###
 **2014/01/19** - Language pack for Spanish. Bug fixes. Props [omniwired](https://github.com/omniwired), [shadyvb](http://profiles.wordpress.org/shadyvb/)
