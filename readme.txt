@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, johnregan3, akeda, kucrut, topher1kenobe
+Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, johnregan3, akeda, kucrut, topher1kenobe, powelski
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.6
 Tested up to:      3.8
@@ -90,7 +90,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 == Changelog ==
 
 = 1.0.4 =
-**2014/01/23** - Language pack for Polish. Bug fixes. Props [powelski](https://github.com/powelski), [fjarrett](http://profiles.wordpress.org/fjarrett/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [kucrut](http://profiles.wordpress.org/kucrut/)
+**2014/01/23** - Language pack for Polish. Bug fixes. Props [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [kucrut](http://profiles.wordpress.org/kucrut/)
 
 = 1.0.3 =
 **2014/01/19** - Language pack for Spanish. Bug fixes. Props [omniwired](https://github.com/omniwired), [shadyvb](http://profiles.wordpress.org/shadyvb/)
