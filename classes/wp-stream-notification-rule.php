@@ -56,7 +56,7 @@ class WP_Stream_Notification_Rule {
 			'summary'    => null,
 			'visibility' => 'inactive',
 			'type'       => 'notfication_rule',
-			'created'    => current_time( 'r', 1 ),
+			'created'    => current_time( 'mysql', 1 ),
 		);
 
 		$data   = $this->to_array();
@@ -68,6 +68,9 @@ class WP_Stream_Notification_Rule {
 			update_stream_meta( $record['ID'], 'occurrences', 0 );
 			$success = ( $result !== false );
 		} else {
+			if ( ! $record['created'] ) {
+				unset( $record['created'] );
+			}
 			$record  = wp_parse_args( $record, $defaults );
 			$result  = $wpdb->insert( $wpdb->stream, $record );  // cache ok, db call ok
 			$success = ( is_int( $result ) );
