@@ -359,13 +359,7 @@ class WP_Stream_Notifications {
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'list-table.php';
 		self::$list_table = new WP_Stream_Notifications_List_Table( array( 'screen' => self::$screen_id ) );
 
-		if ( ! wp_verify_nonce( filter_input( INPUT_POST, '_wpnonce' ), 'stream-notifications-form' ) ) {
-			wp_die( 'Invalid attempt.' );
-		}
-		
 		// TODO check author/user permission to update record
-
-		// TODO Do not save if no triggers are added
 
 		$view     = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 		$action   = filter_input( INPUT_GET, 'action', FILTER_DEFAULT );
@@ -380,6 +374,14 @@ class WP_Stream_Notifications {
 		if ( $_POST && 'rule' == $view ) {
 			$data = $_POST;
 			$rule = new WP_Stream_Notification_Rule( $id );
+
+			if ( ! wp_verify_nonce( filter_input( INPUT_POST, '_wpnonce' ), 'stream-notifications-form' ) ) {
+				wp_die( __( 'Invalid form parameters.', 'stream_notification' ) );
+			}
+
+			if ( empty( $data['triggers'] ) ) {
+				wp_die( __( 'Rules cannot be saved without triggers!', 'stream_notification' ) );
+			}
 
 			if ( ! isset( $data['visibility'] ) ) {
 				$data['visibility'] = 'inactive'; // Checkbox woraround
