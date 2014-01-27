@@ -53,14 +53,27 @@ abstract class WP_Stream_Notification_Adapter {
 						// actual reference here
 						switch ( $context ) {
 							case 'post':
+							case 'page':
+							case 'media':
 								$object = get_post( $log['object_id'] );
 								break;
-							case 'user':
+							case 'users':
 								$object = get_userdata( $log['object_id'] );
 								break;
-							// TODO Add the rest of objects, ie: comments, terms, etc
+							case 'comment':
+								$object = get_comment( $log['object_id'] );
+								break;
+							case 'term':
+							case 'category':
+							case 'post_tag':
+							case 'link_category':
+								$object = get_term( $log['object_id'], $log['meta']['taxonomy'] );
+								break;
+							default:
+								$object = apply_filters( 'stream_notifications_record_object', $log['object_id'], $log );
+								break;
 						}
-						if ( isset( $object->{$meta_key} ) ) {
+						if ( is_object( $object ) && isset( $object->{$meta_key} ) ) {
 							$value = $object->{$meta_key};
 						}
 						break;
