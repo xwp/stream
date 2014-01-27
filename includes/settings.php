@@ -51,7 +51,7 @@ class WP_Stream_Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_fields() {
-		return array(
+		$fields = array(
 			'general' => array(
 				'title'  => __( 'General', 'stream' ),
 				'fields' => array(
@@ -113,6 +113,8 @@ class WP_Stream_Settings {
 				),
 			),
 		);
+
+		return apply_filters( 'wp_stream_options_fields', $fields );
 	}
 
 	/**
@@ -314,7 +316,12 @@ class WP_Stream_Settings {
 	 */
 	public static function get_roles() {
 		$wp_roles = new WP_Roles();
+		$roles    = array();
 
-		return $wp_roles->get_names();
+		foreach ( $wp_roles->get_names() as $role => $label ) {
+			$roles[ $role ] = translate_user_role( $label );
+		}
+
+		return $roles;
 	}
 }

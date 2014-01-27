@@ -182,8 +182,8 @@ class WP_Stream_Query {
 		$perpage = intval( $args['records_per_page'] );
 
 		if ( $perpage >= 0 ) {
-			$pgstrt = ($page - 1) * $perpage;
-			$limits = "LIMIT $pgstrt, {$perpage}";
+			$offset = ($page - 1) * $perpage;
+			$limits = "LIMIT $offset, {$perpage}";
 		} else {
 			$limits = '';
 		}
@@ -252,4 +252,8 @@ function stream_query( $args = array() ) {
 
 function get_stream_meta( $record_id, $key = '', $single = false ) {
 	return get_metadata( 'record', $record_id, $key, $single );
+}
+
+function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
+	return update_metadata( 'record', $record_id, $meta_key, $meta_value, $prev_value );
 }
