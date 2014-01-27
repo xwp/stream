@@ -12,7 +12,7 @@ class WP_Stream_Notification_Rule {
 
 	private $triggers = array();
 	private $groups = array();
-	private $actions = array();
+	private $alerts = array();
 
 	function __construct( $id = null ) {
 		if ( $id ) {
@@ -32,7 +32,7 @@ class WP_Stream_Notification_Rule {
 	}
 
 	function load_from_array( array $arr ) {
-		$keys = array( 'ID', 'author', 'summary', 'visibility', 'type', 'created', 'triggers', 'groups', 'actions', );
+		$keys = array( 'ID', 'author', 'summary', 'visibility', 'type', 'created', 'triggers', 'groups', 'alerts', );
 		foreach ( $keys as $key ) {
 			if ( isset( $arr[$key] ) ) {
 				$this->{$key} = $arr[$key];
@@ -71,7 +71,7 @@ class WP_Stream_Notification_Rule {
 		}
 
 		if ( $this->ID ) {
-			$meta_keys = array( 'triggers', 'groups', 'actions', );
+			$meta_keys = array( 'triggers', 'groups', 'alerts', );
 			$meta      = array_intersect_key( $data, array_flip( $meta_keys ) );
 			update_option( 'stream_notifications_'.$this->ID, $meta );
 		}
@@ -81,7 +81,7 @@ class WP_Stream_Notification_Rule {
 
 	function to_array() {
 		$data = array();
-		$keys = array( 'ID', 'author', 'summary', 'visibility', 'type', 'created', 'triggers', 'groups', 'actions', );
+		$keys = array( 'ID', 'author', 'summary', 'visibility', 'type', 'created', 'triggers', 'groups', 'alerts', );
 		foreach ( $keys as $key ) {
 			$data[$key] = $this->{$key};
 		}

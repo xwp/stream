@@ -60,6 +60,13 @@ class WP_Stream_Notifications {
 	 * @var array
 	 */
 	public static $messages = array();
+
+	/*
+	 * List of registered adapters
+	 * @var array
+	 */
+	public static $adapters = array();
+
 	/**
 	 * Class constructor
 	 */
@@ -87,6 +94,11 @@ class WP_Stream_Notifications {
 
 		// Load all classes in /classes folder
 		foreach ( glob( WP_STREAM_NOTIFICATIONS_DIR . '/classes/*.php' ) as $class ) {
+			include $class;
+		}
+
+		// Include all adapters
+		foreach ( glob( WP_STREAM_NOTIFICATIONS_DIR . '/classes/adapters/*.php' ) as $class ) {
 			include $class;
 		}
 
@@ -133,6 +145,13 @@ class WP_Stream_Notifications {
 		wp_enqueue_script( 'underscore' );
 		wp_enqueue_script( 'stream-notifications-main', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/main.js', array( 'underscore', 'select2' ) );
 		wp_localize_script( 'stream-notifications-main', 'stream_notifications', $this->get_js_options() );
+	}
+
+	public static function register_adapter( $adapter, $name, $title ) {
+		self::$adapters[ $name ] = array(
+			'title' => $title,
+			'class' => $adapter,
+		);
 	}
 
 	/**
@@ -277,6 +296,15 @@ class WP_Stream_Notifications {
 				),
 			),
 		);
+		
+		$args['adapters'] = array();
+
+		foreach ( self::$adapters as $name => $options ) {
+			$args['adapters'][$name] = array(
+				'title'  => $options['title'],
+				'fields' => $options['class']::fields(),
+			);
+		}
 
 		return apply_filters( 'stream_notification_js_args', $args );
 	}
@@ -358,19 +386,28 @@ class WP_Stream_Notifications {
 		// query would check if there is a author_role rule available to limit 
 		// the results according to it
 		$type = filter_input( INPUT_POST, 'type' );
+		$is_single = filter_input( INPUT_POST, 'single' );
 		$query = filter_input( INPUT_POST, 'q' );
 
-		switch ( $type ) {
-			case 'author':
-				// TODO: This does not autocomplete, only matches, we need to do a manual query
-				$users = get_users( array( 'search' => $query ) );
-				$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
-				break;
-			case 'action':
-				$actions = WP_Stream_Connectors::$term_labels['stream_action'];
-				$actions = preg_grep( sprintf( '/%s/i', $query ), $actions );
-				$data    = $this->format_json_for_select2( $actions );
-				break;
+		if ( $is_single ) {
+			switch ( $type ) {
+				case 'author':
+					$user = get_userdata( $query );
+					$data = array( 'id' => $user->ID, 'text' => $user->display_name );
+					break;
+			}
+		} else {
+			switch ( $type ) {
+				case 'author':
+					$users = get_users( array( 'search' => '*' . $query . '*' ) );
+					$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
+					break;
+				case 'action':
+					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
+					$actions = preg_grep( sprintf( '/%s/i', $query ), $actions );
+					$data = $this->format_json_for_select2( $actions );
+					break;
+			}
 		}
 		if ( isset( $data ) ) {
 			wp_send_json_success( $data );
