@@ -3,6 +3,9 @@
 	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream_notification' ) : _e( 'Add Notification Rule', 'stream_notification' ); ?></h2>
 
 	<form action="" method="post">
+
+		<?php wp_nonce_field( 'stream-notifications-form' ); ?>
+
 		<div id="poststuff">
 			<div id="post-body" class="metabox-holder columns-2">
 				<div id="post-body-content">

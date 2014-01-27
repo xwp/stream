@@ -359,7 +359,12 @@ class WP_Stream_Notifications {
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'list-table.php';
 		self::$list_table = new WP_Stream_Notifications_List_Table( array( 'screen' => self::$screen_id ) );
 
-		// TODO add nonce, check author/user permission to update record
+		if ( ! wp_verify_nonce( filter_input( INPUT_POST, '_wpnonce' ), 'stream-notifications-form' ) ) {
+			wp_die( 'Invalid attempt.' );
+		}
+		
+		// TODO check author/user permission to update record
+
 		// TODO Do not save if no triggers are added
 
 		$view     = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
