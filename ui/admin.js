@@ -93,8 +93,8 @@ jQuery(function($){
 				}
 			});
 
-            // Remove the number of element added to the end of the list table
-            $( list_sel + ' tr').slice(-$new_items.length).remove();
+			// Remove the number of element added to the end of the list table
+			$( list_sel + ' tr').slice(-$new_items.length).remove();
 
 			// Remove background after a certain amount of time
 			setTimeout( function() {
