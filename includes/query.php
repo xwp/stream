@@ -237,3 +237,7 @@ function stream_query( $args = array() ) {
 function get_stream_meta( $record_id, $key = '', $single = false ) {
 	return get_metadata( 'record', $record_id, $key, $single );
 }
+
+function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
+	return update_metadata( 'record', $record_id, $meta_key, $meta_value, $prev_value );
+}
