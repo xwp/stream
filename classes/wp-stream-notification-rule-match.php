@@ -311,6 +311,12 @@ class WP_Stream_Notification_Rule_Matcher {
 
 	private function alert( $rules, $log ) {
 		foreach ( $rules as $rule_id => $rule ) {
+			// Update occurrences
+			update_stream_meta(
+				$rule_id,
+				'occurrences',
+				( (int) get_stream_meta( $rule_id, 'occurrences', true ) ) + 1
+			);
 			foreach ( $rule['alerts'] as $alert ) {
 				if ( ! isset( WP_Stream_Notifications::$adapters[$alert['type']] ) ) {
 					continue;

@@ -64,6 +64,8 @@ class WP_Stream_Notification_Rule {
 
 		if ( $this->exists() ) {
 			$result  = $wpdb->update( $wpdb->stream, $record, array( 'ID' => $this->ID ) );  // cache ok, db call ok
+			// Reset occurrences
+			update_stream_meta( $record['ID'], 'occurrences', 0 );
 			$success = ( $result !== false );
 		} else {
 			$record  = wp_parse_args( $record, $defaults );

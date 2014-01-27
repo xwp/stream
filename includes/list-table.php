@@ -156,7 +156,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				break;
 
 			case 'occurences':
-				$out = '0';
+				$out = (int) get_stream_meta( $item->ID, 'occurrences', true );
 				break;
 
 			case 'created':
