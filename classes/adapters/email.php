@@ -27,6 +27,10 @@ class WP_Stream_Notification_Adapter_Email extends WP_Stream_Notification_Adapte
 		);
 	}
 
+	public function send( $log ) {
+		{echo '<pre>';var_dump($log, WP_Stream_Connectors::$term_labels);echo '</pre>';die();}
+	}
+
 }
 
 WP_Stream_Notification_Adapter_Email::register();

@@ -7,12 +7,12 @@ class WP_Stream_Notification_Rule {
 	private $summary;
 	private $visibility;
 	private $created;
-	
-	private $type = 'notification_rule';	
+
+	private $type = 'notification_rule';
 
 	private $triggers = array();
-	private $groups = array();
-	private $alerts = array();
+	private $groups   = array();
+	private $alerts   = array();
 
 	function __construct( $id = null ) {
 		if ( $id ) {
@@ -22,10 +22,12 @@ class WP_Stream_Notification_Rule {
 
 	function load( $id ) {
 		global $wpdb;
-		$item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->stream WHERE type = 'notification_rule' AND ID = %d", $id ) );
+		$item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->stream WHERE type = 'notification_rule' AND ID = %d", $id ) ); // cache ok, db call ok
 		if ( $item ) {
 			$meta = get_option( 'stream_notifications_' . $item->ID );
-			if ( ! $meta || ! is_array( $meta ) ) $meta = array();
+			if ( ! $meta || ! is_array( $meta ) ) {
+				$meta = array();
+			}
 			$this->load_from_array( array_merge( (array) $item, $meta ) );
 		}
 		return $this;
@@ -48,26 +50,28 @@ class WP_Stream_Notification_Rule {
 	function save() {
 		global $wpdb;
 
-		$defaults  = array(
-			'ID' => null,
-			'author' => get_current_user_id(),
-			'summary' => null,
-			'visibility' => 0,
-			'type' => 'notfication_rule',
-			'created' => current_time( 'r', 1 ),
+		$defaults = array(
+			'ID'         => null,
+			'author'     => wp_get_current_user()->ID,
+			'summary'    => null,
+			'visibility' => 'inactive',
+			'type'       => 'notfication_rule',
+			'created'    => current_time( 'r', 1 ),
 		);
 
 		$data   = $this->to_array();
 		$record = array_intersect_key( $data, $defaults );
 
 		if ( $this->exists() ) {
-			$result  = $wpdb->update( $wpdb->stream, $record, array( 'ID' => $this->ID ) );
+			$result  = $wpdb->update( $wpdb->stream, $record, array( 'ID' => $this->ID ) );  // cache ok, db call ok
 			$success = ( $result !== false );
 		} else {
 			$record  = wp_parse_args( $record, $defaults );
-			$result  = $wpdb->insert( $wpdb->stream, $record );
+			$result  = $wpdb->insert( $wpdb->stream, $record );  // cache ok, db call ok
 			$success = ( is_int( $result ) );
-			if ( $success ) $this->ID = $wpdb->insert_id;
+			if ( $success ) {
+				$this->ID = $wpdb->insert_id; // cache ok, db call ok
+			}
 		}
 
 		if ( $this->ID ) {

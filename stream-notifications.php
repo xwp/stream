@@ -40,6 +40,16 @@ class WP_Stream_Notifications {
 	public static $screen_id;
 
 	/**
+	 * List table object
+	 * @var WP_Stream_Notifications_List_Table
+	 */
+	public static $list_table = null;
+
+	const NOTIFICATIONS_PAGE_SLUG = 'wp_stream_notifications';
+	// Todo: We should probably check whether the current user has caps to
+	// view and edit the notifications as this can differ from caps to Stream.
+
+	/**
 	 * List of registered adapters
 	 * @var array
 	 */
@@ -100,6 +110,11 @@ class WP_Stream_Notifications {
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11 );
 
+		// Default list actions handlers
+		add_action( 'wp_stream_notifications_handle_deactivate', array( __CLASS__, 'handle_rule_activation_status_change' ), 10, 3 );
+		add_action( 'wp_stream_notifications_handle_activate', array( __CLASS__, 'handle_rule_activation_status_change' ), 10, 3 );
+		add_action( 'wp_stream_notifications_handle_delete', array( __CLASS__, 'handle_rule_deletion' ), 10, 3 );
+
 		// AJAX end point for form auto completion
 		add_action( 'wp_ajax_stream_notification_endpoint', array( $this, 'form_ajax_ep' ) );
 
@@ -119,7 +134,7 @@ class WP_Stream_Notifications {
 			__( 'Notifications', 'stream' ),
 			__( 'Notifications', 'stream' ),
 			'manage_options',
-			'wp_stream_notifications',
+			self::NOTIFICATIONS_PAGE_SLUG,
 			array( $this, 'page' )
 		);
 
@@ -138,11 +153,15 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		wp_enqueue_style( 'select2' );
-		wp_enqueue_script( 'select2' );
-		wp_enqueue_script( 'underscore' );
-		wp_enqueue_script( 'stream-notifications-main', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/main.js', array( 'underscore', 'select2' ) );
-		wp_localize_script( 'stream-notifications-main', 'stream_notifications', $this->get_js_options() );
+		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
+
+		if ( $view == 'rule' ) {
+			wp_enqueue_style( 'select2' );
+			wp_enqueue_script( 'select2' );
+			wp_enqueue_script( 'underscore' );
+			wp_enqueue_script( 'stream-notifications-main', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/main.js', array( 'underscore', 'select2' ) );
+			wp_localize_script( 'stream-notifications-main', 'stream_notifications', $this->get_js_options() );
+		}
 	}
 
 	public static function register_adapter( $adapter, $name, $title ) {
@@ -161,7 +180,7 @@ class WP_Stream_Notifications {
 		global $wp_roles;
 		$args = array();
 
-		$roles = $wp_roles->roles;
+		$roles     = $wp_roles->roles;
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
 
 		$args['types'] = array(
@@ -293,7 +312,7 @@ class WP_Stream_Notifications {
 				),
 			),
 		);
-		
+
 		$args['adapters'] = array();
 
 		foreach ( self::$adapters as $name => $options ) {
@@ -308,19 +327,18 @@ class WP_Stream_Notifications {
 
 	/**
 	 * Admin page callback function, redirects to each respective method based
-	 * on $_GET['action']
+	 * on $_GET['view']
 	 *
 	 * @return void
 	 */
 	public function page() {
-		$action = filter_input( INPUT_GET, 'action', FILTER_DEFAULT, array( 'default' => 'list' ) );
-		$id     = filter_input( INPUT_GET, 'id', FILTER_DEFAULT );
-		switch ( $action ) {
-			case 'add':
-			case 'edit':
+		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
+		$id = filter_input( INPUT_GET, 'id' );
+
+		switch ( $view ) {
+			case 'rule':
 				$this->page_form( $id );
 				break;
-			case 'list':
 			default:
 				$this->page_list();
 				break;
@@ -338,18 +356,29 @@ class WP_Stream_Notifications {
 	}
 
 	public function page_form_save() {
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'list-table.php';
+		self::$list_table = new WP_Stream_Notifications_List_Table( array( 'screen' => self::$screen_id ) );
+
 		// TODO add nonce, check author/user permission to update record
 		// TODO Do not save if no triggers are added
-		$action = filter_input( INPUT_GET, 'action' );
-		$id = filter_input( INPUT_GET, 'id' );
 
-		$rule = new WP_Stream_Notification_Rule( $id );
+		$view     = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
+		$action   = filter_input( INPUT_GET, 'action', FILTER_DEFAULT );
+		$id       = filter_input( INPUT_GET, 'id' );
+		$bulk_ids = filter_input( INPUT_GET, 'wp_stream_notifications_checkbox', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 
-		$data = $_POST;
+		// There is a chance we go from the bottom bulk actions select box
+		if ( ! $action || $action == '-1' ) {
+			$action = filter_input( INPUT_GET, 'action2', FILTER_DEFAULT, array( 'options' => array( 'default' => 'render' ) ) );
+		}
 
-		if ( $data && in_array( $action, array( 'edit', 'add' ) ) ) {
+		if ( $_POST && 'rule' == $view ) {
+			$data = $_POST;
+			$rule = new WP_Stream_Notification_Rule( $id );
 
-			if ( ! isset( $data['visibility'] ) ) $data['visibility'] = 0; // Checkbox woraround
+			if ( ! isset( $data['visibility'] ) ) {
+				$data['visibility'] = 'inactive'; // Checkbox woraround
+			}
 
 			$result = $rule->load_from_array( $data )->save();
 
@@ -363,16 +392,41 @@ class WP_Stream_Notifications {
 				wp_redirect( add_query_arg( array( 'action' => 'edit', 'id' => $rule->ID ) ) );
 			}
 		}
+
+		if ( 'list' == $view && 'render' != $action ) {
+			if ( has_action( 'wp_stream_notifications_handle_' . $action ) ) {
+				if ( $bulk_ids ) {
+					foreach ( $bulk_ids as $id ) {
+						do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, true );
+					}
+				} else {
+					do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, false );
+				}
+			} else {
+				wp_redirect( admin_url( 'admin.php?page=' . WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) );
+			}
+		}
+
 	}
 
 	/**
-	 * Admin page callback for list action
+	 * Admin page callback for list view
 	 *
 	 * @return void
 	 */
 	public function page_list() {
-		// DEBUG, no listing yet
-		?><script>window.location.href = '<?php echo esc_url_raw( add_query_arg( 'action', 'add' ) ); ?>';</script><?php
+		self::$list_table->prepare_items();
+
+		echo '<div class="wrap">';
+		echo sprintf(
+			'<h2>%s <a href="%s" class="add-new-h2">%s</a></h2>',
+			__( 'Stream Notifications', 'stream' ),
+			admin_url( 'admin.php?page=wp_stream_notifications&view=rule' ),
+			__( 'Add New' )
+		); // xss okay
+
+		self::$list_table->display();
+		echo '</div>';
 	}
 
 	/**
@@ -386,9 +440,10 @@ class WP_Stream_Notifications {
 		// ie: get other rules ( maybe in the same group only ? ), so an author
 		// query would check if there is a author_role rule available to limit
 		// the results according to it
-		$type = filter_input( INPUT_POST, 'type' );
+
+		$type      = filter_input( INPUT_POST, 'type' );
 		$is_single = filter_input( INPUT_POST, 'single' );
-		$query = filter_input( INPUT_POST, 'q' );
+		$query     = filter_input( INPUT_POST, 'q' );
 
 		if ( $is_single ) {
 			switch ( $type ) {
@@ -406,7 +461,7 @@ class WP_Stream_Notifications {
 				case 'action':
 					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
 					$actions = preg_grep( sprintf( '/%s/i', $query ), $actions );
-					$data = $this->format_json_for_select2( $actions );
+					$data    = $this->format_json_for_select2( $actions );
 					break;
 			}
 		}
@@ -440,6 +495,87 @@ class WP_Stream_Notifications {
 				);
 		}
 		return $return;
+	}
+
+	/*
+	 * Handle the rule activation & deactivation action
+	 */
+	public static function handle_rule_activation_status_change( $id, $action, $is_bulk = false ) {
+		$data             = $_GET;
+		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
+		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "activate-record_$id";
+		$visibility       = $action == 'activate' ? 'active' : 'inactive';
+
+		if ( ! wp_verify_nonce( $nonce, $nonce_identifier ) ) {
+			return;
+		}
+
+		$activate_rule = apply_filters( 'wp_stream_notifications_before_rule_' . $action, true, $id );
+		if ( $activate_rule == false ) {
+			return;
+		}
+
+		self::update_record(
+			$id,
+			array( 'visibility' => $visibility ),
+			array( '%s' )
+		);
+		wp_redirect( add_query_arg( array(
+			'wp_stream_nonce' => false,
+			'action'          => false,
+			'id'              => false,
+			'visibility'      => $visibility,
+		) ) );
+	}
+
+	/*
+	 * Handle the rule deletion
+	 */
+	public static function handle_rule_deletion( $id, $action, $is_bulk = false ) {
+		$data             = $_GET;
+		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
+		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "delete-record_$id";
+		$visibility       = filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT );
+
+		if ( ! wp_verify_nonce( $nonce, $nonce_identifier ) ) {
+			return;
+		}
+
+		$activate_rule = apply_filters( 'wp_stream_notifications_before_rule_' . $action, true, $id );
+		if ( $activate_rule == false ) {
+			return;
+		}
+
+		self::delete_record( $id );
+		wp_redirect( add_query_arg( array(
+			'wp_stream_nonce' => false,
+			'action'          => false,
+			'id'              => false,
+			'visibility'      => $visibility,
+		) ) );
+	}
+
+	public function update_record( $id, $fields, $formats ) {
+		global $wpdb;
+
+		$wpdb->update(
+			WP_Stream_DB::$table,
+			$fields,
+			array( 'ID' => $id, 'type' => 'notification_rule' ),
+			$formats,
+			array( '%d', '%s' )
+		); // db call ok, cache ok
+	}
+
+	public function delete_record( $id ) {
+		global $wpdb;
+
+		$wpdb->delete(
+			WP_Stream_DB::$table,
+			array(
+				'ID' => $id,
+			)
+		); // db call ok, cache ok
 	}
 }
 

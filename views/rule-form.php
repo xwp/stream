@@ -9,7 +9,7 @@
 
 					<div id="titlediv">
 						<div id="titlewrap">
-							<input type="text" name="summary" size="30" value="<?= $rule->summary ?>" id="title" autocomplete="off" keyev="true" placeholder="<?= _e( 'Rule title', 'stream_notification' ) ?>">
+							<input type="text" name="summary" size="30" value="<?php echo esc_attr( $rule->summary ) ?>" id="title" autocomplete="off" keyev="true" placeholder="<?php _e( 'Rule title', 'stream_notification' ) ?>">
 						</div>
 					</div><!-- /titlediv -->
 				</div><!-- /post-body-content -->
@@ -31,7 +31,7 @@
 													<?php _e( 'Active', 'stream_notification' ) ?>
 												</label>
 												<span id="post-status-display">
-													<input type="checkbox" name="visibility" id="post_status" value="1" <?php checked( $rule->visibility, 1 ) ?>>
+													<input type="checkbox" name="visibility" id="post_status" value="active" <?php checked( $rule->visibility, 'active' ) ?>>
 												</span>
 											</div>
 										</div>
@@ -80,7 +80,7 @@
 							<h3 class="hndle"><span><?php _e( 'Alerts', 'stream_notification' ) ?></span></h3>
 							<div class="inside">
 								<a class="add-alert button button-secondary" href="#add-alert"><?php _e( 'Add Alert', 'stream_notification' ) ?></a>
-								
+
 							</div>
 						</div>
 
@@ -92,15 +92,15 @@
 	</form>
 </div><!-- /wrap -->
 
-<?php if ( $rule->triggers ): ?>
-<script>
-	var notification_rule = {
-		triggers : <?php echo json_encode( $rule->triggers ) ?>,
-		groups   : <?php echo json_encode( $rule->groups ) ?>,
-		alerts   : <?php echo json_encode( $rule->alerts ) ?>,
-	}
-</script>
-<?php endif ?>
+	<?php if ( $rule->triggers ) { ?>
+		<script>
+			var notification_rule = {
+				triggers : <?php echo json_encode( $rule->triggers ) ?>,
+				groups   : <?php echo json_encode( $rule->groups ) ?>,
+				alerts   : <?php echo json_encode( $rule->alerts ) ?>,
+			}
+		</script>
+	<?php } ?>
 
 <script type="text/template" id="trigger-template-row">
 <div class="trigger" rel="<%- vars.index %>">
