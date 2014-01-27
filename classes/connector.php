@@ -1,5 +1,4 @@
 <?php
-
 abstract class WP_Stream_Connector {
 
 	/**
@@ -22,7 +21,7 @@ abstract class WP_Stream_Connector {
 
 	/**
 	 * Register all context hooks
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function register() {
@@ -82,7 +81,7 @@ abstract class WP_Stream_Connector {
 	 *
 	 * @return mixed|void
 	 */
-	public static  function is_logging_enabled_for_user( $user = null ) {
+	public static function is_logging_enabled_for_user( $user = null ) {
 		if ( is_null( $user ) ){
 			$user = wp_get_current_user();
 		}
