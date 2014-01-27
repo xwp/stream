@@ -10,9 +10,6 @@ class WP_Stream_Notification_Rule_Matcher {
 
 		// Match all new type=stream records
 		add_action( 'wp_stream_post_inserted', array( $this, 'match' ), 10, 2 );
-
-		# DEBUG
-		$this->rules();
 	}
 
 	public function refresh() {
@@ -33,7 +30,7 @@ class WP_Stream_Notification_Rule_Matcher {
 			'ignore_context' => true,
 			'records_per_page' => -1,
 			'fields' => 'ID',
-			'visibility' => 1, // Active rules only
+			'visibility' => 'active', // Active rules only
 			);
 		$rules = stream_query( $args );
 		$rules = wp_list_pluck( $rules, 'ID' );
