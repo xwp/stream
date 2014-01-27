@@ -319,7 +319,7 @@ class WP_Stream_Notification_Rule_Matcher {
 					continue;
 				}
 				$adapter = new WP_Stream_Notifications::$adapters[$alert['type']]['class'];
-				$adapter->send( $log );
+				$adapter->load( $alert )->send( $log );
 			}
 		}
 	}
