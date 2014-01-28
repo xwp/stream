@@ -497,13 +497,12 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		}
 	}
 
-	function get_rule_types( $rule ) {
-		global $wp_stream_notifications;
-		$rules = $wp_stream_notifications->matcher->rules();
-		if ( empty( $rules[ $rule->ID ]['alerts'] ) ) {
+	function get_rule_types( $item ) {
+		$rule = get_option( sprintf( 'stream_notifications_%d', $item->ID ) );
+		if ( empty( $rule['alerts'] ) ) {
 			return __( 'N/A', 'stream_notification' );
 		}
-		$types  = wp_list_pluck( $rules[ $rule->ID ]['alerts'], 'type' );
+		$types  = wp_list_pluck( $rule['alerts'], 'type' );
 		$titles = wp_list_pluck(
 			array_intersect_key(
 				WP_Stream_Notifications::$adapters,
