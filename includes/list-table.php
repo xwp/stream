@@ -292,15 +292,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
-		$authors    = array();
-		$author_ids = existing_records( 'author', 'stream' );
-		foreach ( $author_ids as $author_id ) {
-			$author = get_user_by( 'id', $author_id );
-			if ( $author ) {
-				$authors[$author_id] = $author->display_name;
-			}
-		}
-
+		$authors = assemble_records( 'author', 'stream' );
 
 		$filters['author'] = array(
 			'title' => __( 'authors', 'stream' ),
@@ -309,17 +301,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters['connector'] = array(
 			'title' => __( 'connectors', 'stream' ),
-			'items' => existing_records( 'connector' ),
+			'items' => assemble_records( 'connector' ),
 		);
 
 		$filters['context'] = array(
 			'title' => __( 'contexts', 'stream' ),
-			'items' => existing_records( 'context' ),
+			'items' => assemble_records( 'context' ),
 		);
 
 		$filters['action'] = array(
 			'title' => __( 'actions', 'stream' ),
-			'items' => existing_records( 'action' ),
+			'items' => assemble_records( 'action' ),
 		);
 
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
@@ -339,11 +331,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$options  = array( sprintf( __( '<option value=""></option>', 'stream' ), $title ) );
 		$selected = filter_input( INPUT_GET, $name );
 		foreach ( $items as $v => $label ) {
+			if ( $label['disabled'] === true ) {
+				$disabled = 'disabled="disabled"';
+			} else {
+				$disabled = '';
+			}
 			$options[$v] = sprintf(
-				'<option value="%s" %s>%s</option>',
+				'<option value="%s" %s %s>%s</option>',
 				$v,
 				selected( $v, $selected, false ),
-				$label
+				$disabled,
+				$label['label']
 			);
 		}
 		$out = sprintf(

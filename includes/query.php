@@ -247,13 +247,13 @@ function get_stream_meta( $record_id, $key = '', $single = false ) {
  *
  * @todo   increase security against injections
  *
- * @see    WP_Stream_List_Table::filters_form();
+ * @see    assemble_records
  * @since  1.0.4
  * @param  string  Requested Column (i.e., 'context')
  * @param  string  Requested Table
  * @return array   Array of items to be output to select dropdowns
  */
-function existing_records( $column, $table= '' ) {
+function existing_records( $column, $table = '' ) {
 	global $wpdb;
 	if ( $table == 'stream' ) {
 			$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->stream . ' GROUP BY ' . $column, 'ARRAY_A' );
@@ -268,9 +268,47 @@ function existing_records( $column, $table= '' ) {
 				$output_array[$value] = ucwords( str_replace( '_', ' ', $value ) );
 			}
 		}
-		asort( $output_array );
 		return $output_array;
 	} else {
-		return WP_Stream_Connectors::$term_labels['stream_' . $field ];
+		return WP_Stream_Connectors::$term_labels['stream_' . $column ];
 	}
+}
+
+/**
+ * Assembles records for display in search filters
+ *
+ * Gathers list of all authors/connectors, then compares it to
+ * results of existing records.  All items that do not exist in records
+ * get assigned a disabled value of "true".
+ *
+ * @uses   existing_records
+ * @since  1.0.4
+ * @param  string  Column requested
+ * @param  string  Table to be queried
+ * @return array   options to be displayed in search filters
+ */
+function assemble_records( $column, $table = '' ) {
+	if ( $column == 'author' ) {
+		$all_records = array();
+		$authors     = get_users();
+		foreach ( $authors as $author ) {
+			$author = get_user_by( 'id', $author->ID );
+			if ( $author ) {
+				$all_records[$author->ID] = $author->display_name;
+			}
+		}
+	} else {
+		$all_records = WP_Stream_Connectors::$term_labels['stream_' . $column ];
+	}
+
+	$existing_records = existing_records( $column, $table );
+	foreach ( $all_records as $record => $label ) {
+		if ( array_key_exists( $record , $existing_records ) ) {
+			$all_records[$record] = array( 'label' => $label, 'disabled' => false );
+		} else {
+			$all_records[$record] = array( 'label' => $label, 'disabled' => true );
+		}
+	}
+	asort( $all_records );
+	return $all_records;
 }
