@@ -245,7 +245,7 @@ function get_stream_meta( $record_id, $key = '', $single = false ) {
  * GROUP BY allows query to find just the first occurance of each value in the column,
  * increasing the efficiency of the query.
  *
- * @todo   increase security against injections, can't get $wpdb->prepare to work
+ * @todo   increase security against injections
  *
  * @see    WP_Stream_List_Table::filters_form();
  * @since  1.0.4
@@ -253,10 +253,12 @@ function get_stream_meta( $record_id, $key = '', $single = false ) {
  * @param  string  Requested Table
  * @return array   Array of items to be output to select dropdowns
  */
-function existing_records( $column, $author = false ) {
+function existing_records( $column, $table ) {
 	global $wpdb;
-	if ( $author == true ) {
+	if ( $table == 'stream' ) {
 			$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->stream . ' GROUP BY ' . $column, 'ARRAY_A' );
+	} elseif ( $table == 'meta' ) {
+			$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->streammeta . ' GROUP BY ' . $column, 'ARRAY_A' );
 	} else {
 		$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->streamcontext . ' GROUP BY ' . $column, 'ARRAY_A' );
 	}

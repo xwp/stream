@@ -293,7 +293,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
 		$authors    = array();
-		$author_ids = existing_records( 'author', true );
+		$author_ids = existing_records( 'author', 'stream' );
 		foreach ( $author_ids as $author_id ) {
 			$author = get_user_by( 'id', $author_id );
 			if ( $author ) {
