@@ -128,7 +128,6 @@ class WP_Stream_Notification_Rule_Matcher {
 			case '>=':
 			case '<=':
 				$match = ( $haystack == $needle );
-				break;
 			case 'in':
 			case '!in':
 				$match = array_filter(
