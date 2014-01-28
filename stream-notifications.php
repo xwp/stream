@@ -1,6 +1,7 @@
 <?php
 /**
  * Plugin Name: Stream Notifications
+ * Depends: Stream
  * Plugin URI: http://x-team.com
  * Description: TBD
  * Version: 0.1
@@ -34,6 +35,20 @@
 class WP_Stream_Notifications {
 
 	/**
+	 * Holds plugin minimum version
+	 *
+	 * @const string
+	 */
+	const STREAM_MIN_VERSION = '0.9.5';
+
+	/**
+	 * Hold Stream instance
+	 *
+	 * @var string
+	 */
+	public static $instance;
+
+	/**
 	 * Screen ID for my admin page
 	 * @var string
 	 */
@@ -50,6 +65,13 @@ class WP_Stream_Notifications {
 	// view and edit the notifications as this can differ from caps to Stream.
 
 	/**
+	 * Holds admin notices messages
+	 *
+	 * @var array
+	 */
+	public static $messages = array();
+
+	/*
 	 * List of registered adapters
 	 * @var array
 	 */
@@ -64,8 +86,7 @@ class WP_Stream_Notifications {
 	/**
 	 * Class constructor
 	 */
-	public function __construct() {
-
+	private function __construct() {
 		define( 'WP_STREAM_NOTIFICATIONS_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_NOTIFICATIONS_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_NOTIFICATIONS_INC_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'includes/' );
@@ -81,20 +102,10 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function load() {
+		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 
-		// Brothers in arms!, live together, or die together!
-		if ( ! class_exists( 'WP_Stream' ) ) {
-			add_action(
-				'plugins_loaded',
-				function() {
-					require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-					deactivate_plugins( __FILE__ );
-					wp_die(
-						__( 'Stream plugin has not been found, please install/activate it first. Plugin will now be deactivated automatically.', 'stream' ),
-						__( 'Stream Notifications was Deactivated', 'stream' )
-					);
-				}
-			);
+		if ( ! $this->is_dependency_satisfied() ) {
+			return;
 		}
 
 		// Load all classes in /classes folder
@@ -348,6 +359,8 @@ class WP_Stream_Notifications {
 	/**
 	 * Admin page callback for form actions
 	 *
+	 * @param null $id
+	 *
 	 * @return void
 	 */
 	public function page_form( $id = null ) {
@@ -443,9 +456,9 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function form_ajax_ep() {
-		// BIG TODO: Make the request context-aware,
-		// ie: get other rules ( maybe in the same group only ? ), so an author
-		// query would check if there is a author_role rule available to limit
+		// BIG @TODO: Make the request context-aware,
+		// ie: get other rules ( maybe in the same group only ? ), so an author 
+		// query would check if there is a author_role rule available to limit 
 		// the results according to it
 
 		$type      = filter_input( INPUT_POST, 'type' );
@@ -584,6 +597,62 @@ class WP_Stream_Notifications {
 			)
 		); // db call ok, cache ok
 	}
+
+	/**
+	 * Check if plugin dependencies are satisfied and add an admin notice if not
+	 *
+	 * @return bool
+	 */
+	public function is_dependency_satisfied() {
+		$message = '';
+
+		if ( ! class_exists( 'WP_Stream' ) ) {
+			$message .= sprintf( '<p>%s</p>', __( 'Stream Notifications requires Stream plugin to be present and activated.', 'stream' ) );
+		} else if ( version_compare( WP_Stream::VERSION, self::STREAM_MIN_VERSION, '<' ) ) {
+			$message .= sprintf( '<p>%s</p>', sprintf( __( 'Stream Notifications requires Stream version %s or higher', 'stream' ), self::STREAM_MIN_VERSION ) );
+		}
+
+		if ( ! empty( $message ) ) {
+			self::$messages['wp_stream_db_error'] = sprintf(
+				'<div class="error">%s<p>%s</p></div>',
+				$message,
+				sprintf(
+					__( 'Please <a href="%s" target="_blank">install</a> Stream plugin version %s or higher for Stream Notifications to work properly.', 'stream' ),
+					esc_url( 'http://wordpress.org/plugins/stream/' ),
+					self::STREAM_MIN_VERSION
+				)
+			); // xss okay
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Display all messages on admin board
+	 *
+	 * @return void
+	 */
+	public static function admin_notices() {
+		foreach ( self::$messages as $message ) {
+			echo wp_kses_post( $message );
+		}
+	}
+
+	/**
+	 * Return active instance of WP_Stream, create one if it doesn't exist
+	 *
+	 * @return WP_Stream
+	 */
+	public static function get_instance() {
+		if ( empty( self::$instance ) ) {
+			$class = __CLASS__;
+			self::$instance = new $class;
+		}
+		return self::$instance;
+	}
+
 }
 
-$GLOBALS['wp_stream_notifications'] = new WP_Stream_Notifications;
+$GLOBALS['wp_stream_notifications'] = WP_Stream_Notifications::get_instance();
