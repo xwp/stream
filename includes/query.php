@@ -253,7 +253,7 @@ function get_stream_meta( $record_id, $key = '', $single = false ) {
  * @param  string  Requested Table
  * @return array   Array of items to be output to select dropdowns
  */
-function existing_records( $column, $table ) {
+function existing_records( $column, $table= '' ) {
 	global $wpdb;
 	if ( $table == 'stream' ) {
 			$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->stream . ' GROUP BY ' . $column, 'ARRAY_A' );
