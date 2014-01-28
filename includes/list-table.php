@@ -287,31 +287,68 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 	}
 
+	/**
+	 * Assembles records for display in search filters
+	 *
+	 * Gathers list of all authors/connectors, then compares it to
+	 * results of existing records.  All items that do not exist in records
+	 * get assigned a disabled value of "true".
+	 *
+	 * @uses   existing_records (see query.php)
+	 * @since  1.0.4
+	 * @param  string  Column requested
+	 * @param  string  Table to be queried
+	 * @return array   options to be displayed in search filters
+	 */
+	function assemble_records( $column, $table = '' ) {
+		if ( $column == 'author' ) {
+			$all_records = array();
+			$authors     = get_users();
+			foreach ( $authors as $author ) {
+				$author = get_user_by( 'id', $author->ID );
+				if ( $author ) {
+					$all_records[$author->ID] = $author->display_name;
+				}
+			}
+		} else {
+			$all_records = WP_Stream_Connectors::$term_labels['stream_' . $column ];
+		}
+
+		$existing_records = existing_records( $column, $table );
+		foreach ( $all_records as $record => $label ) {
+			if ( array_key_exists( $record , $existing_records ) ) {
+				$all_records[$record] = array( 'label' => $label, 'disabled' => false );
+			} else {
+				$all_records[$record] = array( 'label' => $label, 'disabled' => true );
+			}
+		}
+		asort( $all_records );
+		return $all_records;
+	}
+
 	function filters_form() {
 		$filters = array();
 
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
-		$authors = assemble_records( 'author', 'stream' );
-
 		$filters['author'] = array(
 			'title' => __( 'authors', 'stream' ),
-			'items' => $authors,
+			'items' => $this->assemble_records( 'author', 'stream' ),
 		);
 
 		$filters['connector'] = array(
 			'title' => __( 'connectors', 'stream' ),
-			'items' => assemble_records( 'connector' ),
+			'items' => $this->assemble_records( 'connector' ),
 		);
 
 		$filters['context'] = array(
 			'title' => __( 'contexts', 'stream' ),
-			'items' => assemble_records( 'context' ),
+			'items' => $this->assemble_records( 'context' ),
 		);
 
 		$filters['action'] = array(
 			'title' => __( 'actions', 'stream' ),
-			'items' => assemble_records( 'action' ),
+			'items' => $this->assemble_records( 'action' ),
 		);
 
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
