@@ -253,9 +253,13 @@ function get_stream_meta( $record_id, $key = '', $single = false ) {
  * @param  string  Requested Table
  * @return array   Array of items to be output to select dropdowns
  */
-function existing_records( $column, $table = 'wp_stream_context' ) {
+function existing_records( $column, $author = false ) {
 	global $wpdb;
-	$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $table . ' GROUP BY ' . $column, 'ARRAY_A' );
+	if ( $author == true ) {
+			$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->stream . ' GROUP BY ' . $column, 'ARRAY_A' );
+	} else {
+		$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->streamcontext . ' GROUP BY ' . $column, 'ARRAY_A' );
+	}
 	if ( is_array( $rows ) && ! empty( $rows ) ) {
 		foreach ( $rows as $row ) {
 			foreach ( $row as $cell => $value ) {
