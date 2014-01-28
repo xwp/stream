@@ -302,28 +302,19 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'items' => $users,
 		);
 
-		$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
-		asort( $connectors );
-
 		$filters['connector'] = array(
 			'title' => __( 'connectors', 'stream' ),
-			'items' => WP_Stream_Connectors::$term_labels['stream_connector'],
+			'items' => existing_records( 'connector' ),
 		);
-
-		$contexts = WP_Stream_Connectors::$term_labels['stream_context'];
-		asort( $contexts );
 
 		$filters['context'] = array(
 			'title' => __( 'contexts', 'stream' ),
-			'items' => $contexts,
+			'items' => existing_records( 'context' ),
 		);
-
-		$actions = WP_Stream_Connectors::$term_labels['stream_action'];
-		asort( $actions );
 
 		$filters['action'] = array(
 			'title' => __( 'actions', 'stream' ),
-			'items' => $actions,
+			'items' => existing_records( 'action' ),
 		);
 
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );

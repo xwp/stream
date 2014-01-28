@@ -237,3 +237,34 @@ function stream_query( $args = array() ) {
 function get_stream_meta( $record_id, $key = '', $single = false ) {
 	return get_metadata( 'record', $record_id, $key, $single );
 }
+
+/**
+ * Returns array of existing values for requested column.
+ * Used to fill search filters with only used items, instead of all items.
+ *
+ * GROUP BY allows query to find just the first occurance of each value in the column,
+ * increasing the efficiency of the query.
+ *
+ * @todo   increase security against injections, can't get $wpdb->prepare to work
+ *
+ * @see    WP_Stream_List_Table::filters_form();
+ * @since  1.0.4
+ * @param  string  Requested Column (i.e., 'context')
+ * @param  string  Requested Table
+ * @return array   Array of items to be output to select dropdowns
+ */
+function existing_records( $column, $table = 'wp_stream_context' ) {
+	global $wpdb;
+	$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $table . ' GROUP BY ' . $column, 'ARRAY_A' );
+	if ( is_array( $rows ) && ! empty( $rows ) ) {
+		foreach ( $rows as $row ) {
+			foreach ( $row as $cell => $value ) {
+				$output_array[$value] = ucwords( str_replace( '_', ' ', $value ) );
+			}
+		}
+		asort( $output_array );
+		return $output_array;
+	} else {
+		return WP_Stream_Connectors::$term_labels['stream_' . $field ];
+	}
+}
