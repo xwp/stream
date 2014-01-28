@@ -292,14 +292,19 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
-		$users = array();
-		foreach ( (array) get_users( array( 'orderby' => 'display_name' ) ) as $user ) {
-			$users[$user->ID] = $user->display_name;
+		$authors    = array();
+		$author_ids = existing_records( 'author', 'wp_stream' );
+		foreach ( $author_ids as $author_id ) {
+			$author = get_user_by( 'id', $author_id );
+			if ( $author ) {
+				$authors[$author_id] = $author->display_name;
+			}
 		}
+
 
 		$filters['author'] = array(
 			'title' => __( 'authors', 'stream' ),
-			'items' => $users,
+			'items' => $authors,
 		);
 
 		$filters['connector'] = array(
