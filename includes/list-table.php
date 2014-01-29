@@ -317,9 +317,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$existing_records = existing_records( $column, $table );
 		foreach ( $all_records as $record => $label ) {
 			if ( array_key_exists( $record , $existing_records ) ) {
-				$all_records[$record] = array( 'label' => $label, 'disabled' => false );
+				$all_records[$record] = array( 'label' => $label, 'disabled' => '' );
 			} else {
-				$all_records[$record] = array( 'label' => $label, 'disabled' => true );
+				$all_records[$record] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
 			}
 		}
 		asort( $all_records );
@@ -368,16 +368,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$options  = array( sprintf( __( '<option value=""></option>', 'stream' ), $title ) );
 		$selected = filter_input( INPUT_GET, $name );
 		foreach ( $items as $v => $label ) {
-			if ( $label['disabled'] === true ) {
-				$disabled = 'disabled="disabled"';
-			} else {
-				$disabled = '';
-			}
 			$options[$v] = sprintf(
 				'<option value="%s" %s %s>%s</option>',
 				$v,
 				selected( $v, $selected, false ),
-				$disabled,
+				$label['disabled'],
 				$label['label']
 			);
 		}
