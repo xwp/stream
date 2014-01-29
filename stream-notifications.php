@@ -142,8 +142,8 @@ class WP_Stream_Notifications {
 	public function register_menu() {
 		self::$screen_id = add_submenu_page(
 			'wp_stream',
-			__( 'Notifications', 'stream' ),
-			__( 'Notifications', 'stream' ),
+			__( 'Notifications', 'stream-notifications' ),
+			__( 'Notifications', 'stream-notifications' ),
 			'manage_options',
 			self::NOTIFICATIONS_PAGE_SLUG,
 			array( $this, 'page' )
@@ -196,92 +196,92 @@ class WP_Stream_Notifications {
 
 		$args['types'] = array(
 			'search' => array(
-				'title'     => __( 'Summary', 'stream' ),
+				'title'     => __( 'Summary', 'stream-notifications' ),
 				'type'      => 'text',
 				'operators' => array(
-					'='            => __( 'is', 'stream' ),
-					'!='           => __( 'is not', 'stream' ),
-					'contains'     => __( 'contains', 'stream' ),
-					'!contains'    => __( 'does not contain', 'stream' ),
-					'regex'        => __( 'regex', 'stream' ),
+					'='            => __( 'is', 'stream-notifications' ),
+					'!='           => __( 'is not', 'stream-notifications' ),
+					'contains'     => __( 'contains', 'stream-notifications' ),
+					'!contains'    => __( 'does not contain', 'stream-notifications' ),
+					'regex'        => __( 'regex', 'stream-notifications' ),
 				),
 			),
 			// 'object_type' => array(
-			// 	'title'     => __( 'Object Type', 'stream' ),
+			// 	'title'     => __( 'Object Type', 'stream-notifications' ),
 			// 	'type'      => 'select',
 			// 	'multiple'  => true,
 			// 	'operators' => array(
-			// 		'='      => __( 'is', 'stream' ),
-			// 		'!='     => __( 'is not', 'stream' ),
-			// 		'in'     => __( 'in', 'stream' ),
-			// 		'not_in' => __( 'not in', 'stream' ),
+			// 		'='      => __( 'is', 'stream-notifications' ),
+			// 		'!='     => __( 'is not', 'stream-notifications' ),
+			// 		'in'     => __( 'in', 'stream-notifications' ),
+			// 		'not_in' => __( 'not in', 'stream-notifications' ),
 			// 		),
 			// 	'options' => array( // TODO: Do we have a dynamic way to get this ?: Answer: NO, use 'Context'
-			// 		'user'    => __( 'User', 'stream' ),
-			// 		'post'    => __( 'Post', 'stream' ),
-			// 		'comment' => __( 'Comment', 'stream' ),
+			// 		'user'    => __( 'User', 'stream-notifications' ),
+			// 		'post'    => __( 'Post', 'stream-notifications' ),
+			// 		'comment' => __( 'Comment', 'stream-notifications' ),
 			// 	),
 			// ),
 
 			'object_id' => array(
-				'title'     => __( 'Object ID', 'stream' ),
+				'title'     => __( 'Object ID', 'stream-notifications' ),
 				'type'      => 'text',
 				'tags'      => true,
 				'operators' => array(
-					'='      => __( 'is', 'stream' ),
-					'!='     => __( 'is not', 'stream' ),
-					'in'     => __( 'in', 'stream' ),
-					'not_in' => __( 'not in', 'stream' ),
+					'='      => __( 'is', 'stream-notifications' ),
+					'!='     => __( 'is not', 'stream-notifications' ),
+					'in'     => __( 'in', 'stream-notifications' ),
+					'not_in' => __( 'not in', 'stream-notifications' ),
 				),
 			),
 
 			'author_role' => array(
-				'title'     => __( 'Author Role', 'stream' ),
+				'title'     => __( 'Author Role', 'stream-notifications' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 				'options'  => $roles_arr,
 			),
 
 			'author' => array(
-				'title'     => __( 'Author', 'stream' ),
+				'title'     => __( 'Author', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 			),
 
 			'ip' => array(
-				'title'     => __( 'IP', 'stream' ),
+				'title'     => __( 'IP', 'stream-notifications' ),
 				'type'      => 'text',
 				'tags'      => true,
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 			),
 
 			'date' => array(
-				'title'     => __( 'Date', 'stream' ),
+				'title'     => __( 'Date', 'stream-notifications' ),
 				'type'      => 'date',
 				'operators' => array(
-					'='  => __( 'is on', 'stream' ),
-					'!=' => __( 'is not on', 'stream' ),
-					'<'  => __( 'is before', 'stream' ),
-					'<=' => __( 'is on or before', 'stream' ),
-					'>'  => __( 'is after', 'stream' ),
-					'>=' => __( 'is on or after', 'stream' ),
+					'='  => __( 'is on', 'stream-notifications' ),
+					'!=' => __( 'is not on', 'stream-notifications' ),
+					'<'  => __( 'is before', 'stream-notifications' ),
+					'<=' => __( 'is on or before', 'stream-notifications' ),
+					'>'  => __( 'is after', 'stream-notifications' ),
+					'>=' => __( 'is on or after', 'stream-notifications' ),
 				),
 			),
 
@@ -290,36 +290,36 @@ class WP_Stream_Notifications {
 			// 'meta_query'            => array(),
 
 			'connector' => array(
-				'title'     => __( 'Connector', 'stream' ),
+				'title'     => __( 'Connector', 'stream-notifications' ),
 				'type'      => 'select',
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			),
 			'context' => array(
-				'title'     => __( 'Context', 'stream' ),
+				'title'     => __( 'Context', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 			),
 			'action' => array(
-				'title'     => __( 'Action', 'stream' ),
+				'title'     => __( 'Action', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 			),
 		);
@@ -440,7 +440,7 @@ class WP_Stream_Notifications {
 		echo '<div class="wrap">';
 		echo sprintf(
 			'<h2>%s <a href="%s" class="add-new-h2">%s</a></h2>',
-			__( 'Stream Notifications', 'stream' ),
+			__( 'Stream Notifications', 'stream-notifications' ),
 			admin_url( 'admin.php?page=wp_stream_notifications&view=rule' ),
 			__( 'Add New' )
 		); // xss okay
@@ -625,9 +625,9 @@ class WP_Stream_Notifications {
 		$message = '';
 
 		if ( ! class_exists( 'WP_Stream' ) ) {
-			$message .= sprintf( '<p>%s</p>', __( 'Stream Notifications requires Stream plugin to be present and activated.', 'stream' ) );
+			$message .= sprintf( '<p>%s</p>', __( 'Stream Notifications requires Stream plugin to be present and activated.', 'stream-notifications' ) );
 		} else if ( version_compare( WP_Stream::VERSION, self::STREAM_MIN_VERSION, '<' ) ) {
-			$message .= sprintf( '<p>%s</p>', sprintf( __( 'Stream Notifications requires Stream version %s or higher', 'stream' ), self::STREAM_MIN_VERSION ) );
+			$message .= sprintf( '<p>%s</p>', sprintf( __( 'Stream Notifications requires Stream version %s or higher', 'stream-notifications' ), self::STREAM_MIN_VERSION ) );
 		}
 
 		if ( ! empty( $message ) ) {
@@ -635,7 +635,7 @@ class WP_Stream_Notifications {
 				'<div class="error">%s<p>%s</p></div>',
 				$message,
 				sprintf(
-					__( 'Please <a href="%s" target="_blank">install</a> Stream plugin version %s or higher for Stream Notifications to work properly.', 'stream' ),
+					__( 'Please <a href="%s" target="_blank">install</a> Stream plugin version %s or higher for Stream Notifications to work properly.', 'stream-notifications' ),
 					esc_url( 'http://wordpress.org/plugins/stream/' ),
 					self::STREAM_MIN_VERSION
 				)
