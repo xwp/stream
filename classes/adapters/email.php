@@ -14,21 +14,21 @@ class WP_Stream_Notification_Adapter_Email extends WP_Stream_Notification_Adapte
 				'multiple' => true,
 				'ajax'     => true,
 				'key'      => 'author',
-				),
+			),
 			'emails' => array(
 				'title' => __( 'To emails', 'stream_notification' ),
 				'type'  => 'text',
 				'tags'  => true,
-				),
+			),
 			'subject' => array(
 				'title' => __( 'Subject', 'stream_notification' ),
 				'type'  => 'text',
 				'hint'  => __( 'ex: "%%summary%%" or "[%%created%% - %%author%%] %%summary%%", consult FAQ for documentaion.', 'stream_notification' ),
-				),
+			),
 			'message' => array(
 				'title' => __( 'Message', 'stream_notification' ),
 				'type'  => 'textarea',
-				),
+			),
 		);
 	}
 
