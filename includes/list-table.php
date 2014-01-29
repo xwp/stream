@@ -35,7 +35,6 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				'cb'         => '<span class="check-column"><input type="checkbox" /></span>',
 				'name'       => __( 'Name', 'stream-notifications' ),
 				'type'       => __( 'Type', 'stream-notifications' ),
-				'alert'      => __( 'Alert', 'stream-notifications' ),
 				'occurences' => __( 'Occurences', 'stream-notifications' ),
 				'created'    => __( 'Created', 'stream-notifications' ),
 			)
@@ -147,13 +146,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				$out .= $this->get_action_links( $item );
 				break;
 
-			// TODO: The following columns need to pull actual values
 			case 'type':
-				$out = __( 'N/A', 'stream-notifications' );
-				break;
-
-			case 'alert':
-				$out = __( 'N/A', 'stream-notifications' );
+				$out = $this->get_rule_types( $item );
 				break;
 
 			case 'occurences':
@@ -491,6 +485,23 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		} else {
 			return $dummy;
 		}
+	}
+
+	function get_rule_types( $rule ) {
+		global $wp_stream_notifications;
+		$rules = $wp_stream_notifications->matcher->rules();
+		if ( empty( $rules[ $rule->ID ]['alerts'] ) ) {
+			return __( 'N/A', 'stream_notification' );
+		}
+		$types = wp_list_pluck( $rules[ $rule->ID ]['alerts'], 'type' );
+		$titles = wp_list_pluck(
+			array_intersect_key(
+				WP_Stream_Notifications::$adapters,
+				array_flip( $types )
+			),
+			'title'
+		);
+		return implode( ', ', $titles );
 	}
 
 }
