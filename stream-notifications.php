@@ -8,7 +8,7 @@
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
- * Text Domain: stream
+ * Text Domain: stream-notifications
  * Domain Path: /languages
  */
 
