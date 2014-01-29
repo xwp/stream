@@ -1,6 +1,6 @@
 <div class="wrap">
 
-	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream-notifications' ) : _e( 'Add Notification Rule', 'stream-notifications' ); ?></h2>
+	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream-notifications' ) : _e( 'Add New Notification Rule', 'stream-notifications' ); ?></h2>
 
 	<form action="" method="post">
 
