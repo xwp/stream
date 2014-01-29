@@ -138,6 +138,11 @@
 	margin-bottom: 1px;
 }
 
+.toplevel_page_wp_stream .select2-results .select2-disabled {
+	background: transparent;
+	color: #aaa;
+}
+
 .toplevel_page_wp_stream .select2-container.select2-allowclear .select2-choice abbr {
 	margin-top: -2px;
 }
@@ -159,9 +164,4 @@
 
 .toplevel_page_wp_stream .new-row.fadeout {
 	background-color: transparent;
-}
-
-.toplevel_page_wp_stream .select2-results .select2-disabled {
-	background: transparent;
-	color: #aaa;
 }
