@@ -142,7 +142,18 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		switch ( $column_name ) {
 
 			case 'name':
-				$out  = $this->column_link( $item->summary, array( 'view' => 'rule', 'action' => 'edit', 'id' => $item->ID ), null, null, 'row-title' );
+				$name = $item->summary
+					? $item->summary
+					: '(' . __( 'no title', 'stream' ) . ')';
+
+				$out = sprintf(
+					'<a href="%s" class="%s" title="%s">%s</a>',
+					admin_url( sprintf( 'admin.php?page=wp_stream_notifications&view=rule&action=edit&id=%s', $item->ID ) ),
+					'row-title',
+					esc_attr( $name ),
+					esc_html( $name )
+				);
+
 				$out .= $this->get_action_links( $item );
 				break;
 
@@ -487,13 +498,12 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		}
 	}
 
-	function get_rule_types( $rule ) {
-		global $wp_stream_notifications;
-		$rules = $wp_stream_notifications->matcher->rules();
-		if ( empty( $rules[ $rule->ID ]['alerts'] ) ) {
+	function get_rule_types( $item ) {
+		$rule = get_option( sprintf( 'stream_notifications_%d', $item->ID ) );
+		if ( empty( $rule['alerts'] ) ) {
 			return __( 'N/A', 'stream_notification' );
 		}
-		$types = wp_list_pluck( $rules[ $rule->ID ]['alerts'], 'type' );
+		$types  = wp_list_pluck( $rule['alerts'], 'type' );
 		$titles = wp_list_pluck(
 			array_intersect_key(
 				WP_Stream_Notifications::$adapters,
