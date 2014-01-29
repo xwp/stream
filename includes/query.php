@@ -276,9 +276,9 @@ function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '
 function existing_records( $column, $table = '' ) {
 	global $wpdb;
 
-	if ( 'stream' == $table ) {
+	if ( 'stream' === $table ) {
 			$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->stream . ' GROUP BY ' . $column, 'ARRAY_A' );
-	} elseif ( $table == 'meta' ) {
+	} elseif ( 'meta' === $table ) {
 			$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->streammeta . ' GROUP BY ' . $column, 'ARRAY_A' );
 	} else {
 		$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->streamcontext . ' GROUP BY ' . $column, 'ARRAY_A' );
