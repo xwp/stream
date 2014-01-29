@@ -8,7 +8,7 @@
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
- * Text Domain: stream
+ * Text Domain: stream-notifications
  * Domain Path: /languages
  */
 
@@ -55,6 +55,16 @@ class WP_Stream_Notifications {
 	public static $screen_id;
 
 	/**
+	 * List table object
+	 * @var WP_Stream_Notifications_List_Table
+	 */
+	public static $list_table = null;
+
+	const NOTIFICATIONS_PAGE_SLUG = 'wp_stream_notifications';
+	// Todo: We should probably check whether the current user has caps to
+	// view and edit the notifications as this can differ from caps to Stream.
+
+	/**
 	 * Holds admin notices messages
 	 *
 	 * @var array
@@ -66,6 +76,12 @@ class WP_Stream_Notifications {
 	 * @var array
 	 */
 	public static $adapters = array();
+
+	/**
+	 * Matcher object
+	 * @var  WP_Stream_Notification_Rule_Matcher
+	 */
+	public $matcher;
 
 	/**
 	 * Class constructor
@@ -105,8 +121,16 @@ class WP_Stream_Notifications {
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11 );
 
+		// Default list actions handlers
+		add_action( 'wp_stream_notifications_handle_deactivate', array( __CLASS__, 'handle_rule_activation_status_change' ), 10, 3 );
+		add_action( 'wp_stream_notifications_handle_activate', array( __CLASS__, 'handle_rule_activation_status_change' ), 10, 3 );
+		add_action( 'wp_stream_notifications_handle_delete', array( __CLASS__, 'handle_rule_deletion' ), 10, 3 );
+
 		// AJAX end point for form auto completion
 		add_action( 'wp_ajax_stream_notification_endpoint', array( $this, 'form_ajax_ep' ) );
+
+		// Load Matcher
+		$this->matcher = new WP_Stream_Notification_Rule_Matcher();
 	}
 
 	/**
@@ -118,10 +142,10 @@ class WP_Stream_Notifications {
 	public function register_menu() {
 		self::$screen_id = add_submenu_page(
 			'wp_stream',
-			__( 'Notifications', 'stream' ),
-			__( 'Notifications', 'stream' ),
+			__( 'Notifications', 'stream-notifications' ),
+			__( 'Notifications', 'stream-notifications' ),
 			'manage_options',
-			'wp_stream_notifications',
+			self::NOTIFICATIONS_PAGE_SLUG,
 			array( $this, 'page' )
 		);
 
@@ -140,11 +164,15 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		wp_enqueue_style( 'select2' );
-		wp_enqueue_script( 'select2' );
-		wp_enqueue_script( 'underscore' );
-		wp_enqueue_script( 'stream-notifications-main', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/main.js', array( 'underscore', 'select2' ) );
-		wp_localize_script( 'stream-notifications-main', 'stream_notifications', $this->get_js_options() );
+		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
+
+		if ( $view == 'rule' ) {
+			wp_enqueue_style( 'select2' );
+			wp_enqueue_script( 'select2' );
+			wp_enqueue_script( 'underscore' );
+			wp_enqueue_script( 'stream-notifications-main', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/main.js', array( 'underscore', 'select2' ) );
+			wp_localize_script( 'stream-notifications-main', 'stream_notifications', $this->get_js_options() );
+		}
 	}
 
 	public static function register_adapter( $adapter, $name, $title ) {
@@ -168,93 +196,92 @@ class WP_Stream_Notifications {
 
 		$args['types'] = array(
 			'search' => array(
-				'title'     => __( 'Summary', 'stream' ),
+				'title'     => __( 'Summary', 'stream-notifications' ),
 				'type'      => 'text',
 				'operators' => array(
-					'='            => __( 'is', 'stream' ),
-					'!='           => __( 'is not', 'stream' ),
-					'contains'     => __( 'contains', 'stream' ),
-					'contains-not' => __( 'does not contain', 'stream' ),
-					'regex'        => __( 'regex', 'stream' ),
+					'='            => __( 'is', 'stream-notifications' ),
+					'!='           => __( 'is not', 'stream-notifications' ),
+					'contains'     => __( 'contains', 'stream-notifications' ),
+					'!contains'    => __( 'does not contain', 'stream-notifications' ),
+					'regex'        => __( 'regex', 'stream-notifications' ),
 				),
 			),
-			'object_type' => array(
-				'title'     => __( 'Object Type', 'stream' ),
-				'type'      => 'select',
-				'multiple'  => true,
-				'operators' => array(
-					'='      => __( 'is', 'stream' ),
-					'!='     => __( 'is not', 'stream' ),
-					'in'     => __( 'in', 'stream' ),
-					'not_in' => __( 'not in', 'stream' ),
-					),
-				'options' => array( // TODO: Do we have a dynamic way to get this ?
-					'user'    => __( 'User', 'stream' ),
-					'post'    => __( 'Post', 'stream' ),
-					'comment' => __( 'Comment', 'stream' ),
-				),
-			),
+			// 'object_type' => array(
+			// 	'title'     => __( 'Object Type', 'stream-notifications' ),
+			// 	'type'      => 'select',
+			// 	'multiple'  => true,
+			// 	'operators' => array(
+			// 		'='      => __( 'is', 'stream-notifications' ),
+			// 		'!='     => __( 'is not', 'stream-notifications' ),
+			// 		'in'     => __( 'in', 'stream-notifications' ),
+			// 		'not_in' => __( 'not in', 'stream-notifications' ),
+			// 		),
+			// 	'options' => array( // TODO: Do we have a dynamic way to get this ?: Answer: NO, use 'Context'
+			// 		'user'    => __( 'User', 'stream-notifications' ),
+			// 		'post'    => __( 'Post', 'stream-notifications' ),
+			// 		'comment' => __( 'Comment', 'stream-notifications' ),
+			// 	),
+			// ),
 
-			// TODO: Show object title in front end if both object type / id are set
 			'object_id' => array(
-				'title'     => __( 'Object ID', 'stream' ),
+				'title'     => __( 'Object ID', 'stream-notifications' ),
 				'type'      => 'text',
 				'tags'      => true,
 				'operators' => array(
-					'='      => __( 'is', 'stream' ),
-					'!='     => __( 'is not', 'stream' ),
-					'in'     => __( 'in', 'stream' ),
-					'not_in' => __( 'not in', 'stream' ),
+					'='      => __( 'is', 'stream-notifications' ),
+					'!='     => __( 'is not', 'stream-notifications' ),
+					'in'     => __( 'in', 'stream-notifications' ),
+					'not_in' => __( 'not in', 'stream-notifications' ),
 				),
 			),
 
 			'author_role' => array(
-				'title'     => __( 'Author Role', 'stream' ),
+				'title'     => __( 'Author Role', 'stream-notifications' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 				'options'  => $roles_arr,
 			),
 
 			'author' => array(
-				'title'     => __( 'Author', 'stream' ),
+				'title'     => __( 'Author', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 			),
 
 			'ip' => array(
-				'title'     => __( 'IP', 'stream' ),
+				'title'     => __( 'IP', 'stream-notifications' ),
 				'type'      => 'text',
 				'tags'      => true,
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 			),
 
 			'date' => array(
-				'title'     => __( 'Date', 'stream' ),
+				'title'     => __( 'Date', 'stream-notifications' ),
 				'type'      => 'date',
 				'operators' => array(
-					'='  => __( 'is on', 'stream' ),
-					'!=' => __( 'is not on', 'stream' ),
-					'<'  => __( 'is before', 'stream' ),
-					'<=' => __( 'is on or before', 'stream' ),
-					'>'  => __( 'is after', 'stream' ),
-					'>=' => __( 'is on or after', 'stream' ),
+					'='  => __( 'is on', 'stream-notifications' ),
+					'!=' => __( 'is not on', 'stream-notifications' ),
+					'<'  => __( 'is before', 'stream-notifications' ),
+					'<=' => __( 'is on or before', 'stream-notifications' ),
+					'>'  => __( 'is after', 'stream-notifications' ),
+					'>=' => __( 'is on or after', 'stream-notifications' ),
 				),
 			),
 
@@ -263,40 +290,40 @@ class WP_Stream_Notifications {
 			// 'meta_query'            => array(),
 
 			'connector' => array(
-				'title'     => __( 'Connector', 'stream' ),
+				'title'     => __( 'Connector', 'stream-notifications' ),
 				'type'      => 'select',
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			),
 			'context' => array(
-				'title'     => __( 'Context', 'stream' ),
+				'title'     => __( 'Context', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 			),
 			'action' => array(
-				'title'     => __( 'Action', 'stream' ),
+				'title'     => __( 'Action', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => array(
-					'='   => __( 'is', 'stream' ),
-					'!='  => __( 'is not', 'stream' ),
-					'in'  => __( 'in', 'stream' ),
-					'!in' => __( 'not in', 'stream' ),
+					'='   => __( 'is', 'stream-notifications' ),
+					'!='  => __( 'is not', 'stream-notifications' ),
+					'in'  => __( 'in', 'stream-notifications' ),
+					'!in' => __( 'not in', 'stream-notifications' ),
 				),
 			),
 		);
-		
+
 		$args['adapters'] = array();
 
 		foreach ( self::$adapters as $name => $options ) {
@@ -311,19 +338,18 @@ class WP_Stream_Notifications {
 
 	/**
 	 * Admin page callback function, redirects to each respective method based
-	 * on $_GET['action']
+	 * on $_GET['view']
 	 *
 	 * @return void
 	 */
 	public function page() {
-		$action = filter_input( INPUT_GET, 'action', FILTER_DEFAULT, array( 'default' => 'list' ) );
-		$id     = filter_input( INPUT_GET, 'id', FILTER_DEFAULT );
-		switch ( $action ) {
-			case 'add':
-			case 'edit':
+		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
+		$id = filter_input( INPUT_GET, 'id' );
+
+		switch ( $view ) {
+			case 'rule':
 				$this->page_form( $id );
 				break;
-			case 'list':
 			default:
 				$this->page_list();
 				break;
@@ -343,35 +369,84 @@ class WP_Stream_Notifications {
 	}
 
 	public function page_form_save() {
-		// TODO add nonce, check author/user permission to update record
-		// TODO Do not save if no triggers are added
-		$action = filter_input( INPUT_GET, 'action' );
-		$id     = filter_input( INPUT_GET, 'id' );
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'list-table.php';
+		self::$list_table = new WP_Stream_Notifications_List_Table( array( 'screen' => self::$screen_id ) );
 
-		$rule = new WP_Stream_Notification_Rule( $id );
+		// TODO check author/user permission to update record
 
-		$data = $_POST;
+		$view     = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
+		$action   = filter_input( INPUT_GET, 'action', FILTER_DEFAULT );
+		$id       = filter_input( INPUT_GET, 'id' );
+		$bulk_ids = filter_input( INPUT_GET, 'wp_stream_notifications_checkbox', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 
-		if ( $data && in_array( $action, array( 'edit', 'add' ) ) ) {
+		// There is a chance we go from the bottom bulk actions select box
+		if ( ! $action || $action == '-1' ) {
+			$action = filter_input( INPUT_GET, 'action2', FILTER_DEFAULT, array( 'options' => array( 'default' => 'render' ) ) );
+		}
 
-			if ( ! isset( $data['visibility'] ) ) $data['visibility'] = 0; // Checkbox woraround
+		if ( $_POST && 'rule' == $view ) {
+			$data = $_POST;
+			$rule = new WP_Stream_Notification_Rule( $id );
+
+			if ( ! wp_verify_nonce( filter_input( INPUT_POST, '_wpnonce' ), 'stream-notifications-form' ) ) {
+				wp_die( __( 'Invalid form parameters.', 'stream-notifications' ) );
+			}
+
+			if ( empty( $data['triggers'] ) ) {
+				wp_die( __( 'Rules cannot be saved without triggers!', 'stream-notifications' ) );
+			}
+
+			if ( ! isset( $data['visibility'] ) ) {
+				$data['visibility'] = 'inactive'; // Checkbox woraround
+			}
 
 			$result = $rule->load_from_array( $data )->save();
+
+			if ( $result ) {
+				// Should not follow the WP naming convention, to avoid conflicts
+				// if/when Stream migrates to using WP tables
+				do_action( 'saved_stream_notification_rule', $rule );
+			}
 
 			if ( $result && $action != 'edit' ) {
 				wp_redirect( add_query_arg( array( 'action' => 'edit', 'id' => $rule->ID ) ) );
 			}
 		}
+
+		if ( 'list' == $view && 'render' != $action ) {
+			if ( has_action( 'wp_stream_notifications_handle_' . $action ) ) {
+				if ( $bulk_ids ) {
+					foreach ( $bulk_ids as $id ) {
+						do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, true );
+					}
+				} else {
+					do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, false );
+				}
+			} else {
+				wp_redirect( admin_url( 'admin.php?page=' . WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) );
+			}
+		}
+
 	}
 
 	/**
-	 * Admin page callback for list action
+	 * Admin page callback for list view
 	 *
 	 * @return void
 	 */
 	public function page_list() {
-		// DEBUG, no listing yet
-		?><script>window.location.href = '<?php echo esc_url_raw( add_query_arg( 'action', 'add' ) ); ?>';</script><?php
+		self::$list_table->prepare_items();
+
+		echo '<div class="wrap">';
+		echo sprintf(
+			'<h2>%s <a href="%s" class="add-new-h2">%s</a></h2>',
+			__( 'Stream Notifications', 'stream-notifications' ),
+			admin_url( 'admin.php?page=wp_stream_notifications&view=rule' ),
+			__( 'Add New' )
+		); // xss okay
+
+		self::$list_table->display();
+		echo '</div>';
 	}
 
 	/**
@@ -382,18 +457,37 @@ class WP_Stream_Notifications {
 	 */
 	public function form_ajax_ep() {
 		// BIG @TODO: Make the request context-aware,
-		// ie: get other rules ( maybe in the same group only ? ), so an author 
-		// query would check if there is a author_role rule available to limit 
+		// ie: get other rules ( maybe in the same group only ? ), so an author
+		// query would check if there is a author_role rule available to limit
 		// the results according to it
-		$type = filter_input( INPUT_POST, 'type' );
+
+		$type      = filter_input( INPUT_POST, 'type' );
 		$is_single = filter_input( INPUT_POST, 'single' );
-		$query = filter_input( INPUT_POST, 'q' );
+		$query     = filter_input( INPUT_POST, 'q' );
 
 		if ( $is_single ) {
 			switch ( $type ) {
 				case 'author':
-					$user = get_userdata( $query );
-					$data = array( 'id' => $user->ID, 'text' => $user->display_name );
+					$user_ids = explode( ',', $query );
+					$user_query = new WP_User_Query(
+						array(
+							'include' => $user_ids,
+							'fields' => array( 'ID', 'user_email', 'display_name' )
+						)
+					);
+					if ( $user_query->results ) {
+						$data = $this->format_json_for_select2(
+							$user_query->results,
+							'ID',
+							'display_name'
+						);
+					} else {
+						$data = array();
+					}
+					break;
+				case 'action':
+					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
+					$data    = $this->format_json_for_select2( array( $query => $actions[$query] ) );
 					break;
 			}
 		} else {
@@ -405,7 +499,7 @@ class WP_Stream_Notifications {
 				case 'action':
 					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
 					$actions = preg_grep( sprintf( '/%s/i', $query ), $actions );
-					$data = $this->format_json_for_select2( $actions );
+					$data    = $this->format_json_for_select2( $actions );
 					break;
 			}
 		}
@@ -441,6 +535,87 @@ class WP_Stream_Notifications {
 		return $return;
 	}
 
+	/*
+	 * Handle the rule activation & deactivation action
+	 */
+	public static function handle_rule_activation_status_change( $id, $action, $is_bulk = false ) {
+		$data             = $_GET;
+		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
+		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "activate-record_$id";
+		$visibility       = $action == 'activate' ? 'active' : 'inactive';
+
+		if ( ! wp_verify_nonce( $nonce, $nonce_identifier ) ) {
+			return;
+		}
+
+		$activate_rule = apply_filters( 'wp_stream_notifications_before_rule_' . $action, true, $id );
+		if ( $activate_rule == false ) {
+			return;
+		}
+
+		self::update_record(
+			$id,
+			array( 'visibility' => $visibility ),
+			array( '%s' )
+		);
+		wp_redirect( add_query_arg( array(
+			'wp_stream_nonce' => false,
+			'action'          => false,
+			'id'              => false,
+			'visibility'      => $visibility,
+		) ) );
+	}
+
+	/*
+	 * Handle the rule deletion
+	 */
+	public static function handle_rule_deletion( $id, $action, $is_bulk = false ) {
+		$data             = $_GET;
+		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
+		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "delete-record_$id";
+		$visibility       = filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT );
+
+		if ( ! wp_verify_nonce( $nonce, $nonce_identifier ) ) {
+			return;
+		}
+
+		$activate_rule = apply_filters( 'wp_stream_notifications_before_rule_' . $action, true, $id );
+		if ( $activate_rule == false ) {
+			return;
+		}
+
+		self::delete_record( $id );
+		wp_redirect( add_query_arg( array(
+			'wp_stream_nonce' => false,
+			'action'          => false,
+			'id'              => false,
+			'visibility'      => $visibility,
+		) ) );
+	}
+
+	public function update_record( $id, $fields, $formats ) {
+		global $wpdb;
+
+		$wpdb->update(
+			WP_Stream_DB::$table,
+			$fields,
+			array( 'ID' => $id, 'type' => 'notification_rule' ),
+			$formats,
+			array( '%d', '%s' )
+		); // db call ok, cache ok
+	}
+
+	public function delete_record( $id ) {
+		global $wpdb;
+
+		$wpdb->delete(
+			WP_Stream_DB::$table,
+			array(
+				'ID' => $id,
+			)
+		); // db call ok, cache ok
+	}
+
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
 	 *
@@ -450,9 +625,9 @@ class WP_Stream_Notifications {
 		$message = '';
 
 		if ( ! class_exists( 'WP_Stream' ) ) {
-			$message .= sprintf( '<p>%s</p>', __( 'Stream Notifications requires Stream plugin to be present and activated.', 'stream' ) );
+			$message .= sprintf( '<p>%s</p>', __( 'Stream Notifications requires Stream plugin to be present and activated.', 'stream-notifications' ) );
 		} else if ( version_compare( WP_Stream::VERSION, self::STREAM_MIN_VERSION, '<' ) ) {
-			$message .= sprintf( '<p>%s</p>', sprintf( __( 'Stream Notifications requires Stream version %s or higher', 'stream' ), self::STREAM_MIN_VERSION ) );
+			$message .= sprintf( '<p>%s</p>', sprintf( __( 'Stream Notifications requires Stream version %s or higher', 'stream-notifications' ), self::STREAM_MIN_VERSION ) );
 		}
 
 		if ( ! empty( $message ) ) {
@@ -460,7 +635,7 @@ class WP_Stream_Notifications {
 				'<div class="error">%s<p>%s</p></div>',
 				$message,
 				sprintf(
-					__( 'Please <a href="%s" target="_blank">install</a> Stream plugin version %s or higher for Stream Notifications to work properly.', 'stream' ),
+					__( 'Please <a href="%s" target="_blank">install</a> Stream plugin version %s or higher for Stream Notifications to work properly.', 'stream-notifications' ),
 					esc_url( 'http://wordpress.org/plugins/stream/' ),
 					self::STREAM_MIN_VERSION
 				)
