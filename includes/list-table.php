@@ -6,8 +6,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		parent::__construct(
 			array(
 				'post_type' => 'stream_notifications',
-				'plural' => 'rules',
-				'screen' => isset( $args['screen'] ) ? $args['screen'] : null,
+				'plural'    => 'rules',
+				'screen'    => isset( $args['screen'] ) ? $args['screen'] : null,
 			)
 		);
 
@@ -15,10 +15,10 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'per_page',
 			array(
 				'default' => 20,
-				'label'   => __( 'Rules per page', 'stream' ),
+				'label'   => __( 'Rules per page', 'stream-notifications' ),
 				'option'  => 'edit_stream_notifications_per_page',
-				)
-			);
+			)
+		);
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		set_screen_options();
@@ -33,11 +33,11 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'wp_stream_notifications_list_table_columns',
 			array(
 				'cb'         => '<span class="check-column"><input type="checkbox" /></span>',
-				'name'       => __( 'Name', 'stream' ),
-				'type'       => __( 'Type', 'stream' ),
-				'alert'      => __( 'Alert', 'stream' ),
-				'occurences' => __( 'Occurences', 'stream' ),
-				'created'    => __( 'Created', 'stream' ),
+				'name'       => __( 'Name', 'stream-notifications' ),
+				'type'       => __( 'Type', 'stream-notifications' ),
+				'alert'      => __( 'Alert', 'stream-notifications' ),
+				'occurences' => __( 'Occurences', 'stream-notifications' ),
+				'created'    => __( 'Created', 'stream-notifications' ),
 			)
 		);
 	}
@@ -62,7 +62,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$this->set_pagination_args(
 			array(
 				'total_items' => $total_items,
-				'per_page' => $this->get_items_per_page( 'edit_stream_notifications_per_page', 20 ),
+				'per_page'    => $this->get_items_per_page( 'edit_stream_notifications_per_page', 20 ),
 			)
 		);
 	}
@@ -115,7 +115,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 		if ( ! $args['ignore_url_params'] ) {
 			$allowed_params = array(
-				'search', 'visibility',
+				'search',
+				'visibility',
 			);
 
 			foreach ( $allowed_params as $param ) {
@@ -142,17 +143,17 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		switch ( $column_name ) {
 
 			case 'name':
-				$out  = $this->column_link( $item->summary, 'name', $item->summary, null, 'row-title' );
+				$out  = $this->column_link( $item->summary, array( 'view' => 'rule', 'action' => 'edit', 'id' => $item->ID ), null, null, 'row-title' );
 				$out .= $this->get_action_links( $item );
 				break;
 
 			// TODO: The following columns need to pull actual values
 			case 'type':
-				$out = __( 'N/A', 'stream' );
+				$out = __( 'N/A', 'stream-notifications' );
 				break;
 
 			case 'alert':
-				$out = __( 'N/A', 'stream' );
+				$out = __( 'N/A', 'stream-notifications' );
 				break;
 
 			case 'occurences':
@@ -163,8 +164,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				$out  = $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
 				$out .= 'active' == $item->visibility
-					? __( 'Active', 'stream' )
-					: __( 'Inactive', 'stream' );
+					? __( 'Active', 'stream-notifications' )
+					: __( 'Inactive', 'stream-notifications' );
 				break;
 
 			default:
@@ -207,23 +208,23 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$deletion_nonce   = wp_create_nonce( "delete-record_$record->ID" );
 
 		$action_links = array();
-		$action_links[ __( 'Edit', 'stream' ) ] = array(
-			'href' => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&view=rule&action=edit&id=%s',	$record->ID	) ),
+		$action_links[ __( 'Edit', 'stream-notifications' ) ] = array(
+			'href'  => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&view=rule&action=edit&id=%s', $record->ID ) ),
 			'class' => null,
 		);
 
 		if ( 'active' == $record->visibility ) {
-			$action_links[ __( 'Deactivate', 'stream' ) ] = array(
-				'href' => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&action=deactivate&id=%s&wp_stream_nonce=%s', $record->ID, $activation_nonce )	),
+			$action_links[ __( 'Deactivate', 'stream-notifications' ) ] = array(
+				'href'  => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&action=deactivate&id=%s&wp_stream_nonce=%s', $record->ID, $activation_nonce ) ),
 				'class' => null,
 			);
 		} elseif ( 'inactive' == $record->visibility ) {
-			$action_links[ __( 'Activate', 'stream' ) ] = array(
-				'href' => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&action=activate&id=%s&wp_stream_nonce=%s', $record->ID, $activation_nonce ) ),
+			$action_links[ __( 'Activate', 'stream-notifications' ) ] = array(
+				'href'  => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&action=activate&id=%s&wp_stream_nonce=%s', $record->ID, $activation_nonce ) ),
 				'class' => null,
 			);
-			$action_links[ __( 'Delete Permanently', 'stream' ) ] = array(
-				'href' => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&action=delete&id=%s&wp_stream_nonce=%s', $record->ID, $deletion_nonce ) ),
+			$action_links[ __( 'Delete Permanently', 'stream-notifications' ) ] = array(
+				'href'  => admin_url( sprintf( 'admin.php?page=wp_stream_notifications&action=delete&id=%s&wp_stream_nonce=%s', $record->ID, $deletion_nonce ) ),
 				'class' => 'delete',
 			);
 		}
@@ -325,25 +326,25 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 		$options[] = sprintf(
 			'<option value="-1" selected="selected">%s</option>',
-			esc_html__( 'Bulk Actions', 'stream' )
+			esc_html__( 'Bulk Actions', 'stream-notifications' )
 		);
 
 		if ( 'active' != $visibility ) {
 			$options[] = sprintf(
 				'<option value="activate">%s</option>',
-				esc_html__( 'Activate', 'stream' )
+				esc_html__( 'Activate', 'stream-notifications' )
 			);
 		}
 		if ( 'inactive' != $visibility ) {
 			$options[] = sprintf(
 				'<option value="deactivate">%s</option>',
-				esc_html__( 'Deactivate', 'stream' )
+				esc_html__( 'Deactivate', 'stream-notifications' )
 			);
 		}
 		if ( 'inactive' == $visibility ) {
 			$options[] = sprintf(
 				'<option value="delete">%s</option>',
-				esc_html__( 'Delete Permanently', 'stream' )
+				esc_html__( 'Delete Permanently', 'stream-notifications' )
 			);
 		}
 
@@ -357,7 +358,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			<input type="submit" name="" id="do%1$s" class="button action" value="%s">',
 			$dropdown_name,
 			$options_html,
-			esc_attr__( 'Apply', 'stream' )
+			esc_attr__( 'Apply', 'stream-notifications' )
 		);
 
 		return apply_filters( 'wp_stream_notifications_bulk_actions_html', $html );
@@ -366,22 +367,22 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	function list_navigation() {
 		$navigation_items = array(
 			'all' => array(
-				'link_text' => __( 'All', 'stream' ),
-				'url'  => admin_url( sprintf( 'admin.php?page=%s', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) ),
+				'link_text'  => __( 'All', 'stream-notifications' ),
+				'url'        => admin_url( sprintf( 'admin.php?page=%s', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) ),
 				'link_class' => null,
 				'li_class'   => null,
 				'count'      => $this->count_records(),
 			),
 			'active' => array(
-				'link_text' => __( 'Active', 'stream' ),
-				'url'  => admin_url( sprintf( 'admin.php?page=%s&visibility=active', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) ),
+				'link_text'  => __( 'Active', 'stream-notifications' ),
+				'url'        => admin_url( sprintf( 'admin.php?page=%s&visibility=active', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) ),
 				'link_class' => null,
 				'li_class'   => null,
 				'count'      => $this->count_records( array( 'visibility' => 'active' ) ),
 			),
 			'inactive' => array(
-				'link_text' => __( 'Inactive', 'stream' ),
-				'url'  => admin_url( sprintf( 'admin.php?page=%s&visibility=inactive', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) ),
+				'link_text'  => __( 'Inactive', 'stream-notifications' ),
+				'url'        => admin_url( sprintf( 'admin.php?page=%s&visibility=inactive', WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) ),
 				'link_class' => null,
 				'li_class'   => null,
 				'count'      => $this->count_records( array( 'visibility' => 'inactive' ) ),
@@ -433,7 +434,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				<input type="search" id="record-search-input" name="search" value="%2$s" />
 				<input type="submit" name="" id="search-submit" class="button" value="%1$s" />
 			</p>',
-			esc_attr__( 'Search Notifications', 'stream' ),
+			esc_attr__( 'Search Notifications', 'stream-notifications' ),
 			isset( $_GET['search'] ) ? esc_attr( $_GET['search'] ) : null
 		);
 
