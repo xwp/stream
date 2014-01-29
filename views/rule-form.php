@@ -3,7 +3,7 @@
 	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream-notifications' ) : _e( 'Add New Notification Rule', 'stream-notifications' ); ?>
 		<?php if ( $rule->exists() ) : ?>
 			<?php
-			$new_rule_url = add_query_arg(
+			$new_link = add_query_arg(
 				array(
 					'page' => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
 					'view' => 'rule',
@@ -11,7 +11,7 @@
 				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 			);
 			?>
-			<a href="<?php echo esc_url( $new_rule_url ) ?>" class="add-new-h2"><?php _e( 'Add New', 'stream-notifications' ) ?></a>
+			<a href="<?php echo esc_url( $new_link ) ?>" class="add-new-h2"><?php _e( 'Add New', 'stream-notifications' ) ?></a>
 		<?php endif; ?>
 	</h2>
 
