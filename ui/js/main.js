@@ -185,6 +185,14 @@ jQuery(function($){
 			selectify( $this.parent().find('select') );
 			selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
 		})
+
+		// Delete a trigger
+		.on( 'click.sn', '.delete-alert', function(e) {
+			e.preventDefault();
+			var $this = $(this);
+
+			$this.parents('.alert').first().remove();
+		})
 	;
 
 	// Populate form values if it exists
