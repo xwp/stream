@@ -8,12 +8,17 @@ class WP_Stream_Notification_Adapter_Email extends WP_Stream_Notification_Adapte
 
 	public static function fields() {
 		return array(
-			'to' => array(
-				'title'    => __( 'To', 'stream_notification' ),
+			'users' => array(
+				'title'    => __( 'To users', 'stream_notification' ),
 				'type'     => 'hidden',
 				'multiple' => true,
 				'ajax'     => true,
 				'key'      => 'author',
+				),
+			'emails' => array(
+				'title' => __( 'To emails', 'stream_notification' ),
+				'type'  => 'text',
+				'tags'  => true,
 				),
 			'subject' => array(
 				'title' => __( 'Subject', 'stream_notification' ),
