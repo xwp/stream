@@ -60,6 +60,11 @@ class WP_Stream_Notifications {
 	 */
 	public static $list_table = null;
 
+	/**
+	 * Page slug for notifications list table screen
+	 *
+	 * @const string
+	 */
 	const NOTIFICATIONS_PAGE_SLUG = 'wp_stream_notifications';
 	// Todo: We should probably check whether the current user has caps to
 	// view and edit the notifications as this can differ from caps to Stream.
