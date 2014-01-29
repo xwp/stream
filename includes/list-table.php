@@ -514,7 +514,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 	function display() {
 		echo $this->list_navigation(); // xss ok
-		echo '<form method="get" action="', esc_attr( admin_url( 'admin.php' ) ), '">';
+		echo '<form method="get" action="' . admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) . '">';
 		parent::display();
 		echo '</form>';
 	}
