@@ -86,6 +86,27 @@ jQuery(function($){
 				}
 
 				$this.select2( elementArgs );
+				$this.on( 'select2_populate', function( e, val ) {
+					var $this = $(this);
+					if ( $this.hasClass('ajax') ) {
+						$.ajax({
+			            	url: ajaxurl,
+			            	type: 'post',
+			                data: {
+			                	action: 'stream_notification_endpoint',
+			                    q : val,
+			                    single: 1,
+			                    type  : type,
+			                },
+			                dataType: "json",
+			                success: function(j){
+			                	$this.select2( 'data', j.data );
+			                }
+		            	})
+					} else {
+						$this.select2( 'data', [{ id: val, text: val }] );
+					}
+				} );
 			});
 		};
 
@@ -224,9 +245,10 @@ jQuery(function($){
 
 			// populate the trigger value, according to the trigger type
 			if ( trigger.value ) {
-				valueField = row.find('.trigger-value:not(.select2-container)').eq(0);
+				valueField = row.find('.trigger_value:not(.select2-container)').eq(0);
 				if ( valueField.is('select') || valueField.is('.ajax') ) {
-					valueField.select2( 'val', trigger.value ).trigger('change');
+					valueField.trigger( 'select2_populate', trigger.value );
+					// valueField.select2( 'val', trigger.value ).trigger('change');
 				} else {
 					valueField.val( trigger.value ).trigger('change');
 				}
@@ -254,7 +276,12 @@ jQuery(function($){
 				name = $this.attr('name').match('\\[([a-z_\-]+)\\]$')[1];
 				if ( typeof alert[name] != 'undefined' ) {
 					val = alert[name];
-					$this.val( val ).trigger('change');
+					if ( $this.hasClass( 'select2-offscreen' ) ) {
+						$this.trigger( 'select2_populate', val )
+						// $this.select2( 'val', val ).trigger( 'change' );
+					} else {
+						$this.val( val ).trigger('change');
+					}
 				}
 			});
 		}
