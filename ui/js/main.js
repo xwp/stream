@@ -1,15 +1,15 @@
 /* globals stream_notifications, ajaxurl, triggers */
 jQuery(function($){
 	'use strict';
-	
+
 	_.templateSettings.variable = 'vars';
 
 	var types = stream_notifications.types,
 		i,
-		
+
 		divTriggers = $('#triggers'), // Trigger Playground
-		divAlerts = $('#alerts'), // Alerts Playground
-		
+		divAlerts   = $('#alerts .inside'), // Alerts Playground
+
 		btns = {
 			add_trigger: '.add-trigger',
 			add_alert: '.add-alert',
@@ -27,7 +27,7 @@ jQuery(function($){
 			allowClear: true,
 			width: '160px'
 		},
-		
+
 		selectify = function( elements, args ) {
 			args = args || {};
 			$.extend( args, select2_args );
@@ -42,9 +42,9 @@ jQuery(function($){
 					var type = '';
 					if ( ! ( type = $this.data( 'ajax-key' ) ) ) {
 						if ( tORa == 'triggers' ) {
-							type = $this.parents('.form-row').first().find('select.trigger_type').val();
+							type = $this.parents('.form-row').first().find('select.trigger-type').val();
 						} else {
-							type = $this.parents('.form-row').eq(1).find('select.alert_type').val();
+							type = $this.parents('.form-row').eq(1).find('select.alert-type').val();
 						}
 					}
 					elementArgs.minimumInputLength = 3;
@@ -69,19 +69,19 @@ jQuery(function($){
 					};
 					elementArgs.initSelection = function(element, callback) {
 						var id = $(element).val();
-				        if ( id !== '' ) {
-				            $.ajax({
-				            	url: ajaxurl,
-				            	type: 'post',
-				                data: {
-				                	action: 'stream_notification_endpoint',
-				                    q : id,
-				                    single: 1,
-				                    type  : type,
-				                },
-				                dataType: "json"
-			            	}).done( function( data ) { callback( data.data ); } );
-				        }
+						if ( id !== '' ) {
+							$.ajax({
+								url: ajaxurl,
+								type: 'post',
+								data: {
+									action: 'stream_notification_endpoint',
+									q     : id,
+									single: 1,
+									type  : type,
+								},
+								dataType: "json"
+							}).done( function( data ) { callback( data.data ); } );
+						}
 					};
 				}
 
@@ -114,10 +114,10 @@ jQuery(function($){
 		// Add new rule
 		.on( 'click.sn', btns.add_trigger, function(e) {
 			e.preventDefault();
-			var $this = $(this),
-				index = 0,
-				lastItem  = null,
-				group = divTriggers.find('.group').filter( '[rel=' + $this.data('group') + ']' );
+			var $this    = $(this),
+				index    = 0,
+				lastItem = null,
+				group    = divTriggers.find('.group').filter( '[rel=' + $this.data('group') + ']' );
 
 			if ( ( lastItem = divTriggers.find('.trigger').last() ) && lastItem.size() ) {
 				index = parseInt( lastItem.attr('rel') ) + 1;
@@ -126,11 +126,11 @@ jQuery(function($){
 			group.append( tmpl( $.extend(
 				{ index: index, group: $this.data('group') },
 				stream_notifications
-				) ) );
+			) ) );
 			group.find('.trigger').first().addClass('first');
 			selectify( group.find('select') );
 		})
-	
+
 		// Add new group
 		.on( 'click.sn', btns.add_group, function(e, groupIndex) {
 			e.preventDefault();
@@ -165,14 +165,14 @@ jQuery(function($){
 		})
 
 		// Reveal rule options after choosing rule type
-		.on( 'change.sn', '.trigger_type', function() {
+		.on( 'change.sn', '.trigger-type', function() {
 			var $this   = $(this),
 				options = types[ $this.val() ],
 				index   = $this.parents('.trigger').first().attr('rel');
-			$this.next('.trigger_options').remove();
-			
+			$this.next('.trigger-options').remove();
+
 			if ( ! options ) { return; }
-			
+
 			$this.after( tmpl_options( $.extend( options, { index: index } ) ) );
 			selectify( $this.parent().find('select') );
 			selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
@@ -189,16 +189,16 @@ jQuery(function($){
 			divAlerts.append( tmpl_alert( $.extend(
 				{ index: index },
 				stream_notifications
-				) ) );
+			) ) );
 			selectify( divAlerts.find('.alert select') );
 		})
 
 		// Reveal rule options after choosing rule type
-		.on( 'change.sn', '.alert_type', function() {
+		.on( 'change.sn', '.alert-type', function() {
 			var $this   = $(this),
 				options = stream_notifications.adapters[ $this.val() ],
 				index   = $this.parents('.alert').first().attr('rel');
-			$this.next('.alert_options').remove();
+			$this.next('.alert-options').remove();
 
 			if ( ! options ) { return; }
 
@@ -207,7 +207,7 @@ jQuery(function($){
 			selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
 		})
 
-		// Delete a trigger
+		// Delete an alert
 		.on( 'click.sn', '.delete-alert', function(e) {
 			e.preventDefault();
 			var $this = $(this);
@@ -230,7 +230,7 @@ jQuery(function($){
 				var group = notification_rule.groups[trigger.group];
 				$( btns.add_group ).filter('[data-group='+group.group+']').trigger('click', trigger.group);
 				groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']');
-				groupDiv.find('select.group_relation').select2( 'val', group.relation );
+				groupDiv.find('select.group-relation').select2( 'val', group.relation );
 			}
 
 			// create the new row, by clicking the add-trigger button in the appropriate group
@@ -239,14 +239,13 @@ jQuery(function($){
 
 			// populate values
 			row = groupDiv.find('.trigger:last');
-			row.find('select.trigger_relation').select2( 'val', trigger.relation ).trigger('change');
-			row.find('select.trigger_type').select2( 'val', trigger.type ).trigger('change');
-			row.find('select.trigger_operator').select2( 'val', trigger.operator ).trigger('change');
+			row.find('select.trigger-relation').select2( 'val', trigger.relation ).trigger('change');
+			row.find('select.trigger-type').select2( 'val', trigger.type ).trigger('change');
+			row.find('select.trigger-operator').select2( 'val', trigger.operator ).trigger('change');
 
 			// populate the trigger value, according to the trigger type
 			if ( trigger.value ) {
 				valueField = row.find('.trigger_value:not(.select2-container)').eq(0);
-				// debugger
 				if ( valueField.is('select') || valueField.is('.ajax') ) {
 					valueField.trigger( 'select2_populate', trigger.value );
 					// valueField.select2( 'val', trigger.value ).trigger('change');
@@ -268,8 +267,8 @@ jQuery(function($){
 
 			// populate values
 			row = divAlerts.find('.alert:last');
-			row.find('select.alert_type').select2( 'val', alert.type ).trigger('change');
-			optionFields = row.find('.alert_options');
+			row.find('select.alert-type').select2( 'val', alert.type ).trigger('change');
+			optionFields = row.find('.alert-options');
 			optionFields.find(':input[name]').each(function(i, el){
 				var $this = $(this),
 					name,

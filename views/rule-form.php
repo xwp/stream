@@ -1,6 +1,6 @@
 <div class="wrap">
 
-	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream_notification' ) : _e( 'Add Notification Rule', 'stream_notification' ); ?></h2>
+	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream-notifications' ) : _e( 'Add Notification Rule', 'stream-notifications' ); ?></h2>
 
 	<form action="" method="post">
 
@@ -12,7 +12,7 @@
 
 					<div id="titlediv">
 						<div id="titlewrap">
-							<input type="text" name="summary" size="30" value="<?php echo esc_attr( $rule->summary ) ?>" id="title" autocomplete="off" keyev="true" placeholder="<?php _e( 'Rule title', 'stream_notification' ) ?>">
+							<input type="text" name="summary" size="30" value="<?php echo esc_attr( $rule->summary ) ?>" id="title" autocomplete="off" keyev="true" placeholder="<?php _e( 'Rule title', 'stream-notifications' ) ?>">
 						</div>
 					</div><!-- /titlediv -->
 				</div><!-- /post-body-content -->
@@ -22,7 +22,7 @@
 						<div id="submitdiv" class="postbox ">
 							<h3 class="hndle">
 								<span>
-									<?php _e( 'Status', 'stream_notification' ) ?>
+									<?php _e( 'Status', 'stream-notifications' ) ?>
 								</span>
 							</h3>
 							<div class="inside">
@@ -31,7 +31,7 @@
 										<div id="misc-publishing-actions">
 											<div class="misc-pub-section misc-pub-post-status">
 												<label for="post_status">
-													<?php _e( 'Active', 'stream_notification' ) ?>
+													<?php _e( 'Active', 'stream-notifications' ) ?>
 												</label>
 												<span id="post-status-display">
 													<input type="checkbox" name="visibility" id="post_status" value="active" <?php checked( $rule->visibility, 'active' ) ?>>
@@ -43,13 +43,13 @@
 									<div id="major-publishing-actions">
 										<div id="delete-action">
 											<a class="submitdelete deletion" href="#delete-post">
-												<?php _e( 'Move to Trash', 'stream_notification' ) ?>
+												<?php _e( 'Move to Trash', 'stream-notifications' ) ?>
 											</a>
 										</div>
 
 										<div id="publishing-action">
 											<span class="spinner"></span>
-											<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php _e( 'Save', 'stream_notification' ) ?>" accesskey="p">
+											<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php _e( 'Save', 'stream-notifications' ) ?>" accesskey="p">
 										</div>
 										<div class="clear"></div>
 									</div>
@@ -65,12 +65,12 @@
 
 						<div id="triggers" class="postbox">
 							<h3 class="hndle">
-								<span><?php _e( 'Triggers', 'stream_notification' ) ?></span>
+								<span><?php _e( 'Triggers', 'stream-notifications' ) ?></span>
 							</h3>
 							<div class="inside">
 
-								<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php _e( 'Add Trigger', 'stream_notification' ) ?></a>
-								<a class="add-trigger-group button button-secondary" href="#add-trigger-group" data-group="0"><?php _e( 'Add Group', 'stream_notification' ) ?></a>
+								<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php _e( 'Add Trigger', 'stream-notifications' ) ?></a>
+								<a class="add-trigger-group button button-secondary" href="#add-trigger-group" data-group="0"><?php _e( 'Add Group', 'stream-notifications' ) ?></a>
 
 								<div class="group" rel="0">
 
@@ -80,10 +80,9 @@
 						</div>
 
 						<div id="alerts" class="postbox">
-							<h3 class="hndle"><span><?php _e( 'Alerts', 'stream_notification' ) ?></span></h3>
+							<h3 class="hndle"><span><?php _e( 'Alerts', 'stream-notifications' ) ?></span></h3>
 							<div class="inside">
-								<a class="add-alert button button-secondary" href="#add-alert"><?php _e( 'Add Alert', 'stream_notification' ) ?></a>
-
+								<a class="add-alert button button-secondary" href="#add-alert"><?php _e( 'Add Alert', 'stream-notifications' ) ?></a>
 							</div>
 						</div>
 
@@ -110,17 +109,17 @@
 	<div class="form-row">
 		<input type="hidden" name="triggers[<%- vars.index %>][group]" value="<%- vars.group %>" />
 		<div class="field relation">
-			<select name="triggers[<%- vars.index %>][relation]" class="trigger_relation">
-				<option value="and"><?php _e( 'AND', 'stream_notification' ) ?></option>
-				<option value="or"><?php _e( 'OR', 'stream_notification' ) ?></option>
+			<select name="triggers[<%- vars.index %>][relation]" class="trigger-relation">
+				<option value="and"><?php _e( 'AND', 'stream-notifications' ) ?></option>
+				<option value="or"><?php _e( 'OR', 'stream-notifications' ) ?></option>
 			</select>
 		</div>
 		<div class="field type">
-			<select name="triggers[<%- vars.index %>][type]" class="trigger_type" rel="<%- vars.index %>" placeholder="Choose Rule">
+			<select name="triggers[<%- vars.index %>][type]" class="trigger-type" rel="<%- vars.index %>" placeholder="Choose Rule">
 				<option></option>
 				<% _.each( vars.types, function( type, name ){ %>
-	            <option value="<%- name %>"><%- type.title %></option>
-		        <% }); %>
+				<option value="<%- name %>"><%- type.title %></option>
+				<% }); %>
 			</select>
 		</div>
 		<a href="#" class="delete-trigger">Remove</a>
@@ -133,9 +132,9 @@
 	<div class="group-meta">
 		<input type="hidden" name="groups[<%- vars.index %>][group]" value="<%- vars.parent %>" />
 		<div class="field relation">
-			<select name="groups[<%- vars.index %>][relation]" class="group_relation">
-				<option value="and"><?php _e( 'AND', 'stream_notification' ) ?></option>
-				<option value="or"><?php _e( 'OR', 'stream_notification' ) ?></option>
+			<select name="groups[<%- vars.index %>][relation]" class="group-relation">
+				<option value="and"><?php _e( 'AND', 'stream-notifications' ) ?></option>
+				<option value="or"><?php _e( 'OR', 'stream-notifications' ) ?></option>
 			</select>
 		</div>
 		<a href="#add-trigger" class="add-trigger button button-secondary" data-group="<%- vars.index %>">Add Trigger</a>
@@ -146,26 +145,26 @@
 </script>
 
 <script type="text/template" id="trigger-template-options">
-<div class="trigger_options">
+<div class="trigger-options">
 	<div class="field operator">
-		<select name="triggers[<%- vars.index %>][operator]" class="trigger_operator">
+		<select name="triggers[<%- vars.index %>][operator]" class="trigger-operator">
 			<% _.each( vars.operators, function( list, name ){ %>
-            <option value="<%- name %>"><%- list %></option>
-	        <% }); %>
+			<option value="<%- name %>"><%- list %></option>
+			<% }); %>
 		</select>
 	</div>
 	<div class="field value">
 		<% if ( ['select', 'ajax'].indexOf( vars.type ) != -1 ){ %>
-		<select name="triggers[<%- vars.index %>][value]" class="trigger_value" data-ajax="<% ( vars.ajax ) %>" <% if ( vars.multiple ){ %>multiple="multiple"<% } %>>
+		<select name="triggers[<%- vars.index %>][value]" class="trigger-value" data-ajax="<% ( vars.ajax ) %>" <% if ( vars.multiple ){ %>multiple="multiple"<% } %>>
 			<option></option>
 			<% if ( vars.options ) { %>
 				<% _.each( vars.options, function( list, name ){ %>
-	            <option value="<%- name %>"><%- list %></option>
-		        <% }); %>
-	        <% } %>
+				<option value="<%- name %>"><%- list %></option>
+				<% }); %>
+			<% } %>
 		</select>
 		<% } else { %>
-		<input type="text" name="triggers[<%- vars.index %>][value]" class="trigger_value <% if ( vars.tags ){ %>tags<% } %> <% if ( vars.ajax ){ %>ajax<% } %>">
+		<input type="text" name="triggers[<%- vars.index %>][value]" class="trigger-value <% if ( vars.tags ){ %>tags<% } %> <% if ( vars.ajax ){ %>ajax<% } %>">
 		<% } // endif%>
 	</div>
 </div>
@@ -175,11 +174,11 @@
 <div class="alert" rel="<%- vars.index %>">
 	<div class="form-row">
 		<div class="field type">
-			<select name="alerts[<%- vars.index %>][type]" class="alert_type" rel="<%- vars.index %>" placeholder="Choose Type">
+			<select name="alerts[<%- vars.index %>][type]" class="alert-type" rel="<%- vars.index %>" placeholder="Choose Type">
 				<option></option>
 				<% _.each( vars.adapters, function( type, name ){ %>
-	            <option value="<%- name %>"><%- type.title %></option>
-		        <% }); %>
+				<option value="<%- name %>"><%- type.title %></option>
+				<% }); %>
 			</select>
 		</div>
 		<a href="#" class="delete-alert">Remove</a>
@@ -188,27 +187,27 @@
 </script>
 
 <script type="text/template" id="alert-template-options">
-<table class="alert_options form-table">
+<table class="alert-options form-table">
 	<% for ( field_name in vars.fields ) { var field = vars.fields[field_name]; %>
-		<tr class="form-row">
+		<tr>
 			<th>
 				<label><%- field.title %></label>
 			</th>
 			<td>
 				<div class="field value">
 					<% if ( ['select'].indexOf( field.type ) != -1 ){ %>
-					<select name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert_value widefat" data-ajax="<% ( field.ajax ) %>" <% if ( field.multiple ){ %>multiple="multiple"<% } %>>
+					<select name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat" data-ajax="<% ( field.ajax ) %>" <% if ( field.multiple ){ %>multiple="multiple"<% } %>>
 						<option></option>
 						<% if ( vars.fields[field] ) { %>
 							<% _.each( vars.fields[field], function( list, name ){ %>
-				            <option value="<%- name %>"><%- list %></option>
-					        <% }); %>
-				        <% } %>
+							<option value="<%- name %>"><%- list %></option>
+							<% }); %>
+						<% } %>
 					</select>
 					<% } else if ( ['textarea'].indexOf( field.type ) != -1 ) { %>
-						<textarea name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert_value widefat" cols=30></textarea>
+						<textarea name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value large-text code" rows="10" cols="80"></textarea>
 					<% } else { %>
-					<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert_value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" <% if ( field.ajax && field.key ){ %>data-ajax-key="<%- field.key %>"<% } %> >
+					<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" <% if ( field.ajax && field.key ){ %>data-ajax-key="<%- field.key %>"<% } %> >
 					<% } %>
 					<% if ( field.hint ) { %>
 						<p class="description"><%- field.hint %></p>
@@ -221,7 +220,7 @@
 </script>
 
 <style>
-	.field, .trigger_type, .trigger_options, .trigger_value { float: left; }
+	.field, .trigger-type, .trigger-options, .trigger-value { float: left; }
 	.form-row {
 		clear: both;
 		overflow: hidden;
@@ -229,40 +228,55 @@
 		background: #eee;
 		padding: 10px;
 	}
-	.inside > .group {
+	#triggers .inside,
+	#alerts .inside {
+		margin-top: 12px;
+	}
+	.inside > .group,
+	.inside > .alert {
 		margin: 10px 0 0;
 		background: none;
 		padding: 0;
 
 		-webkit-box-shadow: none;
-		        box-shadow: none;
+			    box-shadow: none;
 	}
-	.group {
+	.group,
+	.alert {
 		background: rgba(0, 0, 0, 0.08);
 		padding: 20px 20px 12px;
 		margin-bottom: 10px;
 		min-height: 16px;
 		clear: both;
 	}
-	.group .form-row {
+	.group .form-row,
+	.alert .form-row {
 		background: rgba(0, 0, 0, 0.03);
 	}
 	.group,
-	.group .form-row {
+	.group .form-row,
+	.alert,
+	.alert .form-row {
 		margin-left: 90px;
 
 		-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
-		        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+			    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
 	}
-	.group .form-row .delete-trigger {
+	.group .form-row .delete-trigger,
+	.alert .form-row .delete-alert {
 		line-height: 29px;
 	}
 	.inside > .group,
-	.inside > .group > .group {
+	.inside > .group > .group,
+	.inside > .alert {
 		margin-left: 0;
 	}
-	.inside > .group > .trigger > .form-row {
+	.inside > .group > .trigger > .form-row,
+	.inside > .alert > .form-row {
 		margin-left: 0;
+	}
+	.alert-options th {
+		width: auto;
 	}
 	.group-meta {
 		float: left;
@@ -284,8 +298,10 @@
 	.trigger.first .field.type {
 		margin-left: 99px;
 	}
-	.delete-trigger, .delete-alert { float: right; }
-
+	.delete-trigger,
+	.delete-alert {
+		float: right;
+	}
 	.select2-container {
 		margin-right: 6px;
 	}
@@ -295,10 +311,10 @@
 	.select2-container .select2-choice > .select2-chosen {
 		font-size: 13px;
 	}
-	.select2-container.trigger_type {
+	.select2-container.trigger-type {
 		width: 180px !important;
 	}
-	.select2-container.trigger_operator {
+	.select2-container.trigger-operator {
 		width: 140px !important;
 	}
 </style>
