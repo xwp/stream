@@ -1,6 +1,19 @@
 <div class="wrap">
 
-	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream-notifications' ) : _e( 'Add New Notification Rule', 'stream-notifications' ); ?></h2>
+	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream-notifications' ) : _e( 'Add New Notification Rule', 'stream-notifications' ); ?>
+		<?php if ( $rule->exists() ) : ?>
+			<?php
+			$new_rule_url = add_query_arg(
+				array(
+					'page' => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
+					'view' => 'rule',
+				),
+				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			);
+			?>
+			<a href="<?php echo esc_url( $new_rule_url ) ?>" class="add-new-h2"><?php _e( 'Add New', 'stream-notifications' ) ?></a>
+		<?php endif; ?>
+	</h2>
 
 	<form action="" method="post">
 
@@ -41,18 +54,20 @@
 									</div>
 
 									<div id="major-publishing-actions">
-										<?php if ( $rule->exists() ): ?>
+										<?php if ( $rule->exists() ) : ?>
 										<div id="delete-action">
-											<a class="submitdelete deletion" href="<?php 
-											echo esc_url_raw(
-												sprintf(
-													'%s?page=%s&action=delete&id=%d&wp_stream_nonce=%s',
-													admin_url( 'admin.php' ),
-													WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
-													$rule->ID,
-													wp_create_nonce( 'delete-record_' . $rule->ID )
-												)
-											); ?>">
+											<?php
+											$delete_link = add_query_arg(
+												array(
+													'page'            => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
+													'action'          => 'delete',
+													'id'              => absint( $rule->ID ),
+													'wp_stream_nonce' => wp_create_nonce( 'delete-record_' . absint( $rule->ID ) ),
+												),
+												admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+											);
+											?>
+											<a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ) ?>">
 												<?php _e( 'Delete', 'stream-notifications' ) ?>
 											</a>
 										</div>

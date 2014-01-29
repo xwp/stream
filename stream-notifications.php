@@ -423,7 +423,14 @@ class WP_Stream_Notifications {
 					do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, false );
 				}
 			} else {
-				wp_redirect( admin_url( 'admin.php?page=' . WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG ) );
+				wp_redirect(
+					add_query_arg(
+						array(
+							'page' => self::NOTIFICATIONS_PAGE_SLUG,
+						),
+						admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+					)
+				);
 			}
 		}
 
@@ -441,7 +448,13 @@ class WP_Stream_Notifications {
 		echo sprintf(
 			'<h2>%s <a href="%s" class="add-new-h2">%s</a></h2>',
 			__( 'Stream Notifications', 'stream-notifications' ),
-			admin_url( 'admin.php?page=wp_stream_notifications&view=rule' ),
+			add_query_arg(
+				array(
+					'page' => self::NOTIFICATIONS_PAGE_SLUG,
+					'view' => 'rule',
+				),
+				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			),
 			__( 'Add New' )
 		); // xss okay
 
