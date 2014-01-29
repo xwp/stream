@@ -164,7 +164,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$author_role = isset( $user->roles[0] ) ? $wp_roles->role_names[$user->roles[0]] : null;
 					$out = sprintf(
 						'<a href="%s">%s <span>%s</span></a><br /><small>%s</small>',
-						add_query_arg( array( 'author' => $author_ID ), admin_url( 'admin.php?page=wp_stream' ) ),
+						add_query_arg(
+							array(
+								'page'   => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+								'author' => absint( $author_ID ),
+							),
+							admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+						),
 						get_avatar( $author_ID, 40 ),
 						$author_name,
 						$author_role
@@ -271,7 +277,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function column_link( $display, $key, $value = null, $title = null ) {
-		$url = admin_url( 'admin.php?page=wp_stream' );
+		$url = add_query_arg(
+			array(
+				'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+			),
+			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+		);
 
 		$args = ! is_array( $key ) ? array( $key => $value ) : $key;
 
@@ -360,7 +371,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
-		$url = admin_url( 'admin.php' );
+		$url = admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
+
 		echo sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss okay
 	}
 
@@ -422,7 +434,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function display() {
-		echo '<form method="get" action="', esc_attr( admin_url( 'admin.php' ) ), '">';
+		echo '<form method="get" action="' . admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) . '">';
 		echo $this->filter_search(); // xss okay
 		parent::display();
 		echo '</form>';
