@@ -335,19 +335,23 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	function filters_form( $which ) {
 		if ( 'top' == $which ) {
 			$filters_string = sprintf(
-				'<input type="hidden" name="page" value="%s"/><input type="hidden" name="wp_stream_nonce" value="%s"/>',
+				'<input type="hidden" name="page" value="%s"/>
+				<input type="hidden" name="wp_stream_nonce" value="%s"/>',
 				WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
 				wp_create_nonce( 'wp_stream_notifications_bulk_actions' )
 			);
 
 			echo sprintf(
-				'%s
+				'<form method="get" action="%s">
+					%s
+				</form>
 				<div class="alignleft actions bulkactions">
 					%s
 				</div>
 				<div class="alignleft actions">
 					%s
 				</div>',
+				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ),
 				$this->filter_search(),
 				$this->stream_notifications_bulk_actions( $which ),
 				$filters_string
