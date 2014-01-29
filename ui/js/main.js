@@ -100,11 +100,14 @@ jQuery(function($){
 			                },
 			                dataType: "json",
 			                success: function(j){
+			                	console.log(j.data)
 			                	$this.select2( 'data', j.data );
 			                }
 		            	})
-					} else {
+					} else if ( $this.hasClass('tags') ) {
 						$this.select2( 'data', [{ id: val, text: val }] );
+					} else {
+						$this.select2( 'val', val );
 					}
 				} );
 			});
@@ -245,7 +248,7 @@ jQuery(function($){
 
 			// populate the trigger value, according to the trigger type
 			if ( trigger.value ) {
-				valueField = row.find('.trigger_value:not(.select2-container)').eq(0);
+				valueField = row.find('.trigger-value:not(.select2-container)').eq(0);
 				if ( valueField.is('select') || valueField.is('.ajax') ) {
 					valueField.trigger( 'select2_populate', trigger.value );
 					// valueField.select2( 'val', trigger.value ).trigger('change');

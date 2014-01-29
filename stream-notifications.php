@@ -505,7 +505,9 @@ class WP_Stream_Notifications {
 					break;
 				case 'action':
 					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
-					$data    = $this->format_json_for_select2( array( $query => $actions[$query] ) );
+					$values = explode( ',', $query );
+					$actions = array_intersect_key( $actions, array_flip( $values ) );
+					$data    = $this->format_json_for_select2( $actions );
 					break;
 			}
 		} else {
