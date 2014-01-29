@@ -208,7 +208,7 @@
 					<% } else if ( ['textarea'].indexOf( field.type ) != -1 ) { %>
 						<textarea name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert_value widefat" cols=30></textarea>
 					<% } else { %>
-					<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert_value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" data-ajax-key="<% if ( field.ajax && field.key ){ %><%- field.key %><% } %>" >
+					<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert_value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" <% if ( field.ajax && field.key ){ %>data-ajax-key="<%- field.key %>"<% } %> >
 					<% } %>
 					<% if ( field.hint ) { %>
 						<p class="description"><%- field.hint %></p>

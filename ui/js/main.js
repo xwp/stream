@@ -34,11 +34,10 @@ jQuery(function($){
 
 			$(elements).filter(':not(.select2-offscreen)').each( function() {
 				var $this = $(this),
-					elementArgs = args,
+					elementArgs = jQuery.extend( {}, args ),
 					tORa = $this.closest('#alerts, #triggers').attr('id');
 				;
 				elementArgs.width = parseInt( $this.css('width'), 10 ) + 30;
-
 				if ( $this.hasClass('ajax') ) {
 					var type = '';
 					if ( ! ( type = $this.data( 'ajax-key' ) ) ) {
