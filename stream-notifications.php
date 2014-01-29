@@ -468,8 +468,26 @@ class WP_Stream_Notifications {
 		if ( $is_single ) {
 			switch ( $type ) {
 				case 'author':
-					$user = get_userdata( $query );
-					$data = array( 'id' => $user->ID, 'text' => $user->display_name );
+					$user_ids = explode( ',', $query );
+					$user_query = new WP_User_Query(
+						array(
+							'include' => $user_ids,
+							'fields' => array( 'ID', 'user_email', 'display_name' )
+						)
+					);
+					if ( $user_query->results ) {
+						$data = $this->format_json_for_select2(
+							$user_query->results,
+							'ID',
+							'display_name'
+						);
+					} else {
+						$data = array();
+					}
+					break;
+				case 'action':
+					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
+					$data    = $this->format_json_for_select2( array( $query => $actions[$query] ) );
 					break;
 			}
 		} else {
