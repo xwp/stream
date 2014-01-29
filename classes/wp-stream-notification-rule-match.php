@@ -131,7 +131,7 @@ class WP_Stream_Notification_Rule_Matcher {
 			case 'in':
 			case '!in':
 				$match = array_filter(
-					$needle,
+					(array) $needle,
 					function( $value ) use ( $haystack ) {
 						return $value == $haystack;
 					}
