@@ -8,7 +8,7 @@ jQuery(function($){
 		i,
 
 		divTriggers = $('#triggers'), // Trigger Playground
-		divAlerts = $('#alerts .inside'), // Alerts Playground
+		divAlerts   = $('#alerts .inside'), // Alerts Playground
 
 		btns = {
 			add_trigger: '.add-trigger',
@@ -17,10 +17,10 @@ jQuery(function($){
 			del: '#delete-trigger'
 		},
 
-		tmpl			   = _.template( $('script#trigger-template-row').html() ),
-		tmpl_options	   = _.template( $('script#trigger-template-options').html() ),
-		tmpl_group		 = _.template( $('script#trigger-template-group').html() ),
-		tmpl_alert		 = _.template( $('script#alert-template-row').html() ),
+		tmpl               = _.template( $('script#trigger-template-row').html() ),
+		tmpl_options       = _.template( $('script#trigger-template-options').html() ),
+		tmpl_group         = _.template( $('script#trigger-template-group').html() ),
+		tmpl_alert         = _.template( $('script#alert-template-row').html() ),
 		tmpl_alert_options = _.template( $('script#alert-template-options').html() ),
 
 		select2_args = {
@@ -75,7 +75,7 @@ jQuery(function($){
 								type: 'post',
 								data: {
 									action: 'stream_notification_endpoint',
-									q : id,
+									q     : id,
 									single: 1,
 									type  : type,
 								},
@@ -93,10 +93,10 @@ jQuery(function($){
 		// Add new rule
 		.on( 'click.sn', btns.add_trigger, function(e) {
 			e.preventDefault();
-			var $this = $(this),
-				index = 0,
-				lastItem  = null,
-				group = divTriggers.find('.group').filter( '[rel=' + $this.data('group') + ']' );
+			var $this    = $(this),
+				index    = 0,
+				lastItem = null,
+				group    = divTriggers.find('.group').filter( '[rel=' + $this.data('group') + ']' );
 
 			if ( ( lastItem = divTriggers.find('.trigger').last() ) && lastItem.size() ) {
 				index = parseInt( lastItem.attr('rel') ) + 1;
@@ -105,7 +105,7 @@ jQuery(function($){
 			group.append( tmpl( $.extend(
 				{ index: index, group: $this.data('group') },
 				stream_notifications
-				) ) );
+			) ) );
 			group.find('.trigger').first().addClass('first');
 			selectify( group.find('select') );
 		})
@@ -168,7 +168,7 @@ jQuery(function($){
 			divAlerts.append( tmpl_alert( $.extend(
 				{ index: index },
 				stream_notifications
-				) ) );
+			) ) );
 			selectify( divAlerts.find('.alert select') );
 		})
 
@@ -209,7 +209,7 @@ jQuery(function($){
 				var group = notification_rule.groups[trigger.group];
 				$( btns.add_group ).filter('[data-group='+group.group+']').trigger('click', trigger.group);
 				groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']');
-				groupDiv.find('select.group_relation').select2( 'val', group.relation );
+				groupDiv.find('select.group-relation').select2( 'val', group.relation );
 			}
 
 			// create the new row, by clicking the add-trigger button in the appropriate group

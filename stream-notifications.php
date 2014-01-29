@@ -389,11 +389,11 @@ class WP_Stream_Notifications {
 			$rule = new WP_Stream_Notification_Rule( $id );
 
 			if ( ! wp_verify_nonce( filter_input( INPUT_POST, '_wpnonce' ), 'stream-notifications-form' ) ) {
-				wp_die( __( 'Invalid form parameters.', 'stream_notification' ) );
+				wp_die( __( 'Invalid form parameters.', 'stream-notifications' ) );
 			}
 
 			if ( empty( $data['triggers'] ) ) {
-				wp_die( __( 'Rules cannot be saved without triggers!', 'stream_notification' ) );
+				wp_die( __( 'Rules cannot be saved without triggers!', 'stream-notifications' ) );
 			}
 
 			if ( ! isset( $data['visibility'] ) ) {
@@ -457,8 +457,8 @@ class WP_Stream_Notifications {
 	 */
 	public function form_ajax_ep() {
 		// BIG @TODO: Make the request context-aware,
-		// ie: get other rules ( maybe in the same group only ? ), so an author 
-		// query would check if there is a author_role rule available to limit 
+		// ie: get other rules ( maybe in the same group only ? ), so an author
+		// query would check if there is a author_role rule available to limit
 		// the results according to it
 
 		$type      = filter_input( INPUT_POST, 'type' );

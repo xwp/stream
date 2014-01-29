@@ -1,6 +1,6 @@
 <div class="wrap">
 
-	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream_notification' ) : _e( 'Add Notification Rule', 'stream_notification' ); ?></h2>
+	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream-notifications' ) : _e( 'Add Notification Rule', 'stream-notifications' ); ?></h2>
 
 	<form action="" method="post">
 
@@ -12,7 +12,7 @@
 
 					<div id="titlediv">
 						<div id="titlewrap">
-							<input type="text" name="summary" size="30" value="<?php echo esc_attr( $rule->summary ) ?>" id="title" autocomplete="off" keyev="true" placeholder="<?php _e( 'Rule title', 'stream_notification' ) ?>">
+							<input type="text" name="summary" size="30" value="<?php echo esc_attr( $rule->summary ) ?>" id="title" autocomplete="off" keyev="true" placeholder="<?php _e( 'Rule title', 'stream-notifications' ) ?>">
 						</div>
 					</div><!-- /titlediv -->
 				</div><!-- /post-body-content -->
@@ -22,7 +22,7 @@
 						<div id="submitdiv" class="postbox ">
 							<h3 class="hndle">
 								<span>
-									<?php _e( 'Status', 'stream_notification' ) ?>
+									<?php _e( 'Status', 'stream-notifications' ) ?>
 								</span>
 							</h3>
 							<div class="inside">
@@ -31,7 +31,7 @@
 										<div id="misc-publishing-actions">
 											<div class="misc-pub-section misc-pub-post-status">
 												<label for="post_status">
-													<?php _e( 'Active', 'stream_notification' ) ?>
+													<?php _e( 'Active', 'stream-notifications' ) ?>
 												</label>
 												<span id="post-status-display">
 													<input type="checkbox" name="visibility" id="post_status" value="active" <?php checked( $rule->visibility, 'active' ) ?>>
@@ -43,13 +43,13 @@
 									<div id="major-publishing-actions">
 										<div id="delete-action">
 											<a class="submitdelete deletion" href="#delete-post">
-												<?php _e( 'Move to Trash', 'stream_notification' ) ?>
+												<?php _e( 'Move to Trash', 'stream-notifications' ) ?>
 											</a>
 										</div>
 
 										<div id="publishing-action">
 											<span class="spinner"></span>
-											<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php _e( 'Save', 'stream_notification' ) ?>" accesskey="p">
+											<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php _e( 'Save', 'stream-notifications' ) ?>" accesskey="p">
 										</div>
 										<div class="clear"></div>
 									</div>
@@ -65,12 +65,12 @@
 
 						<div id="triggers" class="postbox">
 							<h3 class="hndle">
-								<span><?php _e( 'Triggers', 'stream_notification' ) ?></span>
+								<span><?php _e( 'Triggers', 'stream-notifications' ) ?></span>
 							</h3>
 							<div class="inside">
 
-								<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php _e( 'Add Trigger', 'stream_notification' ) ?></a>
-								<a class="add-trigger-group button button-secondary" href="#add-trigger-group" data-group="0"><?php _e( 'Add Group', 'stream_notification' ) ?></a>
+								<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php _e( 'Add Trigger', 'stream-notifications' ) ?></a>
+								<a class="add-trigger-group button button-secondary" href="#add-trigger-group" data-group="0"><?php _e( 'Add Group', 'stream-notifications' ) ?></a>
 
 								<div class="group" rel="0">
 
@@ -80,9 +80,9 @@
 						</div>
 
 						<div id="alerts" class="postbox">
-							<h3 class="hndle"><span><?php _e( 'Alerts', 'stream_notification' ) ?></span></h3>
+							<h3 class="hndle"><span><?php _e( 'Alerts', 'stream-notifications' ) ?></span></h3>
 							<div class="inside">
-								<a class="add-alert button button-secondary" href="#add-alert"><?php _e( 'Add Alert', 'stream_notification' ) ?></a>
+								<a class="add-alert button button-secondary" href="#add-alert"><?php _e( 'Add Alert', 'stream-notifications' ) ?></a>
 							</div>
 						</div>
 
@@ -110,8 +110,8 @@
 		<input type="hidden" name="triggers[<%- vars.index %>][group]" value="<%- vars.group %>" />
 		<div class="field relation">
 			<select name="triggers[<%- vars.index %>][relation]" class="trigger-relation">
-				<option value="and"><?php _e( 'AND', 'stream_notification' ) ?></option>
-				<option value="or"><?php _e( 'OR', 'stream_notification' ) ?></option>
+				<option value="and"><?php _e( 'AND', 'stream-notifications' ) ?></option>
+				<option value="or"><?php _e( 'OR', 'stream-notifications' ) ?></option>
 			</select>
 		</div>
 		<div class="field type">
@@ -132,9 +132,9 @@
 	<div class="group-meta">
 		<input type="hidden" name="groups[<%- vars.index %>][group]" value="<%- vars.parent %>" />
 		<div class="field relation">
-			<select name="groups[<%- vars.index %>][relation]" class="group_relation">
-				<option value="and"><?php _e( 'AND', 'stream_notification' ) ?></option>
-				<option value="or"><?php _e( 'OR', 'stream_notification' ) ?></option>
+			<select name="groups[<%- vars.index %>][relation]" class="group-relation">
+				<option value="and"><?php _e( 'AND', 'stream-notifications' ) ?></option>
+				<option value="or"><?php _e( 'OR', 'stream-notifications' ) ?></option>
 			</select>
 		</div>
 		<a href="#add-trigger" class="add-trigger button button-secondary" data-group="<%- vars.index %>">Add Trigger</a>
