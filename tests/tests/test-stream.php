@@ -20,7 +20,7 @@ class Test_WP_Stream extends WP_StreamTestCase {
 		$this->assertTrue( defined( 'WP_STREAM_CLASS_DIR' ), 'WP_STREAM_CLASS_DIR is not defined' );
 
 		$actions_tests = array(
-			array( 'plugins_loaded', 'WP_Stream_Settings', 'load' ),
+			array( 'init', 'WP_Stream_Settings', 'load' ),
 			array( 'plugins_loaded', 'WP_Stream_Log', 'load' ),
 			array( 'init', 'WP_Stream_Connectors', 'load' ),
 		);
