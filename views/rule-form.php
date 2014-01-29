@@ -41,11 +41,22 @@
 									</div>
 
 									<div id="major-publishing-actions">
+										<?php if ( $rule->exists() ): ?>
 										<div id="delete-action">
-											<a class="submitdelete deletion" href="#delete-post">
-												<?php _e( 'Move to Trash', 'stream-notifications' ) ?>
+											<a class="submitdelete deletion" href="<?php 
+											echo esc_url_raw(
+												sprintf(
+													'%s?page=%s&action=delete&id=%d&wp_stream_nonce=%s',
+													admin_url( 'admin.php' ),
+													WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
+													$rule->ID,
+													wp_create_nonce( 'delete-record_' . $rule->ID )
+												)
+											); ?>">
+												<?php _e( 'Delete', 'stream-notifications' ) ?>
 											</a>
 										</div>
+										<?php endif ?>
 
 										<div id="publishing-action">
 											<span class="spinner"></span>
