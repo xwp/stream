@@ -68,7 +68,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 
  * Multisite view of all activity records on a network
  * Support for IPv6 addresses
- * Language support for Arabic, Czech, and Slovak
+ * Language support for Arabic, Czech, Slovak and Indonesian
 
 **See room for improvement?**
 
@@ -88,6 +88,15 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.0.7 =
+**2014/01/29** - Code efficiency improvements when fetching admin area URLs. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 1.0.6 =
+**2014/01/28** - Query improvements, default connector interface, hook added for general settings fields. Bug fixes. Props [dero](https://github.com/dero), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 1.0.5 =
+**2014/01/27** - Bug fix for live updates breaking columns when some are hidden via Screen Options. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
 
 = 1.0.4 =
 **2014/01/23** - Language pack for Polish. Bug fixes. Props [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [kucrut](http://profiles.wordpress.org/kucrut/)

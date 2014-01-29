@@ -40,6 +40,18 @@ class WP_Stream_Connectors {
 		}
 
 		foreach ( self::$connectors as $connector ) {
+			// Check if the connectors extends the WP_Stream_Connector class, if not skip it
+			if ( ! is_subclass_of( $connector, 'WP_Stream_Connector' ) ) {
+				add_action(
+					'admin_notices',
+					function() use( $connector ) {
+						printf( '<div class="error"><p>%s %s</p></div>', $connector, __( "class wasn't loaded because it doesn't extends the WP_Stream_Connector class", 'stream' ) );
+					}
+				);
+
+				continue;
+			}
+
 			$connector::register();
 
 			// Add new terms to our label lookup array
