@@ -70,7 +70,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 
  * Multisite view of all activity records on a network
  * Support for IPv6 addresses
- * Language support for Arabic, Czech, Slovak and Indonesian
+ * Language support for Arabic (RTL), Czech, Slovak and Indonesian
 
 **See room for improvement?**
 
