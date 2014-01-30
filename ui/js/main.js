@@ -25,6 +25,7 @@ jQuery(function($){
 
 		select2_args = {
 			allowClear: true,
+			minimumResultsForSearch: 5,
 			width: '160px'
 		},
 
