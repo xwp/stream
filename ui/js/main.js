@@ -209,9 +209,9 @@ jQuery(function($){
 
 			if ( ! options ) { return; }
 
-			$this.after( tmpl_alert_options( $.extend( options, { index: index } ) ) );
-			selectify( $this.parent().find('select') );
-			selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
+			$this.parent().after( tmpl_alert_options( $.extend( options, { index: index } ) ) );
+			selectify( $this.parent().next().find('select') );
+			selectify( $this.parent().next().find('input.tags, input.ajax'), { tags: [] } );
 		})
 
 		// Delete an alert
