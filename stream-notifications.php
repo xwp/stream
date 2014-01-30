@@ -578,6 +578,7 @@ class WP_Stream_Notifications {
 			array( 'visibility' => $visibility ),
 			array( '%s' )
 		);
+
 		wp_redirect( add_query_arg( array(
 			'wp_stream_nonce' => false,
 			'action'          => false,
@@ -605,6 +606,7 @@ class WP_Stream_Notifications {
 		}
 
 		self::delete_record( $id );
+		
 		wp_redirect( add_query_arg( array(
 			'wp_stream_nonce' => false,
 			'action'          => false,
@@ -623,6 +625,9 @@ class WP_Stream_Notifications {
 			$formats,
 			array( '%d', '%s' )
 		); // db call ok, cache ok
+
+		// Refresh rule cache
+		$this->matcher->refresh();
 	}
 
 	public function delete_record( $id ) {
@@ -634,6 +639,9 @@ class WP_Stream_Notifications {
 				'ID' => $id,
 			)
 		); // db call ok, cache ok
+
+		// Refresh rule cache
+		$this->matcher->refresh();
 	}
 
 	/**
