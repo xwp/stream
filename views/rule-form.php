@@ -252,6 +252,9 @@
 		background: #eee;
 		padding: 10px;
 	}
+	#triggers .inside {
+		padding-bottom: 3px;
+	}
 	#triggers .inside,
 	#alerts .inside {
 		margin-top: 12px;
@@ -259,20 +262,21 @@
 	#alerts .inside {
 		padding: 0;
 	}
-	.inside > .group {
-		margin: 10px 0 0;
-		background: none;
-		padding: 0;
-
-		-webkit-box-shadow: none;
-			    box-shadow: none;
-	}
 	.group {
 		background: rgba(0, 0, 0, 0.08);
 		padding: 20px 20px 12px;
 		margin-bottom: 10px;
 		min-height: 16px;
 		clear: both;
+	}
+	.inside > .group {
+		margin: 0;
+		min-height: 0;
+		background: none;
+		padding: 0;
+
+		-webkit-box-shadow: none;
+			    box-shadow: none;
 	}
 	.group .form-row {
 		background: rgba(0, 0, 0, 0.03);
@@ -283,6 +287,11 @@
 
 		-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
 			    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+	}
+	.add-trigger,
+	.add-trigger-group {
+		margin-right: 4px !important;
+		margin-bottom: 10px !important;
 	}
 	.group .delete-trigger,
 	.alert .delete-alert {
@@ -305,6 +314,12 @@
 	.inside > .alert {
 		margin-left: 0;
 	}
+	.inside > .group > .trigger > .form-row {
+		margin-top: 10px;
+	}
+	.inside > .group > .trigger.first > .form-row {
+		margin-top: 0;
+	}
 	.inside > .group > .trigger > .form-row,
 	.inside > .alert > .form-row {
 		margin-left: 0;
@@ -317,7 +332,6 @@
 	}
 	.group-meta a {
 		font-size: 10px;
-		padding-left: 5px;
 	}
 	.group-meta a.delete-group {
 		line-height: 28px;
@@ -353,6 +367,9 @@
 	}
 	#alerts .select2-container {
 		max-width: 300px;
+	}
+	.select2-container.alert-type {
+		min-width: 150px;
 	}
 	.alert .form-row .type {
 		padding: 12px;
