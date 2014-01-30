@@ -15,7 +15,7 @@
 		<?php endif; ?>
 	</h2>
 
-	<form action="" method="post">
+	<form action="" method="post" id="rule-form">
 
 		<?php wp_nonce_field( 'stream-notifications-form' ); ?>
 
