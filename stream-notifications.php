@@ -204,11 +204,11 @@ class WP_Stream_Notifications {
 				'title'     => __( 'Summary', 'stream-notifications' ),
 				'type'      => 'text',
 				'operators' => array(
-					'='            => __( 'is', 'stream-notifications' ),
-					'!='           => __( 'is not', 'stream-notifications' ),
-					'contains'     => __( 'contains', 'stream-notifications' ),
-					'!contains'    => __( 'does not contain', 'stream-notifications' ),
-					'regex'        => __( 'regex', 'stream-notifications' ),
+					'='         => __( 'is', 'stream-notifications' ),
+					'!='        => __( 'is not', 'stream-notifications' ),
+					'contains'  => __( 'contains', 'stream-notifications' ),
+					'!contains' => __( 'does not contain', 'stream-notifications' ),
+					'regex'     => __( 'regex', 'stream-notifications' ),
 				),
 			),
 			// 'object_type' => array(
@@ -250,7 +250,7 @@ class WP_Stream_Notifications {
 					'in'  => __( 'in', 'stream-notifications' ),
 					'!in' => __( 'not in', 'stream-notifications' ),
 				),
-				'options'  => $roles_arr,
+				'options' => $roles_arr,
 			),
 
 			'author' => array(
@@ -414,7 +414,14 @@ class WP_Stream_Notifications {
 			}
 
 			if ( $result && $action != 'edit' ) {
-				wp_redirect( add_query_arg( array( 'action' => 'edit', 'id' => $rule->ID ) ) );
+				wp_redirect(
+					add_query_arg(
+						array(
+							'action' => 'edit',
+							'id'     => $rule->ID,
+						)
+					)
+				);
 			}
 		}
 
@@ -490,7 +497,7 @@ class WP_Stream_Notifications {
 					$user_query = new WP_User_Query(
 						array(
 							'include' => $user_ids,
-							'fields' => array( 'ID', 'user_email', 'display_name' )
+							'fields'  => array( 'ID', 'user_email', 'display_name' ),
 						)
 					);
 					if ( $user_query->results ) {
@@ -505,7 +512,7 @@ class WP_Stream_Notifications {
 					break;
 				case 'action':
 					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
-					$values = explode( ',', $query );
+					$values  = explode( ',', $query );
 					$actions = array_intersect_key( $actions, array_flip( $values ) );
 					$data    = $this->format_json_for_select2( $actions );
 					break;
@@ -514,7 +521,7 @@ class WP_Stream_Notifications {
 			switch ( $type ) {
 				case 'author':
 					$users = get_users( array( 'search' => '*' . $query . '*' ) );
-					$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
+					$data  = $this->format_json_for_select2( $users, 'ID', 'display_name' );
 					break;
 				case 'action':
 					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
@@ -550,7 +557,7 @@ class WP_Stream_Notifications {
 			$return[] = array(
 				'id'   => $key,
 				'text' => $vals[$idx],
-				);
+			);
 		}
 		return $return;
 	}
@@ -578,12 +585,16 @@ class WP_Stream_Notifications {
 			array( 'visibility' => $visibility ),
 			array( '%s' )
 		);
-		wp_redirect( add_query_arg( array(
-			'wp_stream_nonce' => false,
-			'action'          => false,
-			'id'              => false,
-			'visibility'      => $visibility,
-		) ) );
+		wp_redirect(
+			add_query_arg(
+				array(
+				'wp_stream_nonce' => false,
+				'action'          => false,
+				'id'              => false,
+				'visibility'      => $visibility,
+				)
+			)
+		);
 	}
 
 	/*
@@ -605,12 +616,16 @@ class WP_Stream_Notifications {
 		}
 
 		self::delete_record( $id );
-		wp_redirect( add_query_arg( array(
-			'wp_stream_nonce' => false,
-			'action'          => false,
-			'id'              => false,
-			'visibility'      => $visibility,
-		) ) );
+		wp_redirect(
+			add_query_arg(
+				array(
+				'wp_stream_nonce' => false,
+				'action'          => false,
+				'id'              => false,
+				'visibility'      => $visibility,
+				)
+			)
+		);
 	}
 
 	public function update_record( $id, $fields, $formats ) {
@@ -693,63 +708,63 @@ class WP_Stream_Notifications {
 
 	/**
 	 * Add a sample rule, used upon activation
-	 * 
+	 *
 	 */
 	public function add_sample_rule() {
 		$rule = new WP_Stream_Notification_Rule();
 		$details = array(
-			'author' => 0,
-			'summary' => __( 'Sample Rule', 'stream-notifications' ),
+			'author'     => 0,
+			'summary'    => __( 'Sample Rule', 'stream-notifications' ),
 			'visibility' => 'inactive',
-			'type' => 'notification_rule',
-			'triggers' => array(
+			'type'       => 'notification_rule',
+			'triggers'   => array(
 				array(
-					'group' => 0,
+					'group'    => 0,
 					'relation' => 'and',
-					'type' => 'author_role',
+					'type'     => 'author_role',
 					'operator' => '!=',
-					'value' => 'administrator',
+					'value'    => 'administrator',
 				),
 				array(
-					'group' => 0,
+					'group'    => 0,
 					'relation' => 'and',
-					'type' => 'action',
+					'type'     => 'action',
 					'operator' => '=',
-					'value' => 'created,updated',
+					'value'    => 'created,updated',
 				),
 				array(
-					'group' => 1,
+					'group'    => 1,
 					'relation' => 'and',
-					'type' => 'author_role',
+					'type'     => 'author_role',
 					'operator' => '=',
-					'value' => 'administrator',
+					'value'    => 'administrator',
 				),
 				array(
-					'group' => 1,
+					'group'    => 1,
 					'relation' => 'and',
-					'type' => 'connector',
+					'type'     => 'connector',
 					'operator' => '=',
-					'value' => 'users',
+					'value'    => 'users',
 				),
 				array(
-					'group' => 1,
+					'group'    => 1,
 					'relation' => 'and',
-					'type' => 'action',
+					'type'     => 'action',
 					'operator' => '=',
-					'value' => 'deleted',
+					'value'    => 'deleted',
 				),
 			),
 			'groups' => array(
 				1 => array(
-					'group' => 0,
+					'group'    => 0,
 					'relation' => 'or',
 				),
 			),
 			'alerts' => array(
 				array(
-					'type' => 'email',
-					'users' => '1',
-					'emails' => '',
+					'type'    => 'email',
+					'users'   => '1',
+					'emails'  => '',
 					'subject' => __( '[Stream Notification] %%summary%%', 'stream-notifications' ),
 					'message' => __( "The following just happened on your site:\r\n\r\n%%summary%%\r\n\r\nDate of action: %%created%%", 'stream-notifications' )
 				),
