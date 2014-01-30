@@ -679,6 +679,87 @@ class WP_Stream_Notifications {
 	}
 
 	/**
+	 * Plugin activation routine
+	 * @return void
+	 */
+	public function on_activation() {
+		// Add sample rule
+		if ( ! stream_query( 'type=notification_rule&ignore_context=1' ) ) {
+			$this->load();
+			$this->add_sample_rule();
+		}
+		// add_action( 'plugins_loaded', array( $this, 'add_sample_rule' ) );
+	}
+
+	/**
+	 * Add a sample rule, used upon activation
+	 * 
+	 */
+	public function add_sample_rule() {
+		$rule = new WP_Stream_Notification_Rule();
+		$details = array(
+			'author' => 0,
+			'summary' => __( 'Sample Rule', 'stream-notifications' ),
+			'visibility' => 'inactive',
+			'type' => 'notification_rule',
+			'triggers' => array(
+				array(
+					'group' => 0,
+					'relation' => 'and',
+					'type' => 'author_role',
+					'operator' => '!=',
+					'value' => 'administrator',
+				),
+				array(
+					'group' => 0,
+					'relation' => 'and',
+					'type' => 'action',
+					'operator' => '=',
+					'value' => 'created,updated',
+				),
+				array(
+					'group' => 1,
+					'relation' => 'and',
+					'type' => 'author_role',
+					'operator' => '=',
+					'value' => 'administrator',
+				),
+				array(
+					'group' => 1,
+					'relation' => 'and',
+					'type' => 'connector',
+					'operator' => '=',
+					'value' => 'users',
+				),
+				array(
+					'group' => 1,
+					'relation' => 'and',
+					'type' => 'action',
+					'operator' => '=',
+					'value' => 'deleted',
+				),
+			),
+			'groups' => array(
+				1 => array(
+					'group' => 0,
+					'relation' => 'or',
+				),
+			),
+			'alerts' => array(
+				array(
+					'type' => 'email',
+					'users' => '1',
+					'emails' => '',
+					'subject' => __( '[Stream Notification] %%summary%%', 'stream-notifications' ),
+					'message' => __( "The following just happened on your site:\r\n\r\n%%summary%%\r\n\r\nDate of action: %%created%%", 'stream-notifications' )
+				),
+			),
+		);
+		$rule->load_from_array( $details );
+		$rule->save();
+	}
+
+	/**
 	 * Return active instance of WP_Stream, create one if it doesn't exist
 	 *
 	 * @return WP_Stream
@@ -694,3 +775,4 @@ class WP_Stream_Notifications {
 }
 
 $GLOBALS['wp_stream_notifications'] = WP_Stream_Notifications::get_instance();
+register_activation_hook( __FILE__, array( $GLOBALS['wp_stream_notifications'], 'on_activation' ) );
