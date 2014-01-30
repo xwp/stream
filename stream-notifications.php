@@ -513,7 +513,9 @@ class WP_Stream_Notifications {
 		} else {
 			switch ( $type ) {
 				case 'author':
+					add_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
 					$users = get_users( array( 'search' => '*' . $query . '*' ) );
+					remove_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
 					$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
 					break;
 				case 'action':
@@ -642,6 +644,16 @@ class WP_Stream_Notifications {
 
 		// Refresh rule cache
 		$this->matcher->refresh();
+	}
+
+	public function fix_user_query_display_name( $query ) {
+		global $wpdb;
+		$search = $query->query_vars['search'];
+		if ( empty( $search ) ) {
+			return;
+		}
+		$search = str_replace( '*', '', $search );
+		$query->query_where .= $wpdb->prepare( " OR $wpdb->users.display_name LIKE %s", '%' . like_escape( $search ) . '%' );
 	}
 
 	/**
