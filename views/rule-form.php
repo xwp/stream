@@ -1,6 +1,6 @@
 <div class="wrap">
 
-	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream-notifications' ) : _e( 'Add New Notification Rule', 'stream-notifications' ); ?>
+	<h2><?php $rule->exists() ? esc_html_e( 'Edit Notification Rule', 'stream-notifications' ) : esc_html_e( 'Add New Notification Rule', 'stream-notifications' ); ?>
 		<?php if ( $rule->exists() ) : ?>
 			<?php
 			$new_link = add_query_arg(
@@ -11,7 +11,7 @@
 				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 			);
 			?>
-			<a href="<?php echo esc_url( $new_link ) ?>" class="add-new-h2"><?php _e( 'Add New', 'stream-notifications' ) ?></a>
+			<a href="<?php echo esc_url( $new_link ) ?>" class="add-new-h2"><?php esc_html_e( 'Add New', 'stream-notifications' ) ?></a>
 		<?php endif; ?>
 	</h2>
 
@@ -25,7 +25,7 @@
 
 					<div id="titlediv">
 						<div id="titlewrap">
-							<input type="text" name="summary" size="30" value="<?php echo esc_attr( $rule->summary ) ?>" id="title" autocomplete="off" keyev="true" placeholder="<?php _e( 'Rule title', 'stream-notifications' ) ?>">
+							<input type="text" name="summary" size="30" value="<?php echo esc_attr( $rule->summary ) ?>" id="title" autocomplete="off" keyev="true" placeholder="<?php esc_attr_e( 'Rule title', 'stream-notifications' ) ?>">
 						</div>
 					</div><!-- /titlediv -->
 				</div><!-- /post-body-content -->
@@ -34,48 +34,44 @@
 					<div id="side-sortables" class="meta-box-sortables ui-sortable">
 						<div id="submitdiv" class="postbox ">
 							<h3 class="hndle">
-								<span>
-									<?php _e( 'Status', 'stream-notifications' ) ?>
-								</span>
+								<span><?php esc_html_e( 'Publish', 'stream-notifications' ) ?></span>
 							</h3>
 							<div class="inside">
 								<div class="submitbox" id="submitpost">
 									<div id="minor-publishing">
 										<div id="misc-publishing-actions">
 											<div class="misc-pub-section misc-pub-post-status">
-												<label for="post_status">
-													<?php _e( 'Active', 'stream-notifications' ) ?>
+												<label for="notification_visibility">
+													<input type="checkbox" name="visibility" id="notification_visibility" value="active" <?php checked( $rule->visibility, 'active' ) ?>>
+													<?php esc_html_e( 'Active', 'stream-notifications' ) ?>
 												</label>
-												<span id="post-status-display">
-													<input type="checkbox" name="visibility" id="post_status" value="active" <?php checked( $rule->visibility, 'active' ) ?>>
-												</span>
 											</div>
 										</div>
 									</div>
 
 									<div id="major-publishing-actions">
 										<?php if ( $rule->exists() ) : ?>
-										<div id="delete-action">
-											<?php
-											$delete_link = add_query_arg(
-												array(
-													'page'            => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
-													'action'          => 'delete',
-													'id'              => absint( $rule->ID ),
-													'wp_stream_nonce' => wp_create_nonce( 'delete-record_' . absint( $rule->ID ) ),
-												),
-												admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-											);
-											?>
-											<a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ) ?>">
-												<?php _e( 'Delete', 'stream-notifications' ) ?>
-											</a>
-										</div>
-										<?php endif ?>
+											<div id="delete-action">
+												<?php
+												$delete_link = add_query_arg(
+													array(
+														'page'            => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
+														'action'          => 'delete',
+														'id'              => absint( $rule->ID ),
+														'wp_stream_nonce' => wp_create_nonce( 'delete-record_' . absint( $rule->ID ) ),
+													),
+													admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+												);
+												?>
+												<a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ) ?>">
+													<?php esc_html_e( 'Delete permanently', 'stream-notifications' ) ?>
+												</a>
+											</div>
+										<?php endif; ?>
 
 										<div id="publishing-action">
 											<span class="spinner"></span>
-											<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php _e( 'Save', 'stream-notifications' ) ?>" accesskey="p">
+											<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php $rule->exists() ? esc_attr_e( 'Update', 'stream-notifications' ) : esc_attr_e( 'Save', 'stream-notifications' ) ?>" accesskey="p">
 										</div>
 										<div class="clear"></div>
 									</div>
@@ -91,12 +87,12 @@
 
 						<div id="triggers" class="postbox">
 							<h3 class="hndle">
-								<span><?php _e( 'Triggers', 'stream-notifications' ) ?></span>
+								<span><?php esc_html_e( 'Triggers', 'stream-notifications' ) ?></span>
 							</h3>
 							<div class="inside">
 
-								<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php _e( 'Add Trigger', 'stream-notifications' ) ?></a>
-								<a class="add-trigger-group button button-secondary" href="#add-trigger-group" data-group="0"><?php _e( 'Add Group', 'stream-notifications' ) ?></a>
+								<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php esc_html_e( 'Add Trigger', 'stream-notifications' ) ?></a>
+								<a class="add-trigger-group button button-secondary" href="#add-trigger-group" data-group="0"><?php esc_html_e( 'Add Group', 'stream-notifications' ) ?></a>
 
 								<div class="group" rel="0">
 
@@ -106,9 +102,9 @@
 						</div>
 
 						<div id="alerts" class="postbox">
-							<h3 class="hndle"><span><?php _e( 'Alerts', 'stream-notifications' ) ?></span></h3>
+							<h3 class="hndle"><span><?php esc_html_e( 'Alerts', 'stream-notifications' ) ?></span></h3>
 							<div class="inside">
-								<a class="add-alert button button-secondary" href="#add-alert"><?php _e( 'Add Alert', 'stream-notifications' ) ?></a>
+								<a class="add-alert button button-secondary" href="#add-alert"><?php esc_html_e( 'Add Alert', 'stream-notifications' ) ?></a>
 							</div>
 						</div>
 
@@ -136,8 +132,8 @@
 		<input type="hidden" name="triggers[<%- vars.index %>][group]" value="<%- vars.group %>" />
 		<div class="field relation">
 			<select name="triggers[<%- vars.index %>][relation]" class="trigger-relation">
-				<option value="and"><?php _e( 'AND', 'stream-notifications' ) ?></option>
-				<option value="or"><?php _e( 'OR', 'stream-notifications' ) ?></option>
+				<option value="and"><?php esc_html_e( 'AND', 'stream-notifications' ) ?></option>
+				<option value="or"><?php esc_html_e( 'OR', 'stream-notifications' ) ?></option>
 			</select>
 		</div>
 		<div class="field type">
@@ -159,8 +155,8 @@
 		<input type="hidden" name="groups[<%- vars.index %>][group]" value="<%- vars.parent %>" />
 		<div class="field relation">
 			<select name="groups[<%- vars.index %>][relation]" class="group-relation">
-				<option value="and"><?php _e( 'AND', 'stream-notifications' ) ?></option>
-				<option value="or"><?php _e( 'OR', 'stream-notifications' ) ?></option>
+				<option value="and"><?php esc_html_e( 'AND', 'stream-notifications' ) ?></option>
+				<option value="or"><?php esc_html_e( 'OR', 'stream-notifications' ) ?></option>
 			</select>
 		</div>
 		<a href="#add-trigger" class="add-trigger button button-secondary" data-group="<%- vars.index %>">Add Trigger</a>
