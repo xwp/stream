@@ -578,6 +578,10 @@ class WP_Stream_Notifications {
 			array( 'visibility' => $visibility ),
 			array( '%s' )
 		);
+
+		// Refresh rule cache
+		$this->matcher->refresh();
+		
 		wp_redirect( add_query_arg( array(
 			'wp_stream_nonce' => false,
 			'action'          => false,
@@ -605,6 +609,10 @@ class WP_Stream_Notifications {
 		}
 
 		self::delete_record( $id );
+
+		// Refresh rule cache
+		$this->matcher->refresh();
+
 		wp_redirect( add_query_arg( array(
 			'wp_stream_nonce' => false,
 			'action'          => false,
