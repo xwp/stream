@@ -88,6 +88,9 @@ jQuery(function($){
 				$this.select2( elementArgs );
 				$this.on( 'select2_populate', function( e, val ) {
 					var $this = $(this);
+					if ( ! val ) {
+						return;
+					}
 					if ( $this.hasClass('ajax') ) {
 						$.ajax({
 			            	url: ajaxurl,
