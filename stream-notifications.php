@@ -13,7 +13,7 @@
  */
 
 /**
- * Copyright (c) 2013 X-Team (http://x-team.com/)
+ * Copyright (c) 2014 X-Team (http://x-team.com/)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2 or, at
@@ -39,7 +39,7 @@ class WP_Stream_Notifications {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '0.9.5';
+	const STREAM_MIN_VERSION = '1.0.7';
 
 	/**
 	 * Hold Stream instance
