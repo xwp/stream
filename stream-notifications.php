@@ -711,7 +711,6 @@ class WP_Stream_Notifications {
 			$this->load();
 			$this->add_sample_rule();
 		}
-		// add_action( 'plugins_loaded', array( $this, 'add_sample_rule' ) );
 	}
 
 	/**
