@@ -17,7 +17,7 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 Never be in the dark about WP Admin activity again. Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
 
-Every logged-in user action is logged in an activity stream and organized for easy filtering by connector, context, action and IP address.
+Every logged-in user action is logged in a user activity stream and organized for easy filtering by connector, context, action and IP address.
 
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
@@ -43,14 +43,14 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 **Noteworthy features:**
 
- * Dashboard widget of most recent activity
+ * Dashboard widget of most recent user activity
  * Specify which roles should have their activity logged
- * Limit who can view activity records by user role
- * Live update of activity records in the Stream
- * Private RSS feeds of activity records
- * Private JSON feeds of activity records
+ * Limit who can view user activity records by user role
+ * Live update of user activity records in the Stream
+ * Private RSS feeds of user activity records
+ * Private JSON feeds of user activity records
  * Set how long records should live before being purged automatically
- * Option to manually purge all activity records from the database
+ * Option to manually purge all user activity records from the database
 
 **Extension plugins:**
 
@@ -88,6 +88,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.0.8 =
+**2014/01/30** - Bug fix for sites using BuddyPress. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
 
 = 1.0.7 =
 **2014/01/29** - Code efficiency improvements when fetching admin area URLs. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
