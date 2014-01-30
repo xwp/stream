@@ -6,7 +6,7 @@ class WP_Stream_Install {
 
 	/**
 	 * Check db version, create/update table schema accordingly
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function check() {
@@ -64,7 +64,13 @@ class WP_Stream_Install {
 			KEY parent (parent),
 			KEY author (author),
 			KEY created (created)
-		);";
+		) CHARACTER SET " . $wpdb->charset;
+
+		if ( $wpdb->collate ) {
+			$sql .= ' COLLATE ' . $wpdb->collate;
+		}
+
+		$sql .= ';';
 
 		dbDelta( $sql );
 
@@ -78,7 +84,13 @@ class WP_Stream_Install {
 			KEY context (context),
 			KEY action (action),
 			KEY connector (connector)
-		);";
+		) CHARACTER SET " . $wpdb->charset;
+
+		if ( $wpdb->collate ) {
+			$sql .= ' COLLATE ' . $wpdb->collate;
+		}
+
+		$sql .= ';';
 
 		dbDelta( $sql );
 
@@ -91,7 +103,13 @@ class WP_Stream_Install {
 			KEY record_id (record_id),
 			KEY meta_key (meta_key),
 			KEY meta_value (meta_value)
-		);";
+		) CHARACTER SET " . $wpdb->charset;
+
+		if ( $wpdb->collate ) {
+			$sql .= ' COLLATE ' . $wpdb->collate;
+		}
+
+		$sql .= ';';
 
 		dbDelta( $sql );
 	}
