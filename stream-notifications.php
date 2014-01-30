@@ -338,6 +338,11 @@ class WP_Stream_Notifications {
 			);
 		}
 
+		// Localization
+		$args['i18n'] = array(
+			'empty_triggers' => __( 'A rule must contain at least one trigger to be saved.', 'stream-notifications' ),
+		);
+
 		return apply_filters( 'stream_notification_js_args', $args );
 	}
 
