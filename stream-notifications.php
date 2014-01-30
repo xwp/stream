@@ -127,9 +127,9 @@ class WP_Stream_Notifications {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11 );
 
 		// Default list actions handlers
-		add_action( 'wp_stream_notifications_handle_deactivate', array( __CLASS__, 'handle_rule_activation_status_change' ), 10, 3 );
-		add_action( 'wp_stream_notifications_handle_activate', array( __CLASS__, 'handle_rule_activation_status_change' ), 10, 3 );
-		add_action( 'wp_stream_notifications_handle_delete', array( __CLASS__, 'handle_rule_deletion' ), 10, 3 );
+		add_action( 'wp_stream_notifications_handle_deactivate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
+		add_action( 'wp_stream_notifications_handle_activate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
+		add_action( 'wp_stream_notifications_handle_delete', array( $this, 'handle_rule_deletion' ), 10, 3 );
 
 		// AJAX end point for form auto completion
 		add_action( 'wp_ajax_stream_notification_endpoint', array( $this, 'form_ajax_ep' ) );
@@ -558,7 +558,7 @@ class WP_Stream_Notifications {
 	/*
 	 * Handle the rule activation & deactivation action
 	 */
-	public static function handle_rule_activation_status_change( $id, $action, $is_bulk = false ) {
+	public function handle_rule_activation_status_change( $id, $action, $is_bulk = false ) {
 		$data             = $_GET;
 		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
 		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "activate-record_$id";
@@ -573,24 +573,28 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		self::update_record(
+		$this->update_record(
 			$id,
 			array( 'visibility' => $visibility ),
 			array( '%s' )
 		);
 
-		wp_redirect( add_query_arg( array(
-			'wp_stream_nonce' => false,
-			'action'          => false,
-			'id'              => false,
-			'visibility'      => $visibility,
-		) ) );
+		wp_redirect(
+			add_query_arg(
+				array(
+					'wp_stream_nonce' => false,
+					'action'          => false,
+					'id'              => false,
+					'visibility'      => $visibility,
+				)
+			)
+		);
 	}
 
 	/*
 	 * Handle the rule deletion
 	 */
-	public static function handle_rule_deletion( $id, $action, $is_bulk = false ) {
+	public function handle_rule_deletion( $id, $action, $is_bulk = false ) {
 		$data             = $_GET;
 		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
 		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "delete-record_$id";
@@ -605,14 +609,18 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		self::delete_record( $id );
+		$this->delete_record( $id );
 		
-		wp_redirect( add_query_arg( array(
-			'wp_stream_nonce' => false,
-			'action'          => false,
-			'id'              => false,
-			'visibility'      => $visibility,
-		) ) );
+		wp_redirect(
+			add_query_arg(
+				array(
+					'wp_stream_nonce' => false,
+					'action'          => false,
+					'id'              => false,
+					'visibility'      => $visibility,
+				)
+			)
+		);
 	}
 
 	public function update_record( $id, $fields, $formats ) {
