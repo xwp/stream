@@ -104,6 +104,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 1.1 ###
+**2014/01/31** - Disable terms in dropdown filters for which records do not exist. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
+
 ### 1.0.9 ###
 **2014/01/31** - Several important bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
