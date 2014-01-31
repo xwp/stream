@@ -105,7 +105,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'connector', 'context', 'action',
 			'author', 'object_id', 'search',
 			'date', 'date_from', 'date_to',
-			'record__in',
+			'record__in', 'ip',
 		);
 
 		foreach ( $allowed_params as $param ) {
