@@ -276,21 +276,24 @@ function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '
 function existing_records( $column, $table = '' ) {
 	global $wpdb;
 
-	if ( 'stream' === $table ) {
-		$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->stream} GROUP BY {$column}", 'ARRAY_A' );
-	} elseif ( 'meta' === $table ) {
-		$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streammeta} GROUP BY {$column}", 'ARRAY_A' );
-	} else {
-		$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streamcontext} GROUP BY {$column}", 'ARRAY_A' );
+	switch ( $table ) {
+		case 'stream' :
+			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->stream} GROUP BY {$column}", 'ARRAY_A' );
+			break;
+		case 'meta' :
+			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streammeta} GROUP BY {$column}", 'ARRAY_A' );
+			break;
+		default :
+			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streamcontext} GROUP BY {$column}", 'ARRAY_A' );
 	}
 
 	if ( is_array( $rows ) && ! empty( $rows ) ) {
 		foreach ( $rows as $row ) {
 			foreach ( $row as $cell => $value ) {
-				$output_array[$value] = ucwords( str_replace( '_', ' ', $value ) );
+				$output_array[$value] = $value;
 			}
 		}
-		return $output_array;
+		return (array) $output_array;
 	} else {
 		return WP_Stream_Connectors::$term_labels['stream_' . $column];
 	}
