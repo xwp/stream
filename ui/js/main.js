@@ -214,7 +214,7 @@ jQuery(function($){
 			var $this   = $(this),
 				options = stream_notifications.adapters[ $this.val() ],
 				index   = $this.parents('.alert').first().attr('rel');
-			$this.next('.alert-options').remove();
+			$this.parent().next('.alert-options').remove();
 
 			if ( ! options ) { return; }
 
