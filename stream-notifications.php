@@ -199,6 +199,13 @@ class WP_Stream_Notifications {
 		$roles     = $wp_roles->roles;
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
 
+		$default_operators = array(
+			'='   => __( 'is', 'stream-notifications' ),
+			'!='  => __( 'is not', 'stream-notifications' ),
+			'in'  => __( 'in', 'stream-notifications' ),
+			'!in' => __( 'not in', 'stream-notifications' ),
+		);
+
 		$args['types'] = array(
 			'search' => array(
 				'title'     => __( 'Summary', 'stream-notifications' ),
@@ -232,24 +239,14 @@ class WP_Stream_Notifications {
 				'title'     => __( 'Object ID', 'stream-notifications' ),
 				'type'      => 'text',
 				'tags'      => true,
-				'operators' => array(
-					'='      => __( 'is', 'stream-notifications' ),
-					'!='     => __( 'is not', 'stream-notifications' ),
-					'in'     => __( 'in', 'stream-notifications' ),
-					'not_in' => __( 'not in', 'stream-notifications' ),
-				),
+				'operators' => $default_operators,
 			),
 
 			'author_role' => array(
 				'title'     => __( 'Author Role', 'stream-notifications' ),
 				'type'      => 'select',
 				'multiple'  => true,
-				'operators' => array(
-					'='   => __( 'is', 'stream-notifications' ),
-					'!='  => __( 'is not', 'stream-notifications' ),
-					'in'  => __( 'in', 'stream-notifications' ),
-					'!in' => __( 'not in', 'stream-notifications' ),
-				),
+				'operators' => $default_operators,
 				'options' => $roles_arr,
 			),
 
@@ -257,24 +254,14 @@ class WP_Stream_Notifications {
 				'title'     => __( 'Author', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
-				'operators' => array(
-					'='   => __( 'is', 'stream-notifications' ),
-					'!='  => __( 'is not', 'stream-notifications' ),
-					'in'  => __( 'in', 'stream-notifications' ),
-					'!in' => __( 'not in', 'stream-notifications' ),
-				),
+				'operators' => $default_operators,
 			),
 
 			'ip' => array(
 				'title'     => __( 'IP', 'stream-notifications' ),
 				'type'      => 'text',
 				'tags'      => true,
-				'operators' => array(
-					'='   => __( 'is', 'stream-notifications' ),
-					'!='  => __( 'is not', 'stream-notifications' ),
-					'in'  => __( 'in', 'stream-notifications' ),
-					'!in' => __( 'not in', 'stream-notifications' ),
-				),
+				'operators' => $default_operators,
 			),
 
 			'date' => array(
@@ -297,35 +284,20 @@ class WP_Stream_Notifications {
 			'connector' => array(
 				'title'     => __( 'Connector', 'stream-notifications' ),
 				'type'      => 'select',
-				'operators' => array(
-					'='   => __( 'is', 'stream-notifications' ),
-					'!='  => __( 'is not', 'stream-notifications' ),
-					'in'  => __( 'in', 'stream-notifications' ),
-					'!in' => __( 'not in', 'stream-notifications' ),
-				),
+				'operators' => $default_operators,
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			),
 			'context' => array(
 				'title'     => __( 'Context', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
-				'operators' => array(
-					'='   => __( 'is', 'stream-notifications' ),
-					'!='  => __( 'is not', 'stream-notifications' ),
-					'in'  => __( 'in', 'stream-notifications' ),
-					'!in' => __( 'not in', 'stream-notifications' ),
-				),
+				'operators' => $default_operators,
 			),
 			'action' => array(
 				'title'     => __( 'Action', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
-				'operators' => array(
-					'='   => __( 'is', 'stream-notifications' ),
-					'!='  => __( 'is not', 'stream-notifications' ),
-					'in'  => __( 'in', 'stream-notifications' ),
-					'!in' => __( 'not in', 'stream-notifications' ),
-				),
+				'operators' => $default_operators,
 			),
 		);
 
