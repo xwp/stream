@@ -17,7 +17,10 @@
 
 	<form action="" method="post" id="rule-form">
 
-		<?php wp_nonce_field( 'stream-notifications-form' ); ?>
+		<?php
+		wp_nonce_field( 'stream-notifications-form' );
+		wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
+		?>
 
 		<div id="poststuff">
 			<div id="post-body" class="metabox-holder columns-2">
@@ -84,8 +87,15 @@
 				<div id="postbox-container-2" class="postbox-container">
 
 					<div id="normal-sortables" class="meta-box-sortables ui-sortable">
-
+						
+<?php
+$sortables = get_user_option( 'meta-box-order_' . get_current_screen()->id );
+foreach ( explode( ',', $sortables['normal'] ) as $box ):
+	switch ( $box ):
+	case 'triggers':
+		?>
 						<div id="triggers" class="postbox">
+							<div class="handlediv" title="<?php _e( 'Click to toggle' ) ?>"><br></div>
 							<h3 class="hndle">
 								<span><?php esc_html_e( 'Triggers', 'stream-notifications' ) ?></span>
 							</h3>
@@ -100,14 +110,22 @@
 
 							</div>
 						</div>
-
+		<?php
+	break;
+	case 'alerts':
+		?>
 						<div id="alerts" class="postbox">
+							<div class="handlediv" title="<?php _e( 'Click to toggle' ) ?>"><br></div>
 							<h3 class="hndle"><span><?php esc_html_e( 'Alerts', 'stream-notifications' ) ?></span></h3>
 							<div class="inside">
 								<a class="add-alert button button-secondary" href="#add-alert"><?php esc_html_e( '+ Add Alert', 'stream-notifications' ) ?></a>
 							</div>
 						</div>
-
+		<?php
+		break;
+	endswitch;
+endforeach;
+?>
 					</div>
 
 				</div><!-- postbox-container-2 -->

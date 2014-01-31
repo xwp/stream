@@ -172,6 +172,7 @@ class WP_Stream_Notifications {
 		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 
 		if ( $view == 'rule' ) {
+			wp_enqueue_script( 'dashboard' );
 			wp_enqueue_style( 'select2' );
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_script( 'underscore' );
