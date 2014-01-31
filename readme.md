@@ -104,6 +104,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 1.0.9 ###
+**2014/01/31** - Several important bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
 ### 1.0.8 ###
 **2014/01/30** - Bug fix for sites using BuddyPress. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
 
