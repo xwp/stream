@@ -13,7 +13,7 @@
  */
 
 /**
- * Copyright (c) 2013 X-Team (http://x-team.com/)
+ * Copyright (c) 2014 X-Team (http://x-team.com/)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2 or, at
@@ -39,7 +39,7 @@ class WP_Stream_Notifications {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '0.9.5';
+	const STREAM_MIN_VERSION = '1.0.7';
 
 	/**
 	 * Hold Stream instance
@@ -127,9 +127,9 @@ class WP_Stream_Notifications {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11 );
 
 		// Default list actions handlers
-		add_action( 'wp_stream_notifications_handle_deactivate', array( __CLASS__, 'handle_rule_activation_status_change' ), 10, 3 );
-		add_action( 'wp_stream_notifications_handle_activate', array( __CLASS__, 'handle_rule_activation_status_change' ), 10, 3 );
-		add_action( 'wp_stream_notifications_handle_delete', array( __CLASS__, 'handle_rule_deletion' ), 10, 3 );
+		add_action( 'wp_stream_notifications_handle_deactivate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
+		add_action( 'wp_stream_notifications_handle_activate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
+		add_action( 'wp_stream_notifications_handle_delete', array( $this, 'handle_rule_deletion' ), 10, 3 );
 
 		// AJAX end point for form auto completion
 		add_action( 'wp_ajax_stream_notification_endpoint', array( $this, 'form_ajax_ep' ) );
@@ -204,11 +204,11 @@ class WP_Stream_Notifications {
 				'title'     => __( 'Summary', 'stream-notifications' ),
 				'type'      => 'text',
 				'operators' => array(
-					'='            => __( 'is', 'stream-notifications' ),
-					'!='           => __( 'is not', 'stream-notifications' ),
-					'contains'     => __( 'contains', 'stream-notifications' ),
-					'!contains'    => __( 'does not contain', 'stream-notifications' ),
-					'regex'        => __( 'regex', 'stream-notifications' ),
+					'='         => __( 'is', 'stream-notifications' ),
+					'!='        => __( 'is not', 'stream-notifications' ),
+					'contains'  => __( 'contains', 'stream-notifications' ),
+					'!contains' => __( 'does not contain', 'stream-notifications' ),
+					'regex'     => __( 'regex', 'stream-notifications' ),
 				),
 			),
 			// 'object_type' => array(
@@ -250,7 +250,7 @@ class WP_Stream_Notifications {
 					'in'  => __( 'in', 'stream-notifications' ),
 					'!in' => __( 'not in', 'stream-notifications' ),
 				),
-				'options'  => $roles_arr,
+				'options' => $roles_arr,
 			),
 
 			'author' => array(
@@ -338,6 +338,11 @@ class WP_Stream_Notifications {
 			);
 		}
 
+		// Localization
+		$args['i18n'] = array(
+			'empty_triggers' => __( 'A rule must contain at least one trigger to be saved.', 'stream-notifications' ),
+		);
+
 		return apply_filters( 'stream_notification_js_args', $args );
 	}
 
@@ -414,7 +419,14 @@ class WP_Stream_Notifications {
 			}
 
 			if ( $result && $action != 'edit' ) {
-				wp_redirect( add_query_arg( array( 'action' => 'edit', 'id' => $rule->ID ) ) );
+				wp_redirect(
+					add_query_arg(
+						array(
+							'action' => 'edit',
+							'id'     => $rule->ID,
+						)
+					)
+				);
 			}
 		}
 
@@ -490,7 +502,7 @@ class WP_Stream_Notifications {
 					$user_query = new WP_User_Query(
 						array(
 							'include' => $user_ids,
-							'fields' => array( 'ID', 'user_email', 'display_name' )
+							'fields'  => array( 'ID', 'user_email', 'display_name' ),
 						)
 					);
 					if ( $user_query->results ) {
@@ -505,7 +517,7 @@ class WP_Stream_Notifications {
 					break;
 				case 'action':
 					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
-					$values = explode( ',', $query );
+					$values  = explode( ',', $query );
 					$actions = array_intersect_key( $actions, array_flip( $values ) );
 					$data    = $this->format_json_for_select2( $actions );
 					break;
@@ -563,7 +575,7 @@ class WP_Stream_Notifications {
 			$return[] = array(
 				'id'   => $key,
 				'text' => $vals[$idx],
-				);
+			);
 		}
 		return $return;
 	}
@@ -571,7 +583,7 @@ class WP_Stream_Notifications {
 	/*
 	 * Handle the rule activation & deactivation action
 	 */
-	public static function handle_rule_activation_status_change( $id, $action, $is_bulk = false ) {
+	public function handle_rule_activation_status_change( $id, $action, $is_bulk = false ) {
 		$data             = $_GET;
 		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
 		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "activate-record_$id";
@@ -586,24 +598,28 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		self::update_record(
+		$this->update_record(
 			$id,
 			array( 'visibility' => $visibility ),
 			array( '%s' )
 		);
 
-		wp_redirect( add_query_arg( array(
-			'wp_stream_nonce' => false,
-			'action'          => false,
-			'id'              => false,
-			'visibility'      => $visibility,
-		) ) );
+		wp_redirect(
+			add_query_arg(
+				array(
+					'wp_stream_nonce' => false,
+					'action'          => false,
+					'id'              => false,
+					'visibility'      => $visibility,
+				)
+			)
+		);
 	}
 
 	/*
 	 * Handle the rule deletion
 	 */
-	public static function handle_rule_deletion( $id, $action, $is_bulk = false ) {
+	public function handle_rule_deletion( $id, $action, $is_bulk = false ) {
 		$data             = $_GET;
 		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
 		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "delete-record_$id";
@@ -618,14 +634,18 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		self::delete_record( $id );
-		
-		wp_redirect( add_query_arg( array(
-			'wp_stream_nonce' => false,
-			'action'          => false,
-			'id'              => false,
-			'visibility'      => $visibility,
-		) ) );
+		$this->delete_record( $id );
+
+		wp_redirect(
+			add_query_arg(
+				array(
+					'wp_stream_nonce' => false,
+					'action'          => false,
+					'id'              => false,
+					'visibility'      => $visibility,
+				)
+			)
+		);
 	}
 
 	public function update_record( $id, $fields, $formats ) {
@@ -710,6 +730,86 @@ class WP_Stream_Notifications {
 	}
 
 	/**
+	 * Plugin activation routine
+	 * @return void
+	 */
+	public function on_activation() {
+		// Add sample rule
+		if ( ! stream_query( 'type=notification_rule&ignore_context=1' ) ) {
+			$this->load();
+			$this->add_sample_rule();
+		}
+	}
+
+	/**
+	 * Add a sample rule, used upon activation
+	 *
+	 */
+	public function add_sample_rule() {
+		$rule = new WP_Stream_Notification_Rule();
+		$details = array(
+			'author'     => 0,
+			'summary'    => __( 'Sample Rule', 'stream-notifications' ),
+			'visibility' => 'inactive',
+			'type'       => 'notification_rule',
+			'triggers'   => array(
+				array(
+					'group'    => 0,
+					'relation' => 'and',
+					'type'     => 'author_role',
+					'operator' => '!=',
+					'value'    => 'administrator',
+				),
+				array(
+					'group'    => 0,
+					'relation' => 'and',
+					'type'     => 'action',
+					'operator' => '=',
+					'value'    => 'created,updated',
+				),
+				array(
+					'group'    => 1,
+					'relation' => 'and',
+					'type'     => 'author_role',
+					'operator' => '=',
+					'value'    => 'administrator',
+				),
+				array(
+					'group'    => 1,
+					'relation' => 'and',
+					'type'     => 'connector',
+					'operator' => '=',
+					'value'    => 'users',
+				),
+				array(
+					'group'    => 1,
+					'relation' => 'and',
+					'type'     => 'action',
+					'operator' => '=',
+					'value'    => 'deleted',
+				),
+			),
+			'groups' => array(
+				1 => array(
+					'group'    => 0,
+					'relation' => 'or',
+				),
+			),
+			'alerts' => array(
+				array(
+					'type'    => 'email',
+					'users'   => '1',
+					'emails'  => '',
+					'subject' => __( '[Stream Notification] %%summary%%', 'stream-notifications' ),
+					'message' => __( "The following just happened on your site:\r\n\r\n%%summary%%\r\n\r\nDate of action: %%created%%", 'stream-notifications' )
+				),
+			),
+		);
+		$rule->load_from_array( $details );
+		$rule->save();
+	}
+
+	/**
 	 * Return active instance of WP_Stream, create one if it doesn't exist
 	 *
 	 * @return WP_Stream
@@ -725,3 +825,4 @@ class WP_Stream_Notifications {
 }
 
 $GLOBALS['wp_stream_notifications'] = WP_Stream_Notifications::get_instance();
+register_activation_hook( __FILE__, array( $GLOBALS['wp_stream_notifications'], 'on_activation' ) );

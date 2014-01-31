@@ -218,9 +218,9 @@ jQuery(function($){
 
 			if ( ! options ) { return; }
 
-			$this.after( tmpl_alert_options( $.extend( options, { index: index } ) ) );
-			selectify( $this.parent().find('select') );
-			selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
+			$this.parent().after( tmpl_alert_options( $.extend( options, { index: index } ) ) );
+			selectify( $this.parent().next().find('select') );
+			selectify( $this.parent().next().find('input.tags, input.ajax'), { tags: [] } );
 		})
 
 		// Delete an alert
@@ -302,5 +302,19 @@ jQuery(function($){
 			});
 		}
 	}
+
+	// Do not submit if no triggers exist
+	$('#rule-form').submit(function(e){
+		if ( divTriggers.find('.trigger').size() < 1 ) {
+			$('body,html').scrollTop(0)
+			$('.wrap > h2')
+				.after('<div class="updated error fade" style="display:none"><p>'+stream_notifications.i18n.empty_triggers+'</p></div>')
+				.next('.updated')
+				.slideDown('fast')
+				.delay(3000)
+				.slideUp('slow');
+			return false;
+		}
+	});
 
 });
