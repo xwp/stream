@@ -277,11 +277,11 @@ function existing_records( $column, $table = '' ) {
 	global $wpdb;
 
 	if ( 'stream' === $table ) {
-			$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->stream . ' GROUP BY ' . $column, 'ARRAY_A' );
+		$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->stream} GROUP BY {$column}", 'ARRAY_A' );
 	} elseif ( 'meta' === $table ) {
-			$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->streammeta . ' GROUP BY ' . $column, 'ARRAY_A' );
+		$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streammeta} GROUP BY {$column}", 'ARRAY_A' );
 	} else {
-		$rows = $wpdb->get_results( 'SELECT ' . $column . ' FROM ' . $wpdb->streamcontext . ' GROUP BY ' . $column, 'ARRAY_A' );
+		$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streamcontext} GROUP BY {$column}", 'ARRAY_A' );
 	}
 
 	if ( is_array( $rows ) && ! empty( $rows ) ) {
