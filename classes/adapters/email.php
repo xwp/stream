@@ -9,25 +9,28 @@ class WP_Stream_Notification_Adapter_Email extends WP_Stream_Notification_Adapte
 	public static function fields() {
 		return array(
 			'users' => array(
-				'title'    => __( 'To users', 'stream-notifications' ),
+				'title'    => __( 'Send to Users', 'stream-notifications' ),
 				'type'     => 'hidden',
 				'multiple' => true,
 				'ajax'     => true,
 				'key'      => 'author',
+				'hint'     => __( 'Alert specific users via email.', 'stream-notifications' ),
 			),
 			'emails' => array(
-				'title' => __( 'To emails', 'stream-notifications' ),
+				'title' => __( 'Send to Emails', 'stream-notifications' ),
 				'type'  => 'text',
 				'tags'  => true,
+				'hint'  => __( 'Alert any arbitrary email address not tied to a specific user.', 'stream-notifications' ),
 			),
 			'subject' => array(
 				'title' => __( 'Subject', 'stream-notifications' ),
 				'type'  => 'text',
-				'hint'  => __( 'ex: "%%summary%%" or "[%%created%% - %%author%%] %%summary%%", consult FAQ for documentaion.', 'stream-notifications' ),
+				'hint'  => __( 'Data tags are allowed.', 'stream-notifications' ),
 			),
 			'message' => array(
 				'title' => __( 'Message', 'stream-notifications' ),
 				'type'  => 'textarea',
+				'hint'  => __( 'HTML and data tags are allowed.', 'stream-notifications' ),
 			),
 		);
 	}

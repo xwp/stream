@@ -1,6 +1,6 @@
 <div class="wrap">
 
-	<h2><?php $rule->exists() ? _e( 'Edit Notification Rule', 'stream-notifications' ) : _e( 'Add New Notification Rule', 'stream-notifications' ); ?>
+	<h2><?php $rule->exists() ? esc_html_e( 'Edit Notification Rule', 'stream-notifications' ) : esc_html_e( 'Add New Notification Rule', 'stream-notifications' ); ?>
 		<?php if ( $rule->exists() ) : ?>
 			<?php
 			$new_link = add_query_arg(
@@ -11,11 +11,11 @@
 				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 			);
 			?>
-			<a href="<?php echo esc_url( $new_link ) ?>" class="add-new-h2"><?php _e( 'Add New', 'stream-notifications' ) ?></a>
+			<a href="<?php echo esc_url( $new_link ) ?>" class="add-new-h2"><?php esc_html_e( 'Add New', 'stream-notifications' ) ?></a>
 		<?php endif; ?>
 	</h2>
 
-	<form action="" method="post">
+	<form action="" method="post" id="rule-form">
 
 		<?php wp_nonce_field( 'stream-notifications-form' ); ?>
 
@@ -25,7 +25,7 @@
 
 					<div id="titlediv">
 						<div id="titlewrap">
-							<input type="text" name="summary" size="30" value="<?php echo esc_attr( $rule->summary ) ?>" id="title" autocomplete="off" keyev="true" placeholder="<?php _e( 'Rule title', 'stream-notifications' ) ?>">
+							<input type="text" name="summary" size="30" value="<?php echo esc_attr( $rule->summary ) ?>" id="title" autocomplete="off" keyev="true" placeholder="<?php esc_attr_e( 'Rule title', 'stream-notifications' ) ?>">
 						</div>
 					</div><!-- /titlediv -->
 				</div><!-- /post-body-content -->
@@ -34,48 +34,44 @@
 					<div id="side-sortables" class="meta-box-sortables ui-sortable">
 						<div id="submitdiv" class="postbox ">
 							<h3 class="hndle">
-								<span>
-									<?php _e( 'Status', 'stream-notifications' ) ?>
-								</span>
+								<span><?php esc_html_e( 'Publish', 'stream-notifications' ) ?></span>
 							</h3>
 							<div class="inside">
 								<div class="submitbox" id="submitpost">
 									<div id="minor-publishing">
 										<div id="misc-publishing-actions">
 											<div class="misc-pub-section misc-pub-post-status">
-												<label for="post_status">
-													<?php _e( 'Active', 'stream-notifications' ) ?>
+												<label for="notification_visibility">
+													<input type="checkbox" name="visibility" id="notification_visibility" value="active" <?php checked( $rule->visibility, 'active' ) ?>>
+													<?php esc_html_e( 'Active', 'stream-notifications' ) ?>
 												</label>
-												<span id="post-status-display">
-													<input type="checkbox" name="visibility" id="post_status" value="active" <?php checked( $rule->visibility, 'active' ) ?>>
-												</span>
 											</div>
 										</div>
 									</div>
 
 									<div id="major-publishing-actions">
 										<?php if ( $rule->exists() ) : ?>
-										<div id="delete-action">
-											<?php
-											$delete_link = add_query_arg(
-												array(
-													'page'            => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
-													'action'          => 'delete',
-													'id'              => absint( $rule->ID ),
-													'wp_stream_nonce' => wp_create_nonce( 'delete-record_' . absint( $rule->ID ) ),
-												),
-												admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-											);
-											?>
-											<a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ) ?>">
-												<?php _e( 'Delete', 'stream-notifications' ) ?>
-											</a>
-										</div>
-										<?php endif ?>
+											<div id="delete-action">
+												<?php
+												$delete_link = add_query_arg(
+													array(
+														'page'            => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
+														'action'          => 'delete',
+														'id'              => absint( $rule->ID ),
+														'wp_stream_nonce' => wp_create_nonce( 'delete-record_' . absint( $rule->ID ) ),
+													),
+													admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+												);
+												?>
+												<a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ) ?>">
+													<?php esc_html_e( 'Delete permanently', 'stream-notifications' ) ?>
+												</a>
+											</div>
+										<?php endif; ?>
 
 										<div id="publishing-action">
 											<span class="spinner"></span>
-											<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php _e( 'Save', 'stream-notifications' ) ?>" accesskey="p">
+											<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php $rule->exists() ? esc_attr_e( 'Update', 'stream-notifications' ) : esc_attr_e( 'Save', 'stream-notifications' ) ?>" accesskey="p">
 										</div>
 										<div class="clear"></div>
 									</div>
@@ -91,12 +87,12 @@
 
 						<div id="triggers" class="postbox">
 							<h3 class="hndle">
-								<span><?php _e( 'Triggers', 'stream-notifications' ) ?></span>
+								<span><?php esc_html_e( 'Triggers', 'stream-notifications' ) ?></span>
 							</h3>
 							<div class="inside">
 
-								<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php _e( 'Add Trigger', 'stream-notifications' ) ?></a>
-								<a class="add-trigger-group button button-secondary" href="#add-trigger-group" data-group="0"><?php _e( 'Add Group', 'stream-notifications' ) ?></a>
+								<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php esc_html_e( '+ Add Trigger', 'stream-notifications' ) ?></a>
+								<a class="add-trigger-group button button-primary" href="#add-trigger-group" data-group="0"><?php esc_html_e( '+ Add Group', 'stream-notifications' ) ?></a>
 
 								<div class="group" rel="0">
 
@@ -106,9 +102,9 @@
 						</div>
 
 						<div id="alerts" class="postbox">
-							<h3 class="hndle"><span><?php _e( 'Alerts', 'stream-notifications' ) ?></span></h3>
+							<h3 class="hndle"><span><?php esc_html_e( 'Alerts', 'stream-notifications' ) ?></span></h3>
 							<div class="inside">
-								<a class="add-alert button button-secondary" href="#add-alert"><?php _e( 'Add Alert', 'stream-notifications' ) ?></a>
+								<a class="add-alert button button-secondary" href="#add-alert"><?php esc_html_e( '+ Add Alert', 'stream-notifications' ) ?></a>
 							</div>
 						</div>
 
@@ -136,8 +132,8 @@
 		<input type="hidden" name="triggers[<%- vars.index %>][group]" value="<%- vars.group %>" />
 		<div class="field relation">
 			<select name="triggers[<%- vars.index %>][relation]" class="trigger-relation">
-				<option value="and"><?php _e( 'AND', 'stream-notifications' ) ?></option>
-				<option value="or"><?php _e( 'OR', 'stream-notifications' ) ?></option>
+				<option value="and"><?php esc_html_e( 'AND', 'stream-notifications' ) ?></option>
+				<option value="or"><?php esc_html_e( 'OR', 'stream-notifications' ) ?></option>
 			</select>
 		</div>
 		<div class="field type">
@@ -148,7 +144,7 @@
 				<% }); %>
 			</select>
 		</div>
-		<a href="#" class="delete-trigger">Remove</a>
+		<a href="#" class="delete-trigger">Delete</a>
 	</div>
 </div>
 </script>
@@ -159,13 +155,13 @@
 		<input type="hidden" name="groups[<%- vars.index %>][group]" value="<%- vars.parent %>" />
 		<div class="field relation">
 			<select name="groups[<%- vars.index %>][relation]" class="group-relation">
-				<option value="and"><?php _e( 'AND', 'stream-notifications' ) ?></option>
-				<option value="or"><?php _e( 'OR', 'stream-notifications' ) ?></option>
+				<option value="and"><?php esc_html_e( 'AND', 'stream-notifications' ) ?></option>
+				<option value="or"><?php esc_html_e( 'OR', 'stream-notifications' ) ?></option>
 			</select>
 		</div>
-		<a href="#add-trigger" class="add-trigger button button-secondary" data-group="<%- vars.index %>">Add Trigger</a>
-		<a href="#add-trigger-group" class="add-trigger-group button button-secondary" data-group="<%- vars.index %>">Add Group</a>
-		<a href="#" class="delete-group">Remove</a>
+		<a href="#add-trigger" class="add-trigger button button-secondary" data-group="<%- vars.index %>">+ Add Trigger</a>
+		<a href="#add-trigger-group" class="add-trigger-group button button-primary" data-group="<%- vars.index %>">+ Add Group</a>
+		<a href="#" class="delete-group">Delete Group</a>
 	</div>
 </div>
 </script>
@@ -199,15 +195,17 @@
 <script type="text/template" id="alert-template-row">
 <div class="alert" rel="<%- vars.index %>">
 	<div class="form-row">
-		<div class="field type">
+		<div class="type">
+			<span class="circle"><%- vars.index + 1 %></span>
 			<select name="alerts[<%- vars.index %>][type]" class="alert-type" rel="<%- vars.index %>" placeholder="Choose Type">
 				<option></option>
 				<% _.each( vars.adapters, function( type, name ){ %>
 				<option value="<%- name %>"><%- type.title %></option>
 				<% }); %>
 			</select>
+			<a href="#" class="delete-alert alignright">Delete</a>
+			<div class="clear"></div>
 		</div>
-		<a href="#" class="delete-alert">Remove</a>
 	</div>
 </div>
 </script>
@@ -216,27 +214,27 @@
 <table class="alert-options form-table">
 	<% for ( field_name in vars.fields ) { var field = vars.fields[field_name]; %>
 		<tr>
-			<th>
+			<th class="label">
 				<label><%- field.title %></label>
+				<% if ( field.hint ) { %>
+					<p class="description"><%- field.hint %></p>
+				<% } %>
 			</th>
 			<td>
 				<div class="field value">
 					<% if ( ['select'].indexOf( field.type ) != -1 ){ %>
-					<select name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat" data-ajax="<% ( field.ajax ) %>" <% if ( field.multiple ){ %>multiple="multiple"<% } %>>
-						<option></option>
-						<% if ( vars.fields[field] ) { %>
-							<% _.each( vars.fields[field], function( list, name ){ %>
-							<option value="<%- name %>"><%- list %></option>
-							<% }); %>
-						<% } %>
-					</select>
+						<select name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat" data-ajax="<% ( field.ajax ) %>" <% if ( field.multiple ){ %>multiple="multiple"<% } %>>
+							<option></option>
+							<% if ( vars.fields[field] ) { %>
+								<% _.each( vars.fields[field], function( list, name ){ %>
+								<option value="<%- name %>"><%- list %></option>
+								<% }); %>
+							<% } %>
+						</select>
 					<% } else if ( ['textarea'].indexOf( field.type ) != -1 ) { %>
 						<textarea name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value large-text code" rows="10" cols="80"></textarea>
 					<% } else { %>
-					<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" <% if ( field.ajax && field.key ){ %>data-ajax-key="<%- field.key %>"<% } %> >
-					<% } %>
-					<% if ( field.hint ) { %>
-						<p class="description"><%- field.hint %></p>
+						<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" <% if ( field.ajax && field.key ){ %>data-ajax-key="<%- field.key %>"<% } %> >
 					<% } %>
 				</div>
 			</td>
@@ -246,63 +244,85 @@
 </script>
 
 <style>
-	.field, .trigger-type, .trigger-options, .trigger-value { float: left; }
-	.form-row {
+	#triggers .field, .trigger-type, .trigger-options, .trigger-value { float: left; }
+	.trigger .form-row {
 		clear: both;
 		overflow: hidden;
 		margin-bottom: 10px;
 		background: #eee;
 		padding: 10px;
 	}
+	#triggers .inside {
+		padding-bottom: 3px;
+	}
 	#triggers .inside,
 	#alerts .inside {
 		margin-top: 12px;
 	}
-	.inside > .group,
-	.inside > .alert {
-		margin: 10px 0 0;
-		background: none;
+	#alerts .inside {
 		padding: 0;
-
-		-webkit-box-shadow: none;
-			    box-shadow: none;
 	}
-	.group,
-	.alert {
+	.group {
 		background: rgba(0, 0, 0, 0.08);
 		padding: 20px 20px 12px;
 		margin-bottom: 10px;
 		min-height: 16px;
 		clear: both;
 	}
-	.group .form-row,
-	.alert .form-row {
+	.inside > .group {
+		margin: 0;
+		min-height: 0;
+		background: none;
+		padding: 0;
+
+		-webkit-box-shadow: none;
+			    box-shadow: none;
+	}
+	.group .form-row {
 		background: rgba(0, 0, 0, 0.03);
 	}
 	.group,
-	.group .form-row,
-	.alert,
-	.alert .form-row {
+	.group .form-row {
 		margin-left: 90px;
 
 		-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
 			    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
 	}
-	.group .form-row .delete-trigger,
-	.alert .form-row .delete-alert {
+	.add-trigger,
+	.add-trigger-group {
+		margin-right: 4px !important;
+		margin-bottom: 10px !important;
+	}
+	.group .delete-trigger,
+	.alert .delete-alert {
 		line-height: 29px;
+	}
+	.group .delete-trigger,
+	.group .delete-group,
+	.alert .delete-alert {
+		color: #a00;
+		text-decoration: none;
+	}
+	.group .delete-trigger:hover,
+	.group .delete-group:hover,
+	.alert .delete-alert:hover {
+		color: #f00;
+		text-decoration: none;
 	}
 	.inside > .group,
 	.inside > .group > .group,
 	.inside > .alert {
 		margin-left: 0;
 	}
+	.inside > .group > .trigger > .form-row {
+		margin-top: 10px;
+	}
+	.inside > .group > .trigger.first > .form-row {
+		margin-top: 0;
+	}
 	.inside > .group > .trigger > .form-row,
 	.inside > .alert > .form-row {
 		margin-left: 0;
-	}
-	.alert-options th {
-		width: auto;
 	}
 	.group-meta {
 		float: left;
@@ -312,7 +332,6 @@
 	}
 	.group-meta a {
 		font-size: 10px;
-		padding-left: 5px;
 	}
 	.group-meta a.delete-group {
 		line-height: 28px;
@@ -342,5 +361,67 @@
 	}
 	.select2-container.trigger-operator {
 		width: 140px !important;
+	}
+	#alerts .add-alert {
+		margin: 0 0 12px 12px;
+	}
+	#alerts .select2-container {
+		max-width: 300px;
+	}
+	.select2-container.alert-type {
+		min-width: 150px;
+	}
+	.alert .form-row .type {
+		padding: 12px;
+		border: 1px solid #ddd;
+		box-shadow: inset #f5f5f5 0 1px 0 0;
+		background: #eaeaea;
+	}
+	.alert .form-row .type .circle {
+		display: inline-block;
+		height: 22px;
+		width: 22px;
+		font-size: 12px;
+		line-height: 23px;
+		border-radius: 12px;
+		text-align: center;
+		background: #aaa;
+		color: #fff;
+		margin-right: 10px;
+		vertical-align: middle;
+	}
+	table.alert-options {
+		margin-top: 0;
+	}
+	table.alert-options tbody tr th.label {
+		width: 24%;
+		vertical-align: top;
+		background: #f9f9f9;
+		border-right: 1px solid #e1e1e1;
+		border-top: 1px solid #f0f0f0;
+	}
+	table.alert-options tbody tr th.label label {
+		display: block;
+		font-size: 12px;
+		font-weight: bold;
+		padding: 0;
+		margin: 0 0 3px;
+		color: #333;
+	}
+	table.alert-options tbody tr th .description {
+		display: block;
+		font-size: 12px;
+		line-height: 16px;
+		font-weight: normal;
+		font-style: normal;
+		color: #888;
+	}
+	table.alert-options tbody tr th,
+	table.alert-options tbody tr td {
+		padding: 13px 15px;
+
+	}
+	table.alert-options tbody tr td {
+		border-top: 1px solid #f5f5f5;
 	}
 </style>
