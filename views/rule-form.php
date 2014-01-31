@@ -64,7 +64,7 @@
 												);
 												?>
 												<a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ) ?>">
-													<?php esc_html_e( 'Delete permanently', 'stream-notifications' ) ?>
+													<?php esc_html_e( 'Delete Permanently', 'stream-notifications' ) ?>
 												</a>
 											</div>
 										<?php endif; ?>
