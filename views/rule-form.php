@@ -343,4 +343,9 @@
 	.select2-container.trigger-operator {
 		width: 140px !important;
 	}
+	.select2-choices img.avatar,
+	.select2-results img.avatar {
+		vertical-align: middle;
+		padding-right: 5px;
+	}
 </style>

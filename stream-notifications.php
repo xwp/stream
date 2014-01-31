@@ -525,7 +525,18 @@ class WP_Stream_Notifications {
 					break;
 			}
 		}
-		if ( isset( $data ) ) {
+
+		// Add gravatar for authors
+		if ( $type == 'author' && get_option( 'show_avatars' ) ) {
+			foreach ( $data as $i => $item ) {
+				if ( $avatar = get_avatar( $item['id'], 20 ) ) {
+					$item['avatar'] = $avatar;
+				}
+				$data[$i] = $item;
+			}
+		}
+
+		if ( $data ) {
 			wp_send_json_success( $data );
 		} else {
 			wp_send_json_error();
