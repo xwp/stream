@@ -297,14 +297,15 @@ jQuery(function($){
 	// Do not submit if no triggers exist
 	$('#rule-form').submit(function(e){
 		if ( divTriggers.find('.trigger').size() < 1 ) {
-			$('.wrap > h2')
-				.after('<div class="updated fade"><p>'+stream_notifications.i18n.empty_triggers+'</p></div>')
-				.next('.updated')
-				.delay(3000)
-				.fadeOut('slow');
 			$('body,html').scrollTop(0)
+			$('.wrap > h2')
+				.after('<div class="updated error fade" style="display:none"><p>'+stream_notifications.i18n.empty_triggers+'</p></div>')
+				.next('.updated')
+				.slideDown('fast')
+				.delay(3000)
+				.slideUp('slow');
 			return false;
 		}
-	})
+	});
 
 });
