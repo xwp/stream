@@ -90,7 +90,8 @@
 						
 <?php
 $sortables = get_user_option( 'meta-box-order_' . get_current_screen()->id );
-foreach ( explode( ',', $sortables['normal'] ) as $box ):
+$boxes = ( ! empty( $sortables['normal'] ) ) ? explode( ',', $sortables['normal'] ) : array( 'triggers', 'alerts' );
+foreach ( $boxes as $box ):
 	switch ( $box ):
 	case 'triggers':
 		?>
