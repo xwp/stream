@@ -23,10 +23,23 @@ jQuery(function($){
 		tmpl_alert         = _.template( $('script#alert-template-row').html() ),
 		tmpl_alert_options = _.template( $('script#alert-template-options').html() ),
 
+		select2_format = function( item ) {
+			var text = item.text;
+			if ( typeof item.avatar != 'undefined' ) {
+				text = item.avatar + item.text;
+			} else{
+				console.log('no avatar', item)
+			}
+			return text;
+		},
+
 		select2_args = {
 			allowClear: true,
 			minimumResultsForSearch: 8,
-			width: '160px'
+			width: '160px',
+			format: select2_format,
+			formatSelection: select2_format,
+			formatResult: select2_format
 		},
 
 		selectify = function( elements, args ) {
@@ -63,9 +76,6 @@ jQuery(function($){
 						results: function (data) {
 							var r = data.data || [];
 							return {results: r};
-						},
-						formatSelection: function(item) {
-							return item.title;
 						}
 					};
 					elementArgs.initSelection = function(element, callback) {
@@ -104,7 +114,6 @@ jQuery(function($){
 			                },
 			                dataType: "json",
 			                success: function(j){
-			                	console.log(j.data)
 			                	$this.select2( 'data', j.data );
 			                }
 		            	})
@@ -205,7 +214,7 @@ jQuery(function($){
 			var $this   = $(this),
 				options = stream_notifications.adapters[ $this.val() ],
 				index   = $this.parents('.alert').first().attr('rel');
-			$this.next('.alert-options').remove();
+			$this.parent().next('.alert-options').remove();
 
 			if ( ! options ) { return; }
 

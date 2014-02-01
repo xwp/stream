@@ -115,8 +115,10 @@ class WP_Stream_Notifications_Form
 		} else {
 			switch ( $type ) {
 				case 'author':
+					add_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
 					$users = get_users( array( 'search' => '*' . $query . '*' ) );
-					$data  = $this->format_json_for_select2( $users, 'ID', 'display_name' );
+					remove_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
+					$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
 					break;
 				case 'action':
 					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
@@ -125,7 +127,18 @@ class WP_Stream_Notifications_Form
 					break;
 			}
 		}
-		if ( isset( $data ) ) {
+
+		// Add gravatar for authors
+		if ( $type == 'author' && get_option( 'show_avatars' ) ) {
+			foreach ( $data as $i => $item ) {
+				if ( $avatar = get_avatar( $item['id'], 20 ) ) {
+					$item['avatar'] = $avatar;
+				}
+				$data[$i] = $item;
+			}
+		}
+
+		if ( $data ) {
 			wp_send_json_success( $data );
 		} else {
 			wp_send_json_error();
@@ -155,6 +168,16 @@ class WP_Stream_Notifications_Form
 			);
 		}
 		return $return;
+	}
+
+	public function fix_user_query_display_name( $query ) {
+		global $wpdb;
+		$search = $query->query_vars['search'];
+		if ( empty( $search ) ) {
+			return;
+		}
+		$search = str_replace( '*', '', $search );
+		$query->query_where .= $wpdb->prepare( " OR $wpdb->users.display_name LIKE %s", '%' . like_escape( $search ) . '%' );
 	}
 
 	/**
@@ -314,14 +337,14 @@ class WP_Stream_Notifications_Form
 						);
 						?>
 						<a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ) ?>">
-							<?php esc_html_e( 'Delete permanently', 'stream-notifications' ) ?>
+							<?php esc_html_e( 'Delete Permanently', 'stream-notifications' ) ?>
 						</a>
 					</div>
 				<?php endif; ?>
 
 				<div id="publishing-action">
 					<span class="spinner"></span>
-					<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php $rule->exists() ? esc_attr_e( 'Update', 'stream-notifications' ) : esc_attr_e( 'Save', 'stream-notifications' ) ?>" accesskey="p">
+					<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php $rule->exists() ? esc_attr_e( 'Update', 'stream-notifications' ) : esc_attr_e( 'Save', 'stream-notifications' ) ?>" accesskey="s">
 				</div>
 				<div class="clear"></div>
 			</div>
