@@ -29,7 +29,7 @@
 
 					<div id="titlediv">
 						<div id="titlewrap">
-							<input type="text" name="summary" size="30" value="<?php echo esc_attr( $rule->summary ) ?>" id="title" autocomplete="off" keyev="true" placeholder="<?php esc_attr_e( 'Rule title', 'stream-notifications' ) ?>">
+							<input type="text" name="summary" size="30" value="<?php echo esc_attr( $rule->summary ) ?>" id="title" autocomplete="off" keyev="true" placeholder="<?php esc_attr_e( 'Rule title', 'stream-notifications' ) ?>" autofocus="focus">
 						</div>
 					</div><!-- /titlediv -->
 				</div><!-- /post-body-content -->

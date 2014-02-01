@@ -317,4 +317,7 @@ jQuery(function($){
 		}
 	});
 
+	// Autofocus for earlier browsers
+	$('[autofocus]').focus();
+
 });
