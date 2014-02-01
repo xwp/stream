@@ -63,8 +63,8 @@ class WP_Stream_Notifications_Form
 			wp_enqueue_style( 'select2' );
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_script( 'underscore' );
-			wp_enqueue_script( 'stream-notifications-main', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/main.js', array( 'underscore', 'select2' ) );
-			wp_localize_script( 'stream-notifications-main', 'stream_notifications', $this->get_js_options() );
+			wp_enqueue_script( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/form.js', array( 'underscore', 'select2' ) );
+			wp_localize_script( 'stream-notifications-form', 'stream_notifications', $this->get_js_options() );
 		}
 	}
 
