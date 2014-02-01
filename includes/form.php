@@ -283,6 +283,7 @@ class WP_Stream_Notifications_Form
 			$args['adapters'][$name] = array(
 				'title'  => $options['title'],
 				'fields' => $options['class']::fields(),
+				'hints'  => $options['class']::hints(),
 			);
 		}
 

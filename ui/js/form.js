@@ -27,8 +27,6 @@ jQuery(function($){
 			var text = item.text;
 			if ( typeof item.avatar != 'undefined' ) {
 				text = item.avatar + item.text;
-			} else{
-				console.log('no avatar', item)
 			}
 			return text;
 		},
@@ -218,7 +216,7 @@ jQuery(function($){
 
 			if ( ! options ) { return; }
 
-			$this.parent().after( tmpl_alert_options( $.extend( options, { index: index } ) ) );
+			$this.parent().after( tmpl_alert_options( $.extend( options, { index: index  } ) ) );
 			selectify( $this.parent().next().find('select') );
 			selectify( $this.parent().next().find('input.tags, input.ajax'), { tags: [] } );
 		})
@@ -316,5 +314,23 @@ jQuery(function($){
 			return false;
 		}
 	});
+
+	divAlerts
+		.on( 'click', '.toggler', function(e) {
+			e.preventDefault();
+			var rel = this.rel,
+				toggled = $(rel),
+				toggler = $(this)
+				;
+
+			if ( ! toggled.is(':visible') ) {
+				toggled.slideDown('fast');
+				toggler.data( 'text', toggler.text() );
+				toggler.text( toggler.data('text-toggle') );
+			} else {
+				toggled.slideUp('fast');
+				toggler.text( toggler.data('text') );
+			}
+		} );
 
 });

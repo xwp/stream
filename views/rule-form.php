@@ -168,9 +168,16 @@
 					<% } %>
 				</div>
 			</td>
-		</div>
+		</tr>
 	<% } %>
-</div>
+	<% if ( typeof vars.hints != 'undefined' ) { %>
+		<tr>
+			<th></th>
+			<td><%= vars.hints %></td>
+		</tr>
+	<% } %>
+</table>
+
 </script>
 
 <style>
@@ -358,5 +365,8 @@
 	}
 	table.alert-options tbody tr td {
 		border-top: 1px solid #f5f5f5;
+	}
+	.toggled {
+		display: none;
 	}
 </style>
