@@ -20,10 +20,11 @@
 		<?php
 		wp_nonce_field( 'stream-notifications-form' );
 		wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
+		wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
 		?>
 
 		<div id="poststuff">
-			<div id="post-body" class="metabox-holder columns-2">
+			<div id="post-body" class="metabox-holder columns-<?php echo esc_attr( 1 == get_current_screen()->get_columns() ? 1 : 2 ); ?>">
 				<div id="post-body-content">
 
 					<div id="titlediv">
@@ -34,101 +35,11 @@
 				</div><!-- /post-body-content -->
 
 				<div id="postbox-container-1" class="postbox-container">
-					<div id="side-sortables" class="meta-box-sortables ui-sortable">
-						<div id="submitdiv" class="postbox ">
-							<h3 class="hndle">
-								<span><?php esc_html_e( 'Publish', 'stream-notifications' ) ?></span>
-							</h3>
-							<div class="inside">
-								<div class="submitbox" id="submitpost">
-									<div id="minor-publishing">
-										<div id="misc-publishing-actions">
-											<div class="misc-pub-section misc-pub-post-status">
-												<label for="notification_visibility">
-													<input type="checkbox" name="visibility" id="notification_visibility" value="active" <?php checked( $rule->visibility, 'active' ) ?>>
-													<?php esc_html_e( 'Active', 'stream-notifications' ) ?>
-												</label>
-											</div>
-										</div>
-									</div>
-
-									<div id="major-publishing-actions">
-										<?php if ( $rule->exists() ) : ?>
-											<div id="delete-action">
-												<?php
-												$delete_link = add_query_arg(
-													array(
-														'page'            => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
-														'action'          => 'delete',
-														'id'              => absint( $rule->ID ),
-														'wp_stream_nonce' => wp_create_nonce( 'delete-record_' . absint( $rule->ID ) ),
-													),
-													admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-												);
-												?>
-												<a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ) ?>">
-													<?php esc_html_e( 'Delete permanently', 'stream-notifications' ) ?>
-												</a>
-											</div>
-										<?php endif; ?>
-
-										<div id="publishing-action">
-											<span class="spinner"></span>
-											<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php $rule->exists() ? esc_attr_e( 'Update', 'stream-notifications' ) : esc_attr_e( 'Save', 'stream-notifications' ) ?>" accesskey="p">
-										</div>
-										<div class="clear"></div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+					<?php do_meta_boxes( get_current_screen()->id, 'side', $rule ); ?>
 				</div><!-- postbox-container-1 -->
 
 				<div id="postbox-container-2" class="postbox-container">
-
-					<div id="normal-sortables" class="meta-box-sortables ui-sortable">
-						
-<?php
-$sortables = get_user_option( 'meta-box-order_' . get_current_screen()->id );
-$boxes = ( ! empty( $sortables['normal'] ) ) ? explode( ',', $sortables['normal'] ) : array( 'triggers', 'alerts' );
-foreach ( $boxes as $box ):
-	switch ( $box ):
-	case 'triggers':
-		?>
-						<div id="triggers" class="postbox">
-							<div class="handlediv" title="<?php _e( 'Click to toggle' ) ?>"><br></div>
-							<h3 class="hndle">
-								<span><?php esc_html_e( 'Triggers', 'stream-notifications' ) ?></span>
-							</h3>
-							<div class="inside">
-
-								<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php esc_html_e( '+ Add Trigger', 'stream-notifications' ) ?></a>
-								<a class="add-trigger-group button button-primary" href="#add-trigger-group" data-group="0"><?php esc_html_e( '+ Add Group', 'stream-notifications' ) ?></a>
-
-								<div class="group" rel="0">
-
-								</div>
-
-							</div>
-						</div>
-		<?php
-	break;
-	case 'alerts':
-		?>
-						<div id="alerts" class="postbox">
-							<div class="handlediv" title="<?php _e( 'Click to toggle' ) ?>"><br></div>
-							<h3 class="hndle"><span><?php esc_html_e( 'Alerts', 'stream-notifications' ) ?></span></h3>
-							<div class="inside">
-								<a class="add-alert button button-secondary" href="#add-alert"><?php esc_html_e( '+ Add Alert', 'stream-notifications' ) ?></a>
-							</div>
-						</div>
-		<?php
-		break;
-	endswitch;
-endforeach;
-?>
-					</div>
-
+					<?php do_meta_boxes( get_current_screen()->id, 'normal', $rule ); ?>
 				</div><!-- postbox-container-2 -->
 			</div><!-- /postbody -->
 		</div><!-- /poststuff -->
