@@ -89,6 +89,12 @@ class WP_Stream_Notifications {
 	public $matcher;
 
 	/**
+	 * Form Class Object
+	 * @var WP_Stream_Notifications_Form
+	 */
+	public $form;
+
+	/**
 	 * Class constructor
 	 */
 	private function __construct() {
@@ -124,18 +130,21 @@ class WP_Stream_Notifications {
 		}
 
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11 );
 
 		// Default list actions handlers
 		add_action( 'wp_stream_notifications_handle_deactivate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
 		add_action( 'wp_stream_notifications_handle_activate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
 		add_action( 'wp_stream_notifications_handle_delete', array( $this, 'handle_rule_deletion' ), 10, 3 );
 
-		// AJAX end point for form auto completion
-		add_action( 'wp_ajax_stream_notification_endpoint', array( $this, 'form_ajax_ep' ) );
-
 		// Load Matcher
 		$this->matcher = new WP_Stream_Notification_Rule_Matcher();
+
+		// Load form class
+		
+		if ( is_admin() ) {
+			include WP_STREAM_NOTIFICATIONS_INC_DIR . '/form.php';
+			$this->form = new WP_Stream_Notifications_Form;
+		}
 	}
 
 	/**
@@ -155,30 +164,7 @@ class WP_Stream_Notifications {
 		);
 
 		add_action( 'load-' . self::$screen_id, array( $this, 'page_form_save' ) );
-	}
-
-	/**
-	 * Enqueue our scripts, in our own page only
-	 *
-	 * @action admin_enqueue_scripts
-	 * @param  string $hook Current admin page slug
-	 * @return void
-	 */
-	public function enqueue_scripts( $hook ) {
-		if ( $hook != self::$screen_id ) {
-			return;
-		}
-
-		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
-
-		if ( $view == 'rule' ) {
-			wp_enqueue_script( 'dashboard' );
-			wp_enqueue_style( 'select2' );
-			wp_enqueue_script( 'select2' );
-			wp_enqueue_script( 'underscore' );
-			wp_enqueue_script( 'stream-notifications-main', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/main.js', array( 'underscore', 'select2' ) );
-			wp_localize_script( 'stream-notifications-main', 'stream_notifications', $this->get_js_options() );
-		}
+		add_action( 'load-' . self::$screen_id, array( $this->form, 'load' ) );
 	}
 
 	public static function register_adapter( $adapter, $name, $title ) {
@@ -186,137 +172,6 @@ class WP_Stream_Notifications {
 			'title' => $title,
 			'class' => $adapter,
 		);
-	}
-
-	/**
-	 * Format JS options for the form, to be used with wp_localize_script
-	 *
-	 * @return array  Options for our form JS handling
-	 */
-	public function get_js_options() {
-		global $wp_roles;
-		$args = array();
-
-		$roles     = $wp_roles->roles;
-		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
-
-		$default_operators = array(
-			'='   => __( 'is', 'stream-notifications' ),
-			'!='  => __( 'is not', 'stream-notifications' ),
-			'in'  => __( 'in', 'stream-notifications' ),
-			'!in' => __( 'not in', 'stream-notifications' ),
-		);
-
-		$args['types'] = array(
-			'search' => array(
-				'title'     => __( 'Summary', 'stream-notifications' ),
-				'type'      => 'text',
-				'operators' => array(
-					'='         => __( 'is', 'stream-notifications' ),
-					'!='        => __( 'is not', 'stream-notifications' ),
-					'contains'  => __( 'contains', 'stream-notifications' ),
-					'!contains' => __( 'does not contain', 'stream-notifications' ),
-					'regex'     => __( 'regex', 'stream-notifications' ),
-				),
-			),
-			// 'object_type' => array(
-			// 	'title'     => __( 'Object Type', 'stream-notifications' ),
-			// 	'type'      => 'select',
-			// 	'multiple'  => true,
-			// 	'operators' => array(
-			// 		'='      => __( 'is', 'stream-notifications' ),
-			// 		'!='     => __( 'is not', 'stream-notifications' ),
-			// 		'in'     => __( 'in', 'stream-notifications' ),
-			// 		'not_in' => __( 'not in', 'stream-notifications' ),
-			// 		),
-			// 	'options' => array( // TODO: Do we have a dynamic way to get this ?: Answer: NO, use 'Context'
-			// 		'user'    => __( 'User', 'stream-notifications' ),
-			// 		'post'    => __( 'Post', 'stream-notifications' ),
-			// 		'comment' => __( 'Comment', 'stream-notifications' ),
-			// 	),
-			// ),
-
-			'object_id' => array(
-				'title'     => __( 'Object ID', 'stream-notifications' ),
-				'type'      => 'text',
-				'tags'      => true,
-				'operators' => $default_operators,
-			),
-
-			'author_role' => array(
-				'title'     => __( 'Author Role', 'stream-notifications' ),
-				'type'      => 'select',
-				'multiple'  => true,
-				'operators' => $default_operators,
-				'options' => $roles_arr,
-			),
-
-			'author' => array(
-				'title'     => __( 'Author', 'stream-notifications' ),
-				'type'      => 'text',
-				'ajax'      => true,
-				'operators' => $default_operators,
-			),
-
-			'ip' => array(
-				'title'     => __( 'IP', 'stream-notifications' ),
-				'type'      => 'text',
-				'tags'      => true,
-				'operators' => $default_operators,
-			),
-
-			'date' => array(
-				'title'     => __( 'Date', 'stream-notifications' ),
-				'type'      => 'date',
-				'operators' => array(
-					'='  => __( 'is on', 'stream-notifications' ),
-					'!=' => __( 'is not on', 'stream-notifications' ),
-					'<'  => __( 'is before', 'stream-notifications' ),
-					'<=' => __( 'is on or before', 'stream-notifications' ),
-					'>'  => __( 'is after', 'stream-notifications' ),
-					'>=' => __( 'is on or after', 'stream-notifications' ),
-				),
-			),
-
-			// TODO: find a way to introduce meta to the rules, problem: not translatable since it is
-			// generated on run time with no prior definition
-			// 'meta_query'            => array(),
-
-			'connector' => array(
-				'title'     => __( 'Connector', 'stream-notifications' ),
-				'type'      => 'select',
-				'operators' => $default_operators,
-				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
-			),
-			'context' => array(
-				'title'     => __( 'Context', 'stream-notifications' ),
-				'type'      => 'text',
-				'ajax'      => true,
-				'operators' => $default_operators,
-			),
-			'action' => array(
-				'title'     => __( 'Action', 'stream-notifications' ),
-				'type'      => 'text',
-				'ajax'      => true,
-				'operators' => $default_operators,
-			),
-		);
-
-		$args['adapters'] = array();
-
-		foreach ( self::$adapters as $name => $options ) {
-			$args['adapters'][$name] = array(
-				'title'  => $options['title'],
-				'fields' => $options['class']::fields(),
-			);
-		}
-
-		// Localization
-		$args['i18n'] = array(
-			'empty_triggers' => __( 'A rule must contain at least one trigger to be saved.', 'stream-notifications' ),
-		);
-
-		return apply_filters( 'stream_notification_js_args', $args );
 	}
 
 	/**
@@ -452,107 +307,6 @@ class WP_Stream_Notifications {
 		echo '</div>';
 	}
 
-	/**
-	 * Callback for form AJAX operations
-	 *
-	 * @action wp_ajax_stream_notifications_endpoint
-	 * @return void
-	 */
-	public function form_ajax_ep() {
-		// BIG @TODO: Make the request context-aware,
-		// ie: get other rules ( maybe in the same group only ? ), so an author
-		// query would check if there is a author_role rule available to limit
-		// the results according to it
-
-		$type      = filter_input( INPUT_POST, 'type' );
-		$is_single = filter_input( INPUT_POST, 'single' );
-		$query     = filter_input( INPUT_POST, 'q' );
-
-		if ( $is_single ) {
-			switch ( $type ) {
-				case 'author':
-					$user_ids = explode( ',', $query );
-					$user_query = new WP_User_Query(
-						array(
-							'include' => $user_ids,
-							'fields'  => array( 'ID', 'user_email', 'display_name' ),
-						)
-					);
-					if ( $user_query->results ) {
-						$data = $this->format_json_for_select2(
-							$user_query->results,
-							'ID',
-							'display_name'
-						);
-					} else {
-						$data = array();
-					}
-					break;
-				case 'action':
-					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
-					$values  = explode( ',', $query );
-					$actions = array_intersect_key( $actions, array_flip( $values ) );
-					$data    = $this->format_json_for_select2( $actions );
-					break;
-			}
-		} else {
-			switch ( $type ) {
-				case 'author':
-					add_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
-					$users = get_users( array( 'search' => '*' . $query . '*' ) );
-					remove_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
-					$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
-					break;
-				case 'action':
-					$actions = WP_Stream_Connectors::$term_labels['stream_action'];
-					$actions = preg_grep( sprintf( '/%s/i', $query ), $actions );
-					$data    = $this->format_json_for_select2( $actions );
-					break;
-			}
-		}
-
-		// Add gravatar for authors
-		if ( $type == 'author' && get_option( 'show_avatars' ) ) {
-			foreach ( $data as $i => $item ) {
-				if ( $avatar = get_avatar( $item['id'], 20 ) ) {
-					$item['avatar'] = $avatar;
-				}
-				$data[$i] = $item;
-			}
-		}
-
-		if ( $data ) {
-			wp_send_json_success( $data );
-		} else {
-			wp_send_json_error();
-		}
-	}
-
-	/**
-	 * Take an (associative) array and format it for select2 AJAX result parser
-	 * @param  array  $data (associative) Data array
-	 * @param  string $key  Key of the ID column, null if associative array
-	 * @param  string $val  Key of the Title column, null if associative array
-	 * @return array        Formatted array, [ { id: %, title: % }, .. ]
-	 */
-	public function format_json_for_select2( $data, $key = null, $val = null ) {
-		$return = array();
-		if ( is_null( $key ) && is_null( $val ) ) { // for flat associative array
-			$keys = array_keys( $data );
-			$vals = array_values( $data );
-		} else {
-			$keys = wp_list_pluck( $data, $key );
-			$vals = wp_list_pluck( $data, $val );
-		}
-		foreach ( $keys as $idx => $key ) {
-			$return[] = array(
-				'id'   => $key,
-				'text' => $vals[$idx],
-			);
-		}
-		return $return;
-	}
-
 	/*
 	 * Handle the rule activation & deactivation action
 	 */
@@ -648,16 +402,6 @@ class WP_Stream_Notifications {
 
 		// Refresh rule cache
 		$this->matcher->refresh();
-	}
-
-	public function fix_user_query_display_name( $query ) {
-		global $wpdb;
-		$search = $query->query_vars['search'];
-		if ( empty( $search ) ) {
-			return;
-		}
-		$search = str_replace( '*', '', $search );
-		$query->query_where .= $wpdb->prepare( " OR $wpdb->users.display_name LIKE %s", '%' . like_escape( $search ) . '%' );
 	}
 
 	/**
