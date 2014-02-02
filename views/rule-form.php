@@ -366,7 +366,27 @@
 	table.alert-options tbody tr td {
 		border-top: 1px solid #f5f5f5;
 	}
-	.toggled {
-		display: none;
+	#data-tags .inside {
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+	#data-tags header {
+		padding: 10px;
+		padding-left: 25px;
+		background-color: rgba(0, 0, 0, 0.03);
+		cursor: pointer;
+	}
+	#data-tags dl {
+		margin-bottom: 10px;
+	}
+	#data-tags header:before {
+		font: normal 20px/1 'dashicons';
+		display: inline-block;
+		content: '\f140';
+		position: absolute;
+		left: 0;
+	}
+	#data-tags header.ui-state-active:before {
+		content: '\f142';
 	}
 </style>
