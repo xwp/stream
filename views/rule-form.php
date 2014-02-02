@@ -297,7 +297,7 @@
 		vertical-align: middle;
 		margin-right: 5px;
 		margin-bottom: 2px;
-		border-radius: 10px;
+		border-radius: 3px;
 	}
 	.select2-search-choice-close {
 		-moz-transition: none;
