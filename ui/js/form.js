@@ -339,7 +339,8 @@ jQuery(function($){
 	// Data tags accordion
 	$('#data-tag-glossary').accordion({
 		header: 'header',
-		collapsible: true
+		collapsible: true,
+		heightStyle: 'content'
 	});
 
 });
