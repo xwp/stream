@@ -10,6 +10,8 @@ jQuery(function($){
 		divTriggers = $('#triggers'), // Trigger Playground
 		divAlerts   = $('#alerts .inside'), // Alerts Playground
 
+		iGroup      = 0,
+
 		btns = {
 			add_trigger: '.add-trigger',
 			add_alert: '.add-alert',
@@ -131,7 +133,7 @@ jQuery(function($){
 			var $this    = $(this),
 				index    = 0,
 				lastItem = null,
-				group    = divTriggers.find('.group').filter( '[rel=' + $this.data('group') + ']' );
+				group    = divTriggers.find('.group[rel=' + $this.data('group') + ']' );
 
 			if ( ( lastItem = divTriggers.find('.trigger').last() ) && lastItem.size() ) {
 				index = parseInt( lastItem.attr('rel') ) + 1;
@@ -151,11 +153,10 @@ jQuery(function($){
 			var $this = $(this),
 				lastItem = null,
 				parentGroupIndex = $this.data('group'),
-				group = divTriggers.find('.group').eq(parentGroupIndex);
+				group = divTriggers.find('.group[rel=' + $this.data('group') + ']' );
+
 			if ( ! groupIndex ) {
-				if ( ( lastItem = divTriggers.find('.group').last() ) && lastItem.size() ) {
-					groupIndex = parseInt( lastItem.attr('rel') ) + 1;
-				}
+				groupIndex = ++iGroup;
 			}
 
 			group.append( tmpl_group({ index: groupIndex, parent: parentGroupIndex }) );
