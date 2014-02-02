@@ -127,7 +127,7 @@ class WP_Stream_Settings {
 							'name'        => 'active_connectors',
 							'title'       => __( 'Active Connectors', 'stream' ),
 							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Uncheck Connectors that you don\'t want to use / record.', 'stream' ),
+							'desc'        => __( 'Only the selected connectors above will have their activity logged.', 'stream' ),
 							'choices'     => array( __CLASS__, 'get_connectors' ),
 							'default'     => array( __CLASS__, 'get_default_connectors' ),
 						),
