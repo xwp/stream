@@ -262,7 +262,7 @@ class WP_Stream_Settings {
 					esc_attr( $class ),
 					esc_attr( $placeholder ),
 					esc_attr( $current_value ),
-					esc_html( $after_field )
+					$after_field // xss ok
 				);
 				break;
 			case 'checkbox':
@@ -272,7 +272,7 @@ class WP_Stream_Settings {
 					esc_attr( $section ),
 					esc_attr( $name ),
 					checked( $current_value, 1, false ),
-					esc_html( $after_field )
+					$after_field // xss ok
 				);
 				break;
 			case 'multi_checkbox':
