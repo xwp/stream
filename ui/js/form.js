@@ -340,6 +340,10 @@ jQuery(function($){
 	$('a.reset-occ').click(function(e){
 		e.preventDefault();
 
+		if ( ! confirm( stream_notifications.i18n.confirm_reset ) ) {
+			return;
+		}
+
 		$.getJSON( this.href, {}, function(j) {
 			var div = $('.submitbox .occurrences span');
 			if ( j.success ) {
