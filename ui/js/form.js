@@ -337,4 +337,21 @@ jQuery(function($){
 	// Autofocus for earlier browsers
 	$('[autofocus]').focus();
 
+	// Reset occurrences link
+	$('a.reset-occ').click(function(e){
+		e.preventDefault();
+
+		if ( ! confirm( stream_notifications.i18n.confirm_reset ) ) {
+			return;
+		}
+
+		$.getJSON( this.href, {}, function(j) {
+			var div = $('.submitbox .occurrences span');
+			if ( j.success ) {
+				div.html( div.html().replace(/\d+/, 0) );
+			} else {
+				alert( stream_notifications.i18n.ajax_error );
+			}
+		} )
+	})
 });

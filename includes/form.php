@@ -6,6 +6,7 @@ class WP_Stream_Notifications_Form
 	function __construct() {
 		// AJAX end point for form auto completion
 		add_action( 'wp_ajax_stream_notification_endpoint', array( $this, 'form_ajax_ep' ) );
+		add_action( 'wp_ajax_stream-notifications-reset-occ', array( $this, 'ajax_reset_occ' ) );
 
 		// Enqueue our form scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11 );
@@ -180,6 +181,22 @@ class WP_Stream_Notifications_Form
 		$query->query_where .= $wpdb->prepare( " OR $wpdb->users.display_name LIKE %s", '%' . like_escape( $search ) . '%' );
 	}
 
+	public function ajax_reset_occ() {
+		$id = filter_input( INPUT_GET, 'id' );
+		$nonce = filter_input( INPUT_GET, 'wp_stream_nonce' );
+
+		if ( ! wp_verify_nonce( $nonce, 'reset-occ_' . $id ) ) {
+			wp_send_json_error( __( 'Invalid nonce', 'domain' ) );
+		}
+
+		if ( empty( $id ) || (int) $id != $id ) {
+			wp_send_json_error( __( 'Invalid record ID', 'domain' ) );
+		}
+
+		update_stream_meta( $id, 'occurrences', 0 );
+		wp_send_json_success();
+	}
+
 	/**
 	 * Format JS options for the form, to be used with wp_localize_script
 	 *
@@ -290,6 +307,8 @@ class WP_Stream_Notifications_Form
 		// Localization
 		$args['i18n'] = array(
 			'empty_triggers' => __( 'A rule must contain at least one trigger to be saved.', 'stream-notifications' ),
+			'ajax_error'     => __( 'There was an error submitting your request, please try again.', 'stream-notifications' ),
+			'confirm_reset'  => __( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream-notifications' ),
 		);
 
 		return apply_filters( 'stream_notification_js_args', $args );
@@ -310,6 +329,14 @@ class WP_Stream_Notifications_Form
 	}
 
 	public function metabox_save( $rule ) {
+		$reset_link = add_query_arg(
+			array(
+				'action'          => 'stream-notifications-reset-occ',
+				'id'              => absint( $rule->ID ),
+				'wp_stream_nonce' => wp_create_nonce( 'reset-occ_' . absint( $rule->ID ) ),
+			),
+			admin_url( 'admin-ajax.php' )
+		);
 		?>
 		<div class="submitbox" id="submitpost">
 			<div id="minor-publishing">
@@ -320,6 +347,31 @@ class WP_Stream_Notifications_Form
 							<?php esc_html_e( 'Active', 'stream-notifications' ) ?>
 						</label>
 					</div>
+					<?php if ( $rule->exists() ): ?>
+					<div class="misc-pub-section">
+						<?php $occ = get_stream_meta( $rule->ID, 'occurrences', true ) ?>
+						<div class="occurrences">
+							<p>
+								<?php
+								echo sprintf(
+									_n(
+										'This rule has occurred %1$s time.',
+										'This rule has occurred %1$s times.',
+										$occ,
+										'stream-notifications'
+									),
+									sprintf( '<strong>%d</strong>', $occ ? $occ : 0 )
+								)
+								?>
+							</p>
+							<p>
+							<a href="<?php echo esc_url( $reset_link ) ?>" class="button button-secondary reset-occ">
+								<?php esc_html_e( 'Reset Count', 'stream-notifications' ) ?>
+							</a>
+							</p>
+						</div>
+					</div>
+					<?php endif ?>
 				</div>
 			</div>
 
