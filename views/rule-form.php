@@ -377,7 +377,7 @@
 		cursor: pointer;
 	}
 	#data-tags dl {
-		margin-bottom: 10px;
+		padding-bottom: 10px;
 	}
 	#data-tags header:before {
 		font: normal 20px/1 'dashicons';
