@@ -138,7 +138,7 @@ class WP_Stream_Notifications_Form
 			}
 		}
 
-		if ( $data ) {
+		if ( ! empty( $data )  ) {
 			wp_send_json_success( $data );
 		} else {
 			wp_send_json_error();
