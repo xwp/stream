@@ -244,7 +244,7 @@ class WP_Stream_Settings {
 					esc_attr( $class ),
 					esc_attr( $placeholder ),
 					esc_attr( self::$options[$section . '_' . $name] ),
-					esc_html( $after_field )
+					$after_field // xss ok
 				);
 				break;
 			case 'checkbox':
