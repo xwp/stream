@@ -308,7 +308,7 @@ class WP_Stream_Notifications_Form
 		$args['i18n'] = array(
 			'empty_triggers' => __( 'A rule must contain at least one trigger to be saved.', 'stream-notifications' ),
 			'ajax_error'     => __( 'There was an error submitting your request, please try again.', 'stream-notifications' ),
-			'confirm_reset'  => __( 'Are you sure you want to reset occurrences for this record ?', 'stream-notifications' ),
+			'confirm_reset'  => __( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream-notifications' ),
 		);
 
 		return apply_filters( 'stream_notification_js_args', $args );
