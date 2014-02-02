@@ -35,6 +35,43 @@ class WP_Stream_Notification_Adapter_Email extends WP_Stream_Notification_Adapte
 		);
 	}
 
+	public static function hints() {
+		ob_start();
+		?>
+		<a href="#" class="toggler" rel="#data-tag-glossary"
+			data-text-toggle="<?php _e( 'Hide Data Tag glossary', 'stream-notifications' ) ?>"
+			><?php _e( 'Show Data Tag glossary', 'stream-notifications' ) ?></a>
+		<div id="data-tag-glossary" class="toggled">
+			<strong><?php _e( 'Available Data Tags', 'stream-notifications' ) ?></strong>
+			<dl>
+				<dt><code>%%summary%%</code></dt>
+				<dd><?php _e( 'Summary of triggered record', 'stream-notifications' ) ?></dd>
+			</dl>
+			<dl>
+				<dt><code>%%object_id%%</code></dt>
+				<dd><?php _e( 'Date of triggered record', 'stream-notifications' ) ?></dd>
+			</dl>
+			<dl>
+				<dt><code>%%created%%</code></dt>
+				<dd><?php _e( 'Date of triggered record', 'stream-notifications' ) ?></dd>
+			</dl>
+			<dl>
+				<dt><code>%%author.??%%</code></dt>
+				<dd><?php _e( 'Attribute of record author, ie: author.user_login, author.user_email', 'stream-notifications' ) ?></dd>
+			</dl>
+			<dl>
+				<dt><code>%%object.??%%</code></dt>
+				<dd><?php _e( 'Attribute of record object, ie: object.post_title, object.term_id', 'stream-notifications' ) ?></dd>
+			</dl>
+			<dl>
+				<dt><code>%%meta.??%%</code></dt>
+				<dd><?php _e( 'Record meta field, ie: meta.old_theme ( in Themes:Switch )', 'stream-notifications' ) ?></dd>
+			</dl>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
 	public function send( $log ) {
 		$users = $this->params['users'];
 		$user_emails = array();
