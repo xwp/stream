@@ -393,7 +393,6 @@ class WP_Stream_Notifications_Form
 							<?php esc_html_e( 'Delete Permanently', 'stream-notifications' ) ?>
 						</a>
 					</div>
-					<div id="reset-occ"></div>
 				<?php endif; ?>
 
 				<div id="publishing-action">
