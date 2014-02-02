@@ -32,7 +32,7 @@ jQuery(function($){
 	});
 
 	// Admin page tabs
-	var $tabs   	= $('.nav-tab-wrapper'),
+	var $tabs       = $('.nav-tab-wrapper'),
 		$panels     = $('table.form-table'),
 		currentHash = window.location.hash ? window.location.hash.match(/\d+/)[0] : 0;
 
