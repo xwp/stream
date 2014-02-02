@@ -120,6 +120,19 @@ class WP_Stream_Settings {
 						),
 					),
 				),
+				'connectors' => array(
+					'title' => __( 'Connectors', 'stream' ),
+					'fields' => array(
+						array(
+							'name'        => 'active_connectors',
+							'title'       => __( 'Active Connectors', 'stream' ),
+							'type'        => 'multi_checkbox',
+							'desc'        => __( 'Only the selected connectors above will have their activity logged.', 'stream' ),
+							'choices'     => array( __CLASS__, 'get_connectors' ),
+							'default'     => array( __CLASS__, 'get_default_connectors' ),
+						),
+					),
+				),
 			);
 			self::$fields = apply_filters( 'wp_stream_options_fields', $fields );
 		}
@@ -213,14 +226,19 @@ class WP_Stream_Settings {
 
 		$output = null;
 
-		$type        = isset( $field['type'] ) ? $field['type'] : null;
-		$section     = isset( $field['section'] ) ? $field['section'] : null;
-		$name        = isset( $field['name'] ) ? $field['name'] : null;
-		$class       = isset( $field['class'] ) ? $field['class'] : null;
-		$placeholder = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
-		$description = isset( $field['desc'] ) ? $field['desc'] : null;
-		$href        = isset( $field['href'] ) ? $field['href'] : null;
-		$after_field = isset( $field['after_field'] ) ? $field['after_field'] : null;
+		$type          = isset( $field['type'] ) ? $field['type'] : null;
+		$section       = isset( $field['section'] ) ? $field['section'] : null;
+		$name          = isset( $field['name'] ) ? $field['name'] : null;
+		$class         = isset( $field['class'] ) ? $field['class'] : null;
+		$placeholder   = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
+		$description   = isset( $field['desc'] ) ? $field['desc'] : null;
+		$href          = isset( $field['href'] ) ? $field['href'] : null;
+		$after_field   = isset( $field['after_field'] ) ? $field['after_field'] : null;
+		$current_value = self::$options[$section . '_' . $name];
+
+		if ( is_callable( $current_value ) ) {
+			$current_value = call_user_func( $current_value );
+		}
 
 		if ( ! $type || ! $section || ! $name ) {
 			return;
@@ -243,7 +261,7 @@ class WP_Stream_Settings {
 					esc_attr( $name ),
 					esc_attr( $class ),
 					esc_attr( $placeholder ),
-					esc_attr( self::$options[$section . '_' . $name] ),
+					esc_attr( $current_value ),
 					$after_field // xss ok
 				);
 				break;
@@ -253,20 +271,23 @@ class WP_Stream_Settings {
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name ),
-					checked( self::$options[$section . '_' . $name], 1, false ),
-					esc_html( $after_field )
+					checked( $current_value, 1, false ),
+					$after_field // xss ok
 				);
 				break;
 			case 'multi_checkbox':
-				$current_value = (array) self::$options[$section . '_' . $name];
-
-				$output = sprintf(
+				$output        = sprintf(
 					'<div id="%1$s[%2$s_%3$s]"><fieldset>',
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
-				foreach ( $field['choices'] as $value => $label ) {
+				$current_value = (array) $current_value;
+				$choices = $field['choices'];
+				if ( is_callable( $choices ) ) {
+					$choices = call_user_func( $choices );
+				}
+				foreach ( $choices as $value => $label ) {
 					$output .= sprintf(
 						'<label>%1$s <span>%2$s</span></label><br />',
 						sprintf(
@@ -332,5 +353,23 @@ class WP_Stream_Settings {
 		}
 
 		return $roles;
+	}
+
+	/**
+	 * Get an array of registered Connectors
+	 *
+	 * @return array
+	 */
+	public static function get_connectors() {
+		return WP_Stream_Connectors::$term_labels['stream_connector'];
+	}
+
+	/**
+	 * Get an array of registered Connectors
+	 *
+	 * @return array
+	 */
+	public static function get_default_connectors() {
+		return array_keys( WP_Stream_Connectors::$term_labels['stream_connector'] );
 	}
 }
