@@ -83,7 +83,9 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	public static function callback_update_option_sidebars_widgets( $old, $new ) {
 
 		// Disable listener if we're switching themes
-		if ( did_action( 'after_switch_theme' ) ) return;
+		if ( did_action( 'after_switch_theme' ) ) {
+			return;
+		}
 
 		global $order_operation;
 
@@ -136,7 +138,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				elseif ( $changed = array_diff( $old_widgets, $new_widgets ) ) {
 					$action    = 'deleted';
 					$message   = __( '"%s" has been deleted from "%s"', 'stream' );
-					$widget_id = $changed[0];
+					$widget_id = reset( $changed );
 					$sidebar   = $old;
 				}
 
