@@ -89,7 +89,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
-= 1.1.1 =
+= 1.1.2 =
 **2014/02/02** - Bug fix for list table notice on new installations. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 = 1.1 =
