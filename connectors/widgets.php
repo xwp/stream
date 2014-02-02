@@ -131,7 +131,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				if ( $changed = array_diff( $new_widgets, $old_widgets ) ) {
 					$action    = 'added';
 					$message   = __( '"%s" has been added to "%s"', 'stream' );
-					$widget_id = $changed[0];
+					$widget_id = reset( $changed );
 					$sidebar   = $new;
 				}
 				// Removed
