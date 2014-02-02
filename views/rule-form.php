@@ -297,13 +297,16 @@
 		vertical-align: middle;
 		margin-right: 5px;
 		margin-bottom: 2px;
-		border-radius: 3px;
+
+		-webkit-border-radius: 3px;
+		   -moz-border-radius: 3px;
+		        border-radius: 3px;
 	}
 	.select2-search-choice-close {
-		-moz-transition: none;
 		-webkit-transition: none;
-		-o-transition: all 0 none;
-		transition: none;
+		   -moz-transition: none;
+		     -o-transition: all 0 none;
+		        transition: none;
 	}
 	#alerts .add-alert {
 		margin: 0 0 12px 12px;
