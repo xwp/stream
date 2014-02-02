@@ -295,6 +295,8 @@ function existing_records( $column, $table = '' ) {
 		}
 		return (array) $output_array;
 	} else {
-		return WP_Stream_Connectors::$term_labels['stream_' . $column];
+		return isset( WP_Stream_Connectors::$term_labels['stream_' . $column] )
+			? WP_Stream_Connectors::$term_labels['stream_' . $column]
+			: array();
 	}
 }
