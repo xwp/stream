@@ -284,7 +284,7 @@ class WP_Stream_Settings {
 				);
 				// Fallback if nothing is selected
 				$output .= sprintf(
-					'<input type="hidden" name="%1$s[%2$s_%3$s][]" />',
+					'<input type="hidden" name="%1$s[%2$s_%3$s][]" value="__placeholder__" />',
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name )
