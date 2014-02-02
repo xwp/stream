@@ -20,6 +20,13 @@ class WP_Stream_Settings {
 	public static $options = array();
 
 	/**
+	 * Settings fields
+	 *
+	 * @var array
+	 */
+	public static $fields = array();
+
+	/**
 	 * Public constructor
 	 *
 	 * @return \WP_Stream_Settings
@@ -51,70 +58,72 @@ class WP_Stream_Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_fields() {
-		$fields = array(
-			'general' => array(
-				'title'  => __( 'General', 'stream' ),
-				'fields' => array(
-					array(
-						'name'        => 'log_activity_for',
-						'title'       => __( 'Log Activity for', 'stream' ),
-						'type'        => 'multi_checkbox',
-						'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
-						'choices'     => self::get_roles(),
-						'default'     => array_keys( self::get_roles() ),
-					),
-					array(
-						'name'        => 'role_access',
-						'title'       => __( 'Role Access', 'stream' ),
-						'type'        => 'multi_checkbox',
-						'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
-						'choices'     => self::get_roles(),
-						'default'     => array( 'administrator' ),
-					),
-					array(
-						'name'        => 'private_feeds',
-						'title'       => __( 'Private Feeds', 'stream' ),
-						'type'        => 'checkbox',
-						'desc'        => sprintf(
-							__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
-							sprintf(
-								'<a href="%s" title="%s">',
-								admin_url( 'profile.php' ),
-								esc_attr__( 'View Profile', 'stream' )
-							),
-							'</a>'
+		if ( empty( self::$fields ) ) {
+			$fields = array(
+				'general' => array(
+					'title'  => __( 'General', 'stream' ),
+					'fields' => array(
+						array(
+							'name'        => 'log_activity_for',
+							'title'       => __( 'Log Activity for', 'stream' ),
+							'type'        => 'multi_checkbox',
+							'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
+							'choices'     => self::get_roles(),
+							'default'     => array_keys( self::get_roles() ),
 						),
-						'after_field' => __( 'Enabled' ),
-						'default'     => 0,
-					),
-					array(
-						'name'        => 'records_ttl',
-						'title'       => __( 'Keep Records for', 'stream' ),
-						'type'        => 'number',
-						'class'       => 'small-text',
-						'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
-						'default'     => 90,
-						'after_field' => __( 'days', 'stream' ),
-					),
-					array(
-						'name'        => 'delete_all_records',
-						'title'       => __( 'Delete All Records', 'stream' ),
-						'type'        => 'link',
-						'href'        => add_query_arg(
-							array(
-								'action'          => 'wp_stream_reset',
-								'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-							),
-							admin_url( 'admin-ajax.php' )
+						array(
+							'name'        => 'role_access',
+							'title'       => __( 'Role Access', 'stream' ),
+							'type'        => 'multi_checkbox',
+							'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
+							'choices'     => self::get_roles(),
+							'default'     => array( 'administrator' ),
 						),
-						'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
-						'default'     => 0,
+						array(
+							'name'        => 'private_feeds',
+							'title'       => __( 'Private Feeds', 'stream' ),
+							'type'        => 'checkbox',
+							'desc'        => sprintf(
+								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
+								sprintf(
+									'<a href="%s" title="%s">',
+									admin_url( 'profile.php' ),
+									esc_attr__( 'View Profile', 'stream' )
+								),
+								'</a>'
+							),
+							'after_field' => __( 'Enabled' ),
+							'default'     => 0,
+						),
+						array(
+							'name'        => 'records_ttl',
+							'title'       => __( 'Keep Records for', 'stream' ),
+							'type'        => 'number',
+							'class'       => 'small-text',
+							'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
+							'default'     => 90,
+							'after_field' => __( 'days', 'stream' ),
+						),
+						array(
+							'name'        => 'delete_all_records',
+							'title'       => __( 'Delete All Records', 'stream' ),
+							'type'        => 'link',
+							'href'        => add_query_arg(
+								array(
+									'action'          => 'wp_stream_reset',
+									'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+								),
+								admin_url( 'admin-ajax.php' )
+							),
+							'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
+							'default'     => 0,
+						),
 					),
 				),
-			),
-		);
-
-		return apply_filters( 'wp_stream_options_fields', $fields );
+			);
+			self::$fields = apply_filters( 'wp_stream_options_fields', $fields );
+		}
+		return self::$fields;
 	}
 
 	/**
