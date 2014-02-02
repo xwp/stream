@@ -350,12 +350,24 @@ class WP_Stream_Notifications_Form
 					<div class="misc-pub-section">
 						<?php $occ = get_stream_meta( $rule->ID, 'occurrences', true ) ?>
 						<div class="occurrences">
-							<span>
-								<?php echo esc_html( sprintf( __( 'Triggered %d times', 'stream-notifications' ), $occ ? $occ : 0 ) ) ?>
-							</span>
-							<a href="<?php echo esc_url( $reset_link ) ?>" class="reset-occ">
-								<?php esc_html_e( 'Reset', 'stream-notifications' ) ?>
+							<p>
+								<?php
+								echo sprintf(
+									_n(
+										'This rule has occurred %1$s time.',
+										'This rule has occurred %1$s times.',
+										$occ,
+										'stream-notifications'
+									),
+									sprintf( '<strong>%d</strong>', $occ ? $occ : 0 )
+								)
+								?>
+							</p>
+							<p>
+							<a href="<?php echo esc_url( $reset_link ) ?>" class="button button-secondary reset-occ">
+								<?php esc_html_e( 'Reset Count', 'stream-notifications' ) ?>
 							</a>
+							</p>
 						</div>
 					</div>
 					<?php endif ?>
@@ -380,9 +392,7 @@ class WP_Stream_Notifications_Form
 							<?php esc_html_e( 'Delete Permanently', 'stream-notifications' ) ?>
 						</a>
 					</div>
-					<div id="reset-occ">
-						
-					</div>
+					<div id="reset-occ"></div>
 				<?php endif; ?>
 
 				<div id="publishing-action">
