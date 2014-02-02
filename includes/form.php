@@ -320,6 +320,12 @@ class WP_Stream_Notifications_Form
 							<?php esc_html_e( 'Active', 'stream-notifications' ) ?>
 						</label>
 					</div>
+					<?php if ( $rule->exists() ): ?>
+					<div class="misc-pub-section">
+						<?php $occ = get_stream_meta( $rule->ID, 'occurrences', true ) ?>
+						<div class="occurrences"><?php echo esc_html( sprintf( __( 'Triggered %d times', 'stream-notifications' ), $occ ? $occ : 0 ) ) ?></div>
+					</div>
+					<?php endif ?>
 				</div>
 			</div>
 
