@@ -151,6 +151,25 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Return translated labels for all serialized Settings found in WordPress.
+	 *
+	 * @return string Field key translation or key itself if not found
+	 */
+	public static function get_serialized_field_label( $option_name, $field_key ) {
+		$labels = array(
+			// to be updated
+		);
+		
+		$labels = apply_filters( 'wp_stream_serialized_labels', $labels );
+
+		if ( isset( $labels[$field_key] ) && isset( $labels[$option_name][$field_key] ) ) {
+			return $labels[$option_name][$field_key];
+		}
+
+		return $field_key;
+	}
+
+	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
 	 * @filter wp_stream_action_links_{connector}
