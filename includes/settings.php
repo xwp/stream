@@ -327,7 +327,9 @@ class WP_Stream_Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_stream_settings_translations( $labels ) {
-		$labels['wp_stream'] = array();
+		if(! isset( $labels['wp_stream'] ) ) {
+			$labels['wp_stream'] = array();
+		}
 		
 		foreach( self::get_fields() as $section_slug => $section ) {
 			foreach( $section['fields'] as $field ) {
