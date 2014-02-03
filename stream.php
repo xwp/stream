@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: http://wordpress.org/plugins/stream/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 0.9.7
+ * Version: 1.1.2
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -12,7 +12,7 @@
  */
 
 /**
- * Copyright (c) 2013 X-Team (http://x-team.com/)
+ * Copyright (c) 2014 X-Team (http://x-team.com/)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2 or, at
@@ -37,7 +37,7 @@ class WP_Stream {
 	 *
 	 * @const string
 	 */
-	const VERSION = '0.9.7';
+	const VERSION = '1.1';
 
 	/**
 	 * Hold Stream instance
@@ -91,7 +91,7 @@ class WP_Stream {
 
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_INC_DIR . 'settings.php';
-		add_action( 'plugins_loaded', array( 'WP_Stream_Settings', 'load' ) );
+		add_action( 'init', array( 'WP_Stream_Settings', 'load' ) );
 
 		// Load logger class
 		require_once WP_STREAM_INC_DIR . 'log.php';
@@ -138,6 +138,10 @@ class WP_Stream {
 			return;
 		}
 
+		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
+			return;
+		}
+
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
 		WP_Stream_Install::check();
@@ -149,6 +153,10 @@ class WP_Stream {
 	 * @return void
 	 */
 	private function verify_database_present() {
+		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
+			return;
+		}
+
 		global $wpdb;
 		$message = '';
 

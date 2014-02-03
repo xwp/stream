@@ -20,6 +20,13 @@ class WP_Stream_Settings {
 	public static $options = array();
 
 	/**
+	 * Settings fields
+	 *
+	 * @var array
+	 */
+	public static $fields = array();
+
+	/**
 	 * Public constructor
 	 *
 	 * @return \WP_Stream_Settings
@@ -53,68 +60,85 @@ class WP_Stream_Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_fields() {
-		return array(
-			'general' => array(
-				'title'  => __( 'General', 'stream' ),
-				'fields' => array(
-					array(
-						'name'        => 'log_activity_for',
-						'title'       => __( 'Log Activity for', 'stream' ),
-						'type'        => 'multi_checkbox',
-						'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
-						'choices'     => self::get_roles(),
-						'default'     => array_keys( self::get_roles() ),
-					),
-					array(
-						'name'        => 'role_access',
-						'title'       => __( 'Role Access', 'stream' ),
-						'type'        => 'multi_checkbox',
-						'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
-						'choices'     => self::get_roles(),
-						'default'     => array( 'administrator' ),
-					),
-					array(
-						'name'        => 'private_feeds',
-						'title'       => __( 'Private Feeds', 'stream' ),
-						'type'        => 'checkbox',
-						'desc'        => sprintf(
-							__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
-							sprintf(
-								'<a href="%s" title="%s">',
-								admin_url( 'profile.php' ),
-								esc_attr__( 'View Profile', 'stream' )
-							),
-							'</a>'
+		if ( empty( self::$fields ) ) {
+			$fields = array(
+				'general' => array(
+					'title'  => __( 'General', 'stream' ),
+					'fields' => array(
+						array(
+							'name'        => 'log_activity_for',
+							'title'       => __( 'Log Activity for', 'stream' ),
+							'type'        => 'multi_checkbox',
+							'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
+							'choices'     => self::get_roles(),
+							'default'     => array_keys( self::get_roles() ),
 						),
-						'after_field' => __( 'Enabled' ),
-						'default'     => 0,
-					),
-					array(
-						'name'        => 'records_ttl',
-						'title'       => __( 'Keep Records for', 'stream' ),
-						'type'        => 'number',
-						'class'       => 'small-text',
-						'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
-						'default'     => 90,
-						'after_field' => __( 'days', 'stream' ),
-					),
-					array(
-						'name'        => 'delete_all_records',
-						'title'       => __( 'Delete All Records', 'stream' ),
-						'type'        => 'link',
-						'href'        => add_query_arg(
-							array(
-								'action'          => 'wp_stream_reset',
-								'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-							),
-							admin_url( 'admin-ajax.php' )
+						array(
+							'name'        => 'role_access',
+							'title'       => __( 'Role Access', 'stream' ),
+							'type'        => 'multi_checkbox',
+							'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
+							'choices'     => self::get_roles(),
+							'default'     => array( 'administrator' ),
 						),
-						'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
-						'default'     => 0,
+						array(
+							'name'        => 'private_feeds',
+							'title'       => __( 'Private Feeds', 'stream' ),
+							'type'        => 'checkbox',
+							'desc'        => sprintf(
+								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
+								sprintf(
+									'<a href="%s" title="%s">',
+									admin_url( 'profile.php' ),
+									esc_attr__( 'View Profile', 'stream' )
+								),
+								'</a>'
+							),
+							'after_field' => __( 'Enabled' ),
+							'default'     => 0,
+						),
+						array(
+							'name'        => 'records_ttl',
+							'title'       => __( 'Keep Records for', 'stream' ),
+							'type'        => 'number',
+							'class'       => 'small-text',
+							'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
+							'default'     => 90,
+							'after_field' => __( 'days', 'stream' ),
+						),
+						array(
+							'name'        => 'delete_all_records',
+							'title'       => __( 'Delete All Records', 'stream' ),
+							'type'        => 'link',
+							'href'        => add_query_arg(
+								array(
+									'action'          => 'wp_stream_reset',
+									'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+								),
+								admin_url( 'admin-ajax.php' )
+							),
+							'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
+							'default'     => 0,
+						),
 					),
 				),
-			),
-		);
+				'connectors' => array(
+					'title' => __( 'Connectors', 'stream' ),
+					'fields' => array(
+						array(
+							'name'        => 'active_connectors',
+							'title'       => __( 'Active Connectors', 'stream' ),
+							'type'        => 'multi_checkbox',
+							'desc'        => __( 'Only the selected connectors above will have their activity logged.', 'stream' ),
+							'choices'     => array( __CLASS__, 'get_connectors' ),
+							'default'     => array( __CLASS__, 'get_default_connectors' ),
+						),
+					),
+				),
+			);
+			self::$fields = apply_filters( 'wp_stream_options_fields', $fields );
+		}
+		return self::$fields;
 	}
 
 	/**
@@ -204,14 +228,19 @@ class WP_Stream_Settings {
 
 		$output = null;
 
-		$type        = isset( $field['type'] ) ? $field['type'] : null;
-		$section     = isset( $field['section'] ) ? $field['section'] : null;
-		$name        = isset( $field['name'] ) ? $field['name'] : null;
-		$class       = isset( $field['class'] ) ? $field['class'] : null;
-		$placeholder = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
-		$description = isset( $field['desc'] ) ? $field['desc'] : null;
-		$href        = isset( $field['href'] ) ? $field['href'] : null;
-		$after_field = isset( $field['after_field'] ) ? $field['after_field'] : null;
+		$type          = isset( $field['type'] ) ? $field['type'] : null;
+		$section       = isset( $field['section'] ) ? $field['section'] : null;
+		$name          = isset( $field['name'] ) ? $field['name'] : null;
+		$class         = isset( $field['class'] ) ? $field['class'] : null;
+		$placeholder   = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
+		$description   = isset( $field['desc'] ) ? $field['desc'] : null;
+		$href          = isset( $field['href'] ) ? $field['href'] : null;
+		$after_field   = isset( $field['after_field'] ) ? $field['after_field'] : null;
+		$current_value = self::$options[$section . '_' . $name];
+
+		if ( is_callable( $current_value ) ) {
+			$current_value = call_user_func( $current_value );
+		}
 
 		if ( ! $type || ! $section || ! $name ) {
 			return;
@@ -234,8 +263,8 @@ class WP_Stream_Settings {
 					esc_attr( $name ),
 					esc_attr( $class ),
 					esc_attr( $placeholder ),
-					esc_attr( self::$options[$section . '_' . $name] ),
-					esc_html( $after_field )
+					esc_attr( $current_value ),
+					$after_field // xss ok
 				);
 				break;
 			case 'checkbox':
@@ -244,20 +273,23 @@ class WP_Stream_Settings {
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name ),
-					checked( self::$options[$section . '_' . $name], 1, false ),
-					esc_html( $after_field )
+					checked( $current_value, 1, false ),
+					$after_field // xss ok
 				);
 				break;
 			case 'multi_checkbox':
-				$current_value = (array) self::$options[$section . '_' . $name];
-
-				$output = sprintf(
+				$output        = sprintf(
 					'<div id="%1$s[%2$s_%3$s]"><fieldset>',
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
-				foreach ( $field['choices'] as $value => $label ) {
+				$current_value = (array) $current_value;
+				$choices = $field['choices'];
+				if ( is_callable( $choices ) ) {
+					$choices = call_user_func( $choices );
+				}
+				foreach ( $choices as $value => $label ) {
 					$output .= sprintf(
 						'<label>%1$s <span>%2$s</span></label><br />',
 						sprintf(
@@ -316,8 +348,31 @@ class WP_Stream_Settings {
 	 */
 	public static function get_roles() {
 		$wp_roles = new WP_Roles();
+		$roles    = array();
 
-		return $wp_roles->get_names();
+		foreach ( $wp_roles->get_names() as $role => $label ) {
+			$roles[ $role ] = translate_user_role( $label );
+		}
+
+		return $roles;
+	}
+
+	/**
+	 * Get an array of registered Connectors
+	 *
+	 * @return array
+	 */
+	public static function get_connectors() {
+		return WP_Stream_Connectors::$term_labels['stream_connector'];
+	}
+
+	/**
+	 * Get an array of registered Connectors
+	 *
+	 * @return array
+	 */
+	public static function get_default_connectors() {
+		return array_keys( WP_Stream_Connectors::$term_labels['stream_connector'] );
 	}
 
 	/**

@@ -59,7 +59,7 @@ if [ ${#staged_php_files[@]} != 0 ]; then
 	# PHP_CodeSniffer WordPress Coding Standards
 	echo "## phpcs"
 	if command -v phpcs >/dev/null 2>&1; then
-		phpcs_standard=$(if [ -e ruleset.xml ]; then echo ruleset.xml; else echo WordPress; fi)
+		phpcs_standard=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi)
 		phpcs -p -s -v --standard=$phpcs_standard "${staged_php_files[@]}"
 	else
 		echo "Skipping phpcs since not installed"

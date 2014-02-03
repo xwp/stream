@@ -4,22 +4,26 @@
 ![Banner](assets/banner-1544x500.png)
 Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail.
 
-**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe), [pascalklaeres](http://profiles.wordpress.org/pascalklaeres)  
+**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [johnregan3](http://profiles.wordpress.org/johnregan3), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe), [powelski](http://profiles.wordpress.org/powelski)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.6  
-**Tested up to:** 3.8  
+**Tested up to:** 3.8.1  
 **Stable tag:** trunk (master)  
 **License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
 
 ## Description ##
 
-[![Play video on YouTube](http://i1.ytimg.com/vi/DtN3DB0rpkM/hqdefault.jpg)](http://www.youtube.com/watch?v=DtN3DB0rpkM)
+[![Play video on YouTube](http://i1.ytimg.com/vi/H9TnZMUE_Y8/hqdefault.jpg)](http://www.youtube.com/watch?v=H9TnZMUE_Y8)
 
 **Note: This plugin requires PHP 5.3 or higher to be activated.**
 
 Never be in the dark about WP Admin activity again. Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
 
-Every logged-in user action is logged in an activity stream and organized for easy filtering by connector, context, action and IP address.
+Every logged-in user action is logged in a user activity stream and organized for easy filtering by connector, context, action and IP address.
+
+Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
+
+Stream is built to extend, allowing developers to easily build their own connectors to track any type of action in the activity stream (developer documentation coming soon).
 
 **Recorded activity:**
 
@@ -41,28 +45,32 @@ Every logged-in user action is logged in an activity stream and organized for ea
 
 **Noteworthy features:**
 
- * Dashboard widget of most recent activity
+ * Dashboard widget of most recent user activity
  * Specify which roles should have their activity logged
- * Limit who can view activity records by user role
- * Private RSS feeds of activity records
- * Private JSON feeds of activity records
+ * Limit who can view user activity records by user role
+ * Live update of user activity records in the Stream
+ * Private RSS feeds of user activity records
+ * Private JSON feeds of user activity records
  * Set how long records should live before being purged automatically
- * Option to manually purge all activity records from the database
+ * Option to manually purge all user activity records from the database
+
+**Extension plugins:**
+
+ * [Cherry-Pick](http://wordpress.org/plugins/stream-cherry-pick/): Allow Administrators to delete records from the Stream individually or in bulk.
 
 **Languages:**
 
  * English
  * French
  * German
+ * Spanish
+ * Polish
 
 **Coming soon:**
 
  * Multisite view of all activity records on a network
- * Live update of activity records in the Stream
-
-Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
-
-Stream is built to extend, allowing developers to easily build their own connectors to track any type of action in the activity stream (developer documentation coming soon).
+ * Support for IPv6 addresses
+ * Language support for Arabic (RTL), Czech, Slovak and Indonesian
 
 **See room for improvement?**
 
@@ -82,11 +90,61 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ![Every logged-in user action is logged in the activity stream and organized for easy filtering and searching.](assets/screenshot-1.png)
 
-### Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
+### Enable live updates in Screen Options to watch your site activity flow into the Stream in real-time.
 
-![Control which user roles can access Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-2.png)
+![Enable live updates in Screen Options to watch your site activity flow into the Stream in real-time.](assets/screenshot-2.png)
+
+### Control which user roles have their activity tracked and which user roles can access Stream.
+
+![Control which user roles have their activity tracked and which user roles can access Stream.](assets/screenshot-3.png)
+
+### Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
+
+![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
+
+### 1.1.2 ###
+**2014/02/02** - Bug fix for list table notice on new installations. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
+### 1.1 ###
+**2014/01/31** - Disable terms in dropdown filters for which records do not exist. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
+
+### 1.0.9 ###
+**2014/01/31** - Several important bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
+### 1.0.8 ###
+**2014/01/30** - Bug fix for sites using BuddyPress. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
+
+### 1.0.7 ###
+**2014/01/29** - Code efficiency improvements when fetching admin area URLs. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+### 1.0.6 ###
+**2014/01/28** - Query improvements, default connector interface, hook added for general settings fields. Bug fixes. Props [dero](https://github.com/dero), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+### 1.0.5 ###
+**2014/01/27** - Bug fix for live updates breaking columns when some are hidden via Screen Options. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
+
+### 1.0.4 ###
+**2014/01/23** - Language pack for Polish. Bug fixes. Props [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [kucrut](http://profiles.wordpress.org/kucrut/)
+
+### 1.0.3 ###
+**2014/01/19** - Language pack for Spanish. Bug fixes. Props [omniwired](https://github.com/omniwired), [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
+### 1.0.2 ###
+**2014/01/15** - Ensure the dashboard widget repects the Role Access setting. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+### 1.0.1 ###
+**2014/01/15** - Require nonce for generating a new user feed key. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
+
+### 1.0 ###
+**2014/01/13** - Allow list table to be exensible. Hook added to prevent tables from being created, if desired. Props [johnregan3](http://profiles.wordpress.org/johnregan3/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/)
+
+### 0.9.9 ###
+**2014/01/08** - Updated screenshot assets and descriptions. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+### 0.9.8 ###
+**2014/01/01** - Support for live updates in the Stream. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 ### 0.9.7 ###
 **2013/12/29** - Plugin version available as a constant. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/)

@@ -21,6 +21,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			);
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
+		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
 		set_screen_options();
 	}
 
@@ -72,6 +73,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 	}
 
+	/**
+	 * Render the checkbox column
+	 *
+	 * @param  array $item Contains all the data for the checkbox column
+	 * @return string Displays a checkbox
+	 */
+	function column_cb( $item ) {
+			return sprintf(
+			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
+			/*$1%s*/ 'wp_stream_checkbox',
+			/*$2%s*/ $item->ID
+		);
+	}
+
 	function get_records() {
 		$args = array();
 
@@ -90,14 +105,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'connector', 'context', 'action',
 			'author', 'object_id', 'search',
 			'date', 'date_from', 'date_to',
-			'record__in',
+			'record__in', 'ip',
 		);
+
 		foreach ( $allowed_params as $param ) {
 			if ( $paramval = filter_input( INPUT_GET, $param ) ) {
 				$args[$param] = $paramval;
 			}
 		}
-
 		$args['paged'] = $this->get_pagenum();
 
 		if ( ! isset( $args['records_per_page'] ) ) {
@@ -129,9 +144,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 						$item->summary,
 						array(
 							'object_id' => $item->object_id,
-							'context' => $item->context,
-							)
-						);
+							'context'   => $item->context,
+						),
+						null,
+						__( 'View all records for this object', 'stream' )
+					);
 				} else {
 					$out = $item->summary;
 				}
@@ -147,7 +164,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$author_role = isset( $user->roles[0] ) ? $wp_roles->role_names[$user->roles[0]] : null;
 					$out = sprintf(
 						'<a href="%s">%s <span>%s</span></a><br /><small>%s</small>',
-						add_query_arg( array( 'author' => $author_ID ), admin_url( 'admin.php?page=wp_stream' ) ),
+						add_query_arg(
+							array(
+								'page'   => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+								'author' => absint( $author_ID ),
+							),
+							admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+						),
 						get_avatar( $author_ID, 40 ),
 						$author_name,
 						$author_role
@@ -178,19 +201,46 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			default:
-				$out = $column_name; // xss okay
+				// Register inserted column defaults. Must match a column header from get_columns.
+				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', $new_columns = array() );
+
+				if ( ! empty( $inserted_columns ) && is_array( $inserted_columns ) ) {
+					foreach ( $inserted_columns as $column_title ) {
+						/**
+						 * If column title inserted via wp_stream_register_column_defaults ($column_title) exists
+						 * among columns registered with get_columns ($column_name) and there is an action associated
+						 * with this column, do the action
+						 *
+						 * Also, note that the action name must include the $column_title registered
+						 * with wp_stream_register_column_defaults
+						 */
+						if ( $column_title == $column_name && has_action( 'wp_stream_insert_column_default-' . $column_title ) ) {
+							$out = do_action( 'wp_stream_insert_column_default-' . $column_title, $item );
+						} else {
+							$out = $column_name;
+						}
+					}
+				} else {
+					$out = $column_name; // xss okay
+				}
 				break;
 		}
-		echo $out; //xss okay
+
+		echo $out; // xss okay
 	}
 
 
 	public static function get_action_links( $record ){
 		$out          = '';
 		$action_links = apply_filters( 'wp_stream_action_links_' . $record->connector, array(), $record );
+		$custom_links = apply_filters( 'wp_stream_custom_action_links_' . $record->connector, array(), $record );
+
+		if ( $action_links || $custom_links ) {
+			$out .= '<div class="row-actions">';
+		}
 
 		if ( $action_links ) {
-			$out  .= '<div class="row-actions">';
+
 			$links = array();
 			$i     = 0;
 			foreach ( $action_links as $al_title => $al_href ) {
@@ -203,28 +253,88 @@ class WP_Stream_List_Table extends WP_List_Table {
 				);
 			}
 			$out .= implode( '', $links );
+		}
+
+		if ( $action_links && $custom_links ) {
+			$out .= ' | ';
+		}
+
+		if ( $custom_links && is_array( $custom_links ) ) {
+			$last_link = end( $custom_links );
+			foreach ( $custom_links as $key => $link ) {
+				$out .= $link;
+				if ( $key != $last_link ) {
+					$out .= ' | ';
+				}
+			}
+		}
+
+		if ( $action_links || $custom_links ) {
 			$out .= '</div>';
 		}
+
 		return $out;
 	}
 
-	function column_link( $display, $key, $value = null ) {
-		$url = admin_url( 'admin.php?page=wp_stream' );
+	function column_link( $display, $key, $value = null, $title = null ) {
+		$url = add_query_arg(
+			array(
+				'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+			),
+			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+		);
 
-		if ( ! is_array( $key ) ) {
-			$args = array( $key => $value );
-		} else {
-			$args = $key;
-		}
+		$args = ! is_array( $key ) ? array( $key => $value ) : $key;
+
 		foreach ( $args as $k => $v ) {
 			$url = add_query_arg( $k, $v, $url );
 		}
 
 		return sprintf(
-			'<a href="%s">%s</a>',
-			$url,
-			$display
-		); // xss okay
+			'<a href="%s" title="%s">%s</a>',
+			esc_url( $url ),
+			esc_attr( $title ),
+			esc_html( $display )
+		);
+	}
+
+	/**
+	 * Assembles records for display in search filters
+	 *
+	 * Gathers list of all authors/connectors, then compares it to
+	 * results of existing records.  All items that do not exist in records
+	 * get assigned a disabled value of "true".
+	 *
+	 * @uses   existing_records (see query.php)
+	 * @since  1.0.4
+	 * @param  string  Column requested
+	 * @param  string  Table to be queried
+	 * @return array   options to be displayed in search filters
+	 */
+	function assemble_records( $column, $table = '' ) {
+		if ( $column == 'author' ) {
+			$all_records = array();
+			$authors     = get_users();
+			foreach ( $authors as $author ) {
+				$author = get_user_by( 'id', $author->ID );
+				if ( $author ) {
+					$all_records[$author->ID] = $author->display_name;
+				}
+			}
+		} else {
+			$all_records = WP_Stream_Connectors::$term_labels['stream_' . $column ];
+		}
+
+		$existing_records = existing_records( $column, $table );
+		foreach ( $all_records as $record => $label ) {
+			if ( array_key_exists( $record , $existing_records ) ) {
+				$all_records[$record] = array( 'label' => $label, 'disabled' => '' );
+			} else {
+				$all_records[$record] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
+			}
+		}
+		asort( $all_records );
+		return $all_records;
 	}
 
 	function filters_form() {
@@ -232,38 +342,24 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
-		$users = array();
-		foreach ( (array) get_users( array( 'orderby' => 'display_name' ) ) as $user ) {
-			$users[$user->ID] = $user->display_name;
-		}
-
 		$filters['author'] = array(
 			'title' => __( 'authors', 'stream' ),
-			'items' => $users,
+			'items' => $this->assemble_records( 'author', 'stream' ),
 		);
-
-		$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
-		asort( $connectors );
 
 		$filters['connector'] = array(
 			'title' => __( 'connectors', 'stream' ),
-			'items' => WP_Stream_Connectors::$term_labels['stream_connector'],
+			'items' => $this->assemble_records( 'connector' ),
 		);
-
-		$contexts = WP_Stream_Connectors::$term_labels['stream_context'];
-		asort( $contexts );
 
 		$filters['context'] = array(
 			'title' => __( 'contexts', 'stream' ),
-			'items' => $contexts,
+			'items' => $this->assemble_records( 'context' ),
 		);
-
-		$actions = WP_Stream_Connectors::$term_labels['stream_action'];
-		asort( $actions );
 
 		$filters['action'] = array(
 			'title' => __( 'actions', 'stream' ),
-			'items' => $actions,
+			'items' => $this->assemble_records( 'action' ),
 		);
 
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
@@ -275,7 +371,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
-		$url = admin_url( 'admin.php' );
+		$url = admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
+
 		echo sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss okay
 	}
 
@@ -284,10 +381,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$selected = filter_input( INPUT_GET, $name );
 		foreach ( $items as $v => $label ) {
 			$options[$v] = sprintf(
-				'<option value="%s" %s>%s</option>',
+				'<option value="%s" %s %s>%s</option>',
 				$v,
 				selected( $v, $selected, false ),
-				$label
+				$label['disabled'],
+				$label['label']
 			);
 		}
 		$out = sprintf(
@@ -336,24 +434,34 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function display() {
-		echo '<form method="get" action="', esc_attr( admin_url( 'admin.php' ) ), '">';
+		echo '<form method="get" action="' . admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) . '">';
 		echo $this->filter_search(); // xss okay
 		parent::display();
 		echo '</form>';
 	}
 
 	function display_tablenav( $which ) {
-		if ( 'top' == $which )
-	?>
-	<div class="tablenav <?php echo esc_attr( $which ); ?>">
-		<?php
-		$this->extra_tablenav( $which );
-		$this->pagination( $which );
-		?>
+		if ( 'top' == $which ) : ?>
+			<div class="tablenav <?php echo esc_attr( $which ); ?>">
+				<?php
+				$this->extra_tablenav( $which );
+				$this->pagination( $which );
+				?>
 
-		<br class="clear" />
-		</div>
-	<?php
+				<br class="clear" />
+			</div>
+		<?php  else : ?>
+			<div class="tablenav <?php echo esc_attr( $which ); ?>">
+				<?php
+				do_action( 'wp_stream_after_list_table' );
+				$this->extra_tablenav( $which );
+				$this->pagination( $which );
+				?>
+
+				<br class="clear" />
+			</div>
+		<?php
+		endif;
 	}
 
 
@@ -363,5 +471,36 @@ class WP_Stream_List_Table extends WP_List_Table {
 		} else {
 			return $dummy;
 		}
+	}
+
+	static function set_live_update_option( $dummy, $option, $value ) {
+		if ( $option == 'stream_live_update_records' ) {
+			$value = $_POST['stream_live_update_records'];
+			return $value;
+		} else {
+			return $dummy;
+		}
+	}
+
+	static function live_update_checkbox( $status, $args ) {
+		$user_id = get_current_user_id();
+		$option  = get_user_meta( $user_id, 'stream_live_update_records', true );
+		$value   = isset( $option ) ? $option : 'on';
+		$nonce   = wp_create_nonce( 'stream_live_update_nonce' );
+		ob_start();
+		?>
+		<fieldset>
+			<h5><?php esc_html_e( 'Live updates', 'stream' ) ?></h5>
+			<div><input type="hidden" name="enable_live_update_nonce" id="enable_live_update_nonce" value="<?php echo esc_attr( $nonce ) ?>" /></div>
+			<div><input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ) ?>" /></div>
+			<div class="metabox-prefs stream-live-update-checkbox">
+				<label for="enable_live_update">
+					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( 'on', $value ) ?> />
+					<?php esc_html_e( 'Enabled', 'stream' ) ?><span class="spinner"></span>
+				</label>
+			</div>
+		</fieldset>
+		<?php
+		return ob_get_clean();
 	}
 }
