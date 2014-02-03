@@ -3,6 +3,7 @@
 class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	
 	const HIGHLIGHT_FIELD_URL_PARAM_NAME = 'wp_stream_highlight';
+	const HIGHLIGHT_CLASS_NAME = 'wp_stream_highlight';
 
 	/**
 	 * Context name
@@ -30,6 +31,16 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		'category_base',
 		'tag_base',
 	);
+
+	/**
+	 * Register all context hooks
+	 *
+	 * @return void
+	 */
+	public static function register() {
+		parent::register();
+		add_action( 'admin_head', array( __CLASS__, 'highlight_field' ) );
+	}
 
 	/**
 	 * Return translated context label
@@ -266,6 +277,31 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				$current_key => 'updated',
 			)
 		);
+	}
+	
+	/**
+	 * Add class to highlight field by URL param
+	 *
+	 * @action admin_head
+	 */
+	public function highlight_field() {
+		if( isset( $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) ): ?>
+			<style>
+				input.<?php echo self::HIGHLIGHT_CLASS_NAME ?>,
+				textarea.<?php echo self::HIGHLIGHT_CLASS_NAME ?>,
+				select.<?php echo self::HIGHLIGHT_CLASS_NAME ?> {
+					background: #ff8;
+				}
+			</style>
+			<script>
+				(function ($) {
+					$(function () {
+						$(<?php echo json_encode( sprintf( 'input[name=%s]', $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) ) ?>)
+							.addClass(<?php echo json_encode( self::HIGHLIGHT_CLASS_NAME ) ?>);
+					});
+				}(jQuery));
+			</script>
+		<?php endif;
 	}
 
 }
