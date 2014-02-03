@@ -90,7 +90,7 @@ class WP_Stream_Notification_Rule_Matcher {
 		$needle = $trigger['value'];
 		$operator = $trigger['operator'];
 		$negative = ( $operator[0] == '!' );
-		
+
 		switch ( $trigger['type'] ) {
 			case 'search':
 				$haystack = $log['summary'];
@@ -172,7 +172,7 @@ class WP_Stream_Notification_Rule_Matcher {
 		foreach ( $rules as $rule_id ) {
 			$output[ $rule_id ] = array();
 			$rule = new WP_Stream_Notification_Rule( $rule_id );
-			
+
 			// Generate an easy-to-parse tree of triggers/groups
 			$triggers = $this->generate_tree(
 				$this->generate_flattened_tree(
@@ -203,7 +203,7 @@ class WP_Stream_Notification_Rule_Matcher {
 		}
 		return array_reverse( $chain );
 	}
-	 
+
 	/**
 	 * Takes the groups and triggers and creates a flattened tree,
 	 * which is an pre-order walkthrough of the tree we want to construct
@@ -217,24 +217,24 @@ class WP_Stream_Notification_Rule_Matcher {
 		$flattened_tree      = array( array( 'item' => $groups['0'], 'level' => 0, 'type' => 'group' ) );
 		$current_group_chain = array( '0' );
 		$level               = 1;
-	 
+
 		foreach ( $triggers as $key => $trigger ) {
 			$active_group = end( $current_group_chain );
-	 
+
 			// If the trigger goes to any other than actually opened group, we need to traverse the tree first
 			if ( $trigger['group'] != $active_group ) {
-	 
+
 				$trigger_group_chain   = $this->generate_group_chain( $groups, $trigger['group'] );
 				$common_ancestors      = array_intersect( $current_group_chain, $trigger_group_chain );
 				$newly_inserted_groups = array_diff( $trigger_group_chain, $current_group_chain );
 				$steps_back            = $level - count( $common_ancestors );
-	 
+
 				// First take the steps back until we reach a common ancestor
 				for ( $i = 0; $i < $steps_back; $i++ ) {
 					array_pop( $current_group_chain );
 					$level--;
 				}
-	 
+
 				// Then go forward and generate group nodes until the trigger is ready to be inserted
 				foreach ( $newly_inserted_groups as $group ) {
 					$flattened_tree[] = array( 'item' => $groups[ $group ], 'level' => $level++, 'type' => 'group' );
@@ -244,10 +244,10 @@ class WP_Stream_Notification_Rule_Matcher {
 			// Now we're sure the trigger goes to a correct position
 			$flattened_tree[] = array( 'item' => $trigger, 'level' => $level, 'type' => 'trigger' );
 		}
-	 
+
 		return $flattened_tree;
 	}
-	 
+
 	/**
 	 * Takes the flattened tree and generates a proper tree
 	 */
@@ -282,9 +282,9 @@ class WP_Stream_Notification_Rule_Matcher {
 	 * Split trigger trees by relation, so we can fail trigger trees early if
 	 * an effective trigger is not matched
 	 *
-	 * A chunk would be a bulk of triggers that only matches if ANY of its 
+	 * A chunk would be a bulk of triggers that only matches if ANY of its
 	 * nested triggers are matched
-	 * 
+	 *
 	 * @param  array  $group Group array, ex: array(
 	 *   'relation' => 'and',
 	 *   'trigger'  => array( arr trigger1, arr trigger2 )
