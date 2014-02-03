@@ -167,6 +167,9 @@ class WP_Stream {
 			}
 		}
 
+		// Check upgrade routine
+		self::install();
+
 		if ( ! empty( $message ) ) {
 			self::$messages['wp_stream_db_error'] = sprintf(
 				'<div class="error">%s<p>%s</p></div>',
