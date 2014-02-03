@@ -382,13 +382,13 @@ class WP_Stream_Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_stream_settings_translations( $labels ) {
-		if ( ! isset( $labels['wp_stream'] ) ) {
-			$labels['wp_stream'] = array();
+		if ( ! isset( $labels[self::KEY] ) ) {
+			$labels[self::KEY] = array();
 		}
 
 		foreach ( self::get_fields() as $section_slug => $section ) {
 			foreach ( $section['fields'] as $field ) {
-				$labels['wp_stream'][sprintf( '%s_%s', $section_slug, $field['name'] )] = $field['title'];
+				$labels[self::KEY][sprintf( '%s_%s', $section_slug, $field['name'] )] = $field['title'];
 			}
 		}
 
