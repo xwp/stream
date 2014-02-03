@@ -4,6 +4,10 @@ jQuery(function($){
 
 	_.templateSettings.variable = 'vars';
 
+	$.datepicker.setDefaults({
+		dateFormat: "yy-mm-dd"
+	});
+
 	var types = stream_notifications.types,
 		i,
 
@@ -40,6 +44,12 @@ jQuery(function($){
 			format: select2_format,
 			formatSelection: select2_format,
 			formatResult: select2_format
+		},
+
+		datify = function( elements ) {
+			$( elements ).each( function() {
+				$(this).datepicker();
+			});
 		},
 
 		selectify = function( elements, args ) {
@@ -191,6 +201,7 @@ jQuery(function($){
 			$this.after( tmpl_options( $.extend( options, { index: index } ) ) );
 			selectify( $this.parent().find('select') );
 			selectify( $this.parent().find('input.tags, input.ajax'), { tags: [] } );
+			datify( $this.parent().find('.type-date') );
 		})
 	;
 
