@@ -1,6 +1,8 @@
 <?php
 
 class WP_Stream_Connector_Settings extends WP_Stream_Connector {
+	
+	const HIGHLIGHT_FIELD_URL_PARAM_NAME = 'wp_stream_highlight';
 
 	/**
 	 * Context name
@@ -173,6 +175,11 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					if ( current_user_can( $target_submenu[1] ) ) {
 						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[$record->context] );
 						$url  = admin_url( $submenu_slug );
+						
+						$field_name = get_stream_meta( $record->ID, 'option', true );
+						if( $field_name !== '' ) {
+							$url  = add_query_arg( self::HIGHLIGHT_FIELD_URL_PARAM_NAME, $field_name, $url );
+						}
 
 						$links[ $text ] = $url;
 					}
