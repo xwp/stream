@@ -5,7 +5,8 @@ jQuery(function($){
 	_.templateSettings.variable = 'vars';
 
 	$.datepicker.setDefaults({
-		dateFormat: "yy-mm-dd"
+		dateFormat: 'yy/mm/dd',
+		minDate: 0
 	});
 
 	var types = stream_notifications.types,
