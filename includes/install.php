@@ -12,7 +12,7 @@ class WP_Stream_Install {
 	public static function check() {
 		global $wpdb;
 
-		$current = self::get_version();
+		$current = WP_Stream::VERSION;
 
 		$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 
@@ -29,17 +29,6 @@ class WP_Stream_Install {
 		}
 
 		update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $current );
-	}
-
-	/**
-	 * Get plugin version
-	 * @return string  Plugin version
-	 */
-	public static function get_version() {
-		include_once ABSPATH . 'wp-admin/includes/plugin.php';
-		$plugins = get_plugins();
-		$name    = plugin_basename( WP_STREAM_DIR . 'stream.php' );
-		return $plugins[$name]['Version'];
 	}
 
 	public static function install() {
@@ -96,8 +85,7 @@ class WP_Stream_Install {
 		dbDelta( $sql );
 	}
 
-	public static function update() {
-		// Reserved for future
+	public static function update( $db_version, $current ) {
 	}
 
 }
