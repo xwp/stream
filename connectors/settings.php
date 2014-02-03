@@ -162,7 +162,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		
 		$labels = apply_filters( 'wp_stream_serialized_labels', $labels );
 
-		if ( isset( $labels[$field_key] ) && isset( $labels[$option_name][$field_key] ) ) {
+		if ( isset( $labels[$option_name] ) && isset( $labels[$option_name][$field_key] ) ) {
 			return $labels[$option_name][$field_key];
 		}
 
