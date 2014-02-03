@@ -271,13 +271,13 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			$changed_keys = array();
 
 			// Added keys
-			$changed_keys = array_merge( $changed_keys, array_keys( array_diff_key( $value, $old_value) ) );
+			$changed_keys = array_merge( $changed_keys, array_keys( array_diff_key( $value, $old_value ) ) );
 
 			// Deleted keys
-			$changed_keys = array_merge( $changed_keys, array_keys( array_diff_key( $old_value, $value) ) );
+			$changed_keys = array_merge( $changed_keys, array_keys( array_diff_key( $old_value, $value ) ) );
 
 			// array_diff_assoc is not sufficient
-			foreach( array_diff( array_keys( $value ), $changed_keys ) as $option_key ) {
+			foreach ( array_diff( array_keys( $value ), $changed_keys ) as $option_key ) {
 				if ( $value[$option_key] != $old_value[$option_key] ) {
 					$changed_keys[] = $option_key;
 				}
@@ -305,7 +305,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			);
 		}
 
-		foreach( $changed_options as $properties ) {
+		foreach ( $changed_options as $properties ) {
 			self::log(
 				__( '"%s" setting was updated', 'stream' ),
 				$properties,

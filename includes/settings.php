@@ -386,8 +386,8 @@ class WP_Stream_Settings {
 			$labels['wp_stream'] = array();
 		}
 
-		foreach( self::get_fields() as $section_slug => $section ) {
-			foreach( $section['fields'] as $field ) {
+		foreach ( self::get_fields() as $section_slug => $section ) {
+			foreach ( $section['fields'] as $field ) {
 				$labels['wp_stream'][sprintf( '%s_%s', $section_slug, $field['name'] )] = $field['title'];
 			}
 		}
