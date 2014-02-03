@@ -159,7 +159,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		$labels = array(
 			// to be updated
 		);
-		
+
 		$labels = apply_filters( 'wp_stream_serialized_labels', $labels );
 
 		if ( isset( $labels[$option_name] ) && isset( $labels[$option_name][$field_key] ) ) {
@@ -264,31 +264,31 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		if ( ! isset( $current_key ) ) {
 			$current_key = 'settings';
 		}
-		
+
 		$changed_options = array();
-		
-		if( is_array( $old_value ) && is_array( $value ) ) {
+
+		if ( is_array( $old_value ) && is_array( $value ) ) {
 			$changed_keys = array();
-			
-			// added keys
+
+			// Added keys
 			$changed_keys = array_merge( $changed_keys, array_keys( array_diff_key( $value, $old_value) ) );
-			
-			// deleted keys
+
+			// Deleted keys
 			$changed_keys = array_merge( $changed_keys, array_keys( array_diff_key( $old_value, $value) ) );
-			
+
 			// array_diff_assoc is not sufficient
 			foreach( array_diff( array_keys( $value ), $changed_keys ) as $option_key ) {
-				if( $value[$option_key] != $old_value[$option_key] ) {
+				if ( $value[$option_key] != $old_value[$option_key] ) {
 					$changed_keys[] = $option_key;
 				}
 			}
-			
+
 			$changed_options = array_map(
 				function( $field_key ) use ( $current_key, $value, $old_value ) {
 					return array(
 						'label'     => self::get_serialized_field_label( $current_key, $field_key ),
 						'option'    => $current_key,
-						// Prevent php fatal error when saving array as option
+						// Prevent fatal error when saving option as array
 						'old_value' => isset( $old_value[$field_key] ) ? maybe_serialize( $old_value[$field_key] ) : null,
 						'value'     => isset( $value[$field_key] ) ? maybe_serialize( $value[$field_key] ) : null,
 					);
@@ -299,7 +299,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			$changed_options[] = array(
 				'label'     => self::get_field_label( $option ),
 				'option'    => $option,
-				// Prevent php fatal error when saving array as option
+				// Prevent fatal error when saving option as array
 				'old_value' => maybe_serialize( $old_value ),
 				'value'     => maybe_serialize( $value ),
 			);
