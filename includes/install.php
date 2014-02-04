@@ -12,7 +12,7 @@ class WP_Stream_Install {
 	public static function check() {
 		global $wpdb;
 
-		$current = self::get_version();
+		$current = WP_Stream::VERSION;
 
 		$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 
@@ -31,17 +31,6 @@ class WP_Stream_Install {
 		update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $current );
 	}
 
-	/**
-	 * Get plugin version
-	 * @return string  Plugin version
-	 */
-	public static function get_version() {
-		include_once ABSPATH . 'wp-admin/includes/plugin.php';
-		$plugins = get_plugins();
-		$name    = plugin_basename( WP_STREAM_DIR . 'stream.php' );
-		return $plugins[$name]['Version'];
-	}
-
 	public static function install() {
 		global $wpdb;
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -58,7 +47,7 @@ class WP_Stream_Install {
 			parent bigint(20) unsigned NOT NULL DEFAULT '0',
 			type varchar(20) NOT NULL DEFAULT 'stream',
 			created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-			ip varchar(20) NOT NULL,
+			ip varchar(20) NULL,
 			PRIMARY KEY (ID),
 			KEY site_id (site_id),
 			KEY parent (parent),
@@ -96,8 +85,14 @@ class WP_Stream_Install {
 		dbDelta( $sql );
 	}
 
-	public static function update() {
-		// Reserved for future
+	public static function update( $db_version, $current ) {
+		global $wpdb;
+		$prefix = self::$table_prefix;
+
+		// If version is lower than 1.1.3, do the update routine
+		if ( version_compare( $db_version, '1.1.3' ) == -1 ) {
+			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(20) NULL AFTER created" );
+		}
 	}
 
 }
