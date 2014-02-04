@@ -49,10 +49,10 @@ class WP_Stream_Settings {
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 
 		// Check if we need to flush rewrites rules
-		add_action( 'update_option_' . self::KEY  , array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
+		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
 
 		// Remove records when records TTL is shortened
-		add_action( 'update_option_' . self::KEY  , array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
+		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
 
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
 	}
@@ -417,9 +417,9 @@ class WP_Stream_Settings {
 	public function updated_option_ttl_remove_records( $old_value, $new_value ) {
 		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : -1;
 		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : -1;
-		
+
 		if ( $ttl_after < $ttl_before ) {
-			do_action( 'stream_auto_purge' );
+			do_action( 'wp_stream_auto_purge' );
 		}
 	}
 }
