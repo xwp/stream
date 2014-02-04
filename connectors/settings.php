@@ -373,7 +373,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 							}, 1000, function () {
 								$field.animate({
 									backgroundColor: "#fffedf"
-								}, 1000);
+								}, 250);
 
 								$("label")
 									.filter(function () {
@@ -381,7 +381,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 									})
 									.animate({
 										color: "#d54e21"
-									}, 1000);
+									}, 250);
 								}
 							);
 					}
