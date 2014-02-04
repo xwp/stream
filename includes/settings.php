@@ -50,6 +50,8 @@ class WP_Stream_Settings {
 
 		// Check if we need to flush rewrites rules
 		add_action( 'update_option_' . self::KEY  , array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
+
+		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
 	}
 
 	/**
@@ -276,8 +278,15 @@ class WP_Stream_Settings {
 				);
 				break;
 			case 'multi_checkbox':
-				$output        = sprintf(
+				$output = sprintf(
 					'<div id="%1$s[%2$s_%3$s]"><fieldset>',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				// Fallback if nothing is selected
+				$output .= sprintf(
+					'<input type="hidden" name="%1$s[%2$s_%3$s][]" value="__placeholder__" />',
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name )
@@ -371,5 +380,25 @@ class WP_Stream_Settings {
 	 */
 	public static function get_default_connectors() {
 		return array_keys( WP_Stream_Connectors::$term_labels['stream_connector'] );
+	}
+
+	/**
+	 * Get translations of serialized Stream settings
+	 *
+	 * @filter wp_stream_serialized_labels
+	 * @return array Multidimensional array of fields
+	 */
+	public static function get_settings_translations( $labels ) {
+		if ( ! isset( $labels[self::KEY] ) ) {
+			$labels[self::KEY] = array();
+		}
+
+		foreach ( self::get_fields() as $section_slug => $section ) {
+			foreach ( $section['fields'] as $field ) {
+				$labels[self::KEY][sprintf( '%s_%s', $section_slug, $field['name'] )] = $field['title'];
+			}
+		}
+
+		return $labels;
 	}
 }
