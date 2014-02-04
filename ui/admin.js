@@ -31,6 +31,19 @@ jQuery(function($){
 		}
 	});
 
+	// Admin page tabs
+	var $tabs       = $('.nav-tab-wrapper'),
+		$panels     = $('table.form-table'),
+		currentHash = window.location.hash ? window.location.hash.match(/\d+/)[0] : 0;
+
+	$tabs.on('click', 'a', function(e){
+		e.preventDefault();
+		var index = $tabs.find('a').index( $(this) );
+		$panels.hide().eq(index).show();
+		$tabs.find('a').removeClass('nav-tab-active').filter($(this)).addClass('nav-tab-active');
+	});
+	$tabs.children().eq( currentHash ).trigger('click');
+
 	// Heartbeat for Live Updates
 	// runs only on stream page (not settings)
 	$(document).ready( function() {
@@ -86,8 +99,15 @@ jQuery(function($){
 			// Add element to the dom
 			$(list_sel).prepend( $new_items );
 
-            // Remove the number of element added to the end of the list table
-            $( list_sel + ' tr').slice(-$new_items.length).remove();
+			$( '.metabox-prefs input' ).each( function() {
+				if( $( this ).prop( 'checked' ) !== true ) {
+					var label = $( this ).val();
+					$( 'td.column-' + label ).hide();
+				}
+			});
+
+			// Remove the number of element added to the end of the list table
+			$( list_sel + ' tr').slice(-$new_items.length).remove();
 
 			// Remove background after a certain amount of time
 			setTimeout( function() {
