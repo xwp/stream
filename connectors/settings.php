@@ -1,7 +1,7 @@
 <?php
 
 class WP_Stream_Connector_Settings extends WP_Stream_Connector {
-	
+
 	const HIGHLIGHT_FIELD_URL_PARAM_NAME = 'wp_stream_highlight';
 	const HIGHLIGHT_CLASS_NAME = 'wp_stream_highlight';
 
@@ -186,7 +186,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					if ( current_user_can( $target_submenu[1] ) ) {
 						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[$record->context] );
 						$url  = admin_url( $submenu_slug );
-						
+
 						$field_name = get_stream_meta( $record->ID, 'option', true );
 						if ( $field_name !== '' ) {
 							$url = add_query_arg( self::HIGHLIGHT_FIELD_URL_PARAM_NAME, $field_name, $url );
@@ -278,7 +278,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			)
 		);
 	}
-	
+
 	/**
 	 * Add class to highlight field by URL param
 	 *
@@ -290,13 +290,16 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				input.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?>,
 				textarea.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?>,
 				select.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?> {
-					background: #ff8;
+					background: #fffedf;
+				}
+				label.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?> {
+					color: #d54e21;
 				}
 			</style>
 			<script>
 				(function ($) {
 					$(function () {
-						$(<?php echo json_encode( sprintf( 'input[name=%s]', $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) ) ?>)
+						$(<?php echo json_encode( sprintf( 'input[name=%1$s], label[for=%1$s]', $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) ) ?>)
 							.addClass(<?php echo json_encode( self::HIGHLIGHT_CLASS_NAME ) ?>);
 					});
 				}(jQuery));
