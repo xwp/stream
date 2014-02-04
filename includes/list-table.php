@@ -420,9 +420,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$out = sprintf(
 			'<div id="filter-date-range">
 				<label class="screen-reader-text" for="date_from">%1$s:</label>
-				<input type="text" name="date_from" id="date_from" class="date-picker" placeholder="%1$s" size="9" value="%2$s" />
+				<input type="text" name="date_from" id="date_from" class="date-picker" placeholder="%1$s" size="14" value="%2$s" />
 				<label class="screen-reader-text" for="date_to">%3$s:</label>
-				<input type="text" name="date_to" id="date_to" class="date-picker" placeholder="%3$s" size="9" value="%4$s" />
+				<input type="text" name="date_to" id="date_to" class="date-picker" placeholder="%3$s" size="14" value="%4$s" />
 			</div>',
 			esc_attr__( 'Date start', 'stream' ),
 			isset( $_GET['date_from'] ) ? esc_attr( $_GET['date_from'] ) : null,
