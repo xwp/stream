@@ -47,7 +47,7 @@ class WP_Stream_Install {
 			parent bigint(20) unsigned NOT NULL DEFAULT '0',
 			type varchar(20) NOT NULL DEFAULT 'stream',
 			created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-			ip varchar(20) NULL,
+			ip varchar(39) NULL,
 			PRIMARY KEY (ID),
 			KEY site_id (site_id),
 			KEY parent (parent),
@@ -92,6 +92,11 @@ class WP_Stream_Install {
 		// If version is lower than 1.1.3, do the update routine
 		if ( version_compare( $db_version, '1.1.3' ) == -1 ) {
 			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(20) NULL AFTER created" );
+		}
+
+		// IPv6 fix, for 1.1.3 and below
+		if ( version_compare( $db_version, '1.1.3' ) <= 0 ) {
+			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(39) NULL AFTER created" );
 		}
 	}
 
