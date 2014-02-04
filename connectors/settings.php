@@ -188,8 +188,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 						$url  = admin_url( $submenu_slug );
 						
 						$field_name = get_stream_meta( $record->ID, 'option', true );
-						if( $field_name !== '' ) {
-							$url  = add_query_arg( self::HIGHLIGHT_FIELD_URL_PARAM_NAME, $field_name, $url );
+						if ( $field_name !== '' ) {
+							$url = add_query_arg( self::HIGHLIGHT_FIELD_URL_PARAM_NAME, $field_name, $url );
 						}
 
 						$links[ $text ] = $url;
@@ -285,11 +285,11 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @action admin_head
 	 */
 	public function highlight_field() {
-		if( isset( $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) && preg_match( '#^[\w-]+$#', $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) ): ?>
+		if ( isset( $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) && preg_match( '#^[\w-]+$#', $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) ): ?>
 			<style>
-				input.<?php echo self::HIGHLIGHT_CLASS_NAME ?>,
-				textarea.<?php echo self::HIGHLIGHT_CLASS_NAME ?>,
-				select.<?php echo self::HIGHLIGHT_CLASS_NAME ?> {
+				input.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?>,
+				textarea.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?>,
+				select.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?> {
 					background: #ff8;
 				}
 			</style>
