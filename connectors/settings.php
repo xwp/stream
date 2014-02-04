@@ -284,7 +284,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @action admin_head
 	 */
-	public function highlight_field() {
+	public static function highlight_field() {
 		if ( isset( $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) && preg_match( '#^[\w-]+$#', $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) ): ?>
 			<style>
 				input.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?>,
