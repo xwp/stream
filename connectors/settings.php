@@ -363,6 +363,10 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 								return $(this).attr("for") === fieldName;
 							})
 							.css("color", "#d54e21");
+
+						$("html, body").animate({
+							scrollTop: $field.offset().top - $("#wpadminbar").height()
+						}, 1000);
 					}
 				});
 			}(jQuery));
