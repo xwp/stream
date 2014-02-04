@@ -349,6 +349,13 @@ jQuery(function($){
 	// Autofocus for earlier browsers
 	$('[autofocus]').focus();
 
+	// Data tags accordion
+	$('#data-tag-glossary').accordion({
+		header: 'header',
+		collapsible: true,
+		heightStyle: 'content'
+	});
+
 	// Reset occurrences link
 	$('a.reset-occ').click(function(e){
 		e.preventDefault();

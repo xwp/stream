@@ -14,6 +14,10 @@ abstract class WP_Stream_Notification_Adapter {
 		return array();
 	}
 
+	public static function hints() {
+		return '';
+	}
+
 	/**
 	 * Replace placeholders in alert[field]s with proper info from the log
 	 * @param  string $haystack Text to replace in
