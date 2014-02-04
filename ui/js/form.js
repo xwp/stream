@@ -350,10 +350,12 @@ jQuery(function($){
 	$('[autofocus]').focus();
 
 	// Data tags accordion
-	$('#data-tag-glossary').accordion({
+	$('#data-tag-glossary').attr('data-theme', 'none').attr('data-role', 'none').accordion({
 		header: 'header',
 		collapsible: true,
-		heightStyle: 'content'
+		heightStyle: 'content',
+		active: false,
+		icons: { "header": "", "activeHeader": "" }
 	});
 
 	// Reset occurrences link

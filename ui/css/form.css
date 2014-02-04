@@ -201,8 +201,16 @@ table.alert-options tbody tr td {
 #data-tags header {
 	padding: 10px;
 	padding-left: 25px;
-	background-color: rgba(0, 0, 0, 0.03);
+	background: rgba(0, 0, 0, 0.03) !important;
+	border: none !important;
 	cursor: pointer;
+}
+#data-tags header .ui-icon {
+	display: none;	
+}
+#data-tags .dt-list {
+	border: none !important;
+	padding: 0 !important;
 }
 #data-tags dl {
 	padding-bottom: 10px;

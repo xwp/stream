@@ -71,8 +71,8 @@ class WP_Stream_Notifications_Form
 			wp_enqueue_style( 'select2' );
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_script( 'underscore' );
+			wp_enqueue_style( 'jquery-ui' );
 			wp_enqueue_script( 'jquery-ui-datepicker' );
-			wp_enqueue_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css', array(), '1.10.3' );
 			wp_enqueue_script( 'jquery-ui-accordion' );
 			wp_enqueue_style( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/css/form.css' );
 			wp_enqueue_script( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/form.js', array( 'underscore', 'select2' ) );
