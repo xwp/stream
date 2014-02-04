@@ -299,7 +299,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			<script>
 				(function ($) {
 					$(function () {
-						$(<?php echo json_encode( sprintf( 'input[name=%1$s], label[for=%1$s]', $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) ) ?>)
+						$(<?php echo json_encode( sprintf( 'input[name=%1$s], textarea[name=%1$s], select[name=%1$s], label[for=%1$s]', $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) ) ?>)
 							.addClass(<?php echo json_encode( self::HIGHLIGHT_CLASS_NAME ) ?>);
 					});
 				}(jQuery));
