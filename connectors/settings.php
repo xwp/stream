@@ -365,7 +365,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 							.css("color", "#d54e21");
 
 						$("html, body").animate({
-							scrollTop: $field.offset().top - $("#wpadminbar").height()
+							scrollTop: $field.closest("tr").offset().top - $("#wpadminbar").height()
 						}, 1000);
 					}
 				});
