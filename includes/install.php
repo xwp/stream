@@ -91,7 +91,7 @@ class WP_Stream_Install {
 
 		// If version is lower than 1.1.3, do the update routine
 		if ( version_compare( $db_version, '1.1.3' ) == -1 ) {
-			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY IP varchar(20) NULL AFTER created" );
+			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(20) NULL AFTER created" );
 		}
 	}
 
