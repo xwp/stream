@@ -39,6 +39,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	public static function register() {
 		parent::register();
 		add_action( 'admin_head', array( __CLASS__, 'highlight_field' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_jquery_color' ) );
 	}
 
 	/**
@@ -160,6 +161,16 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		}
 
 		return $field_key;
+	}
+
+	/**
+	 * Enqueue jQuery Color plugin
+	 *
+	 * @action admin_enqueue_scripts
+	 * @return void
+	 */
+	public static function enqueue_jquery_color() {
+		wp_enqueue_script( 'jquery-color' );
 	}
 
 	/**
@@ -356,17 +367,23 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 								return $(this).attr("name") === fieldName;
 							});
 
-						$field.css("background", "#fffedf")
+						$("html, body")
+							.animate({
+								scrollTop: $field.closest("tr").offset().top - $("#wpadminbar").height()
+							}, 1000, function () {
+								$field.animate({
+									backgroundColor: "#fffedf"
+								}, 1000);
 
-						$("label")
-							.filter(function () {
-								return $(this).attr("for") === fieldName;
-							})
-							.css("color", "#d54e21");
-
-						$("html, body").animate({
-							scrollTop: $field.closest("tr").offset().top - $("#wpadminbar").height()
-						}, 1000);
+								$("label")
+									.filter(function () {
+										return $(this).attr("for") === fieldName;
+									})
+									.animate({
+										color: "#d54e21"
+									}, 1000);
+								}
+							);
 					}
 				});
 			}(jQuery));
