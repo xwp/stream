@@ -97,8 +97,10 @@ class WP_Stream_Notification_Rule_Matcher {
 				break;
 			case 'object_id':
 				$haystack = $log['object_id'];
+				break;
 			case 'author':
 				$haystack = $log['author'];
+				break;
 			case 'author_role':
 				$user = get_userdata( $log['author'] );
 				$haystack = ( $user->exists() && $user->roles ) ? $user->roles[0] : false;
@@ -107,7 +109,7 @@ class WP_Stream_Notification_Rule_Matcher {
 				$haystack = $log['ip'];
 				break;
 			case 'date':
-				$haystack = date( 'Ymd', $log['created'] );
+				$haystack = date( 'Ymd', strtotime( $log['created'] ) );
 				$needle = date( 'Ymd', strtotime( $needle ) );
 				break;
 			case 'connector':

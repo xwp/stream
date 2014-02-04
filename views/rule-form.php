@@ -302,7 +302,18 @@
 	.select2-choices img.avatar,
 	.select2-results img.avatar {
 		vertical-align: middle;
-		padding-right: 5px;
+		margin-right: 5px;
+		margin-bottom: 2px;
+
+		-webkit-border-radius: 3px;
+		   -moz-border-radius: 3px;
+		        border-radius: 3px;
+	}
+	.select2-search-choice-close {
+		-webkit-transition: none;
+		   -moz-transition: none;
+		     -o-transition: all 0 none;
+		        transition: none;
 	}
 	#alerts .add-alert {
 		margin: 0 0 12px 12px;
