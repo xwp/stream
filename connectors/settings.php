@@ -2,8 +2,7 @@
 
 class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
-	const HIGHLIGHT_FIELD_URL_PARAM_NAME = 'wp_stream_highlight';
-	const HIGHLIGHT_CLASS_NAME = 'wp_stream_highlight';
+	const HIGHLIGHT_FIELD_URL_HASH_PREFIX = 'wp-stream-highlight:';
 
 	/**
 	 * Context name
@@ -209,7 +208,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 						$field_name = get_stream_meta( $record->ID, 'option', true );
 						if ( $field_name !== '' ) {
-							$url = add_query_arg( self::HIGHLIGHT_FIELD_URL_PARAM_NAME, $field_name, $url );
+							$url = sprintf( '%s#%s%s', rtrim( preg_replace( '/#.*/', '', $url ), '/' ), self::HIGHLIGHT_FIELD_URL_HASH_PREFIX, $field_name );
 						}
 
 						$links[ $text ] = $url;
@@ -341,26 +340,34 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @action admin_head
 	 */
 	public static function highlight_field() {
-		if ( isset( $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) && preg_match( '#^[\w-]+$#', $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) ): ?>
-			<style>
-				input.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?>,
-				textarea.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?>,
-				select.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?> {
-					background: #fffedf;
-				}
-				label.<?php echo sanitize_html_class( self::HIGHLIGHT_CLASS_NAME ) ?> {
-					color: #d54e21;
-				}
-			</style>
-			<script>
-				(function ($) {
-					$(function () {
-						$(<?php echo json_encode( sprintf( 'input[name=%1$s], textarea[name=%1$s], select[name=%1$s], label[for=%1$s]', $_GET[self::HIGHLIGHT_FIELD_URL_PARAM_NAME] ) ) ?>)
-							.addClass(<?php echo json_encode( self::HIGHLIGHT_CLASS_NAME ) ?>);
-					});
-				}(jQuery));
-			</script>
-		<?php endif;
+		?>
+		<script>
+			(function ($) {
+				$(function () {
+					var hashPrefix = <?php echo json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) ?>,
+						fieldName = "",
+						$field = {};
+
+					if (location.hash.substr(1, hashPrefix.length) === hashPrefix) {
+						fieldName = location.hash.substr(hashPrefix.length + 1);
+
+						$field = $("input, textarea, select")
+							.filter(function () {
+								return $(this).attr("name") === fieldName;
+							});
+
+						$field.css("background", "#fffedf")
+
+						$("label")
+							.filter(function () {
+								return $(this).attr("for") === fieldName;
+							})
+							.css("color", "#d54e21");
+					}
+				});
+			}(jQuery));
+		</script>
+		<?php
 	}
 
 }
