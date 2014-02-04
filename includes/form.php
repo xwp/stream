@@ -39,6 +39,13 @@ class WP_Stream_Notifications_Form
 			WP_Stream_Notifications::$screen_id,
 			'side'
 		);
+		add_meta_box(
+			'data-tags',
+			__( 'Data Tags', 'stream-notifications' ),
+			array( $this, 'metabox_data_tags' ),
+			WP_Stream_Notifications::$screen_id,
+			'side'
+		);
 	}
 
 	/**
@@ -64,6 +71,7 @@ class WP_Stream_Notifications_Form
 			wp_enqueue_style( 'select2' );
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_script( 'underscore' );
+			wp_enqueue_script( 'jquery-ui-accordion' );
 			wp_enqueue_script( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/form.js', array( 'underscore', 'select2' ) );
 			wp_localize_script( 'stream-notifications-form', 'stream_notifications', $this->get_js_options() );
 		}
@@ -405,4 +413,46 @@ class WP_Stream_Notifications_Form
 		<?php
 	}
 
+	public function metabox_data_tags() {
+		?>
+		<div id="data-tag-glossary">
+			<header><?php _e( 'General', 'stream-notifications' ) ?></header>
+			<div class="dt-list">
+				<dl>
+					<dt><code>%%summary%%</code></dt>
+					<dd><?php _e( 'Summary message of the triggered record', 'stream-notifications' ) ?></dd>
+					<dt><code>%%object_id%%</code></dt>
+					<dd><?php _e( 'Object ID of triggered record', 'stream-notifications' ) ?></dd>
+					<dt><code>%%created%%</code></dt>
+					<dd><?php _e( 'Timestamp of triggered record', 'stream-notifications' ) ?></dd>
+					<dt><code>%%ip%%</code></dt>
+					<dd><?php _e( 'IP of the person who authored the triggered record', 'stream-notifications' ) ?></dd>
+				</dl>
+			</div>
+			<header><?php _e( 'Object', 'stream-notifications' ) ?></header>
+			<div class="dt-list">
+				<dl>
+					<dt><code>%%object.post_title%%</code></dt>
+					<dd><?php _e( 'Post title of the record post', 'stream-notifications' ) ?></dd>
+				</dl>
+			</div>
+			<header><?php _e( 'Author', 'stream-notifications' ) ?></header>
+			<div class="dt-list">
+				<dl>
+					<dt><code>%%author.user_login%%</code></dt>
+					<dd><?php _e( 'Username of the record author', 'stream-notifications' ) ?></dd>
+					<dt><code>%%author.user_email%%</code></dt>
+					<dd><?php _e( 'Email of the record author', 'stream-notifications' ) ?></dd>
+					<dt><code>%%author.display_name%%</code></dt>
+					<dd><?php _e( 'Display name of the record author', 'stream-notifications' ) ?></dd>
+				</dl>
+			</div>
+			<div class="dt-list">
+				<header><?php _e( 'Meta', 'stream-notifications' ) ?></header>
+				<dl>
+				</dl>
+			</div>
+		</div>
+		<?php
+	}
 }
