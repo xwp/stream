@@ -409,7 +409,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'<select name="%1$s">
 				%2$s
 			</select>
-			<input type="submit" name="" id="do%1$s" class="button action" value="%s">',
+			<input type="submit" name="" id="do%1$s" class="button action" value="%3$s">',
 			$dropdown_name,
 			$options_html,
 			esc_attr__( 'Apply', 'stream-notifications' )
