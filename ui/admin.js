@@ -8,11 +8,30 @@ jQuery(function($){
 		});
 	}
 
-	$( '.toplevel_page_wp_stream .chosen-select' ).select2({
-		minimumResultsForSearch: 10,
-		allowClear: true,
-		width: '165px'
-	});
+	$( '.toplevel_page_wp_stream select.chosen-select' ).select2({
+			minimumResultsForSearch: 10,
+			allowClear: true,
+			width: '165px'
+		});
+
+	$( '.toplevel_page_wp_stream input[type=hidden].chosen-select' ).select2({
+			minimumInputLength: 1,
+			allowClear: true,
+			width: '165px',
+			ajax: {
+				url: ajaxurl,
+				datatype: 'json',
+				data: function (term, page) {
+					return {
+						action: 'wp_stream_filters',
+						q: term
+					};
+				},
+				results: function (data, page) {
+					return {results: data};
+				}
+			}
+		});
 
 	$(window).load(function() {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
