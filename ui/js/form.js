@@ -44,7 +44,23 @@ jQuery(function($){
 			width: '160px',
 			format: select2_format,
 			formatSelection: select2_format,
-			formatResult: select2_format
+			formatResult: select2_format,
+
+			// Only allow multi items if we have a proper operator
+			maximumSelectionSize: function() {
+				var item = $('.select2-container-active.trigger-value');
+				if ( ! item.size() ) return 0;
+
+				var operator = item.parents('.form-row').first().find('select.trigger-operator').val();
+				if ( ! operator ) return 0;
+
+				if ( operator.match(/in$/) ) {
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+
 		},
 
 		datify = function( elements ) {
