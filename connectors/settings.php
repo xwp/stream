@@ -2,6 +2,8 @@
 
 class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
+	const HIGHLIGHT_FIELD_URL_HASH_PREFIX = 'wp-stream-highlight:';
+
 	/**
 	 * Context name
 	 * @var string
@@ -28,6 +30,17 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		'category_base',
 		'tag_base',
 	);
+
+	/**
+	 * Register all context hooks
+	 *
+	 * @return void
+	 */
+	public static function register() {
+		parent::register();
+		add_action( 'admin_head', array( __CLASS__, 'highlight_field' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_jquery_color' ) );
+	}
 
 	/**
 	 * Return translated context label
@@ -151,6 +164,16 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Enqueue jQuery Color plugin
+	 *
+	 * @action admin_enqueue_scripts
+	 * @return void
+	 */
+	public static function enqueue_jquery_color() {
+		wp_enqueue_script( 'jquery-color' );
+	}
+
+	/**
 	 * Return translated labels for all serialized Settings found in WordPress.
 	 *
 	 * @return string Field key translation or key itself if not found
@@ -193,6 +216,11 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					if ( current_user_can( $target_submenu[1] ) ) {
 						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[$record->context] );
 						$url  = admin_url( $submenu_slug );
+
+						$field_name = get_stream_meta( $record->ID, 'option', true );
+						if ( $field_name !== '' ) {
+							$url = sprintf( '%s#%s%s', rtrim( preg_replace( '/#.*/', '', $url ), '/' ), self::HIGHLIGHT_FIELD_URL_HASH_PREFIX, $field_name );
+						}
 
 						$links[ $text ] = $url;
 					}
@@ -315,6 +343,52 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				)
 			);
 		}
+	}
+
+	/**
+	 * Add class to highlight field by URL param
+	 *
+	 * @action admin_head
+	 */
+	public static function highlight_field() {
+		?>
+		<script>
+			(function ($) {
+				$(function () {
+					var hashPrefix = <?php echo json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) ?>,
+						fieldName = "",
+						$field = {};
+
+					if (location.hash.substr(1, hashPrefix.length) === hashPrefix) {
+						fieldName = location.hash.substr(hashPrefix.length + 1);
+
+						$field = $("input, textarea, select")
+							.filter(function () {
+								return $(this).attr("name") === fieldName;
+							});
+
+						$("html, body")
+							.animate({
+								scrollTop: ($field.closest("tr").length === 1 ? $field.closest("tr") : $field).offset().top - $("#wpadminbar").height()
+							}, 1000, function () {
+								$field.animate({
+									backgroundColor: "#fffedf"
+								}, 250);
+
+								$("label")
+									.filter(function () {
+										return $(this).attr("for") === fieldName;
+									})
+									.animate({
+										color: "#d54e21"
+									}, 250);
+								}
+							);
+					}
+				});
+			}(jQuery));
+		</script>
+		<?php
 	}
 
 }
