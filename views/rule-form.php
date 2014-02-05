@@ -116,7 +116,7 @@
 			<% } %>
 		</select>
 		<% } else { %>
-		<input type="text" name="triggers[<%- vars.index %>][value]" class="trigger-value <% if ( vars.tags ){ %>tags<% } %> <% if ( vars.ajax ){ %>ajax<% } %>">
+		<input type="text" name="triggers[<%- vars.index %>][value]" class="trigger-value type-<%- vars.type %> <% if ( vars.tags ){ %>tags<% } %> <% if ( vars.ajax ){ %>ajax<% } %>">
 		<% } // endif%>
 	</div>
 </div>
