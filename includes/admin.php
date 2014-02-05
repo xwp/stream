@@ -61,6 +61,9 @@ class WP_Stream_Admin {
 
 		// Enable/Disable live update per user
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
+		
+		// Ajax authors list
+		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_authors' ) );
 
 	}
 
@@ -691,6 +694,35 @@ class WP_Stream_Admin {
 		} else {
 			wp_send_json_error( 'Live Updates checkbox error' );
 		}
+	}
+	
+	/**
+	 * @action wp_ajax_wp_stream_filters
+	 */
+	public static function ajax_authors( $callback ) {
+		switch ( $_REQUEST['filter'] ) {
+			case 'author':
+				$results = array_map(
+					function( $user ) {
+						return array(
+							'id'   => $user->id,
+							'text' => $user->display_name,
+						);
+					},
+					get_users()
+				);
+				break;
+		}
+
+		$results = array_filter(
+			$results,
+			function( $result ) {
+				return mb_strpos( mb_strtolower( $result['text'] ), mb_strtolower( $_REQUEST['q'] ) ) !== false;
+			}
+		);
+	
+		echo json_encode( array_values( $results ) );
+		die();
 	}
 
 }
