@@ -24,7 +24,23 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
+		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 		set_screen_options();
+	}
+
+	static function ajax_filters() {
+		$results = array(
+			array(
+				'id'   => 1,
+				'text' => 'Garfield',
+			),
+			array(
+				'id'   => 2,
+				'text' => 'Odie',
+			),
+		);
+		echo json_encode( $results );
+		die();
 	}
 
 	function extra_tablenav( $which ) {
@@ -350,6 +366,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		
 		if ( count( $authors_records ) <= self::PRELOADED_AUTHORS_NUMBER ) {
 			$filters['author']['items'] = $authors_records;
+		} else {
+			$filters['author']['ajax'] = true;
 		}
 
 		$filters['connector'] = array(
@@ -372,7 +390,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters_string .= $this->filter_date();
 
 		foreach ( $filters as $name => $data ) {
-			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array() );
+			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'] );
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
@@ -381,24 +399,33 @@ class WP_Stream_List_Table extends WP_List_Table {
 		echo sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss okay
 	}
 
-	function filter_select( $name, $title, $items ) {
-		$options  = array( sprintf( __( '<option value=""></option>', 'stream' ), $title ) );
-		$selected = filter_input( INPUT_GET, $name );
-		foreach ( $items as $v => $label ) {
-			$options[$v] = sprintf(
-				'<option value="%s" %s %s>%s</option>',
-				$v,
-				selected( $v, $selected, false ),
-				$label['disabled'],
-				$label['label']
+	function filter_select( $name, $title, $items, $ajax ) {
+		if( $ajax ) {
+			$out = sprintf(
+				'<input type="hidden" name="%s" class="chosen-select" data-placeholder="Show all %s">',
+				$name,
+				$title
+			);
+		} else {
+			$options  = array( sprintf( __( '<option value=""></option>', 'stream' ), $title ) );
+			$selected = filter_input( INPUT_GET, $name );
+			foreach ( $items as $v => $label ) {
+				$options[$v] = sprintf(
+					'<option value="%s" %s %s>%s</option>',
+					$v,
+					selected( $v, $selected, false ),
+					$label['disabled'],
+					$label['label']
+				);
+			}
+			$out = sprintf(
+				'<select name="%s" class="chosen-select" data-placeholder="Show all %s">%s</select>',
+				$name,
+				$title,
+				implode( '', $options )
 			);
 		}
-		$out = sprintf(
-			'<select name="%s" class="chosen-select" data-placeholder="Show all %s">%s</select>',
-			$name,
-			$title,
-			implode( '', $options )
-		);
+
 		return $out;
 	}
 
