@@ -20,6 +20,8 @@ class WP_Stream_Install {
 
 		if ( empty( $db_version ) ) {
 			self::install();
+		} elseif ( version_compare( $db_version, '1.1.4' ) == -1 ) {
+			self::update_charset();
 		} elseif ( $db_version != $current ) {
 			self::update( $db_version, $current );
 		} else {
@@ -112,14 +114,17 @@ class WP_Stream_Install {
 		dbDelta( $sql );
 	}
 
-	public static function update( $db_version, $current ) {
+	/**
+	 * Updates user's stream tables to include the correct
+	 *
+	 * @since  1.1.4
+	 * @see    self::check()
+	 * @return void
+	 */
+	public static function update_charset() {
 		global $wpdb;
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		$prefix = self::$table_prefix;
-
-		/**
-		 * Update Charset and Collation in tables during update
-		 */
 
 		$tables = array( 'stream', 'stream_context', 'stream_meta' );
 		foreach ( $tables as $table ) {
@@ -133,8 +138,6 @@ class WP_Stream_Install {
 			$sql .= ';';
 			$wpdb->query( $sql );
 		}
-
-		update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $current );
 
 	}
 
