@@ -24,6 +24,7 @@ jQuery(function($){
 				data: function (term, page) {
 					return {
 						action: 'wp_stream_filters',
+						filter: $(this).attr("name"),
 						q: term
 					};
 				},
