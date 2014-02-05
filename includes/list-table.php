@@ -1,6 +1,8 @@
 <?php
 
 class WP_Stream_List_Table extends WP_List_Table {
+	
+	const PRELOADED_AUTHORS_NUMBER = 3;
 
 	function __construct( $args = array() ) {
 		parent::__construct(
@@ -342,10 +344,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
-		$filters['author'] = array(
-			'title' => __( 'authors', 'stream' ),
-			'items' => $this->assemble_records( 'author', 'stream' ),
-		);
+		$authors_records = $this->assemble_records( 'author', 'stream' );
+		$filters['author'] = array();
+		$filters['author']['title'] = __( 'authors', 'stream' );
+		
+		if ( count( $authors_records ) <= self::PRELOADED_AUTHORS_NUMBER ) {
+			$filters['author']['items'] = $authors_records;
+		}
 
 		$filters['connector'] = array(
 			'title' => __( 'connectors', 'stream' ),
@@ -367,7 +372,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters_string .= $this->filter_date();
 
 		foreach ( $filters as $name => $data ) {
-			$filters_string .= $this->filter_select( $name, $data['title'], $data['items'] );
+			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array() );
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
