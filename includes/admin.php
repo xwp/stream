@@ -48,7 +48,7 @@ class WP_Stream_Admin {
 
 		// Auto purge setup
 		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
-		add_action( 'stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
+		add_action( 'wp_stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
 
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
@@ -171,6 +171,7 @@ class WP_Stream_Admin {
 	 */
 	public static function admin_menu_css() {
 		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
+		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
 
 		// Make sure we're working off a clean version.
 		include( ABSPATH . WPINC . '/version.php' );
@@ -604,7 +605,7 @@ class WP_Stream_Admin {
 		$enable_update = get_user_meta( get_current_user_id(), 'stream_live_update_records', true );
 		$enable_update = isset( $enable_update ) ? $enable_update : '';
 
-		if ( 'live-update' === $data['wp-stream-heartbeat'] && $enable_update == 'on' ) {
+		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_update == 'on' ) {
 			// Register list table
 			require_once WP_STREAM_INC_DIR . 'list-table.php';
 			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );

@@ -264,7 +264,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	public static function callback_clear_auth_cookie() {
 		$user = wp_get_current_user();
 		// For some reason, ignito mode calls clear_auth_cookie on failed login attempts
-		if ( empty( $user ) ) {
+		if ( empty( $user ) || ! $user->exists() ) {
 			return;
 		}
 		self::log(
