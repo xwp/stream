@@ -20,11 +20,9 @@ class WP_Stream_Install {
 
 		if ( empty( $db_version ) ) {
 			self::install();
-		}
-		elseif ( $db_version != $current ) {
+		} elseif ( $db_version != $current ) {
 			self::update( $db_version, $current );
-		}
-		else {
+		} else {
 			return;
 		}
 
@@ -114,8 +112,30 @@ class WP_Stream_Install {
 		dbDelta( $sql );
 	}
 
-	public static function update() {
-		// Reserved for future
+	public static function update( $db_version, $current ) {
+		global $wpdb;
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		$prefix = self::$table_prefix;
+
+		/**
+		 * Update Charset and Collation in tables during update
+		 */
+
+		$tables = array( 'stream', 'stream_context', 'stream_meta' );
+		foreach ( $tables as $table ) {
+			//update table charset
+			$sql = "ALTER TABLE {$prefix}{$table}
+			CONVERT TO CHARACTER SET " . $wpdb->charset;
+			//update table collation
+			if ( $wpdb->collate ) {
+				$sql .= ' COLLATE ' . $wpdb->collate;
+			}
+			$sql .= ';';
+			$wpdb->query( $sql );
+		}
+
+		update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $current );
+
 	}
 
 }
