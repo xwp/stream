@@ -171,6 +171,7 @@ class WP_Stream_Admin {
 	 */
 	public static function admin_menu_css() {
 		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
+		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
 
 		// Make sure we're working off a clean version.
 		include( ABSPATH . WPINC . '/version.php' );

@@ -412,7 +412,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filter_date() {
-		wp_register_style( 'jquery-ui', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css' );
 		wp_enqueue_style( 'jquery-ui' );
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );

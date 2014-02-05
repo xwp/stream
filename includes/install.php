@@ -6,7 +6,7 @@ class WP_Stream_Install {
 
 	/**
 	 * Check db version, create/update table schema accordingly
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function check() {
@@ -20,11 +20,9 @@ class WP_Stream_Install {
 
 		if ( empty( $db_version ) ) {
 			self::install();
-		}
-		elseif ( $db_version != $current ) {
+		} elseif ( $db_version != $current ) {
 			self::update( $db_version, $current );
-		}
-		else {
+		} else {
 			return;
 		}
 
@@ -53,7 +51,13 @@ class WP_Stream_Install {
 			KEY parent (parent),
 			KEY author (author),
 			KEY created (created)
-		);";
+		) CHARACTER SET " . $wpdb->charset;
+
+		if ( $wpdb->collate ) {
+			$sql .= ' COLLATE ' . $wpdb->collate;
+		}
+
+		$sql .= ';';
 
 		dbDelta( $sql );
 
@@ -67,7 +71,13 @@ class WP_Stream_Install {
 			KEY context (context),
 			KEY action (action),
 			KEY connector (connector)
-		);";
+		) CHARACTER SET " . $wpdb->charset;
+
+		if ( $wpdb->collate ) {
+			$sql .= ' COLLATE ' . $wpdb->collate;
+		}
+
+		$sql .= ';';
 
 		dbDelta( $sql );
 
@@ -80,7 +90,13 @@ class WP_Stream_Install {
 			KEY record_id (record_id),
 			KEY meta_key (meta_key),
 			KEY meta_value (meta_value)
-		);";
+		) CHARACTER SET " . $wpdb->charset;
+
+		if ( $wpdb->collate ) {
+			$sql .= ' COLLATE ' . $wpdb->collate;
+		}
+
+		$sql .= ';';
 
 		dbDelta( $sql );
 	}
@@ -92,6 +108,15 @@ class WP_Stream_Install {
 		// If version is lower than 1.1.3, do the update routine
 		if ( version_compare( $db_version, '1.1.3' ) == -1 ) {
 			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(20) NULL AFTER created" );
+		}
+
+		// If version is lower than 1.1.4, do the update routine
+		if ( version_compare( $db_version, '1.1.4' ) == -1 ) {
+			$tables  = array( 'stream', 'stream_context', 'stream_meta' );
+			$collate = ( $wpdb->collate ) ? " COLLATE {$wpdb->collate}" : null;
+			foreach ( $tables as $table ) {
+				$wpdb->query( "ALTER TABLE {$prefix}{$table} CONVERT TO CHARACTER SET {$wpdb->charset}{$collate};" );
+			}
 		}
 	}
 
