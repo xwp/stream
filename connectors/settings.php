@@ -369,7 +369,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 						$("html, body")
 							.animate({
-								scrollTop: $field.closest("tr").offset().top - $("#wpadminbar").height()
+								scrollTop: ($field.closest("tr").length === 1 ? $field.closest("tr") : $field).offset().top - $("#wpadminbar").height()
 							}, 1000, function () {
 								$field.animate({
 									backgroundColor: "#fffedf"
