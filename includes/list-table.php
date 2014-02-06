@@ -32,21 +32,21 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		return apply_filters(
 			'wp_stream_notifications_list_table_columns',
 			array(
-				'cb'         => '<span class="check-column"><input type="checkbox" /></span>',
-				'name'       => __( 'Name', 'stream-notifications' ),
-				'type'       => __( 'Type', 'stream-notifications' ),
-				'occurences' => __( 'Occurences', 'stream-notifications' ),
-				'created'    => __( 'Created', 'stream-notifications' ),
+				'cb'          => '<span class="check-column"><input type="checkbox" /></span>',
+				'name'        => __( 'Name', 'stream-notifications' ),
+				'type'        => __( 'Type', 'stream-notifications' ),
+				'occurrences' => __( 'Occurrences', 'stream-notifications' ),
+				'created'     => __( 'Created', 'stream-notifications' ),
 			)
 		);
 	}
 
 	function get_sortable_columns() {
 		return array(
-			'name'       => array( 'name', false ),
-			'type'       => array( 'type', false ),
-			'occurences' => array( 'occurences', true ),
-			'created'    => array( 'created', true ),
+			'name'        => array( 'name', false ),
+			'type'        => array( 'type', false ),
+			'occurrences' => array( 'occurrences', true ),
+			'created'     => array( 'created', true ),
 		);
 	}
 
@@ -172,7 +172,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				$out = $this->get_rule_types( $item );
 				break;
 
-			case 'occurences':
+			case 'occurrences':
 				$out = (int) get_stream_meta( $item->ID, 'occurrences', true );
 				break;
 
