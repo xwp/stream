@@ -2,7 +2,7 @@
 
 class WP_Stream_List_Table extends WP_List_Table {
 	
-	const PRELOADED_AUTHORS_NUMBER = 3;
+	const PRELOADED_AUTHORS_NUMBER = 50;
 
 	function __construct( $args = array() ) {
 		parent::__construct(
