@@ -328,7 +328,7 @@ class WP_Stream_Admin {
 			);
 			exit;
 		} else {
-			wp_die( "You don't have sufficient priviledges to do this action." );
+			wp_die( "You don't have sufficient privileges to do this action." );
 		}
 	}
 
