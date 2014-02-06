@@ -95,6 +95,13 @@ class WP_Stream_Notifications {
 	public $form;
 
 	/**
+	 * Capability for the Notifications to be viewed
+	 *
+	 * @const string
+	 */
+	const VIEW_CAP = 'view_stream_notifications';
+
+	/**
 	 * Class constructor
 	 */
 	private function __construct() {
@@ -129,6 +136,10 @@ class WP_Stream_Notifications {
 			include $class;
 		}
 
+		// Load settings, enabling extensions to hook in
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'settings.php';
+		WP_Stream_Notification_Settings::load();
+
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 
 		// Default list actions handlers
@@ -140,7 +151,7 @@ class WP_Stream_Notifications {
 		$this->matcher = new WP_Stream_Notification_Rule_Matcher();
 
 		// Load form class
-		
+
 		if ( is_admin() ) {
 			include WP_STREAM_NOTIFICATIONS_INC_DIR . '/form.php';
 			$this->form = new WP_Stream_Notifications_Form;
@@ -158,7 +169,7 @@ class WP_Stream_Notifications {
 			'wp_stream',
 			__( 'Notifications', 'stream-notifications' ),
 			__( 'Notifications', 'stream-notifications' ),
-			'manage_options',
+			self::VIEW_CAP,
 			self::NOTIFICATIONS_PAGE_SLUG,
 			array( $this, 'page' )
 		);
