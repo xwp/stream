@@ -63,7 +63,7 @@ class WP_Stream_Admin {
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
 		
 		// Ajax authors list
-		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_authors' ) );
+		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
 	}
 
@@ -699,7 +699,7 @@ class WP_Stream_Admin {
 	/**
 	 * @action wp_ajax_wp_stream_filters
 	 */
-	public static function ajax_authors( $callback ) {
+	public static function ajax_filters( $callback ) {
 		switch ( $_REQUEST['filter'] ) {
 			case 'author':
 				$results = array_map(
