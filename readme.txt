@@ -90,7 +90,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 == Changelog ==
 
 = 1.1.5 =
-**2014/02/05** - Fix class scope bug causing fatal error. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+**2014/02/05** - Fixed a class scope bug [reported in the support forum](http://wordpress.org/support/topic/temporary-fatal-error-after-upgrade-113) that was causing a fatal error. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 = 1.1.4 =
 **2014/02/05** - Highlight changed settings field feature. DB upgrade routine for proper utf-8 charset. Various bug fixes. Props [powelski](http://profiles.wordpress.org/powelski/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
