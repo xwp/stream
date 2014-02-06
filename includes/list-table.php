@@ -36,7 +36,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				'name'        => __( 'Name', 'stream-notifications' ),
 				'type'        => __( 'Type', 'stream-notifications' ),
 				'occurrences' => __( 'Occurrences', 'stream-notifications' ),
-				'created'     => __( 'Created', 'stream-notifications' ),
+				'date'        => __( 'Date', 'stream-notifications' ),
 			)
 		);
 	}
@@ -46,7 +46,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'name'        => array( 'summary', false ),
 			'type'        => array( 'type', false ),
 			'occurrences' => array( 'occurrences', true ),
-			'created'     => array( 'created', false ),
+			'date'        => array( 'created', false ),
 		);
 	}
 
@@ -176,7 +176,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				$out = (int) get_stream_meta( $item->ID, 'occurrences', true );
 				break;
 
-			case 'created':
+			case 'date':
 				$out  = $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
 				$out .= 'active' == $item->visibility
