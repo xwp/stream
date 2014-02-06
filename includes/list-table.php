@@ -49,8 +49,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function get_sortable_columns() {
 		return array(
-			'id'   => 'id',
-			'date' => 'date',
+			'id'   => array( 'id', false ),
+			'date' => array( 'date', true ),
 		);
 	}
 
