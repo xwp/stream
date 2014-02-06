@@ -46,7 +46,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'name'        => array( 'name', false ),
 			'type'        => array( 'type', false ),
 			'occurrences' => array( 'occurrences', true ),
-			'created'     => array( 'created', true ),
+			'created'     => array( 'created', false ),
 		);
 	}
 
