@@ -53,6 +53,8 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Private JSON feeds of user activity records
  * Set how long records should live before being purged automatically
  * Option to manually purge all user activity records from the database
+ * Disable connectors where you don't want user activity tracked
+ * Support for IPv6 addresses
 
 **Extension plugins:**
 
@@ -69,7 +71,6 @@ Stream is built to extend, allowing developers to easily build their own connect
 **Coming soon:**
 
  * Multisite view of all activity records on a network
- * Support for IPv6 addresses
  * Language support for Arabic (RTL), Czech, Slovak and Indonesian
 
 **See room for improvement?**
