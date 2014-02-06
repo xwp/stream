@@ -43,7 +43,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 	function get_sortable_columns() {
 		return array(
-			'name'        => array( 'name', false ),
+			'name'        => array( 'summary', false ),
 			'type'        => array( 'type', false ),
 			'occurrences' => array( 'occurrences', true ),
 			'created'     => array( 'created', false ),
