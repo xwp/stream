@@ -132,11 +132,9 @@ class WP_Stream_Notification_Rule_Matcher {
 				$match = ( $haystack == $needle );
 			case 'in':
 			case '!in':
-				$match = array_filter(
-					(array) $needle,
-					function( $value ) use ( $haystack ) {
-						return $value == $haystack;
-					}
+				$match = (bool) array_intersect(
+					explode( ',', $needle ),
+					(array) $haystack
 				);
 				break;
 			// string special comparison operators
