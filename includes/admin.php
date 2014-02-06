@@ -316,8 +316,10 @@ class WP_Stream_Admin {
 	 */
 	public static function render_extensions_page() {
 		?>
-		<div class="wrap themes-php">
-			<?php require_once WP_STREAM_INC_DIR . 'extensions.php' ?>
+		<div class="themes-php">
+			<div class="wrap">
+				<?php require_once WP_STREAM_INC_DIR . 'extensions.php' ?>
+			</div>
 		</div>
 		<?php
 	}

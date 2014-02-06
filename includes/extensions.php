@@ -1,10 +1,20 @@
 <?php
-$response   = wp_remote_get( 'http://wp-stream.com/wp-json.php/posts?type=download' );
+$response   = wp_remote_get( 'http://vvv.wp-stream.com/wp-json.php/posts/?type=extension' );
 $extensions = ! is_wp_error( $response ) ? json_decode( wp_remote_retrieve_body( $response ) ) : null;
 $count      = 0;
 
 if ( ! empty( $extensions ) ) {
-	foreach ( $extensions as $extension ) {
+
+	// Order the extensions by post title
+	usort( $extensions, function( $a, $b ) { return strcmp( $a->title, $b->title ); } );
+
+	foreach ( $extensions as $key => $extension ) {
+		$status = isset( $extension->status ) ? $extension->status : null;
+		$type   = isset( $extension->post_meta->plugin_type[0] ) ? $extension->post_meta->plugin_type[0] : null;
+		if ( 'publish' != $status || 'premium' != $type ) {
+			unset( $extensions[$key] );
+			continue;
+		}
 		$plugin_path  = isset( $extension->post_meta->plugin_path[0] ) ? $extension->post_meta->plugin_path[0] : null;
 		$is_installed = ( $plugin_path && defined( 'WP_PLUGIN_DIR' ) && file_exists( trailingslashit( WP_PLUGIN_DIR )  . $plugin_path ) );
 		if ( $is_installed ) {
@@ -39,7 +49,7 @@ if ( ! empty( $extensions ) ) {
 				$image_src    = ! empty( $image_src ) ? $image_src : null;
 				?>
 
-				<div class="theme<?php if ( $is_installed ) { echo esc_attr( ' active' ); } ?>">
+				<div class="theme<?php if ( $is_active ) { echo esc_attr( ' active' ); } ?>">
 					<a href="<?php echo esc_url( $extension->link ) ?>" target="_blank">
 						<div class="theme-screenshot<?php if ( ! $image_src ) { echo esc_attr( ' blank' ); } ?>">
 							<?php if ( $image_src ) : ?>
@@ -50,15 +60,17 @@ if ( ! empty( $extensions ) ) {
 						<h3 class="theme-name"><span><?php echo esc_html( $extension->title ) ?></span></h3>
 					</a>
 					<div class="theme-actions">
-						<?php if ( ! $is_installed ) : ?>
+						<?php if ( ! $is_installed ) { ?>
 							<a class="button button-primary" href="<?php echo esc_url( $action_link ) ?>" target="_blank">
 								<?php esc_html_e( 'Get This Extension', 'stream' ) ?>
 							</a>
-						<?php elseif ( ! $is_active ) : ?>
-							<?php esc_html_e( 'Inactive', 'stream' ) ?>
-						<?php else : ?>
+						<?php } elseif ( ! $is_active ) { ?>
+							<a class="button button-primary" href="<?php echo esc_url( admin_url( 'plugins.php' ) ) ?>">
+								<?php esc_html_e( 'Activate', 'stream' ) ?>
+							</a>
+						<?php } else { ?>
 							<?php esc_html_e( 'Active', 'stream' ) ?>
-						<?php endif; ?>
+						<?php } ?>
 					</div>
 				</div>
 
@@ -70,12 +82,12 @@ if ( ! empty( $extensions ) ) {
 
 	</div>
 
-<?php else : ?>
+	<?php else : ?>
 
-	<h2><?php esc_html_e( 'Stream Extensions', 'stream' ) ?></h2>
+		<h2><?php esc_html_e( 'Stream Extensions', 'stream' ) ?></h2>
 
-	<p><?php esc_html_e( 'Sorry, there was a problem loading the extensions list.', 'stream' ) ?></p>
+		<p><em><?php esc_html_e( 'Sorry, there was a problem loading the list of extensions.', 'stream' ) ?></em></p>
 
-	<p><a class="button button-primary" href="http://wp-stream.com/extensions/" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a></p>
+		<p><a class="button button-primary" href="http://wp-stream.com/#extensions" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a></p>
 
-<?php endif; ?>
+	<?php endif; ?>
