@@ -105,7 +105,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ## Changelog ##
 
 ### 1.1.6 ###
-**2014/02/06** - Small sortable columns bug fix on the records screen. Props [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+**2014/02/06** - Sortable columns bug fix on the records screen. Props [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 ### 1.1.5 ###
 **2014/02/05** - Fixed a class scope bug [reported in the support forum](http://wordpress.org/support/topic/temporary-fatal-error-after-upgrade-113) that was causing a fatal error on some installs. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
