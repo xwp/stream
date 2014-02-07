@@ -16,6 +16,12 @@ class WP_Stream_Install {
 
 		$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 
+		/**
+		 * Allows devs to alter the tables prefix, default to base_prefix
+		 *
+		 * @param  string  database prefix
+		 * @return string  udpated database prefix
+		 */
 		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->prefix );
 
 		if ( empty( $db_version ) ) {

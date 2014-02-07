@@ -181,6 +181,11 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		);
 	}
 
+	/**
+	 * Constructs list of ignored post types for the post connector
+	 *
+	 * @return  array  List of ignored post types
+	 */
 	public static function get_ignored_post_types() {
 		return apply_filters(
 			'wp_stream_post_exclude_post_types',

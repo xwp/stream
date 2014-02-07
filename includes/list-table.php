@@ -32,6 +32,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function get_columns(){
+		/**
+		 * Allows devs to add new columns to table
+		 *
+		 * @param  array  default columns
+		 * @return array  updated list of columns
+		 */
 		return apply_filters(
 			'wp_stream_list_table_columns',
 			array(
@@ -243,7 +249,23 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	public static function get_action_links( $record ){
 		$out          = '';
+		/**
+		 * Filter allows modification of action links for a specific connector
+		 *
+		 * @param  string  connector
+		 * @param  array   array of action links for this connector
+		 * @param  obj     record
+		 * @return arrray  action links for this connector
+		 */
 		$action_links = apply_filters( 'wp_stream_action_links_' . $record->connector, array(), $record );
+		/**
+		 * Filter allows addition of custom links for a specific connector
+		 *
+		 * @param  string  connector
+		 * @param  array   array of custom links for this connector
+		 * @param  obj     record
+		 * @return arrray  custom links for this connector
+		 */
 		$custom_links = apply_filters( 'wp_stream_custom_action_links_' . $record->connector, array(), $record );
 
 		if ( $action_links || $custom_links ) {
@@ -373,6 +395,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'items' => $this->assemble_records( 'action' ),
 		);
 
+		/**
+		 * Filter allows additional filters in the list table dropdowns
+		 * Note the format of the filters above, with they key and array
+		 * containing a title and array of items.
+		 *
+		 * @param  array  Array of filters
+		 * @return array  Updated array of filters
+		 */
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
 
 		$filters_string .= $this->filter_date();
@@ -463,6 +493,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		<?php  else : ?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 				<?php
+				/**
+				 * Action allows for mods after the list table display
+				 */
 				do_action( 'wp_stream_after_list_table' );
 				$this->extra_tablenav( $which );
 				$this->pagination( $which );
