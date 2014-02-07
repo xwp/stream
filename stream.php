@@ -228,7 +228,7 @@ class WP_Stream {
 		echo 'jQuery( document ).ready( function() {';
 		echo 'jQuery( "#ui-datepicker-div" ).addClass( "stream-datepicker" );';
 		echo '});';
-		echo "</script>";
+		echo '</script>';
 
 	}
 
