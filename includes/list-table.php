@@ -201,7 +201,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			default:
-				// Register inserted column defaults. Must match a column header from get_columns.
+				/**
+				 * Registers new Columns to be inserted into the table.  The cell contents of this column is set
+				 * below with 'wp_stream_inster_column_default-
+				 *
+				 * @param array  $new_columns  Array of new column titles to add
+				 */
 				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', $new_columns = array() );
 
 				if ( ! empty( $inserted_columns ) && is_array( $inserted_columns ) ) {
@@ -215,6 +220,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 						 * with wp_stream_register_column_defaults
 						 */
 						if ( $column_title == $column_name && has_action( 'wp_stream_insert_column_default-' . $column_title ) ) {
+							/**
+							 * This action allows for the addition of content under the specified column ($column_title)
+							 *
+							 * @param  string  $column_title  Title of the column (set in wp_stream_register_column_defaults)
+							 * @param  obj     $item          Contents of the row
+							 */
 							$out = do_action( 'wp_stream_insert_column_default-' . $column_title, $item );
 						} else {
 							$out = $column_name;
