@@ -101,6 +101,13 @@ class Test_WP_Stream_Admin extends WP_StreamTestCase {
 	 * Check the output of the plugin action links function
 	 */
 	public function test_plugin_action_links() {
+		/**
+		 * Filter allows for addition of action links during testing
+		 *
+		 * @param  array  array of action links
+		 * @param  string URL of stream main PHP file
+		 * @return array  updated array of action links
+		 */
 		$filter_output = apply_filters( 'plugin_action_links', array(), plugin_basename( WP_STREAM_DIR . 'stream.php' ) );
 		$this->assertTrue( strrpos( $filter_output[0], '/wp-admin/admin.php?page=wp_stream_settings' ) >= 0 );
 	}

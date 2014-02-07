@@ -183,6 +183,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			// to be updated
 		);
 
+		/**
+		 * Filter allows for insertion of serialized labels
+		 *
+		 * @param  array  $lables  Serialized labels
+		 * @return array  Updated array of serialzed labels
+		 */
 		$labels = apply_filters( 'wp_stream_serialized_labels', $labels );
 
 		if ( isset( $labels[$option_name] ) && isset( $labels[$option_name][$field_key] ) ) {

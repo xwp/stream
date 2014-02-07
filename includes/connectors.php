@@ -33,6 +33,14 @@ class WP_Stream_Connectors {
 				$classes[] = "WP_Stream_Connector_$class";
 			}
 		}
+
+		/**
+		 * Filter allows for adding additional connectors via classes that extend
+		 * WP_Stream_Connector
+		 *
+		 * @param  array  Connector Class names
+		 * @return array  Updated Array of Connector Class names
+		 */
 		self::$connectors = apply_filters( 'wp_stream_connectors', $classes );
 
 		foreach ( self::$connectors as $connector ) {
