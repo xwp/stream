@@ -9,15 +9,17 @@ if ( ! empty( $extensions ) ) {
 	usort( $extensions, function( $a, $b ) { return strcmp( $a->title, $b->title ); } );
 
 	foreach ( $extensions as $key => $extension ) {
-		$status = isset( $extension->status ) ? $extension->status : null;
-		$type   = isset( $extension->post_meta->plugin_type[0] ) ? $extension->post_meta->plugin_type[0] : null;
-		if ( 'publish' != $status || 'premium' != $type ) {
+		$type = isset( $extension->post_meta->plugin_type[0] ) ? $extension->post_meta->plugin_type[0] : null;
+
+		if ( 'premium' != $type ) {
 			unset( $extensions[$key] );
 			continue;
 		}
-		$plugin_path  = isset( $extension->post_meta->plugin_path[0] ) ? $extension->post_meta->plugin_path[0] : null;
-		$is_installed = ( $plugin_path && defined( 'WP_PLUGIN_DIR' ) && file_exists( trailingslashit( WP_PLUGIN_DIR )  . $plugin_path ) );
-		if ( $is_installed ) {
+
+		$plugin_path = isset( $extension->post_meta->plugin_path[0] ) ? $extension->post_meta->plugin_path[0] : null;
+		$is_active   = ( $plugin_path && is_plugin_active( $plugin_path ) );
+
+		if ( $is_active ) {
 			$count++;
 		}
 	}
@@ -31,7 +33,24 @@ if ( ! empty( $extensions ) ) {
 		<a class="button button-primary" href="http://wp-stream.com/extensions/" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a>
 	</h2>
 
-	<p><em><?php esc_html_e( 'Take your user activity data to the next level with Stream Extensions! These plugins extend the base functionality of Stream and are available as separate downloads.', 'stream' ) ?></em></p>
+	<p class="description">
+		<?php esc_html_e( 'To install and receive automatic updates for premium extensions, you must have a valid license key.', 'stream' ) ?>
+		<a href="#" class="stream-signup"><?php esc_html_e( 'Purchase license key', 'stream' ) ?></a>
+	</p>
+
+	<table class="license-check" style="display: table;">
+		<tbody>
+			<tr>
+				<th scope="row"><label for="wp_stream_license_key">License Key</label></th>
+				<td>
+					<input type="text" name="wp_stream_license_key" id="wp_stream_license_key" class="regular-text code" maxlength="32" value="">
+					<a href="#" class="button button-secondary" id="wp_stream_check_license">Activate License</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<p class="description stream-license-check-message"></p>
 
 	<div class="theme-browser rendered">
 

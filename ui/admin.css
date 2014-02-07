@@ -176,6 +176,12 @@
 	margin-bottom: 20px;
 }
 
+.stream_page_wp_stream_extensions .license-check th {
+	font-size: 14px;
+	font-weight: bold;
+	padding-right: 10px;
+}
+
 .stream_page_wp_stream_extensions .theme a {
 	text-decoration: none;
 }
