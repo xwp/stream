@@ -203,7 +203,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			default:
 				/**
 				 * Registers new Columns to be inserted into the table.  The cell contents of this column is set
-				 * below with 'wp_stream_inster_column_default-
+				 * below with 'wp_stream_inster_column_default-'
 				 *
 				 * @param array  $new_columns  Array of new column titles to add
 				 */

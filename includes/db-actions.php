@@ -62,7 +62,7 @@ class WP_Stream_DB {
 
 		$data = array_filter( $data );
 
-		// TODO Check/Validate *required* fields 
+		// TODO Check/Validate *required* fields
 
 		$result = $wpdb->insert(
 			self::$table,
@@ -73,6 +73,11 @@ class WP_Stream_DB {
 			$record_id = $wpdb->insert_id;
 		}
 		else {
+			/**
+			 * Action Hook that fires on an error during post insertion
+			 *
+			 * @param  $record_id  Record Id being inserted
+			 */
 			do_action( 'wp_stream_post_insert_error', $record_id );
 			return $record_id;
 		}
