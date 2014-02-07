@@ -248,7 +248,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 
 	public static function get_action_links( $record ){
-		$out          = '';
+		$out = '';
+
 		/**
 		 * Filter allows modification of action links for a specific connector
 		 *
@@ -258,6 +259,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		 * @return arrray  action links for this connector
 		 */
 		$action_links = apply_filters( 'wp_stream_action_links_' . $record->connector, array(), $record );
+
 		/**
 		 * Filter allows addition of custom links for a specific connector
 		 *
