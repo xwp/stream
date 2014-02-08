@@ -252,7 +252,7 @@
 }
 
 .stream-datepicker.ui-datepicker th {
-	padding: 1em 0;
+	padding: 0.75em 0;
 	color: #fff;
 	font-weight: normal;
 	border: none;
@@ -279,7 +279,7 @@
 .stream-datepicker.ui-datepicker .ui-widget-content td.ui-state-disabled,
 .stream-datepicker td.ui-state-disabled .ui-state-default {
 	opacity: 1;
-	color: #bbb;
+	color: #004561;
 }
 
 .stream-datepicker .ui-state-disabled .ui-state-default {
