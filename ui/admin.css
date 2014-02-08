@@ -177,14 +177,19 @@
 	-moz-border-radius: 0;
 }
 
-.stream-datepicker.ui-datepicker {
+.stream-datepicker.ui-datepicker * {
 	padding: 0;
+	font-family: 'Open Sans', sans-serif;
+}
+
+.stream-datepicker.ui-datepicker table {
+	font-size: 13px;
 }
 
 .stream-datepicker .ui-datepicker-header {
 	border: none;
 	background: #222;
-	color: #e8e8e8;
+	color: #fff;
 	font-weight: normal;
 }
 
@@ -199,7 +204,7 @@
 
 .stream-datepicker.ui-datepicker thead {
 	background: #222;
-	color: #e8e8e8;
+	color: #fff;
 }
 
 .stream-datepicker .ui-corner-all {
@@ -209,7 +214,8 @@
 .stream-datepicker.ui-datepicker .ui-datepicker-title {
 	margin-top: .4em;
 	margin-bottom: .3em;
-	color: #e9f0f4;
+	color: #fff;
+	font-size: 14px;
 }
 
 .stream-datepicker.ui-datepicker .ui-datepicker-prev-hover,
@@ -247,10 +253,10 @@
 
 .stream-datepicker.ui-datepicker th {
 	padding: 1em 0;
-	color: #eee;
+	color: #fff;
 	font-weight: normal;
 	border: none;
-	border-top: 1px solid #3a414d;
+	border-top: 1px solid #333;
 }
 
 .stream-datepicker.ui-datepicker td {
@@ -266,7 +272,7 @@
 	padding: .5em;
 	margin: 0;
 	font-weight: normal;
-	color: #efefef;
+	color: #fff;
 }
 
 .stream-datepicker.ui-datepicker td.ui-state-disabled,
