@@ -279,7 +279,7 @@
 .stream-datepicker.ui-datepicker .ui-widget-content td.ui-state-disabled,
 .stream-datepicker td.ui-state-disabled .ui-state-default {
 	opacity: 1;
-	color: #004561;
+	color: #333;
 }
 
 .stream-datepicker .ui-state-disabled .ui-state-default {
