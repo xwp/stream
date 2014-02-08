@@ -54,7 +54,7 @@ class WP_Stream_Notification_Adapter_Email extends WP_Stream_Notification_Adapte
 		$emails  = array_filter( $emails );
 		$subject = $this->replace( $this->params['subject'], $log );
 		$message = $this->replace( $this->params['message'], $log );
-		wp_mail( $to, $subject, $message );
+		wp_mail( $emails, $subject, $message );
 	}
 
 }
