@@ -161,7 +161,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_activate_plugin( $slug, $network_wide ) {
 		$plugins      = get_plugins();
 		$name         = $plugins[$slug]['Name'];
-		$network_wide = $network_wide ? 'network wide' : '';
+		$network_wide = $network_wide ? true : null;
 		self::log(
 			__( '"%s" plugin activated %s', 'stream' ),
 			compact( 'name', 'network_wide' ),
@@ -173,7 +173,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_deactivate_plugin( $slug, $network_wide ) {
 		$plugins      = get_plugins();
 		$name         = $plugins[$slug]['Name'];
-		$network_wide = $network_wide ? 'network wide' : '';
+		$network_wide = $network_wide ? true : null;
 		self::log(
 			__( '"%s" plugin deactivated %s', 'stream' ),
 			compact( 'name', 'network_wide' ),
@@ -227,7 +227,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		}
 		foreach ( $plugins_to_delete as $plugin => $data ) {
 			$name = $data['Name'];
-			$network_wide = $data['Network'] ? 'network wide' : null;
+			$network_wide = $data['Network'] ? true : null;
 			self::log(
 				__( '"%s" plugin deleted', 'stream' ),
 				compact( 'name', 'plugin', 'network_wide' ),
