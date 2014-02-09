@@ -40,7 +40,7 @@ try {
 
 	$md_args = array();
 	if ( file_exists( $readme_root . '/.travis.yml' ) ) {
-		$md_args['travis_ci_url'] = preg_replace( '/^.+?:(.+)\.git$/', 'https://travis-ci.org/$1', trim( `git config --get remote.origin.url` ) );
+		$md_args['travis_ci_url'] = preg_replace( '#.+github\.com[:/]([^/]+/[^/]+)\.git$#', 'https://travis-ci.org/$1', trim( `git config --get remote.origin.url` ) );
 	}
 	$markdown = $readme->to_markdown( $md_args );
 
