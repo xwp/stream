@@ -62,9 +62,9 @@ class WP_Stream_Log {
 			'parent'    => self::$instance->prev_record,
 			'connector' => $connector,
 			'contexts'  => $contexts,
-			'meta'      => array_filter( $args ),
+			'meta'      => $args,
 			'ip'        => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
-		);
+			);
 
 		$record_id = WP_Stream_DB::get_instance()->insert( $recordarr );
 
