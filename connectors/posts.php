@@ -63,8 +63,8 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( get_post( $record->object_id ) ) {
 			if ( $link = get_edit_post_link( $record->object_id ) ) {
-				$post_type = get_post_type_object( get_post_type( $record->object_id ) );
-				$links[ sprintf( __( 'Edit %s', 'stream' ), $post_type->labels->singular_name ) ] = $link;
+				$post_type_name = self::get_post_type_name( get_post_type( $record->object_id ) );
+				$links[ sprintf( __( 'Edit %s', 'stream' ), $post_type_name ) ] = $link;
 			}
 			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
 				$links[ __( 'View', 'stream' ) ] = $link;
@@ -135,13 +135,13 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			}
 		}
 
-		$post_type = get_post_type_object( $post->post_type );
+		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
 
 		self::log(
 			$message,
 			array(
 				'post_title'    => $post->post_title,
-				'singular_name' => strtolower( $post_type->labels->singular_name ),
+				'singular_name' => $post_type_name,
 				'new_status'    => $new,
 				'old_status'    => $old,
 				'revision_id'   => $revision_id,
@@ -166,13 +166,13 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			return;
 		}
 
-		$post_type = get_post_type_object( $post->post_type );
+		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
 
 		self::log(
 			__( '"%s" %s deleted from trash', 'stream' ),
 			array(
 				'post_title'    => $post->post_title,
-				'singular_name' => strtolower( $post_type->labels->singular_name ),
+				'singular_name' => $post_type_name,
 			),
 			$post->ID,
 			array(
@@ -190,6 +190,16 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'revision',
 			)
 		);
+	}
+
+	private static function get_post_type_name( $post_type_slug ) {
+		if ( post_type_exists( $post_type_slug ) ) {
+			$post_type = get_post_type_object( $post_type_slug );
+			$name = $post_type->labels->singular_name;
+		} else {
+			$name = __( 'Post', 'stream' );
+		}
+		return $name;
 	}
 
 }
