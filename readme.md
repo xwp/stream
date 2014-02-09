@@ -105,6 +105,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 1.1.8 ###
+**2014/02/09** - Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
 ### 1.1.7 ###
 **2014/02/06** - Upgrade routine for IPv6 support. Persist tab selection after saving Stream Settings. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [dero](https://github.com/dero)
 
