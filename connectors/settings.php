@@ -276,6 +276,11 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function callback_updated_option( $option, $old_value, $value ) {
 		global $new_whitelist_options, $whitelist_options;
+
+		if ( 0 === strpos( $option, '_transient_' ) ) {
+			return;
+		}
+
 		$options = array_merge(
 			(array) $whitelist_options,
 			$new_whitelist_options,
