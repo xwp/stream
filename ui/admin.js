@@ -8,11 +8,51 @@ jQuery(function($){
 		});
 	}
 
-	$( '.toplevel_page_wp_stream .chosen-select' ).select2({
-		minimumResultsForSearch: 10,
-		allowClear: true,
-		width: '165px'
-	});
+	$( '.toplevel_page_wp_stream select.chosen-select' ).select2({
+			minimumResultsForSearch: 10,
+			allowClear: true,
+			width: '165px'
+		});
+
+	$( '.toplevel_page_wp_stream input[type=hidden].chosen-select' ).select2({
+			minimumInputLength: 1,
+			allowClear: true,
+			width: '165px',
+			ajax: {
+				url: ajaxurl,
+				datatype: 'json',
+				data: function (term) {
+					return {
+						action: 'wp_stream_filters',
+						filter: $(this).attr('name'),
+						q: term
+					};
+				},
+				results: function (data) {
+					return {results: data};
+				}
+			},
+			initSelection: function (element, callback) {
+				var id = $(element).val();
+
+				if(id !== '') {
+					$.post(
+						ajaxurl,
+						{
+							action: 'wp_stream_get_author_name_by_id',
+							id:     id
+						},
+						function (response) {
+							callback({
+								id:   id,
+								text: response
+							});
+						},
+						'json'
+					);
+				}
+			}
+		});
 
 	$(window).load(function() {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
