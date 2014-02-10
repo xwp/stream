@@ -8,7 +8,7 @@
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
- * Text Domain: stream-notifications
+ * Text Domain: stream-reports
  * Domain Path: /languages
  */
 
@@ -72,7 +72,7 @@ class WP_Stream_Reports {
 	 *
 	 * @const string
 	 */
-	const VIEW_CAP = 'manage_options';
+	const VIEW_CAP = 'view_stream_reports';
 
 	/**
 	 * Class constructor
@@ -80,8 +80,8 @@ class WP_Stream_Reports {
 	private function __construct() {
 		define( 'WP_STREAM_REPORTS_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_REPORTS_URL', plugin_dir_url( __FILE__ ) );
-		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'includes/' );
-		define( 'WP_STREAM_REPORTS_CLASS_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'classes/' );
+		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' );
+		define( 'WP_STREAM_REPORTS_CLASS_DIR', WP_STREAM_REPORTS_DIR . 'classes/' );
 
 		add_action( 'plugins_loaded', array( $this, 'load' ) );
 	}
@@ -98,6 +98,10 @@ class WP_Stream_Reports {
 		if ( ! $this->is_dependency_satisfied() ) {
 			return;
 		}
+
+		// Load settings, enabling extensions to hook in
+		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
+		WP_Stream_Reports_Settings::load();
 
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
@@ -119,8 +123,8 @@ class WP_Stream_Reports {
 			array( $this, 'page' )
 		);
 
-//		add_action( 'load-' . self::$screen_id, array( $this, 'page_form_save' ) );
-//		add_action( 'load-' . self::$screen_id, array( $this->form, 'load' ) );
+		// add_action( 'load-' . self::$screen_id, array( $this, 'page_form_save' ) );
+		// add_action( 'load-' . self::$screen_id, array( $this->form, 'load' ) );
 	}
 
 	/**
@@ -133,6 +137,7 @@ class WP_Stream_Reports {
 		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 		$id = filter_input( INPUT_GET, 'id' );
 
+		return 'This is the page';
 		/*switch ( $view ) {
 			case 'rule':
 				$this->page_form( $id );
