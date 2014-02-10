@@ -57,10 +57,14 @@ class WP_Stream_Install {
 			KEY parent (parent),
 			KEY author (author),
 			KEY created (created)
-		) CHARACTER SET " . $wpdb->charset;
+		)";
 
-		if ( $wpdb->collate ) {
-			$sql .= ' COLLATE ' . $wpdb->collate;
+		if ( ! empty( $wpdb->charset ) ) {
+			$sql .= " CHARACTER SET $wpdb->charset";
+		}
+
+		if ( ! empty( $wpdb->collate ) ) {
+			$sql .= " COLLATE $wpdb->collate";
 		}
 
 		$sql .= ';';
