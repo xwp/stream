@@ -21,6 +21,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		);
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
+		add_filter( 'stream_query_args', array( __CLASS__, 'register_occurrences_for_sorting' ) );
 		set_screen_options();
 	}
 
@@ -32,18 +33,21 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		return apply_filters(
 			'wp_stream_notifications_list_table_columns',
 			array(
-				'cb'         => '<span class="check-column"><input type="checkbox" /></span>',
-				'name'       => __( 'Name', 'stream-notifications' ),
-				'type'       => __( 'Type', 'stream-notifications' ),
-				'occurences' => __( 'Occurences', 'stream-notifications' ),
-				'created'    => __( 'Created', 'stream-notifications' ),
+				'cb'          => '<span class="check-column"><input type="checkbox" /></span>',
+				'name'        => __( 'Name', 'stream-notifications' ),
+				'type'        => __( 'Type', 'stream-notifications' ),
+				'occurrences' => __( 'Occurrences', 'stream-notifications' ),
+				'date'        => __( 'Date', 'stream-notifications' ),
 			)
 		);
 	}
 
 	function get_sortable_columns() {
 		return array(
-			'created' => 'created',
+			'name'        => array( 'summary', false ),
+			'type'        => array( 'type', false ),
+			'occurrences' => array( 'occurrences', true ),
+			'date'        => array( 'created', false ),
 		);
 	}
 
@@ -169,11 +173,11 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				$out = $this->get_rule_types( $item );
 				break;
 
-			case 'occurences':
+			case 'occurrences':
 				$out = (int) get_stream_meta( $item->ID, 'occurrences', true );
 				break;
 
-			case 'created':
+			case 'date':
 				$out  = $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
 				$out .= 'active' == $item->visibility
@@ -578,6 +582,18 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'title'
 		);
 		return implode( ', ', $titles );
+	}
+
+	/**
+	 * @filter stream_query_args
+	 */
+	static function register_occurrences_for_sorting( $args ) {
+		if ( 'occurrences' === $args['orderby'] ) {
+			$args['meta_key'] = $args['orderby'];
+			$args['orderby']  = 'meta_value_num';
+		}
+
+		return $args;
 	}
 
 }
