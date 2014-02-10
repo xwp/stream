@@ -21,6 +21,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		);
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
+		add_filter( 'stream_query_args', array( __CLASS__, 'register_occurrences_for_sorting' ) );
 		set_screen_options();
 	}
 
@@ -581,6 +582,18 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'title'
 		);
 		return implode( ', ', $titles );
+	}
+
+	/**
+	 * @filter stream_query_args
+	 */
+	function register_occurrences_for_sorting( $args ) {
+		if ( $args['orderby'] === 'occurrences' ) {
+			$args['meta_key'] = $args['orderby'];
+			$args['orderby']  = 'meta_value_num';
+		}
+
+		return $args;
 	}
 
 }
