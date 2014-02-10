@@ -2,8 +2,6 @@
 
 class WP_Stream_Admin {
 
-	const PRELOADED_AUTHORS_NUMBER = 50;
-
 	/**
 	 * Menu page screen id
 	 *
@@ -17,12 +15,13 @@ class WP_Stream_Admin {
 	 */
 	public static $list_table = null;
 
-	const ADMIN_BODY_CLASS   = 'wp_stream_screen';
-	const RECORDS_PAGE_SLUG  = 'wp_stream';
-	const SETTINGS_PAGE_SLUG = 'wp_stream_settings';
-	const ADMIN_PARENT_PAGE  = 'admin.php';
-	const VIEW_CAP           = 'view_stream';
-	const SETTINGS_CAP       = 'manage_options';
+	const ADMIN_BODY_CLASS    = 'wp_stream_screen';
+	const RECORDS_PAGE_SLUG   = 'wp_stream';
+	const SETTINGS_PAGE_SLUG  = 'wp_stream_settings';
+	const ADMIN_PARENT_PAGE   = 'admin.php';
+	const VIEW_CAP            = 'view_stream';
+	const SETTINGS_CAP        = 'manage_options';
+	const PRELOAD_AUTHORS_MAX = 50;
 
 	public static function load() {
 		// User and role caps
@@ -63,10 +62,10 @@ class WP_Stream_Admin {
 
 		// Enable/Disable live update per user
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
-		
+
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
-		
+
 		// Ajax author's name by ID
 		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
 
@@ -700,7 +699,7 @@ class WP_Stream_Admin {
 			wp_send_json_error( 'Live Updates checkbox error' );
 		}
 	}
-	
+
 	/**
 	 * @action wp_ajax_wp_stream_filters
 	 */
@@ -726,22 +725,22 @@ class WP_Stream_Admin {
 				return mb_strpos( mb_strtolower( $result['text'] ), mb_strtolower( $_REQUEST['q'] ) ) !== false;
 			}
 		);
-		
+
 		$results_count = count( $results );
-		
-		if ( $results_count > self::PRELOADED_AUTHORS_NUMBER ) {
-			$results   = array_slice( $results, 0, self::PRELOADED_AUTHORS_NUMBER );
+
+		if ( $results_count > self::PRELOAD_AUTHORS_MAX ) {
+			$results   = array_slice( $results, 0, self::PRELOAD_AUTHORS_MAX );
 			$results[] = array(
 				'id'       => 0,
 				'disabled' => true,
-				'text'     => sprintf( _n( 'One more result...', '%d more results...', $results_count - self::PRELOADED_AUTHORS_NUMBER, 'stream' ), $results_count - self::PRELOADED_AUTHORS_NUMBER ),
+				'text'     => sprintf( _n( 'One more result...', '%d more results...', $results_count - self::PRELOAD_AUTHORS_MAX, 'stream' ), $results_count - self::PRELOAD_AUTHORS_MAX ),
 			);
 		}
-	
+
 		echo json_encode( array_values( $results ) );
 		die();
 	}
-	
+
 	/**
 	 * @action wp_ajax_wp_stream_get_author_name_by_id
 	 */

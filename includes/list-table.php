@@ -396,8 +396,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$authors_records = $this->assemble_records( 'author', 'stream' );
 		$filters['author'] = array();
 		$filters['author']['title'] = __( 'authors', 'stream' );
-		
-		if ( count( $authors_records ) <= WP_Stream_Admin::PRELOADED_AUTHORS_NUMBER ) {
+
+		if ( count( $authors_records ) <= WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
 			$filters['author']['items'] = $authors_records;
 		} else {
 			$filters['author']['ajax'] = true;
