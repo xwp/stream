@@ -8,7 +8,7 @@
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
- * Text Domain: stream-notifications
+ * Text Domain: stream-reports
  * Domain Path: /languages
  */
 
@@ -123,8 +123,8 @@ class WP_Stream_Reports {
 			array( $this, 'page' )
 		);
 
-//		add_action( 'load-' . self::$screen_id, array( $this, 'page_form_save' ) );
-//		add_action( 'load-' . self::$screen_id, array( $this->form, 'load' ) );
+		// add_action( 'load-' . self::$screen_id, array( $this, 'page_form_save' ) );
+		// add_action( 'load-' . self::$screen_id, array( $this->form, 'load' ) );
 	}
 
 	/**
@@ -137,7 +137,7 @@ class WP_Stream_Reports {
 		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 		$id = filter_input( INPUT_GET, 'id' );
 
-		return "This is the page";
+		return 'This is the page';
 		/*switch ( $view ) {
 			case 'rule':
 				$this->page_form( $id );

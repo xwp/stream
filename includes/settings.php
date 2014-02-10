@@ -31,7 +31,7 @@ class WP_Stream_Reports_Settings {
 							'name'        => 'role_access',
 							'title'       => __( 'Role Access', 'stream-reports' ),
 							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Users from the selected roles above will have permission to view, create and edit Stream Reports. However, only site Administrators can access Stream Notifications Settings.', 'stream-notifications' ),
+							'desc'        => __( 'Users from the selected roles above will have permission to view and edit Stream Reports. However, only site Administrators can access Stream Reports Settings.', 'stream-reports' ),
 							'choices'     => WP_Stream_Settings::get_roles(),
 							'default'     => array( 'administrator' ),
 						),
