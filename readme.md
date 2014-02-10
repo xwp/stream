@@ -105,6 +105,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 1.1.9 ###
+**2014/02/10** - Load authors filter using AJAX if there are more than 50. Props [powelski](http://profiles.wordpress.org/powelski/)
+
 ### 1.1.8 ###
 **2014/02/09** - Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
