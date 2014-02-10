@@ -51,7 +51,7 @@ class WP_Stream_Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_fields() {
-		return array(
+		return apply_filters( 'stream_get_fields', array(
 			'general' => array(
 				'title'  => __( 'General', 'stream' ),
 				'fields' => array(
@@ -112,6 +112,7 @@ class WP_Stream_Settings {
 					),
 				),
 			),
+			)
 		);
 	}
 

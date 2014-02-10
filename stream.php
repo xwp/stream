@@ -68,6 +68,9 @@ class WP_Stream {
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 
+		if ( is_multisite() )
+			require_once WP_STREAM_INC_DIR . 'network.php';
+
 		// Load DB helper class
 		require_once WP_STREAM_INC_DIR . 'db-actions.php';
 		$this->db = new WP_Stream_DB;
@@ -88,7 +91,7 @@ class WP_Stream {
 		$this->verify_database_present();
 
 		//Load languages
-		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
+		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' )  );
 
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_INC_DIR . 'settings.php';
@@ -112,7 +115,7 @@ class WP_Stream {
 
 		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
-			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
+			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' )  );
 		}
 	}
 

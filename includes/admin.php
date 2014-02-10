@@ -26,12 +26,19 @@ class WP_Stream_Admin {
 		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
-		// Register settings page
-		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
-
 		// Register settings page for network admin
-		if ( is_multisite() ) {
+		if ( is_network_admin() ) {
 			add_action( 'network_admin_menu', array( __CLASS__, 'register_menu' ) );
+
+			// Admin notices
+			add_action( 'network_admin_notices', array( __CLASS__, 'admin_notices' ) );
+
+		} else {
+			// Register settings page
+			add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
+
+			// Admin notices
+			add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 		}
 		// Plugin action links
 		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
@@ -155,8 +162,9 @@ class WP_Stream_Admin {
 	/**
 	 * Add menu styles for various WP Admin skins
 	 *
+	 * @uses wp_add_inline_style()
 	 * @action admin_enqueue_scripts
-	 * @return wp_add_inline_style
+	 * @return bool true on success false on failure
 	 */
 	public static function admin_menu_css() {
 		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
@@ -240,6 +248,10 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_page() {
+		if ( is_multisite() )
+			include_once ABSPATH . 'wp-admin/options-head.php';
+
+		$form_action = is_network_admin() ? network_admin_url( 'edit.php?action=stream_settings' ) : admin_url( 'options.php' );
 		?>
 		<div class="wrap">
 
@@ -263,7 +275,7 @@ class WP_Stream_Admin {
 			</h2>
 
 			<div class="nav-tab-content" id="tab-content-settings">
-				<form method="post" action="options.php">
+				<form method="post" action="<?php echo esc_attr( $form_action ) ?>">
 		<?php
 		$i = 0;
 		foreach ( $sections as $section => $data ) {
@@ -572,8 +584,8 @@ class WP_Stream_Admin {
 	 * @uses gather_updated_items
 	 * @uses generate_row
 	 *
-	 * @param  array  Response to heartbeat
-	 * @param  array  Response from heartbeat
+	 * @param  array $response Response to heartbeat
+	 * @param  array $data Response from heartbeat
 	 * @return array  Data sent to heartbeat
 	 */
 	public static function live_update( $response, $data ) {
@@ -613,7 +625,7 @@ class WP_Stream_Admin {
 	/**
    * Sends Updated Actions to the List Table View
    *
-   * @param       int    Timestamp of last update
+   * @param int $last_id Timestamp of last update
    * @param array $query
    *
    * @return array  Array of recently updated items
