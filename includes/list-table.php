@@ -1,8 +1,6 @@
 <?php
 
 class WP_Stream_List_Table extends WP_List_Table {
-	
-	const PRELOADED_AUTHORS_NUMBER = 50;
 
 	function __construct( $args = array() ) {
 		parent::__construct(
@@ -364,7 +362,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters['author'] = array();
 		$filters['author']['title'] = __( 'authors', 'stream' );
 		
-		if ( count( $authors_records ) <= self::PRELOADED_AUTHORS_NUMBER ) {
+		if ( count( $authors_records ) <= WP_Stream_Admin::PRELOADED_AUTHORS_NUMBER ) {
 			$filters['author']['items'] = $authors_records;
 		} else {
 			$filters['author']['ajax'] = true;
@@ -400,7 +398,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filter_select( $name, $title, $items, $ajax ) {
-		if( $ajax ) {
+		if ( $ajax ) {
 			$out = sprintf(
 				'<input type="hidden" name="%s" class="chosen-select" data-placeholder="Show all %s">',
 				$name,
