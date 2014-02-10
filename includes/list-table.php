@@ -588,7 +588,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	 * @filter stream_query_args
 	 */
 	static function register_occurrences_for_sorting( $args ) {
-		if ( $args['orderby'] === 'occurrences' ) {
+		if ( 'occurrences' === $args['orderby'] ) {
 			$args['meta_key'] = $args['orderby'];
 			$args['orderby']  = 'meta_value_num';
 		}
