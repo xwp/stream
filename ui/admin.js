@@ -31,6 +31,26 @@ jQuery(function($){
 				results: function (data, page) {
 					return {results: data};
 				}
+			},
+			initSelection: function (element, callback) {
+				var id = $(element).val();
+				
+				if(id !== "") {
+					$.post(
+						ajaxurl,
+						{
+							action: "wp_stream_get_author_name_by_id",
+							id:     id
+						},
+						function (response) {
+							callback({
+								id:   id,
+								text: response
+							});
+						},
+						"json"
+					);
+				}
 			}
 		});
 
