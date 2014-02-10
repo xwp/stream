@@ -15,6 +15,13 @@ class WP_Stream_Admin {
 	 */
 	public static $list_table = null;
 
+	/**
+	 * Network option to disable access on individual sites
+	 *
+	 * @var bool
+	 */
+	public static $disable_site_admin = false;
+
 	const RECORDS_PAGE_SLUG  = 'wp_stream';
 	const SETTINGS_PAGE_SLUG = 'wp_stream_settings';
 	const ADMIN_PARENT_PAGE  = 'admin.php';
@@ -25,6 +32,12 @@ class WP_Stream_Admin {
 		// User and role caps
 		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
+
+		if ( is_multisite() ) {
+			$settings = get_site_option( WP_Stream_Settings::KEY, array() );
+			if ( true == $settings['general']['disable_sites_admin'] )
+				self::$disable_site_admin = true;
+		}
 
 		// Register settings page for network admin
 		if ( is_network_admin() ) {
@@ -96,6 +109,9 @@ class WP_Stream_Admin {
 	 */
 	public static function register_menu() {
 		if ( is_network_admin() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) )
+			return false;
+
+		if ( ! is_network_admin() && self::$disable_site_admin )
 			return false;
 
 		self::$screen_id['main'] = add_menu_page(
@@ -248,8 +264,6 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_page() {
-		if ( is_multisite() )
-			include_once ABSPATH . 'wp-admin/options-head.php';
 
 		$form_action = is_network_admin() ? network_admin_url( 'edit.php?action=stream_settings' ) : admin_url( 'options.php' );
 		?>
@@ -275,6 +289,12 @@ class WP_Stream_Admin {
 			</h2>
 
 			<div class="nav-tab-content" id="tab-content-settings">
+
+				<?php if ( is_network_admin() ) : ?>
+				<h4><?php _e( 'The following settings will be saved as the default settings used for each network blog', 'stream' ) ?></h4>
+				<h4><?php _e( 'Individual blog settings can be updated using the choose blog dropdown or by accessing the settings page on the individual blogs', 'stream' ) ?></h4>
+
+				<?php endif ?>
 				<form method="post" action="<?php echo esc_attr( $form_action ) ?>">
 		<?php
 		$i = 0;

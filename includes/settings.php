@@ -211,6 +211,7 @@ class WP_Stream_Settings {
 		$description = isset( $field['desc'] ) ? $field['desc'] : null;
 		$href        = isset( $field['href'] ) ? $field['href'] : null;
 		$after_field = isset( $field['after_field'] ) ? $field['after_field'] : null;
+		$default     = isset( $field['default'] ) ? $field['default'] : null;
 
 		if ( ! $type || ! $section || ! $name ) {
 			return;
@@ -271,6 +272,32 @@ class WP_Stream_Settings {
 					);
 				}
 				$output .= '</fieldset></div>';
+				break;
+			case 'select':
+				$current_value = (array)self::$options[$section . '_' . $name];
+				$default_value = isset( $default['value'] ) ? $default['value'] : '-1';
+				$default_name = isset( $default['name'] ) ? $default['name'] : 'Choose Setting';
+
+				$output = sprintf(
+					'<select name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s">',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				$output .= sprintf( '<option value="%1$s" %2$s>%3$s</option>',
+					esc_attr( $default_value ),
+					checked( in_array( $default_value, $current_value ), true, false ),
+					esc_html( $default_name )
+				);
+				foreach ( $field['choices'] as $value => $label ) {
+					$output .= sprintf(
+						'<option value="%1$s" %2$s>%3$s</option>',
+						esc_attr( $value ),
+						checked( in_array( $value, $current_value ), true, false ),
+						esc_html( $label )
+					);
+				}
+				$output .= '</select>';
 				break;
 			case 'link':
 				$output = sprintf(

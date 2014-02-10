@@ -37,7 +37,7 @@ class WP_Stream_Network {
 				require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 
 			  if ( is_network_admin() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-				$fields['general']['fields'][] =
+				$new_fields['general']['fields'][] =
 							array(
 								'name'    => 'disable_sites_admin',
 								'title'   => __( 'Disable Site Access', 'stream' ),
@@ -45,9 +45,29 @@ class WP_Stream_Network {
 								'desc'    => __( 'When site access is disabled the settings and Stream can only be accessed in network administration', 'stream' ),
 								'type'    => 'checkbox',
 				);
-				return $fields;
+				$new_fields['general']['fields'][] =
+					array(
+						'name'    => 'settings_for_blog',
+						'title'   => __( 'Settings for Blog', 'stream' ),
+						'default' => array( 'value' => 0, 'name' => 'Network Default' ),
+						'desc'    => __( 'Select the site to apply settings changes to', 'stream' ),
+						'type'    => 'select',
+						'choices' => $this->get_network_sites(),
+					);
+
+				return array_merge_recursive( $new_fields, $fields );
 			}
 		return $fields;
+	}
+
+	function get_network_sites() {
+		$return = array();
+		$sites = wp_get_sites();
+		foreach ( $sites as $site ) {
+			$blog = get_blog_details( (int) $site['blog_id'] );
+			$return[$blog->blog_id] = $blog->blogname;
+		}
+		return $return;
 	}
 
 	/**
@@ -57,8 +77,15 @@ class WP_Stream_Network {
 		if ( ! isset( $_GET['action'] ) || 'stream_settings' != $_GET['action'] )
 			return;
 
+		$update_network = true;
 		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null;
 		if ( $options ) {
+			$blog_to_update = isset( $options['settings_for_blog'] ) ? (int) $options['settings_for_blog'] : 0;
+			if ( 0 !== $blog_to_update ) {
+				switch_to_blog( $blog_to_update );
+				$update_network = false;
+			}
+			unset( $options['settings_for_blog'] );
 			foreach ( $options as $option ) {
 				$option = trim( $option );
 				$value = null;
@@ -68,8 +95,14 @@ class WP_Stream_Network {
 				if ( ! is_array( $value ) )
 					$value = trim( $value );
 
-				update_site_option( $option, $value );
+				if ( $update_network ) {
+					update_site_option( $option, $value );
+				} else {
+					update_option( $option, $value );
+				}
 			}
+			if ( ! $update_network )
+				restore_current_blog();
 		}
 
 		if ( ! count( get_settings_errors() ) )
