@@ -7,7 +7,7 @@ Stable tag:        trunk
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
-Stream Notifications allows you to create custom rules that will notify you when certain actions are performed in WordPress and captured by Stream.
+Stream Notifications allows you to create custom rules that will notify you when certain actions are performed in the WordPress admin.
 
 == Description ==
 
