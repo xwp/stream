@@ -2,6 +2,8 @@
 
 class WP_Stream_Admin {
 
+	const PRELOADED_AUTHORS_NUMBER = 50;
+
 	/**
 	 * Menu page screen id
 	 *
@@ -714,12 +716,24 @@ class WP_Stream_Admin {
 				break;
 		}
 
+		// `search` arg for get_users() is not enough
 		$results = array_filter(
 			$results,
 			function( $result ) {
 				return mb_strpos( mb_strtolower( $result['text'] ), mb_strtolower( $_REQUEST['q'] ) ) !== false;
 			}
 		);
+		
+		$results_count = count( $results );
+		
+		if ( $results_count > self::PRELOADED_AUTHORS_NUMBER ) {
+			$results   = array_slice( $results, 0, self::PRELOADED_AUTHORS_NUMBER );
+			$results[] = array(
+				'id'       => 0,
+				'disabled' => true,
+				'text'     => sprintf( _n( 'One more result...', '%d more results...', $results_count - self::PRELOADED_AUTHORS_NUMBER, 'stream' ), $results_count - self::PRELOADED_AUTHORS_NUMBER ),
+			);
+		}
 	
 		echo json_encode( array_values( $results ) );
 		die();
