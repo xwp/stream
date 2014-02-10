@@ -21,25 +21,25 @@ jQuery(function($){
 			ajax: {
 				url: ajaxurl,
 				datatype: 'json',
-				data: function (term, page) {
+				data: function (term) {
 					return {
 						action: 'wp_stream_filters',
-						filter: $(this).attr("name"),
+						filter: $(this).attr('name'),
 						q: term
 					};
 				},
-				results: function (data, page) {
+				results: function (data) {
 					return {results: data};
 				}
 			},
 			initSelection: function (element, callback) {
 				var id = $(element).val();
-				
-				if(id !== "") {
+
+				if(id !== '') {
 					$.post(
 						ajaxurl,
 						{
-							action: "wp_stream_get_author_name_by_id",
+							action: 'wp_stream_get_author_name_by_id',
 							id:     id
 						},
 						function (response) {
@@ -48,7 +48,7 @@ jQuery(function($){
 								text: response
 							});
 						},
-						"json"
+						'json'
 					);
 				}
 			}
