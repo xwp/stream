@@ -1,0 +1,74 @@
+#!/bin/bash
+# WordPress Plugin pre-commit hook
+
+set -e
+
+message="Checking staged changes..."
+git_status_egrep='^[MARC].+'
+
+for i; do
+	case "$i"
+	in
+		-m)
+			message="Checking any uncommitted changes..."
+			git_status_egrep='^.?[MARC].+'
+			shift;;
+	esac
+done
+
+echo $message
+
+# Check for staged JS files
+IFS=$'\n' staged_js_files=( $(git status --porcelain | sed 's/[^ ]* -> *//g' | egrep $git_status_egrep'\.js$' | cut -c4-) )
+if [ ${#staged_js_files[@]} != 0 ]; then
+	# JSHint
+	if [ -e .jshintrc ]; then
+		echo "## jslint"
+		if command -v jshint >/dev/null 2>&1; then
+			jshint "${staged_js_files[@]}"
+		else
+			echo "Skipping jshint since not installed"
+		fi
+	fi
+
+fi
+
+# Check for staged PHP files
+IFS=$'\n' staged_php_files=( $(git status --porcelain | sed 's/[^ ]* -> *//g' | egrep $git_status_egrep'\.php$' | cut -c4-) )
+if [ ${#staged_php_files[@]} != 0 ]; then
+	# PHP Syntax Check
+	for php_file in "${staged_php_files[@]}"; do
+		php -lf $php_file
+	done
+
+	# PHPUnit
+	if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
+		echo "## phpunit"
+		if [ "$USER" != 'vagrant' ] && command -v vagrant >/dev/null 2>&1 && command -v vassh >/dev/null 2>&1; then
+			echo "Running phpunit in vagrant..."
+			vassh phpunit
+		elif ! command -v phpunit >/dev/null 2>&1;then
+			echo "Skipping phpunit since not installed"
+		elif [ -z "$WP_TESTS_DIR" ]; then
+			echo "Skipping phpunit since WP_TESTS_DIR env missing"
+		else
+			phpunit
+		fi
+	fi
+
+	# PHP_CodeSniffer WordPress Coding Standards
+	echo "## phpcs"
+	if command -v phpcs >/dev/null 2>&1; then
+		phpcs_standard=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi)
+		phpcs -p -s -v --standard=$phpcs_standard "${staged_php_files[@]}"
+	else
+		echo "Skipping phpcs since not installed"
+	fi
+fi
+
+# Make sure the readme.md never gets out of sync with the readme.txt
+generate_markdown_readme=$(find . -name generate-markdown-readme -print -quit)
+if [ -n "$generate_markdown_readme" ]; then
+	markdown_readme_path=$($generate_markdown_readme)
+	git add $markdown_readme_path
+fi
