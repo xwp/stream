@@ -66,6 +66,9 @@ class WP_Stream_Admin {
 		
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
+		
+		// Ajax author's name by ID
+		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
 
 	}
 
@@ -701,7 +704,7 @@ class WP_Stream_Admin {
 	/**
 	 * @action wp_ajax_wp_stream_filters
 	 */
-	public static function ajax_filters( $callback ) {
+	public static function ajax_filters() {
 		switch ( $_REQUEST['filter'] ) {
 			case 'author':
 				$results = array_map(
@@ -736,6 +739,15 @@ class WP_Stream_Admin {
 		}
 	
 		echo json_encode( array_values( $results ) );
+		die();
+	}
+	
+	/**
+	 * @action wp_ajax_wp_stream_get_author_name_by_id
+	 */
+	public static function get_author_name_by_id() {
+		$user = get_userdata( $_REQUEST['id'] );
+		echo json_encode( $user->display_name );
 		die();
 	}
 
