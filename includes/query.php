@@ -59,6 +59,12 @@ class WP_Stream_Query {
 
 		$args = wp_parse_args( $args, $defaults );
 
+		/**
+		 * Filter allows additional arguments to query $args
+		 *
+		 * @param  array  Array of query arguments
+		 * @return array  Updated array of query arguments
+		 */
 		$args = apply_filters( 'stream_query_args', $args );
 
 		$join  = '';

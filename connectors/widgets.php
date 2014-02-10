@@ -307,6 +307,13 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return array
 	 */
 	public static function get_sidebar_widgets() {
+		/**
+		 * Filter allows for insertion of sidebar widgets
+		 *
+		 * @param  array  Sidebar Widgets in Options table
+		 * @param  array  Inserted Sidebar Widgets
+		 * @return array  Array of updated Sidebar Widgets
+		 */
 		return apply_filters( 'sidebars_widgets', get_option( 'sidebars_widgets', array() ) );
 	}
 

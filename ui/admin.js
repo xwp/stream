@@ -72,15 +72,25 @@ jQuery(function($){
 	});
 
 	// Admin page tabs
-	var $tabs       = $('.nav-tab-wrapper'),
-		$panels     = $('table.form-table'),
-		currentHash = window.location.hash ? window.location.hash.match(/\d+/)[0] : 0;
+	var $tabs          = $('.nav-tab-wrapper'),
+		$panels        = $('table.form-table'),
+		$activeTab     = $tabs.find('.nav-tab-active'),
+		defaultIndex   = $activeTab.length > 0 ? $tabs.find('a').index( $activeTab ) : 0,
+		currentHash    = window.location.hash ? window.location.hash.match(/\d+/)[0] : defaultIndex,
+		syncFormAction = function( index ) {
+			var $optionsForm   = $('input[name="option_page"][value="wp_stream"]').parent('form');
+			var currentAction  = $optionsForm.attr('action');
+
+			$optionsForm.prop('action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ));
+		};
 
 	$tabs.on('click', 'a', function(e){
 		e.preventDefault();
 		var index = $tabs.find('a').index( $(this) );
 		$panels.hide().eq(index).show();
 		$tabs.find('a').removeClass('nav-tab-active').filter($(this)).addClass('nav-tab-active');
+		window.location.hash = index;
+		syncFormAction(index);
 	});
 	$tabs.children().eq( currentHash ).trigger('click');
 

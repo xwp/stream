@@ -20,6 +20,12 @@ class WP_Stream_Log {
 	 * @return void
 	 */
 	public static function load() {
+		/**
+		 * Filter allows developers to change log handler class
+		 *
+		 * @param  array   Current Class
+		 * @return string  New Class for log handling
+		 */
 		$log_handler    = apply_filters( 'wp_stream_log_handler', __CLASS__ );
 		self::$instance = new $log_handler;
 	}

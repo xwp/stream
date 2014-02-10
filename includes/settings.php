@@ -36,7 +36,12 @@ class WP_Stream_Settings {
 		// Parse field information gathering default values
 		$defaults = self::get_defaults();
 
-		// Get options
+		/**
+		 * Filter allows for modification of options
+		 *
+		 * @param  array  array of options
+		 * @return array  updated array of options
+		 */
 		self::$options = apply_filters(
 			'wp_stream_options',
 			wp_parse_args(
@@ -139,6 +144,12 @@ class WP_Stream_Settings {
 					),
 				),
 			);
+			/**
+			 * Filter allows for modification of options fields
+			 *
+			 * @param  array  array of fields
+			 * @return array  updated array of fields
+			 */
 			self::$fields = apply_filters( 'wp_stream_options_fields', $fields );
 		}
 		return self::$fields;
@@ -419,6 +430,9 @@ class WP_Stream_Settings {
 		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : -1;
 
 		if ( $ttl_after < $ttl_before ) {
+			/**
+			 * Action assists in purging when TTL is shortened
+			 */
 			do_action( 'wp_stream_auto_purge' );
 		}
 	}

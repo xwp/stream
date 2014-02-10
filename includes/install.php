@@ -16,6 +16,12 @@ class WP_Stream_Install {
 
 		$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 
+		/**
+		 * Allows devs to alter the tables prefix, default to base_prefix
+		 *
+		 * @param  string  database prefix
+		 * @return string  udpated database prefix
+		 */
 		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->prefix );
 
 		if ( empty( $db_version ) ) {
@@ -45,7 +51,7 @@ class WP_Stream_Install {
 			parent bigint(20) unsigned NOT NULL DEFAULT '0',
 			type varchar(20) NOT NULL DEFAULT 'stream',
 			created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-			ip varchar(20) NULL,
+			ip varchar(39) NULL,
 			PRIMARY KEY (ID),
 			KEY site_id (site_id),
 			KEY parent (parent),
@@ -105,11 +111,6 @@ class WP_Stream_Install {
 		global $wpdb;
 		$prefix = self::$table_prefix;
 
-		// If version is lower than 1.1.3, do the update routine
-		if ( version_compare( $db_version, '1.1.3' ) == -1 ) {
-			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(20) NULL AFTER created" );
-		}
-
 		// If version is lower than 1.1.4, do the update routine
 		if ( version_compare( $db_version, '1.1.4' ) == -1 ) {
 			$tables  = array( 'stream', 'stream_context', 'stream_meta' );
@@ -117,6 +118,11 @@ class WP_Stream_Install {
 			foreach ( $tables as $table ) {
 				$wpdb->query( "ALTER TABLE {$prefix}{$table} CONVERT TO CHARACTER SET {$wpdb->charset}{$collate};" );
 			}
+		}
+
+		// If version is lower than 1.1.7, do the update routine
+		if ( version_compare( $db_version, '1.1.7' ) == -1 ) {
+			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(39) NULL AFTER created" );
 		}
 	}
 
