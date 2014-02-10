@@ -62,7 +62,7 @@ class WP_Stream_Log {
 			'parent'    => self::$instance->prev_record,
 			'connector' => $connector,
 			'contexts'  => $contexts,
-			'meta'      => array_filter( $args ),
+			'meta'      => array_filter( $args, 'is_null' ),
 			'ip'        => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
