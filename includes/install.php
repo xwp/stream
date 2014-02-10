@@ -81,10 +81,14 @@ class WP_Stream_Install {
 			KEY context (context),
 			KEY action (action),
 			KEY connector (connector)
-		) CHARACTER SET " . $wpdb->charset;
+		)";
 
-		if ( $wpdb->collate ) {
-			$sql .= ' COLLATE ' . $wpdb->collate;
+		if ( ! empty( $wpdb->charset ) ) {
+			$sql .= " CHARACTER SET $wpdb->charset";
+		}
+
+		if ( ! empty( $wpdb->collate ) ) {
+			$sql .= " COLLATE $wpdb->collate";
 		}
 
 		$sql .= ';';
@@ -100,10 +104,14 @@ class WP_Stream_Install {
 			KEY record_id (record_id),
 			KEY meta_key (meta_key),
 			KEY meta_value (meta_value)
-		) CHARACTER SET " . $wpdb->charset;
+		)";
 
-		if ( $wpdb->collate ) {
-			$sql .= ' COLLATE ' . $wpdb->collate;
+		if ( ! empty( $wpdb->charset ) ) {
+			$sql .= " CHARACTER SET $wpdb->charset";
+		}
+
+		if ( ! empty( $wpdb->collate ) ) {
+			$sql .= " COLLATE $wpdb->collate";
 		}
 
 		$sql .= ';';
