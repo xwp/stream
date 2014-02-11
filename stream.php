@@ -112,9 +112,6 @@ class WP_Stream {
 		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
-
-			//add class for stream datepicker
-			add_action( 'admin_print_scripts', array( __CLASS__, 'datepicker' ), 99 );
 		}
 	}
 
@@ -221,15 +218,6 @@ class WP_Stream {
 			self::$instance = new $class;
 		}
 		return self::$instance;
-	}
-
-	public static function datepicker() {
-		echo "<script type='text/javascript'>\n";
-		echo 'jQuery( document ).ready( function() {';
-		echo 'jQuery( "#ui-datepicker-div" ).addClass( "stream-datepicker" );';
-		echo '});';
-		echo '</script>';
-
 	}
 
 }
