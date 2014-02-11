@@ -81,6 +81,7 @@ class WP_Stream_Reports {
 		define( 'WP_STREAM_REPORTS_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_REPORTS_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' );
+		define( 'WP_STREAM_REPORTS_VIEW_DIR', WP_STREAM_REPORTS_DIR . 'views/' );
 		define( 'WP_STREAM_REPORTS_CLASS_DIR', WP_STREAM_REPORTS_DIR . 'classes/' );
 
 		add_action( 'plugins_loaded', array( $this, 'load' ) );
@@ -134,18 +135,28 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function page() {
-		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
-		$id = filter_input( INPUT_GET, 'id' );
+		$view = (object) array(
+			'slug' => 'all',
+			'path' => null,
+		);
+		if ( isset( $_GET['view'] ) && ! empty( $_GET['view'] ) ){
+			$view->slug = $_GET['view'];
+		}
 
-		return 'This is the page';
-		/*switch ( $view ) {
-			case 'rule':
-				$this->page_form( $id );
-				break;
-			default:
-				$this->page_list();
-				break;
-		}*/
+		// First we check if the file exists in our plugin folder, otherwhise give the user an error
+		if ( ! file_exists( WP_STREAM_REPORTS_VIEW_DIR . sanitize_file_name( $view->slug ) . '.php' ) ){
+			$view->slug = 'error';
+		}
+
+		// Define the path for the view we
+		$view->path = WP_STREAM_REPORTS_VIEW_DIR . sanitize_file_name( $view->slug ) . '.php';
+
+		// Execute some actions before including the view, to allow others to hook in here
+		// Use these to do stuff related to the view you are working with
+		do_action( 'stream-reports-view', $view );
+		do_action( "stream-reports-view-{$view->slug}", $view );
+
+		include_once $view->path;
 	}
 
 	/**
