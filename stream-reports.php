@@ -191,9 +191,9 @@ class WP_Stream_Reports {
 	}
 
 	/**
-	 * Return active instance of WP_Stream, create one if it doesn't exist
+	 * Return active instance of WP_Stream_Reports, create one if it doesn't exist
 	 *
-	 * @return WP_Stream
+	 * @return WP_Stream_Reports
 	 */
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
