@@ -55,7 +55,7 @@ class WP_Stream_Log {
 		}
 
 		// Remove null value from array
-		$args = array_filter(
+		$meta = array_filter(
 			$args,
 			function ( $var ) {
 				return ! is_null( $var );
@@ -70,7 +70,7 @@ class WP_Stream_Log {
 			'parent'    => self::$instance->prev_record,
 			'connector' => $connector,
 			'contexts'  => $contexts,
-			'meta'      => $args,
+			'meta'      => $meta,
 			'ip'        => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
