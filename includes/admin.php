@@ -22,11 +22,13 @@ class WP_Stream_Admin {
 	 */
 	public static $disable_site_admin = false;
 
-	const RECORDS_PAGE_SLUG  = 'wp_stream';
-	const SETTINGS_PAGE_SLUG = 'wp_stream_settings';
-	const ADMIN_PARENT_PAGE  = 'admin.php';
-	const VIEW_CAP           = 'view_stream';
-	const SETTINGS_CAP       = 'manage_options';
+	const ADMIN_BODY_CLASS    = 'wp_stream_screen';
+	const RECORDS_PAGE_SLUG   = 'wp_stream';
+	const SETTINGS_PAGE_SLUG  = 'wp_stream_settings';
+	const ADMIN_PARENT_PAGE   = 'admin.php';
+	const VIEW_CAP            = 'view_stream';
+	const SETTINGS_CAP        = 'manage_options';
+	const PRELOAD_AUTHORS_MAX = 50;
 
 	public static function load() {
 		// User and role caps
@@ -35,15 +37,17 @@ class WP_Stream_Admin {
 
 		if ( is_multisite() ) {
 			$settings = get_site_option( WP_Stream_Settings::KEY, array() );
-			if ( true == $settings['general']['disable_sites_admin'] )
+			if ( true == $settings['general']['disable_sites_admin'] ) {
 				self::$disable_site_admin = true;
+			}
 		}
 
 		// Register settings page for network admin
 		if ( is_network_admin() ) {
+			// Register network settings page
 			add_action( 'network_admin_menu', array( __CLASS__, 'register_menu' ) );
 
-			// Admin notices
+			// Network admin notices
 			add_action( 'network_admin_notices', array( __CLASS__, 'admin_notices' ) );
 
 		} else {
@@ -53,6 +57,10 @@ class WP_Stream_Admin {
 			// Admin notices
 			add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 		}
+
+		// Add admin body class
+		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
+
 		// Plugin action links
 		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
 
@@ -68,7 +76,7 @@ class WP_Stream_Admin {
 
 		// Auto purge setup
 		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
-		add_action( 'stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
+		add_action( 'wp_stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
 
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
@@ -82,6 +90,12 @@ class WP_Stream_Admin {
 
 		// Enable/Disable live update per user
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
+
+		// Ajax authors list
+		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
+
+		// Ajax author's name by ID
+		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
 
 	}
 
@@ -176,6 +190,21 @@ class WP_Stream_Admin {
 	}
 
 	/**
+	 * Add a specific body class to all Stream admin screens
+	 *
+	 * @filter admin_body_class
+	 * @param  array $classes
+	 * @return array $classes
+	 */
+	public static function admin_body_class( $classes ) {
+		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
+			$classes .= self::ADMIN_BODY_CLASS;
+		}
+
+		return $classes;
+	}
+
+	/**
 	 * Add menu styles for various WP Admin skins
 	 *
 	 * @uses wp_add_inline_style()
@@ -184,17 +213,23 @@ class WP_Stream_Admin {
 	 */
 	public static function admin_menu_css() {
 		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
+		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
 
 		// Make sure we're working off a clean version.
 		include( ABSPATH . WPINC . '/version.php' );
+
+		$body_class   = self::ADMIN_BODY_CLASS;
+		$records_page = self::RECORDS_PAGE_SLUG;
+		$stream_url   = WP_STREAM_URL;
+
 		if ( version_compare( $wp_version, '3.8-alpha', '>=' ) ) {
 			wp_enqueue_style( 'wp-stream-icons' );
 			$css = "
-				#toplevel_page_wp_stream .wp-menu-image:before {
+				#toplevel_page_{$records_page} .wp-menu-image:before {
 					font-family: 'WP Stream' !important;
 					content: '\\73' !important;
 				}
-				#toplevel_page_wp_stream .wp-menu-image {
+				#toplevel_page_{$records_page} .wp-menu-image {
 					background-repeat: no-repeat;
 				}
 				#menu-posts-feedback .wp-menu-image:before {
@@ -205,34 +240,33 @@ class WP_Stream_Admin {
 					background: none !important;
 					background-repeat: no-repeat;
 				}
-				.toplevel_page_wp_stream #wpbody-content .wrap h2:before,
-				.stream_page_wp_stream_settings #wpbody-content .wrap h2:nth-child(1):before {
+				body.{$body_class} #wpbody-content .wrap h2:nth-child(1):before {
 					font-family: 'WP Stream' !important;
 					content: '\\73';
 					padding: 0 8px 0 0;
 				}
 			";
 		} else {
-			$css = '
-				#toplevel_page_wp_stream .wp-menu-image {
-					background: url( ' . WP_STREAM_URL . 'ui/stream-icons/menuicon-sprite.png ) 0 90% no-repeat;
+			$css = "
+				#toplevel_page_{$records_page} .wp-menu-image {
+					background: url( {$stream_url}ui/stream-icons/menuicon-sprite.png ) 0 90% no-repeat;
 				}
 				/* Retina Stream Menu Icon */
 				@media  only screen and (-moz-min-device-pixel-ratio: 1.5),
 						only screen and (-o-min-device-pixel-ratio: 3/2),
 						only screen and (-webkit-min-device-pixel-ratio: 1.5),
 						only screen and (min-device-pixel-ratio: 1.5) {
-					#toplevel_page_wp_stream .wp-menu-image {
-						background: url( ' . WP_STREAM_URL . 'ui/stream-icons/menuicon-sprite-2x.png ) 0 90% no-repeat;
+					#toplevel_page_{$records_page} .wp-menu-image {
+						background: url( {$stream_url}ui/stream-icons/menuicon-sprite-2x.png ) 0 90% no-repeat;
 						background-size:30px 64px;
 					}
 				}
-				#toplevel_page_wp_stream.current .wp-menu-image,
-				#toplevel_page_wp_stream.wp-has-current-submenu .wp-menu-image,
-				#toplevel_page_wp_stream:hover .wp-menu-image {
+				#toplevel_page_{$records_page}.current .wp-menu-image,
+				#toplevel_page_{$records_page}.wp-has-current-submenu .wp-menu-image,
+				#toplevel_page_{$records_page}:hover .wp-menu-image {
 					background-position: top left;
 				}
-			';
+			";
 		}
 		wp_add_inline_style( 'wp-admin', $css );
 	}
@@ -333,10 +367,18 @@ class WP_Stream_Admin {
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			self::erase_stream_records();
-			wp_redirect( add_query_arg( array( 'page' => 'wp_stream_settings', 'message' => 'data_erased' ), is_network_admin() ? network_admin_url( 'admin.php' ) : admin_url( 'admin.php' ) ) );
+			wp_redirect(
+				add_query_arg(
+					array(
+						'page'    => 'wp_stream_settings',
+						'message' => 'data_erased',
+					),
+					is_network_admin() ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
+				)
+			);
 			exit;
 		} else {
-			wp_die( "You don't have sufficient priviledges to do this action." );
+			wp_die( "You don't have sufficient privileges to do this action." );
 		}
 	}
 
@@ -610,10 +652,10 @@ class WP_Stream_Admin {
 	 */
 	public static function live_update( $response, $data ) {
 
-		$enable_update = get_user_meta( get_current_user_id(), 'enable_live_update', true );
+		$enable_update = get_user_meta( get_current_user_id(), 'stream_live_update_records', true );
 		$enable_update = isset( $enable_update ) ? $enable_update : '';
 
-		if ( 'live-update' === $data['wp-stream-heartbeat'] && $enable_update == 'on' ) {
+		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_update == 'on' ) {
 			// Register list table
 			require_once WP_STREAM_INC_DIR . 'list-table.php';
 			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
@@ -692,13 +734,63 @@ class WP_Stream_Admin {
 
 		$user = (int) $input['user'];
 
-		$success = update_user_meta( $user, 'enable_live_update', $checked );
+		$success = update_user_meta( $user, 'stream_live_update_records', $checked );
 
 		if ( $success ) {
 			wp_send_json_success( 'Live Updates Enabled' );
 		} else {
 			wp_send_json_error( 'Live Updates checkbox error' );
 		}
+	}
+
+	/**
+	 * @action wp_ajax_wp_stream_filters
+	 */
+	public static function ajax_filters() {
+		switch ( $_REQUEST['filter'] ) {
+			case 'author':
+				$results = array_map(
+					function( $user ) {
+						return array(
+							'id'   => $user->id,
+							'text' => $user->display_name,
+						);
+					},
+					get_users()
+				);
+				break;
+		}
+
+		// `search` arg for get_users() is not enough
+		$results = array_filter(
+			$results,
+			function( $result ) {
+				return mb_strpos( mb_strtolower( $result['text'] ), mb_strtolower( $_REQUEST['q'] ) ) !== false;
+			}
+		);
+
+		$results_count = count( $results );
+
+		if ( $results_count > self::PRELOAD_AUTHORS_MAX ) {
+			$results   = array_slice( $results, 0, self::PRELOAD_AUTHORS_MAX );
+			$results[] = array(
+				'id'       => 0,
+				'disabled' => true,
+				'text'     => sprintf( _n( 'One more result...', '%d more results...', $results_count - self::PRELOAD_AUTHORS_MAX, 'stream' ), $results_count - self::PRELOAD_AUTHORS_MAX ),
+			);
+		}
+
+		echo json_encode( array_values( $results ) );
+		die();
+	}
+
+	/**
+	 * @action wp_ajax_wp_stream_get_author_name_by_id
+	 */
+	public static function get_author_name_by_id() {
+		$user = get_userdata( $_REQUEST['id'] );
+		echo json_encode( $user->display_name );
+		die();
 	}
 
 }

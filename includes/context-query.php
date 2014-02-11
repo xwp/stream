@@ -82,9 +82,9 @@ class WP_Stream_Context_Query {
 		$where = array();
 
 		$queries = $this->queries;
-		
+
 		$meta_query = new WP_Meta_Query;
-		
+
 		// Context table is always joined
 		// $join[] = " INNER JOIN $context_table ON $main_table.ID = $context_table.record_id";
 
@@ -148,6 +148,12 @@ class WP_Stream_Context_Query {
 
 		$join = implode( "\n", $join );
 
+		/**
+		 * Filter allows modification of context sql statement
+		 *
+		 * @param  array   Array of context sql statement components
+		 * @return string  Updated context sql statement
+		 */
 		return apply_filters_ref_array( 'get_context_sql', array( compact( 'join', 'where' ), $this->queries ) );
 	}
 

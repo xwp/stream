@@ -49,7 +49,7 @@ class Test_WP_Stream_Admin extends WP_StreamTestCase {
 			array( 'admin_enqueue_scripts', self::CLASSNAME, 'admin_menu_css' ),
 			array( 'wp_ajax_wp_stream_reset', self::CLASSNAME, 'wp_ajax_reset' ),
 			array( 'init', self::CLASSNAME, 'purge_schedule_setup' ),
-			array( 'stream_auto_purge', self::CLASSNAME, 'purge_scheduled_action' ),
+			array( 'wp_stream_auto_purge', self::CLASSNAME, 'purge_scheduled_action' ),
 		);
 
 		$this->do_action_validation( $test_actions );
@@ -101,6 +101,13 @@ class Test_WP_Stream_Admin extends WP_StreamTestCase {
 	 * Check the output of the plugin action links function
 	 */
 	public function test_plugin_action_links() {
+		/**
+		 * Filter allows for addition of action links during testing
+		 *
+		 * @param  array  array of action links
+		 * @param  string URL of stream main PHP file
+		 * @return array  updated array of action links
+		 */
 		$filter_output = apply_filters( 'plugin_action_links', array(), plugin_basename( WP_STREAM_DIR . 'stream.php' ) );
 		$this->assertTrue( strrpos( $filter_output[0], '/wp-admin/admin.php?page=wp_stream_settings' ) >= 0 );
 	}

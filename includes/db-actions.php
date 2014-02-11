@@ -12,7 +12,12 @@ class WP_Stream_DB {
 
 	public function __construct() {
 		global $wpdb;
-		// Allow devs to alter the tables prefix, default to base_prefix
+		/**
+		 * Allows devs to alter the tables prefix, default to base_prefix
+		 *
+		 * @param  string  database prefix
+		 * @return string  udpated database prefix
+		 */
 		$prefix              = apply_filters( 'wp_stream_db_tables_prefix', is_multisite() ? $wpdb->base_prefix : $wpdb->prefix );
 		self::$table         = $prefix . 'stream';
 		self::$table_meta    = $prefix . 'stream_meta';
@@ -50,6 +55,12 @@ class WP_Stream_DB {
 	public function insert( $recordarr ) {
 		global $wpdb;
 
+		/**
+		 * Filter allows modification of record information
+		 *
+		 * @param  array  array of record information
+		 * @return array  udpated array of record information
+		 */
 		$recordarr = apply_filters( 'wp_stream_record_array', $recordarr );
 
 		// Allow extensions to handle the saving process
@@ -62,7 +73,7 @@ class WP_Stream_DB {
 
 		$data = array_filter( $data );
 
-		// TODO Check/Validate *required* fields 
+		// TODO Check/Validate *required* fields
 
 		$result = $wpdb->insert(
 			self::$table,
@@ -73,6 +84,11 @@ class WP_Stream_DB {
 			$record_id = $wpdb->insert_id;
 		}
 		else {
+			/**
+			 * Action Hook that fires on an error during post insertion
+			 *
+			 * @param  int  $record_id  Record being inserted
+			 */
 			do_action( 'wp_stream_post_insert_error', $record_id );
 			return $record_id;
 		}
@@ -91,7 +107,12 @@ class WP_Stream_DB {
 				$this->insert_meta( $record_id, $key, $val );
 			}
 		}
-
+		/**
+		 * Fires when A Post is inserted
+		 *
+		 * @param  int    $record_id  Inserted record ID
+		 * @param  array  $recordarr  Array of information on this record
+		 */
 		do_action( 'wp_stream_post_inserted', $record_id, $recordarr );
 
 		return $record_id;
