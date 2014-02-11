@@ -1,6 +1,6 @@
 <?php
 /**
- * Settings class for Stream Notifications
+ * Settings class for Stream Reports
  *
  * @author X-Team <x-team.com>
  * @author Shady Sharaf <shady@x-team.com>, Jaroslav Polakovič <dero@x-team.com>
@@ -17,7 +17,7 @@ class WP_Stream_Reports_Settings {
 		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
-		// Add Notifications settings tab to Stream settings
+		// Add Reports settings tab to Stream settings
 		add_filter( 'wp_stream_options_fields', array( __CLASS__, '_register_settings' ) );
 	}
 
@@ -45,7 +45,7 @@ class WP_Stream_Reports_Settings {
 	}
 
 	/**
-	 * Appends Notifications settings to Stream settings
+	 * Appends Reports settings to Stream settings
 	 *
 	 * @filter wp_stream_options_fields
 	 */
@@ -71,7 +71,7 @@ class WP_Stream_Reports_Settings {
 		foreach ( $caps as $cap ) {
 			if ( WP_Stream_Reports::VIEW_CAP === $cap ) {
 				foreach ( $user->roles as $role ) {
-					if ( self::_role_can_access_notifications( $role ) ) {
+					if ( self::_role_can_access( $role ) ) {
 						$allcaps[ $cap ] = true;
 						break 2;
 					}
@@ -94,14 +94,14 @@ class WP_Stream_Reports_Settings {
 	 * @return array
 	 */
 	public static function _filter_role_caps( $allcaps, $cap, $role ) {
-		if ( WP_Stream_Reports::VIEW_CAP === $cap && self::_role_can_access_notifications( $role ) ) {
+		if ( WP_Stream_Reports::VIEW_CAP === $cap && self::_role_can_access( $role ) ) {
 			$allcaps[ $cap ] = true;
 		}
 
 		return $allcaps;
 	}
 
-	private static function _role_can_access_notifications( $role ) {
+	private static function _role_can_access( $role ) {
 		if ( in_array( $role, WP_Stream_Settings::$options['reports_role_access'] ) ) {
 			return true;
 		}
