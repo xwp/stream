@@ -137,14 +137,16 @@ class WP_Stream_Reports {
 	public function page() {
 		$view = (object) array(
 			'slug' => 'all',
-			'path' => null
+			'path' => null,
 		);
-		if ( isset( $_GET['view'] ) && !empty( $_GET['view'] ) )
+		if ( isset( $_GET['view'] ) && !empty( $_GET['view'] ) ){
 			$view->slug = $_GET['view'];
+		}
 
 		// First we check if the file exists in our plugin folder, otherwhise give the user an error
-		if ( !file_exists( WP_STREAM_REPORTS_VIEW_DIR . sanitize_file_name( $view->slug ) . ".php" ) )
+		if ( ! file_exists( WP_STREAM_REPORTS_VIEW_DIR . sanitize_file_name( $view->slug ) . ".php" ) ){
 			$view->slug = 'error';
+		}
 
 
 		// Define the path for the view we
