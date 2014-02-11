@@ -115,6 +115,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 					}
 					$slug = $upgrader->result['destination_name'];
 					$name = $plugin_data['Name'];
+				} elseif ( $type == 'theme' ) {
+					$slug = $upgrader->result['destination_name'];
+					$theme_data = wp_get_theme( $slug );
+					if ( empty( $theme_data ) ) {
+						return;
+					}
+					$name = $theme_data->get( 'Name' );
 				}
 			} else {
 				$slug = $upgrader->skin->api->slug;
