@@ -91,11 +91,11 @@
 	color: #fff;
 	font-weight: normal;
 	border: none;
-	border-top: 1px solid #333;
+	border-top: 1px solid #555;
 }
 
 .stream-datepicker.ui-datepicker td {
-	background: #0074a2;
+	background: #f1f1f1;
 	border: none;
 	padding: 0;
 }
@@ -107,22 +107,20 @@
 	padding: .5em;
 	margin: 0;
 	font-weight: normal;
-	color: #fff;
+	color: #333;
 }
 
 .stream-datepicker.ui-datepicker td.ui-state-disabled,
 .stream-datepicker.ui-datepicker .ui-widget-content td.ui-state-disabled,
 .stream-datepicker td.ui-state-disabled .ui-state-default {
 	opacity: 1;
-	color: #333;
-}
-
-.stream-datepicker .ui-state-disabled .ui-state-default {
+	color: #999;
 }
 
 .stream-datepicker td .ui-state-active,
 .stream-datepicker td .ui-state-hover {
-	background: #222;
+	background: #0074a2;
+	color: #fff;
 }
 
 /* Other Datepicker Color Schemes */
