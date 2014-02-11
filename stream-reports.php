@@ -147,12 +147,17 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function register_ui_assets() {
+
 		// JavaScript register
 		wp_register_script( 'stream-reports-d3', WP_STREAM_REPORTS_URL . "ui/d3/d3.min.js", array(), '3.4.1', true );
 		wp_register_script( 'stream-reports-admin', WP_STREAM_REPORTS_URL . "ui/admin.js", array( 'stream-reports-d3' ), self::VERSION, true );
 
 		// CSS register
 		wp_register_style( 'stream-reports-admin', WP_STREAM_REPORTS_URL . "ui/admin.css", array(), self::VERSION, 'screen' );
+
+		global $pagenow;
+		if ( 'admin.php' !== $pagenow )
+			return;
 
 		$page = false;
 		if ( isset( $_GET['page'] ) && !empty( $_GET['page'] ) ) // Ensure that we will not throw any notices
