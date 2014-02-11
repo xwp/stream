@@ -242,7 +242,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			case 'blog_id':
 				$blog = $item->blog_id ? get_blog_details( $item->blog_id ) : self::get_network_blog();
-				$out = sprintf(
+				$out  = sprintf(
 					'<a href="%s"><span>%s</span></a>',
 					add_query_arg( array( 'blog_id' => $blog->blog_id ), network_admin_url( 'admin.php?page=wp_stream' ) ),
 					esc_html( $blog->blogname )
@@ -294,8 +294,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * @return stdClass
 	 */
 	public static function get_network_blog() {
-		$blog = new stdClass;
-		$blog->blog_id = 0;
+		$blog           = new stdClass;
+		$blog->blog_id  = 0;
 		$blog->blogname = 'Network Admin';
 
 		return $blog;
@@ -433,7 +433,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
 		$authors_records = $this->assemble_records( 'author', 'stream' );
-		$filters['author'] = array();
+
+		$filters['author']          = array();
 		$filters['author']['title'] = __( 'authors', 'stream' );
 
 		if ( count( $authors_records ) <= WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
@@ -459,7 +460,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		if ( is_network_admin() ) {
 			$blogs = array();
-			foreach( (array) wp_get_sites() as $blog ) {
+			foreach ( (array) wp_get_sites() as $blog ) {
 				$blogs[$blog['blog_id']] = $blog['domain'];
 			}
 			$blogs[0] =
