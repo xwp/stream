@@ -141,36 +141,33 @@ class WP_Stream_Reports {
 	/**
 	 * Register and enqueue the scripts related to our plugin.
 	 *
-	 * @action admin_enqueue_scripts
-	 * @uses wp_register_script
-	 * @uses wp_enqueue_script
+	 * @action   admin_enqueue_scripts
+	 * @uses     wp_register_script
+	 * @uses     wp_enqueue_script
+	 *
+	 * @param $pagename the actual page name
+	 *
 	 * @return void
 	 */
-	public function register_ui_assets() {
+	public function register_ui_assets( $pagename ) {
+		// JavaScript registration
+		wp_register_script( 'stream-reports-d3', WP_STREAM_REPORTS_URL . 'ui/js/d3/d3.min.js', array(), '3.4.1', true );
+		wp_register_script( 'stream-reports-admin', WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js', array( 'stream-reports-d3' ), self::VERSION, true );
 
-		// JavaScript register
-		wp_register_script( 'stream-reports-d3', WP_STREAM_REPORTS_URL . "ui/d3/d3.min.js", array(), '3.4.1', true );
-		wp_register_script( 'stream-reports-admin', WP_STREAM_REPORTS_URL . "ui/admin.js", array( 'stream-reports-d3' ), self::VERSION, true );
+		// CSS registration
+		wp_register_style( 'stream-reports-admin', WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css', array(), self::VERSION, 'screen' );
 
-		// CSS register
-		wp_register_style( 'stream-reports-admin', WP_STREAM_REPORTS_URL . "ui/admin.css", array(), self::VERSION, 'screen' );
-
-		global $pagenow;
-		if ( 'admin.php' !== $pagenow )
+		// If we are not on the right page we return early
+		if ( $pagename !== self::$screen_id ) {
 			return;
-
-		$page = false;
-		if ( isset( $_GET['page'] ) && !empty( $_GET['page'] ) ) // Ensure that we will not throw any notices
-			$page = $_GET['page'];
-
-		// Enqueue only when needed
-		if ( self::REPORTS_PAGE_SLUG === $page ){
-			// JavaScript
-			wp_enqueue_script( 'stream-reports-admin' );
-
-			// CSS
-			wp_enqueue_style( 'stream-reports-admin' );
 		}
+
+		// JavaScript enqueue
+		wp_enqueue_script( 'stream-reports-admin' );
+		wp_enqueue_script( 'stream-reports-d3' );
+
+		// CSS enqueue
+		wp_enqueue_style( 'stream-reports-admin' );
 	}
 
 	/**
