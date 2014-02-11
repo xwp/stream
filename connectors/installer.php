@@ -113,19 +113,22 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 					} else { // Probably a failed installation
 						return;
 					}
-					$slug = $upgrader->result['destination_name'];
-					$name = $plugin_data['Name'];
+					$slug    = $upgrader->result['destination_name'];
+					$name    = $plugin_data['Name'];
+					$version = $plugin_data['Version'];
 				} elseif ( $type == 'theme' ) {
 					$slug = $upgrader->result['destination_name'];
 					$theme_data = wp_get_theme( $slug );
 					if ( empty( $theme_data ) ) {
 						return;
 					}
-					$name = $theme_data->get( 'Name' );
+					$name    = $theme_data->get( 'Name' );
+					$version = $theme_data->get( 'Version' );
 				}
 			} else {
-				$slug = $upgrader->skin->api->slug;
-				$name = $upgrader->skin->api->name;
+				$slug    = $upgrader->skin->api->slug;
+				$name    = $upgrader->skin->api->name;
+				$version = $upgrader->skin->api->version;
 			}
 			$action  = 'installed';
 			$message = __( 'Installed %s: %s %s', 'stream' );
