@@ -150,17 +150,10 @@ class WP_Stream_Reports {
 		// Define the path for the view we
 		$view->path = WP_STREAM_REPORTS_VIEW_DIR . sanitize_file_name( $view->slug ) . ".php";
 
-		// Here we can prepare variables based on the view we are on
-		// NOTE: if you implement a new view, be sure to add it here in this `case`
-		switch ( $view->slug ) {
-			case 'all':
-
-				break;
-
-			case 'error':
-
-				break;
-		}
+		// Execute some actions before including the view, to allow others to hook in here
+		// Use these to do stuff related to the view you are working with
+		do_action( "stream-reports-view", $view );
+		do_action( "stream-reports-view-{$view->slug}", $view );
 
 		include_once $view->path;
 	}
