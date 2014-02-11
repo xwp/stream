@@ -152,7 +152,7 @@ class WP_Stream_Reports {
 		wp_register_script( 'stream-reports-admin', WP_STREAM_REPORTS_URL . "ui/admin.js", array( 'stream-reports-d3' ), self::VERSION, true );
 
 		// CSS register
-		wp_register_style( 'stream-reports-admin', WP_STREAM_REPORTS_URL . "ui/admin.css", array(), self::VERSION, true );
+		wp_register_style( 'stream-reports-admin', WP_STREAM_REPORTS_URL . "ui/admin.css", array(), self::VERSION, 'screen' );
 
 		$page = false;
 		if ( isset( $_GET['page'] ) && !empty( $_GET['page'] ) ) // Ensure that we will not throw any notices
