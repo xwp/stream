@@ -70,8 +70,7 @@ class WP_Stream_DB {
 
 		$fields = array( 'object_id', 'site_id', 'blog_id', 'author', 'created', 'summary', 'parent', 'visibility', 'ip' );
 		$data   = array_intersect_key( $recordarr, array_flip( $fields ) );
-
-		$data = array_filter( $data );
+		$data   = array_filter( $data );
 
 		// TODO Check/Validate *required* fields
 
@@ -128,8 +127,8 @@ class WP_Stream_DB {
 				'connector' => $connector,
 				'context'   => $context,
 				'action'    => $action,
-				)
-			);
+			)
+		);
 
 		return $result;
 	}
@@ -143,11 +142,10 @@ class WP_Stream_DB {
 				'record_id'  => $record_id,
 				'meta_key'   => $key,
 				'meta_value' => $val,
-				)
-			);
+			)
+		);
 
 		return $result;
 	}
-
 
 }
