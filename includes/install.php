@@ -124,7 +124,7 @@ class WP_Stream_Install {
 		$prefix = self::$table_prefix;
 
 		// If version is lower than 1.1.4, do the update routine
-		if ( version_compare( $db_version, '1.1.4' ) == -1 ) {
+		if ( version_compare( $db_version, '1.1.4' ) == -1 && ( ! empty( $wpdb->charset ) ) ) {
 			$tables  = array( 'stream', 'stream_context', 'stream_meta' );
 			$collate = ( $wpdb->collate ) ? " COLLATE {$wpdb->collate}" : null;
 			foreach ( $tables as $table ) {
