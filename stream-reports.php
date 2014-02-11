@@ -4,7 +4,7 @@
  * Depends: Stream
  * Plugin URI: http://x-team.com
  * Description: TBD
- * Version: 0.1
+ * Version: 0.1.0
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -39,6 +39,14 @@ class WP_Stream_Reports {
 	 * @const string
 	 */
 	const STREAM_MIN_VERSION = '1.0.7';
+
+	/**
+	 * Holds this plugin version
+	 * Used in assets cache
+	 *
+	 * @const string
+	 */
+	const VERSION = '0.1.0';
 
 	/**
 	 * Hold Stream instance
@@ -105,6 +113,9 @@ class WP_Stream_Reports {
 
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+
+		// Register and enqueue the administration scripts
+		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ) );
 	}
 
 	/**
@@ -125,6 +136,36 @@ class WP_Stream_Reports {
 
 		// add_action( 'load-' . self::$screen_id, array( $this, 'page_form_save' ) );
 		// add_action( 'load-' . self::$screen_id, array( $this->form, 'load' ) );
+	}
+
+	/**
+	 * Register and enqueue the scripts related to our plugin.
+	 *
+	 * @action admin_enqueue_scripts
+	 * @uses wp_register_script
+	 * @uses wp_enqueue_script
+	 * @return void
+	 */
+	public function register_ui_assets() {
+		// JavaScript register
+		wp_register_script( 'stream-reports-d3', WP_STREAM_REPORTS_URL . "ui/d3/d3.min.js", array(), '3.4.1', true );
+		wp_register_script( 'stream-reports-admin', WP_STREAM_REPORTS_URL . "ui/admin.js", array( 'stream-reports-d3' ), self::VERSION, true );
+
+		// CSS register
+		wp_register_style( 'stream-reports-admin', WP_STREAM_REPORTS_URL . "ui/admin.css", array(), self::VERSION, true );
+
+		$page = false;
+		if ( isset( $_GET['page'] ) && !empty( $_GET['page'] ) ) // Ensure that we will not throw any notices
+			$page = $_GET['page'];
+
+		// Enqueue only when needed
+		if ( self::REPORTS_PAGE_SLUG === $page ){
+			// JavaScript
+			wp_enqueue_script( 'stream-reports-admin' );
+
+			// CSS
+			wp_enqueue_style( 'stream-reports-admin' );
+		}
 	}
 
 	/**
