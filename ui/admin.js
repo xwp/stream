@@ -153,7 +153,7 @@ jQuery(function($){
 			});
 		});
 
-		$( "#ui-datepicker-div" ).addClass( "stream-datepicker" );
+		$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
 
 	});
 
