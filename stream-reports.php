@@ -4,7 +4,7 @@
  * Depends: Stream
  * Plugin URI: http://x-team.com
  * Description: TBD
- * Version: 0.1
+ * Version: 0.1.0
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -39,6 +39,14 @@ class WP_Stream_Reports {
 	 * @const string
 	 */
 	const STREAM_MIN_VERSION = '1.0.7';
+
+	/**
+	 * Holds this plugin version
+	 * Used in assets cache
+	 *
+	 * @const string
+	 */
+	const VERSION = '0.1.0';
 
 	/**
 	 * Hold Stream instance
@@ -106,6 +114,9 @@ class WP_Stream_Reports {
 
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+
+		// Register and enqueue the administration scripts
+		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ) );
 	}
 
 	/**
@@ -126,6 +137,38 @@ class WP_Stream_Reports {
 
 		// add_action( 'load-' . self::$screen_id, array( $this, 'page_form_save' ) );
 		// add_action( 'load-' . self::$screen_id, array( $this->form, 'load' ) );
+	}
+
+	/**
+	 * Register and enqueue the scripts related to our plugin.
+	 *
+	 * @action   admin_enqueue_scripts
+	 * @uses     wp_register_script
+	 * @uses     wp_enqueue_script
+	 *
+	 * @param $pagename the actual page name
+	 *
+	 * @return void
+	 */
+	public function register_ui_assets( $pagename ) {
+		// JavaScript registration
+		wp_register_script( 'stream-reports-d3', WP_STREAM_REPORTS_URL . 'ui/js/d3/d3.min.js', array(), '3.4.1', true );
+		wp_register_script( 'stream-reports-admin', WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js', array( 'stream-reports-d3' ), self::VERSION, true );
+
+		// CSS registration
+		wp_register_style( 'stream-reports-admin', WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css', array(), self::VERSION, 'screen' );
+
+		// If we are not on the right page we return early
+		if ( $pagename !== self::$screen_id ) {
+			return;
+		}
+
+		// JavaScript enqueue
+		wp_enqueue_script( 'stream-reports-admin' );
+		wp_enqueue_script( 'stream-reports-d3' );
+
+		// CSS enqueue
+		wp_enqueue_style( 'stream-reports-admin' );
 	}
 
 	/**
