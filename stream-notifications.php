@@ -362,7 +362,7 @@ class WP_Stream_Notifications {
 		$data             = $_GET;
 		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
 		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "delete-record_$id";
-		$visibility       = $is_bulk ? 'inactive' : filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT );
+		$visibility       = filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT );
 
 		if ( ! wp_verify_nonce( $nonce, $nonce_identifier ) ) {
 			return;
