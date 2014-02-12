@@ -224,8 +224,6 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$activation_nonce = wp_create_nonce( "activate-record_$record->ID" );
 		$deletion_nonce   = wp_create_nonce( "delete-record_$record->ID" );
 
-		$visibility = filter_input( INPUT_GET, 'visibility' );
-
 		$action_links = array();
 		$action_links[ __( 'Edit', 'stream-notifications' ) ] = array(
 			'href' => add_query_arg(
@@ -261,12 +259,14 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 						'action'          => 'activate',
 						'id'              => absint( $record->ID ),
 						'wp_stream_nonce' => $activation_nonce,
-						'visibility'      => $visibility,
 					),
 					admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 				),
 				'class' => null,
 			);
+
+			$visibility = filter_input( INPUT_GET, 'visibility' );
+
 			$action_links[ __( 'Delete Permanently', 'stream-notifications' ) ] = array(
 				'href' => add_query_arg(
 					array(
