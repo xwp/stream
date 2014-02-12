@@ -346,25 +346,23 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			);
 
 			echo sprintf(
-				'<form method="get" action="%s">
-					%s
-				</form>
+				'%s
 				<div class="alignleft actions bulkactions">
 					%s
 				</div>
 				<div class="alignleft actions">
 					%s
 				</div>',
-				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ),
 				$this->filter_search(),
 				$this->stream_notifications_bulk_actions( $which ),
 				$filters_string
 			); // xss okay
 		} else {
 			echo sprintf(
-				'<div class="alignleft actions bulkactions">
-					%s
-				</div>',
+					'<div class="alignleft actions bulkactions">
+						%s
+					</div>
+				</form>',
 				$this->stream_notifications_bulk_actions( $which )
 			); // xss okay
 		}
@@ -520,7 +518,6 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		echo $this->list_navigation(); // xss ok
 		echo '<form method="get" action="' . admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) . '">';
 		parent::display();
-		echo '</form>';
 	}
 
 	function display_tablenav( $which ) {
