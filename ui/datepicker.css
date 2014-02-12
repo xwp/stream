@@ -187,11 +187,6 @@
 		background: #4796B3;
 	}
 
-	/* Table Background */
-	.admin-color-blue .stream-datepicker.ui-datepicker td {
-		background: #52ACCC;
-	}
-
 	/* Calendar Top Border */
 	.admin-color-blue .stream-datepicker.ui-datepicker th {
 		border-color: #52ACCC;
@@ -199,7 +194,6 @@
 
 	/* Calendar Title, Dates Color */
 	.admin-color-blue .stream-datepicker.ui-datepicker .ui-datepicker-title,
-	.admin-color-blue .stream-datepicker td .ui-state-default,
 	.admin-color-blue .stream-datepicker.ui-datepicker th {
 		color: #fff;
 	}
@@ -207,15 +201,7 @@
 	/* Hover State */
 	.admin-color-blue .stream-datepicker td .ui-state-active,
 	.admin-color-blue .stream-datepicker td .ui-state-hover {
-		color: #fff;
 		background: #096484;
-	}
-
-	/* Disabled Color */
-	.admin-color-blue .stream-datepicker.ui-datepicker td.ui-state-disabled,
-	.admin-color-blue .stream-datepicker.ui-datepicker .ui-widget-content td.ui-state-disabled,
-	.admin-color-blue .stream-datepicker td.ui-state-disabled .ui-state-default {
-		color: #ddd;
 	}
 
 /* Coffee */
@@ -229,11 +215,6 @@
 		background: #46403C;
 	}
 
-	/* Table Background */
-	.admin-color-coffee .stream-datepicker.ui-datepicker td {
-		background: #59524C;
-	}
-
 	/* Calendar Top Border */
 	.admin-color-coffee .stream-datepicker.ui-datepicker th {
 		border-color: #59524C;
@@ -241,7 +222,6 @@
 
 	/* Calendar Title, Dates Color */
 	.admin-color-coffee .stream-datepicker.ui-datepicker .ui-datepicker-title,
-	.admin-color-coffee .stream-datepicker td .ui-state-default,
 	.admin-color-coffee .stream-datepicker.ui-datepicker th {
 		color: #fff;
 	}
@@ -249,15 +229,7 @@
 	/* Hover State */
 	.admin-color-coffee .stream-datepicker td .ui-state-active,
 	.admin-color-coffee .stream-datepicker td .ui-state-hover {
-		color: #fff;
 		background: #C7A589;
-	}
-
-	/* Disabled Color */
-	.admin-color-coffee .stream-datepicker.ui-datepicker td.ui-state-disabled,
-	.admin-color-coffee .stream-datepicker.ui-datepicker .ui-widget-content td.ui-state-disabled,
-	.admin-color-coffee .stream-datepicker td.ui-state-disabled .ui-state-default {
-		color: #ddd;
 	}
 
 /* Ectoplasm */
@@ -271,11 +243,6 @@
 		background: #413256;
 	}
 
-	/* Table Background */
-	.admin-color-ectoplasm .stream-datepicker.ui-datepicker td {
-		background: #523F6D;
-	}
-
 	/* Calendar Top Border */
 	.admin-color-ectoplasm .stream-datepicker.ui-datepicker th {
 		border-color: #523F6D;
@@ -283,7 +250,6 @@
 
 	/* Calendar Title, Dates Color */
 	.admin-color-ectoplasm .stream-datepicker.ui-datepicker .ui-datepicker-title,
-	.admin-color-ectoplasm .stream-datepicker td .ui-state-default,
 	.admin-color-ectoplasm .stream-datepicker.ui-datepicker th {
 		color: #fff;
 	}
@@ -291,15 +257,7 @@
 	/* Hover State */
 	.admin-color-ectoplasm .stream-datepicker td .ui-state-active,
 	.admin-color-ectoplasm .stream-datepicker td .ui-state-hover {
-		color: #fff;
 		background: #A3B745;
-	}
-
-	/* Disabled Color */
-	.admin-color-ectoplasm .stream-datepicker.ui-datepicker td.ui-state-disabled,
-	.admin-color-ectoplasm .stream-datepicker.ui-datepicker .ui-widget-content td.ui-state-disabled,
-	.admin-color-ectoplasm .stream-datepicker td.ui-state-disabled .ui-state-default {
-		color: #aaa;
 	}
 
 /* Midnight */
@@ -313,11 +271,6 @@
 		background: #26292C;
 	}
 
-	/* Table Background */
-	.admin-color-midnight .stream-datepicker.ui-datepicker td {
-		background: #363B3F;
-	}
-
 	/* Calendar Top Border */
 	.admin-color-midnight .stream-datepicker.ui-datepicker th {
 		border-color: #363B3F;
@@ -325,7 +278,6 @@
 
 	/* Calendar Title, Dates Color */
 	.admin-color-midnight .stream-datepicker.ui-datepicker .ui-datepicker-title,
-	.admin-color-midnight .stream-datepicker td .ui-state-default,
 	.admin-color-midnight .stream-datepicker.ui-datepicker th {
 		color: #fff;
 	}
@@ -333,15 +285,7 @@
 	/* Hover State */
 	.admin-color-midnight .stream-datepicker td .ui-state-active,
 	.admin-color-midnight .stream-datepicker td .ui-state-hover {
-		color: #fff;
 		background: #E14D43;
-	}
-
-	/* Disabled Color */
-	.admin-color-midnight .stream-datepicker.ui-datepicker td.ui-state-disabled,
-	.admin-color-midnight .stream-datepicker.ui-datepicker .ui-widget-content td.ui-state-disabled,
-	.admin-color-midnight .stream-datepicker td.ui-state-disabled .ui-state-default {
-		color: #aaa;
 	}
 
 /* Ocean */
@@ -355,11 +299,6 @@
 		background: #627C83;
 	}
 
-	/* Table Background */
-	.admin-color-ocean .stream-datepicker.ui-datepicker td {
-		background: #738E96;
-	}
-
 	/* Calendar Top Border */
 	.admin-color-ocean .stream-datepicker.ui-datepicker th {
 		border-color: #738E96;
@@ -367,7 +306,6 @@
 
 	/* Calendar Title, Dates Color */
 	.admin-color-ocean .stream-datepicker.ui-datepicker .ui-datepicker-title,
-	.admin-color-ocean .stream-datepicker td .ui-state-default,
 	.admin-color-ocean .stream-datepicker.ui-datepicker th {
 		color: #fff;
 	}
@@ -375,15 +313,7 @@
 	/* Hover State */
 	.admin-color-ocean .stream-datepicker td .ui-state-active,
 	.admin-color-ocean .stream-datepicker td .ui-state-hover {
-		color: #fff;
 		background: #9EBAA0;
-	}
-
-	/* Disabled Color */
-	.admin-color-ocean .stream-datepicker.ui-datepicker td.ui-state-disabled,
-	.admin-color-ocean .stream-datepicker.ui-datepicker .ui-widget-content td.ui-state-disabled,
-	.admin-color-ocean .stream-datepicker td.ui-state-disabled .ui-state-default {
-		color: #ddd;
 	}
 
 /* Sunrise */
@@ -397,11 +327,6 @@
 		background: #BE3631;
 	}
 
-	/* Table Background */
-	.admin-color-sunrise .stream-datepicker.ui-datepicker td {
-		background: #CF4944;
-	}
-
 	/* Calendar Top Border */
 	.admin-color-sunrise .stream-datepicker.ui-datepicker th {
 		border-color: #CF4944;
@@ -409,7 +334,6 @@
 
 	/* Calendar Title, Dates Color */
 	.admin-color-sunrise .stream-datepicker.ui-datepicker .ui-datepicker-title,
-	.admin-color-sunrise .stream-datepicker td .ui-state-default,
 	.admin-color-sunrise .stream-datepicker.ui-datepicker th {
 		color: #fff;
 	}
@@ -417,14 +341,5 @@
 	/* Hover State */
 	.admin-color-sunrise .stream-datepicker td .ui-state-active,
 	.admin-color-sunrise .stream-datepicker td .ui-state-hover {
-		color: #fff;
 		background: #DD823B;
 	}
-
-	/* Disabled Color */
-	.admin-color-sunrise .stream-datepicker.ui-datepicker td.ui-state-disabled,
-	.admin-color-sunrise .stream-datepicker.ui-datepicker .ui-widget-content td.ui-state-disabled,
-	.admin-color-sunrise .stream-datepicker td.ui-state-disabled .ui-state-default {
-		color: #bbb;
-	}
-
