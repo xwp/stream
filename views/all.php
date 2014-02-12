@@ -1,5 +1,26 @@
 <div class="wrap">
-    <h2><?php _e( "Stream Reports", 'stream-reports' ); ?></h2>
+	<h2><?php esc_html_e( 'Stream Reports', 'stream-reports' ); ?></h2>
 
+	<div id="chart"></div>
+
+	<script>
+		var chart = c3.generate({
+			data: {
+				columns: [
+					['data1', 30, 200, 100, 400, 150, 250],
+					['data2', 130, 100, 140, 200, 150, 50]
+				],
+				type: 'bar',
+				groups: [
+					['data1', 'data2']
+				]
+			},
+			axis: {
+				x: {
+					type: 'categorized'
+				}
+			}
+		});
+	</script>
 
 </div>

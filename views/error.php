@@ -1,6 +1,8 @@
 <div class='wrap about-wrap'>
-    <h1><?php _e( "Oops, that's an Error!", 'stream-reports' ); ?></h1>
+    <h2><?php _e( "Oops, that's an Error!", 'stream-reports' ); ?></h2>
     <div class='about-text'>
-        <?php esc_html_e( 'Yeah... Something went very wrong somewhere along your last actions.', 'stream-reports' ); ?>
+        <p>
+					<?php esc_html_e( 'Yeah... Something went very wrong somewhere along your last actions.', 'stream-reports' ); ?>
+				</p>
     </div>
 </div>
