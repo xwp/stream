@@ -2,10 +2,11 @@
 /* Date Picker Styles */
 
 .stream-datepicker.ui-widget {
-	border: none;
-	border-radius: 0;
+	border: 1px solid #ddd;
+
 	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
+	   -moz-border-radius: 0;
+	        border-radius: 0;
 }
 
 .stream-datepicker.ui-datepicker * {
@@ -32,9 +33,10 @@
 	background: #222;
 	border-color: transparent;
 	cursor: pointer;
-	border-radius: 0;
+
 	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
+	   -moz-border-radius: 0;
+	        border-radius: 0;
 }
 
 .stream-datepicker.ui-datepicker thead {
@@ -43,7 +45,9 @@
 }
 
 .stream-datepicker .ui-corner-all {
-	border-radius: 0;
+	-webkit-border-radius: 0;
+	   -moz-border-radius: 0;
+	        border-radius: 0;
 }
 
 .stream-datepicker.ui-datepicker .ui-datepicker-title {
@@ -91,7 +95,7 @@
 	color: #fff;
 	font-weight: normal;
 	border: none;
-	border-top: 1px solid #555;
+	border-top: 1px solid #333;
 }
 
 .stream-datepicker.ui-datepicker td {
