@@ -331,13 +331,14 @@ class WP_Stream_Settings {
 				$default_value = isset( $default['value'] ) ? $default['value'] : '-1';
 				$default_name  = isset( $default['name'] ) ? $default['name'] : 'Choose Setting';
 
-				$output = sprintf(
+				$output  = sprintf(
 					'<select name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s">',
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
-				$output .= sprintf( '<option value="%1$s" %2$s>%3$s</option>',
+				$output .= sprintf(
+					'<option value="%1$s" %2$s>%3$s</option>',
 					esc_attr( $default_value ),
 					checked( in_array( $default_value, $current_value ), true, false ),
 					esc_html( $default_name )
