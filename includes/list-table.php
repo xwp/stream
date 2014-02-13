@@ -264,6 +264,9 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				),
 				'class' => null,
 			);
+
+			$visibility = filter_input( INPUT_GET, 'visibility' );
+
 			$action_links[ __( 'Delete Permanently', 'stream-notifications' ) ] = array(
 				'href' => add_query_arg(
 					array(
@@ -271,6 +274,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 						'action'          => 'delete',
 						'id'              => absint( $record->ID ),
 						'wp_stream_nonce' => $deletion_nonce,
+						'visibility'      => $visibility,
 					),
 					admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 				),
@@ -338,33 +342,34 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 	function filters_form( $which ) {
 		if ( 'top' == $which ) {
+			$visibility = filter_input( INPUT_GET, 'visibility' );
 			$filters_string = sprintf(
 				'<input type="hidden" name="page" value="%s"/>
+				%s,
 				<input type="hidden" name="wp_stream_nonce" value="%s"/>',
 				WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
+				$visibility !== null ? sprintf( '<input type="hidden" name="visibility" value="%s"/>', $visibility ) : '',
 				wp_create_nonce( 'wp_stream_notifications_bulk_actions' )
 			);
 
 			echo sprintf(
-				'<form method="get" action="%s">
-					%s
-				</form>
+				'%s
 				<div class="alignleft actions bulkactions">
 					%s
 				</div>
 				<div class="alignleft actions">
 					%s
 				</div>',
-				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ),
 				$this->filter_search(),
 				$this->stream_notifications_bulk_actions( $which ),
 				$filters_string
 			); // xss okay
 		} else {
 			echo sprintf(
-				'<div class="alignleft actions bulkactions">
-					%s
-				</div>',
+					'<div class="alignleft actions bulkactions">
+						%s
+					</div>
+				</form>',
 				$this->stream_notifications_bulk_actions( $which )
 			); // xss okay
 		}
@@ -520,7 +525,6 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		echo $this->list_navigation(); // xss ok
 		echo '<form method="get" action="' . admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) . '">';
 		parent::display();
-		echo '</form>';
 	}
 
 	function display_tablenav( $which ) {
