@@ -103,9 +103,33 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		}
 
 		if ( $action == 'install' ) {
-			$slug    = $upgrader->skin->api->slug;
-			$name    = $upgrader->skin->api->name;
-			$from    = $upgrader->skin->options['type'];
+			$from = $upgrader->skin->options['type'];
+			if ( $from == 'upload' ) {
+				if ( $type == 'plugin' ) {
+					$cached_plugins = wp_cache_get( 'plugins', 'plugins' );
+					$plugin_data    = $cached_plugins['/'.$upgrader->result['destination_name']];
+					if ( $plugin_data ) {
+						$plugin_data = reset( $plugin_data );
+					} else { // Probably a failed installation
+						return;
+					}
+					$slug    = $upgrader->result['destination_name'];
+					$name    = $plugin_data['Name'];
+					$version = $plugin_data['Version'];
+				} elseif ( $type == 'theme' ) {
+					$slug = $upgrader->result['destination_name'];
+					$theme_data = wp_get_theme( $slug );
+					if ( empty( $theme_data ) ) {
+						return;
+					}
+					$name    = $theme_data->get( 'Name' );
+					$version = $theme_data->get( 'Version' );
+				}
+			} else {
+				$slug    = $upgrader->skin->api->slug;
+				$name    = $upgrader->skin->api->name;
+				$version = $upgrader->skin->api->version;
+			}
 			$action  = 'installed';
 			$message = __( 'Installed %s: %s %s', 'stream' );
 		} elseif ( $action == 'update' ) {
@@ -161,7 +185,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_activate_plugin( $slug, $network_wide ) {
 		$plugins      = get_plugins();
 		$name         = $plugins[$slug]['Name'];
-		$network_wide = $network_wide ? 'network wide' : '';
+		$network_wide = $network_wide ? 'network wide' : null;
 		self::log(
 			__( '"%s" plugin activated %s', 'stream' ),
 			compact( 'name', 'network_wide' ),
@@ -173,7 +197,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_deactivate_plugin( $slug, $network_wide ) {
 		$plugins      = get_plugins();
 		$name         = $plugins[$slug]['Name'];
-		$network_wide = $network_wide ? 'network wide' : '';
+		$network_wide = $network_wide ? 'network wide' : null;
 		self::log(
 			__( '"%s" plugin deactivated %s', 'stream' ),
 			compact( 'name', 'network_wide' ),

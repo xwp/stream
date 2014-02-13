@@ -60,6 +60,14 @@ class WP_Stream_Log {
 			$user_id = get_current_user_id();
 		}
 
+		// Remove null value from array
+		$meta = array_filter(
+			$args,
+			function ( $var ) {
+				return ! is_null( $var );
+			}
+		);
+
 		$recordarr = array(
 			'object_id' => $object_id,
 			'author'    => $user_id,
@@ -68,9 +76,9 @@ class WP_Stream_Log {
 			'parent'    => self::$instance->prev_record,
 			'connector' => $connector,
 			'contexts'  => $contexts,
-			'meta'      => $args,
+			'meta'      => $meta,
 			'ip'        => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
-			);
+		);
 
 		$record_id = WP_Stream_DB::get_instance()->insert( $recordarr );
 
