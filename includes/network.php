@@ -16,13 +16,11 @@ class WP_Stream_Network {
 
 	function actions() {
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
-
 	}
 
 	function filters() {
 		add_filter( 'stream_get_fields', array( $this, 'stream_get_fields' ) );
 		add_filter( 'wp_stream_options', array( $this, 'stream_filter_options' ) );
-
 	}
 
 	/**
