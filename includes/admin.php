@@ -177,8 +177,9 @@ class WP_Stream_Admin {
 	 * @return wp_add_inline_style
 	 */
 	public static function admin_menu_css() {
-		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
 		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
+		wp_register_style( 'wp-stream-datepicker', WP_STREAM_URL . 'ui/datepicker.css', array( 'jquery-ui' ) );
+		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
 
 		// Make sure we're working off a clean version.
 		include( ABSPATH . WPINC . '/version.php' );
