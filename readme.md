@@ -105,6 +105,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 1.2 ###
+**2014/02/12** - Awesome datepicker styles. Performance optimizations. Bug fixes. Props [johnregan3](http://profiles.wordpress.org/johnregan3/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/)
+
 ### 1.1.9 ###
 **2014/02/10** - Load authors filter using AJAX if there are more than 50. Props [powelski](http://profiles.wordpress.org/powelski/)
 
