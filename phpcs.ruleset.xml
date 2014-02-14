@@ -4,6 +4,8 @@
 
 	<rule ref="WordPress" />
 
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+
 	<rule ref="WordPress.NamingConventions.ValidFunctionName">
 		<exclude-pattern>/tests/*</exclude-pattern><!-- because of PHPUnit method names -->
 	</rule>
