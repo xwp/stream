@@ -376,15 +376,16 @@ class WP_Stream_Admin {
 				$wpdb->query( "DROP TABLE $table" );
 			}
 
-			//Delete database option
+			// Delete database option
 			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 			delete_option( WP_Stream_Settings::KEY );
 			delete_option( 'dashboard_stream_activity_options' );
-			//Redirect to plugin page
+
+			// Redirect to plugin page
 			wp_redirect( add_query_arg( array( 'deactivate' => true ) , admin_url( 'plugins.php' ) ) );
 			exit;
 		} else {
-			wp_die( "You don't have sufficient priviledges to do this action." );
+			wp_die( "You don't have sufficient privileges to do this action." );
 		}
 
 	}
