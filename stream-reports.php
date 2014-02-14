@@ -159,15 +159,21 @@ class WP_Stream_Reports {
 			'3.4.1'
 		);
 		wp_register_script(
-			'stream-reports-c3',
-			WP_STREAM_REPORTS_URL . 'ui/js/c3/c3.min.js',
-			array( 'stream-reports-d3' ),
-			'0.1.7'
+			'stream-reports-raphael',
+			WP_STREAM_REPORTS_URL . 'ui/js/raphael/raphael.min.js',
+			array(),
+			'2.1.2'
+		);
+		wp_register_script(
+			'stream-reports-graphael',
+			WP_STREAM_REPORTS_URL . 'ui/js/raphael/g.raphael.min.js',
+			array( 'stream-reports-raphael' ),
+			'0.5.1'
 		);
 		wp_register_script(
 			'stream-reports-admin',
 			WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js',
-			array( 'stream-reports-c3', 'jquery', 'underscore' ),
+			array( 'stream-reports-graphael', 'jquery', 'underscore' ),
 			self::VERSION,
 			true
 		);
@@ -180,12 +186,6 @@ class WP_Stream_Reports {
 			self::VERSION,
 			'screen'
 		);
-		wp_register_style(
-			'stream-reports-c3',
-			WP_STREAM_REPORTS_URL . 'ui/css/c3/c3.css',
-			array(),
-			'0.1.7'
-		);
 
 		// If we are not on the right page we return early
 		if ( $pagename !== self::$screen_id ) {
@@ -196,7 +196,6 @@ class WP_Stream_Reports {
 		wp_enqueue_script( 'stream-reports-admin' );
 
 		// CSS enqueue
-		wp_enqueue_style( 'stream-reports-c3' );
 		wp_enqueue_style( 'stream-reports-admin' );
 	}
 

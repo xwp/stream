@@ -1,8 +1,9 @@
-(function( window, $, _, c3 ){
+/* global Raphael, jQuery, _ */
+(function( window, $, _, Raphael ){
 	'use strict';
 	$.fn.streamReportChart = function (){
 		if ( typeof arguments[0] !== 'undefined' && typeof arguments[0] !== 'object' ){
-			return console.error( "Error: %s (%s)", "bad type", typeof arguments[0] );
+			return console.error( 'Error: %s (%s)', 'bad type', typeof arguments[0] );
 		}
 
 		var default_args = _.extend(
@@ -22,23 +23,21 @@
 			_base_ueid = '__stream-report-chart-';
 
 		return this.each(function ( key, el ){
-			var	ueid = _.uniqueId(_base_ueid), // Builds a Unique ID for the chart container element
-				$chart_box = $(el).attr( 'id', ueid ), // Append the Unique ID
-				args = _.extend( {}, default_args, { bindto: "#" + ueid }, $chart_box.data( 'report-chart' ) ), // Builds the arguments
-				chart = null;
-
-			// Change `args` if needed
-
-
+			// Builds a Unique ID for the chart container element
+			var	ueid = _.uniqueId(_base_ueid);
+			// Append the Unique ID
+			$(el).attr( 'id', ueid );
 			// Then generate the C3 Chart based on `args`
-			chart = c3.generate(args);
+			var chart = Raphael(ueid);
+			chart.text(320, 70, 'Static Pie Chart').attr({ font: '20px sans-serif' });
+			chart.piechart(320, 240, 150, [55, 20, 13, 32, 5, 1, 2, 10]);
 		});
 	};
 
 
 	// Just working on a good exemple
-	$(document).ready(function (){
-		$('.report_chart').streamReportChart();
+	$(document).ready(function(){
+		$('.report-chart').streamReportChart();
 	});
 
-})( window, jQuery.noConflict(), _.noConflict(), c3 );
+})( window, jQuery.noConflict(), _.noConflict(), Raphael);
