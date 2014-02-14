@@ -167,7 +167,7 @@ class WP_Stream_Reports {
 		wp_register_script(
 			'stream-reports-admin',
 			WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js',
-			array( 'stream-reports-d3' ),
+			array( 'stream-reports-c3', 'jquery', 'underscore' ),
 			self::VERSION,
 			true
 		);
@@ -194,8 +194,6 @@ class WP_Stream_Reports {
 
 		// JavaScript enqueue
 		wp_enqueue_script( 'stream-reports-admin' );
-		wp_enqueue_script( 'stream-reports-d3' );
-		wp_enqueue_script( 'stream-reports-c3' );
 
 		// CSS enqueue
 		wp_enqueue_style( 'stream-reports-c3' );
