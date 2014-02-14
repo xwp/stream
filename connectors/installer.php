@@ -90,22 +90,16 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
 		$logs = array(); // If doing a bulk update, store log info in an array
 
-		$type = null;
-		if ( isset( $extra['type'] ) ){
-			$type = $extra['type'];
-		}
-
-		$action = null;
-		if ( isset( $extra['action'] ) ){
-			$action = $extra['action'];
-		}
-
 		$success = ! is_wp_error( $upgrader->skin->result );
 		$error   = null;
+
 		if ( ! $success ) {
 			$errors = $upgrader->skin->result->errors;
 			list( $error ) = reset( $errors );
 		}
+
+		$type   = $extra['type'];
+		$action = $extra['action'];
 
 		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
 			return;
