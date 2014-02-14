@@ -108,12 +108,21 @@ class WP_Stream_Reports {
 			return;
 		}
 
+		// Load Carbon to Handle dates much easier
+		require_once WP_STREAM_REPORTS_INC_DIR . 'vendor/Carbon.php';
+
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
 		WP_Stream_Reports_Settings::load();
 
+		// Load the Interval/Date class, to allow input and parsing of the Reports interval
+		require_once WP_STREAM_REPORTS_CLASS_DIR . 'date_interval.php';
+
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+
+		// Filter the Predefined list of intervals to make it work
+		add_filter( 'stream-report-predefined-intervals', array( $this, '_filter_predefined_intervals' ), 20 );
 
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ) );
@@ -137,6 +146,100 @@ class WP_Stream_Reports {
 
 		// add_action( 'load-' . self::$screen_id, array( $this, 'page_form_save' ) );
 		// add_action( 'load-' . self::$screen_id, array( $this->form, 'load' ) );
+	}
+
+	/**
+	 *
+	 *
+	 * @filter
+	 * @return array
+	 */
+	public function _filter_predefined_intervals( $intervals ){
+		global $wpdb;
+		$first_stream_item = reset(
+			stream_query(
+				array(
+					'order' => 'ASC',
+					'orderby' => 'created',
+					'records_per_page' => 1,
+					'ignore_context' => true,
+				)
+			)
+		);
+		if ( $first_stream_item === false ){
+			return false;
+		}
+		$first_stream_date = \Carbon\Carbon::parse( $first_stream_item->created );
+
+		foreach ( $intervals as $key => $interval ){
+			if ( ! isset( $interval['start'] ) || $interval['start'] === false ){
+				$intervals[$key]['start'] = $interval['start'] = $first_stream_date;
+			}
+			if ( ! isset( $interval['end'] ) || $interval['end'] === false ){
+				$intervals[$key]['end'] = $interval['end'] = \Carbon\Carbon::now();
+			}
+
+			if ( ! is_a( $interval['start'], '\Carbon\Carbon' ) || ! is_a( $interval['end'], '\Carbon\Carbon' ) ) {
+				unset( $intervals[$key] );
+				continue;
+			}
+		}
+
+		foreach ( $intervals as $key => $interval ){
+			if ( isset( $interval['depends'] ) && isset( $intervals[$interval['depends']] ) ){
+				$from = $interval['start'];
+			} else {
+				$from = $interval['start'];
+			}
+
+			if ( isset( $interval['depends'] ) && isset( $intervals[$interval['depends']] ) ){
+				$to = $intervals[$interval['depends']]['start'];
+			} else {
+				$to = $interval['end'];
+			}
+
+			$interval_stream_item = reset(
+				stream_query(
+					array(
+						'order' => 'ASC',
+						'orderby' => 'created',
+						'records_per_page' => 1,
+						'ignore_context' => true,
+						'date_from' => (string) $interval['start'],
+						'date_to' => (string) $interval['end'],
+					)
+				)
+			);
+			if ( $interval_stream_item === false ) {
+				unset( $intervals[$key] );
+				continue;
+			}
+
+			/*
+			if ( ! isset( $interval['depends'] ) || ! isset( $intervals[$interval['depends']] ) ){
+				continue;
+			}
+
+			$interval_stream_check = reset(
+				stream_query(
+					array(
+						'order' => 'ASC',
+						'orderby' => 'created',
+						'records_per_page' => 1,
+						'ignore_context' => true,
+						'date_from' => (string) $from,
+						'date_to' => (string) $to,
+					)
+				)
+			);
+			if ( $interval_stream_check === false ) {
+				unset( $intervals[$key] );
+				continue;
+			}
+			*/
+		}
+
+		return $intervals;
 	}
 
 	/**
@@ -182,6 +285,8 @@ class WP_Stream_Reports {
 			'slug' => 'all',
 			'path' => null,
 		);
+
+		// Avoid throwing Notices by testing the variable
 		if ( isset( $_GET['view'] ) && ! empty( $_GET['view'] ) ){
 			$view->slug = $_GET['view'];
 		}
