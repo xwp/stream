@@ -181,8 +181,8 @@ class WP_Stream_Reports {
 			'screen'
 		);
 		wp_register_style(
-			'stream-report-c3',
-			WP_STREAM_REPORTS_URL . 'ui/js/c3/c3.min.js',
+			'stream-reports-c3',
+			WP_STREAM_REPORTS_URL . 'ui/css/c3/c3.css',
 			array(),
 			'0.1.7'
 		);
