@@ -88,9 +88,18 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @action transition_post_status
 	 */
 	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
-		$logs    = array(); // If doing a bulk update, store log info in an array
-		$type    = $extra['type'];
-		$action  = $extra['action'];
+		$logs = array(); // If doing a bulk update, store log info in an array
+
+		$type = null;
+		if ( isset( $extra['type'] ) ){
+			$type = $extra['type'];
+		}
+
+		$action = null;
+		if ( isset( $extra['action'] ) ){
+			$action = $extra['action'];
+		}
+
 		$success = ! is_wp_error( $upgrader->skin->result );
 		$error   = null;
 		if ( ! $success ) {
@@ -150,13 +159,23 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				}
 			}
 			elseif ( $type == 'theme' ) {
-				$slug = $upgrader->skin->theme;
-				$theme = wp_get_theme( $slug );
-				$name = $theme['Name'];
-				$old_version = $theme['Version'];
-				$stylesheet = $theme['Stylesheet Dir'] . '/style.css';
-				$theme_data = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
-				$version = $theme_data['Version'];
+				if ( ! isset( $upgrader->skin->theme ) && isset( $upgrader->skin->theme_info ) && is_a( $upgrader->skin->theme_info, 'WP_Theme' ) ){
+					// Ref: http://codex.wordpress.org/Class_Reference/WP_Theme
+					$slug = $upgrader->skin->theme_info->get_template();
+					$name = $upgrader->skin->theme_info->get( 'Name' );
+					$old_version = $upgrader->skin->theme_info->get( 'Version' );
+					$stylesheet = $upgrader->skin->theme_info->get_stylesheet_directory() . '/style.css';
+					$theme_data = get_file_data( $stylesheet,  array( 'Version' => 'Version' ) );
+					$version = $theme_data['Version'];
+				} else {
+					$slug = $upgrader->skin->theme;
+					$theme = wp_get_theme( $slug );
+					$name = $theme['Name'];
+					$old_version = $theme['Version'];
+					$stylesheet = $theme['Stylesheet Dir'] . '/style.css';
+					$theme_data = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
+					$version = $theme_data['Version'];
+				}
 			}
 			$action  = 'updated';
 			$message = __( 'Updated %s: %s to %s', 'stream' );
