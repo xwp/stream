@@ -97,7 +97,8 @@ jQuery(function($){
 							return {
 								action: 'stream_notification_endpoint',
 								type: type,
-								q: term
+								q: term,
+								args: $(this).attr("data-args")
 							};
 						},
 						results: function (data) {
@@ -116,6 +117,7 @@ jQuery(function($){
 									q     : id,
 									single: 1,
 									type  : type,
+									args: $(this).attr("data-args")
 								},
 								dataType: "json"
 							}).done( function( data ) { callback( data.data ); } );
@@ -138,6 +140,7 @@ jQuery(function($){
 			                    q : val,
 			                    single: 1,
 			                    type  : type,
+								args: $(this).attr("data-args")
 			                },
 			                dataType: "json",
 			                success: function(j){
