@@ -96,6 +96,7 @@ class WP_Stream_Notifications_Form
 		$type      = filter_input( INPUT_POST, 'type' );
 		$is_single = filter_input( INPUT_POST, 'single' );
 		$query     = filter_input( INPUT_POST, 'q' );
+		$args      = filter_input( INPUT_POST, 'args' );
 
 		if ( $is_single ) {
 			switch ( $type ) {
