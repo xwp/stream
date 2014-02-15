@@ -461,7 +461,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				);
 			}
 			$out = sprintf(
-				'<select name="%s" class="chosen-select" data-placeholder="Show all %s">%s</select>',
+				'<select name="%s" class="chosen-select" data-placeholder="' . esc_attr__( 'Show all %s', 'stream' ) . '">%s</select>',
 				$name,
 				$title,
 				implode( '', $options )
