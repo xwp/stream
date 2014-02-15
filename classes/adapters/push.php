@@ -14,6 +14,9 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 				'multiple' => true,
 				'ajax'     => true,
 				'key'      => 'author',
+				'args'     => array(
+					'push' => true,
+				),
 				'hint'     => __( 'Alert specific users via push.', 'stream-notifications' ),
 			),
 		);
