@@ -19,6 +19,16 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 				),
 				'hint'     => __( 'Alert specific users via push.', 'stream-notifications' ),
 			),
+			'subject' => array(
+				'title' => __( 'Subject', 'stream-notifications' ),
+				'type'  => 'text',
+				'hint'  => __( 'Data tags are allowed.', 'stream-notifications' ),
+			),
+			'message' => array(
+				'title' => __( 'Message', 'stream-notifications' ),
+				'type'  => 'textarea',
+				'hint'  => __( 'Data tags are allowed.', 'stream-notifications' ),
+			),
 		);
 	}
 
