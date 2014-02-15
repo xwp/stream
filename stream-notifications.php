@@ -227,6 +227,7 @@ class WP_Stream_Notifications {
 		$action   = filter_input( INPUT_GET, 'action', FILTER_DEFAULT );
 		$id       = filter_input( INPUT_GET, 'id' );
 		$bulk_ids = filter_input( INPUT_GET, 'wp_stream_notifications_checkbox', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		$search   = filter_input( INPUT_GET, 'search' );
 
 		// There is a chance we go from the bottom bulk actions select box
 		if ( ! $action || $action == '-1' ) {
@@ -278,7 +279,7 @@ class WP_Stream_Notifications {
 				} else {
 					do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, false );
 				}
-			} else {
+			} elseif ( $search === null ) {
 				wp_redirect(
 					add_query_arg(
 						array(
