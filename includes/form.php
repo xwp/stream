@@ -197,7 +197,7 @@ class WP_Stream_Notifications_Form
 			return;
 		}
 		$search = str_replace( '*', '', $search );
-		$query->query_where .= $wpdb->prepare( " OR $wpdb->users.display_name LIKE %s", '%' . like_escape( $search ) . '%' );
+		$query->query_where = preg_replace( '#\buser_login\s+LIKE\s+\'.*?\'#', '\0' . $wpdb->prepare( " OR $wpdb->users.display_name LIKE %s", '%' . like_escape( $search ) . '%' ), $query->query_where );
 	}
 
 	public function ajax_reset_occ() {
