@@ -10,6 +10,9 @@ class WP_Stream_Notifications_Form
 
 		// Enqueue our form scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11 );
+
+		// define `search_in` arg for WP_User_Query
+		add_filter( 'user_search_columns', array( $this, 'define_search_in_arg' ), 10, 3 );
 	}
 
 	public function load() {
@@ -132,12 +135,14 @@ class WP_Stream_Notifications_Form
 		} else {
 			switch ( $type ) {
 				case 'author':
-					add_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
 					$users = get_users( array(
-						'search'   => '*' . $query . '*',
-						'meta_key' => ( isset( $args['push'] ) && $args['push'] ) ? 'ckpn_user_key' : null,
+						'search'    => '*' . $query . '*',
+						'search_in' => array(
+							'user_login',
+							'display_name',
+						),
+						'meta_key'  => ( isset( $args['push'] ) && $args['push'] ) ? 'ckpn_user_key' : null,
 					) );
-					remove_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
 					$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
 					break;
 				case 'action':
@@ -188,16 +193,6 @@ class WP_Stream_Notifications_Form
 			);
 		}
 		return $return;
-	}
-
-	public function fix_user_query_display_name( $query ) {
-		global $wpdb;
-		$search = $query->query_vars['search'];
-		if ( empty( $search ) ) {
-			return;
-		}
-		$search = str_replace( '*', '', $search );
-		$query->query_where = preg_replace( '#\buser_login\s+LIKE\s+\'.*?\'#', '\0' . $wpdb->prepare( " OR $wpdb->users.display_name LIKE %s", '%' . like_escape( $search ) . '%' ), $query->query_where );
 	}
 
 	public function ajax_reset_occ() {
@@ -331,6 +326,17 @@ class WP_Stream_Notifications_Form
 		);
 
 		return apply_filters( 'stream_notification_js_args', $args );
+	}
+
+	/**
+	 * @filter user_search_columns
+	 */
+	public function define_search_in_arg( $search_columns, $search, $query ) {
+		$search_in = $query->get('search_in');
+		if ($search_in !== null ) {
+			$search_columns = (array) $search_in;
+		}
+		return $search_columns;
 	}
 
 	public function metabox_triggers() {
