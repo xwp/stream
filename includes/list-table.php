@@ -443,13 +443,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function filter_select( $name, $title, $items, $ajax ) {
 		if ( $ajax ) {
 			$out = sprintf(
-				'<input type="hidden" name="%s" value="%s" class="chosen-select" data-placeholder="Show all %s">',
+				'<input type="hidden" name="%s" value="%s" class="chosen-select" data-placeholder="' . esc_attr__( 'Show all %s', 'stream' ) . '">',
 				$name,
 				filter_input( INPUT_GET, $name ),
 				$title
 			);
 		} else {
-			$options  = array( sprintf( __( '<option value=""></option>', 'stream' ), $title ) );
+			$options  = array( '<option value=""></option>' );
 			$selected = filter_input( INPUT_GET, $name );
 			foreach ( $items as $v => $label ) {
 				$options[$v] = sprintf(
