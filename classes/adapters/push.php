@@ -33,7 +33,45 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 	}
 
 	public function send( $log ) {
-		// to be added...
+		if ( $this->params['users'] !== '' ) {
+			$users_ids = explode( ',', $this->params['users'] );
+			$users = get_users( array(
+				'include'  => $users_ids,
+				'fields'   => 'ID',
+				'meta_key' => 'ckpn_user_key',
+			) );
+			$users_pushover_keys = array_map(
+				function( $user_id ) {
+					return get_user_meta( $user_id, 'ckpn_user_key', true );
+				},
+				$users
+			);
+		}
+		$subject = $this->replace( $this->params['subject'], $log );
+		$message = $this->replace( $this->params['message'], $log );
+
+		$post_fields = array(
+			'token'   => 'abN9k16dBD6x2zEFs3dXqjExgS19ds',
+			'message' => $message,
+			'title'   => $subject,
+		);
+
+		$connection = curl_init();
+
+		foreach ( $users_pushover_keys as $key ) {
+			$post_fields['user'] = $key;
+			curl_setopt_array(
+				$connection,
+				array(
+					CURLOPT_URL            => 'https://api.pushover.net/1/messages.json',
+					CURLOPT_POST           => true,
+					CURLOPT_RETURNTRANSFER => 1,
+					CURLOPT_POSTFIELDS     => http_build_query( $post_fields ),
+				)
+			);
+			$response = curl_exec($connection);
+		}
+		curl_close($connection);
 	}
 
 }
