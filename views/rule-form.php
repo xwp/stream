@@ -143,6 +143,7 @@
 <script type="text/template" id="alert-template-options">
 <table class="alert-options form-table">
 	<% for ( field_name in vars.fields ) { var field = vars.fields[field_name]; %>
+		<% var argsHTML = ( typeof field.args === "object" ? "data-args=" + JSON.stringify( field.args ) : "" ); %>
 		<tr>
 			<th class="label">
 				<label><%- field.title %></label>
@@ -153,7 +154,7 @@
 			<td>
 				<div class="field value">
 					<% if ( ['select'].indexOf( field.type ) != -1 ){ %>
-						<select name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat" data-ajax="<% ( field.ajax ) %>" <% if ( field.multiple ){ %>multiple="multiple"<% } %>>
+						<select name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat" data-ajax="<% ( field.ajax ) %>" <% if ( field.multiple ){ %>multiple="multiple"<% } %> <%- argsHTML %>>
 							<option></option>
 							<% if ( vars.fields[field] ) { %>
 								<% _.each( vars.fields[field], function( list, name ){ %>
@@ -162,9 +163,9 @@
 							<% } %>
 						</select>
 					<% } else if ( ['textarea'].indexOf( field.type ) != -1 ) { %>
-						<textarea name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value large-text code" rows="10" cols="80"></textarea>
+						<textarea name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value large-text code" rows="10" cols="80" <%- argsHTML %>></textarea>
 					<% } else { %>
-						<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" <% if ( field.ajax && field.key ){ %>data-ajax-key="<%- field.key %>"<% } %> >
+						<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" <% if ( field.ajax && field.key ){ %>data-ajax-key="<%- field.key %>"<% } %> <%- argsHTML %>>
 					<% } %>
 				</div>
 			</td>
