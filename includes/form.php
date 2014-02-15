@@ -96,7 +96,11 @@ class WP_Stream_Notifications_Form
 		$type      = filter_input( INPUT_POST, 'type' );
 		$is_single = filter_input( INPUT_POST, 'single' );
 		$query     = filter_input( INPUT_POST, 'q' );
-		$args      = filter_input( INPUT_POST, 'args' );
+		$args      = json_decode( filter_input( INPUT_POST, 'args' ), true );
+
+		if (! is_array( $args ) ) {
+			$args = array();
+		}
 
 		if ( $is_single ) {
 			switch ( $type ) {
@@ -129,7 +133,10 @@ class WP_Stream_Notifications_Form
 			switch ( $type ) {
 				case 'author':
 					add_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
-					$users = get_users( array( 'search' => '*' . $query . '*' ) );
+					$users = get_users( array(
+						'search'   => '*' . $query . '*',
+						'meta_key' => ( isset( $args['push'] ) && $args['push'] ) ? 'ckpn_user_key' : null,
+					) );
 					remove_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
 					$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
 					break;
