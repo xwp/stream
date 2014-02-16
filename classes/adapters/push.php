@@ -38,7 +38,7 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 				'error' => array(
 					'title'   => __( 'Pushover Notifications plugin is required', 'stream-notifications' ),
 					'type'    => 'error',
-					'message' => __( 'In order to use push with Stream Notifications, please download and activate Pushover Notifications plugin.', 'stream-notifications' ),
+					'message' => sprintf( __( 'In order to use push with Stream Notifications, please %1$s.', 'stream-notifications' ), sprintf( '<a href="%1$s">%2$s</a>', admin_url( 'plugins.php' ), __( 'activate Pushover Notifications plugin', 'stream-notifications' ) ) ),
 				),
 			);
 		} else {
