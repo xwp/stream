@@ -164,6 +164,8 @@
 						</select>
 					<% } else if ( ['textarea'].indexOf( field.type ) != -1 ) { %>
 						<textarea name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value large-text code" rows="10" cols="80" <%- argsHTML %>></textarea>
+					<% } else if ( ['error'].indexOf( field.type ) != -1 ) { %>
+						<%- field.message %>
 					<% } else { %>
 						<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" <% if ( field.ajax && field.key ){ %>data-ajax-key="<%- field.key %>"<% } %> <%- argsHTML %>>
 					<% } %>
