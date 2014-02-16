@@ -33,6 +33,14 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 					'hint'  => __( 'Data tags are allowed.', 'stream-notifications' ),
 				),
 			);
+		} elseif (! is_plugin_active( 'pushover-notifications/pushover-notifications.php' ) ) {
+			$fields = array(
+				'error' => array(
+					'title'   => __( 'Pushover Notifications plugin is required', 'stream-notifications' ),
+					'type'    => 'error',
+					'message' => __( 'In order to use push with Stream Notifications, please download and activate Pushover Notifications plugin.', 'stream-notifications' ),
+				),
+			);
 		} else {
 			$fields = array(
 				'error' => array(
