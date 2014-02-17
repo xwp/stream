@@ -147,7 +147,7 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 	 * @filter wp_stream_serialized_labels
 	 */
 	function pushover_key_labels( $labels ) {
-		$labels['ckpn_pushover_notifications_settings'] = array(
+		$labels[self::PUSHOVER_OPTION_NAME] = array(
 			// Settings
 			'application_key' => __( 'Application API Token/Key', 'stream-notifications' ),
 			'api_key'         => __( 'Your User Key', 'stream-notifications' ),
