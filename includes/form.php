@@ -10,6 +10,9 @@ class WP_Stream_Notifications_Form
 
 		// Enqueue our form scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11 );
+
+		// define `search_in` arg for WP_User_Query
+		add_filter( 'user_search_columns', array( $this, 'define_search_in_arg' ), 10, 3 );
 	}
 
 	public function load() {
@@ -96,6 +99,11 @@ class WP_Stream_Notifications_Form
 		$type      = filter_input( INPUT_POST, 'type' );
 		$is_single = filter_input( INPUT_POST, 'single' );
 		$query     = filter_input( INPUT_POST, 'q' );
+		$args      = json_decode( filter_input( INPUT_POST, 'args' ), true );
+
+		if ( ! is_array( $args ) ) {
+			$args = array();
+		}
 
 		if ( $is_single ) {
 			switch ( $type ) {
@@ -127,9 +135,14 @@ class WP_Stream_Notifications_Form
 		} else {
 			switch ( $type ) {
 				case 'author':
-					add_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
-					$users = get_users( array( 'search' => '*' . $query . '*' ) );
-					remove_action( 'pre_user_query', array( $this, 'fix_user_query_display_name' ) );
+					$users = get_users( array(
+						'search'    => '*' . $query . '*',
+						'search_in' => array(
+							'user_login',
+							'display_name',
+						),
+						'meta_key'  => ( isset( $args['push'] ) && $args['push'] ) ? 'ckpn_user_key' : null,
+					) );
 					$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
 					break;
 				case 'action':
@@ -180,16 +193,6 @@ class WP_Stream_Notifications_Form
 			);
 		}
 		return $return;
-	}
-
-	public function fix_user_query_display_name( $query ) {
-		global $wpdb;
-		$search = $query->query_vars['search'];
-		if ( empty( $search ) ) {
-			return;
-		}
-		$search = str_replace( '*', '', $search );
-		$query->query_where .= $wpdb->prepare( " OR $wpdb->users.display_name LIKE %s", '%' . like_escape( $search ) . '%' );
 	}
 
 	public function ajax_reset_occ() {
@@ -323,6 +326,16 @@ class WP_Stream_Notifications_Form
 		);
 
 		return apply_filters( 'stream_notification_js_args', $args );
+	}
+
+	/**
+	 * @filter user_search_columns
+	 */
+	public function define_search_in_arg( $search_columns, $search, $query ) {
+		$search_in      = $query->get('search_in');
+		$search_columns = ! is_null( $search_in ) ? (array) $search_in : $search_columns;
+
+		return $search_columns;
 	}
 
 	public function metabox_triggers() {
