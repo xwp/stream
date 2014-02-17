@@ -1,0 +1,1023 @@
+# Copyright (C) 2014 Stream
+# This file is distributed under the same license as the Stream package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Stream 1.0.3\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/stream\n"
+"POT-Creation-Date: 2014-01-21 19:44:03+00:00\n"
+"PO-Revision-Date: 2014-01-22 03:04+0700\n"
+"Last-Translator: Dzikri Aziz <kvcrvt@gmail.com>\n"
+"Language-Team: X-Team <wordpress@x-team.com>\n"
+"Language: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: connectors/comments.php:34 connectors/comments.php:66
+msgid "Comments"
+msgstr "Komentar"
+
+#: connectors/comments.php:44 connectors/menus.php:37 connectors/posts.php:37
+#: connectors/taxonomies.php:64 connectors/users.php:53
+msgid "Created"
+msgstr "Dibuat"
+
+#: connectors/comments.php:45 connectors/installer.php:47
+msgid "Edited"
+msgstr "Disunting"
+
+#: connectors/comments.php:46
+msgid "Replied"
+msgstr "Dibalas"
+
+#: connectors/comments.php:47
+msgid "Approved"
+msgstr "Diperkenankan"
+
+#: connectors/comments.php:48
+msgid "Unapproved"
+msgstr "Tidak diperkenankan"
+
+#: connectors/comments.php:49 connectors/posts.php:38
+msgid "Trashed"
+msgstr "Dibuang"
+
+#: connectors/comments.php:50
+msgid "Restored"
+msgstr "Dikembalikan"
+
+#: connectors/comments.php:51
+msgid "Marked as Spam"
+msgstr "Ditandai sebagai Spam"
+
+#: connectors/comments.php:52
+msgid "Unmarked as Spam"
+msgstr "Ditandai bukan sebagai Spam"
+
+#: connectors/comments.php:53 connectors/installer.php:46
+#: connectors/media.php:42 connectors/menus.php:39 connectors/posts.php:39
+#: connectors/taxonomies.php:66 connectors/users.php:54
+#: connectors/widgets.php:39
+msgid "Deleted"
+msgstr "Dihapus"
+
+#: connectors/comments.php:54
+msgid "Duplicate"
+msgstr "Ganda"
+
+#: connectors/comments.php:55
+msgid "Throttled"
+msgstr "Throttled"
+
+#: connectors/comments.php:84 connectors/taxonomies.php:93
+msgid "Edit"
+msgstr "Sunting"
+
+#: connectors/comments.php:86
+msgid "Unapprove"
+msgstr "Jangan perkenankan"
+
+#: connectors/comments.php:94
+msgid "Approve"
+msgstr "Perkenankan"
+
+#: connectors/comments.php:125
+msgid "Guest"
+msgstr "Tamu"
+
+#: connectors/comments.php:161
+msgid "a logged out user"
+msgstr "pengguna tidak dikenal"
+
+#: connectors/comments.php:165
+msgid "Comment flooding by %s detected and prevented"
+msgstr "Banjir komentar dari %s ditemukan dan telah dicegah"
+
+#: connectors/comments.php:181 connectors/comments.php:224
+#: connectors/comments.php:248 connectors/comments.php:272
+#: connectors/comments.php:296 connectors/comments.php:320
+#: connectors/comments.php:344 connectors/comments.php:371
+#: connectors/comments.php:398
+msgid "a post"
+msgstr "sebuah post"
+
+#: connectors/comments.php:182
+msgid "approved automatically"
+msgstr "diperkenankan secara otomatis"
+
+#: connectors/comments.php:182
+msgid "pending approval"
+msgstr "menunggu persetujuan"
+
+#: connectors/comments.php:189
+msgctxt ""
+"1: Parent comment's author, 2: Comment author, 3: Post title, 4: Comment "
+"status"
+msgid "Reply to %1$s's comment by %2$s on %3$s %4$s"
+msgstr "Balasan untuk komentar %1$s oleh %2$s pada %3$s %4$s"
+
+#: connectors/comments.php:201
+msgctxt "1: Comment author, 2: Post title 3: Comment status"
+msgid "New comment by %1$s on %2$s %3$s"
+msgstr "Komentart baru oleh %1$s pada %2$s %3$s"
+
+#: connectors/comments.php:227
+msgctxt "1: Comment author, 2: Post title"
+msgid "%1$s's comment on %2$s edited"
+msgstr "Komentar %1$s pada %2$s telah disunting"
+
+#: connectors/comments.php:251
+msgctxt "1: Comment author, 2: Post title"
+msgid "%1$s's comment on %2$s deleted permanently"
+msgstr "Komentar %1$s pada %2$s telah dihapus untuk selamanya"
+
+#: connectors/comments.php:275
+msgctxt "1: Comment author, 2: Post title"
+msgid "%1$s's comment on %2$s trashed"
+msgstr "Komentar %1$s pada %2$s telah dibuang"
+
+#: connectors/comments.php:299
+msgctxt "1: Comment author, 2: Post title"
+msgid "%1$s's comment on %2$s restored"
+msgstr "Komentar %1$s pada %2$s telah dikembalikan"
+
+#: connectors/comments.php:323
+msgctxt "1: Comment author, 2: Post title"
+msgid "%1$s's comment on %2$s marked as spam"
+msgstr "Komentar %1$s pada %2$s telah ditandai sebagai spam"
+
+#: connectors/comments.php:347
+msgctxt "1: Comment author, 2: Post title"
+msgid "%1$s's comment on %2$s unmarked as spam"
+msgstr "Komentar %1$s pada %2$s telah ditandai bukan spam"
+
+#: connectors/comments.php:374
+msgctxt "Comment status transition. 1: Comment author, 2: Post title"
+msgid "%1$s's comment %2$s"
+msgstr "Komentar %1$s %2$s"
+
+#: connectors/comments.php:401
+msgctxt "1: Comment author, 2: Post title"
+msgid "Duplicate comment by %1$s prevented on %2$s"
+msgstr "Komentar ganda oleh %1$s pada %2$s telah dicegah"
+
+#: connectors/installer.php:33
+msgid "Installer"
+msgstr "Pemasang"
+
+#: connectors/installer.php:43
+msgid "Installed"
+msgstr "Telah dipasang"
+
+#: connectors/installer.php:44
+msgid "Activated"
+msgstr "Telah diaktifkan"
+
+#: connectors/installer.php:45 connectors/widgets.php:40
+msgid "Deactivated"
+msgstr "Telah dinonaktifkan"
+
+#: connectors/installer.php:48 connectors/media.php:41 connectors/menus.php:38
+#: connectors/posts.php:36 connectors/settings.php:48
+#: connectors/taxonomies.php:65 connectors/users.php:52
+#: connectors/widgets.php:41
+msgid "Updated"
+msgstr "Telah diperbarui"
+
+#: connectors/installer.php:59
+msgid "Plugins"
+msgstr "Plugin"
+
+#: connectors/installer.php:60
+msgid "Themes"
+msgstr "Tema"
+
+#: connectors/installer.php:61
+msgid "WordPress"
+msgstr "WordPress"
+
+#: connectors/installer.php:78
+msgid "About"
+msgstr "Perihal"
+
+#: connectors/installer.php:80
+msgid "View Release Notes"
+msgstr "Lihat Catatan Rilis"
+
+#: connectors/installer.php:110
+msgctxt ""
+"Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: "
+"Plugin/theme version"
+msgid "Installed %1$s: %2$s %3$s"
+msgstr "%1$s terpasang: %2$s %3$s"
+
+#: connectors/installer.php:142
+msgctxt ""
+"Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/"
+"theme version"
+msgid "Updated %1$s: %2$s %3$s"
+msgstr "%1$s diperbarui: %2$s %3$s"
+
+#: connectors/installer.php:172 connectors/installer.php:188
+#: connectors/installer.php:246
+msgid "network wide"
+msgstr "di seluruh jaringan"
+
+#: connectors/installer.php:174
+msgctxt "1: Plugin name, 2: Single site or network wide"
+msgid "\"%1$s\" plugin activated %2$s"
+msgstr "Plugin \"%1$s\" diaktifkan %2$s"
+
+#: connectors/installer.php:190
+msgctxt "1: Plugin name, 2: Single site or network wide"
+msgid "\"%1$s\" plugin deactivated %2$s"
+msgstr "Plugin \"%1$s\" dinonaktifkan %2$s"
+
+#: connectors/installer.php:204
+msgid "\"%s\" theme activated"
+msgstr "Tema \"%s\" diaktifkan"
+
+#: connectors/installer.php:219
+msgid "\"%s\" theme deleted"
+msgstr "Tema \"%s\" dihapus"
+
+#: connectors/installer.php:248
+msgid "\"%s\" plugin deleted"
+msgstr "Plugin \"%s\" dihapus"
+
+#: connectors/installer.php:287
+msgctxt "Plugin/theme editing. 1: Type (plugin/theme), 2: Plugin/theme name"
+msgid "Edited %1$s: %2$s"
+msgstr "%1$s disunting: %2$s"
+
+#: connectors/installer.php:305
+msgid "WordPress auto-updated to %s"
+msgstr "WordPress diperbarui secara otomatis ke versi %s"
+
+#: connectors/installer.php:307
+msgid "WordPress updated to %s"
+msgstr "WordPress diperbarui ke versi %s"
+
+#: connectors/media.php:29 connectors/media.php:55 connectors/settings.php:64
+msgid "Media"
+msgstr "Media"
+
+#: connectors/media.php:39
+msgid "Attached"
+msgstr "Terlampir"
+
+#: connectors/media.php:40
+msgid "Uploaded"
+msgstr "Terunggah"
+
+#: connectors/media.php:43 connectors/menus.php:40
+msgid "Assigned"
+msgstr "Ditetapkan"
+
+#: connectors/media.php:44 connectors/menus.php:41
+msgid "Unassigned"
+msgstr "Dilepas"
+
+#: connectors/media.php:70
+msgid "Edit Media"
+msgstr "Sunting Media"
+
+#: connectors/media.php:73 connectors/posts.php:70
+#: connectors/taxonomies.php:94
+msgid "View"
+msgstr "Lihat"
+
+#: connectors/media.php:87
+msgctxt "1: Attachment title, 2: Parent post title"
+msgid "Attached \"%1$s\" to \"%2$s\""
+msgstr "\"%1$s\" dilampirkan pada \"%2$s\""
+
+#: connectors/media.php:93
+msgid "Added \"%s\" to Media library"
+msgstr "\"%s\" ditambahkan pada pustaka Media"
+
+#: connectors/media.php:115
+msgid "Updated \"%s\""
+msgstr "\"%s\" diperbarui"
+
+#: connectors/media.php:135
+msgid "Deleted \"%s\""
+msgstr "\"%s\" dihapus"
+
+#: connectors/media.php:150
+msgid "Edited image \"%s\""
+msgstr "Gambar \"%s\" disunting"
+
+#: connectors/menus.php:27
+msgid "Menus"
+msgstr "Menu"
+
+#: connectors/menus.php:80
+msgid "Edit Menu"
+msgstr "Sunting Menu"
+
+#: connectors/menus.php:94
+msgid "Created new menu \"%s\""
+msgstr "Menu \"%s\" dibuat"
+
+#: connectors/menus.php:112
+msgctxt "Menu name"
+msgid "Updated menu \"%s\""
+msgstr "Menu \"%s\" diperbarui"
+
+#: connectors/menus.php:128
+msgctxt "Menu name"
+msgid "Deleted \"%s\""
+msgstr "\"%s\" Dihapus"
+
+#: connectors/menus.php:163
+msgctxt "1: Menu name, 2: Theme location"
+msgid "\"%1$s\" has been unassigned from \"%2$s\""
+msgstr "Menu \"%1$s\" dilepas dari \"%2$s\""
+
+#: connectors/menus.php:171
+msgctxt "1: Menu name, 2: Theme location"
+msgid "\"%1$s\" has been assigned to \"%2$s\""
+msgstr "Menu \"%1$s\" ditempatkan pada \"%2$s\""
+
+#: connectors/posts.php:26
+msgid "Posts"
+msgstr "Post"
+
+#: connectors/posts.php:67
+msgctxt "Post type singular name"
+msgid "Edit %s"
+msgstr "Sunting %s"
+
+#: connectors/posts.php:74
+msgid "Revision"
+msgstr "Revisi"
+
+#: connectors/posts.php:96
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s drafted"
+msgstr "%2$s \"%1$s\" disusun"
+
+#: connectors/posts.php:104 connectors/posts.php:112
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s published"
+msgstr "%2$s \"%1$s\" diterbitkan"
+
+#: connectors/posts.php:119
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s unpublished"
+msgstr "Publikasi %2$s \"%1$s\" dibatalkan"
+
+#: connectors/posts.php:126
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s trashed"
+msgstr "%2$s %1$s telah dibuang"
+
+#: connectors/posts.php:134
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s updated"
+msgstr "%2$s \"%1$s\" diperbarui"
+
+#: connectors/posts.php:196
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s deleted from trash"
+msgstr "%2$s \"%1$s\" dihapus dari tong sampah"
+
+#: connectors/settings.php:38 connectors/settings.php:59 includes/admin.php:99
+#: includes/admin.php:214
+msgid "Settings"
+msgstr "Pengaturan"
+
+#: connectors/settings.php:60 includes/settings.php:56
+msgid "General"
+msgstr "Umum"
+
+#: connectors/settings.php:61
+msgid "Writing"
+msgstr "Penulisan"
+
+#: connectors/settings.php:62
+msgid "Reading"
+msgstr "Baca"
+
+#: connectors/settings.php:63
+msgid "Discussion"
+msgstr "Diskusi"
+
+#: connectors/settings.php:65
+msgid "Permalinks"
+msgstr "Pranala"
+
+#: connectors/settings.php:77
+msgid "Site Title"
+msgstr "Nama Situs"
+
+#: connectors/settings.php:78
+msgid "Tagline"
+msgstr "Tagline"
+
+#: connectors/settings.php:79
+msgid "WordPress Address (URL)"
+msgstr "Alamat WordPress (URL)"
+
+#: connectors/settings.php:80
+msgid "Site Address (URL)"
+msgstr "Alamat Situs (URL)"
+
+#: connectors/settings.php:81
+msgid "E-mail Address"
+msgstr "Alamat E-mail"
+
+#: connectors/settings.php:82
+msgid "Membership"
+msgstr "Keanggotaan"
+
+#: connectors/settings.php:83
+msgid "New User Default Role"
+msgstr "Peran Standar Pengguna Baru"
+
+#: connectors/settings.php:84
+msgid "Timezone"
+msgstr "Zona Waktu"
+
+#: connectors/settings.php:85
+msgid "Date Format"
+msgstr "Format Tanggal"
+
+#: connectors/settings.php:86
+msgid "Time Format"
+msgstr "Format Waktu"
+
+#: connectors/settings.php:87
+msgid "Week Starts On"
+msgstr "Pekan Dimulai Pada"
+
+#: connectors/settings.php:89 connectors/settings.php:90
+msgid "Formatting"
+msgstr "Pemformatan"
+
+#: connectors/settings.php:91
+msgid "Default Post Category"
+msgstr "Kategori Standar Pos"
+
+#: connectors/settings.php:92
+msgid "Default Post Format"
+msgstr "Format Standar Post"
+
+#: connectors/settings.php:93
+msgid "Mail Server Address"
+msgstr "Alamat Server E-mail"
+
+#: connectors/settings.php:94
+msgid "Mail Server Login Name"
+msgstr "Nama Login Server E-mail"
+
+#: connectors/settings.php:95
+msgid "Mail Server Password"
+msgstr "Kata kunci Server E-mail"
+
+#: connectors/settings.php:96
+msgid "Default Mail Category"
+msgstr "Kategori Standar E-mail"
+
+#: connectors/settings.php:97
+msgid "Update Services"
+msgstr "Perbarui Layanan"
+
+#: connectors/settings.php:99 connectors/settings.php:100
+#: connectors/settings.php:101
+msgid "Front page displays"
+msgstr "Laman depan menampilkan"
+
+#: connectors/settings.php:102
+msgid "Blog pages show at most"
+msgstr "Laman blog menampilkan sebanyak"
+
+#: connectors/settings.php:103
+msgid "Syndication feeds show the most recent"
+msgstr "Sindikasi feed menampilkan sebanyak"
+
+#: connectors/settings.php:104
+msgid "For each article in a feed, show"
+msgstr "Untuk setiap artikel pada feed, tampilkan"
+
+#: connectors/settings.php:105
+msgid "Search Engine Visibility"
+msgstr "Visibilitas Mesin Pencari"
+
+#: connectors/settings.php:107 connectors/settings.php:108
+#: connectors/settings.php:109
+msgid "Default article settings"
+msgstr "Pengaturan standar artikel"
+
+#: connectors/settings.php:110 connectors/settings.php:111
+#: connectors/settings.php:112 connectors/settings.php:113
+#: connectors/settings.php:114 connectors/settings.php:115
+#: connectors/settings.php:116 connectors/settings.php:117
+#: connectors/settings.php:118 connectors/settings.php:119
+msgid "Other comment settings"
+msgstr "Pengaturan lain komentar"
+
+#: connectors/settings.php:120 connectors/settings.php:121
+msgid "E-mail me whenever"
+msgstr "Kirimi saya e-mail ketika"
+
+#: connectors/settings.php:122 connectors/settings.php:123
+msgid "Before a comment appears"
+msgstr "Sebelum komentar tampil"
+
+#: connectors/settings.php:124 connectors/settings.php:125
+msgid "Comment Moderation"
+msgstr "Moderasi Komentar"
+
+#: connectors/settings.php:126
+msgid "Comment Blacklist"
+msgstr "Daftar Hitam Komentar"
+
+#: connectors/settings.php:127
+msgid "Avatar Display"
+msgstr "Tampilan Avatar"
+
+#: connectors/settings.php:128
+msgid "Avatar Maximum Rating"
+msgstr "Rating Maksimal Avatar"
+
+#: connectors/settings.php:129
+msgid "Default Avatar"
+msgstr "Avatar Standar"
+
+#: connectors/settings.php:131 connectors/settings.php:132
+#: connectors/settings.php:133
+msgid "Thumbnail Image Size"
+msgstr "Ukuran Gambar Kecil"
+
+#: connectors/settings.php:134 connectors/settings.php:135
+msgid "Medium Image Size"
+msgstr "Ukuran Gambar Sedang"
+
+#: connectors/settings.php:136 connectors/settings.php:137
+msgid "Large Image Size"
+msgstr "Ukuran Gambar Besar"
+
+#: connectors/settings.php:138
+msgid "Uploading Files Organization"
+msgstr "Pengaturan Berkas Unggahan"
+
+#: connectors/settings.php:140
+msgid "Permalink structure"
+msgstr "Struktur Pranala"
+
+#: connectors/settings.php:141
+msgid "Category base"
+msgstr "Dasar Ketegori"
+
+#: connectors/settings.php:142
+msgid "Tag base"
+msgstr "Dasar Tag"
+
+#: connectors/settings.php:174
+msgid "Edit %s Settings"
+msgstr "Sunting Pengaturan %s"
+
+#: connectors/settings.php:255
+msgid "\"%s\" setting was updated"
+msgstr "Pengaturan \"%s\" diperbarui"
+
+#: connectors/taxonomies.php:54
+msgid "Taxonomies"
+msgstr "Taksonomi"
+
+#: connectors/taxonomies.php:113
+msgctxt "1: Term name, 2: Taxonomy singular label"
+msgid "\"%1$s\" %2$s created"
+msgstr "%2$s \"%1$s\" dibuat"
+
+#: connectors/taxonomies.php:137
+msgctxt "1: Term name, 2: Taxonomy singular label"
+msgid "\"%1$s\" %2$s deleted"
+msgstr "%2$s \"%1$s\" dihapus"
+
+#: connectors/taxonomies.php:169
+msgctxt "1: Term name, 2: Taxonomy singular label"
+msgid "\"%1$s\" %2$s updated"
+msgstr "%2$s \"%1$s\" diperbarui"
+
+#: connectors/users.php:42 connectors/users.php:70
+msgid "Users"
+msgstr "Pengguna"
+
+#: connectors/users.php:55
+msgid "Password Reset"
+msgstr "Pemulihan Kata Sandi"
+
+#: connectors/users.php:56
+msgid "Forgot Password"
+msgstr "Lupa Kata Sandi"
+
+#: connectors/users.php:57
+msgid "Login"
+msgstr "Masuk"
+
+#: connectors/users.php:58
+msgid "Logout"
+msgstr "Keluar"
+
+#: connectors/users.php:59
+msgid "Failed Login"
+msgstr "Login Gagal"
+
+#: connectors/users.php:85
+msgid "Edit Profile"
+msgstr "Sunting Profil"
+
+#: connectors/users.php:131
+msgid "New user registration"
+msgstr "Pendaftaran pengguna baru"
+
+#: connectors/users.php:134
+msgctxt "1: User display name, 2: User role"
+msgid "New user account created for %1$s (%2$s)"
+msgstr "Pengguna baru dibuat untuk %1$s (%2$s)"
+
+#: connectors/users.php:163
+msgid "%s's profile was updated"
+msgstr "Profil %s diperbarui"
+
+#: connectors/users.php:186
+msgctxt "1: User display name, 2: Old role, 3: New role"
+msgid "%1$s's role was changed from %2$s to %3$s"
+msgstr "Peran %1$s's diganti dari %2$s menjadi %3$s"
+
+#: connectors/users.php:210
+msgid "%s's password was reset"
+msgstr "Kata kunci %s diganti"
+
+#: connectors/users.php:234
+msgid "%s's password was requested to be reset"
+msgstr "Kata kunci %s diminta untuk diganti"
+
+#: connectors/users.php:254
+msgid "%s logged in"
+msgstr "%s masuk"
+
+#: connectors/users.php:279
+msgid "%s logged out"
+msgstr "%s keluar"
+
+#: connectors/users.php:317
+msgctxt "1: User display name, 2: User roles"
+msgid "%1$s's account was deleted (%2$s)"
+msgstr "Akun %1$s (%2$s) telah dihapus"
+
+#: connectors/users.php:326
+msgid "User account #%d was deleted"
+msgstr "Akun pengguna #%d dihapus"
+
+#: connectors/users.php:354
+msgid "Invalid login attempt for %s"
+msgstr "%s gagal masuk"
+
+#: connectors/widgets.php:28 connectors/widgets.php:53
+msgid "Widgets"
+msgstr "Widget"
+
+#: connectors/widgets.php:38
+msgid "Added"
+msgstr "Ditambahkan"
+
+#: connectors/widgets.php:42
+msgid "Sorted"
+msgstr "Diurutkan"
+
+#: connectors/widgets.php:69
+msgid "Edit Widget Area"
+msgstr "Sunting Area Widget"
+
+#: connectors/widgets.php:95
+msgctxt "1: Widget title, 2: Sidebar name"
+msgid "\"%1$s\" from \"%2$s\" has been deactivated"
+msgstr "\"%2$s\" pada \"%1$s\" telah dinonaktifkan"
+
+#: connectors/widgets.php:135
+msgctxt "1: Widget title, 2: Sidebar name"
+msgid "\"%1$s\" has been added to \"%2$s\""
+msgstr "\"%2$s\" telah ditambahkan pada \"%1$s\""
+
+#: connectors/widgets.php:146
+msgctxt "1: Widget title, 2: Sidebar name"
+msgid "\"%1$s\" has been deleted from \"%2$s\""
+msgstr "\"%2$s\" telah dihapus dari \"%1$s\""
+
+#: connectors/widgets.php:199
+msgctxt "1: Widget title, 2: Sidebar name"
+msgid "Updated \"%1$s\" in \"%2$s\""
+msgstr "\"%2$s\" pada \"%1$s\" telah diperbarui"
+
+#: connectors/widgets.php:250
+msgctxt "Sidebar name"
+msgid "\"%s\" widgets were reordered"
+msgstr "Widget pada \"%s\" telah diurutkan"
+
+#: includes/admin.php:74
+msgid "All records have been successfully erased."
+msgstr "Semua catatan berhasil dihapus"
+
+#. #-#-#-#-#  stream.pot (Stream 1.0.3)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: includes/admin.php:87 includes/admin.php:88
+msgid "Stream"
+msgstr "Stream"
+
+#: includes/admin.php:98 includes/admin.php:238
+msgid "Stream Settings"
+msgstr "Pengaturan Stream"
+
+#: includes/admin.php:136
+msgid ""
+"Are you sure you want to delete all Stream activity records from the "
+"database? This cannot be undone."
+msgstr ""
+"Anda yakin ingin menghapus semua catatan Stream? Data tidak dapat "
+"dikembalikan."
+
+#: includes/admin.php:137
+msgid ""
+"Are you sure you want to uninstall and deactivate Stream? This will delete "
+"all Stream tables from the database and cannot be undone."
+msgstr ""
+"Anda yakin ingin mencopot dan menghapus Stream? Langkah ini akan menghapus "
+"tabel data dan tidak dapat dikembalikan."
+
+#: includes/admin.php:223
+msgid "Uninstall"
+msgstr "Copot"
+
+#: includes/admin.php:287
+msgid "Stream Records"
+msgstr "Catatan Stream"
+
+#: includes/admin.php:450
+msgid "Stream Activity"
+msgstr "Aktifitas Stream"
+
+#: includes/admin.php:469
+msgid "Sorry, no activity records were found."
+msgstr "Maaf, tidak ada catatan aktifitas yang ditemukan."
+
+#: includes/admin.php:495
+msgctxt "1: Time, 2: User profile URL, 3: User display name"
+msgid "%1$s ago by <a href=\"%2$s\">%3$s</a>"
+msgstr "%1$s yang lalu oleh <a href=\"%2$s\">%3$s</a>"
+
+#: includes/admin.php:506 includes/list-table.php:134
+msgid "%s ago"
+msgstr "%s yang lalu"
+
+#: includes/admin.php:531
+msgid "View all Stream Records"
+msgstr "Lihat semua catatan Stream"
+
+#: includes/admin.php:532
+msgid "More"
+msgstr "Selanjutnya"
+
+#: includes/admin.php:554
+msgid "Number of Records"
+msgstr "Jumlah Catatan"
+
+#: includes/feeds.php:73
+msgid "Stream Feeds Key"
+msgstr "Kunci Feed Stream"
+
+#: includes/feeds.php:77
+msgid "Generate new key"
+msgstr "Buat kunci baru"
+
+#: includes/feeds.php:79
+msgid ""
+"This is your private key used for accessing feeds of Stream Records "
+"securely. You can change your key at any time by generating a new one using "
+"the link above."
+msgstr ""
+"Ini adalah kunci pribadi anda untuk mengakses feed Catatan Stream dengan "
+"aman. Anda dapat mengganti kunci anda kapan saja dengan menggunakan pranala "
+"di atas."
+
+#: includes/feeds.php:81
+msgid "RSS Feed"
+msgstr "Feed RSS"
+
+#: includes/feeds.php:83
+msgid "JSON Feed"
+msgstr "Feed JSON"
+
+#: includes/feeds.php:97
+msgid "Access Denied"
+msgstr "Akses ditolak"
+
+#: includes/feeds.php:98
+msgid ""
+"You don't have permission to view this feed, please contact your site "
+"Administrator."
+msgstr "Anda tidak diizinkan untuk melihat feed ini. Hubungi admin situs anda."
+
+#: includes/feeds.php:160
+msgid "Stream Feed"
+msgstr "Feed Stream"
+
+#: includes/list-table.php:18
+msgid "Records per page"
+msgstr "Catatan per halaman"
+
+#: includes/list-table.php:38
+msgid "Date"
+msgstr "Tanggal"
+
+#: includes/list-table.php:39
+msgid "Summary"
+msgstr "Ringkasan"
+
+#: includes/list-table.php:40
+msgid "Author"
+msgstr "Penindak"
+
+#: includes/list-table.php:41
+msgid "Connector"
+msgstr "Penghubung"
+
+#: includes/list-table.php:42
+msgid "Context"
+msgstr "Konteks"
+
+#: includes/list-table.php:43
+msgid "Action"
+msgstr "Tindakan"
+
+#: includes/list-table.php:44
+msgid "IP Address"
+msgstr "Alamat IP"
+
+#: includes/list-table.php:45
+msgid "ID"
+msgstr "ID"
+
+#: includes/list-table.php:150
+msgid "View all records for this object"
+msgstr "Lihat semua catatan untuk objek ini"
+
+#: includes/list-table.php:173
+msgid "N/A"
+msgstr "--"
+
+#: includes/list-table.php:301
+msgid "authors"
+msgstr "penindak"
+
+#: includes/list-table.php:309
+msgid "connectors"
+msgstr "penghubung"
+
+#: includes/list-table.php:317
+msgid "contexts"
+msgstr "konteks"
+
+#: includes/list-table.php:325
+msgid "actions"
+msgstr "tindakan"
+
+#: includes/list-table.php:337
+msgid "Filter"
+msgstr "Saring"
+
+#: includes/list-table.php:356
+msgid "Show all %s"
+msgstr "Lihat semua %s"
+
+#: includes/list-table.php:369
+msgid "Search Records"
+msgstr "Cari Catatan"
+
+#: includes/list-table.php:389
+msgid "Date start"
+msgstr "Dari tanggal"
+
+#: includes/list-table.php:391
+msgid "Date end"
+msgstr "Sampai Tanggal"
+
+#: includes/list-table.php:455
+msgid "Live updates"
+msgstr "Pembaruan otomatis"
+
+#: includes/list-table.php:461 includes/settings.php:83
+msgid "Enabled"
+msgstr "Diaktifkan"
+
+#: includes/settings.php:60
+msgid "Log Activity for"
+msgstr "Catat Aktifitas untuk"
+
+#: includes/settings.php:62
+msgid "Only the selected roles above will have their activity logged."
+msgstr "Hanya aktifitas dari peran yang terpilih di atas akan dicatat."
+
+#: includes/settings.php:68
+msgid "Role Access"
+msgstr "Akses Peran Pengguna"
+
+#: includes/settings.php:70
+msgid ""
+"Users from the selected roles above will have permission to view Stream "
+"Records. However, only site Administrators can access Stream Settings."
+msgstr ""
+"Pengguna dari peran terpilih di atas akan diizinkan untuk melihat Catatan "
+"Stream, namun hanya admin situs yang dapat mengakses pengaturan Stream."
+
+#: includes/settings.php:76
+msgid "Private Feeds"
+msgstr "Feed Pribadi"
+
+#: includes/settings.php:79
+msgid ""
+"Users from the selected roles above will be given a private key found in "
+"their <a href=\"%s\" title=\"%s\">user profile</a> to access feeds of Stream "
+"Records securely."
+msgstr ""
+"Pengguna dari peran terpilih di atas akan diberikan kunci pribadi pada <a "
+"href=\"%s\" title=\"%s\">profil mereka</a> untuk mengakses feed Catatan "
+"Stream secara aman."
+
+#: includes/settings.php:81
+msgid "View Profile"
+msgstr "Liat Profil"
+
+#: includes/settings.php:88
+msgid "Keep Records for"
+msgstr "Simpan Catatan selama"
+
+#: includes/settings.php:91
+msgid ""
+"Maximum number of days to keep activity records. Leave blank to keep records "
+"forever."
+msgstr ""
+"Lama hari penyimpanan catatan aktifitas. Biarkan kosong untuk menyimpan "
+"catatan selamanya."
+
+#: includes/settings.php:93
+msgid "days"
+msgstr "hari"
+
+#: includes/settings.php:97
+msgid "Delete All Records"
+msgstr "Hapus Semua Catatan"
+
+#: includes/settings.php:106
+msgid ""
+"Warning: Clicking this will delete all activity records from the database."
+msgstr "Peringatan: Semua catatan aktifitas akan dihapus."
+
+#: includes/settings.php:278
+msgid "Reset Stream Database"
+msgstr "Kosongkan data Stream"
+
+#: stream.php:166
+msgid "The following table is not present in the WordPress database :"
+msgstr "Tabel berikut tidak ditemukan pada basis data WordPress:"
+
+#: stream.php:174
+msgid ""
+"Please <a href=\"%s\">uninstall</a> the Stream plugin and activate it again."
+msgstr "Harap <a href=\"%s\">copot</a> plugin Stream lalu pasang kembali."
+
+#: stream.php:188
+msgid "Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE."
+msgstr ""
+"Stream memerlukan PHP versi 5.3+, untuk saat ini plugin tidak diaktifkan."
+
+#. Plugin URI of the plugin/theme
+msgid "http://wordpress.org/plugins/stream/"
+msgstr "http://wordpress.org/plugins/stream/"
+
+#. Description of the plugin/theme
+msgid ""
+"Stream tracks logged-in user activity so you can monitor every change made "
+"on your WordPress site in beautifully organized detail. All activity is "
+"organized by context, action and IP address for easy filtering. Developers "
+"can extend Stream with custom connectors to log any kind of action."
+msgstr ""
+"Stream mencatat semua aktifitas dari pengguna yang telah masuk agar anda "
+"dapat mengamati semua perubahan yang terjadi pada situs WordPress anda dalam "
+"bentuk data yang indah. Semua aktifitas disusun berdasarkan konteks, "
+"tindakan dan alamat IP agar dapat disaring dengan mudah. Pengembang dapat "
+"memperluas Stream dengan penghubung khusus untuk mencatat berbagai macam "
+"tindakan."
+
+#. Author of the plugin/theme
+msgid "X-Team"
+msgstr "X-Team"
+
+#. Author URI of the plugin/theme
+msgid "http://x-team.com/wordpress/"
+msgstr "http://x-team.com/wordpress/"
