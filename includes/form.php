@@ -101,7 +101,7 @@ class WP_Stream_Notifications_Form
 		$query     = filter_input( INPUT_POST, 'q' );
 		$args      = json_decode( filter_input( INPUT_POST, 'args' ), true );
 
-		if (! is_array( $args ) ) {
+		if ( ! is_array( $args ) ) {
 			$args = array();
 		}
 
@@ -332,10 +332,9 @@ class WP_Stream_Notifications_Form
 	 * @filter user_search_columns
 	 */
 	public function define_search_in_arg( $search_columns, $search, $query ) {
-		$search_in = $query->get('search_in');
-		if ($search_in !== null ) {
-			$search_columns = (array) $search_in;
-		}
+		$search_in      = $query->get('search_in');
+		$search_columns = ! is_null( $search_in ) ? (array) $search_in : $search_columns;
+
 		return $search_columns;
 	}
 
