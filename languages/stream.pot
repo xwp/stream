@@ -4,16 +4,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Stream 1.0.3\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/stream\n"
-"POT-Creation-Date: 2014-01-21 17:35:57+00:00\n"
+"POT-Creation-Date: 2014-01-21 19:44:03+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2014-01-22 01:37+0700\n"
-"Last-Translator: Dzikri Aziz <kvcrvt@gmail.com>\n"
-"Language-Team: X-Team <wordpress@x-team.com>\n"
-"X-Generator: Poedit 1.5.5\n"
-"Language: English\n"
-"X-Poedit-SourceCharset: UTF-8\n"
+"PO-Revision-Date: 2014-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 
 #: connectors/comments.php:34 connectors/comments.php:66
 msgid "Comments"
@@ -129,10 +126,9 @@ msgid "%1$s's comment on %2$s edited"
 msgstr ""
 
 #: connectors/comments.php:251
+msgctxt "1: Comment author, 2: Post title"
 msgid "%1$s's comment on %2$s deleted permanently"
-msgid_plural "1: Comment author, 2: Post title"
-msgstr[0] ""
-msgstr[1] ""
+msgstr ""
 
 #: connectors/comments.php:275
 msgctxt "1: Comment author, 2: Post title"
@@ -208,42 +204,56 @@ msgid "View Release Notes"
 msgstr ""
 
 #: connectors/installer.php:110
-msgid "Installed %s: %s %s"
+msgctxt ""
+"Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: "
+"Plugin/theme version"
+msgid "Installed %1$s: %2$s %3$s"
 msgstr ""
 
-#: connectors/installer.php:138
-msgid "Updated %s: %s to %s"
+#: connectors/installer.php:142
+msgctxt ""
+"Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/"
+"theme version"
+msgid "Updated %1$s: %2$s %3$s"
 msgstr ""
 
-#: connectors/installer.php:166
-msgid "\"%s\" plugin activated %s"
+#: connectors/installer.php:172 connectors/installer.php:188
+#: connectors/installer.php:246
+msgid "network wide"
 msgstr ""
 
-#: connectors/installer.php:178
-msgid "\"%s\" plugin deactivated %s"
+#: connectors/installer.php:174
+msgctxt "1: Plugin name, 2: Single site or network wide"
+msgid "\"%1$s\" plugin activated %2$s"
 msgstr ""
 
-#: connectors/installer.php:188
+#: connectors/installer.php:190
+msgctxt "1: Plugin name, 2: Single site or network wide"
+msgid "\"%1$s\" plugin deactivated %2$s"
+msgstr ""
+
+#: connectors/installer.php:204
 msgid "\"%s\" theme activated"
 msgstr ""
 
-#: connectors/installer.php:203
+#: connectors/installer.php:219
 msgid "\"%s\" theme deleted"
 msgstr ""
 
-#: connectors/installer.php:232
+#: connectors/installer.php:248
 msgid "\"%s\" plugin deleted"
 msgstr ""
 
-#: connectors/installer.php:271
-msgid "Edited %s: %s"
+#: connectors/installer.php:287
+msgctxt "Plugin/theme editing. 1: Type (plugin/theme), 2: Plugin/theme name"
+msgid "Edited %1$s: %2$s"
 msgstr ""
 
-#: connectors/installer.php:285
+#: connectors/installer.php:305
 msgid "WordPress auto-updated to %s"
 msgstr ""
 
-#: connectors/installer.php:287
+#: connectors/installer.php:307
 msgid "WordPress updated to %s"
 msgstr ""
 
@@ -277,22 +287,23 @@ msgid "View"
 msgstr ""
 
 #: connectors/media.php:87
-msgid "Attached \"%s\" to \"%s\""
+msgctxt "1: Attachment title, 2: Parent post title"
+msgid "Attached \"%1$s\" to \"%2$s\""
 msgstr ""
 
-#: connectors/media.php:89
+#: connectors/media.php:93
 msgid "Added \"%s\" to Media library"
 msgstr ""
 
-#: connectors/media.php:111
+#: connectors/media.php:115
 msgid "Updated \"%s\""
 msgstr ""
 
-#: connectors/media.php:131 connectors/menus.php:128
+#: connectors/media.php:135
 msgid "Deleted \"%s\""
 msgstr ""
 
-#: connectors/media.php:146
+#: connectors/media.php:150
 msgid "Edited image \"%s\""
 msgstr ""
 
@@ -309,15 +320,23 @@ msgid "Created new menu \"%s\""
 msgstr ""
 
 #: connectors/menus.php:112
+msgctxt "Menu name"
 msgid "Updated menu \"%s\""
 msgstr ""
 
-#: connectors/menus.php:163
-msgid "\"%s\" has been unassigned from \"%s\""
+#: connectors/menus.php:128
+msgctxt "Menu name"
+msgid "Deleted \"%s\""
 msgstr ""
 
-#: connectors/menus.php:167
-msgid "\"%s\" has been assigned to \"%s\""
+#: connectors/menus.php:163
+msgctxt "1: Menu name, 2: Theme location"
+msgid "\"%1$s\" has been unassigned from \"%2$s\""
+msgstr ""
+
+#: connectors/menus.php:171
+msgctxt "1: Menu name, 2: Theme location"
+msgid "\"%1$s\" has been assigned to \"%2$s\""
 msgstr ""
 
 #: connectors/posts.php:26
@@ -325,6 +344,7 @@ msgid "Posts"
 msgstr ""
 
 #: connectors/posts.php:67
+msgctxt "Post type singular name"
 msgid "Edit %s"
 msgstr ""
 
@@ -333,27 +353,33 @@ msgid "Revision"
 msgstr ""
 
 #: connectors/posts.php:96
-msgid "\"%s\" %s drafted"
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s drafted"
 msgstr ""
 
-#: connectors/posts.php:100 connectors/posts.php:104
-msgid "\"%s\" %s published"
+#: connectors/posts.php:104 connectors/posts.php:112
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s published"
 msgstr ""
 
-#: connectors/posts.php:107
-msgid "\"%s\" %s unpublished"
+#: connectors/posts.php:119
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s unpublished"
 msgstr ""
 
-#: connectors/posts.php:110
-msgid "\"%s\" %s trashed"
+#: connectors/posts.php:126
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s trashed"
 msgstr ""
 
-#: connectors/posts.php:114 connectors/taxonomies.php:161
-msgid "\"%s\" %s updated"
+#: connectors/posts.php:134
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s updated"
 msgstr ""
 
-#: connectors/posts.php:172
-msgid "\"%s\" %s deleted from trash"
+#: connectors/posts.php:196
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s deleted from trash"
 msgstr ""
 
 #: connectors/settings.php:38 connectors/settings.php:59 includes/admin.php:99
@@ -561,11 +587,18 @@ msgid "Taxonomies"
 msgstr ""
 
 #: connectors/taxonomies.php:113
-msgid "\"%s\" %s created"
+msgctxt "1: Term name, 2: Taxonomy singular label"
+msgid "\"%1$s\" %2$s created"
 msgstr ""
 
-#: connectors/taxonomies.php:133
-msgid "\"%s\" %s deleted"
+#: connectors/taxonomies.php:137
+msgctxt "1: Term name, 2: Taxonomy singular label"
+msgid "\"%1$s\" %2$s deleted"
+msgstr ""
+
+#: connectors/taxonomies.php:169
+msgctxt "1: Term name, 2: Taxonomy singular label"
+msgid "\"%1$s\" %2$s updated"
 msgstr ""
 
 #: connectors/users.php:42 connectors/users.php:70
@@ -601,42 +634,45 @@ msgid "New user registration"
 msgstr ""
 
 #: connectors/users.php:134
-msgid "New user account created for %s (%s)"
+msgctxt "1: User display name, 2: User role"
+msgid "New user account created for %1$s (%2$s)"
 msgstr ""
 
-#: connectors/users.php:159
+#: connectors/users.php:163
 msgid "%s's profile was updated"
 msgstr ""
 
-#: connectors/users.php:182
-msgid "%s's role was changed from %s to %s"
+#: connectors/users.php:186
+msgctxt "1: User display name, 2: Old role, 3: New role"
+msgid "%1$s's role was changed from %2$s to %3$s"
 msgstr ""
 
-#: connectors/users.php:202
+#: connectors/users.php:210
 msgid "%s's password was reset"
 msgstr ""
 
-#: connectors/users.php:226
+#: connectors/users.php:234
 msgid "%s's password was requested to be reset"
 msgstr ""
 
-#: connectors/users.php:246
+#: connectors/users.php:254
 msgid "%s logged in"
 msgstr ""
 
-#: connectors/users.php:271
+#: connectors/users.php:279
 msgid "%s logged out"
 msgstr ""
 
-#: connectors/users.php:309
-msgid "%s's account was deleted (%s)"
+#: connectors/users.php:317
+msgctxt "1: User display name, 2: User roles"
+msgid "%1$s's account was deleted (%2$s)"
 msgstr ""
 
-#: connectors/users.php:314
+#: connectors/users.php:326
 msgid "User account #%d was deleted"
 msgstr ""
 
-#: connectors/users.php:342
+#: connectors/users.php:354
 msgid "Invalid login attempt for %s"
 msgstr ""
 
@@ -657,22 +693,27 @@ msgid "Edit Widget Area"
 msgstr ""
 
 #: connectors/widgets.php:95
-msgid "\"%s\" from \"%s\" has been deactivated"
+msgctxt "1: Widget title, 2: Sidebar name"
+msgid "\"%1$s\" from \"%2$s\" has been deactivated"
 msgstr ""
 
-#: connectors/widgets.php:131
-msgid "\"%s\" has been added to \"%s\""
+#: connectors/widgets.php:135
+msgctxt "1: Widget title, 2: Sidebar name"
+msgid "\"%1$s\" has been added to \"%2$s\""
 msgstr ""
 
-#: connectors/widgets.php:138
-msgid "\"%s\" has been deleted from \"%s\""
+#: connectors/widgets.php:146
+msgctxt "1: Widget title, 2: Sidebar name"
+msgid "\"%1$s\" has been deleted from \"%2$s\""
 msgstr ""
 
-#: connectors/widgets.php:187
-msgid "Updated \"%s\" in \"%s\""
+#: connectors/widgets.php:199
+msgctxt "1: Widget title, 2: Sidebar name"
+msgid "Updated \"%1$s\" in \"%2$s\""
 msgstr ""
 
-#: connectors/widgets.php:234
+#: connectors/widgets.php:250
+msgctxt "Sidebar name"
 msgid "\"%s\" widgets were reordered"
 msgstr ""
 
@@ -718,23 +759,24 @@ msgstr ""
 msgid "Sorry, no activity records were found."
 msgstr ""
 
-#: includes/admin.php:497
-msgid "ago by"
+#: includes/admin.php:495
+msgctxt "1: Time, 2: User profile URL, 3: User display name"
+msgid "%1$s ago by <a href=\"%2$s\">%3$s</a>"
 msgstr ""
 
-#: includes/admin.php:503 includes/list-table.php:134
+#: includes/admin.php:506 includes/list-table.php:134
 msgid "%s ago"
 msgstr ""
 
-#: includes/admin.php:528
+#: includes/admin.php:531
 msgid "View all Stream Records"
 msgstr ""
 
-#: includes/admin.php:529
+#: includes/admin.php:532
 msgid "More"
 msgstr ""
 
-#: includes/admin.php:551
+#: includes/admin.php:554
 msgid "Number of Records"
 msgstr ""
 
@@ -815,6 +857,10 @@ msgstr ""
 msgid "View all records for this object"
 msgstr ""
 
+#: includes/list-table.php:173
+msgid "N/A"
+msgstr ""
+
 #: includes/list-table.php:301
 msgid "authors"
 msgstr ""
@@ -833,10 +879,6 @@ msgstr ""
 
 #: includes/list-table.php:337
 msgid "Filter"
-msgstr ""
-
-#: includes/list-table.php:343
-msgid "<option value=\"\"></option>"
 msgstr ""
 
 #: includes/list-table.php:356
@@ -859,7 +901,7 @@ msgstr ""
 msgid "Live updates"
 msgstr ""
 
-#: includes/list-table.php:461 includes/settings.php:87
+#: includes/list-table.php:461 includes/settings.php:83
 msgid "Enabled"
 msgstr ""
 
@@ -888,37 +930,38 @@ msgstr ""
 #: includes/settings.php:79
 msgid ""
 "Users from the selected roles above will be given a private key found in "
-"their %suser profile%s to access feeds of Stream Records securely."
+"their <a href=\"%s\" title=\"%s\">user profile</a> to access feeds of Stream "
+"Records securely."
 msgstr ""
 
-#: includes/settings.php:83
+#: includes/settings.php:81
 msgid "View Profile"
 msgstr ""
 
-#: includes/settings.php:92
+#: includes/settings.php:88
 msgid "Keep Records for"
 msgstr ""
 
-#: includes/settings.php:95
+#: includes/settings.php:91
 msgid ""
 "Maximum number of days to keep activity records. Leave blank to keep records "
 "forever."
 msgstr ""
 
-#: includes/settings.php:97
+#: includes/settings.php:93
 msgid "days"
 msgstr ""
 
-#: includes/settings.php:101
+#: includes/settings.php:97
 msgid "Delete All Records"
 msgstr ""
 
-#: includes/settings.php:110
+#: includes/settings.php:106
 msgid ""
 "Warning: Clicking this will delete all activity records from the database."
 msgstr ""
 
-#: includes/settings.php:282
+#: includes/settings.php:278
 msgid "Reset Stream Database"
 msgstr ""
 

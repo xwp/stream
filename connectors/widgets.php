@@ -94,7 +94,11 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		if ( $deactivated = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] ) ) {
 			$action    = 'deactivated';
-			$message   = __( '"%s" from "%s" has been deactivated', 'stream' );
+			$message   = _x(
+				'"%1$s" from "%2$s" has been deactivated',
+				'1: Widget title, 2: Sidebar name',
+				'stream'
+			);
 			$widget_id = $deactivated[0];
 			$sidebar   = $old;
 
@@ -130,14 +134,22 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				// Added ?
 				if ( $changed = array_diff( $new_widgets, $old_widgets ) ) {
 					$action    = 'added';
-					$message   = __( '"%s" has been added to "%s"', 'stream' );
+					$message   = _x(
+						'"%1$s" has been added to "%2$s"',
+						'1: Widget title, 2: Sidebar name',
+						'stream'
+					);
 					$widget_id = reset( $changed );
 					$sidebar   = $new;
 				}
 				// Removed
 				elseif ( $changed = array_diff( $old_widgets, $new_widgets ) ) {
 					$action    = 'deleted';
-					$message   = __( '"%s" has been deleted from "%s"', 'stream' );
+					$message   = _x(
+						'"%1$s" has been deleted from "%2$s"',
+						'1: Widget title, 2: Sidebar name',
+						'stream'
+					);
 					$widget_id = reset( $changed );
 					$sidebar   = $old;
 				}
@@ -186,7 +198,11 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		// If it wasn't assigned to a sidebar, then its a new thing, skip it
 		if ( $sidebar_name ) {
 			self::log(
-				__( 'Updated "%s" in "%s"', 'stream' ),
+				_x(
+					'Updated "%1$s" in "%2$s"',
+					'1: Widget title, 2: Sidebar name',
+					'stream'
+				),
 				compact( 'name', 'sidebar_name', 'title', 'id_base', 'sidebar', 'widget_id', 'new_instance', 'old_instance' ),
 				null,
 				array( 'widgets' => 'updated' )
@@ -233,7 +249,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			//  executed by self::callback_update_option_sidebars_widgets
 			//  in case this is ONLY a reorder process
 			$order_operation = array(
-				__( '"%s" widgets were reordered', 'stream' ),
+				_x( '"%s" widgets were reordered', 'Sidebar name', 'stream' ),
 				compact( 'sidebar_name', 'sidebar' ),
 				null,
 				array( 'widgets' => 'sorted' ),

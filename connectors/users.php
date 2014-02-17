@@ -131,7 +131,11 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$message     = __( 'New user registration', 'stream' );
 			$user_to_log = $registered_user->ID;
 		} else { // Current logged-in user created a new user
-			$message     = __( 'New user account created for %s (%s)', 'stream' );
+			$message     = _x(
+				'New user account created for %1$s (%2$s)',
+				'1: User display name, 2: User role',
+				'stream'
+			);
 			$user_to_log = $current_user->ID;
 		}
 
@@ -179,7 +183,11 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 
 		global $wp_roles;
 		self::log(
-			__( '%s\'s role was changed from %s to %s', 'stream' ),
+			_x(
+				'%1$s\'s role was changed from %2$s to %3$s',
+				'1: User display name, 2: Old role, 3: New role',
+				'stream'
+			),
 			array(
 				'display_name' => get_user_by( 'id', $user_id )->display_name,
 				'old_role'     => translate_user_role( $wp_roles->role_names[ $old_roles[0] ] ),
@@ -306,7 +314,11 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		$user = wp_get_current_user();
 
 		if ( isset( self::$_users_object_pre_deleted[ $user_id ] ) ) {
-			$message      = __( '%s\'s account was deleted (%s)', 'stream' );
+			$message      = _x(
+				'%1$s\'s account was deleted (%2$s)',
+				'1: User display name, 2: User roles',
+				'stream'
+			);
 			$display_name = self::$_users_object_pre_deleted[ $user_id ]->display_name;
 			$deleted_user = self::$_users_object_pre_deleted[ $user_id ];
 			unset( self::$_users_object_pre_deleted[ $user_id ] );

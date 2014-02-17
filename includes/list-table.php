@@ -198,7 +198,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 						$author_role
 					);
 				} else {
-					$out = 'N/A';
+					$out = __( 'N/A', 'stream' );
 				}
 				break;
 
@@ -443,10 +443,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function filter_select( $name, $title, $items, $ajax ) {
 		if ( $ajax ) {
 			$out = sprintf(
-				'<input type="hidden" name="%s" value="%s" class="chosen-select" data-placeholder="Show all %s">',
-				$name,
-				filter_input( INPUT_GET, $name ),
-				$title
+				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
+				esc_attr( $name ),
+				esc_attr( filter_input( INPUT_GET, $name ) ),
+				esc_html( $title )
 			);
 		} else {
 			$options  = array( sprintf( __( '<option value=""></option>', 'stream' ), $title ) );
@@ -461,9 +461,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 				);
 			}
 			$out = sprintf(
-				'<select name="%s" class="chosen-select" data-placeholder="Show all %s">%s</select>',
-				$name,
-				$title,
+				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
+				esc_attr( $name ),
+				sprintf( esc_attr__( 'Show all %s', 'stream' ), $title ),
 				implode( '', $options )
 			);
 		}

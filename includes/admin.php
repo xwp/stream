@@ -532,9 +532,12 @@ class WP_Stream_Admin {
 
 			if ( $author ) {
 				$time_author = sprintf(
-					'%s %s <a href="%s">%s</a>',
+					_x(
+						'%1$s ago by <a href="%2$s">%3$s</a>',
+						'1: Time, 2: User profile URL, 3: User display name',
+						'stream'
+					),
 					human_time_diff( strtotime( $record->created ) ),
-					esc_html__( 'ago by', 'stream' ),
 					esc_url( $author_link ),
 					esc_html( $author->display_name )
 				);
