@@ -2,12 +2,15 @@
 
 class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter {
 
+	const PUSHOVER_OPTION_NAME = 'ckpn_pushover_notifications_settings';
+
 	public static function register( $title = '' ) {
 		parent::register( __( 'Push', 'stream-notifications' ) );
+		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'pushover_key_labels' ) );
 	}
 
 	public static function get_application_key() {
-		$options = get_option( 'ckpn_pushover_notifications_settings', array() );
+		$options = get_option( self::PUSHOVER_OPTION_NAME, array() );
 		$result  = ( isset( $options['application_key'] ) && ! empty( $options['application_key'] ) ) ? $options['application_key'] : false;
 
 		return $result;
@@ -138,6 +141,30 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 			$response = curl_exec( $connection );
 		}
 		curl_close( $connection );
+	}
+
+	/**
+	 * @filter wp_stream_serialized_labels
+	 */
+	function pushover_key_labels( $labels ) {
+		$labels['ckpn_pushover_notifications_settings'] = array(
+			// Settings
+			'application_key' => __( 'Application API Token/Key', 'stream-notifications' ),
+			'api_key'         => __( 'Your User Key', 'stream-notifications' ),
+			'new_user'        => __( 'New Users', 'stream-notifications' ),
+			'new_post'        => __( 'New Posts are Published', 'stream-notifications' ),
+			'new_post_roles'  => __( 'Roles to Notify', 'stream-notifications' ),
+			'new_comment'     => __( 'New Comments', 'stream-notifications' ),
+			'notify_authors'  => __( 'Notify the Post Author (for multi-author blogs)', 'stream-notifications' ),
+			'password_reset'  => __( 'Notify users when password resets are requested for their accounts', 'stream-notifications' ),
+			'core_update'     => __( 'WordPress Core Update is Available', 'stream-notifications' ),
+			'plugin_updates'  => __( 'Plugin & Theme Updates are Available', 'stream-notifications' ),
+			'multiple_keys'   => __( 'Use Multiple Application Keys', 'stream-notifications' ),
+			'sslverify'       => __( 'Verify SSL from api.pushover.net', 'stream-notifications' ),
+			'logging'         => __( 'Enable Logging', 'stream-notifications' ),
+		);
+
+		return $labels;
 	}
 
 }
