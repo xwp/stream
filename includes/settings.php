@@ -329,7 +329,7 @@ class WP_Stream_Settings {
 				break;
 			case 'file':
 				$output = sprintf(
-					'<input type="file" id="%1$s_%2$s_%3$s" class="%4$s">',
+					'<input type="file" name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s" class="%4$s">',
 					esc_attr( self::KEY ),
 					esc_attr( $section ),
 					esc_attr( $name ),
