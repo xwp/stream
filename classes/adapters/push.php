@@ -48,7 +48,7 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 						sprintf(
 							'<a href="%1$s" target="_blank">%2$s</a>',
 							esc_url( 'http://wordpress.org/plugins/pushover-notifications/' ),
-							__( 'Pushover Notifications for WordPress', 'stream-notifications' )
+							__( 'Pushover Notifications', 'stream-notifications' )
 						)
 					),
 				),
