@@ -6,10 +6,20 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 		parent::register( __( 'Push', 'stream-notifications' ) );
 	}
 
-	public static function fields() {
+	public static function get_application_key() {
 		$options = get_option( 'ckpn_pushover_notifications_settings', array() );
 
 		if( isset( $options['application_key'] ) && $options['application_key'] !== '' ) {
+			$result = $options['application_key'];
+		} else {
+			$result = false;
+		}
+
+		return $result;
+	}
+
+	public static function fields() {
+		if( self::get_application_key() !== false ) {
 			$fields = array(
 				'users' => array(
 					'title'    => __( 'Send to Users', 'stream-notifications' ),
