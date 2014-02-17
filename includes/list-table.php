@@ -345,10 +345,10 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			$visibility = filter_input( INPUT_GET, 'visibility' );
 			$filters_string = sprintf(
 				'<input type="hidden" name="page" value="%s"/>
-				%s,
+				%s
 				<input type="hidden" name="wp_stream_nonce" value="%s"/>',
 				WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
-				$visibility !== null ? sprintf( '<input type="hidden" name="visibility" value="%s"/>', $visibility ) : '',
+				( null !== $visibility ) ? sprintf( '<input type="hidden" name="visibility" value="%s"/>', $visibility ) : '',
 				wp_create_nonce( 'wp_stream_notifications_bulk_actions' )
 			);
 
