@@ -159,6 +159,9 @@ jQuery(function($){
 			// Remove the number of element added to the end of the list table
 			$( list_sel + ' tr').slice(-$new_items.length).remove();
 
+			// Allow others to hook in, ie: timeago
+			$( list_sel ).parent().trigger( 'updated' );
+
 			// Remove background after a certain amount of time
 			setTimeout( function() {
 				$('.new-row').addClass( 'fadeout' );
@@ -196,5 +199,18 @@ jQuery(function($){
 		$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
 
 	});
+
+	// Relative time
+	$( 'table.wp-list-table' ).on( 'updated', function() {
+		var timeObjects = $(this).find( 'time.relative-time' );
+		timeObjects.each( function( i, el ) {
+			var thiz = $(el);
+			thiz.removeClass( 'relative-time' );
+			$( '<strong><time datetime="' + thiz.attr( 'datetime' ) + '" class="timeago"/></time></strong><br/>' )
+				.prependTo( thiz.parent().parent() )
+				.find( 'time.timeago' )
+				.timeago();
+		});
+	}).trigger( 'updated' );
 
 });
