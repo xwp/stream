@@ -1,8 +1,8 @@
 === Stream ===
-Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, johnregan3, akeda, kucrut, topher1kenobe
+Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, johnregan3, akeda, kucrut, topher1kenobe, powelski
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.6
-Tested up to:      3.8
+Tested up to:      3.8.1
 Stable tag:        trunk
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
@@ -17,7 +17,7 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 Never be in the dark about WP Admin activity again. Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
 
-Every logged-in user action is logged in an activity stream and organized for easy filtering by connector, context, action and IP address.
+Every logged-in user action is logged in a user activity stream and organized for easy filtering by connector, context, action and IP address.
 
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
@@ -43,14 +43,16 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 **Noteworthy features:**
 
- * Dashboard widget of most recent activity
+ * Dashboard widget of most recent user activity
  * Specify which roles should have their activity logged
- * Limit who can view activity records by user role
- * Live update of activity records in the Stream
- * Private RSS feeds of activity records
- * Private JSON feeds of activity records
+ * Limit who can view user activity records by user role
+ * Live update of user activity records in the Stream
+ * Private RSS feeds of user activity records
+ * Private JSON feeds of user activity records
  * Set how long records should live before being purged automatically
- * Option to manually purge all activity records from the database
+ * Option to manually purge all user activity records from the database
+ * Disable connectors where you don't want user activity tracked
+ * Support for IPv6 addresses
 
 **Extension plugins:**
 
@@ -62,12 +64,12 @@ Stream is built to extend, allowing developers to easily build their own connect
  * French
  * German
  * Spanish
+ * Polish
 
 **Coming soon:**
 
  * Multisite view of all activity records on a network
- * Support for IPv6 addresses
- * Language support for Arabic, Czech, Slovak and Polish
+ * Language support for Arabic (RTL), Czech, Slovak and Indonesian
 
 **See room for improvement?**
 
@@ -87,6 +89,54 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.2 =
+**2014/02/12** - Awesome datepicker styles. Performance optimizations. Bug fixes. Props [johnregan3](http://profiles.wordpress.org/johnregan3/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/)
+
+= 1.1.9 =
+**2014/02/10** - Load authors filter using AJAX if there are more than 50. Props [powelski](http://profiles.wordpress.org/powelski/)
+
+= 1.1.8 =
+**2014/02/09** - Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
+= 1.1.7 =
+**2014/02/06** - Upgrade routine for IPv6 support. Persist tab selection after saving Stream Settings. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [dero](https://github.com/dero)
+
+= 1.1.6 =
+**2014/02/06** - Sortable columns bug fix on the records screen. Props [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 1.1.5 =
+**2014/02/05** - Fixed a class scope bug [reported in the support forum](http://wordpress.org/support/topic/temporary-fatal-error-after-upgrade-113) that was causing a fatal error on some installs. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
+= 1.1.4 =
+**2014/02/05** - Highlight changed settings field feature. DB upgrade routine for proper utf-8 charset. Various bug fixes. Props [powelski](http://profiles.wordpress.org/powelski/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 1.1.3 =
+**2014/02/04** - Upgrade routine for IP column in DB. Serialized option parsing for Stream Settings records. Purge records immediately when TTL is set backwards in Stream Settings. Various bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 1.1.2 =
+**2014/02/02** - Bug fix for list table notice on new installations. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
+= 1.1 =
+**2014/01/31** - Disable terms in dropdown filters for which records do not exist. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
+
+= 1.0.9 =
+**2014/01/31** - Several important bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
+= 1.0.8 =
+**2014/01/30** - Bug fix for sites using BuddyPress. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
+
+= 1.0.7 =
+**2014/01/29** - Code efficiency improvements when fetching admin area URLs. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 1.0.6 =
+**2014/01/28** - Query improvements, default connector interface, hook added for general settings fields. Bug fixes. Props [dero](https://github.com/dero), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 1.0.5 =
+**2014/01/27** - Bug fix for live updates breaking columns when some are hidden via Screen Options. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
+
+= 1.0.4 =
+**2014/01/23** - Language pack for Polish. Bug fixes. Props [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [kucrut](http://profiles.wordpress.org/kucrut/)
 
 = 1.0.3 =
 **2014/01/19** - Language pack for Spanish. Bug fixes. Props [omniwired](https://github.com/omniwired), [shadyvb](http://profiles.wordpress.org/shadyvb/)

@@ -37,6 +37,8 @@ class WP_Stream_Query {
 			'date'                  => null,
 			'date_from'             => null,
 			'date_to'               => null,
+			// Visibility filters
+			'visibility'            => null,
 			// __in params
 			'record_greater_than'   => null,
 			'record__in'            => array(),
@@ -52,19 +54,30 @@ class WP_Stream_Query {
 			'context_query'         => array(),
 			// Fields selection
 			'fields'                => '',
+			'ignore_context'        => null,
 			);
 
 		$args = wp_parse_args( $args, $defaults );
 
+		/**
+		 * Filter allows additional arguments to query $args
+		 *
+		 * @param  array  Array of query arguments
+		 * @return array  Updated array of query arguments
+		 */
 		$args = apply_filters( 'stream_query_args', $args );
 
-		// Always join with context table
-		$join  = sprintf(
-			' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
-			$wpdb->streamcontext,
-			$wpdb->stream
-			);
+		$join  = '';
 		$where = '';
+
+		// Only join with context table for correct types of records
+		if ( ! $args['ignore_context'] ) {
+			$join = sprintf(
+				' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
+				$wpdb->streamcontext,
+				$wpdb->stream
+				);
+		}
 
 		/**
 		 * PARSE CORE FILTERS
@@ -87,6 +100,10 @@ class WP_Stream_Query {
 
 		if ( $args['author'] ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.author LIKE %d", (int) $args['author'] );
+		}
+
+		if ( $args['visibility'] ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.visibility = %s", $args['visibility'] );
 		}
 
 		/**
@@ -157,10 +174,12 @@ class WP_Stream_Query {
 		/**
 		 * PARSE CONTEXT PARAMS
 		 */
-		$context_query = new WP_Stream_Context_Query( $args );
-		$cclauses      = $context_query->get_sql();
-		$join         .= $cclauses['join'];
-		$where        .= $cclauses['where'];
+		if ( ! $args['ignore_context'] ) {
+			$context_query = new WP_Stream_Context_Query( $args );
+			$cclauses      = $context_query->get_sql();
+			$join         .= $cclauses['join'];
+			$where        .= $cclauses['where'];
+		}
 
 		/**
 		 * PARSE PAGINATION PARAMS
@@ -205,7 +224,10 @@ class WP_Stream_Query {
 		 * PARSE FIELDS PARAMETER
 		 */
 		$fields = $args['fields'];
-		$select = "$wpdb->stream.*, $wpdb->streamcontext.context, $wpdb->streamcontext.action, $wpdb->streamcontext.connector";
+		$select = "$wpdb->stream.*";
+		if ( ! $args['ignore_context'] ) {
+			$select .= ", $wpdb->streamcontext.context, $wpdb->streamcontext.action, $wpdb->streamcontext.connector";
+		}
 		if ( $fields == 'ID' ) {
 			$select = "$wpdb->stream.ID";
 		}
@@ -236,4 +258,51 @@ function stream_query( $args = array() ) {
 
 function get_stream_meta( $record_id, $key = '', $single = false ) {
 	return get_metadata( 'record', $record_id, $key, $single );
+}
+
+function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
+	return update_metadata( 'record', $record_id, $meta_key, $meta_value, $prev_value );
+}
+
+/**
+ * Returns array of existing values for requested column.
+ * Used to fill search filters with only used items, instead of all items.
+ *
+ * GROUP BY allows query to find just the first occurance of each value in the column,
+ * increasing the efficiency of the query.
+ *
+ * @todo   increase security against injections
+ *
+ * @see    assemble_records
+ * @since  1.0.4
+ * @param  string  Requested Column (i.e., 'context')
+ * @param  string  Requested Table
+ * @return array   Array of items to be output to select dropdowns
+ */
+function existing_records( $column, $table = '' ) {
+	global $wpdb;
+
+	switch ( $table ) {
+		case 'stream' :
+			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->stream} GROUP BY {$column}", 'ARRAY_A' );
+			break;
+		case 'meta' :
+			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streammeta} GROUP BY {$column}", 'ARRAY_A' );
+			break;
+		default :
+			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streamcontext} GROUP BY {$column}", 'ARRAY_A' );
+	}
+
+	if ( is_array( $rows ) && ! empty( $rows ) ) {
+		foreach ( $rows as $row ) {
+			foreach ( $row as $cell => $value ) {
+				$output_array[$value] = $value;
+			}
+		}
+		return (array) $output_array;
+	} else {
+		return isset( WP_Stream_Connectors::$term_labels['stream_' . $column] )
+			? WP_Stream_Connectors::$term_labels['stream_' . $column]
+			: array();
+	}
 }

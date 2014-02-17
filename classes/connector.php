@@ -1,5 +1,4 @@
 <?php
-
 abstract class WP_Stream_Connector {
 
 	/**
@@ -22,7 +21,7 @@ abstract class WP_Stream_Connector {
 
 	/**
 	 * Register all context hooks
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function register() {
@@ -43,7 +42,7 @@ abstract class WP_Stream_Connector {
 	/**
 	 * Callback for all registered hooks throughout Stream
 	 * Looks for a class method with the convention: "callback_{action name}"
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function callback() {
@@ -53,6 +52,11 @@ abstract class WP_Stream_Connector {
 
 		//For the sake of testing, trigger an action with the name of the callback
 		if ( defined( 'STREAM_TESTS' ) ) {
+			/**
+			 * Action fires during testing to test the current callback
+			 *
+			 * @param  array  $callback  Callback name
+			 */
 			do_action( 'stream_test_' . $callback[1] );
 		}
 
@@ -82,7 +86,7 @@ abstract class WP_Stream_Connector {
 	 *
 	 * @return mixed|void
 	 */
-	public static  function is_logging_enabled_for_user( $user = null ) {
+	public static function is_logging_enabled_for_user( $user = null ) {
 		if ( is_null( $user ) ){
 			$user = wp_get_current_user();
 		}
@@ -97,6 +101,14 @@ abstract class WP_Stream_Connector {
 			$bool         = ! ( count( array_intersect( $user_roles, $roles_logged ) ) === 0 );
 		}
 
+		/**
+		 * Filter sets boolean result value for this method
+		 *
+		 * @param  bool
+		 * @param  obj    $user  Current user object
+		 * @param  string        Current class name
+		 * @return bool
+		 */
 		return apply_filters( 'wp_stream_record_log', $bool, $user, get_called_class() );
 	}
 

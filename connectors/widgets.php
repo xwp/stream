@@ -83,7 +83,9 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	public static function callback_update_option_sidebars_widgets( $old, $new ) {
 
 		// Disable listener if we're switching themes
-		if ( did_action( 'after_switch_theme' ) ) return;
+		if ( did_action( 'after_switch_theme' ) ) {
+			return;
+		}
 
 		global $order_operation;
 
@@ -137,7 +139,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 						'1: Widget title, 2: Sidebar name',
 						'stream'
 					);
-					$widget_id = $changed[0];
+					$widget_id = reset( $changed );
 					$sidebar   = $new;
 				}
 				// Removed
@@ -148,7 +150,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 						'1: Widget title, 2: Sidebar name',
 						'stream'
 					);
-					$widget_id = $changed[0];
+					$widget_id = reset( $changed );
 					$sidebar   = $old;
 				}
 
@@ -321,6 +323,13 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return array
 	 */
 	public static function get_sidebar_widgets() {
+		/**
+		 * Filter allows for insertion of sidebar widgets
+		 *
+		 * @param  array  Sidebar Widgets in Options table
+		 * @param  array  Inserted Sidebar Widgets
+		 * @return array  Array of updated Sidebar Widgets
+		 */
 		return apply_filters( 'sidebars_widgets', get_option( 'sidebars_widgets', array() ) );
 	}
 
