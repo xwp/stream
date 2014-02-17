@@ -155,7 +155,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			case 'date':
 				$date_string = sprintf(
 					'<time datetime="%s" class="relative-time">%s</time>',
-					get_date_from_gmt( $item->created, 'Y-m-d h:i' ),
+					$item->created,
 					get_date_from_gmt( $item->created, 'Y/m/d' )
 				);
 				$out = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );

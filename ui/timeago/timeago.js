@@ -193,7 +193,21 @@
   }
 
   function distance(date) {
-    return (new Date().getTime() - date.getTime());
+    // return (new Date().getTime() - date.getTime());
+    var UTC_date_string = new Date().toUTCString(); // get current UTC Time in string form
+    var millis_since_epoch = Date.parse(UTC_date_string); // convert it to milliseconds
+
+    /* The date passed in comes to us in the client's timezone because it was created using the javascript
+     * new Date() constructor when it was parsed form the DOM.  Unforunately, the date in the DOM is from
+     * the server, and already in UTC.  We can account for this discrepancy by subtracting the client's
+     * timezone offset.
+     */
+    var date_millis = date.getTime(); // convert passed in date to milliseconds (still wrong timezone)
+    var minutes_off = date.getTimezoneOffset(); // get the number of minutes this timezone differs from UTC time
+    var millis_off = minutes_off*60*1000; // convert from minutes to milliseconds
+    var date_millis_since_epoch = date_millis - millis_off; // subtract the discrepancy from the date milliseconds
+
+    return (millis_since_epoch - date_millis_since_epoch); // finally, find the difference
   }
 
   // fix for IE6 suckage
