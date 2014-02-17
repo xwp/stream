@@ -8,18 +8,13 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 
 	public static function get_application_key() {
 		$options = get_option( 'ckpn_pushover_notifications_settings', array() );
-
-		if( isset( $options['application_key'] ) && $options['application_key'] !== '' ) {
-			$result = $options['application_key'];
-		} else {
-			$result = false;
-		}
+		$result  = ( isset( $options['application_key'] ) && ! empty( $options['application_key'] ) ) ? $options['application_key'] : false;
 
 		return $result;
 	}
 
 	public static function fields() {
-		if( self::get_application_key() !== false ) {
+		if ( false !== self::get_application_key() ) {
 			$fields = array(
 				'users' => array(
 					'title'    => __( 'Send to Users', 'stream-notifications' ),
@@ -43,12 +38,19 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 					'hint'  => __( 'Data tags are allowed.', 'stream-notifications' ),
 				),
 			);
-		} elseif (! is_plugin_active( 'pushover-notifications/pushover-notifications.php' ) ) {
+		} elseif ( ! is_plugin_active( 'pushover-notifications/pushover-notifications.php' ) ) {
 			$fields = array(
 				'error' => array(
 					'title'   => __( 'Pushover Notifications plugin is required', 'stream-notifications' ),
 					'type'    => 'error',
-					'message' => sprintf( __( 'In order to use push with Stream Notifications, please %1$s.', 'stream-notifications' ), sprintf( '<a href="%1$s">%2$s</a>', admin_url( 'plugins.php' ), __( 'activate Pushover Notifications plugin', 'stream-notifications' ) ) ),
+					'message' => sprintf(
+						__( 'In order to use push with Stream Notifications, please %1$s.', 'stream-notifications' ),
+						sprintf(
+							'<a href="%1$s">%2$s</a>',
+							admin_url( 'plugins.php' ),
+							__( 'activate Pushover Notifications plugin', 'stream-notifications' )
+						)
+					),
 				),
 			);
 		} else {
@@ -56,7 +58,14 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 				'error' => array(
 					'title'   => __( 'Application key is missing', 'stream-notifications' ),
 					'type'    => 'error',
-					'message' => sprintf( __( 'Please provide your Application key on %1$s.', 'stream-notifications' ), sprintf( '<a href="%1$s">%2$s</a>', admin_url( 'options-general.php?page=pushover-notifications' ), __( 'Pushover Notifications settings page', 'stream-notifications' ) ) ),
+					'message' => sprintf(
+						__( 'Please provide your Application key on %1$s.', 'stream-notifications' ),
+						sprintf(
+							'<a href="%1$s">%2$s</a>',
+							admin_url( 'options-general.php?page=pushover-notifications' ),
+							__( 'Pushover Notifications settings page', 'stream-notifications' )
+						)
+					),
 				),
 			);
 		}
@@ -67,11 +76,11 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 	public function send( $log ) {
 		$application_key = self::get_application_key();
 
-		if( $application_key === false ) {
+		if ( false === $application_key ) {
 			return false;
 		}
 
-		if ( $this->params['users'] !== '' ) {
+		if ( ! empty( $this->params['users'] ) ) {
 			$users_ids = explode( ',', $this->params['users'] );
 			$users = get_users( array(
 				'include'  => $users_ids,
@@ -85,6 +94,7 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 				$users
 			);
 		}
+
 		$subject = $this->replace( $this->params['subject'], $log );
 		$message = $this->replace( $this->params['message'], $log );
 
@@ -107,9 +117,9 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 					CURLOPT_POSTFIELDS     => http_build_query( $post_fields ),
 				)
 			);
-			$response = curl_exec($connection);
+			$response = curl_exec( $connection );
 		}
-		curl_close($connection);
+		curl_close( $connection );
 	}
 
 }
