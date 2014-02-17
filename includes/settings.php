@@ -435,7 +435,7 @@ class WP_Stream_Settings {
 	 * @action update_option_wp_stream
 	 * @return void
 	 */
-	public function updated_option_ttl_remove_records( $old_value, $new_value ) {
+	public static function updated_option_ttl_remove_records( $old_value, $new_value ) {
 		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : -1;
 		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : -1;
 
