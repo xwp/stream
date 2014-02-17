@@ -155,6 +155,8 @@ class WP_Stream_Notifications {
 		if ( is_admin() ) {
 			include WP_STREAM_NOTIFICATIONS_INC_DIR . '/form.php';
 			$this->form = new WP_Stream_Notifications_Form;
+
+			include WP_STREAM_NOTIFICATIONS_INC_DIR . '/export.php';
 		}
 	}
 

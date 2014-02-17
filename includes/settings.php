@@ -19,6 +19,10 @@ class WP_Stream_Notification_Settings {
 
 		// Add Notifications settings tab to Stream settings
 		add_filter( 'wp_stream_options_fields', array( __CLASS__, '_register_settings' ) );
+
+		// Export function
+		add_action( 'wp_ajax_wp_stream_notifications_export', array( 'WP_Stream_Notifications_Import_Export', 'export' ) );
+		add_action( 'pre_update_option_' . WP_Stream_Settings::KEY, array( 'WP_Stream_Notifications_Import_Export', 'import' ) );
 	}
 
 	public static function get_fields() {
@@ -28,12 +32,40 @@ class WP_Stream_Notification_Settings {
 					'title'  => __( 'Notifications', 'stream-notifications' ),
 					'fields' => array(
 						array(
-							'name'        => 'role_access',
-							'title'       => __( 'Role Access', 'stream-notifications' ),
-							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Users from the selected roles above will have permission to view, create and edit Stream Notifications. However, only site Administrators can access Stream Notifications Settings.', 'stream-notifications' ),
-							'choices'     => WP_Stream_Settings::get_roles(),
-							'default'     => array( 'administrator' ),
+							'name'    => 'role_access',
+							'title'   => __( 'Role Access', 'stream-notifications' ),
+							'type'    => 'multi_checkbox',
+							'desc'    => __( 'Users from the selected roles above will have permission to view, create and edit Stream Notifications. However, only site Administrators can access Stream Notifications Settings.', 'stream-notifications' ),
+							'choices' => WP_Stream_Settings::get_roles(),
+							'default' => array( 'administrator' ),
+						),
+						array(
+							'name'  => 'export_rules',
+							'title' => __( 'Export Rules', 'stream' ),
+							'type'  => 'link',
+							'href'  => add_query_arg(
+								array(
+									'action'                     => 'wp_stream_notifications_export',
+									'stream_notifications_nonce' => wp_create_nonce( 'stream-notifications-nonce' ),
+								),
+								admin_url( 'admin-ajax.php' )
+							),
+							'desc'    => __( 'Export all rules to a JSON file.', 'stream-notifications' ),
+							'default' => 0,
+						),
+						array(
+							'name'  => 'import_rules',
+							'title' => __( 'Import Rules', 'stream-notifications' ),
+							'type'  => 'file',
+							'href'  => add_query_arg(
+								array(
+									'action'                     => 'wp_stream_notifications_import',
+									'stream_notifications_nonce' => wp_create_nonce( 'stream-notifications-nonce' ),
+								),
+								admin_url( 'admin-ajax.php' )
+							),
+							'desc'    => __( 'Import rules from a JSON file.', 'stream-notifications' ),
+							'default' => 0,
 						),
 					),
 				),

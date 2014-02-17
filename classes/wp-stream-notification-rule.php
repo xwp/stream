@@ -103,4 +103,12 @@ class WP_Stream_Notification_Rule {
 		return $r;
 	}
 
+	function __set( $key, $value ) {
+		switch ( $key ) {
+			default:
+				$this->{$key} = $value;
+				break;
+		}
+	}
+
 }
