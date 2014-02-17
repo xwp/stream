@@ -147,6 +147,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				} else {
 					$slugs = array( $upgrader->skin->plugin );
 				}
+				$logs    = array();
 				$plugins = get_plugins();
 				foreach ( $slugs as $slug ) {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
@@ -158,22 +159,21 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				}
 			}
 			elseif ( $type == 'theme' ) {
-				if ( ! isset( $upgrader->skin->theme ) && isset( $upgrader->skin->theme_info ) && is_a( $upgrader->skin->theme_info, 'WP_Theme' ) ){
-					// Ref: http://codex.wordpress.org/Class_Reference/WP_Theme
-					$slug = $upgrader->skin->theme_info->get_template();
-					$name = $upgrader->skin->theme_info->get( 'Name' );
-					$old_version = $upgrader->skin->theme_info->get( 'Version' );
-					$stylesheet = $upgrader->skin->theme_info->get_stylesheet_directory() . '/style.css';
-					$theme_data = get_file_data( $stylesheet,  array( 'Version' => 'Version' ) );
-					$version = $theme_data['Version'];
+				if ( isset( $extra['bulk'] ) && $extra['bulk'] == true ) {
+					$slugs = $extra['themes'];
 				} else {
-					$slug = $upgrader->skin->theme;
-					$theme = wp_get_theme( $slug );
-					$name = $theme['Name'];
-					$old_version = $theme['Version'];
+					$slugs = array( $upgrader->skin->theme );
+				}
+				$logs = array();
+				foreach ( $slugs as $slug ) {
+					$theme      = wp_get_theme( $slug );
 					$stylesheet = $theme['Stylesheet Dir'] . '/style.css';
 					$theme_data = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
-					$version = $theme_data['Version'];
+					$logs[] = array(
+						'name'        => $theme['Name'],
+						'old_version' => $theme['Version'],
+						'version'     => $theme_data['Version'],
+					);
 				}
 			}
 			$action  = 'updated';
