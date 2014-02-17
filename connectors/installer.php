@@ -98,6 +98,11 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			list( $error ) = reset( $errors );
 		}
 
+		// This would have failed down the road anyway
+		if ( ! isset( $extra['type'] ) ) {
+			return false;
+		}
+
 		$type   = $extra['type'];
 		$action = $extra['action'];
 
