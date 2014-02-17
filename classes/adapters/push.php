@@ -65,6 +65,12 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 	}
 
 	public function send( $log ) {
+		$application_key = self::get_application_key();
+
+		if( $application_key === false ) {
+			return false;
+		}
+
 		if ( $this->params['users'] !== '' ) {
 			$users_ids = explode( ',', $this->params['users'] );
 			$users = get_users( array(
@@ -83,7 +89,7 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 		$message = $this->replace( $this->params['message'], $log );
 
 		$post_fields = array(
-			'token'   => 'abN9k16dBD6x2zEFs3dXqjExgS19ds',
+			'token'   => $application_key,
 			'message' => $message,
 			'title'   => $subject,
 		);
