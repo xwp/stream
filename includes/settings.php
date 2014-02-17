@@ -327,6 +327,15 @@ class WP_Stream_Settings {
 				}
 				$output .= '</fieldset></div>';
 				break;
+			case 'file':
+				$output = sprintf(
+					'<input type="file" name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s" class="%4$s">',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name ),
+					esc_attr( $class )
+				);
+				break;
 			case 'link':
 				$output = sprintf(
 					'<a id="%1$s_%2$s_%3$s" class="%4$s" href="%5$s">%6$s</a>',

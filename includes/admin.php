@@ -302,7 +302,7 @@ class WP_Stream_Admin {
 			</h2>
 
 			<div class="nav-tab-content" id="tab-content-settings">
-				<form method="post" action="options.php">
+				<form method="post" action="options.php" enctype="multipart/form-data">
 		<?php
 		$i = 0;
 		foreach ( $sections as $section => $data ) {
