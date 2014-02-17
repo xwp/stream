@@ -14,7 +14,40 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 	}
 
 	public static function fields() {
-		if ( false !== self::get_application_key() ) {
+		$plugin_path  = 'pushover-notifications/pushover-notifications.php';
+		$is_installed = ( $plugin_path && defined( 'WP_PLUGIN_DIR' ) && file_exists( trailingslashit( WP_PLUGIN_DIR )  . $plugin_path ) );
+
+		if ( ! $is_installed ) {
+			$fields = array(
+				'error' => array(
+					'title'   => __( 'Missing Required Plugin', 'stream-notifications' ),
+					'type'    => 'error',
+					'message' => sprintf(
+						__( 'Please install and activate the %1$s plugin to enable push alerts.', 'stream-notifications' ),
+						sprintf(
+							'<a href="%1$s" target="_blank">%2$s</a>',
+							esc_url( 'http://wordpress.org/plugins/pushover-notifications/' ),
+							__( 'Pushover Notifications', 'stream-notifications' )
+						)
+					),
+				),
+			);
+		} elseif ( ! is_plugin_active( $plugin_path ) ) {
+			$fields = array(
+				'error' => array(
+					'title'   => __( 'Required Plugin Not Activated', 'stream-notifications' ),
+					'type'    => 'error',
+					'message' => sprintf(
+						__( 'Please activate the %1$s plugin to enable push alerts.', 'stream-notifications' ),
+						sprintf(
+							'<a href="%1$s">%2$s</a>',
+							admin_url( 'plugins.php' ),
+							__( 'Pushover Notifications', 'stream-notifications' )
+						)
+					),
+				),
+			);
+		} elseif ( false !== self::get_application_key() ) {
 			$fields = array(
 				'users' => array(
 					'title'    => __( 'Send to Users', 'stream-notifications' ),
@@ -36,21 +69,6 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 					'title' => __( 'Message', 'stream-notifications' ),
 					'type'  => 'textarea',
 					'hint'  => __( 'Data tags are allowed.', 'stream-notifications' ),
-				),
-			);
-		} elseif ( ! is_plugin_active( 'pushover-notifications/pushover-notifications.php' ) ) {
-			$fields = array(
-				'error' => array(
-					'title'   => __( 'Pushover Notifications plugin is required', 'stream-notifications' ),
-					'type'    => 'error',
-					'message' => sprintf(
-						__( 'In order to use push with Stream Notifications, please activate the %1$s plugin.', 'stream-notifications' ),
-						sprintf(
-							'<a href="%1$s" target="_blank">%2$s</a>',
-							esc_url( 'http://wordpress.org/plugins/pushover-notifications/' ),
-							__( 'Pushover Notifications', 'stream-notifications' )
-						)
-					),
 				),
 			);
 		} else {
