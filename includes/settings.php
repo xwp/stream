@@ -116,7 +116,7 @@ class WP_Stream_Settings {
 						),
 						array(
 							'name'        => 'delete_all_records',
-							'title'       => __( 'Delete All Records', 'stream' ),
+							'title'       => __( 'Reset Stream Database', 'stream' ),
 							'type'        => 'link',
 							'href'        => add_query_arg(
 								array(
@@ -250,6 +250,7 @@ class WP_Stream_Settings {
 		$description   = isset( $field['desc'] ) ? $field['desc'] : null;
 		$href          = isset( $field['href'] ) ? $field['href'] : null;
 		$after_field   = isset( $field['after_field'] ) ? $field['after_field'] : null;
+		$title         = isset( $field['title'] ) ? $field['title'] : null;
 		$current_value = self::$options[$section . '_' . $name];
 
 		if ( is_callable( $current_value ) ) {
@@ -334,7 +335,7 @@ class WP_Stream_Settings {
 					esc_attr( $name ),
 					esc_attr( $class ),
 					esc_attr( $href ),
-					__( 'Reset Stream Database', 'stream' )
+					esc_attr( $title )
 				);
 				break;
 		}
