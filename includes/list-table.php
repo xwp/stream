@@ -120,6 +120,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			$allowed_params = array(
 				'search',
 				'visibility',
+				// filters
+				'date',
 			);
 
 			foreach ( $allowed_params as $param ) {
