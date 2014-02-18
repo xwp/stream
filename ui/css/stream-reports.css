@@ -9,3 +9,19 @@
 #stream-report-form {
 	display: inline;
 }
+
+/*Stream sections*/
+.stream-section-wrapper a.delete {
+	float: right;
+	color : #a00;
+	visibility: hidden;
+}
+
+.stream-section-wrapper a.delete:hover {
+	color : #f00;
+}
+
+.stream-section-wrapper a.delete.visible,
+.mobile .stream-section-wrapper a.delete{
+	visibility: visible;
+}
