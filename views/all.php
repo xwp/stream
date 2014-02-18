@@ -1,5 +1,5 @@
 <div class="wrap">
-	<h2><?php _e( 'Stream Reports', 'stream-reports' ) ?> <a href="javascript:void(0)" id="stream-add-section" class="add-new-h2">Add New Section</a></h2>
+	<h2><?php _e( 'Stream Reports', 'stream-reports' ) ?> <a href="#" onclick="return false;" id="stream-add-section" class="add-new-h2">Add New Section</a></h2>
 
 	<?php wp_nonce_field( 'stream-reports-page', 'stream_report_nonce', false ); ?>
 	<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
