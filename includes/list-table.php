@@ -3,6 +3,8 @@
 class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 	function __construct( $args = array() ) {
+		$view = filter_input( INPUT_GET, 'view' );
+
 		parent::__construct(
 			array(
 				'post_type' => 'stream_notifications',
@@ -11,14 +13,16 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			)
 		);
 
-		add_screen_option(
-			'per_page',
-			array(
-				'default' => 20,
-				'label'   => __( 'Rules per page', 'stream-notifications' ),
-				'option'  => 'edit_stream_notifications_per_page',
-			)
-		);
+		if ( null === $view ) {
+			add_screen_option(
+				'per_page',
+				array(
+					'default' => 20,
+					'label'   => __( 'Rules per page', 'stream-notifications' ),
+					'option'  => 'edit_stream_notifications_per_page',
+				)
+			);
+		}
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		add_filter( 'stream_query_args', array( __CLASS__, 'register_occurrences_for_sorting' ) );
@@ -30,6 +34,12 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	function get_columns(){
+		$view = filter_input( INPUT_GET, 'view' );
+
+		if ( null !== $view ) {
+			return array();
+		}
+
 		return apply_filters(
 			'wp_stream_notifications_list_table_columns',
 			array(
