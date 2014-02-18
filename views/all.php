@@ -12,9 +12,6 @@
 		<div id="postbox-container-2" class="postbox-container">
 			<?php do_meta_boxes( WP_Stream_Reports::$screen_id, 'side', '' ); ?>
 		</div>
-		<div id="postbox-container-3" class="postbox-container">
-			<?php do_meta_boxes( WP_Stream_Reports::$screen_id, 'column3', '' ); ?>
-		</div>
 	</div>
 
 </div>

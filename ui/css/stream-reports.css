@@ -1,0 +1,6 @@
+/* Media queries to alternate between 1 columns and 2 columns depending on screen size */
+@media only screen and (max-width: 850px) {
+	#wpbody-content #dashboard-widgets.columns-2 .postbox-container {
+		width: 100% !important;
+	}
+}
