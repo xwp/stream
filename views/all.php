@@ -1,6 +1,8 @@
 <div class="wrap">
 	<h2><?php _e( 'Stream Reports', 'stream-reports' ); ?></h2>
 
+	<?php wp_nonce_field( 'stream-reports-page', 'stream-reports-page-nonce', false ); ?>
+	<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
 	<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
 
 	<div id="dashboard-widgets" class="<?php echo esc_attr( $class ) ?>">
