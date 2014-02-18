@@ -449,7 +449,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				esc_html( $title )
 			);
 		} else {
-			$options  = array( sprintf( __( '<option value=""></option>', 'stream' ), $title ) );
+			$options  = array( '<option value=""></option>' );
 			$selected = filter_input( INPUT_GET, $name );
 			foreach ( $items as $v => $label ) {
 				$options[$v] = sprintf(
