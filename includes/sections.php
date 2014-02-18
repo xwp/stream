@@ -29,32 +29,33 @@ class WP_Stream_Reports_Sections {
 		//Temp default
 		$default = array(
 			array( 'title' => 'Super Title', 'data' => array() ),
-			array( 'title' => 'Super Title 2', 'data' => array() ),
+			array( 'title' => 'Super Title', 'data' => array() ),
 		);
 
 		// Get all sections from the db
 		self::$sections = get_option( __CLASS__, $default );
 
-		// Register AJAX function here
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			$ajax_hooks = array(
-				'stream_reports_add_metabox' => 'add_metabox',
-				'stream_reports_delete_metabox' => 'delete_metabox',
-			);
-
-			foreach ( $ajax_hooks as $hook => $function ) {
-				add_action( "wp_ajax_{$hook}", array( $this, $function ) );
-			}
-
-			// Check referer here so we don't have to check it on every function call
-			if ( in_array( $_REQUEST['action'], $ajax_hooks ) ) {
-				check_admin_referer( 'stream-reports-page-nonce' );
-			}
-
-			// If we are doing a ajax function... no need to continue further
+		// If we are not in ajax mode, return early
+		if ( ! defined( 'DOING_AJAX' ) ) {
 			return;
 		}
 
+		$ajax_hooks = array(
+			'stream_reports_add_metabox' => 'add_metabox',
+			'stream_reports_delete_metabox' => 'delete_metabox',
+		);
+
+		foreach ( $ajax_hooks as $hook => $function ) {
+			add_action( "wp_ajax_{$hook}", array( $this, $function ) );
+		}
+
+		// Check referer here so we don't have to check it on every function call
+		if ( array_key_exists( $_REQUEST['action'], $ajax_hooks ) ) {
+			check_admin_referer( 'stream-reports-page', 'stream_report_nonce' );
+		}
+	}
+
+	public function load_page() {
 		// Enqueue all core scripts required for this page to work
 		wp_enqueue_script( array( 'common', 'dashboard', 'postbox' ) );
 		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
@@ -63,7 +64,7 @@ class WP_Stream_Reports_Sections {
 		foreach ( self::$sections as $key => $section ) {
 			add_meta_box(
 				"wp-stream-reports-{$key}",
-				$section['title'],
+				$section['title'] . " {$key}",
 				array( $this, 'metabox_content' ),
 				WP_Stream_Reports::$screen_id,
 				'normal',
@@ -87,9 +88,11 @@ class WP_Stream_Reports_Sections {
 	 * This function will handle the ajax request to add a metabox to the page.
 	 */
 	public function add_metabox() {
-		//@todo Save the metabox to the db here
+		// Add a new section
+		self::$sections[] = array( 'title' => 'Super Title', 'data' => array() );
 
-		wp_send_json_success();
+		// Update the database option
+		$this->update_option();
 	}
 
 	/**
@@ -99,6 +102,17 @@ class WP_Stream_Reports_Sections {
 		//@todo Save new metabox to the db here
 
 		wp_send_json_success();
+	}
+
+	// Handle option updating in the database
+	private function update_option(){
+		$is_saved = update_option( __CLASS__, self::$sections );
+
+		if ( $is_saved ) {
+			wp_send_json_success();
+		} else {
+			wp_send_json_error();
+		}
 	}
 
 	/**

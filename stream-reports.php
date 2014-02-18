@@ -112,6 +112,10 @@ class WP_Stream_Reports {
 		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
 		WP_Stream_Reports_Settings::load();
 
+		// Load sections here
+		require_once WP_STREAM_REPORTS_INC_DIR . 'sections.php';
+		WP_Stream_Reports_Sections::get_instance();
+
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 
@@ -135,8 +139,8 @@ class WP_Stream_Reports {
 			array( $this, 'page' )
 		);
 
-		require_once WP_STREAM_REPORTS_INC_DIR . 'sections.php';
-		add_action( 'load-' . self::$screen_id, array( 'WP_Stream_Reports_Sections', 'get_instance' ) );
+		$sections = WP_Stream_Reports_Sections::get_instance();
+		add_action( 'load-' . self::$screen_id, array( $sections, 'load_page' ) );
 	}
 
 	/**
