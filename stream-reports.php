@@ -83,6 +83,11 @@ class WP_Stream_Reports {
 	const VIEW_CAP = 'view_stream_reports';
 
 	/**
+	 * Hold the nonce name
+	 */
+	public static $nonce;
+
+	/**
 	 * Class constructor
 	 */
 	private function __construct() {
@@ -110,11 +115,11 @@ class WP_Stream_Reports {
 
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
-		WP_Stream_Reports_Settings::load();
+		add_action( 'init', array( 'WP_Stream_Reports_Settings', 'load' ), 11 );
 
 		// Load sections here
 		require_once WP_STREAM_REPORTS_INC_DIR . 'sections.php';
-		WP_Stream_Reports_Sections::get_instance();
+		add_action( 'init', array( 'WP_Stream_Reports_Sections', 'get_instance' ), 12 );
 
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
@@ -182,8 +187,20 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function page() {
+		// Create the nonce we will be using on the page
+		self::$nonce = array( 'stream_reports_nonce' => wp_create_nonce( 'stream-reports-page' ) );
+
 		// Page class
-		$class = 'metabox-holder columns-' . get_current_screen()->get_columns();
+		$class   = 'metabox-holder columns-' . get_current_screen()->get_columns();
+		$add_url = add_query_arg(
+			array_merge(
+				array(
+					'action' => 'stream_reports_add_metabox',
+				),
+				self::$nonce
+			),
+			admin_url( 'admin-ajax.php' )
+		);
 
 		$view = (object) array(
 			'slug' => 'all',

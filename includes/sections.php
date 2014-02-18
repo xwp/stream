@@ -26,9 +26,8 @@ class WP_Stream_Reports_Sections {
 	 * Public constructor
 	 */
 	public function __construct() {
-		//Temp default
+		//Put a default
 		$default = array(
-			array( 'title' => 'Super Title', 'data' => array() ),
 			array( 'title' => 'Super Title', 'data' => array() ),
 		);
 
@@ -53,9 +52,9 @@ class WP_Stream_Reports_Sections {
 		if ( array_key_exists( $_REQUEST['action'], $ajax_hooks ) ) {
 			// Checking permission
 			if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
-				wp_die( 'Cheating huh?' );
+				wp_die( __( 'Cheating huh?', 'stream-reports' ) );
 			}
-			check_admin_referer( 'stream-reports-page', 'stream_report_nonce' );
+			check_admin_referer( 'stream-reports-page', 'stream_reports_nonce' );
 		}
 	}
 
@@ -73,7 +72,7 @@ class WP_Stream_Reports_Sections {
 				WP_Stream_Reports::$screen_id,
 				'normal',
 				'default',
-				$section
+				$key
 			);
 		}
 	}
@@ -81,14 +80,23 @@ class WP_Stream_Reports_Sections {
 	/**
 	 * This is the content of the metabox
 	 *
-	 * @param $data
+	 * @param $object
 	 * @param $section
 	 */
-	public function metabox_content( $data, $section ) {
-		ob_start(); ?>
-			<div class="chart">This will be replace by the chart</div>
-		<?php
-		echo ob_get_clean(); //xss ok
+	public function metabox_content( $object, $section ) {
+		$key = $section['args'];
+		$delete_url = add_query_arg(
+			array_merge(
+				array(
+					'action' => 'stream_reports_delete_metabox',
+					'key'    => $section['args'],
+				),
+				WP_Stream_Reports::$nonce
+			),
+			admin_url( 'admin-ajax.php' )
+		);
+
+		include WP_STREAM_REPORTS_VIEW_DIR . 'section.php';
 	}
 
 	/**
@@ -106,8 +114,12 @@ class WP_Stream_Reports_Sections {
 	 * This function will remove the metabox from the current view.
 	 */
 	public function delete_metabox() {
-		//@todo Save new metabox to the db here
+		$key = filter_input( INPUT_GET, 'key', FILTER_VALIDATE_INT );
 
+		// Unset the metabox from the array.
+		unset( self::$sections[$key] );
+
+		// Update the database option
 		$this->update_option();
 	}
 
@@ -123,7 +135,7 @@ class WP_Stream_Reports_Sections {
 				)
 			);
 		} else {
-			wp_die( __( 'Something went terribly wrong', 'stream-reports' ) );
+			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream-reports' ) );
 		}
 	}
 
