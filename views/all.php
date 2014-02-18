@@ -5,7 +5,7 @@
 				 id="stream-reports-add-section"
 				 class="add-new-h2"
 				 onclick="document.getElementById('stream-report-form').submit();">
-				<?php esc_html_e( 'Add New Section', 'stream-reports' ); ?>
+				<?php esc_html_e( 'Add New', 'stream-reports' ); ?>
 			</a>
 			<input type="hidden" name="action" value="stream_reports_add_metabox">
 			<?php wp_nonce_field( 'stream-reports-page', 'stream_report_nonce', false ); ?>
