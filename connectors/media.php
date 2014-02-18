@@ -84,7 +84,11 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	public static function callback_add_attachment( $post_id ) {
 		$post = get_post( $post_id );
 		if ( $post->post_parent ) {
-			$message = __( 'Attached "%s" to "%s"', 'stream' );
+			$message = _x(
+				'Attached "%1$s" to "%2$s"',
+				'1: Attachment title, 2: Parent post title',
+				'stream'
+			);
 		} else {
 			$message = __( 'Added "%s" to Media library', 'stream' );
 		}

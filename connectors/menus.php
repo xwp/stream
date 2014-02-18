@@ -109,7 +109,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 		}
 		$name = $menu_data['menu-name'];
 		self::log(
-			__( 'Updated menu "%s"', 'stream' ),
+			_x( 'Updated menu "%s"', 'Menu name', 'stream' ),
 			compact( 'name', 'menu_id', 'menu_data' ),
 			$menu_id,
 			array( sanitize_title( $name ) => 'updated' )
@@ -125,7 +125,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 		$name    = $deleted_term->name;
 		$menu_id = $term;
 		self::log(
-			__( 'Deleted "%s"', 'stream' ),
+			_x( 'Deleted "%s"', 'Menu name', 'stream' ),
 			compact( 'name', 'menu_id' ),
 			$menu_id,
 			array( sanitize_title( $name ) => 'deleted' )
@@ -160,11 +160,19 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 				if ( empty( $new[$key][$location_id] ) ) {
 					$action  = 'unassigned';
 					$menu_id = isset( $old[$key][$location_id] ) ? $old[$key][$location_id] : 0;
-					$message = __( '"%s" has been unassigned from "%s"', 'stream' );
+					$message = _x(
+						'"%1$s" has been unassigned from "%2$s"',
+						'1: Menu name, 2: Theme location',
+						'stream'
+					);
 				} else {
 					$action  = 'assigned';
 					$menu_id = isset( $new[$key][$location_id] ) ? $new[$key][$location_id] : 0;
-					$message = __( '"%s" has been assigned to "%s"', 'stream' );
+					$message = _x(
+						'"%1$s" has been assigned to "%2$s"',
+						'1: Menu name, 2: Theme location',
+						'stream'
+						);
 				}
 				$menu = get_term( $menu_id, 'nav_menu' );
 
