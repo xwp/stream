@@ -101,17 +101,26 @@ class WP_Stream_Reports_Sections {
 	public function delete_metabox() {
 		//@todo Save new metabox to the db here
 
-		wp_send_json_success();
+		$this->update_option();
 	}
 
 	// Handle option updating in the database
 	private function update_option(){
+		if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
+			wp_die( 'Cheating huh?' );
+		}
+
 		$is_saved = update_option( __CLASS__, self::$sections );
 
 		if ( $is_saved ) {
-			wp_send_json_success();
+			wp_redirect(
+				add_query_arg(
+					array( 'page' => WP_Stream_Reports::REPORTS_PAGE_SLUG ),
+					admin_url( 'admin.php' )
+				)
+			);
 		} else {
-			wp_send_json_error();
+			wp_die( __( 'Something went terribly wrong', 'stream-reports' ) );
 		}
 	}
 
