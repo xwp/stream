@@ -67,6 +67,7 @@ jQuery(function($){
 			$( elements ).each( function() {
 				$(this).datepicker();
 			});
+			$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
 		},
 
 		selectify = function( elements, args ) {
