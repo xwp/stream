@@ -49,7 +49,7 @@ class WP_Stream_Reports {
 	const VERSION = '0.1.0';
 
 	/**
-	 * Hold Stream instance
+	 * Hold Stream Reports instance
 	 *
 	 * @var string
 	 */
@@ -135,8 +135,8 @@ class WP_Stream_Reports {
 			array( $this, 'page' )
 		);
 
-		// add_action( 'load-' . self::$screen_id, array( $this, 'page_form_save' ) );
-		// add_action( 'load-' . self::$screen_id, array( $this->form, 'load' ) );
+		require_once WP_STREAM_REPORTS_INC_DIR . 'sections.php';
+		add_action( 'load-' . self::$screen_id, array( 'WP_Stream_Reports_Sections', 'get_instance' ) );
 	}
 
 	/**
@@ -178,6 +178,9 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function page() {
+		// Page class
+		$class = 'metabox-holder columns-' . get_current_screen()->get_columns();
+
 		$view = (object) array(
 			'slug' => 'all',
 			'path' => null,
