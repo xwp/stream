@@ -61,15 +61,17 @@ Stream is built to extend, allowing developers to easily build their own connect
 **Languages:**
 
  * English
- * French
+ * French (France)
  * German
- * Spanish
+ * Indonesian
  * Polish
+ * Portuguese (Brazil)
+ * Spanish (Spain)
 
 **Coming soon:**
 
  * Multisite view of all activity records on a network
- * Language support for Arabic (RTL), Czech, Slovak and Indonesian
+ * Language support for Arabic (RTL), Czech and Slovak
 
 **See room for improvement?**
 
@@ -89,6 +91,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.2.1 =
+**2014/02/17** - Translation updates. Langage pack for pt_BR. Bug fixes. Props [kucrut](http://profiles.wordpress.org/kucrut/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [bordoni](http://profiles.wordpress.org/webord/), [powelski](http://profiles.wordpress.org/powelski/), [omniwired](https://github.com/omniwired), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 = 1.2 =
 **2014/02/12** - Awesome datepicker styles. Performance optimizations. Bug fixes. Props [johnregan3](http://profiles.wordpress.org/johnregan3/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/)
