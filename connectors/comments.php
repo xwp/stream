@@ -186,7 +186,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			$parent_user_name = get_comment_author( $comment->comment_parent, 'name' );
 
 			self::log(
-				__( 'Reply to %s\'s comment by %s on %s %s' , 'stream' ),
+				_x(
+					'Reply to %1$s\'s comment by %2$s on %3$s %4$s',
+					"1: Parent comment's author, 2: Comment author, 3: Post title, 4: Comment status",
+					'stream'
+				),
 				compact( 'parent_user_name', 'user_name', 'post_title', 'comment_status', 'post_id', 'parent_user_id' ),
 				$comment_id,
 				array( 'comments' => 'replied' ),
@@ -194,7 +198,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			);
 		} else {
 			self::log(
-				__( 'New comment by %s on %s %s' , 'stream' ),
+				_x(
+					'New comment by %1$s on %2$s %3$s',
+					'1: Comment author, 2: Post title 3: Comment status',
+					'stream'
+				),
 				compact( 'user_name', 'post_title', 'comment_status', 'post_id' ),
 				$comment_id,
 				array( 'comments' => 'created' ),
@@ -216,7 +224,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
-			__( '%s\'s comment on %s edited', 'stream' ),
+			_x(
+				'%1$s\'s comment on %2$s edited',
+				'1: Comment author, 2: Post title',
+				'stream'
+			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
 			array( 'comments' => 'edited' )
@@ -236,7 +248,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
-			__( '%s\'s comment on %s deleted permanently', 'stream' ),
+			_x(
+				'%1$s\'s comment on %2$s deleted permanently',
+				'1: Comment author, 2: Post title',
+				'stream'
+			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
 			array( 'comments' => 'deleted' )
@@ -256,7 +272,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
-			__( '%s\'s comment on %s trashed', 'stream' ),
+			_x(
+				'%1$s\'s comment on %2$s trashed',
+				'1: Comment author, 2: Post title',
+				'stream'
+			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
 			array( 'comments' => 'trashed' )
@@ -276,7 +296,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
-			__( '%s\'s comment on %s restored', 'stream' ),
+			_x(
+				'%1$s\'s comment on %2$s restored',
+				'1: Comment author, 2: Post title',
+				'stream'
+			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
 			array( 'comments' => 'untrashed' )
@@ -296,7 +320,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
-			__( '%s\'s comment on %s marked as spam', 'stream' ),
+			_x(
+				'%1$s\'s comment on %2$s marked as spam',
+				'1: Comment author, 2: Post title',
+				'stream'
+			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
 			array( 'comments' => 'spammed' )
@@ -316,7 +344,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
-			__( '%s\'s comment on %s unmarked as spam', 'stream' ),
+			_x(
+				'%1$s\'s comment on %2$s unmarked as spam',
+				'1: Comment author, 2: Post title',
+				'stream'
+			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
 			array( 'comments' => 'unspammed' )
@@ -339,7 +371,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
-			__( '%s\'s comment %s', 'stream' ),
+			_x(
+				'%1$s\'s comment %2$s',
+				'Comment status transition. 1: Comment author, 2: Post title',
+				'stream'
+			),
 			compact( 'user_name', 'new_status', 'old_status', 'post_title', 'post_id', 'user_id' ),
 			$comment->comment_id,
 			array( 'comments' => $new_status )
@@ -362,7 +398,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
-			__( 'Duplicate comment by %s prevented on %s', 'stream' ),
+			_x(
+				'Duplicate comment by %1$s prevented on %2$s',
+				'1: Comment author, 2: Post title',
+				'stream'
+			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
 			array( 'comments' => 'duplicate' )

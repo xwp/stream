@@ -88,26 +88,62 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @action transition_post_status
 	 */
 	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
-		$logs    = array(); // If doing a bulk update, store log info in an array
-		$type    = $extra['type'];
-		$action  = $extra['action'];
+		$logs = array(); // If doing a bulk update, store log info in an array
+
 		$success = ! is_wp_error( $upgrader->skin->result );
 		$error   = null;
+
 		if ( ! $success ) {
 			$errors = $upgrader->skin->result->errors;
 			list( $error ) = reset( $errors );
 		}
+
+		// This would have failed down the road anyway
+		if ( ! isset( $extra['type'] ) ) {
+			return false;
+		}
+
+		$type   = $extra['type'];
+		$action = $extra['action'];
 
 		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
 			return;
 		}
 
 		if ( $action == 'install' ) {
-			$slug    = $upgrader->skin->api->slug;
-			$name    = $upgrader->skin->api->name;
-			$from    = $upgrader->skin->options['type'];
+			$from = $upgrader->skin->options['type'];
+			if ( $from == 'upload' ) {
+				if ( $type == 'plugin' ) {
+					$cached_plugins = wp_cache_get( 'plugins', 'plugins' );
+					$plugin_data    = $cached_plugins['/'.$upgrader->result['destination_name']];
+					if ( $plugin_data ) {
+						$plugin_data = reset( $plugin_data );
+					} else { // Probably a failed installation
+						return;
+					}
+					$slug    = $upgrader->result['destination_name'];
+					$name    = $plugin_data['Name'];
+					$version = $plugin_data['Version'];
+				} elseif ( $type == 'theme' ) {
+					$slug = $upgrader->result['destination_name'];
+					$theme_data = wp_get_theme( $slug );
+					if ( empty( $theme_data ) ) {
+						return;
+					}
+					$name    = $theme_data->get( 'Name' );
+					$version = $theme_data->get( 'Version' );
+				}
+			} else {
+				$slug    = $upgrader->skin->api->slug;
+				$name    = $upgrader->skin->api->name;
+				$version = $upgrader->skin->api->version;
+			}
 			$action  = 'installed';
-			$message = __( 'Installed %s: %s %s', 'stream' );
+			$message = _x(
+				'Installed %1$s: %2$s %3$s',
+				'Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
+				'stream'
+			);
 		} elseif ( $action == 'update' ) {
 			if ( $type == 'plugin' ) {
 				if ( isset( $extra['bulk'] ) && $extra['bulk'] == true ) {
@@ -115,6 +151,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				} else {
 					$slugs = array( $upgrader->skin->plugin );
 				}
+				$logs    = array();
 				$plugins = get_plugins();
 				foreach ( $slugs as $slug ) {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
@@ -126,16 +163,29 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				}
 			}
 			elseif ( $type == 'theme' ) {
-				$slug = $upgrader->skin->theme;
-				$theme = wp_get_theme( $slug );
-				$name = $theme['Name'];
-				$old_version = $theme['Version'];
-				$stylesheet = $theme['Stylesheet Dir'] . '/style.css';
-				$theme_data = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
-				$version = $theme_data['Version'];
+				if ( isset( $extra['bulk'] ) && $extra['bulk'] == true ) {
+					$slugs = $extra['themes'];
+				} else {
+					$slugs = array( $upgrader->skin->theme );
+				}
+				$logs = array();
+				foreach ( $slugs as $slug ) {
+					$theme      = wp_get_theme( $slug );
+					$stylesheet = $theme['Stylesheet Dir'] . '/style.css';
+					$theme_data = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
+					$logs[] = array(
+						'name'        => $theme['Name'],
+						'old_version' => $theme['Version'],
+						'version'     => $theme_data['Version'],
+					);
+				}
 			}
 			$action  = 'updated';
-			$message = __( 'Updated %s: %s to %s', 'stream' );
+			$message = _x(
+				'Updated %1$s: %2$s %3$s',
+				'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
+				'stream'
+			);
 		} else {
 			return false;
 		}
@@ -161,9 +211,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_activate_plugin( $slug, $network_wide ) {
 		$plugins      = get_plugins();
 		$name         = $plugins[$slug]['Name'];
-		$network_wide = $network_wide ? 'network wide' : '';
+		$network_wide = $network_wide ? __( 'network wide', 'stream' ) : null;
 		self::log(
-			__( '"%s" plugin activated %s', 'stream' ),
+			_x(
+				'"%1$s" plugin activated %2$s',
+				'1: Plugin name, 2: Single site or network wide',
+				'stream'
+			),
 			compact( 'name', 'network_wide' ),
 			null,
 			array( 'plugins' => 'activated' )
@@ -173,9 +227,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_deactivate_plugin( $slug, $network_wide ) {
 		$plugins      = get_plugins();
 		$name         = $plugins[$slug]['Name'];
-		$network_wide = $network_wide ? 'network wide' : '';
+		$network_wide = $network_wide ? __( 'network wide', 'stream' ) : null;
 		self::log(
-			__( '"%s" plugin deactivated %s', 'stream' ),
+			_x(
+				'"%1$s" plugin deactivated %2$s',
+				'1: Plugin name, 2: Single site or network wide',
+				'stream'
+			),
 			compact( 'name', 'network_wide' ),
 			null,
 			array( 'plugins' => 'deactivated' )
@@ -227,7 +285,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		}
 		foreach ( $plugins_to_delete as $plugin => $data ) {
 			$name = $data['Name'];
-			$network_wide = $data['Network'] ? 'network wide' : null;
+			$network_wide = $data['Network'] ? __( 'network wide', 'stream' ) : '';
 			self::log(
 				__( '"%s" plugin deleted', 'stream' ),
 				compact( 'name', 'plugin', 'network_wide' ),
@@ -268,7 +326,11 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		}
 
 		self::log(
-			__( 'Edited %s: %s', 'stream' ),
+			_x(
+				'Edited %1$s: %2$s',
+				'Plugin/theme editing. 1: Type (plugin/theme), 2: Plugin/theme name',
+				'stream'
+			),
 			compact( 'type', 'name', 'file' ),
 			null,
 			array( $type . 's' => 'edited' )

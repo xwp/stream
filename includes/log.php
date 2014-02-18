@@ -60,6 +60,14 @@ class WP_Stream_Log {
 			$user_id = get_current_user_id();
 		}
 
+		// Remove null value from array
+		$meta = array_filter(
+			$args,
+			function ( $var ) {
+				return ! is_null( $var );
+			}
+		);
+
 		$recordarr = array(
 			'object_id' => $object_id,
 			'site_id'   => is_multisite() ? get_current_site()->id : 1,
@@ -70,7 +78,7 @@ class WP_Stream_Log {
 			'parent'    => self::$instance->prev_record,
 			'connector' => $connector,
 			'contexts'  => $contexts,
-			'meta'      => $args,
+			'meta'      => $meta,
 			'ip'        => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 

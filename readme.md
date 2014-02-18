@@ -63,15 +63,17 @@ Stream is built to extend, allowing developers to easily build their own connect
 **Languages:**
 
  * English
- * French
+ * French (France)
  * German
- * Spanish
+ * Indonesian
  * Polish
+ * Portuguese (Brazil)
+ * Spanish (Spain)
 
 **Coming soon:**
 
  * Multisite view of all activity records on a network
- * Language support for Arabic (RTL), Czech, Slovak and Indonesian
+ * Language support for Arabic (RTL), Czech and Slovak
 
 **See room for improvement?**
 
@@ -104,6 +106,12 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
+
+### 1.2.1 ###
+**2014/02/17** - Translation updates. Langage packs for pt_BR and id_ID. Bug fixes. Props [kucrut](http://profiles.wordpress.org/kucrut/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [bordoni](http://profiles.wordpress.org/webord/), [powelski](http://profiles.wordpress.org/powelski/), [omniwired](https://github.com/omniwired), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+### 1.2 ###
+**2014/02/12** - Awesome datepicker styles. Performance optimizations. Bug fixes. Props [johnregan3](http://profiles.wordpress.org/johnregan3/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/)
 
 ### 1.1.9 ###
 **2014/02/10** - Load authors filter using AJAX if there are more than 50. Props [powelski](http://profiles.wordpress.org/powelski/)
