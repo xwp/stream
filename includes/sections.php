@@ -51,6 +51,10 @@ class WP_Stream_Reports_Sections {
 
 		// Check referer here so we don't have to check it on every function call
 		if ( array_key_exists( $_REQUEST['action'], $ajax_hooks ) ) {
+			// Checking permission
+			if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
+				wp_die( 'Cheating huh?' );
+			}
 			check_admin_referer( 'stream-reports-page', 'stream_report_nonce' );
 		}
 	}
@@ -81,7 +85,10 @@ class WP_Stream_Reports_Sections {
 	 * @param $section
 	 */
 	public function metabox_content( $data, $section ) {
-		echo '<div class="chart">This will be replace by the chart</div>';
+		ob_start(); ?>
+			<div class="chart">This will be replace by the chart</div>
+		<?php
+		echo ob_get_clean(); //xss ok
 	}
 
 	/**
@@ -105,11 +112,7 @@ class WP_Stream_Reports_Sections {
 	}
 
 	// Handle option updating in the database
-	private function update_option(){
-		if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
-			wp_die( 'Cheating huh?' );
-		}
-
+	private function update_option() {
 		$is_saved = update_option( __CLASS__, self::$sections );
 
 		if ( $is_saved ) {
