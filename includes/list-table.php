@@ -514,7 +514,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				<input type="search" id="record-search-input" name="search" value="%2$s" />
 				<input type="submit" name="" id="search-submit" class="button" value="%1$s" />
 			</p>',
-			esc_attr__( 'Search Notifications', 'stream-notifications' ),
+			esc_attr__( 'Search Notification Rules', 'stream-notifications' ),
 			isset( $_GET['search'] ) ? esc_attr( $_GET['search'] ) : null
 		);
 
