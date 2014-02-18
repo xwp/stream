@@ -57,10 +57,14 @@ class WP_Stream_Install {
 			KEY parent (parent),
 			KEY author (author),
 			KEY created (created)
-		) CHARACTER SET " . $wpdb->charset;
+		)";
 
-		if ( $wpdb->collate ) {
-			$sql .= ' COLLATE ' . $wpdb->collate;
+		if ( ! empty( $wpdb->charset ) ) {
+			$sql .= " CHARACTER SET $wpdb->charset";
+		}
+
+		if ( ! empty( $wpdb->collate ) ) {
+			$sql .= " COLLATE $wpdb->collate";
 		}
 
 		$sql .= ';';
@@ -77,10 +81,14 @@ class WP_Stream_Install {
 			KEY context (context),
 			KEY action (action),
 			KEY connector (connector)
-		) CHARACTER SET " . $wpdb->charset;
+		)";
 
-		if ( $wpdb->collate ) {
-			$sql .= ' COLLATE ' . $wpdb->collate;
+		if ( ! empty( $wpdb->charset ) ) {
+			$sql .= " CHARACTER SET $wpdb->charset";
+		}
+
+		if ( ! empty( $wpdb->collate ) ) {
+			$sql .= " COLLATE $wpdb->collate";
 		}
 
 		$sql .= ';';
@@ -96,10 +104,14 @@ class WP_Stream_Install {
 			KEY record_id (record_id),
 			KEY meta_key (meta_key),
 			KEY meta_value (meta_value)
-		) CHARACTER SET " . $wpdb->charset;
+		)";
 
-		if ( $wpdb->collate ) {
-			$sql .= ' COLLATE ' . $wpdb->collate;
+		if ( ! empty( $wpdb->charset ) ) {
+			$sql .= " CHARACTER SET $wpdb->charset";
+		}
+
+		if ( ! empty( $wpdb->collate ) ) {
+			$sql .= " COLLATE $wpdb->collate";
 		}
 
 		$sql .= ';';
@@ -112,7 +124,7 @@ class WP_Stream_Install {
 		$prefix = self::$table_prefix;
 
 		// If version is lower than 1.1.4, do the update routine
-		if ( version_compare( $db_version, '1.1.4' ) == -1 ) {
+		if ( version_compare( $db_version, '1.1.4' ) == -1 && ! empty( $wpdb->charset ) ) {
 			$tables  = array( 'stream', 'stream_context', 'stream_meta' );
 			$collate = ( $wpdb->collate ) ? " COLLATE {$wpdb->collate}" : null;
 			foreach ( $tables as $table ) {

@@ -116,7 +116,7 @@ class WP_Stream_Settings {
 						),
 						array(
 							'name'        => 'delete_all_records',
-							'title'       => __( 'Delete All Records', 'stream' ),
+							'title'       => __( 'Reset Stream Database', 'stream' ),
 							'type'        => 'link',
 							'href'        => add_query_arg(
 								array(
@@ -250,6 +250,7 @@ class WP_Stream_Settings {
 		$description   = isset( $field['desc'] ) ? $field['desc'] : null;
 		$href          = isset( $field['href'] ) ? $field['href'] : null;
 		$after_field   = isset( $field['after_field'] ) ? $field['after_field'] : null;
+		$title         = isset( $field['title'] ) ? $field['title'] : null;
 		$current_value = self::$options[$section . '_' . $name];
 
 		if ( is_callable( $current_value ) ) {
@@ -326,6 +327,15 @@ class WP_Stream_Settings {
 				}
 				$output .= '</fieldset></div>';
 				break;
+			case 'file':
+				$output = sprintf(
+					'<input type="file" name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s" class="%4$s">',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name ),
+					esc_attr( $class )
+				);
+				break;
 			case 'link':
 				$output = sprintf(
 					'<a id="%1$s_%2$s_%3$s" class="%4$s" href="%5$s">%6$s</a>',
@@ -334,7 +344,7 @@ class WP_Stream_Settings {
 					esc_attr( $name ),
 					esc_attr( $class ),
 					esc_attr( $href ),
-					__( 'Reset Stream Database', 'stream' )
+					esc_attr( $title )
 				);
 				break;
 		}
@@ -425,7 +435,7 @@ class WP_Stream_Settings {
 	 * @action update_option_wp_stream
 	 * @return void
 	 */
-	public function updated_option_ttl_remove_records( $old_value, $new_value ) {
+	public static function updated_option_ttl_remove_records( $old_value, $new_value ) {
 		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : -1;
 		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : -1;
 
