@@ -19,8 +19,8 @@ class WP_Stream_Reports_Sections {
 	 * Public constructor
 	 */
 	public function __construct() {
-		wp_enqueue_script( 'dashboard' );
-		wp_enqueue_script( 'postbox' );
+		// Enqueue all core scripts required for this page to work
+		wp_enqueue_script( array( 'common', 'dashboard', 'postbox' ) );
 		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
 
 		//Temporary
