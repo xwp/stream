@@ -38,7 +38,7 @@ class WP_Stream_Reports {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '1.0.7';
+	const STREAM_MIN_VERSION = '1.2.1';
 
 	/**
 	 * Holds this plugin version
@@ -131,7 +131,7 @@ class WP_Stream_Reports {
 	 */
 	public function register_menu() {
 		self::$screen_id = add_submenu_page(
-			'wp_stream',
+			WP_Stream_Admin::RECORDS_PAGE_SLUG,
 			__( 'Reports', 'stream-reports' ),
 			__( 'Reports', 'stream-reports' ),
 			self::VIEW_CAP,
