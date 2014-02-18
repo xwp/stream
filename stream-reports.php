@@ -211,16 +211,16 @@ class WP_Stream_Reports {
 			'path' => null,
 		);
 		if ( isset( $_GET['view'] ) && ! empty( $_GET['view'] ) ){
-			$view->slug = $_GET['view'];
+			$view->slug = sanitize_file_name( wp_unslash( $_GET['view'] ) );
 		}
 
 		// First we check if the file exists in our plugin folder, otherwhise give the user an error
-		if ( ! file_exists( WP_STREAM_REPORTS_VIEW_DIR . sanitize_file_name( $view->slug ) . '.php' ) ){
+		if ( ! file_exists( WP_STREAM_REPORTS_VIEW_DIR . $view->slug . '.php' ) ){
 			$view->slug = 'error';
 		}
 
 		// Define the path for the view we
-		$view->path = WP_STREAM_REPORTS_VIEW_DIR . sanitize_file_name( $view->slug ) . '.php';
+		$view->path = WP_STREAM_REPORTS_VIEW_DIR . $view->slug . '.php';
 
 		// Execute some actions before including the view, to allow others to hook in here
 		// Use these to do stuff related to the view you are working with
