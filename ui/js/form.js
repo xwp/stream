@@ -259,6 +259,10 @@ jQuery(function($){
 			var $this = $(this);
 
 			$this.parents('.alert').first().remove();
+
+			$(".alert .circle").each(function (index) {
+				$(this).text(index + 1);
+			});
 		})
 	;
 
