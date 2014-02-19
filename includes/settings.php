@@ -134,6 +134,10 @@ class WP_Stream_Notification_Settings {
 	}
 
 	private static function _role_can_access_notifications( $role ) {
+		if ( ! isset( WP_Stream_Settings::$options['notifications_role_access'] ) ) {
+			WP_Stream_Settings::$options['notifications_role_access'] = array( 'administrator' );
+		}
+
 		if ( in_array( $role, WP_Stream_Settings::$options['notifications_role_access'] ) ) {
 			return true;
 		}
