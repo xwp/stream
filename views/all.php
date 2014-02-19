@@ -1,6 +1,5 @@
 <div class="wrap">
-	<h2>
-		<?php _e( 'Stream Reports', 'stream-reports' ) ?>
+	<h2><?php _e( 'Stream Reports', 'stream-reports' ) ?>
 		<a href="<?php echo esc_url( $add_url ); ?>" class="add-new-h2">
 			<?php esc_html_e( 'Add New', 'stream-reports' ); ?>
 		</a>
