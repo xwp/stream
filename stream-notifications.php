@@ -138,7 +138,7 @@ class WP_Stream_Notifications {
 
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'settings.php';
-		WP_Stream_Notification_Settings::load();
+		add_action( 'init', array( 'WP_Stream_Notification_Settings', 'load' ), 9 );
 
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 
