@@ -377,6 +377,24 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		} else {
 			$all_records = WP_Stream_Connectors::$term_labels['stream_' . $column ];
+
+			if ( 'connector' === $column ) {
+				/**
+				 * Toggle visibility of disabled connectors on list table filter dropdown
+				 *
+				 * @param bool $hidden Visibility status, hidden by default.
+				 */
+				$hide_disabled_connectors_filter = apply_filters( 'wp_stream_list_table_show_disabled_connectors', true );
+
+				if ( true === $hide_disabled_connectors_filter ) {
+					$active_connectors = WP_Stream_Settings::$options['connectors_active_connectors'];
+					foreach ( array_keys( $all_records ) as $_connector ) {
+						if ( ! in_array( $_connector, $active_connectors ) ) {
+							unset( $all_records[ $_connector ] );
+						}
+					}
+				}
+			}
 		}
 
 		$existing_records = existing_records( $column, $table );
