@@ -137,6 +137,25 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 		$args['paged'] = $this->get_pagenum();
 
+		// Exclude disabled connectors
+		if ( empty( $args['connector'] ) ) {
+			/**
+			 * Toggle visibility of records from disabled connectors on list table
+			 *
+			 * @param bool $hidden Visibility status, hidden by default.
+			 */
+			$hide_disabled_connectors_records = apply_filters( 'wp_stream_list_table_hide_disabled_connectors_records', true );
+
+			if ( true === $hide_disabled_connectors_records ) {
+				$args['connector__in'] = wp_list_filter(
+					WP_Stream_Settings::$options['connectors_active_connectors'],
+					array( '__placeholder__' ),
+					'NOT'
+				);
+			}
+		}
+
+
 		if ( ! isset( $args['records_per_page'] ) ) {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
