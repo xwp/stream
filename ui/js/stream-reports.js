@@ -148,6 +148,15 @@
 	// Just working on a good exemple
 	$(document).ready(function(){
 		$('.report-chart').streamReportChart();
+
+		// Delete Action
+		$('.postbox').hover(
+				function() {
+					$(this).find('.settings .delete').addClass( 'visible' );
+				}, function() {
+					$(this).find('.settings .delete').removeClass( 'visible' );
+				}
+		);
 	});
 
 })( window, jQuery.noConflict(), _.noConflict(), Raphael);
