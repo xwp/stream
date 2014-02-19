@@ -248,7 +248,8 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 *
 	 * @action wp_login
 	 */
-	public static function callback_wp_login( $user_login, $user ) {
+	public static function callback_wp_login( $user_login ) {
+		$user = get_user_by( 'login', $user_login );
 		if ( self::is_logging_enabled_for_user( $user ) ) {
 			self::log(
 				__( '%s logged in', 'stream' ),
