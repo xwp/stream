@@ -125,7 +125,7 @@ class WP_Stream_Reports {
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 
 		// Register and enqueue the administration scripts
-		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
 	}
 
 	/**
@@ -161,11 +161,28 @@ class WP_Stream_Reports {
 	 */
 	public function register_ui_assets( $pagename ) {
 		// JavaScript registration
-		wp_register_script( 'stream-reports-d3', WP_STREAM_REPORTS_URL . 'ui/js/d3/d3.min.js', array(), '3.4.1', true );
-		wp_register_script( 'stream-reports-admin', WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js', array( 'stream-reports-d3' ), self::VERSION, true );
+		wp_register_script(
+			'stream-reports-d3',
+			WP_STREAM_REPORTS_URL . 'ui/js/d3/d3.min.js',
+			array(),
+			'3.4.1'
+		);
+		wp_register_script(
+			'stream-reports-admin',
+			WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js',
+			array( 'jquery', 'underscore' ),
+			self::VERSION,
+			true
+		);
 
 		// CSS registration
-		wp_register_style( 'stream-reports-admin', WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css', array(), self::VERSION, 'screen' );
+		wp_register_style(
+			'stream-reports-admin',
+			WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css',
+			array(),
+			self::VERSION,
+			'screen'
+		);
 
 		// If we are not on the right page we return early
 		if ( $pagename !== self::$screen_id ) {
@@ -173,11 +190,24 @@ class WP_Stream_Reports {
 		}
 
 		// JavaScript enqueue
-		wp_enqueue_script( 'stream-reports-admin' );
-		wp_enqueue_script( 'stream-reports-d3' );
+		wp_enqueue_script(
+			array(
+				'stream-reports-admin',
+				'stream-reports-d3',
+				'select2',
+				'common',
+				'dashboard',
+				'postbox',
+			)
+		);
 
 		// CSS enqueue
-		wp_enqueue_style( 'stream-reports-admin' );
+		wp_enqueue_style(
+			array(
+				'stream-reports-admin',
+				'select2',
+			)
+		);
 	}
 
 	/**
