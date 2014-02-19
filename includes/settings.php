@@ -407,6 +407,25 @@ class WP_Stream_Settings {
 	}
 
 	/**
+	 * Get an array of active Connectors
+	 *
+	 * @return array
+	 */
+	public static function get_active_connectors() {
+		$active_connectors = self::$options['connectors_active_connectors'];
+		if ( is_callable( $active_connectors ) ) {
+			$active_connectors = call_user_func( $active_connectors );
+		}
+		$active_connectors = wp_list_filter(
+			$active_connectors,
+			array( '__placeholder__' ),
+			'NOT'
+		);
+
+		return $active_connectors;
+	}
+
+	/**
 	 * Get translations of serialized Stream settings
 	 *
 	 * @filter wp_stream_serialized_labels
