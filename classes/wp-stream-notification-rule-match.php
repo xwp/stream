@@ -103,7 +103,7 @@ class WP_Stream_Notification_Rule_Matcher {
 				break;
 			case 'author_role':
 				$user = get_userdata( $log['author'] );
-				$haystack = ( $user->exists() && $user->roles ) ? $user->roles[0] : false;
+				$haystack = ( is_object( $user ) && $user->exists() && $user->roles ) ? $user->roles[0] : false;
 				break;
 			case 'ip':
 				$haystack = $log['ip'];
