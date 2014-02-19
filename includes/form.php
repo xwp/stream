@@ -16,39 +16,42 @@ class WP_Stream_Notifications_Form
 	}
 
 	public function load() {
+		$view = filter_input( INPUT_GET, 'view' );
 
 		// Control screen layout
-		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
+		if ( 'rule' === $view ) {
+			add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
 
-		// Register metaboxes
-		add_meta_box(
-			'triggers',
-			__( 'Triggers', 'stream-notifications' ),
-			array( $this, 'metabox_triggers' ),
-			WP_Stream_Notifications::$screen_id,
-			'normal'
-		);
-		add_meta_box(
-			'alerts',
-			__( 'Alerts', 'stream-notifications' ),
-			array( $this, 'metabox_alerts' ),
-			WP_Stream_Notifications::$screen_id,
-			'normal'
-		);
-		add_meta_box(
-			'submitdiv',
-			__( 'Save', 'stream-notifications' ),
-			array( $this, 'metabox_save' ),
-			WP_Stream_Notifications::$screen_id,
-			'side'
-		);
-		add_meta_box(
-			'data-tags',
-			__( 'Data Tags', 'stream-notifications' ),
-			array( $this, 'metabox_data_tags' ),
-			WP_Stream_Notifications::$screen_id,
-			'side'
-		);
+			// Register metaboxes
+			add_meta_box(
+				'triggers',
+				__( 'Triggers', 'stream-notifications' ),
+				array( $this, 'metabox_triggers' ),
+				WP_Stream_Notifications::$screen_id,
+				'normal'
+			);
+			add_meta_box(
+				'alerts',
+				__( 'Alerts', 'stream-notifications' ),
+				array( $this, 'metabox_alerts' ),
+				WP_Stream_Notifications::$screen_id,
+				'normal'
+			);
+			add_meta_box(
+				'submitdiv',
+				__( 'Save', 'stream-notifications' ),
+				array( $this, 'metabox_save' ),
+				WP_Stream_Notifications::$screen_id,
+				'side'
+			);
+			add_meta_box(
+				'data-tags',
+				__( 'Data Tags', 'stream-notifications' ),
+				array( $this, 'metabox_data_tags' ),
+				WP_Stream_Notifications::$screen_id,
+				'side'
+			);
+		}
 	}
 
 	/**
