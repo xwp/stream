@@ -147,11 +147,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$hide_disabled_connectors_records = apply_filters( 'wp_stream_list_table_hide_disabled_connectors_records', true );
 
 			if ( true === $hide_disabled_connectors_records ) {
-				$args['connector__in'] = wp_list_filter(
-					WP_Stream_Settings::$options['connectors_active_connectors'],
-					array( '__placeholder__' ),
-					'NOT'
-				);
+				$active_connectors = WP_Stream_Settings::$options['connectors_active_connectors'];
+				if ( is_callable( $active_connectors ) ) {
+					$active_connectors = call_user_func( $active_connectors );
+				}
+				$args['connector__in'] = wp_list_filter( $active_connectors, array( '__placeholder__' ), 'NOT' );
 			}
 		}
 
