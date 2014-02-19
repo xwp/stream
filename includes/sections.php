@@ -66,7 +66,6 @@ class WP_Stream_Reports_Sections {
 
 	public function load_page() {
 		// Enqueue all core scripts required for this page to work
-		wp_enqueue_script( array( 'common', 'dashboard', 'postbox' ) );
 		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
 
 		// Add all metaboxes
