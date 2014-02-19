@@ -3,7 +3,7 @@
 	'use strict';
 
 	// Delete Action
-	$('.meta-box-sortables').hover(
+	$('.postbox').hover(
 		function() {
 			$(this).find('.settings .delete').addClass( 'visible' );
 		}, function() {

@@ -23,16 +23,22 @@ class WP_Stream_Reports_Sections {
 	public static $sections;
 
 	/**
+	 * Holds the meta box id prefix
+	 */
+	const META_PREFIX = 'wp-stream-reports-';
+
+	/**
 	 * Public constructor
 	 */
 	public function __construct() {
-		//Put a default
-		$default = array(
-			array( 'title' => 'Super Title', 'data' => array() ),
-		);
+		// We should input a default box here
+		$default = array();
 
 		// Get all sections from the db
-		self::$sections = get_option( __CLASS__, $default );
+		self::$sections = get_user_option( __CLASS__ );
+
+		// Apply default if no user option is found
+		self::$sections = (self::$sections) ?: $default;
 
 		// If we are not in ajax mode, return early
 		if ( ! defined( 'DOING_AJAX' ) ) {
@@ -65,13 +71,23 @@ class WP_Stream_Reports_Sections {
 
 		// Add all metaboxes
 		foreach ( self::$sections as $key => $section ) {
+			$default = array(
+				'title'    => '',
+				'priority' => 'default',
+				'context'  => 'normal',
+			);
+
+			// Parse default argument
+			$section = wp_parse_args( $section, $default );
+
+			// Add the actual metabox
 			add_meta_box(
-				"wp-stream-reports-{$key}",
-				$section['title'] . " {$key}",
+				self::META_PREFIX . $key,
+				$section['title'],
 				array( $this, 'metabox_content' ),
 				WP_Stream_Reports::$screen_id,
-				'normal',
-				'default',
+				$section['context'],
+				$section['priority'],
 				$key
 			);
 		}
@@ -104,7 +120,11 @@ class WP_Stream_Reports_Sections {
 	 */
 	public function add_metabox() {
 		// Add a new section
-		self::$sections[] = array( 'title' => 'Super Title', 'data' => array() );
+		self::$sections[] = array(
+			'title'    => 'All activity',
+			'data'     => array(),
+			'priority' => 'default',
+		);
 
 		// Update the database option
 		$this->update_option();
@@ -114,10 +134,41 @@ class WP_Stream_Reports_Sections {
 	 * This function will remove the metabox from the current view.
 	 */
 	public function delete_metabox() {
-		$key = filter_input( INPUT_GET, 'key', FILTER_VALIDATE_INT );
+		$meta_key = filter_input( INPUT_GET, 'key', FILTER_VALIDATE_INT );
 
 		// Unset the metabox from the array.
-		unset( self::$sections[$key] );
+		unset( self::$sections[$meta_key] );
+
+		if ( empty( self::$sections ) ) {
+			delete_user_option(
+				get_current_user_id(),
+				'meta-box-order_stream_page_' . WP_Stream_Reports::REPORTS_PAGE_SLUG,
+				true
+			);
+		} else {
+			// Delete the metabox from the page ordering as well
+			// There might be a better way on handling this I'm sure (stream_page should not be hardcoded)
+			$user_options = get_user_option( 'meta-box-order_stream_page_' . WP_Stream_Reports::REPORTS_PAGE_SLUG );
+		}
+
+		if ( ! empty( $user_options ) ) {
+			// Remove the one we are deleting from the list
+			foreach ( $user_options as $key => &$string ) {
+				$order = explode( ',', $string );
+				if ( ( $key = array_search( self::META_PREFIX . $meta_key, $order ) ) !== false ) {
+					unset( $order[ $key ] );
+					$string = implode( ',', $order );
+				}
+			}
+
+			// Save the ordering again
+			update_user_option(
+				get_current_user_id(),
+				'meta-box-order_stream_page_' . WP_Stream_Reports::REPORTS_PAGE_SLUG,
+				$user_options,
+				true
+			);
+		}
 
 		// Update the database option
 		$this->update_option();
@@ -125,7 +176,7 @@ class WP_Stream_Reports_Sections {
 
 	// Handle option updating in the database
 	private function update_option() {
-		$is_saved = update_option( __CLASS__, self::$sections );
+		$is_saved = update_user_option( get_current_user_id(), __CLASS__, self::$sections );
 
 		if ( $is_saved ) {
 			wp_redirect(

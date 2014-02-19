@@ -7,6 +7,6 @@
 	</div>
 	<div class="clear"></div>
 	<div class="chart">
-		What is happenning here??
+		This is where the magic happens.
 	</div>
 </div>

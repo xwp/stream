@@ -115,7 +115,7 @@ class WP_Stream_Reports {
 
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
-		WP_Stream_Reports_Settings::load();
+		add_action( 'init', array( 'WP_Stream_Reports_Settings', 'load' ), 9 );
 
 		// Load sections here
 		require_once WP_STREAM_REPORTS_INC_DIR . 'sections.php';
