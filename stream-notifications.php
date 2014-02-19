@@ -39,7 +39,7 @@ class WP_Stream_Notifications {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '1.0.7';
+	const STREAM_MIN_VERSION = '1.2.1';
 
 	/**
 	 * Hold Stream instance
@@ -466,7 +466,7 @@ class WP_Stream_Notifications {
 	 */
 	public function on_activation() {
 		// Add sample rule
-		if ( ! stream_query( 'type=notification_rule&ignore_context=1' ) ) {
+		if ( function_exists( 'stream_query' ) && ! stream_query( 'type=notification_rule&ignore_context=1' ) ) {
 			$this->load();
 			$this->add_sample_rule();
 		}
