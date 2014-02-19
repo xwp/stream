@@ -1,0 +1,27 @@
+/* Media queries to alternate between 1 columns and 2 columns depending on screen size */
+@media only screen and (max-width: 850px) {
+	#wpbody-content #dashboard-widgets.columns-2 .postbox-container {
+		width: 100% !important;
+	}
+}
+
+/*Stream report form*/
+#stream-report-form {
+	display: inline;
+}
+
+/*Stream sections*/
+.stream-section-wrapper a.delete {
+	float: right;
+	color : #a00;
+	visibility: hidden;
+}
+
+.stream-section-wrapper a.delete:hover {
+	color : #f00;
+}
+
+.stream-section-wrapper a.delete.visible,
+.mobile .stream-section-wrapper a.delete{
+	visibility: visible;
+}
