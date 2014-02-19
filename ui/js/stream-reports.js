@@ -114,13 +114,13 @@
 								this.sector.animate({ transform: 's1 1 ' + this.cx + ' ' + this.cy }, 300, "easeInOut");
 							});
 						}
-					} else if ( 'line' = data.type ){
+					} else if ( 'line' === data.type ){
 
-					} else if ( 'vertical-bar' = data.type ){
+					} else if ( 'vertical-bar' === data.type ){
 
-					} else if ( 'horizontal-bar' = data.type ){
+					} else if ( 'horizontal-bar' === data.type ){
 
-					} else if ( 'dot' = data.type ){
+					} else if ( 'dot' === data.type ){
 
 					}
 
