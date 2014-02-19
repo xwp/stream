@@ -384,7 +384,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				 *
 				 * @param bool $hidden Visibility status, hidden by default.
 				 */
-				$hide_disabled_connectors_filter = apply_filters( 'wp_stream_list_table_show_disabled_connectors', true );
+				$hide_disabled_connectors_filter = apply_filters( 'wp_stream_list_table_hide_disabled_connectors', true );
 
 				if ( true === $hide_disabled_connectors_filter ) {
 					$active_connectors = WP_Stream_Settings::$options['connectors_active_connectors'];
