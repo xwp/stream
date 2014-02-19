@@ -71,8 +71,9 @@ class WP_Stream_Reports_Sections {
 
 		// Add all metaboxes
 		foreach ( self::$sections as $key => $section ) {
-			$default = array(
-				'title'    => '',
+			$title_key = $key + 1;
+			$default   = array(
+				'title'    => "Report {$title_key}",
 				'priority' => 'default',
 				'context'  => 'normal',
 			);
@@ -120,11 +121,7 @@ class WP_Stream_Reports_Sections {
 	 */
 	public function add_metabox() {
 		// Add a new section
-		self::$sections[] = array(
-			'title'    => 'All activity',
-			'data'     => array(),
-			'priority' => 'default',
-		);
+		self::$sections[] = array();
 
 		// Update the database option
 		$this->update_option();
@@ -134,11 +131,15 @@ class WP_Stream_Reports_Sections {
 	 * This function will remove the metabox from the current view.
 	 */
 	public function delete_metabox() {
-		$meta_key = filter_input( INPUT_GET, 'key', FILTER_VALIDATE_INT );
+		$meta_key = false;
+		if ( isset( $_GET[ 'key' ] ) && is_numeric( $_GET['key'] ) ) {
+			$meta_key = (int) $_GET['key'];
+		}
 
 		// Unset the metabox from the array.
 		unset( self::$sections[$meta_key] );
 
+		// If there is no more section. We delete the user option.
 		if ( empty( self::$sections ) ) {
 			delete_user_option(
 				get_current_user_id(),
