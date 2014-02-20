@@ -14,7 +14,6 @@
  * @param array   $backtrace  (optional) Contains stack backtrace of deprecated function
  */
 function wp_stream_deprecated_function( $function, $version, $alternate = null, $backtrace = null ) {
-
 	/**
 	 * Passes the function name, the Stream version that deprecated the function,
 	 * and what function to use instead.
@@ -39,7 +38,13 @@ function wp_stream_deprecated_function( $function, $version, $alternate = null, 
 	}
 
 	if ( ! empty( $alternate ) ) {
-		$alternate = sprintf( __( 'Use %s instead.', 'stream' ), esc_html( $alternate ) );
+		$alternate = sprintf(
+			__( 'Use %s instead.', 'stream' ),
+			sprintf(
+				'<code>%s</code>',
+				$alternate
+			)
+		);
 	} else {
 		$alternate = __( 'There is no alternative available.', 'stream' );
 	}
@@ -47,11 +52,56 @@ function wp_stream_deprecated_function( $function, $version, $alternate = null, 
 	trigger_error(
 		sprintf(
 			__( '%1$s is <strong>deprecated</strong> since Stream version %2$s! %3$s', 'stream' ),
-			esc_html( $function ),
+			sprintf(
+				'<code>%s</code>',
+				esc_html( $function )
+			),
 			esc_html( $version ),
-			esc_html( $alternate )
+			$alternate // xss ok
 		)
 	);
+}
 
-	trigger_error( print_r( $backtrace ) );
+/**
+ * stream_query()
+ *
+ * @deprecated 1.2.4
+ */
+function stream_query( $args = array() ) {
+	wp_stream_deprecated_function( __FUNCTION__, '1.2.4', 'wp_stream_query', debug_backtrace() );
+
+	return wp_stream_query( $args );
+}
+
+/**
+ * get_stream_meta()
+ *
+ * @deprecated 1.2.4
+ */
+function get_stream_meta( $record_id, $key = '', $single = false ) {
+	wp_stream_deprecated_function( __FUNCTION__, '1.2.4', 'wp_stream_get_meta', debug_backtrace() );
+
+	return wp_stream_get_meta( $record_id, $key, $single );
+}
+
+/**
+ * update_stream_meta()
+ *
+ * @deprecated 1.2.4
+ */
+function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
+	wp_stream_deprecated_function( __FUNCTION__, '1.2.4', 'wp_stream_update_meta', debug_backtrace() );
+
+	return wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value );
+}
+
+/**
+ * existing_records()
+ *
+ * @deprecated 1.2.4
+ */
+function existing_records( $column, $table = '' ) {
+	wp_stream_deprecated_function( __FUNCTION__, '1.2.4', 'wp_stream_existing_records', debug_backtrace() );
+
+	return wp_stream_existing_records( $column, $table );
 }

@@ -70,7 +70,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				$links[ __( 'View', 'stream' ) ] = $link;
 			}
 			if ( 'updated' == $record->action ) {
-				if ( $revision_id = get_stream_meta( $record->ID, 'revision_id', true ) ) {
+				if ( $revision_id = wp_stream_get_meta( $record->ID, 'revision_id', true ) ) {
 					$links[ __( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
 				}
 			}

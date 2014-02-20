@@ -27,7 +27,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_transition_post_status' ) );
 
 		//Check if the entry is in the database
-		$result = stream_query(
+		$result = wp_stream_query(
 			array(
 				'object_id'  => $post_id,
 				'context'    => 'post',
@@ -57,7 +57,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_deleted_post' ) );
 
 		//Check if the entry is in the database
-		$result = stream_query(
+		$result = wp_stream_query(
 			array(
 				'object_id' => $post_id,
 				'context'   => 'post',

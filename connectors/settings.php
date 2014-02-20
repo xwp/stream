@@ -223,7 +223,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[$record->context] );
 						$url  = admin_url( $submenu_slug );
 
-						$field_name = get_stream_meta( $record->ID, 'option', true );
+						$field_name = wp_stream_get_meta( $record->ID, 'option', true );
 						if ( $field_name !== '' ) {
 							$url = sprintf( '%s#%s%s', rtrim( preg_replace( '/#.*/', '', $url ), '/' ), self::HIGHLIGHT_FIELD_URL_HASH_PREFIX, $field_name );
 						}

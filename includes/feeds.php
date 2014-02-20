@@ -128,7 +128,7 @@ class WP_Stream_Feeds {
 			'orderby'          => isset( $_GET['orderby'] ) ? (string) $_GET['orderby'] : 'ID',
 			'fields'           => isset( $_GET['fields'] ) ? (string) $_GET['fields'] : '',
 		);
-		$records = stream_query( $args );
+		$records = wp_stream_query( $args );
 
 		$latest_record = isset( $records[0]->created ) ? $records[0]->created : null;
 

@@ -156,7 +156,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
-		$items = stream_query( $args );
+		$items = wp_stream_query( $args );
 		return $items;
 	}
 
@@ -374,7 +374,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * results of existing records.  All items that do not exist in records
 	 * get assigned a disabled value of "true".
 	 *
-	 * @uses   existing_records (see query.php)
+	 * @uses   wp_stream_existing_records (see query.php)
 	 * @since  1.0.4
 	 * @param  string  Column requested
 	 * @param  string  Table to be queried
@@ -412,7 +412,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 
-		$existing_records = existing_records( $column, $table );
+		$existing_records = wp_stream_existing_records( $column, $table );
 		foreach ( $all_records as $record => $label ) {
 			if ( array_key_exists( $record , $existing_records ) ) {
 				$all_records[$record] = array( 'label' => $label, 'disabled' => '' );

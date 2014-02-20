@@ -518,7 +518,7 @@ class WP_Stream_Admin {
 		$args = array(
 			'records_per_page' => isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5,
 		);
-		$records = stream_query( $args );
+		$records = wp_stream_query( $args );
 
 		if ( ! $records ) {
 			?>
@@ -686,7 +686,7 @@ class WP_Stream_Admin {
 		$query = wp_parse_args( $query, $default );
 
 		//Run query
-		return stream_query( $query );
+		return wp_stream_query( $query );
 	}
 
 	/**

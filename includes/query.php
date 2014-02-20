@@ -252,15 +252,15 @@ class WP_Stream_Query {
 
 }
 
-function stream_query( $args = array() ) {
+function wp_stream_query( $args = array() ) {
 	return WP_Stream_Query::get_instance()->query( $args );
 }
 
-function get_stream_meta( $record_id, $key = '', $single = false ) {
+function wp_stream_get_meta( $record_id, $key = '', $single = false ) {
 	return get_metadata( 'record', $record_id, $key, $single );
 }
 
-function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
+function wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
 	return update_metadata( 'record', $record_id, $meta_key, $meta_value, $prev_value );
 }
 
@@ -279,7 +279,7 @@ function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '
  * @param  string  Requested Table
  * @return array   Array of items to be output to select dropdowns
  */
-function existing_records( $column, $table = '' ) {
+function wp_stream_existing_records( $column, $table = '' ) {
 	global $wpdb;
 
 	switch ( $table ) {
