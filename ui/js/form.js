@@ -159,27 +159,31 @@ jQuery(function($){
 					}
 				} );
 			});
-		};
+		},
 
-	divTriggers
-		// Add new rule
-		.on( 'click.sn', btns.add_trigger, function(e) {
-			e.preventDefault();
-			var $this    = $(this),
-				index    = 0,
+		add_trigger = function (group_index) {
+			var index    = 0,
 				lastItem = null,
-				group    = divTriggers.find('.group[rel=' + $this.data('group') + ']' );
+				group    = divTriggers.find('.group[rel=' + group_index + ']' );
 
 			if ( ( lastItem = divTriggers.find('.trigger').last() ) && lastItem.size() ) {
 				index = parseInt( lastItem.attr('rel') ) + 1;
 			}
 
 			group.append( tmpl( $.extend(
-				{ index: index, group: $this.data('group') },
+				{ index: index, group: group_index },
 				stream_notifications
 			) ) );
 			group.find('.trigger').first().addClass('first');
 			selectify( group.find('select') );
+		};
+
+	divTriggers
+		// Add new rule
+		.on( 'click.sn', btns.add_trigger, function(e) {
+			e.preventDefault();
+
+			add_trigger($(this).data('group'));
 		})
 
 		// Add new group
