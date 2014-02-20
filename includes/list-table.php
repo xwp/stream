@@ -608,7 +608,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	static function include_null_occurrences( $sql, $args ) {
 		$meta_key = 'occurrences';
 
-		if( preg_match( sprintf( '#`?%s`?.`?meta_key`?\s+=\s+\'%s\'#', WP_Stream_DB::$table_meta, $meta_key ), $sql ) ) {
+		if( preg_match( sprintf( '#`?%s`?\.`?meta_key`?\s+=\s+\'%s\'#', WP_Stream_DB::$table_meta, $meta_key ), $sql ) ) {
 			// replace INNER JOIN with LEFT JOIN
 			$sql = preg_replace( sprintf( '#INNER(\s+JOIN\s+`?%s`?)#', WP_Stream_DB::$table_meta ), 'LEFT\1', $sql );
 
