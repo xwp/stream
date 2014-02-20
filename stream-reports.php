@@ -118,8 +118,8 @@ class WP_Stream_Reports {
 		add_action( 'init', array( 'WP_Stream_Reports_Settings', 'load' ), 9 );
 
 		// Load sections here
-		require_once WP_STREAM_REPORTS_INC_DIR . 'sections.php';
-		add_action( 'init', array( 'WP_Stream_Reports_Sections', 'get_instance' ), 12 );
+		require_once WP_STREAM_REPORTS_INC_DIR . 'metaboxes.php';
+		add_action( 'init', array( 'WP_Stream_Reports_Metaboxes', 'get_instance' ), 12 );
 
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
@@ -147,8 +147,8 @@ class WP_Stream_Reports {
 		// Create nonce right away so it is accessible everywhere
 		self::$nonce = array( 'stream_reports_nonce' => wp_create_nonce( 'stream-reports-page' ) );
 
-		$sections = WP_Stream_Reports_Sections::get_instance();
-		add_action( 'load-' . self::$screen_id, array( $sections, 'load_page' ) );
+		$metabox = WP_Stream_Reports_Metaboxes::get_instance();
+		add_action( 'load-' . self::$screen_id, array( $metabox, 'load_page' ) );
 	}
 
 	/**

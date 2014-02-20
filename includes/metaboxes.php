@@ -6,7 +6,7 @@
  * @author Jonathan Bardo <jonathan.bardo@x-team.com>
  */
 
-class WP_Stream_Reports_Sections {
+class WP_Stream_Reports_Metaboxes {
 
 	/**
 	 * Hold Stream Reports Section instance
@@ -148,7 +148,24 @@ class WP_Stream_Reports_Sections {
 			$chart_types[ $args['chart-type'] ] .= ' active';
 		}
 
-		include WP_STREAM_REPORTS_VIEW_DIR . 'section.php';
+		include WP_STREAM_REPORTS_VIEW_DIR . 'metabox.php';
+	}
+
+	/**
+	 * Update configuration array from ajax call and save this to the user option
+	 */
+	public function save_metabox_config() {
+		//@todo Parse the new config from $_POSt and validate all field
+
+		// Update the database option
+		$this->update_option();
+	}
+
+	/**
+	 * Instantly update chart based on user configuration
+	 */
+	public function update_metabox_display() {
+		//@todo Generate new data for the chart and send json back for realtime update
 	}
 
 	/**
@@ -158,8 +175,8 @@ class WP_Stream_Reports_Sections {
 		// Add a new section
 		self::$sections[] = array();
 
-		// Update the database option
-		$this->update_option();
+		// Update the database option (pass true in param so the function redirect)
+		$this->update_option( true );
 	}
 
 	/**
@@ -206,30 +223,43 @@ class WP_Stream_Reports_Sections {
 			);
 		}
 
-		// Update the database option
-		$this->update_option();
+		// Update the database option (pass true in param so the function redirect)
+		$this->update_option( true );
 	}
 
-	// Handle option updating in the database
-	private function update_option() {
+	/**
+	 * Handle option updating in the database
+	 *
+	 * @param bool $redirect If the function must redirect and exit here
+	 */
+	private function update_option( $redirect = false ) {
 		$is_saved = update_user_option( get_current_user_id(), __CLASS__, self::$sections );
 
-		if ( $is_saved ) {
+		// If we need to redirect back to stream report page
+		if ( $is_saved && $redirect ) {
 			wp_redirect(
 				add_query_arg(
 					array( 'page' => WP_Stream_Reports::REPORTS_PAGE_SLUG ),
 					admin_url( 'admin.php' )
 				)
 			);
+			exit;
 		} else {
 			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream-reports' ) );
+		}
+
+		// If it was a standard ajax call requesting json back.
+		if ( $is_saved ) {
+			wp_send_json_success();
+		} else {
+			wp_send_json_error();
 		}
 	}
 
 	/**
 	 * Return active instance of WP_Stream_Reports, create one if it doesn't exist
 	 *
-	 * @return WP_Stream_Reports
+	 * @return WP_Stream_Reports_Metaboxes
 	 */
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
