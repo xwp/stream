@@ -92,6 +92,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 1.2.3 =
+**2014/02/21** - Replacement function for filter_input family to avoid PHP bug. Filter added to main Stream query. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
 = 1.2.2 =
 **2014/02/19** - Prevent records of disabled connectors from appearing in the Stream. Bug fixes. Props [kucrut](http://profiles.wordpress.org/kucrut/), [johnregan3](http://profiles.wordpress.org/johnregan3/)
 
