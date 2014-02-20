@@ -13,6 +13,8 @@
 
 			// Configuration toggle
 			$('.postbox-title-action .edit-box').click(function(){
+
+
 				// Change value of button
 				$(this).text( $(this).text() === 'Configure' ? 'Cancel' : 'Configure' );
 
@@ -21,6 +23,11 @@
 
 				// Show the delete button
 				$(this).parent().next().find('a').toggleClass('visible');
+
+				var $postbox = $(this).parents('.postbox');
+
+				//Open the section if it's hidden
+				$postbox.removeClass('closed');
 
 				// Show the configure div
 				$(this).parents('.postbox').find('.inside .configure').toggleClass('visible');

@@ -37,7 +37,7 @@
 .stream_page_wp_stream_reports .postbox .configure {
 	height: 0px;
 	overflow: hidden;
-	margin: 0;
+	margin: -1px 0 0 0;
 	border-bottom: 1px solid #eee;
 }
 
