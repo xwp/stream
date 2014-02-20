@@ -24,6 +24,8 @@ class XT_Filter_Input {
 	);
 
 	public static function super( $type, $variable_name, $filter = null, array $options = array() ) {
+		$super = null;
+
 		switch ( $type ) {
 			case INPUT_POST   : $super = $_POST; break;
 			case INPUT_GET    : $super = $_GET; break;
