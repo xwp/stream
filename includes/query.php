@@ -245,6 +245,8 @@ class WP_Stream_Query {
 		$orderby
 		$limits";
 
+		$sql = apply_filters( 'wp_stream_query', $sql, $args );
+
 		$results = $wpdb->get_results( $sql );
 
 		return $results;
