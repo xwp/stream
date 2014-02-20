@@ -3,39 +3,51 @@
 class WP_Stream_Filter_Input {
 
 	public static $filter_callbacks = array(
-		FILTER_DEFAULT          => null,
-		FILTER_VALIDATE_BOOLEAN => 'is_bool',
-		FILTER_VALIDATE_EMAIL   => 'is_email',
-		FILTER_VALIDATE_FLOAT   => 'is_float',
-		FILTER_VALIDATE_INT     => 'is_int',
-		FILTER_VALIDATE_IP      => array( 'WP_Stream_Filter_Input', 'is_ip_address' ),
-		FILTER_VALIDATE_REGEXP  => array( 'WP_Stream_Filter_Input', 'is_regex' ),
-		FILTER_VALIDATE_URL     => 'wp_http_validate_url',
-
-		FILTER_SANITIZE_EMAIL   => 'sanitize_email',
-		FILTER_SANITIZE_ENCODED => 'esc_url_raw',
-		FILTER_SANITIZE_NUMBER_FLOAT => 'floatval',
-		FILTER_SANITIZE_NUMBER_INT => 'intval',
-		FILTER_SANITIZE_SPECIAL_CHARS => 'htmlspecialchars',
+		FILTER_DEFAULT                     => null,
+		// Validate
+		FILTER_VALIDATE_BOOLEAN            => 'is_bool',
+		FILTER_VALIDATE_EMAIL              => 'is_email',
+		FILTER_VALIDATE_FLOAT              => 'is_float',
+		FILTER_VALIDATE_INT                => 'is_int',
+		FILTER_VALIDATE_IP                 => array( 'WP_Stream_Filter_Input', 'is_ip_address' ),
+		FILTER_VALIDATE_REGEXP             => array( 'WP_Stream_Filter_Input', 'is_regex' ),
+		FILTER_VALIDATE_URL                => 'wp_http_validate_url',
+		// Sanitize
+		FILTER_SANITIZE_EMAIL              => 'sanitize_email',
+		FILTER_SANITIZE_ENCODED            => 'esc_url_raw',
+		FILTER_SANITIZE_NUMBER_FLOAT       => 'floatval',
+		FILTER_SANITIZE_NUMBER_INT         => 'intval',
+		FILTER_SANITIZE_SPECIAL_CHARS      => 'htmlspecialchars',
 		FILTER_SANITIZE_FULL_SPECIAL_CHARS => 'htmlspecialchars',
-		FILTER_SANITIZE_STRING => 'sanitize_text_field',
-		FILTER_SANITIZE_URL => 'esc_url_raw',
-		FILTER_UNSAFE_RAW => null,
+		FILTER_SANITIZE_STRING             => 'sanitize_text_field',
+		FILTER_SANITIZE_URL                => 'esc_url_raw',
+		// Other
+		FILTER_UNSAFE_RAW                  => null,
 	);
 
 	public static function super( $type, $variable_name, $filter = null, array $options = array() ) {
 		$super = null;
 
 		switch ( $type ) {
-			case INPUT_POST   : $super = $_POST; break;
-			case INPUT_GET    : $super = $_GET; break;
-			case INPUT_COOKIE : $super = $_COOKIE; break;
-			case INPUT_ENV    : $super = $_ENV; break;
-			case INPUT_SERVER : $super = $_SERVER; break;
+			case INPUT_POST   :
+				$super = $_POST;
+				break;
+			case INPUT_GET    :
+				$super = $_GET;
+				break;
+			case INPUT_COOKIE :
+				$super = $_COOKIE;
+				break;
+			case INPUT_ENV    :
+				$super = $_ENV;
+				break;
+			case INPUT_SERVER :
+				$super = $_SERVER;
+				break;
 		}
 
 		if ( is_null( $super ) ) {
-			throw new Exception( 'Invalid use, type must be one of INPUT_* family.' );
+			throw new Exception( 'Invalid use, type must be one of INPUT_* family.', 'stream' );
 		}
 
 		if ( ! isset( $super[ $variable_name ] ) ) {
