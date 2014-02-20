@@ -245,6 +245,13 @@ class WP_Stream_Query {
 		$orderby
 		$limits";
 
+		/**
+		 * Allows developers to change final SQL of Stream Query
+		 *
+		 * @param  string
+		 * @param  array  $args  Arguments passed to query
+		 * @return string
+		 */
 		$sql = apply_filters( 'wp_stream_query', $sql, $args );
 
 		$results = $wpdb->get_results( $sql );
