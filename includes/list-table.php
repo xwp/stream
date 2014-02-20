@@ -113,10 +113,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$args = array();
 
 		// Parse sorting params
-		if ( ! $order = filter_input( INPUT_GET, 'order' ) ) {
+		if ( ! $order = xt_filter_input( INPUT_GET, 'order' ) ) {
 			$order = 'DESC';
 		}
-		if ( ! $orderby = filter_input( INPUT_GET, 'orderby' ) ) {
+		if ( ! $orderby = xt_filter_input( INPUT_GET, 'orderby' ) ) {
 			$orderby = '';
 		}
 		$args['order']   = $order;
@@ -131,7 +131,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 
 		foreach ( $allowed_params as $param ) {
-			if ( $paramval = filter_input( INPUT_GET, $param ) ) {
+			if ( $paramval = xt_filter_input( INPUT_GET, $param ) ) {
 				$args[$param] = $paramval;
 			}
 		}
@@ -481,12 +481,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$out = sprintf(
 				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
 				esc_attr( $name ),
-				esc_attr( filter_input( INPUT_GET, $name ) ),
+				esc_attr( xt_filter_input( INPUT_GET, $name ) ),
 				esc_html( $title )
 			);
 		} else {
 			$options  = array( '<option value=""></option>' );
-			$selected = filter_input( INPUT_GET, $name );
+			$selected = xt_filter_input( INPUT_GET, $name );
 			foreach ( $items as $v => $label ) {
 				$options[$v] = sprintf(
 					'<option value="%s" %s %s>%s</option>',

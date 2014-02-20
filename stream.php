@@ -67,6 +67,9 @@ class WP_Stream {
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 
+		// Load filters polyfill
+		require_once WP_STREAM_INC_DIR . 'filters.php';
+
 		// Load DB helper class
 		require_once WP_STREAM_INC_DIR . 'db-actions.php';
 		$this->db = new WP_Stream_DB;
