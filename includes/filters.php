@@ -1,6 +1,6 @@
 <?php
 
-class XT_Filter_Input {
+class WP_Stream_Filter_Input {
 
 	public static $filter_callbacks = array(
 		FILTER_DEFAULT          => null,
@@ -8,8 +8,8 @@ class XT_Filter_Input {
 		FILTER_VALIDATE_EMAIL   => 'is_email',
 		FILTER_VALIDATE_FLOAT   => 'is_float',
 		FILTER_VALIDATE_INT     => 'is_int',
-		FILTER_VALIDATE_IP      => array( 'XT_Filter_Input', 'is_ip_address' ),
-		FILTER_VALIDATE_REGEXP  => array( 'XT_Filter_Input', 'is_regex' ),
+		FILTER_VALIDATE_IP      => array( 'WP_Stream_Filter_Input', 'is_ip_address' ),
+		FILTER_VALIDATE_REGEXP  => array( 'WP_Stream_Filter_Input', 'is_regex' ),
 		FILTER_VALIDATE_URL     => 'wp_http_validate_url',
 
 		FILTER_SANITIZE_EMAIL   => 'sanitize_email',
@@ -89,10 +89,10 @@ class XT_Filter_Input {
 
 }
 
-function xt_filter_input( $type, $variable_name, $filter = null, array $options = array() ) {
-	return call_user_func_array( array( 'XT_Filter_Input', 'super' ), func_get_args() );
+function wp_stream_filter_input( $type, $variable_name, $filter = null, array $options = array() ) {
+	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'super' ), func_get_args() );
 }
 
-function xt_filter_var( $var, $filter = null, array $options = array() ) {
-	return call_user_func_array( array( 'XT_Filter_Input', 'filter' ), func_get_args() );
+function wp_stream_filter_var( $var, $filter = null, array $options = array() ) {
+	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'filter' ), func_get_args() );
 }

@@ -251,8 +251,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	public static function callback_delete_site_transient_update_themes() {
-		$stylesheet = xt_filter_input( INPUT_GET, 'stylesheet' );
-		if ( xt_filter_input( INPUT_GET, 'action' ) != 'delete' || ! $stylesheet ) {
+		$stylesheet = wp_stream_filter_input( INPUT_GET, 'stylesheet' );
+		if ( wp_stream_filter_input( INPUT_GET, 'action' ) != 'delete' || ! $stylesheet ) {
 			return;
 		}
 		$theme = $GLOBALS['theme'];
@@ -267,7 +267,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 
 	public static function callback_pre_option_uninstall_plugins() {
 		global $plugins;
-		if ( xt_filter_input( INPUT_GET, 'action' ) != 'delete-selected' && xt_filter_input( INPUT_POST, 'action2' ) != 'delete-selected' ) {
+		if ( wp_stream_filter_input( INPUT_GET, 'action' ) != 'delete-selected' && wp_stream_filter_input( INPUT_POST, 'action2' ) != 'delete-selected' ) {
 			return false;
 		}
 		$_plugins = get_plugins();
@@ -280,7 +280,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	public static function callback_pre_set_site_transient_update_plugins( $value ) {
-		if ( ! xt_filter_input( INPUT_POST, 'verify-delete' ) || ! ( $plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' ) ) ) {
+		if ( ! wp_stream_filter_input( INPUT_POST, 'verify-delete' ) || ! ( $plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' ) ) ) {
 			return $value;
 		}
 		foreach ( $plugins_to_delete as $plugin => $data ) {

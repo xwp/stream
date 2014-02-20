@@ -225,7 +225,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @action retrieve_password
 	 */
 	public static function callback_retrieve_password( $user_login ) {
-		if ( xt_filter_var( $user_login, FILTER_VALIDATE_EMAIL ) ) {
+		if ( wp_stream_filter_var( $user_login, FILTER_VALIDATE_EMAIL ) ) {
 			$user = get_user_by( 'email', $user_login );
 		} else {
 			$user = get_user_by( 'login', $user_login );

@@ -78,7 +78,7 @@ class WP_Stream_Admin {
 	 * @return string
 	 */
 	public static function admin_notices() {
-		$message = xt_filter_input( INPUT_GET, 'message' );
+		$message = wp_stream_filter_input( INPUT_GET, 'message' );
 
 		switch ( $message ) {
 			case 'data_erased':
@@ -287,7 +287,7 @@ class WP_Stream_Admin {
 
 			<?php
 			$sections   = WP_Stream_Settings::get_fields();
-			$active_tab = xt_filter_input( INPUT_GET, 'tab' );
+			$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 			?>
 
 			<h2 class="nav-tab-wrapper">

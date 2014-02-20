@@ -91,7 +91,7 @@ class WP_Stream_Query {
 		}
 
 		if ( $args['ip'] ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", xt_filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
+			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", wp_stream_filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
 		}
 
 		if ( $args['search'] ) {
