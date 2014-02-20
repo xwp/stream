@@ -32,7 +32,7 @@ jQuery(function($){
 
 		select2_format = function( item ) {
 			var text = item.text;
-			if ( typeof item.avatar != 'undefined' ) {
+			if ( typeof item.avatar !== 'undefined' ) {
 				text = item.avatar + item.text;
 			}
 			return text;
@@ -49,10 +49,14 @@ jQuery(function($){
 			// Only allow multi items if we have a proper operator
 			maximumSelectionSize: function() {
 				var item = $('.select2-container-active.trigger-value');
-				if ( ! item.size() ) return 0;
+				if ( ! item.size() ) {
+					return 0;
+				}
 
 				var operator = item.parents('.form-row').first().find('select.trigger-operator').val();
-				if ( ! operator ) return 0;
+				if ( ! operator ) {
+					return 0;
+				}
 
 				if ( operator.match(/in$/) ) {
 					return 0;
@@ -77,13 +81,13 @@ jQuery(function($){
 			$(elements).filter(':not(.select2-offscreen)').each( function() {
 				var $this = $(this),
 					elementArgs = jQuery.extend( {}, args ),
-					tORa = $this.closest('#alerts, #triggers').attr('id');
+					tORa = $this.closest('#alerts, #triggers').attr('id')
 				;
 				elementArgs.width = parseInt( $this.css('width'), 10 ) + 30;
 				if ( $this.hasClass('ajax') ) {
 					var type = '';
 					if ( ! ( type = $this.data( 'ajax-key' ) ) ) {
-						if ( tORa == 'triggers' ) {
+						if ( tORa === 'triggers' ) {
 							type = $this.parents('.form-row').first().find('select.trigger-type').val();
 						} else {
 							type = $this.parents('.form-row').eq(1).find('select.alert-type').val();
@@ -99,7 +103,7 @@ jQuery(function($){
 								action: 'stream_notification_endpoint',
 								type: type,
 								q: term,
-								args: $(this).attr("data-args")
+								args: $(this).attr( 'data-args' )
 							};
 						},
 						results: function (data) {
@@ -118,9 +122,9 @@ jQuery(function($){
 									q     : id,
 									single: 1,
 									type  : type,
-									args: $(this).attr("data-args")
+									args: $(this).attr( 'data-args' )
 								},
-								dataType: "json"
+								dataType: 'json'
 							}).done( function( data ) { callback( data.data ); } );
 						}
 					};
@@ -261,14 +265,14 @@ jQuery(function($){
 
 			$this.parents('.alert').first().remove();
 
-			$(".alert .circle").each(function (index) {
+			$( '.alert .circle' ).each(function (index) {
 				$(this).text(index + 1);
 			});
 		})
 	;
 
 	// Populate form values if it exists
-	if ( typeof notification_rule != 'undefined'  ) {
+	if ( typeof notification_rule !== 'undefined'  ) {
 
 		// Triggers
 		jQuery.each( notification_rule.triggers, function(i, trigger) {
@@ -307,9 +311,8 @@ jQuery(function($){
 		} );
 
 		// Alerts
-		for ( i = 0; i < notification_rule.alerts.length; i++ ) {
-			var alert = notification_rule.alerts[i],
-				row,
+		jQuery.each( notification_rule.alerts, function(i, alert) {
+			var row,
 				optionFields,
 				valueField;
 
@@ -335,7 +338,7 @@ jQuery(function($){
 					}
 				}
 			});
-		}
+		});
 	}
 
 	// Do not submit if no triggers exist
