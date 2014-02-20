@@ -10,70 +10,59 @@
  * Configure Section
  * (There is override of core css declaration)
  */
-#dashboard-widgets h3 .postbox-title-action {
+.stream_page_wp_stream_reports #dashboard-widgets h3 .postbox-title-action {
 	position: inherit;
 	padding: 0 8px 0 0;
-	top: 5px;
 	float: right;
 }
 
-.js #dashboard-widgets h3 .postbox-title-action.postbox-delete-action a {
+.js.stream_page_wp_stream_reports #dashboard-widgets h3 .postbox-title-action.postbox-delete-action a {
 	color : #a00;
 	visibility: hidden;
+	margin-right: 5px;
 }
 
-.js #dashboard-widgets h3 .postbox-title-action.postbox-delete-action a.visible {
+.js.stream_page_wp_stream_reports #dashboard-widgets h3 .postbox-title-action.postbox-delete-action a.visible {
 	visibility: visible;
 }
 
-.js #dashboard-widgets h3 .postbox-title-action.postbox-delete-action a:hover {
+.js.stream_page_wp_stream_reports #dashboard-widgets h3 .postbox-title-action.postbox-delete-action a:hover {
 	color : #f00;
 }
 
-.postbox .inside .configure {
+.stream_page_wp_stream_reports .postbox > .inside {
+	margin: 0;
+}
+
+.stream_page_wp_stream_reports .postbox .configure {
 	height: 0px;
 	overflow: hidden;
-	padding-top: 0;
-	padding-bottom: 0;
-	margin-top: -12px;
-	margin-bottom: 0;
-	-moz-transition-duration: 0.4s;
-	-webkit-transition-duration: 0.4s;
-	-o-transition-duration: 0.4s;
-	transition-duration: 0.4s;
-	-moz-transition-timing-function: ease-out;
-	-webkit-transition-timing-function: ease-out;
-	-o-transition-timing-function: ease-out;
-	transition-timing-function: ease-out;
+	margin: 0;
 	border-bottom: 1px solid #eee;
 }
 
-.postbox .inside .configure.visible {
-	height: 40px;
-	-moz-transition-duration: 0.4s;
-	-webkit-transition-duration: 0.4s;
-	-o-transition-duration: 0.4s;
-	transition-duration: 0.4s;
-	-moz-transition-timing-function: ease-in;
-	-webkit-transition-timing-function: ease-in;
-	-o-transition-timing-function: ease-in;
-	transition-timing-function: ease-in;
+.stream_page_wp_stream_reports .postbox .configure .inside {
+	margin: 0;
+	padding: 10px 12px;
+}
+
+.stream_page_wp_stream_reports .postbox .configure.visible {
+	height: auto;
 	overflow: hidden;
 }
 
-.postbox .inside .configure .chart-options {
-	width: 30%;
-	margin: 6px 5px 0 12px;
+.stream_page_wp_stream_reports .postbox .configure .chart-options {
+	width: 185px;
 }
 
-#normal-sortables .postbox .submit{
-	padding: 6px 12px;
+.stream_page_wp_stream_reports .postbox .configure input.button {
+	float: right;
 }
 
-.postbox .inside {
+.stream_page_wp_stream_reports .postbox .inside {
 	padding: 0;
 }
 
-.postbox .inside .chart {
+.stream_page_wp_stream_reports .postbox .inside .chart {
 	padding: 12px;
 }
