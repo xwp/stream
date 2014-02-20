@@ -26,6 +26,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		add_filter( 'stream_query_args', array( __CLASS__, 'register_occurrences_for_sorting' ) );
+		add_filter( 'wp_stream_query',   array( __CLASS__, 'include_null_occurrences' ), 10, 2 );
 		set_screen_options();
 	}
 
@@ -609,6 +610,23 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		}
 
 		return $args;
+	}
+
+	/**
+	 *	@filter wp_stream_query
+	 */
+	static function include_null_occurrences( $sql, $args ) {
+		$meta_key = 'occurrences';
+
+		if( preg_match( sprintf( '#`?%s`?\.`?meta_key`?\s+=\s+\'%s\'#', WP_Stream_DB::$table_meta, $meta_key ), $sql ) ) {
+			// replace INNER JOIN with LEFT JOIN
+			$sql = preg_replace( sprintf( '#INNER(\s+JOIN\s+`?%s`?)#', WP_Stream_DB::$table_meta ), 'LEFT\1', $sql );
+
+			// replace .meta_key = 'occurrences' with .meta_key = 'occurrences' OR .meta_key IS NULL
+			$sql = preg_replace( sprintf( '#(`?%s`?\.`?meta_key`?) = \'%s\'#', WP_Stream_DB::$table_meta, $meta_key ), '\0 OR \1 IS NULL', $sql );
+		}
+
+		return $sql;
 	}
 
 }
