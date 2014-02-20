@@ -112,7 +112,7 @@ class WP_Stream_Notifications_Form
 		if ( $is_single ) {
 			switch ( $type ) {
 				case 'author':
-					$user_ids = explode( ',', $query );
+					$user_ids   = explode( ',', $query );
 					$user_query = new WP_User_Query(
 						array(
 							'include' => $user_ids,
@@ -131,10 +131,10 @@ class WP_Stream_Notifications_Form
 					break;
 				case 'action':
 				case 'context':
-					$items = WP_Stream_Connectors::$term_labels['stream_' . $type];
-					$values  = explode( ',', $query );
-					$items = array_intersect_key( $items, array_flip( $values ) );
-					$data    = $this->format_json_for_select2( $items );
+					$items  = WP_Stream_Connectors::$term_labels['stream_' . $type];
+					$values = explode( ',', $query );
+					$items  = array_intersect_key( $items, array_flip( $values ) );
+					$data   = $this->format_json_for_select2( $items );
 					break;
 			}
 		} else {
@@ -154,7 +154,7 @@ class WP_Stream_Notifications_Form
 				case 'context':
 					$items = WP_Stream_Connectors::$term_labels['stream_' . $type];
 					$items = preg_grep( sprintf( '/%s/i', $query ), $items );
-					$data    = $this->format_json_for_select2( $items );
+					$data  = $this->format_json_for_select2( $items );
 					break;
 			}
 		}
