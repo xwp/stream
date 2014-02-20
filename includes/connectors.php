@@ -43,19 +43,10 @@ class WP_Stream_Connectors {
 		 */
 		self::$connectors = apply_filters( 'wp_stream_connectors', $classes );
 
-		foreach ( self::$connectors as $connector ) {
-			self::$term_labels['stream_connector'][$connector::$name] = $connector::get_label();
-		}
-
 		// Get active connectors
 		$active_connectors = WP_Stream_Settings::get_active_connectors();
 
 		foreach ( self::$connectors as $connector ) {
-
-			if ( ! in_array( $connector::$name, $active_connectors ) ) {
-				continue;
-			}
-
 			// Check if the connectors extends the WP_Stream_Connector class, if not skip it
 			if ( ! is_subclass_of( $connector, 'WP_Stream_Connector' ) ) {
 				add_action(
@@ -65,6 +56,11 @@ class WP_Stream_Connectors {
 					}
 				);
 
+				continue;
+			}
+
+			self::$term_labels['stream_connector'][$connector::$name] = $connector::get_label();
+			if ( ! in_array( $connector::$name, $active_connectors ) ) {
 				continue;
 			}
 
