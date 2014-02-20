@@ -20,9 +20,20 @@ class WP_Stream_Connectors {
 	);
 
 	/**
+	 * Admin notice messages
+	 *
+	 * @since 1.2.3
+	 * @var array
+	 */
+	protected static $admin_notices = array();
+
+
+	/**
 	 * Load built-in connectors
 	 */
 	public static function load() {
+		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
+
 		require_once WP_STREAM_CLASS_DIR . 'connector.php';
 
 		$classes = array();
@@ -49,11 +60,10 @@ class WP_Stream_Connectors {
 		foreach ( self::$connectors as $connector ) {
 			// Check if the connectors extends the WP_Stream_Connector class, if not skip it
 			if ( ! is_subclass_of( $connector, 'WP_Stream_Connector' ) ) {
-				add_action(
-					'admin_notices',
-					function() use( $connector ) {
-						printf( '<div class="error"><p>%s %s</p></div>', $connector, __( "class wasn't loaded because it doesn't extends the WP_Stream_Connector class", 'stream' ) );
-					}
+				self::$admin_notices[] = sprintf(
+					__( "%s class wasn't loaded because it doesn't extends the %s class.", 'stream' ),
+					$connector,
+					'WP_Stream_Connector'
 				);
 
 				continue;
@@ -78,4 +88,21 @@ class WP_Stream_Connectors {
 		}
 	}
 
+
+	/**
+	 * Print admin notices
+	 *
+	 * @since 1.2.3
+	 */
+	public static function admin_notices() {
+		if ( ! empty( self::$admin_notices ) ) :
+			?>
+			<div class="error">
+				<?php foreach ( self::$admin_notices as $message ) : ?>
+					<?php echo wpautop( esc_html( $message ) ); // xss ok ?>
+				<?php endforeach; ?>
+			</div>
+			<?php
+		endif;
+	}
 }
