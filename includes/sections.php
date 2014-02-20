@@ -99,13 +99,17 @@ class WP_Stream_Reports_Sections {
 			// Default metabox argument
 			$title_key = $key + 1;
 			$default   = array(
-				'title'    => "Report {$title_key}" . $configure,
-				'priority' => 'default',
-				'context'  => 'normal',
+				'title'      => "Report {$title_key}" . $configure,
+				'priority'   => 'default',
+				'context'    => 'normal',
+				'chart-type' => 'bar',
 			);
 
 			// Parse default argument
 			$section = wp_parse_args( $section, $default );
+
+			// Set the key for template use
+			$section['key'] = $key;
 
 			// Add the actual metabox
 			add_meta_box(
@@ -115,7 +119,7 @@ class WP_Stream_Reports_Sections {
 				WP_Stream_Reports::$screen_id,
 				$section['context'],
 				$section['priority'],
-				$key
+				$section
 			);
 		endforeach;
 	}
@@ -127,7 +131,22 @@ class WP_Stream_Reports_Sections {
 	 * @param $section
 	 */
 	public function metabox_content( $object, $section ) {
-		$key = $section['args'];
+		$args = $section['args'];
+
+		// Assigning template vars
+		$key = $section['args']['key'];
+
+		// Create an object of available charts
+		$chart_types = array(
+			'bar'  => 'dashicons-chart-bar',
+			'pie'  => 'dashicons-chart-pie',
+			'line' => 'dashicons-chart-area',
+		);
+
+		// Apply the active class to the active chart type used
+		if ( array_key_exists( $args['chart-type'], $chart_types ) ) {
+			$chart_types[ $args['chart-type'] ] .= ' active';
+		}
 
 		include WP_STREAM_REPORTS_VIEW_DIR . 'section.php';
 	}

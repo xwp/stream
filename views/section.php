@@ -1,5 +1,4 @@
 <div class="stream-section-wrapper" data-id="<?php echo esc_attr( $key ) ?>">
-
 	<div class="configure">
 		<div class="inside">
 			<select class="chart-options">
@@ -44,7 +43,16 @@
 					<option value="action">Frankie Jarrett's Activity by Action</option>
 				</optgroup>
 			</select>
-			<input type="button" name="submit" id="submit" class="button button-primary" value="<?php esc_html_e( 'Save', 'stream-reports' ) ?>">
+			<div class="chart-types">
+				<?php foreach ( $chart_types as $type => $class ): ?>
+				<div data-type="<?php echo esc_attr( $type ); ?>"
+						 class="dashicons <?php echo esc_attr( $class ); ?>"></div>
+				<?php endforeach; ?>
+			</div>
+			<input type="button"
+						 name="submit"
+						 class="button button-primary configure-submit disabled"
+						 value="<?php esc_html_e( 'Save', 'stream-reports' ) ?>">
 		</div>
 	</div>
 

@@ -59,6 +59,21 @@
 	float: right;
 }
 
+.stream_page_wp_stream_reports .postbox .configure .chart-types {
+	display: inline-block;
+	margin-left: 10px;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .chart-types .dashicons {
+	padding-left: 5px;
+	color: #888888;
+	cursor: pointer;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .chart-types .dashicons.active {
+	color: #000;
+}
+
 .stream_page_wp_stream_reports .postbox .inside {
 	padding: 0;
 }

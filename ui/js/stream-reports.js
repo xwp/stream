@@ -4,12 +4,27 @@
 
 	var Reports = {
 		init: function() {
+			// Variables
+			this.$configureDiv = $('.postbox .inside .configure');
+
 			// Let's configure event listener for all sections
 			this.configureSection();
 		},
 		configureSection: function() {
+			var t = this;
+
 			// Trigger select2js
-			$('.postbox .inside .configure .chart-options').select2();
+			t.$configureDiv.find('.chart-options').select2();
+
+			// Change chart type toggle
+			this.$configureDiv.find('.chart-types .dashicons').click(function() {
+				var $target = $(this);
+				if(!$target.hasClass('active')){
+					$target.siblings().removeClass('active');
+					$target.addClass('active');
+					t.configureEnableSaveButton($target);
+				}
+			});
 
 			// Confirmation of deletion
 			$('.postbox-delete-action a').click(function(){
@@ -20,24 +35,31 @@
 
 			// Configuration toggle
 			$('.postbox-title-action .edit-box').click(function(){
+				var $target = $(this);
 				// Change value of button
-				$(this).text( $(this).text() === 'Configure' ? 'Cancel' : 'Configure' );
+				$target.text( $target.text() === 'Configure' ? 'Cancel' : 'Configure' );
 
 				// Always show the cancel button
-				$(this).toggleClass('edit-box');
+				$target.toggleClass('edit-box');
 
 				// Show the delete button
-				$(this).parent().next().find('a').toggleClass('visible');
+				$target.parent().next().find('a').toggleClass('visible');
 
-				// Parent Container
-				var $postbox = $(this).parents('.postbox');
+				// Hold parent container
+				var $curPostbox = $target.parents('.postbox');
 
 				//Open the section if it's hidden
-				$postbox.removeClass('closed');
+				$curPostbox.removeClass('closed');
 
 				// Show the configure div
-				$postbox.find('.inside .configure').toggleClass('visible');
+				$curPostbox.find('.inside .configure').toggleClass('visible');
 			});
+		},
+		configureEnableSaveButton : function($target){
+			var $submit = $target.parents('.configure').find('.configure-submit');
+			if( $submit.hasClass('disabled') ) {
+				$submit.removeClass('disabled');
+			}
 		}
 	};
 
