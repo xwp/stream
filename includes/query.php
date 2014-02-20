@@ -248,7 +248,7 @@ class WP_Stream_Query {
 		/**
 		 * Allows developers to change final SQL of Stream Query
 		 *
-		 * @param  string
+		 * @param  string $sql   SQL statement
 		 * @param  array  $args  Arguments passed to query
 		 * @return string
 		 */
