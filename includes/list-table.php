@@ -22,7 +22,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		add_filter( 'stream_query_args', array( __CLASS__, 'register_occurrences_for_sorting' ) );
-		add_filter( 'wp_stream_query', array( __CLASS__, 'include_null_occurrences' ), 10, 2 );
+		add_filter( 'wp_stream_query',   array( __CLASS__, 'include_null_occurrences' ), 10, 2 );
 		set_screen_options();
 	}
 
