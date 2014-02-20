@@ -11,10 +11,15 @@
 			// Trigger select2js
 			$('.postbox .inside .configure .chart-options').select2();
 
+			// Confirmation of deletion
+			$('.postbox-delete-action a').click(function(){
+				if (!window.confirm('Do you really want to delete this section?\rThis cannot be undone.')) {
+					return false;
+				}
+			});
+
 			// Configuration toggle
 			$('.postbox-title-action .edit-box').click(function(){
-
-
 				// Change value of button
 				$(this).text( $(this).text() === 'Configure' ? 'Cancel' : 'Configure' );
 
@@ -24,13 +29,14 @@
 				// Show the delete button
 				$(this).parent().next().find('a').toggleClass('visible');
 
+				// Parent Container
 				var $postbox = $(this).parents('.postbox');
 
 				//Open the section if it's hidden
 				$postbox.removeClass('closed');
 
 				// Show the configure div
-				$(this).parents('.postbox').find('.inside .configure').toggleClass('visible');
+				$postbox.find('.inside .configure').toggleClass('visible');
 			});
 		}
 	};
