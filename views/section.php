@@ -1,4 +1,5 @@
-<div class="stream-section-wrapper" data-id="<?php echo esc_attr( $key ); ?>">
+<div class="stream-section-wrapper" data-id="<?php echo esc_attr( $key ) ?>">
+
 	<div class="configure">
 		<div class="inside">
 			<select class="chart-options">
@@ -13,4 +14,5 @@
 	<div class="chart">
 		This is where the magic happens.
 	</div>
+
 </div>
