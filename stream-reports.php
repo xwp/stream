@@ -144,6 +144,9 @@ class WP_Stream_Reports {
 			array( $this, 'page' )
 		);
 
+		// Create nonce right away so it is accessible everywhere
+		self::$nonce = array( 'stream_reports_nonce' => wp_create_nonce( 'stream-reports-page' ) );
+
 		$sections = WP_Stream_Reports_Sections::get_instance();
 		add_action( 'load-' . self::$screen_id, array( $sections, 'load_page' ) );
 	}
@@ -217,9 +220,6 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function page() {
-		// Create the nonce we will be using on the page
-		self::$nonce = array( 'stream_reports_nonce' => wp_create_nonce( 'stream-reports-page' ) );
-
 		// Page class
 		$class   = 'metabox-holder columns-' . get_current_screen()->get_columns();
 		$add_url = add_query_arg(

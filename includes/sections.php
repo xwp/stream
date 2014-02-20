@@ -69,10 +69,37 @@ class WP_Stream_Reports_Sections {
 		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
 
 		// Add all metaboxes
-		foreach ( self::$sections as $key => $section ) {
+		foreach ( self::$sections as $key => $section ) :
+			$delete_url = add_query_arg(
+				array_merge(
+					array(
+						'action' => 'stream_reports_delete_metabox',
+						'key'    => $key,
+					),
+					WP_Stream_Reports::$nonce
+				),
+				admin_url( 'admin-ajax.php' )
+			);
+
+			//  Configure button
+			$configure = sprintf(
+				'<span class="postbox-title-action">
+					<a href="javascript:void(0);" class="edit-box open-box">%3$s</a>
+				</span>
+				<span class="postbox-title-action postbox-delete-action">
+					<a href="%1$s">
+						%2$s
+					</a>
+				</span>',
+				esc_url( $delete_url ),
+				esc_html__( 'Delete', 'stream-reports' ),
+				esc_html__( 'Configure', 'stream-reports' )
+			);
+
+			// Default metabox argument
 			$title_key = $key + 1;
 			$default   = array(
-				'title'    => "Report {$title_key}",
+				'title'    => "Report {$title_key}" . $configure,
 				'priority' => 'default',
 				'context'  => 'normal',
 			);
@@ -90,7 +117,7 @@ class WP_Stream_Reports_Sections {
 				$section['priority'],
 				$key
 			);
-		}
+		endforeach;
 	}
 
 	/**
@@ -101,16 +128,6 @@ class WP_Stream_Reports_Sections {
 	 */
 	public function metabox_content( $object, $section ) {
 		$key = $section['args'];
-		$delete_url = add_query_arg(
-			array_merge(
-				array(
-					'action' => 'stream_reports_delete_metabox',
-					'key'    => $section['args'],
-				),
-				WP_Stream_Reports::$nonce
-			),
-			admin_url( 'admin-ajax.php' )
-		);
 
 		include WP_STREAM_REPORTS_VIEW_DIR . 'section.php';
 	}
