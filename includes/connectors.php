@@ -48,10 +48,7 @@ class WP_Stream_Connectors {
 		}
 
 		// Get active connectors
-		$active_connectors = WP_Stream_Settings::$options['connectors_active_connectors'];
-		if ( is_callable( $active_connectors ) ) {
-			$active_connectors = call_user_func( $active_connectors );
-		}
+		$active_connectors = WP_Stream_Settings::get_active_connectors();
 
 		foreach ( self::$connectors as $connector ) {
 
