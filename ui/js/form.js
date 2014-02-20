@@ -405,5 +405,10 @@ jQuery(function($){
 				alert( stream_notifications.i18n.ajax_error );
 			}
 		} )
-	})
+	});
+
+	// Add empty trigger if no triggers are visible
+	if ( $( '.trigger' ).length === 0 ) {
+		add_trigger( 0 );
+	}
 });
