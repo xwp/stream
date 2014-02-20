@@ -8,8 +8,8 @@ class XT_Filter_Input {
 		FILTER_VALIDATE_EMAIL   => 'is_email',
 		FILTER_VALIDATE_FLOAT   => 'is_float',
 		FILTER_VALIDATE_INT     => 'is_int',
-		FILTER_VALIDATE_IP      => array( 'XT_Filter', 'is_ip_address' ),
-		FILTER_VALIDATE_REGEXP  => array( 'XT_Filter', 'is_regex' ),
+		FILTER_VALIDATE_IP      => array( 'XT_Filter_Input', 'is_ip_address' ),
+		FILTER_VALIDATE_REGEXP  => array( 'XT_Filter_Input', 'is_regex' ),
 		FILTER_VALIDATE_URL     => 'wp_http_validate_url',
 
 		FILTER_SANITIZE_EMAIL   => 'sanitize_email',
@@ -23,7 +23,7 @@ class XT_Filter_Input {
 		FILTER_UNSAFE_RAW => null,
 	);
 
-	public function filter( $type, $variable_name, $filter = null, array $options = array() ) {
+	public static function super( $type, $variable_name, $filter = null, array $options = array() ) {
 		switch ( $type ) {
 			case INPUT_POST   : $super = $_POST; break;
 			case INPUT_GET    : $super = $_GET; break;
@@ -42,16 +42,33 @@ class XT_Filter_Input {
 
 		$var = $super[ $variable_name ];
 
+		$var = self::filter( $var, $filter, $options );
+
+		return $var;
+	}
+
+	public static function filter( $var, $filter = null, array $options = array() ) {
 		if ( $filter && $filter != FILTER_DEFAULT ) {
 			$filter_callback = self::$filter_callbacks[ $filter ];
-			$var = call_user_func( $filter_callback, $var );
+			$result = call_user_func( $filter_callback, $var );
+
+			// filter_var / filter_input treats validation/sanitization filters the same
+			// they both return output and change the var value, this shouldn't be the case here.
+			// We'll do a boolean check on validation function, and let sanitizers change the value
+			if ( $filter < 500 ) { // Validation functions
+				if ( ! $result ) {
+					$var = null;
+				}
+			} else { // Santization functions
+				$var = $result;
+			}
 		}
 
 		if ( false === $var ) {
 			$var = null;
 		}
 
-		// Polyfill the default attribute only, for now.
+		// Polyfill the `default` attribute only, for now.
 		if ( ! empty( $options['options']['default'] ) && is_null( $var ) ) {
 			return $options['options']['default'];
 		}
@@ -70,8 +87,10 @@ class XT_Filter_Input {
 
 }
 
-function xt_filter_input() {
-	static $filter;
-	$filter || $filter = new XT_Filter_Input;
-	return call_user_func_array( array( $filter, 'filter' ), func_get_args() );
+function xt_filter_input( $type, $variable_name, $filter = null, array $options = array() ) {
+	return call_user_func_array( array( 'XT_Filter_Input', 'super' ), func_get_args() );
+}
+
+function xt_filter_var( $var, $filter = null, array $options = array() ) {
+	return call_user_func_array( array( 'XT_Filter_Input', 'filter' ), func_get_args() );
 }
