@@ -107,6 +107,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 1.2.2 ###
+**2014/02/19** - Prevent records of disabled connectors from appearing in the Stream. Bug fixes. Props [kucrut](http://profiles.wordpress.org/kucrut/), [johnregan3](http://profiles.wordpress.org/johnregan3/)
+
 ### 1.2.1 ###
 **2014/02/17** - Translation updates. Langage packs for pt_BR and id_ID. Bug fixes. Props [kucrut](http://profiles.wordpress.org/kucrut/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [bordoni](http://profiles.wordpress.org/webord/), [powelski](http://profiles.wordpress.org/powelski/), [omniwired](https://github.com/omniwired), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
