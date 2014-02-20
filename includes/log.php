@@ -68,13 +68,6 @@ class WP_Stream_Log {
 			}
 		);
 
-		$ip = null;
-		if ( function_exists( 'filter_input' ) && filter_has_var( INPUT_SERVER, 'REMOTE_ADDR' ) ) {
-			$ip = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
-		} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) && WP_Http::is_ip_address( $_SERVER['REMOTE_ADDR'] ) ) {
-			$ip = $_SERVER['REMOTE_ADDR'];
-		}
-
 		$recordarr = array(
 			'object_id' => $object_id,
 			'author'    => $user_id,
@@ -84,7 +77,7 @@ class WP_Stream_Log {
 			'connector' => $connector,
 			'contexts'  => $contexts,
 			'meta'      => $meta,
-			'ip'        => $ip,
+			'ip'        => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
 		$record_id = WP_Stream_DB::get_instance()->insert( $recordarr );
