@@ -153,7 +153,7 @@ class WP_Stream_Admin {
 		wp_enqueue_script( 'timeago' );
 		wp_enqueue_script( 'timeago-locale' );
 
-		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ) );
+		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat', 'underscore' ) );
 		wp_localize_script(
 			'wp-stream-admin',
 			'wp_stream',

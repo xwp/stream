@@ -214,3 +214,94 @@ jQuery(function($){
 	}).trigger( 'updated' );
 
 });
+
+
+(function ( window, $, _ ) {
+	$( document ).on({
+		'ready' : function ( event ) {
+			var $page = $( '.wp_stream_screen' );
+
+
+
+			// Rather use each thingy as one scope, to avoid conflicts...
+			(function( event, $, _, $page ){
+				"use strict"
+				if ( $page.lenght === 0 ){
+					return;
+				}
+
+				var $fields = $page.find( '.user_n_role_select' );
+
+				$fields.each(function( k, el ){
+					var $input = $(el),
+						$placeholder = $input.next( '.user_n_role_select_placeholder' ),
+						roles = $input.data('roles');
+
+					$input.select2({
+						multiple: true,
+						ajax: {
+							type: "POST",
+							url: ajaxurl,
+							dataType: 'json',
+							quietMillis: 500,
+							data: function (term, page) { // page is the one-based page number tracked by Select2
+								return {
+									'find': term, //search term
+									'limit': 10, // page size
+									'pager': page, // page number
+									'action': 'stream_find_user'
+								};
+							},
+							results: function (data, page) {
+								var answer = {
+										results:[
+											{
+												text: "Roles",
+												children: roles
+											},
+											{
+												text: "Users",
+												children: []
+											}
+										]
+									};
+
+								if (data==0 || data=='' || data.status!==true)
+									return answer;
+
+								$.each( data.users, function ( k, user ){
+									if ( _.contains( roles, user.id ) )
+										user.disabled = true;
+								} );
+
+								answer.results[1].children = data.users;
+								// notice we return the value of more so Select2 knows if more results can be loaded
+								return answer;
+							}
+						},
+						initSelection: function (item, callback) {
+							callback( item.data( 'selected' ) );
+						}
+					}).on({
+						'change' : function (e){
+							$input.siblings( '.user_n_role_select_value' ).off().remove();
+
+							if ( typeof e.val === 'undefined' ){
+								e.val = $input.val().split( ',' );
+							}
+
+							_.each( e.val.reverse(), function( value, key, list ){
+								if ( value === '__placeholder__' ){
+									return;
+								}
+								$placeholder.after( $placeholder.clone( true ).attr( 'class', 'user_n_role_select_value' ).val( value ) );
+							});
+						}
+					});
+
+				});
+
+			})( event, $, _, $page )
+		}
+	});
+})( window, jQuery.noConflict(), _.noConflict() );
