@@ -40,8 +40,11 @@ class WP_Stream_Connectors {
 		if ( $found = glob( WP_STREAM_DIR . 'connectors/*.php' ) ) {
 			foreach ( $found as $class ) {
 				include_once $class;
-				$class     = ucwords( preg_match( '#(.+)\.php#', basename( $class ), $matches ) ? $matches[1] : '' );
-				$classes[] = "WP_Stream_Connector_$class";
+				$class_name = ucwords( preg_match( '#(.+)\.php#', basename( $class ), $matches ) ? $matches[1] : '' );
+				$class      = "WP_Stream_Connector_$class_name";
+				$classes[]  = $class;
+
+				self::$term_labels['stream_connector'][$class::$name] = $class::get_label();
 			}
 		}
 
@@ -69,7 +72,12 @@ class WP_Stream_Connectors {
 				continue;
 			}
 
-			self::$term_labels['stream_connector'][$connector::$name] = $connector::get_label();
+			// Store connector label
+			if ( ! in_array( $connector::$name, self::$term_labels['stream_connector'] ) ) {
+				self::$term_labels['stream_connector'][$connector::$name] = $connector::get_label();
+			}
+
+			// Check if connector is activated
 			if ( ! in_array( $connector::$name, $active_connectors ) ) {
 				continue;
 			}
