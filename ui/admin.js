@@ -221,11 +221,9 @@ jQuery(function($){
 		'ready' : function ( event ) {
 			var $page = $( '.wp_stream_screen' );
 
-
-
 			// Rather use each thingy as one scope, to avoid conflicts...
 			(function( event, $, _, $page ){
-				"use strict"
+				'use strict';
 				if ( $page.lenght === 0 ){
 					return;
 				}
@@ -240,7 +238,7 @@ jQuery(function($){
 					$input.select2({
 						multiple: true,
 						ajax: {
-							type: "POST",
+							type: 'POST',
 							url: ajaxurl,
 							dataType: 'json',
 							quietMillis: 500,
@@ -252,29 +250,32 @@ jQuery(function($){
 									'action': 'stream_find_user'
 								};
 							},
-							results: function (data, page) {
+							results: function (data) {
 								var answer = {
 										results:[
 											{
-												text: "Roles",
+												text: 'Roles',
 												children: roles
 											},
 											{
-												text: "Users",
+												text: 'Users',
 												children: []
 											}
 										]
 									};
 
-								if (data==0 || data=='' || data.status!==true)
+								if ( data === 0 || data === '' || data.status !== true ){
 									return answer;
+								}
 
 								$.each( data.users, function ( k, user ){
-									if ( _.contains( roles, user.id ) )
+									if ( _.contains( roles, user.id ) ){
 										user.disabled = true;
+									}
 								} );
 
 								answer.results[1].children = data.users;
+
 								// notice we return the value of more so Select2 knows if more results can be loaded
 								return answer;
 							}
@@ -290,7 +291,7 @@ jQuery(function($){
 								e.val = $input.val().split( ',' );
 							}
 
-							_.each( e.val.reverse(), function( value, key, list ){
+							_.each( e.val.reverse(), function( value ){
 								if ( value === '__placeholder__' ){
 									return;
 								}
@@ -301,7 +302,7 @@ jQuery(function($){
 
 				});
 
-			})( event, $, _, $page )
+			})( event, $, _, $page );
 		}
 	});
 })( window, jQuery.noConflict(), _.noConflict() );
