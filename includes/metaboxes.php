@@ -155,7 +155,7 @@ class WP_Stream_Reports_Metaboxes {
 	 * Update configuration array from ajax call and save this to the user option
 	 */
 	public function save_metabox_config() {
-		//@todo Parse the new config from $_POSt and validate all field
+		//@todo Parse the new config from $_POST and validate all field
 
 		// Update the database option
 		$this->update_option();
