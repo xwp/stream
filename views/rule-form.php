@@ -173,7 +173,7 @@
 			</td>
 		</tr>
 	<% } %>
-	<% if ( typeof vars.hints != 'undefined' ) { %>
+	<% if ( typeof vars.hints != 'undefined' && vars.hints ) { %>
 		<tr>
 			<th></th>
 			<td><%= vars.hints %></td>
