@@ -442,7 +442,7 @@ class WP_Stream_Notifications_Form
 			<ul class="outer-border">
 				<li class="control-section accordion-section">
 					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'General', 'stream-notifications' ) ?>"><?php _e( 'General', 'stream-notifications' ) ?></h3>
-					<div class="accordion-section-content" style="display: none;">
+					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
 								<dt><code>%%summary%%</code></dt>
@@ -459,7 +459,7 @@ class WP_Stream_Notifications_Form
 				</li>
 				<li class="control-section accordion-section">
 					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Object', 'stream-notifications' ) ?>"><?php _e( 'Object', 'stream-notifications' ) ?></h3>
-					<div class="accordion-section-content" style="display: none;">
+					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
 								<dt><code>%%object.post_title%%</code></dt>
@@ -470,7 +470,7 @@ class WP_Stream_Notifications_Form
 				</li>
 				<li class="control-section accordion-section">
 					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Author', 'stream-notifications' ) ?>"><?php _e( 'Author', 'stream-notifications' ) ?></h3>
-					<div class="accordion-section-content" style="display: none;">
+					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
 								<dt><code>%%author.user_login%%</code></dt>
@@ -485,7 +485,7 @@ class WP_Stream_Notifications_Form
 				</li>
 				<li class="control-section accordion-section">
 					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Meta', 'stream-notifications' ) ?>"><?php _e( 'Meta', 'stream-notifications' ) ?></h3>
-					<div class="accordion-section-content" style="display: none;">
+					<div class="accordion-section-content">
 						<div class="inside">
 							
 						</div>
