@@ -324,8 +324,8 @@ class WP_Stream_Notifications_Form
 
 		// Localization
 		$args['i18n'] = array(
-			'empty_triggers'        => __( 'A rule must contain at least one trigger to be saved.', 'stream-notifications' ),
-			'invalid_first_trigger' => __( 'You cannot save a rule without any triggers.', 'stream-notifications' ),
+			'empty_triggers'        => __( 'You cannot save a rule without any triggers.', 'stream-notifications' ),
+			'invalid_first_trigger' => __( 'You cannot save a rule with an empty trigger.', 'stream-notifications' ),
 			'ajax_error'            => __( 'There was an error submitting your request, please try again.', 'stream-notifications' ),
 			'confirm_reset'         => __( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream-notifications' ),
 		);
