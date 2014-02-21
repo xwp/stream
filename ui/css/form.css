@@ -203,10 +203,12 @@ table.alert-options tbody tr td {
 	margin: 0 !important;
 	padding: 0 !important;
 }
-#data-tags .accordion-section {
+#data-tags .accordion-section,
+#data-tags .accordion-section.bottom h3 {
 	border-bottom: none;
 }
-#data-tags .accordion-section.open {
+#data-tags .accordion-section.open,
+#data-tags .accordion-section.open.bottom h3 {
 	border-bottom: 1px solid #dfdfdf;
 }
 #data-tags .accordion-section-content {
