@@ -192,9 +192,9 @@ jQuery(function($){
 							)
 					)
 					.next('.updated')
-					.slideDown('fast')
+					.fadeIn('normal')
 					.delay(3000)
-					.slideUp('slow', function () {$(this).remove();});
+					.fadeOut('normal', function () {$(this).remove();});
 			}
 		};
 
