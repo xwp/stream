@@ -441,7 +441,7 @@ class WP_Stream_Notifications_Form
 		<div id="data-tag-glossary" class="accordion-container">
 			<ul class="outer-border">
 				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="Pages"><?php _e( 'General', 'stream-notifications' ) ?></h3>
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'General', 'stream-notifications' ) ?>"><?php _e( 'General', 'stream-notifications' ) ?></h3>
 					<div class="accordion-section-content" style="display: none;">
 						<div class="inside">
 							<dl>
@@ -458,7 +458,7 @@ class WP_Stream_Notifications_Form
 					</div>
 				</li>
 				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="Pages"><?php _e( 'Object', 'stream-notifications' ) ?></h3>
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Object', 'stream-notifications' ) ?>"><?php _e( 'Object', 'stream-notifications' ) ?></h3>
 					<div class="accordion-section-content" style="display: none;">
 						<div class="inside">
 							<dl>
@@ -469,7 +469,7 @@ class WP_Stream_Notifications_Form
 					</div>
 				</li>
 				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="Pages"><?php _e( 'Author', 'stream-notifications' ) ?></h3>
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Author', 'stream-notifications' ) ?>"><?php _e( 'Author', 'stream-notifications' ) ?></h3>
 					<div class="accordion-section-content" style="display: none;">
 						<div class="inside">
 							<dl>
@@ -484,7 +484,7 @@ class WP_Stream_Notifications_Form
 					</div>
 				</li>
 				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="Pages"><?php _e( 'Meta', 'stream-notifications' ) ?></h3>
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Meta', 'stream-notifications' ) ?>"><?php _e( 'Meta', 'stream-notifications' ) ?></h3>
 					<div class="accordion-section-content" style="display: none;">
 						<div class="inside">
 							
