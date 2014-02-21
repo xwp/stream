@@ -194,34 +194,53 @@ table.alert-options tbody tr td {
 table.alert-options tbody tr td {
 	border-top: 1px solid #f5f5f5;
 }
+
 #data-tags .inside {
 	margin: 0 !important;
 	padding: 0 !important;
 }
-#data-tags header {
-	padding: 10px;
-	padding-left: 25px;
-	background: rgba(0, 0, 0, 0.03) !important;
-	border: none !important;
-	cursor: pointer;
+#data-tags .accordion-section {
+	border-bottom: none;
 }
-#data-tags header .ui-icon {
-	display: none;	
+#data-tags .accordion-section.open {
+	border-bottom: 1px solid #dfdfdf;
 }
-#data-tags .dt-list {
-	border: none !important;
-	padding: 0 !important;
+#data-tags .accordion-section-content {
+	padding-bottom: 5px;
+}
+#data-tags .accordion-section-title {
+	padding-left: 30px;
+}
+#data-tags .accordion-section-title:after {
+	display: none;
+}
+#data-tags .accordion-section-title:before {
+	color: #aaa;
+	position: absolute;
+	left: 6px;
+	float: left;
+	content: '\f140';
+	font: 400 20px/1 dashicons;
+	speak: none;
+	display: block;
+	padding: 0;
+	text-indent: 0;
+	text-align: center;
+	text-decoration: none !important;
+
+	 -webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+#data-tags .accordion-section-title:hover:before {
+	color: #777;
+}
+#data-tags .accordion-section.open .accordion-section-title:before {
+	content: '\f142';
 }
 #data-tags dl {
-	padding-bottom: 10px;
+	margin-bottom: 0;
 }
-#data-tags header:before {
-	font: normal 20px/1 'dashicons';
-	display: inline-block;
-	content: '\f140';
-	position: absolute;
-	left: 0;
-}
-#data-tags header.ui-state-active:before {
-	content: '\f142';
+#data-tags dd {
+	margin: 0;
+	padding-bottom: 15px;
 }
