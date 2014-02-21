@@ -237,13 +237,18 @@ jQuery(function($){
 
 					$input.select2({
 						multiple: true,
-						formatSelection: function (object, container){
+						formatSelection: function (object){
 							if ( $.isNumeric( object.id ) ){
 								object.text += '<i class="icon16 icon-users"></i>';
 							}
 							return object.text;
 						},
-
+						formatResult: function (object){
+							if ( $.isNumeric( object.id ) ){
+								object.text += ' ( ID: ' + object.id + ' )';
+							}
+							return object.text;
+						},
 						ajax: {
 							type: 'POST',
 							url: ajaxurl,

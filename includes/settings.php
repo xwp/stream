@@ -567,6 +567,7 @@ class WP_Stream_Settings {
 			$args = array(
 				'id' => $user->ID,
 				'text' => $user->display_name,
+				'avatar' => 'http://gravatar.com/avatar/' . md5( strtolower( trim( $user->user_email ) ) ),
 			);
 
 			$response->users[] = $args;
