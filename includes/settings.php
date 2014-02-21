@@ -130,16 +130,49 @@ class WP_Stream_Settings {
 						),
 					),
 				),
-				'connectors' => array(
-					'title' => __( 'Connectors', 'stream' ),
+				'exclude' => array(
+					'title' => __( 'Exclude', 'stream' ),
 					'fields' => array(
 						array(
-							'name'        => 'active_connectors',
-							'title'       => __( 'Active Connectors', 'stream' ),
-							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Only the selected connectors above will have their activity logged.', 'stream' ),
-							'choices'     => array( __CLASS__, 'get_connectors' ),
-							'default'     => array( __CLASS__, 'get_default_connectors' ),
+							'name'        => 'authors_and_roles',
+							'title'       => __( 'Authors & Roles', 'stream' ),
+							'type'        => 'user_and_role',
+							'desc'        => __( 'No activity will be logged for these authors and roles.', 'stream' ),
+						),
+						array(
+							'name'        => 'connectors',
+							'title'       => __( 'Connectors', 'stream' ),
+							'type'        => 'chosen',
+							'desc'        => __( 'No activity will be logged for these connectors.', 'stream' ),
+							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+							'param'       => 'connector',
+							'default'     => array(),
+						),
+						array(
+							'name'        => 'contexts',
+							'title'       => __( 'Contexts', 'stream' ),
+							'type'        => 'chosen',
+							'desc'        => __( 'No activity will be logged for these contexts.', 'stream' ),
+							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+							'param'       => 'context',
+							'default'     => array(),
+						),
+						array(
+							'name'        => 'actions',
+							'title'       => __( 'Actions', 'stream' ),
+							'type'        => 'chosen',
+							'desc'        => __( 'No activity will be logged for these actions.', 'stream' ),
+							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+							'param'       => 'action',
+							'default'     => array(),
+						),
+						array(
+							'name'        => 'ip_addresses',
+							'title'       => __( 'IP Addresses', 'stream' ),
+							'type'        => 'chosen',
+							'desc'        => __( 'No activity will be logged for these IP addresses.', 'stream' ),
+							'class'       => 'ip-addresses',
+							'default'     => array(),
 						),
 					),
 				),
@@ -347,8 +380,45 @@ class WP_Stream_Settings {
 					esc_attr( $title )
 				);
 				break;
-		}
+			case 'chosen' :
+				if ( ! isset ( $current_value ) ){
+					$current_value = array();
+				}
+				if ( ( $key = array_search( '__placeholder__', $current_value ) ) !== false ){
+					unset( $current_value[ $key ] );
+				}
 
+				$data_values     = array();
+				$selected_values = array();
+				if ( isset( $field[ 'choices' ] ) ){
+					$choices = $field[ 'choices' ];
+					if ( is_callable( $choices ) ){
+						$param   = ( isset( $field[ 'param' ] ) ) ? $field[ 'param' ] : null;
+						$choices = call_user_func( $choices, $param );
+					}
+					foreach ( $choices as $key => $value ) {
+						$data_values[ ] = array( 'id' => $key, 'text' => $value, );
+						if ( in_array( $key, $current_value ) ){
+							$selected_values[ ] = array( 'id' => $key, 'text' => $value, );
+						}
+					}
+					$class .= 'with-source';
+				} else {
+					foreach ( $current_value as $value ) {
+						if ( $value == '__placeholder__' ){
+							continue;
+						}
+						$selected_values[ ] = array( 'id' => $value, 'text' => $value, );
+					}
+				}
+
+				$output  = sprintf( '<div id="%1$s[%2$s_%3$s]">', esc_attr( self::KEY ), esc_attr( $section ), esc_attr( $name ) );
+				$output .= sprintf( '<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="chosen-select %4$s" data-select-placeholder="%5$s-%6$s-select-placeholder"  />', json_encode( $data_values ), json_encode( $selected_values ), esc_attr( implode( ',', $current_value ) ), $class, esc_attr( $section ), esc_attr( $name ) );
+				// Fallback if nothing is selected
+				$output .= sprintf( '<input type="hidden" name="%1$s[%2$s_%3$s][]" class="%2$s-%3$s-select-placeholder" value="__placeholder__" />', esc_attr( self::KEY ), esc_attr( $section ), esc_attr( $name ) );
+				$output .= '</div>';
+				break;
+		}
 		$output .= ! empty( $description ) ? sprintf( '<p class="description">%s</p>', $description /* xss ok */ ) : null;
 
 		return $output;
@@ -407,22 +477,86 @@ class WP_Stream_Settings {
 	}
 
 	/**
+	 * Function will return all terms labels of given column
+	 *
+	 * @param $column string  Name of the column
+	 * @return array
+	 */
+	public static function get_terms_labels( $column ){
+		$return_labels = array();
+		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
+			$return_labels = WP_Stream_Connectors::$term_labels[ 'stream_' . $column ];
+			ksort( $return_labels );
+		}
+		return $return_labels;
+	}
+	/**
 	 * Get an array of active Connectors
 	 *
 	 * @return array
 	 */
 	public static function get_active_connectors() {
-		$active_connectors = self::$options['connectors_active_connectors'];
-		if ( is_callable( $active_connectors ) ) {
-			$active_connectors = call_user_func( $active_connectors );
-		}
-		$active_connectors = wp_list_filter(
+		$excluded_connectors = self::get_excluded_connectors();
+		$active_connectors   = array_intersect( $excluded_connectors, array_keys( self::get_terms_labels( 'connectors' ) ) );
+		$active_connectors   = wp_list_filter(
 			$active_connectors,
 			array( '__placeholder__' ),
 			'NOT'
 		);
 
 		return $active_connectors;
+	}
+
+	/**
+	 * Get an array of excluded connectors
+	 * @uses   WP_Stream_Settings::get_excluded_by_key
+	 * @return array
+	 */
+	public static function get_excluded_connectors(){
+		return self::get_excluded_by_key( 'connectors' );
+	}
+
+	/**
+	 * Get an array of excluded contexts
+	 * @uses   WP_Stream_Settings::get_excluded_by_key
+	 * @return array
+	 */
+	public static function get_excluded_contexts(){
+		return self::get_excluded_by_key( 'contexts' );
+	}
+
+	/**
+	 * Get an array of excluded actions
+	 * @uses   WP_Stream_Settings::get_excluded_by_key
+	 * @return array
+	 */
+	public static function get_excluded_actions(){
+		return self::get_excluded_by_key( 'actions' );
+	}
+
+	/**
+	 * Get an array of excluded IP addresses
+	 * @uses   WP_Stream_Settings::get_excluded_by_key
+	 * @return array
+	 */
+	public static function get_excluded_ip_addresses(){
+		return self::get_excluded_by_key( 'ip_addresses' );
+	}
+
+
+	public static function get_excluded_by_key( $key ){
+		$option_name     = 'exclude_' . $key;
+		$excluded_values = (isset(self::$options[$option_name]))?self::$options[$option_name] :array();
+		if ( is_callable( $excluded_values ) ) {
+			$excluded_values = call_user_func( $excluded_values );
+		}
+		$excluded_values = wp_list_filter(
+			$excluded_values,
+			array( '__placeholder__' ),
+			'NOT'
+		);
+
+		return $excluded_values;
 	}
 
 	/**
