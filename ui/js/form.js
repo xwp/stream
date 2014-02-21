@@ -138,20 +138,20 @@ jQuery(function($){
 					}
 					if ( $this.hasClass('ajax') ) {
 						$.ajax({
-			            	url: ajaxurl,
-			            	type: 'post',
-			                data: {
-			                	action: 'stream_notification_endpoint',
-			                    q : val,
-			                    single: 1,
-			                    type  : type,
+							url: ajaxurl,
+							type: 'post',
+							data: {
+								action: 'stream_notification_endpoint',
+								q : val,
+								single: 1,
+								type  : type,
 								args: $(this).attr("data-args")
-			                },
-			                dataType: "json",
-			                success: function(j){
-			                	$this.select2( 'data', j.data );
-			                }
-		            	})
+							},
+							dataType: "json",
+							success: function(j){
+								$this.select2( 'data', j.data );
+							}
+						})
 					} else if ( $this.hasClass('tags') ) {
 						$this.select2( 'data', [{ id: val, text: val }] );
 					} else {
