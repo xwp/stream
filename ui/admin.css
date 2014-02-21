@@ -170,3 +170,16 @@
 .wp_stream_screen .user_n_role_select {
 	width:350px;
 }
+
+.wp_stream_screen .user_n_role_select .select2-search-choice .icon16 {
+	float: right;
+	margin: -6px 0 0 3px;
+	padding: 0;
+	width: 16px;
+	height: 16px;
+}
+
+.wp_stream_screen .user_n_role_select .select2-search-choice .icon16:before {
+	font-size: 15px!important;
+	color: #656565;
+}
