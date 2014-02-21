@@ -232,7 +232,7 @@ class WP_Stream_Notifications {
 		$search   = filter_input( INPUT_GET, 'search' );
 
 		// There is a chance we go from the bottom bulk actions select box
-		if ( ! $action || $action == '-1' ) {
+		if ( ! $action || '-1' == $action ) {
 			$action = filter_input( INPUT_GET, 'action2', FILTER_DEFAULT, array( 'options' => array( 'default' => 'render' ) ) );
 		}
 
@@ -260,7 +260,7 @@ class WP_Stream_Notifications {
 				do_action( 'saved_stream_notification_rule', $rule );
 			}
 
-			if ( $result && $action != 'edit' ) {
+			if ( $result && 'edit' != $action ) {
 				wp_redirect(
 					add_query_arg(
 						array(
@@ -281,7 +281,7 @@ class WP_Stream_Notifications {
 				} else {
 					do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, false );
 				}
-			} elseif ( $search === null ) {
+			} elseif ( null === $search ) {
 				wp_redirect(
 					add_query_arg(
 						array(
@@ -328,14 +328,14 @@ class WP_Stream_Notifications {
 		$data             = $_GET;
 		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
 		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "activate-record_$id";
-		$visibility       = $action == 'activate' ? 'active' : 'inactive';
+		$visibility       = ( 'activate' == $action ) ? 'active' : 'inactive';
 
 		if ( ! wp_verify_nonce( $nonce, $nonce_identifier ) ) {
 			return;
 		}
 
 		$activate_rule = apply_filters( 'wp_stream_notifications_before_rule_' . $action, true, $id );
-		if ( $activate_rule == false ) {
+		if ( false == $activate_rule ) {
 			return;
 		}
 
@@ -371,7 +371,7 @@ class WP_Stream_Notifications {
 		}
 
 		$activate_rule = apply_filters( 'wp_stream_notifications_before_rule_' . $action, true, $id );
-		if ( $activate_rule == false ) {
+		if ( false == $activate_rule ) {
 			return;
 		}
 

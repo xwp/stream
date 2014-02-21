@@ -62,17 +62,13 @@ class WP_Stream_Notifications_Form
 	 * @return void
 	 */
 	public function enqueue_scripts( $hook ) {
-		if (
-			$hook != WP_Stream_Notifications::$screen_id
-			||
-			filter_input( INPUT_GET, 'view' ) != 'rule'
-			) {
+		if ( WP_Stream_Notifications::$screen_id != $hook || 'rule' != filter_input( INPUT_GET, 'view' ) ) {
 			return;
 		}
 
 		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 
-		if ( $view == 'rule' ) {
+		if ( 'rule' == $view ) {
 			wp_enqueue_script( 'dashboard' );
 			wp_enqueue_style( 'select2' );
 			wp_enqueue_script( 'select2' );
@@ -161,7 +157,7 @@ class WP_Stream_Notifications_Form
 		}
 
 		// Add gravatar for authors
-		if ( $type == 'author' && get_option( 'show_avatars' ) ) {
+		if ( 'author' == $type && get_option( 'show_avatars' ) ) {
 			foreach ( $data as $i => $item ) {
 				if ( $avatar = get_avatar( $item['id'], 20 ) ) {
 					$item['avatar'] = $avatar;
@@ -327,9 +323,10 @@ class WP_Stream_Notifications_Form
 
 		// Localization
 		$args['i18n'] = array(
-			'empty_triggers' => __( 'A rule must contain at least one trigger to be saved.', 'stream-notifications' ),
-			'ajax_error'     => __( 'There was an error submitting your request, please try again.', 'stream-notifications' ),
-			'confirm_reset'  => __( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream-notifications' ),
+			'empty_triggers'        => __( 'You cannot save a rule without any triggers.', 'stream-notifications' ),
+			'invalid_first_trigger' => __( 'You cannot save a rule with an empty first trigger.', 'stream-notifications' ),
+			'ajax_error'            => __( 'There was an error submitting your request, please try again.', 'stream-notifications' ),
+			'confirm_reset'         => __( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream-notifications' ),
 		);
 
 		return apply_filters( 'stream_notification_js_args', $args );
