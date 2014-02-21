@@ -176,6 +176,26 @@ jQuery(function($){
 			) ) );
 			group.find('.trigger').first().addClass('first');
 			selectify( group.find('select') );
+		},
+
+		display_error = function (key) {
+			if ( $('.error').filter(function () {return $(this).attr('data-key') === key;}).length === 0 ) {
+				$('body,html').scrollTop(0)
+				$('.wrap > h2')
+					.after(
+						$('<div></div>')
+							.addClass('updated error fade')
+							.attr('data-key', key)
+							.hide()
+							.append(
+								$('<p></p>').text(stream_notifications.i18n[key])
+							)
+					)
+					.next('.updated')
+					.slideDown('fast')
+					.delay(3000)
+					.slideUp('slow', function () {$(this).remove();});
+			}
 		};
 
 	divTriggers
@@ -351,25 +371,13 @@ jQuery(function($){
 	$('#rule-form').submit(function(e){
 		// Do not submit if no triggers exist
 		if ( divTriggers.find('.trigger').size() < 1 ) {
-			$('body,html').scrollTop(0)
-			$('.wrap > h2')
-				.after('<div class="updated error fade" style="display:none"><p>'+stream_notifications.i18n.empty_triggers+'</p></div>')
-				.next('.updated')
-				.fadeIn('normal')
-				.delay(3000)
-				.fadeOut('normal');
+			display_error('empty_triggers');
 			return false;
 		}
 
 		// Do not submit if no working triggers exist
 		if ( $('.trigger-type:first').select2('data') === null ) {
-			$('body,html').scrollTop(0)
-			$('.wrap > h2')
-				.after('<div class="updated error fade" style="display:none"><p>'+stream_notifications.i18n.invalid_first_trigger+'</p></div>')
-				.next('.updated')
-				.fadeIn('normal')
-				.delay(3000)
-				.fadeOut('normal');
+			display_error('invalid_first_trigger');
 			return false;
 		}
 	});
