@@ -361,8 +361,8 @@ jQuery(function($){
 			return false;
 		}
 
-		// Do not submit if `active` option is checked and no working triggers exist
-		if ( $('#notification_visibility').is(':checked') && $('.trigger-type:first').select2('data') === null ) {
+		// Do not submit if no working triggers exist
+		if ( $('.trigger-type:first').select2('data') === null ) {
 			$('body,html').scrollTop(0)
 			$('.wrap > h2')
 				.after('<div class="updated error fade" style="display:none"><p>'+stream_notifications.i18n.invalid_first_trigger+'</p></div>')
