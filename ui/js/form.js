@@ -376,15 +376,6 @@ jQuery(function($){
 	// Autofocus for earlier browsers
 	$('[autofocus]').focus();
 
-	// Data tags accordion
-	$('#data-tag-glossary').attr('data-theme', 'none').attr('data-role', 'none').accordion({
-		header: 'header',
-		collapsible: true,
-		heightStyle: 'content',
-		active: false,
-		icons: { "header": "", "activeHeader": "" }
-	});
-
 	// Reset occurrences link
 	$('a.reset-occ').click(function(e){
 		e.preventDefault();
