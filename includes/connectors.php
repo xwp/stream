@@ -47,15 +47,15 @@ class WP_Stream_Connectors {
 			self::$term_labels['stream_connector'][$connector::$name] = $connector::get_label();
 		}
 
-		// Get active connectors
-		$active_connectors = WP_Stream_Settings::$options['connectors_active_connectors'];
-		if ( is_callable( $active_connectors ) ) {
-			$active_connectors = call_user_func( $active_connectors );
+		// Get excluded connectors
+		$excluded_connectors = WP_Stream_Settings::$options['exclude_connectors'];
+		if ( is_callable( $excluded_connectors ) ) {
+			$excluded_connectors = call_user_func( $excluded_connectors );
 		}
 
 		foreach ( self::$connectors as $connector ) {
 
-			if ( ! in_array( $connector::$name, $active_connectors ) ) {
+			if ( in_array( $connector::$name, $excluded_connectors ) ) {
 				continue;
 			}
 

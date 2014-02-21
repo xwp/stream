@@ -31,6 +31,9 @@ abstract class WP_Stream_Connector {
 		if ( ! self::is_logging_enabled_for_user() ) {
 			return;
 		}
+		if ( ! self::is_logging_enabled_for_ip() ) {
+			return;
+		}
 
 		foreach ( $class::$actions as $action ) {
 			add_action( $action, array( $class, 'callback' ), null, 5 );
@@ -109,6 +112,42 @@ abstract class WP_Stream_Connector {
 		 * @param  string        Current class name
 		 * @return bool
 		 */
+		return apply_filters( 'wp_stream_record_log', $bool, $user, get_called_class() );
+	}
+
+	/**
+	 * Check if we need to record action for IP
+	 *
+	 * @param null $ip
+	 *
+	 * @return mixed|void
+	 */
+	public static function is_logging_enabled_for_ip( $ip = null ) {
+		if ( is_null( $ip ) ){
+			$ip = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
+		} else {
+			$ip = filter_var( $ip, FILTER_VALIDATE_IP );
+		}
+
+		// If ip is not valid the we will log the action
+		if ( $ip === false ) {
+			$bool = true;
+		} else {
+			$excluded_ip_addresses = WP_Stream_Settings::get_excluded_ip_addresses();
+
+			$bool = ( ! in_array( $ip, $excluded_ip_addresses ) ) ;
+		}
+
+		/**
+		 * Filter sets boolean result value for this method
+		 *
+		 * @param  bool
+		 * @param  obj    $user  Current user object
+		 * @param  string        Current class name
+		 * @return bool
+		 */
+
+		$user = wp_get_current_user();
 		return apply_filters( 'wp_stream_record_log', $bool, $user, get_called_class() );
 	}
 

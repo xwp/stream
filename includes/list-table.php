@@ -402,9 +402,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$hide_disabled_connectors_filter = apply_filters( 'wp_stream_list_table_hide_disabled_connectors', true );
 
 				if ( true === $hide_disabled_connectors_filter ) {
-					$active_connectors = WP_Stream_Settings::get_active_connectors();
+					$excluded_connectors = WP_Stream_Settings::get_excluded_connectors();
 					foreach ( array_keys( $all_records ) as $_connector ) {
-						if ( ! in_array( $_connector, $active_connectors ) ) {
+						if ( in_array( $_connector, $excluded_connectors ) ) {
 							unset( $all_records[ $_connector ] );
 						}
 					}
