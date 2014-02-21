@@ -355,9 +355,9 @@ jQuery(function($){
 			$('.wrap > h2')
 				.after('<div class="updated error fade" style="display:none"><p>'+stream_notifications.i18n.empty_triggers+'</p></div>')
 				.next('.updated')
-				.slideDown('fast')
+				.fadeIn('normal')
 				.delay(3000)
-				.slideUp('slow');
+				.fadeOut('normal');
 			return false;
 		}
 
@@ -367,9 +367,9 @@ jQuery(function($){
 			$('.wrap > h2')
 				.after('<div class="updated error fade" style="display:none"><p>'+stream_notifications.i18n.invalid_first_trigger+'</p></div>')
 				.next('.updated')
-				.slideDown('fast')
+				.fadeIn('normal')
 				.delay(3000)
-				.slideUp('slow');
+				.fadeOut('normal');
 			return false;
 		}
 	});
