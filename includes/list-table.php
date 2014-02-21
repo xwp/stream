@@ -485,7 +485,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 		$navigation_links = array();
 		$navigation_html  = '';
-		$visibility       = wp_stream_filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT, array( 'options' => array( 'default' => 'all' ) ) );
+		$visibility       = filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT, array( 'options' => array( 'default' => 'all' ) ) ); // TODO: wp_stream_filter_input
 
 		$i = 0;
 

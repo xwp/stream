@@ -194,7 +194,7 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function page() {
-		$view = wp_stream_filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
+		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) ); // TODO: wp_stream_filter_input
 		$id   = wp_stream_filter_input( INPUT_GET, 'id' );
 
 		switch ( $view ) {
@@ -225,18 +225,15 @@ class WP_Stream_Notifications {
 
 		// TODO check author/user permission to update record
 
-		// TODO: Make compat with wp_stream_filter_input
-		$view     = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
+		$view     = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) ); // TODO: wp_stream_filter_input
 		$action   = wp_stream_filter_input( INPUT_GET, 'action', FILTER_DEFAULT );
 		$id       = wp_stream_filter_input( INPUT_GET, 'id' );
-		// TODO: Make compat with wp_stream_filter_input
-		$bulk_ids = filter_input( INPUT_GET, 'wp_stream_notifications_checkbox', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		$bulk_ids = filter_input( INPUT_GET, 'wp_stream_notifications_checkbox', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ); // TODO: wp_stream_filter_input
 		$search   = wp_stream_filter_input( INPUT_GET, 'search' );
 
 		// There is a chance we go from the bottom bulk actions select box
 		if ( ! $action || $action == '-1' ) {
-			// TODO: Make compat with wp_stream_filter_input
-			$action = filter_input( INPUT_GET, 'action2', FILTER_DEFAULT, array( 'options' => array( 'default' => 'render' ) ) );
+			$action = filter_input( INPUT_GET, 'action2', FILTER_DEFAULT, array( 'options' => array( 'default' => 'render' ) ) ); // TODO: wp_stream_filter_input
 		}
 
 		if ( $_POST && 'rule' == $view ) {
