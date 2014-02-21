@@ -62,17 +62,13 @@ class WP_Stream_Notifications_Form
 	 * @return void
 	 */
 	public function enqueue_scripts( $hook ) {
-		if (
-			$hook != WP_Stream_Notifications::$screen_id
-			||
-			filter_input( INPUT_GET, 'view' ) != 'rule'
-			) {
+		if ( WP_Stream_Notifications::$screen_id != $hook || 'rule' != filter_input( INPUT_GET, 'view' ) ) {
 			return;
 		}
 
 		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 
-		if ( $view == 'rule' ) {
+		if ( 'rule' == $view ) {
 			wp_enqueue_script( 'dashboard' );
 			wp_enqueue_style( 'select2' );
 			wp_enqueue_script( 'select2' );
@@ -160,7 +156,7 @@ class WP_Stream_Notifications_Form
 		}
 
 		// Add gravatar for authors
-		if ( $type == 'author' && get_option( 'show_avatars' ) ) {
+		if ( 'author' == $type && get_option( 'show_avatars' ) ) {
 			foreach ( $data as $i => $item ) {
 				if ( $avatar = get_avatar( $item['id'], 20 ) ) {
 					$item['avatar'] = $avatar;
