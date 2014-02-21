@@ -16,7 +16,7 @@ class WP_Stream_Notifications_Form
 	}
 
 	public function load() {
-		$view = filter_input( INPUT_GET, 'view' );
+		$view = wp_stream_filter_input( INPUT_GET, 'view' );
 
 		// Control screen layout
 		if ( 'rule' === $view ) {
@@ -65,12 +65,12 @@ class WP_Stream_Notifications_Form
 		if (
 			$hook != WP_Stream_Notifications::$screen_id
 			||
-			filter_input( INPUT_GET, 'view' ) != 'rule'
+			wp_stream_filter_input( INPUT_GET, 'view' ) != 'rule'
 			) {
 			return;
 		}
 
-		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
+		$view = wp_stream_filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 
 		if ( $view == 'rule' ) {
 			wp_enqueue_script( 'dashboard' );
@@ -100,10 +100,10 @@ class WP_Stream_Notifications_Form
 		// query would check if there is a author_role rule available to limit
 		// the results according to it
 
-		$type      = filter_input( INPUT_POST, 'type' );
-		$is_single = filter_input( INPUT_POST, 'single' );
-		$query     = filter_input( INPUT_POST, 'q' );
-		$args      = json_decode( filter_input( INPUT_POST, 'args' ), true );
+		$type      = wp_stream_filter_input( INPUT_POST, 'type' );
+		$is_single = wp_stream_filter_input( INPUT_POST, 'single' );
+		$query     = wp_stream_filter_input( INPUT_POST, 'q' );
+		$args      = json_decode( wp_stream_filter_input( INPUT_POST, 'args' ), true );
 
 		if ( ! is_array( $args ) ) {
 			$args = array();
@@ -202,8 +202,8 @@ class WP_Stream_Notifications_Form
 	}
 
 	public function ajax_reset_occ() {
-		$id = filter_input( INPUT_GET, 'id' );
-		$nonce = filter_input( INPUT_GET, 'wp_stream_nonce' );
+		$id    = wp_stream_filter_input( INPUT_GET, 'id' );
+		$nonce = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 
 		if ( ! wp_verify_nonce( $nonce, 'reset-occ_' . $id ) ) {
 			wp_send_json_error( __( 'Invalid nonce', 'domain' ) );

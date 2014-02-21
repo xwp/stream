@@ -39,7 +39,7 @@ class WP_Stream_Notifications {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '1.2.1';
+	const STREAM_MIN_VERSION = '1.2.3';
 
 	/**
 	 * Hold Stream instance
@@ -194,8 +194,8 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function page() {
-		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
-		$id = filter_input( INPUT_GET, 'id' );
+		$view = wp_stream_filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
+		$id   = wp_stream_filter_input( INPUT_GET, 'id' );
 
 		switch ( $view ) {
 			case 'rule':
@@ -225,14 +225,17 @@ class WP_Stream_Notifications {
 
 		// TODO check author/user permission to update record
 
+		// TODO: Make compat with wp_stream_filter_input
 		$view     = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
-		$action   = filter_input( INPUT_GET, 'action', FILTER_DEFAULT );
-		$id       = filter_input( INPUT_GET, 'id' );
+		$action   = wp_stream_filter_input( INPUT_GET, 'action', FILTER_DEFAULT );
+		$id       = wp_stream_filter_input( INPUT_GET, 'id' );
+		// TODO: Make compat with wp_stream_filter_input
 		$bulk_ids = filter_input( INPUT_GET, 'wp_stream_notifications_checkbox', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
-		$search   = filter_input( INPUT_GET, 'search' );
+		$search   = wp_stream_filter_input( INPUT_GET, 'search' );
 
 		// There is a chance we go from the bottom bulk actions select box
 		if ( ! $action || $action == '-1' ) {
+			// TODO: Make compat with wp_stream_filter_input
 			$action = filter_input( INPUT_GET, 'action2', FILTER_DEFAULT, array( 'options' => array( 'default' => 'render' ) ) );
 		}
 
@@ -240,7 +243,7 @@ class WP_Stream_Notifications {
 			$data = $_POST;
 			$rule = new WP_Stream_Notification_Rule( $id );
 
-			if ( ! wp_verify_nonce( filter_input( INPUT_POST, '_wpnonce' ), 'stream-notifications-form' ) ) {
+			if ( ! wp_verify_nonce( wp_stream_filter_input( INPUT_POST, '_wpnonce' ), 'stream-notifications-form' ) ) {
 				wp_die( __( 'Invalid form parameters.', 'stream-notifications' ) );
 			}
 
@@ -326,7 +329,7 @@ class WP_Stream_Notifications {
 	 */
 	public function handle_rule_activation_status_change( $id, $action, $is_bulk = false ) {
 		$data             = $_GET;
-		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
+		$nonce            = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "activate-record_$id";
 		$visibility       = $action == 'activate' ? 'active' : 'inactive';
 
@@ -362,9 +365,9 @@ class WP_Stream_Notifications {
 	 */
 	public function handle_rule_deletion( $id, $action, $is_bulk = false ) {
 		$data             = $_GET;
-		$nonce            = filter_input( INPUT_GET, 'wp_stream_nonce' );
+		$nonce            = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "delete-record_$id";
-		$visibility       = filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT );
+		$visibility       = wp_stream_filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT );
 
 		if ( ! wp_verify_nonce( $nonce, $nonce_identifier ) ) {
 			return;
