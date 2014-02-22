@@ -70,6 +70,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 **Coming soon:**
 
+ * UI to exclude specific types of user activity from being tracked
+ * Limit who can view user activity records by user, not just by role
+ * Improved context assignements for Media, Comments, Users and Widgets
  * Multisite view of all activity records on a network
  * Language support for Arabic (RTL), Czech and Slovak
 
