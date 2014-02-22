@@ -77,7 +77,7 @@ class WP_Stream_Log {
 			'connector' => $connector,
 			'contexts'  => $contexts,
 			'meta'      => $meta,
-			'ip'        => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
+			'ip'        => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
 		$record_id = WP_Stream_DB::get_instance()->insert( $recordarr );

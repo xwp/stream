@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: http://wordpress.org/plugins/stream/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 1.2.2
+ * Version: 1.2.3
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -37,7 +37,7 @@ class WP_Stream {
 	 *
 	 * @const string
 	 */
-	const VERSION = '1.2.2';
+	const VERSION = '1.2.3';
 
 	/**
 	 * Hold Stream instance
@@ -66,6 +66,9 @@ class WP_Stream {
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
+
+		// Load filters polyfill
+		require_once WP_STREAM_INC_DIR . 'filters.php';
 
 		// Load DB helper class
 		require_once WP_STREAM_INC_DIR . 'db-actions.php';

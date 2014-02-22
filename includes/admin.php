@@ -78,7 +78,7 @@ class WP_Stream_Admin {
 	 * @return string
 	 */
 	public static function admin_notices() {
-		$message = filter_input( INPUT_GET, 'message' );
+		$message = wp_stream_filter_input( INPUT_GET, 'message' );
 
 		switch ( $message ) {
 			case 'data_erased':
@@ -287,7 +287,7 @@ class WP_Stream_Admin {
 
 			<?php
 			$sections   = WP_Stream_Settings::get_fields();
-			$active_tab = filter_input( INPUT_GET, 'tab' );
+			$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 			?>
 
 			<h2 class="nav-tab-wrapper">
@@ -637,8 +637,11 @@ class WP_Stream_Admin {
 			require_once WP_STREAM_INC_DIR . 'list-table.php';
 			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
 
-			$last_id = filter_var( $data['wp-stream-heartbeat-last-id'], FILTER_VALIDATE_INT );
-			$query   = filter_var( $data['wp-stream-heartbeat-query'], FILTER_DEFAULT, array( 'options' => array( 'default' => array() ) ) );
+			$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
+			$query   = $data['wp-stream-heartbeat-query'];
+			if ( empty( $query ) ) {
+				$query = array();
+			}
 
 			// Decode the query
 			$query = json_decode( wp_kses_stripslashes( $query ) );

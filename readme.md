@@ -72,6 +72,9 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 **Coming soon:**
 
+ * UI to exclude specific types of user activity from being tracked
+ * Limit who can view user activity records by user, not just by role
+ * Improved context assignements for Media, Comments, Users and Widgets
  * Multisite view of all activity records on a network
  * Language support for Arabic (RTL), Czech and Slovak
 
@@ -106,6 +109,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
+
+### 1.2.3 ###
+**2014/02/21** - Replacement function for filter_input family to avoid PHP bug. Filter added to main Stream query. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 ### 1.2.2 ###
 **2014/02/19** - Prevent records of disabled connectors from appearing in the Stream. Bug fixes. Props [kucrut](http://profiles.wordpress.org/kucrut/), [johnregan3](http://profiles.wordpress.org/johnregan3/)
