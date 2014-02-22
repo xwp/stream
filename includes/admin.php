@@ -22,6 +22,7 @@ class WP_Stream_Admin {
 	const ADMIN_PARENT_PAGE    = 'admin.php';
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
+	const PRELOAD_AUTHORS_MAX  = 50;
 
 	public static function load() {
 		// User and role caps
@@ -63,6 +64,12 @@ class WP_Stream_Admin {
 		// Enable/Disable live update per user
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
 
+		// Ajax authors list
+		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
+
+		// Ajax author's name by ID
+		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
+
 	}
 
 	/**
@@ -72,7 +79,7 @@ class WP_Stream_Admin {
 	 * @return string
 	 */
 	public static function admin_notices() {
-		$message = filter_input( INPUT_GET, 'message' );
+		$message = wp_stream_filter_input( INPUT_GET, 'message' );
 
 		switch ( $message ) {
 			case 'data_erased':
@@ -133,6 +140,17 @@ class WP_Stream_Admin {
 		wp_register_script( 'select2', WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
 		wp_register_style( 'select2', WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
 
+		wp_register_script( 'timeago', WP_STREAM_URL . 'ui/timeago/timeago.js', array(), '0.2.0', true );
+		if ( ! ( $locale = substr( get_locale(), 2 ) ) ) {
+			$locale = 'en';
+		}
+		$file_tmpl = 'ui/timeago/locale/jquery.timeago.%s.js';
+		if ( file_exists( WP_STREAM_DIR . sprintf( $file_tmpl, $locale ) ) ) {
+			wp_register_script( 'timeago-locale', WP_STREAM_URL . sprintf( $file_tmpl, $locale ), array( 'timeago' ), '1' );
+		} else {
+			wp_register_script( 'timeago-locale', WP_STREAM_URL . sprintf( $file_tmpl, 'en' ), array( 'timeago' ), '1' );
+		}
+
 		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 
 		if ( ! in_array( $hook, self::$screen_id ) && 'plugins.php' !== $hook ) {
@@ -141,6 +159,10 @@ class WP_Stream_Admin {
 
 		wp_enqueue_script( 'select2' );
 		wp_enqueue_style( 'select2' );
+
+		wp_enqueue_script( 'timeago' );
+		wp_enqueue_script( 'timeago-locale' );
+
 		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ) );
 		wp_localize_script(
 			'wp-stream-admin',
@@ -180,8 +202,9 @@ class WP_Stream_Admin {
 	 * @return wp_add_inline_style
 	 */
 	public static function admin_menu_css() {
-		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
 		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
+		wp_register_style( 'wp-stream-datepicker', WP_STREAM_URL . 'ui/datepicker.css', array( 'jquery-ui' ) );
+		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
 
 		// Make sure we're working off a clean version.
 		include( ABSPATH . WPINC . '/version.php' );
@@ -274,7 +297,7 @@ class WP_Stream_Admin {
 
 			<?php
 			$sections   = WP_Stream_Settings::get_fields();
-			$active_tab = filter_input( INPUT_GET, 'tab' );
+			$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 			?>
 
 			<h2 class="nav-tab-wrapper">
@@ -289,7 +312,7 @@ class WP_Stream_Admin {
 			</h2>
 
 			<div class="nav-tab-content" id="tab-content-settings">
-				<form method="post" action="options.php">
+				<form method="post" action="options.php" enctype="multipart/form-data">
 		<?php
 		$i = 0;
 		foreach ( $sections as $section => $data ) {
@@ -353,7 +376,7 @@ class WP_Stream_Admin {
 			);
 			exit;
 		} else {
-			wp_die( "You don't have sufficient priviledges to do this action." );
+			wp_die( "You don't have sufficient privileges to do this action." );
 		}
 	}
 
@@ -393,15 +416,16 @@ class WP_Stream_Admin {
 				$wpdb->query( "DROP TABLE $table" );
 			}
 
-			//Delete database option
+			// Delete database option
 			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 			delete_option( WP_Stream_Settings::KEY );
 			delete_option( 'dashboard_stream_activity_options' );
-			//Redirect to plugin page
+
+			// Redirect to plugin page
 			wp_redirect( add_query_arg( array( 'deactivate' => true ) , admin_url( 'plugins.php' ) ) );
 			exit;
 		} else {
-			wp_die( "You don't have sufficient priviledges to do this action." );
+			wp_die( "You don't have sufficient privileges to do this action." );
 		}
 
 	}
@@ -549,9 +573,12 @@ class WP_Stream_Admin {
 
 			if ( $author ) {
 				$time_author = sprintf(
-					'%s %s <a href="%s">%s</a>',
+					_x(
+						'%1$s ago by <a href="%2$s">%3$s</a>',
+						'1: Time, 2: User profile URL, 3: User display name',
+						'stream'
+					),
 					human_time_diff( strtotime( $record->created ) ),
-					esc_html__( 'ago by', 'stream' ),
 					esc_url( $author_link ),
 					esc_html( $author->display_name )
 				);
@@ -635,8 +662,11 @@ class WP_Stream_Admin {
 			require_once WP_STREAM_INC_DIR . 'list-table.php';
 			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
 
-			$last_id = filter_var( $data['wp-stream-heartbeat-last-id'], FILTER_VALIDATE_INT );
-			$query   = filter_var( $data['wp-stream-heartbeat-query'], FILTER_DEFAULT, array( 'options' => array( 'default' => array() ) ) );
+			$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
+			$query   = $data['wp-stream-heartbeat-query'];
+			if ( empty( $query ) ) {
+				$query = array();
+			}
 
 			// Decode the query
 			$query = json_decode( wp_kses_stripslashes( $query ) );
@@ -716,6 +746,56 @@ class WP_Stream_Admin {
 		} else {
 			wp_send_json_error( 'Live Updates checkbox error' );
 		}
+	}
+
+	/**
+	 * @action wp_ajax_wp_stream_filters
+	 */
+	public static function ajax_filters() {
+		switch ( $_REQUEST['filter'] ) {
+			case 'author':
+				$results = array_map(
+					function( $user ) {
+						return array(
+							'id'   => $user->id,
+							'text' => $user->display_name,
+						);
+					},
+					get_users()
+				);
+				break;
+		}
+
+		// `search` arg for get_users() is not enough
+		$results = array_filter(
+			$results,
+			function( $result ) {
+				return mb_strpos( mb_strtolower( $result['text'] ), mb_strtolower( $_REQUEST['q'] ) ) !== false;
+			}
+		);
+
+		$results_count = count( $results );
+
+		if ( $results_count > self::PRELOAD_AUTHORS_MAX ) {
+			$results   = array_slice( $results, 0, self::PRELOAD_AUTHORS_MAX );
+			$results[] = array(
+				'id'       => 0,
+				'disabled' => true,
+				'text'     => sprintf( _n( 'One more result...', '%d more results...', $results_count - self::PRELOAD_AUTHORS_MAX, 'stream' ), $results_count - self::PRELOAD_AUTHORS_MAX ),
+			);
+		}
+
+		echo json_encode( array_values( $results ) );
+		die();
+	}
+
+	/**
+	 * @action wp_ajax_wp_stream_get_author_name_by_id
+	 */
+	public static function get_author_name_by_id() {
+		$user = get_userdata( $_REQUEST['id'] );
+		echo json_encode( $user->display_name );
+		die();
 	}
 
 }

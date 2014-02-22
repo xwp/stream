@@ -22,7 +22,23 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
+		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 		set_screen_options();
+	}
+
+	static function ajax_filters() {
+		$results = array(
+			array(
+				'id'   => 1,
+				'text' => 'Garfield',
+			),
+			array(
+				'id'   => 2,
+				'text' => 'Odie',
+			),
+		);
+		echo json_encode( $results );
+		die();
 	}
 
 	function extra_tablenav( $which ) {
@@ -32,6 +48,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function get_columns(){
+		/**
+		 * Allows devs to add new columns to table
+		 *
+		 * @param  array  default columns
+		 * @return array  updated list of columns
+		 */
 		return apply_filters(
 			'wp_stream_list_table_columns',
 			array(
@@ -91,10 +113,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$args = array();
 
 		// Parse sorting params
-		if ( ! $order = filter_input( INPUT_GET, 'order' ) ) {
+		if ( ! $order = wp_stream_filter_input( INPUT_GET, 'order' ) ) {
 			$order = 'DESC';
 		}
-		if ( ! $orderby = filter_input( INPUT_GET, 'orderby' ) ) {
+		if ( ! $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
 			$orderby = '';
 		}
 		$args['order']   = $order;
@@ -109,11 +131,26 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 
 		foreach ( $allowed_params as $param ) {
-			if ( $paramval = filter_input( INPUT_GET, $param ) ) {
+			if ( $paramval = wp_stream_filter_input( INPUT_GET, $param ) ) {
 				$args[$param] = $paramval;
 			}
 		}
 		$args['paged'] = $this->get_pagenum();
+
+		// Exclude disabled connectors
+		if ( empty( $args['connector'] ) ) {
+			/**
+			 * Toggle visibility of records from disabled connectors on list table
+			 *
+			 * @param bool $hidden Visibility status, hidden by default.
+			 */
+			$hide_disabled_connectors_records = apply_filters( 'wp_stream_list_table_hide_disabled_connectors_records', true );
+
+			if ( true === $hide_disabled_connectors_records ) {
+				$args['connector__in'] = WP_Stream_Settings::get_active_connectors();
+			}
+		}
+
 
 		if ( ! isset( $args['records_per_page'] ) ) {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
@@ -131,9 +168,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'date':
-				$out  = sprintf( '<strong>' . __( '%s ago', 'stream' ) . '</strong>', human_time_diff( strtotime( $item->created ) ) );
-				$out .= '<br />';
-				$out .= $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
+				$date_string = sprintf(
+					'<time datetime="%s" class="relative-time">%s</time>',
+					$item->created,
+					get_date_from_gmt( $item->created, 'Y/m/d' )
+				);
+				$out = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
 				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
 				break;
@@ -176,7 +216,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 						$author_role
 					);
 				} else {
-					$out = 'N/A';
+					$out = __( 'N/A', 'stream' );
 				}
 				break;
 
@@ -201,7 +241,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			default:
-				// Register inserted column defaults. Must match a column header from get_columns.
+				/**
+				 * Registers new Columns to be inserted into the table.  The cell contents of this column is set
+				 * below with 'wp_stream_inster_column_default-'
+				 *
+				 * @param array  $new_columns  Array of new column titles to add
+				 */
 				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', $new_columns = array() );
 
 				if ( ! empty( $inserted_columns ) && is_array( $inserted_columns ) ) {
@@ -215,6 +260,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 						 * with wp_stream_register_column_defaults
 						 */
 						if ( $column_title == $column_name && has_action( 'wp_stream_insert_column_default-' . $column_title ) ) {
+							/**
+							 * This action allows for the addition of content under the specified column ($column_title)
+							 *
+							 * @param  string  $column_title  Title of the column (set in wp_stream_register_column_defaults)
+							 * @param  obj     $item          Contents of the row
+							 */
 							$out = do_action( 'wp_stream_insert_column_default-' . $column_title, $item );
 						} else {
 							$out = $column_name;
@@ -231,8 +282,26 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 
 	public static function get_action_links( $record ){
-		$out          = '';
+		$out = '';
+
+		/**
+		 * Filter allows modification of action links for a specific connector
+		 *
+		 * @param  string  connector
+		 * @param  array   array of action links for this connector
+		 * @param  obj     record
+		 * @return arrray  action links for this connector
+		 */
 		$action_links = apply_filters( 'wp_stream_action_links_' . $record->connector, array(), $record );
+
+		/**
+		 * Filter allows addition of custom links for a specific connector
+		 *
+		 * @param  string  connector
+		 * @param  array   array of custom links for this connector
+		 * @param  obj     record
+		 * @return arrray  custom links for this connector
+		 */
 		$custom_links = apply_filters( 'wp_stream_custom_action_links_' . $record->connector, array(), $record );
 
 		if ( $action_links || $custom_links ) {
@@ -294,7 +363,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'<a href="%s" title="%s">%s</a>',
 			esc_url( $url ),
 			esc_attr( $title ),
-			esc_html( $display )
+			$display
 		);
 	}
 
@@ -323,6 +392,24 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		} else {
 			$all_records = WP_Stream_Connectors::$term_labels['stream_' . $column ];
+
+			if ( 'connector' === $column ) {
+				/**
+				 * Toggle visibility of disabled connectors on list table filter dropdown
+				 *
+				 * @param bool $hidden Visibility status, hidden by default.
+				 */
+				$hide_disabled_connectors_filter = apply_filters( 'wp_stream_list_table_hide_disabled_connectors', true );
+
+				if ( true === $hide_disabled_connectors_filter ) {
+					$active_connectors = WP_Stream_Settings::get_active_connectors();
+					foreach ( array_keys( $all_records ) as $_connector ) {
+						if ( ! in_array( $_connector, $active_connectors ) ) {
+							unset( $all_records[ $_connector ] );
+						}
+					}
+				}
+			}
 		}
 
 		$existing_records = existing_records( $column, $table );
@@ -342,10 +429,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
-		$filters['author'] = array(
-			'title' => __( 'authors', 'stream' ),
-			'items' => $this->assemble_records( 'author', 'stream' ),
-		);
+		$authors_records = $this->assemble_records( 'author', 'stream' );
+		$filters['author'] = array();
+		$filters['author']['title'] = __( 'authors', 'stream' );
+
+		if ( count( $authors_records ) <= WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
+			$filters['author']['items'] = $authors_records;
+		} else {
+			$filters['author']['ajax'] = true;
+		}
 
 		$filters['connector'] = array(
 			'title' => __( 'connectors', 'stream' ),
@@ -362,12 +454,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'items' => $this->assemble_records( 'action' ),
 		);
 
+		/**
+		 * Filter allows additional filters in the list table dropdowns
+		 * Note the format of the filters above, with they key and array
+		 * containing a title and array of items.
+		 *
+		 * @param  array  Array of filters
+		 * @return array  Updated array of filters
+		 */
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
 
 		$filters_string .= $this->filter_date();
 
 		foreach ( $filters as $name => $data ) {
-			$filters_string .= $this->filter_select( $name, $data['title'], $data['items'] );
+			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'] );
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
@@ -376,24 +476,34 @@ class WP_Stream_List_Table extends WP_List_Table {
 		echo sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss okay
 	}
 
-	function filter_select( $name, $title, $items ) {
-		$options  = array( sprintf( __( '<option value=""></option>', 'stream' ), $title ) );
-		$selected = filter_input( INPUT_GET, $name );
-		foreach ( $items as $v => $label ) {
-			$options[$v] = sprintf(
-				'<option value="%s" %s %s>%s</option>',
-				$v,
-				selected( $v, $selected, false ),
-				$label['disabled'],
-				$label['label']
+	function filter_select( $name, $title, $items, $ajax ) {
+		if ( $ajax ) {
+			$out = sprintf(
+				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
+				esc_attr( $name ),
+				esc_attr( wp_stream_filter_input( INPUT_GET, $name ) ),
+				esc_html( $title )
+			);
+		} else {
+			$options  = array( '<option value=""></option>' );
+			$selected = wp_stream_filter_input( INPUT_GET, $name );
+			foreach ( $items as $v => $label ) {
+				$options[$v] = sprintf(
+					'<option value="%s" %s %s>%s</option>',
+					$v,
+					selected( $v, $selected, false ),
+					$label['disabled'],
+					$label['label']
+				);
+			}
+			$out = sprintf(
+				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
+				esc_attr( $name ),
+				sprintf( esc_attr__( 'Show all %s', 'stream' ), $title ),
+				implode( '', $options )
 			);
 		}
-		$out = sprintf(
-			'<select name="%s" class="chosen-select" data-placeholder="Show all %s">%s</select>',
-			$name,
-			$title,
-			implode( '', $options )
-		);
+
 		return $out;
 	}
 
@@ -413,6 +523,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function filter_date() {
 		wp_enqueue_style( 'jquery-ui' );
+		wp_enqueue_style( 'wp-stream-datepicker' );
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 
@@ -452,6 +563,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		<?php  else : ?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 				<?php
+				/**
+				 * Action allows for mods after the list table display
+				 */
 				do_action( 'wp_stream_after_list_table' );
 				$this->extra_tablenav( $which );
 				$this->pagination( $which );

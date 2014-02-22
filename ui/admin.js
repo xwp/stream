@@ -8,11 +8,51 @@ jQuery(function($){
 		});
 	}
 
-	$( '.toplevel_page_wp_stream .chosen-select' ).select2({
-		minimumResultsForSearch: 10,
-		allowClear: true,
-		width: '165px'
-	});
+	$( '.toplevel_page_wp_stream select.chosen-select' ).select2({
+			minimumResultsForSearch: 10,
+			allowClear: true,
+			width: '165px'
+		});
+
+	$( '.toplevel_page_wp_stream input[type=hidden].chosen-select' ).select2({
+			minimumInputLength: 1,
+			allowClear: true,
+			width: '165px',
+			ajax: {
+				url: ajaxurl,
+				datatype: 'json',
+				data: function (term) {
+					return {
+						action: 'wp_stream_filters',
+						filter: $(this).attr('name'),
+						q: term
+					};
+				},
+				results: function (data) {
+					return {results: data};
+				}
+			},
+			initSelection: function (element, callback) {
+				var id = $(element).val();
+
+				if(id !== '') {
+					$.post(
+						ajaxurl,
+						{
+							action: 'wp_stream_get_author_name_by_id',
+							id:     id
+						},
+						function (response) {
+							callback({
+								id:   id,
+								text: response
+							});
+						},
+						'json'
+					);
+				}
+			}
+		});
 
 	$(window).load(function() {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
@@ -32,15 +72,25 @@ jQuery(function($){
 	});
 
 	// Admin page tabs
-	var $tabs       = $('.nav-tab-wrapper'),
-		$panels     = $('table.form-table'),
-		currentHash = window.location.hash ? window.location.hash.match(/\d+/)[0] : 0;
+	var $tabs          = $('.nav-tab-wrapper'),
+		$panels        = $('table.form-table'),
+		$activeTab     = $tabs.find('.nav-tab-active'),
+		defaultIndex   = $activeTab.length > 0 ? $tabs.find('a').index( $activeTab ) : 0,
+		currentHash    = window.location.hash ? window.location.hash.match(/\d+/)[0] : defaultIndex,
+		syncFormAction = function( index ) {
+			var $optionsForm   = $('input[name="option_page"][value="wp_stream"]').parent('form');
+			var currentAction  = $optionsForm.attr('action');
+
+			$optionsForm.prop('action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ));
+		};
 
 	$tabs.on('click', 'a', function(e){
 		e.preventDefault();
 		var index = $tabs.find('a').index( $(this) );
 		$panels.hide().eq(index).show();
 		$tabs.find('a').removeClass('nav-tab-active').filter($(this)).addClass('nav-tab-active');
+		window.location.hash = index;
+		syncFormAction(index);
 	});
 	$tabs.children().eq( currentHash ).trigger('click');
 
@@ -109,6 +159,9 @@ jQuery(function($){
 			// Remove the number of element added to the end of the list table
 			$( list_sel + ' tr').slice(-$new_items.length).remove();
 
+			// Allow others to hook in, ie: timeago
+			$( list_sel ).parent().trigger( 'updated' );
+
 			// Remove background after a certain amount of time
 			setTimeout( function() {
 				$('.new-row').addClass( 'fadeout' );
@@ -143,6 +196,21 @@ jQuery(function($){
 			});
 		});
 
+		$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
+
 	});
+
+	// Relative time
+	$( 'table.wp-list-table' ).on( 'updated', function() {
+		var timeObjects = $(this).find( 'time.relative-time' );
+		timeObjects.each( function( i, el ) {
+			var thiz = $(el);
+			thiz.removeClass( 'relative-time' );
+			$( '<strong><time datetime="' + thiz.attr( 'datetime' ) + '" class="timeago"/></time></strong><br/>' )
+				.prependTo( thiz.parent().parent() )
+				.find( 'time.timeago' )
+				.timeago();
+		});
+	}).trigger( 'updated' );
 
 });

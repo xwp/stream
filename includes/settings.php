@@ -36,7 +36,12 @@ class WP_Stream_Settings {
 		// Parse field information gathering default values
 		$defaults = self::get_defaults();
 
-		// Get options
+		/**
+		 * Filter allows for modification of options
+		 *
+		 * @param  array  array of options
+		 * @return array  updated array of options
+		 */
 		self::$options = apply_filters(
 			'wp_stream_options',
 			wp_parse_args(
@@ -111,7 +116,7 @@ class WP_Stream_Settings {
 						),
 						array(
 							'name'        => 'delete_all_records',
-							'title'       => __( 'Delete All Records', 'stream' ),
+							'title'       => __( 'Reset Stream Database', 'stream' ),
 							'type'        => 'link',
 							'href'        => add_query_arg(
 								array(
@@ -139,6 +144,12 @@ class WP_Stream_Settings {
 					),
 				),
 			);
+			/**
+			 * Filter allows for modification of options fields
+			 *
+			 * @param  array  array of fields
+			 * @return array  updated array of fields
+			 */
 			self::$fields = apply_filters( 'wp_stream_options_fields', $fields );
 		}
 		return self::$fields;
@@ -239,6 +250,7 @@ class WP_Stream_Settings {
 		$description   = isset( $field['desc'] ) ? $field['desc'] : null;
 		$href          = isset( $field['href'] ) ? $field['href'] : null;
 		$after_field   = isset( $field['after_field'] ) ? $field['after_field'] : null;
+		$title         = isset( $field['title'] ) ? $field['title'] : null;
 		$current_value = self::$options[$section . '_' . $name];
 
 		if ( is_callable( $current_value ) ) {
@@ -315,6 +327,15 @@ class WP_Stream_Settings {
 				}
 				$output .= '</fieldset></div>';
 				break;
+			case 'file':
+				$output = sprintf(
+					'<input type="file" name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s" class="%4$s">',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name ),
+					esc_attr( $class )
+				);
+				break;
 			case 'link':
 				$output = sprintf(
 					'<a id="%1$s_%2$s_%3$s" class="%4$s" href="%5$s">%6$s</a>',
@@ -323,7 +344,7 @@ class WP_Stream_Settings {
 					esc_attr( $name ),
 					esc_attr( $class ),
 					esc_attr( $href ),
-					__( 'Reset Stream Database', 'stream' )
+					esc_attr( $title )
 				);
 				break;
 		}
@@ -386,6 +407,25 @@ class WP_Stream_Settings {
 	}
 
 	/**
+	 * Get an array of active Connectors
+	 *
+	 * @return array
+	 */
+	public static function get_active_connectors() {
+		$active_connectors = self::$options['connectors_active_connectors'];
+		if ( is_callable( $active_connectors ) ) {
+			$active_connectors = call_user_func( $active_connectors );
+		}
+		$active_connectors = wp_list_filter(
+			$active_connectors,
+			array( '__placeholder__' ),
+			'NOT'
+		);
+
+		return $active_connectors;
+	}
+
+	/**
 	 * Get translations of serialized Stream settings
 	 *
 	 * @filter wp_stream_serialized_labels
@@ -414,11 +454,14 @@ class WP_Stream_Settings {
 	 * @action update_option_wp_stream
 	 * @return void
 	 */
-	public function updated_option_ttl_remove_records( $old_value, $new_value ) {
+	public static function updated_option_ttl_remove_records( $old_value, $new_value ) {
 		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : -1;
 		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : -1;
 
 		if ( $ttl_after < $ttl_before ) {
+			/**
+			 * Action assists in purging when TTL is shortened
+			 */
 			do_action( 'wp_stream_auto_purge' );
 		}
 	}

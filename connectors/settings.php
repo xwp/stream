@@ -183,6 +183,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			// to be updated
 		);
 
+		/**
+		 * Filter allows for insertion of serialized labels
+		 *
+		 * @param  array  $lables  Serialized labels
+		 * @return array  Updated array of serialzed labels
+		 */
 		$labels = apply_filters( 'wp_stream_serialized_labels', $labels );
 
 		if ( isset( $labels[$option_name] ) && isset( $labels[$option_name][$field_key] ) ) {
@@ -276,6 +282,11 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function callback_updated_option( $option, $old_value, $value ) {
 		global $new_whitelist_options, $whitelist_options;
+
+		if ( 0 === strpos( $option, '_transient_' ) ) {
+			return;
+		}
+
 		$options = array_merge(
 			(array) $whitelist_options,
 			$new_whitelist_options,
@@ -313,7 +324,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 			foreach ( $changed_keys as $field_key ) {
 				$changed_options[] = array(
-					'label'     => self::get_serialized_field_label( $current_key, $field_key ),
+					'label'     => self::get_serialized_field_label( $option, $field_key ),
 					'option'    => $current_key,
 					// Prevent fatal error when saving option as array
 					'old_value' => isset( $old_value[$field_key] ) ? maybe_serialize( $old_value[$field_key] ) : null,

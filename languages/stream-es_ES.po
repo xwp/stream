@@ -2,20 +2,21 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Stream\n"
 "POT-Creation-Date: 2013-12-19 16:09+0100\n"
-"PO-Revision-Date: 2013-12-19 16:24+0100\n"
-"Last-Translator: Juan Manuel Combetto <juan@x-team.com>\n"
+"PO-Revision-Date: 2014-02-14 14:39-0300\n"
+"Last-Translator: Ing. Juan Manuel Combetto <juan@x-team.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.3\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../stream.php:131
 msgid "Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE."
-msgstr "Stream necesita de una version de PHP de 5.3+, el plugin NO ESTA ACTIVO"
+msgstr ""
+"Stream necesita de una version de PHP de 5.3+, el plugin NO ESTA ACTIVO"
 
 #: ../connectors/installer.php:32
 msgid "Installer"
@@ -75,7 +76,7 @@ msgstr "El plugin \"%s\" ha sido desactivado %s"
 #: ../connectors/installer.php:165
 #, php-format
 msgid "\"%s\" theme activated"
-msgstr "El tema \"%s\ ha sido activado"
+msgstr "El tema \"%s\" ha sido activado"
 
 #: ../connectors/installer.php:180
 #, php-format
@@ -589,7 +590,9 @@ msgstr "Ajustes de Stream"
 msgid ""
 "Are you sure you want to delete all Stream activity records from the "
 "database? This cannot be undone."
-msgstr "Esta seguro de querer eliminar todos los registros de Stream de la base de datos"
+msgstr ""
+"Esta seguro de querer eliminar todos los registros de Stream de la base de "
+"datos"
 
 #: ../includes/admin.php:227
 msgid "Stream Records"
@@ -604,7 +607,11 @@ msgid ""
 "This is a private URL for you to access a feed of Stream Records. Consider "
 "this key a secret and do not share it with other users. If your key has been "
 "compromised, you can use the link below to generate a new one. "
-msgstr "Este es un URL privado para que pueda acceder a los registros de Stream. Considere esto como una clave secreta, no la comparta con otros usuarios. Si su clave ha sido comprometida, puede usar el enlace aqui debajo para generar una nueva"
+msgstr ""
+"Este es un URL privado para que pueda acceder a los registros de Stream. "
+"Considere esto como una clave secreta, no la comparta con otros usuarios. Si "
+"su clave ha sido comprometida, puede usar el enlace aqui debajo para generar "
+"una nueva"
 
 #: ../includes/feeds.php:70
 msgid "Generate New Key"
@@ -618,7 +625,9 @@ msgstr "Acceso denegado"
 msgid ""
 "You don't have permission to view this feed, please contact your site "
 "Administrator."
-msgstr "No tienes permiso para ver esta vista, por favor pongase en contacto con el administrador del sitio"
+msgstr ""
+"No tienes permiso para ver esta vista, por favor pongase en contacto con el "
+"administrador del sitio"
 
 #: ../includes/feeds.php:140
 msgid "Stream Feed"
@@ -709,7 +718,10 @@ msgstr "Rol de acceso"
 msgid ""
 "Users from the selected roles above will have permission to view Stream "
 "Records. However, only site Administrators can access Stream Settings."
-msgstr "Los usuarios de los roles seleccionados arriba tienen permiso de ver Registros Sream, sin embargo solamente los administradores del sitio pueden realizar ajustes"
+msgstr ""
+"Los usuarios de los roles seleccionados arriba tienen permiso de ver "
+"Registros Sream, sin embargo solamente los administradores del sitio pueden "
+"realizar ajustes"
 
 #: ../includes/settings.php:65
 msgid "Private Feeds"
@@ -721,7 +733,10 @@ msgid ""
 "Users from the selected roles above will be given a private Feed URL in "
 "their %sUser Profile%s. Please %sflush rewrite rules%s on your site after "
 "changing this setting."
-msgstr "A los usuarios de los roles seleccionados se les va a dar un Feed URL en su %sPerfil de usuario%s. Por favor haga los cambios necesarios en su sitio despues de cambiar esta configuración. Ej: %sflush rewrite rules%s"
+msgstr ""
+"A los usuarios de los roles seleccionados se les va a dar un Feed URL en su "
+"%sPerfil de usuario%s. Por favor haga los cambios necesarios en su sitio "
+"despues de cambiar esta configuración. Ej: %sflush rewrite rules%s"
 
 #: ../includes/settings.php:67
 msgid "View Profile"
@@ -743,7 +758,9 @@ msgstr "Mantener registro"
 msgid ""
 "Maximum number of days to keep activity records. Leave blank to keep records "
 "forever."
-msgstr "Maximo de dias para mantener los registros de actividad. Dejar en blanco para recordar para siempre."
+msgstr ""
+"Maximo de dias para mantener los registros de actividad. Dejar en blanco "
+"para recordar para siempre."
 
 #: ../includes/settings.php:78
 msgid "days"
@@ -756,7 +773,9 @@ msgstr "Borrar todos los registros"
 #: ../includes/settings.php:85
 msgid ""
 "Warning: Clicking this will delete all activity records from the database."
-msgstr "Advertencia: Al hacer click en esto, todos los registros de actividad se borrarán de la base de datos."
+msgstr ""
+"Advertencia: Al hacer click en esto, todos los registros de actividad se "
+"borrarán de la base de datos."
 
 #: ../includes/settings.php:236
 msgid "Reset Stream Database"

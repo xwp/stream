@@ -51,6 +51,8 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Private JSON feeds of user activity records
  * Set how long records should live before being purged automatically
  * Option to manually purge all user activity records from the database
+ * Disable connectors where you don't want user activity tracked
+ * Support for IPv6 addresses
 
 **Extension plugins:**
 
@@ -62,16 +64,20 @@ Stream is built to extend, allowing developers to easily build their own connect
 **Languages:**
 
  * English
- * French
+ * French (France)
  * German
- * Spanish
+ * Indonesian
  * Polish
+ * Portuguese (Brazil)
+ * Spanish (Spain)
 
 **Coming soon:**
 
+ * UI to exclude specific types of user activity from being tracked
+ * Limit who can view user activity records by user, not just by role
+ * Improved context assignements for Media, Comments, Users and Widgets
  * Multisite view of all activity records on a network
- * Support for IPv6 addresses
- * Language support for Arabic (RTL), Czech, Slovak and Indonesian
+ * Language support for Arabic (RTL), Czech and Slovak
 
 **See room for improvement?**
 
@@ -91,6 +97,27 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.2.3 =
+**2014/02/21** - Replacement function for filter_input family to avoid PHP bug. Filter added to main Stream query. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 1.2.2 =
+**2014/02/19** - Prevent records of disabled connectors from appearing in the Stream. Bug fixes. Props [kucrut](http://profiles.wordpress.org/kucrut/), [johnregan3](http://profiles.wordpress.org/johnregan3/)
+
+= 1.2.1 =
+**2014/02/17** - Translation updates. Langage packs for pt_BR and id_ID. Bug fixes. Props [kucrut](http://profiles.wordpress.org/kucrut/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [bordoni](http://profiles.wordpress.org/webord/), [powelski](http://profiles.wordpress.org/powelski/), [omniwired](https://github.com/omniwired), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 1.2 =
+**2014/02/12** - Awesome datepicker styles. Performance optimizations. Bug fixes. Props [johnregan3](http://profiles.wordpress.org/johnregan3/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/)
+
+= 1.1.9 =
+**2014/02/10** - Load authors filter using AJAX if there are more than 50. Props [powelski](http://profiles.wordpress.org/powelski/)
+
+= 1.1.8 =
+**2014/02/09** - Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
+= 1.1.7 =
+**2014/02/06** - Upgrade routine for IPv6 support. Persist tab selection after saving Stream Settings. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [dero](https://github.com/dero)
 
 = 1.1.6 =
 **2014/02/06** - Sortable columns bug fix on the records screen. Props [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/)

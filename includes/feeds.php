@@ -134,7 +134,7 @@ class WP_Stream_Feeds {
 
 		$records_admin_url = add_query_arg( array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ), admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) );
 
-		if ( 'json' === filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR ) ) {
+		if ( 'json' === wp_stream_filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR ) ) {
 			if ( version_compare( PHP_VERSION, '5.4', '>=' ) ) {
 				echo json_encode( $records, JSON_PRETTY_PRINT );
 			} else {
@@ -154,6 +154,11 @@ class WP_Stream_Feeds {
 				xmlns:atom="http://www.w3.org/2005/Atom"
 				xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
 				xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+				<?php
+				/**
+				 * Action fires during RSS xmls printing
+				 */
+				?>
 				<?php do_action( 'rss2_ns' ) ?>
 			>
 				<channel>
@@ -165,6 +170,11 @@ class WP_Stream_Feeds {
 					<language><?php bloginfo_rss( 'language' ) ?></language>
 					<sy:updatePeriod><?php echo esc_html( 'hourly' ) ?></sy:updatePeriod>
 					<sy:updateFrequency><?php echo absint( 1 ) ?></sy:updateFrequency>
+					<?php
+					/**
+					 * Action fires during RSS head
+					 */
+					?>
 					<?php do_action( 'rss2_head' ) ?>
 					<?php foreach ( $records as $record ) : ?>
 						<?php
@@ -182,6 +192,11 @@ class WP_Stream_Feeds {
 							<category domain="ip"><?php echo esc_html( $record->ip ) ?></category>
 							<guid isPermaLink="false"><?php echo esc_url( $record_link ) ?></guid>
 							<link><?php echo esc_url( $record_link ) ?></link>
+							<?php
+							/**
+							 * Action fires during RSS item
+							 */
+							?>
 							<?php do_action( 'rss2_item' ) ?>
 						</item>
 					<?php endforeach; ?>

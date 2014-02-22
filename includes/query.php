@@ -59,6 +59,12 @@ class WP_Stream_Query {
 
 		$args = wp_parse_args( $args, $defaults );
 
+		/**
+		 * Filter allows additional arguments to query $args
+		 *
+		 * @param  array  Array of query arguments
+		 * @return array  Updated array of query arguments
+		 */
 		$args = apply_filters( 'stream_query_args', $args );
 
 		$join  = '';
@@ -85,7 +91,7 @@ class WP_Stream_Query {
 		}
 
 		if ( $args['ip'] ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
+			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", wp_stream_filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
 		}
 
 		if ( $args['search'] ) {
@@ -238,6 +244,15 @@ class WP_Stream_Query {
 		WHERE 1=1 $where
 		$orderby
 		$limits";
+
+		/**
+		 * Allows developers to change final SQL of Stream Query
+		 *
+		 * @param  string $sql   SQL statement
+		 * @param  array  $args  Arguments passed to query
+		 * @return string
+		 */
+		$sql = apply_filters( 'wp_stream_query', $sql, $args );
 
 		$results = $wpdb->get_results( $sql );
 
