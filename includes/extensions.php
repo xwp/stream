@@ -18,37 +18,33 @@ if ( ! empty( $extensions ) ) {
 
 		$plugin_path = isset( $extension->post_meta->plugin_path[0] ) ? $extension->post_meta->plugin_path[0] : null;
 		$is_active   = ( $plugin_path && is_plugin_active( $plugin_path ) );
-
-		if ( $is_active ) {
-			$count++;
-		}
 	}
 }
 ?>
 
 <?php if ( ! empty( $extensions ) ) : ?>
 
-	<h2><?php esc_html_e( 'Stream Extensions', 'stream' ) ?>
-		<span class="theme-count"><?php echo absint( $count ) ?></span>
-		<a class="button button-primary" href="http://wp-stream.com/extensions/" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a>
+	<h2><?php esc_html_e( 'Stream Premium Extensions', 'stream' ) ?>
+		<span class="theme-count"><?php echo absint( count( $extensions ) ) ?></span>
+		<a href="#" class="button button-primary stream-premium-connect"><?php esc_html_e( 'Connect to Stream Premium', 'stream' ) ?></a>
 	</h2>
 
 	<p class="description">
-		<?php esc_html_e( 'To install and receive automatic updates for premium extensions, you must have a valid license key.', 'stream' ) ?>
-		<a href="#" class="stream-signup"><?php esc_html_e( 'Purchase license key', 'stream' ) ?></a>
+		<?php esc_html_e( "Connect to your Stream Premium account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?> <a href="#" class="stream-premium-signup"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
 	</p>
 
-	<table class="license-check" style="display: table;">
-		<tbody>
-			<tr>
-				<th scope="row"><label for="wp_stream_license_key">License Key</label></th>
-				<td>
-					<input type="text" name="wp_stream_license_key" id="wp_stream_license_key" class="regular-text code" maxlength="32" value="">
-					<a href="#" class="button button-secondary" id="wp_stream_check_license">Activate License</a>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+	<?php
+	/*
+	<h2><?php esc_html_e( 'Stream Premium Extensions', 'stream' ) ?>
+		<span class="theme-count"><?php echo absint( count( $extensions ) ) ?></span>
+		<a href="#" class="button button-secondary stream-premium-disconnect"><?php esc_html_e( 'Disconnect', 'stream' ) ?></a>
+	</h2>
+
+	<p class="description" style="color: green;">
+		<div class="dashicons dashicons-yes"></div> Your account is connected!
+	</p>
+	*/
+	?>
 
 	<p class="description stream-license-check-message"></p>
 
@@ -103,7 +99,7 @@ if ( ! empty( $extensions ) ) {
 
 	<?php else : ?>
 
-		<h2><?php esc_html_e( 'Stream Extensions', 'stream' ) ?></h2>
+		<h2><?php esc_html_e( 'Stream Premium Extensions', 'stream' ) ?></h2>
 
 		<p><em><?php esc_html_e( 'Sorry, there was a problem loading the list of extensions.', 'stream' ) ?></em></p>
 
