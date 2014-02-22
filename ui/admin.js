@@ -233,21 +233,30 @@ jQuery(function($){
 				$fields.each(function( k, el ){
 					var $input = $(el),
 						$placeholder = $input.next( '.user_n_role_select_placeholder' ),
-						roles = $input.data('roles');
+						roles = $input.data('roles'),
+						l10n = $input.data( 'localization' );
 
 					$input.select2({
 						multiple: true,
 						formatSelection: function (object){
 							if ( $.isNumeric( object.id ) ){
-								object.text += '<i class="icon16 icon-users"></i>';
+								return object.login + ' (' + object.id + ')' + '<i class="icon16 icon-users"></i>';
 							}
 							return object.text;
 						},
 						formatResult: function (object){
 							if ( $.isNumeric( object.id ) ){
-								object.text += ' ( ID: ' + object.id + ' )';
+								var template = _.template(
+										'ID: <b><%= id %></b><br />' +
+										'Email: <b><%= email %></b><br />' +
+										'Login: <b><%= login %></b><br />' +
+										'Display Name: <b><%= display_name %></b>'
+									);
+
+								return template(object);
+							} else {
+								return object.text;
 							}
-							return object.text;
 						},
 						ajax: {
 							type: 'POST',
@@ -257,20 +266,20 @@ jQuery(function($){
 							data: function (term, page) { // page is the one-based page number tracked by Select2
 								return {
 									'find': term, //search term
-									'limit': 10, // page size
-									'pager': page, // page number
+									'limit': 25, // page size
+									'page': page, // page number
 									'action': 'stream_find_user'
 								};
 							},
-							results: function (data) {
+							results: function (data, page) {
 								var answer = {
 										results:[
 											{
-												text: 'Roles',
+												text: l10n.roles,
 												children: roles
 											},
 											{
-												text: 'Users',
+												text: l10n.users,
 												children: []
 											}
 										]
@@ -286,7 +295,21 @@ jQuery(function($){
 									}
 								} );
 
-								answer.results[1].children = data.users;
+								if ( page === 1 ){
+									answer.results[1].children = data.users;
+								} else {
+									answer.results = [
+										{
+											children: data.users
+										}
+									];
+								}
+
+								if ( (page * 25) <= data.total && data.total !== 0 ){
+									answer.more = true;
+								} else {
+									answer.more = false;
+								}
 
 								// notice we return the value of more so Select2 knows if more results can be loaded
 								return answer;

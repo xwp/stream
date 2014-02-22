@@ -316,7 +316,11 @@ class WP_Stream_Settings {
 						$user = new WP_User( $value );
 						$data_selected[] = array(
 							'id' => $user->ID,
-							'text' => $user->display_name,
+							'login' => $user->user_login,
+							'nicename' => $user->user_nicename,
+							'email' => $user->user_email,
+							'display_name' => $user->display_name,
+							'avatar' => 'http://gravatar.com/avatar/' . md5( strtolower( trim( $user->user_email ) ) ),
 						);
 					} else {
 						foreach ( $data_roles as $role ){
@@ -328,11 +332,17 @@ class WP_Stream_Settings {
 					}
 				}
 
+				$data_l10n = array(
+					'roles' => __( 'Roles', 'stream' ),
+					'users' => __( 'Users', 'stream' ),
+				);
+
 				$output .= sprintf(
-					'<input type="hidden" class="user_n_role_select" data-roles=\'%1$s\' data-selected=\'%2$s\' value="%3$s" />',
+					'<input type="hidden" class="user_n_role_select" data-roles=\'%1$s\' data-selected=\'%2$s\' value="%3$s" data-localization=\'%4$s\' />',
 					json_encode( $data_roles ),
 					json_encode( $data_selected ),
-					esc_attr( implode( ',', $current_value ) )
+					esc_attr( implode( ',', $current_value ) ),
+					json_encode( $data_l10n )
 				);
 
 				// Fallback if nothing is selected
@@ -532,6 +542,11 @@ class WP_Stream_Settings {
 		}
 	}
 
+	/**
+	 * Function to output the Users from the search for Select2 AJAX
+	 *
+	 * @return void
+	 */
 	public static function find_users(){
 		if ( ! defined( 'DOING_AJAX' ) ) return;
 		$response = (object) array(
@@ -541,32 +556,41 @@ class WP_Stream_Settings {
 
 		$request = (object) array(
 			'find' => ( isset( $_POST['find'] )? esc_attr( trim( $_POST['find'] ) ) : '' ),
+			'page' => ( isset( $_POST['page'] )? absint( trim( $_POST['page'] ) ) - 1 : 0 ),
+			'limit' => ( isset( $_POST['limit'] )? absint( trim( $_POST['limit'] ) ) : 25 ),
 		);
+
 
 		add_filter( 'user_search_columns', array( __CLASS__, '_filter_user_search_columns' ), 10, 3 );
 
 		$users = new WP_User_Query(
 			array(
 				'search' => "*{$request->find}*",
+				'number' => $request->limit,
+				'offset' => $request->page * $request->limit,
 				'search_columns' => array(
 					'user_login',
-					'user_nicename',
 					'user_email',
-					'user_url',
 				),
 			)
 		);
-		if ( $users->get_total() === 0 )
+
+		if ( $users->get_total() === 0 ){
 			exit( json_encode( $response ) );
+		}
 
 		$response->status  = true;
 		$response->message = '';
+		$response->users   = array();
+		$response->total   = $users->get_total();
 
-		$response->users = array();
 		foreach ( $users->results as $key => $user ) {
 			$args = array(
 				'id' => $user->ID,
-				'text' => $user->display_name,
+				'login' => $user->user_login,
+				'nicename' => $user->user_nicename,
+				'email' => $user->user_email,
+				'display_name' => $user->display_name,
 				'avatar' => 'http://gravatar.com/avatar/' . md5( strtolower( trim( $user->user_email ) ) ),
 			);
 
@@ -576,6 +600,20 @@ class WP_Stream_Settings {
 		exit( json_encode( $response ) );
 	}
 
+
+	/**
+	 * Filtering the Columns that we will search for users on our Select2 Fields
+	 *
+	 * Usage:
+	 * add_filter( 'user_search_columns', array( __CLASS__, '_filter_user_search_columns' ), 10, 3 );
+	 *
+	 * @param  [type] $search_columns Columns that will be searched
+	 * @param  [type] $search         Search object
+	 * @param  [type] $query          Search Query
+	 *
+	 * @filter user_search_columns
+	 * @return [type]                 Columns after adding `display_name`
+	 */
 	public static function _filter_user_search_columns( $search_columns, $search, $query ){
 		$search_columns[] = 'display_name';
 		return $search_columns;
