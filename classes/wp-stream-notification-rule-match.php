@@ -90,7 +90,7 @@ class WP_Stream_Notification_Rule_Matcher {
 		$type     = isset( $trigger['type'] ) ? $trigger['type'] : null;
 		$needle   = isset( $trigger['value'] ) ? $trigger['value'] : null;
 		$operator = isset( $trigger['operator'] ) ? $trigger['operator'] : null;
-		$negative = ( isset( $operator[0] ) && $operator[0] == '!' );
+		$negative = ( isset( $operator[0] ) && '!' == $operator[0] );
 
 		switch ( $type ) {
 			case 'search':
@@ -257,7 +257,7 @@ class WP_Stream_Notification_Rule_Matcher {
 			for ( $i; $i < count( $flattened_tree ); $i++ ) {
 				// If we're on the correct level, we're going to insert the node
 				if ( $flattened_tree[$i]['level'] == $level ) {
-					if ( $flattened_tree[$i]['type'] == 'trigger' ) {
+					if ( 'trigger' == $flattened_tree[$i]['type'] ) {
 						$return[] = $flattened_tree[$i]['item'];
 						// If the node is a group, we need to call the recursive function
 						// in order to construct the tree for us further
@@ -299,7 +299,7 @@ class WP_Stream_Notification_Rule_Matcher {
 				$trigger['triggers'] = $this->generate_group_chunks( $trigger['triggers'] );
 			}
 			// If relation=and, start a new chunk, else join the previous chunk
-			if ( $trigger['relation'] == 'and' ) {
+			if ( 'and' == $trigger['relation'] ) {
 				$chunks[] = array( $trigger );
 				$current_chunk = count( $chunks ) - 1;
 			} else {

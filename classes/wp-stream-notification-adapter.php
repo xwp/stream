@@ -36,13 +36,13 @@ abstract class WP_Stream_Notification_Adapter {
 					case 'created':
 						$value = $log[$placeholder];
 						break;
-					case ( strpos( $placeholder, 'meta.' ) !== false ):
+					case ( false !== strpos( $placeholder, 'meta.' ) ):
 						$meta_key = substr( $placeholder, 5 );
 						if ( isset( $log['meta'][ $meta_key ] ) ) {
 							$value = $log['meta'][ $meta_key ];
 						}
 						break;
-					case ( strpos( $placeholder, 'author.' ) !== false ):
+					case ( false !== strpos( $placeholder, 'author.' ) ):
 						$meta_key = substr( $placeholder, 7 );
 						$author = get_userdata( $log['author'] );
 						if ( $author && isset( $author->{$meta_key} ) ) {
@@ -50,7 +50,7 @@ abstract class WP_Stream_Notification_Adapter {
 						}
 						break;
 					// TODO Move this part to Stream base, and abstract it
-					case ( strpos( $placeholder, 'object.' ) !== false ):
+					case ( false !== strpos( $placeholder, 'object.' ) ):
 						$meta_key = substr( $placeholder, 7 );
 						$context = key( $log['contexts'] );
 						// can only guess the object type, since there is no
