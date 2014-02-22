@@ -87,11 +87,12 @@ class WP_Stream_Notification_Rule_Matcher {
 	}
 
 	public function match_trigger( $trigger, $log ) {
-		$needle = $trigger['value'];
-		$operator = $trigger['operator'];
-		$negative = ( $operator[0] == '!' );
+		$type     = isset( $trigger['type'] ) ? $trigger['type'] : null;
+		$needle   = isset( $trigger['value'] ) ? $trigger['value'] : null;
+		$operator = isset( $trigger['operator'] ) ? $trigger['operator'] : null;
+		$negative = ( isset( $operator[0] ) && $operator[0] == '!' );
 
-		switch ( $trigger['type'] ) {
+		switch ( $type ) {
 			case 'search':
 				$haystack = $log['summary'];
 				break;
@@ -102,7 +103,7 @@ class WP_Stream_Notification_Rule_Matcher {
 				$haystack = $log['author'];
 				break;
 			case 'author_role':
-				$user = get_userdata( $log['author'] );
+				$user     = get_userdata( $log['author'] );
 				$haystack = ( is_object( $user ) && $user->exists() && $user->roles ) ? $user->roles[0] : false;
 				break;
 			case 'ip':
@@ -110,7 +111,7 @@ class WP_Stream_Notification_Rule_Matcher {
 				break;
 			case 'date':
 				$haystack = date( 'Ymd', strtotime( $log['created'] ) );
-				$needle = date( 'Ymd', strtotime( $needle ) );
+				$needle   = date( 'Ymd', strtotime( $needle ) );
 				break;
 			case 'connector':
 				$haystack = $log['connector'];
@@ -124,7 +125,7 @@ class WP_Stream_Notification_Rule_Matcher {
 		}
 
 		$match = false;
-		switch ( $trigger['operator'] ) {
+		switch ( $operator ) {
 			case '=':
 			case '!=':
 			case '>=':
