@@ -192,7 +192,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			case 'date':
 				$out  = $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
-				$out .= ( 'active' == $item->visibility ) ? __( 'Active', 'stream-notifications' ) : __( 'Inactive', 'stream-notifications' );
+				$out .= ( 'active' == $item->visibility ) ? __( 'Active', 'stream-notifications' ) : __( 'Last Modified', 'stream-notifications' );
 				break;
 
 			default:
