@@ -314,6 +314,28 @@ class WP_Stream_Notifications_Form
 			),
 		);
 
+		// Connector-based triggers
+		$args['special_types'] = array(
+			'post_title' => array(
+				'title' => __( 'Post: Title', 'stream-notifications' ),
+				'type'  => 'text',
+				'connector' => 'posts',
+				'operators' => $default_operators,
+			),
+			'post_slug' => array(
+				'title' => __( 'Post: Slug', 'stream-notifications' ),
+				'type'  => 'text',
+				'connector' => 'posts',
+				'operators' => $default_operators,
+			),
+			'post_content' => array(
+				'title' => __( 'Post: Content', 'stream-notifications' ),
+				'type'  => 'text',
+				'connector' => 'posts',
+				'operators' => $default_operators,
+			),
+		);
+
 		$args['adapters'] = array();
 
 		foreach ( WP_Stream_Notifications::$adapters as $name => $options ) {
