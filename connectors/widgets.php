@@ -49,9 +49,13 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return array Context label translations
 	 */
 	public static function get_context_labels() {
-		return array(
-			'widgets' => __( 'Widgets', 'stream' ),
-		);
+		global $wp_registered_sidebars;
+		$labels = array();
+
+		foreach ( $wp_registered_sidebars as $sidebar ) {
+			$labels[$sidebar['id']] = $sidebar['name'];
+		}
+		return $labels;
 	}
 
 	/**
@@ -108,7 +112,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$message,
 				compact( 'title', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
 				null,
-				array( 'widgets' => $action )
+				array( $sidebar => $action )
 			);
 
 			$order_operation = null;
@@ -166,7 +170,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 					$message,
 					compact( 'title', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
 					null,
-					array( 'widgets' => $action )
+					array( $sidebar => $action )
 				);
 
 				$widget_id = null;
@@ -205,7 +209,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				),
 				compact( 'name', 'sidebar_name', 'title', 'id_base', 'sidebar', 'widget_id', 'new_instance', 'old_instance' ),
 				null,
-				array( 'widgets' => 'updated' )
+				array( $sidebar => 'updated' )
 			);
 		}
 
@@ -252,7 +256,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				_x( '"%s" widgets were reordered', 'Sidebar name', 'stream' ),
 				compact( 'sidebar_name', 'sidebar' ),
 				null,
-				array( 'widgets' => 'sorted' ),
+				array( $sidebar => 'sorted' ),
 			);
 
 		}
