@@ -63,6 +63,7 @@ class WP_Stream_Notification_Rule {
 		$record = array_intersect_key( $data, $defaults );
 
 		if ( $this->exists() ) {
+			$record['created'] = $defaults['created'];
 			$result  = $wpdb->update( $wpdb->stream, $record, array( 'ID' => $this->ID ) );  // cache ok, db call ok
 			$success = ( false !== $result );
 		} else {
