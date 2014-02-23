@@ -251,12 +251,16 @@ jQuery(function($){
 							return template(object);
 						},
 						formatResult: function (object, label){
+							if ( typeof object.children !== 'undefined' && object.text === '' ){
+								label.hide();
+							}
+
 							var template;
 							if ( $.isNumeric( object.id ) ){
 								var title_template = _.template('<%= email %> (ID: <%= id %>)');
-								label.attr( 'title', title_template(object) );
+								label.attr( 'title', title_template(object) ).addClass('select2-result-user');
 
-								template = _.template('<%= display_name %>');
+								template = _.template('<img class="select2-result-user-avatar" src="<%= avatar %>" /> <%= display_name %>');
 							} else {
 								template = _.template('<%= text %>');
 							}
