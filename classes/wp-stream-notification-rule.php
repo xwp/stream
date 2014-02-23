@@ -63,7 +63,13 @@ class WP_Stream_Notification_Rule {
 		$record = array_intersect_key( $data, $defaults );
 
 		if ( $this->exists() ) {
-			$record['created'] = $defaults['created'];
+			$before = new WP_Stream_Notification_Rule( $this->ID );
+
+			// update `created` to current date if needed
+			if ( $before->visibility === 'inactive' || $this->visibility === 'inactive' ) {
+				$record['created'] = $defaults['created'];
+			}
+
 			$result  = $wpdb->update( $wpdb->stream, $record, array( 'ID' => $this->ID ) );  // cache ok, db call ok
 			$success = ( false !== $result );
 		} else {
