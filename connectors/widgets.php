@@ -55,6 +55,9 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		foreach ( $wp_registered_sidebars as $sidebar ) {
 			$labels[$sidebar['id']] = $sidebar['name'];
 		}
+
+		$labels['wp_inactive_widgets'] = __( 'Inactive Widgets' );
+
 		return $labels;
 	}
 
