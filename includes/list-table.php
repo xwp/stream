@@ -229,13 +229,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$display_col = isset( WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}] )
 					? WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}]
 					: $item->{$column_name};
-
-				if ( 'context' === $column_name && 'comments' === $item->connector ) {
-					$comment     = get_comment( $item->object_id );
-					$post_type   = get_post_type( $comment->comment_post_ID );
-					$display_col = get_post_type_object( $post_type )->labels->name;
-				}
-
 				$out = $this->column_link( $display_col, $column_name, $item->{$column_name} );
 				break;
 
