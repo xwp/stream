@@ -371,7 +371,7 @@ class WP_Stream_Notifications_Form
 				<div id="misc-publishing-actions">
 					<div class="misc-pub-section misc-pub-post-status">
 						<label for="notification_visibility">
-							<input type="checkbox" name="visibility" id="notification_visibility" value="active" <?php $rule->exists() && checked( $rule->visibility, 'active' ) ?>>
+							<input type="checkbox" name="visibility" id="notification_visibility" value="active" <?php checked( ! $rule->exists() || $rule->visibility === 'active' ) ?>>
 							<?php esc_html_e( 'Active', 'stream-notifications' ) ?>
 						</label>
 					</div>
