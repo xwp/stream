@@ -238,25 +238,29 @@ jQuery(function($){
 
 					$input.select2({
 						multiple: true,
-						formatSelection: function (object){
+						formatSelection: function (object, container){
+							var template;
 							if ( $.isNumeric( object.id ) ){
-								return object.login + ' (' + object.id + ')' + '<i class="icon16 icon-users"></i>';
-							}
-							return object.text;
-						},
-						formatResult: function (object){
-							if ( $.isNumeric( object.id ) ){
-								var template = _.template(
-										'ID: <b><%= id %></b><br />' +
-										'Email: <b><%= email %></b><br />' +
-										'Login: <b><%= login %></b><br />' +
-										'Display Name: <b><%= display_name %></b>'
-									);
+								var title_template = _.template('<%= email %> (ID: <%= id %>)');
+								container.parents('.select2-search-choice').attr( 'title', title_template(object) );
 
-								return template(object);
+								template = _.template('<%= display_name %><i class="icon16 icon-users"></i>');
 							} else {
-								return object.text;
+								template = _.template('<%= text %>');
 							}
+							return template(object);
+						},
+						formatResult: function (object, label){
+							var template;
+							if ( $.isNumeric( object.id ) ){
+								var title_template = _.template('<%= email %> (ID: <%= id %>)');
+								label.attr( 'title', title_template(object) );
+
+								template = _.template('<%= display_name %>');
+							} else {
+								template = _.template('<%= text %>');
+							}
+							return template(object);
 						},
 						ajax: {
 							type: 'POST',
@@ -300,6 +304,7 @@ jQuery(function($){
 								} else {
 									answer.results = [
 										{
+											text: '',
 											children: data.users
 										}
 									];
