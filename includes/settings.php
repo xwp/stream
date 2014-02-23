@@ -497,7 +497,7 @@ class WP_Stream_Settings {
 	 */
 	public static function get_active_connectors() {
 		$excluded_connectors = self::get_excluded_connectors();
-		$active_connectors   = array_intersect( $excluded_connectors, array_keys( self::get_terms_labels( 'connectors' ) ) );
+		$active_connectors   = array_diff( array_keys( self::get_terms_labels( 'connector' ) ), $excluded_connectors );
 		$active_connectors   = wp_list_filter(
 			$active_connectors,
 			array( '__placeholder__' ),
@@ -543,9 +543,13 @@ class WP_Stream_Settings {
 		return self::get_excluded_by_key( 'ip_addresses' );
 	}
 
-
-	public static function get_excluded_by_key( $key ){
-		$option_name     = 'exclude_' . $key;
+	/**
+	 * @param $column string name of the setting key (actions|ip_addresses|contexts|connectors)
+	 *
+	 * @return array
+	 */
+	public static function get_excluded_by_key( $column ){
+		$option_name     = 'exclude_' . $column;
 		$excluded_values = (isset(self::$options[$option_name]))?self::$options[$option_name] :array();
 		if ( is_callable( $excluded_values ) ) {
 			$excluded_values = call_user_func( $excluded_values );

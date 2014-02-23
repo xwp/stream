@@ -53,7 +53,21 @@ jQuery(function($){
 				}
 			}
 		});
-
+    var stream_select2_change_handler = function (e, input) {
+        var $placeholder_class = input.data('select-placeholder');
+        var $placeholder_child_class = $placeholder_class + '-child'
+        var $placeholder = input.siblings("." + $placeholder_class);
+        jQuery('.' + $placeholder_child_class).off().remove();
+        if (typeof e.val === 'undefined') {
+            e.val = input.val().split(',');
+        }
+        $.each(e.val.reverse(), function (value, key, list) {
+            if (value === '__placeholder__') {
+                return true;
+            }
+            $placeholder.after($placeholder.clone(true).attr('class', $placeholder_child_class).val(key));
+        });
+    }
     $('.stream_page_wp_stream_settings input[type=hidden].chosen-select.with-source').each(function (k, el) {
         var $input = $(el);
         $input.select2({
@@ -75,20 +89,7 @@ jQuery(function($){
                 callback( item.data( 'selected' ) );
             }
         }).on('change',function (e) {
-            console.log(e);
-            var $placeholder_class = $input.data('select-placeholder');
-            var $placeholder_child_class = $placeholder_class + '-child'
-            var $placeholder = jQuery($input).siblings("." + $placeholder_class);
-            jQuery('.' + $placeholder_child_class).off().remove();
-            if (typeof e.val === 'undefined') {
-                e.val = $input.val().split(',');
-            }
-            $.each(e.val.reverse(), function (value, key, list) {
-                if (value === '__placeholder__') {
-                    return true;
-                }
-                $placeholder.after($placeholder.clone(true).attr('class', $placeholder_child_class).val(key));
-            });
+            stream_select2_change_handler( e , $input );
         }).trigger('change');
     })
     $( '.stream_page_wp_stream_settings input[type=hidden].chosen-select.ip-addresses').each(function( k, el ){
@@ -108,23 +109,10 @@ jQuery(function($){
                 callback( item.data( 'selected' ) );
             },
             formatNoMatches : function(){ return ''}
-        }).on('change',function (e) {
-            console.log(e);
-            var $placeholder_class = $input.data('select-placeholder');
-            var $placeholder_child_class = $placeholder_class + '-child'
-            var $placeholder = jQuery($input).siblings("." + $placeholder_class);
-            jQuery('.' + $placeholder_child_class).off().remove();
-            if (typeof e.val === 'undefined') {
-                e.val = $input.val().split(',');
-            }
-            $.each(e.val.reverse(), function (value, key, list) {
-                if (value === '__placeholder__') {
-                    return true;
-                }
-                $placeholder.after($placeholder.clone(true).attr('class', $placeholder_child_class).val(key));
-            });
+        }).on('change',function(e){
+            stream_select2_change_handler( e , $input );
         }).trigger('change');
-    })
+    });
 	$(window).load(function() {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
 	});

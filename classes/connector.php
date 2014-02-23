@@ -133,9 +133,7 @@ abstract class WP_Stream_Connector {
 		if ( $ip === false ) {
 			$bool = true;
 		} else {
-			$excluded_ip_addresses = WP_Stream_Settings::get_excluded_ip_addresses();
-
-			$bool = ( ! in_array( $ip, $excluded_ip_addresses ) ) ;
+			$bool = self::is_logging_enabled( 'ip_addresses', $ip );
 		}
 
 		/**
@@ -152,6 +150,38 @@ abstract class WP_Stream_Connector {
 	}
 
 	/**
+	 * @param $action string action slug to check whether logging is enable or not for that action
+	 *
+	 * @return bool
+	 */
+	public static function is_logging_enabled_for_action( $action ) {
+		return self::is_logging_enabled( 'actions', $action );
+	}
+
+	/**
+	 * @param $context string context slug to check whether logging is enable or not for that context
+	 *
+	 * @return bool
+	 */
+	public static function is_logging_enabled_for_context( $context ) {
+		return self::is_logging_enabled( 'contexts', $context );
+	}
+
+	/**
+	 * This function is use to check whether logging is enabled
+	 *
+	 * @param $column string name of the setting key (actions|ip_addresses|contexts|connectors)
+	 * @param $value string to check in excluded array
+	 * @return array
+	 */
+	public static function is_logging_enabled( $column, $value ){
+
+		$excluded_values = WP_Stream_Settings::get_excluded_by_key( $column );
+		$bool = ( ! in_array( $value, $excluded_values ) ) ;
+
+		return $bool;
+	}
+	/**
 	 * Log handler
 	 *
 	 * @param  string $message   sprintf-ready error message string
@@ -164,6 +194,17 @@ abstract class WP_Stream_Connector {
 	 * @return void
 	 */
 	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
+		//Prevent inserting Excluded Context & Actions
+		foreach ( $contexts as $context => $action ){
+			if ( ! self::is_logging_enabled_for_context( $context ) ){
+				unset( $contexts[$context] );
+			} else if ( ! self::is_logging_enabled_for_action( $action ) ){
+				unset( $contexts[$context] );
+			}
+		}
+		if ( count( $contexts ) == 0 ){
+			return ;
+		}
 		$class = get_called_class();
 
 		return WP_Stream_Log::get_instance()->log(
