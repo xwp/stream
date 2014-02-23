@@ -460,6 +460,11 @@ class WP_Stream_Admin {
 
 		foreach ( $caps as $cap ) {
 			if ( self::VIEW_CAP === $cap ) {
+				if ( in_array( $user->ID, WP_Stream_Settings::$options['general_role_access'] ) ){
+					$allcaps[ $cap ] = true;
+					break;
+				}
+
 				foreach ( $user->roles as $role ) {
 					if ( self::_role_can_view_stream( $role ) ) {
 						$allcaps[ $cap ] = true;
