@@ -292,6 +292,15 @@ class WP_Stream_Notifications_Form
 			'regex'     => __( 'regex', 'stream-notifications' ),
 		);
 
+		$numeric_operators = array(
+			'='  => __( 'equals', 'stream-notifications' ),
+			'!=' => __( 'not equal', 'stream-notifications' ),
+			'<'  => __( 'less than', 'stream-notifications' ),
+			'<=' => __( 'equal or less than', 'stream-notifications' ),
+			'>'  => __( 'greater than', 'stream-notifications' ),
+			'>=' => __( 'equal or greater than', 'stream-notifications' ),
+		);
+
 		$args['types'] = array(
 			'search' => array(
 				'title'     => __( 'Summary', 'stream-notifications' ),
@@ -402,7 +411,54 @@ class WP_Stream_Notifications_Form
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
-				'operators' => $text_operator,
+				'operators' => $default_operators,
+			),
+			'post_status' => array(
+				'title'     => __( '- Post: Status', 'stream-notifications' ),
+				'type'      => 'select',
+				'connector' => 'posts',
+				'options'   => wp_list_pluck( $GLOBALS['wp_post_statuses'], 'label' ),
+				'operators' => $default_operators,
+			),
+			'post_format' => array(
+				'title'     => __( '- Post: Format', 'stream-notifications' ),
+				'type'      => 'select',
+				'connector' => 'posts',
+				'options'   => get_post_format_strings(),
+				'operators' => $default_operators,
+			),
+			'post_parent' => array(
+				'title'     => __( '- Post: Parent', 'stream-notifications' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'posts',
+				'operators' => $default_operators,
+			),
+			'post_thumbnail' => array(
+				'title'     => __( '- Post: Featured Image', 'stream-notifications' ),
+				'type'      => 'select',
+				'connector' => 'posts',
+				'options'   => array(
+					'0' => __( 'None', 'stream-notifications' ),
+					'1' => __( 'Has one', 'stream-notifications' )
+				),
+				'operators' => $default_operators,
+			),
+			'post_comment_status' => array(
+				'title'     => __( '- Post: Comment Status', 'stream-notifications' ),
+				'type'      => 'select',
+				'connector' => 'posts',
+				'options'   => array(
+					'open'   => __( 'Open', 'stream-notifications' ),
+					'closed' => __( 'Closed', 'stream-notifications' )
+				),
+				'operators' => $default_operators,
+			),
+			'post_comment_count' => array(
+				'title'     => __( '- Post: Comment Count', 'stream-notifications' ),
+				'type'      => 'text',
+				'connector' => 'posts',
+				'operators' => $numeric_operators,
 			),
 			'user' => array(
 				'title'     => __( '- User', 'stream-notifications' ),
