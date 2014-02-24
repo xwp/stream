@@ -142,6 +142,9 @@ class WP_Stream_Notification_Rule_Matcher {
 				}
 				$haystack = $log['meta']['taxonomy'];
 				break;
+			default:
+				return false;
+				break;
 		}
 
 		$match = false;
