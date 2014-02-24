@@ -108,16 +108,17 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			return;
 		}
 
-		$term = get_term( $term_id, $taxonomy );
+		$term           = get_term( $term_id, $taxonomy );
+		$term_name      = $term->name;
 		$taxonomy_label = self::$singular_labels[$taxonomy];
-		$term_name = $term->name;
+		$term_parent    = $term->parent;
 		self::log(
 			_x(
 				'"%1$s" %2$s created',
 				'1: Term name, 2: Taxonomy singular label',
 				'stream'
 			),
-			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy' ),
+			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy', 'term_parent' ),
 			$tt_id,
 			array( $taxonomy => 'created' )
 			);
@@ -133,7 +134,8 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			return;
 		}
 
-		$term_name = $deleted_term->name;
+		$term_name      = $deleted_term->name;
+		$term_parent    = $deleted_term->parent;
 		$taxonomy_label = self::$singular_labels[$taxonomy];
 		self::log(
 			_x(
@@ -141,7 +143,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 				'1: Term name, 2: Taxonomy singular label',
 				'stream'
 			),
-			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy' ),
+			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy', 'term_parent' ),
 			$tt_id,
 			array( $taxonomy => 'deleted' )
 			);
@@ -165,15 +167,16 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 		if ( ! $term ) { // for some reason!
 			$term = get_term( $term_id, $taxonomy );
 		}
-		$term_name = $term->name;
+		$term_name      = $term->name;
 		$taxonomy_label = self::$singular_labels[$taxonomy];
+		$term_parent    = $term->parent;
 		self::log(
 			_x(
 				'"%1$s" %2$s updated',
 				'1: Term name, 2: Taxonomy singular label',
 				'stream'
 			),
-			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy' ),
+			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy', 'term_parent' ),
 			$tt_id,
 			array( $taxonomy => 'updated' )
 			);
