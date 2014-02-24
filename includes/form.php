@@ -112,6 +112,8 @@ class WP_Stream_Notifications_Form
 		if ( $is_single ) {
 			switch ( $type ) {
 				case 'author':
+				case 'post_author':
+				case 'user':
 					$user_ids   = explode( ',', $query );
 					$user_query = new WP_User_Query(
 						array(
@@ -140,14 +142,19 @@ class WP_Stream_Notifications_Form
 		} else {
 			switch ( $type ) {
 				case 'author':
-					$users = get_users( array(
-						'search'    => '*' . $query . '*',
-						'search_in' => array(
-							'user_login',
-							'display_name',
-						),
-						'meta_key'  => ( isset( $args['push'] ) && $args['push'] ) ? 'ckpn_user_key' : null,
-					) );
+				case 'post_author':
+				case 'user':
+					$users = get_users(
+						array(
+							'search'    => '*' . $query . '*',
+							'search_in' => array(
+								'user_login',
+								'display_name',
+								'user_email',
+							),
+							'meta_key'  => ( isset( $args['push'] ) && $args['push'] ) ? 'ckpn_user_key' : null,
+						)
+					);
 					$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
 					break;
 				case 'action':
