@@ -90,6 +90,15 @@ class WP_Stream_Notification_Rule_Matcher {
 		$needle   = $trigger['value'];
 		$operator = $trigger['operator'];
 		$negative = ( $operator[0] == '!' );
+		$haystack = null;
+
+		// Post-specific triggers dirty work
+		if ( false !== strpos( $trigger['type'], 'post_' ) ) {
+			$post = get_post( $log['object_id'] );
+			if ( empty( $post) ) {
+				return false;
+			}
+		}
 
 		switch ( $trigger['type'] ) {
 			case 'search':
@@ -141,6 +150,40 @@ class WP_Stream_Notification_Rule_Matcher {
 					return false;
 				}
 				$haystack = $log['meta']['taxonomy'];
+				break;
+
+			case 'post_title':
+				$haystack = $post->post_title;
+				break;
+			case 'post_slug':
+				$haystack = $post->post_name;
+				break;
+			case 'post_content':
+				$haystack = $post->post_content;
+				break;
+			case 'post_excerpt':
+				$haystack = $post->post_excerpt;
+				break;
+			case 'post_status':
+				$haystack = get_post_status( $post->ID );
+				break;
+			case 'post_format':
+				$haystack = get_post_format( $post );
+				break;
+			case 'post_parent':
+				$haystack = wp_get_post_parent_id( $post->ID );
+				break;
+			case 'post_thumbnail':
+				if ( ! function_exists( 'get_post_thumbnail_id' ) ) {
+					return false;
+				}
+				$haystack = get_post_thumbnail_id( $post->ID ) > 0;
+				break;
+			case 'post_comment_status':
+				$haystack = $post->comment_status;
+				break;
+			case 'post_comment_count':
+				$haystack = get_comment_count( $post->ID );
 				break;
 			default:
 				return false;
