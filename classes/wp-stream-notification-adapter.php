@@ -25,7 +25,7 @@ abstract class WP_Stream_Notification_Adapter {
 	 * @return string
 	 */
 	public static function replace( $haystack, $log ) {
-		if ( preg_match_all( '#%%([^%]+)%%#', $haystack, $placeholders ) ) {
+		if ( preg_match_all( '#{([^}]+)}#', $haystack, $placeholders ) ) {
 
 			foreach ( $placeholders[1] as $placeholder ) {
 				$value = false;
@@ -83,7 +83,7 @@ abstract class WP_Stream_Notification_Adapter {
 						break;
 				}
 				if ( $value ) {
-					$haystack = str_replace( "%%$placeholder%%", $value, $haystack );
+					$haystack = str_replace( "{{$placeholder}}", $value, $haystack );
 				}
 			}
 		}
