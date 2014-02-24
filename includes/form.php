@@ -133,6 +133,18 @@ class WP_Stream_Notifications_Form
 					$items  = array_intersect_key( $items, array_flip( $values ) );
 					$data   = $this->format_json_for_select2( $items );
 					break;
+				case 'post':
+				case 'post_parent':
+					$args  = array(
+						'post_type' => 'any',
+						'post_status' => 'any',
+						'posts_per_page' => -1,
+						'post__in' => explode( ',', $query ),
+					);
+					$posts = get_posts( $args );
+					$items = array_combine( wp_list_pluck( $posts, 'ID' ), wp_list_pluck( $posts, 'post_title' ) );
+					$data  = $this->format_json_for_select2( $items );
+					break;
 				case 'tax':
 					$items  = get_taxonomies( null, 'objects' );
 					$items  = wp_list_pluck( $items, 'labels' );
@@ -171,6 +183,12 @@ class WP_Stream_Notifications_Form
 				case 'context':
 					$items = WP_Stream_Connectors::$term_labels['stream_' . $type];
 					$items = preg_grep( sprintf( '/%s/i', $query ), $items );
+					$data  = $this->format_json_for_select2( $items );
+					break;
+				case 'post':
+				case 'post_parent':
+					$posts = get_posts( 'post_type=any&post_status=any&posts_per_page=-1&s=' . $query );
+					$items = array_combine( wp_list_pluck( $posts, 'ID' ), wp_list_pluck( $posts, 'post_title' ) );
 					$data  = $this->format_json_for_select2( $items );
 					break;
 				case 'tax':
