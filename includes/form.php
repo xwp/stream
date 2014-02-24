@@ -133,6 +133,21 @@ class WP_Stream_Notifications_Form
 					$items  = array_intersect_key( $items, array_flip( $values ) );
 					$data   = $this->format_json_for_select2( $items );
 					break;
+				case 'tax':
+					$items  = get_taxonomies( null, 'objects' );
+					$items  = wp_list_pluck( $items, 'labels' );
+					$items  = wp_list_pluck( $items, 'name' );
+					$query  = explode( ',', $query );
+					$chosen = array_intersect_key( $items, array_flip( $query ) );
+					$data   = $this->format_json_for_select2( $chosen );
+					break;
+				case 'term':
+				case 'term_parent':
+					$tax   = isset( $args['tax'] ) ? $args['tax'] : null;
+					$query = explode( ',', $query );
+					$terms = $this->get_terms( $query, $tax );
+					$data  = $this->format_json_for_select2( $terms );
+					break;
 			}
 		} else {
 			switch ( $type ) {
@@ -157,6 +172,19 @@ class WP_Stream_Notifications_Form
 					$items = WP_Stream_Connectors::$term_labels['stream_' . $type];
 					$items = preg_grep( sprintf( '/%s/i', $query ), $items );
 					$data  = $this->format_json_for_select2( $items );
+					break;
+				case 'tax':
+					$items = get_taxonomies( null, 'objects' );
+					$items = wp_list_pluck( $items, 'labels' );
+					$items = wp_list_pluck( $items, 'name' );
+					$items = preg_grep( sprintf( '/%s/i', $query ), $items );
+					$data  = $this->format_json_for_select2( $items );
+					break;
+				case 'term':
+				case 'term_parent':
+					$tax   = isset( $args['tax'] ) ? $args['tax'] : null;
+					$terms = $this->get_terms( $query, $tax );
+					$data  = $this->format_json_for_select2( $terms );
 					break;
 			}
 		}
@@ -320,22 +348,77 @@ class WP_Stream_Notifications_Form
 
 		// Connector-based triggers
 		$args['special_types'] = array(
-			'post_title' => array(
-				'title' => __( 'Post: Title', 'stream-notifications' ),
-				'type'  => 'text',
+			'post' => array(
+				'title'     => __( '- Post', 'stream-notifications' ),
+				'type'      => 'text',
+				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
+			'post_title' => array(
+				'title'     => __( '- Post: Title', 'stream-notifications' ),
+				'type'      => 'text',
+				'connector' => 'posts',
+				'operators' => $text_operator,
+			),
 			'post_slug' => array(
-				'title' => __( 'Post: Slug', 'stream-notifications' ),
-				'type'  => 'text',
+				'title'     => __( '- Post: Slug', 'stream-notifications' ),
+				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
 			'post_content' => array(
-				'title' => __( 'Post: Content', 'stream-notifications' ),
-				'type'  => 'text',
+				'title'     => __( '- Post: Content', 'stream-notifications' ),
+				'type'      => 'text',
 				'connector' => 'posts',
+				'operators' => $text_operator,
+			),
+			'post_excerpt' => array(
+				'title'     => __( '- Post: Excerpt', 'stream-notifications' ),
+				'type'      => 'text',
+				'connector' => 'posts',
+				'operators' => $text_operator,
+			),
+			'post_author' => array(
+				'title'     => __( '- Post: Author', 'stream-notifications' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'posts',
+				'operators' => $text_operator,
+			),
+			'user' => array(
+				'title'     => __( '- User', 'stream-notifications' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'users',
+				'operators' => $default_operators,
+			),
+			'user_role' => array(
+				'title'     => __( '- User: Role', 'stream-notifications' ),
+				'type'      => 'select',
+				'connector' => 'users',
+				'options'   => $roles_arr,
+				'operators' => $default_operators,
+			),
+			'tax' => array(
+				'title'     => __( '- Taxonomy', 'stream-notifications' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'taxonomies',
+				'operators' => $default_operators,
+			),
+			'term' => array(
+				'title'     => __( '- Term', 'stream-notifications' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'taxonomies',
+				'operators' => $default_operators,
+			),
+			'term_parent' => array(
+				'title'     => __( '- Term: Parent', 'stream-notifications' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'taxonomies',
 				'operators' => $default_operators,
 			),
 		);
@@ -364,10 +447,46 @@ class WP_Stream_Notifications_Form
 	 * @filter user_search_columns
 	 */
 	public function define_search_in_arg( $search_columns, $search, $query ) {
-		$search_in      = $query->get('search_in');
+		$search_in      = $query->get( 'search_in' );
 		$search_columns = ! is_null( $search_in ) ? (array) $search_in : $search_columns;
 
 		return $search_columns;
+	}
+
+	public function get_terms( $search, $taxonomies = array() ) {
+		global $wpdb;
+		$taxonomies = (array) $taxonomies;
+
+		$sql = "SELECT t.term_id, t.name, t.slug, tt.taxonomy, tt.description
+			FROM $wpdb->terms t
+			JOIN $wpdb->term_taxonomy tt USING ( term_id )
+			WHERE
+			";
+
+		if ( is_array( $search ) ) {
+			$search = array_map( 'intval', $search );
+			$where = sprintf( 't.term_id IN ( %s )', implode( ', ', $search ) );
+		} else {
+			$where = '
+				t.name LIKE %s
+				OR
+				t.slug LIKE %s
+				OR
+				tt.taxonomy LIKE %s
+				OR
+				tt.description LIKE %s
+			';
+			$where = $wpdb->prepare( $where, "%$search%", "%$search%", "%$search%", "%$search%" );
+		}
+
+		$sql .= $where;
+		$results = $wpdb->get_results( $sql );
+
+		$return  = array();
+		foreach ( $results as $result ) {
+			$return[ $result->term_id ] = sprintf( '%s - %s', $result->name, $result->taxonomy );
+		}
+		return $return;
 	}
 
 	public function metabox_triggers() {
