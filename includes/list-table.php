@@ -163,7 +163,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 					: '(' . __( 'no title', 'stream' ) . ')';
 
 				$out = sprintf(
-					'<strong><a href="%s" class="%s" title="%s">%s</a>%s</strong>',
+					'<strong style="display:block;margin-bottom:.2em;font-size:14px;"><a href="%s" class="%s" title="%s">%s</a>%s</strong>', // TODO: Add these styles to a CSS file
 					add_query_arg(
 						array(
 							'page'   => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
