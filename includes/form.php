@@ -457,7 +457,7 @@ class WP_Stream_Notifications_Form
 		global $wpdb;
 		$taxonomies = (array) $taxonomies;
 
-		$sql = "SELECT t.term_id, t.name, t.slug, tt.taxonomy, tt.description
+		$sql = "SELECT tt.term_taxonomy_id id, t.name, t.slug, tt.taxonomy, tt.description
 			FROM $wpdb->terms t
 			JOIN $wpdb->term_taxonomy tt USING ( term_id )
 			WHERE
@@ -465,7 +465,7 @@ class WP_Stream_Notifications_Form
 
 		if ( is_array( $search ) ) {
 			$search = array_map( 'intval', $search );
-			$where = sprintf( 't.term_id IN ( %s )', implode( ', ', $search ) );
+			$where = sprintf( 'tt.term_taxonomy_id IN ( %s )', implode( ', ', $search ) );
 		} else {
 			$where = '
 				t.name LIKE %s
@@ -484,7 +484,7 @@ class WP_Stream_Notifications_Form
 
 		$return  = array();
 		foreach ( $results as $result ) {
-			$return[ $result->term_id ] = sprintf( '%s - %s', $result->name, $result->taxonomy );
+			$return[ $result->id ] = sprintf( '%s - %s', $result->name, $result->taxonomy );
 		}
 		return $return;
 	}
