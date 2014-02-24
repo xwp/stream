@@ -89,10 +89,10 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		if ( $record->object_id && $record->action != 'deleted' && ( $term = get_term( $record->object_id, $record->context ) ) ) {
+		if ( $record->object_id && $record->action != 'deleted' && ( $term = get_term_by( 'term_taxonomy_id', $record->object_id, $record->context ) ) ) {
 			if ( ! is_wp_error( $term ) ) {
-				$links[ __( 'Edit', 'stream' ) ] = get_edit_term_link( $record->object_id, $record->context );
-				$links[ __( 'View', 'stream' ) ] = get_term_link( get_term( $record->object_id, $record->context ) );
+				$links[ __( 'Edit', 'stream' ) ] = get_edit_term_link( $term->term_id, $term->taxonomy );
+				$links[ __( 'View', 'stream' ) ] = get_term_link( get_term( $term->term_id, $term->taxonomy ) );
 			}
 		}
 		return $links;
