@@ -136,6 +136,12 @@ class WP_Stream_Notification_Rule_Matcher {
 					$haystack = $parent->term_taxonomy_id;
 				}
 				break;
+			case 'tax':
+				if ( empty( $log['meta']['taxonomy'] ) ) {
+					return false;
+				}
+				$haystack = $log['meta']['taxonomy'];
+				break;
 		}
 
 		$match = false;
