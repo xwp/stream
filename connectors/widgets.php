@@ -98,6 +98,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		$widget_id = null;
 		$sidebar   = null;
+		unset( $old['array_version'] );
+		unset( $new['array_version'] );
 
 		if ( $deactivated = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] ) ) {
 			$action    = 'deactivated';
