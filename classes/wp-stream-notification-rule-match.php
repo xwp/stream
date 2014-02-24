@@ -87,9 +87,10 @@ class WP_Stream_Notification_Rule_Matcher {
 	}
 
 	public function match_trigger( $trigger, $log ) {
-		$needle   = $trigger['value'];
-		$operator = $trigger['operator'];
-		$negative = ( $operator[0] == '!' );
+		$type     = isset( $trigger['type'] ) ? $trigger['type'] : null;
+		$needle   = isset( $trigger['value'] ) ? $trigger['value'] : null;
+		$operator = isset( $trigger['operator'] ) ? $trigger['operator'] : null;
+		$negative = ( isset( $operator[0] ) && '!' == $operator[0] );
 		$haystack = null;
 
 		// Post-specific triggers dirty work
@@ -100,7 +101,7 @@ class WP_Stream_Notification_Rule_Matcher {
 			}
 		}
 
-		switch ( $trigger['type'] ) {
+		switch ( $type ) {
 			case 'search':
 				$haystack = $log['summary'];
 				break;
@@ -111,7 +112,7 @@ class WP_Stream_Notification_Rule_Matcher {
 				$haystack = $log['author'];
 				break;
 			case 'author_role':
-				$user = get_userdata( $log['author'] );
+				$user     = get_userdata( $log['author'] );
 				$haystack = ( is_object( $user ) && $user->exists() && $user->roles ) ? $user->roles[0] : false;
 				break;
 			case 'ip':
@@ -119,7 +120,7 @@ class WP_Stream_Notification_Rule_Matcher {
 				break;
 			case 'date':
 				$haystack = date( 'Ymd', strtotime( $log['created'] ) );
-				$needle = date( 'Ymd', strtotime( $needle ) );
+				$needle   = date( 'Ymd', strtotime( $needle ) );
 				break;
 			case 'connector':
 				$haystack = $log['connector'];
@@ -191,7 +192,7 @@ class WP_Stream_Notification_Rule_Matcher {
 		}
 
 		$match = false;
-		switch ( $trigger['operator'] ) {
+		switch ( $operator ) {
 			case '=':
 			case '!=':
 			case '>=':
@@ -321,7 +322,7 @@ class WP_Stream_Notification_Rule_Matcher {
 			for ( $i; $i < count( $flattened_tree ); $i++ ) {
 				// If we're on the correct level, we're going to insert the node
 				if ( $flattened_tree[$i]['level'] == $level ) {
-					if ( $flattened_tree[$i]['type'] == 'trigger' ) {
+					if ( 'trigger' == $flattened_tree[$i]['type'] ) {
 						$return[] = $flattened_tree[$i]['item'];
 						// If the node is a group, we need to call the recursive function
 						// in order to construct the tree for us further
@@ -363,7 +364,7 @@ class WP_Stream_Notification_Rule_Matcher {
 				$trigger['triggers'] = $this->generate_group_chunks( $trigger['triggers'] );
 			}
 			// If relation=and, start a new chunk, else join the previous chunk
-			if ( $trigger['relation'] == 'and' ) {
+			if ( 'and' == $trigger['relation'] ) {
 				$chunks[] = array( $trigger );
 				$current_chunk = count( $chunks ) - 1;
 			} else {

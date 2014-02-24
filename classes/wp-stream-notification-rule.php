@@ -64,7 +64,7 @@ class WP_Stream_Notification_Rule {
 
 		if ( $this->exists() ) {
 			$result  = $wpdb->update( $wpdb->stream, $record, array( 'ID' => $this->ID ) );  // cache ok, db call ok
-			$success = ( $result !== false );
+			$success = ( false !== $result );
 		} else {
 			if ( ! $record['created'] ) {
 				unset( $record['created'] );

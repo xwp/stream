@@ -62,17 +62,13 @@ class WP_Stream_Notifications_Form
 	 * @return void
 	 */
 	public function enqueue_scripts( $hook ) {
-		if (
-			$hook != WP_Stream_Notifications::$screen_id
-			||
-			filter_input( INPUT_GET, 'view' ) != 'rule'
-			) {
+		if ( WP_Stream_Notifications::$screen_id != $hook || 'rule' != filter_input( INPUT_GET, 'view' ) ) {
 			return;
 		}
 
 		$view = filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 
-		if ( $view == 'rule' ) {
+		if ( 'rule' == $view ) {
 			wp_enqueue_script( 'dashboard' );
 			wp_enqueue_style( 'select2' );
 			wp_enqueue_script( 'select2' );
@@ -81,6 +77,7 @@ class WP_Stream_Notifications_Form
 			wp_enqueue_script( 'jquery-ui-datepicker' );
 			wp_enqueue_style( 'wp-stream-datepicker' );
 			wp_enqueue_script( 'jquery-ui-accordion' );
+			wp_enqueue_script( 'accordion' );
 			wp_enqueue_style( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/css/form.css' );
 			wp_enqueue_script( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/form.js', array( 'underscore', 'select2' ) );
 			wp_localize_script( 'stream-notifications-form', 'stream_notifications', $this->get_js_options() );
@@ -208,7 +205,7 @@ class WP_Stream_Notifications_Form
 		}
 
 		// Add gravatar for authors
-		if ( $type == 'author' && get_option( 'show_avatars' ) ) {
+		if ( 'author' == $type && get_option( 'show_avatars' ) ) {
 			foreach ( $data as $i => $item ) {
 				if ( $avatar = get_avatar( $item['id'], 20 ) ) {
 					$item['avatar'] = $avatar;
@@ -509,9 +506,10 @@ class WP_Stream_Notifications_Form
 
 		// Localization
 		$args['i18n'] = array(
-			'empty_triggers' => __( 'A rule must contain at least one trigger to be saved.', 'stream-notifications' ),
-			'ajax_error'     => __( 'There was an error submitting your request, please try again.', 'stream-notifications' ),
-			'confirm_reset'  => __( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream-notifications' ),
+			'empty_triggers'        => __( 'You cannot save a rule without any triggers.', 'stream-notifications' ),
+			'invalid_first_trigger' => __( 'You cannot save a rule with an empty first trigger.', 'stream-notifications' ),
+			'ajax_error'            => __( 'There was an error submitting your request, please try again.', 'stream-notifications' ),
+			'confirm_reset'         => __( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream-notifications' ),
 		);
 
 		return apply_filters( 'stream_notification_js_args', $args );
@@ -656,43 +654,60 @@ class WP_Stream_Notifications_Form
 
 	public function metabox_data_tags() {
 		?>
-		<div id="data-tag-glossary">
-			<header><?php _e( 'General', 'stream-notifications' ) ?></header>
-			<div class="dt-list">
-				<dl>
-					<dt><code>%%summary%%</code></dt>
-					<dd><?php _e( 'Summary message of the triggered record', 'stream-notifications' ) ?></dd>
-					<dt><code>%%object_id%%</code></dt>
-					<dd><?php _e( 'Object ID of triggered record', 'stream-notifications' ) ?></dd>
-					<dt><code>%%created%%</code></dt>
-					<dd><?php _e( 'Timestamp of triggered record', 'stream-notifications' ) ?></dd>
-					<dt><code>%%ip%%</code></dt>
-					<dd><?php _e( 'IP of the person who authored the triggered record', 'stream-notifications' ) ?></dd>
-				</dl>
-			</div>
-			<header><?php _e( 'Object', 'stream-notifications' ) ?></header>
-			<div class="dt-list">
-				<dl>
-					<dt><code>%%object.post_title%%</code></dt>
-					<dd><?php _e( 'Post title of the record post', 'stream-notifications' ) ?></dd>
-				</dl>
-			</div>
-			<header><?php _e( 'Author', 'stream-notifications' ) ?></header>
-			<div class="dt-list">
-				<dl>
-					<dt><code>%%author.user_login%%</code></dt>
-					<dd><?php _e( 'Username of the record author', 'stream-notifications' ) ?></dd>
-					<dt><code>%%author.user_email%%</code></dt>
-					<dd><?php _e( 'Email of the record author', 'stream-notifications' ) ?></dd>
-					<dt><code>%%author.display_name%%</code></dt>
-					<dd><?php _e( 'Display name of the record author', 'stream-notifications' ) ?></dd>
-				</dl>
-			</div>
-			<div class="dt-list">
-				<header><?php _e( 'Meta', 'stream-notifications' ) ?></header>
-				<dl>
-				</dl>
-			</div>
+		<div id="data-tag-glossary" class="accordion-container">
+			<ul class="outer-border">
+				<li class="control-section accordion-section">
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'General', 'stream-notifications' ) ?>"><?php _e( 'General', 'stream-notifications' ) ?></h3>
+					<div class="accordion-section-content">
+						<div class="inside">
+							<dl>
+								<dt><code>%%summary%%</code></dt>
+								<dd><?php _e( 'Summary message of the triggered record', 'stream-notifications' ) ?></dd>
+								<dt><code>%%object_id%%</code></dt>
+								<dd><?php _e( 'Object ID of triggered record', 'stream-notifications' ) ?></dd>
+								<dt><code>%%created%%</code></dt>
+								<dd><?php _e( 'Timestamp of triggered record', 'stream-notifications' ) ?></dd>
+								<dt><code>%%ip%%</code></dt>
+								<dd><?php _e( 'IP of the person who authored the triggered record', 'stream-notifications' ) ?></dd>
+							</dl>
+						</div>
+					</div>
+				</li>
+				<li class="control-section accordion-section">
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Object', 'stream-notifications' ) ?>"><?php _e( 'Object', 'stream-notifications' ) ?></h3>
+					<div class="accordion-section-content">
+						<div class="inside">
+							<dl>
+								<dt><code>%%object.post_title%%</code></dt>
+								<dd><?php _e( 'Post title of the record post', 'stream-notifications' ) ?></dd>
+							</dl>
+						</div>
+					</div>
+				</li>
+				<li class="control-section accordion-section">
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Author', 'stream-notifications' ) ?>"><?php _e( 'Author', 'stream-notifications' ) ?></h3>
+					<div class="accordion-section-content">
+						<div class="inside">
+							<dl>
+								<dt><code>%%author.user_login%%</code></dt>
+								<dd><?php _e( 'Username of the record author', 'stream-notifications' ) ?></dd>
+								<dt><code>%%author.user_email%%</code></dt>
+								<dd><?php _e( 'Email of the record author', 'stream-notifications' ) ?></dd>
+								<dt><code>%%author.display_name%%</code></dt>
+								<dd><?php _e( 'Display name of the record author', 'stream-notifications' ) ?></dd>
+							</dl>
+						</div>
+					</div>
+				</li>
+				<li class="control-section accordion-section">
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Meta', 'stream-notifications' ) ?>"><?php _e( 'Meta', 'stream-notifications' ) ?></h3>
+					<div class="accordion-section-content">
+						<div class="inside">
+							
+						</div>
+					</div>
+				</li>
+			</ul>
 		</div>
 		<?php
 	}

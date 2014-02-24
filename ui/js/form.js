@@ -158,16 +158,12 @@ jQuery(function($){
 					}
 				} );
 			});
-		};
+		},
 
-	divTriggers
-		// Add new rule
-		.on( 'click.sn', btns.add_trigger, function(e) {
-			e.preventDefault();
-			var $this      = $(this),
-				index      = 0,
+		add_trigger = function (group_index) {
+			var index    = 0,
 				lastItem   = null,
-				group      = divTriggers.find('.group[rel=' + $this.data('group') + ']' ),
+				group    = divTriggers.find('.group[rel=' + group_index + ']' ),
 				i          = null,
 				type       = null,
 				types      = {},
@@ -193,12 +189,40 @@ jQuery(function($){
 			}
 
 			group.append( tmpl( $.extend(
-				{ index: index, group: $this.data('group') },
+				{ index: index, group: group_index },
 				stream_notifications,
 				{ types: $.extend( {}, stream_notifications.types, types ) }
 			) ) );
 			group.find('.trigger').first().addClass('first');
 			selectify( group.find('select') );
+		},
+
+		display_error = function (key) {
+			if ( $('.error').filter(function () {return $(this).attr('data-key') === key;}).length === 0 ) {
+				$('body,html').scrollTop(0);
+				$('.wrap > h2')
+					.after(
+						$('<div></div>')
+							.addClass('updated error fade')
+							.attr('data-key', key)
+							.hide()
+							.append(
+								$('<p></p>').text(stream_notifications.i18n[key])
+							)
+					)
+					.next('.updated')
+					.fadeIn('normal')
+					.delay(3000)
+					.fadeOut('normal', function () {$(this).remove();});
+			}
+		};
+
+	divTriggers
+		// Add new rule
+		.on( 'click.sn', btns.add_trigger, function(e) {
+			e.preventDefault();
+
+			add_trigger($(this).data('group'));
 		})
 
 		// Add new group
@@ -219,9 +243,12 @@ jQuery(function($){
 		// Delete a trigger
 		.on( 'click.sn', '.delete-trigger', function(e) {
 			e.preventDefault();
-			var $this = $(this);
+			var $group = $(this).closest('.group');
 
-			$this.parents('.trigger').first().remove();
+			$group.find('.trigger').first().remove();
+
+			// add `first` class in case the first trigger was removed
+			$group.find('.trigger').first().addClass('first');
 		})
 
 		// Delete a group
@@ -364,16 +391,16 @@ jQuery(function($){
 		});
 	}
 
-	// Do not submit if no triggers exist
 	$('#rule-form').submit(function(){
+		// Do not submit if no triggers exist
 		if ( divTriggers.find('.trigger').size() < 1 ) {
-			$('body,html').scrollTop(0);
-			$('.wrap > h2')
-				.after('<div class="updated error fade" style="display:none"><p>'+stream_notifications.i18n.empty_triggers+'</p></div>')
-				.next('.updated')
-				.slideDown('fast')
-				.delay(3000)
-				.slideUp('slow');
+			display_error('empty_triggers');
+			return false;
+		}
+
+		// Do not submit if no working triggers exist
+		if ( $('.trigger-type:first').select2('data') === null ) {
+			display_error('invalid_first_trigger');
 			return false;
 		}
 	});
@@ -399,15 +426,6 @@ jQuery(function($){
 	// Autofocus for earlier browsers
 	$('[autofocus]').focus();
 
-	// Data tags accordion
-	$('#data-tag-glossary').attr('data-theme', 'none').attr('data-role', 'none').accordion({
-		header: 'header',
-		collapsible: true,
-		heightStyle: 'content',
-		active: false,
-		icons: { 'header': '', 'activeHeader': 'activeHeader' }
-	});
-
 	// Reset occurrences link
 	$('a.reset-occ').click(function(e){
 		e.preventDefault();
@@ -425,4 +443,9 @@ jQuery(function($){
 			}
 		} );
 	});
+
+	// Add empty trigger if no triggers are visible
+	if ( $( '.trigger' ).length === 0 ) {
+		add_trigger( 0 );
+	}
 });
