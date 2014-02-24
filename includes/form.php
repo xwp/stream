@@ -536,7 +536,7 @@ class WP_Stream_Notifications_Form
 										'stream-notifications'
 									),
 									sprintf( '<strong>%d</strong>', $occ ? $occ : 0 )
-								)
+								) // xss okay
 								?>
 							</p>
 							<p>
