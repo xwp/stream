@@ -243,12 +243,12 @@ jQuery(function($){
 		// Delete a trigger
 		.on( 'click.sn', '.delete-trigger', function(e) {
 			e.preventDefault();
-			var $group = $(this).closest('.group');
+			var $this  = $(this);
 
-			$group.find('.trigger').first().remove();
+			$this.closest('.trigger').remove();
 
 			// add `first` class in case the first trigger was removed
-			$group.find('.trigger').first().addClass('first');
+			$this.closest('.group').find('.trigger').first().addClass('first');
 		})
 
 		// Delete a group
