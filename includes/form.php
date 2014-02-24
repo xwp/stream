@@ -229,8 +229,8 @@ class WP_Stream_Notifications_Form
 		$default_operators = array(
 			'='   => __( 'is', 'stream-notifications' ),
 			'!='  => __( 'is not', 'stream-notifications' ),
-			'in'  => __( 'in', 'stream-notifications' ),
-			'!in' => __( 'not in', 'stream-notifications' ),
+			'in'  => __( 'is in', 'stream-notifications' ),
+			'!in' => __( 'is not in', 'stream-notifications' ),
 		);
 
 		$args['types'] = array(
@@ -484,7 +484,7 @@ class WP_Stream_Notifications_Form
 					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Meta', 'stream-notifications' ) ?>"><?php _e( 'Meta', 'stream-notifications' ) ?></h3>
 					<div class="accordion-section-content">
 						<div class="inside">
-							
+
 						</div>
 					</div>
 				</li>
