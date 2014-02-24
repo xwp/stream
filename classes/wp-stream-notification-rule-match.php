@@ -121,6 +121,21 @@ class WP_Stream_Notification_Rule_Matcher {
 			case 'action':
 				$haystack = reset( $log['contexts'] );
 				break;
+
+			/* Context-aware triggers */
+			case 'post':
+			case 'user':
+			case 'term':
+				$haystack = $log['object_id'];
+				break;
+			case 'term_parent':
+				$parent = get_term( $log['meta']['term_parent'], $log['meta']['taxonomy'] );
+				if ( empty( $parent ) || is_wp_error( $parent ) ) {
+					return false;
+				} else {
+					$haystack = $parent->term_taxonomy_id;
+				}
+				break;
 		}
 
 		$match = false;
@@ -132,10 +147,8 @@ class WP_Stream_Notification_Rule_Matcher {
 				$match = ( $haystack == $needle );
 			case 'in':
 			case '!in':
-				$match = (bool) array_intersect(
-					explode( ',', $needle ),
-					(array) $haystack
-				);
+				$needle = is_array( $needle ) ? $needle : explode( ',', $needle );
+				$match = (bool) array_intersect( $needle, (array) $haystack );
 				break;
 			// string special comparison operators
 			case 'contains':
