@@ -47,6 +47,14 @@ class WP_Stream_Connectors {
 			self::$term_labels['stream_connector'][$connector::$name] = $connector::get_label();
 		}
 
+		/**
+		 * Action allows for perform any additional action after connector term loaded
+		 *
+		 * @param $labels array Connectors labels
+		 */
+
+		do_action( 'wp_stream_after_connector_term_labels_loaded',  self::$term_labels['stream_connector'] );
+
 		// Get excluded connectors
 		$excluded_connectors = WP_Stream_Settings::$options['exclude_connectors'];
 		if ( is_callable( $excluded_connectors ) ) {

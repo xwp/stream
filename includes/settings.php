@@ -603,4 +603,28 @@ class WP_Stream_Settings {
 			do_action( 'wp_stream_auto_purge' );
 		}
 	}
+
+	/**
+	 * Function will migrate old options
+	 * @param $labels array connectors terms labels
+	 * @used wp_stream_after_connector_term_labels_loaded
+	 */
+	public static function migrate_old_options( $labels ){
+
+		$old_options = get_option( self::KEY, array() );
+
+		if ( isset ( $old_options [ 'general_log_activity_for' ] ) ){
+			//Migrate as per new excluded setting
+		}
+		if ( isset ( $old_options [ 'connectors_active_connectors' ] ) ){
+
+			self::$options [ 'exclude_connectors' ] = array_diff(
+				array_keys(
+					$labels
+				), $old_options [ 'connectors_active_connectors' ]
+			);
+
+		}
+		update_option( self::KEY, self::$options );
+	}
 }

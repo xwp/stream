@@ -136,6 +136,13 @@ class WP_Stream_Install {
 		if ( version_compare( $db_version, '1.1.7' ) == -1 ) {
 			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(39) NULL AFTER created" );
 		}
+
+		// If version is lower than 1.2.3, do the update routine for site options
+		//Backward setting compatibility for old version plugins
+		if ( version_compare( $db_version, '1.2.3', '<=' ) ) {
+			add_filter( 'wp_stream_after_connector_term_labels_loaded', 'WP_Stream_Settings::migrate_old_options' );
+		}
+
 	}
 
 }

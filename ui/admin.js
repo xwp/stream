@@ -55,19 +55,19 @@ jQuery(function($){
 		});
     var stream_select2_change_handler = function (e, input) {
         var $placeholder_class = input.data('select-placeholder');
-        var $placeholder_child_class = $placeholder_class + '-child'
-        var $placeholder = input.siblings("." + $placeholder_class);
+        var $placeholder_child_class = $placeholder_class + '-child';
+        var $placeholder = input.siblings('.' + $placeholder_class);
         jQuery('.' + $placeholder_child_class).off().remove();
         if (typeof e.val === 'undefined') {
             e.val = input.val().split(',');
         }
-        $.each(e.val.reverse(), function (value, key, list) {
+        $.each(e.val.reverse(), function (value, key) {
             if (value === '__placeholder__') {
                 return true;
             }
             $placeholder.after($placeholder.clone(true).attr('class', $placeholder_child_class).val(key));
         });
-    }
+    };
     $('.stream_page_wp_stream_settings input[type=hidden].chosen-select.with-source').each(function (k, el) {
         var $input = $(el);
         $input.select2({
@@ -76,12 +76,12 @@ jQuery(function($){
             data: $input.data('values'),
             query: function (query) {
                 var data = {results: []};
-                if (typeof (query.term) != "undefined") {
+                if (typeof (query.term) !== 'undefined') {
                     $.each($input.data('values'), function () {
-                        if ( query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
+                        if ( query.term.length === 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
                             data.results.push({id: this.id, text: this.text });
                         }
-                    })
+                    });
                 }
                 query.callback(data);
             },
@@ -91,16 +91,16 @@ jQuery(function($){
         }).on('change',function (e) {
             stream_select2_change_handler( e , $input );
         }).trigger('change');
-    })
+    });
     $( '.stream_page_wp_stream_settings input[type=hidden].chosen-select.ip-addresses').each(function( k, el ){
         var $input = $(el);
         var $ip_regex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
         $input.select2({
-            tags:$input.data("selected"),
+            tags:$input.data('selected'),
             width:350,
             query: function (query){
                 var data = {results: []};
-                if(typeof (query.term) != "undefined" && query.term.match($ip_regex) != null ){
+                if(typeof (query.term) !== 'undefined' && query.term.match($ip_regex) != null ){
                     data.results.push({id: query.term, text: query.term });
                 }
                 query.callback(data);
@@ -108,7 +108,9 @@ jQuery(function($){
             initSelection: function (item, callback) {
                 callback( item.data( 'selected' ) );
             },
-            formatNoMatches : function(){ return ''}
+            formatNoMatches : function(){
+                return '';
+            }
         }).on('change',function(e){
             stream_select2_change_handler( e , $input );
         }).trigger('change');
