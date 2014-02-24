@@ -165,3 +165,14 @@
 .toplevel_page_wp_stream .new-row.fadeout {
 	background-color: transparent;
 }
+
+.wp_stream_screen .chosen-select.authors_and_roles .select2-search-choice .icon16 {
+    margin: -6px 1px 0 -3px;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+}
+.wp_stream_screen .chosen-select.authors_and_roles .select2-search-choice .icon16:before {
+    font-size: 15px!important;
+    color: #656565;
+}

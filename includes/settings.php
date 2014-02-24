@@ -60,7 +60,78 @@ class WP_Stream_Settings {
 		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
 
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
+
+		// Ajax callback function to search users
+		add_action( 'wp_ajax_stream_get_user', array( __CLASS__, 'get_users' ) );
 	}
+
+	/**
+	 * Ajax callback function to search users that is used on exclude setting page
+	 *
+	 * @uses WP_User_Query WordPress User Query class.
+	 * @return void
+	 */
+	public static function get_users(){
+		if ( ! defined( 'DOING_AJAX' ) ) {
+			return;
+		}
+		$response = (object) array(
+			'status' => false,
+			'message' => __( 'There was an error in the request', 'stream' ),
+		);
+
+		$request = (object) array(
+			'find' => ( isset( $_POST['find'] )? esc_attr( trim( $_POST['find'] ) ) : '' ),
+		);
+
+		add_filter( 'user_search_columns', array( __CLASS__, 'add_display_name_search_columns' ), 10, 3 );
+
+		$users = new WP_User_Query(
+			array(
+				'search' => "*{$request->find}*",
+				'search_columns' => array(
+					'user_login',
+					'user_nicename',
+					'user_email',
+					'user_url',
+				),
+			)
+		);
+		if ( $users->get_total() === 0 )
+			exit( json_encode( $response ) );
+
+		$response->status  = true;
+		$response->message = '';
+
+		$response->users = array();
+		foreach ( $users->results as $key => $user ) {
+			$args = array(
+				'id' => $user->ID,
+				'text' => $user->display_name,
+			);
+
+			$response->users[] = $args;
+		}
+
+		exit( json_encode( $response ) );
+	}
+
+	/**
+	 * Filter the columns to search in a WP_User_Query search.
+	 *
+	 *
+	 * @param array  $search_columns Array of column names to be searched.
+	 * @param string $search         Text being searched.
+	 * @param WP_User_Query $query	 current WP_User_Query instance.
+	 *
+	 *
+	 * @return array
+	 */
+	public static function add_display_name_search_columns( $search_columns, $search, $query ){
+		$search_columns[] = 'display_name';
+		return $search_columns;
+	}
+
 
 	/**
 	 * Return settings fields
@@ -73,14 +144,6 @@ class WP_Stream_Settings {
 				'general' => array(
 					'title'  => __( 'General', 'stream' ),
 					'fields' => array(
-						array(
-							'name'        => 'log_activity_for',
-							'title'       => __( 'Log Activity for', 'stream' ),
-							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
-							'choices'     => self::get_roles(),
-							'default'     => array_keys( self::get_roles() ),
-						),
 						array(
 							'name'        => 'role_access',
 							'title'       => __( 'Role Access', 'stream' ),
@@ -136,8 +199,10 @@ class WP_Stream_Settings {
 						array(
 							'name'        => 'authors_and_roles',
 							'title'       => __( 'Authors & Roles', 'stream' ),
-							'type'        => 'user_and_role',
+							'type'        => 'chosen_user_role',
 							'desc'        => __( 'No activity will be logged for these authors and roles.', 'stream' ),
+							'choices'     => self::get_roles(),
+							'default'     => array(),
 						),
 						array(
 							'name'        => 'connectors',
@@ -412,10 +477,95 @@ class WP_Stream_Settings {
 					}
 				}
 
-				$output  = sprintf( '<div id="%1$s[%2$s_%3$s]">', esc_attr( self::KEY ), esc_attr( $section ), esc_attr( $name ) );
-				$output .= sprintf( '<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="chosen-select %4$s" data-select-placeholder="%5$s-%6$s-select-placeholder"  />', json_encode( $data_values ), json_encode( $selected_values ), esc_attr( implode( ',', $current_value ) ), $class, esc_attr( $section ), esc_attr( $name ) );
-				// Fallback if nothing is selected
-				$output .= sprintf( '<input type="hidden" name="%1$s[%2$s_%3$s][]" class="%2$s-%3$s-select-placeholder" value="__placeholder__" />', esc_attr( self::KEY ), esc_attr( $section ), esc_attr( $name ) );
+				$output  = sprintf(
+					'<div id="%1$s[%2$s_%3$s]">',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				$output .= sprintf(
+					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="chosen-select %4$s" data-select-placeholder="%5$s-%6$s-select-placeholder"  />',
+					json_encode( $data_values ),
+					json_encode( $selected_values ),
+					esc_attr( implode( ',', $current_value ) ),
+					$class,
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				// to store data with default value if nothing is selected
+				$output .= sprintf(
+					'<input type="hidden" name="%1$s[%2$s_%3$s][]" class="%2$s-%3$s-select-placeholder" value="__placeholder__" />',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				$output .= '</div>';
+				break;
+			case 'chosen_user_role':
+				$current_value = (array) $current_value;
+				$data_values   = array();
+
+				if ( isset( $field[ 'choices' ] ) ){
+					$choices = $field[ 'choices' ];
+					if ( is_callable( $choices ) ){
+						$param   = ( isset( $field[ 'param' ] ) ) ? $field[ 'param' ] : null;
+						$choices = call_user_func( $choices, $param );
+					}
+				} else {
+					$choices = array();
+				}
+
+				foreach ( $choices as $key => $role ){
+					$data_values[] = array(
+						'id'     => $key,
+						'text'   => $role,
+					);
+				}
+
+				$selected_values = array();
+				foreach ( $current_value as $value ) {
+					if ( ! is_string( $value ) && ! is_numeric( $value ) ){
+						continue;
+					}
+
+					if ( $value == '__placeholder__' ){
+						continue;
+					}
+
+					if ( is_numeric( $value ) ){
+						$user               = new WP_User( $value );
+						$selected_values[ ] = array( 'id' => $user->ID, 'text' => $user->display_name, );
+					} else {
+						foreach ( $data_values as $role ) {
+							if ( $role[ 'id' ] != $value ){
+								continue;
+							}
+							$selected_values[ ] = $role;
+						}
+					}
+				}
+
+				$output  = sprintf(
+					'<div id="%1$s[%2$s_%3$s]">',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				$output .= sprintf(
+					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="chosen-select %5$s" data-select-placeholder="%4$s-%5$s-select-placeholder"  />',
+					json_encode( $data_values ),
+					json_encode( $selected_values ),
+					esc_attr( implode( ',', $current_value ) ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				// to store data with default value if nothing is selected
+				$output .= sprintf(
+					'<input type="hidden" name="%1$s[%2$s_%3$s][]" class="%2$s-%3$s-select-placeholder" value="__placeholder__" />',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
 				$output .= '</div>';
 				break;
 		}
@@ -615,14 +765,22 @@ class WP_Stream_Settings {
 
 		if ( isset ( $old_options [ 'general_log_activity_for' ] ) ){
 			//Migrate as per new excluded setting
+			self::$options [ 'exclude_authors_and_roles' ] = array_diff(
+				array_keys(
+					self::get_roles()
+				)
+				, $old_options [ 'general_log_activity_for' ]
+			);
+
+			unset( self::$options[ 'general_log_activity_for' ] );
 		}
 		if ( isset ( $old_options [ 'connectors_active_connectors' ] ) ){
-
 			self::$options [ 'exclude_connectors' ] = array_diff(
 				array_keys(
 					$labels
 				), $old_options [ 'connectors_active_connectors' ]
 			);
+			unset( self::$options[ 'connectors_active_connectors' ] );
 
 		}
 		update_option( self::KEY, self::$options );

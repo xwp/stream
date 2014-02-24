@@ -115,6 +115,66 @@ jQuery(function($){
             stream_select2_change_handler( e , $input );
         }).trigger('change');
     });
+    var $input_user;
+    $('.stream_page_wp_stream_settings input[type=hidden].chosen-select.authors_and_roles').each(function (k, el) {
+        $input_user = $(el);
+        var $roles = $input_user.data('values');
+        $input_user.select2({
+            multiple: true,
+            width: 350,
+            ajax: {
+                type: 'POST',
+                url: ajaxurl,
+                dataType: 'json',
+                quietMillis: 500,
+                data: function (term, page) {
+                    return {
+                        'find': term,
+                        'limit': 10,
+                        'pager': page,
+                        'action': 'stream_get_user'
+                    };
+                },
+                results: function (data) {
+                    var answer = {
+                        results: [
+                            {
+                                text: 'Roles',
+                                children: $roles
+                            },
+                            {
+                                text: 'Users',
+                                children: []
+                            }
+                        ]
+                    };
+                    if (data === 0 || data === '' || data.status !== true) {
+                        return answer;
+                    }
+                    $.each(data.users, function (k, user) {
+                        if ($.contains($roles, user.id)){
+                            user.disabled = true;
+                        }
+                    });
+                    answer.results[1].children = data.users;
+                    // notice we return the value of more so Select2 knows if more results can be loaded
+                    return answer;
+                }
+            },
+            formatSelection: function (object){
+                if ( $.isNumeric( object.id ) && object.text.indexOf('icon-users') < 0 ){
+                    object.text += '<i class="icon16 icon-users"></i>';
+                }
+                return object.text;
+            },
+            initSelection: function (item, callback) {
+                callback(item.data('selected'));
+            },
+        });
+    }).on('change',function (e) {
+        stream_select2_change_handler(e, $input_user);
+    }).trigger('change');
+
 	$(window).load(function() {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
 	});
