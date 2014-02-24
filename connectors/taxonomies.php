@@ -118,7 +118,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 				'stream'
 			),
 			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy' ),
-			$term_id,
+			$tt_id,
 			array( $taxonomy => 'created' )
 			);
 	}
@@ -142,7 +142,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 				'stream'
 			),
 			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy' ),
-			$term_id,
+			$tt_id,
 			array( $taxonomy => 'deleted' )
 			);
 	}
@@ -174,7 +174,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 				'stream'
 			),
 			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy' ),
-			$term_id,
+			$tt_id,
 			array( $taxonomy => 'updated' )
 			);
 	}
