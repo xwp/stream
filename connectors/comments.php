@@ -385,7 +385,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				'stream'
 			),
 			compact( 'user_name', 'new_status', 'old_status', 'post_title', 'post_id', 'user_id' ),
-			$comment->comment_id,
+			$comment->comment_ID,
 			array( $post_type => $new_status )
 		);
 	}
