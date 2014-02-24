@@ -238,17 +238,19 @@ class WP_Stream_Notifications_Form
 			'!in' => __( 'not in', 'stream-notifications' ),
 		);
 
+		$text_operator = array(
+			'='         => __( 'is', 'stream-notifications' ),
+			'!='        => __( 'is not', 'stream-notifications' ),
+			'contains'  => __( 'contains', 'stream-notifications' ),
+			'!contains' => __( 'does not contain', 'stream-notifications' ),
+			'regex'     => __( 'regex', 'stream-notifications' ),
+		);
+
 		$args['types'] = array(
 			'search' => array(
 				'title'     => __( 'Summary', 'stream-notifications' ),
 				'type'      => 'text',
-				'operators' => array(
-					'='         => __( 'is', 'stream-notifications' ),
-					'!='        => __( 'is not', 'stream-notifications' ),
-					'contains'  => __( 'contains', 'stream-notifications' ),
-					'!contains' => __( 'does not contain', 'stream-notifications' ),
-					'regex'     => __( 'regex', 'stream-notifications' ),
-				),
+				'operators' => $text_operator,
 			),
 			'object_id' => array(
 				'title'     => __( 'Object ID', 'stream-notifications' ),
@@ -328,7 +330,7 @@ class WP_Stream_Notifications_Form
 				'title' => __( 'Post: Slug', 'stream-notifications' ),
 				'type'  => 'text',
 				'connector' => 'posts',
-				'operators' => $default_operators,
+				'operators' => $text_operator,
 			),
 			'post_content' => array(
 				'title' => __( 'Post: Content', 'stream-notifications' ),
