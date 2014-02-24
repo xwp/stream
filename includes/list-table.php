@@ -163,7 +163,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 					: '(' . __( 'no title', 'stream' ) . ')';
 
 				$out = sprintf(
-					'<a href="%s" class="%s" title="%s">%s</a>',
+					'<strong style="display:block;margin-bottom:.2em;font-size:14px;"><a href="%s" class="%s" title="%s">%s</a>%s</strong>', // TODO: Add these styles to a CSS file
 					add_query_arg(
 						array(
 							'page'   => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
@@ -175,7 +175,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 					),
 					'row-title',
 					esc_attr( $name ),
-					esc_html( $name )
+					esc_html( $name ),
+					'inactive' == $item->visibility ? sprintf( ' - <span class="post-state">%s</span>', __( 'Inactive', 'stream-notifications' ) ) : ''
 				);
 
 				$out .= $this->get_action_links( $item );
@@ -192,7 +193,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			case 'date':
 				$out  = $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
-				$out .= ( 'active' == $item->visibility ) ? __( 'Active', 'stream-notifications' ) : __( 'Inactive', 'stream-notifications' );
+				$out .= ( 'active' == $item->visibility ) ? __( 'Active', 'stream-notifications' ) : __( 'Last Modified', 'stream-notifications' );
 				break;
 
 			default:
