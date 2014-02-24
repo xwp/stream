@@ -87,7 +87,7 @@ class WP_Stream_Notification_Rule_Matcher {
 	}
 
 	public function match_trigger( $trigger, $log ) {
-		$needle = $trigger['value'];
+		$needle   = $trigger['value'];
 		$operator = $trigger['operator'];
 		$negative = ( $operator[0] == '!' );
 
