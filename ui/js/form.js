@@ -238,9 +238,11 @@ jQuery(function($){
 				options = null,
 				index   = $this.parents('.trigger').first().attr('rel');
 
-			options = ( typeof types[ $this.val() ] !== 'undefined' ) ?
-				types[ $this.val() ]
-				: stream_notifications.special_types[ $this.val() ];
+			if ( ( typeof types[ $this.val() ] !== 'undefined' ) ) {
+				options = types[ $this.val() ];
+			} else {
+				options = stream_notifications.special_types[ $this.val() ];
+			}
 
 			$this.next('.trigger-options').remove();
 
