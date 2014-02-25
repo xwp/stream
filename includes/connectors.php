@@ -20,17 +20,31 @@ class WP_Stream_Connectors {
 	);
 
 	/**
+	 * Admin notice messages
+	 *
+	 * @since 1.2.3
+	 * @var array
+	 */
+	protected static $admin_notices = array();
+
+
+	/**
 	 * Load built-in connectors
 	 */
 	public static function load() {
+		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
+
 		require_once WP_STREAM_CLASS_DIR . 'connector.php';
 
 		$classes = array();
 		if ( $found = glob( WP_STREAM_DIR . 'connectors/*.php' ) ) {
 			foreach ( $found as $class ) {
 				include_once $class;
-				$class     = ucwords( preg_match( '#(.+)\.php#', basename( $class ), $matches ) ? $matches[1] : '' );
-				$classes[] = "WP_Stream_Connector_$class";
+				$class_name = ucwords( preg_match( '#(.+)\.php#', basename( $class ), $matches ) ? $matches[1] : '' );
+				$class      = "WP_Stream_Connector_$class_name";
+				$classes[]  = $class;
+
+				self::$term_labels['stream_connector'][$class::$name] = $class::get_label();
 			}
 		}
 
@@ -43,39 +57,28 @@ class WP_Stream_Connectors {
 		 */
 		self::$connectors = apply_filters( 'wp_stream_connectors', $classes );
 
-		foreach ( self::$connectors as $connector ) {
-			self::$term_labels['stream_connector'][$connector::$name] = $connector::get_label();
-		}
-
-		/**
-		 * Action allows for perform any additional action after connector term loaded
-		 *
-		 * @param $labels array Connectors labels
-		 */
-
-		do_action( 'wp_stream_after_connector_term_labels_loaded',  self::$term_labels['stream_connector'] );
-
-		// Get excluded connectors
-		$excluded_connectors = WP_Stream_Settings::$options['exclude_connectors'];
-		if ( is_callable( $excluded_connectors ) ) {
-			$excluded_connectors = call_user_func( $excluded_connectors );
-		}
+		// Get active connectors
+		$active_connectors = WP_Stream_Settings::get_active_connectors();
 
 		foreach ( self::$connectors as $connector ) {
+			// Check if the connectors extends the WP_Stream_Connector class, if not skip it
+			if ( ! is_subclass_of( $connector, 'WP_Stream_Connector' ) ) {
+				self::$admin_notices[] = sprintf(
+					__( "%s class wasn't loaded because it doesn't extends the %s class.", 'stream' ),
+					$connector,
+					'WP_Stream_Connector'
+				);
 
-			if ( in_array( $connector::$name, $excluded_connectors ) ) {
 				continue;
 			}
 
-			// Check if the connectors extends the WP_Stream_Connector class, if not skip it
-			if ( ! is_subclass_of( $connector, 'WP_Stream_Connector' ) ) {
-				add_action(
-					'admin_notices',
-					function() use( $connector ) {
-						printf( '<div class="error"><p>%s %s</p></div>', $connector, __( "class wasn't loaded because it doesn't extends the WP_Stream_Connector class", 'stream' ) );
-					}
-				);
+			// Store connector label
+			if ( ! in_array( $connector::$name, self::$term_labels['stream_connector'] ) ) {
+				self::$term_labels['stream_connector'][$connector::$name] = $connector::get_label();
+			}
 
+			// Check if connector is activated
+			if ( ! in_array( $connector::$name, $active_connectors ) ) {
 				continue;
 			}
 
@@ -93,4 +96,21 @@ class WP_Stream_Connectors {
 		}
 	}
 
+
+	/**
+	 * Print admin notices
+	 *
+	 * @since 1.2.3
+	 */
+	public static function admin_notices() {
+		if ( ! empty( self::$admin_notices ) ) :
+			?>
+			<div class="error">
+				<?php foreach ( self::$admin_notices as $message ) : ?>
+					<?php echo wpautop( esc_html( $message ) ); // xss ok ?>
+				<?php endforeach; ?>
+			</div>
+			<?php
+		endif;
+	}
 }

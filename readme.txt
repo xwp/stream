@@ -72,7 +72,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 
  * UI to exclude specific types of user activity from being tracked
  * Limit who can view user activity records by user, not just by role
- * Improved context assignements for Media, Comments, Users and Widgets
+ * Improved context assignements for Media, Users and Widgets
  * Multisite view of all activity records on a network
  * Language support for Arabic (RTL), Czech and Slovak
 
@@ -94,6 +94,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.2.4 =
+**2014/02/25** - Use post type names as Context for Comments connector. German translation update. Bug fixes. Props [powelski](http://profiles.wordpress.org/powelski/), [kucrut](http://profiles.wordpress.org/kucrut/), [pascalklaeres](http://profiles.wordpress.org/pascalklaeres/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 = 1.2.3 =
 **2014/02/21** - Replacement function for filter_input family to avoid PHP bug. Filter added to main Stream query. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
