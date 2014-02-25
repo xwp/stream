@@ -132,10 +132,11 @@ jQuery(function($){
                         'find': term,
                         'limit': 10,
                         'pager': page,
-                        'action': 'stream_get_user'
+                        'action': 'stream_get_users',
+                        'nonce' : $input_user.data('nonce')
                     };
                 },
-                results: function (data) {
+                results: function (response) {
                     var answer = {
                         results: [
                             {
@@ -148,15 +149,15 @@ jQuery(function($){
                             }
                         ]
                     };
-                    if (data === 0 || data === '' || data.status !== true) {
+                    if (response.success !== true || response.data === undefined || response.data.status !== true ) {
                         return answer;
                     }
-                    $.each(data.users, function (k, user) {
+                    $.each(response.data.users, function (k, user) {
                         if ($.contains($roles, user.id)){
                             user.disabled = true;
                         }
                     });
-                    answer.results[1].children = data.users;
+                    answer.results[1].children = response.data.users;
                     // notice we return the value of more so Select2 knows if more results can be loaded
                     return answer;
                 }
@@ -169,7 +170,7 @@ jQuery(function($){
             },
             initSelection: function (item, callback) {
                 callback(item.data('selected'));
-            },
+            }
         });
     }).on('change',function (e) {
         stream_select2_change_handler(e, $input_user);

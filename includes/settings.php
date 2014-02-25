@@ -62,7 +62,7 @@ class WP_Stream_Settings {
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
 
 		// Ajax callback function to search users
-		add_action( 'wp_ajax_stream_get_user', array( __CLASS__, 'get_users' ) );
+		add_action( 'wp_ajax_stream_get_users', array( __CLASS__, 'get_users' ) );
 	}
 
 	/**
@@ -75,13 +75,19 @@ class WP_Stream_Settings {
 		if ( ! defined( 'DOING_AJAX' ) ) {
 			return;
 		}
+		if ( ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
+			return;
+		}
+
+		check_ajax_referer( 'stream_get_users', 'nonce' );
+
 		$response = (object) array(
 			'status' => false,
 			'message' => __( 'There was an error in the request', 'stream' ),
 		);
 
 		$request = (object) array(
-			'find' => ( isset( $_POST['find'] )? esc_attr( trim( $_POST['find'] ) ) : '' ),
+			'find' => ( isset( $_POST['find'] )? wp_unslash( trim( $_POST['find'] ) ) : '' ),
 		);
 
 		add_filter( 'user_search_columns', array( __CLASS__, 'add_display_name_search_columns' ), 10, 3 );
@@ -97,8 +103,11 @@ class WP_Stream_Settings {
 				),
 			)
 		);
+
+		remove_filter( 'user_search_columns', array( __CLASS__, 'add_display_name_search_columns' ), 10 );
+		
 		if ( $users->get_total() === 0 )
-			exit( json_encode( $response ) );
+			wp_send_json_error( $response );
 
 		$response->status  = true;
 		$response->message = '';
@@ -113,7 +122,7 @@ class WP_Stream_Settings {
 			$response->users[] = $args;
 		}
 
-		exit( json_encode( $response ) );
+		wp_send_json_success( $response );
 	}
 
 	/**
@@ -467,7 +476,7 @@ class WP_Stream_Settings {
 							$selected_values[ ] = array( 'id' => $key, 'text' => $value, );
 						}
 					}
-					$class .= 'with-source';
+					$class .= ' with-source';
 				} else {
 					foreach ( $current_value as $value ) {
 						if ( $value == '__placeholder__' ){
@@ -485,8 +494,8 @@ class WP_Stream_Settings {
 				);
 				$output .= sprintf(
 					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="chosen-select %4$s" data-select-placeholder="%5$s-%6$s-select-placeholder"  />',
-					json_encode( $data_values ),
-					json_encode( $selected_values ),
+					esc_attr( json_encode( $data_values ) ),
+					esc_attr( json_encode( $selected_values ) ),
 					esc_attr( implode( ',', $current_value ) ),
 					$class,
 					esc_attr( $section ),
@@ -552,12 +561,13 @@ class WP_Stream_Settings {
 					esc_attr( $name )
 				);
 				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="chosen-select %5$s" data-select-placeholder="%4$s-%5$s-select-placeholder"  />',
+					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="chosen-select %5$s" data-select-placeholder="%4$s-%5$s-select-placeholder" data-nonce="%6$s" />',
 					json_encode( $data_values ),
 					json_encode( $selected_values ),
 					esc_attr( implode( ',', $current_value ) ),
 					esc_attr( $section ),
-					esc_attr( $name )
+					esc_attr( $name ),
+					esc_attr( wp_create_nonce( 'stream_get_users' ) )
 				);
 				// to store data with default value if nothing is selected
 				$output .= sprintf(
@@ -768,8 +778,8 @@ class WP_Stream_Settings {
 			self::$options [ 'exclude_authors_and_roles' ] = array_diff(
 				array_keys(
 					self::get_roles()
-				)
-				, $old_options [ 'general_log_activity_for' ]
+				),
+				$old_options [ 'general_log_activity_for' ]
 			);
 
 			unset( self::$options[ 'general_log_activity_for' ] );
