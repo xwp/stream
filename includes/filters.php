@@ -50,11 +50,10 @@ class WP_Stream_Filter_Input {
 			throw new Exception( 'Invalid use, type must be one of INPUT_* family.', 'stream' );
 		}
 
-		if ( ! isset( $super[ $variable_name ] ) ) {
-			return;
+		$var = null;
+		if ( isset( $super[ $variable_name ] ) ) {
+			$var = $super[ $variable_name ];
 		}
-
-		$var = $super[ $variable_name ];
 
 		$var = self::filter( $var, $filter, $options );
 
