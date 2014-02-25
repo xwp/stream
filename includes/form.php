@@ -470,12 +470,16 @@ class WP_Stream_Notifications_Form
 					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
+								<dt><code>{author}</code></dt>
+								<dd><?php _e( 'ID of the record author', 'stream-notifications' ) ?></dd>
 								<dt><code>{author.user_login}</code></dt>
 								<dd><?php _e( 'Username of the record author', 'stream-notifications' ) ?></dd>
 								<dt><code>{author.user_email}</code></dt>
-								<dd><?php _e( 'Email of the record author', 'stream-notifications' ) ?></dd>
+								<dd><?php _e( 'Email address of the record author', 'stream-notifications' ) ?></dd>
 								<dt><code>{author.display_name}</code></dt>
 								<dd><?php _e( 'Display name of the record author', 'stream-notifications' ) ?></dd>
+								<dt><code>{author.user_url}</code></dt>
+								<dd><?php _e( 'Website URL of the record author', 'stream-notifications' ) ?></dd>
 							</dl>
 						</div>
 					</div>
