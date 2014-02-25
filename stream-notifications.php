@@ -228,7 +228,7 @@ class WP_Stream_Notifications {
 		$view     = wp_stream_filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 		$action   = wp_stream_filter_input( INPUT_GET, 'action', FILTER_DEFAULT );
 		$id       = wp_stream_filter_input( INPUT_GET, 'id' );
-		$bulk_ids = filter_input( INPUT_GET, 'wp_stream_notifications_checkbox', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );  // TODO: wp_stream_filter_input
+		$bulk_ids = filter_input( INPUT_GET, 'wp_stream_notifications_checkbox', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ); // TODO: wp_stream_filter_input
 		$search   = wp_stream_filter_input( INPUT_GET, 'search' );
 
 		// There is a chance we go from the bottom bulk actions select box
