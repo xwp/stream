@@ -252,6 +252,8 @@ class WP_Stream_Notifications {
 				$data['visibility'] = 'inactive'; // Checkbox woraround
 			}
 
+			$data['summary'] = trim( $data['summary'] );
+
 			$result = $rule->load_from_array( $data )->save();
 
 			if ( $result ) {
