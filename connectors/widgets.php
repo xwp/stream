@@ -235,16 +235,15 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$widget_ids = preg_replace( '#(widget-\d+_)#', '', $widget_ids );
 			$new[$sidebar_id] = array_filter( explode( ',', $widget_ids ) );
 
-			if ( $new[$sidebar_id] === $old[$sidebar_id] ) {
-				continue;
+			if ( $new[$sidebar_id] !== $old[$sidebar_id] ) {
+				$changed = $sidebar_id;
+				break;
 			}
-
-			$changed = $sidebar_id;
 		}
 
 		if ( isset( $changed ) ) {
 			$sidebar      = $changed;
-			$sidebar_name = $wp_registered_sidebars[$sidebar_id]['name'];
+			$sidebar_name = $wp_registered_sidebars[$changed]['name'];
 			// Saving this in a global var, so it can be accessed and
 			//  executed by self::callback_update_option_sidebars_widgets
 			//  in case this is ONLY a reorder process
