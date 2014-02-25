@@ -1,10 +1,10 @@
 <div class="wrap">
 
-	<?php if ( wp_stream_filter_input( INPUT_GET, 'updated' ) || wp_stream_filter_input( INPUT_POST, 'summary' ) ): ?>
-	<div class="updated fade">
-		<p><?php _e( 'Rule saved', 'stream-notifications' ) ?></p>
-	</div>
-	<?php endif ?>
+	<?php if ( wp_stream_filter_input( INPUT_GET, 'updated' ) || wp_stream_filter_input( INPUT_POST, 'summary' ) ) : ?>
+		<div class="updated fade">
+			<p><?php esc_html_e( 'Rule saved.', 'stream-notifications' ) ?></p>
+		</div>
+	<?php endif; ?>
 
 	<h2><?php $rule->exists() ? esc_html_e( 'Edit Notification Rule', 'stream-notifications' ) : esc_html_e( 'Add New Notification Rule', 'stream-notifications' ); ?>
 		<?php if ( $rule->exists() ) : ?>
