@@ -57,8 +57,8 @@ class WP_Stream_Connectors {
 		 */
 		self::$connectors = apply_filters( 'wp_stream_connectors', $classes );
 
-		// Get active connectors
-		$active_connectors = WP_Stream_Settings::get_active_connectors();
+		// Get excluded connectors
+		$excluded_connectors = WP_Stream_Settings::get_excluded_connectors();
 
 		foreach ( self::$connectors as $connector ) {
 			// Check if the connectors extends the WP_Stream_Connector class, if not skip it
@@ -77,8 +77,18 @@ class WP_Stream_Connectors {
 				self::$term_labels['stream_connector'][$connector::$name] = $connector::get_label();
 			}
 
-			// Check if connector is activated
-			if ( ! in_array( $connector::$name, $active_connectors ) ) {
+			/**
+			 * Filter allows to continue register excluded connector
+			 *
+			 * @param boolean TRUE if exclude otherwise false
+			 * @param string connector unique name
+			 * @param array Excluded connector array
+			 */
+
+			$is_excluded_connector = apply_filters( 'wp_stream_check_connector_is_excluded', in_array( $connector::$name, $excluded_connectors ), $connector::$name, $excluded_connectors );
+
+
+			if ( $is_excluded_connector ) {
 				continue;
 			}
 
@@ -94,6 +104,12 @@ class WP_Stream_Connectors {
 				$connector::get_context_labels()
 			);
 		}
+
+		/**
+		 * This allow to perform action after all connectors registration
+		 * @param array all register connectors labels array
+		 */
+		do_action( 'wp_stream_after_connectors_registration', self::$term_labels['stream_connector'] );
 	}
 
 
