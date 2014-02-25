@@ -15,7 +15,6 @@
 
 	"globals": {
 		"jQuery": false,
-		"wp": false,
-		"_": false
+		"wp": false
 	}
 }
