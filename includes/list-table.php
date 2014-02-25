@@ -158,7 +158,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		switch ( $column_name ) {
 
 			case 'name':
-				$name = $item->summary
+				$name = strlen( $item->summary )
 					? $item->summary
 					: '(' . __( 'no title', 'stream' ) . ')';
 
