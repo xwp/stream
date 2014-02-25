@@ -87,7 +87,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			return;
 		}
 
-		global $order_operation;
+		global $wp_stream_widget_order_operation;
 
 		$widget_id = null;
 		$sidebar   = null;
@@ -111,7 +111,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				array( 'widgets' => $action )
 			);
 
-			$order_operation = null;
+			$wp_stream_widget_order_operation = null;
 
 			return;
 		}
@@ -158,7 +158,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 					continue;
 				}
 
-				$order_operation = null;
+				$wp_stream_widget_order_operation = null;
 
 				list( $id_base, $name, $title, $sidebar, $sidebar_name ) = array_values( self::get_widget_info( $widget_id, $sidebar ) );
 
@@ -174,8 +174,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		}
 
 		// Did anything happen ? if not, just record the reorder log entry
-		if ( $order_operation ) {
-			call_user_func_array( array( __CLASS__, 'log' ), $order_operation );
+		if ( $wp_stream_widget_order_operation ) {
+			call_user_func_array( array( __CLASS__, 'log' ), $wp_stream_widget_order_operation );
 		}
 
 	}
@@ -219,7 +219,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return void
 	 */
 	public static function callback_wp_ajax_widgets_order() {
-		global $wp_registered_sidebars, $wp_registered_widgets, $sidebars_widgets, $order_operation;
+		global $wp_registered_sidebars, $wp_registered_widgets, $sidebars_widgets, $wp_stream_widget_order_operation;
 
 		// If this was a widget update, skip adding a new record
 		if ( did_action( 'widget_update_callback' ) ) {
@@ -248,7 +248,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			// Saving this in a global var, so it can be accessed and
 			//  executed by self::callback_update_option_sidebars_widgets
 			//  in case this is ONLY a reorder process
-			$order_operation = array(
+			$wp_stream_widget_order_operation = array(
 				_x( '"%s" widgets were reordered', 'Sidebar name', 'stream' ),
 				compact( 'sidebar_name', 'sidebar' ),
 				null,
