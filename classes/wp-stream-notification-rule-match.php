@@ -87,11 +87,21 @@ class WP_Stream_Notification_Rule_Matcher {
 	}
 
 	public function match_trigger( $trigger, $log ) {
-		$needle = $trigger['value'];
-		$operator = $trigger['operator'];
-		$negative = ( $operator[0] == '!' );
+		$type     = isset( $trigger['type'] ) ? $trigger['type'] : null;
+		$needle   = isset( $trigger['value'] ) ? $trigger['value'] : null;
+		$operator = isset( $trigger['operator'] ) ? $trigger['operator'] : null;
+		$negative = ( isset( $operator[0] ) && '!' == $operator[0] );
+		$haystack = null;
 
-		switch ( $trigger['type'] ) {
+		// Post-specific triggers dirty work
+		if ( false !== strpos( $trigger['type'], 'post_' ) ) {
+			$post = get_post( $log['object_id'] );
+			if ( empty( $post) ) {
+				return false;
+			}
+		}
+
+		switch ( $type ) {
 			case 'search':
 				$haystack = $log['summary'];
 				break;
@@ -102,7 +112,7 @@ class WP_Stream_Notification_Rule_Matcher {
 				$haystack = $log['author'];
 				break;
 			case 'author_role':
-				$user = get_userdata( $log['author'] );
+				$user     = get_userdata( $log['author'] );
 				$haystack = ( is_object( $user ) && $user->exists() && $user->roles ) ? $user->roles[0] : false;
 				break;
 			case 'ip':
@@ -110,7 +120,7 @@ class WP_Stream_Notification_Rule_Matcher {
 				break;
 			case 'date':
 				$haystack = date( 'Ymd', strtotime( $log['created'] ) );
-				$needle = date( 'Ymd', strtotime( $needle ) );
+				$needle   = date( 'Ymd', strtotime( $needle ) );
 				break;
 			case 'connector':
 				$haystack = $log['connector'];
@@ -121,10 +131,68 @@ class WP_Stream_Notification_Rule_Matcher {
 			case 'action':
 				$haystack = reset( $log['contexts'] );
 				break;
+
+			/* Context-aware triggers */
+			case 'post':
+			case 'user':
+			case 'term':
+				$haystack = $log['object_id'];
+				break;
+			case 'term_parent':
+				$parent = get_term( $log['meta']['term_parent'], $log['meta']['taxonomy'] );
+				if ( empty( $parent ) || is_wp_error( $parent ) ) {
+					return false;
+				} else {
+					$haystack = $parent->term_taxonomy_id;
+				}
+				break;
+			case 'tax':
+				if ( empty( $log['meta']['taxonomy'] ) ) {
+					return false;
+				}
+				$haystack = $log['meta']['taxonomy'];
+				break;
+
+			case 'post_title':
+				$haystack = $post->post_title;
+				break;
+			case 'post_slug':
+				$haystack = $post->post_name;
+				break;
+			case 'post_content':
+				$haystack = $post->post_content;
+				break;
+			case 'post_excerpt':
+				$haystack = $post->post_excerpt;
+				break;
+			case 'post_status':
+				$haystack = get_post_status( $post->ID );
+				break;
+			case 'post_format':
+				$haystack = get_post_format( $post );
+				break;
+			case 'post_parent':
+				$haystack = wp_get_post_parent_id( $post->ID );
+				break;
+			case 'post_thumbnail':
+				if ( ! function_exists( 'get_post_thumbnail_id' ) ) {
+					return false;
+				}
+				$haystack = get_post_thumbnail_id( $post->ID ) > 0;
+				break;
+			case 'post_comment_status':
+				$haystack = $post->comment_status;
+				break;
+			case 'post_comment_count':
+				$haystack = get_comment_count( $post->ID );
+				break;
+			default:
+				return false;
+				break;
 		}
 
 		$match = false;
-		switch ( $trigger['operator'] ) {
+		switch ( $operator ) {
 			case '=':
 			case '!=':
 			case '>=':
@@ -132,10 +200,8 @@ class WP_Stream_Notification_Rule_Matcher {
 				$match = ( $haystack == $needle );
 			case 'in':
 			case '!in':
-				$match = (bool) array_intersect(
-					explode( ',', $needle ),
-					(array) $haystack
-				);
+				$needle = is_array( $needle ) ? $needle : explode( ',', $needle );
+				$match = (bool) array_intersect( $needle, (array) $haystack );
 				break;
 			// string special comparison operators
 			case 'contains':
@@ -256,7 +322,7 @@ class WP_Stream_Notification_Rule_Matcher {
 			for ( $i; $i < count( $flattened_tree ); $i++ ) {
 				// If we're on the correct level, we're going to insert the node
 				if ( $flattened_tree[$i]['level'] == $level ) {
-					if ( $flattened_tree[$i]['type'] == 'trigger' ) {
+					if ( 'trigger' == $flattened_tree[$i]['type'] ) {
 						$return[] = $flattened_tree[$i]['item'];
 						// If the node is a group, we need to call the recursive function
 						// in order to construct the tree for us further
@@ -298,7 +364,7 @@ class WP_Stream_Notification_Rule_Matcher {
 				$trigger['triggers'] = $this->generate_group_chunks( $trigger['triggers'] );
 			}
 			// If relation=and, start a new chunk, else join the previous chunk
-			if ( $trigger['relation'] == 'and' ) {
+			if ( 'and' == $trigger['relation'] ) {
 				$chunks[] = array( $trigger );
 				$current_chunk = count( $chunks ) - 1;
 			} else {

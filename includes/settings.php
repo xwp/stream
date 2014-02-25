@@ -22,7 +22,7 @@ class WP_Stream_Notification_Settings {
 
 		// Export function
 		add_action( 'wp_ajax_wp_stream_notifications_export', array( 'WP_Stream_Notifications_Import_Export', 'export' ) );
-		add_action( 'pre_update_option_' . WP_Stream_Settings::KEY, array( 'WP_Stream_Notifications_Import_Export', 'import' ) );
+		add_filter( 'pre_update_option_' . WP_Stream_Settings::KEY, array( 'WP_Stream_Notifications_Import_Export', 'import' ) );
 	}
 
 	public static function get_fields() {

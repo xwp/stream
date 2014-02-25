@@ -39,22 +39,21 @@ class WP_Stream_Notifications_Import_Export {
 
 	public static function import() {
 		$filename = 'notifications_import_rules';
-		if ( empty( $_FILES[ WP_Stream_Settings::KEY ][ 'tmp_name' ][ $filename ] ) ) {
-			return;
-		}
+		if ( ! empty( $_FILES[ WP_Stream_Settings::KEY ][ 'tmp_name' ][ $filename ] ) ) {
+			$tmpfile = $_FILES[ WP_Stream_Settings::KEY ][ 'tmp_name' ][ $filename ];
+			$result = self::_import( file_get_contents( $tmpfile ) );
 
-		$tmpfile = $_FILES[ WP_Stream_Settings::KEY ][ 'tmp_name' ][ $filename ];
-		$result = self::_import( file_get_contents( $tmpfile ) );
-
-		if ( $result ) {
-			list( $class, $message ) = $result;
-			add_settings_error(
-				WP_Stream_Settings::KEY,
-				'imported',
-				$message,
-				$class
-			);
+			if ( $result ) {
+				list( $class, $message ) = $result;
+				add_settings_error(
+					WP_Stream_Settings::KEY,
+					'imported',
+					$message,
+					$class
+				);
+			}
 		}
+		return func_get_arg( 0 ); // This is filtering 'pre_update_option_' so must return the passed value
 	}
 
 	private static function _import( $contents ) {

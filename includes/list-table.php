@@ -158,12 +158,12 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		switch ( $column_name ) {
 
 			case 'name':
-				$name = $item->summary
+				$name = strlen( $item->summary )
 					? $item->summary
 					: '(' . __( 'no title', 'stream' ) . ')';
 
 				$out = sprintf(
-					'<a href="%s" class="%s" title="%s">%s</a>',
+					'<strong style="display:block;margin-bottom:.2em;font-size:14px;"><a href="%s" class="%s" title="%s">%s</a>%s</strong>', // TODO: Add these styles to a CSS file
 					add_query_arg(
 						array(
 							'page'   => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
@@ -175,7 +175,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 					),
 					'row-title',
 					esc_attr( $name ),
-					esc_html( $name )
+					esc_html( $name ),
+					'inactive' == $item->visibility ? sprintf( ' - <span class="post-state">%s</span>', __( 'Inactive', 'stream-notifications' ) ) : ''
 				);
 
 				$out .= $this->get_action_links( $item );
@@ -192,9 +193,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			case 'date':
 				$out  = $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
-				$out .= 'active' == $item->visibility
-					? __( 'Active', 'stream-notifications' )
-					: __( 'Inactive', 'stream-notifications' );
+				$out .= ( 'active' == $item->visibility ) ? __( 'Active', 'stream-notifications' ) : __( 'Last Modified', 'stream-notifications' );
 				break;
 
 			default:
@@ -495,14 +494,10 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				'<li class="%s"><a href="%s" class="%s">%s%s</a>%s</li>',
 				esc_attr( $item[ 'li_class' ] ),
 				esc_attr( $item[ 'url' ] ),
-				$visibility == $visibility_filter
-					? 'current ' . esc_attr( $item[ 'link_class' ] )
-					: esc_attr( $item[ 'link_class' ] ),
+				( $visibility == $visibility_filter ) ? sprintf( 'current %s', esc_attr( $item[ 'link_class' ] ) ) : esc_attr( $item[ 'link_class' ] ),
 				esc_html( $item[ 'link_text' ] ),
-				$item[ 'count' ] !== null
-					? sprintf( ' <span class="count">(%s)</span>', esc_html( $item[ 'count' ] ) )
-					: '',
-				$i === count( $navigation_items ) ? '' : ' | '
+				( null !== $item[ 'count' ] ) ? sprintf( ' <span class="count">(%s)</span>', esc_html( $item[ 'count' ] ) ) : '',
+				( $i === count( $navigation_items ) ) ? '' : ' | '
 			);
 		}
 
@@ -577,7 +572,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	static function set_screen_option( $dummy, $option, $value ) {
-		if ( $option == 'edit_stream_notifications_per_page' ) {
+		if ( 'edit_stream_notifications_per_page' == $option ) {
 			return $value;
 		} else {
 			return $dummy;
