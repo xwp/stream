@@ -101,12 +101,17 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		if ( $deactivated = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] ) ) {
 			$action    = 'deactivated';
+			// Changing the summary message string. "From" would not make any sense if a widget is deactivated.
 			$message   = _x(
-				'"%1$s" from "%2$s" has been deactivated',
-				'1: Widget title, 2: Sidebar name',
+				'"%1$s" has been deactivated',
+				'1: Widget title',
 				'stream'
 			);
-			$widget_id = $deactivated[0];
+
+			// It is not always the 0th key value. If a widget is dropped after any other widget in the Inactive area;
+			// then the difference would be on a non-zero key.
+			$diff_ids = array_values( $deactivated );
+			$widget_id = $diff_ids[0];
 			$sidebar   = $old;
 
 			list( $id_base, $name, $title, $sidebar, $sidebar_name ) = array_values( self::get_widget_info( $widget_id, $sidebar ) );
@@ -115,7 +120,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$message,
 				compact( 'title', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
 				null,
-				array( $sidebar => $action )
+				array( 'wp_inactive_widgets' => $action )
 			);
 
 			$order_operation = null;
@@ -274,11 +279,12 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return array             array( $id_base, $name, $title, $sidebar, $sidebar_name, $widget_class )
 	 */
 	public static function get_widget_info( $id, $sidebars = array() ) {
-		global $wp_registered_widgets, $wp_widget_factory, $wp_registered_sidebars;
+		global $wp_registered_widgets, $wp_widget_factory;
 		$ids = array_combine(
 			wp_list_pluck( $wp_widget_factory->widgets, 'id_base' ),
 			array_keys( $wp_widget_factory->widgets )
 		);
+		$labels = self::get_context_labels();
 
 		$id_base = preg_match( '#(.*)-(\d+)$#', $id, $matches ) ? $matches[1] : null;
 		$number  = $matches[2];
@@ -295,7 +301,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		foreach ( $sidebars as $_sidebar_id => $_sidebar ) {
 			if ( is_array( $_sidebar ) && in_array( $id, $_sidebar ) ) {
 				$sidebar      = $_sidebar_id;
-				$sidebar_name = $wp_registered_sidebars[ $sidebar ]['name'];
+				$sidebar_name = $labels[ $sidebar ];
 				break;
 			}
 		}
