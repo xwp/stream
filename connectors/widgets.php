@@ -127,7 +127,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 					||
 					( ! is_array( $new_widgets ) )
 					) {
-					return; // Switching themes ?
+					break; // Switching themes ?, do not return so order operation is logged
 				}
 				$old_widgets = $old[$sidebar_id];
 
