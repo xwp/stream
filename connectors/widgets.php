@@ -100,9 +100,9 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		$sidebar   = null;
 
 		if ( $deactivated = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] ) ) {
-			$action    = 'deactivated';
+			$action = 'deactivated';
 			// Changing the summary message string. "From" would not make any sense if a widget is deactivated.
-			$message   = _x(
+			$message = _x(
 				'"%1$s" has been deactivated',
 				'1: Widget title',
 				'stream'
@@ -110,7 +110,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 			// It is not always the 0th key value. If a widget is dropped after any other widget in the Inactive area;
 			// then the difference would be on a non-zero key.
-			$diff_ids = array_values( $deactivated );
+			$diff_ids  = array_values( $deactivated );
 			$widget_id = $diff_ids[0];
 			$sidebar   = $old;
 
@@ -284,8 +284,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			wp_list_pluck( $wp_widget_factory->widgets, 'id_base' ),
 			array_keys( $wp_widget_factory->widgets )
 		);
-		$labels = self::get_context_labels();
 
+		$labels  = self::get_context_labels();
 		$id_base = preg_match( '#(.*)-(\d+)$#', $id, $matches ) ? $matches[1] : null;
 		$number  = $matches[2];
 		$name    = $wp_widget_factory->widgets[ $ids[$id_base] ]->name;
