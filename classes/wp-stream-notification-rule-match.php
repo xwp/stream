@@ -91,6 +91,15 @@ class WP_Stream_Notification_Rule_Matcher {
 		$needle   = isset( $trigger['value'] ) ? $trigger['value'] : null;
 		$operator = isset( $trigger['operator'] ) ? $trigger['operator'] : null;
 		$negative = ( isset( $operator[0] ) && '!' == $operator[0] );
+		$haystack = null;
+
+		// Post-specific triggers dirty work
+		if ( false !== strpos( $trigger['type'], 'post_' ) ) {
+			$post = get_post( $log['object_id'] );
+			if ( empty( $post) ) {
+				return false;
+			}
+		}
 
 		switch ( $type ) {
 			case 'search':
@@ -122,6 +131,64 @@ class WP_Stream_Notification_Rule_Matcher {
 			case 'action':
 				$haystack = reset( $log['contexts'] );
 				break;
+
+			/* Context-aware triggers */
+			case 'post':
+			case 'user':
+			case 'term':
+				$haystack = $log['object_id'];
+				break;
+			case 'term_parent':
+				$parent = get_term( $log['meta']['term_parent'], $log['meta']['taxonomy'] );
+				if ( empty( $parent ) || is_wp_error( $parent ) ) {
+					return false;
+				} else {
+					$haystack = $parent->term_taxonomy_id;
+				}
+				break;
+			case 'tax':
+				if ( empty( $log['meta']['taxonomy'] ) ) {
+					return false;
+				}
+				$haystack = $log['meta']['taxonomy'];
+				break;
+
+			case 'post_title':
+				$haystack = $post->post_title;
+				break;
+			case 'post_slug':
+				$haystack = $post->post_name;
+				break;
+			case 'post_content':
+				$haystack = $post->post_content;
+				break;
+			case 'post_excerpt':
+				$haystack = $post->post_excerpt;
+				break;
+			case 'post_status':
+				$haystack = get_post_status( $post->ID );
+				break;
+			case 'post_format':
+				$haystack = get_post_format( $post );
+				break;
+			case 'post_parent':
+				$haystack = wp_get_post_parent_id( $post->ID );
+				break;
+			case 'post_thumbnail':
+				if ( ! function_exists( 'get_post_thumbnail_id' ) ) {
+					return false;
+				}
+				$haystack = get_post_thumbnail_id( $post->ID ) > 0;
+				break;
+			case 'post_comment_status':
+				$haystack = $post->comment_status;
+				break;
+			case 'post_comment_count':
+				$haystack = get_comment_count( $post->ID );
+				break;
+			default:
+				return false;
+				break;
 		}
 
 		$match = false;
@@ -133,10 +200,8 @@ class WP_Stream_Notification_Rule_Matcher {
 				$match = ( $haystack == $needle );
 			case 'in':
 			case '!in':
-				$match = (bool) array_intersect(
-					explode( ',', $needle ),
-					(array) $haystack
-				);
+				$needle = is_array( $needle ) ? $needle : explode( ',', $needle );
+				$match = (bool) array_intersect( $needle, (array) $haystack );
 				break;
 			// string special comparison operators
 			case 'contains':

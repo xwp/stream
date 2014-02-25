@@ -1,4 +1,4 @@
-/* globals stream_notifications, ajaxurl, triggers */
+/* globals stream_notifications, ajaxurl, _, notification_rule, alert, confirm */
 jQuery(function($){
 	'use strict';
 
@@ -10,12 +10,11 @@ jQuery(function($){
 	});
 
 	var types = stream_notifications.types,
-		i,
 
 		divTriggers = $('#triggers'), // Trigger Playground
 		divAlerts   = $('#alerts .inside'), // Alerts Playground
 
-		iGroup      = 0,
+		iGroup = 0,
 
 		btns = {
 			add_trigger: '.add-trigger',
@@ -122,7 +121,7 @@ jQuery(function($){
 									q     : id,
 									single: 1,
 									type  : type,
-									args: $(this).attr( 'data-args' )
+									args  : $(this).attr( 'data-args' )
 								},
 								dataType: 'json'
 							}).done( function( data ) { callback( data.data ); } );
@@ -142,16 +141,16 @@ jQuery(function($){
 							type: 'post',
 							data: {
 								action: 'stream_notification_endpoint',
-								q : val,
+								q     : val,
 								single: 1,
 								type  : type,
-								args: $(this).attr("data-args")
+								args  : $(this).attr('data-args')
 							},
-							dataType: "json",
+							dataType: 'json',
 							success: function(j){
 								$this.select2( 'data', j.data );
 							}
-						})
+						});
 					} else if ( $this.hasClass('tags') ) {
 						$this.select2( 'data', [{ id: val, text: val }] );
 					} else {
@@ -163,16 +162,36 @@ jQuery(function($){
 
 		add_trigger = function (group_index) {
 			var index    = 0,
-				lastItem = null,
-				group    = divTriggers.find('.group[rel=' + group_index + ']' );
+				lastItem   = null,
+				group    = divTriggers.find('.group[rel=' + group_index + ']' ),
+				i          = null,
+				type       = null,
+				types      = {},
+				connectors = {}
+			;
 
 			if ( ( lastItem = divTriggers.find('.trigger').last() ) && lastItem.size() ) {
 				index = parseInt( lastItem.attr('rel') ) + 1;
 			}
 
+			// Get adjacent trigger[type=connector] to filter special trigger types
+			connectors = group.find('select.trigger-type option:selected[value=connector]');
+			connectors = connectors.map(function(){
+				return $(this).parents('.trigger').first().find(':input.trigger-value').val();
+			}).toArray();
+			if ( connectors.length ) {
+				for ( i in stream_notifications.special_types ) {
+					type = stream_notifications.special_types[i];
+					if ( -1 !== connectors.indexOf( type.connector ) ) {
+						types[i] = type;
+					}
+				}
+			}
+
 			group.append( tmpl( $.extend(
 				{ index: index, group: group_index },
-				stream_notifications
+				stream_notifications,
+				{ types: $.extend( {}, stream_notifications.types, types ) }
 			) ) );
 			group.find('.trigger').first().addClass('first');
 			selectify( group.find('select') );
@@ -180,7 +199,7 @@ jQuery(function($){
 
 		display_error = function (key) {
 			if ( $('.error').filter(function () {return $(this).attr('data-key') === key;}).length === 0 ) {
-				$('body,html').scrollTop(0)
+				$('body,html').scrollTop(0);
 				$('.wrap > h2')
 					.after(
 						$('<div></div>')
@@ -210,7 +229,6 @@ jQuery(function($){
 		.on( 'click.sn', btns.add_group, function(e, groupIndex) {
 			e.preventDefault();
 			var $this = $(this),
-				lastItem = null,
 				parentGroupIndex = $this.data('group'),
 				group = divTriggers.find('.group[rel=' + $this.data('group') + ']' );
 
@@ -225,12 +243,12 @@ jQuery(function($){
 		// Delete a trigger
 		.on( 'click.sn', '.delete-trigger', function(e) {
 			e.preventDefault();
-			var $group = $(this).closest('.group');
+			var $this  = $(this);
 
-			$group.find('.trigger').first().remove();
+			$this.closest('.trigger').remove();
 
 			// add `first` class in case the first trigger was removed
-			$group.find('.trigger').first().addClass('first');
+			$this.closest('.group').find('.trigger').first().addClass('first');
 		})
 
 		// Delete a group
@@ -244,8 +262,15 @@ jQuery(function($){
 		// Reveal rule options after choosing rule type
 		.on( 'change.sn', '.trigger-type', function() {
 			var $this   = $(this),
-				options = types[ $this.val() ],
+				options = null,
 				index   = $this.parents('.trigger').first().attr('rel');
+
+			if ( ( typeof types[ $this.val() ] !== 'undefined' ) ) {
+				options = types[ $this.val() ];
+			} else {
+				options = stream_notifications.special_types[ $this.val() ];
+			}
+
 			$this.next('.trigger-options').remove();
 
 			if ( ! options ) { return; }
@@ -261,8 +286,7 @@ jQuery(function($){
 		// Add new alert
 		.on( 'click.sn', btns.add_alert, function(e) {
 			e.preventDefault();
-			var $this = $(this),
-				index = divAlerts.find('.alert').size();
+			var index = divAlerts.find('.alert').size();
 
 			divAlerts.append( tmpl_alert( $.extend(
 				{ index: index },
@@ -340,8 +364,7 @@ jQuery(function($){
 		// Alerts
 		jQuery.each( notification_rule.alerts, function(i, alert) {
 			var row,
-				optionFields,
-				valueField;
+				optionFields;
 
 			// create the new row, by clicking the add-alert button
 			divAlerts.find( btns.add_alert ).trigger( 'click' );
@@ -351,14 +374,14 @@ jQuery(function($){
 			row.find('select.alert-type').select2( 'val', alert.type ).trigger('change');
 			optionFields = row.find('.alert-options');
 			optionFields.find(':input[name]').each(function(i, el){
-				var $this = $(this),
+				var $this = $(el),
 					name,
 					val;
-				name = $this.attr('name').match('\\[([a-z_\-]+)\\]$')[1];
-				if ( typeof alert[name] != 'undefined' ) {
+				name = $this.attr('name').match(/\[([a-z_\-]+)\]$/)[1];
+				if ( typeof alert[name] !== 'undefined' ) {
 					val = alert[name];
 					if ( $this.hasClass( 'select2-offscreen' ) ) {
-						$this.trigger( 'select2_populate', val )
+						$this.trigger( 'select2_populate', val );
 						// $this.select2( 'val', val ).trigger( 'change' );
 					} else {
 						$this.val( val ).trigger('change');
@@ -368,7 +391,7 @@ jQuery(function($){
 		});
 	}
 
-	$('#rule-form').submit(function(e){
+	$('#rule-form').submit(function(){
 		// Do not submit if no triggers exist
 		if ( divTriggers.find('.trigger').size() < 1 ) {
 			display_error('empty_triggers');
@@ -418,7 +441,7 @@ jQuery(function($){
 			} else {
 				alert( stream_notifications.i18n.ajax_error );
 			}
-		} )
+		} );
 	});
 
 	// Add empty trigger if no triggers are visible
