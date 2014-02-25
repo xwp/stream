@@ -165,33 +165,38 @@ class WP_Stream_Reports {
 			'stream-reports-d3',
 			WP_STREAM_REPORTS_URL . 'ui/js/d3/d3.min.js',
 			array(),
-			'3.4.1'
+			'3.4.2',
+			true
 		);
+
 		wp_register_script(
-			'stream-reports-raphael',
-			WP_STREAM_REPORTS_URL . 'ui/js/raphael/raphael.min.js',
-			array(),
-			'2.1.2'
-		);
-		wp_register_script(
-			'stream-reports-graphael',
-			WP_STREAM_REPORTS_URL . 'ui/js/raphael/g.raphael.min.js',
-			array( 'stream-reports-raphael' ),
-			'0.5.1'
+			'stream-reports-nvd3',
+			WP_STREAM_REPORTS_URL . 'ui/js/nvd3/nv.d3.min.js',
+			array( 'stream-reports-d3' ),
+			'1.1.15b',
+			true
 		);
 		wp_register_script(
 			'stream-reports-admin',
 			WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js',
-			array( 'stream-reports-graphael', 'jquery', 'underscore' ),
+			array( 'stream-reports-nvd3', 'jquery', 'underscore' ),
 			self::VERSION,
 			true
 		);
 
 		// CSS registration
 		wp_register_style(
+			'stream-reports-nvd3',
+			WP_STREAM_REPORTS_URL . 'ui/css/nvd3/nv.d3.min.css',
+			array(),
+			self::VERSION,
+			'screen'
+		);
+
+		wp_register_style(
 			'stream-reports-admin',
 			WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css',
-			array(),
+			array( 'stream-reports-nvd3' ),
 			self::VERSION,
 			'screen'
 		);
@@ -206,7 +211,6 @@ class WP_Stream_Reports {
 		wp_enqueue_script(
 			array(
 				'stream-reports-admin',
-				'stream-reports-d3',
 				'select2',
 				'common',
 				'dashboard',
