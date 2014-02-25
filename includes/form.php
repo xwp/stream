@@ -442,13 +442,13 @@ class WP_Stream_Notifications_Form
 					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
-								<dt><code>%%summary%%</code></dt>
+								<dt><code>{summary}</code></dt>
 								<dd><?php _e( 'Summary message of the triggered record', 'stream-notifications' ) ?></dd>
-								<dt><code>%%object_id%%</code></dt>
+								<dt><code>{object_id}</code></dt>
 								<dd><?php _e( 'Object ID of triggered record', 'stream-notifications' ) ?></dd>
-								<dt><code>%%created%%</code></dt>
+								<dt><code>{created}</code></dt>
 								<dd><?php _e( 'Timestamp of triggered record', 'stream-notifications' ) ?></dd>
-								<dt><code>%%ip%%</code></dt>
+								<dt><code>{ip}</code></dt>
 								<dd><?php _e( 'IP of the person who authored the triggered record', 'stream-notifications' ) ?></dd>
 							</dl>
 						</div>
@@ -459,7 +459,7 @@ class WP_Stream_Notifications_Form
 					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
-								<dt><code>%%object.post_title%%</code></dt>
+								<dt><code>{object.post_title}</code></dt>
 								<dd><?php _e( 'Post title of the record post', 'stream-notifications' ) ?></dd>
 							</dl>
 						</div>
@@ -470,11 +470,11 @@ class WP_Stream_Notifications_Form
 					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
-								<dt><code>%%author.user_login%%</code></dt>
+								<dt><code>{author.user_login}</code></dt>
 								<dd><?php _e( 'Username of the record author', 'stream-notifications' ) ?></dd>
-								<dt><code>%%author.user_email%%</code></dt>
+								<dt><code>{author.user_email}</code></dt>
 								<dd><?php _e( 'Email of the record author', 'stream-notifications' ) ?></dd>
-								<dt><code>%%author.display_name%%</code></dt>
+								<dt><code>{author.display_name}</code></dt>
 								<dd><?php _e( 'Display name of the record author', 'stream-notifications' ) ?></dd>
 							</dl>
 						</div>
