@@ -230,7 +230,9 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		unset( $old['array_version'] );
 		$new = $_POST['sidebars'];
 		foreach ( $new as $sidebar_id => $widget_ids ) {
-			if ( $sidebar_id == 'wp_inactive_widgets' ) continue;
+			if ( $sidebar_id == 'wp_inactive_widgets' ) {
+				continue;
+			}
 
 			$widget_ids = preg_replace( '#(widget-\d+_)#', '', $widget_ids );
 			$new[$sidebar_id] = array_filter( explode( ',', $widget_ids ) );
