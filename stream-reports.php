@@ -38,7 +38,7 @@ class WP_Stream_Reports {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '1.0.7';
+	const STREAM_MIN_VERSION = '1.2.1';
 
 	/**
 	 * Holds this plugin version
@@ -49,7 +49,7 @@ class WP_Stream_Reports {
 	const VERSION = '0.1.0';
 
 	/**
-	 * Hold Stream instance
+	 * Hold Stream Reports instance
 	 *
 	 * @var string
 	 */
@@ -83,6 +83,11 @@ class WP_Stream_Reports {
 	const VIEW_CAP = 'view_stream_reports';
 
 	/**
+	 * Hold the nonce name
+	 */
+	public static $nonce;
+
+	/**
 	 * Class constructor
 	 */
 	private function __construct() {
@@ -113,7 +118,11 @@ class WP_Stream_Reports {
 
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
-		WP_Stream_Reports_Settings::load();
+		add_action( 'init', array( 'WP_Stream_Reports_Settings', 'load' ), 9 );
+
+		// Load sections here
+		require_once WP_STREAM_REPORTS_INC_DIR . 'sections.php';
+		add_action( 'init', array( 'WP_Stream_Reports_Sections', 'get_instance' ), 12 );
 
 		// Load the Interval/Date class, to allow input and parsing of the Reports interval
 		require_once WP_STREAM_REPORTS_CLASS_DIR . 'date-interval.php';
@@ -125,7 +134,7 @@ class WP_Stream_Reports {
 		add_filter( 'stream-report-predefined-intervals', array( $this, '_filter_predefined_intervals' ), 20 );
 
 		// Register and enqueue the administration scripts
-		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
 	}
 
 	/**
@@ -136,7 +145,7 @@ class WP_Stream_Reports {
 	 */
 	public function register_menu() {
 		self::$screen_id = add_submenu_page(
-			'wp_stream',
+			WP_Stream_Admin::RECORDS_PAGE_SLUG,
 			__( 'Reports', 'stream-reports' ),
 			__( 'Reports', 'stream-reports' ),
 			self::VIEW_CAP,
@@ -144,8 +153,8 @@ class WP_Stream_Reports {
 			array( $this, 'page' )
 		);
 
-		// add_action( 'load-' . self::$screen_id, array( $this, 'page_form_save' ) );
-		// add_action( 'load-' . self::$screen_id, array( $this->form, 'load' ) );
+		$sections = WP_Stream_Reports_Sections::get_instance();
+		add_action( 'load-' . self::$screen_id, array( $sections, 'load_page' ) );
 	}
 
 	/**
@@ -166,9 +175,11 @@ class WP_Stream_Reports {
 				)
 			)
 		);
+
 		if ( $first_stream_item === false ){
 			return false;
 		}
+
 		$first_stream_date = \Carbon\Carbon::parse( $first_stream_item->created );
 
 		foreach ( $intervals as $key => $interval ){
@@ -183,60 +194,6 @@ class WP_Stream_Reports {
 				unset( $intervals[$key] );
 				continue;
 			}
-		}
-
-		foreach ( $intervals as $key => $interval ){
-			if ( isset( $interval['depends'] ) && isset( $intervals[$interval['depends']] ) ){
-				$from = $interval['start'];
-			} else {
-				$from = $interval['start'];
-			}
-
-			if ( isset( $interval['depends'] ) && isset( $intervals[$interval['depends']] ) ){
-				$to = $intervals[$interval['depends']]['start'];
-			} else {
-				$to = $interval['end'];
-			}
-
-			$interval_stream_item = reset(
-				stream_query(
-					array(
-						'order' => 'ASC',
-						'orderby' => 'created',
-						'records_per_page' => 1,
-						'ignore_context' => true,
-						'date_from' => (string) $interval['start'],
-						'date_to' => (string) $interval['end'],
-					)
-				)
-			);
-			if ( $interval_stream_item === false ) {
-				unset( $intervals[$key] );
-				continue;
-			}
-
-			/*
-			if ( ! isset( $interval['depends'] ) || ! isset( $intervals[$interval['depends']] ) ){
-				continue;
-			}
-
-			$interval_stream_check = reset(
-				stream_query(
-					array(
-						'order' => 'ASC',
-						'orderby' => 'created',
-						'records_per_page' => 1,
-						'ignore_context' => true,
-						'date_from' => (string) $from,
-						'date_to' => (string) $to,
-					)
-				)
-			);
-			if ( $interval_stream_check === false ) {
-				unset( $intervals[$key] );
-				continue;
-			}
-			*/
 		}
 
 		return $intervals;
@@ -255,11 +212,28 @@ class WP_Stream_Reports {
 	 */
 	public function register_ui_assets( $pagename ) {
 		// JavaScript registration
-		wp_register_script( 'stream-reports-d3', WP_STREAM_REPORTS_URL . 'ui/js/d3/d3.min.js', array(), '3.4.1', true );
-		wp_register_script( 'stream-reports-admin', WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js', array( 'stream-reports-d3' ), self::VERSION, true );
+		wp_register_script(
+			'stream-reports-d3',
+			WP_STREAM_REPORTS_URL . 'ui/js/d3/d3.min.js',
+			array(),
+			'3.4.1'
+		);
+		wp_register_script(
+			'stream-reports-admin',
+			WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js',
+			array( 'jquery', 'underscore' ),
+			self::VERSION,
+			true
+		);
 
 		// CSS registration
-		wp_register_style( 'stream-reports-admin', WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css', array(), self::VERSION, 'screen' );
+		wp_register_style(
+			'stream-reports-admin',
+			WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css',
+			array(),
+			self::VERSION,
+			'screen'
+		);
 
 		// If we are not on the right page we return early
 		if ( $pagename !== self::$screen_id ) {
@@ -267,11 +241,24 @@ class WP_Stream_Reports {
 		}
 
 		// JavaScript enqueue
-		wp_enqueue_script( 'stream-reports-admin' );
-		wp_enqueue_script( 'stream-reports-d3' );
+		wp_enqueue_script(
+			array(
+				'stream-reports-admin',
+				'stream-reports-d3',
+				'select2',
+				'common',
+				'dashboard',
+				'postbox',
+			)
+		);
 
 		// CSS enqueue
-		wp_enqueue_style( 'stream-reports-admin' );
+		wp_enqueue_style(
+			array(
+				'stream-reports-admin',
+				'select2',
+			)
+		);
 	}
 
 	/**
@@ -281,6 +268,21 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function page() {
+		// Create the nonce we will be using on the page
+		self::$nonce = array( 'stream_reports_nonce' => wp_create_nonce( 'stream-reports-page' ) );
+
+		// Page class
+		$class   = 'metabox-holder columns-' . get_current_screen()->get_columns();
+		$add_url = add_query_arg(
+			array_merge(
+				array(
+					'action' => 'stream_reports_add_metabox',
+				),
+				self::$nonce
+			),
+			admin_url( 'admin-ajax.php' )
+		);
+
 		$view = (object) array(
 			'slug' => 'all',
 			'path' => null,
@@ -288,16 +290,16 @@ class WP_Stream_Reports {
 
 		// Avoid throwing Notices by testing the variable
 		if ( isset( $_GET['view'] ) && ! empty( $_GET['view'] ) ){
-			$view->slug = $_GET['view'];
+			$view->slug = sanitize_file_name( wp_unslash( $_GET['view'] ) );
 		}
 
 		// First we check if the file exists in our plugin folder, otherwhise give the user an error
-		if ( ! file_exists( WP_STREAM_REPORTS_VIEW_DIR . sanitize_file_name( $view->slug ) . '.php' ) ){
+		if ( ! file_exists( WP_STREAM_REPORTS_VIEW_DIR . $view->slug . '.php' ) ){
 			$view->slug = 'error';
 		}
 
 		// Define the path for the view we
-		$view->path = WP_STREAM_REPORTS_VIEW_DIR . sanitize_file_name( $view->slug ) . '.php';
+		$view->path = WP_STREAM_REPORTS_VIEW_DIR . $view->slug . '.php';
 
 		// Execute some actions before including the view, to allow others to hook in here
 		// Use these to do stuff related to the view you are working with

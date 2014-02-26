@@ -102,6 +102,11 @@ class WP_Stream_Reports_Settings {
 	}
 
 	private static function _role_can_access( $role ) {
+		// Default role if one is not set by default
+		if ( ! isset( WP_Stream_Settings::$options['reports_role_access'] ) ) {
+			WP_Stream_Settings::$options['reports_role_access'] = array( 'administrator' );
+		}
+
 		if ( in_array( $role, WP_Stream_Settings::$options['reports_role_access'] ) ) {
 			return true;
 		}
