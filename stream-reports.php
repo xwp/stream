@@ -116,7 +116,7 @@ class WP_Stream_Reports {
 		WP_Stream_Reports_Settings::load();
 
 		// Load the Interval/Date class, to allow input and parsing of the Reports interval
-		require_once WP_STREAM_REPORTS_CLASS_DIR . 'date_interval.php';
+		require_once WP_STREAM_REPORTS_CLASS_DIR . 'date-interval.php';
 
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );

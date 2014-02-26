@@ -13,8 +13,6 @@ class WP_Stream_Report_Date_Interval {
 		$this->args = (object) wp_parse_args( $this->args, $args );
 
 		$go = $this->get_predefined_intervals();
-
-
 	}
 
 	public function get_predefined_intervals(){
