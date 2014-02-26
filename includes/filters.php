@@ -25,7 +25,7 @@ class WP_Stream_Filter_Input {
 		FILTER_UNSAFE_RAW                  => null,
 	);
 
-	public static function super( $type, $variable_name, $filter = null, array $options = array() ) {
+	public static function super( $type, $variable_name, $filter = null, $options = array() ) {
 		$super = null;
 
 		switch ( $type ) {
@@ -60,7 +60,7 @@ class WP_Stream_Filter_Input {
 		return $var;
 	}
 
-	public static function filter( $var, $filter = null, array $options = array() ) {
+	public static function filter( $var, $filter = null, $options = array() ) {
 		if ( $filter && $filter != FILTER_DEFAULT ) {
 			$filter_callback = self::$filter_callbacks[ $filter ];
 			$result = call_user_func( $filter_callback, $var );
@@ -81,8 +81,15 @@ class WP_Stream_Filter_Input {
 			$var = null;
 		}
 
+		// Detect FILTER_REQUIRE_ARRAY flag
+		if ( is_int( $options ) && $options === FILTER_REQUIRE_ARRAY ) {
+			if ( ! is_array( $var ) ) {
+				$var = null;
+			}
+		}
+
 		// Polyfill the `default` attribute only, for now.
-		if ( ! empty( $options['options']['default'] ) && is_null( $var ) ) {
+		if ( is_array( $options ) && ! empty( $options['options']['default'] ) && is_null( $var ) ) {
 			return $options['options']['default'];
 		}
 
@@ -100,10 +107,10 @@ class WP_Stream_Filter_Input {
 
 }
 
-function wp_stream_filter_input( $type, $variable_name, $filter = null, array $options = array() ) {
+function wp_stream_filter_input( $type, $variable_name, $filter = null, $options = array() ) {
 	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'super' ), func_get_args() );
 }
 
-function wp_stream_filter_var( $var, $filter = null, array $options = array() ) {
+function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
 	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'filter' ), func_get_args() );
 }
