@@ -53,10 +53,10 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		$labels = array();
 
 		foreach ( $wp_registered_sidebars as $sidebar ) {
-			$labels[$sidebar['id']] = $sidebar['name'];
+			$labels[ $sidebar['id'] ] = $sidebar['name'];
 		}
 
-		$labels['wp_inactive_widgets'] = __( 'Inactive Widgets' );
+		$labels['wp_inactive_widgets'] = esc_html__( 'Inactive Widgets' );
 
 		return $labels;
 	}
@@ -100,8 +100,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		$sidebar   = null;
 
 		if ( $deactivated = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] ) ) {
-			$action = 'deactivated';
-			// Changing the summary message string. "From" would not make any sense if a widget is deactivated.
+			$action  = 'deactivated';
 			$message = _x(
 				'"%1$s" has been deactivated',
 				'1: Widget title',
@@ -131,17 +130,17 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		if ( ! $widget_id ) {
 			foreach ( $new as $sidebar_id => $new_widgets ){
 				if (
-					( ! isset( $old[$sidebar_id] ) )
+					( ! isset( $old[ $sidebar_id ] ) )
 					||
-					( ! isset( $new[$sidebar_id] ) )
+					( ! isset( $new[ $sidebar_id ] ) )
 					||
-					( ! is_array( $old[$sidebar_id] ) )
+					( ! is_array( $old[ $sidebar_id ] ) )
 					||
 					( ! is_array( $new_widgets ) )
 					) {
 					return; // Switching themes ?
 				}
-				$old_widgets = $old[$sidebar_id];
+				$old_widgets = $old[ $sidebar_id ];
 
 				// Added ?
 				if ( $changed = array_diff( $new_widgets, $old_widgets ) ) {
@@ -196,6 +195,10 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * Tracks widget instance updates
 	 *
 	 * @filter widget_update_callback
+	 * @param $instance
+	 * @param $new_instance
+	 * @param $old_instance
+	 * @param $widget
 	 * @return array
 	 */
 	public static function callback_widget_update_callback( $instance, $new_instance, $old_instance, $widget ) {
@@ -247,7 +250,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$widget_ids = preg_replace( '#(widget-\d+_)#', '', $widget_ids );
 			$new[$sidebar_id] = array_filter( explode( ',', $widget_ids ) );
 
-			if ( $new[$sidebar_id] === $old[$sidebar_id] ) {
+			if ( $new[ $sidebar_id ] === $old[ $sidebar_id ] ) {
 				continue;
 			}
 
@@ -256,7 +259,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		if ( isset( $changed ) ) {
 			$sidebar      = $changed;
-			$sidebar_name = $wp_registered_sidebars[$sidebar_id]['name'];
+			$sidebar_name = $wp_registered_sidebars[ $sidebar_id ]['name'];
 			// Saving this in a global var, so it can be accessed and
 			//  executed by self::callback_update_option_sidebars_widgets
 			//  in case this is ONLY a reorder process
@@ -288,7 +291,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		$labels  = self::get_context_labels();
 		$id_base = preg_match( '#(.*)-(\d+)$#', $id, $matches ) ? $matches[1] : null;
 		$number  = $matches[2];
-		$name    = $wp_widget_factory->widgets[ $ids[$id_base] ]->name;
+		$name    = $wp_widget_factory->widgets[ $ids[ $id_base ] ]->name;
 
 		$settings = self::get_widget_settings( $id );
 		$title    = ! empty( $settings['title'] ) ? $settings['title'] : $name;
@@ -301,7 +304,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		foreach ( $sidebars as $_sidebar_id => $_sidebar ) {
 			if ( is_array( $_sidebar ) && in_array( $id, $_sidebar ) ) {
 				$sidebar      = $_sidebar_id;
-				$sidebar_name = $labels[ $sidebar ];
+				$sidebar_name = isset( $labels[ $sidebar ] ) ? $labels[ $sidebar ] : esc_html__( 'Widgets', 'stream' );
 				break;
 			}
 		}
@@ -326,8 +329,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			array_keys( $wp_widget_factory->widgets )
 		);
 
-		$instance = $wp_widget_factory->widgets[ $ids[$id_base] ]->get_settings();
-		return isset( $instance[$number] ) ? $instance[$number] : array();
+		$instance = $wp_widget_factory->widgets[ $ids[ $id_base ] ]->get_settings();
+		return isset( $instance[ $number ] ) ? $instance[ $number ] : array();
 	}
 
 	/**
