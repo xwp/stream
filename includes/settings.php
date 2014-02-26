@@ -106,8 +106,9 @@ class WP_Stream_Settings {
 
 		remove_filter( 'user_search_columns', array( __CLASS__, 'add_display_name_search_columns' ), 10 );
 		
-		if ( $users->get_total() === 0 )
+		if ( $users->get_total() === 0 ) {
 			wp_send_json_error( $response );
+		}
 
 		$response->status  = true;
 		$response->message = '';
@@ -208,7 +209,7 @@ class WP_Stream_Settings {
 						array(
 							'name'        => 'authors_and_roles',
 							'title'       => __( 'Authors & Roles', 'stream' ),
-							'type'        => 'chosen_user_role',
+							'type'        => 'select2_user_role',
 							'desc'        => __( 'No activity will be logged for these authors and roles.', 'stream' ),
 							'choices'     => self::get_roles(),
 							'default'     => array(),
@@ -216,7 +217,7 @@ class WP_Stream_Settings {
 						array(
 							'name'        => 'connectors',
 							'title'       => __( 'Connectors', 'stream' ),
-							'type'        => 'chosen',
+							'type'        => 'select2',
 							'desc'        => __( 'No activity will be logged for these connectors.', 'stream' ),
 							'choices'     => array( __CLASS__, 'get_terms_labels' ),
 							'param'       => 'connector',
@@ -225,7 +226,7 @@ class WP_Stream_Settings {
 						array(
 							'name'        => 'contexts',
 							'title'       => __( 'Contexts', 'stream' ),
-							'type'        => 'chosen',
+							'type'        => 'select2',
 							'desc'        => __( 'No activity will be logged for these contexts.', 'stream' ),
 							'choices'     => array( __CLASS__, 'get_terms_labels' ),
 							'param'       => 'context',
@@ -234,7 +235,7 @@ class WP_Stream_Settings {
 						array(
 							'name'        => 'actions',
 							'title'       => __( 'Actions', 'stream' ),
-							'type'        => 'chosen',
+							'type'        => 'select2',
 							'desc'        => __( 'No activity will be logged for these actions.', 'stream' ),
 							'choices'     => array( __CLASS__, 'get_terms_labels' ),
 							'param'       => 'action',
@@ -243,7 +244,7 @@ class WP_Stream_Settings {
 						array(
 							'name'        => 'ip_addresses',
 							'title'       => __( 'IP Addresses', 'stream' ),
-							'type'        => 'chosen',
+							'type'        => 'select2',
 							'desc'        => __( 'No activity will be logged for these IP addresses.', 'stream' ),
 							'class'       => 'ip-addresses',
 							'default'     => array(),
@@ -454,32 +455,32 @@ class WP_Stream_Settings {
 					esc_attr( $title )
 				);
 				break;
-			case 'chosen' :
-				if ( ! isset ( $current_value ) ){
+			case 'select2' :
+				if ( ! isset ( $current_value ) ) {
 					$current_value = array();
 				}
-				if ( ( $key = array_search( '__placeholder__', $current_value ) ) !== false ){
+				if ( ( $key = array_search( '__placeholder__', $current_value ) ) !== false ) {
 					unset( $current_value[ $key ] );
 				}
 
 				$data_values     = array();
 				$selected_values = array();
-				if ( isset( $field[ 'choices' ] ) ){
+				if ( isset( $field[ 'choices' ] ) ) {
 					$choices = $field[ 'choices' ];
-					if ( is_callable( $choices ) ){
+					if ( is_callable( $choices ) ) {
 						$param   = ( isset( $field[ 'param' ] ) ) ? $field[ 'param' ] : null;
 						$choices = call_user_func( $choices, $param );
 					}
 					foreach ( $choices as $key => $value ) {
 						$data_values[ ] = array( 'id' => $key, 'text' => $value, );
-						if ( in_array( $key, $current_value ) ){
+						if ( in_array( $key, $current_value ) ) {
 							$selected_values[ ] = array( 'id' => $key, 'text' => $value, );
 						}
 					}
 					$class .= ' with-source';
 				} else {
 					foreach ( $current_value as $value ) {
-						if ( $value == '__placeholder__' ){
+						if ( $value == '__placeholder__' ) {
 							continue;
 						}
 						$selected_values[ ] = array( 'id' => $value, 'text' => $value, );
@@ -493,7 +494,7 @@ class WP_Stream_Settings {
 					esc_attr( $name )
 				);
 				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="chosen-select %4$s" data-select-placeholder="%5$s-%6$s-select-placeholder"  />',
+					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %4$s" data-select-placeholder="%5$s-%6$s-select-placeholder"  />',
 					esc_attr( json_encode( $data_values ) ),
 					esc_attr( json_encode( $selected_values ) ),
 					esc_attr( implode( ',', $current_value ) ),
@@ -510,13 +511,13 @@ class WP_Stream_Settings {
 				);
 				$output .= '</div>';
 				break;
-			case 'chosen_user_role':
-				$current_value = (array) $current_value;
+			case 'select2_user_role':
+				$current_value = (array)$current_value;
 				$data_values   = array();
 
-				if ( isset( $field[ 'choices' ] ) ){
+				if ( isset( $field[ 'choices' ] ) ) {
 					$choices = $field[ 'choices' ];
-					if ( is_callable( $choices ) ){
+					if ( is_callable( $choices ) ) {
 						$param   = ( isset( $field[ 'param' ] ) ) ? $field[ 'param' ] : null;
 						$choices = call_user_func( $choices, $param );
 					}
@@ -524,29 +525,26 @@ class WP_Stream_Settings {
 					$choices = array();
 				}
 
-				foreach ( $choices as $key => $role ){
-					$data_values[] = array(
-						'id'     => $key,
-						'text'   => $role,
-					);
+				foreach ( $choices as $key => $role ) {
+					$data_values[ ] = array( 'id' => $key, 'text' => $role, );
 				}
 
 				$selected_values = array();
 				foreach ( $current_value as $value ) {
-					if ( ! is_string( $value ) && ! is_numeric( $value ) ){
+					if ( ! is_string( $value ) && ! is_numeric( $value ) ) {
 						continue;
 					}
 
-					if ( $value == '__placeholder__' ){
+					if ( $value == '__placeholder__' ) {
 						continue;
 					}
 
-					if ( is_numeric( $value ) ){
+					if ( is_numeric( $value ) ) {
 						$user               = new WP_User( $value );
 						$selected_values[ ] = array( 'id' => $user->ID, 'text' => $user->display_name, );
 					} else {
 						foreach ( $data_values as $role ) {
-							if ( $role[ 'id' ] != $value ){
+							if ( $role[ 'id' ] != $value ) {
 								continue;
 							}
 							$selected_values[ ] = $role;
@@ -561,7 +559,7 @@ class WP_Stream_Settings {
 					esc_attr( $name )
 				);
 				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="chosen-select %5$s" data-select-placeholder="%4$s-%5$s-select-placeholder" data-nonce="%6$s" />',
+					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %5$s" data-select-placeholder="%4$s-%5$s-select-placeholder" data-nonce="%6$s" />',
 					json_encode( $data_values ),
 					json_encode( $selected_values ),
 					esc_attr( implode( ',', $current_value ) ),
@@ -624,7 +622,7 @@ class WP_Stream_Settings {
 	 * @return array
 	 */
 	public static function get_connectors() {
-		return WP_Stream_Connectors::$term_labels['stream_connector'];
+		return WP_Stream_Connectors::$term_labels[ 'stream_connector' ];
 	}
 
 	/**
@@ -633,7 +631,7 @@ class WP_Stream_Settings {
 	 * @return array
 	 */
 	public static function get_default_connectors() {
-		return array_keys( WP_Stream_Connectors::$term_labels['stream_connector'] );
+		return array_keys( WP_Stream_Connectors::$term_labels[ 'stream_connector' ] );
 	}
 
 	/**
@@ -642,12 +640,13 @@ class WP_Stream_Settings {
 	 * @param $column string  Name of the column
 	 * @return array
 	 */
-	public static function get_terms_labels( $column ){
+	public static function get_terms_labels( $column ) {
 		$return_labels = array();
 		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
 			$return_labels = WP_Stream_Connectors::$term_labels[ 'stream_' . $column ];
 			ksort( $return_labels );
 		}
+
 		return $return_labels;
 	}
 	/**
@@ -656,51 +655,11 @@ class WP_Stream_Settings {
 	 * @return array
 	 */
 	public static function get_active_connectors() {
-		$excluded_connectors = self::get_excluded_connectors();
+		$excluded_connectors = self::get_excluded_by_key( 'connectors' );
 		$active_connectors   = array_diff( array_keys( self::get_terms_labels( 'connector' ) ), $excluded_connectors );
-		$active_connectors   = wp_list_filter(
-			$active_connectors,
-			array( '__placeholder__' ),
-			'NOT'
-		);
+		$active_connectors   = wp_list_filter( $active_connectors, array( '__placeholder__' ), 'NOT' );
 
 		return $active_connectors;
-	}
-
-	/**
-	 * Get an array of excluded connectors
-	 * @uses   WP_Stream_Settings::get_excluded_by_key
-	 * @return array
-	 */
-	public static function get_excluded_connectors(){
-		return self::get_excluded_by_key( 'connectors' );
-	}
-
-	/**
-	 * Get an array of excluded contexts
-	 * @uses   WP_Stream_Settings::get_excluded_by_key
-	 * @return array
-	 */
-	public static function get_excluded_contexts(){
-		return self::get_excluded_by_key( 'contexts' );
-	}
-
-	/**
-	 * Get an array of excluded actions
-	 * @uses   WP_Stream_Settings::get_excluded_by_key
-	 * @return array
-	 */
-	public static function get_excluded_actions(){
-		return self::get_excluded_by_key( 'actions' );
-	}
-
-	/**
-	 * Get an array of excluded IP addresses
-	 * @uses   WP_Stream_Settings::get_excluded_by_key
-	 * @return array
-	 */
-	public static function get_excluded_ip_addresses(){
-		return self::get_excluded_by_key( 'ip_addresses' );
 	}
 
 	/**
@@ -708,17 +667,13 @@ class WP_Stream_Settings {
 	 *
 	 * @return array
 	 */
-	public static function get_excluded_by_key( $column ){
+	public static function get_excluded_by_key( $column ) {
 		$option_name     = 'exclude_' . $column;
-		$excluded_values = (isset(self::$options[$option_name]))?self::$options[$option_name] :array();
+		$excluded_values = ( isset( self::$options[ $option_name ] ) ) ? self::$options[ $option_name ] : array();
 		if ( is_callable( $excluded_values ) ) {
 			$excluded_values = call_user_func( $excluded_values );
 		}
-		$excluded_values = wp_list_filter(
-			$excluded_values,
-			array( '__placeholder__' ),
-			'NOT'
-		);
+		$excluded_values = wp_list_filter( $excluded_values, array( '__placeholder__' ), 'NOT' );
 
 		return $excluded_values;
 	}
@@ -762,37 +717,5 @@ class WP_Stream_Settings {
 			 */
 			do_action( 'wp_stream_auto_purge' );
 		}
-	}
-
-	/**
-	 * Function will migrate old options
-	 * @param $labels array connectors terms labels
-	 * @used wp_stream_after_connector_term_labels_loaded
-	 */
-	public static function migrate_old_options( $labels ){
-
-		$old_options = get_option( self::KEY, array() );
-
-		if ( isset ( $old_options [ 'general_log_activity_for' ] ) ){
-			//Migrate as per new excluded setting
-			self::$options [ 'exclude_authors_and_roles' ] = array_diff(
-				array_keys(
-					self::get_roles()
-				),
-				$old_options [ 'general_log_activity_for' ]
-			);
-
-			unset( self::$options[ 'general_log_activity_for' ] );
-		}
-		if ( isset ( $old_options [ 'connectors_active_connectors' ] ) ){
-			self::$options [ 'exclude_connectors' ] = array_diff(
-				array_keys(
-					$labels
-				), $old_options [ 'connectors_active_connectors' ]
-			);
-			unset( self::$options[ 'connectors_active_connectors' ] );
-
-		}
-		update_option( self::KEY, self::$options );
 	}
 }

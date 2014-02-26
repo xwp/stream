@@ -27,14 +27,6 @@ abstract class WP_Stream_Connector {
 	public static function register() {
 		$class = get_called_class();
 
-		// Check if logging action is enable for user or provide a hook for plugin to override on specific cases
-		if ( ! self::is_logging_enabled_for_user() ) {
-			return;
-		}
-		if ( ! self::is_logging_enabled_for_ip() ) {
-			return;
-		}
-
 		foreach ( $class::$actions as $action ) {
 			add_action( $action, array( $class, 'callback' ), null, 5 );
 		}
@@ -81,110 +73,6 @@ abstract class WP_Stream_Connector {
 		return $links;
 	}
 
-
-	/**
-	 * Check if we need to record action for specific users
-	 *
-	 * @param null $user
-	 *
-	 * @return mixed|void
-	 */
-	public static function is_logging_enabled_for_user( $user = null ) {
-		if ( is_null( $user ) ){
-			$user = wp_get_current_user();
-		}
-
-		// If the user is not a valid user then we log action
-		if ( ! ( $user instanceof WP_User ) || $user->ID === 0 ) {
-			$bool = true;
-		} else {
-			// If a user is part of a role that we don't want to log, we disable it
-			$user_roles   = array_values( $user->roles );
-			$roles_logged = WP_Stream_Settings::$options['exclude_authors_and_roles'];
-			$bool         = ( count( array_intersect( $user_roles, $roles_logged ) ) === 0 );
-			//Check user id in exclude array
-			if ( $bool ){
-				$bool = ! ( in_array( $user->ID , $roles_logged ) );
-			}
-		}
-
-		/**
-		 * Filter sets boolean result value for this method
-		 *
-		 * @param  bool
-		 * @param  obj    $user  Current user object
-		 * @param  string        Current class name
-		 * @return bool
-		 */
-		return apply_filters( 'wp_stream_record_log', $bool, $user, get_called_class() );
-	}
-
-	/**
-	 * Check if we need to record action for IP
-	 *
-	 * @param null $ip
-	 *
-	 * @return mixed|void
-	 */
-	public static function is_logging_enabled_for_ip( $ip = null ) {
-		if ( is_null( $ip ) ){
-			$ip = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
-		} else {
-			$ip = filter_var( $ip, FILTER_VALIDATE_IP );
-		}
-
-		// If ip is not valid the we will log the action
-		if ( $ip === false ) {
-			$bool = true;
-		} else {
-			$bool = self::is_logging_enabled( 'ip_addresses', $ip );
-		}
-
-		/**
-		 * Filter sets boolean result value for this method
-		 *
-		 * @param  bool
-		 * @param  obj    $user  Current user object
-		 * @param  string        Current class name
-		 * @return bool
-		 */
-
-		$user = wp_get_current_user();
-		return apply_filters( 'wp_stream_record_log', $bool, $user, get_called_class() );
-	}
-
-	/**
-	 * @param $action string action slug to check whether logging is enable or not for that action
-	 *
-	 * @return bool
-	 */
-	public static function is_logging_enabled_for_action( $action ) {
-		return self::is_logging_enabled( 'actions', $action );
-	}
-
-	/**
-	 * @param $context string context slug to check whether logging is enable or not for that context
-	 *
-	 * @return bool
-	 */
-	public static function is_logging_enabled_for_context( $context ) {
-		return self::is_logging_enabled( 'contexts', $context );
-	}
-
-	/**
-	 * This function is use to check whether logging is enabled
-	 *
-	 * @param $column string name of the setting key (actions|ip_addresses|contexts|connectors)
-	 * @param $value string to check in excluded array
-	 * @return array
-	 */
-	public static function is_logging_enabled( $column, $value ){
-
-		$excluded_values = WP_Stream_Settings::get_excluded_by_key( $column );
-		$bool = ( ! in_array( $value, $excluded_values ) ) ;
-
-		return $bool;
-	}
 	/**
 	 * Log handler
 	 *
@@ -199,11 +87,13 @@ abstract class WP_Stream_Connector {
 	 */
 	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
 		//Prevent inserting Excluded Context & Actions
-		foreach ( $contexts as $context => $action ){
-			if ( ! self::is_logging_enabled_for_context( $context ) ){
-				unset( $contexts[$context] );
-			} else if ( ! self::is_logging_enabled_for_action( $action ) ){
-				unset( $contexts[$context] );
+		foreach ( $contexts as $context => $action ) {
+			if ( ! WP_Stream_Connectors::is_logging_enabled( 'contexts', $context ) ) {
+				unset( $contexts[ $context ] );
+			} else {
+				if ( ! WP_Stream_Connectors::is_logging_enabled( 'actions', $action ) ) {
+					unset( $contexts[ $context ] );
+				}
 			}
 		}
 		if ( count( $contexts ) == 0 ){

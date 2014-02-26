@@ -14,7 +14,7 @@ jQuery(function($){
 			width: '165px'
 		});
 
-	$( '.toplevel_page_wp_stream input[type=hidden].chosen-select' ).select2({
+	$( '.toplevel_page_wp_stream input[type=hidden].select2-select' ).select2({
 			minimumInputLength: 1,
 			allowClear: true,
 			width: '165px',
@@ -68,7 +68,7 @@ jQuery(function($){
             $placeholder.after($placeholder.clone(true).attr('class', $placeholder_child_class).val(key));
         });
     };
-    $('.stream_page_wp_stream_settings input[type=hidden].chosen-select.with-source').each(function (k, el) {
+    $('.stream_page_wp_stream_settings input[type=hidden].select2-select.with-source').each(function (k, el) {
         var $input = $(el);
         $input.select2({
             multiple: true,
@@ -92,7 +92,7 @@ jQuery(function($){
             stream_select2_change_handler( e , $input );
         }).trigger('change');
     });
-    $( '.stream_page_wp_stream_settings input[type=hidden].chosen-select.ip-addresses').each(function( k, el ){
+    $( '.stream_page_wp_stream_settings input[type=hidden].select2-select.ip-addresses').each(function( k, el ){
         var $input = $(el);
         var $ip_regex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
         $input.select2({
@@ -116,7 +116,7 @@ jQuery(function($){
         }).trigger('change');
     });
     var $input_user;
-    $('.stream_page_wp_stream_settings input[type=hidden].chosen-select.authors_and_roles').each(function (k, el) {
+    $('.stream_page_wp_stream_settings input[type=hidden].select2-select.authors_and_roles').each(function (k, el) {
         $input_user = $(el);
         var $roles = $input_user.data('values');
         $input_user.select2({
