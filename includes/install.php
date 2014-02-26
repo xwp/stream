@@ -138,7 +138,7 @@ class WP_Stream_Install {
 		}
 
 		// Taxonomy records switch from term_id to term_taxonomy_id
-		if ( version_compare( $db_version, '1.2.4', '<=' ) ) {
+		if ( version_compare( $db_version, '1.2.5', '<=' ) ) {
 			$sql = "SELECT r.ID id, tt.term_taxonomy_id tt
 				FROM $wpdb->stream r
 				JOIN $wpdb->streamcontext c
