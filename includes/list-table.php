@@ -3,7 +3,7 @@
 class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 	function __construct( $args = array() ) {
-		$view = filter_input( INPUT_GET, 'view' );
+		$view = wp_stream_filter_input( INPUT_GET, 'view' );
 
 		parent::__construct(
 			array(
@@ -35,7 +35,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	function get_columns(){
-		$view = filter_input( INPUT_GET, 'view' );
+		$view = wp_stream_filter_input( INPUT_GET, 'view' );
 
 		if ( null !== $view ) {
 			return array();
@@ -114,10 +114,10 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$args = wp_parse_args( $args, $defaults );
 
 		// Parse sorting params
-		if ( ! $order = filter_input( INPUT_GET, 'order' ) ) {
+		if ( ! $order = wp_stream_filter_input( INPUT_GET, 'order' ) ) {
 			$order = 'DESC';
 		}
-		if ( ! $orderby = filter_input( INPUT_GET, 'orderby' ) ) {
+		if ( ! $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
 			$orderby = '';
 		}
 		$args['order']          = $order;
@@ -135,7 +135,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			);
 
 			foreach ( $allowed_params as $param ) {
-				if ( $paramval = filter_input( INPUT_GET, $param ) ) {
+				if ( $paramval = wp_stream_filter_input( INPUT_GET, $param ) ) {
 					$args[$param] = $paramval;
 				}
 			}
@@ -276,7 +276,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				'class' => null,
 			);
 
-			$visibility = filter_input( INPUT_GET, 'visibility' );
+			$visibility = wp_stream_filter_input( INPUT_GET, 'visibility' );
 
 			$action_links[ __( 'Delete Permanently', 'stream-notifications' ) ] = array(
 				'href' => add_query_arg(
@@ -353,7 +353,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 	function filters_form( $which ) {
 		if ( 'top' == $which ) {
-			$visibility = filter_input( INPUT_GET, 'visibility' );
+			$visibility = wp_stream_filter_input( INPUT_GET, 'visibility' );
 			$filters_string = sprintf(
 				'<input type="hidden" name="page" value="%s"/>
 				%s
@@ -395,7 +395,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	 */
 	function stream_notifications_bulk_actions( $which ) {
 		$dropdown_name = ( 'top' == $which ) ? 'action' : 'action2';
-		$visibility    = filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT );
+		$visibility    = wp_stream_filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT );
 		$options       = array();
 
 		$options[] = sprintf(
@@ -484,7 +484,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 		$navigation_links = array();
 		$navigation_html  = '';
-		$visibility       = filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT, array( 'options' => array( 'default' => 'all' ) ) );
+		$visibility       = wp_stream_filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT, array( 'options' => array( 'default' => 'all' ) ) );
 
 		$i = 0;
 

@@ -4,7 +4,7 @@ class WP_Stream_Notifications_Import_Export {
 
 	public static function export() {
 
-		if ( ! wp_verify_nonce( filter_input( INPUT_GET, 'stream_notifications_nonce' ), 'stream-notifications-nonce' ) ) {
+		if ( ! wp_verify_nonce( wp_stream_filter_input( INPUT_GET, 'stream_notifications_nonce' ), 'stream-notifications-nonce' ) ) {
 			wp_die( __( 'Invalid nonce, go back and try again.', 'stream-notifications' ) );
 		}
 
