@@ -124,7 +124,7 @@ class WP_Stream_Install {
 		$prefix = self::$table_prefix;
 
 		// If version is lower than 1.1.4, do the update routine
-		if ( version_compare( $db_version, '1.1.4' ) == -1 && ! empty( $wpdb->charset ) ) {
+		if ( version_compare( $db_version, '1.1.4', '<' ) && ! empty( $wpdb->charset ) ) {
 			$tables  = array( 'stream', 'stream_context', 'stream_meta' );
 			$collate = ( $wpdb->collate ) ? " COLLATE {$wpdb->collate}" : null;
 			foreach ( $tables as $table ) {
@@ -133,12 +133,13 @@ class WP_Stream_Install {
 		}
 
 		// If version is lower than 1.1.7, do the update routine
-		if ( version_compare( $db_version, '1.1.7' ) == -1 ) {
+		if ( version_compare( $db_version, '1.1.7', '<' ) ) {
 			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(39) NULL AFTER created" );
 		}
 
+		// If version is lower than 1.2.5, do the update routine
 		// Taxonomy records switch from term_id to term_taxonomy_id
-		if ( version_compare( $db_version, '1.2.5', '<=' ) ) {
+		if ( version_compare( $db_version, '1.2.5', '<' ) ) {
 			$sql = "SELECT r.ID id, tt.term_taxonomy_id tt
 				FROM $wpdb->stream r
 				JOIN $wpdb->streamcontext c
