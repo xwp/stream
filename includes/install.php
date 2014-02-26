@@ -136,6 +136,32 @@ class WP_Stream_Install {
 		if ( version_compare( $db_version, '1.1.7' ) == -1 ) {
 			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(39) NULL AFTER created" );
 		}
+
+		// Taxonomy records switch from term_id to term_taxonomy_id
+		if ( version_compare( $db_version, '1.2.4', '<=' ) ) {
+			$sql = "SELECT r.ID id, tt.term_taxonomy_id tt
+				FROM $wpdb->stream r
+				JOIN $wpdb->streamcontext c
+					ON r.ID = c.record_id AND c.connector = 'taxonomies'
+				JOIN $wpdb->streammeta m
+					ON r.ID = m.record_id AND m.meta_key = 'term_id'
+				JOIN $wpdb->streammeta m2
+					ON r.ID = m2.record_id AND m2.meta_key = 'taxonomy'
+				JOIN $wpdb->term_taxonomy tt
+					ON tt.term_id = m.meta_value
+					AND tt.taxonomy = m2.meta_value
+				";
+			$tax_records = $wpdb->get_results( $sql ); // db call okay
+			foreach ( $tax_records as $record ) {
+				if ( ! empty( $record->tt ) ) {
+					$wpdb->update(
+						$wpdb->stream,
+						array( 'object_id' => $record->tt ),
+						array( 'ID' => $record->id )
+					);
+				}
+			}
+		}
 	}
 
 }
