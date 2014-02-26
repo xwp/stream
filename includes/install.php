@@ -158,7 +158,9 @@ class WP_Stream_Install {
 					$wpdb->update(
 						$wpdb->stream,
 						array( 'object_id' => $record->tt ),
-						array( 'ID' => $record->id )
+						array( 'ID' => $record->id ),
+						array( '%d' ),
+						array( '%d' )
 					);
 				}
 			}
