@@ -70,10 +70,10 @@ class WP_Stream_Feeds {
 		?>
 		<table class="form-table">
 			<tr>
-				<th><label for="stream_feed_url"><?php esc_html_e( 'Stream Feeds Key', 'stream' ) ?></label></th>
+				<th><label for="<?php echo esc_attr( self::USER_FEED_KEY ) ?>"><?php esc_html_e( 'Stream Feeds Key', 'stream' ) ?></label></th>
 				<td>
 					<p>
-						<code><?php echo esc_html( $key ) ?></code>
+						<input type="text" name="<?php echo esc_attr( self::USER_FEED_KEY ) ?>" id="<?php echo esc_attr( self::USER_FEED_KEY ) ?>" class="regular-text code" value="<?php echo esc_attr( $key ) ?>" readonly>
 						<small><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true, 'wp_stream_nonce' => $nonce ) ) ) ?>"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
 					</p>
 					<p class="description"><?php esc_html_e( 'This is your private key used for accessing feeds of Stream Records securely. You can change your key at any time by generating a new one using the link above.', 'stream' ) ?></p>
