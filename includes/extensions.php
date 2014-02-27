@@ -26,23 +26,23 @@ if ( ! empty( $extensions ) ) {
 
 	<h2><?php esc_html_e( 'Stream Premium Extensions', 'stream' ) ?>
 		<span class="theme-count"><?php echo absint( count( $extensions ) ) ?></span>
-		<?php if ( ! get_option( 'stream-license' ) ): ?>
+		<?php if ( ! get_option( 'stream-license' ) ) : ?>
 			<a href="#" class="button button-primary stream-premium-connect" data-stream-connect="1"><?php esc_html_e( 'Connect to Stream Premium', 'stream' ) ?></a>
 		<?php else : ?>
 			<a href="#" class="button button-secondary stream-premium-disconnect" data-stream-disconnect="1"><?php esc_html_e( 'Disconnect', 'stream' ) ?></a>
-		<?php endif ?>
+		<?php endif; ?>
 		<span class="spinner" style="float: none"></span>
 	</h2>
 
-	<?php if ( ! get_option( 'stream-license' ) ): ?>
+	<?php if ( ! get_option( 'stream-license' ) ) : ?>
 		<p class="description">
-			<?php esc_html_e( "Connect to your Stream Premium account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?> <a href="#" class="stream-premium-signup"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
+			<?php esc_html_e( "Connect to your Stream Premium account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?> <a href="https://wp-stream.com/join/" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
 		</p>
 	<?php else : ?>
 		<p class="description" style="color: green;">
 			<span class="dashicons dashicons-yes"></span> <?php esc_html_e( 'Your account is connected!', 'stream' ) ?>
 		</p>
-	<?php endif ?>
+	<?php endif; ?>
 
 	<p class="description stream-license-check-message"></p>
 
