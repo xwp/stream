@@ -47,16 +47,11 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Specify which roles should have their activity logged
  * Limit who can view user activity records by user role
  * Live update of user activity records in the Stream
- * Private RSS feeds of user activity records
- * Private JSON feeds of user activity records
+ * Private RSS and JSON feeds of user activity records
  * Set how long records should live before being purged automatically
  * Option to manually purge all user activity records from the database
  * Disable connectors where you don't want user activity tracked
  * Support for IPv6 addresses
-
-**Extension plugins:**
-
- * [Cherry-Pick](http://wordpress.org/plugins/stream-cherry-pick/): Allow Administrators to delete records from the Stream individually or in bulk.
 
 **Languages:**
 
