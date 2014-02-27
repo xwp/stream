@@ -237,7 +237,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			),
 			$user->ID,
 			array(
-				'users' => 'forgot-password',
+				'sessions' => 'forgot-password',
 			),
 			$user->ID
 		);
@@ -258,7 +258,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				),
 				$user->ID,
 				array(
-					'users' => 'login',
+					'sessions' => 'login',
 				),
 				$user->ID
 			);
@@ -283,7 +283,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			),
 			$user->ID,
 			array(
-				'users' => 'logout',
+				'sessions' => 'logout',
 			),
 			$user->ID
 		);
@@ -355,7 +355,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			__( 'Invalid login attempt for %s', 'stream' ),
 			compact( 'username' ),
 			$user ? $user->ID : 0,
-			array( 'users' => 'failed_login' ),
+			array( 'sessions' => 'failed_login' ),
 			$user ? $user->ID : 0
 		);
 	}
