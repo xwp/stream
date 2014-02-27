@@ -167,7 +167,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			),
 			$user->ID,
 			array(
-				'users' => 'updated',
+				'profiles' => 'updated',
 			)
 		);
 	}
@@ -214,7 +214,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			),
 			$user->ID,
 			array(
-				'users' => 'password-reset',
+				'profiles' => 'password-reset',
 			),
 			$user->ID
 		);
