@@ -148,9 +148,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'roles'        => implode( ', ', self::get_role_labels( $user_id ) ),
 			),
 			$registered_user->ID,
-			array(
-				'users' => 'created',
-			),
+			array( 'users' => 'created' ),
 			$user_to_log
 		);
 	}
@@ -167,9 +165,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'display_name' => $user->display_name,
 			),
 			$user->ID,
-			array(
-				'profiles' => 'updated',
-			)
+			array( 'profiles' => 'updated' )
 		);
 	}
 
@@ -196,9 +192,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'new_role'     => translate_user_role( $wp_roles->role_names[ $new_role ] ),
 			),
 			$user_id,
-			array(
-				'profiles' => 'updated',
-			)
+			array( 'profiles' => 'updated' )
 		);
 	}
 
@@ -214,9 +208,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'email' => $user->display_name,
 			),
 			$user->ID,
-			array(
-				'profiles' => 'password-reset',
-			),
+			array( 'profiles' => 'password-reset' ),
 			$user->ID
 		);
 	}
@@ -234,13 +226,9 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		}
 		self::log(
 			__( '%s\'s password was requested to be reset', 'stream' ),
-			array(
-				'display_name' => $user->display_name,
-			),
+			array( 'display_name' => $user->display_name ),
 			$user->ID,
-			array(
-				'sessions' => 'forgot-password',
-			),
+			array( 'sessions' => 'forgot-password' ),
 			$user->ID
 		);
 	}
@@ -255,13 +243,9 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		if ( self::is_logging_enabled_for_user( $user ) ) {
 			self::log(
 				__( '%s logged in', 'stream' ),
-				array(
-					'display_name' => $user->display_name,
-				),
+				array( 'display_name' => $user->display_name ),
 				$user->ID,
-				array(
-					'sessions' => 'login',
-				),
+				array( 'sessions' => 'login' ),
 				$user->ID
 			);
 		}
@@ -280,13 +264,9 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		}
 		self::log(
 			__( '%s logged out', 'stream' ),
-			array(
-				'display_name' => $user->display_name,
-			),
+			array( 'display_name' => $user->display_name ),
 			$user->ID,
-			array(
-				'sessions' => 'logout',
-			),
+			array( 'sessions' => 'logout' ),
 			$user->ID
 		);
 	}
@@ -338,9 +318,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'roles'        => implode( ', ', self::get_role_labels( $deleted_user ) ),
 			),
 			$user_id,
-			array(
-				'users' => 'deleted',
-			),
+			array( 'users' => 'deleted' ),
 			$user->ID
 		);
 	}
