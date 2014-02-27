@@ -67,7 +67,9 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'users' => __( 'Users', 'stream' ),
+			'users'    => __( 'Users', 'stream' ),
+			'sessions' => __( 'Sessions', 'stream' ),
+			'profiles' => __( 'Profiles', 'stream' ),
 		);
 	}
 
@@ -146,9 +148,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'roles'        => implode( ', ', self::get_role_labels( $user_id ) ),
 			),
 			$registered_user->ID,
-			array(
-				'users' => 'created',
-			),
+			array( 'users' => 'created' ),
 			$user_to_log
 		);
 	}
@@ -165,9 +165,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'display_name' => $user->display_name,
 			),
 			$user->ID,
-			array(
-				'users' => 'updated',
-			)
+			array( 'profiles' => 'updated' )
 		);
 	}
 
@@ -194,9 +192,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'new_role'     => translate_user_role( $wp_roles->role_names[ $new_role ] ),
 			),
 			$user_id,
-			array(
-				'users' => 'updated',
-			)
+			array( 'profiles' => 'updated' )
 		);
 	}
 
@@ -212,9 +208,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'email' => $user->display_name,
 			),
 			$user->ID,
-			array(
-				'users' => 'password-reset',
-			),
+			array( 'profiles' => 'password-reset' ),
 			$user->ID
 		);
 	}
@@ -232,13 +226,9 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		}
 		self::log(
 			__( '%s\'s password was requested to be reset', 'stream' ),
-			array(
-				'display_name' => $user->display_name,
-			),
+			array( 'display_name' => $user->display_name ),
 			$user->ID,
-			array(
-				'users' => 'forgot-password',
-			),
+			array( 'sessions' => 'forgot-password' ),
 			$user->ID
 		);
 	}
@@ -253,13 +243,9 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		if ( self::is_logging_enabled_for_user( $user ) ) {
 			self::log(
 				__( '%s logged in', 'stream' ),
-				array(
-					'display_name' => $user->display_name,
-				),
+				array( 'display_name' => $user->display_name ),
 				$user->ID,
-				array(
-					'users' => 'login',
-				),
+				array( 'sessions' => 'login' ),
 				$user->ID
 			);
 		}
@@ -278,13 +264,9 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		}
 		self::log(
 			__( '%s logged out', 'stream' ),
-			array(
-				'display_name' => $user->display_name,
-			),
+			array( 'display_name' => $user->display_name ),
 			$user->ID,
-			array(
-				'users' => 'logout',
-			),
+			array( 'sessions' => 'logout' ),
 			$user->ID
 		);
 	}
@@ -336,9 +318,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'roles'        => implode( ', ', self::get_role_labels( $deleted_user ) ),
 			),
 			$user_id,
-			array(
-				'users' => 'deleted',
-			),
+			array( 'users' => 'deleted' ),
 			$user->ID
 		);
 	}
@@ -355,7 +335,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			__( 'Invalid login attempt for %s', 'stream' ),
 			compact( 'username' ),
 			$user ? $user->ID : 0,
-			array( 'users' => 'failed_login' ),
+			array( 'sessions' => 'failed_login' ),
 			$user ? $user->ID : 0
 		);
 	}
