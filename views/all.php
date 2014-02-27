@@ -17,5 +17,4 @@
 			<?php do_meta_boxes( WP_Stream_Reports::$screen_id, 'side', 'side' ); ?>
 		</div>
 	</div>
-
 </div>

@@ -10,7 +10,7 @@
 	"trailing": true,
 	"undef": true,
 	"unused": true,
-
+	"nomen": false,
 	"browser": true,
 
 	"globals": {
