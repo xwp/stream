@@ -3,28 +3,21 @@ $response   = wp_remote_get( 'http://vvv.wp-stream.com/wp-json.php/posts/?type=e
 $extensions = ! is_wp_error( $response ) ? json_decode( wp_remote_retrieve_body( $response ) ) : null;
 $count      = 0;
 
-if ( ! empty( $extensions ) ) {
+// Create an array of all plugin paths, using the text-domain as a unique key slug
+$plugin_paths = array();
+foreach ( get_plugins() as $path => $data ) {
+	if ( isset( $data['TextDomain'] ) && ! empty( $data['TextDomain'] ) ) {
+		$plugin_paths[ $data['TextDomain'] ] = $path;
+	}
+}
+
+if ( ! empty( $extensions ) ) :
 
 	// Order the extensions by post title
 	usort( $extensions, function( $a, $b ) { return strcmp( $a->title, $b->title ); } );
 
-	foreach ( $extensions as $key => $extension ) {
-		$type = isset( $extension->post_meta->plugin_type[0] ) ? $extension->post_meta->plugin_type[0] : null;
-
-		if ( 'premium' != $type ) {
-			unset( $extensions[$key] );
-			continue;
-		}
-
-		$plugin_path = isset( $extension->post_meta->plugin_path[0] ) ? $extension->post_meta->plugin_path[0] : null;
-		$is_active   = ( $plugin_path && is_plugin_active( $plugin_path ) );
-	}
-}
-?>
-
-<?php if ( ! empty( $extensions ) ) : ?>
-
-	<h2><?php esc_html_e( 'Stream Premium Extensions', 'stream' ) ?>
+	?>
+	<h2><?php esc_html_e( 'Stream Extensions', 'stream' ) ?>
 		<span class="theme-count"><?php echo absint( count( $extensions ) ) ?></span>
 		<?php if ( ! get_option( 'stream-license' ) ) : ?>
 			<a href="#" class="button button-primary stream-premium-connect" data-stream-connect="1"><?php esc_html_e( 'Connect to Stream Premium', 'stream' ) ?></a>
@@ -36,7 +29,7 @@ if ( ! empty( $extensions ) ) {
 
 	<?php if ( ! get_option( 'stream-license' ) ) : ?>
 		<p class="description">
-			<?php esc_html_e( "Connect to your Stream Premium account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?> <a href="https://wp-stream.com/join/" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
+			<?php esc_html_e( "Connect your Stream Premium account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?> <a href="https://wp-stream.com/join/" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
 		</p>
 	<?php else : ?>
 		<p class="description" style="color: green;">
@@ -53,7 +46,8 @@ if ( ! empty( $extensions ) ) {
 			<?php foreach ( $extensions as $extension ) : ?>
 
 				<?php
-				$plugin_path  = isset( $extension->post_meta->plugin_path[0] ) ? $extension->post_meta->plugin_path[0] : null;
+				$text_domain  = isset( $extension->slug ) ? sprintf( 'stream-%s', $extension->slug ) : null;
+				$plugin_path  = array_key_exists( $text_domain, $plugin_paths ) ? $plugin_paths[ $text_domain ] : null;
 				$is_active    = ( $plugin_path && is_plugin_active( $plugin_path ) );
 				$is_installed = ( $plugin_path && defined( 'WP_PLUGIN_DIR' ) && file_exists( trailingslashit( WP_PLUGIN_DIR )  . $plugin_path ) );
 				$action_link  = isset( $extension->post_meta->external_url[0] ) ? $extension->post_meta->external_url[0] : $extension->link;
@@ -70,20 +64,31 @@ if ( ! empty( $extensions ) ) {
 							<?php endif; ?>
 						</div>
 						<span class="more-details"><?php esc_html_e( 'View Details', 'stream' ) ?></span>
-						<h3 class="theme-name"><span><?php echo esc_html( $extension->title ) ?></span></h3>
+						<h3 class="theme-name">
+							<span><?php echo esc_html( $extension->title ) ?></span>
+							<?php if ( $is_installed && ! $is_active ) : ?>
+								<span class="inactive"><?php esc_html_e( 'Inactive', 'stream' ) ?></span>
+							<?php endif; ?>
+						</h3>
 					</a>
 					<div class="theme-actions">
-						<?php if ( ! $is_installed ) { ?>
-							<a class="button button-primary" href="<?php echo esc_url( $action_link ) ?>" target="_blank">
-								<?php esc_html_e( 'Get This Extension', 'stream' ) ?>
-							</a>
-						<?php } elseif ( ! $is_active ) { ?>
-							<a class="button button-primary" href="<?php echo esc_url( admin_url( 'plugins.php' ) ) ?>">
+						<?php if ( ! $is_installed ) : ?>
+							<?php if ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) : ?>
+								<a href="<?php echo esc_url( $action_link ) ?>" class="button button-secondary" target="_blank">
+									<?php esc_html_e( 'Get This Extension', 'stream' ) ?>
+								</a>
+							<?php else : ?>
+								<a href="#" class="button button-primary">
+									<?php esc_html_e( 'Install Now', 'stream' ) ?>
+								</a>
+							<?php endif; ?>
+						<?php elseif ( $is_installed && ! $is_active ) : ?>
+							<a href="<?php echo esc_url( admin_url( 'plugins.php' ) ) ?>" class="button button-primary">
 								<?php esc_html_e( 'Activate', 'stream' ) ?>
 							</a>
-						<?php } else { ?>
+						<?php elseif ( $is_installed && $is_active ) : ?>
 							<?php esc_html_e( 'Active', 'stream' ) ?>
-						<?php } ?>
+						<?php endif; ?>
 					</div>
 				</div>
 
