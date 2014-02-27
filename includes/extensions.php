@@ -102,7 +102,7 @@ if ( ! empty( $extensions ) ) :
 
 	<?php else : ?>
 
-		<h2><?php esc_html_e( 'Stream Premium Extensions', 'stream' ) ?></h2>
+		<h2><?php esc_html_e( 'Stream Extensions', 'stream' ) ?></h2>
 
 		<p><em><?php esc_html_e( 'Sorry, there was a problem loading the list of extensions.', 'stream' ) ?></em></p>
 
