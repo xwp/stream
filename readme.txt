@@ -47,19 +47,11 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Specify which roles should have their activity logged
  * Limit who can view user activity records by user role
  * Live update of user activity records in the Stream
- * Private RSS feeds of user activity records
- * Private JSON feeds of user activity records
+ * Private RSS and JSON feeds of user activity records
  * Set how long records should live before being purged automatically
  * Option to manually purge all user activity records from the database
  * Disable connectors where you don't want user activity tracked
  * Support for IPv6 addresses
-
-**Extension plugins:**
-
- * [Cherry-Pick](http://wordpress.org/plugins/stream-cherry-pick/): Allow Administrators to delete records from the Stream individually or in bulk.
-
-**Extension plugins:**
- * [Cherry-Pick](http://wordpress.org/plugins/stream-cherry-pick/): Gives Administrators the ability to delete records from the Stream individually or in bulk.
 
 **Languages:**
 
@@ -75,7 +67,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 
  * UI to exclude specific types of user activity from being tracked
  * Limit who can view user activity records by user, not just by role
- * Improved context assignements for Media, Users and Widgets
+ * Improved context assignements for Media and Users
  * Multisite view of all activity records on a network
  * Language support for Arabic (RTL), Czech and Slovak
 
@@ -97,6 +89,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.2.5 =
+**2014/02/27** - Use sidebar area names as Context for Widgets connector. Bug fixes. Props [desaiuditd](http://profiles.wordpress.org/desaiuditd/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [bordoni](http://profiles.wordpress.org/bordoni/)
 
 = 1.2.4 =
 **2014/02/25** - Use post type names as Context for Comments connector. German translation update. Bug fixes. Props [powelski](http://profiles.wordpress.org/powelski/), [kucrut](http://profiles.wordpress.org/kucrut/), [pascalklaeres](http://profiles.wordpress.org/pascalklaeres/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
