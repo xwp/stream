@@ -72,7 +72,7 @@ if ( ! empty( $extensions ) ) :
 						</h3>
 					</a>
 					<div class="theme-actions">
-						<?php if ( ! $is_installed ) : ?>
+						<?php if ( ! $is_installed ) { ?>
 							<?php if ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) : ?>
 								<a href="<?php echo esc_url( $action_link ) ?>" class="button button-secondary" target="_blank">
 									<?php esc_html_e( 'Get This Extension', 'stream' ) ?>
@@ -82,13 +82,13 @@ if ( ! empty( $extensions ) ) :
 									<?php esc_html_e( 'Install Now', 'stream' ) ?>
 								</a>
 							<?php endif; ?>
-						<?php elseif ( $is_installed && ! $is_active ) : ?>
+						<?php } elseif ( $is_installed && ! $is_active ) { ?>
 							<a href="<?php echo esc_url( admin_url( 'plugins.php' ) ) ?>" class="button button-primary">
 								<?php esc_html_e( 'Activate', 'stream' ) ?>
 							</a>
-						<?php elseif ( $is_installed && $is_active ) : ?>
+						<?php } elseif ( $is_installed && $is_active ) { ?>
 							<?php esc_html_e( 'Active', 'stream' ) ?>
-						<?php endif; ?>
+						<?php } ?>
 					</div>
 				</div>
 
