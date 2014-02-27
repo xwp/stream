@@ -197,7 +197,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			),
 			$user_id,
 			array(
-				'users' => 'updated',
+				'profiles' => 'updated',
 			)
 		);
 	}
