@@ -17,7 +17,7 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 	}
 
 	public static function fields() {
-		$plugin_path  = 'pushover-notifications/pushover-notifications.php';
+		$plugin_path  = defined( 'CKPN_FILE' ) ? CKPN_FILE : null;
 		$is_installed = ( $plugin_path && defined( 'WP_PLUGIN_DIR' ) && file_exists( trailingslashit( WP_PLUGIN_DIR )  . $plugin_path ) );
 
 		if ( ! $is_installed ) {
