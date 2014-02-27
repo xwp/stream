@@ -80,7 +80,7 @@
 				<% }); %>
 			</select>
 		</div>
-		<a href="#" class="delete-trigger">Delete</a>
+		<a href="#" class="delete-trigger"><?php esc_html_e( 'Delete', 'stream-notifications' ) ?></a>
 	</div>
 </div>
 </script>
@@ -95,9 +95,9 @@
 				<option value="or"><?php esc_html_e( 'OR', 'stream-notifications' ) ?></option>
 			</select>
 		</div>
-		<a href="#add-trigger" class="add-trigger button button-secondary" data-group="<%- vars.index %>">+ Add Trigger</a>
-		<a href="#add-trigger-group" class="add-trigger-group button button-primary" data-group="<%- vars.index %>">+ Add Group</a>
-		<a href="#" class="delete-group">Delete Group</a>
+		<a href="#add-trigger" class="add-trigger button button-secondary" data-group="<%- vars.index %>"><?php esc_html_e( '+ Add Trigger', 'stream-notifications' ) ?></a>
+		<a href="#add-trigger-group" class="add-trigger-group button button-primary" data-group="<%- vars.index %>"><?php esc_html_e( '+ Add Group', 'stream-notifications' ) ?></a>
+		<a href="#" class="delete-group"><?php esc_html_e( 'Delete Group', 'stream-notifications' ) ?></a>
 	</div>
 </div>
 </script>
@@ -139,7 +139,7 @@
 				<option value="<%- name %>"><%- type.title %></option>
 				<% }); %>
 			</select>
-			<a href="#" class="delete-alert alignright">Delete</a>
+			<a href="#" class="delete-alert alignright"><?php esc_html_e( 'Delete', 'stream-notifications' ) ?></a>
 			<div class="clear"></div>
 		</div>
 	</div>
@@ -174,6 +174,9 @@
 						<%= field.message %>
 					<% } else { %>
 						<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" <% if ( field.ajax && field.key ){ %>data-ajax-key="<%- field.key %>"<% } %> <%- argsHTML %>>
+					<% } %>
+					<% if ( field.after ) { %>
+						<%- field.after %>
 					<% } %>
 				</div>
 			</td>
