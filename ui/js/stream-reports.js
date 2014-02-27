@@ -80,7 +80,7 @@
 
             // Check if a graph need to be draw
             'draw': null
-        },
+        }
     };
 
     // Grab all the opts and draw the chart on the screen
@@ -118,118 +118,74 @@
 
             nv.addGraph(function () {
                 switch (data.type) {
+									case 'donut':
+									case 'pie':
+											data.chart = nv.models.pieChart();
+											data.chart.x(function (d) { return d.key; });
+											data.chart.y(function (d) { return d.value; });
 
-                case 'donut':
-                case 'pie':
-                    data.chart = nv.models.pieChart();
-                    data.chart.x(function (d) { return d.key; });
-                    data.chart.y(function (d) { return d.value; });
+											if ('donut' === data.type) {
+													data.chart.donut(true);
+											}
+											break;
 
-                    if ('donut' === data.type) {
-                        data.chart.donut(true);
-                    }
+									case 'line':
+											data.chart = nv.models.lineChart();
+											break;
 
-                    break;
+									case 'multibar':
+											data.chart = nv.models.multiBarChart();
+											break;
 
-                case 'line':
-                    data.chart = nv.models.lineChart();
+									case 'multibar-horizontal':
+											data.chart = nv.models.multiBarHorizontalChart();
+											break;
 
-                    break;
-
-                case 'multibar':
-                    data.chart = nv.models.multiBarChart();
-
-                    break;
-
-                case 'multibar-horizontal':
-                    data.chart = nv.models.multiBarHorizontalChart();
-
-                    break;
-
-                default: // If we don't have a type of chart defined it gets out...
-                    return;
+									default: // If we don't have a type of chart defined it gets out...
+											return;
                 }
 
+								var mapValidation = [
+									{data: data.donutRatio,        function: data.chart.donutRatio},
+									{data: data.label.show,        function: data.chart.showLabels},
+									{data: data.showValues,        function: data.chart.showValues},
+									{data: data.label.threshold,   function: data.chart.labelThreshold},
+									{data: data.label.type,        function: data.chart.labelType},
+									{data: data.group.spacing,     function: data.chart.groupSpacing},
+									{data: data.guidelines,        function: data.chart.useInteractiveGuideline},
+									{data: data.animate,           function: data.chart.transitionDuration},
+									{data: data.legend.show,       function: data.chart.showLegend},
+									{data: data.yAxis.show,        function: data.chart.showYAxis},
+									{data: data.yAxis.reduceTicks, function: data.chart.reduceYTicks},
+									{data: data.xAxis.show,        function: data.chart.showXAxis},
+									{data: data.xAxis.reduceTicks, function: data.chart.reduceXTicks},
+									{data: data.controls,          function: data.chart.showControls},
+									{data: data.margin,            function: data.chart.margin},
+									{data: data.tooltip.show,      function: data.chart.tooltips}
+								];
 
-                if (null !== data.donutRatio && $.isFunction(data.chart.donutRatio)) {
-                    data.chart.donutRatio(data.donutRatio);
-                }
+								_.map(mapValidation, function(value){
+									if (null !== value.data && _.isFunction(value.function)) {
+										value.function(value.data);
+									}
+								});
 
-                if (null !== data.label.show && $.isFunction(data.chart.showLabels)) {
-                    data.chart.showLabels(data.label.show);
-                }
+								mapValidation = [
+									{data: data.yAxis.label,  object: data.chart.yAxis, function: 'data.chart.yAxis.axisLabel'},
+									{data: data.yAxis.format, object: data.chart.yAxis, function: 'data.chart.yAxistickFormat', format: true},
+									{data: data.xAxis.label,  object: data.chart.xAxis, function: 'data.chart.xAxis.axisLabel'},
+									{data: data.xAxis.format, object: data.chart.xAxis, function: 'data.chart.xAxis.tickFormat', format: true}
+								];
 
-                if (null !== data.showValues && $.isFunction(data.chart.showValues)) {
-                    data.chart.showValues(data.showValues);
-                }
-
-                if (null !== data.label.threshold && $.isFunction(data.chart.labelThreshold)) {
-                    data.chart.labelThreshold(data.label.threshold);
-                }
-
-                if (null !== data.label.type && $.isFunction(data.chart.labelType)) {
-                    data.chart.labelType(data.label.type);
-                }
-
-                if (null !== data.group.spacing && $.isFunction(data.chart.groupSpacing)) {
-                    data.chart.groupSpacing(data.group.spacing);
-                }
-
-                if (null !== data.guidelines && $.isFunction(data.chart.useInteractiveGuideline)) {
-                    data.chart.useInteractiveGuideline(data.guidelines);
-                }
-
-                if (null !== data.animate && $.isFunction(data.chart.transitionDuration)) {
-                    data.chart.transitionDuration(data.animate);
-                }
-
-                if (null !== data.legend.show && $.isFunction(data.chart.showLegend)) {
-                    data.chart.showLegend(data.legend.show);
-                }
-
-                if (null !== data.yAxis.show && $.isFunction(data.chart.showYAxis)) {
-                    data.chart.showYAxis(data.yAxis.show);
-                }
-
-                if (null !== data.yAxis.reduceTicks && $.isFunction(data.chart.reduceYTicks)) {
-                    data.chart.reduceYTicks(data.yAxis.reduceTicks);
-                }
-
-                if (null !== data.yAxis.label && _.isObject(data.chart.yAxis) && $.isFunction(data.chart.yAxis.axisLabel)) {
-                    data.chart.yAxis.axisLabel(data.yAxis.label);
-                }
-
-                if (null !== data.yAxis.format && _.isObject(data.chart.yAxis) && $.isFunction(data.chart.yAxis.tickFormat)) {
-                    data.chart.yAxis.tickFormat(d3.format(data.yAxis.format));
-                }
-
-                if (null !== data.xAxis.show && $.isFunction(data.chart.showXAxis)) {
-                    data.chart.showXAxis(data.xAxis.show);
-                }
-
-                if (null !== data.xAxis.reduceTicks && $.isFunction(data.chart.reduceXTicks)) {
-                    data.chart.reduceXTicks(data.xAxis.reduceTicks);
-                }
-
-                if (null !== data.xAxis.label && _.isObject(data.chart.xAxis) && $.isFunction(data.chart.xAxis.axisLabel)) {
-                    data.chart.xAxis.axisLabel(data.xAxis.label);
-                }
-
-                if (null !== data.xAxis.format && _.isObject(data.chart.xAxis) && $.isFunction(data.chart.xAxis.tickFormat)) {
-                    data.chart.xAxis.tickFormat(d3.format(data.xAxis.format));
-                }
-
-                if (null !== data.controls && $.isFunction(data.chart.showControls)) {
-                    data.chart.showControls(data.controls);
-                }
-
-                if (null !== data.margin && $.isFunction(data.chart.margin)) {
-                    data.chart.margin(data.margin);
-                }
-
-                if (null !== data.tooltip.show && $.isFunction(data.chart.tooltips)) {
-                    data.chart.tooltips(data.tooltip.show);
-                }
+								_.map(mapValidation, function(value){
+									if (null !== value.data && _.isObject(value.object) && _.isFunction(value.function)) {
+										if (!_.isUndefined(value.format)){
+											value.function(d3.format(value.data));
+										} else {
+											value.function(value.data);
+										}
+									}
+								});
 
                 data.d3.datum(data.values).call(data.chart);
 
@@ -259,4 +215,4 @@
         );
     });
 
-})( window, jQuery.noConflict(), _.noConflict(), nv, d3);
+})(window, jQuery.noConflict(), _.noConflict(), nv, d3);
