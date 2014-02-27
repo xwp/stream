@@ -608,7 +608,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 *	@filter wp_stream_query
+	 * @filter wp_stream_query
 	 */
 	static function include_null_occurrences( $sql, $args ) {
 		$meta_key = 'occurrences';
