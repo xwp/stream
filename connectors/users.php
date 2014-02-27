@@ -67,7 +67,8 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'users' => __( 'Users', 'stream' ),
+			'users'    => __( 'Users', 'stream' ),
+			'sessions' => __( 'Sessions', 'stream' ),
 		);
 	}
 
