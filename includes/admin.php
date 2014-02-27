@@ -338,6 +338,36 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_extensions_page() {
+		wp_enqueue_style( 'thickbox' );
+		wp_enqueue_script(
+			'stream-activation',
+			plugins_url( '../ui/license.js', __FILE__ ),
+			array( 'jquery', 'thickbox' ),
+			WP_Stream::VERSION,
+			true
+		);
+		$action = 'license';
+		wp_localize_script(
+			'stream-activation',
+			'stream_activation',
+			array(
+				'action' => get_option( 'stream-license' ) ? 'disconnect' : 'connect',
+				'api' => array(
+					'connect' => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'connect', 'connect' ),
+					'disconnect' => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'disconnect', 'disconnect' ),
+					'disconnect_local' => add_query_arg( 'action', 'stream-license-remove', admin_url( 'admin-ajax.php' ) ),
+				),
+				'nonce' => array(
+					'license_check'  => wp_create_nonce( 'license_check' ),
+					'license_remove' => wp_create_nonce( 'license_remove' ),
+				),
+				'i18n' => array(
+					'connected' => __( 'Connected', 'stream' ),
+					'login_to_stream' => __( 'Login to wp-stream.com', 'stream' ),
+				),
+			)
+		);
+
 		?>
 		<div class="themes-php">
 			<div class="wrap">

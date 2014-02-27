@@ -33,6 +33,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 
 			// License validation and storage
 			add_action( 'wp_ajax_stream-license-check', array( $this, 'license_check' ) );
+			add_action( 'wp_ajax_stream-license-remove', array( $this, 'license_remove' ) );
 		}
 
 		public function register( $plugin_file ) {
@@ -57,7 +58,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			$response = wp_remote_post( $url, $options );
 
 			if ( wp_remote_retrieve_response_code( $response ) != 200 ) {
-				wp_die( __( 'Could not connect to Stream update center.', 'stream-notifications' ) );
+				wp_die( __( 'Could not connect to Stream update center.', 'stream' ) );
 			}
 
 			$body = wp_remote_retrieve_body( $response );
@@ -99,7 +100,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			$response = wp_remote_post( $url, $options );
 
 			if ( 200 != wp_remote_retrieve_response_code( $response ) ) {
-				$error = __( 'Could not connect to Stream update center.', 'stream-notifications' );
+				$error = __( 'Could not connect to Stream update center.', 'stream' );
 				add_action( 'all_admin_notices', function() use ( $error ) { echo wp_kses_post( $error ); } );
 				return;
 			}
@@ -117,7 +118,11 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 		}
 
 		public function license_check() {
-			$license = filter_input( INPUT_POST, 'license' );
+			$license = wp_stream_filter_input( INPUT_POST, 'license' );
+
+			if ( ! wp_verify_nonce( wp_stream_filter_input( INPUT_POST, 'nonce' ), 'license_check' ) ) {
+				wp_die( __( 'Invalid security check.', 'stream' ) );
+			}
 
 			$action = 'license-verify';
 			$args   = array(
@@ -131,7 +136,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			$response = wp_remote_post( $url, $args );
 
 			if ( 200 != wp_remote_retrieve_response_code( $response ) ) {
-				wp_send_json_error( __( 'Could not connect to Stream license server to verify license details.', 'stream-notifications' ) );
+				wp_send_json_error( __( 'Could not connect to Stream license server to verify license details.', 'stream' ) );
 			}
 
 			$data = json_decode( wp_remote_retrieve_body( $response ) );
@@ -144,30 +149,37 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			wp_send_json( $data );
 		}
 
+		public function license_remove() {
+			if ( ! wp_verify_nonce( wp_stream_filter_input( INPUT_POST, 'nonce' ), 'license_remove' ) ) {
+				wp_die( __( 'Invalid security check.', 'stream' ) );
+			}
+
+			delete_option( 'stream-license' );
+			delete_option( 'stream-licensee' );
+			wp_send_json_success( array( 'message' => __( 'Site disconnected successfully from your Stream account.', 'stream' ) ) );
+		}
+
 		public function plugin_action_links( $links ) {
 			if ( ! get_option( 'stream-license' ) ) {
 				$links[ 'activation' ] = sprintf(
-					'<a href="#" data-stream-activate="1" >%1$s</a>',
-					__( 'Activate', 'stream-notifications' )
-				);
-
-				wp_enqueue_script( 'stream-activation', plugins_url( '../ui/js/license.js', __FILE__ ) );
-
-				$action = 'license';
-				wp_localize_script(
-					'stream-activation',
-					'stream_activation',
-					array(
-						'api' => apply_filters( 'stream-api-url', $this->api_url . $action, $action ),
-						'i18n' => array(
-							'activated' => __( 'Activated', 'stream-notifications' ),
-						),
-					)
+					'<a href="%1$s">%2$s</a>',
+					admin_url(
+						add_query_arg(
+							'page',
+							WP_Stream_Admin::EXTENSIONS_PAGE_SLUG,
+							WP_Stream_Admin::ADMIN_PARENT_PAGE
+						)
+					),
+					__( 'Activate', 'stream' )
 				);
 			} else {
-				$links[ 'activation' ] = __( 'Activated', 'stream-notifications' );
+				$links[ 'activation' ] = __( 'Activated', 'stream' );
 			}
 			return $links;
+		}
+
+		public function get_api_url() {
+			return $this->api_url;
 		}
 
 	}
