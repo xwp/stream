@@ -528,9 +528,9 @@ class WP_Stream_Admin {
 
 	public static function dashboard_stream_activity_update_contents(){
 
-		if( ! empty( $_POST['stream-paged'] ) ){
+		if ( ! empty( $_POST['stream-paged'] ) ) {
 			$paged = absint( $_POST['stream-paged'] );
-		}else{
+		} else {
 			$paged = 1;
 		}
 
@@ -614,7 +614,7 @@ class WP_Stream_Admin {
 		$total_items = self::dashboard_get_total_found_rows();
 		$args = array(
 			'total_pages' => ceil( $total_items / $options['records_per_page'] ),
-			'current' => $paged
+			'current' => $paged,
 		);	
 
 		self::dashboard_pagination( $args );
@@ -626,10 +626,11 @@ class WP_Stream_Admin {
 	 */
 	public static function dashboard_pagination( $args = array() ){
 
-		$args = wp_parse_args( $args, array(
-			'current' => 1,
-			'total_pages' => 1
-
+		$args = wp_parse_args( 
+			$args, 
+			array(
+				'current' => 1,
+				'total_pages' => 1
 		) );
 		extract( $args );
 
@@ -664,8 +665,8 @@ class WP_Stream_Admin {
 		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
 			'prev-page' . $disable_first,
 			esc_attr__( 'Go to the previous page', 'stream' ),
-			esc_url( add_query_arg( 'paged', max( 1, $current-1 ), $records_link ) ),
-			max( 1, $current-1),
+			esc_url( add_query_arg( 'paged', max( 1, $current - 1 ), $records_link ) ),
+			max( 1, $current - 1),
 			'&lsaquo;'
 		);
 
@@ -675,8 +676,8 @@ class WP_Stream_Admin {
 		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
 			'next-page' . $disable_last,
 			esc_attr__( 'Go to the next page', 'stream' ),
-			esc_url( add_query_arg( 'paged', min( $total_pages, $current+1 ), $records_link ) ),
-			min( $total_pages, $current+1 ),
+			esc_url( add_query_arg( 'paged', min( $total_pages, $current + 1 ), $records_link ) ),
+			min( $total_pages, $current + 1 ),
 			'&rsaquo;'
 		);
 
