@@ -638,8 +638,14 @@ class WP_Stream_Admin {
 			admin_url( self::ADMIN_PARENT_PAGE )
 		);
 
+		$html_view_all = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
+			'view-all',
+			esc_attr__( 'View all records', 'stream' ),
+			esc_url( $records_link ),
+			__( 'View All', 'stream' )
+		);
+
 		$page_links = array();
-		$output = '';
 		$disable_first = $disable_last = '';
 		if ( $current == 1 ){
 			$disable_first = ' disabled';
@@ -650,25 +656,25 @@ class WP_Stream_Admin {
 
 		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s' data-page='1'>%s</a>",
 			'first-page' . $disable_first,
-			esc_attr__( 'Go to the first page' ),
+			esc_attr__( 'Go to the first page', 'stream' ),
 			esc_url( remove_query_arg( 'paged', $records_link ) ),
 			'&laquo;'
 		);
 
 		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
 			'prev-page' . $disable_first,
-			esc_attr__( 'Go to the previous page' ),
+			esc_attr__( 'Go to the previous page', 'stream' ),
 			esc_url( add_query_arg( 'paged', max( 1, $current-1 ), $records_link ) ),
 			max( 1, $current-1),
 			'&lsaquo;'
 		);
 
 		$html_total_pages = sprintf( "<span class='total-pages'>%s</span>", number_format_i18n( $total_pages ) );
-		$page_links[] = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging' ), $current, $html_total_pages ) . '</span>';
+		$page_links[] = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), $current, $html_total_pages ) . '</span>';
 
 		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
 			'next-page' . $disable_last,
-			esc_attr__( 'Go to the next page' ),
+			esc_attr__( 'Go to the next page', 'stream' ),
 			esc_url( add_query_arg( 'paged', min( $total_pages, $current+1 ), $records_link ) ),
 			min( $total_pages, $current+1 ),
 			'&rsaquo;'
@@ -676,16 +682,17 @@ class WP_Stream_Admin {
 
 		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
 			'last-page' . $disable_last,
-			esc_attr__( 'Go to the last page' ),
+			esc_attr__( 'Go to the last page', 'stream' ),
 			esc_url( add_query_arg( 'paged', $total_pages, $records_link ) ),
 			$total_pages,
 			'&raquo;'
 		);
 
 		$pagination_links_class = 'pagination-links';
-		$output .= "\n<span class='$pagination_links_class'>" . join( "\n", $page_links ) . '</span>';
+		$output = "\n<div class='$pagination_links_class'>" . join( "\n", $page_links ) . '</div>';
 
-		echo "<div>$output</div>";
+
+		echo "<div>$html_view_all $output</div>";
 	}
 
 	/**
