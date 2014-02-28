@@ -95,7 +95,6 @@ class WP_Stream_Reports {
 		define( 'WP_STREAM_REPORTS_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' );
 		define( 'WP_STREAM_REPORTS_VIEW_DIR', WP_STREAM_REPORTS_DIR . 'views/' );
-		define( 'WP_STREAM_REPORTS_CLASS_DIR', WP_STREAM_REPORTS_DIR . 'classes/' );
 
 		add_action( 'plugins_loaded', array( $this, 'load' ) );
 	}
@@ -125,13 +124,10 @@ class WP_Stream_Reports {
 		add_action( 'init', array( 'WP_Stream_Reports_Metaboxes', 'get_instance' ), 12 );
 
 		// Load the Interval/Date class, to allow input and parsing of the Reports interval
-		require_once WP_STREAM_REPORTS_CLASS_DIR . 'date-interval.php';
+		require_once WP_STREAM_REPORTS_INC_DIR . 'date-interval.php';
 
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
-
-		// Filter the Predefined list of intervals to make it work
-		add_filter( 'stream-report-predefined-intervals', array( $this, '_filter_predefined_intervals' ), 20 );
 
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
@@ -158,48 +154,6 @@ class WP_Stream_Reports {
 
 		$metabox = WP_Stream_Reports_Metaboxes::get_instance();
 		add_action( 'load-' . self::$screen_id, array( $metabox, 'load_page' ) );
-	}
-
-	/**
-	 *
-	 *
-	 * @filter
-	 * @return array
-	 */
-	public function _filter_predefined_intervals( $intervals ){
-		global $wpdb;
-		$first_stream_item = reset(
-			stream_query(
-				array(
-					'order' => 'ASC',
-					'orderby' => 'created',
-					'records_per_page' => 1,
-					'ignore_context' => true,
-				)
-			)
-		);
-
-		if ( $first_stream_item === false ){
-			return false;
-		}
-
-		$first_stream_date = \Carbon\Carbon::parse( $first_stream_item->created );
-
-		foreach ( $intervals as $key => $interval ){
-			if ( ! isset( $interval['start'] ) || $interval['start'] === false ){
-				$intervals[$key]['start'] = $interval['start'] = $first_stream_date;
-			}
-			if ( ! isset( $interval['end'] ) || $interval['end'] === false ){
-				$intervals[$key]['end'] = $interval['end'] = \Carbon\Carbon::now();
-			}
-
-			if ( ! is_a( $interval['start'], '\Carbon\Carbon' ) || ! is_a( $interval['end'], '\Carbon\Carbon' ) ) {
-				unset( $intervals[$key] );
-				continue;
-			}
-		}
-
-		return $intervals;
 	}
 
 	/**
@@ -233,7 +187,7 @@ class WP_Stream_Reports {
 		wp_register_script(
 			'stream-reports',
 			WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js',
-			array( 'stream-reports-nvd3', 'jquery', 'underscore' ),
+			array( 'stream-reports-nvd3', 'jquery', 'underscore', 'jquery-ui-datepicker' ),
 			self::VERSION,
 			true
 		);
@@ -250,7 +204,7 @@ class WP_Stream_Reports {
 		wp_register_style(
 			'stream-reports',
 			WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css',
-			array( 'stream-reports-nvd3' ),
+			array( 'stream-reports-nvd3', 'wp-stream-datepicker' ),
 			self::VERSION,
 			'screen'
 		);
@@ -267,7 +221,7 @@ class WP_Stream_Reports {
 			array(
 				'configure' => __( 'Configure', 'stream-reports' ),
 				'cancel'    => __( 'Cancel', 'stream-reports' ),
-				'deletemsg' => __( 'Do you really want to delete this section?\rThis cannot be undone.', 'stream-reports' )
+				'deletemsg' => __( 'Do you really want to delete this section? This cannot be undone.', 'stream-reports' )
 			)
 		);
 

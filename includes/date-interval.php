@@ -1,21 +1,28 @@
 <?php
 use Carbon\Carbon;
 
+// Template function
+function stream_report_intervals_html() {
+	$date = new WP_Stream_Report_Date_Interval();
+	include WP_STREAM_REPORTS_VIEW_DIR . 'intervals.php';
+}
+
 class WP_Stream_Report_Date_Interval {
 
-	private $args = array(
-		'start' => false,
-		'end' => false,
-	);
+	/**
+	 * Class constructor
+	 */
+	public function __construct() {
+		// Filter the Predefined list of intervals to make it work
+		add_filter( 'stream-report-predefined-intervals', array( $this, 'filter_predefined_intervals' ), 20 );
 
-	public function __construct( $args = array() ){
-
-		$this->args = (object) wp_parse_args( $this->args, $args );
-
+		// Get all default intervals
 		$this->intervals = $this->get_predefined_intervals();
-
 	}
 
+	/**
+	 * @return mixed|void
+	 */
 	public function get_predefined_intervals(){
 		return apply_filters(
 			'stream-report-predefined-intervals',
@@ -84,41 +91,44 @@ class WP_Stream_Report_Date_Interval {
 		);
 	}
 
-	public function html(){
-		// Only enqueue if needed
-		if ( ! wp_style_is( 'wp-stream-datepicker', 'enqueued' ) ){
-			wp_enqueue_style( 'wp-stream-datepicker' );
+	/**
+	 * Filter the predefined intervals to reflect db oldest value
+	 * @param $intervals
+	 *
+	 * @return array
+	 */
+	public function filter_predefined_intervals( $intervals ){
+		$query = stream_query(
+			array(
+				'order'            => 'ASC',
+				'orderby'          => 'created',
+				'records_per_page' => 1,
+				'ignore_context'   => true,
+			)
+		);
+
+		$first_stream_item = reset( $query );
+
+		if ( $first_stream_item === false ){
+			return false;
 		}
 
-		// Only enqueue if needed
-		if ( ! wp_script_is( 'jquery-ui-datepicker', 'enqueued' ) ){
-			wp_enqueue_script( 'jquery-ui-datepicker' );
+		$first_stream_date = \Carbon\Carbon::parse( $first_stream_item->created );
+
+		foreach ( $intervals as $key => $interval ){
+			if ( ! isset( $interval['start'] ) || $interval['start'] === false ){
+				$intervals[$key]['start'] = $interval['start'] = $first_stream_date;
+			}
+			if ( ! isset( $interval['end'] ) || $interval['end'] === false ){
+				$intervals[$key]['end'] = $interval['end'] = \Carbon\Carbon::now();
+			}
+
+			if ( ! is_a( $interval['start'], '\Carbon\Carbon' ) || ! is_a( $interval['end'], '\Carbon\Carbon' ) ) {
+				unset( $intervals[$key] );
+				continue;
+			}
 		}
 
-		$html = '';
-
-		$html .=
-		'<div class="reports-date-interval">' .
-			'<select class="field-predefined">' .
-				'<option></option>' .
-				'<option value="custom">' . esc_attr__( 'Custom Interval', 'stream-reports' ) . '</option>';
-
-		foreach ( $this->intervals as $key => $interval ) {
-			$html .= '<option value="' . esc_attr( $key ) . '" data-from="' . esc_attr( $interval['start']->format( 'Y/m/d' ) ) . '" data-to="' . esc_attr( $interval['end']->format( 'Y/m/d' ) ) . '">' . esc_attr( $interval['label'] ) . '</option>';
-		}
-
-
-		$html .=
-			'</select>' .
-			'<div class="report-date-inputs">' .
-				'<div class="__box"><i class="date-remove dashicons"></i><input type="text" name="date_from" class="date-picker field-from" placeholder="Data de Começo" size="14" value=""></div>' .
-				'<span class="connector dashicons"></span>' .
-				'<div class="__box"><i class="date-remove dashicons"></i><input type="text" name="date_to" class="date-picker field-to" placeholder="Data de Fim" size="14" value=""></div>' .
-			'</div>' .
-			'<button class="button button-primary">' . __( 'Change Interval', 'stream-report' ) . '</button>' .
-			'<div class="clear"></div>' .
-		'</div>';
-
-		return $html;
+		return $intervals;
 	}
 }
