@@ -35,10 +35,10 @@ class WP_Stream_Reports_Metaboxes {
 		$default = array();
 
 		// Get all sections from the db
-		self::$sections = get_user_option( __CLASS__ );
+		$user_option = WP_Stream_Reports_Settings::get_user_options();
 
 		// Apply default if no user option is found
-		self::$sections = (self::$sections) ?: $default;
+		self::$sections = isset( $user_option['sections'] ) ? $user_option['sections'] : $default;
 
 		// If we are not in ajax mode, return early
 		if ( ! defined( 'DOING_AJAX' ) ) {
@@ -233,7 +233,7 @@ class WP_Stream_Reports_Metaboxes {
 	 * @param bool $redirect If the function must redirect and exit here
 	 */
 	private function update_option( $redirect = false ) {
-		$is_saved = update_user_option( get_current_user_id(), __CLASS__, self::$sections );
+		$is_saved = WP_Stream_Reports_Settings::update_user_options( 'sections', self::$sections );
 
 		// If we need to redirect back to stream report page
 		if ( $is_saved && $redirect ) {
