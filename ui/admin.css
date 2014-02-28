@@ -170,7 +170,7 @@
 	margin: 3px 0 0 0;
 }
 
-.stream_page_wp_stream_extensions .themes-php .wrap p {
+.stream_page_wp_stream_extensions .themes-php .wrap p.description {
 	clear: both;
 	font-size: 15px;
 	margin-bottom: 20px;
