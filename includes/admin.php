@@ -546,7 +546,7 @@ class WP_Stream_Admin {
 		$options = get_option( 'dashboard_stream_activity_options', array() );
 		$args = array(
 			'records_per_page' => isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5,
-			'paged' => $paged
+			'paged' => $paged,
 		);
 		$records = stream_query( $args );
 
@@ -630,8 +630,9 @@ class WP_Stream_Admin {
 			$args, 
 			array(
 				'current' => 1,
-				'total_pages' => 1
-		) );
+				'total_pages' => 1,
+			) 
+		);
 		extract( $args );
 
 		$records_link = add_query_arg(
@@ -639,7 +640,8 @@ class WP_Stream_Admin {
 			admin_url( self::ADMIN_PARENT_PAGE )
 		);
 
-		$html_view_all = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
+		$html_view_all = sprintf( 
+			"<a class='%s' title='%s' href='%s'>%s</a>",
 			'view-all',
 			esc_attr__( 'View all records', 'stream' ),
 			esc_url( $records_link ),
@@ -655,14 +657,16 @@ class WP_Stream_Admin {
 			$disable_last = ' disabled';
 		}
 
-		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s' data-page='1'>%s</a>",
+		$page_links[] = sprintf( 
+			"<a class='%s' title='%s' href='%s' data-page='1'>%s</a>",
 			'first-page' . $disable_first,
 			esc_attr__( 'Go to the first page', 'stream' ),
 			esc_url( remove_query_arg( 'paged', $records_link ) ),
 			'&laquo;'
 		);
 
-		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
+		$page_links[] = sprintf( 
+			"<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
 			'prev-page' . $disable_first,
 			esc_attr__( 'Go to the previous page', 'stream' ),
 			esc_url( add_query_arg( 'paged', max( 1, $current - 1 ), $records_link ) ),
@@ -673,7 +677,8 @@ class WP_Stream_Admin {
 		$html_total_pages = sprintf( "<span class='total-pages'>%s</span>", number_format_i18n( $total_pages ) );
 		$page_links[] = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), $current, $html_total_pages ) . '</span>';
 
-		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
+		$page_links[] = sprintf( 
+			"<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
 			'next-page' . $disable_last,
 			esc_attr__( 'Go to the next page', 'stream' ),
 			esc_url( add_query_arg( 'paged', min( $total_pages, $current + 1 ), $records_link ) ),
@@ -681,7 +686,8 @@ class WP_Stream_Admin {
 			'&rsaquo;'
 		);
 
-		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
+		$page_links[] = sprintf( 
+			"<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
 			'last-page' . $disable_last,
 			esc_attr__( 'Go to the last page', 'stream' ),
 			esc_url( add_query_arg( 'paged', $total_pages, $records_link ) ),
@@ -690,10 +696,9 @@ class WP_Stream_Admin {
 		);
 
 		$pagination_links_class = 'pagination-links';
-		$output = "\n<div class='$pagination_links_class'>" . join( "\n", $page_links ) . '</div>';
+		$html_pagination_links = "\n<div class='$pagination_links_class'>" . join( "\n", $page_links ) . '</div>';
 
-
-		echo "<div>$html_view_all $output</div>";
+		echo '<div>' . $html_view_all . $html_pagination_links . '</div>';
 	}
 
 	/**
