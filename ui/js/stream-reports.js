@@ -90,11 +90,12 @@
                         from_remove.hide();
                     }
 
+                    to.datepicker('option', 'minDate', from.val());
+
                     if (_.last(arguments) === true) {
                         return false;
                     }
 
-                    to.datepicker('option', 'minDate', from.val());
                     predefined.trigger('check_options');
                 }
             });
@@ -107,11 +108,12 @@
                         to_remove.hide();
                     }
 
+                    from.datepicker('option', 'maxDate', to.val());
+
                     if (_.last(arguments) === true) {
                         return false;
                     }
 
-                    from.datepicker('option', 'maxDate', to.val());
                     predefined.trigger('check_options');
                 }
             });
