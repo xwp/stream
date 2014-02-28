@@ -666,7 +666,7 @@ class WP_Stream_Admin {
 			'&laquo;'
 		);
 
-		$page_links[] = sprintf( 
+		$page_links[] = sprintf(
 			"<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
 			'prev-page' . $disable_first,
 			esc_attr__( 'Go to the previous page', 'stream' ),
