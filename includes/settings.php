@@ -3,11 +3,23 @@
  * Settings class for Stream Reports
  *
  * @author X-Team <x-team.com>
- * @author Shady Sharaf <shady@x-team.com>, Jaroslav Polakovič <dero@x-team.com>
+ * @author Shady Sharaf <shady@x-team.com>, Jaroslav Polakovič <dero@x-team.com>, Jonathan Bardo <jonathan.bardo@x-team.com>
  */
 class WP_Stream_Reports_Settings {
 
+	/**
+	 * Contains the option fields for the settings
+	 *
+	 * @var array $fields
+	 */
 	public static $fields = array();
+
+	/**
+	 * Contains the array of user options for the plugin
+	 *
+	 * @var array $user_options
+	 */
+	private static $user_options;
 
 	/**
 	 * Public constructor
@@ -112,6 +124,36 @@ class WP_Stream_Reports_Settings {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get user option and store it in a static var for easy access
+	 *
+	 * @return array
+	 */
+	public static function get_user_options() {
+		if ( ! empty( self::$user_options ) ) {
+			return self::$user_options;
+		} else {
+			self::$user_options = get_user_option( __CLASS__ );
+
+			// Return empty array if no user option is in db
+			return ( self::$user_options ) ?: array();
+		}
+	}
+
+	/**
+	 * Save user option
+	 *
+	 * @param string $key
+	 * @param mixed $option The actual value of the key
+	 *
+	 * @return unknown
+	 */
+	public static function update_user_options( $key, $option ) {
+		$user_options = self::get_user_options();
+		$user_options[ $key ] = $option;
+		return update_user_option( get_current_user_id(), __CLASS__, $user_options );
 	}
 
 }
