@@ -651,10 +651,10 @@ class WP_Stream_Admin {
 
 		$page_links = array();
 		$disable_first = $disable_last = '';
-		if ( $current == 1 ){
+		if ( 1 === $current ){
 			$disable_first = ' disabled';
 		}
-		if ( $current == $total_pages ){
+		if ( $current === $total_pages ){
 			$disable_last = ' disabled';
 		}
 
