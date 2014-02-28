@@ -3,7 +3,9 @@
  * Settings class for Stream Reports
  *
  * @author X-Team <x-team.com>
- * @author Shady Sharaf <shady@x-team.com>, Jaroslav Polakovič <dero@x-team.com>, Jonathan Bardo <jonathan.bardo@x-team.com>
+ * @author Shady Sharaf <shady@x-team.com>
+ * @author Jaroslav Polakovič <dero@x-team.com>
+ * @author Jonathan Bardo <jonathan.bardo@x-team.com>
  */
 class WP_Stream_Reports_Settings {
 
@@ -129,16 +131,21 @@ class WP_Stream_Reports_Settings {
 	/**
 	 * Get user option and store it in a static var for easy access
 	 *
+	 * @param null  $key
+	 * @param array $default
+	 *
 	 * @return array
 	 */
-	public static function get_user_options() {
-		if ( ! empty( self::$user_options ) ) {
-			return self::$user_options;
-		} else {
+	public static function get_user_options( $key = null, $default = array() ) {
+		if ( empty( self::$user_options ) ) {
 			self::$user_options = get_user_option( __CLASS__ );
+		}
 
+		if ( is_null( $key ) ) {
 			// Return empty array if no user option is in db
 			return ( self::$user_options ) ?: array();
+		} else {
+			return isset( self::$user_options[$key] ) ? self::$user_options[$key] : $default;
 		}
 	}
 

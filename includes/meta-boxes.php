@@ -31,14 +31,8 @@ class WP_Stream_Reports_Metaboxes {
 	 * Public constructor
 	 */
 	public function __construct() {
-		// We should input a default box here
-		$default = array();
-
 		// Get all sections from the db
-		$user_option = WP_Stream_Reports_Settings::get_user_options();
-
-		// Apply default if no user option is found
-		self::$sections = isset( $user_option['sections'] ) ? $user_option['sections'] : $default;
+		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
 		$ajax_hooks = array(
 			'stream_reports_add_metabox' => 'add_metabox',

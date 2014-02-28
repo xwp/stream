@@ -6,10 +6,11 @@
     var report = {};
 
     report.intervals = {
-        init: function ($div) {
-            var elements = $div;
+        init: function ($wrapper) {
+						this.wrapper = $wrapper;
+						this.save_interval(this.wrapper.find('.button-primary'), this.wrapper);
 
-            this.$ = elements.each(function () {
+            this.$ = this.wrapper.each(function () {
                 var container = $(_.last(arguments)),
                     from = container.find('.field-from'),
                     to = container.find('.field-to'),
@@ -108,13 +109,29 @@
                     }
                 });
 
+								// Trigger change on load
+								predefined.trigger('change');
+
                 $('').add(from_remove).add(to_remove).on({
                     'click': function () {
                         $(this).next('input').val('').trigger('change');
                     }
                 });
             });
-        }
+        },
+				save_interval: function($btn) {
+					var $wrapper = this.wrapper;
+					$btn.click(function(){
+						var data = {
+							key: $wrapper.find('select.field-predefined').find(':selected').val(),
+							start: $wrapper.find('.report-date-inputs .field-from').val(),
+							end: $wrapper.find('.report-date-inputs .field-to').val()
+						};
+
+						// Add params to URL
+						$(this).attr('href', $(this).attr('href') + '&' + $.param(data));
+					})
+				}
     };
     /**
      * Metabox logic logic

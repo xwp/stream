@@ -6,6 +6,25 @@ function stream_report_intervals_html() {
 	$date = WP_Stream_Report_Date_Interval::get_instance();
 	$date->load();
 
+	// Default interval
+	$default = array(
+		'key'   => 'all-time',
+		'start' => '',
+		'end'   => '',
+	);
+
+	$user_interval = WP_Stream_Reports_Settings::get_user_options( 'interval', $default );
+
+	$save_interval_url = add_query_arg(
+		array_merge(
+			array(
+				'action' => 'stream_reports_save_interval',
+			),
+			WP_Stream_Reports::$nonce
+		),
+		admin_url( 'admin-ajax.php' )
+	);
+
 	include WP_STREAM_REPORTS_VIEW_DIR . 'intervals.php';
 }
 
@@ -29,7 +48,12 @@ class WP_Stream_Report_Date_Interval {
 	 */
 	public function __construct() {
 		// Ajax declaration to save time interval
+		$ajax_hooks = array(
+			'stream_reports_save_interval' => 'save_interval',
+		);
 
+		// Register all ajax action and check referer for this class
+		WP_Stream_Reports::handle_ajax_request( $ajax_hooks, $this );
 	}
 
 	/**
@@ -153,6 +177,33 @@ class WP_Stream_Report_Date_Interval {
 		}
 
 		return $intervals;
+	}
+
+
+	/**
+	 * Handle ajax saving of time intervals
+	 */
+	public function save_interval() {
+		$interval = array(
+			'key'   => isset( $_REQUEST['key'] ) ? sanitize_text_field( $_REQUEST['key'] ) : '',
+			'start' => isset( $_REQUEST['start'] ) ? sanitize_text_field( $_REQUEST['start'] ) : '',
+			'end'   => isset( $_REQUEST['end'] ) ? sanitize_text_field( $_REQUEST['end'] ) : '',
+		);
+
+		// Get predefined interval for validation
+		$avail_intervals = $this->get_predefined_intervals();
+
+		if ( 'custom' !== $interval['key'] && ! isset( $avail_intervals[ $interval['key'] ] ) ) {
+			wp_die( __( 'This time interval is not available', 'stream-reports' ) );
+		}
+
+		// Only store dates if we are dealing with custom dates and no relative preset
+		if ( 'custom' !== $interval['key'] ) {
+			$interval['start'] = '';
+			$interval['end']   = '';
+		}
+
+		WP_Stream_Reports_Settings::update_user_option( 'interval', $interval, true );
 	}
 
 	/**
