@@ -31,37 +31,16 @@ class WP_Stream_Reports_Metaboxes {
 	 * Public constructor
 	 */
 	public function __construct() {
-		// We should input a default box here
-		$default = array();
-
 		// Get all sections from the db
-		self::$sections = get_user_option( __CLASS__ );
-
-		// Apply default if no user option is found
-		self::$sections = (self::$sections) ?: $default;
-
-		// If we are not in ajax mode, return early
-		if ( ! defined( 'DOING_AJAX' ) ) {
-			return;
-		}
+		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
 		$ajax_hooks = array(
 			'stream_reports_add_metabox' => 'add_metabox',
 			'stream_reports_delete_metabox' => 'delete_metabox',
 		);
 
-		foreach ( $ajax_hooks as $hook => $function ) {
-			add_action( "wp_ajax_{$hook}", array( $this, $function ) );
-		}
-
-		// Check referer here so we don't have to check it on every function call
-		if ( array_key_exists( $_REQUEST['action'], $ajax_hooks ) ) {
-			// Checking permission
-			if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
-				wp_die( __( 'Cheating huh?', 'stream-reports' ) );
-			}
-			check_admin_referer( 'stream-reports-page', 'stream_reports_nonce' );
-		}
+		// Register all ajax action and check referer for this class
+		WP_Stream_Reports::handle_ajax_request( $ajax_hooks, $this );
 	}
 
 	public function load_page() {
@@ -148,7 +127,7 @@ class WP_Stream_Reports_Metaboxes {
 			$chart_types[ $args['chart-type'] ] .= ' active';
 		}
 
-		include WP_STREAM_REPORTS_VIEW_DIR . 'metabox.php';
+		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
 	}
 
 	/**
@@ -176,7 +155,7 @@ class WP_Stream_Reports_Metaboxes {
 		self::$sections[] = array();
 
 		// Update the database option (pass true in param so the function redirect)
-		$this->update_option( true );
+		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections, true );
 	}
 
 	/**
@@ -224,40 +203,11 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		// Update the database option (pass true in param so the function redirect)
-		$this->update_option( true );
+		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections, true );
 	}
 
 	/**
-	 * Handle option updating in the database
-	 *
-	 * @param bool $redirect If the function must redirect and exit here
-	 */
-	private function update_option( $redirect = false ) {
-		$is_saved = update_user_option( get_current_user_id(), __CLASS__, self::$sections );
-
-		// If we need to redirect back to stream report page
-		if ( $is_saved && $redirect ) {
-			wp_redirect(
-				add_query_arg(
-					array( 'page' => WP_Stream_Reports::REPORTS_PAGE_SLUG ),
-					admin_url( 'admin.php' )
-				)
-			);
-			exit;
-		} else {
-			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream-reports' ) );
-		}
-
-		// If it was a standard ajax call requesting json back.
-		if ( $is_saved ) {
-			wp_send_json_success();
-		} else {
-			wp_send_json_error();
-		}
-	}
-
-	/**
-	 * Return active instance of WP_Stream_Reports, create one if it doesn't exist
+	 * Return active instance of WP_Stream_Reports_Metaboxes, create one if it doesn't exist
 	 *
 	 * @return WP_Stream_Reports_Metaboxes
 	 */

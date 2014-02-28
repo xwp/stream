@@ -3,11 +3,25 @@
  * Settings class for Stream Reports
  *
  * @author X-Team <x-team.com>
- * @author Shady Sharaf <shady@x-team.com>, Jaroslav Polakovič <dero@x-team.com>
+ * @author Shady Sharaf <shady@x-team.com>
+ * @author Jaroslav Polakovič <dero@x-team.com>
+ * @author Jonathan Bardo <jonathan.bardo@x-team.com>
  */
 class WP_Stream_Reports_Settings {
 
+	/**
+	 * Contains the option fields for the settings
+	 *
+	 * @var array $fields
+	 */
 	public static $fields = array();
+
+	/**
+	 * Contains the array of user options for the plugin
+	 *
+	 * @var array $user_options
+	 */
+	private static $user_options;
 
 	/**
 	 * Public constructor
@@ -112,6 +126,60 @@ class WP_Stream_Reports_Settings {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get user option and store it in a static var for easy access
+	 *
+	 * @param null  $key
+	 * @param array $default
+	 *
+	 * @return array
+	 */
+	public static function get_user_options( $key = null, $default = array() ) {
+		if ( empty( self::$user_options ) ) {
+			self::$user_options = get_user_option( __CLASS__ );
+		}
+
+		if ( is_null( $key ) ) {
+			// Return empty array if no user option is in db
+			return ( self::$user_options ) ?: array();
+		} else {
+			return isset( self::$user_options[$key] ) ? self::$user_options[$key] : $default;
+		}
+	}
+
+	/**
+	 * Handle option updating in the database
+	 *
+	 * @param string $key
+	 * @param mixed $option
+	 * @param bool  $redirect If the function must redirect and exit here
+	 */
+	public static function update_user_option( $key, $option, $redirect = false ) {
+		$user_options = self::get_user_options();
+		$user_options[ $key ] = $option;
+		$is_saved = update_user_option( get_current_user_id(), __CLASS__, $user_options );
+
+		// If we need to redirect back to stream report page
+		if ( $is_saved && $redirect ) {
+			wp_redirect(
+				add_query_arg(
+					array( 'page' => WP_Stream_Reports::REPORTS_PAGE_SLUG ),
+					admin_url( 'admin.php' )
+				)
+			);
+			exit;
+		} else {
+			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream-reports' ) );
+		}
+
+		// If it was a standard ajax call requesting json back.
+		if ( $is_saved ) {
+			wp_send_json_success();
+		} else {
+			wp_send_json_error();
+		}
 	}
 
 }

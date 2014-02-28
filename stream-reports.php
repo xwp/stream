@@ -95,7 +95,6 @@ class WP_Stream_Reports {
 		define( 'WP_STREAM_REPORTS_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' );
 		define( 'WP_STREAM_REPORTS_VIEW_DIR', WP_STREAM_REPORTS_DIR . 'views/' );
-		define( 'WP_STREAM_REPORTS_CLASS_DIR', WP_STREAM_REPORTS_DIR . 'classes/' );
 
 		add_action( 'plugins_loaded', array( $this, 'load' ) );
 	}
@@ -118,14 +117,45 @@ class WP_Stream_Reports {
 		add_action( 'init', array( 'WP_Stream_Reports_Settings', 'load' ), 9 );
 
 		// Load sections here
-		require_once WP_STREAM_REPORTS_INC_DIR . 'metaboxes.php';
+		require_once WP_STREAM_REPORTS_INC_DIR . 'meta-boxes.php';
 		add_action( 'init', array( 'WP_Stream_Reports_Metaboxes', 'get_instance' ), 12 );
+
+		// Load Carbon to Handle dates much easier
+		require_once WP_STREAM_REPORTS_INC_DIR . 'vendor/Carbon.php';
+
+		// Load the Interval/Date class, to allow input and parsing of the Reports interval
+		require_once WP_STREAM_REPORTS_INC_DIR . 'date-interval.php';
+		add_action( 'init', array( 'WP_Stream_Report_Date_Interval', 'get_instance' ), 13 );
 
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
+	}
+
+	/**
+	 * @param array $ajax_hooks associative array of ajax hooks action to actual functionname
+	 * @param object $referer Class refering the action
+	 */
+	public static function handle_ajax_request( $ajax_hooks, $referer ) {
+		// If we are not in ajax mode, return early
+		if ( ! defined( 'DOING_AJAX' ) || ! is_object( $referer ) ) {
+			return;
+		}
+
+		foreach ( $ajax_hooks as $hook => $function ) {
+			add_action( "wp_ajax_{$hook}", array( $referer, $function ) );
+		}
+
+		// Check referer here so we don't have to check it on every function call
+		if ( array_key_exists( $_REQUEST['action'], $ajax_hooks ) ) {
+			// Checking permission
+			if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
+				wp_die( __( 'Cheating huh?', 'stream-reports' ) );
+			}
+			check_admin_referer( 'stream-reports-page', 'stream_reports_nonce' );
+		}
 	}
 
 	/**
@@ -182,7 +212,7 @@ class WP_Stream_Reports {
 		wp_register_script(
 			'stream-reports',
 			WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js',
-			array( 'stream-reports-nvd3', 'jquery', 'underscore' ),
+			array( 'stream-reports-nvd3', 'jquery', 'underscore', 'jquery-ui-datepicker' ),
 			self::VERSION,
 			true
 		);
@@ -199,7 +229,7 @@ class WP_Stream_Reports {
 		wp_register_style(
 			'stream-reports',
 			WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css',
-			array( 'stream-reports-nvd3' ),
+			array( 'stream-reports-nvd3', 'wp-stream-datepicker' ),
 			self::VERSION,
 			'screen'
 		);
@@ -216,7 +246,7 @@ class WP_Stream_Reports {
 			array(
 				'configure' => __( 'Configure', 'stream-reports' ),
 				'cancel'    => __( 'Cancel', 'stream-reports' ),
-				'deletemsg' => __( 'Do you really want to delete this section?\rThis cannot be undone.', 'stream-reports' )
+				'deletemsg' => __( 'Do you really want to delete this section? This cannot be undone.', 'stream-reports' )
 			)
 		);
 
@@ -263,6 +293,8 @@ class WP_Stream_Reports {
 			'slug' => 'all',
 			'path' => null,
 		);
+
+		// Avoid throwing Notices by testing the variable
 		if ( isset( $_GET['view'] ) && ! empty( $_GET['view'] ) ){
 			$view->slug = sanitize_file_name( wp_unslash( $_GET['view'] ) );
 		}
