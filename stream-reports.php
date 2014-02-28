@@ -121,8 +121,8 @@ class WP_Stream_Reports {
 		add_action( 'init', array( 'WP_Stream_Reports_Settings', 'load' ), 9 );
 
 		// Load sections here
-		require_once WP_STREAM_REPORTS_INC_DIR . 'sections.php';
-		add_action( 'init', array( 'WP_Stream_Reports_Sections', 'get_instance' ), 12 );
+		require_once WP_STREAM_REPORTS_INC_DIR . 'metaboxes.php';
+		add_action( 'init', array( 'WP_Stream_Reports_Metaboxes', 'get_instance' ), 12 );
 
 		// Load the Interval/Date class, to allow input and parsing of the Reports interval
 		require_once WP_STREAM_REPORTS_CLASS_DIR . 'date-interval.php';
@@ -153,8 +153,11 @@ class WP_Stream_Reports {
 			array( $this, 'page' )
 		);
 
-		$sections = WP_Stream_Reports_Sections::get_instance();
-		add_action( 'load-' . self::$screen_id, array( $sections, 'load_page' ) );
+		// Create nonce right away so it is accessible everywhere
+		self::$nonce = array( 'stream_reports_nonce' => wp_create_nonce( 'stream-reports-page' ) );
+
+		$metabox = WP_Stream_Reports_Metaboxes::get_instance();
+		add_action( 'load-' . self::$screen_id, array( $metabox, 'load_page' ) );
 	}
 
 	/**
@@ -216,21 +219,38 @@ class WP_Stream_Reports {
 			'stream-reports-d3',
 			WP_STREAM_REPORTS_URL . 'ui/js/d3/d3.min.js',
 			array(),
-			'3.4.1'
+			'3.4.2',
+			true
+		);
+
+		wp_register_script(
+			'stream-reports-nvd3',
+			WP_STREAM_REPORTS_URL . 'ui/js/nvd3/nv.d3.min.js',
+			array( 'stream-reports-d3' ),
+			'1.1.15b',
+			true
 		);
 		wp_register_script(
-			'stream-reports-admin',
+			'stream-reports',
 			WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js',
-			array( 'jquery', 'underscore' ),
+			array( 'stream-reports-nvd3', 'jquery', 'underscore' ),
 			self::VERSION,
 			true
 		);
 
 		// CSS registration
 		wp_register_style(
-			'stream-reports-admin',
-			WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css',
+			'stream-reports-nvd3',
+			WP_STREAM_REPORTS_URL . 'ui/css/nvd3/nv.d3.min.css',
 			array(),
+			self::VERSION,
+			'screen'
+		);
+
+		wp_register_style(
+			'stream-reports',
+			WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css',
+			array( 'stream-reports-nvd3' ),
 			self::VERSION,
 			'screen'
 		);
@@ -240,11 +260,21 @@ class WP_Stream_Reports {
 			return;
 		}
 
+		// Localization
+		wp_localize_script(
+			'stream-reports',
+			'streamReportsLocal',
+			array(
+				'configure' => __( 'Configure', 'stream-reports' ),
+				'cancel'    => __( 'Cancel', 'stream-reports' ),
+				'deletemsg' => __( 'Do you really want to delete this section?\rThis cannot be undone.', 'stream-reports' )
+			)
+		);
+
 		// JavaScript enqueue
 		wp_enqueue_script(
 			array(
-				'stream-reports-admin',
-				'stream-reports-d3',
+				'stream-reports',
 				'select2',
 				'common',
 				'dashboard',
@@ -255,7 +285,7 @@ class WP_Stream_Reports {
 		// CSS enqueue
 		wp_enqueue_style(
 			array(
-				'stream-reports-admin',
+				'stream-reports',
 				'select2',
 			)
 		);
@@ -268,9 +298,6 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function page() {
-		// Create the nonce we will be using on the page
-		self::$nonce = array( 'stream_reports_nonce' => wp_create_nonce( 'stream-reports-page' ) );
-
 		// Page class
 		$class   = 'metabox-holder columns-' . get_current_screen()->get_columns();
 		$add_url = add_query_arg(
