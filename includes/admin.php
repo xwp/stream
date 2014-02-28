@@ -352,9 +352,9 @@ class WP_Stream_Admin {
 			'stream_activation',
 			array(
 				'action' => get_option( 'stream-license' ) ? 'disconnect' : 'connect',
-				'api' => array(
-					'connect' => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'connect', 'connect' ),
-					'disconnect' => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'disconnect', 'disconnect' ),
+				'api'    => array(
+					'connect'          => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'connect', 'connect' ),
+					'disconnect'       => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'disconnect', 'disconnect' ),
 					'disconnect_local' => add_query_arg( 'action', 'stream-license-remove', admin_url( 'admin-ajax.php' ) ),
 				),
 				'nonce' => array(
@@ -362,8 +362,8 @@ class WP_Stream_Admin {
 					'license_remove' => wp_create_nonce( 'license_remove' ),
 				),
 				'i18n' => array(
-					'connected' => __( 'Connected', 'stream' ),
-					'login_to_stream' => __( 'Login to wp-stream.com', 'stream' ),
+					'connected'       => __( 'Connected', 'stream' ),
+					'login_to_stream' => __( 'Connect to Stream Premium', 'stream' ),
 				),
 			)
 		);

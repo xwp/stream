@@ -7,7 +7,7 @@ jQuery(function($){
 		login_first = function() {
 			var url = ( stream_activation.action === 'connect' ) ? stream_activation.api.connect : stream_activation.api.disconnect;
 			url += '&site=' + window.location.host;
-			tb_show( stream_activation.i18n.login_to_stream, url + '&modal=1#TB_iframe?height=240&amp;width=405&amp;inlineId=hiddenModalContent', null );
+			tb_show( stream_activation.i18n.login_to_stream, url + '&modal=1#TB_iframe?height=400&amp;width=350&amp;inlineId=hiddenModalContent', null );
 		},
 		receive = function( message ) {
 			if ( typeof message !== 'string' || ! message.match(/^stream:/) ) {
