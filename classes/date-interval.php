@@ -12,7 +12,7 @@ class WP_Stream_Report_Date_Interval {
 
 		$this->args = (object) wp_parse_args( $this->args, $args );
 
-		$go = $this->get_predefined_intervals();
+		$this->intervals = $this->get_predefined_intervals();
 
 	}
 
@@ -85,7 +85,39 @@ class WP_Stream_Report_Date_Interval {
 	}
 
 	public function html(){
+		// Only enqueue if needed
+		if ( ! wp_style_is( 'wp-stream-datepicker', 'enqueued' ) ){
+			wp_enqueue_style( 'wp-stream-datepicker' );
+		}
+
+		// Only enqueue if needed
+		if ( ! wp_script_is( 'jquery-ui-datepicker', 'enqueued' ) ){
+			wp_enqueue_script( 'jquery-ui-datepicker' );
+		}
+
 		$html = '';
+
+		$html .=
+		'<div class="reports-date-interval">' .
+			'<select class="field-predefined">' .
+				'<option></option>' .
+				'<option value="custom">' . esc_attr__( 'Custom Interval', 'stream-reports' ) . '</option>';
+
+		foreach ( $this->intervals as $key => $interval ) {
+			$html .= '<option value="' . esc_attr( $key ) . '" data-from="' . esc_attr( $interval['start']->format( 'Y/m/d' ) ) . '" data-to="' . esc_attr( $interval['end']->format( 'Y/m/d' ) ) . '">' . esc_attr( $interval['label'] ) . '</option>';
+		}
+
+
+		$html .=
+			'</select>' .
+			'<div class="report-date-inputs">' .
+				'<div class="__box"><i class="date-remove dashicons"></i><input type="text" name="date_from" class="date-picker field-from" placeholder="Data de Começo" size="14" value=""></div>' .
+				'<span class="connector dashicons"></span>' .
+				'<div class="__box"><i class="date-remove dashicons"></i><input type="text" name="date_to" class="date-picker field-to" placeholder="Data de Fim" size="14" value=""></div>' .
+			'</div>' .
+			'<button class="button button-primary">' . __( 'Change Interval', 'stream-report' ) . '</button>' .
+			'<div class="clear"></div>' .
+		'</div>';
 
 		return $html;
 	}

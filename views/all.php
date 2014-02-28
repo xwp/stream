@@ -5,9 +5,11 @@
 		</a>
 	</h2>
 
-	<div class='reports-date-interval'>
-		<?php $dateinterval = new WP_Stream_Report_Date_Interval(); ?>
-	</div>
+
+	<?php
+		$dateinterval = new WP_Stream_Report_Date_Interval();
+		echo '' . $dateinterval->html();
+	?>
 
 	<?php wp_nonce_field( 'stream-reports-page', 'stream_report_nonce', false ); ?>
 	<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
