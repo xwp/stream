@@ -6,10 +6,10 @@
     var report = {};
 
     report.intervals = {
-        init: function () {
-            var elements = $('.reports-date-interval');
+        init: function ($div) {
+            var elements = $div;
 
-            report.intervals.$ = elements.each(function () {
+            this.$ = elements.each(function () {
                 var container = $(_.last(arguments)),
                     from = container.find('.field-from'),
                     to = container.find('.field-to'),
@@ -390,7 +390,9 @@
      * Document Ready actions
      */
     $(document).ready(function () {
-        stream.report.intervals.init();
+        stream.report.intervals.init(
+						$('.reports-date-interval')
+				);
 
         stream.report.chart.init(
             $('.stream_page_wp_stream_reports .chart'),
