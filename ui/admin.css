@@ -45,35 +45,15 @@
 	padding: 12px;
 }
 
-#dashboard_stream_activity .pagination-links {
-	height: 23px;
-	margin: 6px 0px 4px;
-	padding: 10px;
-	vertical-align: middle;
-}
-#dashboard_stream_activity .pagination-links a {
-	background: #eee;
-	background: rgba( 0, 0, 0, 0.05 );
-	color: #777;
-	font-weight: 600;
-	margin-right: 1px;
-	font-size: 16px;
-	padding: 0 10px 3px;
-}
-
-#dashboard_stream_activity .current-page{
-	padding-top: 0;
-	text-align: center;
-}
-
-#dashboard_stream_activity .next-page{
-	margin-left: 2px;
+#dashboard_stream_activity .tablenav{
+	clear: none;
+	padding-right: 5px;
 }
 
 #dashboard_stream_activity .view-all{
-	float: right;
+	float: left;
 	padding: 0 10px 3px;
-	margin-top: 11px;
+	margin-top: 5px;
 }
 
 .toplevel_page_wp_stream .tablenav {

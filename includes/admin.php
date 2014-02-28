@@ -544,8 +544,9 @@ class WP_Stream_Admin {
 	public static function dashboard_stream_activity_contents( $paged = 1 ) {
 
 		$options = get_option( 'dashboard_stream_activity_options', array() );
+		$records_per_page = isset( $options['record_per_page'] ) ? absint( $options['records_per_page'] ) : 5;
 		$args = array(
-			'records_per_page' => isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5,
+			'records_per_page' => $records_per_page,
 			'paged' => $paged,
 		);
 		$records = stream_query( $args );
@@ -613,7 +614,7 @@ class WP_Stream_Admin {
 
 		$total_items = self::dashboard_get_total_found_rows();
 		$args = array(
-			'total_pages' => ceil( $total_items / $options['records_per_page'] ),
+			'total_pages' => ceil( $total_items / $records_per_page ),
 			'current' => $paged,
 		);	
 
@@ -695,8 +696,7 @@ class WP_Stream_Admin {
 			'&raquo;'
 		);
 
-		$pagination_links_class = 'pagination-links';
-		$html_pagination_links = "\n<div class='$pagination_links_class'>" . join( "\n", $page_links ) . '</div>';
+		$html_pagination_links = "\n<div class='tablenav'><div class='tablenav-pages'><span class='pagination-links'>" . join( "\n", $page_links ) . '</span></div></div>';
 
 		echo '<div>' . $html_view_all . $html_pagination_links . '</div>';
 	}
