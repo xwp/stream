@@ -58,7 +58,7 @@ class WP_Stream_Admin {
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
 		
 		// Dashboard AJAX pagination
-		add_action( 'wp_ajax_stream_dashboard_update', array( __CLASS__, 'dashboard_stream_activity_update_contents' ) );
+		add_action( 'wp_ajax_stream_activity_dashboard_update', array( __CLASS__, 'dashboard_stream_activity_update_contents' ) );
 
 		// Heartbeat live update
 		add_filter( 'heartbeat_received', array( __CLASS__, 'live_update' ), 10, 2 );

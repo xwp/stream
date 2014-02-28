@@ -5,7 +5,7 @@ jQuery(function($){
 		$( '#dashboard_stream_activity .pagination-links a').click(function(e){
 			e.preventDefault();
 			var data = {
-				'action' : 'stream_dashboard_update',
+				'action' : 'stream_activity_dashboard_update',
 				'stream-paged' : $(this).data('page'),
 			};
 	
