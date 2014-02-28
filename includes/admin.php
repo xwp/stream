@@ -626,7 +626,7 @@ class WP_Stream_Admin {
 	 */
 	public static function dashboard_pagination( $args = array() ){
 
-		$args = wp_parse_args( 
+		$args = wp_parse_args(
 			$args, 
 			array(
 				'current' => 1,
@@ -640,7 +640,7 @@ class WP_Stream_Admin {
 			admin_url( self::ADMIN_PARENT_PAGE )
 		);
 
-		$html_view_all = sprintf( 
+		$html_view_all = sprintf(
 			"<a class='%s' title='%s' href='%s'>%s</a>",
 			'view-all',
 			esc_attr__( 'View all records', 'stream' ),
@@ -657,7 +657,7 @@ class WP_Stream_Admin {
 			$disable_last = ' disabled';
 		}
 
-		$page_links[] = sprintf( 
+		$page_links[] = sprintf(
 			"<a class='%s' title='%s' href='%s' data-page='1'>%s</a>",
 			'first-page' . $disable_first,
 			esc_attr__( 'Go to the first page', 'stream' ),
@@ -670,14 +670,14 @@ class WP_Stream_Admin {
 			'prev-page' . $disable_first,
 			esc_attr__( 'Go to the previous page', 'stream' ),
 			esc_url( add_query_arg( 'paged', max( 1, $current - 1 ), $records_link ) ),
-			max( 1, $current - 1),
+			max( 1, $current - 1 ),
 			'&lsaquo;'
 		);
 
 		$html_total_pages = sprintf( "<span class='total-pages'>%s</span>", number_format_i18n( $total_pages ) );
 		$page_links[] = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), $current, $html_total_pages ) . '</span>';
 
-		$page_links[] = sprintf( 
+		$page_links[] = sprintf(
 			"<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
 			'next-page' . $disable_last,
 			esc_attr__( 'Go to the next page', 'stream' ),
@@ -686,7 +686,7 @@ class WP_Stream_Admin {
 			'&rsaquo;'
 		);
 
-		$page_links[] = sprintf( 
+		$page_links[] = sprintf(
 			"<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
 			'last-page' . $disable_last,
 			esc_attr__( 'Go to the last page', 'stream' ),
