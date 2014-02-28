@@ -300,7 +300,7 @@ Version: 3.4.5 Timestamp: Mon Nov  4 08:22:42 PST 2013
 
 /* results */
 .select2-results {
-    max-height: 200px;
+    max-height: 400px;
     padding: 0 0 0 4px;
     margin: 4px 4px 4px 0;
     position: relative;
@@ -531,7 +531,7 @@ disabled look for disabled choices in the results dropdown
     height: 13px;
     position: absolute;
     right: 3px;
-    top: 4px;
+    top: 3px;
 
     font-size: 1px;
     outline: none;

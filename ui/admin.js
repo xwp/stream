@@ -214,3 +214,139 @@ jQuery(function($){
 	}).trigger( 'updated' );
 
 });
+
+
+(function ( window, $, _ ) {
+	$( document ).on({
+		'ready' : function ( event ) {
+			var $page = $( '.wp_stream_screen' );
+
+			// Rather use each thingy as one scope, to avoid conflicts...
+			(function( event, $, _, $page ){
+				'use strict';
+				if ( $page.lenght === 0 ){
+					return;
+				}
+
+				var $fields = $page.find( '.user_n_role_select' );
+
+				$fields.each(function( k, el ){
+					var $input = $(el),
+						$placeholder = $input.next( '.user_n_role_select_placeholder' ),
+						roles = $input.data('roles'),
+						l10n = $input.data( 'localization' );
+
+					$input.select2({
+						multiple: true,
+						formatSelection: function (object, container){
+							var template;
+							if ( $.isNumeric( object.id ) ){
+								var title_template = _.template('<%= email %> (ID: <%= id %>)');
+								container.parents('.select2-search-choice').attr( 'title', title_template(object) );
+
+								template = _.template('<%= display_name %><i class="icon16 icon-users"></i>');
+							} else {
+								template = _.template('<%= text %>');
+							}
+							return template(object);
+						},
+						formatResult: function (object, label){
+							if ( typeof object.children !== 'undefined' && object.text === '' ){
+								label.hide();
+							}
+
+							var template;
+							if ( $.isNumeric( object.id ) ){
+								var title_template = _.template('<%= email %> (ID: <%= id %>)');
+								label.attr( 'title', title_template(object) ).addClass('select2-result-user');
+
+								template = _.template('<img class="select2-result-user-avatar" src="<%= avatar %>" /> <%= display_name %>');
+							} else {
+								template = _.template('<%= text %>');
+							}
+							return template(object);
+						},
+						ajax: {
+							type: 'POST',
+							url: ajaxurl,
+							dataType: 'json',
+							quietMillis: 500,
+							data: function (term, page) { // page is the one-based page number tracked by Select2
+								return {
+									'find': term, //search term
+									'limit': 25, // page size
+									'page': page, // page number
+									'action': 'stream_find_user'
+								};
+							},
+							results: function (data, page) {
+								var answer = {
+										results:[
+											{
+												text: l10n.roles,
+												children: roles
+											},
+											{
+												text: l10n.users,
+												children: []
+											}
+										]
+									};
+
+								if ( data === 0 || data === '' || data.status !== true ){
+									return answer;
+								}
+
+								$.each( data.users, function ( k, user ){
+									if ( _.contains( roles, user.id ) ){
+										user.disabled = true;
+									}
+								} );
+
+								if ( page === 1 ){
+									answer.results[1].children = data.users;
+								} else {
+									answer.results = [
+										{
+											text: '',
+											children: data.users
+										}
+									];
+								}
+
+								if ( (page * 25) <= data.total && data.total !== 0 ){
+									answer.more = true;
+								} else {
+									answer.more = false;
+								}
+
+								// notice we return the value of more so Select2 knows if more results can be loaded
+								return answer;
+							}
+						},
+						initSelection: function (item, callback) {
+							callback( item.data( 'selected' ) );
+						}
+					}).on({
+						'change' : function (e){
+							$input.siblings( '.user_n_role_select_value' ).off().remove();
+
+							if ( typeof e.val === 'undefined' ){
+								e.val = $input.val().split( ',' );
+							}
+
+							_.each( e.val.reverse(), function( value ){
+								if ( value === '__placeholder__' ){
+									return;
+								}
+								$placeholder.after( $placeholder.clone( true ).attr( 'class', 'user_n_role_select_value' ).val( value ) );
+							});
+						}
+					});
+
+				});
+
+			})( event, $, _, $page );
+		}
+	});
+})( window, jQuery.noConflict(), _.noConflict() );

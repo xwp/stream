@@ -60,6 +60,10 @@ class WP_Stream_Settings {
 		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
 
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
+
+		// Ajax call to return the array of users for Select2
+		add_action( 'wp_ajax_stream_find_user', array( __CLASS__, 'find_users' ) );
+
 	}
 
 	/**
@@ -84,9 +88,8 @@ class WP_Stream_Settings {
 						array(
 							'name'        => 'role_access',
 							'title'       => __( 'Role Access', 'stream' ),
-							'type'        => 'multi_checkbox',
+							'type'        => 'user_n_role_select',
 							'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
-							'choices'     => self::get_roles(),
 							'default'     => array( 'administrator' ),
 						),
 						array(
@@ -292,6 +295,66 @@ class WP_Stream_Settings {
 					$after_field // xss ok
 				);
 				break;
+
+			case 'user_n_role_select':
+				$output = sprintf(
+					'<div id="%1$s[%2$s_%3$s]">',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+
+				$current_value = (array) $current_value;
+				$data_roles    = self::get_roles_for_select2();
+				$data_selected = array();
+
+				foreach ( $current_value as $k => $value ){
+					if ( ! is_string( $value ) && ! is_numeric( $value ) )
+						continue;
+
+					if ( is_numeric( $value ) ){
+						$user = new WP_User( $value );
+						$data_selected[] = array(
+							'id' => $user->ID,
+							'login' => $user->user_login,
+							'nicename' => $user->user_nicename,
+							'email' => $user->user_email,
+							'display_name' => $user->display_name,
+							'avatar' => 'http://gravatar.com/avatar/' . md5( strtolower( trim( $user->user_email ) ) ),
+						);
+					} else {
+						foreach ( $data_roles as $role ){
+							if ($role['id'] != $value)
+								continue;
+
+							$data_selected[] = $role;
+						}
+					}
+				}
+
+				$data_l10n = array(
+					'roles' => __( 'Roles', 'stream' ),
+					'users' => __( 'Users', 'stream' ),
+				);
+
+				$output .= sprintf(
+					'<input type="hidden" class="user_n_role_select" data-roles=\'%1$s\' data-selected=\'%2$s\' value="%3$s" data-localization=\'%4$s\' />',
+					json_encode( $data_roles ),
+					json_encode( $data_selected ),
+					esc_attr( implode( ',', $current_value ) ),
+					json_encode( $data_l10n )
+				);
+
+				// Fallback if nothing is selected
+				$output .= sprintf(
+					'<input type="hidden" name="%1$s[%2$s_%3$s][]" class="user_n_role_select_placeholder" value="__placeholder__" />',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+
+				$output .= '</div>';
+				break;
 			case 'multi_checkbox':
 				$output = sprintf(
 					'<div id="%1$s[%2$s_%3$s]"><fieldset>',
@@ -406,6 +469,19 @@ class WP_Stream_Settings {
 		return array_keys( WP_Stream_Connectors::$term_labels['stream_connector'] );
 	}
 
+	public static function get_roles_for_select2( $locked = array( 'administrator' ) ) {
+		$roles = self::get_roles();
+		$data_roles = array();
+		foreach ( $roles as $key => $role ){
+			$data_roles[] = array(
+				'id'     => $key,
+				'text'   => $role,
+				'locked' => ( in_array( $key, $locked ) ? true : false )
+			);
+		}
+		return $data_roles;
+	}
+
 	/**
 	 * Get an array of active Connectors
 	 *
@@ -464,5 +540,82 @@ class WP_Stream_Settings {
 			 */
 			do_action( 'wp_stream_auto_purge' );
 		}
+	}
+
+	/**
+	 * Function to output the Users from the search for Select2 AJAX
+	 *
+	 * @return void
+	 */
+	public static function find_users(){
+		if ( ! defined( 'DOING_AJAX' ) ) return;
+		$response = (object) array(
+			'status' => false,
+			'message' => __( 'There was an error in the request', 'stream' ),
+		);
+
+		$request = (object) array(
+			'find' => ( isset( $_POST['find'] )? esc_attr( trim( $_POST['find'] ) ) : '' ),
+			'page' => ( isset( $_POST['page'] )? absint( trim( $_POST['page'] ) ) - 1 : 0 ),
+			'limit' => ( isset( $_POST['limit'] )? absint( trim( $_POST['limit'] ) ) : 25 ),
+		);
+
+
+		add_filter( 'user_search_columns', array( __CLASS__, '_filter_user_search_columns' ), 10, 3 );
+
+		$users = new WP_User_Query(
+			array(
+				'search' => "*{$request->find}*",
+				'number' => $request->limit,
+				'offset' => $request->page * $request->limit,
+				'search_columns' => array(
+					'user_login',
+					'user_email',
+				),
+			)
+		);
+
+		if ( $users->get_total() === 0 ){
+			exit( json_encode( $response ) );
+		}
+
+		$response->status  = true;
+		$response->message = '';
+		$response->users   = array();
+		$response->total   = $users->get_total();
+
+		foreach ( $users->results as $key => $user ) {
+			$args = array(
+				'id' => $user->ID,
+				'login' => $user->user_login,
+				'nicename' => $user->user_nicename,
+				'email' => $user->user_email,
+				'display_name' => $user->display_name,
+				'avatar' => 'http://gravatar.com/avatar/' . md5( strtolower( trim( $user->user_email ) ) ),
+			);
+
+			$response->users[] = $args;
+		}
+
+		exit( json_encode( $response ) );
+	}
+
+
+	/**
+	 * Filtering the Columns that we will search for users on our Select2 Fields
+	 *
+	 * Usage:
+	 * add_filter( 'user_search_columns', array( __CLASS__, '_filter_user_search_columns' ), 10, 3 );
+	 *
+	 * @param  [type] $search_columns Columns that will be searched
+	 * @param  [type] $search         Search object
+	 * @param  [type] $query          Search Query
+	 *
+	 * @filter user_search_columns
+	 * @return [type]                 Columns after adding `display_name`
+	 */
+	public static function _filter_user_search_columns( $search_columns, $search, $query ){
+		$search_columns[] = 'display_name';
+		return $search_columns;
 	}
 }

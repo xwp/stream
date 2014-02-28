@@ -153,7 +153,7 @@ class WP_Stream_Admin {
 		wp_enqueue_script( 'timeago' );
 		wp_enqueue_script( 'timeago-locale' );
 
-		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ) );
+		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat', 'underscore' ) );
 		wp_localize_script(
 			'wp-stream-admin',
 			'wp_stream',
@@ -460,6 +460,11 @@ class WP_Stream_Admin {
 
 		foreach ( $caps as $cap ) {
 			if ( self::VIEW_CAP === $cap ) {
+				if ( in_array( $user->ID, WP_Stream_Settings::$options['general_role_access'] ) ){
+					$allcaps[ $cap ] = true;
+					break;
+				}
+
 				foreach ( $user->roles as $role ) {
 					if ( self::_role_can_view_stream( $role ) ) {
 						$allcaps[ $cap ] = true;
