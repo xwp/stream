@@ -120,7 +120,7 @@ class WP_Stream_Reports {
 		add_action( 'init', array( 'WP_Stream_Reports_Settings', 'load' ), 9 );
 
 		// Load sections here
-		require_once WP_STREAM_REPORTS_INC_DIR . 'metaboxes.php';
+		require_once WP_STREAM_REPORTS_INC_DIR . 'meta-boxes.php';
 		add_action( 'init', array( 'WP_Stream_Reports_Metaboxes', 'get_instance' ), 12 );
 
 		// Load the Interval/Date class, to allow input and parsing of the Reports interval
