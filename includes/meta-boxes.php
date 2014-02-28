@@ -148,7 +148,7 @@ class WP_Stream_Reports_Metaboxes {
 			$chart_types[ $args['chart-type'] ] .= ' active';
 		}
 
-		include WP_STREAM_REPORTS_VIEW_DIR . 'metabox.php';
+		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
 	}
 
 	/**

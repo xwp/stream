@@ -112,9 +112,6 @@ class WP_Stream_Reports {
 			return;
 		}
 
-		// Load Carbon to Handle dates much easier
-		require_once WP_STREAM_REPORTS_INC_DIR . 'vendor/Carbon.php';
-
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
 		add_action( 'init', array( 'WP_Stream_Reports_Settings', 'load' ), 9 );
@@ -122,6 +119,9 @@ class WP_Stream_Reports {
 		// Load sections here
 		require_once WP_STREAM_REPORTS_INC_DIR . 'meta-boxes.php';
 		add_action( 'init', array( 'WP_Stream_Reports_Metaboxes', 'get_instance' ), 12 );
+
+		// Load Carbon to Handle dates much easier
+		require_once WP_STREAM_REPORTS_INC_DIR . 'vendor/Carbon.php';
 
 		// Load the Interval/Date class, to allow input and parsing of the Reports interval
 		require_once WP_STREAM_REPORTS_INC_DIR . 'date-interval.php';
