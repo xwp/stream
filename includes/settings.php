@@ -143,17 +143,36 @@ class WP_Stream_Reports_Settings {
 	}
 
 	/**
-	 * Save user option
+	 * Handle option updating in the database
 	 *
 	 * @param string $key
-	 * @param mixed $option The actual value of the key
-	 *
-	 * @return unknown
+	 * @param mixed $option
+	 * @param bool  $redirect If the function must redirect and exit here
 	 */
-	public static function update_user_options( $key, $option ) {
+	public static function update_user_option( $key, $option, $redirect = false ) {
 		$user_options = self::get_user_options();
 		$user_options[ $key ] = $option;
-		return update_user_option( get_current_user_id(), __CLASS__, $user_options );
+		$is_saved = update_user_option( get_current_user_id(), __CLASS__, $user_options );
+
+		// If we need to redirect back to stream report page
+		if ( $is_saved && $redirect ) {
+			wp_redirect(
+				add_query_arg(
+					array( 'page' => WP_Stream_Reports::REPORTS_PAGE_SLUG ),
+					admin_url( 'admin.php' )
+				)
+			);
+			exit;
+		} else {
+			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream-reports' ) );
+		}
+
+		// If it was a standard ajax call requesting json back.
+		if ( $is_saved ) {
+			wp_send_json_success();
+		} else {
+			wp_send_json_error();
+		}
 	}
 
 }

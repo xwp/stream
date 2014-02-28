@@ -125,12 +125,37 @@ class WP_Stream_Reports {
 
 		// Load the Interval/Date class, to allow input and parsing of the Reports interval
 		require_once WP_STREAM_REPORTS_INC_DIR . 'date-interval.php';
+		add_action( 'init', array( 'WP_Stream_Report_Date_Interval', 'get_instance' ), 13 );
 
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
+	}
+
+	/**
+	 * @param array $ajax_hooks associative array of ajax hooks action to actual functionname
+	 * @param object $referer Class refering the action
+	 */
+	public static function handle_ajax_request( $ajax_hooks, $referer ) {
+		// If we are not in ajax mode, return early
+		if ( ! defined( 'DOING_AJAX' ) || ! is_object( $referer ) ) {
+			return;
+		}
+
+		foreach ( $ajax_hooks as $hook => $function ) {
+			add_action( "wp_ajax_{$hook}", array( $referer, $function ) );
+		}
+
+		// Check referer here so we don't have to check it on every function call
+		if ( array_key_exists( $_REQUEST['action'], $ajax_hooks ) ) {
+			// Checking permission
+			if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
+				wp_die( __( 'Cheating huh?', 'stream-reports' ) );
+			}
+			check_admin_referer( 'stream-reports-page', 'stream_reports_nonce' );
+		}
 	}
 
 	/**

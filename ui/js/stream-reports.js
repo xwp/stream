@@ -156,9 +156,8 @@
             this.$configureBtn.click(function () {
                 var $target = $(this),
 
-                    // Hold parent container
-                    $curPostbox = $target.parents('.postbox');
-
+								// Hold parent container
+								$curPostbox = $target.parents('.postbox');
 
                 // Change value of button
                 $target.text($target.text() === streamReportsLocal.configure ? streamReportsLocal.cancel : streamReportsLocal.configure);

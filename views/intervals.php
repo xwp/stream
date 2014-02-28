@@ -34,6 +34,6 @@
 						 value="">
 		</div>
 	</div>
-	<button class="button button-primary"><?php _e( 'Generate reports', 'stream-report' ) ?></button>
+	<a href="#" class="button button-primary"><?php _e( 'Generate reports', 'stream-report' ) ?></a>
 	<div class="clear"></div>
 </div>

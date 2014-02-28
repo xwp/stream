@@ -3,16 +3,39 @@ use Carbon\Carbon;
 
 // Template function
 function stream_report_intervals_html() {
-	$date = new WP_Stream_Report_Date_Interval();
+	$date = WP_Stream_Report_Date_Interval::get_instance();
+	$date->load();
+
 	include WP_STREAM_REPORTS_VIEW_DIR . 'intervals.php';
 }
 
 class WP_Stream_Report_Date_Interval {
+	/**
+	 * Hold Stream Reports Section instance
+	 *
+	 * @var string
+	 */
+	public static $instance;
+
+	/**
+	 * Contains an array of all available intervals
+	 *
+	 * @var array $intervals
+	 */
+	public $intervals;
 
 	/**
 	 * Class constructor
 	 */
 	public function __construct() {
+		// Ajax declaration to save time interval
+
+	}
+
+	/**
+	 * Load function
+	 */
+	public function load() {
 		// Filter the Predefined list of intervals to make it work
 		add_filter( 'stream-report-predefined-intervals', array( $this, 'filter_predefined_intervals' ), 20 );
 
@@ -130,5 +153,18 @@ class WP_Stream_Report_Date_Interval {
 		}
 
 		return $intervals;
+	}
+
+	/**
+	 * Return active instance of WP_Stream_Report_Date_Interval, create one if it doesn't exist
+	 *
+	 * @return WP_Stream_Report_Date_Interval
+	 */
+	public static function get_instance() {
+		if ( empty( self::$instance ) ) {
+			$class = __CLASS__;
+			self::$instance = new $class;
+		}
+		return self::$instance;
 	}
 }
