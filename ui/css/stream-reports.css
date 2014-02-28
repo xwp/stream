@@ -110,6 +110,10 @@
 	width: 125px;
 }
 
+.reports-date-interval .report-date-inputs .field-from {
+	text-align: right;
+}
+
 .reports-date-interval .report-date-inputs .__box {
 	position: relative;
 	display: block;
