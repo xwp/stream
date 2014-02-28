@@ -1,5 +1,5 @@
 /* dashboard pagination */
-jQuery(function($){ 
+jQuery(function($){
 
 	var dashboardBind = function(){
 		$( '#dashboard_stream_activity .pagination-links a').click(function(e){
@@ -9,7 +9,7 @@ jQuery(function($){
 				'stream-paged' : $(this).data('page'),
 			};
 	
-			$.post( ajaxurl, data, function( response ){
+			$.post( window.ajaxurl, data, function( response ){
 				$( '#dashboard_stream_activity .inside' ).html( response );
 				dashboardBind();
 			} );
