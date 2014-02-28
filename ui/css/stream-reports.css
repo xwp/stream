@@ -114,13 +114,13 @@
 	text-align: right;
 }
 
-.reports-date-interval .report-date-inputs .__box {
+.reports-date-interval .report-date-inputs .box {
 	position: relative;
 	display: block;
 	float: left;
 }
 
-.reports-date-interval .report-date-inputs .__box .date-remove {
+.reports-date-interval .report-date-inputs .box .date-remove {
 	display: none;
 	position: absolute;
 	cursor: pointer;
@@ -132,12 +132,12 @@
 	font-size: 14px;
 }
 
-.reports-date-interval .report-date-inputs .__box:first-child .date-remove {
+.reports-date-interval .report-date-inputs .box:first-child .date-remove {
 	left: 0;
 }
 
 
-.reports-date-interval .report-date-inputs .__box .date-remove:before {
+.reports-date-interval .report-date-inputs .box .date-remove:before {
 	content: '\f158';
 }
 

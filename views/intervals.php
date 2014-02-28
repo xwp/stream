@@ -14,7 +14,7 @@
 	</select>
 
 	<div class="report-date-inputs">
-		<div class="__box">
+		<div class="box">
 			<i class="date-remove dashicons"></i>
 			<input type="text"
 						 name="date_from"
@@ -24,7 +24,7 @@
 						 value="">
 		</div>
 		<span class="connector dashicons"></span>
-		<div class="__box">
+		<div class="box">
 			<i class="date-remove dashicons"></i>
 			<input type="text"
 						 name="date_to"
@@ -34,6 +34,6 @@
 						 value="">
 		</div>
 	</div>
-	<button class="button button-primary"> <?php _e( 'Generate reports', 'stream-report' ) ?></button>
+	<button class="button button-primary"><?php _e( 'Generate reports', 'stream-report' ) ?></button>
 	<div class="clear"></div>
 </div>
