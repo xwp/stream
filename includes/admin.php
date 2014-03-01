@@ -642,7 +642,7 @@ class WP_Stream_Admin {
 		);
 
 		$html_view_all = sprintf(
-			"<a class='%s' title='%s' href='%s'>%s</a>",
+			'<a class="%s" title="%s" href="%s">%s</a>',
 			'view-all',
 			esc_attr__( 'View all records', 'stream' ),
 			esc_url( $records_link ),
@@ -659,7 +659,7 @@ class WP_Stream_Admin {
 		}
 
 		$page_links[] = sprintf(
-			"<a class='%s' title='%s' href='%s' data-page='1'>%s</a>",
+			'<a class="%s" title="%s" href="%s" data-page="1">%s</a>',
 			'first-page' . $disable_first,
 			esc_attr__( 'Go to the first page', 'stream' ),
 			esc_url( remove_query_arg( 'paged', $records_link ) ),
@@ -667,7 +667,7 @@ class WP_Stream_Admin {
 		);
 
 		$page_links[] = sprintf(
-			"<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
+			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'prev-page' . $disable_first,
 			esc_attr__( 'Go to the previous page', 'stream' ),
 			esc_url( add_query_arg( 'paged', max( 1, $current - 1 ), $records_link ) ),
@@ -675,11 +675,11 @@ class WP_Stream_Admin {
 			'&lsaquo;'
 		);
 
-		$html_total_pages = sprintf( "<span class='total-pages'>%s</span>", number_format_i18n( $total_pages ) );
+		$html_total_pages = sprintf( '<span class="total-pages">%s</span>', number_format_i18n( $total_pages ) );
 		$page_links[]     = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), $current, $html_total_pages ) . '</span>';
 
 		$page_links[] = sprintf(
-			"<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
+			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'next-page' . $disable_last,
 			esc_attr__( 'Go to the next page', 'stream' ),
 			esc_url( add_query_arg( 'paged', min( $total_pages, $current + 1 ), $records_link ) ),
@@ -688,7 +688,7 @@ class WP_Stream_Admin {
 		);
 
 		$page_links[] = sprintf(
-			"<a class='%s' title='%s' href='%s' data-page='%s'>%s</a>",
+			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'last-page' . $disable_last,
 			esc_attr__( 'Go to the last page', 'stream' ),
 			esc_url( add_query_arg( 'paged', $total_pages, $records_link ) ),
@@ -696,7 +696,7 @@ class WP_Stream_Admin {
 			'&raquo;'
 		);
 
-		$html_pagination_links = "\n<div class='tablenav'><div class='tablenav-pages'><span class='pagination-links'>" . join( "\n", $page_links ) . '</span></div></div>';
+		$html_pagination_links = '<div class="tablenav"><div class="tablenav-pages"><span class="pagination-links">' . join( "\n", $page_links ) . '</span></div></div>';
 
 		echo '<div>' . $html_view_all . $html_pagination_links . '</div>';
 	}
