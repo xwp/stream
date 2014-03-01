@@ -646,7 +646,7 @@ class WP_Stream_Admin {
 			'view-all',
 			esc_attr__( 'View all records', 'stream' ),
 			esc_url( $records_link ),
-			__( 'View All', 'stream' )
+			esc_html__( 'View All', 'stream' )
 		);
 
 		$page_links    = array();
