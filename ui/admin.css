@@ -48,12 +48,12 @@
 #dashboard_stream_activity .tablenav{
 	clear: none;
 	padding-right: 5px;
+	margin: 4px 0 6px;
 }
 
 #dashboard_stream_activity .view-all{
 	float: left;
-	padding: 0 10px 3px;
-	margin-top: 5px;
+	margin: 7px 0 0 12px;
 }
 
 .toplevel_page_wp_stream .tablenav {
