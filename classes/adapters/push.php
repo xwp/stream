@@ -61,7 +61,20 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 					'args'     => array(
 						'push' => true,
 					),
-					'hint'     => __( 'Alert specific users via push.', 'stream-notifications' ),
+					'hint'     => array(
+						// hint 1
+						__( 'Alert specific users via push.', 'stream-notifications' ),
+
+						// hint 2
+						sprintf(
+							__( 'Only those users with a %s in their profile can be selected.', 'stream-notifications' ),
+							sprintf(
+								'<a href="%s">%s</a>',
+								admin_url( 'profile.php#wp-stream-highlight:ckpn_user_key' ),
+								__( 'Pushover User Key', 'stream-notifications' )
+							)
+						),
+					),
 				),
 				'subject' => array(
 					'title' => __( 'Subject', 'stream-notifications' ),
