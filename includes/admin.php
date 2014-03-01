@@ -544,7 +544,7 @@ class WP_Stream_Admin {
 	public static function dashboard_stream_activity_contents( $paged = 1 ) {
 
 		$options = get_option( 'dashboard_stream_activity_options', array() );
-		$records_per_page = isset( $options['record_per_page'] ) ? absint( $options['records_per_page'] ) : 5;
+		$records_per_page = isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5;
 		$args = array(
 			'records_per_page' => $records_per_page,
 			'paged' => $paged,
