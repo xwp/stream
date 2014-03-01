@@ -156,7 +156,7 @@
 				<% if ( field.hint ) { %>
 					<% var hints = ( typeof field.hint === "object" ? field.hint : [field.hint] ); %>
 					<% for ( i in hints ) { var hint = hints[i]; %>
-						<p class="description"><%- hint %></p>
+						<p class="description"><%= hint %></p>
 					<% } %>
 				<% } %>
 			</th>
