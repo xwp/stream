@@ -1,5 +1,5 @@
 /*jslint nomen: true */
-/*global jQuery, _, nv, d3, stream, streamReportsLocal, document, window */
+/*global jQuery, _, nv, d3, stream, streamReportsLocal, document, window, ajaxurl */
 (function (window, $, _, nv, d3, streamReportsLocal) {
     'use strict';
 
@@ -133,6 +133,7 @@
 					})
 				}
     };
+
     /**
      * Metabox logic logic
      */
@@ -147,59 +148,76 @@
             this.configureSection();
         },
         configureSection: function () {
-            var t = this;
+					var parent = this;
+					// Trigger select2js
+					this.$configureDiv.find('.chart-options').select2();
 
-            // Trigger select2js
-            t.$configureDiv.find('.chart-options').select2();
+					// Change chart type toggle
+					this.$configureDiv.find('.chart-types .dashicons').click(function () {
+						var $target = $(this);
+						if (!$target.hasClass('active')) {
+							$target.siblings().removeClass('active');
+							$target.addClass('active');
+							parent.$btnSave.removeClass('disabled');
+						}
+					});
 
-            // Change chart type toggle
-            this.$configureDiv.find('.chart-types .dashicons').click(function () {
-                var $target = $(this);
-                if (!$target.hasClass('active')) {
-                    $target.siblings().removeClass('active');
-                    $target.addClass('active');
-                    t.configureEnableSaveButton($target);
-                }
-            });
+					// Bind handler to save button
+					this.$btnSave = this.$configureDiv.find('.button-primary').click(this.configureSave);
 
-            // Confirmation of deletion
-            this.$deleteBtn.click(function () {
-                if (!window.confirm(streamReportsLocal.deletemsg)) {
-                    return false;
-                }
-            });
+					// Confirmation of deletion
+					this.$deleteBtn.click(function () {
+						if (!window.confirm(streamReportsLocal.deletemsg)) {
+							return false;
+						}
+					});
 
-            // Configuration toggle
-            this.$configureBtn.click(function () {
-                var $target = $(this),
+					// Configuration toggle
+					this.$configureBtn.click(function () {
+						var $target = $(this),
 
-								// Hold parent container
-								$curPostbox = $target.parents('.postbox');
+						// Hold parent container
+						$curPostbox = $target.parents('.postbox');
 
-                // Change value of button
-                $target.text($target.text() === streamReportsLocal.configure ? streamReportsLocal.cancel : streamReportsLocal.configure);
+						// Change value of button
+						$target.text($target.text() === streamReportsLocal.configure ? streamReportsLocal.cancel : streamReportsLocal.configure);
 
-                // Always show the cancel button
-                $target.toggleClass('edit-box');
+						// Always show the cancel button
+						$target.toggleClass('edit-box');
 
-                // Show the delete button
-                $target.parent().next().find('a').toggleClass('visible');
+						// Show the delete button
+						$target.parent().next().find('a').toggleClass('visible');
 
-                //Open the section if it's hidden
-                $curPostbox.removeClass('closed');
+						//Open the section if it's hidden
+						$curPostbox.removeClass('closed');
 
-                // Show the configure div
-                $curPostbox.find('.inside .configure').toggleClass('visible');
-            });
+						// Show the configure div
+						$curPostbox.find('.inside .configure').toggleClass('visible');
+					});
         },
-        configureEnableSaveButton : function ($target) {
-            var $submit = $target.parents('.configure').find('.configure-submit');
-            if ($submit.hasClass('disabled')) {
-                $submit.removeClass('disabled');
-            }
-        }
-    };
+				configureSave: function() {
+					var parent = stream.report.metabox;
+					if ($(this).hasClass('disabled')){
+						return false;
+					}
 
+					// Send the new
+					$.ajax({
+						type: 'GET',
+						url: ajaxurl,
+						data: {
+							action: 'stream_report_save_metabox_config',
+							stream_reports_nonce : $('#stream_report_nonce').val(),
+							chart_type : parent.$configureDiv.find('.chart-types .active').data('type'),
+							section_id : $(this).data('id')
+						},
+						dataType: 'json',
+						success : function(data) {
+							console.log(data);
+						}
+					});
+				}
+    };
 
     /**
      * Chart logic

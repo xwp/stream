@@ -1,4 +1,4 @@
-<div class="stream-section-wrapper" data-id="<?php echo esc_attr( $key ) ?>">
+<div class="stream-section-wrapper">
 	<div class="configure">
 		<div class="inside">
 			<select class="chart-options">
@@ -52,7 +52,8 @@
 			<input type="button"
 						 name="submit"
 						 class="button button-primary configure-submit disabled"
-						 value="<?php esc_html_e( 'Save', 'stream-reports' ) ?>">
+						 value="<?php esc_html_e( 'Save', 'stream-reports' ) ?>"
+						 data-id="<?php echo esc_attr( $key ) ?>">
 		</div>
 	</div>
 

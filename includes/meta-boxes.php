@@ -35,8 +35,10 @@ class WP_Stream_Reports_Metaboxes {
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
 		$ajax_hooks = array(
-			'stream_reports_add_metabox' => 'add_metabox',
-			'stream_reports_delete_metabox' => 'delete_metabox',
+			'stream_reports_add_metabox'           => 'add_metabox',
+			'stream_reports_delete_metabox'        => 'delete_metabox',
+			'stream_report_save_metabox_config'    => 'save_metabox_config',
+			'stream_report_update_metabox_display' => 'update_metabox_display',
 		);
 
 		// Register all ajax action and check referer for this class
@@ -81,7 +83,7 @@ class WP_Stream_Reports_Metaboxes {
 				'title'      => "Report {$title_key}" . $configure,
 				'priority'   => 'default',
 				'context'    => 'normal',
-				'chart-type' => 'bar',
+				'chart_type' => 'bar',
 			);
 
 			// Parse default argument
@@ -123,8 +125,8 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		// Apply the active class to the active chart type used
-		if ( array_key_exists( $args['chart-type'], $chart_types ) ) {
-			$chart_types[ $args['chart-type'] ] .= ' active';
+		if ( array_key_exists( $args['chart_type'], $chart_types ) ) {
+			$chart_types[ $args['chart_type'] ] .= ' active';
 		}
 
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
@@ -134,10 +136,23 @@ class WP_Stream_Reports_Metaboxes {
 	 * Update configuration array from ajax call and save this to the user option
 	 */
 	public function save_metabox_config() {
-		//@todo Parse the new config from $_POST and validate all field
+		$input = array(
+			'id'          => ( isset( $_REQUEST['section_id'] ) && is_numeric( $_REQUEST['section_id'] ) ) ?  (int) $_REQUEST['section_id'] : false,
+			'chart_type'  => isset( $_REQUEST['chart_type'] ) ? sanitize_text_field( $_REQUEST['chart_type'] ) : false,
+		);
+
+		if (
+			in_array( false, array_values( $input ) )
+			&& ! isset( self::$sections[ $input['id'] ] )
+		) {
+			wp_send_json_error();
+		}
+
+		// Store the chart type
+		self::$sections[ $input['id'] ]['chart_type'] = $input['chart_type'];
 
 		// Update the database option
-		$this->update_option();
+		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
 	}
 
 	/**
