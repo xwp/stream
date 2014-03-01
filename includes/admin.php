@@ -528,12 +528,7 @@ class WP_Stream_Admin {
 
 	public static function dashboard_stream_activity_update_contents(){
 
-		if ( ! empty( $_POST['stream-paged'] ) ) {
-			$paged = absint( $_POST['stream-paged'] );
-		} else {
-			$paged = 1;
-		}
-
+		$paged = ! empty( $_POST['stream-paged'] ) ? absint( $_POST['stream-paged'] ) : 1;
 		self::dashboard_stream_activity_contents( $paged );
 		die;
 	}
