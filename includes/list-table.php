@@ -463,10 +463,22 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		if ( is_network_admin() ) {
 			$blogs = array();
+
+			// display network blog as the first option
+			$network_blog = self::get_network_blog();
+			$blogs[$network_blog->blog_id] = array(
+				'label'    => $network_blog->blogname,
+				'disabled' => '',
+			);
+
+			// add all sites
 			foreach ( (array) wp_get_sites() as $blog ) {
-				$blogs[$blog['blog_id']] = $blog['domain'];
+				$blog_data = get_blog_details( $blog );
+				$blogs[$blog['blog_id']] = array(
+					'label'    => $blog_data->blogname,
+					'disabled' => '',
+				);
 			}
-			$blogs[0] =
 
 			$filters['blog_id'] = array(
 				'title' => __( 'blogs', 'stream' ),
