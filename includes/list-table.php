@@ -300,7 +300,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	public static function get_network_blog() {
 		$blog           = new stdClass;
 		$blog->blog_id  = 0;
-		$blog->blogname = 'Network Admin';
+		$blog->blogname = __( 'Network Admin', 'stream' );
 
 		return $blog;
 	}
