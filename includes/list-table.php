@@ -657,7 +657,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * This will be moved to blog connector perhaps
 	 * @filter stream_query_args
 	 */
-	static function set_network_option_value() {
+	static function set_network_option_value( $args ) {
 		if ( isset( $args['blog_id'] ) && $args['blog_id'] === 'network' ) {
 			$args['blog_id'] = 0;
 		}
