@@ -466,7 +466,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			// display network blog as the first option
 			$network_blog = self::get_network_blog();
-			$blogs[$network_blog->blog_id] = array(
+			$blogs['network'] = array(
 				'label'    => $network_blog->blogname,
 				'disabled' => '',
 			);
