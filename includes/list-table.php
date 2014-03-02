@@ -520,11 +520,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 		} else {
 			$options  = array( '<option value=""></option>' );
 			$selected = filter_input( INPUT_GET, $name );
-			foreach ( $items as $v => $label ) {
-				$options[$v] = sprintf(
+			foreach ( $items as $option_value => $label ) {
+				$options[$option_value] = sprintf(
 					'<option value="%s" %s %s>%s</option>',
-					$v,
-					selected( $v, $selected, false ),
+					$option_value,
+					selected( $option_value, $selected, false ),
 					$label['disabled'],
 					$label['label']
 				);
