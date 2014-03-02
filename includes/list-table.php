@@ -22,6 +22,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
+		add_filter( 'stream_query_args', array( __CLASS__, 'set_network_option_value' ) );
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 		set_screen_options();
 
@@ -650,5 +651,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 		</fieldset>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * This will be moved to blog connector perhaps
+	 * @filter stream_query_args
+	 */
+	static function set_network_option_value {
+		if ( isset( $args['blog_id'] ) && $args['blog_id'] === 'network' ) {
+			$args['blog_id'] = 0;
+		}
+
+		return $args;
 	}
 }
