@@ -2,6 +2,10 @@
 	border-bottom: 0;
 }
 
+#dashboard_stream_activity h3 .postbox-title-action {
+	top: 6px;
+}
+
 #dashboard_stream_activity.postbox .inside,
 #dashboard_stream_activity ul,
 #dashboard_stream_activity ul li {
@@ -116,6 +120,9 @@
 }
 
 @media only screen and (max-width: 782px) {
+	#dashboard_stream_activity h3 .postbox-title-action {
+		top: 10px;
+	}
 	#dashboard_stream_activity .view-all {
 		display: none;
 	}
