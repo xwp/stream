@@ -80,7 +80,6 @@ class WP_Stream_Notifications_Form
 			wp_enqueue_script( 'accordion' );
 			wp_enqueue_style( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/css/form.css' );
 			wp_enqueue_script( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/form.js', array( 'underscore', 'select2' ) );
-			wp_enqueue_script( 'stream-notifications-actions' );
 			wp_localize_script( 'stream-notifications-form', 'stream_notifications', $this->get_js_options() );
 		}
 	}
