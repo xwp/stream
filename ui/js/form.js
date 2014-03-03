@@ -298,15 +298,24 @@ jQuery(function($){
 		// Reveal alert options after choosing alert type
 		.on( 'change.sn', '.alert-type', function() {
 			var $this    = $(this),
-				$wrapper = $(this).closest('.alert'),
+				$wrapper = $this.closest('.alert'),
 				$alert   = {},
+				$copy    = {},
 				options  = stream_notifications.adapters[ $this.val() ],
+				type     = $this.val(),
 				index    = $wrapper.attr('rel');
+
 			$wrapper.find('.alert-options').remove();
 
 			if ( ! options ) { return; }
 
-			$alert = $( tmpl_alert_options( $.extend( options, { type: $(this).val(), index: index  } ) ) );
+			$copy = $wrapper
+				.find(".alert-options")
+				.filter(function() {
+					return $(this).attr("data-type") === type;
+				});
+
+			$alert = $( tmpl_alert_options( $.extend( options, { type: type, index: index  } ) ) );
 			$alert.appendTo($wrapper);
 			selectify( $alert.find('select') );
 			selectify( $alert.find('input.tags, input.ajax'), { tags: [] } );
