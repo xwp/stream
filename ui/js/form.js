@@ -295,7 +295,7 @@ jQuery(function($){
 			selectify( divAlerts.find('.alert select') );
 		})
 
-		// Reveal rule options after choosing rule type
+		// Reveal alert options after choosing alert type
 		.on( 'change.sn', '.alert-type', function() {
 			var $this   = $(this),
 				options = stream_notifications.adapters[ $this.val() ],
