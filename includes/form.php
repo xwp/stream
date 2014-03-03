@@ -62,13 +62,13 @@ class WP_Stream_Notifications_Form
 	 * @return void
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( WP_Stream_Notifications::$screen_id != $hook || 'rule' != wp_stream_filter_input( INPUT_GET, 'view' ) ) {
+		if ( WP_Stream_Notifications::$screen_id !== $hook || 'rule' !== wp_stream_filter_input( INPUT_GET, 'view' ) ) {
 			return;
 		}
 
 		$view = wp_stream_filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 
-		if ( 'rule' == $view ) {
+		if ( 'rule' === $view ) {
 			wp_enqueue_script( 'dashboard' );
 			wp_enqueue_style( 'select2' );
 			wp_enqueue_script( 'select2' );
@@ -206,7 +206,7 @@ class WP_Stream_Notifications_Form
 		}
 
 		// Add gravatar for authors
-		if ( 'author' == $type && get_option( 'show_avatars' ) ) {
+		if ( 'author' === $type && get_option( 'show_avatars' ) ) {
 			foreach ( $data as $i => $item ) {
 				if ( $avatar = get_avatar( $item['id'], 20 ) ) {
 					$item['avatar'] = $avatar;
@@ -255,7 +255,7 @@ class WP_Stream_Notifications_Form
 			wp_send_json_error( esc_html__( 'Invalid nonce', 'stream-notifications' ) );
 		}
 
-		if ( empty( $id ) || (int) $id != $id ) {
+		if ( empty( $id ) || (int) $id !== $id ) {
 			wp_send_json_error( esc_html__( 'Invalid record ID', 'stream-notifications' ) );
 		}
 
@@ -591,7 +591,7 @@ class WP_Stream_Notifications_Form
 				<div id="misc-publishing-actions">
 					<div class="misc-pub-section misc-pub-post-status">
 						<label for="notification_visibility">
-							<input type="checkbox" name="visibility" id="notification_visibility" value="active" <?php checked( ! $rule->exists() || $rule->visibility === 'active' ) ?>>
+							<input type="checkbox" name="visibility" id="notification_visibility" value="active" <?php checked( ! $rule->exists() || 'active' === $rule->visibility ) ?>>
 							<?php esc_html_e( 'Active', 'stream-notifications' ) ?>
 						</label>
 					</div>
