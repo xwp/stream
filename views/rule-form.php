@@ -147,7 +147,7 @@
 </script>
 
 <script type="text/template" id="alert-template-options">
-<table class="alert-options form-table">
+<table class="alert-options form-table" data-type="<%- vars.type %>">
 	<% for ( field_name in vars.fields ) { var field = vars.fields[field_name]; %>
 		<% var argsHTML = ( typeof field.args === "object" ? "data-args=" + JSON.stringify( field.args ) : "" ); %>
 		<tr>
