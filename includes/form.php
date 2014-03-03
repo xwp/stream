@@ -10,6 +10,9 @@ class WP_Stream_Notifications_Form
 
 		// Enqueue our form scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11 );
+
+		// define `search_in` arg for WP_User_Query
+		add_filter( 'user_search_columns', array( $this, 'define_search_in_arg' ), 10, 3 );
 	}
 
 	public function load() {
@@ -104,14 +107,12 @@ class WP_Stream_Notifications_Form
 				case 'post_author':
 				case 'user':
 					$user_ids   = explode( ',', $query );
-					add_filter( 'user_search_columns', array( $this, 'define_search_in_arg' ), 10, 3 );
 					$user_query = new WP_User_Query(
 						array(
 							'include' => $user_ids,
 							'fields'  => array( 'ID', 'user_email', 'display_name' ),
 						)
 					);
-					remove_filter( 'user_search_columns', array( $this, 'define_search_in_arg' ), 10, 3 );
 					if ( $user_query->results ) {
 						$data = $this->format_json_for_select2(
 							$user_query->results,
