@@ -192,13 +192,15 @@ class WP_Stream_Notifications {
 	/**
 	 * @action admin_enqueue_scripts
 	 */
-	public static function register_scripts() {
-		wp_register_script( 'stream-notifications-actions', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/actions.js', array( 'jquery' ) );
-		wp_localize_script( 'stream-notifications-actions', 'stream_notifications_actions', array(
-			'messages' => array(
-				'deletePermanently' => __( 'Do you really want to delete this rule? This cannot be undone.', 'stream-notifications' ),
-			),
-		) );
+	public static function register_scripts( $hook ) {
+		if ( sprintf( 'stream_page_%s', self::NOTIFICATIONS_PAGE_SLUG ) === $hook ) {
+			wp_enqueue_script( 'stream-notifications-actions', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/actions.js', array( 'jquery' ) );
+			wp_localize_script( 'stream-notifications-actions', 'stream_notifications_actions', array(
+				'messages' => array(
+					'deletePermanently' => __( 'Do you really want to delete this rule? This cannot be undone.', 'stream-notifications' ),
+				),
+			) );
+		}
 	}
 
 	/**
@@ -288,28 +290,24 @@ class WP_Stream_Notifications {
 			}
 		}
 
-		if ( 'list' == $view ) {
-			if ( 'render' === $action ) {
-				wp_enqueue_script( 'stream-notifications-actions' );
-			} else {
-				if ( has_action( 'wp_stream_notifications_handle_' . $action ) ) {
-					if ( $bulk_ids ) {
-						foreach ( $bulk_ids as $id ) {
-							do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, true );
-						}
-					} else {
-						do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, false );
+		if ( 'list' === $view && 'render' !== $action ) {
+			if ( has_action( 'wp_stream_notifications_handle_' . $action ) ) {
+				if ( $bulk_ids ) {
+					foreach ( $bulk_ids as $id ) {
+						do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, true );
 					}
-				} elseif ( null === $search ) {
-					wp_redirect(
-						add_query_arg(
-							array(
-								'page' => self::NOTIFICATIONS_PAGE_SLUG,
-							),
-							admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-						)
-					);
+				} else {
+					do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, false );
 				}
+			} elseif ( null === $search ) {
+				wp_redirect(
+					add_query_arg(
+						array(
+							'page' => self::NOTIFICATIONS_PAGE_SLUG,
+						),
+						admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+					)
+				);
 			}
 		}
 
