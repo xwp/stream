@@ -654,64 +654,77 @@ class WP_Stream_Notifications_Form
 	}
 
 	public function metabox_data_tags() {
+		$data_tags = array(
+			__( 'Basic', 'stream-notifications' ) => array(
+				'summary'   => __( 'Summary message of the triggered record.', 'stream-notifications' ),
+				'author'    => __( 'User ID of the triggered record author.', 'stream-notifications' ),
+				'connector' => __( 'Connector of the triggered record.', 'stream-notifications' ),
+				'context'   => __( 'Context of the triggered record.', 'stream-notifications' ),
+				'action'    => __( 'Action of the triggered record.', 'stream-notifications' ),
+				'created'   => __( 'Timestamp of triggered record.', 'stream-notifications' ),
+				'ip'        => __( 'IP of the triggered record author.', 'stream-notifications' ),
+				'object_id' => __( 'Object ID of the triggered record.', 'stream-notifications' ),
+			),
+			__( 'Advanced', 'stream-notifications' ) => array(
+				'object.' => __( 'Specific object data of the record, relative to what the object type is:
+					<br /><br />
+					<strong>{object.post_title}</strong>
+					<br />
+					<strong>{object.post_excerpt}</strong>
+					<br />
+					<strong>{object.post_status}</strong>
+					<br />
+					<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more Post values</a>
+					<br /><br />
+					<strong>{object.name}</strong>
+					<br />
+					<strong>{object.taxonomy}</strong>
+					<br />
+					<strong>{object.description}</strong>
+					<br />
+					<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more Term values</a>', 'stream-notifications' ),
+
+				'author.' => __( 'Specific user data of the record author:
+					<br /><br />
+					<strong>{author.display_name}</strong>
+					<br />
+					<strong>{author.user_email}</strong>
+					<br />
+					<strong>{author.user_login}</strong>
+					<br />
+					<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more User values</a>', 'stream-notifications' ),
+				'meta.' => __( 'Specific meta data of the record, used to display specific meta values created by Connectors.
+					<br /><br />
+					Example: <strong>{meta.old_theme}</strong> to display the old theme name when a new theme is activated.', 'stream-notifications' ),
+			),
+		);
+		$allowed_html = array(
+			'a'      => array(
+				'href'   => array(),
+				'target' => array(),
+			),
+			'code'   => array(),
+			'strong' => array(),
+			'br'     => array(),
+		);
 		?>
 		<div id="data-tag-glossary" class="accordion-container">
 			<ul class="outer-border">
+				<?php foreach ( $data_tags as $section => $tags ) : ?>
 				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'General', 'stream-notifications' ) ?>"><?php _e( 'General', 'stream-notifications' ) ?></h3>
+					<h3 class="accordion-section-title hndle" title="<?php echo esc_attr( $section ) ?>"><?php echo esc_html( $section ) ?></h3>
 					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
-								<dt><code>{summary}</code></dt>
-								<dd><?php _e( 'Summary message of the triggered record', 'stream-notifications' ) ?></dd>
-								<dt><code>{object_id}</code></dt>
-								<dd><?php _e( 'Object ID of triggered record', 'stream-notifications' ) ?></dd>
-								<dt><code>{created}</code></dt>
-								<dd><?php _e( 'Timestamp of triggered record', 'stream-notifications' ) ?></dd>
-								<dt><code>{ip}</code></dt>
-								<dd><?php _e( 'IP of the person who authored the triggered record', 'stream-notifications' ) ?></dd>
+								<?php foreach ( $tags as $tag => $desc ) : ?>
+									<dt><code>{<?php echo esc_html( $tag ) ?>}</code></dt>
+									<dd><?php echo wp_kses( $desc, $allowed_html ) ?></dd>
+								<?php endforeach; ?>
 							</dl>
 						</div>
 					</div>
 				</li>
-				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Object', 'stream-notifications' ) ?>"><?php _e( 'Object', 'stream-notifications' ) ?></h3>
-					<div class="accordion-section-content">
-						<div class="inside">
-							<dl>
-								<dt><code>{object.post_title}</code></dt>
-								<dd><?php _e( 'Post title of the record post', 'stream-notifications' ) ?></dd>
-							</dl>
-						</div>
-					</div>
-				</li>
-				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Author', 'stream-notifications' ) ?>"><?php _e( 'Author', 'stream-notifications' ) ?></h3>
-					<div class="accordion-section-content">
-						<div class="inside">
-							<dl>
-								<dt><code>{author}</code></dt>
-								<dd><?php _e( 'ID of the record author', 'stream-notifications' ) ?></dd>
-								<dt><code>{author.user_login}</code></dt>
-								<dd><?php _e( 'Username of the record author', 'stream-notifications' ) ?></dd>
-								<dt><code>{author.user_email}</code></dt>
-								<dd><?php _e( 'Email address of the record author', 'stream-notifications' ) ?></dd>
-								<dt><code>{author.display_name}</code></dt>
-								<dd><?php _e( 'Display name of the record author', 'stream-notifications' ) ?></dd>
-								<dt><code>{author.user_url}</code></dt>
-								<dd><?php _e( 'Website URL of the record author', 'stream-notifications' ) ?></dd>
-							</dl>
-						</div>
-					</div>
-				</li>
-				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Meta', 'stream-notifications' ) ?>"><?php _e( 'Meta', 'stream-notifications' ) ?></h3>
-					<div class="accordion-section-content">
-						<div class="inside">
-
-						</div>
-					</div>
-				</li>
+				<?php endforeach; ?>
 			</ul>
 		</div>
 		<?php
