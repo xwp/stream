@@ -154,7 +154,10 @@
 			<th class="label">
 				<label><%- field.title %></label>
 				<% if ( field.hint ) { %>
-					<p class="description"><%- field.hint %></p>
+					<% var hints = ( typeof field.hint === "object" ? field.hint : [field.hint] ); %>
+					<% for ( i in hints ) { var hint = hints[i]; %>
+						<p class="description"><%= hint %></p>
+					<% } %>
 				<% } %>
 			</th>
 			<td>
