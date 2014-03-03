@@ -305,7 +305,7 @@ jQuery(function($){
 				type     = $this.val(),
 				index    = $wrapper.attr('rel');
 
-			$wrapper.find('.alert-options').remove();
+			$wrapper.find('.alert-options').hide();
 
 			if ( ! options ) { return; }
 
@@ -314,11 +314,17 @@ jQuery(function($){
 				.filter(function() {
 					return $(this).attr("data-type") === type;
 				});
+				$wrapper.find('.alert-options').hide();
 
-			$alert = $( tmpl_alert_options( $.extend( options, { type: type, index: index  } ) ) );
-			$alert.appendTo($wrapper);
-			selectify( $alert.find('select') );
-			selectify( $alert.find('input.tags, input.ajax'), { tags: [] } );
+			// render new alert tempate
+			if($copy.length === 0) {
+				$alert = $( tmpl_alert_options( $.extend( options, { type: type, index: index  } ) ) );
+				$alert.appendTo($wrapper);
+				selectify( $alert.find('select') );
+				selectify( $alert.find('input.tags, input.ajax'), { tags: [] } );
+			} else {
+				$copy.show();
+			}
 		})
 
 		// Delete an alert
