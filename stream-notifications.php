@@ -39,7 +39,7 @@ class WP_Stream_Notifications {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '1.2.3';
+	const STREAM_MIN_VERSION = '1.2.6';
 
 	/**
 	 * Hold Stream instance
@@ -105,10 +105,10 @@ class WP_Stream_Notifications {
 	 * Class constructor
 	 */
 	private function __construct() {
-		define( 'WP_STREAM_NOTIFICATIONS_DIR', plugin_dir_path( __FILE__ ) );
-		define( 'WP_STREAM_NOTIFICATIONS_URL', plugin_dir_url( __FILE__ ) );
-		define( 'WP_STREAM_NOTIFICATIONS_INC_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'includes/' );
-		define( 'WP_STREAM_NOTIFICATIONS_CLASS_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'classes/' );
+		define( 'WP_STREAM_NOTIFICATIONS_DIR', plugin_dir_path( __FILE__ ) ); // Has trailing slash
+		define( 'WP_STREAM_NOTIFICATIONS_URL', plugin_dir_url( __FILE__ ) ); // Has trailing slash
+		define( 'WP_STREAM_NOTIFICATIONS_INC_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'includes/' ); // Has trailing slash
+		define( 'WP_STREAM_NOTIFICATIONS_CLASS_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'classes/' ); // Has trailing slash
 
 		add_action( 'plugins_loaded', array( $this, 'load' ) );
 	}
@@ -127,12 +127,12 @@ class WP_Stream_Notifications {
 		}
 
 		// Load all classes in /classes folder
-		foreach ( glob( WP_STREAM_NOTIFICATIONS_DIR . '/classes/*.php' ) as $class ) {
+		foreach ( glob( WP_STREAM_NOTIFICATIONS_DIR . 'classes/*.php' ) as $class ) {
 			include $class;
 		}
 
 		// Include all adapters
-		foreach ( glob( WP_STREAM_NOTIFICATIONS_DIR . '/classes/adapters/*.php' ) as $class ) {
+		foreach ( glob( WP_STREAM_NOTIFICATIONS_DIR . 'classes/adapters/*.php' ) as $class ) {
 			include $class;
 		}
 
@@ -155,10 +155,10 @@ class WP_Stream_Notifications {
 		// Load form class
 
 		if ( is_admin() ) {
-			include WP_STREAM_NOTIFICATIONS_INC_DIR . '/form.php';
+			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'form.php';
 			$this->form = new WP_Stream_Notifications_Form;
 
-			include WP_STREAM_NOTIFICATIONS_INC_DIR . '/export.php';
+			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'export.php';
 		}
 	}
 
@@ -217,9 +217,9 @@ class WP_Stream_Notifications {
 			case 'rule':
 				$this->page_form( $id );
 				break;
+
 			default:
 				$this->page_list();
-				break;
 		}
 	}
 
@@ -232,7 +232,7 @@ class WP_Stream_Notifications {
 	 */
 	public function page_form( $id = null ) {
 		$rule = new WP_Stream_Notification_Rule( $id );
-		include WP_STREAM_NOTIFICATIONS_DIR . '/views/rule-form.php';
+		include WP_STREAM_NOTIFICATIONS_DIR . 'views/rule-form.php';
 	}
 
 	public function page_form_save() {
@@ -248,11 +248,11 @@ class WP_Stream_Notifications {
 		$search   = wp_stream_filter_input( INPUT_GET, 'search' );
 
 		// There is a chance we go from the bottom bulk actions select box
-		if ( ! $action || '-1' == $action ) {
+		if ( ! $action || '-1' === $action ) {
 			$action = wp_stream_filter_input( INPUT_GET, 'action2', FILTER_DEFAULT, array( 'options' => array( 'default' => 'render' ) ) );
 		}
 
-		if ( $_POST && 'rule' == $view ) {
+		if ( $_POST && 'rule' === $view ) {
 			$data = $_POST;
 			$rule = new WP_Stream_Notification_Rule( $id );
 
@@ -278,7 +278,7 @@ class WP_Stream_Notifications {
 				do_action( 'saved_stream_notification_rule', $rule );
 			}
 
-			if ( $result && 'edit' != $action ) {
+			if ( $result && 'edit' !== $action ) {
 				wp_redirect(
 					add_query_arg(
 						array(
@@ -346,14 +346,14 @@ class WP_Stream_Notifications {
 		$data             = $_GET;
 		$nonce            = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 		$nonce_identifier = $is_bulk ? 'wp_stream_notifications_bulk_actions' : "activate-record_$id";
-		$visibility       = ( 'activate' == $action ) ? 'active' : 'inactive';
+		$visibility       = ( 'activate' === $action ) ? 'active' : 'inactive';
 
 		if ( ! wp_verify_nonce( $nonce, $nonce_identifier ) ) {
 			return;
 		}
 
 		$activate_rule = apply_filters( 'wp_stream_notifications_before_rule_' . $action, true, $id );
-		if ( false == $activate_rule ) {
+		if ( false === $activate_rule ) {
 			return;
 		}
 
@@ -389,7 +389,7 @@ class WP_Stream_Notifications {
 		}
 
 		$activate_rule = apply_filters( 'wp_stream_notifications_before_rule_' . $action, true, $id );
-		if ( false == $activate_rule ) {
+		if ( false === $activate_rule ) {
 			return;
 		}
 
