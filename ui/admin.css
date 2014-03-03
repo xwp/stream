@@ -112,15 +112,18 @@
 	}
 }
 
-@media only screen and (max-width: 480px) {
-	.toplevel_page_wp_stream .fixed .column-author {
-		display: none;
-	}
+@media only screen and (max-width: 782px) {
 	#dashboard_stream_activity .view-all{
 		display: none;
 	}
 	#dashboard_stream_activity .tablenav{
 		padding-top: 15px;
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	.toplevel_page_wp_stream .fixed .column-author {
+		display: none;
 	}
 }
 
