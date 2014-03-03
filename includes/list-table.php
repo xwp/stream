@@ -18,7 +18,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				'per_page',
 				array(
 					'default' => 20,
-					'label'   => __( 'Rules per page', 'stream-notifications' ),
+					'label'   => esc_html__( 'Rules per page', 'stream-notifications' ),
 					'option'  => 'edit_stream_notifications_per_page',
 				)
 			);
@@ -45,10 +45,10 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'wp_stream_notifications_list_table_columns',
 			array(
 				'cb'          => '<span class="check-column"><input type="checkbox" /></span>',
-				'name'        => __( 'Name', 'stream-notifications' ),
-				'type'        => __( 'Type', 'stream-notifications' ),
-				'occurrences' => __( 'Occurrences', 'stream-notifications' ),
-				'date'        => __( 'Date', 'stream-notifications' ),
+				'name'        => esc_html__( 'Name', 'stream-notifications' ),
+				'type'        => esc_html__( 'Type', 'stream-notifications' ),
+				'occurrences' => esc_html__( 'Occurrences', 'stream-notifications' ),
+				'date'        => esc_html__( 'Date', 'stream-notifications' ),
 			)
 		);
 	}
@@ -89,8 +89,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	function column_cb( $item ) {
 			return sprintf(
 			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
-			/*$1%s*/ 'wp_stream_notifications_checkbox',
-			/*$2%s*/ $item->ID
+			'wp_stream_notifications_checkbox',
+			$item->ID
 		);
 	}
 
@@ -136,7 +136,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 			foreach ( $allowed_params as $param ) {
 				if ( $paramval = wp_stream_filter_input( INPUT_GET, $param ) ) {
-					$args[$param] = $paramval;
+					$args[ $param ] = $paramval;
 				}
 			}
 		}
@@ -158,11 +158,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		switch ( $column_name ) {
 
 			case 'name':
-				$name = strlen( $item->summary )
-					? $item->summary
-					: '(' . __( 'no title', 'stream' ) . ')';
-
-				$out = sprintf(
+				$name = strlen( $item->summary ) ? $item->summary : sprintf( '(%s)', esc_html__( 'no title', 'stream-notifications' ) );
+				$out  = sprintf(
 					'<strong style="display:block;margin-bottom:.2em;font-size:14px;"><a href="%s" class="%s" title="%s">%s</a>%s</strong>', // TODO: Add these styles to a CSS file
 					add_query_arg(
 						array(
@@ -176,7 +173,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 					'row-title',
 					esc_attr( $name ),
 					esc_html( $name ),
-					'inactive' == $item->visibility ? sprintf( ' - <span class="post-state">%s</span>', __( 'Inactive', 'stream-notifications' ) ) : ''
+					'inactive' === $item->visibility ? sprintf( ' - <span class="post-state">%s</span>', esc_html__( 'Inactive', 'stream-notifications' ) ) : ''
 				);
 
 				$out .= $this->get_action_links( $item );
@@ -187,13 +184,13 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				break;
 
 			case 'occurrences':
-				$out = (int) get_stream_meta( $item->ID, 'occurrences', true );
+				$out = absint( get_stream_meta( $item->ID, 'occurrences', true ) );
 				break;
 
 			case 'date':
 				$out  = $this->column_link( get_date_from_gmt( $item->created, 'Y/m/d' ), 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
-				$out .= ( 'active' == $item->visibility ) ? __( 'Active', 'stream-notifications' ) : __( 'Last Modified', 'stream-notifications' );
+				$out .= ( 'active' === $item->visibility ) ? esc_html__( 'Active', 'stream-notifications' ) : esc_html__( 'Last Modified', 'stream-notifications' );
 				break;
 
 			default:
@@ -210,7 +207,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 						 * Also, note that the action name must include the $column_title registered
 						 * with wp_stream_notifications_register_column_defaults
 						 */
-						if ( $column_title == $column_name && has_action( 'wp_stream_notifications_insert_column_default-' . $column_title ) ) {
+						if ( $column_title === $column_name && has_action( 'wp_stream_notifications_insert_column_default-' . $column_title ) ) {
 							$out = do_action( 'wp_stream_notifications_insert_column_default-' . $column_title, $item );
 						} else {
 							$out = $column_name;
@@ -236,7 +233,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$deletion_nonce   = wp_create_nonce( "delete-record_$record->ID" );
 
 		$action_links = array();
-		$action_links[ __( 'Edit', 'stream-notifications' ) ] = array(
+		$action_links[ esc_html__( 'Edit', 'stream-notifications' ) ] = array(
 			'href' => add_query_arg(
 				array(
 					'page'   => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
@@ -249,8 +246,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			'class' => null,
 		);
 
-		if ( 'active' == $record->visibility ) {
-			$action_links[ __( 'Deactivate', 'stream-notifications' ) ] = array(
+		if ( 'active' === $record->visibility ) {
+			$action_links[ esc_html__( 'Deactivate', 'stream-notifications' ) ] = array(
 				'href' => add_query_arg(
 					array(
 						'page'            => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
@@ -262,8 +259,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				),
 				'class' => null,
 			);
-		} elseif ( 'inactive' == $record->visibility ) {
-			$action_links[ __( 'Activate', 'stream-notifications' ) ] = array(
+		} elseif ( 'inactive' === $record->visibility ) {
+			$action_links[ esc_html__( 'Activate', 'stream-notifications' ) ] = array(
 				'href' => add_query_arg(
 					array(
 						'page'            => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
@@ -278,7 +275,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 			$visibility = wp_stream_filter_input( INPUT_GET, 'visibility' );
 
-			$action_links[ __( 'Delete Permanently', 'stream-notifications' ) ] = array(
+			$action_links[ esc_html__( 'Delete Permanently', 'stream-notifications' ) ] = array(
 				'href' => add_query_arg(
 					array(
 						'page'            => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
@@ -317,7 +314,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			$last_link = end( $custom_links );
 			foreach ( $custom_links as $key => $link ) {
 				$out .= $link;
-				if ( $key != $last_link ) {
+				if ( $key !== $last_link ) {
 					$out .= ' | ';
 				}
 			}
@@ -352,7 +349,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	function filters_form( $which ) {
-		if ( 'top' == $which ) {
+		if ( 'top' === $which ) {
 			$visibility = wp_stream_filter_input( INPUT_GET, 'visibility' );
 			$filters_string = sprintf(
 				'<input type="hidden" name="page" value="%s"/>
@@ -394,7 +391,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	 * @return string Bulk actions select box and a respective submit
 	 */
 	function stream_notifications_bulk_actions( $which ) {
-		$dropdown_name = ( 'top' == $which ) ? 'action' : 'action2';
+		$dropdown_name = ( 'top' === $which ) ? 'action' : 'action2';
 		$visibility    = wp_stream_filter_input( INPUT_GET, 'visibility', FILTER_DEFAULT );
 		$options       = array();
 
@@ -403,19 +400,19 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			esc_html__( 'Bulk Actions', 'stream-notifications' )
 		);
 
-		if ( 'active' != $visibility ) {
+		if ( 'active' !== $visibility ) {
 			$options[] = sprintf(
 				'<option value="activate">%s</option>',
 				esc_html__( 'Activate', 'stream-notifications' )
 			);
 		}
-		if ( 'inactive' != $visibility ) {
+		if ( 'inactive' !== $visibility ) {
 			$options[] = sprintf(
 				'<option value="deactivate">%s</option>',
 				esc_html__( 'Deactivate', 'stream-notifications' )
 			);
 		}
-		if ( 'inactive' == $visibility ) {
+		if ( 'inactive' === $visibility ) {
 			$options[] = sprintf(
 				'<option value="delete">%s</option>',
 				esc_html__( 'Delete Permanently', 'stream-notifications' )
@@ -441,8 +438,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	function list_navigation() {
 		$navigation_items = array(
 			'all' => array(
-				'link_text'  => __( 'All', 'stream-notifications' ),
-				'url' => add_query_arg(
+				'link_text' => esc_html__( 'All', 'stream-notifications' ),
+				'url'       => add_query_arg(
 					array(
 						'page' => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
 					),
@@ -453,8 +450,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				'count'      => $this->count_records(),
 			),
 			'active' => array(
-				'link_text'  => __( 'Active', 'stream-notifications' ),
-				'url' => add_query_arg(
+				'link_text' => esc_html__( 'Active', 'stream-notifications' ),
+				'url'       => add_query_arg(
 					array(
 						'page'       => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
 						'visibility' => 'active',
@@ -466,8 +463,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				'count'      => $this->count_records( array( 'visibility' => 'active' ) ),
 			),
 			'inactive' => array(
-				'link_text'  => __( 'Inactive', 'stream-notifications' ),
-				'url' => add_query_arg(
+				'link_text' => esc_html__( 'Inactive', 'stream-notifications' ),
+				'url'       => add_query_arg(
 					array(
 						'page'       => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
 						'visibility' => 'inactive',
@@ -494,7 +491,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				'<li class="%s"><a href="%s" class="%s">%s%s</a>%s</li>',
 				esc_attr( $item[ 'li_class' ] ),
 				esc_attr( $item[ 'url' ] ),
-				( $visibility == $visibility_filter ) ? sprintf( 'current %s', esc_attr( $item[ 'link_class' ] ) ) : esc_attr( $item[ 'link_class' ] ),
+				( $visibility === $visibility_filter ) ? sprintf( 'current %s', esc_attr( $item[ 'link_class' ] ) ) : esc_attr( $item[ 'link_class' ] ),
 				esc_html( $item[ 'link_text' ] ),
 				( null !== $item[ 'count' ] ) ? sprintf( ' <span class="count">(%s)</span>', esc_html( $item[ 'count' ] ) ) : '',
 				( $i === count( $navigation_items ) ) ? '' : ' | '
@@ -535,8 +532,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	function display_tablenav( $which ) {
-		if ( 'top' == $which ) { ?>
-			<div class="tablenav <?php echo esc_attr( $which ); ?>">
+		if ( 'top' === $which ) : ?>
+			<div class="tablenav <?php echo esc_attr( $which ) ?>">
 				<?php
 				$this->extra_tablenav( $which );
 				$this->pagination( $which );
@@ -544,8 +541,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 				<br class="clear" />
 			</div>
-		<?php } else { ?>
-			<div class="tablenav <?php echo esc_attr( $which ); ?>">
+		<?php else : ?>
+			<div class="tablenav <?php echo esc_attr( $which ) ?>">
 				<?php
 				do_action( 'wp_stream_notifications_after_list_table' );
 				$this->extra_tablenav( $which );
@@ -555,7 +552,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				<br class="clear" />
 			</div>
 		<?php
-		}
+		endif;
 	}
 
 	function single_row( $item ) {
@@ -572,7 +569,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	static function set_screen_option( $dummy, $option, $value ) {
-		if ( 'edit_stream_notifications_per_page' == $option ) {
+		if ( 'edit_stream_notifications_per_page' === $option ) {
 			return $value;
 		} else {
 			return $dummy;
@@ -582,7 +579,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	function get_rule_types( $item ) {
 		$rule = get_option( sprintf( 'stream_notifications_%d', $item->ID ) );
 		if ( empty( $rule['alerts'] ) ) {
-			return __( 'N/A', 'stream_notification' );
+			return esc_html__( 'N/A', 'stream-notifications' );
 		}
 		$types  = wp_list_pluck( $rule['alerts'], 'type' );
 		$titles = wp_list_pluck(

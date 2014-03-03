@@ -29,19 +29,19 @@ class WP_Stream_Notification_Settings {
 		if ( empty( self::$fields ) ) {
 			$fields = array(
 				'notifications' => array(
-					'title'  => __( 'Notifications', 'stream-notifications' ),
+					'title'  => esc_html__( 'Notifications', 'stream-notifications' ),
 					'fields' => array(
 						array(
 							'name'    => 'role_access',
-							'title'   => __( 'Role Access', 'stream-notifications' ),
+							'title'   => esc_html__( 'Role Access', 'stream-notifications' ),
 							'type'    => 'multi_checkbox',
-							'desc'    => __( 'Users from the selected roles above will have permission to view, create and edit Stream Notifications. However, only site Administrators can access Stream Notifications Settings.', 'stream-notifications' ),
+							'desc'    => esc_html__( 'Users from the selected roles above will have permission to view, create and edit Stream Notifications. However, only site Administrators can access Stream Notifications Settings.', 'stream-notifications' ),
 							'choices' => WP_Stream_Settings::get_roles(),
 							'default' => array( 'administrator' ),
 						),
 						array(
 							'name'  => 'export_rules',
-							'title' => __( 'Export Rules', 'stream' ),
+							'title' => esc_html__( 'Export Rules', 'stream' ),
 							'type'  => 'link',
 							'href'  => add_query_arg(
 								array(
@@ -50,12 +50,12 @@ class WP_Stream_Notification_Settings {
 								),
 								admin_url( 'admin-ajax.php' )
 							),
-							'desc'    => __( 'Export all rules to a JSON file.', 'stream-notifications' ),
+							'desc'    => esc_html__( 'Export all rules to a JSON file.', 'stream-notifications' ),
 							'default' => 0,
 						),
 						array(
 							'name'  => 'import_rules',
-							'title' => __( 'Import Rules', 'stream-notifications' ),
+							'title' => esc_html__( 'Import Rules', 'stream-notifications' ),
 							'type'  => 'file',
 							'href'  => add_query_arg(
 								array(
@@ -64,7 +64,7 @@ class WP_Stream_Notification_Settings {
 								),
 								admin_url( 'admin-ajax.php' )
 							),
-							'desc'    => __( 'Import rules from a JSON file.', 'stream-notifications' ),
+							'desc'    => esc_html__( 'Import rules from a JSON file.', 'stream-notifications' ),
 							'default' => 0,
 						),
 					),

@@ -19,9 +19,9 @@ class WP_Stream_Notifications_Import_Export {
 		$cached = get_transient( 'stream-notification-rules' );
 
 		foreach ( $query as $rule ) {
-			$rule = new WP_Stream_Notification_Rule( $rule->ID );
+			$rule     = new WP_Stream_Notification_Rule( $rule->ID );
 			$rule->ID = null;
-			$items[] = $rule->to_array();
+			$items[]  = $rule->to_array();
 		}
 
 		$json = json_encode( $items );
@@ -39,9 +39,11 @@ class WP_Stream_Notifications_Import_Export {
 
 	public static function import() {
 		$filename = 'notifications_import_rules';
-		if ( ! empty( $_FILES[ WP_Stream_Settings::KEY ][ 'tmp_name' ][ $filename ] ) ) {
-			$tmpfile = $_FILES[ WP_Stream_Settings::KEY ][ 'tmp_name' ][ $filename ];
-			$result = self::_import( file_get_contents( $tmpfile ) );
+
+		if ( ! empty( $_FILES[ WP_Stream_Settings::KEY ]['tmp_name'][ $filename ] ) ) {
+
+			$tmpfile = $_FILES[ WP_Stream_Settings::KEY ]['tmp_name'][ $filename ];
+			$result  = self::_import( file_get_contents( $tmpfile ) );
 
 			if ( $result ) {
 				list( $class, $message ) = $result;

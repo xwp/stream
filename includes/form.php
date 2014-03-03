@@ -1,7 +1,6 @@
 <?php
 
-class WP_Stream_Notifications_Form
-{
+class WP_Stream_Notifications_Form {
 
 	function __construct() {
 		// AJAX end point for form auto completion
