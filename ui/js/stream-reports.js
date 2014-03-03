@@ -21,11 +21,13 @@
 
                 if (_.isFunction($.fn.datepicker)) {
                     to.datepicker({
-                        dateFormat: 'yy/mm/dd'
+                        dateFormat: 'yy/mm/dd',
+                        maxDate: 0
                     });
 
                     from.datepicker({
-                        dateFormat: 'yy/mm/dd'
+                        dateFormat: 'yy/mm/dd',
+                        maxDate: 0
                     });
 
                     datepickers.datepicker('widget').addClass('stream-datepicker');
