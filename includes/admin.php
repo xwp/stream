@@ -511,7 +511,7 @@ class WP_Stream_Admin {
 
 		wp_add_dashboard_widget(
 			'dashboard_stream_activity',
-			__( 'Stream Activity', 'stream' ),
+			esc_html__( 'Stream Activity', 'stream' ),
 			array( __CLASS__, 'dashboard_stream_activity_initial_contents' ),
 			array( __CLASS__, 'dashboard_stream_activity_options' )
 		);
@@ -538,11 +538,11 @@ class WP_Stream_Admin {
 	 */
 	public static function dashboard_stream_activity_contents( $paged = 1 ) {
 
-		$options = get_option( 'dashboard_stream_activity_options', array() );
+		$options          = get_option( 'dashboard_stream_activity_options', array() );
 		$records_per_page = isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5;
-		$args = array(
+		$args             = array(
 			'records_per_page' => $records_per_page,
-			'paged' => $paged,
+			'paged'            => $paged,
 		);
 		$records = stream_query( $args );
 
@@ -610,7 +610,7 @@ class WP_Stream_Admin {
 		$total_items = self::dashboard_get_total_found_rows();
 		$args = array(
 			'total_pages' => ceil( $total_items / $records_per_page ),
-			'current' => $paged,
+			'current'     => $paged,
 		);
 
 		self::dashboard_pagination( $args );
@@ -625,7 +625,7 @@ class WP_Stream_Admin {
 		$args = wp_parse_args(
 			$args,
 			array(
-				'current' => 1,
+				'current'     => 1,
 				'total_pages' => 1,
 			)
 		);
@@ -691,7 +691,13 @@ class WP_Stream_Admin {
 			'&raquo;'
 		);
 
-		$html_pagination_links = '<div class="tablenav"><div class="tablenav-pages"><span class="pagination-links">' . join( "\n", $page_links ) . '</span></div><div class="clear"></div></div>';
+		$html_pagination_links = '
+			<div class="tablenav">
+				<div class="tablenav-pages">
+					<span class="pagination-links">' . join( "\n", $page_links ) . '</span>
+				</div>
+				<div class="clear"></div>
+			</div>';
 
 		echo '<div>' . $html_view_all . $html_pagination_links . '</div>';
 	}
@@ -702,7 +708,7 @@ class WP_Stream_Admin {
 	public static function dashboard_stream_activity_options() {
 		$options = get_option( 'dashboard_stream_activity_options', array() );
 
-		if ( 'POST' == $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
+		if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
 			$options['records_per_page'] = absint( $_POST['dashboard_stream_activity_options']['records_per_page'] );
 			update_option( 'dashboard_stream_activity_options', $options );
 		}
@@ -739,7 +745,7 @@ class WP_Stream_Admin {
 		$enable_update = get_user_meta( get_current_user_id(), 'stream_live_update_records', true );
 		$enable_update = isset( $enable_update ) ? $enable_update : '';
 
-		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_update == 'on' ) {
+		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && 'on' === $enable_update ) {
 			// Register list table
 			require_once WP_STREAM_INC_DIR . 'list-table.php';
 			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );

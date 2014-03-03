@@ -116,7 +116,7 @@
 }
 
 @media only screen and (max-width: 782px) {
-	#dashboard_stream_activity .view-all{
+	#dashboard_stream_activity .view-all {
 		display: none;
 	}
 	#dashboard_stream_activity .tablenav .tablenav-pages {
