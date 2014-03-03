@@ -45,13 +45,16 @@
 	padding: 12px;
 }
 
-#dashboard_stream_activity .tablenav{
+#dashboard_stream_activity .tablenav {
 	clear: none;
-	padding-right: 5px;
 	margin: 4px 0 6px;
 }
 
-#dashboard_stream_activity .view-all{
+#dashboard_stream_activity .tablenav .tablenav-pages {
+	margin-right: 6px;
+}
+
+#dashboard_stream_activity .view-all {
 	float: left;
 	margin: 7px 0 0 12px;
 }
@@ -116,8 +119,8 @@
 	#dashboard_stream_activity .view-all{
 		display: none;
 	}
-	#dashboard_stream_activity .tablenav{
-		padding-top: 15px;
+	#dashboard_stream_activity .tablenav .tablenav-pages {
+		margin: 15px 0;
 	}
 }
 

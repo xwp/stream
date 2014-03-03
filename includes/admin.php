@@ -56,7 +56,7 @@ class WP_Stream_Admin {
 
 		// Load Dashboard widget
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
-		
+
 		// Dashboard AJAX pagination
 		add_action( 'wp_ajax_stream_activity_dashboard_update', array( __CLASS__, 'dashboard_stream_activity_update_contents' ) );
 
@@ -611,10 +611,9 @@ class WP_Stream_Admin {
 		$args = array(
 			'total_pages' => ceil( $total_items / $records_per_page ),
 			'current' => $paged,
-		);	
+		);
 
 		self::dashboard_pagination( $args );
-		echo '<div class="clear"></div>';
 	}
 
 	/*
@@ -624,11 +623,11 @@ class WP_Stream_Admin {
 	public static function dashboard_pagination( $args = array() ){
 
 		$args = wp_parse_args(
-			$args, 
+			$args,
 			array(
 				'current' => 1,
 				'total_pages' => 1,
-			) 
+			)
 		);
 		extract( $args );
 
@@ -692,7 +691,7 @@ class WP_Stream_Admin {
 			'&raquo;'
 		);
 
-		$html_pagination_links = '<div class="tablenav"><div class="tablenav-pages"><span class="pagination-links">' . join( "\n", $page_links ) . '</span></div></div>';
+		$html_pagination_links = '<div class="tablenav"><div class="tablenav-pages"><span class="pagination-links">' . join( "\n", $page_links ) . '</span></div><div class="clear"></div></div>';
 
 		echo '<div>' . $html_view_all . $html_pagination_links . '</div>';
 	}
