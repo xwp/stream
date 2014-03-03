@@ -301,7 +301,7 @@ jQuery(function($){
 				$wrapper = $(this).closest('.alert'),
 				$alert   = {},
 				options  = stream_notifications.adapters[ $this.val() ],
-				index    = $this.parents('.alert').first().attr('rel');
+				index    = $wrapper.attr('rel');
 			$wrapper.find('.alert-options').remove();
 
 			if ( ! options ) { return; }
