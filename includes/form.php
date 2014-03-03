@@ -666,47 +666,31 @@ class WP_Stream_Notifications_Form
 			__( 'Advanced', 'stream-notifications' ) => array(
 				'object.' => __( 'Specific object data of the record depending on what the object type is:
 					<br /><br />
-					<table>
-						<tbody>
-							<tr>
-								<td style="width:50px;vertical-align:top;"><a href="http://codex.wordpress.org/Class_Reference/WP_Post#Member_Variables_of_WP_Post" title="See all available Post object return values in Codex" target="_blank">Post</a></td>
-								<td>
-									<strong>{object.post_title}</strong>
-									<br />
-									<strong>{object.post_excerpt}</strong>
-									<br />
-									<strong>{object.post_status}</strong>
-								</td>
-							</tr>
-							<tr>
-								<td style="width:50px;vertical-align:top;"><a href="http://codex.wordpress.org/Function_Reference/get_term_by#Return_Values" title="See all available Term object return values in Codex" target="_blank">Term</a></td>
-								<td>
-									<strong>{object.name}</strong>
-									<br />
-									<strong>{object.taxonomy}</strong>
-									<br />
-									<strong>{object.description}</strong>
-								</td>
-							</tr>
-						</tbody>
-					</table>', 'stream-notifications' ),
+					<strong>{object.post_title}</strong>
+					<br />
+					<strong>{object.post_excerpt}</strong>
+					<br />
+					<strong>{object.post_status}</strong>
+					<br />
+					<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more Post values</a>
+					<br /><br />
+					<strong>{object.name}</strong>
+					<br />
+					<strong>{object.taxonomy}</strong>
+					<br />
+					<strong>{object.description}</strong>
+					<br />
+					<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more Term values</a>', 'stream-notifications' ),
 
 				'author.' => __( 'Specific user data of the record author:
 					<br /><br />
-					<table>
-						<tbody>
-							<tr>
-								<td style="width:50px;vertical-align:top;"><a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" title="See all available User meta return values in Codex" target="_blank">User</a></td>
-								<td>
-									<strong>{author.display_name}</strong>
-									<br />
-									<strong>{author.user_email}</strong>
-									<br />
-									<strong>{author.user_login}</strong>
-								</td>
-							</tr>
-						</tbody>
-					</table>', 'stream-notifications' ),
+					<strong>{author.display_name}</strong>
+					<br />
+					<strong>{author.user_email}</strong>
+					<br />
+					<strong>{author.user_login}</strong>
+					<br />
+					<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more User values</a>', 'stream-notifications' ),
 				'meta.' => __( 'Specific meta data of the record, used to display specific meta values created by Connectors.
 					<br /><br />
 					Example: <strong>{meta.old_theme}</strong> to display the old theme name when a new theme is activated.', 'stream-notifications' ),
@@ -715,21 +699,11 @@ class WP_Stream_Notifications_Form
 		$allowed_html = array(
 			'a'      => array(
 				'href'   => array(),
-				'title'  => array(),
 				'target' => array(),
 			),
 			'code'   => array(),
 			'strong' => array(),
 			'br'     => array(),
-			'h4'     => array(),
-			'table'  => array(),
-			'thead'  => array(),
-			'th'     => array(),
-			'tbody'  => array(),
-			'tr'     => array(),
-			'td'     => array(
-				'style' => array(),
-			),
 		);
 		?>
 		<div id="data-tag-glossary" class="accordion-container">
