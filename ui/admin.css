@@ -116,6 +116,12 @@
 	.toplevel_page_wp_stream .fixed .column-author {
 		display: none;
 	}
+	#dashboard_stream_activity .view-all{
+		display: none;
+	}
+	#dashboard_stream_activity .tablenav{
+		padding-top: 15px;
+	}
 }
 
 .toplevel_page_wp_stream .column-author a {
