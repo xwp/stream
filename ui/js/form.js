@@ -297,16 +297,19 @@ jQuery(function($){
 
 		// Reveal alert options after choosing alert type
 		.on( 'change.sn', '.alert-type', function() {
-			var $this   = $(this),
-				options = stream_notifications.adapters[ $this.val() ],
-				index   = $this.parents('.alert').first().attr('rel');
-			$this.closest('.alert').find('.alert-options').remove();
+			var $this    = $(this),
+				$wrapper = $(this).closest('.alert'),
+				$alert   = {},
+				options  = stream_notifications.adapters[ $this.val() ],
+				index    = $this.parents('.alert').first().attr('rel');
+			$wrapper.find('.alert-options').remove();
 
 			if ( ! options ) { return; }
 
-			$this.parent().after( tmpl_alert_options( $.extend( options, { type: $(this).val(), index: index  } ) ) );
-			selectify( $this.parent().next().find('select') );
-			selectify( $this.parent().next().find('input.tags, input.ajax'), { tags: [] } );
+			$alert = $( tmpl_alert_options( $.extend( options, { type: $(this).val(), index: index  } ) ) );
+			$alert.appendTo($wrapper);
+			selectify( $alert.find('select') );
+			selectify( $alert.find('input.tags, input.ajax'), { tags: [] } );
 		})
 
 		// Delete an alert
