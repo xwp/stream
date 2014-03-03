@@ -420,6 +420,8 @@ jQuery(function($){
 			display_error('invalid_first_trigger');
 			return false;
 		}
+
+		$('.alert-options:hidden').remove();
 	});
 
 	divAlerts
