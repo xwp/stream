@@ -1,7 +1,13 @@
 <?php
-$response   = wp_remote_get( 'http://vvv.wp-stream.com/wp-json.php/posts/?type=extension' );
-$extensions = ! is_wp_error( $response ) ? json_decode( wp_remote_retrieve_body( $response ) ) : null;
-$count      = 0;
+if ( false === ( $extensions = get_transient( 'stream-extensions-list' ) ) ) {
+	$response   = wp_remote_get( 'http://vvv.wp-stream.com/wp-json.php/posts/?type=extension' );
+	$extensions = ! is_wp_error( $response ) ? json_decode( wp_remote_retrieve_body( $response ) ) : null;
+	if ( $extensions ) {
+		set_transient( 'stream-extensions-list', $extensions, DAY_IN_SECONDS );
+	}
+}
+
+$count = 0;
 
 // Create an array of all plugin paths, using the text-domain as a unique key slug
 $plugin_paths = array();
