@@ -653,43 +653,102 @@ class WP_Stream_Notifications_Form
 
 	public function metabox_data_tags() {
 		$data_tags = array(
-			__( 'General', 'stream-notifications' ) => array(
-				'summary' => __( 'Summary message of the triggered record', 'stream-notifications' ),
-				'object_id' => __( 'Object ID of triggered record', 'stream-notifications' ),
-				'connector' => __( 'Title of Connector that triggered the record.', 'stream-notifications' ),
-				'context' => __( 'Title of the record Context', 'stream-notifications' ),
-				'action' => __( 'Title of the record Action', 'stream-notifications' ),
-				'created' => __( 'Timestamp of triggered record', 'stream-notifications' ),
-				'ip' => __( 'IP of the person who authored the triggered record', 'stream-notifications' ),
+			__( 'Basic', 'stream-notifications' ) => array(
+				'summary'   => __( 'Summary message of the triggered record.', 'stream-notifications' ),
+				'author'    => __( 'User ID of the triggered record author.', 'stream-notifications' ),
+				'connector' => __( 'Connector of the triggered record.', 'stream-notifications' ),
+				'context'   => __( 'Context of the triggered record.', 'stream-notifications' ),
+				'action'    => __( 'Action of the triggered record.', 'stream-notifications' ),
+				'created'   => __( 'Timestamp of triggered record.', 'stream-notifications' ),
+				'ip'        => __( 'IP of the triggered record author.', 'stream-notifications' ),
+				'object_id' => __( 'Object ID of the triggered record.', 'stream-notifications' ),
 			),
 			__( 'Advanced', 'stream-notifications' ) => array(
-				'object' => __( 'Attributes of the record Object, depends on the Connector/Context,
-					ex: <strong>{object.post_title}</strong> if the Object is expected to be a Post,
-					<strong>{object.term_id}</strong> if the Object is expected to be a Taxonomy Term ', 'stream-notifications' ),
-				'author' => __( 'Attributes of the User who authored the record action.
-					ex: <strong>{author.display_name}</strong> or <strong>{author.user_email}</strong>', 'stream-notifications' ),
-				'meta' => __( 'Record meta values, used to target specific meta values created by Connectors.
-					ex: <strong>{meta.old_theme}</strong> to target the old theme name in <strong>Installer:Themes:Activated</strong>.', 'stream-notifications' ),
+				'object.' => __( 'Specific object data of the record depending on what the object type is:
+					<br /><br />
+					<table>
+						<tbody>
+							<tr>
+								<td style="width:50px;vertical-align:top;"><a href="http://codex.wordpress.org/Class_Reference/WP_Post#Member_Variables_of_WP_Post" title="See all available Post object return values in Codex" target="_blank">Post</a></td>
+								<td>
+									<strong>{object.post_title}</strong>
+									<br />
+									<strong>{object.post_excerpt}</strong>
+									<br />
+									<strong>{object.post_status}</strong>
+								</td>
+							</tr>
+							<tr>
+								<td style="width:50px;vertical-align:top;"><a href="http://codex.wordpress.org/Function_Reference/get_term_by#Return_Values" title="See all available Term object return values in Codex" target="_blank">Term</a></td>
+								<td>
+									<strong>{object.name}</strong>
+									<br />
+									<strong>{object.taxonomy}</strong>
+									<br />
+									<strong>{object.description}</strong>
+								</td>
+							</tr>
+						</tbody>
+					</table>', 'stream-notifications' ),
+
+				'author.' => __( 'Specific user data of the record author:
+					<br /><br />
+					<table>
+						<tbody>
+							<tr>
+								<td style="width:50px;vertical-align:top;"><a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" title="See all available User meta return values in Codex" target="_blank">User</a></td>
+								<td>
+									<strong>{author.display_name}</strong>
+									<br />
+									<strong>{author.user_email}</strong>
+									<br />
+									<strong>{author.user_login}</strong>
+								</td>
+							</tr>
+						</tbody>
+					</table>', 'stream-notifications' ),
+				'meta.' => __( 'Specific meta data of the record, used to display specific meta values created by Connectors.
+					<br /><br />
+					Example: <strong>{meta.old_theme}</strong> to display the old theme name when a new theme is activated.', 'stream-notifications' ),
+			),
+		);
+		$allowed_html = array(
+			'a'      => array(
+				'href'   => array(),
+				'title'  => array(),
+				'target' => array(),
+			),
+			'code'   => array(),
+			'strong' => array(),
+			'br'     => array(),
+			'h4'     => array(),
+			'table'  => array(),
+			'thead'  => array(),
+			'th'     => array(),
+			'tbody'  => array(),
+			'tr'     => array(),
+			'td'     => array(
+				'style' => array(),
 			),
 		);
 		?>
 		<div id="data-tag-glossary" class="accordion-container">
 			<ul class="outer-border">
-				<?php foreach ( $data_tags as $section => $tags ): ?>
+				<?php foreach ( $data_tags as $section => $tags ) : ?>
 				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="<?php echo esc_attr( $section ); ?>"><?php echo esc_html( $section ); ?></h3>
+					<h3 class="accordion-section-title hndle" title="<?php echo esc_attr( $section ) ?>"><?php echo esc_html( $section ) ?></h3>
 					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
-								<?php foreach ( $tags as $tag => $desc ): ?>
+								<?php foreach ( $tags as $tag => $desc ) : ?>
 									<dt><code>{<?php echo esc_html( $tag ) ?>}</code></dt>
-									<dd><?php echo wp_kses( $desc, 'code,strong' ) ?></dd>
-								<?php endforeach ?>
+									<dd><?php echo wp_kses( $desc, $allowed_html ) ?></dd>
+								<?php endforeach; ?>
 							</dl>
 						</div>
 					</div>
 				</li>
-				<?php endforeach ?>
+				<?php endforeach; ?>
 			</ul>
 		</div>
 		<?php
