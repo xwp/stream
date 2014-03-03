@@ -142,6 +142,8 @@ class WP_Stream_Notifications {
 
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 
+		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
+
 		// Default list actions handlers
 		add_action( 'wp_stream_notifications_handle_deactivate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
 		add_action( 'wp_stream_notifications_handle_activate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
@@ -157,13 +159,6 @@ class WP_Stream_Notifications {
 			$this->form = new WP_Stream_Notifications_Form;
 
 			include WP_STREAM_NOTIFICATIONS_INC_DIR . '/export.php';
-
-			wp_register_script( 'stream-notifications-actions', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/actions.js', array( 'jquery' ) );
-			wp_localize_script( 'stream-notifications-actions', 'stream_notifications_actions', array(
-				'messages' => array(
-					'deletePermanently' => __( 'Do you really want to delete this rule? This cannot be undone.', 'stream-notifications' ),
-				),
-			) );
 		}
 	}
 
@@ -192,6 +187,18 @@ class WP_Stream_Notifications {
 			'title' => $title,
 			'class' => $adapter,
 		);
+	}
+
+	/**
+	 * @action admin_enqueue_scripts
+	 */
+	public static function register_scripts() {
+		wp_register_script( 'stream-notifications-actions', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/actions.js', array( 'jquery' ) );
+		wp_localize_script( 'stream-notifications-actions', 'stream_notifications_actions', array(
+			'messages' => array(
+				'deletePermanently' => __( 'Do you really want to delete this rule? This cannot be undone.', 'stream-notifications' ),
+			),
+		) );
 	}
 
 	/**
