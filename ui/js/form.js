@@ -316,13 +316,12 @@ jQuery(function($){
 				});
 				$wrapper.find('.alert-options').hide();
 
-			// render new alert tempate
-			if($copy.length === 0) {
+			if($copy.length === 0) { // render new alert template
 				$alert = $( tmpl_alert_options( $.extend( options, { type: type, index: index  } ) ) );
 				$alert.appendTo($wrapper);
 				selectify( $alert.find('select') );
 				selectify( $alert.find('input.tags, input.ajax'), { tags: [] } );
-			} else {
+			} else { // copy found, just show it
 				$copy.show();
 			}
 		})
