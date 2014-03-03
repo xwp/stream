@@ -25,28 +25,28 @@ class WP_Stream_Notifications_Form
 			// Register metaboxes
 			add_meta_box(
 				'triggers',
-				__( 'Triggers', 'stream-notifications' ),
+				esc_html__( 'Triggers', 'stream-notifications' ),
 				array( $this, 'metabox_triggers' ),
 				WP_Stream_Notifications::$screen_id,
 				'normal'
 			);
 			add_meta_box(
 				'alerts',
-				__( 'Alerts', 'stream-notifications' ),
+				esc_html__( 'Alerts', 'stream-notifications' ),
 				array( $this, 'metabox_alerts' ),
 				WP_Stream_Notifications::$screen_id,
 				'normal'
 			);
 			add_meta_box(
 				'submitdiv',
-				__( 'Save', 'stream-notifications' ),
+				esc_html__( 'Save', 'stream-notifications' ),
 				array( $this, 'metabox_save' ),
 				WP_Stream_Notifications::$screen_id,
 				'side'
 			);
 			add_meta_box(
 				'data-tags',
-				__( 'Data Tags', 'stream-notifications' ),
+				esc_html__( 'Data Tags', 'stream-notifications' ),
 				array( $this, 'metabox_data_tags' ),
 				WP_Stream_Notifications::$screen_id,
 				'side'
@@ -252,11 +252,11 @@ class WP_Stream_Notifications_Form
 		$nonce = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 
 		if ( ! wp_verify_nonce( $nonce, 'reset-occ_' . $id ) ) {
-			wp_send_json_error( __( 'Invalid nonce', 'domain' ) );
+			wp_send_json_error( esc_html__( 'Invalid nonce', 'domain' ) );
 		}
 
 		if ( empty( $id ) || (int) $id != $id ) {
-			wp_send_json_error( __( 'Invalid record ID', 'domain' ) );
+			wp_send_json_error( esc_html__( 'Invalid record ID', 'domain' ) );
 		}
 
 		update_stream_meta( $id, 'occurrences', 0 );
@@ -276,44 +276,44 @@ class WP_Stream_Notifications_Form
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
 
 		$default_operators = array(
-			'='   => __( 'is', 'stream-notifications' ),
-			'!='  => __( 'is not', 'stream-notifications' ),
-			'in'  => __( 'is in', 'stream-notifications' ),
-			'!in' => __( 'is not in', 'stream-notifications' ),
+			'='   => esc_html__( 'is', 'stream-notifications' ),
+			'!='  => esc_html__( 'is not', 'stream-notifications' ),
+			'in'  => esc_html__( 'is in', 'stream-notifications' ),
+			'!in' => esc_html__( 'is not in', 'stream-notifications' ),
 		);
 
 		$text_operator = array(
-			'='         => __( 'is', 'stream-notifications' ),
-			'!='        => __( 'is not', 'stream-notifications' ),
-			'contains'  => __( 'contains', 'stream-notifications' ),
-			'!contains' => __( 'does not contain', 'stream-notifications' ),
-			'regex'     => __( 'regex', 'stream-notifications' ),
+			'='         => esc_html__( 'is', 'stream-notifications' ),
+			'!='        => esc_html__( 'is not', 'stream-notifications' ),
+			'contains'  => esc_html__( 'contains', 'stream-notifications' ),
+			'!contains' => esc_html__( 'does not contain', 'stream-notifications' ),
+			'regex'     => esc_html__( 'regex', 'stream-notifications' ),
 		);
 
 		$numeric_operators = array(
-			'='  => __( 'equals', 'stream-notifications' ),
-			'!=' => __( 'not equal', 'stream-notifications' ),
-			'<'  => __( 'less than', 'stream-notifications' ),
-			'<=' => __( 'equal or less than', 'stream-notifications' ),
-			'>'  => __( 'greater than', 'stream-notifications' ),
-			'>=' => __( 'equal or greater than', 'stream-notifications' ),
+			'='  => esc_html__( 'equals', 'stream-notifications' ),
+			'!=' => esc_html__( 'not equal', 'stream-notifications' ),
+			'<'  => esc_html__( 'less than', 'stream-notifications' ),
+			'<=' => esc_html__( 'equal or less than', 'stream-notifications' ),
+			'>'  => esc_html__( 'greater than', 'stream-notifications' ),
+			'>=' => esc_html__( 'equal or greater than', 'stream-notifications' ),
 		);
 
 		$args['types'] = array(
 			'search' => array(
-				'title'     => __( 'Summary', 'stream-notifications' ),
+				'title'     => esc_html__( 'Summary', 'stream-notifications' ),
 				'type'      => 'text',
 				'operators' => $text_operator,
 			),
 			'object_id' => array(
-				'title'     => __( 'Object ID', 'stream-notifications' ),
+				'title'     => esc_html__( 'Object ID', 'stream-notifications' ),
 				'type'      => 'text',
 				'tags'      => true,
 				'operators' => $default_operators,
 			),
 
 			'author_role' => array(
-				'title'     => __( 'Author Role', 'stream-notifications' ),
+				'title'     => esc_html__( 'Author Role', 'stream-notifications' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
@@ -321,29 +321,29 @@ class WP_Stream_Notifications_Form
 			),
 
 			'author' => array(
-				'title'     => __( 'Author', 'stream-notifications' ),
+				'title'     => esc_html__( 'Author', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => $default_operators,
 			),
 
 			'ip' => array(
-				'title'     => __( 'IP', 'stream-notifications' ),
+				'title'     => esc_html__( 'IP', 'stream-notifications' ),
 				'type'      => 'text',
 				'tags'      => true,
 				'operators' => $default_operators,
 			),
 
 			'date' => array(
-				'title'     => __( 'Date', 'stream-notifications' ),
+				'title'     => esc_html__( 'Date', 'stream-notifications' ),
 				'type'      => 'date',
 				'operators' => array(
-					'='  => __( 'is on', 'stream-notifications' ),
-					'!=' => __( 'is not on', 'stream-notifications' ),
-					'<'  => __( 'is before', 'stream-notifications' ),
-					'<=' => __( 'is on or before', 'stream-notifications' ),
-					'>'  => __( 'is after', 'stream-notifications' ),
-					'>=' => __( 'is on or after', 'stream-notifications' ),
+					'='  => esc_html__( 'is on', 'stream-notifications' ),
+					'!=' => esc_html__( 'is not on', 'stream-notifications' ),
+					'<'  => esc_html__( 'is before', 'stream-notifications' ),
+					'<=' => esc_html__( 'is on or before', 'stream-notifications' ),
+					'>'  => esc_html__( 'is after', 'stream-notifications' ),
+					'>=' => esc_html__( 'is on or after', 'stream-notifications' ),
 				),
 			),
 
@@ -352,19 +352,19 @@ class WP_Stream_Notifications_Form
 			// 'meta_query'            => array(),
 
 			'connector' => array(
-				'title'     => __( 'Connector', 'stream-notifications' ),
+				'title'     => esc_html__( 'Connector', 'stream-notifications' ),
 				'type'      => 'select',
 				'operators' => $default_operators,
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			),
 			'context' => array(
-				'title'     => __( 'Context', 'stream-notifications' ),
+				'title'     => esc_html__( 'Context', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => $default_operators,
 			),
 			'action' => array(
-				'title'     => __( 'Action', 'stream-notifications' ),
+				'title'     => esc_html__( 'Action', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => $default_operators,
@@ -374,120 +374,120 @@ class WP_Stream_Notifications_Form
 		// Connector-based triggers
 		$args['special_types'] = array(
 			'post' => array(
-				'title'     => __( '- Post', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
 			'post_title' => array(
-				'title'     => __( '- Post: Title', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Title', 'stream-notifications' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
 			'post_slug' => array(
-				'title'     => __( '- Post: Slug', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Slug', 'stream-notifications' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
 			'post_content' => array(
-				'title'     => __( '- Post: Content', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Content', 'stream-notifications' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
 			'post_excerpt' => array(
-				'title'     => __( '- Post: Excerpt', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Excerpt', 'stream-notifications' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
 			'post_author' => array(
-				'title'     => __( '- Post: Author', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Author', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
 			'post_status' => array(
-				'title'     => __( '- Post: Status', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Status', 'stream-notifications' ),
 				'type'      => 'select',
 				'connector' => 'posts',
 				'options'   => wp_list_pluck( $GLOBALS['wp_post_statuses'], 'label' ),
 				'operators' => $default_operators,
 			),
 			'post_format' => array(
-				'title'     => __( '- Post: Format', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Format', 'stream-notifications' ),
 				'type'      => 'select',
 				'connector' => 'posts',
 				'options'   => get_post_format_strings(),
 				'operators' => $default_operators,
 			),
 			'post_parent' => array(
-				'title'     => __( '- Post: Parent', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Parent', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
 			'post_thumbnail' => array(
-				'title'     => __( '- Post: Featured Image', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Featured Image', 'stream-notifications' ),
 				'type'      => 'select',
 				'connector' => 'posts',
 				'options'   => array(
-					'0' => __( 'None', 'stream-notifications' ),
-					'1' => __( 'Has one', 'stream-notifications' )
+					'0' => esc_html__( 'None', 'stream-notifications' ),
+					'1' => esc_html__( 'Has one', 'stream-notifications' )
 				),
 				'operators' => $default_operators,
 			),
 			'post_comment_status' => array(
-				'title'     => __( '- Post: Comment Status', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Comment Status', 'stream-notifications' ),
 				'type'      => 'select',
 				'connector' => 'posts',
 				'options'   => array(
-					'open'   => __( 'Open', 'stream-notifications' ),
-					'closed' => __( 'Closed', 'stream-notifications' )
+					'open'   => esc_html__( 'Open', 'stream-notifications' ),
+					'closed' => esc_html__( 'Closed', 'stream-notifications' )
 				),
 				'operators' => $default_operators,
 			),
 			'post_comment_count' => array(
-				'title'     => __( '- Post: Comment Count', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Comment Count', 'stream-notifications' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $numeric_operators,
 			),
 			'user' => array(
-				'title'     => __( '- User', 'stream-notifications' ),
+				'title'     => esc_html__( '- User', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'users',
 				'operators' => $default_operators,
 			),
 			'user_role' => array(
-				'title'     => __( '- User: Role', 'stream-notifications' ),
+				'title'     => esc_html__( '- User: Role', 'stream-notifications' ),
 				'type'      => 'select',
 				'connector' => 'users',
 				'options'   => $roles_arr,
 				'operators' => $default_operators,
 			),
 			'tax' => array(
-				'title'     => __( '- Taxonomy', 'stream-notifications' ),
+				'title'     => esc_html__( '- Taxonomy', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'taxonomies',
 				'operators' => $default_operators,
 			),
 			'term' => array(
-				'title'     => __( '- Term', 'stream-notifications' ),
+				'title'     => esc_html__( '- Term', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'taxonomies',
 				'operators' => $default_operators,
 			),
 			'term_parent' => array(
-				'title'     => __( '- Term: Parent', 'stream-notifications' ),
+				'title'     => esc_html__( '- Term: Parent', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'taxonomies',
@@ -507,10 +507,10 @@ class WP_Stream_Notifications_Form
 
 		// Localization
 		$args['i18n'] = array(
-			'empty_triggers'        => __( 'You cannot save a rule without any triggers.', 'stream-notifications' ),
-			'invalid_first_trigger' => __( 'You cannot save a rule with an empty first trigger.', 'stream-notifications' ),
-			'ajax_error'            => __( 'There was an error submitting your request, please try again.', 'stream-notifications' ),
-			'confirm_reset'         => __( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream-notifications' ),
+			'empty_triggers'        => esc_html__( 'You cannot save a rule without any triggers.', 'stream-notifications' ),
+			'invalid_first_trigger' => esc_html__( 'You cannot save a rule with an empty first trigger.', 'stream-notifications' ),
+			'ajax_error'            => esc_html__( 'There was an error submitting your request, please try again.', 'stream-notifications' ),
+			'confirm_reset'         => esc_html__( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream-notifications' ),
 		);
 
 		return apply_filters( 'stream_notification_js_args', $args );
@@ -660,54 +660,54 @@ class WP_Stream_Notifications_Form
 		<div id="data-tag-glossary" class="accordion-container">
 			<ul class="outer-border">
 				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'General', 'stream-notifications' ) ?>"><?php _e( 'General', 'stream-notifications' ) ?></h3>
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'General', 'stream-notifications' ) ?>"><?php esc_html_e( 'General', 'stream-notifications' ) ?></h3>
 					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
 								<dt><code>{summary}</code></dt>
-								<dd><?php _e( 'Summary message of the triggered record', 'stream-notifications' ) ?></dd>
+								<dd><?php esc_html_e( 'Summary message of the triggered record', 'stream-notifications' ) ?></dd>
 								<dt><code>{object_id}</code></dt>
-								<dd><?php _e( 'Object ID of triggered record', 'stream-notifications' ) ?></dd>
+								<dd><?php esc_html_e( 'Object ID of triggered record', 'stream-notifications' ) ?></dd>
 								<dt><code>{created}</code></dt>
-								<dd><?php _e( 'Timestamp of triggered record', 'stream-notifications' ) ?></dd>
+								<dd><?php esc_html_e( 'Timestamp of triggered record', 'stream-notifications' ) ?></dd>
 								<dt><code>{ip}</code></dt>
-								<dd><?php _e( 'IP of the person who authored the triggered record', 'stream-notifications' ) ?></dd>
+								<dd><?php esc_html_e( 'IP of the person who authored the triggered record', 'stream-notifications' ) ?></dd>
 							</dl>
 						</div>
 					</div>
 				</li>
 				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Object', 'stream-notifications' ) ?>"><?php _e( 'Object', 'stream-notifications' ) ?></h3>
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Object', 'stream-notifications' ) ?>"><?php esc_html_e( 'Object', 'stream-notifications' ) ?></h3>
 					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
 								<dt><code>{object.post_title}</code></dt>
-								<dd><?php _e( 'Post title of the record post', 'stream-notifications' ) ?></dd>
+								<dd><?php esc_html_e( 'Post title of the record post', 'stream-notifications' ) ?></dd>
 							</dl>
 						</div>
 					</div>
 				</li>
 				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Author', 'stream-notifications' ) ?>"><?php _e( 'Author', 'stream-notifications' ) ?></h3>
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Author', 'stream-notifications' ) ?>"><?php esc_html_e( 'Author', 'stream-notifications' ) ?></h3>
 					<div class="accordion-section-content">
 						<div class="inside">
 							<dl>
 								<dt><code>{author}</code></dt>
-								<dd><?php _e( 'ID of the record author', 'stream-notifications' ) ?></dd>
+								<dd><?php esc_html_e( 'ID of the record author', 'stream-notifications' ) ?></dd>
 								<dt><code>{author.user_login}</code></dt>
-								<dd><?php _e( 'Username of the record author', 'stream-notifications' ) ?></dd>
+								<dd><?php esc_html_e( 'Username of the record author', 'stream-notifications' ) ?></dd>
 								<dt><code>{author.user_email}</code></dt>
-								<dd><?php _e( 'Email address of the record author', 'stream-notifications' ) ?></dd>
+								<dd><?php esc_html_e( 'Email address of the record author', 'stream-notifications' ) ?></dd>
 								<dt><code>{author.display_name}</code></dt>
-								<dd><?php _e( 'Display name of the record author', 'stream-notifications' ) ?></dd>
+								<dd><?php esc_html_e( 'Display name of the record author', 'stream-notifications' ) ?></dd>
 								<dt><code>{author.user_url}</code></dt>
-								<dd><?php _e( 'Website URL of the record author', 'stream-notifications' ) ?></dd>
+								<dd><?php esc_html_e( 'Website URL of the record author', 'stream-notifications' ) ?></dd>
 							</dl>
 						</div>
 					</div>
 				</li>
 				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Meta', 'stream-notifications' ) ?>"><?php _e( 'Meta', 'stream-notifications' ) ?></h3>
+					<h3 class="accordion-section-title hndle" title="<?php esc_attr_e( 'Meta', 'stream-notifications' ) ?>"><?php esc_html_e( 'Meta', 'stream-notifications' ) ?></h3>
 					<div class="accordion-section-content">
 						<div class="inside">
 
