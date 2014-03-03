@@ -157,6 +157,13 @@ class WP_Stream_Notifications {
 			$this->form = new WP_Stream_Notifications_Form;
 
 			include WP_STREAM_NOTIFICATIONS_INC_DIR . '/export.php';
+
+			wp_register_script( 'stream-notifications-actions', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/actions.js', array( 'jquery' ) );
+			wp_localize_script( 'stream-notifications-actions', 'stream_notifications_actions', array(
+				'messages' => array(
+					'deletePermanently' => __( 'Do you really want to delete this rule? This cannot be undone.', 'stream-notifications' ),
+				),
+			) );
 		}
 	}
 
@@ -274,24 +281,28 @@ class WP_Stream_Notifications {
 			}
 		}
 
-		if ( 'list' == $view && 'render' != $action ) {
-			if ( has_action( 'wp_stream_notifications_handle_' . $action ) ) {
-				if ( $bulk_ids ) {
-					foreach ( $bulk_ids as $id ) {
-						do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, true );
+		if ( 'list' == $view ) {
+			if ( 'render' === $action ) {
+				wp_enqueue_script( 'stream-notifications-actions' );
+			} else {
+				if ( has_action( 'wp_stream_notifications_handle_' . $action ) ) {
+					if ( $bulk_ids ) {
+						foreach ( $bulk_ids as $id ) {
+							do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, true );
+						}
+					} else {
+						do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, false );
 					}
-				} else {
-					do_action( 'wp_stream_notifications_handle_' . $action, $id, $action, false );
+				} elseif ( null === $search ) {
+					wp_redirect(
+						add_query_arg(
+							array(
+								'page' => self::NOTIFICATIONS_PAGE_SLUG,
+							),
+							admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+						)
+					);
 				}
-			} elseif ( null === $search ) {
-				wp_redirect(
-					add_query_arg(
-						array(
-							'page' => self::NOTIFICATIONS_PAGE_SLUG,
-						),
-						admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-					)
-				);
 			}
 		}
 
