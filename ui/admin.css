@@ -45,6 +45,17 @@
 	padding: 12px;
 }
 
+#dashboard_stream_activity .tablenav{
+	clear: none;
+	padding-right: 5px;
+	margin: 4px 0 6px;
+}
+
+#dashboard_stream_activity .view-all{
+	float: left;
+	margin: 7px 0 0 12px;
+}
+
 .toplevel_page_wp_stream .tablenav {
 	padding-top: 6px;
 }
@@ -98,6 +109,15 @@
 	}
 	.toplevel_page_wp_stream .fixed .column-author {
 		width: 33%;
+	}
+}
+
+@media only screen and (max-width: 782px) {
+	#dashboard_stream_activity .view-all{
+		display: none;
+	}
+	#dashboard_stream_activity .tablenav{
+		padding-top: 15px;
 	}
 }
 
