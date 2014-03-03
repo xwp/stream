@@ -182,6 +182,65 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			return $this->api_url;
 		}
 
+		public function install_extension( $slug = null ) {
+
+			$plugin = array();
+
+			// TODO: Nonce check
+
+			$site    = parse_url( get_site_url(), PHP_URL_HOST );
+			$license = get_option( 'stream-license' );
+			if ( empty( $license ) ) {
+				wp_die( __( 'You must subscribe to Stream &copy; to be able to download premium extensions.', 'stream' ) );
+			}
+
+			$plugin = array(
+				'name'   => wp_stream_filter_input( INPUT_GET, 'name' ),
+				'slug'   => $slug,
+				'source' => add_query_arg(
+					array(
+						'slug'    => $slug,
+						'license' => $license,
+						'site'    => $site,
+					),
+					apply_filters( 'stream-api-url', $this->api_url . 'download', array( 'download', $slug, 'extension' ) )
+				),
+			);
+
+			// Handle fs cred. request, TODO: Test
+			$url    = wp_nonce_url( add_query_arg( 'fs', 1 ), 'stream_extension_nonce' );
+			$fields = array( 'install-plugin' );
+			if ( false === ( $creds = request_filesystem_credentials( $url, '', false, false, $fields ) ) ) {
+				return true;
+			}
+			if ( ! WP_Filesystem( $creds ) ) {
+				request_filesystem_credentials( $url, $method, true, false, $fields ); // Setup WP_Filesystem
+				return true;
+			}
+
+			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+			$url  = add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $plugin['slug'] ), 'update.php' );
+			$args = array(
+				'type'   => 'upload',
+				'title'  => sprintf( __( 'Installing %s Stream extension.', 'stream' ), $plugin['name'] ),
+				'nonce'  => 'install-plugin_' . $plugin['slug'],
+				'url'    => $url,
+				'plugin' => $plugin,
+			);
+
+			$upgrader = new Plugin_Upgrader( $skin = new Plugin_Installer_Skin( $args ) );
+			$upgrader->install( $plugin['source'] );
+			// wp_cache_flush();
+
+			$plugin_activate = $upgrader->plugin_info();
+			$activate = activate_plugin( $plugin_activate );
+			if ( is_wp_error( $activate ) ) {
+				echo '<div id="message" class="error"><p>' . $activate->get_error_message() . '</p></div>';
+			} else {
+				echo '<p>' . __( 'Extension was downloaded and activated successfully!', 'stream' ) . '</p>';
+			}
+		}
 	}
 }
 

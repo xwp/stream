@@ -78,7 +78,7 @@ if ( ! empty( $extensions ) ) :
 									<?php esc_html_e( 'Get This Extension', 'stream' ) ?>
 								</a>
 							<?php else : ?>
-								<a href="#" class="button button-primary">
+								<a href="<?php echo esc_url( add_query_arg( 'install', 'stream-' . $extension->slug ) ) ?>" class="button button-primary">
 									<?php esc_html_e( 'Install Now', 'stream' ) ?>
 								</a>
 							<?php endif; ?>

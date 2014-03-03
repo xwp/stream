@@ -338,6 +338,11 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_extensions_page() {
+
+		if ( $install = wp_stream_filter_input( INPUT_GET, 'install' ) ) {
+			return self::render_extension_download_page( $install );
+		}
+
 		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_script(
 			'stream-activation',
@@ -375,6 +380,20 @@ class WP_Stream_Admin {
 			</div>
 		</div>
 		<?php
+	}
+
+	public static function render_extension_download_page( $extension ) {
+		add_filter(
+			'install_plugin_complete_actions',
+			function( $actions ) {
+				echo sprintf(
+					'<a href="%s">%s</a>',
+					remove_query_arg( 'install' ),
+					esc_html__( 'Return to Stream Extensions', 'stream' )
+				); // xss okay
+			}
+		);
+		WP_Stream_Updater::instance()->install_extension( $extension );
 	}
 
 	public static function register_list_table() {
