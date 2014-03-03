@@ -70,7 +70,7 @@ jQuery(function($){
 			$( elements ).each( function() {
 				$(this).datepicker();
 			});
-			$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
+			$('#ui-datepicker-div').addClass( 'stream-datepicker' );
 		},
 
 		selectify = function( elements, args ) {
@@ -295,18 +295,35 @@ jQuery(function($){
 			selectify( divAlerts.find('.alert select') );
 		})
 
-		// Reveal rule options after choosing rule type
+		// Reveal alert options after choosing alert type
 		.on( 'change.sn', '.alert-type', function() {
-			var $this   = $(this),
-				options = stream_notifications.adapters[ $this.val() ],
-				index   = $this.parents('.alert').first().attr('rel');
-			$this.parent().next('.alert-options').remove();
+			var $this    = $(this),
+				$wrapper = $this.closest('.alert'),
+				$alert   = {},
+				$copy    = {},
+				options  = stream_notifications.adapters[ $this.val() ],
+				type     = $this.val(),
+				index    = $wrapper.attr('rel');
+
+			$wrapper.find('.alert-options').hide();
 
 			if ( ! options ) { return; }
 
-			$this.parent().after( tmpl_alert_options( $.extend( options, { index: index  } ) ) );
-			selectify( $this.parent().next().find('select') );
-			selectify( $this.parent().next().find('input.tags, input.ajax'), { tags: [] } );
+			$copy = $wrapper
+				.find('.alert-options')
+				.filter(function() {
+					return $(this).attr('data-type') === type;
+				});
+				$wrapper.find('.alert-options').hide();
+
+			if($copy.length === 0) { // render new alert template
+				$alert = $( tmpl_alert_options( $.extend( options, { type: type, index: index  } ) ) );
+				$alert.appendTo($wrapper);
+				selectify( $alert.find('select') );
+				selectify( $alert.find('input.tags, input.ajax'), { tags: [] } );
+			} else { // copy found, just show it
+				$copy.show();
+			}
 		})
 
 		// Delete an alert
@@ -316,7 +333,7 @@ jQuery(function($){
 
 			$this.parents('.alert').first().remove();
 
-			$( '.alert .circle' ).each(function (index) {
+			$('.alert .circle').each(function (index) {
 				$(this).text(index + 1);
 			});
 		})
@@ -403,6 +420,8 @@ jQuery(function($){
 			display_error('invalid_first_trigger');
 			return false;
 		}
+
+		$('.alert-options:hidden').remove();
 	});
 
 	divAlerts
@@ -445,7 +464,7 @@ jQuery(function($){
 	});
 
 	// Add empty trigger if no triggers are visible
-	if ( $( '.trigger' ).length === 0 ) {
+	if ( $('.trigger').length === 0 ) {
 		add_trigger( 0 );
 	}
 });
