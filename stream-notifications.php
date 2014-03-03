@@ -194,10 +194,10 @@ class WP_Stream_Notifications {
 	 */
 	public static function register_scripts( $hook ) {
 		if ( sprintf( 'stream_page_%s', self::NOTIFICATIONS_PAGE_SLUG ) === $hook ) {
-			wp_enqueue_script( 'stream-notifications-actions', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/actions.js', array( 'jquery' ) );
+			wp_enqueue_script( 'stream-notifications-actions', WP_STREAM_NOTIFICATIONS_URL . 'ui/js/actions.js', array( 'jquery' ) );
 			wp_localize_script( 'stream-notifications-actions', 'stream_notifications_actions', array(
 				'messages' => array(
-					'deletePermanently' => __( 'Do you really want to delete this rule? This cannot be undone.', 'stream-notifications' ),
+					'deletePermanently' => __( 'Are you sure you want to delete this rule? This cannot be undone.', 'stream-notifications' ),
 				),
 			) );
 		}
