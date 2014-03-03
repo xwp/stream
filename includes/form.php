@@ -170,6 +170,7 @@ class WP_Stream_Notifications_Form
 								'user_login',
 								'display_name',
 								'user_email',
+								'user_nicename',
 							),
 							'meta_key'  => ( isset( $args['push'] ) && $args['push'] ) ? 'ckpn_user_key' : null,
 						)
