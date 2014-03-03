@@ -614,6 +614,7 @@ class WP_Stream_Admin {
 		);	
 
 		self::dashboard_pagination( $args );
+		echo '<div class="clear"></div>';
 	}
 
 	/*
