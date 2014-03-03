@@ -252,11 +252,11 @@ class WP_Stream_Notifications_Form
 		$nonce = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 
 		if ( ! wp_verify_nonce( $nonce, 'reset-occ_' . $id ) ) {
-			wp_send_json_error( esc_html__( 'Invalid nonce', 'domain' ) );
+			wp_send_json_error( esc_html__( 'Invalid nonce', 'stream-notifications' ) );
 		}
 
 		if ( empty( $id ) || (int) $id != $id ) {
-			wp_send_json_error( esc_html__( 'Invalid record ID', 'domain' ) );
+			wp_send_json_error( esc_html__( 'Invalid record ID', 'stream-notifications' ) );
 		}
 
 		update_stream_meta( $id, 'occurrences', 0 );
