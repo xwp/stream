@@ -125,7 +125,7 @@ class WP_Stream_Reports {
 
 		// Load the Interval/Date class, to allow input and parsing of the Reports interval
 		require_once WP_STREAM_REPORTS_INC_DIR . 'date-interval.php';
-		add_action( 'init', array( 'WP_Stream_Report_Date_Interval', 'get_instance' ), 13 );
+		add_action( 'init', array( 'WP_Stream_Reports_Date_Interval', 'get_instance' ), 13 );
 
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );

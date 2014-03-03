@@ -88,18 +88,20 @@
  * Report Date Interval
  */
 .reports-date-interval {
-	margin: 10px 0 10px 10px;
+	margin: 10px 0 0;
 }
 
 .reports-date-interval .field-predefined {
-	min-width: 250px;
+	min-width: 200px;
 	float: left;
-	margin-right: 25px;
+	margin-right: 15px;
+	margin-bottom: 15px;
 }
 
 .reports-date-interval .report-date-inputs {
 	float: left;
-	margin-right: 25px;
+	margin-right: 15px;
+	margin-bottom: 15px;
 }
 
 .reports-date-interval .report-date-inputs .field-to,

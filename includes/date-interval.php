@@ -2,8 +2,8 @@
 use Carbon\Carbon;
 
 // Template function
-function stream_report_intervals_html() {
-	$date = WP_Stream_Report_Date_Interval::get_instance();
+function stream_reports_intervals_html() {
+	$date = WP_Stream_Reports_Date_Interval::get_instance();
 	$date->load();
 
 	// Default interval
@@ -28,7 +28,7 @@ function stream_report_intervals_html() {
 	include WP_STREAM_REPORTS_VIEW_DIR . 'intervals.php';
 }
 
-class WP_Stream_Report_Date_Interval {
+class WP_Stream_Reports_Date_Interval {
 	/**
 	 * Hold Stream Reports Section instance
 	 *
@@ -207,9 +207,9 @@ class WP_Stream_Report_Date_Interval {
 	}
 
 	/**
-	 * Return active instance of WP_Stream_Report_Date_Interval, create one if it doesn't exist
+	 * Return active instance of WP_Stream_Reports_Date_Interval, create one if it doesn't exist
 	 *
-	 * @return WP_Stream_Report_Date_Interval
+	 * @return WP_Stream_Reports_Date_Interval
 	 */
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
