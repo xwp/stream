@@ -70,7 +70,7 @@ jQuery(function($){
 			$( elements ).each( function() {
 				$(this).datepicker();
 			});
-			$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
+			$('#ui-datepicker-div').addClass( 'stream-datepicker' );
 		},
 
 		selectify = function( elements, args ) {
@@ -310,9 +310,9 @@ jQuery(function($){
 			if ( ! options ) { return; }
 
 			$copy = $wrapper
-				.find(".alert-options")
+				.find('.alert-options')
 				.filter(function() {
-					return $(this).attr("data-type") === type;
+					return $(this).attr('data-type') === type;
 				});
 				$wrapper.find('.alert-options').hide();
 
@@ -333,7 +333,7 @@ jQuery(function($){
 
 			$this.parents('.alert').first().remove();
 
-			$( '.alert .circle' ).each(function (index) {
+			$('.alert .circle').each(function (index) {
 				$(this).text(index + 1);
 			});
 		})
@@ -464,7 +464,7 @@ jQuery(function($){
 	});
 
 	// Add empty trigger if no triggers are visible
-	if ( $( '.trigger' ).length === 0 ) {
+	if ( $('.trigger').length === 0 ) {
 		add_trigger( 0 );
 	}
 });
