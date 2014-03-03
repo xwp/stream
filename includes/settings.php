@@ -97,7 +97,7 @@ class WP_Stream_Settings {
 								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
 								sprintf(
 									'<a href="%s" title="%s">',
-									admin_url( 'profile.php' ),
+									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
 									esc_attr__( 'View Profile', 'stream' )
 								),
 								'</a>'
