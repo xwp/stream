@@ -300,11 +300,11 @@ jQuery(function($){
 			var $this   = $(this),
 				options = stream_notifications.adapters[ $this.val() ],
 				index   = $this.parents('.alert').first().attr('rel');
-			$this.parent().next('.alert-options').remove();
+			$this.closest('.alert').find('.alert-options').remove();
 
 			if ( ! options ) { return; }
 
-			$this.parent().after( tmpl_alert_options( $.extend( options, { index: index  } ) ) );
+			$this.parent().after( tmpl_alert_options( $.extend( options, { type: $(this).val(), index: index  } ) ) );
 			selectify( $this.parent().next().find('select') );
 			selectify( $this.parent().next().find('input.tags, input.ajax'), { tags: [] } );
 		})
