@@ -664,7 +664,7 @@ class WP_Stream_Notifications_Form
 				'object_id' => __( 'Object ID of the triggered record.', 'stream-notifications' ),
 			),
 			__( 'Advanced', 'stream-notifications' ) => array(
-				'object.' => __( 'Specific object data of the record depending on what the object type is:
+				'object.' => __( 'Specific object data of the record, relative to what the object type is:
 					<br /><br />
 					<strong>{object.post_title}</strong>
 					<br />
