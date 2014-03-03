@@ -595,9 +595,9 @@ class WP_Stream_Notifications_Form
 							<?php esc_html_e( 'Active', 'stream-notifications' ) ?>
 						</label>
 					</div>
-					<?php if ( $rule->exists() ): ?>
+					<?php if ( $rule->exists() ) : ?>
 					<div class="misc-pub-section">
-						<?php $occ = get_stream_meta( $rule->ID, 'occurrences', true ) ?>
+						<?php $occ = absint( get_stream_meta( $rule->ID, 'occurrences', true ) ) ?>
 						<div class="occurrences">
 							<p>
 								<?php
@@ -612,14 +612,16 @@ class WP_Stream_Notifications_Form
 								) // xss okay
 								?>
 							</p>
-							<p>
-							<a href="<?php echo esc_url( $reset_link ) ?>" class="button button-secondary reset-occ">
-								<?php esc_html_e( 'Reset Count', 'stream-notifications' ) ?>
-							</a>
-							</p>
+							<?php if ( 0 !== $occ ) : ?>
+								<p>
+									<a href="<?php echo esc_url( $reset_link ) ?>" class="button button-secondary reset-occ">
+										<?php esc_html_e( 'Reset Count', 'stream-notifications' ) ?>
+									</a>
+								</p>
+							<?php endif; ?>
 						</div>
 					</div>
-					<?php endif ?>
+					<?php endif; ?>
 				</div>
 			</div>
 
