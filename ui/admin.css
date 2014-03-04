@@ -18,6 +18,10 @@
 	padding: 1em 12px;
 }
 
+#dashboard_stream_activity ul {
+	border-bottom: 1px solid #eee;
+}
+
 #dashboard_stream_activity ul li,
 #dashboard_stream_activity .sub-links {
 	padding: 1em 12px;
