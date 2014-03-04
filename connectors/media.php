@@ -48,12 +48,44 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	/**
 	 * Return translated context labels
 	 *
+	 * Based on extension types used by wp_ext2type() in wp-includes/functions.php.
+	 *
 	 * @return array Context label translations
 	 */
 	public static function get_context_labels() {
 		return array(
-			'media' => __( 'Media', 'stream' ),
+			'image'       => __( 'Image', 'stream' ),
+			'audio'       => __( 'Audio', 'stream' ),
+			'video'       => __( 'Video', 'stream' ),
+			'document'    => __( 'Document', 'stream' ),
+			'spreadsheet' => __( 'Spreadsheet', 'stream' ),
+			'interactive' => __( 'Interactive', 'stream' ),
+			'text'        => __( 'Text', 'stream' ),
+			'archive'     => __( 'Archive', 'stream' ),
+			'code'        => __( 'Code', 'stream' ),
 		);
+	}
+
+	/**
+	 * Return the file type for an attachment which corresponds with a context label
+	 *
+	 * @param  object $file_uri  URI of the attachment
+	 * @return string            A file type which corresponds with a context label
+	 */
+	public static function get_attachment_type( $file_uri ) {
+
+		$ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $file_uri );
+		$ext_type = wp_ext2type( $ext );
+		if ( ! $ext_type ) $ext_type = 'document';
+
+		$context_labels = self::get_context_labels();
+
+		if ( isset( $context_labels[$ext_type] ) ) {
+			return $context_labels[$ext_type];
+		} else {
+			return 'document';
+		}
+
 	}
 
 	/**
@@ -97,11 +129,13 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		$parent_id = $post->post_parent;
 		if ( $parent_id && $parent = get_post( $post->post_parent ) ) $parent_title = $parent->post_title;
 
+		$attachment_type = self::get_attachment_type( $post->guid );
+
 		self::log(
 			$message,
 			compact( 'name', 'parent_title', 'parent_id', 'url' ),
 			$post_id,
-			array( 'media' => $post->post_parent ? 'attached' : 'uploaded' )
+			array( $attachment_type => $post->post_parent ? 'attached' : 'uploaded' )
 			);
 	}
 
@@ -115,11 +149,13 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		$message = __( 'Updated "%s"', 'stream' );
 		$name    = $post->post_title;
 
+		$attachment_type = self::get_attachment_type( $post->guid );
+
 		self::log(
 			$message,
 			compact( 'name' ),
 			$post_id,
-			array( 'media' => 'updated' )
+			array( $attachment_type => 'updated' )
 			);
 	}
 
@@ -136,21 +172,26 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		$name    = $post->post_title;
 		$url     = $post->guid;
 
+		$attachment_type = self::get_attachment_type( $post->guid );
+
 		self::log(
 			$message,
 			compact( 'name', 'parent_id', 'url' ),
 			$post_id,
-			array( 'media' => 'deleted' )
+			array( $attachment_type => 'deleted' )
 			);
 	}
 
 	public static function callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id ) {
 		$name = basename( $filename );
+
+		$attachment_type = self::get_attachment_type( $post->guid );
+
 		self::log(
 			__( 'Edited image "%s"', 'stream' ),
 			compact( 'name', 'filename', 'post_id' ),
 			$post_id,
-			array( 'media' => 'edited' )
+			array( $attachment_type => 'edited' )
 			);
 	}
 
