@@ -161,6 +161,7 @@
 
 .toplevel_page_wp_stream .alignleft.actions input[type=text] {
 	height: 27px;
+	line-height: 19px;
 }
 
 .toplevel_page_wp_stream .select2-container {
