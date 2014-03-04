@@ -127,10 +127,10 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		} else {
 			$message = __( 'Added "%s" to Media library', 'stream' );
 		}
-		$name      = $post->post_title;
-		$url       = $post->guid;
-		$parent_id = $post->post_parent;
-		if ( $parent_id && $parent = get_post( $post->post_parent ) ) $parent_title = $parent->post_title;
+		$name         = $post->post_title;
+		$url          = $post->guid;
+		$parent_id    = $post->post_parent;
+		$parent_title = $parent_id ? get_the_title‎( $parent_id ) : null;
 
 		$attachment_type = self::get_attachment_type( $post->guid );
 
