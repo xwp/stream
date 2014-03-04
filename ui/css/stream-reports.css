@@ -112,10 +112,6 @@
 	width: 125px;
 }
 
-.reports-date-interval .report-date-inputs .field-from {
-	text-align: right;
-}
-
 .reports-date-interval .report-date-inputs .box {
 	position: relative;
 	display: block;
@@ -133,11 +129,6 @@
 	line-height: 28px;
 	font-size: 14px;
 }
-
-.reports-date-interval .report-date-inputs .box:first-child .date-remove {
-	left: 0;
-}
-
 
 .reports-date-interval .report-date-inputs .box .date-remove:before {
 	content: '\f158';
