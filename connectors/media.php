@@ -74,17 +74,20 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 */
 	public static function get_attachment_type( $file_uri ) {
 
-		$ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $file_uri );
-		$ext_type = wp_ext2type( $ext );
-		if ( ! $ext_type ) $ext_type = 'document';
+		$extension = pathinfo( $file_uri, PATHINFO_EXTENSION );
+		$extension_type = wp_ext2type( $extension );
+
+		if ( empty( $extension_type ) ) {
+			$extension_type = 'document';
+		}
 
 		$context_labels = self::get_context_labels();
 
-		if ( isset( $context_labels[$ext_type] ) ) {
-			return $context_labels[$ext_type];
-		} else {
-			return 'document';
+		if ( ! isset( $context_labels[ $extension_type ] ) ) {
+			$extension_type = 'document';
 		}
+
+		return $extension_type;
 
 	}
 
