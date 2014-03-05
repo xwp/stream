@@ -166,9 +166,9 @@ class WP_Stream_Install {
 			}
 		}
 
-		// If version is lower than 1.2.7, do the update routine
+		// If version is lower than 1.2.8, do the update routine
 		// Change the context for Media connectors to the attachment type
-		if ( version_compare( $db_version, '1.2.7', '<' ) ) {
+		if ( version_compare( $db_version, '1.2.8', '<' ) ) {
 
 			require_once( WP_STREAM_CLASS_DIR . 'connector.php' );
 			require_once( WP_STREAM_DIR . 'connectors/media.php' );
