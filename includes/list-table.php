@@ -137,54 +137,18 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 		$args['paged'] = $this->get_pagenum();
 
-		// Exclude disabled connectors
-		if ( empty( $args['connector'] ) ) {
-			/**
-			 * Toggle visibility of records from disabled connectors on list table
-			 *
-			 * @param bool $hidden Visibility status, hidden by default.
-			 */
-			$hide_disabled_connectors_records = apply_filters( 'wp_stream_list_table_hide_disabled_connectors_records', true );
-
-			if ( true === $hide_disabled_connectors_records ) {
-				$args[ 'connector__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
-			}
-		}
-
-		// Exclude disabled context
-		if ( empty( $args['context'] ) ) {
-			/**
-			 * Toggle visibility of records from disabled context on list table
-			 *
-			 * @param bool $hidden Visibility status, hidden by default.
-			 */
-			$hide_disabled_contexts_records = apply_filters( 'wp_stream_list_table_hide_disabled_contexts_records', true );
-
-			if ( true === $hide_disabled_contexts_records ) {
-				$args[ 'context__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'contexts' );
-			}
-		}
-
-		// Exclude disabled connectors
-		if ( empty( $args['action'] ) ) {
-			/**
-			 * Toggle visibility of records from disabled connectors on list table
-			 *
-			 * @param bool $hidden Visibility status, hidden by default.
-			 */
-			$hide_disabled_actions_records = apply_filters( 'wp_stream_list_table_hide_disabled_actions_records', true );
-
-			if ( true === $hide_disabled_actions_records ) {
-				$args[ 'action__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
-			}
-		}
-
-
 		if ( ! isset( $args['records_per_page'] ) ) {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
+		//Remove excluded records as per settings
+		add_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
+
 		$items = stream_query( $args );
+
+		//Remove filter added before
+		remove_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
+
 		return $items;
 	}
 

@@ -518,7 +518,14 @@ class WP_Stream_Admin {
 		$args = array(
 			'records_per_page' => isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5,
 		);
+
+		//Remove excluded records as per settings
+		add_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
+
 		$records = stream_query( $args );
+
+		//Remove filter added before
+		remove_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		if ( ! $records ) {
 			?>

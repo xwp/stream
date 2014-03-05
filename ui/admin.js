@@ -62,7 +62,7 @@ jQuery(function($){
             e.val = input.val().split(',');
         }
         $.each(e.val.reverse(), function (value, key) {
-            if (value === '__placeholder__') {
+            if ( key === null || key === '__placeholder__' || key === '' ) {
                 return true;
             }
             $placeholder.after($placeholder.clone(true).attr('class', $placeholder_child_class).val(key));
