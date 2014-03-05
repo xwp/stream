@@ -60,7 +60,88 @@ class WP_Stream_Settings {
 		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
 
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
+
+		// Ajax callback function to search users
+		add_action( 'wp_ajax_stream_get_users', array( __CLASS__, 'get_users' ) );
 	}
+
+	/**
+	 * Ajax callback function to search users that is used on exclude setting page
+	 *
+	 * @uses WP_User_Query WordPress User Query class.
+	 * @return void
+	 */
+	public static function get_users(){
+		if ( ! defined( 'DOING_AJAX' ) ) {
+			return;
+		}
+		if ( ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
+			return;
+		}
+
+		check_ajax_referer( 'stream_get_users', 'nonce' );
+
+		$response = (object) array(
+			'status' => false,
+			'message' => __( 'There was an error in the request', 'stream' ),
+		);
+
+		$request = (object) array(
+			'find' => ( isset( $_POST['find'] )? wp_unslash( trim( $_POST['find'] ) ) : '' ),
+		);
+
+		add_filter( 'user_search_columns', array( __CLASS__, 'add_display_name_search_columns' ), 10, 3 );
+
+		$users = new WP_User_Query(
+			array(
+				'search' => "*{$request->find}*",
+				'search_columns' => array(
+					'user_login',
+					'user_nicename',
+					'user_email',
+					'user_url',
+				),
+			)
+		);
+
+		remove_filter( 'user_search_columns', array( __CLASS__, 'add_display_name_search_columns' ), 10 );
+		
+		if ( $users->get_total() === 0 ) {
+			wp_send_json_error( $response );
+		}
+
+		$response->status  = true;
+		$response->message = '';
+
+		$response->users = array();
+		foreach ( $users->results as $key => $user ) {
+			$args = array(
+				'id' => $user->ID,
+				'text' => $user->display_name,
+			);
+
+			$response->users[] = $args;
+		}
+
+		wp_send_json_success( $response );
+	}
+
+	/**
+	 * Filter the columns to search in a WP_User_Query search.
+	 *
+	 *
+	 * @param array  $search_columns Array of column names to be searched.
+	 * @param string $search         Text being searched.
+	 * @param WP_User_Query $query	 current WP_User_Query instance.
+	 *
+	 *
+	 * @return array
+	 */
+	public static function add_display_name_search_columns( $search_columns, $search, $query ){
+		$search_columns[] = 'display_name';
+		return $search_columns;
+	}
+
 
 	/**
 	 * Return settings fields
@@ -73,14 +154,6 @@ class WP_Stream_Settings {
 				'general' => array(
 					'title'  => __( 'General', 'stream' ),
 					'fields' => array(
-						array(
-							'name'        => 'log_activity_for',
-							'title'       => __( 'Log Activity for', 'stream' ),
-							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Only the selected roles above will have their activity logged.', 'stream' ),
-							'choices'     => self::get_roles(),
-							'default'     => array_keys( self::get_roles() ),
-						),
 						array(
 							'name'        => 'role_access',
 							'title'       => __( 'Role Access', 'stream' ),
@@ -130,16 +203,51 @@ class WP_Stream_Settings {
 						),
 					),
 				),
-				'connectors' => array(
-					'title' => __( 'Connectors', 'stream' ),
+				'exclude' => array(
+					'title' => __( 'Exclude', 'stream' ),
 					'fields' => array(
 						array(
-							'name'        => 'active_connectors',
-							'title'       => __( 'Active Connectors', 'stream' ),
-							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Only the selected connectors above will have their activity logged.', 'stream' ),
-							'choices'     => array( __CLASS__, 'get_connectors' ),
-							'default'     => array( __CLASS__, 'get_default_connectors' ),
+							'name'        => 'authors_and_roles',
+							'title'       => __( 'Authors & Roles', 'stream' ),
+							'type'        => 'select2_user_role',
+							'desc'        => __( 'No activity will be logged for these authors and roles.', 'stream' ),
+							'choices'     => self::get_roles(),
+							'default'     => array(),
+						),
+						array(
+							'name'        => 'connectors',
+							'title'       => __( 'Connectors', 'stream' ),
+							'type'        => 'select2',
+							'desc'        => __( 'No activity will be logged for these connectors.', 'stream' ),
+							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+							'param'       => 'connector',
+							'default'     => array(),
+						),
+						array(
+							'name'        => 'contexts',
+							'title'       => __( 'Contexts', 'stream' ),
+							'type'        => 'select2',
+							'desc'        => __( 'No activity will be logged for these contexts.', 'stream' ),
+							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+							'param'       => 'context',
+							'default'     => array(),
+						),
+						array(
+							'name'        => 'actions',
+							'title'       => __( 'Actions', 'stream' ),
+							'type'        => 'select2',
+							'desc'        => __( 'No activity will be logged for these actions.', 'stream' ),
+							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+							'param'       => 'action',
+							'default'     => array(),
+						),
+						array(
+							'name'        => 'ip_addresses',
+							'title'       => __( 'IP Addresses', 'stream' ),
+							'type'        => 'select2',
+							'desc'        => __( 'No activity will be logged for these IP addresses.', 'stream' ),
+							'class'       => 'ip-addresses',
+							'default'     => array(),
 						),
 					),
 				),
@@ -347,8 +455,128 @@ class WP_Stream_Settings {
 					esc_attr( $title )
 				);
 				break;
-		}
+			case 'select2' :
+				if ( ! isset ( $current_value ) ) {
+					$current_value = array();
+				}
+				if ( ( $key = array_search( '__placeholder__', $current_value ) ) !== false ) {
+					unset( $current_value[ $key ] );
+				}
 
+				$data_values     = array();
+				$selected_values = array();
+				if ( isset( $field[ 'choices' ] ) ) {
+					$choices = $field[ 'choices' ];
+					if ( is_callable( $choices ) ) {
+						$param   = ( isset( $field[ 'param' ] ) ) ? $field[ 'param' ] : null;
+						$choices = call_user_func( $choices, $param );
+					}
+					foreach ( $choices as $key => $value ) {
+						$data_values[ ] = array( 'id' => $key, 'text' => $value, );
+						if ( in_array( $key, $current_value ) ) {
+							$selected_values[ ] = array( 'id' => $key, 'text' => $value, );
+						}
+					}
+					$class .= ' with-source';
+				} else {
+					foreach ( $current_value as $value ) {
+						if ( $value == '__placeholder__' ) {
+							continue;
+						}
+						$selected_values[ ] = array( 'id' => $value, 'text' => $value, );
+					}
+				}
+
+				$output  = sprintf(
+					'<div id="%1$s[%2$s_%3$s]">',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				$output .= sprintf(
+					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %4$s" data-select-placeholder="%5$s-%6$s-select-placeholder"  />',
+					esc_attr( json_encode( $data_values ) ),
+					esc_attr( json_encode( $selected_values ) ),
+					esc_attr( implode( ',', $current_value ) ),
+					$class,
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				// to store data with default value if nothing is selected
+				$output .= sprintf(
+					'<input type="hidden" name="%1$s[%2$s_%3$s][]" class="%2$s-%3$s-select-placeholder" value="__placeholder__" />',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				$output .= '</div>';
+				break;
+			case 'select2_user_role':
+				$current_value = (array)$current_value;
+				$data_values   = array();
+
+				if ( isset( $field[ 'choices' ] ) ) {
+					$choices = $field[ 'choices' ];
+					if ( is_callable( $choices ) ) {
+						$param   = ( isset( $field[ 'param' ] ) ) ? $field[ 'param' ] : null;
+						$choices = call_user_func( $choices, $param );
+					}
+				} else {
+					$choices = array();
+				}
+
+				foreach ( $choices as $key => $role ) {
+					$data_values[ ] = array( 'id' => $key, 'text' => $role, );
+				}
+
+				$selected_values = array();
+				foreach ( $current_value as $value ) {
+					if ( ! is_string( $value ) && ! is_numeric( $value ) ) {
+						continue;
+					}
+
+					if ( $value == '__placeholder__' ) {
+						continue;
+					}
+
+					if ( is_numeric( $value ) ) {
+						$user               = new WP_User( $value );
+						$selected_values[ ] = array( 'id' => $user->ID, 'text' => $user->display_name, );
+					} else {
+						foreach ( $data_values as $role ) {
+							if ( $role[ 'id' ] != $value ) {
+								continue;
+							}
+							$selected_values[ ] = $role;
+						}
+					}
+				}
+
+				$output  = sprintf(
+					'<div id="%1$s[%2$s_%3$s]">',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				$output .= sprintf(
+					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %5$s" data-select-placeholder="%4$s-%5$s-select-placeholder" data-nonce="%6$s" />',
+					json_encode( $data_values ),
+					json_encode( $selected_values ),
+					esc_attr( implode( ',', $current_value ) ),
+					esc_attr( $section ),
+					esc_attr( $name ),
+					esc_attr( wp_create_nonce( 'stream_get_users' ) )
+				);
+				// to store data with default value if nothing is selected
+				$output .= sprintf(
+					'<input type="hidden" name="%1$s[%2$s_%3$s][]" class="%2$s-%3$s-select-placeholder" value="__placeholder__" />',
+					esc_attr( self::KEY ),
+					esc_attr( $section ),
+					esc_attr( $name )
+				);
+				$output .= '</div>';
+				break;
+		}
 		$output .= ! empty( $description ) ? sprintf( '<p class="description">%s</p>', $description /* xss ok */ ) : null;
 
 		return $output;
@@ -394,7 +622,7 @@ class WP_Stream_Settings {
 	 * @return array
 	 */
 	public static function get_connectors() {
-		return WP_Stream_Connectors::$term_labels['stream_connector'];
+		return WP_Stream_Connectors::$term_labels[ 'stream_connector' ];
 	}
 
 	/**
@@ -403,26 +631,51 @@ class WP_Stream_Settings {
 	 * @return array
 	 */
 	public static function get_default_connectors() {
-		return array_keys( WP_Stream_Connectors::$term_labels['stream_connector'] );
+		return array_keys( WP_Stream_Connectors::$term_labels[ 'stream_connector' ] );
 	}
 
+	/**
+	 * Function will return all terms labels of given column
+	 *
+	 * @param $column string  Name of the column
+	 * @return array
+	 */
+	public static function get_terms_labels( $column ) {
+		$return_labels = array();
+		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
+			$return_labels = WP_Stream_Connectors::$term_labels[ 'stream_' . $column ];
+			ksort( $return_labels );
+		}
+
+		return $return_labels;
+	}
 	/**
 	 * Get an array of active Connectors
 	 *
 	 * @return array
 	 */
 	public static function get_active_connectors() {
-		$active_connectors = self::$options['connectors_active_connectors'];
-		if ( is_callable( $active_connectors ) ) {
-			$active_connectors = call_user_func( $active_connectors );
-		}
-		$active_connectors = wp_list_filter(
-			$active_connectors,
-			array( '__placeholder__' ),
-			'NOT'
-		);
+		$excluded_connectors = self::get_excluded_by_key( 'connectors' );
+		$active_connectors   = array_diff( array_keys( self::get_terms_labels( 'connector' ) ), $excluded_connectors );
+		$active_connectors   = wp_list_filter( $active_connectors, array( '__placeholder__' ), 'NOT' );
 
 		return $active_connectors;
+	}
+
+	/**
+	 * @param $column string name of the setting key (actions|ip_addresses|contexts|connectors)
+	 *
+	 * @return array
+	 */
+	public static function get_excluded_by_key( $column ) {
+		$option_name     = 'exclude_' . $column;
+		$excluded_values = ( isset( self::$options[ $option_name ] ) ) ? self::$options[ $option_name ] : array();
+		if ( is_callable( $excluded_values ) ) {
+			$excluded_values = call_user_func( $excluded_values );
+		}
+		$excluded_values = wp_list_filter( $excluded_values, array( '__placeholder__' ), 'NOT' );
+
+		return $excluded_values;
 	}
 
 	/**

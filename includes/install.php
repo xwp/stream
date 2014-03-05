@@ -165,6 +165,43 @@ class WP_Stream_Install {
 				}
 			}
 		}
-	}
 
+		// If version is lower than 1.2.3, do the update routine for site options
+		//Backward setting compatibility for old version plugins
+		if ( version_compare( $db_version, '1.2.5', '<=' ) ) {
+			add_filter( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_old_options' );
+		}
+
+	}
+	/**
+	 * Function will migrate old options
+	 * @param $labels array connectors terms labels
+	 * @used wp_stream_after_connector_term_labels_loaded
+	 */
+	public static function migrate_old_options( $labels ) {
+
+		$old_options = get_option( WP_Stream_Settings::KEY, array() );
+
+		if ( isset ( $old_options [ 'general_log_activity_for' ] ) ) {
+			//Migrate as per new excluded setting
+			WP_Stream_Settings::$options [ 'exclude_authors_and_roles' ] = array_diff(
+				array_keys(
+					WP_Stream_Settings::get_roles()
+				),
+				$old_options [ 'general_log_activity_for' ]
+			);
+
+			unset( WP_Stream_Settings::$options[ 'general_log_activity_for' ] );
+		}
+		if ( isset ( $old_options [ 'connectors_active_connectors' ] ) ) {
+			WP_Stream_Settings::$options [ 'exclude_connectors' ] = array_diff(
+				array_keys(
+					$labels
+				), $old_options [ 'connectors_active_connectors' ]
+			);
+			unset( WP_Stream_Settings::$options[ 'connectors_active_connectors' ] );
+
+		}
+		update_option( WP_Stream_Settings::KEY, WP_Stream_Settings::$options );
+	}
 }

@@ -147,7 +147,35 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$hide_disabled_connectors_records = apply_filters( 'wp_stream_list_table_hide_disabled_connectors_records', true );
 
 			if ( true === $hide_disabled_connectors_records ) {
-				$args['connector__in'] = WP_Stream_Settings::get_active_connectors();
+				$args[ 'connector__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
+			}
+		}
+
+		// Exclude disabled context
+		if ( empty( $args['context'] ) ) {
+			/**
+			 * Toggle visibility of records from disabled context on list table
+			 *
+			 * @param bool $hidden Visibility status, hidden by default.
+			 */
+			$hide_disabled_contexts_records = apply_filters( 'wp_stream_list_table_hide_disabled_contexts_records', true );
+
+			if ( true === $hide_disabled_contexts_records ) {
+				$args[ 'context__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'contexts' );
+			}
+		}
+
+		// Exclude disabled connectors
+		if ( empty( $args['action'] ) ) {
+			/**
+			 * Toggle visibility of records from disabled connectors on list table
+			 *
+			 * @param bool $hidden Visibility status, hidden by default.
+			 */
+			$hide_disabled_actions_records = apply_filters( 'wp_stream_list_table_hide_disabled_actions_records', true );
+
+			if ( true === $hide_disabled_actions_records ) {
+				$args[ 'action__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
 			}
 		}
 
@@ -402,9 +430,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$hide_disabled_connectors_filter = apply_filters( 'wp_stream_list_table_hide_disabled_connectors', true );
 
 				if ( true === $hide_disabled_connectors_filter ) {
-					$active_connectors = WP_Stream_Settings::get_active_connectors();
+					$excluded_connectors = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
 					foreach ( array_keys( $all_records ) as $_connector ) {
-						if ( ! in_array( $_connector, $active_connectors ) ) {
+						if ( in_array( $_connector, $excluded_connectors ) ) {
 							unset( $all_records[ $_connector ] );
 						}
 					}
