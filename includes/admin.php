@@ -72,20 +72,6 @@ class WP_Stream_Admin {
 		// Ajax author's name by ID
 		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
 
-		// Fix CSS glitch on tabs
-		add_action( 'admin_head', array( __CLASS__, 'fix_tabs_glitch' ) );
-
-	}
-
-	public static function fix_tabs_glitch() {
-		$screen = get_current_screen();
-		if ( sprintf( 'stream_page_%s', self::SETTINGS_PAGE_SLUG ) === $screen->id ) : ?>
-			<style>
-				.nav-tab-wrapper a:not(.nav-tab-active) {
-					border-bottom: 1px solid transparent;
-				}
-			</style>
-		<?php endif;
 	}
 
 	/**
