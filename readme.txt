@@ -47,16 +47,11 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Specify which roles should have their activity logged
  * Limit who can view user activity records by user role
  * Live update of user activity records in the Stream
- * Private RSS feeds of user activity records
- * Private JSON feeds of user activity records
+ * Private RSS and JSON feeds of user activity records
  * Set how long records should live before being purged automatically
  * Option to manually purge all user activity records from the database
  * Disable connectors where you don't want user activity tracked
  * Support for IPv6 addresses
-
-**Extension plugins:**
-
- * [Cherry-Pick](http://wordpress.org/plugins/stream-cherry-pick/): Allow Administrators to delete records from the Stream individually or in bulk.
 
 **Languages:**
 
@@ -72,7 +67,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 
  * UI to exclude specific types of user activity from being tracked
  * Limit who can view user activity records by user, not just by role
- * Improved context assignements for Media and Users
+ * Improved context naming for Media
  * Multisite view of all activity records on a network
  * Language support for Arabic (RTL), Czech and Slovak
 
@@ -95,11 +90,17 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 1.2.7 =
+**2014/03/04** - Pagination added to Stream Activity dashboard widget. Bug fixes. Props [chacha](https://github.com/chacha/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 1.2.6 =
+**2014/02/28** - Improved context names in Users connector. Props [powelski](http://profiles.wordpress.org/powelski/)
+
 = 1.2.5 =
-**2014/02/27** - Use sidebar area names as Context for Widgets connector. Bug fixes. Props [desaiuditd](http://profiles.wordpress.org/desaiuditd/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [bordoni](http://profiles.wordpress.org/bordoni/)
+**2014/02/27** - Use sidebar area names as context in Widgets connector. Bug fixes. Props [desaiuditd](http://profiles.wordpress.org/desaiuditd/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [bordoni](http://profiles.wordpress.org/bordoni/)
 
 = 1.2.4 =
-**2014/02/25** - Use post type names as Context for Comments connector. German translation update. Bug fixes. Props [powelski](http://profiles.wordpress.org/powelski/), [kucrut](http://profiles.wordpress.org/kucrut/), [pascalklaeres](http://profiles.wordpress.org/pascalklaeres/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+**2014/02/25** - Use post type names as context in Comments connector. German translation update. Bug fixes. Props [powelski](http://profiles.wordpress.org/powelski/), [kucrut](http://profiles.wordpress.org/kucrut/), [pascalklaeres](http://profiles.wordpress.org/pascalklaeres/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 = 1.2.3 =
 **2014/02/21** - Replacement function for filter_input family to avoid PHP bug. Filter added to main Stream query. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
