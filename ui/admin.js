@@ -84,13 +84,13 @@ jQuery(function($){
 			$optionsForm.prop('action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ));
 		};
 
-	$tabs.on('click', 'a', function(e){
-		e.preventDefault();
+	$tabs.on('click', 'a', function(){
 		var index = $tabs.find('a').index( $(this) );
 		$panels.hide().eq(index).show();
 		$tabs.find('a').removeClass('nav-tab-active').filter($(this)).addClass('nav-tab-active');
 		window.location.hash = index;
 		syncFormAction(index);
+		return false;
 	});
 	$tabs.children().eq( currentHash ).trigger('click');
 

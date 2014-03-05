@@ -200,3 +200,7 @@
 .toplevel_page_wp_stream .new-row.fadeout {
 	background-color: transparent;
 }
+
+.stream_page_wp_stream_settings .nav-tab-wrapper a:not(.nav-tab-active) {
+    border-bottom: 1px solid #ccc;
+}
