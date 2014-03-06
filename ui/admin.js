@@ -4,7 +4,28 @@ jQuery(function($){
 	if ( jQuery.datepicker ) {
 		$( '.toplevel_page_wp_stream .date-picker' ).datepicker({
 			dateFormat: 'yy/mm/dd',
-			maxDate: 0
+			maxDate: 0,
+			beforeShow: function() {
+				$(this).prop( 'disabled', true );
+			},
+			onClose: function() {
+				$(this).prop( 'disabled', false );
+			}
+		});
+
+		var $date_from = $('.toplevel_page_wp_stream #date_from'),
+			$date_to   = $('.toplevel_page_wp_stream #date_to'),
+			currentDateFrom,
+			currentDateTo;
+
+		$date_from.change( function() {
+			currentDateFrom = $(this).datepicker( 'getDate' )
+			$date_to.datepicker( 'option', 'minDate', currentDateFrom );
+		});
+
+		$date_to.change( function() {
+			currentDateTo = $(this).datepicker( 'getDate' )
+			$date_from.datepicker( 'option', 'maxDate', currentDateTo );
 		});
 	}
 
