@@ -105,6 +105,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 1.2.7 ###
+**2014/03/04** - Pagination added to Stream Activity dashboard widget. Bug fixes. Props [chacha](https://github.com/chacha/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
 ### 1.2.6 ###
 **2014/02/28** - Improved context names in Users connector. Props [powelski](http://profiles.wordpress.org/powelski/)
 

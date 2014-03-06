@@ -534,9 +534,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 				<label class="screen-reader-text" for="date_to">%3$s:</label>
 				<input type="text" name="date_to" id="date_to" class="date-picker" placeholder="%3$s" size="14" value="%4$s" />
 			</div>',
-			esc_attr__( 'Date start', 'stream' ),
+			esc_attr__( 'Start date', 'stream' ),
 			isset( $_GET['date_from'] ) ? esc_attr( $_GET['date_from'] ) : null,
-			esc_attr__( 'Date end', 'stream' ),
+			esc_attr__( 'End date', 'stream' ),
 			isset( $_GET['date_to'] ) ? esc_attr( $_GET['date_to'] ) : null
 		);
 
