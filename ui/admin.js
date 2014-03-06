@@ -19,12 +19,12 @@ jQuery(function($){
 			currentDateTo;
 
 		$date_from.change( function() {
-			currentDateFrom = $(this).datepicker( 'getDate' )
+			currentDateFrom = $(this).datepicker( 'getDate' );
 			$date_to.datepicker( 'option', 'minDate', currentDateFrom );
 		});
 
 		$date_to.change( function() {
-			currentDateTo = $(this).datepicker( 'getDate' )
+			currentDateTo = $(this).datepicker( 'getDate' );
 			$date_from.datepicker( 'option', 'maxDate', currentDateTo );
 		});
 	}
