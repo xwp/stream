@@ -100,7 +100,6 @@ class WP_Stream_Connectors {
 
 			$is_excluded_connector = apply_filters( 'wp_stream_check_connector_is_excluded', in_array( $connector::$name, $excluded_connectors ), $connector::$name, $excluded_connectors );
 
-
 			if ( $is_excluded_connector ) {
 				continue;
 			}
