@@ -35,7 +35,7 @@ jQuery(function($){
 			width: '165px'
 		});
 
-	$( '.toplevel_page_wp_stream input[type=hidden].chosen-select' ).select2({
+	$( '.toplevel_page_wp_stream input[type=hidden].select2-select' ).select2({
 			minimumInputLength: 1,
 			allowClear: true,
 			width: '165px',
@@ -74,6 +74,128 @@ jQuery(function($){
 				}
 			}
 		});
+    var stream_select2_change_handler = function (e, input) {
+        var $placeholder_class = input.data('select-placeholder');
+        var $placeholder_child_class = $placeholder_class + '-child';
+        var $placeholder = input.siblings('.' + $placeholder_class);
+        jQuery('.' + $placeholder_child_class).off().remove();
+        if (typeof e.val === 'undefined') {
+            e.val = input.val().split(',');
+        }
+        $.each(e.val.reverse(), function (value, key) {
+            if ( key === null || key === '__placeholder__' || key === '' ) {
+                return true;
+            }
+            $placeholder.after($placeholder.clone(true).attr('class', $placeholder_child_class).val(key));
+        });
+    };
+    $('.stream_page_wp_stream_settings input[type=hidden].select2-select.with-source').each(function (k, el) {
+        var $input = $(el);
+        $input.select2({
+            multiple: true,
+            width: 350,
+            data: $input.data('values'),
+            query: function (query) {
+                var data = {results: []};
+                if (typeof (query.term) !== 'undefined') {
+                    $.each($input.data('values'), function () {
+                        if ( query.term.length === 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
+                            data.results.push({id: this.id, text: this.text });
+                        }
+                    });
+                }
+                query.callback(data);
+            },
+            initSelection: function (item, callback) {
+                callback( item.data( 'selected' ) );
+            }
+        }).on('change',function (e) {
+            stream_select2_change_handler( e , $input );
+        }).trigger('change');
+    });
+    $( '.stream_page_wp_stream_settings input[type=hidden].select2-select.ip-addresses').each(function( k, el ){
+        var $input = $(el);
+        var $ip_regex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
+        $input.select2({
+            tags:$input.data('selected'),
+            width:350,
+            query: function (query){
+                var data = {results: []};
+                if(typeof (query.term) !== 'undefined' && query.term.match($ip_regex) != null ){
+                    data.results.push({id: query.term, text: query.term });
+                }
+                query.callback(data);
+            },
+            initSelection: function (item, callback) {
+                callback( item.data( 'selected' ) );
+            },
+            formatNoMatches : function(){
+                return '';
+            }
+        }).on('change',function(e){
+            stream_select2_change_handler( e , $input );
+        }).trigger('change');
+    });
+    var $input_user;
+    $('.stream_page_wp_stream_settings input[type=hidden].select2-select.authors_and_roles').each(function (k, el) {
+        $input_user = $(el);
+        var $roles = $input_user.data('values');
+        $input_user.select2({
+            multiple: true,
+            width: 350,
+            ajax: {
+                type: 'POST',
+                url: ajaxurl,
+                dataType: 'json',
+                quietMillis: 500,
+                data: function (term, page) {
+                    return {
+                        'find': term,
+                        'limit': 10,
+                        'pager': page,
+                        'action': 'stream_get_users',
+                        'nonce' : $input_user.data('nonce')
+                    };
+                },
+                results: function (response) {
+                    var answer = {
+                        results: [
+                            {
+                                text: 'Roles',
+                                children: $roles
+                            },
+                            {
+                                text: 'Users',
+                                children: []
+                            }
+                        ]
+                    };
+                    if (response.success !== true || response.data === undefined || response.data.status !== true ) {
+                        return answer;
+                    }
+                    $.each(response.data.users, function (k, user) {
+                        if ($.contains($roles, user.id)){
+                            user.disabled = true;
+                        }
+                    });
+                    answer.results[1].children = response.data.users;
+                    // notice we return the value of more so Select2 knows if more results can be loaded
+                    return answer;
+                }
+            },
+            formatSelection: function (object){
+                if ( $.isNumeric( object.id ) && object.text.indexOf('icon-users') < 0 ){
+                    object.text += '<i class="icon16 icon-users"></i>';
+                }
+                return object.text;
+            },
+            initSelection: function (item, callback) {
+                callback(item.data('selected'));
+            }
+        });
+    }).on('change',function (e) {
+        stream_select2_change_handler(e, $input_user);
+    }).trigger('change');
 
 	$(window).load(function() {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );

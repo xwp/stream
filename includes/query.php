@@ -46,6 +46,10 @@ class WP_Stream_Query {
 			'record_parent'         => '',
 			'record_parent__in'     => array(),
 			'record_parent__not_in' => array(),
+			'author__in'             => array(),
+			'author__not_in'        => array(),
+			'ip__in'                 => array(),
+			'ip__not_in'            => array(),
 			// Order
 			'order'                 => 'desc',
 			'orderby'               => 'ID',
@@ -157,6 +161,33 @@ class WP_Stream_Query {
 			$record_parent__not_in = implode( ',', array_filter( (array) $args['record_parent__not_in'], 'is_numeric' ) );
 			if ( strlen( $record_parent__not_in ) ) {
 				$where .= $wpdb->prepare( " AND $wpdb->stream.parent NOT IN ($record_parent__not_in)", '' );
+			}
+		}
+
+		if ( $args[ 'author__in' ] ) {
+			$author__in = implode( ',', array_filter( (array)$args[ 'author__in' ], 'is_numeric' ) );
+			if ( $author__in ) {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.author IN ($author__in)", '' );
+			}
+		}
+
+		if ( $args[ 'author__not_in' ] ) {
+			$author__not_in = implode( ',', array_filter( (array)$args[ 'author__not_in' ], 'is_numeric' ) );
+			if ( strlen( $author__not_in ) ) {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.author NOT IN ($author__not_in)", '' );
+			}
+		}
+		if ( $args[ 'ip__in' ] ) {
+			if ( count( $args[ 'ip__in' ] ) > 0 ) {
+				$ip__in = '(' . substr( str_repeat( ',%s', count( $args[ 'ip__in' ] ) ), 1 ) . ')';
+				$where .= $wpdb->prepare( " AND $wpdb->stream.ip IN {$ip__in}", $args[ 'ip__in' ] );
+			}
+		}
+
+		if ( $args[ 'ip__not_in' ] ) {
+			if ( count( $args[ 'ip__not_in' ] ) > 0 ) {
+				$ip__not_in = '(' . substr( str_repeat( ',%s', count( $args[ 'ip__not_in' ] ) ), 1 ) . ')';
+				$where     .= $wpdb->prepare( " AND $wpdb->stream.ip NOT IN {$ip__not_in}", $args[ 'ip__not_in' ] );
 			}
 		}
 
@@ -315,3 +346,4 @@ function existing_records( $column, $table = '' ) {
 			: array();
 	}
 }
+

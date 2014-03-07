@@ -128,7 +128,14 @@ class WP_Stream_Feeds {
 			'orderby'          => isset( $_GET['orderby'] ) ? (string) $_GET['orderby'] : 'ID',
 			'fields'           => isset( $_GET['fields'] ) ? (string) $_GET['fields'] : '',
 		);
+
+		//Remove excluded records as per settings
+		add_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
+
 		$records = stream_query( $args );
+
+		//Remove filter added before
+		remove_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		$latest_record = isset( $records[0]->created ) ? $records[0]->created : null;
 
