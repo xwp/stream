@@ -62,7 +62,7 @@ jQuery(function($){
             e.val = input.val().split(',');
         }
         $.each(e.val.reverse(), function (value, key) {
-            if (value === '__placeholder__') {
+            if ( key === null || key === '__placeholder__' || key === '' ) {
                 return true;
             }
             $placeholder.after($placeholder.clone(true).attr('class', $placeholder_child_class).val(key));
@@ -206,13 +206,13 @@ jQuery(function($){
 			$optionsForm.prop('action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ));
 		};
 
-	$tabs.on('click', 'a', function(e){
-		e.preventDefault();
+	$tabs.on('click', 'a', function(){
 		var index = $tabs.find('a').index( $(this) );
 		$panels.hide().eq(index).show();
 		$tabs.find('a').removeClass('nav-tab-active').filter($(this)).addClass('nav-tab-active');
 		window.location.hash = index;
 		syncFormAction(index);
+		return false;
 	});
 	$tabs.children().eq( currentHash ).trigger('click');
 

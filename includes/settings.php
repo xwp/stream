@@ -63,6 +63,7 @@ class WP_Stream_Settings {
 
 		// Ajax callback function to search users
 		add_action( 'wp_ajax_stream_get_users', array( __CLASS__, 'get_users' ) );
+
 	}
 
 	/**
@@ -480,7 +481,7 @@ class WP_Stream_Settings {
 					$class .= ' with-source';
 				} else {
 					foreach ( $current_value as $value ) {
-						if ( $value == '__placeholder__' ) {
+						if ( $value === '__placeholder__' || $value === '' ) {
 							continue;
 						}
 						$selected_values[ ] = array( 'id' => $value, 'text' => $value, );
@@ -535,7 +536,7 @@ class WP_Stream_Settings {
 						continue;
 					}
 
-					if ( $value == '__placeholder__' ) {
+					if ( $value === '__placeholder__' || $value === '' ) {
 						continue;
 					}
 
@@ -674,7 +675,6 @@ class WP_Stream_Settings {
 			$excluded_values = call_user_func( $excluded_values );
 		}
 		$excluded_values = wp_list_filter( $excluded_values, array( '__placeholder__' ), 'NOT' );
-
 		return $excluded_values;
 	}
 
@@ -717,5 +717,41 @@ class WP_Stream_Settings {
 			 */
 			do_action( 'wp_stream_auto_purge' );
 		}
+	}
+
+	/**
+	 * Function will add excluded settings args into stream query
+	 *
+	 * @param $args array query args passed to stream_query
+	 *
+	 * @return array
+	 */
+	public static function remove_excluded_record_filter( $args ) {
+		// Remove record of excluded connector
+		if ( empty( $args[ 'connector' ] ) ) {
+			$args[ 'connector__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
+		}
+
+		// Remove record of excluded context
+		if ( empty( $args[ 'context' ] ) ) {
+			$args[ 'context__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'contexts' );
+		}
+
+		// Remove record of excluded actions
+		if ( empty( $args[ 'action' ] ) ) {
+			$args[ 'action__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
+		}
+
+		// Remove record of excluded author
+		if ( empty( $args[ 'author' ] ) ) {
+			$args[ 'author__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
+		}
+
+		// Remove record of excluded ip
+		if ( empty( $args[ 'ip' ] ) ) {
+			$args[ 'ip__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'ip_addresses' );
+		}
+
+		return $args;
 	}
 }

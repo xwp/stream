@@ -211,3 +211,6 @@
     font-size: 15px!important;
     color: #656565;
 }
+.stream_page_wp_stream_settings .nav-tab-wrapper a:not(.nav-tab-active) {
+    border-bottom: 1px solid #ccc;
+}
