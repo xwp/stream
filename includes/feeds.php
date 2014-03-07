@@ -11,7 +11,7 @@ class WP_Stream_Feeds {
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
 
 	public static function load() {
-		if ( ! isset( WP_Stream_Settings::$options['general_private_feeds'] ) || 1 != WP_Stream_Settings::$options['general_private_feeds'] ) {
+		if ( ! isset( WP_Stream_Settings::$options['general_private_feeds'] ) || ! WP_Stream_Settings::$options['general_private_feeds'] ) {
 			return;
 		}
 
@@ -61,9 +61,25 @@ class WP_Stream_Feeds {
 		$pretty_permalinks = get_option( 'permalink_structure' );
 
 		if ( empty( $pretty_permalinks ) ) {
-			$link = add_query_arg( array( 'feed' => self::FEED_QUERY_VAR, self::FEED_KEY_QUERY_VAR => $key ), home_url( '/' ) );
+			$link = add_query_arg(
+				array(
+					'feed'                   => self::FEED_QUERY_VAR,
+					self::FEED_KEY_QUERY_VAR => $key,
+				),
+				home_url( '/' )
+			);
 		} else {
-			$link = add_query_arg( array( self::FEED_KEY_QUERY_VAR => $key ), home_url( sprintf( '/feed/%s/', self::FEED_QUERY_VAR ) ) );
+			$link = add_query_arg(
+				array(
+					self::FEED_KEY_QUERY_VAR => $key,
+				),
+				home_url(
+					sprintf(
+						'/feed/%s/',
+						self::FEED_QUERY_VAR
+					)
+				)
+			);
 		}
 
 		$nonce = wp_create_nonce( 'wp_stream_generate_key' );
@@ -129,17 +145,22 @@ class WP_Stream_Feeds {
 			'fields'           => isset( $_GET['fields'] ) ? (string) $_GET['fields'] : '',
 		);
 
-		//Remove excluded records as per settings
+		// Remove excluded records as per settings
 		add_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		$records = stream_query( $args );
 
-		//Remove filter added before
+		// Remove filter added before
 		remove_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		$latest_record = isset( $records[0]->created ) ? $records[0]->created : null;
 
-		$records_admin_url = add_query_arg( array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ), admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) );
+		$records_admin_url = add_query_arg(
+			array(
+				'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+			),
+			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+		);
 
 		if ( 'json' === wp_stream_filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR ) ) {
 			if ( version_compare( PHP_VERSION, '5.4', '>=' ) ) {
@@ -185,7 +206,12 @@ class WP_Stream_Feeds {
 					<?php do_action( 'rss2_head' ) ?>
 					<?php foreach ( $records as $record ) : ?>
 						<?php
-						$record_link  = add_query_arg( array( 'record__in' => (int) $record->ID ), $records_admin_url );
+						$record_link  = add_query_arg(
+							array(
+								'record__in' => (int) $record->ID,
+							),
+							$records_admin_url
+						);
 						$author       = get_userdata( $record->author );
 						$display_name = isset( $author->display_name ) ? $author->display_name : 'N/A';
 						?>

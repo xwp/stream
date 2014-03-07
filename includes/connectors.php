@@ -27,7 +27,6 @@ class WP_Stream_Connectors {
 	 */
 	protected static $admin_notices = array();
 
-
 	/**
 	 * Load built-in connectors
 	 */
@@ -68,7 +67,7 @@ class WP_Stream_Connectors {
 		self::$connectors = apply_filters( 'wp_stream_connectors', $classes );
 
 		foreach ( $classes as $class ) {
-			self::$term_labels['stream_connector'][$class::$name] = $class::get_label();
+			self::$term_labels['stream_connector'][ $class::$name ] = $class::get_label();
 		}
 
 		// Get excluded connectors
@@ -88,7 +87,7 @@ class WP_Stream_Connectors {
 
 			// Store connector label
 			if ( ! in_array( $connector::$name, self::$term_labels['stream_connector'] ) ) {
-				self::$term_labels['stream_connector'][$connector::$name] = $connector::get_label();
+				self::$term_labels['stream_connector'][ $connector::$name ] = $connector::get_label();
 			}
 
 			/**
@@ -123,9 +122,10 @@ class WP_Stream_Connectors {
 
 		/**
 		 * This allow to perform action after all connectors registration
+		 *
 		 * @param array all register connectors labels array
 		 */
-		do_action( 'wp_stream_after_connectors_registration', self::$term_labels[ 'stream_connector' ] );
+		do_action( 'wp_stream_after_connectors_registration', self::$term_labels['stream_connector'] );
 	}
 
 
@@ -139,7 +139,7 @@ class WP_Stream_Connectors {
 			?>
 			<div class="error">
 				<?php foreach ( self::$admin_notices as $message ) : ?>
-					<?php echo wpautop( esc_html( $message ) ); // xss ok ?>
+					<?php echo wpautop( esc_html( $message ) ) // xss ok ?>
 				<?php endforeach; ?>
 			</div>
 			<?php
@@ -165,7 +165,7 @@ class WP_Stream_Connectors {
 			// If a user is part of a role that we don't want to log, we disable it
 			$user_roles   = array_values( $user->roles );
 			$roles_logged = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
-			$bool         = ( count( array_intersect( $user_roles, $roles_logged ) ) === 0 );
+			$bool         = ( 0 === count( array_intersect( $user_roles, $roles_logged ) ) );
 			//Check user id in exclude array
 			if ( $bool ) {
 				$bool = ! ( in_array( $user->ID, $roles_logged ) );
@@ -181,7 +181,6 @@ class WP_Stream_Connectors {
 		 *
 		 * @return bool
 		 */
-
 		return apply_filters( 'wp_stream_record_log', $bool, $user, get_called_class() );
 	}
 
@@ -215,7 +214,6 @@ class WP_Stream_Connectors {
 		 *
 		 * @return bool
 		 */
-
 		return apply_filters( 'wp_stream_ip_record_log', $bool, $ip, get_called_class() );
 	}
 
@@ -227,7 +225,6 @@ class WP_Stream_Connectors {
 	 * @return array
 	 */
 	public static function is_logging_enabled( $column, $value ) {
-
 		$excluded_values = WP_Stream_Settings::get_excluded_by_key( $column );
 		$bool            = ( ! in_array( $value, $excluded_values ) );
 

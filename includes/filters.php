@@ -29,16 +29,16 @@ class WP_Stream_Filter_Input {
 		$super = null;
 
 		switch ( $type ) {
-			case INPUT_POST   :
+			case INPUT_POST :
 				$super = $_POST;
 				break;
-			case INPUT_GET    :
+			case INPUT_GET :
 				$super = $_GET;
 				break;
 			case INPUT_COOKIE :
 				$super = $_COOKIE;
 				break;
-			case INPUT_ENV    :
+			case INPUT_ENV :
 				$super = $_ENV;
 				break;
 			case INPUT_SERVER :
@@ -50,20 +50,16 @@ class WP_Stream_Filter_Input {
 			throw new Exception( 'Invalid use, type must be one of INPUT_* family.', 'stream' );
 		}
 
-		$var = null;
-		if ( isset( $super[ $variable_name ] ) ) {
-			$var = $super[ $variable_name ];
-		}
-
+		$var = isset( $super[ $variable_name ] ) ? $super[ $variable_name ] : null;
 		$var = self::filter( $var, $filter, $options );
 
 		return $var;
 	}
 
 	public static function filter( $var, $filter = null, $options = array() ) {
-		if ( $filter && $filter != FILTER_DEFAULT ) {
+		if ( $filter && FILTER_DEFAULT !== $filter ) {
 			$filter_callback = self::$filter_callbacks[ $filter ];
-			$result = call_user_func( $filter_callback, $var );
+			$result          = call_user_func( $filter_callback, $var );
 
 			// filter_var / filter_input treats validation/sanitization filters the same
 			// they both return output and change the var value, this shouldn't be the case here.
@@ -82,7 +78,7 @@ class WP_Stream_Filter_Input {
 		}
 
 		// Detect FILTER_REQUIRE_ARRAY flag
-		if ( is_int( $options ) && $options === FILTER_REQUIRE_ARRAY ) {
+		if ( is_int( $options ) && FILTER_REQUIRE_ARRAY === $options ) {
 			if ( ! is_array( $var ) ) {
 				$var = null;
 			}
@@ -98,6 +94,7 @@ class WP_Stream_Filter_Input {
 
 	public static function is_regex( $var ) {
 		$test = @preg_match( $var, '' );
+
 		return $test !== false;
 	}
 

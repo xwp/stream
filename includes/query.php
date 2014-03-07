@@ -9,6 +9,7 @@ class WP_Stream_Query {
 			$class = __CLASS__;
 			self::$instance = new $class;
 		}
+
 		return self::$instance;
 	}
 
@@ -46,9 +47,9 @@ class WP_Stream_Query {
 			'record_parent'         => '',
 			'record_parent__in'     => array(),
 			'record_parent__not_in' => array(),
-			'author__in'             => array(),
+			'author__in'            => array(),
 			'author__not_in'        => array(),
-			'ip__in'                 => array(),
+			'ip__in'                => array(),
 			'ip__not_in'            => array(),
 			// Order
 			'order'                 => 'desc',
@@ -59,7 +60,7 @@ class WP_Stream_Query {
 			// Fields selection
 			'fields'                => '',
 			'ignore_context'        => null,
-			);
+		);
 
 		$args = wp_parse_args( $args, $defaults );
 
@@ -80,7 +81,7 @@ class WP_Stream_Query {
 				' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
 				$wpdb->streamcontext,
 				$wpdb->stream
-				);
+			);
 		}
 
 		/**
@@ -228,22 +229,20 @@ class WP_Stream_Query {
 		/**
 		 * PARSE ORDER PARAMS
 		 */
-		$order   = esc_sql( $args['order'] );
-		$orderby = esc_sql( $args['orderby'] );
+		$order     = esc_sql( $args['order'] );
+		$orderby   = esc_sql( $args['orderby'] );
+		$orderable = array( 'ID', 'site_id', 'object_id', 'author', 'summary', 'visibility', 'parent', 'type', 'created' );
 
-		if ( in_array(
-			$orderby,
-			array( 'ID', 'site_id', 'object_id', 'author', 'summary', 'visibility', 'parent', 'type', 'created' )
-			) ) {
+		if ( in_array( $orderby, $orderable ) ) {
 			$orderby = $wpdb->stream . '.' . $orderby;
 		}
 		elseif ( in_array( $orderby, array( 'connector', 'context', 'action' ) ) ) {
 			$orderby = $wpdb->streamcontext . '.' . $orderby;
 		}
-		elseif ( $orderby == 'meta_value_num' && ! empty( $args['meta_key'] ) ) {
+		elseif ( 'meta_value_num' === $orderby && ! empty( $args['meta_key'] ) ) {
 			$orderby = "CAST($wpdb->streammeta.meta_value AS SIGNED)";
 		}
-		elseif ( $orderby == 'meta_value' && ! empty( $args['meta_key'] ) ) {
+		elseif ( 'meta_value' === $orderby && ! empty( $args['meta_key'] ) ) {
 			$orderby = "$wpdb->streammeta.meta_value";
 		}
 		else {
@@ -259,10 +258,10 @@ class WP_Stream_Query {
 		if ( ! $args['ignore_context'] ) {
 			$select .= ", $wpdb->streamcontext.context, $wpdb->streamcontext.action, $wpdb->streamcontext.connector";
 		}
-		if ( $fields == 'ID' ) {
+		if ( 'ID' === $fields ) {
 			$select = "$wpdb->stream.ID";
 		}
-		elseif ( $fields == 'summary' ) {
+		elseif ( 'summary' === $fields ) {
 			$select = "$wpdb->stream.summary, $wpdb->stream.ID";
 		}
 
@@ -336,14 +335,12 @@ function existing_records( $column, $table = '' ) {
 	if ( is_array( $rows ) && ! empty( $rows ) ) {
 		foreach ( $rows as $row ) {
 			foreach ( $row as $cell => $value ) {
-				$output_array[$value] = $value;
+				$output_array[ $value ] = $value;
 			}
 		}
 		return (array) $output_array;
 	} else {
-		return isset( WP_Stream_Connectors::$term_labels['stream_' . $column] )
-			? WP_Stream_Connectors::$term_labels['stream_' . $column]
-			: array();
+		$column = sprintf( 'stream_%s', $column );
+		return isset( WP_Stream_Connectors::$term_labels[ $column ] ) ? WP_Stream_Connectors::$term_labels[ $column ] : array();
 	}
 }
-

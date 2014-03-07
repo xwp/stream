@@ -4,12 +4,14 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 
 	/**
 	 * Context name
+	 *
 	 * @var string
 	 */
 	public static $name = 'posts';
 
 	/**
 	 * Actions registered for this context
+	 *
 	 * @var array
 	 */
 	public static $actions = array(
@@ -91,46 +93,40 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 
 		if ( in_array( $new, array( 'auto-draft', 'inherit' ) ) ) {
 			return;
-		}
-		elseif ( $old == 'auto-draft' && $new == 'draft' ) {
+		} elseif ( $old == 'auto-draft' && $new == 'draft' ) {
 			$message = _x(
 				'"%1$s" %2$s drafted',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'created';
-		}
-		elseif ( $old == 'auto-draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
+		} elseif ( $old == 'auto-draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
 			$message = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'created';
-		}
-		elseif ( $old == 'draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
+		} elseif ( $old == 'draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
 			$message = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		}
-		elseif ( $old == 'publish' && ( in_array( $new, array( 'draft' ) ) ) ) {
+		} elseif ( $old == 'publish' && ( in_array( $new, array( 'draft' ) ) ) ) {
 			$message = _x(
 				'"%1$s" %2$s unpublished',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		}
-		elseif ( $new == 'trash' ) {
+		} elseif ( $new == 'trash' ) {
 			$message = _x(
 				'"%1$s" %2$s trashed',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'trashed';
-		}
-		else {
+		} else {
 			$message = _x(
 				'"%1$s" %2$s updated',
 				'1: Post title, 2: Post type singular name',
@@ -143,6 +139,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		}
 
 		$revision_id = null;
+
 		if ( wp_revisions_enabled( $post ) ) {
 			$revision = get_children(
 				array(
@@ -171,9 +168,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'revision_id'   => $revision_id,
 			),
 			$post->ID,
-			array(
-				$post->post_type => $action,
-			)
+			array( $post->post_type => $action )
 		);
 	}
 
@@ -203,9 +198,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'singular_name' => $post_type_name,
 			),
 			$post->ID,
-			array(
-				$post->post_type => 'deleted',
-			)
+			array( $post->post_type => 'deleted' )
 		);
 	}
 
@@ -225,13 +218,20 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		);
 	}
 
+	/**
+	 * Gets the singular post type label
+	 *
+	 * @param   string  $post_type_slug
+	 * @return  string  Post type label
+	 */
 	private static function get_post_type_name( $post_type_slug ) {
+		$name = __( 'Post', 'stream' ); // Default
+
 		if ( post_type_exists( $post_type_slug ) ) {
 			$post_type = get_post_type_object( $post_type_slug );
-			$name = $post_type->labels->singular_name;
-		} else {
-			$name = __( 'Post', 'stream' );
+			$name      = $post_type->labels->singular_name;
 		}
+
 		return $name;
 	}
 
