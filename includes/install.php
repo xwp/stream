@@ -197,9 +197,9 @@ class WP_Stream_Install {
 			}
 		}
 
-		// If version is lower than 1.2.9, do the update routine for site options
+		// If version is lower than 1.3.0, do the update routine for site options
 		// Backward settings compatibility for old version plugins
-		if ( version_compare( $db_version, '1.2.9', '<' ) ) {
+		if ( version_compare( $db_version, '1.3.0', '<' ) ) {
 			add_filter( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_old_options_to_exclude_tab' );
 		}
 	}
