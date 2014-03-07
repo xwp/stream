@@ -259,6 +259,7 @@ class WP_Stream_Query {
 		if ( ! $args['ignore_context'] ) {
 			$select .= ", $wpdb->streamcontext.context, $wpdb->streamcontext.action, $wpdb->streamcontext.connector";
 		}
+
 		if ( $fields == 'ID' ) {
 			$select = "$wpdb->stream.ID";
 		}
@@ -286,6 +287,20 @@ class WP_Stream_Query {
 		$sql = apply_filters( 'wp_stream_query', $sql, $args );
 
 		$results = $wpdb->get_results( $sql );
+
+		if ( $fields === 'with-meta' && is_array( $results ) ) {
+			$ids      = array_map( 'absint', wp_list_pluck( $results, 'ID' ) );
+			$sql_meta = sprintf(
+				"SELECT * FROM $wpdb->streammeta WHERE record_id IN ( %s )",
+				implode( ',', $ids )
+			);
+
+			$meta  = $wpdb->get_results( $sql_meta );
+			$ids_f = array_flip( $ids );
+			foreach ( $meta as $meta_record ) {
+				$results[ $ids_f[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ][] = $meta_record->meta_value;
+			}
+		}
 
 		return $results;
 	}
