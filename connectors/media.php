@@ -73,8 +73,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 * @return string            A file type which corresponds with a context label
 	 */
 	public static function get_attachment_type( $file_uri ) {
-
-		$extension = pathinfo( $file_uri, PATHINFO_EXTENSION );
+		$extension      = pathinfo( $file_uri, PATHINFO_EXTENSION );
 		$extension_type = wp_ext2type( $extension );
 
 		if ( empty( $extension_type ) ) {
@@ -88,7 +87,6 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		}
 
 		return $extension_type;
-
 	}
 
 	/**
@@ -127,11 +125,10 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		} else {
 			$message = __( 'Added "%s" to Media library', 'stream' );
 		}
-		$name         = $post->post_title;
-		$url          = $post->guid;
-		$parent_id    = $post->post_parent;
-		$parent_title = $parent_id ? get_the_title‎( $parent_id ) : null;
-
+		$name            = $post->post_title;
+		$url             = $post->guid;
+		$parent_id       = $post->post_parent;
+		$parent_title    = $parent_id ? get_the_title‎( $parent_id ) : null;
 		$attachment_type = self::get_attachment_type( $post->guid );
 
 		self::log(
@@ -139,7 +136,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 			compact( 'name', 'parent_title', 'parent_id', 'url' ),
 			$post_id,
 			array( $attachment_type => $post->post_parent ? 'attached' : 'uploaded' )
-			);
+		);
 	}
 
 	/**
@@ -148,10 +145,9 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 * @action edit_attachment
 	 */
 	public static function callback_edit_attachment( $post_id ) {
-		$post    = get_post( $post_id );
-		$message = __( 'Updated "%s"', 'stream' );
-		$name    = $post->post_title;
-
+		$post            = get_post( $post_id );
+		$message         = __( 'Updated "%s"', 'stream' );
+		$name            = $post->post_title;
 		$attachment_type = self::get_attachment_type( $post->guid );
 
 		self::log(
@@ -159,7 +155,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 			compact( 'name' ),
 			$post_id,
 			array( $attachment_type => 'updated' )
-			);
+		);
 	}
 
 	/**
@@ -168,13 +164,12 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 * @action delete_attachment
 	 */
 	public static function callback_delete_attachment( $post_id ) {
-		$post   = get_post( $post_id );
-		$parent = $post->post_parent ? get_post( $post->post_parent ) : null;
-		if ( $parent ) $parent_id = $parent->ID;
-		$message = __( 'Deleted "%s"', 'stream' );
-		$name    = $post->post_title;
-		$url     = $post->guid;
-
+		$post            = get_post( $post_id );
+		$parent          = $post->post_parent ? get_post( $post->post_parent ) : null;
+		$parent_id       = $parent ? $parent->ID : null;
+		$message         = __( 'Deleted "%s"', 'stream' );
+		$name            = $post->post_title;
+		$url             = $post->guid;
 		$attachment_type = self::get_attachment_type( $post->guid );
 
 		self::log(
@@ -182,12 +177,11 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 			compact( 'name', 'parent_id', 'url' ),
 			$post_id,
 			array( $attachment_type => 'deleted' )
-			);
+		);
 	}
 
 	public static function callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id ) {
-		$name = basename( $filename );
-
+		$name            = basename( $filename );
 		$attachment_type = self::get_attachment_type( $post->guid );
 
 		self::log(
@@ -195,12 +189,11 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 			compact( 'name', 'filename', 'post_id' ),
 			$post_id,
 			array( $attachment_type => 'edited' )
-			);
+		);
 	}
 
 	public static function callback_wp_save_image_file( $dummy, $filename, $image, $mime_type, $post_id ) {
 		return self::callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id );
 	}
-
 
 }

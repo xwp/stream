@@ -43,8 +43,6 @@ class WP_Stream_Connectors {
 				$class_name = ucwords( preg_match( '#(.+)\.php#', basename( $class ), $matches ) ? $matches[1] : '' );
 				$class      = "WP_Stream_Connector_$class_name";
 				$classes[]  = $class;
-
-				self::$term_labels['stream_connector'][$class::$name] = $class::get_label();
 			}
 		}
 
@@ -68,6 +66,10 @@ class WP_Stream_Connectors {
 		 * @return array  Updated Array of Connector Class names
 		 */
 		self::$connectors = apply_filters( 'wp_stream_connectors', $classes );
+
+		foreach ( $classes as $class ) {
+			self::$term_labels['stream_connector'][$class::$name] = $class::get_label();
+		}
 
 		// Get excluded connectors
 		$excluded_connectors = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
