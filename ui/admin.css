@@ -1,3 +1,5 @@
+/* Dashboard Widget */
+
 #dashboard_stream_activity.postbox h3 {
 	border-bottom: 0;
 }
@@ -67,6 +69,21 @@
 	margin: 7px 0 0 12px;
 }
 
+@media only screen and (max-width: 782px) {
+	#dashboard_stream_activity h3 .postbox-title-action {
+		top: 10px;
+	}
+	#dashboard_stream_activity .view-all {
+		display: none;
+	}
+	#dashboard_stream_activity .tablenav .tablenav-pages {
+		margin: 15px 0;
+	}
+}
+
+
+/* Stream Records */
+
 .toplevel_page_wp_stream .tablenav {
 	padding-top: 6px;
 }
@@ -123,18 +140,6 @@
 	}
 }
 
-@media only screen and (max-width: 782px) {
-	#dashboard_stream_activity h3 .postbox-title-action {
-		top: 10px;
-	}
-	#dashboard_stream_activity .view-all {
-		display: none;
-	}
-	#dashboard_stream_activity .tablenav .tablenav-pages {
-		margin: 15px 0;
-	}
-}
-
 @media only screen and (max-width: 480px) {
 	.toplevel_page_wp_stream .fixed .column-author {
 		display: none;
@@ -182,7 +187,9 @@
 	margin-top: -2px;
 }
 
+
 /* Live Update */
+
 .toplevel_page_wp_stream .stream-live-update-checkbox .spinner {
 	margin-top: 5px;
 }
@@ -201,16 +208,31 @@
 	background-color: transparent;
 }
 
-.wp_stream_screen .select2-container.authors_and_roles .select2-search-choice .icon16 {
-    margin: -6px 1px 0 -3px;
-    padding: 0;
-    width: 16px;
-    height: 16px;
-}
-.wp_stream_screen .select2-container.authors_and_roles .select2-search-choice .icon16:before {
-    font-size: 15px!important;
-    color: #656565;
-}
+
+/* Settings */
+
 .stream_page_wp_stream_settings .nav-tab-wrapper a:not(.nav-tab-active) {
-    border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+
+
+/* Select2 Common */
+
+.wp_stream_screen .select2-container.authors_and_roles .select2-search-choice .icon16 {
+	margin: -6px 1px 0 -3px;
+	padding: 0;
+	width: 16px;
+	height: 16px;
+}
+
+.wp_stream_screen .select2-container.authors_and_roles .select2-search-choice .icon16:before {
+	font-size: 15px !important;
+	color: #656565;
+}
+
+.wp_stream_screen .select2-search-choice-close {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	     -o-transition: all 0 none;
+	        transition: none;
 }
