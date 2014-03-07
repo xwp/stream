@@ -213,15 +213,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'connector':
-				$out = $this->column_link( WP_Stream_Connectors::$term_labels['stream_connector'][$item->connector], 'connector', $item->connector );
-				break;
-
 			case 'context':
 			case 'action':
-				$display_col = isset( WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}] )
-					? WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}]
-					: $item->{$column_name};
-				$out = $this->column_link( $display_col, $column_name, $item->{$column_name} );
+				$out = $this->column_link( $this->get_term_title( $item->{$column_name}, $column_name ), $column_name, $item->{$column_name} );
 				break;
 
 			case 'ip':
@@ -357,6 +351,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 			esc_attr( $title ),
 			$display
 		);
+	}
+
+	public function get_term_title( $term, $type ) {
+		if ( isset( WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ] ) ) {
+			return WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ];
+		} else {
+			return $term;
+		}
 	}
 
 	/**
