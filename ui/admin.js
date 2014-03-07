@@ -61,7 +61,7 @@ jQuery(function($){
 						ajaxurl,
 						{
 							action: 'wp_stream_get_author_name_by_id',
-							id:	 id
+							id:     id
 						},
 						function (response) {
 							callback({
@@ -215,11 +215,11 @@ jQuery(function($){
 	});
 
 	// Admin page tabs
-	var $tabs		  = $('.nav-tab-wrapper'),
-		$panels		= $('table.form-table'),
-		$activeTab	 = $tabs.find('.nav-tab-active'),
+	var $tabs          = $('.nav-tab-wrapper'),
+		$panels        = $('table.form-table'),
+		$activeTab     = $tabs.find('.nav-tab-active'),
 		defaultIndex   = $activeTab.length > 0 ? $tabs.find('a').index( $activeTab ) : 0,
-		currentHash	= window.location.hash ? window.location.hash.match(/\d+/)[0] : defaultIndex,
+		currentHash    = window.location.hash ? window.location.hash.match(/\d+/)[0] : defaultIndex,
 		syncFormAction = function( index ) {
 			var $optionsForm   = $('input[name="option_page"][value="wp_stream"]').parent('form');
 			var currentAction  = $optionsForm.attr('action');
@@ -256,11 +256,11 @@ jQuery(function($){
 		wp.heartbeat.interval( 'fast' );
 
 		$(document).on( 'heartbeat-send.stream', function(e, data) {
-			data['wp-stream-heartbeat']		 = 'live-update';
+			data['wp-stream-heartbeat'] = 'live-update';
 			var last_id = $( list_sel + ' tr:first .column-id').text();
 			last_id = ( '' === last_id ) ? 1 : last_id;
 			data['wp-stream-heartbeat-last-id'] = last_id;
-			data['wp-stream-heartbeat-query'] = wp_stream.current_query;
+			data['wp-stream-heartbeat-query']   = wp_stream.current_query;
 		});
 
 		// Listen for "heartbeat-tick" on $(document).
