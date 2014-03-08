@@ -138,4 +138,18 @@ abstract class WP_Stream_Connector {
 		}
 	}
 
+	public static function get_changed_keys( $old_value, $new_value ) {
+		if ( ! is_array( $old_value ) && ! is_array( $new_value ) ) {
+			return array();
+		}
+
+		if( ! is_array( $old_value ) ) {
+			return array_keys( $new_value );
+		}
+
+		if( ! is_array( $new_value ) ) {
+			return array_keys( $old_value );
+		}
+	}
+
 }
