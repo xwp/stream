@@ -47,7 +47,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @action update_option_theme_mods_{name}
 	 */
 	public static function log_theme_modification( $old_value, $new_value ) {
-		self::callback_updated_option( 'theme_mods', $old_value, $new_value );
+		self::callback_updated_option( 'theme_mods', $old_value, $new_value, __( 'Custom Header', 'stream' ) );
 	}
 
 	/**
@@ -292,28 +292,30 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @action updated_option
 	 */
-	public static function callback_updated_option( $option, $old_value, $value ) {
+	public static function callback_updated_option( $option, $old_value, $value, $context = null ) {
 		global $new_whitelist_options, $whitelist_options;
 
 		if ( 0 === strpos( $option, '_transient_' ) ) {
 			return;
 		}
 
-		$options = array_merge(
-			(array) $whitelist_options,
-			$new_whitelist_options,
-			array( 'permalink' => self::$permalink_options )
-		);
+		if ( $context === null ) {
+			$options = array_merge(
+				(array) $whitelist_options,
+				$new_whitelist_options,
+				array( 'permalink' => self::$permalink_options )
+			);
 
-		foreach ( $options as $key => $opts ) {
-			if ( in_array( $option, $opts ) ) {
-				$current_key = $key;
-				break;
+			foreach ( $options as $key => $opts ) {
+				if ( in_array( $option, $opts ) ) {
+					$context = $key;
+					break;
+				}
 			}
 		}
 
-		if ( ! isset( $current_key ) ) {
-			$current_key = 'settings';
+		if ( ! isset( $context ) ) {
+			$context = 'settings';
 		}
 
 		$changed_options = array();
@@ -322,7 +324,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			foreach ( self::get_changed_keys( $old_value, $value ) as $field_key ) {
 				$changed_options[] = array(
 					'label'     => self::get_serialized_field_label( $option, $field_key ),
-					'option'    => $current_key,
+					'option'    => $context,
 					// Prevent fatal error when saving option as array
 					'old_value' => isset( $old_value[$field_key] ) ? maybe_serialize( $old_value[$field_key] ) : null,
 					'value'     => isset( $value[$field_key] ) ? maybe_serialize( $value[$field_key] ) : null,
@@ -344,7 +346,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				$properties,
 				null,
 				array(
-					$current_key => 'updated',
+					$context => 'updated',
 				)
 			);
 		}
