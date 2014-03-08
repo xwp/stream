@@ -166,7 +166,16 @@ abstract class WP_Stream_Connector {
 
 		$result = array_keys( $diff );
 
-		return $result;
+		// remove numeric indexes
+		$result = array_filter(
+			$result,
+			function( $value ) {
+				// check if is not valid number (is_int, is_numeric and ctype_digit are not enough)
+				return (string) (int) $value !== (string) $value;
+			}
+		);
+
+		return array_values( $result );
 	}
 
 }
