@@ -159,12 +159,19 @@ abstract class WP_Stream_Connector {
 
 		$diff = array_udiff_assoc(
 			$old_value,
-			$new_value, function( $value1, $value2 ) {
+			$new_value,
+			function( $value1, $value2 ) {
 				return maybe_serialize( $value1 ) !== maybe_serialize( $value2 );
 			}
 		);
 
 		$result = array_keys( $diff );
+
+		// find unexisting keys in old or new value
+		$common_keys     = array_keys( array_intersect_key( $old_value, $new_value ) );
+		$unique_keys_old = array_values( array_diff( array_keys( $old_value ), $common_keys ) );
+		$unique_keys_new = array_values( array_diff( array_keys( $new_value ), $common_keys ) );
+		$result = array_merge( $result, $unique_keys_old, $unique_keys_new );
 
 		// remove numeric indexes
 		$result = array_filter(
@@ -175,7 +182,7 @@ abstract class WP_Stream_Connector {
 			}
 		);
 
-		return array_values( $result );
+		return array_values( array_unique( $result ) );
 	}
 
 }
