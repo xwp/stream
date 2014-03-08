@@ -589,8 +589,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	static function live_update_checkbox( $status, $args ) {
 		$user_id = get_current_user_id();
-		$option  = get_user_meta( $user_id, 'stream_live_update_records', true );
-		$value   = isset( $option ) ? $option : 'on';
+		$option  = ( get_user_meta( $user_id, 'stream_live_update_records', true ) !== 'off' );
 		$nonce   = wp_create_nonce( 'stream_live_update_nonce' );
 		ob_start();
 		?>
@@ -600,7 +599,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			<div><input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ) ?>" /></div>
 			<div class="metabox-prefs stream-live-update-checkbox">
 				<label for="enable_live_update">
-					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( 'on', $value ) ?> />
+					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( $option ) ?> />
 					<?php esc_html_e( 'Enabled', 'stream' ) ?><span class="spinner"></span>
 				</label>
 			</div>
