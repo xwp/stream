@@ -40,6 +40,14 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		parent::register();
 		add_action( 'admin_head', array( __CLASS__, 'highlight_field' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_jquery_color' ) );
+		add_action( sprintf( 'update_option_theme_mods_%s', get_option( 'stylesheet' ) ), array( __CLASS__, 'log_theme_modification' ), 10, 2 );
+	}
+
+	/**
+	 * @action update_option_theme_mods_{name}
+	 */
+	public static function log_theme_modification( $old_value, $new_value ) {
+		
 	}
 
 	/**
