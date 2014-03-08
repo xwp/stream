@@ -241,8 +241,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			return;
 		}
 
-		$labels  = self::get_context_labels();
-		$old     = self::get_sidebar_widgets();
+		$labels = self::get_context_labels();
+		$old    = self::get_sidebar_widgets();
 		unset( $old['array_version'] );
 		$new = $_POST['sidebars'];
 		foreach ( $new as $sidebar_id => $widget_ids ) {
