@@ -288,7 +288,7 @@ class WP_Stream_Query {
 
 		$results = $wpdb->get_results( $sql );
 
-		if ( $fields === 'with-meta' && is_array( $results ) ) {
+		if ( 'with-meta' === $fields && is_array( $results ) ) {
 			$ids      = array_map( 'absint', wp_list_pluck( $results, 'ID' ) );
 			$sql_meta = sprintf(
 				"SELECT * FROM $wpdb->streammeta WHERE record_id IN ( %s )",
