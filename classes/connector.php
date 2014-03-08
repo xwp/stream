@@ -138,6 +138,12 @@ abstract class WP_Stream_Connector {
 		}
 	}
 
+	/**
+	 * Compare two values and return changed keys if they are arrays
+	 * @param  mixed  $old_value  Value before change
+	 * @param  mixed  $new_value  Value after change
+	 * @return array
+	 */
 	public static function get_changed_keys( $old_value, $new_value ) {
 		if ( ! is_array( $old_value ) && ! is_array( $new_value ) ) {
 			return array();
