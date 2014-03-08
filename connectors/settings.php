@@ -47,7 +47,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @action update_option_theme_mods_{name}
 	 */
 	public static function log_theme_modification( $old_value, $new_value ) {
-		self::callback_updated_option( 'theme_mods', $old_value, $new_value, __( 'Custom Header', 'stream' ) );
+		self::callback_updated_option( 'theme_mods', $old_value, $new_value, 'custom-header' );
 	}
 
 	/**
