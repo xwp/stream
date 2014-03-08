@@ -156,6 +156,17 @@ abstract class WP_Stream_Connector {
 		if( ! is_array( $new_value ) ) {
 			return array_keys( $old_value );
 		}
+
+		$diff = array_udiff_assoc(
+			$old_value,
+			$new_value, function( $value1, $value2 ) {
+				return maybe_serialize( $value1 ) !== maybe_serialize( $value2 );
+			}
+		);
+
+		$result = array_keys( $diff );
+
+		return $result;
 	}
 
 }
