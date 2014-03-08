@@ -189,9 +189,17 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	public static function get_serialized_field_label( $option_name, $field_key ) {
 		$labels = array(
 			'theme_mods' => array(
-				'header_image'      => __( 'Header Image', 'stream' ),
-				'header_image_data' => __( 'Header Image Data', 'stream' ),
-				'header_textcolor'  => __( 'Text Color', 'stream' ),
+				// Custom Background
+				'background_image'       => __( 'Background Image', 'stream' ),
+				'background_image_thumb' => __( 'Background Image Data', 'stream' ),
+				'background_position_x'  => __( 'Background Position', 'stream' ),
+				'background_repeat'      => __( 'Background Repeat', 'stream' ),
+				'background_attachment'  => __( 'Background Attachment', 'stream' ),
+				'background_color'       => __( 'Background Color', 'stream' ),
+				// Custom Header
+				'header_image'           => __( 'Header Image', 'stream' ),
+				'header_image_data'      => __( 'Header Image Data', 'stream' ),
+				'header_textcolor'       => __( 'Text Color', 'stream' ),
 			),
 		);
 
