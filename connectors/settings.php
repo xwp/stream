@@ -77,14 +77,16 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'settings'   => __( 'Settings', 'stream' ),
-			'general'    => __( 'General', 'stream' ),
-			'writing'    => __( 'Writing', 'stream' ),
-			'reading'    => __( 'Reading', 'stream' ),
-			'discussion' => __( 'Discussion', 'stream' ),
-			'media'      => __( 'Media', 'stream' ),
-			'permalink'  => __( 'Permalinks', 'stream' ),
-			'wp_stream'  => __( 'Stream', 'stream' ),
+			'settings'          => __( 'Settings', 'stream' ),
+			'general'           => __( 'General', 'stream' ),
+			'writing'           => __( 'Writing', 'stream' ),
+			'reading'           => __( 'Reading', 'stream' ),
+			'discussion'        => __( 'Discussion', 'stream' ),
+			'media'             => __( 'Media', 'stream' ),
+			'permalink'         => __( 'Permalinks', 'stream' ),
+			'wp_stream'         => __( 'Stream', 'stream' ),
+			'custom-background' => __( 'Custom Background', 'stream' ),
+			'custom-header'     => __( 'Custom Header', 'stream' ),
 		);
 	}
 
