@@ -749,7 +749,7 @@ class WP_Stream_Admin {
 	 */
 	public static function live_update( $response, $data ) {
 
-		$enable_update = ( get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) !== 'off' );
+		$enable_update = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_update ) {
 			// Register list table
