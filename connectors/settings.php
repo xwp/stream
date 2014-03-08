@@ -188,7 +188,11 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function get_serialized_field_label( $option_name, $field_key ) {
 		$labels = array(
-			// to be updated
+			'theme_mods' => array(
+				'header_image'      => __( 'Header Image', 'stream' ),
+				'header_image_data' => __( 'Header Image Data', 'stream' ),
+				'header_textcolor'  => __( 'Text Color', 'stream' ),
+			),
 		);
 
 		/**
