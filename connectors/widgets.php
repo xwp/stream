@@ -263,7 +263,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			//  executed by self::callback_update_option_sidebars_widgets
 			//  in case this is ONLY a reorder process
 			$wp_stream_widget_order_operation = array(
-				_x( '"%s" widgets were reordered', 'Sidebar name', 'stream' ),
+				_x( 'Widgets in "%s" were reordered.', 'Sidebar name', 'stream' ),
 				compact( 'sidebar_name', 'sidebar' ),
 				null,
 				array( $sidebar => 'sorted' ),
