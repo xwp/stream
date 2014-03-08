@@ -314,23 +314,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 		$changed_options = array();
 
-		if ( is_array( $old_value ) && is_array( $value ) ) {
-			$changed_keys = array();
-
-			// Added keys
-			$changed_keys = array_merge( $changed_keys, array_keys( array_diff_key( $value, $old_value ) ) );
-
-			// Deleted keys
-			$changed_keys = array_merge( $changed_keys, array_keys( array_diff_key( $old_value, $value ) ) );
-
-			// array_diff_assoc is not sufficient
-			foreach ( array_diff( array_keys( $value ), $changed_keys ) as $option_key ) {
-				if ( $value[$option_key] != $old_value[$option_key] ) {
-					$changed_keys[] = $option_key;
-				}
-			}
-
-			foreach ( $changed_keys as $field_key ) {
+		if ( is_array( $old_value ) || is_array( $value ) ) {
+			foreach ( self::get_changed_keys( $old_value, $value ) as $field_key ) {
 				$changed_options[] = array(
 					'label'     => self::get_serialized_field_label( $option, $field_key ),
 					'option'    => $current_key,
