@@ -129,8 +129,8 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 			);
 		}
 
-		$subject = $this->replace( $this->params['subject'], $log );
-		$message = $this->replace( $this->params['message'], $log );
+		$subject = isset( $this->params['subject'] ) ? $this->replace( $this->params['subject'], $log ) : null;
+		$message = isset( $this->params['message'] ) ? $this->replace( $this->params['message'], $log ) : null;
 
 		$post_fields = array(
 			'token'   => $application_key,
@@ -139,6 +139,10 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 		);
 
 		$connection = curl_init();
+
+		if ( ! $users_pushover_keys ) {
+			return false;
+		}
 
 		foreach ( $users_pushover_keys as $key ) {
 			$post_fields['user'] = $key;
@@ -159,7 +163,7 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 	/**
 	 * @filter wp_stream_serialized_labels
 	 */
-	function pushover_key_labels( $labels ) {
+	public static function pushover_key_labels( $labels ) {
 		$labels[self::PUSHOVER_OPTION_NAME] = array(
 			'application_key' => __( 'Application API Token/Key', 'stream-notifications' ),
 			'api_key'         => __( 'Your User Key', 'stream-notifications' ),
