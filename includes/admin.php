@@ -749,10 +749,9 @@ class WP_Stream_Admin {
 	 */
 	public static function live_update( $response, $data ) {
 
-		$enable_update = get_user_meta( get_current_user_id(), 'stream_live_update_records', true );
-		$enable_update = isset( $enable_update ) ? $enable_update : '';
+		$enable_update = ( get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) !== 'off' );
 
-		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && 'on' === $enable_update ) {
+		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_update ) {
 			// Register list table
 			require_once WP_STREAM_INC_DIR . 'list-table.php';
 			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
