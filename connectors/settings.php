@@ -361,7 +361,28 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function stream_settings_url( $url, $record ) {
 		if ( 'wp_stream' === $record->context ) {
-			$url = add_query_arg( 'page', WP_Stream_Admin::SETTINGS_PAGE_SLUG, admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) );
+			$option_key = get_stream_meta( $record->ID, 'option_key', true );
+			$url_tab = null;
+
+			if ( $option_key !== '' ) {
+				foreach( WP_Stream_Settings::get_fields() as $tab_name => $tab_properties ) {
+					foreach( $tab_properties['fields'] as $field ) {
+						$field_key = sprintf( '%s_%s', $tab_name, $field['name'] );
+						if ( $field_key === $option_key ) {
+							$url_tab = $tab_name;
+							break 2;
+						}
+					}
+				}
+			}
+
+			$url = add_query_arg(
+				array(
+					'page' => WP_Stream_Admin::SETTINGS_PAGE_SLUG,
+					'tab'  => $url_tab,
+				),
+				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			);
 		}
 
 		return $url;
