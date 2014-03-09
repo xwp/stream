@@ -387,12 +387,13 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		}
 
 		foreach ( $changed_options as $properties ) {
+			$context = $properties['context'];
 			self::log(
 				__( '"%s" setting was updated', 'stream' ),
 				$properties,
 				null,
 				array(
-					$properties['context'] => 'updated',
+					$context => 'updated',
 				)
 			);
 		}
