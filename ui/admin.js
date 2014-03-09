@@ -32,10 +32,10 @@ jQuery(function($){
 	$( '.toplevel_page_wp_stream select.chosen-select' ).select2({
 			minimumResultsForSearch: 10,
 			formatResult: function (record) {
-				var result = "";
+				var result = '';
 
-				if ( undefined !== $(record.element).attr("data-icon") ) {
-					result += '<img src="' + $(record.element).attr("data-icon") + '" class="wp-stream-select2-icon">';
+				if ( undefined !== $(record.element).attr('data-icon') ) {
+					result += '<img src="' + $(record.element).attr('data-icon') + '" class="wp-stream-select2-icon">';
 				}
 
 				result += record.text;

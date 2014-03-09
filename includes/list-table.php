@@ -424,9 +424,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$authors_records = $this->assemble_records( 'author', 'stream' );
 
 		foreach ( $authors_records as $user_id => $user ) {
-			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match) ) {
+			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
 				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
-				$authors_records[$user_id]['icon'] = $gravatar_url;
+				$authors_records[$user_id]['icon']   = $gravatar_url;
 			}
 		}
 
