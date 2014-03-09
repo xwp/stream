@@ -229,10 +229,16 @@ jQuery(function($){
 		};
 
 	$tabs.on('click', 'a', function(){
-		var index = $tabs.find('a').index( $(this) );
+		var index = $tabs.find('a').index( $(this) ),
+		    hashIndex = window.location.hash.match(/^#(\d+)$/);
+
 		$panels.hide().eq(index).show();
 		$tabs.find('a').removeClass('nav-tab-active').filter($(this)).addClass('nav-tab-active');
-		window.location.hash = index;
+
+		if ( window.location.hash === '' || hashIndex !== null ) {
+			window.location.hash = index;
+		}
+
 		syncFormAction(index);
 		return false;
 	});
