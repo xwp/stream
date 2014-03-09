@@ -190,6 +190,11 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			return;
 		}
 
+		// Is auto draft?
+		if ( '' !== $post->post_title && '' === $post->post_name ) {
+			return;
+		}
+
 		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
 
 		self::log(
