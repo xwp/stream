@@ -40,6 +40,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		parent::register();
 		add_action( 'admin_head', array( __CLASS__, 'highlight_field' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_jquery_color' ) );
+		add_filter( 'wp_stream_action_link_url', array( __CLASS__, 'stream_settings_url' ) );
 	}
 
 	/**
@@ -222,11 +223,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					if ( current_user_can( $target_submenu[1] ) ) {
 						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[$record->context] );
 
-						if ( 'wp_stream' === $record->context ) {
-							$url = add_query_arg( 'page', WP_Stream_Admin::SETTINGS_PAGE_SLUG, admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) );
-						} else {
-							$url = admin_url( $submenu_slug );
-						}
+						$url = apply_filters( 'wp_stream_action_link_url', admin_url( $submenu_slug ), $record );
 
 						$field_name = get_stream_meta( $record->ID, 'option', true );
 						if ( $field_name !== '' ) {
@@ -356,6 +353,13 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				)
 			);
 		}
+	}
+
+	/**
+	 * @filter wp_stream_action_link_url
+	 */
+	public static function stream_settings_url( $record ) {
+		
 	}
 
 	/**
