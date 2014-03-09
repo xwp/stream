@@ -149,11 +149,11 @@ abstract class WP_Stream_Connector {
 			return array();
 		}
 
-		if( ! is_array( $old_value ) ) {
+		if ( ! is_array( $old_value ) ) {
 			return array_keys( $new_value );
 		}
 
-		if( ! is_array( $new_value ) ) {
+		if ( ! is_array( $new_value ) ) {
 			return array_keys( $old_value );
 		}
 
