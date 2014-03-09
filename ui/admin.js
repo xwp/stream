@@ -31,6 +31,17 @@ jQuery(function($){
 
 	$( '.toplevel_page_wp_stream select.chosen-select' ).select2({
 			minimumResultsForSearch: 10,
+			formatResult: function (record) {
+				var result = "";
+
+				if ( $(record.element).attr("data-icon") !== undefined ) {
+					result += '<img src="' + $(record.element).attr("data-icon") + '" class="wp-stream-select2-icon">';
+				}
+
+				result += record.text;
+
+				return result;
+			},
 			allowClear: true,
 			width: '165px'
 		});
