@@ -97,24 +97,28 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function get_context_by_key( $option_name, $key ) {
 		$contexts = array(
-			'custom-background' => array(
-				'background_image',
-				'background_image_thumb',
-				'background_position_x',
-				'background_repeat',
-				'background_attachment',
-				'background_color',
-			),
-			'custom-header' => array(
-				'header_image',
-				'header_image_data',
-				'header_textcolor',
+			'theme_mods' => array(
+				'custom-background' => array(
+					'background_image',
+					'background_image_thumb',
+					'background_position_x',
+					'background_repeat',
+					'background_attachment',
+					'background_color',
+				),
+				'custom-header' => array(
+					'header_image',
+					'header_image_data',
+					'header_textcolor',
+				),
 			),
 		);
 
-		foreach ( $contexts as $context => $keys ) {
-			if ( in_array( $key, $keys ) ) {
-				return $context;
+		if ( isset( $contexts[$option_name] ) ) {
+			foreach ( $contexts[$option_name] as $context => $keys ) {
+				if ( in_array( $key, $keys ) ) {
+					return $context;
+				}
 			}
 		}
 
