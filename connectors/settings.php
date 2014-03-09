@@ -47,7 +47,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @action update_option_theme_mods_{name}
 	 */
 	public static function log_theme_modification( $old_value, $new_value ) {
-		self::callback_updated_option( 'theme_mods', $old_value, $new_value, 'custom-header' );
+		self::callback_updated_option( 'theme_mods', $old_value, $new_value );
 	}
 
 	/**
@@ -302,25 +302,23 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @action updated_option
 	 */
-	public static function callback_updated_option( $option, $old_value, $value, $context = null ) {
+	public static function callback_updated_option( $option, $old_value, $value ) {
 		global $new_whitelist_options, $whitelist_options;
 
 		if ( 0 === strpos( $option, '_transient_' ) ) {
 			return;
 		}
 
-		if ( $context === null ) {
-			$options = array_merge(
-				(array) $whitelist_options,
-				$new_whitelist_options,
-				array( 'permalink' => self::$permalink_options )
-			);
+		$options = array_merge(
+			(array) $whitelist_options,
+			$new_whitelist_options,
+			array( 'permalink' => self::$permalink_options )
+		);
 
-			foreach ( $options as $key => $opts ) {
-				if ( in_array( $option, $opts ) ) {
-					$context = $key;
-					break;
-				}
+		foreach ( $options as $key => $opts ) {
+			if ( in_array( $option, $opts ) ) {
+				$context = $key;
+				break;
 			}
 		}
 
