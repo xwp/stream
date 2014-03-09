@@ -217,11 +217,16 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					array( 2 => $submenu_slug )
 				);
 
-				if ( ! empty( $found_submenus ) ) {
+				if ( ! empty( $found_submenus ) || $record->context === 'wp_stream' ) {
 					$target_submenu = array_pop( $found_submenus );
 					if ( current_user_can( $target_submenu[1] ) ) {
 						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[$record->context] );
-						$url  = admin_url( $submenu_slug );
+
+						if ( 'wp_stream' === $record->context ) {
+							$url = add_query_arg( 'page', WP_Stream_Admin::SETTINGS_PAGE_SLUG, admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) );
+						} else {
+							$url = admin_url( $submenu_slug );
+						}
 
 						$field_name = get_stream_meta( $record->ID, 'option', true );
 						if ( $field_name !== '' ) {
