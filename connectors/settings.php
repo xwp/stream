@@ -404,26 +404,35 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			(function ($) {
 				$(function () {
 					var hashPrefix = <?php echo json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) ?>,
-						fieldName = "",
-						escapedFieldName = "",
-						$select2UL = {},
+					    hashFieldName = "",
+						fieldNames = [],
+						$select2Choices = {},
 						$field = {};
 
 					if (location.hash.substr(1, hashPrefix.length) === hashPrefix) {
-						fieldName = location.hash.substr(hashPrefix.length + 1);
+						hashFieldName = location.hash.substr(hashPrefix.length + 1);
+						fieldNames = [hashFieldName];
 
 						$field = $("input, textarea, select")
 							.filter(function () {
-								return $(this).attr("name") === fieldName;
+								return fieldNames.indexOf($(this).attr("name")) > -1;
 							});
 
+						// try to find wp_stream field
 						if ( $field.length === 0 ) {
-							fieldName = "wp_stream[" + fieldName + "]";
-							escapedFieldName = fieldName.replace("[", "\\\[").replace("]", "\\\]");
-							$field = $("#" + escapedFieldName);
-							$select2UL = $field.find("ul");
-							if ( $select2UL.length === 1 ) {
-								$field = $select2UL;
+							fieldNames = [
+								"wp_stream_" + hashFieldName,
+								"wp_stream[" + hashFieldName + "]"
+							];
+
+							$field = $("input, textarea, select, div").filter(function() {
+								return fieldNames.indexOf( $(this).attr("id") ) > -1;
+							});
+
+							// if the field has been selectified, the list is the one to be colorized
+							$select2Choices = $field.find(".select2-choices");
+							if ( $select2Choices.length === 1 ) {
+								$field = $select2Choices;
 							}
 						}
 
@@ -439,7 +448,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 								$("label")
 									.filter(function () {
-										return $(this).attr("for") === fieldName;
+										return fieldNames.indexOf( $(this).attr("for") ) > -1;
 									})
 									.animate({
 										color: "#d54e21"
