@@ -34,7 +34,7 @@ jQuery(function($){
 			formatResult: function (record) {
 				var result = "";
 
-				if ( $(record.element).attr("data-icon") !== undefined ) {
+				if ( undefined !== $(record.element).attr("data-icon") ) {
 					result += '<img src="' + $(record.element).attr("data-icon") + '" class="wp-stream-select2-icon">';
 				}
 
