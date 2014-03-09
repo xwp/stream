@@ -225,8 +225,13 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 						$url = apply_filters( 'wp_stream_action_link_url', admin_url( $submenu_slug ), $record );
 
-						$field_name = get_stream_meta( $record->ID, 'option', true );
-						if ( $field_name !== '' ) {
+						$field_name = get_stream_meta( $record->ID, 'option_key', true );
+
+						if( '' === $field_name ) {
+							$field_name = get_stream_meta( $record->ID, 'option', true );
+						}
+
+						if ( '' !== $field_name ) {
 							$url = sprintf( '%s#%s%s', rtrim( preg_replace( '/#.*/', '', $url ), '/' ), self::HIGHLIGHT_FIELD_URL_HASH_PREFIX, $field_name );
 						}
 
