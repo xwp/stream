@@ -191,7 +191,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		}
 
 		// Is auto draft?
-		if ( '' !== $post->post_title && '' === $post->post_name ) {
+		if ( '0000-00-00 00:00:00' === $post->post_modified_gmt ) {
 			return;
 		}
 
