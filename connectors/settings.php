@@ -368,7 +368,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				$key_context = self::get_context_by_key( $option, $field_key );
 				$changed_options[] = array(
 					'label'     => self::get_serialized_field_label( $option, $field_key ),
-					'option'    => ( $key_context !== false ? $key_context : $context ),
+					'option'    => $option,
+					'context'   => ( false !== $key_context ? $key_context : $context ),
 					// Prevent fatal error when saving option as array
 					'old_value' => isset( $old_value[$field_key] ) ? maybe_serialize( $old_value[$field_key] ) : null,
 					'value'     => isset( $value[$field_key] ) ? maybe_serialize( $value[$field_key] ) : null,
@@ -378,6 +379,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			$changed_options[] = array(
 				'label'     => self::get_field_label( $option ),
 				'option'    => $option,
+				'context'   => $context,
 				// Prevent fatal error when saving option as array
 				'old_value' => maybe_serialize( $old_value ),
 				'value'     => maybe_serialize( $value ),
@@ -390,7 +392,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				$properties,
 				null,
 				array(
-					$context => 'updated',
+					$properties['context'] => 'updated',
 				)
 			);
 		}
