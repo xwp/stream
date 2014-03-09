@@ -236,3 +236,9 @@
 	     -o-transition: all 0 none;
 	        transition: none;
 }
+
+.wp-stream-select2-icon {
+	position: relative;
+	top: 3px;
+	margin-right: 4px;
+}
