@@ -40,7 +40,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		parent::register();
 		add_action( 'admin_head', array( __CLASS__, 'highlight_field' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_jquery_color' ) );
-		add_filter( 'wp_stream_action_link_url', array( __CLASS__, 'stream_settings_url' ) );
+		add_filter( 'wp_stream_action_link_url', array( __CLASS__, 'stream_settings_url' ), 10, 2 );
 	}
 
 	/**
@@ -358,7 +358,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	/**
 	 * @filter wp_stream_action_link_url
 	 */
-	public static function stream_settings_url( $record ) {
+	public static function stream_settings_url( $url, $record ) {
 		
 	}
 
