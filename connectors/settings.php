@@ -326,11 +326,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 			foreach ( $changed_keys as $field_key ) {
 				$changed_options[] = array(
-					'label'     => self::get_serialized_field_label( $option, $field_key ),
-					'option'    => $current_key,
+					'label'      => self::get_serialized_field_label( $option, $field_key ),
+					'option'     => $current_key,
+					'option_key' => $field_key,
 					// Prevent fatal error when saving option as array
-					'old_value' => isset( $old_value[$field_key] ) ? maybe_serialize( $old_value[$field_key] ) : null,
-					'value'     => isset( $value[$field_key] ) ? maybe_serialize( $value[$field_key] ) : null,
+					'old_value'  => isset( $old_value[$field_key] ) ? maybe_serialize( $old_value[$field_key] ) : null,
+					'value'      => isset( $value[$field_key] ) ? maybe_serialize( $value[$field_key] ) : null,
 				);
 			}
 		} else {
