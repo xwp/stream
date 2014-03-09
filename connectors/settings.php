@@ -405,6 +405,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				$(function () {
 					var hashPrefix = <?php echo json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) ?>,
 						fieldName = "",
+						escapedFieldName = "",
+						$select2UL = {},
 						$field = {};
 
 					if (location.hash.substr(1, hashPrefix.length) === hashPrefix) {
@@ -417,7 +419,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 						if ( $field.length === 0 ) {
 							fieldName = "wp_stream[" + fieldName + "]";
-							$field = $("#" + fieldName.replace("[", "\\\[").replace("]", "\\\]") + " ul");
+							escapedFieldName = fieldName.replace("[", "\\\[").replace("]", "\\\]");
+							$field = $("#" + escapedFieldName);
+							$select2UL = $field.find("ul");
+							if ( $select2UL.length === 1 ) {
+								$field = $select2UL;
+							}
 						}
 
 						$("html, body")
