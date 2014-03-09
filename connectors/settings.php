@@ -415,13 +415,20 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 								return $(this).attr("name") === fieldName;
 							});
 
+						if ( $field.length === 0 ) {
+							fieldName = "wp_stream[" + fieldName + "]";
+							$field = $("#" + fieldName.replace("[", "\\\[").replace("]", "\\\]") + " ul");
+						}
+
 						$("html, body")
 							.animate({
 								scrollTop: ($field.closest("tr").length === 1 ? $field.closest("tr") : $field).offset().top - $("#wpadminbar").height()
 							}, 1000, function () {
-								$field.animate({
-									backgroundColor: "#fffedf"
-								}, 250);
+								$field
+									.css("background", "#fff")
+									.animate({
+										backgroundColor: "#fffedf",
+									}, 250);
 
 								$("label")
 									.filter(function () {
