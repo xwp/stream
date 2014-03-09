@@ -359,7 +359,11 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @filter wp_stream_action_link_url
 	 */
 	public static function stream_settings_url( $url, $record ) {
-		
+		if ( 'wp_stream' === $record->context ) {
+			$url = add_query_arg( 'page', WP_Stream_Admin::SETTINGS_PAGE_SLUG, admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) );
+		}
+
+		return $url;
 	}
 
 	/**
