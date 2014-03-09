@@ -91,6 +91,37 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Return context by option name and key
+	 *
+	 * @return string Context slug
+	 */
+	public static function get_context_by_key( $option_name, $key ) {
+		$contexts = array(
+			'custom-background' => array(
+				'background_image',
+				'background_image_thumb',
+				'background_position_x',
+				'background_repeat',
+				'background_attachment',
+				'background_color',
+			),
+			'custom-header' => array(
+				'header_image',
+				'header_image_data',
+				'header_textcolor',
+			),
+		);
+
+		foreach ( $contexts as $context => $keys ) {
+			if ( in_array( $key, $keys ) ) {
+				return $context;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Return translated labels for all default Settings fields found in WordPress.
 	 *
 	 * @return array Field label translations
