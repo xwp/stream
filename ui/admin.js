@@ -219,7 +219,7 @@ jQuery(function($){
 		$panels        = $('table.form-table'),
 		$activeTab     = $tabs.find('.nav-tab-active'),
 		defaultIndex   = $activeTab.length > 0 ? $tabs.find('a').index( $activeTab ) : 0,
-		hashIndex      = window.location.hash.match(/^#(\d+)$/);
+		hashIndex      = window.location.hash.match(/^#(\d+)$/),
 		currentHash    = ( hashIndex !== null ? hashIndex[1] : defaultIndex ),
 		syncFormAction = function( index ) {
 			var $optionsForm   = $('input[name="option_page"][value="wp_stream"]').parent('form');
@@ -230,7 +230,7 @@ jQuery(function($){
 
 	$tabs.on('click', 'a', function(){
 		var index = $tabs.find('a').index( $(this) ),
-		    hashIndex = window.location.hash.match(/^#(\d+)$/);
+			hashIndex = window.location.hash.match(/^#(\d+)$/);
 
 		$panels.hide().eq(index).show();
 		$tabs.find('a').removeClass('nav-tab-active').filter($(this)).addClass('nav-tab-active');
