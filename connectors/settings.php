@@ -227,7 +227,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 						$field_name = get_stream_meta( $record->ID, 'option_key', true );
 
-						if( '' === $field_name ) {
+						if ( '' === $field_name ) {
 							$field_name = get_stream_meta( $record->ID, 'option', true );
 						}
 
@@ -367,11 +367,11 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	public static function stream_settings_url( $url, $record ) {
 		if ( 'wp_stream' === $record->context ) {
 			$option_key = get_stream_meta( $record->ID, 'option_key', true );
-			$url_tab = null;
+			$url_tab    = null;
 
 			if ( $option_key !== '' ) {
-				foreach( WP_Stream_Settings::get_fields() as $tab_name => $tab_properties ) {
-					foreach( $tab_properties['fields'] as $field ) {
+				foreach ( WP_Stream_Settings::get_fields() as $tab_name => $tab_properties ) {
+					foreach ( $tab_properties['fields'] as $field ) {
 						$field_key = sprintf( '%s_%s', $tab_name, $field['name'] );
 						if ( $field_key === $option_key ) {
 							$url_tab = $tab_name;
