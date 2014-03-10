@@ -124,6 +124,26 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Find out if the option key should be ignored and not logged
+	 *
+	 * @return bool Whether option key is ignored or not
+	 */
+	public static function is_key_ignored( $option_name, $key ) {
+		$ignored = array(
+			'theme_mods' => array(
+				'background_image_thumb',
+				'header_image_data',
+			),
+		);
+
+		if ( isset( $ignored[$option_name] ) ) {
+			return in_array( $key, $ignored[$option_name] ) );
+		}
+
+		return false;
+	}
+
+	/**
 	 * Return translated labels for all default Settings fields found in WordPress.
 	 *
 	 * @return array Field label translations
