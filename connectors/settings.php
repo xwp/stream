@@ -224,7 +224,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					array( 2 => $submenu_slug )
 				);
 
-				if ( ! empty( $found_submenus ) || $record->context === 'wp_stream' ) {
+				if ( ! empty( $found_submenus ) || 'wp_stream' === $record->context ) {
 					$target_submenu = array_pop( $found_submenus );
 
 					if ( current_user_can( $target_submenu[1] ) ) {
@@ -374,7 +374,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			$option_key = get_stream_meta( $record->ID, 'option_key', true );
 			$url_tab    = null;
 
-			if ( $option_key !== '' ) {
+			if ( '' !== $option_key ) {
 				foreach ( WP_Stream_Settings::get_fields() as $tab_name => $tab_properties ) {
 					foreach ( $tab_properties['fields'] as $field ) {
 						$field_key = sprintf( '%s_%s', $tab_name, $field['name'] );
