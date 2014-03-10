@@ -26,7 +26,7 @@ class WP_Stream_Install {
 
 		if ( empty( $db_version ) ) {
 			self::install();
-		} elseif ( $db_version != $current ) {
+		} elseif ( $db_version !== $current ) {
 			self::update( $db_version, $current );
 		} else {
 			return;
@@ -37,7 +37,8 @@ class WP_Stream_Install {
 
 	public static function install() {
 		global $wpdb;
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$prefix = self::$table_prefix;
 
@@ -152,7 +153,7 @@ class WP_Stream_Install {
 					ON tt.term_id = m.meta_value
 					AND tt.taxonomy = m2.meta_value
 				";
-			$tax_records = $wpdb->get_results( $sql ); // db call okay
+			$tax_records = $wpdb->get_results( $sql ); // db call ok
 			foreach ( $tax_records as $record ) {
 				if ( ! empty( $record->tt ) ) {
 					$wpdb->update(
@@ -174,11 +175,11 @@ class WP_Stream_Install {
 				JOIN $wpdb->streamcontext c
 					ON r.ID = c.record_id AND c.connector = 'media' AND c.context = 'media'
 				";
-			$media_records = $wpdb->get_results( $sql ); // db call okay
+			$media_records = $wpdb->get_results( $sql ); // db call ok
 
-			require_once( WP_STREAM_INC_DIR . 'query.php' );
-			require_once( WP_STREAM_CLASS_DIR . 'connector.php' );
-			require_once( WP_STREAM_DIR . 'connectors/media.php' );
+			require_once WP_STREAM_INC_DIR . 'query.php';
+			require_once WP_STREAM_CLASS_DIR . 'connector.php';
+			require_once WP_STREAM_DIR . 'connectors/media.php';
 
 			foreach ( $media_records as $record ) {
 				$post = get_post( $record->pid );
