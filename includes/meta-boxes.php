@@ -124,7 +124,8 @@ class WP_Stream_Reports_Metaboxes {
 			'line' => 'dashicons-chart-area',
 		);
 
-		$data_type = isset( $args['data_type'] ) ? $args['data_type'] : 'all';
+		$data_type = isset( $args['data_type'] ) ? $args['data_type'] : '';
+		$data_types = WP_Stream_Connectors::$term_labels['stream_connector'];
 
 		// Apply the active class to the active chart type used
 		if ( array_key_exists( $args['chart_type'], $chart_types ) ) {
