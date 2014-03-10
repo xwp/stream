@@ -190,6 +190,11 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			return;
 		}
 
+		// Ignore auto-drafts that are deleted by the system, see issue-293
+		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
 		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
 
 		self::log(
