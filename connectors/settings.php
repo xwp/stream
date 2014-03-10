@@ -137,7 +137,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		);
 
 		if ( isset( $ignored[$option_name] ) ) {
-			return in_array( $key, $ignored[$option_name] ) );
+			return in_array( $key, $ignored[$option_name] );
 		}
 
 		return false;
