@@ -4,12 +4,14 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 
 	/**
 	 * Context name
+	 *
 	 * @var string
 	 */
 	public static $name = 'taxonomies';
 
 	/**
 	 * Holds excluded taxonomies
+	 *
 	 * @var array
 	 */
 	public static $excluded_taxonomies = array(
@@ -18,6 +20,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 
 	/**
 	 * Actions registered for this context
+	 *
 	 * @var array
 	 */
 	public static $actions = array(
@@ -29,18 +32,21 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 
 	/**
 	 * Cache term values before update, used by callback_edit_term/callback_edited_term
+	 *
 	 * @var Object
 	 */
 	public static $cached_term_before_update;
 
 	/**
 	 * Cache taxonomy labels
+	 *
 	 * @var array
 	 */
 	public static $context_labels;
 
 	/**
 	 * Cached taxonomy singular labels, to be used in summaries
+	 *
 	 * @var array
 	 */
 	public static $singular_labels;
@@ -74,9 +80,12 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		global $wp_taxonomies;
+
 		$labels = wp_list_pluck( $wp_taxonomies, 'labels' );
+
 		self::$context_labels  = wp_list_pluck( $labels, 'name' );
 		self::$singular_labels = array_map( 'strtolower', wp_list_pluck( $labels, 'singular_name' ) );
+
 		return self::$context_labels;
 	}
 
@@ -95,6 +104,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 				$links[ __( 'View', 'stream' ) ] = get_term_link( $term->term_id, $term->taxonomy );
 			}
 		}
+
 		return $links;
 	}
 
@@ -110,8 +120,9 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 
 		$term           = get_term( $term_id, $taxonomy );
 		$term_name      = $term->name;
-		$taxonomy_label = self::$singular_labels[$taxonomy];
+		$taxonomy_label = self::$singular_labels[ $taxonomy ];
 		$term_parent    = $term->parent;
+
 		self::log(
 			_x(
 				'"%1$s" %2$s created',
@@ -121,7 +132,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy', 'term_parent' ),
 			$tt_id,
 			array( $taxonomy => 'created' )
-			);
+		);
 	}
 
 	/**
@@ -136,7 +147,8 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 
 		$term_name      = $deleted_term->name;
 		$term_parent    = $deleted_term->parent;
-		$taxonomy_label = self::$singular_labels[$taxonomy];
+		$taxonomy_label = self::$singular_labels[ $taxonomy ];
+
 		self::log(
 			_x(
 				'"%1$s" %2$s deleted',
@@ -146,7 +158,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy', 'term_parent' ),
 			$tt_id,
 			array( $taxonomy => 'deleted' )
-			);
+		);
 	}
 
 	/**
@@ -164,12 +176,15 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 		}
 
 		$term = self::$cached_term_before_update;
-		if ( ! $term ) { // for some reason!
+
+		if ( ! $term ) { // For some reason!
 			$term = get_term( $term_id, $taxonomy );
 		}
+
 		$term_name      = $term->name;
-		$taxonomy_label = self::$singular_labels[$taxonomy];
+		$taxonomy_label = self::$singular_labels[ $taxonomy ];
 		$term_parent    = $term->parent;
+
 		self::log(
 			_x(
 				'"%1$s" %2$s updated',
@@ -179,7 +194,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			compact( 'term_name', 'taxonomy_label', 'term_id', 'taxonomy', 'term_parent' ),
 			$tt_id,
 			array( $taxonomy => 'updated' )
-			);
+		);
 	}
 
 }
