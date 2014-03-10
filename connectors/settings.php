@@ -112,8 +112,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			),
 		);
 
-		if ( isset( $contexts[$option_name] ) ) {
-			foreach ( $contexts[$option_name] as $context => $keys ) {
+		if ( isset( $contexts[ $option_name ] ) ) {
+			foreach ( $contexts[ $option_name ] as $context => $keys ) {
 				if ( in_array( $key, $keys ) ) {
 					return $context;
 				}
@@ -136,8 +136,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			),
 		);
 
-		if ( isset( $ignored[$option_name] ) ) {
-			return in_array( $key, $ignored[$option_name] );
+		if ( isset( $ignored[ $option_name ] ) ) {
+			return in_array( $key, $ignored[ $option_name ] );
 		}
 
 		return false;
@@ -219,8 +219,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'tag_base'                      => __( 'Tag base', 'stream' ),
 		);
 
-		if ( isset( $labels[$field_key] ) ) {
-			return $labels[$field_key];
+		if ( isset( $labels[ $field_key ] ) ) {
+			return $labels[ $field_key ];
 		}
 
 		return $field_key;
@@ -264,8 +264,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		 */
 		$labels = apply_filters( 'wp_stream_serialized_labels', $labels );
 
-		if ( isset( $labels[$option_name] ) && isset( $labels[$option_name][$field_key] ) ) {
-			return $labels[$option_name][$field_key];
+		if ( isset( $labels[ $option_name ] ) && isset( $labels[ $option_name ][ $field_key ] ) ) {
+			return $labels[ $option_name ][ $field_key ];
 		}
 
 		return $field_key;
@@ -293,7 +293,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				if ( ! empty( $found_submenus ) ) {
 					$target_submenu = array_pop( $found_submenus );
 					if ( current_user_can( $target_submenu[1] ) ) {
-						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[$record->context] );
+						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
 						$url  = admin_url( $submenu_slug );
 
 						$field_name = get_stream_meta( $record->ID, 'option', true );
@@ -388,8 +388,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 						'option'    => $option,
 						'context'   => ( false !== $key_context ? $key_context : $context ),
 						// Prevent fatal error when saving option as array
-						'old_value' => isset( $old_value[$field_key] ) ? maybe_serialize( $old_value[$field_key] ) : null,
-						'value'     => isset( $value[$field_key] ) ? maybe_serialize( $value[$field_key] ) : null,
+						'old_value' => isset( $old_value[ $field_key ] ) ? maybe_serialize( $old_value[ $field_key ] ) : null,
+						'value'     => isset( $value[ $field_key ] ) ? maybe_serialize( $value[ $field_key ] ) : null,
 					);
 				}
 			}
