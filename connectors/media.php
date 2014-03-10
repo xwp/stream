@@ -132,7 +132,8 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		$name            = $post->post_title;
 		$url             = $post->guid;
 		$parent_id       = $post->post_parent;
-		$parent_title    = $parent_id ? get_the_title‎( $parent_id ) : null;
+		$parent          = get_post( $parent_id );
+		$parent_title    = $parent_id ? $parent->post_title : null;
 		$attachment_type = self::get_attachment_type( $post->guid );
 
 		self::log(

@@ -239,23 +239,21 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return void
 	 */
 	public static function callback_wp_ajax_widgets_order() {
-		global $wp_registered_sidebars, $wp_registered_widgets, $sidebars_widgets, $wp_stream_widget_order_operation;
+		global $wp_stream_widget_order_operation;
 
 		// If this was a widget update, skip adding a new record
 		if ( did_action( 'widget_update_callback' ) ) {
 			return;
 		}
 
-		$old = self::get_sidebar_widgets();
+		$labels = self::get_context_labels();
+		$old    = self::get_sidebar_widgets();
 
 		unset( $old['array_version'] );
 
 		$new = $_POST['sidebars'];
 
 		foreach ( $new as $sidebar_id => $widget_ids ) {
-			if ( 'wp_inactive_widgets' === $sidebar_id ) {
-				continue;
-			}
 
 			$widget_ids         = preg_replace( '#(widget-\d+_)#', '', $widget_ids );
 			$new[ $sidebar_id ] = array_filter( explode( ',', $widget_ids ) );
@@ -268,13 +266,13 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		if ( isset( $changed ) ) {
 			$sidebar      = $changed;
-			$sidebar_name = $wp_registered_sidebars[ $changed ]['name'];
+			$sidebar_name = isset( $labels[ $sidebar ] ) ? $labels[ $sidebar ] : esc_html__( 'Widgets', 'stream' );
 
 			// Saving this in a global var, so it can be accessed and
 			// executed by self::callback_update_option_sidebars_widgets
 			// in case this is ONLY a reorder process
 			$wp_stream_widget_order_operation = array(
-				_x( '"%s" widgets were reordered', 'Sidebar name', 'stream' ),
+				_x( 'Widgets in "%s" were reordered', 'Sidebar name', 'stream' ),
 				compact( 'sidebar_name', 'sidebar' ),
 				null,
 				array( $sidebar => 'sorted' ),
