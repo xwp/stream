@@ -163,6 +163,11 @@
 					parent.$btnSave.removeClass('disabled');
 				}
 			});
+			
+			// Change chart type toggle
+			this.$configureDiv.find('.chart-options').change(function () {
+				parent.$btnSave.removeClass('disabled');
+			});
 
 			// Bind handler to save button
 			this.$btnSave = this.$configureDiv.find('.button-primary').click(this.configureSave);
@@ -202,7 +207,7 @@
 			if ($(this).hasClass('disabled')){
 				return false;
 			}
-
+			
 			// Send the new
 			$.ajax({
 				type: 'GET',
@@ -211,6 +216,7 @@
 					action: 'stream_report_save_metabox_config',
 					stream_reports_nonce : $('#stream_report_nonce').val(),
 					chart_type : parent.$configureDiv.find('.chart-types .active').data('type'),
+					data_type : parent.$configureDiv.find('.chart-options').select2('data').id,
 					section_id : $(this).data('id')
 				},
 				dataType: 'json',

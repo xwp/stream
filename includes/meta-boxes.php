@@ -124,6 +124,8 @@ class WP_Stream_Reports_Metaboxes {
 			'line' => 'dashicons-chart-area',
 		);
 
+		$data_type = isset( $args['data_type'] ) ? $args['data_type'] : 'all';
+
 		// Apply the active class to the active chart type used
 		if ( array_key_exists( $args['chart_type'], $chart_types ) ) {
 			$chart_types[ $args['chart_type'] ] .= ' active';
@@ -139,6 +141,7 @@ class WP_Stream_Reports_Metaboxes {
 		$input = array(
 			'id'          => ( isset( $_REQUEST['section_id'] ) && is_numeric( $_REQUEST['section_id'] ) ) ?  (int) $_REQUEST['section_id'] : false,
 			'chart_type'  => isset( $_REQUEST['chart_type'] ) ? sanitize_text_field( $_REQUEST['chart_type'] ) : false,
+			'data_type' => isset( $_REQUEST['data_type'] ) ? sanitize_text_field( $_REQUEST['data_type'] ) : false,
 		);
 
 		if (
@@ -148,8 +151,9 @@ class WP_Stream_Reports_Metaboxes {
 			wp_send_json_error();
 		}
 
-		// Store the chart type
+		// Store the chart configuration
 		self::$sections[ $input['id'] ]['chart_type'] = $input['chart_type'];
+		self::$sections[ $input['id'] ]['data_type'] = $input['data_type'];
 
 		// Update the database option
 		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
