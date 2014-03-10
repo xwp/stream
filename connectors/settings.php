@@ -100,7 +100,6 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'theme_mods' => array(
 				'custom_background' => array(
 					'background_image',
-					'background_image_thumb',
 					'background_position_x',
 					'background_repeat',
 					'background_attachment',
@@ -108,7 +107,6 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				),
 				'custom_header' => array(
 					'header_image',
-					'header_image_data',
 					'header_textcolor',
 				),
 			),
@@ -228,14 +226,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'theme_mods' => array(
 				// Custom Background
 				'background_image'       => __( 'Background Image', 'stream' ),
-				'background_image_thumb' => __( 'Background Image Data', 'stream' ),
 				'background_position_x'  => __( 'Background Position', 'stream' ),
 				'background_repeat'      => __( 'Background Repeat', 'stream' ),
 				'background_attachment'  => __( 'Background Attachment', 'stream' ),
 				'background_color'       => __( 'Background Color', 'stream' ),
 				// Custom Header
 				'header_image'           => __( 'Header Image', 'stream' ),
-				'header_image_data'      => __( 'Header Image Data', 'stream' ),
 				'header_textcolor'       => __( 'Text Color', 'stream' ),
 			),
 		);
