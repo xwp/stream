@@ -4,12 +4,14 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 
 	/**
 	 * Context name
+	 *
 	 * @var string
 	 */
 	public static $name = 'comments';
 
 	/**
 	 * Actions registered for this context
+	 *
 	 * @var array
 	 */
 	public static $actions = array(
@@ -76,13 +78,14 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-
 		if ( $record->object_id ) {
 			if ( $comment = get_comment( $record->object_id ) ) {
-				$del_nonce = wp_create_nonce( "delete-comment_$comment->comment_ID" );
+				$del_nonce     = wp_create_nonce( "delete-comment_$comment->comment_ID" );
 				$approve_nonce = wp_create_nonce( "approve-comment_$comment->comment_ID" );
+
 				$links[ __( 'Edit', 'stream' ) ] = admin_url( "comment.php?action=editcomment&c=$comment->comment_ID" );
-				if ( 1 == $comment->comment_approved ) {
+
+				if ( 1 === $comment->comment_approved ) {
 					$links[ __( 'Unapprove', 'stream' ) ] = admin_url(
 						sprintf(
 							'comment.php?action=unapprovecomment&c=%s&_wpnonce=%s',
@@ -101,6 +104,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				}
 			}
 		}
+
 		return $links;
 	}
 
@@ -178,6 +182,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_id        = self::get_comment_author( $comment, 'id' );
 		$user_name      = self::get_comment_author( $comment, 'name' );
 		$post_id        = $comment->comment_post_ID;
+		$post_type      = get_post_type( $post_id );
 		$post_title     = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 		$comment_status = ( 1 == $comment->comment_approved ) ? __( 'approved automatically', 'stream' ) : __( 'pending approval', 'stream' );
 
@@ -193,7 +198,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				),
 				compact( 'parent_user_name', 'user_name', 'post_title', 'comment_status', 'post_id', 'parent_user_id' ),
 				$comment_id,
-				array( 'comments' => 'replied' ),
+				array( $post_type => 'replied' ),
 				$user_id
 			);
 		} else {
@@ -205,7 +210,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				),
 				compact( 'user_name', 'post_title', 'comment_status', 'post_id' ),
 				$comment_id,
-				array( 'comments' => 'created' ),
+				array( $post_type => 'created' ),
 				$user_id
 			);
 		}
@@ -221,6 +226,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
+		$post_type  = get_post_type( $post_id );
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
@@ -231,7 +237,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( 'comments' => 'edited' )
+			array( $post_type => 'edited' )
 		);
 	}
 
@@ -245,6 +251,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
+		$post_type  = get_post_type( $post_id );
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
@@ -255,7 +262,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( 'comments' => 'deleted' )
+			array( $post_type => 'deleted' )
 		);
 	}
 
@@ -269,6 +276,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
+		$post_type  = get_post_type( $post_id );
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
@@ -279,7 +287,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( 'comments' => 'trashed' )
+			array( $post_type => 'trashed' )
 		);
 	}
 
@@ -293,6 +301,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
+		$post_type  = get_post_type( $post_id );
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
@@ -303,7 +312,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( 'comments' => 'untrashed' )
+			array( $post_type => 'untrashed' )
 		);
 	}
 
@@ -317,6 +326,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
+		$post_type  = get_post_type( $post_id );
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
@@ -327,7 +337,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( 'comments' => 'spammed' )
+			array( $post_type => 'spammed' )
 		);
 	}
 
@@ -341,6 +351,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
+		$post_type  = get_post_type( $post_id );
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
@@ -351,7 +362,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( 'comments' => 'unspammed' )
+			array( $post_type => 'unspammed' )
 		);
 	}
 
@@ -368,6 +379,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
+		$post_type  = get_post_type( $post_id );
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
@@ -377,8 +389,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				'stream'
 			),
 			compact( 'user_name', 'new_status', 'old_status', 'post_title', 'post_id', 'user_id' ),
-			$comment->comment_id,
-			array( 'comments' => $new_status )
+			$comment->comment_ID,
+			array( $post_type => $new_status )
 		);
 	}
 
@@ -395,6 +407,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
+		$post_type  = get_post_type( $post_id );
 		$post_title = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 
 		self::log(
@@ -405,7 +418,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( 'comments' => 'duplicate' )
+			array( $post_type => 'duplicate' )
 		);
 	}
 

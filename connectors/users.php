@@ -4,6 +4,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 
 	/**
 	 * Context name
+	 *
 	 * @var string
 	 */
 	public static $name = 'users';
@@ -18,6 +19,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 
 	/**
 	 * Actions registered for this context
+	 *
 	 * @var array
 	 */
 	public static $actions = array(
@@ -67,7 +69,9 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'users' => __( 'Users', 'stream' ),
+			'users'    => __( 'Users', 'stream' ),
+			'sessions' => __( 'Sessions', 'stream' ),
+			'profiles' => __( 'Profiles', 'stream' ),
 		);
 	}
 
@@ -85,6 +89,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				$links [ __( 'Edit Profile', 'stream' ) ] = $link;
 			}
 		}
+
 		return $links;
 	}
 
@@ -146,9 +151,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'roles'        => implode( ', ', self::get_role_labels( $user_id ) ),
 			),
 			$registered_user->ID,
-			array(
-				'users' => 'created',
-			),
+			array( 'users' => 'created' ),
 			$user_to_log
 		);
 	}
@@ -165,9 +168,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'display_name' => $user->display_name,
 			),
 			$user->ID,
-			array(
-				'users' => 'updated',
-			)
+			array( 'profiles' => 'updated' )
 		);
 	}
 
@@ -182,6 +183,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		}
 
 		global $wp_roles;
+
 		self::log(
 			_x(
 				'%1$s\'s role was changed from %2$s to %3$s',
@@ -194,9 +196,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'new_role'     => translate_user_role( $wp_roles->role_names[ $new_role ] ),
 			),
 			$user_id,
-			array(
-				'users' => 'updated',
-			)
+			array( 'profiles' => 'updated' )
 		);
 	}
 
@@ -212,9 +212,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'email' => $user->display_name,
 			),
 			$user->ID,
-			array(
-				'users' => 'password-reset',
-			),
+			array( 'profiles' => 'password-reset' ),
 			$user->ID
 		);
 	}
@@ -225,20 +223,17 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @action retrieve_password
 	 */
 	public static function callback_retrieve_password( $user_login ) {
-		if ( filter_var( $user_login, FILTER_VALIDATE_EMAIL ) ) {
+		if ( wp_stream_filter_var( $user_login, FILTER_VALIDATE_EMAIL ) ) {
 			$user = get_user_by( 'email', $user_login );
 		} else {
 			$user = get_user_by( 'login', $user_login );
 		}
+
 		self::log(
 			__( '%s\'s password was requested to be reset', 'stream' ),
-			array(
-				'display_name' => $user->display_name,
-			),
+			array( 'display_name' => $user->display_name ),
 			$user->ID,
-			array(
-				'users' => 'forgot-password',
-			),
+			array( 'sessions' => 'forgot-password' ),
 			$user->ID
 		);
 	}
@@ -250,16 +245,13 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function callback_wp_login( $user_login ) {
 		$user = get_user_by( 'login', $user_login );
-		if ( self::is_logging_enabled_for_user( $user ) ) {
+
+		if ( WP_Stream_Connectors::is_logging_enabled_for_user( $user ) ) {
 			self::log(
 				__( '%s logged in', 'stream' ),
-				array(
-					'display_name' => $user->display_name,
-				),
+				array( 'display_name' => $user->display_name ),
 				$user->ID,
-				array(
-					'users' => 'login',
-				),
+				array( 'sessions' => 'login' ),
 				$user->ID
 			);
 		}
@@ -272,19 +264,17 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function callback_clear_auth_cookie() {
 		$user = wp_get_current_user();
-		// For some reason, ignito mode calls clear_auth_cookie on failed login attempts
+
+		// For some reason, incognito mode calls clear_auth_cookie on failed login attempts
 		if ( empty( $user ) || ! $user->exists() ) {
 			return;
 		}
+
 		self::log(
 			__( '%s logged out', 'stream' ),
-			array(
-				'display_name' => $user->display_name,
-			),
+			array( 'display_name' => $user->display_name ),
 			$user->ID,
-			array(
-				'users' => 'logout',
-			),
+			array( 'sessions' => 'logout' ),
 			$user->ID
 		);
 	}
@@ -336,9 +326,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'roles'        => implode( ', ', self::get_role_labels( $deleted_user ) ),
 			),
 			$user_id,
-			array(
-				'users' => 'deleted',
-			),
+			array( 'users' => 'deleted' ),
 			$user->ID
 		);
 	}
@@ -351,11 +339,12 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function callback_wp_login_failed( $username ) {
 		$user = get_user_by( 'login', $username );
+
 		self::log(
 			__( 'Invalid login attempt for %s', 'stream' ),
 			compact( 'username' ),
 			$user ? $user->ID : 0,
-			array( 'users' => 'failed_login' ),
+			array( 'sessions' => 'failed_login' ),
 			$user ? $user->ID : 0
 		);
 	}
