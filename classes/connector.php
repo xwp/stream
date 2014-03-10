@@ -124,7 +124,7 @@ abstract class WP_Stream_Connector {
 		$args = func_get_args();
 		array_shift( $args );
 
-		self::$delayed[$handle] = $args;
+		self::$delayed[ $handle ] = $args;
 		add_action( 'shutdown', array( __CLASS__, 'delayed_log_commit' ) );
 	}
 
