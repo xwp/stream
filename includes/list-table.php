@@ -132,7 +132,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		foreach ( $allowed_params as $param ) {
 			if ( $paramval = wp_stream_filter_input( INPUT_GET, $param ) ) {
-				$args[$param] = $paramval;
+				$args[ $param ] = $paramval;
 			}
 		}
 		$args['paged'] = $this->get_pagenum();
@@ -193,7 +193,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					global $wp_roles;
 					$author_ID   = isset( $user->ID ) ? $user->ID : 0;
 					$author_name = isset( $user->display_name ) ? $user->display_name : null;
-					$author_role = isset( $user->roles[0] ) ? $wp_roles->role_names[$user->roles[0]] : null;
+					$author_role = isset( $user->roles[0] ) ? $wp_roles->role_names[ $user->roles[0] ] : null;
 					$out = sprintf(
 						'<a href="%s">%s <span>%s</span></a><br /><small>%s</small>',
 						add_query_arg(
@@ -213,13 +213,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'connector':
-				$out = $this->column_link( WP_Stream_Connectors::$term_labels['stream_connector'][$item->connector], 'connector', $item->connector );
+				$out = $this->column_link( WP_Stream_Connectors::$term_labels['stream_connector'][ $item->connector ], 'connector', $item->connector );
 				break;
 
 			case 'context':
 			case 'action':
-				$display_col = isset( WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}] )
-					? WP_Stream_Connectors::$term_labels['stream_'.$column_name][$item->{$column_name}]
+				$display_col = isset( WP_Stream_Connectors::$term_labels[ 'stream_' . $column_name ][ $item->{$column_name} ] )
+					? WP_Stream_Connectors::$term_labels[ 'stream_' . $column_name ][ $item->{$column_name} ]
 					: $item->{$column_name};
 				$out = $this->column_link( $display_col, $column_name, $item->{$column_name} );
 				break;
@@ -379,7 +379,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			foreach ( $authors as $author ) {
 				$author = get_user_by( 'id', $author->ID );
 				if ( $author ) {
-					$all_records[$author->ID] = $author->display_name;
+					$all_records[ $author->ID ] = $author->display_name;
 				}
 			}
 		} else {
@@ -407,9 +407,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$existing_records = existing_records( $column, $table );
 		foreach ( $all_records as $record => $label ) {
 			if ( array_key_exists( $record , $existing_records ) ) {
-				$all_records[$record] = array( 'label' => $label, 'disabled' => '' );
+				$all_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
 			} else {
-				$all_records[$record] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
+				$all_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
 			}
 		}
 		asort( $all_records );
@@ -426,7 +426,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		foreach ( $authors_records as $user_id => $user ) {
 			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
 				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
-				$authors_records[$user_id]['icon']   = $gravatar_url;
+				$authors_records[ $user_id ]['icon']   = $gravatar_url;
 			}
 		}
 
@@ -488,7 +488,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$options  = array( '<option value=""></option>' );
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
 			foreach ( $items as $v => $label ) {
-				$options[$v] = sprintf(
+				$options[ $v ] = sprintf(
 					'<option value="%s" %s %s %s>%s</option>',
 					$v,
 					selected( $v, $selected, false ),
