@@ -4,12 +4,14 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 
 	/**
 	 * Context name
+	 *
 	 * @var string
 	 */
 	public static $name = 'media';
 
 	/**
 	 * Actions registered for this context
+	 *
 	 * @var array
 	 */
 	public static $actions = array(
@@ -106,6 +108,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 				$links[ __( 'View', 'stream' ) ] = $link;
 			}
 		}
+
 		return $links;
 	}
 
@@ -125,10 +128,12 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		} else {
 			$message = __( 'Added "%s" to Media library', 'stream' );
 		}
+
 		$name            = $post->post_title;
 		$url             = $post->guid;
 		$parent_id       = $post->post_parent;
-		$parent_title    = $parent_id ? get_the_title‎( $parent_id ) : null;
+		$parent          = get_post( $parent_id );
+		$parent_title    = $parent_id ? $parent->post_title : null;
 		$attachment_type = self::get_attachment_type( $post->guid );
 
 		self::log(
@@ -180,6 +185,11 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		);
 	}
 
+	/**
+	 * Tracks changes made in the image editor
+	 *
+	 * @action delete_attachment
+	 */
 	public static function callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id ) {
 		$name            = basename( $filename );
 		$attachment_type = self::get_attachment_type( $post->guid );
