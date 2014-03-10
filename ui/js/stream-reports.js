@@ -1,5 +1,5 @@
 /*jslint nomen: true */
-/*global jQuery, _, nv, d3, stream, streamReportsLocal, document, window, ajaxurl */
+/*global jQuery, _, nv, d3, stream, streamReportsLocal, document, window */
 (function (window, $, _, nv, d3, streamReportsLocal) {
     'use strict';
 
@@ -7,8 +7,8 @@
 
     report.intervals = {
         init: function ($wrapper) {
-						this.wrapper = $wrapper;
-						this.save_interval(this.wrapper.find('.button-primary'), this.wrapper);
+			this.wrapper = $wrapper;
+			this.save_interval(this.wrapper.find('.button-primary'));
 
             this.$ = this.wrapper.each(function () {
                 var container = $(_.last(arguments)),
@@ -21,11 +21,13 @@
 
                 if (_.isFunction($.fn.datepicker)) {
                     to.datepicker({
-                        dateFormat: 'yy/mm/dd'
+                        dateFormat: 'yy/mm/dd',
+						maxDate: 0
                     });
 
                     from.datepicker({
-                        dateFormat: 'yy/mm/dd'
+                        dateFormat: 'yy/mm/dd',
+						maxDate: 0
                     });
 
                     datepickers.datepicker('widget').addClass('stream-datepicker');
@@ -119,105 +121,105 @@
                 });
             });
         },
-				save_interval: function($btn) {
-					var $wrapper = this.wrapper;
-					$btn.click(function(){
-						var data = {
-							key: $wrapper.find('select.field-predefined').find(':selected').val(),
-							start: $wrapper.find('.report-date-inputs .field-from').val(),
-							end: $wrapper.find('.report-date-inputs .field-to').val()
-						};
+		save_interval: function($btn) {
+			var $wrapper = this.wrapper;
+			$btn.click(function(){
+				var data = {
+					key: $wrapper.find('select.field-predefined').find(':selected').val(),
+					start: $wrapper.find('.report-date-inputs .field-from').val(),
+					end: $wrapper.find('.report-date-inputs .field-to').val()
+				};
 
-						// Add params to URL
-						$(this).attr('href', $(this).attr('href') + '&' + $.param(data));
-					})
-				}
+				// Add params to URL
+				$(this).attr('href', $(this).attr('href') + '&' + $.param(data));
+			});
+		}
     };
 
-    /**
-     * Metabox logic logic
-     */
-    report.metabox = {
-        init: function (configureDiv, deleteBtn, configureBtn) {
-            // Variables
-            this.$configureDiv = configureDiv;
-            this.$deleteBtn    = deleteBtn;
-            this.$configureBtn = configureBtn;
+	/**
+	 * Metabox logic logic
+	 */
+	report.metabox = {
+		init: function (configureDiv, deleteBtn, configureBtn) {
+			// Variables
+			this.$configureDiv = configureDiv;
+			this.$deleteBtn    = deleteBtn;
+			this.$configureBtn = configureBtn;
 
-            // Let's configure event listener for all sections
-            this.configureSection();
-        },
-        configureSection: function () {
-					var parent = this;
-					// Trigger select2js
-					this.$configureDiv.find('.chart-options').select2();
+			// Let's configure event listener for all sections
+			this.configureSection();
+		},
+		configureSection: function () {
+			var parent = this;
+			// Trigger select2js
+			this.$configureDiv.find('.chart-options').select2();
 
-					// Change chart type toggle
-					this.$configureDiv.find('.chart-types .dashicons').click(function () {
-						var $target = $(this);
-						if (!$target.hasClass('active')) {
-							$target.siblings().removeClass('active');
-							$target.addClass('active');
-							parent.$btnSave.removeClass('disabled');
-						}
-					});
-
-					// Bind handler to save button
-					this.$btnSave = this.$configureDiv.find('.button-primary').click(this.configureSave);
-
-					// Confirmation of deletion
-					this.$deleteBtn.click(function () {
-						if (!window.confirm(streamReportsLocal.deletemsg)) {
-							return false;
-						}
-					});
-
-					// Configuration toggle
-					this.$configureBtn.click(function () {
-						var $target = $(this),
-
-						// Hold parent container
-						$curPostbox = $target.parents('.postbox');
-
-						// Change value of button
-						$target.text($target.text() === streamReportsLocal.configure ? streamReportsLocal.cancel : streamReportsLocal.configure);
-
-						// Always show the cancel button
-						$target.toggleClass('edit-box');
-
-						// Show the delete button
-						$target.parent().next().find('a').toggleClass('visible');
-
-						//Open the section if it's hidden
-						$curPostbox.removeClass('closed');
-
-						// Show the configure div
-						$curPostbox.find('.inside .configure').toggleClass('visible');
-					});
-        },
-				configureSave: function() {
-					var parent = stream.report.metabox;
-					if ($(this).hasClass('disabled')){
-						return false;
-					}
-
-					// Send the new
-					$.ajax({
-						type: 'GET',
-						url: ajaxurl,
-						data: {
-							action: 'stream_report_save_metabox_config',
-							stream_reports_nonce : $('#stream_report_nonce').val(),
-							chart_type : parent.$configureDiv.find('.chart-types .active').data('type'),
-							section_id : $(this).data('id')
-						},
-						dataType: 'json',
-						success : function(data) {
-							console.log(data);
-						}
-					});
+			// Change chart type toggle
+			this.$configureDiv.find('.chart-types .dashicons').click(function () {
+				var $target = $(this);
+				if (!$target.hasClass('active')) {
+					$target.siblings().removeClass('active');
+					$target.addClass('active');
+					parent.$btnSave.removeClass('disabled');
 				}
-    };
+			});
+
+			// Bind handler to save button
+			this.$btnSave = this.$configureDiv.find('.button-primary').click(this.configureSave);
+
+			// Confirmation of deletion
+			this.$deleteBtn.click(function () {
+				if (!window.confirm(streamReportsLocal.deletemsg)) {
+					return false;
+				}
+			});
+
+			// Configuration toggle
+			this.$configureBtn.click(function () {
+				var $target = $(this),
+
+				// Hold parent container
+					$curPostbox = $target.parents('.postbox');
+
+				// Change value of button
+				$target.text($target.text() === streamReportsLocal.configure ? streamReportsLocal.cancel : streamReportsLocal.configure);
+
+				// Always show the cancel button
+				$target.toggleClass('edit-box');
+
+				// Show the delete button
+				$target.parent().next().find('a').toggleClass('visible');
+
+				//Open the section if it's hidden
+				$curPostbox.removeClass('closed');
+
+				// Show the configure div
+				$curPostbox.find('.inside .configure').toggleClass('visible');
+			});
+		},
+		configureSave: function() {
+			var parent = stream.report.metabox;
+			if ($(this).hasClass('disabled')){
+				return false;
+			}
+
+			// Send the new
+			$.ajax({
+				type: 'GET',
+				url: ajaxurl,
+				data: {
+					action: 'stream_report_save_metabox_config',
+					stream_reports_nonce : $('#stream_report_nonce').val(),
+					chart_type : parent.$configureDiv.find('.chart-types .active').data('type'),
+					section_id : $(this).data('id')
+				},
+				dataType: 'json',
+				success : function(data) {
+					console.log(data);
+				}
+			});
+		}
+	};
 
     /**
      * Chart logic
@@ -425,8 +427,8 @@
      */
     $(document).ready(function () {
         stream.report.intervals.init(
-						$('.reports-date-interval')
-				);
+			$('.reports-date-interval')
+		);
 
         stream.report.chart.init(
             $('.stream_page_wp_stream_reports .chart'),

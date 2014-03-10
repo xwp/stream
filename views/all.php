@@ -1,7 +1,4 @@
 <div class="wrap">
-	<?php wp_nonce_field( 'stream-reports-page', 'stream_report_nonce', false ); ?>
-	<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
-	<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
 
 	<h2><?php esc_html_e( 'Stream Reports', 'stream-reports' ) ?>
 		<a href="<?php echo esc_url( $add_url ) ?>" class="add-new-h2">
@@ -9,7 +6,11 @@
 		</a>
 	</h2>
 
-	<?php stream_report_intervals_html(); ?>
+	<?php wp_nonce_field( 'stream-reports-page', 'stream_report_nonce', false ) ?>
+	<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ) ?>
+	<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ) ?>
+
+	<?php stream_reports_intervals_html() ?>
 
 	<div id="dashboard-widgets" class="<?php echo esc_attr( $class ) ?>">
 
@@ -22,4 +23,5 @@
 		</div>
 
 	</div>
+
 </div>

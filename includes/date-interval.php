@@ -2,8 +2,8 @@
 use Carbon\Carbon;
 
 // Template function
-function stream_report_intervals_html() {
-	$date = WP_Stream_Report_Date_Interval::get_instance();
+function stream_reports_intervals_html() {
+	$date = WP_Stream_Reports_Date_Interval::get_instance();
 	$date->load();
 
 	// Default interval
@@ -28,7 +28,7 @@ function stream_report_intervals_html() {
 	include WP_STREAM_REPORTS_VIEW_DIR . 'intervals.php';
 }
 
-class WP_Stream_Report_Date_Interval {
+class WP_Stream_Reports_Date_Interval {
 	/**
 	 * Hold Stream Reports Section instance
 	 *
@@ -75,65 +75,65 @@ class WP_Stream_Report_Date_Interval {
 			'stream-report-predefined-intervals',
 			array(
 				'today' => array(
-					'label' => __( 'Today', 'stream-report' ),
+					'label' => esc_html__( 'Today', 'stream-report' ),
 					'start' => Carbon::today(),
 				),
 				'yesterday' => array(
-					'label' => __( 'Yesterday', 'stream-report' ),
+					'label' => esc_html__( 'Yesterday', 'stream-report' ),
 					'start' => Carbon::today()->subDay(),
-					'end' => Carbon::today()->subSecond(),
+					'end'   => Carbon::today()->subSecond(),
 				),
 				'last-7-days' => array(
-					'label' => sprintf( __( 'Last %d Days', 'stream-report' ), 7 ),
+					'label' => sprintf( esc_html__( 'Last %d Days', 'stream-report' ), 7 ),
 					'start' => Carbon::today()->subDays( 7 ),
-					'end' => Carbon::today(),
+					'end'   => Carbon::today(),
 				),
 				'last-14-days' => array(
-					'label' => sprintf( __( 'Last %d Days', 'stream-report' ), 14 ),
+					'label' => sprintf( esc_html__( 'Last %d Days', 'stream-report' ), 14 ),
 					'start' => Carbon::today()->subDays( 14 ),
-					'end' => Carbon::today(),
+					'end'   => Carbon::today(),
 				),
 				'last-30-days' => array(
-					'label' => sprintf( __( 'Last %d Days', 'stream-report' ), 30 ),
+					'label' => sprintf( esc_html__( 'Last %d Days', 'stream-report' ), 30 ),
 					'start' => Carbon::today()->subDays( 30 ),
-					'end' => Carbon::today(),
+					'end'   => Carbon::today(),
 				),
 				'this-month' => array(
-					'label' => __( 'This Month', 'stream-report' ),
+					'label' => esc_html__( 'This Month', 'stream-report' ),
 					'start' => Carbon::today()->day( 1 ),
 				),
 				'last-month' => array(
-					'label' => __( 'Last Month', 'stream-report' ),
+					'label' => esc_html__( 'Last Month', 'stream-report' ),
 					'start' => Carbon::today()->day( 1 )->subMonth(),
-					'end' => Carbon::today()->day( 1 )->subSecond(),
+					'end'   => Carbon::today()->day( 1 )->subSecond(),
 				),
 				'last-3-months' => array(
-					'label' => sprintf( __( 'Last %d Months', 'stream-report' ), 3 ),
+					'label' => sprintf( esc_html__( 'Last %d Months', 'stream-report' ), 3 ),
 					'start' => Carbon::today()->subMonths( 3 ),
-					'end' => Carbon::today(),
+					'end'   => Carbon::today(),
 				),
 				'last-6-months' => array(
-					'label' => sprintf( __( 'Last %d Months', 'stream-report' ), 6 ),
+					'label' => sprintf( esc_html__( 'Last %d Months', 'stream-report' ), 6 ),
 					'start' => Carbon::today()->subMonths( 6 ),
-					'end' => Carbon::today(),
+					'end'   => Carbon::today(),
 				),
 				'last-12-months' => array(
-					'label' => sprintf( __( 'Last %d Months', 'stream-report' ), 12 ),
+					'label' => sprintf( esc_html__( 'Last %d Months', 'stream-report' ), 12 ),
 					'start' => Carbon::today()->subMonths( 12 ),
-					'end' => Carbon::today(),
+					'end'   => Carbon::today(),
 				),
 				'this-year' => array(
-					'label' => __( 'This Month', 'stream-report' ),
+					'label' => esc_html__( 'This Year', 'stream-report' ),
 					'start' => Carbon::today()->day( 1 )->month( 1 ),
 				),
 				'last-year' => array(
-					'label' => __( 'Last Month', 'stream-report' ),
+					'label' => esc_html__( 'Last Year', 'stream-report' ),
 					'start' => Carbon::today()->day( 1 )->month( 1 )->subYear(),
-					'end' => Carbon::today()->day( 1 )->month( 1 )->subSecond(),
+					'end'   => Carbon::today()->day( 1 )->month( 1 )->subSecond(),
 				),
 				'all-time' => array(
-					'label' => __( 'All Time', 'stream-report' ),
-				)
+					'label' => esc_html__( 'All Time', 'stream-report' ),
+				),
 			)
 		);
 	}
@@ -194,7 +194,7 @@ class WP_Stream_Report_Date_Interval {
 		$avail_intervals = $this->get_predefined_intervals();
 
 		if ( 'custom' !== $interval['key'] && ! isset( $avail_intervals[ $interval['key'] ] ) ) {
-			wp_die( __( 'This time interval is not available', 'stream-reports' ) );
+			wp_die( esc_html__( 'That time interval is not available.', 'stream-reports' ) );
 		}
 
 		// Only store dates if we are dealing with custom dates and no relative preset
@@ -207,9 +207,9 @@ class WP_Stream_Report_Date_Interval {
 	}
 
 	/**
-	 * Return active instance of WP_Stream_Report_Date_Interval, create one if it doesn't exist
+	 * Return active instance of WP_Stream_Reports_Date_Interval, create one if it doesn't exist
 	 *
-	 * @return WP_Stream_Report_Date_Interval
+	 * @return WP_Stream_Reports_Date_Interval
 	 */
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
