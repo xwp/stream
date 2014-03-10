@@ -106,8 +106,8 @@ class WP_Stream_Settings {
 		);
 
 		remove_filter( 'user_search_columns', array( __CLASS__, 'add_display_name_search_columns' ), 10 );
-		
-		if ( $users->get_total() === 0 ) {
+
+		if ( 0 === $users->get_total() ) {
 			wp_send_json_error( $response );
 		}
 
@@ -274,7 +274,7 @@ class WP_Stream_Settings {
 		$defaults = array();
 		foreach ( $fields as $section_name => $section ) {
 			foreach ( $section['fields'] as $field ) {
-				$defaults[$section_name.'_'.$field['name']] = isset( $field['default'] )
+				$defaults[ $section_name.'_'.$field['name'] ] = isset( $field['default'] )
 					? $field['default']
 					: null;
 			}
@@ -360,7 +360,7 @@ class WP_Stream_Settings {
 		$href          = isset( $field['href'] ) ? $field['href'] : null;
 		$after_field   = isset( $field['after_field'] ) ? $field['after_field'] : null;
 		$title         = isset( $field['title'] ) ? $field['title'] : null;
-		$current_value = self::$options[$section . '_' . $name];
+		$current_value = self::$options[ $section . '_' . $name ];
 
 		if ( is_callable( $current_value ) ) {
 			$current_value = call_user_func( $current_value );
@@ -460,31 +460,31 @@ class WP_Stream_Settings {
 				if ( ! isset ( $current_value ) ) {
 					$current_value = array();
 				}
-				if ( ( $key = array_search( '__placeholder__', $current_value ) ) !== false ) {
+				if ( false !== ( $key = array_search( '__placeholder__', $current_value ) ) ) {
 					unset( $current_value[ $key ] );
 				}
 
 				$data_values     = array();
 				$selected_values = array();
-				if ( isset( $field[ 'choices' ] ) ) {
-					$choices = $field[ 'choices' ];
+				if ( isset( $field['choices'] ) ) {
+					$choices = $field['choices'];
 					if ( is_callable( $choices ) ) {
-						$param   = ( isset( $field[ 'param' ] ) ) ? $field[ 'param' ] : null;
+						$param   = ( isset( $field['param'] ) ) ? $field['param'] : null;
 						$choices = call_user_func( $choices, $param );
 					}
 					foreach ( $choices as $key => $value ) {
-						$data_values[ ] = array( 'id' => $key, 'text' => $value, );
+						$data_values[] = array( 'id' => $key, 'text' => $value );
 						if ( in_array( $key, $current_value ) ) {
-							$selected_values[ ] = array( 'id' => $key, 'text' => $value, );
+							$selected_values[] = array( 'id' => $key, 'text' => $value );
 						}
 					}
 					$class .= ' with-source';
 				} else {
 					foreach ( $current_value as $value ) {
-						if ( $value === '__placeholder__' || $value === '' ) {
+						if ( '__placeholder__' === $value || '' === $value ) {
 							continue;
 						}
-						$selected_values[ ] = array( 'id' => $value, 'text' => $value, );
+						$selected_values[] = array( 'id' => $value, 'text' => $value );
 					}
 				}
 
@@ -516,10 +516,10 @@ class WP_Stream_Settings {
 				$current_value = (array)$current_value;
 				$data_values   = array();
 
-				if ( isset( $field[ 'choices' ] ) ) {
-					$choices = $field[ 'choices' ];
+				if ( isset( $field['choices'] ) ) {
+					$choices = $field['choices'];
 					if ( is_callable( $choices ) ) {
-						$param   = ( isset( $field[ 'param' ] ) ) ? $field[ 'param' ] : null;
+						$param   = ( isset( $field['param'] ) ) ? $field['param'] : null;
 						$choices = call_user_func( $choices, $param );
 					}
 				} else {
@@ -527,7 +527,7 @@ class WP_Stream_Settings {
 				}
 
 				foreach ( $choices as $key => $role ) {
-					$data_values[ ] = array( 'id' => $key, 'text' => $role, );
+					$data_values[] = array( 'id' => $key, 'text' => $role );
 				}
 
 				$selected_values = array();
@@ -536,19 +536,19 @@ class WP_Stream_Settings {
 						continue;
 					}
 
-					if ( $value === '__placeholder__' || $value === '' ) {
+					if ( '__placeholder__' === $value || '' === $value ) {
 						continue;
 					}
 
 					if ( is_numeric( $value ) ) {
-						$user               = new WP_User( $value );
-						$selected_values[ ] = array( 'id' => $user->ID, 'text' => $user->display_name, );
+						$user              = new WP_User( $value );
+						$selected_values[] = array( 'id' => $user->ID, 'text' => $user->display_name );
 					} else {
 						foreach ( $data_values as $role ) {
-							if ( $role[ 'id' ] != $value ) {
+							if ( $role['id'] !== $value ) {
 								continue;
 							}
-							$selected_values[ ] = $role;
+							$selected_values[] = $role;
 						}
 					}
 				}
@@ -623,7 +623,7 @@ class WP_Stream_Settings {
 	 * @return array
 	 */
 	public static function get_connectors() {
-		return WP_Stream_Connectors::$term_labels[ 'stream_connector' ];
+		return WP_Stream_Connectors::$term_labels['stream_connector'];
 	}
 
 	/**
@@ -632,7 +632,7 @@ class WP_Stream_Settings {
 	 * @return array
 	 */
 	public static function get_default_connectors() {
-		return array_keys( WP_Stream_Connectors::$term_labels[ 'stream_connector' ] );
+		return array_keys( WP_Stream_Connectors::$term_labels['stream_connector'] );
 	}
 
 	/**
@@ -643,8 +643,8 @@ class WP_Stream_Settings {
 	 */
 	public static function get_terms_labels( $column ) {
 		$return_labels = array();
-		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
-			$return_labels = WP_Stream_Connectors::$term_labels[ 'stream_' . $column ];
+		if ( isset ( WP_Stream_Connectors::$term_labels['stream_' . $column ] ) ) {
+			$return_labels = WP_Stream_Connectors::$term_labels['stream_' . $column ];
 			ksort( $return_labels );
 		}
 
@@ -685,13 +685,13 @@ class WP_Stream_Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_settings_translations( $labels ) {
-		if ( ! isset( $labels[self::KEY] ) ) {
-			$labels[self::KEY] = array();
+		if ( ! isset( $labels[ self::KEY ] ) ) {
+			$labels[ self::KEY ] = array();
 		}
 
 		foreach ( self::get_fields() as $section_slug => $section ) {
 			foreach ( $section['fields'] as $field ) {
-				$labels[self::KEY][sprintf( '%s_%s', $section_slug, $field['name'] )] = $field['title'];
+				$labels[ self::KEY ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
 			}
 		}
 
@@ -728,28 +728,28 @@ class WP_Stream_Settings {
 	 */
 	public static function remove_excluded_record_filter( $args ) {
 		// Remove record of excluded connector
-		if ( empty( $args[ 'connector' ] ) ) {
-			$args[ 'connector__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
+		if ( empty( $args['connector'] ) ) {
+			$args['connector__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
 		}
 
 		// Remove record of excluded context
-		if ( empty( $args[ 'context' ] ) ) {
-			$args[ 'context__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'contexts' );
+		if ( empty( $args['context'] ) ) {
+			$args['context__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'contexts' );
 		}
 
 		// Remove record of excluded actions
-		if ( empty( $args[ 'action' ] ) ) {
-			$args[ 'action__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
+		if ( empty( $args['action'] ) ) {
+			$args['action__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
 		}
 
 		// Remove record of excluded author
-		if ( empty( $args[ 'author' ] ) ) {
-			$args[ 'author__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
+		if ( empty( $args['author'] ) ) {
+			$args['author__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
 		}
 
 		// Remove record of excluded ip
-		if ( empty( $args[ 'ip' ] ) ) {
-			$args[ 'ip__not_in' ] = WP_Stream_Settings::get_excluded_by_key( 'ip_addresses' );
+		if ( empty( $args['ip'] ) ) {
+			$args['ip__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'ip_addresses' );
 		}
 
 		return $args;

@@ -11,6 +11,7 @@ class WP_Stream_Admin {
 
 	/**
 	 * List table object
+	 *
 	 * @var WP_Stream_List_Table
 	 */
 	public static $list_table = null;
@@ -204,7 +205,7 @@ class WP_Stream_Admin {
 		wp_register_style( 'wp-stream-datepicker', WP_STREAM_URL . 'ui/datepicker.css', array( 'jquery-ui' ) );
 		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
 
-		// Make sure we're working off a clean version.
+		// Make sure we're working off a clean version
 		include( ABSPATH . WPINC . '/version.php' );
 
 		$body_class   = self::ADMIN_BODY_CLASS;
@@ -339,7 +340,7 @@ class WP_Stream_Admin {
 		self::$list_table->prepare_items();
 
 		echo '<div class="wrap">';
-		echo sprintf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss okay
+		echo sprintf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
 		self::$list_table->display();
 		echo '</div>';
 	}
@@ -545,12 +546,12 @@ class WP_Stream_Admin {
 			'paged'            => $paged,
 		);
 
-		//Remove excluded records as per settings
+		// Remove excluded records as per settings
 		add_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		$records = stream_query( $args );
 
-		//Remove filter added before
+		// Remove filter added before
 		remove_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		if ( ! $records ) {
@@ -749,10 +750,9 @@ class WP_Stream_Admin {
 	 */
 	public static function live_update( $response, $data ) {
 
-		$enable_update = get_user_meta( get_current_user_id(), 'stream_live_update_records', true );
-		$enable_update = isset( $enable_update ) ? $enable_update : '';
+		$enable_update = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
 
-		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && 'on' === $enable_update ) {
+		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_update ) {
 			// Register list table
 			require_once WP_STREAM_INC_DIR . 'list-table.php';
 			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
@@ -793,7 +793,7 @@ class WP_Stream_Admin {
    * @return array  Array of recently updated items
    */
 	public static function gather_updated_items( $last_id, $query = null ) {
-		if ( $last_id === false ) {
+		if ( false === $last_id ) {
 			return '';
 		}
 
@@ -808,7 +808,7 @@ class WP_Stream_Admin {
 		// Filter default
 		$query = wp_parse_args( $query, $default );
 
-		//Run query
+		// Run query
 		return stream_query( $query );
 	}
 

@@ -6,12 +6,14 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 	/**
 	 * Context name
+	 *
 	 * @var string
 	 */
 	public static $name = 'settings';
 
 	/**
 	 * Actions registered for this context
+	 *
 	 * @var array
 	 */
 	public static $actions = array(
@@ -23,6 +25,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 	/**
 	 * Option names used in options-permalink.php
+	 *
 	 * @var array
 	 */
 	public static $permalink_options = array(
@@ -38,6 +41,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function register() {
 		parent::register();
+
 		add_action( 'admin_head', array( __CLASS__, 'highlight_field' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_jquery_color' ) );
 		add_action( sprintf( 'update_option_theme_mods_%s', get_option( 'stylesheet' ) ), array( __CLASS__, 'log_theme_modification' ), 10, 2 );
@@ -281,10 +285,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		$context_labels = self::get_context_labels();
+
 		if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ) ) ) {
 			global $submenu;
+
 			if ( ! empty( $submenu['options-general.php'] ) ) {
-				$submenu_slug   = 'options-' . $record->context . '.php';
+				$submenu_slug   = sprintf( 'options-%s.php', $record->context );
 				$found_submenus = wp_list_filter(
 					$submenu['options-general.php'],
 					array( 2 => $submenu_slug )
@@ -292,12 +298,13 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 				if ( ! empty( $found_submenus ) ) {
 					$target_submenu = array_pop( $found_submenus );
-					if ( current_user_can( $target_submenu[1] ) ) {
-						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
-						$url  = admin_url( $submenu_slug );
 
+					if ( current_user_can( $target_submenu[1] ) ) {
+						$text       = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
+						$url        = admin_url( $submenu_slug );
 						$field_name = get_stream_meta( $record->ID, 'option', true );
-						if ( $field_name !== '' ) {
+
+						if ( '' !== $field_name ) {
 							$url = sprintf( '%s#%s%s', rtrim( preg_replace( '/#.*/', '', $url ), '/' ), self::HIGHLIGHT_FIELD_URL_HASH_PREFIX, $field_name );
 						}
 
@@ -410,9 +417,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				__( '"%s" setting was updated', 'stream' ),
 				$properties,
 				null,
-				array(
-					$context => 'updated',
-				)
+				array( $current_key => 'updated' )
 			);
 		}
 	}

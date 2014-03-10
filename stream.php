@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: http://wordpress.org/plugins/stream/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 1.2.8
+ * Version: 1.2.9
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -37,7 +37,7 @@ class WP_Stream {
 	 *
 	 * @const string
 	 */
-	const VERSION = '1.2.8';
+	const VERSION = '1.2.9';
 
 	/**
 	 * Hold Stream instance
@@ -86,10 +86,10 @@ class WP_Stream {
 			return;
 		}
 
-		// Check database and add message if not present
+		// Check DB and add message if not present
 		$this->verify_database_present();
 
-		//Load languages
+		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
 
 		// Load settings, enabling extensions to hook in
@@ -175,7 +175,7 @@ class WP_Stream {
 		global $wpdb;
 		$message = '';
 
-		// Check if all needed database is present
+		// Check if all needed DB is present
 		foreach ( $this->db->get_table_names() as $table_name ) {
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
 				$message .= sprintf( '<p>%s %s</p>', __( 'The following table is not present in the WordPress database :', 'stream' ), $table_name );
@@ -190,7 +190,7 @@ class WP_Stream {
 				'<div class="error">%s<p>%s</p></div>',
 				$message,
 				sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) )
-			); // xss okay
+			); // xss ok
 		}
 	}
 
@@ -204,7 +204,7 @@ class WP_Stream {
 			self::$messages[] = sprintf(
 				'<div class="error"><p>%s</p></div>',
 				__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
-			); // xss okay
+			); // xss ok
 			return false;
 		}
 

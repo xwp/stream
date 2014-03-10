@@ -4,12 +4,14 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 
 	/**
 	 * Context name
+	 *
 	 * @var string
 	 */
 	public static $name = 'menus';
 
 	/**
 	 * Actions registered for this context
+	 *
 	 * @var array
 	 */
 	public static $actions = array(
@@ -52,8 +54,8 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 		$menus  = get_terms( 'nav_menu', array( 'hide_empty' => false ) );
 
 		foreach ( $menus as $menu ) {
-			$slug          = sanitize_title( $menu->name );
-			$labels[$slug] = $menu->name;
+			$slug            = sanitize_title( $menu->name );
+			$labels[ $slug ] = $menu->name;
 		}
 
 		return $labels;
@@ -61,6 +63,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 
 	public static function register() {
 		parent::register();
+
 		add_action( 'update_option_theme_mods_' . get_option( 'stylesheet' ), array( __CLASS__, 'callback_update_option_theme_mods' ), 10, 2 );
 	}
 
@@ -76,10 +79,12 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 		if ( $record->object_id ) {
 			$menus    = wp_get_nav_menus();
 			$menu_ids = wp_list_pluck( $menus, 'term_id' );
+
 			if ( in_array( $record->object_id, $menu_ids ) ) {
 				$links[ __( 'Edit Menu', 'stream' ) ] = admin_url( 'nav-menus.php?action=edit&menu=' . $record->object_id );
 			}
 		}
+
 		return $links;
 	}
 
@@ -90,6 +95,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 */
 	public static function callback_wp_create_nav_menu( $menu_id, $menu_data ) {
 		$name = $menu_data['menu-name'];
+
 		self::log(
 			__( 'Created new menu "%s"', 'stream' ),
 			compact( 'name', 'menu_id' ),
@@ -107,7 +113,9 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 		if ( empty( $menu_data ) ) {
 			return;
 		}
+
 		$name = $menu_data['menu-name'];
+
 		self::log(
 			_x( 'Updated menu "%s"', 'Menu name', 'stream' ),
 			compact( 'name', 'menu_id', 'menu_data' ),
@@ -124,6 +132,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	public static function callback_delete_nav_menu( $term, $tt_id, $deleted_term ) {
 		$name    = $deleted_term->name;
 		$menu_id = $term;
+
 		self::log(
 			_x( 'Deleted "%s"', 'Menu name', 'stream' ),
 			compact( 'name', 'menu_id' ),
@@ -137,29 +146,30 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 *
 	 * @action update_option_theme_mods_{$stylesheet}
 	 */
-	public static function callback_update_option_theme_mods( $old, $new )
-	{
+	public static function callback_update_option_theme_mods( $old, $new ) {
 		// Disable if we're switching themes
 		if ( did_action( 'after_switch_theme' ) ) return;
 
 		$key = 'nav_menu_locations';
-		if ( ! isset( $new[$key] ) ) {
+
+		if ( ! isset( $new[ $key ] ) ) {
 			return; // Switching themes ?
 		}
 
-		if ( $old[$key] === $new[$key] ) {
+		if ( $old[ $key ] === $new[ $key ] ) {
 			return;
 		}
 
 		$locations = get_registered_nav_menus();
-		$changed   = array_diff_assoc( $old[$key], $new[$key] ) + array_diff_assoc( $new[$key], $old[$key] );
+		$changed   = array_diff_assoc( $old[ $key ], $new[ $key ] ) + array_diff_assoc( $new[ $key ], $old[ $key ] );
 
 		if ( $changed ) {
 			foreach ( $changed as $location_id => $menu_id ) {
-				$location = $locations[$location_id];
-				if ( empty( $new[$key][$location_id] ) ) {
+				$location = $locations[ $location_id ];
+
+				if ( empty( $new[ $key ][ $location_id ] ) ) {
 					$action  = 'unassigned';
-					$menu_id = isset( $old[$key][$location_id] ) ? $old[$key][$location_id] : 0;
+					$menu_id = isset( $old[ $key ][ $location_id ] ) ? $old[ $key ][ $location_id ] : 0;
 					$message = _x(
 						'"%1$s" has been unassigned from "%2$s"',
 						'1: Menu name, 2: Theme location',
@@ -167,13 +177,14 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 					);
 				} else {
 					$action  = 'assigned';
-					$menu_id = isset( $new[$key][$location_id] ) ? $new[$key][$location_id] : 0;
+					$menu_id = isset( $new[ $key ][ $location_id ] ) ? $new[ $key ][ $location_id ] : 0;
 					$message = _x(
 						'"%1$s" has been assigned to "%2$s"',
 						'1: Menu name, 2: Theme location',
 						'stream'
-						);
+					);
 				}
+
 				$menu = get_term( $menu_id, 'nav_menu' );
 
 				if ( ! $menu || is_wp_error( $menu ) ) {
