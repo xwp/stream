@@ -115,18 +115,18 @@ class WP_Stream_Feeds {
 		}
 
 		$args = array(
-			'records_per_page' => isset( $_GET['records_per_page'] ) ? (int) $_GET['records_per_page'] : get_option( 'posts_per_rss' ),
-			'search'           => isset( $_GET['search'] ) ? (string) $_GET['search'] : null,
-			'object_id'        => isset( $_GET['object_id'] ) ? (int) $_GET['object_id'] : null,
-			'ip'               => isset( $_GET['ip'] ) ? (string) $_GET['ip'] : null,
-			'author'           => isset( $_GET['author'] ) ? (int) $_GET['author'] : null,
-			'date'             => isset( $_GET['date'] ) ? (string) $_GET['date'] : null,
-			'date_from'        => isset( $_GET['date_from'] ) ? (string) $_GET['date_from'] : null,
-			'date_to'          => isset( $_GET['date_to'] ) ? (string) $_GET['date_to'] : null,
-			'record_parent'    => isset( $_GET['record_parent'] ) ? (int) $_GET['record_parent'] : null,
-			'order'            => isset( $_GET['order'] ) ? (string) $_GET['order'] : 'desc',
-			'orderby'          => isset( $_GET['orderby'] ) ? (string) $_GET['orderby'] : 'ID',
-			'fields'           => isset( $_GET['fields'] ) ? (string) $_GET['fields'] : '',
+			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT, array( 'options' => array( 'default' => get_option( 'posts_per_rss' ) ) ) ),
+			'search'           => wp_stream_filter_input( INPUT_GET, 'search' ),
+			'object_id'        => wp_stream_filter_input( INPUT_GET, 'object_id', FILTER_SANITIZE_NUMBER_INT ),
+			'ip'               => wp_stream_filter_input( INPUT_GET, 'ip' ),
+			'author'           => wp_stream_filter_input( INPUT_GET, 'author', FILTER_SANITIZE_NUMBER_INT ),
+			'date'             => wp_stream_filter_input( INPUT_GET, 'date' ),
+			'date_from'        => wp_stream_filter_input( INPUT_GET, 'date_from' ),
+			'date_to'          => wp_stream_filter_input( INPUT_GET, 'date_to' ),
+			'record_parent'    => wp_stream_filter_input( INPUT_GET, 'record_parent', FILTER_SANITIZE_NUMBER_INT ),
+			'order'            => wp_stream_filter_input( INPUT_GET, 'order', FILTER_DEFAULT, array( 'options' => array( 'default' => 'desc' ) ) ),
+			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby', FILTER_DEFAULT, array( 'options' => array( 'default' => 'ID' ) ) ),
+			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields', FILTER_DEFAULT, array( 'options' => array( 'default' => 'with-meta' ) ) ),
 		);
 
 		//Remove excluded records as per settings
