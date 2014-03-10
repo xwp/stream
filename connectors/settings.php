@@ -417,7 +417,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				__( '"%s" setting was updated', 'stream' ),
 				$properties,
 				null,
-				array( $current_key => 'updated' )
+				array( $context => 'updated' )
 			);
 		}
 	}
