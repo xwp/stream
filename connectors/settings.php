@@ -85,8 +85,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'media'             => __( 'Media', 'stream' ),
 			'permalink'         => __( 'Permalinks', 'stream' ),
 			'wp_stream'         => __( 'Stream', 'stream' ),
-			'custom-background' => __( 'Custom Background', 'stream' ),
-			'custom-header'     => __( 'Custom Header', 'stream' ),
+			'custom_background' => __( 'Custom Background', 'stream' ),
+			'custom_header'     => __( 'Custom Header', 'stream' ),
 		);
 	}
 
@@ -98,7 +98,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	public static function get_context_by_key( $option_name, $key ) {
 		$contexts = array(
 			'theme_mods' => array(
-				'custom-background' => array(
+				'custom_background' => array(
 					'background_image',
 					'background_image_thumb',
 					'background_position_x',
@@ -106,7 +106,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					'background_attachment',
 					'background_color',
 				),
-				'custom-header' => array(
+				'custom_header' => array(
 					'header_image',
 					'header_image_data',
 					'header_textcolor',
