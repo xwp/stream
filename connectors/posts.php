@@ -190,8 +190,8 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			return;
 		}
 
-		// Is auto draft?
-		if ( '0000-00-00 00:00:00' === $post->post_modified_gmt ) {
+		// Ignore auto-drafts that are deleted by the system, see issue-293
+		if ( 'auto-draft' === $post->post_status ) {
 			return;
 		}
 
