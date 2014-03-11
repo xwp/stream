@@ -70,21 +70,17 @@ class WP_Stream_Filter_Input {
 			// We'll do a boolean check on validation function, and let sanitizers change the value
 			if ( $filter < 500 ) { // Validation functions
 				if ( ! $result ) {
-					$var = null;
+					$var = false;
 				}
 			} else { // Santization functions
 				$var = $result;
 			}
 		}
 
-		if ( false === $var ) {
-			$var = null;
-		}
-
 		// Detect FILTER_REQUIRE_ARRAY flag
 		if ( is_int( $options ) && FILTER_REQUIRE_ARRAY === $options ) {
 			if ( ! is_array( $var ) ) {
-				$var = null;
+				$var = false;
 			}
 		}
 
