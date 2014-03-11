@@ -313,7 +313,7 @@ class WP_Stream_Settings {
 					$section_name,
 					$field + array(
 						'section'   => $section_name,
-						'label_for' => sprintf( '%s_%s_%s', self::KEY, $section_name, $field['name'] ), // xss ok
+						'label_for' => sprintf( '%s[%s_%s]', self::KEY, $section_name, $field['name'] ), // xss ok
 					)
 				);
 			}

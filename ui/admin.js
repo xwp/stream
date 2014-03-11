@@ -230,7 +230,8 @@ jQuery(function($){
 		$panels        = $('table.form-table'),
 		$activeTab     = $tabs.find('.nav-tab-active'),
 		defaultIndex   = $activeTab.length > 0 ? $tabs.find('a').index( $activeTab ) : 0,
-		currentHash    = window.location.hash ? window.location.hash.match(/\d+/)[0] : defaultIndex,
+		hashIndex      = window.location.hash.match(/^#(\d+)$/),
+		currentHash    = ( hashIndex !== null ? hashIndex[1] : defaultIndex ),
 		syncFormAction = function( index ) {
 			var $optionsForm   = $('input[name="option_page"][value="wp_stream"]').parent('form');
 			var currentAction  = $optionsForm.attr('action');
@@ -239,10 +240,16 @@ jQuery(function($){
 		};
 
 	$tabs.on('click', 'a', function(){
-		var index = $tabs.find('a').index( $(this) );
+		var index = $tabs.find('a').index( $(this) ),
+			hashIndex = window.location.hash.match(/^#(\d+)$/);
+
 		$panels.hide().eq(index).show();
 		$tabs.find('a').removeClass('nav-tab-active').filter($(this)).addClass('nav-tab-active');
-		window.location.hash = index;
+
+		if ( window.location.hash === '' || hashIndex !== null ) {
+			window.location.hash = index;
+		}
+
 		syncFormAction(index);
 		return false;
 	});

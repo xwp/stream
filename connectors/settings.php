@@ -44,6 +44,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 		add_action( 'admin_head', array( __CLASS__, 'highlight_field' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_jquery_color' ) );
+		add_filter( 'wp_stream_action_link_url', array( __CLASS__, 'stream_settings_url' ), 10, 2 );
 	}
 
 	/**
@@ -223,13 +224,19 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					array( 2 => $submenu_slug )
 				);
 
-				if ( ! empty( $found_submenus ) ) {
+				if ( ! empty( $found_submenus ) || 'wp_stream' === $record->context ) {
 					$target_submenu = array_pop( $found_submenus );
 
-					if ( current_user_can( $target_submenu[1] ) ) {
-						$text       = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
-						$url        = admin_url( $submenu_slug );
-						$field_name = get_stream_meta( $record->ID, 'option', true );
+					if ( ! is_array( $target_submenu ) || current_user_can( $target_submenu[1] ) ) {
+						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[$record->context] );
+
+						$url = apply_filters( 'wp_stream_action_link_url', admin_url( $submenu_slug ), $record );
+
+						$field_name = get_stream_meta( $record->ID, 'option_key', true );
+
+						if ( '' === $field_name ) {
+							$field_name = get_stream_meta( $record->ID, 'option', true );
+						}
 
 						if ( '' !== $field_name ) {
 							$url = sprintf( '%s#%s%s', rtrim( preg_replace( '/#.*/', '', $url ), '/' ), self::HIGHLIGHT_FIELD_URL_HASH_PREFIX, $field_name );
@@ -331,11 +338,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 			foreach ( $changed_keys as $field_key ) {
 				$changed_options[] = array(
-					'label'     => self::get_serialized_field_label( $option, $field_key ),
-					'option'    => $current_key,
+					'label'      => self::get_serialized_field_label( $option, $field_key ),
+					'option'     => $current_key,
+					'option_key' => $field_key,
 					// Prevent fatal error when saving option as array
-					'old_value' => isset( $old_value[ $field_key ] ) ? maybe_serialize( $old_value[ $field_key ] ) : null,
-					'value'     => isset( $value[ $field_key ] ) ? maybe_serialize( $value[ $field_key ] ) : null,
+					'old_value'  => isset( $old_value[ $field_key ] ) ? maybe_serialize( $old_value[ $field_key ] ) : null,
+					'value'      => isset( $value[ $field_key ] ) ? maybe_serialize( $value[ $field_key ] ) : null,
 				);
 			}
 		} else {
@@ -359,6 +367,38 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	}
 
 	/**
+	 * @filter wp_stream_action_link_url
+	 */
+	public static function stream_settings_url( $url, $record ) {
+		if ( 'wp_stream' === $record->context ) {
+			$option_key = get_stream_meta( $record->ID, 'option_key', true );
+			$url_tab    = null;
+
+			if ( '' !== $option_key ) {
+				foreach ( WP_Stream_Settings::get_fields() as $tab_name => $tab_properties ) {
+					foreach ( $tab_properties['fields'] as $field ) {
+						$field_key = sprintf( '%s_%s', $tab_name, $field['name'] );
+						if ( $field_key === $option_key ) {
+							$url_tab = $tab_name;
+							break 2;
+						}
+					}
+				}
+			}
+
+			$url = add_query_arg(
+				array(
+					'page' => WP_Stream_Admin::SETTINGS_PAGE_SLUG,
+					'tab'  => $url_tab,
+				),
+				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			);
+		}
+
+		return $url;
+	}
+
+	/**
 	 * Add class to highlight field by URL param
 	 *
 	 * @action admin_head
@@ -369,28 +409,51 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			(function ($) {
 				$(function () {
 					var hashPrefix = <?php echo json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) ?>,
-						fieldName = "",
+					    hashFieldName = "",
+						fieldNames = [],
+						$select2Choices = {},
 						$field = {};
 
 					if (location.hash.substr(1, hashPrefix.length) === hashPrefix) {
-						fieldName = location.hash.substr(hashPrefix.length + 1);
+						hashFieldName = location.hash.substr(hashPrefix.length + 1);
+						fieldNames = [hashFieldName];
 
 						$field = $("input, textarea, select")
 							.filter(function () {
-								return $(this).attr("name") === fieldName;
+								return fieldNames.indexOf($(this).attr("name")) > -1;
 							});
+
+						// try to find wp_stream field
+						if ( $field.length === 0 ) {
+							fieldNames = [
+								"wp_stream_" + hashFieldName,
+								"wp_stream[" + hashFieldName + "]"
+							];
+
+							$field = $("input, textarea, select, div").filter(function() {
+								return fieldNames.indexOf( $(this).attr("id") ) > -1;
+							});
+
+							// if the field has been selectified, the list is the one to be colorized
+							$select2Choices = $field.find(".select2-choices");
+							if ( $select2Choices.length === 1 ) {
+								$field = $select2Choices;
+							}
+						}
 
 						$("html, body")
 							.animate({
 								scrollTop: ($field.closest("tr").length === 1 ? $field.closest("tr") : $field).offset().top - $("#wpadminbar").height()
 							}, 1000, function () {
-								$field.animate({
-									backgroundColor: "#fffedf"
-								}, 250);
+								$field
+									.css("background", $(this).css("background-color"))
+									.animate({
+										backgroundColor: "#fffedf",
+									}, 250);
 
 								$("label")
 									.filter(function () {
-										return $(this).attr("for") === fieldName;
+										return fieldNames.indexOf( $(this).attr("for") ) > -1;
 									})
 									.animate({
 										color: "#d54e21"
