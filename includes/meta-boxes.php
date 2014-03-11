@@ -5,7 +5,6 @@
  * @author X-Team <x-team.com>
  * @author Jonathan Bardo <jonathan.bardo@x-team.com>
  */
-
 class WP_Stream_Reports_Metaboxes {
 
 	/**
