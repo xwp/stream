@@ -227,7 +227,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				if ( ! empty( $found_submenus ) || 'wp_stream' === $record->context ) {
 					$target_submenu = array_pop( $found_submenus );
 
-					if ( is_array( $target_submenu ) && current_user_can( $target_submenu[1] ) ) {
+					if ( ! is_array( $target_submenu ) || current_user_can( $target_submenu[1] ) ) {
 						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[$record->context] );
 
 						$url = apply_filters( 'wp_stream_action_link_url', admin_url( $submenu_slug ), $record );
