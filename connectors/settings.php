@@ -292,8 +292,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				'submenu_slug' => function( $record ) {
 					return str_replace( '_', '-', $record->context );
 				},
-				'url'          => function( $destination ) {
-					return add_query_arg( $destination['url'], 'page', $destination['menu_slug'] );
+				'url'          => function( $rule, $record ) {
+					return add_query_arg( 'page', $rule['submenu_slug']( $record ), admin_url( $rule['menu_slug'] ) );
 				},
 				'applicable'   => function( $submenu, $record ) {
 					return in_array( $record->context, array( 'custom_header', 'custom_background' ) );
@@ -304,8 +304,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				'submenu_slug' => function( $record ) {
 					return sprintf( 'options-%s.php', $record->context );
 				},
-				'url'          => function( $destination ) {
-					return $destination['url'];
+				'url'          => function( $rule, $record ) {
+					return admin_url( $rule['submenu_slug']( $record ) );
 				},
 				'applicable'   => function( $submenu, $record ) {
 					return ! empty( $submenu['options-general.php'] );
@@ -325,16 +325,19 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 			if ( ! empty( $applicable_rules ) ) {
 				// The first applicable rule wins
-				$rule = array_shift( $applicable_rules );
+				$rule         = array_shift( $applicable_rules );
+				$menu_slug    = $rule['menu_slug'];
+				$submenu_slug = $rule['submenu_slug']( $record );
+				$url          = $rule['url']( $rule, $record );
 
 				$found_submenus = wp_list_filter(
-					$submenu[$rule['menu_slug']],
-					array( 2 => $rule['submenu_slug'] )
+					$submenu[ $menu_slug ],
+					array( 2 => $submenu_slug )
 				);
 
 				if ( ! empty( $found_submenus ) ) {
 					$target_submenu = array_pop( $found_submenus );
-					list( $section_label, $capability, $section_page ) = $target_submenu;
+					list( $menu_title, $capability ) = $target_submenu;
 
 					if ( current_user_can( $capability ) ) {
 						$text       = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
