@@ -74,15 +74,6 @@
 	margin: 4px 8px 0 0;
 }
 
-@media screen,
-(-o-min-device-pixel-ratio: 5/4),
-(-webkit-min-device-pixel-ratio: 1.25),
-(min-resolution: 120dpi) {
-	.stream_page_wp_stream_reports .postbox .configure .spinner {
-		background-image: url(/wp-admin/images/spinner-2x.gif);
-	}
-}
-
 .stream_page_wp_stream_reports .postbox .configure .chart-types .dashicons.active {
 	color: #000;
 }
