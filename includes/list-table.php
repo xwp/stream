@@ -410,14 +410,19 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		$existing_records = existing_records( $column, $table );
+		$active_records   = array();
+		$disable_records  = array();
+
 		foreach ( $all_records as $record => $label ) {
 			if ( array_key_exists( $record , $existing_records ) ) {
-				$all_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
+				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
 			} else {
-				$all_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
+				$disable_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
 			}
 		}
-		asort( $all_records );
+		asort( $active_records );
+		asort( $disable_records );
+		$all_records = array_merge( $active_records, $disable_records );
 		return $all_records;
 	}
 
