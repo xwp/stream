@@ -2,10 +2,8 @@
 	<div class="configure">
 		<div class="inside">
 			<select class="chart-options">
-				<?php foreach ( $data_types as $type => $text ): 
-					$selected = $type == $data_type ? 'selected="selected"' : '';
-				?>
-				<option value="<?php echo esc_attr( $type ); ?>" <?php echo $selected; ?>><?php echo $text; ?></option>
+				<?php foreach ( $data_types as $type => $text ): ?>
+				<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $type, $data_type ); // xss ok ?>><?php echo esc_html( $text ); ?></option>	
 				<?php endforeach; ?>
 			</select>
 			<div class="chart-types">
