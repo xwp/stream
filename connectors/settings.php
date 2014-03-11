@@ -286,22 +286,58 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		$context_labels = self::get_context_labels();
 
+		$rules = array(
+			'background_header' => array(
+				'menu_slug'    => 'themes.php',
+				'submenu_slug' => function( $record ) {
+					return str_replace( '_', '-', $record->context );
+				},
+				'url'          => function( $destination ) {
+					return add_query_arg( $destination['url'], 'page', $destination['menu_slug'] );
+				},
+				'applicable'   => function( $submenu, $record ) {
+					return in_array( $record->context, array( 'custom_header', 'custom_background' ) );
+				}
+			),
+			'general' => array(
+				'menu_slug'    => 'options-general.php',
+				'submenu_slug' => function( $record ) {
+					return sprintf( 'options-%s.php', $record->context );
+				},
+				'url'          => function( $destination ) {
+					return $destination['url'];
+				},
+				'applicable'   => function( $submenu, $record ) {
+					return ! empty( $submenu['options-general.php'] );
+				},
+			),
+		);
+
 		if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ) ) ) {
 			global $submenu;
 
-			if ( ! empty( $submenu['options-general.php'] ) ) {
-				$submenu_slug   = sprintf( 'options-%s.php', $record->context );
+			$applicable_rules = array_filter(
+				$rules,
+				function( $rule ) use ( $submenu, $record ) {
+					return call_user_func( $rule['applicable'], $submenu, $record );
+				}
+			);
+
+			if ( ! empty( $applicable_rules ) ) {
+				// The first applicable rule wins
+				$rule = array_shift( $applicable_rules );
+
 				$found_submenus = wp_list_filter(
-					$submenu['options-general.php'],
-					array( 2 => $submenu_slug )
+					$submenu[$rule['menu_slug']],
+					array( 2 => $rule['submenu_slug'] )
 				);
 
 				if ( ! empty( $found_submenus ) ) {
 					$target_submenu = array_pop( $found_submenus );
+					list( $section_label, $capability, $section_page ) = $target_submenu;
 
-					if ( current_user_can( $target_submenu[1] ) ) {
+					if ( current_user_can( $capability ) ) {
 						$text       = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
-						$url        = admin_url( $submenu_slug );
 						$field_name = get_stream_meta( $record->ID, 'option', true );
 
 						if ( '' !== $field_name ) {
