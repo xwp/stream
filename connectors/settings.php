@@ -400,7 +400,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @action updated_option
 	 */
 	public static function callback_updated_option( $option, $old_value, $value ) {
-		global $new_whitelist_options, $whitelist_options;
+		global $whitelist_options, $new_whitelist_options;
 
 		if ( 0 === strpos( $option, '_transient_' ) ) {
 			return;
@@ -408,7 +408,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 		$options = array_merge(
 			(array) $whitelist_options,
-			$new_whitelist_options,
+			(array) $new_whitelist_options,
 			array( 'permalink' => self::$permalink_options )
 		);
 
