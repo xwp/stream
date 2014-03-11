@@ -132,6 +132,14 @@ class WP_Stream_Reports_Metaboxes {
 			$chart_types[ $args['chart_type'] ] .= ' active';
 		}
 
+		$selector_type = isset( $args['selector_type'] ) ? $args['selector_type'] : '';
+		$selector_types = array(
+			'author' => __( 'By Author', 'stream-reports' ),
+			'role' => __( 'By User Role', 'stream-reports' ),
+			'context' => __( 'By Context', 'stream-reports' ),
+			'action' => __( 'By Action', 'stream-reports' ),
+		);
+
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
 	}
 
@@ -143,6 +151,7 @@ class WP_Stream_Reports_Metaboxes {
 			'id'          => ( isset( $_REQUEST['section_id'] ) && is_numeric( $_REQUEST['section_id'] ) ) ?  (int) $_REQUEST['section_id'] : false,
 			'chart_type'  => isset( $_REQUEST['chart_type'] ) ? sanitize_text_field( $_REQUEST['chart_type'] ) : false,
 			'data_type' => isset( $_REQUEST['data_type'] ) ? sanitize_text_field( $_REQUEST['data_type'] ) : false,
+			'selector_type' => isset( $_REQUEST['selector_type'] ) ? sanitize_text_field( $_REQUEST['selector_type'] ) : false,
 		);
 
 		if (
@@ -155,6 +164,7 @@ class WP_Stream_Reports_Metaboxes {
 		// Store the chart configuration
 		self::$sections[ $input['id'] ]['chart_type'] = $input['chart_type'];
 		self::$sections[ $input['id'] ]['data_type'] = $input['data_type'];
+		self::$sections[ $input['id'] ]['selector_type'] = $input['selector_type'];
 
 		// Update the database option
 		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );

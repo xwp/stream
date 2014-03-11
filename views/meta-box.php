@@ -1,9 +1,16 @@
 <div class="stream-section-wrapper">
 	<div class="configure">
 		<div class="inside">
-			<select class="chart-options">
+			<select class="chart-option chart-dataset">
 				<?php foreach ( $data_types as $type => $text ): 
 					$selected = $type == $data_type ? 'selected="selected"' : '';
+				?>
+				<option value="<?php echo esc_attr( $type ); ?>" <?php echo $selected; ?>><?php echo $text; ?></option>
+				<?php endforeach; ?>
+			</select>
+			<select class="chart-option chart-selector">
+				<?php foreach ( $selector_types as $type => $text ): 
+					$selected = $type == $selector_type ? 'selected="selected"' : '';
 				?>
 				<option value="<?php echo esc_attr( $type ); ?>" <?php echo $selected; ?>><?php echo $text; ?></option>
 				<?php endforeach; ?>

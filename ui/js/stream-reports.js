@@ -152,7 +152,7 @@
 		configureSection: function () {
 			var parent = this;
 			// Trigger select2js
-			this.$configureDiv.find('.chart-options').select2();
+			this.$configureDiv.find('select.chart-option').select2();
 
 			// Change chart type toggle
 			this.$configureDiv.find('.chart-types .dashicons').click(function () {
@@ -165,7 +165,7 @@
 			});
 			
 			// Change chart type toggle
-			this.$configureDiv.find('.chart-options').change(function () {
+			this.$configureDiv.find('.chart-option').change(function () {
 				parent.$btnSave.removeClass('disabled');
 			});
 
@@ -216,7 +216,8 @@
 					action: 'stream_report_save_metabox_config',
 					stream_reports_nonce : $('#stream_report_nonce').val(),
 					chart_type : parent.$configureDiv.find('.chart-types .active').data('type'),
-					data_type : parent.$configureDiv.find('.chart-options').select2('data').id,
+					data_type : parent.$configureDiv.find('.chart-dataset').select2('data').id,
+					selector_type : parent.$configureDiv.find('.chart-selector').select2('data').id,
 					section_id : $(this).data('id')
 				},
 				dataType: 'json',
