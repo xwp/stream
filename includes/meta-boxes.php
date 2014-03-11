@@ -139,13 +139,13 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	public function save_metabox_config() {
 		$input = array(
-			'id'          => ( isset( $_REQUEST['section_id'] ) && is_numeric( $_REQUEST['section_id'] ) ) ?  (int) $_REQUEST['section_id'] : false,
-			'chart_type'  => isset( $_REQUEST['chart_type'] ) ? sanitize_text_field( $_REQUEST['chart_type'] ) : false,
-			'data_type' => isset( $_REQUEST['data_type'] ) ? sanitize_text_field( $_REQUEST['data_type'] ) : false,
+			'id'          => wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT ),
+			'chart_type'  => wp_stream_filter_input( INPUT_GET, 'chart_type', FILTER_SANITIZE_STRING ),
+			'data_type'   => wp_stream_filter_input( INPUT_GET, 'data_type', FILTER_SANITIZE_STRING ),
 		);
 
 		if (
-			in_array( false, array_values( $input ) )
+			in_array( null, array_values( $input ) )
 			&& ! isset( self::$sections[ $input['id'] ] )
 		) {
 			wp_send_json_error();
