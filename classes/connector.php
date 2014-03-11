@@ -147,4 +147,51 @@ abstract class WP_Stream_Connector {
 		}
 	}
 
+	/**
+	 * Compare two values and return changed keys if they are arrays
+	 * @param  mixed  $old_value  Value before change
+	 * @param  mixed  $new_value  Value after change
+	 * @return array
+	 */
+	public static function get_changed_keys( $old_value, $new_value ) {
+		if ( ! is_array( $old_value ) && ! is_array( $new_value ) ) {
+			return array();
+		}
+
+		if ( ! is_array( $old_value ) ) {
+			return array_keys( $new_value );
+		}
+
+		if ( ! is_array( $new_value ) ) {
+			return array_keys( $old_value );
+		}
+
+		$diff = array_udiff_assoc(
+			$old_value,
+			$new_value,
+			function( $value1, $value2 ) {
+				return maybe_serialize( $value1 ) !== maybe_serialize( $value2 );
+			}
+		);
+
+		$result = array_keys( $diff );
+
+		// find unexisting keys in old or new value
+		$common_keys     = array_keys( array_intersect_key( $old_value, $new_value ) );
+		$unique_keys_old = array_values( array_diff( array_keys( $old_value ), $common_keys ) );
+		$unique_keys_new = array_values( array_diff( array_keys( $new_value ), $common_keys ) );
+		$result = array_merge( $result, $unique_keys_old, $unique_keys_new );
+
+		// remove numeric indexes
+		$result = array_filter(
+			$result,
+			function( $value ) {
+				// check if is not valid number (is_int, is_numeric and ctype_digit are not enough)
+				return (string) (int) $value !== (string) $value;
+			}
+		);
+
+		return array_values( array_unique( $result ) );
+	}
+
 }
