@@ -169,6 +169,68 @@
 	line-height: 19px;
 }
 
+.toplevel_page_wp_stream .date-interval {
+	display: inline;
+}
+
+.toplevel_page_wp_stream .date-interval .field-predefined {
+	min-width: 200px;
+	float: left;
+}
+
+.toplevel_page_wp_stream .date-interval .date-inputs {
+	float: left;
+	margin-right: 15px;
+	margin-bottom: 10px;
+}
+
+.toplevel_page_wp_stream .date-interval .date-inputs .field-to,
+.toplevel_page_wp_stream .date-interval .date-inputs .field-from {
+	line-height: 28px;
+	height: 28px;
+	margin: 0;
+	width: 125px;
+}
+
+.toplevel_page_wp_stream .date-interval .date-inputs .box {
+	position: relative;
+	display: block;
+	float: left;
+}
+
+.toplevel_page_wp_stream .date-interval .date-inputs .box .date-remove {
+	display: none;
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	right: 0;
+	width: 20px;
+	height: 28px;
+	line-height: 28px;
+	font-size: 14px;
+}
+
+.toplevel_page_wp_stream .date-interval .date-inputs .box .date-remove:before {
+	content: '\f158';
+}
+
+.toplevel_page_wp_stream .date-interval .date-inputs .connector {
+	display: block;
+	float: left;
+	border: 1px solid #ddd;
+	border-left: 0;
+	border-right: 0;
+	height: 25px;
+	line-height: 25px;
+	width: 25px;
+	text-align: center;
+	font-size: 14px;
+}
+
+.toplevel_page_wp_stream .date-interval .date-inputs .connector:before {
+	content: '\f345';
+}
+
 .toplevel_page_wp_stream .select2-container {
 	margin-right: 6px;
 	margin-bottom: 6px;
