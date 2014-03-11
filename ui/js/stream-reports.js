@@ -203,10 +203,14 @@
 			});
 		},
 		configureSave: function() {
-			var parent = stream.report.metabox;
+			var parent = stream.report.metabox, $spinner;
 			if ($(this).hasClass('disabled')){
 				return false;
 			}
+
+			// Show the spinner
+			$spinner = parent.$configureDiv.find('.spinner');
+			$spinner.show();
 			
 			// Send the new
 			$.ajax({
@@ -221,7 +225,7 @@
 				},
 				dataType: 'json',
 				success : function(data) {
-					console.log(data);
+					$spinner.hide();
 				}
 			});
 		}
