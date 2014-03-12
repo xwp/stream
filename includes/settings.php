@@ -170,7 +170,7 @@ class WP_Stream_Reports_Settings {
 				)
 			);
 			exit;
-		} else if ( $redirect ) {
+		} elseif ( $redirect ) {
 			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream-reports' ) );
 		}
 
