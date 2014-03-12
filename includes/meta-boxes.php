@@ -148,8 +148,8 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		if (
-			in_array( null, array_values( $input ) )
-			&& null !== $id
+			in_array( false, array_values( $input ) )
+			&& false !== $id
 			&& ! isset( self::$sections[ $id ] )
 		) {
 			wp_send_json_error();
