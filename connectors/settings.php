@@ -518,10 +518,9 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 						hashFieldName = location.hash.substr(hashPrefix.length + 1);
 						fieldNames = [hashFieldName];
 
-						$field = $("input, textarea, select")
-							.filter(function () {
-								return fieldNames.indexOf($(this).attr("name")) > -1;
-							});
+						$field = $("input, textarea, select").filter(function () {
+							return fieldNames.indexOf( $(this).attr("name") ) > -1;
+						});
 
 						// try to find wp_stream field
 						if ( $field.length === 0 ) {
@@ -530,7 +529,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 								"wp_stream[" + hashFieldName + "]"
 							];
 
-							$field = $("input, textarea, select, div").filter(function() {
+							$field = $("input, textarea, select, div").filter(function () {
 								return fieldNames.indexOf( $(this).attr("id") ) > -1;
 							});
 
