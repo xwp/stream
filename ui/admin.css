@@ -120,6 +120,12 @@
 	width: 10%;
 }
 
+@media only screen and (min-width: 782px) {
+	.toplevel_page_wp_stream .tablenav .tablenav-pages {
+		margin-bottom: 4px;
+	}
+}
+
 @media only screen and (max-width: 900px) {
 	.toplevel_page_wp_stream .fixed .column-context,
 	.toplevel_page_wp_stream .fixed .column-action,

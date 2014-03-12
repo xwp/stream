@@ -607,8 +607,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		if ( 'top' === $which ) : ?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 				<?php
-				$this->extra_tablenav( $which );
 				$this->pagination( $which );
+				$this->extra_tablenav( $which );
 				?>
 
 				<br class="clear" />
@@ -620,8 +620,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 				 * Action allows for mods after the list table display
 				 */
 				do_action( 'wp_stream_after_list_table' );
-				$this->extra_tablenav( $which );
 				$this->pagination( $which );
+				$this->extra_tablenav( $which );
 				?>
 
 				<br class="clear" />
