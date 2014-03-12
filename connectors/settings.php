@@ -350,6 +350,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					list( $menu_title, $capability ) = $target_submenu;
 
 					if ( current_user_can( $capability ) ) {
+						$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
 						$text       = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
 						$field_name = get_stream_meta( $record->ID, 'option_key', true );
 
