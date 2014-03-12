@@ -77,9 +77,8 @@ class WP_Stream_Reports_Metaboxes {
 			);
 
 			// Default metabox argument
-			$title_key = $key + 1;
 			$default   = array(
-				'title'      => 'Report ' . $title_key,
+				'title'      => sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $key + 1 ) ),
 				'priority'   => 'default',
 				'context'    => 'normal',
 				'chart_type' => 'bar',
@@ -94,7 +93,7 @@ class WP_Stream_Reports_Metaboxes {
 			// Add the actual metabox
 			add_meta_box(
 				self::META_PREFIX . $key,
-				sprintf( '<span class="title">%s</span>%s', $section['title'], $configure ),
+				sprintf( '<span class="title">%s</span>%s', esc_html( $section['title'] ), $configure ), // xss ok
 				array( $this, 'metabox_content' ),
 				WP_Stream_Reports::$screen_id,
 				$section['context'],
