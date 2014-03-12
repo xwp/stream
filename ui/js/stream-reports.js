@@ -160,15 +160,9 @@
 				if (!$target.hasClass('active')) {
 					$target.siblings().removeClass('active');
 					$target.addClass('active');
-					parent.$btnSave.removeClass('disabled');
 				}
 			});
 			
-			// Change chart type toggle
-			this.$configureDiv.find('.chart-options').change(function () {
-				parent.$btnSave.removeClass('disabled');
-			});
-
 			// Bind handler to save button
 			this.$btnSave = this.$configureDiv.find('.button-primary').click(this.configureSave);
 
@@ -194,9 +188,6 @@
 					$target.text(streamReportsLocal.cancel);
 					parent.$titleHTML = $title.html();
 					$title.replaceWith('<input type="text" class="title" value="' + $title.text() + '">');
-					$curPostbox.find('.hndle .title').keypress(function(){
-						parent.$btnSave.removeClass('disabled');
-					});
 					// Click function management
 					parent.$clickFunction = $._data($curPostbox.find('h3').get(0)).events.click[0].handler;
 					$curPostbox.find('h3').off('click.postboxes');
@@ -221,9 +212,6 @@
 		},
 		configureSave: function() {
 			var parent = $(this).parents('.configure'), $spinner, $postbox, $cancelBtn;
-			if ($(this).hasClass('disabled')){
-				return false;
-			}
 
 			// Postbox container
 			$postbox = $(this).parents('.postbox');
