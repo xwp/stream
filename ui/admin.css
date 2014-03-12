@@ -245,10 +245,6 @@
 	margin-bottom: 6px;
 }
 
-.toplevel_page_wp_stream .select2-results li {
-	margin-bottom: 1px;
-}
-
 .toplevel_page_wp_stream .select2-results .select2-disabled {
 	background: transparent;
 	color: #aaa;
@@ -288,6 +284,10 @@
 
 
 /* Select2 Common */
+
+.wp_stream_screen li.select2-result {
+	margin-bottom: 1px;
+}
 
 .wp_stream_screen .select2-container.authors_and_roles .select2-search-choice .icon16 {
 	margin: -6px 1px 0 -3px;
