@@ -165,7 +165,7 @@
 }
 
 .toplevel_page_wp_stream .alignleft.actions input[type=text] {
-	height: 27px;
+	height: 28px;
 	line-height: 19px;
 }
 
@@ -174,14 +174,14 @@
 }
 
 .toplevel_page_wp_stream .date-interval .field-predefined {
-	min-width: 200px;
+	width: 165px;
 	float: left;
 }
 
 .toplevel_page_wp_stream .date-interval .date-inputs {
 	float: left;
-	margin-right: 15px;
-	margin-bottom: 10px;
+	margin-right: 6px;
+	margin-bottom: 6px;
 }
 
 .toplevel_page_wp_stream .date-interval .date-inputs .field-to,
@@ -208,6 +208,8 @@
 	height: 28px;
 	line-height: 28px;
 	font-size: 14px;
+	padding-top: 1px;
+	padding-right: 2px;
 }
 
 .toplevel_page_wp_stream .date-interval .date-inputs .box .date-remove:before {
@@ -220,9 +222,10 @@
 	border: 1px solid #ddd;
 	border-left: 0;
 	border-right: 0;
-	height: 25px;
-	line-height: 25px;
-	width: 25px;
+	height: 26px;
+	line-height: 28px;
+	padding-left: 2px;
+	width: 20px;
 	text-align: center;
 	font-size: 14px;
 }

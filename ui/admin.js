@@ -342,7 +342,7 @@ jQuery(function($){
 		init: function ($wrapper) {
 			this.wrapper = $wrapper;
 			this.save_interval(this.wrapper.find('.button-primary'), this.wrapper);
-	
+
 			this.$ = this.wrapper.each(function (i, val) {
 				var container = $(val),
 					dateinputs = container.find('.date-inputs'),
@@ -352,7 +352,7 @@ jQuery(function($){
 					from_remove = from.prev('.date-remove'),
 					predefined = container.children('.field-predefined'),
 					datepickers = $('').add(to).add(from);
-	
+
 				if ( jQuery.datepicker ) {
 
 					datepickers.datepicker({
@@ -365,32 +365,30 @@ jQuery(function($){
 							$(this).prop( 'disabled', false );
 						}
 					});
-	
+
 					datepickers.datepicker('widget').addClass('stream-datepicker');
 
 				}
-	
+
 				predefined.select2({
 					'allowClear': true
 				});
-	
+
 				predefined.on({
 					'change': function () {
 						var value = $(this).val(),
 							option = predefined.find('[value="' + value + '"]'),
 							to_val = option.data('to'),
 							from_val = option.data('from');
-	
+
 						if ('custom' === value) {
 							dateinputs.show();
 							return false;
-						} else if ( arguments[arguments.length-1] !== true ) {
-							dateinputs.hide();
 						}
-	
+
 						from.val(from_val).trigger('change', [true]);
 						to.val(to_val).trigger('change', [true]);
-	
+
 						if ( jQuery.datepicker && datepickers.datepicker('widget').is(':visible')) {
 							datepickers.datepicker('refresh').datepicker('hide');
 						}
@@ -413,7 +411,7 @@ jQuery(function($){
 						}
 					}
 				});
-	
+
 				from.on({
 					'change': function () {
 
@@ -424,15 +422,15 @@ jQuery(function($){
 						}
 
 						to.datepicker('option', 'minDate', from.val());
-	
+
 						if (arguments[arguments.length-1] === true) {
 							return false;
 						}
-	
+
 						predefined.trigger('check_options');
 					}
 				});
-	
+
 				to.on({
 					'change': function () {
 						if ('' !== to.val()) {
@@ -442,18 +440,18 @@ jQuery(function($){
 						}
 
 						from.datepicker('option', 'maxDate', to.val());
-	
+
 						if (arguments[arguments.length-1] === true) {
 							return false;
 						}
-	
+
 						predefined.trigger('check_options');
 					}
 				});
-	
+
 				// Trigger change on load
 				predefined.trigger('change');
-	
+
 				$('').add(from_remove).add(to_remove).on({
 					'click': function () {
 						$(this).next('input').val('').trigger('change');
@@ -461,7 +459,7 @@ jQuery(function($){
 				});
 			});
 		},
-	
+
 		save_interval: function($btn) {
 			var $wrapper = this.wrapper;
 			$btn.click(function(){
@@ -470,7 +468,7 @@ jQuery(function($){
 					start: $wrapper.find('.date-inputs .field-from').val(),
 					end: $wrapper.find('.date-inputs .field-to').val()
 				};
-	
+
 				// Add params to URL
 				$(this).attr('href', $(this).attr('href') + '&' + $.param(data));
 			});
