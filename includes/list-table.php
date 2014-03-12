@@ -538,9 +538,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$date_interval = new WP_Stream_Date_Interval();
 
-		$date_predefined = isset( $_GET['date_predefined'] ) ? esc_attr( $_GET['date_predefined'] ) : '';
-		$date_from       = isset( $_GET['date_from'] ) ? esc_attr( $_GET['date_from'] ) : '';
-		$date_to         = isset( $_GET['date_to'] ) ? esc_attr( $_GET['date_to'] ) : '';
+		$date_predefined = wp_stream_filter_input( INPUT_GET, 'date_predefined' );
+		$date_from       = wp_stream_filter_input( INPUT_GET, 'date_from' );
+		$date_to         = wp_stream_filter_input( INPUT_GET, 'date_to' );
 
 		ob_start();
 		?>
