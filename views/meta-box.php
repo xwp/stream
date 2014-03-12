@@ -2,17 +2,13 @@
 	<div class="configure">
 		<div class="inside">
 			<select class="chart-option chart-dataset">
-				<?php foreach ( $data_types as $type => $text ): 
-					$selected = $type == $data_type ? 'selected="selected"' : '';
-				?>
-				<option value="<?php echo esc_attr( $type ); ?>" <?php echo $selected; ?>><?php echo $text; ?></option>
+				<?php foreach ( $data_types as $type => $text ): ?>
+				<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $type == $data_type ); ?>><?php echo esc_html( $text ); ?></option>
 				<?php endforeach; ?>
 			</select>
 			<select class="chart-option chart-selector">
-				<?php foreach ( $selector_types as $type => $text ): 
-					$selected = $type == $selector_type ? 'selected="selected"' : '';
-				?>
-				<option value="<?php echo esc_attr( $type ); ?>" <?php echo $selected; ?>><?php echo $text; ?></option>
+				<?php foreach ( $selector_types as $type => $text ): ?>
+				<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $type == $data_type ); ?>><?php echo esc_html( $text ); ?></option>
 				<?php endforeach; ?>
 			</select>
 			<div class="chart-types">
