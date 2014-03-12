@@ -26,6 +26,7 @@
 						 class="button button-primary configure-submit disabled"
 						 value="<?php esc_html_e( 'Save', 'stream-reports' ) ?>"
 						 data-id="<?php echo esc_attr( $key ) ?>">
+			<span class="spinner"></span>
 		</div>
 	</div>
 

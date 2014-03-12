@@ -5,7 +5,6 @@
  * @author X-Team <x-team.com>
  * @author Jonathan Bardo <jonathan.bardo@x-team.com>
  */
-
 class WP_Stream_Reports_Metaboxes {
 
 	/**
@@ -80,7 +79,7 @@ class WP_Stream_Reports_Metaboxes {
 			// Default metabox argument
 			$title_key = $key + 1;
 			$default   = array(
-				'title'      => "Report {$title_key}" . $configure,
+				'title'      => 'Report ' . $title_key,
 				'priority'   => 'default',
 				'context'    => 'normal',
 				'chart_type' => 'bar',
@@ -95,7 +94,7 @@ class WP_Stream_Reports_Metaboxes {
 			// Add the actual metabox
 			add_meta_box(
 				self::META_PREFIX . $key,
-				$section['title'],
+				sprintf( '<span class="title">%s</span>%s', $section['title'], $configure ),
 				array( $this, 'metabox_content' ),
 				WP_Stream_Reports::$screen_id,
 				$section['context'],
@@ -124,7 +123,7 @@ class WP_Stream_Reports_Metaboxes {
 			'line' => 'dashicons-chart-area',
 		);
 
-		$data_type = isset( $args['data_type'] ) ? $args['data_type'] : '';
+		$data_type  = isset( $args['data_type'] ) ? $args['data_type'] : null;
 		$data_types = WP_Stream_Connectors::$term_labels['stream_connector'];
 
 		// Apply the active class to the active chart type used
@@ -147,24 +146,26 @@ class WP_Stream_Reports_Metaboxes {
 	 * Update configuration array from ajax call and save this to the user option
 	 */
 	public function save_metabox_config() {
+		$id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
+
 		$input = array(
-			'id'          => ( isset( $_REQUEST['section_id'] ) && is_numeric( $_REQUEST['section_id'] ) ) ?  (int) $_REQUEST['section_id'] : false,
-			'chart_type'  => isset( $_REQUEST['chart_type'] ) ? sanitize_text_field( $_REQUEST['chart_type'] ) : false,
-			'data_type' => isset( $_REQUEST['data_type'] ) ? sanitize_text_field( $_REQUEST['data_type'] ) : false,
-			'selector_type' => isset( $_REQUEST['selector_type'] ) ? sanitize_text_field( $_REQUEST['selector_type'] ) : false,
+			'id'            => wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT ),
+			'title'         => wp_stream_filter_input( INPUT_GET, 'title', FILTER_SANITIZE_STRING ),
+			'chart_type'    => wp_stream_filter_input( INPUT_GET, 'chart_type', FILTER_SANITIZE_STRING ),
+			'data_type'     => wp_stream_filter_input( INPUT_GET, 'data_type', FILTER_SANITIZE_STRING ),
+			'selector_type' => wp_stream_filter_input( INPUT_GET, 'selector_type', FILTER_SANITIZE_STRING ),
 		);
 
 		if (
 			in_array( false, array_values( $input ) )
-			&& ! isset( self::$sections[ $input['id'] ] )
+			&& false !== $id
+			&& ! isset( self::$sections[ $id ] )
 		) {
 			wp_send_json_error();
 		}
 
 		// Store the chart configuration
-		self::$sections[ $input['id'] ]['chart_type'] = $input['chart_type'];
-		self::$sections[ $input['id'] ]['data_type'] = $input['data_type'];
-		self::$sections[ $input['id'] ]['selector_type'] = $input['selector_type'];
+		self::$sections[ $id ] = $input;
 
 		// Update the database option
 		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
@@ -217,7 +218,7 @@ class WP_Stream_Reports_Metaboxes {
 			// Remove the one we are deleting from the list
 			foreach ( $user_options as $key => &$string ) {
 				$order = explode( ',', $string );
-				if ( ( $key = array_search( self::META_PREFIX . $meta_key, $order ) ) !== false ) {
+				if ( false !== ( $key = array_search( self::META_PREFIX . $meta_key, $order ) ) ) {
 					unset( $order[ $key ] );
 					$string = implode( ',', $order );
 				}

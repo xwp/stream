@@ -70,6 +70,10 @@
 	cursor: pointer;
 }
 
+.stream_page_wp_stream_reports .postbox .configure .spinner {
+	margin: 4px 8px 0 0;
+}
+
 .stream_page_wp_stream_reports .postbox .configure .chart-types .dashicons.active {
 	color: #000;
 }
