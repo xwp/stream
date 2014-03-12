@@ -533,25 +533,63 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filter_date() {
+
+		require_once WP_STREAM_INC_DIR . 'date-interval.php';
+
 		wp_enqueue_style( 'jquery-ui' );
 		wp_enqueue_style( 'wp-stream-datepicker' );
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 
-		$out = sprintf(
-			'<div id="filter-date-range">
-				<label class="screen-reader-text" for="date_from">%1$s:</label>
-				<input type="text" name="date_from" id="date_from" class="date-picker" placeholder="%1$s" size="14" value="%2$s" />
-				<label class="screen-reader-text" for="date_to">%3$s:</label>
-				<input type="text" name="date_to" id="date_to" class="date-picker" placeholder="%3$s" size="14" value="%4$s" />
-			</div>',
-			esc_attr__( 'Start date', 'stream' ),
-			isset( $_GET['date_from'] ) ? esc_attr( $_GET['date_from'] ) : null,
-			esc_attr__( 'End date', 'stream' ),
-			isset( $_GET['date_to'] ) ? esc_attr( $_GET['date_to'] ) : null
-		);
+		$date_interval = new WP_Stream_Date_Interval();
 
-		return $out;
+		$date_predefined = wp_stream_filter_input( INPUT_GET, 'date_predefined' );
+		$date_from       = wp_stream_filter_input( INPUT_GET, 'date_from' );
+		$date_to         = wp_stream_filter_input( INPUT_GET, 'date_to' );
+
+		ob_start();
+		?>
+ 		<div class="date-interval">
+
+			<select class="field-predefined hide-if-no-js" name="date_predefined" data-placeholder="<?php _e( 'All Time', 'stream' ); ?>">
+				<option></option>
+				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
+				<?php foreach ( $date_interval->intervals as $key => $interval ) {
+					echo sprintf(
+						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
+						esc_attr( $key ),
+						esc_attr( $interval['start']->format( 'Y/m/d' ) ),
+						esc_attr( $interval['end']->format( 'Y/m/d' ) ),
+						selected( $key === $date_predefined ),
+						esc_html( $interval['label'] )
+					); // xss ok
+				} ?>
+			</select>
+
+			<div class="date-inputs">
+				<div class="box">
+					<i class="date-remove dashicons"></i>
+					<input type="text"
+						 name="date_from"
+						 class="date-picker field-from"
+						 placeholder="<?php esc_attr_e( 'Start date', 'stream' ) ?>"
+						 value="<?php echo esc_attr( $date_from ) ?>">
+				</div>
+				<span class="connector dashicons"></span>
+				<div class="box">
+					<i class="date-remove dashicons"></i>
+					<input type="text"
+						 name="date_to"
+						 class="date-picker field-to"
+						 placeholder="<?php esc_attr_e( 'End date', 'stream' ) ?>"
+						 value="<?php echo esc_attr( $date_to ) ?>">
+				</div>
+			</div>
+
+		</div>
+		<?php
+
+		return ob_get_clean();
 	}
 
 	function display() {
