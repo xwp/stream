@@ -20,13 +20,11 @@ class WP_Stream_Date_Interval {
 	 * Class constructor
 	 */
 	public function __construct() {
-
 		// Filter the Predefined list of intervals to make it work
 		add_filter( 'wp_stream_predefined_date_intervals', array( $this, 'filter_predefined_intervals' ), 20 );
 
 		// Get all default intervals
 		$this->intervals = $this->get_predefined_intervals();
-
 	}
 
 	/**
@@ -115,22 +113,21 @@ class WP_Stream_Date_Interval {
 
 		$first_stream_item = reset( $query );
 
-		if ( $first_stream_item === false ){
+		if ( false === $first_stream_item ) {
 			return false;
 		}
 
 		$first_stream_date = \Carbon\Carbon::parse( $first_stream_item->created );
 
-		foreach ( $intervals as $key => $interval ){
-			if ( ! isset( $interval['start'] ) || $interval['start'] === false ){
-				$intervals[$key]['start'] = $interval['start'] = $first_stream_date;
+		foreach ( $intervals as $key => $interval ) {
+			if ( ! isset( $interval['start'] ) || false === $interval['start'] ) {
+				$intervals[ $key ]['start'] = $interval['start'] = $first_stream_date;
 			}
-			if ( ! isset( $interval['end'] ) || $interval['end'] === false ){
-				$intervals[$key]['end'] = $interval['end'] = \Carbon\Carbon::now();
+			if ( ! isset( $interval['end'] ) || false === $interval['end'] ) {
+				$intervals[ $key ]['end'] = $interval['end'] = \Carbon\Carbon::now();
 			}
-
 			if ( ! is_a( $interval['start'], '\Carbon\Carbon' ) || ! is_a( $interval['end'], '\Carbon\Carbon' ) ) {
-				unset( $intervals[$key] );
+				unset( $intervals[ $key ] );
 				continue;
 			}
 		}
