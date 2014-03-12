@@ -222,7 +222,6 @@
 
 			// Cancel button
 			$cancelBtn = $postbox.find('.hndle .open-box');
-			
 			// Send the new
 			$.ajax({
 				type: 'GET',
@@ -231,6 +230,7 @@
 					action: 'stream_report_save_metabox_config',
 					stream_reports_nonce : $('#stream_report_nonce').val(),
 					chart_type : parent.find('.chart-types .active').data('type'),
+					data_group : parent.find( '.chart-dataset' ).select2('data').element[0].dataset.group,
 					data_type : parent.find('.chart-dataset').select2('data').id,
 					selector_type : parent.find('.chart-selector').select2('data').id,
 					section_id : $(this).data('id'),

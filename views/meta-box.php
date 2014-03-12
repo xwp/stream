@@ -2,8 +2,16 @@
 	<div class="configure">
 		<div class="inside">
 			<select class="chart-option chart-dataset">
-				<?php foreach ( $data_types as $type => $text ): ?>
-				<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $type == $data_type ); ?>><?php echo esc_html( $text ); ?></option>
+				<?php foreach ( $data_types as $section ): ?>
+					<optgroup label="<?php echo esc_attr( $section['title'] ); ?>">
+					<?php foreach( $section['options'] as $type => $text ): ?>
+						<option data-group="<?php echo esc_attr( $section['group'] ); ?>"
+								value="<?php echo esc_attr( $type ); ?>" 
+								<?php selected( $type == $data_type ); ?>>
+							<?php echo esc_html( $text ); ?>
+						</option>
+					<?php endforeach; ?>
+					</optgroup>
 				<?php endforeach; ?>
 			</select>
 			<span class="grouping-separator"><?php _e( 'by', 'stream-reports' ); ?></span> 
@@ -34,71 +42,7 @@
 		'tooltip' => array(
 			'show' => true,
 		),
-		'values' => array(
-			array(
-				'key' => 'One',
-				'values' => array(
-					array(
-						'x' => 0,
-						'y' => 0,
-					),
-					array(
-						'x' => 1,
-						'y' => 1,
-					),
-					array(
-						'x' => 2,
-						'y' => 2,
-					),
-					array(
-						'x' => 3,
-						'y' => 3,
-					),
-				),
-			),
-			array(
-				'key' => 'Three',
-				'values' => array(
-					array(
-						'x' => 0,
-						'y' => 0,
-					),
-					array(
-						'x' => 1,
-						'y' => 4,
-					),
-					array(
-						'x' => 2,
-						'y' => 1,
-					),
-					array(
-						'x' => 3,
-						'y' => 2,
-					),
-				),
-			),
-			array(
-				'key' => 'Two',
-				'values' => array(
-					array(
-						'x' => 0,
-						'y' => 1,
-					),
-					array(
-						'x' => 1,
-						'y' => 2,
-					),
-					array(
-						'x' => 2,
-						'y' => 3,
-					),
-					array(
-						'x' => 3,
-						'y' => 4,
-					),
-				),
-			),
-		),
+		'values' => $coordinates
 	);
 	?>
 	<div class="chart" data-report='<?php echo json_encode( $args ) ?>'><svg></svg></div>
