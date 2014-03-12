@@ -85,8 +85,10 @@ class WP_Stream_Filter_Input {
 		}
 
 		// Polyfill the `default` attribute only, for now.
-		if ( is_array( $options ) && ! empty( $options['options']['default'] ) && false === $var ) {
-			return $options['options']['default'];
+		if ( is_array( $options ) && ! empty( $options['options']['default'] ) ) {
+			if ( false === $var || is_null( $var ) ) {
+				return $options['options']['default'];
+			}
 		}
 
 		return $var;
