@@ -241,7 +241,7 @@ jQuery(function($){
 
 	$tabs.on('click', 'a', function(){
 		var index     = $tabs.find('a').index( $(this) ),
-		    hashIndex = window.location.hash.match(/^#(\d+)$/);
+			hashIndex = window.location.hash.match(/^#(\d+)$/);
 
 		$panels.hide().eq(index).show();
 		$tabs.find('a').removeClass('nav-tab-active').filter($(this)).addClass('nav-tab-active');
