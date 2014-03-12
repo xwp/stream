@@ -79,7 +79,7 @@ class WP_Stream_Reports_Metaboxes {
 			// Default metabox argument
 			$title_key = $key + 1;
 			$default   = array(
-				'title'      => "Report {$title_key}" . $configure,
+				'title'      => 'Report ' . $title_key,
 				'priority'   => 'default',
 				'context'    => 'normal',
 				'chart_type' => 'bar',
@@ -94,7 +94,7 @@ class WP_Stream_Reports_Metaboxes {
 			// Add the actual metabox
 			add_meta_box(
 				self::META_PREFIX . $key,
-				$section['title'],
+				sprintf( '<span class="title">%s</span>%s', $section['title'], $configure ),
 				array( $this, 'metabox_content' ),
 				WP_Stream_Reports::$screen_id,
 				$section['context'],
@@ -138,22 +138,25 @@ class WP_Stream_Reports_Metaboxes {
 	 * Update configuration array from ajax call and save this to the user option
 	 */
 	public function save_metabox_config() {
+		$id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
+
 		$input = array(
 			'id'          => wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT ),
+			'title'       => wp_stream_filter_input( INPUT_GET, 'title', FILTER_SANITIZE_STRING ),
 			'chart_type'  => wp_stream_filter_input( INPUT_GET, 'chart_type', FILTER_SANITIZE_STRING ),
 			'data_type'   => wp_stream_filter_input( INPUT_GET, 'data_type', FILTER_SANITIZE_STRING ),
 		);
 
 		if (
 			in_array( null, array_values( $input ) )
-			&& ! isset( self::$sections[ $input['id'] ] )
+			&& null !== $id
+			&& ! isset( self::$sections[ $id ] )
 		) {
 			wp_send_json_error();
 		}
 
 		// Store the chart configuration
-		self::$sections[ $input['id'] ]['chart_type'] = $input['chart_type'];
-		self::$sections[ $input['id'] ]['data_type']  = $input['data_type'];
+		self::$sections[ $id ] = $input;
 
 		// Update the database option
 		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );

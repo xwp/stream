@@ -3,7 +3,7 @@
 		<div class="inside">
 			<select class="chart-options">
 				<?php foreach ( $data_types as $type => $text ): ?>
-				<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $type, $data_type ); // xss ok ?>><?php echo esc_html( $text ); ?></option>	
+				<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $type, $data_type ); // xss ok ?>><?php echo esc_html( $text ); ?></option>
 				<?php endforeach; ?>
 			</select>
 			<div class="chart-types">

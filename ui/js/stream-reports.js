@@ -180,14 +180,31 @@
 			});
 
 			// Configuration toggle
-			this.$configureBtn.click(function () {
-				var $target = $(this),
+			this.$configureBtn.on('click.streamReports', function () {
+				var $target = $(this), $title,
 
 				// Hold parent container
-					$curPostbox = $target.parents('.postbox');
+				$curPostbox = $target.parents('.postbox');
 
-				// Change value of button
-				$target.text($target.text() === streamReportsLocal.configure ? streamReportsLocal.cancel : streamReportsLocal.configure);
+				// Get the title of the metabox
+				$title = $curPostbox.find('.hndle .title');
+
+				// Remove event handler added by core and add it back when user click cancel or save
+				if ($target.text() === streamReportsLocal.configure) {
+					$target.text(streamReportsLocal.cancel);
+					parent.$titleHTML = $title.html();
+					$title.replaceWith('<input type="text" class="title" value="' + $title.text() + '">');
+					$curPostbox.find('.hndle .title').keypress(function(){
+						parent.$btnSave.removeClass('disabled');
+					});
+					// Click function management
+					parent.$clickFunction = $._data($curPostbox.find('h3').get(0)).events.click[0].handler;
+					$curPostbox.find('h3').off('click.postboxes');
+				} else {
+					$target.text(streamReportsLocal.configure);
+					$title.replaceWith('<span class="title">' + $title.val() + '</span>');
+					$curPostbox.find('h3').on('click.postboxes', parent.$clickFunction);
+				}
 
 				// Always show the cancel button
 				$target.toggleClass('edit-box');
@@ -203,14 +220,20 @@
 			});
 		},
 		configureSave: function() {
-			var parent = stream.report.metabox, $spinner;
+			var parent = $(this).parents('.configure'), $spinner, $postbox, $cancelBtn;
 			if ($(this).hasClass('disabled')){
 				return false;
 			}
 
+			// Postbox container
+			$postbox = $(this).parents('.postbox');
+
 			// Show the spinner
-			$spinner = parent.$configureDiv.find('.spinner');
+			$spinner = parent.find('.spinner');
 			$spinner.show();
+
+			// Cancel button
+			$cancelBtn = $postbox.find('.hndle .open-box');
 			
 			// Send the new
 			$.ajax({
@@ -219,13 +242,16 @@
 				data: {
 					action: 'stream_report_save_metabox_config',
 					stream_reports_nonce : $('#stream_report_nonce').val(),
-					chart_type : parent.$configureDiv.find('.chart-types .active').data('type'),
-					data_type : parent.$configureDiv.find('.chart-options').select2('data').id,
-					section_id : $(this).data('id')
+					chart_type : parent.find('.chart-types .active').data('type'),
+					data_type : parent.find('.chart-options').select2('data').id,
+					section_id : $(this).data('id'),
+					title : $postbox.find('.title').val()
 				},
 				dataType: 'json',
 				success : function(data) {
-					$spinner.hide();
+					$spinner.hide(0,function(){
+						$cancelBtn.trigger('click');
+					});
 				}
 			});
 		}
