@@ -22,7 +22,7 @@ class WP_Stream_Date_Interval {
 	public function __construct() {
 
 		// Filter the Predefined list of intervals to make it work
-		add_filter( 'stream-predefined-intervals', array( $this, 'filter_predefined_intervals' ), 20 );
+		add_filter( 'wp_stream_predefined_date_intervals', array( $this, 'filter_predefined_intervals' ), 20 );
 
 		// Get all default intervals
 		$this->intervals = $this->get_predefined_intervals();
@@ -34,7 +34,7 @@ class WP_Stream_Date_Interval {
 	 */
 	public function get_predefined_intervals() {
 		return apply_filters(
-			'stream-predefined-intervals',
+			'wp_stream_predefined_date_intervals',
 			array(
 				'today' => array(
 					'label' => esc_html__( 'Today', 'stream' ),
