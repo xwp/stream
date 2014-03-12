@@ -106,7 +106,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ## Changelog ##
 
 ### 1.3.0 ###
-**2014/03/11** - New "Exclude" tab to prevent specific activity from being tracked. Now logging Custom Background and Custom Header changes. User avatars now displayed in dropdown filter. Bug fixes and UI improvements. Props [powelski](http://profiles.wordpress.org/powelski/), [faishal](http://profiles.wordpress.org/faishal/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [desaiuditd](http://profiles.wordpress.org/desaiuditd/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
+**2014/03/11** - New "Exclude" tab to prevent specific activity from being tracked. Now logging Custom Background and Custom Header changes. Predefined date intervals now available when filtering records. User avatars now displayed in Authors dropdown filter. Bug fixes and UI improvements. Props [powelski](http://profiles.wordpress.org/powelski/), [faishal](http://profiles.wordpress.org/faishal/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [desaiuditd](http://profiles.wordpress.org/desaiuditd/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 ### 1.2.9 ###
 **2014/03/08** - Fixes bug that caused media uploads to fail on new posts. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
