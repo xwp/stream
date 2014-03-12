@@ -119,6 +119,7 @@ class WP_Stream_Reports_Metaboxes {
 		// Get records sorted grouped by original sort
 		$records = $this->load_metabox_records( $args );
 
+
 		$sorted = array();
 		// Get date count for each sort
 		foreach( $records as $type => $items ) {
@@ -204,13 +205,13 @@ class WP_Stream_Reports_Metaboxes {
 			$query_args['action'] = $data_type;
 		}
 		else {
-			return;
+			return array();
 		}
 
 		$grouping_field = $args['selector_type'];
 		$available_fields = array( 'author', 'action', 'context', 'connector', 'ip' );
 		if( ! in_array( $grouping_field, $available_fields ) )
-			return;
+			return array();
 
 		$unsorted = stream_query( $query_args );
 		$sorted = $this->group_by_field( $grouping_field, $unsorted );
