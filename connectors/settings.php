@@ -289,9 +289,9 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		$rules = array(
 			'stream' => array(
 				'menu_slug'    => 'wp_stream',
-				'submenu_slug' => 'wp_stream_settings',
+				'submenu_slug' => WP_Stream_Admin::SETTINGS_PAGE_SLUG,
 				'url'          => function( $rule, $record ) {
-					return add_query_arg( 'page', 'wp_stream_settings', admin_url( 'admin.php' ) );
+					return add_query_arg( 'page', $rule['submenu_slug'], admin_url( 'admin.php' ) );
 				},
 				'applicable'   => function( $submenu, $record ) {
 					return $record->context === 'wp_stream';
