@@ -287,6 +287,16 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		$context_labels = self::get_context_labels();
 
 		$rules = array(
+			'stream' => array(
+				'menu_slug'    => 'wp_stream',
+				'submenu_slug' => 'wp_stream_settings',
+				'url'          => function( $rule, $record ) {
+					return add_query_arg( 'page', 'wp_stream_settings', admin_url( 'admin.php' ) );
+				},
+				'applicable'   => function( $submenu, $record ) {
+					return $record->context === 'wp_stream';
+				}
+			),
 			'background_header' => array(
 				'menu_slug'    => 'themes.php',
 				'submenu_slug' => function( $record ) {
@@ -327,7 +337,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				// The first applicable rule wins
 				$rule         = array_shift( $applicable_rules );
 				$menu_slug    = $rule['menu_slug'];
-				$submenu_slug = $rule['submenu_slug']( $record );
+				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceOf Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
 				$url          = $rule['url']( $rule, $record );
 
 				$found_submenus = wp_list_filter(
