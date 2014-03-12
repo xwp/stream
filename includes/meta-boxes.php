@@ -132,10 +132,10 @@ class WP_Stream_Reports_Metaboxes {
 
 		$selector_type = isset( $args['selector_type'] ) ? $args['selector_type'] : '';
 		$selector_types = array(
-			'author'  => __( 'By Author', 'stream-reports' ),
-			'role'    => __( 'By User Role', 'stream-reports' ),
-			'context' => __( 'By Context', 'stream-reports' ),
-			'action'  => __( 'By Action', 'stream-reports' ),
+			'author'  => __( 'Author', 'stream-reports' ),
+			'role'    => __( 'User Role', 'stream-reports' ),
+			'context' => __( 'Context', 'stream-reports' ),
+			'action'  => __( 'Action', 'stream-reports' ),
 		);
 
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';

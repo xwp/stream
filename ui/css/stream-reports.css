@@ -52,8 +52,12 @@
 }
 
 .stream_page_wp_stream_reports .postbox .configure .chart-option {
-	margin-right: 10px;
+	margin-right: 5px;
 	width: 20%;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .grouping-separator {
+	margin-right: 3px;
 }
 
 .stream_page_wp_stream_reports .postbox .configure input.button {

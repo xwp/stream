@@ -6,6 +6,7 @@
 				<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $type == $data_type ); ?>><?php echo esc_html( $text ); ?></option>
 				<?php endforeach; ?>
 			</select>
+			<span class="grouping-separator"><?php _e( 'by', 'stream-reports' ); ?></span> 
 			<select class="chart-option chart-selector">
 				<?php foreach ( $selector_types as $type => $text ): ?>
 				<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $type == $data_type ); ?>><?php echo esc_html( $text ); ?></option>
