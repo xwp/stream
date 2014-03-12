@@ -1,7 +1,7 @@
 === Stream ===
 Contributors:      X-team, shadyvb, fjarrett, jonathanbardo, johnregan3, akeda, kucrut, topher1kenobe, powelski
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
-Requires at least: 3.6
+Requires at least: 3.7
 Tested up to:      3.8.1
 Stable tag:        trunk
 License:           GPLv2 or later
@@ -35,6 +35,8 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Categories
  * Custom Taxonomies
  * Settings
+ * Custom Backgrounds
+ * Custom Headers
  * Menus
  * Media Library
  * Widgets
@@ -44,8 +46,8 @@ Stream is built to extend, allowing developers to easily build their own connect
 **Noteworthy features:**
 
  * Dashboard widget of most recent user activity
- * Specify which roles should have their activity logged
  * Limit who can view user activity records by user role
+ * UI to exclude specific types of user activity from being tracked
  * Live update of user activity records in the Stream
  * Private RSS and JSON feeds of user activity records
  * Set how long records should live before being purged automatically
@@ -65,7 +67,6 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 **Coming soon:**
 
- * UI to exclude specific types of user activity from being tracked
  * Limit who can view user activity records by user, not just by role
  * Multisite view of all activity records on a network
  * Language support for Arabic (RTL), Czech and Slovak
@@ -88,6 +89,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.3.0 =
+**2014/03/11** - New "Exclude" tab to prevent specific activity from being tracked. Now logging Custom Background and Custom Header changes. User avatars now displayed in dropdown filter. Bug fixes and UI improvements. Props [powelski](http://profiles.wordpress.org/powelski/), [faishal](http://profiles.wordpress.org/faishal/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [desaiuditd](http://profiles.wordpress.org/desaiuditd/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 = 1.2.9 =
 **2014/03/08** - Fixes bug that caused media uploads to fail on new posts. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)

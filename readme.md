@@ -6,7 +6,7 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 **Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [johnregan3](http://profiles.wordpress.org/johnregan3), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe), [powelski](http://profiles.wordpress.org/powelski)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
-**Requires at least:** 3.6  
+**Requires at least:** 3.7  
 **Tested up to:** 3.8.1  
 **Stable tag:** trunk (master)  
 **License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
@@ -37,6 +37,8 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Categories
  * Custom Taxonomies
  * Settings
+ * Custom Backgrounds
+ * Custom Headers
  * Menus
  * Media Library
  * Widgets
@@ -46,8 +48,8 @@ Stream is built to extend, allowing developers to easily build their own connect
 **Noteworthy features:**
 
  * Dashboard widget of most recent user activity
- * Specify which roles should have their activity logged
  * Limit who can view user activity records by user role
+ * UI to exclude specific types of user activity from being tracked
  * Live update of user activity records in the Stream
  * Private RSS and JSON feeds of user activity records
  * Set how long records should live before being purged automatically
@@ -67,7 +69,6 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 **Coming soon:**
 
- * UI to exclude specific types of user activity from being tracked
  * Limit who can view user activity records by user, not just by role
  * Multisite view of all activity records on a network
  * Language support for Arabic (RTL), Czech and Slovak
@@ -103,6 +104,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
+
+### 1.3.0 ###
+**2014/03/11** - New "Exclude" tab to prevent specific activity from being tracked. Now logging Custom Background and Custom Header changes. User avatars now displayed in dropdown filter. Bug fixes and UI improvements. Props [powelski](http://profiles.wordpress.org/powelski/), [faishal](http://profiles.wordpress.org/faishal/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [desaiuditd](http://profiles.wordpress.org/desaiuditd/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 ### 1.2.9 ###
 **2014/03/08** - Fixes bug that caused media uploads to fail on new posts. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
