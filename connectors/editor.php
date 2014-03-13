@@ -25,6 +25,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 */
 	public static function register() {
 		parent::register();
+		add_filter( 'wp_redirect', array( __CLASS__, 'log_changes_on_redirect' ) );
 	}
 
 	/**
@@ -43,7 +44,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			
+			'updated' => __( 'Updated', 'stream' ),
 		);
 	}
 
@@ -54,7 +55,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			
+			'file' => __( 'File', 'stream' ),
 		);
 	}
 
@@ -72,8 +73,53 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		<?php endif;
 	}
 
-	public static function log_changes() {
-		
+	public static function log_changes_on_redirect( $location ) {
+		if ( 'theme-editor' === get_current_screen()->id && 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['action'] ) && 'update' === $_POST['action'] ) {
+
+			if ( isset( $_POST['theme'] ) && $_POST['theme'] ) {
+				$stylesheet = $_POST['theme'];
+			} else {
+				$stylesheet = get_stylesheet();
+			}
+
+			$theme = wp_get_theme( $stylesheet );
+
+			if ( $theme->exists() && ! ($theme->errors() && 'theme_no_stylesheet' == $theme->errors()->get_error_code() ) ) {
+				$allowed_files = $theme->get_files( 'php', 1 );
+				$has_templates = ! empty( $allowed_files );
+				$style_files = $theme->get_files( 'css' );
+				$allowed_files['style.css'] = $style_files['style.css'];
+				$allowed_files += $style_files;
+
+				if ( empty( $_POST['file'] ) ) {
+					$relative_file = 'style.css';
+					$file = $allowed_files['style.css'];
+				} else {
+					$relative_file = $_POST['file'];
+					$file = $theme->get_stylesheet_directory() . '/' . $relative_file;
+				}
+
+				$file_contents = file_get_contents( $file );
+
+				if ( $file_contents !== $_POST['oldcontent'] ) {
+					$properties = array(
+						'file'      => $relative_file,
+						'theme'     => $theme,
+						'new_value' => $file_contents,
+						'old_value' => $_POST['oldcontent'],
+					);
+
+					self::log(
+						__( '"%1$s" file of "%2$s" theme was updated via editor', 'stream' ),
+						$properties,
+						null,
+						array( 'file' => 'updated' )
+					);
+				}
+			}
+		}
+
+		return $location;
 	}
 
 }
