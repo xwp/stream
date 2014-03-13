@@ -102,6 +102,7 @@ class WP_Stream_Settings {
 					'user_email',
 					'user_url',
 				),
+				'orderby' => 'display_name',
 			)
 		);
 
@@ -113,8 +114,8 @@ class WP_Stream_Settings {
 
 		$response->status  = true;
 		$response->message = '';
+		$response->users   = array();
 
-		$response->users = array();
 		foreach ( $users->results as $key => $user ) {
 			$gravatar_url = null;
 
@@ -127,7 +128,7 @@ class WP_Stream_Settings {
 				'text' => $user->display_name,
 			);
 
-			if ( $gravatar_url !== null) {
+			if ( null !== $gravatar_url ) {
 				$args['icon'] = $gravatar_url;
 			}
 
