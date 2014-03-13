@@ -15,7 +15,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * @var array
 	 */
 	public static $actions = array(
-		
+		'admin_footer',
 	);
 
 	/**
@@ -56,6 +56,24 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		return array(
 			
 		);
+	}
+
+	public static function callback_admin_footer() {
+		if( 'theme-editor' === get_current_screen()->id ) : ?>
+			<script>
+				var $content = jQuery('#newcontent');
+
+				jQuery('<textarea></textarea>')
+					.val($content.val())
+					.attr('name', 'oldcontent')
+					.hide()
+					.insertBefore($content);
+			</script>
+		<?php endif;
+	}
+
+	public static function log_changes() {
+		
 	}
 
 }
