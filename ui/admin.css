@@ -126,6 +126,12 @@
 	}
 }
 
+@media only screen and (max-width: 782px) {
+	.toplevel_page_wp_stream .tablenav.bottom .displaying-num {
+		top: -8px;
+	}
+}
+
 @media only screen and (max-width: 900px) {
 	.toplevel_page_wp_stream .fixed .column-context,
 	.toplevel_page_wp_stream .fixed .column-action,
