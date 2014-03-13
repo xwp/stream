@@ -116,10 +116,20 @@ class WP_Stream_Settings {
 
 		$response->users = array();
 		foreach ( $users->results as $key => $user ) {
+			$gravatar_url = null;
+
+			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->ID, 16 ), $gravatar_src_match ) ) {
+				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+			}
+
 			$args = array(
-				'id' => $user->ID,
+				'id'   => $user->ID,
 				'text' => $user->display_name,
 			);
+
+			if ( $gravatar_url !== null) {
+				$args['icon'] = $gravatar_url;
+			}
 
 			$response->users[] = $args;
 		}
