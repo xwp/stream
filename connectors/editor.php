@@ -115,7 +115,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 						'theme_html' => sprintf(
 							'<a href="%s">%s</a>',
 							esc_attr( admin_url( sprintf( 'themes.php?theme=%s', $theme->get_template() ) ) ),
-							$theme->get_template()
+							$theme
 						),
 						'editor_opening_html' => sprintf( '<a href="%s">', esc_attr( admin_url( 'theme-editor.php' ) ) ),
 						'editor_closing_html' => '</a>',
