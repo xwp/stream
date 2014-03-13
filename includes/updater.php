@@ -194,17 +194,16 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				wp_die( __( 'You must subscribe to Stream &copy; to be able to download premium extensions.', 'stream' ) );
 			}
 
+			$source_args = array(
+				'slug'    => $slug,
+				'license' => $license,
+				'site'    => $site,
+			);
+
 			$plugin = array(
 				'name'   => wp_stream_filter_input( INPUT_GET, 'name' ),
 				'slug'   => $slug,
-				'source' => add_query_arg(
-					array(
-						'slug'    => $slug,
-						'license' => $license,
-						'site'    => $site,
-					),
-					apply_filters( 'stream-api-url', $this->api_url . 'download', array( 'download', $slug, 'extension' ) )
-				),
+				'source' => add_query_arg( $source_args, apply_filters( 'stream-api-url', $this->api_url . 'download', array( 'download', $slug, 'extension' ) ) ),
 			);
 
 			// Handle fs cred. request, TODO: Test
