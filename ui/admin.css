@@ -285,6 +285,11 @@
 
 /* Select2 Common */
 
+.wp_stream_screen li.select2-searching {
+	background: none;
+	padding: 3px 7px 0;
+}
+
 .wp_stream_screen li.select2-result {
 	margin-bottom: 1px;
 }
