@@ -103,14 +103,31 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 
 				if ( $file_contents !== $_POST['oldcontent'] ) {
 					$properties = array(
-						'file'      => $relative_file,
-						'theme'     => $theme,
-						'new_value' => $file_contents,
-						'old_value' => $_POST['oldcontent'],
+						'file_html'  => sprintf(
+							'<a href="%s">%s</a>',
+							esc_attr( admin_url( sprintf(
+								'theme-editor.php?theme=%s&file=%s',
+								$theme->get_template(),
+								$relative_file
+							) ) ),
+							$relative_file
+						),
+						'theme_html' => sprintf(
+							'<a href="%s">%s</a>',
+							esc_attr( admin_url( sprintf( 'themes.php?theme=%s', $theme->get_template() ) ) ),
+							$theme->get_template()
+						),
+						'editor_opening_html' => sprintf( '<a href="%s">', esc_attr( admin_url( 'theme-editor.php' ) ) ),
+						'editor_closing_html' => '</a>',
+						'file'       => $relative_file,
+						'theme'      => $theme,
+						'closing'    => '</a>',
+						'new_value'  => $file_contents,
+						'old_value'  => $_POST['oldcontent'],
 					);
 
 					self::log(
-						__( '"%1$s" file of "%2$s" theme was updated via editor', 'stream' ),
+						__( '%1$s file of %2$s theme was updated via %3$sEditor%4$s', 'stream' ),
 						$properties,
 						null,
 						array( 'file' => 'updated' )
