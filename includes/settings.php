@@ -222,7 +222,7 @@ class WP_Stream_Settings {
 							'name'        => 'authors_and_roles',
 							'title'       => __( 'Authors & Roles', 'stream' ),
 							'type'        => 'select2_user_role',
-							'desc'        => __( 'No activity will be logged for these authors and roles.', 'stream' ),
+							'desc'        => __( 'No activity will be logged for these authors and/or roles.', 'stream' ),
 							'choices'     => self::get_roles(),
 							'default'     => array(),
 						),
