@@ -6,7 +6,7 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 **Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [johnregan3](http://profiles.wordpress.org/johnregan3), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe), [powelski](http://profiles.wordpress.org/powelski)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
-**Requires at least:** 3.6  
+**Requires at least:** 3.7  
 **Tested up to:** 3.8.1  
 **Stable tag:** trunk (master)  
 **License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
@@ -37,6 +37,8 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Categories
  * Custom Taxonomies
  * Settings
+ * Custom Backgrounds
+ * Custom Headers
  * Menus
  * Media Library
  * Widgets
@@ -46,8 +48,8 @@ Stream is built to extend, allowing developers to easily build their own connect
 **Noteworthy features:**
 
  * Dashboard widget of most recent user activity
- * Specify which roles should have their activity logged
  * Limit who can view user activity records by user role
+ * UI to exclude specific types of user activity from being tracked
  * Live update of user activity records in the Stream
  * Private RSS and JSON feeds of user activity records
  * Set how long records should live before being purged automatically
@@ -67,9 +69,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 **Coming soon:**
 
- * UI to exclude specific types of user activity from being tracked
  * Limit who can view user activity records by user, not just by role
- * Improved context naming for Media
  * Multisite view of all activity records on a network
  * Language support for Arabic (RTL), Czech and Slovak
 
@@ -105,6 +105,18 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 1.3.0 ###
+**2014/03/12** - New "Exclude" tab to prevent specific activity from being tracked. Now logging Custom Background and Custom Header changes. Predefined date intervals now available when filtering records. User avatars now displayed in Authors dropdown filter. Bug fixes and UI improvements. Props [powelski](http://profiles.wordpress.org/powelski/), [faishal](http://profiles.wordpress.org/faishal/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [desaiuditd](http://profiles.wordpress.org/desaiuditd/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
+### 1.2.9 ###
+**2014/03/08** - Fixes bug that caused media uploads to fail on new posts. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+### 1.2.8 ###
+**2014/03/07** - Use attachment type as context in Media connector. Bug fixes. Props [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+### 1.2.7 ###
+**2014/03/04** - Pagination added to Stream Activity dashboard widget. Bug fixes. Props [chacha](https://github.com/chacha/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
 ### 1.2.6 ###
 **2014/02/28** - Improved context names in Users connector. Props [powelski](http://profiles.wordpress.org/powelski/)
 
@@ -123,7 +135,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ### 1.2.1 ###
 **2014/02/17** - Translation updates. Langage packs for pt_BR and id_ID. Bug fixes. Props [kucrut](http://profiles.wordpress.org/kucrut/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [bordoni](http://profiles.wordpress.org/webord/), [powelski](http://profiles.wordpress.org/powelski/), [omniwired](https://github.com/omniwired), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
-### 1.2 ###
+### 1.2.0 ###
 **2014/02/12** - Awesome datepicker styles. Performance optimizations. Bug fixes. Props [johnregan3](http://profiles.wordpress.org/johnregan3/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/)
 
 ### 1.1.9 ###
@@ -150,7 +162,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ### 1.1.2 ###
 **2014/02/02** - Bug fix for list table notice on new installations. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
-### 1.1 ###
+### 1.1.0 ###
 **2014/01/31** - Disable terms in dropdown filters for which records do not exist. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
 
 ### 1.0.9 ###
@@ -180,7 +192,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ### 1.0.1 ###
 **2014/01/15** - Require nonce for generating a new user feed key. Props [johnregan3](http://profiles.wordpress.org/johnregan3/)
 
-### 1.0 ###
+### 1.0.0 ###
 **2014/01/13** - Allow list table to be exensible. Hook added to prevent tables from being created, if desired. Props [johnregan3](http://profiles.wordpress.org/johnregan3/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/)
 
 ### 0.9.9 ###
@@ -207,7 +219,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ### 0.9.1 ###
 **2013/12/21** - Specify which roles should have their activity logged. Delete all options on uninstall. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
-### 0.9 ###
+### 0.9.0 ###
 **2013/12/20** - Added connector for Comments. Stream activity dashboard widget. UI enhancements. Bug fixes. Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe/)
 
 ### 0.8.2 ###
@@ -216,7 +228,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ### 0.8.1 ###
 **2013/12/18** - Setting to enable/disable private feeds functionality. Additional record logged when a user's role is changed. Bug fixes. Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [kucrut](http://profiles.wordpress.org/kucrut/), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe/), [justinsainton](http://profiles.wordpress.org/justinsainton/)
 
-### 0.8 ###
+### 0.8.0 ###
 **2013/12/16** - Ability to query Stream records in a private RSS feed. Bug fixes. Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 ### 0.7.3 ###
@@ -228,25 +240,25 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ### 0.7.1 ###
 **2013/12/12** - Hotfix to remove PHP 5.4-only syntax. Role Access option added to Settings. Props [kucrut](http://profiles.wordpress.org/kucrut/)
 
-### 0.7 ###
+### 0.7.0 ###
 **2013/12/11** - Added connectors for Taxonomies and Settings. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
-### 0.6 ###
+### 0.6.0 ###
 **2013/12/09** - UX improvements to manual DB purge. Cron event for user-defined TTL of records. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
-### 0.5 ###
+### 0.5.0 ###
 **2013/12/08** - Require PHP 5.3 to activate plugin. Provide action links for records when applicable. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
-### 0.4 ###
+### 0.4.0 ###
 **2013/12/08** - Improved support for pages and custom post types. Chosen for filter dropdowns. Pagination support in screen options. Bug fixes. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
-### 0.3 ###
+### 0.3.0 ###
 **2013/12/07** - Improved actions for Users context. Action for edited images in Media context. Bug fixes in Menus context. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [akeda](http://profiles.wordpress.org/akeda/)
 
-### 0.2 ###
+### 0.2.0 ###
 **2013/12/06** - Second iteration build using custom tables data model. First public release. Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
-### 0.1 ###
+### 0.1.0 ###
 Initial concept built using custom post type/taxonomies as the data model. Props [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 

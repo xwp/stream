@@ -6,12 +6,14 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 	/**
 	 * Context name
+	 *
 	 * @var string
 	 */
 	public static $name = 'settings';
 
 	/**
 	 * Actions registered for this context
+	 *
 	 * @var array
 	 */
 	public static $actions = array(
@@ -23,6 +25,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 	/**
 	 * Option names used in options-permalink.php
+	 *
 	 * @var array
 	 */
 	public static $permalink_options = array(
@@ -38,8 +41,17 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function register() {
 		parent::register();
+
 		add_action( 'admin_head', array( __CLASS__, 'highlight_field' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_jquery_color' ) );
+		add_action( sprintf( 'update_option_theme_mods_%s', get_option( 'stylesheet' ) ), array( __CLASS__, 'log_theme_modification' ), 10, 2 );
+	}
+
+	/**
+	 * @action update_option_theme_mods_{name}
+	 */
+	public static function log_theme_modification( $old_value, $new_value ) {
+		self::callback_updated_option( 'theme_mods', $old_value, $new_value );
 	}
 
 	/**
@@ -69,15 +81,70 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'settings'   => __( 'Settings', 'stream' ),
-			'general'    => __( 'General', 'stream' ),
-			'writing'    => __( 'Writing', 'stream' ),
-			'reading'    => __( 'Reading', 'stream' ),
-			'discussion' => __( 'Discussion', 'stream' ),
-			'media'      => __( 'Media', 'stream' ),
-			'permalink'  => __( 'Permalinks', 'stream' ),
-			'wp_stream'  => __( 'Stream', 'stream' ),
+			'settings'          => __( 'Settings', 'stream' ),
+			'general'           => __( 'General', 'stream' ),
+			'writing'           => __( 'Writing', 'stream' ),
+			'reading'           => __( 'Reading', 'stream' ),
+			'discussion'        => __( 'Discussion', 'stream' ),
+			'media'             => __( 'Media', 'stream' ),
+			'permalink'         => __( 'Permalinks', 'stream' ),
+			'wp_stream'         => __( 'Stream', 'stream' ),
+			'custom_background' => __( 'Custom Background', 'stream' ),
+			'custom_header'     => __( 'Custom Header', 'stream' ),
 		);
+	}
+
+	/**
+	 * Return context by option name and key
+	 *
+	 * @return string Context slug
+	 */
+	public static function get_context_by_key( $option_name, $key ) {
+		$contexts = array(
+			'theme_mods' => array(
+				'custom_background' => array(
+					'background_image',
+					'background_position_x',
+					'background_repeat',
+					'background_attachment',
+					'background_color',
+				),
+				'custom_header' => array(
+					'header_image',
+					'header_textcolor',
+				),
+			),
+		);
+
+		if ( isset( $contexts[ $option_name ] ) ) {
+			foreach ( $contexts[ $option_name ] as $context => $keys ) {
+				if ( in_array( $key, $keys ) ) {
+					return $context;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Find out if the option key should be ignored and not logged
+	 *
+	 * @return bool Whether option key is ignored or not
+	 */
+	public static function is_key_ignored( $option_name, $key ) {
+		$ignored = array(
+			'theme_mods' => array(
+				'background_image_thumb',
+				'header_image_data',
+			),
+		);
+
+		if ( isset( $ignored[ $option_name ] ) ) {
+			return in_array( $key, $ignored[ $option_name ] );
+		}
+
+		return false;
 	}
 
 	/**
@@ -156,8 +223,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'tag_base'                      => __( 'Tag base', 'stream' ),
 		);
 
-		if ( isset( $labels[$field_key] ) ) {
-			return $labels[$field_key];
+		if ( isset( $labels[ $field_key ] ) ) {
+			return $labels[ $field_key ];
 		}
 
 		return $field_key;
@@ -180,7 +247,17 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function get_serialized_field_label( $option_name, $field_key ) {
 		$labels = array(
-			// to be updated
+			'theme_mods' => array(
+				// Custom Background
+				'background_image'       => __( 'Background Image', 'stream' ),
+				'background_position_x'  => __( 'Background Position', 'stream' ),
+				'background_repeat'      => __( 'Background Repeat', 'stream' ),
+				'background_attachment'  => __( 'Background Attachment', 'stream' ),
+				'background_color'       => __( 'Background Color', 'stream' ),
+				// Custom Header
+				'header_image'           => __( 'Header Image', 'stream' ),
+				'header_textcolor'       => __( 'Text Color', 'stream' ),
+			),
 		);
 
 		/**
@@ -191,8 +268,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		 */
 		$labels = apply_filters( 'wp_stream_serialized_labels', $labels );
 
-		if ( isset( $labels[$option_name] ) && isset( $labels[$option_name][$field_key] ) ) {
-			return $labels[$option_name][$field_key];
+		if ( isset( $labels[ $option_name ] ) && isset( $labels[ $option_name ][ $field_key ] ) ) {
+			return $labels[ $option_name ][ $field_key ];
 		}
 
 		return $field_key;
@@ -208,23 +285,101 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		$context_labels = self::get_context_labels();
+
+		$rules = array(
+			'stream' => array(
+				'menu_slug'    => 'wp_stream',
+				'submenu_slug' => WP_Stream_Admin::SETTINGS_PAGE_SLUG,
+				'url'          => function( $rule, $record ) {
+					$option_key = get_stream_meta( $record->ID, 'option_key', true );
+					$url_tab    = null;
+
+					if ( '' !== $option_key ) {
+						foreach ( WP_Stream_Settings::get_fields() as $tab_name => $tab_properties ) {
+							foreach ( $tab_properties['fields'] as $field ) {
+								$field_key = sprintf( '%s_%s', $tab_name, $field['name'] );
+								if ( $field_key === $option_key ) {
+									$url_tab = $tab_name;
+									break 2;
+								}
+							}
+						}
+					}
+
+					return add_query_arg(
+						array(
+							'page' => $rule['submenu_slug'],
+							'tab'  => $url_tab,
+						),
+						admin_url( 'admin.php' )
+					);
+				},
+				'applicable'   => function( $submenu, $record ) {
+					return $record->context === 'wp_stream';
+				}
+			),
+			'background_header' => array(
+				'menu_slug'    => 'themes.php',
+				'submenu_slug' => function( $record ) {
+					return str_replace( '_', '-', $record->context );
+				},
+				'url'          => function( $rule, $record ) {
+					return add_query_arg( 'page', $rule['submenu_slug']( $record ), admin_url( $rule['menu_slug'] ) );
+				},
+				'applicable'   => function( $submenu, $record ) {
+					return in_array( $record->context, array( 'custom_header', 'custom_background' ) );
+				}
+			),
+			'general' => array(
+				'menu_slug'    => 'options-general.php',
+				'submenu_slug' => function( $record ) {
+					return sprintf( 'options-%s.php', $record->context );
+				},
+				'url'          => function( $rule, $record ) {
+					return admin_url( $rule['submenu_slug']( $record ) );
+				},
+				'applicable'   => function( $submenu, $record ) {
+					return ! empty( $submenu['options-general.php'] );
+				},
+			),
+		);
+
 		if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ) ) ) {
 			global $submenu;
-			if ( ! empty( $submenu['options-general.php'] ) ) {
-				$submenu_slug   = 'options-' . $record->context . '.php';
+
+			$applicable_rules = array_filter(
+				$rules,
+				function( $rule ) use ( $submenu, $record ) {
+					return call_user_func( $rule['applicable'], $submenu, $record );
+				}
+			);
+
+			if ( ! empty( $applicable_rules ) ) {
+				// The first applicable rule wins
+				$rule         = array_shift( $applicable_rules );
+				$menu_slug    = $rule['menu_slug'];
+				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceOf Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
+				$url          = $rule['url']( $rule, $record );
+
 				$found_submenus = wp_list_filter(
-					$submenu['options-general.php'],
+					$submenu[ $menu_slug ],
 					array( 2 => $submenu_slug )
 				);
 
 				if ( ! empty( $found_submenus ) ) {
 					$target_submenu = array_pop( $found_submenus );
-					if ( current_user_can( $target_submenu[1] ) ) {
-						$text = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[$record->context] );
-						$url  = admin_url( $submenu_slug );
+					list( $menu_title, $capability ) = $target_submenu;
 
-						$field_name = get_stream_meta( $record->ID, 'option', true );
-						if ( $field_name !== '' ) {
+					if ( current_user_can( $capability ) ) {
+						$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
+						$text       = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
+						$field_name = get_stream_meta( $record->ID, 'option_key', true );
+
+						if ( '' === $field_name ) {
+							$field_name = get_stream_meta( $record->ID, 'option', true );
+						}
+
+						if ( '' !== $field_name ) {
 							$url = sprintf( '%s#%s%s', rtrim( preg_replace( '/#.*/', '', $url ), '/' ), self::HIGHLIGHT_FIELD_URL_HASH_PREFIX, $field_name );
 						}
 
@@ -281,7 +436,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @action updated_option
 	 */
 	public static function callback_updated_option( $option, $old_value, $value ) {
-		global $new_whitelist_options, $whitelist_options;
+		global $whitelist_options, $new_whitelist_options;
 
 		if ( 0 === strpos( $option, '_transient_' ) ) {
 			return;
@@ -289,52 +444,43 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 		$options = array_merge(
 			(array) $whitelist_options,
-			$new_whitelist_options,
+			(array) $new_whitelist_options,
 			array( 'permalink' => self::$permalink_options )
 		);
 
 		foreach ( $options as $key => $opts ) {
 			if ( in_array( $option, $opts ) ) {
-				$current_key = $key;
+				$context = $key;
 				break;
 			}
 		}
 
-		if ( ! isset( $current_key ) ) {
-			$current_key = 'settings';
+		if ( ! isset( $context ) ) {
+			$context = 'settings';
 		}
 
 		$changed_options = array();
 
-		if ( is_array( $old_value ) && is_array( $value ) ) {
-			$changed_keys = array();
-
-			// Added keys
-			$changed_keys = array_merge( $changed_keys, array_keys( array_diff_key( $value, $old_value ) ) );
-
-			// Deleted keys
-			$changed_keys = array_merge( $changed_keys, array_keys( array_diff_key( $old_value, $value ) ) );
-
-			// array_diff_assoc is not sufficient
-			foreach ( array_diff( array_keys( $value ), $changed_keys ) as $option_key ) {
-				if ( $value[$option_key] != $old_value[$option_key] ) {
-					$changed_keys[] = $option_key;
+		if ( is_array( $old_value ) || is_array( $value ) ) {
+			foreach ( self::get_changed_keys( $old_value, $value ) as $field_key ) {
+				if ( ! self::is_key_ignored( $option, $field_key ) ) {
+					$key_context = self::get_context_by_key( $option, $field_key );
+					$changed_options[] = array(
+						'label'      => self::get_serialized_field_label( $option, $field_key ),
+						'option'     => $option,
+						'option_key' => $field_key,
+						'context'    => ( false !== $key_context ? $key_context : $context ),
+						// Prevent fatal error when saving option as array
+						'old_value'  => isset( $old_value[ $field_key ] ) ? maybe_serialize( $old_value[ $field_key ] ) : null,
+						'value'      => isset( $value[ $field_key ] ) ? maybe_serialize( $value[ $field_key ] ) : null,
+					);
 				}
-			}
-
-			foreach ( $changed_keys as $field_key ) {
-				$changed_options[] = array(
-					'label'     => self::get_serialized_field_label( $option, $field_key ),
-					'option'    => $current_key,
-					// Prevent fatal error when saving option as array
-					'old_value' => isset( $old_value[$field_key] ) ? maybe_serialize( $old_value[$field_key] ) : null,
-					'value'     => isset( $value[$field_key] ) ? maybe_serialize( $value[$field_key] ) : null,
-				);
 			}
 		} else {
 			$changed_options[] = array(
 				'label'     => self::get_field_label( $option ),
 				'option'    => $option,
+				'context'   => $context,
 				// Prevent fatal error when saving option as array
 				'old_value' => maybe_serialize( $old_value ),
 				'value'     => maybe_serialize( $value ),
@@ -342,13 +488,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		}
 
 		foreach ( $changed_options as $properties ) {
+			$context = $properties['context'];
 			self::log(
 				__( '"%s" setting was updated', 'stream' ),
 				$properties,
 				null,
-				array(
-					$current_key => 'updated',
-				)
+				array( $context => 'updated' )
 			);
 		}
 	}
@@ -364,28 +509,51 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			(function ($) {
 				$(function () {
 					var hashPrefix = <?php echo json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) ?>,
-						fieldName = "",
-						$field = {};
+					    hashFieldName = "",
+					    fieldNames = [],
+					    $select2Choices = {},
+					    $field = {};
 
 					if (location.hash.substr(1, hashPrefix.length) === hashPrefix) {
-						fieldName = location.hash.substr(hashPrefix.length + 1);
+						hashFieldName = location.hash.substr(hashPrefix.length + 1);
+						fieldNames = [hashFieldName];
 
-						$field = $("input, textarea, select")
-							.filter(function () {
-								return $(this).attr("name") === fieldName;
+						$field = $("input, textarea, select").filter(function () {
+							return fieldNames.indexOf( $(this).attr("name") ) > -1;
+						});
+
+						// try to find wp_stream field
+						if ( $field.length === 0 ) {
+							fieldNames = [
+								"wp_stream_" + hashFieldName,
+								"wp_stream[" + hashFieldName + "]"
+							];
+
+							$field = $("input, textarea, select, div").filter(function () {
+								return fieldNames.indexOf( $(this).attr("id") ) > -1;
 							});
+
+							// if the field has been selectified, the list is the one to be colorized
+							$select2Choices = $field.find(".select2-choices");
+							if ( $select2Choices.length === 1 ) {
+								$field = $select2Choices;
+							}
+						}
 
 						$("html, body")
 							.animate({
 								scrollTop: ($field.closest("tr").length === 1 ? $field.closest("tr") : $field).offset().top - $("#wpadminbar").height()
 							}, 1000, function () {
-								$field.animate({
-									backgroundColor: "#fffedf"
+
+							$field
+								.css("background", $(this).css("background-color"))
+								.animate({
+									backgroundColor: "#fffedf",
 								}, 250);
 
 								$("label")
 									.filter(function () {
-										return $(this).attr("for") === fieldName;
+										return fieldNames.indexOf( $(this).attr("for") ) > -1;
 									})
 									.animate({
 										color: "#d54e21"

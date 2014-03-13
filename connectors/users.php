@@ -4,6 +4,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 
 	/**
 	 * Context name
+	 *
 	 * @var string
 	 */
 	public static $name = 'users';
@@ -18,6 +19,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 
 	/**
 	 * Actions registered for this context
+	 *
 	 * @var array
 	 */
 	public static $actions = array(
@@ -87,6 +89,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				$links [ __( 'Edit Profile', 'stream' ) ] = $link;
 			}
 		}
+
 		return $links;
 	}
 
@@ -180,6 +183,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		}
 
 		global $wp_roles;
+
 		self::log(
 			_x(
 				'%1$s\'s role was changed from %2$s to %3$s',
@@ -224,6 +228,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		} else {
 			$user = get_user_by( 'login', $user_login );
 		}
+
 		self::log(
 			__( '%s\'s password was requested to be reset', 'stream' ),
 			array( 'display_name' => $user->display_name ),
@@ -240,7 +245,8 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function callback_wp_login( $user_login ) {
 		$user = get_user_by( 'login', $user_login );
-		if ( self::is_logging_enabled_for_user( $user ) ) {
+
+		if ( WP_Stream_Connectors::is_logging_enabled_for_user( $user ) ) {
 			self::log(
 				__( '%s logged in', 'stream' ),
 				array( 'display_name' => $user->display_name ),
@@ -258,10 +264,12 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function callback_clear_auth_cookie() {
 		$user = wp_get_current_user();
-		// For some reason, ignito mode calls clear_auth_cookie on failed login attempts
+
+		// For some reason, incognito mode calls clear_auth_cookie on failed login attempts
 		if ( empty( $user ) || ! $user->exists() ) {
 			return;
 		}
+
 		self::log(
 			__( '%s logged out', 'stream' ),
 			array( 'display_name' => $user->display_name ),
@@ -331,6 +339,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function callback_wp_login_failed( $username ) {
 		$user = get_user_by( 'login', $username );
+
 		self::log(
 			__( 'Invalid login attempt for %s', 'stream' ),
 			compact( 'username' ),
