@@ -172,7 +172,6 @@ class WP_Stream_Reports_Metaboxes {
 		$selector_type = isset( $args['selector_type'] ) ? $args['selector_type'] : '';
 		$selector_types = array(
 			'author'  => __( 'Author', 'stream-reports' ),
-			'role'    => __( 'User Role', 'stream-reports' ),
 			'context' => __( 'Context', 'stream-reports' ),
 			'action'  => __( 'Action', 'stream-reports' ),
 		);
