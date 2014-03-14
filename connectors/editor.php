@@ -66,6 +66,28 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Add action links to Stream drop row in admin list screen
+	 *
+	 * @filter wp_stream_action_links_{connector}
+	 * @param  array $links      Previous links registered
+	 * @param  int   $record     Stream record
+	 * @return array             Action links
+	 */
+	public static function action_links( $links, $record ) {
+		if ( 'file' === $record->context ) {
+			$file_name  = get_stream_meta( $record->ID, 'file', true );
+			$theme_name = get_stream_meta( $record->ID, 'theme', true );
+
+			$links[ __( 'Edit File', 'stream' ) ] = admin_url( sprintf(
+				'theme-editor.php?theme=%s&file=%s',
+				$theme_name,
+				$file_name
+			) );
+		}
+		return $links;
+	}
+
+	/**
 	 * @action load-theme-editor.php
 	 */
 	public static function get_edition_data() {
