@@ -126,6 +126,10 @@ class WP_Stream_Reports_Metaboxes {
 			$sorted[ $type ] = $this->count_by_field( 'created', $items, array( $this, 'collapse_dates' ) );
 		}
 
+		$sorted = $this->pad_fields( $sorted );
+		foreach( $sorted as $type => &$items ) {
+			ksort( $items );
+		}
 		$coordinates = array();
 		foreach ( $sorted as $line_name => $points ) {
 			$line_data = array(
@@ -142,7 +146,7 @@ class WP_Stream_Reports_Metaboxes {
 
 			$coordinates[] = $line_data;
 		}
-
+		
 		$data_type  = isset( $args['data_type'] ) ? $args['data_type'] : null;
 		$data_group = isset( $args['data_group'] ) ? $args['data_group'] : null;
 		$data_types = array(
@@ -267,6 +271,28 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	protected function collapse_dates( $date ) {
 		return strtotime( date( 'Y-m-d', strtotime( $date ) ) );
+	}
+
+	protected function pad_fields( $records ) {
+
+		$keys = array();
+		foreach ( $records as $dataset ) {
+			$keys = array_unique( array_merge( $keys, array_keys( $dataset ) ) );
+		}
+
+		$new_records = array();
+		foreach ( $keys as $key ) {
+			foreach ( $records as $data_key => $dataset ) {
+				if ( ! array_key_exists( $data_key, $new_records ) ) {
+					$new_records[ $data_key ] = array();
+				}
+
+				$new_records[ $data_key ][ $key ] = isset( $records[ $data_key ][ $key ] ) ? $records[ $data_key ][ $key ] : 0;
+			}
+		
+		}
+
+		return $new_records;
 	}
 
 	/**
