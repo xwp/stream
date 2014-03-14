@@ -73,10 +73,7 @@ class WP_Stream_Settings {
 	 * @return void
 	 */
 	public static function get_users(){
-		if ( ! defined( 'DOING_AJAX' ) ) {
-			return;
-		}
-		if ( ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
+		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
 			return;
 		}
 
@@ -102,6 +99,7 @@ class WP_Stream_Settings {
 					'user_email',
 					'user_url',
 				),
+				'orderby' => 'display_name',
 			)
 		);
 
@@ -113,13 +111,34 @@ class WP_Stream_Settings {
 
 		$response->status  = true;
 		$response->message = '';
+		$response->users   = array();
 
-		$response->users = array();
 		foreach ( $users->results as $key => $user ) {
+			$gravatar_url = null;
+
+			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->ID, 16 ), $gravatar_src_match ) ) {
+				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+			}
+
 			$args = array(
-				'id' => $user->ID,
-				'text' => $user->display_name,
+				'id'       => $user->ID,
+				'text'     => $user->display_name,
 			);
+
+			$args['tooltip'] = esc_attr(
+				sprintf(
+					'ID: %s%5$sUser: %s%5$sEmail: %s%5$sRole: %s',
+					$user->ID,
+					$user->user_nicename,
+					$user->user_email,
+					implode( ',', $user->roles ),
+					PHP_EOL
+				)
+			);
+
+			if ( null !== $gravatar_url ) {
+				$args['icon'] = $gravatar_url;
+			}
 
 			$response->users[] = $args;
 		}
@@ -211,7 +230,7 @@ class WP_Stream_Settings {
 							'name'        => 'authors_and_roles',
 							'title'       => __( 'Authors & Roles', 'stream' ),
 							'type'        => 'select2_user_role',
-							'desc'        => __( 'No activity will be logged for these authors and roles.', 'stream' ),
+							'desc'        => __( 'No activity will be logged for these authors and/or roles.', 'stream' ),
 							'choices'     => self::get_roles(),
 							'default'     => array(),
 						),

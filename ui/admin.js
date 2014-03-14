@@ -166,10 +166,21 @@ jQuery(function($){
 					return answer;
 				}
 			},
+			formatResult: function (object, container) {
+				var result = object.text;
+
+				if ('undefined' !== typeof object.icon) {
+					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
+					// Add more info to the container
+					container.attr('title', object.tooltip);
+				}
+				return result;
+			},
 			formatSelection: function (object){
 				if ( $.isNumeric( object.id ) && object.text.indexOf('icon-users') < 0 ){
 					object.text += '<i class="icon16 icon-users"></i>';
 				}
+
 				return object.text;
 			},
 			initSelection: function (item, callback) {
@@ -424,11 +435,10 @@ jQuery(function($){
 
 						if ('' !== from.val()) {
 							from_remove.show();
+							to.datepicker('option', 'minDate', from.val());
 						} else {
 							from_remove.hide();
 						}
-
-						to.datepicker('option', 'minDate', from.val());
 
 						if (arguments[arguments.length-1] === true) {
 							return false;
@@ -442,11 +452,10 @@ jQuery(function($){
 					'change': function () {
 						if ('' !== to.val()) {
 							to_remove.show();
+							from.datepicker('option', 'maxDate', to.val());
 						} else {
 							to_remove.hide();
 						}
-
-						from.datepicker('option', 'maxDate', to.val());
 
 						if (arguments[arguments.length-1] === true) {
 							return false;
