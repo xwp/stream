@@ -161,8 +161,6 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 					'file'       => self::$edited_file['file_name'],
 					'theme_name' => (string) self::$edited_file['theme'],
 					'theme'      => $theme_slug,
-					'new_value'  => self::$edited_file['file_contents_after'],
-					'old_value'  => self::$edited_file['file_contents_before'],
 				);
 
 				self::log(
