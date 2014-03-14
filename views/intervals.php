@@ -1,4 +1,4 @@
-<div class="reports-date-interval">
+<div class="date-interval">
 
 	<select class="field-predefined">
 		<option value="custom"><?php esc_attr_e( 'Custom', 'stream-reports' ) ?></option>
@@ -14,7 +14,7 @@
 		} ?>
 	</select>
 
-	<div class="report-date-inputs">
+	<div class="date-inputs">
 		<div class="box">
 			<i class="date-remove dashicons"></i>
 			<input type="text"
