@@ -73,10 +73,7 @@ class WP_Stream_Settings {
 	 * @return void
 	 */
 	public static function get_users(){
-		if ( ! defined( 'DOING_AJAX' ) ) {
-			return;
-		}
-		if ( ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
+		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
 			return;
 		}
 
@@ -124,8 +121,19 @@ class WP_Stream_Settings {
 			}
 
 			$args = array(
-				'id'   => $user->ID,
-				'text' => $user->display_name,
+				'id'       => $user->ID,
+				'text'     => $user->display_name,
+			);
+
+			$args['tooltip'] = esc_attr(
+				sprintf(
+					'ID: %s%5$sUser: %s%5$sEmail: %s%5$sRole: %s',
+					$user->ID,
+					$user->user_nicename,
+					$user->user_email,
+					implode( ',', $user->roles ),
+					PHP_EOL
+				)
 			);
 
 			if ( null !== $gravatar_url ) {

@@ -166,11 +166,13 @@ jQuery(function($){
 					return answer;
 				}
 			},
-			formatResult: function (object) {
+			formatResult: function (object, container) {
 				var result = object.text;
 
 				if ('undefined' !== typeof object.icon) {
 					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
+					// Add more info to the container
+					container.attr('title', object.tooltip);
 				}
 				return result;
 			},
@@ -178,6 +180,7 @@ jQuery(function($){
 				if ( $.isNumeric( object.id ) && object.text.indexOf('icon-users') < 0 ){
 					object.text += '<i class="icon16 icon-users"></i>';
 				}
+
 				return object.text;
 			},
 			initSelection: function (item, callback) {
