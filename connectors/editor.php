@@ -15,8 +15,16 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * @var array
 	 */
 	public static $actions = array(
+		'admin_init',
 		'admin_footer',
 	);
+
+	/**
+	 * Actions registered for this context
+	 *
+	 * @var array
+	 */
+	private static $edited_file = array();
 
 	/**
 	 * Register all context hooks
@@ -56,6 +64,49 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	public static function get_context_labels() {
 		return array(
 			'file' => __( 'File', 'stream' ),
+		);
+	}
+
+	public static function callback_admin_init() {
+		if ( 'theme-editor' !== get_current_screen()->id ) {
+			return;
+		}
+
+		if( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
+			return;
+		}
+
+		if( ! isset( $_POST['action'] ) || 'update' !== $_POST['action'] ) {
+			return;
+		}
+
+		$theme_name = ( isset( $_POST['theme'] ) && $_POST['theme'] ? $_POST['theme'] : get_stylesheet() );
+
+		$theme = wp_get_theme( $theme_name );
+
+		if ( ! $theme->exists() || ( $theme->errors() && 'theme_no_stylesheet' === $theme->errors()->get_error_code() ) ) {
+			return;
+		}
+
+		$allowed_files = $theme->get_files( 'php', 1 );
+		$style_files = $theme->get_files( 'css' );
+		$allowed_files['style.css'] = $style_files['style.css'];
+
+		if ( empty( $_POST['file'] ) ) {
+			$file_name = 'style.css';
+			$file_path = $allowed_files['style.css'];
+		} else {
+			$file_name = $_POST['file'];
+			$file_path = $theme->get_stylesheet_directory() . '/' . $relative_file;
+		}
+
+		$file_contents_before = file_get_contents( $file_path );
+
+		self::$edited_file = compact(
+			$file_name,
+			$file_path,
+			$file_contents_before,
+			$theme
 		);
 	}
 
