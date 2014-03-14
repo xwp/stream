@@ -50,7 +50,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'edited' => __( 'Edited', 'stream' ),
+			'updated' => __( 'Updated', 'stream' ),
 		);
 	}
 
@@ -88,21 +88,20 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		if ( 'file' === $record->context ) {
-			$file_name  = get_stream_meta( $record->ID, 'file', true );
-			$theme_name = get_stream_meta( $record->ID, 'theme', true );
+		$file_name  = get_stream_meta( $record->ID, 'file', true );
+		$theme_name = get_stream_meta( $record->ID, 'theme', true );
 
-			$links[ __( 'Edit File', 'stream' ) ] = admin_url( sprintf(
-				'theme-editor.php?theme=%s&file=%s',
-				$theme_name,
-				$file_name
-			) );
+		$links[ __( 'Edit File', 'stream' ) ] = admin_url( sprintf(
+			'theme-editor.php?theme=%s&file=%s',
+			$theme_name,
+			$file_name
+		) );
 
-			$links[ __( 'Edit Theme', 'stream' ) ] = admin_url( sprintf(
-				'themes.php?theme=%s',
-				$theme_name
-			) );
-		}
+		$links[ __( 'Edit Theme', 'stream' ) ] = admin_url( sprintf(
+			'themes.php?theme=%s',
+			$theme_name
+		) );
+
 		return $links;
 	}
 
@@ -165,7 +164,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 					__( '%1$s file edited in %2$s theme', 'stream' ),
 					$properties,
 					null,
-					array( $theme_slug => 'edited' )
+					array( $theme_slug => 'updated' )
 				);
 			}
 		}
