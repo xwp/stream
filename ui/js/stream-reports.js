@@ -452,8 +452,8 @@
      */
     $(document).ready(function () {
         stream.report.intervals.init(
-			$('.reports-date-interval')
-		);
+		$('.date-interval')
+	);
 
         stream.report.chart.init(
             $('.stream_page_wp_stream_reports .chart'),
