@@ -115,36 +115,31 @@ class WP_Stream_Reports_Metaboxes {
 		// Assigning template vars
 		$key = $section['args']['key'];
 
+		// Create an object of available charts
+		$chart_types = array(
+			'multibar'  => 'dashicons-chart-bar',
+			'pie'  => 'dashicons-chart-pie',
+			'line' => 'dashicons-chart-area',
+		);
+
+		$chart_type = isset( $args['chart_type'] ) ? $args['chart_type'] : 'line';	
+		if ( array_key_exists( $chart_type, $chart_types ) ) {
+			$chart_types[ $args['chart_type'] ] .= ' active';
+		}
 
 		// Get records sorted grouped by original sort
 		$records = $this->load_metabox_records( $args );
 
-
-		$sorted = array();
-		// Get date count for each sort
-		foreach( $records as $type => $items ) {
-			$sorted[ $type ] = $this->count_by_field( 'created', $items, array( $this, 'collapse_dates' ) );
-		}
-
-		$sorted = $this->pad_fields( $sorted );
-		foreach( $sorted as $type => &$items ) {
-			ksort( $items );
-		}
-		$coordinates = array();
-		foreach ( $sorted as $line_name => $points ) {
-			$line_data = array(
-				'key' => $line_name,
-				'values' => array()
-			);
-
-			foreach ( $points as $x => $y ) {
-				$line_data['values'][] = array(
-					'x' => $x,
-					'y' => $y,
-				);
-			}
-
-			$coordinates[] = $line_data;
+		switch ( $chart_type ) {
+			case 'pie':
+				$coordinates = $this->get_pie_chart_coordinates( $records );
+				break;
+			case 'multibar' : 
+				$coordinates = $this->get_bar_chart_coordinates( $records );
+				break;
+			default:
+				$coordinates = $this->get_line_chart_coordinates( $records );
+				break;
 		}
 		
 		$data_type  = isset( $args['data_type'] ) ? $args['data_type'] : null;
@@ -175,19 +170,84 @@ class WP_Stream_Reports_Metaboxes {
 			'action'  => __( 'Action', 'stream-reports' ),
 		);
 
-		// Create an object of available charts
-		$chart_types = array(
-			'bar'  => 'dashicons-chart-bar',
-			'pie'  => 'dashicons-chart-pie',
-			'line' => 'dashicons-chart-area',
-		);
-		
-		// Apply the active class to the active chart type used
-		if ( array_key_exists( $args['chart_type'], $chart_types ) ) {
-			$chart_types[ $args['chart_type'] ] .= ' active';
-		}
 
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
+	}
+
+	public function get_line_chart_coordinates( $records ) {
+
+		$sorted = array();
+		// Get date count for each sort
+		foreach( $records as $type => $items ) {
+			$sorted[ $type ] = $this->count_by_field( 'created', $items, array( $this, 'collapse_dates' ) );
+		}
+
+		$sorted = $this->pad_fields( $sorted );
+		foreach( $sorted as $type => &$items ) {
+			ksort( $items );
+		}
+		$coordinates = array();
+		foreach ( $sorted as $line_name => $points ) {
+			$line_data = array(
+				'key' => $line_name,
+				'values' => array()
+			);
+
+			foreach ( $points as $x => $y ) {
+				$line_data['values'][] = array(
+					'x' => $x,
+					'y' => $y,
+				);
+			}
+
+			$coordinates[] = $line_data;
+		}
+
+		return $coordinates;
+	}
+
+	public function get_pie_chart_coordinates( $records ) {
+
+		$counts = array();
+		foreach ( $records as $type => $items ) {
+			$counts[] = array(
+				"key" => $type,
+				"value" => count( $items )
+			);
+		};
+		return $counts;
+	}
+	
+	public function get_bar_chart_coordinates( $records ) {
+
+		$sorted = array();
+		// Get date count for each sort
+		foreach ( $records as $type => $items ) {
+			$sorted[ $type ] = $this->count_by_field( 'created', $items, array( $this, 'collapse_dates' ) );
+		}
+
+		$sorted = $this->pad_fields( $sorted );
+		foreach ( $sorted as $type => &$items ) {
+			ksort( $items );
+		}
+		$coordinates = array();
+		foreach ( $sorted as $line_name => $points ) {
+			$line_data = array(
+				'key' => $line_name,
+				'values' => array()
+			);
+
+			foreach ( $points as $x => $y ) {
+				$line_data['values'][] = array(
+					'x' => $x,
+					'y' => $y
+				);
+			}
+
+			$coordinates[] = $line_data;
+		}
+
+		return $coordinates;
 	}
 
 	public function load_metabox_records( $args ) {

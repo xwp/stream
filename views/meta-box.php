@@ -37,7 +37,7 @@
 
 	<?php
 	$args = array(
-		'type' => 'line',
+		'type' => $chart_type,
 		'guidelines' => true,
 		'tooltip' => array(
 			'show' => true,
