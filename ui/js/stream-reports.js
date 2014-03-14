@@ -362,6 +362,11 @@
                 data.svg = $el.find('svg');
                 data.d3 = d3.select(data.svg[0]);
 
+		var dateFormat = function( d ) {
+			var milliseconds = d * 1000;
+			return d3.time.format('%x')(new Date( milliseconds ));
+		};
+
                 nv.addGraph(function () {
                     switch (data.type) {
                     case 'donut':
@@ -377,14 +382,17 @@
 
                     case 'line':
                         data.chart = nv.models.lineChart();
+			data.chart.xAxis.tickFormat( dateFormat );
                         break;
 
                     case 'multibar':
                         data.chart = nv.models.multiBarChart();
+			data.chart.xAxis.tickFormat( dateFormat );
                         break;
 
                     case 'multibar-horizontal':
                         data.chart = nv.models.multiBarHorizontalChart();
+			data.chart.xAxis.tickFormat( dateFormat );
                         break;
 
                     default: // If we don't have a type of chart defined it gets out...
@@ -440,9 +448,10 @@
                     $columns.click(data.chart.update);
 
                     return data.chart;
-                });
+		});
             });
-        }
+        },
+
     };
 
     window.stream = $.extend(true, (!_.isObject(window.stream) ? {} : window.stream), { 'report': report });

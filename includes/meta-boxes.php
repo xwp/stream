@@ -128,7 +128,14 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		// Get records sorted grouped by original sort
-		$records = $this->load_metabox_records( $args );
+		$date = new WP_Stream_Date_Interval();
+		$default_interval = array(
+			'key' => 'all-time',
+			'start' => '',
+			'end' => ''
+		);
+		$user_interval = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
+		$records = $this->load_metabox_records( $args, $user_interval );
 
 		switch ( $chart_type ) {
 			case 'pie':
@@ -250,10 +257,12 @@ class WP_Stream_Reports_Metaboxes {
 		return $coordinates;
 	}
 
-	public function load_metabox_records( $args ) {
+	public function load_metabox_records( $args, $date_interval ) {
 
 		$query_args = array(
 			'records_per_page' => -1,
+			'date_from' => $date_interval['start'],
+			'date_to' => $date_interval['end'],
 		);
 
 		$data_type  = isset( $args['data_type'] ) ? $args['data_type'] : null;
