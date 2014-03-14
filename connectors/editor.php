@@ -92,16 +92,20 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 			$file_name  = get_stream_meta( $record->ID, 'file', true );
 			$theme_name = get_stream_meta( $record->ID, 'theme', true );
 
-			$links[ __( 'Edit File', 'stream' ) ] = admin_url( sprintf(
-				'theme-editor.php?theme=%s&file=%s',
-				$theme_name,
-				$file_name
-			) );
+			$links[ __( 'Edit File', 'stream' ) ] = admin_url(
+				sprintf(
+					'theme-editor.php?theme=%s&file=%s',
+					$theme_name,
+					$file_name
+				)
+			);
 
-			$links[ __( 'Edit Theme', 'stream' ) ] = admin_url( sprintf(
-				'themes.php?theme=%s',
-				$theme_name
-			) );
+			$links[ __( 'Edit Theme', 'stream' ) ] = admin_url(
+				sprintf(
+					'themes.php?theme=%s',
+					$theme_name
+				)
+			);
 		}
 
 		return $links;
@@ -111,11 +115,11 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * @action load-theme-editor.php
 	 */
 	public static function get_edition_data() {
-		if( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
+		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			return;
 		}
 
-		if( ! isset( $_POST['action'] ) || 'update' !== $_POST['action'] ) {
+		if ( ! isset( $_POST['action'] ) || 'update' !== $_POST['action'] ) {
 			return;
 		}
 
@@ -152,7 +156,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * @filter wp_redirect
 	 */
 	public static function log_changes( $location ) {
-		if( ! empty( self::$edited_file ) ) {
+		if ( ! empty( self::$edited_file ) ) {
 			$file_contents_after = file_get_contents( self::$edited_file['file_path'] );
 
 			if ( $file_contents_after !== self::$edited_file['file_contents_before'] ) {
