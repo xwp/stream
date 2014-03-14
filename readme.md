@@ -14,8 +14,6 @@ Stream Reports allows you to generate beautiful visuals of your logged-in user a
 
 TBD
 
-[![Build Status](git@github.com:x-team/wp-stream-reports.png?branch=master)](git@github.com:x-team/wp-stream-reports)
-
 ## Changelog ##
 
 TBD
