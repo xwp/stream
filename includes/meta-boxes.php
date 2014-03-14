@@ -212,8 +212,9 @@ class WP_Stream_Reports_Metaboxes {
 
 		$grouping_field = $args['selector_type'];
 		$available_fields = array( 'author', 'action', 'context', 'connector', 'ip' );
-		if( ! in_array( $grouping_field, $available_fields ) )
+		if ( ! in_array( $grouping_field, $available_fields ) ) {
 			return array();
+		}
 
 		$unsorted = stream_query( $query_args );
 		$sorted = $this->group_by_field( $grouping_field, $unsorted );
