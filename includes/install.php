@@ -26,7 +26,7 @@ class WP_Stream_Install {
 
 		if ( empty( $db_version ) ) {
 			self::install();
-		} elseif ( $db_version != $current ) {
+		} elseif ( $db_version !== $current ) {
 			self::update( $db_version, $current );
 		} else {
 			return;
@@ -37,7 +37,8 @@ class WP_Stream_Install {
 
 	public static function install() {
 		global $wpdb;
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$prefix = self::$table_prefix;
 
@@ -126,7 +127,7 @@ class WP_Stream_Install {
 		$prefix = self::$table_prefix;
 
 		// If version is lower than 1.1.4, do the update routine
-		if ( version_compare( $db_version, '1.1.4' ) == -1 && ! empty( $wpdb->charset ) ) {
+		if ( version_compare( $db_version, '1.1.4', '<' ) && ! empty( $wpdb->charset ) ) {
 			$tables  = array( 'stream', 'stream_context', 'stream_meta' );
 			$collate = ( $wpdb->collate ) ? " COLLATE {$wpdb->collate}" : null;
 			foreach ( $tables as $table ) {
@@ -135,15 +136,112 @@ class WP_Stream_Install {
 		}
 
 		// If version is lower than 1.1.7, do the update routine
-		if ( version_compare( $db_version, '1.1.7' ) == -1 ) {
+		if ( version_compare( $db_version, '1.1.7', '<' ) ) {
 			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(39) NULL AFTER created" );
 		}
 
-		// If version is lower than 1.2, manually alter the column order. Not possible using dbDelta alone.
-		if ( version_compare( $db_version, '1.2' ) == -1 ) {
-			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY blog_id bigint(20) AFTER site_id" );
+		// If version is lower than 1.2.5, do the update routine
+		// Taxonomy records switch from term_id to term_taxonomy_id
+		if ( version_compare( $db_version, '1.2.5', '<' ) ) {
+			$sql = "SELECT r.ID id, tt.term_taxonomy_id tt
+				FROM $wpdb->stream r
+				JOIN $wpdb->streamcontext c
+					ON r.ID = c.record_id AND c.connector = 'taxonomies'
+				JOIN $wpdb->streammeta m
+					ON r.ID = m.record_id AND m.meta_key = 'term_id'
+				JOIN $wpdb->streammeta m2
+					ON r.ID = m2.record_id AND m2.meta_key = 'taxonomy'
+				JOIN $wpdb->term_taxonomy tt
+					ON tt.term_id = m.meta_value
+					AND tt.taxonomy = m2.meta_value
+				";
+			$tax_records = $wpdb->get_results( $sql ); // db call ok
+			foreach ( $tax_records as $record ) {
+				if ( ! empty( $record->tt ) ) {
+					$wpdb->update(
+						$wpdb->stream,
+						array( 'object_id' => $record->tt ),
+						array( 'ID' => $record->id ),
+						array( '%d' ),
+						array( '%d' )
+					);
+				}
+			}
 		}
 
+		// If version is lower than 1.2.8, do the update routine
+		// Change the context for Media connectors to the attachment type
+		if ( version_compare( $db_version, '1.2.8', '<' ) ) {
+			$sql = "SELECT r.ID id, r.object_id pid, c.meta_id mid
+				FROM $wpdb->stream r
+				JOIN $wpdb->streamcontext c
+					ON r.ID = c.record_id AND c.connector = 'media' AND c.context = 'media'
+				";
+			$media_records = $wpdb->get_results( $sql ); // db call ok
+
+			require_once WP_STREAM_INC_DIR . 'query.php';
+			require_once WP_STREAM_CLASS_DIR . 'connector.php';
+			require_once WP_STREAM_DIR . 'connectors/media.php';
+
+			foreach ( $media_records as $record ) {
+				$post = get_post( $record->pid );
+				$guid = isset( $post->guid ) ? $post->guid : null;
+				$url  = $guid ? $guid : get_stream_meta( $record->id, 'url', true );
+
+				if ( ! empty( $url ) ) {
+					$wpdb->update(
+						$wpdb->streamcontext,
+						array( 'context' => WP_Stream_Connector_Media::get_attachment_type( $url ) ),
+						array( 'record_id' => $record->id ),
+						array( '%s' ),
+						array( '%d' )
+					);
+				}
+			}
+		}
+
+		// If version is lower than 1.3.0, do the update routine for site options
+		// Backward settings compatibility for old version plugins
+		if ( version_compare( $db_version, '1.3.0', '<' ) ) {
+			add_filter( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_old_options_to_exclude_tab' );
+		}
+
+		// If version is lower than 1.4.0, manually alter the column order. Not possible using dbDelta alone.
+		if ( version_compare( $db_version, '1.4.0', '<' ) ) {
+			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY blog_id bigint(20) AFTER site_id" );
+		}
+	}
+
+	/**
+	 * Function will migrate old options from the General and Connectors tabs into the new Exclude tab
+	 *
+	 * @param $labels array connectors terms labels
+	 * @used wp_stream_after_connector_term_labels_loaded
+	 */
+	public static function migrate_old_options_to_exclude_tab( $labels ) {
+
+		$old_options = get_option( WP_Stream_Settings::KEY, array() );
+
+		// Stream > Settings > General > Log Activity for
+		if ( isset( $old_options['general_log_activity_for'] ) ) {
+			WP_Stream_Settings::$options['exclude_authors_and_roles'] = array_diff(
+				array_keys( WP_Stream_Settings::get_roles() ),
+				$old_options['general_log_activity_for']
+			);
+			unset( WP_Stream_Settings::$options['general_log_activity_for'] );
+		}
+
+		// Stream > Settings > Connectors > Active Connectors
+		if ( isset( $old_options['connectors_active_connectors'] ) ) {
+			WP_Stream_Settings::$options['exclude_connectors'] = array_diff(
+				array_keys( $labels ),
+				$old_options['connectors_active_connectors']
+			);
+			unset( WP_Stream_Settings::$options['connectors_active_connectors'] );
+
+		}
+
+		update_option( WP_Stream_Settings::KEY, WP_Stream_Settings::$options );
 	}
 
 }

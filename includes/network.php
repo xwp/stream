@@ -19,8 +19,8 @@ class WP_Stream_Network {
 	}
 
 	function filters() {
-		add_filter( 'stream_get_fields', array( $this, 'stream_get_fields' ) );
-		add_filter( 'wp_stream_options', array( $this, 'stream_filter_options' ) );
+		add_filter( 'wp_stream_get_fields', array( $this, 'get_fields' ) );
+		add_filter( 'wp_stream_options', array( $this, 'filter_options' ) );
 	}
 
 	/**
@@ -30,7 +30,7 @@ class WP_Stream_Network {
 	 *
 	 * @return mixed
 	 */
-	function stream_get_fields( $fields ) {
+	function get_fields( $fields ) {
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		}
@@ -40,7 +40,7 @@ class WP_Stream_Network {
 				'name'    => 'disable_sites_admin',
 				'title'   => __( 'Disable Site Access', 'stream' ),
 				'default' => 0,
-				'desc'    => __( 'When site access is disabled the settings and Stream can only be accessed in network administration', 'stream' ),
+				'desc'    => __( 'When site access is disabled the settings and Stream can only be accessed in network administration.', 'stream' ),
 				'type'    => 'checkbox',
 			);
 
@@ -48,7 +48,7 @@ class WP_Stream_Network {
 				'name'    => 'settings_for_blog',
 				'title'   => __( 'Settings for Blog', 'stream' ),
 				'default' => array( 'value' => 0, 'name' => 'Network Default' ),
-				'desc'    => __( 'Select the site to apply settings changes to', 'stream' ),
+				'desc'    => __( 'Select the site to apply settings changes to.', 'stream' ),
 				'type'    => 'select',
 				'choices' => $this->get_network_sites(),
 			);
@@ -65,7 +65,7 @@ class WP_Stream_Network {
 
 		foreach ( $sites as $site ) {
 			$blog = get_blog_details( (int) $site['blog_id'] );
-			$return[$blog->blog_id] = $blog->blogname;
+			$return[ $blog->blog_id ] = $blog->blogname;
 		}
 
 		return $return;
@@ -75,7 +75,7 @@ class WP_Stream_Network {
 	 * Wrapper for the settings API to work on the network settings page
 	 */
 	function network_options_action() {
-		if ( ! isset( $_GET['action'] ) || 'stream_settings' != $_GET['action'] ) {
+		if ( ! isset( $_GET['action'] ) || 'stream_settings' !== $_GET['action'] ) {
 			return;
 		}
 
@@ -96,8 +96,8 @@ class WP_Stream_Network {
 				$option = trim( $option );
 				$value  = null;
 
-				if ( isset( $_POST[$option] ) ) {
-					$value = $_POST[$option];
+				if ( isset( $_POST[ $option ] ) ) {
+					$value = $_POST[ $option ];
 				}
 
 				if ( ! is_array( $value ) ) {
@@ -134,7 +134,7 @@ class WP_Stream_Network {
 	 *
 	 * @return array
 	 */
-	function stream_filter_options( $options ) {
+	function filter_options( $options ) {
 		if ( ! is_network_admin() ) {
 			return $options;
 		}
@@ -152,5 +152,3 @@ class WP_Stream_Network {
 	}
 
 }
-
-new WP_Stream_Network();
