@@ -29,7 +29,6 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 		'make_delete_blog',
 		'make_undelete_blog',
 		'update_blog_public',
-
 	);
 
 	/**
@@ -60,22 +59,27 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	 *
 	 * @return array Context label translations
 	 */
-//	public static function get_context_labels() {
-//		$blogs = wp_get_sites();
-//		$blog_labels = array();
-//		foreach( $blogs as $blog ) {
-//			$blog_labels[$blog['blog_id']] = array(
-//				'domain' => $blog['domain'],
-//				'public' => $blog['public'],
-//				'last_updated' => $blog['last_updated'],
-//				'registered' => $blog['registered'],
-//				'archived' => $blog['archived'],
-//				'mature' => $blog['mature'],
-//				'spam' => $blog['spam'],
-//				'deleted' => $blog['deleted'],
-//			);
-//		}
-//	}
+	/*
+	public static function get_context_labels() {
+		$blogs       = wp_get_sites();
+		$blog_labels = array();
+
+		foreach( $blogs as $blog ) {
+			$blog_labels[ $blog['blog_id'] ] = array(
+				'domain'       => $blog['domain'],
+				'public'       => $blog['public'],
+				'last_updated' => $blog['last_updated'],
+				'registered'   => $blog['registered'],
+				'archived'     => $blog['archived'],
+				'mature'       => $blog['mature'],
+				'spam'         => $blog['spam'],
+				'deleted'      => $blog['deleted'],
+			);
+		}
+
+		return $blog_labels;
+	}
+	*/
 
 	/**
 	 * Add action links to Stream drop row in admin list screen
@@ -86,7 +90,6 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-
 		return $links;
 	}
 
@@ -134,7 +137,7 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	 * @param $blog
 	 * @action unmature_blog
 	 */
-	public static function callback_unmature_blog ( $blog ) {
+	public static function callback_unmature_blog( $blog ) {
 
 	}
 
