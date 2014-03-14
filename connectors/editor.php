@@ -60,7 +60,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	}
 
 	public static function callback_admin_footer() {
-		if( 'theme-editor' === get_current_screen()->id ) : ?>
+		if( is_admin() && 'theme-editor' === get_current_screen()->id ) : ?>
 			<script>
 				var $content = jQuery('#newcontent');
 
@@ -74,7 +74,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	}
 
 	public static function log_changes_on_redirect( $location ) {
-		if ( 'theme-editor' === get_current_screen()->id && 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['action'] ) && 'update' === $_POST['action'] ) {
+		if ( is_admin() && 'theme-editor' === get_current_screen()->id && 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['action'] ) && 'update' === $_POST['action'] ) {
 
 			if ( isset( $_POST['theme'] ) && $_POST['theme'] ) {
 				$stylesheet = $_POST['theme'];
