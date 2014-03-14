@@ -31,7 +31,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	public static function register() {
 		parent::register();
 		add_action( 'load-theme-editor.php', array( __CLASS__, 'get_edition_data' ) );
-		add_filter( 'wp_redirect', array( __CLASS__, 'log_changes_on_redirect' ) );
+		add_filter( 'wp_redirect', array( __CLASS__, 'log_changes' ) );
 	}
 
 	/**
@@ -148,7 +148,10 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		);
 	}
 
-	public static function log_changes_on_redirect( $location ) {
+	/**
+	 * @filter wp_redirect
+	 */
+	public static function log_changes( $location ) {
 		if( ! empty( self::$edited_file ) ) {
 			$file_contents_after = file_get_contents( self::$edited_file['file_path'] );
 
