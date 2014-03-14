@@ -97,25 +97,12 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	}
 
 	public static function callback_admin_init() {
-		if ( ! is_admin() || 'theme-editor' !== get_current_screen()->id ) {
-			return;
-		}
-
-		if( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
-			return;
-		}
-
-		if( ! isset( $_POST['action'] ) || 'update' !== $_POST['action'] ) {
+		if ( ! self::is_edition_requested() ) {
 			return;
 		}
 
 		$theme_name = ( isset( $_POST['theme'] ) && $_POST['theme'] ? $_POST['theme'] : get_stylesheet() );
-
 		$theme = wp_get_theme( $theme_name );
-
-		if ( ! $theme->exists() || ( $theme->errors() && 'theme_no_stylesheet' === $theme->errors()->get_error_code() ) ) {
-			return;
-		}
 
 		$allowed_files = $theme->get_files( 'php', 1 );
 		$style_files = $theme->get_files( 'css' );
@@ -126,7 +113,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 			$file_path = $allowed_files['style.css'];
 		} else {
 			$file_name = $_POST['file'];
-			$file_path = $theme->get_stylesheet_directory() . '/' . $relative_file;
+			$file_path = $theme->get_stylesheet_directory() . '/' . $file_name;
 		}
 
 		$file_contents_before = file_get_contents( $file_path );
