@@ -163,7 +163,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 				);
 
 				self::log(
-					__( '%1$s file edited in %2$s theme', 'stream' ),
+					__( '"%1$s" was updated in "%2$s"', 'stream' ),
 					$properties,
 					null,
 					array( $theme_slug => 'updated' )
