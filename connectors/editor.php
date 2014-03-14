@@ -40,7 +40,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * @return string Translated context label
 	 */
 	public static function get_label() {
-		return __( 'Editor', 'stream' );
+		return __( 'Theme Editor', 'stream' );
 	}
 
 	/**
