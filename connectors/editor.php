@@ -83,6 +83,11 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 				$theme_name,
 				$file_name
 			) );
+
+			$links[ __( 'Edit Theme', 'stream' ) ] = admin_url( sprintf(
+				'themes.php?theme=%s',
+				$theme_name
+			) );
 		}
 		return $links;
 	}
@@ -151,7 +156,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 					'editor_opening_html' => sprintf( '<a href="%s">', esc_attr( admin_url( 'theme-editor.php' ) ) ),
 					'editor_closing_html' => '</a>',
 					'file'       => self::$edited_file['file_name'],
-					'theme'      => self::$edited_file['theme'],
+					'theme'      => self::$edited_file['theme']->get_template(),
 					'closing'    => '</a>',
 					'new_value'  => self::$edited_file['file_contents_after'],
 					'old_value'  => self::$edited_file['file_contents_before'],
