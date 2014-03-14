@@ -119,7 +119,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 			return;
 		}
 
-		if ( ! isset( $_POST['action'] ) || 'update' !== $_POST['action'] ) {
+		if ( 'update' !== wp_stream_filter_input( INPUT_POST, 'action' ) ) {
 			return;
 		}
 
