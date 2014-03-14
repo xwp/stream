@@ -50,7 +50,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'updated' => __( 'Updated', 'stream' ),
+			'edited' => __( 'Edited', 'stream' ),
 		);
 	}
 
@@ -139,34 +139,18 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 
 			if ( $file_contents_after !== self::$edited_file['file_contents_before'] ) {
 				$properties = array(
-					'file_html'  => sprintf(
-						'<a href="%s">%s</a>',
-						esc_attr( admin_url( sprintf(
-							'theme-editor.php?theme=%s&file=%s',
-							self::$edited_file['theme']->get_template(),
-							self::$edited_file['file_name']
-						) ) ),
-						self::$edited_file['file_name']
-					),
-					'theme_html' => sprintf(
-						'<a href="%s">%s</a>',
-						esc_attr( admin_url( sprintf( 'themes.php?theme=%s', self::$edited_file['theme']->get_template() ) ) ),
-						self::$edited_file['theme']
-					),
-					'editor_opening_html' => sprintf( '<a href="%s">', esc_attr( admin_url( 'theme-editor.php' ) ) ),
-					'editor_closing_html' => '</a>',
 					'file'       => self::$edited_file['file_name'],
+					'theme_name' => (string) self::$edited_file['theme'],
 					'theme'      => self::$edited_file['theme']->get_template(),
-					'closing'    => '</a>',
 					'new_value'  => self::$edited_file['file_contents_after'],
 					'old_value'  => self::$edited_file['file_contents_before'],
 				);
 
 				self::log(
-					__( '%1$s file of %2$s theme was updated via %3$sEditor%4$s', 'stream' ),
+					__( '%1$s file edited in %2$s theme', 'stream' ),
 					$properties,
 					null,
-					array( 'file' => 'updated' )
+					array( 'file' => 'edited' )
 				);
 			}
 		}
