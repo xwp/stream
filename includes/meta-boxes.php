@@ -195,17 +195,19 @@ class WP_Stream_Reports_Metaboxes {
 		$data_type  = isset( $args['data_type'] ) ? $args['data_type'] : null;
 		$data_group = isset( $args['data_group'] ) ? $args['data_group'] : null;
 
-		if ( 'connector' === $data_group ) {
-			$query_args['connector'] = $data_type;
-		} 
-		elseif ( 'context' === $data_group ) {
-			$query_args['context'] = $data_type;
-		} 
-		elseif ( 'action' === $data_group ) {
-			$query_args['action'] = $data_type;
-		}
-		else {
-			return array();
+		switch ( $data_group ) {
+			case 'connector':
+				$query_args['connector'] = $data_type;
+				break;
+			case 'context':
+				$query_args['context'] = $data_type;
+				break;
+			case 'action':
+				$query_args['action'] = $data_type;
+				break;
+			default:
+				return array();
+				break;
 		}
 
 		$grouping_field = $args['selector_type'];
