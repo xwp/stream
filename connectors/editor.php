@@ -60,9 +60,23 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * @return array Context label translations
 	 */
 	public static function get_context_labels() {
-		return array(
-			'file' => __( 'File', 'stream' ),
+		$themes = wp_get_themes();
+
+		$themes_slugs = array_map(
+			function( $theme ) {
+				return $theme->get_template();
+			},
+			$themes
 		);
+
+		$themes_names = array_map(
+			function( $theme ) {
+				return (string) $theme;
+			},
+			$themes
+		);
+
+		return array_combine( $themes_slugs, $themes_names );
 	}
 
 	/**
@@ -138,10 +152,11 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 			$file_contents_after = file_get_contents( self::$edited_file['file_path'] );
 
 			if ( $file_contents_after !== self::$edited_file['file_contents_before'] ) {
+				$theme_slug = self::$edited_file['theme']->get_template();
 				$properties = array(
 					'file'       => self::$edited_file['file_name'],
 					'theme_name' => (string) self::$edited_file['theme'],
-					'theme'      => self::$edited_file['theme']->get_template(),
+					'theme'      => $theme_slug,
 					'new_value'  => self::$edited_file['file_contents_after'],
 					'old_value'  => self::$edited_file['file_contents_before'],
 				);
@@ -150,7 +165,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 					__( '%1$s file edited in %2$s theme', 'stream' ),
 					$properties,
 					null,
-					array( 'file' => 'edited' )
+					array( $theme_slug => 'edited' )
 				);
 			}
 		}
