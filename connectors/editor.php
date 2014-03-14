@@ -67,8 +67,37 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		);
 	}
 
-	public static function callback_admin_init() {
+	/**
+	 * Check if edition of file is requested
+	 *
+	 * @return bool Whether valid edition request is sent
+	 */
+	public static function is_edition_requested() {
 		if ( 'theme-editor' !== get_current_screen()->id ) {
+			return false;
+		}
+
+		if( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
+			return false;
+		}
+
+		if( ! isset( $_POST['action'] ) || 'update' !== $_POST['action'] ) {
+			return false;
+		}
+
+		$theme_name = ( isset( $_POST['theme'] ) && $_POST['theme'] ? $_POST['theme'] : get_stylesheet() );
+
+		$theme = wp_get_theme( $theme_name );
+
+		if ( ! $theme->exists() || ( $theme->errors() && 'theme_no_stylesheet' === $theme->errors()->get_error_code() ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public static function callback_admin_init() {
+		if ( ! is_admin() || 'theme-editor' !== get_current_screen()->id ) {
 			return;
 		}
 
