@@ -368,7 +368,7 @@
 
 				var dateFormat = function( d ) {
 					var milliseconds = d * 1000;
-					return d3.time.format('%x')(new Date( milliseconds ));
+					return d3.time.format('%Y/%m/%d')(new Date( milliseconds ));
 				};
 
 				nv.addGraph(function () {
