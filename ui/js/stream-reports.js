@@ -304,7 +304,7 @@
 					'show': true,
 					'label': null,
 					'format': ',r',
-					'reduceTicks': false,
+					'reduceTicks': true,
 					'rotateLabels': 0
 				},
 
