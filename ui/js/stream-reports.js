@@ -294,16 +294,16 @@
 				// y Axis information
 				'yAxis': {
 					'show': true,
-					'label' : null,
-					'format' : ',r',
+					'label': null,
+					'format': ',r',
 					'reduceTicks': false
 				},
 
 				// x Axis information
 				'xAxis': {
 					'show': true,
-					'label' : null,
-					'format' : ',r',
+					'label': null,
+					'format': ',r',
 					'reduceTicks': false,
 					'rotateLabels': 0
 				},
@@ -340,7 +340,7 @@
 
 		// Build all the opts to be drawn later
 		init: function (elements, $columns, opts) {
-			opts = $.extend(true, {}, report.chart._.opts, { '$' : elements }, (typeof opts !== 'undefined' ? opts : {}));
+			opts = $.extend(true, {}, report.chart._.opts, { '$': elements }, (typeof opts !== 'undefined' ? opts : {}));
 
 			opts.$.each(function (k, el) {
 				var $el = $(el),
