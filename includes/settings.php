@@ -129,7 +129,7 @@ class WP_Stream_Settings {
 				sprintf(
 					'%s%5$s%s%5$s%s%5$s%s',
 					__( 'ID:', 'stream' ) . ' ' . $user->ID,
-					__( 'User:', 'stream' ) . ' ' . $user->user_nicename,
+					__( 'User:', 'stream' ) . ' ' . $user->user_login,
 					__( 'Email:', 'stream' ) . ' ' . $user->user_email,
 					__( 'Role:', 'stream' ) . ' ' . implode( ',', $user->roles ),
 					PHP_EOL
