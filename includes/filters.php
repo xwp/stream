@@ -94,6 +94,52 @@ class WP_Stream_Filter_Input {
 		return $var;
 	}
 
+	/**
+	 * See http://www.php.net/manual/en/function.filter-var-array.php
+	 *
+	 * @param array $data
+	 * @param mixed $definition
+	 *
+	 * @return mixed
+	 */
+	public static function filter_var_input( $data, $definition ) {
+		foreach ( $definition as $key => &$value ) {
+			if ( isset( $data[ $key ] ) ) {
+				if ( is_array( $value ) ) {
+					$value['options'] = isset( $value['options'] ) ? $value['options'] : array();
+					$value = self::filter( $data[ $key ], $value['filter'], $value['options'] );
+				} else {
+					$value = self::filter( $data[ $key ], $value );
+				}
+			} else {
+				$value = false;
+			}
+		}
+
+		return $definition;
+	}
+
+	/**
+	 * See http://www.php.net/manual/en/function.filter-input-array.php
+	 *
+	 * @param int   $type
+	 * @param mixed $definition
+	 *
+	 * @return mixed
+	 */
+	public static function filter_input_array( $type, $definition ) {
+		foreach ( $definition as $key => &$value ) {
+			if ( is_array( $value ) ) {
+				$value['options'] = isset( $value['options'] ) ? $value['options'] : array();
+				$value = self::super( $type, $key, $value['filter'], $value['options'] );
+			} else {
+				$value = self::super( $type, $key, $value );
+			}
+		}
+
+		return $definition;
+	}
+
 	public static function is_regex( $var ) {
 		$test = @preg_match( $var, '' );
 
@@ -110,6 +156,14 @@ function wp_stream_filter_input( $type, $variable_name, $filter = null, $options
 	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'super' ), func_get_args() );
 }
 
+function wp_stream_filter_input_array( $type, $definition ) {
+	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'filter_input_array' ), func_get_args() );
+}
+
 function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
 	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'filter' ), func_get_args() );
+}
+
+function wp_stream_filter_var_array( $data, $definition ) {
+	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'filter_var_input' ), func_get_args() );
 }
