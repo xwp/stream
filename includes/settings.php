@@ -127,11 +127,11 @@ class WP_Stream_Settings {
 
 			$args['tooltip'] = esc_attr(
 				sprintf(
-					'ID: %s%5$sUser: %s%5$sEmail: %s%5$sRole: %s',
-					$user->ID,
-					$user->user_nicename,
-					$user->user_email,
-					implode( ',', $user->roles ),
+					'%s%5$s%s%5$s%s%5$s%s',
+					__( 'ID:', 'stream' ) . ' ' . $user->ID,
+					__( 'User:', 'stream' ) . ' ' . $user->user_nicename,
+					__( 'Email:', 'stream' ) . ' ' . $user->user_email,
+					__( 'Role:', 'stream' ) . ' ' . implode( ',', $user->roles ),
 					PHP_EOL
 				)
 			);
