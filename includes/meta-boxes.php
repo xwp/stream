@@ -304,7 +304,7 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	/**
-	 * Groups objects with similar field properties into ararys
+	 * Groups objects with similar field properties into arrays
 	 * @return array
 	 */
 	protected function group_by_field( $field, $records, $callback = '' ) {
