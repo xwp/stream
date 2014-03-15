@@ -131,7 +131,7 @@ class WP_Stream_Settings {
 					__( 'ID:', 'stream' ) . ' ' . $user->ID,
 					__( 'User:', 'stream' ) . ' ' . $user->user_login,
 					__( 'Email:', 'stream' ) . ' ' . $user->user_email,
-					__( 'Role:', 'stream' ) . ' ' . implode( ',', $user->roles ),
+					__( 'Role:', 'stream' ) . ' ' . implode( ',', self::get_roles() ),
 					PHP_EOL
 				)
 			);
