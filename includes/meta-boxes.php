@@ -77,7 +77,7 @@ class WP_Stream_Reports_Metaboxes {
 			);
 
 			// Default metabox argument
-			$default   = array(
+			$default = array(
 				'title'      => sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $key + 1 ) ),
 				'priority'   => 'default',
 				'context'    => 'normal',
@@ -415,13 +415,10 @@ class WP_Stream_Reports_Metaboxes {
 	 * This function will remove the metabox from the current view.
 	 */
 	public function delete_metabox() {
-		$meta_key = false;
-		if ( isset( $_GET[ 'key' ] ) && is_numeric( $_GET['key'] ) ) {
-			$meta_key = (int) $_GET['key'];
-		}
+		$meta_key = wp_stream_filter_input( INPUT_GET, 'key', FILTER_SANITIZE_NUMBER_INT );
 
 		// Unset the metabox from the array.
-		unset( self::$sections[$meta_key] );
+		unset( self::$sections[ $meta_key ] );
 
 		// If there is no more section. We delete the user option.
 		if ( empty( self::$sections ) ) {
