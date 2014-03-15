@@ -390,6 +390,7 @@
 
 						case 'multibar':
 							data.chart = nv.models.multiBarChart();
+							data.chart.yAxis.tickFormat( d3.format(',f') );
 							data.chart.xAxis.tickFormat( dateFormat );
 							break;
 
