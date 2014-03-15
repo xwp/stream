@@ -326,7 +326,7 @@
 				'type': false,
 
 				// Miliseconds on the animation, or false to deactivate
-				'animate': 200,
+				'animate': 350,
 
 				// Check if a graph need to be draw
 				'draw': null
