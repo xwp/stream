@@ -373,34 +373,33 @@
 
 				nv.addGraph(function () {
 					switch (data.type) {
-					case 'donut':
-					case 'pie':
-						data.chart = nv.models.pieChart();
-						data.chart.x(function (d) { return d.key; });
-						data.chart.y(function (d) { return d.value; });
+						case 'donut':
+						case 'pie':
+							data.chart = nv.models.pieChart();
+							data.chart.x(function (d) { return d.key; });
+							data.chart.y(function (d) { return d.value; });
+							if ('donut' === data.type) {
+								data.chart.donut(true);
+							}
+							break;
 
-						if ('donut' === data.type) {
-							data.chart.donut(true);
-						}
-						break;
+						case 'line':
+							data.chart = nv.models.lineChart();
+							data.chart.xAxis.tickFormat( dateFormat );
+							break;
 
-					case 'line':
-						data.chart = nv.models.lineChart();
-						data.chart.xAxis.tickFormat( dateFormat );
-						break;
+						case 'multibar':
+							data.chart = nv.models.multiBarChart();
+							data.chart.xAxis.tickFormat( dateFormat );
+							break;
 
-					case 'multibar':
-						data.chart = nv.models.multiBarChart();
-						data.chart.xAxis.tickFormat( dateFormat );
-						break;
+						case 'multibar-horizontal':
+							data.chart = nv.models.multiBarHorizontalChart();
+							data.chart.xAxis.tickFormat( dateFormat );
+							break;
 
-					case 'multibar-horizontal':
-						data.chart = nv.models.multiBarHorizontalChart();
-						data.chart.xAxis.tickFormat( dateFormat );
-						break;
-
-					default: // If we don't have a type of chart defined it gets out...
-						return;
+						default: // If we don't have a type of chart defined it gets out...
+							return;
 					}
 
 					var mapValidation = [
