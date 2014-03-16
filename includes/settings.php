@@ -125,13 +125,14 @@ class WP_Stream_Settings {
 				'text'     => $user->display_name,
 			);
 
+			$user_roles = array_map( 'ucwords', $user->roles );
 			$args['tooltip'] = esc_attr(
 				sprintf(
-					'%s%5$s%s%5$s%s%5$s%s',
-					__( 'ID:', 'stream' ) . ' ' . $user->ID,
-					__( 'User:', 'stream' ) . ' ' . $user->user_login,
-					__( 'Email:', 'stream' ) . ' ' . $user->user_email,
-					__( 'Role:', 'stream' ) . ' ' . implode( ',', self::get_roles() ),
+					__( 'ID: %d%5$sUser: %s%5$sEmail: %s%5$sRole: %s', 'stream' ),
+					$user->ID,
+					$user->user_login,
+					$user->user_email,
+					implode( ', ', $user_roles ),
 					PHP_EOL
 				)
 			);
