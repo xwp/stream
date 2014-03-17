@@ -157,9 +157,23 @@ class WP_Stream_Settings {
 
 		check_ajax_referer( 'stream_get_ips', 'nonce' );
 
-		$response = array();
+		global $wpdb;
 
-		wp_send_json_success( $response );
+		$results = $wpdb->get_col(
+			$wpdb->prepare(
+				"
+					SELECT distinct(`ip`)
+					FROM `{$wpdb->stream}`
+					WHERE `ip` LIKE %s
+					ORDER BY inet_aton(`ip`) ASC
+					LIMIT %d;
+				",
+				like_escape( $_POST['find'] ) . '%',
+				$_POST['limit']
+			)
+		);
+
+		wp_send_json_success( $results );
 	}
 
 	/**
