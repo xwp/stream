@@ -98,16 +98,41 @@ jQuery(function($){
 	});
 	$( '.stream_page_wp_stream_settings input[type=hidden].select2-select.ip-addresses').each(function( k, el ){
 		var $input = $(el);
-		var $ip_regex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
+
 		$input.select2({
 			tags:$input.data('selected'),
 			width:350,
-			query: function (query){
-				var data = {results: []};
-				if(typeof (query.term) !== 'undefined' && query.term.match($ip_regex) != null ){
-					data.results.push({id: query.term, text: query.term });
+			ajax: {
+				type: 'POST',
+				url: ajaxurl,
+				dataType: 'json',
+				quietMillis: 500,
+				data: function (term, page) {
+					return {
+						find:   term,
+						limit:  10,
+						action: 'stream_get_ips',
+						nonce:  $input.data('nonce')
+					};
+				},
+				results: function (response) {
+					var answer = {
+						results: []
+					};
+
+					if (response.success !== true || response.data === undefined ) {
+						return answer;
+					}
+
+					$.each(response.data, function (key, ip ) {
+						answer.results.push({
+							id:   ip,
+							text: ip
+						});
+					});
+
+					return answer;
 				}
-				query.callback(data);
 			},
 			initSelection: function (item, callback) {
 				callback( item.data( 'selected' ) );
