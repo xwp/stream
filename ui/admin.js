@@ -107,7 +107,7 @@ jQuery(function($){
 				url: ajaxurl,
 				dataType: 'json',
 				quietMillis: 500,
-				data: function (term, page) {
+				data: function (term) {
 					return {
 						find:   term,
 						limit:  10,
@@ -140,7 +140,7 @@ jQuery(function($){
 			formatNoMatches : function(){
 				return '';
 			},
-			createSearchChoice: function(term, data) {
+			createSearchChoice: function(term) {
 				var ip_chunks = [];
 
 				ip_chunks = term.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
