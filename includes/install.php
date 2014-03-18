@@ -178,7 +178,7 @@ class WP_Stream_Install {
 			$media_records = $wpdb->get_results( $sql ); // db call ok
 
 			require_once WP_STREAM_INC_DIR . 'query.php';
-			require_once WP_STREAM_CLASS_DIR . 'connector.php';
+			require_once WP_STREAM_INC_DIR . 'connector.php';
 			require_once WP_STREAM_DIR . 'connectors/media.php';
 
 			foreach ( $media_records as $record ) {

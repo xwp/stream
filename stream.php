@@ -64,7 +64,6 @@ class WP_Stream {
 		define( 'WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
-		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 
 		// Load filters polyfill
 		require_once WP_STREAM_INC_DIR . 'filters.php';
