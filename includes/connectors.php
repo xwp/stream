@@ -35,14 +35,17 @@ class WP_Stream_Connectors {
 
 		require_once WP_STREAM_INC_DIR . 'connector.php';
 
+		$found = wp_cache_get( 'connectors_glob', 'wp_stream' );
+		if ( empty( $found ) ) {
+			$found = glob( WP_STREAM_DIR . 'connectors/*.php' );
+			wp_cache_set( 'connectors_glob', $found, 'wp_stream' );
+		}
 		$classes = array();
-		if ( $found = glob( WP_STREAM_DIR . 'connectors/*.php' ) ) {
-			foreach ( $found as $class ) {
-				include_once $class;
-				$class_name = ucwords( preg_match( '#(.+)\.php#', basename( $class ), $matches ) ? $matches[1] : '' );
-				$class      = "WP_Stream_Connector_$class_name";
-				$classes[]  = $class;
-			}
+		foreach ( $found as $class ) {
+			include_once $class;
+			$class_name = ucwords( preg_match( '#(.+)\.php#', basename( $class ), $matches ) ? $matches[1] : '' );
+			$class      = "WP_Stream_Connector_$class_name";
+			$classes[]  = $class;
 		}
 
 		$exclude_all_connector = false;

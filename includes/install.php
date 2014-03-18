@@ -28,6 +28,7 @@ class WP_Stream_Install {
 			self::install();
 		} elseif ( $db_version !== $current ) {
 			self::update( $db_version, $current );
+			self::flush_object_cache();
 		} else {
 			return;
 		}
@@ -203,6 +204,16 @@ class WP_Stream_Install {
 		if ( version_compare( $db_version, '1.3.0', '<' ) ) {
 			add_filter( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_old_options_to_exclude_tab' );
 		}
+	}
+
+	/**
+	 * Any data that stream stores in the object cache should get deleted here
+	 * Extension plugins should purge the object cache of the data they've added
+	 * via the wp_stream_flush_object_cache action fired here.
+	 */
+	public static function flush_object_cache() {
+		wp_cache_delete( 'connectors_glob', 'wp_stream' );
+		do_action( 'wp_stream_flush_object_cache' );
 	}
 
 	/**
