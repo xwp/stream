@@ -141,17 +141,42 @@ jQuery(function($){
 				return '';
 			},
 			createSearchChoice: function(term, data) {
-				var repeats = $(data)
-						.filter(function() {
-							return this.text === term;
-						});
+				var repeats = [],
+					ip_chunks = [];
 
-				if (repeats.length === 0) {
-					return {
-						id:   term,
-						text: term
-					};
+				ip_chunks = term.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+
+				if(ip_chunks === null) {
+					return;
 				}
+
+				// remove whole match
+				ip_chunks.shift();
+
+				ip_chunks = $.grep(
+					ip_chunks,
+					function(chunk) {
+						return (chunk.charAt(0) !== '0' && parseInt(chunk, 10) <= 255);
+					}
+				);
+
+				if(ip_chunks.length < 4) {
+					return;
+				}
+
+				repeats = $(data)
+					.filter(function() {
+						return this.text === term;
+					});
+
+				if (repeats.length > 0) {
+					return;
+				}
+
+				return {
+					id:   term,
+					text: term
+				};
 			}
 		}).on('change',function(e){
 			stream_select2_change_handler( e , $input );
