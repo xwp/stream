@@ -166,6 +166,14 @@ jQuery(function($){
 					return answer;
 				}
 			},
+			formatResult: function (object) {
+				var result = object.text;
+
+				if ('undefined' !== typeof object.icon) {
+					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
+				}
+				return result;
+			},
 			formatSelection: function (object){
 				if ( $.isNumeric( object.id ) && object.text.indexOf('icon-users') < 0 ){
 					object.text += '<i class="icon16 icon-users"></i>';
