@@ -141,12 +141,11 @@ jQuery(function($){
 				return '';
 			},
 			createSearchChoice: function(term, data) {
-				var repeats = [],
-					ip_chunks = [];
+				var ip_chunks = [];
 
 				ip_chunks = term.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
 
-				if(ip_chunks === null) {
+				if (ip_chunks === null) {
 					return;
 				}
 
@@ -160,16 +159,7 @@ jQuery(function($){
 					}
 				);
 
-				if(ip_chunks.length < 4) {
-					return;
-				}
-
-				repeats = $(data)
-					.filter(function() {
-						return this.text === term;
-					});
-
-				if (repeats.length > 0) {
+				if (ip_chunks.length < 4) {
 					return;
 				}
 
