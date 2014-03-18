@@ -69,7 +69,7 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'filters.php';
 
 		// Load DB helper class
-		require_once WP_STREAM_INC_DIR . 'db-actions.php';
+		require_once WP_STREAM_INC_DIR . 'db.php';
 		$this->db = new WP_Stream_DB;
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
