@@ -139,6 +139,19 @@ jQuery(function($){
 			},
 			formatNoMatches : function(){
 				return '';
+			},
+			createSearchChoice: function(term, data) {
+				var repeats = $(data)
+						.filter(function() {
+							return this.text === term;
+						});
+
+				if (repeats.length === 0) {
+					return {
+						id:   term,
+						text: term
+					};
+				}
 			}
 		}).on('change',function(e){
 			stream_select2_change_handler( e , $input );
