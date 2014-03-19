@@ -3,14 +3,17 @@ jQuery(function($){
 
 	$( '.toplevel_page_wp_stream select.chosen-select' ).select2({
 			minimumResultsForSearch: 10,
-			formatResult: function (record) {
-				var result = '';
+			formatResult: function (record, container) {
+				var result = '', $elem = $(record.element);
 
-				if ( undefined !== $(record.element).attr('data-icon') ) {
-					result += '<img src="' + $(record.element).attr('data-icon') + '" class="wp-stream-select2-icon">';
+				if ( undefined !== $elem.attr('data-icon') ) {
+					result += '<img src="' + $elem.attr('data-icon') + '" class="wp-stream-select2-icon">';
 				}
 
 				result += record.text;
+
+				// Add more info to the container
+				container.attr('title', $elem.attr('title'));
 
 				return result;
 			},
