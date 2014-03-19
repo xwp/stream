@@ -353,7 +353,7 @@ class WP_Stream_Notifications_Form {
 				'options'   => array_combine(
 					array_map(
 						function( $weekday_index ) {
-							return $weekday_index % 7;
+							return sprintf( 'weekday_%d', $weekday_index % 7 );
 						},
 						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
 					),
