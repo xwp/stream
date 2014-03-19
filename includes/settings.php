@@ -76,17 +76,14 @@ class WP_Stream_Settings {
 	 * @return void
 	 */
 	public static function get_users(){
-		if ( ! defined( 'DOING_AJAX' ) ) {
-			return;
-		}
-		if ( ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
+		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
 			return;
 		}
 
 		check_ajax_referer( 'stream_get_users', 'nonce' );
 
 		$response = (object) array(
-			'status' => false,
+			'status'  => false,
 			'message' => __( 'There was an error in the request', 'stream' ),
 		);
 
@@ -148,10 +145,7 @@ class WP_Stream_Settings {
 	 * @return void
 	 */
 	public static function get_ips(){
-		if ( ! defined( 'DOING_AJAX' ) ) {
-			return;
-		}
-		if ( ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
+		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
 			return;
 		}
 
