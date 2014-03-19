@@ -350,8 +350,21 @@ class WP_Stream_Notifications_Form {
 				'title'     => esc_html__( 'Day of Week', 'stream-notifications' ),
 				'type'      => 'select',
 				'operators' => $default_operators,
-				'options'   => array(
-					
+				'options'   => array_combine(
+					array_map(
+						function( $weekday_index ) {
+							return $weekday_index % 7;
+						},
+						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
+					),
+					array_map(
+						function( $weekday_index ) {
+							global $wp_locale;
+
+							return $wp_locale->get_weekday ( $weekday_index % 7 );
+						},
+						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
+					)
 				),
 			),
 
