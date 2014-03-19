@@ -444,7 +444,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$authors_records[ $user_id ]['icon'] = $gravatar_url;
 			}
 			$user_roles = array_map( 'ucwords', $user->roles );
-			$authors_records[ $user_id ]['label'] = $user->display_name;
+			$authors_records[ $user_id ]['label']   = $user->display_name;
 			$authors_records[ $user_id ]['tooltip'] = sprintf(
 				__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
 				$user->ID,
