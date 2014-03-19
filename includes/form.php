@@ -346,6 +346,15 @@ class WP_Stream_Notifications_Form {
 				),
 			),
 
+			'weekday' => array(
+				'title'     => esc_html__( 'Day of Week', 'stream-notifications' ),
+				'type'      => 'select',
+				'operators' => $default_operators,
+				'options'   => array(
+					
+				),
+			),
+
 			// TODO: find a way to introduce meta to the rules, problem: not translatable since it is
 			// generated on run time with no prior definition
 			// 'meta_query'            => array(),
