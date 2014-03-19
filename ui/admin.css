@@ -88,6 +88,10 @@
 	padding-top: 6px;
 }
 
+.toplevel_page_wp_stream .tablenav.bottom .button {
+	margin-right: 6px;
+}
+
 .toplevel_page_wp_stream .tablenav .actions {
 	padding: 0;
 	overflow: visible;
