@@ -328,6 +328,31 @@ jQuery(function($){
 			});
 		});
 
+		//Enable Filter Toggle Checkbox Ajax
+		$( '.stream-toggle-filters input[type=checkbox]' ).click( function( e ) {
+			//e.preventDefault();
+			var nonce   = $( '#toggle_filters_nonce' ).val();
+			var user	= $( '#toggle_filters_user' ).val();
+			var checked = 'unchecked';
+			var checkbox = $(this).attr('id');
+			if ( $(this).is( ':checked' ) ) {
+				checked = 'checked';
+			}
+
+			$.ajax({
+				type: 'POST',
+				url: ajaxurl,
+				data: { action: 'stream_toggle_filters', nonce : nonce, user : user, checked : checked, checkbox: checkbox },
+				dataType: 'json',
+				beforeSend : function() {
+					$( checkbox + ' .spinner' ).show().css( { 'display' : 'inline-block' } );
+				},
+				success : function() {
+					window.location.reload();
+				}
+			});
+		});
+
 		$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
 
 	});

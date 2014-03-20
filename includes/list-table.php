@@ -21,7 +21,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
-		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
+		add_filter( 'screen_settings', array( __CLASS__, 'screen_controls' ), 10, 2 );
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
 		set_screen_options();
@@ -431,43 +431,65 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filters_form() {
+
+		$user_id = get_current_user_id();
+
+		$filters_option = get_user_meta( $user_id, 'stream_toggle_filters', true );
+
+		$no_filters = true;
+
+		foreach( $filters_option as $option ) {
+			if ( $option ) {
+				$no_filters = false;
+				break;
+			}
+
+		}
+
+		if ( $no_filters )
+			return;
+
 		$filters = array();
 
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
-		$authors_records = $this->assemble_records( 'author', 'stream' );
+		if( $filters_option['authors'] ) {
+			$authors_records = $this->assemble_records( 'author', 'stream' );
 
-		foreach ( $authors_records as $user_id => $user ) {
-			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
-				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
-				$authors_records[ $user_id ]['icon'] = $gravatar_url;
+			foreach ( $authors_records as $user_id => $user ) {
+				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
+					list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+					$authors_records[ $user_id ]['icon'] = $gravatar_url;
+				}
+			}
+
+			$filters['author'] = array();
+			$filters['author']['title'] = __( 'authors', 'stream' );
+
+			if ( count( $authors_records ) <= WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
+				$filters['author']['items'] = $authors_records;
+			} else {
+				$filters['author']['ajax'] = true;
 			}
 		}
-
-		$filters['author'] = array();
-		$filters['author']['title'] = __( 'authors', 'stream' );
-
-		if ( count( $authors_records ) <= WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
-			$filters['author']['items'] = $authors_records;
-		} else {
-			$filters['author']['ajax'] = true;
+		if( $filters_option['connectors'] ) {
+			$filters['connector'] = array(
+				'title' => __( 'connectors', 'stream' ),
+				'items' => $this->assemble_records( 'connector' ),
+			);
 		}
-
-		$filters['connector'] = array(
-			'title' => __( 'connectors', 'stream' ),
-			'items' => $this->assemble_records( 'connector' ),
-		);
-
-		$filters['context'] = array(
-			'title' => __( 'contexts', 'stream' ),
-			'items' => $this->assemble_records( 'context' ),
-		);
-
-		$filters['action'] = array(
-			'title' => __( 'actions', 'stream' ),
-			'items' => $this->assemble_records( 'action' ),
-		);
-
+		if( $filters_option['contexts'] ) {
+			$filters['context'] = array(
+				'title' => __( 'contexts', 'stream' ),
+				'items' => $this->assemble_records( 'context' ),
+			);
+		}
+		if( $filters_option['actions'] ) {
+			$filters['action'] = array(
+				'title' => __( 'actions', 'stream' ),
+				'items' => $this->assemble_records( 'action' ),
+			);
+		}
 		/**
 		 * Filter allows additional filters in the list table dropdowns
 		 * Note the format of the filters above, with they key and array
@@ -478,8 +500,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		 */
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
 
-		$filters_string .= $this->filter_date();
-
+		if( $filters_option['date_range'] ) {
+			$filters_string .= $this->filter_date();
+		}
 		foreach ( $filters as $name => $data ) {
 			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'] );
 		}
@@ -648,15 +671,28 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 	}
 
-	static function live_update_checkbox( $status, $args ) {
+	static function screen_controls( $status, $args ) {
+
 		$user_id = get_current_user_id();
-		$option  = ( 'off' !== get_user_meta( $user_id, 'stream_live_update_records', true ) );
-		$nonce   = wp_create_nonce( 'stream_live_update_nonce' );
+		$option  = get_user_meta( $user_id, 'enable_live_update', true );
+		$filters_option_defaults = array(
+			'date_range' => false,
+			'authors' => false,
+			'connectors' => false,
+			'contexts' => false,
+			'actions' => false
+		);
+		$filters_option = get_user_meta( $user_id, 'stream_toggle_filters', true );
+		if ( empty( $filters_option ) )
+		$filters_option = update_user_meta( $user_id,'stream_toggle_filters', $filters_option_defaults );
+
+		$nonce_1   = wp_create_nonce( 'enable_live_update_nonce' );
+		$nonce_2   = wp_create_nonce( 'toggle_filters_nonce' );
 		ob_start();
 		?>
 		<fieldset>
 			<h5><?php esc_html_e( 'Live updates', 'stream' ) ?></h5>
-			<div><input type="hidden" name="enable_live_update_nonce" id="enable_live_update_nonce" value="<?php echo esc_attr( $nonce ) ?>" /></div>
+			<div><input type="hidden" name="stream_live_update_nonce" id="stream_live_update_nonce" value="<?php echo esc_attr( $nonce_1 ) ?>" /></div>
 			<div><input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ) ?>" /></div>
 			<div class="metabox-prefs stream-live-update-checkbox">
 				<label for="enable_live_update">
@@ -665,6 +701,31 @@ class WP_Stream_List_Table extends WP_List_Table {
 				</label>
 			</div>
 		</fieldset>
+		<fieldset>
+			<h5><?php esc_html_e( 'Toggle Filters', 'stream' ) ?></h5>
+			<div><input type="hidden" name="toggle_filters_nonce" id="toggle_filters_nonce" value="<?php echo esc_attr( $nonce_2 ) ?>" /></div>
+			<div><input type="hidden" name="toggle_filters_user" id="toggle_filters_user" value="<?php echo absint( $user_id ) ?>" /></div>
+			<div class="metabox-prefs stream-toggle-filters">
+				<?php
+				$filters = apply_filters( 'stream_toggle_filters', array(
+					'date_range' => __( 'Date Range', 'stream' ),
+					'authors' => __( 'Authors', 'stream' ),
+					'connectors' => __( 'Connectors', 'stream' ),
+					'contexts' => __( 'Contexts', 'stream' ),
+					'actions' => __( 'Actions', 'stream' ),
+				) );
+
+				foreach( $filters as $key => $val ) : ?>
+					<label for="<?php echo esc_attr( $key ); ?>">
+						<input type="hidden" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" value="0" />
+						<input type="checkbox" value="1" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" id="<?php echo esc_attr( $key ); ?>" <?php checked( $filters_option[$key] ) ?> />
+						<?php esc_html_e( sprintf( __( '%s', 'stream'  ), $val ) ); ?><span class="spinner"></span>
+					</label>
+				<?php endforeach; ?>
+
+			</div>
+		</fieldset>
+
 		<?php
 		return ob_get_clean();
 	}

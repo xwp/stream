@@ -67,6 +67,8 @@ class WP_Stream_Admin {
 		// Enable/Disable live update per user
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
 
+		add_action( 'wp_ajax_stream_toggle_filters', array( __CLASS__, 'toggle_filters' ) );
+
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
@@ -841,6 +843,39 @@ class WP_Stream_Admin {
 		} else {
 			wp_send_json_error( 'Live Updates checkbox error' );
 		}
+	}
+
+	public static function toggle_filters() {
+		check_ajax_referer( 'toggle_filters_nonce', 'nonce' );
+
+		$input = array(
+			'checked'     => FILTER_SANITIZE_STRING,
+			'user'        => FILTER_SANITIZE_STRING,
+			'checkbox'    => FILTER_SANITIZE_STRING,
+		);
+
+		$input = filter_input_array( INPUT_POST, $input );
+
+		if ( false === $input ) {
+			wp_send_json_error( 'Error in toggle filter checkbox' );
+		}
+
+		$checked = ( 'checked' === $input['checked'] ) ? true : false;
+
+		$user = (int) $input['user'];
+
+		$filters_option = get_user_meta( $user, 'stream_toggle_filters', true );
+
+		$filters_option[$input['checkbox']] = $checked;
+
+		$success = update_user_meta( $user,'stream_toggle_filters', $filters_option );
+
+		if ( $success ) {
+			wp_send_json_success( 'Toggled filter option' );
+		} else {
+			wp_send_json_error( 'Toggled filter checkbox error' );
+		}
+
 	}
 
 	/**
