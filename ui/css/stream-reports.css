@@ -51,8 +51,17 @@
 	overflow: hidden;
 }
 
-.stream_page_wp_stream_reports .postbox .configure .chart-options {
-	width: 40%;
+.stream_page_wp_stream_reports .postbox .configure .chart-option {
+	margin-right: 5px;
+	width: 20%;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .chart-dataset {
+	width: 30%;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .grouping-separator {
+	margin-right: 3px;
 }
 
 .stream_page_wp_stream_reports .postbox .configure input.button {
@@ -61,7 +70,6 @@
 
 .stream_page_wp_stream_reports .postbox .configure .chart-types {
 	display: inline-block;
-	margin-left: 10px;
 }
 
 .stream_page_wp_stream_reports .postbox .configure .chart-types .dashicons {

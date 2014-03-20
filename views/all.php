@@ -10,7 +10,7 @@
 	<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ) ?>
 	<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ) ?>
 
-	<?php stream_reports_intervals_html() ?>
+	<?php wp_stream_reports_intervals_html() ?>
 
 	<div id="dashboard-widgets" class="<?php echo esc_attr( $class ) ?>">
 
