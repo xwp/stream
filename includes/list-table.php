@@ -383,7 +383,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			foreach ( $authors as $author ) {
 				$author = get_user_by( 'id', $author->ID );
 				if ( $author ) {
-					$all_records[ $author->ID ] = $author->display_name;
+					$all_records[ $author->ID ] = $author;
 				}
 			}
 		} else {
@@ -438,10 +438,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$authors_records = $this->assemble_records( 'author', 'stream' );
 
 		foreach ( $authors_records as $user_id => $user ) {
+			$user = $user['label'];
 			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
 				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
 				$authors_records[ $user_id ]['icon'] = $gravatar_url;
 			}
+			$user_roles = array_map( 'ucwords', $user->roles );
+			$authors_records[ $user_id ]['label']   = $user->display_name;
+			$authors_records[ $user_id ]['tooltip'] = sprintf(
+				__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+				$user->ID,
+				$user->user_login,
+				$user->user_email,
+				implode( ', ', $user_roles )
+			);
 		}
 
 		$filters['author'] = array();
@@ -503,11 +513,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
 			foreach ( $items as $v => $label ) {
 				$options[ $v ] = sprintf(
-					'<option value="%s" %s %s %s>%s</option>',
+					'<option value="%s" %s %s %s title="%s">%s</option>',
 					$v,
 					selected( $v, $selected, false ),
 					$label['disabled'],
 					isset( $label['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $label['icon'] ) ) : '',
+					isset( $label['tooltip'] ) ? esc_attr( $label['tooltip'] ) : '',
 					$label['label']
 				);
 			}

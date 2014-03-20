@@ -124,8 +124,19 @@ class WP_Stream_Settings {
 			}
 
 			$args = array(
-				'id'   => $user->ID,
-				'text' => $user->display_name,
+				'id'       => $user->ID,
+				'text'     => $user->display_name,
+			);
+
+			$user_roles = array_map( 'ucwords', $user->roles );
+			$args['tooltip'] = esc_attr(
+				sprintf(
+					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+					$user->ID,
+					$user->user_login,
+					$user->user_email,
+					implode( ', ', $user_roles )
+				)
 			);
 
 			if ( null !== $gravatar_url ) {

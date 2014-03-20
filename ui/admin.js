@@ -3,14 +3,17 @@ jQuery(function($){
 
 	$( '.toplevel_page_wp_stream select.chosen-select' ).select2({
 			minimumResultsForSearch: 10,
-			formatResult: function (record) {
-				var result = '';
+			formatResult: function (record, container) {
+				var result = '', $elem = $(record.element);
 
-				if ( undefined !== $(record.element).attr('data-icon') ) {
-					result += '<img src="' + $(record.element).attr('data-icon') + '" class="wp-stream-select2-icon">';
+				if ( undefined !== $elem.attr('data-icon') ) {
+					result += '<img src="' + $elem.attr('data-icon') + '" class="wp-stream-select2-icon">';
 				}
 
 				result += record.text;
+
+				// Add more info to the container
+				container.attr('title', $elem.attr('title'));
 
 				return result;
 			},
@@ -219,11 +222,13 @@ jQuery(function($){
 					return answer;
 				}
 			},
-			formatResult: function (object) {
+			formatResult: function (object, container) {
 				var result = object.text;
 
 				if ('undefined' !== typeof object.icon) {
 					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
+					// Add more info to the container
+					container.attr('title', object.tooltip);
 				}
 				return result;
 			},
@@ -231,6 +236,7 @@ jQuery(function($){
 				if ( $.isNumeric( object.id ) && object.text.indexOf('icon-users') < 0 ){
 					object.text += '<i class="icon16 icon-users"></i>';
 				}
+
 				return object.text;
 			},
 			initSelection: function (item, callback) {
