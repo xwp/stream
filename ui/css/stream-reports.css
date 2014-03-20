@@ -30,6 +30,10 @@
 	color : #f00;
 }
 
+.stream_page_wp_stream_reports .date-interval {
+	margin: 10px 10px 3px;
+}
+
 .stream_page_wp_stream_reports .postbox > .inside {
 	margin: 0;
 }
