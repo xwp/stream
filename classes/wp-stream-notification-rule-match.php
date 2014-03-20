@@ -122,6 +122,12 @@ class WP_Stream_Notification_Rule_Matcher {
 				$haystack = date( 'Ymd', strtotime( $log['created'] ) );
 				$needle   = date( 'Ymd', strtotime( $needle ) );
 				break;
+			case 'weekday':
+				if ( preg_match('#\d+#', $needle, $weekday_match ) ) {
+					$haystack = date( 'w', strtotime( $log['created'] ) );
+					$needle = $weekday_match[0];
+				}
+				break;
 			case 'connector':
 				$haystack = $log['connector'];
 				break;
