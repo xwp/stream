@@ -293,6 +293,9 @@ jQuery(function($){
 				stream_notifications
 			) ) );
 			selectify( divAlerts.find('.alert select') );
+			$('html, body').animate({
+				scrollTop: divAlerts.find(".alert").last().offset().top
+			}, 400);
 		})
 
 		// Reveal alert options after choosing alert type
