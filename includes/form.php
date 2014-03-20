@@ -346,6 +346,29 @@ class WP_Stream_Notifications_Form {
 				),
 			),
 
+			'weekday' => array(
+				'title'     => esc_html__( 'Day of Week', 'stream-notifications' ),
+				'type'      => 'select',
+				'multiple'  => true,
+				'operators' => $default_operators,
+				'options'   => array_combine(
+					array_map(
+						function( $weekday_index ) {
+							return sprintf( 'weekday_%d', $weekday_index % 7 );
+						},
+						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
+					),
+					array_map(
+						function( $weekday_index ) {
+							global $wp_locale;
+
+							return $wp_locale->get_weekday ( $weekday_index % 7 );
+						},
+						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
+					)
+				),
+			),
+
 			// TODO: find a way to introduce meta to the rules, problem: not translatable since it is
 			// generated on run time with no prior definition
 			// 'meta_query'            => array(),
