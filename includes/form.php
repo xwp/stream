@@ -349,6 +349,7 @@ class WP_Stream_Notifications_Form {
 			'weekday' => array(
 				'title'     => esc_html__( 'Day of Week', 'stream-notifications' ),
 				'type'      => 'select',
+				'multiple'  => true,
 				'operators' => $default_operators,
 				'options'   => array_combine(
 					array_map(
