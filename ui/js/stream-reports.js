@@ -155,7 +155,9 @@
 			var parent = this;
 
 			// Trigger select2js
-			this.$configureDiv.find('select.chart-option').select2();
+			this.$configureDiv.find('select.chart-option').select2({ 
+				minimumResultsForSearch: 5,
+			});
 
 			// Change chart type toggle
 			this.$configureDiv.find('.chart-types .dashicons').click(function () {
