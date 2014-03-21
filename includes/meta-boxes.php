@@ -130,7 +130,6 @@ class WP_Stream_Reports_Metaboxes {
 
 		// Get records sorted grouped by original sort
 		$date = new WP_Stream_Date_Interval();
-
 		$default_interval = array(
 			'key'   => 'all-time',
 			'start' => '',
@@ -138,6 +137,14 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		$user_interval = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
+		$user_interval_key = $user_interval['key'];
+
+		$available_intervals = $date->get_predefined_intervals();
+		if ( array_key_exists( $user_interval_key, $available_intervals ) ) {
+			$user_interval['start'] = $available_intervals[ $user_interval_key ]['start'];
+			$user_interval['end'] = $available_intervals[ $user_interval_key ]['end'];
+		}
+
 		$records       = $this->load_metabox_records( $args, $user_interval );
 
 		switch ( $chart_type ) {
