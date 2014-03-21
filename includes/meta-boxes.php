@@ -164,18 +164,19 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$data_types = array(
+			'all' => __( 'All Activity', 'stream-reports' ),
 			array(
-				'title'   => __( 'Connector Activity', 'stream-report' ),
+				'title'   => __( 'Connector Activity', 'stream-reports' ),
 				'group'   => 'connector',
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			),
 			array(
-				'title'   => __( 'Context Activity', 'stream-report' ),
+				'title'   => __( 'Context Activity', 'stream-reports' ),
 				'group'   => 'context',
 				'options' => WP_Stream_Connectors::$term_labels['stream_context'],
 			),
 			array(
-				'title'   => __( 'Actions Activity', 'stream-report' ),
+				'title'   => __( 'Actions Activity', 'stream-reports' ),
 				'group'   => 'action',
 				'options' => WP_Stream_Connectors::$term_labels['stream_action'],
 			),
@@ -312,6 +313,9 @@ class WP_Stream_Reports_Metaboxes {
 				break;
 			case 'action':
 				$query_args['action'] = $data_type;
+				break;
+			case 'other':
+				// all selector requires no query arg modifications
 				break;
 			default:
 				return array();
