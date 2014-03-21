@@ -308,7 +308,7 @@ jQuery(function($){
 		//Enable Live Update Checkbox Ajax
 		$( '#enable_live_update' ).click( function() {
 			var nonce   = $( '#enable_live_update_nonce' ).val();
-			var user	= $( '#enable_live_update_user' ).val();
+			var user = $( '#enable_live_update_user' ).val();
 			var checked = 'unchecked';
 			if ( $('#enable_live_update' ).is( ':checked' ) ) {
 				checked = 'checked';
@@ -330,9 +330,8 @@ jQuery(function($){
 
 		//Enable Filter Toggle Checkbox Ajax
 		$( '.stream-toggle-filters input[type=checkbox]' ).click( function( e ) {
-			//e.preventDefault();
-			var nonce   = $( '#toggle_filters_nonce' ).val();
-			var user	= $( '#toggle_filters_user' ).val();
+			var nonce = $('#toggle_filters_nonce').val();
+			var user = $('#toggle_filters_user').val();
 			var checked = 'unchecked';
 			var checkbox = $(this).attr('id');
 			if ( $(this).is( ':checked' ) ) {
