@@ -285,17 +285,17 @@ class WP_Stream_Reports_Metaboxes {
 	protected function get_label( $value, $grouping ) {
 		switch ( $grouping ) {
 			case 'action':
-				$output = WP_Stream_Connectors::$term_labels['stream_action'][ $value ];
+				$output = isset( WP_Stream_Connectors::$term_labels['stream_action'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_action'][ $value ] : $value;
 				break;
 			case 'author':
 				$user_info = get_userdata( $value );
 				$output    = isset( $user_info->display_name ) ? $user_info->display_name : __( 'N/A', 'stream-reports' );
 				break;
 			case 'context':
-				$output = WP_Stream_Connectors::$term_labels['stream_context'][ $value ];
+				$output = isset( WP_Stream_Connectors::$term_labels['stream_context'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_context'][ $value ] : $value;
 				break;
 			default:
-				$output = null;
+				$output = $value;
 		}
 
 		return $output;
