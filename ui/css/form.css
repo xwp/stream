@@ -10,6 +10,9 @@
 	background: #eee;
 	padding: 10px;
 }
+.trigger-value {
+	width: 200px;
+}
 #triggers .inside {
 	padding-bottom: 3px;
 }
