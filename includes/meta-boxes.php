@@ -155,6 +155,7 @@ class WP_Stream_Reports_Metaboxes {
 		$data_group = isset( $args['data_group'] ) ? $args['data_group'] : null;
 
 		$data_types = array(
+			'all' => __( 'All Activity', 'stream-report' ),
 			array(
 				'title'   => __( 'Connector Activity', 'stream-report' ),
 				'group'   => 'connector',
@@ -392,7 +393,7 @@ class WP_Stream_Reports_Metaboxes {
 
 		// Store the chart configuration
 		self::$sections[ $id ] = $input;
-
+		
 		// Update the database option
 		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
 	}
