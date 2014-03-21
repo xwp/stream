@@ -136,16 +136,16 @@ class WP_Stream_Reports_Metaboxes {
 			'end'   => '',
 		);
 
-		$user_interval = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
+		$user_interval     = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
 		$user_interval_key = $user_interval['key'];
 
 		$available_intervals = $date->get_predefined_intervals();
 		if ( array_key_exists( $user_interval_key, $available_intervals ) ) {
 			$user_interval['start'] = $available_intervals[ $user_interval_key ]['start'];
-			$user_interval['end'] = $available_intervals[ $user_interval_key ]['end'];
+			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
 		}
 
-		$records       = $this->load_metabox_records( $args, $user_interval );
+		$records = $this->load_metabox_records( $args, $user_interval );
 
 		switch ( $chart_type ) {
 			case 'pie':
@@ -162,19 +162,19 @@ class WP_Stream_Reports_Metaboxes {
 		$data_group = isset( $args['data_group'] ) ? $args['data_group'] : null;
 
 		$data_types = array(
-			'all' => __( 'All Activity', 'stream-report' ),
+			'all' => __( 'All Activity', 'stream-reports' ),
 			array(
-				'title'   => __( 'Connector Activity', 'stream-report' ),
+				'title'   => __( 'Connector Activity', 'stream-reports' ),
 				'group'   => 'connector',
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			),
 			array(
-				'title'   => __( 'Context Activity', 'stream-report' ),
+				'title'   => __( 'Context Activity', 'stream-reports' ),
 				'group'   => 'context',
 				'options' => WP_Stream_Connectors::$term_labels['stream_context'],
 			),
 			array(
-				'title'   => __( 'Actions Activity', 'stream-report' ),
+				'title'   => __( 'Actions Activity', 'stream-reports' ),
 				'group'   => 'action',
 				'options' => WP_Stream_Connectors::$term_labels['stream_action'],
 			),
@@ -403,7 +403,7 @@ class WP_Stream_Reports_Metaboxes {
 
 		// Store the chart configuration
 		self::$sections[ $id ] = $input;
-		
+
 		// Update the database option
 		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
 	}

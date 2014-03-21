@@ -5,12 +5,12 @@
 		<div class="inside">
 
 			<select class="chart-option chart-dataset">
-				<?php foreach ( $data_types as $section_key => $section ) : 
-					if( is_string( $section ) ) :?>
+				<?php foreach ( $data_types as $section_key => $section ) : ?>
+					<?php if ( is_string( $section ) ) : ?>
 						<option data-group="other" value="<?php echo esc_attr( $section_key ) ?>" <?php selected( $section_key === $data_type ) ?>>
 							<?php echo esc_html( $section ) ?>
 						</option>
-					<?php else: ?>
+					<?php else : ?>
 						<optgroup label="<?php echo esc_attr( $section['title'] ) ?>">
 						<?php foreach ( $section['options'] as $type => $text ) : ?>
 							<option data-group="<?php echo esc_attr( $section['group'] ) ?>" value="<?php echo esc_attr( $type ) ?>" <?php selected( $type === $data_type ) ?>>
