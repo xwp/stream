@@ -188,8 +188,14 @@
 				var selectors = parent.$configureDiv.find( '.chart-selector' );
 				selectors.find( 'option' ).removeAttr( 'disabled' );
 				for( var i = 0; i < disabled_selectors.length; i++ ){
-					selectors.find( 'option[value="' + disabled_selectors[i] + '"]').attr('disabled', 'disabled');
+					var option = selectors.find( 'option[value="' + disabled_selectors[i] + '"]');
+					option.attr('disabled', 'disabled');
+					if( option.is( ':selected' ) ) {
+						option.removeAttr( 'selected' );
+						selectors.trigger( 'change' );
+					}
 				}
+
 			} );
 
 			// Configuration toggle
