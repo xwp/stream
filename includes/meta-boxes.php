@@ -169,16 +169,23 @@ class WP_Stream_Reports_Metaboxes {
 				'title'   => __( 'Connector Activity', 'stream-reports' ),
 				'group'   => 'connector',
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
+				'disable' => array(),
 			),
 			array(
 				'title'   => __( 'Context Activity', 'stream-reports' ),
 				'group'   => 'context',
 				'options' => WP_Stream_Connectors::$term_labels['stream_context'],
+				'disable' => array(
+					'context'
+				),
 			),
 			array(
 				'title'   => __( 'Actions Activity', 'stream-reports' ),
 				'group'   => 'action',
 				'options' => WP_Stream_Connectors::$term_labels['stream_action'],
+				'disable' => array(
+					'action'
+				),
 			),
 		);
 

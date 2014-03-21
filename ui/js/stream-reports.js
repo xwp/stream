@@ -155,7 +155,9 @@
 			var parent = this;
 
 			// Trigger select2js
-			this.$configureDiv.find('select.chart-option').select2();
+			this.$configureDiv.find('select.chart-option').select2({ 
+				minimumResultsForSearch: 5,
+			});
 
 			// Change chart type toggle
 			this.$configureDiv.find('.chart-types .dashicons').click(function () {
@@ -175,6 +177,26 @@
 					return false;
 				}
 			});
+
+			this.$configureDiv.find( '.chart-dataset' ).on( 'change', function( e ) {
+				var dataset = e.val;
+
+				var option = parent.$configureDiv.find('.chart-dataset :selected');
+				var disable = option.closest('optgroup').data('disable-selectors');
+				var disabled_selectors = disable.split(',');
+
+				var selectors = parent.$configureDiv.find( '.chart-selector' );
+				selectors.find( 'option' ).removeAttr( 'disabled' );
+				for( var i = 0; i < disabled_selectors.length; i++ ){
+					var option = selectors.find( 'option[value="' + disabled_selectors[i] + '"]');
+					option.attr('disabled', 'disabled');
+					if( option.is( ':selected' ) ) {
+						option.removeAttr( 'selected' );
+						selectors.trigger( 'change' );
+					}
+				}
+
+			} );
 
 			// Configuration toggle
 			this.$configureBtn.on('click.streamReports', function () {
