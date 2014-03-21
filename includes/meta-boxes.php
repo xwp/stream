@@ -210,7 +210,7 @@ class WP_Stream_Reports_Metaboxes {
 
 		foreach ( $sorted as $line_name => $points ) {
 			$line_data = array(
-				'key'    => $this->get_label( $grouping ),
+				'key'    => $this->get_label( $line_name, $grouping ),
 				'values' => array(),
 			);
 
