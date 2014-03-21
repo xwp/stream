@@ -11,7 +11,7 @@
 							<?php echo esc_html( $section ) ?>
 						</option>
 					<?php else : ?>
-						<optgroup label="<?php echo esc_attr( $section['title'] ) ?>" data-disable-selectors="<?php echo esc_attr( join( ',', $section['disable'] ) ); ?>">
+						<optgroup label="<?php echo esc_attr( $section['title'] ) ?>" data-disable-selectors="<?php echo esc_attr( join( ',', $section['disable'] ) ) ?>">
 						<?php foreach ( $section['options'] as $type => $text ) : ?>
 							<option data-group="<?php echo esc_attr( $section['group'] ) ?>" value="<?php echo esc_attr( $type ) ?>" <?php selected( $type === $data_type ) ?>>
 								<?php echo esc_html( $text ) ?>
