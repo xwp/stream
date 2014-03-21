@@ -115,10 +115,9 @@ class WP_Stream_Reports_Metaboxes {
 		// Assigning template vars
 		$key = $section['args']['key'];
 
-
-		$chart_type = isset( $args['chart_type'] ) ? $args['chart_type'] : 'line';
-		$data_type  = isset( $args['data_type'] ) ? $args['data_type'] : null;
-		$data_group = isset( $args['data_group'] ) ? $args['data_group'] : null;
+		$chart_type    = isset( $args['chart_type'] ) ? $args['chart_type'] : 'line';
+		$data_type     = isset( $args['data_type'] ) ? $args['data_type'] : null;
+		$data_group    = isset( $args['data_group'] ) ? $args['data_group'] : null;
 		$selector_type = isset( $args['selector_type'] ) ? $args['selector_type'] : '';
 
 		$chart_types = array(
@@ -126,7 +125,7 @@ class WP_Stream_Reports_Metaboxes {
 			'pie'      => 'dashicons-chart-pie',
 			'line'     => 'dashicons-chart-area',
 		);
-		
+
 		if ( array_key_exists( $chart_type, $chart_types ) ) {
 			$chart_types[ $args['chart_type'] ] .= ' active';
 		} else {
@@ -142,16 +141,17 @@ class WP_Stream_Reports_Metaboxes {
 			'end'   => '',
 		);
 
-		$user_interval = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
+		$user_interval     = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
 		$user_interval_key = $user_interval['key'];
 
 		$available_intervals = $date->get_predefined_intervals();
 		if ( array_key_exists( $user_interval_key, $available_intervals ) ) {
 			$user_interval['start'] = $available_intervals[ $user_interval_key ]['start'];
-			$user_interval['end'] = $available_intervals[ $user_interval_key ]['end'];
+			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
 		}
 
-		$records       = $this->load_metabox_records( $args, $user_interval );
+		$records = $this->load_metabox_records( $args, $user_interval );
+
 		switch ( $chart_type ) {
 			case 'pie':
 				$coordinates = $this->get_pie_chart_coordinates( $records, $selector_type );
@@ -275,26 +275,22 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	protected function get_label( $value, $grouping ) {
-		
-		switch( $grouping ) {
-
+		switch ( $grouping ) {
 			case 'action':
-				return WP_Stream_Connectors::$term_labels['stream_action'][ $value ];
+				$output = WP_Stream_Connectors::$term_labels['stream_action'][ $value ];
 				break;
 			case 'author':
 				$user_info = get_userdata( $value );
-				if ( $user_info ) {
-					return $user_info->display_name;
-				} else {
-					return __( 'N/A', 'stream-report' );
-				}
+				$output    = isset( $user_info->display_name ) ? $user_info->display_name : __( 'N/A', 'stream-reports' );
 				break;
 			case 'context':
-				return WP_Stream_Connectors::$term_labels['stream_context'][ $value ];
+				$output = WP_Stream_Connectors::$term_labels['stream_context'][ $value ];
 				break;
-
+			default:
+				$output = null;
 		}
 
+		return $output;
 	}
 
 	public function load_metabox_records( $args, $date_interval ) {
