@@ -89,7 +89,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
 
 		// If user meta is not found; add the default hidden column 'id'
-		if ( false == $hidden ) {
+		if ( false === $hidden ) {
 			$hidden = array( 'id' );
 			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
 		}
