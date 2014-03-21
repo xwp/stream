@@ -115,18 +115,23 @@ class WP_Stream_Reports_Metaboxes {
 		// Assigning template vars
 		$key = $section['args']['key'];
 
-		// Create an object of available charts
+		$chart_type    = isset( $args['chart_type'] ) ? $args['chart_type'] : 'line';
+		$data_type     = isset( $args['data_type'] ) ? $args['data_type'] : null;
+		$data_group    = isset( $args['data_group'] ) ? $args['data_group'] : null;
+		$selector_type = isset( $args['selector_type'] ) ? $args['selector_type'] : '';
+
 		$chart_types = array(
 			'multibar' => 'dashicons-chart-bar',
 			'pie'      => 'dashicons-chart-pie',
 			'line'     => 'dashicons-chart-area',
 		);
 
-		$chart_type = isset( $args['chart_type'] ) ? $args['chart_type'] : 'line';
-
 		if ( array_key_exists( $chart_type, $chart_types ) ) {
 			$chart_types[ $args['chart_type'] ] .= ' active';
+		} else {
+			$chart_type = 'line';
 		}
+
 
 		// Get records sorted grouped by original sort
 		$date = new WP_Stream_Date_Interval();
@@ -136,30 +141,27 @@ class WP_Stream_Reports_Metaboxes {
 			'end'   => '',
 		);
 
-		$user_interval = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
+		$user_interval     = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
 		$user_interval_key = $user_interval['key'];
 
 		$available_intervals = $date->get_predefined_intervals();
 		if ( array_key_exists( $user_interval_key, $available_intervals ) ) {
 			$user_interval['start'] = $available_intervals[ $user_interval_key ]['start'];
-			$user_interval['end'] = $available_intervals[ $user_interval_key ]['end'];
+			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
 		}
 
-		$records       = $this->load_metabox_records( $args, $user_interval );
+		$records = $this->load_metabox_records( $args, $user_interval );
 
 		switch ( $chart_type ) {
 			case 'pie':
-				$coordinates = $this->get_pie_chart_coordinates( $records );
+				$coordinates = $this->get_pie_chart_coordinates( $records, $selector_type );
 				break;
 			case 'multibar' :
-				$coordinates = $this->get_bar_chart_coordinates( $records );
+				$coordinates = $this->get_bar_chart_coordinates( $records, $selector_type );
 				break;
 			default:
-				$coordinates = $this->get_line_chart_coordinates( $records );
+				$coordinates = $this->get_line_chart_coordinates( $records, $selector_type );
 		}
-
-		$data_type  = isset( $args['data_type'] ) ? $args['data_type'] : null;
-		$data_group = isset( $args['data_group'] ) ? $args['data_group'] : null;
 
 		$data_types = array(
 			array(
@@ -179,7 +181,6 @@ class WP_Stream_Reports_Metaboxes {
 			),
 		);
 
-		$selector_type = isset( $args['selector_type'] ) ? $args['selector_type'] : '';
 
 		$selector_types = array(
 			'author'  => __( 'Author', 'stream-reports' ),
@@ -190,7 +191,7 @@ class WP_Stream_Reports_Metaboxes {
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
 	}
 
-	public function get_line_chart_coordinates( $records ) {
+	public function get_line_chart_coordinates( $records, $grouping ) {
 		$sorted = array();
 
 		// Get date count for each sort
@@ -208,7 +209,7 @@ class WP_Stream_Reports_Metaboxes {
 
 		foreach ( $sorted as $line_name => $points ) {
 			$line_data = array(
-				'key'    => $line_name,
+				'key'    => $this->get_label( $grouping ),
 				'values' => array(),
 			);
 
@@ -225,12 +226,12 @@ class WP_Stream_Reports_Metaboxes {
 		return $coordinates;
 	}
 
-	public function get_pie_chart_coordinates( $records ) {
+	public function get_pie_chart_coordinates( $records, $grouping ) {
 		$counts = array();
 
 		foreach ( $records as $type => $items ) {
 			$counts[] = array(
-				'key'   => $type,
+				'key'   => $this->get_label( $type, $grouping ),
 				'value' => count( $items ),
 			);
 		};
@@ -238,7 +239,7 @@ class WP_Stream_Reports_Metaboxes {
 		return $counts;
 	}
 
-	public function get_bar_chart_coordinates( $records ) {
+	public function get_bar_chart_coordinates( $records, $grouping ) {
 		$sorted = array();
 
 		// Get date count for each sort
@@ -256,7 +257,7 @@ class WP_Stream_Reports_Metaboxes {
 
 		foreach ( $sorted as $line_name => $points ) {
 			$line_data = array(
-				'key'    => $line_name,
+				'key'    => $this->get_label( $line_name, $grouping ),
 				'values' => array(),
 			);
 
@@ -271,6 +272,25 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		return $coordinates;
+	}
+
+	protected function get_label( $value, $grouping ) {
+		switch ( $grouping ) {
+			case 'action':
+				$output = WP_Stream_Connectors::$term_labels['stream_action'][ $value ];
+				break;
+			case 'author':
+				$user_info = get_userdata( $value );
+				$output    = isset( $user_info->display_name ) ? $user_info->display_name : __( 'N/A', 'stream-reports' );
+				break;
+			case 'context':
+				$output = WP_Stream_Connectors::$term_labels['stream_context'][ $value ];
+				break;
+			default:
+				$output = null;
+		}
+
+		return $output;
 	}
 
 	public function load_metabox_records( $args, $date_interval ) {
