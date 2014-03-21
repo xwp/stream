@@ -287,6 +287,9 @@ class WP_Stream_Reports_Metaboxes {
 			case 'action':
 				$query_args['action'] = $data_type;
 				break;
+			case 'other':
+				// all selector requires no query arg modifications
+				break;
 			default:
 				return array();
 		}
