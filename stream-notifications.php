@@ -39,7 +39,7 @@ class WP_Stream_Notifications {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '1.2.6';
+	const STREAM_MIN_VERSION = '1.3.0';
 
 	/**
 	 * Hold Stream instance
