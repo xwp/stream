@@ -14,8 +14,6 @@ Stream Notifications allows you to create custom rules that will notify you when
 
 TBD
 
-[![Build Status](https://travis-ci.org/x-team/wp-stream-notifications.png?branch=master)](https://travis-ci.org/x-team/wp-stream-notifications)
-
 ## Changelog ##
 
 TBD
