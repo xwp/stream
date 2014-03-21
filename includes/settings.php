@@ -158,8 +158,13 @@ class WP_Stream_Reports_Settings {
 	 */
 	public static function update_user_option( $key, $option, $redirect = false ) {
 		$user_options = self::get_user_options();
-		$user_options[ $key ] = $option;
-		$is_saved = update_user_option( get_current_user_id(), __CLASS__, $user_options );
+
+		if ( $user_options[ $key ] != $option ) {
+			$user_options[ $key ] = $option;
+			$is_saved = update_user_option( get_current_user_id(), __CLASS__, $user_options );
+		} else {
+			$is_saved = true;
+		}
 
 		// If we need to redirect back to stream report page
 		if ( $is_saved && $redirect ) {
