@@ -115,18 +115,24 @@ class WP_Stream_Reports_Metaboxes {
 		// Assigning template vars
 		$key = $section['args']['key'];
 
-		// Create an object of available charts
+
+		$chart_type = isset( $args['chart_type'] ) ? $args['chart_type'] : 'line';
+		$data_type  = isset( $args['data_type'] ) ? $args['data_type'] : null;
+		$data_group = isset( $args['data_group'] ) ? $args['data_group'] : null;
+		$selector_type = isset( $args['selector_type'] ) ? $args['selector_type'] : '';
+
 		$chart_types = array(
 			'multibar' => 'dashicons-chart-bar',
 			'pie'      => 'dashicons-chart-pie',
 			'line'     => 'dashicons-chart-area',
 		);
-
-		$chart_type = isset( $args['chart_type'] ) ? $args['chart_type'] : 'line';
-
+		
 		if ( array_key_exists( $chart_type, $chart_types ) ) {
 			$chart_types[ $args['chart_type'] ] .= ' active';
+		} else {
+			$chart_type = 'line';
 		}
+
 
 		// Get records sorted grouped by original sort
 		$date = new WP_Stream_Date_Interval();
@@ -146,11 +152,6 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$records       = $this->load_metabox_records( $args, $user_interval );
-
-		$data_type  = isset( $args['data_type'] ) ? $args['data_type'] : null;
-		$data_group = isset( $args['data_group'] ) ? $args['data_group'] : null;
-		$selector_type = isset( $args['selector_type'] ) ? $args['selector_type'] : '';
-
 		switch ( $chart_type ) {
 			case 'pie':
 				$coordinates = $this->get_pie_chart_coordinates( $records, $selector_type );
