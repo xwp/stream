@@ -38,7 +38,7 @@ class WP_Stream_Reports {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '1.2.1';
+	const STREAM_MIN_VERSION = '1.3.0';
 
 	/**
 	 * Holds this plugin version
