@@ -855,8 +855,8 @@ class WP_Stream_Admin {
 		check_ajax_referer( 'stream_toggle_filters_nonce', 'nonce' );
 
 		$input = array(
-			'checked'  => wp_stream_filter_input( INPUT_POST, $_POST['checked'], FILTER_SANITIZE_STRING ),
-			'user'     => intval( $_POST['user'] ),
+			'checked'  => wp_stream_filter_input( INPUT_POST, 'checked', FILTER_SANITIZE_STRING ),
+			'user'     => wp_stream_filter_input( INPUT_POST, 'user', FILTER_SANITIZE_NUMBER_INT ),
 			'checkbox' => sanitize_key( $_POST['checkbox'] ),
 		);
 
