@@ -4,11 +4,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function __construct( $args = array() ) {
 		parent::__construct(
-			  array(
-				  'post_type' => 'stream',
-				  'plural'    => 'records',
-				  'screen'    => isset( $args['screen'] ) ? $args['screen'] : null,
-			  )
+			array(
+				'post_type' => 'stream',
+				'plural'    => 'records',
+				'screen'    => isset( $args['screen'] ) ? $args['screen'] : null,
+			)
 		);
 
 		add_screen_option(
@@ -90,10 +90,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$total_items = $this->get_total_found_rows();
 
 		$this->set_pagination_args(
-			 array(
-				 'total_items' => $total_items,
-				 'per_page'    => $this->get_items_per_page( 'edit_stream_per_page', 20 ),
-			 )
+			array(
+				'total_items' => $total_items,
+				'per_page'    => $this->get_items_per_page( 'edit_stream_per_page', 20 ),
+			)
 		);
 	}
 
@@ -702,7 +702,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'contexts'   => true,
 			'actions'    => true,
 		);
-		$filters_option          = get_user_meta( $user_id, 'stream_toggle_filters', true );
+		$filters_option = get_user_meta( $user_id, 'stream_toggle_filters', true );
 		if ( empty( $filters_option ) ) {
 			update_user_meta( $user_id, 'stream_toggle_filters', $filters_option_defaults );
 			$filters_option = get_user_meta( $user_id, 'stream_toggle_filters', true );
@@ -748,7 +748,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					)
 				);
 
-				foreach ( $filters as $key => $val ) : ?>
+		foreach ( $filters as $key => $val ) : ?>
 					<label for="<?php echo esc_attr( $key ); ?>">
 						<input type="hidden" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" value="0" />
 						<input type="checkbox" value="1" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" id="<?php echo esc_attr( $key ); ?>" <?php checked( $filters_option[ $key ] ) ?> />

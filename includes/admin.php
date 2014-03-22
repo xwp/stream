@@ -272,7 +272,7 @@ class WP_Stream_Admin {
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
 			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
-			$links[]        = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
+			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 
 			$url     = add_query_arg(
 				array(
@@ -300,7 +300,7 @@ class WP_Stream_Admin {
 			<?php settings_errors() ?>
 
 			<?php
-			$sections = WP_Stream_Settings::get_fields();
+			$sections   = WP_Stream_Settings::get_fields();
 			$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 			?>
 
@@ -319,10 +319,10 @@ class WP_Stream_Admin {
 				<form method="post" action="options.php" enctype="multipart/form-data">
 					<?php
 					$i = 0;
-					foreach ( $sections as $section => $data ) {
+		foreach ( $sections as $section => $data ) {
 						$i++;
 						$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
-						if ( $is_active ) {
+			if ( $is_active ) {
 							settings_fields( WP_Stream_Settings::KEY );
 							do_settings_sections( WP_Stream_Settings::KEY );
 						}
@@ -373,7 +373,7 @@ class WP_Stream_Admin {
 		global $wpdb;
 
 		$wpdb->query(
-			 "
+			"
 			DELETE t1, t2, t3
 			FROM {$wpdb->stream} as t1
 				INNER JOIN {$wpdb->streamcontext} as t2
@@ -433,8 +433,8 @@ class WP_Stream_Admin {
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
 		$wpdb->query(
-			 $wpdb->prepare(
-				  "
+			$wpdb->prepare(
+				"
 				DELETE t1, t2, t3
 				FROM {$wpdb->stream} as t1
 					INNER JOIN {$wpdb->streamcontext} as t2
@@ -444,8 +444,8 @@ class WP_Stream_Admin {
 					AND t1.ID = t2.record_id
 					AND t1.ID = t3.record_id;
 				",
-					  $date->format( 'Y-m-d H:i:s' )
-			 )
+					$date->format( 'Y-m-d H:i:s' )
+			)
 		);
 	}
 
