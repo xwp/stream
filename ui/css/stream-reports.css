@@ -107,6 +107,15 @@
 .stream_page_wp_stream_reports .nvtooltip.xy-tooltip {
 	font-family: "Open Sans", sans-serif !important;
 	margin: 20px 0 0 12px;
+	border: 1px solid #e5e5e5;
+
+	-webkit-border-radius: 6px;
+	   -moz-border-radius: 6px;
+	        border-radius: 6px;
+
+	-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+	   -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+	        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
 
 .stream_page_wp_stream_reports .nvtooltip.xy-tooltip h3 {
