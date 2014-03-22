@@ -453,60 +453,43 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters_option = get_user_meta( $user_id, 'stream_toggle_filters', true );
 
-		$no_filters = true;
-
-		foreach ( $filters_option as $option ) {
-			if ( $option ) {
-				$no_filters = false;
-				break;
-			}
-		}
-
-		if ( $no_filters ) {
-			return;
-		}
-
 		$filters = array();
 
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 
-		if ( $filters_option['authors'] ) {
-			$authors_records = $this->assemble_records( 'author', 'stream' );
+		$authors_records = $this->assemble_records( 'author', 'stream' );
 
-			foreach ( $authors_records as $user_id => $user ) {
-				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
-					list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
-					$authors_records[ $user_id ]['icon'] = $gravatar_url;
-				}
-			}
-
-			$filters['author']          = array();
-			$filters['author']['title'] = __( 'authors', 'stream' );
-
-			if ( count( $authors_records ) <= WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
-				$filters['author']['items'] = $authors_records;
-			} else {
-				$filters['author']['ajax'] = true;
+		foreach ( $authors_records as $user_id => $user ) {
+			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
+				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+				$authors_records[ $user_id ]['icon'] = $gravatar_url;
 			}
 		}
-		if ( $filters_option['connectors'] ) {
-			$filters['connector'] = array(
-				'title' => __( 'connectors', 'stream' ),
-				'items' => $this->assemble_records( 'connector' ),
-			);
+
+		$filters['author']          = array();
+		$filters['author']['title'] = __( 'authors', 'stream' );
+
+		if ( count( $authors_records ) <= WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
+			$filters['author']['items'] = $authors_records;
+		} else {
+			$filters['author']['ajax'] = true;
 		}
-		if ( $filters_option['contexts'] ) {
-			$filters['context'] = array(
-				'title' => __( 'contexts', 'stream' ),
-				'items' => $this->assemble_records( 'context' ),
-			);
-		}
-		if ( $filters_option['actions'] ) {
-			$filters['action'] = array(
-				'title' => __( 'actions', 'stream' ),
-				'items' => $this->assemble_records( 'action' ),
-			);
-		}
+
+		$filters['connector'] = array(
+			'title' => __( 'connectors', 'stream' ),
+			'items' => $this->assemble_records( 'connector' ),
+		);
+
+		$filters['context'] = array(
+			'title' => __( 'contexts', 'stream' ),
+			'items' => $this->assemble_records( 'context' ),
+		);
+
+		$filters['action'] = array(
+			'title' => __( 'actions', 'stream' ),
+			'items' => $this->assemble_records( 'action' ),
+		);
+
 		/**
 		 * Filter allows additional filters in the list table dropdowns
 		 * Note the format of the filters above, with they key and array
@@ -518,11 +501,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 		 */
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
 
-		if ( $filters_option['date_range'] ) {
-			$filters_string .= $this->filter_date();
-		}
+		$filters_string .= $this->filter_date();
+
 		foreach ( $filters as $name => $data ) {
-			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'] );
+			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'], $filters_option[ $name ] );
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
@@ -531,7 +513,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		echo sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
 
-	function filter_select( $name, $title, $items, $ajax ) {
+	function filter_select( $name, $title, $items, $ajax, $enabled = true ) {
+
+
 		if ( $ajax ) {
 			$out = sprintf(
 				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
@@ -697,10 +681,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$option                  = get_user_meta( $user_id, 'enable_live_update', true );
 		$filters_option_defaults = array(
 			'date_range' => true,
-			'authors'    => true,
-			'connectors' => true,
-			'contexts'   => true,
-			'actions'    => true,
+			'author'     => true,
+			'connector'  => true,
+			'context'    => true,
+			'action'     => true,
 		);
 		$filters_option = get_user_meta( $user_id, 'stream_toggle_filters', true );
 		if ( empty( $filters_option ) ) {
@@ -741,10 +725,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$filters = apply_filters(
 					'stream_toggle_filters', array(
 						'date_range' => __( 'Date Range', 'stream' ),
-						'authors'    => __( 'Authors', 'stream' ),
-						'connectors' => __( 'Connectors', 'stream' ),
-						'contexts'   => __( 'Contexts', 'stream' ),
-						'actions'    => __( 'Actions', 'stream' ),
+						'author'     => __( 'Authors', 'stream' ),
+						'connector'  => __( 'Connectors', 'stream' ),
+						'context'    => __( 'Contexts', 'stream' ),
+						'action'     => __( 'Actions', 'stream' ),
 					)
 				);
 

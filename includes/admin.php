@@ -178,6 +178,7 @@ class WP_Stream_Admin {
 				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
 				'current_query'  => json_encode( $_GET ),
+				'filter_controls' => get_user_meta( get_current_user_id(), 'stream_toggle_filters', true ),
 			)
 		);
 	}
@@ -854,19 +855,19 @@ class WP_Stream_Admin {
 		check_ajax_referer( 'stream_toggle_filters_nonce', 'nonce' );
 
 		$input = array(
-			'checked'  => wp_stream_filter_input( $_POST['checked'], FILTER_VALIDATE_BOOLEAN ),
-			'user'     => wp_stream_filter_input( $_POST['user'], FILTER_VALIDATE_INT ),
+			'checked'  => wp_stream_filter_input( INPUT_POST, $_POST['checked'], FILTER_SANITIZE_STRING ),
+			'user'     => intval( $_POST['user'] ),
 			'checkbox' => sanitize_key( $_POST['checkbox'] ),
 		);
 
 		$filters_option = get_user_meta( $input['user'], 'stream_toggle_filters', true );
 
-		$filters_option[$input['checkbox']] = ( 'checked' === $input['checked'] );
+		$filters_option[ $input['checkbox'] ] = ( 'checked' === $input['checked'] );
 
 		$success = update_user_meta( $input['user'], 'stream_toggle_filters', $filters_option );
 
 		if ( $success ) {
-			wp_send_json_success( 'Toggled filter option' );
+			wp_send_json( array( 'control' => $input['checkbox'] ) );
 		} else {
 			wp_send_json_error( 'Toggled filter checkbox error' );
 		}
