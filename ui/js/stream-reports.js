@@ -155,7 +155,7 @@
 			var parent = this;
 
 			// Trigger select2js
-			this.$configureDiv.find('select.chart-option').select2({ 
+			this.$configureDiv.find('select.chart-option').select2({
 				minimumResultsForSearch: 5,
 			});
 
@@ -398,6 +398,7 @@
 						case 'donut':
 						case 'pie':
 							data.chart = nv.models.pieChart();
+							data.chart.valueFormat( d3.format(',f') );
 							data.chart.x(function (d) { return d.key; });
 							data.chart.y(function (d) { return d.value; });
 							if ('donut' === data.type) {
