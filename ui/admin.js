@@ -343,8 +343,10 @@ jQuery(function($){
 			});
 			if ( all_hidden ) {
 				$( 'input#record-query-submit' ).hide();
+				$( 'span.filter_info' ).show();
 			} else {
 				$( 'input#record-query-submit' ).show();
+				$( 'span.filter_info' ).hide();
 			}
 		}
 
