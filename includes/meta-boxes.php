@@ -151,6 +151,10 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$records = $this->load_metabox_records( $args, $user_interval );
+		$records = $this->sort_by_count( $records );
+
+		$limit = apply_filters( 'stream_reports_record_limit', 10 );
+		$records = $this->limit_records( $records, $limit );
 
 		switch ( $chart_type ) {
 			case 'pie':
@@ -242,7 +246,7 @@ class WP_Stream_Reports_Metaboxes {
 				'key'   => $this->get_label( $type, $grouping ),
 				'value' => count( $items ),
 			);
-		};
+		}
 
 		return $counts;
 	}
@@ -283,6 +287,11 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	protected function get_label( $value, $grouping ) {
+		
+		if ( 'report-others' === $value ) {
+			return __( 'All Others', 'stream-reports' );
+		}
+
 		switch ( $grouping ) {
 			case 'action':
 				$output = isset( WP_Stream_Connectors::$term_labels['stream_action'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_action'][ $value ] : $value;
@@ -342,6 +351,59 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	/**
+	 * Sorts each set of data by the number of records in them
+	 */
+	protected function sort_by_count( $records ) {
+
+		$counts = array();
+		foreach ( $records as $field => $data ){
+
+			$count = count( $data );
+			if ( ! array_key_exists( $count, $counts ) ) {
+				$counts[ $count ] = array();
+			}
+			
+			$counts[ $count ][] = array(
+				'key' => $field,
+				'data' => $data
+			);
+		}
+
+		krsort( $counts );
+
+		$output = array();
+		foreach ( $counts as $count => $element ) {
+			
+			foreach ( $element as $element_data ) {
+				$output[ $element_data['key'] ] = $element_data['data'];
+			}
+		}
+
+		return $output;
+
+	}
+	
+	/**
+	 * Merges all records past limit into single record
+	 */
+	protected function limit_records( $records, $limit ) { 
+
+		$top_elements = array_slice( $records, 0, $limit );
+		$leftover_elements = array_slice( $records, $limit );
+		if ( ! $leftover_elements ) {
+			return $top_elements;
+		}
+
+		$other_element = array();
+		foreach( $leftover_elements as $data ){
+			$other_element = array_merge( $other_element, $data );
+		}
+
+		$top_elements['report-others'] = $other_element;
+		return $top_elements;
+	}
+
+	/**
 	 * Groups objects with similar field properties into arrays
 	 * @return array
 	 */
@@ -381,12 +443,9 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	/**
-	 * Used to group data points by day
-	 */
-	protected function collapse_dates( $date ) {
-		return strtotime( date( 'Y-m-d', strtotime( $date ) ) );
-	}
-
+	 * Adds blank fields for all keys present in any array
+	 * @return array
+	 */	
 	protected function pad_fields( $records ) {
 		$keys = array();
 
@@ -408,6 +467,14 @@ class WP_Stream_Reports_Metaboxes {
 
 		return $new_records;
 	}
+
+	/**
+	 * Used to group data points by day
+	 */
+	protected function collapse_dates( $date ) {
+		return strtotime( date( 'Y-m-d', strtotime( $date ) ) );
+	}
+
 
 	/**
 	 * Update configuration array from ajax call and save this to the user option
