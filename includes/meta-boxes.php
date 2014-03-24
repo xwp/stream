@@ -132,7 +132,6 @@ class WP_Stream_Reports_Metaboxes {
 			$chart_type = 'line';
 		}
 
-
 		// Get records sorted grouped by original sort
 		$date = new WP_Stream_Date_Interval();
 		$default_interval = array(
@@ -141,10 +140,10 @@ class WP_Stream_Reports_Metaboxes {
 			'end'   => '',
 		);
 
-		$user_interval     = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
-		$user_interval_key = $user_interval['key'];
-
+		$user_interval       = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
+		$user_interval_key   = $user_interval['key'];
 		$available_intervals = $date->get_predefined_intervals();
+
 		if ( array_key_exists( $user_interval_key, $available_intervals ) ) {
 			$user_interval['start'] = $available_intervals[ $user_interval_key ]['start'];
 			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
@@ -153,7 +152,7 @@ class WP_Stream_Reports_Metaboxes {
 		$records = $this->load_metabox_records( $args, $user_interval );
 		$records = $this->sort_by_count( $records );
 
-		$limit = apply_filters( 'stream_reports_record_limit', 10 );
+		$limit   = apply_filters( 'stream_reports_record_limit', 10 );
 		$records = $this->limit_records( $records, $limit );
 
 		switch ( $chart_type ) {
@@ -192,7 +191,6 @@ class WP_Stream_Reports_Metaboxes {
 				),
 			),
 		);
-
 
 		$selector_types = array(
 			'author'  => __( 'Author', 'stream-reports' ),
@@ -287,7 +285,6 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	protected function get_label( $value, $grouping ) {
-		
 		if ( 'report-others' === $value ) {
 			return __( 'All Others', 'stream-reports' );
 		}
@@ -362,10 +359,10 @@ class WP_Stream_Reports_Metaboxes {
 			if ( ! array_key_exists( $count, $counts ) ) {
 				$counts[ $count ] = array();
 			}
-			
+
 			$counts[ $count ][] = array(
 				'key' => $field,
-				'data' => $data
+				'data' => $data,
 			);
 		}
 
@@ -373,33 +370,33 @@ class WP_Stream_Reports_Metaboxes {
 
 		$output = array();
 		foreach ( $counts as $count => $element ) {
-			
+
 			foreach ( $element as $element_data ) {
 				$output[ $element_data['key'] ] = $element_data['data'];
 			}
 		}
 
 		return $output;
-
 	}
-	
+
 	/**
 	 * Merges all records past limit into single record
 	 */
-	protected function limit_records( $records, $limit ) { 
-
-		$top_elements = array_slice( $records, 0, $limit );
+	protected function limit_records( $records, $limit ) {
+		$top_elements      = array_slice( $records, 0, $limit );
 		$leftover_elements = array_slice( $records, $limit );
+
 		if ( ! $leftover_elements ) {
 			return $top_elements;
 		}
 
 		$other_element = array();
-		foreach( $leftover_elements as $data ){
+		foreach ( $leftover_elements as $data ) {
 			$other_element = array_merge( $other_element, $data );
 		}
 
 		$top_elements['report-others'] = $other_element;
+
 		return $top_elements;
 	}
 
@@ -445,7 +442,7 @@ class WP_Stream_Reports_Metaboxes {
 	/**
 	 * Adds blank fields for all keys present in any array
 	 * @return array
-	 */	
+	 */
 	protected function pad_fields( $records ) {
 		$keys = array();
 
@@ -474,7 +471,6 @@ class WP_Stream_Reports_Metaboxes {
 	protected function collapse_dates( $date ) {
 		return strtotime( date( 'Y-m-d', strtotime( $date ) ) );
 	}
-
 
 	/**
 	 * Update configuration array from ajax call and save this to the user option
