@@ -46,7 +46,7 @@ class WP_Stream_Reports_Metaboxes {
 
 	public function load_page() {
 		// Enqueue all core scripts required for this page to work
-		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
+		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 1 ) );
 
 		// Add all metaboxes
 		foreach ( self::$sections as $key => $section ) {
