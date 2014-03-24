@@ -168,13 +168,13 @@ class WP_Stream_Reports_Metaboxes {
 
 		$data_types = array(
 			'all' => __( 'All Activity', 'stream-reports' ),
-			array(
+			'connector' => array(
 				'title'   => __( 'Connector Activity', 'stream-reports' ),
 				'group'   => 'connector',
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
 				'disable' => array(),
 			),
-			array(
+			'context' => array(
 				'title'   => __( 'Context Activity', 'stream-reports' ),
 				'group'   => 'context',
 				'options' => WP_Stream_Connectors::$term_labels['stream_context'],
@@ -182,7 +182,7 @@ class WP_Stream_Reports_Metaboxes {
 					'context'
 				),
 			),
-			array(
+			'action' => array(
 				'title'   => __( 'Actions Activity', 'stream-reports' ),
 				'group'   => 'action',
 				'options' => WP_Stream_Connectors::$term_labels['stream_action'],
@@ -383,7 +383,7 @@ class WP_Stream_Reports_Metaboxes {
 	 * Merges all records past limit into single record
 	 */
 	protected function limit_records( $records, $limit ) {
-		$top_elements      = array_slice( $records, 0, $limit );
+		$top_elements      = array_slice( $records, 0, $limit, true );
 		$leftover_elements = array_slice( $records, $limit );
 
 		if ( ! $leftover_elements ) {
