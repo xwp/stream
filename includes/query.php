@@ -60,10 +60,11 @@ class WP_Stream_Query {
 			// Fields selection
 			'fields'                => '',
 			'ignore_context'        => null,
+			//Hide Excluded
+			'hide_excluded'         => true,
 		);
 
 		$args = wp_parse_args( $args, $defaults );
-
 		/**
 		 * Filter allows additional arguments to query $args
 		 *
@@ -71,6 +72,10 @@ class WP_Stream_Query {
 		 * @return array  Updated array of query arguments
 		 */
 		$args = apply_filters( 'stream_query_args', $args );
+
+		if ( true === $args[ 'hide_excluded' ] ) {
+			$args = self::add_excluded_record_args( $args );
+		}
 
 		$join  = '';
 		$where = '';
@@ -311,6 +316,42 @@ class WP_Stream_Query {
 		return $results;
 	}
 
+	/**
+	 * Function will add excluded settings args into stream query
+	 *
+	 * @param $args array query args passed to stream_query
+	 *
+	 * @return array
+	 */
+	public static function add_excluded_record_args( $args ) {
+		// Remove record of excluded connector
+		if ( empty( $args['connector'] ) ) {
+			$args['connector__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
+		}
+
+		// Remove record of excluded context
+		if ( empty( $args['context'] ) ) {
+			$args['context__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'contexts' );
+		}
+
+		// Remove record of excluded actions
+		if ( empty( $args['action'] ) ) {
+			$args['action__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
+		}
+
+		// Remove record of excluded author
+		if ( empty( $args['author'] ) ) {
+			$args['author__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
+		}
+
+		// Remove record of excluded ip
+		if ( empty( $args['ip'] ) ) {
+			$args['ip__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'ip_addresses' );
+		}
+
+		return $args;
+	}
+
 }
 
 function stream_query( $args = array() ) {
@@ -366,3 +407,4 @@ function existing_records( $column, $table = '' ) {
 		return isset( WP_Stream_Connectors::$term_labels[ $column ] ) ? WP_Stream_Connectors::$term_labels[ $column ] : array();
 	}
 }
+

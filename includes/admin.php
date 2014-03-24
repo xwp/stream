@@ -546,13 +546,7 @@ class WP_Stream_Admin {
 			'paged'            => $paged,
 		);
 
-		// Remove excluded records as per settings
-		add_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
-
 		$records = stream_query( $args );
-
-		// Remove filter added before
-		remove_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		if ( ! $records ) {
 			?>
@@ -808,14 +802,8 @@ class WP_Stream_Admin {
 		// Filter default
 		$query = wp_parse_args( $query, $default );
 
-		// Remove excluded records as per settings
-		add_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
-
 		// Run query
 		$items = stream_query( $query );
-
-		// Remove filter added before
-		remove_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		return $items;
 	}
