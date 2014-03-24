@@ -123,22 +123,23 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 			return;
 		}
 
-		$theme_name = ( isset( $_POST['theme'] ) && $_POST['theme'] ? $_POST['theme'] : get_stylesheet() );
-		$theme = wp_get_theme( $theme_name );
+		$theme_name = wp_stream_filter_input( INPUT_POST, 'theme' ) ? wp_stream_filter_input( INPUT_POST, 'theme' ) : get_stylesheet();
+		$theme      = wp_get_theme( $theme_name );
 
 		if ( ! $theme->exists() || ( $theme->errors() && 'theme_no_stylesheet' === $theme->errors()->get_error_code() ) ) {
 			return;
 		}
 
-		$allowed_files = $theme->get_files( 'php', 1 );
-		$style_files = $theme->get_files( 'css' );
+		$allowed_files              = $theme->get_files( 'php', 1 );
+		$style_files                = $theme->get_files( 'css' );
 		$allowed_files['style.css'] = $style_files['style.css'];
+		$file                       = wp_stream_filter_input( INPUT_POST, 'file' );
 
-		if ( empty( $_POST['file'] ) ) {
+		if ( empty( $file ) ) {
 			$file_name = 'style.css';
 			$file_path = $allowed_files['style.css'];
 		} else {
-			$file_name = $_POST['file'];
+			$file_name = $file;
 			$file_path = $theme->get_stylesheet_directory() . '/' . $file_name;
 		}
 
