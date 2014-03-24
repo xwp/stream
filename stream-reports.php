@@ -347,7 +347,7 @@ class WP_Stream_Reports {
 					'selector_type' => 'action',
 				),
 				array(
-					'id'            => 3,
+					'id'            => 2,
 					'title'         => __( 'Comments Activity by Action', 'stream-reports' ),
 					'chart_type'    => 'pie',
 					'data_group'    => 'connector',
