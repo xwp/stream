@@ -114,7 +114,7 @@ class WP_Stream_Date_Interval {
 		$first_stream_item = reset( $query );
 
 		if ( false === $first_stream_item ) {
-			return false;
+			return array();
 		}
 
 		$first_stream_date = \Carbon\Carbon::parse( $first_stream_item->created );
