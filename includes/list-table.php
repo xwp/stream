@@ -20,6 +20,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 			)
 		);
 
+		// Check for default hidden columns
+		$this->get_hidden_columns();
+
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
@@ -75,6 +78,23 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'id'   => array( 'ID', false ),
 			'date' => array( 'date', false ),
 		);
+	}
+
+	function get_hidden_columns() {
+		if ( ! $user = wp_get_current_user() ) {
+			return array();
+		}
+
+		// Directly checking the user meta; to check whether user has changed screen option or not
+		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
+
+		// If user meta is not found; add the default hidden column 'id'
+		if ( false === $hidden ) {
+			$hidden = array( 'id' );
+			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+		}
+
+		return $hidden;
 	}
 
 	function prepare_items() {
