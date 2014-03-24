@@ -289,6 +289,8 @@ class WP_Stream_Notifications_Form {
 			'!='        => esc_html__( 'is not', 'stream-notifications' ),
 			'contains'  => esc_html__( 'contains', 'stream-notifications' ),
 			'!contains' => esc_html__( 'does not contain', 'stream-notifications' ),
+			'starts'    => esc_html__( 'starts with', 'stream-notifications' ),
+			'ends'      => esc_html__( 'ends with', 'stream-notifications' ),
 			'regex'     => esc_html__( 'regex', 'stream-notifications' ),
 		);
 
