@@ -214,6 +214,12 @@ class WP_Stream_Notification_Rule_Matcher {
 			case '!contains':
 				$match = ( false !== strpos( $haystack, $needle ) );
 				break;
+			case 'starts':
+				$match = ( 0 === strpos( $haystack, $needle ) );
+				break;
+			case 'ends':
+				$match = ( strlen( $haystack ) - strlen( $needle ) === strrpos( $haystack, $needle ) );
+				break;
 			case 'regex':
 				$match = preg_match( $needle, $haystack ) > 0;
 				break;
