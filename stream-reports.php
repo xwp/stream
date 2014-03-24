@@ -315,6 +315,52 @@ class WP_Stream_Reports {
 	}
 
 	/**
+	 * Plugin activation route
+	 * @return void
+	 */
+	public function on_activation() {
+
+		if ( ! $this->is_dependency_satisfied() ) {
+			return;
+		}
+
+		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
+		WP_Stream_Reports_Settings::load();
+
+		$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
+		if ( ! $sections ) {
+			$sections = array(
+				array(
+					'id'            => 0,
+					'title'         => __( 'All Activity by Author', 'stream-reports' ),
+					'chart_type'    => 'line',
+					'data_group'    => 'other',
+					'data_type'     => 'all',
+					'selector_type' => 'author',
+				),
+				array(
+					'id'            => 1,
+					'title'         => __( 'All Activity by Action', 'stream-reports' ),
+					'chart_type'    => 'line',
+					'data_group'    => 'other',
+					'data_type'     => 'all',
+					'selector_type' => 'action',
+				),
+				array(
+					'id'            => 3,
+					'title'         => __( 'Comments Activity by Action', 'stream-reports' ),
+					'chart_type'    => 'pie',
+					'data_group'    => 'connector',
+					'data_type'     => 'comments',
+					'selector_type' => 'action',
+				),
+			);
+
+			WP_Stream_Reports_Settings::update_user_option( 'sections', $sections );
+		}
+	}
+
+	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
 	 *
 	 * @return bool
@@ -372,3 +418,4 @@ class WP_Stream_Reports {
 }
 
 $GLOBALS['wp_stream_reports'] = WP_Stream_Reports::get_instance();
+register_activation_hook( __FILE__, array( $GLOBALS['wp_stream_reports'], 'on_activation' ) );
