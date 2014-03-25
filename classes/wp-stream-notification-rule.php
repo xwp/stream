@@ -99,7 +99,7 @@ class WP_Stream_Notification_Rule {
 		foreach ( $keys as $key ) {
 			$data[$key] = $this->{$key};
 		}
-		return $data;
+		return stripslashes_deep( $data );
 	}
 
 	function __get( $key ) {
