@@ -243,9 +243,10 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		$selector_types = array(
-			'action'  => __( 'Action', 'stream-reports' ),
-			'author'  => __( 'Author', 'stream-reports' ),
-			'context' => __( 'Context', 'stream-reports' ),
+			'action'      => __( 'Action', 'stream-reports' ),
+			'author'      => __( 'Author', 'stream-reports' ),
+			'author_role' => __( 'Author Role', 'stream-reports' ),
+			'context'     => __( 'Context', 'stream-reports' ),
 		);
 		
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
@@ -347,6 +348,9 @@ class WP_Stream_Reports_Metaboxes {
 				$user_info = get_userdata( $value );
 				$output    = isset( $user_info->display_name ) ? $user_info->display_name : __( 'N/A', 'stream-reports' );
 				break;
+			case 'author_role':
+				$output = ucfirst( $value );
+				break;
 			case 'context':
 				$output = isset( WP_Stream_Connectors::$term_labels['stream_context'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_context'][ $value ] : $value;
 				break;
@@ -385,14 +389,26 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$grouping_field   = $args['selector_type'];
-		$available_fields = array( 'author', 'action', 'context', 'connector', 'ip' );
+		$available_fields = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip' );
 
 		if ( ! in_array( $grouping_field, $available_fields ) ) {
 			return array();
 		}
 
 		$unsorted = stream_query( $query_args );
-		$sorted   = $this->group_by_field( $grouping_field, $unsorted );
+		if ( 'author_role' === $grouping_field ) {
+			$users = array();
+			foreach ( $unsorted as $key => $record ) {
+
+				if ( ! array_key_exists( $record->author, $users ) ) {
+					$users[ $record->author ] = get_userdata( $record->author );
+				}
+
+				$record->author_role = join( ',', $users[ $record->author ]->roles );
+
+			}
+		}
+		$sorted = $this->group_by_field( $grouping_field, $unsorted );
 
 		return $sorted;
 	}
