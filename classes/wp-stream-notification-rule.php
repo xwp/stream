@@ -87,17 +87,6 @@ class WP_Stream_Notification_Rule {
 		if ( $this->ID ) {
 			$meta_keys = array( 'triggers', 'groups', 'alerts', );
 			$meta      = array_intersect_key( $data, array_flip( $meta_keys ) );
-			if ( isset( $meta['triggers'] ) && is_array( $meta['triggers'] ) ) {
-				$meta['triggers'] = array_map(
-					function( $trigger ) {
-						if ( isset( $trigger['value'] ) ) {
-							$trigger['value'] = stripslashes( $trigger['value'] );
-						}
-						return $trigger;
-					},
-					$meta['triggers']
-				);
-			}
 			update_option( 'stream_notifications_'.$this->ID, $meta );
 		}
 
