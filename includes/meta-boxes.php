@@ -77,7 +77,7 @@ class WP_Stream_Reports_Metaboxes {
 			),
 		);
 
-		WP_Stream_Reports_Settings::update_user_option( 'sections', $sections, false, true );
+		WP_Stream_Reports_Settings::update_user_option( 'sections', $sections );
 		
 		$interval = array(
 			'key' => 'last-30-days',
@@ -85,7 +85,7 @@ class WP_Stream_Reports_Metaboxes {
 			'end' => '',
 		);
 
-		WP_Stream_Reports_Settings::update_user_option( 'interval', $interval, true );
+		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'interval', $interval );
 
 	}
 
@@ -247,7 +247,7 @@ class WP_Stream_Reports_Metaboxes {
 			'context' => __( 'Context', 'stream-reports' ),
 			'action'  => __( 'Action', 'stream-reports' ),
 		);
-
+		
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
 	}
 
@@ -545,7 +545,7 @@ class WP_Stream_Reports_Metaboxes {
 		self::$sections[ $id ] = $input;
 
 		// Update the database option
-		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
+		WP_Stream_Reports_Settings::ajax_update_user_option( 'sections', self::$sections );
 	}
 
 	/**
@@ -562,8 +562,7 @@ class WP_Stream_Reports_Metaboxes {
 		// Add a new section
 		self::$sections[] = array();
 
-		// Update the database option (pass true in param so the function redirect)
-		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections, true );
+		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'sections', self::$sections );
 	}
 
 	/**
@@ -607,8 +606,7 @@ class WP_Stream_Reports_Metaboxes {
 			);
 		}
 
-		// Update the database option (pass true in param so the function redirect)
-		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections, true );
+		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'sections', self::$sections );
 	}
 
 	/**

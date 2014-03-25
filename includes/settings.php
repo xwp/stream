@@ -167,15 +167,15 @@ class WP_Stream_Reports_Settings {
 	 * @param string $key
 	 * @param mixed $option
 	 * @param bool  $redirect If the function must redirect and exit here
-	 * @param bool  $silent If the function shouldn't output anything
 	 */
-	public static function update_user_option( $key, $option, $redirect = false, $silent = false ) {
+	public static function update_user_option( $key, $option ) {
 		$user_options = self::get_user_options();
 
 		if ( ! isset( $user_options[ $key ] ) ) {
 			$user_options[ $key ] = array();
 		}
 
+		// Don't re-save if the value hasn't changed
 		if ( $user_options[ $key ] != $option ) {
 			$user_options[ $key ] = $option;
 			$is_saved = update_user_option( get_current_user_id(), __CLASS__, $user_options );
@@ -183,29 +183,50 @@ class WP_Stream_Reports_Settings {
 			$is_saved = true;
 		}
 
-		// If we need to redirect back to stream report page
-		if ( $is_saved && $redirect ) {
-			wp_redirect(
+		return $is_saved;
+	}
+
+	/**
+	 * Handles saving during AJAX requests
+	 *
+	 * @param string $key
+	 * @param mixed $option
+	 */
+	public static function ajax_update_user_option( $key, $option ) {
+
+		check_ajax_referer( 'stream-reports-page', 'stream_reports_nonce' );
+
+		$is_saved = self::update_user_option( $key, $option );
+
+		if ( $is_saved ) {
+			wp_send_json_success();
+		} else {
+			wp_send_json_error();
+		}
+
+	}
+
+	/**
+	 * Updates the user option and redirects back to the main page if successful
+	 *
+	 * @param string $key
+	 * @param mixed $option
+	 */
+	public static function update_user_option_and_redirect( $key, $option ) {
+
+		$is_saved = self::update_user_option( $key, $option );
+		if ( $saved ) {
+			wp_redierct(
 				add_query_arg(
 					array( 'page' => WP_Stream_Reports::REPORTS_PAGE_SLUG ),
 					admin_url( 'admin.php' )
 				)
 			);
 			exit;
-		} elseif ( $redirect ) {
+		} else {
 			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream-reports' ) );
 		}
 
-		if ( $silent ) {
-			return;
-		}
-
-		// If it was a standard ajax call requesting json back.
-		if ( $is_saved ) {
-			wp_send_json_success();
-		} else {
-			wp_send_json_error();
-		}
 	}
 
 }
