@@ -315,20 +315,6 @@ class WP_Stream_Reports {
 	}
 
 	/**
-	 * Plugin activation route
-	 * @return void
-	 */
-	public function on_activation() {
-		if ( ! $this->is_dependency_satisfied() ) {
-			return;
-		}
-
-		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
-		WP_Stream_Reports_Settings::load();
-
-	}
-
-	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
 	 *
 	 * @return bool
@@ -386,4 +372,3 @@ class WP_Stream_Reports {
 }
 
 $GLOBALS['wp_stream_reports'] = WP_Stream_Reports::get_instance();
-register_activation_hook( __FILE__, array( $GLOBALS['wp_stream_reports'], 'on_activation' ) );
