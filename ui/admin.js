@@ -178,7 +178,7 @@ jQuery(function($){
 	var $input_user;
 	$('.stream_page_wp_stream_settings input[type=hidden].select2-select.authors_and_roles').each(function (k, el) {
 		$input_user = $(el);
-		var roles = $input_user.data('values');
+
 		$input_user.select2({
 			multiple: true,
 			width: 350,
@@ -192,12 +192,22 @@ jQuery(function($){
 						'find': term,
 						'limit': 10,
 						'pager': page,
-						'action': 'stream_get_users',
+						'action': 'stream_get_users_and_roles',
 						'nonce' : $input_user.data('nonce')
 					};
 				},
 				results: function (response) {
-					var answer = {
+					var roles  = [];
+						answer = [];
+
+					roles = $.grep(
+						$input_user.data('values'),
+						function(role) {
+							return role.text.toLowerCase().indexOf($input_user.data('select2').search.val().toLowerCase()) >= 0;
+						}
+					);
+
+					answer = {
 						results: [
 							{
 								text: 'Roles',
@@ -209,6 +219,7 @@ jQuery(function($){
 							}
 						]
 					};
+
 					if (response.success !== true || response.data === undefined || response.data.status !== true ) {
 						return answer;
 					}
