@@ -367,17 +367,15 @@ class WP_Stream_Admin {
 	public static function erase_stream_records() {
 		global $wpdb;
 
-		$wpdb->query(
-			"
-			DELETE t1, t2, t3
-			FROM {$wpdb->stream} as t1
-				INNER JOIN {$wpdb->streamcontext} as t2
-				INNER JOIN {$wpdb->streammeta} as t3
-			WHERE t1.type = 'stream'
-				AND t1.ID = t2.record_id
-				AND t1.ID = t3.record_id;
-			"
-		);
+		$wpdb->query("
+			DELETE `stream`, `context`, `meta`
+			FROM {$wpdb->stream} AS `stream`
+			LEFT JOIN {$wpdb->streamcontext} AS `context`
+			ON `context`.`record_id` = `stream`.`ID`
+			LEFT JOIN {$wpdb->streammeta} AS `meta`
+			ON `meta`.`record_id` = `stream`.`ID`
+			WHERE `stream`.`type` = 'stream';
+		");
 	}
 
 	/**
