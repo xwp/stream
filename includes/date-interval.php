@@ -56,9 +56,9 @@ class WP_Stream_Reports_Date_Interval extends WP_Stream_Date_Interval {
 	 */
 	public function save_interval() {
 		$interval = array(
-			'key'   => wp_stream_filter_input( INPUT_GET, 'key', FILTER_SANITIZE_STRING, array('default' => '') ),
-			'start' => wp_stream_filter_input( INPUT_GET, 'start', FILTER_SANITIZE_STRING, array('default' => '') ),
-			'end'   => wp_stream_filter_input( INPUT_GET, 'end', FILTER_SANITIZE_STRING, array('default' => '') ),
+			'key'   => wp_stream_filter_input( INPUT_GET, 'key', FILTER_SANITIZE_STRING, array( 'default' => '' ) ),
+			'start' => wp_stream_filter_input( INPUT_GET, 'start', FILTER_SANITIZE_STRING, array( 'default' => '' ) ),
+			'end'   => wp_stream_filter_input( INPUT_GET, 'end', FILTER_SANITIZE_STRING, array( 'default' => '' ) ),
 		);
 
 		// Get predefined interval for validation
