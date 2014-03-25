@@ -129,6 +129,18 @@ class WP_Stream_Reports_Settings {
 	}
 
 	/**
+	 * Returns true if the settings have not been setup for this user
+	 * @return boolean
+	 */
+	public static function is_first_visit() {
+		if ( ! get_user_option( __CLASS__ ) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Get user option and store it in a static var for easy access
 	 *
 	 * @param null  $key
@@ -158,6 +170,10 @@ class WP_Stream_Reports_Settings {
 	 */
 	public static function update_user_option( $key, $option, $redirect = false ) {
 		$user_options = self::get_user_options();
+
+		if ( ! isset( $user_options[ $key ] ) ) {
+			$user_options[ $key ] = array();
+		}
 
 		if ( $user_options[ $key ] != $option ) {
 			$user_options[ $key ] = $option;

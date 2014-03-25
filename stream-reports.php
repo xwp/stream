@@ -327,37 +327,6 @@ class WP_Stream_Reports {
 		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
 		WP_Stream_Reports_Settings::load();
 
-		$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
-		if ( ! $sections ) {
-			$sections = array(
-				array(
-					'id'            => 0,
-					'title'         => __( 'All Activity by Author', 'stream-reports' ),
-					'chart_type'    => 'line',
-					'data_group'    => 'other',
-					'data_type'     => 'all',
-					'selector_type' => 'author',
-				),
-				array(
-					'id'            => 1,
-					'title'         => __( 'All Activity by Action', 'stream-reports' ),
-					'chart_type'    => 'line',
-					'data_group'    => 'other',
-					'data_type'     => 'all',
-					'selector_type' => 'action',
-				),
-				array(
-					'id'            => 2,
-					'title'         => __( 'Comments Activity by Action', 'stream-reports' ),
-					'chart_type'    => 'pie',
-					'data_group'    => 'connector',
-					'data_type'     => 'comments',
-					'selector_type' => 'action',
-				),
-			);
-
-			WP_Stream_Reports_Settings::update_user_option( 'sections', $sections );
-		}
 	}
 
 	/**

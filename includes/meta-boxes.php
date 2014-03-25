@@ -30,6 +30,7 @@ class WP_Stream_Reports_Metaboxes {
 	 * Public constructor
 	 */
 	public function __construct() {
+
 		// Get all sections from the db
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
@@ -44,7 +45,48 @@ class WP_Stream_Reports_Metaboxes {
 		WP_Stream_Reports::handle_ajax_request( $ajax_hooks, $this );
 	}
 
+	/**
+	 * Runs on a user's first visit to setup sample data
+	 */
+	protected function setup_user() {
+
+		$sections = array(
+			array(
+				'id'            => 0,
+				'title'         => __( 'All Activity by Author', 'stream-reports' ),
+				'chart_type'    => 'line',
+				'data_group'    => 'other',
+				'data_type'     => 'all',
+				'selector_type' => 'author',
+			),
+			array(
+				'id'            => 1,
+				'title'         => __( 'All Activity by Action', 'stream-reports' ),
+				'chart_type'    => 'line',
+				'data_group'    => 'other',
+				'data_type'     => 'all',
+				'selector_type' => 'action',
+			),
+			array(
+				'id'            => 2,
+				'title'         => __( 'Comments Activity by Action', 'stream-reports' ),
+				'chart_type'    => 'pie',
+				'data_group'    => 'connector',
+				'data_type'     => 'comments',
+				'selector_type' => 'action',
+			),
+		);
+
+		WP_Stream_Reports_Settings::update_user_option( 'sections', $sections, true );
+
+	}
+
 	public function load_page() {
+		
+		if ( is_admin() && WP_Stream_Reports_Settings::is_first_visit() ) {
+			$this->setup_user();
+		}
+
 		// Enqueue all core scripts required for this page to work
 		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
 
