@@ -407,7 +407,11 @@ class WP_Stream_Reports_Metaboxes {
 		if ( 'author_role' === $grouping_field ) {
 			foreach ( $unsorted as $key => $record ) {
 				$user = get_userdata( $record->author );
-				$record->author_role = join( ',', $user->roles );
+				if ( $user ) {
+					$record->author_role = join( ',', $user->roles );
+				} else {
+					$record->author_role = 'N/A';
+				}
 			}
 		}
 		$sorted = $this->group_by_field( $grouping_field, $unsorted );
