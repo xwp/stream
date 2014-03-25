@@ -319,7 +319,6 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function on_activation() {
-
 		if ( ! $this->is_dependency_satisfied() ) {
 			return;
 		}
