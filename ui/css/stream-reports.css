@@ -12,6 +12,10 @@
  * (There is override of core css declaration)
  */
 
+.stream_page_wp_stream_reports #dashboard-widgets h3 input.title {
+	width: 220px;
+}
+
 .stream_page_wp_stream_reports #dashboard-widgets h3 .postbox-title-action {
 	position: inherit;
 	padding: 0 8px 0 0;
@@ -49,7 +53,8 @@
 
 .stream_page_wp_stream_reports .postbox .configure .inside {
 	margin: 0;
-	padding: 10px 12px;
+	padding: 10px 12px 0;
+	min-height: 28px;
 }
 
 .stream_page_wp_stream_reports .postbox .configure.visible {
@@ -57,17 +62,30 @@
 	overflow: hidden;
 }
 
+.stream_page_wp_stream_reports .postbox .configure .chart-option,
+.stream_page_wp_stream_reports .postbox .configure .grouping-separator,
+.stream_page_wp_stream_reports .postbox .configure .chart-types {
+	float: left;
+	margin-bottom: 10px;
+}
+
 .stream_page_wp_stream_reports .postbox .configure .chart-option {
 	margin-right: 5px;
 	width: 20%;
+	max-width: 150px;
+	min-width: 120px;
 }
 
 .stream_page_wp_stream_reports .postbox .configure .chart-dataset {
 	width: 30%;
+	max-width: 250px;
+	min-width: 165px;
 }
 
 .stream_page_wp_stream_reports .postbox .configure .grouping-separator {
-	margin: 0 5px 0 2px;
+	margin-right: 5px;
+	margin-left: 2px;
+	line-height: 28px;
 }
 
 .stream_page_wp_stream_reports .postbox .configure input.button {
@@ -76,12 +94,14 @@
 
 .stream_page_wp_stream_reports .postbox .configure .chart-types {
 	display: inline-block;
+	line-height: 28px;
 }
 
 .stream_page_wp_stream_reports .postbox .configure .chart-types .dashicons {
 	padding-left: 5px;
 	color: #888888;
 	cursor: pointer;
+	line-height: 28px;
 }
 
 .stream_page_wp_stream_reports .postbox .configure .spinner {
@@ -92,6 +112,49 @@
 	color: #000;
 }
 
+@media only screen and (max-width: 782px) {
+	.stream_page_wp_stream_reports .date-interval .field-predefined,
+	.stream_page_wp_stream_reports .date-interval .date-inputs {
+		margin-bottom: 10px;
+	}
+
+	.stream_page_wp_stream_reports .date-interval .button {
+		float: left;
+		clear: left;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure .chart-option {
+		width: 46%;
+		margin: 0 0 6px;
+		max-width: none;
+		min-width: 0;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure .chart-selector {
+		float: right;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure .grouping-separator {
+		width: 8%;
+		text-align: center;
+		margin: 0 0 6px;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure .chart-types {
+		clear: left;
+		line-height: 36px;
+		margin-bottom: 0;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure .chart-types .dashicons {
+		line-height: 36px;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure input.button {
+		margin-bottom: 6px;
+	}
+}
+
 
 /* Charts */
 
@@ -100,8 +163,16 @@
 }
 
 .stream_page_wp_stream_reports .postbox .inside .chart {
-	padding: 12px;
 	height: 300px;
+	padding: 0;
+}
+
+.stream_page_wp_stream_reports .postbox .inside .chart svg {
+	padding: 12px;
+}
+
+.stream_page_wp_stream_reports .postbox .inside .chart svg g.nv-axisMaxMin:nth-child(3) text {
+	text-anchor: end !important;
 }
 
 .stream_page_wp_stream_reports .nvtooltip.xy-tooltip {
