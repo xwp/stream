@@ -189,11 +189,11 @@ jQuery(function($){
 				quietMillis: 500,
 				data: function (term, page) {
 					return {
-						'find': term,
-						'limit': 10,
-						'pager': page,
-						'action': 'stream_get_users_and_roles',
-						'nonce' : $input_user.data('nonce')
+						find:   term,
+						limit:  10,
+						pager:  page,
+						action: 'stream_get_users_and_roles',
+						nonce:  $input_user.data('nonce')
 					};
 				},
 				results: function (response) {
