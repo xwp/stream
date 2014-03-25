@@ -243,9 +243,9 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		$selector_types = array(
+			'action'  => __( 'Action', 'stream-reports' ),
 			'author'  => __( 'Author', 'stream-reports' ),
 			'context' => __( 'Context', 'stream-reports' ),
-			'action'  => __( 'Action', 'stream-reports' ),
 		);
 		
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
