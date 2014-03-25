@@ -174,9 +174,9 @@ class WP_Stream_Reports_Metaboxes {
 		$key = $section['args']['key'];
 
 		$args = wp_parse_args( $args, array(
-			'chart_type' => 'line',
-			'data_type' => null,
-			'data_group' => null,
+			'chart_type'    => 'line',
+			'data_type'     => null,
+			'data_group'    => null,
 			'selector_type' => ''
 		) );
 
@@ -202,9 +202,9 @@ class WP_Stream_Reports_Metaboxes {
 			'type'       => $args['chart_type'],
 			'guidelines' => true,
 			'tooltip'    => array(
-				'show' => true,
+				'show'   => true,
 			),
-			'values' => $this->get_chart_coordinates( $args ),
+			'values'     => $this->get_chart_coordinates( $args ),
 		);
 	}
 
@@ -606,13 +606,13 @@ class WP_Stream_Reports_Metaboxes {
 	public function update_metabox_display() {
 
 		$section_id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
-		$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
-		$section = $sections[ $section_id ];
+		$sections   = WP_Stream_Reports_Settings::get_user_options( 'sections' );
+		$section    = $sections[ $section_id ];
 
 		$args = wp_parse_args( $section, array(
-			'chart_type' => 'line',
-			'data_type' => null,
-			'data_group' => null,
+			'chart_type'    => 'line',
+			'data_type'     => null,
+			'data_group'    => null,
 			'selector_type' => ''
 		) );
 
