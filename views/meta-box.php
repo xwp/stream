@@ -43,17 +43,6 @@
 
 	</div>
 
-	<?php
-	$args = array(
-		'type'       => $args['chart_type'],
-		'guidelines' => true,
-		'tooltip'    => array(
-			'show' => true,
-		),
-		'values' => $coordinates,
-	);
-	?>
-
-	<div class="chart" data-report='<?php echo json_encode( $args ) ?>'><svg></svg></div>
+	<div class="chart" data-report='<?php echo json_encode( $chart_options ) ?>'><svg></svg></div>
 
 </div>

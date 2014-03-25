@@ -248,6 +248,9 @@
 
 			// Cancel button
 			$cancelBtn = $postbox.find('.hndle .open-box');
+
+			var id = $(this).data('id');
+
 			// Send the new
 			$.ajax({
 				type: 'GET',
@@ -259,7 +262,7 @@
 					data_group : parent.find( '.chart-dataset' ).select2('data').element[0].dataset.group,
 					data_type : parent.find('.chart-dataset').select2('data').id,
 					selector_type : parent.find('.chart-selector').select2('data').id,
-					section_id : $(this).data('id'),
+					section_id : id,
 					title : $postbox.find('.title').val(),
 				},
 				dataType: 'json',
@@ -267,6 +270,34 @@
 					$spinner.hide(0,function(){
 						$cancelBtn.trigger('click');
 					});
+
+					if( data.success == true ){
+
+						$.ajax({
+							type: 'GET',
+							url: ajaxurl,
+							data: {
+								action: 'stream_report_update_metabox_display',
+								stream_reports_nonce: $('#stream_report_nonce').val(),
+								section_id: id,
+							},
+							dataType: 'json',
+							success : function( data ) {
+
+								var new_chart_data = data.data;
+								var chart = $('#wp-stream-reports-' + id + ' .chart').data( 'report', new_chart_data );
+								chart.html('<svg></svg>');
+								stream.report.chart.init(
+									chart,
+									$('.columns-prefs input[type="radio"]')
+								);
+
+							}
+						})
+
+					}
+
+					
 				}
 			});
 		}

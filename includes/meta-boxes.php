@@ -180,19 +180,32 @@ class WP_Stream_Reports_Metaboxes {
 			'selector_type' => ''
 		) );
 
-		$coordinates = $this->get_chart_coordinates( $args );
-
-		$data_types = $this->get_data_types();
-		$selector_types = $this->get_selector_types();
 		$chart_types = $this->get_chart_types();
-
 		if ( array_key_exists( $args['chart_type'], $chart_types ) ) {
 			$chart_types[ $args['chart_type'] ] .= ' active';
 		} else {
-			$chart_type = 'line';
+			$args['chart_type'] = 'line';
 		}
+
+		$chart_options = $this->get_chart_options( $args );
+
+		$data_types = $this->get_data_types();
+		$selector_types = $this->get_selector_types();
+		
 		
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
+	}
+
+	protected function get_chart_options( $args ) {
+
+		return array(
+			'type'       => $args['chart_type'],
+			'guidelines' => true,
+			'tooltip'    => array(
+				'show' => true,
+			),
+			'values' => $this->get_chart_coordinates( $args ),
+		);
 	}
 
 	protected function get_chart_types() {
@@ -265,7 +278,7 @@ class WP_Stream_Reports_Metaboxes {
 		$limit   = apply_filters( 'stream_reports_record_limit', 10 );
 		$records = $this->limit_records( $records, $limit );
 
-		switch ( $chart_type ) {
+		switch ( $args['chart_type'] ) {
 			case 'pie':
 				$coordinates = $this->get_pie_chart_coordinates( $records, $args['selector_type'] );
 				break;
@@ -275,7 +288,7 @@ class WP_Stream_Reports_Metaboxes {
 			default:
 				$coordinates = $this->get_line_chart_coordinates( $records, $args['selector_type'] );
 		}
-
+		
 		return $coordinates;
 
 	}
@@ -396,15 +409,15 @@ class WP_Stream_Reports_Metaboxes {
 			'date_to'          => $date_interval['end'],
 		);
 
-		switch ( $data_group ) {
+		switch ( $args['data_group'] ) {
 			case 'connector':
-				$query_args['connector'] = $data_type;
+				$query_args['connector'] = $args['data_type'];
 				break;
 			case 'context':
-				$query_args['context'] = $data_type;
+				$query_args['context'] = $args['data_type'];
 				break;
 			case 'action':
-				$query_args['action'] = $data_type;
+				$query_args['action'] = $args['data_type'];
 				break;
 			case 'other':
 				// all selector requires no query arg modifications
@@ -593,20 +606,24 @@ class WP_Stream_Reports_Metaboxes {
 	public function update_metabox_display() {
 
 		$section_id = 0;
-		$sections = WP_Stream_Reports_Settings::get_user_option( 'sections' );
+		$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 		$section = $sections[ $section_id ];
 
+		$args = wp_parse_args( $section, array(
+			'chart_type' => 'line',
+			'data_type' => null,
+			'data_group' => null,
+			'selector_type' => ''
+		) );
 
+		$chart_types = $this->get_chart_types();
+		if ( ! array_key_exists( $args['chart_type'], $chart_types ) ) {
+			$args['chart_type'] = 'line';
+		}
 
-		$data = array(
-			'type'       => $chart_type,
-			'guidelines' => true,
-			'tooltip'    => array(
-				'show' => true,
-			),
-			'values' => $coordinates,
-		);
-		wp_send_json_success( $data );
+		$chart_options = $this->get_chart_options( $args );
+
+		wp_send_json_success( $chart_options );
 	}
 
 	/**
