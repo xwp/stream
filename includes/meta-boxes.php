@@ -410,7 +410,7 @@ class WP_Stream_Reports_Metaboxes {
 				if ( $user ) {
 					$record->author_role = join( ',', $user->roles );
 				} else {
-					$record->author_role = 'N/A';
+					$record->author_role = __( 'N/A', 'stream-reports' );
 				}
 			}
 		}
