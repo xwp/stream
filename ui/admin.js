@@ -178,7 +178,7 @@ jQuery(function($){
 	var $input_user;
 	$('.stream_page_wp_stream_settings input[type=hidden].select2-select.authors_and_roles').each(function (k, el) {
 		$input_user = $(el);
-		var $roles = $input_user.data('values');
+		var roles = $input_user.data('values');
 		$input_user.select2({
 			multiple: true,
 			width: 350,
@@ -201,7 +201,7 @@ jQuery(function($){
 						results: [
 							{
 								text: 'Roles',
-								children: $roles
+								children: roles
 							},
 							{
 								text: 'Users',
@@ -213,7 +213,7 @@ jQuery(function($){
 						return answer;
 					}
 					$.each(response.data.users, function (k, user) {
-						if ($.contains($roles, user.id)){
+						if ($.contains(roles, user.id)){
 							user.disabled = true;
 						}
 					});
