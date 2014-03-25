@@ -368,15 +368,17 @@ class WP_Stream_Admin {
 		global $wpdb;
 
 		$wpdb->query(
-			$wpdb->prepare("
-				DELETE `stream`, `context`, `meta`
+			$wpdb->prepare(
+				"DELETE `stream`, `context`, `meta`
 				FROM {$wpdb->stream} AS `stream`
 				LEFT JOIN {$wpdb->streamcontext} AS `context`
 				ON `context`.`record_id` = `stream`.`ID`
 				LEFT JOIN {$wpdb->streammeta} AS `meta`
 				ON `meta`.`record_id` = `stream`.`ID`
-				WHERE `stream`.`type` = %s;
-			", 'stream')
+				WHERE `stream`.`type` = %s;",
+
+				'stream'
+			)
 		);
 	}
 
