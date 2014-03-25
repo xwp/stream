@@ -77,7 +77,15 @@ class WP_Stream_Reports_Metaboxes {
 			),
 		);
 
-		WP_Stream_Reports_Settings::update_user_option( 'sections', $sections, true );
+		WP_Stream_Reports_Settings::update_user_option( 'sections', $sections, false, true );
+		
+		$interval = array(
+			'key' => 'last-30-days',
+			'start' => '',
+			'end' => '',
+		);
+
+		WP_Stream_Reports_Settings::update_user_option( 'interval', $interval, true );
 
 	}
 

@@ -167,8 +167,9 @@ class WP_Stream_Reports_Settings {
 	 * @param string $key
 	 * @param mixed $option
 	 * @param bool  $redirect If the function must redirect and exit here
+	 * @param bool  $silent If the function shouldn't output anything
 	 */
-	public static function update_user_option( $key, $option, $redirect = false ) {
+	public static function update_user_option( $key, $option, $redirect = false, $silent = false ) {
 		$user_options = self::get_user_options();
 
 		if ( ! isset( $user_options[ $key ] ) ) {
@@ -193,6 +194,10 @@ class WP_Stream_Reports_Settings {
 			exit;
 		} elseif ( $redirect ) {
 			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream-reports' ) );
+		}
+
+		if ( $silent ) {
+			return;
 		}
 
 		// If it was a standard ajax call requesting json back.
