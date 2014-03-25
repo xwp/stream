@@ -197,7 +197,7 @@ jQuery(function($){
 					};
 				},
 				results: function (response) {
-					var roles  = [];
+					var roles  = [],
 						answer = [];
 
 					roles = $.grep(
