@@ -192,7 +192,7 @@ jQuery(function($){
 						find:   term,
 						limit:  10,
 						pager:  page,
-						action: 'stream_get_users_and_roles',
+						action: 'stream_get_users',
 						nonce:  $input_user.data('nonce')
 					};
 				},
