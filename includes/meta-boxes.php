@@ -605,7 +605,7 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	public function update_metabox_display() {
 
-		$section_id = 0;
+		$section_id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
 		$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 		$section = $sections[ $section_id ];
 
