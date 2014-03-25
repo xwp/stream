@@ -136,14 +136,14 @@ class WP_Stream_Query {
 		if ( $args['record__in'] ) {
 			$record__in = implode( ',', array_filter( (array) $args['record__in'], 'is_numeric' ) );
 			if ( $record__in ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.ID IN ($record__in)", '' );
+				$where .= $wpdb->prepare( " AND $wpdb->stream.ID IN (%s)", $record__in );
 			}
 		}
 
 		if ( $args['record__not_in'] ) {
 			$record__not_in = implode( ',', array_filter( (array) $args['record__not_in'], 'is_numeric' ) );
 			if ( strlen( $record__not_in ) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.ID NOT IN ($record__not_in)", '' );
+				$where .= $wpdb->prepare( " AND $wpdb->stream.ID NOT IN (%s)", $record__not_in );
 			}
 		}
 
@@ -154,28 +154,28 @@ class WP_Stream_Query {
 		if ( $args['record_parent__in'] ) {
 			$record_parent__in = implode( ',', array_filter( (array) $args['record_parent__in'], 'is_numeric' ) );
 			if ( strlen( $record_parent__in ) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.parent IN ($record_parent__in)", '' );
+				$where .= $wpdb->prepare( " AND $wpdb->stream.parent IN (%s)", $record_parent__in );
 			}
 		}
 
 		if ( $args['record_parent__not_in'] ) {
 			$record_parent__not_in = implode( ',', array_filter( (array) $args['record_parent__not_in'], 'is_numeric' ) );
 			if ( strlen( $record_parent__not_in ) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.parent NOT IN ($record_parent__not_in)", '' );
+				$where .= $wpdb->prepare( " AND $wpdb->stream.parent NOT IN (%s)", $record_parent__not_in );
 			}
 		}
 
 		if ( $args[ 'author__in' ] ) {
 			$author__in = implode( ',', array_filter( (array)$args[ 'author__in' ], 'is_numeric' ) );
 			if ( $author__in ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.author IN ($author__in)", '' );
+				$where .= $wpdb->prepare( " AND $wpdb->stream.author IN (%s)", $author__in );
 			}
 		}
 
 		if ( $args[ 'author__not_in' ] ) {
 			$author__not_in = implode( ',', array_filter( (array)$args[ 'author__not_in' ], 'is_numeric' ) );
 			if ( strlen( $author__not_in ) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.author NOT IN ($author__not_in)", '' );
+				$where .= $wpdb->prepare( " AND $wpdb->stream.author NOT IN (%s)", $author__not_in );
 			}
 		}
 		if ( $args[ 'ip__in' ] ) {
