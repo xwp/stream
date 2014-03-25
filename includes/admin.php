@@ -376,7 +376,6 @@ class WP_Stream_Admin {
 				LEFT JOIN {$wpdb->streammeta} AS `meta`
 				ON `meta`.`record_id` = `stream`.`ID`
 				WHERE `stream`.`type` = %s;",
-
 				'stream'
 			)
 		);
