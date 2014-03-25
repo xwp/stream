@@ -30,6 +30,7 @@ class WP_Stream_Reports_Metaboxes {
 	 * Public constructor
 	 */
 	public function __construct() {
+
 		// Get all sections from the db
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
@@ -44,9 +45,66 @@ class WP_Stream_Reports_Metaboxes {
 		WP_Stream_Reports::handle_ajax_request( $ajax_hooks, $this );
 	}
 
+	/**
+	 * Runs on a user's first visit to setup sample data
+	 */
+	protected function setup_user() {
+
+		$sections = array(
+			array(
+				'id'            => 0,
+				'title'         => __( 'All Activity by Author', 'stream-reports' ),
+				'chart_type'    => 'line',
+				'data_group'    => 'other',
+				'data_type'     => 'all',
+				'selector_type' => 'author',
+			),
+			array(
+				'id'            => 1,
+				'title'         => __( 'All Activity by Action', 'stream-reports' ),
+				'chart_type'    => 'line',
+				'data_group'    => 'other',
+				'data_type'     => 'all',
+				'selector_type' => 'action',
+			),
+			array(
+				'id'            => 2,
+				'title'         => __( 'All Activity by Author Role', 'stream-reports' ),
+				'chart_type'    => 'multibar',
+				'data_group'    => 'other',
+				'data_type'     => 'all',
+				'selector_type' => 'author_role',
+			),
+			array(
+				'id'            => 3,
+				'title'         => __( 'Comments Activity by Action', 'stream-reports' ),
+				'chart_type'    => 'pie',
+				'data_group'    => 'connector',
+				'data_type'     => 'comments',
+				'selector_type' => 'action',
+			),
+		);
+
+		WP_Stream_Reports_Settings::update_user_option( 'sections', $sections );
+		
+		$interval = array(
+			'key' => 'last-30-days',
+			'start' => '',
+			'end' => '',
+		);
+
+		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'interval', $interval );
+
+	}
+
 	public function load_page() {
+		
+		if ( is_admin() && WP_Stream_Reports_Settings::is_first_visit() ) {
+			$this->setup_user();
+		}
+
 		// Enqueue all core scripts required for this page to work
-		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
+		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 1 ) );
 
 		// Add all metaboxes
 		foreach ( self::$sections as $key => $section ) {
@@ -193,11 +251,12 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		$selector_types = array(
-			'author'  => __( 'Author', 'stream-reports' ),
-			'context' => __( 'Context', 'stream-reports' ),
-			'action'  => __( 'Action', 'stream-reports' ),
+			'action'      => __( 'Action', 'stream-reports' ),
+			'author'      => __( 'Author', 'stream-reports' ),
+			'author_role' => __( 'Author Role', 'stream-reports' ),
+			'context'     => __( 'Context', 'stream-reports' ),
 		);
-
+		
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
 	}
 
@@ -297,6 +356,9 @@ class WP_Stream_Reports_Metaboxes {
 				$user_info = get_userdata( $value );
 				$output    = isset( $user_info->display_name ) ? $user_info->display_name : __( 'N/A', 'stream-reports' );
 				break;
+			case 'author_role':
+				$output = ucfirst( $value );
+				break;
 			case 'context':
 				$output = isset( WP_Stream_Connectors::$term_labels['stream_context'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_context'][ $value ] : $value;
 				break;
@@ -335,14 +397,24 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$grouping_field   = $args['selector_type'];
-		$available_fields = array( 'author', 'action', 'context', 'connector', 'ip' );
+		$available_fields = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip' );
 
 		if ( ! in_array( $grouping_field, $available_fields ) ) {
 			return array();
 		}
 
 		$unsorted = stream_query( $query_args );
-		$sorted   = $this->group_by_field( $grouping_field, $unsorted );
+		if ( 'author_role' === $grouping_field ) {
+			foreach ( $unsorted as $key => $record ) {
+				$user = get_userdata( $record->author );
+				if ( $user ) {
+					$record->author_role = join( ',', $user->roles );
+				} else {
+					$record->author_role = __( 'N/A', 'stream-reports' );
+				}
+			}
+		}
+		$sorted = $this->group_by_field( $grouping_field, $unsorted );
 
 		return $sorted;
 	}
@@ -495,7 +567,7 @@ class WP_Stream_Reports_Metaboxes {
 		self::$sections[ $id ] = $input;
 
 		// Update the database option
-		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
+		WP_Stream_Reports_Settings::ajax_update_user_option( 'sections', self::$sections );
 	}
 
 	/**
@@ -512,8 +584,7 @@ class WP_Stream_Reports_Metaboxes {
 		// Add a new section
 		self::$sections[] = array();
 
-		// Update the database option (pass true in param so the function redirect)
-		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections, true );
+		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'sections', self::$sections );
 	}
 
 	/**
@@ -557,8 +628,7 @@ class WP_Stream_Reports_Metaboxes {
 			);
 		}
 
-		// Update the database option (pass true in param so the function redirect)
-		WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections, true );
+		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'sections', self::$sections );
 	}
 
 	/**

@@ -260,7 +260,7 @@
 					data_type : parent.find('.chart-dataset').select2('data').id,
 					selector_type : parent.find('.chart-selector').select2('data').id,
 					section_id : $(this).data('id'),
-					title : $postbox.find('.title').val()
+					title : $postbox.find('.title').val(),
 				},
 				dataType: 'json',
 				success : function(data) {
