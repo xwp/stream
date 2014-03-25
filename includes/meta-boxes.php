@@ -69,6 +69,14 @@ class WP_Stream_Reports_Metaboxes {
 			),
 			array(
 				'id'            => 2,
+				'title'         => __( 'All Activity by Author Role', 'stream-reports' ),
+				'chart_type'    => 'multibar',
+				'data_group'    => 'other',
+				'data_type'     => 'all',
+				'selector_type' => 'author_role',
+			),
+			array(
+				'id'            => 3,
 				'title'         => __( 'Comments Activity by Action', 'stream-reports' ),
 				'chart_type'    => 'pie',
 				'data_group'    => 'connector',
