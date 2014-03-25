@@ -74,7 +74,7 @@ class WP_Stream_Reports_Date_Interval extends WP_Stream_Date_Interval {
 			$interval['end']   = '';
 		}
 
-		WP_Stream_Reports_Settings::update_user_option( 'interval', $interval, true );
+		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'interval', $interval );
 	}
 
 	/**
