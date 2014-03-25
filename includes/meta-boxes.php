@@ -173,22 +173,74 @@ class WP_Stream_Reports_Metaboxes {
 		// Assigning template vars
 		$key = $section['args']['key'];
 
-		$chart_type    = isset( $args['chart_type'] ) ? $args['chart_type'] : 'line';
-		$data_type     = isset( $args['data_type'] ) ? $args['data_type'] : null;
-		$data_group    = isset( $args['data_group'] ) ? $args['data_group'] : null;
-		$selector_type = isset( $args['selector_type'] ) ? $args['selector_type'] : '';
+		$args = wp_parse_args( $args, array(
+			'chart_type' => 'line',
+			'data_type' => null,
+			'data_group' => null,
+			'selector_type' => ''
+		) );
 
-		$chart_types = array(
-			'multibar' => 'dashicons-chart-bar',
-			'pie'      => 'dashicons-chart-pie',
-			'line'     => 'dashicons-chart-area',
-		);
+		$coordinates = $this->get_chart_coordinates( $args );
 
-		if ( array_key_exists( $chart_type, $chart_types ) ) {
+		$data_types = $this->get_data_types();
+		$selector_types = $this->get_selector_types();
+		$chart_types = $this->get_chart_types();
+
+		if ( array_key_exists( $args['chart_type'], $chart_types ) ) {
 			$chart_types[ $args['chart_type'] ] .= ' active';
 		} else {
 			$chart_type = 'line';
 		}
+		
+		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
+	}
+
+	protected function get_chart_types() {
+		return array(
+			'multibar' => 'dashicons-chart-bar',
+			'pie'      => 'dashicons-chart-pie',
+			'line'     => 'dashicons-chart-area',
+		);
+	}
+
+	protected function get_data_types() {
+		return array(
+			'all' => __( 'All Activity', 'stream-reports' ),
+			'connector' => array(
+				'title'   => __( 'Connector Activity', 'stream-reports' ),
+				'group'   => 'connector',
+				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
+				'disable' => array(),
+			),
+			'context' => array(
+				'title'   => __( 'Context Activity', 'stream-reports' ),
+				'group'   => 'context',
+				'options' => WP_Stream_Connectors::$term_labels['stream_context'],
+				'disable' => array(
+					'context'
+				),
+			),
+			'action' => array(
+				'title'   => __( 'Actions Activity', 'stream-reports' ),
+				'group'   => 'action',
+				'options' => WP_Stream_Connectors::$term_labels['stream_action'],
+				'disable' => array(
+					'action'
+				),
+			),
+		);
+	}
+
+	protected function get_selector_types() {
+		return array(
+			'action'      => __( 'Action', 'stream-reports' ),
+			'author'      => __( 'Author', 'stream-reports' ),
+			'author_role' => __( 'Author Role', 'stream-reports' ),
+			'context'     => __( 'Context', 'stream-reports' ),
+		);
+	}
+
+	public function get_chart_coordinates( $args ) {
 
 		// Get records sorted grouped by original sort
 		$date = new WP_Stream_Date_Interval();
@@ -215,49 +267,17 @@ class WP_Stream_Reports_Metaboxes {
 
 		switch ( $chart_type ) {
 			case 'pie':
-				$coordinates = $this->get_pie_chart_coordinates( $records, $selector_type );
+				$coordinates = $this->get_pie_chart_coordinates( $records, $args['selector_type'] );
 				break;
 			case 'multibar' :
-				$coordinates = $this->get_bar_chart_coordinates( $records, $selector_type );
+				$coordinates = $this->get_bar_chart_coordinates( $records, $args['selector_type'] );
 				break;
 			default:
-				$coordinates = $this->get_line_chart_coordinates( $records, $selector_type );
+				$coordinates = $this->get_line_chart_coordinates( $records, $args['selector_type'] );
 		}
 
-		$data_types = array(
-			'all' => __( 'All Activity', 'stream-reports' ),
-			'connector' => array(
-				'title'   => __( 'Connector Activity', 'stream-reports' ),
-				'group'   => 'connector',
-				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
-				'disable' => array(),
-			),
-			'context' => array(
-				'title'   => __( 'Context Activity', 'stream-reports' ),
-				'group'   => 'context',
-				'options' => WP_Stream_Connectors::$term_labels['stream_context'],
-				'disable' => array(
-					'context'
-				),
-			),
-			'action' => array(
-				'title'   => __( 'Actions Activity', 'stream-reports' ),
-				'group'   => 'action',
-				'options' => WP_Stream_Connectors::$term_labels['stream_action'],
-				'disable' => array(
-					'action'
-				),
-			),
-		);
+		return $coordinates;
 
-		$selector_types = array(
-			'action'      => __( 'Action', 'stream-reports' ),
-			'author'      => __( 'Author', 'stream-reports' ),
-			'author_role' => __( 'Author Role', 'stream-reports' ),
-			'context'     => __( 'Context', 'stream-reports' ),
-		);
-		
-		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
 	}
 
 	public function get_line_chart_coordinates( $records, $grouping ) {
@@ -375,9 +395,6 @@ class WP_Stream_Reports_Metaboxes {
 			'date_from'        => $date_interval['start'],
 			'date_to'          => $date_interval['end'],
 		);
-
-		$data_type  = isset( $args['data_type'] ) ? $args['data_type'] : null;
-		$data_group = isset( $args['data_group'] ) ? $args['data_group'] : null;
 
 		switch ( $data_group ) {
 			case 'connector':
@@ -574,7 +591,22 @@ class WP_Stream_Reports_Metaboxes {
 	 * Instantly update chart based on user configuration
 	 */
 	public function update_metabox_display() {
-		//@todo Generate new data for the chart and send json back for realtime update
+
+		$section_id = 0;
+		$sections = WP_Stream_Reports_Settings::get_user_option( 'sections' );
+		$section = $sections[ $section_id ];
+
+
+
+		$data = array(
+			'type'       => $chart_type,
+			'guidelines' => true,
+			'tooltip'    => array(
+				'show' => true,
+			),
+			'values' => $coordinates,
+		);
+		wp_send_json_success( $data );
 	}
 
 	/**
