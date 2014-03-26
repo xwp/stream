@@ -210,6 +210,7 @@ class WP_Stream_Install {
 			$args = array(
 				'connector' => 'installer',
 				'context'   => 'themes',
+				'action'    => 'edited',
 			);
 			$records = stream_query( $args );
 
