@@ -94,22 +94,24 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( current_user_can( 'edit_theme_options' ) ) {
 			$file_name  = get_stream_meta( $record->ID, 'file', true );
-			$theme_name = get_stream_meta( $record->ID, 'theme', true );
+			$theme_slug = get_stream_meta( $record->ID, 'theme', true );
 
-			$links[ __( 'Edit File', 'stream' ) ] = admin_url(
-				sprintf(
-					'theme-editor.php?theme=%s&file=%s',
-					$theme_name,
-					$file_name
-				)
-			);
+			if ( $file_name !== '' && $theme_slug !== '' ) {
+				$links[ __( 'Edit File', 'stream' ) ] = admin_url(
+					sprintf(
+						'theme-editor.php?theme=%s&file=%s',
+						$theme_slug,
+						$file_name
+					)
+				);
 
-			$links[ __( 'Edit Theme', 'stream' ) ] = admin_url(
-				sprintf(
-					'themes.php?theme=%s',
-					$theme_name
-				)
-			);
+				$links[ __( 'Edit Theme', 'stream' ) ] = admin_url(
+					sprintf(
+						'themes.php?theme=%s',
+						$theme_slug
+					)
+				);
+			}
 		}
 
 		return $links;
