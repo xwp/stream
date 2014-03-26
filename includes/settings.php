@@ -24,6 +24,11 @@ class WP_Stream_Reports_Settings {
 	private static $user_options;
 
 	/**
+	 * Holds the user option name (key)
+	 */
+	const OPTION_NAME = 'stream_reports_settings';
+
+	/**
 	 * Public constructor
 	 */
 	public static function load() {
@@ -135,7 +140,7 @@ class WP_Stream_Reports_Settings {
 	 * @return boolean
 	 */
 	public static function is_first_visit() {
-		if ( ! get_user_option( __CLASS__ ) ) {
+		if ( ! get_user_option( self::OPTION_NAME ) ) {
 			return true;
 		}
 
@@ -152,7 +157,7 @@ class WP_Stream_Reports_Settings {
 	 */
 	public static function get_user_options( $key = null, $default = array() ) {
 		if ( empty( self::$user_options ) ) {
-			self::$user_options = get_user_option( __CLASS__ );
+			self::$user_options = get_user_option( self::OPTION_NAME );
 		}
 
 		if ( is_null( $key ) ) {
@@ -182,7 +187,7 @@ class WP_Stream_Reports_Settings {
 		// Don't re-save if the value hasn't changed
 		if ( $user_options[ $key ] != $option ) {
 			$user_options[ $key ] = $option;
-			$is_saved = update_user_option( get_current_user_id(), __CLASS__, $user_options );
+			$is_saved = update_user_option( get_current_user_id(), self::OPTION_NAME, $user_options );
 		} else {
 			$is_saved = true;
 		}

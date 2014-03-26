@@ -85,6 +85,13 @@ class WP_Stream_Reports_Metaboxes {
 
 		WP_Stream_Reports_Settings::update_user_option( 'sections', $sections );
 
+		$order = array(
+			'normal' => sprintf( '%1$s0,%1$s2', self::META_PREFIX ),
+			'side'   => sprintf( '%1$s1,%1$s3', self::META_PREFIX ),
+		);
+
+		update_user_option( get_current_user_id(), 'meta-box-order_stream_page_' . WP_Stream_Reports::REPORTS_PAGE_SLUG, $order, true );
+
 		$interval = array(
 			'key'   => 'last-30-days',
 			'start' => '',
@@ -100,7 +107,7 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		// Enqueue all core scripts required for this page to work
-		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 1 ) );
+		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
 
 		// Add all metaboxes
 		foreach ( self::$sections as $key => $section ) {
