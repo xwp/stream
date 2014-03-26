@@ -79,6 +79,10 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		return array_combine( $themes_slugs, $themes_names );
 	}
 
+	public static function get_message() {
+		return __( '"%1$s" was updated in "%2$s"', 'stream' );
+	}
+
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
@@ -169,7 +173,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 				);
 
 				self::log(
-					__( '"%1$s" was updated in "%2$s"', 'stream' ),
+					self::get_message(),
 					$properties,
 					null,
 					array( $theme_slug => 'updated' )
