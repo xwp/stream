@@ -235,7 +235,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 				update_stream_meta( $record->ID, 'theme_name', $theme_name );
 
 				if ( is_object( $theme ) ) {
-					update_stream_meta( $record->ID, 'theme', (string) $theme );
+					update_stream_meta( $record->ID, 'theme', $theme->get_template() );
 				}
 			}
 		}
