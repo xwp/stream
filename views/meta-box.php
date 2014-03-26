@@ -7,13 +7,13 @@
 			<select class="chart-option chart-dataset">
 				<?php foreach ( $data_types as $section_key => $section ) : ?>
 					<?php if ( is_string( $section ) ) : ?>
-						<option data-group="other" value="<?php echo esc_attr( $section_key ) ?>" <?php selected( $section_key === $data_type ) ?>>
+						<option data-group="other" value="<?php echo esc_attr( $section_key ) ?>" <?php selected( $section_key === $args['data_type'] ) ?>>
 							<?php echo esc_html( $section ) ?>
 						</option>
 					<?php else : ?>
 						<optgroup label="<?php echo esc_attr( $section['title'] ) ?>" data-disable-selectors="<?php echo esc_attr( join( ',', $section['disable'] ) ) ?>">
 						<?php foreach ( $section['options'] as $type => $text ) : ?>
-							<option data-group="<?php echo esc_attr( $section['group'] ) ?>" value="<?php echo esc_attr( $type ) ?>" <?php selected( $type === $data_type ) ?>>
+							<option data-group="<?php echo esc_attr( $section['group'] ) ?>" value="<?php echo esc_attr( $type ) ?>" <?php selected( $type === $args['data_type'] ) ?>>
 								<?php echo esc_html( $text ) ?>
 							</option>
 						<?php endforeach; ?>
@@ -26,7 +26,7 @@
 
 			<select class="chart-option chart-selector">
 				<?php foreach ( $selector_types as $type => $text ) : ?>
-					<option value="<?php echo esc_attr( $type ) ?>" <?php selected( $type === $selector_type ) ?>><?php echo esc_html( $text ) ?></option>
+					<option value="<?php echo esc_attr( $type ) ?>" <?php selected( $type === $args['selector_type'] ) ?>><?php echo esc_html( $text ) ?></option>
 				<?php endforeach; ?>
 			</select>
 
@@ -43,17 +43,6 @@
 
 	</div>
 
-	<?php
-	$args = array(
-		'type'       => $chart_type,
-		'guidelines' => true,
-		'tooltip'    => array(
-			'show' => true,
-		),
-		'values' => $coordinates,
-	);
-	?>
-
-	<div class="chart" data-report='<?php echo json_encode( $args ) ?>'><svg></svg></div>
+	<div class="chart" data-report='<?php echo json_encode( $chart_options ) ?>'><svg></svg></div>
 
 </div>
