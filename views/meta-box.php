@@ -7,7 +7,7 @@
 			<select class="chart-option chart-dataset">
 				<?php foreach ( $data_types as $section_key => $section ) : ?>
 					<?php if ( is_string( $section ) ) : ?>
-						<option data-group="other" value="<?php echo esc_attr( $section_key ) ?>" <?php selected( $section_key === $args['$data_type'] ) ?>>
+						<option data-group="other" value="<?php echo esc_attr( $section_key ) ?>" <?php selected( $section_key === $args['data_type'] ) ?>>
 							<?php echo esc_html( $section ) ?>
 						</option>
 					<?php else : ?>
