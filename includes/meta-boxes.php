@@ -86,13 +86,12 @@ class WP_Stream_Reports_Metaboxes {
 		WP_Stream_Reports_Settings::update_user_option( 'sections', $sections );
 
 		$interval = array(
-			'key' => 'last-30-days',
+			'key'   => 'last-30-days',
 			'start' => '',
-			'end' => '',
+			'end'   => '',
 		);
 
 		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'interval', $interval );
-
 	}
 
 	public function load_page() {

@@ -55,6 +55,7 @@ class WP_Stream_Reports_Settings {
 
 			self::$fields = apply_filters( 'wp_stream_reports_options_fields', $fields );
 		}
+
 		return self::$fields;
 	}
 
@@ -130,14 +131,15 @@ class WP_Stream_Reports_Settings {
 
 	/**
 	 * Returns true if the settings have not been setup for this user
+	 *
 	 * @return boolean
 	 */
 	public static function is_first_visit() {
 		if ( ! get_user_option( __CLASS__ ) ) {
 			return true;
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 	/**
@@ -154,11 +156,13 @@ class WP_Stream_Reports_Settings {
 		}
 
 		if ( is_null( $key ) ) {
-			// Return empty array if no user option is in db
-			return ( self::$user_options ) ?: array();
+			// Return empty array if no user option is in DB
+			$output = ( self::$user_options ) ?: array();
 		} else {
-			return isset( self::$user_options[$key] ) ? self::$user_options[$key] : $default;
+			$output = isset( self::$user_options[ $key ] ) ? self::$user_options[ $key ] : $default;
 		}
+
+		return $output;
 	}
 
 	/**
@@ -193,7 +197,6 @@ class WP_Stream_Reports_Settings {
 	 * @param mixed $option
 	 */
 	public static function ajax_update_user_option( $key, $option ) {
-
 		check_ajax_referer( 'stream-reports-page', 'stream_reports_nonce' );
 
 		$is_saved = self::update_user_option( $key, $option );
@@ -203,7 +206,6 @@ class WP_Stream_Reports_Settings {
 		} else {
 			wp_send_json_error();
 		}
-
 	}
 
 	/**
@@ -213,8 +215,8 @@ class WP_Stream_Reports_Settings {
 	 * @param mixed $option
 	 */
 	public static function update_user_option_and_redirect( $key, $option ) {
-
 		$is_saved = self::update_user_option( $key, $option );
+
 		if ( $is_saved ) {
 			wp_redirect(
 				add_query_arg(
@@ -226,7 +228,6 @@ class WP_Stream_Reports_Settings {
 		} else {
 			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream-reports' ) );
 		}
-
 	}
 
 }
