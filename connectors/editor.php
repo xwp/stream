@@ -94,7 +94,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( current_user_can( 'edit_theme_options' ) ) {
 			$file_name  = get_stream_meta( $record->ID, 'file', true );
-			$theme_slug = get_stream_meta( $record->ID, 'theme', true );
+			$theme_slug = get_stream_meta( $record->ID, 'theme_slug', true );
 
 			if ( $file_name !== '' && $theme_slug !== '' ) {
 				$links[ __( 'Edit File', 'stream' ) ] = admin_url(
@@ -129,8 +129,8 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 			return;
 		}
 
-		$theme_name = wp_stream_filter_input( INPUT_POST, 'theme' ) ? wp_stream_filter_input( INPUT_POST, 'theme' ) : get_stylesheet();
-		$theme      = wp_get_theme( $theme_name );
+		$theme_slug = wp_stream_filter_input( INPUT_POST, 'theme' ) ? wp_stream_filter_input( INPUT_POST, 'theme' ) : get_stylesheet();
+		$theme      = wp_get_theme( $theme_slug );
 
 		if ( ! $theme->exists() || ( $theme->errors() && 'theme_no_stylesheet' === $theme->errors()->get_error_code() ) ) {
 			return;
@@ -171,7 +171,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 				$properties = array(
 					'file'       => self::$edited_file['file_name'],
 					'theme_name' => (string) self::$edited_file['theme'],
-					'theme'      => $theme_slug,
+					'theme_slug' => $theme_slug,
 				);
 
 				self::log(
@@ -235,7 +235,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 				update_stream_meta( $record->ID, 'theme_name', $theme_name );
 
 				if ( is_object( $theme ) ) {
-					update_stream_meta( $record->ID, 'theme', $theme->get_template() );
+					update_stream_meta( $record->ID, 'theme_slug', $theme->get_template() );
 				}
 			}
 		}
