@@ -197,6 +197,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		$records = stream_query( $args );
 
 		foreach ( $records as $record ) {
+			$file_name  = get_stream_meta( $record->ID, 'file', true );
 			$theme_name = get_stream_meta( $record->ID, 'name', true );
 
 			if ( $theme_name !== '' ) {
@@ -212,11 +213,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 				$wpdb->update(
 					$wpdb->stream,
 					array(
-						'summary' => sprintf(
-							self::get_message(),
-							get_stream_meta( $record->ID, 'file', true ),
-							$theme_name
-						),
+						'summary' => sprintf( self::get_message(), $file_name, $theme_name ),
 					),
 					array( 'ID' => $record->ID )
 				);
