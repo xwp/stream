@@ -217,29 +217,39 @@ class WP_Stream_Install {
 			foreach( $records as $record ) {
 				$theme_name = get_stream_meta( $record->ID, 'name', true );
 
-				// `stream`
-				$wpdb->update(
-					$wpdb->stream,
-					array(
-						'summary' => sprintf(
-							WP_Stream_Connector_Editor::get_message(),
-							get_stream_meta( $record->ID, 'file', true ),
-							$theme_name
-						)
-					),
-					array( 'ID' => $record->ID )
-				);
+				if( $theme_name !== '' ) {
+					$matched_themes = array_filter(
+						wp_get_themes(),
+						function( $theme ) use ( $theme_name ) {
+							return (string) $theme === $theme_name;
+						}
+					);
+					$theme = array_shift( $matched_themes );
 
-				// `stream_context`
-				$wpdb->update(
-					$wpdb->streamcontext,
-					array(
-						'connector' => 'editor',
-						'context'   => $theme_name,
-						'action'    => 'updated',
-					),
-					array( 'record_id' => $record->ID )
-				);
+					// `stream`
+					$wpdb->update(
+						$wpdb->stream,
+						array(
+							'summary' => sprintf(
+								WP_Stream_Connector_Editor::get_message(),
+								get_stream_meta( $record->ID, 'file', true ),
+								$theme_name
+							)
+						),
+						array( 'ID' => $record->ID )
+					);
+
+					// `stream_context`
+					$wpdb->update(
+						$wpdb->streamcontext,
+						array(
+							'connector' => 'editor',
+							'context'   => is_object( $theme ) ? $theme->get_template() : $theme_name,
+							'action'    => 'updated',
+						),
+						array( 'record_id' => $record->ID )
+					);
+				}
 			}
 		}
 	}
