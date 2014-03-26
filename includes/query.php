@@ -21,7 +21,6 @@ class WP_Stream_Query {
 	 */
 	public function query( $args ) {
 		global $wpdb;
-
 		$defaults = array(
 			// Pagination params
 			'records_per_page'      => 10,
@@ -61,7 +60,7 @@ class WP_Stream_Query {
 			'fields'                => '',
 			'ignore_context'        => null,
 			//Hide Excluded
-			'hide_excluded'         => true,
+			'hide_excluded'         => ( WP_Stream_Settings::$options[ 'exclude_hide_previous_records' ] === 0 ) ? false : true,
 		);
 
 		$args = wp_parse_args( $args, $defaults );

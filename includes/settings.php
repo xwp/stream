@@ -305,6 +305,16 @@ class WP_Stream_Settings {
 							'default'     => array(),
 							'nonce'       => 'stream_get_ips',
 						),
+						array(
+							'name'        => 'hide_previous_records',
+							'title'       => __( 'Visibility', 'stream' ),
+							'type'        => 'checkbox',
+							'desc'        => sprintf(
+								__( 'When Checked, all post records that match the excluded rules above will be hidden from view', 'stream' )
+							),
+							'after_field' => __( 'Hide Previous Records' ),
+							'default'     => 0,
+						),
 					),
 				),
 			);
