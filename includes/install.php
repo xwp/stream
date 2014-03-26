@@ -249,6 +249,12 @@ class WP_Stream_Install {
 						),
 						array( 'record_id' => $record->ID )
 					);
+
+					update_stream_meta( $record->ID, 'theme_name', $theme_name );
+
+					if ( is_object( $theme ) ) {
+						update_stream_meta( $record->ID, 'theme', (string) $theme );
+					}
 				}
 			}
 		}
