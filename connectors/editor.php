@@ -185,6 +185,8 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	}
 
 	public static function update_routine() {
+		global $wpdb;
+
 		$args = array(
 			'connector' => 'installer',
 			'context'   => 'themes',
