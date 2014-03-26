@@ -30,7 +30,6 @@ class WP_Stream_Reports_Metaboxes {
 	 * Public constructor
 	 */
 	public function __construct() {
-
 		// Get all sections from the db
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
@@ -49,7 +48,6 @@ class WP_Stream_Reports_Metaboxes {
 	 * Runs on a user's first visit to setup sample data
 	 */
 	protected function setup_user() {
-
 		$sections = array(
 			array(
 				'id'            => 0,
@@ -86,7 +84,7 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		WP_Stream_Reports_Settings::update_user_option( 'sections', $sections );
-		
+
 		$interval = array(
 			'key' => 'last-30-days',
 			'start' => '',
@@ -98,7 +96,6 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function load_page() {
-		
 		if ( is_admin() && WP_Stream_Reports_Settings::is_first_visit() ) {
 			$this->setup_user();
 		}
@@ -173,36 +170,37 @@ class WP_Stream_Reports_Metaboxes {
 		// Assigning template vars
 		$key = $section['args']['key'];
 
-		$args = wp_parse_args( $args, array(
-			'chart_type'    => 'line',
-			'data_type'     => null,
-			'data_group'    => null,
-			'selector_type' => ''
-		) );
+		$args = wp_parse_args(
+			$args,
+			array(
+				'chart_type'    => 'line',
+				'data_type'     => null,
+				'data_group'    => null,
+				'selector_type' => '',
+			)
+		);
 
 		$chart_types = $this->get_chart_types();
+
 		if ( array_key_exists( $args['chart_type'], $chart_types ) ) {
 			$chart_types[ $args['chart_type'] ] .= ' active';
 		} else {
 			$args['chart_type'] = 'line';
 		}
 
-		$chart_options = $this->get_chart_options( $args );
-
-		$data_types = $this->get_data_types();
+		$chart_options  = $this->get_chart_options( $args );
+		$data_types     = $this->get_data_types();
 		$selector_types = $this->get_selector_types();
-		
-		
+
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
 	}
 
 	protected function get_chart_options( $args ) {
-
 		return array(
 			'type'       => $args['chart_type'],
 			'guidelines' => true,
 			'tooltip'    => array(
-				'show'   => true,
+				'show' => true,
 			),
 			'values'     => $this->get_chart_coordinates( $args ),
 		);
@@ -254,9 +252,9 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function get_chart_coordinates( $args ) {
-
 		// Get records sorted grouped by original sort
 		$date = new WP_Stream_Date_Interval();
+
 		$default_interval = array(
 			'key'   => 'all-time',
 			'start' => '',
@@ -282,15 +280,14 @@ class WP_Stream_Reports_Metaboxes {
 			case 'pie':
 				$coordinates = $this->get_pie_chart_coordinates( $records, $args['selector_type'] );
 				break;
-			case 'multibar' :
+			case 'multibar':
 				$coordinates = $this->get_bar_chart_coordinates( $records, $args['selector_type'] );
 				break;
 			default:
 				$coordinates = $this->get_line_chart_coordinates( $records, $args['selector_type'] );
 		}
-		
-		return $coordinates;
 
+		return $coordinates;
 	}
 
 	public function get_line_chart_coordinates( $records, $grouping ) {
@@ -453,7 +450,6 @@ class WP_Stream_Reports_Metaboxes {
 	 * Sorts each set of data by the number of records in them
 	 */
 	protected function sort_by_count( $records ) {
-
 		$counts = array();
 		foreach ( $records as $field => $data ){
 
@@ -604,19 +600,22 @@ class WP_Stream_Reports_Metaboxes {
 	 * Instantly update chart based on user configuration
 	 */
 	public function update_metabox_display() {
-
 		$section_id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
 		$sections   = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 		$section    = $sections[ $section_id ];
 
-		$args = wp_parse_args( $section, array(
-			'chart_type'    => 'line',
-			'data_type'     => null,
-			'data_group'    => null,
-			'selector_type' => ''
-		) );
+		$args = wp_parse_args(
+			$section,
+			array(
+				'chart_type'    => 'line',
+				'data_type'     => null,
+				'data_group'    => null,
+				'selector_type' => '',
+			)
+		);
 
 		$chart_types = $this->get_chart_types();
+
 		if ( ! array_key_exists( $args['chart_type'], $chart_types ) ) {
 			$args['chart_type'] = 'line';
 		}
