@@ -214,6 +214,8 @@ class WP_Stream_Install {
 			$records = stream_query( $args );
 
 			foreach( $records as $record ) {
+				$theme_name = get_stream_meta( $record->ID, 'name', true );
+
 				// `stream`
 				$wpdb->update(
 					$wpdb->stream,
@@ -221,10 +223,21 @@ class WP_Stream_Install {
 						'summary' => sprintf(
 							WP_Stream_Connector_Editor::get_message(),
 							get_stream_meta( $record->ID, 'file', true ),
-							get_stream_meta( $record->ID, 'name', true )
+							$theme_name
 						)
 					),
 					array( 'ID' => $record->ID )
+				);
+
+				// `stream_context`
+				$wpdb->update(
+					$wpdb->streamcontext,
+					array(
+						'connector' => 'editor',
+						'context'   => $theme_name,
+						'action'    => 'updated',
+					),
+					array( 'record_id' => $record->ID )
 				);
 			}
 		}
