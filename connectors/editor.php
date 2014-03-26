@@ -184,4 +184,57 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		return $location;
 	}
 
+	public static function update_routine() {
+		$args = array(
+			'connector' => 'installer',
+			'context'   => 'themes',
+			'action'    => 'edited',
+		);
+		$records = stream_query( $args );
+
+		foreach( $records as $record ) {
+			$theme_name = get_stream_meta( $record->ID, 'name', true );
+
+			if( $theme_name !== '' ) {
+				$matched_themes = array_filter(
+					wp_get_themes(),
+					function( $theme ) use ( $theme_name ) {
+						return (string) $theme === $theme_name;
+					}
+				);
+				$theme = array_shift( $matched_themes );
+
+				// `stream`
+				$wpdb->update(
+					$wpdb->stream,
+					array(
+						'summary' => sprintf(
+							self::get_message(),
+							get_stream_meta( $record->ID, 'file', true ),
+							$theme_name
+						)
+					),
+					array( 'ID' => $record->ID )
+				);
+
+				// `stream_context`
+				$wpdb->update(
+					$wpdb->streamcontext,
+					array(
+						'connector' => 'editor',
+						'context'   => is_object( $theme ) ? $theme->get_template() : $theme_name,
+						'action'    => 'updated',
+					),
+					array( 'record_id' => $record->ID )
+				);
+
+				update_stream_meta( $record->ID, 'theme_name', $theme_name );
+
+				if ( is_object( $theme ) ) {
+					update_stream_meta( $record->ID, 'theme', (string) $theme );
+				}
+			}
+		}
+	}
+
 }
