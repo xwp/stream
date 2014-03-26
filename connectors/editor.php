@@ -196,10 +196,10 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		);
 		$records = stream_query( $args );
 
-		foreach( $records as $record ) {
+		foreach ( $records as $record ) {
 			$theme_name = get_stream_meta( $record->ID, 'name', true );
 
-			if( $theme_name !== '' ) {
+			if ( $theme_name !== '' ) {
 				$matched_themes = array_filter(
 					wp_get_themes(),
 					function( $theme ) use ( $theme_name ) {
@@ -216,7 +216,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 							self::get_message(),
 							get_stream_meta( $record->ID, 'file', true ),
 							$theme_name
-						)
+						),
 					),
 					array( 'ID' => $record->ID )
 				);
