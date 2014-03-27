@@ -274,9 +274,12 @@ class WP_Stream_Notifications_Form {
 		$roles     = $wp_roles->roles;
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
 
-		$default_operators = array(
+		$single_operators = array(
 			'='   => esc_html__( 'is', 'stream-notifications' ),
 			'!='  => esc_html__( 'is not', 'stream-notifications' ),
+		);
+
+		$default_operators = $single_operators + array(
 			'in'  => esc_html__( 'is in', 'stream-notifications' ),
 			'!in' => esc_html__( 'is not in', 'stream-notifications' ),
 		);
@@ -286,6 +289,8 @@ class WP_Stream_Notifications_Form {
 			'!='        => esc_html__( 'is not', 'stream-notifications' ),
 			'contains'  => esc_html__( 'contains', 'stream-notifications' ),
 			'!contains' => esc_html__( 'does not contain', 'stream-notifications' ),
+			'starts'    => esc_html__( 'starts with', 'stream-notifications' ),
+			'ends'      => esc_html__( 'ends with', 'stream-notifications' ),
 			'regex'     => esc_html__( 'regex', 'stream-notifications' ),
 		);
 
@@ -376,7 +381,7 @@ class WP_Stream_Notifications_Form {
 			'connector' => array(
 				'title'     => esc_html__( 'Connector', 'stream-notifications' ),
 				'type'      => 'select',
-				'operators' => $default_operators,
+				'operators' => $single_operators,
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			),
 			'context' => array(

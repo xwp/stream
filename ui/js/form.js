@@ -197,6 +197,16 @@ jQuery(function($){
 			selectify( group.find('select') );
 		},
 
+		add_alert = function () {
+			var index = divAlerts.find('.alert').size();
+
+			divAlerts.append( tmpl_alert( $.extend(
+				{ index: index },
+				stream_notifications
+			) ) );
+			selectify( divAlerts.find('.alert select') );
+		},
+
 		display_error = function (key) {
 			if ( $('.error').filter(function () {return $(this).attr('data-key') === key;}).length === 0 ) {
 				$('body,html').scrollTop(0);
@@ -286,13 +296,10 @@ jQuery(function($){
 		// Add new alert
 		.on( 'click.sn', btns.add_alert, function(e) {
 			e.preventDefault();
-			var index = divAlerts.find('.alert').size();
-
-			divAlerts.append( tmpl_alert( $.extend(
-				{ index: index },
-				stream_notifications
-			) ) );
-			selectify( divAlerts.find('.alert select') );
+			add_alert();
+			$('html, body').animate({
+				scrollTop: divAlerts.find(".alert").last().offset().top
+			}, 400);
 		})
 
 		// Reveal alert options after choosing alert type
@@ -384,7 +391,7 @@ jQuery(function($){
 				optionFields;
 
 			// create the new row, by clicking the add-alert button
-			divAlerts.find( btns.add_alert ).trigger( 'click' );
+			add_alert();
 
 			// populate values
 			row = divAlerts.find('.alert:last');

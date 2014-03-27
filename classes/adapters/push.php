@@ -17,6 +17,8 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 	}
 
 	public static function fields() {
+		include_once ABSPATH . 'wp-admin/includes/plugin.php';
+
 		$plugin_path  = defined( 'CKPN_FILE' ) ? CKPN_FILE : null;
 		$is_installed = ( $plugin_path && defined( 'WP_PLUGIN_DIR' ) && file_exists( trailingslashit( WP_PLUGIN_DIR )  . $plugin_path ) );
 
