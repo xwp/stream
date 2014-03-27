@@ -310,7 +310,7 @@ class WP_Stream_Settings {
 							'title'       => __( 'Visibility', 'stream' ),
 							'type'        => 'checkbox',
 							'desc'        => sprintf(
-								__( 'When Checked, all post records that match the excluded rules above will be hidden from view', 'stream' )
+								__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
 							),
 							'after_field' => __( 'Hide Previous Records' ),
 							'default'     => 0,
