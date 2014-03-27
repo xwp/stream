@@ -305,6 +305,16 @@ class WP_Stream_Settings {
 							'default'     => array(),
 							'nonce'       => 'stream_get_ips',
 						),
+						array(
+							'name'        => 'hide_previous_records',
+							'title'       => __( 'Visibility', 'stream' ),
+							'type'        => 'checkbox',
+							'desc'        => sprintf(
+								__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
+							),
+							'after_field' => __( 'Hide Previous Records' ),
+							'default'     => 0,
+						),
 					),
 				),
 			);
@@ -774,41 +784,5 @@ class WP_Stream_Settings {
 			 */
 			do_action( 'wp_stream_auto_purge' );
 		}
-	}
-
-	/**
-	 * Function will add excluded settings args into stream query
-	 *
-	 * @param $args array query args passed to stream_query
-	 *
-	 * @return array
-	 */
-	public static function remove_excluded_record_filter( $args ) {
-		// Remove record of excluded connector
-		if ( empty( $args['connector'] ) ) {
-			$args['connector__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
-		}
-
-		// Remove record of excluded context
-		if ( empty( $args['context'] ) ) {
-			$args['context__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'contexts' );
-		}
-
-		// Remove record of excluded actions
-		if ( empty( $args['action'] ) ) {
-			$args['action__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
-		}
-
-		// Remove record of excluded author
-		if ( empty( $args['author'] ) ) {
-			$args['author__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
-		}
-
-		// Remove record of excluded ip
-		if ( empty( $args['ip'] ) ) {
-			$args['ip__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'ip_addresses' );
-		}
-
-		return $args;
 	}
 }

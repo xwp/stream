@@ -340,7 +340,7 @@ class WP_Stream_Admin {
 		self::$list_table->prepare_items();
 
 		echo '<div class="wrap">';
-		echo sprintf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
+		printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
 		self::$list_table->display();
 		echo '</div>';
 	}
@@ -547,13 +547,7 @@ class WP_Stream_Admin {
 			'paged'            => $paged,
 		);
 
-		// Remove excluded records as per settings
-		add_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
-
 		$records = stream_query( $args );
-
-		// Remove filter added before
-		remove_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		if ( ! $records ) {
 			?>
@@ -810,7 +804,9 @@ class WP_Stream_Admin {
 		$query = wp_parse_args( $query, $default );
 
 		// Run query
-		return stream_query( $query );
+		$items = stream_query( $query );
+
+		return $items;
 	}
 
 	/**
