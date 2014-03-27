@@ -204,9 +204,9 @@ class WP_Stream_Install {
 			add_filter( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_old_options_to_exclude_tab' );
 		}
 
-		// If version is lower than 1.3.0, do the update routine
+		// If version is lower than 1.3.1, do the update routine
 		// Update records of Installer to Theme Editor connector
-		if ( version_compare( $db_version, '1.3.0', '<' ) ) {
+		if ( version_compare( $db_version, '1.3.1', '<' ) ) {
 			WP_Stream_Connector_Editor::update_routine();
 		}
 	}
