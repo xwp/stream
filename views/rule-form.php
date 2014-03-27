@@ -113,7 +113,7 @@
 	</div>
 	<div class="field value">
 		<% if ( ['select', 'ajax'].indexOf( vars.type ) != -1 ){ %>
-		<select name="triggers[<%- vars.index %>][value]" class="trigger-value" data-ajax="<% ( vars.ajax ) %>" <% if ( vars.multiple ){ %>multiple="multiple"<% } %>>
+		<select name="triggers[<%- vars.index %>][value]<% if ( vars.multiple ){ %>[]<% } %>" class="trigger-value" data-ajax="<% ( vars.ajax ) %>" <% if ( vars.multiple ){ %>multiple="multiple"<% } %>>
 			<option></option>
 			<% if ( vars.options ) { %>
 				<% _.each( vars.options, function( list, name ){ %>

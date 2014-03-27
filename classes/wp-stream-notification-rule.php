@@ -99,6 +99,18 @@ class WP_Stream_Notification_Rule {
 		foreach ( $keys as $key ) {
 			$data[$key] = $this->{$key};
 		}
+
+		// Convert array-like trigger values to string
+		$data['triggers'] = array_map(
+			function( $trigger ) {
+				if ( isset( $trigger['value'] ) && is_array( $trigger['value'] ) ) {
+					$trigger['value'] = implode( ',', $trigger['value'] );
+				}
+				return $trigger;
+			},
+			$data['triggers']
+		);
+
 		return stripslashes_deep( $data );
 	}
 

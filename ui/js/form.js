@@ -154,7 +154,7 @@ jQuery(function($){
 					} else if ( $this.hasClass('tags') ) {
 						$this.select2( 'data', [{ id: val, text: val }] );
 					} else {
-						$this.select2( 'val', val );
+						$this.select2( 'val', val.split(',') );
 					}
 				} );
 			});
