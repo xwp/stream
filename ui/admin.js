@@ -3,14 +3,17 @@ jQuery(function($){
 
 	$( '.toplevel_page_wp_stream select.chosen-select' ).select2({
 			minimumResultsForSearch: 10,
-			formatResult: function (record) {
-				var result = '';
+			formatResult: function (record, container) {
+				var result = '', $elem = $(record.element);
 
-				if ( undefined !== $(record.element).attr('data-icon') ) {
-					result += '<img src="' + $(record.element).attr('data-icon') + '" class="wp-stream-select2-icon">';
+				if ( undefined !== $elem.attr('data-icon') ) {
+					result += '<img src="' + $elem.attr('data-icon') + '" class="wp-stream-select2-icon">';
 				}
 
 				result += record.text;
+
+				// Add more info to the container
+				container.attr('title', $elem.attr('title'));
 
 				return result;
 			},
@@ -98,22 +101,75 @@ jQuery(function($){
 	});
 	$( '.stream_page_wp_stream_settings input[type=hidden].select2-select.ip-addresses').each(function( k, el ){
 		var $input = $(el);
-		var $ip_regex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
+
 		$input.select2({
 			tags:$input.data('selected'),
 			width:350,
-			query: function (query){
-				var data = {results: []};
-				if(typeof (query.term) !== 'undefined' && query.term.match($ip_regex) != null ){
-					data.results.push({id: query.term, text: query.term });
+			ajax: {
+				type: 'POST',
+				url: ajaxurl,
+				dataType: 'json',
+				quietMillis: 500,
+				data: function (term) {
+					return {
+						find:   term,
+						limit:  10,
+						action: 'stream_get_ips',
+						nonce:  $input.data('nonce')
+					};
+				},
+				results: function (response) {
+					var answer = {
+						results: []
+					};
+
+					if (response.success !== true || response.data === undefined ) {
+						return answer;
+					}
+
+					$.each(response.data, function (key, ip ) {
+						answer.results.push({
+							id:   ip,
+							text: ip
+						});
+					});
+
+					return answer;
 				}
-				query.callback(data);
 			},
 			initSelection: function (item, callback) {
 				callback( item.data( 'selected' ) );
 			},
 			formatNoMatches : function(){
 				return '';
+			},
+			createSearchChoice: function(term) {
+				var ip_chunks = [];
+
+				ip_chunks = term.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+
+				if (ip_chunks === null) {
+					return;
+				}
+
+				// remove whole match
+				ip_chunks.shift();
+
+				ip_chunks = $.grep(
+					ip_chunks,
+					function(chunk) {
+						return (chunk.charAt(0) !== '0' && parseInt(chunk, 10) <= 255);
+					}
+				);
+
+				if (ip_chunks.length < 4) {
+					return;
+				}
+
+				return {
+					id:   term,
+					text: term
+				};
 			}
 		}).on('change',function(e){
 			stream_select2_change_handler( e , $input );
@@ -122,7 +178,7 @@ jQuery(function($){
 	var $input_user;
 	$('.stream_page_wp_stream_settings input[type=hidden].select2-select.authors_and_roles').each(function (k, el) {
 		$input_user = $(el);
-		var $roles = $input_user.data('values');
+
 		$input_user.select2({
 			multiple: true,
 			width: 350,
@@ -133,19 +189,29 @@ jQuery(function($){
 				quietMillis: 500,
 				data: function (term, page) {
 					return {
-						'find': term,
-						'limit': 10,
-						'pager': page,
-						'action': 'stream_get_users',
-						'nonce' : $input_user.data('nonce')
+						find:   term,
+						limit:  10,
+						pager:  page,
+						action: 'stream_get_users',
+						nonce:  $input_user.data('nonce')
 					};
 				},
 				results: function (response) {
-					var answer = {
+					var roles  = [],
+						answer = [];
+
+					roles = $.grep(
+						$input_user.data('values'),
+						function(role) {
+							return role.text.toLowerCase().indexOf($input_user.data('select2').search.val().toLowerCase()) >= 0;
+						}
+					);
+
+					answer = {
 						results: [
 							{
 								text: 'Roles',
-								children: $roles
+								children: roles
 							},
 							{
 								text: 'Users',
@@ -153,11 +219,12 @@ jQuery(function($){
 							}
 						]
 					};
+
 					if (response.success !== true || response.data === undefined || response.data.status !== true ) {
 						return answer;
 					}
 					$.each(response.data.users, function (k, user) {
-						if ($.contains($roles, user.id)){
+						if ($.contains(roles, user.id)){
 							user.disabled = true;
 						}
 					});
@@ -166,11 +233,13 @@ jQuery(function($){
 					return answer;
 				}
 			},
-			formatResult: function (object) {
+			formatResult: function (object, container) {
 				var result = object.text;
 
 				if ('undefined' !== typeof object.icon) {
 					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
+					// Add more info to the container
+					container.attr('title', object.tooltip);
 				}
 				return result;
 			},
@@ -178,6 +247,7 @@ jQuery(function($){
 				if ( $.isNumeric( object.id ) && object.text.indexOf('icon-users') < 0 ){
 					object.text += '<i class="icon16 icon-users"></i>';
 				}
+
 				return object.text;
 			},
 			initSelection: function (item, callback) {

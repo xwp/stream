@@ -20,6 +20,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 			)
 		);
 
+		// Check for default hidden columns
+		$this->get_hidden_columns();
+
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
 		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
@@ -75,6 +78,23 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'id'   => array( 'ID', false ),
 			'date' => array( 'date', false ),
 		);
+	}
+
+	function get_hidden_columns() {
+		if ( ! $user = wp_get_current_user() ) {
+			return array();
+		}
+
+		// Directly checking the user meta; to check whether user has changed screen option or not
+		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
+
+		// If user meta is not found; add the default hidden column 'id'
+		if ( false === $hidden ) {
+			$hidden = array( 'id' );
+			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+		}
+
+		return $hidden;
 	}
 
 	function prepare_items() {
@@ -142,13 +162,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
-		// Remove excluded records as per settings
-		add_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
-
 		$items = stream_query( $args );
-
-		// Remove filter added before
-		remove_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		return $items;
 	}
@@ -383,7 +397,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			foreach ( $authors as $author ) {
 				$author = get_user_by( 'id', $author->ID );
 				if ( $author ) {
-					$all_records[ $author->ID ] = $author->display_name;
+					$all_records[ $author->ID ] = $author;
 				}
 			}
 		} else {
@@ -438,10 +452,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$authors_records = $this->assemble_records( 'author', 'stream' );
 
 		foreach ( $authors_records as $user_id => $user ) {
+			$user = $user['label'];
 			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
 				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
 				$authors_records[ $user_id ]['icon'] = $gravatar_url;
 			}
+			$user_roles = array_map( 'ucwords', $user->roles );
+			$authors_records[ $user_id ]['label']   = $user->display_name;
+			$authors_records[ $user_id ]['tooltip'] = sprintf(
+				__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+				$user->ID,
+				$user->user_login,
+				$user->user_email,
+				implode( ', ', $user_roles )
+			);
 		}
 
 		$filters['author'] = array();
@@ -487,7 +511,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
 		$url = admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
-		echo sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
+		printf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
 
 	function filter_select( $name, $title, $items, $ajax ) {
@@ -503,11 +527,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
 			foreach ( $items as $v => $label ) {
 				$options[ $v ] = sprintf(
-					'<option value="%s" %s %s %s>%s</option>',
+					'<option value="%s" %s %s %s title="%s">%s</option>',
 					$v,
 					selected( $v, $selected, false ),
 					$label['disabled'],
 					isset( $label['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $label['icon'] ) ) : '',
+					isset( $label['tooltip'] ) ? esc_attr( $label['tooltip'] ) : '',
 					$label['label']
 				);
 			}
@@ -559,7 +584,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				<option></option>
 				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
 				<?php foreach ( $date_interval->intervals as $key => $interval ) {
-					echo sprintf(
+					printf(
 						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 						esc_attr( $key ),
 						esc_attr( $interval['start']->format( 'Y/m/d' ) ),
