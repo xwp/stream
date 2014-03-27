@@ -102,7 +102,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 * Fix: Fallback to the term slug if a label does not exist in list-table ([issue-214](https://github.com/x-team/wp-stream/issues/214))
 * Fix: Widget sorting is now being tracked properly as well as Inactive widgets ([issue-283](https://github.com/x-team/wp-stream/issues/283))
 
- Props [powelski](http://profiles.wordpress.org/powelski/), [faishal](http://profiles.wordpress.org/faishal/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [desaiuditd](http://profiles.wordpress.org/desaiuditd/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
+Props [powelski](http://profiles.wordpress.org/powelski/), [faishal](http://profiles.wordpress.org/faishal/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [desaiuditd](http://profiles.wordpress.org/desaiuditd/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 = 1.2.9 - March 8, 2014 =
 Fixes bug that caused media uploads to fail on new posts. Props [fjarrett](http://profiles.wordpress.org/fjarrett/)
