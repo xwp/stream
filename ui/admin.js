@@ -450,7 +450,7 @@ jQuery(function($){
 					var dayOffset = '0';
 
 					// check if the site date is different from the local date, and set a day offset
-					if ( localTime.getDate() != siteTime.getDate() || localTime.getMonth() != siteTime.getMonth() ) {
+					if ( localTime.getDate() !== siteTime.getDate() || localTime.getMonth() !== siteTime.getMonth() ) {
 						if ( localTime.getTime() < siteTime.getTime() ) {
 							dayOffset = '+1d';
 						} else {
