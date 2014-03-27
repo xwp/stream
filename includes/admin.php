@@ -340,7 +340,7 @@ class WP_Stream_Admin {
 		self::$list_table->prepare_items();
 
 		echo '<div class="wrap">';
-		echo sprintf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
+		printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
 		self::$list_table->display();
 		echo '</div>';
 	}
