@@ -35,7 +35,7 @@
 
 				if (_.isFunction($.fn.select2)) {
 					predefined.select2({
-						'allowClear': true
+						allowClear: true,
 					});
 				}
 
@@ -126,8 +126,8 @@
 			$btn.click(function(){
 				var data = {
 					key: $wrapper.find('select.field-predefined').find(':selected').val(),
-					start: $wrapper.find('.report-date-inputs .field-from').val(),
-					end: $wrapper.find('.report-date-inputs .field-to').val()
+					start: $wrapper.find('.date-inputs .field-from').val(),
+					end: $wrapper.find('.date-inputs .field-to').val(),
 				};
 
 				// Add params to URL
