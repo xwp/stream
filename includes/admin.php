@@ -49,7 +49,7 @@ class WP_Stream_Admin {
 		add_action( 'wp_ajax_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
 
 		// Auto purge setup
-		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
+		add_action( 'wp', array( __CLASS__, 'purge_schedule_setup' ) );
 		add_action( 'wp_stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
 
 		// Admin notices
