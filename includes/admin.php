@@ -424,7 +424,9 @@ class WP_Stream_Admin {
 	public static function purge_scheduled_action() {
 		global $wpdb;
 
-		$days = WP_Stream_Settings::$options['general_records_ttl'];
+		$options = WP_Stream_Settings::get_options();
+
+		$days = $options['general_records_ttl'];
 		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
