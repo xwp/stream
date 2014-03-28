@@ -9,9 +9,7 @@ function wp_stream_reports_intervals_html() {
 		'start' => '',
 		'end'   => '',
 	);
-
-	$user_interval = WP_Stream_Reports_Settings::get_user_options( 'interval', $default );
-
+	$user_interval     = WP_Stream_Reports_Settings::get_user_options( 'interval', $default );
 	$save_interval_url = add_query_arg(
 		array_merge(
 			array(
@@ -64,7 +62,7 @@ class WP_Stream_Reports_Date_Interval extends WP_Stream_Date_Interval {
 		// Get predefined interval for validation
 		$avail_intervals = $this->get_predefined_intervals();
 
-		if ( 'custom' !== $interval['key'] && ! isset( $avail_intervals[ $interval['key'] ] ) ) {
+		if ( '' !== $interval['key'] && 'custom' !== $interval['key']  && ! isset( $avail_intervals[ $interval['key'] ] ) ) {
 			wp_die( esc_html__( 'That time interval is not available.', 'stream-reports' ) );
 		}
 

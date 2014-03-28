@@ -1,7 +1,8 @@
 <div class="date-interval">
 
-	<select class="field-predefined">
-		<option value="custom"><?php esc_attr_e( 'Custom', 'stream-reports' ) ?></option>
+	<select class="field-predefined" data-placeholder="<?php _e( 'All Time', 'stream-reports' ); ?>">
+		<option></option>
+		<option value="custom" <?php selected( 'custom' === $user_interval['key'] ); ?>><?php esc_attr_e( 'Custom', 'stream-reports' ) ?></option>
 		<?php foreach ( $date->intervals as $key => $interval ) {
 			echo sprintf(
 				'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
