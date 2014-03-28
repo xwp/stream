@@ -33,15 +33,13 @@ class WP_Stream_Settings {
 		 * @param  array  array of options
 		 * @return array  updated array of options
 		 */
-		self::$options = apply_filters(
+		return apply_filters(
 			'wp_stream_options',
 			wp_parse_args(
 				(array) get_option( self::KEY, array() ),
 				self::get_defaults()
 			)
 		);
-
-		return self::$options;
 	}
 
 	/**
@@ -51,7 +49,7 @@ class WP_Stream_Settings {
 	 */
 	public static function load() {
 
-		self::get_options();
+		self::$options = self::get_options();
 
 		// Register settings, and fields
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
