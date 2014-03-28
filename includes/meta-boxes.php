@@ -142,7 +142,7 @@ class WP_Stream_Reports_Metaboxes {
 				'title'      => sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $key + 1 ) ),
 				'priority'   => 'default',
 				'context'    => 'normal',
-				'chart_type' => 'bar',
+				'chart_type' => 'multibar',
 			);
 
 			// Parse default argument
@@ -179,7 +179,7 @@ class WP_Stream_Reports_Metaboxes {
 		$args = wp_parse_args(
 			$args,
 			array(
-				'chart_type'    => 'line',
+				'chart_type'    => 'multibar',
 				'data_type'     => null,
 				'data_group'    => null,
 				'selector_type' => '',
@@ -192,7 +192,7 @@ class WP_Stream_Reports_Metaboxes {
 		if ( array_key_exists( $args['chart_type'], $chart_types ) ) {
 			$chart_types[ $args['chart_type'] ] .= ' active';
 		} else {
-			$args['chart_type'] = 'line';
+			$args['chart_type'] = 'multibar';
 		}
 
 		$configure_class = '';
