@@ -235,7 +235,9 @@ class WP_Stream_Reports_Metaboxes {
 				'title'   => __( 'Connector Activity', 'stream-reports' ),
 				'group'   => 'connector',
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
-				'disable' => array(),
+				'disable' => array(
+					'connector',
+				),
 			),
 			'context' => array(
 				'title'   => __( 'Context Activity', 'stream-reports' ),
@@ -261,6 +263,7 @@ class WP_Stream_Reports_Metaboxes {
 			'action'      => __( 'Action', 'stream-reports' ),
 			'author'      => __( 'Author', 'stream-reports' ),
 			'author_role' => __( 'Author Role', 'stream-reports' ),
+			'connector'   => __( 'Connector', 'stream-reports' ),
 			'context'     => __( 'Context', 'stream-reports' ),
 		);
 	}
@@ -402,6 +405,9 @@ class WP_Stream_Reports_Metaboxes {
 				break;
 			case 'author_role':
 				$output = ucfirst( $value );
+				break;
+			case 'connector':
+				$output = isset( WP_Stream_Connectors::$term_labels['stream_connector'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_connector'][ $value ] : $value;
 				break;
 			case 'context':
 				$output = isset( WP_Stream_Connectors::$term_labels['stream_context'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_context'][ $value ] : $value;
