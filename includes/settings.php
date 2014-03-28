@@ -40,6 +40,8 @@ class WP_Stream_Settings {
 				self::get_defaults()
 			)
 		);
+
+		return self::$options;
 	}
 
 	/**
