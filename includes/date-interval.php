@@ -31,67 +31,70 @@ class WP_Stream_Date_Interval {
 	 * @return mixed|void
 	 */
 	public function get_predefined_intervals() {
+		$gmt_offset = get_option( 'gmt_offset' );
 		return apply_filters(
 			'wp_stream_predefined_date_intervals',
 			array(
 				'today' => array(
 					'label' => esc_html__( 'Today', 'stream' ),
-					'start' => Carbon::today(),
+					'start' => Carbon::today()->addHours( $gmt_offset ),
+					'end'   => Carbon::today()->addHours( $gmt_offset ),
 				),
 				'yesterday' => array(
 					'label' => esc_html__( 'Yesterday', 'stream' ),
-					'start' => Carbon::today()->subDay(),
-					'end'   => Carbon::today()->subSecond(),
+					'start' => Carbon::today()->addHours( $gmt_offset )->subDay(),
+					'end'   => Carbon::today()->addHours( $gmt_offset )->subSecond(),
 				),
 				'last-7-days' => array(
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 7 ),
-					'start' => Carbon::today()->subDays( 7 ),
-					'end'   => Carbon::today(),
+					'start' => Carbon::today()->addHours( $gmt_offset )->subDays( 7 ),
+					'end'   => Carbon::today()->addHours( $gmt_offset ),
 				),
 				'last-14-days' => array(
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 14 ),
-					'start' => Carbon::today()->subDays( 14 ),
-					'end'   => Carbon::today(),
+					'start' => Carbon::today()->addHours( $gmt_offset )->subDays( 14 ),
+					'end'   => Carbon::today()->addHours( $gmt_offset ),
 				),
 				'last-30-days' => array(
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 30 ),
-					'start' => Carbon::today()->subDays( 30 ),
-					'end'   => Carbon::today(),
+					'start' => Carbon::today()->addHours( $gmt_offset )->subDays( 30 ),
+					'end'   => Carbon::today()->addHours( $gmt_offset ),
 				),
 				'this-month' => array(
 					'label' => esc_html__( 'This Month', 'stream' ),
-					'start' => Carbon::today()->day( 1 ),
+					'start' => Carbon::today()->addHours( $gmt_offset )->day( 1 ),
 				),
 				'last-month' => array(
 					'label' => esc_html__( 'Last Month', 'stream' ),
-					'start' => Carbon::today()->day( 1 )->subMonth(),
-					'end'   => Carbon::today()->day( 1 )->subSecond(),
+					'start' => Carbon::today()->addHours( $gmt_offset )->day( 1 )->subMonth(),
+					'end'   => Carbon::today()->addHours( $gmt_offset )->day( 1 )->subSecond(),
 				),
 				'last-3-months' => array(
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 3 ),
-					'start' => Carbon::today()->subMonths( 3 ),
-					'end'   => Carbon::today(),
+					'start' => Carbon::today()->addHours( $gmt_offset )->subMonths( 3 ),
+					'end'   => Carbon::today()->addHours( $gmt_offset ),
 				),
 				'last-6-months' => array(
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 6 ),
-					'start' => Carbon::today()->subMonths( 6 ),
-					'end'   => Carbon::today(),
+					'start' => Carbon::today()->addHours( $gmt_offset )->subMonths( 6 ),
+					'end'   => Carbon::today()->addHours( $gmt_offset ),
 				),
 				'last-12-months' => array(
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 12 ),
-					'start' => Carbon::today()->subMonths( 12 ),
-					'end'   => Carbon::today(),
+					'start' => Carbon::today()->addHours( $gmt_offset )->subMonths( 12 ),
+					'end'   => Carbon::today()->addHours( $gmt_offset ),
 				),
 				'this-year' => array(
 					'label' => esc_html__( 'This Year', 'stream' ),
-					'start' => Carbon::today()->day( 1 )->month( 1 ),
+					'start' => Carbon::today()->addHours( $gmt_offset )->day( 1 )->month( 1 ),
 				),
 				'last-year' => array(
 					'label' => esc_html__( 'Last Year', 'stream' ),
-					'start' => Carbon::today()->day( 1 )->month( 1 )->subYear(),
-					'end'   => Carbon::today()->day( 1 )->month( 1 )->subSecond(),
-				)
-			)
+					'start' => Carbon::today()->addHours( $gmt_offset )->day( 1 )->month( 1 )->subYear(),
+					'end'   => Carbon::today()->addHours( $gmt_offset )->day( 1 )->month( 1 )->subSecond(),
+				),
+			),
+			$gmt_offset
 		);
 	}
 

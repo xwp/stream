@@ -461,6 +461,7 @@ jQuery(function($){
 					datepickers.datepicker({
 						dateFormat: 'yy/mm/dd',
 						maxDate: dayOffset,
+						defaultDate: siteTime,
 						beforeShow: function() {
 							$(this).prop( 'disabled', true );
 						},

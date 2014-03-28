@@ -171,7 +171,7 @@ class WP_Stream_Admin {
 					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
 					'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
 				),
-				'gmt_offset'     => get_option('gmt_offset'),
+				'gmt_offset'     => get_option( 'gmt_offset' ),
 				'current_screen' => $hook,
 				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
