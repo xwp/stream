@@ -35,7 +35,6 @@
 
 				if (_.isFunction($.fn.select2)) {
 					predefined.select2({
-						'placeholder': 'Select an Interval to Report',
 						'allowClear': true
 					});
 				}
@@ -200,10 +199,10 @@
 
 			// Configuration toggle
 			this.$configureBtn.on('click.streamReports', function () {
-				var $target = $(this), $title,
+				var $target = $(this), $title;
 
 				// Hold parent container
-				$curPostbox = $target.parents('.postbox');
+				var $curPostbox = $target.parents('.postbox');
 
 				// Get the title of the metabox
 				$title = $curPostbox.find('.hndle .title');
@@ -234,6 +233,8 @@
 				// Show the configure div
 				$curPostbox.find('.inside .configure').toggleClass('visible');
 			});
+			
+			this.$configureDiv.filter( '.stream-reports-expand' ).closest( '.postbox' ).find( '.postbox-title-action a.open-box').click();
 		},
 
 		configureSave: function() {

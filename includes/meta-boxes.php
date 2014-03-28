@@ -183,6 +183,7 @@ class WP_Stream_Reports_Metaboxes {
 				'data_type'     => null,
 				'data_group'    => null,
 				'selector_type' => '',
+				'is_new'        => false,
 			)
 		);
 
@@ -192,6 +193,13 @@ class WP_Stream_Reports_Metaboxes {
 			$chart_types[ $args['chart_type'] ] .= ' active';
 		} else {
 			$args['chart_type'] = 'line';
+		}
+
+		$configure_class = '';
+		if ( $args['is_new'] ) {
+			$configure_class = 'stream-reports-expand';
+			unset( self::$sections[ $key ]['is_new'] );
+			WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
 		}
 
 		$chart_options  = $this->get_chart_options( $args );
@@ -636,7 +644,9 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	public function add_metabox() {
 		// Add a new section
-		self::$sections[] = array();
+		self::$sections[] = array(
+			'is_new' => true,
+		);
 
 		// Push new metabox to top of the display
 		$new_section_id = 'wp-stream-reports-' . ( count( self::$sections ) - 1 );
