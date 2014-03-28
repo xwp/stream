@@ -61,6 +61,8 @@ class WP_Stream_Admin {
 		// Dashboard AJAX pagination
 		add_action( 'wp_ajax_stream_activity_dashboard_update', array( __CLASS__, 'dashboard_stream_activity_update_contents' ) );
 
+		add_filter( 'screen_settings', array( __CLASS__, 'dashboard_live_update_checkbox' ), 10, 2 );
+
 		// Heartbeat live update
 		add_filter( 'heartbeat_received', array( __CLASS__, 'live_update' ), 10, 2 );
 
@@ -730,6 +732,35 @@ class WP_Stream_Admin {
 		<?php
 	}
 
+	public static function dashboard_live_update_checkbox( $status, $args ) {
+
+		$protocol      = ( ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443 ) ? 'https://' : 'http://';
+		$current_url   = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$dashboard_url = admin_url( 'index.php' );
+		if ( $current_url != $dashboard_url ) {
+			return;
+		}
+
+		$user_id = get_current_user_id();
+		$option  = ( 'off' !== get_user_meta( $user_id, 'stream_live_update_records_dashboard', true ) );
+		$nonce   = wp_create_nonce( 'stream_live_update_nonce' );
+		ob_start();
+		?>
+		<fieldset>
+			<h5><?php esc_html_e( 'Live updates', 'stream' ) ?></h5>
+			<div><input type="hidden" name="enable_live_update_nonce" id="enable_live_update_nonce" value="<?php echo esc_attr( $nonce ) ?>" /></div>
+			<div><input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ) ?>" /></div>
+			<div class="metabox-prefs stream-live-update-checkbox">
+				<label for="enable_live_update">
+					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" data-page="dashboard" <?php checked( $option ) ?> />
+					<?php esc_html_e( 'Enabled', 'stream' ) ?><span class="spinner"></span>
+				</label>
+			</div>
+		</fieldset>
+		<?php
+		return ob_get_clean();
+	}
+
 
 	/**
 	 * Sends Updated Actions to the List Table View
@@ -831,7 +862,14 @@ class WP_Stream_Admin {
 
 		$user = (int) $input['user'];
 
-		$success = update_user_meta( $user, 'stream_live_update_records', $checked );
+		if ( isset( $_POST['page'] ) && $_POST['page'] == 'dashboard' ) {
+			$meta_key = 'stream_live_update_records_dashboard';
+		} else {
+			$meta_key = 'stream_live_update_records';
+
+		}
+		$success = update_user_meta( $user, $meta_key, $checked );
+
 
 		if ( $success ) {
 			wp_send_json_success( 'Live Updates Enabled' );
