@@ -1,6 +1,6 @@
 <div class="stream-section-wrapper">
 
-	<div class="configure">
+	<div class="configure <?php echo esc_attr( $configure_class ); ?>">
 
 		<div class="inside">
 

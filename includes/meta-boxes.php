@@ -142,7 +142,7 @@ class WP_Stream_Reports_Metaboxes {
 				'title'      => sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $key + 1 ) ),
 				'priority'   => 'default',
 				'context'    => 'normal',
-				'chart_type' => 'bar',
+				'chart_type' => 'line',
 			);
 
 			// Parse default argument
@@ -183,6 +183,7 @@ class WP_Stream_Reports_Metaboxes {
 				'data_type'     => null,
 				'data_group'    => null,
 				'selector_type' => '',
+				'is_new'        => false,
 			)
 		);
 
@@ -192,6 +193,13 @@ class WP_Stream_Reports_Metaboxes {
 			$chart_types[ $args['chart_type'] ] .= ' active';
 		} else {
 			$args['chart_type'] = 'line';
+		}
+
+		$configure_class = '';
+		if ( $args['is_new'] ) {
+			$configure_class = 'stream-reports-expand';
+			unset( self::$sections[ $key ]['is_new'] );
+			WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
 		}
 
 		$chart_options  = $this->get_chart_options( $args );
@@ -214,9 +222,9 @@ class WP_Stream_Reports_Metaboxes {
 
 	protected function get_chart_types() {
 		return array(
-			'multibar' => 'dashicons-chart-bar',
-			'pie'      => 'dashicons-chart-pie',
 			'line'     => 'dashicons-chart-area',
+			'pie'      => 'dashicons-chart-pie',
+			'multibar' => 'dashicons-chart-bar',
 		);
 	}
 
@@ -636,7 +644,18 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	public function add_metabox() {
 		// Add a new section
-		self::$sections[] = array();
+		self::$sections[] = array(
+			'is_new' => true,
+		);
+
+		// Push new metabox to top of the display
+		$new_section_id = 'wp-stream-reports-' . ( count( self::$sections ) - 1 );
+		$order          = get_user_option( 'meta-box-order_stream_page_' . WP_Stream_Reports::REPORTS_PAGE_SLUG );
+		$normal_order   = explode( ',', $order['normal'] );
+
+		array_unshift( $normal_order, $new_section_id );
+		$order['normal'] = join( ',', $normal_order );
+		update_user_option( get_current_user_id(), 'meta-box-order_stream_page_' . WP_Stream_Reports::REPORTS_PAGE_SLUG, $order, true );
 
 		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'sections', self::$sections );
 	}
