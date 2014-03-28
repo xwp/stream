@@ -34,6 +34,9 @@ class WP_Stream_Date_Interval {
 		return apply_filters(
 			'wp_stream_predefined_date_intervals',
 			array(
+				'all-time' => array(
+					'label' => esc_html__( 'All Time', 'stream' ),
+				),
 				'today' => array(
 					'label' => esc_html__( 'Today', 'stream' ),
 					'start' => Carbon::today(),
