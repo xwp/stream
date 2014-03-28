@@ -180,12 +180,17 @@
 			this.$configureDiv.find( '.chart-dataset' ).on( 'change', function( e ) {
 				var dataset = e.val;
 
+				var selectors = parent.$configureDiv.find( '.chart-selector' );
+				selectors.find( 'option' ).removeAttr( 'disabled' );
+
 				var option = parent.$configureDiv.find('.chart-dataset :selected');
+				if( 'all' == $(option).val() ) {
+					return;
+				}
+
 				var disable = option.closest('optgroup').data('disable-selectors');
 				var disabled_selectors = disable.split(',');
 
-				var selectors = parent.$configureDiv.find( '.chart-selector' );
-				selectors.find( 'option' ).removeAttr( 'disabled' );
 				for( var i = 0; i < disabled_selectors.length; i++ ){
 					var option = selectors.find( 'option[value="' + disabled_selectors[i] + '"]');
 					option.attr('disabled', 'disabled');
