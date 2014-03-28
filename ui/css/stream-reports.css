@@ -197,3 +197,8 @@
 .stream_page_wp_stream_reports svg text {
 	font-family: "Open Sans", sans-serif !important;
 }
+
+.stream_page_wp_stream_reports svg .nv-axis .tick text,
+.stream_page_wp_stream_reports svg .nv-axis .nv-axisMaxMin text {
+	font-size: 10px;
+}
