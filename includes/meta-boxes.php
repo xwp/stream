@@ -640,12 +640,12 @@ class WP_Stream_Reports_Metaboxes {
 
 		// Push new metabox to top of the display
 		$new_section_id = 'wp-stream-reports-' . ( count( self::$sections ) - 1 );
-		$metabox_order = get_user_option( 'meta-box-order_stream_page_wp_stream_reports' );
-		$metabox_normal_order = explode( ',', $metabox_order['normal'] );
+		$order          = get_user_option( 'meta-box-order_stream_page_' . WP_Stream_Reports::REPORTS_PAGE_SLUG );
+		$normal_order   = explode( ',', $order['normal'] );
 
-		array_unshift( $metabox_normal_order, $new_section_id );
-		$metabox_order['normal'] = join( ',', $metabox_normal_order );
-		update_user_option( get_current_user_id(), 'meta-box-order_stream_page_wp_stream_reports', $metabox_order, true );
+		array_unshift( $normal_order, $new_section_id );
+		$order['normal'] = join( ',', $normal_order );
+		update_user_option( get_current_user_id(), 'meta-box-order_stream_page_' . WP_Stream_Reports::REPORTS_PAGE_SLUG, $order, true );
 
 		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'sections', self::$sections );
 	}
