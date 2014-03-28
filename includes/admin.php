@@ -416,8 +416,8 @@ class WP_Stream_Admin {
 	}
 
 	public static function purge_schedule_setup() {
-		if ( ! wp_next_scheduled( 'stream_auto_purge' ) ) {
-			wp_schedule_event( time(), 'daily', 'stream_auto_purge' );
+		if ( ! wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
+			wp_schedule_event( time(), 'daily', 'wp_stream_auto_purge' );
 		}
 	}
 
