@@ -26,6 +26,22 @@ class WP_Stream_Settings {
 	 */
 	public static $fields = array();
 
+	public static function get_options() {
+		/**
+		 * Filter allows for modification of options
+		 *
+		 * @param  array  array of options
+		 * @return array  updated array of options
+		 */
+		return apply_filters(
+			'wp_stream_options',
+			wp_parse_args(
+				(array) get_option( self::KEY, array() ),
+				self::get_defaults()
+			)
+		);
+	}
+
 	/**
 	 * Public constructor
 	 *
@@ -33,22 +49,7 @@ class WP_Stream_Settings {
 	 */
 	public static function load() {
 
-		// Parse field information gathering default values
-		$defaults = self::get_defaults();
-
-		/**
-		 * Filter allows for modification of options
-		 *
-		 * @param  array  array of options
-		 * @return array  updated array of options
-		 */
-		self::$options = apply_filters(
-			'wp_stream_options',
-			wp_parse_args(
-				(array) get_option( self::KEY, array() ),
-				$defaults
-			)
-		);
+		self::$options = self::get_options();
 
 		// Register settings, and fields
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
