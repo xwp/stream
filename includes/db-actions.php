@@ -88,10 +88,10 @@ class WP_Stream_DB {
 			/**
 			 * Action Hook that fires on an error during post insertion
 			 *
-			 * @param  int  $record_id  Record being inserted
+			 * @param  array  $recordarr  Record being inserted
 			 */
-			do_action( 'wp_stream_post_insert_error', $record_id );
-			return $record_id;
+			do_action( 'wp_stream_post_insert_error', $recordarr );
+			return;
 		}
 
 		self::$instance->prev_record = $record_id;
