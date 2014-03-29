@@ -623,22 +623,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function display() {
 		echo '<form method="get" action="' . admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) . '">';
-		echo $this->filter_search(); // xss ok
 		parent::display();
 		echo '</form>';
 	}
 
 	function display_tablenav( $which ) {
 		if ( 'top' === $which ) : ?>
-			<div class="tablenav <?php echo esc_attr( $which ); ?>">
-				<?php
-				$this->pagination( $which );
-				$this->extra_tablenav( $which );
-				?>
-
-				<br class="clear" />
-			</div>
-		<?php  else : ?>
+			<?php echo '<div class="alignright">' ?>
+				<?php echo $this->filter_search() // xss ok ?>
+				<div class="tablenav <?php echo esc_attr( $which ); ?>">
+					<?php $this->pagination( $which ) ?>
+				</div>
+			<?php echo '</div>' ?>
+			<?php echo $this->extra_tablenav( $which ) // xss ok ?>
+		<?php else : ?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 				<?php
 				/**

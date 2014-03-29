@@ -84,7 +84,22 @@
 
 /* Stream Records */
 
+.toplevel_page_wp_stream h2 {
+	margin-bottom: 15px;
+}
+
+.toplevel_page_wp_stream #record-search-input {
+	width: 165px;
+}
+
 .toplevel_page_wp_stream .tablenav {
+	float: right;
+	clear: right;
+}
+
+.toplevel_page_wp_stream .tablenav.bottom {
+	float: none;
+	clear: both;
 	padding-top: 6px;
 }
 
@@ -93,6 +108,7 @@
 }
 
 .toplevel_page_wp_stream .tablenav .actions {
+	float: left;
 	padding: 0;
 	overflow: visible;
 }
@@ -186,16 +202,28 @@
 }
 
 .toplevel_page_wp_stream .date-interval {
-	display: inline;
+	display: inline-block;
+}
+
+.toplevel_page_wp_stream .date-interval .date-inputs {
+	clear: left;
+	margin-right: 3px !important;
+	margin-bottom: 0 !important;
 }
 
 .toplevel_page_wp_stream .select2-container {
 	margin-right: 6px;
 	margin-bottom: 6px;
+	vertical-align: baseline;
 }
 
 .toplevel_page_wp_stream .select2-container.select2-allowclear .select2-choice abbr {
 	margin-top: -2px;
+}
+
+.toplevel_page_wp_stream #record-query-submit {
+	vertical-align: bottom;
+	margin-bottom: 6px;
 }
 
 
