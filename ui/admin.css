@@ -89,7 +89,7 @@
 }
 
 .toplevel_page_wp_stream #record-search-input {
-	width: 165px;
+	width: 160px;
 }
 
 .toplevel_page_wp_stream .tablenav {
@@ -258,7 +258,7 @@
 /* Date Interval Common */
 
 .wp_stream_screen .date-interval .field-predefined {
-	width: 165px;
+	width: 160px;
 	float: left;
 	margin-right: 6px;
 	margin-bottom: 6px;
