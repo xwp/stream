@@ -368,7 +368,11 @@ jQuery(function($){
 		toggle_filter_submit();
 
 		//Enable Filter Toggle Checkbox Ajax
-		$( 'div.stream-toggle-filters input[type=checkbox]' ).click( function() {
+		$( 'div.stream-toggle-filters input[type=checkbox]' ).click( function( e ) {
+
+			// Disable other checkboxes for duration of request to avoid "clickjacking"
+			var siblings = $(this).closest('div').find('input:checkbox');
+			siblings.attr( 'disabled', true );
 			var nonce = $( '#toggle_filters_nonce' ).val();
 			var user = $( '#toggle_filters_user' ).val();
 			var checked = 'unchecked';
@@ -384,6 +388,7 @@ jQuery(function($){
 				dataType: 'json',
 				beforeSend : function() {
 					$( checkbox + ' .spinner' ).show().css( { 'display' : 'inline-block' } );
+
 				},
 				success : function( data ) {
 
@@ -399,8 +404,10 @@ jQuery(function($){
 					}
 
 					toggle_filter_submit();
+
 				}
 			});
+			siblings.attr( 'disabled', false );
 		});
 
 
