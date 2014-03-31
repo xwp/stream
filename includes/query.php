@@ -64,10 +64,11 @@ class WP_Stream_Query {
 			// Fields selection
 			'fields'                => '',
 			'ignore_context'        => null,
+			// Hide records that match the exclude rules
+			'hide_excluded'         => ! empty( WP_Stream_Settings::$options[ 'exclude_hide_previous_records' ] ),
 		);
 
 		$args = wp_parse_args( $args, $defaults );
-
 		/**
 		 * Filter allows additional arguments to query $args
 		 *
@@ -75,6 +76,10 @@ class WP_Stream_Query {
 		 * @return array  Updated array of query arguments
 		 */
 		$args = apply_filters( 'stream_query_args', $args );
+
+		if ( true === $args[ 'hide_excluded' ] ) {
+			$args = self::add_excluded_record_args( $args );
+		}
 
 		$join  = '';
 		$where = '';
@@ -141,65 +146,71 @@ class WP_Stream_Query {
 		/**
 		 * PARSE __IN PARAM FAMILY
 		 */
-		if ( $args['record_greater_than'] ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.ID > %d", (int) $args['record_greater_than'] );
+		if ( $args[ 'record_greater_than' ] ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.ID > %d", (int) $args[ 'record_greater_than' ] );
 		}
 
-		if ( $args['record__in'] ) {
-			$record__in = implode( ',', array_filter( (array) $args['record__in'], 'is_numeric' ) );
-			if ( $record__in ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.ID IN ($record__in)", '' );
+		if ( $args[ 'record__in' ] ) {
+			$record__in = array_filter( (array) $args[ 'record__in' ], 'is_numeric' );
+			if ( ! empty( $record__in ) ) {
+				$record__in_format = '(' . join( ',', array_fill( 0, count( $record__in ), '%d' ) ) . ')';
+				$where .= $wpdb->prepare( " AND $wpdb->stream.ID IN {$record__in_format}", $record__in );
 			}
 		}
 
-		if ( $args['record__not_in'] ) {
-			$record__not_in = implode( ',', array_filter( (array) $args['record__not_in'], 'is_numeric' ) );
-			if ( strlen( $record__not_in ) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.ID NOT IN ($record__not_in)", '' );
+		if ( $args[ 'record__not_in' ] ) {
+			$record__not_in = array_filter( (array) $args[ 'record__not_in' ], 'is_numeric' );
+			if ( ! empty( $record__not_in ) ) {
+				$record__not_in_format = '(' . join( ',', array_fill( 0, count( $record__not_in ), '%d' ) ) . ')';
+				$where .= $wpdb->prepare( " AND $wpdb->stream.ID NOT IN {$record__not_in_format}", $record__not_in );
 			}
 		}
 
-		if ( $args['record_parent'] ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.parent = %d", (int) $args['record_parent'] );
+		if ( $args[ 'record_parent' ] ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.parent = %d", (int) $args[ 'record_parent' ] );
 		}
 
-		if ( $args['record_parent__in'] ) {
-			$record_parent__in = implode( ',', array_filter( (array) $args['record_parent__in'], 'is_numeric' ) );
-			if ( strlen( $record_parent__in ) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.parent IN ($record_parent__in)", '' );
+		if ( $args[ 'record_parent__in' ] ) {
+			$record_parent__in = array_filter( (array) $args[ 'record_parent__in' ], 'is_numeric' );
+			if ( ! empty( $record_parent__in ) ) {
+				$record_parent__in_format = '(' . join( ',', array_fill( 0, count( $record_parent__in ), '%d' ) ) . ')';
+				$where .= $wpdb->prepare( " AND $wpdb->stream.parent IN {$record_parent__in_format}", $record_parent__in );
 			}
 		}
 
-		if ( $args['record_parent__not_in'] ) {
-			$record_parent__not_in = implode( ',', array_filter( (array) $args['record_parent__not_in'], 'is_numeric' ) );
-			if ( strlen( $record_parent__not_in ) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.parent NOT IN ($record_parent__not_in)", '' );
+		if ( $args[ 'record_parent__not_in' ] ) {
+			$record_parent__not_in = array_filter( (array) $args[ 'record_parent__not_in' ], 'is_numeric' );
+			if ( ! empty( $record_parent__not_in ) ) {
+				$record_parent__not_in_format = '(' . join( ',', array_fill( 0, count( $record_parent__not_in ), '%d' ) ) . ')';
+				$where .= $wpdb->prepare( " AND $wpdb->stream.parent NOT IN {$record_parent__not_in_format}", $record_parent__not_in );
 			}
 		}
 
 		if ( $args[ 'author__in' ] ) {
-			$author__in = implode( ',', array_filter( (array)$args[ 'author__in' ], 'is_numeric' ) );
-			if ( $author__in ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.author IN ($author__in)", '' );
+			$author__in = array_filter( (array) $args[ 'author__in' ], 'is_numeric' );
+			if ( ! empty( $author__in ) ) {
+				$author__in_format = '(' . join( ',', array_fill( 0, count( $author__in ), '%d' ) ) . ')';
+				$where .= $wpdb->prepare( " AND $wpdb->stream.author IN {$author__in_format}", $author__in );
 			}
 		}
 
 		if ( $args[ 'author__not_in' ] ) {
-			$author__not_in = implode( ',', array_filter( (array)$args[ 'author__not_in' ], 'is_numeric' ) );
-			if ( strlen( $author__not_in ) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->stream.author NOT IN ($author__not_in)", '' );
+			$author__not_in = array_filter( (array) $args[ 'author__not_in' ], 'is_numeric' );
+			if ( ! empty( $author__not_in ) ) {
+				$author__not_in_format = '(' . join( ',', array_fill( 0, count( $author__not_in ), '%d' ) ) . ')';
+				$where .= $wpdb->prepare( " AND $wpdb->stream.author NOT IN {$author__not_in_format}", $author__not_in );
 			}
 		}
 		if ( $args[ 'ip__in' ] ) {
-			if ( count( $args[ 'ip__in' ] ) > 0 ) {
-				$ip__in = '(' . substr( str_repeat( ',%s', count( $args[ 'ip__in' ] ) ), 1 ) . ')';
+			if ( ! empty( $args[ 'ip__in' ] ) ) {
+				$ip__in = '(' . join( ',', array_fill( 0, count( $args[ 'ip__in' ] ), '%s' ) ) . ')';
 				$where .= $wpdb->prepare( " AND $wpdb->stream.ip IN {$ip__in}", $args[ 'ip__in' ] );
 			}
 		}
 
 		if ( $args[ 'ip__not_in' ] ) {
-			if ( count( $args[ 'ip__not_in' ] ) > 0 ) {
-				$ip__not_in = '(' . substr( str_repeat( ',%s', count( $args[ 'ip__not_in' ] ) ), 1 ) . ')';
+			if ( ! empty( $args[ 'ip__not_in' ] ) ) {
+				$ip__not_in = '(' . join( ',', array_fill( 0, count( $args[ 'ip__not_in' ] ), '%s' ) ) . ')';
 				$where     .= $wpdb->prepare( " AND $wpdb->stream.ip NOT IN {$ip__not_in}", $args[ 'ip__not_in' ] );
 			}
 		}
@@ -315,6 +326,42 @@ class WP_Stream_Query {
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Function will add excluded settings args into stream query
+	 *
+	 * @param $args array query args passed to stream_query
+	 *
+	 * @return array
+	 */
+	public static function add_excluded_record_args( $args ) {
+		// Remove record of excluded connector
+		if ( empty( $args['connector'] ) ) {
+			$args['connector__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
+		}
+
+		// Remove record of excluded context
+		if ( empty( $args['context'] ) ) {
+			$args['context__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'contexts' );
+		}
+
+		// Remove record of excluded actions
+		if ( empty( $args['action'] ) ) {
+			$args['action__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
+		}
+
+		// Remove record of excluded author
+		if ( empty( $args['author'] ) ) {
+			$args['author__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
+		}
+
+		// Remove record of excluded ip
+		if ( empty( $args['ip'] ) ) {
+			$args['ip__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'ip_addresses' );
+		}
+
+		return $args;
 	}
 
 }

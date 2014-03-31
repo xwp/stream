@@ -88,6 +88,10 @@
 	padding-top: 6px;
 }
 
+.toplevel_page_wp_stream .tablenav.bottom .button {
+	margin-right: 6px;
+}
+
 .toplevel_page_wp_stream .tablenav .actions {
 	padding: 0;
 	overflow: visible;
@@ -188,11 +192,6 @@
 .toplevel_page_wp_stream .select2-container {
 	margin-right: 6px;
 	margin-bottom: 6px;
-}
-
-.toplevel_page_wp_stream .select2-results .select2-disabled {
-	background: transparent;
-	color: #aaa;
 }
 
 .toplevel_page_wp_stream .select2-container.select2-allowclear .select2-choice abbr {
@@ -303,6 +302,11 @@
 
 .wp_stream_screen li.select2-result {
 	margin-bottom: 1px;
+}
+
+.wp_stream_screen .select2-results .select2-disabled {
+	background: transparent;
+	color: #aaa;
 }
 
 .wp_stream_screen .select2-container.authors_and_roles .select2-search-choice .icon16 {
