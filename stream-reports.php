@@ -344,6 +344,7 @@ class WP_Stream_Reports {
 
 			return false;
 		}
+
 		return true;
 	}
 
