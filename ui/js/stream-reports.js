@@ -137,6 +137,45 @@
 	};
 
 	/**
+	 * Screen options
+	 */
+	report.screen = {
+		init: function( chartHeightOption, applyBtn ) {
+			this.$chartHeightOption = chartHeightOption;
+			this.$applyBtn = applyBtn;
+
+			this.configureOptions();
+		},
+
+		configureOptions: function() {
+			var parent = this;
+
+			this.$applyBtn.click(function( e ) {
+				e.preventDefault();
+
+				var $spinner = $(this).siblings('.spinner');
+				$spinner.show();
+
+				$.ajax({
+					type: 'GET',
+					url: ajaxurl,
+					data: {
+						action: 'stream_report_save_chart_height',
+						stream_reports_nonce: $('#stream_report_nonce').val(),
+						chart_height: parent.$chartHeightOption.val(),
+					},
+					dataType: 'json',
+					success : function(data) {
+						location.reload(true);
+					}
+				});
+
+				return false;
+			});
+		}
+	};
+
+	/**
 	 * Metabox logic logic
 	 */
 	report.metabox = {
@@ -238,7 +277,7 @@
 				// Show the configure div
 				$curPostbox.find('.inside .configure').toggleClass('visible');
 			});
-			
+
 			this.$configureDiv.filter( '.stream-reports-expand' ).closest( '.postbox' ).find( '.postbox-title-action a.open-box').click();
 		},
 
@@ -303,7 +342,7 @@
 
 					}
 
-					
+
 				}
 			});
 		}
@@ -526,6 +565,10 @@
 	$(document).ready(function () {
 		stream.report.intervals.init(
 			$('.date-interval')
+		);
+		stream.report.screen.init(
+			$('#chart_height'),
+			$('#chart_height_apply')
 		);
 		stream.report.chart.init(
 			$('.stream_page_wp_stream_reports .chart'),
