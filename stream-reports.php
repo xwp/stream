@@ -111,6 +111,10 @@ class WP_Stream_Reports {
 			return;
 		}
 
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return;
+		}
+
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
 		add_action( 'init', array( 'WP_Stream_Reports_Settings', 'load' ), 9 );
