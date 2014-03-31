@@ -19,7 +19,7 @@ class WP_Stream_Network {
 	}
 
 	function filters() {
-		add_filter( 'wp_stream_get_fields', array( $this, 'get_fields' ) );
+		add_filter( 'wp_stream_options_fields', array( $this, 'get_fields' ) );
 		add_filter( 'wp_stream_options', array( $this, 'filter_options' ) );
 	}
 
