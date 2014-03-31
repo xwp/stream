@@ -14,15 +14,21 @@ class WP_Stream_Install {
 
 		$current = WP_Stream::VERSION;
 
-		$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+		$db_version = get_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 
 		/**
 		 * Allows devs to alter the tables prefix, default to base_prefix
 		 *
 		 * @param  string  database prefix
 		 * @return string  udpated database prefix
-		 */
-		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->prefix );
+		*/
+		if ( is_multisite() ) {
+			$prefix = $wpdb->base_prefix;			 
+		} else {
+			$prefix = $wpdb->prefix;			 
+		}
+
+		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $prefix );
 
 		if ( empty( $db_version ) ) {
 			self::install();
@@ -32,7 +38,7 @@ class WP_Stream_Install {
 			return;
 		}
 
-		update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $current );
+		update_site_option( plugin_basename( WP_STREAM_DIR ) . '_db', $current );
 	}
 
 	public static function install() {
@@ -208,7 +214,7 @@ class WP_Stream_Install {
 
 		// If version is lower than 1.4.0, manually alter the column order. Not possible using dbDelta alone.
 		if ( version_compare( $db_version, '1.4.0', '<' ) ) {
-			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY blog_id bigint(20) AFTER site_id" );
+			$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '1' AFTER site_id" );
 		}
 	}
 
