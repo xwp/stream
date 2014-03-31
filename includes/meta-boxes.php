@@ -742,7 +742,7 @@ class WP_Stream_Reports_Metaboxes {
 			<div><input type="hidden" name="update_chart_height_user" id="update_chart_height_user" value="<?php echo esc_attr( $user_id ); ?>"></div>
 			<div class="metabox-prefs stream-reports-chart-height-option">
 				<label for="chart-height">
-					<input type="number" step="50" min="50" max="950" name="chart_height" id="chart_height" maxlength="3" value="<?php echo esc_attr( $option ); ?>">
+					<input type="number" step="50" min="100" max="950" name="chart_height" id="chart_height" maxlength="3" value="<?php echo esc_attr( $option ); ?>">
 					<?php esc_html_e( 'px', 'stream-reports' ); ?>
 				</label>
 				<input type="submit" id="chart_height_apply" class="button" value="<?php esc_attr_e( 'Apply', 'stream-reports' ); ?>">
