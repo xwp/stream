@@ -210,13 +210,17 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	protected function get_chart_options( $args ) {
+		$values        = $this->get_chart_coordinates( $args );
+		$show_controls = count( $values ) > 1;
+
 		return array(
 			'type'       => $args['chart_type'],
 			'guidelines' => true,
 			'tooltip'    => array(
 				'show' => true,
 			),
-			'values'     => $this->get_chart_coordinates( $args ),
+			'values'     => $values,
+			'controls'   => $show_controls,
 		);
 	}
 
