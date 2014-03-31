@@ -21,7 +21,7 @@ class WP_Stream_Admin {
 	 *
 	 * @var bool
 	 */
-	public static $disable_site_admin = false;
+	public static $disable_sites_admin = false;
 
 	const ADMIN_BODY_CLASS    = 'wp_stream_screen';
 	const RECORDS_PAGE_SLUG   = 'wp_stream';
@@ -37,9 +37,12 @@ class WP_Stream_Admin {
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
 		if ( is_multisite() ) {
-			$settings = get_site_option( WP_Stream_Settings::KEY, array() );
-			if ( true == $settings['general']['disable_sites_admin'] ) {
-				self::$disable_site_admin = true;
+			$settings = wp_parse_args(
+				(array) get_site_option( WP_Stream_Settings::KEY, array() ),
+				WP_Stream_Settings::get_defaults()
+			);
+			if ( isset( $settings['general_disable_sites_admin'] ) && true == $settings['general_disable_sites_admin'] ) {
+				self::$disable_sites_admin = true;
 			}
 		}
 
@@ -129,7 +132,7 @@ class WP_Stream_Admin {
 		if ( is_network_admin() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) )
 			return false;
 
-		if ( ! is_network_admin() && self::$disable_site_admin )
+		if ( ! is_network_admin() && self::$disable_sites_admin )
 			return false;
 
 		self::$screen_id['main'] = add_menu_page(
