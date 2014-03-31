@@ -124,6 +124,10 @@ class WP_Stream_Notifications {
 			return;
 		}
 
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return;
+		}
+
 		// Load all classes in /classes folder
 		foreach ( glob( WP_STREAM_NOTIFICATIONS_DIR . 'classes/*.php' ) as $class ) {
 			include $class;
