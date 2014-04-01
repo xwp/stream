@@ -595,7 +595,12 @@ class WP_Stream_Settings {
 				}
 
 				foreach ( $choices as $key => $role ) {
-					$data_values[] = array( 'id' => $key, 'text' => $role );
+					$args  = array( 'id' => $key, 'text' => $role );
+					$users = get_users( array( 'role' => $key ) );
+					if ( count( $users ) ) {
+						$args['user_count'] = sprintf( _n( '1 user', '%s users', count( $users ), 'stream' ), count( $users ) );
+					}
+					$data_values[] = $args;
 				}
 
 				$selected_values = array();
