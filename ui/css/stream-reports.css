@@ -112,6 +112,10 @@
 	color: #000;
 }
 
+.stream_page_wp_stream_reports .stream-reports-chart-height-option{
+	width: 200px;
+}
+
 @media only screen and (max-width: 782px) {
 	.stream_page_wp_stream_reports .date-interval .field-predefined,
 	.stream_page_wp_stream_reports .date-interval .date-inputs {
@@ -163,7 +167,6 @@
 }
 
 .stream_page_wp_stream_reports .postbox .inside .chart {
-	height: 300px;
 	padding: 0;
 }
 

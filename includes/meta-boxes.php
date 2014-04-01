@@ -37,11 +37,14 @@ class WP_Stream_Reports_Metaboxes {
 			'stream_reports_add_metabox'           => 'add_metabox',
 			'stream_reports_delete_metabox'        => 'delete_metabox',
 			'stream_report_save_metabox_config'    => 'save_metabox_config',
+			'stream_report_save_chart_height'      => 'save_chart_height',
 			'stream_report_update_metabox_display' => 'update_metabox_display',
 		);
 
 		// Register all ajax action and check referer for this class
 		WP_Stream_Reports::handle_ajax_request( $ajax_hooks, $this );
+
+		add_filter( 'screen_settings', array( $this, 'chart_height_display' ), 10, 2 );
 	}
 
 	/**
@@ -203,6 +206,7 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$chart_options  = $this->get_chart_options( $args );
+		$chart_height   = WP_Stream_Reports_Settings::get_user_options( 'chart_height' , 300 );
 		$data_types     = $this->get_data_types();
 		$selector_types = $this->get_selector_types();
 
@@ -712,6 +716,41 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'sections', self::$sections );
+	}
+
+	public function save_chart_height(){
+
+		$chart_height = wp_stream_filter_input( INPUT_GET, 'chart_height', FILTER_SANITIZE_NUMBER_INT );
+
+		if ( false === $chart_height ) {
+			wp_send_json_error();
+		}
+
+		// Update the database option
+		WP_Stream_Reports_Settings::ajax_update_user_option( 'chart_height', $chart_height );
+	}
+
+	public function chart_height_display( $status, $args ) {
+		$user_id = get_current_user_id();
+		$option  = WP_Stream_Reports_Settings::get_user_options( 'chart_height', 300 );
+		$nonce   = wp_create_nonce( 'stream_reports_chart_height_nonce' );
+		ob_start();
+		?>
+		<fieldset>
+			<h5><?php esc_html_e( 'Chart height', 'stream-repotrs' ); ?></h5>
+			<div><input type="hidden" name="update_chart_height_nonce" id="update_chart_height_nonce" value="<?php echo esc_attr( $nonce ); ?>"></div>
+			<div><input type="hidden" name="update_chart_height_user" id="update_chart_height_user" value="<?php echo esc_attr( $user_id ); ?>"></div>
+			<div class="metabox-prefs stream-reports-chart-height-option">
+				<label for="chart-height">
+					<input type="number" step="50" min="100" max="950" name="chart_height" id="chart_height" maxlength="3" value="<?php echo esc_attr( $option ); ?>">
+					<?php esc_html_e( 'px', 'stream-reports' ); ?>
+				</label>
+				<input type="submit" id="chart_height_apply" class="button" value="<?php esc_attr_e( 'Apply', 'stream-reports' ); ?>">
+				<span class="spinner"></span>
+			</div>
+		</fieldset>
+		<?php
+		return ob_get_clean();
 	}
 
 	/**
