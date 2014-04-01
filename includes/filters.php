@@ -18,7 +18,6 @@ class WP_Stream_Filter_Input {
 		FILTER_SANITIZE_NUMBER_FLOAT       => 'floatval',
 		FILTER_SANITIZE_NUMBER_INT         => 'intval',
 		FILTER_SANITIZE_SPECIAL_CHARS      => 'htmlspecialchars',
-		FILTER_SANITIZE_FULL_SPECIAL_CHARS => 'htmlspecialchars',
 		FILTER_SANITIZE_STRING             => 'sanitize_text_field',
 		FILTER_SANITIZE_URL                => 'esc_url_raw',
 		// Other

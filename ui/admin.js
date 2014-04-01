@@ -238,8 +238,12 @@ jQuery(function($){
 
 				if ('undefined' !== typeof object.icon) {
 					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
-					// Add more info to the container
-					container.attr('title', object.tooltip);
+				}
+				// Add more info to the container
+				if ( 'undefined' !== typeof object.tooltip ) {
+					container.attr( 'title', object.tooltip );
+				} else if ( 'undefined' !== typeof object.user_count ) {
+					container.attr( 'title', object.user_count );
 				}
 				return result;
 			},
@@ -440,9 +444,28 @@ jQuery(function($){
 
 				if ( jQuery.datepicker ) {
 
+					// Apply a GMT offset due to Date() using the visitor's local time
+					var siteGMTOffsetHours  = parseFloat( wp_stream.gmt_offset );
+					var localGMTOffsetHours = new Date().getTimezoneOffset() / 60 * -1;
+					var totalGMTOffsetHours = siteGMTOffsetHours - localGMTOffsetHours;
+
+					var localTime = new Date();
+					var siteTime = new Date( localTime.getTime() + ( totalGMTOffsetHours * 60 * 60 * 1000 ) );
+					var dayOffset = '0';
+
+					// check if the site date is different from the local date, and set a day offset
+					if ( localTime.getDate() !== siteTime.getDate() || localTime.getMonth() !== siteTime.getMonth() ) {
+						if ( localTime.getTime() < siteTime.getTime() ) {
+							dayOffset = '+1d';
+						} else {
+							dayOffset = '-1d';
+						}
+					}
+
 					datepickers.datepicker({
 						dateFormat: 'yy/mm/dd',
-						maxDate: 0,
+						maxDate: dayOffset,
+						defaultDate: siteTime,
 						beforeShow: function() {
 							$(this).prop( 'disabled', true );
 						},

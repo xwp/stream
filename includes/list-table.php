@@ -519,7 +519,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
 		$url = admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
-		echo sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
+		printf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
 
 	function filter_select( $name, $title, $items, $ajax ) {
@@ -592,7 +592,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				<option></option>
 				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
 				<?php foreach ( $date_interval->intervals as $key => $interval ) {
-					echo sprintf(
+					printf(
 						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 						esc_attr( $key ),
 						esc_attr( $interval['start']->format( 'Y/m/d' ) ),
