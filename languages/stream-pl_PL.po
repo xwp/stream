@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Stream\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/stream\n"
-"POT-Creation-Date: 2014-03-15 00:17+0100\n"
-"PO-Revision-Date: 2014-03-15 00:19+0100\n"
+"POT-Creation-Date: 2014-04-01 12:40+0100\n"
+"PO-Revision-Date: 2014-04-01 12:47+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pl_PL\n"
@@ -470,11 +470,11 @@ msgid "Post"
 msgstr "Wpis"
 
 #: ../connectors/settings.php:63 ../connectors/settings.php:84
-#: ../includes/admin.php:114 ../includes/admin.php:270
+#: ../includes/admin.php:114 ../includes/admin.php:271
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: ../connectors/settings.php:85 ../includes/settings.php:156
+#: ../connectors/settings.php:85 ../includes/settings.php:211
 msgid "General"
 msgstr "Ogólne"
 
@@ -875,7 +875,7 @@ msgstr "Usunięto \"%1$s\" z \"%2$s\""
 #: ../connectors/widgets.php:222
 #, php-format
 msgctxt "1: Widget title, 2: Sidebar name"
-msgid "Updated \"%1$s\" in \"%2$s\""
+msgid "\"%1$s\" in \"%2$s\" updated"
 msgstr "Zaktualizowano \"%1$s\" w \"%2$s\""
 
 #: ../connectors/widgets.php:275
@@ -888,7 +888,7 @@ msgstr "Kolejność widgetów w \"%s\" została zmieniona"
 msgid "All records have been successfully erased."
 msgstr "Wszystkie zapisy zostały usunięte."
 
-#: ../includes/admin.php:113 ../includes/admin.php:294
+#: ../includes/admin.php:113 ../includes/admin.php:295
 msgid "Stream Settings"
 msgstr "Ustawienia Stream"
 
@@ -908,68 +908,68 @@ msgstr ""
 "Czy na pewno chcesz odinstalować i wyłączyć Stream? Ta czynność usunie "
 "wszystkie tabele Stream z bazy danych i nie można jej cofnąć."
 
-#: ../includes/admin.php:279
+#: ../includes/admin.php:280
 msgid "Uninstall"
 msgstr "Odinstaluj"
 
-#: ../includes/admin.php:343
+#: ../includes/admin.php:344
 msgid "Stream Records"
 msgstr "Zapisy Stream"
 
-#: ../includes/admin.php:515
+#: ../includes/admin.php:518
 msgid "Stream Activity"
 msgstr "Aktywność Stream"
 
-#: ../includes/admin.php:559
+#: ../includes/admin.php:556
 msgid "Sorry, no activity records were found."
 msgstr "Niestety żadne zapisy aktywności nie zostały odnalezione."
 
-#: ../includes/admin.php:586
+#: ../includes/admin.php:583
 #, php-format
 msgctxt "1: Time, 2: User profile URL, 3: User display name"
 msgid "%1$s ago by <a href=\"%2$s\">%3$s</a>"
 msgstr "%1$s temu przez <a href=\"%2$s\">%3$s</a>"
 
-#: ../includes/admin.php:596
+#: ../includes/admin.php:593
 #, php-format
 msgid "%s ago"
 msgstr "%s temu"
 
-#: ../includes/admin.php:650
+#: ../includes/admin.php:647
 msgid "View all records"
 msgstr "Wyświetl wszystkie zapisy"
 
-#: ../includes/admin.php:652
+#: ../includes/admin.php:649
 msgid "View All"
 msgstr "Zobacz wszystko"
 
-#: ../includes/admin.php:667
+#: ../includes/admin.php:664
 msgid "Go to the first page"
 msgstr "Idź do pierwszej strony"
 
-#: ../includes/admin.php:675
+#: ../includes/admin.php:672
 msgid "Go to the previous page"
 msgstr "Idź do poprzedniej strony"
 
-#: ../includes/admin.php:682
+#: ../includes/admin.php:679
 #, php-format
 msgctxt "paging"
 msgid "%1$s of %2$s"
 msgstr "%1$s z %2$s"
 
-#: ../includes/admin.php:687
+#: ../includes/admin.php:684
 msgid "Go to the next page"
 msgstr "Idź do następnej strony"
 
-#: ../includes/admin.php:696
+#: ../includes/admin.php:693
 msgid "Go to the last page"
 msgstr "Idź do ostatniej strony"
 
-#: ../includes/admin.php:732 ../includes/list-table.php:18
+#: ../includes/admin.php:729 ../includes/list-table.php:18
 msgid "Records per page"
 msgstr "Liczba zapisów na stronę"
 
-#: ../includes/admin.php:879
+#: ../includes/admin.php:878
 #, php-format
 msgid "One more result..."
 msgid_plural "%d more results..."
@@ -982,39 +982,39 @@ msgstr[2] "%d wyników więcej..."
 msgid "%s class wasn't loaded because it doesn't extends the %s class."
 msgstr "Klasa %s nie została załadowana, ponieważ nie rozszerza klasy %s"
 
-#: ../includes/date-interval.php:38
+#: ../includes/date-interval.php:51
 msgid "Today"
 msgstr "Dzisiaj"
 
-#: ../includes/date-interval.php:42
+#: ../includes/date-interval.php:56
 msgid "Yesterday"
 msgstr "Wczoraj"
 
-#: ../includes/date-interval.php:47 ../includes/date-interval.php:52
-#: ../includes/date-interval.php:57
+#: ../includes/date-interval.php:61 ../includes/date-interval.php:66
+#: ../includes/date-interval.php:71
 #, php-format
 msgid "Last %d Days"
 msgstr "Ostatnie %d dni"
 
-#: ../includes/date-interval.php:62
+#: ../includes/date-interval.php:76
 msgid "This Month"
 msgstr "Obecny miesiąc"
 
-#: ../includes/date-interval.php:66
+#: ../includes/date-interval.php:80
 msgid "Last Month"
 msgstr "Zeszły miesiąc"
 
-#: ../includes/date-interval.php:71 ../includes/date-interval.php:76
-#: ../includes/date-interval.php:81
+#: ../includes/date-interval.php:85 ../includes/date-interval.php:90
+#: ../includes/date-interval.php:95
 #, php-format
 msgid "Last %d Months"
 msgstr "Ostatnie %d miesięcy"
 
-#: ../includes/date-interval.php:86
+#: ../includes/date-interval.php:100
 msgid "This Year"
 msgstr "Obecny rok"
 
-#: ../includes/date-interval.php:90
+#: ../includes/date-interval.php:104
 msgid "Last Year"
 msgstr "Zeszły rok"
 
@@ -1056,120 +1056,133 @@ msgstr ""
 "Nie masz uprawnień, by wyświetlić ten kanał. Skontaktuj się z "
 "Administratorem strony."
 
-#: ../includes/feeds.php:193
+#: ../includes/feeds.php:187
 msgid "Stream Feed"
 msgstr "Kanał Stream"
 
-#: ../includes/filters.php:50
+#: ../includes/filters.php:49
 msgid "Invalid use, type must be one of INPUT_* family."
 msgstr "Nieprawidłowe użycie, stała musi należeć do grupy INPUT_*"
 
-#: ../includes/filters.php:62
+#: ../includes/filters.php:61
 msgid "Filter not supported."
 msgstr "Filtr nie jest wspierany."
 
-#: ../includes/list-table.php:61
+#: ../includes/list-table.php:64
 msgid "Date"
 msgstr "Data"
 
-#: ../includes/list-table.php:62
+#: ../includes/list-table.php:65
 msgid "Summary"
 msgstr "Streszczenie"
 
-#: ../includes/list-table.php:63
+#: ../includes/list-table.php:66
 msgid "Author"
 msgstr "Autor"
 
-#: ../includes/list-table.php:64
+#: ../includes/list-table.php:67
 msgid "Connector"
 msgstr "Łącznik"
 
-#: ../includes/list-table.php:65
+#: ../includes/list-table.php:68
 msgid "Context"
 msgstr "Kontekst"
 
-#: ../includes/list-table.php:66
+#: ../includes/list-table.php:69
 msgid "Action"
 msgstr "Akcja"
 
-#: ../includes/list-table.php:67
+#: ../includes/list-table.php:70
 msgid "IP Address"
 msgstr "Adres IP"
 
-#: ../includes/list-table.php:68
+#: ../includes/list-table.php:71
 msgid "ID"
 msgstr "ID"
 
-#: ../includes/list-table.php:183
+#: ../includes/list-table.php:197
 msgid "View all records for this object"
 msgstr "Pokaż wszystkie zapisy dla tego obiektu"
 
-#: ../includes/list-table.php:214
+#: ../includes/list-table.php:228
 msgid "N/A"
 msgstr "n/d"
 
-#: ../includes/list-table.php:448
+#: ../includes/list-table.php:463 ../includes/settings.php:135
+#, php-format
+msgid ""
+"ID: %d\n"
+"User: %s\n"
+"Email: %s\n"
+"Role: %s"
+msgstr ""
+"ID: %d\n"
+"Użytkownik: %s\n"
+"E-mail: %s\n"
+"Rola: %s"
+
+#: ../includes/list-table.php:472
 msgid "authors"
 msgstr "autorzy"
 
-#: ../includes/list-table.php:457
+#: ../includes/list-table.php:481
 msgid "connectors"
 msgstr "łączniki"
 
-#: ../includes/list-table.php:462
+#: ../includes/list-table.php:486
 msgid "contexts"
 msgstr "konteksty"
 
-#: ../includes/list-table.php:467
+#: ../includes/list-table.php:491
 msgid "actions"
 msgstr "akcje"
 
-#: ../includes/list-table.php:487
+#: ../includes/list-table.php:511
 msgid "Filter"
 msgstr "Przefiltruj"
 
-#: ../includes/list-table.php:517
+#: ../includes/list-table.php:542
 #, php-format
 msgid "Show all %s"
 msgstr "Wszystko: %s"
 
-#: ../includes/list-table.php:532
+#: ../includes/list-table.php:557
 msgid "Search Records"
 msgstr "Szukaj zapisów"
 
-#: ../includes/list-table.php:558
+#: ../includes/list-table.php:583
 msgid "All Time"
 msgstr "Kiedykolwiek"
 
-#: ../includes/list-table.php:560
+#: ../includes/list-table.php:585
 msgid "Custom"
 msgstr "Własne"
 
-#: ../includes/list-table.php:579
+#: ../includes/list-table.php:604
 msgid "Start date"
 msgstr "Data początkowa"
 
-#: ../includes/list-table.php:588
+#: ../includes/list-table.php:613
 msgid "End date"
 msgstr "Data końcowa"
 
-#: ../includes/list-table.php:658
+#: ../includes/list-table.php:683
 msgid "Live updates"
 msgstr "Aktualizacje na żywo"
 
-#: ../includes/list-table.php:664 ../includes/settings.php:179
+#: ../includes/list-table.php:689 ../includes/settings.php:234
 msgid "Enabled"
 msgstr "Włączone"
 
-#: ../includes/settings.php:87
+#: ../includes/settings.php:88
 msgid "There was an error in the request"
 msgstr "Wystąpił błąd w żądaniu"
 
-#: ../includes/settings.php:160
+#: ../includes/settings.php:215
 msgid "Role Access"
 msgstr "Dostęp ról"
 
-#: ../includes/settings.php:162
+#: ../includes/settings.php:217
 msgid ""
 "Users from the selected roles above will have permission to view Stream "
 "Records. However, only site Administrators can access Stream Settings."
@@ -1177,11 +1190,11 @@ msgstr ""
 "Użytkownicy z wybranymi powyżej rolami będą mogli wyświetlać Zapisy Stream. "
 "Tylko Administratorzy jednak otrzymają dostęp do Ustawień Stream."
 
-#: ../includes/settings.php:168
+#: ../includes/settings.php:223
 msgid "Private Feeds"
 msgstr "Prywatne kanały"
 
-#: ../includes/settings.php:171
+#: ../includes/settings.php:226
 #, php-format
 msgid ""
 "Users from the selected roles above will be given a private key found in "
@@ -1190,15 +1203,15 @@ msgstr ""
 "Użytkowicy z wybranymi powyżej rolami otrzymają prywatny klucz dostępny w "
 "ich %sprofilu%s, by uzyskać bezpieczny dostęp do kanałów Zapisów Stream."
 
-#: ../includes/settings.php:175
+#: ../includes/settings.php:230
 msgid "View Profile"
 msgstr "Wyświetl profil"
 
-#: ../includes/settings.php:184
+#: ../includes/settings.php:239
 msgid "Keep Records for"
 msgstr "Przechowuj zapisy z"
 
-#: ../includes/settings.php:187
+#: ../includes/settings.php:242
 msgid ""
 "Maximum number of days to keep activity records. Leave blank to keep records "
 "forever."
@@ -1206,79 +1219,99 @@ msgstr ""
 "Maksymalna liczba dni, dla których zachowana zostanie aktywność. By "
 "przechowywać zapisy bez limitu, pozostaw puste pole."
 
-#: ../includes/settings.php:189
+#: ../includes/settings.php:244
 msgid "days"
 msgstr "dni"
 
-#: ../includes/settings.php:193
+#: ../includes/settings.php:248
 msgid "Reset Stream Database"
 msgstr "Wyczyść bazę danych Stream"
 
-#: ../includes/settings.php:202
+#: ../includes/settings.php:257
 msgid ""
 "Warning: Clicking this will delete all activity records from the database."
 msgstr ""
 "Ostrzeżenie: Kliknięcie w link wymaże wszystkie zapisy aktywności z bazy "
 "danych."
 
-#: ../includes/settings.php:208
+#: ../includes/settings.php:263
 msgid "Exclude"
 msgstr "Wyklucz"
 
-#: ../includes/settings.php:212
+#: ../includes/settings.php:267
 msgid "Authors & Roles"
 msgstr "Autorzy i role"
 
-#: ../includes/settings.php:214
-msgid "No activity will be logged for these authors and roles."
-msgstr "Żadna aktywność nie będzie zapisywana dla tych autorów i ról."
+#: ../includes/settings.php:269
+msgid "No activity will be logged for these authors and/or roles."
+msgstr "Żadna aktywność nie będzie zapisywana dla tych autorów i/lub ról."
 
-#: ../includes/settings.php:220
+#: ../includes/settings.php:275
 msgid "Connectors"
 msgstr "Łączniki"
 
-#: ../includes/settings.php:222
+#: ../includes/settings.php:277
 msgid "No activity will be logged for these connectors."
 msgstr "Żadna aktywność nie będzie zapisywana dla tych łączników."
 
-#: ../includes/settings.php:229
+#: ../includes/settings.php:284
 msgid "Contexts"
 msgstr "Konteksty"
 
-#: ../includes/settings.php:231
+#: ../includes/settings.php:286
 msgid "No activity will be logged for these contexts."
 msgstr "Żadna aktywność nie będzie zapisywana dla tych kontekstów."
 
-#: ../includes/settings.php:238
+#: ../includes/settings.php:293
 msgid "Actions"
 msgstr "Akcje"
 
-#: ../includes/settings.php:240
+#: ../includes/settings.php:295
 msgid "No activity will be logged for these actions."
 msgstr "Żadna aktywność nie będzie zapisywana dla tych akcji."
 
-#: ../includes/settings.php:247
+#: ../includes/settings.php:302
 msgid "IP Addresses"
 msgstr "Adresy IP"
 
-#: ../includes/settings.php:249
+#: ../includes/settings.php:304
 msgid "No activity will be logged for these IP addresses."
 msgstr "Żadna aktywność nie będzie zapisywana dla tych adresów IP."
 
-#: ../stream.php:181
+#: ../includes/settings.php:311
+msgid "Visibility"
+msgstr "Widoczność"
+
+#: ../includes/settings.php:314
+msgid ""
+"When checked, all past records that match the excluded rules above will be "
+"hidden from view."
+msgstr ""
+"Jeśli zaznaczone, wszystkie istniejące zapisy spełniające kryteria "
+"wykluczenia zostaną ukryte"
+
+#: ../includes/settings.php:316
+msgid "Hide Previous Records"
+msgstr "Ukryj poprzednie zapisy"
+
+#: ../stream.php:180
 msgid "The following table is not present in the WordPress database :"
 msgstr "Następująca tabela nie została znaleziona w bazie danych WordPressa:"
 
-#: ../stream.php:192
+#: ../stream.php:191
 #, php-format
 msgid ""
 "Please <a href=\"%s\">uninstall</a> the Stream plugin and activate it again."
 msgstr ""
 "Proszę <a href=\"%s\">odinstalować</a> wtyczkę Stream i włączyć ją ponownie."
 
-#: ../stream.php:206
+#: ../stream.php:205
 msgid "Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE."
 msgstr "Stream wymaga PHP w wersji 5.3+, wtyczka jest obecnie NIEAKTYWNA."
+
+#~ msgctxt "1: Widget title, 2: Sidebar name"
+#~ msgid "Updated \"%1$s\" in \"%2$s\""
+#~ msgstr "Zaktualizowano \"%1$s\" w \"%2$s\""
 
 #~ msgid "More"
 #~ msgstr "Więcej"
