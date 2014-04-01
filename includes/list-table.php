@@ -504,12 +504,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters_string .= $this->filter_date();
 
+		$filters_string .= '<div class="stream-filters">';
+
 		foreach ( $filters as $name => $data ) {
 			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'] );
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
-		$url = admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
+
+		$filters_string .= '</div>';
 
 		printf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
@@ -562,7 +565,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filter_date() {
-
 		require_once WP_STREAM_INC_DIR . 'date-interval.php';
 
 		wp_enqueue_style( 'jquery-ui' );
@@ -579,21 +581,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 		ob_start();
 		?>
  		<div class="date-interval">
-
-			<select class="field-predefined hide-if-no-js" name="date_predefined" data-placeholder="<?php _e( 'All Time', 'stream' ); ?>">
-				<option></option>
-				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
-				<?php foreach ( $date_interval->intervals as $key => $interval ) {
-					printf(
-						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
-						esc_attr( $key ),
-						esc_attr( $interval['start']->format( 'Y/m/d' ) ),
-						esc_attr( $interval['end']->format( 'Y/m/d' ) ),
-						selected( $key === $date_predefined ),
-						esc_html( $interval['label'] )
-					); // xss ok
-				} ?>
-			</select>
 
 			<div class="date-inputs">
 				<div class="box">
@@ -615,6 +602,23 @@ class WP_Stream_List_Table extends WP_List_Table {
 				</div>
 			</div>
 
+			<div class="clear"></div>
+
+			<select class="field-predefined hide-if-no-js" name="date_predefined" data-placeholder="<?php _e( 'All Time', 'stream' ); ?>">
+				<option></option>
+				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
+				<?php foreach ( $date_interval->intervals as $key => $interval ) {
+					printf(
+						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
+						esc_attr( $key ),
+						esc_attr( $interval['start']->format( 'Y/m/d' ) ),
+						esc_attr( $interval['end']->format( 'Y/m/d' ) ),
+						selected( $key === $date_predefined ),
+						esc_html( $interval['label'] )
+					); // xss ok
+				} ?>
+			</select>
+
 		</div>
 		<?php
 
@@ -629,7 +633,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function display_tablenav( $which ) {
 		if ( 'top' === $which ) : ?>
-			<?php echo '<div class="alignright">' ?>
+			<?php echo '<div class="alignright stream-search-paginate">' ?>
 				<?php echo $this->filter_search() // xss ok ?>
 				<div class="tablenav <?php echo esc_attr( $which ); ?>">
 					<?php $this->pagination( $which ) ?>
@@ -646,7 +650,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$this->pagination( $which );
 				$this->extra_tablenav( $which );
 				?>
-
 				<br class="clear" />
 			</div>
 		<?php
