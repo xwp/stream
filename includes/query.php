@@ -70,7 +70,7 @@ class WP_Stream_Query {
 		 * @param  array  Array of query arguments
 		 * @return array  Updated array of query arguments
 		 */
-		$args = apply_filters( 'stream_query_args', $args );
+		$args = apply_filters( 'wp_stream_query_args', $args );
 
 		if ( true === $args[ 'hide_excluded' ] ) {
 			$args = self::add_excluded_record_args( $args );
