@@ -487,7 +487,6 @@ jQuery(function($){
 
 						if ('custom' === value) {
 							dateinputs.show();
-							dateinputs.find('input.date-picker').val('');
 							dateinputs.find('.field-from').focus();
 							return false;
 						} else {
