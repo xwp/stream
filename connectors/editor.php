@@ -96,7 +96,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 			$file_name  = get_stream_meta( $record->ID, 'file', true );
 			$theme_slug = get_stream_meta( $record->ID, 'theme_slug', true );
 
-			if ( $file_name !== '' && $theme_slug !== '' ) {
+			if ( '' !== $file_name && '' !== $theme_slug ) {
 				$links[ __( 'Edit File', 'stream' ) ] = admin_url(
 					sprintf(
 						'theme-editor.php?theme=%s&file=%s',
@@ -146,7 +146,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 			$file_path = $allowed_files['style.css'];
 		} else {
 			$file_name = $file;
-			$file_path = $theme->get_stylesheet_directory() . '/' . $file_name;
+			$file_path = sprintf( '%s/%s', $theme->get_stylesheet_directory(), $file_name );
 		}
 
 		$file_contents_before = file_get_contents( $file_path );
