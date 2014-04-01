@@ -201,13 +201,13 @@ class WP_Stream_Install {
 		// If version is lower than 1.3.0, do the update routine for site options
 		// Backward settings compatibility for old version plugins
 		if ( version_compare( $db_version, '1.3.0', '<' ) ) {
-			add_filter( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_old_options_to_exclude_tab' );
+			add_action( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_old_options_to_exclude_tab' );
 		}
 
 		// If version is lower than 1.3.1, do the update routine
 		// Update records of Installer to Theme Editor connector
 		if ( version_compare( $db_version, '1.3.1', '<' ) ) {
-			add_filter( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_installer_edits_to_theme_editor_connector' );
+			add_action( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_installer_edits_to_theme_editor_connector' );
 		}
 	}
 
@@ -215,7 +215,7 @@ class WP_Stream_Install {
 	 * Function will migrate old options from the General and Connectors tabs into the new Exclude tab
 	 *
 	 * @param $labels array connectors terms labels
-	 * @filter wp_stream_after_connectors_registration
+	 * @action wp_stream_after_connectors_registration
 	 */
 	public static function migrate_old_options_to_exclude_tab( $labels ) {
 		$old_options = get_option( WP_Stream_Settings::KEY, array() );
@@ -245,7 +245,7 @@ class WP_Stream_Install {
 	/**
 	 * Function will migrate theme file edit records from Installer connector to the Theme Editor connector
 	 *
-	 * @filter wp_stream_after_connectors_registration
+	 * @action wp_stream_after_connectors_registration
 	 */
 	public static function migrate_installer_edits_to_theme_editor_connector() {
 		global $wpdb;
