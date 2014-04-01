@@ -238,8 +238,12 @@ jQuery(function($){
 
 				if ('undefined' !== typeof object.icon) {
 					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
-					// Add more info to the container
-					container.attr('title', object.tooltip);
+				}
+				// Add more info to the container
+				if ( 'undefined' !== typeof object.tooltip ) {
+					container.attr( 'title', object.tooltip );
+				} else if ( 'undefined' !== typeof object.user_count ) {
+					container.attr( 'title', object.user_count );
 				}
 				return result;
 			},
