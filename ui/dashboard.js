@@ -60,12 +60,6 @@ jQuery(function($){
 			// Add element to the dom
 			$(listSel).prepend( $new_items );
 
-			// Remove the number of element added to the end of the list table
-			$( listSel + ' li').slice(-$new_items.length).remove();
-
-			// Allow others to hook in, ie: timeago
-			$( listSel ).parent().trigger( 'updated' );
-
 			// Remove background after a certain amount of time
 			setTimeout( function() {
 				$('.new-row').addClass( 'fadeout' );

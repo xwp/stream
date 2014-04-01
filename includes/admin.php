@@ -565,7 +565,7 @@ class WP_Stream_Admin {
 
 		foreach ( $records as $record ) {
 			$i++;
-			echo self::dashboard_widget_row( $record, $i );
+			echo self::dashboard_widget_row( $record, $i ); //xss okay
 		}
 
 		echo '</ul>';
@@ -780,7 +780,7 @@ class WP_Stream_Admin {
 		if ( ! empty( $updated_items ) ) {
 			ob_start();
 			foreach ( $updated_items as $item ) {
-				echo self::dashboard_widget_row( $item );
+				echo self::dashboard_widget_row( $item ); //xss okay
 			}
 
 			$send = ob_get_clean();
