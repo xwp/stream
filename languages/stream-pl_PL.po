@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Stream\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/stream\n"
 "POT-Creation-Date: 2014-04-01 12:40+0100\n"
-"PO-Revision-Date: 2014-04-01 12:47+0100\n"
+"PO-Revision-Date: 2014-04-01 12:49+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pl_PL\n"
@@ -1288,11 +1288,11 @@ msgid ""
 "hidden from view."
 msgstr ""
 "Jeśli zaznaczone, wszystkie istniejące zapisy spełniające kryteria "
-"wykluczenia zostaną ukryte"
+"wykluczenia zostaną ukryte."
 
 #: ../includes/settings.php:316
 msgid "Hide Previous Records"
-msgstr "Ukryj poprzednie zapisy"
+msgstr "Ukryj istniejące zapisy"
 
 #: ../stream.php:180
 msgid "The following table is not present in the WordPress database :"
