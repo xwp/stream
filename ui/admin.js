@@ -335,7 +335,7 @@ jQuery(function($){
 		$(document).on( 'heartbeat-tick.stream', function( e, data ) {
 
 			// If this no rows return then we kill the script
-			if ( ! data['wp-stream-heartbeat'] ) {
+			if ( ! data['wp-stream-heartbeat'] || data['wp-stream-heartbeat'].length == 0  ) {
 				return;
 			}
 
@@ -392,7 +392,7 @@ jQuery(function($){
 				checked = 'checked';
 			}
 
-			$.ajax({
+			/*$.ajax({
 				type: 'POST',
 				url: ajaxurl,
 				data: { action: 'stream_enable_live_update', nonce : nonce, user : user, checked : checked },
@@ -403,7 +403,7 @@ jQuery(function($){
 				success : function() {
 					$( '.stream-live-update-checkbox .spinner' ).hide();
 				}
-			});
+			}); */
 		});
 
 		$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
