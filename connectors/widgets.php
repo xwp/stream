@@ -219,7 +219,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		if ( $sidebar_name ) {
 			self::log(
 				_x(
-					'Updated "%1$s" in "%2$s"',
+					'"%1$s" in "%2$s" updated',
 					'1: Widget title, 2: Sidebar name',
 					'stream'
 				),
