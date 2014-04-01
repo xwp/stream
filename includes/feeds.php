@@ -145,13 +145,7 @@ class WP_Stream_Feeds {
 			'fields'           => isset( $_GET['fields'] ) ? (string) $_GET['fields'] : '',
 		);
 
-		// Remove excluded records as per settings
-		add_filter( 'wp_stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
-
 		$records = wp_stream_query( $args );
-
-		// Remove filter added before
-		remove_filter( 'wp_stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		$latest_record = isset( $records[0]->created ) ? $records[0]->created : null;
 

@@ -88,6 +88,10 @@
 	padding-top: 6px;
 }
 
+.toplevel_page_wp_stream .tablenav.bottom .button {
+	margin-right: 6px;
+}
+
 .toplevel_page_wp_stream .tablenav .actions {
 	padding: 0;
 	overflow: visible;
@@ -118,6 +122,18 @@
 .toplevel_page_wp_stream .column-ip,
 .toplevel_page_wp_stream .column-id {
 	width: 10%;
+}
+
+@media only screen and (min-width: 782px) {
+	.toplevel_page_wp_stream .tablenav .tablenav-pages {
+		margin-bottom: 4px;
+	}
+}
+
+@media only screen and (max-width: 782px) {
+	.toplevel_page_wp_stream .tablenav.bottom .displaying-num {
+		top: -8px;
+	}
 }
 
 @media only screen and (max-width: 900px) {
@@ -165,22 +181,17 @@
 }
 
 .toplevel_page_wp_stream .alignleft.actions input[type=text] {
-	height: 27px;
+	height: 28px;
 	line-height: 19px;
+}
+
+.toplevel_page_wp_stream .date-interval {
+	display: inline;
 }
 
 .toplevel_page_wp_stream .select2-container {
 	margin-right: 6px;
 	margin-bottom: 6px;
-}
-
-.toplevel_page_wp_stream .select2-results li {
-	margin-bottom: 1px;
-}
-
-.toplevel_page_wp_stream .select2-results .select2-disabled {
-	background: transparent;
-	color: #aaa;
 }
 
 .toplevel_page_wp_stream .select2-container.select2-allowclear .select2-choice abbr {
@@ -216,7 +227,87 @@
 }
 
 
+/* Date Interval Common */
+
+.wp_stream_screen .date-interval .field-predefined {
+	width: 165px;
+	float: left;
+	margin-right: 6px;
+	margin-bottom: 6px;
+}
+
+.wp_stream_screen .date-interval .date-inputs {
+	float: left;
+	margin-right: 6px;
+	margin-bottom: 6px;
+}
+
+.wp_stream_screen .date-interval .date-inputs .field-to,
+.wp_stream_screen .date-interval .date-inputs .field-from {
+	line-height: 28px;
+	height: 28px;
+	margin: 0;
+	width: 125px;
+}
+
+.wp_stream_screen .date-interval .date-inputs .box {
+	position: relative;
+	display: block;
+	float: left;
+}
+
+.wp_stream_screen .date-interval .date-inputs .box .date-remove {
+	display: none;
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	right: 0;
+	width: 20px;
+	height: 28px;
+	line-height: 28px;
+	font-size: 14px;
+	padding-top: 1px;
+	padding-right: 2px;
+}
+
+.wp_stream_screen .date-interval .date-inputs .box .date-remove:before {
+	content: '\f158';
+}
+
+.wp_stream_screen .date-interval .date-inputs .connector {
+	display: block;
+	float: left;
+	border: 1px solid #ddd;
+	border-left: 0;
+	border-right: 0;
+	height: 26px;
+	line-height: 28px;
+	padding-left: 2px;
+	width: 20px;
+	text-align: center;
+	font-size: 14px;
+}
+
+.wp_stream_screen .date-interval .date-inputs .connector:before {
+	content: '\f345';
+}
+
+
 /* Select2 Common */
+
+.wp_stream_screen li.select2-searching {
+	background: none;
+	padding: 3px 7px 0;
+}
+
+.wp_stream_screen li.select2-result {
+	margin-bottom: 1px;
+}
+
+.wp_stream_screen .select2-results .select2-disabled {
+	background: transparent;
+	color: #aaa;
+}
 
 .wp_stream_screen .select2-container.authors_and_roles .select2-search-choice .icon16 {
 	margin: -6px 1px 0 -3px;
