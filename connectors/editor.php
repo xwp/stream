@@ -80,7 +80,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	}
 
 	public static function get_message() {
-		return __( '"%1$s" was updated in "%2$s"', 'stream' );
+		return __( '"%1$s" in "%2$s" updated', 'stream' );
 	}
 
 	/**
