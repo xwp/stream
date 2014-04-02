@@ -142,10 +142,14 @@ class WP_Stream_Reports_Metaboxes {
 
 			// Default metabox argument
 			$default = array(
-				'title'      => '',
-				'priority'   => 'default',
-				'context'    => 'normal',
-				'chart_type' => 'line',
+				'title'         => '',
+				'priority'      => 'default',
+				'context'       => 'normal',
+				'chart_type'    => 'line',
+				'data_type'     => '',
+				'data_group'    => '',
+				'selector_type' => '',
+				'is_new'        => false,
 			);
 
 			// Parse default argument
@@ -180,17 +184,6 @@ class WP_Stream_Reports_Metaboxes {
 
 		// Assigning template vars
 		$key = $section['args']['key'];
-
-		$args = wp_parse_args(
-			$args,
-			array(
-				'chart_type'    => 'line',
-				'data_type'     => null,
-				'data_group'    => null,
-				'selector_type' => '',
-				'is_new'        => false,
-			)
-		);
 
 		$chart_types = $this->get_chart_types();
 
