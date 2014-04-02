@@ -94,18 +94,6 @@ class WP_Stream_Network {
 		return $fields;
 	}
 
-	function get_network_sites() {
-		$return = array();
-		$sites  = wp_get_sites();
-
-		foreach ( $sites as $site ) {
-			$blog = get_blog_details( (int) $site['blog_id'] );
-			$return[ $blog->blog_id ] = $blog->blogname;
-		}
-
-		return $return;
-	}
-
 	/**
 	 * Wrapper for the settings API to work on the network settings page
 	 */
