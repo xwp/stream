@@ -231,9 +231,17 @@ class WP_Stream_Reports_Metaboxes {
 		// Don't add 'Activity' to special cases that already have it
 		$exceptions = array( 'all' );
 		if ( in_array( $args['data_type'], $exceptions ) ) {
-			$string = __( '%s by %s', 'stream-reports' );
+			$string = _x(
+				'%1$s by %2$s',
+				'Special case for activities that do not add activity suffix. 1: Dataset 2: Selector',
+				'stream-reports'
+			);
 		} else {
-			$string = __( '%s Activity by %s', 'stream-reports' );
+			$string = _x(
+				'%1$s Activity by %2$s',
+				'1: Dataset 2: Selector',
+				'stream-reports'
+			);
 		}
 
 		return sprintf( $string, $type_label, $selector_label );
