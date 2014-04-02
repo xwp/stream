@@ -282,7 +282,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 		echo $out; // xss ok
 	}
 
-
 	public static function get_action_links( $record ){
 		$out = '';
 
@@ -662,7 +661,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 		<?php
 		endif;
 	}
-
 
 	static function set_screen_option( $dummy, $option, $value ) {
 		if ( 'edit_stream_per_page' === $option ) {
