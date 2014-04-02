@@ -41,12 +41,6 @@
 	display: block;
 }
 
-#dashboard_stream_activity .record-avatar img {
-	-webkit-border-radius: 3px;
-	   -moz-border-radius: 3px;
-	        border-radius: 3px;
-}
-
 #dashboard_stream_activity .record-meta {
 	color: #666;
 }
@@ -170,10 +164,6 @@
 	float: left;
 	margin-right: 10px;
 	margin-top: 1px;
-
-	-webkit-border-radius: 3px;
-	   -moz-border-radius: 3px;
-	        border-radius: 3px;
 }
 
 .toplevel_page_wp_stream .filter-date-range {
