@@ -33,9 +33,9 @@ class WP_Stream_Settings {
 
 	public static function get_options() {
 
-		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		$option_key = self::get_option_key();
 
-		if ( 'wp_stream_default_settings' === $current_page ) {
+		if ( self::DEFAULTS_KEY === $option_key ) {
 			return self::get_defaults();
 		}
 
@@ -376,19 +376,30 @@ class WP_Stream_Settings {
 	}
 
 	/**
+	 * Returns the correct option key based on the current screen.
+	 *
+	 * @return array Default option values
+	 */
+	public static function get_option_key() {
+		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		if ( 'wp_stream_default_settings' === $current_page ) {
+			$option_key = WP_Stream_Settings::DEFAULTS_KEY;
+		} else {
+			$option_key = WP_Stream_Settings::SETTINGS_KEY;
+		}
+
+		return $option_key;
+	}
+
+	/**
 	 * Registers settings fields and sections
 	 *
 	 * @return void
 	 */
 	public static function register_settings() {
 
-		$sections = self::get_fields();
-
-		$option_key   = WP_Stream_Settings::SETTINGS_KEY;
-		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
-		if ( 'wp_stream_default_settings' === $current_page ) {
-			$option_key = WP_Stream_Settings::DEFAULTS_KEY;
-		}
+		$sections   = self::get_fields();
+		$option_key = self::get_option_key();
 
 		register_setting( $option_key, $option_key );
 
@@ -461,12 +472,7 @@ class WP_Stream_Settings {
 		$title         = isset( $field['title'] ) ? $field['title'] : null;
 		$nonce         = isset( $field['nonce'] ) ? $field['nonce'] : null;
 		$current_value = self::$options[ $section . '_' . $name ];
-
-		$option_key    = self::SETTINGS_KEY;
-		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
-		if ( 'wp_stream_default_settings' === $current_page ) {
-			$option_key = self::DEFAULTS_KEY;
-		}
+		$option_key    = self::get_option_key();
 
 		if ( is_callable( $current_value ) ) {
 			$current_value = call_user_func( $current_value );

@@ -349,17 +349,12 @@ class WP_Stream_Admin {
 	 */
 	public static function render_page() {
 
-		$option_key   = WP_Stream_Settings::SETTINGS_KEY;
-		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
-		if ( 'wp_stream_default_settings' === $current_page ) {
-			$option_key = WP_Stream_Settings::DEFAULTS_KEY;
-		}
-
-		$form_action = is_network_admin() ? add_query_arg( array( 'action' => $current_page ), 'edit.php' ) : admin_url( 'options.php' );
+		$option_key  = WP_Stream_Settings::get_option_key();
+		$form_action = is_network_admin() ? add_query_arg( array( 'action' => $option_key ), 'edit.php' ) : admin_url( 'options.php' );
 		?>
 		<div class="wrap">
 
-			<h2><?php echo get_admin_page_title(); ?></h2>
+			<h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
 
 			<?php settings_errors() ?>
 
