@@ -61,9 +61,6 @@ class WP_Stream_Admin {
 		// Dashboard AJAX pagination
 		add_action( 'wp_ajax_stream_activity_dashboard_update', array( __CLASS__, 'dashboard_stream_activity_update_contents' ) );
 
-		// Update Dashboard Pagination after Heartbeat
-		add_action( 'wp_ajax_update_dashboard_pagination', array( __CLASS__, 'dashboard_pagination' ) );
-
 		// Heartbeat live update
 		add_filter( 'heartbeat_received', array( __CLASS__, 'heartbeat_received' ), 10, 2 );
 
@@ -696,7 +693,14 @@ class WP_Stream_Admin {
 		<?php
 	}
 
-
+	/**
+	 * Handles live updates for both dashboard widget and Stream Post List
+	 *
+	 * @action heartbeat_recieved
+	 * @param  array  Response to be sent to heartbeat tick
+	 * @param  array  Data from heartbeat send
+	 * @return array  Data sent to heartbeat tick
+	 */
 	public static function heartbeat_received( $response, $data ) {
 
 		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
