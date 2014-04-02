@@ -155,10 +155,11 @@ class WP_Stream_Reports_Metaboxes {
 			// Parse default argument
 			$section = wp_parse_args( $section, $default );
 
-			$title = empty( $section['title'] ) ? $this->get_generated_title( $section ) : $section['title'];
-
 			// Set the key for template use
 			$section['key'] = $key;
+
+			// Generate the title automatically if not already set
+			$title = empty( $section['title'] ) ? $this->get_generated_title( $section ) : $section['title'];
 
 			// Add the actual metabox
 			add_meta_box(
@@ -224,6 +225,10 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	protected function get_generated_title( $args ) {
+
+		if ( empty( $args['data_type'] ) ) {
+			return sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $args['key'] + 1 ) );
+		}
 
 		$type_label     = $this->get_label( $args['data_type'], $args['data_group'] );
 		$selector_label = $this->get_selector_types( $args['selector_type'] );
