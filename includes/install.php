@@ -51,7 +51,7 @@ class WP_Stream_Install {
 		$sql = "CREATE TABLE {$prefix}stream (
 			ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			site_id bigint(20) unsigned NOT NULL DEFAULT '1',
-			blog_id bigint(20) unsigned NOT NULL DEFAULT NULL,
+			blog_id bigint(20) unsigned NOT NULL DEFAULT '0',
 			object_id bigint(20) unsigned NULL,
 			author bigint(20) unsigned NOT NULL DEFAULT '0',
 			summary longtext NOT NULL,
@@ -214,7 +214,7 @@ class WP_Stream_Install {
 
 		// If version is lower than 1.4.0, manually alter the column order. Not possible using dbDelta alone.
 		if ( version_compare( $db_version, '1.4.0', '<' ) ) {
-			$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT NULL AFTER site_id" );
+			$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
 		}
 	}
 
