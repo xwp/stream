@@ -250,12 +250,13 @@
 
 				// Get the title of the metabox
 				$title = $curPostbox.find('.hndle .title');
+				var titleValue = $curPostbox.find( '.chart-title' ).val();
 
 				// Remove event handler added by core and add it back when user click cancel or save
 				if ($target.text() === streamReportsLocal.configure) {
 					$target.text(streamReportsLocal.cancel);
 					parent.$titleHTML = $title.html();
-					$title.replaceWith('<input type="text" class="title" value="' + $title.text() + '">');
+					$title.replaceWith('<input type="text" class="title" value="' + titleValue + '">');
 					// Click function management
 					parent.$clickFunction = $._data($curPostbox.find('h3').get(0)).events.click[0].handler;
 					$curPostbox.find('h3').off('click.postboxes');
@@ -329,13 +330,17 @@
 							dataType: 'json',
 							success : function( data ) {
 
-								var new_chart_data = data.data;
-								var chart = $('#wp-stream-reports-' + id + ' .chart').data( 'report', new_chart_data );
+								var $box = $('#wp-stream-reports-' + id );
+
+								var new_chart_data = data.data.options;
+								var chart = $box.find('.chart').data( 'report', new_chart_data );
 								chart.html('<svg></svg>');
 								stream.report.chart.init(
 									chart,
 									$('.columns-prefs input[type="radio"]')
 								);
+
+								$box.find( '.hndle .title' ).text( data.data.title );
 
 							}
 						})

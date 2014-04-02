@@ -4,6 +4,8 @@
 
 		<div class="inside">
 
+			<input type="hidden" class="chart-title" value="<?php echo esc_attr( $args['title'] ); ?>">
+
 			<select class="chart-option chart-dataset">
 				<?php foreach ( $data_types as $section_key => $section ) : ?>
 					<?php if ( is_string( $section ) ) : ?>

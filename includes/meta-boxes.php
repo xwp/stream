@@ -142,7 +142,7 @@ class WP_Stream_Reports_Metaboxes {
 
 			// Default metabox argument
 			$default = array(
-				'title'      => sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $key + 1 ) ),
+				'title'      => '',
 				'priority'   => 'default',
 				'context'    => 'normal',
 				'chart_type' => 'line',
@@ -151,13 +151,15 @@ class WP_Stream_Reports_Metaboxes {
 			// Parse default argument
 			$section = wp_parse_args( $section, $default );
 
+			$title = empty( $section['title'] ) ? $this->get_generated_title( $section ) : $section['title'];
+
 			// Set the key for template use
 			$section['key'] = $key;
 
 			// Add the actual metabox
 			add_meta_box(
 				self::META_PREFIX . $key,
-				sprintf( '<span class="title">%s</span>%s', esc_html( $section['title'] ), $configure ), // xss ok
+				sprintf( '<span class="title">%s</span>%s', esc_html( $title ), $configure ), // xss ok
 				array( $this, 'metabox_content' ),
 				WP_Stream_Reports::$screen_id,
 				$section['context'],
@@ -228,6 +230,22 @@ class WP_Stream_Reports_Metaboxes {
 		);
 	}
 
+	protected function get_generated_title( $args ) {
+
+		$type_label     = $this->get_label( $args['data_type'], $args['data_group'] );
+		$selector_label = $this->get_selector_types( $args['selector_type'] );
+
+		// Don't add 'Activity' to special cases that already have it
+		$exceptions = array( 'all' );
+		if ( in_array( $args['data_type'], $exceptions ) ) {
+			$string = __( '%s by %s', 'stream-reports' );
+		} else {
+			$string = __( '%s Activity by %s', 'stream-reports' );
+		}
+
+		return sprintf( $string, $type_label, $selector_label );
+	}
+
 	protected function get_chart_types() {
 		return array(
 			'line'     => 'dashicons-chart-area',
@@ -236,8 +254,8 @@ class WP_Stream_Reports_Metaboxes {
 		);
 	}
 
-	protected function get_data_types() {
-		return array(
+	protected function get_data_types( $key = '' ) {
+		$labels = array(
 			'all' => __( 'All Activity', 'stream-reports' ),
 			'connector' => array(
 				'title'   => __( 'Connector Activity', 'stream-reports' ),
@@ -264,16 +282,36 @@ class WP_Stream_Reports_Metaboxes {
 				),
 			),
 		);
+
+		if ( empty( $key ) ) {
+			return $labels;
+		} elseif ( array_key_exists( $key, $labels ) ) {
+			return $labels[ $key ];
+		} else {
+			return false;
+		}
 	}
 
-	protected function get_selector_types() {
-		return array(
+	/**
+	 * Returns selector type labels, or a single selector type's label'
+	 * @return string
+	 */
+	protected function get_selector_types( $key = '' ) {
+		$labels = array(
 			'action'      => __( 'Action', 'stream-reports' ),
 			'author'      => __( 'Author', 'stream-reports' ),
 			'author_role' => __( 'Author Role', 'stream-reports' ),
 			'connector'   => __( 'Connector', 'stream-reports' ),
 			'context'     => __( 'Context', 'stream-reports' ),
 		);
+
+		if ( empty( $key ) ) {
+			return $labels;
+		} elseif ( array_key_exists( $key, $labels ) ) {
+			return $labels[ $key ];
+		} else {
+			return false;
+		}
 	}
 
 	public function get_chart_coordinates( $args ) {
@@ -421,7 +459,11 @@ class WP_Stream_Reports_Metaboxes {
 				$output = isset( WP_Stream_Connectors::$term_labels['stream_context'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_context'][ $value ] : $value;
 				break;
 			default:
-				$output = $value;
+				$output = $this->get_data_types( $value );
+				if ( ! $output ) {
+					$output = $value;
+				}
+				break;
 		}
 
 		return $output;
@@ -650,7 +692,12 @@ class WP_Stream_Reports_Metaboxes {
 
 		$chart_options = $this->get_chart_options( $args );
 
-		wp_send_json_success( $chart_options );
+		wp_send_json_success(
+			array(
+				'options' => $chart_options,
+				'title' => empty( $section['title'] ) ? $this->get_generated_title( $args ) : $section['title'],
+			)
+		);
 	}
 
 	/**
