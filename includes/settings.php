@@ -313,7 +313,7 @@ class WP_Stream_Settings {
 							'desc'        => sprintf(
 								__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
 							),
-							'after_field' => __( 'Hide Previous Records' ),
+							'after_field' => __( 'Hide Previous Records', 'stream' ),
 							'default'     => 0,
 						),
 					),
