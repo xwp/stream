@@ -18,7 +18,6 @@ class WP_Stream_Filter_Input {
 		FILTER_SANITIZE_NUMBER_FLOAT       => 'floatval',
 		FILTER_SANITIZE_NUMBER_INT         => 'intval',
 		FILTER_SANITIZE_SPECIAL_CHARS      => 'htmlspecialchars',
-		FILTER_SANITIZE_FULL_SPECIAL_CHARS => 'htmlspecialchars',
 		FILTER_SANITIZE_STRING             => 'sanitize_text_field',
 		FILTER_SANITIZE_URL                => 'esc_url_raw',
 		// Other
@@ -70,27 +69,25 @@ class WP_Stream_Filter_Input {
 			// We'll do a boolean check on validation function, and let sanitizers change the value
 			if ( $filter < 500 ) { // Validation functions
 				if ( ! $result ) {
-					$var = null;
+					$var = false;
 				}
 			} else { // Santization functions
 				$var = $result;
 			}
 		}
 
-		if ( false === $var ) {
-			$var = null;
-		}
-
 		// Detect FILTER_REQUIRE_ARRAY flag
 		if ( is_int( $options ) && FILTER_REQUIRE_ARRAY === $options ) {
 			if ( ! is_array( $var ) ) {
-				$var = null;
+				$var = false;
 			}
 		}
 
 		// Polyfill the `default` attribute only, for now.
-		if ( is_array( $options ) && ! empty( $options['options']['default'] ) && is_null( $var ) ) {
-			return $options['options']['default'];
+		if ( is_array( $options ) && ! empty( $options['options']['default'] ) ) {
+			if ( false === $var || is_null( $var ) ) {
+				return $options['options']['default'];
+			}
 		}
 
 		return $var;

@@ -49,7 +49,7 @@ class WP_Stream_Admin {
 		add_action( 'wp_ajax_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
 
 		// Auto purge setup
-		add_action( 'init', array( __CLASS__, 'purge_schedule_setup' ) );
+		add_action( 'wp', array( __CLASS__, 'purge_schedule_setup' ) );
 		add_action( 'wp_stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
 
 		// Admin notices
@@ -174,6 +174,7 @@ class WP_Stream_Admin {
 					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
 					'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
 				),
+				'gmt_offset'     => get_option( 'gmt_offset' ),
 				'current_screen' => $hook,
 				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
@@ -346,7 +347,7 @@ class WP_Stream_Admin {
 		self::$list_table->prepare_items();
 
 		echo '<div class="wrap">';
-		echo sprintf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
+		printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
 		self::$list_table->display();
 		echo '</div>';
 	}
@@ -374,15 +375,16 @@ class WP_Stream_Admin {
 		global $wpdb;
 
 		$wpdb->query(
-			"
-			DELETE t1, t2, t3
-			FROM {$wpdb->stream} as t1
-				INNER JOIN {$wpdb->streamcontext} as t2
-				INNER JOIN {$wpdb->streammeta} as t3
-			WHERE t1.type = 'stream'
-				AND t1.ID = t2.record_id
-				AND t1.ID = t3.record_id;
-			"
+			$wpdb->prepare(
+				"DELETE `stream`, `context`, `meta`
+				FROM {$wpdb->stream} AS `stream`
+				LEFT JOIN {$wpdb->streamcontext} AS `context`
+				ON `context`.`record_id` = `stream`.`ID`
+				LEFT JOIN {$wpdb->streammeta} AS `meta`
+				ON `meta`.`record_id` = `stream`.`ID`
+				WHERE `stream`.`type` = %s;",
+				'stream'
+			)
 		);
 	}
 
@@ -421,31 +423,32 @@ class WP_Stream_Admin {
 	}
 
 	public static function purge_schedule_setup() {
-		if ( ! wp_next_scheduled( 'stream_auto_purge' ) ) {
-			wp_schedule_event( time(), 'daily', 'stream_auto_purge' );
+		if ( ! wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
+			wp_schedule_event( time(), 'daily', 'wp_stream_auto_purge' );
 		}
 	}
 
 	public static function purge_scheduled_action() {
 		global $wpdb;
 
-		$days = WP_Stream_Settings::$options['general_records_ttl'];
+		$options = WP_Stream_Settings::get_options();
+
+		$days = $options['general_records_ttl'];
 		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
 		$wpdb->query(
 			$wpdb->prepare(
-				"
-				DELETE t1, t2, t3
-				FROM {$wpdb->stream} as t1
-					INNER JOIN {$wpdb->streamcontext} as t2
-					INNER JOIN {$wpdb->streammeta} as t3
-				WHERE t1.type = 'stream'
-					AND t1.created < %s
-					AND t1.ID = t2.record_id
-					AND t1.ID = t3.record_id;
-				",
-					$date->format( 'Y-m-d H:i:s' )
+				"DELETE `stream`, `context`, `meta`
+				FROM {$wpdb->stream} AS `stream`
+				LEFT JOIN {$wpdb->streamcontext} AS `context`
+				ON `context`.`record_id` = `stream`.`ID`
+				LEFT JOIN {$wpdb->streammeta} AS `meta`
+				ON `meta`.`record_id` = `stream`.`ID`
+				WHERE `stream`.`type` = %s
+				AND `stream`.`created` < %s;",
+				'stream',
+				$date->format( 'Y-m-d H:i:s' )
 			)
 		);
 	}
@@ -553,13 +556,7 @@ class WP_Stream_Admin {
 			'paged'            => $paged,
 		);
 
-		// Remove excluded records as per settings
-		add_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
-
 		$records = stream_query( $args );
-
-		// Remove filter added before
-		remove_filter( 'stream_query_args', array( 'WP_Stream_Settings', 'remove_excluded_record_filter' ), 10, 1 );
 
 		if ( ! $records ) {
 			?>
@@ -817,7 +814,9 @@ class WP_Stream_Admin {
 		$query = wp_parse_args( $query, $default );
 
 		// Run query
-		return stream_query( $query );
+		$items = stream_query( $query );
+
+		return $items;
 	}
 
 	/**
