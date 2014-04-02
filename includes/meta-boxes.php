@@ -277,12 +277,14 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		if ( empty( $key ) ) {
-			return $labels;
+			$output = $labels;
 		} elseif ( array_key_exists( $key, $labels ) ) {
-			return $labels[ $key ];
+			$output = $labels[ $key ];
 		} else {
-			return false;
+			$output = false;
 		}
+
+		return $output;
 	}
 
 	/**
@@ -299,12 +301,14 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		if ( empty( $key ) ) {
-			return $labels;
+			$output = $labels;
 		} elseif ( array_key_exists( $key, $labels ) ) {
-			return $labels[ $key ];
+			$output = $labels[ $key ];
 		} else {
-			return false;
+			$output = false;
 		}
+
+		return $output;
 	}
 
 	public function get_chart_coordinates( $args ) {
