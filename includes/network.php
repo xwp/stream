@@ -37,20 +37,12 @@ class WP_Stream_Network {
 
 		if ( is_network_admin() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 			$new_fields['general']['fields'][] = array(
-				'name'    => 'disable_sites_admin',
-				'title'   => __( 'Disable Site Access', 'stream' ),
-				'default' => 0,
-				'desc'    => __( 'When site access is disabled the settings and Stream can only be accessed in network administration.', 'stream' ),
-				'type'    => 'checkbox',
-			);
-
-			$new_fields['general']['fields'][] = array(
-				'name'    => 'settings_for_blog',
-				'title'   => __( 'Settings for Blog', 'stream' ),
-				'default' => array( 'value' => 0, 'name' => 'Network Default' ),
-				'desc'    => __( 'Select the site to apply settings changes to.', 'stream' ),
-				'type'    => 'select',
-				'choices' => $this->get_network_sites(),
+				'name'        => 'disable_site_access',
+				'title'       => __( 'Disable Site Access', 'stream' ),
+				'after_field' => __( 'Enabled' ),
+				'default'     => 0,
+				'desc'        => __( 'When site access is disabled Stream can only be accessed from the network administration.', 'stream' ),
+				'type'        => 'checkbox',
 			);
 
 			return array_merge_recursive( $new_fields, $fields );
@@ -79,18 +71,9 @@ class WP_Stream_Network {
 			return;
 		}
 
-		$update_network = true;
-		$options        = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null;
+		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null;
 
 		if ( $options ) {
-			$blog_to_update = isset( $options['settings_for_blog'] ) ? (int) $options['settings_for_blog'] : 0;
-
-			if ( 0 !== $blog_to_update ) {
-				switch_to_blog( $blog_to_update );
-				$update_network = false;
-			}
-
-			unset( $options['settings_for_blog'] );
 
 			foreach ( $options as $option ) {
 				$option = trim( $option );
@@ -104,15 +87,7 @@ class WP_Stream_Network {
 					$value = trim( $value );
 				}
 
-				if ( $update_network ) {
-					update_site_option( $option, $value );
-				} else {
-					update_option( $option, $value );
-				}
-			}
-
-			if ( ! $update_network ) {
-				restore_current_blog();
+				update_site_option( $option, $value );
 			}
 		}
 

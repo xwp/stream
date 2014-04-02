@@ -21,7 +21,7 @@ class WP_Stream_Admin {
 	 *
 	 * @var bool
 	 */
-	public static $disable_sites_admin = false;
+	public static $disable_access = false;
 
 	const ADMIN_BODY_CLASS    = 'wp_stream_screen';
 	const RECORDS_PAGE_SLUG   = 'wp_stream';
@@ -41,8 +41,8 @@ class WP_Stream_Admin {
 				(array) get_site_option( WP_Stream_Settings::KEY, array() ),
 				WP_Stream_Settings::get_defaults()
 			);
-			if ( isset( $settings['general_disable_sites_admin'] ) && true == $settings['general_disable_sites_admin'] ) {
-				self::$disable_sites_admin = true;
+			if ( isset( $settings['general_disable_site_access'] ) && true == $settings['general_disable_site_access'] ) {
+				self::$disable_access = true;
 			}
 		}
 
@@ -132,7 +132,7 @@ class WP_Stream_Admin {
 		if ( is_network_admin() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) )
 			return false;
 
-		if ( ! is_network_admin() && self::$disable_sites_admin )
+		if ( ! is_network_admin() && self::$disable_access )
 			return false;
 
 		self::$screen_id['main'] = add_menu_page(
@@ -355,7 +355,6 @@ class WP_Stream_Admin {
 
 				<?php if ( is_network_admin() ) : ?>
 					<h4><?php esc_html_e( 'The following settings will be saved as the default settings used for each network blog', 'stream' ) ?></h4>
-					<h4><?php esc_html_e( 'Individual blog settings can be updated using the choose blog dropdown or by accessing the settings page on the individual blogs', 'stream' ) ?></h4>
 				<?php endif; ?>
 
 				<form method="post" action="<?php echo esc_attr( $form_action ) ?>" enctype="multipart/form-data">
