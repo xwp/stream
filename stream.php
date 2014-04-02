@@ -48,7 +48,7 @@ class WP_Stream {
 	/**
 	 * @var WP_Stream_DB
 	 */
-	public static $db = null;
+	public $db = null;
 
 	/**
 	 * @var WP_Stream_Network
@@ -83,7 +83,7 @@ class WP_Stream {
 
 		// Load DB helper class
 		require_once WP_STREAM_INC_DIR . 'db-actions.php';
-		self::$db = new WP_Stream_DB;
+		$this->db = new WP_Stream_DB;
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			return;
@@ -98,7 +98,7 @@ class WP_Stream {
 		}
 
 		// Check DB and add message if not present
-		add_action( 'plugins_loaded', array( __CLASS__, 'verify_database_present' ) );
+		add_action( 'plugins_loaded', array( $this, 'verify_database_present' ) );
 
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -172,7 +172,7 @@ class WP_Stream {
 	 *
 	 * @return void
 	 */
-	public static function verify_database_present() {
+	public function verify_database_present() {
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		}
@@ -192,7 +192,7 @@ class WP_Stream {
 		$uninstall_message = '';
 
 		// Check if all needed DB is present
-		foreach ( self::$db->get_table_names() as $table_name ) {
+		foreach ( $this->db->get_table_names() as $table_name ) {
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
 				$database_message .= sprintf( '<p>%s %s</p>', __( 'The following table is not present in the WordPress database :', 'stream' ), $table_name );
 			}
