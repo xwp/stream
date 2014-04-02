@@ -39,20 +39,31 @@ jQuery(function($){
 				return;
 			}
 
-			if( ! $( '#dashboard_stream_activity a.prev-page' ).hasClass( 'disabled' ) ) {
+			//Prevent updates from being applied directly to pages that aren't the first in the list
+			if ( ! $( '#dashboard_stream_activity a.prev-page' ).hasClass( 'disabled' ) ) {
 				return;
 			}
 
 			// Get all new rows
 			var $new_items = $(data['wp-stream-heartbeat']);
 
-			// Remove all class to tr added by WP and add new row class
-			$new_items.removeClass().addClass('new-row');
+			var itemArray = [];
+			var newHTML = $( $new_items ).each( function() {
+				if ( typeof( $(this).html() ) === 'string' ) {
+					itemArray.push( '<li class="new-row">' + $(this).html() + '</li>' );
+				}
+			});
+
+			//Use records per page here
+			var addedItems = itemArray.slice( 0, data['per_page'] );
 
 			// Add element to the dom
-			$(listSel).prepend( $new_items );
+			$(listSel).prepend( addedItems );
 
-			$( listSel + ' li:last-child').hide();
+			//hide last visible element in list (will appear on next page)
+			// Remove the number of element added to the end of the list table
+
+			$( listSel + ' li').slice(-itemArray.length).hide();
 
 			// Remove background after a certain amount of time
 			setTimeout( function() {

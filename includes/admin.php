@@ -699,9 +699,10 @@ class WP_Stream_Admin {
 
 	public static function heartbeat_received( $response, $data ) {
 
-		$enable_stream_update = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
-		$option = get_option( 'dashboard_stream_activity_options' );
+		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
+		$option                  = get_option( 'dashboard_stream_activity_options' );
 		$enable_dashboard_update = ( ! empty( $option['live_update'] ) );
+		$response['per_page']    = isset( $option['records_per_page'] ) ? absint( $option['records_per_page'] ) : 5;
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_stream_update ) {
 			$response['wp-stream-heartbeat'] = self::live_update( $response, $data );

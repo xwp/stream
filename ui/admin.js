@@ -379,7 +379,7 @@ jQuery(function($){
 				setTimeout( function() {
 					$( list_sel + ' tr').removeClass('new-row fadeout');
 				}, 500);
-			}, 100000);
+			}, 3000);
 
 		});
 
@@ -392,7 +392,7 @@ jQuery(function($){
 				checked = 'checked';
 			}
 
-			/*$.ajax({
+			$.ajax({
 				type: 'POST',
 				url: ajaxurl,
 				data: { action: 'stream_enable_live_update', nonce : nonce, user : user, checked : checked },
@@ -403,7 +403,7 @@ jQuery(function($){
 				success : function() {
 					$( '.stream-live-update-checkbox .spinner' ).hide();
 				}
-			}); */
+			});
 		});
 
 		$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
