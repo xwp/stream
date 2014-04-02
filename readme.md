@@ -105,6 +105,28 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 1.3.1 - April 3, 2014 ###
+* New: Theme Editor connector for tracking changes made to theme files ([issue-313](https://github.com/x-team/wp-stream/issues/313))
+* New: Additional screen options to show/hide only the filters you care about ([issue-329](https://github.com/x-team/wp-stream/issues/329))
+* New: Visibility option in Exclude settings to hide past records from view ([issue-355](https://github.com/x-team/wp-stream/issues/355))
+* New: Stream Activity dashboard widget now supports live updates ([issue-356](https://github.com/x-team/wp-stream/issues/356))
+* New: Hover authors to reveal a tooltip with helpful user meta ([issue-338](https://github.com/x-team/wp-stream/issues/338))
+* New: Hover roles to reveal a tooltip with the number of authors assigned to that role ([issue-377](https://github.com/x-team/wp-stream/issues/377))
+* Tweak: Future dates now disabled in Start date field datepicker ([issue-334](https://github.com/x-team/wp-stream/issues/334))
+* Tweak: Now showing user Gravatars in Exclude Authors & Roles settings field ([issue-333](https://github.com/x-team/wp-stream/issues/333))
+* Tweak: ID column is now hidden by default in Screen Options ([issue-348](https://github.com/x-team/wp-stream/issues/348))
+* Tweak: Widget updated summary message improvement ([8818976](https://github.com/x-team/wp-stream/commit/88189761d4a8836038e8d9ec348096a0aab3072d))
+* Fix: Autocomplete not working correctly in Exclude IP Addressees settings field ([issue-335](https://github.com/x-team/wp-stream/issues/335))
+* Fix: Reset Stream Database link not clearing everything in all cases ([issue-347](https://github.com/x-team/wp-stream/issues/347))
+* Fix: PHP 5.3.3 compatibility issue with filter constant ([issue-351](https://github.com/x-team/wp-stream/issues/351))
+* Fix: Predefined date range intervals not honoring the site timezone setting ([issue-353](https://github.com/x-team/wp-stream/issues/353))
+* Fix: wpdb::prepare() notice appearing in WordPress 3.9 ([issue-354](https://github.com/x-team/wp-stream/issues/354))
+* Fix: Invalid argument warning thrown on fresh installations of WordPress ([issue-358](https://github.com/x-team/wp-stream/issues/358))
+* Fix: Record TTL purge not functioning correctly ([issue-371](https://github.com/x-team/wp-stream/issues/371))
+* Fix: Small CSS bug in jQuery UI datepicker skins ([04c80af](https://github.com/x-team/wp-stream/commit/04c80afa99486086612be9f6ad83148dfbbe533a))
+
+Props [powelski](http://profiles.wordpress.org/powelski/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [faishal](http://profiles.wordpress.org/faishal/), [desaiuditd](http://profiles.wordpress.org/desaiuditd/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [Powdered-Toast-Man](https://github.com/Powdered-Toast-Man)
+
 ### 1.3.0 - March 12, 2014 ###
 * New: Exclude tab in Settings to prevent specific types of activity from being tracked ([issue-251](https://github.com/x-team/wp-stream/issues/251))
 * New: Now logging Custom Background and Custom Header changes ([issue-309](https://github.com/x-team/wp-stream/issues/309))
