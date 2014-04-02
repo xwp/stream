@@ -154,6 +154,10 @@ class WP_Stream {
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
 		WP_Stream_Install::check();
+
+		// Set default value for dashboard widget live updates.
+		update_option( 'dashboard_stream_activity_options', array( 'live_update' => '1' ) );
+
 	}
 
 	/**
