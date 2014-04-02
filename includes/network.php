@@ -111,8 +111,16 @@ class WP_Stream_Network {
 				$option = trim( $option );
 				$value  = null;
 
-				if ( isset( $_POST[ $option ] ) ) {
-					$value = $_POST[ $option ];
+				$sections = WP_Stream_Settings::get_fields();
+				foreach ( $sections as $section_name => $section ) {
+					foreach ( $section['fields'] as $field_idx => $field ) {
+						$option_key = $section_name . '_' . $field['name'];
+						if ( isset( $_POST[ $option ][ $option_key ] ) ) {
+							$value[ $option_key ] = $_POST[ $option ][ $option_key ];
+						} else {
+							$value[ $option_key ] = false;
+						}
+					}
 				}
 
 				if ( ! is_array( $value ) ) {

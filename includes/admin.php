@@ -154,6 +154,14 @@ class WP_Stream_Admin {
 				'wp_stream_settings',
 				array( __CLASS__, 'render_page' )
 			);
+			self::$screen_id['default_settings'] = add_submenu_page(
+				self::RECORDS_PAGE_SLUG,
+				__( 'Stream Default Settings', 'stream' ),
+				__( 'Default Settings', 'stream' ),
+				self::SETTINGS_CAP,
+				'wp_stream_default_settings',
+				array( __CLASS__, 'render_page' )
+			);
 		} else {
 			self::$screen_id['settings'] = add_submenu_page(
 				self::RECORDS_PAGE_SLUG,

@@ -75,7 +75,7 @@ jQuery(function($){
 			$placeholder.after($placeholder.clone(true).attr('class', $placeholder_child_class).val(key));
 		});
 	};
-	$('.stream_page_wp_stream_settings input[type=hidden].select2-select.with-source').each(function (k, el) {
+	$('#tab-content-settings input[type=hidden].select2-select.with-source').each(function (k, el) {
 		var $input = $(el);
 		$input.select2({
 			multiple: true,
@@ -99,7 +99,7 @@ jQuery(function($){
 			stream_select2_change_handler( e , $input );
 		}).trigger('change');
 	});
-	$( '.stream_page_wp_stream_settings input[type=hidden].select2-select.ip-addresses').each(function( k, el ){
+	$( '#tab-content-settings input[type=hidden].select2-select.ip-addresses').each(function( k, el ){
 		var $input = $(el);
 
 		$input.select2({
@@ -176,7 +176,7 @@ jQuery(function($){
 		}).trigger('change');
 	});
 	var $input_user;
-	$('.stream_page_wp_stream_settings input[type=hidden].select2-select.authors_and_roles').each(function (k, el) {
+	$('#tab-content-settings input[type=hidden].select2-select.authors_and_roles').each(function (k, el) {
 		$input_user = $(el);
 
 		$input_user.select2({
