@@ -10,7 +10,12 @@ class WP_Stream_Settings {
 	/**
 	 * Settings key/identifier
 	 */
-	const KEY = 'wp_stream';
+	const SETTINGS_KEY = 'wp_stream';
+
+	/**
+	 * Default Settings key/identifier
+	 */
+	const DEFAULTS_KEY = 'wp_stream_defaults';
 
 	/**
 	 * Plugin settings
@@ -27,16 +32,23 @@ class WP_Stream_Settings {
 	public static $fields = array();
 
 	public static function get_options() {
+
+		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+
+		if ( 'wp_stream_default_settings' === $current_page ) {
+			return self::get_defaults();
+		}
+
 		/**
 		 * Filter allows for modification of options
 		 *
 		 * @param  array  array of options
 		 * @return array  updated array of options
-		 */
+		*/
 		return apply_filters(
 			'wp_stream_options',
 			wp_parse_args(
-				(array) get_option( self::KEY, array() ),
+				(array) get_option( self::SETTINGS_KEY, array() ),
 				self::get_defaults()
 			)
 		);
@@ -55,10 +67,10 @@ class WP_Stream_Settings {
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 
 		// Check if we need to flush rewrites rules
-		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
+		add_action( 'update_option_' . self::SETTINGS_KEY, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
 
 		// Remove records when records TTL is shortened
-		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
+		add_action( 'update_option_' . self::SETTINGS_KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
 
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
 
@@ -338,6 +350,7 @@ class WP_Stream_Settings {
 	public static function get_defaults() {
 		$fields   = self::get_fields();
 		$defaults = array();
+
 		foreach ( $fields as $section_name => $section ) {
 			foreach ( $section['fields'] as $field ) {
 				$defaults[ $section_name.'_'.$field['name'] ] = isset( $field['default'] )
@@ -345,7 +358,21 @@ class WP_Stream_Settings {
 					: null;
 			}
 		}
-		return $defaults;
+
+		/**
+		 * Filter allows for modification of options defaults
+		 *
+		 * @param  array  array of options
+		 * @return array  updated array of option defaults
+		*/
+		return apply_filters(
+			'wp_stream_option_defaults',
+			wp_parse_args(
+				(array) get_site_option( self::DEFAULTS_KEY, array() ),
+				$defaults
+			)
+		);
+
 	}
 
 	/**
@@ -357,14 +384,20 @@ class WP_Stream_Settings {
 
 		$sections = self::get_fields();
 
-		register_setting( self::KEY, self::KEY );
+		$option_key   = WP_Stream_Settings::SETTINGS_KEY;
+		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		if ( 'wp_stream_default_settings' === $current_page ) {
+			$option_key = WP_Stream_Settings::DEFAULTS_KEY;
+		}
+
+		register_setting( $option_key, $option_key );
 
 		foreach ( $sections as $section_name => $section ) {
 			add_settings_section(
 				$section_name,
 				null,
 				'__return_false',
-				self::KEY
+				$option_key
 			);
 
 			foreach ( $section['fields'] as $field_idx => $field ) {
@@ -375,11 +408,11 @@ class WP_Stream_Settings {
 					$field['name'],
 					$field['title'],
 					( isset( $field['callback'] ) ? $field['callback'] : array( __CLASS__, 'output_field' ) ),
-					self::KEY,
+					$option_key,
 					$section_name,
 					$field + array(
 						'section'   => $section_name,
-						'label_for' => sprintf( '%s_%s_%s', self::KEY, $section_name, $field['name'] ), // xss ok
+						'label_for' => sprintf( '%s_%s_%s', $option_key, $section_name, $field['name'] ), // xss ok
 					)
 				);
 			}
@@ -429,6 +462,12 @@ class WP_Stream_Settings {
 		$nonce         = isset( $field['nonce'] ) ? $field['nonce'] : null;
 		$current_value = self::$options[ $section . '_' . $name ];
 
+		$option_key    = self::SETTINGS_KEY;
+		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		if ( 'wp_stream_default_settings' === $current_page ) {
+			$option_key = self::DEFAULTS_KEY;
+		}
+
 		if ( is_callable( $current_value ) ) {
 			$current_value = call_user_func( $current_value );
 		}
@@ -449,7 +488,7 @@ class WP_Stream_Settings {
 				$output = sprintf(
 					'<input type="%1$s" name="%2$s[%3$s_%4$s]" id="%2$s_%3$s_%4$s" class="%5$s" placeholder="%6$s" value="%7$s" /> %8$s',
 					esc_attr( $type ),
-					esc_attr( self::KEY ),
+					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
 					esc_attr( $class ),
@@ -461,7 +500,7 @@ class WP_Stream_Settings {
 			case 'checkbox':
 				$output = sprintf(
 					'<label><input type="checkbox" name="%1$s[%2$s_%3$s]" id="%1$s[%2$s_%3$s]" value="1" %4$s /> %5$s</label>',
-					esc_attr( self::KEY ),
+					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
 					checked( $current_value, 1, false ),
@@ -471,14 +510,14 @@ class WP_Stream_Settings {
 			case 'multi_checkbox':
 				$output = sprintf(
 					'<div id="%1$s[%2$s_%3$s]"><fieldset>',
-					esc_attr( self::KEY ),
+					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
 				// Fallback if nothing is selected
 				$output .= sprintf(
 					'<input type="hidden" name="%1$s[%2$s_%3$s][]" value="__placeholder__" />',
-					esc_attr( self::KEY ),
+					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
@@ -492,7 +531,7 @@ class WP_Stream_Settings {
 						'<label>%1$s <span>%2$s</span></label><br />',
 						sprintf(
 							'<input type="checkbox" name="%1$s[%2$s_%3$s][]" value="%4$s" %5$s />',
-							esc_attr( self::KEY ),
+							esc_attr( $option_key ),
 							esc_attr( $section ),
 							esc_attr( $name ),
 							esc_attr( $value ),
@@ -510,7 +549,7 @@ class WP_Stream_Settings {
 
 				$output  = sprintf(
 					'<select name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s">',
-					esc_attr( self::KEY ),
+					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
@@ -533,7 +572,7 @@ class WP_Stream_Settings {
 			case 'file':
 				$output = sprintf(
 					'<input type="file" name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s" class="%4$s">',
-					esc_attr( self::KEY ),
+					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
 					esc_attr( $class )
@@ -542,7 +581,7 @@ class WP_Stream_Settings {
 			case 'link':
 				$output = sprintf(
 					'<a id="%1$s_%2$s_%3$s" class="%4$s" href="%5$s">%6$s</a>',
-					esc_attr( self::KEY ),
+					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
 					esc_attr( $class ),
@@ -554,6 +593,7 @@ class WP_Stream_Settings {
 				if ( ! isset ( $current_value ) ) {
 					$current_value = array();
 				}
+
 				if ( false !== ( $key = array_search( '__placeholder__', $current_value ) ) ) {
 					unset( $current_value[ $key ] );
 				}
@@ -584,7 +624,7 @@ class WP_Stream_Settings {
 
 				$output  = sprintf(
 					'<div id="%1$s[%2$s_%3$s]">',
-					esc_attr( self::KEY ),
+					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
@@ -601,7 +641,7 @@ class WP_Stream_Settings {
 				// to store data with default value if nothing is selected
 				$output .= sprintf(
 					'<input type="hidden" name="%1$s[%2$s_%3$s][]" class="%2$s-%3$s-select-placeholder" value="__placeholder__" />',
-					esc_attr( self::KEY ),
+					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
@@ -650,7 +690,7 @@ class WP_Stream_Settings {
 
 				$output  = sprintf(
 					'<div id="%1$s[%2$s_%3$s]">',
-					esc_attr( self::KEY ),
+					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
@@ -666,7 +706,7 @@ class WP_Stream_Settings {
 				// to store data with default value if nothing is selected
 				$output .= sprintf(
 					'<input type="hidden" name="%1$s[%2$s_%3$s][]" class="%2$s-%3$s-select-placeholder" value="__placeholder__" />',
-					esc_attr( self::KEY ),
+					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
@@ -780,13 +820,13 @@ class WP_Stream_Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_settings_translations( $labels ) {
-		if ( ! isset( $labels[ self::KEY ] ) ) {
-			$labels[ self::KEY ] = array();
+		if ( ! isset( $labels[ self::SETTINGS_KEY ] ) ) {
+			$labels[ self::SETTINGS_KEY ] = array();
 		}
 
 		foreach ( self::get_fields() as $section_slug => $section ) {
 			foreach ( $section['fields'] as $field ) {
-				$labels[ self::KEY ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
+				$labels[ self::SETTINGS_KEY ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
 			}
 		}
 

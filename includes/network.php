@@ -16,6 +16,7 @@ class WP_Stream_Network {
 
 	function actions() {
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
+		add_action( 'wpmuadminedit', array( $this, 'default_options_action' ) );
 	}
 
 	function filters() {
@@ -39,6 +40,11 @@ class WP_Stream_Network {
 			return $fields;
 		}
 
+		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		if ( ! $current_page ) {
+			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
+		}
+
 		$network_only_options = apply_filters( 'wp_stream_network_only_option_fields', array(
 			'general' => array(
 				'delete_all_records',
@@ -53,7 +59,11 @@ class WP_Stream_Network {
 			),
 		) );
 
-		$hidden_options = is_network_admin() ? $site_only_options : $network_only_options;
+		if ( 'wp_stream_network_settings' == $current_page && is_network_admin() ) {
+			$hidden_options = $site_only_options;
+		} else {
+			$hidden_options = $network_only_options;
+		}
 
 		foreach ( $fields as $section_key => $section ) {
 			foreach ( $section['fields'] as $key => $field ) {
@@ -66,7 +76,7 @@ class WP_Stream_Network {
 			}
 		}
 
-		if ( is_network_admin() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+		if ( 'wp_stream_network_settings' == $current_page && is_network_admin() ) {
 			$new_fields['general']['fields'][] = array(
 				'name'        => 'enable_site_access',
 				'title'       => __( 'Enable Site Access', 'stream' ),
@@ -75,7 +85,6 @@ class WP_Stream_Network {
 				'desc'        => __( 'When site access is disabled Stream can only be accessed from the network administration.', 'stream' ),
 				'type'        => 'checkbox',
 			);
-			$new_fields['exclude']['desc'] = __( 'These settings will apply to the Network Stream.', 'stream' );
 
 			$fields = array_merge_recursive( $new_fields, $fields );
 		}
@@ -99,7 +108,7 @@ class WP_Stream_Network {
 	 * Wrapper for the settings API to work on the network settings page
 	 */
 	function network_options_action() {
-		if ( ! isset( $_GET['action'] ) || 'stream_settings' !== $_GET['action'] ) {
+		if ( ! isset( $_GET['action'] ) || 'wp_stream_network_settings' !== $_GET['action'] ) {
 			return;
 		}
 
@@ -143,6 +152,53 @@ class WP_Stream_Network {
 	}
 
 	/**
+	 * Wrapper for the settings API to work on the default settings page
+	 */
+	function default_options_action() {
+		if ( ! isset( $_GET['action'] ) || 'wp_stream_default_settings' !== $_GET['action'] ) {
+			return;
+		}
+
+		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null;
+
+		if ( $options ) {
+
+			foreach ( $options as $option ) {
+				$option = trim( $option );
+				$value  = null;
+
+				$sections = WP_Stream_Settings::get_fields();
+				foreach ( $sections as $section_name => $section ) {
+					foreach ( $section['fields'] as $field_idx => $field ) {
+						$option_key = $section_name . '_' . $field['name'];
+						if ( isset( $_POST[ $option ][ $option_key ] ) ) {
+							$value[ $option_key ] = $_POST[ $option ][ $option_key ];
+						} else {
+							$value[ $option_key ] = false;
+						}
+					}
+				}
+
+				if ( ! is_array( $value ) ) {
+					$value = trim( $value );
+				}
+
+				update_site_option( $option, $value );
+			}
+		}
+
+		if ( ! count( get_settings_errors() ) ) {
+			add_settings_error( 'general', 'settings_updated', __( 'Default Settings saved.', 'stream' ), 'updated' );
+		}
+
+		set_transient( 'settings_errors', get_settings_errors(), 30 );
+
+		$go_back = add_query_arg( 'settings-updated', 'true', wp_get_referer() );
+		wp_redirect( $go_back );
+		exit;
+	}
+
+	/**
 	 * Filters stream options when on the network settings page
 	 *
 	 * @param $options
@@ -155,7 +211,7 @@ class WP_Stream_Network {
 		}
 
 		$network_options = wp_parse_args(
-			(array) get_site_option( WP_Stream_Settings::KEY, array() ),
+			(array) get_site_option( WP_Stream_Settings::SETTINGS_KEY, array() ),
 			WP_Stream_Settings::get_defaults()
 		);
 

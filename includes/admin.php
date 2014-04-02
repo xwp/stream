@@ -38,7 +38,7 @@ class WP_Stream_Admin {
 
 		if ( is_multisite() ) {
 			$settings = wp_parse_args(
-				(array) get_site_option( WP_Stream_Settings::KEY, array() ),
+				(array) get_site_option( WP_Stream_Settings::SETTINGS_KEY, array() ),
 				WP_Stream_Settings::get_defaults()
 			);
 			if ( isset( $settings['general_enable_site_access'] ) && false == $settings['general_enable_site_access'] ) {
@@ -146,22 +146,24 @@ class WP_Stream_Admin {
 		);
 
 		if ( is_network_admin() ) {
-			self::$screen_id['settings'] = add_submenu_page(
+			self::$screen_id['network_settings'] = add_submenu_page(
 				self::RECORDS_PAGE_SLUG,
 				__( 'Stream Network Settings', 'stream' ),
 				__( 'Network Settings', 'stream' ),
 				self::SETTINGS_CAP,
-				'wp_stream_settings',
+				'wp_stream_network_settings',
 				array( __CLASS__, 'render_page' )
 			);
-			self::$screen_id['default_settings'] = add_submenu_page(
-				self::RECORDS_PAGE_SLUG,
-				__( 'Stream Default Settings', 'stream' ),
-				__( 'Default Settings', 'stream' ),
-				self::SETTINGS_CAP,
-				'wp_stream_default_settings',
-				array( __CLASS__, 'render_page' )
-			);
+			if ( ! self::$disable_access ) {
+				self::$screen_id['default_settings'] = add_submenu_page(
+					self::RECORDS_PAGE_SLUG,
+					__( 'Stream Default Settings', 'stream' ),
+					__( 'Default Settings', 'stream' ),
+					self::SETTINGS_CAP,
+					'wp_stream_default_settings',
+					array( __CLASS__, 'render_page' )
+				);
+			}
 		} else {
 			self::$screen_id['settings'] = add_submenu_page(
 				self::RECORDS_PAGE_SLUG,
@@ -347,11 +349,18 @@ class WP_Stream_Admin {
 	 */
 	public static function render_page() {
 
-		$form_action = is_network_admin() ? network_admin_url( 'edit.php?action=stream_settings' ) : admin_url( 'options.php' );
+		$option_key   = WP_Stream_Settings::SETTINGS_KEY;
+		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		if ( 'wp_stream_default_settings' === $current_page ) {
+			$option_key = WP_Stream_Settings::DEFAULTS_KEY;
+		}
+
+		$form_action = is_network_admin() ? add_query_arg( array( 'action' => $current_page ), 'edit.php' ) : admin_url( 'options.php' );
 		?>
 		<div class="wrap">
 
-			<h2><?php echo is_network_admin() ? __( 'Stream Network Settings', 'stream' ) : __( 'Stream Settings', 'stream' ); ?></h2>
+			<h2><?php echo get_admin_page_title(); ?></h2>
+
 			<?php settings_errors() ?>
 
 			<?php
@@ -379,8 +388,8 @@ class WP_Stream_Admin {
 			$i++;
 			$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
 			if ( $is_active ) {
-				settings_fields( WP_Stream_Settings::KEY );
-				do_settings_sections( WP_Stream_Settings::KEY );
+				settings_fields( $option_key );
+				do_settings_sections( $option_key );
 			}
 		}
 		submit_button();
@@ -465,7 +474,7 @@ class WP_Stream_Admin {
 
 			// Delete database option
 			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-			delete_option( WP_Stream_Settings::KEY );
+			delete_option( WP_Stream_Settings::SETTINGS_KEY );
 			delete_option( 'dashboard_stream_activity_options' );
 
 			// Redirect to plugin page
