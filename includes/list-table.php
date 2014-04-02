@@ -391,10 +391,27 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * @return array   options to be displayed in search filters
 	 */
 	function assemble_records( $column, $table = '' ) {
+
+		$setting_key = self::get_column_excluded_setting_key( $column );
+
+		/**
+		 * Toggle visibility of disabled connectors/actions/contexts on list table filter dropdown
+		 *
+		 * @param bool $hidden Visibility status, default is Hide Previous Record value set in Exclude setting.
+		 */
+		$hide_disabled_column_filter = apply_filters( 'wp_stream_list_table_hide_disabled_ ' . $setting_key, ( WP_Stream_Settings::$options[ 'exclude_hide_previous_records' ] === 0 ) ? false : true );
+
 		if ( 'author' === $column ) {
 			$all_records = array();
 			$authors     = get_users();
+			if ( $hide_disabled_column_filter ) {
+				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
+			}
+
 			foreach ( $authors as $author ) {
+				if ( $hide_disabled_column_filter && in_array( $author->ID, $excluded_records ) ) {
+					continue;
+				}
 				$author = get_user_by( 'id', $author->ID );
 				if ( $author ) {
 					$all_records[ $author->ID ] = $author;
@@ -404,20 +421,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$prefixed_column = sprintf( 'stream_%s', $column );
 			$all_records     = WP_Stream_Connectors::$term_labels[ $prefixed_column ];
 
-			if ( 'connector' === $column ) {
-				/**
-				 * Toggle visibility of disabled connectors on list table filter dropdown
-				 *
-				 * @param bool $hidden Visibility status, hidden by default.
-				 */
-				$hide_disabled_connectors_filter = apply_filters( 'wp_stream_list_table_hide_disabled_connectors', true );
-
-				if ( true === $hide_disabled_connectors_filter ) {
-					$excluded_connectors = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
-					foreach ( array_keys( $all_records ) as $_connector ) {
-						if ( in_array( $_connector, $excluded_connectors ) ) {
-							unset( $all_records[ $_connector ] );
-						}
+			if ( true === $hide_disabled_column_filter ) {
+				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
+				foreach ( array_keys( $all_records ) as $_connector ) {
+					if ( in_array( $_connector, $excluded_records ) ) {
+						unset( $all_records[ $_connector ] );
 					}
 				}
 			}
@@ -694,4 +702,27 @@ class WP_Stream_List_Table extends WP_List_Table {
 		return ob_get_clean();
 	}
 
+	/**
+	 * This function is use to map List table column name with excluded setting keys
+	 *
+	 * @param $column string list table column name
+	 *
+	 * @return string setting name for that column
+	 */
+	function get_column_excluded_setting_key( $column ) {
+		switch ( $column ) {
+			case 'connector' :
+				return 'connectors';
+			case 'context' :
+				return 'contexts';
+			case 'action' :
+				return 'action';
+			case 'ip':
+				return 'ip_addresses';
+			case 'author':
+				return 'authors_and_roles';
+			default:
+				return false;
+		}
+	}
 }
