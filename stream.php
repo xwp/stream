@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Stream
- * Plugin URI: http://x-team.com
- * Description: Track and monitor every change made on your WordPress site. All logged-in user activity is recorded and organized by action and context for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 0.7.3
+ * Plugin URI: http://wordpress.org/plugins/stream/
+ * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
+ * Version: 1.3.0
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -12,7 +12,7 @@
  */
 
 /**
- * Copyright (c) 2013 X-Team (http://x-team.com/)
+ * Copyright (c) 2014 X-Team (http://x-team.com/)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2 or, at
@@ -21,18 +21,28 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Founda
- * tion, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 
 class WP_Stream {
 
+	/**
+	 * Plugin version number
+	 *
+	 * @const string
+	 */
+	const VERSION = '1.3.0';
+
+	/**
+	 * Hold Stream instance
+	 *
+	 * @var string
+	 */
 	public static $instance;
 
 	/**
@@ -41,27 +51,49 @@ class WP_Stream {
 	public $db = null;
 
 	/**
+	 * Admin notices messages
+	 *
+	 * @var array
+	 */
+	public static $messages = array();
+
+	/**
 	 * Class constructor
 	 */
-	public function __construct() {
-
-		if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
-			add_action( 'all_admin_notices', array( __CLASS__, 'php_version_notice' ) );
-			return;
-		}
-
+	private function __construct() {
 		define( 'WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 
+		// Load filters polyfill
+		require_once WP_STREAM_INC_DIR . 'filters.php';
+
+		// Load DB helper class
+		require_once WP_STREAM_INC_DIR . 'db-actions.php';
+		$this->db = new WP_Stream_DB;
+
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			return;
 		}
 
+		// Add admin notice action to display all messages
+		add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
+
+		// If php version is not valid, kill plugin
+		if ( ! self::is_valid_php_version() ) {
+			return;
+		}
+
+		// Check DB and add message if not present
+		$this->verify_database_present();
+
+		// Load languages
+		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
+
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_INC_DIR . 'settings.php';
-		add_action( 'plugins_loaded', array( 'WP_Stream_Settings', 'load' ) );
+		add_action( 'init', array( 'WP_Stream_Settings', 'load' ) );
 
 		// Load logger class
 		require_once WP_STREAM_INC_DIR . 'log.php';
@@ -71,39 +103,127 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'connectors.php';
 		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ) );
 
-		// Load DB helper class
-		require_once WP_STREAM_INC_DIR . 'db-actions.php';
-		$this->db = new WP_Stream_DB;
-
 		// Load query class
 		require_once WP_STREAM_INC_DIR . 'query.php';
 		require_once WP_STREAM_INC_DIR . 'context-query.php';
 
-		if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+		// Load support for feeds
+		require_once WP_STREAM_INC_DIR . 'feeds.php';
+		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
+
+		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 		}
 	}
 
 	/**
+	 * Loads the translation files.
+	 *
+	 * @access public
+	 * @action plugins_loaded
+	 * @return void
+	 */
+	public static function i18n() {
+		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	}
+
+	/**
 	 * Installation / Upgrade checks
-	 * 
+	 *
 	 * @action register_activation_hook
 	 * @return void
 	 */
 	public static function install() {
-		if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
-			add_action( 'all_admin_notices', array( __CLASS__, 'php_version_notice' ) );
+		if ( ! self::is_valid_php_version() ) {
+			add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
 			return;
 		}
+
+		/**
+		 * Filter will halt install() if set to true
+		 *
+		 * @param  bool
+		 * @return bool
+		 */
+		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
+			return;
+		}
+
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
 		WP_Stream_Install::check();
 	}
 
 	/**
+	 * Verify that all needed databases are present and add an error message if not.
+	 *
+	 * @return void
+	 */
+	private function verify_database_present() {
+		/**
+		 * Filter will halt verify_database_present() if set to true
+		 *
+		 * @param  bool
+		 * @return bool
+		 */
+		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
+			return;
+		}
+
+		global $wpdb;
+		$message = '';
+
+		// Check if all needed DB is present
+		foreach ( $this->db->get_table_names() as $table_name ) {
+			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
+				$message .= sprintf( '<p>%s %s</p>', __( 'The following table is not present in the WordPress database :', 'stream' ), $table_name );
+			}
+		}
+
+		// Check upgrade routine
+		self::install();
+
+		if ( ! empty( $message ) ) {
+			self::$messages['wp_stream_db_error'] = sprintf(
+				'<div class="error">%s<p>%s</p></div>',
+				$message,
+				sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) )
+			); // xss ok
+		}
+	}
+
+	/**
+	 * Display a notice about php version
+	 *
+	 * @action all_admin_notices
+	 */
+	public static function is_valid_php_version() {
+		if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
+			self::$messages[] = sprintf(
+				'<div class="error"><p>%s</p></div>',
+				__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
+			); // xss ok
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Display all messages on admin board
+	 *
+	 * @return void
+	 */
+	public static function admin_notices() {
+		foreach ( self::$messages as $message ) {
+			echo wp_kses_post( $message );
+		}
+	}
+
+	/**
 	 * Return active instance of WP_Stream, create one if it doesn't exist
-	 * 
+	 *
 	 * @return WP_Stream
 	 */
 	public static function get_instance() {
@@ -114,19 +234,7 @@ class WP_Stream {
 		return self::$instance;
 	}
 
-	/**
-	 * Display a notice about php version
-	 *
-	 * @action all_admin_notices
-	 */
-	public static function php_version_notice() {
-		echo sprintf(
-			'<div class="error"><p>%s</p></div>',
-			__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
-			); // xss okay
-	}
-
 }
 
-$GLOBALS['wp_stream'] = new WP_Stream;
+$GLOBALS['wp_stream'] = WP_Stream::get_instance();
 register_activation_hook( __FILE__, array( 'WP_Stream', 'install' ) );

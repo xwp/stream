@@ -29,5 +29,5 @@ before_script:
 script:
     - find . -path ./bin -prune -o \( -name '*.php' -o -name '*.inc' \) -exec php -lf {} \;
     - if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then phpunit; fi
-    - phpcs --standard=$(if [ -e ruleset.xml ]; then echo ruleset.xml; else echo WordPress; fi) $(find . -name '*.php')
+    - phpcs --standard=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi) $(find . -name '*.php')
     - jshint .

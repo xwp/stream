@@ -4,12 +4,14 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 
 	/**
 	 * Context name
+	 *
 	 * @var string
 	 */
 	public static $name = 'posts';
 
 	/**
 	 * Actions registered for this context
+	 *
 	 * @var array
 	 */
 	public static $actions = array(
@@ -63,13 +65,13 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( get_post( $record->object_id ) ) {
 			if ( $link = get_edit_post_link( $record->object_id ) ) {
-				$post_type = get_post_type_object( get_post_type( $record->object_id ) );
-				$links[ sprintf( __( 'Edit %s', 'stream' ), $post_type->labels->singular_name ) ] = $link;
+				$post_type_name = self::get_post_type_name( get_post_type( $record->object_id ) );
+				$links[ sprintf( _x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
 			}
 			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
 				$links[ __( 'View', 'stream' ) ] = $link;
 			}
-			if ( $record->action == 'updated' ) {
+			if ( 'updated' == $record->action ) {
 				if ( $revision_id = get_stream_meta( $record->ID, 'revision_id', true ) ) {
 					$links[ __( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
 				}
@@ -91,27 +93,45 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 
 		if ( in_array( $new, array( 'auto-draft', 'inherit' ) ) ) {
 			return;
-		}
-		elseif ( $old == 'auto-draft' && $new == 'draft' ) {
-			$message = __( '"%s" %s drafted', 'stream' );
+		} elseif ( $old == 'auto-draft' && $new == 'draft' ) {
+			$message = _x(
+				'"%1$s" %2$s drafted',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 			$action  = 'created';
-		}
-		elseif ( $old == 'auto-draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = __( '"%s" %s published', 'stream' );
+		} elseif ( $old == 'auto-draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
+			$message = _x(
+				'"%1$s" %2$s published',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 			$action  = 'created';
-		}
-		elseif ( $old == 'draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = __( '"%s" %s published', 'stream' );
-		}
-		elseif ( $old == 'publish' && ( in_array( $new, array( 'draft' ) ) ) ) {
-			$message = __( '"%s" %s unpublished', 'stream' );
-		}
-		elseif ( $new == 'trash' ) {
-			$message = __( '"%s" %s trashed', 'stream' );
+		} elseif ( $old == 'draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
+			$message = _x(
+				'"%1$s" %2$s published',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
+		} elseif ( $old == 'publish' && ( in_array( $new, array( 'draft' ) ) ) ) {
+			$message = _x(
+				'"%1$s" %2$s unpublished',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
+		} elseif ( $new == 'trash' ) {
+			$message = _x(
+				'"%1$s" %2$s trashed',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 			$action  = 'trashed';
-		}
-		else {
-			$message = __( '"%s" %s updated', 'stream' );
+		} else {
+			$message = _x(
+				'"%1$s" %2$s updated',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 		}
 
 		if ( empty( $action ) ) {
@@ -119,6 +139,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		}
 
 		$revision_id = null;
+
 		if ( wp_revisions_enabled( $post ) ) {
 			$revision = get_children(
 				array(
@@ -135,21 +156,19 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			}
 		}
 
-		$post_type = get_post_type_object( $post->post_type );
+		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
 
 		self::log(
 			$message,
 			array(
 				'post_title'    => $post->post_title,
-				'singular_name' => strtolower( $post_type->labels->singular_name ),
+				'singular_name' => $post_type_name,
 				'new_status'    => $new,
 				'old_status'    => $old,
 				'revision_id'   => $revision_id,
 			),
 			$post->ID,
-			array(
-				$post->post_type => $action,
-			)
+			array( $post->post_type => $action )
 		);
 	}
 
@@ -161,25 +180,38 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	public static function callback_deleted_post( $post_id ) {
 		$post = get_post( $post_id );
 
-		if ( in_array( $post->post_type, self::get_ignored_post_types() ) ) {
+		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing
+		if ( ! ( $post instanceof WP_Post ) || in_array( $post->post_type, self::get_ignored_post_types() )  ) {
 			return;
 		}
 
-		$post_type = get_post_type_object( $post->post_type );
+		// Ignore auto-drafts that are deleted by the system, see issue-293
+		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
 
 		self::log(
-			__( '"%s" %s deleted from trash', 'stream' ),
+			_x(
+				'"%1$s" %2$s deleted from trash',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			),
 			array(
 				'post_title'    => $post->post_title,
-				'singular_name' => strtolower( $post_type->labels->singular_name ),
+				'singular_name' => $post_type_name,
 			),
 			$post->ID,
-			array(
-				$post->post_type => 'deleted',
-			)
+			array( $post->post_type => 'deleted' )
 		);
 	}
 
+	/**
+	 * Constructs list of ignored post types for the post connector
+	 *
+	 * @return  array  List of ignored post types
+	 */
 	public static function get_ignored_post_types() {
 		return apply_filters(
 			'wp_stream_post_exclude_post_types',
@@ -189,6 +221,23 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'revision',
 			)
 		);
+	}
+
+	/**
+	 * Gets the singular post type label
+	 *
+	 * @param   string  $post_type_slug
+	 * @return  string  Post type label
+	 */
+	private static function get_post_type_name( $post_type_slug ) {
+		$name = __( 'Post', 'stream' ); // Default
+
+		if ( post_type_exists( $post_type_slug ) ) {
+			$post_type = get_post_type_object( $post_type_slug );
+			$name      = $post_type->labels->singular_name;
+		}
+
+		return $name;
 	}
 
 }

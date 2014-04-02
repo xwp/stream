@@ -83,11 +83,20 @@ class WordPress_Readme_Parser {
 	 */
 	function to_markdown( $params = array() ) {
 
+		$general_section_formatter = function ( $body ) use ( $params ) {
+			$body = preg_replace(
+				'#\[youtube\s+(?:http://www\.youtube\.com/watch\?v=|http://youtu\.be/)(.+?)\]#',
+				'[![Play video on YouTube](http://i1.ytimg.com/vi/$1/hqdefault.jpg)](http://www.youtube.com/watch?v=$1)',
+				$body
+			);
+			return $body;
+		};
+
 		// Parse sections
 		$section_formatters = array(
 			'Description' => function ( $body ) use ( $params ) {
 				if ( isset( $params['travis_ci_url'] ) ) {
-					$body .= sprintf( "\n\n[![Build Status](%s.png)](%s?branch=master)", $params['travis_ci_url'], $params['travis_ci_url'] );
+					$body .= sprintf( "\n\n[![Build Status](%s.png?branch=master)](%s)", $params['travis_ci_url'], $params['travis_ci_url'] );
 				}
 				return $body;
 			},
@@ -170,9 +179,12 @@ class WordPress_Readme_Parser {
 			$markdown .= "\n";
 
 			$body = $section['body'];
+
+			$body = call_user_func( $general_section_formatter, $body );
 			if ( isset( $section_formatters[$section['heading']] ) ) {
 				$body = trim( call_user_func( $section_formatters[$section['heading']], $body ) );
 			}
+
 			if ( $body ) {
 				$markdown .= sprintf( "%s\n", $body );
 			}
