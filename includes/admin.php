@@ -62,7 +62,7 @@ class WP_Stream_Admin {
 		add_action( 'wp_ajax_stream_activity_dashboard_update', array( __CLASS__, 'dashboard_stream_activity_update_contents' ) );
 
 		// Heartbeat live update
-		add_filter( 'heartbeat_received', array( __CLASS__, 'live_update' ), 10, 2 );
+		add_filter( 'heartbeat_received', array( __CLASS__, 'heartbeat_received' ), 10, 2 );
 
 		// Enable/Disable live update per user
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
@@ -150,8 +150,8 @@ class WP_Stream_Admin {
 		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 
 		if ( ! in_array( $hook, self::$screen_id ) && 'dashboard.php' !== $hook ) {
-			wp_enqueue_script( 'wp-stream-admin-dashboard', WP_STREAM_URL . 'ui/dashboard.js', array( 'jquery' ) );
 
+			wp_enqueue_script( 'wp-stream-admin-dashboard', WP_STREAM_URL . 'ui/dashboard.js', array( 'jquery', 'heartbeat' ) );
 			return;
 		}
 
@@ -569,53 +569,11 @@ class WP_Stream_Admin {
 
 		echo '<ul>';
 
-		foreach ( $records as $record ) :
+		foreach ( $records as $record ) {
 			$i++;
+			echo self::dashboard_widget_row( $record, $i ); //xss okay
+		}
 
-			$author = get_userdata( $record->author );
-
-			$records_link = add_query_arg(
-				array( 'page' => self::RECORDS_PAGE_SLUG ),
-				admin_url( self::ADMIN_PARENT_PAGE )
-			);
-
-			$author_link = add_query_arg(
-				array( 'author' => isset( $author->ID ) ? absint( $author->ID ) : 0 ),
-				$records_link
-			);
-
-			if ( $author ) {
-				$time_author = sprintf(
-					_x(
-						'%1$s ago by <a href="%2$s">%3$s</a>',
-						'1: Time, 2: User profile URL, 3: User display name',
-						'stream'
-					),
-					human_time_diff( strtotime( $record->created ) ),
-					esc_url( $author_link ),
-					esc_html( $author->display_name )
-				);
-			} else {
-				$time_author = sprintf(
-					__( '%s ago', 'stream' ),
-					human_time_diff( strtotime( $record->created ) )
-				);
-			}
-			?>
-			<li class="<?php if ( $i % 2 ) { echo 'alternate'; } ?>">
-				<?php if ( $author ) : ?>
-					<div class="record-avatar">
-						<a href="<?php echo esc_url( $author_link ) ?>">
-							<?php echo get_avatar( $author->ID, 36 ) ?>
-						</a>
-					</div>
-				<?php endif; ?>
-				<span class="record-meta"><?php echo $time_author // xss ok ?></span>
-				<br />
-				<?php echo esc_html( $record->summary ) ?>
-			</li>
-		<?php
-		endforeach;
 
 		echo '</ul>';
 
@@ -722,6 +680,7 @@ class WP_Stream_Admin {
 
 		if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
 			$options['records_per_page'] = absint( $_POST['dashboard_stream_activity_options']['records_per_page'] );
+			$options['live_update'] = isset( $_POST['dashboard_stream_activity_options']['live_update'] ) ? 'on' : 'off';;
 			update_option( 'dashboard_stream_activity_options', $options );
 		}
 
@@ -735,8 +694,40 @@ class WP_Stream_Admin {
 				<input type="number" step="1" min="1" max="999" class="screen-per-page" name="dashboard_stream_activity_options[records_per_page]" id="dashboard_stream_activity_options[records_per_page]" value="<?php echo absint( $options['records_per_page'] ) ?>">
 				<label for="dashboard_stream_activity_options[records_per_page]"><?php esc_html_e( 'Records per page', 'stream' ) ?></label>
 			</p>
+			<?php $value = isset( $options['live_update'] ) ? $options['live_update'] : 'on'; ?>
+			<p>
+				<input type="checkbox" name="dashboard_stream_activity_options[live_update]" id="dashboard_stream_activity_options[live_update]" value='on' <?php checked( $value, 'on' ) ?> />
+				<label for="dashboard_stream_activity_options[live_update]"><?php esc_html_e( 'Enable live updates', 'stream' ) ?></label>
+			</p>
 		</div>
 	<?php
+	}
+
+	/**
+	 * Handles live updates for both dashboard widget and Stream Post List
+	 *
+	 * @action heartbeat_recieved
+	 * @param  array  Response to be sent to heartbeat tick
+	 * @param  array  Data from heartbeat send
+	 * @return array  Data sent to heartbeat tick
+	 */
+	public static function heartbeat_received( $response, $data ) {
+
+		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
+		$option                  = get_option( 'dashboard_stream_activity_options' );
+		$enable_dashboard_update = ( 'off' !== ( $option['live_update'] ) );
+		$response['per_page']    = isset( $option['records_per_page'] ) ? absint( $option['records_per_page'] ) : 5;
+
+		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_stream_update ) {
+			$response['wp-stream-heartbeat'] = self::live_update( $response, $data );
+		} elseif ( isset( $data['wp-stream-heartbeat'] ) && 'dashboard-update' === $data['wp-stream-heartbeat'] && $enable_dashboard_update ) {
+			$response['wp-stream-heartbeat'] = self::live_update_dashboard( $response, $data );
+		} else {
+			$response['log'] = 'fail';
+		}
+
+		return $response;
+
 	}
 
 
@@ -755,37 +746,63 @@ class WP_Stream_Admin {
 	 */
 	public static function live_update( $response, $data ) {
 
-		$enable_update = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
+		// Register list table
+		require_once WP_STREAM_INC_DIR . 'list-table.php';
+		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
 
-		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_update ) {
-			// Register list table
-			require_once WP_STREAM_INC_DIR . 'list-table.php';
-			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
-
-			$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
-			$query   = $data['wp-stream-heartbeat-query'];
-			if ( empty( $query ) ) {
-				$query = array();
-			}
-
-			// Decode the query
-			$query = json_decode( wp_kses_stripslashes( $query ) );
-
-			$updated_items = self::gather_updated_items( $last_id, $query );
-
-			if ( ! empty( $updated_items ) ) {
-				ob_start();
-				foreach ( $updated_items as $item ) {
-					self::$list_table->single_row( $item );
-				}
-
-				$response['wp-stream-heartbeat'] = ob_get_clean();
-			}
-		} else {
-			$response['log'] = 'udpates disabled';
+		$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
+		$query   = $data['wp-stream-heartbeat-query'];
+		if ( empty( $query ) ) {
+			$query = array();
 		}
 
-		return $response;
+		// Decode the query
+		$query = json_decode( wp_kses_stripslashes( $query ) );
+
+		$updated_items = self::gather_updated_items( $last_id, $query );
+
+		if ( ! empty( $updated_items ) ) {
+			ob_start();
+			foreach ( $updated_items as $item ) {
+				self::$list_table->single_row( $item );
+			}
+
+			$send = ob_get_clean();
+		} else {
+			$send = '';
+		}
+
+		return $send;
+	}
+
+
+	/**
+	 * Handles Live Updates for Stream Activity Dashboard Widget.
+	 *
+	 * @uses gather_updated_items
+	 *
+	 * @param  array  Response to heartbeat
+	 * @param  array  Response from heartbeat
+	 * @return array  Data sent to heartbeat
+	 */
+	public static function live_update_dashboard( $response, $data ) {
+
+		$send = array();
+
+		$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
+
+		$updated_items = self::gather_updated_items( $last_id );
+
+		if ( ! empty( $updated_items ) ) {
+			ob_start();
+			foreach ( $updated_items as $item ) {
+				echo self::dashboard_widget_row( $item ); //xss okay
+			}
+
+			$send = ob_get_clean();
+		}
+
+		return $send;
 	}
 
 
@@ -797,13 +814,9 @@ class WP_Stream_Admin {
 	 *
 	 * @return array  Array of recently updated items
 	 */
-	public static function gather_updated_items( $last_id, $query = null ) {
+	public static function gather_updated_items( $last_id, $query = array() ) {
 		if ( false === $last_id ) {
 			return '';
-		}
-
-		if ( is_null( $query ) ) {
-			$query = array();
 		}
 
 		$default = array(
@@ -817,6 +830,67 @@ class WP_Stream_Admin {
 		$items = stream_query( $query );
 
 		return $items;
+	}
+
+
+	/**
+	 * Renders rows for Stream Activity Dashboard Widget
+	 *
+	 * @param  obj     Record to be inserted
+	 * @param  int     Row number
+	 * @return string  Contents of new row
+	 */
+	public static function dashboard_widget_row( $item, $i = null ) {
+		$records_link = add_query_arg(
+			array( 'page' => self::RECORDS_PAGE_SLUG ),
+			admin_url( self::ADMIN_PARENT_PAGE )
+		);
+
+		$author = get_userdata( $item->author );
+		$author_link = add_query_arg(
+			array( 'author' => isset( $author->ID ) ? absint( $author->ID ) : 0 ),
+			$records_link
+		);
+
+		if ( $author ) {
+			$time_author = sprintf(
+				_x(
+					'%1$s ago by <a href="%2$s">%3$s</a>',
+					'1: Time, 2: User profile URL, 3: User display name',
+					'stream'
+				),
+				human_time_diff( strtotime( $item->created ) ),
+				esc_url( $author_link ),
+				esc_html( $author->display_name )
+			);
+		} else {
+			$time_author = sprintf(
+				__( '%s ago', 'stream' ),
+				human_time_diff( strtotime( $item->created ) )
+			);
+		}
+		$class = '';
+		if ( isset( $i ) ) {
+			if ( $i % 2 ) {
+				$class = 'class="alternate"';
+			}
+		}
+		ob_start()
+		?>
+		<li <?php echo esc_html( $class ) ?> data-id="<?php echo esc_html( $item->ID ) ?>">
+			<?php if ( $author ) : ?>
+				<div class="record-avatar">
+					<a href="<?php echo esc_url( $author_link ) ?>">
+						<?php echo get_avatar( $author->ID, 36 ) ?>
+					</a>
+				</div>
+			<?php endif; ?>
+			<span class="record-meta"><?php echo $time_author // xss ok ?></span>
+			<br />
+			<?php echo esc_html( $item->summary ) ?>
+		</li>
+		<?php
+		return ob_get_clean();
 	}
 
 	/**

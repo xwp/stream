@@ -153,6 +153,7 @@ class WP_Stream {
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
 		WP_Stream_Install::check();
+
 	}
 
 	/**
