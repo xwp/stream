@@ -450,7 +450,7 @@ jQuery(function($){
 		toggle_filter_submit();
 
 		//Enable Filter Toggle Checkbox Ajax
-		$( 'div.stream-toggle-filters input[type=checkbox]' ).click( function( e ) {
+		$( 'div.stream-toggle-filters input[type=checkbox]' ).click( function() {
 
 			// Disable other checkboxes for duration of request to avoid "clickjacking"
 			var siblings = $(this).closest('div').find('input:checkbox');
