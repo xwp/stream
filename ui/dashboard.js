@@ -39,6 +39,10 @@ jQuery(function($){
 				return;
 			}
 
+			if( ! $( '#dashboard_stream_activity a.prev-page' ).hasClass( 'disabled' ) ) {
+				return;
+			}
+
 			// Get all new rows
 			var $new_items = $(data['wp-stream-heartbeat']);
 
@@ -59,6 +63,8 @@ jQuery(function($){
 
 			// Add element to the dom
 			$(listSel).prepend( $new_items );
+
+			$( listSel + ' li:last-child').hide();
 
 			// Remove background after a certain amount of time
 			setTimeout( function() {
