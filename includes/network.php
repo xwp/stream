@@ -16,7 +16,6 @@ class WP_Stream_Network {
 
 	function actions() {
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
-		add_action( 'wpmuadminedit', array( $this, 'default_options_action' ) );
 	}
 
 	function filters() {
@@ -111,7 +110,7 @@ class WP_Stream_Network {
 	 * Wrapper for the settings API to work on the network settings page
 	 */
 	function network_options_action() {
-		if ( ! isset( $_GET['action'] ) || 'wp_stream' !== $_GET['action'] ) {
+		if ( ! isset( $_GET['action'] ) || ( 'wp_stream_network_settings' !== $_GET['action'] && 'wp_stream_default_settings' !== $_GET['action'] ) ) {
 			return;
 		}
 
@@ -144,54 +143,7 @@ class WP_Stream_Network {
 		}
 
 		if ( ! count( get_settings_errors() ) ) {
-			add_settings_error( 'general', 'settings_updated', __( 'Network Settings saved.', 'stream' ), 'updated' );
-		}
-
-		set_transient( 'settings_errors', get_settings_errors(), 30 );
-
-		$go_back = add_query_arg( 'settings-updated', 'true', wp_get_referer() );
-		wp_redirect( $go_back );
-		exit;
-	}
-
-	/**
-	 * Wrapper for the settings API to work on the default settings page
-	 */
-	function default_options_action() {
-		if ( ! isset( $_GET['action'] ) || 'wp_stream_defaults' !== $_GET['action'] ) {
-			return;
-		}
-
-		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null;
-
-		if ( $options ) {
-
-			foreach ( $options as $option ) {
-				$option = trim( $option );
-				$value  = null;
-
-				$sections = WP_Stream_Settings::get_fields();
-				foreach ( $sections as $section_name => $section ) {
-					foreach ( $section['fields'] as $field_idx => $field ) {
-						$option_key = $section_name . '_' . $field['name'];
-						if ( isset( $_POST[ $option ][ $option_key ] ) ) {
-							$value[ $option_key ] = $_POST[ $option ][ $option_key ];
-						} else {
-							$value[ $option_key ] = false;
-						}
-					}
-				}
-
-				if ( ! is_array( $value ) ) {
-					$value = trim( $value );
-				}
-
-				update_site_option( $option, $value );
-			}
-		}
-
-		if ( ! count( get_settings_errors() ) ) {
-			add_settings_error( 'general', 'settings_updated', __( 'Default Settings saved.', 'stream' ), 'updated' );
+			add_settings_error( 'general', 'settings_updated', __( 'Settings saved.', 'stream' ), 'updated' );
 		}
 
 		set_transient( 'settings_errors', get_settings_errors(), 30 );

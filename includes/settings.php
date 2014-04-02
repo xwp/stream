@@ -382,6 +382,9 @@ class WP_Stream_Settings {
 	 */
 	public static function get_option_key() {
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		if ( ! $current_page ) {
+			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
+		}
 		if ( 'wp_stream_default_settings' === $current_page ) {
 			$option_key = WP_Stream_Settings::DEFAULTS_KEY;
 		} else {
