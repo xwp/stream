@@ -98,7 +98,7 @@ class WP_Stream_Network {
 	 * Wrapper for the settings API to work on the network settings page
 	 */
 	function network_options_action() {
-		if ( ! isset( $_GET['action'] ) || ( 'wp_stream_network_settings' !== $_GET['action'] && 'wp_stream_default_settings' !== $_GET['action'] ) ) {
+		if ( ! isset( $_GET['action'] ) || ( 'wp_stream_settings' !== $_GET['action'] && 'wp_stream_default_settings' !== $_GET['action'] ) ) {
 			return;
 		}
 

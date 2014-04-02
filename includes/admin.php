@@ -146,12 +146,12 @@ class WP_Stream_Admin {
 		);
 
 		if ( is_network_admin() ) {
-			self::$screen_id['network_settings'] = add_submenu_page(
+			self::$screen_id['settings'] = add_submenu_page(
 				self::RECORDS_PAGE_SLUG,
 				__( 'Stream Network Settings', 'stream' ),
 				__( 'Network Settings', 'stream' ),
 				self::SETTINGS_CAP,
-				'wp_stream_network_settings',
+				'wp_stream_settings',
 				array( __CLASS__, 'render_page' )
 			);
 			if ( ! self::$disable_access ) {
@@ -422,7 +422,7 @@ class WP_Stream_Admin {
 						'page'    => 'wp_stream_settings',
 						'message' => 'data_erased',
 					),
-					is_network_admin() ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
+					is_plugin_active_for_network( WP_STREAM_PLUGIN ) ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
 				)
 			);
 			exit;
