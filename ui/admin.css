@@ -1,5 +1,9 @@
 /* Dashboard Widget */
 
+#dashboard_stream_activity:hover .edit-box {
+	display: inline;
+}
+
 #dashboard_stream_activity.postbox h3 {
 	border-bottom: 0;
 }
