@@ -711,18 +711,26 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 */
 	function get_column_excluded_setting_key( $column ) {
 		switch ( $column ) {
-			case 'connector' :
-				return 'connectors';
-			case 'context' :
-				return 'contexts';
-			case 'action' :
-				return 'action';
+			case 'connector':
+				$output = 'connectors';
+				break;
+			case 'context':
+				$output = 'contexts';
+				break;
+			case 'action':
+				$output = 'action';
+				break;
 			case 'ip':
-				return 'ip_addresses';
+				$output = 'ip_addresses';
+				break;
 			case 'author':
-				return 'authors_and_roles';
+				$output = 'authors_and_roles';
+				break;
 			default:
-				return false;
+				$output = false;
 		}
+
+		return $output;
 	}
+
 }
