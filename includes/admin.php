@@ -670,7 +670,7 @@ class WP_Stream_Admin {
 
 		if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
 			$options['records_per_page'] = absint( $_POST['dashboard_stream_activity_options']['records_per_page'] );
-			$options['live_update'] = isset( $_POST['dashboard_stream_activity_options']['live_update'] ) ? '1' : '';;
+			$options['live_update'] = isset( $_POST['dashboard_stream_activity_options']['live_update'] ) ? 'on' : 'off';;
 			update_option( 'dashboard_stream_activity_options', $options );
 		}
 
@@ -684,9 +684,9 @@ class WP_Stream_Admin {
 				<input type="number" step="1" min="1" max="999" class="screen-per-page" name="dashboard_stream_activity_options[records_per_page]" id="dashboard_stream_activity_options[records_per_page]" value="<?php echo absint( $options['records_per_page'] ) ?>">
 				<label for="dashboard_stream_activity_options[records_per_page]"><?php esc_html_e( 'Records per page', 'stream' ) ?></label>
 			</p>
-			<?php $value = ! empty( $options['live_update'] ) ? '1' : ''; ?>
+			<?php $value = isset( $options['live_update'] ) ? $options['live_update'] : 'on'; ?>
 			<p>
-				<input type="checkbox" name="dashboard_stream_activity_options[live_update]" id="dashboard_stream_activity_options[live_update]" value='1' <?php checked( $value, '1' ) ?> />
+				<input type="checkbox" name="dashboard_stream_activity_options[live_update]" id="dashboard_stream_activity_options[live_update]" value='on' <?php checked( $value, 'on' ) ?> />
 				<label for="dashboard_stream_activity_options[live_update]"><?php esc_html_e( 'Enable live updates', 'stream' ) ?></label>
 			</p>
 		</div>
@@ -705,7 +705,7 @@ class WP_Stream_Admin {
 
 		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
 		$option                  = get_option( 'dashboard_stream_activity_options' );
-		$enable_dashboard_update = ( ! empty( $option['live_update'] ) );
+		$enable_dashboard_update = ( 'off' !== ( $option['live_update'] ) );
 		$response['per_page']    = isset( $option['records_per_page'] ) ? absint( $option['records_per_page'] ) : 5;
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_stream_update ) {
