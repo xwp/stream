@@ -35,7 +35,7 @@ jQuery(function($){
 		$(document).on( 'heartbeat-tick.stream', function( e, data ) {
 
 			// If this no rows return then we kill the script
-			if ( ! data['wp-stream-heartbeat'] || data['wp-stream-heartbeat'].length == 0 ) {
+			if ( ! data['wp-stream-heartbeat'] || data['wp-stream-heartbeat'].length === 0 ) {
 				return;
 			}
 
@@ -48,14 +48,14 @@ jQuery(function($){
 			var $new_items = $(data['wp-stream-heartbeat']);
 
 			var itemArray = [];
-			var newHTML = $( $new_items ).each( function() {
+			$( $new_items ).each( function() {
 				if ( typeof( $(this).html() ) === 'string' ) {
 					itemArray.push( '<li class="new-row">' + $(this).html() + '</li>' );
 				}
 			});
 
 			//Use records per page here
-			var addedItems = itemArray.slice( 0, data['per_page'] );
+			var addedItems = itemArray.slice( 0, data.per_page );
 
 			// Add element to the dom
 			$(listSel).prepend( addedItems );

@@ -335,7 +335,7 @@ jQuery(function($){
 		$(document).on( 'heartbeat-tick.stream', function( e, data ) {
 
 			// If this no rows return then we kill the script
-			if ( ! data['wp-stream-heartbeat'] || data['wp-stream-heartbeat'].length == 0  ) {
+			if ( ! data['wp-stream-heartbeat'] || data['wp-stream-heartbeat'].length === 0  ) {
 				return;
 			}
 
