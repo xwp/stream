@@ -379,7 +379,7 @@ jQuery(function($){
 				setTimeout( function() {
 					$( list_sel + ' tr').removeClass('new-row fadeout');
 				}, 500);
-			}, 3000);
+			}, 100000);
 
 		});
 

@@ -49,18 +49,6 @@ jQuery(function($){
 			// Remove all class to tr added by WP and add new row class
 			$new_items.removeClass().addClass('new-row');
 
-			//Check if first tr has the alternate class
-			var has_class =  ( $( listSel + ' li:first').hasClass('alternate') );
-
-			// Apply the good class to the list
-			if ( $new_items.length === 1 && !has_class ) {
-				$new_items.addClass('alternate');
-			} else {
-				var even_or_odd = ( $new_items.length%2 === 0 && !has_class ) ? 'even':'odd';
-				// Add class to nth child because there is more than one element
-				$new_items.filter(':nth-child('+even_or_odd+')').addClass('alternate');
-			}
-
 			// Add element to the dom
 			$(listSel).prepend( $new_items );
 

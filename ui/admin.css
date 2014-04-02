@@ -205,7 +205,8 @@
 	margin-top: 5px;
 }
 
-.toplevel_page_wp_stream .new-row {
+.toplevel_page_wp_stream .new-row,
+#dashboard_stream_activity .new-row {
 	background-color: #ffffe0;
 
 	-webkit-transition: background 0.5s linear;
@@ -215,7 +216,8 @@
 	        transition: background 0.5s linear;
 }
 
-.toplevel_page_wp_stream .new-row.fadeout {
+.toplevel_page_wp_stream .new-row.fadeout,
+#dashboard_stream_activity .new-row.fadeout {
 	background-color: transparent;
 }
 
