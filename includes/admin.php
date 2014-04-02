@@ -41,7 +41,7 @@ class WP_Stream_Admin {
 				(array) get_site_option( WP_Stream_Settings::KEY, array() ),
 				WP_Stream_Settings::get_defaults()
 			);
-			if ( isset( $settings['general_disable_site_access'] ) && true == $settings['general_disable_site_access'] ) {
+			if ( isset( $settings['general_enable_site_access'] ) && false == $settings['general_enable_site_access'] ) {
 				self::$disable_access = true;
 			}
 		}
@@ -145,14 +145,25 @@ class WP_Stream_Admin {
 			'2.999999' // Using longtail decimal string to reduce the chance of position conflicts, see Codex
 		);
 
-		self::$screen_id['settings'] = add_submenu_page(
-			self::RECORDS_PAGE_SLUG,
-			__( 'Stream Settings', 'stream' ),
-			__( 'Settings', 'stream' ),
-			self::SETTINGS_CAP,
-			'wp_stream_settings',
-			array( __CLASS__, 'render_page' )
-		);
+		if ( is_network_admin() ) {
+			self::$screen_id['settings'] = add_submenu_page(
+				self::RECORDS_PAGE_SLUG,
+				__( 'Stream Network Settings', 'stream' ),
+				__( 'Network Settings', 'stream' ),
+				self::SETTINGS_CAP,
+				'wp_stream_settings',
+				array( __CLASS__, 'render_page' )
+			);
+		} else {
+			self::$screen_id['settings'] = add_submenu_page(
+				self::RECORDS_PAGE_SLUG,
+				__( 'Stream Settings', 'stream' ),
+				__( 'Settings', 'stream' ),
+				self::SETTINGS_CAP,
+				'wp_stream_settings',
+				array( __CLASS__, 'render_page' )
+			);
+		}
 
 		// Register the list table early, so it associates the column headers with 'Screen settings'
 		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
@@ -332,7 +343,7 @@ class WP_Stream_Admin {
 		?>
 		<div class="wrap">
 
-			<h2><?php _e( 'Stream Settings', 'stream' ) ?></h2>
+			<h2><?php echo is_network_admin() ? __( 'Stream Network Settings', 'stream' ) : __( 'Stream Settings', 'stream' ); ?></h2>
 			<?php settings_errors() ?>
 
 			<?php
@@ -352,10 +363,6 @@ class WP_Stream_Admin {
 			</h2>
 
 			<div class="nav-tab-content" id="tab-content-settings">
-
-				<?php if ( is_network_admin() ) : ?>
-					<h4><?php esc_html_e( 'The following settings will be saved as the default settings used for each network blog', 'stream' ) ?></h4>
-				<?php endif; ?>
 
 				<form method="post" action="<?php echo esc_attr( $form_action ) ?>" enctype="multipart/form-data">
 		<?php

@@ -35,17 +35,49 @@ class WP_Stream_Network {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		}
 
+		if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			return $fields;
+		}
+
+		$network_only_options = apply_filters( 'wp_stream_network_only_option_fields', array(
+			'general' => array(
+				'delete_all_records',
+				'records_ttl',
+			),
+		) );
+
+		$site_only_options = apply_filters( 'wp_stream_site_only_option_fields', array(
+			'general' => array(
+				'role_access',
+				'private_feeds',
+			),
+		) );
+
+		$hidden_options = is_network_admin() ? $site_only_options : $network_only_options;
+
+		foreach ( $fields as $section_key => $section ) {
+			foreach ( $section['fields'] as $key => $field ) {
+				if ( ! isset( $hidden_options[ $section_key ] ) ) {
+					continue;
+				}
+				if ( in_array( $field['name'], $hidden_options[ $section_key ] ) ) {
+					unset( $fields[ $section_key ]['fields'][ $key ] );
+				}
+			}
+		}
+
 		if ( is_network_admin() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 			$new_fields['general']['fields'][] = array(
-				'name'        => 'disable_site_access',
-				'title'       => __( 'Disable Site Access', 'stream' ),
+				'name'        => 'enable_site_access',
+				'title'       => __( 'Enable Site Access', 'stream' ),
 				'after_field' => __( 'Enabled' ),
-				'default'     => 0,
+				'default'     => 1,
 				'desc'        => __( 'When site access is disabled Stream can only be accessed from the network administration.', 'stream' ),
 				'type'        => 'checkbox',
 			);
+			$new_fields['exclude']['desc'] = __( 'These settings will apply to the Network Stream.', 'stream' );
 
-			return array_merge_recursive( $new_fields, $fields );
+			$fields = array_merge_recursive( $new_fields, $fields );
 		}
 
 		return $fields;
