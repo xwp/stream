@@ -255,7 +255,7 @@
 						'text': streamReportsLocal.clear,
 						'click': function() {
 							$inputBox.val('');
-							$inputBox.trigger( 'keydown' );
+							$inputBox.trigger( 'keyup' );
 						}
 
 					} ) );
@@ -282,6 +282,7 @@
 					    	'placeholder': generatedTitle,
 					} );
 					$titleText.replaceWith( $inputBox );
+					$inputBox.trigger('keyup');
 
 					// Click function management
 					parent.$clickFunction = $._data($curPostbox.find('h3').get(0)).events.click[0].handler;
