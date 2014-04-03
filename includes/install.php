@@ -27,6 +27,13 @@ class WP_Stream_Install {
 	public static $current;
 
 	/**
+	 * URL to the Stream Admin settings page.
+	 * @access public
+	 * @var string
+	 */
+	public static $stream_url;
+
+	/**
 	 * Initialized object of class
 	 *
 	 * @access private
@@ -52,10 +59,12 @@ class WP_Stream_Install {
 	 * Sets static class properties
 	 */
 	function __construct() {
+
 		global $wpdb;
 		self::$current = WP_Stream::VERSION;
 
 		self::$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+		self::$stream_url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE . '&page=' . WP_Stream_Admin::SETTINGS_PAGE_SLUG );
 
 		/**
 		 * Allows devs to alter the tables prefix, default to base_prefix
@@ -79,10 +88,10 @@ class WP_Stream_Install {
 	 */
 	private static function check() {
 		if ( empty( self::$db_version ) ) {
-			self::install();
+			$current = self::install( self::$current );
 
 		} elseif ( self::$db_version !== self::$current ) {
-			add_action( 'pre_current_active_plugins', array( __CLASS__, 'prompt_update' ) );
+			add_action( 'admin_notices', array( __CLASS__, 'update_notice_hook' ) );
 		}
 	}
 
@@ -93,12 +102,9 @@ class WP_Stream_Install {
 	 * When database update is complete page will refresh with dismissible message to user
 	 */
 	public static function prompt_update() {
-		$referrer = wp_get_referer();
-		$location = WP_STREAM_UPDATE_URL;
 			?>
 			<div class="updated">
-				<form method="post" action="<?php echo esc_url( self_admin_url( $referrer ) ) ?>">
-				<?php wp_nonce_field( 'update_required', 'wp_stream_update', wp_get_referer(), true ) ?>
+				<form method="post" action="<?php echo esc_url( add_query_arg( 'wp_stream_update', 'update_required', wp_get_referer() ) ) ?>">
 					<input type="hidden" name="update_action" value="wp_stream_update"/>
 					<p><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></p>
 					<p><?php esc_html_e( 'Before we send you on your way we have to update your database to the newest version', 'stream' ) ?></p>
@@ -109,11 +115,44 @@ class WP_Stream_Install {
 		<?php
 	}
 
+	public static function prompt_update_status() {
+		$success_db = self::update( self::$db_version, self::$current );
+
+		if ( $success_db && self::$current === $success_db ) {
+			$success_op = update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $success_db );
+		}
+
+		if ( empty( $success_db ) || empty( $success_op ) ) {
+			wp_die( __( 'There was an error updating the database. Please try again', 'stream' ), 'Database Update Error', array( 'response' => 200, 'back_link' => true ) );
+		}
+		?>
+		<div class="updated">
+			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ), wp_get_referer() ); ?>" style="display:inline;">
+				<p><?php esc_html_e( 'Update complete', 'stream' ) ?></p>
+				<p><?php esc_html_e( sprintf( 'Your stream database has been successfully updated from %s to %s', self::$db_version, self::$current ),  'stream' ) ?></p>
+				<?php submit_button( __( 'Continue' ), 'button', 'submit', false ); ?>
+			</form>
+		</div>
+		<?php
+	}
+
+	public static function update_notice_hook() {
+		if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
+			self::prompt_update();
+
+		} elseif ( 'user_action_required' === $_REQUEST['wp_stream_update' ] ) {
+			self::prompt_update_status();
+
+		} elseif ( 'update_required' === $_REQUEST['wp_stream_update'] ) {
+				self::prompt_update();
+		}
+	}
+
 	/**
 	 * Initial database install routine
 	 * @uses dbDelta()
 	 */
-	public static function install() {
+	public static function install( $current ) {
 		global $wpdb;
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -196,6 +235,8 @@ class WP_Stream_Install {
 		$sql .= ';';
 
 		dbDelta( $sql );
+
+		return $current;
 	}
 
 	/**
@@ -203,9 +244,9 @@ class WP_Stream_Install {
 	 *
 	 * @param int $db_version last updated version of database stored in plugin options
 	 * @param int $current Current running plugin version
+	 * @return int new database version to store
 	 */
 	public static function update( $db_version, $current ) {
-		error_log( 'UPDATE - - ' . $db_version .' CALLED AT ' . date( 'Y:m:d h:i' ) );
 		global $wpdb;
 		$prefix = self::$table_prefix;
 
@@ -281,22 +322,21 @@ class WP_Stream_Install {
 					);
 				}
 			}
-			error_log( 'VERSION UPDATE FROM ' . $db_version . ' COMPLETE' );
 		}
 
-//		// If version is lower than 1.3.0, do the update routine for site options
-//		// Backward settings compatibility for old version plugins
-//		if ( version_compare( $db_version, '1.3.0', '<' ) ) {
-//			add_action( 'wp_stream_after_connectors_registration', array( __CLASS__, 'migrate_old_options_to_exclude_tab' ) );
-//		}
-//
-//		// If version is lower than 1.3.1, do the update routine
-//		// Update records of Installer to Theme Editor connector
-//		if ( version_compare( $db_version, '1.3.1', '<' ) ) {
-//			add_action( 'wp_stream_after_connectors_registration', array( __CLASS__, 'migrate_installer_edits_to_theme_editor_connector' ) );
-//		}
+		// If version is lower than 1.3.0, do the update routine for site options
+		// Backward settings compatibility for old version plugins
+		if ( version_compare( $db_version, '1.3.0', '<' ) ) {
+			add_action( 'wp_stream_after_connectors_registration', array( __CLASS__, 'migrate_old_options_to_exclude_tab' ) );
+		}
 
-		return $db_version;
+		// If version is lower than 1.3.1, do the update routine
+		// Update records of Installer to Theme Editor connector
+		if ( version_compare( $db_version, '1.3.1', '<' ) ) {
+			add_action( 'wp_stream_after_connectors_registration', array( __CLASS__, 'migrate_installer_edits_to_theme_editor_connector' ) );
+		}
+
+		return $current;
 	}
 
 	/**
@@ -387,74 +427,3 @@ class WP_Stream_Install {
 		}
 	}
 }
-
-if ( ! isset( $_REQUEST['wp_stream_update'] ) )
-	return;
-
-/**
- * WP Stream Update Database Administration Bootstrap
- */
-require_once( ABSPATH . 'wp-admin/admin.php' );
-
-if ( !current_user_can( 'activate_plugins' ) ) {
-	wp_die( __( 'You do not have sufficient permissions to manage plugins for this site.' ) );
-}
-
-// Clean up request URI from temporary args for screen options / paging uri's to work as expected.
-$_SERVER['REQUEST_URI'] = remove_query_arg(
-	array(
-		'error', 'deleted', 'activate',
-		'activate - multi', 'deactivate',
-		'deactivate - multi', '_error_nonce',
-	),
-	$_SERVER['REQUEST_URI']
-);
-
-require_once( ABSPATH . 'wp-admin/admin-header.php' );
-
-$wp_stream_update = WP_Stream_Install::get_instance();
-$referrer = wp_get_referer();
-?>
-<div class="wrap">
-	<h2><?php _e( 'Stream Settings', 'stream' ) ?></h2>
-	<?php
-	if ( isset( $_REQUEST['wp_stream_update'] ) && 'update_required' === $_REQUEST['wp_stream_update'] ) {
-			$success_db = $wp_stream_update::update( $wp_stream_update::$db_version, $wp_stream_update::$current );
-			$success_op = update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $wp_stream_update::$current );
-			if ( ! $success_op || ! $success_db ) {
-				$url = admin_url( 'plugins.php' );
-				$go_back = "</p><p><a href='" . esc_url( remove_query_arg( 'wp_stream_update', $url ) ) . "'>" . __( 'There was an error updating the database.  Please try again' ) . "</a>";
-				wp_die( $go_back );
-			}
-		?>
-		<div class="updated">
-				<form method="post" action="<?php echo esc_url( self_admin_url( '/admin.php?page=wp_stream_settings' ) ) ?>">
-					<?php wp_nonce_field( 'dismiss_notice', 'wp_stream_update' ) ?>
-					<p><?php esc_html_e( 'Update complete', 'stream' ) ?></p>
-					<p><?php esc_html_e( 'Your stream database has been successfully updated', 'stream' ) ?></p>
-					<p><?php submit_button( __( 'Continue', 'stream' ), 'minor' ) ?></p>
-				</form>
-			</div>
-	<?php
-	} elseif ( isset( $_REQUEST['wp_stream_update'] ) && 'dismiss_notice' == $_REQUEST['wp_stream_update'] ) {
-		if ( false !== strpos( $referrer, $location ) ) {
-			$location = $referrer;
-		}
-
-		$location = remove_query_arg( 'update_action', self_admin_url( $location ) );
-
-		wp_redirect( self_admin_url( $location ) );
-		exit;
-	} elseif ( isset( $_REQUEST['wp_stream_update'] ) && 'wp_stream_update' == $_REQUEST['update_action'] ) {
-		if ( false !== strpos( $referrer, $location ) ) {
-			$location = $referrer;
-		}
-
-		wp_redirect( self_admin_url( remove_query_arg( 'wp_stream_update', $location ) ) );
-		exit;
-	}
-	?>
-		</div>
-	<?php
-
-include( ABSPATH . 'wp-admin/admin-footer.php' );
