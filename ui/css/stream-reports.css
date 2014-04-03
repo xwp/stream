@@ -40,6 +40,10 @@
 	margin: 10px 10px 3px;
 }
 
+.stream_page_wp_stream_reports .postbox:hover .edit-box {
+	display: inline;
+}
+
 .stream_page_wp_stream_reports .postbox > .inside {
 	margin: 0;
 }
