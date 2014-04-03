@@ -82,6 +82,7 @@ class WP_Stream_Install {
 			self::install();
 
 		} elseif ( self::$db_version !== self::$current ) {
+			error_log( 'Adding update button action' );
 			add_action( 'pre_current_active_plugins', array( __CLASS__, 'prompt_update' ) );
 		}
 	}
@@ -96,20 +97,10 @@ class WP_Stream_Install {
 		$referrer = wp_get_referer();
 		$location = 'plugins.php';
 
-			?>
-			<form method="post" action="">
-				<?php wp_nonce_field( 'wp_stream_update' ) ?>
-				<input type="hidden" name="action" value="wp_stream_update"/>
-					<div class="updated">
-						<p><?php esc_html_e( __( 'Stream Database Update Required', 'stream' ) ) ?></p>
-						<p><?php esc_html_e( __( 'Before we send you on your way we have to update your database to the newest version', 'stream' ) ) ?></p>
-						<p><?php esc_html_e( __( 'The update process may take a few minutes so please be patient', 'stream' ) ) ?></p>
-						<p><?php esc_html_e( __( 'Update Database', 'stream' ) ) ?></p>
-					</div>
-			</form>
-		<?php
+		error_log( $referrer );
 
 		if ( isset( $_REQUEST['wp_stream_update_confirmed'] ) && 'wp_stream_update_confirmed' == $_REQUEST['wp_stream_update_confirmed'] ) {
+			error_log( $_REQUEST['wp_stream_update_confirmed'] );
 			?>
 			<form method="post" action="">
 				<input type="hidden" name="action" value="dismiss_notice"/>
@@ -122,6 +113,8 @@ class WP_Stream_Install {
 			<?php
 
 		} elseif ( isset( $_REQUEST['action'] ) && 'dismiss_notice' == $_REQUEST['action'] ) {
+			error_log( $_REQUEST['action'] );
+			error_log( $referrer );
 
 			if ( $referrer  ) {
 				update_option( plugin_basename( WP_STREAM_DIR ) . '_db', self::$current );
@@ -133,6 +126,7 @@ class WP_Stream_Install {
 				exit;
 			}
 		} elseif ( isset( $_REQUEST['action'] ) && 'wp_stream_update' == $_REQUEST['action'] ) {
+			error_log( $_REQUEST['action'] );
 			self::update( self::$db_version, self::$current );
 			if ( false !== strpos( $referrer, $location ) )
 				$location = $referrer;
@@ -141,6 +135,19 @@ class WP_Stream_Install {
 			$location = add_query_arg( array( 'wp_stream_update_confirmed' => 'wp_stream_update_confirmed' ), $location );
 			wp_redirect( admin_url( $location ) );
 			exit;
+		} else {
+			?>
+			<form method="post" action="">
+				<?php wp_nonce_field( 'wp_stream_update' ) ?>
+				<input type="hidden" name="action" value="wp_stream_update"/>
+					<div class="updated">
+						<p><?php esc_html_e( __( 'Stream Database Update Required', 'stream' ) ) ?></p>
+						<p><?php esc_html_e( __( 'Before we send you on your way we have to update your database to the newest version', 'stream' ) ) ?></p>
+						<p><?php esc_html_e( __( 'The update process may take a few minutes so please be patient', 'stream' ) ) ?></p>
+						<p><?php esc_html_e( __( 'Update Database', 'stream' ) ) ?></p>
+					</div>
+			</form>
+		<?php
 		}
 	}
 
@@ -289,6 +296,7 @@ class WP_Stream_Install {
 		// If version is lower than 1.2.8, do the update routine
 		// Change the context for Media connectors to the attachment type
 		if ( version_compare( $db_version, '1.2.8', '<' ) ) {
+			error_log( 'UPDATING. '.$db_version );
 			$sql = "SELECT r.ID id, r.object_id pid, c.meta_id mid
 				FROM $wpdb->stream r
 				JOIN $wpdb->streamcontext c
