@@ -82,7 +82,22 @@
 
 /* Stream Records */
 
+.toplevel_page_wp_stream h2 {
+	margin-bottom: 10px;
+}
+
+.toplevel_page_wp_stream #record-search-input {
+	width: 160px;
+}
+
 .toplevel_page_wp_stream .tablenav {
+	float: right;
+	clear: right;
+}
+
+.toplevel_page_wp_stream .tablenav.bottom {
+	float: none;
+	clear: both;
 	padding-top: 6px;
 }
 
@@ -90,9 +105,8 @@
 	margin-right: 6px;
 }
 
-.toplevel_page_wp_stream .tablenav .actions {
-	padding: 0;
-	overflow: visible;
+.toplevel_page_wp_stream .actions {
+	width: calc(100% - 300px);
 }
 
 .toplevel_page_wp_stream .chosen-container-single {
@@ -129,6 +143,15 @@
 }
 
 @media only screen and (max-width: 782px) {
+	.toplevel_page_wp_stream .actions {
+		display: none;
+	}
+
+	.toplevel_page_wp_stream .stream-search-paginate,
+	.toplevel_page_wp_stream .tablenav {
+		float: none;
+	}
+
 	.toplevel_page_wp_stream .tablenav.bottom .displaying-num {
 		top: -8px;
 	}
@@ -180,16 +203,38 @@
 }
 
 .toplevel_page_wp_stream .date-interval {
-	display: inline;
+	position: relative;
+}
+
+.toplevel_page_wp_stream .date-interval .field-predefined {
+	float: left;
+	margin-top: 35px;
+}
+
+.toplevel_page_wp_stream .date-interval .date-inputs {
+	display: none;
+	position: absolute;
+	float: none !important;
+	margin-right: 3px !important;
+	margin-bottom: 0 !important;
+}
+
+.toplevel_page_wp_stream .stream-filters {
+	margin-top: 35px;
 }
 
 .toplevel_page_wp_stream .select2-container {
-	margin-right: 6px;
-	margin-bottom: 6px;
+	float: left;
+	margin: 0 6px 6px 0;
 }
 
 .toplevel_page_wp_stream .select2-container.select2-allowclear .select2-choice abbr {
 	margin-top: -2px;
+}
+
+.toplevel_page_wp_stream #record-query-submit {
+	float: left;
+	margin-bottom: 6px;
 }
 
 
@@ -226,7 +271,7 @@
 /* Date Interval Common */
 
 .wp_stream_screen .date-interval .field-predefined {
-	width: 165px;
+	width: 160px;
 	float: left;
 	margin-right: 6px;
 	margin-bottom: 6px;

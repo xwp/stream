@@ -18,13 +18,13 @@ jQuery(function($){
 				return result;
 			},
 			allowClear: true,
-			width: '165px'
+			width: '160px'
 		});
 
 	$( '.toplevel_page_wp_stream input[type=hidden].select2-select' ).select2({
 			minimumInputLength: 1,
 			allowClear: true,
-			width: '165px',
+			width: '160px',
 			ajax: {
 				url: ajaxurl,
 				datatype: 'json',
@@ -575,6 +575,8 @@ jQuery(function($){
 						if ('custom' === value) {
 							dateinputs.show();
 							return false;
+						} else {
+							dateinputs.hide();
 						}
 
 						from.val(from_val).trigger('change', [true]);
