@@ -101,10 +101,10 @@ class WP_Stream_Install {
 				<?php wp_nonce_field( 'wp_stream_update' ) ?>
 				<input type="hidden" name="action" value="wp_stream_update"/>
 					<div class="updated">
-						<p><?php echo esc_html( __( 'Stream Database Update Required', 'stream' ) ) ?></p>
-						<p><?php echo esc_html( __( 'Before we send you on your way we have to update your database to the newest version', 'stream' ) ) ?></p>
-						<p><?php echo esc_html( __( 'The update process may take a few minutes so please be patient', 'stream' ) ) ?></p>
-						<p><?php submit_button( __( 'Update Database', 'stream' ) ) ?></p>
+						<p><?php esc_html_e( __( 'Stream Database Update Required', 'stream' ) ) ?></p>
+						<p><?php esc_html_e( __( 'Before we send you on your way we have to update your database to the newest version', 'stream' ) ) ?></p>
+						<p><?php esc_html_e( __( 'The update process may take a few minutes so please be patient', 'stream' ) ) ?></p>
+						<p><?php esc_html_e( __( 'Update Database', 'stream' ) ) ?></p>
 					</div>
 			</form>
 		<?php
@@ -114,12 +114,13 @@ class WP_Stream_Install {
 			<form method="post" action="">
 				<input type="hidden" name="action" value="dismiss_notice"/>
 					<div class="updated">
-						<p><?php echo esc_html( __( 'Update complete', 'stream' ) ) ?></p>
-						<p><?php echo esc_html( __( 'Your stream database has been successfully updated', 'stream' ) ) ?></p>
-						<p><?php submit_button( __( 'Continue', 'stream' ), 'minor' ) ?></p>
+						<p><?php esc_html_e( __( 'Update complete', 'stream' ) ) ?></p>
+						<p><?php esc_html_e( __( 'Your stream database has been successfully updated', 'stream' ) ) ?></p>
+						<p><?php esc_html_e( __( 'Continue', 'stream' ), 'minor' ) ?></p>
 					</div>
 			</form>
 			<?php
+
 		} elseif ( isset( $_REQUEST['action'] ) && 'dismiss_notice' == $_REQUEST['action'] ) {
 
 			if ( $referrer  ) {
