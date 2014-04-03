@@ -6,8 +6,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		parent::__construct(
 			array(
 				'post_type' => 'stream',
-				'plural' => 'records',
-				'screen' => isset( $args['screen'] ) ? $args['screen'] : null,
+				'plural'    => 'records',
+				'screen'    => isset( $args['screen'] ) ? $args['screen'] : null,
 			)
 		);
 
@@ -24,7 +24,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$this->get_hidden_columns();
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
-		add_filter( 'screen_settings', array( __CLASS__, 'live_update_checkbox' ), 10, 2 );
+		add_filter( 'screen_settings', array( __CLASS__, 'screen_controls' ), 10, 2 );
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
 		set_screen_options();
@@ -46,16 +46,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function extra_tablenav( $which ) {
-		if ( 'top' === $which ){
+		if ( 'top' === $which ) {
 			$this->filters_form();
 		}
 	}
 
-	function get_columns(){
+	function get_columns() {
 		/**
 		 * Allows devs to add new columns to table
 		 *
 		 * @param  array  default columns
+		 *
 		 * @return array  updated list of columns
 		 */
 		return apply_filters(
@@ -111,7 +112,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$this->set_pagination_args(
 			array(
 				'total_items' => $total_items,
-				'per_page' => $this->get_items_per_page( 'edit_stream_per_page', 20 ),
+				'per_page'    => $this->get_items_per_page( 'edit_stream_per_page', 20 ),
 			)
 		);
 	}
@@ -120,13 +121,16 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * Render the checkbox column
 	 *
 	 * @param  array $item Contains all the data for the checkbox column
+	 *
 	 * @return string Displays a checkbox
 	 */
 	function column_cb( $item ) {
-			return sprintf(
+		return sprintf(
 			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
-			/*$1%s*/ 'wp_stream_checkbox',
-			/*$2%s*/ $item->ID
+			/*$1%s*/
+			'wp_stream_checkbox',
+			/*$2%s*/
+			$item->ID
 		);
 	}
 
@@ -145,10 +149,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		// Filters
 		$allowed_params = array(
-			'connector', 'context', 'action',
-			'author', 'object_id', 'search',
-			'date', 'date_from', 'date_to',
-			'record__in', 'ip',
+			'connector',
+			'context',
+			'action',
+			'author',
+			'object_id',
+			'search',
+			'date',
+			'date_from',
+			'date_to',
+			'record__in',
+			'ip',
 		);
 
 		foreach ( $allowed_params as $param ) {
@@ -169,6 +180,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function get_total_found_rows() {
 		global $wpdb;
+
 		return $wpdb->get_var( 'SELECT FOUND_ROWS()' );
 	}
 
@@ -180,7 +192,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$item->created,
 					get_date_from_gmt( $item->created, 'Y/m/d' )
 				);
-				$out = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out         = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
 				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
 				break;
@@ -188,13 +200,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 			case 'summary' :
 				if ( $item->object_id ) {
 					$out = $this->column_link(
-						$item->summary,
-						array(
-							'object_id' => $item->object_id,
-							'context'   => $item->context,
-						),
-						null,
-						__( 'View all records for this object', 'stream' )
+								$item->summary,
+									array(
+										'object_id' => $item->object_id,
+										'context'   => $item->context,
+									),
+									null,
+									__( 'View all records for this object', 'stream' )
 					);
 				} else {
 					$out = $item->summary;
@@ -248,7 +260,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				 * Registers new Columns to be inserted into the table.  The cell contents of this column is set
 				 * below with 'wp_stream_inster_column_default-'
 				 *
-				 * @param array  $new_columns  Array of new column titles to add
+				 * @param array $new_columns Array of new column titles to add
 				 */
 				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', $new_columns = array() );
 
@@ -266,8 +278,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 							/**
 							 * This action allows for the addition of content under the specified column ($column_title)
 							 *
-							 * @param  string  $column_title  Title of the column (set in wp_stream_register_column_defaults)
-							 * @param  obj     $item          Contents of the row
+							 * @param  string $column_title Title of the column (set in wp_stream_register_column_defaults)
+							 * @param  obj    $item         Contents of the row
 							 */
 							$out = do_action( 'wp_stream_insert_column_default-' . $column_title, $item );
 						} else {
@@ -282,8 +294,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		echo $out; // xss ok
 	}
 
-
-	public static function get_action_links( $record ){
+	public static function get_action_links( $record ) {
 		$out = '';
 
 		/**
@@ -292,6 +303,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		 * @param  string  connector
 		 * @param  array   array of action links for this connector
 		 * @param  obj     record
+		 *
 		 * @return arrray  action links for this connector
 		 */
 		$action_links = apply_filters( 'wp_stream_action_links_' . $record->connector, array(), $record );
@@ -302,6 +314,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		 * @param  string  connector
 		 * @param  array   array of custom links for this connector
 		 * @param  obj     record
+		 *
 		 * @return arrray  custom links for this connector
 		 */
 		$custom_links = apply_filters( 'wp_stream_custom_action_links_' . $record->connector, array(), $record );
@@ -315,7 +328,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$links = array();
 			$i     = 0;
 			foreach ( $action_links as $al_title => $al_href ) {
-				$i++;
+				$i ++;
 				$links[] = sprintf(
 					'<span><a href="%s" class="action-link">%s</a>%s</span>',
 					$al_href,
@@ -370,9 +383,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	public function get_term_title( $term, $type ) {
-		if ( isset( WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ] ) ) {
-			return WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ];
-		} else {
+		if ( isset( WP_Stream_Connectors::$term_labels["stream_$type"][ $term ] ) ) {
+			return WP_Stream_Connectors::$term_labels["stream_$type"][ $term ];
+		}
+		else {
 			return $term;
 		}
 	}
@@ -386,15 +400,34 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 *
 	 * @uses   existing_records (see query.php)
 	 * @since  1.0.4
+	 *
 	 * @param  string  Column requested
 	 * @param  string  Table to be queried
+	 *
 	 * @return array   options to be displayed in search filters
 	 */
 	function assemble_records( $column, $table = '' ) {
+
+		$setting_key = self::get_column_excluded_setting_key( $column );
+
+		/**
+		 * Toggle visibility of disabled connectors/actions/contexts on list table filter dropdown
+		 *
+		 * @param bool $hidden Visibility status, default is Hide Previous Record value set in Exclude setting.
+		 */
+		$hide_disabled_column_filter = apply_filters( 'wp_stream_list_table_hide_disabled_ ' . $setting_key, ( WP_Stream_Settings::$options[ 'exclude_hide_previous_records' ] === 0 ) ? false : true );
+
 		if ( 'author' === $column ) {
 			$all_records = array();
 			$authors     = get_users();
+			if ( $hide_disabled_column_filter ) {
+				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
+			}
+
 			foreach ( $authors as $author ) {
+				if ( $hide_disabled_column_filter && in_array( $author->ID, $excluded_records ) ) {
+					continue;
+				}
 				$author = get_user_by( 'id', $author->ID );
 				if ( $author ) {
 					$all_records[ $author->ID ] = $author;
@@ -404,20 +437,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$prefixed_column = sprintf( 'stream_%s', $column );
 			$all_records     = WP_Stream_Connectors::$term_labels[ $prefixed_column ];
 
-			if ( 'connector' === $column ) {
-				/**
-				 * Toggle visibility of disabled connectors on list table filter dropdown
-				 *
-				 * @param bool $hidden Visibility status, hidden by default.
-				 */
-				$hide_disabled_connectors_filter = apply_filters( 'wp_stream_list_table_hide_disabled_connectors', true );
-
-				if ( true === $hide_disabled_connectors_filter ) {
-					$excluded_connectors = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
-					foreach ( array_keys( $all_records ) as $_connector ) {
-						if ( in_array( $_connector, $excluded_connectors ) ) {
-							unset( $all_records[ $_connector ] );
-						}
+			if ( true === $hide_disabled_column_filter ) {
+				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
+				foreach ( array_keys( $all_records ) as $_connector ) {
+					if ( in_array( $_connector, $excluded_records ) ) {
+						unset( $all_records[ $_connector ] );
 					}
 				}
 			}
@@ -428,7 +452,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$disabled_records = array();
 
 		foreach ( $all_records as $record => $label ) {
-			if ( array_key_exists( $record , $existing_records ) ) {
+			if ( array_key_exists( $record, $existing_records ) ) {
 				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
 			} else {
 				$disabled_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
@@ -445,9 +469,16 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filters_form() {
+
+		$user_id = get_current_user_id();
+
+		$filters_option = get_user_meta( $user_id, 'stream_toggle_filters', true );
+
 		$filters = array();
 
 		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
+
+		$filters_string .= sprintf( __( '%1$sShow filter controls via the screen options tab above%2$s', 'stream' ), '<span class="filter_info" style="display:none">', '</span>' );
 
 		$authors_records = $this->assemble_records( 'author', 'stream' );
 
@@ -468,7 +499,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			);
 		}
 
-		$filters['author'] = array();
+		$filters['author']          = array();
 		$filters['author']['title'] = __( 'authors', 'stream' );
 
 		if ( count( $authors_records ) <= WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
@@ -498,6 +529,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		 * containing a title and array of items.
 		 *
 		 * @param  array  Array of filters
+		 *
 		 * @return array  Updated array of filters
 		 */
 		$filters = apply_filters( 'wp_stream_list_table_filters', $filters );
@@ -507,7 +539,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters_string .= '<div class="stream-filters">';
 
 		foreach ( $filters as $name => $data ) {
-			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'] );
+			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'], $filters_option[ $name ] );
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
@@ -517,7 +549,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		printf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
 
-	function filter_select( $name, $title, $items, $ajax ) {
+	function filter_select( $name, $title, $items, $ajax, $enabled = true ) {
+
+
 		if ( $ajax ) {
 			$out = sprintf(
 				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
@@ -580,25 +614,26 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		ob_start();
 		?>
- 		<div class="date-interval">
+		<div class="date-interval">
 
 			<div class="date-inputs">
 				<div class="box">
 					<i class="date-remove dashicons"></i>
 					<input type="text"
-						 name="date_from"
-						 class="date-picker field-from"
-						 placeholder="<?php esc_attr_e( 'Start date', 'stream' ) ?>"
-						 value="<?php echo esc_attr( $date_from ) ?>">
+						   name="date_from"
+						   class="date-picker field-from"
+						   placeholder="<?php esc_attr_e( 'Start date', 'stream' ) ?>"
+						   value="<?php echo esc_attr( $date_from ) ?>">
 				</div>
 				<span class="connector dashicons"></span>
+
 				<div class="box">
 					<i class="date-remove dashicons"></i>
 					<input type="text"
-						 name="date_to"
-						 class="date-picker field-to"
-						 placeholder="<?php esc_attr_e( 'End date', 'stream' ) ?>"
-						 value="<?php echo esc_attr( $date_to ) ?>">
+						   name="date_to"
+						   class="date-picker field-to"
+						   placeholder="<?php esc_attr_e( 'End date', 'stream' ) ?>"
+						   value="<?php echo esc_attr( $date_to ) ?>">
 				</div>
 			</div>
 
@@ -656,7 +691,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 		endif;
 	}
 
-
 	static function set_screen_option( $dummy, $option, $value ) {
 		if ( 'edit_stream_per_page' === $option ) {
 			return $value;
@@ -668,22 +702,42 @@ class WP_Stream_List_Table extends WP_List_Table {
 	static function set_live_update_option( $dummy, $option, $value ) {
 		if ( 'stream_live_update_records' === $option ) {
 			$value = $_POST['stream_live_update_records'];
+
 			return $value;
 		} else {
 			return $dummy;
 		}
 	}
 
-	static function live_update_checkbox( $status, $args ) {
-		$user_id = get_current_user_id();
-		$option  = ( 'off' !== get_user_meta( $user_id, 'stream_live_update_records', true ) );
-		$nonce   = wp_create_nonce( 'stream_live_update_nonce' );
+	static function screen_controls( $status, $args ) {
+
+		$user_id                 = get_current_user_id();
+		$option                  = get_user_meta( $user_id, 'enable_live_update', true );
+		$filters_option_defaults = array(
+			'date_range' => true,
+			'author'     => true,
+			'connector'  => true,
+			'context'    => true,
+			'action'     => true,
+		);
+		$filters_option = get_user_meta( $user_id, 'stream_toggle_filters', true );
+		if ( empty( $filters_option ) ) {
+			update_user_meta( $user_id, 'stream_toggle_filters', $filters_option_defaults );
+			$filters_option = get_user_meta( $user_id, 'stream_toggle_filters', true );
+		}
+		$stream_live_update_records_nonce = wp_create_nonce( 'stream_live_update_records_nonce' );
+		$stream_toggle_filters_nonce      = wp_create_nonce( 'stream_toggle_filters_nonce' );
 		ob_start();
 		?>
 		<fieldset>
 			<h5><?php esc_html_e( 'Live updates', 'stream' ) ?></h5>
-			<div><input type="hidden" name="enable_live_update_nonce" id="enable_live_update_nonce" value="<?php echo esc_attr( $nonce ) ?>" /></div>
-			<div><input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ) ?>" /></div>
+
+			<div>
+				<input type="hidden" name="stream_live_update_nonce" id="stream_live_update_nonce" value="<?php echo esc_attr( $stream_live_update_records_nonce ) ?>" />
+			</div>
+			<div>
+				<input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ) ?>" />
+			</div>
 			<div class="metabox-prefs stream-live-update-checkbox">
 				<label for="enable_live_update">
 					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( $option ) ?> />
@@ -691,8 +745,71 @@ class WP_Stream_List_Table extends WP_List_Table {
 				</label>
 			</div>
 		</fieldset>
+		<fieldset>
+			<h5><?php esc_html_e( 'Show Filters', 'stream' ) ?></h5>
+
+			<div>
+				<input type="hidden" name="toggle_filters_nonce" id="toggle_filters_nonce" value="<?php echo esc_attr( $stream_toggle_filters_nonce ) ?>" />
+			</div>
+			<div>
+				<input type="hidden" name="toggle_filters_user" id="toggle_filters_user" value="<?php echo absint( $user_id ) ?>" />
+			</div>
+			<div class="metabox-prefs stream-toggle-filters">
+				<?php
+				$filters = apply_filters(
+					'stream_toggle_filters', array(
+						'date_range' => __( 'Date Range', 'stream' ),
+						'author'     => __( 'Authors', 'stream' ),
+						'connector'  => __( 'Connectors', 'stream' ),
+						'context'    => __( 'Contexts', 'stream' ),
+						'action'     => __( 'Actions', 'stream' ),
+					)
+				);
+
+		foreach ( $filters as $key => $val ) : ?>
+					<label for="<?php echo esc_attr( $key ); ?>">
+						<input type="hidden" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" value="0" />
+						<input type="checkbox" value="1" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" id="<?php echo esc_attr( $key ); ?>" <?php checked( $filters_option[ $key ] ) ?> />
+						<?php echo esc_html( $val ); ?><span class="spinner"></span>
+					</label>
+				<?php endforeach; ?>
+
+			</div>
+		</fieldset>
+
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * This function is use to map List table column name with excluded setting keys
+	 *
+	 * @param $column string list table column name
+	 *
+	 * @return string setting name for that column
+	 */
+	function get_column_excluded_setting_key( $column ) {
+		switch ( $column ) {
+			case 'connector':
+				$output = 'connectors';
+				break;
+			case 'context':
+				$output = 'contexts';
+				break;
+			case 'action':
+				$output = 'action';
+				break;
+			case 'ip':
+				$output = 'ip_addresses';
+				break;
+			case 'author':
+				$output = 'authors_and_roles';
+				break;
+			default:
+				$output = false;
+		}
+
+		return $output;
 	}
 
 }
