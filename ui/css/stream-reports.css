@@ -116,6 +116,11 @@
 	color: #000;
 }
 
+.stream_page_wp_stream_reports .postbox .clear-title {
+	cursor: pointer;
+	margin-left: 5px;
+}
+
 .stream_page_wp_stream_reports .stream-reports-chart-height-option{
 	width: 200px;
 }
