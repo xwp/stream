@@ -275,6 +275,12 @@ jQuery(function($){
 		}
 	});
 
+	$('#wp_stream_general_reset_site_settings').click(function(e){
+		if ( ! confirm( wp_stream.i18n.confirm_defaults ) ) {
+			e.preventDefault();
+		}
+	});
+
 	$('#wp_stream_uninstall').click(function(e){
 		if ( ! confirm( wp_stream.i18n.confirm_uninstall ) ) {
 			e.preventDefault();
@@ -283,7 +289,7 @@ jQuery(function($){
 
 	// Admin page tabs
 	var $tabs          = $('.nav-tab-wrapper'),
-		$panels        = $('table.form-table'),
+		$panels        = $('.nav-tab-content table.form-table'),
 		$activeTab     = $tabs.find('.nav-tab-active'),
 		defaultIndex   = $activeTab.length > 0 ? $tabs.find('a').index( $activeTab ) : 0,
 		hashIndex      = window.location.hash.match(/^#(\d+)$/),

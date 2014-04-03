@@ -75,6 +75,9 @@ class WP_Stream_Admin {
 		// Reset Streams database
 		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
 
+		// Reset Streams settings
+		add_action( 'wp_ajax_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
+
 		// Uninstall Streams and Deactivate plugin
 		add_action( 'wp_ajax_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
 
@@ -120,6 +123,9 @@ class WP_Stream_Admin {
 		switch ( $message ) {
 			case 'data_erased':
 				printf( '<div class="updated"><p>%s</p></div>', __( 'All records have been successfully erased.', 'stream' ) );
+				break;
+			case 'settings_reset':
+				printf( '<div class="updated"><p>%s</p></div>', __( 'All site settings have been successfully reset.', 'stream' ) );
 				break;
 		}
 	}
@@ -230,6 +236,7 @@ class WP_Stream_Admin {
 			array(
 				'i18n'           => array(
 					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+					'confirm_defaults'  => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
 				),
 				'gmt_offset'     => get_option( 'gmt_offset' ),
@@ -435,7 +442,7 @@ class WP_Stream_Admin {
 		}
 	}
 
-	public static function erase_stream_records() {
+	private static function erase_stream_records() {
 		global $wpdb;
 
 		$wpdb->query(
@@ -450,6 +457,41 @@ class WP_Stream_Admin {
 				'stream'
 			)
 		);
+	}
+
+	public static function wp_ajax_defaults() {
+		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+		if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			wp_die( "You don't have sufficient privileges to do this action." );
+		}
+		if ( current_user_can( self::SETTINGS_CAP ) ) {
+			self::reset_stream_settings();
+			wp_redirect(
+				add_query_arg(
+					array(
+						'page'    => 'wp_stream_settings',
+						'message' => 'settings_reset',
+					),
+					is_plugin_active_for_network( WP_STREAM_PLUGIN ) ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
+				)
+			);
+			exit;
+		} else {
+			wp_die( "You don't have sufficient privileges to do this action." );
+		}
+	}
+
+	private static function reset_stream_settings() {
+		global $wpdb;
+
+		$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
+		if ( $blogs ) {
+			foreach ( $blogs as $blog ) {
+				switch_to_blog( $blog['blog_id'] );
+				delete_option( WP_Stream_Settings::SETTINGS_KEY );
+			}
+			restore_current_blog();
+		}
 	}
 
 	/**

@@ -90,6 +90,24 @@ class WP_Stream_Network {
 			);
 
 			$fields = array_merge_recursive( $new_fields, $fields );
+
+			$reset_site_settings_href = add_query_arg(
+				array(
+					'action'          => 'wp_stream_defaults',
+					'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+				),
+				admin_url( 'admin-ajax.php' )
+			);
+
+			$fields['general']['fields'][] = array(
+				'name'    => 'reset_site_settings',
+				'title'   => __( 'Reset Site Settings', 'stream' ),
+				'type'    => 'link',
+				'href'    => $reset_site_settings_href,
+				'desc'    => __( 'Warning: Clicking this will override all site settings with defaults.', 'stream' ),
+				'default' => 0,
+			);
+
 		}
 
 		return $fields;
