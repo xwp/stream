@@ -4,35 +4,104 @@ class WP_Stream_Install {
 
 	public static $table_prefix;
 
-	/**
-	 * Check db version, create/update table schema accordingly
-	 *
-	 * @return void
-	 */
-	public static function check() {
+	public static $db_version;
+
+	public static $current;
+
+	private static $instance = false;
+
+	public static function get_instance() {
+		if ( empty( self::$instance ) ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	function __construct() {
 		global $wpdb;
+		self::$current = WP_Stream::VERSION;
 
-		$current = WP_Stream::VERSION;
-
-		$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+		//update_option( plugin_basename( WP_STREAM_DIR ) . '_db', self::$current );
+		self::$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 
 		/**
 		 * Allows devs to alter the tables prefix, default to base_prefix
 		 *
-		 * @param  string  database prefix
-		 * @return string  udpated database prefix
+		 * @var string $prefix  database prefix
+		 * @var string $table_prefix udpated database prefix
 		 */
-		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->prefix );
-
-		if ( empty( $db_version ) ) {
-			self::install();
-		} elseif ( $db_version !== $current ) {
-			self::update( $db_version, $current );
-		} else {
-			return;
+		if ( is_multisite() ) {
+			$prefix = $wpdb->prefix; //change to $wpdb->base_prefix when network stream enabled;
+		}
+		else {
+			$prefix = $wpdb->prefix;
 		}
 
-		update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $current );
+		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $prefix );
+		self::check();
+	}
+
+	/**
+	 * Check db version, create/update table schema accordingly
+	 * If database update required admin notice will be given
+	 * on the plugin update screen
+	 *
+	 * @return null
+	 */
+	private static function check() {
+		if ( empty( self::$db_version ) ) {
+			self::install();
+
+		} elseif ( self::$db_version !== self::$current ) {
+			add_action( 'pre_current_active_plugins', array( __CLASS__, 'prompt_update' ) );
+		}
+	}
+
+	public static function prompt_update() {
+		$referrer = wp_get_referer();
+		$location = 'plugins.php';
+
+		if ( isset( $_REQUEST['action'] ) && 'wp_stream_update' == $_REQUEST['action'] ) {
+			self::update( self::$db_version, self::$current );
+
+		} elseif ( isset( $_REQUEST['wp_stream_update'] ) && 'stream_updated' == $_REQUEST['wp_stream_update'] ) {
+			?>
+			<form method="post" action="">
+				<?php wp_nonce_field( 'wp_stream_update' ) ?>
+				<input type="hidden" name="action" value="wp_stream_update"/>
+					<div class="updated">
+						<p><?php echo esc_html( __( 'Stream Database Update Required', 'stream' ) ) ?></p>
+						<p><?php echo esc_html( __( 'Before we send you on your way we have to update your database to the newest version', 'stream' ) ) ?></p>
+						<p><?php echo esc_html( __( 'The update process may take a few minutes so please be patient', 'stream' ) ) ?></p>
+						<p><?php submit_button( __( 'Update Database', 'stream' ) ) ?></p>
+					</div>
+			</form>
+		<?php
+		} elseif ( isset( $_REQUEST['wp_stream_update_confirmed'] ) && 'wp_stream_update_confirmed' == $_REQUEST['wp_stream_update_confirmed'] ) {
+
+			?>
+			<form method="post" action="">
+				<input type="hidden" name="action" value="wp_stream_update"/>
+					<div class="updated">
+						<p><?php echo esc_html( __( 'Update complete', 'stream' ) ) ?></p>
+						<p><?php echo esc_html( __( 'Your stream database has been successfully updated', 'stream' ) ) ?></p>
+						<p><?php submit_button( __( 'Continue', 'stream' ), 'minor' ) ?></p>
+					</div>
+			</form>
+			<?php
+		} elseif ( isset( $_REQUEST['action'] ) && 'dismiss_notice' == $_REQUEST['action'] ) {
+
+			if ( $referrer  ) {
+				if ( false !== strpos( $referrer, $location ) )
+					$location = $referrer;
+
+				$location = remove_query_arg( 'action', admin_url( $location ) );
+
+				update_option( plugin_basename( WP_STREAM_DIR ) . '_db', self::$current );
+				wp_redirect( admin_url( $location ) );
+				exit;
+			}
+		}
 	}
 
 	public static function install() {
