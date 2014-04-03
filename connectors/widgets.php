@@ -16,9 +16,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 */
 	public static $actions = array(
 		'update_option_sidebars_widgets',
-		'sidebar_admin_setup',
-		'wp_ajax_widgets-order',
-		'widget_update_callback',
+		'updated_option',
 	);
 
 	/**
@@ -40,6 +38,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			'added'       => __( 'Added', 'stream' ),
 			'deleted'     => __( 'Deleted', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
+			'reactivated' => __( 'Reactivated', 'stream' ),
 			'updated'     => __( 'Updated', 'stream' ),
 			'sorted'      => __( 'Sorted', 'stream' ),
 		);
@@ -60,6 +59,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		}
 
 		$labels['wp_inactive_widgets'] = esc_html__( 'Inactive Widgets' );
+		$labels['orphaned_widgets'] = esc_html__( 'Orphaned Widgets' );
+		$labels[''] = esc_html__( 'Unknown', 'stream' );
 
 		return $labels;
 	}
@@ -77,7 +78,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			global $wp_registered_sidebars;
 
 			if ( array_key_exists( $sidebar, $wp_registered_sidebars ) ) {
-				$links[ __( 'Edit Widget Area', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar );
+				$links[ __( 'Edit Widget Area', 'stream' ) ] = admin_url( "widgets.php#$sidebar" );
 			}
 		}
 
@@ -85,262 +86,455 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	}
 
 	/**
-	 * Tracks addition/deletion/deactivation of widgets from sidebars
+	 * @return bool
+	 */
+	public static function is_customizer_preview() {
+		global $wp_customize;
+		return ! empty( $wp_customize ) && $wp_customize->is_preview();
+	}
+
+	/**
+	 * Tracks addition/deletion/reordering/deactivation of widgets from sidebars
 	 *
 	 * @action update_option_sidebars_widgets
-	 * @param  array $old  Old sidebars
-	 * @param  array $new  New sidebars
+	 * @param  array $old  Old sidebars widgets
+	 * @param  array $new  New sidebars widgets
 	 * @return void
 	 */
 	public static function callback_update_option_sidebars_widgets( $old, $new ) {
 
-		// Disable listener if we're switching themes
+		// Disable listener if we're switching themes or if we're in the customizer
 		if ( did_action( 'after_switch_theme' ) ) {
 			return;
 		}
 
-		global $wp_stream_widget_order_operation;
+		unset( $old['array_version'] );
+		unset( $new['array_version'] );
 
-		$widget_id = null;
-		$sidebar   = null;
+		self::handle_deactivated_widgets( $old, $new );
+		self::handle_reactivated_widgets( $old, $new );
+		self::handle_widget_deletion( $old, $new );
+		self::handle_widget_addition( $old, $new );
+		self::handle_widget_reordering( $old, $new );
+		// @todo Handle updating
+	}
 
-		if ( $deactivated = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] ) ) {
+
+	/**
+	 * Track deactivation of widgets from sidebars
+	 *
+	 * @param  array $old  Old sidebars widgets
+	 * @param  array $new  New sidebars widgets
+	 * @return void
+	 */
+	static protected function handle_deactivated_widgets( $old, $new ) {
+		$new_deactivated_widget_ids = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] );
+		foreach ( $new_deactivated_widget_ids as $widget_id ) {
+			$sidebar_id = '';
+			foreach ( $old as $old_sidebar_id => $old_widget_ids ) {
+				if ( in_array( $widget_id, $old_widget_ids ) ) {
+					$sidebar_id = $old_sidebar_id;
+					break;
+				}
+			}
 			$action  = 'deactivated';
-			$message = _x(
-				'"%1$s" has been deactivated',
-				'1: Widget title',
-				'stream'
-			);
-
-			// It is not always the 0th key value. If a widget is dropped after any other widget in the Inactive area;
-			// then the difference would be on a non-zero key.
-			$diff_ids  = array_values( $deactivated );
-			$widget_id = $diff_ids[0];
-			$sidebar   = $old;
-
-			list( $id_base, $name, $title, $sidebar, $sidebar_name ) = array_values( self::get_widget_info( $widget_id, $sidebar ) );
+			$title = self::get_widget_title( $widget_id );
+			$name = self::get_widget_name( $widget_id );
+			if ( $name && $title ) {
+				$message = _x(
+					'"%1$s" (%2$s) widget deactivated',
+					'1: Widget title, 2: Widget name',
+					'stream'
+				);
+			} else if ( $name ) {
+				// Empty title, but we have the name
+				$message = _x(
+					'%2$s widget deactivated',
+					'2: Widget name',
+					'stream'
+				);
+			} else if ( $title ) {
+				// Likely a single widget since no name is available
+				$message = _x(
+					'"%1$s" widget deactivated',
+					'1: Widget title',
+					'stream'
+				);
+			} else {
+				// Neither a name nor a title are available, so use the sidebar ID
+				$message = _x(
+					'%3$s widget deactivated',
+					'3: Widget ID',
+					'stream'
+				);
+			}
 
 			self::log(
 				$message,
-				compact( 'title', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
+				compact( 'title', 'name', 'widget_id', 'sidebar_id' ),
 				null,
 				array( 'wp_inactive_widgets' => $action )
 			);
-
-			$wp_stream_widget_order_operation = null;
-
-			return;
 		}
-
-		if ( ! $widget_id ) {
-			foreach ( $new as $sidebar_id => $new_widgets ){
-				if (
-					( ! isset( $old[ $sidebar_id ] ) )
-					||
-					( ! isset( $new[ $sidebar_id ] ) )
-					||
-					( ! is_array( $old[ $sidebar_id ] ) )
-					||
-					( ! is_array( $new_widgets ) )
-					) {
-					break; // Switching themes ?, do not return so order operation is logged
-				}
-				$old_widgets = $old[ $sidebar_id ];
-
-				// Added ?
-				if ( $changed = array_diff( $new_widgets, $old_widgets ) ) {
-					$action    = 'added';
-					$message   = _x(
-						'"%1$s" has been added to "%2$s"',
-						'1: Widget title, 2: Sidebar name',
-						'stream'
-					);
-					$widget_id = reset( $changed );
-					$sidebar   = $new;
-				}
-				// Removed
-				elseif ( $changed = array_diff( $old_widgets, $new_widgets ) ) {
-					$action    = 'deleted';
-					$message   = _x(
-						'"%1$s" has been deleted from "%2$s"',
-						'1: Widget title, 2: Sidebar name',
-						'stream'
-					);
-					$widget_id = reset( $changed );
-					$sidebar   = $old;
-				}
-
-				if ( ! $widget_id ) {
-					continue;
-				}
-
-				$wp_stream_widget_order_operation = null;
-
-				list( $id_base, $name, $title, $sidebar, $sidebar_name ) = array_values( self::get_widget_info( $widget_id, $sidebar ) );
-
-				self::log(
-					$message,
-					compact( 'title', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
-					null,
-					array( $sidebar => $action )
-				);
-
-				$widget_id = null;
-			}
-		}
-
-		// Did anything happen ? if not, just record the reorder log entry
-		if ( $wp_stream_widget_order_operation ) {
-			call_user_func_array( array( __CLASS__, 'log' ), $wp_stream_widget_order_operation );
-		}
-
 	}
 
-	/**
-	 * Tracks widget instance updates
-	 *
-	 * @filter widget_update_callback
-	 * @param $instance
-	 * @param $new_instance
-	 * @param $old_instance
-	 * @param $widget
-	 * @return array
-	 */
-	public static function callback_widget_update_callback( $instance, $new_instance, $old_instance, $widget ) {
-		global $wp_registered_sidebars;
-
-		$id_base   = $widget->id_base;
-		$widget_id = $widget->id;
-
-		list( $id_base, $name, $title, $sidebar, $sidebar_name ) = array_values( self::get_widget_info( $widget_id, false ) );
-		$title = isset( $new_instance['title'] ) ? $new_instance['title'] : null;
-
-		// If it wasn't assigned to a sidebar, then its a new thing, skip it
-		if ( $sidebar_name ) {
-			self::log(
-				_x(
-					'Updated "%1$s" in "%2$s"',
-					'1: Widget title, 2: Sidebar name',
-					'stream'
-				),
-				compact( 'name', 'sidebar_name', 'title', 'id_base', 'sidebar', 'widget_id', 'new_instance', 'old_instance' ),
-				null,
-				array( $sidebar => 'updated' )
-			);
-		}
-
-		return $instance;
-	}
 
 	/**
-	 * Tracks reordering of widgets
+	 * Track reactivation of widgets from sidebars
 	 *
-	 * @action wp_ajax_widgets_order
+	 * @param  array $old  Old sidebars widgets
+	 * @param  array $new  New sidebars widgets
 	 * @return void
 	 */
-	public static function callback_wp_ajax_widgets_order() {
-		global $wp_stream_widget_order_operation;
-
-		// If this was a widget update, skip adding a new record
-		if ( did_action( 'widget_update_callback' ) ) {
-			return;
-		}
-
-		$labels = self::get_context_labels();
-		$old    = self::get_sidebar_widgets();
-
-		unset( $old['array_version'] );
-
-		$new = $_POST['sidebars'];
-
-		foreach ( $new as $sidebar_id => $widget_ids ) {
-
-			$widget_ids         = preg_replace( '#(widget-\d+_)#', '', $widget_ids );
-			$new[ $sidebar_id ] = array_filter( explode( ',', $widget_ids ) );
-
-			if ( $new[ $sidebar_id ] !== $old[ $sidebar_id ] ) {
-				$changed = $sidebar_id;
-				break;
+	static protected function handle_reactivated_widgets( $old, $new ) {
+		$new_reactivated_widget_ids = array_diff( $old['wp_inactive_widgets'], $new['wp_inactive_widgets'] );
+		foreach ( $new_reactivated_widget_ids as $widget_id ) {
+			$sidebar_id = '';
+			foreach ( $new as $new_sidebar_id => $new_widget_ids ) {
+				if ( in_array( $widget_id, $new_widget_ids ) ) {
+					$sidebar_id = $new_sidebar_id;
+					break;
+				}
 			}
-		}
 
-		if ( isset( $changed ) ) {
-			$sidebar      = $changed;
-			$sidebar_name = isset( $labels[ $sidebar ] ) ? $labels[ $sidebar ] : esc_html__( 'Widgets', 'stream' );
-
-			// Saving this in a global var, so it can be accessed and
-			// executed by self::callback_update_option_sidebars_widgets
-			// in case this is ONLY a reorder process
-			$wp_stream_widget_order_operation = array(
-				_x( 'Widgets in "%s" were reordered', 'Sidebar name', 'stream' ),
-				compact( 'sidebar_name', 'sidebar' ),
+			$action  = 'reactivated';
+			$title = self::get_widget_title( $widget_id );
+			$name = self::get_widget_name( $widget_id );
+			if ( $name && $title ) {
+				$message = _x(
+					'"%1$s" (%2$s) widget reactivated',
+					'1: Widget title, 2: Widget name',
+					'stream'
+				);
+			} else if ( $name ) {
+				// Empty title, but we have the name
+				$message = _x(
+					'%2$s widget reactivated',
+					'2: Widget name',
+					'stream'
+				);
+			} else if ( $title ) {
+				// Likely a single widget since no name is available
+				$message = _x(
+					'"%1$s" widget reactivated',
+					'1: Widget title',
+					'stream'
+				);
+			} else {
+				// Neither a name nor a title are available, so use the sidebar ID
+				$message = _x(
+					'%3$s widget reactivated',
+					'3: Widget ID',
+					'stream'
+				);
+			}
+			self::log(
+				$message,
+				compact( 'title', 'name', 'widget_id', 'sidebar_id' ),
 				null,
-				array( $sidebar => 'sorted' ),
+				array( $sidebar_id => $action )
 			);
 		}
 	}
 
 	/**
-	 * Returns widget info based on widget id
+	 * Track reactivation of widgets from sidebars
 	 *
-	 * @param  integer $id       Widget ID, ex: pages-1
-	 * @param  array   $sidebars Existing sidebars to search in
-	 * @return array             array( $id_base, $name, $title, $sidebar, $sidebar_name, $widget_class )
+	 * @param  array $old  Old sidebars widgets
+	 * @param  array $new  New sidebars widgets
+	 * @return void
 	 */
-	public static function get_widget_info( $id, $sidebars = array() ) {
-		global $wp_registered_widgets, $wp_widget_factory;
+	static protected function handle_widget_deletion( $old, $new ) {
+		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', $old ) );
+		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', $new ) );
+		$deleted_widget_ids = array_diff( $all_old_widget_ids, $all_new_widget_ids );
+		foreach ( $deleted_widget_ids as $widget_id ) {
+			$sidebar_id = '';
+			foreach ( $old as $old_sidebar_id => $old_widget_ids ) {
+				if ( in_array( $widget_id, $old_widget_ids ) ) {
+					$sidebar_id = $old_sidebar_id;
+					break;
+				}
+			}
+			$action  = 'deleted';
+			$title = self::get_widget_title( $widget_id );
+			$name = self::get_widget_name( $widget_id );
+			if ( $name && $title ) {
+				$message = _x(
+					'"%1$s" (%2$s) widget deleted',
+					'1: Widget title, 2: Widget name',
+					'stream'
+				);
+			} else if ( $name ) {
+				// Empty title, but we have the name
+				$message = _x(
+					'%2$s widget deleted',
+					'2: Widget name',
+					'stream'
+				);
+			} else if ( $title ) {
+				// Likely a single widget since no name is available
+				$message = _x(
+					'"%1$s" widget deleted',
+					'1: Widget title',
+					'stream'
+				);
+			} else {
+				// Neither a name nor a title are available, so use the sidebar ID
+				$message = _x(
+					'%3$s widget deleted',
+					'3: Widget ID',
+					'stream'
+				);
+			}
+			self::log(
+				$message,
+				compact( 'title', 'name', 'widget_id', 'sidebar_id' ),
+				null,
+				array( $sidebar_id => $action )
+			);
+		}
+	}
 
-		$ids = array_combine(
+	/**
+	 * Track reactivation of widgets from sidebars
+	 *
+	 * @param  array $old  Old sidebars widgets
+	 * @param  array $new  New sidebars widgets
+	 * @return void
+	 */
+	static protected function handle_widget_addition( $old, $new ) {
+		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', $old ) );
+		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', $new ) );
+		$added_widget_ids = array_diff( $all_new_widget_ids, $all_old_widget_ids );
+		foreach ( $added_widget_ids as $widget_id ) {
+			$sidebar_id = '';
+			foreach ( $new as $new_sidebar_id => $new_widget_ids ) {
+				if ( in_array( $widget_id, $new_widget_ids ) ) {
+					$sidebar_id = $new_sidebar_id;
+					break;
+				}
+			}
+
+			$action  = 'added';
+			$title = self::get_widget_title( $widget_id );
+			$name = self::get_widget_name( $widget_id );
+			if ( $name && $title ) {
+				$message = _x(
+					'"%1$s" (%2$s) widget added',
+					'1: Widget title, 2: Widget name',
+					'stream'
+				);
+			} else if ( $name ) {
+				// Empty title, but we have the name
+				$message = _x(
+					'%2$s widget added',
+					'2: Widget name',
+					'stream'
+				);
+			} else if ( $title ) {
+				// Likely a single widget since no name is available
+				$message = _x(
+					'"%1$s" widget added',
+					'1: Widget title',
+					'stream'
+				);
+			} else {
+				// Neither a name nor a title are available, so use the sidebar ID
+				$message = _x(
+					'%3$s widget added',
+					'3: Widget ID',
+					'stream'
+				);
+			}
+			self::log(
+				$message,
+				compact( 'title', 'name', 'widget_id', 'sidebar_id' ),
+				null,
+				array( $sidebar_id => $action )
+			);
+		}
+	}
+
+	/**
+	 * Track reordering of widgets
+	 *
+	 * @param  array $old  Old sidebars widgets
+	 * @param  array $new  New sidebars widgets
+	 * @return void
+	 */
+	static protected function handle_widget_reordering( $old, $new ) {
+
+		$all_sidebar_ids = array_intersect( array_keys( $old ), array_keys( $new ) );
+		foreach ( $all_sidebar_ids as $sidebar_id ) {
+
+			// Use intersect to ignore widget additions and removals
+			$common_widget_ids = array_intersect( $old[ $sidebar_id ], $new[ $sidebar_id ] );
+			$widget_order_changed = ( $common_widget_ids !== array_intersect( $new[ $sidebar_id ], $common_widget_ids ) );
+			if ( $widget_order_changed ) {
+				$labels = self::get_context_labels();
+				$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
+
+				self::log(
+					_x( 'Widgets in "%s" were reordered', 'Sidebar name', 'stream' ),
+					compact( 'sidebar_name', 'sidebar' ), // @todo We don't want to store sidebar_name in stream meta
+					null,
+					array( $sidebar_id => 'sorted' )
+				);
+			}
+		}
+
+	}
+
+	/**
+	 * Track changes to widgets
+	 *
+	 * @faction updated_option
+	 * @param string $option_name
+	 * @param array $old_value
+	 * @param array $new_value
+	 */
+	public static function callback_updated_option( $option_name, $old_value, $new_value ) {
+		// @todo What about adding widget for first time?
+		// @todo What about deleting a widget?
+
+		if ( ! preg_match( '/^widget_(.+)$/', $option_name, $matches ) || ! is_array( $new_value ) ) {
+			return;
+		}
+		$is_multi = ! empty( $new_value['_multiwidget'] );
+		$widget_id_base = $matches[1];
+		$updates = array();
+
+		if ( $is_multi ) {
+			$widget_id_format = "$widget_id_base-%d";
+
+			unset( $new_value['_multiwidget'] );
+			unset( $old_value['_multiwidget'] );
+			$widget_numbers = array_intersect( array_keys( $old_value ), array_keys( $new_value ) ); // ignore widgets added/removed
+			foreach ( $widget_numbers as $widget_number ) {
+				$new_instance = $new_value[ $widget_number ];
+				$old_instance = $old_value[ $widget_number ];
+				if ( $old_instance !== $new_instance ) {
+					$widget_id = sprintf( $widget_id_format, $widget_number );
+					$title = ! empty( $new_instance['title'] ) ? $new_instance['title'] : null;
+					$name = self::get_widget_name( $widget_id );
+					$sidebar_id = self::get_widget_sidebar_id( $widget_id );
+					$updates[] = compact( 'widget_id', 'title', 'name', 'sidebar_id', 'old_instance' );
+				}
+			}
+		} else {
+			$widget_id = $widget_id_base;
+			$name = $widget_id; // There aren't names available for single widgets
+			$title = ! empty( $new_value['title'] ) ? $new_value['title'] : null;
+			$sidebar_id = self::get_widget_sidebar_id( $widget_id );
+			$old_instance = $old_value;
+			$updates[] = compact( 'widget_id', 'title', 'name', 'sidebar_id', 'old_instance' );
+		}
+
+		foreach ( $updates as $update ) {
+
+			if ( $update['name'] && $update['title'] ) {
+				$message = _x(
+					'"%1$s" (%2$s) widget updated',
+					'1: Widget title, 2: Widget name',
+					'stream'
+				);
+			} else if ( $update['name'] ) {
+				// Empty title, but we have the name
+				$message = _x(
+					'%2$s widget updated',
+					'2: Widget name',
+					'stream'
+				);
+			} else if ( $update['title'] ) {
+				// Likely a single widget since no name is available
+				$message = _x(
+					'"%1$s" widget updated',
+					'1: Widget title',
+					'stream'
+				);
+			} else {
+				// Neither a name nor a title are available, so use the widget ID
+				$message = _x(
+					'%3$s widget updated',
+					'3: Widget ID',
+					'stream'
+				);
+			}
+			self::log(
+				$message,
+				compact( 'title', 'name', 'widget_id', 'sidebar_id', 'old_instance' ),
+				null,
+				array( $update['sidebar_id'] => 'updated' )
+			);
+		}
+	}
+
+	/**
+	 * @param string $widget_id
+	 * @return string
+	 */
+	public static function get_widget_title( $widget_id ) {
+		$instance = self::get_widget_instance( $widget_id );
+		return ! empty( $instance['title'] ) ? $instance['title'] : null;
+	}
+
+	/**
+	 * @param string $widget_id
+	 * @return string|null
+	 */
+	public static function get_widget_name( $widget_id ) {
+		$widget_obj = self::get_widget_object( $widget_id );
+		return $widget_obj ? $widget_obj->name : null;
+	}
+
+	/**
+	 * @param string $widget_id
+	 * @return WP_Widget|null
+	 */
+	public static function get_widget_object( $widget_id ) {
+		global $wp_registered_widget_controls, $wp_widget_factory;
+		if ( ! isset( $wp_registered_widget_controls[ $widget_id ] ) || empty( $wp_registered_widget_controls[ $widget_id ]['id_base'] ) ) {
+			return null;
+		}
+
+		$id_base = $wp_registered_widget_controls[ $widget_id ]['id_base'];
+		$id_base_to_widget_class_map = array_combine(
 			wp_list_pluck( $wp_widget_factory->widgets, 'id_base' ),
 			array_keys( $wp_widget_factory->widgets )
 		);
 
-		$labels  = self::get_context_labels();
-		$id_base = preg_match( '#(.*)-(\d+)$#', $id, $matches ) ? $matches[1] : null;
-		$number  = $matches[2];
-		$name    = $wp_widget_factory->widgets[ $ids[ $id_base ] ]->name;
-
-		$settings = self::get_widget_settings( $id );
-		$title    = ! empty( $settings['title'] ) ? $settings['title'] : $name;
-
-		$sidebar      = null;
-		$sidebar_name = null;
-
-		if ( false === $sidebars ) {
-			$sidebars = self::get_sidebar_widgets();
+		if ( ! isset( $id_base_to_widget_class_map[ $id_base ] ) ) {
+			return null;
 		}
 
-		foreach ( $sidebars as $_sidebar_id => $_sidebar ) {
-			if ( is_array( $_sidebar ) && in_array( $id, $_sidebar ) ) {
-				$sidebar      = $_sidebar_id;
-				$sidebar_name = isset( $labels[ $sidebar ] ) ? $labels[ $sidebar ] : esc_html__( 'Widgets', 'stream' );
-				break;
-			}
-		}
-
-		return array( $id_base, $name, $title, $sidebar, $sidebar_name, $ids[ $id_base ] );
+		return $wp_widget_factory->widgets[ $id_base_to_widget_class_map[ $id_base ] ];
 	}
 
 	/**
 	 * Returns widget instance settings
 	 *
-	 * @param  string $id  Widget ID, ex: pages-1
-	 * @return array       Widget instance
+	 * @param  string $widget_id  Widget ID, ex: pages-1
+	 * @return array|null         Widget instance
 	 */
-	public static function get_widget_settings( $id ) {
-		global $wp_widget_factory, $wp_registered_widgets, $wp_widget_factory, $wp_registered_sidebars;
+	public static function get_widget_instance( $widget_id ) {
+		$instance = null;
 
-		$id_base = preg_match( '#(.*)-(\d+)#', $id, $matches ) ? $matches[1] : null;
-		$number  = $matches[2];
-
-		$ids = array_combine(
-			wp_list_pluck( $wp_widget_factory->widgets, 'id_base' ),
-			array_keys( $wp_widget_factory->widgets )
-		);
-
-		$instance = $wp_widget_factory->widgets[ $ids[ $id_base ] ]->get_settings();
-
-		return isset( $instance[ $number ] ) ? $instance[ $number ] : array();
+		$widget_obj = self::get_widget_object( $widget_id );
+		if ( $widget_obj && ! empty( $widget_obj->params[0]['number'] ) ) {
+			$settings = $widget_obj->get_settings();
+			$multi_number = $widget_obj->params[0]['number'];
+			if ( isset( $settings[ $multi_number ] ) && ! empty( $settings[ $multi_number ]['title'] ) ) {
+				$instance = $settings[ $multi_number ];
+			}
+		} else {
+			// Single widgets, try our best guess at the option used
+			$potential_instance = get_option( "widget_{$widget_id}" );
+			if ( ! empty( $potential_instance ) && ! empty( $potential_instance['title'] ) ) {
+				$instance = $potential_instance;
+			}
+		}
+		return $instance;
 	}
 
 	/**
@@ -348,9 +542,10 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 *
 	 * @return array
 	 */
-	public static function get_sidebar_widgets() {
+	public static function get_sidebars_widgets() {
 		/**
 		 * Filter allows for insertion of sidebar widgets
+		 * @todo Do we need this filter?
 		 *
 		 * @param  array  Sidebar Widgets in Options table
 		 * @param  array  Inserted Sidebar Widgets
@@ -362,19 +557,17 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	/**
 	 * Return the sidebar of a certain widget, based on widget_id
 	 *
-	 * @param  string $id Widget id, ex: pages-1
-	 * @return string     Sidebar id
+	 * @param  string $widget_id  Widget id, ex: pages-1
+	 * @return string             Sidebar id
 	 */
-	public static function get_widget_sidebar( $id ) {
-		$sidebars = self::get_sidebar_widgets();
-
-		foreach ( $sidebars as $sidebar_id => $bar ) {
-			if ( in_array( $id, $bar ) ) {
+	public static function get_widget_sidebar_id( $widget_id ) {
+		$sidebars_widgets = self::get_sidebars_widgets();
+		foreach ( $sidebars_widgets as $sidebar_id => $widget_ids ) {
+			if ( in_array( $widget_id, $widget_ids ) ) {
 				return $sidebar_id;
 			}
 		}
-
-		return null;
+		return 'orphaned_widgets';
 	}
 
 }
