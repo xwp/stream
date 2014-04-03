@@ -241,6 +241,28 @@
 
 			} );
 
+			this.$configureDiv.parents( '.postbox' ).on( 'keydown', '.title', function() {
+
+				var $inputBox = $(this);
+
+				if( '' === $(this).val() && $(this).siblings( '.clear-title' ).length ) {
+					$(this).siblings( '.clear-title' ).remove();
+				}
+
+				if( '' !== $(this).val() && ! $(this).siblings( '.clear-title' ).length ) {
+					$(this).after( $( '<a/>', {
+						'class': 'clear-title',
+						'text': streamReportsLocal.clear,
+						'click': function() {
+							$inputBox.val('');
+							$inputBox.trigger( 'keydown' );
+						}
+
+					} ) );
+				}
+
+			} );
+
 			// Configuration toggle
 			this.$configureBtn.on('click.streamReports', function () {
 				var $target = $(this), $title;
@@ -260,13 +282,6 @@
 					    	'placeholder': generatedTitle,
 					} );
 					$titleText.replaceWith( $inputBox );
-					$inputBox.after( $( '<a />', {
-						'class': 'clear-title',
-						'text': streamReportsLocal.clear,
-						'click': function() {
-							$inputBox.val( '' );
-						}
-					} ) );
 
 					// Click function management
 					parent.$clickFunction = $._data($curPostbox.find('h3').get(0)).events.click[0].handler;
