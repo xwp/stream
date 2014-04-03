@@ -14,6 +14,7 @@
 
 .stream_page_wp_stream_reports #dashboard-widgets h3 input.title {
 	width: 220px;
+	line-height: 19px;
 }
 
 .stream_page_wp_stream_reports #dashboard-widgets h3 .postbox-title-action {
@@ -38,6 +39,10 @@
 
 .stream_page_wp_stream_reports .date-interval {
 	margin: 10px 10px 3px;
+}
+
+.stream_page_wp_stream_reports .postbox:hover .edit-box {
+	display: inline;
 }
 
 .stream_page_wp_stream_reports .postbox > .inside {
@@ -110,6 +115,11 @@
 
 .stream_page_wp_stream_reports .postbox .configure .chart-types .dashicons.active {
 	color: #000;
+}
+
+.stream_page_wp_stream_reports .postbox .clear-title {
+	cursor: pointer;
+	margin-left: 5px;
 }
 
 .stream_page_wp_stream_reports .stream-reports-chart-height-option{

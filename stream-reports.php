@@ -248,6 +248,7 @@ class WP_Stream_Reports {
 			array(
 				'configure' => __( 'Configure', 'stream-reports' ),
 				'cancel'    => __( 'Cancel', 'stream-reports' ),
+				'clear'     => __( 'Clear', 'stream-reports' ),
 				'deletemsg' => __( 'Do you really want to delete this section? This cannot be undone.', 'stream-reports' )
 			)
 		);
