@@ -100,9 +100,9 @@ class WP_Stream_Install {
 				<form method="post" action="<?php echo esc_url( self_admin_url( $referrer ) ) ?>">
 				<?php wp_nonce_field( 'update_required', 'wp_stream_update', wp_get_referer(), true ) ?>
 					<input type="hidden" name="update_action" value="wp_stream_update"/>
-					<p><?php esc_html_e( __( 'Stream Database Update Required', 'stream' ) ) ?></p>
-					<p><?php esc_html_e( __( 'Before we send you on your way we have to update your database to the newest version', 'stream' ) ) ?></p>
-					<p><?php esc_html_e( __( 'The update process may take a few minutes so please be patient', 'stream' ) ) ?></p>
+					<p><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></p>
+					<p><?php esc_html_e( 'Before we send you on your way we have to update your database to the newest version', 'stream' ) ?></p>
+					<p><?php esc_html_e( 'The update process may take a few minutes so please be patient', 'stream' ) ?></p>
 					<p><?php submit_button( __( 'Update Database', 'stream' ) ) ?></p>
 				</form>
 			</div>
@@ -396,24 +396,29 @@ if ( ! isset( $_REQUEST['wp_stream_update'] ) )
  */
 require_once( ABSPATH . 'wp-admin/admin.php' );
 
-if ( !current_user_can( 'activate_plugins' ) )
+if ( !current_user_can( 'activate_plugins' ) ) {
 	wp_die( __( 'You do not have sufficient permissions to manage plugins for this site.' ) );
+}
 
-
-//Clean up request URI from temporary args for screen options / paging uri's to work as expected.
-$_SERVER['REQUEST_URI'] = remove_query_arg(array('error', 'deleted', 'activate', 'activate - multi', 'deactivate', 'deactivate - multi', '_error_nonce'), $_SERVER['REQUEST_URI']);
+// Clean up request URI from temporary args for screen options / paging uri's to work as expected.
+$_SERVER['REQUEST_URI'] = remove_query_arg(
+	array(
+		'error', 'deleted', 'activate',
+		'activate - multi', 'deactivate',
+		'deactivate - multi', '_error_nonce',
+	),
+	$_SERVER['REQUEST_URI']
+);
 
 require_once( ABSPATH . 'wp-admin/admin-header.php' );
 
 $wp_stream_update = WP_Stream_Install::get_instance();
 $referrer = wp_get_referer();
-
 ?>
-
 <div class="wrap">
 	<h2><?php _e( 'Stream Settings', 'stream' ) ?></h2>
 	<?php
-	if ( isset( $_REQUEST['wp_stream_update'] ) && 'update_required' == $_REQUEST['wp_stream_update'] ) {
+	if ( isset( $_REQUEST['wp_stream_update'] ) && 'update_required' === $_REQUEST['wp_stream_update'] ) {
 			$success_db = $wp_stream_update::update( $wp_stream_update::$db_version, $wp_stream_update::$current );
 			$success_op = update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $wp_stream_update::$current );
 			if ( ! $success_op || ! $success_db ) {
@@ -425,31 +430,31 @@ $referrer = wp_get_referer();
 		<div class="updated">
 				<form method="post" action="<?php echo esc_url( self_admin_url( '/admin.php?page=wp_stream_settings' ) ) ?>">
 					<?php wp_nonce_field( 'dismiss_notice', 'wp_stream_update' ) ?>
-					<p><?php esc_html_e( __( 'Update complete', 'stream' ) ) ?></p>
-					<p><?php esc_html_e( __( 'Your stream database has been successfully updated', 'stream' ) ) ?></p>
+					<p><?php esc_html_e( 'Update complete', 'stream' ) ?></p>
+					<p><?php esc_html_e( 'Your stream database has been successfully updated', 'stream' ) ?></p>
 					<p><?php submit_button( __( 'Continue', 'stream' ), 'minor' ) ?></p>
 				</form>
 			</div>
 	<?php
-
-	}
-	elseif ( isset( $_REQUEST['wp_stream_update'] ) && 'dismiss_notice' == $_REQUEST['wp_stream_update'] ) {
-		if ( false !== strpos( $referrer, $location ) )
+	} elseif ( isset( $_REQUEST['wp_stream_update'] ) && 'dismiss_notice' == $_REQUEST['wp_stream_update'] ) {
+		if ( false !== strpos( $referrer, $location ) ) {
 			$location = $referrer;
+		}
 
 		$location = remove_query_arg( 'update_action', self_admin_url( $location ) );
+
 		wp_redirect( self_admin_url( $location ) );
 		exit;
-	}
-
-	elseif ( isset( $_REQUEST['wp_stream_update'] ) && 'wp_stream_update' == $_REQUEST['update_action'] ) {
-		if ( false !== strpos( $referrer, $location ) )
+	} elseif ( isset( $_REQUEST['wp_stream_update'] ) && 'wp_stream_update' == $_REQUEST['update_action'] ) {
+		if ( false !== strpos( $referrer, $location ) ) {
 			$location = $referrer;
+		}
 
 		wp_redirect( self_admin_url( remove_query_arg( 'wp_stream_update', $location ) ) );
 		exit;
-	} ?>
-	</div>
+	}
+	?>
+		</div>
+	<?php
 
-<?php
 include( ABSPATH . 'wp-admin/admin-footer.php' );
