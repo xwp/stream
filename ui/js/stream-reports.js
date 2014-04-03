@@ -260,6 +260,13 @@
 					    	'placeholder': generatedTitle,
 					} );
 					$titleText.replaceWith( $inputBox );
+					$inputBox.after( $( '<a />', {
+						'class': 'clear-title',
+						'text': streamReportsLocal.clear,
+						'click': function() {
+							$inputBox.val( '' );
+						}
+					} ) );
 
 					// Click function management
 					parent.$clickFunction = $._data($curPostbox.find('h3').get(0)).events.click[0].handler;
@@ -279,6 +286,7 @@
 					}
 
 					$inputBox.replaceWith( $titleText );
+					$titleText.siblings( '.clear-title' ).remove();
 
 					// Click function management
 					$curPostbox.find('h3').on('click.postboxes', parent.$clickFunction);
