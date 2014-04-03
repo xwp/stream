@@ -273,7 +273,7 @@
 				var generatedTitle = $curPostbox.find( '.chart-generated-title' ).val();
 				var displayedTitle = realTitle;
 				if ( '' == displayedTitle ) {
-					dispalyedTitle = generatedTiitle;
+					dispalyedTitle = generatedTitle;
 				}
 
 				// Remove event handler added by core and add it back when user click cancel or save
