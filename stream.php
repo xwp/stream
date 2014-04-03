@@ -36,7 +36,7 @@ class WP_Stream {
 	 *
 	 * @const string
 	 */
-	const VERSION = '1.3.1';
+	const VERSION = '1.3.0';
 
 	/**
 	 * Hold Stream instance
@@ -63,6 +63,7 @@ class WP_Stream {
 	private function __construct() {
 		define( 'WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
+		define( 'WP_STREAM_UPDATE_URL', WP_STREAM_URL . DIRECTORY_SEPARATOR . 'includes/install.php' );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 
@@ -152,8 +153,7 @@ class WP_Stream {
 
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
-		WP_Stream_Install::check();
-
+		$update = WP_Stream_Install::get_instance();
 	}
 
 	/**
