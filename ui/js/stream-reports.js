@@ -241,7 +241,7 @@
 
 			} );
 
-			this.$configureDiv.parents( '.postbox' ).on( 'keydown', '.title', function() {
+			this.$configureDiv.parents( '.postbox' ).on( 'keyup paste', '.title', function() {
 
 				var $inputBox = $(this);
 
