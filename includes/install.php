@@ -2,14 +2,44 @@
 
 class WP_Stream_Install {
 
+	/**
+	 * Holds the database table prefix
+	 *
+	 * @access public
+	 * @var mixed|void
+	 */
 	public static $table_prefix;
 
+	/**
+	 * Holds version of database at last update
+	 *
+	 * @access public
+	 * @var mixed|void
+	 */
 	public static $db_version;
 
+	/**
+	 * Current version of running plugin
+	 *
+	 * @access public
+	 * @var string|int
+	 */
 	public static $current;
 
+	/**
+	 * Initialized object of class
+	 *
+	 * @access private
+	 * @var bool|object
+	 */
 	private static $instance = false;
 
+	/**
+	 * Gets instance of singleton class
+	 *
+	 * @access public
+	 * @return bool|object|WP_Stream_Install
+	 */
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self();
@@ -17,11 +47,14 @@ class WP_Stream_Install {
 		return self::$instance;
 	}
 
+	/**
+	 * Class constructor
+	 * Sets static class properties
+	 */
 	function __construct() {
 		global $wpdb;
 		self::$current = WP_Stream::VERSION;
 
-		//update_option( plugin_basename( WP_STREAM_DIR ) . '_db', self::$current );
 		self::$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 
 		/**
@@ -30,12 +63,7 @@ class WP_Stream_Install {
 		 * @var string $prefix  database prefix
 		 * @var string $table_prefix udpated database prefix
 		 */
-		if ( is_multisite() ) {
-			$prefix = $wpdb->prefix; //change to $wpdb->base_prefix when network stream enabled;
-		}
-		else {
-			$prefix = $wpdb->prefix;
-		}
+		$prefix = $wpdb->prefix;
 
 		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $prefix );
 		self::check();
@@ -46,6 +74,7 @@ class WP_Stream_Install {
 	 * If database update required admin notice will be given
 	 * on the plugin update screen
 	 *
+	 * @action pre_current_active_plugins
 	 * @return null
 	 */
 	private static function check() {
@@ -57,6 +86,12 @@ class WP_Stream_Install {
 		}
 	}
 
+	/**
+	 * Action hook callback function
+	 * Adds the user controlled database upgrade routine to the plugins updated page
+	 *
+	 * When database update is complete page will refresh with dismissible message to user
+	 */
 	public static function prompt_update() {
 		$referrer = wp_get_referer();
 		$location = 'plugins.php';
@@ -92,18 +127,21 @@ class WP_Stream_Install {
 		} elseif ( isset( $_REQUEST['action'] ) && 'dismiss_notice' == $_REQUEST['action'] ) {
 
 			if ( $referrer  ) {
+				update_option( plugin_basename( WP_STREAM_DIR ) . '_db', self::$current );
 				if ( false !== strpos( $referrer, $location ) )
 					$location = $referrer;
 
 				$location = remove_query_arg( 'action', admin_url( $location ) );
-
-				update_option( plugin_basename( WP_STREAM_DIR ) . '_db', self::$current );
 				wp_redirect( admin_url( $location ) );
 				exit;
 			}
 		}
 	}
 
+	/**
+	 * Initial database install routine
+	 * @uses dbDelta()
+	 */
 	public static function install() {
 		global $wpdb;
 
@@ -189,6 +227,12 @@ class WP_Stream_Install {
 		dbDelta( $sql );
 	}
 
+	/**
+	 * Database user controlled update routine
+	 *
+	 * @param int $db_version last updated version of database stored in plugin options
+	 * @param int $current Current running plugin version
+	 */
 	public static function update( $db_version, $current ) {
 		global $wpdb;
 		$prefix = self::$table_prefix;
