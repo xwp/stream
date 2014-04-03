@@ -96,10 +96,6 @@ class WP_Stream_Install {
 		$referrer = wp_get_referer();
 		$location = 'plugins.php';
 
-		if ( isset( $_REQUEST['action'] ) && 'wp_stream_update' == $_REQUEST['action'] ) {
-			self::update( self::$db_version, self::$current );
-
-		} elseif ( isset( $_REQUEST['wp_stream_update'] ) && 'stream_updated' == $_REQUEST['wp_stream_update'] ) {
 			?>
 			<form method="post" action="">
 				<?php wp_nonce_field( 'wp_stream_update' ) ?>
@@ -112,11 +108,11 @@ class WP_Stream_Install {
 					</div>
 			</form>
 		<?php
-		} elseif ( isset( $_REQUEST['wp_stream_update_confirmed'] ) && 'wp_stream_update_confirmed' == $_REQUEST['wp_stream_update_confirmed'] ) {
 
+		if ( isset( $_REQUEST['wp_stream_update_confirmed'] ) && 'wp_stream_update_confirmed' == $_REQUEST['wp_stream_update_confirmed'] ) {
 			?>
 			<form method="post" action="">
-				<input type="hidden" name="action" value="wp_stream_update"/>
+				<input type="hidden" name="action" value="dismiss_notice"/>
 					<div class="updated">
 						<p><?php echo esc_html( __( 'Update complete', 'stream' ) ) ?></p>
 						<p><?php echo esc_html( __( 'Your stream database has been successfully updated', 'stream' ) ) ?></p>
@@ -135,6 +131,15 @@ class WP_Stream_Install {
 				wp_redirect( admin_url( $location ) );
 				exit;
 			}
+		} elseif ( isset( $_REQUEST['action'] ) && 'wp_stream_update' == $_REQUEST['action'] ) {
+			self::update( self::$db_version, self::$current );
+			if ( false !== strpos( $referrer, $location ) )
+				$location = $referrer;
+
+			$location = remove_query_arg( 'action', admin_url( $location ) );
+			$location = add_query_arg( array( 'wp_stream_update_confirmed' => 'wp_stream_update_confirmed' ), $location );
+			wp_redirect( admin_url( $location ) );
+			exit;
 		}
 	}
 
