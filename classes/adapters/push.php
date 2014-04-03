@@ -71,7 +71,7 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 						sprintf(
 							__( 'Only those users with a %s in their profile can be selected.', 'stream-notifications' ),
 							sprintf(
-								'<a href="%s">%s</a>',
+								'<a href="%s" target="_blank">%s</a>',
 								admin_url( 'profile.php#wp-stream-highlight:ckpn_user_key' ),
 								__( 'Pushover User Key', 'stream-notifications' )
 							)
