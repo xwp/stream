@@ -20,7 +20,8 @@ class WP_Stream_Network {
 
 	function filters() {
 		add_filter( 'wp_stream_options_fields', array( $this, 'get_fields' ) );
-		add_filter( 'wp_stream_options', array( $this, 'filter_options' ) );
+		add_filter( 'wp_stream_options', array( $this, 'get_network_options' ) );
+		add_filter( 'stream_toggle_filters', array( $this, 'toggle_filters' ) );
 	}
 
 	/**
@@ -142,13 +143,13 @@ class WP_Stream_Network {
 	}
 
 	/**
-	 * Filters stream options when on the network settings page
+	 * Uses network options when on the network settings page
 	 *
 	 * @param $options
 	 *
 	 * @return array
 	 */
-	function filter_options( $options ) {
+	function get_network_options( $options ) {
 		if ( ! is_network_admin() ) {
 			return $options;
 		}
@@ -163,6 +164,21 @@ class WP_Stream_Network {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Add the Site toggle to screen options when in network settings
+	 *
+	 * @param $options
+	 *
+	 * @return array
+	 */
+	function toggle_filters( $filters ) {
+		if ( ! is_network_admin() ) {
+			return $filters;
+		}
+		$filters['blog_id'] = esc_html__( 'Site', 'stream' );
+		return $filters;
 	}
 
 }

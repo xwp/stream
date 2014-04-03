@@ -44,7 +44,7 @@ class WP_Stream_Settings {
 		 *
 		 * @param  array  array of options
 		 * @return array  updated array of options
-		*/
+		 */
 		return apply_filters(
 			'wp_stream_options',
 			wp_parse_args(
@@ -325,7 +325,7 @@ class WP_Stream_Settings {
 							'desc'        => sprintf(
 								__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
 							),
-							'after_field' => __( 'Hide Previous Records' ),
+							'after_field' => __( 'Hide Previous Records', 'stream' ),
 							'default'     => 0,
 						),
 					),
@@ -671,7 +671,12 @@ class WP_Stream_Settings {
 				}
 
 				foreach ( $choices as $key => $role ) {
-					$data_values[] = array( 'id' => $key, 'text' => $role );
+					$args  = array( 'id' => $key, 'text' => $role );
+					$users = get_users( array( 'role' => $key ) );
+					if ( count( $users ) ) {
+						$args['user_count'] = sprintf( _n( '1 user', '%s users', count( $users ), 'stream' ), count( $users ) );
+					}
+					$data_values[] = $args;
 				}
 
 				$selected_values = array();
