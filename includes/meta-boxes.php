@@ -160,7 +160,7 @@ class WP_Stream_Reports_Metaboxes {
 			$section['generated_title'] = $this->get_generated_title( $section );
 
 			// Generate the title automatically if not already set
-			$title = empty( $section['title'] ) ? $this->get_generated_title( $section ) : $section['title'];
+			$title = empty( $section['title'] ) ? $section['generated_title'] : $section['title'];
 
 			// Add the actual metabox
 			add_meta_box(
