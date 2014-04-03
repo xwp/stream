@@ -358,17 +358,15 @@ class WP_Stream_Admin {
 		$option_key   = WP_Stream_Settings::get_option_key();
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 		$form_action  = is_network_admin() ? add_query_arg( array( 'action' => $current_page ), 'edit.php' ) : admin_url( 'options.php' );
+
+		$sections   = WP_Stream_Settings::get_fields();
+		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 		?>
 		<div class="wrap">
 
 			<h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
 
 			<?php settings_errors() ?>
-
-			<?php
-			$sections   = WP_Stream_Settings::get_fields();
-			$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
-			?>
 
 			<h2 class="nav-tab-wrapper">
 				<?php $i = 0 ?>
@@ -384,18 +382,18 @@ class WP_Stream_Admin {
 			<div class="nav-tab-content" id="tab-content-settings">
 
 				<form method="post" action="<?php echo esc_attr( $form_action ) ?>" enctype="multipart/form-data">
-					<?php
-					$i = 0;
-					foreach ( $sections as $section => $data ) {
-						$i++;
-						$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
-						if ( $is_active ) {
-							settings_fields( $option_key );
-							do_settings_sections( $option_key );
-						}
-					}
-					submit_button();
-					?>
+		<?php
+		$i = 0;
+		foreach ( $sections as $section => $data ) {
+			$i++;
+			$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
+			if ( $is_active ) {
+				settings_fields( $option_key );
+				do_settings_sections( $option_key );
+			}
+		}
+		submit_button();
+		?>
 				</form>
 
 			</div>

@@ -602,7 +602,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters = $this->get_filters();
 
-		$filters_string = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
+		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
 		$filters_string .= sprintf( __( '%1$sShow filter controls via the screen options tab above%2$s', 'stream' ), '<span class="filter_info" style="display:none">', '</span>' );
 
 		foreach ( $filters as $name => $data ) {
@@ -782,8 +782,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	public function screen_controls( $status, $args ) {
 
-		$user_id                 = get_current_user_id();
-		$option                  = get_user_meta( $user_id, 'enable_live_update', true );
+		$user_id = get_current_user_id();
+		$option  = get_user_meta( $user_id, 'enable_live_update', true );
 
 		$filters = $this->get_filters();
 
@@ -833,17 +833,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 				<input type="hidden" name="toggle_filters_user" id="toggle_filters_user" value="<?php echo absint( $user_id ) ?>" />
 			</div>
 			<div class="metabox-prefs stream-toggle-filters">
-				<?php
-
-				foreach ( $filters as $key => $val ) :
-					?>
-					<label for="<?php echo esc_attr( $key ); ?>">
-						<input type="hidden" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" value="0" />
-						<input type="checkbox" value="1" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" id="<?php echo esc_attr( $key ); ?>" <?php checked( $filters_option[ $key ] ) ?> />
-						<?php echo esc_html( ucwords( $val['title'] ) ); ?><span class="spinner"></span>
-					</label>
-					<?php
-				endforeach; ?>
+				<?php foreach ( $filters as $key => $val ) : ?>
+				<label for="<?php echo esc_attr( $key ); ?>">
+					<input type="hidden" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" value="0" />
+					<input type="checkbox" value="1" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" id="<?php echo esc_attr( $key ); ?>" <?php checked( $filters_option[ $key ] ) ?> />
+					<?php echo esc_html( ucwords( $val['title'] ) ); ?><span class="spinner"></span>
+				</label>
+				<?php endforeach; ?>
 			</div>
 		</fieldset>
 
