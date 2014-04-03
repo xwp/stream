@@ -157,6 +157,7 @@ class WP_Stream_Reports_Metaboxes {
 
 			// Set the key for template use
 			$section['key'] = $key;
+			$section['generated_title'] = $this->get_generated_title( $section );
 
 			// Generate the title automatically if not already set
 			$title = empty( $section['title'] ) ? $this->get_generated_title( $section ) : $section['title'];

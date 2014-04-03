@@ -245,25 +245,46 @@
 			this.$configureBtn.on('click.streamReports', function () {
 				var $target = $(this), $title;
 
-				// Hold parent container
 				var $curPostbox = $target.parents('.postbox');
 
-				// Get the title of the metabox
-				$title = $curPostbox.find('.hndle .title');
-				var titleValue = $curPostbox.find( '.chart-title' ).val();
+				var realTitle      = $curPostbox.find( '.chart-title' ).val();
+				var generatedTitle = $curPostbox.find( '.chart-generated-title' ).val();
 
 				// Remove event handler added by core and add it back when user click cancel or save
 				if ($target.text() === streamReportsLocal.configure) {
-					$target.text(streamReportsLocal.cancel);
-					parent.$titleHTML = $title.html();
-					$title.replaceWith('<input type="text" class="title" value="' + titleValue + '">');
+					var $titleText = $curPostbox.find( '.hndle .title' );
+					var $inputBox  = $( '<input/>', {
+						'type': 'text',
+					    	'class': 'title',
+					    	'value': realTitle,
+					    	'placeholder': generatedTitle,
+					} );
+					$titleText.replaceWith( $inputBox );
+
 					// Click function management
 					parent.$clickFunction = $._data($curPostbox.find('h3').get(0)).events.click[0].handler;
 					$curPostbox.find('h3').off('click.postboxes');
+
+					// Switch configure button text
+					$target.text(streamReportsLocal.cancel);
 				} else {
-					$target.text(streamReportsLocal.configure);
-					$title.replaceWith('<span class="title">' + $title.val() + '</span>');
+					var $inputBox  = $curPostbox.find( '.hndle .title' );
+					var $titleText = $( '<span/>', {
+						'class': 'title',
+						'text': $inputBox.val(),
+					} );
+
+					if ( '' == $titleText.text() ) {
+						$titleText.text( $inputBox.attr( 'placeholder' ) );
+					}
+
+					$inputBox.replaceWith( $titleText );
+
+					// Click function management
 					$curPostbox.find('h3').on('click.postboxes', parent.$clickFunction);
+
+					// Switch cancel button text
+					$target.text(streamReportsLocal.configure);
 				}
 
 				// Always show the cancel button
