@@ -253,15 +253,3 @@ table.alert-options tbody tr td {
 	margin: 0;
 	padding-bottom: 15px;
 }
-
-.stream_page_wp_stream_notifications #triggers .icon16 {
-	margin: -6px 1px 0 -3px;
-	padding: 0;
-	width: 16px;
-	height: 16px;
-}
-
-.stream_page_wp_stream_notifications #triggers .icon16:before {
-	font-size: 15px !important;
-	color: #656565;
-}
