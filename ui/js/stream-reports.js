@@ -388,8 +388,8 @@
 								$box.find( '.chart-generated-title' ).val( data.data.generated_title );
 
 								var newTitle = data.data.title;
-								if ( '' = newTitle ) {
-									newTitle = data.data.generatedTitle;
+								if ( '' == newTitle ) {
+									newTitle = data.data.generated_title;
 								}
 
 								$box.find( '.hndle .title' ).text( newTitle );
