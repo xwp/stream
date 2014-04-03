@@ -30,11 +30,7 @@ jQuery(function($){
 		tmpl_alert_options = _.template( $('script#alert-template-options').html() ),
 
 		select2_format = function( item ) {
-			var text = item.text;
-			if ( typeof item.avatar !== 'undefined' ) {
-				text = item.avatar + item.text;
-			}
-			return text;
+			return item.text;
 		},
 
 		select2_args = {
@@ -127,6 +123,24 @@ jQuery(function($){
 							}).done( function( data ) { callback( data.data ); } );
 						}
 					};
+					elementArgs.formatResult = function(object) {
+						var result = object.text;
+
+						if ( object.hasOwnProperty( 'avatar' ) ) {
+							result = object.avatar + result;
+						}
+
+						return result;
+					};
+					elementArgs.formatSelection = function(object) {
+						var result = object.text;
+
+						if ( object.hasOwnProperty( 'avatar' ) ) {
+							result += '<i class="icon16 icon-users"></i>';
+						}
+
+						return result;
+					}
 				}
 
 				$this.select2( elementArgs );
