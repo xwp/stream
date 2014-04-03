@@ -271,6 +271,10 @@
 
 				var realTitle      = $curPostbox.find( '.chart-title' ).val();
 				var generatedTitle = $curPostbox.find( '.chart-generated-title' ).val();
+				var displayedTitle = realTitle;
+				if ( '' == displayedTitle ) {
+					dispalyedTitle = generatedTiitle;
+				}
 
 				// Remove event handler added by core and add it back when user click cancel or save
 				if ($target.text() === streamReportsLocal.configure) {
@@ -294,7 +298,7 @@
 					var $inputBox  = $curPostbox.find( '.hndle .title' );
 					var $titleText = $( '<span/>', {
 						'class': 'title',
-						'text': $inputBox.val(),
+						'text': displayedTitle,
 					} );
 
 					if ( '' == $titleText.text() ) {
