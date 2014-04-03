@@ -702,8 +702,9 @@ class WP_Stream_Reports_Metaboxes {
 
 		wp_send_json_success(
 			array(
-				'options' => $chart_options,
-				'title' => empty( $section['title'] ) ? $this->get_generated_title( $args ) : $section['title'],
+				'options'         => $chart_options,
+				'title'           => $section['title'],
+				'generated_title' => $this->get_generated_title( $args ),
 			)
 		);
 	}

@@ -369,8 +369,15 @@
 									$('.columns-prefs input[type="radio"]')
 								);
 
-								$box.find( '.hndle .title' ).text( data.data.title );
+								$box.find( '.chart-title' ).val( data.data.title );
+								$box.find( '.chart-generated-title' ).val( data.data.generated_title );
 
+								var newTitle = data.data.title;
+								if ( '' = newTitle ) {
+									newTitle = data.data.generatedTitle;
+								}
+
+								$box.find( '.hndle .title' ).text( newTitle );
 							}
 						})
 
