@@ -35,6 +35,20 @@ class WP_Stream_Install {
 	public static $stream_url;
 
 	/**
+	 * Is plugin network activated
+	 * 
+	 * @var bool
+	 */
+	public static $network;
+
+	/**
+	 * Array of plugin version numbers that require db update
+	 * 
+	 * @var array
+	 */
+	public static $db_update_versions;
+
+	/**
 	 * Initialized object of class
 	 *
 	 * @access private
@@ -62,10 +76,17 @@ class WP_Stream_Install {
 	 */
 	function __construct() {
 		global $wpdb;
-
-		self::$current    = WP_Stream::VERSION;
+		self::$current = WP_Stream::VERSION;
+		if ( is_plugin_active_for_network( WP_STREAM_DIR ) ) {
+			self::$db_version = get_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+			self::$network    = true;
+		} else {
+			self::$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+			self::$network    = false;
+		}
 		self::$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 		self::$stream_url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE . '&page=' . WP_Stream_Admin::SETTINGS_PAGE_SLUG );
+		self::$db_update_versions = WP_Stream::get_update_versions();
 
 		/**
 		 * Allows devs to alter the tables prefix, default to base_prefix
@@ -89,6 +110,7 @@ class WP_Stream_Install {
 	private static function check() {
 		if ( empty( self::$db_version ) ) {
 			$current = self::install( self::$current );
+
 		} elseif ( self::$db_version !== self::$current ) {
 			add_action( 'admin_notices', array( __CLASS__, 'update_notice_hook' ) );
 		}
@@ -149,8 +171,10 @@ class WP_Stream_Install {
 	public static function update_notice_hook() {
 		if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 			self::prompt_update();
+
 		} elseif ( 'user_action_required' === $_REQUEST['wp_stream_update' ] ) {
 			self::prompt_update_status();
+
 		} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
 			self::prompt_update_status();
 		}
@@ -258,24 +282,42 @@ class WP_Stream_Install {
 		global $wpdb;
 		$prefix = self::$table_prefix;
 
-		// If version is lower than 1.1.4, do the update routine
-		if ( version_compare( $db_version, '1.1.4', '<' ) && ! empty( $wpdb->charset ) ) {
-			$tables  = array( 'stream', 'stream_context', 'stream_meta' );
-			$collate = ( $wpdb->collate ) ? " COLLATE {$wpdb->collate}" : null;
-			foreach ( $tables as $table ) {
-				$wpdb->query( "ALTER TABLE {$prefix}{$table} CONVERT TO CHARACTER SET {$wpdb->charset}{$collate};" );
+		foreach ( self::$db_update_versions as $version ) {
+
+			if ( version_compare( $db_version, $version, '<' ) ) {
+				$version_func = str_ireplace( '.', '', $version );
+				call_user_func( array( __CLASS__, 'update'. $version_func ), $prefix, $wpdb );
 			}
 		}
 
-		// If version is lower than 1.1.7, do the update routine
-		if ( version_compare( $db_version, '1.1.7', '<' ) ) {
-			$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(39) NULL AFTER created" );
+		return $current;
+
+	}
+
+
+	public static function update_114( $prefix, $wpdb ) {
+		global $wpdb;
+
+		if ( ! empty( $wpdb->carset ) ) {
+			return;
 		}
 
-		// If version is lower than 1.2.5, do the update routine
-		// Taxonomy records switch from term_id to term_taxonomy_id
-		if ( version_compare( $db_version, '1.2.5', '<' ) ) {
-			$sql = "SELECT r.ID id, tt.term_taxonomy_id tt
+		$tables  = array( 'stream', 'stream_context', 'stream_meta' );
+		$collate = ( $wpdb->collate ) ? " COLLATE {$wpdb->collate}" : null;
+		foreach ( $tables as $table ) {
+			$wpdb->query( "ALTER TABLE {$prefix}{$table} CONVERT TO CHARACTER SET {$wpdb->charset}{$collate};" );
+		}
+	}
+
+	public static function update_117( $prefix, $wpdb ) {
+		if ( ! empty( $wpdb->carset ) ) {
+			return;
+		}
+		$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(39) NULL AFTER created" );
+	}
+
+	public static function update_125( $prefix, $wpdb ) {
+		$sql = "SELECT r.ID id, tt.term_taxonomy_id tt
 				FROM $wpdb->stream r
 				JOIN $wpdb->streamcontext c
 					ON r.ID = c.record_id AND c.connector = 'taxonomies'
@@ -287,64 +329,52 @@ class WP_Stream_Install {
 					ON tt.term_id = m.meta_value
 					AND tt.taxonomy = m2.meta_value
 				";
-			$tax_records = $wpdb->get_results( $sql ); // db call ok
-			foreach ( $tax_records as $record ) {
-				if ( ! empty( $record->tt ) ) {
-					$wpdb->update(
-						$wpdb->stream,
-						array( 'object_id' => $record->tt ),
-						array( 'ID' => $record->id ),
-						array( '%d' ),
-						array( '%d' )
-					);
-				}
+		$tax_records = $wpdb->get_results( $sql ); // db call ok
+		foreach ( $tax_records as $record ) {
+			if ( ! empty( $record->tt ) ) {
+				$wpdb->update(
+					$wpdb->stream,
+					array( 'object_id' => $record->tt ),
+					array( 'ID' => $record->id ),
+					array( '%d' ),
+					array( '%d' )
+				);
 			}
 		}
+	}
 
-		// If version is lower than 1.2.8, do the update routine
-		// Change the context for Media connectors to the attachment type
-		if ( version_compare( $db_version, '1.2.8', '<' ) ) {
-			$sql = "SELECT r.ID id, r.object_id pid, c.meta_id mid
+	public static function update_128( $prefix, $wpdb ) {
+		$sql = "SELECT r.ID id, r.object_id pid, c.meta_id mid
 				FROM $wpdb->stream r
 				JOIN $wpdb->streamcontext c
 					ON r.ID = c.record_id AND c.connector = 'media' AND c.context = 'media'
 				";
-			$media_records = $wpdb->get_results( $sql ); // db call ok
+		$media_records = $wpdb->get_results( $sql ); // db call ok
 
-			require_once WP_STREAM_INC_DIR . 'query.php';
-			require_once WP_STREAM_CLASS_DIR . 'connector.php';
-			require_once WP_STREAM_DIR . 'connectors/media.php';
+		foreach ( $media_records as $record ) {
+			$post = get_post( $record->pid );
+			$guid = isset( $post->guid ) ? $post->guid : null;
+			$url  = $guid ? $guid : get_stream_meta( $record->id, 'url', true );
 
-			foreach ( $media_records as $record ) {
-				$post = get_post( $record->pid );
-				$guid = isset( $post->guid ) ? $post->guid : null;
-				$url  = $guid ? $guid : get_stream_meta( $record->id, 'url', true );
-
-				if ( ! empty( $url ) ) {
-					$wpdb->update(
-						$wpdb->streamcontext,
-						array( 'context' => WP_Stream_Connector_Media::get_attachment_type( $url ) ),
-						array( 'record_id' => $record->id ),
-						array( '%s' ),
-						array( '%d' )
-					);
-				}
+			if ( ! empty( $url ) ) {
+				$wpdb->update(
+					$wpdb->streamcontext,
+					array( 'context' => WP_Stream_Connector_Media::get_attachment_type( $url ) ),
+					array( 'record_id' => $record->id ),
+					array( '%s' ),
+					array( '%d' )
+				);
 			}
 		}
 
-		// If version is lower than 1.3.0, do the update routine for site options
-		// Backward settings compatibility for old version plugins
-		if ( version_compare( $db_version, '1.3.0', '<' ) ) {
-			add_action( 'wp_stream_after_connectors_registration', array( __CLASS__, 'migrate_old_options_to_exclude_tab' ) );
-		}
+	}
 
-		// If version is lower than 1.3.1, do the update routine
-		// Update records of Installer to Theme Editor connector
-		if ( version_compare( $db_version, '1.3.1', '<' ) ) {
-			add_action( 'wp_stream_after_connectors_registration', array( __CLASS__, 'migrate_installer_edits_to_theme_editor_connector' ) );
-		}
+	public static function update_130( $prefix, $wpdb ) {
+		add_action( 'wp_stream_after_connectors_registration', array( __CLASS__, 'migrate_old_options_to_exclude_tab' ) );
+	}
 
-		return $current;
+	public static function update_131( $prefix, $wpdb ) {
+		add_action( 'wp_stream_after_connectors_registration', array( __CLASS__, 'migrate_installer_edits_to_theme_editor_connector' ) );
 	}
 
 	/**
@@ -394,14 +424,14 @@ class WP_Stream_Install {
 		$records = stream_query( $args );
 
 		foreach ( $records as $record ) {
-			$file_name  = get_stream_meta( $record->ID, 'file', true );
+			$file_name = get_stream_meta( $record->ID, 'file', true );
 			$theme_name = get_stream_meta( $record->ID, 'name', true );
 
 			if ( '' !== $theme_name ) {
 				$matched_themes = array_filter(
 					wp_get_themes(),
-					function( $theme ) use ( $theme_name ) {
-						return (string) $theme === $theme_name;
+					function ( $theme ) use ( $theme_name ) {
+						return (string)$theme === $theme_name;
 					}
 				);
 				$theme = array_shift( $matched_themes );
@@ -433,5 +463,6 @@ class WP_Stream_Install {
 				}
 			}
 		}
+
 	}
 }
