@@ -854,7 +854,7 @@ class WP_Stream_Admin {
 
 		// Register list table
 		require_once WP_STREAM_INC_DIR . 'list-table.php';
-		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
+		self::$list_table = new WP_Stream_List_Table( array( 'screen' => 'toplevel_page_' . self::RECORDS_PAGE_SLUG ) );
 
 		$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
 		$query   = $data['wp-stream-heartbeat-query'];

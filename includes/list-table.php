@@ -3,11 +3,18 @@
 class WP_Stream_List_Table extends WP_List_Table {
 
 	function __construct( $args = array() ) {
+
+		$screen_id = isset( $args['screen'] ) ? $args['screen'] : null;
+
+		if ( is_network_admin() && $screen_id && '-network' !== substr( $screen_id, -8 ) ) {
+			$screen_id .= '-network';
+		}
+
 		parent::__construct(
 			array(
 				'post_type' => 'stream',
 				'plural'    => 'records',
-				'screen'    => isset( $args['screen'] ) ? $args['screen'] : null,
+				'screen'    => $screen_id,
 			)
 		);
 
@@ -31,7 +38,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 		set_screen_options();
 
 		if ( is_network_admin() ) {
-			add_filter( 'manage_' . $this->screen->id . '-network_columns', array( $this, 'get_columns' ), 0 );
 			add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
 		}
 	}
@@ -106,7 +112,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
 
 		// If user meta is not found; add the default hidden column 'id'
-		if ( false === $hidden ) {
+		if ( ! $hidden ) {
 			$hidden = array( 'id' );
 			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
 		}
@@ -117,7 +123,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function prepare_items() {
 		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
-		$hidden   = get_hidden_columns( $this->screen );
+		$hidden   = $this->get_hidden_columns();
 
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
