@@ -384,10 +384,7 @@
 								var new_chart_data = data.data.options;
 								var chart = $box.find('.chart').data( 'report', new_chart_data );
 								chart.html('<svg></svg>');
-								stream.report.chart.init(
-									chart,
-									$('.columns-prefs input[type="radio"]')
-								);
+								stream.report.chart.draw();
 
 								$box.find( '.chart-title' ).val( data.data.title );
 								$box.find( '.chart-generated-title' ).val( data.data.generated_title );
@@ -493,7 +490,7 @@
 		},
 
 		// Grab all the opts and draw the chart on the screen
-		draw: function (k, el, opts, $columns) {
+		drawChart: function (k, el, opts, $columns) {
 			var $el = $(el),
 				data = $el.data('report', $.extend(true, {}, opts, { 'id': _.uniqueId('__stream-report-chart-') }, $el.data('report'))).data('report');
 
@@ -608,13 +605,17 @@
 
 		// Build all the opts to be drawn later
 		init: function (elements, $columns) {
-			var parent = this;
-
-			var opts = $.extend(true, {}, report.chart._.opts, { '$': elements }, (typeof opts !== 'undefined' ? opts : {}));
-			opts.$.each(function (k, el) {
-				parent.draw(k, el, opts, $columns);
-			});
+			this.elements = elements;
+			this.$columns = $columns;
 		},
+
+		draw: function () {
+			var parent = this;
+			var opts = $.extend(true, {}, report.chart._.opts, { '$': this.elements }, (typeof opts !== 'undefined' ? opts : {}));
+			opts.$.each( function (k, el) {
+				parent.drawChart(k, el, opts, parent.$columns);
+			} );
+		}
 
 	};
 
@@ -635,6 +636,10 @@
 			$('.stream_page_wp_stream_reports .chart'),
 			$('.columns-prefs input[type="radio"]')
 		);
+		stream.report.chart.draw();
+		$('.postbox.closed .handlediv').click(function(){
+			stream.report.chart.draw();
+		});
 		stream.report.metabox.init(
 			$('.postbox .inside .configure'),
 			$('.postbox-delete-action a'),
