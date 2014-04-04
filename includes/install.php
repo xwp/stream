@@ -129,10 +129,10 @@ class WP_Stream_Install {
 		}
 		?>
 		<div class="updated">
-			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ), wp_get_referer() ); ?>" style="display:inline;">
+			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ), wp_get_referer() ) ?>" style="display:inline;">
 				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ) ?></strong></p>
-				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', self::$db_version, self::$current ),  'stream' ) ?></p>
-				<?php submit_button( __( 'Continue' ), 'submit', false ) ?>
+				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', self::$db_version, self::$current ), 'stream' ) ?></p>
+				<?php submit_button( __( 'Continue', 'stream' ), 'submit', false ) ?>
 			</form>
 		</div>
 		<?php
