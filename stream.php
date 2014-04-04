@@ -116,13 +116,10 @@ class WP_Stream {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 
-			// Registers a hook that connectors and other plugins can use whenever a stream update happens
-			//add_action( 'init', array( 'WP_Stream_Admin' ), 'register_update_hook' );
 			add_action( 'init', array( __CLASS__, 'install' ) );
 
-			add_action( 'admin_init', function() {
-				WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( __CLASS__, 'install' ), WP_Stream::VERSION );
-			}, 99);
+			// Registers a hook that connectors and other plugins can use whenever a stream update happens
+			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
 		}
 	}
 
@@ -190,9 +187,6 @@ class WP_Stream {
 			}
 		}
 
-		// Check upgrade routine /** @internal Moving this to hook into an init hook It uses properties from WP_Stream_Admin */
-		//self::install();
-
 		if ( ! empty( $message ) ) {
 			self::$messages['wp_stream_db_error'] = sprintf(
 				'<div class="error">%s<p>%s</p></div>',
@@ -200,6 +194,10 @@ class WP_Stream {
 				sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) )
 			); // xss ok
 		}
+	}
+
+	static function update_activation_hook() {
+		WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( __CLASS__, 'install' ), self::VERSION );
 	}
 
 	/**
