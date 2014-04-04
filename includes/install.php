@@ -52,6 +52,7 @@ class WP_Stream_Install {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 
@@ -61,8 +62,8 @@ class WP_Stream_Install {
 	 */
 	function __construct() {
 		global $wpdb;
-		self::$current = WP_Stream::VERSION;
 
+		self::$current    = WP_Stream::VERSION;
 		self::$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 		self::$stream_url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE . '&page=' . WP_Stream_Admin::SETTINGS_PAGE_SLUG );
 
@@ -88,7 +89,6 @@ class WP_Stream_Install {
 	private static function check() {
 		if ( empty( self::$db_version ) ) {
 			$current = self::install( self::$current );
-
 		} elseif ( self::$db_version !== self::$current ) {
 			add_action( 'admin_notices', array( __CLASS__, 'update_notice_hook' ) );
 		}
@@ -101,16 +101,16 @@ class WP_Stream_Install {
 	 * When database update is complete page will refresh with dismissible message to user
 	 */
 	public static function prompt_update() {
-			?>
-			<div class="error">
-				<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update', wp_get_referer() ) ) ?>">
-					<input type="hidden" name="wp_stream_update" value="update_and_continue"/>
-					<p><strong><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></strong></p>
-					<p><?php esc_html_e( 'Before we send you on your way, we have to update your database to the newest version.', 'stream' ) ?></p>
-					<p><?php esc_html_e( 'The update process may take a little while, so please be patient.', 'stream' ) ?></p>
-					<?php submit_button( __( 'Update Database', 'stream' ) ) ?>
-				</form>
-			</div>
+		?>
+		<div class="error">
+			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update', wp_get_referer() ) ) ?>">
+				<input type="hidden" name="wp_stream_update" value="update_and_continue"/>
+				<p><strong><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></strong></p>
+				<p><?php esc_html_e( 'Before we send you on your way, we have to update your database to the newest version.', 'stream' ) ?></p>
+				<p><?php esc_html_e( 'The update process may take a little while, so please be patient.', 'stream' ) ?></p>
+				<?php submit_button( __( 'Update Database', 'stream' ) ) ?>
+			</form>
+		</div>
 		<?php
 	}
 
@@ -121,11 +121,13 @@ class WP_Stream_Install {
 	 */
 	public static function prompt_update_status() {
 		$success_db = self::update( self::$db_version, self::$current );
+
 		if ( $success_db && self::$current === $success_db ) {
 			$success_op = update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $success_db );
 		}
+
 		if ( empty( $success_db ) || empty( $success_op ) ) {
-			wp_die( __( 'There was an error updating the database. Please try again', 'stream' ), 'Database Update Error', array( 'response' => 200, 'back_link' => true ) );
+			wp_die( __( 'There was an error updating the Stream database. Please try again.', 'stream' ), 'Database Update Error', array( 'response' => 200, 'back_link' => true ) );
 		}
 		?>
 		<div class="updated">
@@ -147,12 +149,10 @@ class WP_Stream_Install {
 	public static function update_notice_hook() {
 		if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 			self::prompt_update();
-
 		} elseif ( 'user_action_required' === $_REQUEST['wp_stream_update' ] ) {
 			self::prompt_update_status();
-
 		} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
-				self::prompt_update_status();
+			self::prompt_update_status();
 		}
 	}
 
