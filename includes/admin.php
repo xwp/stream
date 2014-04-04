@@ -307,18 +307,17 @@ class WP_Stream_Admin {
 
 		if ( is_plugin_active_for_network( $plugin ) ) {
 			$current_versions = get_site_option( plugin_basename( WP_STREAM_DIR ) . '_connectors', array() );
-			$network = true;
+			$network          = true;
 		} elseif ( is_plugin_active( $plugin ) ) {
 			$current_versions = get_option( plugin_basename( WP_STREAM_DIR ) . '_connectors', array() );
-			$network = false;
+			$network          = false;
 		} else {
 			return;
 		}
 
-		if ( version_compare( $version, $current_versions[$plugin], '>' ) ) {
-			call_user_func( $callback, $current_versions[$plugin], $network );
-
-			$current_versions[$plugin] = $version;
+		if ( version_compare( $version, $current_versions[ $plugin ], '>' ) ) {
+			call_user_func( $callback, $current_versions[ $plugin ], $network );
+			$current_versions[ $plugin ] = $version;
 		}
 
 		if ( $network ) {
