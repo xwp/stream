@@ -26,7 +26,7 @@ class WP_Stream_Install {
 
 		if ( empty( $db_version ) ) {
 			self::install();
-		} elseif ( $db_version != $current ) {
+		} elseif ( $db_version !== $current ) {
 			self::update( $db_version, $current );
 		} else {
 			return;
@@ -37,7 +37,8 @@ class WP_Stream_Install {
 
 	public static function install() {
 		global $wpdb;
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$prefix = self::$table_prefix;
 
@@ -152,7 +153,7 @@ class WP_Stream_Install {
 					ON tt.term_id = m.meta_value
 					AND tt.taxonomy = m2.meta_value
 				";
-			$tax_records = $wpdb->get_results( $sql ); // db call okay
+			$tax_records = $wpdb->get_results( $sql ); // db call ok
 			foreach ( $tax_records as $record ) {
 				if ( ! empty( $record->tt ) ) {
 					$wpdb->update(
@@ -174,11 +175,11 @@ class WP_Stream_Install {
 				JOIN $wpdb->streamcontext c
 					ON r.ID = c.record_id AND c.connector = 'media' AND c.context = 'media'
 				";
-			$media_records = $wpdb->get_results( $sql ); // db call okay
+			$media_records = $wpdb->get_results( $sql ); // db call ok
 
-			require_once( WP_STREAM_INC_DIR . 'query.php' );
-			require_once( WP_STREAM_CLASS_DIR . 'connector.php' );
-			require_once( WP_STREAM_DIR . 'connectors/media.php' );
+			require_once WP_STREAM_INC_DIR . 'query.php';
+			require_once WP_STREAM_CLASS_DIR . 'connector.php';
+			require_once WP_STREAM_DIR . 'connectors/media.php';
 
 			foreach ( $media_records as $record ) {
 				$post = get_post( $record->pid );
@@ -200,7 +201,13 @@ class WP_Stream_Install {
 		// If version is lower than 1.3.0, do the update routine for site options
 		// Backward settings compatibility for old version plugins
 		if ( version_compare( $db_version, '1.3.0', '<' ) ) {
-			add_filter( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_old_options_to_exclude_tab' );
+			add_action( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_old_options_to_exclude_tab' );
+		}
+
+		// If version is lower than 1.3.1, do the update routine
+		// Update records of Installer to Theme Editor connector
+		if ( version_compare( $db_version, '1.3.1', '<' ) ) {
+			add_action( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_installer_edits_to_theme_editor_connector' );
 		}
 	}
 
@@ -208,10 +215,9 @@ class WP_Stream_Install {
 	 * Function will migrate old options from the General and Connectors tabs into the new Exclude tab
 	 *
 	 * @param $labels array connectors terms labels
-	 * @used wp_stream_after_connector_term_labels_loaded
+	 * @action wp_stream_after_connectors_registration
 	 */
 	public static function migrate_old_options_to_exclude_tab( $labels ) {
-
 		$old_options = get_option( WP_Stream_Settings::KEY, array() );
 
 		// Stream > Settings > General > Log Activity for
@@ -234,6 +240,63 @@ class WP_Stream_Install {
 		}
 
 		update_option( WP_Stream_Settings::KEY, WP_Stream_Settings::$options );
+	}
+
+	/**
+	 * Function will migrate theme file edit records from Installer connector to the Theme Editor connector
+	 *
+	 * @action wp_stream_after_connectors_registration
+	 */
+	public static function migrate_installer_edits_to_theme_editor_connector() {
+		global $wpdb;
+
+		$args = array(
+			'connector' => 'installer',
+			'context'   => 'themes',
+			'action'    => 'edited',
+		);
+		$records = stream_query( $args );
+
+		foreach ( $records as $record ) {
+			$file_name  = get_stream_meta( $record->ID, 'file', true );
+			$theme_name = get_stream_meta( $record->ID, 'name', true );
+
+			if ( '' !== $theme_name ) {
+				$matched_themes = array_filter(
+					wp_get_themes(),
+					function( $theme ) use ( $theme_name ) {
+						return (string) $theme === $theme_name;
+					}
+				);
+				$theme = array_shift( $matched_themes );
+
+				// `stream`
+				$wpdb->update(
+					$wpdb->stream,
+					array(
+						'summary' => sprintf( WP_Stream_Connector_Editor::get_message(), $file_name, $theme_name ),
+					),
+					array( 'ID' => $record->ID )
+				);
+
+				// `stream_context`
+				$wpdb->update(
+					$wpdb->streamcontext,
+					array(
+						'connector' => 'editor',
+						'context'   => is_object( $theme ) ? $theme->get_template() : $theme_name,
+						'action'    => 'updated',
+					),
+					array( 'record_id' => $record->ID )
+				);
+
+				update_stream_meta( $record->ID, 'theme_name', $theme_name );
+
+				if ( is_object( $theme ) ) {
+					update_stream_meta( $record->ID, 'theme_slug', $theme->get_template() );
+				}
+			}
+		}
 	}
 
 }

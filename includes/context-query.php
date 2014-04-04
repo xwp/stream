@@ -43,12 +43,14 @@ class WP_Stream_Context_Query {
 		foreach ( array( 'connector', 'context', 'action' ) as $key ) {
 			foreach ( array( '', '__in', '__not_in' ) as $i => $suffix ) {
 				$lookup  = array( '=', 'IN', 'NOT IN' );
-				$compare = $lookup[$i];
-				if ( ! empty( $query[$key.$suffix] ) ) {
-					$context_query[0][$key] = array(
-						'value'   => $query[$key.$suffix],
-						'compare' => $compare,
-						);
+				$compare = $lookup[ $i ];
+				if ( ! empty( $query[ $key . $suffix ] ) ) {
+					$context_query[] = array(
+						$key => array(
+							'value'   => $query[ $key . $suffix ],
+							'compare' => $compare,
+						),
+					);
 				}
 			}
 		}
@@ -57,7 +59,7 @@ class WP_Stream_Context_Query {
 			$context_query = array_merge( $context_query, $query['context_query'] );
 		}
 
-		if ( isset( $context_query['relation'] ) && strtoupper( $context_query['relation'] ) == 'OR' ) {
+		if ( isset( $context_query['relation'] ) && 'OR' === strtoupper( $context_query['relation'] ) ) {
 			$this->relation = 'OR';
 		} else {
 			$this->relation = 'AND';
@@ -73,9 +75,8 @@ class WP_Stream_Context_Query {
 			return array( 'join' => '', 'where' => '' );
 		}
 
-		$context_table = WP_Stream_DB::$table_context;
-		$main_table    = WP_Stream_DB::$table;
-
+		$context_table  = WP_Stream_DB::$table_context;
+		$main_table     = WP_Stream_DB::$table;
 		$meta_id_column = 'meta_id';
 
 		$join  = array();
@@ -100,51 +101,57 @@ class WP_Stream_Context_Query {
 					$value = $args['value'];
 				}
 
-				if ( isset( $args['compare'] ) )
+				if ( isset( $args['compare'] ) ) {
 					$compare = strtoupper( $args['compare'] );
-				else
+				} else {
 					$compare = is_array( $value ) ? 'IN' : '=';
+				}
 
-				if ( ! in_array(
-					$compare, array(
-						'=', '!=',
-						'LIKE', 'NOT LIKE',
-						'IN', 'NOT IN',
-						'REGEXP', 'NOT REGEXP', 'RLIKE',
-						)
-					)
-					) {
+				$operators = array(
+					'=',
+					'!=',
+					'LIKE',
+					'NOT LIKE',
+					'IN',
+					'NOT IN',
+					'REGEXP',
+					'NOT REGEXP',
+					'RLIKE',
+				);
+
+				if ( ! in_array( $compare, $operators ) ) {
 					$compare = '=';
 				}
 
-				if ( 'IN' == substr( $compare, -2 ) ) {
+				if ( 'IN' === substr( $compare, -2 ) ) {
 					if ( ! is_array( $value ) ) {
 						$value = preg_split( '/[,\s]+/', $value );
 					}
 					$compare_string = '(' . substr( str_repeat( ',%s', count( $value ) ), 1 ) . ')';
-				} elseif ( 'LIKE' == substr( $compare, -4 ) ) {
+				} elseif ( 'LIKE' === substr( $compare, -4 ) ) {
 					$value          = '%' . like_escape( $value ) . '%';
 					$compare_string = '%s';
 				} else {
 					$compare_string = '%s';
 				}
 
-				if ( ! empty( $where[$i] ) ) {
-					$where[$i] .= ' AND ';
+				if ( ! empty( $where[ $i ] ) ) {
+					$where[ $i ] .= ' AND ';
 				} else {
-					$where[$i] = '';
+					$where[ $i ] = '';
 				}
 
-				$where[$i] = ' (' . $where[$i] . $wpdb->prepare( "CAST($context_table.$key AS {$type}) {$compare} {$compare_string})", $value );
+				$where[ $i ] = ' (' . $where[ $i ] . $wpdb->prepare( "CAST($context_table.$key AS {$type}) {$compare} {$compare_string})", $value );
 			}
 		}
 
 		$where = array_filter( $where );
 
-		if ( empty( $where ) )
+		if ( empty( $where ) ) {
 			$where = '';
-		else
+		} else {
 			$where = ' AND (' . implode( "\n{$this->relation} ", $where ) . ' )';
+		}
 
 		$join = implode( "\n", $join );
 
