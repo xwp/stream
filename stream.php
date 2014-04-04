@@ -116,12 +116,11 @@ class WP_Stream {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 
-			add_action( 'admin_init', array( __CLASS__, 'install' ) );
+			add_action( 'init', array( __CLASS__, 'install' ) );
 
 			// Registers a hook that connectors and other plugins can use whenever a stream update happens
 			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
 		}
-
 	}
 
 	/**
@@ -199,22 +198,6 @@ class WP_Stream {
 
 	static function update_activation_hook() {
 		WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( __CLASS__, 'install' ), self::VERSION );
-	}
-
-	/**
-	 * An array of plugin versions that require a database update
-	 *
-	 * @return array
-	 */
-	static function get_update_versions() {
-		return array(
-			'1.1.4', // Converted tables to correct character set
-			'1.1.7', // Altered the ip column to be varchar(39) and put after the created column
-			'1.2.5', // Changed the taxonomy records to use term_taxonomy_id instead of term_id
-			'1.2.8', // Support for attachments
-			'1.3.0',
-			'1.3.1',
-		);
 	}
 
 	/**
