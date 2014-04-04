@@ -102,13 +102,13 @@ class WP_Stream_Install {
 	 */
 	public static function prompt_update() {
 			?>
-			<div class="updated">
+			<div class="error">
 				<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update', wp_get_referer() ) ) ?>">
 					<input type="hidden" name="wp_stream_update" value="update_and_continue"/>
-					<p><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></p>
-					<p><?php esc_html_e( 'Before we send you on your way we have to update your database to the newest version', 'stream' ) ?></p>
-					<p><?php esc_html_e( 'The update process may take a few minutes so please be patient', 'stream' ) ?></p>
-					<p><?php submit_button( __( 'Update Database', 'stream' ) ) ?></p>
+					<p><strong><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></strong></p>
+					<p><?php esc_html_e( 'Before we send you on your way, we have to update your database to the newest version.', 'stream' ) ?></p>
+					<p><?php esc_html_e( 'The update process may take a little while, so please be patient.', 'stream' ) ?></p>
+					<?php submit_button( __( 'Update Database', 'stream' ) ) ?>
 				</form>
 			</div>
 		<?php
@@ -130,9 +130,9 @@ class WP_Stream_Install {
 		?>
 		<div class="updated">
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ), wp_get_referer() ); ?>" style="display:inline;">
-				<p><?php esc_html_e( 'Update complete', 'stream' ) ?></p>
-				<p><?php esc_html_e( sprintf( 'Your stream database has been successfully updated from %s to %s', self::$db_version, self::$current ),  'stream' ) ?></p>
-				<?php submit_button( __( 'Continue' ),  'submit', false ); ?>
+				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ) ?></strong></p>
+				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', self::$db_version, self::$current ),  'stream' ) ?></p>
+				<?php submit_button( __( 'Continue' ),  'submit', false ) ?>
 			</form>
 		</div>
 		<?php
