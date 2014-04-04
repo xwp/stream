@@ -290,6 +290,47 @@ class WP_Stream_Admin {
 	}
 
 	/**
+	 * Register a routine to be called when stream or a stream connector has been updated
+	 * It works by comparing the current version with the version previously stored in the database.
+	 *
+	 * @param string $file A reference to the main plugin file
+	 * @param callback $callback The function to run when the hook is called.
+	 * @param string $version The version to which the plugin is updating.
+	 * @return void
+	 */
+	public static function register_update_hook( $file, $callback, $version ) {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		$plugin = plugin_basename( $file );
+
+		if ( is_plugin_active_for_network( $plugin ) ) {
+			$current_versions = get_site_option( plugin_basename( WP_STREAM_DIR ) . '_connectors', array() );
+			$network = true;
+		} elseif ( is_plugin_active( $plugin ) ) {
+			$current_versions = get_option( plugin_basename( WP_STREAM_DIR ) . '_connectors', array() );
+			$network = false;
+		} else {
+			return;
+		}
+
+		if ( version_compare( $version, $current_versions[$plugin], '>' ) ) {
+			call_user_func( $callback, $current_versions[$plugin], $network );
+
+			$current_versions[$plugin] = $version;
+		}
+
+		if ( $network ) {
+			update_site_option( plugin_basename( WP_STREAM_DIR ) . '_registered_connectors', $current_versions  );
+		} else {
+			update_option( plugin_basename( WP_STREAM_DIR ) . '_registered_connectors', $current_versions );
+		}
+
+		return;
+	}
+
+	/**
 	 * Render settings page
 	 *
 	 * @return void
