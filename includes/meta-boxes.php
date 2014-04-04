@@ -43,8 +43,6 @@ class WP_Stream_Reports_Metaboxes {
 
 		// Register all ajax action and check referer for this class
 		WP_Stream_Reports::handle_ajax_request( $ajax_hooks, $this );
-
-		add_filter( 'screen_settings', array( $this, 'chart_height_display' ), 10, 2 );
 	}
 
 	/**
@@ -108,6 +106,9 @@ class WP_Stream_Reports_Metaboxes {
 		if ( is_admin() && WP_Stream_Reports_Settings::is_first_visit() ) {
 			$this->setup_user();
 		}
+
+		// Add screen option for chart height
+		add_filter( 'screen_settings', array( $this, 'chart_height_display' ), 10, 2 );
 
 		// Enqueue all core scripts required for this page to work
 		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
