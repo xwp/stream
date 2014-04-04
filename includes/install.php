@@ -144,7 +144,7 @@ class WP_Stream_Install {
 			self::prompt_update_status();
 
 		} elseif ( 'update_required' === $_REQUEST['wp_stream_update'] ) {
-				self::prompt_update();
+				self::prompt_update_status();
 		}
 	}
 
