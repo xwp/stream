@@ -134,7 +134,7 @@ class WP_Stream_Feeds {
 			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT, array( 'options' => array( 'default' => get_option( 'posts_per_rss' ) ) ) ),
 			'search'           => wp_stream_filter_input( INPUT_GET, 'search' ),
 			'object_id'        => wp_stream_filter_input( INPUT_GET, 'object_id', FILTER_SANITIZE_NUMBER_INT ),
-			'ip'               => wp_stream_filter_input( INPUT_GET, 'ip' ),
+			'ip'               => wp_stream_filter_input( INPUT_GET, 'ip', FILTER_VALIDATE_IP ),
 			'author'           => wp_stream_filter_input( INPUT_GET, 'author', FILTER_SANITIZE_NUMBER_INT ),
 			'date'             => wp_stream_filter_input( INPUT_GET, 'date' ),
 			'date_from'        => wp_stream_filter_input( INPUT_GET, 'date_from' ),
