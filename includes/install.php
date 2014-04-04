@@ -28,6 +28,7 @@ class WP_Stream_Install {
 
 	/**
 	 * URL to the Stream Admin settings page.
+	 *
 	 * @access public
 	 * @var string
 	 */
@@ -59,7 +60,6 @@ class WP_Stream_Install {
 	 * Sets static class properties
 	 */
 	function __construct() {
-
 		global $wpdb;
 		self::$current = WP_Stream::VERSION;
 
@@ -83,7 +83,6 @@ class WP_Stream_Install {
 	 * If database update required admin notice will be given
 	 * on the plugin update screen
 	 *
-	 * @action pre_current_active_plugins
 	 * @return null
 	 */
 	private static function check() {
@@ -115,6 +114,11 @@ class WP_Stream_Install {
 		<?php
 	}
 
+	/**
+	 * When user initiates a database update this function calls the update methods, checks for success
+	 * updates the stream_db version number in the database and outputs a success and continue message
+	 *
+	 */
 	public static function prompt_update_status() {
 		$success_db = self::update( self::$db_version, self::$current );
 		if ( $success_db && self::$current === $success_db ) {
@@ -134,6 +138,12 @@ class WP_Stream_Install {
 		<?php
 	}
 
+	/**
+	 * Added to the admin_notices hook when file plugin version is higher than database plugin version
+	 *
+	 * @action admin_notices
+	 * @return void
+	 */
 	public static function update_notice_hook() {
 		if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 			self::prompt_update();
