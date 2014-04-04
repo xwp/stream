@@ -31,6 +31,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		set_screen_options();
 
 		if ( is_network_admin() ) {
+			add_filter( 'manage_' . $this->screen->id . '-network_columns', array( $this, 'get_columns' ), 0 );
 			add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
 		}
 	}
@@ -57,9 +58,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function network_admin_columns( $columns ) {
-		unset( $columns['id'] );
-		$columns['blog_id'] = __( 'Site', 'stream' );
-		return $columns;
+		return array_merge(
+			array_slice( $columns, 0, -1 ),
+			array(
+				'blog_id' => esc_html__( 'Site', 'stream' ),
+			),
+			array_slice( $columns, -1 )
+		);
 	}
 
 	function get_columns(){
