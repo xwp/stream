@@ -493,126 +493,126 @@
 		},
 
 		// Grab all the opts and draw the chart on the screen
-		draw: function () {
-			return;
+		draw: function (k, el, opts, $columns) {
+			var $el = $(el),
+				data = $el.data('report', $.extend(true, {}, opts, { 'id': _.uniqueId('__stream-report-chart-') }, $el.data('report'))).data('report');
+
+			if( $(el).parents( '.postbox.closed' ).length ) {
+				return;
+			}
+
+			if ('parent' === data.width || 'parent' === data._width) {
+				data.width = $el.parent().innerWidth();
+				data._width = 'parent';
+			} else if ('this' === data.width || 'this' === data._width) {
+				data.width = $el.innerWidth();
+				data._width = 'this';
+			}
+				if ('parent' === data.height || 'parent' === data._height) {
+				data.height = $el.parent().innerHeight();
+				data._height = 'parent';
+			} else if ('this' === data.height || 'this' === data._height) {
+				data.height = $el.innerHeight();
+				data._height = 'this';
+			}
+
+			// This is very important, if you build the SVG live it was bugging...
+			data.svg = $el.find('svg');
+			data.d3 = d3.select(data.svg[0]);
+				var dateFormat = function( d ) {
+				var milliseconds = d * 1000;
+				return d3.time.format('%Y/%m/%d')(new Date( milliseconds ));
+			};
+
+			nv.addGraph(function () {
+				switch (data.type) {
+					case 'donut':
+					case 'pie':
+						data.chart = nv.models.pieChart();
+						data.chart.valueFormat( d3.format(',f') );
+						data.chart.x(function (d) { return d.key; });
+						data.chart.y(function (d) { return d.value; });
+						if ('donut' === data.type) {
+							data.chart.donut(true);
+						}
+						break;
+					case 'line':
+						data.chart = nv.models.lineChart();
+						data.chart.xAxis.tickFormat( dateFormat );
+						break;
+					case 'multibar':
+						data.chart = nv.models.multiBarChart();
+						data.chart.yAxis.tickFormat( d3.format(',f') );
+						data.chart.xAxis.tickFormat( dateFormat );
+						break;
+
+					case 'multibar-horizontal':
+						data.chart = nv.models.multiBarHorizontalChart();
+						data.chart.xAxis.tickFormat( dateFormat );
+						break;
+
+					default: // If we don't have a type of chart defined it gets out...
+						return;
+				}
+
+				var mapValidation = [
+					{data: data.donutRatio,        _function: data.chart.donutRatio},
+					{data: data.label.show,        _function: data.chart.showLabels},
+					{data: data.showValues,        _function: data.chart.showValues},
+					{data: data.label.threshold,   _function: data.chart.labelThreshold},
+					{data: data.label.type,        _function: data.chart.labelType},
+					{data: data.group.spacing,     _function: data.chart.groupSpacing},
+					{data: data.guidelines,        _function: data.chart.useInteractiveGuideline},
+					{data: data.animate,           _function: data.chart.transitionDuration},
+					{data: data.legend.show,       _function: data.chart.showLegend},
+					{data: data.yAxis.show,        _function: data.chart.showYAxis},
+					{data: data.yAxis.reduceTicks, _function: data.chart.reduceYTicks},
+					{data: data.xAxis.show,        _function: data.chart.showXAxis},
+					{data: data.xAxis.reduceTicks, _function: data.chart.reduceXTicks},
+					{data: data.controls,          _function: data.chart.showControls},
+					{data: data.margin,            _function: data.chart.margin},
+					{data: data.tooltip.show,      _function: data.chart.tooltips}
+				];
+
+				_.map(mapValidation, function (value) {
+					if (null !== value.data && _.isFunction(value._function)) {
+						value._function(value.data);
+					}
+				});
+
+				mapValidation = [
+					{data: data.yAxis.label,  object: data.chart.yAxis, _function: 'data.chart.yAxis.axisLabel'},
+					{data: data.yAxis.format, object: data.chart.yAxis, _function: 'data.chart.yAxistickFormat', format: true},
+					{data: data.xAxis.label,  object: data.chart.xAxis, _function: 'data.chart.xAxis.axisLabel'},
+					{data: data.xAxis.format, object: data.chart.xAxis, _function: 'data.chart.xAxis.tickFormat', format: true}
+				];
+
+				_.map(mapValidation, function (value) {
+					if (null !== value.data && _.isObject(value.object) && _.isFunction(value._function)) {
+						if (!_.isUndefined(value.format)) {
+							value._function(d3.format(value.data));
+						} else {
+							value._function(value.data);
+						}
+					}
+				});
+
+				data.d3.datum(data.values).call(data.chart);
+				//Update the chart when window resizes.
+				nv.utils.windowResize(data.chart.update);
+				$columns.click(data.chart.update);
+
+				return data.chart;
+			});
 		},
 
 		// Build all the opts to be drawn later
-		init: function (elements, $columns, opts) {
-			opts = $.extend(true, {}, report.chart._.opts, { '$': elements }, (typeof opts !== 'undefined' ? opts : {}));
+		init: function (elements, $columns) {
+			var parent = this;
 
+			var opts = $.extend(true, {}, report.chart._.opts, { '$': elements }, (typeof opts !== 'undefined' ? opts : {}));
 			opts.$.each(function (k, el) {
-				var $el = $(el),
-					data = $el.data('report', $.extend(true, {}, opts, { 'id': _.uniqueId('__stream-report-chart-') }, $el.data('report'))).data('report');
-
-				if ('parent' === data.width || 'parent' === data._width) {
-					data.width = $el.parent().innerWidth();
-					data._width = 'parent';
-				} else if ('this' === data.width || 'this' === data._width) {
-					data.width = $el.innerWidth();
-					data._width = 'this';
-				}
-
-				if ('parent' === data.height || 'parent' === data._height) {
-					data.height = $el.parent().innerHeight();
-					data._height = 'parent';
-				} else if ('this' === data.height || 'this' === data._height) {
-					data.height = $el.innerHeight();
-					data._height = 'this';
-				}
-
-				// This is very important, if you build the SVG live it was bugging...
-				data.svg = $el.find('svg');
-				data.d3 = d3.select(data.svg[0]);
-
-				var dateFormat = function( d ) {
-					var milliseconds = d * 1000;
-					return d3.time.format('%Y/%m/%d')(new Date( milliseconds ));
-				};
-
-				nv.addGraph(function () {
-					switch (data.type) {
-						case 'donut':
-						case 'pie':
-							data.chart = nv.models.pieChart();
-							data.chart.valueFormat( d3.format(',f') );
-							data.chart.x(function (d) { return d.key; });
-							data.chart.y(function (d) { return d.value; });
-							if ('donut' === data.type) {
-								data.chart.donut(true);
-							}
-							break;
-
-						case 'line':
-							data.chart = nv.models.lineChart();
-							data.chart.xAxis.tickFormat( dateFormat );
-							break;
-
-						case 'multibar':
-							data.chart = nv.models.multiBarChart();
-							data.chart.yAxis.tickFormat( d3.format(',f') );
-							data.chart.xAxis.tickFormat( dateFormat );
-							break;
-
-						case 'multibar-horizontal':
-							data.chart = nv.models.multiBarHorizontalChart();
-							data.chart.xAxis.tickFormat( dateFormat );
-							break;
-
-						default: // If we don't have a type of chart defined it gets out...
-							return;
-					}
-
-					var mapValidation = [
-						{data: data.donutRatio,        _function: data.chart.donutRatio},
-						{data: data.label.show,        _function: data.chart.showLabels},
-						{data: data.showValues,        _function: data.chart.showValues},
-						{data: data.label.threshold,   _function: data.chart.labelThreshold},
-						{data: data.label.type,        _function: data.chart.labelType},
-						{data: data.group.spacing,     _function: data.chart.groupSpacing},
-						{data: data.guidelines,        _function: data.chart.useInteractiveGuideline},
-						{data: data.animate,           _function: data.chart.transitionDuration},
-						{data: data.legend.show,       _function: data.chart.showLegend},
-						{data: data.yAxis.show,        _function: data.chart.showYAxis},
-						{data: data.yAxis.reduceTicks, _function: data.chart.reduceYTicks},
-						{data: data.xAxis.show,        _function: data.chart.showXAxis},
-						{data: data.xAxis.reduceTicks, _function: data.chart.reduceXTicks},
-						{data: data.controls,          _function: data.chart.showControls},
-						{data: data.margin,            _function: data.chart.margin},
-						{data: data.tooltip.show,      _function: data.chart.tooltips}
-					];
-
-					_.map(mapValidation, function (value) {
-						if (null !== value.data && _.isFunction(value._function)) {
-							value._function(value.data);
-						}
-					});
-
-					mapValidation = [
-						{data: data.yAxis.label,  object: data.chart.yAxis, _function: 'data.chart.yAxis.axisLabel'},
-						{data: data.yAxis.format, object: data.chart.yAxis, _function: 'data.chart.yAxistickFormat', format: true},
-						{data: data.xAxis.label,  object: data.chart.xAxis, _function: 'data.chart.xAxis.axisLabel'},
-						{data: data.xAxis.format, object: data.chart.xAxis, _function: 'data.chart.xAxis.tickFormat', format: true}
-					];
-
-					_.map(mapValidation, function (value) {
-						if (null !== value.data && _.isObject(value.object) && _.isFunction(value._function)) {
-							if (!_.isUndefined(value.format)) {
-								value._function(d3.format(value.data));
-							} else {
-								value._function(value.data);
-							}
-						}
-					});
-
-					data.d3.datum(data.values).call(data.chart);
-
-					//Update the chart when window resizes.
-					nv.utils.windowResize(data.chart.update);
-					$columns.click(data.chart.update);
-
-					return data.chart;
-				});
+				parent.draw(k, el, opts, $columns);
 			});
 		},
 
