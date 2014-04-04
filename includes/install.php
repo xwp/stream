@@ -104,8 +104,8 @@ class WP_Stream_Install {
 	public static function prompt_update() {
 			?>
 			<div class="updated">
-				<form method="post" action="<?php echo esc_url( add_query_arg( 'wp_stream_update', 'update_required', wp_get_referer() ) ) ?>">
-					<input type="hidden" name="update_action" value="wp_stream_update"/>
+				<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update', wp_get_referer() ) ) ?>">
+					<input type="hidden" name="wp_stream_update" value="update_and_continue"/>
 					<p><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></p>
 					<p><?php esc_html_e( 'Before we send you on your way we have to update your database to the newest version', 'stream' ) ?></p>
 					<p><?php esc_html_e( 'The update process may take a few minutes so please be patient', 'stream' ) ?></p>
@@ -117,11 +117,9 @@ class WP_Stream_Install {
 
 	public static function prompt_update_status() {
 		$success_db = self::update( self::$db_version, self::$current );
-
 		if ( $success_db && self::$current === $success_db ) {
 			$success_op = update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $success_db );
 		}
-
 		if ( empty( $success_db ) || empty( $success_op ) ) {
 			wp_die( __( 'There was an error updating the database. Please try again', 'stream' ), 'Database Update Error', array( 'response' => 200, 'back_link' => true ) );
 		}
@@ -130,7 +128,7 @@ class WP_Stream_Install {
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ), wp_get_referer() ); ?>" style="display:inline;">
 				<p><?php esc_html_e( 'Update complete', 'stream' ) ?></p>
 				<p><?php esc_html_e( sprintf( 'Your stream database has been successfully updated from %s to %s', self::$db_version, self::$current ),  'stream' ) ?></p>
-				<?php submit_button( __( 'Continue' ), 'button', 'submit', false ); ?>
+				<?php submit_button( __( 'Continue' ),  'submit', false ); ?>
 			</form>
 		</div>
 		<?php
@@ -143,7 +141,7 @@ class WP_Stream_Install {
 		} elseif ( 'user_action_required' === $_REQUEST['wp_stream_update' ] ) {
 			self::prompt_update_status();
 
-		} elseif ( 'update_required' === $_REQUEST['wp_stream_update'] ) {
+		} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
 				self::prompt_update_status();
 		}
 	}
