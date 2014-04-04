@@ -43,7 +43,6 @@ class WP_Stream_Reports_Metaboxes {
 
 		// Register all ajax action and check referer for this class
 		WP_Stream_Reports::handle_ajax_request( $ajax_hooks, $this );
-
 	}
 
 	/**
@@ -108,6 +107,7 @@ class WP_Stream_Reports_Metaboxes {
 			$this->setup_user();
 		}
 
+		// Add screen option for chart height
 		add_filter( 'screen_settings', array( $this, 'chart_height_display' ), 10, 2 );
 
 		// Enqueue all core scripts required for this page to work
