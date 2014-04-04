@@ -187,7 +187,7 @@ class WP_Stream_Install {
 	 * To add your own stream extension plugin database update routine
 	 * use the filter and return your version that updating from requires an update
 	 * You must also make the callback function available in the global namespace on plugins loaded
-	 * use the wp_stream_update_{version_number} version number must be a 3 character string number with no periods
+	 * use the wp_stream_update_{version_number} version number must be a string of characters that represent the version with no periods
 	 *
 	 * @filter wp_stream_db_update_versions
 	 *
