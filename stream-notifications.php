@@ -515,8 +515,8 @@ class WP_Stream_Notifications {
 					'group'    => 0,
 					'relation' => 'and',
 					'type'     => 'action',
-					'operator' => '=',
-					'value'    => 'created,updated',
+					'operator' => 'is',
+					'value'    => 'updated',
 				),
 				array(
 					'group'    => 1,
@@ -530,14 +530,14 @@ class WP_Stream_Notifications {
 					'relation' => 'and',
 					'type'     => 'connector',
 					'operator' => '=',
-					'value'    => 'users',
+					'value'    => 'widgets',
 				),
 				array(
 					'group'    => 1,
 					'relation' => 'and',
 					'type'     => 'action',
 					'operator' => '=',
-					'value'    => 'deleted',
+					'value'    => 'sorted',
 				),
 			),
 			'groups' => array(
@@ -551,8 +551,8 @@ class WP_Stream_Notifications {
 					'type'    => 'email',
 					'users'   => '1',
 					'emails'  => '',
-					'subject' => __( '[Stream Notification] %%summary%%', 'stream-notifications' ),
-					'message' => __( "The following just happened on your site:\r\n\r\n%%summary%%\r\n\r\nDate of action: %%created%%", 'stream-notifications' )
+					'subject' => sprintf( __( '[Site Activity Alert] %s', 'stream-notifications' ), get_bloginfo( 'name' ) ),
+					'message' => __( "The following just happened on your site:\r\n\r\n{summary} by {author.display_name}\r\n\r\nDate of action: {created}", 'stream-notifications' )
 				),
 			),
 		);
