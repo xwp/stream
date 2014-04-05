@@ -253,3 +253,16 @@ table.alert-options tbody tr td {
 	margin: 0;
 	padding-bottom: 15px;
 }
+
+.stream_page_wp_stream_notifications .alert {
+	background: none;
+	margin: 0;
+	padding: 0;
+	border: none;
+	text-shadow: none;
+	color: #444;
+
+	-webkit-border-radius: 0;
+	   -moz-border-radius: 0;
+	        border-radius: 0;
+}
