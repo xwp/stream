@@ -39,6 +39,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			'deleted'     => __( 'Deleted', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
 			'reactivated' => __( 'Reactivated', 'stream' ),
+			'moved'       => __( 'Moved', 'stream' ),
 			'updated'     => __( 'Updated', 'stream' ),
 			'sorted'      => __( 'Sorted', 'stream' ),
 		);
@@ -103,7 +104,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 */
 	public static function callback_update_option_sidebars_widgets( $old, $new ) {
 
-		// Disable listener if we're switching themes or if we're in the customizer
+		// Disable listener if we're switching themes
 		if ( did_action( 'after_switch_theme' ) ) {
 			return;
 		}
@@ -116,7 +117,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		self::handle_widget_deletion( $old, $new );
 		self::handle_widget_addition( $old, $new );
 		self::handle_widget_reordering( $old, $new );
-		// @todo Handle updating
+		self::handle_widget_moved( $old, $new );
 	}
 
 
@@ -238,7 +239,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	}
 
 	/**
-	 * Track reactivation of widgets from sidebars
+	 * Track deletion of widgets from sidebars
 	 *
 	 * @param  array $old  Old sidebars widgets
 	 * @param  array $new  New sidebars widgets
@@ -388,6 +389,78 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 					null,
 					array( $sidebar_id => 'sorted' )
 				);
+			}
+		}
+
+	}
+
+	/**
+	 * Track movement of widgets to other sidebars
+	 *
+	 * @param  array $old  Old sidebars widgets
+	 * @param  array $new  New sidebars widgets
+	 * @return void
+	 */
+	static protected function handle_widget_moved( $old, $new ) {
+
+		$all_sidebar_ids = array_intersect( array_keys( $old ), array_keys( $new ) );
+		foreach ( $all_sidebar_ids as $new_sidebar_id ) {
+			if ( $old[ $new_sidebar_id ] === $new[ $new_sidebar_id ] ) {
+				continue;
+			}
+
+			$new_widget_ids = array_diff( $new[ $new_sidebar_id ], $old[ $new_sidebar_id ] );
+
+			foreach ( $new_widget_ids as $widget_id ) {
+				// Now find the sidebar that the widget was originally located in, as long it is not wp_inactive_widgets
+				$old_sidebar_id = null;
+				foreach ( $old as $sidebar_id => $old_widget_ids ) {
+					if ( in_array( $widget_id, $old_widget_ids ) ) {
+						$old_sidebar_id = $sidebar_id;
+						break;
+					}
+				}
+				if ( ! $old_sidebar_id ) {
+					continue;
+				}
+				assert( $old_sidebar_id !== $new_sidebar_id );
+
+				$labels = self::get_context_labels();
+				$old_sidebar_name = isset( $labels[ $new_sidebar_id ] ) ? $labels[ $new_sidebar_id ] : $new_sidebar_id;
+				$new_sidebar_name = isset( $labels[ $old_sidebar_id ] ) ? $labels[ $old_sidebar_id ] : $old_sidebar_id;
+				$title = self::get_widget_title( $widget_id );
+				$name = self::get_widget_name( $widget_id );
+				if ( $name && $title ) {
+					$message = __( '"{title}" ({name}) widget moved from {old_sidebar_name} to {new_sidebar_name}', 'stream' );
+				} else if ( $name ) {
+					// Empty title, but we have the name
+					$message = __( '{name} widget moved from {old_sidebar_name} to {new_sidebar_name}', 'stream' );
+				} else if ( $title ) {
+					// Likely a single widget since no name is available
+					$message = __( '"{title}" widget moved from {old_sidebar_name} to {new_sidebar_name}', 'stream' );
+				} else {
+					// Neither a name nor a title are available, so use the sidebar ID
+					$message = __( '{widget_id} widget moved from {old_sidebar_name} to {new_sidebar_name}', 'stream' );
+				}
+
+				$tpl_vars = compact( 'title', 'name', 'old_sidebar_name', 'new_sidebar_name' );
+				$message = str_replace(
+					array_map( function ( $m ) { return '{' . $m . '}';  }, array_keys( $tpl_vars ) ),
+					array_values( $tpl_vars ),
+					$message
+				);
+
+				self::log(
+					$message,
+					compact( 'widget_id' ), // , 'new_sidebar_id', 'old_sidebar_id'
+					null,
+					array(
+						$new_sidebar_id => 'moved', // added
+						$old_sidebar_id => 'moved', // subtracted
+						// @todo add widget_id as a context?
+					)
+				);
+
 			}
 		}
 
