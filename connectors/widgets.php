@@ -367,10 +367,17 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		$all_sidebar_ids = array_intersect( array_keys( $old ), array_keys( $new ) );
 		foreach ( $all_sidebar_ids as $sidebar_id ) {
+			if ( $old[ $sidebar_id ] === $new[ $sidebar_id ] ) {
+				continue;
+			}
 
 			// Use intersect to ignore widget additions and removals
+			$all_widget_ids = array_unique( array_merge( $old[ $sidebar_id ], $new[ $sidebar_id ] ) );
 			$common_widget_ids = array_intersect( $old[ $sidebar_id ], $new[ $sidebar_id ] );
-			$widget_order_changed = ( $common_widget_ids !== array_intersect( $new[ $sidebar_id ], $common_widget_ids ) );
+			$uncommon_widget_ids = array_diff( $all_widget_ids, $common_widget_ids );
+			$new_widget_ids = array_values( array_diff( $new[ $sidebar_id ], $uncommon_widget_ids ) );
+			$old_widget_ids = array_values( array_diff( $old[ $sidebar_id ], $uncommon_widget_ids ) );
+			$widget_order_changed = ( $new_widget_ids !== $old_widget_ids );
 			if ( $widget_order_changed ) {
 				$labels = self::get_context_labels();
 				$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
