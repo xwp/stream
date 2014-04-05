@@ -664,9 +664,9 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		$instance = null;
 
 		$widget_obj = self::get_widget_object( $widget_id );
-		if ( $widget_obj && ! empty( $widget_obj->params[0]['number'] ) ) {
+		if ( $widget_obj ) {
 			$settings = $widget_obj->get_settings();
-			$multi_number = $widget_obj->params[0]['number'];
+			$multi_number = intval( preg_replace( '/.+?-(?=\d+$)/', '', $widget_id ) );
 			if ( isset( $settings[ $multi_number ] ) && ! empty( $settings[ $multi_number ]['title'] ) ) {
 				$instance = $settings[ $multi_number ];
 			}
