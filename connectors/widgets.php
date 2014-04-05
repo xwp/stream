@@ -383,9 +383,11 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$labels = self::get_context_labels();
 				$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
+				$message = __( 'Widgets in "{sidebar_name}" were reordered', 'stream' );
+				$message = self::apply_tpl_vars( $message, compact( 'sidebar_name' ) );
 				self::log(
-					_x( 'Widgets in "%s" were reordered', 'Sidebar name', 'stream' ),
-					compact( 'sidebar_name', 'sidebar' ), // @todo We don't want to store sidebar_name in stream meta
+					$message,
+					compact( 'sidebar_id' ), // @todo Do we need to store the sidebar_id in Stream meta if if is already in the context?
 					null,
 					array( $sidebar_id => 'sorted' )
 				);
@@ -444,15 +446,10 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				}
 
 				$tpl_vars = compact( 'title', 'name', 'old_sidebar_name', 'new_sidebar_name' );
-				$message = str_replace(
-					array_map( function ( $m ) { return '{' . $m . '}';  }, array_keys( $tpl_vars ) ),
-					array_values( $tpl_vars ),
-					$message
-				);
-
+				$message = self::apply_tpl_vars( $message, $tpl_vars );
 				self::log(
 					$message,
-					compact( 'widget_id' ), // , 'new_sidebar_id', 'old_sidebar_id'
+					compact( 'widget_id' ),
 					null,
 					array(
 						$new_sidebar_id => 'moved', // added
@@ -548,6 +545,24 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				array( $update['sidebar_id'] => 'updated' )
 			);
 		}
+	}
+
+	/**
+	 * Replace in $message any $tpl_vars array keys bounded by curly-braces,
+	 * supplying the $tpl_vars array values in their place. A saner approach
+	 * than using vsprintf.
+	 *
+	 * @param string $message
+	 * @param array $tpl_vars
+	 * @return string
+	 */
+	public static function apply_tpl_vars( $message, array $tpl_vars ) {
+		$message = str_replace(
+			array_map( function ( $m ) { return '{' . $m . '}'; }, array_keys( $tpl_vars ) ),
+			array_values( $tpl_vars ),
+			$message
+		);
+		return $message;
 	}
 
 	/**
