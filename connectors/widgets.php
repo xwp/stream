@@ -248,6 +248,9 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	static protected function handle_widget_deletion( $old, $new ) {
 		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', $old ) );
 		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', $new ) );
+		// @todo In the customizer, moving widgets to other sidebars is problematic because each sidebar is registered as a separate setting; so we need to make sure that all $_POST['customized'] are applied?
+		// @todo The widget option is getting updated before the sidebars_widgets are updated, so we need to hook into the option update to try to cache any deletions for future lookup
+
 		$deleted_widget_ids = array_diff( $all_old_widget_ids, $all_new_widget_ids );
 		foreach ( $deleted_widget_ids as $widget_id ) {
 			$sidebar_id = '';
@@ -261,36 +264,23 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$title = self::get_widget_title( $widget_id );
 			$name = self::get_widget_name( $widget_id );
 			if ( $name && $title ) {
-				$message = _x(
-					'"%1$s" (%2$s) widget deleted',
-					'1: Widget title, 2: Widget name',
-					'stream'
-				);
+				$message = __( '"{title}" ({name}) widget deleted', 'stream' );
 			} else if ( $name ) {
 				// Empty title, but we have the name
-				$message = _x(
-					'%2$s widget deleted',
-					'2: Widget name',
-					'stream'
-				);
+				$message = __( '{name} widget deleted', 'stream' );
 			} else if ( $title ) {
 				// Likely a single widget since no name is available
-				$message = _x(
-					'"%1$s" widget deleted',
-					'1: Widget title',
-					'stream'
-				);
+				$message = __( '"{title}" widget deleted', 'stream' );
 			} else {
-				// Neither a name nor a title are available, so use the sidebar ID
-				$message = _x(
-					'%3$s widget deleted',
-					'3: Widget ID',
-					'stream'
-				);
+				// Neither a name nor a title are available, so use the widget ID
+				$message = __( '{widget_id} widget deleted', 'stream' );
 			}
+
+			$tpl_vars = compact( 'name', 'title', 'widget_id' );
+			$message = self::apply_tpl_vars( $message, $tpl_vars );
 			self::log(
 				$message,
-				compact( 'title', 'name', 'widget_id', 'sidebar_id' ),
+				compact( 'widget_id', 'sidebar_id' ),
 				null,
 				array( $sidebar_id => $action )
 			);
@@ -317,40 +307,29 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				}
 			}
 
+			// @todo should this actually be created instead of added?
+
 			$action  = 'added';
 			$title = self::get_widget_title( $widget_id );
 			$name = self::get_widget_name( $widget_id );
 			if ( $name && $title ) {
-				$message = _x(
-					'"%1$s" (%2$s) widget added',
-					'1: Widget title, 2: Widget name',
-					'stream'
-				);
+				$message = __( '"{title}" ({name}) widget added', 'stream' );
 			} else if ( $name ) {
 				// Empty title, but we have the name
-				$message = _x(
-					'%2$s widget added',
-					'2: Widget name',
-					'stream'
-				);
+				$message = __( '{name} widget added', 'stream' );
 			} else if ( $title ) {
 				// Likely a single widget since no name is available
-				$message = _x(
-					'"%1$s" widget added',
-					'1: Widget title',
-					'stream'
-				);
+				$message = __( '"{title}" widget added', 'stream' );
 			} else {
-				// Neither a name nor a title are available, so use the sidebar ID
-				$message = _x(
-					'%3$s widget added',
-					'3: Widget ID',
-					'stream'
-				);
+				// Neither a name nor a title are available, so use the widget ID
+				$message = __( '{widget_id} widget added', 'stream' );
 			}
+
+			$tpl_vars = compact( 'name', 'title', 'widget_id' );
+			$message = self::apply_tpl_vars( $message, $tpl_vars );
 			self::log(
 				$message,
-				compact( 'title', 'name', 'widget_id', 'sidebar_id' ),
+				compact( 'widget_id', 'sidebar_id' ), // @todo Do we care about sidebar_id in meta if it is already context? But there is no 'context' for what the context signifies
 				null,
 				array( $sidebar_id => $action )
 			);
