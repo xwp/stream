@@ -112,6 +112,7 @@ class WP_Stream_Install {
 		?>
 		<div class="error">
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update', wp_get_referer() ) ) ?>">
+				<?php wp_nonce_field( 'wp_stream_update_db' ) ?>
 				<input type="hidden" name="wp_stream_update" value="update_and_continue"/>
 				<p><strong><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></strong></p>
 				<p><?php esc_html_e( 'Before we send you on your way, we have to update your database to the newest version.', 'stream' ) ?></p>
@@ -128,6 +129,7 @@ class WP_Stream_Install {
 	 *
 	 */
 	public static function prompt_update_status() {
+		check_admin_referer( 'wp_stream_update_db' );
 		$success_db = self::update( self::$db_version, self::$current );
 
 		if ( $success_db && self::$current === $success_db ) {
@@ -155,6 +157,9 @@ class WP_Stream_Install {
 	 * @return void
 	 */
 	public static function update_notice_hook() {
+		if ( ! current_user_can( WP_Stream_Admin::VIEW_CAP ) ) {
+			return;
+		}
 		if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 			self::prompt_update();
 		} elseif ( 'user_action_required' === $_REQUEST['wp_stream_update' ] ) {
