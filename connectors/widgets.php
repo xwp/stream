@@ -36,6 +36,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	public static function get_action_labels() {
 		return array(
 			'added'       => __( 'Added', 'stream' ),
+			'created'     => __( 'Created', 'stream' ),
 			'deleted'     => __( 'Deleted', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
 			'reactivated' => __( 'Reactivated', 'stream' ),
@@ -451,23 +452,42 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @param array $new_value
 	 */
 	public static function callback_updated_option( $option_name, $old_value, $new_value ) {
-		// @todo What about adding widget for first time?
-		// @todo What about deleting a widget?
+		// @todo Actions possible here are: created, updated, deleted; actions possible for sidebar contexts are added and remvoed
 
 		if ( ! preg_match( '/^widget_(.+)$/', $option_name, $matches ) || ! is_array( $new_value ) ) {
 			return;
 		}
 		$is_multi = ! empty( $new_value['_multiwidget'] );
 		$widget_id_base = $matches[1];
+
+		$creates = array();
 		$updates = array();
+		$deletes = array();
 
 		if ( $is_multi ) {
 			$widget_id_format = "$widget_id_base-%d";
 
 			unset( $new_value['_multiwidget'] );
 			unset( $old_value['_multiwidget'] );
-			$widget_numbers = array_intersect( array_keys( $old_value ), array_keys( $new_value ) ); // ignore widgets added/removed
-			foreach ( $widget_numbers as $widget_number ) {
+
+			/**
+			 * Created widgets
+			 */
+			$created_widget_numbers = array_diff( array_keys( $new_value ), array_keys( $old_value ) );
+			foreach ( $created_widget_numbers as $widget_number ) {
+				$instance = $new_value[ $widget_number ];
+				$widget_id = sprintf( $widget_id_format, $widget_number );
+				$title = ! empty( $instance['title'] ) ? $instance['title'] : null;
+				$name = self::get_widget_name( $widget_id );
+				$sidebar_id = self::get_widget_sidebar_id( $widget_id ); // @todo May not be assigned yet
+				$creates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
+			}
+
+			/**
+			 * Updated widgets
+			 */
+			$updated_widget_numbers = array_intersect( array_keys( $old_value ), array_keys( $new_value ) );
+			foreach ( $updated_widget_numbers as $widget_number ) {
 				$new_instance = $new_value[ $widget_number ];
 				$old_instance = $old_value[ $widget_number ];
 				if ( $old_instance !== $new_instance ) {
@@ -475,10 +495,25 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 					$title = ! empty( $new_instance['title'] ) ? $new_instance['title'] : null;
 					$name = self::get_widget_name( $widget_id );
 					$sidebar_id = self::get_widget_sidebar_id( $widget_id );
-					$updates[] = compact( 'widget_id', 'title', 'name', 'sidebar_id', 'old_instance' );
+					$updates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'old_instance' );
 				}
 			}
+
+			/**
+			 * Deleted widgets
+			 */
+			$deleted_widget_numbers = array_diff( array_keys( $old_value ), array_keys( $new_value ) );
+			foreach ( $deleted_widget_numbers as $widget_number ) {
+				$instance = $old_value[ $widget_number ];
+				$widget_id = sprintf( $widget_id_format, $widget_number );
+				$title = ! empty( $instance['title'] ) ? $instance['title'] : null;
+				$name = self::get_widget_name( $widget_id );
+				$sidebar_id = self::get_widget_sidebar_id( $widget_id ); // @todo May not be assigned anymore
+				$creates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
+			}
 		} else {
+			// Doing our best guess for tracking changes to old single widgets, assuming their options start with 'widget_'
+
 			$widget_id = $widget_id_base;
 			$name = $widget_id; // There aren't names available for single widgets
 			$title = ! empty( $new_value['title'] ) ? $new_value['title'] : null;
@@ -487,42 +522,75 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$updates[] = compact( 'widget_id', 'title', 'name', 'sidebar_id', 'old_instance' );
 		}
 
+		/**
+		 * Log updated actions
+		 */
 		foreach ( $updates as $update ) {
-
 			if ( $update['name'] && $update['title'] ) {
-				$message = _x(
-					'"%1$s" (%2$s) widget updated',
-					'1: Widget title, 2: Widget name',
-					'stream'
-				);
+				$message = __( '"{title}" ({name}) updated', 'stream' );
 			} else if ( $update['name'] ) {
 				// Empty title, but we have the name
-				$message = _x(
-					'%2$s widget updated',
-					'2: Widget name',
-					'stream'
-				);
+				$message = __( '{name} widget updated', 'stream' );
 			} else if ( $update['title'] ) {
 				// Likely a single widget since no name is available
-				$message = _x(
-					'"%1$s" widget updated',
-					'1: Widget title',
-					'stream'
-				);
+				$message = __( '"{title}" widget updated', 'stream' );
 			} else {
-				// Neither a name nor a title are available, so use the widget ID
-				$message = _x(
-					'%3$s widget updated',
-					'3: Widget ID',
-					'stream'
-				);
+				// Neither a name nor a title are available, so use the sidebar ID
+				$message = __( '{widget_id} widget updated', 'stream' );
 			}
-			self::log(
-				$message,
-				compact( 'title', 'name', 'widget_id', 'sidebar_id', 'old_instance' ),
-				null,
-				array( $update['sidebar_id'] => 'updated' )
-			);
+
+			$tpl_vars = $update;
+			$message = self::apply_tpl_vars( $message, $tpl_vars );
+			$contexts = array( $update['sidebar_id'] => 'updated' );
+			self::log( $message, $update, null, $contexts );
+		}
+
+		/**
+		 * Log created actions
+		 * @todo We should only do these if not captured by an update to the sidebars_widgets option
+		 */
+		foreach ( $creates as $create ) {
+			if ( $create['name'] && $create['title'] ) {
+				$message = __( '"{title}" ({name}) created', 'stream' );
+			} else if ( $create['name'] ) {
+				// Empty title, but we have the name
+				$message = __( '{name} widget created', 'stream' );
+			} else if ( $create['title'] ) {
+				// Likely a single widget since no name is available
+				$message = __( '"{title}" widget created', 'stream' );
+			} else {
+				// Neither a name nor a title are available, so use the sidebar ID
+				$message = __( '{widget_id} widget created', 'stream' );
+			}
+
+			$tpl_vars = $create;
+			$message = self::apply_tpl_vars( $message, $tpl_vars );
+			$contexts = array( $create['sidebar_id'] => 'created' );
+			self::log( $message, $create, null, $contexts );
+		}
+
+		/**
+		 * Log deleted actions
+		 * @todo We should only do these if not captured by an update to the sidebars_widgets option
+		 */
+		foreach ( $deletes as $delete ) {
+			if ( $create['name'] && $delete['title'] ) {
+				$message = __( '"{title}" ({name}) deleted', 'stream' );
+			} else if ( $delete['name'] ) {
+				// Empty title, but we have the name
+				$message = __( '{name} widget deleted', 'stream' );
+			} else if ( $delete['title'] ) {
+				// Likely a single widget since no name is available
+				$message = __( '"{title}" widget deleted', 'stream' );
+			} else {
+				// Neither a name nor a title are available, so use the sidebar ID
+				$message = __( '{widget_id} widget deleted', 'stream' );
+			}
+
+			$tpl_vars = $delete;
+			$message = self::apply_tpl_vars( $message, $tpl_vars );
+			$contexts = array( $create['sidebar_id'] => 'deleted' );
+			self::log( $message, $create, null, $contexts );
 		}
 	}
 
