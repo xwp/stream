@@ -557,6 +557,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return string
 	 */
 	public static function apply_tpl_vars( $message, array $tpl_vars ) {
+		$tpl_vars = array_filter( $tpl_vars, function ( $v ) { return is_string( $v ) || is_numeric( $v ); } );
 		$message = str_replace(
 			array_map( function ( $m ) { return '{' . $m . '}'; }, array_keys( $tpl_vars ) ),
 			array_values( $tpl_vars ),
