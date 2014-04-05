@@ -515,7 +515,7 @@ class WP_Stream_Notifications {
 					'group'    => 0,
 					'relation' => 'and',
 					'type'     => 'action',
-					'operator' => 'is',
+					'operator' => '=',
 					'value'    => 'updated',
 				),
 				array(
