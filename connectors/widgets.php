@@ -605,16 +605,33 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	}
 
 	/**
+	 * @param $widget_id
+	 * @return array|null
+	 */
+	public static function parse_widget_id( $widget_id ) {
+		if ( preg_match( '/^(.+)-(\d+)$/', $widget_id, $matches ) ) {
+			return array(
+				'id_base' => $matches[1],
+				'widget_number' => intval( $matches[2] ),
+			);
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * @param string $widget_id
 	 * @return WP_Widget|null
 	 */
 	public static function get_widget_object( $widget_id ) {
-		global $wp_registered_widget_controls, $wp_widget_factory;
-		if ( ! isset( $wp_registered_widget_controls[ $widget_id ] ) || empty( $wp_registered_widget_controls[ $widget_id ]['id_base'] ) ) {
+		global $wp_widget_factory;
+
+		$parsed_widget_id = self::parse_widget_id( $widget_id );
+		if ( ! $parsed_widget_id ) {
 			return null;
 		}
 
-		$id_base = $wp_registered_widget_controls[ $widget_id ]['id_base'];
+		$id_base = $parsed_widget_id['id_base'];
 		$id_base_to_widget_class_map = array_combine(
 			wp_list_pluck( $wp_widget_factory->widgets, 'id_base' ),
 			array_keys( $wp_widget_factory->widgets )
@@ -636,10 +653,11 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	public static function get_widget_instance( $widget_id ) {
 		$instance = null;
 
+		$parsed_widget_id = self::parse_widget_id( $widget_id );
 		$widget_obj = self::get_widget_object( $widget_id );
-		if ( $widget_obj ) {
+		if ( $widget_obj && $parsed_widget_id ) {
 			$settings = $widget_obj->get_settings();
-			$multi_number = intval( preg_replace( '/.+?-(?=\d+$)/', '', $widget_id ) );
+			$multi_number = $parsed_widget_id['widget_number'];
 			if ( isset( $settings[ $multi_number ] ) && ! empty( $settings[ $multi_number ]['title'] ) ) {
 				$instance = $settings[ $multi_number ];
 			}
@@ -678,6 +696,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 */
 	public static function get_widget_sidebar_id( $widget_id ) {
 		$sidebars_widgets = self::get_sidebars_widgets();
+		unset( $sidebars_widgets['array_version'] );
 		foreach ( $sidebars_widgets as $sidebar_id => $widget_ids ) {
 			if ( in_array( $widget_id, $widget_ids ) ) {
 				return $sidebar_id;
