@@ -238,8 +238,12 @@ jQuery(function($){
 
 				if ('undefined' !== typeof object.icon) {
 					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
-					// Add more info to the container
-					container.attr('title', object.tooltip);
+				}
+				// Add more info to the container
+				if ( 'undefined' !== typeof object.tooltip ) {
+					container.attr( 'title', object.tooltip );
+				} else if ( 'undefined' !== typeof object.user_count ) {
+					container.attr( 'title', object.user_count );
 				}
 				return result;
 			},
@@ -335,7 +339,7 @@ jQuery(function($){
 		$(document).on( 'heartbeat-tick.stream', function( e, data ) {
 
 			// If this no rows return then we kill the script
-			if ( ! data['wp-stream-heartbeat'] ) {
+			if ( ! data['wp-stream-heartbeat'] || data['wp-stream-heartbeat'].length === 0  ) {
 				return;
 			}
 
@@ -386,7 +390,7 @@ jQuery(function($){
 		//Enable Live Update Checkbox Ajax
 		$( '#enable_live_update' ).click( function() {
 			var nonce   = $( '#enable_live_update_nonce' ).val();
-			var user	= $( '#enable_live_update_user' ).val();
+			var user = $( '#enable_live_update_user' ).val();
 			var checked = 'unchecked';
 			if ( $('#enable_live_update' ).is( ':checked' ) ) {
 				checked = 'checked';
@@ -405,6 +409,89 @@ jQuery(function($){
 				}
 			});
 		});
+
+		function toggle_filter_submit() {
+			var all_hidden = true;
+			// If all filters are hidden, hide the button
+			if ( ! $( 'div.date-interval' ).is( ':hidden' ) ) {
+				all_hidden = false;
+			}
+			var divs = $( 'div.alignleft.actions div.select2-container' );
+			divs.each( function() {
+				if ( ! $(this).is( ':hidden' ) ) {
+					all_hidden = false;
+					return false;
+				}
+			});
+			if ( all_hidden ) {
+				$( 'input#record-query-submit' ).hide();
+				$( 'span.filter_info' ).show();
+			} else {
+				$( 'input#record-query-submit' ).show();
+				$( 'span.filter_info' ).hide();
+			}
+		}
+
+		if ( $( 'div.stream-toggle-filters [id="date_range"]' ).is( ':checked' ) ) {
+			$( 'div.date-interval' ).show();
+		} else {
+			$( 'div.date-interval' ).hide();
+		}
+
+		var filters = [ 'date_range', 'author', 'connector', 'context', 'action' ];
+		for( var i=0; i < filters.length; i++ ) {
+			if ( $( 'div.stream-toggle-filters [id="' + filters[i] + '"]'  ).is( ':checked' ) ) {
+				$( '[name="' + filters[i] + '"]' ).prev( '.select2-container' ).show();
+			} else {
+				$( '[name="' + filters[i] + '"]' ).prev( '.select2-container' ).hide();
+			}
+		}
+
+		toggle_filter_submit();
+
+		//Enable Filter Toggle Checkbox Ajax
+		$( 'div.stream-toggle-filters input[type=checkbox]' ).click( function() {
+
+			// Disable other checkboxes for duration of request to avoid "clickjacking"
+			var siblings = $(this).closest('div').find('input:checkbox');
+			siblings.attr( 'disabled', true );
+			var nonce = $( '#toggle_filters_nonce' ).val();
+			var user = $( '#toggle_filters_user' ).val();
+			var checked = 'unchecked';
+			var checkbox = $(this).attr('id');
+			if ( $(this).is( ':checked' ) ) {
+				checked = 'checked';
+			}
+
+			$.ajax({
+				type: 'POST',
+				url: ajaxurl,
+				data: { action: 'stream_toggle_filters', nonce : nonce, user : user, checked : checked, checkbox: checkbox },
+				dataType: 'json',
+				beforeSend : function() {
+					$( checkbox + ' .spinner' ).show().css( { 'display' : 'inline-block' } );
+
+				},
+				success : function( data ) {
+
+					var date_interval_div = $( 'div.date-interval' );
+					// toggle visibility of input whose name attr matches checkbox ID
+					if ( data.control === 'date_range' ) {
+						date_interval_div.toggle();
+					} else {
+						var control = $( '[name="' + data.control + '"]');
+						if ( control.is( 'select' ) ) {
+							$( control ).prev( '.select2-container' ).toggle();
+						}
+					}
+
+					toggle_filter_submit();
+
+				}
+			});
+			siblings.attr( 'disabled', false );
+		});
+
 
 		$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
 
