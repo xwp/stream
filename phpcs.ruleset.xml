@@ -2,9 +2,10 @@
 <ruleset name="WordPress Coding Standards for Plugins">
 	<description>Generally-applicable sniffs for WordPress plugins</description>
 
-	<rule ref="WordPress" />
+	<rule ref="WordPress-Core-Extra" />
 
 	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/bin/*</exclude-pattern>
 
 	<rule ref="WordPress.NamingConventions.ValidFunctionName">
 		<exclude-pattern>/tests/*</exclude-pattern><!-- because of PHPUnit method names -->
