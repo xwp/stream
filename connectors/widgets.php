@@ -402,18 +402,22 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 				$tpl_vars = compact( 'title', 'name', 'old_sidebar_name', 'new_sidebar_name' );
 				$message = self::apply_tpl_vars( $message, $tpl_vars );
-				// @todo instead of one record with two contexts, should we two records with one context each?
+
+				$sidebar_id = $old_sidebar_id;
 				self::log(
 					$message,
-					compact( 'widget_id', 'new_sidebar_id', 'old_sidebar_id' ),
+					compact( 'widget_id', 'sidebar_id' ),
 					null,
-					array(
-						$new_sidebar_id => 'added',
-						$old_sidebar_id => 'removed',
-						// @todo add widget_id as a context?
-					)
+					array( $sidebar_id => 'removed', )
 				);
 
+				$sidebar_id = $new_sidebar_id;
+				self::log(
+					$message,
+					compact( 'widget_id', 'sidebar_id' ),
+					null,
+					array( $sidebar_id => 'added', )
+				);
 			}
 		}
 
