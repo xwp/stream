@@ -36,6 +36,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	public static function get_action_labels() {
 		return array(
 			'added'       => __( 'Added', 'stream' ),
+			'removed'     => __( 'Removed', 'stream' ),
 			'created'     => __( 'Created', 'stream' ),
 			'deleted'     => __( 'Deleted', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
@@ -115,7 +116,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		self::handle_deactivated_widgets( $old, $new );
 		self::handle_reactivated_widgets( $old, $new );
-		self::handle_widget_deletion( $old, $new );
+		self::handle_widget_removal( $old, $new );
 		self::handle_widget_addition( $old, $new );
 		self::handle_widget_reordering( $old, $new );
 		self::handle_widget_moved( $old, $new );
@@ -219,7 +220,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @param  array $new  New sidebars widgets
 	 * @return void
 	 */
-	static protected function handle_widget_deletion( $old, $new ) {
+	static protected function handle_widget_removal( $old, $new ) {
 		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', $old ) );
 		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', $new ) );
 		// @todo In the customizer, moving widgets to other sidebars is problematic because each sidebar is registered as a separate setting; so we need to make sure that all $_POST['customized'] are applied?
@@ -234,20 +235,20 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 					break;
 				}
 			}
-			$action  = 'deleted';
+			$action  = 'removed';
 			$title = self::get_widget_title( $widget_id );
 			$name = self::get_widget_name( $widget_id );
 			if ( $name && $title ) {
-				$message = __( '"{title}" ({name}) widget deleted', 'stream' );
+				$message = __( '"{title}" ({name}) widget removed', 'stream' );
 			} else if ( $name ) {
 				// Empty title, but we have the name
-				$message = __( '{name} widget deleted', 'stream' );
+				$message = __( '{name} widget removed', 'stream' );
 			} else if ( $title ) {
 				// Likely a single widget since no name is available
-				$message = __( '"{title}" widget deleted', 'stream' );
+				$message = __( '"{title}" widget removed', 'stream' );
 			} else {
 				// Neither a name nor a title are available, so use the widget ID
-				$message = __( '{widget_id} widget deleted', 'stream' );
+				$message = __( '{widget_id} widget removed', 'stream' );
 			}
 
 			$tpl_vars = compact( 'name', 'title', 'widget_id' );
@@ -482,7 +483,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$title = ! empty( $instance['title'] ) ? $instance['title'] : null;
 				$name = self::get_widget_name( $widget_id );
 				$sidebar_id = self::get_widget_sidebar_id( $widget_id ); // @todo May not be assigned anymore
-				$creates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
+				$deletes[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
 			}
 		} else {
 			// Doing our best guess for tracking changes to old single widgets, assuming their options start with 'widget_'
@@ -547,7 +548,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		 * @todo We should only do these if not captured by an update to the sidebars_widgets option
 		 */
 		foreach ( $deletes as $delete ) {
-			if ( $create['name'] && $delete['title'] ) {
+			if ( $delete['name'] && $delete['title'] ) {
 				$message = __( '"{title}" ({name}) deleted', 'stream' );
 			} else if ( $delete['name'] ) {
 				// Empty title, but we have the name
@@ -562,8 +563,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 			$tpl_vars = $delete;
 			$message = self::apply_tpl_vars( $message, $tpl_vars );
-			$contexts = array( $create['sidebar_id'] => 'deleted' );
-			self::log( $message, $create, null, $contexts );
+			$contexts = array( $delete['sidebar_id'] => 'deleted' );
+			self::log( $message, $delete, null, $contexts );
 		}
 	}
 
