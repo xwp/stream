@@ -745,7 +745,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			</div>
 		</fieldset>
 		<fieldset>
-			<h5><?php esc_html_e( 'Show Filters', 'stream' ) ?></h5>
+			<h5><?php esc_html_e( 'Show filters', 'stream' ) ?></h5>
 
 			<div>
 				<input type="hidden" name="toggle_filters_nonce" id="toggle_filters_nonce" value="<?php echo esc_attr( $stream_toggle_filters_nonce ) ?>" />
