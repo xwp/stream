@@ -3,6 +3,15 @@
 class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 	/**
+	 * Whether or not 'created' and 'deleted' actions should be logged. Normally
+	 * the sidebar 'added' and 'removed' actions will correspond with these.
+	 * See note below with usage.
+	 *
+	 * @var bool
+	 */
+	public static $verbose_widget_created_deleted_actions = false;
+
+	/**
 	 * Context name
 	 *
 	 * @var string
@@ -512,53 +521,63 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		}
 
 		/**
-		 * Log created actions
-		 * @todo We should only do these if not captured by an update to the sidebars_widgets option
+		 * In the normal case, widgets are never created or deleted in a vacuum.
+		 * Created widgets are immediately assigned to a sidebar, and deleted
+		 * widgets are immediately removed from their assigned sidebar. If,
+		 * however, widget instances get manipulated programmatically, it is
+		 * possible that they could be orphaned, in which case the following
+		 * actions would be useful to log.
 		 */
-		foreach ( $creates as $create ) {
-			if ( $create['name'] && $create['title'] ) {
-				$message = __( '"{title}" ({name}) created', 'stream' );
-			} else if ( $create['name'] ) {
-				// Empty title, but we have the name
-				$message = __( '{name} widget created', 'stream' );
-			} else if ( $create['title'] ) {
-				// Likely a single widget since no name is available
-				$message = __( '"{title}" widget created', 'stream' );
-			} else {
-				// Neither a name nor a title are available, so use the sidebar ID
-				$message = __( '{widget_id} widget created', 'stream' );
+		if ( self::$verbose_widget_created_deleted_actions ) {
+
+			// We should only do these if not captured by an update to the sidebars_widgets option
+			/**
+			 * Log created actions
+			 */
+			foreach ( $creates as $create ) {
+				if ( $create['name'] && $create['title'] ) {
+					$message = __( '"{title}" ({name}) created', 'stream' );
+				} else if ( $create['name'] ) {
+					// Empty title, but we have the name
+					$message = __( '{name} widget created', 'stream' );
+				} else if ( $create['title'] ) {
+					// Likely a single widget since no name is available
+					$message = __( '"{title}" widget created', 'stream' );
+				} else {
+					// Neither a name nor a title are available, so use the sidebar ID
+					$message = __( '{widget_id} widget created', 'stream' );
+				}
+
+				$tpl_vars = $create;
+				$message = self::apply_tpl_vars( $message, $tpl_vars );
+				$contexts = array( $create['sidebar_id'] => 'created' );
+				unset( $create['title'], $create['name'] );
+				self::log( $message, $create, null, $contexts );
 			}
 
-			$tpl_vars = $create;
-			$message = self::apply_tpl_vars( $message, $tpl_vars );
-			$contexts = array( $create['sidebar_id'] => 'created' );
-			unset( $create['title'], $create['name'] );
-			self::log( $message, $create, null, $contexts );
-		}
+			/**
+			 * Log deleted actions
+			 */
+			foreach ( $deletes as $delete ) {
+				if ( $delete['name'] && $delete['title'] ) {
+					$message = __( '"{title}" ({name}) deleted', 'stream' );
+				} else if ( $delete['name'] ) {
+					// Empty title, but we have the name
+					$message = __( '{name} widget deleted', 'stream' );
+				} else if ( $delete['title'] ) {
+					// Likely a single widget since no name is available
+					$message = __( '"{title}" widget deleted', 'stream' );
+				} else {
+					// Neither a name nor a title are available, so use the sidebar ID
+					$message = __( '{widget_id} widget deleted', 'stream' );
+				}
 
-		/**
-		 * Log deleted actions
-		 * @todo We should only do these if not captured by an update to the sidebars_widgets option
-		 */
-		foreach ( $deletes as $delete ) {
-			if ( $delete['name'] && $delete['title'] ) {
-				$message = __( '"{title}" ({name}) deleted', 'stream' );
-			} else if ( $delete['name'] ) {
-				// Empty title, but we have the name
-				$message = __( '{name} widget deleted', 'stream' );
-			} else if ( $delete['title'] ) {
-				// Likely a single widget since no name is available
-				$message = __( '"{title}" widget deleted', 'stream' );
-			} else {
-				// Neither a name nor a title are available, so use the sidebar ID
-				$message = __( '{widget_id} widget deleted', 'stream' );
+				$tpl_vars = $delete;
+				$message = self::apply_tpl_vars( $message, $tpl_vars );
+				$contexts = array( $delete['sidebar_id'] => 'deleted' );
+				unset( $delete['title'], $delete['name'] );
+				self::log( $message, $delete, null, $contexts );
 			}
-
-			$tpl_vars = $delete;
-			$message = self::apply_tpl_vars( $message, $tpl_vars );
-			$contexts = array( $delete['sidebar_id'] => 'deleted' );
-			unset( $delete['title'], $delete['name'] );
-			self::log( $message, $delete, null, $contexts );
 		}
 	}
 
