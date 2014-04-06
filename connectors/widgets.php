@@ -41,7 +41,6 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			'deleted'     => __( 'Deleted', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
 			'reactivated' => __( 'Reactivated', 'stream' ),
-			'moved'       => __( 'Moved', 'stream' ),
 			'updated'     => __( 'Updated', 'stream' ),
 			'sorted'      => __( 'Sorted', 'stream' ),
 		);
@@ -61,7 +60,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$labels[ $sidebar['id'] ] = $sidebar['name'];
 		}
 
-		$labels['wp_inactive_widgets'] = esc_html__( 'Inactive Widgets' );
+		$labels['wp_inactive_widgets'] = esc_html__( 'Inactive Widgets' ); // @todo Why esc_html??
 		$labels['orphaned_widgets'] = esc_html__( 'Orphaned Widgets' );
 		$labels[''] = esc_html__( 'Unknown', 'stream' );
 
@@ -77,23 +76,17 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		if ( $sidebar = get_stream_meta( $record->ID, 'sidebar', true ) ) {
+		if ( $sidebar = get_stream_meta( $record->ID, 'sidebar_id', true ) ) { // @todo Requires database upgrade 'sidebar' => 'sidebar_id'
 			global $wp_registered_sidebars;
 
 			if ( array_key_exists( $sidebar, $wp_registered_sidebars ) ) {
 				$links[ __( 'Edit Widget Area', 'stream' ) ] = admin_url( "widgets.php#$sidebar" );
 			}
+			// @todo Also old_sidebar_id and new_sidebar_id
+			// @todo Add Edit Widget link
 		}
 
 		return $links;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public static function is_customizer_preview() {
-		global $wp_customize;
-		return ! empty( $wp_customize ) && $wp_customize->is_preview();
 	}
 
 	/**
@@ -282,8 +275,6 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				}
 			}
 
-			// @todo should this actually be created instead of added?
-
 			$action  = 'added';
 			$title = self::get_widget_title( $widget_id );
 			$name = self::get_widget_name( $widget_id );
@@ -337,11 +328,12 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$labels = self::get_context_labels();
 				$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
+				$old_widget_ids = $old[ $sidebar_id ];
 				$message = __( 'Widgets in "{sidebar_name}" were reordered', 'stream' );
 				$message = self::apply_tpl_vars( $message, compact( 'sidebar_name' ) );
 				self::log(
 					$message,
-					compact( 'sidebar_id' ), // @todo Do we need to store the sidebar_id in Stream meta if if is already in the context?
+					compact( 'sidebar_id', 'old_widget_ids' ),
 					null,
 					array( $sidebar_id => 'sorted' )
 				);
@@ -401,13 +393,14 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 				$tpl_vars = compact( 'title', 'name', 'old_sidebar_name', 'new_sidebar_name' );
 				$message = self::apply_tpl_vars( $message, $tpl_vars );
+				// @todo instead of one record with two contexts, should we two records with one context each?
 				self::log(
 					$message,
-					compact( 'widget_id' ),
+					compact( 'widget_id', 'new_sidebar_id', 'old_sidebar_id' ),
 					null,
 					array(
-						$new_sidebar_id => 'moved', // added
-						$old_sidebar_id => 'moved', // subtracted
+						$new_sidebar_id => 'added',
+						$old_sidebar_id => 'removed',
 						// @todo add widget_id as a context?
 					)
 				);
@@ -426,8 +419,6 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @param array $new_value
 	 */
 	public static function callback_updated_option( $option_name, $old_value, $new_value ) {
-		// @todo Actions possible here are: created, updated, deleted; actions possible for sidebar contexts are added and remvoed
-
 		if ( ! preg_match( '/^widget_(.+)$/', $option_name, $matches ) || ! is_array( $new_value ) ) {
 			return;
 		}
@@ -516,6 +507,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$tpl_vars = $update;
 			$message = self::apply_tpl_vars( $message, $tpl_vars );
 			$contexts = array( $update['sidebar_id'] => 'updated' );
+			unset( $update['title'], $update['name'] );
 			self::log( $message, $update, null, $contexts );
 		}
 
@@ -540,6 +532,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$tpl_vars = $create;
 			$message = self::apply_tpl_vars( $message, $tpl_vars );
 			$contexts = array( $create['sidebar_id'] => 'created' );
+			unset( $create['title'], $create['name'] );
 			self::log( $message, $create, null, $contexts );
 		}
 
@@ -564,6 +557,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$tpl_vars = $delete;
 			$message = self::apply_tpl_vars( $message, $tpl_vars );
 			$contexts = array( $delete['sidebar_id'] => 'deleted' );
+			unset( $delete['title'], $delete['name'] );
 			self::log( $message, $delete, null, $contexts );
 		}
 	}
