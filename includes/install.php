@@ -3,6 +3,13 @@
 class WP_Stream_Install {
 
 	/**
+	 * Option key to store database version
+	 *
+	 * @var string
+	 */
+	const KEY = 'wp_stream_db';
+
+	/**
 	 * Holds the database table prefix
 	 *
 	 * @access public
@@ -72,14 +79,14 @@ class WP_Stream_Install {
 		global $wpdb;
 
 		self::$current    = WP_Stream::VERSION;
-		self::$db_version = get_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+		self::$db_version = self::get_db_version();
 		self::$stream_url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE . '&page=' . WP_Stream_Admin::SETTINGS_PAGE_SLUG );
 
 		/**
-		 * Allows devs to alter the tables prefix, default to base_prefix
+		 * Allows developers to alter the tables prefix, default to base_prefix
 		 *
 		 * @var string $prefix  database prefix
-		 * @var string $table_prefix udpated database prefix
+		 * @var string $table_prefix updated database prefix
 		 */
 		$prefix = $wpdb->prefix;
 
@@ -96,10 +103,28 @@ class WP_Stream_Install {
 	 */
 	private static function check() {
 		if ( empty( self::$db_version ) ) {
+
 			$current = self::install( self::$current );
 		} elseif ( self::$db_version !== self::$current ) {
 			add_action( 'admin_notices', array( __CLASS__, 'update_notice_hook' ) );
 		}
+	}
+
+	public static function get_db_version() {
+		global $wpdb;
+
+		$version = get_option( self::KEY );
+
+		if ( ! $version && version_compare( self::$current, '1.3.1', '<=' ) ) {
+			$old_key = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%wp-stream%_db'" );
+			if ( ! empty( $old_key ) && is_array( $old_key ) ) {
+				$version = get_option( $old_key[0] );
+				update_option( self::KEY, $version );
+				delete_option( $old_key[0] );
+			}
+		}
+
+		return $version;
 	}
 
 	/**
@@ -133,7 +158,7 @@ class WP_Stream_Install {
 		$success_db = self::update( self::$db_version, self::$current );
 
 		if ( $success_db && self::$current === $success_db ) {
-			$success_op = update_option( plugin_basename( WP_STREAM_DIR ) . '_db', $success_db );
+			$success_op = update_option( self::KEY. '_db', $success_db );
 		}
 
 		if ( empty( $success_db ) || empty( $success_op ) ) {
@@ -221,7 +246,10 @@ class WP_Stream_Install {
 
 	/**
 	 * Initial database install routine
+	 *
 	 * @uses dbDelta()
+	 * @param string $current Current version of plugin installed
+	 * @return string Current version of plugin installed
 	 */
 	public static function install( $current ) {
 		global $wpdb;
