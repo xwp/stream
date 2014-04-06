@@ -574,7 +574,6 @@ class WP_Stream_Admin {
 			echo self::dashboard_widget_row( $record, $i ); //xss okay
 		}
 
-
 		echo '</ul>';
 
 		$total_items = self::dashboard_get_total_found_rows();
@@ -669,7 +668,7 @@ class WP_Stream_Admin {
 				<div class="clear"></div>
 			</div>';
 
-		echo '<div>' . $html_view_all . $html_pagination_links . '</div>';
+		echo '<div>' . $html_view_all . $html_pagination_links . '</div>'; // xss ok
 	}
 
 	/**

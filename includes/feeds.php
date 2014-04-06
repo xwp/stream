@@ -30,10 +30,11 @@ class WP_Stream_Feeds {
 	 *
 	 * @action show_user_profile
 	 * @action edit_user_profile
+	 * @param WP_User $user
 	 * @return void
 	 */
 	public static function save_user_feed_key( $user ) {
-		if ( get_user_meta( $user->ID, self::USER_FEED_KEY, true ) && ! isset( $_GET[self::GENERATE_KEY_QUERY_VAR] ) ) {
+		if ( get_user_meta( $user->ID, self::USER_FEED_KEY, true ) && ! isset( $_GET[ self::GENERATE_KEY_QUERY_VAR ] ) ) {
 			return;
 		}
 
@@ -49,6 +50,7 @@ class WP_Stream_Feeds {
 	 *
 	 * @action show_user_profile
 	 * @action edit_user_profile
+	 * @param WP_User $user
 	 * @return string
 	 */
 	public static function user_feed_key( $user ) {
@@ -83,6 +85,7 @@ class WP_Stream_Feeds {
 		}
 
 		$nonce = wp_create_nonce( 'wp_stream_generate_key' );
+		$generate_feed_url = add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true, 'wp_stream_nonce' => $nonce ) ) . sprintf( '#wp-stream-highlight:%s', self::USER_FEED_KEY );
 		?>
 		<table class="form-table">
 			<tr>
@@ -90,11 +93,11 @@ class WP_Stream_Feeds {
 				<td>
 					<p>
 						<input type="text" name="<?php echo esc_attr( self::USER_FEED_KEY ) ?>" id="<?php echo esc_attr( self::USER_FEED_KEY ) ?>" class="regular-text code" value="<?php echo esc_attr( $key ) ?>" readonly>
-						<small><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true, 'wp_stream_nonce' => $nonce ) ) . sprintf( '#wp-stream-highlight:%s', self::USER_FEED_KEY ) ) ?>"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
+						<small><a href="<?php echo esc_url( $generate_feed_url ); ?>"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
 					</p>
 					<p class="description"><?php esc_html_e( 'This is your private key used for accessing feeds of Stream Records securely. You can change your key at any time by generating a new one using the link above.', 'stream' ) ?></p>
 					<p>
-						<a href="<?php echo esc_url( $link ) ?>" target="_blank"><?php echo esc_html_e( 'RSS Feed' ) ?></a>
+						<a href="<?php echo esc_url( $link ) ?>" target="_blank"><?php esc_html_e( 'RSS Feed' ) ?></a>
 						|
 						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'json' ), $link ) ) ?>" target="_blank"><?php echo esc_html_e( 'JSON Feed' ) ?></a>
 					</p>
@@ -113,13 +116,13 @@ class WP_Stream_Feeds {
 		$die_title   = esc_html__( 'Access Denied', 'stream' );
 		$die_message = '<h1>' . $die_title .'</h1><p>' . esc_html__( 'You don\'t have permission to view this feed, please contact your site Administrator.', 'stream' ) . '</p>';
 
-		if ( ! isset( $_GET[self::FEED_KEY_QUERY_VAR] ) || empty( $_GET[self::FEED_KEY_QUERY_VAR] ) ) {
+		if ( ! isset( $_GET[ self::FEED_KEY_QUERY_VAR ] ) || empty( $_GET[ self::FEED_KEY_QUERY_VAR ] ) ) {
 			wp_die( $die_message, $die_title );
 		}
 
 		$args = array(
 			'meta_key'   => self::USER_FEED_KEY,
-			'meta_value' => $_GET[self::FEED_KEY_QUERY_VAR],
+			'meta_value' => $_GET[ self::FEED_KEY_QUERY_VAR ],
 			'number'     => 1,
 		);
 		$user = get_users( $args );
@@ -166,7 +169,7 @@ class WP_Stream_Feeds {
 
 			header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_option( 'blog_charset' ), true );
 
-			echo '<?xml version="1.0" encoding="' . get_option( 'blog_charset' ) . '"?>';
+			echo '<?xml version="1.0" encoding="' . get_option( 'blog_charset' ) . '"?>'; // xss ok
 			?>
 
 			<rss version="2.0"

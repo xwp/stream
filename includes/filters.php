@@ -94,7 +94,9 @@ class WP_Stream_Filter_Input {
 	}
 
 	public static function is_regex( $var ) {
+		// @codingStandardsIgnoreStart
 		$test = @preg_match( $var, '' );
+		// @codingStandardsIgnoreEnd
 
 		return $test !== false;
 	}

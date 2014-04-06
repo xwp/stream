@@ -383,8 +383,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	public function get_term_title( $term, $type ) {
-		if ( isset( WP_Stream_Connectors::$term_labels["stream_$type"][ $term ] ) ) {
-			return WP_Stream_Connectors::$term_labels["stream_$type"][ $term ];
+		if ( isset( WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ] ) ) {
+			return WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ];
 		}
 		else {
 			return $term;
@@ -415,7 +415,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		 *
 		 * @param bool $hidden Visibility status, default is Hide Previous Record value set in Exclude setting.
 		 */
-		$hide_disabled_column_filter = apply_filters( 'wp_stream_list_table_hide_disabled_ ' . $setting_key, ( WP_Stream_Settings::$options[ 'exclude_hide_previous_records' ] === 0 ) ? false : true );
+		$hide_disabled_column_filter = apply_filters( 'wp_stream_list_table_hide_disabled_ ' . $setting_key, ( WP_Stream_Settings::$options['exclude_hide_previous_records'] === 0 ) ? false : true );
 
 		if ( 'author' === $column ) {
 			$all_records = array();
@@ -548,7 +548,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function filter_select( $name, $title, $items, $ajax, $enabled = true ) {
 
-
 		if ( $ajax ) {
 			$out = sprintf(
 				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
@@ -657,7 +656,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function display() {
-		echo '<form method="get" action="' . admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) . '">';
+		echo '<form method="get" action="' . admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) . '">'; // xss ok
 		echo $this->filter_search(); // xss ok
 		parent::display();
 		echo '</form>';
