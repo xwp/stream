@@ -77,7 +77,6 @@ class WP_Stream_Install {
 	 */
 	function __construct() {
 		global $wpdb;
-
 		self::$current    = WP_Stream::VERSION;
 		self::$db_version = self::get_db_version();
 		self::$stream_url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE . '&page=' . WP_Stream_Admin::SETTINGS_PAGE_SLUG );
@@ -102,8 +101,10 @@ class WP_Stream_Install {
 	 * @return null
 	 */
 	private static function check() {
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return;
+		}
 		if ( empty( self::$db_version ) ) {
-
 			$current = self::install( self::$current );
 		} elseif ( self::$db_version !== self::$current ) {
 			add_action( 'admin_notices', array( __CLASS__, 'update_notice_hook' ) );
@@ -114,11 +115,11 @@ class WP_Stream_Install {
 		global $wpdb;
 
 		$version = get_option( self::KEY );
-
 		if ( ! $version && version_compare( self::$current, '1.3.1', '<=' ) ) {
 			$old_key = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%wp-stream%_db'" );
 			if ( ! empty( $old_key ) && is_array( $old_key ) ) {
 				$version = get_option( $old_key[0] );
+
 				update_option( self::KEY, $version );
 				delete_option( $old_key[0] );
 			}
@@ -154,11 +155,12 @@ class WP_Stream_Install {
 	 *
 	 */
 	public static function prompt_update_status() {
+		global $wpdb;
 		check_admin_referer( 'wp_stream_update_db' );
 		$success_db = self::update( self::$db_version, self::$current );
 
-		if ( $success_db && self::$current === $success_db ) {
-			$success_op = update_option( self::KEY. '_db', $success_db );
+		if ( $success_db ) {
+			$success_op = update_option( self::KEY, self::$current );
 		}
 
 		if ( empty( $success_db ) || empty( $success_op ) ) {
@@ -187,8 +189,6 @@ class WP_Stream_Install {
 		}
 		if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 			self::prompt_update();
-		} elseif ( 'user_action_required' === $_REQUEST['wp_stream_update' ] ) {
-			self::prompt_update_status();
 		} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
 			self::prompt_update_status();
 		}
@@ -234,14 +234,15 @@ class WP_Stream_Install {
 			$function = 'wp_stream_update_' . str_ireplace( '.', '', $version );
 
 			if ( version_compare( $db_version, $version, '<' ) ) {
-				$result = call_user_func( $function, $db_version, $current );
+				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current ) : false;
 				if ( $current === $result ) {
 					return $current;
 				}
 				return false;
 			}
 		}
-		return true;
+
+		return $current;
 	}
 
 	/**
