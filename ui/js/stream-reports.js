@@ -194,7 +194,7 @@
 
 			// Trigger select2js
 			this.$configureDiv.find('select.chart-option').select2({
-				minimumResultsForSearch: 5,
+				minimumResultsForSearch: 8,
 			});
 
 			// Change chart type toggle
