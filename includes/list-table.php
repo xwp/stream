@@ -5,10 +5,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function __construct( $args = array() ) {
 
 		$screen_id = isset( $args['screen'] ) ? $args['screen'] : null;
-
-		if ( is_network_admin() && $screen_id && '-network' !== substr( $screen_id, -8 ) ) {
-			$screen_id .= '-network';
-		}
+		$screen_id = apply_filters( 'wp_stream_list_table_screen_id', $screen_id );
 
 		parent::__construct(
 			array(
@@ -32,14 +29,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		add_filter( 'screen_settings', array( $this, 'screen_controls' ), 10, 2 );
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
-		add_filter( 'stream_query_args', array( __CLASS__, 'set_network_option_value' ) );
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
 		set_screen_options();
-
-		if ( is_network_admin() ) {
-			add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
-		}
 	}
 
 	static function ajax_filters() {
@@ -61,16 +53,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 		if ( 'top' === $which ) {
 			$this->filters_form();
 		}
-	}
-
-	function network_admin_columns( $columns ) {
-		return array_merge(
-			array_slice( $columns, 0, -1 ),
-			array(
-				'blog_id' => esc_html__( 'Site', 'stream' ),
-			),
-			array_slice( $columns, -1 )
-		);
 	}
 
 	function get_columns(){
@@ -279,7 +261,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'blog_id':
-				$blog = $item->blog_id ? get_blog_details( $item->blog_id ) : self::get_network_blog();
+				$blog = ( $item->blog_id && is_multisite() ) ? get_blog_details( $item->blog_id ) : WP_Stream_Network::get_network_blog();
 				$out  = sprintf(
 					'<a href="%s"><span>%s</span></a>',
 					add_query_arg( array( 'blog_id' => $blog->blog_id ), network_admin_url( 'admin.php?page=wp_stream' ) ),
@@ -325,19 +307,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		echo $out; // xss ok
 	}
-
-	/**
-	 * Builds a stdClass object used when displaying actions done in network administration
-	 * @return stdClass
-	 */
-	public static function get_network_blog() {
-		$blog           = new stdClass;
-		$blog->blog_id  = 0;
-		$blog->blogname = __( 'Network Admin', 'stream' );
-
-		return $blog;
-	}
-
 
 	public static function get_action_links( $record ) {
 		$out = '';
@@ -567,32 +536,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'items' => $this->assemble_records( 'action' ),
 		);
 
-		if ( is_network_admin() ) {
-			$blogs = array();
-
-			// display network blog as the first option
-			$network_blog = self::get_network_blog();
-
-			$blogs['network'] = array(
-				'label'    => $network_blog->blogname,
-				'disabled' => '',
-			);
-
-			// add all sites
-			foreach ( (array) wp_get_sites() as $blog ) {
-				$blog_data = get_blog_details( $blog );
-
-				$blogs[ $blog['blog_id'] ] = array(
-					'label'    => $blog_data->blogname,
-					'disabled' => '',
-				);
-			}
-
-			$filters['blog_id'] = array(
-				'title' => __( 'sites', 'stream' ),
-				'items' => $blogs,
-			);
-		}
 
 		/**
 		 * Filter allows additional filters in the list table dropdowns
@@ -888,17 +831,4 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		return $output;
 	}
-
-	/**
-	 * This will be moved to blog connector perhaps
-	 * @filter stream_query_args
-	 */
-	static function set_network_option_value( $args ) {
-		if ( isset( $args['blog_id'] ) && $args['blog_id'] === 'network' ) {
-			$args['blog_id'] = 0;
-		}
-
-		return $args;
-	}
-
 }

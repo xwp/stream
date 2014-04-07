@@ -49,6 +49,7 @@ class WP_Stream_Admin {
 
 		// Plugin action links
 		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
+		add_filter( 'network_admin_plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
 
 		// Load admin scripts and styles
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
@@ -301,10 +302,10 @@ class WP_Stream_Admin {
 	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
-			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), network_admin_url( self::ADMIN_PARENT_PAGE ) );
+			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), is_network_admin() ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE ) );
 			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 
-			$url     = add_query_arg(
+			$url = add_query_arg(
 				array(
 					'action'          => 'wp_stream_uninstall',
 					'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
@@ -476,9 +477,9 @@ class WP_Stream_Admin {
 			}
 
 			// Delete database option
-			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-			delete_option( WP_Stream_Settings::SETTINGS_KEY );
-			delete_option( 'dashboard_stream_activity_options' );
+			delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+			delete_site_option( WP_Stream_Settings::SETTINGS_KEY );
+			delete_site_option( 'dashboard_stream_activity_options' );
 
 			// Redirect to plugin page
 			wp_redirect( add_query_arg( array( 'deactivate' => true ), admin_url( 'plugins.php' ) ) );

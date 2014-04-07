@@ -27,8 +27,24 @@ class WP_Stream_Network {
 		add_filter( 'wp_stream_settings_form_action', array( $this, 'settings_form_action' ) );
 		add_filter( 'wp_stream_options_fields', array( $this, 'get_fields' ) );
 		add_filter( 'wp_stream_options', array( $this, 'get_network_options' ) );
+		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
 		add_filter( 'stream_toggle_filters', array( $this, 'toggle_filters' ) );
 		add_filter( 'wp_stream_db_tables_prefix', array( $this, 'db_tables_prefix' ) );
+		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
+		add_filter( 'stream_query_args', array( $this, 'set_network_option_value' ) );
+		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
+	}
+
+	/**
+	 * Builds a stdClass object used when displaying actions done in network administration
+	 * @return stdClass
+	 */
+	public static function get_network_blog() {
+		$blog           = new stdClass;
+		$blog->blog_id  = 0;
+		$blog->blogname = __( 'Network Admin', 'stream' );
+
+		return $blog;
 	}
 
 	/**
@@ -243,48 +259,134 @@ class WP_Stream_Network {
 	 * @return array
 	 */
 	function get_network_options( $options ) {
-		if ( ! is_network_admin() ) {
-			return $options;
-		}
+		if ( is_network_admin() ) {
 
-		$network_options = wp_parse_args(
-			(array) get_site_option( WP_Stream_Settings::SETTINGS_KEY, array() ),
-			WP_Stream_Settings::get_defaults()
-		);
+			$network_options = wp_parse_args(
+				(array) get_site_option( WP_Stream_Settings::SETTINGS_KEY, array() ),
+				WP_Stream_Settings::get_defaults()
+			);
 
-		if ( $network_options ) {
-			return $network_options;
+			if ( $network_options ) {
+				$options = $network_options;
+			}
 		}
 
 		return $options;
 	}
 
 	/**
-	 * Add the Site toggle to screen options when in network settings
+	 * Add the Site filter to the stream activity in network admin
 	 *
-	 * @param $options
+	 * @param $filters
+	 *
+	 * @return array
+	 */
+	function list_table_filters( $filters ) {
+		if ( is_network_admin() ) {
+			$blogs = array();
+
+			// display network blog as the first option
+			$network_blog = self::get_network_blog();
+
+			$blogs['network'] = array(
+				'label'    => $network_blog->blogname,
+				'disabled' => '',
+			);
+
+			// add all sites
+			foreach ( (array) wp_get_sites() as $blog ) {
+				$blog_data = get_blog_details( $blog );
+
+				$blogs[ $blog['blog_id'] ] = array(
+					'label'    => $blog_data->blogname,
+					'disabled' => '',
+				);
+			}
+
+			$filters['blog_id'] = array(
+				'title' => __( 'sites', 'stream' ),
+				'items' => $blogs,
+			);
+		}
+
+		return $filters;
+	}
+
+	/**
+	 * Add the Site toggle to screen options in network admin
+	 *
+	 * @param $filters
 	 *
 	 * @return array
 	 */
 	function toggle_filters( $filters ) {
-		if ( ! is_network_admin() ) {
-			return $filters;
+		if ( is_network_admin() ) {
+			$filters['blog_id'] = esc_html__( 'Site', 'stream' );
 		}
-		$filters['blog_id'] = esc_html__( 'Site', 'stream' );
 		return $filters;
 	}
-
 
 	/**
 	 * Use a single primary database table for multisite installs
 	 *
-	 * @param $options
+	 * @param $prefix
 	 *
-	 * @return array
+	 * @return string
 	 */
 	function db_tables_prefix( $prefix ) {
 		global $wpdb;
 		return $wpdb->base_prefix;
+	}
+
+	/**
+	 * Add the network suffix to the $screen_id when in the network admin
+	 *
+	 * @param $screen_id
+	 *
+	 * @return string
+	 */
+	function list_table_screen_id( $screen_id ) {
+		if ( $screen_id && is_network_admin() ) {
+			if ( '-network' !== substr( $screen_id, -8 ) ) {
+				$screen_id .= '-network';
+			}
+		}
+		return $screen_id;
+	}
+
+	/**
+	 * Adjust the stream query to work with changes on the network level
+	 *
+	 * @param $args
+	 *
+	 * @return mixed
+	 */
+	static function set_network_option_value( $args ) {
+		if ( isset( $args['blog_id'] ) && $args['blog_id'] === 'network' ) {
+			$args['blog_id'] = 0;
+		}
+
+		return $args;
+	}
+
+	/**
+	 * Add the Site column to the network stream records
+	 *
+	 * @param $args
+	 *
+	 * @return mixed
+	 */
+	function network_admin_columns( $columns ) {
+		if ( is_network_admin() ) {
+			$columns = array_merge(
+				array_slice( $columns, 0, -1 ),
+				array(
+					'blog_id' => esc_html__( 'Site', 'stream' ),
+				),
+				array_slice( $columns, -1 )
+			);
+		}
+		return $columns;
 	}
 
 }
