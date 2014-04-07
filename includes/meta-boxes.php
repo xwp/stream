@@ -313,6 +313,7 @@ class WP_Stream_Reports_Metaboxes {
 			'author_role' => __( 'Author Role', 'stream-reports' ),
 			'connector'   => __( 'Connector', 'stream-reports' ),
 			'context'     => __( 'Context', 'stream-reports' ),
+			'ip'          => __( 'IP Address', 'stream-reports' ),
 		);
 
 		if ( empty( $key ) ) {
