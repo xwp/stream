@@ -450,7 +450,7 @@ class WP_Stream_Admin {
 			}
 
 			// Delete database option
-			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+			delete_option( WP_Stream_Install::KEY );
 			delete_option( WP_Stream_Settings::KEY );
 			delete_option( 'dashboard_stream_activity_options' );
 
