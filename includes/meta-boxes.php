@@ -348,7 +348,6 @@ class WP_Stream_Reports_Metaboxes {
 		$records = $this->load_metabox_records( $args, $user_interval );
 		$records = $this->sort_by_count( $records );
 
-
 		$limit   = apply_filters( 'stream_reports_record_limit', 10 );
 		$records = $this->limit_records( $records, $limit );
 
