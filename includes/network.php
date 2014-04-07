@@ -15,13 +15,88 @@ class WP_Stream_Network {
 	}
 
 	function actions() {
+		add_action( 'network_admin_menu', array( 'WP_Stream_Admin', 'register_menu' ) );
+		add_action( 'network_admin_notices', array( 'WP_Stream_Admin', 'admin_notices' ) );
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
+		add_action( 'wp_network_dashboard_setup', array( 'WP_Stream_Admin', 'dashboard_stream_activity' ) );
+		add_action( 'wp_stream_admin_menu_screens', array( $this, 'admin_menu_screens' ) );
 	}
 
 	function filters() {
+		add_filter( 'wp_stream_disable_admin_access', array( $this, 'disable_admin_access' ) );
+		add_filter( 'wp_stream_settings_form_action', array( $this, 'settings_form_action' ) );
 		add_filter( 'wp_stream_options_fields', array( $this, 'get_fields' ) );
 		add_filter( 'wp_stream_options', array( $this, 'get_network_options' ) );
 		add_filter( 'stream_toggle_filters', array( $this, 'toggle_filters' ) );
+		add_filter( 'wp_stream_db_tables_prefix', array( $this, 'db_tables_prefix' ) );
+	}
+
+	/**
+	 * If site access has been disabled from the network admin, disallow access
+	 *
+	 * @param $disable_access
+	 *
+	 * @return boolean
+	 */
+	function disable_admin_access( $disable_access ) {
+		if ( ! is_network_admin() ) {
+			$settings = wp_parse_args(
+				(array) get_site_option( WP_Stream_Settings::SETTINGS_KEY, array() ),
+				WP_Stream_Settings::get_defaults()
+			);
+			if ( isset( $settings['general_enable_site_access'] ) && false == $settings['general_enable_site_access'] ) {
+				return true;
+			}
+		}
+		return $disable_access;
+	}
+
+	/**
+	 * Add Network Settings and Default Settings menu items
+	 *
+	 * @param $screen_id
+	 *
+	 * @return array
+	 */
+	function admin_menu_screens() {
+		if ( is_network_admin() ) {
+			remove_submenu_page( WP_Stream_Admin::RECORDS_PAGE_SLUG, 'wp_stream_settings' );
+
+			WP_Stream_Admin::$screen_id['settings'] = add_submenu_page(
+				WP_Stream_Admin::RECORDS_PAGE_SLUG,
+				__( 'Stream Network Settings', 'stream' ),
+				__( 'Network Settings', 'stream' ),
+				WP_Stream_Admin::SETTINGS_CAP,
+				'wp_stream_settings',
+				array( 'WP_Stream_Admin', 'render_page' )
+			);
+
+			if ( ! WP_Stream_Admin::$disable_access ) {
+				WP_Stream_Admin::$screen_id['default_settings'] = add_submenu_page(
+					WP_Stream_Admin::RECORDS_PAGE_SLUG,
+					__( 'Stream Default Settings', 'stream' ),
+					__( 'Default Settings', 'stream' ),
+					WP_Stream_Admin::SETTINGS_CAP,
+					'wp_stream_default_settings',
+					array( 'WP_Stream_Admin', 'render_page' )
+				);
+			}
+		}
+	}
+
+	/**
+	 * Adjust the action of the settings form when in the Network Admin
+	 *
+	 * @param $action
+	 *
+	 * @return string
+	 */
+	function settings_form_action( $action ) {
+		if ( is_network_admin() ) {
+			$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+			$action = add_query_arg( array( 'action' => $current_page ), 'edit.php' );
+		}
+		return $action;
 	}
 
 	/**
@@ -197,6 +272,19 @@ class WP_Stream_Network {
 		}
 		$filters['blog_id'] = esc_html__( 'Site', 'stream' );
 		return $filters;
+	}
+
+
+	/**
+	 * Use a single primary database table for multisite installs
+	 *
+	 * @param $options
+	 *
+	 * @return array
+	 */
+	function db_tables_prefix( $prefix ) {
+		global $wpdb;
+		return $wpdb->base_prefix;
 	}
 
 }

@@ -17,7 +17,7 @@ class WP_Stream_Admin {
 	public static $list_table = null;
 
 	/**
-	 * Network option to disable access on individual sites
+	 * Option to disable access to Stream
 	 *
 	 * @var bool
 	 */
@@ -36,31 +36,13 @@ class WP_Stream_Admin {
 		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
-		if ( is_multisite() ) {
-			$settings = wp_parse_args(
-				(array) get_site_option( WP_Stream_Settings::SETTINGS_KEY, array() ),
-				WP_Stream_Settings::get_defaults()
-			);
-			if ( isset( $settings['general_enable_site_access'] ) && false == $settings['general_enable_site_access'] ) {
-				self::$disable_access = true;
-			}
-		}
+		self::$disable_access = apply_filters( 'wp_stream_disable_admin_access', false );
 
-		// Register settings page for network admin
-		if ( is_network_admin() ) {
-			// Register network settings page
-			add_action( 'network_admin_menu', array( __CLASS__, 'register_menu' ) );
+		// Register settings page
+		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
 
-			// Network admin notices
-			add_action( 'network_admin_notices', array( __CLASS__, 'admin_notices' ) );
-
-		} else {
-			// Register settings page
-			add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
-
-			// Admin notices
-			add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
-		}
+		// Admin notices
+		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
 		// Add admin body class
 		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
@@ -90,7 +72,6 @@ class WP_Stream_Admin {
 
 		// Load Dashboard widget
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
-		add_action( 'wp_network_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
 
 		// Dashboard AJAX pagination
 		add_action( 'wp_ajax_stream_activity_dashboard_update', array( __CLASS__, 'dashboard_stream_activity_update_contents' ) );
@@ -140,7 +121,7 @@ class WP_Stream_Admin {
 		if ( is_network_admin() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) )
 			return false;
 
-		if ( ! is_network_admin() && self::$disable_access )
+		if ( self::$disable_access )
 			return false;
 
 		self::$screen_id['main'] = add_menu_page(
@@ -153,35 +134,16 @@ class WP_Stream_Admin {
 			'2.999999' // Using longtail decimal string to reduce the chance of position conflicts, see Codex
 		);
 
-		if ( is_network_admin() ) {
-			self::$screen_id['settings'] = add_submenu_page(
-				self::RECORDS_PAGE_SLUG,
-				__( 'Stream Network Settings', 'stream' ),
-				__( 'Network Settings', 'stream' ),
-				self::SETTINGS_CAP,
-				'wp_stream_settings',
-				array( __CLASS__, 'render_page' )
-			);
-			if ( ! self::$disable_access ) {
-				self::$screen_id['default_settings'] = add_submenu_page(
-					self::RECORDS_PAGE_SLUG,
-					__( 'Stream Default Settings', 'stream' ),
-					__( 'Default Settings', 'stream' ),
-					self::SETTINGS_CAP,
-					'wp_stream_default_settings',
-					array( __CLASS__, 'render_page' )
-				);
-			}
-		} else {
-			self::$screen_id['settings'] = add_submenu_page(
-				self::RECORDS_PAGE_SLUG,
-				__( 'Stream Settings', 'stream' ),
-				__( 'Settings', 'stream' ),
-				self::SETTINGS_CAP,
-				'wp_stream_settings',
-				array( __CLASS__, 'render_page' )
-			);
-		}
+		self::$screen_id['settings'] = add_submenu_page(
+			self::RECORDS_PAGE_SLUG,
+			__( 'Stream Settings', 'stream' ),
+			__( 'Settings', 'stream' ),
+			self::SETTINGS_CAP,
+			'wp_stream_settings',
+			array( __CLASS__, 'render_page' )
+		);
+
+		do_action( 'wp_stream_admin_menu_screens' );
 
 		// Register the list table early, so it associates the column headers with 'Screen settings'
 		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
@@ -339,7 +301,7 @@ class WP_Stream_Admin {
 	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
-			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), is_network_admin() ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE ) );
+			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), network_admin_url( self::ADMIN_PARENT_PAGE ) );
 			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 
 			$url     = add_query_arg(
@@ -362,9 +324,8 @@ class WP_Stream_Admin {
 	 */
 	public static function render_page() {
 
-		$option_key   = WP_Stream_Settings::get_option_key();
-		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
-		$form_action  = is_network_admin() ? add_query_arg( array( 'action' => $current_page ), 'edit.php' ) : admin_url( 'options.php' );
+		$option_key  = WP_Stream_Settings::get_option_key();
+		$form_action = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
 
 		$sections   = WP_Stream_Settings::get_fields();
 		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );

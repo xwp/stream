@@ -19,13 +19,7 @@ class WP_Stream_DB {
 		 * @param  string  database prefix
 		 * @return string  udpated database prefix
 		 */
-		if ( is_multisite() ) {
-			$prefix = $wpdb->base_prefix;
-		} else {
-			$prefix = $wpdb->prefix;
-		}
-
-		$prefix = apply_filters( 'wp_stream_db_tables_prefix', $prefix );
+		$prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->prefix );
 
 		self::$table         = $prefix . 'stream';
 		self::$table_meta    = $prefix . 'stream_meta';

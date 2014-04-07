@@ -22,13 +22,7 @@ class WP_Stream_Install {
 		 * @param  string  database prefix
 		 * @return string  udpated database prefix
 		*/
-		if ( is_multisite() ) {
-			$prefix = $wpdb->base_prefix;
-		} else {
-			$prefix = $wpdb->prefix;
-		}
-
-		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $prefix );
+		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->prefix );
 
 		if ( empty( $db_version ) ) {
 			self::install();
