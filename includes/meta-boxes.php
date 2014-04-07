@@ -348,6 +348,7 @@ class WP_Stream_Reports_Metaboxes {
 		$records = $this->load_metabox_records( $args, $user_interval );
 		$records = $this->sort_by_count( $records );
 
+
 		$limit   = apply_filters( 'stream_reports_record_limit', 10 );
 		$records = $this->limit_records( $records, $limit );
 
@@ -519,8 +520,10 @@ class WP_Stream_Reports_Metaboxes {
 				$user = get_userdata( $record->author );
 				if ( $user ) {
 					$record->author_role = join( ',', $user->roles );
-				} else {
+				} else if ( $record->author == 0 ) {
 					$record->author_role = __( 'N/A', 'stream-reports' );
+				} else {
+					$record->author_role = __( 'Unknown', 'stream-reports' );
 				}
 			}
 		}
