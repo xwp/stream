@@ -334,6 +334,7 @@ class WP_Stream_Notifications_Form {
 			'ip' => array(
 				'title'     => esc_html__( 'IP', 'stream-notifications' ),
 				'type'      => 'text',
+				'class'     => 'ip-addresses',
 				'tags'      => true,
 				'operators' => $default_operators,
 			),
