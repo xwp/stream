@@ -27,6 +27,7 @@
 		wp_nonce_field( 'stream-notifications-form' );
 		wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
 		wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
+		wp_nonce_field( 'stream_get_ips', 'ip_nonce', false );
 		?>
 
 		<div id="poststuff">
