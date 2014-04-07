@@ -158,7 +158,9 @@ jQuery(function($){
 				ip_chunks = $.grep(
 					ip_chunks,
 					function(chunk) {
-						return (chunk.charAt(0) !== '0' && parseInt(chunk, 10) <= 255);
+						var numeric = parseInt(chunk, 10);
+
+						return numeric <= 255 && numeric.toString() === chunk;
 					}
 				);
 
