@@ -458,8 +458,12 @@ class WP_Stream_Reports_Metaboxes {
 				$output = isset( WP_Stream_Connectors::$term_labels['stream_action'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_action'][ $value ] : $value;
 				break;
 			case 'author':
-				$user_info = get_userdata( $value );
-				$output    = isset( $user_info->display_name ) ? $user_info->display_name : __( 'N/A', 'stream-reports' );
+				if ( $value ) {
+					$user_info = get_userdata( $value );
+					$output    = isset( $user_info->display_name ) ? $user_info->display_name : sprintf( __( 'User ID: %s', 'stream-reports' ), $value );
+				} else {
+					$output = __( 'N/A', 'stream-reports' );
+				}
 				break;
 			case 'author_role':
 				$output = ucfirst( $value );
