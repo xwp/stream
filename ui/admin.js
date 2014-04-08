@@ -158,7 +158,9 @@ jQuery(function($){
 				ip_chunks = $.grep(
 					ip_chunks,
 					function(chunk) {
-						return (chunk.charAt(0) !== '0' && parseInt(chunk, 10) <= 255);
+						var numeric = parseInt(chunk, 10);
+
+						return numeric <= 255 && numeric.toString() === chunk;
 					}
 				);
 
@@ -389,7 +391,7 @@ jQuery(function($){
 
 		//Enable Live Update Checkbox Ajax
 		$( '#enable_live_update' ).click( function() {
-			var nonce   = $( '#enable_live_update_nonce' ).val();
+			var nonce   = $( '#stream_live_update_nonce' ).val();
 			var user = $( '#enable_live_update_user' ).val();
 			var checked = 'unchecked';
 			if ( $('#enable_live_update' ).is( ':checked' ) ) {
