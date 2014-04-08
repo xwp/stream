@@ -711,7 +711,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	static function screen_controls( $status, $args ) {
 
 		$user_id                 = get_current_user_id();
-		$option                  = get_user_meta( $user_id, 'enable_live_update', true );
+		$option                  = get_user_meta( $user_id, 'stream_live_update_records', true );
 		$filters_option_defaults = array(
 			'date_range' => true,
 			'author'     => true,
@@ -739,7 +739,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			</div>
 			<div class="metabox-prefs stream-live-update-checkbox">
 				<label for="enable_live_update">
-					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( $option ) ?> />
+					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( $option, 'on' ) ?> />
 					<?php esc_html_e( 'Enabled', 'stream' ) ?><span class="spinner"></span>
 				</label>
 			</div>
