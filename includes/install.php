@@ -212,13 +212,13 @@ class WP_Stream_Install {
 			add_action( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_installer_edits_to_theme_editor_connector' );
 		}
 
-		// If version is lower than 1.3.2, manually alter the column order. Not possible using dbDelta alone.
-		if ( version_compare( $db_version, '1.3.2', '<' ) ) {
+		// If version is lower than 1.3.3, manually alter the column order. Not possible using dbDelta alone.
+		if ( version_compare( $db_version, '1.3.3', '<' ) ) {
 			$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
 		}
 
-		// If version is lower than 1.3.2, merge multisite tables.
-		if ( version_compare( $db_version, '1.3.2', '<' ) ) {
+		// If version is lower than 1.3.3, merge multisite tables.
+		if ( version_compare( $db_version, '1.3.3', '<' ) ) {
 			if ( is_multisite() ) {
 
 				$blogs = wp_get_sites();
