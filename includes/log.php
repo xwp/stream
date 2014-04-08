@@ -74,15 +74,16 @@ class WP_Stream_Log {
 		);
 
 		$recordarr = array(
-			'object_id' => $object_id,
-			'author'    => $user_id,
-			'created'   => current_time( 'mysql', 1 ),
-			'summary'   => vsprintf( $message, $args ),
-			'parent'    => self::$instance->prev_record,
-			'connector' => $connector,
-			'contexts'  => $contexts,
-			'meta'      => $meta,
-			'ip'        => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
+			'object_id'   => $object_id,
+			'author'      => $user_id,
+			'author_role' => $user->roles[0],
+			'created'     => current_time( 'mysql', 1 ),
+			'summary'     => vsprintf( $message, $args ),
+			'parent'      => self::$instance->prev_record,
+			'connector'   => $connector,
+			'contexts'    => $contexts,
+			'meta'        => $meta,
+			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
 		$record_id = WP_Stream_DB::get_instance()->insert( $recordarr );
