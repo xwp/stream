@@ -67,6 +67,7 @@ class WP_Stream_Admin {
 		// Enable/Disable live update per user
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
 
+		// Toggle filters in list table on/off
 		add_action( 'wp_ajax_stream_toggle_filters', array( __CLASS__, 'toggle_filters' ) );
 
 		// Ajax authors list
@@ -74,7 +75,6 @@ class WP_Stream_Admin {
 
 		// Ajax author's name by ID
 		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
-
 	}
 
 	/**

@@ -178,6 +178,7 @@ class WP_Stream {
 		}
 
 		global $wpdb;
+
 		$message = '';
 
 		// Check if all needed DB is present
@@ -238,6 +239,7 @@ class WP_Stream {
 			$class = __CLASS__;
 			self::$instance = new $class;
 		}
+
 		return self::$instance;
 	}
 

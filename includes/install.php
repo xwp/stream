@@ -77,6 +77,7 @@ class WP_Stream_Install {
 	 */
 	function __construct() {
 		global $wpdb;
+
 		self::$current    = WP_Stream::VERSION;
 		self::$db_version = self::get_db_version();
 		self::$stream_url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE . '&page=' . WP_Stream_Admin::SETTINGS_PAGE_SLUG );
@@ -104,6 +105,7 @@ class WP_Stream_Install {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
 		}
+
 		if ( empty( self::$db_version ) ) {
 			$current = self::install( self::$current );
 		} elseif ( self::$db_version !== self::$current ) {
@@ -156,7 +158,9 @@ class WP_Stream_Install {
 	 */
 	public static function prompt_update_status() {
 		global $wpdb;
+
 		check_admin_referer( 'wp_stream_update_db' );
+
 		$success_db = self::update( self::$db_version, self::$current );
 
 		if ( $success_db ) {
@@ -187,6 +191,7 @@ class WP_Stream_Install {
 		if ( ! current_user_can( WP_Stream_Admin::VIEW_CAP ) ) {
 			return;
 		}
+
 		if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 			self::prompt_update();
 		} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
@@ -227,6 +232,7 @@ class WP_Stream_Install {
 	 */
 	public static function update( $db_version, $current ) {
 		require_once WP_STREAM_INC_DIR . 'db-updates.php';
+
 		$prefix   = self::$table_prefix;
 		$versions = apply_filters( 'wp_stream_db_update_versions', self::db_update_versions(), $current, $prefix );
 
