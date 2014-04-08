@@ -750,6 +750,10 @@ class WP_Stream_Admin {
 		require_once WP_STREAM_INC_DIR . 'list-table.php';
 		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
 
+		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
+			return;
+		}
+
 		$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
 		$query   = $data['wp-stream-heartbeat-query'];
 		if ( empty( $query ) ) {
@@ -786,6 +790,10 @@ class WP_Stream_Admin {
 	 * @return array  Data sent to heartbeat
 	 */
 	public static function live_update_dashboard( $response, $data ) {
+
+		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
+			return;
+		}
 
 		$send = array();
 
