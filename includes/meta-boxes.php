@@ -589,7 +589,7 @@ class WP_Stream_Reports_Metaboxes {
 			$key = $record->$field;
 
 			if ( is_callable( $callback ) ) {
-				$key = $callback( $key );
+				$key = call_user_func( $callback, $key );
 			}
 
 			if ( array_key_exists( $key, $sorted ) && is_array( $sorted[ $key ] ) ) {
