@@ -58,15 +58,16 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	 * @return array Context label translations
 	 */
 	public static function get_context_labels() {
-		$blogs  = wp_get_sites();
 		$labels = array();
+		if ( is_multisite() ) {
+			$blogs  = wp_get_sites();
 
-		foreach ( $blogs as $blog ) {
-			$blog_details   = get_blog_details( $blog['blog_id'] );
-			$key            = sanitize_key( $blog_details->blogname );
-			$labels[ $key ] = $blog_details->blogname;
+			foreach ( $blogs as $blog ) {
+				$blog_details   = get_blog_details( $blog['blog_id'] );
+				$key            = sanitize_key( $blog_details->blogname );
+				$labels[ $key ] = $blog_details->blogname;
+			}
 		}
-
 		return $labels;
 	}
 
