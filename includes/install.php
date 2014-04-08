@@ -265,7 +265,6 @@ class WP_Stream_Install {
 
 							$wpdb->insert( $wpdb->base_prefix . 'stream_meta', $stream_meta );
 						}
-
 					}
 					$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stream, {$wpdb->prefix}stream_context, {$wpdb->prefix}stream_meta" );
 				}
