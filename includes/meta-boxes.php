@@ -460,7 +460,7 @@ class WP_Stream_Reports_Metaboxes {
 			case 'author':
 				if ( $value ) {
 					$user_info = get_userdata( $value );
-					$output    = isset( $user_info->display_name ) ? $user_info->display_name : sprintf( __( 'User ID: %s', 'stream-reports' ), $value );
+					$output    = isset( $user_info->display_name ) ? $user_info->display_name : sprintf( __( 'User ID: %d', 'stream-reports' ), $value );
 				} else {
 					$output = __( 'N/A', 'stream-reports' );
 				}
