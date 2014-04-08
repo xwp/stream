@@ -65,6 +65,18 @@ class WP_Stream_Log {
 			$user_id = get_current_user_id();
 		}
 
+		$user = new WP_User( $user_id );
+
+		if ( ! isset( $args['author_meta'] ) ) {
+			$args['author_meta'] = maybe_serialize(
+				array(
+					'user_email'   => $user->user_email,
+					'display_name' => $user->display_name,
+					'user_login'   => $user->user_login,
+				)
+			);
+		}
+
 		// Remove meta with null values from being logged
 		$meta = array_filter(
 			$args,
