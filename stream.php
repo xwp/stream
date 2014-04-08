@@ -211,6 +211,7 @@ class WP_Stream {
 				'<div class="error"><p>%s</p></div>',
 				__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
 			); // xss ok
+
 			return false;
 		}
 
