@@ -212,9 +212,65 @@ class WP_Stream_Install {
 			add_action( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_installer_edits_to_theme_editor_connector' );
 		}
 
-		// If version is lower than 1.4.0, manually alter the column order. Not possible using dbDelta alone.
-		if ( version_compare( $db_version, '1.4.0', '<' ) ) {
+		// If version is lower than 1.3.2, manually alter the column order. Not possible using dbDelta alone.
+		if ( version_compare( $db_version, '1.3.2', '<' ) ) {
 			$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
+		}
+
+		// If version is lower than 1.3.2, merge multisite tables.
+		if ( version_compare( $db_version, '1.3.2', '<' ) ) {
+			if ( is_multisite() ) {
+
+				$blogs = wp_get_sites();
+
+				foreach ( $blogs as $blog ) {
+					switch_to_blog( $blog['blog_id'] );
+
+					if ( $wpdb->prefix === $wpdb->base_prefix ) {
+						continue;
+					}
+
+					$sql = "SELECT * FROM {$wpdb->prefix}stream";
+
+					$blog_stream = $wpdb->get_results( $sql, ARRAY_A );
+
+					foreach ( $blog_stream as $key => $stream_entry ) {
+
+						$prev_entry_id = $stream_entry['ID'];
+
+						unset( $stream_entry['ID'] );
+						$stream_entry['blog_id'] = $blog['blog_id'];
+
+						$wpdb->insert( $wpdb->base_prefix . 'stream', $stream_entry );
+						$stream_entry_id = $wpdb->insert_id;
+
+						$sql = "SELECT * FROM {$wpdb->prefix}stream_context WHERE record_id = $prev_entry_id";
+
+						$blog_stream_context = $wpdb->get_results( $sql, ARRAY_A );
+
+						foreach ( $blog_stream_context as $key => $stream_context ) {
+							unset( $stream_context['meta_id'] );
+							$stream_context['record_id'] = $stream_entry_id;
+
+							$wpdb->insert( $wpdb->base_prefix . 'stream_context', $stream_context );
+						}
+
+						$sql = "SELECT * FROM {$wpdb->prefix}stream_meta WHERE record_id = $prev_entry_id";
+
+						$blog_stream_meta = $wpdb->get_results( $sql, ARRAY_A );
+
+						foreach ( $blog_stream_meta as $key => $stream_meta ) {
+							unset( $stream_meta['meta_id'] );
+							$stream_meta['record_id'] = $stream_entry_id;
+
+							$wpdb->insert( $wpdb->base_prefix . 'stream_meta', $stream_meta );
+						}
+
+					}
+					$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stream, {$wpdb->prefix}stream_context, {$wpdb->prefix}stream_meta" );
+				}
+				restore_current_blog();
+			}
 		}
 	}
 
