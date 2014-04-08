@@ -16,6 +16,13 @@ class WP_Stream_Admin {
 	 */
 	public static $list_table = null;
 
+	/**
+	 * Option to disable access to Stream
+	 *
+	 * @var bool
+	 */
+	public static $disable_access = false;
+
 	const ADMIN_BODY_CLASS    = 'wp_stream_screen';
 	const RECORDS_PAGE_SLUG   = 'wp_stream';
 	const SETTINGS_PAGE_SLUG  = 'wp_stream_settings';
@@ -29,14 +36,20 @@ class WP_Stream_Admin {
 		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
-		// Add admin body class
-		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
+		self::$disable_access = apply_filters( 'wp_stream_disable_admin_access', false );
 
 		// Register settings page
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
 
+		// Admin notices
+		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
+
+		// Add admin body class
+		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
+
 		// Plugin action links
 		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
+		add_filter( 'network_admin_plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
 
 		// Load admin scripts and styles
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
@@ -44,6 +57,9 @@ class WP_Stream_Admin {
 
 		// Reset Streams database
 		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
+
+		// Reset Streams settings
+		add_action( 'wp_ajax_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
 
 		// Uninstall Streams and Deactivate plugin
 		add_action( 'wp_ajax_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
@@ -90,6 +106,9 @@ class WP_Stream_Admin {
 			case 'data_erased':
 				printf( '<div class="updated"><p>%s</p></div>', __( 'All records have been successfully erased.', 'stream' ) );
 				break;
+			case 'settings_reset':
+				printf( '<div class="updated"><p>%s</p></div>', __( 'All site settings have been successfully reset.', 'stream' ) );
+				break;
 		}
 	}
 
@@ -97,9 +116,15 @@ class WP_Stream_Admin {
 	 * Register menu page
 	 *
 	 * @action admin_menu
-	 * @return void
+	 * @return bool|void
 	 */
 	public static function register_menu() {
+		if ( is_network_admin() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) )
+			return false;
+
+		if ( self::$disable_access )
+			return false;
+
 		self::$screen_id['main'] = add_menu_page(
 			__( 'Stream', 'stream' ),
 			__( 'Stream', 'stream' ),
@@ -118,6 +143,8 @@ class WP_Stream_Admin {
 			'wp_stream_settings',
 			array( __CLASS__, 'render_page' )
 		);
+
+		do_action( 'wp_stream_admin_menu_screens' );
 
 		// Register the list table early, so it associates the column headers with 'Screen settings'
 		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
@@ -172,6 +199,7 @@ class WP_Stream_Admin {
 			array(
 				'i18n'           => array(
 					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+					'confirm_defaults'  => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
 				),
 				'gmt_offset'     => get_option( 'gmt_offset' ),
@@ -179,7 +207,7 @@ class WP_Stream_Admin {
 				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
 				'current_query'  => json_encode( $_GET ),
-				'filter_controls' => get_user_meta( get_current_user_id(), 'stream_toggle_filters', true ),
+				'filters'        => self::$list_table ? self::$list_table->get_filters() : false,
 			)
 		);
 	}
@@ -204,8 +232,9 @@ class WP_Stream_Admin {
 	/**
 	 * Add menu styles for various WP Admin skins
 	 *
+	 * @uses wp_add_inline_style()
 	 * @action admin_enqueue_scripts
-	 * @return wp_add_inline_style
+	 * @return bool true on success false on failure
 	 */
 	public static function admin_menu_css() {
 		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
@@ -273,10 +302,10 @@ class WP_Stream_Admin {
 	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
-			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
+			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), is_network_admin() ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE ) );
 			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 
-			$url     = add_query_arg(
+			$url = add_query_arg(
 				array(
 					'action'          => 'wp_stream_uninstall',
 					'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
@@ -295,16 +324,18 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_page() {
+
+		$option_key  = WP_Stream_Settings::get_option_key();
+		$form_action = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
+
+		$sections   = WP_Stream_Settings::get_fields();
+		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 		?>
 		<div class="wrap">
 
-			<h2><?php _e( 'Stream Settings', 'stream' ) ?></h2>
-			<?php settings_errors() ?>
+			<h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
 
-			<?php
-			$sections   = WP_Stream_Settings::get_fields();
-			$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
-			?>
+			<?php settings_errors() ?>
 
 			<h2 class="nav-tab-wrapper">
 				<?php $i = 0 ?>
@@ -318,20 +349,22 @@ class WP_Stream_Admin {
 			</h2>
 
 			<div class="nav-tab-content" id="tab-content-settings">
-				<form method="post" action="options.php" enctype="multipart/form-data">
-					<?php
-					$i = 0;
+
+				<form method="post" action="<?php echo esc_attr( $form_action ) ?>" enctype="multipart/form-data">
+		<?php
+		$i = 0;
 		foreach ( $sections as $section => $data ) {
-						$i++;
-						$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
+			$i++;
+			$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
 			if ( $is_active ) {
-							settings_fields( WP_Stream_Settings::KEY );
-							do_settings_sections( WP_Stream_Settings::KEY );
-						}
-					}
-					submit_button();
-					?>
+				settings_fields( $option_key );
+				do_settings_sections( $option_key );
+			}
+		}
+		submit_button();
+		?>
 				</form>
+
 			</div>
 
 		</div>
@@ -362,7 +395,7 @@ class WP_Stream_Admin {
 						'page'    => 'wp_stream_settings',
 						'message' => 'data_erased',
 					),
-					admin_url( self::ADMIN_PARENT_PAGE )
+					is_plugin_active_for_network( WP_STREAM_PLUGIN ) ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
 				)
 			);
 			exit;
@@ -371,7 +404,7 @@ class WP_Stream_Admin {
 		}
 	}
 
-	public static function erase_stream_records() {
+	private static function erase_stream_records() {
 		global $wpdb;
 
 		$wpdb->query(
@@ -386,6 +419,41 @@ class WP_Stream_Admin {
 				'stream'
 			)
 		);
+	}
+
+	public static function wp_ajax_defaults() {
+		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+		if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			wp_die( "You don't have sufficient privileges to do this action." );
+		}
+		if ( current_user_can( self::SETTINGS_CAP ) ) {
+			self::reset_stream_settings();
+			wp_redirect(
+				add_query_arg(
+					array(
+						'page'    => 'wp_stream_settings',
+						'message' => 'settings_reset',
+					),
+					is_plugin_active_for_network( WP_STREAM_PLUGIN ) ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
+				)
+			);
+			exit;
+		} else {
+			wp_die( "You don't have sufficient privileges to do this action." );
+		}
+	}
+
+	private static function reset_stream_settings() {
+		global $wpdb;
+
+		$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
+		if ( $blogs ) {
+			foreach ( $blogs as $blog ) {
+				switch_to_blog( $blog['blog_id'] );
+				delete_option( WP_Stream_Settings::SETTINGS_KEY );
+			}
+			restore_current_blog();
+		}
 	}
 
 	/**
@@ -409,9 +477,9 @@ class WP_Stream_Admin {
 			}
 
 			// Delete database option
-			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-			delete_option( WP_Stream_Settings::KEY );
-			delete_option( 'dashboard_stream_activity_options' );
+			delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+			delete_site_option( WP_Stream_Settings::SETTINGS_KEY );
+			delete_site_option( 'dashboard_stream_activity_options' );
 
 			// Redirect to plugin page
 			wp_redirect( add_query_arg( array( 'deactivate' => true ), admin_url( 'plugins.php' ) ) );
@@ -748,7 +816,7 @@ class WP_Stream_Admin {
 
 		// Register list table
 		require_once WP_STREAM_INC_DIR . 'list-table.php';
-		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
+		self::$list_table = new WP_Stream_List_Table( array( 'screen' => 'toplevel_page_' . self::RECORDS_PAGE_SLUG ) );
 
 		$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
 		$query   = $data['wp-stream-heartbeat-query'];
