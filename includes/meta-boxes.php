@@ -33,13 +33,15 @@ class WP_Stream_Reports_Metaboxes {
 		// Get all sections from the db
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
-		add_filter( 'stream_reports_chart_coordinates', array( $this, 'sort_coordinates_by_count' ), 5, 2 );
-		add_filter( 'stream_reports_chart_coordinates', array( $this, 'limit_coordinates' ), 5, 2 );
+		add_filter( 'stream_reports_load_records', array( $this, 'sort_coordinates_by_count' ), 5, 2 );
+		add_filter( 'stream_reports_load_records', array( $this, 'limit_coordinates' ), 5, 2 );
 
-		add_filter( 'stream_reports_chart_coordinates', array( $this, 'pie_chart_coordinates' ), 10, 2 );
-		add_filter( 'stream_reports_chart_coordinates', array( $this, 'bar_chart_coordinates' ), 10, 2 );
-		add_filter( 'stream_reports_chart_coordinates', array( $this, 'line_chart_coordinates' ), 10, 2 );
-		add_filter( 'stream_reports_chart_coordinates', array( $this, 'translate_labels' ), 10, 2 );
+		add_filter( 'stream_reports_make_chart', array( $this, 'pie_chart_coordinates' ), 10, 2 );
+		add_filter( 'stream_reports_make_chart', array( $this, 'bar_chart_coordinates' ), 10, 2 );
+		add_filter( 'stream_reports_make_chart', array( $this, 'line_chart_coordinates' ), 10, 2 );
+
+		add_filter( 'stream_reports_finalize_chart', array( $this, 'translate_labels' ), 10, 2 );
+		add_filter( 'stream_reports_finalize_chart', array( $this, 'apply_chart_settings' ), 10, 2 );
 
 		$ajax_hooks = array(
 			'stream_reports_add_metabox'           => 'add_metabox',
@@ -252,9 +254,11 @@ class WP_Stream_Reports_Metaboxes {
 			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
 		}
 
-		$records     = $this->load_metabox_records( $args, $user_interval );
-		$coordinates = apply_filters( 'stream_reports_chart_coordinates', $records, $args );
-		return $coordinates;
+		$records = $this->load_metabox_records( $args, $user_interval );
+		$records = apply_filters( 'stream_reports_load_records', $records, $args );
+
+		$coordinates = apply_filters( 'stream_reports_make_chart', $records, $args );
+		return apply_filters( 'stream_reports_finalize_chart', $coordinates, $args );
 	}
 
 	public function line_chart_coordinates( $records, $args ) {
@@ -350,6 +354,19 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		return $coordinates;
+	}
+
+	public function apply_chart_settings( $coordinates, $args ) {
+
+		$disabled_fields = array();
+		foreach ( $coordinates as $key => $dataset ) {
+			if ( in_array( $dataset['key'], $disabled_fields ) ) {
+				$coordinates[ $key ]['disabled'] = true;
+			}
+		}
+
+		return $coordinates;
+
 	}
 
 	public function translate_labels( $coordinates, $args ) {
