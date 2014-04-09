@@ -231,107 +231,6 @@ class WP_Stream_Reports_Metaboxes {
 		);
 	}
 
-	protected function get_generated_title( $args ) {
-
-		if ( empty( $args['data_type'] ) ) {
-			return sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $args['key'] + 1 ) );
-		}
-
-		$type_label     = $this->get_label( $args['data_type'], $args['data_group'] );
-		$selector_label = $this->get_selector_types( $args['selector_type'] );
-
-		// Don't add 'Activity' to special cases that already have it
-		$exceptions = array( 'all' );
-		if ( in_array( $args['data_type'], $exceptions ) ) {
-			$string = _x(
-				'%1$s by %2$s',
-				'Special case for activities that do not add activity suffix. 1: Dataset 2: Selector',
-				'stream-reports'
-			);
-		} else {
-			$string = _x(
-				'%1$s Activity by %2$s',
-				'1: Dataset 2: Selector',
-				'stream-reports'
-			);
-		}
-
-		return sprintf( $string, $type_label, $selector_label );
-	}
-
-	protected function get_chart_types() {
-		return array(
-			'line'     => 'dashicons-chart-area',
-			'pie'      => 'dashicons-chart-pie',
-			'multibar' => 'dashicons-chart-bar',
-		);
-	}
-
-	protected function get_data_types( $key = '' ) {
-		$labels = array(
-			'all' => __( 'All Activity', 'stream-reports' ),
-			'connector' => array(
-				'title'   => __( 'Connector Activity', 'stream-reports' ),
-				'group'   => 'connector',
-				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
-				'disable' => array(
-					'connector',
-				),
-			),
-			'context' => array(
-				'title'   => __( 'Context Activity', 'stream-reports' ),
-				'group'   => 'context',
-				'options' => WP_Stream_Connectors::$term_labels['stream_context'],
-				'disable' => array(
-					'context'
-				),
-			),
-			'action' => array(
-				'title'   => __( 'Actions Activity', 'stream-reports' ),
-				'group'   => 'action',
-				'options' => WP_Stream_Connectors::$term_labels['stream_action'],
-				'disable' => array(
-					'action'
-				),
-			),
-		);
-
-		if ( empty( $key ) ) {
-			$output = $labels;
-		} elseif ( array_key_exists( $key, $labels ) ) {
-			$output = $labels[ $key ];
-		} else {
-			$output = false;
-		}
-
-		return $output;
-	}
-
-	/**
-	 * Returns selector type labels, or a single selector type's label'
-	 * @return string
-	 */
-	protected function get_selector_types( $key = '' ) {
-		$labels = array(
-			'action'      => __( 'Action', 'stream-reports' ),
-			'author'      => __( 'Author', 'stream-reports' ),
-			'author_role' => __( 'Author Role', 'stream-reports' ),
-			'connector'   => __( 'Connector', 'stream-reports' ),
-			'context'     => __( 'Context', 'stream-reports' ),
-			'ip'          => __( 'IP Address', 'stream-reports' ),
-		);
-
-		if ( empty( $key ) ) {
-			$output = $labels;
-		} elseif ( array_key_exists( $key, $labels ) ) {
-			$output = $labels[ $key ];
-		} else {
-			$output = false;
-		}
-
-		return $output;
-	}
-
 	public function get_chart_coordinates( $args ) {
 		$date = new WP_Stream_Date_Interval();
 
@@ -497,6 +396,89 @@ class WP_Stream_Reports_Metaboxes {
 
 		return $output;
 	}
+
+	/**
+	 * Returns data type labels, or a single data type's label'
+	 * @return string
+	 */
+	protected function get_data_types( $key = '' ) {
+		$labels = array(
+			'all' => __( 'All Activity', 'stream-reports' ),
+			'connector' => array(
+				'title'   => __( 'Connector Activity', 'stream-reports' ),
+				'group'   => 'connector',
+				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
+				'disable' => array(
+					'connector',
+				),
+			),
+			'context' => array(
+				'title'   => __( 'Context Activity', 'stream-reports' ),
+				'group'   => 'context',
+				'options' => WP_Stream_Connectors::$term_labels['stream_context'],
+				'disable' => array(
+					'context'
+				),
+			),
+			'action' => array(
+				'title'   => __( 'Actions Activity', 'stream-reports' ),
+				'group'   => 'action',
+				'options' => WP_Stream_Connectors::$term_labels['stream_action'],
+				'disable' => array(
+					'action'
+				),
+			),
+		);
+
+		if ( empty( $key ) ) {
+			$output = $labels;
+		} elseif ( array_key_exists( $key, $labels ) ) {
+			$output = $labels[ $key ];
+		} else {
+			$output = false;
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Returns chart types available
+	 * @return string
+	 */
+	protected function get_chart_types() {
+		return array(
+			'line'     => 'dashicons-chart-area',
+			'pie'      => 'dashicons-chart-pie',
+			'multibar' => 'dashicons-chart-bar',
+		);
+	}
+
+	/**
+	 * Returns selector type labels, or a single selector type's label'
+	 * @return string
+	 */
+	protected function get_selector_types( $key = '' ) {
+		$labels = array(
+			'action'      => __( 'Action', 'stream-reports' ),
+			'author'      => __( 'Author', 'stream-reports' ),
+			'author_role' => __( 'Author Role', 'stream-reports' ),
+			'connector'   => __( 'Connector', 'stream-reports' ),
+			'context'     => __( 'Context', 'stream-reports' ),
+			'ip'          => __( 'IP Address', 'stream-reports' ),
+		);
+
+		if ( empty( $key ) ) {
+			$output = $labels;
+		} elseif ( array_key_exists( $key, $labels ) ) {
+			$output = $labels[ $key ];
+		} else {
+			$output = false;
+		}
+
+		return $output;
+	}
+
+
 
 	public function load_metabox_records( $args, $date_interval ) {
 		$query_args = array(
@@ -669,6 +651,37 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	protected function collapse_dates( $date ) {
 		return strtotime( date( 'Y-m-d', strtotime( $date ) ) );
+	}
+
+	/**
+	 * Creates a title generated from the arguments for the chart
+	 */
+	protected function get_generated_title( $args ) {
+
+		if ( empty( $args['data_type'] ) ) {
+			return sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $args['key'] + 1 ) );
+		}
+
+		$type_label     = $this->get_label( $args['data_type'], $args['data_group'] );
+		$selector_label = $this->get_selector_types( $args['selector_type'] );
+
+		// Don't add 'Activity' to special cases that already have it
+		$exceptions = array( 'all' );
+		if ( in_array( $args['data_type'], $exceptions ) ) {
+			$string = _x(
+				'%1$s by %2$s',
+				'Special case for activities that do not add activity suffix. 1: Dataset 2: Selector',
+				'stream-reports'
+			);
+		} else {
+			$string = _x(
+				'%1$s Activity by %2$s',
+				'1: Dataset 2: Selector',
+				'stream-reports'
+			);
+		}
+
+		return sprintf( $string, $type_label, $selector_label );
 	}
 
 	/**
