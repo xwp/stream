@@ -388,6 +388,14 @@ jQuery(function($){
 			// Remove the no items row
 			$( list_sel + ' tr.no-items').remove();
 
+			// Update pagination
+			total_items_i18n = data['total_items_i18n'] || '';
+			if ( total_items_i18n ) {
+				$('.displaying-num').text( total_items_i18n );
+				$('.total-pages').text( data['total_pages_i18n'] );
+				$('.tablenav-pages').find('.next-page, .last-page').toggleClass('disabled', data['total_pages'] == $('.current-page').val());
+			}
+
 			// Allow others to hook in, ie: timeago
 			$( list_sel ).parent().trigger( 'updated' );
 

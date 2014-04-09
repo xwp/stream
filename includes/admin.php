@@ -716,7 +716,26 @@ class WP_Stream_Admin {
 		$response['per_page']    = isset( $option['records_per_page'] ) ? absint( $option['records_per_page'] ) : 5;
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_stream_update ) {
+			// Register list table
+			require_once WP_STREAM_INC_DIR . 'list-table.php';
+			self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
+
 			$response['wp-stream-heartbeat'] = self::live_update( $response, $data );
+
+			if ( ! empty( $response['wp-stream-heartbeat'] ) ) {
+				self::$list_table->prepare_items();
+
+				extract( self::$list_table->_pagination_args, EXTR_SKIP );
+
+				if ( isset( $total_items ) ) {
+					$response['total_items_i18n'] = sprintf( _n( '1 item', '%s items', $total_items ), number_format_i18n( $total_items ) );
+				}
+
+				if ( isset( $total_pages ) ) {
+					$response['total_pages'] = $total_pages;
+					$response['total_pages_i18n'] = number_format_i18n( $total_pages );
+				}
+			}
 		} elseif ( isset( $data['wp-stream-heartbeat'] ) && 'dashboard-update' === $data['wp-stream-heartbeat'] && $enable_dashboard_update ) {
 			$response['wp-stream-heartbeat'] = self::live_update_dashboard( $response, $data );
 		} else {
@@ -741,10 +760,6 @@ class WP_Stream_Admin {
 	 * @return array  Data sent to heartbeat
 	 */
 	public static function live_update( $response, $data ) {
-		// Register list table
-		require_once WP_STREAM_INC_DIR . 'list-table.php';
-		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
-
 		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
 			return;
 		}
