@@ -345,6 +345,12 @@ jQuery(function($){
 				return;
 			}
 
+			// Get show on screen
+			var show_on_screen = $('#edit_stream_per_page').val();
+
+			// Get all current rows
+			var $current_items = $( list_sel + ' tr');
+
 			// Get all new rows
 			var $new_items = $(data['wp-stream-heartbeat']);
 
@@ -352,7 +358,7 @@ jQuery(function($){
 			$new_items.removeClass().addClass('new-row');
 
 			//Check if first tr has the alternate class
-			var has_class =  ( $( list_sel + ' tr:first').hasClass('alternate') );
+			var has_class =  ( $current_items.first().hasClass('alternate') );
 
 			// Apply the good class to the list
 			if ( $new_items.length === 1 && !has_class ) {
@@ -374,7 +380,13 @@ jQuery(function($){
 			});
 
 			// Remove the number of element added to the end of the list table
-			$( list_sel + ' tr').slice(-$new_items.length).remove();
+			var slice_rows = show_on_screen - ( $new_items.length + $current_items.length );
+			if ( slice_rows < 0 ) {
+				$( list_sel + ' tr').slice(slice_rows).remove();
+			}
+
+			// Remove the no items row
+			$( list_sel + ' tr.no-items').remove();
 
 			// Allow others to hook in, ie: timeago
 			$( list_sel ).parent().trigger( 'updated' );
