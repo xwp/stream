@@ -33,6 +33,11 @@ class WP_Stream_Reports_Metaboxes {
 		// Get all sections from the db
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
+		add_filter( 'stream_reports_chart_coordinates', array( $this, 'pie_chart_coordinates' ), 5, 2 );
+		add_filter( 'stream_reports_chart_coordinates', array( $this, 'bar_chart_coordinates' ), 5, 2 );
+		add_filter( 'stream_reports_chart_coordinates', array( $this, 'line_chart_coordinates' ), 5, 2 );
+		add_filter( 'stream_reports_chart_coordinates', array( $this, 'translate_labels' ), 10, 2 );
+
 		$ajax_hooks = array(
 			'stream_reports_add_metabox'           => 'add_metabox',
 			'stream_reports_delete_metabox'        => 'delete_metabox',
@@ -328,7 +333,6 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function get_chart_coordinates( $args ) {
-		// Get records sorted grouped by original sort
 		$date = new WP_Stream_Date_Interval();
 
 		$default_interval = array(
@@ -352,21 +356,15 @@ class WP_Stream_Reports_Metaboxes {
 		$limit   = apply_filters( 'stream_reports_record_limit', 10 );
 		$records = $this->limit_records( $records, $limit );
 
-		switch ( $args['chart_type'] ) {
-			case 'pie':
-				$coordinates = $this->get_pie_chart_coordinates( $records, $args['selector_type'] );
-				break;
-			case 'multibar':
-				$coordinates = $this->get_bar_chart_coordinates( $records, $args['selector_type'] );
-				break;
-			default:
-				$coordinates = $this->get_line_chart_coordinates( $records, $args['selector_type'] );
-		}
-
+		$coordinates = apply_filters( 'stream_reports_chart_coordinates', $records, $args );
 		return $coordinates;
 	}
 
-	public function get_line_chart_coordinates( $records, $grouping ) {
+	public function line_chart_coordinates( $records, $args ) {
+		if ( 'line' !== $args['chart_type'] ) {
+			return $records;
+		}
+
 		$sorted = array();
 
 		// Get date count for each sort
@@ -381,10 +379,9 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$coordinates = array();
-
 		foreach ( $sorted as $line_name => $points ) {
 			$line_data = array(
-				'key'    => $this->get_label( $line_name, $grouping ),
+				'key'    => $line_name,
 				'values' => array(),
 			);
 
@@ -401,12 +398,16 @@ class WP_Stream_Reports_Metaboxes {
 		return $coordinates;
 	}
 
-	public function get_pie_chart_coordinates( $records, $grouping ) {
+	public function pie_chart_coordinates( $records, $args ) {
+
+		if ( 'pie' !== $args['chart_type'] ) {
+			return $records;
+		}
 		$counts = array();
 
 		foreach ( $records as $type => $items ) {
 			$counts[] = array(
-				'key'   => $this->get_label( $type, $grouping ),
+				'key'   => $type,
 				'value' => count( $items ),
 			);
 		}
@@ -414,7 +415,12 @@ class WP_Stream_Reports_Metaboxes {
 		return $counts;
 	}
 
-	public function get_bar_chart_coordinates( $records, $grouping ) {
+	public function bar_chart_coordinates( $records, $args ) {
+
+		if ( 'multibar' !== $args['chart_type'] ) {
+			return $records;
+		}
+
 		$sorted = array();
 
 		// Get date count for each sort
@@ -432,7 +438,7 @@ class WP_Stream_Reports_Metaboxes {
 
 		foreach ( $sorted as $line_name => $points ) {
 			$line_data = array(
-				'key'    => $this->get_label( $line_name, $grouping ),
+				'key'    => $line_name,
 				'values' => array(),
 			);
 
@@ -444,6 +450,15 @@ class WP_Stream_Reports_Metaboxes {
 			}
 
 			$coordinates[] = $line_data;
+		}
+
+		return $coordinates;
+	}
+
+	public function translate_labels( $coordinates, $args ) {
+
+		foreach ( $coordinates as $key => $dataset ) {
+			$coordinates[ $key ]['key'] = $this->get_label( $dataset['key'], $args['selector_type'] );
 		}
 
 		return $coordinates;
