@@ -33,9 +33,12 @@ class WP_Stream_Reports_Metaboxes {
 		// Get all sections from the db
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
-		add_filter( 'stream_reports_chart_coordinates', array( $this, 'pie_chart_coordinates' ), 5, 2 );
-		add_filter( 'stream_reports_chart_coordinates', array( $this, 'bar_chart_coordinates' ), 5, 2 );
-		add_filter( 'stream_reports_chart_coordinates', array( $this, 'line_chart_coordinates' ), 5, 2 );
+		add_filter( 'stream_reports_chart_coordinates', array( $this, 'sort_coordinates_by_count' ), 5, 2 );
+		add_filter( 'stream_reports_chart_coordinates', array( $this, 'limit_coordinates' ), 5, 2 );
+
+		add_filter( 'stream_reports_chart_coordinates', array( $this, 'pie_chart_coordinates' ), 10, 2 );
+		add_filter( 'stream_reports_chart_coordinates', array( $this, 'bar_chart_coordinates' ), 10, 2 );
+		add_filter( 'stream_reports_chart_coordinates', array( $this, 'line_chart_coordinates' ), 10, 2 );
 		add_filter( 'stream_reports_chart_coordinates', array( $this, 'translate_labels' ), 10, 2 );
 
 		$ajax_hooks = array(
@@ -249,12 +252,7 @@ class WP_Stream_Reports_Metaboxes {
 			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
 		}
 
-		$records = $this->load_metabox_records( $args, $user_interval );
-		$records = $this->sort_by_count( $records );
-
-		$limit   = apply_filters( 'stream_reports_record_limit', 10 );
-		$records = $this->limit_records( $records, $limit );
-
+		$records     = $this->load_metabox_records( $args, $user_interval );
 		$coordinates = apply_filters( 'stream_reports_chart_coordinates', $records, $args );
 		return $coordinates;
 	}
@@ -532,7 +530,7 @@ class WP_Stream_Reports_Metaboxes {
 	/**
 	 * Sorts each set of data by the number of records in them
 	 */
-	protected function sort_by_count( $records ) {
+	public function sort_coordinates_by_count( $records ) {
 		$counts = array();
 		foreach ( $records as $field => $data ){
 
@@ -563,7 +561,13 @@ class WP_Stream_Reports_Metaboxes {
 	/**
 	 * Merges all records past limit into single record
 	 */
-	protected function limit_records( $records, $limit ) {
+	public function limit_coordinates( $records, $args ) {
+
+		$limit = apply_filters( 'stream_reports_record_limit', 10 );
+		if ( 0 === $limit ) {
+			return $records;
+		}
+
 		$top_elements      = array_slice( $records, 0, $limit, true );
 		$leftover_elements = array_slice( $records, $limit );
 
