@@ -381,7 +381,8 @@ class WP_Stream_Notifications_Form {
 			'connector' => array(
 				'title'     => esc_html__( 'Connector', 'stream-notifications' ),
 				'type'      => 'select',
-				'operators' => $single_operators,
+				'multiple'  => true,
+				'operators' => $default_operators,
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
 			),
 			'context' => array(
