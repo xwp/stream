@@ -385,9 +385,10 @@ class WP_Stream_Notifications_Form {
 			),
 			'context' => array(
 				'title'     => esc_html__( 'Context', 'stream-notifications' ),
-				'type'      => 'text',
-				'ajax'      => true,
+				'type'      => 'select',
+				'multiple'  => true,
 				'operators' => $default_operators,
+				'options'   => WP_Stream_Connectors::$term_labels['stream_context'],
 			),
 			'action' => array(
 				'title'     => esc_html__( 'Action', 'stream-notifications' ),
