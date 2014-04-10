@@ -113,6 +113,7 @@ class WP_Stream {
 
 		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
+			require_once WP_STREAM_INC_DIR . 'extensions.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 		}
 	}
