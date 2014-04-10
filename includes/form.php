@@ -122,7 +122,6 @@ class WP_Stream_Notifications_Form {
 						$data = array();
 					}
 					break;
-				case 'action':
 				case 'context':
 					$items  = WP_Stream_Connectors::$term_labels['stream_' . $type];
 					$values = explode( ',', $query );
