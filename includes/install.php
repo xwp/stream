@@ -276,7 +276,7 @@ class WP_Stream_Install {
 			type varchar(20) NOT NULL DEFAULT 'stream',
 			created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 			ip varchar(39) NULL,
-			PRIMARY KEY (ID),
+			PRIMARY KEY  (ID),
 			KEY site_id (site_id),
 			KEY parent (parent),
 			KEY author (author),
@@ -301,7 +301,7 @@ class WP_Stream_Install {
 			context varchar(100) NOT NULL,
 			action varchar(100) NOT NULL,
 			connector varchar(100) NOT NULL,
-			PRIMARY KEY (meta_id),
+			PRIMARY KEY  (meta_id),
 			KEY context (context),
 			KEY action (action),
 			KEY connector (connector)
@@ -324,7 +324,7 @@ class WP_Stream_Install {
 			record_id bigint(20) unsigned NOT NULL,
 			meta_key varchar(200) NOT NULL,
 			meta_value varchar(200) NOT NULL,
-			PRIMARY KEY (meta_id),
+			PRIMARY KEY  (meta_id),
 			KEY record_id (record_id),
 			KEY meta_key (meta_key),
 			KEY meta_value (meta_value)
