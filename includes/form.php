@@ -122,12 +122,6 @@ class WP_Stream_Notifications_Form {
 						$data = array();
 					}
 					break;
-				case 'context':
-					$items  = WP_Stream_Connectors::$term_labels['stream_' . $type];
-					$values = explode( ',', $query );
-					$items  = array_intersect_key( $items, array_flip( $values ) );
-					$data   = $this->format_json_for_select2( $items );
-					break;
 				case 'post':
 				case 'post_parent':
 					$args  = array(
