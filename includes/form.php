@@ -271,6 +271,9 @@ class WP_Stream_Notifications_Form {
 		global $wp_roles;
 		$args = array();
 
+		$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
+		asort( $connectors );
+
 		$roles     = $wp_roles->roles;
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
 
@@ -380,7 +383,7 @@ class WP_Stream_Notifications_Form {
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
-				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
+				'options'   => $connectors,
 			),
 			'context' => array(
 				'title'     => esc_html__( 'Context', 'stream-notifications' ),
