@@ -27,6 +27,7 @@
 		wp_nonce_field( 'stream-notifications-form' );
 		wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
 		wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
+		wp_nonce_field( 'stream_get_ips', 'ip_nonce', false );
 		?>
 
 		<div id="poststuff">
@@ -113,7 +114,7 @@
 	</div>
 	<div class="field value">
 		<% if ( ['select', 'ajax'].indexOf( vars.type ) != -1 ){ %>
-		<select name="triggers[<%- vars.index %>][value]<% if ( vars.multiple ){ %>[]<% } %>" class="trigger-value" data-ajax="<% ( vars.ajax ) %>" <% if ( vars.multiple ){ %>multiple="multiple"<% } %>>
+		<select name="triggers[<%- vars.index %>][value]<% if ( vars.multiple ){ %>[]<% } %>" class="trigger-value<% if ( vars.subtype ){ %> <%- vars.subtype %><% } %>" data-ajax="<% ( vars.ajax ) %>" <% if ( vars.multiple ){ %>multiple="multiple"<% } %>>
 			<option></option>
 			<% if ( vars.options ) { %>
 				<% _.each( vars.options, function( list, name ){ %>
@@ -122,7 +123,7 @@
 			<% } %>
 		</select>
 		<% } else { %>
-		<input type="text" name="triggers[<%- vars.index %>][value]" class="trigger-value type-<%- vars.type %> <% if ( vars.tags ){ %>tags<% } %> <% if ( vars.ajax ){ %>ajax<% } %>">
+		<input type="text" name="triggers[<%- vars.index %>][value]" class="trigger-value type-<%- vars.type %> <% if ( vars.tags ){ %>tags<% } %> <% if ( vars.ajax ){ %>ajax<% } %><% if ( vars.subtype ){ %> <%- vars.subtype %><% } %>">
 		<% } // endif%>
 	</div>
 </div>

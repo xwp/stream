@@ -79,7 +79,76 @@ jQuery(function($){
 					tORa = $this.closest('#alerts, #triggers').attr('id')
 				;
 				elementArgs.width = parseInt( $this.css('width'), 10 ) + 30;
-				if ( $this.hasClass('ajax') ) {
+				if ( $this.hasClass('ip') ) {
+					elementArgs.ajax = {
+						type: 'POST',
+						url: ajaxurl,
+						dataType: 'json',
+						quietMillis: 500,
+						data: function (term) {
+							return {
+								find:   term,
+								limit:  10,
+								action: 'stream_get_ips',
+								nonce:  $("input[name=ip_nonce]").val()
+							};
+						},
+						results: function (response) {
+							var answer = {
+								results: []
+							};
+
+							if (response.success !== true || response.data === undefined ) {
+								return answer;
+							}
+
+							$.each(response.data, function (key, ip ) {
+								answer.results.push({
+									id:   ip,
+									text: ip
+								});
+							});
+
+							return answer;
+						}
+					},
+					elementArgs.initSelection = function (item, callback) {
+						callback( item.data( 'selected' ) );
+					},
+					elementArgs.formatNoMatches = function(){
+						return '';
+					},
+					elementArgs.createSearchChoice = function(term) {
+						var ip_chunks = [];
+
+						ip_chunks = term.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+
+						if (ip_chunks === null) {
+							return;
+						}
+
+						// remove whole match
+						ip_chunks.shift();
+
+						ip_chunks = $.grep(
+							ip_chunks,
+							function(chunk) {
+								var numeric = parseInt(chunk, 10);
+
+								return numeric <= 255 && numeric.toString() === chunk;
+							}
+						);
+
+						if (ip_chunks.length < 4) {
+							return;
+						}
+
+						return {
+							id:   term,
+							text: term
+						};
+					}
+				} else if ( $this.hasClass('ajax') ) {
 					var type = '';
 					if ( ! ( type = $this.data( 'ajax-key' ) ) ) {
 						if ( tORa === 'triggers' ) {
@@ -166,7 +235,12 @@ jQuery(function($){
 							}
 						});
 					} else if ( $this.hasClass('tags') ) {
-						$this.select2( 'data', [{ id: val, text: val }] );
+						$this.select2( 'data', $.map(
+							val.split(','),
+							function(ip) {
+								return {id: ip, text: ip};
+							}
+						) );
 					} else {
 						$this.select2( 'val', val.split(',') );
 					}
@@ -390,7 +464,7 @@ jQuery(function($){
 			// populate the trigger value, according to the trigger type
 			if ( trigger.value ) {
 				valueField = row.find('.trigger-value:not(.select2-container)').eq(0);
-				if ( valueField.is('select') || valueField.is('.ajax') ) {
+				if ( valueField.is('select') || valueField.is('.ajax, .ip') ) {
 					valueField.trigger( 'select2_populate', trigger.value );
 					// valueField.select2( 'val', trigger.value ).trigger('change');
 				} else {
