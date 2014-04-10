@@ -331,8 +331,11 @@ jQuery(function($){
 
 		$(document).on( 'heartbeat-send.stream', function(e, data) {
 			data['wp-stream-heartbeat'] = 'live-update';
-			var last_id = $( list_sel + ' tr:first .column-id').text();
-			last_id = ( '' === last_id ) ? 1 : last_id;
+			var last_item = $( list_sel + ' tr:first .column-id');
+			var last_id = 1;
+			if ( last_item.length !== 0 ) {
+				last_id = ( '' === last_item.text() ) ? 1 : last_item.text();
+			}
 			data['wp-stream-heartbeat-last-id'] = last_id;
 			data['wp-stream-heartbeat-query']   = wp_stream.current_query;
 		});
@@ -394,6 +397,7 @@ jQuery(function($){
 				$('.displaying-num').text( total_items_i18n );
 				$('.total-pages').text( data.total_pages_i18n );
 				$('.tablenav-pages').find('.next-page, .last-page').toggleClass('disabled', data.total_pages === $('.current-page').val());
+				$( '.tablenav-pages .last-page').attr('href', data.last_page_link);
 			}
 
 			// Allow others to hook in, ie: timeago
