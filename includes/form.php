@@ -122,13 +122,6 @@ class WP_Stream_Notifications_Form {
 						$data = array();
 					}
 					break;
-				case 'action':
-				case 'context':
-					$items  = WP_Stream_Connectors::$term_labels['stream_' . $type];
-					$values = explode( ',', $query );
-					$items  = array_intersect_key( $items, array_flip( $values ) );
-					$data   = $this->format_json_for_select2( $items );
-					break;
 				case 'post':
 				case 'post_parent':
 					$args  = array(
@@ -388,15 +381,17 @@ class WP_Stream_Notifications_Form {
 			),
 			'context' => array(
 				'title'     => esc_html__( 'Context', 'stream-notifications' ),
-				'type'      => 'text',
-				'ajax'      => true,
+				'type'      => 'select',
+				'multiple'  => true,
 				'operators' => $default_operators,
+				'options'   => WP_Stream_Connectors::$term_labels['stream_context'],
 			),
 			'action' => array(
 				'title'     => esc_html__( 'Action', 'stream-notifications' ),
-				'type'      => 'text',
-				'ajax'      => true,
+				'type'      => 'select',
+				'multiple'  => true,
 				'operators' => $default_operators,
+				'options'   => WP_Stream_Connectors::$term_labels['stream_action'],
 			),
 		);
 
