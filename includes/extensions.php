@@ -9,21 +9,35 @@ class WP_Stream_Extensions {
 
 	const EXTENSIONS_KEY = 'wp_stream_extensions_';
 	const MEMBER_KEY     = 'wp_stream_member';
-	const DATA_API_URL   = 'https://wp-stream.com/json/';
+	const API_ENDPOINT   = '/wp-json.php/posts/?type=extension';
+	const API_DOMAIN     = 'vvv.wp-stream.com';
+	const API_TRANSPORT  = 'http://'; /** @internal will need valid ssl cert before using https:// transport  */
 
 	var $extensions;
 
 	var $extension_data;
 
-	var $stream_member = false;
+	var $api_uri;
+
+	var $plugin_paths;
+
+	var $stream_member = true; // /** @internal setting to true for testing the page output */
 
 	var $license_key = NULL;
 
+	public static $instance = false;
 
+	public static function get_instance() {
+		if ( ! self::$instance )
+			self::$instance = new self();
+
+		return self::$instance;
+	}
 
 	function __construct() {
-		$this->extensions = $this->get_extension_data();
-
+		$this->api_uri = self::API_TRANSPORT . self::API_DOMAIN . self::API_ENDPOINT;
+		$this->extensions   = $this->get_extension_data();
+		$this->plugin_paths = $this->get_plugin_paths();
 	}
 
 	/**
@@ -34,23 +48,42 @@ class WP_Stream_Extensions {
 	function render_page() {
 		?>
 		<div class="wrap">
-
-			<h2><?php _e( 'Stream Extensions', 'stream' ) ?></h2>
 			<?php settings_errors() ?>
-
-			<h1>Coming really, really soon. This is where the extensions will live.</h1>
-
+			<?php $this->extensions_display_body( $this->extensions ) ?>
 		</div>
 		<?php
 	}
 
 	/**
+	 * Checks for extension data stored in transient
+	 *
+	 * @return array|mixed
+	 */
+	function get_extension_data() {
+		if ( false === ( $api_transient = get_transient( self::EXTENSIONS_KEY ) ) ) {
+			$api_transient = $this->get_extension_api();
+
+			if ( $api_transient ) {
+				set_transient( self::EXTENSIONS_KEY, $this->get_extension_api(), MINUTE_IN_SECONDS * 60 * 12 * 2 );
+			}
+			return $api_transient;
+		}
+
+		return $api_transient;
+	}
+
+	/**
 	 * Gets the extension data from the wp-stream.com json extension api
 	 *
-	 * @return array
+	 * @return array|bool Array of extensions on success or false on WP_Error
 	 */
 	function get_extension_api() {
-		return array();
+		$response = wp_remote_get( $this->api_uri );
+		if ( ! is_wp_error( $response ) ) {
+			return json_decode( wp_remote_retrieve_body( $response ) );
+		}
+
+		return $response;
 	}
 
 	/**
@@ -59,7 +92,7 @@ class WP_Stream_Extensions {
 	 *
 	 */
 	private function activate_membership() {
-		$license_key = wp_remote_get( self::DATA_API_URL, array() );
+		$license_key = wp_remote_get( $this->api_uri, array() );
 		set_transient( self::MEMBER_KEY, array( 'license_key' => $license_key ), MINUTE_IN_SECONDS * 60 * 48 );
 		return $license_key;
 	}
@@ -70,6 +103,8 @@ class WP_Stream_Extensions {
 	 * @return bool true if membership active
 	 */
 	private function verify_membership() {
+		return true;
+		/** @internal returning true early for testing extension page output  */
 		if ( false === ( $license_key = get_transient( self::MEMBER_KEY ) ) ) {
 			$license_key = $this->activate_membership();
 		}
@@ -77,7 +112,7 @@ class WP_Stream_Extensions {
 		$key_hash = wp_hash_password( $license_key );
 		if ( ! $this->stream_member /** request to wp-stream.com */ ) {
 			/** Checks if the hash of the users key matches the hash of users key stored on wp-stream.com */
-			return wp_remote_get( self::DATA_API_URL, array( 'hashed_key' => $key_hash ) );
+			return wp_remote_get( $this->api_uri, array( 'hashed_key' => $key_hash ) );
 		}
 		return false;
 	}
@@ -100,7 +135,21 @@ class WP_Stream_Extensions {
 				do_action( 'activated_plugin', trim( $plugin ) );
 			}
 		}
+	}
 
+	/**
+	 * Create an array of all plugin paths, using the text-domain as a unique key slug
+	 *
+	 * @return array
+	 */
+	function get_plugin_paths() {
+		$plugin_paths = array();
+		foreach ( get_plugins() as $path => $data ) {
+			if ( isset( $data['TextDomain'] ) && ! empty( $data['TextDomain'] ) ) {
+				$plugin_paths[$data['TextDomain']] = $path;
+			}
+		}
+		return $plugin_paths;
 	}
 
 	function download_extension() {
@@ -118,94 +167,120 @@ class WP_Stream_Extensions {
 
 	}
 
-	/**
-	 * Checks for extension data stored in transient
-	 *
-	 * @return array|mixed
-	 */
-	function get_extension_data() {
-		if ( false === ( $api_transient = get_transient( self::EXTENSIONS_KEY ) ) ) {
-			$api_transient = $this->get_extension_api();
+	function extensions_display_header( $extensions ) {
+		?>
+		<h2><?php esc_html_e( 'Stream Extensions', 'stream' ) ?>
+			<span class="theme-count"><?php echo absint( count( $extensions ) ) ?></span>
+			<?php if ( ! $this->verify_membership() ) : ?>
+				<a href="#" class="button button-primary stream-premium-connect" data-stream-connect="1"><?php esc_html_e( 'Connect to Stream Premium', 'stream' ) ?></a>
+			<?php else : ?>
+				<a href="#" class="button button-secondary stream-premium-disconnect" data-stream-disconnect="1"><?php esc_html_e( 'Disconnect', 'stream' ) ?></a>
+			<?php endif; ?>
+			<span class="spinner" style="float: none"></span>
+		</h2>
 
-			if ( $api_transient ) {
-				set_transient( self::EXTENSIONS_KEY, $this->get_extension_api(), MINUTE_IN_SECONDS * 60 * 12 * 2 );
-			}
-			return $api_transient;
-		}
+		<?php if ( ! $this->verify_membership() ) : ?>
+			<p class="description">
+			<?php esc_html_e( "Connect your Stream Premium account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?>
+				<a href="https://wp-stream.com/join/" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
+			</p>
+		<?php else : ?>
+			<p class="description" style="color: green;">
+			<span class="dashicons dashicons-yes"></span> <?php esc_html_e( 'Your account is connected!', 'stream' ) ?>
+			</p>
+		<?php endif;
 
-		return $api_transient;
+		return $extensions;
 	}
 
 	/**
-	 * HTML Single extension display template
+	 * Output HTML to display grid of extensions
 	 *
-	 * @param $extension
+	 * @param array $extensions Array of available extensions from the json api
 	 * @return void
 	 */
-	function extension_template( $extension ) {
-		?>
-		<script id="tmpl-theme-single" type="text/template">
-		<div class="theme-backdrop"></div>
-		<div class="theme-wrap">
-			<div class="theme-header">
-				<button class="left dashicons dashicons-no"><span class="screen-reader-text"><?php _e( 'Show previous theme' ); ?></span></button>
-				<button class="right dashicons dashicons-no"><span class="screen-reader-text"><?php _e( 'Show next theme' ); ?></span></button>
-				<button class="close dashicons dashicons-no"><span class="screen-reader-text"><?php _e( 'Close overlay' ); ?></span></button>
-			</div>
-			<div class="theme-about">
-				<div class="theme-screenshots">
-				<# if ( data.screenshot[0] ) { #>
-					<div class="screenshot"><img src="{{ data.screenshot[0] }}" alt="" /></div>
-				<# } else { #>
-					<div class="screenshot blank"></div>
-				<# } #>
-			</div>
+	function extensions_display_body( $extensions ) {
+		if ( empty( $extensions ) ) { ?>
+			<h2><?php _e( 'Stream Extensions', 'stream' ) ?></h2>
+			<p>
+				<em><?php esc_html_e( 'Sorry, there was a problem loading the list of extensions.', 'stream' ) ?></em></p>
+			<p>
+				<a class="button button-primary" href="http://wp-stream.com/#extensions" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a>
+			</p>
+			<?php
+			return;
+		} else {
+			// Order the extensions by post title
+			usort(
+				$extensions, function ( $a, $b ) {
+					return strcmp( $a->title, $b->title );
+				}
+			);
+			$this->extensions_display_header( $extensions );
+		} ?>
 
-			<div class="theme-info">
-				<# if ( data.active ) { #>
-					<span class="current-label"><?php _e( 'Current Theme' ); ?></span>
-				<# } #>
-				<h3 class="theme-name">{{{ data.name }}}<span class="theme-version"><?php printf( __( 'Version: %s' ), '{{{ data.version }}}' ); ?></span></h3>
-				<h4 class="theme-author"><?php printf( __( 'By %s' ), '{{{ data.authorAndUri }}}' ); ?></h4>
+		<p class="description stream-license-check-message"></p>
 
-				<# if ( data.hasUpdate ) { #>
-				<div class="theme-update-message">
-					<h4 class="theme-update"><?php _e( 'Update Available' ); ?></h4>
-					{{{ data.update }}}
+		<div class="theme-browser rendered">
+
+			<div class="themes">
+
+				<?php foreach ( $extensions as $extension ) : ?>
+
+					<?php
+					$text_domain  = isset( $extension->slug ) ? sprintf( 'stream-%s', $extension->slug ) : null;
+					$plugin_path  = array_key_exists( $text_domain, $this->plugin_paths ) ? $this->plugin_paths[ $text_domain ] : null;
+					$is_active    = ( $plugin_path && is_plugin_active( $plugin_path ) );
+					$is_installed = ( $plugin_path && defined( 'WP_PLUGIN_DIR' ) && file_exists( trailingslashit( WP_PLUGIN_DIR )  . $plugin_path ) );
+					$action_link  = isset( $extension->post_meta->external_url[0] ) ? $extension->post_meta->external_url[0] : $extension->link;
+					$action_link  = ! empty( $action_link ) ? $action_link : $extension->link;
+					$image_src    = isset( $extension->featured_image->source ) ? $extension->featured_image->source : null;
+					$image_src    = ! empty( $image_src ) ? $image_src : null;
+					?>
+
+					<div class="theme<?php if ( $is_active ) { echo esc_attr( ' active' ); } ?>">
+						<a href="<?php echo esc_url( $extension->link ) ?>" target="_blank">
+							<div class="theme-screenshot<?php if ( ! $image_src ) { echo esc_attr( ' blank' ); } ?>">
+								<?php if ( $image_src ) : ?>
+									<img src="<?php echo esc_url( $image_src ) ?>" alt="<?php echo esc_attr( $extension->title ) ?>">
+								<?php endif; ?>
+							</div>
+							<span class="more-details"><?php esc_html_e( 'View Details', 'stream' ) ?></span>
+							<h3 class="theme-name">
+								<span><?php echo esc_html( $extension->title ) ?></span>
+								<?php if ( $is_installed && ! $is_active ) : ?>
+								<span class="inactive"><?php esc_html_e( 'Inactive', 'stream' ) ?></span>
+								<?php endif; ?>
+							</h3>
+						</a>
+					<div class="theme-actions">
+						<?php if ( ! $is_installed ) { ?>
+							<?php if ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) : ?>
+								<a href="<?php echo esc_url( $action_link ) ?>" class="button button-secondary" target="_blank">
+									<?php esc_html_e( 'Get This Extension', 'stream' ) ?>
+								</a>
+							<?php else : ?>
+								<a href="<?php echo esc_url( add_query_arg( 'install', 'stream-' . $extension->slug ) ) ?>" class="button button-primary">
+									<?php esc_html_e( 'Install Now', 'stream' ) ?>
+								</a>
+							<?php endif; ?>
+						<?php } elseif ( $is_installed && ! $is_active ) { ?>
+							<a href="<?php echo esc_url( admin_url( 'plugins.php' ) ) ?>" class="button button-primary">
+								<?php esc_html_e( 'Activate', 'stream' ) ?>
+							</a>
+						<?php } elseif ( $is_installed && $is_active ) { ?>
+							<?php esc_html_e( 'Active', 'stream' ) ?>
+						<?php } ?>
+					</div>
 				</div>
-				<# } #>
-				<p class="theme-description">{{{ data.description }}}</p>
 
-				<# if ( data.parent ) { #>
-					<p class="parent-theme"><?php printf( __( 'This is a child theme of %s.' ), '<strong>{{{ data.parent }}}</strong>' ); ?></p>
-				<# } #>
+			<?php endforeach; ?>
 
-				<# if ( data.tags ) { #>
-					<p class="theme-tags"><span><?php _e( 'Tags:' ); ?></span> {{{ data.tags }}}</p>
-				<# } #>
-			</div>
-		</div>
-
-		<div class="theme-actions">
-			<div class="active-theme">
-				<a href="{{{ data.actions.customize }}}" class="button button-primary customize load-customize hide-if-no-customize"><?php _e( 'Customize' ); ?></a>
-				<?php echo esc_html( implode( ' ', $current_theme_actions ) ) ?>
-			</div>
-			<div class="inactive-theme">
-				<# if ( data.actions.activate ) { #>
-					<a href="{{{ data.actions.activate }}}" class="button button-primary activate"><?php _e( 'Activate' ); ?></a>
-				<# } #>
-				<a href="{{{ data.actions.customize }}}" class="button button-secondary load-customize hide-if-no-customize"><?php _e( 'Live Preview' ); ?></a>
-				<a href="{{{ data.actions.preview }}}" class="button button-secondary hide-if-customize"><?php _e( 'Preview' ); ?></a>
 			</div>
 
-			<# if ( ! data.active && data.actions['delete'] ) { #>
-				<a href="{{{ data.actions['delete'] }}}" class="button button-secondary delete-theme"><?php _e( 'Delete' ); ?></a>
-			<# } #>
-		</div>
-		</div>
-		</script>
+			<br class="clear">
 
+		</div>
 		<?php
 	}
 }
