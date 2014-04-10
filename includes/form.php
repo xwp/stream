@@ -274,12 +274,9 @@ class WP_Stream_Notifications_Form {
 		$roles     = $wp_roles->roles;
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
 
-		$single_operators = array(
+		$default_operators = array(
 			'='   => esc_html__( 'is', 'stream-notifications' ),
 			'!='  => esc_html__( 'is not', 'stream-notifications' ),
-		);
-
-		$default_operators = $single_operators + array(
 			'in'  => esc_html__( 'is in', 'stream-notifications' ),
 			'!in' => esc_html__( 'is not in', 'stream-notifications' ),
 		);
