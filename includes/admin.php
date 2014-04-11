@@ -392,8 +392,7 @@ class WP_Stream_Admin {
 		echo '<div class="wrap">';
 
 		if ( is_network_admin() ) {
-			$site_count = get_blog_count() + 1; // Add 1 to treat the Network Admin as a site
-			$site_count = sprintf( _n( '1 site', '%d sites', $site_count, 'stream' ), $site_count );
+			$site_count = sprintf( _n( '1 site', '%d sites', get_blog_count(), 'stream' ), get_blog_count() );
 			printf( '<h2>%s (%s)</h2>', __( 'Stream Records', 'stream' ), $site_count ); // xss ok
 		} else {
 			printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
