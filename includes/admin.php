@@ -381,7 +381,14 @@ class WP_Stream_Admin {
 		self::$list_table->prepare_items();
 
 		echo '<div class="wrap">';
-		printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
+
+		if ( is_network_admin() ) {
+			$site_count = sprintf( _n( '1 site', '%d sites', get_blog_count(), 'stream' ), get_blog_count() );
+			printf( '<h2>%s (%s)</h2>', __( 'Stream Records', 'stream' ), $site_count ); // xss ok
+		} else {
+			printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
+		}
+
 		self::$list_table->display();
 		echo '</div>';
 	}
