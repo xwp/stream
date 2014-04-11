@@ -294,6 +294,7 @@ class WP_Stream_Admin {
 				}
 			";
 		}
+
 		wp_add_inline_style( 'wp-admin', $css );
 	}
 
@@ -387,6 +388,7 @@ class WP_Stream_Admin {
 
 	public static function wp_ajax_reset() {
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			self::erase_stream_records();
 			wp_redirect(
@@ -462,6 +464,7 @@ class WP_Stream_Admin {
 	 */
 	public static function uninstall_plugin() {
 		global $wpdb;
+
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
 
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
@@ -597,7 +600,6 @@ class WP_Stream_Admin {
 
 	public static function dashboard_get_total_found_rows() {
 		global $wpdb;
-
 		return $wpdb->get_var( 'SELECT FOUND_ROWS()' );
 	}
 
@@ -606,7 +608,6 @@ class WP_Stream_Admin {
 	}
 
 	public static function dashboard_stream_activity_update_contents() {
-
 		$paged = ! empty( $_POST['stream-paged'] ) ? absint( $_POST['stream-paged'] ) : 1;
 		self::dashboard_stream_activity_contents( $paged );
 		die;
@@ -616,7 +617,6 @@ class WP_Stream_Admin {
 	 * Contents of the Stream Activity dashboard widget
 	 */
 	public static function dashboard_stream_activity_contents( $paged = 1 ) {
-
 		$options          = get_option( 'dashboard_stream_activity_options', array() );
 		$records_per_page = isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5;
 		$args             = array(
@@ -642,7 +642,6 @@ class WP_Stream_Admin {
 			echo self::dashboard_widget_row( $record, $i ); //xss okay
 		}
 
-
 		echo '</ul>';
 
 		$total_items = self::dashboard_get_total_found_rows();
@@ -659,7 +658,6 @@ class WP_Stream_Admin {
 	 * Copied from private class WP_List_Table::pagination()
 	 */
 	public static function dashboard_pagination( $args = array() ) {
-
 		$args = wp_parse_args(
 			$args,
 			array(
@@ -780,7 +778,6 @@ class WP_Stream_Admin {
 	 * @return array  Data sent to heartbeat tick
 	 */
 	public static function heartbeat_received( $response, $data ) {
-
 		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
 		$option                  = get_option( 'dashboard_stream_activity_options' );
 		$enable_dashboard_update = ( 'off' !== ( $option['live_update'] ) );
@@ -795,7 +792,6 @@ class WP_Stream_Admin {
 		}
 
 		return $response;
-
 	}
 
 
@@ -813,10 +809,13 @@ class WP_Stream_Admin {
 	 * @return array  Data sent to heartbeat
 	 */
 	public static function live_update( $response, $data ) {
-
 		// Register list table
 		require_once WP_STREAM_INC_DIR . 'list-table.php';
 		self::$list_table = new WP_Stream_List_Table( array( 'screen' => 'toplevel_page_' . self::RECORDS_PAGE_SLUG ) );
+
+		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
+			return;
+		}
 
 		$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
 		$query   = $data['wp-stream-heartbeat-query'];
@@ -854,6 +853,9 @@ class WP_Stream_Admin {
 	 * @return array  Data sent to heartbeat
 	 */
 	public static function live_update_dashboard( $response, $data ) {
+		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
+			return;
+		}
 
 		$send = array();
 
@@ -958,6 +960,7 @@ class WP_Stream_Admin {
 			<?php echo esc_html( $item->summary ) ?>
 		</li>
 		<?php
+
 		return ob_get_clean();
 	}
 
@@ -1012,7 +1015,6 @@ class WP_Stream_Admin {
 		} else {
 			wp_send_json_error( 'Toggled filter checkbox error' );
 		}
-
 	}
 
 	/**
