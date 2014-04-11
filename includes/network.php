@@ -25,8 +25,11 @@ class WP_Stream_Network {
 	function filters() {
 		add_filter( 'wp_stream_disable_admin_access', array( $this, 'disable_admin_access' ) );
 		add_filter( 'wp_stream_settings_form_action', array( $this, 'settings_form_action' ) );
+		add_filter( 'wp_stream_settings_form_description', array( $this, 'settings_form_description' ) );
+		add_filter( 'wp_stream_settings_option_key', array( $this, 'get_option_key' ) );
 		add_filter( 'wp_stream_options_fields', array( $this, 'get_fields' ) );
-		add_filter( 'wp_stream_options', array( $this, 'get_network_options' ) );
+		add_filter( 'wp_stream_options', array( $this, 'get_network_options' ), 10, 2 );
+		add_filter( 'wp_stream_serialized_labels', array( $this, 'get_settings_translations' ) );
 		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
 		add_filter( 'stream_toggle_filters', array( $this, 'toggle_filters' ) );
 		add_filter( 'wp_stream_db_tables_prefix', array( $this, 'db_tables_prefix' ) );
@@ -57,7 +60,7 @@ class WP_Stream_Network {
 	function disable_admin_access( $disable_access ) {
 		if ( ! is_network_admin() ) {
 			$settings = wp_parse_args(
-				(array) get_site_option( WP_Stream_Settings::SETTINGS_KEY, array() ),
+				(array) get_site_option( WP_Stream_Settings::NETWORK_KEY, array() ),
 				WP_Stream_Settings::get_defaults()
 			);
 			if ( isset( $settings['general_enable_site_access'] ) && false == $settings['general_enable_site_access'] ) {
@@ -76,22 +79,21 @@ class WP_Stream_Network {
 	 */
 	function admin_menu_screens() {
 		if ( is_network_admin() ) {
-			remove_submenu_page( WP_Stream_Admin::RECORDS_PAGE_SLUG, 'wp_stream_settings' );
 
-			WP_Stream_Admin::$screen_id['settings'] = add_submenu_page(
+			WP_Stream_Admin::$screen_id['network_settings'] = add_submenu_page(
 				WP_Stream_Admin::RECORDS_PAGE_SLUG,
 				__( 'Stream Network Settings', 'stream' ),
 				__( 'Network Settings', 'stream' ),
 				WP_Stream_Admin::SETTINGS_CAP,
-				'wp_stream_settings',
+				'wp_stream_network_settings',
 				array( 'WP_Stream_Admin', 'render_page' )
 			);
 
 			if ( ! WP_Stream_Admin::$disable_access ) {
 				WP_Stream_Admin::$screen_id['default_settings'] = add_submenu_page(
 					WP_Stream_Admin::RECORDS_PAGE_SLUG,
-					__( 'Stream Default Settings', 'stream' ),
-					__( 'Default Settings', 'stream' ),
+					__( 'New Site Settings', 'stream' ),
+					__( 'Site Defaults', 'stream' ),
 					WP_Stream_Admin::SETTINGS_CAP,
 					'wp_stream_default_settings',
 					array( 'WP_Stream_Admin', 'render_page' )
@@ -116,6 +118,52 @@ class WP_Stream_Network {
 	}
 
 	/**
+	 * Add a description to each of the Settings pages in the Network Admin
+	 *
+	 * @param $description
+	 *
+	 * @return string
+	 */
+	function settings_form_description( $description ) {
+		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		switch ( $current_page ) {
+			case 'wp_stream_settings' :
+				$description = __( 'These settings only apply to the Network Admin Stream.', 'stream' );
+				break;
+			case 'wp_stream_network_settings' :
+				$description = __( 'These settings apply to all sites on the network.', 'stream' );
+				break;
+			case 'wp_stream_default_settings' :
+				$description = __( 'These default settings will apply to new sites created on the network. These settings do not alter existing sites.', 'stream' );
+				break;
+		}
+		return $description;
+	}
+
+	/**
+	 * Changes the option key depending on which settings page is being viewed
+	 *
+	 * @param $fields
+	 *
+	 * @return mixed
+	 */
+	function get_option_key( $option_key ) {
+		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		if ( ! $current_page ) {
+			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
+		}
+
+		if ( 'wp_stream_default_settings' === $current_page ) {
+			$option_key = WP_Stream_Settings::DEFAULTS_KEY;
+		}
+		if ( 'wp_stream_network_settings' === $current_page ) {
+			$option_key = WP_Stream_Settings::NETWORK_KEY;
+		}
+
+		return $option_key;
+	}
+
+	/**
 	 * Adds a network settings field to stream options in network admin
 	 *
 	 * @param $fields
@@ -133,7 +181,7 @@ class WP_Stream_Network {
 
 		$option_key = WP_Stream_Settings::get_option_key();
 
-		$network_only_options = apply_filters(
+		$stream_hidden_options = apply_filters(
 			'wp_stream_network_only_option_fields',
 			array(
 				'general' => array(
@@ -143,20 +191,57 @@ class WP_Stream_Network {
 			)
 		);
 
-		$site_only_options = apply_filters(
+		$network_stream_hidden_options = apply_filters(
+			'wp_stream_network_only_option_fields',
+			array(
+				'general' => array(
+					'delete_all_records',
+					'records_ttl',
+					'role_access',
+				),
+				'exclude' => array(
+					'authors_and_roles',
+					'connectors',
+					'contexts',
+					'actions',
+					'ip_addresses',
+					'hide_previous_records',
+				),
+			)
+		);
+
+		$network_hidden_options = apply_filters(
 			'wp_stream_site_only_option_fields',
 			array(
 				'general' => array(
 					'role_access',
 					'private_feeds',
 				),
+				'exclude' => array(
+					'authors_and_roles',
+					'connectors',
+					'contexts',
+					'actions',
+					'ip_addresses',
+					'hide_previous_records',
+				),
 			)
 		);
 
-		if ( WP_Stream_Settings::SETTINGS_KEY === $option_key && is_network_admin() ) {
-			$hidden_options = $site_only_options;
+		$defaults_hidden_options = apply_filters(
+			'wp_stream_site_only_option_fields',
+			array()
+		);
+
+		// Remove settings based on context
+		if ( WP_Stream_Settings::KEY === $option_key && is_network_admin() ) {
+			$hidden_options = $network_stream_hidden_options;
+		} elseif ( WP_Stream_Settings::NETWORK_KEY === $option_key && is_network_admin() ) {
+			$hidden_options = $network_hidden_options;
+		} elseif ( WP_Stream_Settings::DEFAULTS_KEY === $option_key && is_network_admin() ) {
+			$hidden_options = $defaults_hidden_options;
 		} else {
-			$hidden_options = $network_only_options;
+			$hidden_options = $stream_hidden_options;
 		}
 
 		foreach ( $fields as $section_key => $section ) {
@@ -170,7 +255,14 @@ class WP_Stream_Network {
 			}
 		}
 
-		if ( WP_Stream_Settings::SETTINGS_KEY === $option_key && is_network_admin() ) {
+		foreach ( $fields as $section_key => $section ) {
+			if ( empty( $section['fields'] ) ) {
+				unset( $fields[ $section_key ] );
+			}
+		}
+
+		// Add and change settings, based on context
+		if ( WP_Stream_Settings::NETWORK_KEY === $option_key && is_network_admin() ) {
 			$new_fields['general']['fields'][] = array(
 				'name'        => 'enable_site_access',
 				'title'       => __( 'Enable Site Access', 'stream' ),
@@ -198,17 +290,64 @@ class WP_Stream_Network {
 				'desc'    => __( 'Warning: Clicking this will override all site settings with defaults.', 'stream' ),
 				'default' => 0,
 			);
-
+		}
+		if ( WP_Stream_Settings::KEY === $option_key && is_network_admin() ) {
+			foreach ( $fields['general']['fields'] as $key => $field ) {
+				if ( 'private_feeds' === $field['name'] ) {
+					$fields['general']['fields'][ $key ]['desc'] = sprintf(
+						__( 'Super Admins will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
+						sprintf(
+							'<a href="%s" title="%s">',
+							admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
+							esc_attr__( 'View Profile', 'stream' )
+						),
+						'</a>'
+					);
+					break;
+				}
+			}
 		}
 
 		return $fields;
 	}
 
 	/**
+	 * Get translations of serialized Stream Network and Stream Default settings
+	 *
+	 * @filter wp_stream_serialized_labels
+	 * @return array Multidimensional array of fields
+	 */
+	function get_settings_translations( $labels ) {
+		$network_key  = WP_Stream_Settings::NETWORK_KEY;
+		$defaults_key = WP_Stream_Settings::DEFAULTS_KEY;
+
+		if ( ! isset( $labels[ $network_key ] ) ) {
+			$labels[ $network_key ] = array();
+		}
+		if ( ! isset( $labels[ $defaults_key ] ) ) {
+			$labels[ $defaults_key ] = array();
+		}
+
+		foreach ( WP_Stream_Settings::get_fields() as $section_slug => $section ) {
+			foreach ( $section['fields'] as $field ) {
+				$labels[ $network_key ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ]  = $field['title'];
+				$labels[ $defaults_key ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
+			}
+		}
+
+		return $labels;
+	}
+
+	/**
 	 * Wrapper for the settings API to work on the network settings page
 	 */
 	function network_options_action() {
-		if ( ! isset( $_GET['action'] ) || ( 'wp_stream_settings' !== $_GET['action'] && 'wp_stream_default_settings' !== $_GET['action'] ) ) {
+		$allowed_referers = array(
+			'wp_stream_settings',
+			'wp_stream_network_settings',
+			'wp_stream_default_settings',
+		);
+		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers ) ) {
 			return;
 		}
 
@@ -258,17 +397,12 @@ class WP_Stream_Network {
 	 *
 	 * @return array
 	 */
-	function get_network_options( $options ) {
+	function get_network_options( $options, $option_key ) {
 		if ( is_network_admin() ) {
-
-			$network_options = wp_parse_args(
-				(array) get_site_option( WP_Stream_Settings::SETTINGS_KEY, array() ),
+			$options = wp_parse_args(
+				(array) get_site_option( $option_key, array() ),
 				WP_Stream_Settings::get_defaults()
 			);
-
-			if ( $network_options ) {
-				$options = $network_options;
-			}
 		}
 
 		return $options;
