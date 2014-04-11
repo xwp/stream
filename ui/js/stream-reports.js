@@ -250,9 +250,8 @@
 				}
 
 				if( '' !== $(this).val() && ! $(this).siblings( '.clear-title' ).length ) {
-					$(this).after( $( '<a/>', {
-						'class': 'clear-title',
-						'text': streamReportsLocal.clear,
+					$(this).after( $( '<i/>', {
+						'class': 'clear-title dashicons',
 						'click': function() {
 							$inputBox.val('');
 							$inputBox.trigger( 'keyup' );
