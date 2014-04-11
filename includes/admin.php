@@ -345,6 +345,7 @@ class WP_Stream_Admin {
 
 			<?php settings_errors() ?>
 
+			<?php if ( count( $sections ) > 1 ) : ?>
 			<h2 class="nav-tab-wrapper">
 				<?php $i = 0 ?>
 				<?php foreach ( $sections as $section => $data ) : ?>
@@ -355,6 +356,7 @@ class WP_Stream_Admin {
 					</a>
 				<?php endforeach; ?>
 			</h2>
+			<?php endif; ?>
 
 			<div class="nav-tab-content" id="tab-content-settings">
 
