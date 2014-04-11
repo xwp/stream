@@ -33,8 +33,8 @@ class WP_Stream_Reports_Metaboxes {
 		// Get all sections from the db
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
-		add_filter( 'stream_reports_load_records', array( $this, 'sort_coordinates_by_count' ), 5, 2 );
-		add_filter( 'stream_reports_load_records', array( $this, 'limit_coordinates' ), 5, 2 );
+		add_filter( 'stream_reports_load_records', array( $this, 'sort_coordinates_by_count' ), 10, 2 );
+		add_filter( 'stream_reports_load_records', array( $this, 'limit_coordinates' ), 10, 2 );
 
 		add_filter( 'stream_reports_make_chart', array( $this, 'pie_chart_coordinates' ), 10, 2 );
 		add_filter( 'stream_reports_make_chart', array( $this, 'bar_chart_coordinates' ), 10, 2 );
