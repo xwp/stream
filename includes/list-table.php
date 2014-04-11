@@ -737,7 +737,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	public function screen_controls( $status, $args ) {
 
 		$user_id = get_current_user_id();
-		$option  = get_user_meta( $user_id, 'enable_live_update', true );
+		$option  = get_user_meta( $user_id, 'stream_live_update_records', true );
 
 		$filters = $this->get_filters();
 
