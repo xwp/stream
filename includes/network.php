@@ -63,10 +63,12 @@ class WP_Stream_Network {
 				(array) get_site_option( WP_Stream_Settings::NETWORK_KEY, array() ),
 				WP_Stream_Settings::get_defaults()
 			);
+
 			if ( isset( $settings['general_enable_site_access'] ) && false == $settings['general_enable_site_access'] ) {
 				return true;
 			}
 		}
+
 		return $disable_access;
 	}
 
@@ -78,27 +80,28 @@ class WP_Stream_Network {
 	 * @return array
 	 */
 	function admin_menu_screens() {
-		if ( is_network_admin() ) {
+		if ( ! is_network_admin() ) {
+			return;
+		}
 
-			WP_Stream_Admin::$screen_id['network_settings'] = add_submenu_page(
+		WP_Stream_Admin::$screen_id['network_settings'] = add_submenu_page(
+			WP_Stream_Admin::RECORDS_PAGE_SLUG,
+			__( 'Stream Network Settings', 'stream' ),
+			__( 'Network Settings', 'stream' ),
+			WP_Stream_Admin::SETTINGS_CAP,
+			'wp_stream_network_settings',
+			array( 'WP_Stream_Admin', 'render_page' )
+		);
+
+		if ( ! WP_Stream_Admin::$disable_access ) {
+			WP_Stream_Admin::$screen_id['default_settings'] = add_submenu_page(
 				WP_Stream_Admin::RECORDS_PAGE_SLUG,
-				__( 'Stream Network Settings', 'stream' ),
-				__( 'Network Settings', 'stream' ),
+				__( 'New Site Settings', 'stream' ),
+				__( 'Site Defaults', 'stream' ),
 				WP_Stream_Admin::SETTINGS_CAP,
-				'wp_stream_network_settings',
+				'wp_stream_default_settings',
 				array( 'WP_Stream_Admin', 'render_page' )
 			);
-
-			if ( ! WP_Stream_Admin::$disable_access ) {
-				WP_Stream_Admin::$screen_id['default_settings'] = add_submenu_page(
-					WP_Stream_Admin::RECORDS_PAGE_SLUG,
-					__( 'New Site Settings', 'stream' ),
-					__( 'Site Defaults', 'stream' ),
-					WP_Stream_Admin::SETTINGS_CAP,
-					'wp_stream_default_settings',
-					array( 'WP_Stream_Admin', 'render_page' )
-				);
-			}
 		}
 	}
 
@@ -112,8 +115,9 @@ class WP_Stream_Network {
 	function settings_form_action( $action ) {
 		if ( is_network_admin() ) {
 			$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
-			$action = add_query_arg( array( 'action' => $current_page ), 'edit.php' );
+			$action       = add_query_arg( array( 'action' => $current_page ), 'edit.php' );
 		}
+
 		return $action;
 	}
 
@@ -162,6 +166,7 @@ class WP_Stream_Network {
 		if ( 'wp_stream_default_settings' === $current_page ) {
 			$option_key = WP_Stream_Settings::DEFAULTS_KEY;
 		}
+
 		if ( 'wp_stream_network_settings' === $current_page ) {
 			$option_key = WP_Stream_Settings::NETWORK_KEY;
 		}
@@ -297,6 +302,7 @@ class WP_Stream_Network {
 				'default' => 0,
 			);
 		}
+
 		if ( WP_Stream_Settings::KEY === $option_key && is_network_admin() ) {
 			foreach ( $fields['general']['fields'] as $key => $field ) {
 				if ( 'private_feeds' === $field['name'] ) {
@@ -330,6 +336,7 @@ class WP_Stream_Network {
 		if ( ! isset( $labels[ $network_key ] ) ) {
 			$labels[ $network_key ] = array();
 		}
+
 		if ( ! isset( $labels[ $defaults_key ] ) ) {
 			$labels[ $defaults_key ] = array();
 		}
@@ -463,6 +470,7 @@ class WP_Stream_Network {
 		if ( is_network_admin() ) {
 			$filters['blog_id'] = esc_html__( 'Site', 'stream' );
 		}
+
 		return $filters;
 	}
 
@@ -491,6 +499,7 @@ class WP_Stream_Network {
 				$screen_id .= '-network';
 			}
 		}
+
 		return $screen_id;
 	}
 
@@ -502,7 +511,7 @@ class WP_Stream_Network {
 	 * @return mixed
 	 */
 	static function set_network_option_value( $args ) {
-		if ( isset( $args['blog_id'] ) && $args['blog_id'] === 'network' ) {
+		if ( isset( $args['blog_id'] ) && 'network' === $args['blog_id'] ) {
 			$args['blog_id'] = 0;
 		}
 
@@ -526,6 +535,7 @@ class WP_Stream_Network {
 				array_slice( $columns, -1 )
 			);
 		}
+
 		return $columns;
 	}
 
