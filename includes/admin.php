@@ -611,7 +611,7 @@ class WP_Stream_Admin {
 
 		wp_add_dashboard_widget(
 			'dashboard_stream_activity',
-			esc_html__( 'Stream Activity', 'stream' ),
+			is_network_admin() ? esc_html__( 'Network Stream Activity', 'stream' ) : esc_html__( 'Stream Activity', 'stream' ),
 			array( __CLASS__, 'dashboard_stream_activity_initial_contents' ),
 			array( __CLASS__, 'dashboard_stream_activity_options' )
 		);
@@ -688,7 +688,7 @@ class WP_Stream_Admin {
 
 		$records_link = add_query_arg(
 			array( 'page' => self::RECORDS_PAGE_SLUG ),
-			admin_url( self::ADMIN_PARENT_PAGE )
+			is_network_admin() ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
 		);
 
 		$html_view_all = sprintf(
