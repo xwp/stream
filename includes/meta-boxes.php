@@ -191,6 +191,7 @@ class WP_Stream_Reports_Metaboxes {
 			'disabled'      => array(),
 			'group'         => false,
 		);
+
 		return wp_parse_args( $section, $default );
 	}
 
@@ -264,10 +265,10 @@ class WP_Stream_Reports_Metaboxes {
 			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
 		}
 
-		$records = $this->load_metabox_records( $args, $user_interval );
-		$records = apply_filters( 'stream_reports_load_records', $records, $args );
-
+		$records     = $this->load_metabox_records( $args, $user_interval );
+		$records     = apply_filters( 'stream_reports_load_records', $records, $args );
 		$coordinates = apply_filters( 'stream_reports_make_chart', $records, $args );
+
 		return apply_filters( 'stream_reports_finalize_chart', $coordinates, $args );
 	}
 
@@ -310,7 +311,6 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function pie_chart_coordinates( $records, $args ) {
-
 		if ( 'pie' !== $args['chart_type'] ) {
 			return $records;
 		}
@@ -327,7 +327,6 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function bar_chart_coordinates( $records, $args ) {
-
 		if ( 'multibar' !== $args['chart_type'] ) {
 			return $records;
 		}
@@ -367,7 +366,6 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function apply_chart_settings( $coordinates, $args ) {
-
 		foreach ( $coordinates as $key => $dataset ) {
 			if ( in_array( $key, $args['disabled'] ) ) {
 				$coordinates[ $key ]['disabled'] = true;
@@ -375,11 +373,9 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		return $coordinates;
-
 	}
 
 	public function translate_labels( $coordinates, $args ) {
-
 		foreach ( $coordinates as $key => $dataset ) {
 			$coordinates[ $key ]['key'] = $this->get_label( $dataset['key'], $args['selector_type'] );
 		}
@@ -588,7 +584,6 @@ class WP_Stream_Reports_Metaboxes {
 	 * Merges all records past limit into single record
 	 */
 	public function limit_coordinates( $records, $args ) {
-
 		$limit = apply_filters( 'stream_reports_record_limit', 10 );
 		if ( 0 === $limit ) {
 			return $records;
@@ -617,7 +612,6 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	protected function group_by_field( $field, $records, $callback = '' ) {
 		$sorted = array();
-
 		foreach ( $records as $record ) {
 			$key = $record->$field;
 
@@ -687,7 +681,6 @@ class WP_Stream_Reports_Metaboxes {
 	 * Creates a title generated from the arguments for the chart
 	 */
 	protected function get_generated_title( $args ) {
-
 		if ( empty( $args['data_type'] ) ) {
 			return sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $args['key'] + 1 ) );
 		}
@@ -833,12 +826,10 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function save_chart_options(){
-
 		$section_id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
 		$sections   = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 		$section    = $sections[ $section_id ];
-
-		$type = wp_stream_filter_input( INPUT_GET, 'update_type', FILTER_SANITIZE_STRING );
+		$type       = wp_stream_filter_input( INPUT_GET, 'update_type', FILTER_SANITIZE_STRING );
 
 		if ( 'disable' === $type ) {
 			if ( ! isset( $_GET['update_payload'] ) || ! is_array( $_GET['update_payload'] ) ) {
@@ -866,7 +857,6 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function save_chart_height(){
-
 		$chart_height = wp_stream_filter_input( INPUT_GET, 'chart_height', FILTER_SANITIZE_NUMBER_INT );
 
 		if ( false === $chart_height ) {
@@ -899,7 +889,6 @@ class WP_Stream_Reports_Metaboxes {
 		<?php
 		return ob_get_clean();
 	}
-
 
 	/**
 	 * Return active instance of WP_Stream_Reports_Metaboxes, create one if it doesn't exist
