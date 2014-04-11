@@ -125,7 +125,12 @@ class WP_Stream_Network {
 	 * @return string
 	 */
 	function settings_form_description( $description ) {
+		if ( ! is_network_admin() ) {
+			return;
+		}
+
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+
 		switch ( $current_page ) {
 			case 'wp_stream_settings' :
 				$description = __( 'These settings only apply to the Network Admin Stream.', 'stream' );
@@ -137,6 +142,7 @@ class WP_Stream_Network {
 				$description = __( 'These default settings will apply to new sites created on the network. These settings do not alter existing sites.', 'stream' );
 				break;
 		}
+
 		return $description;
 	}
 
