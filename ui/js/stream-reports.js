@@ -310,7 +310,7 @@
 					$inputBox.replaceWith( $titleText );
 					$titleText.siblings( '.clear-title' ).remove();
 
-					// Remove class to container
+					// Remove class from container
 					$curPostbox.removeClass( 'configure' );
 
 					// Click function management
