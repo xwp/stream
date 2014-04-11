@@ -152,22 +152,8 @@ class WP_Stream_Reports_Metaboxes {
 				esc_html__( 'Configure', 'stream-reports' )
 			);
 
-			// Default metabox argument
-			$default = array(
-				'title'         => '',
-				'priority'      => 'default',
-				'context'       => 'normal',
-				'chart_type'    => 'line',
-				'data_type'     => '',
-				'data_group'    => '',
-				'selector_type' => '',
-				'is_new'        => false,
-				'disabled'      => array(),
-				'group'         => false,
-			);
-
 			// Parse default argument
-			$section = wp_parse_args( $section, $default );
+			$section = $this->parse_section( $section );
 
 			// Set the key for template use
 			$section['key'] = $key;
@@ -187,6 +173,25 @@ class WP_Stream_Reports_Metaboxes {
 				$section
 			);
 		}
+	}
+
+	/**
+	 * Parses the section arguments and provides defaults
+	 */
+	protected function parse_section( $section ) {
+		$default = array(
+			'title'         => '',
+			'priority'      => 'default',
+			'context'       => 'normal',
+			'chart_type'    => 'line',
+			'data_type'     => '',
+			'data_group'    => '',
+			'selector_type' => '',
+			'is_new'        => false,
+			'disabled'      => array(),
+			'group'         => false,
+		);
+		return wp_parse_args( $section, $default );
 	}
 
 	/**
@@ -743,15 +748,7 @@ class WP_Stream_Reports_Metaboxes {
 		$sections   = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 		$section    = $sections[ $section_id ];
 
-		$args = wp_parse_args(
-			$section,
-			array(
-				'chart_type'    => 'line',
-				'data_type'     => null,
-				'data_group'    => null,
-				'selector_type' => '',
-			)
-		);
+		$args = $this->parse_section( $section );
 
 		$chart_types = $this->get_chart_types();
 
@@ -902,6 +899,7 @@ class WP_Stream_Reports_Metaboxes {
 		<?php
 		return ob_get_clean();
 	}
+
 
 	/**
 	 * Return active instance of WP_Stream_Reports_Metaboxes, create one if it doesn't exist
