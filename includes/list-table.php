@@ -424,12 +424,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$setting_key = self::get_column_excluded_setting_key( $column );
 
+		$exclude_hide_previous_records = isset( WP_Stream_Settings::$options['exclude_hide_previous_records'] ) ? WP_Stream_Settings::$options['exclude_hide_previous_records'] : 0;
+
 		/**
 		 * Toggle visibility of disabled connectors/actions/contexts on list table filter dropdown
 		 *
 		 * @param bool $hidden Visibility status, default is Hide Previous Record value set in Exclude setting.
 		 */
-		$hide_disabled_column_filter = apply_filters( 'wp_stream_list_table_hide_disabled_ ' . $setting_key, ( WP_Stream_Settings::$options[ 'exclude_hide_previous_records' ] === 0 ) ? false : true );
+		$hide_disabled_column_filter = apply_filters( 'wp_stream_list_table_hide_disabled_ ' . $setting_key, ( 0 === $exclude_hide_previous_records ) ? false : true );
 
 		if ( 'author' === $column ) {
 			$all_records = array();
