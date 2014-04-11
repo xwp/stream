@@ -604,6 +604,7 @@ jQuery(function($){
 							return false;
 						} else {
 							dateinputs.hide();
+							datepickers.datepicker('hide');
 							return false;
 						}
 
