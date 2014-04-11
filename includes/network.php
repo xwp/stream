@@ -307,7 +307,7 @@ class WP_Stream_Network {
 			foreach ( $fields['general']['fields'] as $key => $field ) {
 				if ( 'private_feeds' === $field['name'] ) {
 					$fields['general']['fields'][ $key ]['desc'] = sprintf(
-						__( 'Add Network Admin actions to the %sPrivate Feeds%s of Super Admin users.', 'stream' ),
+						__( 'Allows Super Admins to see actvity from the Network Admin (<code>blog_id = 0</code>) inside their Private Feeds. A Private Feed key can be found in their %suser profile%s.', 'stream' ),
 						sprintf(
 							'<a href="%s" title="%s">',
 							admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
