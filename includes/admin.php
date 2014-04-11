@@ -329,12 +329,19 @@ class WP_Stream_Admin {
 		$option_key  = WP_Stream_Settings::get_option_key();
 		$form_action = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
 
+		$page_title       = apply_filters( 'wp_stream_settings_form_title', get_admin_page_title() );
+		$page_description = apply_filters( 'wp_stream_settings_form_description', '' );
+
 		$sections   = WP_Stream_Settings::get_fields();
 		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 		?>
 		<div class="wrap">
 
-			<h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
+			<h2><?php echo esc_html( $page_title ); ?></h2>
+
+			<?php if ( ! empty( $page_description ) ) : ?>
+			<p><?php echo esc_html( $page_description ); ?></p>
+			<?php endif; ?>
 
 			<?php settings_errors() ?>
 
@@ -379,6 +386,8 @@ class WP_Stream_Admin {
 
 	public static function stream_page() {
 		self::$list_table->prepare_items();
+
+		$page_title = __( 'Stream Records', 'stream' );
 
 		echo '<div class="wrap">';
 
@@ -460,7 +469,7 @@ class WP_Stream_Admin {
 		if ( $blogs ) {
 			foreach ( $blogs as $blog ) {
 				switch_to_blog( $blog['blog_id'] );
-				delete_option( WP_Stream_Settings::SETTINGS_KEY );
+				delete_option( WP_Stream_Settings::KEY );
 			}
 			restore_current_blog();
 		}
@@ -489,7 +498,9 @@ class WP_Stream_Admin {
 
 			// Delete database option
 			delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-			delete_site_option( WP_Stream_Settings::SETTINGS_KEY );
+			delete_site_option( WP_Stream_Settings::KEY );
+			delete_site_option( WP_Stream_Settings::DEFAULT_KEY );
+			delete_site_option( WP_Stream_Settings::NETWORK_KEY );
 			delete_site_option( 'dashboard_stream_activity_options' );
 
 			// Redirect to plugin page

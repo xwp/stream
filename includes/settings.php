@@ -10,7 +10,12 @@ class WP_Stream_Settings {
 	/**
 	 * Settings key/identifier
 	 */
-	const SETTINGS_KEY = 'wp_stream';
+	const KEY = 'wp_stream';
+
+	/**
+	 * Settings key/identifier
+	 */
+	const NETWORK_KEY = 'wp_stream_network';
 
 	/**
 	 * Default Settings key/identifier
@@ -48,9 +53,10 @@ class WP_Stream_Settings {
 		return apply_filters(
 			'wp_stream_options',
 			wp_parse_args(
-				(array) get_option( self::SETTINGS_KEY, array() ),
+				(array) get_option( self::KEY, array() ),
 				self::get_defaults()
-			)
+			),
+			$option_key
 		);
 	}
 
@@ -67,10 +73,10 @@ class WP_Stream_Settings {
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 
 		// Check if we need to flush rewrites rules
-		add_action( 'update_option_' . self::SETTINGS_KEY, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
+		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
 
 		// Remove records when records TTL is shortened
-		add_action( 'update_option_' . self::SETTINGS_KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
+		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
 
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
 
@@ -381,17 +387,7 @@ class WP_Stream_Settings {
 	 * @return array Default option values
 	 */
 	public static function get_option_key() {
-		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
-		if ( ! $current_page ) {
-			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
-		}
-		if ( 'wp_stream_default_settings' === $current_page ) {
-			$option_key = WP_Stream_Settings::DEFAULTS_KEY;
-		} else {
-			$option_key = WP_Stream_Settings::SETTINGS_KEY;
-		}
-
-		return $option_key;
+		return apply_filters( 'wp_stream_settings_option_key', WP_Stream_Settings::KEY );
 	}
 
 	/**
@@ -834,13 +830,13 @@ class WP_Stream_Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_settings_translations( $labels ) {
-		if ( ! isset( $labels[ self::SETTINGS_KEY ] ) ) {
-			$labels[ self::SETTINGS_KEY ] = array();
+		if ( ! isset( $labels[ self::KEY ] ) ) {
+			$labels[ self::KEY ] = array();
 		}
 
 		foreach ( self::get_fields() as $section_slug => $section ) {
 			foreach ( $section['fields'] as $field ) {
-				$labels[ self::SETTINGS_KEY ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
+				$labels[ self::KEY ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
 			}
 		}
 
