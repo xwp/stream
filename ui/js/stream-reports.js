@@ -485,7 +485,10 @@
 				'animate': 350,
 
 				// Check if a graph need to be draw
-				'draw': null
+				'draw': null,
+
+				// Whether to stack the chart by default
+				'stacked' : false,
 			}
 		},
 
@@ -497,6 +500,8 @@
 			if( $(el).parents( '.postbox.closed' ).length ) {
 				return;
 			}
+
+			var section_id = $(el).parents('.postbox').find('.section-id').val();
 
 			if ('parent' === data.width || 'parent' === data._width) {
 				data.width = $el.parent().innerWidth();
@@ -568,7 +573,8 @@
 					{data: data.xAxis.reduceTicks, _function: data.chart.reduceXTicks},
 					{data: data.controls,          _function: data.chart.showControls},
 					{data: data.margin,            _function: data.chart.margin},
-					{data: data.tooltip.show,      _function: data.chart.tooltips}
+					{data: data.tooltip.show,      _function: data.chart.tooltips},
+					{data: data.stacked,           _function: data.chart.stacked},
 				];
 
 				_.map(mapValidation, function (value) {
@@ -599,8 +605,41 @@
 				nv.utils.windowResize(data.chart.update);
 				$columns.click(data.chart.update);
 
+				data.chart.dispatch.on( 'stateChange', stream.report.chart.stateChangeCallback( section_id ) );
 				return data.chart;
 			});
+		},
+
+		stateChangeCallback: function( section_id ) {
+			var id = section_id;
+			return function( e ) {
+				var data = {
+					'type': 'none',
+				};
+
+				if ( undefined !== e.stacked ) {
+					data.type    = 'group';
+					data.payload = e.stacked;
+				} else if ( undefined !== e.disabled ) {
+					data.type    = 'disable';
+					data.payload = e.disabled;
+				}
+
+				if ( 'none' !== data.type ) {
+					$.ajax({
+						type: 'GET',
+						url: ajaxurl,
+						data: {
+							'action': 'stream_report_save_chart_options',
+							'stream_reports_nonce' : $('#stream_report_nonce').val(),
+							'section_id' : id,
+							'update_type': data.type,
+							'update_payload': data.payload,
+						},
+						dataType: 'json',
+					});
+				}
+			};
 		},
 
 		// Build all the opts to be drawn later
@@ -615,6 +654,7 @@
 			opts.$.each( function (k, el) {
 				parent.drawChart(k, el, opts, parent.$columns);
 			} );
+
 		}
 
 	};
@@ -632,6 +672,12 @@
 			$('#chart_height'),
 			$('#chart_height_apply')
 		);
+
+		$('.stream_page_wp_stream_reports .postbox').each( function( index ){
+			var id = $(this).find( '.section-d' ).val();
+			$(this).data('section-id', id );
+		} );
+
 		stream.report.chart.init(
 			$('.stream_page_wp_stream_reports .chart'),
 			$('.columns-prefs input[type="radio"]')

@@ -48,6 +48,7 @@ class WP_Stream_Reports_Metaboxes {
 			'stream_reports_delete_metabox'        => 'delete_metabox',
 			'stream_report_save_metabox_config'    => 'save_metabox_config',
 			'stream_report_save_chart_height'      => 'save_chart_height',
+			'stream_report_save_chart_options'     => 'save_chart_options',
 			'stream_report_update_metabox_display' => 'update_metabox_display',
 		);
 
@@ -161,6 +162,8 @@ class WP_Stream_Reports_Metaboxes {
 				'data_group'    => '',
 				'selector_type' => '',
 				'is_new'        => false,
+				'disabled'      => array(),
+				'group'         => false,
 			);
 
 			// Parse default argument
@@ -233,6 +236,8 @@ class WP_Stream_Reports_Metaboxes {
 			),
 			'values'     => $values,
 			'controls'   => $show_controls,
+			'stacked'    => (bool) $args['group'],
+			'grouped'    => false,
 		);
 	}
 
@@ -358,9 +363,8 @@ class WP_Stream_Reports_Metaboxes {
 
 	public function apply_chart_settings( $coordinates, $args ) {
 
-		$disabled_fields = array();
 		foreach ( $coordinates as $key => $dataset ) {
-			if ( in_array( $dataset['key'], $disabled_fields ) ) {
+			if ( in_array( $key, $args['disabled'] ) ) {
 				$coordinates[ $key ]['disabled'] = true;
 			}
 		}
@@ -829,6 +833,39 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'sections', self::$sections );
+	}
+
+	public function save_chart_options(){
+
+		$section_id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
+		$sections   = WP_Stream_Reports_Settings::get_user_options( 'sections' );
+		$section    = $sections[ $section_id ];
+
+		$type = wp_stream_filter_input( INPUT_GET, 'update_type', FILTER_SANITIZE_STRING );
+
+		if ( 'disable' === $type ) {
+			if ( ! isset( $_GET['update_payload'] ) || ! is_array( $_GET['update_payload'] ) ) {
+				wp_send_json_error();
+			}
+
+			$payload = array();
+			foreach ( $_GET['update_payload'] as $key => $value ) {
+				if ( 'true' === $value ) {
+					$payload[] = absint( $key );
+				}
+			}
+
+			$section['disabled'] = $payload;
+		} else if ( 'group' === $type ) {
+			$payload = wp_stream_filter_input( INPUT_GET, 'update_payload', FILTER_SANITIZE_STRING );
+			$section['group'] = 'true' === $payload;
+		}
+
+		// Store the chart configuration
+		self::$sections[ $section_id ] = $section;
+
+		// Update the database option
+		WP_Stream_Reports_Settings::ajax_update_user_option( 'sections', self::$sections );
 	}
 
 	public function save_chart_height(){

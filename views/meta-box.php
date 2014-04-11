@@ -4,6 +4,7 @@
 
 		<div class="inside">
 
+			<input type="hidden" class="section-id" value="<?php echo esc_attr( $args['key'] ); ?>">
 			<input type="hidden" class="chart-title" value="<?php echo esc_attr( $args['title'] ); ?>">
 			<input type="hidden" class="chart-generated-title" value="<?php echo esc_attr( $args['generated_title'] ); ?>">
 
