@@ -280,12 +280,15 @@
 					var $titleText = $curPostbox.find( '.hndle .title' );
 					var $inputBox  = $( '<input/>', {
 						'type': 'text',
-					    	'class': 'title',
-					    	'value': realTitle,
-					    	'placeholder': generatedTitle,
+						'class': 'title',
+						'value': realTitle,
+						'placeholder': generatedTitle,
 					} );
 					$titleText.replaceWith( $inputBox );
 					$inputBox.trigger('keyup');
+
+					// Add class to container
+					$curPostbox.addClass( 'configure' );
 
 					// Click function management
 					parent.$clickFunction = $._data($curPostbox.find('h3').get(0)).events.click[0].handler;
@@ -306,6 +309,9 @@
 
 					$inputBox.replaceWith( $titleText );
 					$titleText.siblings( '.clear-title' ).remove();
+
+					// Remove class to container
+					$curPostbox.removeClass( 'configure' );
 
 					// Click function management
 					$curPostbox.find('h3').on('click.postboxes', parent.$clickFunction);
