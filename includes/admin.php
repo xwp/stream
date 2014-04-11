@@ -74,7 +74,6 @@ class WP_Stream_Admin {
 
 		// Ajax author's name by ID
 		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
-
 	}
 
 	/**
@@ -435,9 +434,9 @@ class WP_Stream_Admin {
 		global $wpdb;
 
 		$options = WP_Stream_Settings::get_options();
+		$days    = $options['general_records_ttl'];
+		$date    = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 
-		$days = $options['general_records_ttl'];
-		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
 		$wpdb->query(
@@ -722,7 +721,7 @@ class WP_Stream_Admin {
 		extract( self::$list_table->_pagination_args, EXTR_SKIP );
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && isset( $total_items ) ) {
-			$response['total_items'] = $total_items;
+			$response['total_items']      = $total_items;
 			$response['total_items_i18n'] = sprintf( _n( '1 item', '%s items', $total_items ), number_format_i18n( $total_items ) );
 		}
 
@@ -741,6 +740,7 @@ class WP_Stream_Admin {
 					$response['total_pages'] = 0;
 				}
 			}
+
 			$response['wp-stream-heartbeat'] = self::live_update( $response, $data );
 
 		} elseif ( isset( $data['wp-stream-heartbeat'] ) && 'dashboard-update' === $data['wp-stream-heartbeat'] && $enable_dashboard_update ) {
@@ -767,7 +767,6 @@ class WP_Stream_Admin {
 
 		return $response;
 	}
-
 
 	/**
 	 * Sends Updated Actions to the List Table View
@@ -812,7 +811,6 @@ class WP_Stream_Admin {
 		return $send;
 	}
 
-
 	/**
 	 * Handles Live Updates for Stream Activity Dashboard Widget.
 	 *
@@ -845,7 +843,6 @@ class WP_Stream_Admin {
 		return $send;
 	}
 
-
 	/**
 	 * Sends Updated Actions to the List Table View
 	 *
@@ -872,7 +869,6 @@ class WP_Stream_Admin {
 		return $items;
 	}
 
-
 	/**
 	 * Renders rows for Stream Activity Dashboard Widget
 	 *
@@ -886,7 +882,7 @@ class WP_Stream_Admin {
 			admin_url( self::ADMIN_PARENT_PAGE )
 		);
 
-		$author = get_userdata( $item->author );
+		$author      = get_userdata( $item->author );
 		$author_link = add_query_arg(
 			array( 'author' => isset( $author->ID ) ? absint( $author->ID ) : 0 ),
 			$records_link
@@ -909,7 +905,9 @@ class WP_Stream_Admin {
 				human_time_diff( strtotime( $item->created ) )
 			);
 		}
+
 		$class = '';
+
 		if ( isset( $i ) ) {
 			if ( $i % 2 ) {
 				$class = 'alternate';
