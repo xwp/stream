@@ -361,10 +361,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceOf Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
 				$url          = $rule['url']( $rule, $record );
 
-				$found_submenus = wp_list_filter(
-					$submenu[ $menu_slug ],
-					array( 2 => $submenu_slug )
-				);
+				if ( isset( $submenu[ $menu_slug ] ) ) {
+					$found_submenus = wp_list_filter(
+						$submenu[ $menu_slug ],
+						array( 2 => $submenu_slug )
+					);
+				}
 
 				if ( ! empty( $found_submenus ) ) {
 					$target_submenu = array_pop( $found_submenus );
