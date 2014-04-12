@@ -56,7 +56,11 @@ class WP_Stream_Filter_Input {
 	}
 
 	public static function filter( $var, $filter = null, $options = array() ) {
-		if ( $filter && FILTER_DEFAULT !== $filter ) {
+		// Default filter is a sanitizer, not validator
+		$filter_type = 'sanitizer';
+
+		// Only filter value if it is not null
+		if ( isset( $var ) && $filter && FILTER_DEFAULT !== $filter ) {
 			if ( ! isset( self::$filter_callbacks[ $filter ] ) ) {
 				throw new Exception( __( 'Filter not supported.', 'stream' ) );
 			}
@@ -67,7 +71,8 @@ class WP_Stream_Filter_Input {
 			// filter_var / filter_input treats validation/sanitization filters the same
 			// they both return output and change the var value, this shouldn't be the case here.
 			// We'll do a boolean check on validation function, and let sanitizers change the value
-			if ( $filter < 500 ) { // Validation functions
+			$filter_type = ( $filter < 500 ) ? 'validator' : 'sanitizer';
+			if ( $filter_type === 'validator' ) { // Validation functions
 				if ( ! $result ) {
 					$var = false;
 				}
@@ -77,16 +82,18 @@ class WP_Stream_Filter_Input {
 		}
 
 		// Detect FILTER_REQUIRE_ARRAY flag
-		if ( is_int( $options ) && FILTER_REQUIRE_ARRAY === $options ) {
+		if ( isset( $var ) && is_int( $options ) && FILTER_REQUIRE_ARRAY === $options ) {
 			if ( ! is_array( $var ) ) {
-				$var = false;
+				$var = ( $filter_type === 'validator' ) ? false : null;
 			}
 		}
 
 		// Polyfill the `default` attribute only, for now.
 		if ( is_array( $options ) && ! empty( $options['options']['default'] ) ) {
-			if ( false === $var || is_null( $var ) ) {
-				return $options['options']['default'];
+			if ( $filter_type === 'validator' && false === $var ) {
+				$var = $options['options']['default'];
+			} elseif ( $filter_type === 'sanitizer' && null === $var ) {
+				$var = $options['options']['default'];
 			}
 		}
 
