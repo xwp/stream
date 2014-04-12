@@ -41,7 +41,7 @@ class WP_Stream_Extensions {
 		$this->plugin_paths = $this->get_plugin_paths();
 
 		add_filter( 'plugins_api', array( $this, 'filter_plugin_api_info' ), 99, 3 );
-
+		add_filter( 'http_request_host_is_external', array( $this, 'filter_allowed_external_host' ), 10, 3 );
 	}
 
 	/**
@@ -97,12 +97,20 @@ class WP_Stream_Extensions {
 					$api = new stdClass();
 					$api->name = $extension->title;
 					$api->version = $extension->post_meta->current_version[0];
-					$api->download_link = self::API_TRANSPORT . self::API_DOMAIN . $extension->post_meta->download_url[0];
+					$api->download_link = esc_url_raw( self::API_TRANSPORT . self::API_DOMAIN . $extension->post_meta->download_url[0] );
 					return $api;
 				}
 			}
 		}
+
 		return $false;
+	}
+
+	function filter_allowed_external_host( $allow, $host, $url ) {
+		if ( $host == self::API_DOMAIN ) {
+			$allow = true;
+		}
+		return $allow;
 	}
 
 	/**
@@ -113,6 +121,7 @@ class WP_Stream_Extensions {
 	private function activate_membership() {
 		$license_key = wp_remote_get( $this->api_uri, array() );
 		set_transient( self::MEMBER_KEY, array( 'license_key' => $license_key ), MINUTE_IN_SECONDS * 60 * 48 );
+
 		return $license_key;
 	}
 
