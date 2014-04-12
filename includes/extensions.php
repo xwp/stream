@@ -40,6 +40,7 @@ class WP_Stream_Extensions {
 		$this->extensions   = $this->get_extension_data();
 		$this->plugin_paths = $this->get_plugin_paths();
 
+		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_for_extension_updates' ) );
 		add_filter( 'plugins_api', array( $this, 'filter_plugin_api_info' ), 99, 3 );
 		add_filter( 'http_request_host_is_external', array( $this, 'filter_allowed_external_host' ), 10, 3 );
 	}
@@ -86,12 +87,13 @@ class WP_Stream_Extensions {
 		if ( ! is_wp_error( $response ) ) {
 			return json_decode( wp_remote_retrieve_body( $response ) );
 		}
-
 		return false;
 	}
 
 	function filter_plugin_api_info( $false, $action, $args ) {
 		if ( 'plugin_information' == $action && empty( $false ) ) {
+
+			/** @internal The querying the api using the filter endpoint doesn't seem to work. For now I'm looping through all the extensions to get the api info for using WordPress install api  */
 			foreach ( $this->get_extension_data() as $extension ) {
 				if ( $extension->slug == $args->slug ) {
 					$api = new stdClass();
@@ -146,26 +148,6 @@ class WP_Stream_Extensions {
 	}
 
 	/**
-	 * Activates an already installed extension
-	 *
-	 */
-	function activate_extension( $extension ) {
-		if ( $this->verify_membership() ) {
-			$current = get_option( 'active_plugins' );
-			$plugin  = plugin_basename( trim( $extension ) );
-
-			if ( ! in_array( $plugin, $current ) ) {
-				$current[] = $plugin;
-				sort( $current );
-				do_action( 'activate_plugin', trim( $plugin ) );
-				update_option( 'active_plugins', $current );
-				do_action( 'activate_' . trim( $plugin ) );
-				do_action( 'activated_plugin', trim( $plugin ) );
-			}
-		}
-	}
-
-	/**
 	 * Create an array of all plugin paths, using the text-domain as a unique key slug
 	 *
 	 * @return array
@@ -180,19 +162,18 @@ class WP_Stream_Extensions {
 		return $plugin_paths;
 	}
 
-	function download_extension() {
-
-	}
-
-	function check_for_extension_updates() {
-
-	}
-
-	function update_extension() {
-		if ( $this->verify_membership() ) {
-			/** Call Update Extension Method  @see https://github.com/x-team/wp-stream/issues/400 */
+	function check_for_extension_updates( $transient ) {
+		if ( empty( $transient->checked ) ) {
+			return $transient;
 		}
+		/**
+		 * Loop through extensions and do version compare and if update available
+		 * set $transient->response['extension_slug'] = stdClass object containing:
+		 * download_link, name, version, update details;
+		 *
+		 */
 
+		return $transient;
 	}
 
 	function extensions_display_header( $extensions ) {
