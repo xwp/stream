@@ -45,10 +45,12 @@ class WP_Stream_Context_Query {
 				$lookup  = array( '=', 'IN', 'NOT IN' );
 				$compare = $lookup[ $i ];
 				if ( ! empty( $query[ $key . $suffix ] ) ) {
-					$context_query[0][ $key ] = array(
-						'value'   => $query[ $key . $suffix ],
-						'compare' => $compare,
-						);
+					$context_query[] = array(
+						$key => array(
+							'value'   => $query[ $key . $suffix ],
+							'compare' => $compare,
+						),
+					);
 				}
 			}
 		}

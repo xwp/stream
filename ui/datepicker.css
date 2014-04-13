@@ -61,6 +61,7 @@
 .stream-datepicker.ui-datepicker .ui-datepicker-next-hover,
 .stream-datepicker.ui-datepicker .ui-datepicker-next,
 .stream-datepicker.ui-datepicker .ui-datepicker-prev {
+	height: 1em;
 	top: .9em;
 	border:none;
 }

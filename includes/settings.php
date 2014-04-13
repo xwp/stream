@@ -26,6 +26,22 @@ class WP_Stream_Settings {
 	 */
 	public static $fields = array();
 
+	public static function get_options() {
+		/**
+		 * Filter allows for modification of options
+		 *
+		 * @param  array  array of options
+		 * @return array  updated array of options
+		 */
+		return apply_filters(
+			'wp_stream_options',
+			wp_parse_args(
+				(array) get_option( self::KEY, array() ),
+				self::get_defaults()
+			)
+		);
+	}
+
 	/**
 	 * Public constructor
 	 *
@@ -33,22 +49,7 @@ class WP_Stream_Settings {
 	 */
 	public static function load() {
 
-		// Parse field information gathering default values
-		$defaults = self::get_defaults();
-
-		/**
-		 * Filter allows for modification of options
-		 *
-		 * @param  array  array of options
-		 * @return array  updated array of options
-		 */
-		self::$options = apply_filters(
-			'wp_stream_options',
-			wp_parse_args(
-				(array) get_option( self::KEY, array() ),
-				$defaults
-			)
-		);
+		self::$options = self::get_options();
 
 		// Register settings, and fields
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
@@ -64,6 +65,9 @@ class WP_Stream_Settings {
 		// Ajax callback function to search users
 		add_action( 'wp_ajax_stream_get_users', array( __CLASS__, 'get_users' ) );
 
+		// Ajax callback function to search IPs
+		add_action( 'wp_ajax_stream_get_ips', array( __CLASS__, 'get_ips' ) );
+
 	}
 
 	/**
@@ -73,17 +77,14 @@ class WP_Stream_Settings {
 	 * @return void
 	 */
 	public static function get_users(){
-		if ( ! defined( 'DOING_AJAX' ) ) {
-			return;
-		}
-		if ( ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
+		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
 			return;
 		}
 
 		check_ajax_referer( 'stream_get_users', 'nonce' );
 
 		$response = (object) array(
-			'status' => false,
+			'status'  => false,
 			'message' => __( 'There was an error in the request', 'stream' ),
 		);
 
@@ -124,8 +125,19 @@ class WP_Stream_Settings {
 			}
 
 			$args = array(
-				'id'   => $user->ID,
-				'text' => $user->display_name,
+				'id'       => $user->ID,
+				'text'     => $user->display_name,
+			);
+
+			$user_roles = array_map( 'ucwords', $user->roles );
+			$args['tooltip'] = esc_attr(
+				sprintf(
+					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+					$user->ID,
+					$user->user_login,
+					$user->user_email,
+					implode( ', ', $user_roles )
+				)
 			);
 
 			if ( null !== $gravatar_url ) {
@@ -136,6 +148,38 @@ class WP_Stream_Settings {
 		}
 
 		wp_send_json_success( $response );
+	}
+
+	/**
+	 * Ajax callback function to search IP addresses that is used on exclude setting page
+	 *
+	 * @uses WP_User_Query WordPress User Query class.
+	 * @return void
+	 */
+	public static function get_ips(){
+		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
+			return;
+		}
+
+		check_ajax_referer( 'stream_get_ips', 'nonce' );
+
+		global $wpdb;
+
+		$results = $wpdb->get_col(
+			$wpdb->prepare(
+				"
+					SELECT distinct(`ip`)
+					FROM `{$wpdb->stream}`
+					WHERE `ip` LIKE %s
+					ORDER BY inet_aton(`ip`) ASC
+					LIMIT %d;
+				",
+				like_escape( $_POST['find'] ) . '%',
+				$_POST['limit']
+			)
+		);
+
+		wp_send_json_success( $results );
 	}
 
 	/**
@@ -260,6 +304,17 @@ class WP_Stream_Settings {
 							'desc'        => __( 'No activity will be logged for these IP addresses.', 'stream' ),
 							'class'       => 'ip-addresses',
 							'default'     => array(),
+							'nonce'       => 'stream_get_ips',
+						),
+						array(
+							'name'        => 'hide_previous_records',
+							'title'       => __( 'Visibility', 'stream' ),
+							'type'        => 'checkbox',
+							'desc'        => sprintf(
+								__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
+							),
+							'after_field' => __( 'Hide Previous Records', 'stream' ),
+							'default'     => 0,
 						),
 					),
 				),
@@ -371,6 +426,7 @@ class WP_Stream_Settings {
 		$href          = isset( $field['href'] ) ? $field['href'] : null;
 		$after_field   = isset( $field['after_field'] ) ? $field['after_field'] : null;
 		$title         = isset( $field['title'] ) ? $field['title'] : null;
+		$nonce         = isset( $field['nonce'] ) ? $field['nonce'] : null;
 		$current_value = self::$options[ $section . '_' . $name ];
 
 		if ( is_callable( $current_value ) ) {
@@ -506,13 +562,14 @@ class WP_Stream_Settings {
 					esc_attr( $name )
 				);
 				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %4$s" data-select-placeholder="%5$s-%6$s-select-placeholder"  />',
+					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %4$s" data-select-placeholder="%5$s-%6$s-select-placeholder" %7$s />',
 					esc_attr( json_encode( $data_values ) ),
 					esc_attr( json_encode( $selected_values ) ),
 					esc_attr( implode( ',', $current_value ) ),
 					$class,
 					esc_attr( $section ),
-					esc_attr( $name )
+					esc_attr( $name ),
+					isset( $nonce ) ? sprintf( ' data-nonce="%s"', esc_attr( wp_create_nonce( $nonce ) ) ) : ''
 				);
 				// to store data with default value if nothing is selected
 				$output .= sprintf(
@@ -538,7 +595,12 @@ class WP_Stream_Settings {
 				}
 
 				foreach ( $choices as $key => $role ) {
-					$data_values[] = array( 'id' => $key, 'text' => $role );
+					$args  = array( 'id' => $key, 'text' => $role );
+					$users = get_users( array( 'role' => $key ) );
+					if ( count( $users ) ) {
+						$args['user_count'] = sprintf( _n( '1 user', '%s users', count( $users ), 'stream' ), count( $users ) );
+					}
+					$data_values[] = $args;
 				}
 
 				$selected_values = array();
@@ -728,41 +790,5 @@ class WP_Stream_Settings {
 			 */
 			do_action( 'wp_stream_auto_purge' );
 		}
-	}
-
-	/**
-	 * Function will add excluded settings args into stream query
-	 *
-	 * @param $args array query args passed to stream_query
-	 *
-	 * @return array
-	 */
-	public static function remove_excluded_record_filter( $args ) {
-		// Remove record of excluded connector
-		if ( empty( $args['connector'] ) ) {
-			$args['connector__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
-		}
-
-		// Remove record of excluded context
-		if ( empty( $args['context'] ) ) {
-			$args['context__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'contexts' );
-		}
-
-		// Remove record of excluded actions
-		if ( empty( $args['action'] ) ) {
-			$args['action__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
-		}
-
-		// Remove record of excluded author
-		if ( empty( $args['author'] ) ) {
-			$args['author__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
-		}
-
-		// Remove record of excluded ip
-		if ( empty( $args['ip'] ) ) {
-			$args['ip__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'ip_addresses' );
-		}
-
-		return $args;
 	}
 }

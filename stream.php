@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: http://wordpress.org/plugins/stream/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -21,12 +21,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 class WP_Stream {
@@ -36,7 +36,7 @@ class WP_Stream {
 	 *
 	 * @const string
 	 */
-	const VERSION = '1.3.0';
+	const VERSION = '1.3.1';
 
 	/**
 	 * Hold Stream instance
@@ -152,6 +152,7 @@ class WP_Stream {
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
 		WP_Stream_Install::check();
+
 	}
 
 	/**
