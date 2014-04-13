@@ -59,7 +59,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$labels[ $sidebar['id'] ] = $sidebar['name'];
 		}
 
-		$labels['wp_inactive_widgets'] = esc_html__( 'Inactive Widgets' );
+		$labels['wp_inactive_widgets'] = esc_html__( 'Inactive Widgets', 'stream' );
 
 		return $labels;
 	}
