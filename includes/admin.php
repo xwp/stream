@@ -149,39 +149,34 @@ class WP_Stream_Admin {
 
 		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 
-		if ( ! in_array( $hook, self::$screen_id ) && 'dashboard.php' !== $hook ) {
-
+		if ( 'index.php' === $hook ) {
 			wp_enqueue_script( 'wp-stream-admin-dashboard', WP_STREAM_URL . 'ui/dashboard.js', array( 'jquery', 'heartbeat' ) );
-			return;
+		} else if ( in_array( $hook, self::$screen_id ) ) {
+
+			wp_enqueue_script( 'select2' );
+			wp_enqueue_style( 'select2' );
+
+			wp_enqueue_script( 'timeago' );
+			wp_enqueue_script( 'timeago-locale' );
+
+			wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ) );
+			wp_localize_script(
+				'wp-stream-admin',
+				'wp_stream',
+				array(
+					'i18n'            => array(
+						'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+						'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
+					),
+					'gmt_offset'      => get_option( 'gmt_offset' ),
+					'current_screen'  => $hook,
+					'current_page'    => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
+					'current_order'   => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
+					'current_query'   => json_encode( $_GET ),
+					'filter_controls' => get_user_meta( get_current_user_id(), 'stream_toggle_filters', true ),
+				)
+			);
 		}
-
-		if ( ! in_array( $hook, self::$screen_id ) && 'plugins.php' !== $hook ) {
-			return;
-		}
-
-		wp_enqueue_script( 'select2' );
-		wp_enqueue_style( 'select2' );
-
-		wp_enqueue_script( 'timeago' );
-		wp_enqueue_script( 'timeago-locale' );
-
-		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ) );
-		wp_localize_script(
-			'wp-stream-admin',
-			'wp_stream',
-			array(
-				'i18n'           => array(
-					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
-					'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
-				),
-				'gmt_offset'     => get_option( 'gmt_offset' ),
-				'current_screen' => $hook,
-				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
-				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
-				'current_query'  => json_encode( $_GET ),
-				'filter_controls' => get_user_meta( get_current_user_id(), 'stream_toggle_filters', true ),
-			)
-		);
 	}
 
 	/**
