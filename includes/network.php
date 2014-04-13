@@ -193,7 +193,7 @@ class WP_Stream_Network {
 		$option_key = WP_Stream_Settings::get_option_key();
 
 		$stream_hidden_options = apply_filters(
-			'wp_stream_network_only_option_fields',
+			'wp_stream_hidden_option_fields',
 			array(
 				'general' => array(
 					'delete_all_records',
@@ -203,7 +203,7 @@ class WP_Stream_Network {
 		);
 
 		$network_stream_hidden_options = apply_filters(
-			'wp_stream_network_only_option_fields',
+			'wp_stream_network_stream_option_fields',
 			array(
 				'general' => array(
 					'delete_all_records',
@@ -222,7 +222,7 @@ class WP_Stream_Network {
 		);
 
 		$network_hidden_options = apply_filters(
-			'wp_stream_site_only_option_fields',
+			'wp_stream_network_option_fields',
 			array(
 				'general' => array(
 					'role_access',
@@ -240,8 +240,13 @@ class WP_Stream_Network {
 		);
 
 		$defaults_hidden_options = apply_filters(
-			'wp_stream_site_only_option_fields',
-			array()
+			'wp_stream_defaults_option_fields',
+			array(
+				'general' => array(
+					'delete_all_records',
+					'records_ttl',
+				),
+			)
 		);
 
 		// Remove settings based on context
