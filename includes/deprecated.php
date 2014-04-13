@@ -7,11 +7,13 @@
 global $wp_stream_deprecated_filters;
 
 $wp_stream_deprecated_filters = array(
-	'stream_query_args' => array(
+	array(
+		'old'     => 'stream_query_args',
 		'new'     => 'wp_stream_query_args',
 		'version' => '1.3.2',
 	),
-	'stream_toggle_filters' => array(
+	array(
+		'old'     => 'stream_toggle_filters',
 		'new'     => 'wp_stream_toggle_filters',
 		'version' => '1.3.2',
 	),
@@ -24,23 +26,25 @@ foreach ( $wp_stream_deprecated_filters as $filter ) {
 function wp_stream_deprecated_filter_mapping( $data ) {
 	global $wp_stream_deprecated_filters;
 
-	$current_filter    = current_filter();
-	$deprecated_filter = false;
+	$new_filter = current_filter();
+	$old_filter = false;
+	$version    = false;
 
 	foreach ( $wp_stream_deprecated_filters as $key => $filter ) {
-		if ( $current_filter === $filter['new'] ) {
-			$deprecated_filter = $key;
+		if ( $new_filter === $filter['new'] ) {
+			$old_filter = $filter['old'];
+			$version    = $filter['version'];
 			break;
 		}
 	}
 
-	if ( ! $deprecated_filter || ! has_filter( $deprecated_filter ) ) {
+	if ( ! $old_filter || ! has_filter( $old_filter ) ) {
 		return $data;
 	}
 
 	$filter_args = array_merge(
 		array(
-			$deprecated_filter,
+			$old_filter,
 		),
 		func_get_args()
 	);
@@ -48,9 +52,9 @@ function wp_stream_deprecated_filter_mapping( $data ) {
 	$data = call_user_func_array( 'apply_filters', $filter_args );
 
 	_deprecated_function(
-		sprintf( __( 'The %s filter', 'stream' ), $deprecated_filter ),
-		$wp_stream_deprecated_filters[ $deprecated_filter ]['version'],
-		$current_filter
+		sprintf( __( 'The %s filter', 'stream' ), $old_filter ),
+		$version,
+		$new_filter
 	);
 
 	return $data;
