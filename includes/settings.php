@@ -716,8 +716,8 @@ class WP_Stream_Settings {
 	 */
 	public static function get_terms_labels( $column ) {
 		$return_labels = array();
-		if ( isset ( WP_Stream_Connectors::$term_labels['stream_' . $column ] ) ) {
-			$return_labels = WP_Stream_Connectors::$term_labels['stream_' . $column ];
+		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
+			$return_labels = WP_Stream_Connectors::$term_labels[ 'stream_' . $column ];
 			ksort( $return_labels );
 		}
 

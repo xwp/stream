@@ -117,7 +117,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			if ( 'upload' === $from ) {
 				if ( 'plugin' === $type ) {
 					$cached_plugins = wp_cache_get( 'plugins', 'plugins' );
-					$plugin_data    = $cached_plugins['/'.$upgrader->result['destination_name']];
+					$plugin_data    = $cached_plugins[ '/' . $upgrader->result['destination_name'] ];
 					if ( $plugin_data ) {
 						$plugin_data = reset( $plugin_data );
 					} else { // Probably a failed installation
@@ -195,7 +195,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		$context = $type . 's';
 
 		// If not doing bulk, simulate one to trigger a log operation
-		if ( ! $logs ) $logs[] = array();
+		if ( ! $logs ) {
+			$logs[] = array();
+		}
 
 		foreach ( $logs as $log ) {
 			extract( $log );

@@ -677,7 +677,7 @@ class WP_Stream_Admin {
 				<div class="clear"></div>
 			</div>';
 
-		echo '<div>' . $html_view_all . $html_pagination_links . '</div>';
+		echo '<div>' . $html_view_all . $html_pagination_links . '</div>'; // xss ok
 	}
 
 	/**

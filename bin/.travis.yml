@@ -19,10 +19,13 @@ before_script:
     - export WP_TESTS_DIR=/tmp/wordpress-tests/
     - export PLUGIN_DIR=$(pwd)
     - export PLUGIN_SLUG=$(basename $(pwd) | sed 's/^wp-//')
+    - export PHPCS_BRANCH=rule-subsets
     - if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION; cd /tmp/wordpress/wp-content/plugins; ln -s $PLUGIN_DIR $PLUGIN_SLUG; cd $PLUGIN_DIR; fi
     - pear config-set auto_discover 1
     - pear install PHP_CodeSniffer
-    - git clone git://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress
+    - mkdir -p $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress
+    - curl -L https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/archive/$PHPCS_BRANCH.tar.gz | tar -zx --strip 1 -C $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress
+    - $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress/bin/install-subsets
     - phpenv rehash
     - npm install -g jshint
 
