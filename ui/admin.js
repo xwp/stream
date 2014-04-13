@@ -158,7 +158,9 @@ jQuery(function($){
 				ip_chunks = $.grep(
 					ip_chunks,
 					function(chunk) {
-						return (chunk.charAt(0) !== '0' && parseInt(chunk, 10) <= 255);
+						var numeric = parseInt(chunk, 10);
+
+						return numeric <= 255 && numeric.toString() === chunk;
 					}
 				);
 
@@ -238,8 +240,12 @@ jQuery(function($){
 
 				if ('undefined' !== typeof object.icon) {
 					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
-					// Add more info to the container
-					container.attr('title', object.tooltip);
+				}
+				// Add more info to the container
+				if ( 'undefined' !== typeof object.tooltip ) {
+					container.attr( 'title', object.tooltip );
+				} else if ( 'undefined' !== typeof object.user_count ) {
+					container.attr( 'title', object.user_count );
 				}
 				return result;
 			},
@@ -325,8 +331,11 @@ jQuery(function($){
 
 		$(document).on( 'heartbeat-send.stream', function(e, data) {
 			data['wp-stream-heartbeat'] = 'live-update';
-			var last_id = $( list_sel + ' tr:first .column-id').text();
-			last_id = ( '' === last_id ) ? 1 : last_id;
+			var last_item = $( list_sel + ' tr:first .column-id');
+			var last_id = 1;
+			if ( last_item.length !== 0 ) {
+				last_id = ( '' === last_item.text() ) ? 1 : last_item.text();
+			}
 			data['wp-stream-heartbeat-last-id'] = last_id;
 			data['wp-stream-heartbeat-query']   = wp_stream.current_query;
 		});
@@ -335,9 +344,15 @@ jQuery(function($){
 		$(document).on( 'heartbeat-tick.stream', function( e, data ) {
 
 			// If this no rows return then we kill the script
-			if ( ! data['wp-stream-heartbeat'] ) {
+			if ( ! data['wp-stream-heartbeat'] || data['wp-stream-heartbeat'].length === 0  ) {
 				return;
 			}
+
+			// Get show on screen
+			var show_on_screen = $('#edit_stream_per_page').val();
+
+			// Get all current rows
+			var $current_items = $( list_sel + ' tr');
 
 			// Get all new rows
 			var $new_items = $(data['wp-stream-heartbeat']);
@@ -346,7 +361,7 @@ jQuery(function($){
 			$new_items.removeClass().addClass('new-row');
 
 			//Check if first tr has the alternate class
-			var has_class =  ( $( list_sel + ' tr:first').hasClass('alternate') );
+			var has_class =  ( $current_items.first().hasClass('alternate') );
 
 			// Apply the good class to the list
 			if ( $new_items.length === 1 && !has_class ) {
@@ -368,7 +383,22 @@ jQuery(function($){
 			});
 
 			// Remove the number of element added to the end of the list table
-			$( list_sel + ' tr').slice(-$new_items.length).remove();
+			var slice_rows = show_on_screen - ( $new_items.length + $current_items.length );
+			if ( slice_rows < 0 ) {
+				$( list_sel + ' tr').slice(slice_rows).remove();
+			}
+
+			// Remove the no items row
+			$( list_sel + ' tr.no-items').remove();
+
+			// Update pagination
+			var total_items_i18n = data.total_items_i18n || '';
+			if ( total_items_i18n ) {
+				$('.displaying-num').text( total_items_i18n );
+				$('.total-pages').text( data.total_pages_i18n );
+				$('.tablenav-pages').find('.next-page, .last-page').toggleClass('disabled', data.total_pages === $('.current-page').val());
+				$( '.tablenav-pages .last-page').attr('href', data.last_page_link);
+			}
 
 			// Allow others to hook in, ie: timeago
 			$( list_sel ).parent().trigger( 'updated' );
@@ -385,8 +415,8 @@ jQuery(function($){
 
 		//Enable Live Update Checkbox Ajax
 		$( '#enable_live_update' ).click( function() {
-			var nonce   = $( '#enable_live_update_nonce' ).val();
-			var user	= $( '#enable_live_update_user' ).val();
+			var nonce   = $( '#stream_live_update_nonce' ).val();
+			var user = $( '#enable_live_update_user' ).val();
 			var checked = 'unchecked';
 			if ( $('#enable_live_update' ).is( ':checked' ) ) {
 				checked = 'checked';
@@ -405,6 +435,89 @@ jQuery(function($){
 				}
 			});
 		});
+
+		function toggle_filter_submit() {
+			var all_hidden = true;
+			// If all filters are hidden, hide the button
+			if ( ! $( 'div.date-interval' ).is( ':hidden' ) ) {
+				all_hidden = false;
+			}
+			var divs = $( 'div.alignleft.actions div.select2-container' );
+			divs.each( function() {
+				if ( ! $(this).is( ':hidden' ) ) {
+					all_hidden = false;
+					return false;
+				}
+			});
+			if ( all_hidden ) {
+				$( 'input#record-query-submit' ).hide();
+				$( 'span.filter_info' ).show();
+			} else {
+				$( 'input#record-query-submit' ).show();
+				$( 'span.filter_info' ).hide();
+			}
+		}
+
+		if ( $( 'div.stream-toggle-filters [id="date_range"]' ).is( ':checked' ) ) {
+			$( 'div.date-interval' ).show();
+		} else {
+			$( 'div.date-interval' ).hide();
+		}
+
+		var filters = [ 'date_range', 'author', 'connector', 'context', 'action' ];
+		for( var i=0; i < filters.length; i++ ) {
+			if ( $( 'div.stream-toggle-filters [id="' + filters[i] + '"]'  ).is( ':checked' ) ) {
+				$( '[name="' + filters[i] + '"]' ).prev( '.select2-container' ).show();
+			} else {
+				$( '[name="' + filters[i] + '"]' ).prev( '.select2-container' ).hide();
+			}
+		}
+
+		toggle_filter_submit();
+
+		//Enable Filter Toggle Checkbox Ajax
+		$( 'div.stream-toggle-filters input[type=checkbox]' ).click( function() {
+
+			// Disable other checkboxes for duration of request to avoid "clickjacking"
+			var siblings = $(this).closest('div').find('input:checkbox');
+			siblings.attr( 'disabled', true );
+			var nonce = $( '#toggle_filters_nonce' ).val();
+			var user = $( '#toggle_filters_user' ).val();
+			var checked = 'unchecked';
+			var checkbox = $(this).attr('id');
+			if ( $(this).is( ':checked' ) ) {
+				checked = 'checked';
+			}
+
+			$.ajax({
+				type: 'POST',
+				url: ajaxurl,
+				data: { action: 'stream_toggle_filters', nonce : nonce, user : user, checked : checked, checkbox: checkbox },
+				dataType: 'json',
+				beforeSend : function() {
+					$( checkbox + ' .spinner' ).show().css( { 'display' : 'inline-block' } );
+
+				},
+				success : function( data ) {
+
+					var date_interval_div = $( 'div.date-interval' );
+					// toggle visibility of input whose name attr matches checkbox ID
+					if ( data.control === 'date_range' ) {
+						date_interval_div.toggle();
+					} else {
+						var control = $( '[name="' + data.control + '"]');
+						if ( control.is( 'select' ) ) {
+							$( control ).prev( '.select2-container' ).toggle();
+						}
+					}
+
+					toggle_filter_submit();
+
+				}
+			});
+			siblings.attr( 'disabled', false );
+		});
+
 
 		$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
 
@@ -487,6 +600,11 @@ jQuery(function($){
 
 						if ('custom' === value) {
 							dateinputs.show();
+							from.datepicker('show');
+							return false;
+						} else {
+							dateinputs.hide();
+							datepickers.datepicker('hide');
 							return false;
 						}
 

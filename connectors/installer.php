@@ -312,7 +312,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	public static function callback_wp_redirect( $location ) {
-		if ( ! preg_match( '#(plugin|theme)-editor.php#', $location, $match ) ) {
+		if ( ! preg_match( '#(plugin)-editor.php#', $location, $match ) ) {
 			return $location;
 		}
 
