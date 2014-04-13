@@ -17,22 +17,30 @@ $wp_stream_deprecated_filters = array(
 	),
 );
 
-foreach ( $wp_stream_deprecated_filters as $old => $new ) {
-	add_filter( $old, 'wp_stream_deprecated_filter_mapping' );
+foreach ( $wp_stream_deprecated_filters as $filter ) {
+	add_filter( $filter['new'], 'wp_stream_deprecated_filter_mapping' );
 }
 
 function wp_stream_deprecated_filter_mapping( $data ) {
 	global $wp_stream_deprecated_filters;
 
-	$filter = current_filter();
+	$current_filter    = current_filter();
+	$deprecated_filter = false;
 
-	if ( ! has_filter( $filter ) ) {
+	foreach ( $wp_stream_deprecated_filters as $key => $filter ) {
+		if ( $current_filter === $filter['new'] ) {
+			$deprecated_filter = $key;
+			break;
+		}
+	}
+
+	if ( ! $deprecated_filter || ! has_filter( $deprecated_filter ) ) {
 		return $data;
 	}
 
 	$filter_args = array_merge(
 		array(
-			$wp_stream_deprecated_filters[ $filter ]['new'],
+			$deprecated_filter,
 		),
 		func_get_args()
 	);
@@ -40,9 +48,9 @@ function wp_stream_deprecated_filter_mapping( $data ) {
 	$data = call_user_func_array( 'apply_filters', $filter_args );
 
 	_deprecated_function(
-		sprintf( __( 'The %s filter', 'stream' ), $filter ),
-		$wp_stream_deprecated_filters[ $filter ]['version'],
-		$wp_stream_deprecated_filters[ $filter ]['new']
+		sprintf( __( 'The %s filter', 'stream' ), $deprecated_filter ),
+		$wp_stream_deprecated_filters[ $deprecated_filter ]['version'],
+		$current_filter
 	);
 
 	return $data;
