@@ -14,7 +14,7 @@ $wp_stream_deprecated_filters = array(
 	'stream_toggle_filters' => array(
 		'new'     => 'wp_stream_toggle_filters',
 		'version' => '1.3.2',
-	)
+	),
 );
 
 foreach ( $wp_stream_deprecated_filters as $old => $new ) {
