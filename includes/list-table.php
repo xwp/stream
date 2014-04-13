@@ -745,7 +745,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			<div class="metabox-prefs stream-toggle-filters">
 				<?php
 				$filters = apply_filters(
-					'stream_toggle_filters', array(
+					'wp_stream_toggle_filters', array(
 						'date_range' => __( 'Date Range', 'stream' ),
 						'author'     => __( 'Authors', 'stream' ),
 						'connector'  => __( 'Connectors', 'stream' ),
