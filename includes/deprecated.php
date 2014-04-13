@@ -7,14 +7,14 @@
 global $wp_stream_deprecated_filters;
 
 $wp_stream_deprecated_filters = array(
-	'wp_stream_query_args' => array(
-		'old'     => 'stream_query_args',
+	'stream_query_args' => array(
+		'new'     => 'wp_stream_query_args',
 		'version' => '3.0.1',
 	),
 );
 
-foreach ( $wp_stream_deprecated_filters as $new => $old ) {
-	add_filter( $new, 'wp_stream_deprecated_filter_mapping' );
+foreach ( $wp_stream_deprecated_filters as $old => $new ) {
+	add_filter( $old, 'wp_stream_deprecated_filter_mapping' );
 }
 
 function wp_stream_deprecated_filter_mapping( $data ) {
@@ -22,17 +22,13 @@ function wp_stream_deprecated_filter_mapping( $data ) {
 
 	$filter = current_filter();
 
-	if ( ! isset( $wp_stream_deprecated_filters[ $filter ][ 'old' ] ) ) {
-		return $data;
-	}
-
-	if ( ! has_filter( $wp_stream_deprecated_filters[ $filter ][ 'old' ] ) ) {
+	if ( ! has_filter( $filter ) ) {
 		return $data;
 	}
 
 	$filter_args = array_merge(
 		array(
-			$wp_stream_deprecated_filters[ $filter ][ 'old' ],
+			$wp_stream_deprecated_filters[ $filter ]['new'],
 		),
 		func_get_args()
 	);
@@ -40,9 +36,9 @@ function wp_stream_deprecated_filter_mapping( $data ) {
 	$data = call_user_func_array( 'apply_filters', $filter_args );
 
 	_deprecated_function(
-		sprintf( __( 'The %s filter', 'stream' ), $wp_stream_deprecated_filters[ $filter ][ 'old' ] ),
-		$wp_stream_deprecated_filters[ $filter ][ 'version' ],
-		$filter
+		sprintf( __( 'The %s filter', 'stream' ), $filter ),
+		$wp_stream_deprecated_filters[ $filter ]['version'],
+		$wp_stream_deprecated_filters[ $filter ]['new']
 	);
 
 	return $data;
