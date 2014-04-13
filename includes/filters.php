@@ -92,7 +92,7 @@ class WP_Stream_Filter_Input {
 		if ( is_array( $options ) && ! empty( $options['options']['default'] ) ) {
 			if ( 'validator' === $filter_type && false === $var ) {
 				$var = $options['options']['default'];
-			} elseif ( $filter_type === 'sanitizer' && null === $var ) {
+			} elseif ( 'sanitizer' === $filter_type && null === $var ) {
 				$var = $options['options']['default'];
 			}
 		}
