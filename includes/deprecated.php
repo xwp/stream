@@ -9,7 +9,7 @@ global $wp_stream_deprecated_filters;
 $wp_stream_deprecated_filters = array(
 	'stream_query_args' => array(
 		'new'     => 'wp_stream_query_args',
-		'version' => '3.0.1',
+		'version' => '1.3.2',
 	),
 );
 
@@ -52,7 +52,7 @@ function wp_stream_deprecated_filter_mapping( $data ) {
  * @see wp_stream_query()
  */
 function stream_query( $args = array() ) {
-	_deprecated_function( __FUNCTION__, '1.3.1', 'wp_stream_query()' );
+	_deprecated_function( __FUNCTION__, '1.3.2', 'wp_stream_query()' );
 
 	return wp_stream_query( $args );
 }
@@ -65,7 +65,7 @@ function stream_query( $args = array() ) {
  * @see wp_stream_get_meta()
  */
 function get_stream_meta( $record_id, $key = '', $single = false ) {
-	_deprecated_function( __FUNCTION__, '1.3.1', 'wp_stream_get_meta()' );
+	_deprecated_function( __FUNCTION__, '1.3.2', 'wp_stream_get_meta()' );
 
 	return wp_stream_get_meta( $record_id, $key, $single );
 }
@@ -78,7 +78,7 @@ function get_stream_meta( $record_id, $key = '', $single = false ) {
  * @see wp_stream_update_meta()
  */
 function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
-	_deprecated_function( __FUNCTION__, '1.3.1', 'wp_stream_update_meta()' );
+	_deprecated_function( __FUNCTION__, '1.3.2', 'wp_stream_update_meta()' );
 
 	return wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value );
 }
@@ -91,7 +91,7 @@ function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '
  * @see wp_stream_existing_records()
  */
 function existing_records( $column, $table = '' ) {
-	_deprecated_function( __FUNCTION__, '1.3.1', 'wp_stream_existing_records()' );
+	_deprecated_function( __FUNCTION__, '1.3.2', 'wp_stream_existing_records()' );
 
 	return wp_stream_existing_records( $column, $table );
 }
