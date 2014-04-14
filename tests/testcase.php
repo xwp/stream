@@ -18,7 +18,7 @@ class WP_StreamTestCase extends WP_UnitTestCase {
 	 * Custom action prefix for test custom triggered actions
 	 * @var string
 	 */
-	protected $action_prefix = 'stream_test_';
+	protected $action_prefix = 'wp_stream_test_';
 
 	/**
 	 * PHP unit setup function
