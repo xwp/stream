@@ -28,6 +28,7 @@ class WP_Stream_Install {
 			self::install();
 		} elseif ( $db_version !== $current ) {
 			self::update( $db_version, $current );
+			self::flush_object_cache();
 		} else {
 			return;
 		}
@@ -178,7 +179,7 @@ class WP_Stream_Install {
 			$media_records = $wpdb->get_results( $sql ); // db call ok
 
 			require_once WP_STREAM_INC_DIR . 'query.php';
-			require_once WP_STREAM_CLASS_DIR . 'connector.php';
+			require_once WP_STREAM_INC_DIR . 'connector.php';
 			require_once WP_STREAM_DIR . 'connectors/media.php';
 
 			foreach ( $media_records as $record ) {
@@ -209,6 +210,16 @@ class WP_Stream_Install {
 		if ( version_compare( $db_version, '1.3.1', '<' ) ) {
 			add_action( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_installer_edits_to_theme_editor_connector' );
 		}
+	}
+
+	/**
+	 * Any data that stream stores in the object cache should get deleted here
+	 * Extension plugins should purge the object cache of the data they've added
+	 * via the wp_stream_flush_object_cache action fired here.
+	 */
+	public static function flush_object_cache() {
+		wp_cache_delete( 'connectors_glob', 'wp_stream' );
+		do_action( 'wp_stream_flush_object_cache' );
 	}
 
 	/**

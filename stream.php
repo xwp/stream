@@ -64,24 +64,15 @@ class WP_Stream {
 		define( 'WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
-		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 
 		// Load filters polyfill
-		require_once WP_STREAM_INC_DIR . 'filters.php';
+		require_once WP_STREAM_INC_DIR . 'filter-input.php';
 
 		// Load DB helper class
-		require_once WP_STREAM_INC_DIR . 'db-actions.php';
+		require_once WP_STREAM_INC_DIR . 'db.php';
 		$this->db = new WP_Stream_DB;
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			return;
-		}
-
-		// Add admin notice action to display all messages
-		add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
-
-		// If php version is not valid, kill plugin
-		if ( ! self::is_valid_php_version() ) {
 			return;
 		}
 
@@ -121,6 +112,19 @@ class WP_Stream {
 	}
 
 	/**
+	 * Invoked when the PHP version check fails. Load up the translations and
+	 * add the error message to the admin notices
+	 */
+	static function fail_php_version() {
+		add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
+		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
+		self::$messages[] = sprintf(
+			'<div class="error"><p>%s</p></div>',
+			__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
+		);
+	}
+
+	/**
 	 * Loads the translation files.
 	 *
 	 * @access public
@@ -138,11 +142,6 @@ class WP_Stream {
 	 * @return void
 	 */
 	public static function install() {
-		if ( ! self::is_valid_php_version() ) {
-			add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
-			return;
-		}
-
 		/**
 		 * Filter will halt install() if set to true
 		 *
@@ -203,15 +202,7 @@ class WP_Stream {
 	 * @action all_admin_notices
 	 */
 	public static function is_valid_php_version() {
-		if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
-			self::$messages[] = sprintf(
-				'<div class="error"><p>%s</p></div>',
-				__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
-			); // xss ok
-			return false;
-		}
-
-		return true;
+		return version_compare( PHP_VERSION, '5.3', '>=' );
 	}
 
 	/**
@@ -240,5 +231,9 @@ class WP_Stream {
 
 }
 
-$GLOBALS['wp_stream'] = WP_Stream::get_instance();
-register_activation_hook( __FILE__, array( 'WP_Stream', 'install' ) );
+if ( WP_Stream::is_valid_php_version() ) {
+	$GLOBALS['wp_stream'] = WP_Stream::get_instance();
+	register_activation_hook( __FILE__, array( 'WP_Stream', 'install' ) );
+} else {
+	WP_Stream::fail_php_version();
+}
