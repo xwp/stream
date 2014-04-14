@@ -202,7 +202,7 @@ class WP_Stream_Reports_Settings {
 	 * @param mixed $option
 	 */
 	public static function ajax_update_user_option( $key, $option ) {
-		check_ajax_referer( 'stream-reports-page', 'stream_reports_nonce' );
+		check_ajax_referer( 'stream-reports-page', 'wp_stream_reports_nonce' );
 
 		$is_saved = self::update_user_option( $key, $option );
 

@@ -13,7 +13,7 @@ function wp_stream_reports_intervals_html() {
 	$save_interval_url = add_query_arg(
 		array_merge(
 			array(
-				'action' => 'stream_reports_save_interval',
+				'action' => 'wp_stream_reports_save_interval',
 			),
 			WP_Stream_Reports::$nonce
 		),
@@ -42,7 +42,7 @@ class WP_Stream_Reports_Date_Interval extends WP_Stream_Date_Interval {
 
 		// Ajax declaration to save time interval
 		$ajax_hooks = array(
-			'stream_reports_save_interval' => 'save_interval',
+			'wp_stream_reports_save_interval' => 'save_interval',
 		);
 
 		// Register all ajax action and check referer for this class

@@ -37,7 +37,7 @@ class WP_Stream_Reports {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '1.3.0';
+	const STREAM_MIN_VERSION = '1.3.2';
 
 	/**
 	 * Holds this plugin version
@@ -156,7 +156,7 @@ class WP_Stream_Reports {
 			if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
 				wp_die( __( 'Cheating huh?', 'stream-reports' ) );
 			}
-			check_admin_referer( 'stream-reports-page', 'stream_reports_nonce' );
+			check_admin_referer( 'stream-reports-page', 'wp_stream_reports_nonce' );
 		}
 	}
 
@@ -177,7 +177,7 @@ class WP_Stream_Reports {
 		);
 
 		// Create nonce right away so it is accessible everywhere
-		self::$nonce = array( 'stream_reports_nonce' => wp_create_nonce( 'stream-reports-page' ) );
+		self::$nonce = array( 'wp_stream_reports_nonce' => wp_create_nonce( 'stream-reports-page' ) );
 
 		$metabox = WP_Stream_Reports_Metaboxes::get_instance();
 		add_action( 'load-' . self::$screen_id, array( $metabox, 'load_page' ) );
@@ -284,7 +284,7 @@ class WP_Stream_Reports {
 		$add_url = add_query_arg(
 			array_merge(
 				array(
-					'action' => 'stream_reports_add_metabox',
+					'action' => 'wp_stream_reports_add_metabox',
 				),
 				self::$nonce
 			),

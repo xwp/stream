@@ -33,23 +33,23 @@ class WP_Stream_Reports_Metaboxes {
 		// Get all sections from the db
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
-		add_filter( 'stream_reports_load_records', array( $this, 'sort_coordinates_by_count' ), 10, 2 );
-		add_filter( 'stream_reports_load_records', array( $this, 'limit_coordinates' ), 10, 2 );
+		add_filter( 'wp_stream_reports_load_records', array( $this, 'sort_coordinates_by_count' ), 10, 2 );
+		add_filter( 'wp_stream_reports_load_records', array( $this, 'limit_coordinates' ), 10, 2 );
 
-		add_filter( 'stream_reports_make_chart', array( $this, 'pie_chart_coordinates' ), 10, 2 );
-		add_filter( 'stream_reports_make_chart', array( $this, 'bar_chart_coordinates' ), 10, 2 );
-		add_filter( 'stream_reports_make_chart', array( $this, 'line_chart_coordinates' ), 10, 2 );
+		add_filter( 'wp_stream_reports_make_chart', array( $this, 'pie_chart_coordinates' ), 10, 2 );
+		add_filter( 'wp_stream_reports_make_chart', array( $this, 'bar_chart_coordinates' ), 10, 2 );
+		add_filter( 'wp_stream_reports_make_chart', array( $this, 'line_chart_coordinates' ), 10, 2 );
 
-		add_filter( 'stream_reports_finalize_chart', array( $this, 'translate_labels' ), 10, 2 );
-		add_filter( 'stream_reports_finalize_chart', array( $this, 'apply_chart_settings' ), 10, 2 );
+		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'translate_labels' ), 10, 2 );
+		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'apply_chart_settings' ), 10, 2 );
 
 		$ajax_hooks = array(
-			'stream_reports_add_metabox'           => 'add_metabox',
-			'stream_reports_delete_metabox'        => 'delete_metabox',
-			'stream_report_save_metabox_config'    => 'save_metabox_config',
-			'stream_report_save_chart_height'      => 'save_chart_height',
-			'stream_report_save_chart_options'     => 'save_chart_options',
-			'stream_report_update_metabox_display' => 'update_metabox_display',
+			'wp_stream_reports_add_metabox'           => 'add_metabox',
+			'wp_stream_reports_delete_metabox'        => 'delete_metabox',
+			'wp_stream_report_save_metabox_config'    => 'save_metabox_config',
+			'wp_stream_report_save_chart_height'      => 'save_chart_height',
+			'wp_stream_report_save_chart_options'     => 'save_chart_options',
+			'wp_stream_report_update_metabox_display' => 'update_metabox_display',
 		);
 
 		// Register all ajax action and check referer for this class
@@ -129,7 +129,7 @@ class WP_Stream_Reports_Metaboxes {
 			$delete_url = add_query_arg(
 				array_merge(
 					array(
-						'action' => 'stream_reports_delete_metabox',
+						'action' => 'wp_stream_reports_delete_metabox',
 						'key'    => $key,
 					),
 					WP_Stream_Reports::$nonce
@@ -266,10 +266,10 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$records     = $this->load_metabox_records( $args, $user_interval );
-		$records     = apply_filters( 'stream_reports_load_records', $records, $args );
-		$coordinates = apply_filters( 'stream_reports_make_chart', $records, $args );
+		$records     = apply_filters( 'wp_stream_reports_load_records', $records, $args );
+		$coordinates = apply_filters( 'wp_stream_reports_make_chart', $records, $args );
 
-		return apply_filters( 'stream_reports_finalize_chart', $coordinates, $args );
+		return apply_filters( 'wp_stream_reports_finalize_chart', $coordinates, $args );
 	}
 
 	public function line_chart_coordinates( $records, $args ) {
@@ -531,7 +531,7 @@ class WP_Stream_Reports_Metaboxes {
 			return array();
 		}
 
-		$unsorted = stream_query( $query_args );
+		$unsorted = wp_stream_query( $query_args );
 		if ( 'author_role' === $grouping_field ) {
 			foreach ( $unsorted as $key => $record ) {
 				$user = get_userdata( $record->author );
@@ -584,7 +584,7 @@ class WP_Stream_Reports_Metaboxes {
 	 * Merges all records past limit into single record
 	 */
 	public function limit_coordinates( $records, $args ) {
-		$limit = apply_filters( 'stream_reports_record_limit', 10 );
+		$limit = apply_filters( 'wp_stream_reports_record_limit', 10 );
 		if ( 0 === $limit ) {
 			return $records;
 		}
@@ -870,7 +870,7 @@ class WP_Stream_Reports_Metaboxes {
 	public function chart_height_display( $status, $args ) {
 		$user_id = get_current_user_id();
 		$option  = WP_Stream_Reports_Settings::get_user_options( 'chart_height', 300 );
-		$nonce   = wp_create_nonce( 'stream_reports_chart_height_nonce' );
+		$nonce   = wp_create_nonce( 'wp_stream_reports_chart_height_nonce' );
 		ob_start();
 		?>
 		<fieldset>

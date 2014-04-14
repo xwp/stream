@@ -6,7 +6,7 @@
 		</a>
 	</h2>
 
-	<?php wp_nonce_field( 'stream-reports-page', 'stream_report_nonce', false ) ?>
+	<?php wp_nonce_field( 'stream-reports-page', 'wp_stream_reports_nonce', false ) ?>
 	<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ) ?>
 	<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ) ?>
 
