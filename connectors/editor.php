@@ -93,8 +93,8 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( current_user_can( 'edit_theme_options' ) ) {
-			$file_name  = get_stream_meta( $record->ID, 'file', true );
-			$theme_slug = get_stream_meta( $record->ID, 'theme_slug', true );
+			$file_name  = wp_stream_get_meta( $record->ID, 'file', true );
+			$theme_slug = wp_stream_get_meta( $record->ID, 'theme_slug', true );
 
 			if ( '' !== $file_name && '' !== $theme_slug ) {
 				$links[ __( 'Edit File', 'stream' ) ] = admin_url(

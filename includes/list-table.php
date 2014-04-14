@@ -173,7 +173,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
-		$items = stream_query( $args );
+		$items = wp_stream_query( $args );
 
 		return $items;
 	}
@@ -387,7 +387,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * results of existing records.  All items that do not exist in records
 	 * get assigned a disabled value of "true".
 	 *
-	 * @uses   existing_records (see query.php)
+	 * @uses   wp_stream_existing_records (see query.php)
 	 * @since  1.0.4
 	 *
 	 * @param  string  Column requested
@@ -436,7 +436,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 
-		$existing_records = existing_records( $column, $table );
+		$existing_records = wp_stream_existing_records( $column, $table );
 		$active_records   = array();
 		$disabled_records = array();
 
@@ -745,7 +745,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			<div class="metabox-prefs stream-toggle-filters">
 				<?php
 				$filters = apply_filters(
-					'stream_toggle_filters', array(
+					'wp_stream_toggle_filters', array(
 						'date_range' => __( 'Date Range', 'stream' ),
 						'author'     => __( 'Authors', 'stream' ),
 						'connector'  => __( 'Connectors', 'stream' ),
