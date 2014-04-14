@@ -550,7 +550,7 @@
 
 				// Update chart data
 				$chart.data( 'report', data.data.options );
-
+				$chart.find('svg').html('<svg></svg>');
 				var opts = $.extend(true, {}, report.chart._.opts, { '$': this.elements }, (typeof opts !== 'undefined' ? opts : {}));
 				stream.report.chart.drawChart($section.find('.section-id').val(), $chart, opts, stream.report.chart.$columns);
 
