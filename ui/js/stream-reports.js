@@ -161,7 +161,7 @@
 					url: ajaxurl,
 					data: {
 						action: 'stream_report_save_chart_height',
-						stream_reports_nonce: $('#stream_report_nonce').val(),
+						wp_stream_reports_nonce: $('#wp_stream_reports_nonce').val(),
 						chart_height: parent.$chartHeightOption.val(),
 					},
 					dataType: 'json',
@@ -357,7 +357,7 @@
 				url: ajaxurl,
 				data: {
 					action: 'stream_report_save_metabox_config',
-					stream_reports_nonce : $('#stream_report_nonce').val(),
+					wp_stream_reports_nonce : $('#wp_stream_reports_nonce').val(),
 					chart_type : parent.find('.chart-types .active').data('type'),
 					data_group : parent.find( '.chart-dataset' ).select2('data').element[0].dataset.group,
 					data_type : parent.find('.chart-dataset').select2('data').id,
@@ -378,7 +378,7 @@
 							url: ajaxurl,
 							data: {
 								action: 'stream_report_update_metabox_display',
-								stream_reports_nonce: $('#stream_report_nonce').val(),
+								wp_stream_reports_nonce: $('#wp_stream_reports_nonce').val(),
 								section_id: id,
 							},
 							dataType: 'json',
@@ -636,7 +636,7 @@
 						url: ajaxurl,
 						data: {
 							'action': 'stream_report_save_chart_options',
-							'stream_reports_nonce' : $('#stream_report_nonce').val(),
+							'wp_stream_reports_nonce' : $('#wp_stream_reports_nonce').val(),
 							'section_id' : id,
 							'update_type': data.type,
 							'update_payload': data.payload,
