@@ -479,7 +479,6 @@
 			}
 		},
 
-
 		stateChangeCallback: function( section_id ) {
 			var id = section_id;
 			return function( e ) {
@@ -494,10 +493,7 @@
 					data.type    = 'disable';
 					data.payload = e.disabled;
 				}
-				console.log( e );
-				console.log( e.disabled );
-				console.log( data.payload );
-				console.log( e );
+
 				if ( 'none' !== data.type ) {
 					$.ajax({
 						type: 'GET',
@@ -508,7 +504,7 @@
 							'section_id' : id,
 							'update_type': data.type,
 							'update_payload': data.payload,
-						},
+							},
 						dataType: 'json',
 					});
 				}
@@ -554,7 +550,9 @@
 
 				// Update chart data
 				$chart.data( 'report', data.data.options );
-				stream.report.chart.draw();
+
+				var opts = $.extend(true, {}, report.chart._.opts, { '$': this.elements }, (typeof opts !== 'undefined' ? opts : {}));
+				stream.report.chart.drawChart($section.find('.section-id').val(), $chart, opts, stream.report.chart.$columns);
 
 				// Update title values
 				$section.find( '.chart-title' ).val( data.data.title );
@@ -570,15 +568,6 @@
 				$chart.find('.chart-loading').hide();
 
 			};
-		},
-
-		draw: function () {
-			var parent = this;
-			var opts = $.extend(true, {}, report.chart._.opts, { '$': this.elements }, (typeof opts !== 'undefined' ? opts : {}));
-			opts.$.each( function (k, el) {
-				parent.drawChart(k, el, opts, parent.$columns);
-			} );
-
 		},
 
 		// Grab all the opts and draw the chart on the screen
@@ -730,10 +719,11 @@
 			stream.report.chart.loadSection( $(this).parents('.postbox') );
 		} );
 
-		stream.report.chart.draw();
-		$('.postbox.closed .handlediv').click(function(){
-			stream.report.chart.draw();
+		$('.postbox.closed').bind( 'click.initOpen', function(){
+			stream.report.chart.loadSection( $(this) );
+			$(this).unbind( 'click.initOpen' );
 		});
+
 		stream.report.metabox.init(
 			$('.postbox .inside .configure'),
 			$('.postbox-delete-action a'),
