@@ -252,6 +252,7 @@
 
 .stream_page_wp_stream_reports .chart .chart-loading div {
 	background-color: white;
+	padding: 5px;
 	margin-left: auto;
 	margin-right: auto;
 	width: 130px;
