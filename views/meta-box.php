@@ -47,6 +47,6 @@
 
 	</div>
 
-	<div class="chart" data-report='<?php echo json_encode( $chart_options ) ?>' style="height:<?php echo esc_attr( $chart_height ); ?>px;"><svg></svg></div>
+	<div class="chart" style="height:<?php echo esc_attr( $chart_height ); ?>px;"><svg></svg></div>
 
 </div>

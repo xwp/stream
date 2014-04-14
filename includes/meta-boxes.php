@@ -222,7 +222,6 @@ class WP_Stream_Reports_Metaboxes {
 			WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
 		}
 
-		$chart_options  = $this->get_chart_options( $args );
 		$chart_height   = WP_Stream_Reports_Settings::get_user_options( 'chart_height' , 300 );
 		$data_types     = $this->get_data_types();
 		$selector_types = $this->get_selector_types();
