@@ -343,7 +343,7 @@
 			$postbox = $(this).parents('.postbox');
 
 			// Show the spinner
-			$spinner = parent.find('.spinner');
+			$spinner = $postbox.find('.configure .spinner');
 			$spinner.show();
 
 			// Cancel button
@@ -527,6 +527,8 @@
 			var section_id = $section.data('section-id');
 			var $chart     = $section.find('.chart');
 
+			$chart.find( '.chart-loading' ).show();
+
 			$.ajax({
 				type: 'GET',
 				url: ajaxurl,
@@ -564,6 +566,8 @@
 					newTitle = data.data.generated_title;
 				}
 				$section.find( '.hndle .title' ).text( newTitle );
+
+				$chart.find('.chart-loading').hide();
 
 			};
 		},

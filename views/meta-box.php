@@ -47,6 +47,14 @@
 
 	</div>
 
-	<div class="chart" style="height:<?php echo absint( $chart_height ); ?>px;"><svg></svg></div>
+	<div class="chart" style="height:<?php echo absint( $chart_height ); ?>px;">
+		<div class="chart-loading">
+			<div>
+				<span class="spinner"></span>
+				<?php _e( 'Loading data...', 'stream-reports' ); ?>
+			</div>
+		</div>
+		<svg></svg>
+	</div>
 
 </div>

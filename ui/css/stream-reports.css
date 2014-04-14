@@ -236,3 +236,30 @@
 .stream_page_wp_stream_reports svg .nv-axis .nv-axisMaxMin text {
 	font-size: 10px;
 }
+
+.stream_page_wp_stream_reports .chart {
+	position: relative;
+}
+
+.stream_page_wp_stream_reports .chart .chart-loading {
+	display: none;
+	position: absolute;
+	font-weight: bold;
+	top: 30%;
+	width: 100%;
+	text-align: center;
+}
+
+.stream_page_wp_stream_reports .chart .chart-loading div {
+	background-color: white;
+	margin-left: auto;
+	margin-right: auto;
+	width: 130px;
+}
+
+.stream_page_wp_stream_reports .chart .spinner {
+	display: inline;
+	float: left;
+	position: relative;
+	top: -2px;
+}
