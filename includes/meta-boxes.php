@@ -46,10 +46,10 @@ class WP_Stream_Reports_Metaboxes {
 		$ajax_hooks = array(
 			'wp_stream_reports_add_metabox'           => 'add_metabox',
 			'wp_stream_reports_delete_metabox'        => 'delete_metabox',
-			'wp_stream_report_save_metabox_config'    => 'save_metabox_config',
-			'wp_stream_report_save_chart_height'      => 'save_chart_height',
-			'wp_stream_report_save_chart_options'     => 'save_chart_options',
-			'wp_stream_report_update_metabox_display' => 'update_metabox_display',
+			'wp_stream_reports_save_metabox_config'    => 'save_metabox_config',
+			'wp_stream_reports_save_chart_height'      => 'save_chart_height',
+			'wp_stream_reports_save_chart_options'     => 'save_chart_options',
+			'wp_stream_reports_update_metabox_display' => 'update_metabox_display',
 		);
 
 		// Register all ajax action and check referer for this class

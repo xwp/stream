@@ -160,7 +160,7 @@
 					type: 'GET',
 					url: ajaxurl,
 					data: {
-						action: 'wp_stream_report_save_chart_height',
+						action: 'wp_stream_reports_save_chart_height',
 						wp_stream_reports_nonce: $('#wp_stream_reports_nonce').val(),
 						chart_height: parent.$chartHeightOption.val(),
 					},
@@ -356,7 +356,7 @@
 				type: 'GET',
 				url: ajaxurl,
 				data: {
-					action: 'wp_stream_report_save_metabox_config',
+					action: 'wp_stream_reports_save_metabox_config',
 					wp_stream_reports_nonce : $('#wp_stream_reports_nonce').val(),
 					chart_type : parent.find('.chart-types .active').data('type'),
 					data_group : parent.find( '.chart-dataset' ).select2('data').element[0].dataset.group,
@@ -377,7 +377,7 @@
 							type: 'GET',
 							url: ajaxurl,
 							data: {
-								action: 'wp_stream_report_update_metabox_display',
+								action: 'wp_stream_reports_update_metabox_display',
 								wp_stream_reports_nonce: $('#wp_stream_reports_nonce').val(),
 								section_id: id,
 							},
@@ -635,7 +635,7 @@
 						type: 'GET',
 						url: ajaxurl,
 						data: {
-							'action': 'wp_stream_report_save_chart_options',
+							'action': 'wp_stream_reports_save_chart_options',
 							'wp_stream_reports_nonce' : $('#wp_stream_reports_nonce').val(),
 							'section_id' : id,
 							'update_type': data.type,
