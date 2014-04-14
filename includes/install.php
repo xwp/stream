@@ -184,7 +184,7 @@ class WP_Stream_Install {
 			foreach ( $media_records as $record ) {
 				$post = get_post( $record->pid );
 				$guid = isset( $post->guid ) ? $post->guid : null;
-				$url  = $guid ? $guid : wp_get_stream_meta( $record->id, 'url', true );
+				$url  = $guid ? $guid : wp_stream_get_meta( $record->id, 'url', true );
 
 				if ( ! empty( $url ) ) {
 					$wpdb->update(
@@ -258,8 +258,8 @@ class WP_Stream_Install {
 		$records = wp_stream_query( $args );
 
 		foreach ( $records as $record ) {
-			$file_name  = wp_get_stream_meta( $record->ID, 'file', true );
-			$theme_name = wp_get_stream_meta( $record->ID, 'name', true );
+			$file_name  = wp_stream_get_meta( $record->ID, 'file', true );
+			$theme_name = wp_stream_get_meta( $record->ID, 'name', true );
 
 			if ( '' !== $theme_name ) {
 				$matched_themes = array_filter(
