@@ -47,6 +47,6 @@
 
 	</div>
 
-	<div class="chart" style="height:<?php echo esc_attr( absint( $chart_height ) ); ?>px;"><svg></svg></div>
+	<div class="chart" style="height:<?php echo absint( $chart_height ); ?>px;"><svg></svg></div>
 
 </div>
