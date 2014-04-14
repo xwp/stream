@@ -255,7 +255,7 @@ class WP_Stream_Install {
 			'context'   => 'themes',
 			'action'    => 'edited',
 		);
-		$records = stream_query( $args );
+		$records = wp_stream_query( $args );
 
 		foreach ( $records as $record ) {
 			$file_name  = wp_get_stream_meta( $record->ID, 'file', true );
@@ -290,10 +290,10 @@ class WP_Stream_Install {
 					array( 'record_id' => $record->ID )
 				);
 
-				update_stream_meta( $record->ID, 'theme_name', $theme_name );
+				wp_update_stream_meta( $record->ID, 'theme_name', $theme_name );
 
 				if ( is_object( $theme ) ) {
-					update_stream_meta( $record->ID, 'theme_slug', $theme->get_template() );
+					wp_update_stream_meta( $record->ID, 'theme_slug', $theme->get_template() );
 				}
 			}
 		}
