@@ -198,7 +198,19 @@
 }
 
 .stream_page_wp_stream_reports .postbox .inside .chart {
+	position: relative;
 	padding: 0;
+}
+
+.stream_page_wp_stream_reports .postbox .inside .chart .chart-loading {
+	display: none;
+	position: absolute;
+	top: calc(50% - 12px);
+	width: 100%;
+	font-size: 18px;
+	font-weight: 700;
+	text-align: center;
+	color: #000;
 }
 
 .stream_page_wp_stream_reports .postbox .inside .chart svg {
@@ -235,32 +247,4 @@
 .stream_page_wp_stream_reports svg .nv-axis .tick text,
 .stream_page_wp_stream_reports svg .nv-axis .nv-axisMaxMin text {
 	font-size: 10px;
-}
-
-.stream_page_wp_stream_reports .chart {
-	position: relative;
-}
-
-.stream_page_wp_stream_reports .chart .chart-loading {
-	display: none;
-	position: absolute;
-	font-weight: bold;
-	top: 30%;
-	width: 100%;
-	text-align: center;
-}
-
-.stream_page_wp_stream_reports .chart .chart-loading div {
-	background-color: white;
-	padding: 5px;
-	margin-left: auto;
-	margin-right: auto;
-	width: 130px;
-}
-
-.stream_page_wp_stream_reports .chart .spinner {
-	display: inline;
-	float: left;
-	position: relative;
-	top: -2px;
 }
