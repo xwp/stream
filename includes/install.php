@@ -118,7 +118,7 @@ class WP_Stream_Install {
 
 		$version = get_option( self::KEY );
 		if ( ! $version && version_compare( self::$current, '1.3.2', '<=' ) ) {
-			$old_key = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%stream%db'" );
+			$old_key = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%stream%_db'" );
 			if ( ! empty( $old_key ) && is_array( $old_key ) ) {
 				$version = get_option( $old_key[0] );
 
