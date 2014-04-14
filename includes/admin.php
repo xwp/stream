@@ -75,7 +75,6 @@ class WP_Stream_Admin {
 
 		// Ajax author's name by ID
 		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
-
 	}
 
 	/**
@@ -446,9 +445,9 @@ class WP_Stream_Admin {
 		global $wpdb;
 
 		$options = WP_Stream_Settings::get_options();
+		$days    = $options['general_records_ttl'];
+		$date    = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 
-		$days = $options['general_records_ttl'];
-		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
 		$wpdb->query(
@@ -489,10 +488,21 @@ class WP_Stream_Admin {
 	 */
 	public static function _filter_user_caps( $allcaps, $caps, $args, $user = null ) {
 		$user = is_a( $user, 'WP_User' ) ? $user : wp_get_current_user();
+		// @see
+		// https://github.com/WordPress/WordPress/blob/c67c9565f1495255807069fdb39dac914046b1a0/wp-includes/capabilities.php#L758
+		$roles = array_unique(
+			array_merge(
+				$user->roles,
+				array_filter(
+					array_keys( $user->caps ),
+					array( $GLOBALS['wp_roles'], 'is_role' )
+				)
+			)
+		);
 
 		foreach ( $caps as $cap ) {
 			if ( self::VIEW_CAP === $cap ) {
-				foreach ( $user->roles as $role ) {
+				foreach ( $roles as $role ) {
 					if ( self::_role_can_view_stream( $role ) ) {
 						$allcaps[ $cap ] = true;
 						break 2;
@@ -567,7 +577,7 @@ class WP_Stream_Admin {
 			'paged'            => $paged,
 		);
 
-		$records = stream_query( $args );
+		$records = wp_stream_query( $args );
 
 		if ( ! $records ) {
 			?>
@@ -721,22 +731,64 @@ class WP_Stream_Admin {
 	 * @return array  Data sent to heartbeat tick
 	 */
 	public static function heartbeat_received( $response, $data ) {
-		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
 		$option                  = get_option( 'dashboard_stream_activity_options' );
+		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
 		$enable_dashboard_update = ( 'off' !== ( $option['live_update'] ) );
-		$response['per_page']    = isset( $option['records_per_page'] ) ? absint( $option['records_per_page'] ) : 5;
+
+		// Register list table
+		require_once WP_STREAM_INC_DIR . 'list-table.php';
+		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
+		self::$list_table->prepare_items();
+
+		extract( self::$list_table->_pagination_args, EXTR_SKIP );
+
+		if ( isset( $data['wp-stream-heartbeat'] ) && isset( $total_items ) ) {
+			$response['total_items']      = $total_items;
+			$response['total_items_i18n'] = sprintf( _n( '1 item', '%s items', $total_items ), number_format_i18n( $total_items ) );
+		}
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_stream_update ) {
+
+			if ( ! empty( $data['wp-stream-heartbeat'] ) ) {
+				if ( isset( $total_pages ) ) {
+					$response['total_pages']      = $total_pages;
+					$response['total_pages_i18n'] = number_format_i18n( $total_pages );
+
+					$query_args          = json_decode( $data['wp-stream-heartbeat-query'], true );
+					$query_args['paged'] = $total_pages;
+
+					$response['last_page_link'] = add_query_arg( $query_args, admin_url( 'admin.php' ) );
+				} else {
+					$response['total_pages'] = 0;
+				}
+			}
+
 			$response['wp-stream-heartbeat'] = self::live_update( $response, $data );
+
 		} elseif ( isset( $data['wp-stream-heartbeat'] ) && 'dashboard-update' === $data['wp-stream-heartbeat'] && $enable_dashboard_update ) {
+
+			$per_page = isset( $option['records_per_page'] ) ? absint( $option['records_per_page'] ) : 5;
+
+			if ( isset( $total_items ) ) {
+				$total_pages = ceil( $total_items / $per_page );
+				$response['total_pages'] = $total_pages;
+				$response['total_pages_i18n'] = number_format_i18n( $total_pages );
+
+				$query_args['page']  = self::RECORDS_PAGE_SLUG;
+				$query_args['paged'] = $total_pages;
+
+				$response['last_page_link'] = add_query_arg( $query_args, admin_url( 'admin.php' ) );
+			}
+
+			$response['per_page'] = $per_page;
 			$response['wp-stream-heartbeat'] = self::live_update_dashboard( $response, $data );
+
 		} else {
 			$response['log'] = 'fail';
 		}
 
 		return $response;
 	}
-
 
 	/**
 	 * Sends Updated Actions to the List Table View
@@ -752,10 +804,6 @@ class WP_Stream_Admin {
 	 * @return array  Data sent to heartbeat
 	 */
 	public static function live_update( $response, $data ) {
-		// Register list table
-		require_once WP_STREAM_INC_DIR . 'list-table.php';
-		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
-
 		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
 			return;
 		}
@@ -784,7 +832,6 @@ class WP_Stream_Admin {
 
 		return $send;
 	}
-
 
 	/**
 	 * Handles Live Updates for Stream Activity Dashboard Widget.
@@ -818,7 +865,6 @@ class WP_Stream_Admin {
 		return $send;
 	}
 
-
 	/**
 	 * Sends Updated Actions to the List Table View
 	 *
@@ -840,11 +886,10 @@ class WP_Stream_Admin {
 		$query = wp_parse_args( $query, $default );
 
 		// Run query
-		$items = stream_query( $query );
+		$items = wp_stream_query( $query );
 
 		return $items;
 	}
-
 
 	/**
 	 * Renders rows for Stream Activity Dashboard Widget
@@ -859,7 +904,7 @@ class WP_Stream_Admin {
 			admin_url( self::ADMIN_PARENT_PAGE )
 		);
 
-		$author = get_userdata( $item->author );
+		$author      = get_userdata( $item->author );
 		$author_link = add_query_arg(
 			array( 'author' => isset( $author->ID ) ? absint( $author->ID ) : 0 ),
 			$records_link
@@ -882,15 +927,16 @@ class WP_Stream_Admin {
 				human_time_diff( strtotime( $item->created ) )
 			);
 		}
+
 		$class = '';
+
 		if ( isset( $i ) ) {
 			if ( $i % 2 ) {
-				$class = 'class="alternate"';
+				$class = 'alternate';
 			}
 		}
 		ob_start()
-		?>
-		<li <?php echo esc_html( $class ) ?> data-id="<?php echo esc_html( $item->ID ) ?>">
+		?><li class="<?php echo esc_html( $class ) ?>" data-id="<?php echo esc_html( $item->ID ) ?>">
 			<?php if ( $author ) : ?>
 				<div class="record-avatar">
 					<a href="<?php echo esc_url( $author_link ) ?>">
@@ -901,8 +947,7 @@ class WP_Stream_Admin {
 			<span class="record-meta"><?php echo $time_author // xss ok ?></span>
 			<br />
 			<?php echo esc_html( $item->summary ) ?>
-		</li>
-		<?php
+		</li><?php
 
 		return ob_get_clean();
 	}

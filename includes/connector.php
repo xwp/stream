@@ -56,7 +56,7 @@ abstract class WP_Stream_Connector {
 			 *
 			 * @param  array  $callback  Callback name
 			 */
-			do_action( 'stream_test_' . $callback[1] );
+			do_action( 'wp_stream_test_' . $callback[1] );
 		}
 
 		// Call the real function

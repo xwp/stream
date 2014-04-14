@@ -70,7 +70,7 @@ class WP_Stream_Query {
 		 * @param  array  Array of query arguments
 		 * @return array  Updated array of query arguments
 		 */
-		$args = apply_filters( 'stream_query_args', $args );
+		$args = apply_filters( 'wp_stream_query_args', $args );
 
 		if ( true === $args[ 'hide_excluded' ] ) {
 			$args = self::add_excluded_record_args( $args );
@@ -298,7 +298,7 @@ class WP_Stream_Query {
 
 		$results = $wpdb->get_results( $sql );
 
-		if ( 'with-meta' === $fields && is_array( $results ) ) {
+		if ( 'with-meta' === $fields && is_array( $results ) && $results ) {
 			$ids      = array_map( 'absint', wp_list_pluck( $results, 'ID' ) );
 			$sql_meta = sprintf(
 				"SELECT * FROM $wpdb->streammeta WHERE record_id IN ( %s )",
@@ -343,15 +343,15 @@ class WP_Stream_Query {
 
 }
 
-function stream_query( $args = array() ) {
+function wp_stream_query( $args = array() ) {
 	return WP_Stream_Query::get_instance()->query( $args );
 }
 
-function get_stream_meta( $record_id, $key = '', $single = false ) {
+function wp_stream_get_meta( $record_id, $key = '', $single = false ) {
 	return get_metadata( 'record', $record_id, $key, $single );
 }
 
-function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
+function wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
 	return update_metadata( 'record', $record_id, $meta_key, $meta_value, $prev_value );
 }
 
@@ -370,7 +370,7 @@ function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '
  * @param  string  Requested Table
  * @return array   Array of items to be output to select dropdowns
  */
-function existing_records( $column, $table = '' ) {
+function wp_stream_existing_records( $column, $table = '' ) {
 	global $wpdb;
 
 	switch ( $table ) {
