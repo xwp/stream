@@ -184,7 +184,7 @@ class WP_Stream_Install {
 			foreach ( $media_records as $record ) {
 				$post = get_post( $record->pid );
 				$guid = isset( $post->guid ) ? $post->guid : null;
-				$url  = $guid ? $guid : get_stream_meta( $record->id, 'url', true );
+				$url  = $guid ? $guid : wp_stream_get_meta( $record->id, 'url', true );
 
 				if ( ! empty( $url ) ) {
 					$wpdb->update(
@@ -255,11 +255,11 @@ class WP_Stream_Install {
 			'context'   => 'themes',
 			'action'    => 'edited',
 		);
-		$records = stream_query( $args );
+		$records = wp_stream_query( $args );
 
 		foreach ( $records as $record ) {
-			$file_name  = get_stream_meta( $record->ID, 'file', true );
-			$theme_name = get_stream_meta( $record->ID, 'name', true );
+			$file_name  = wp_stream_get_meta( $record->ID, 'file', true );
+			$theme_name = wp_stream_get_meta( $record->ID, 'name', true );
 
 			if ( '' !== $theme_name ) {
 				$matched_themes = array_filter(
@@ -290,10 +290,10 @@ class WP_Stream_Install {
 					array( 'record_id' => $record->ID )
 				);
 
-				update_stream_meta( $record->ID, 'theme_name', $theme_name );
+				wp_update_stream_meta( $record->ID, 'theme_name', $theme_name );
 
 				if ( is_object( $theme ) ) {
-					update_stream_meta( $record->ID, 'theme_slug', $theme->get_template() );
+					wp_update_stream_meta( $record->ID, 'theme_slug', $theme->get_template() );
 				}
 			}
 		}

@@ -566,7 +566,7 @@ class WP_Stream_Admin {
 			'paged'            => $paged,
 		);
 
-		$records = stream_query( $args );
+		$records = wp_stream_query( $args );
 
 		if ( ! $records ) {
 			?>
@@ -875,7 +875,7 @@ class WP_Stream_Admin {
 		$query = wp_parse_args( $query, $default );
 
 		// Run query
-		$items = stream_query( $query );
+		$items = wp_stream_query( $query );
 
 		return $items;
 	}

@@ -145,7 +145,7 @@ class WP_Stream_Feeds {
 			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields', FILTER_DEFAULT, array( 'options' => array( 'default' => 'with-meta' ) ) ),
 		);
 
-		$records = stream_query( $args );
+		$records = wp_stream_query( $args );
 
 		$latest_record = isset( $records[0]->created ) ? $records[0]->created : null;
 
