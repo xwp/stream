@@ -63,7 +63,7 @@ function wp_stream_deprecated_filter_mapping( $data ) {
 /**
  * stream_query()
  *
- * @deprecated 1.3.1
+ * @deprecated 1.3.2
  * @deprecated Use wp_stream_query()
  * @see wp_stream_query()
  */
@@ -76,7 +76,7 @@ function stream_query( $args = array() ) {
 /**
  * get_stream_meta()
  *
- * @deprecated 1.3.1
+ * @deprecated 1.3.2
  * @deprecated Use wp_stream_get_meta
  * @see wp_stream_get_meta()
  */
@@ -89,7 +89,7 @@ function get_stream_meta( $record_id, $key = '', $single = false ) {
 /**
  * update_stream_meta()
  *
- * @deprecated 1.3.1
+ * @deprecated 1.3.2
  * @deprecated Use wp_stream_update_meta
  * @see wp_stream_update_meta()
  */
@@ -102,7 +102,7 @@ function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '
 /**
  * existing_records()
  *
- * @deprecated 1.3.1
+ * @deprecated 1.3.2
  * @deprecated Use wp_stream_existing_records
  * @see wp_stream_existing_records()
  */
