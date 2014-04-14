@@ -32,7 +32,7 @@ class WP_Stream_Notification_Rule_Matcher {
 			'fields' => 'ID',
 			'visibility' => 'active', // Active rules only
 			);
-		$rules = stream_query( $args );
+		$rules = wp_stream_query( $args );
 		$rules = wp_list_pluck( $rules, 'ID' );
 
 		$rules = $this->format( $rules );
@@ -389,10 +389,10 @@ class WP_Stream_Notification_Rule_Matcher {
 	private function alert( $rules, $log ) {
 		foreach ( $rules as $rule_id => $rule ) {
 			// Update occurrences
-			update_stream_meta(
+			wp_stream_update_meta(
 				$rule_id,
 				'occurrences',
-				( (int) get_stream_meta( $rule_id, 'occurrences', true ) ) + 1
+				( (int) wp_stream_get_meta( $rule_id, 'occurrences', true ) ) + 1
 			);
 			foreach ( $rule['alerts'] as $alert ) {
 				if ( ! isset( WP_Stream_Notifications::$adapters[$alert['type']] ) ) {

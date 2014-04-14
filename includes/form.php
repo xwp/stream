@@ -251,7 +251,7 @@ class WP_Stream_Notifications_Form {
 			wp_send_json_error( esc_html__( 'Invalid record ID', 'stream-notifications' ) );
 		}
 
-		update_stream_meta( $id, 'occurrences', 0 );
+		wp_stream_update_meta( $id, 'occurrences', 0 );
 		wp_send_json_success();
 	}
 
@@ -621,7 +621,7 @@ class WP_Stream_Notifications_Form {
 					</div>
 					<?php if ( $rule->exists() ) : ?>
 					<div class="misc-pub-section">
-						<?php $occ = absint( get_stream_meta( $rule->ID, 'occurrences', true ) ) ?>
+						<?php $occ = absint( wp_stream_get_meta( $rule->ID, 'occurrences', true ) ) ?>
 						<div class="occurrences">
 							<p>
 								<?php

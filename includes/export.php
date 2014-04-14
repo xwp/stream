@@ -14,7 +14,7 @@ class WP_Stream_Notifications_Import_Export {
 			'posts_per_page' => -1,
 			'order'          => 'asc',
 		);
-		$query  = stream_query( $args );
+		$query  = wp_stream_query( $args );
 		$items  = array();
 		$cached = get_transient( 'stream-notification-rules' );
 

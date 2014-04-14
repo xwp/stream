@@ -25,7 +25,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		}
 
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
-		add_filter( 'stream_query_args', array( __CLASS__, 'register_occurrences_for_sorting' ) );
+		add_filter( 'wp_stream_query_args', array( __CLASS__, 'register_occurrences_for_sorting' ) );
 		add_filter( 'wp_stream_query',   array( __CLASS__, 'include_null_occurrences' ), 10, 2 );
 		set_screen_options();
 	}
@@ -145,7 +145,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_notifications_per_page', 20 );
 		}
 
-		$items = stream_query( $args );
+		$items = wp_stream_query( $args );
 		return $items;
 	}
 
@@ -184,7 +184,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 				break;
 
 			case 'occurrences':
-				$out = absint( get_stream_meta( $item->ID, 'occurrences', true ) );
+				$out = absint( wp_stream_get_meta( $item->ID, 'occurrences', true ) );
 				break;
 
 			case 'date':
@@ -593,7 +593,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * @filter stream_query_args
+	 * @filter wp_stream_query_args
 	 */
 	static function register_occurrences_for_sorting( $args ) {
 		if ( 'occurrences' === $args['orderby'] ) {
