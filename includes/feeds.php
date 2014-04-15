@@ -69,7 +69,7 @@ class WP_Stream_Feeds {
 	 * @return string
 	 */
 	public static function user_feed_key( $user ) {
-		if ( ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
+		if ( ! is_network_admin() && ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 			return;
 		}
 

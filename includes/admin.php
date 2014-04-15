@@ -285,6 +285,12 @@ class WP_Stream_Admin {
 	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
+
+			// Don't show links in Network Admin if Stream isn't network enabled
+			if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+				return $links;
+			}
+
 			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), is_network_admin() ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE ) );
 			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 
@@ -482,12 +488,12 @@ class WP_Stream_Admin {
 			// Delete database option
 			delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 			delete_site_option( WP_Stream_Settings::KEY );
-			delete_site_option( WP_Stream_Settings::DEFAULT_KEY );
+			delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
 			delete_site_option( WP_Stream_Settings::NETWORK_KEY );
 			delete_site_option( 'dashboard_stream_activity_options' );
 
 			// Redirect to plugin page
-			wp_redirect( add_query_arg( array( 'deactivate' => true ), admin_url( 'plugins.php' ) ) );
+			wp_redirect( add_query_arg( array( 'deactivate' => true ), is_network_admin() ? network_admin_url( 'plugins.php' ) : admin_url( 'plugins.php' ) ) );
 			exit;
 		} else {
 			wp_die( "You don't have sufficient privileges to do this action." );
