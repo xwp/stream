@@ -147,7 +147,7 @@ class WP_Stream_Live_Update {
 			}
 
 			$response['per_page'] = $per_page;
-			$response['wp-stream-heartbeat'] = WP_Stream_Dashboard_Widget::live_update_dashboard( $response, $data );
+			$response['wp-stream-heartbeat'] = WP_Stream_Dashboard_Widget::live_update( $response, $data );
 
 		} else {
 			$response['log'] = 'fail';

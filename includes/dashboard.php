@@ -4,10 +4,10 @@ class WP_Stream_Dashboard_Widget {
 
 	public static function load() {
 		// Load Dashboard widget
-		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
+		add_action( 'wp_dashboard_setup', array( __CLASS__, 'stream_activity' ) );
 
 		// Dashboard AJAX pagination
-		add_action( 'wp_ajax_stream_activity_dashboard_update', array( __CLASS__, 'dashboard_stream_activity_update_contents' ) );
+		add_action( 'wp_ajax_stream_activity_dashboard_update', array( __CLASS__, 'stream_activity_update_contents' ) );
 	}
 
 	/**
@@ -15,7 +15,7 @@ class WP_Stream_Dashboard_Widget {
 	 *
 	 * @action wp_dashboard_setup
 	 */
-	public static function dashboard_stream_activity() {
+	public static function stream_activity() {
 		if ( ! current_user_can( WP_Stream_Admin::VIEW_CAP ) ) {
 			return;
 		}
@@ -23,30 +23,30 @@ class WP_Stream_Dashboard_Widget {
 		wp_add_dashboard_widget(
 			'dashboard_stream_activity',
 			esc_html__( 'Stream Activity', 'stream' ),
-			array( __CLASS__, 'dashboard_stream_activity_initial_contents' ),
-			array( __CLASS__, 'dashboard_stream_activity_options' )
+			array( __CLASS__, 'stream_activity_initial_contents' ),
+			array( __CLASS__, 'stream_activity_options' )
 		);
 	}
 
-	public static function dashboard_get_total_found_rows() {
+	public static function get_total_found_rows() {
 		global $wpdb;
 		return $wpdb->get_var( 'SELECT FOUND_ROWS()' );
 	}
 
-	public static function dashboard_stream_activity_initial_contents() {
-		self::dashboard_stream_activity_contents();
+	public static function stream_activity_initial_contents() {
+		self::stream_activity_contents();
 	}
 
-	public static function dashboard_stream_activity_update_contents() {
+	public static function stream_activity_update_contents() {
 		$paged = ! empty( $_POST['stream-paged'] ) ? absint( $_POST['stream-paged'] ) : 1;
-		self::dashboard_stream_activity_contents( $paged );
+		self::stream_activity_contents( $paged );
 		die;
 	}
 
 	/**
 	 * Contents of the Stream Activity dashboard widget
 	 */
-	public static function dashboard_stream_activity_contents( $paged = 1 ) {
+	public static function stream_activity_contents( $paged = 1 ) {
 		$options          = get_option( 'dashboard_stream_activity_options', array() );
 		$records_per_page = isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5;
 		$args             = array(
@@ -69,25 +69,25 @@ class WP_Stream_Dashboard_Widget {
 
 		foreach ( $records as $record ) {
 			$i++;
-			echo self::dashboard_widget_row( $record, $i ); //xss okay
+			echo self::widget_row( $record, $i ); //xss okay
 		}
 
 		echo '</ul>';
 
-		$total_items = self::dashboard_get_total_found_rows();
+		$total_items = self::get_total_found_rows();
 		$args        = array(
 			'total_pages' => ceil( $total_items / $records_per_page ),
 			'current'     => $paged,
 		);
 
-		self::dashboard_pagination( $args );
+		self::pagination( $args );
 	}
 
 	/*
 	 * Display pagination links for Dashboard Widget
 	 * Copied from private class WP_List_Table::pagination()
 	 */
-	public static function dashboard_pagination( $args = array() ) {
+	public static function pagination( $args = array() ) {
 		$args = wp_parse_args(
 			$args,
 			array(
@@ -171,7 +171,7 @@ class WP_Stream_Dashboard_Widget {
 	/**
 	 * Configurable options for the Stream Activity dashboard widget
 	 */
-	public static function dashboard_stream_activity_options() {
+	public static function stream_activity_options() {
 		$options = get_option( 'dashboard_stream_activity_options', array() );
 
 		if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
@@ -206,7 +206,7 @@ class WP_Stream_Dashboard_Widget {
 	 * @param  int     Row number
 	 * @return string  Contents of new row
 	 */
-	public static function dashboard_widget_row( $item, $i = null ) {
+	public static function widget_row( $item, $i = null ) {
 		$records_link = add_query_arg(
 			array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ),
 			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
@@ -269,7 +269,7 @@ class WP_Stream_Dashboard_Widget {
 	 * @param  array  Response from heartbeat
 	 * @return array  Data sent to heartbeat
 	 */
-	public static function live_update_dashboard( $response, $data ) {
+	public static function live_update( $response, $data ) {
 		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
 			return;
 		}
@@ -283,7 +283,7 @@ class WP_Stream_Dashboard_Widget {
 		if ( ! empty( $updated_items ) ) {
 			ob_start();
 			foreach ( $updated_items as $item ) {
-				echo self::dashboard_widget_row( $item ); //xss okay
+				echo self::widget_row( $item ); //xss okay
 			}
 
 			$send = ob_get_clean();
