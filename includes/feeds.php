@@ -139,19 +139,6 @@ class WP_Stream_Feeds {
 			wp_die( $die_message, $die_title );
 		}
 
-		$blog_id = self::$is_network_feed ? null : get_current_blog_id();
-
-		if ( self::$is_network_feed ) {
-			$network_settings = (array) get_site_option( WP_Stream_Settings::KEY, array() );
-			if ( isset( $network_settings['general_private_feeds_network_admin'] ) && ! $network_settings['general_private_feeds_network_admin'] ) {
-				$blog_id = array();
-				$blogs   = wp_get_sites();
-				foreach ( $blogs as $blog ) {
-					$blog_id[] = $blog['blog_id'];
-				}
-			}
-		}
-
 		$args = array(
 			'meta_key'   => self::USER_FEED_KEY,
 			'meta_value' => $_GET[self::FEED_KEY_QUERY_VAR],
@@ -168,6 +155,19 @@ class WP_Stream_Feeds {
 
 			if ( ! $roles || ! array_intersect( $roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 				wp_die( $die_message, $die_title );
+			}
+		}
+
+		$blog_id = self::$is_network_feed ? null : get_current_blog_id();
+
+		if ( self::$is_network_feed ) {
+			$network_settings = (array) get_site_option( WP_Stream_Settings::KEY, array() );
+			if ( isset( $network_settings['general_private_feeds_network_admin'] ) && ! $network_settings['general_private_feeds_network_admin'] ) {
+				$blog_id = array();
+				$blogs   = wp_get_sites();
+				foreach ( $blogs as $blog ) {
+					$blog_id[] = $blog['blog_id'];
+				}
 			}
 		}
 
