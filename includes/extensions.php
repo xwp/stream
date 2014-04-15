@@ -245,8 +245,9 @@ class WP_Stream_Extensions {
 					$action_link   = ! empty( $action_link ) ? $action_link : $extension->link;
 					$image_src     = isset( $extension->featured_image->source ) ? $extension->featured_image->source : null;
 					$image_src     = ! empty( $image_src ) ? $image_src : null;
-					$install_link  = wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ) );
-					$activate_link = wp_nonce_url( add_query_arg( array( 'action' => 'activate-plugin', 'plugin' => $extension->post_meta->plugin_path[0] ), self_admin_url( 'update.php' ) ) );
+					$install_link  = wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug );
+					$activate_link = wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] );
+
 					?>
 
 					<div class="theme<?php if ( $is_active ) { echo esc_attr( ' active' ); } ?>">
