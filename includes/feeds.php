@@ -5,14 +5,30 @@ require_once WP_STREAM_INC_DIR . 'admin.php';
 class WP_Stream_Feeds {
 
 	const FEED_QUERY_VAR         = 'stream';
+	const FEED_NETWORK_QUERY_VAR = 'network-stream';
 	const FEED_KEY_QUERY_VAR     = 'key';
 	const FEED_TYPE_QUERY_VAR    = 'type';
 	const USER_FEED_KEY          = 'stream_user_feed_key';
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
 
+	public static $is_network_feed = false;
+
 	public static function load() {
-		if ( ! isset( WP_Stream_Settings::$options['general_private_feeds'] ) || ! WP_Stream_Settings::$options['general_private_feeds'] ) {
-			return;
+		if ( is_network_admin() ) {
+			self::$is_network_feed = true;
+		}
+
+		if ( ! is_admin() ) {
+			$feed_path = parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH );
+			if ( self::FEED_NETWORK_QUERY_VAR === basename( $feed_path ) ) {
+				self::$is_network_feed = true;
+			}
+		}
+
+		if ( ! self::$is_network_feed ) {
+			if ( ! isset( WP_Stream_Settings::$options['general_private_feeds'] ) || ! WP_Stream_Settings::$options['general_private_feeds'] ) {
+				return;
+			}
 		}
 
 		add_action( 'show_user_profile', array( __CLASS__, 'save_user_feed_key' ) );
@@ -22,6 +38,7 @@ class WP_Stream_Feeds {
 		add_action( 'edit_user_profile', array( __CLASS__, 'user_feed_key' ) );
 
 		add_feed( self::FEED_QUERY_VAR, array( __CLASS__, 'feed_template' ) );
+		add_feed( self::FEED_NETWORK_QUERY_VAR, array( __CLASS__, 'feed_template' ) );
 	}
 
 	/**
@@ -56,14 +73,19 @@ class WP_Stream_Feeds {
 			return;
 		}
 
+		if ( is_network_admin() && ! is_super_admin( $user->ID ) ) {
+			return;
+		}
+
 		$key = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
+		$query_var = is_network_admin() ? self::FEED_NETWORK_QUERY_VAR : self::FEED_QUERY_VAR;
 
 		$pretty_permalinks = get_option( 'permalink_structure' );
 
 		if ( empty( $pretty_permalinks ) ) {
 			$link = add_query_arg(
 				array(
-					'feed'                   => self::FEED_QUERY_VAR,
+					'feed'                   => $query_var,
 					self::FEED_KEY_QUERY_VAR => $key,
 				),
 				home_url( '/' )
@@ -76,7 +98,7 @@ class WP_Stream_Feeds {
 				home_url(
 					sprintf(
 						'/feed/%s/',
-						self::FEED_QUERY_VAR
+						$query_var
 					)
 				)
 			);
@@ -117,6 +139,19 @@ class WP_Stream_Feeds {
 			wp_die( $die_message, $die_title );
 		}
 
+		$blog_id = self::$is_network_feed ? null : get_current_blog_id();
+
+		if ( self::$is_network_feed ) {
+			$network_settings = (array) get_site_option( WP_Stream_Settings::KEY, array() );
+			if ( isset( $network_settings['general_network_actions_in_private_feeds'] ) && ! $network_settings['general_network_actions_in_private_feeds'] ) {
+				$blog_id = array();
+				$blogs   = wp_get_sites();
+				foreach ( $blogs as $blog ) {
+					$blog_id[] = $blog['blog_id'];
+				}
+			}
+		}
+
 		$args = array(
 			'meta_key'   => self::USER_FEED_KEY,
 			'meta_value' => $_GET[self::FEED_KEY_QUERY_VAR],
@@ -124,10 +159,12 @@ class WP_Stream_Feeds {
 		);
 		$user = get_users( $args );
 
-		$roles = isset( $user[0]->roles ) ? (array) $user[0]->roles : array();
+		if ( ! is_super_admin( $user[0]->ID ) ) {
+			$roles = isset( $user[0]->roles ) ? (array) $user[0]->roles : array();
 
-		if ( ! $roles || ! array_intersect( $roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
-			wp_die( $die_message, $die_title );
+			if ( ! $roles || ! array_intersect( $roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
+				wp_die( $die_message, $die_title );
+			}
 		}
 
 		$args = array(
@@ -135,6 +172,7 @@ class WP_Stream_Feeds {
 			'search'           => isset( $_GET['search'] ) ? (string) $_GET['search'] : null,
 			'object_id'        => isset( $_GET['object_id'] ) ? (int) $_GET['object_id'] : null,
 			'ip'               => isset( $_GET['ip'] ) ? (string) $_GET['ip'] : null,
+			'blog_id'          => $blog_id,
 			'author'           => isset( $_GET['author'] ) ? (int) $_GET['author'] : null,
 			'date'             => isset( $_GET['date'] ) ? (string) $_GET['date'] : null,
 			'date_from'        => isset( $_GET['date_from'] ) ? (string) $_GET['date_from'] : null,

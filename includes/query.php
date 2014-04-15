@@ -109,11 +109,19 @@ class WP_Stream_Query {
 		}
 
 		if ( $args['site_id'] ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.site_id = %d", $args['site_id'] );
+			if ( is_array( $args['site_id'] ) ) {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.site_id IN (%d)", implode( ',', $args['site_id'] ) );
+			} else {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.site_id = %d", $args['site_id'] );
+			}
 		}
 
 		if ( $args['blog_id'] ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.blog_id = %d", $args['blog_id'] );
+			if ( is_array( $args['blog_id'] ) ) {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.blog_id IN (%d)", implode( ',', $args['blog_id'] ) );
+			} else {
+				$where .= $wpdb->prepare( " AND $wpdb->stream.blog_id = %d", $args['blog_id'] );
+			}
 		}
 
 		if ( $args['search'] ) {
