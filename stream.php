@@ -71,12 +71,6 @@ class WP_Stream {
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 
-		// Load network class
-		if ( is_multisite() ) {
-			require_once WP_STREAM_INC_DIR . 'network.php';
-			$this->network = new WP_Stream_Network;
-		}
-
 		// Load filters polyfill
 		require_once WP_STREAM_INC_DIR . 'filter-input.php';
 
@@ -97,6 +91,12 @@ class WP_Stream {
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_INC_DIR . 'settings.php';
 		add_action( 'init', array( 'WP_Stream_Settings', 'load' ) );
+
+		// Load network class
+		if ( is_multisite() ) {
+			require_once WP_STREAM_INC_DIR . 'network.php';
+			$this->network = new WP_Stream_Network;
+		}
 
 		// Load logger class
 		require_once WP_STREAM_INC_DIR . 'log.php';

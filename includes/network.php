@@ -21,6 +21,7 @@ class WP_Stream_Network {
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
 		add_action( 'wp_network_dashboard_setup', array( 'WP_Stream_Dashboard_Widget', 'stream_activity' ) );
 		add_action( 'wp_stream_admin_menu_screens', array( $this, 'admin_menu_screens' ) );
+		add_action( 'update_site_option_' . WP_Stream_Settings::NETWORK_KEY, array( $this, 'updated_option_ttl_remove_records' ), 10, 3 );
 	}
 
 	function filters() {
@@ -114,6 +115,20 @@ class WP_Stream_Network {
 				array( 'WP_Stream_Admin', 'render_page' )
 			);
 		}
+	}
+
+	/**
+	 * Remove records when records TTL is shortened
+	 *
+	 * @param string $option_key
+	 * @param array  $old_value
+	 * @param array  $new_value
+	 *
+	 * @action update_option_wp_stream
+	 * @return void
+	 */
+	function updated_option_ttl_remove_records( $option_key, $new_value, $old_value ) {
+		WP_Stream_Settings::updated_option_ttl_remove_records( $old_value, $new_value );
 	}
 
 	/**
