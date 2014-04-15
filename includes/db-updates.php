@@ -289,7 +289,7 @@ function wp_stream_update_114( $db_version, $current_version ) {
 	$prefix = WP_Stream_Install::$table_prefix;
 
 	if ( ! empty( $wpdb->charset ) ) {
-		return true;
+		return $current_version;
 	}
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );

@@ -241,10 +241,9 @@ class WP_Stream_Install {
 
 			if ( version_compare( $db_version, $version, '<' ) ) {
 				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current ) : false;
-				if ( $current === $result ) {
-					return $current;
+				if ( $current !== $result ) {
+					return false;
 				}
-				return false;
 			}
 		}
 
