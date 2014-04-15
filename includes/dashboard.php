@@ -133,7 +133,7 @@ class WP_Stream_Dashboard_Widget {
 		);
 
 		$html_total_pages = sprintf( '<span class="total-pages">%s</span>', number_format_i18n( $total_pages ) );
-		$page_links[]     = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), $current, $html_total_pages ) . '</span>';
+		$page_links[]     = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), number_format_i18n( $current ), $html_total_pages ) . '</span>';
 
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
