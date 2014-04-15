@@ -143,7 +143,7 @@ class WP_Stream_Feeds {
 
 		if ( self::$is_network_feed ) {
 			$network_settings = (array) get_site_option( WP_Stream_Settings::KEY, array() );
-			if ( isset( $network_settings['general_network_actions_in_private_feeds'] ) && ! $network_settings['general_network_actions_in_private_feeds'] ) {
+			if ( isset( $network_settings['general_private_feeds_network_admin'] ) && ! $network_settings['general_private_feeds_network_admin'] ) {
 				$blog_id = array();
 				$blogs   = wp_get_sites();
 				foreach ( $blogs as $blog ) {

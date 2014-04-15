@@ -311,7 +311,7 @@ class WP_Stream_Network {
 
 		if ( WP_Stream_Settings::KEY === $option_key && is_network_admin() ) {
 			$new_fields['general']['fields'][] = array(
-				'name'        => 'network_actions_in_private_feeds',
+				'name'        => 'private_feeds_network_admin',
 				'title'       => __( 'Network Admin in Feeds', 'stream' ),
 				'after_field' => __( 'Enabled' ),
 				'default'     => 1,
