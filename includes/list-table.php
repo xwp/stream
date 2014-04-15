@@ -178,7 +178,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
-		$items = stream_query( $args );
+		$items = wp_stream_query( $args );
 
 		return $items;
 	}
@@ -337,35 +337,24 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$out .= '<div class="row-actions">';
 		}
 
-		if ( $action_links ) {
-
-			$links = array();
-			$i     = 0;
+		$links = array();
+		if ( $action_links && is_array( $action_links ) ) {
 			foreach ( $action_links as $al_title => $al_href ) {
-				$i ++;
 				$links[] = sprintf(
-					'<span><a href="%s" class="action-link">%s</a>%s</span>',
+					'<span><a href="%s" class="action-link">%s</a></span>',
 					$al_href,
-					$al_title,
-					( count( $action_links ) === $i ) ? null : ' | '
+					$al_title
 				);
 			}
-			$out .= implode( '', $links );
-		}
-
-		if ( $action_links && $custom_links ) {
-			$out .= ' | ';
 		}
 
 		if ( $custom_links && is_array( $custom_links ) ) {
-			$last_link = end( $custom_links );
 			foreach ( $custom_links as $key => $link ) {
-				$out .= $link;
-				if ( $key !== $last_link ) {
-					$out .= ' | ';
-				}
+				$links[] = $link;
 			}
 		}
+
+		$out .= implode( ' | ', $links );
 
 		if ( $action_links || $custom_links ) {
 			$out .= '</div>';
@@ -412,7 +401,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * results of existing records.  All items that do not exist in records
 	 * get assigned a disabled value of "true".
 	 *
-	 * @uses   existing_records (see query.php)
+	 * @uses   wp_stream_existing_records (see query.php)
 	 * @since  1.0.4
 	 *
 	 * @param  string  Column requested
@@ -463,7 +452,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 
-		$existing_records = existing_records( $column, $table );
+		$existing_records = wp_stream_existing_records( $column, $table );
 		$active_records   = array();
 		$disabled_records = array();
 

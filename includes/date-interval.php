@@ -117,7 +117,7 @@ class WP_Stream_Date_Interval {
 	 * @return array
 	 */
 	public function filter_predefined_intervals( $intervals ) {
-		$query = stream_query(
+		$query = wp_stream_query(
 			array(
 				'order'            => 'ASC',
 				'orderby'          => 'created',

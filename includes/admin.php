@@ -565,10 +565,21 @@ class WP_Stream_Admin {
 	 */
 	public static function _filter_user_caps( $allcaps, $caps, $args, $user = null ) {
 		$user = is_a( $user, 'WP_User' ) ? $user : wp_get_current_user();
+		// @see
+		// https://github.com/WordPress/WordPress/blob/c67c9565f1495255807069fdb39dac914046b1a0/wp-includes/capabilities.php#L758
+		$roles = array_unique(
+			array_merge(
+				$user->roles,
+				array_filter(
+					array_keys( $user->caps ),
+					array( $GLOBALS['wp_roles'], 'is_role' )
+				)
+			)
+		);
 
 		foreach ( $caps as $cap ) {
 			if ( self::VIEW_CAP === $cap ) {
-				foreach ( $user->roles as $role ) {
+				foreach ( $roles as $role ) {
 					if ( self::_role_can_view_stream( $role ) ) {
 						$allcaps[ $cap ] = true;
 						break 2;
@@ -643,7 +654,7 @@ class WP_Stream_Admin {
 			'paged'            => $paged,
 		);
 
-		$records = stream_query( $args );
+		$records = wp_stream_query( $args );
 
 		if ( ! $records ) {
 			?>
@@ -952,7 +963,7 @@ class WP_Stream_Admin {
 		$query = wp_parse_args( $query, $default );
 
 		// Run query
-		$items = stream_query( $query );
+		$items = wp_stream_query( $query );
 
 		return $items;
 	}
