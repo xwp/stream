@@ -72,7 +72,7 @@ class WP_Stream_Dashboard_Widget {
 
 		$total_items = count( $all_records );
 		$args        = array(
-			'total_pages' => ceil( $total_items / $records_per_page ),
+			'total_pages' => absint( ceil( $total_items / $records_per_page ) ), // Cast as an integer, not a float
 			'current'     => $paged,
 		);
 
@@ -107,10 +107,13 @@ class WP_Stream_Dashboard_Widget {
 		);
 
 		$page_links    = array();
-		$disable_first = $disable_last = '';
+		$disable_first = '';
+		$disable_last  = '';
+
 		if ( 1 === $current ) {
 			$disable_first = ' disabled';
 		}
+
 		if ( $current === $total_pages ) {
 			$disable_last = ' disabled';
 		}
