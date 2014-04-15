@@ -162,6 +162,10 @@ class WP_Stream_Feeds {
 		if ( ! is_super_admin( $user[0]->ID ) ) {
 			$roles = isset( $user[0]->roles ) ? (array) $user[0]->roles : array();
 
+			if ( self::$is_network_feed ) {
+				wp_die( $die_message, $die_title );
+			}
+
 			if ( ! $roles || ! array_intersect( $roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 				wp_die( $die_message, $die_title );
 			}
