@@ -18,7 +18,7 @@ class WP_Stream_Network {
 		add_action( 'network_admin_menu', array( 'WP_Stream_Admin', 'register_menu' ) );
 		add_action( 'network_admin_notices', array( 'WP_Stream_Admin', 'admin_notices' ) );
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
-		add_action( 'wp_network_dashboard_setup', array( 'WP_Stream_Admin', 'dashboard_stream_activity' ) );
+		add_action( 'wp_network_dashboard_setup', array( 'WP_Stream_Dashboard_Widget', 'stream_activity' ) );
 		add_action( 'wp_stream_admin_menu_screens', array( $this, 'admin_menu_screens' ) );
 	}
 
