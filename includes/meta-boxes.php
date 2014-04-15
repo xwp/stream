@@ -46,10 +46,10 @@ class WP_Stream_Reports_Metaboxes {
 		$ajax_hooks = array(
 			'wp_stream_reports_add_metabox'           => 'add_metabox',
 			'wp_stream_reports_delete_metabox'        => 'delete_metabox',
-			'wp_stream_report_save_metabox_config'    => 'save_metabox_config',
-			'wp_stream_report_save_chart_height'      => 'save_chart_height',
-			'wp_stream_report_save_chart_options'     => 'save_chart_options',
-			'wp_stream_report_update_metabox_display' => 'update_metabox_display',
+			'wp_stream_reports_save_metabox_config'    => 'save_metabox_config',
+			'wp_stream_reports_save_chart_height'      => 'save_chart_height',
+			'wp_stream_reports_save_chart_options'     => 'save_chart_options',
+			'wp_stream_reports_update_metabox_display' => 'update_metabox_display',
 		);
 
 		// Register all ajax action and check referer for this class
@@ -222,7 +222,6 @@ class WP_Stream_Reports_Metaboxes {
 			WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
 		}
 
-		$chart_options  = $this->get_chart_options( $args );
 		$chart_height   = WP_Stream_Reports_Settings::get_user_options( 'chart_height' , 300 );
 		$data_types     = $this->get_data_types();
 		$selector_types = $this->get_selector_types();

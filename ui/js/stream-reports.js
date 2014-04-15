@@ -160,7 +160,7 @@
 					type: 'GET',
 					url: ajaxurl,
 					data: {
-						action: 'wp_stream_report_save_chart_height',
+						action: 'wp_stream_reports_save_chart_height',
 						wp_stream_reports_nonce: $('#wp_stream_reports_nonce').val(),
 						chart_height: parent.$chartHeightOption.val(),
 					},
@@ -343,7 +343,7 @@
 			$postbox = $(this).parents('.postbox');
 
 			// Show the spinner
-			$spinner = parent.find('.spinner');
+			$spinner = $postbox.find('.configure .spinner');
 			$spinner.show();
 
 			// Cancel button
@@ -356,7 +356,7 @@
 				type: 'GET',
 				url: ajaxurl,
 				data: {
-					action: 'wp_stream_report_save_metabox_config',
+					action: 'wp_stream_reports_save_metabox_config',
 					wp_stream_reports_nonce : $('#wp_stream_reports_nonce').val(),
 					chart_type : parent.find('.chart-types .active').data('type'),
 					data_group : parent.find( '.chart-dataset' ).select2('data').element[0].dataset.group,
@@ -377,30 +377,12 @@
 							type: 'GET',
 							url: ajaxurl,
 							data: {
-								action: 'wp_stream_report_update_metabox_display',
+								action: 'wp_stream_reports_update_metabox_display',
 								wp_stream_reports_nonce: $('#wp_stream_reports_nonce').val(),
 								section_id: id,
 							},
 							dataType: 'json',
-							success : function( data ) {
-
-								var $box = $('#wp-stream-reports-' + id );
-
-								var new_chart_data = data.data.options;
-								var chart = $box.find('.chart').data( 'report', new_chart_data );
-								chart.html('<svg></svg>');
-								stream.report.chart.draw();
-
-								$box.find( '.chart-title' ).val( data.data.title );
-								$box.find( '.chart-generated-title' ).val( data.data.generated_title );
-
-								var newTitle = data.data.title;
-								if ( '' == newTitle ) {
-									newTitle = data.data.generated_title;
-								}
-
-								$box.find( '.hndle .title' ).text( newTitle );
-							}
+							success : stream.report.chart.loadSectionCallback( $postbox ),
 						})
 
 					}
@@ -495,6 +477,97 @@
 				// Whether to stack the chart by default
 				'stacked' : false,
 			}
+		},
+
+		stateChangeCallback: function( section_id ) {
+			var id = section_id;
+			return function( e ) {
+				var data = {
+					'type': 'none',
+				};
+
+				if ( undefined !== e.stacked ) {
+					data.type    = 'group';
+					data.payload = e.stacked;
+				} else if ( undefined !== e.disabled ) {
+					data.type    = 'disable';
+					data.payload = e.disabled;
+				}
+
+				if ( 'none' !== data.type ) {
+					$.ajax({
+						type: 'GET',
+						url: ajaxurl,
+						data: {
+							'action': 'wp_stream_reports_save_chart_options',
+							'wp_stream_reports_nonce' : $('#wp_stream_reports_nonce').val(),
+							'section_id' : id,
+							'update_type': data.type,
+							'update_payload': data.payload,
+							},
+						dataType: 'json',
+					});
+				}
+			};
+		},
+
+		// Build all the opts to be drawn later
+		init: function (elements, $columns) {
+			this.elements = elements;
+			this.$columns = $columns;
+		},
+
+		// Loads and redraws a section's chart and configuration options
+		loadSection: function( $section ) {
+
+			var section_id = $section.data('section-id');
+			var $chart     = $section.find('.chart');
+
+			$chart.find( '.chart-loading' ).show();
+
+			$.ajax({
+				type: 'GET',
+				url: ajaxurl,
+				data: {
+					action: 'wp_stream_reports_update_metabox_display',
+					wp_stream_reports_nonce: $('#wp_stream_reports_nonce').val(),
+					section_id: section_id,
+				},
+				dataType: 'json',
+				success : stream.report.chart.refreshSectionCallback( $section, $chart ),
+			});
+
+		},
+
+		loadSectionCallback: function( $section ) {
+			return function( data ) {
+				stream.report.chart.loadSection( $section );
+			}
+		},
+
+		refreshSectionCallback: function( $section, $chart ) {
+			return function( data ) {
+
+				// Update chart data
+				$chart.data( 'report', data.data.options );
+				$chart.find('svg').html('<svg></svg>');
+				var opts = $.extend(true, {}, report.chart._.opts, { '$': this.elements }, (typeof opts !== 'undefined' ? opts : {}));
+				stream.report.chart.drawChart($section.find('.section-id').val(), $chart, opts, stream.report.chart.$columns);
+
+				// Update title values
+				$section.find( '.chart-title' ).val( data.data.title );
+				$section.find( '.chart-generated-title' ).val( data.data.generated_title );
+
+				// Update Title Text
+				var newTitle = data.data.title;
+				if ( '' == newTitle ) {
+					newTitle = data.data.generated_title;
+				}
+				$section.find( '.hndle .title' ).text( newTitle );
+
+				$chart.find('.chart-loading').hide();
+
+			};
 		},
 
 		// Grab all the opts and draw the chart on the screen
@@ -615,53 +688,6 @@
 			});
 		},
 
-		stateChangeCallback: function( section_id ) {
-			var id = section_id;
-			return function( e ) {
-				var data = {
-					'type': 'none',
-				};
-
-				if ( undefined !== e.stacked ) {
-					data.type    = 'group';
-					data.payload = e.stacked;
-				} else if ( undefined !== e.disabled ) {
-					data.type    = 'disable';
-					data.payload = e.disabled;
-				}
-
-				if ( 'none' !== data.type ) {
-					$.ajax({
-						type: 'GET',
-						url: ajaxurl,
-						data: {
-							'action': 'wp_stream_report_save_chart_options',
-							'wp_stream_reports_nonce' : $('#wp_stream_reports_nonce').val(),
-							'section_id' : id,
-							'update_type': data.type,
-							'update_payload': data.payload,
-						},
-						dataType: 'json',
-					});
-				}
-			};
-		},
-
-		// Build all the opts to be drawn later
-		init: function (elements, $columns) {
-			this.elements = elements;
-			this.$columns = $columns;
-		},
-
-		draw: function () {
-			var parent = this;
-			var opts = $.extend(true, {}, report.chart._.opts, { '$': this.elements }, (typeof opts !== 'undefined' ? opts : {}));
-			opts.$.each( function (k, el) {
-				parent.drawChart(k, el, opts, parent.$columns);
-			} );
-
-		}
-
 	};
 
 	window.stream = $.extend(true, (!_.isObject(window.stream) ? {} : window.stream), { 'report': report });
@@ -679,7 +705,7 @@
 		);
 
 		$('.stream_page_wp_stream_reports .postbox').each( function( index ){
-			var id = $(this).find( '.section-d' ).val();
+			var id = $(this).find( '.section-id' ).val();
 			$(this).data('section-id', id );
 		} );
 
@@ -687,10 +713,17 @@
 			$('.stream_page_wp_stream_reports .chart'),
 			$('.columns-prefs input[type="radio"]')
 		);
-		stream.report.chart.draw();
-		$('.postbox.closed .handlediv').click(function(){
-			stream.report.chart.draw();
+
+		$('.stream_page_wp_stream_reports .chart').each( function( index ){
+			var id = $(this).parents('.postbox').data('section-id');
+			stream.report.chart.loadSection( $(this).parents('.postbox') );
+		} );
+
+		$('.postbox.closed').bind( 'click.initOpen', function(){
+			stream.report.chart.loadSection( $(this) );
+			$(this).unbind( 'click.initOpen' );
 		});
+
 		stream.report.metabox.init(
 			$('.postbox .inside .configure'),
 			$('.postbox-delete-action a'),
