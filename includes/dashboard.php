@@ -28,11 +28,6 @@ class WP_Stream_Dashboard_Widget {
 		);
 	}
 
-	public static function get_total_found_rows() {
-		global $wpdb;
-		return $wpdb->get_var( 'SELECT FOUND_ROWS()' );
-	}
-
 	public static function stream_activity_initial_contents() {
 		self::stream_activity_contents();
 	}
@@ -54,7 +49,8 @@ class WP_Stream_Dashboard_Widget {
 			'paged'            => $paged,
 		);
 
-		$records = wp_stream_query( $args );
+		$records     = wp_stream_query( $args );
+		$all_records = wp_stream_query( array( 'records_per_page' => -1, 'paged' => 0 ) );
 
 		if ( ! $records ) {
 			?>
@@ -74,9 +70,9 @@ class WP_Stream_Dashboard_Widget {
 
 		echo '</ul>';
 
-		$total_items = self::get_total_found_rows();
+		$total_items = count( $all_records );
 		$args        = array(
-			'total_pages' => ceil( $total_items / $records_per_page ),
+			'total_pages' => absint( ceil( $total_items / $records_per_page ) ), // Cast as an integer, not a float
 			'current'     => $paged,
 		);
 
@@ -111,10 +107,13 @@ class WP_Stream_Dashboard_Widget {
 		);
 
 		$page_links    = array();
-		$disable_first = $disable_last = '';
+		$disable_first = '';
+		$disable_last  = '';
+
 		if ( 1 === $current ) {
 			$disable_first = ' disabled';
 		}
+
 		if ( $current === $total_pages ) {
 			$disable_last = ' disabled';
 		}
@@ -137,7 +136,7 @@ class WP_Stream_Dashboard_Widget {
 		);
 
 		$html_total_pages = sprintf( '<span class="total-pages">%s</span>', number_format_i18n( $total_pages ) );
-		$page_links[]     = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), $current, $html_total_pages ) . '</span>';
+		$page_links[]     = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), number_format_i18n( $current ), $html_total_pages ) . '</span>';
 
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
