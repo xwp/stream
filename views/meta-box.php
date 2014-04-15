@@ -48,9 +48,7 @@
 	</div>
 
 	<div class="chart" style="height:<?php echo absint( $chart_height ) ?>px;">
-		<div class="chart-loading">
-			<?php _e( 'Loading&hellip;', 'stream-reports' ) ?>
-		</div>
+		<div class="chart-loading"><span><span class="spinner"></span><?php _e( 'Loading&hellip;', 'stream-reports' ) ?></span></div>
 		<svg></svg>
 	</div>
 

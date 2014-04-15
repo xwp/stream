@@ -211,6 +211,12 @@
 	font-weight: 700;
 	text-align: center;
 	color: #000;
+	z-index: 1;
+}
+
+.stream_page_wp_stream_reports .postbox .inside .chart .chart-loading > span {
+	padding: 6px 12px;
+	background-color: #fff;
 }
 
 .stream_page_wp_stream_reports .postbox .inside .chart svg {
@@ -221,6 +227,7 @@
 	text-anchor: end !important;
 }
 
+.stream_page_wp_stream_reports .postbox .inside .chart .chart-loading > span,
 .stream_page_wp_stream_reports .nvtooltip.xy-tooltip {
 	font-family: "Open Sans", sans-serif !important;
 	margin: 20px 0 0 12px;
