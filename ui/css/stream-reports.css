@@ -216,7 +216,7 @@
 
 .stream_page_wp_stream_reports .postbox .inside .chart .chart-loading > span {
 	padding: 6px 12px;
-	background-color: #fff;
+	background-color: #f9f9f9;
 }
 
 .stream_page_wp_stream_reports .postbox .inside .chart svg {
