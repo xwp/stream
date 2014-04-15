@@ -105,6 +105,10 @@ class WP_Stream {
 		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
+			require_once WP_STREAM_INC_DIR . 'dashboard.php';
+			add_action( 'plugins_loaded', array( 'WP_Stream_Dashboard_Widget', 'load' ), 11 );
+			require_once WP_STREAM_INC_DIR . 'live-update.php';
+			add_action( 'plugins_loaded', array( 'WP_Stream_Live_Update', 'load' ), 12 );
 		}
 
 		// Load deprecated functions
