@@ -15,6 +15,7 @@ class WP_Stream_Network {
 	}
 
 	function actions() {
+		add_action( 'init', array( $this, 'ajax_network_admin' ), 1 );
 		add_action( 'network_admin_menu', array( 'WP_Stream_Admin', 'register_menu' ) );
 		add_action( 'network_admin_notices', array( 'WP_Stream_Admin', 'admin_notices' ) );
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
@@ -36,6 +37,16 @@ class WP_Stream_Network {
 		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
 		add_filter( 'wp_stream_query_args', array( $this, 'set_network_option_value' ) );
 		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
+	}
+
+	/**
+	 * Workaround to get admin-ajax.php to know when the request is from the network admin
+	 * See https://core.trac.wordpress.org/ticket/22589
+	 */
+	function ajax_network_admin() {
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && is_multisite() && preg_match( '#^' . network_admin_url() . '#i', $_SERVER['HTTP_REFERER'] ) ) {
+			define( 'WP_NETWORK_ADMIN', true );
+		}
 	}
 
 	/**
