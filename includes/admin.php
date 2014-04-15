@@ -485,7 +485,17 @@ class WP_Stream_Admin {
 				$wpdb->query( "DROP TABLE $table" );
 			}
 
-			// Delete database option
+			// Delete database options
+			if ( is_multisite() ) {
+				$blogs = get_blog_list();
+				foreach ( $blogs as $blog ) {
+					switch_to_blog( $blog->ID );
+					delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+					delete_option( WP_Stream_Settings::KEY );
+				}
+				restore_current_blog();
+			}
+
 			delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 			delete_site_option( WP_Stream_Settings::KEY );
 			delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
