@@ -310,20 +310,22 @@ class WP_Stream_Network {
 		}
 
 		if ( WP_Stream_Settings::KEY === $option_key && is_network_admin() ) {
+			$private_feeds_network_admin_desc = sprintf(
+				__( 'Allows Super Admins to see activity from the Network Admin (<code>blog_id = 0</code>) inside their Private Feeds. A Private Feed key can be found in their %suser profile%s.', 'stream' ),
+				sprintf(
+					'<a href="%s" title="%s">',
+					admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
+					esc_attr__( 'View Profile', 'stream' )
+				),
+				'</a>'
+			);
+
 			$new_fields['general']['fields'][] = array(
 				'name'        => 'private_feeds_network_admin',
 				'title'       => __( 'Network Admin in Feeds', 'stream' ),
 				'after_field' => __( 'Enabled' ),
 				'default'     => 1,
-				'desc'        => sprintf(
-					__( 'Allows Super Admins to see activity from the Network Admin (<code>blog_id = 0</code>) inside their Private Feeds. A Private Feed key can be found in their %suser profile%s.', 'stream' ),
-					sprintf(
-						'<a href="%s" title="%s">',
-						admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
-						esc_attr__( 'View Profile', 'stream' )
-					),
-					'</a>'
-				),
+				'desc'        => $private_feeds_network_admin_desc,
 				'type'        => 'checkbox',
 			);
 
