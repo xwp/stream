@@ -28,11 +28,6 @@ class WP_Stream_Dashboard_Widget {
 		);
 	}
 
-	public static function get_total_found_rows() {
-		global $wpdb;
-		return $wpdb->get_var( 'SELECT FOUND_ROWS()' );
-	}
-
 	public static function stream_activity_initial_contents() {
 		self::stream_activity_contents();
 	}
@@ -54,7 +49,8 @@ class WP_Stream_Dashboard_Widget {
 			'paged'            => $paged,
 		);
 
-		$records = wp_stream_query( $args );
+		$records     = wp_stream_query( $args );
+		$all_records = wp_stream_query( array( 'records_per_page' => -1, 'paged' => 0 ) );
 
 		if ( ! $records ) {
 			?>
@@ -74,7 +70,7 @@ class WP_Stream_Dashboard_Widget {
 
 		echo '</ul>';
 
-		$total_items = self::get_total_found_rows();
+		$total_items = count( $all_records );
 		$args        = array(
 			'total_pages' => ceil( $total_items / $records_per_page ),
 			'current'     => $paged,
