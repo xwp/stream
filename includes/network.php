@@ -209,6 +209,7 @@ class WP_Stream_Network {
 					'delete_all_records',
 					'records_ttl',
 					'role_access',
+					'private_feeds',
 				),
 				'exclude' => array(
 					'authors_and_roles',
@@ -309,20 +310,24 @@ class WP_Stream_Network {
 		}
 
 		if ( WP_Stream_Settings::KEY === $option_key && is_network_admin() ) {
-			foreach ( $fields['general']['fields'] as $key => $field ) {
-				if ( 'private_feeds' === $field['name'] ) {
-					$fields['general']['fields'][ $key ]['desc'] = sprintf(
-						__( 'Allows Super Admins to see actvity from the Network Admin (<code>blog_id = 0</code>) inside their Private Feeds. A Private Feed key can be found in their %suser profile%s.', 'stream' ),
-						sprintf(
-							'<a href="%s" title="%s">',
-							admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
-							esc_attr__( 'View Profile', 'stream' )
-						),
-						'</a>'
-					);
-					break;
-				}
-			}
+			$new_fields['general']['fields'][] = array(
+				'name'        => 'network_actions_in_private_feeds',
+				'title'       => __( 'Network Admin in Feeds', 'stream' ),
+				'after_field' => __( 'Enabled' ),
+				'default'     => 1,
+				'desc'        => sprintf(
+					__( 'Allows Super Admins to see activity from the Network Admin (<code>blog_id = 0</code>) inside their Private Feeds. A Private Feed key can be found in their %suser profile%s.', 'stream' ),
+					sprintf(
+						'<a href="%s" title="%s">',
+						admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
+						esc_attr__( 'View Profile', 'stream' )
+					),
+					'</a>'
+				),
+				'type'        => 'checkbox',
+			);
+
+			$fields = array_merge_recursive( $new_fields, $fields );
 		}
 
 		return $fields;
