@@ -271,7 +271,7 @@ jQuery(function($){
 	});
 
 	// Confirmation on some important actions
-	$('#wp_stream_general_delete_all_records').click(function(e){
+	$('#wp_stream_general_delete_all_records, #wp_stream_network_general_delete_all_records').click(function(e){
 		if ( ! confirm( wp_stream.i18n.confirm_purge ) ) {
 			e.preventDefault();
 		}

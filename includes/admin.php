@@ -67,6 +67,7 @@ class WP_Stream_Admin {
 		// Auto purge setup
 		add_action( 'wp', array( __CLASS__, 'purge_schedule_setup' ) );
 		add_action( 'wp_stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
+		add_action( 'init', array( __CLASS__, 'purge_scheduled_action' ) );
 
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
@@ -314,7 +315,7 @@ class WP_Stream_Admin {
 	 */
 	public static function render_page() {
 
-		$option_key  = WP_Stream_Settings::get_option_key();
+		$option_key  = WP_Stream_Settings::$screen_key;
 		$form_action = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
 
 		$page_title       = apply_filters( 'wp_stream_settings_form_title', get_admin_page_title() );
@@ -428,7 +429,8 @@ class WP_Stream_Admin {
 				ON `context`.`record_id` = `stream`.`ID`
 				LEFT JOIN {$wpdb->streammeta} AS `meta`
 				ON `meta`.`record_id` = `stream`.`ID`
-				WHERE `stream`.`type` = %s" . $where,
+				WHERE `stream`.`type` = %s
+				$where;",
 				'stream'
 			)
 		);
@@ -525,11 +527,22 @@ class WP_Stream_Admin {
 	public static function purge_scheduled_action() {
 		global $wpdb;
 
-		$options = WP_Stream_Settings::get_options();
-		$days    = $options['general_records_ttl'];
-		$date    = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
+		if ( is_multisite() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			$options = WP_Stream_Settings::get_options( WP_Stream_Settings::NETWORK_KEY );
+		} else {
+			$options = WP_Stream_Settings::get_options();
+		}
+
+		$days = $options['general_records_ttl'];
+		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
+
+		$where = $wpdb->prepare( " AND `stream`.`created` < %s", $date->format( 'Y-m-d H:i:s' ) );
+
+		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			$where .= $wpdb->prepare( " AND `blog_id` = %d", get_current_blog_id() );
+		}
 
 		$wpdb->query(
 			$wpdb->prepare(
@@ -540,7 +553,7 @@ class WP_Stream_Admin {
 				LEFT JOIN {$wpdb->streammeta} AS `meta`
 				ON `meta`.`record_id` = `stream`.`ID`
 				WHERE `stream`.`type` = %s
-				AND `stream`.`created` < %s;",
+				$where;",
 				'stream',
 				$date->format( 'Y-m-d H:i:s' )
 			)

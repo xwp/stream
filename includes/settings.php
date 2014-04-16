@@ -30,6 +30,13 @@ class WP_Stream_Settings {
 	public static $options = array();
 
 	/**
+	 * Option key for current screen
+	 *
+	 * @var array
+	 */
+	public static $screen_key = '';
+
+	/**
 	 * Settings fields
 	 *
 	 * @var array
@@ -43,7 +50,8 @@ class WP_Stream_Settings {
 	 */
 	public static function load() {
 
-		self::$options = self::get_options();
+		self::$screen_key = self::get_option_key();
+		self::$options    = self::get_options();
 
 		// Register settings, and fields
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
@@ -192,136 +200,161 @@ class WP_Stream_Settings {
 		return $search_columns;
 	}
 
+	/**
+	 * Returns the option key depending on which settings page is being viewed
+	 *
+	 * @return string Option key for this page
+	 */
+	public static function get_option_key() {
+		$option_key = self::KEY;
+
+		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		if ( ! $current_page ) {
+			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
+		}
+
+		if ( 'wp_stream_default_settings' === $current_page ) {
+			$option_key = self::DEFAULTS_KEY;
+		}
+
+		if ( 'wp_stream_network_settings' === $current_page ) {
+			$option_key = self::NETWORK_KEY;
+		}
+
+		return apply_filters( 'wp_stream_settings_option_key', $option_key );
+	}
 
 	/**
 	 * Return settings fields
 	 *
 	 * @return array Multidimensional array of fields
 	 */
-	public static function get_fields() {
-		if ( empty( self::$fields ) ) {
-			$fields = array(
-				'general' => array(
-					'title'  => __( 'General', 'stream' ),
-					'fields' => array(
-						array(
-							'name'        => 'role_access',
-							'title'       => __( 'Role Access', 'stream' ),
-							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
-							'choices'     => self::get_roles(),
-							'default'     => array( 'administrator' ),
-						),
-						array(
-							'name'        => 'private_feeds',
-							'title'       => __( 'Private Feeds', 'stream' ),
-							'type'        => 'checkbox',
-							'desc'        => sprintf(
-								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
-								sprintf(
-									'<a href="%s" title="%s">',
-									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
-									esc_attr__( 'View Profile', 'stream' )
-								),
-								'</a>'
-							),
-							'after_field' => __( 'Enabled' ),
-							'default'     => 0,
-						),
-						array(
-							'name'        => 'records_ttl',
-							'title'       => __( 'Keep Records for', 'stream' ),
-							'type'        => 'number',
-							'class'       => 'small-text',
-							'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
-							'default'     => 90,
-							'after_field' => __( 'days', 'stream' ),
-						),
-						array(
-							'name'        => 'delete_all_records',
-							'title'       => __( 'Reset Stream Database', 'stream' ),
-							'type'        => 'link',
-							'href'        => add_query_arg(
-								array(
-									'action'          => 'wp_stream_reset',
-									'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-								),
-								admin_url( 'admin-ajax.php' )
-							),
-							'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
-							'default'     => 0,
-						),
-					),
-				),
-				'exclude' => array(
-					'title' => __( 'Exclude', 'stream' ),
-					'fields' => array(
-						array(
-							'name'        => 'authors_and_roles',
-							'title'       => __( 'Authors & Roles', 'stream' ),
-							'type'        => 'select2_user_role',
-							'desc'        => __( 'No activity will be logged for these authors and/or roles.', 'stream' ),
-							'choices'     => self::get_roles(),
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'connectors',
-							'title'       => __( 'Connectors', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these connectors.', 'stream' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'connector',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'contexts',
-							'title'       => __( 'Contexts', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these contexts.', 'stream' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'context',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'actions',
-							'title'       => __( 'Actions', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these actions.', 'stream' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'action',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'ip_addresses',
-							'title'       => __( 'IP Addresses', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these IP addresses.', 'stream' ),
-							'class'       => 'ip-addresses',
-							'default'     => array(),
-							'nonce'       => 'stream_get_ips',
-						),
-						array(
-							'name'        => 'hide_previous_records',
-							'title'       => __( 'Visibility', 'stream' ),
-							'type'        => 'checkbox',
-							'desc'        => sprintf(
-								__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
-							),
-							'after_field' => __( 'Hide Previous Records', 'stream' ),
-							'default'     => 0,
-						),
-					),
-				),
-			);
-			/**
-			 * Filter allows for modification of options fields
-			 *
-			 * @param  array  array of fields
-			 * @return array  updated array of fields
-			 */
-			self::$fields = apply_filters( 'wp_stream_options_fields', $fields );
+	public static function get_fields( $option_key = null ) {
+		if ( ! $option_key ) {
+			$option_key = self::$screen_key;
 		}
-		return self::$fields;
+
+		$fields = array(
+			'general' => array(
+				'title'  => __( 'General', 'stream' ),
+				'fields' => array(
+					array(
+						'name'        => 'role_access',
+						'title'       => __( 'Role Access', 'stream' ),
+						'type'        => 'multi_checkbox',
+						'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
+						'choices'     => self::get_roles(),
+						'default'     => array( 'administrator' ),
+					),
+					array(
+						'name'        => 'private_feeds',
+						'title'       => __( 'Private Feeds', 'stream' ),
+						'type'        => 'checkbox',
+						'desc'        => sprintf(
+							__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
+							sprintf(
+								'<a href="%s" title="%s">',
+								admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
+								esc_attr__( 'View Profile', 'stream' )
+							),
+							'</a>'
+						),
+						'after_field' => __( 'Enabled' ),
+						'default'     => 0,
+					),
+					array(
+						'name'        => 'records_ttl',
+						'title'       => __( 'Keep Records for', 'stream' ),
+						'type'        => 'number',
+						'class'       => 'small-text',
+						'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
+						'default'     => 90,
+						'after_field' => __( 'days', 'stream' ),
+					),
+					array(
+						'name'        => 'delete_all_records',
+						'title'       => __( 'Reset Stream Database', 'stream' ),
+						'type'        => 'link',
+						'href'        => add_query_arg(
+							array(
+								'action'          => 'wp_stream_reset',
+								'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+							),
+							admin_url( 'admin-ajax.php' )
+						),
+						'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
+						'default'     => 0,
+					),
+				),
+			),
+			'exclude' => array(
+				'title' => __( 'Exclude', 'stream' ),
+				'fields' => array(
+					array(
+						'name'        => 'authors_and_roles',
+						'title'       => __( 'Authors & Roles', 'stream' ),
+						'type'        => 'select2_user_role',
+						'desc'        => __( 'No activity will be logged for these authors and/or roles.', 'stream' ),
+						'choices'     => self::get_roles(),
+						'default'     => array(),
+					),
+					array(
+						'name'        => 'connectors',
+						'title'       => __( 'Connectors', 'stream' ),
+						'type'        => 'select2',
+						'desc'        => __( 'No activity will be logged for these connectors.', 'stream' ),
+						'choices'     => array( __CLASS__, 'get_terms_labels' ),
+						'param'       => 'connector',
+						'default'     => array(),
+					),
+					array(
+						'name'        => 'contexts',
+						'title'       => __( 'Contexts', 'stream' ),
+						'type'        => 'select2',
+						'desc'        => __( 'No activity will be logged for these contexts.', 'stream' ),
+						'choices'     => array( __CLASS__, 'get_terms_labels' ),
+						'param'       => 'context',
+						'default'     => array(),
+					),
+					array(
+						'name'        => 'actions',
+						'title'       => __( 'Actions', 'stream' ),
+						'type'        => 'select2',
+						'desc'        => __( 'No activity will be logged for these actions.', 'stream' ),
+						'choices'     => array( __CLASS__, 'get_terms_labels' ),
+						'param'       => 'action',
+						'default'     => array(),
+					),
+					array(
+						'name'        => 'ip_addresses',
+						'title'       => __( 'IP Addresses', 'stream' ),
+						'type'        => 'select2',
+						'desc'        => __( 'No activity will be logged for these IP addresses.', 'stream' ),
+						'class'       => 'ip-addresses',
+						'default'     => array(),
+						'nonce'       => 'stream_get_ips',
+					),
+					array(
+						'name'        => 'hide_previous_records',
+						'title'       => __( 'Visibility', 'stream' ),
+						'type'        => 'checkbox',
+						'desc'        => sprintf(
+							__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
+						),
+						'after_field' => __( 'Hide Previous Records', 'stream' ),
+						'default'     => 0,
+					),
+				),
+			),
+		);
+
+		/**
+		 * Filter allows for modification of options fields
+		 *
+		 * @param  array  array of fields
+		 * @return array  updated array of fields
+		 */
+		return apply_filters( 'wp_stream_options_fields', $fields, $option_key );
 	}
 
 	/**
@@ -329,10 +362,12 @@ class WP_Stream_Settings {
 	 *
 	 * @return array Options
 	 */
-	public static function get_options() {
+	public static function get_options( $option_key = null ) {
+		if ( ! $option_key ) {
+			$option_key = self::$screen_key;
+		}
 
-		$option_key = self::get_option_key();
-		$defaults   = self::get_defaults();
+		$defaults = self::get_defaults( $option_key );
 
 		if ( self::DEFAULTS_KEY === $option_key ) {
 			return $defaults;
@@ -347,7 +382,7 @@ class WP_Stream_Settings {
 		return apply_filters(
 			'wp_stream_options',
 			wp_parse_args(
-				(array) get_option( self::KEY, array() ),
+				(array) get_option( $option_key, array() ),
 				$defaults
 			),
 			$option_key
@@ -359,8 +394,12 @@ class WP_Stream_Settings {
 	 *
 	 * @return array Default option values
 	 */
-	public static function get_defaults() {
-		$fields   = self::get_fields();
+	public static function get_defaults( $option_key = null ) {
+		if ( ! $option_key ) {
+			$option_key = self::$screen_key;
+		}
+
+		$fields   = self::get_fields( $option_key );
 		$defaults = array();
 
 		foreach ( $fields as $section_name => $section ) {
@@ -388,15 +427,6 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Returns the correct option key based on the current screen.
-	 *
-	 * @return string Option key
-	 */
-	public static function get_option_key() {
-		return apply_filters( 'wp_stream_settings_option_key', WP_Stream_Settings::KEY );
-	}
-
-	/**
 	 * Registers settings fields and sections
 	 *
 	 * @return void
@@ -404,7 +434,7 @@ class WP_Stream_Settings {
 	public static function register_settings() {
 
 		$sections   = self::get_fields();
-		$option_key = self::get_option_key();
+		$option_key = self::$screen_key;
 
 		register_setting( $option_key, $option_key );
 
@@ -477,7 +507,7 @@ class WP_Stream_Settings {
 		$title         = isset( $field['title'] ) ? $field['title'] : null;
 		$nonce         = isset( $field['nonce'] ) ? $field['nonce'] : null;
 		$current_value = self::$options[ $section . '_' . $name ];
-		$option_key    = self::get_option_key();
+		$option_key    = self::$screen_key;
 
 		if ( is_callable( $current_value ) ) {
 			$current_value = call_user_func( $current_value );
