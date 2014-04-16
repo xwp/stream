@@ -61,12 +61,14 @@ class WP_Stream_Log {
 	 * @return int
 	 */
 	public function log( $connector, $message, $args, $object_id, $contexts, $user_id = null ) {
+		global $wpdb;
+
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
 
 		$user  = new WP_User( $user_id );
-		$roles = get_option( 'wp_user_roles' );
+		$roles = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
 
 		if ( ! isset( $args['author_meta'] ) ) {
 			$args['author_meta'] = maybe_serialize(

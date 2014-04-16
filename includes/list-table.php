@@ -224,10 +224,16 @@ class WP_Stream_List_Table extends WP_List_Table {
 				}
 
 				global $wp_roles;
-				$author_ID   = isset( $item->author ) ? $item->author : 0;
-				$author_role = isset( $item->author_role ) ? $wp_roles->role_names[ $item->author_role ] : $author_meta['user_role_label'];
-
+				$author_ID    = isset( $item->author ) ? $item->author : 0;
 				$user_deleted = false;
+
+				if ( isset( $wp_roles->role_names[ $item->author_role ] ) ) {
+					$author_role = $wp_roles->role_names[ $item->author_role ];
+				} elseif ( ! empty( $author_meta['user_role_label'] ) ) {
+					$author_role = $author_meta['user_role_label'];
+				} else {
+					$author_role = $item->author_role;
+				}
 
 				if ( $user ) {
 					$author_name   = isset( $user->display_name ) ? $user->display_name : $user->user_login;
