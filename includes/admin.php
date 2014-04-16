@@ -493,9 +493,9 @@ class WP_Stream_Admin {
 
 			// Delete database options
 			if ( is_multisite() ) {
-				$blogs = get_blog_list();
+				$blogs = wp_get_sites();
 				foreach ( $blogs as $blog ) {
-					switch_to_blog( $blog->ID );
+					switch_to_blog( $blog['blog_id'] );
 					delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 					delete_option( WP_Stream_Settings::KEY );
 				}
