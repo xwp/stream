@@ -227,16 +227,19 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$author_ID   = isset( $item->author ) ? $item->author : 0;
 				$author_role = isset( $item->author_role ) ? $wp_roles->role_names[ $item->author_role ] : $author_meta['user_role_label'];
 
+				$user_deleted = false;
+
 				if ( $user ) {
 					$author_name   = isset( $user->display_name ) ? $user->display_name : $user->user_login;
 					$author_avatar = get_avatar( $author_ID, 40 );
 				} else {
+					$user_deleted  = true;
 					$author_name   = ! empty( $author_meta['display_name'] ) ? $author_meta['display_name'] : $author_meta['user_login'];
 					$author_avatar = get_avatar( $author_meta['user_email'], 40 );
 				}
 
 				$out = sprintf(
-					'<a href="%s">%s <span>%s</span></a><br /><small>%s</small>',
+					'<a href="%s">%s <span>%s</span></a>%s%s',
 					add_query_arg(
 						array(
 							'page'   => WP_Stream_Admin::RECORDS_PAGE_SLUG,
@@ -246,7 +249,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 					),
 					$author_avatar,
 					$author_name,
-					$author_role
+					$user_deleted ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
+					$author_role ? sprintf( '<br /><small>%s</small>', $author_role ) : ''
 				);
 				break;
 

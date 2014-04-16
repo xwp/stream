@@ -170,6 +170,11 @@
 	margin-top: 1px;
 }
 
+.toplevel_page_wp_stream .column-author .deleted {
+	font-style: italic;
+	color: #aaa;
+}
+
 .toplevel_page_wp_stream .filter-date-range {
 	margin-top: -1px;
 }
