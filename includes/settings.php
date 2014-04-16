@@ -36,30 +36,6 @@ class WP_Stream_Settings {
 	 */
 	public static $fields = array();
 
-	public static function get_options() {
-
-		$option_key = self::get_option_key();
-
-		if ( self::DEFAULTS_KEY === $option_key ) {
-			return self::get_defaults();
-		}
-
-		/**
-		 * Filter allows for modification of options
-		 *
-		 * @param  array  array of options
-		 * @return array  updated array of options
-		 */
-		return apply_filters(
-			'wp_stream_options',
-			wp_parse_args(
-				(array) get_option( self::KEY, array() ),
-				self::get_defaults()
-			),
-			$option_key
-		);
-	}
-
 	/**
 	 * Public constructor
 	 *
@@ -349,6 +325,36 @@ class WP_Stream_Settings {
 	}
 
 	/**
+	 * Returns a list of options based on the current screen.
+	 *
+	 * @return array Options
+	 */
+	public static function get_options() {
+
+		$option_key = self::get_option_key();
+		$defaults   = self::get_defaults();
+
+		if ( self::DEFAULTS_KEY === $option_key ) {
+			return $defaults;
+		}
+
+		/**
+		 * Filter allows for modification of options
+		 *
+		 * @param  array  array of options
+		 * @return array  updated array of options
+		 */
+		return apply_filters(
+			'wp_stream_options',
+			wp_parse_args(
+				(array) get_option( self::KEY, array() ),
+				$defaults
+			),
+			$option_key
+		);
+	}
+
+	/**
 	 * Iterate through registered fields and extract default values
 	 *
 	 * @return array Default option values
@@ -384,7 +390,7 @@ class WP_Stream_Settings {
 	/**
 	 * Returns the correct option key based on the current screen.
 	 *
-	 * @return array Default option values
+	 * @return string Option key
 	 */
 	public static function get_option_key() {
 		return apply_filters( 'wp_stream_settings_option_key', WP_Stream_Settings::KEY );
