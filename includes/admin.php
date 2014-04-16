@@ -527,6 +527,11 @@ class WP_Stream_Admin {
 	public static function purge_scheduled_action() {
 		global $wpdb;
 
+		// Don't purge if in Network Admin if Stream isn't network enabled
+		if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			return;
+		}
+
 		if ( is_multisite() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 			$options = WP_Stream_Settings::get_options( WP_Stream_Settings::NETWORK_KEY );
 		} else {
