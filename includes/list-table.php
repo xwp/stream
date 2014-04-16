@@ -216,7 +216,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			case 'author' :
 				$user        = get_user_by( 'id', $item->author );
-				$author_meta = get_stream_meta( $item->ID, 'author_meta', true );
+				$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
 
 				if ( ! $user && ! is_array( $author_meta ) ) {
 					$out = __( 'N/A', 'stream' );
@@ -227,10 +227,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$author_ID    = isset( $item->author ) ? $item->author : 0;
 				$user_deleted = false;
 
-				if ( isset( $wp_roles->role_names[ $item->author_role ] ) ) {
+				if ( ! empty( $item->author_role ) && isset( $wp_roles->role_names[ $item->author_role ] ) ) {
 					$author_role = $wp_roles->role_names[ $item->author_role ];
 				} elseif ( ! empty( $author_meta['user_role_label'] ) ) {
 					$author_role = $author_meta['user_role_label'];
+				} elseif ( isset( $user->roles[0] ) && isset( $wp_roles->role_names[ $user->roles[0] ] ) ) {
+					$author_role = $wp_roles->role_names[ $user->roles[0] ];
 				} else {
 					$author_role = $item->author_role;
 				}
