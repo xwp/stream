@@ -43,6 +43,11 @@ class WP_Stream_Reports_Metaboxes {
 		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'translate_labels' ), 10, 2 );
 		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'apply_chart_settings' ), 10, 2 );
 
+		if ( is_multisite() ) {
+			add_filter( 'wp_stream_reports_data_types', array( $this, 'mutlisite_data_types' ), 10 );
+			add_filter( 'wp_stream_reports_selector_types', array( $this, 'mutlisite_selector_types' ), 10 );
+		}
+
 		$ajax_hooks = array(
 			'wp_stream_reports_add_metabox'           => 'add_metabox',
 			'wp_stream_reports_delete_metabox'        => 'delete_metabox',
@@ -462,6 +467,26 @@ class WP_Stream_Reports_Metaboxes {
 		return $output;
 	}
 
+	public function mutlisite_data_types( $old_labels ) {
+		$options = array();
+		$sites   = wp_get_sites();
+		foreach ( $sites as $site ) {
+			$details = get_blog_details( $site['blog_id'] );
+			$options[ $site['blog_id'] ] = $details->blogname;
+		}
+
+		// Position sites label right after 'all' dataset
+		$labels         = array( 'all' => array() );
+		$labels['site'] = array(
+			'title'   => __( 'Site Activity', 'stream-reports' ),
+			'group'   => 'site',
+			'options' => $options,
+			'disable' => array(),
+		);
+
+		return array_merge( $labels, $old_labels );
+	}
+
 	/**
 	 * Returns chart types available
 	 * @return string
@@ -501,6 +526,13 @@ class WP_Stream_Reports_Metaboxes {
 		return $output;
 	}
 
+	public function mutlisite_selector_types( $labels ) {
+		$new_labels = array(
+			'site' => __( 'Site', 'stream-reports' ),
+		);
+
+		return array_merge( $labels, $new_labels );
+	}
 
 
 	public function load_metabox_records( $args, $date_interval ) {
