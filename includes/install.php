@@ -48,7 +48,7 @@ class WP_Stream_Install {
 			site_id bigint(20) unsigned NOT NULL DEFAULT '1',
 			object_id bigint(20) unsigned NULL,
 			author bigint(20) unsigned NOT NULL DEFAULT '0',
-			author_role varchar(20) NOT NULL,
+			author_role varchar(20) NOT NULL DEFAULT '',
 			summary longtext NOT NULL,
 			visibility varchar(20) NOT NULL DEFAULT 'publish',
 			parent bigint(20) unsigned NOT NULL DEFAULT '0',
