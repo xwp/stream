@@ -485,7 +485,9 @@ class WP_Stream_Reports_Metaboxes {
 			'title'   => __( 'Site Activity', 'stream-reports' ),
 			'group'   => 'site',
 			'options' => $options,
-			'disable' => array(),
+			'disable' => array(
+				'site',
+			),
 		);
 
 		return array_merge( $labels, $old_labels );
