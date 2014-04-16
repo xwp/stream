@@ -213,6 +213,7 @@ class WP_Stream_Install {
 			'1.2.8'/** @version 1.2.8 Change the context for Media connectors to the attachment type */,
 			'1.3.0'/** @version 1.3.0 Backward settings compatibility for old version plugins */,
 			'1.3.1'/** @version 1.3.1 Update records of Installer to Theme Editor connector */,
+			'1.3.2'/** @version 1.3.2 Add the author_role column */,
 		);
 	}
 
@@ -269,6 +270,7 @@ class WP_Stream_Install {
 			site_id bigint(20) unsigned NOT NULL DEFAULT '1',
 			object_id bigint(20) unsigned NULL,
 			author bigint(20) unsigned NOT NULL DEFAULT '0',
+			author_role varchar(20) NOT NULL DEFAULT '',
 			summary longtext NOT NULL,
 			visibility varchar(20) NOT NULL DEFAULT 'publish',
 			parent bigint(20) unsigned NOT NULL DEFAULT '0',

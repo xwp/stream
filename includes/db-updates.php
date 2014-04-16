@@ -1,7 +1,35 @@
 <?php
 
 /**
- * Update Database to current version from version 1.3.1
+ * Update Database to version 1.3.2
+ *
+ * @param string $db_version Database version updating from
+ * @param string $current_version Database version updating to
+ *
+ * @return bool true if no wpdb errors
+ */
+function wp_stream_update_132( $db_version, $current_version ) {
+	global $wpdb;
+
+	$prefix = WP_Stream_Install::$table_prefix;
+
+	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
+
+	if ( version_compare( $db_version, '1.3.2', '<' ) ) {
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(20) NOT NULL AFTER author" );
+	}
+
+	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
+
+	if ( $wpdb->last_error ) {
+		return __( 'Database Update Error', 'stream' );
+	}
+
+	return $current_version;
+}
+
+/**
+ * Update Database to version 1.3.1
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -88,7 +116,7 @@ function migrate_installer_edits_to_theme_editor_connector() {
 }
 
 /**
- * Update Database to current version from version 1.3.0
+ * Update Database to version 1.3.0
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -154,7 +182,7 @@ function migrate_old_options_to_exclude_tab( $labels ) {
 }
 
 /**
- * Update Database to current version from version 1.2.8
+ * Update Database to version 1.2.8
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -194,14 +222,14 @@ function wp_stream_update_128( $db_version, $current_version ) {
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
 
 	if ( $wpdb->last_error ) {
-		return __( 'Database Update Error', 'stream ' );
+		return __( 'Database Update Error', 'stream' );
 	}
 
 	return $current_version;
 }
 
 /**
- * Update Database to current version from version 1.2.5
+ * Update Database to version 1.2.5
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -241,14 +269,14 @@ function wp_stream_update_125( $db_version, $current_version ) {
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
 
 	if ( $wpdb->last_error ) {
-		return __( 'Database Update Error', 'stream ' );
+		return __( 'Database Update Error', 'stream' );
 	}
 
 	return $current_version;
 }
 
 /**
- * Update Database to current version from version 1.1.7
+ * Update Database to version 1.1.7
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -269,14 +297,14 @@ function wp_stream_update_117( $db_version, $current_version ) {
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
 
 	if ( $wpdb->last_error ) {
-		return __( 'Database Update Error', 'stream ' );
+		return __( 'Database Update Error', 'stream' );
 	}
 
 	return $current_version;
 }
 
 /**
- * Update Database to current version from version 1.1.4
+ * Update Database to version 1.1.4
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -302,7 +330,7 @@ function wp_stream_update_114( $db_version, $current_version ) {
 	}
 
 	if ( $wpdb->last_error ) {
-		return __( 'Database Update Error', 'stream ' );
+		return __( 'Database Update Error', 'stream' );
 	}
 
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
