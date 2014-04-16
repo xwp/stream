@@ -41,6 +41,8 @@ function wp_stream_update_131( $db_version, $current_version ) {
 
 	add_action( 'wp_stream_after_connectors_registration', 'migrate_installer_edits_to_theme_editor_connector' );
 
+	WP_Stream_Connectors::load();
+
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, false );
 
 	return $current_version;
@@ -127,6 +129,8 @@ function wp_stream_update_130( $db_version, $current_version ) {
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
 	add_action( 'wp_stream_after_connectors_registration', 'migrate_old_options_to_exclude_tab' );
+
+	WP_Stream_Connectors::load();
 
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, false );
 
