@@ -486,7 +486,7 @@ class WP_Stream_Reports_Metaboxes {
 			'group'   => 'blog_id',
 			'options' => $options,
 			'disable' => array(
-				'site',
+				'blog_id',
 			),
 		);
 
