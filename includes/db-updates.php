@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Update Database to current version from version 1.3.1
+ * Update Database to version 1.3.1
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -88,7 +88,7 @@ function migrate_installer_edits_to_theme_editor_connector() {
 }
 
 /**
- * Update Database to current version from version 1.3.0
+ * Update Database to version 1.3.0
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -154,7 +154,7 @@ function migrate_old_options_to_exclude_tab( $labels ) {
 }
 
 /**
- * Update Database to current version from version 1.2.8
+ * Update Database to version 1.2.8
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -201,7 +201,7 @@ function wp_stream_update_128( $db_version, $current_version ) {
 }
 
 /**
- * Update Database to current version from version 1.2.5
+ * Update Database to version 1.2.5
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -248,7 +248,7 @@ function wp_stream_update_125( $db_version, $current_version ) {
 }
 
 /**
- * Update Database to current version from version 1.1.7
+ * Update Database to version 1.1.7
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -276,7 +276,7 @@ function wp_stream_update_117( $db_version, $current_version ) {
 }
 
 /**
- * Update Database to current version from version 1.1.4
+ * Update Database to version 1.1.4
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
