@@ -131,6 +131,8 @@ class WP_Stream_Reports {
 
 		// Register new submenu
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+		add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
+
 
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
