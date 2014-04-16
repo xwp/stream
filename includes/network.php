@@ -91,6 +91,8 @@ class WP_Stream_Network {
 			return;
 		}
 
+		remove_submenu_page( WP_Stream_Admin::RECORDS_PAGE_SLUG, 'wp_stream_settings' );
+
 		WP_Stream_Admin::$screen_id['network_settings'] = add_submenu_page(
 			WP_Stream_Admin::RECORDS_PAGE_SLUG,
 			__( 'Stream Network Settings', 'stream' ),
@@ -197,26 +199,6 @@ class WP_Stream_Network {
 			)
 		);
 
-		$network_stream_hidden_options = apply_filters(
-			'wp_stream_network_stream_option_fields',
-			array(
-				'general' => array(
-					'delete_all_records',
-					'records_ttl',
-					'role_access',
-					'private_feeds',
-				),
-				'exclude' => array(
-					'authors_and_roles',
-					'connectors',
-					'contexts',
-					'actions',
-					'ip_addresses',
-					'hide_previous_records',
-				),
-			)
-		);
-
 		$network_hidden_options = apply_filters(
 			'wp_stream_network_option_fields',
 			array(
@@ -250,8 +232,6 @@ class WP_Stream_Network {
 			$hidden_options = $network_hidden_options;
 		} elseif ( WP_Stream_Settings::DEFAULTS_KEY === $option_key ) {
 			$hidden_options = $defaults_hidden_options;
-		} elseif ( is_network_admin() ) {
-			$hidden_options = $network_stream_hidden_options;
 		} else {
 			$hidden_options = $stream_hidden_options;
 		}
@@ -302,29 +282,6 @@ class WP_Stream_Network {
 				'desc'    => __( 'Warning: Clicking this will override all site settings with defaults.', 'stream' ),
 				'default' => 0,
 			);
-		}
-
-		if ( WP_Stream_Settings::KEY === $option_key && is_network_admin() ) {
-			$private_feeds_network_admin_desc = sprintf(
-				__( 'Allows Super Admins to see activity from the Network Admin (<code>blog_id = 0</code>) inside their Private Feeds. A Private Feed key can be found in their %suser profile%s.', 'stream' ),
-				sprintf(
-					'<a href="%s" title="%s">',
-					admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
-					esc_attr__( 'View Profile', 'stream' )
-				),
-				'</a>'
-			);
-
-			$new_fields['general']['fields'][] = array(
-				'name'        => 'private_feeds_network_admin',
-				'title'       => __( 'Network Admin in Feeds', 'stream' ),
-				'after_field' => __( 'Enabled' ),
-				'default'     => 1,
-				'desc'        => $private_feeds_network_admin_desc,
-				'type'        => 'checkbox',
-			);
-
-			$fields = array_merge_recursive( $new_fields, $fields );
 		}
 
 		return $fields;

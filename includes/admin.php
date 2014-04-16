@@ -445,7 +445,7 @@ class WP_Stream_Admin {
 			wp_redirect(
 				add_query_arg(
 					array(
-						'page'    => 'wp_stream_settings',
+						'page'    => is_network_admin() ? 'wp_stream_network_settings' : 'wp_stream_settings',
 						'message' => 'settings_reset',
 					),
 					is_plugin_active_for_network( WP_STREAM_PLUGIN ) ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
@@ -460,7 +460,7 @@ class WP_Stream_Admin {
 	private static function reset_stream_settings() {
 		global $wpdb;
 
-		$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
+		$blogs = wp_get_sites();
 		if ( $blogs ) {
 			foreach ( $blogs as $blog ) {
 				switch_to_blog( $blog['blog_id'] );

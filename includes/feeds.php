@@ -160,17 +160,6 @@ class WP_Stream_Feeds {
 
 		$blog_id = self::$is_network_feed ? null : get_current_blog_id();
 
-		if ( self::$is_network_feed ) {
-			$network_settings = (array) get_site_option( WP_Stream_Settings::KEY, array() );
-			if ( isset( $network_settings['general_private_feeds_network_admin'] ) && ! $network_settings['general_private_feeds_network_admin'] ) {
-				$blog_id = array();
-				$blogs   = wp_get_sites();
-				foreach ( $blogs as $blog ) {
-					$blog_id[] = $blog['blog_id'];
-				}
-			}
-		}
-
 		$args = array(
 			'blog_id'          => $blog_id,
 			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT, array( 'options' => array( 'default' => get_option( 'posts_per_rss' ) ) ) ),
