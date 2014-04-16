@@ -549,14 +549,17 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		switch ( $args['data_group'] ) {
+			case 'action':
+				$query_args['action'] = $args['data_type'];
+				break;
+			case 'blog_id':
+				$query_args['blog_id'] = $args['data_type'];
+				break;
 			case 'connector':
 				$query_args['connector'] = $args['data_type'];
 				break;
 			case 'context':
 				$query_args['context'] = $args['data_type'];
-				break;
-			case 'action':
-				$query_args['action'] = $args['data_type'];
 				break;
 			case 'other':
 				// all selector requires no query arg modifications
