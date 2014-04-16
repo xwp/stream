@@ -48,7 +48,6 @@ class WP_Stream_Install {
 			site_id bigint(20) unsigned NOT NULL DEFAULT '1',
 			object_id bigint(20) unsigned NULL,
 			author bigint(20) unsigned NOT NULL DEFAULT '0',
-			author_role varchar(20) NOT NULL DEFAULT '',
 			summary longtext NOT NULL,
 			visibility varchar(20) NOT NULL DEFAULT 'publish',
 			parent bigint(20) unsigned NOT NULL DEFAULT '0',
@@ -210,12 +209,6 @@ class WP_Stream_Install {
 		// Update records of Installer to Theme Editor connector
 		if ( version_compare( $db_version, '1.3.1', '<' ) ) {
 			add_action( 'wp_stream_after_connectors_registration', 'WP_Stream_Install::migrate_installer_edits_to_theme_editor_connector' );
-		}
-
-		// If version is lower than 1.3.2, do the update routine
-		// Update Stream table to include author_role
-		if ( version_compare( $db_version, '1.3.2', '<' ) ) {
-			$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(20) NOT NULL AFTER author" );
 		}
 	}
 
