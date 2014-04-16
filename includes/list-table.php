@@ -173,7 +173,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
-		$items = stream_query( $args );
+		$items = wp_stream_query( $args );
 
 		return $items;
 	}
@@ -342,35 +342,24 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$out .= '<div class="row-actions">';
 		}
 
-		if ( $action_links ) {
-
-			$links = array();
-			$i     = 0;
+		$links = array();
+		if ( $action_links && is_array( $action_links ) ) {
 			foreach ( $action_links as $al_title => $al_href ) {
-				$i ++;
 				$links[] = sprintf(
-					'<span><a href="%s" class="action-link">%s</a>%s</span>',
+					'<span><a href="%s" class="action-link">%s</a></span>',
 					$al_href,
-					$al_title,
-					( count( $action_links ) === $i ) ? null : ' | '
+					$al_title
 				);
 			}
-			$out .= implode( '', $links );
-		}
-
-		if ( $action_links && $custom_links ) {
-			$out .= ' | ';
 		}
 
 		if ( $custom_links && is_array( $custom_links ) ) {
-			$last_link = end( $custom_links );
 			foreach ( $custom_links as $key => $link ) {
-				$out .= $link;
-				if ( $key !== $last_link ) {
-					$out .= ' | ';
-				}
+				$links[] = $link;
 			}
 		}
+
+		$out .= implode( ' | ', $links );
 
 		if ( $action_links || $custom_links ) {
 			$out .= '</div>';
@@ -417,7 +406,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * results of existing records.  All items that do not exist in records
 	 * get assigned a disabled value of "true".
 	 *
-	 * @uses   existing_records (see query.php)
+	 * @uses   wp_stream_existing_records (see query.php)
 	 * @since  1.0.4
 	 *
 	 * @param  string  Column requested
@@ -466,7 +455,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 
-		$existing_records = existing_records( $column, $table );
+		$existing_records = wp_stream_existing_records( $column, $table );
 		$active_records   = array();
 		$disabled_records = array();
 
@@ -730,7 +719,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	static function screen_controls( $status, $args ) {
 
 		$user_id                 = get_current_user_id();
-		$option                  = get_user_meta( $user_id, 'enable_live_update', true );
+		$option                  = get_user_meta( $user_id, 'stream_live_update_records', true );
 		$filters_option_defaults = array(
 			'date_range' => true,
 			'author'     => true,
@@ -758,7 +747,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			</div>
 			<div class="metabox-prefs stream-live-update-checkbox">
 				<label for="enable_live_update">
-					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( $option ) ?> />
+					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( $option, 'on' ) ?> />
 					<?php esc_html_e( 'Enabled', 'stream' ) ?><span class="spinner"></span>
 				</label>
 			</div>
@@ -775,7 +764,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			<div class="metabox-prefs stream-toggle-filters">
 				<?php
 				$filters = apply_filters(
-					'stream_toggle_filters', array(
+					'wp_stream_toggle_filters', array(
 						'date_range' => __( 'Date Range', 'stream' ),
 						'author'     => __( 'Authors', 'stream' ),
 						'connector'  => __( 'Connectors', 'stream' ),

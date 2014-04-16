@@ -28,6 +28,7 @@ class WP_Stream_Install {
 			self::install();
 		} elseif ( $db_version !== $current ) {
 			self::update( $db_version, $current );
+			self::flush_object_cache();
 		} else {
 			return;
 		}
@@ -179,13 +180,13 @@ class WP_Stream_Install {
 			$media_records = $wpdb->get_results( $sql ); // db call ok
 
 			require_once WP_STREAM_INC_DIR . 'query.php';
-			require_once WP_STREAM_CLASS_DIR . 'connector.php';
+			require_once WP_STREAM_INC_DIR . 'connector.php';
 			require_once WP_STREAM_DIR . 'connectors/media.php';
 
 			foreach ( $media_records as $record ) {
 				$post = get_post( $record->pid );
 				$guid = isset( $post->guid ) ? $post->guid : null;
-				$url  = $guid ? $guid : get_stream_meta( $record->id, 'url', true );
+				$url  = $guid ? $guid : wp_stream_get_meta( $record->id, 'url', true );
 
 				if ( ! empty( $url ) ) {
 					$wpdb->update(
@@ -216,6 +217,16 @@ class WP_Stream_Install {
 		if ( version_compare( $db_version, '1.3.2', '<' ) ) {
 			$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(20) NOT NULL AFTER author_id" );
 		}
+	}
+
+	/**
+	 * Any data that stream stores in the object cache should get deleted here
+	 * Extension plugins should purge the object cache of the data they've added
+	 * via the wp_stream_flush_object_cache action fired here.
+	 */
+	public static function flush_object_cache() {
+		wp_cache_delete( 'connectors_glob', 'wp_stream' );
+		do_action( 'wp_stream_flush_object_cache' );
 	}
 
 	/**
@@ -262,11 +273,11 @@ class WP_Stream_Install {
 			'context'   => 'themes',
 			'action'    => 'edited',
 		);
-		$records = stream_query( $args );
+		$records = wp_stream_query( $args );
 
 		foreach ( $records as $record ) {
-			$file_name  = get_stream_meta( $record->ID, 'file', true );
-			$theme_name = get_stream_meta( $record->ID, 'name', true );
+			$file_name  = wp_stream_get_meta( $record->ID, 'file', true );
+			$theme_name = wp_stream_get_meta( $record->ID, 'name', true );
 
 			if ( '' !== $theme_name ) {
 				$matched_themes = array_filter(
@@ -297,10 +308,10 @@ class WP_Stream_Install {
 					array( 'record_id' => $record->ID )
 				);
 
-				update_stream_meta( $record->ID, 'theme_name', $theme_name );
+				wp_update_stream_meta( $record->ID, 'theme_name', $theme_name );
 
 				if ( is_object( $theme ) ) {
-					update_stream_meta( $record->ID, 'theme_slug', $theme->get_template() );
+					wp_update_stream_meta( $record->ID, 'theme_slug', $theme->get_template() );
 				}
 			}
 		}

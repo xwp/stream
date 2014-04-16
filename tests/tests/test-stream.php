@@ -17,7 +17,6 @@ class Test_WP_Stream extends WP_StreamTestCase {
 		$this->assertTrue( defined( 'WP_STREAM_DIR' ), 'WP_STREAM_DIR is not defined' );
 		$this->assertTrue( defined( 'WP_STREAM_URL' ), 'WP_STREAM_URL is not defined' );
 		$this->assertTrue( defined( 'WP_STREAM_INC_DIR' ), 'WP_STREAM_INC_DIR is not defined' );
-		$this->assertTrue( defined( 'WP_STREAM_CLASS_DIR' ), 'WP_STREAM_CLASS_DIR is not defined' );
 
 		$actions_tests = array(
 			array( 'init', 'WP_Stream_Settings', 'load' ),
@@ -27,7 +26,7 @@ class Test_WP_Stream extends WP_StreamTestCase {
 
 		$this->do_action_validation( $actions_tests );
 
-		require_once WP_STREAM_INC_DIR . 'db-actions.php';
+		require_once WP_STREAM_INC_DIR . 'db.php';
 		$this->assertInstanceOf( 'WP_Stream_DB', $this->plugin->db );
 	}
 
