@@ -67,7 +67,6 @@ class WP_Stream_Admin {
 		// Auto purge setup
 		add_action( 'wp', array( __CLASS__, 'purge_schedule_setup' ) );
 		add_action( 'wp_stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
-		add_action( 'init', array( __CLASS__, 'purge_scheduled_action' ) );
 
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
@@ -418,7 +417,7 @@ class WP_Stream_Admin {
 
 		$where = '';
 		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$where .= $wpdb->prepare( " AND `blog_id` = %d", get_current_blog_id() );
+			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
 
 		$wpdb->query(
@@ -543,10 +542,10 @@ class WP_Stream_Admin {
 
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
-		$where = $wpdb->prepare( " AND `stream`.`created` < %s", $date->format( 'Y-m-d H:i:s' ) );
+		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
 
 		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$where .= $wpdb->prepare( " AND `blog_id` = %d", get_current_blog_id() );
+			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
 
 		$wpdb->query(
