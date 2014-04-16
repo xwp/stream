@@ -34,7 +34,6 @@ class WP_Stream_Network {
 		add_filter( 'wp_stream_serialized_labels', array( $this, 'get_settings_translations' ) );
 		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
 		add_filter( 'stream_toggle_filters', array( $this, 'toggle_filters' ) );
-		add_filter( 'wp_stream_db_tables_prefix', array( $this, 'db_tables_prefix' ) );
 		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
 		add_filter( 'wp_stream_query_args', array( $this, 'set_network_option_value' ) );
 		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
@@ -510,18 +509,6 @@ class WP_Stream_Network {
 		}
 
 		return $filters;
-	}
-
-	/**
-	 * Use a single primary database table for multisite installs
-	 *
-	 * @param $prefix
-	 *
-	 * @return string
-	 */
-	function db_tables_prefix( $prefix ) {
-		global $wpdb;
-		return $wpdb->base_prefix;
 	}
 
 	/**

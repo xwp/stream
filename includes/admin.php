@@ -400,7 +400,7 @@ class WP_Stream_Admin {
 			wp_redirect(
 				add_query_arg(
 					array(
-						'page'    => 'wp_stream_settings',
+						'page'    => is_network_admin() ? 'wp_stream_network_settings' : 'wp_stream_settings',
 						'message' => 'data_erased',
 					),
 					is_plugin_active_for_network( WP_STREAM_PLUGIN ) ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
@@ -415,6 +415,11 @@ class WP_Stream_Admin {
 	private static function erase_stream_records() {
 		global $wpdb;
 
+		$where = '';
+		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			$where .= $wpdb->prepare( " AND `blog_id` = %d", get_current_blog_id() );
+		}
+
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE `stream`, `context`, `meta`
@@ -423,7 +428,7 @@ class WP_Stream_Admin {
 				ON `context`.`record_id` = `stream`.`ID`
 				LEFT JOIN {$wpdb->streammeta} AS `meta`
 				ON `meta`.`record_id` = `stream`.`ID`
-				WHERE `stream`.`type` = %s;",
+				WHERE `stream`.`type` = %s" . $where,
 				'stream'
 			)
 		);
