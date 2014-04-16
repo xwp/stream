@@ -413,7 +413,7 @@ class WP_Stream_Reports_Metaboxes {
 			case 'context':
 				$output = isset( WP_Stream_Connectors::$term_labels['stream_context'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_context'][ $value ] : $value;
 				break;
-			case 'site':
+			case 'blog_id':
 				$details = get_blog_details( $value );
 				$output  = $details->blogname;
 				break;
@@ -483,7 +483,7 @@ class WP_Stream_Reports_Metaboxes {
 		$labels         = array( 'all' => array() );
 		$labels['site'] = array(
 			'title'   => __( 'Site Activity', 'stream-reports' ),
-			'group'   => 'site',
+			'group'   => 'blog_id',
 			'options' => $options,
 			'disable' => array(
 				'site',
@@ -534,7 +534,7 @@ class WP_Stream_Reports_Metaboxes {
 
 	public function mutlisite_selector_types( $labels ) {
 		$new_labels = array(
-			'site' => __( 'Site', 'stream-reports' ),
+			'blog_id' => __( 'Site', 'stream-reports' ),
 		);
 
 		return array_merge( $labels, $new_labels );
@@ -566,7 +566,7 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$grouping_field   = $args['selector_type'];
-		$available_fields = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip' );
+		$available_fields = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip', 'blog_id' );
 
 		if ( ! in_array( $grouping_field, $available_fields ) ) {
 			return array();
