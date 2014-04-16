@@ -213,9 +213,9 @@ class WP_Stream_Install {
 		}
 
 		// If version is lower than 1.3.2, do the update routine
-		// Update Stream table to include author_id and author_role
+		// Update Stream table to include author_role
 		if ( version_compare( $db_version, '1.3.2', '<' ) ) {
-			$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(20) NOT NULL AFTER author_id" );
+			$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(20) NOT NULL AFTER author" );
 		}
 	}
 
