@@ -227,6 +227,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$author_ID    = isset( $item->author ) ? $item->author : 0;
 				$user_deleted = false;
 
+				/**
+				 * Tries to find a label for the record's author_role.
+				 *
+				 * If the author_role exists, use the label associated with it
+				 * Otherwise, if there is a user role label stored as Stream meta then use that
+				 * Otherwise, if the user exists, use the label associated with their current role
+				 * Otherwise, use the role slug as the label
+				 */
 				if ( ! empty( $item->author_role ) && isset( $wp_roles->role_names[ $item->author_role ] ) ) {
 					$author_role = $wp_roles->role_names[ $item->author_role ];
 				} elseif ( ! empty( $author_meta['user_role_label'] ) ) {
