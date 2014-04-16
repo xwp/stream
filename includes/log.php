@@ -65,14 +65,16 @@ class WP_Stream_Log {
 			$user_id = get_current_user_id();
 		}
 
-		$user = new WP_User( $user_id );
+		$user  = new WP_User( $user_id );
+		$roles = get_option( 'wp_user_roles' );
 
 		if ( ! isset( $args['author_meta'] ) ) {
 			$args['author_meta'] = maybe_serialize(
 				array(
-					'user_email'   => $user->user_email,
-					'display_name' => $user->display_name,
-					'user_login'   => $user->user_login,
+					'user_email'      => $user->user_email,
+					'display_name'    => $user->display_name,
+					'user_login'      => $user->user_login,
+					'user_role_label' => $roles[ $user->roles[0] ]['name'],
 				)
 			);
 		}

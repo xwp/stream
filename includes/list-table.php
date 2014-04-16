@@ -225,7 +225,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 				global $wp_roles;
 				$author_ID   = isset( $item->author ) ? $item->author : 0;
-				$author_role = isset( $item->author_role ) ? $wp_roles->role_names[ $item->author_role ] : null;
+				$author_role = isset( $item->author_role ) ? $wp_roles->role_names[ $item->author_role ] : $author_meta['user_role_label'];
 
 				if ( $user ) {
 					$author_name   = isset( $user->display_name ) ? $user->display_name : $user->user_login;
