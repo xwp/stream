@@ -449,6 +449,8 @@ class WP_Stream_Reports_Metaboxes {
 			),
 		);
 
+		$labels = apply_filters( 'wp_stream_reports_data_types', $labels );
+
 		if ( empty( $key ) ) {
 			$output = $labels;
 		} elseif ( array_key_exists( $key, $labels ) ) {
@@ -485,6 +487,8 @@ class WP_Stream_Reports_Metaboxes {
 			'context'     => __( 'Context', 'stream-reports' ),
 			'ip'          => __( 'IP Address', 'stream-reports' ),
 		);
+
+		$labels = apply_filters( 'wp_stream_reports_selector_types', $labels );
 
 		if ( empty( $key ) ) {
 			$output = $labels;
