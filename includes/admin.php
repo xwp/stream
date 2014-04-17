@@ -531,9 +531,6 @@ class WP_Stream_Admin {
 			// Prevent stream action from being fired on plugin
 			remove_action( 'deactivate_plugin', array( 'WP_Stream_Connector_Installer', 'callback' ), null );
 
-			// Deactivate the plugin
-			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
-
 			// Plugin is being uninstalled from only one of the multisite blogs
 			if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 				$blog_id = get_current_blog_id();
@@ -566,6 +563,9 @@ class WP_Stream_Admin {
 				delete_site_option( WP_Stream_Settings::NETWORK_KEY );
 				delete_site_option( 'dashboard_stream_activity_options' );
 			}
+
+			// Deactivate the plugin
+			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
 
 			// Redirect to plugin page
 			wp_redirect( add_query_arg( array( 'deactivate' => true ), is_network_admin() ? network_admin_url( 'plugins.php' ) : admin_url( 'plugins.php' ) ) );
