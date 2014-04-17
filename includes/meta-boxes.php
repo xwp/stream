@@ -431,7 +431,7 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function multisite_labels( $value, $grouping ) {
-		if ( 'blog_id' === $grouping && is_integer( $value ) ) {
+		if ( 'blog_id' === $grouping && is_numeric( $value ) ) {
 			$blog  = ( $value && is_multisite() ) ? get_blog_details( $value ) : WP_Stream_Network::get_network_blog();
 			$value = $blog->blogname;
 		}
