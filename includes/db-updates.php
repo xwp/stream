@@ -15,7 +15,9 @@ function wp_stream_update_132( $db_version, $current_version ) {
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
-	if ( version_compare( $db_version, '1.3.2', '<' ) ) {
+	$wpdb->get_results( "SELECT * FROM information_schema.COLUMNS WHERE TABLE_NAME = '{$prefix}stream' AND COLUMN_NAME = 'author_role'" );
+
+	if ( 0 === $wpdb->num_rows ) {
 		$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(20) NOT NULL AFTER author" );
 	}
 
@@ -294,9 +296,7 @@ function wp_stream_update_117( $db_version, $current_version ) {
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
-	if ( version_compare( $db_version, '1.1.7', '<' ) ) {
-		$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(39) NULL AFTER created" );
-	}
+	$wpdb->query( "ALTER TABLE {$prefix}stream MODIFY ip varchar(39) NULL AFTER created" );
 
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
 
