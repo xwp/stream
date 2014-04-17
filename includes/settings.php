@@ -425,7 +425,7 @@ class WP_Stream_Settings {
 	 */
 	public static function register_settings() {
 
-		$sections   = self::get_fields();
+		$sections = self::get_fields();
 
 		register_setting( self::$option_key, self::$option_key );
 
