@@ -534,28 +534,38 @@ class WP_Stream_Admin {
 			// Deactivate the plugin
 			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
 
-			// Delete all tables
-			foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
-				$wpdb->query( "DROP TABLE $table" );
-			}
+			// Plugin is being uninstalled from only one of the multisite blogs
+			if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+				$blog_id = get_current_blog_id();
 
-			// Delete database options
-			if ( is_multisite() ) {
-				$blogs = wp_get_sites();
-				foreach ( $blogs as $blog ) {
-					switch_to_blog( $blog['blog_id'] );
-					delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-					delete_option( WP_Stream_Settings::KEY );
+				$wpdb->query( "DELETE FROM {$wpdb->base_prefix}stream WHERE blog_id = $blog_id" );
+
+				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+				delete_option( WP_Stream_Settings::KEY );
+			} else {
+				// Delete all tables
+				foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
+					$wpdb->query( "DROP TABLE $table" );
 				}
-				restore_current_blog();
-			}
 
-			// Delete database option
-			delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-			delete_site_option( WP_Stream_Settings::KEY );
-			delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
-			delete_site_option( WP_Stream_Settings::NETWORK_KEY );
-			delete_site_option( 'dashboard_stream_activity_options' );
+				// Delete database options
+				if ( is_multisite() ) {
+					$blogs = wp_get_sites();
+					foreach ( $blogs as $blog ) {
+						switch_to_blog( $blog['blog_id'] );
+						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+						delete_option( WP_Stream_Settings::KEY );
+					}
+					restore_current_blog();
+				}
+
+				// Delete database option
+				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+				delete_site_option( WP_Stream_Settings::KEY );
+				delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
+				delete_site_option( WP_Stream_Settings::NETWORK_KEY );
+				delete_site_option( 'dashboard_stream_activity_options' );
+			}
 
 			// Redirect to plugin page
 			wp_redirect( add_query_arg( array( 'deactivate' => true ), is_network_admin() ? network_admin_url( 'plugins.php' ) : admin_url( 'plugins.php' ) ) );
