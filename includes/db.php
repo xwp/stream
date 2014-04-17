@@ -90,8 +90,8 @@ class WP_Stream_DB {
 			 *
 			 * @param  int  $record_id  Record being inserted
 			 */
-			do_action( 'wp_stream_post_insert_error', $record_id );
-			return $record_id;
+			do_action( 'wp_stream_post_insert_error', $result );
+			return $result;
 		}
 
 		self::$instance->prev_record = $record_id;
