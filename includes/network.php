@@ -69,9 +69,9 @@ class WP_Stream_Network {
 	 */
 	function disable_admin_access( $disable_access ) {
 		if ( ! is_network_admin() ) {
-			$settings = WP_Stream_Settings::get_options( WP_Stream_Settings::NETWORK_KEY );
+			$settings = (array) get_site_option( WP_Stream_Settings::NETWORK_KEY, array() );
 
-			if ( isset( $settings['general_enable_site_access'] ) && false == $settings['general_enable_site_access'] ) {
+			if ( isset( $settings['general_enable_site_access'] ) && false === $settings['general_enable_site_access'] ) {
 				return true;
 			}
 		}
