@@ -60,12 +60,14 @@ class WP_Stream_Network {
 			network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 		);
 
-		$admin_bar->add_menu( array(
-			'id'     => 'network-admin-stream',
-			'parent' => 'network-admin',
-			'title'  => esc_html__( 'Stream', 'stream' ),
-			'href'   => esc_url( $href ),
-		));
+		$admin_bar->add_menu(
+			array(
+				'id'     => 'network-admin-stream',
+				'parent' => 'network-admin',
+				'title'  => esc_html__( 'Stream', 'stream' ),
+				'href'   => esc_url( $href ),
+			)
+		);
 	}
 
 	/**
