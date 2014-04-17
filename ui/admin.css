@@ -222,6 +222,10 @@
 	border-bottom: 1px solid #ccc;
 }
 
+.stream_page_wp_stream_settings .select2-container {
+	width: 350px;
+}
+
 
 /* Date Interval Common */
 
