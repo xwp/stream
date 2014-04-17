@@ -30,21 +30,26 @@ class WP_Stream_Reports_Metaboxes {
 	 * Public constructor
 	 */
 	public function __construct() {
-		// Get all sections from the db
+		// Get all sections from the database
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
+		// Load records
 		add_filter( 'wp_stream_reports_load_records', array( $this, 'sort_coordinates_by_count' ), 10, 2 );
 		add_filter( 'wp_stream_reports_load_records', array( $this, 'limit_coordinates' ), 10, 2 );
 
+		// Make charts
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'pie_chart_coordinates' ), 10, 2 );
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'bar_chart_coordinates' ), 10, 2 );
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'line_chart_coordinates' ), 10, 2 );
 
+		// Finalize charts
 		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'translate_labels' ), 10, 2 );
 		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'apply_chart_settings' ), 10, 2 );
 
+		// Get chart labels
 		add_filter( 'wp_stream_reports_get_label', array( $this, 'translate_data_type_labels' ), 10, 2 );
 
+		// Specific data for multisite
 		if ( is_multisite() && is_network_admin() ) {
 			add_filter( 'wp_stream_reports_data_types', array( $this, 'mutlisite_data_types' ), 10 );
 			add_filter( 'wp_stream_reports_selector_types', array( $this, 'mutlisite_selector_types' ), 10 );
@@ -612,6 +617,7 @@ class WP_Stream_Reports_Metaboxes {
 		if ( 'blog_id' === $args['data_group'] ) {
 			$query_args['blog_id'] = $args['data_type'];
 		}
+
 		return $query_args;
 	}
 
