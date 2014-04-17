@@ -240,7 +240,7 @@ class WP_Stream_Install {
 		foreach ( $versions as $version ) {
 			$function = 'wp_stream_update_' . str_ireplace( '.', '', $version );
 
-			if ( version_compare( $db_version, $version, '<=' ) ) {
+			if ( version_compare( $db_version, $version, '<' ) ) {
 				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current ) : false;
 				if ( $current !== $result ) {
 					return false;
