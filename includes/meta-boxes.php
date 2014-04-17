@@ -44,8 +44,9 @@ class WP_Stream_Reports_Metaboxes {
 		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'apply_chart_settings' ), 10, 2 );
 
 		$ajax_hooks = array(
-			'wp_stream_reports_add_metabox'           => 'add_metabox',
-			'wp_stream_reports_delete_metabox'        => 'delete_metabox',
+			'wp_stream_reports_add_metabox'            => 'add_metabox',
+			'wp_stream_reports_delete_metabox'         => 'delete_metabox',
+			'wp_stream_reports_default_reports'        => 'setup_user',
 			'wp_stream_reports_save_metabox_config'    => 'save_metabox_config',
 			'wp_stream_reports_save_chart_height'      => 'save_chart_height',
 			'wp_stream_reports_save_chart_options'     => 'save_chart_options',
@@ -59,7 +60,7 @@ class WP_Stream_Reports_Metaboxes {
 	/**
 	 * Runs on a user's first visit to setup sample data
 	 */
-	protected function setup_user() {
+	public function setup_user() {
 		$sections = array(
 			array(
 				'id'            => 0,

@@ -147,6 +147,16 @@
 	width: 200px;
 }
 
+.stream_page_wp_stream_reports .no-reports-message {
+	position: absolute;
+	top: calc(50% - 12px);
+	width: 100%;
+	font-size: 18px;
+	font-weight: 700;
+	text-align: center;
+	color: #000;
+}
+
 @media only screen and (max-width: 782px) {
 	.stream_page_wp_stream_reports .date-interval .field-predefined,
 	.stream_page_wp_stream_reports .date-interval .date-inputs {
