@@ -128,16 +128,6 @@ class WP_Stream_Admin {
 			array( __CLASS__, 'render_extensions_page' )
 		);
 
-		$extensions = WP_Stream_Extensions::get_instance();
-		self::$screen_id['extensions'] = add_submenu_page(
-			self::RECORDS_PAGE_SLUG,
-			__( 'Stream Extensions', 'stream' ),
-			__( 'Extensions', 'stream' ),
-			self::SETTINGS_CAP,
-			'wp_stream_extensions',
-			array( $extensions, 'render_page' )
-		);
-
 		// Register the list table early, so it associates the column headers with 'Screen settings'
 		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
 	}
@@ -402,7 +392,8 @@ class WP_Stream_Admin {
 		?>
 		<div class="themes-php">
 			<div class="wrap">
-				<?php require_once WP_STREAM_INC_DIR . 'extensions.php' ?>
+				<?php $extensions = WP_Stream_Extensions::get_instance() ?>
+				<?php $extensions->render_page() ?>
 			</div>
 		</div>
 		<?php

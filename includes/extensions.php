@@ -45,11 +45,8 @@ class WP_Stream_Extensions {
 		$this->extensions   = $this->get_extension_data();
 		$this->plugin_paths = $this->get_plugin_paths();
 
-		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_for_extension_updates' ) );
 		add_filter( 'plugins_api', array( $this, 'filter_plugin_api_info' ), 99, 3 );
 		add_filter( 'http_request_host_is_external', array( $this, 'filter_allowed_external_host' ), 10, 3 );
-		add_action( 'wp_ajax_stream-license-check', array( $this, 'license_check' ) );
-		add_action( 'wp_ajax_stream-license-remove', array( $this, 'license_remove' ) );
 	}
 
 	/**
@@ -146,38 +143,6 @@ class WP_Stream_Extensions {
 		return false;
 	}
 
-	public function license_check() {
-		$license = wp_stream_filter_input( INPUT_POST, 'license' );
-
-		if ( ! wp_verify_nonce( wp_stream_filter_input( INPUT_POST, 'nonce' ), 'license_check' ) ) {
-			wp_die( __( 'Invalid security check.', 'stream' ) );
-		}
-
-		$action = 'license-verify';
-		$args   = array(
-			'body' => array(
-				'a' => $action,
-				'l' => $license,
-			),
-		);
-
-		$url      = apply_filters( 'stream-api-url', $this->license_api_uri . $action, $action );
-		$response = wp_remote_post( $url, $args );
-
-		if ( 200 != wp_remote_retrieve_response_code( $response ) ) {
-			wp_send_json_error( __( 'Could not connect to Stream license server to verify license details.', 'stream' ) );
-		}
-
-		$data = json_decode( wp_remote_retrieve_body( $response ) );
-		if ( ! $data->success ) {
-			wp_send_json_error( $data );
-		}
-
-		update_option( 'stream-license', $license );
-		update_option( 'stream-licensee', $data->data->user );
-		wp_send_json( $data );
-	}
-
 	/**
 	 * Create an array of all plugin paths, using the text-domain as a unique key slug
 	 *
@@ -191,59 +156,6 @@ class WP_Stream_Extensions {
 			}
 		}
 		return $plugin_paths;
-	}
-
-	function check_for_extension_updates( $transient ) {
-		if ( empty( $transient->checked ) ) {
-			return $transient;
-		}
-		$response = (array)$this->request( array_intersect_key( $transient->checked, $this->plugins ) );
-		$license  = get_option( 'stream-license' );
-		$site     = parse_url( get_site_url(), PHP_URL_HOST );
-		if ( $response ) {
-			foreach ( $response as $key => $value ) {
-				$value->package .= '&license=' . $license . '&site=' . $site;
-			}
-			$transient->response = array_merge( $transient->response, $response );
-		}
-		return $transient;
-	}
-
-	public function request( $plugins ) {
-		$action  = 'update';
-		$url     = apply_filters( 'stream-api-url', $this->license_api_uri . $action, $action );
-		$options = array(
-			'body' => array(
-				'a'       => $action,
-				'plugins' => $plugins,
-				'name'    => get_bloginfo( 'name' ),
-				'url'     => get_bloginfo( 'url' ),
-				'license' => get_option( 'stream-license' ),
-			),
-		);
-
-		$response = wp_remote_post( $url, $options );
-
-		if ( 200 != wp_remote_retrieve_response_code( $response ) ) {
-			$error = __( 'Could not connect to Stream update center.', 'stream' );
-			add_action(
-				'all_admin_notices', function () use ( $error ) {
-					echo wp_kses_post( $error );
-				}
-			);
-			return false;
-		}
-
-		$body = wp_remote_retrieve_body( $response );
-		do_action( 'stream-update-api-response', $body, $response, $url, $options );
-
-		$body = json_decode( $body );
-
-		if ( empty( $body ) ) {
-			return false;
-		}
-
-		return $body;
 	}
 
 	function extensions_display_header( $extensions ) {
