@@ -16,6 +16,7 @@ class WP_Stream_Network {
 
 	function actions() {
 		add_action( 'init', array( $this, 'ajax_network_admin' ), 1 );
+		add_action( 'admin_bar_menu', array( $this, 'network_admin_bar_menu' ), 99, 1 );
 		add_action( 'network_admin_menu', array( 'WP_Stream_Admin', 'register_menu' ) );
 		add_action( 'network_admin_notices', array( 'WP_Stream_Admin', 'admin_notices' ) );
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
@@ -46,6 +47,25 @@ class WP_Stream_Network {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && is_multisite() && preg_match( '#^' . network_admin_url() . '#i', $_SERVER['HTTP_REFERER'] ) ) {
 			define( 'WP_NETWORK_ADMIN', true );
 		}
+	}
+
+	/**
+	 * Adds Stream to the admin bar under the "My Sites > Network Admin" menu
+	 */
+	function network_admin_bar_menu( $admin_bar ) {
+		$href = add_query_arg(
+			array(
+				'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+			),
+			network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+		);
+
+		$admin_bar->add_menu( array(
+			'id'     => 'network-admin-stream',
+			'parent' => 'network-admin',
+			'title'  => esc_html__( 'Stream', 'stream' ),
+			'href'   => esc_url( $href ),
+		));
 	}
 
 	/**
