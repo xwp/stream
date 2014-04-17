@@ -6,7 +6,7 @@
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
  *
- * @return bool true if no wpdb errors
+ * @return string $current_version if updated correctly
  */
 function wp_stream_update_132( $db_version, $current_version ) {
 	global $wpdb;
@@ -36,7 +36,7 @@ function wp_stream_update_132( $db_version, $current_version ) {
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
  *
- * @return bool true if no wpdb errors
+ * @return string $current_version if updated correctly
  */
 function wp_stream_update_131( $db_version, $current_version ) {
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
