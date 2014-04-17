@@ -1,6 +1,85 @@
 <?php
 
 /**
+ * Update Database to version 1.4.0
+ *
+ * @param string $db_version Database version updating from
+ * @param string $current_version Database version updating to
+ *
+ * @return bool true if no wpdb errors
+ */
+function wp_stream_update_140( $db_version, $current_version ) {
+	global $wpdb;
+
+	$prefix = WP_Stream_Install::$table_prefix;
+
+	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
+
+	$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
+
+	if ( is_multisite() ) {
+		$blogs = wp_get_sites();
+
+		foreach ( $blogs as $blog ) {
+			switch_to_blog( $blog['blog_id'] );
+
+			// No need to merge the primary site
+			if ( $wpdb->prefix === $prefix ) {
+				continue;
+			}
+
+			$sql = "SELECT * FROM {$wpdb->prefix}stream";
+
+			$blog_stream = $wpdb->get_results( $sql, ARRAY_A );
+
+			foreach ( $blog_stream as $key => $stream_entry ) {
+
+				$prev_entry_id = $stream_entry['ID'];
+
+				unset( $stream_entry['ID'] );
+				$stream_entry['blog_id'] = $blog['blog_id'];
+
+				$wpdb->insert( $wpdb->base_prefix . 'stream', $stream_entry );
+				$stream_entry_id = $wpdb->insert_id;
+
+				$sql = "SELECT * FROM {$wpdb->prefix}stream_context WHERE record_id = $prev_entry_id";
+
+				$blog_stream_context = $wpdb->get_results( $sql, ARRAY_A );
+
+				foreach ( $blog_stream_context as $key => $stream_context ) {
+					unset( $stream_context['meta_id'] );
+					$stream_context['record_id'] = $stream_entry_id;
+
+					$wpdb->insert( $wpdb->base_prefix . 'stream_context', $stream_context );
+				}
+
+				$sql = "SELECT * FROM {$wpdb->prefix}stream_meta WHERE record_id = $prev_entry_id";
+
+				$blog_stream_meta = $wpdb->get_results( $sql, ARRAY_A );
+
+				foreach ( $blog_stream_meta as $key => $stream_meta ) {
+					unset( $stream_meta['meta_id'] );
+					$stream_meta['record_id'] = $stream_entry_id;
+
+					$wpdb->insert( $wpdb->base_prefix . 'stream_meta', $stream_meta );
+				}
+
+			}
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stream, {$wpdb->prefix}stream_context, {$wpdb->prefix}stream_meta" );
+		}
+		restore_current_blog();
+	}
+
+	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
+
+	if ( $wpdb->last_error ) {
+		return __( 'Database Update Error', 'stream' );
+	}
+
+	return $current_version;
+}
+
+/**
  * Update Database to version 1.3.2
  *
  * @param string $db_version Database version updating from

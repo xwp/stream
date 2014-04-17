@@ -88,7 +88,7 @@ class WP_Stream_Install {
 		 * @var string $prefix  database prefix
 		 * @var string $table_prefix updated database prefix
 		 */
-		$prefix = $wpdb->prefix;
+		$prefix = $wpdb->base_prefix;
 
 		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $prefix );
 		self::check();
@@ -117,7 +117,7 @@ class WP_Stream_Install {
 		global $wpdb;
 
 		$version = get_site_option( self::KEY );
-		if ( ! $version && version_compare( self::$current, '1.3.2', '<=' ) ) {
+		if ( ! $version && version_compare( self::$current, '1.4.0', '<=' ) ) {
 			$old_key = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%stream%_db'" );
 			if ( ! empty( $old_key ) && is_array( $old_key ) ) {
 				$version = get_option( $old_key[0] );
@@ -214,6 +214,7 @@ class WP_Stream_Install {
 			'1.3.0'/** @version 1.3.0 Backward settings compatibility for old version plugins */,
 			'1.3.1'/** @version 1.3.1 Update records of Installer to Theme Editor connector */,
 			'1.3.2'/** @version 1.3.2 Add the author_role column */,
+			'1.4.0'/** @version 1.4.0 Prepare tables for multisite support */,
 		);
 	}
 
