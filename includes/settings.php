@@ -29,6 +29,11 @@ class WP_Stream_Reports_Settings {
 	const OPTION_NAME = 'stream_reports_settings';
 
 	/**
+	 * Holds the user option name for network admin (key)
+	 */
+	const NETWORK_ADMIN_OPTION_NAME = 'stream_reports_network_settings';
+
+	/**
 	 * Public constructor
 	 */
 	public static function load() {
@@ -140,7 +145,7 @@ class WP_Stream_Reports_Settings {
 	 * @return boolean
 	 */
 	public static function is_first_visit() {
-		if ( ! get_user_option( self::OPTION_NAME ) ) {
+		if ( ! get_user_option( self::get_option_key() ) ) {
 			return true;
 		}
 
@@ -157,7 +162,7 @@ class WP_Stream_Reports_Settings {
 	 */
 	public static function get_user_options( $key = null, $default = array() ) {
 		if ( empty( self::$user_options ) ) {
-			self::$user_options = get_user_option( self::OPTION_NAME );
+			self::$user_options = get_user_option( self::get_option_key() );
 		}
 
 		if ( is_null( $key ) ) {
@@ -187,7 +192,7 @@ class WP_Stream_Reports_Settings {
 		// Don't re-save if the value hasn't changed
 		if ( $user_options[ $key ] != $option ) {
 			$user_options[ $key ] = $option;
-			$is_saved = update_user_option( get_current_user_id(), self::OPTION_NAME, $user_options );
+			$is_saved = update_user_option( get_current_user_id(), self::get_option_key(), $user_options );
 		} else {
 			$is_saved = true;
 		}
@@ -233,6 +238,10 @@ class WP_Stream_Reports_Settings {
 		} else {
 			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream-reports' ) );
 		}
+	}
+
+	public static function get_option_key() {
+		return is_network_admin() ? self::NETWORK_ADMIN_OPTION_NAME : self::OPTION_NAME;
 	}
 
 }
