@@ -130,9 +130,10 @@ class WP_Stream_Reports {
 		add_action( 'init', array( 'WP_Stream_Reports_Date_Interval', 'get_instance' ) );
 
 		// Register new submenu
-		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
-
+		if ( ! apply_filters( 'wp_stream_reports_disallow_site_access', false ) ) {
+			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+		}
 
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
