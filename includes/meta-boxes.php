@@ -414,8 +414,8 @@ class WP_Stream_Reports_Metaboxes {
 				$output = isset( WP_Stream_Connectors::$term_labels['stream_context'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_context'][ $value ] : $value;
 				break;
 			case 'blog_id':
-				$details = get_blog_details( $value );
-				$output  = $details->blogname;
+				$blog   = ( $value && is_multisite() ) ? get_blog_details( $value ) : WP_Stream_Network::get_network_blog();
+				$output = $blog->blogname;
 				break;
 			default:
 				$output = $this->get_data_types( $value ) ? $this->get_data_types( $value ) : $value;
