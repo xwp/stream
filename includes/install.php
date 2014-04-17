@@ -143,8 +143,8 @@ class WP_Stream_Install {
 				<?php wp_nonce_field( 'wp_stream_update_db' ) ?>
 				<input type="hidden" name="wp_stream_update" value="update_and_continue"/>
 				<p><strong><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></strong></p>
-				<p><?php esc_html_e( 'Before we send you on your way, we have to update your database to the newest version.', 'stream' ) ?></p>
-				<p><?php esc_html_e( 'The update process may take a little while, so please be patient.', 'stream' ) ?></p>
+				<p><?php esc_html_e( 'Stream has updated! Before we send you on your way, we need to update your database to the newest version.', 'stream' ) ?></p>
+				<p><?php esc_html_e( 'This process could take a little while, so please be patient.', 'stream' ) ?></p>
 				<?php submit_button( __( 'Update Database', 'stream' ) ) ?>
 			</form>
 		</div>
