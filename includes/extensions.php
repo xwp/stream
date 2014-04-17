@@ -55,12 +55,7 @@ class WP_Stream_Extensions {
 	 * @return void
 	 */
 	function render_page() {
-		?>
-		<div class="wrap">
-			<?php settings_errors() ?>
-			<?php $this->extensions_display_body( $this->extensions ) ?>
-		</div>
-		<?php
+		$this->extensions_display_body( $this->extensions );
 	}
 
 	/**
