@@ -28,7 +28,7 @@ class WP_Stream_Network {
 		add_filter( 'wp_stream_disable_admin_access', array( $this, 'disable_admin_access' ) );
 		add_filter( 'wp_stream_settings_form_action', array( $this, 'settings_form_action' ) );
 		add_filter( 'wp_stream_settings_form_description', array( $this, 'settings_form_description' ) );
-		add_filter( 'wp_stream_options_fields', array( $this, 'get_fields' ) );
+		add_filter( 'wp_stream_options_fields', array( $this, 'get_network_admin_fields' ) );
 		add_filter( 'wp_stream_options', array( $this, 'get_network_options' ), 10, 2 );
 		add_filter( 'wp_stream_serialized_labels', array( $this, 'get_settings_translations' ) );
 		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
@@ -159,9 +159,6 @@ class WP_Stream_Network {
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 
 		switch ( $current_page ) {
-			case 'wp_stream_settings' :
-				$description = __( 'These settings only apply to the Network Admin Stream.', 'stream' );
-				break;
 			case 'wp_stream_network_settings' :
 				$description = __( 'These settings apply to all sites on the network.', 'stream' );
 				break;
@@ -174,13 +171,13 @@ class WP_Stream_Network {
 	}
 
 	/**
-	 * Adds a network settings field to stream options in network admin
+	 * Adjusts the settings fields displayed in various network admin screens
 	 *
 	 * @param $fields
 	 *
 	 * @return mixed
 	 */
-	function get_fields( $fields ) {
+	function get_network_admin_fields( $fields ) {
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		}
@@ -217,21 +214,9 @@ class WP_Stream_Network {
 			)
 		);
 
-		$defaults_hidden_options = apply_filters(
-			'wp_stream_defaults_option_fields',
-			array(
-				'general' => array(
-					'delete_all_records',
-					'records_ttl',
-				),
-			)
-		);
-
 		// Remove settings based on context
 		if ( WP_Stream_Settings::NETWORK_KEY === WP_Stream_Settings::$option_key ) {
 			$hidden_options = $network_hidden_options;
-		} elseif ( WP_Stream_Settings::DEFAULTS_KEY === WP_Stream_Settings::$option_key ) {
-			$hidden_options = $defaults_hidden_options;
 		} else {
 			$hidden_options = $stream_hidden_options;
 		}
@@ -247,13 +232,7 @@ class WP_Stream_Network {
 			}
 		}
 
-		foreach ( $fields as $section_key => $section ) {
-			if ( empty( $section['fields'] ) ) {
-				unset( $fields[ $section_key ] );
-			}
-		}
-
-		// Add and change settings, based on context
+		// Add settings based on context
 		if ( WP_Stream_Settings::NETWORK_KEY === WP_Stream_Settings::$option_key ) {
 			$new_fields['general']['fields'][] = array(
 				'name'        => 'enable_site_access',
@@ -282,6 +261,13 @@ class WP_Stream_Network {
 				'desc'    => __( 'Warning: Clicking this will override all site settings with defaults.', 'stream' ),
 				'default' => 0,
 			);
+		}
+
+		// Remove empty settings sections
+		foreach ( $fields as $section_key => $section ) {
+			if ( empty( $section['fields'] ) ) {
+				unset( $fields[ $section_key ] );
+			}
 		}
 
 		return $fields;
@@ -320,7 +306,6 @@ class WP_Stream_Network {
 	 */
 	function network_options_action() {
 		$allowed_referers = array(
-			'wp_stream_settings',
 			'wp_stream_network_settings',
 			'wp_stream_default_settings',
 		);
