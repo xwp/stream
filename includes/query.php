@@ -34,6 +34,7 @@ class WP_Stream_Query {
 			'ip'                    => null,
 			// Author param
 			'author'                => null,
+			'author_role'           => null,
 			// Date-based filters
 			'date'                  => null,
 			'date_from'             => null,

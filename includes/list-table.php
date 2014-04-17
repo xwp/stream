@@ -215,30 +215,59 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'author' :
-				$user = get_user_by( 'id', $item->author );
-				if ( $user ) {
-					global $wp_roles;
+				$user        = get_user_by( 'id', $item->author );
+				$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
 
-					$author_ID   = isset( $user->ID ) ? $user->ID : 0;
-					$author_name = isset( $user->display_name ) ? $user->display_name : null;
-					$author_role = isset( $user->roles[0] ) ? $wp_roles->role_names[ $user->roles[0] ] : null;
-
-					$out = sprintf(
-						'<a href="%s">%s <span>%s</span></a><br /><small>%s</small>',
-						add_query_arg(
-							array(
-								'page'   => WP_Stream_Admin::RECORDS_PAGE_SLUG,
-								'author' => absint( $author_ID ),
-							),
-							admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-						),
-						get_avatar( $author_ID, 40 ),
-						$author_name,
-						$author_role
-					);
-				} else {
+				if ( ! $user && ! is_array( $author_meta ) ) {
 					$out = __( 'N/A', 'stream' );
+					break;
 				}
+
+				global $wp_roles;
+				$author_ID    = isset( $item->author ) ? $item->author : 0;
+				$user_deleted = false;
+
+				/**
+				 * Tries to find a label for the record's author_role.
+				 *
+				 * If the author_role exists, use the label associated with it
+				 * Otherwise, if there is a user role label stored as Stream meta then use that
+				 * Otherwise, if the user exists, use the label associated with their current role
+				 * Otherwise, use the role slug as the label
+				 */
+				if ( ! empty( $item->author_role ) && isset( $wp_roles->role_names[ $item->author_role ] ) ) {
+					$author_role = $wp_roles->role_names[ $item->author_role ];
+				} elseif ( ! empty( $author_meta['user_role_label'] ) ) {
+					$author_role = $author_meta['user_role_label'];
+				} elseif ( isset( $user->roles[0] ) && isset( $wp_roles->role_names[ $user->roles[0] ] ) ) {
+					$author_role = $wp_roles->role_names[ $user->roles[0] ];
+				} else {
+					$author_role = $item->author_role;
+				}
+
+				if ( $user ) {
+					$author_name   = isset( $user->display_name ) ? $user->display_name : $user->user_login;
+					$author_avatar = get_avatar( $author_ID, 40 );
+				} else {
+					$user_deleted  = true;
+					$author_name   = ! empty( $author_meta['display_name'] ) ? $author_meta['display_name'] : $author_meta['user_login'];
+					$author_avatar = get_avatar( $author_meta['user_email'], 40 );
+				}
+
+				$out = sprintf(
+					'<a href="%s">%s <span>%s</span></a>%s%s',
+					add_query_arg(
+						array(
+							'page'   => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+							'author' => absint( $author_ID ),
+						),
+						admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+					),
+					$author_avatar,
+					$author_name,
+					$user_deleted ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
+					$author_role ? sprintf( '<br /><small>%s</small>', $author_role ) : ''
+				);
 				break;
 
 			case 'connector':
