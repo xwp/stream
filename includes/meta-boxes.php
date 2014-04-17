@@ -45,7 +45,7 @@ class WP_Stream_Reports_Metaboxes {
 
 		add_filter( 'wp_stream_reports_get_label', array( $this, 'translate_data_type_labels' ), 10, 2 );
 
-		if ( is_multisite() ) {
+		if ( is_multisite() && is_network_admin() ) {
 			add_filter( 'wp_stream_reports_data_types', array( $this, 'mutlisite_data_types' ), 10 );
 			add_filter( 'wp_stream_reports_selector_types', array( $this, 'mutlisite_selector_types' ), 10 );
 			add_filter( 'wp_stream_reports_get_label', array( $this, 'multisite_labels' ), 10, 2 );
