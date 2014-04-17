@@ -222,6 +222,10 @@
 	border-bottom: 1px solid #ccc;
 }
 
+.stream_page_wp_stream_settings .select2-container {
+	width: 500px;
+}
+
 
 /* Date Interval Common */
 
@@ -335,8 +339,4 @@
 	        filter: gray; /* IE6-9 */
 	-webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */
 	   -moz-filter: grayscale(100%); /* Firefox < 3.5 */
-}
-
-.stream_page_wp_stream_settings .select2-container {
-	width: 500px;
 }
