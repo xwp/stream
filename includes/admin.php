@@ -136,8 +136,10 @@ class WP_Stream_Admin {
 
 		do_action( 'wp_stream_admin_menu_screens' );
 
-		// Register the list table early, so it associates the column headers with 'Screen settings'
-		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
+		if ( ! WP_Stream_Install::$update_required ) {
+			// Register the list table early, so it associates the column headers with 'Screen settings'
+			add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
+		}
 	}
 
 	/**
@@ -367,6 +369,12 @@ class WP_Stream_Admin {
 
 		$sections   = WP_Stream_Settings::get_fields();
 		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
+
+		if ( WP_Stream_Install::$update_required ) {
+			printf( '<div class="wrap"><h2>%s</h2></div>', $page_title );
+			return;
+		}
+
 		?>
 		<div class="wrap">
 
@@ -420,8 +428,6 @@ class WP_Stream_Admin {
 	}
 
 	public static function stream_page() {
-		self::$list_table->prepare_items();
-
 		$page_title = __( 'Stream Records', 'stream' );
 
 		echo '<div class="wrap">';
@@ -433,6 +439,11 @@ class WP_Stream_Admin {
 			printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
 		}
 
+		if ( WP_Stream_Install::$update_required ) {
+			return;
+		}
+
+		self::$list_table->prepare_items();
 		self::$list_table->display();
 		echo '</div>';
 	}

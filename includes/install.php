@@ -50,6 +50,14 @@ class WP_Stream_Install {
 	public static $update_versions;
 
 	/**
+	 * Holds status of whether it's safe to run Stream or not
+	 *
+	 * @access public
+	 * @var bool
+	 */
+	public static $update_required = false;
+
+	/**
 	 * Initialized object of class
 	 *
 	 * @access private
@@ -109,6 +117,9 @@ class WP_Stream_Install {
 		if ( empty( self::$db_version ) ) {
 			$current = self::install( self::$current );
 		} elseif ( self::$db_version !== self::$current ) {
+			if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
+				self::$update_required = true;
+			}
 			add_action( 'admin_notices', array( __CLASS__, 'update_notice_hook' ) );
 		}
 	}
