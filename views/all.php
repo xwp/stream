@@ -14,16 +14,21 @@
 
 	<div id="dashboard-widgets" class="<?php echo esc_attr( $class ) ?>">
 
-		<?php if ( $no_reports ) : ?>
-		<div class="no-reports-message">
-			<?php esc_html_e( "There's nothing here! Do you want to ", 'stream-reports' ); ?>
-			<a href="<?php echo esc_attr( $create_url ) ?>">
-				<?php esc_html_e( 'create some reports?', 'stream-reports' ); ?>
-			</a>
-		</div>
-		<?php endif; ?>
-
 		<div class="postbox-container">
+			<?php if ( $no_reports ) : ?>
+				<div class="no-reports-message">
+					<?php esc_html_e( 'Well, this is embarrassing. There are no reports yet!', 'stream-reports' ) ?>
+					<p>
+						<a href="<?php echo esc_url( $add_url ) ?>" class="button button-secondary">
+							<?php esc_html_e( 'Add New', 'stream-reports' ) ?>
+						</a>
+						<span><?php esc_html_e( 'or', 'stream-reports' ) ?></span>
+						<a href="<?php echo esc_url( $create_url ) ?>" class="button button-primary">
+							<?php esc_html_e( 'Auto-Generate', 'stream-reports' ) ?>
+						</a>
+					</p>
+				</div>
+			<?php endif; ?>
 			<?php do_meta_boxes( WP_Stream_Reports::$screen_id, 'normal', 'normal' ) ?>
 		</div>
 
