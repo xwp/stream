@@ -18,6 +18,9 @@
 	margin: 0;
 	padding: 0;
 }
+#dashboard_stream_activity .alternate {
+	background-color: #fafafa;
+}
 
 #dashboard_stream_activity .dashboard-widget-control-form,
 #dashboard_stream_activity .no-records {
@@ -170,6 +173,11 @@
 	margin-top: 1px;
 }
 
+.toplevel_page_wp_stream .column-author .deleted {
+	font-style: italic;
+	color: #aaa;
+}
+
 .toplevel_page_wp_stream .filter-date-range {
 	margin-top: -1px;
 }
@@ -305,14 +313,14 @@
 	color: #aaa;
 }
 
-.wp_stream_screen .select2-container.authors_and_roles .select2-search-choice .icon16 {
+.wp_stream_screen .select2-search-choice .icon16 {
 	margin: -6px 1px 0 -3px;
 	padding: 0;
 	width: 16px;
 	height: 16px;
 }
 
-.wp_stream_screen .select2-container.authors_and_roles .select2-search-choice .icon16:before {
+.wp_stream_screen .select2-search-choice .icon16:before {
 	font-size: 15px !important;
 	color: #656565;
 }

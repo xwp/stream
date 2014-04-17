@@ -291,7 +291,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				'menu_slug'    => 'wp_stream',
 				'submenu_slug' => WP_Stream_Admin::SETTINGS_PAGE_SLUG,
 				'url'          => function( $rule, $record ) {
-					$option_key = get_stream_meta( $record->ID, 'option_key', true );
+					$option_key = wp_stream_get_meta( $record->ID, 'option_key', true );
 					$url_tab    = null;
 
 					if ( '' !== $option_key ) {
@@ -361,10 +361,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceOf Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
 				$url          = $rule['url']( $rule, $record );
 
-				$found_submenus = wp_list_filter(
-					$submenu[ $menu_slug ],
-					array( 2 => $submenu_slug )
-				);
+				if ( isset( $submenu[ $menu_slug ] ) ) {
+					$found_submenus = wp_list_filter(
+						$submenu[ $menu_slug ],
+						array( 2 => $submenu_slug )
+					);
+				}
 
 				if ( ! empty( $found_submenus ) ) {
 					$target_submenu = array_pop( $found_submenus );
@@ -373,10 +375,10 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					if ( current_user_can( $capability ) ) {
 						$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
 						$text       = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
-						$field_name = get_stream_meta( $record->ID, 'option_key', true );
+						$field_name = wp_stream_get_meta( $record->ID, 'option_key', true );
 
 						if ( '' === $field_name ) {
-							$field_name = get_stream_meta( $record->ID, 'option', true );
+							$field_name = wp_stream_get_meta( $record->ID, 'option', true );
 						}
 
 						if ( '' !== $field_name ) {

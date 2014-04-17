@@ -55,18 +55,7 @@ class WP_Stream_Admin {
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
-		// Load Dashboard widget
-		add_action( 'wp_dashboard_setup', array( __CLASS__, 'dashboard_stream_activity' ) );
-
-		// Dashboard AJAX pagination
-		add_action( 'wp_ajax_stream_activity_dashboard_update', array( __CLASS__, 'dashboard_stream_activity_update_contents' ) );
-
-		// Heartbeat live update
-		add_filter( 'heartbeat_received', array( __CLASS__, 'heartbeat_received' ), 10, 2 );
-
-		// Enable/Disable live update per user
-		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
-
+		// Toggle filters in list table on/off
 		add_action( 'wp_ajax_stream_toggle_filters', array( __CLASS__, 'toggle_filters' ) );
 
 		// Ajax authors list
@@ -74,7 +63,6 @@ class WP_Stream_Admin {
 
 		// Ajax author's name by ID
 		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
-
 	}
 
 	/**
@@ -149,39 +137,34 @@ class WP_Stream_Admin {
 
 		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
 
-		if ( ! in_array( $hook, self::$screen_id ) && 'dashboard.php' !== $hook ) {
-
+		if ( 'index.php' === $hook ) {
 			wp_enqueue_script( 'wp-stream-admin-dashboard', WP_STREAM_URL . 'ui/dashboard.js', array( 'jquery', 'heartbeat' ) );
-			return;
+		} else if ( in_array( $hook, self::$screen_id ) ) {
+
+			wp_enqueue_script( 'select2' );
+			wp_enqueue_style( 'select2' );
+
+			wp_enqueue_script( 'timeago' );
+			wp_enqueue_script( 'timeago-locale' );
+
+			wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ) );
+			wp_localize_script(
+				'wp-stream-admin',
+				'wp_stream',
+				array(
+					'i18n'            => array(
+						'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+						'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
+					),
+					'gmt_offset'      => get_option( 'gmt_offset' ),
+					'current_screen'  => $hook,
+					'current_page'    => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
+					'current_order'   => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
+					'current_query'   => json_encode( $_GET ),
+					'filter_controls' => get_user_meta( get_current_user_id(), 'stream_toggle_filters', true ),
+				)
+			);
 		}
-
-		if ( ! in_array( $hook, self::$screen_id ) && 'plugins.php' !== $hook ) {
-			return;
-		}
-
-		wp_enqueue_script( 'select2' );
-		wp_enqueue_style( 'select2' );
-
-		wp_enqueue_script( 'timeago' );
-		wp_enqueue_script( 'timeago-locale' );
-
-		wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ) );
-		wp_localize_script(
-			'wp-stream-admin',
-			'wp_stream',
-			array(
-				'i18n'           => array(
-					'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
-					'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
-				),
-				'gmt_offset'     => get_option( 'gmt_offset' ),
-				'current_screen' => $hook,
-				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
-				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
-				'current_query'  => json_encode( $_GET ),
-				'filter_controls' => get_user_meta( get_current_user_id(), 'stream_toggle_filters', true ),
-			)
-		);
 	}
 
 	/**
@@ -205,7 +188,7 @@ class WP_Stream_Admin {
 	 * Add menu styles for various WP Admin skins
 	 *
 	 * @action admin_enqueue_scripts
-	 * @return wp_add_inline_style
+	 * @return void
 	 */
 	public static function admin_menu_css() {
 		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
@@ -265,6 +248,7 @@ class WP_Stream_Admin {
 				}
 			";
 		}
+
 		wp_add_inline_style( 'wp-admin', $css );
 	}
 
@@ -287,6 +271,46 @@ class WP_Stream_Admin {
 		}
 
 		return $links;
+	}
+
+	/**
+	 * Register a routine to be called when stream or a stream connector has been updated
+	 * It works by comparing the current version with the version previously stored in the database.
+	 *
+	 * @param string $file A reference to the main plugin file
+	 * @param string $callback The function to run when the hook is called.
+	 * @param string $version The version to which the plugin is updating.
+	 * @return void
+	 */
+	public static function register_update_hook( $file, $callback, $version ) {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		$plugin = plugin_basename( $file );
+
+		if ( is_plugin_active_for_network( $plugin ) ) {
+			$current_versions = get_site_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$network          = true;
+		} elseif ( is_plugin_active( $plugin ) ) {
+			$current_versions = get_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$network          = false;
+		} else {
+			return;
+		}
+
+		if ( version_compare( $version, $current_versions[ $plugin ], '>' ) ) {
+			call_user_func( $callback, $current_versions[ $plugin ], $network );
+			$current_versions[ $plugin ] = $version;
+		}
+
+		if ( $network ) {
+			update_site_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+		} else {
+			update_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+		}
+
+		return;
 	}
 
 	/**
@@ -354,6 +378,7 @@ class WP_Stream_Admin {
 
 	public static function wp_ajax_reset() {
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			self::erase_stream_records();
 			wp_redirect(
@@ -394,6 +419,7 @@ class WP_Stream_Admin {
 	 */
 	public static function uninstall_plugin() {
 		global $wpdb;
+
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
 
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
@@ -409,7 +435,7 @@ class WP_Stream_Admin {
 			}
 
 			// Delete database option
-			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+			delete_option( WP_Stream_Install::KEY );
 			delete_option( WP_Stream_Settings::KEY );
 			delete_option( 'dashboard_stream_activity_options' );
 
@@ -432,9 +458,9 @@ class WP_Stream_Admin {
 		global $wpdb;
 
 		$options = WP_Stream_Settings::get_options();
+		$days    = $options['general_records_ttl'];
+		$date    = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 
-		$days = $options['general_records_ttl'];
-		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
 		$wpdb->query(
@@ -475,10 +501,21 @@ class WP_Stream_Admin {
 	 */
 	public static function _filter_user_caps( $allcaps, $caps, $args, $user = null ) {
 		$user = is_a( $user, 'WP_User' ) ? $user : wp_get_current_user();
+		// @see
+		// https://github.com/WordPress/WordPress/blob/c67c9565f1495255807069fdb39dac914046b1a0/wp-includes/capabilities.php#L758
+		$roles = array_unique(
+			array_merge(
+				$user->roles,
+				array_filter(
+					array_keys( $user->caps ),
+					array( $GLOBALS['wp_roles'], 'is_role' )
+				)
+			)
+		);
 
 		foreach ( $caps as $cap ) {
 			if ( self::VIEW_CAP === $cap ) {
-				foreach ( $user->roles as $role ) {
+				foreach ( $roles as $role ) {
 					if ( self::_role_can_view_stream( $role ) ) {
 						$allcaps[ $cap ] = true;
 						break 2;
@@ -509,421 +546,6 @@ class WP_Stream_Admin {
 		return $allcaps;
 	}
 
-	/**
-	 * Add Stream Activity widget to the dashboard
-	 *
-	 * @action wp_dashboard_setup
-	 */
-	public static function dashboard_stream_activity() {
-		if ( ! current_user_can( self::VIEW_CAP ) ) {
-			return;
-		}
-
-		wp_add_dashboard_widget(
-			'dashboard_stream_activity',
-			esc_html__( 'Stream Activity', 'stream' ),
-			array( __CLASS__, 'dashboard_stream_activity_initial_contents' ),
-			array( __CLASS__, 'dashboard_stream_activity_options' )
-		);
-	}
-
-	public static function dashboard_get_total_found_rows() {
-		global $wpdb;
-
-		return $wpdb->get_var( 'SELECT FOUND_ROWS()' );
-	}
-
-	public static function dashboard_stream_activity_initial_contents() {
-		self::dashboard_stream_activity_contents();
-	}
-
-	public static function dashboard_stream_activity_update_contents() {
-
-		$paged = ! empty( $_POST['stream-paged'] ) ? absint( $_POST['stream-paged'] ) : 1;
-		self::dashboard_stream_activity_contents( $paged );
-		die;
-	}
-
-	/**
-	 * Contents of the Stream Activity dashboard widget
-	 */
-	public static function dashboard_stream_activity_contents( $paged = 1 ) {
-
-		$options          = get_option( 'dashboard_stream_activity_options', array() );
-		$records_per_page = isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5;
-		$args             = array(
-			'records_per_page' => $records_per_page,
-			'paged'            => $paged,
-		);
-
-		$records = stream_query( $args );
-
-		if ( ! $records ) {
-			?>
-			<p class="no-records"><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ) ?></p>
-			<?php
-			return;
-		}
-
-		$i = 0;
-
-		echo '<ul>';
-
-		foreach ( $records as $record ) {
-			$i++;
-			echo self::dashboard_widget_row( $record, $i ); //xss okay
-		}
-
-
-		echo '</ul>';
-
-		$total_items = self::dashboard_get_total_found_rows();
-		$args        = array(
-			'total_pages' => ceil( $total_items / $records_per_page ),
-			'current'     => $paged,
-		);
-
-		self::dashboard_pagination( $args );
-	}
-
-	/*
-	 * Display pagination links for Dashboard Widget
-	 * Copied from private class WP_List_Table::pagination()
-	 */
-	public static function dashboard_pagination( $args = array() ) {
-
-		$args = wp_parse_args(
-			$args,
-			array(
-				'current'     => 1,
-				'total_pages' => 1,
-			)
-		);
-		extract( $args );
-
-		$records_link = add_query_arg(
-			array( 'page' => self::RECORDS_PAGE_SLUG ),
-			admin_url( self::ADMIN_PARENT_PAGE )
-		);
-
-		$html_view_all = sprintf(
-			'<a class="%s" title="%s" href="%s">%s</a>',
-			'view-all',
-			esc_attr__( 'View all records', 'stream' ),
-			esc_url( $records_link ),
-			esc_html__( 'View All', 'stream' )
-		);
-
-		$page_links    = array();
-		$disable_first = $disable_last = '';
-		if ( 1 === $current ) {
-			$disable_first = ' disabled';
-		}
-		if ( $current === $total_pages ) {
-			$disable_last = ' disabled';
-		}
-
-		$page_links[] = sprintf(
-			'<a class="%s" title="%s" href="%s" data-page="1">%s</a>',
-			'first-page' . $disable_first,
-			esc_attr__( 'Go to the first page', 'stream' ),
-			esc_url( remove_query_arg( 'paged', $records_link ) ),
-			'&laquo;'
-		);
-
-		$page_links[] = sprintf(
-			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
-			'prev-page' . $disable_first,
-			esc_attr__( 'Go to the previous page', 'stream' ),
-			esc_url( add_query_arg( 'paged', max( 1, $current - 1 ), $records_link ) ),
-			max( 1, $current - 1 ),
-			'&lsaquo;'
-		);
-
-		$html_total_pages = sprintf( '<span class="total-pages">%s</span>', number_format_i18n( $total_pages ) );
-		$page_links[]     = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), $current, $html_total_pages ) . '</span>';
-
-		$page_links[] = sprintf(
-			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
-			'next-page' . $disable_last,
-			esc_attr__( 'Go to the next page', 'stream' ),
-			esc_url( add_query_arg( 'paged', min( $total_pages, $current + 1 ), $records_link ) ),
-			min( $total_pages, $current + 1 ),
-			'&rsaquo;'
-		);
-
-		$page_links[] = sprintf(
-			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
-			'last-page' . $disable_last,
-			esc_attr__( 'Go to the last page', 'stream' ),
-			esc_url( add_query_arg( 'paged', $total_pages, $records_link ) ),
-			$total_pages,
-			'&raquo;'
-		);
-
-		$html_pagination_links = '
-			<div class="tablenav">
-				<div class="tablenav-pages">
-					<span class="pagination-links">' . join( "\n", $page_links ) . '</span>
-				</div>
-				<div class="clear"></div>
-			</div>';
-
-		echo '<div>' . $html_view_all . $html_pagination_links . '</div>';
-	}
-
-	/**
-	 * Configurable options for the Stream Activity dashboard widget
-	 */
-	public static function dashboard_stream_activity_options() {
-		$options = get_option( 'dashboard_stream_activity_options', array() );
-
-		if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
-			$options['records_per_page'] = absint( $_POST['dashboard_stream_activity_options']['records_per_page'] );
-			$options['live_update'] = isset( $_POST['dashboard_stream_activity_options']['live_update'] ) ? 'on' : 'off';;
-			update_option( 'dashboard_stream_activity_options', $options );
-		}
-
-		if ( ! isset( $options['records_per_page'] ) ) {
-			$options['records_per_page'] = 5;
-		}
-
-		?>
-		<div id="dashboard-stream-activity-options">
-			<p>
-				<input type="number" step="1" min="1" max="999" class="screen-per-page" name="dashboard_stream_activity_options[records_per_page]" id="dashboard_stream_activity_options[records_per_page]" value="<?php echo absint( $options['records_per_page'] ) ?>">
-				<label for="dashboard_stream_activity_options[records_per_page]"><?php esc_html_e( 'Records per page', 'stream' ) ?></label>
-			</p>
-			<?php $value = isset( $options['live_update'] ) ? $options['live_update'] : 'on'; ?>
-			<p>
-				<input type="checkbox" name="dashboard_stream_activity_options[live_update]" id="dashboard_stream_activity_options[live_update]" value='on' <?php checked( $value, 'on' ) ?> />
-				<label for="dashboard_stream_activity_options[live_update]"><?php esc_html_e( 'Enable live updates', 'stream' ) ?></label>
-			</p>
-		</div>
-	<?php
-	}
-
-	/**
-	 * Handles live updates for both dashboard widget and Stream Post List
-	 *
-	 * @action heartbeat_recieved
-	 * @param  array  Response to be sent to heartbeat tick
-	 * @param  array  Data from heartbeat send
-	 * @return array  Data sent to heartbeat tick
-	 */
-	public static function heartbeat_received( $response, $data ) {
-
-		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
-		$option                  = get_option( 'dashboard_stream_activity_options' );
-		$enable_dashboard_update = ( 'off' !== ( $option['live_update'] ) );
-		$response['per_page']    = isset( $option['records_per_page'] ) ? absint( $option['records_per_page'] ) : 5;
-
-		if ( isset( $data['wp-stream-heartbeat'] ) && 'live-update' === $data['wp-stream-heartbeat'] && $enable_stream_update ) {
-			$response['wp-stream-heartbeat'] = self::live_update( $response, $data );
-		} elseif ( isset( $data['wp-stream-heartbeat'] ) && 'dashboard-update' === $data['wp-stream-heartbeat'] && $enable_dashboard_update ) {
-			$response['wp-stream-heartbeat'] = self::live_update_dashboard( $response, $data );
-		} else {
-			$response['log'] = 'fail';
-		}
-
-		return $response;
-
-	}
-
-
-	/**
-	 * Sends Updated Actions to the List Table View
-	 *
-	 * @todo fix reliability issues with sidebar widgets
-	 *
-	 * @uses gather_updated_items
-	 * @uses generate_row
-	 *
-	 * @param  array  Response to heartbeat
-	 * @param  array  Response from heartbeat
-	 *
-	 * @return array  Data sent to heartbeat
-	 */
-	public static function live_update( $response, $data ) {
-
-		// Register list table
-		require_once WP_STREAM_INC_DIR . 'list-table.php';
-		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::RECORDS_PAGE_SLUG ) );
-
-		$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
-		$query   = $data['wp-stream-heartbeat-query'];
-		if ( empty( $query ) ) {
-			$query = array();
-		}
-
-		// Decode the query
-		$query = json_decode( wp_kses_stripslashes( $query ) );
-
-		$updated_items = self::gather_updated_items( $last_id, $query );
-
-		if ( ! empty( $updated_items ) ) {
-			ob_start();
-			foreach ( $updated_items as $item ) {
-				self::$list_table->single_row( $item );
-			}
-
-			$send = ob_get_clean();
-		} else {
-			$send = '';
-		}
-
-		return $send;
-	}
-
-
-	/**
-	 * Handles Live Updates for Stream Activity Dashboard Widget.
-	 *
-	 * @uses gather_updated_items
-	 *
-	 * @param  array  Response to heartbeat
-	 * @param  array  Response from heartbeat
-	 * @return array  Data sent to heartbeat
-	 */
-	public static function live_update_dashboard( $response, $data ) {
-
-		$send = array();
-
-		$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
-
-		$updated_items = self::gather_updated_items( $last_id );
-
-		if ( ! empty( $updated_items ) ) {
-			ob_start();
-			foreach ( $updated_items as $item ) {
-				echo self::dashboard_widget_row( $item ); //xss okay
-			}
-
-			$send = ob_get_clean();
-		}
-
-		return $send;
-	}
-
-
-	/**
-	 * Sends Updated Actions to the List Table View
-	 *
-	 * @param       int    Timestamp of last update
-	 * @param array $query
-	 *
-	 * @return array  Array of recently updated items
-	 */
-	public static function gather_updated_items( $last_id, $query = array() ) {
-		if ( false === $last_id ) {
-			return '';
-		}
-
-		$default = array(
-			'record_greater_than' => (int) $last_id,
-		);
-
-		// Filter default
-		$query = wp_parse_args( $query, $default );
-
-		// Run query
-		$items = stream_query( $query );
-
-		return $items;
-	}
-
-
-	/**
-	 * Renders rows for Stream Activity Dashboard Widget
-	 *
-	 * @param  obj     Record to be inserted
-	 * @param  int     Row number
-	 * @return string  Contents of new row
-	 */
-	public static function dashboard_widget_row( $item, $i = null ) {
-		$records_link = add_query_arg(
-			array( 'page' => self::RECORDS_PAGE_SLUG ),
-			admin_url( self::ADMIN_PARENT_PAGE )
-		);
-
-		$author = get_userdata( $item->author );
-		$author_link = add_query_arg(
-			array( 'author' => isset( $author->ID ) ? absint( $author->ID ) : 0 ),
-			$records_link
-		);
-
-		if ( $author ) {
-			$time_author = sprintf(
-				_x(
-					'%1$s ago by <a href="%2$s">%3$s</a>',
-					'1: Time, 2: User profile URL, 3: User display name',
-					'stream'
-				),
-				human_time_diff( strtotime( $item->created ) ),
-				esc_url( $author_link ),
-				esc_html( $author->display_name )
-			);
-		} else {
-			$time_author = sprintf(
-				__( '%s ago', 'stream' ),
-				human_time_diff( strtotime( $item->created ) )
-			);
-		}
-		$class = '';
-		if ( isset( $i ) ) {
-			if ( $i % 2 ) {
-				$class = 'class="alternate"';
-			}
-		}
-		ob_start()
-		?>
-		<li <?php echo esc_html( $class ) ?> data-id="<?php echo esc_html( $item->ID ) ?>">
-			<?php if ( $author ) : ?>
-				<div class="record-avatar">
-					<a href="<?php echo esc_url( $author_link ) ?>">
-						<?php echo get_avatar( $author->ID, 36 ) ?>
-					</a>
-				</div>
-			<?php endif; ?>
-			<span class="record-meta"><?php echo $time_author // xss ok ?></span>
-			<br />
-			<?php echo esc_html( $item->summary ) ?>
-		</li>
-		<?php
-		return ob_get_clean();
-	}
-
-	/**
-	 * Ajax function to enable/disable live update
-	 * @return void/json
-	 */
-	public static function enable_live_update() {
-		check_ajax_referer( 'stream_live_update_records_nonce', 'nonce' );
-
-		$input = array(
-			'checked' => FILTER_SANITIZE_STRING,
-			'user'    => FILTER_SANITIZE_STRING,
-		);
-
-		$input = filter_input_array( INPUT_POST, $input );
-
-		if ( false === $input ) {
-			wp_send_json_error( 'Error in live update checkbox' );
-		}
-
-		$checked = ( 'checked' === $input['checked'] ) ? 'on' : 'off';
-
-		$user = (int) $input['user'];
-
-		$success = update_user_meta( $user, 'stream_live_update_records', $checked );
-
-		if ( $success ) {
-			wp_send_json_success( 'Live Updates Enabled' );
-		} else {
-			wp_send_json_error( 'Live Updates checkbox error' );
-		}
-	}
-
 	public static function toggle_filters() {
 		check_ajax_referer( 'stream_toggle_filters_nonce', 'nonce' );
 
@@ -944,7 +566,6 @@ class WP_Stream_Admin {
 		} else {
 			wp_send_json_error( 'Toggled filter checkbox error' );
 		}
-
 	}
 
 	/**

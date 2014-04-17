@@ -21,6 +21,7 @@ class WP_Stream_Query {
 	 */
 	public function query( $args ) {
 		global $wpdb;
+
 		$defaults = array(
 			// Pagination params
 			'records_per_page'      => 10,
@@ -33,6 +34,7 @@ class WP_Stream_Query {
 			'ip'                    => null,
 			// Author param
 			'author'                => null,
+			'author_role'           => null,
 			// Date-based filters
 			'date'                  => null,
 			'date_from'             => null,
@@ -70,7 +72,7 @@ class WP_Stream_Query {
 		 * @param  array  Array of query arguments
 		 * @return array  Updated array of query arguments
 		 */
-		$args = apply_filters( 'stream_query_args', $args );
+		$args = apply_filters( 'wp_stream_query_args', $args );
 
 		if ( true === $args[ 'hide_excluded' ] ) {
 			$args = self::add_excluded_record_args( $args );
@@ -120,8 +122,7 @@ class WP_Stream_Query {
 		 */
 		if ( $args['date'] ) {
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) = %s", $args['date'] );
-		}
-		else {
+		} else {
 			if ( $args['date_from'] ) {
 				$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) >= %s", $args['date_from'] );
 			}
@@ -245,17 +246,13 @@ class WP_Stream_Query {
 
 		if ( in_array( $orderby, $orderable ) ) {
 			$orderby = $wpdb->stream . '.' . $orderby;
-		}
-		elseif ( in_array( $orderby, array( 'connector', 'context', 'action' ) ) ) {
+		} elseif ( in_array( $orderby, array( 'connector', 'context', 'action' ) ) ) {
 			$orderby = $wpdb->streamcontext . '.' . $orderby;
-		}
-		elseif ( 'meta_value_num' === $orderby && ! empty( $args['meta_key'] ) ) {
+		} elseif ( 'meta_value_num' === $orderby && ! empty( $args['meta_key'] ) ) {
 			$orderby = "CAST($wpdb->streammeta.meta_value AS SIGNED)";
-		}
-		elseif ( 'meta_value' === $orderby && ! empty( $args['meta_key'] ) ) {
+		} elseif ( 'meta_value' === $orderby && ! empty( $args['meta_key'] ) ) {
 			$orderby = "$wpdb->streammeta.meta_value";
-		}
-		else {
+		} else {
 			$orderby = "$wpdb->stream.ID";
 		}
 		$orderby = 'ORDER BY ' . $orderby . ' ' . $order;
@@ -272,8 +269,7 @@ class WP_Stream_Query {
 
 		if ( 'ID' === $fields ) {
 			$select = "$wpdb->stream.ID";
-		}
-		elseif ( 'summary' === $fields ) {
+		} elseif ( 'summary' === $fields ) {
 			$select = "$wpdb->stream.summary, $wpdb->stream.ID";
 		}
 
@@ -298,7 +294,7 @@ class WP_Stream_Query {
 
 		$results = $wpdb->get_results( $sql );
 
-		if ( 'with-meta' === $fields && is_array( $results ) ) {
+		if ( 'with-meta' === $fields && is_array( $results ) && $results ) {
 			$ids      = array_map( 'absint', wp_list_pluck( $results, 'ID' ) );
 			$sql_meta = sprintf(
 				"SELECT * FROM $wpdb->streammeta WHERE record_id IN ( %s )",
@@ -307,6 +303,7 @@ class WP_Stream_Query {
 
 			$meta  = $wpdb->get_results( $sql_meta );
 			$ids_f = array_flip( $ids );
+
 			foreach ( $meta as $meta_record ) {
 				$results[ $ids_f[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ][] = $meta_record->meta_value;
 			}
@@ -343,15 +340,15 @@ class WP_Stream_Query {
 
 }
 
-function stream_query( $args = array() ) {
+function wp_stream_query( $args = array() ) {
 	return WP_Stream_Query::get_instance()->query( $args );
 }
 
-function get_stream_meta( $record_id, $key = '', $single = false ) {
+function wp_stream_get_meta( $record_id, $key = '', $single = false ) {
 	return get_metadata( 'record', $record_id, $key, $single );
 }
 
-function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
+function wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
 	return update_metadata( 'record', $record_id, $meta_key, $meta_value, $prev_value );
 }
 
@@ -370,7 +367,7 @@ function update_stream_meta( $record_id, $meta_key, $meta_value, $prev_value = '
  * @param  string  Requested Table
  * @return array   Array of items to be output to select dropdowns
  */
-function existing_records( $column, $table = '' ) {
+function wp_stream_existing_records( $column, $table = '' ) {
 	global $wpdb;
 
 	switch ( $table ) {

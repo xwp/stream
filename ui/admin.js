@@ -158,7 +158,9 @@ jQuery(function($){
 				ip_chunks = $.grep(
 					ip_chunks,
 					function(chunk) {
-						return (chunk.charAt(0) !== '0' && parseInt(chunk, 10) <= 255);
+						var numeric = parseInt(chunk, 10);
+
+						return numeric <= 255 && numeric.toString() === chunk;
 					}
 				);
 
@@ -329,8 +331,11 @@ jQuery(function($){
 
 		$(document).on( 'heartbeat-send.stream', function(e, data) {
 			data['wp-stream-heartbeat'] = 'live-update';
-			var last_id = $( list_sel + ' tr:first .column-id').text();
-			last_id = ( '' === last_id ) ? 1 : last_id;
+			var last_item = $( list_sel + ' tr:first .column-id');
+			var last_id = 1;
+			if ( last_item.length !== 0 ) {
+				last_id = ( '' === last_item.text() ) ? 1 : last_item.text();
+			}
 			data['wp-stream-heartbeat-last-id'] = last_id;
 			data['wp-stream-heartbeat-query']   = wp_stream.current_query;
 		});
@@ -343,6 +348,12 @@ jQuery(function($){
 				return;
 			}
 
+			// Get show on screen
+			var show_on_screen = $('#edit_stream_per_page').val();
+
+			// Get all current rows
+			var $current_items = $( list_sel + ' tr');
+
 			// Get all new rows
 			var $new_items = $(data['wp-stream-heartbeat']);
 
@@ -350,7 +361,7 @@ jQuery(function($){
 			$new_items.removeClass().addClass('new-row');
 
 			//Check if first tr has the alternate class
-			var has_class =  ( $( list_sel + ' tr:first').hasClass('alternate') );
+			var has_class =  ( $current_items.first().hasClass('alternate') );
 
 			// Apply the good class to the list
 			if ( $new_items.length === 1 && !has_class ) {
@@ -372,7 +383,22 @@ jQuery(function($){
 			});
 
 			// Remove the number of element added to the end of the list table
-			$( list_sel + ' tr').slice(-$new_items.length).remove();
+			var slice_rows = show_on_screen - ( $new_items.length + $current_items.length );
+			if ( slice_rows < 0 ) {
+				$( list_sel + ' tr').slice(slice_rows).remove();
+			}
+
+			// Remove the no items row
+			$( list_sel + ' tr.no-items').remove();
+
+			// Update pagination
+			var total_items_i18n = data.total_items_i18n || '';
+			if ( total_items_i18n ) {
+				$('.displaying-num').text( total_items_i18n );
+				$('.total-pages').text( data.total_pages_i18n );
+				$('.tablenav-pages').find('.next-page, .last-page').toggleClass('disabled', data.total_pages === $('.current-page').val());
+				$( '.tablenav-pages .last-page').attr('href', data.last_page_link);
+			}
 
 			// Allow others to hook in, ie: timeago
 			$( list_sel ).parent().trigger( 'updated' );
@@ -389,7 +415,7 @@ jQuery(function($){
 
 		//Enable Live Update Checkbox Ajax
 		$( '#enable_live_update' ).click( function() {
-			var nonce   = $( '#enable_live_update_nonce' ).val();
+			var nonce   = $( '#stream_live_update_nonce' ).val();
 			var user = $( '#enable_live_update_user' ).val();
 			var checked = 'unchecked';
 			if ( $('#enable_live_update' ).is( ':checked' ) ) {
@@ -574,6 +600,11 @@ jQuery(function($){
 
 						if ('custom' === value) {
 							dateinputs.show();
+							from.datepicker('show');
+							return false;
+						} else {
+							dateinputs.hide();
+							datepickers.datepicker('hide');
 							return false;
 						}
 

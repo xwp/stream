@@ -71,7 +71,7 @@ class WP_Stream_DB {
 			return;
 		}
 
-		$fields = array( 'object_id', 'author', 'created', 'summary', 'parent', 'visibility', 'ip' );
+		$fields = array( 'object_id', 'author', 'author_role', 'created', 'summary', 'parent', 'visibility', 'ip' );
 		$data   = array_intersect_key( $recordarr, array_flip( $fields ) );
 		$data   = array_filter( $data );
 
