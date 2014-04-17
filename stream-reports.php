@@ -68,6 +68,13 @@ class WP_Stream_Reports {
 	public static $messages = array();
 
 	/**
+	 * Option to disallow access to Stream Reports
+	 *
+	 * @var bool
+	 */
+	public static $disallow_access = false;
+
+	/**
 	 * Page slug for notifications list table screen
 	 *
 	 * @const string
@@ -105,7 +112,7 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function load() {
-		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+		add_action( 'all_admin_notices', array( $this, 'admin_notices' ) );
 
 		if ( ! $this->is_dependency_satisfied() ) {
 			return;
@@ -130,7 +137,10 @@ class WP_Stream_Reports {
 		add_action( 'init', array( 'WP_Stream_Reports_Date_Interval', 'get_instance' ) );
 
 		// Register new submenu
+		add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
 		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+
+		self::$disallow_access = apply_filters( 'wp_stream_reports_disallow_site_access', false );
 
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
@@ -167,6 +177,11 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function register_menu() {
+
+		if ( self::$disallow_access ) {
+			return false;
+		}
+
 		self::$screen_id = add_submenu_page(
 			WP_Stream_Admin::RECORDS_PAGE_SLUG,
 			__( 'Reports', 'stream-reports' ),

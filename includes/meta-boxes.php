@@ -30,18 +30,32 @@ class WP_Stream_Reports_Metaboxes {
 	 * Public constructor
 	 */
 	public function __construct() {
-		// Get all sections from the db
+		// Get all sections from the database
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 
+		// Load records
 		add_filter( 'wp_stream_reports_load_records', array( $this, 'sort_coordinates_by_count' ), 10, 2 );
 		add_filter( 'wp_stream_reports_load_records', array( $this, 'limit_coordinates' ), 10, 2 );
 
+		// Make charts
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'pie_chart_coordinates' ), 10, 2 );
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'bar_chart_coordinates' ), 10, 2 );
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'line_chart_coordinates' ), 10, 2 );
 
+		// Finalize charts
 		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'translate_labels' ), 10, 2 );
 		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'apply_chart_settings' ), 10, 2 );
+
+		// Get chart labels
+		add_filter( 'wp_stream_reports_get_label', array( $this, 'translate_data_type_labels' ), 10, 2 );
+
+		// Specific data for multisite
+		if ( is_multisite() && is_network_admin() ) {
+			add_filter( 'wp_stream_reports_data_types', array( $this, 'mutlisite_data_types' ), 10 );
+			add_filter( 'wp_stream_reports_selector_types', array( $this, 'mutlisite_selector_types' ), 10 );
+			add_filter( 'wp_stream_reports_get_label', array( $this, 'multisite_labels' ), 10, 2 );
+			add_filter( 'wp_stream_reports_query_args', array( $this, 'multisite_query_args' ), 10, 2 );
+		}
 
 		$ajax_hooks = array(
 			'wp_stream_reports_add_metabox'           => 'add_metabox',
@@ -409,11 +423,25 @@ class WP_Stream_Reports_Metaboxes {
 				$output = isset( WP_Stream_Connectors::$term_labels['stream_context'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_context'][ $value ] : $value;
 				break;
 			default:
-				$output = $this->get_data_types( $value ) ? $this->get_data_types( $value ) : $value;
+				// Allow plugins to translate the label
+				$output = apply_filters( 'wp_stream_reports_get_label', $value, $grouping );
 				break;
 		}
 
 		return $output;
+	}
+
+	public function translate_data_type_labels( $value, $grouping ) {
+		return $this->get_data_types( $value ) ? $this->get_data_types( $value ) : $value;
+	}
+
+	public function multisite_labels( $value, $grouping ) {
+		if ( 'blog_id' === $grouping && is_numeric( $value ) ) {
+			$blog  = ( $value && is_multisite() ) ? get_blog_details( $value ) : WP_Stream_Network::get_network_blog();
+			$value = $blog->blogname;
+		}
+
+		return $value;
 	}
 
 	/**
@@ -449,7 +477,9 @@ class WP_Stream_Reports_Metaboxes {
 			),
 		);
 
-		if ( empty( $key ) ) {
+		$labels = apply_filters( 'wp_stream_reports_data_types', $labels );
+
+		if ( '' === $key ) {
 			$output = $labels;
 		} elseif ( array_key_exists( $key, $labels ) ) {
 			$output = $labels[ $key ];
@@ -458,6 +488,28 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		return $output;
+	}
+
+	public function mutlisite_data_types( $old_labels ) {
+		$options = array();
+		$sites   = wp_get_sites();
+		foreach ( $sites as $site ) {
+			$details = get_blog_details( $site['blog_id'] );
+			$options[ $site['blog_id'] ] = $details->blogname;
+		}
+
+		// Position sites label right after 'all' dataset
+		$labels         = array( 'all' => array() );
+		$labels['site'] = array(
+			'title'   => __( 'Site Activity', 'stream-reports' ),
+			'group'   => 'blog_id',
+			'options' => $options,
+			'disable' => array(
+				'blog_id',
+			),
+		);
+
+		return array_merge( $labels, $old_labels );
 	}
 
 	/**
@@ -486,6 +538,8 @@ class WP_Stream_Reports_Metaboxes {
 			'ip'          => __( 'IP Address', 'stream-reports' ),
 		);
 
+		$labels = apply_filters( 'wp_stream_reports_selector_types', $labels );
+
 		if ( empty( $key ) ) {
 			$output = $labels;
 		} elseif ( array_key_exists( $key, $labels ) ) {
@@ -497,6 +551,13 @@ class WP_Stream_Reports_Metaboxes {
 		return $output;
 	}
 
+	public function mutlisite_selector_types( $labels ) {
+		$new_labels = array(
+			'blog_id' => __( 'Site', 'stream-reports' ),
+		);
+
+		return array_merge( $labels, $new_labels );
+	}
 
 
 	public function load_metabox_records( $args, $date_interval ) {
@@ -507,14 +568,17 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		switch ( $args['data_group'] ) {
+			case 'action':
+				$query_args['action'] = $args['data_type'];
+				break;
+			case 'blog_id':
+				$query_args['blog_id'] = $args['data_type'];
+				break;
 			case 'connector':
 				$query_args['connector'] = $args['data_type'];
 				break;
 			case 'context':
 				$query_args['context'] = $args['data_type'];
-				break;
-			case 'action':
-				$query_args['action'] = $args['data_type'];
 				break;
 			case 'other':
 				// all selector requires no query arg modifications
@@ -524,13 +588,14 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$grouping_field   = $args['selector_type'];
-		$available_fields = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip' );
+		$available_fields = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip', 'blog_id' );
 
 		if ( ! in_array( $grouping_field, $available_fields ) ) {
 			return array();
 		}
 
-		$unsorted = wp_stream_query( $query_args );
+		$query_args = apply_filters( 'wp_stream_reports_query_args', $query_args, $args );
+		$unsorted   = wp_stream_query( $query_args );
 		if ( 'author_role' === $grouping_field ) {
 			foreach ( $unsorted as $key => $record ) {
 				$user = get_userdata( $record->author );
@@ -546,6 +611,14 @@ class WP_Stream_Reports_Metaboxes {
 		$sorted = $this->group_by_field( $grouping_field, $unsorted );
 
 		return $sorted;
+	}
+
+	public function multisite_query_args( $query_args, $args ) {
+		if ( 'blog_id' === $args['data_group'] ) {
+			$query_args['blog_id'] = $args['data_type'];
+		}
+
+		return $query_args;
 	}
 
 	/**
