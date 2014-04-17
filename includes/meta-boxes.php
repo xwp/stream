@@ -84,6 +84,7 @@ class WP_Stream_Reports_Metaboxes {
 				'data_group'    => 'other',
 				'data_type'     => 'all',
 				'selector_type' => 'author_role',
+				'group'         => true,
 			),
 			array(
 				'id'            => 3,
