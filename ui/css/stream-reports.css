@@ -147,6 +147,37 @@
 	width: 200px;
 }
 
+.stream_page_wp_stream_reports #dashboard-widgets .postbox-container {
+	position: relative;
+}
+
+.stream_page_wp_stream_reports .no-reports-message {
+	position: absolute;
+	top: calc(50% - 25px);
+	width: calc(100% - 50px);
+	padding: 0 25px;
+	font-size: 18px;
+	line-height: 28px;
+	font-weight: 700;
+	text-align: center;
+	color: #000;
+}
+
+@media only screen and (max-width: 799px) {
+	.stream_page_wp_stream_reports .no-reports-message {
+		margin-top: 50px;
+	}
+}
+
+.stream_page_wp_stream_reports .no-reports-message a {
+	font-weight: normal;
+}
+
+.stream_page_wp_stream_reports .no-reports-message span {
+	padding: 0 5px;
+	text-transform: uppercase;
+}
+
 @media only screen and (max-width: 782px) {
 	.stream_page_wp_stream_reports .date-interval .field-predefined,
 	.stream_page_wp_stream_reports .date-interval .date-inputs {

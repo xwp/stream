@@ -33,6 +33,20 @@
 	<div id="dashboard-widgets" class="<?php echo esc_attr( $class ) ?>">
 
 		<div class="postbox-container">
+			<?php if ( $no_reports ) : ?>
+				<div class="no-reports-message">
+					<?php esc_html_e( 'Well, this is embarrassing. There are no reports yet!', 'stream-reports' ) ?>
+					<p>
+						<a href="<?php echo esc_url( $add_url ) ?>" class="button button-secondary">
+							<?php esc_html_e( 'Add a new one', 'stream-reports' ) ?>
+						</a>
+						<span><?php esc_html_e( 'or', 'stream-reports' ) ?></span>
+						<a href="<?php echo esc_url( $create_url ) ?>" class="button button-primary">
+							<?php esc_html_e( 'Generate some for me', 'stream-reports' ) ?>
+						</a>
+					</p>
+				</div>
+			<?php endif; ?>
 			<?php do_meta_boxes( WP_Stream_Reports::$screen_id, 'normal', 'normal' ) ?>
 		</div>
 

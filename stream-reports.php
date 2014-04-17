@@ -306,6 +306,21 @@ class WP_Stream_Reports {
 			admin_url( 'admin-ajax.php' )
 		);
 
+		$sections   = WP_Stream_Reports_Settings::get_user_options( 'sections' );
+		$no_reports = empty( $sections );
+		$create_url = add_query_arg(
+			array_merge(
+				array(
+					'action' => 'wp_stream_reports_default_reports',
+				),
+				self::$nonce
+			),
+			admin_url( 'admin-ajax.php' )
+		);
+
+		$no_reports_message = __( "There's nothing here! Do you want to <a href=\"%s\">create some reports</a>?", 'stream-reports' );
+		$no_reports_message = sprintf( $no_reports_message, $create_url );
+
 		$view = (object) array(
 			'slug' => 'all',
 			'path' => null,
