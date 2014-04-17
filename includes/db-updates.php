@@ -65,11 +65,11 @@ function migrate_installer_edits_to_theme_editor_connector() {
 		'context'   => 'themes',
 		'action'    => 'edited',
 	);
-	$records = stream_query( $args );
+	$records = wp_stream_query( $args );
 
 	foreach ( $records as $record ) {
-		$file_name  = get_stream_meta( $record->ID, 'file', true );
-		$theme_name = get_stream_meta( $record->ID, 'name', true );
+		$file_name  = wp_stream_get_meta( $record->ID, 'file', true );
+		$theme_name = wp_stream_get_meta( $record->ID, 'name', true );
 
 		if ( '' !== $theme_name ) {
 			$matched_themes = array_filter(
@@ -100,10 +100,10 @@ function migrate_installer_edits_to_theme_editor_connector() {
 				array( 'record_id' => $record->ID )
 			);
 
-			update_stream_meta( $record->ID, 'theme_name', $theme_name );
+			wp_stream_update_meta( $record->ID, 'theme_name', $theme_name );
 
 			if ( is_object( $theme ) ) {
-				update_stream_meta( $record->ID, 'theme_slug', $theme->get_template() );
+				wp_stream_update_meta( $record->ID, 'theme_slug', $theme->get_template() );
 			}
 		}
 	}
@@ -210,7 +210,7 @@ function wp_stream_update_128( $db_version, $current_version ) {
 	foreach ( $media_records as $record ) {
 		$post = get_post( $record->pid );
 		$guid = isset( $post->guid ) ? $post->guid : null;
-		$url  = $guid ? $guid : get_stream_meta( $record->id, 'url', true );
+		$url  = $guid ? $guid : wp_stream_get_meta( $record->id, 'url', true );
 
 		if ( ! empty( $url ) ) {
 			$wpdb->update(
@@ -257,7 +257,7 @@ function wp_stream_update_125( $db_version, $current_version ) {
 	foreach ( $media_records as $record ) {
 		$post = get_post( $record->pid );
 		$guid = isset( $post->guid ) ? $post->guid : null;
-		$url  = $guid ? $guid : get_stream_meta( $record->id, 'url', true );
+		$url  = $guid ? $guid : wp_stream_get_meta( $record->id, 'url', true );
 
 		if ( ! empty( $url ) ) {
 			$wpdb->update(
