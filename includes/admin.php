@@ -55,6 +55,7 @@ class WP_Stream_Admin {
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
+		// Toggle filters in list table on/off
 		add_action( 'wp_ajax_stream_toggle_filters', array( __CLASS__, 'toggle_filters' ) );
 
 		// Ajax authors list
@@ -187,7 +188,7 @@ class WP_Stream_Admin {
 	 * Add menu styles for various WP Admin skins
 	 *
 	 * @action admin_enqueue_scripts
-	 * @return wp_add_inline_style
+	 * @return void
 	 */
 	public static function admin_menu_css() {
 		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
@@ -270,6 +271,46 @@ class WP_Stream_Admin {
 		}
 
 		return $links;
+	}
+
+	/**
+	 * Register a routine to be called when stream or a stream connector has been updated
+	 * It works by comparing the current version with the version previously stored in the database.
+	 *
+	 * @param string $file A reference to the main plugin file
+	 * @param string $callback The function to run when the hook is called.
+	 * @param string $version The version to which the plugin is updating.
+	 * @return void
+	 */
+	public static function register_update_hook( $file, $callback, $version ) {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		$plugin = plugin_basename( $file );
+
+		if ( is_plugin_active_for_network( $plugin ) ) {
+			$current_versions = get_site_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$network          = true;
+		} elseif ( is_plugin_active( $plugin ) ) {
+			$current_versions = get_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$network          = false;
+		} else {
+			return;
+		}
+
+		if ( version_compare( $version, $current_versions[ $plugin ], '>' ) ) {
+			call_user_func( $callback, $current_versions[ $plugin ], $network );
+			$current_versions[ $plugin ] = $version;
+		}
+
+		if ( $network ) {
+			update_site_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+		} else {
+			update_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+		}
+
+		return;
 	}
 
 	/**
@@ -394,7 +435,7 @@ class WP_Stream_Admin {
 			}
 
 			// Delete database option
-			delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+			delete_option( WP_Stream_Install::KEY );
 			delete_option( WP_Stream_Settings::KEY );
 			delete_option( 'dashboard_stream_activity_options' );
 
