@@ -337,6 +337,6 @@
 	   -moz-filter: grayscale(100%); /* Firefox < 3.5 */
 }
 
-.select2-container {
+.stream_page_wp_stream_settings .select2-container {
 	width: 500px;
 }
