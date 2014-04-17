@@ -28,7 +28,7 @@ class WP_Stream_Network {
 		add_filter( 'wp_stream_disable_admin_access', array( $this, 'disable_admin_access' ) );
 		add_filter( 'wp_stream_settings_form_action', array( $this, 'settings_form_action' ) );
 		add_filter( 'wp_stream_settings_form_description', array( $this, 'settings_form_description' ) );
-		add_filter( 'wp_stream_options_fields', array( $this, 'get_fields' ), 10, 2 );
+		add_filter( 'wp_stream_options_fields', array( $this, 'get_fields' ) );
 		add_filter( 'wp_stream_options', array( $this, 'get_network_options' ), 10, 2 );
 		add_filter( 'wp_stream_serialized_labels', array( $this, 'get_settings_translations' ) );
 		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
@@ -180,7 +180,7 @@ class WP_Stream_Network {
 	 *
 	 * @return mixed
 	 */
-	function get_fields( $fields, $option_key ) {
+	function get_fields( $fields ) {
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		}
@@ -228,9 +228,9 @@ class WP_Stream_Network {
 		);
 
 		// Remove settings based on context
-		if ( WP_Stream_Settings::NETWORK_KEY === $option_key ) {
+		if ( WP_Stream_Settings::NETWORK_KEY === WP_Stream_Settings::$option_key ) {
 			$hidden_options = $network_hidden_options;
-		} elseif ( WP_Stream_Settings::DEFAULTS_KEY === $option_key ) {
+		} elseif ( WP_Stream_Settings::DEFAULTS_KEY === WP_Stream_Settings::$option_key ) {
 			$hidden_options = $defaults_hidden_options;
 		} else {
 			$hidden_options = $stream_hidden_options;
@@ -254,7 +254,7 @@ class WP_Stream_Network {
 		}
 
 		// Add and change settings, based on context
-		if ( WP_Stream_Settings::NETWORK_KEY === $option_key ) {
+		if ( WP_Stream_Settings::NETWORK_KEY === WP_Stream_Settings::$option_key ) {
 			$new_fields['general']['fields'][] = array(
 				'name'        => 'enable_site_access',
 				'title'       => __( 'Enable Site Access', 'stream' ),

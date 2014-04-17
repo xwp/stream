@@ -314,7 +314,7 @@ class WP_Stream_Admin {
 	 */
 	public static function render_page() {
 
-		$option_key  = WP_Stream_Settings::$screen_key;
+		$option_key  = WP_Stream_Settings::$option_key;
 		$form_action = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
 
 		$page_title       = apply_filters( 'wp_stream_settings_form_title', get_admin_page_title() );
