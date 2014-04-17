@@ -43,9 +43,13 @@ class WP_Stream_Reports_Metaboxes {
 		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'translate_labels' ), 10, 2 );
 		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'apply_chart_settings' ), 10, 2 );
 
+		add_filter( 'wp_stream_reports_get_label', array( $this, 'translate_data_type_labels' ), 10, 2 );
+
 		if ( is_multisite() ) {
 			add_filter( 'wp_stream_reports_data_types', array( $this, 'mutlisite_data_types' ), 10 );
 			add_filter( 'wp_stream_reports_selector_types', array( $this, 'mutlisite_selector_types' ), 10 );
+			add_filter( 'wp_stream_reports_get_label', array( $this, 'multisite_labels' ), 10, 2 );
+			add_filter( 'wp_stream_reports_query_args', array( $this, 'multisite_query_args' ), 10, 2 );
 		}
 
 		$ajax_hooks = array(
@@ -413,16 +417,26 @@ class WP_Stream_Reports_Metaboxes {
 			case 'context':
 				$output = isset( WP_Stream_Connectors::$term_labels['stream_context'][ $value ] ) ? WP_Stream_Connectors::$term_labels['stream_context'][ $value ] : $value;
 				break;
-			case 'blog_id':
-				$blog   = ( $value && is_multisite() ) ? get_blog_details( $value ) : WP_Stream_Network::get_network_blog();
-				$output = $blog->blogname;
-				break;
 			default:
-				$output = $this->get_data_types( $value ) ? $this->get_data_types( $value ) : $value;
+				// Allow plugins to translate the label
+				$output = apply_filters( 'wp_stream_reports_get_label', $value, $grouping );
 				break;
 		}
 
 		return $output;
+	}
+
+	public function translate_data_type_labels( $value, $grouping ) {
+		return $this->get_data_types( $value ) ? $this->get_data_types( $value ) : $value;
+	}
+
+	public function multisite_labels( $value, $grouping ) {
+		if ( 'blog_id' === $grouping && is_integer( $value ) ) {
+			$blog  = ( $value && is_multisite() ) ? get_blog_details( $value ) : WP_Stream_Network::get_network_blog();
+			$value = $blog->blogname;
+		}
+
+		return $value;
 	}
 
 	/**
@@ -460,7 +474,7 @@ class WP_Stream_Reports_Metaboxes {
 
 		$labels = apply_filters( 'wp_stream_reports_data_types', $labels );
 
-		if ( empty( $key ) ) {
+		if ( '' === $key ) {
 			$output = $labels;
 		} elseif ( array_key_exists( $key, $labels ) ) {
 			$output = $labels[ $key ];
@@ -575,7 +589,8 @@ class WP_Stream_Reports_Metaboxes {
 			return array();
 		}
 
-		$unsorted = wp_stream_query( $query_args );
+		$query_args = apply_filters( 'wp_stream_reports_query_args', $query_args, $args );
+		$unsorted   = wp_stream_query( $query_args );
 		if ( 'author_role' === $grouping_field ) {
 			foreach ( $unsorted as $key => $record ) {
 				$user = get_userdata( $record->author );
@@ -591,6 +606,13 @@ class WP_Stream_Reports_Metaboxes {
 		$sorted = $this->group_by_field( $grouping_field, $unsorted );
 
 		return $sorted;
+	}
+
+	public function multisite_query_args( $query_args, $args ) {
+		if ( 'blog_id' === $args['data_group'] ) {
+			$query_args['blog_id'] = $args['data_type'];
+		}
+		return $query_args;
 	}
 
 	/**
