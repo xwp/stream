@@ -323,8 +323,7 @@ class WP_Stream_Admin {
 
 		if ( $network ) {
 			update_site_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
-		}
-		else {
+		} else {
 			update_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
 		}
 
