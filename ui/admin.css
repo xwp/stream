@@ -344,3 +344,50 @@
 	-webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */
 	   -moz-filter: grayscale(100%); /* Firefox < 3.5 */
 }
+
+
+/* Extensions */
+
+.stream_page_wp_stream_extensions .themes-php .wrap h2 .button {
+	margin: 3px 0 0 0;
+}
+
+.stream_page_wp_stream_extensions .themes-php .wrap p.description {
+	clear: both;
+	font-size: 15px;
+	margin-bottom: 20px;
+}
+
+.stream_page_wp_stream_extensions .license-check th {
+	font-size: 14px;
+	font-weight: bold;
+	padding-right: 10px;
+}
+
+.stream_page_wp_stream_extensions .theme a {
+	text-decoration: none;
+}
+
+.stream_page_wp_stream_extensions .theme.active .theme-actions {
+	padding-top: 15px;
+	height: 33px;
+	color: #fff;
+	text-transform: uppercase;
+}
+
+.stream_page_wp_stream_extensions .theme .theme-actions .button-primary {
+	margin-right: 0;
+}
+
+.stream_page_wp_stream_extensions .theme .theme-name span.inactive {
+	float: right;
+	margin-right: -5px;
+	font-weight: normal;
+	text-transform: uppercase;
+	font-size: 13px;
+	color: #777;
+}
+
+.stream_page_wp_stream_extensions .theme:hover .theme-name span.inactive {
+	display: none;
+}
