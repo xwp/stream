@@ -15,7 +15,11 @@ function wp_stream_update_140( $db_version, $current_version ) {
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
-	$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
+	$wpdb->get_results( "SELECT * FROM information_schema.COLUMNS WHERE TABLE_NAME = '{$prefix}stream' AND COLUMN_NAME = 'blog_id'" );
+
+	if ( 0 === $wpdb->num_rows ) {
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
+	}
 
 	if ( is_multisite() ) {
 		$blogs = wp_get_sites();
