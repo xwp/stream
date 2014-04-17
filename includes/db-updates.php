@@ -23,8 +23,15 @@ function wp_stream_update_140( $db_version, $current_version ) {
 		foreach ( $blogs as $blog ) {
 			switch_to_blog( $blog['blog_id'] );
 
-			// No need to merge the primary site
+			// No need to merge the primary site, but update the blog_id
 			if ( $wpdb->prefix === $prefix ) {
+				$wpdb->update(
+					$prefix . 'stream',
+					array( 'blog_id' => $blog['blog_id'] ),
+					array( 'blog_id' => '0' ),
+					array( '%d' ),
+					array( '%d' )
+				);
 				continue;
 			}
 
@@ -63,7 +70,6 @@ function wp_stream_update_140( $db_version, $current_version ) {
 
 					$wpdb->insert( $wpdb->base_prefix . 'stream_meta', $stream_meta );
 				}
-
 			}
 			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stream, {$wpdb->prefix}stream_context, {$wpdb->prefix}stream_meta" );
 		}
