@@ -116,13 +116,13 @@ class WP_Stream_Install {
 	public static function get_db_version() {
 		global $wpdb;
 
-		$version = get_option( self::KEY );
+		$version = get_site_option( self::KEY );
 		if ( ! $version && version_compare( self::$current, '1.3.2', '<=' ) ) {
 			$old_key = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%stream%_db'" );
 			if ( ! empty( $old_key ) && is_array( $old_key ) ) {
 				$version = get_option( $old_key[0] );
 
-				update_option( self::KEY, $version );
+				update_site_option( self::KEY, $version );
 				delete_option( $old_key[0] );
 			}
 		}
@@ -164,7 +164,7 @@ class WP_Stream_Install {
 		$success_db = self::update( self::$db_version, self::$current );
 
 		if ( $success_db ) {
-			$success_op = update_option( self::KEY, self::$current );
+			$success_op = update_site_option( self::KEY, self::$current );
 		}
 
 		if ( empty( $success_db ) || empty( $success_op ) ) {
