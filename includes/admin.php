@@ -71,6 +71,7 @@ class WP_Stream_Admin {
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
+		// Toggle filters in list table on/off
 		add_action( 'wp_ajax_stream_toggle_filters', array( __CLASS__, 'toggle_filters' ) );
 
 		// Ajax authors list
@@ -106,11 +107,13 @@ class WP_Stream_Admin {
 	 * @return bool|void
 	 */
 	public static function register_menu() {
-		if ( is_network_admin() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) )
+		if ( is_network_admin() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 			return false;
+		}
 
-		if ( self::$disable_access )
+		if ( self::$disable_access ) {
 			return false;
+		}
 
 		self::$screen_id['main'] = add_menu_page(
 			__( 'Stream', 'stream' ),
@@ -149,12 +152,14 @@ class WP_Stream_Admin {
 	public static function admin_enqueue_scripts( $hook ) {
 		wp_register_script( 'select2', WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
 		wp_register_style( 'select2', WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
-
 		wp_register_script( 'timeago', WP_STREAM_URL . 'ui/timeago/timeago.js', array(), '0.2.0', true );
+
 		if ( ! ( $locale = substr( get_locale(), 2 ) ) ) {
 			$locale = 'en';
 		}
+
 		$file_tmpl = 'ui/timeago/locale/jquery.timeago.%s.js';
+
 		if ( file_exists( WP_STREAM_DIR . sprintf( $file_tmpl, $locale ) ) ) {
 			wp_register_script( 'timeago-locale', WP_STREAM_URL . sprintf( $file_tmpl, $locale ), array( 'timeago' ), '1' );
 		} else {
@@ -165,7 +170,7 @@ class WP_Stream_Admin {
 
 		if ( 'index.php' === $hook ) {
 			wp_enqueue_script( 'wp-stream-admin-dashboard', WP_STREAM_URL . 'ui/dashboard.js', array( 'jquery', 'heartbeat' ) );
-		} else if ( in_array( $hook, self::$screen_id ) ) {
+		} elseif ( in_array( $hook, self::$screen_id ) ) {
 
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_style( 'select2' );
@@ -308,6 +313,46 @@ class WP_Stream_Admin {
 	}
 
 	/**
+	 * Register a routine to be called when stream or a stream connector has been updated
+	 * It works by comparing the current version with the version previously stored in the database.
+	 *
+	 * @param string $file A reference to the main plugin file
+	 * @param string $callback The function to run when the hook is called.
+	 * @param string $version The version to which the plugin is updating.
+	 * @return void
+	 */
+	public static function register_update_hook( $file, $callback, $version ) {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		$plugin = plugin_basename( $file );
+
+		if ( is_plugin_active_for_network( $plugin ) ) {
+			$current_versions = get_site_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$network          = true;
+		} elseif ( is_plugin_active( $plugin ) ) {
+			$current_versions = get_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$network          = false;
+		} else {
+			return;
+		}
+
+		if ( version_compare( $version, $current_versions[ $plugin ], '>' ) ) {
+			call_user_func( $callback, $current_versions[ $plugin ], $network );
+			$current_versions[ $plugin ] = $version;
+		}
+
+		if ( $network ) {
+			update_site_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+		} else {
+			update_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+		}
+
+		return;
+	}
+
+	/**
 	 * Render settings page
 	 *
 	 * @return void
@@ -328,22 +373,22 @@ class WP_Stream_Admin {
 			<h2><?php echo esc_html( $page_title ); ?></h2>
 
 			<?php if ( ! empty( $page_description ) ) : ?>
-			<p><?php echo esc_html( $page_description ); ?></p>
+				<p><?php echo esc_html( $page_description ); ?></p>
 			<?php endif; ?>
 
 			<?php settings_errors() ?>
 
 			<?php if ( count( $sections ) > 1 ) : ?>
-			<h2 class="nav-tab-wrapper">
-				<?php $i = 0 ?>
-				<?php foreach ( $sections as $section => $data ) : ?>
-					<?php $i ++ ?>
-					<?php $is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section ) ?>
-					<a href="<?php echo esc_url( add_query_arg( 'tab', $section ) ) ?>" class="nav-tab<?php if ( $is_active ) { echo esc_attr( ' nav-tab-active' ); } ?>">
-						<?php echo esc_html( $data['title'] ) ?>
-					</a>
-				<?php endforeach; ?>
-			</h2>
+				<h2 class="nav-tab-wrapper">
+					<?php $i = 0 ?>
+					<?php foreach ( $sections as $section => $data ) : ?>
+						<?php $i ++ ?>
+						<?php $is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section ) ?>
+						<a href="<?php echo esc_url( add_query_arg( 'tab', $section ) ) ?>" class="nav-tab<?php if ( $is_active ) { echo esc_attr( ' nav-tab-active' ); } ?>">
+							<?php echo esc_html( $data['title'] ) ?>
+						</a>
+					<?php endforeach; ?>
+				</h2>
 			<?php endif; ?>
 
 			<div class="nav-tab-content" id="tab-content-settings">
@@ -437,9 +482,11 @@ class WP_Stream_Admin {
 
 	public static function wp_ajax_defaults() {
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
 		if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 			wp_die( "You don't have sufficient privileges to do this action." );
 		}
+
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			self::reset_stream_settings();
 			wp_redirect(
@@ -461,6 +508,7 @@ class WP_Stream_Admin {
 		global $wpdb;
 
 		$blogs = wp_get_sites();
+
 		if ( $blogs ) {
 			foreach ( $blogs as $blog ) {
 				switch_to_blog( $blog['blog_id'] );
@@ -502,6 +550,7 @@ class WP_Stream_Admin {
 				restore_current_blog();
 			}
 
+			// Delete database option
 			delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 			delete_site_option( WP_Stream_Settings::KEY );
 			delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );

@@ -38,6 +38,7 @@ class WP_Stream_Query {
 			'blog_id'               => is_network_admin() ? null : get_current_blog_id(),
 			// Author param
 			'author'                => null,
+			'author_role'           => null,
 			// Date-based filters
 			'date'                  => null,
 			'date_from'             => null,
@@ -133,8 +134,7 @@ class WP_Stream_Query {
 		 */
 		if ( $args['date'] ) {
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) = %s", $args['date'] );
-		}
-		else {
+		} else {
 			if ( $args['date_from'] ) {
 				$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) >= %s", $args['date_from'] );
 			}
@@ -258,17 +258,13 @@ class WP_Stream_Query {
 
 		if ( in_array( $orderby, $orderable ) ) {
 			$orderby = $wpdb->stream . '.' . $orderby;
-		}
-		elseif ( in_array( $orderby, array( 'connector', 'context', 'action' ) ) ) {
+		} elseif ( in_array( $orderby, array( 'connector', 'context', 'action' ) ) ) {
 			$orderby = $wpdb->streamcontext . '.' . $orderby;
-		}
-		elseif ( 'meta_value_num' === $orderby && ! empty( $args['meta_key'] ) ) {
+		} elseif ( 'meta_value_num' === $orderby && ! empty( $args['meta_key'] ) ) {
 			$orderby = "CAST($wpdb->streammeta.meta_value AS SIGNED)";
-		}
-		elseif ( 'meta_value' === $orderby && ! empty( $args['meta_key'] ) ) {
+		} elseif ( 'meta_value' === $orderby && ! empty( $args['meta_key'] ) ) {
 			$orderby = "$wpdb->streammeta.meta_value";
-		}
-		else {
+		} else {
 			$orderby = "$wpdb->stream.ID";
 		}
 		$orderby = 'ORDER BY ' . $orderby . ' ' . $order;
@@ -285,8 +281,7 @@ class WP_Stream_Query {
 
 		if ( 'ID' === $fields ) {
 			$select = "$wpdb->stream.ID";
-		}
-		elseif ( 'summary' === $fields ) {
+		} elseif ( 'summary' === $fields ) {
 			$select = "$wpdb->stream.summary, $wpdb->stream.ID";
 		}
 
@@ -320,6 +315,7 @@ class WP_Stream_Query {
 
 			$meta  = $wpdb->get_results( $sql_meta );
 			$ids_f = array_flip( $ids );
+
 			foreach ( $meta as $meta_record ) {
 				$results[ $ids_f[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ][] = $meta_record->meta_value;
 			}
