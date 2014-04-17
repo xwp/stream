@@ -34,7 +34,7 @@ class WP_Stream_Settings {
 	 *
 	 * @var array
 	 */
-	public static $screen_key = '';
+	public static $option_key = '';
 
 	/**
 	 * Settings fields
@@ -50,7 +50,7 @@ class WP_Stream_Settings {
 	 */
 	public static function load() {
 
-		self::$screen_key = self::get_option_key();
+		self::$option_key = self::get_option_key();
 		self::$options    = self::get_options();
 
 		// Register settings, and fields
@@ -229,124 +229,122 @@ class WP_Stream_Settings {
 	 *
 	 * @return array Multidimensional array of fields
 	 */
-	public static function get_fields( $option_key = null ) {
-		if ( ! $option_key ) {
-			$option_key = self::$screen_key;
+	public static function get_fields() {
+		if ( empty( self::$fields ) ) {
+			$fields = array(
+				'general' => array(
+					'title'  => __( 'General', 'stream' ),
+					'fields' => array(
+						array(
+							'name'        => 'role_access',
+							'title'       => __( 'Role Access', 'stream' ),
+							'type'        => 'multi_checkbox',
+							'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
+							'choices'     => self::get_roles(),
+							'default'     => array( 'administrator' ),
+						),
+						array(
+							'name'        => 'private_feeds',
+							'title'       => __( 'Private Feeds', 'stream' ),
+							'type'        => 'checkbox',
+							'desc'        => sprintf(
+								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
+								sprintf(
+									'<a href="%s" title="%s">',
+									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
+									esc_attr__( 'View Profile', 'stream' )
+								),
+								'</a>'
+							),
+							'after_field' => __( 'Enabled' ),
+							'default'     => 0,
+						),
+						array(
+							'name'        => 'records_ttl',
+							'title'       => __( 'Keep Records for', 'stream' ),
+							'type'        => 'number',
+							'class'       => 'small-text',
+							'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
+							'default'     => 90,
+							'after_field' => __( 'days', 'stream' ),
+						),
+						array(
+							'name'        => 'delete_all_records',
+							'title'       => __( 'Reset Stream Database', 'stream' ),
+							'type'        => 'link',
+							'href'        => add_query_arg(
+								array(
+									'action'          => 'wp_stream_reset',
+									'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+								),
+								admin_url( 'admin-ajax.php' )
+							),
+							'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
+							'default'     => 0,
+						),
+					),
+				),
+				'exclude' => array(
+					'title' => __( 'Exclude', 'stream' ),
+					'fields' => array(
+						array(
+							'name'        => 'authors_and_roles',
+							'title'       => __( 'Authors & Roles', 'stream' ),
+							'type'        => 'select2_user_role',
+							'desc'        => __( 'No activity will be logged for these authors and/or roles.', 'stream' ),
+							'choices'     => self::get_roles(),
+							'default'     => array(),
+						),
+						array(
+							'name'        => 'connectors',
+							'title'       => __( 'Connectors', 'stream' ),
+							'type'        => 'select2',
+							'desc'        => __( 'No activity will be logged for these connectors.', 'stream' ),
+							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+							'param'       => 'connector',
+							'default'     => array(),
+						),
+						array(
+							'name'        => 'contexts',
+							'title'       => __( 'Contexts', 'stream' ),
+							'type'        => 'select2',
+							'desc'        => __( 'No activity will be logged for these contexts.', 'stream' ),
+							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+							'param'       => 'context',
+							'default'     => array(),
+						),
+						array(
+							'name'        => 'actions',
+							'title'       => __( 'Actions', 'stream' ),
+							'type'        => 'select2',
+							'desc'        => __( 'No activity will be logged for these actions.', 'stream' ),
+							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+							'param'       => 'action',
+							'default'     => array(),
+						),
+						array(
+							'name'        => 'ip_addresses',
+							'title'       => __( 'IP Addresses', 'stream' ),
+							'type'        => 'select2',
+							'desc'        => __( 'No activity will be logged for these IP addresses.', 'stream' ),
+							'class'       => 'ip-addresses',
+							'default'     => array(),
+							'nonce'       => 'stream_get_ips',
+						),
+						array(
+							'name'        => 'hide_previous_records',
+							'title'       => __( 'Visibility', 'stream' ),
+							'type'        => 'checkbox',
+							'desc'        => sprintf(
+								__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
+							),
+							'after_field' => __( 'Hide Previous Records', 'stream' ),
+							'default'     => 0,
+						),
+					),
+				),
+			);
 		}
-
-		$fields = array(
-			'general' => array(
-				'title'  => __( 'General', 'stream' ),
-				'fields' => array(
-					array(
-						'name'        => 'role_access',
-						'title'       => __( 'Role Access', 'stream' ),
-						'type'        => 'multi_checkbox',
-						'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
-						'choices'     => self::get_roles(),
-						'default'     => array( 'administrator' ),
-					),
-					array(
-						'name'        => 'private_feeds',
-						'title'       => __( 'Private Feeds', 'stream' ),
-						'type'        => 'checkbox',
-						'desc'        => sprintf(
-							__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
-							sprintf(
-								'<a href="%s" title="%s">',
-								admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
-								esc_attr__( 'View Profile', 'stream' )
-							),
-							'</a>'
-						),
-						'after_field' => __( 'Enabled' ),
-						'default'     => 0,
-					),
-					array(
-						'name'        => 'records_ttl',
-						'title'       => __( 'Keep Records for', 'stream' ),
-						'type'        => 'number',
-						'class'       => 'small-text',
-						'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
-						'default'     => 90,
-						'after_field' => __( 'days', 'stream' ),
-					),
-					array(
-						'name'        => 'delete_all_records',
-						'title'       => __( 'Reset Stream Database', 'stream' ),
-						'type'        => 'link',
-						'href'        => add_query_arg(
-							array(
-								'action'          => 'wp_stream_reset',
-								'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-							),
-							admin_url( 'admin-ajax.php' )
-						),
-						'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
-						'default'     => 0,
-					),
-				),
-			),
-			'exclude' => array(
-				'title' => __( 'Exclude', 'stream' ),
-				'fields' => array(
-					array(
-						'name'        => 'authors_and_roles',
-						'title'       => __( 'Authors & Roles', 'stream' ),
-						'type'        => 'select2_user_role',
-						'desc'        => __( 'No activity will be logged for these authors and/or roles.', 'stream' ),
-						'choices'     => self::get_roles(),
-						'default'     => array(),
-					),
-					array(
-						'name'        => 'connectors',
-						'title'       => __( 'Connectors', 'stream' ),
-						'type'        => 'select2',
-						'desc'        => __( 'No activity will be logged for these connectors.', 'stream' ),
-						'choices'     => array( __CLASS__, 'get_terms_labels' ),
-						'param'       => 'connector',
-						'default'     => array(),
-					),
-					array(
-						'name'        => 'contexts',
-						'title'       => __( 'Contexts', 'stream' ),
-						'type'        => 'select2',
-						'desc'        => __( 'No activity will be logged for these contexts.', 'stream' ),
-						'choices'     => array( __CLASS__, 'get_terms_labels' ),
-						'param'       => 'context',
-						'default'     => array(),
-					),
-					array(
-						'name'        => 'actions',
-						'title'       => __( 'Actions', 'stream' ),
-						'type'        => 'select2',
-						'desc'        => __( 'No activity will be logged for these actions.', 'stream' ),
-						'choices'     => array( __CLASS__, 'get_terms_labels' ),
-						'param'       => 'action',
-						'default'     => array(),
-					),
-					array(
-						'name'        => 'ip_addresses',
-						'title'       => __( 'IP Addresses', 'stream' ),
-						'type'        => 'select2',
-						'desc'        => __( 'No activity will be logged for these IP addresses.', 'stream' ),
-						'class'       => 'ip-addresses',
-						'default'     => array(),
-						'nonce'       => 'stream_get_ips',
-					),
-					array(
-						'name'        => 'hide_previous_records',
-						'title'       => __( 'Visibility', 'stream' ),
-						'type'        => 'checkbox',
-						'desc'        => sprintf(
-							__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
-						),
-						'after_field' => __( 'Hide Previous Records', 'stream' ),
-						'default'     => 0,
-					),
-				),
-			),
-		);
 
 		/**
 		 * Filter allows for modification of options fields
@@ -354,7 +352,7 @@ class WP_Stream_Settings {
 		 * @param  array  array of fields
 		 * @return array  updated array of fields
 		 */
-		return apply_filters( 'wp_stream_options_fields', $fields, $option_key );
+		return apply_filters( 'wp_stream_options_fields', $fields );
 	}
 
 	/**
@@ -362,10 +360,8 @@ class WP_Stream_Settings {
 	 *
 	 * @return array Options
 	 */
-	public static function get_options( $option_key = null ) {
-		if ( ! $option_key ) {
-			$option_key = self::$screen_key;
-		}
+	public static function get_options() {
+		$option_key = self::$option_key;
 
 		$defaults = self::get_defaults( $option_key );
 
@@ -394,12 +390,8 @@ class WP_Stream_Settings {
 	 *
 	 * @return array Default option values
 	 */
-	public static function get_defaults( $option_key = null ) {
-		if ( ! $option_key ) {
-			$option_key = self::$screen_key;
-		}
-
-		$fields   = self::get_fields( $option_key );
+	public static function get_defaults() {
+		$fields   = self::get_fields();
 		$defaults = array();
 
 		foreach ( $fields as $section_name => $section ) {
@@ -433,17 +425,16 @@ class WP_Stream_Settings {
 	 */
 	public static function register_settings() {
 
-		$sections   = self::get_fields();
-		$option_key = self::$screen_key;
+		$sections = self::get_fields();
 
-		register_setting( $option_key, $option_key );
+		register_setting( self::$option_key, self::$option_key );
 
 		foreach ( $sections as $section_name => $section ) {
 			add_settings_section(
 				$section_name,
 				null,
 				'__return_false',
-				$option_key
+				self::$option_key
 			);
 
 			foreach ( $section['fields'] as $field_idx => $field ) {
@@ -454,11 +445,11 @@ class WP_Stream_Settings {
 					$field['name'],
 					$field['title'],
 					( isset( $field['callback'] ) ? $field['callback'] : array( __CLASS__, 'output_field' ) ),
-					$option_key,
+					self::$option_key,
 					$section_name,
 					$field + array(
 						'section'   => $section_name,
-						'label_for' => sprintf( '%s_%s_%s', $option_key, $section_name, $field['name'] ), // xss ok
+						'label_for' => sprintf( '%s_%s_%s', self::$option_key, $section_name, $field['name'] ), // xss ok
 					)
 				);
 			}
@@ -507,7 +498,7 @@ class WP_Stream_Settings {
 		$title         = isset( $field['title'] ) ? $field['title'] : null;
 		$nonce         = isset( $field['nonce'] ) ? $field['nonce'] : null;
 		$current_value = self::$options[ $section . '_' . $name ];
-		$option_key    = self::$screen_key;
+		$option_key    = self::$option_key;
 
 		if ( is_callable( $current_value ) ) {
 			$current_value = call_user_func( $current_value );

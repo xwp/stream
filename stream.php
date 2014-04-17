@@ -117,8 +117,15 @@ class WP_Stream {
 		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
+
+			add_action( 'init', array( __CLASS__, 'install' ) );
+
+			// Registers a hook that connectors and other plugins can use whenever a stream update happens
+			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
+
 			require_once WP_STREAM_INC_DIR . 'dashboard.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
+
 			require_once WP_STREAM_INC_DIR . 'live-update.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Live_Update', 'load' ) );
 		}
@@ -170,8 +177,7 @@ class WP_Stream {
 
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
-		WP_Stream_Install::check();
-
+		$update = WP_Stream_Install::get_instance();
 	}
 
 	/**
@@ -195,6 +201,7 @@ class WP_Stream {
 		}
 
 		global $wpdb;
+
 		$database_message  = '';
 		$uninstall_message = '';
 
@@ -221,6 +228,10 @@ class WP_Stream {
 				$uninstall_message
 			); // xss ok
 		}
+	}
+
+	static function update_activation_hook() {
+		WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( __CLASS__, 'install' ), self::VERSION );
 	}
 
 	/**
@@ -253,6 +264,7 @@ class WP_Stream {
 			$class = __CLASS__;
 			self::$instance = new $class;
 		}
+
 		return self::$instance;
 	}
 
