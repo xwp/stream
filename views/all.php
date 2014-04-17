@@ -20,11 +20,11 @@
 					<?php esc_html_e( 'Well, this is embarrassing. There are no reports yet!', 'stream-reports' ) ?>
 					<p>
 						<a href="<?php echo esc_url( $add_url ) ?>" class="button button-secondary">
-							<?php esc_html_e( 'Add New', 'stream-reports' ) ?>
+							<?php esc_html_e( 'Add a new one', 'stream-reports' ) ?>
 						</a>
 						<span><?php esc_html_e( 'or', 'stream-reports' ) ?></span>
 						<a href="<?php echo esc_url( $create_url ) ?>" class="button button-primary">
-							<?php esc_html_e( 'Auto-Generate', 'stream-reports' ) ?>
+							<?php esc_html_e( 'Generate some for me', 'stream-reports' ) ?>
 						</a>
 					</p>
 				</div>
