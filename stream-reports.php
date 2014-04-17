@@ -105,8 +105,7 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function load() {
-		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
-		add_action( 'network_admin_notices', array( $this, 'admin_notices' ) );
+		add_action( 'all_admin_notices', array( $this, 'admin_notices' ) );
 
 		if ( ! $this->is_dependency_satisfied() ) {
 			return;
