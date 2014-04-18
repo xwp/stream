@@ -120,7 +120,7 @@ class WP_Stream_Install {
 			if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 				self::$update_required = true;
 			}
-			add_action( 'admin_notices', array( __CLASS__, 'update_notice_hook' ) );
+			add_action( 'all_admin_notices', array( __CLASS__, 'update_notice_hook' ) );
 		}
 	}
 
