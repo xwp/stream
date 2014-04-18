@@ -24,7 +24,7 @@ function wp_stream_update_140( $db_version, $current_version ) {
 
 	// If the blog_id doesn't exist, then create it and update records retroactively
 	if ( empty( $rows ) ) {
-		$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NULL DEFAULT '0' AFTER site_id" );
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
 	}
 
 	// If multisite, merge the site stream tables into one
@@ -97,7 +97,7 @@ function wp_stream_update_140( $db_version, $current_version ) {
 
 	// If the author_role doesn't exist, then create it and update records retroactively
 	if ( empty( $rows ) ) {
-		$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(50) NOT NULL AFTER author" );
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(50) NULL AFTER author" );
 
 		$records = wp_stream_query( array( 'records_per_page' => -1 ) );
 
