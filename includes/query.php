@@ -109,11 +109,11 @@ class WP_Stream_Query {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", wp_stream_filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
 		}
 
-		if ( $args['site_id'] ) {
+		if ( is_numeric( $args['site_id'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.site_id = %d", $args['site_id'] );
 		}
 
-		if ( $args['blog_id'] ) {
+		if ( is_numeric( $args['blog_id'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.blog_id = %d", $args['blog_id'] );
 		}
 
