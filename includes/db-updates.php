@@ -20,9 +20,27 @@ function wp_stream_update_140( $db_version, $current_version ) {
 	// Check to see if the author_role column already exists
 	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'author_role'" );
 
-	// If the author_role doesn't exist, then create it
+	// If the author_role doesn't exist, then create it and update records retroactively
 	if ( empty( $rows ) ) {
 		$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(50) NOT NULL AFTER author" );
+
+		$records = wp_stream_query( array( 'records_per_page' => -1 ) );
+
+		foreach ( $records as $record ) {
+			$user = get_user_by( 'id', $record->author );
+
+			if ( ! $user || ! isset( $user->roles[0] ) ) {
+				continue;
+			}
+
+			$wpdb->update(
+				$wpdb->stream,
+				array(
+					'author_role' => $user->roles[0],
+				),
+				array( 'ID' => $record->ID )
+			);
+		}
 	}
 
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
@@ -211,10 +229,11 @@ function wp_stream_update_128( $db_version, $current_version ) {
 		FROM $wpdb->stream r
 		JOIN $wpdb->streamcontext c
 			ON r.ID = c.record_id AND c.connector = 'media' AND c.context = 'media'
-		";
-	$media_records = $wpdb->get_results( $sql ); // db call ok
+	";
 
-	foreach ( $media_records as $record ) {
+	$records = $wpdb->get_results( $sql ); // db call ok
+
+	foreach ( $records as $record ) {
 		$post = get_post( $record->pid );
 		$guid = isset( $post->guid ) ? $post->guid : null;
 		$url  = $guid ? $guid : wp_stream_get_meta( $record->id, 'url', true );
@@ -265,11 +284,11 @@ function wp_stream_update_125( $db_version, $current_version ) {
 		JOIN $wpdb->term_taxonomy tt
 			ON tt.term_id = m.meta_value
 			AND tt.taxonomy = m2.meta_value
-		";
+	";
 
-	$tax_records = $wpdb->get_results( $sql ); // db call ok
+	$records = $wpdb->get_results( $sql ); // db call ok
 
-	foreach ( $tax_records as $record ) {
+	foreach ( $records as $record ) {
 		if ( ! empty( $record->tt ) ) {
 			$wpdb->update(
 				$wpdb->stream,
