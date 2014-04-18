@@ -213,7 +213,7 @@ class WP_Stream_Install {
 			'1.2.8'/** @version 1.2.8 Change the context for Media connectors to the attachment type */,
 			'1.3.0'/** @version 1.3.0 Backward settings compatibility for old version plugins */,
 			'1.3.1'/** @version 1.3.1 Update records of Installer to Theme Editor connector */,
-			'1.3.2'/** @version 1.3.2 Add the author_role column */,
+			'1.4.0'/** @version 1.4.0 Add the author_role column */,
 		);
 	}
 

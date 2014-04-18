@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Update Database to version 1.4.0
+ * Version 1.4.0
+ *
+ * Create `author_role` column in `stream` table if it doesn't already exist.
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -26,14 +28,16 @@ function wp_stream_update_140( $db_version, $current_version ) {
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
 
 	if ( $wpdb->last_error ) {
-		return __( 'Database Update Error', 'stream' );
+		return esc_html__( 'Database Update Error', 'stream' );
 	}
 
 	return $current_version;
 }
 
 /**
- * Update Database to version 1.3.1
+ * Version 1.3.1
+ *
+ * Migrate theme file edit records from Installer connector to the Theme Editor connector and update summaries.
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -53,14 +57,14 @@ function wp_stream_update_131( $db_version, $current_version ) {
 }
 
 /**
- * Function will migrate theme file edit records from Installer connector to the Theme Editor connector
+ * @param $labels array connectors terms labels
  *
  * @action wp_stream_after_connectors_registration
+ * @return string $current_version if updated correctly
  */
 function migrate_installer_edits_to_theme_editor_connector() {
 	global $wpdb;
 
-	$prefix          = WP_Stream_Install::$table_prefix;
 	$db_version      = WP_Stream_Install::$db_version;
 	$current_version = WP_Stream_Install::$current;
 
@@ -122,12 +126,14 @@ function migrate_installer_edits_to_theme_editor_connector() {
 }
 
 /**
- * Update Database to version 1.3.0
+ * Version 1.3.0
+ *
+ * Migrate old options from the General and Connectors tabs into the new Exclude tab.
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
  *
- * @return bool true if no wpdb errors
+ * @return string $current_version if updated correctly
  */
 function wp_stream_update_130( $db_version, $current_version ) {
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
@@ -142,17 +148,14 @@ function wp_stream_update_130( $db_version, $current_version ) {
 }
 
 /**
- *  Function will migrate old options from the General and Connectors tabs into the new Exclude tab
- *
  * @param $labels array connectors terms labels
  *
  * @action wp_stream_after_connectors_registration
- * @return bool|int|string
+ * @return string $current_version if updated correctly
  */
 function migrate_old_options_to_exclude_tab( $labels ) {
 	global $wpdb;
 
-	$prefix          = WP_Stream_Install::$table_prefix;
 	$db_version      = WP_Stream_Install::$db_version;
 	$current_version = WP_Stream_Install::$current;
 
@@ -190,18 +193,18 @@ function migrate_old_options_to_exclude_tab( $labels ) {
 }
 
 /**
- * Update Database to version 1.2.8
+ * Version 1.2.8
+ *
+ * Update existing Media records so that the context is the media's attachment type.
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
  *
- * @return bool true if no wpdb errors
+ * @return string $current_version if updated correctly
  */
 function wp_stream_update_128( $db_version, $current_version ) {
 	global $wpdb;
 
-	$prefix = WP_Stream_Install::$table_prefix;
-
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
 	$sql = "SELECT r.ID id, r.object_id pid, c.meta_id mid
@@ -230,45 +233,49 @@ function wp_stream_update_128( $db_version, $current_version ) {
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
 
 	if ( $wpdb->last_error ) {
-		return __( 'Database Update Error', 'stream' );
+		return esc_html__( 'Database Update Error', 'stream' );
 	}
 
 	return $current_version;
 }
 
 /**
- * Update Database to version 1.2.5
+ * Version 1.2.5
+ *
+ * Taxonomy records switch from term_id to term_taxonomy_id.
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
  *
- * @return bool true if no wpdb errors
+ * @return string $current_version if updated correctly
  */
 function wp_stream_update_125( $db_version, $current_version ) {
 	global $wpdb;
 
-	$prefix = WP_Stream_Install::$table_prefix;
-
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
-	$sql = "SELECT r.ID id, r.object_id pid, c.meta_id mid
+	$sql = "SELECT r.ID id, tt.term_taxonomy_id tt
 		FROM $wpdb->stream r
 		JOIN $wpdb->streamcontext c
-			ON r.ID = c.record_id AND c.connector = 'media' AND c.context = 'media'
+			ON r.ID = c.record_id AND c.connector = 'taxonomies'
+		JOIN $wpdb->streammeta m
+			ON r.ID = m.record_id AND m.meta_key = 'term_id'
+		JOIN $wpdb->streammeta m2
+			ON r.ID = m2.record_id AND m2.meta_key = 'taxonomy'
+		JOIN $wpdb->term_taxonomy tt
+			ON tt.term_id = m.meta_value
+			AND tt.taxonomy = m2.meta_value
 		";
-	$media_records = $wpdb->get_results( $sql ); // db call ok
 
-	foreach ( $media_records as $record ) {
-		$post = get_post( $record->pid );
-		$guid = isset( $post->guid ) ? $post->guid : null;
-		$url  = $guid ? $guid : wp_stream_get_meta( $record->id, 'url', true );
+	$tax_records = $wpdb->get_results( $sql ); // db call ok
 
-		if ( ! empty( $url ) ) {
+	foreach ( $tax_records as $record ) {
+		if ( ! empty( $record->tt ) ) {
 			$wpdb->update(
-				$wpdb->streamcontext,
-				array( 'context' => WP_Stream_Connector_Media::get_attachment_type( $url ) ),
-				array( 'record_id' => $record->id ),
-				array( '%s' ),
+				$wpdb->stream,
+				array( 'object_id' => $record->tt ),
+				array( 'ID' => $record->id ),
+				array( '%d' ),
 				array( '%d' )
 			);
 		}
@@ -277,19 +284,21 @@ function wp_stream_update_125( $db_version, $current_version ) {
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
 
 	if ( $wpdb->last_error ) {
-		return __( 'Database Update Error', 'stream' );
+		return esc_html__( 'Database Update Error', 'stream' );
 	}
 
 	return $current_version;
 }
 
 /**
- * Update Database to version 1.1.7
+ * Version 1.1.7
+ *
+ * Update the IP column to be compatible with IPv6 addresses.
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
  *
- * @return bool true if no wpdb errors
+ * @return string $current_version if updated correctly
  */
 function wp_stream_update_117( $db_version, $current_version ) {
 	global $wpdb;
@@ -303,19 +312,21 @@ function wp_stream_update_117( $db_version, $current_version ) {
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
 
 	if ( $wpdb->last_error ) {
-		return __( 'Database Update Error', 'stream' );
+		return esc_html__( 'Database Update Error', 'stream' );
 	}
 
 	return $current_version;
 }
 
 /**
- * Update Database to version 1.1.4
+ * Version 1.1.4
+ *
+ * Update the charset and collation in all stream tables.
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
  *
- * @return bool true if no wpdb errors
+ * @return string $current_version if updated correctly
  */
 function wp_stream_update_114( $db_version, $current_version ) {
 	global $wpdb;
@@ -335,11 +346,11 @@ function wp_stream_update_114( $db_version, $current_version ) {
 		$wpdb->query( "ALTER TABLE {$prefix}{$table} CONVERT TO CHARACTER SET {$wpdb->charset}{$collate};" );
 	}
 
-	if ( $wpdb->last_error ) {
-		return __( 'Database Update Error', 'stream' );
-	}
-
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
+
+	if ( $wpdb->last_error ) {
+		return esc_html__( 'Database Update Error', 'stream' );
+	}
 
 	return $current_version;
 }
