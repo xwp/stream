@@ -15,10 +15,12 @@ function wp_stream_update_132( $db_version, $current_version ) {
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
-	$wpdb->get_results( "SELECT * FROM information_schema.COLUMNS WHERE TABLE_NAME = '{$prefix}stream' AND COLUMN_NAME = 'author_role'" );
+	// Check to see if the author_role column already exists
+	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'author_role'" );
 
-	if ( 0 === $wpdb->num_rows ) {
-		$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(20) NOT NULL AFTER author" );
+	// If the author_role doesn't exist, then create it
+	if ( empty( $rows ) ) {
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(50) NOT NULL AFTER author" );
 	}
 
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
