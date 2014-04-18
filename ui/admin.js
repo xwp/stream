@@ -591,6 +591,14 @@ jQuery(function($){
 					'allowClear': true
 				});
 
+				if ('' !== from.val()) {
+					from_remove.show();
+				}
+
+				if ('' !== to.val()) {
+					to_remove.show();
+				}
+
 				predefined.on({
 					'change': function () {
 						var value = $(this).val(),
