@@ -26,7 +26,7 @@ class WP_Stream_Query {
 
 		$defaults = array(
 			// Pagination params
-			'records_per_page'      => get_site_option( 'posts_per_page' ),
+			'records_per_page'      => get_option( 'posts_per_page' ),
 			'paged'                 => 1,
 			// Search param
 			'search'                => null,
