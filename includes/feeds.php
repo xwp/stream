@@ -80,7 +80,7 @@ class WP_Stream_Feeds {
 		$key = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
 		$query_var = is_network_admin() ? self::FEED_NETWORK_QUERY_VAR : self::FEED_QUERY_VAR;
 
-		$pretty_permalinks = get_option( 'permalink_structure' );
+		$pretty_permalinks = get_site_option( 'permalink_structure' );
 
 		if ( empty( $pretty_permalinks ) ) {
 			$link = add_query_arg(
@@ -162,7 +162,7 @@ class WP_Stream_Feeds {
 
 		$args = array(
 			'blog_id'          => $blog_id,
-			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT, array( 'options' => array( 'default' => get_option( 'posts_per_rss' ) ) ) ),
+			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT, array( 'options' => array( 'default' => get_site_option( 'posts_per_rss' ) ) ) ),
 			'search'           => wp_stream_filter_input( INPUT_GET, 'search' ),
 			'object_id'        => wp_stream_filter_input( INPUT_GET, 'object_id', FILTER_SANITIZE_NUMBER_INT ),
 			'ip'               => wp_stream_filter_input( INPUT_GET, 'ip', FILTER_VALIDATE_IP ),
@@ -197,9 +197,9 @@ class WP_Stream_Feeds {
 			}
 		} else {
 
-			header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_option( 'blog_charset' ), true );
+			header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_site_option( 'blog_charset' ), true );
 
-			echo '<?xml version="1.0" encoding="' . get_option( 'blog_charset' ) . '"?>';
+			echo '<?xml version="1.0" encoding="' . get_site_option( 'blog_charset' ) . '"?>';
 			?>
 
 			<rss version="2.0"
