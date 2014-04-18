@@ -660,7 +660,7 @@ class WP_Stream_Notifications_Form {
 								'id'              => absint( $rule->ID ),
 								'wp_stream_nonce' => wp_create_nonce( 'delete-record_' . absint( $rule->ID ) ),
 							),
-							admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+							is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 						);
 						?>
 						<a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ) ?>">

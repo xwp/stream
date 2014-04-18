@@ -14,7 +14,7 @@
 					'page' => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
 					'view' => 'rule',
 				),
-				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+				is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 			);
 			?>
 			<a href="<?php echo esc_url( $new_link ) ?>" class="add-new-h2"><?php esc_html_e( 'Add New', 'stream-notifications' ) ?></a>
@@ -42,11 +42,11 @@
 				</div><!-- /post-body-content -->
 
 				<div id="postbox-container-1" class="postbox-container">
-					<?php do_meta_boxes( get_current_screen()->id, 'side', $rule ); ?>
+					<?php do_meta_boxes( WP_Stream_Notifications::$screen_id, 'side', $rule ); ?>
 				</div><!-- postbox-container-1 -->
 
 				<div id="postbox-container-2" class="postbox-container">
-					<?php do_meta_boxes( get_current_screen()->id, 'normal', $rule ); ?>
+					<?php do_meta_boxes( WP_Stream_Notifications::$screen_id, 'normal', $rule ); ?>
 				</div><!-- postbox-container-2 -->
 			</div><!-- /postbody -->
 		</div><!-- /poststuff -->

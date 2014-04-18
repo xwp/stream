@@ -59,6 +59,11 @@ class WP_Stream_Notifications {
 	public static $list_table = null;
 
 	/**
+	 * @var WP_Stream_Notifications_Network
+	 */
+	public $network = null;
+
+	/**
 	 * Page slug for notifications list table screen
 	 *
 	 * @const string
@@ -103,6 +108,7 @@ class WP_Stream_Notifications {
 	 * Class constructor
 	 */
 	private function __construct() {
+		define( 'WP_STREAM_NOTIFICATIONS_PLUGIN', plugin_basename( __FILE__ ) );
 		define( 'WP_STREAM_NOTIFICATIONS_DIR', plugin_dir_path( __FILE__ ) ); // Has trailing slash
 		define( 'WP_STREAM_NOTIFICATIONS_URL', plugin_dir_url( __FILE__ ) ); // Has trailing slash
 		define( 'WP_STREAM_NOTIFICATIONS_INC_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'includes/' ); // Has trailing slash
@@ -118,7 +124,9 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function load() {
-		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+
+		// Admin notices
+		add_action( 'all_admin_notices', array( $this, 'admin_notices' ) );
 
 		if ( ! $this->is_dependency_satisfied() ) {
 			return;
@@ -145,6 +153,23 @@ class WP_Stream_Notifications {
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'settings.php';
 		add_action( 'init', array( 'WP_Stream_Notification_Settings', 'load' ), 9 );
+
+		// Load network class
+		if ( is_multisite() ) {
+			require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'network.php';
+			$this->network = new WP_Stream_Notifications_Network;
+		}
+
+		// Register export page
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+		if ( is_plugin_active_for_network( WP_STREAM_NOTIFICATIONS_PLUGIN ) ) {
+			add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
+		}
+		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) ) {
+			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+		}
 
 		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) ) {
 			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
@@ -313,7 +338,7 @@ class WP_Stream_Notifications {
 						array(
 							'page' => self::NOTIFICATIONS_PAGE_SLUG,
 						),
-						admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+						is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 					)
 				);
 			}
@@ -338,7 +363,7 @@ class WP_Stream_Notifications {
 					'page' => self::NOTIFICATIONS_PAGE_SLUG,
 					'view' => 'rule',
 				),
-				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+				is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 			),
 			__( 'Add New' )
 		); // xss okay

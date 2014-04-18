@@ -46,7 +46,7 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 						__( 'Please activate the %1$s plugin to enable push alerts.', 'stream-notifications' ),
 						sprintf(
 							'<a href="%1$s">%2$s</a>',
-							admin_url( 'plugins.php' ),
+							is_network_admin() ? network_admin_url( 'plugins.php' ) : admin_url( 'plugins.php' ),
 							__( 'Pushover Notifications', 'stream-notifications' )
 						)
 					),
@@ -72,7 +72,7 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 							__( 'Only those users with a %s in their profile can be selected.', 'stream-notifications' ),
 							sprintf(
 								'<a href="%s" target="_blank">%s</a>',
-								admin_url( 'profile.php#wp-stream-highlight:ckpn_user_key' ),
+								is_network_admin() ? network_admin_url( 'profile.php#wp-stream-highlight:ckpn_user_key' ) : admin_url( 'profile.php#wp-stream-highlight:ckpn_user_key' ),
 								__( 'Pushover User Key', 'stream-notifications' )
 							)
 						),
@@ -98,7 +98,7 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 						__( 'Please provide your Application key on %1$s.', 'stream-notifications' ),
 						sprintf(
 							'<a href="%1$s">%2$s</a>',
-							admin_url( 'options-general.php?page=pushover-notifications' ),
+							is_network_admin() ? network_admin_url( 'options-general.php?page=pushover-notifications' ) : admin_url( 'options-general.php?page=pushover-notifications' ),
 							__( 'Pushover Notifications settings page', 'stream-notifications' )
 						)
 					),

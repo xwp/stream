@@ -52,6 +52,7 @@ class WP_Stream_Notification_Rule {
 
 		$defaults = array(
 			'ID'         => null,
+			'blog_id'    => is_network_admin() ? 0 : get_current_blog_id(),
 			'author'     => wp_get_current_user()->ID,
 			'summary'    => null,
 			'visibility' => 'inactive',
