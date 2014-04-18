@@ -153,6 +153,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'context',
 			'action',
 			'author',
+			'author_role',
 			'object_id',
 			'search',
 			'date',

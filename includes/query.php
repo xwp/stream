@@ -50,6 +50,8 @@ class WP_Stream_Query {
 			'record_parent__not_in' => array(),
 			'author__in'            => array(),
 			'author__not_in'        => array(),
+			'author_role__in'       => array(),
+			'author_role__not_in'   => array(),
 			'ip__in'                => array(),
 			'ip__not_in'            => array(),
 			// Order
@@ -110,7 +112,11 @@ class WP_Stream_Query {
 		}
 
 		if ( $args['author'] ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.author LIKE %d", (int) $args['author'] );
+			$where .= $wpdb->prepare( " AND $wpdb->stream.author = %d", (int) $args['author'] );
+		}
+
+		if ( $args['author_role'] ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.author_role = %s", $args['author_role'] );
 		}
 
 		if ( $args['visibility'] ) {
@@ -189,6 +195,21 @@ class WP_Stream_Query {
 				$where .= $wpdb->prepare( " AND $wpdb->stream.author NOT IN {$author__not_in_format}", $author__not_in );
 			}
 		}
+
+		if ( $args[ 'author_role__in' ] ) {
+			if ( ! empty( $args[ 'author_role__in' ] ) ) {
+				$author_role__in = '(' . join( ',', array_fill( 0, count( $args[ 'author_role__in' ] ), '%s' ) ) . ')';
+				$where          .= $wpdb->prepare( " AND $wpdb->stream.author_role IN {$author_role__in}", $args[ 'author_role__in' ] );
+			}
+		}
+
+		if ( $args[ 'author_role__not_in' ] ) {
+			if ( ! empty( $args[ 'author_role__not_in' ] ) ) {
+				$author_role__not_in = '(' . join( ',', array_fill( 0, count( $args[ 'author_role__not_in' ] ), '%s' ) ) . ')';
+				$where              .= $wpdb->prepare( " AND $wpdb->stream.author_role NOT IN {$author_role__not_in}", $args[ 'author_role__not_in' ] );
+			}
+		}
+
 		if ( $args[ 'ip__in' ] ) {
 			if ( ! empty( $args[ 'ip__in' ] ) ) {
 				$ip__in = '(' . join( ',', array_fill( 0, count( $args[ 'ip__in' ] ), '%s' ) ) . ')';
@@ -242,7 +263,7 @@ class WP_Stream_Query {
 		 */
 		$order     = esc_sql( $args['order'] );
 		$orderby   = esc_sql( $args['orderby'] );
-		$orderable = array( 'ID', 'site_id', 'object_id', 'author', 'summary', 'visibility', 'parent', 'type', 'created' );
+		$orderable = array( 'ID', 'site_id', 'object_id', 'author', 'author_role', 'summary', 'visibility', 'parent', 'type', 'created' );
 
 		if ( in_array( $orderby, $orderable ) ) {
 			$orderby = $wpdb->stream . '.' . $orderby;
