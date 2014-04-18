@@ -51,7 +51,6 @@ function wp_stream_update_140( $db_version, $current_version ) {
 			$blog_stream = $wpdb->get_results( $sql, ARRAY_A );
 
 			foreach ( $blog_stream as $key => $stream_entry ) {
-
 				$prev_entry_id = $stream_entry['ID'];
 
 				unset( $stream_entry['ID'] );
@@ -82,8 +81,10 @@ function wp_stream_update_140( $db_version, $current_version ) {
 					$wpdb->insert( $wpdb->base_prefix . 'stream_meta', $stream_meta );
 				}
 			}
+
 			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stream, {$wpdb->prefix}stream_context, {$wpdb->prefix}stream_meta" );
 		}
+
 		restore_current_blog();
 	}
 
