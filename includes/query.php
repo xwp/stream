@@ -22,13 +22,13 @@ class WP_Stream_Query {
 	public function query( $args ) {
 		global $wpdb;
 
-		$site_id = is_multisite() ? get_current_site()->id : null;
+		$site_id = is_multisite() ? get_current_site()->id : 1;
 
 		$defaults = array(
 			// Pagination params
-			'records_per_page'      => 10,
+			'records_per_page'      => get_site_option( 'posts_per_page' ),
 			'paged'                 => 1,
-			// Search params
+			// Search param
 			'search'                => null,
 			// Stream core fields filtering
 			'type'                  => 'stream',
@@ -36,7 +36,7 @@ class WP_Stream_Query {
 			'ip'                    => null,
 			'site_id'               => is_network_admin() ? null : $site_id,
 			'blog_id'               => is_network_admin() ? null : get_current_blog_id(),
-			// Author param
+			// Author params
 			'author'                => null,
 			'author_role'           => null,
 			// Date-based filters
