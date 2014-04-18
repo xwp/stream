@@ -24,7 +24,7 @@ function wp_stream_update_140( $db_version, $current_version ) {
 
 	// If the blog_id doesn't exist, then create it and update records retroactively
 	if ( empty( $rows ) ) {
-		$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NULL DEFAULT '0' AFTER site_id" );
 	}
 
 	// If multisite, merge the site stream tables into one
