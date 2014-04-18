@@ -37,7 +37,7 @@ class WP_Stream_Notifications {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '1.3.2';
+	const STREAM_MIN_VERSION = '1.4.0';
 
 	/**
 	 * Hold Stream instance
@@ -138,11 +138,17 @@ class WP_Stream_Notifications {
 			include $class;
 		}
 
+		if ( is_multisite() ) {
+			add_filter( 'wp_stream_notifications_disallow_site_access', array( 'WP_Stream_Network', 'disable_admin_access' ) );
+		}
+
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'settings.php';
 		add_action( 'init', array( 'WP_Stream_Notification_Settings', 'load' ), 9 );
 
-		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) ) {
+			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+		}
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
 
