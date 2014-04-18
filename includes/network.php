@@ -90,6 +90,9 @@ class WP_Stream_Network {
 	 * @return boolean
 	 */
 	public static function disable_admin_access( $disable_access ) {
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
 		if ( ! is_network_admin() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 			$settings = (array) get_site_option( WP_Stream_Settings::NETWORK_KEY, array() );
 
