@@ -598,6 +598,14 @@ jQuery(function($){
 					'allowClear': true
 				});
 
+				if ('' !== from.val()) {
+					from_remove.show();
+				}
+
+				if ('' !== to.val()) {
+					to_remove.show();
+				}
+
 				predefined.on({
 					'change': function () {
 						var value = $(this).val(),
@@ -612,7 +620,6 @@ jQuery(function($){
 						} else {
 							dateinputs.hide();
 							datepickers.datepicker('hide');
-							return false;
 						}
 
 						from.val(from_val).trigger('change', [true]);
