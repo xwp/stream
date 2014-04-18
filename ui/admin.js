@@ -605,7 +605,6 @@ jQuery(function($){
 						} else {
 							dateinputs.hide();
 							datepickers.datepicker('hide');
-							return false;
 						}
 
 						from.val(from_val).trigger('change', [true]);
