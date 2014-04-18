@@ -533,7 +533,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	function display() {
 		echo $this->list_navigation(); // xss ok
 		$admin_url = is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
-		echo '<form method="get" action="' . $admin_url . '">';
+		printf( '<form method="get" action="%s">', esc_url( $admin_url ) );
 		parent::display();
 	}
 
@@ -583,7 +583,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	function get_rule_types( $item ) {
-		$rule = get_option( sprintf( 'stream_notifications_%d', $item->ID ) );
+		$rule = get_site_option( sprintf( 'stream_notifications_%d', $item->ID ) );
 		if ( empty( $rule['alerts'] ) ) {
 			return esc_html__( 'N/A', 'stream-notifications' );
 		}
