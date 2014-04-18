@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Update Database to version 1.3.2
+ * Update Database to version 1.4.0
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
  *
  * @return string $current_version if updated correctly
  */
-function wp_stream_update_132( $db_version, $current_version ) {
+function wp_stream_update_140( $db_version, $current_version ) {
 	global $wpdb;
 
 	$prefix = WP_Stream_Install::$table_prefix;
