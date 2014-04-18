@@ -156,7 +156,7 @@ class WP_Stream_Install {
 				<p><strong><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></strong></p>
 				<p><?php esc_html_e( 'Stream has updated! Before we send you on your way, we need to update your database to the newest version.', 'stream' ) ?></p>
 				<p><?php esc_html_e( 'This process could take a little while, so please be patient.', 'stream' ) ?></p>
-				<?php submit_button( __( 'Update Database', 'stream' ) ) ?>
+				<?php submit_button( esc_html__( 'Update Database', 'stream' ), 'primary', 'stream-update-db-submit' ) ?>
 			</form>
 		</div>
 		<?php
@@ -186,7 +186,7 @@ class WP_Stream_Install {
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ), wp_get_referer() ) ?>" style="display:inline;">
 				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ) ?></strong></p>
 				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', self::$db_version, self::$current ), 'stream' ) ?></p>
-				<?php submit_button( __( 'Continue', 'stream' ), 'submit', false ) ?>
+				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ) ?>
 			</form>
 		</div>
 		<?php
@@ -224,8 +224,7 @@ class WP_Stream_Install {
 			'1.2.8'/** @version 1.2.8 Change the context for Media connectors to the attachment type */,
 			'1.3.0'/** @version 1.3.0 Backward settings compatibility for old version plugins */,
 			'1.3.1'/** @version 1.3.1 Update records of Installer to Theme Editor connector */,
-			'1.3.2'/** @version 1.3.2 Add the author_role column */,
-			'1.4.0'/** @version 1.4.0 Prepare tables for multisite support */,
+			'1.4.0'/** @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
 		);
 	}
 
