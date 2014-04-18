@@ -49,7 +49,7 @@ class WP_Stream_Admin {
 		add_action( 'wp_ajax_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
 
 		// Auto purge setup
-		add_action( 'wp', array( __CLASS__, 'purge_schedule_setup' ) );
+		add_action( 'wp_loaded', array( __CLASS__, 'purge_schedule_setup' ) );
 		add_action( 'wp_stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
 
 		// Admin notices
@@ -429,6 +429,10 @@ class WP_Stream_Admin {
 			// Deactivate the plugin
 			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
 
+			// Delete scheduled cron event hooks
+			wp_clear_scheduled_hook( 'stream_auto_purge' ); // Deprecated hook
+			wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
+
 			// Delete all tables
 			foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
 				$wpdb->query( "DROP TABLE $table" );
@@ -450,7 +454,7 @@ class WP_Stream_Admin {
 
 	public static function purge_schedule_setup() {
 		if ( ! wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
-			wp_schedule_event( time(), 'daily', 'wp_stream_auto_purge' );
+			wp_schedule_event( time(), 'twicedaily', 'wp_stream_auto_purge' );
 		}
 	}
 
