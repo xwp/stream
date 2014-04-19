@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: http://wordpress.org/plugins/stream/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 1.3.2
+ * Version: 1.4.0
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -36,7 +36,7 @@ class WP_Stream {
 	 *
 	 * @const string
 	 */
-	const VERSION = '1.3.2';
+	const VERSION = '1.4.0';
 
 	/**
 	 * Hold Stream instance
@@ -109,6 +109,17 @@ class WP_Stream {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			require_once WP_STREAM_INC_DIR . 'extensions.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
+
+			add_action( 'init', array( __CLASS__, 'install' ) );
+
+			// Registers a hook that connectors and other plugins can use whenever a stream update happens
+			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
+
+			require_once WP_STREAM_INC_DIR . 'dashboard.php';
+			add_action( 'plugins_loaded', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
+
+			require_once WP_STREAM_INC_DIR . 'live-update.php';
+			add_action( 'plugins_loaded', array( 'WP_Stream_Live_Update', 'load' ) );
 		}
 
 		// Load deprecated functions
@@ -158,8 +169,7 @@ class WP_Stream {
 
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
-		WP_Stream_Install::check();
-
+		$update = WP_Stream_Install::get_instance();
 	}
 
 	/**
@@ -179,6 +189,7 @@ class WP_Stream {
 		}
 
 		global $wpdb;
+
 		$message = '';
 
 		// Check if all needed DB is present
@@ -188,9 +199,6 @@ class WP_Stream {
 			}
 		}
 
-		// Check upgrade routine
-		self::install();
-
 		if ( ! empty( $message ) ) {
 			self::$messages['wp_stream_db_error'] = sprintf(
 				'<div class="error">%s<p>%s</p></div>',
@@ -198,6 +206,10 @@ class WP_Stream {
 				sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) )
 			); // xss ok
 		}
+	}
+
+	static function update_activation_hook() {
+		WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( __CLASS__, 'install' ), self::VERSION );
 	}
 
 	/**
@@ -230,6 +242,7 @@ class WP_Stream {
 			$class = __CLASS__;
 			self::$instance = new $class;
 		}
+
 		return self::$instance;
 	}
 
