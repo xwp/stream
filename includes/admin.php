@@ -137,7 +137,7 @@ class WP_Stream_Admin {
 
 		if ( 'index.php' === $hook ) {
 			wp_enqueue_script( 'wp-stream-admin-dashboard', WP_STREAM_URL . 'ui/dashboard.js', array( 'jquery', 'heartbeat' ) );
-		} else if ( in_array( $hook, self::$screen_id ) || 'plugins.php' === $hook ) {
+		} elseif ( in_array( $hook, self::$screen_id ) || 'plugins.php' === $hook ) {
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_style( 'select2' );
 
