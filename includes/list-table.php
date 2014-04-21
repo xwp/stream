@@ -164,7 +164,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 
 		foreach ( $allowed_params as $param ) {
-			if ( $paramval = wp_stream_filter_input( INPUT_GET, $param ) ) {
+			$paramval = wp_stream_filter_input( INPUT_GET, $param );
+			if ( $paramval || '0' === $paramval ) {
 				$args[ $param ] = $paramval;
 			}
 		}
