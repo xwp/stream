@@ -72,10 +72,6 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'db.php';
 		$this->db = new WP_Stream_DB;
 
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			return;
-		}
-
 		// Check DB and add message if not present
 		$this->verify_database_present();
 
