@@ -51,13 +51,6 @@ class WP_Stream {
 	public $db = null;
 
 	/**
-	 * Admin notices messages
-	 *
-	 * @var array
-	 */
-	public static $messages = array();
-
-	/**
 	 * Class constructor
 	 */
 	private function __construct() {
@@ -123,12 +116,8 @@ class WP_Stream {
 	 * add the error message to the admin notices
 	 */
 	static function fail_php_version() {
-		add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
-		self::$messages[] = sprintf(
-			'<div class="error"><p>%s</p></div>',
-			__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
-		);
+		self::notice( __( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' ) );
 	}
 
 	/**
@@ -182,21 +171,17 @@ class WP_Stream {
 
 		global $wpdb;
 
-		$message = '';
+		$messages = array();
 
 		// Check if all needed DB is present
 		foreach ( $this->db->get_table_names() as $table_name ) {
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-				$message .= sprintf( '<p>%s %s</p>', __( 'The following table is not present in the WordPress database :', 'stream' ), $table_name );
+				$messages[] = sprintf( __( 'The following table is not present in the WordPress database: %s', 'stream' ), $table_name );
 			}
 		}
 
 		if ( ! empty( $message ) ) {
-			self::$messages['wp_stream_db_error'] = sprintf(
-				'<div class="error">%s<p>%s</p></div>',
-				$message,
-				sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) )
-			); // xss ok
+			self::notice( join( "\n\n", $messages ) );
 		}
 	}
 
@@ -205,22 +190,38 @@ class WP_Stream {
 	}
 
 	/**
-	 * Display a notice about php version
+	 * Whether the current PHP version meets the minimum requirements
 	 *
-	 * @action all_admin_notices
+	 * @return bool
 	 */
 	public static function is_valid_php_version() {
 		return version_compare( PHP_VERSION, '5.3', '>=' );
 	}
 
 	/**
-	 * Display all messages on admin board
+	 * Show an error or other message, using admin_notice or WP-CLI logger
 	 *
+	 * @param string $message
+	 * @param bool $is_error
 	 * @return void
 	 */
-	public static function admin_notices() {
-		foreach ( self::$messages as $message ) {
-			echo wp_kses_post( $message );
+	public static function notice( $message, $is_error = true ) {
+		if ( constant( 'WP_CLI' ) ) {
+			$message = strip_tags( $message );
+			if ( $is_error ) {
+				WP_CLI::warning( $message );
+			} else {
+				WP_CLI::success( $message );
+			}
+		} else {
+			add_action( 'all_admin_notices', function () use ( $message, $is_error ) {
+				echo wp_kses_post( sprintf(
+					'<div class="%s">%s</div>',
+					$is_error ? 'error' : 'updated',
+					wpautop( $message )
+				) );
+			} );
+
 		}
 	}
 
