@@ -228,6 +228,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				global $wp_roles;
 				$author_ID    = isset( $item->author ) ? $item->author : 0;
 				$user_deleted = false;
+				$is_wp_cli    = ! empty( $author_meta['is_wp_cli'] );
 
 				/**
 				 * Tries to find a label for the record's author_role.
@@ -250,6 +251,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 				if ( $user ) {
 					$author_name   = isset( $user->display_name ) ? $user->display_name : $user->user_login;
 					$author_avatar = get_avatar( $author_ID, 40 );
+				} else if ( $is_wp_cli ) {
+					$author_name   = 'WP-CLI';
+					$author_avatar = ''; // @todo Use logo?
 				} else {
 					$user_deleted  = true;
 					$author_name   = ! empty( $author_meta['display_name'] ) ? $author_meta['display_name'] : $author_meta['user_login'];
@@ -257,7 +261,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				}
 
 				$out = sprintf(
-					'<a href="%s">%s <span>%s</span></a>%s%s',
+					'<a href="%s">%s <span>%s</span></a>%s%s%s',
 					add_query_arg(
 						array(
 							'page'   => WP_Stream_Admin::RECORDS_PAGE_SLUG,
@@ -268,7 +272,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$author_avatar,
 					$author_name,
 					$user_deleted ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
-					$author_role ? sprintf( '<br /><small>%s</small>', $author_role ) : ''
+					$author_role ? sprintf( '<br /><small>%s</small>', $author_role ) : '',
+					$user && $is_wp_cli ? sprintf( '<br /><small>%s</small>', __( 'via WP-CLI', 'stream' ) ) : ''
 				);
 				break;
 

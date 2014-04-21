@@ -74,9 +74,10 @@ class WP_Stream_Log {
 			$args['author_meta'] = maybe_serialize(
 				array(
 					'user_email'      => $user->user_email,
-					'display_name'    => $user->display_name,
+					'display_name'    => ( constant( 'WP_CLI' ) && empty( $user->display_name ) ) ? 'WP-CLI' : $user->display_name,
 					'user_login'      => $user->user_login,
-					'user_role_label' => $roles[ $user->roles[0] ]['name'],
+					'user_role_label' => ! empty( $user->roles ) ? $roles[ $user->roles[0] ]['name'] : null,
+					'is_wp_cli'       => ! is_null( constant( 'WP_CLI' ) ),
 				)
 			);
 		}
@@ -92,7 +93,7 @@ class WP_Stream_Log {
 		$recordarr = array(
 			'object_id'   => $object_id,
 			'author'      => $user_id,
-			'author_role' => $user->roles[0],
+			'author_role' => ! empty( $user->roles ) ? $user->roles[0] : null,
 			'created'     => current_time( 'mysql', 1 ),
 			'summary'     => vsprintf( $message, $args ),
 			'parent'      => self::$instance->prev_record,
