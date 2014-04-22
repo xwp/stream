@@ -18,7 +18,7 @@
 				$.each(stream_extensions.extensions, function(index, value) {
 					if (extension === index) {
 						console.log(value);
-						template.html('<img src="'+ value.screen_shot + '" />' + value.description);
+						template.find('.screenshot').html('<img src="' + value.screen_shot + '" />');
 					}
 				});
 			});
