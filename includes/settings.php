@@ -248,11 +248,17 @@ class WP_Stream_Settings {
 							'title'       => __( 'Private Feeds', 'stream' ),
 							'type'        => 'checkbox',
 							'desc'        => sprintf(
-								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
+								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
 								sprintf(
 									'<a href="%s" title="%s">',
 									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
 									esc_attr__( 'View Profile', 'stream' )
+								),
+								'</a>',
+								sprintf(
+									'<a href="%s" title="%s" target="_blank">',
+									esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
+									esc_attr__( 'View Codex', 'stream' )
 								),
 								'</a>'
 							),
