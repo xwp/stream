@@ -2,7 +2,7 @@
 /**
  * Extensions Class
  *
- * @author Chris Olbekson <chris@x-team.com
+ * @author Chris Olbekson <chris@x-team.com>
  */
 
 class WP_Stream_Extensions {
@@ -86,6 +86,7 @@ class WP_Stream_Extensions {
 		if ( ! is_wp_error( $response ) ) {
 			return json_decode( wp_remote_retrieve_body( $response ) );
 		}
+
 		return false;
 	}
 
@@ -99,6 +100,7 @@ class WP_Stream_Extensions {
 					$api->name = $extension->title;
 					$api->version = $extension->post_meta->current_version[0];
 					$api->download_link = esc_url_raw( self::API_TRANSPORT . self::API_DOMAIN . $extension->post_meta->download_url[0] );
+
 					return $api;
 				}
 			}
@@ -111,6 +113,7 @@ class WP_Stream_Extensions {
 		if ( $host == self::API_DOMAIN ) {
 			$allow = true;
 		}
+
 		return $allow;
 	}
 
@@ -135,6 +138,7 @@ class WP_Stream_Extensions {
 		if ( get_option( 'stream-license' ) ) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -224,24 +228,25 @@ class WP_Stream_Extensions {
 					$image_src     = ! empty( $image_src ) ? $image_src : null;
 					$install_link  = wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug );
 					$activate_link = wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] );
-
+					$aria_action = esc_attr( $extension->slug . '-action' );
+					$aria_name   = esc_attr( $extension->slug . '-name' );
 					?>
 
-					<div class="theme<?php if ( $is_active ) { echo esc_attr( ' active' ); } ?>">
-						<a href="<?php echo esc_url( $extension->link ) ?>" target="_blank">
+					<div class="theme<?php if ( $is_active ) { echo esc_attr( ' active' ); } ?>" tabindex="0" data-extension="<?php echo esc_attr( $extension->slug ); ?>">
+<!--						<a href="--><?php //echo esc_url( $extension->link ) ?><!--" target="_blank">-->
 							<div class="theme-screenshot<?php if ( ! $image_src ) { echo esc_attr( ' blank' ); } ?>">
 								<?php if ( $image_src ) : ?>
 									<img src="<?php echo esc_url( $image_src ) ?>" alt="<?php echo esc_attr( $extension->title ) ?>">
 								<?php endif; ?>
 							</div>
-							<span class="more-details"><?php esc_html_e( 'View Details', 'stream' ) ?></span>
+							<span class="more-details" id="<?php echo esc_attr( $aria_action ); ?>"><?php esc_html_e( 'View Details', 'stream' ) ?></span>
 							<h3 class="theme-name">
 								<span><?php echo esc_html( $extension->title ) ?></span>
 								<?php if ( $is_installed && ! $is_active ) : ?>
 								<span class="inactive"><?php esc_html_e( 'Inactive', 'stream' ) ?></span>
 								<?php endif; ?>
 							</h3>
-						</a>
+<!--						</a>-->
 					<div class="theme-actions">
 						<?php if ( ! $is_installed ) { ?>
 							<?php if ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) : ?>
@@ -270,6 +275,59 @@ class WP_Stream_Extensions {
 			<br class="clear">
 
 		</div>
+		<div class="theme-overlay"></div>
 		<?php
+		$this->render_extension_about_template();
+	}
+
+	function prepare_extensions_for_js( $extensions ) {
+		$prepared_extensions = array();
+		foreach ( $extensions as $extension ) {
+
+			$prepared_extensions[ $extension->slug ] = array(
+				'id'           => $extension->slug,
+				'name'         => $extension->title,
+				'screen_shot'   => isset( $extension->featured_image->source ) ? $extension->featured_image->source : null,
+				'video'         => '', /** @todo Get video embed code from json api */
+				'description'  => $extension->content,
+				'author'       => $extension->author->name,
+				'authorAndUri' => $extension->author->name,
+				'version'      => '1.0', /** @todo Add version number to json api */
+				'active'       => true,
+				'hasUpdate'    => false,
+				'update'       => false,
+				'actions'      => array(
+					'activate'  => wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] ),
+					'install' => null,
+					'delete'    => null,
+				),
+			);
+		}
+		return $prepared_extensions;
+	}
+
+	function render_extension_about_template() {
+		?>
+			<div class="theme-wrap">
+				<div class="theme-header">
+					<button class="left dashicons dashicons-no"><span class="screen-reader-text">Show previous extension</span></button>
+					<button class="right dashicons dashicons-no"><span class="screen-reader-text">Show next extension</span></button>
+					<button class="close dashicons dashicons-no"><span class="screen-reader-text">Close overlay</span></button>
+				</div>
+			<div class="theme-about">
+				<div class="theme-screenshots">
+					<div class="screenshot"></div>
+				</div>
+
+			<div class="theme-info">
+				<p class="theme-description"></p>
+			</div>
+		</div>
+
+		<div class="theme-actions">
+			<div class="active-theme"></div>
+		</div>
+		</div>
+	<?php
 	}
 }
