@@ -21,7 +21,41 @@ class WP_Stream_Feeds {
 		add_action( 'show_user_profile', array( __CLASS__, 'user_feed_key' ) );
 		add_action( 'edit_user_profile', array( __CLASS__, 'user_feed_key' ) );
 
+		// Generate new Stream Feed Key
+		add_action( 'wp_ajax_wp_stream_feed_key_generate', array( __CLASS__, 'generate_user_feed_key' ) );
+
 		add_feed( self::FEED_QUERY_VAR, array( __CLASS__, 'feed_template' ) );
+	}
+
+	/**
+	 * Sends a new user key when the
+	 *
+	 * @return void/json
+	 */
+	public static function generate_user_feed_key() {
+		check_ajax_referer( 'wp_stream_generate_key', 'nonce' );
+
+		$user_id = wp_stream_filter_input( INPUT_POST, 'user', FILTER_SANITIZE_NUMBER_INT );
+
+		if ( $user_id ) {
+			$feed_key = wp_generate_password( 32, false );
+			update_user_meta( $user_id, self::USER_FEED_KEY, $feed_key );
+
+			$link      = self::get_user_feed_url( $feed_key );
+			$xml_feed  = add_query_arg( array( 'type' => 'json' ), $link );
+			$json_feed = add_query_arg( array( 'type' => 'json' ), $link );
+
+			wp_send_json_success(
+				array(
+					'message'   => 'User feed key successfully generated.',
+					'feed_key'  => $feed_key,
+					'xml_feel'  => $xml_feed,
+					'json_feed' => $json_feed,
+				)
+			);
+		} else {
+			wp_send_json_error( 'User ID error' );
+		}
 	}
 
 	/**
@@ -33,15 +67,20 @@ class WP_Stream_Feeds {
 	 * @return void
 	 */
 	public static function save_user_feed_key( $user ) {
-		if ( get_user_meta( $user->ID, self::USER_FEED_KEY, true ) && ! isset( $_GET[self::GENERATE_KEY_QUERY_VAR] ) ) {
+		$generate_key = isset( $_GET[ self::GENERATE_KEY_QUERY_VAR ] );
+		$verify_nonce = isset( $_GET['wp_stream_nonce'] ) && wp_verify_nonce( $_GET['wp_stream_nonce'], 'wp_stream_generate_key' );
+
+		if ( ! $generate_key && get_user_meta( $user->ID, self::USER_FEED_KEY, true ) ) {
 			return;
 		}
 
-		if ( ! isset( $_GET['wp_stream_nonce'] ) || ! wp_verify_nonce( $_GET['wp_stream_nonce'], 'wp_stream_generate_key' ) ) {
+		if ( $generate_key && ! $verify_nonce ) {
 			return;
 		}
 
-		update_user_meta( $user->ID, self::USER_FEED_KEY, wp_generate_password( 32, false ) );
+		$feed_key = wp_generate_password( 32, false );
+
+		update_user_meta( $user->ID, self::USER_FEED_KEY, $feed_key );
 	}
 
 	/**
@@ -56,8 +95,39 @@ class WP_Stream_Feeds {
 			return;
 		}
 
-		$key = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
+		$key  = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
+		$link = self::get_user_feed_url( $key );
 
+		$nonce = wp_create_nonce( 'wp_stream_generate_key' );
+		?>
+		<table class="form-table">
+			<tr>
+				<th><label for="<?php echo esc_attr( self::USER_FEED_KEY ) ?>"><?php esc_html_e( 'Stream Feeds Key', 'stream' ) ?></label></th>
+				<td>
+					<p class="wp-stream-feeds-key">
+						<?php wp_nonce_field( 'wp_stream_generate_key', 'wp_stream_generate_key_nonce' ) ?>
+						<input type="text" name="<?php echo esc_attr( self::USER_FEED_KEY ) ?>" id="<?php echo esc_attr( self::USER_FEED_KEY ) ?>" class="regular-text code" value="<?php echo esc_attr( $key ) ?>" readonly>
+						<small><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true, 'wp_stream_nonce' => $nonce ) ) ) ?>" id="<?php echo esc_attr( self::USER_FEED_KEY ) ?>_generate"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
+						<span class="spinner" style="display: none;"></span>
+					</p>
+					<p class="description"><?php esc_html_e( 'This is your private key used for accessing feeds of Stream Records securely. You can change your key at any time by generating a new one using the link above.', 'stream' ) ?></p>
+					<p>
+						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'xml' ), $link )  ) ?>" class="rss-feed" target="_blank"><?php echo esc_html_e( 'RSS Feed' ) ?></a>
+						|
+						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'json' ), $link ) ) ?>" class="json-feed" target="_blank"><?php echo esc_html_e( 'JSON Feed' ) ?></a>
+					</p>
+				</td>
+			</tr>
+		</table>
+		<?php
+	}
+
+	/**
+	 * Return Stream Feed URL
+	 *
+	 * @return string
+	 */
+	public static function get_user_feed_url( $key ) {
 		$pretty_permalinks = get_option( 'permalink_structure' );
 
 		if ( empty( $pretty_permalinks ) ) {
@@ -82,26 +152,7 @@ class WP_Stream_Feeds {
 			);
 		}
 
-		$nonce = wp_create_nonce( 'wp_stream_generate_key' );
-		?>
-		<table class="form-table">
-			<tr>
-				<th><label for="<?php echo esc_attr( self::USER_FEED_KEY ) ?>"><?php esc_html_e( 'Stream Feeds Key', 'stream' ) ?></label></th>
-				<td>
-					<p>
-						<input type="text" name="<?php echo esc_attr( self::USER_FEED_KEY ) ?>" id="<?php echo esc_attr( self::USER_FEED_KEY ) ?>" class="regular-text code" value="<?php echo esc_attr( $key ) ?>" readonly>
-						<small><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true, 'wp_stream_nonce' => $nonce ) ) . sprintf( '#wp-stream-highlight:%s', self::USER_FEED_KEY ) ) ?>"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
-					</p>
-					<p class="description"><?php esc_html_e( 'This is your private key used for accessing feeds of Stream Records securely. You can change your key at any time by generating a new one using the link above.', 'stream' ) ?></p>
-					<p>
-						<a href="<?php echo esc_url( $link ) ?>" target="_blank"><?php echo esc_html_e( 'RSS Feed' ) ?></a>
-						|
-						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'json' ), $link ) ) ?>" target="_blank"><?php echo esc_html_e( 'JSON Feed' ) ?></a>
-					</p>
-				</td>
-			</tr>
-		</table>
-		<?php
+		return $link;
 	}
 
 	/**
