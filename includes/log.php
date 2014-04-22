@@ -74,10 +74,10 @@ class WP_Stream_Log {
 			$args['author_meta'] = maybe_serialize(
 				array(
 					'user_email'      => $user->user_email,
-					'display_name'    => ( constant( 'WP_CLI' ) && empty( $user->display_name ) ) ? 'WP-CLI' : $user->display_name,
+					'display_name'    => ( defined( 'WP_CLI' ) && empty( $user->display_name ) ) ? 'WP-CLI' : $user->display_name,
 					'user_login'      => $user->user_login,
 					'user_role_label' => ! empty( $user->roles ) ? $roles[ $user->roles[0] ]['name'] : null,
-					'is_wp_cli'       => ! is_null( constant( 'WP_CLI' ) ),
+					'is_wp_cli'       => defined( 'WP_CLI' ),
 				)
 			);
 		}

@@ -444,7 +444,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		if ( 'author' === $column ) {
 			$all_records = array();
+			$wp_cli_user = new WP_User( 0 );
 			$authors     = get_users();
+			$authors[]   = $wp_cli_user;
 			if ( $hide_disabled_column_filter ) {
 				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
 			}
@@ -453,10 +455,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				if ( $hide_disabled_column_filter && in_array( $author->ID, $excluded_records ) ) {
 					continue;
 				}
-				$author = get_user_by( 'id', $author->ID );
-				if ( $author ) {
-					$all_records[ $author->ID ] = $author;
-				}
+				$all_records[ $author->ID ] = $author;
 			}
 		} else {
 			$prefixed_column = sprintf( 'stream_%s', $column );
@@ -508,20 +507,24 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$authors_records = $this->assemble_records( 'author', 'stream' );
 
 		foreach ( $authors_records as $user_id => $user ) {
-			$user = $user['label'];
-			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
-				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
-				$authors_records[ $user_id ]['icon'] = $gravatar_url;
+			if ( 0 === $user_id ) {
+				$authors_records[ $user_id ]['label'] = 'WP-CLI';
+			} else {
+				$user = $user['label'];
+				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
+					list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+					$authors_records[ $user_id ]['icon'] = $gravatar_url;
+				}
+				$user_roles = array_map( 'ucwords', $user->roles );
+				$authors_records[ $user_id ]['label']   = $user->display_name;
+				$authors_records[ $user_id ]['tooltip'] = sprintf(
+					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+					$user->ID,
+					$user->user_login,
+					$user->user_email,
+					implode( ', ', $user_roles )
+				);
 			}
-			$user_roles = array_map( 'ucwords', $user->roles );
-			$authors_records[ $user_id ]['label']   = $user->display_name;
-			$authors_records[ $user_id ]['tooltip'] = sprintf(
-				__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
-				$user->ID,
-				$user->user_login,
-				$user->user_email,
-				implode( ', ', $user_roles )
-			);
 		}
 
 		$filters['author']          = array();
