@@ -49,6 +49,13 @@ function wp_stream_update_140( $db_version, $current_version ) {
 		return esc_html__( 'Database Update Error', 'stream' );
 	}
 
+	// Clear an old cron event hook that is lingering, replaced by `wp_stream_auto_purge`
+	wp_clear_scheduled_hook( 'stream_auto_purge' );
+
+	// Clear out this cron event hook too since we're changing the interval in this release
+	// and want the new schedule to take affect immediately after updating.
+	wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
+
 	return $current_version;
 }
 
