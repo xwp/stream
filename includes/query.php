@@ -24,15 +24,17 @@ class WP_Stream_Query {
 
 		$defaults = array(
 			// Pagination params
-			'records_per_page'      => 10,
+			'records_per_page'      => get_option( 'posts_per_page' ),
 			'paged'                 => 1,
-			// Search params
+			// Search param
 			'search'                => null,
 			// Stream core fields filtering
 			'type'                  => 'stream',
 			'object_id'             => null,
 			'ip'                    => null,
-			// Author param
+			'site_id'               => is_multisite() ? get_current_site()->id : 1,
+			'blog_id'               => is_network_admin() ? null : get_current_blog_id(),
+			// Author params
 			'author'                => null,
 			'author_role'           => null,
 			// Date-based filters
@@ -105,6 +107,14 @@ class WP_Stream_Query {
 
 		if ( $args['ip'] ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", wp_stream_filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
+		}
+
+		if ( is_numeric( $args['site_id'] ) ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.site_id = %d", $args['site_id'] );
+		}
+
+		if ( is_numeric( $args['blog_id'] ) ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.blog_id = %d", $args['blog_id'] );
 		}
 
 		if ( $args['search'] ) {
@@ -264,7 +274,7 @@ class WP_Stream_Query {
 		 */
 		$order     = esc_sql( $args['order'] );
 		$orderby   = esc_sql( $args['orderby'] );
-		$orderable = array( 'ID', 'site_id', 'object_id', 'author', 'author_role', 'summary', 'visibility', 'parent', 'type', 'created' );
+		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'author', 'author_role', 'summary', 'visibility', 'parent', 'type', 'created' );
 
 		if ( in_array( $orderby, $orderable ) ) {
 			$orderby = $wpdb->stream . '.' . $orderby;
