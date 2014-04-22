@@ -344,3 +344,10 @@
 	-webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */
 	   -moz-filter: grayscale(100%); /* Firefox < 3.5 */
 }
+
+/* User Profile */
+.wp-stream-feeds-key .spinner {
+	margin-top: 5px;
+	position: absolute;
+	float: none;
+}

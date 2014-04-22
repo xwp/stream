@@ -709,6 +709,31 @@ jQuery(function($){
 		}
 	};
 
+	$( '.wp-stream-feeds-key #stream_user_feed_key_generate' ).click(function( e ) {
+		e.preventDefault();
+
+		var user = $('#user_id').val(),
+			nonce  = $( '.wp-stream-feeds-key #wp_stream_generate_key_nonce' ).val();
+
+		$.ajax({
+			type: 'POST',
+			url: ajaxurl,
+			data: { action: 'wp_stream_feed_key_generate', nonce : nonce, user : user },
+			dataType: 'json',
+			beforeSend: function() {
+				$( '.wp-stream-feeds-key .spinner' ).show().css( { 'display' : 'inline-block' } );
+			},
+			success: function( response ) {
+				$( '.wp-stream-feeds-key .spinner' ).hide();
+				if ( response.success === true || response.data !== undefined ) {
+					$( '.wp-stream-feeds-key #stream_user_feed_key' ).val( response.data.feed_key );
+					$( '.wp-stream-feeds-links a.rss-feed' ).attr( 'href', response.data.xml_feed );
+					$( '.wp-stream-feeds-links a.json-feed' ).attr( 'href', response.data.json_feed );
+				}
+			}
+		});
+	});
+
 	$(document).ready( function() {
 		intervals.init( $('.date-interval') );
 	});
