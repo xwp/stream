@@ -547,6 +547,7 @@ class WP_Stream_Admin {
 				$wpdb->query( "DELETE FROM {$wpdb->base_prefix}stream WHERE blog_id = $blog_id" );
 
 				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+				delete_option( WP_Stream_Install::KEY );
 				delete_option( WP_Stream_Settings::KEY );
 			} else {
 				// Delete all tables
@@ -560,6 +561,7 @@ class WP_Stream_Admin {
 					foreach ( $blogs as $blog ) {
 						switch_to_blog( $blog['blog_id'] );
 						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+						delete_option( WP_Stream_Install::KEY );
 						delete_option( WP_Stream_Settings::KEY );
 					}
 					restore_current_blog();
@@ -567,6 +569,7 @@ class WP_Stream_Admin {
 
 				// Delete database option
 				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+				delete_site_option( WP_Stream_Install::KEY );
 				delete_site_option( WP_Stream_Settings::KEY );
 				delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
 				delete_site_option( WP_Stream_Settings::NETWORK_KEY );
