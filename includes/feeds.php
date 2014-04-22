@@ -6,7 +6,6 @@ class WP_Stream_Feeds {
 
 	const FEED_QUERY_VAR         = 'stream';
 	const FEED_NETWORK_QUERY_VAR = 'network-stream';
-	const FEED_KEY_QUERY_VAR     = 'key';
 	const FEED_TYPE_QUERY_VAR    = 'type';
 	const USER_FEED_KEY          = 'stream_user_feed_key';
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
@@ -186,13 +185,13 @@ class WP_Stream_Feeds {
 		$die_title   = esc_html__( 'Access Denied', 'stream' );
 		$die_message = '<h1>' . $die_title .'</h1><p>' . esc_html__( 'You don\'t have permission to view this feed, please contact your site Administrator.', 'stream' ) . '</p>';
 
-		if ( ! isset( $_GET[self::FEED_KEY_QUERY_VAR] ) || empty( $_GET[self::FEED_KEY_QUERY_VAR] ) ) {
+		if ( ! isset( $_GET[self::FEED_QUERY_VAR] ) || empty( $_GET[self::FEED_QUERY_VAR] ) ) {
 			wp_die( $die_message, $die_title );
 		}
 
 		$args = array(
 			'meta_key'   => self::USER_FEED_KEY,
-			'meta_value' => $_GET[self::FEED_KEY_QUERY_VAR],
+			'meta_value' => $_GET[self::FEED_QUERY_VAR],
 			'number'     => 1,
 		);
 		$user = get_users( $args );
