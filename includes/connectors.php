@@ -31,6 +31,11 @@ class WP_Stream_Connectors {
 	 * Load built-in connectors
 	 */
 	public static function load() {
+
+		if ( WP_Stream_Install::$update_required ) {
+			return;
+		}
+
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
 		require_once WP_STREAM_INC_DIR . 'connector.php';
