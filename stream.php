@@ -51,9 +51,15 @@ class WP_Stream {
 	public $db = null;
 
 	/**
+	 * @var WP_Stream_Network
+	 */
+	public $network = null;
+
+	/**
 	 * Class constructor
 	 */
 	private function __construct() {
+		define( 'WP_STREAM_PLUGIN', plugin_basename( __FILE__ ) );
 		define( 'WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
@@ -66,7 +72,7 @@ class WP_Stream {
 		$this->db = new WP_Stream_DB;
 
 		// Check DB and add message if not present
-		$this->verify_database_present();
+		add_action( 'plugins_loaded', array( $this, 'verify_database_present' ) );
 
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -74,6 +80,12 @@ class WP_Stream {
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_INC_DIR . 'settings.php';
 		add_action( 'init', array( 'WP_Stream_Settings', 'load' ) );
+
+		// Load network class
+		if ( is_multisite() ) {
+			require_once WP_STREAM_INC_DIR . 'network.php';
+			$this->network = new WP_Stream_Network;
+		}
 
 		// Load logger class
 		require_once WP_STREAM_INC_DIR . 'log.php';
@@ -158,7 +170,11 @@ class WP_Stream {
 	 *
 	 * @return void
 	 */
-	private function verify_database_present() {
+	public function verify_database_present() {
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
 		/**
 		 * Filter will halt verify_database_present() if set to true
 		 *
@@ -171,17 +187,30 @@ class WP_Stream {
 
 		global $wpdb;
 
-		$messages = array();
+		$database_message  = '';
+		$uninstall_message = '';
 
 		// Check if all needed DB is present
 		foreach ( $this->db->get_table_names() as $table_name ) {
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-				$messages[] = sprintf( __( 'The following table is not present in the WordPress database: %s', 'stream' ), $table_name );
+				$database_message .= sprintf( '<p>%s %s</p>', __( 'The following table is not present in the WordPress database :', 'stream' ), $table_name );
 			}
 		}
 
-		if ( ! empty( $message ) ) {
-			self::notice( join( "\n\n", $messages ) );
+		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) && current_user_can( 'manage_network_plugins' ) ) {
+			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), network_admin_url( 'plugins.php#stream' ) );
+		} elseif ( current_user_can( 'activate_plugins' ) ) {
+			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
+		}
+
+		// Check upgrade routine
+		self::install();
+
+		if ( ! empty( $database_message ) ) {
+			self::notice( $database_message );
+		}
+		if ( ! empty( $uninstall_message ) ) {
+			self::notice( $uninstall_message );
 		}
 	}
 
@@ -206,7 +235,7 @@ class WP_Stream {
 	 * @return void
 	 */
 	public static function notice( $message, $is_error = true ) {
-		if ( constant( 'WP_CLI' ) ) {
+		if ( defined( 'WP_CLI' ) ) {
 			$message = strip_tags( $message );
 			if ( $is_error ) {
 				WP_CLI::warning( $message );
