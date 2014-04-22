@@ -95,7 +95,7 @@ class WP_Stream_Dashboard_Widget {
 
 		$records_link = add_query_arg(
 			array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ),
-			is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 		);
 
 		$html_view_all = sprintf(

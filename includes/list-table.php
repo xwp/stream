@@ -267,7 +267,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 							'page'   => WP_Stream_Admin::RECORDS_PAGE_SLUG,
 							'author' => absint( $author_ID ),
 						),
-						is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+						self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 					),
 					$author_avatar,
 					$author_name,
@@ -398,7 +398,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			array(
 				'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG,
 			),
-			is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 		);
 
 		$args = ! is_array( $key ) ? array( $key => $value ) : $key;
@@ -590,7 +590,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
 
-		$url = is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
+		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
 		printf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
@@ -701,7 +701,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function display() {
-		$url = is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
+		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
 		echo '<form method="get" action="' . esc_url( $url ) . '">';
 		echo $this->filter_search(); // xss ok
