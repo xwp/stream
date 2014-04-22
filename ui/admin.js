@@ -75,7 +75,7 @@ jQuery(function($){
 			$placeholder.after($placeholder.clone(true).attr('class', $placeholder_child_class).val(key));
 		});
 	};
-	$('.stream_page_wp_stream_settings input[type=hidden].select2-select.with-source').each(function (k, el) {
+	$('#tab-content-settings input[type=hidden].select2-select.with-source').each(function (k, el) {
 		var $input = $(el);
 		$input.select2({
 			multiple: true,
@@ -99,7 +99,7 @@ jQuery(function($){
 			stream_select2_change_handler( e , $input );
 		}).trigger('change');
 	});
-	$( '.stream_page_wp_stream_settings input[type=hidden].select2-select.ip-addresses').each(function( k, el ){
+	$( '#tab-content-settings input[type=hidden].select2-select.ip-addresses').each(function( k, el ){
 		var $input = $(el);
 
 		$input.select2({
@@ -178,7 +178,7 @@ jQuery(function($){
 		}).trigger('change');
 	});
 	var $input_user;
-	$('.stream_page_wp_stream_settings input[type=hidden].select2-select.authors_and_roles').each(function (k, el) {
+	$('#tab-content-settings input[type=hidden].select2-select.authors_and_roles').each(function (k, el) {
 		$input_user = $(el);
 
 		$input_user.select2({
@@ -240,6 +240,8 @@ jQuery(function($){
 
 				if ('undefined' !== typeof object.icon) {
 					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
+					// Add more info to the container
+					container.attr('title', object.tooltip);
 				}
 				// Add more info to the container
 				if ( 'undefined' !== typeof object.tooltip ) {
@@ -269,8 +271,14 @@ jQuery(function($){
 	});
 
 	// Confirmation on some important actions
-	$('#wp_stream_general_delete_all_records').click(function(e){
+	$('#wp_stream_general_delete_all_records, #wp_stream_network_general_delete_all_records').click(function(e){
 		if ( ! confirm( wp_stream.i18n.confirm_purge ) ) {
+			e.preventDefault();
+		}
+	});
+
+	$('#wp_stream_general_reset_site_settings, #wp_stream_network_general_reset_site_settings').click(function(e){
+		if ( ! confirm( wp_stream.i18n.confirm_defaults ) ) {
 			e.preventDefault();
 		}
 	});
@@ -283,13 +291,13 @@ jQuery(function($){
 
 	// Admin page tabs
 	var $tabs          = $('.nav-tab-wrapper'),
-		$panels        = $('table.form-table'),
+		$panels        = $('.nav-tab-content table.form-table'),
 		$activeTab     = $tabs.find('.nav-tab-active'),
 		defaultIndex   = $activeTab.length > 0 ? $tabs.find('a').index( $activeTab ) : 0,
 		hashIndex      = window.location.hash.match(/^#(\d+)$/),
 		currentHash    = ( hashIndex !== null ? hashIndex[1] : defaultIndex ),
 		syncFormAction = function( index ) {
-			var $optionsForm   = $('input[name="option_page"][value="wp_stream"]').parent('form');
+			var $optionsForm   = $('input[name="option_page"][value^="wp_stream"]').parent('form');
 			var currentAction  = $optionsForm.attr('action');
 
 			$optionsForm.prop('action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ));
@@ -458,18 +466,17 @@ jQuery(function($){
 			}
 		}
 
-		if ( $( 'div.stream-toggle-filters [id="date_range"]' ).is( ':checked' ) ) {
+		if ( $( 'div.stream-toggle-filters [id="date"]' ).is( ':checked' ) ) {
 			$( 'div.date-interval' ).show();
 		} else {
 			$( 'div.date-interval' ).hide();
 		}
 
-		var filters = [ 'date_range', 'author', 'connector', 'context', 'action' ];
-		for( var i=0; i < filters.length; i++ ) {
-			if ( $( 'div.stream-toggle-filters [id="' + filters[i] + '"]'  ).is( ':checked' ) ) {
-				$( '[name="' + filters[i] + '"]' ).prev( '.select2-container' ).show();
+		for( var filter in wp_stream.filters ) {
+			if ( $( 'div.stream-toggle-filters [id="' + filter + '"]'  ).is( ':checked' ) ) {
+				$( '[name="' + filter + '"]' ).prev( '.select2-container' ).show();
 			} else {
-				$( '[name="' + filters[i] + '"]' ).prev( '.select2-container' ).hide();
+				$( '[name="' + filter + '"]' ).prev( '.select2-container' ).hide();
 			}
 		}
 
@@ -502,7 +509,7 @@ jQuery(function($){
 
 					var date_interval_div = $( 'div.date-interval' );
 					// toggle visibility of input whose name attr matches checkbox ID
-					if ( data.control === 'date_range' ) {
+					if ( data.control === 'date' ) {
 						date_interval_div.toggle();
 					} else {
 						var control = $( '[name="' + data.control + '"]');

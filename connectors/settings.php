@@ -18,6 +18,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static $actions = array(
 		'whitelist_options',
+		'update_site_option',
 		'update_option_permalink_structure',
 		'update_option_category_base',
 		'update_option_tag_base',
@@ -33,6 +34,37 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		'category_base',
 		'tag_base',
 	);
+
+	/**
+	 * Option names used in network/settings.php
+	 *
+	 * @var array
+	 */
+	public static $network_options = array(
+		'registrationnotification',
+		'registration',
+		'add_new_users',
+		'menu_items',
+		'upload_space_check_disabled',
+		'blog_upload_space',
+		'upload_filetypes',
+		'site_name',
+		'first_post',
+		'first_page',
+		'first_comment',
+		'first_comment_url',
+		'first_comment_author',
+		'welcome_email',
+		'welcome_user_email',
+		'fileupload_maxk',
+		'global_terms_enabled',
+		'illegal_names',
+		'limited_email_domains',
+		'banned_email_domains',
+		'WPLANG',
+		'admin_email',
+	);
+
 
 	/**
 	 * Register all context hooks
@@ -81,16 +113,19 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'settings'          => __( 'Settings', 'stream' ),
-			'general'           => __( 'General', 'stream' ),
-			'writing'           => __( 'Writing', 'stream' ),
-			'reading'           => __( 'Reading', 'stream' ),
-			'discussion'        => __( 'Discussion', 'stream' ),
-			'media'             => __( 'Media', 'stream' ),
-			'permalink'         => __( 'Permalinks', 'stream' ),
-			'wp_stream'         => __( 'Stream', 'stream' ),
-			'custom_background' => __( 'Custom Background', 'stream' ),
-			'custom_header'     => __( 'Custom Header', 'stream' ),
+			'settings'           => __( 'Settings', 'stream' ),
+			'general'            => __( 'General', 'stream' ),
+			'writing'            => __( 'Writing', 'stream' ),
+			'reading'            => __( 'Reading', 'stream' ),
+			'discussion'         => __( 'Discussion', 'stream' ),
+			'media'              => __( 'Media', 'stream' ),
+			'permalink'          => __( 'Permalinks', 'stream' ),
+			'network'            => __( 'Network', 'stream' ),
+			'wp_stream'          => __( 'Stream', 'stream' ),
+			'wp_stream_network'  => __( 'Stream Network', 'stream' ),
+			'wp_stream_defaults' => __( 'Stream Defaults', 'stream' ),
+			'custom_background ' => __( 'Custom Background', 'stream' ),
+			'custom_header'      => __( 'Custom Header', 'stream' ),
 		);
 	}
 
@@ -221,6 +256,29 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'permalink_structure'           => __( 'Permalink structure', 'stream' ),
 			'category_base'                 => __( 'Category base', 'stream' ),
 			'tag_base'                      => __( 'Tag base', 'stream' ),
+			// Network
+			'registrationnotification'      => __( 'Registration notification', 'stream' ),
+			'registration'                  => __( 'Allow new registrations', 'stream' ),
+			'add_new_users'                 => __( 'Add New Users', 'stream' ),
+			'menu_items'                    => __( 'Enable administration menus', 'stream' ),
+			'upload_space_check_disabled'   => __( 'Site upload space check', 'stream' ),
+			'blog_upload_space'             => __( 'Site upload space', 'stream' ),
+			'upload_filetypes'              => __( 'Upload file types', 'stream' ),
+			'site_name'                     => __( 'Network Title', 'stream' ),
+			'first_post'                    => __( 'First Post', 'stream' ),
+			'first_page'                    => __( 'First Page', 'stream' ),
+			'first_comment'                 => __( 'First Comment', 'stream' ),
+			'first_comment_url'             => __( 'First Comment URL', 'stream' ),
+			'first_comment_author'          => __( 'First Comment Author', 'stream' ),
+			'welcome_email'                 => __( 'Welcome Email', 'stream' ),
+			'welcome_user_email'            => __( 'Welcome User Email', 'stream' ),
+			'fileupload_maxk'               => __( 'Max upload file size', 'stream' ),
+			'global_terms_enabled'          => __( 'Terms Enabled', 'stream' ),
+			'illegal_names'                 => __( 'Banned Names', 'stream' ),
+			'limited_email_domains'         => __( 'Limited Email Registrations', 'stream' ),
+			'banned_email_domains'          => __( 'Banned Email Domains', 'stream' ),
+			'WPLANG'                        => __( 'Network Language', 'stream' ),
+			'admin_email'                   => __( 'Network Admin Email', 'stream' ),
 		);
 
 		if ( isset( $labels[ $field_key ] ) ) {
@@ -342,6 +400,21 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					return ! empty( $submenu['options-general.php'] );
 				},
 			),
+			'network' => array(
+				'menu_slug'    => 'settings.php',
+				'submenu_slug' => function( $record ) {
+					return 'settings.php';
+				},
+				'url'          => function( $rule, $record ) {
+					return network_admin_url( $rule['menu_slug'] );
+				},
+				'applicable'   => function( $submenu, $record ) {
+					if ( ! $record->blog_id ) {
+						return ! empty( $submenu['settings.php'] );
+					}
+					return false;
+				},
+			),
 		);
 
 		if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ) ) ) {
@@ -415,6 +488,15 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Trigger this connector core tracker, only on network/settings.php page
+	 *
+	 * @action update_site_option
+	 */
+	public static function callback_update_site_option( $option, $value, $old_value ) {
+		self::callback_updated_option( $option, $value, $old_value );
+	}
+
+	/**
 	 * Trigger this connector core tracker, only on options-permalink.php page
 	 *
 	 * @action update_option_category_base
@@ -440,14 +522,15 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	public static function callback_updated_option( $option, $old_value, $value ) {
 		global $whitelist_options, $new_whitelist_options;
 
-		if ( 0 === strpos( $option, '_transient_' ) ) {
+		if ( 0 === strpos( $option, '_transient_' ) || 0 === strpos( $option, '_site_transient_' ) ) {
 			return;
 		}
 
 		$options = array_merge(
 			(array) $whitelist_options,
 			(array) $new_whitelist_options,
-			array( 'permalink' => self::$permalink_options )
+			array( 'permalink' => self::$permalink_options ),
+			array( 'network' => self::$network_options )
 		);
 
 		foreach ( $options as $key => $opts ) {
@@ -462,8 +545,14 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		}
 
 		$changed_options = array();
-
+		$option_group    = false;
 		if ( is_array( $old_value ) || is_array( $value ) ) {
+			if ( count( array_filter( array_keys( $value ), 'is_string' ) ) > 0 ) {
+				$option_group = true;
+			}
+		}
+
+		if ( $option_group ) {
 			foreach ( self::get_changed_keys( $old_value, $value ) as $field_key ) {
 				if ( ! self::is_key_ignored( $option, $field_key ) ) {
 					$key_context = self::get_context_by_key( $option, $field_key );
