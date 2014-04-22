@@ -19,7 +19,7 @@ class WP_Stream_DB {
 		 * @param  string  database prefix
 		 * @return string  udpated database prefix
 		 */
-		$prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->prefix );
+		$prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
 
 		self::$table         = $prefix . 'stream';
 		self::$table_meta    = $prefix . 'stream_meta';
@@ -71,7 +71,7 @@ class WP_Stream_DB {
 			return;
 		}
 
-		$fields = array( 'object_id', 'author', 'author_role', 'created', 'summary', 'parent', 'visibility', 'ip' );
+		$fields = array( 'object_id', 'site_id', 'blog_id', 'author', 'author_role', 'created', 'summary', 'parent', 'visibility', 'ip' );
 		$data   = array_intersect_key( $recordarr, array_flip( $fields ) );
 		$data   = array_filter( $data );
 
