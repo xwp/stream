@@ -23,13 +23,14 @@ class WP_Stream_Admin {
 	 */
 	public static $disable_access = false;
 
-	const ADMIN_BODY_CLASS    = 'wp_stream_screen';
-	const RECORDS_PAGE_SLUG   = 'wp_stream';
-	const SETTINGS_PAGE_SLUG  = 'wp_stream_settings';
-	const ADMIN_PARENT_PAGE   = 'admin.php';
-	const VIEW_CAP            = 'view_stream';
-	const SETTINGS_CAP        = 'manage_options';
-	const PRELOAD_AUTHORS_MAX = 50;
+	const ADMIN_BODY_CLASS     = 'wp_stream_screen';
+	const RECORDS_PAGE_SLUG    = 'wp_stream';
+	const SETTINGS_PAGE_SLUG   = 'wp_stream_settings';
+	const EXTENSIONS_PAGE_SLUG = 'wp_stream_extensions';
+	const ADMIN_PARENT_PAGE    = 'admin.php';
+	const VIEW_CAP             = 'view_stream';
+	const SETTINGS_CAP         = 'manage_options';
+	const PRELOAD_AUTHORS_MAX  = 50;
 
 	public static function load() {
 		// User and role caps
