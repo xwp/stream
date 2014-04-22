@@ -193,7 +193,7 @@ class WP_Stream {
 		// Check if all needed DB is present
 		foreach ( $this->db->get_table_names() as $table_name ) {
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-				$database_message .= sprintf( '<p>%s %s</p>', __( 'The following table is not present in the WordPress database :', 'stream' ), $table_name );
+				$database_message .= sprintf( '%s %s', __( 'The following table is not present in the WordPress database:', 'stream' ), $table_name );
 			}
 		}
 
@@ -208,9 +208,9 @@ class WP_Stream {
 
 		if ( ! empty( $database_message ) ) {
 			self::notice( $database_message );
-		}
-		if ( ! empty( $uninstall_message ) ) {
-			self::notice( $uninstall_message );
+			if ( ! empty( $uninstall_message ) ) {
+				self::notice( $uninstall_message );
+			}
 		}
 	}
 
