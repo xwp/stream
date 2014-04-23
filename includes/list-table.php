@@ -530,7 +530,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		foreach ( $authors_records as $user_id => $user ) {
 			if ( 0 === $user_id ) {
 				$authors_records[ $user_id ]['label'] = 'WP-CLI';
-				$authors_records[ $user_id ]['icon'] = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+				$authors_records[ $user_id ]['icon']  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
 			} else {
 				$user = $user['label'];
 				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 32 ), $gravatar_src_match ) ) {
