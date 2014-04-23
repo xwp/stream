@@ -158,6 +158,7 @@ class WP_Stream_Admin {
 
 		$locale    = substr( get_locale(), 0, 2 );
 		$file_tmpl = 'ui/timeago/locale/jquery.timeago.%s.js';
+		$debug     = apply_filters( 'wp_stream_debug', SCRIPT_DEBUG ) ? '' : '.min';
 
 		if ( file_exists( WP_STREAM_DIR . sprintf( $file_tmpl, $locale ) ) ) {
 			wp_register_script( 'timeago-locale', WP_STREAM_URL . sprintf( $file_tmpl, $locale ), array( 'timeago' ), '1' );
@@ -165,12 +166,12 @@ class WP_Stream_Admin {
 			wp_register_script( 'timeago-locale', WP_STREAM_URL . sprintf( $file_tmpl, 'en' ), array( 'timeago' ), '1' );
 		}
 
-		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
+		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . "ui/admin{$debug}.css", array() );
 
 		$script_screens = array( 'plugins.php', 'user-edit.php', 'user-new.php', 'profile.php' );
 
 		if ( 'index.php' === $hook ) {
-			wp_enqueue_script( 'wp-stream-admin-dashboard', WP_STREAM_URL . 'ui/dashboard.js', array( 'jquery', 'heartbeat' ) );
+			wp_enqueue_script( 'wp-stream-admin-dashboard', WP_STREAM_URL . "ui/dashboard{$debug}.js", array( 'jquery', 'heartbeat' ) );
 		} elseif ( in_array( $hook, self::$screen_id ) || in_array( $hook, $script_screens ) ) {
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_style( 'select2' );
@@ -178,7 +179,7 @@ class WP_Stream_Admin {
 			wp_enqueue_script( 'timeago' );
 			wp_enqueue_script( 'timeago-locale' );
 
-			wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ) );
+			wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . "ui/admin{$debug}.js", array( 'jquery', 'select2', 'heartbeat' ) );
 			wp_localize_script(
 				'wp-stream-admin',
 				'wp_stream',
