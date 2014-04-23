@@ -506,33 +506,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'items' => $date_interval->intervals,
 		);
 
-		$authors_records = $this->assemble_records( 'author', 'stream' );
+		$authors_records = WP_Stream_Admin::get_authors_record_meta(
+			$this->assemble_records( 'author', 'stream' )
+		);
 
-		foreach ( $authors_records as $user_id => $user ) {
-			$user = $user['label'];
-			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
-				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
-				$authors_records[ $user_id ]['icon'] = $gravatar_url;
-			}
-			$user_roles = array_map( 'ucwords', $user->roles );
-			$authors_records[ $user_id ]['label']   = $user->display_name;
-			$authors_records[ $user_id ]['tooltip'] = sprintf(
-				__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
-				$user->ID,
-				$user->user_login,
-				$user->user_email,
-				implode( ', ', $user_roles )
-			);
-		}
-
-		$filters['author']          = array();
-		$filters['author']['title'] = __( 'authors', 'stream' );
-
-		if ( count( $authors_records ) ) {
-			$filters['author']['items'] = $authors_records;
-		} else {
-			$filters['author']['ajax'] = true;
-		}
+		$filters['author'] = array(
+			'title' => __( 'authors', 'stream' ),
+			'items' => $authors_records,
+			'ajax'  => count( $authors_records ) <= 0,
+		);
 
 		$filters['connector'] = array(
 			'title' => __( 'connectors', 'stream' ),

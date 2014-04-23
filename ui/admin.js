@@ -2,25 +2,33 @@
 jQuery(function($){
 
 	$( '.toplevel_page_wp_stream :input.chosen-select' ).each( function( i, el ) {
-		var args = {};
+		var args = {},
+			formatResult = function (record, container) {
+				var result = '',
+					$elem = $(record.element),
+					icon = '';
+
+				if ( undefined !== record.icon ) {
+					icon = record.icon;
+				} else if ( undefined !== $elem.attr('data-icon') ) {
+					icon = $elem.data('icon');
+				}
+				if ( icon ) {
+					result += '<img src="' + icon + '" class="wp-stream-select2-icon">';
+				}
+
+				result += record.text;
+
+				// Add more info to the container
+				container.attr('title', $elem.attr('title'));
+
+				return result;
+			};
 
 		if ( $(el).find('option').length > 0 ) {
 			args = {
 				minimumResultsForSearch: 10,
-				formatResult: function (record, container) {
-					var result = '', $elem = $(record.element);
-
-					if ( undefined !== $elem.attr('data-icon') ) {
-						result += '<img src="' + $elem.attr('data-icon') + '" class="wp-stream-select2-icon">';
-					}
-
-					result += record.text;
-
-					// Add more info to the container
-					container.attr('title', $elem.attr('title'));
-
-					return result;
-				},
+				formatResult: formatResult,
 				allowClear: true,
 				width: '165px'
 			};
@@ -43,6 +51,7 @@ jQuery(function($){
 						return {results: data};
 					}
 				},
+				formatResult: formatResult,
 				initSelection: function (element, callback) {
 					var id = $(element).val();
 					if(id !== '') {
