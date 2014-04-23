@@ -78,7 +78,7 @@ class WP_Stream_Admin {
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
 		// Ajax author's name by ID
-		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
+		add_action( 'wp_ajax_wp_stream_get_filter_value_by_id', array( __CLASS__, 'get_filter_value_by_id' ) );
 	}
 
 	/**
@@ -732,37 +732,29 @@ class WP_Stream_Admin {
 	 * @action wp_ajax_wp_stream_filters
 	 */
 	public static function ajax_filters() {
-		switch ( $_REQUEST['filter'] ) {
+		switch ( wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
 			case 'author':
-				$results = array_map(
+				// `search` arg for get_users() is not enough
+				$users = array_filter(
+					get_users(),
 					function ( $user ) {
-						return array(
-							'id'   => $user->id,
-							'text' => $user->display_name,
-						);
-					},
-					get_users()
+						return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( wp_stream_filter_input( INPUT_GET, 'q' ) ) );
+					}
 				);
+
+				if ( count( $users ) > self::PRELOAD_AUTHORS_MAX ) {
+					$users = array_slice( $users, 0, self::PRELOAD_AUTHORS_MAX );
+					$extra = array(
+						'id'       => 0,
+						'disabled' => true,
+						'text'     => sprintf( _n( 'One more result...', '%d more results...', $results_count - self::PRELOAD_AUTHORS_MAX, 'stream' ), $results_count - self::PRELOAD_AUTHORS_MAX ),
+					);
+				}
+
+				// Get gravatar / roles for final result set
+				$results = self::get_authors_record_meta( $users );
+
 				break;
-		}
-
-		// `search` arg for get_users() is not enough
-		$results = array_filter(
-			$results,
-			function ( $result ) {
-				return mb_strpos( mb_strtolower( $result['text'] ), mb_strtolower( $_REQUEST['q'] ) ) !== false;
-			}
-		);
-
-		$results_count = count( $results );
-
-		if ( $results_count > self::PRELOAD_AUTHORS_MAX ) {
-			$results   = array_slice( $results, 0, self::PRELOAD_AUTHORS_MAX );
-			$results[] = array(
-				'id'       => 0,
-				'disabled' => true,
-				'text'     => sprintf( _n( 'One more result...', '%d more results...', $results_count - self::PRELOAD_AUTHORS_MAX, 'stream' ), $results_count - self::PRELOAD_AUTHORS_MAX ),
-			);
 		}
 
 		echo json_encode( array_values( $results ) );
@@ -770,12 +762,56 @@ class WP_Stream_Admin {
 	}
 
 	/**
-	 * @action wp_ajax_wp_stream_get_author_name_by_id
+	 * @action wp_ajax_wp_stream_get_filter_value_by_id
 	 */
-	public static function get_author_name_by_id() {
-		$user = get_userdata( $_REQUEST['id'] );
-		echo json_encode( $user->display_name );
-		die();
+	public static function get_filter_value_by_id() {
+		$filter = wp_stream_filter_input( INPUT_POST, 'filter' );
+		switch ( $filter ) {
+			case 'author':
+				$user = get_userdata( wp_stream_filter_input( INPUT_POST, 'id' ) );
+				if ( ! $user || is_wp_error( $user ) ) {
+					$value = '';
+				} else {
+					$value = $user->display_name;
+				}
+				break;
+			default:
+				$value = '';
+				break;
+		}
+		echo json_encode( $value );
+		wp_die();
+	}
+
+	public static function get_authors_record_meta( $authors ) {
+		$authors_records = array();
+		foreach ( $authors as $user_id => $user ) {
+			$user = is_a( $user, 'WP_User' ) ? $user : $user['label'];
+			$icon = '';
+
+			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->user_email, 16 ), $gravatar_src_match ) ) {
+				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+				$icon = $gravatar_url;
+			}
+
+			$title = sprintf(
+				__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+				$user->ID,
+				$user->user_login,
+				$user->user_email,
+				implode( ', ', array_map( 'ucwords', $user->roles ) )
+			);
+
+			$authors_records[ $user_id ] = array(
+				'text'  => $user->display_name,
+				'id'    => $user_id,
+				'label' => $user->display_name,
+				'icon'  => $icon,
+				'title' => $title,
+			);
+		}
+
+		return $authors_records;
 	}
 
 }

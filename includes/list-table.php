@@ -29,24 +29,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		add_filter( 'screen_settings', array( $this, 'screen_controls' ), 10, 2 );
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
-		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
 		set_screen_options();
-	}
-
-	static function ajax_filters() {
-		$results = array(
-			array(
-				'id'   => 1,
-				'text' => 'Garfield',
-			),
-			array(
-				'id'   => 2,
-				'text' => 'Odie',
-			),
-		);
-		echo json_encode( $results );
-		die();
 	}
 
 	function extra_tablenav( $which ) {
@@ -453,7 +437,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		if ( 'author' === $column ) {
 			$all_records = array();
-			$authors     = get_users();
+
+			// Short circuit and return empty array if we have more than 10 users, to use Ajax instead
+			$user_count  = count_users();
+			$total_users = $user_count['total_users'];
+			if ( $total_users > WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
+				return array();
+			}
+
+			$authors = get_users();
 			if ( $hide_disabled_column_filter ) {
 				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
 			}
@@ -513,33 +505,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'items' => $date_interval->intervals,
 		);
 
-		$authors_records = $this->assemble_records( 'author', 'stream' );
+		$authors_records = WP_Stream_Admin::get_authors_record_meta(
+			$this->assemble_records( 'author', 'stream' )
+		);
 
-		foreach ( $authors_records as $user_id => $user ) {
-			$user = $user['label'];
-			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
-				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
-				$authors_records[ $user_id ]['icon'] = $gravatar_url;
-			}
-			$user_roles = array_map( 'ucwords', $user->roles );
-			$authors_records[ $user_id ]['label']   = $user->display_name;
-			$authors_records[ $user_id ]['tooltip'] = sprintf(
-				__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
-				$user->ID,
-				$user->user_login,
-				$user->user_email,
-				implode( ', ', $user_roles )
-			);
-		}
-
-		$filters['author']          = array();
-		$filters['author']['title'] = __( 'authors', 'stream' );
-
-		if ( count( $authors_records ) <= WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
-			$filters['author']['items'] = $authors_records;
-		} else {
-			$filters['author']['ajax'] = true;
-		}
+		$filters['author'] = array(
+			'title' => __( 'authors', 'stream' ),
+			'items' => $authors_records,
+			'ajax'  => count( $authors_records ) <= 0,
+		);
 
 		$filters['connector'] = array(
 			'title' => __( 'connectors', 'stream' ),
@@ -598,7 +572,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		if ( $ajax ) {
 			$out = sprintf(
-				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
+				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s"/>',
 				esc_attr( $name ),
 				esc_attr( wp_stream_filter_input( INPUT_GET, $name ) ),
 				esc_html( $title )
