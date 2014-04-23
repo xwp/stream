@@ -207,7 +207,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$out = $item->summary;
 				if ( $item->object_id ) {
 					$out .= $this->column_link(
-						'<span class="dashicons dashicons-visibility stream-filter-object-id"></span>',
+						'<span class="dashicons dashicons-search stream-filter-object-id"></span>',
 						array(
 							'object_id' => $item->object_id,
 							'context'   => $item->context,
