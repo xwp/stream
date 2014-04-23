@@ -231,23 +231,23 @@ class WP_Stream_Install {
 	/**
 	 * Database user controlled update routine
 	 *
-	 * To add your own stream extension plugin database update routine
-	 * use the filter and return your version that updating from requires an update
+	 * To add your own stream extension database update routine
+	 * use the filter and return the version that requires an update
 	 * You must also make the callback function available in the global namespace on plugins loaded
 	 * use the wp_stream_update_{version_number} version number must be a string of characters that represent the version with no periods
 	 *
 	 * @filter wp_stream_db_update_versions
+	 * @filter wp_stream_auto_db_update_versions
 	 *
 	 * @param int $db_version last updated version of database stored in plugin options
 	 * @param int $current Current running plugin version
 	 * @return mixed Version number on success, true on no update needed, mysql error message on error
 	 */
-	public static function update( $db_version, $current ) {
+	public static function update( $db_version, $current, $auto = false ) {
 		require_once WP_STREAM_INC_DIR . 'db-updates.php';
 
 		$prefix   = self::$table_prefix;
 		$versions = apply_filters( 'wp_stream_db_update_versions', self::db_update_versions(), $current, $prefix );
-
 		foreach ( $versions as $version ) {
 			$function = 'wp_stream_update_' . str_ireplace( '.', '', $version );
 
