@@ -243,14 +243,12 @@ class WP_Stream {
 				WP_CLI::success( $message );
 			}
 		} else {
-			add_action( 'all_admin_notices', function () use ( $message, $is_error ) {
-				echo wp_kses_post( sprintf(
-					'<div class="%s">%s</div>',
-					$is_error ? 'error' : 'updated',
-					wpautop( $message )
-				) );
-			} );
-
+			$print_message = function () use ( $message, $is_error ) {
+				$class_name = ( $is_error ? 'error' : 'updated' );
+				$html_message = sprintf( '<div class="%s">%s</div>', $class_name, wpautop( $message ) );
+				echo wp_kses_post( $html_message );
+			};
+			add_action( 'all_admin_notices', $print_message );
 		}
 	}
 
