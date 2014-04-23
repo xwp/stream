@@ -607,7 +607,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		if ( $ajax ) {
 			$out = sprintf(
-				'<input type="hidden" name="%s" class="chosen-select" data-placeholder="%s"/>',
+				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s"/>',
 				esc_attr( $name ),
 				esc_attr( wp_stream_filter_input( INPUT_GET, $name ) ),
 				esc_html( $title )
