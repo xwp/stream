@@ -9,7 +9,7 @@ class WP_Stream_Extensions {
 
 	const EXTENSIONS_KEY = 'wp_stream_extensions_';
 	const MEMBER_KEY     = 'wp_stream_member';
-	const API_EP         = '/wp-json.php/posts/';
+	const API_EP         = '/wp-json/posts/';
 	const API_LICENSE_EP = '/api/';
 	const API_DOMAIN     = 'vvv.wp-stream.com';
 	const API_TRANSPORT  = 'http://'; /** @internal will need valid ssl cert before using https:// transport  */
