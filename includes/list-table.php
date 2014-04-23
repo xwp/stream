@@ -617,7 +617,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$options  = array( '<option value=""></option>' );
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
 			foreach ( $items as $v => $label ) {
-				$options[ $v ] = sprintf(
+				$options[] = sprintf(
 					'<option value="%s" %s %s %s title="%s">%s</option>',
 					$v,
 					selected( $v, $selected, false ),
