@@ -56,13 +56,6 @@ class WP_Stream {
 	public $network = null;
 
 	/**
-	 * Admin notices messages
-	 *
-	 * @var array
-	 */
-	public static $messages = array();
-
-	/**
 	 * Class constructor
 	 */
 	private function __construct() {
@@ -77,10 +70,6 @@ class WP_Stream {
 		// Load DB helper class
 		require_once WP_STREAM_INC_DIR . 'db.php';
 		$this->db = new WP_Stream_DB;
-
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			return;
-		}
 
 		// Check DB and add message if not present
 		add_action( 'plugins_loaded', array( $this, 'verify_database_present' ) );
@@ -139,12 +128,8 @@ class WP_Stream {
 	 * add the error message to the admin notices
 	 */
 	static function fail_php_version() {
-		add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
-		self::$messages[] = sprintf(
-			'<div class="error"><p>%s</p></div>',
-			__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
-		);
+		self::notice( __( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' ) );
 	}
 
 	/**
@@ -208,7 +193,7 @@ class WP_Stream {
 		// Check if all needed DB is present
 		foreach ( $this->db->get_table_names() as $table_name ) {
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-				$database_message .= sprintf( '<p>%s %s</p>', __( 'The following table is not present in the WordPress database :', 'stream' ), $table_name );
+				$database_message .= sprintf( '%s %s', __( 'The following table is not present in the WordPress database:', 'stream' ), $table_name );
 			}
 		}
 
@@ -222,11 +207,10 @@ class WP_Stream {
 		self::install();
 
 		if ( ! empty( $database_message ) ) {
-			self::$messages['wp_stream_db_error'] = sprintf(
-				'<div class="error">%s<p>%s</p></div>',
-				$database_message,
-				$uninstall_message
-			); // xss ok
+			self::notice( $database_message );
+			if ( ! empty( $uninstall_message ) ) {
+				self::notice( $uninstall_message );
+			}
 		}
 	}
 
@@ -235,22 +219,36 @@ class WP_Stream {
 	}
 
 	/**
-	 * Display a notice about php version
+	 * Whether the current PHP version meets the minimum requirements
 	 *
-	 * @action all_admin_notices
+	 * @return bool
 	 */
 	public static function is_valid_php_version() {
 		return version_compare( PHP_VERSION, '5.3', '>=' );
 	}
 
 	/**
-	 * Display all messages on admin board
+	 * Show an error or other message, using admin_notice or WP-CLI logger
 	 *
+	 * @param string $message
+	 * @param bool $is_error
 	 * @return void
 	 */
-	public static function admin_notices() {
-		foreach ( self::$messages as $message ) {
-			echo wp_kses_post( $message );
+	public static function notice( $message, $is_error = true ) {
+		if ( defined( 'WP_CLI' ) ) {
+			$message = strip_tags( $message );
+			if ( $is_error ) {
+				WP_CLI::warning( $message );
+			} else {
+				WP_CLI::success( $message );
+			}
+		} else {
+			$print_message = function () use ( $message, $is_error ) {
+				$class_name   = ( $is_error ? 'error' : 'updated' );
+				$html_message = sprintf( '<div class="%s">%s</div>', $class_name, wpautop( $message ) );
+				echo wp_kses_post( $html_message );
+			};
+			add_action( 'all_admin_notices', $print_message );
 		}
 	}
 
