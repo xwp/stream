@@ -547,6 +547,7 @@ class WP_Stream_Admin {
 				$wpdb->query( "DELETE FROM {$wpdb->base_prefix}stream WHERE blog_id = $blog_id" );
 
 				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+				delete_option( WP_Stream_Install::KEY );
 				delete_option( WP_Stream_Settings::KEY );
 			} else {
 				// Delete all tables
@@ -560,6 +561,7 @@ class WP_Stream_Admin {
 					foreach ( $blogs as $blog ) {
 						switch_to_blog( $blog['blog_id'] );
 						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+						delete_option( WP_Stream_Install::KEY );
 						delete_option( WP_Stream_Settings::KEY );
 					}
 					restore_current_blog();
@@ -567,6 +569,7 @@ class WP_Stream_Admin {
 
 				// Delete database option
 				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+				delete_site_option( WP_Stream_Install::KEY );
 				delete_site_option( WP_Stream_Settings::KEY );
 				delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
 				delete_site_option( WP_Stream_Settings::NETWORK_KEY );
@@ -730,9 +733,14 @@ class WP_Stream_Admin {
 	public static function ajax_filters() {
 		switch ( wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
 			case 'author':
+				$users = array_merge(
+					array( 0 => (object) array( 'display_name' => 'WP-CLI' ) ),
+					get_users()
+				);
+
 				// `search` arg for get_users() is not enough
 				$users = array_filter(
-					get_users(),
+					$users,
 					function ( $user ) {
 						return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( wp_stream_filter_input( INPUT_GET, 'q' ) ) );
 					}
@@ -764,7 +772,12 @@ class WP_Stream_Admin {
 		$filter = wp_stream_filter_input( INPUT_POST, 'filter' );
 		switch ( $filter ) {
 			case 'author':
-				$user = get_userdata( wp_stream_filter_input( INPUT_POST, 'id' ) );
+				$id = wp_stream_filter_input( INPUT_POST, 'id' );
+				if ( $id === '0' ) {
+					$value = 'WP-CLI';
+					break;
+				}
+				$user = get_userdata( $id );
 				if ( ! $user || is_wp_error( $user ) ) {
 					$value = '';
 				} else {
@@ -782,26 +795,34 @@ class WP_Stream_Admin {
 	public static function get_authors_record_meta( $authors ) {
 		$authors_records = array();
 		foreach ( $authors as $user_id => $user ) {
-			$user = is_a( $user, 'WP_User' ) ? $user : $user['label'];
-			$icon = '';
+			$icon  = '';
+			$title = '';
+			if ( 0 === $user_id ) {
+				$name  = 'WP-CLI';
+				$icon  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+				$title = 'WP-CLI Operation';
+			} else {
+				$user = is_a( $user, 'WP_User' ) ? $user : $user['label'];
+				$name = $user->display_name;
 
-			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->user_email, 16 ), $gravatar_src_match ) ) {
-				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
-				$icon = $gravatar_url;
+				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->user_email, 16 ), $gravatar_src_match ) ) {
+					list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+					$icon = $gravatar_url;
+				}
+
+				$title = sprintf(
+					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+					$user->ID,
+					$user->user_login,
+					$user->user_email,
+					implode( ', ', array_map( 'ucwords', $user->roles ) )
+				);
 			}
 
-			$title = sprintf(
-				__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
-				$user->ID,
-				$user->user_login,
-				$user->user_email,
-				implode( ', ', array_map( 'ucwords', $user->roles ) )
-			);
-
 			$authors_records[ $user_id ] = array(
-				'text'  => $user->display_name,
+				'text'  => $name,
 				'id'    => $user_id,
-				'label' => $user->display_name,
+				'label' => $name,
 				'icon'  => $icon,
 				'title' => $title,
 			);
