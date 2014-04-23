@@ -809,7 +809,7 @@ class WP_Stream_Admin {
 				$user = is_a( $user, 'WP_User' ) ? $user : $user['label'];
 				$name = $user->display_name;
 
-				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->user_email, 16 ), $gravatar_src_match ) ) {
+				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->user_email, 32 ), $gravatar_src_match ) ) {
 					list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
 					$icon = $gravatar_url;
 				}
