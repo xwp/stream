@@ -204,18 +204,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'summary' :
+				$out = $item->summary;
 				if ( $item->object_id ) {
-					$out = $this->column_link(
-								$item->summary,
-									array(
-										'object_id' => $item->object_id,
-										'context'   => $item->context,
-									),
-									null,
-									__( 'View all records for this object', 'stream' )
+					$out .= $this->column_link(
+						'<span class="dashicons dashicons-visibility stream-filter-object-id"></span>',
+						array(
+							'object_id' => $item->object_id,
+							'context'   => $item->context,
+						),
+						null,
+						__( 'View all records for this object', 'stream' )
 					);
-				} else {
-					$out = $item->summary;
 				}
 				$out .= $this->get_action_links( $item );
 				break;

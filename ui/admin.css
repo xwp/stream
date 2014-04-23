@@ -125,6 +125,14 @@
 	width: 10%;
 }
 
+.toplevel_page_wp_stream .stream-filter-object-id {
+	padding-left: 5px;
+	visibility: hidden;
+}
+.toplevel_page_wp_stream td.summary:hover .stream-filter-object-id {
+	visibility: visible;
+}
+
 @media only screen and (min-width: 782px) {
 	.toplevel_page_wp_stream .tablenav .tablenav-pages {
 		margin-bottom: 4px;
