@@ -1,65 +1,74 @@
 /* globals confirm, wp_stream, ajaxurl */
 jQuery(function($){
 
-	$( '.toplevel_page_wp_stream select.chosen-select' ).select2({
-			minimumResultsForSearch: 10,
-			formatResult: function (record, container) {
-				var result = '', $elem = $(record.element);
+	$( '.toplevel_page_wp_stream :input.chosen-select' ).each( function( i, el ) {
+		var args = {};
 
-				if ( undefined !== $elem.attr('data-icon') ) {
-					result += '<img src="' + $elem.attr('data-icon') + '" class="wp-stream-select2-icon">';
-				}
+		if ( $(el).find('option').length > 0 ) {
+			args = {
+				minimumResultsForSearch: 10,
+				formatResult: function (record, container) {
+					var result = '', $elem = $(record.element);
 
-				result += record.text;
+					if ( undefined !== $elem.attr('data-icon') ) {
+						result += '<img src="' + $elem.attr('data-icon') + '" class="wp-stream-select2-icon">';
+					}
 
-				// Add more info to the container
-				container.attr('title', $elem.attr('title'));
+					result += record.text;
 
-				return result;
-			},
-			allowClear: true,
-			width: '165px'
-		});
+					// Add more info to the container
+					container.attr('title', $elem.attr('title'));
 
-	$( '.toplevel_page_wp_stream input[type=hidden].select2-select' ).select2({
-			minimumInputLength: 1,
-			allowClear: true,
-			width: '165px',
-			ajax: {
-				url: ajaxurl,
-				datatype: 'json',
-				data: function (term) {
-					return {
-						action: 'wp_stream_filters',
-						filter: $(this).attr('name'),
-						q: term
-					};
+					return result;
 				},
-				results: function (data) {
-					return {results: data};
-				}
-			},
-			initSelection: function (element, callback) {
-				var id = $(element).val();
+				allowClear: true,
+				width: '165px'
+			};
+		} else {
+			args = {
+				minimumInputLength: 3,
+				allowClear: true,
+				width: '165px',
+				ajax: {
+					url: ajaxurl,
+					datatype: 'json',
+					data: function (term) {
+						return {
+							action: 'wp_stream_filters',
+							filter: $(el).attr('name'),
+							q: term
+						};
+					},
+					results: function (data) {
+						return {results: data};
+					}
+				},
+				initSelection: function (element, callback) {
+					var id = $(element).val();
 
-				if(id !== '') {
-					$.post(
-						ajaxurl,
-						{
-							action: 'wp_stream_get_author_name_by_id',
-							id:     id
-						},
-						function (response) {
-							callback({
-								id:   id,
-								text: response
-							});
-						},
-						'json'
-					);
+					if(id !== '') {
+						$.post(
+							ajaxurl,
+							{
+								action: 'wp_stream_get_author_name_by_id',
+								id:     id
+							},
+							function (response) {
+								callback({
+									id:   id,
+									text: response
+								});
+							},
+							'json'
+						);
+					}
 				}
-			}
-		});
+			};
+		}
+
+		$(el).select2( args );
+	});
+
 	var stream_select2_change_handler = function (e, input) {
 		var $placeholder_class = input.data('select-placeholder');
 		var $placeholder_child_class = $placeholder_class + '-child';

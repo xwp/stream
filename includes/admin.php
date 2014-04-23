@@ -728,7 +728,7 @@ class WP_Stream_Admin {
 	 * @action wp_ajax_wp_stream_filters
 	 */
 	public static function ajax_filters() {
-		switch ( $_REQUEST['filter'] ) {
+		switch ( wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
 			case 'author':
 				$results = array_map(
 					function ( $user ) {

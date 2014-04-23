@@ -454,7 +454,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		if ( 'author' === $column ) {
 			$all_records = array();
-			$authors     = get_users();
+
+			// Short circuit and return empty array if we have more than 10 users, to use Ajax instead
+			$user_count  = count_users();
+			$total_users = $user_count['total_users'];
+			if ( $total_users > WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
+				return array();
+			}
+
+			$authors = get_users();
 			if ( $hide_disabled_column_filter ) {
 				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
 			}
@@ -536,7 +544,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters['author']          = array();
 		$filters['author']['title'] = __( 'authors', 'stream' );
 
-		if ( count( $authors_records ) <= WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
+		if ( count( $authors_records ) ) {
 			$filters['author']['items'] = $authors_records;
 		} else {
 			$filters['author']['ajax'] = true;
@@ -599,7 +607,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		if ( $ajax ) {
 			$out = sprintf(
-				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
+				'<input type="hidden" name="%s" class="chosen-select" data-placeholder="%s"/>',
 				esc_attr( $name ),
 				esc_attr( wp_stream_filter_input( INPUT_GET, $name ) ),
 				esc_html( $title )
