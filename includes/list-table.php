@@ -207,16 +207,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 			case 'author' :
 				$user        = get_user_by( 'id', $item->author );
 				$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
-
-				if ( ! $user && ! is_array( $author_meta ) ) {
-					$out = __( 'N/A', 'stream' );
-					break;
-				}
+				$is_wp_cli   = ! empty( $author_meta['is_wp_cli'] );
+				$author_role = null;
 
 				global $wp_roles;
 				$author_ID    = isset( $item->author ) ? $item->author : 0;
 				$user_deleted = false;
-				$is_wp_cli    = ! empty( $author_meta['is_wp_cli'] );
 
 				/**
 				 * Tries to find a label for the record's author_role.
@@ -243,6 +239,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$author_name   = 'WP-CLI';
 					$avatar_url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
 					$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-80 photo" height="80" width="80">', esc_attr( $author_name ), esc_url( $avatar_url ) );
+				} elseif ( ! $is_wp_cli ) {
+					$author_name   = __( 'N/A', 'stream' );
+					$author_avatar = get_avatar( 'system@wp-stream.com', 80, get_option('avatar_default') ?: 'mystery', $author_name );
+					$author_avatar = preg_replace( "/src='(.+?)'/", "src='\$1&amp;forcedefault=1'", $author_avatar );
 				} else {
 					$user_deleted  = true;
 					$author_name   = ! empty( $author_meta['display_name'] ) ? $author_meta['display_name'] : $author_meta['user_login'];

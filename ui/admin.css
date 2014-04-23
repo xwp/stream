@@ -47,6 +47,10 @@
 #dashboard_stream_activity .record-avatar a {
 	display: block;
 }
+#dashboard_stream_activity .record-avatar img {
+	width: 36px;
+	height: 36px;
+}
 
 #dashboard_stream_activity .record-meta {
 	color: #666;
