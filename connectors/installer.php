@@ -240,15 +240,26 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		);
 	}
 
+	/**
+	 * @todo Core needs a delete_theme hook
+	 */
 	public static function callback_delete_site_transient_update_themes() {
-		$stylesheet = wp_stream_filter_input( INPUT_GET, 'stylesheet' );
 
-		if ( 'delete' !== wp_stream_filter_input( INPUT_GET, 'action' ) || ! $stylesheet ) {
+		$backtrace = debug_backtrace();
+		$delete_theme_call = null;
+		foreach ( $backtrace as $call ) {
+			if ( isset( $call['function'] ) && 'delete_theme' === $call['function'] ) {
+				$delete_theme_call = $call;
+				break;
+			}
+		}
+
+		if ( empty( $delete_theme_call ) ) {
 			return;
 		}
 
-		$theme = $GLOBALS['theme'];
-		$name  = $theme['Name'];
+		$name = $delete_theme_call['args'][0];
+		// @todo Can we get the name of the theme? Or has it already been eliminated
 
 		self::log(
 			__( '"%s" theme deleted', 'stream' ),
@@ -258,6 +269,10 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		);
 	}
 
+	/**
+	 * @todo Core needs an uninstall_plugin hook
+	 * @todo This does not work in WP-CLI
+	 */
 	public static function callback_pre_option_uninstall_plugins() {
 		global $plugins;
 
@@ -276,6 +291,10 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		return false;
 	}
 
+	/**
+	 * @todo Core needs a delete_plugin hook
+	 * @todo This does not work in WP-CLI
+	 */
 	public static function callback_pre_set_site_transient_update_plugins( $value ) {
 		if ( ! wp_stream_filter_input( INPUT_POST, 'verify-delete' ) || ! ( $plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' ) ) ) {
 			return $value;
