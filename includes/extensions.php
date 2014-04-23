@@ -232,7 +232,7 @@ class WP_Stream_Extensions {
 					$aria_name   = esc_attr( $extension->slug . '-name' );
 					?>
 
-					<div class="theme<?php if ( $is_active ) { echo esc_attr( ' active' ); } ?>" tabindex="0" data-extension="<?php echo esc_attr( $extension->slug ); ?>">
+					<div class="theme<?php if ( $is_active ) { echo esc_attr( ' active' ); } ?> thickbox" tabindex="0" data-extension="<?php echo esc_attr( $extension->slug ); ?>">
 <!--						<a href="--><?php //echo esc_url( $extension->link ) ?><!--" target="_blank">-->
 							<div class="theme-screenshot<?php if ( ! $image_src ) { echo esc_attr( ' blank' ); } ?>">
 								<?php if ( $image_src ) : ?>
@@ -275,7 +275,7 @@ class WP_Stream_Extensions {
 			<br class="clear">
 
 		</div>
-		<div class="theme-overlay"></div>
+<!--		<div class="theme-overlay"></div>-->
 		<?php
 		$this->render_extension_about_template();
 	}
@@ -308,26 +308,30 @@ class WP_Stream_Extensions {
 
 	function render_extension_about_template() {
 		?>
+		<div class="theme-overlay hidden">
 			<div class="theme-wrap">
 				<div class="theme-header">
 					<button class="left dashicons dashicons-no"><span class="screen-reader-text">Show previous extension</span></button>
 					<button class="right dashicons dashicons-no"><span class="screen-reader-text">Show next extension</span></button>
 					<button class="close dashicons dashicons-no"><span class="screen-reader-text">Close overlay</span></button>
 				</div>
-			<div class="theme-about">
-				<div class="theme-screenshots">
-					<div class="screenshot"></div>
+				<div class="theme-about">
+					<div class="theme-screenshots">
+						<div class="screenshot"></div>
+					</div>
+
+					<div class="theme-info">
+						<h3 class="theme-name"></h3>
+						<p class="theme-description"></p>
+					</div>
 				</div>
 
-			<div class="theme-info">
-				<p class="theme-description"></p>
+				<div class="theme-actions">
+					<div class="active-theme"></div>
+				</div>
 			</div>
 		</div>
 
-		<div class="theme-actions">
-			<div class="active-theme"></div>
-		</div>
-		</div>
 	<?php
 	}
 }
