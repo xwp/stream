@@ -40,6 +40,7 @@ class WP_Stream_Network {
 		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
 		add_filter( 'wp_stream_query_args', array( __CLASS__, 'set_network_option_value' ) );
 		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
+		add_filter( 'wp_stream_connectors', array( $this, 'hide_blogs_connector' ) );
 	}
 
 	/**
@@ -406,7 +407,7 @@ class WP_Stream_Network {
 	 * @return array
 	 */
 	function list_table_filters( $filters ) {
-		if ( is_network_admin() ) {
+		if ( is_network_admin() && ! wp_is_large_network() ) {
 			$blogs = array();
 
 			// display network blog as the first option
@@ -504,4 +505,17 @@ class WP_Stream_Network {
 		return $columns;
 	}
 
+	/**
+	 * Prevent the Blogs connector from loading when not in network_admin
+	 *
+	 * @param $args
+	 *
+	 * @return mixed
+	 */
+	function hide_blogs_connector( $connectors ) {
+		if ( ! is_network_admin() ) {
+			return array_diff( $connectors, array( 'WP_Stream_Connector_Blogs' ) );
+		}
+		return $connectors;
+	}
 }

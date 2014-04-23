@@ -112,7 +112,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @return array Context label translations
 	 */
 	public static function get_context_labels() {
-		return array(
+		$context_labels = array(
 			'settings'           => __( 'Settings', 'stream' ),
 			'general'            => __( 'General', 'stream' ),
 			'writing'            => __( 'Writing', 'stream' ),
@@ -122,11 +122,21 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'permalink'          => __( 'Permalinks', 'stream' ),
 			'network'            => __( 'Network', 'stream' ),
 			'wp_stream'          => __( 'Stream', 'stream' ),
-			'wp_stream_network'  => __( 'Stream Network', 'stream' ),
-			'wp_stream_defaults' => __( 'Stream Defaults', 'stream' ),
 			'custom_background ' => __( 'Custom Background', 'stream' ),
 			'custom_header'      => __( 'Custom Header', 'stream' ),
 		);
+
+		if ( is_network_admin() ) {
+			$context_labels = array_merge(
+				$context_labels,
+				array(
+					'wp_stream_network'  => __( 'Stream Network', 'stream' ),
+					'wp_stream_defaults' => __( 'Stream Defaults', 'stream' ),
+				)
+			);
+		}
+
+		return $context_labels;
 	}
 
 	/**
