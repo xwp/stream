@@ -29,24 +29,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		add_filter( 'screen_settings', array( $this, 'screen_controls' ), 10, 2 );
 		add_filter( 'set-screen-option', array( __CLASS__, 'set_screen_option' ), 10, 3 );
-		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
 		set_screen_options();
-	}
-
-	static function ajax_filters() {
-		$results = array(
-			array(
-				'id'   => 1,
-				'text' => 'Garfield',
-			),
-			array(
-				'id'   => 2,
-				'text' => 'Odie',
-			),
-		);
-		echo json_encode( $results );
-		die();
 	}
 
 	function extra_tablenav( $which ) {
