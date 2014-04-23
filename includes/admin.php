@@ -790,18 +790,20 @@ class WP_Stream_Admin {
 				$icon = $gravatar_url;
 			}
 
+			$title = sprintf(
+				__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+				$user->ID,
+				$user->user_login,
+				$user->user_email,
+				implode( ', ', array_map( 'ucwords', $user->roles ) )
+			);
+
 			$authors_records[ $user_id ] = array(
 				'text'  => $user->display_name,
 				'id'    => $user_id,
 				'label' => $user->display_name,
 				'icon'  => $icon,
-				'title' => sprintf(
-					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
-					$user->ID,
-					$user->user_login,
-					$user->user_email,
-					implode( ', ', array_map( 'ucwords', $user->roles ) )
-				),
+				'title' => $title,
 			);
 		}
 
