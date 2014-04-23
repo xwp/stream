@@ -148,6 +148,8 @@ class WP_Stream_Install {
 	 * When database update is complete page will refresh with dismissible message to user
 	 */
 	public static function prompt_update() {
+		$update_args = array( 'type' => 'auto' );
+		$success_db = self::update( self::$db_version, self::$current, $update_args );
 		?>
 		<div class="error">
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update', wp_get_referer() ) ) ?>">
@@ -172,7 +174,8 @@ class WP_Stream_Install {
 
 		check_admin_referer( 'wp_stream_update_db' );
 
-		$success_db = self::update( self::$db_version, self::$current );
+		$update_args = array( 'type' => 'user' );
+		$success_db = self::update( self::$db_version, self::$current, $update_args );
 
 		if ( $success_db ) {
 			$success_op = update_site_option( self::KEY, self::$current );
@@ -212,24 +215,6 @@ class WP_Stream_Install {
 
 	/**
 	 * Array of database versions that require and updates
-	 * To access or add your own update functions use the filter in the update method
-	 *
-	 * @access private
-	 * @return array
-	 */
-	private static function db_update_versions() {
-		return array(
-			'1.1.4'/** @version 1.1.4 Fix mysql character set issues */,
-			'1.1.7'/** @version 1.1.7 Modified the ip column to varchar(39) */,
-			'1.2.8'/** @version 1.2.8 Change the context for Media connectors to the attachment type */,
-			'1.3.0'/** @version 1.3.0 Backward settings compatibility for old version plugins */,
-			'1.3.1'/** @version 1.3.1 Update records of Installer to Theme Editor connector */,
-			'1.4.0'/** @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
-		);
-	}
-
-	/**
-	 * Database user controlled update routine
 	 *
 	 * To add your own stream extension database update routine
 	 * use the filter and return the version that requires an update
@@ -237,19 +222,41 @@ class WP_Stream_Install {
 	 * use the wp_stream_update_{version_number} version number must be a string of characters that represent the version with no periods
 	 *
 	 * @filter wp_stream_db_update_versions
-	 * @filter wp_stream_auto_db_update_versions
+	 *
+	 * @access private
+	 * @return array
+	 */
+	private static function db_update_versions() {
+		$db_update_versions = array(
+			'1.1.4' /* @version 1.1.4 Fix mysql character set issues */,
+			'1.1.7' /* @version 1.1.7 Modified the ip column to varchar(39) */,
+			'1.2.8' /* @version 1.2.8 Change the context for Media connectors to the attachment type */,
+			'1.3.0' /* @version 1.3.0 Backward settings compatibility for old version plugins */,
+			'1.3.1' /* @version 1.3.1 Update records of Installer to Theme Editor connector */,
+			'1.4.0' /* @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
+		);
+
+		return apply_filters( 'wp_stream_db_update_versions', $db_update_versions );
+	}
+
+	/**
+	 * Database user controlled update routine
 	 *
 	 * @param int $db_version last updated version of database stored in plugin options
 	 * @param int $current Current running plugin version
 	 * @return mixed Version number on success, true on no update needed, mysql error message on error
 	 */
-	public static function update( $db_version, $current, $auto = false ) {
+	public static function update( $db_version, $current, $update_args ) {
 		require_once WP_STREAM_INC_DIR . 'db-updates.php';
 
-		$prefix   = self::$table_prefix;
-		$versions = apply_filters( 'wp_stream_db_update_versions', self::db_update_versions(), $current, $prefix );
+		$versions = self::db_update_versions();
+
 		foreach ( $versions as $version ) {
-			$function = 'wp_stream_update_' . str_ireplace( '.', '', $version );
+			if ( ! isset( $update_args['type'] ) ) {
+				$update_args['type'] = 'user';
+			}
+
+			$function = 'wp_stream_update_' . ( 'user' === $update_args['type'] ? '' : $update_args['type'] . '_' ) . str_ireplace( '.', '', $version );
 
 			if ( version_compare( $db_version, $version, '<' ) ) {
 				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current ) : false;

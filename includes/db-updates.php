@@ -5,7 +5,49 @@
  *
  * Create `author_role` column in `stream` table if it doesn't already exist.
  * Create `blog_id` column in `stream` table if it doesn't already exist.
+ *
+ * @param string $db_version Database version updating from
+ * @param string $current_version Database version updating to
+ *
+ * @return string $current_version if updated correctly
+ */
+function wp_stream_update_auto_140( $db_version, $current_version ) {
+	global $wpdb;
+
+	$prefix = WP_Stream_Install::$table_prefix;
+
+	do_action( 'wp_stream_before_auto_db_update_' . $db_version, $current_version );
+
+	// Check to see if the blog_id column already exists
+	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'blog_id'" );
+
+	// If the blog_id doesn't exist, then create it and update records retroactively
+	if ( empty( $rows ) ) {
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
+	}
+
+	// Check to see if the author_role column already exists
+	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'author_role'" );
+
+	// If the author_role doesn't exist, then create it
+	if ( empty( $rows ) ) {
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(50) NULL AFTER author" );
+	}
+
+	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
+
+	if ( $wpdb->last_error ) {
+		return __( 'Database Update Error', 'stream' );
+	}
+
+	return $current_version;
+}
+
+/**
+ * Version 1.4.0
+ *
  * Merge multisite Stream tables.
+ * Retroactively update author_roles.
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -18,14 +60,6 @@ function wp_stream_update_140( $db_version, $current_version ) {
 	$prefix = WP_Stream_Install::$table_prefix;
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
-
-	// Check to see if the blog_id column already exists
-	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'blog_id'" );
-
-	// If the blog_id doesn't exist, then create it and update records retroactively
-	if ( empty( $rows ) ) {
-		$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
-	}
 
 	// If multisite, merge the site stream tables into one
 	if ( is_multisite() ) {
@@ -92,30 +126,22 @@ function wp_stream_update_140( $db_version, $current_version ) {
 		return __( 'Database Update Error', 'stream' );
 	}
 
-	// Check to see if the author_role column already exists
-	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'author_role'" );
+	$records = wp_stream_query( array( 'records_per_page' => -1 ) );
 
-	// If the author_role doesn't exist, then create it and update records retroactively
-	if ( empty( $rows ) ) {
-		$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(50) NULL AFTER author" );
+	foreach ( $records as $record ) {
+		$user = get_user_by( 'id', $record->author );
 
-		$records = wp_stream_query( array( 'records_per_page' => -1 ) );
-
-		foreach ( $records as $record ) {
-			$user = get_user_by( 'id', $record->author );
-
-			if ( ! $user || ! isset( $user->roles[0] ) ) {
-				continue;
-			}
-
-			$wpdb->update(
-				$wpdb->stream,
-				array(
-					'author_role' => $user->roles[0],
-				),
-				array( 'ID' => $record->ID )
-			);
+		if ( ! $user || ! isset( $user->roles[0] ) ) {
+			continue;
 		}
+
+		$wpdb->update(
+			$wpdb->stream,
+			array(
+				'author_role' => $user->roles[0],
+			),
+			array( 'ID' => $record->ID )
+		);
 	}
 
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
