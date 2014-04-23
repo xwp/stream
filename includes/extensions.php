@@ -229,16 +229,14 @@ class WP_Stream_Extensions {
 					$install_link  = wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug );
 					$activate_link = wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] );
 					$aria_action = esc_attr( $extension->slug . '-action' );
-					$aria_name   = esc_attr( $extension->slug . '-name' );
 					?>
 
 					<div class="theme<?php if ( $is_active ) { echo esc_attr( ' active' ); } ?> thickbox" tabindex="0" data-extension="<?php echo esc_attr( $extension->slug ); ?>">
-<!--						<a href="--><?php //echo esc_url( $extension->link ) ?><!--" target="_blank">-->
-							<div class="theme-screenshot<?php if ( ! $image_src ) { echo esc_attr( ' blank' ); } ?>">
-								<?php if ( $image_src ) : ?>
-									<img src="<?php echo esc_url( $image_src ) ?>" alt="<?php echo esc_attr( $extension->title ) ?>">
-								<?php endif; ?>
-							</div>
+						<div class="theme-screenshot<?php if ( ! $image_src ) { echo esc_attr( ' blank' ); } ?>">
+							<?php if ( $image_src ) : ?>
+								<img src="<?php echo esc_url( $image_src ) ?>" alt="<?php echo esc_attr( $extension->title ) ?>">
+							<?php endif; ?>
+						</div>
 							<span class="more-details" id="<?php echo esc_attr( $aria_action ); ?>"><?php esc_html_e( 'View Details', 'stream' ) ?></span>
 							<h3 class="theme-name">
 								<span><?php echo esc_html( $extension->title ) ?></span>
@@ -246,7 +244,7 @@ class WP_Stream_Extensions {
 								<span class="inactive"><?php esc_html_e( 'Inactive', 'stream' ) ?></span>
 								<?php endif; ?>
 							</h3>
-<!--						</a>-->
+
 					<div class="theme-actions">
 						<?php if ( ! $is_installed ) { ?>
 							<?php if ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) : ?>
@@ -271,11 +269,8 @@ class WP_Stream_Extensions {
 			<?php endforeach; ?>
 
 			</div>
-
 			<br class="clear">
-
 		</div>
-<!--		<div class="theme-overlay"></div>-->
 		<?php
 		$this->render_extension_about_template();
 	}
@@ -283,13 +278,13 @@ class WP_Stream_Extensions {
 	function prepare_extensions_for_js( $extensions ) {
 		$prepared_extensions = array();
 		foreach ( $extensions as $extension ) {
-
 			$prepared_extensions[ $extension->slug ] = array(
 				'id'           => $extension->slug,
 				'name'         => $extension->title,
-				'screen_shot'   => isset( $extension->featured_image->source ) ? $extension->featured_image->source : null,
-				'video'         => '', /** @todo Get video embed code from json api */
-				'description'  => $extension->content,
+				'screen_shot'  => isset( $extension->featured_image->source ) ? $extension->featured_image->source : null,
+				'video'        => isset( $extension->post_meta->video_url[0] ) ? $extension->post_meta->video_url[0] : null,
+				'content'      => $extension->content,
+				'excerpt'      => $extension->excerpt,
 				'author'       => $extension->author->name,
 				'authorAndUri' => $extension->author->name,
 				'version'      => '1.0', /** @todo Add version number to json api */
@@ -331,7 +326,27 @@ class WP_Stream_Extensions {
 				</div>
 			</div>
 		</div>
-
+		<style>
+			.video-container {
+				position:       relative;
+				padding-bottom: 56.25%;
+				padding-top:    30px; height: 0; overflow: hidden;
+			}
+			.video-container iframe,
+			.video-container object,
+			.video-container embed {
+				position: absolute;
+				top:      0;
+				left:     0;
+				width:    100%;
+				height:   100%;
+			}
+			.theme-overlay .screenshot {
+				border: none!important;
+				box-shadow: none;
+				-webkit-box-shadow: none;
+			}
+		</style>
 	<?php
 	}
 }
