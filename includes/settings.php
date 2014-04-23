@@ -90,7 +90,7 @@ class WP_Stream_Settings {
 			'message' => __( 'There was an error in the request', 'stream' ),
 		);
 
-		$search = ( isset( $_POST['find'] )? wp_unslash( trim( $_POST['find'] ) ) : '' );
+		$search  = ( isset( $_POST['find'] )? wp_unslash( trim( $_POST['find'] ) ) : '' );
 		$request = (object) array(
 			'find' => $search,
 		);
