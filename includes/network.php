@@ -9,6 +9,9 @@
 
 class WP_Stream_Network {
 
+	const NETWORK_SETTINGS_PAGE_SLUG = 'wp_stream_network_settings';
+	const DEFAULT_SETTINGS_PAGE_SLUG = 'wp_stream_default_settings';
+
 	function __construct() {
 		$this->actions();
 		$this->filters();
@@ -123,7 +126,7 @@ class WP_Stream_Network {
 			__( 'Stream Network Settings', 'stream' ),
 			__( 'Network Settings', 'stream' ),
 			WP_Stream_Admin::SETTINGS_CAP,
-			'wp_stream_network_settings',
+			self::NETWORK_SETTINGS_PAGE_SLUG,
 			array( 'WP_Stream_Admin', 'render_page' )
 		);
 
@@ -133,7 +136,7 @@ class WP_Stream_Network {
 				__( 'New Site Settings', 'stream' ),
 				__( 'Site Defaults', 'stream' ),
 				WP_Stream_Admin::SETTINGS_CAP,
-				'wp_stream_default_settings',
+				self::DEFAULT_SETTINGS_PAGE_SLUG,
 				array( 'WP_Stream_Admin', 'render_page' )
 			);
 		}
@@ -184,10 +187,10 @@ class WP_Stream_Network {
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 
 		switch ( $current_page ) {
-			case 'wp_stream_network_settings' :
+			case self::NETWORK_SETTINGS_PAGE_SLUG :
 				$description = __( 'These settings apply to all sites on the network.', 'stream' );
 				break;
-			case 'wp_stream_default_settings' :
+			case self::DEFAULT_SETTINGS_PAGE_SLUG :
 				$description = __( 'These default settings will apply to new sites created on the network. These settings do not alter existing sites.', 'stream' );
 				break;
 		}
@@ -331,8 +334,8 @@ class WP_Stream_Network {
 	 */
 	function network_options_action() {
 		$allowed_referers = array(
-			'wp_stream_network_settings',
-			'wp_stream_default_settings',
+			self::NETWORK_SETTINGS_PAGE_SLUG,
+			self::DEFAULT_SETTINGS_PAGE_SLUG,
 		);
 		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers ) ) {
 			return;

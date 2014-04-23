@@ -130,7 +130,7 @@ class WP_Stream_Admin {
 			__( 'Stream Settings', 'stream' ),
 			__( 'Settings', 'stream' ),
 			self::SETTINGS_CAP,
-			'wp_stream_settings',
+			self::SETTINGS_PAGE_SLUG,
 			array( __CLASS__, 'render_page' )
 		);
 
@@ -296,7 +296,11 @@ class WP_Stream_Admin {
 				return $links;
 			}
 
-			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), is_network_admin() ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE ) );
+			if ( is_network_admin() ) {
+				$admin_page_url = add_query_arg( array( 'page' => WP_Stream_Network::NETWORK_SETTINGS_PAGE_SLUG ), network_admin_url( self::ADMIN_PARENT_PAGE ) );
+			} else {
+				$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
+			}
 			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 
 			$url = add_query_arg(
@@ -581,7 +585,7 @@ class WP_Stream_Admin {
 			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
 
 			// Redirect to plugin page
-			wp_redirect( add_query_arg( array( 'deactivate' => true ), is_network_admin() ? network_admin_url( 'plugins.php' ) : admin_url( 'plugins.php' ) ) );
+			wp_redirect( add_query_arg( array( 'deactivate' => true ), self_admin_url( 'plugins.php' ) ) );
 			exit;
 		} else {
 			wp_die( "You don't have sufficient privileges to do this action." );
