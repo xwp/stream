@@ -35,6 +35,7 @@ class WP_Stream_Notifications_Import_Export {
 		header( 'Pragma: public' );
 		header( 'Content-Length: ' . strlen( $json ) );
 		echo $json; // xss ok
+		die();
 	}
 
 	public static function import() {

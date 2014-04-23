@@ -24,7 +24,7 @@ class WP_Stream_Notification_Rule {
 		global $wpdb;
 		$item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->stream WHERE type = 'notification_rule' AND ID = %d", $id ) ); // cache ok, db call ok
 		if ( $item ) {
-			$meta = get_option( 'stream_notifications_' . $item->ID );
+			$meta = get_site_option( 'stream_notifications_' . $item->ID );
 			if ( ! $meta || ! is_array( $meta ) ) {
 				$meta = array();
 			}
@@ -52,6 +52,7 @@ class WP_Stream_Notification_Rule {
 
 		$defaults = array(
 			'ID'         => null,
+			'blog_id'    => is_network_admin() ? 0 : get_current_blog_id(),
 			'author'     => wp_get_current_user()->ID,
 			'summary'    => null,
 			'visibility' => 'inactive',
@@ -87,7 +88,7 @@ class WP_Stream_Notification_Rule {
 		if ( $this->ID ) {
 			$meta_keys = array( 'triggers', 'groups', 'alerts', );
 			$meta      = array_intersect_key( $data, array_flip( $meta_keys ) );
-			update_option( 'stream_notifications_'.$this->ID, $meta );
+			update_site_option( 'stream_notifications_'.$this->ID, $meta );
 		}
 
 		return $success;

@@ -124,6 +124,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$args['orderby']        = $orderby;
 		$args['paged']          = $this->get_pagenum();
 		$args['type']           = 'notification_rule';
+		$args['blog_id']        = is_network_admin() ? 0 : get_current_blog_id();
 		$args['ignore_context'] = true;
 
 		if ( ! $args['ignore_url_params'] ) {
@@ -168,7 +169,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 							'action' => 'edit',
 							'id'     => absint( $item->ID ),
 						),
-						admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+						is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 					),
 					'row-title',
 					esc_attr( $name ),
@@ -227,6 +228,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 		$out          = '';
 		$custom_links = apply_filters( 'wp_stream_notifications_custom_action_links_' . $record->ID, array(), $record );
 
+		$admin_url = is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
+
 		$out .= '<div class="row-actions">';
 
 		$activation_nonce = wp_create_nonce( "activate-record_$record->ID" );
@@ -241,7 +244,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 					'action' => 'edit',
 					'id'     => absint( $record->ID ),
 				),
-				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+				$admin_url
 			),
 			'class' => null,
 		);
@@ -255,7 +258,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 						'id'              => absint( $record->ID ),
 						'wp_stream_nonce' => $activation_nonce,
 					),
-					admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+					$admin_url
 				),
 				'class' => null,
 			);
@@ -268,7 +271,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 						'id'              => absint( $record->ID ),
 						'wp_stream_nonce' => $activation_nonce,
 					),
-					admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+					$admin_url
 				),
 				'class' => null,
 			);
@@ -284,7 +287,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 						'wp_stream_nonce' => $deletion_nonce,
 						'visibility'      => $visibility,
 					),
-					admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+					$admin_url
 				),
 				'class' => 'delete',
 			);
@@ -330,7 +333,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 			array(
 				'page' => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
 			),
-			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 		);
 
 		$args = ! is_array( $key ) ? array( $key => $value ) : $key;
@@ -436,6 +439,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	function list_navigation() {
+		$admin_url = is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
+
 		$navigation_items = array(
 			'all' => array(
 				'link_text' => esc_html__( 'All', 'stream-notifications' ),
@@ -443,7 +448,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 					array(
 						'page' => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
 					),
-					admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+					$admin_url
 				),
 				'link_class' => null,
 				'li_class'   => null,
@@ -456,7 +461,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 						'page'       => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
 						'visibility' => 'active',
 					),
-					admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+					$admin_url
 				),
 				'link_class' => null,
 				'li_class'   => null,
@@ -469,7 +474,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 						'page'       => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
 						'visibility' => 'inactive',
 					),
-					admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+					$admin_url
 				),
 				'link_class' => null,
 				'li_class'   => null,
@@ -527,7 +532,8 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 
 	function display() {
 		echo $this->list_navigation(); // xss ok
-		echo '<form method="get" action="' . admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) . '">';
+		$admin_url = is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
+		printf( '<form method="get" action="%s">', esc_url( $admin_url ) );
 		parent::display();
 	}
 
@@ -577,7 +583,7 @@ class WP_Stream_Notifications_List_Table extends WP_List_Table {
 	}
 
 	function get_rule_types( $item ) {
-		$rule = get_option( sprintf( 'stream_notifications_%d', $item->ID ) );
+		$rule = get_site_option( sprintf( 'stream_notifications_%d', $item->ID ) );
 		if ( empty( $rule['alerts'] ) ) {
 			return esc_html__( 'N/A', 'stream-notifications' );
 		}

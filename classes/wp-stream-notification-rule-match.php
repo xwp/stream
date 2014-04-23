@@ -26,13 +26,28 @@ class WP_Stream_Notification_Rule_Matcher {
 
 		// Get rules
 		$args = array(
-			'type' => 'notification_rule',
-			'ignore_context' => true,
+			'type'             => 'notification_rule',
+			'ignore_context'   => true,
 			'records_per_page' => -1,
-			'fields' => 'ID',
-			'visibility' => 'active', // Active rules only
-			);
+			'fields'           => 'ID',
+			'visibility'       => 'active', // Active rules only
+		);
 		$rules = wp_stream_query( $args );
+
+		if ( is_multisite() && is_plugin_active_for_network( WP_STREAM_NOTIFICATIONS_PLUGIN ) ) {
+			$args = array(
+				'blog_id'          => '0',
+				'type'             => 'notification_rule',
+				'ignore_context'   => true,
+				'records_per_page' => -1,
+				'fields'           => 'ID',
+				'visibility'       => 'active', // Active rules only
+			);
+			$network_rules = wp_stream_query( $args );
+
+			$rules = array_merge( $rules, $network_rules );
+		}
+
 		$rules = wp_list_pluck( $rules, 'ID' );
 
 		$rules = $this->format( $rules );
