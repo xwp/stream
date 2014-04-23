@@ -244,7 +244,7 @@ class WP_Stream {
 			}
 		} else {
 			$print_message = function () use ( $message, $is_error ) {
-				$class_name = ( $is_error ? 'error' : 'updated' );
+				$class_name   = ( $is_error ? 'error' : 'updated' );
 				$html_message = sprintf( '<div class="%s">%s</div>', $class_name, wpautop( $message ) );
 				echo wp_kses_post( $html_message );
 			};
