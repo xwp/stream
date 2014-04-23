@@ -124,7 +124,7 @@ class WP_Stream_Settings {
 			$gravatar_url = null;
 
 			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->ID, 16 ), $gravatar_src_match ) ) {
-				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+				$gravatar_url = $gravatar_src_match[1];
 			}
 
 			$args = array(

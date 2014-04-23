@@ -171,6 +171,8 @@
 	float: left;
 	margin-right: 10px;
 	margin-top: 1px;
+	width: 40px;
+	height: 40px;
 }
 
 .toplevel_page_wp_stream .column-author .deleted {
@@ -336,6 +338,8 @@
 	    position: relative;
 	         top: 3px;
 	margin-right: 4px;
+	width: 16px;
+	height: 16px;
 }
 
 .select2-disabled .wp-stream-select2-icon {

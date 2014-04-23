@@ -255,14 +255,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 				if ( $user ) {
 					$author_name   = isset( $user->display_name ) ? $user->display_name : $user->user_login;
-					$author_avatar = get_avatar( $author_ID, 40 );
+					$author_avatar = get_avatar( $author_ID, 80 );
 				} elseif ( $is_wp_cli ) {
 					$author_name   = 'WP-CLI';
-					$author_avatar = ''; // @todo Use logo?
+					$avatar_url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+					$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-80 photo" height="80" width="80">', esc_attr( $author_name ), esc_url( $avatar_url ) );
 				} else {
 					$user_deleted  = true;
 					$author_name   = ! empty( $author_meta['display_name'] ) ? $author_meta['display_name'] : $author_meta['user_login'];
-					$author_avatar = get_avatar( $author_meta['user_email'], 40 );
+					$author_avatar = get_avatar( $author_meta['user_email'], 80 );
 				}
 
 				$out = sprintf(
@@ -529,9 +530,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 		foreach ( $authors_records as $user_id => $user ) {
 			if ( 0 === $user_id ) {
 				$authors_records[ $user_id ]['label'] = 'WP-CLI';
+				$authors_records[ $user_id ]['icon'] = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
 			} else {
 				$user = $user['label'];
-				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
+				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 32 ), $gravatar_src_match ) ) {
 					list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
 					$authors_records[ $user_id ]['icon'] = $gravatar_url;
 				}
