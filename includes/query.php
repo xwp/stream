@@ -121,7 +121,7 @@ class WP_Stream_Query {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.summary LIKE %s", "%{$args['search']}%" );
 		}
 
-		if ( $args['author'] || $args['author'] === '0' ) {
+		if ( $args['author'] || '0' === $args['author'] ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.author = %d", (int) $args['author'] );
 		}
 

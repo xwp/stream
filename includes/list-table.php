@@ -256,7 +256,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				if ( $user ) {
 					$author_name   = isset( $user->display_name ) ? $user->display_name : $user->user_login;
 					$author_avatar = get_avatar( $author_ID, 40 );
-				} else if ( $is_wp_cli ) {
+				} elseif ( $is_wp_cli ) {
 					$author_name   = 'WP-CLI';
 					$author_avatar = ''; // @todo Use logo?
 				} else {
