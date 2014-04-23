@@ -45,12 +45,12 @@ jQuery(function($){
 				},
 				initSelection: function (element, callback) {
 					var id = $(element).val();
-
 					if(id !== '') {
 						$.post(
 							ajaxurl,
 							{
-								action: 'wp_stream_get_author_name_by_id',
+								action: 'wp_stream_get_filter_value_by_id',
+								filter: $(element).attr('name'),
 								id:     id
 							},
 							function (response) {

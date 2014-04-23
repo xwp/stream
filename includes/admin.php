@@ -78,7 +78,7 @@ class WP_Stream_Admin {
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
 		// Ajax author's name by ID
-		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
+		add_action( 'wp_ajax_wp_stream_get_filter_value_by_id', array( __CLASS__, 'get_filter_value_by_id' ) );
 	}
 
 	/**
@@ -766,12 +766,25 @@ class WP_Stream_Admin {
 	}
 
 	/**
-	 * @action wp_ajax_wp_stream_get_author_name_by_id
+	 * @action wp_ajax_wp_stream_get_filter_value_by_id
 	 */
-	public static function get_author_name_by_id() {
-		$user = get_userdata( $_REQUEST['id'] );
-		echo json_encode( $user->display_name );
-		die();
+	public static function get_filter_value_by_id() {
+		$filter = wp_stream_filter_input( INPUT_POST, 'filter' );
+		switch ( $filter ) {
+			case 'author':
+				$user = get_userdata( wp_stream_filter_input( INPUT_POST, 'id' ) );
+				if ( ! $user || is_wp_error( $user ) ) {
+					$value = '';
+				} else {
+					$value = $user->display_name;
+				}
+				break;
+			default:
+				$value = '';
+				break;
+		}
+		echo json_encode( $value );
+		wp_die();
 	}
 
 }
