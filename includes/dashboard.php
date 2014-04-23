@@ -211,7 +211,11 @@ class WP_Stream_Dashboard_Widget {
 			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 		);
 
-		$author      = get_userdata( $item->author );
+		if ( 0 === (int)$item->author ) {
+			$author = new WP_User( 0 );
+		} else {
+			$author = get_userdata( $item->author );
+		}
 		$author_link = add_query_arg(
 			array( 'author' => isset( $author->ID ) ? absint( $author->ID ) : 0 ),
 			$records_link
@@ -226,7 +230,7 @@ class WP_Stream_Dashboard_Widget {
 				),
 				human_time_diff( strtotime( $item->created ) ),
 				esc_url( $author_link ),
-				esc_html( $author->display_name )
+				esc_html( 0 === $author->ID ? 'WP-CLI' : $author->display_name )
 			);
 		} else {
 			$time_author = sprintf(
@@ -247,7 +251,15 @@ class WP_Stream_Dashboard_Widget {
 			<?php if ( $author ) : ?>
 				<div class="record-avatar">
 					<a href="<?php echo esc_url( $author_link ) ?>">
-						<?php echo get_avatar( $author->ID, 36 ) ?>
+						<?php if ( 0 === $author->ID ): ?>
+							<?php
+							$author_name = 'WP-CLI';
+							$avatar_url  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+							printf( '<img alt="%s" src="%s" class="avatar avatar-80 photo" height="36" width="36">', esc_attr( $author_name ), esc_url( $avatar_url ) );
+							?>
+						<?php else : ?>
+							<?php echo get_avatar( $author->ID, 36 ) ?>
+						<?php endif; ?>
 					</a>
 				</div>
 			<?php endif; ?>

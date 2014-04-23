@@ -169,7 +169,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 
 		foreach ( $allowed_params as $param ) {
-			if ( $paramval = wp_stream_filter_input( INPUT_GET, $param ) ) {
+			$paramval = wp_stream_filter_input( INPUT_GET, $param );
+			if ( $paramval || '0' === $paramval ) {
 				$args[ $param ] = $paramval;
 			}
 		}
@@ -231,6 +232,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				global $wp_roles;
 				$author_ID    = isset( $item->author ) ? $item->author : 0;
 				$user_deleted = false;
+				$is_wp_cli    = ! empty( $author_meta['is_wp_cli'] );
 
 				/**
 				 * Tries to find a label for the record's author_role.
@@ -252,15 +254,19 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 				if ( $user ) {
 					$author_name   = isset( $user->display_name ) ? $user->display_name : $user->user_login;
-					$author_avatar = get_avatar( $author_ID, 40 );
+					$author_avatar = get_avatar( $author_ID, 80 );
+				} elseif ( $is_wp_cli ) {
+					$author_name   = 'WP-CLI';
+					$avatar_url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+					$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-80 photo" height="80" width="80">', esc_attr( $author_name ), esc_url( $avatar_url ) );
 				} else {
 					$user_deleted  = true;
 					$author_name   = ! empty( $author_meta['display_name'] ) ? $author_meta['display_name'] : $author_meta['user_login'];
-					$author_avatar = get_avatar( $author_meta['user_email'], 40 );
+					$author_avatar = get_avatar( $author_meta['user_email'], 80 );
 				}
 
 				$out = sprintf(
-					'<a href="%s">%s <span>%s</span></a>%s%s',
+					'<a href="%s">%s <span>%s</span></a>%s%s%s',
 					add_query_arg(
 						array(
 							'page'   => WP_Stream_Admin::RECORDS_PAGE_SLUG,
@@ -271,7 +277,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$author_avatar,
 					$author_name,
 					$user_deleted ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
-					$author_role ? sprintf( '<br /><small>%s</small>', $author_role ) : ''
+					$author_role ? sprintf( '<br /><small>%s</small>', $author_role ) : '',
+					$user && $is_wp_cli ? sprintf( '<br /><small>%s</small>', __( 'via WP-CLI', 'stream' ) ) : ''
 				);
 				break;
 
@@ -453,7 +460,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		if ( 'author' === $column ) {
 			$all_records = array();
+			$wp_cli_user = new WP_User( 0 );
 			$authors     = get_users();
+			$authors[]   = $wp_cli_user;
 			if ( $hide_disabled_column_filter ) {
 				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
 			}
@@ -462,10 +471,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				if ( $hide_disabled_column_filter && in_array( $author->ID, $excluded_records ) ) {
 					continue;
 				}
-				$author = get_user_by( 'id', $author->ID );
-				if ( $author ) {
-					$all_records[ $author->ID ] = $author;
-				}
+				$all_records[ $author->ID ] = $author;
 			}
 		} else {
 			$prefixed_column = sprintf( 'stream_%s', $column );
@@ -485,12 +491,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$active_records   = array();
 		$disabled_records = array();
 
-		foreach ( $all_records as $record => $label ) {
-			if ( array_key_exists( $record, $existing_records ) ) {
-				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
+		foreach ( $all_records as $user_id => $label ) {
+			if ( array_key_exists( $user_id, $existing_records ) ) {
+				$active_records[ $user_id ] = array( 'label' => $label, 'disabled' => '' );
 			} else {
-				$disabled_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
+				$disabled_records[ $user_id ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
 			}
+		}
+
+		// Remove WP-CLI pseudo user if no records with user=0 exist
+		if ( isset( $disabled_records[0] ) ) {
+			unset( $disabled_records[0] );
 		}
 
 		asort( $active_records );
@@ -516,20 +527,25 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$authors_records = $this->assemble_records( 'author', 'stream' );
 
 		foreach ( $authors_records as $user_id => $user ) {
-			$user = $user['label'];
-			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 16 ), $gravatar_src_match ) ) {
-				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
-				$authors_records[ $user_id ]['icon'] = $gravatar_url;
+			if ( 0 === $user_id ) {
+				$authors_records[ $user_id ]['label'] = 'WP-CLI';
+				$authors_records[ $user_id ]['icon']  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+			} else {
+				$user = $user['label'];
+				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user_id, 32 ), $gravatar_src_match ) ) {
+					list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+					$authors_records[ $user_id ]['icon'] = $gravatar_url;
+				}
+				$user_roles = array_map( 'ucwords', $user->roles );
+				$authors_records[ $user_id ]['label']   = $user->display_name;
+				$authors_records[ $user_id ]['tooltip'] = sprintf(
+					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+					$user->ID,
+					$user->user_login,
+					$user->user_email,
+					implode( ', ', $user_roles )
+				);
 			}
-			$user_roles = array_map( 'ucwords', $user->roles );
-			$authors_records[ $user_id ]['label']   = $user->display_name;
-			$authors_records[ $user_id ]['tooltip'] = sprintf(
-				__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
-				$user->ID,
-				$user->user_login,
-				$user->user_email,
-				implode( ', ', $user_roles )
-			);
 		}
 
 		$filters['author']          = array();
@@ -607,7 +623,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$options  = array( '<option value=""></option>' );
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
 			foreach ( $items as $v => $label ) {
-				$options[ $v ] = sprintf(
+				$options[] = sprintf(
 					'<option value="%s" %s %s %s title="%s">%s</option>',
 					$v,
 					selected( $v, $selected, false ),
@@ -636,7 +652,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				<input type="submit" name="" id="search-submit" class="button" value="%1$s" />
 			</p>',
 			esc_attr__( 'Search Records', 'stream' ),
-			isset( $_GET['search'] ) ? esc_attr( $_GET['search'] ) : null
+			isset( $_GET['search'] ) ? esc_attr( wp_unslash( $_GET['search'] ) ) : null
 		);
 
 		return $out;

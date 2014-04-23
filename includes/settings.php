@@ -90,8 +90,9 @@ class WP_Stream_Settings {
 			'message' => __( 'There was an error in the request', 'stream' ),
 		);
 
+		$search  = ( isset( $_POST['find'] )? wp_unslash( trim( $_POST['find'] ) ) : '' );
 		$request = (object) array(
-			'find' => ( isset( $_POST['find'] )? wp_unslash( trim( $_POST['find'] ) ) : '' ),
+			'find' => $search,
 		);
 
 		add_filter( 'user_search_columns', array( __CLASS__, 'add_display_name_search_columns' ), 10, 3 );
@@ -123,7 +124,7 @@ class WP_Stream_Settings {
 			$gravatar_url = null;
 
 			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->ID, 16 ), $gravatar_src_match ) ) {
-				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+				$gravatar_url = $gravatar_src_match[1];
 			}
 
 			$args = array(
@@ -147,6 +148,15 @@ class WP_Stream_Settings {
 			}
 
 			$response->users[] = $args;
+		}
+
+		if ( empty( $search ) || preg_match( '/wp|cli/i', $search ) ) {
+			$response->users[] = array(
+				'id'      => 0,
+				'text'    => 'WP-CLI',
+				'icon'    => WP_STREAM_URL . 'ui/stream-icons/wp-cli.png',
+				'tooltip' => '',
+			);
 		}
 
 		wp_send_json_success( $response );
