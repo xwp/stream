@@ -651,7 +651,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				<input type="submit" name="" id="search-submit" class="button" value="%1$s" />
 			</p>',
 			esc_attr__( 'Search Records', 'stream' ),
-			isset( $_GET['search'] ) ? esc_attr( $_GET['search'] ) : null
+			isset( $_GET['search'] ) ? esc_attr( wp_unslash( $_GET['search'] ) ) : null
 		);
 
 		return $out;
