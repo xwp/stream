@@ -253,10 +253,9 @@ class WP_Stream_Dashboard_Widget {
 					<a href="<?php echo esc_url( $author_link ) ?>">
 						<?php if ( 0 === $author->ID ): ?>
 							<?php
-							$author_name   = 'WP-CLI';
-							$avatar_url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
-							$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-80 photo" height="36" width="36">', esc_attr( $author_name ), esc_url( $avatar_url ) );
-							echo $author_avatar; // xss ok
+							$author_name = 'WP-CLI';
+							$avatar_url  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+							printf( '<img alt="%s" src="%s" class="avatar avatar-80 photo" height="36" width="36">', esc_attr( $author_name ), esc_url( $avatar_url ) );
 							?>
 						<?php else : ?>
 							<?php echo get_avatar( $author->ID, 36 ) ?>
