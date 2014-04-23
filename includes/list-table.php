@@ -597,7 +597,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					'<option value="%s" %s %s %s title="%s">%s</option>',
 					$v,
 					selected( $v, $selected, false ),
-					$label['disabled'],
+					isset( $label['disabled'] ) ? $label['disabled'] : '', // xss ok
 					isset( $label['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $label['icon'] ) ) : '',
 					isset( $label['tooltip'] ) ? esc_attr( $label['tooltip'] ) : '',
 					$label['label']
