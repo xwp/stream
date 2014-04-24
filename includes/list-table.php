@@ -442,6 +442,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		 */
 		$hide_disabled_column_filter = apply_filters( 'wp_stream_list_table_hide_disabled_ ' . $setting_key, ( 0 === $exclude_hide_previous_records ) ? false : true );
 
+		// @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object
 		if ( 'author' === $column ) {
 			$all_records = array();
 
@@ -484,11 +485,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$active_records   = array();
 		$disabled_records = array();
 
-		foreach ( $all_records as $user_id => $label ) {
-			if ( array_key_exists( $user_id, $existing_records ) ) {
-				$active_records[ $user_id ] = array( 'label' => $label, 'disabled' => '' );
+		foreach ( $all_records as $record => $label ) {
+			if ( array_key_exists( $record, $existing_records ) ) {
+				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
 			} else {
-				$disabled_records[ $user_id ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
+				$disabled_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
 			}
 		}
 
@@ -497,8 +498,22 @@ class WP_Stream_List_Table extends WP_List_Table {
 			unset( $disabled_records[0] );
 		}
 
-		asort( $active_records );
-		asort( $disabled_records );
+		$sort = function ( $a, $b ) use ( $column ) {
+			// @todo we should ideally not have this author condition; the label should be an object with toString()
+			if ( 'author' === $column ) {
+				$label_a = ( 0 === $a['label']->ID ) ? 'WP-CLI' : $a['label']->display_name;
+				$label_b = ( 0 === $b['label']->ID ) ? 'WP-CLI' : $b['label']->display_name;
+			} else {
+				$label_a = $a['label'];
+				$label_b = $b['label'];
+			}
+			if ( $label_a === $label_b ) {
+				return 0;
+			}
+			return strtolower( $label_a ) < strtolower( $label_b ) ? -1 : 1;
+		};
+		uasort( $active_records, $sort );
+		uasort( $disabled_records, $sort );
 
 		// Not using array_merge() in order to preserve the array index for the Authors dropdown which uses the user_id as the key
 		$all_records = $active_records + $disabled_records;
