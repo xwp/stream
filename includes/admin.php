@@ -439,9 +439,9 @@ class WP_Stream_Admin {
 
 		$extensions = WP_Stream_Extensions::get_instance();
 
-//		if ( $install = wp_stream_filter_input( INPUT_GET, 'install' ) ) {
-//			return self::render_extension_download_page( $install );
-//		}
+		if ( $install = wp_stream_filter_input( INPUT_GET, 'install' ) ) {
+			return self::render_extension_download_page( $install );
+		}
 
 		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_script(
@@ -479,25 +479,7 @@ class WP_Stream_Admin {
 				),
 			)
 		);
-		wp_localize_script(
-			'stream-extensions',
-			'stream_extensions',
-			array(
-				'extensions'   => $extensions->prepare_extensions_for_js( $extensions->extensions ),
-				'settings' => array(
-					'canInstall'    => ( ! is_multisite() && current_user_can( 'install_themes' ) ),
-					'installURI'    => ( ! is_multisite() && current_user_can( 'install_themes' ) ) ? admin_url( 'theme-install.php' ) : null,
-					'confirmDelete' => __( "Are you sure you want to delete this theme?\n\nClick 'Cancel' to go back, 'OK' to confirm the delete." ),
-					'adminUrl'      => parse_url( admin_url(), PHP_URL_PATH ),
-				),
-				'l10n'     => array(
-					'addNew'            => __( 'Add New Theme' ),
-					'search'            => __( 'Search Installed Themes' ),
-					'searchPlaceholder' => __( 'Search installed themes...' ), // placeholder (no ellipsis)
-				),
-			)
-		);
-
+		wp_localize_script( 'stream-extensions', 'stream_extensions', array( 'extensions' => $extensions->prepare_extensions_for_js( $extensions->extensions ) ) );
 		add_thickbox();
 		?>
 		<div class="themes-php">
