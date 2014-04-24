@@ -144,6 +144,11 @@ class WP_Stream_Reports {
 
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
+
+		// Register to Stream updates
+		if ( class_exists( 'WP_Stream_Updater' ) ) {
+			WP_Stream_Updater::instance()->register( plugin_basename( __FILE__ ) );
+		}
 	}
 
 	/**
