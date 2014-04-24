@@ -4,7 +4,7 @@
 ![Banner](assets/banner-1544x500.png)
 Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail.
 
-**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [johnregan3](http://profiles.wordpress.org/johnregan3), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe), [powelski](http://profiles.wordpress.org/powelski)  
+**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [lukecarbis](http://profiles.wordpress.org/lukecarbis), [westonruter](http://profiles.wordpress.org/westonruter), [powelski](http://profiles.wordpress.org/powelski), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [c3mdigital](http://profiles.wordpress.org/c3mdigital), [johnregan3](http://profiles.wordpress.org/johnregan3), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
 **Tested up to:** 3.8.1  
@@ -47,6 +47,7 @@ Stream is built to extend, allowing developers to easily build their own connect
 
 **Noteworthy features:**
 
+ * Multisite view of all activity records on a network
  * Dashboard widget of most recent user activity
  * Limit who can view user activity records by user role
  * UI to exclude specific types of user activity from being tracked
@@ -70,7 +71,6 @@ Stream is built to extend, allowing developers to easily build their own connect
 **Coming soon:**
 
  * Limit who can view user activity records by user, not just by role
- * Multisite view of all activity records on a network
  * Language support for Arabic (RTL), Czech and Slovak
 
 **See room for improvement?**
@@ -104,6 +104,27 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
+
+### 1.4.0 - April 24, 2014 ###
+* New: Multisite is now fully supported, activate Stream network-wide ([#65](https://github.com/x-team/wp-stream/issues/65))
+* New: WP-CLI compatibility, Stream now tracks changes made via WP-CLI ([#423](https://github.com/x-team/wp-stream/issues/423))
+* New: Separate API for handling DB update routines ([#379](https://github.com/x-team/wp-stream/issues/379))
+* Tweak: More compact search filters for smaller screens ([#403](https://github.com/x-team/wp-stream/issues/403))
+* Tweak: Use icon link instead of clicking the summary to filter by object ID ([#380](https://github.com/x-team/wp-stream/issues/380))
+* Tweak: Save additional author meta for better records ([#389](https://github.com/x-team/wp-stream/issues/389))
+* Tweak: Deprecate functions and hooks in favor of consistent naming conventions ([#267](https://github.com/x-team/wp-stream/issues/267))
+* Fix: Fix AJAX loading of authors in dropdown filters ([#49](https://github.com/x-team/wp-stream/issues/49))
+* Fix: Stream Feeds Key not being automatically generated ([#420](https://github.com/x-team/wp-stream/issues/420))
+* Fix: TTL purge schedule is never setup ([#412](https://github.com/x-team/wp-stream/issues/412))
+* Fix: Uninstall confirmation message doesn't display ([#411](https://github.com/x-team/wp-stream/issues/411))
+* Fix: Non-Administrator users seeing errors in Settings records ([#406](https://github.com/x-team/wp-stream/issues/406))
+* Fix: Custom capability conflict with W3 Total Cache plugin ([#296](https://github.com/x-team/wp-stream/issues/296))
+* Fix: Live updates remove last item in activity table ([#386](https://github.com/x-team/wp-stream/issues/386))
+* Fix: Live updates screen option checkbox not persisting ([#392](https://github.com/x-team/wp-stream/issues/392))
+* Fix: IP validator not respecting zero ([#394](https://github.com/x-team/wp-stream/issues/394))
+* Fix: NextGen compability issue ([#416](https://github.com/x-team/wp-stream/issues/416))
+
+Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [c3mdigital](http://profiles.wordpress.org/c3mdigital/), [westonruter](http://profiles.wordpress.org/westonruter/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [powelski](http://profiles.wordpress.org/powelski/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [desaiuditd](http://profiles.wordpress.org/desaiuditd/)
 
 ### 1.3.1 - April 3, 2014 ###
 * New: Theme Editor connector for tracking changes made to theme files ([#313](https://github.com/x-team/wp-stream/issues/313))
