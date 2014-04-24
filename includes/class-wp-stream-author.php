@@ -22,7 +22,7 @@ class WP_Stream_Author {
 	 * @param array $author_meta
 	 */
 	function __construct( $user_id, $author_meta = array() ) {
-		$this->id = $user_id;
+		$this->id   = $user_id;
 		$this->meta = $author_meta;
 		if ( $this->id ) {
 			$this->user_obj = new WP_User( $this->id );
