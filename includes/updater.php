@@ -42,6 +42,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			// Plugin activation link
 			$plugin_basename = plugin_basename( $plugin_file );
 			add_action( 'plugin_action_links_' . $plugin_basename, array( $this, 'plugin_action_links' ) );
+			add_action( 'in_plugin_update_message-' .$plugin_basename, array( $this, 'premium_connect_notice' ), 10, 2 );
 		}
 
 		public function info( $result, $action = null, $args = null ) {
@@ -77,7 +78,11 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			$site     = parse_url( get_site_url(), PHP_URL_HOST );
 			if ( $response ) {
 				foreach ( $response as $key => $value ) {
-					$value->package .= '&license=' . $license . '&site=' . $site;
+					if ( $license ) {
+						$value->package .= '&license=' . $license . '&site=' . $site;
+					} else {
+						$value->package = '';
+					}
 				}
 				$transient->response = array_merge( $transient->response, $response );
 			}
@@ -146,6 +151,11 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 
 			update_option( 'stream-license', $license );
 			update_option( 'stream-licensee', $data->data->user );
+
+			// Invalidate plugin-update transient so we can check for updates
+			// and restore package urls to existing updates
+			delete_site_transient( 'update_plugins' );
+
 			wp_send_json( $data );
 		}
 
@@ -156,6 +166,11 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 
 			delete_option( 'stream-license' );
 			delete_option( 'stream-licensee' );
+
+			// Invalidate plugin-update transient so we can check for updates
+			// and restore package urls to existing updates
+			delete_site_transient( 'update_plugins' );
+
 			wp_send_json_success( array( 'message' => __( 'Site disconnected successfully from your Stream account.', 'stream' ) ) );
 		}
 
@@ -238,6 +253,15 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				echo '<div id="message" class="error"><p>' . $activate->get_error_message() . '</p></div>';
 			} else {
 				echo '<p>' . __( 'Extension was downloaded and activated successfully!', 'stream' ) . '</p>';
+			}
+		}
+
+		public function premium_connect_notice( $plugin, $r ) {
+			if ( empty( $r->package ) ) {
+				printf(
+					'<em>, Please <a href="%s">connect this site</a> to Stream Premium to enable automatic updates.</em>',
+					admin_url( 'admin.php?page=wp_stream_extensions' )
+				);
 			}
 		}
 	}
