@@ -107,7 +107,7 @@ class WP_Stream {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 
-			add_action( 'init', array( __CLASS__, 'install' ) );
+			add_action( 'init', array( __CLASS__, 'install' ), 10, 1 );
 
 			// Registers a hook that connectors and other plugins can use whenever a stream update happens
 			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
