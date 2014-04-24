@@ -191,7 +191,7 @@ class WP_Stream_Extensions {
 		<?php if ( ! $this->verify_membership() ) : ?>
 			<p class="description">
 			<?php esc_html_e( "Connect your Stream Premium account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?>
-				<a href="https://wp-stream.com/join/" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
+				<a href="<?php echo esc_url( self::API_TRANSPORT . self::API_DOMAIN . '/join/' ) ?>" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
 			</p>
 		<?php else : ?>
 			<p class="description" style="color: green;">
@@ -215,7 +215,7 @@ class WP_Stream_Extensions {
 			<p>
 				<em><?php esc_html_e( 'Sorry, there was a problem loading the list of extensions.', 'stream' ) ?></em></p>
 			<p>
-				<a class="button button-primary" href="http://wp-stream.com/#extensions" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a>
+				<a class="button button-primary" href="<?php echo esc_url( self::API_TRANSPORT . self::API_DOMAIN . '/#extensions' ) ?>" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a>
 			</p>
 			<?php
 			return;
