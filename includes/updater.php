@@ -166,6 +166,11 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 
 			delete_option( 'stream-license' );
 			delete_option( 'stream-licensee' );
+
+			// Invalidate plugin-update transient so we can check for updates
+			// and restore package urls to existing updates
+			delete_site_transient( 'update_plugins' );
+
 			wp_send_json_success( array( 'message' => __( 'Site disconnected successfully from your Stream account.', 'stream' ) ) );
 		}
 
