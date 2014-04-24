@@ -120,6 +120,14 @@ function wp_stream_update_140( $db_version, $current_version ) {
 		}
 
 		restore_current_blog();
+	} else {
+		$wpdb->update(
+			$wpdb->stream,
+			array( 'blog_id' => '1' ),
+			array( 'blog_id' => '0' ),
+			array( '%d' ),
+			array( '%d' )
+		);
 	}
 
 	if ( $wpdb->last_error ) {
