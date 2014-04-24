@@ -30,7 +30,7 @@
 							template.find('.theme-actions').html('<a href="' + value.actions.activate + '" class="button button-primary">' + value.activate18n + '</a>');
 
 						} else if (value.installed && value.active) {
-							template.find( '.theme-actions').html(value.active18n);
+							template.find( '.theme-actions').html('<h3 class="theme-name">' + value.active18n + '</h3>');
 						}
 						overlay.show();
 					}
