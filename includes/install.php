@@ -123,7 +123,7 @@ class WP_Stream_Install {
 		}
 
 		if ( empty( self::$db_version ) ) {
-			$current = self::install( self::$current );
+			self::install( self::$current );
 		} elseif ( self::$db_version !== self::$current ) {
 
 			if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
@@ -135,10 +135,12 @@ class WP_Stream_Install {
 				self::$success_db = self::update( self::$db_version, self::$current, $update_args );
 			}
 
-			// Only add notice if we have manual update to trigger on this release.
+			// We need to check if there is a manual update needed between the current and last db version.
 			$versions = self::db_update_versions();
-			if ( in_array( self::$current, $versions ) ) {
+			if ( version_compare( end( $versions ), self::$db_version, '>=' ) ) {
 				add_action( 'all_admin_notices', array( __CLASS__, 'update_notice_hook' ) );
+			} else {
+				self::update_db_option();
 			}
 		}
 	}
@@ -158,6 +160,34 @@ class WP_Stream_Install {
 		}
 
 		return $version;
+	}
+
+	public static function update_db_option() {
+		if ( self::$success_db ) {
+			$success_op = update_site_option( self::KEY, self::$current );
+		}
+
+		if ( empty( self::$success_db ) || empty( $success_op ) ) {
+			wp_die( __( 'There was an error updating the Stream database. Please try again.', 'stream' ), 'Database Update Error', array( 'response' => 200, 'back_link' => true ) );
+		}
+	}
+
+	/**
+	 * Added to the admin_notices hook when file plugin version is higher than database plugin version
+	 *
+	 * @action admin_notices
+	 * @return void
+	 */
+	public static function update_notice_hook() {
+		if ( ! current_user_can( WP_Stream_Admin::VIEW_CAP ) ) {
+			return;
+		}
+
+		if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
+			self::prompt_update();
+		} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
+			self::prompt_update_status();
+		}
 	}
 
 	/**
@@ -187,17 +217,9 @@ class WP_Stream_Install {
 	 *
 	 */
 	public static function prompt_update_status() {
-		global $wpdb;
-
 		check_admin_referer( 'wp_stream_update_db' );
 
-		if ( self::$success_db ) {
-			$success_op = update_site_option( self::KEY, self::$current );
-		}
-
-		if ( empty( self::$success_db ) || empty( $success_op ) ) {
-			wp_die( __( 'There was an error updating the Stream database. Please try again.', 'stream' ), 'Database Update Error', array( 'response' => 200, 'back_link' => true ) );
-		}
+		self::update_db_option();
 		?>
 		<div class="updated">
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ), wp_get_referer() ) ?>" style="display:inline;">
@@ -207,24 +229,6 @@ class WP_Stream_Install {
 			</form>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Added to the admin_notices hook when file plugin version is higher than database plugin version
-	 *
-	 * @action admin_notices
-	 * @return void
-	 */
-	public static function update_notice_hook() {
-		if ( ! current_user_can( WP_Stream_Admin::VIEW_CAP ) ) {
-			return;
-		}
-
-		if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
-			self::prompt_update();
-		} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
-			self::prompt_update_status();
-		}
 	}
 
 	/**
