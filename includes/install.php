@@ -200,7 +200,7 @@ class WP_Stream_Install {
 	public static function prompt_update() {
 		?>
 		<div class="error">
-			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update', wp_get_referer() ) ) ?>">
+			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ) ) ?>">
 				<?php wp_nonce_field( 'wp_stream_update_db' ) ?>
 				<input type="hidden" name="wp_stream_update" value="update_and_continue"/>
 				<p><strong><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></strong></p>
@@ -223,7 +223,7 @@ class WP_Stream_Install {
 		self::update_db_option();
 		?>
 		<div class="updated">
-			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update', wp_get_referer() ) ) ?>" style="display:inline;">
+			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ) ) ?>" style="display:inline;">
 				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ) ?></strong></p>
 				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', self::$db_version, self::$current ), 'stream' ) ?></p>
 				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ) ?>
