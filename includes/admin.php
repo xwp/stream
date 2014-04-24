@@ -741,6 +741,7 @@ class WP_Stream_Admin {
 
 				if ( count( $users ) > self::PRELOAD_AUTHORS_MAX ) {
 					$users = array_slice( $users, 0, self::PRELOAD_AUTHORS_MAX );
+					// @todo $extra is not used
 					$extra = array(
 						'id'       => 0,
 						'disabled' => true,
@@ -787,7 +788,7 @@ class WP_Stream_Admin {
 
 	public static function get_authors_record_meta( $authors ) {
 		$authors_records = array();
-		foreach ( $authors as $user_id => $user ) {
+		foreach ( $authors as $user_id => $author ) {
 			$icon  = '';
 			$title = '';
 			if ( 0 === $user_id ) {
@@ -795,10 +796,10 @@ class WP_Stream_Admin {
 				$icon  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
 				$title = 'WP-CLI Operation';
 			} else {
-				$user = is_a( $user, 'WP_User' ) ? $user : $user['label'];
+				$user = is_a( $author, 'WP_User' ) ? $author : $author['label']; // @todo hacky. Stop using WP_User as label
 				$name = $user->display_name;
 
-				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->user_email, 16 ), $gravatar_src_match ) ) {
+				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->user_email, 32 ), $gravatar_src_match ) ) {
 					list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
 					$icon = $gravatar_url;
 				}
@@ -813,11 +814,12 @@ class WP_Stream_Admin {
 			}
 
 			$authors_records[ $user_id ] = array(
-				'text'  => $name,
-				'id'    => $user_id,
-				'label' => $name,
-				'icon'  => $icon,
-				'title' => $title,
+				'text'     => $name,
+				'id'       => $user_id,
+				'label'    => $name,
+				'icon'     => $icon,
+				'title'    => $title,
+				'disabled' => ( is_array( $author ) && isset( $author['disabled'] ) ) ? $author['disabled'] : null,
 			);
 		}
 

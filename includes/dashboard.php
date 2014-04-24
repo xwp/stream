@@ -164,7 +164,7 @@ class WP_Stream_Dashboard_Widget {
 				<div class="clear"></div>
 			</div>';
 
-		echo '<div>' . $html_view_all . $html_pagination_links . '</div>';
+		echo '<div>' . $html_view_all . $html_pagination_links . '</div>'; // xss ok
 	}
 
 	/**
@@ -210,11 +210,15 @@ class WP_Stream_Dashboard_Widget {
 			array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ),
 			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 		);
+		$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
+		$is_wp_cli   = ! empty( $author_meta['is_wp_cli'] );
 
 		if ( 0 === (int)$item->author ) {
-			$author = new WP_User( 0 );
+			$author      = new WP_User( 0 );
+			$author_name = $is_wp_cli ? 'WP-CLI' : __( 'N/A', 'stream' );
 		} else {
-			$author = get_userdata( $item->author );
+			$author      = get_userdata( $item->author );
+			$author_name = $author->display_name;
 		}
 		$author_link = add_query_arg(
 			array( 'author' => isset( $author->ID ) ? absint( $author->ID ) : 0 ),
@@ -230,7 +234,7 @@ class WP_Stream_Dashboard_Widget {
 				),
 				human_time_diff( strtotime( $item->created ) ),
 				esc_url( $author_link ),
-				esc_html( 0 === $author->ID ? 'WP-CLI' : $author->display_name )
+				esc_html( $author_name )
 			);
 		} else {
 			$time_author = sprintf(
@@ -246,20 +250,25 @@ class WP_Stream_Dashboard_Widget {
 				$class = 'alternate';
 			}
 		}
+
+		if ( 0 === $author->ID ) {
+			if ( $is_wp_cli ) {
+				$avatar_url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+				$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-72 photo" height="72" width="72">', esc_attr( $author_name ), esc_url( $avatar_url ) );
+			} else {
+				$author_avatar = get_avatar( 'system@wp-stream.com', 72, get_option( 'avatar_default' ) ?: 'mystery', $author_name );
+				$author_avatar = preg_replace( "/src='(.+?)'/", "src='\$1&amp;forcedefault=1'", $author_avatar );
+			}
+		} else {
+			$author_avatar = get_avatar( $author->ID, 72 );
+		}
+
 		ob_start()
 		?><li class="<?php echo esc_html( $class ) ?>" data-id="<?php echo esc_html( $item->ID ) ?>">
 			<?php if ( $author ) : ?>
 				<div class="record-avatar">
 					<a href="<?php echo esc_url( $author_link ) ?>">
-						<?php if ( 0 === $author->ID ): ?>
-							<?php
-							$author_name = 'WP-CLI';
-							$avatar_url  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
-							printf( '<img alt="%s" src="%s" class="avatar avatar-80 photo" height="36" width="36">', esc_attr( $author_name ), esc_url( $avatar_url ) );
-							?>
-						<?php else : ?>
-							<?php echo get_avatar( $author->ID, 36 ) ?>
-						<?php endif; ?>
+					<?php echo $author_avatar; // xss ok ?>
 					</a>
 				</div>
 			<?php endif; ?>
