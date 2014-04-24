@@ -193,6 +193,11 @@ class WP_Stream_Notifications {
 
 			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'export.php';
 		}
+
+		// Register to Stream updates
+		if ( class_exists( 'WP_Stream_Updater' ) ) {
+			WP_Stream_Updater::instance()->register( plugin_basename( __FILE__ ) );
+		}
 	}
 
 	/**
