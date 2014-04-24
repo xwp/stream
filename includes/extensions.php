@@ -15,20 +15,29 @@ class WP_Stream_Extensions {
 	const API_TRANSPORT  = 'http://'; /** @internal will need valid ssl cert before using https:// transport  */
 	const API_QUERY      = '?type=extension';
 
+	/**
+	 * @var array|mixed
+	 */
 	var $extensions;
 
-	var $extension_data;
-
+	/**
+	 * @var string
+	 */
 	var $api_uri;
 
-	var $license_api_uri;
-
+	/**
+	 * @var array
+	 */
 	var $plugin_paths;
 
-	var $stream_member = true; // /** @internal setting to true for testing the page output */
-
+	/**
+	 * @var string|null
+	 */
 	var $license_key = NULL;
 
+	/**
+	 * @var bool
+	 */
 	public static $instance = false;
 
 	public static function get_instance() {
@@ -68,7 +77,7 @@ class WP_Stream_Extensions {
 			$api_transient = $this->get_extension_api();
 
 			if ( $api_transient ) {
-				set_transient( self::EXTENSIONS_KEY, $this->get_extension_api(), MINUTE_IN_SECONDS * 60 * 12 * 2 );
+				set_transient( self::EXTENSIONS_KEY, $this->get_extension_api(), MINUTE_IN_SECONDS * 60 * 6 );
 			}
 			return $api_transient;
 		}
@@ -90,9 +99,15 @@ class WP_Stream_Extensions {
 		return false;
 	}
 
+	/**
+	 * @param $false
+	 * @param $action
+	 * @param $args
+	 *
+	 * @return stdClass
+	 */
 	function filter_plugin_api_info( $false, $action, $args ) {
 		if ( 'plugin_information' == $action && empty( $false ) ) {
-
 			/** @internal The querying the api using the filter endpoint doesn't seem to work. For now I'm looping through all the extensions to get the api info for using WordPress install api  */
 			foreach ( $this->get_extension_data() as $extension ) {
 				if ( $extension->slug == $args->slug ) {
@@ -109,24 +124,21 @@ class WP_Stream_Extensions {
 		return $false;
 	}
 
+	/**
+	 * Filter to allow extension downloads from external domain
+	 *
+	 * @param bool $allow False by default. True when external domain is white listed
+	 * @param string $host Host being checked against white list
+	 * @param string $url
+	 *
+	 * @return bool
+	 */
 	function filter_allowed_external_host( $allow, $host, $url ) {
 		if ( $host == self::API_DOMAIN ) {
 			$allow = true;
 		}
 
 		return $allow;
-	}
-
-	/**
-	 * Activates membership to access premium extensions
-	 * stores a hashed membership key in the db
-	 *
-	 */
-	private function activate_membership() {
-		$license_key = wp_remote_get( $this->api_uri, array() );
-		set_transient( self::MEMBER_KEY, array( 'license_key' => $license_key ), MINUTE_IN_SECONDS * 60 * 48 );
-
-		return $license_key;
 	}
 
 	/**
@@ -157,6 +169,13 @@ class WP_Stream_Extensions {
 		return $plugin_paths;
 	}
 
+	/**
+	 * Output HTML header on extensions page. Contains the connect to stream verify membership button
+	 *
+	 * @param $extensions
+	 *
+	 * @return mixed
+	 */
 	function extensions_display_header( $extensions ) {
 		?>
 		<h2><?php esc_html_e( 'Stream Extensions', 'stream' ) ?>
@@ -187,6 +206,7 @@ class WP_Stream_Extensions {
 	 * Output HTML to display grid of extensions
 	 *
 	 * @param array $extensions Array of available extensions from the json api
+	 *
 	 * @return void
 	 */
 	function extensions_display_body( $extensions ) {
@@ -215,54 +235,54 @@ class WP_Stream_Extensions {
 
 			<div class="themes">
 
-				<?php foreach ( $extensions as $extension ) : ?>
+			<?php foreach ( $extensions as $extension ) : ?>
 
-					<?php
-					$text_domain   = isset( $extension->slug ) ? sprintf( 'stream-%s', $extension->slug ) : null;
-					$plugin_path   = array_key_exists( $text_domain, $this->plugin_paths ) ? $this->plugin_paths[ $text_domain ] : null;
-					$is_active     = ( $plugin_path && is_plugin_active( $plugin_path ) );
-					$is_installed  = ( $plugin_path && defined( 'WP_PLUGIN_DIR' ) && file_exists( trailingslashit( WP_PLUGIN_DIR )  . $plugin_path ) );
-					$action_link   = isset( $extension->post_meta->external_url[0] ) ? $extension->post_meta->external_url[0] : $extension->link;
-					$action_link   = ! empty( $action_link ) ? $action_link : $extension->link;
-					$image_src     = isset( $extension->featured_image->source ) ? $extension->featured_image->source : null;
-					$image_src     = ! empty( $image_src ) ? $image_src : null;
-					$install_link  = wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug );
-					$activate_link = wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] );
-					$aria_action = esc_attr( $extension->slug . '-action' );
-					?>
+				<?php
+				$text_domain   = isset( $extension->slug ) ? sprintf( 'stream-%s', $extension->slug ) : null;
+				$plugin_path   = array_key_exists( $text_domain, $this->plugin_paths ) ? $this->plugin_paths[ $text_domain ] : null;
+				$is_active     = ( $plugin_path && is_plugin_active( $plugin_path ) );
+				$is_installed  = ( $plugin_path && defined( 'WP_PLUGIN_DIR' ) && file_exists( trailingslashit( WP_PLUGIN_DIR )  . $plugin_path ) );
+				$action_link   = isset( $extension->post_meta->external_url[0] ) ? $extension->post_meta->external_url[0] : $extension->link;
+				$action_link   = ! empty( $action_link ) ? $action_link : $extension->link;
+				$image_src     = isset( $extension->featured_image->source ) ? $extension->featured_image->source : null;
+				$image_src     = ! empty( $image_src ) ? $image_src : null;
+				$install_link  = wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug );
+				$activate_link = wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] );
+				$aria_action = esc_attr( $extension->slug . '-action' );
+				?>
 
-					<div class="theme<?php if ( $is_active ) { echo esc_attr( ' active' ); } ?> thickbox" tabindex="0" data-extension="<?php echo esc_attr( $extension->slug ); ?>">
-						<div class="theme-screenshot<?php if ( ! $image_src ) { echo esc_attr( ' blank' ); } ?>">
-							<?php if ( $image_src ) : ?>
-								<img src="<?php echo esc_url( $image_src ) ?>" alt="<?php echo esc_attr( $extension->title ) ?>">
+				<div class="theme<?php if ( $is_active ) { echo esc_attr( ' active' ); } ?> thickbox" tabindex="0" data-extension="<?php echo esc_attr( $extension->slug ); ?>">
+					<div class="theme-screenshot<?php if ( ! $image_src ) { echo esc_attr( ' blank' ); } ?>">
+						<?php if ( $image_src ) : ?>
+							<img src="<?php echo esc_url( $image_src ) ?>" alt="<?php echo esc_attr( $extension->title ) ?>">
+						<?php endif; ?>
+					</div>
+						<span class="more-details" id="<?php echo esc_attr( $aria_action ); ?>"><?php esc_html_e( 'View Details', 'stream' ) ?></span>
+						<h3 class="theme-name">
+							<span><?php echo esc_html( $extension->title ) ?></span>
+							<?php if ( $is_installed && ! $is_active ) : ?>
+							<span class="inactive"><?php esc_html_e( 'Inactive', 'stream' ) ?></span>
 							<?php endif; ?>
-						</div>
-							<span class="more-details" id="<?php echo esc_attr( $aria_action ); ?>"><?php esc_html_e( 'View Details', 'stream' ) ?></span>
-							<h3 class="theme-name">
-								<span><?php echo esc_html( $extension->title ) ?></span>
-								<?php if ( $is_installed && ! $is_active ) : ?>
-								<span class="inactive"><?php esc_html_e( 'Inactive', 'stream' ) ?></span>
-								<?php endif; ?>
-							</h3>
+						</h3>
 
 					<div class="theme-actions">
-						<?php if ( ! $is_installed ) { ?>
-							<?php if ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) : ?>
-								<a href="<?php echo esc_url( $action_link ) ?>" class="button button-secondary" target="_blank">
-									<?php esc_html_e( 'Get This Extension', 'stream' ) ?>
-								</a>
-							<?php else : ?>
-								<a href="<?php echo esc_url( $install_link ) ?>" class="button button-primary">
-									<?php esc_html_e( 'Install Now', 'stream' ) ?>
-								</a>
-							<?php endif; ?>
-						<?php } elseif ( $is_installed && ! $is_active ) { ?>
-							<a href="<?php echo esc_url( $activate_link ) ?>" class="button button-primary">
-								<?php esc_html_e( 'Activate', 'stream' ) ?>
+					<?php if ( ! $is_installed ) { ?>
+						<?php if ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) : ?>
+							<a href="<?php echo esc_url( $action_link ) ?>" class="button button-secondary" target="_blank">
+								<?php esc_html_e( 'Get This Extension', 'stream' ) ?>
 							</a>
-						<?php } elseif ( $is_installed && $is_active ) { ?>
-							<?php esc_html_e( 'Active', 'stream' ) ?>
-						<?php } ?>
+						<?php else : ?>
+							<a href="<?php echo esc_url( $install_link ) ?>" class="button button-primary">
+								<?php esc_html_e( 'Install Now', 'stream' ) ?>
+							</a>
+						<?php endif; ?>
+					<?php } elseif ( $is_installed && ! $is_active ) { ?>
+						<a href="<?php echo esc_url( $activate_link ) ?>" class="button button-primary">
+							<?php esc_html_e( 'Activate', 'stream' ) ?>
+						</a>
+					<?php } elseif ( $is_installed && $is_active ) { ?>
+						<?php esc_html_e( 'Active', 'stream' ) ?>
+					<?php } ?>
 					</div>
 				</div>
 
@@ -272,9 +292,17 @@ class WP_Stream_Extensions {
 			<br class="clear">
 		</div>
 		<?php
-		$this->render_extension_about_template();
+		$this->render_extension_overlay();
 	}
 
+	/**
+	 * Prepares the extensions for javascript output
+	 *
+	 * @for wp_localize_script()
+	 * @param array $extensions retrieved from the wp-stream.com extension api
+	 *
+	 * @return array
+	 */
 	function prepare_extensions_for_js( $extensions ) {
 		$prepared_extensions = array();
 		foreach ( $extensions as $extension ) {
@@ -285,15 +313,13 @@ class WP_Stream_Extensions {
 				'video'        => isset( $extension->post_meta->video_url[0] ) ? $extension->post_meta->video_url[0] : null,
 				'content'      => $extension->content,
 				'excerpt'      => $extension->excerpt,
-				'author'       => $extension->author->name,
-				'authorAndUri' => $extension->author->name,
-				'version'      => '1.0', /** @todo Add version number to json api */
+				'version'      => isset( $extension->post_meta->version[0] ) ? $extension->post_meta->version[0] : null,
 				'active'       => true,
 				'hasUpdate'    => false,
 				'update'       => false,
 				'actions'      => array(
 					'activate'  => wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] ),
-					'install' => null,
+					'install'   => null,
 					'delete'    => null,
 				),
 			);
@@ -301,7 +327,11 @@ class WP_Stream_Extensions {
 		return $prepared_extensions;
 	}
 
-	function render_extension_about_template() {
+	/**
+	 * HTML extension overlay template. Populated by javascript when extension is clicked
+	 *
+	 */
+	function render_extension_overlay() {
 		?>
 		<div class="theme-overlay hidden">
 			<div class="theme-wrap">
@@ -316,7 +346,7 @@ class WP_Stream_Extensions {
 					</div>
 
 					<div class="theme-info">
-						<h3 class="theme-name"></h3>
+						<h3 class="theme-name"><span class="theme-version"></span></h3>
 						<p class="theme-description"></p>
 					</div>
 				</div>
@@ -326,6 +356,7 @@ class WP_Stream_Extensions {
 				</div>
 			</div>
 		</div>
+		<!-- CSS to make Youtube video container responsive -->
 		<style>
 			.video-container {
 				position:       relative;
