@@ -137,7 +137,7 @@ class WP_Stream_Install {
 
 			// We need to check if there is a manual update needed between the current and last db version.
 			$versions = self::db_update_versions();
-			if ( version_compare( end( $versions ), self::$db_version, '>=' ) ) {
+			if ( version_compare( end( $versions ), self::$db_version, '>' ) ) {
 				add_action( 'all_admin_notices', array( __CLASS__, 'update_notice_hook' ) );
 			} else {
 				self::update_db_option();
