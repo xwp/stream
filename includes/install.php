@@ -58,6 +58,14 @@ class WP_Stream_Install {
 	public static $update_required = false;
 
 	/**
+	 * Holds status of whether the database update worked
+	 *
+	 * @access public
+	 * @var bool|string
+	 */
+	public static $success_db;
+
+	/**
 	 * Initialized object of class
 	 *
 	 * @access private
@@ -117,9 +125,16 @@ class WP_Stream_Install {
 		if ( empty( self::$db_version ) ) {
 			$current = self::install( self::$current );
 		} elseif ( self::$db_version !== self::$current ) {
+
 			if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 				self::$update_required = true;
+				$update_args = array( 'type' => 'auto' );
+				self::$success_db = self::update( self::$db_version, self::$current, $update_args );
+			} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
+				$update_args = array( 'type' => 'user' );
+				self::$success_db = self::update( self::$db_version, self::$current, $update_args );
 			}
+
 			add_action( 'all_admin_notices', array( __CLASS__, 'update_notice_hook' ) );
 		}
 	}
@@ -148,8 +163,6 @@ class WP_Stream_Install {
 	 * When database update is complete page will refresh with dismissible message to user
 	 */
 	public static function prompt_update() {
-		$update_args = array( 'type' => 'auto' );
-		$success_db = self::update( self::$db_version, self::$current, $update_args );
 		?>
 		<div class="error">
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update', wp_get_referer() ) ) ?>">
@@ -174,14 +187,11 @@ class WP_Stream_Install {
 
 		check_admin_referer( 'wp_stream_update_db' );
 
-		$update_args = array( 'type' => 'user' );
-		$success_db = self::update( self::$db_version, self::$current, $update_args );
-
-		if ( $success_db ) {
+		if ( self::$success_db ) {
 			$success_op = update_site_option( self::KEY, self::$current );
 		}
 
-		if ( empty( $success_db ) || empty( $success_op ) ) {
+		if ( empty( self::$success_db ) || empty( $success_op ) ) {
 			wp_die( __( 'There was an error updating the Stream database. Please try again.', 'stream' ), 'Database Update Error', array( 'response' => 200, 'back_link' => true ) );
 		}
 		?>
@@ -362,6 +372,8 @@ class WP_Stream_Install {
 		$sql .= ';';
 
 		dbDelta( $sql );
+
+		update_site_option( self::KEY, self::$current );
 
 		return $current;
 	}
