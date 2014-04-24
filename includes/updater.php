@@ -74,7 +74,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				return $transient;
 			}
 			$response = (array) $this->request( array_intersect_key( $transient->checked, $this->plugins ) );
-			$license  = get_option( 'stream-license' );
+			$license  = get_site_option( 'stream-license' );
 			$site     = parse_url( get_site_url(), PHP_URL_HOST );
 			if ( $response ) {
 				foreach ( $response as $key => $value ) {
@@ -98,7 +98,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 					'plugins' => $plugins,
 					'name'    => get_bloginfo( 'name' ),
 					'url'     => get_bloginfo( 'url' ),
-					'license' => get_option( 'stream-license' ),
+					'license' => get_site_option( 'stream-license' ),
 				),
 			);
 
@@ -149,8 +149,8 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				wp_send_json_error( $data );
 			}
 
-			update_option( 'stream-license', $license );
-			update_option( 'stream-licensee', $data->data->user );
+			update_site_option( 'stream-license', $license );
+			update_site_option( 'stream-licensee', $data->data->user );
 
 			// Invalidate plugin-update transient so we can check for updates
 			// and restore package urls to existing updates
@@ -164,8 +164,8 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				wp_die( __( 'Invalid security check.', 'stream' ) );
 			}
 
-			delete_option( 'stream-license' );
-			delete_option( 'stream-licensee' );
+			delete_site_option( 'stream-license' );
+			delete_site_option( 'stream-licensee' );
 
 			// Invalidate plugin-update transient so we can check for updates
 			// and restore package urls to existing updates
@@ -175,7 +175,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 		}
 
 		public function plugin_action_links( $links ) {
-			if ( ! get_option( 'stream-license' ) ) {
+			if ( ! get_site_option( 'stream-license' ) ) {
 				$links[ 'activation' ] = sprintf(
 					'<a href="%1$s">%2$s</a>',
 					admin_url(
@@ -204,7 +204,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			// TODO: Nonce check
 
 			$site    = parse_url( get_site_url(), PHP_URL_HOST );
-			$license = get_option( 'stream-license' );
+			$license = get_site_option( 'stream-license' );
 			if ( empty( $license ) ) {
 				wp_die( __( 'You must subscribe to Stream &copy; to be able to download premium extensions.', 'stream' ) );
 			}
