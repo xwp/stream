@@ -245,7 +245,7 @@ class WP_Stream_Install {
 	 * @access private
 	 * @return array
 	 */
-	private static function db_update_versions() {
+	public static function db_update_versions() {
 		$db_update_versions = array(
 			'1.1.4' /* @version 1.1.4 Fix mysql character set issues */,
 			'1.1.7' /* @version 1.1.7 Modified the ip column to varchar(39) */,
@@ -253,6 +253,7 @@ class WP_Stream_Install {
 			'1.3.0' /* @version 1.3.0 Backward settings compatibility for old version plugins */,
 			'1.3.1' /* @version 1.3.1 Update records of Installer to Theme Editor connector */,
 			'1.4.0' /* @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
+			'1.4.2' /* @version 1.4.2 Patch to fix rare multisite upgrade not triggering */,
 		);
 
 		return apply_filters( 'wp_stream_db_update_versions', $db_update_versions );

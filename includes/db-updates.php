@@ -1,6 +1,39 @@
 <?php
 
 /**
+ * Version 1.4.2
+ *
+ * Fix rare case where Multisite update would not trigger when jumping from ealier version
+ * to 1.4.1.
+ *
+ * @param string $db_version Database version updating from
+ * @param string $current_version Database version updating to
+ *
+ * @return string $current_version if updated correctly
+ */
+function wp_stream_update_142( $db_version, $current_version ) {
+	// If $db_version if 1.4.1 then we need to run all updates all over again. Otherwise. We skip this update.
+	if ( version_compare( $db_version, '1.4.1', '=' ) ) {
+		$versions = WP_Stream_Install::db_update_versions();
+		foreach ( $versions as $version ) {
+			// Further updates will apply themselves on their on.
+			if ( $version === $current_version ) {
+				break;
+			}
+
+			$function = 'wp_stream_update_' . str_ireplace( '.', '', $version );
+			if ( function_exists( $function ) ) {
+				call_user_func( $function, $db_version, $current_version );
+			}
+		}
+
+		wp_stream_update_auto_140( $db_version, $current_version );
+	}
+
+	return $current_version;
+}
+
+/**
  * Version 1.4.0
  *
  * Create `author_role` column in `stream` table if it doesn't already exist.
@@ -179,7 +212,7 @@ function wp_stream_update_140( $db_version, $current_version ) {
 function wp_stream_update_131( $db_version, $current_version ) {
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
-	add_action( 'wp_stream_after_connectors_registration', 'migrate_installer_edits_to_theme_editor_connector' );
+	add_action( 'wp_stream_after_connectors_registration', 'wp_stream_update_migrate_installer_edits_to_theme_editor_connector' );
 
 	WP_Stream_Connectors::load();
 
@@ -189,12 +222,10 @@ function wp_stream_update_131( $db_version, $current_version ) {
 }
 
 /**
- * @param $labels array connectors terms labels
- *
- * @action wp_stream_after_connectors_registration
+ * @action   wp_stream_after_connectors_registration
  * @return string $current_version if updated correctly
  */
-function migrate_installer_edits_to_theme_editor_connector() {
+function wp_stream_update_migrate_installer_edits_to_theme_editor_connector() {
 	global $wpdb;
 
 	$db_version      = WP_Stream_Install::$db_version;
@@ -270,7 +301,7 @@ function migrate_installer_edits_to_theme_editor_connector() {
 function wp_stream_update_130( $db_version, $current_version ) {
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
-	add_action( 'wp_stream_after_connectors_registration', 'migrate_old_options_to_exclude_tab' );
+	add_action( 'wp_stream_after_connectors_registration', 'wp_stream_update_migrate_old_options_to_exclude_tab' );
 
 	WP_Stream_Connectors::load();
 
@@ -285,7 +316,7 @@ function wp_stream_update_130( $db_version, $current_version ) {
  * @action wp_stream_after_connectors_registration
  * @return string $current_version if updated correctly
  */
-function migrate_old_options_to_exclude_tab( $labels ) {
+function wp_stream_update_migrate_old_options_to_exclude_tab( $labels ) {
 	global $wpdb;
 
 	$db_version      = WP_Stream_Install::$db_version;
@@ -335,9 +366,19 @@ function migrate_old_options_to_exclude_tab( $labels ) {
  * @return string $current_version if updated correctly
  */
 function wp_stream_update_128( $db_version, $current_version ) {
-	global $wpdb;
-
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
+
+	add_action( 'wp_stream_after_connectors_registration', 'wp_stream_update_migrate_media_to_attachment_type' );
+
+	WP_Stream_Connectors::load();
+
+	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, false );
+
+	return $current_version;
+}
+
+function wp_stream_update_migrate_media_to_attachment_type() {
+	global $wpdb;
 
 	$sql = "SELECT r.ID id, r.object_id pid, c.meta_id mid
 		FROM $wpdb->stream r
@@ -362,14 +403,6 @@ function wp_stream_update_128( $db_version, $current_version ) {
 			);
 		}
 	}
-
-	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
-
-	if ( $wpdb->last_error ) {
-		return esc_html__( 'Database Update Error', 'stream' );
-	}
-
-	return $current_version;
 }
 
 /**
