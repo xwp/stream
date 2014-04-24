@@ -147,7 +147,7 @@ class WP_Stream_Extensions {
 	 * @return bool true if membership active
 	 */
 	private function verify_membership() {
-		if ( get_site_option( 'wp-stream-license' ) ) {
+		if ( get_site_option( 'wp_stream_license' ) ) {
 			return true;
 		}
 

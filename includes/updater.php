@@ -21,7 +21,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 		}
 
 		public function __construct() {
-			$this->api_url = apply_filters( 'stream-api-url', $this->api_url );
+			$this->api_url = apply_filters( 'wp_stream_update_api_url', $this->api_url );
 			$this->setup();
 		}
 
@@ -50,7 +50,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				return $result;
 			}
 
-			$url     = apply_filters( 'stream-api-url', $this->api_url . $action, $action );
+			$url     = apply_filters( 'wp_stream_update_api_url', $this->api_url . $action, $action );
 			$options = array(
 				'body' => array(
 					'slug'   => $args->slug,
@@ -63,7 +63,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			}
 
 			$body = wp_remote_retrieve_body( $response );
-			do_action( 'stream-update-api-response', $body, $response, $url, $options );
+			do_action( 'wp_stream_update_api_response', $body, $response, $url, $options );
 
 			$info = (object) json_decode( $body, true );
 			return $info;
@@ -74,7 +74,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				return $transient;
 			}
 			$response = (array) $this->request( array_intersect_key( $transient->checked, $this->plugins ) );
-			$license  = get_site_option( 'wp-stream-license' );
+			$license  = get_site_option( 'wp_stream_license' );
 			$site     = parse_url( get_site_url(), PHP_URL_HOST );
 			if ( $response ) {
 				foreach ( $response as $key => $value ) {
@@ -91,14 +91,14 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 
 		public function request( $plugins ) {
 			$action  = 'update';
-			$url     = apply_filters( 'stream-api-url', $this->api_url . $action, $action );
+			$url     = apply_filters( 'wp_stream_update_api_url', $this->api_url . $action, $action );
 			$options = array(
 				'body' => array(
 					'a'       => $action,
 					'plugins' => $plugins,
 					'name'    => get_bloginfo( 'name' ),
 					'url'     => get_bloginfo( 'url' ),
-					'license' => get_site_option( 'wp-stream-license' ),
+					'license' => get_site_option( 'wp_stream_license' ),
 				),
 			);
 
@@ -111,7 +111,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			}
 
 			$body = wp_remote_retrieve_body( $response );
-			do_action( 'stream-update-api-response', $body, $response, $url, $options );
+			do_action( 'wp_stream_update_api_response', $body, $response, $url, $options );
 
 			$body = json_decode( $body );
 
@@ -137,7 +137,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				),
 			);
 
-			$url      = apply_filters( 'stream-api-url', $this->api_url . $action, $action );
+			$url      = apply_filters( 'wp_stream_update_api_url', $this->api_url . $action, $action );
 			$response = wp_remote_post( $url, $args );
 
 			if ( 200 != wp_remote_retrieve_response_code( $response ) ) {
@@ -149,8 +149,8 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				wp_send_json_error( $data );
 			}
 
-			update_site_option( 'wp-stream-license', $license );
-			update_site_option( 'wp-stream-licensee', $data->data->user );
+			update_site_option( 'wp_stream_license', $license );
+			update_site_option( 'wp_stream_licensee', $data->data->user );
 
 			// Invalidate plugin-update transient so we can check for updates
 			// and restore package urls to existing updates
@@ -164,8 +164,8 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				wp_die( __( 'Invalid security check.', 'stream' ) );
 			}
 
-			delete_site_option( 'wp-stream-license' );
-			delete_site_option( 'wp-stream-licensee' );
+			delete_site_option( 'wp_stream_license' );
+			delete_site_option( 'wp_stream_licensee' );
 
 			// Invalidate plugin-update transient so we can check for updates
 			// and restore package urls to existing updates
@@ -175,7 +175,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 		}
 
 		public function plugin_action_links( $links ) {
-			if ( ! get_site_option( 'wp-stream-license' ) ) {
+			if ( ! get_site_option( 'wp_stream_license' ) ) {
 				$links[ 'activation' ] = sprintf(
 					'<a href="%1$s">%2$s</a>',
 					admin_url(
@@ -204,7 +204,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			// TODO: Nonce check
 
 			$site    = parse_url( get_site_url(), PHP_URL_HOST );
-			$license = get_site_option( 'wp-stream-license' );
+			$license = get_site_option( 'wp_stream_license' );
 			if ( empty( $license ) ) {
 				wp_die( __( 'You must subscribe to Stream &copy; to be able to download premium extensions.', 'stream' ) );
 			}
@@ -218,7 +218,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			$plugin = array(
 				'name'   => wp_stream_filter_input( INPUT_GET, 'name' ),
 				'slug'   => $slug,
-				'source' => add_query_arg( $source_args, apply_filters( 'stream-api-url', $this->api_url . 'download', array( 'download', $slug, 'extension' ) ) ),
+				'source' => add_query_arg( $source_args, apply_filters( 'wp_stream_update_api_url', $this->api_url . 'download', array( 'download', $slug, 'extension' ) ) ),
 			);
 
 			// Handle fs cred. request, TODO: Test
