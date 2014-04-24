@@ -55,7 +55,7 @@ class WP_Stream_Author {
 	 */
 	function get_display_name() {
 		if ( 0 === $this->id ) {
-			return __( 'System', 'stream' );
+			return __( 'Unknown', 'stream' );
 		} else {
 			if ( $this->is_deleted() ) {
 				if ( ! empty( $this->meta['display_name'] ) ) {

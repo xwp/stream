@@ -145,7 +145,7 @@ class WP_Stream_Settings {
 			$response->users[] = $args;
 		}
 
-		if ( empty( $search ) || preg_match( '/wp|cli|system/i', $search ) ) {
+		if ( empty( $search ) || preg_match( '/wp|cli|system|unknown/i', $search ) ) {
 			$author = new WP_Stream_Author( 0 );
 			$response->users[] = array(
 				'id'      => $author->id,
