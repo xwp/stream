@@ -43,6 +43,8 @@ class WP_Stream_Author {
 			return $this->get_avatar_src();
 		} elseif ( 'role' === $name ) {
 			return $this->get_role();
+		} elseif ( 'agent' === $name ) {
+			return $this->get_agent();
 		} elseif ( ! empty( $this->user_obj ) && 0 !== $this->user_obj->ID ) {
 			return $this->user_obj->$name;
 		} else {
@@ -71,6 +73,19 @@ class WP_Stream_Author {
 				return $this->user_obj->user_login;
 			}
 		}
+	}
+
+	/**
+	 * @return string|null
+	 */
+	function get_agent() {
+		$agent = null;
+		if ( ! empty( $this->meta['agent'] ) ) {
+			$agent = $this->meta['agent'];
+		} elseif ( ! empty( $this->meta['is_wp_cli'] ) ) {
+			$agent = 'wp_cli'; // legacy
+		}
+		return $agent;
 	}
 
 	/**
@@ -152,7 +167,7 @@ class WP_Stream_Author {
 	 * @return bool
 	 */
 	function is_wp_cli() {
-		return ! empty( $this->meta['is_wp_cli'] );
+		return ( 'wp_cli' === $this->get_agent() );
 	}
 
 	/**
@@ -162,4 +177,35 @@ class WP_Stream_Author {
 		return $this->get_display_name();
 	}
 
+	/**
+	 * Look at the environment to detect if an agent is being used
+	 *
+	 * @return null|string
+	 */
+	static function get_current_agent() {
+		$agent = null;
+		if ( defined( 'WP_CLI' ) ) {
+			$agent = 'wp_cli';
+		} elseif ( defined( 'DOING_CRON' ) && DOING_CRON ) {
+			$agent = 'wp_cron';
+		}
+		$agent = apply_filters( 'wp_stream_current_agent', $agent );
+		return $agent;
+	}
+
+	/**
+	 * @param string $agent
+	 * @return string
+	 */
+	static function get_agent_label( $agent ) {
+		if ( 'wp_cli' === $agent ) {
+			$label = __( 'via WP-CLI', 'stream' );
+		} elseif ( 'wp_cron' === $agent ) {
+			$label = __( 'during WP Cron', 'stream' );
+		} else {
+			$label = null;
+		}
+		$label = apply_filters( 'wp_stream_agent_label', $label, $agent );
+		return $label;
+	}
 }

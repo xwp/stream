@@ -222,8 +222,8 @@ class WP_Stream_Dashboard_Widget {
 			esc_html( $author->get_display_name() )
 		);
 
-		if ( $author->is_wp_cli() ) {
-			$time_author .= __( ' (via WP-CLI)', 'stream' );
+		if ( $author->get_agent() ) {
+			$time_author .= sprintf( ' %s', WP_Stream_Author::get_agent_label( $author->get_agent() ) );
 		}
 
 		$class = ( isset( $i ) && $i % 2 ) ? 'alternate' : '';

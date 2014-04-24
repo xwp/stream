@@ -66,20 +66,22 @@ class WP_Stream_Log {
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
 
 		$user  = new WP_User( $user_id );
 		$roles = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
 
 		if ( ! isset( $args['author_meta'] ) ) {
-			$args['author_meta'] = maybe_serialize(
-				array(
-					'user_email'      => $user->user_email,
-					'display_name'    => ( defined( 'WP_CLI' ) && empty( $user->display_name ) ) ? 'WP-CLI' : $user->display_name,
-					'user_login'      => $user->user_login,
-					'user_role_label' => ! empty( $user->roles ) ? $roles[ $user->roles[0] ]['name'] : null,
-					'is_wp_cli'       => defined( 'WP_CLI' ),
-				)
+			$args['author_meta'] = array(
+				'user_email'      => $user->user_email,
+				'display_name'    => ( defined( 'WP_CLI' ) && empty( $user->display_name ) ) ? 'WP-CLI' : $user->display_name, // @todo
+				'user_login'      => $user->user_login,
+				'user_role_label' => ! empty( $user->roles ) ? $roles[ $user->roles[0] ]['name'] : null,
+				'agent'           => WP_Stream_Author::get_current_agent(),
 			);
+		}
+		if ( isset( $args['author_meta'] ) ) {
+			$args['author_meta'] = maybe_serialize( $args['author_meta'] );
 		}
 
 		// Remove meta with null values from being logged

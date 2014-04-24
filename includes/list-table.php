@@ -217,7 +217,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$author->get_display_name(),
 					$author->is_deleted() ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
 					$author->get_role() ? sprintf( '<br /><small>%s</small>', $author->get_role() ) : '',
-					$author->is_wp_cli() ? sprintf( '<br /><small>%s</small>', __( 'via WP-CLI', 'stream' ) ) : ''
+					$author->get_agent() ? sprintf( '<br /><small>%s</small>', WP_Stream_Author::get_agent_label( $author->get_agent() ) ) : ''
 				);
 				break;
 
