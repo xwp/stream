@@ -61,8 +61,25 @@ class WP_Stream_Log {
 	 * @return int
 	 */
 	public function log( $connector, $message, $args, $object_id, $contexts, $user_id = null ) {
+		global $wpdb;
+
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
+		}
+
+		$user  = new WP_User( $user_id );
+		$roles = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
+
+		if ( ! isset( $args['author_meta'] ) ) {
+			$args['author_meta'] = maybe_serialize(
+				array(
+					'user_email'      => $user->user_email,
+					'display_name'    => ( defined( 'WP_CLI' ) && empty( $user->display_name ) ) ? 'WP-CLI' : $user->display_name,
+					'user_login'      => $user->user_login,
+					'user_role_label' => ! empty( $user->roles ) ? $roles[ $user->roles[0] ]['name'] : null,
+					'is_wp_cli'       => defined( 'WP_CLI' ),
+				)
+			);
 		}
 
 		// Remove meta with null values from being logged
@@ -74,15 +91,18 @@ class WP_Stream_Log {
 		);
 
 		$recordarr = array(
-			'object_id' => $object_id,
-			'author'    => $user_id,
-			'created'   => current_time( 'mysql', 1 ),
-			'summary'   => vsprintf( $message, $args ),
-			'parent'    => self::$instance->prev_record,
-			'connector' => $connector,
-			'contexts'  => $contexts,
-			'meta'      => $meta,
-			'ip'        => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
+			'object_id'   => $object_id,
+			'site_id'     => is_multisite() ? get_current_site()->id : 1,
+			'blog_id'     => apply_filters( 'blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() ),
+			'author'      => $user_id,
+			'author_role' => ! empty( $user->roles ) ? $user->roles[0] : null,
+			'created'     => current_time( 'mysql', 1 ),
+			'summary'     => vsprintf( $message, $args ),
+			'parent'      => self::$instance->prev_record,
+			'connector'   => $connector,
+			'contexts'    => $contexts,
+			'meta'        => $meta,
+			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
 		$record_id = WP_Stream_DB::get_instance()->insert( $recordarr );

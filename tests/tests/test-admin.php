@@ -48,7 +48,7 @@ class Test_WP_Stream_Admin extends WP_StreamTestCase {
 			array( 'admin_enqueue_scripts', self::CLASSNAME, 'admin_enqueue_scripts' ),
 			array( 'admin_enqueue_scripts', self::CLASSNAME, 'admin_menu_css' ),
 			array( 'wp_ajax_wp_stream_reset', self::CLASSNAME, 'wp_ajax_reset' ),
-			array( 'wp', self::CLASSNAME, 'purge_schedule_setup' ),
+			array( 'wp_loaded', self::CLASSNAME, 'purge_schedule_setup' ),
 			array( 'wp_stream_auto_purge', self::CLASSNAME, 'purge_scheduled_action' ),
 		);
 

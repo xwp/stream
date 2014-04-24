@@ -1,13 +1,20 @@
 /* globals confirm, wp_stream, ajaxurl */
 jQuery(function($){
 
-	$( '.toplevel_page_wp_stream select.chosen-select' ).select2({
-			minimumResultsForSearch: 10,
-			formatResult: function (record, container) {
-				var result = '', $elem = $(record.element);
+	$( '.toplevel_page_wp_stream :input.chosen-select' ).each( function( i, el ) {
+		var args = {},
+			formatResult = function (record, container) {
+				var result = '',
+					$elem = $(record.element),
+					icon = '';
 
-				if ( undefined !== $elem.attr('data-icon') ) {
-					result += '<img src="' + $elem.attr('data-icon') + '" class="wp-stream-select2-icon">';
+				if ( undefined !== record.icon ) {
+					icon = record.icon;
+				} else if ( undefined !== $elem.attr('data-icon') ) {
+					icon = $elem.data('icon');
+				}
+				if ( icon ) {
+					result += '<img src="' + icon + '" class="wp-stream-select2-icon">';
 				}
 
 				result += record.text;
@@ -16,50 +23,61 @@ jQuery(function($){
 				container.attr('title', $elem.attr('title'));
 
 				return result;
-			},
-			allowClear: true,
-			width: '165px'
-		});
+			};
 
-	$( '.toplevel_page_wp_stream input[type=hidden].select2-select' ).select2({
-			minimumInputLength: 1,
-			allowClear: true,
-			width: '165px',
-			ajax: {
-				url: ajaxurl,
-				datatype: 'json',
-				data: function (term) {
-					return {
-						action: 'wp_stream_filters',
-						filter: $(this).attr('name'),
-						q: term
-					};
+		if ( $(el).find('option').length > 0 ) {
+			args = {
+				minimumResultsForSearch: 10,
+				formatResult: formatResult,
+				allowClear: true,
+				width: '165px'
+			};
+		} else {
+			args = {
+				minimumInputLength: 3,
+				allowClear: true,
+				width: '165px',
+				ajax: {
+					url: ajaxurl,
+					datatype: 'json',
+					data: function (term) {
+						return {
+							action: 'wp_stream_filters',
+							filter: $(el).attr('name'),
+							q: term
+						};
+					},
+					results: function (data) {
+						return {results: data};
+					}
 				},
-				results: function (data) {
-					return {results: data};
+				formatResult: formatResult,
+				initSelection: function (element, callback) {
+					var id = $(element).val();
+					if(id !== '') {
+						$.post(
+							ajaxurl,
+							{
+								action: 'wp_stream_get_filter_value_by_id',
+								filter: $(element).attr('name'),
+								id:     id
+							},
+							function (response) {
+								callback({
+									id:   id,
+									text: response
+								});
+							},
+							'json'
+						);
+					}
 				}
-			},
-			initSelection: function (element, callback) {
-				var id = $(element).val();
+			};
+		}
 
-				if(id !== '') {
-					$.post(
-						ajaxurl,
-						{
-							action: 'wp_stream_get_author_name_by_id',
-							id:     id
-						},
-						function (response) {
-							callback({
-								id:   id,
-								text: response
-							});
-						},
-						'json'
-					);
-				}
-			}
-		});
+		$(el).select2( args );
+	});
+
 	var stream_select2_change_handler = function (e, input) {
 		var $placeholder_class = input.data('select-placeholder');
 		var $placeholder_child_class = $placeholder_class + '-child';
@@ -75,7 +93,7 @@ jQuery(function($){
 			$placeholder.after($placeholder.clone(true).attr('class', $placeholder_child_class).val(key));
 		});
 	};
-	$('.stream_page_wp_stream_settings input[type=hidden].select2-select.with-source').each(function (k, el) {
+	$('#tab-content-settings input[type=hidden].select2-select.with-source').each(function (k, el) {
 		var $input = $(el);
 		$input.select2({
 			multiple: true,
@@ -99,7 +117,7 @@ jQuery(function($){
 			stream_select2_change_handler( e , $input );
 		}).trigger('change');
 	});
-	$( '.stream_page_wp_stream_settings input[type=hidden].select2-select.ip-addresses').each(function( k, el ){
+	$( '#tab-content-settings input[type=hidden].select2-select.ip-addresses').each(function( k, el ){
 		var $input = $(el);
 
 		$input.select2({
@@ -158,7 +176,9 @@ jQuery(function($){
 				ip_chunks = $.grep(
 					ip_chunks,
 					function(chunk) {
-						return (chunk.charAt(0) !== '0' && parseInt(chunk, 10) <= 255);
+						var numeric = parseInt(chunk, 10);
+
+						return numeric <= 255 && numeric.toString() === chunk;
 					}
 				);
 
@@ -176,7 +196,7 @@ jQuery(function($){
 		}).trigger('change');
 	});
 	var $input_user;
-	$('.stream_page_wp_stream_settings input[type=hidden].select2-select.authors_and_roles').each(function (k, el) {
+	$('#tab-content-settings input[type=hidden].select2-select.authors_and_roles').each(function (k, el) {
 		$input_user = $(el);
 
 		$input_user.select2({
@@ -238,6 +258,8 @@ jQuery(function($){
 
 				if ('undefined' !== typeof object.icon) {
 					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
+					// Add more info to the container
+					container.attr('title', object.tooltip);
 				}
 				// Add more info to the container
 				if ( 'undefined' !== typeof object.tooltip ) {
@@ -267,8 +289,14 @@ jQuery(function($){
 	});
 
 	// Confirmation on some important actions
-	$('#wp_stream_general_delete_all_records').click(function(e){
+	$('#wp_stream_general_delete_all_records, #wp_stream_network_general_delete_all_records').click(function(e){
 		if ( ! confirm( wp_stream.i18n.confirm_purge ) ) {
+			e.preventDefault();
+		}
+	});
+
+	$('#wp_stream_general_reset_site_settings, #wp_stream_network_general_reset_site_settings').click(function(e){
+		if ( ! confirm( wp_stream.i18n.confirm_defaults ) ) {
 			e.preventDefault();
 		}
 	});
@@ -281,13 +309,13 @@ jQuery(function($){
 
 	// Admin page tabs
 	var $tabs          = $('.nav-tab-wrapper'),
-		$panels        = $('table.form-table'),
+		$panels        = $('.nav-tab-content table.form-table'),
 		$activeTab     = $tabs.find('.nav-tab-active'),
 		defaultIndex   = $activeTab.length > 0 ? $tabs.find('a').index( $activeTab ) : 0,
 		hashIndex      = window.location.hash.match(/^#(\d+)$/),
 		currentHash    = ( hashIndex !== null ? hashIndex[1] : defaultIndex ),
 		syncFormAction = function( index ) {
-			var $optionsForm   = $('input[name="option_page"][value="wp_stream"]').parent('form');
+			var $optionsForm   = $('input[name="option_page"][value^="wp_stream"]').parent('form');
 			var currentAction  = $optionsForm.attr('action');
 
 			$optionsForm.prop('action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ));
@@ -329,8 +357,11 @@ jQuery(function($){
 
 		$(document).on( 'heartbeat-send.stream', function(e, data) {
 			data['wp-stream-heartbeat'] = 'live-update';
-			var last_id = $( list_sel + ' tr:first .column-id').text();
-			last_id = ( '' === last_id ) ? 1 : last_id;
+			var last_item = $( list_sel + ' tr:first .column-id');
+			var last_id = 1;
+			if ( last_item.length !== 0 ) {
+				last_id = ( '' === last_item.text() ) ? 1 : last_item.text();
+			}
 			data['wp-stream-heartbeat-last-id'] = last_id;
 			data['wp-stream-heartbeat-query']   = wp_stream.current_query;
 		});
@@ -343,6 +374,12 @@ jQuery(function($){
 				return;
 			}
 
+			// Get show on screen
+			var show_on_screen = $('#edit_stream_per_page').val();
+
+			// Get all current rows
+			var $current_items = $( list_sel + ' tr');
+
 			// Get all new rows
 			var $new_items = $(data['wp-stream-heartbeat']);
 
@@ -350,7 +387,7 @@ jQuery(function($){
 			$new_items.removeClass().addClass('new-row');
 
 			//Check if first tr has the alternate class
-			var has_class =  ( $( list_sel + ' tr:first').hasClass('alternate') );
+			var has_class =  ( $current_items.first().hasClass('alternate') );
 
 			// Apply the good class to the list
 			if ( $new_items.length === 1 && !has_class ) {
@@ -372,7 +409,22 @@ jQuery(function($){
 			});
 
 			// Remove the number of element added to the end of the list table
-			$( list_sel + ' tr').slice(-$new_items.length).remove();
+			var slice_rows = show_on_screen - ( $new_items.length + $current_items.length );
+			if ( slice_rows < 0 ) {
+				$( list_sel + ' tr').slice(slice_rows).remove();
+			}
+
+			// Remove the no items row
+			$( list_sel + ' tr.no-items').remove();
+
+			// Update pagination
+			var total_items_i18n = data.total_items_i18n || '';
+			if ( total_items_i18n ) {
+				$('.displaying-num').text( total_items_i18n );
+				$('.total-pages').text( data.total_pages_i18n );
+				$('.tablenav-pages').find('.next-page, .last-page').toggleClass('disabled', data.total_pages === $('.current-page').val());
+				$( '.tablenav-pages .last-page').attr('href', data.last_page_link);
+			}
 
 			// Allow others to hook in, ie: timeago
 			$( list_sel ).parent().trigger( 'updated' );
@@ -389,7 +441,7 @@ jQuery(function($){
 
 		//Enable Live Update Checkbox Ajax
 		$( '#enable_live_update' ).click( function() {
-			var nonce   = $( '#enable_live_update_nonce' ).val();
+			var nonce   = $( '#stream_live_update_nonce' ).val();
 			var user = $( '#enable_live_update_user' ).val();
 			var checked = 'unchecked';
 			if ( $('#enable_live_update' ).is( ':checked' ) ) {
@@ -432,18 +484,17 @@ jQuery(function($){
 			}
 		}
 
-		if ( $( 'div.stream-toggle-filters [id="date_range"]' ).is( ':checked' ) ) {
+		if ( $( 'div.stream-toggle-filters [id="date"]' ).is( ':checked' ) ) {
 			$( 'div.date-interval' ).show();
 		} else {
 			$( 'div.date-interval' ).hide();
 		}
 
-		var filters = [ 'date_range', 'author', 'connector', 'context', 'action' ];
-		for( var i=0; i < filters.length; i++ ) {
-			if ( $( 'div.stream-toggle-filters [id="' + filters[i] + '"]'  ).is( ':checked' ) ) {
-				$( '[name="' + filters[i] + '"]' ).prev( '.select2-container' ).show();
+		for( var filter in wp_stream.filters ) {
+			if ( $( 'div.stream-toggle-filters [id="' + filter + '"]'  ).is( ':checked' ) ) {
+				$( '[name="' + filter + '"]' ).prev( '.select2-container' ).show();
 			} else {
-				$( '[name="' + filters[i] + '"]' ).prev( '.select2-container' ).hide();
+				$( '[name="' + filter + '"]' ).prev( '.select2-container' ).hide();
 			}
 		}
 
@@ -476,7 +527,7 @@ jQuery(function($){
 
 					var date_interval_div = $( 'div.date-interval' );
 					// toggle visibility of input whose name attr matches checkbox ID
-					if ( data.control === 'date_range' ) {
+					if ( data.control === 'date' ) {
 						date_interval_div.toggle();
 					} else {
 						var control = $( '[name="' + data.control + '"]');
@@ -565,6 +616,14 @@ jQuery(function($){
 					'allowClear': true
 				});
 
+				if ('' !== from.val()) {
+					from_remove.show();
+				}
+
+				if ('' !== to.val()) {
+					to_remove.show();
+				}
+
 				predefined.on({
 					'change': function () {
 						var value = $(this).val(),
@@ -574,7 +633,11 @@ jQuery(function($){
 
 						if ('custom' === value) {
 							dateinputs.show();
+							from.datepicker('show');
 							return false;
+						} else {
+							dateinputs.hide();
+							datepickers.datepicker('hide');
 						}
 
 						from.val(from_val).trigger('change', [true]);
@@ -663,6 +726,31 @@ jQuery(function($){
 			});
 		}
 	};
+
+	$( '.wp-stream-feeds-key #stream_user_feed_key_generate' ).click(function( e ) {
+		e.preventDefault();
+
+		var user = $('#user_id').val(),
+			nonce  = $( '.wp-stream-feeds-key #wp_stream_generate_key_nonce' ).val();
+
+		$.ajax({
+			type: 'POST',
+			url: ajaxurl,
+			data: { action: 'wp_stream_feed_key_generate', nonce : nonce, user : user },
+			dataType: 'json',
+			beforeSend: function() {
+				$( '.wp-stream-feeds-key .spinner' ).show().css( { 'display' : 'inline-block' } );
+			},
+			success: function( response ) {
+				$( '.wp-stream-feeds-key .spinner' ).hide();
+				if ( response.success === true || response.data !== undefined ) {
+					$( '.wp-stream-feeds-key #stream_user_feed_key' ).val( response.data.feed_key );
+					$( '.wp-stream-feeds-links a.rss-feed' ).attr( 'href', response.data.xml_feed );
+					$( '.wp-stream-feeds-links a.json-feed' ).attr( 'href', response.data.json_feed );
+				}
+			}
+		});
+	});
 
 	$(document).ready( function() {
 		intervals.init( $('.date-interval') );
