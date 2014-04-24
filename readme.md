@@ -106,6 +106,10 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 1.4.2 - April 24, 2014 ###
+* Fix: Update Database button redirecting to previous screen ([#443](https://github.com/x-team/wp-stream/issues/443))
+* Fix: Update routine hotfix that was causing records to disappear ([#447](https://github.com/x-team/wp-stream/issues/447))
+
 ### 1.4.1 - April 24, 2014 ###
 * Fix: Scripts and styles not using Stream version number ([#440](https://github.com/x-team/wp-stream/issues/440))
 * Fix: WP-CLI incorrectly referenced in records ([#441](https://github.com/x-team/wp-stream/issues/441))
