@@ -158,7 +158,7 @@ class WP_Stream_Admin {
 
 		$locale    = substr( get_locale(), 0, 2 );
 		$file_tmpl = 'ui/timeago/locale/jquery.timeago.%s.js';
-		$debug     = apply_filters( 'wp_stream_debug', SCRIPT_DEBUG ) ? '' : '.min';
+		$debug     = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
 		if ( file_exists( WP_STREAM_DIR . sprintf( $file_tmpl, $locale ) ) ) {
 			wp_register_script( 'timeago-locale', WP_STREAM_URL . sprintf( $file_tmpl, $locale ), array( 'timeago' ), '1' );
