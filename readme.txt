@@ -90,25 +90,30 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 1.4.1 - April 24, 2014 =
+
+* Fix: Scripts and styles not using Stream version number ([#440](https://github.com/x-team/wp-stream/issues/440))
+* Fix: WP-CLI incorrectly referenced in records ([#441](https://github.com/x-team/wp-stream/issues/441))
+
 = 1.4.0 - April 24, 2014 =
 
 * New: Multisite is now fully supported, activate Stream network-wide ([#65](https://github.com/x-team/wp-stream/issues/65))
-* New: WP-CLI compatibility, Stream now tracks changes made via WP-CLI ([#423](https://github.com/x-team/wp-stream/issues/423))
 * New: Separate API for handling DB update routines ([#379](https://github.com/x-team/wp-stream/issues/379))
-* Tweak: More compact search filters for smaller screens ([#403](https://github.com/x-team/wp-stream/issues/403))
+* New: WP-CLI compatibility, Stream now tracks changes made via WP-CLI ([#423](https://github.com/x-team/wp-stream/issues/423))
+* Tweak: Deprecate functions and hooks in favor of consistent naming conventions ([#267](https://github.com/x-team/wp-stream/issues/267))
 * Tweak: Use icon link instead of clicking the summary to filter by object ID ([#380](https://github.com/x-team/wp-stream/issues/380))
 * Tweak: Save additional author meta for better records ([#389](https://github.com/x-team/wp-stream/issues/389))
-* Tweak: Deprecate functions and hooks in favor of consistent naming conventions ([#267](https://github.com/x-team/wp-stream/issues/267))
+* Tweak: More compact search filters for smaller screens ([#403](https://github.com/x-team/wp-stream/issues/403))
 * Fix: Fix AJAX loading of authors in dropdown filters ([#49](https://github.com/x-team/wp-stream/issues/49))
-* Fix: Stream Feeds Key not being automatically generated ([#420](https://github.com/x-team/wp-stream/issues/420))
-* Fix: TTL purge schedule is never setup ([#412](https://github.com/x-team/wp-stream/issues/412))
-* Fix: Uninstall confirmation message doesn't display ([#411](https://github.com/x-team/wp-stream/issues/411))
-* Fix: Non-Administrator users seeing errors in Settings records ([#406](https://github.com/x-team/wp-stream/issues/406))
 * Fix: Custom capability conflict with W3 Total Cache plugin ([#296](https://github.com/x-team/wp-stream/issues/296))
 * Fix: Live updates remove last item in activity table ([#386](https://github.com/x-team/wp-stream/issues/386))
 * Fix: Live updates screen option checkbox not persisting ([#392](https://github.com/x-team/wp-stream/issues/392))
 * Fix: IP validator not respecting zero ([#394](https://github.com/x-team/wp-stream/issues/394))
+* Fix: Non-Administrator users seeing errors in Settings records ([#406](https://github.com/x-team/wp-stream/issues/406))
+* Fix: Uninstall confirmation message doesn't display ([#411](https://github.com/x-team/wp-stream/issues/411))
+* Fix: TTL purge schedule is never setup ([#412](https://github.com/x-team/wp-stream/issues/412))
 * Fix: NextGen compability issue ([#416](https://github.com/x-team/wp-stream/issues/416))
+* Fix: Stream Feeds Key not being automatically generated ([#420](https://github.com/x-team/wp-stream/issues/420))
 
 Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [c3mdigital](http://profiles.wordpress.org/c3mdigital/), [westonruter](http://profiles.wordpress.org/westonruter/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [powelski](http://profiles.wordpress.org/powelski/), [johnregan3](http://profiles.wordpress.org/johnregan3/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [desaiuditd](http://profiles.wordpress.org/desaiuditd/)
 
