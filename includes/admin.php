@@ -787,39 +787,19 @@ class WP_Stream_Admin {
 	}
 
 	public static function get_authors_record_meta( $authors ) {
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
+
 		$authors_records = array();
 		foreach ( $authors as $user_id => $author ) {
-			$icon  = '';
 			$title = '';
-			if ( 0 === $user_id ) {
-				$name  = 'WP-CLI';
-				$icon  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
-				$title = 'WP-CLI Operation';
-			} else {
-				$user = is_a( $author, 'WP_User' ) ? $author : $author['label']; // @todo hacky. Stop using WP_User as label
-				$name = $user->display_name;
-
-				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->user_email, 32 ), $gravatar_src_match ) ) {
-					list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
-					$icon = $gravatar_url;
-				}
-
-				$title = sprintf(
-					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
-					$user->ID,
-					$user->user_login,
-					$user->user_email,
-					implode( ', ', array_map( 'ucwords', $user->roles ) )
-				);
-			}
-
+			$author_obj = new WP_Stream_Author( $user_id );
 			$authors_records[ $user_id ] = array(
-				'text'     => $name,
+				'text'     => $author_obj->get_display_name(),
 				'id'       => $user_id,
-				'label'    => $name,
-				'icon'     => $icon,
+				'label'    => $author_obj->get_display_name(),
+				'icon'     => $author_obj->get_avatar_src( 32 ),
 				'title'    => $title,
-				'disabled' => ( is_array( $author ) && isset( $author['disabled'] ) ) ? $author['disabled'] : null,
+				'disabled' => ( is_array( $author ) && isset( $author['disabled'] ) ) ? $author['disabled'] : null, // @todo hacky
 			);
 		}
 

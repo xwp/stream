@@ -120,42 +120,38 @@ class WP_Stream_Settings {
 		$response->message = '';
 		$response->users   = array();
 
-		foreach ( $users->results as $key => $user ) {
-			$gravatar_url = null;
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
 
-			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->ID, 16 ), $gravatar_src_match ) ) {
-				$gravatar_url = $gravatar_src_match[1];
-			}
+		foreach ( $users->results as $key => $user ) {
+			$author = new WP_Stream_Author( $user->ID );
 
 			$args = array(
-				'id'       => $user->ID,
-				'text'     => $user->display_name,
+				'id'     => $author->ID,
+				'text'   => $author->display_name,
 			);
 
-			$user_roles = array_map( 'ucwords', $user->roles );
 			$args['tooltip'] = esc_attr(
 				sprintf(
 					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
-					$user->ID,
-					$user->user_login,
-					$user->user_email,
-					implode( ', ', $user_roles )
+					$author->id,
+					$author->user_login,
+					$author->user_email,
+					ucwords( $author->get_role() )
 				)
 			);
 
-			if ( null !== $gravatar_url ) {
-				$args['icon'] = $gravatar_url;
-			}
+			$args['icon'] = $author->get_avatar_src( 32 );
 
 			$response->users[] = $args;
 		}
 
-		if ( empty( $search ) || preg_match( '/wp|cli/i', $search ) ) {
+		if ( empty( $search ) || preg_match( '/wp|cli|system/i', $search ) ) {
+			$author = new WP_Stream_Author( 0 );
 			$response->users[] = array(
-				'id'      => 0,
-				'text'    => 'WP-CLI',
-				'icon'    => WP_STREAM_URL . 'ui/stream-icons/wp-cli.png',
-				'tooltip' => '',
+				'id'      => $author->id,
+				'text'    => $author->get_display_name(),
+				'icon'    => $author->get_avatar_src( 32 ),
+				'tooltip' => __( 'Actions performed by the system when a user is not logged in (e.g. auto site upgrader, or invoking WP-CLI without --user)', 'stream' ),
 			);
 		}
 

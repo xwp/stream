@@ -206,73 +206,36 @@ class WP_Stream_Dashboard_Widget {
 	 * @return string  Contents of new row
 	 */
 	public static function widget_row( $item, $i = null ) {
-		$records_link = add_query_arg(
-			array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ),
-			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-		);
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
+
 		$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
-		$is_wp_cli   = ! empty( $author_meta['is_wp_cli'] );
+		$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
 
-		if ( 0 === (int)$item->author ) {
-			$author      = new WP_User( 0 );
-			$author_name = $is_wp_cli ? 'WP-CLI' : __( 'N/A', 'stream' );
-		} else {
-			$author      = get_userdata( $item->author );
-			$author_name = $author->display_name;
-		}
-		$author_link = add_query_arg(
-			array( 'author' => isset( $author->ID ) ? absint( $author->ID ) : 0 ),
-			$records_link
+		$time_author = sprintf(
+			_x(
+				'%1$s ago by <a href="%2$s">%3$s</a>',
+				'1: Time, 2: User profile URL, 3: User display name',
+				'stream'
+			),
+			human_time_diff( strtotime( $item->created ) ),
+			esc_url( $author->get_records_page_url() ),
+			esc_html( $author->get_display_name() )
 		);
 
-		if ( $author ) {
-			$time_author = sprintf(
-				_x(
-					'%1$s ago by <a href="%2$s">%3$s</a>',
-					'1: Time, 2: User profile URL, 3: User display name',
-					'stream'
-				),
-				human_time_diff( strtotime( $item->created ) ),
-				esc_url( $author_link ),
-				esc_html( $author_name )
-			);
-		} else {
-			$time_author = sprintf(
-				__( '%s ago', 'stream' ),
-				human_time_diff( strtotime( $item->created ) )
-			);
+		if ( $author->is_wp_cli() ) {
+			$time_author .= __( ' (via WP-CLI)', 'stream' );
 		}
 
-		$class = '';
-
-		if ( isset( $i ) ) {
-			if ( $i % 2 ) {
-				$class = 'alternate';
-			}
-		}
-
-		if ( 0 === $author->ID ) {
-			if ( $is_wp_cli ) {
-				$avatar_url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
-				$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-72 photo" height="72" width="72">', esc_attr( $author_name ), esc_url( $avatar_url ) );
-			} else {
-				$author_avatar = get_avatar( 'system@wp-stream.com', 72, get_option( 'avatar_default' ) ?: 'mystery', $author_name );
-				$author_avatar = preg_replace( "/src='(.+?)'/", "src='\$1&amp;forcedefault=1'", $author_avatar );
-			}
-		} else {
-			$author_avatar = get_avatar( $author->ID, 72 );
-		}
+		$class = ( isset( $i ) && $i % 2 ) ? 'alternate' : '';
 
 		ob_start()
 		?><li class="<?php echo esc_html( $class ) ?>" data-id="<?php echo esc_html( $item->ID ) ?>">
-			<?php if ( $author ) : ?>
-				<div class="record-avatar">
-					<a href="<?php echo esc_url( $author_link ) ?>">
-					<?php echo $author_avatar; // xss ok ?>
-					</a>
-				</div>
-			<?php endif; ?>
-			<span class="record-meta"><?php echo $time_author // xss ok ?></span>
+			<div class="record-avatar">
+				<a href="<?php echo esc_url( $author->get_records_page_url() ) ?>">
+					<?php echo $author->get_avatar_img( 72 ); // xss ok ?>
+				</a>
+			</div>
+			<span class="record-meta"><?php echo $time_author; // xss ok ?></span>
 			<br />
 			<?php echo esc_html( $item->summary ) ?>
 		</li><?php
