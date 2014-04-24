@@ -253,7 +253,7 @@ class WP_Stream_Dashboard_Widget {
 
 		if ( 0 === $author->ID ) {
 			if ( $is_wp_cli ) {
-				$avatar_url  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+				$avatar_url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
 				$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-72 photo" height="72" width="72">', esc_attr( $author_name ), esc_url( $avatar_url ) );
 			} else {
 				$author_avatar = get_avatar( 'system@wp-stream.com', 72, get_option( 'avatar_default' ) ?: 'mystery', $author_name );

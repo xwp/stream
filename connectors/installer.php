@@ -137,7 +137,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				'Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
 				'stream'
 			);
-			$logs[] = compact( 'slug', 'name', 'version', 'message', 'action', 'message' );
+			$logs[]  = compact( 'slug', 'name', 'version', 'message', 'action', 'message' );
 		} elseif ( 'update' === $action ) {
 			$action  = 'updated';
 			$message = _x(

@@ -241,7 +241,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-80 photo" height="80" width="80">', esc_attr( $author_name ), esc_url( $avatar_url ) );
 				} elseif ( ! $is_wp_cli ) {
 					$author_name   = __( 'N/A', 'stream' );
-					$author_avatar = get_avatar( 'system@wp-stream.com', 80, get_option('avatar_default') ?: 'mystery', $author_name );
+					$author_avatar = get_avatar( 'system@wp-stream.com', 80, get_option( 'avatar_default' ) ?: 'mystery', $author_name );
 					$author_avatar = preg_replace( "/src='(.+?)'/", "src='\$1&amp;forcedefault=1'", $author_avatar );
 				} else {
 					$user_deleted  = true;
