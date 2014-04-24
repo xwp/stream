@@ -462,7 +462,7 @@ class WP_Stream_Admin {
 			'stream-activation',
 			'stream_activation',
 			array(
-				'action' => get_site_option( 'stream-license' ) ? 'disconnect' : 'connect',
+				'action' => get_site_option( 'wp-stream-license' ) ? 'disconnect' : 'connect',
 				'api'    => array(
 					'connect'          => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'connect', 'connect' ),
 					'disconnect'       => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'disconnect', 'disconnect' ),
