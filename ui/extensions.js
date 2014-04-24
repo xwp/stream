@@ -1,8 +1,8 @@
 /**
  * Stream Extension Display page javascript
  *
- * global stream_extensions, jQuery
  */
+/* global stream_extensions */
 
 (function($) {
 
