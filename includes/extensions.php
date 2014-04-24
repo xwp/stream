@@ -356,7 +356,7 @@ class WP_Stream_Extensions {
 				</div>
 			</div>
 		</div>
-		<!-- CSS to remove the border / outline from the video container -->
+		<!-- CSS to make Youtube video container responsive -->
 		<style>
 			.video-container {
 				position:       relative;
