@@ -137,9 +137,7 @@ function wp_stream_update_140( $db_version, $current_version ) {
 
 		$wpdb->update(
 			$wpdb->stream,
-			array(
-				'author_role' => $user->roles[0],
-			),
+			array( 'author_role' => $user->roles[0] ),
 			array( 'ID' => $record->ID )
 		);
 	}
