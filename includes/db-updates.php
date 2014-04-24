@@ -11,8 +11,17 @@
  *
  * @return string $current_version if updated correctly
  */
+function wp_stream_update_auto_142( $db_version, $current_version ) {
+	// If $db_version if 1.4.1 then we need to run all auto updates again. Otherwise. We skip this update.
+	if ( version_compare( $db_version, '1.4.1', '=' ) ) {
+		return wp_stream_update_auto_140( $db_version, $current_version );
+	}
+
+	return $current_version;
+}
+
 function wp_stream_update_142( $db_version, $current_version ) {
-	// If $db_version if 1.4.1 then we need to run all updates all over again. Otherwise. We skip this update.
+	// If $db_version if 1.4.1 then we need to run all updates again. Otherwise. We skip this update.
 	if ( version_compare( $db_version, '1.4.1', '=' ) ) {
 		$versions = WP_Stream_Install::db_update_versions();
 		foreach ( $versions as $version ) {
@@ -23,11 +32,12 @@ function wp_stream_update_142( $db_version, $current_version ) {
 
 			$function = 'wp_stream_update_' . str_ireplace( '.', '', $version );
 			if ( function_exists( $function ) ) {
-				call_user_func( $function, $db_version, $current_version );
+				$db_success = call_user_func( $function, $db_version, $current_version );
+				if ( $current_version !== $db_success ) {
+					return $db_success;
+				}
 			}
 		}
-
-		wp_stream_update_auto_140( $db_version, $current_version );
 	}
 
 	return $current_version;

@@ -223,7 +223,7 @@ class WP_Stream_Install {
 		self::update_db_option();
 		?>
 		<div class="updated">
-			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ), wp_get_referer() ) ?>" style="display:inline;">
+			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update', wp_get_referer() ) ) ?>" style="display:inline;">
 				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ) ?></strong></p>
 				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', self::$db_version, self::$current ), 'stream' ) ?></p>
 				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ) ?>
@@ -281,7 +281,7 @@ class WP_Stream_Install {
 			$function = 'wp_stream_update_' . ( 'user' === $update_args['type'] ? '' : $update_args['type'] . '_' ) . str_ireplace( '.', '', $version );
 
 			if ( version_compare( $db_version, $version, '<' ) ) {
-				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current ) : false;
+				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current ) : $current;
 				if ( $current !== $result ) {
 					return false;
 				}
