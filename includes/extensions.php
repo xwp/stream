@@ -72,8 +72,8 @@ class WP_Stream_Extensions {
 	 *
 	 * @return array|mixed
 	 */
-	function get_extension_data() {
-		if ( false === ( $api_transient = get_transient( self::EXTENSIONS_KEY ) ) ) {
+	function get_extension_data( $force = false ) {
+		if ( $force || false === ( $api_transient = get_transient( self::EXTENSIONS_KEY ) ) ) {
 			$api_transient = $this->get_extension_api();
 
 			if ( $api_transient ) {
