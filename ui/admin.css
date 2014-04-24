@@ -47,6 +47,10 @@
 #dashboard_stream_activity .record-avatar a {
 	display: block;
 }
+#dashboard_stream_activity .record-avatar img {
+	width: 36px;
+	height: 36px;
+}
 
 #dashboard_stream_activity .record-meta {
 	color: #666;
@@ -125,6 +129,14 @@
 	width: 10%;
 }
 
+.toplevel_page_wp_stream .stream-filter-object-id {
+	padding-left: 5px;
+	visibility: hidden;
+}
+.toplevel_page_wp_stream td.summary:hover .stream-filter-object-id {
+	visibility: visible;
+}
+
 @media only screen and (min-width: 782px) {
 	.toplevel_page_wp_stream .tablenav .tablenav-pages {
 		margin-bottom: 4px;
@@ -171,6 +183,8 @@
 	float: left;
 	margin-right: 10px;
 	margin-top: 1px;
+	width: 40px;
+	height: 40px;
 }
 
 .toplevel_page_wp_stream .column-author .deleted {
@@ -228,6 +242,10 @@
 
 .stream_page_wp_stream_settings .nav-tab-wrapper a:not(.nav-tab-active) {
 	border-bottom: 1px solid #ccc;
+}
+
+.stream_page_wp_stream_settings .select2-container {
+	width: 350px;
 }
 
 
@@ -336,6 +354,8 @@
 	    position: relative;
 	         top: 3px;
 	margin-right: 4px;
+	width: 16px;
+	height: 16px;
 }
 
 .select2-disabled .wp-stream-select2-icon {
@@ -344,7 +364,6 @@
 	-webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */
 	   -moz-filter: grayscale(100%); /* Firefox < 3.5 */
 }
-
 
 /* Extensions */
 
@@ -390,4 +409,11 @@
 
 .stream_page_wp_stream_extensions .theme:hover .theme-name span.inactive {
 	display: none;
+}
+
+/* User Profile */
+.wp-stream-feeds-key .spinner {
+	margin-top: 5px;
+	position: absolute;
+	float: none;
 }

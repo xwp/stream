@@ -1,13 +1,20 @@
 /* globals confirm, wp_stream, ajaxurl */
 jQuery(function($){
 
-	$( '.toplevel_page_wp_stream select.chosen-select' ).select2({
-			minimumResultsForSearch: 10,
-			formatResult: function (record, container) {
-				var result = '', $elem = $(record.element);
+	$( '.toplevel_page_wp_stream :input.chosen-select' ).each( function( i, el ) {
+		var args = {},
+			formatResult = function (record, container) {
+				var result = '',
+					$elem = $(record.element),
+					icon = '';
 
-				if ( undefined !== $elem.attr('data-icon') ) {
-					result += '<img src="' + $elem.attr('data-icon') + '" class="wp-stream-select2-icon">';
+				if ( undefined !== record.icon ) {
+					icon = record.icon;
+				} else if ( undefined !== $elem.attr('data-icon') ) {
+					icon = $elem.data('icon');
+				}
+				if ( icon ) {
+					result += '<img src="' + icon + '" class="wp-stream-select2-icon">';
 				}
 
 				result += record.text;
@@ -16,50 +23,61 @@ jQuery(function($){
 				container.attr('title', $elem.attr('title'));
 
 				return result;
-			},
-			allowClear: true,
-			width: '165px'
-		});
+			};
 
-	$( '.toplevel_page_wp_stream input[type=hidden].select2-select' ).select2({
-			minimumInputLength: 1,
-			allowClear: true,
-			width: '165px',
-			ajax: {
-				url: ajaxurl,
-				datatype: 'json',
-				data: function (term) {
-					return {
-						action: 'wp_stream_filters',
-						filter: $(this).attr('name'),
-						q: term
-					};
+		if ( $(el).find('option').length > 0 ) {
+			args = {
+				minimumResultsForSearch: 10,
+				formatResult: formatResult,
+				allowClear: true,
+				width: '165px'
+			};
+		} else {
+			args = {
+				minimumInputLength: 3,
+				allowClear: true,
+				width: '165px',
+				ajax: {
+					url: ajaxurl,
+					datatype: 'json',
+					data: function (term) {
+						return {
+							action: 'wp_stream_filters',
+							filter: $(el).attr('name'),
+							q: term
+						};
+					},
+					results: function (data) {
+						return {results: data};
+					}
 				},
-				results: function (data) {
-					return {results: data};
+				formatResult: formatResult,
+				initSelection: function (element, callback) {
+					var id = $(element).val();
+					if(id !== '') {
+						$.post(
+							ajaxurl,
+							{
+								action: 'wp_stream_get_filter_value_by_id',
+								filter: $(element).attr('name'),
+								id:     id
+							},
+							function (response) {
+								callback({
+									id:   id,
+									text: response
+								});
+							},
+							'json'
+						);
+					}
 				}
-			},
-			initSelection: function (element, callback) {
-				var id = $(element).val();
+			};
+		}
 
-				if(id !== '') {
-					$.post(
-						ajaxurl,
-						{
-							action: 'wp_stream_get_author_name_by_id',
-							id:     id
-						},
-						function (response) {
-							callback({
-								id:   id,
-								text: response
-							});
-						},
-						'json'
-					);
-				}
-			}
-		});
+		$(el).select2( args );
+	});
+
 	var stream_select2_change_handler = function (e, input) {
 		var $placeholder_class = input.data('select-placeholder');
 		var $placeholder_child_class = $placeholder_class + '-child';
@@ -708,6 +726,31 @@ jQuery(function($){
 			});
 		}
 	};
+
+	$( '.wp-stream-feeds-key #stream_user_feed_key_generate' ).click(function( e ) {
+		e.preventDefault();
+
+		var user = $('#user_id').val(),
+			nonce  = $( '.wp-stream-feeds-key #wp_stream_generate_key_nonce' ).val();
+
+		$.ajax({
+			type: 'POST',
+			url: ajaxurl,
+			data: { action: 'wp_stream_feed_key_generate', nonce : nonce, user : user },
+			dataType: 'json',
+			beforeSend: function() {
+				$( '.wp-stream-feeds-key .spinner' ).show().css( { 'display' : 'inline-block' } );
+			},
+			success: function( response ) {
+				$( '.wp-stream-feeds-key .spinner' ).hide();
+				if ( response.success === true || response.data !== undefined ) {
+					$( '.wp-stream-feeds-key #stream_user_feed_key' ).val( response.data.feed_key );
+					$( '.wp-stream-feeds-links a.rss-feed' ).attr( 'href', response.data.xml_feed );
+					$( '.wp-stream-feeds-links a.json-feed' ).attr( 'href', response.data.json_feed );
+				}
+			}
+		});
+	});
 
 	$(document).ready( function() {
 		intervals.init( $('.date-interval') );

@@ -121,7 +121,7 @@ class WP_Stream_Query {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.summary LIKE %s", "%{$args['search']}%" );
 		}
 
-		if ( $args['author'] ) {
+		if ( $args['author'] || '0' === $args['author'] ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.author = %d", (int) $args['author'] );
 		}
 
@@ -377,7 +377,7 @@ function wp_stream_query( $args = array() ) {
 }
 
 function wp_stream_get_meta( $record_id, $key = '', $single = false ) {
-	return get_metadata( 'record', $record_id, $key, $single );
+	return maybe_unserialize( get_metadata( 'record', $record_id, $key, $single ) );
 }
 
 function wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {

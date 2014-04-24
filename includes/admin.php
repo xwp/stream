@@ -79,7 +79,7 @@ class WP_Stream_Admin {
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
 		// Ajax author's name by ID
-		add_action( 'wp_ajax_wp_stream_get_author_name_by_id', array( __CLASS__, 'get_author_name_by_id' ) );
+		add_action( 'wp_ajax_wp_stream_get_filter_value_by_id', array( __CLASS__, 'get_filter_value_by_id' ) );
 	}
 
 	/**
@@ -131,7 +131,7 @@ class WP_Stream_Admin {
 			__( 'Stream Settings', 'stream' ),
 			__( 'Settings', 'stream' ),
 			self::SETTINGS_CAP,
-			'wp_stream_settings',
+			self::SETTINGS_PAGE_SLUG,
 			array( __CLASS__, 'render_page' )
 		);
 
@@ -148,10 +148,8 @@ class WP_Stream_Admin {
 		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
 		do_action( 'wp_stream_admin_menu_screens' );
 
-		if ( ! WP_Stream_Install::$update_required ) {
-			// Register the list table early, so it associates the column headers with 'Screen settings'
-			add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
-		}
+		// Register the list table early, so it associates the column headers with 'Screen settings'
+		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
 	}
 
 	/**
@@ -177,18 +175,20 @@ class WP_Stream_Admin {
 			wp_register_script( 'timeago-locale', WP_STREAM_URL . sprintf( $file_tmpl, 'en' ), array( 'timeago' ), '1' );
 		}
 
-		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array() );
+		wp_enqueue_style( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.css', array(), WP_Stream::VERSION );
+
+		$script_screens = array( 'plugins.php', 'user-edit.php', 'user-new.php', 'profile.php' );
 
 		if ( 'index.php' === $hook ) {
-			wp_enqueue_script( 'wp-stream-admin-dashboard', WP_STREAM_URL . 'ui/dashboard.js', array( 'jquery', 'heartbeat' ) );
-		} elseif ( in_array( $hook, self::$screen_id ) || 'plugins.php' === $hook ) {
+			wp_enqueue_script( 'wp-stream-admin-dashboard', WP_STREAM_URL . 'ui/dashboard.js', array( 'jquery', 'heartbeat' ), WP_Stream::VERSION );
+		} elseif ( in_array( $hook, self::$screen_id ) || in_array( $hook, $script_screens ) ) {
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_style( 'select2' );
 
 			wp_enqueue_script( 'timeago' );
 			wp_enqueue_script( 'timeago-locale' );
 
-			wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ) );
+			wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ), WP_Stream::VERSION );
 			wp_localize_script(
 				'wp-stream-admin',
 				'wp_stream',
@@ -235,8 +235,8 @@ class WP_Stream_Admin {
 	 */
 	public static function admin_menu_css() {
 		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
-		wp_register_style( 'wp-stream-datepicker', WP_STREAM_URL . 'ui/datepicker.css', array( 'jquery-ui' ) );
-		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css' );
+		wp_register_style( 'wp-stream-datepicker', WP_STREAM_URL . 'ui/datepicker.css', array( 'jquery-ui' ), WP_Stream::VERSION );
+		wp_register_style( 'wp-stream-icons', WP_STREAM_URL . 'ui/stream-icons/style.css', array(), WP_Stream::VERSION );
 
 		// Make sure we're working off a clean version
 		include( ABSPATH . WPINC . '/version.php' );
@@ -306,7 +306,11 @@ class WP_Stream_Admin {
 				return $links;
 			}
 
-			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), is_network_admin() ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE ) );
+			if ( is_network_admin() ) {
+				$admin_page_url = add_query_arg( array( 'page' => WP_Stream_Network::NETWORK_SETTINGS_PAGE_SLUG ), network_admin_url( self::ADMIN_PARENT_PAGE ) );
+			} else {
+				$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
+			}
 			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 
 			$url = add_query_arg(
@@ -377,11 +381,6 @@ class WP_Stream_Admin {
 
 		$sections   = WP_Stream_Settings::get_fields();
 		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
-
-		if ( WP_Stream_Install::$update_required ) {
-			printf( '<div class="wrap"><h2>%s</h2></div>', $page_title );
-			return;
-		}
 
 		?>
 		<div class="wrap">
@@ -521,10 +520,6 @@ class WP_Stream_Admin {
 			printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
 		}
 
-		if ( WP_Stream_Install::$update_required ) {
-			return;
-		}
-
 		self::$list_table->prepare_items();
 		self::$list_table->display();
 		echo '</div>';
@@ -624,12 +619,40 @@ class WP_Stream_Admin {
 			// Prevent stream action from being fired on plugin
 			remove_action( 'deactivate_plugin', array( 'WP_Stream_Connector_Installer', 'callback' ), null );
 
-			// Deactivate the plugin
-			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
+			// Plugin is being uninstalled from only one of the multisite blogs
+			if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+				$blog_id = get_current_blog_id();
 
-			// Delete all tables
-			foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
-				$wpdb->query( "DROP TABLE $table" );
+				$wpdb->query( "DELETE FROM {$wpdb->base_prefix}stream WHERE blog_id = $blog_id" );
+
+				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+				delete_option( WP_Stream_Install::KEY );
+				delete_option( WP_Stream_Settings::KEY );
+			} else {
+				// Delete all tables
+				foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
+					$wpdb->query( "DROP TABLE $table" );
+				}
+
+				// Delete database options
+				if ( is_multisite() ) {
+					$blogs = wp_get_sites();
+					foreach ( $blogs as $blog ) {
+						switch_to_blog( $blog['blog_id'] );
+						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+						delete_option( WP_Stream_Install::KEY );
+						delete_option( WP_Stream_Settings::KEY );
+					}
+					restore_current_blog();
+				}
+
+				// Delete database option
+				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
+				delete_site_option( WP_Stream_Install::KEY );
+				delete_site_option( WP_Stream_Settings::KEY );
+				delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
+				delete_site_option( WP_Stream_Settings::NETWORK_KEY );
+				delete_site_option( 'dashboard_stream_activity_options' );
 			}
 
 			// Delete scheduled cron event hooks
@@ -640,7 +663,7 @@ class WP_Stream_Admin {
 			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
 
 			// Redirect to plugin page
-			wp_redirect( add_query_arg( array( 'deactivate' => true ), is_network_admin() ? network_admin_url( 'plugins.php' ) : admin_url( 'plugins.php' ) ) );
+			wp_redirect( add_query_arg( array( 'deactivate' => true ), self_admin_url( 'plugins.php' ) ) );
 			exit;
 		} else {
 			wp_die( "You don't have sufficient privileges to do this action." );
@@ -787,37 +810,35 @@ class WP_Stream_Admin {
 	 * @action wp_ajax_wp_stream_filters
 	 */
 	public static function ajax_filters() {
-		switch ( $_REQUEST['filter'] ) {
+		switch ( wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
 			case 'author':
-				$results = array_map(
-					function ( $user ) {
-						return array(
-							'id'   => $user->id,
-							'text' => $user->display_name,
-						);
-					},
+				$users = array_merge(
+					array( 0 => (object) array( 'display_name' => 'WP-CLI' ) ),
 					get_users()
 				);
+
+				// `search` arg for get_users() is not enough
+				$users = array_filter(
+					$users,
+					function ( $user ) {
+						return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( wp_stream_filter_input( INPUT_GET, 'q' ) ) );
+					}
+				);
+
+				if ( count( $users ) > self::PRELOAD_AUTHORS_MAX ) {
+					$users = array_slice( $users, 0, self::PRELOAD_AUTHORS_MAX );
+					// @todo $extra is not used
+					$extra = array(
+						'id'       => 0,
+						'disabled' => true,
+						'text'     => sprintf( _n( 'One more result...', '%d more results...', $results_count - self::PRELOAD_AUTHORS_MAX, 'stream' ), $results_count - self::PRELOAD_AUTHORS_MAX ),
+					);
+				}
+
+				// Get gravatar / roles for final result set
+				$results = self::get_authors_record_meta( $users );
+
 				break;
-		}
-
-		// `search` arg for get_users() is not enough
-		$results = array_filter(
-			$results,
-			function ( $result ) {
-				return mb_strpos( mb_strtolower( $result['text'] ), mb_strtolower( $_REQUEST['q'] ) ) !== false;
-			}
-		);
-
-		$results_count = count( $results );
-
-		if ( $results_count > self::PRELOAD_AUTHORS_MAX ) {
-			$results   = array_slice( $results, 0, self::PRELOAD_AUTHORS_MAX );
-			$results[] = array(
-				'id'       => 0,
-				'disabled' => true,
-				'text'     => sprintf( _n( 'One more result...', '%d more results...', $results_count - self::PRELOAD_AUTHORS_MAX, 'stream' ), $results_count - self::PRELOAD_AUTHORS_MAX ),
-			);
 		}
 
 		echo json_encode( array_values( $results ) );
@@ -825,12 +846,70 @@ class WP_Stream_Admin {
 	}
 
 	/**
-	 * @action wp_ajax_wp_stream_get_author_name_by_id
+	 * @action wp_ajax_wp_stream_get_filter_value_by_id
 	 */
-	public static function get_author_name_by_id() {
-		$user = get_userdata( $_REQUEST['id'] );
-		echo json_encode( $user->display_name );
-		die();
+	public static function get_filter_value_by_id() {
+		$filter = wp_stream_filter_input( INPUT_POST, 'filter' );
+		switch ( $filter ) {
+			case 'author':
+				$id = wp_stream_filter_input( INPUT_POST, 'id' );
+				if ( $id === '0' ) {
+					$value = 'WP-CLI';
+					break;
+				}
+				$user = get_userdata( $id );
+				if ( ! $user || is_wp_error( $user ) ) {
+					$value = '';
+				} else {
+					$value = $user->display_name;
+				}
+				break;
+			default:
+				$value = '';
+				break;
+		}
+		echo json_encode( $value );
+		wp_die();
+	}
+
+	public static function get_authors_record_meta( $authors ) {
+		$authors_records = array();
+		foreach ( $authors as $user_id => $author ) {
+			$icon  = '';
+			$title = '';
+			if ( 0 === $user_id ) {
+				$name  = 'WP-CLI';
+				$icon  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+				$title = 'WP-CLI Operation';
+			} else {
+				$user = is_a( $author, 'WP_User' ) ? $author : $author['label']; // @todo hacky. Stop using WP_User as label
+				$name = $user->display_name;
+
+				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->user_email, 32 ), $gravatar_src_match ) ) {
+					list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+					$icon = $gravatar_url;
+				}
+
+				$title = sprintf(
+					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+					$user->ID,
+					$user->user_login,
+					$user->user_email,
+					implode( ', ', array_map( 'ucwords', $user->roles ) )
+				);
+			}
+
+			$authors_records[ $user_id ] = array(
+				'text'     => $name,
+				'id'       => $user_id,
+				'label'    => $name,
+				'icon'     => $icon,
+				'title'    => $title,
+				'disabled' => ( is_array( $author ) && isset( $author['disabled'] ) ) ? $author['disabled'] : null,
+			);
+		}
+
+		return $authors_records;
 	}
 
 }

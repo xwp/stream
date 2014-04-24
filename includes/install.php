@@ -58,6 +58,14 @@ class WP_Stream_Install {
 	public static $update_required = false;
 
 	/**
+	 * Holds status of whether the database update worked
+	 *
+	 * @access public
+	 * @var bool|string
+	 */
+	public static $success_db;
+
+	/**
 	 * Initialized object of class
 	 *
 	 * @access private
@@ -117,9 +125,16 @@ class WP_Stream_Install {
 		if ( empty( self::$db_version ) ) {
 			$current = self::install( self::$current );
 		} elseif ( self::$db_version !== self::$current ) {
+
 			if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 				self::$update_required = true;
+				$update_args = array( 'type' => 'auto' );
+				self::$success_db = self::update( self::$db_version, self::$current, $update_args );
+			} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
+				$update_args = array( 'type' => 'user' );
+				self::$success_db = self::update( self::$db_version, self::$current, $update_args );
 			}
+
 			add_action( 'all_admin_notices', array( __CLASS__, 'update_notice_hook' ) );
 		}
 	}
@@ -172,13 +187,11 @@ class WP_Stream_Install {
 
 		check_admin_referer( 'wp_stream_update_db' );
 
-		$success_db = self::update( self::$db_version, self::$current );
-
-		if ( $success_db ) {
+		if ( self::$success_db ) {
 			$success_op = update_site_option( self::KEY, self::$current );
 		}
 
-		if ( empty( $success_db ) || empty( $success_op ) ) {
+		if ( empty( self::$success_db ) || empty( $success_op ) ) {
 			wp_die( __( 'There was an error updating the Stream database. Please try again.', 'stream' ), 'Database Update Error', array( 'response' => 200, 'back_link' => true ) );
 		}
 		?>
@@ -212,44 +225,48 @@ class WP_Stream_Install {
 
 	/**
 	 * Array of database versions that require and updates
-	 * To access or add your own update functions use the filter in the update method
 	 *
-	 * @access private
-	 * @return array
-	 */
-	private static function db_update_versions() {
-		return array(
-			'1.1.4'/** @version 1.1.4 Fix mysql character set issues */,
-			'1.1.7'/** @version 1.1.7 Modified the ip column to varchar(39) */,
-			'1.2.8'/** @version 1.2.8 Change the context for Media connectors to the attachment type */,
-			'1.3.0'/** @version 1.3.0 Backward settings compatibility for old version plugins */,
-			'1.3.1'/** @version 1.3.1 Update records of Installer to Theme Editor connector */,
-			'1.4.0'/** @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
-		);
-	}
-
-	/**
-	 * Database user controlled update routine
-	 *
-	 * To add your own stream extension plugin database update routine
-	 * use the filter and return your version that updating from requires an update
+	 * To add your own stream extension database update routine
+	 * use the filter and return the version that requires an update
 	 * You must also make the callback function available in the global namespace on plugins loaded
 	 * use the wp_stream_update_{version_number} version number must be a string of characters that represent the version with no periods
 	 *
 	 * @filter wp_stream_db_update_versions
 	 *
+	 * @access private
+	 * @return array
+	 */
+	private static function db_update_versions() {
+		$db_update_versions = array(
+			'1.1.4' /* @version 1.1.4 Fix mysql character set issues */,
+			'1.1.7' /* @version 1.1.7 Modified the ip column to varchar(39) */,
+			'1.2.8' /* @version 1.2.8 Change the context for Media connectors to the attachment type */,
+			'1.3.0' /* @version 1.3.0 Backward settings compatibility for old version plugins */,
+			'1.3.1' /* @version 1.3.1 Update records of Installer to Theme Editor connector */,
+			'1.4.0' /* @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
+		);
+
+		return apply_filters( 'wp_stream_db_update_versions', $db_update_versions );
+	}
+
+	/**
+	 * Database user controlled update routine
+	 *
 	 * @param int $db_version last updated version of database stored in plugin options
 	 * @param int $current Current running plugin version
 	 * @return mixed Version number on success, true on no update needed, mysql error message on error
 	 */
-	public static function update( $db_version, $current ) {
+	public static function update( $db_version, $current, $update_args ) {
 		require_once WP_STREAM_INC_DIR . 'db-updates.php';
 
-		$prefix   = self::$table_prefix;
-		$versions = apply_filters( 'wp_stream_db_update_versions', self::db_update_versions(), $current, $prefix );
+		$versions = self::db_update_versions();
 
 		foreach ( $versions as $version ) {
-			$function = 'wp_stream_update_' . str_ireplace( '.', '', $version );
+			if ( ! isset( $update_args['type'] ) ) {
+				$update_args['type'] = 'user';
+			}
+
+			$function = 'wp_stream_update_' . ( 'user' === $update_args['type'] ? '' : $update_args['type'] . '_' ) . str_ireplace( '.', '', $version );
 
 			if ( version_compare( $db_version, $version, '<' ) ) {
 				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current ) : false;
@@ -355,6 +372,8 @@ class WP_Stream_Install {
 		$sql .= ';';
 
 		dbDelta( $sql );
+
+		update_site_option( self::KEY, self::$current );
 
 		return $current;
 	}
