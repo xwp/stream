@@ -135,7 +135,11 @@ class WP_Stream_Install {
 				self::$success_db = self::update( self::$db_version, self::$current, $update_args );
 			}
 
-			add_action( 'all_admin_notices', array( __CLASS__, 'update_notice_hook' ) );
+			// Only add notice if we have manual update to trigger on this release.
+			$versions = self::db_update_versions();
+			if ( in_array( self::$current, $versions ) ) {
+				add_action( 'all_admin_notices', array( __CLASS__, 'update_notice_hook' ) );
+			}
 		}
 	}
 
@@ -253,7 +257,9 @@ class WP_Stream_Install {
 	 * Database user controlled update routine
 	 *
 	 * @param int $db_version last updated version of database stored in plugin options
-	 * @param int $current Current running plugin version
+	 * @param int $current    Current running plugin version
+	 * @param array $update_args
+	 *
 	 * @return mixed Version number on success, true on no update needed, mysql error message on error
 	 */
 	public static function update( $db_version, $current, $update_args ) {
