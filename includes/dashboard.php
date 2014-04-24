@@ -164,7 +164,7 @@ class WP_Stream_Dashboard_Widget {
 				<div class="clear"></div>
 			</div>';
 
-		echo '<div>' . $html_view_all . $html_pagination_links . '</div>';
+		echo '<div>' . $html_view_all . $html_pagination_links . '</div>'; // xss ok
 	}
 
 	/**
@@ -250,25 +250,25 @@ class WP_Stream_Dashboard_Widget {
 				$class = 'alternate';
 			}
 		}
+
+		if ( 0 === $author->ID ) {
+			if ( $is_wp_cli ) {
+				$avatar_url  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+				$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-72 photo" height="72" width="72">', esc_attr( $author_name ), esc_url( $avatar_url ) );
+			} else {
+				$author_avatar = get_avatar( 'system@wp-stream.com', 72, get_option( 'avatar_default' ) ?: 'mystery', $author_name );
+				$author_avatar = preg_replace( "/src='(.+?)'/", "src='\$1&amp;forcedefault=1'", $author_avatar );
+			}
+		} else {
+			$author_avatar = get_avatar( $author->ID, 72 );
+		}
+
 		ob_start()
 		?><li class="<?php echo esc_html( $class ) ?>" data-id="<?php echo esc_html( $item->ID ) ?>">
 			<?php if ( $author ) : ?>
 				<div class="record-avatar">
 					<a href="<?php echo esc_url( $author_link ) ?>">
-					<?php
-					if ( 0 === $author->ID ) {
-						if ( $is_wp_cli ) {
-							$avatar_url  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
-							printf( '<img alt="%s" src="%s" class="avatar avatar-72 photo" height="72" width="72">', esc_attr( $author_name ), esc_url( $avatar_url ) );
-						} else {
-							$author_avatar = get_avatar( 'system@wp-stream.com', 72, get_option('avatar_default') ?: 'mystery', $author_name );
-							$author_avatar = preg_replace( "/src='(.+?)'/", "src='\$1&amp;forcedefault=1'", $author_avatar );
-							echo $author_avatar; // xss ok
-						}
-					} else {
-						echo get_avatar( $author->ID, 72 );
-					}
-					?>
+					<?php echo $author_avatar; // xss ok ?>
 					</a>
 				</div>
 			<?php endif; ?>
