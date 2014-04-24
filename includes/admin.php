@@ -791,14 +791,13 @@ class WP_Stream_Admin {
 
 		$authors_records = array();
 		foreach ( $authors as $user_id => $author ) {
-			$title = '';
 			$author_obj = new WP_Stream_Author( $user_id );
 			$authors_records[ $user_id ] = array(
 				'text'     => $author_obj->get_display_name(),
 				'id'       => $user_id,
 				'label'    => $author_obj->get_display_name(),
 				'icon'     => $author_obj->get_avatar_src( 32 ),
-				'title'    => $title,
+				'title'    => '',
 				'disabled' => ( is_array( $author ) && isset( $author['disabled'] ) ) ? $author['disabled'] : null, // @todo hacky
 			);
 		}
