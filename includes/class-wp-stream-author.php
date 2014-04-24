@@ -65,8 +65,7 @@ class WP_Stream_Author {
 				} else {
 					return __( 'N/A', 'stream' );
 				}
-			}
-			else if ( ! empty( $this->user_obj->display_name ) ) {
+			} elseif ( ! empty( $this->user_obj->display_name ) ) {
 				return $this->user_obj->display_name;
 			} else {
 				return $this->user_obj->user_login;
