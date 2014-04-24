@@ -1,8 +1,8 @@
 /**
  * Stream Extension Display page javascript
  *
- * global stream_extensions, jQuery
  */
+/* global stream_extensions */
 
 (function($) {
 
@@ -23,6 +23,15 @@
 							template.find('.screenshot').html('<div class="video-container"><iframe class="youtube-player" type="text/html" width="640" height="385" src="http://www.youtube.com/embed/' + value.video + '" frameborder="0"></iframe ></div>');
 						}
 						template.find('.theme-description').html(value.content);
+						if (!value.installed) {
+							template.find('.theme-actions').html('<a href="' + value.actions.install + '" class="button button-primary">' + value.install18n + '</a>');
+
+						} else if (value.installed && !value.active) {
+							template.find('.theme-actions').html('<a href="' + value.actions.activate + '" class="button button-primary">' + value.activate18n + '</a>');
+
+						} else if (value.installed && value.active) {
+							template.find( '.theme-actions').html('<h3 class="theme-name">' + value.active18n + '</h3>');
+						}
 						overlay.show();
 					}
 				});
@@ -39,6 +48,15 @@
 								template.find('.screenshot').html('<div class="video-container"><iframe class="youtube-player" type="text/html" width="640" height="385" src="http://www.youtube.com/embed/' + value.video + '" frameborder="0"></iframe ></div>');
 							}
 							template.find('.theme-description').html(value.content);
+							if (!value.installed) {
+								template.find('.theme-actions').html('<a href="' + value.actions.install + '" class="button button-primary">' + value.install18n + '</a>');
+
+							} else if (value.installed && !value.active) {
+								template.find('.theme-actions').html('<a href="' + value.actions.activate + '" class="button button-primary">' + value.activate18n + '</a>');
+
+							} else if (value.installed && value.active) {
+								template.find('.theme-actions').html(value.active18n);
+							}
 							overlay.show();
 						}
 					});
@@ -56,6 +74,15 @@
 								template.find('.screenshot').html('<div class="video-container"><iframe class="youtube-player" type="text/html" width="640" height="385" src="http://www.youtube.com/embed/' + value.video + '" frameborder="0"></iframe ></div>');
 							}
 							template.find('.theme-description').html(value.content);
+							if (!value.installed) {
+								template.find('.theme-actions').html('<a href="' + value.actions.install + '" class="button button-primary">' + value.install18n + '</a>');
+
+							} else if (value.installed && !value.active) {
+								template.find('.theme-actions').html('<a href="' + value.actions.activate + '" class="button button-primary">' + value.activate18n + '</a>');
+
+							} else if (value.installed && value.active) {
+								template.find('.theme-actions').html(value.active18n);
+							}
 							overlay.show();
 						}
 					});

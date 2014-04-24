@@ -72,8 +72,8 @@ class WP_Stream_Extensions {
 	 *
 	 * @return array|mixed
 	 */
-	function get_extension_data() {
-		if ( false === ( $api_transient = get_transient( self::EXTENSIONS_KEY ) ) ) {
+	function get_extension_data( $force = false ) {
+		if ( $force || false === ( $api_transient = get_transient( self::EXTENSIONS_KEY ) ) ) {
 			$api_transient = $this->get_extension_api();
 
 			if ( $api_transient ) {
@@ -191,7 +191,7 @@ class WP_Stream_Extensions {
 		<?php if ( ! $this->verify_membership() ) : ?>
 			<p class="description">
 			<?php esc_html_e( "Connect your Stream Premium account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?>
-				<a href="https://wp-stream.com/join/" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
+				<a href="<?php echo esc_url( self::API_TRANSPORT . self::API_DOMAIN . '/join/' ) ?>" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
 			</p>
 		<?php else : ?>
 			<p class="description" style="color: green;">
@@ -215,7 +215,7 @@ class WP_Stream_Extensions {
 			<p>
 				<em><?php esc_html_e( 'Sorry, there was a problem loading the list of extensions.', 'stream' ) ?></em></p>
 			<p>
-				<a class="button button-primary" href="http://wp-stream.com/#extensions" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a>
+				<a class="button button-primary" href="<?php echo esc_url( self::API_TRANSPORT . self::API_DOMAIN . '/#extensions' ) ?>" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a>
 			</p>
 			<?php
 			return;
@@ -306,6 +306,8 @@ class WP_Stream_Extensions {
 	function prepare_extensions_for_js( $extensions ) {
 		$prepared_extensions = array();
 		foreach ( $extensions as $extension ) {
+			$text_domain = isset( $extension->slug ) ? sprintf( 'stream-%s', $extension->slug ) : null;
+			$plugin_path = array_key_exists( $text_domain, $this->plugin_paths ) ? $this->plugin_paths[ $text_domain ] : null;
 			$prepared_extensions[ $extension->slug ] = array(
 				'id'           => $extension->slug,
 				'name'         => $extension->title,
@@ -314,12 +316,15 @@ class WP_Stream_Extensions {
 				'content'      => $extension->content,
 				'excerpt'      => $extension->excerpt,
 				'version'      => isset( $extension->post_meta->version[0] ) ? $extension->post_meta->version[0] : null,
-				'active'       => true,
-				'hasUpdate'    => false,
+				'active'       => ( $plugin_path && is_plugin_active( $plugin_path ) ),
+				'installed'    => ( $plugin_path && defined( 'WP_PLUGIN_DIR' ) && file_exists( trailingslashit( WP_PLUGIN_DIR ) . $plugin_path ) ),
 				'update'       => false,
+				'install18n'   => __( 'Install Now', 'stream' ),
+				'activate18n'  => __( 'Activate', 'stream' ),
+				'active18n'    => __( 'Active', 'stream' ),
 				'actions'      => array(
 					'activate'  => wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] ),
-					'install'   => null,
+					'install'   => wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug ),
 					'delete'    => null,
 				),
 			);
@@ -351,9 +356,7 @@ class WP_Stream_Extensions {
 					</div>
 				</div>
 
-				<div class="theme-actions">
-					<div class="active-theme"></div>
-				</div>
+				<div class="theme-actions"></div>
 			</div>
 		</div>
 		<!-- CSS to make Youtube video container responsive -->

@@ -86,6 +86,10 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				}
 				$transient->response = array_merge( $transient->response, $response );
 			}
+
+			// TEMP: Trigger extension data update as well
+			WP_Stream_Extensions::get_instance()->get_extension_data( true );
+
 			return $transient;
 		}
 
