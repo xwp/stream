@@ -151,6 +151,11 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 
 			update_option( 'stream-license', $license );
 			update_option( 'stream-licensee', $data->data->user );
+
+			// Invalidate plugin-update transient so we can check for updates
+			// and restore package urls to existing updates
+			delete_site_transient( 'update_plugins' );
+
 			wp_send_json( $data );
 		}
 
