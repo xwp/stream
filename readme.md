@@ -110,9 +110,13 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 * Fix: Update Database button redirecting to previous screen ([#443](https://github.com/x-team/wp-stream/issues/443))
 * Fix: Update routine hotfix that was causing records to disappear ([#447](https://github.com/x-team/wp-stream/issues/447))
 
+Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [westonruter](http://profiles.wordpress.org/westonruter/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
 ### 1.4.1 - April 24, 2014 ###
 * Fix: Scripts and styles not using Stream version number ([#440](https://github.com/x-team/wp-stream/issues/440))
 * Fix: WP-CLI incorrectly referenced in records ([#441](https://github.com/x-team/wp-stream/issues/441))
+
+Props [westonruter](http://profiles.wordpress.org/westonruter/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 ### 1.4.0 - April 24, 2014 ###
 * New: Multisite is now fully supported, activate Stream network-wide ([#65](https://github.com/x-team/wp-stream/issues/65))
