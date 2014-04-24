@@ -50,6 +50,14 @@ class WP_Stream_Install {
 	public static $update_versions;
 
 	/**
+	 * Holds status of whether it's safe to run Stream or not
+	 *
+	 * @access public
+	 * @var bool
+	 */
+	public static $update_required = false;
+
+	/**
 	 * Initialized object of class
 	 *
 	 * @access private
@@ -88,7 +96,7 @@ class WP_Stream_Install {
 		 * @var string $prefix  database prefix
 		 * @var string $table_prefix updated database prefix
 		 */
-		$prefix = $wpdb->prefix;
+		$prefix = $wpdb->base_prefix;
 
 		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $prefix );
 		self::check();
@@ -109,7 +117,10 @@ class WP_Stream_Install {
 		if ( empty( self::$db_version ) ) {
 			$current = self::install( self::$current );
 		} elseif ( self::$db_version !== self::$current ) {
-			add_action( 'admin_notices', array( __CLASS__, 'update_notice_hook' ) );
+			if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
+				self::$update_required = true;
+			}
+			add_action( 'all_admin_notices', array( __CLASS__, 'update_notice_hook' ) );
 		}
 	}
 
@@ -117,7 +128,7 @@ class WP_Stream_Install {
 		global $wpdb;
 
 		$version = get_site_option( self::KEY );
-		if ( ! $version && version_compare( self::$current, '1.3.2', '<=' ) ) {
+		if ( ! $version && version_compare( self::$current, '1.4.0', '<=' ) ) {
 			$old_key = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%stream%_db'" );
 			if ( ! empty( $old_key ) && is_array( $old_key ) ) {
 				$version = get_option( $old_key[0] );
@@ -145,7 +156,7 @@ class WP_Stream_Install {
 				<p><strong><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></strong></p>
 				<p><?php esc_html_e( 'Stream has updated! Before we send you on your way, we need to update your database to the newest version.', 'stream' ) ?></p>
 				<p><?php esc_html_e( 'This process could take a little while, so please be patient.', 'stream' ) ?></p>
-				<?php submit_button( __( 'Update Database', 'stream' ) ) ?>
+				<?php submit_button( esc_html__( 'Update Database', 'stream' ), 'primary', 'stream-update-db-submit' ) ?>
 			</form>
 		</div>
 		<?php
@@ -175,7 +186,7 @@ class WP_Stream_Install {
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ), wp_get_referer() ) ?>" style="display:inline;">
 				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ) ?></strong></p>
 				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', self::$db_version, self::$current ), 'stream' ) ?></p>
-				<?php submit_button( __( 'Continue', 'stream' ), 'submit', false ) ?>
+				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ) ?>
 			</form>
 		</div>
 		<?php
@@ -213,7 +224,7 @@ class WP_Stream_Install {
 			'1.2.8'/** @version 1.2.8 Change the context for Media connectors to the attachment type */,
 			'1.3.0'/** @version 1.3.0 Backward settings compatibility for old version plugins */,
 			'1.3.1'/** @version 1.3.1 Update records of Installer to Theme Editor connector */,
-			'1.3.2'/** @version 1.3.2 Add the author_role column */,
+			'1.4.0'/** @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
 		);
 	}
 
@@ -268,6 +279,7 @@ class WP_Stream_Install {
 		$sql = "CREATE TABLE {$prefix}stream (
 			ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			site_id bigint(20) unsigned NOT NULL DEFAULT '1',
+			blog_id bigint(20) unsigned NOT NULL DEFAULT '0',
 			object_id bigint(20) unsigned NULL,
 			author bigint(20) unsigned NOT NULL DEFAULT '0',
 			author_role varchar(20) NOT NULL DEFAULT '',
@@ -279,6 +291,7 @@ class WP_Stream_Install {
 			ip varchar(39) NULL,
 			PRIMARY KEY  (ID),
 			KEY site_id (site_id),
+			KEY blog_id (blog_id),
 			KEY parent (parent),
 			KEY author (author),
 			KEY created (created)

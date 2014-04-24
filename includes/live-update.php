@@ -103,7 +103,7 @@ class WP_Stream_Live_Update {
 
 		// Register list table
 		require_once WP_STREAM_INC_DIR . 'list-table.php';
-		self::$list_table = new WP_Stream_List_Table( array( 'screen' => WP_Stream_Admin::RECORDS_PAGE_SLUG ) );
+		self::$list_table = new WP_Stream_List_Table( array( 'screen' => 'toplevel_page_' . WP_Stream_Admin::RECORDS_PAGE_SLUG ) );
 		self::$list_table->prepare_items();
 
 		extract( self::$list_table->_pagination_args, EXTR_SKIP );

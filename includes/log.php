@@ -91,6 +91,8 @@ class WP_Stream_Log {
 
 		$recordarr = array(
 			'object_id'   => $object_id,
+			'site_id'     => is_multisite() ? get_current_site()->id : 1,
+			'blog_id'     => apply_filters( 'blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() ),
 			'author'      => $user_id,
 			'author_role' => $user->roles[0],
 			'created'     => current_time( 'mysql', 1 ),
