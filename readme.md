@@ -43,6 +43,7 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Media Library
  * Widgets
  * Comments
+ * Theme Editor
  * WordPress Core Updates
 
 **Noteworthy features:**
