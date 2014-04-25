@@ -70,7 +70,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 		}
 
 		public function check( $transient ) {
-			if ( empty( $transient->checked ) ) {
+			if ( empty( $transient->checked ) || ! $this->plugins ) {
 				return $transient;
 			}
 			$response = (array) $this->request( array_intersect_key( $transient->checked, $this->plugins ) );

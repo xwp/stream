@@ -105,6 +105,7 @@ class WP_Stream {
 
 		// Include Stream extension updater
 		require_once WP_STREAM_INC_DIR . 'updater.php';
+		WP_Stream_Updater::instance();
 
 		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
