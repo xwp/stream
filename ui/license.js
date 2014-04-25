@@ -10,10 +10,14 @@ jQuery(function($){
 			tb_show( stream_activation.i18n.login_to_stream, url + '&modal=1#TB_iframe?height=400&amp;width=350&amp;inlineId=hiddenModalContent', null );
 		},
 		receive = function( message ) {
+			spinner.hide();
+
 			if ( typeof message !== 'string' || ! message.match(/^stream:/) ) {
 				return;
 			}
+
 			console && console.debug( message );
+
 			var data = $.map(
 				message
 					.replace(/^(stream:)/, '')

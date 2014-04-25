@@ -120,7 +120,7 @@ class WP_Stream_Extensions {
 					$api = new stdClass();
 					$api->name = $extension->title;
 					$api->version = $extension->post_meta->current_version[0];
-					$api->download_link = esc_url_raw( self::API_TRANSPORT . self::API_DOMAIN . $extension->post_meta->download_url[0] );
+					$api->download_link = esc_url_raw( $extension->post_meta->download_url[0] );
 
 					return $api;
 				}
