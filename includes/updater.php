@@ -1,5 +1,8 @@
 <?php
-/*                                                                              */
+/**
+ * Updater Class
+ *
+ */
 
 if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 	class WP_Stream_Updater_0_1 {
