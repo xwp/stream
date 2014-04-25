@@ -311,9 +311,11 @@ class WP_Stream_Extensions {
 	 */
 	function prepare_extensions_for_js( $extensions ) {
 		$prepared_extensions = array();
+
 		foreach ( $extensions as $extension ) {
 			$text_domain = isset( $extension->slug ) ? sprintf( 'stream-%s', $extension->slug ) : null;
 			$plugin_path = array_key_exists( $text_domain, $this->plugin_paths ) ? $this->plugin_paths[ $text_domain ] : null;
+
 			$prepared_extensions[ $extension->slug ] = array(
 				'id'           => $extension->slug,
 				'name'         => $extension->title,
@@ -322,7 +324,7 @@ class WP_Stream_Extensions {
 				'remote_img'   => isset( $extension->post_meta->remote_image[0] ) ? $extension->post_meta->remote_image[0] : null,
 				'content'      => $extension->content,
 				'excerpt'      => $extension->excerpt,
-				'version'      => isset( $extension->post_meta->version[0] ) ? $extension->post_meta->version[0] : null,
+				'version'      => isset( $extension->post_meta->current_version[0] ) ? $extension->post_meta->current_version[0] : null,
 				'active'       => ( $plugin_path && is_plugin_active( $plugin_path ) ),
 				'installed'    => ( $plugin_path && defined( 'WP_PLUGIN_DIR' ) && file_exists( trailingslashit( WP_PLUGIN_DIR ) . $plugin_path ) ),
 				'update'       => false,
@@ -330,12 +332,13 @@ class WP_Stream_Extensions {
 				'activate18n'  => __( 'Activate', 'stream' ),
 				'active18n'    => __( 'Active', 'stream' ),
 				'actions'      => array(
-					'activate'  => wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] ),
-					'install'   => wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug ),
-					'delete'    => null,
+					'activate' => wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] ),
+					'install'  => wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug ),
+					'delete'   => null,
 				),
 			);
 		}
+
 		return $prepared_extensions;
 	}
 
