@@ -560,7 +560,7 @@
 
 				// Update Title Text
 				var newTitle = data.data.title;
-				if ( '' == newTitle ) {
+				if ( '' === newTitle || null === newTitle ) {
 					newTitle = data.data.generated_title;
 				}
 				$section.find( '.hndle .title' ).text( newTitle );
