@@ -137,6 +137,25 @@ class WP_Stream_Network {
 				array( 'WP_Stream_Admin', 'render_page' )
 			);
 		}
+		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			WP_Stream_Admin::$screen_id['extensions'] = add_submenu_page(
+				WP_Stream_Admin::RECORDS_PAGE_SLUG,
+				__( 'Stream Extensions', 'stream' ),
+				__( 'Extensions', 'stream' ),
+				WP_Stream_Admin::SETTINGS_CAP,
+				WP_Stream_Admin::EXTENSIONS_PAGE_SLUG,
+				array( 'WP_Stream_Admin', 'render_extensions_page' )
+			);
+		} else {
+			WP_Stream_Admin::$screen_id['extensions'] = add_menu_page(
+				WP_Stream_Admin::RECORDS_PAGE_SLUG,
+				__( 'Stream Extensions', 'stream' ),
+				__( 'Extensions', 'stream' ),
+				WP_Stream_Admin::SETTINGS_CAP,
+				WP_Stream_Admin::EXTENSIONS_PAGE_SLUG,
+				array( 'WP_Stream_Admin', 'render_extensions_page' )
+			);
+		}
 	}
 
 	/**
