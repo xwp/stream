@@ -103,9 +103,14 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'feeds.php';
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
 
+		// Include Stream extension updater
+		require_once WP_STREAM_INC_DIR . 'updater.php';
+
 		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
+			require_once WP_STREAM_INC_DIR . 'extensions.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
+			add_action( 'plugins_loaded', array( 'WP_Stream_Extensions', 'get_instance' ) );
 
 			add_action( 'init', array( __CLASS__, 'install' ), 10, 1 );
 

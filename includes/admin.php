@@ -23,13 +23,14 @@ class WP_Stream_Admin {
 	 */
 	public static $disable_access = false;
 
-	const ADMIN_BODY_CLASS    = 'wp_stream_screen';
-	const RECORDS_PAGE_SLUG   = 'wp_stream';
-	const SETTINGS_PAGE_SLUG  = 'wp_stream_settings';
-	const ADMIN_PARENT_PAGE   = 'admin.php';
-	const VIEW_CAP            = 'view_stream';
-	const SETTINGS_CAP        = 'manage_options';
-	const PRELOAD_AUTHORS_MAX = 50;
+	const ADMIN_BODY_CLASS     = 'wp_stream_screen';
+	const RECORDS_PAGE_SLUG    = 'wp_stream';
+	const SETTINGS_PAGE_SLUG   = 'wp_stream_settings';
+	const EXTENSIONS_PAGE_SLUG = 'wp_stream_extensions';
+	const ADMIN_PARENT_PAGE    = 'admin.php';
+	const VIEW_CAP             = 'view_stream';
+	const SETTINGS_CAP         = 'manage_options';
+	const PRELOAD_AUTHORS_MAX  = 50;
 
 	public static function load() {
 		// User and role caps
@@ -134,6 +135,17 @@ class WP_Stream_Admin {
 			array( __CLASS__, 'render_page' )
 		);
 
+		self::$screen_id['extensions'] = add_submenu_page(
+			self::RECORDS_PAGE_SLUG,
+			__( 'Stream Extensions', 'stream' ),
+			__( 'Extensions', 'stream' ),
+			self::SETTINGS_CAP,
+			self::EXTENSIONS_PAGE_SLUG,
+			array( __CLASS__, 'render_extensions_page' )
+		);
+
+		// Register the list table early, so it associates the column headers with 'Screen settings'
+		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
 		do_action( 'wp_stream_admin_menu_screens' );
 
 		// Register the list table early, so it associates the column headers with 'Screen settings'
@@ -415,6 +427,80 @@ class WP_Stream_Admin {
 
 		</div>
 	<?php
+	}
+
+	/**
+	 * Render extensions page
+	 *
+	 * @return void
+	 */
+	public static function render_extensions_page() {
+
+		$extensions = WP_Stream_Extensions::get_instance();
+
+		if ( $install = wp_stream_filter_input( INPUT_GET, 'install' ) ) {
+			return self::render_extension_download_page( $install );
+		}
+
+		wp_enqueue_style( 'thickbox' );
+		wp_enqueue_script(
+			'stream-activation',
+			plugins_url( '../ui/license.js', __FILE__ ),
+			array( 'jquery', 'thickbox' ),
+			WP_Stream::VERSION,
+			true
+		);
+		wp_enqueue_script(
+			'stream-extensions',
+			plugins_url( '../ui/extensions.js', __FILE__ ),
+			array( 'jquery' ),
+			WP_Stream::VERSION,
+			true
+		);
+		$action = 'license';
+		wp_localize_script(
+			'stream-activation',
+			'stream_activation',
+			array(
+				'action' => get_site_option( 'wp_stream_license' ) ? 'disconnect' : 'connect',
+				'api'    => array(
+					'connect'          => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'connect', 'connect' ),
+					'disconnect'       => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'disconnect', 'disconnect' ),
+					'disconnect_local' => add_query_arg( 'action', 'stream-license-remove', admin_url( 'admin-ajax.php' ) ),
+				),
+				'nonce' => array(
+					'license_check'  => wp_create_nonce( 'license_check' ),
+					'license_remove' => wp_create_nonce( 'license_remove' ),
+				),
+				'i18n' => array(
+					'connected'       => __( 'Connected', 'stream' ),
+					'login_to_stream' => __( 'Connect to Stream Premium', 'stream' ),
+				),
+			)
+		);
+		wp_localize_script( 'stream-extensions', 'stream_extensions', array( 'extensions' => $extensions->prepare_extensions_for_js( $extensions->extensions ) ) );
+		add_thickbox();
+		?>
+		<div class="themes-php">
+			<div class="wrap">
+				<?php $extensions->render_page() ?>
+			</div>
+		</div>
+		<?php
+	}
+
+	public static function render_extension_download_page( $extension ) {
+		add_filter(
+			'install_plugin_complete_actions',
+			function( $actions ) {
+				echo sprintf(
+					'<a href="%s">%s</a>',
+					remove_query_arg( 'install' ),
+					esc_html__( 'Return to Stream Extensions', 'stream' )
+				); // xss okay
+			}
+		);
+		WP_Stream_Updater::instance()->install_extension( $extension );
 	}
 
 	public static function register_list_table() {
