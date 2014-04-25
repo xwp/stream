@@ -812,8 +812,7 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	public function update_metabox_display() {
 		$section_id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
-		$sections   = WP_Stream_Reports_Settings::get_user_options( 'sections' );
-		$section    = $sections[ $section_id ];
+		$section    = $this->get_section( $section_id );
 
 		$args = $this->parse_section( $section );
 
@@ -901,8 +900,7 @@ class WP_Stream_Reports_Metaboxes {
 
 	public function save_chart_options(){
 		$section_id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
-		$sections   = WP_Stream_Reports_Settings::get_user_options( 'sections' );
-		$section    = $sections[ $section_id ];
+		$section    = $this->get_section( $section_id );
 		$type       = wp_stream_filter_input( INPUT_GET, 'update_type', FILTER_SANITIZE_STRING );
 
 		if ( 'disable' === $type ) {
@@ -962,6 +960,19 @@ class WP_Stream_Reports_Metaboxes {
 		</fieldset>
 		<?php
 		return ob_get_clean();
+	}
+
+	protected function get_section( $id ) {
+		if ( empty( self::$sections ) ) {
+			self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
+		}
+
+		$section = self::$sections[ $id ];
+		$section = $this->parse_section( $section );
+
+		$section['key'] = $id;
+		return $section;
+
 	}
 
 	/**
