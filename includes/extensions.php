@@ -77,7 +77,7 @@ class WP_Stream_Extensions {
 		if ( $force || false === ( $api_transient = get_transient( self::EXTENSIONS_KEY ) ) ) {
 			$api_transient = $this->get_extension_api();
 
-			if ( $api_transient ) {
+			if ( $api_transient && ! empty( $api_transient ) ) {
 				set_transient( self::EXTENSIONS_KEY, $this->get_extension_api(), MINUTE_IN_SECONDS * 60 * 6 );
 			}
 			return $api_transient;
@@ -319,6 +319,7 @@ class WP_Stream_Extensions {
 				'name'         => $extension->title,
 				'screen_shot'  => isset( $extension->featured_image->source ) ? $extension->featured_image->source : null,
 				'video'        => isset( $extension->post_meta->video_url[0] ) ? $extension->post_meta->video_url[0] : null,
+				'remote_img'   => isset( $extension->post_meta->remote_image[0] ) ? $extension->post_meta->remote_image[0] : null,
 				'content'      => $extension->content,
 				'excerpt'      => $extension->excerpt,
 				'version'      => isset( $extension->post_meta->version[0] ) ? $extension->post_meta->version[0] : null,

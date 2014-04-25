@@ -21,6 +21,8 @@
 						template.find('.theme-version').text('Version: ' + value.version);
 						if (value.video) {
 							template.find('.screenshot').html('<div class="video-container"><iframe class="youtube-player" type="text/html" width="640" height="385" src="http://www.youtube.com/embed/' + value.video + '" frameborder="0"></iframe ></div>');
+						} else if (value.remote_img) {
+							template.find('.screenshot').html('<div class="video-container"><img src="' + value.remote_img + '" /></div>');
 						}
 						template.find('.theme-description').html(value.content);
 						if (!value.installed) {
