@@ -15,11 +15,12 @@
 
 			$( '.theme .more-details, .theme .theme-screenshot' ).on( 'click', function() {
 				var extension = $( this ).parent().addClass( 'open' ).data( 'extension' );
+				var ext_data;
 
 				if ( ext_obj[ extension ] === null ) {
 					return;
 				} else {
-					var ext_data = ext_obj[ extension ];
+					ext_data  = ext_obj[ extension ];
 				}
 
 				template.find( '.theme-name' ).html( ext_data.name + '<span class="theme-version"></span>' );
