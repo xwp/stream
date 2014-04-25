@@ -312,7 +312,7 @@ class WP_Stream_Extensions {
 	function prepare_extensions_for_js( $extensions ) {
 		$prepared_extensions = array();
 
-		foreach ( $extensions as $extension ) {
+		foreach ( (array) $extensions as $extension ) {
 			$text_domain = isset( $extension->slug ) ? sprintf( 'stream-%s', $extension->slug ) : null;
 			$plugin_path = array_key_exists( $text_domain, $this->plugin_paths ) ? $this->plugin_paths[ $text_domain ] : null;
 
