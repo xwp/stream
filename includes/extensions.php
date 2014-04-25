@@ -70,6 +70,7 @@ class WP_Stream_Extensions {
 	/**
 	 * Checks for extension data stored in transient
 	 *
+	 * @param bool $force If set to true stored transient by passed
 	 * @return array|mixed
 	 */
 	function get_extension_data( $force = false ) {
@@ -100,6 +101,8 @@ class WP_Stream_Extensions {
 	}
 
 	/**
+	 * Filters the plugin install api
+	 *
 	 * @param $false
 	 * @param $action
 	 * @param $args
