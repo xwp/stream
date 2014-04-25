@@ -63,6 +63,7 @@ jQuery(function($){
 		},
 		disconnect = function() {
 			console && console.debug ( 'Disconnected from mothership, removing local license.' );
+			tb_remove();
 			$.ajax( {
 				url: ajaxurl,
 				type: 'post',
