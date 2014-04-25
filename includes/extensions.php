@@ -116,18 +116,18 @@ class WP_Stream_Extensions {
 		if ( 'plugin_information' == $action && empty( $false ) ) {
 			/** @internal The querying the api using the filter endpoint doesn't seem to work. For now I'm looping through all the extensions to get the api info for using WordPress install api  */
 			$site    = parse_url( get_option( 'siteurl' ), PHP_URL_HOST );
-			$license = get_site_option( 'wp-stream-license' );
+			$license = get_site_option( 'wp_stream_license' );
 			foreach ( $this->get_extension_data() as $extension ) {
 				if ( $extension->slug == $args->slug ) {
 					$api = new stdClass();
 					$api->name = $extension->title;
 					$api->version = $extension->post_meta->current_version[0];
 					$api->download_link = add_query_arg(
-						$extension->post_meta->download_url[0],
 						array(
 							'site'    => $site,
 							'license' => $license,
-						)
+						),
+						$extension->post_meta->download_url[0]
 					);
 
 					return $api;
