@@ -76,7 +76,9 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			if ( empty( $transient->checked ) || ! $this->plugins ) {
 				return $transient;
 			}
+
 			$response = (array) $this->request( array_intersect_key( $transient->checked, $this->plugins ) );
+
 			$license  = get_site_option( WP_Stream_Updater::LICENSE_KEY );
 			$site     = parse_url( get_site_url(), PHP_URL_HOST );
 			if ( $response ) {
@@ -97,6 +99,12 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 		}
 
 		public function request( $plugins ) {
+			$license = get_site_option( WP_Stream_Updater::LICENSE_KEY );
+
+			if ( ! $license ) {
+				return;
+			}
+
 			$action  = 'update';
 			$url     = apply_filters( 'wp_stream_update_api_url', $this->api_url . $action, $action );
 			$options = array(
@@ -105,7 +113,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 					'plugins' => $plugins,
 					'name'    => get_bloginfo( 'name' ),
 					'url'     => get_bloginfo( 'url' ),
-					'license' => get_site_option( WP_Stream_Updater::LICENSE_KEY ),
+					'license' => $license,
 				),
 			);
 
