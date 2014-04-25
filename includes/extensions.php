@@ -111,7 +111,7 @@ class WP_Stream_Extensions {
 	 */
 	function filter_plugin_api_info( $false, $action, $args ) {
 		if ( ! $this->verify_membership() ) {
-			wp_die( __( 'You must connect your account to stream premium before installing extensions', 'stream' ), 'Extension Install Error', array( 'response' => 200, 'back_link' => true ) );
+			wp_die( __( 'You must connect to your Stream Premium account to install extensions.', 'stream' ), 'Extension Install Error', array( 'response' => 200, 'back_link' => true ) );
 		}
 		if ( 'plugin_information' == $action && empty( $false ) ) {
 			/** @internal The querying the api using the filter endpoint doesn't seem to work. For now I'm looping through all the extensions to get the api info for using WordPress install api  */
