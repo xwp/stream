@@ -72,7 +72,7 @@ class WP_Stream {
 		$this->db = new WP_Stream_DB;
 
 		// Check DB and add message if not present
-		add_action( 'plugins_loaded', array( $this, 'verify_database_present' ) );
+		add_action( 'init', array( $this, 'verify_database_present' ) );
 
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
