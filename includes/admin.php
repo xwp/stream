@@ -467,7 +467,7 @@ class WP_Stream_Admin {
 			'stream-activation',
 			'stream_activation',
 			array(
-				'action' => get_site_option( 'wp_stream_license' ) ? 'disconnect' : 'connect',
+				'action' => get_site_option( WP_Stream_Updater::LICENSE_KEY ) ? 'disconnect' : 'connect',
 				'api'    => array(
 					'connect'          => apply_filters( 'wp_stream_update_api_url', WP_Stream_Updater::instance()->get_api_url() . 'connect', 'connect' ),
 					'disconnect'       => apply_filters( 'wp_stream_update_api_url', WP_Stream_Updater::instance()->get_api_url() . 'disconnect', 'disconnect' ),
@@ -653,7 +653,8 @@ class WP_Stream_Admin {
 
 				// Delete database option
 				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-				delete_site_option( WP_Stream_Install::KEY );
+				delete_site_option( WP_Stream_Updater::LICENSE_KEY );
+				delete_site_option( WP_Stream_Updater::LICENSEE_KEY );
 				delete_site_option( WP_Stream_Settings::KEY );
 				delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
 				delete_site_option( WP_Stream_Settings::NETWORK_KEY );

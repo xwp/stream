@@ -74,7 +74,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				return $transient;
 			}
 			$response = (array) $this->request( array_intersect_key( $transient->checked, $this->plugins ) );
-			$license  = get_site_option( 'wp_stream_license' );
+			$license  = get_site_option( WP_Stream_Updater::LICENSE_KEY );
 			$site     = parse_url( get_site_url(), PHP_URL_HOST );
 			if ( $response ) {
 				foreach ( $response as $key => $value ) {
@@ -102,7 +102,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 					'plugins' => $plugins,
 					'name'    => get_bloginfo( 'name' ),
 					'url'     => get_bloginfo( 'url' ),
-					'license' => get_site_option( 'wp_stream_license' ),
+					'license' => get_site_option( WP_Stream_Updater::LICENSE_KEY ),
 				),
 			);
 
@@ -153,8 +153,8 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				wp_send_json_error( $data );
 			}
 
-			update_site_option( 'wp_stream_license', $license );
-			update_site_option( 'wp_stream_licensee', $data->data->user );
+			update_site_option( WP_Stream_Updater::LICENSE_KEY, $license );
+			update_site_option( WP_Stream_Updater::LICENSEE_KEY, $data->data->user );
 
 			// Invalidate plugin-update transient so we can check for updates
 			// and restore package urls to existing updates
@@ -168,8 +168,8 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 				wp_die( __( 'Invalid security check.', 'stream' ) );
 			}
 
-			delete_site_option( 'wp_stream_license' );
-			delete_site_option( 'wp_stream_licensee' );
+			delete_site_option( WP_Stream_Updater::LICENSE_KEY );
+			delete_site_option( WP_Stream_Updater::LICENSEE_KEY );
 
 			// Invalidate plugin-update transient so we can check for updates
 			// and restore package urls to existing updates
@@ -179,7 +179,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 		}
 
 		public function plugin_action_links( $links ) {
-			if ( ! get_site_option( 'wp_stream_license' ) ) {
+			if ( ! get_site_option( WP_Stream_Updater::LICENSE_KEY ) ) {
 				$links[ 'activation' ] = sprintf(
 					'<a href="%1$s">%2$s</a>',
 					admin_url(
@@ -208,7 +208,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 			// TODO: Nonce check
 
 			$site    = parse_url( get_site_url(), PHP_URL_HOST );
-			$license = get_site_option( 'wp_stream_license' );
+			$license = get_site_option( WP_Stream_Updater::LICENSE_KEY );
 			if ( empty( $license ) ) {
 				wp_die( __( 'You must subscribe to Stream &copy; to be able to download premium extensions.', 'stream' ) );
 			}
@@ -273,6 +273,8 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 
 if ( ! class_exists( 'WP_Stream_Updater' ) ) {
 	class WP_Stream_Updater {
+		const LICENSE_KEY  = 'wp_stream_license';
+		const LICENSEE_KEY = 'wp_stream_licensee';
 
 		private static $versions = array();
 
