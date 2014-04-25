@@ -19,7 +19,7 @@
 				if ( ext_obj[ extension ] === null ) {
 					return;
 				} else {
-					ext_data = ext_obj[ extension ];
+					var ext_data = ext_obj[ extension ];
 				}
 
 				template.find( '.theme-name' ).html( ext_data.name + '<span class="theme-version"></span>' );
