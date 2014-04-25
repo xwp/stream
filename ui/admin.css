@@ -420,3 +420,7 @@
 .stream_page_wp_stream_extensions .theme:hover .theme-name span.inactive {
 	display: none;
 }
+
+.stream_page_wp_stream_extensions > iframe {
+	display: none;
+}
