@@ -42,13 +42,14 @@ jQuery(function($){
 		},
 		got_license = function( license ) {
 			console && console.debug( 'Got license: ', license );
+			// Remove the modal box right away so it doesn't seemed frozen.
+			tb_remove();
 			$.ajax( {
 				url: ajaxurl,
 				type: 'post',
 				data: { action: 'stream-license-check', license: license, nonce: stream_activation.nonce.license_check },
 				dataType: 'json',
 				success: function( r ) {
-					tb_remove();
 					console && console.debug( 'Got license verification results: ', r );
 					spinner.hide();
 					if ( r.success ) {
