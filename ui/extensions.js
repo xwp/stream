@@ -4,105 +4,78 @@
  */
 /* global stream_extensions */
 
-(function($) {
+(function( $ ) {
 
 	var Extensions = {
 
 		load : function() {
-			var template = $('.theme-wrap');
-			var overlay  = $('.theme-overlay');
+			var template = $( '.theme-wrap' );
+			var overlay  = $( '.theme-overlay' );
 			var ext_obj  = stream_extensions.extensions;
-			$('.theme').on('click', function() {
-				var $this = $(this);
-				var extension = $this.data('extension');
-				$.each(ext_obj, function(index, value) {
-					if (extension === index) {
-						template.find('.theme-name').html(value.name + '<span class="theme-version"></span>');
-						template.find('.theme-version').text('Version: ' + value.version);
-						if (value.video) {
-							template.find('.screenshot').html('<div class="video-container"><iframe class="youtube-player" type="text/html" width="640" height="385" src="http://www.youtube.com/embed/' + value.video + '" frameborder="0"></iframe ></div>');
-						} else if (value.remote_img) {
-							template.find('.screenshot').html('<div class="video-container"><img src="' + value.remote_img + '" /></div>');
-						}
-						template.find('.theme-description').html(value.content);
-						if (!value.installed) {
-							template.find('.theme-actions').html('<a href="' + value.actions.install + '" class="button button-primary">' + value.install18n + '</a>');
 
-						} else if (value.installed && !value.active) {
-							template.find('.theme-actions').html('<a href="' + value.actions.activate + '" class="button button-primary">' + value.activate18n + '</a>');
+			$( '.theme .more-details, .theme .theme-screenshot' ).on( 'click', function() {
+				var extension = $( this ).parent().addClass( 'open' ).data( 'extension' );
+				var ext_data;
 
-						} else if (value.installed && value.active) {
-							template.find( '.theme-actions').html('<h3 class="theme-name">' + value.active18n + '</h3>');
-						}
-						overlay.show();
-					}
-				});
+				if ( ext_obj[ extension ] === null ) {
+					return;
+				} else {
+					ext_data  = ext_obj[ extension ];
+				}
 
-				$('.right').on('click', function () {
-					extension = $this.next().data('extension');
-					//Advance loop to next indexed object
-					$.each(ext_obj, function(index, value) {
-						if (extension === index) {
-							overlay.hide();
-							template.find('.theme-name').html(value.name + '<span class="theme-version"></span>');
-							template.find('.theme-version').text('Version: ' + value.version);
-							if (value.video) {
-								template.find('.screenshot').html('<div class="video-container"><iframe class="youtube-player" type="text/html" width="640" height="385" src="http://www.youtube.com/embed/' + value.video + '" frameborder="0"></iframe ></div>');
-							} else if (value.remote_img) {
-								template.find('.screenshot').html('<div class="video-container"><img src="' + value.remote_img + '" /></div>');
-							}
-							template.find('.theme-description').html(value.content);
-							if (!value.installed) {
-								template.find('.theme-actions').html('<a href="' + value.actions.install + '" class="button button-primary">' + value.install18n + '</a>');
+				template.find( '.theme-name' ).html( ext_data.name + '<span class="theme-version"></span>' );
+				template.find( '.theme-version' ).text( 'Version: ' + ext_data.version );
+				template.find( '.theme-description' ).html( ext_data.content );
 
-							} else if (value.installed && !value.active) {
-								template.find('.theme-actions').html('<a href="' + value.actions.activate + '" class="button button-primary">' + value.activate18n + '</a>');
+				if ( ext_data.video ) {
+					template.find( '.screenshot' ).html( '<div class="video-container"><iframe class="youtube-player" type="text/html" width="640" height="385" src="http://www.youtube.com/embed/' + ext_data.video + '" frameborder="0"></iframe ></div>' );
+				} else if ( ext_data.remote_img ) {
+					template.find( '.screenshot' ).html( '<div class="video-container"><img src="' + ext_data.remote_img + '" /></div>' );
+				} else {
+					template.find( '.screenshot' ).html( '' );
+				}
 
-							} else if (value.installed && value.active) {
-								template.find('.theme-actions').html(value.active18n);
-							}
-							overlay.show();
-						}
-					});
-				});
+				if ( ! ext_data.installed ) {
+					template.find( '.theme-actions' ).html( '<a href="' + ext_data.actions.install + '" class="button button-primary">' + ext_data.install18n + '</a>' );
+				} else if ( ext_data.installed && ! ext_data.active ) {
+					template.find( '.theme-actions' ).html( '<a href="' + ext_data.actions.activate + '" class="button button-primary">' + ext_data.activate18n + '</a>' );
+				} else if ( ext_data.installed && ext_data.active ) {
+					template.find( '.theme-actions' ).html( '<a href="#" class="button button-disabled">' + ext_data.active18n + '</a>' );
+				} else {
+					template.find( '.theme-actions' ).html( '' );
+				}
 
-				$('.left').on('click', function () {
-					extension = $this.prev().data('extension');
-					//Advance loop to next indexed object
-					$.each(ext_obj, function (index, value) {
-						if (extension === index) {
-							overlay.hide();
-							template.find('.theme-name').html(value.name + '<span class="theme-version"></span>');
-							template.find('.theme-version').text('Version: ' + value.version);
-							if (value.video) {
-								template.find('.screenshot').html('<div class="video-container"><iframe class="youtube-player" type="text/html" width="640" height="385" src="http://www.youtube.com/embed/' + value.video + '" frameborder="0"></iframe ></div>');
-							} else if (value.remote_img) {
-								template.find('.screenshot').html('<div class="video-container"><img src="' + value.remote_img + '" /></div>');
-							}
-							template.find('.theme-description').html(value.content);
-							if (!value.installed) {
-								template.find('.theme-actions').html('<a href="' + value.actions.install + '" class="button button-primary">' + value.install18n + '</a>');
+				overlay.show();
+			});
 
-							} else if (value.installed && !value.active) {
-								template.find('.theme-actions').html('<a href="' + value.actions.activate + '" class="button button-primary">' + value.activate18n + '</a>');
+			$( '.theme-overlay .theme-header .right' ).on( 'click', function() {
+				var nextExtension = $( '.themes .theme.open' ).next();
+				if ( 0 === nextExtension.length ) {
+					nextExtension = $( '.themes .theme' ).first();
+				}
+				overlay.hide();
+				$( '.themes .theme.open' ).removeClass( 'open' );
+				nextExtension.find( '.more-details' ).trigger( 'click' );
+			});
 
-							} else if (value.installed && value.active) {
-								template.find('.theme-actions').html(value.active18n);
-							}
-							overlay.show();
-						}
-					});
-				});
+			$( '.theme-overlay .theme-header .left' ).on( 'click', function() {
+				var prevExtension = $( '.themes .theme.open' ).prev();
+				if ( 0 === prevExtension.length ) {
+					prevExtension = $( '.themes .theme' ).last();
+				}
+				overlay.hide();
+				$( '.themes .theme.open' ).removeClass( 'open' );
+				prevExtension.find( '.more-details' ).trigger( 'click' );
+			});
 
-				$('.close').on('click', function () {
-					overlay.hide();
-				});
+			$( '.theme-overlay .theme-header .close' ).on( 'click', function() {
+				overlay.hide();
 			});
 		}
 	};
 
-	$(document).ready(function() {
+	$( document ).ready( function() {
 		Extensions.load();
 	});
 
-}(jQuery));
+} ( jQuery ) );
