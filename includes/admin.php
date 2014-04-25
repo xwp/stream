@@ -135,14 +135,16 @@ class WP_Stream_Admin {
 			array( __CLASS__, 'render_page' )
 		);
 
-		self::$screen_id['extensions'] = add_submenu_page(
-			self::RECORDS_PAGE_SLUG,
-			__( 'Stream Extensions', 'stream' ),
-			__( 'Extensions', 'stream' ),
-			self::SETTINGS_CAP,
-			self::EXTENSIONS_PAGE_SLUG,
-			array( __CLASS__, 'render_extensions_page' )
-		);
+		if ( ! is_multisite() ) {
+			self::$screen_id['extensions'] = add_submenu_page(
+				self::RECORDS_PAGE_SLUG,
+				__( 'Stream Extensions', 'stream' ),
+				__( 'Extensions', 'stream' ),
+				self::SETTINGS_CAP,
+				self::EXTENSIONS_PAGE_SLUG,
+				array( __CLASS__, 'render_extensions_page' )
+			);
+		}
 
 		// Register the list table early, so it associates the column headers with 'Screen settings'
 		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
@@ -241,18 +243,21 @@ class WP_Stream_Admin {
 		// Make sure we're working off a clean version
 		include( ABSPATH . WPINC . '/version.php' );
 
-		$body_class   = self::ADMIN_BODY_CLASS;
-		$records_page = self::RECORDS_PAGE_SLUG;
-		$stream_url   = WP_STREAM_URL;
+		$body_class      = self::ADMIN_BODY_CLASS;
+		$records_page    = self::RECORDS_PAGE_SLUG;
+		$extensions_page = self::EXTENSIONS_PAGE_SLUG;
+		$stream_url      = WP_STREAM_URL;
 
 		if ( version_compare( $wp_version, '3.8-alpha', '>=' ) ) {
 			wp_enqueue_style( 'wp-stream-icons' );
 			$css = "
-				#toplevel_page_{$records_page} .wp-menu-image:before {
+				#toplevel_page_{$records_page} .wp-menu-image:before,
+				#toplevel_page_{$extensions_page} .wp-menu-image:before {
 					font-family: 'WP Stream' !important;
 					content: '\\73' !important;
 				}
-				#toplevel_page_{$records_page} .wp-menu-image {
+				#toplevel_page_{$records_page} .wp-menu-image,
+				#toplevel_page_{$extensions_page} .wp-menu-image {
 					background-repeat: no-repeat;
 				}
 				#menu-posts-feedback .wp-menu-image:before {
