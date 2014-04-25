@@ -464,8 +464,8 @@ class WP_Stream_Admin {
 			array(
 				'action' => get_site_option( 'wp_stream_license' ) ? 'disconnect' : 'connect',
 				'api'    => array(
-					'connect'          => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'connect', 'connect' ),
-					'disconnect'       => apply_filters( 'stream-api-url', WP_Stream_Updater::instance()->get_api_url() . 'disconnect', 'disconnect' ),
+					'connect'          => apply_filters( 'wp_stream_update_api_url', WP_Stream_Updater::instance()->get_api_url() . 'connect', 'connect' ),
+					'disconnect'       => apply_filters( 'wp_stream_update_api_url', WP_Stream_Updater::instance()->get_api_url() . 'disconnect', 'disconnect' ),
 					'disconnect_local' => add_query_arg( 'action', 'stream-license-remove', admin_url( 'admin-ajax.php' ) ),
 				),
 				'nonce' => array(
