@@ -1,11 +1,96 @@
 <?php
 
 /**
+ * Version 1.4.2
+ *
+ * Fix rare case where Multisite update would not trigger when jumping from ealier version
+ * to 1.4.1.
+ *
+ * @param string $db_version Database version updating from
+ * @param string $current_version Database version updating to
+ *
+ * @return string $current_version if updated correctly
+ */
+function wp_stream_update_auto_142( $db_version, $current_version ) {
+	// If $db_version if 1.4.1 then we need to run all auto updates again. Otherwise. We skip this update.
+	if ( version_compare( $db_version, '1.4.1', '=' ) ) {
+		return wp_stream_update_auto_140( $db_version, $current_version );
+	}
+
+	return $current_version;
+}
+
+function wp_stream_update_142( $db_version, $current_version ) {
+	// If $db_version if 1.4.1 then we need to run all updates again. Otherwise. We skip this update.
+	if ( version_compare( $db_version, '1.4.1', '=' ) ) {
+		$versions = WP_Stream_Install::db_update_versions();
+		foreach ( $versions as $version ) {
+			// Further updates will apply themselves on their on.
+			if ( $version === $current_version ) {
+				break;
+			}
+
+			$function = 'wp_stream_update_' . str_ireplace( '.', '', $version );
+			if ( function_exists( $function ) ) {
+				$db_success = call_user_func( $function, $db_version, $current_version );
+				if ( $current_version !== $db_success ) {
+					return $db_success;
+				}
+			}
+		}
+	}
+
+	return $current_version;
+}
+
+/**
  * Version 1.4.0
  *
  * Create `author_role` column in `stream` table if it doesn't already exist.
  * Create `blog_id` column in `stream` table if it doesn't already exist.
+ *
+ * @param string $db_version Database version updating from
+ * @param string $current_version Database version updating to
+ *
+ * @return string $current_version if updated correctly
+ */
+function wp_stream_update_auto_140( $db_version, $current_version ) {
+	global $wpdb;
+
+	$prefix = WP_Stream_Install::$table_prefix;
+
+	do_action( 'wp_stream_before_auto_db_update_' . $db_version, $current_version );
+
+	// Check to see if the blog_id column already exists
+	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'blog_id'" );
+
+	// If the blog_id doesn't exist, then create it and update records retroactively
+	if ( empty( $rows ) ) {
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
+	}
+
+	// Check to see if the author_role column already exists
+	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'author_role'" );
+
+	// If the author_role doesn't exist, then create it
+	if ( empty( $rows ) ) {
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(50) NULL AFTER author" );
+	}
+
+	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
+
+	if ( $wpdb->last_error ) {
+		return __( 'Database Update Error', 'stream' );
+	}
+
+	return $current_version;
+}
+
+/**
+ * Version 1.4.0
+ *
  * Merge multisite Stream tables.
+ * Retroactively update author_roles.
  *
  * @param string $db_version Database version updating from
  * @param string $current_version Database version updating to
@@ -18,14 +103,6 @@ function wp_stream_update_140( $db_version, $current_version ) {
 	$prefix = WP_Stream_Install::$table_prefix;
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
-
-	// Check to see if the blog_id column already exists
-	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'blog_id'" );
-
-	// If the blog_id doesn't exist, then create it and update records retroactively
-	if ( empty( $rows ) ) {
-		$wpdb->query( "ALTER TABLE {$prefix}stream ADD blog_id bigint(20) unsigned NOT NULL DEFAULT '0' AFTER site_id" );
-	}
 
 	// If multisite, merge the site stream tables into one
 	if ( is_multisite() ) {
@@ -86,36 +163,34 @@ function wp_stream_update_140( $db_version, $current_version ) {
 		}
 
 		restore_current_blog();
+	} else {
+		$wpdb->update(
+			$wpdb->stream,
+			array( 'blog_id' => '1' ),
+			array( 'blog_id' => '0' ),
+			array( '%d' ),
+			array( '%d' )
+		);
 	}
 
 	if ( $wpdb->last_error ) {
 		return __( 'Database Update Error', 'stream' );
 	}
 
-	// Check to see if the author_role column already exists
-	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'author_role'" );
+	$records = wp_stream_query( array( 'records_per_page' => -1 ) );
 
-	// If the author_role doesn't exist, then create it and update records retroactively
-	if ( empty( $rows ) ) {
-		$wpdb->query( "ALTER TABLE {$prefix}stream ADD author_role varchar(50) NULL AFTER author" );
+	foreach ( $records as $record ) {
+		$user = get_user_by( 'id', $record->author );
 
-		$records = wp_stream_query( array( 'records_per_page' => -1 ) );
-
-		foreach ( $records as $record ) {
-			$user = get_user_by( 'id', $record->author );
-
-			if ( ! $user || ! isset( $user->roles[0] ) ) {
-				continue;
-			}
-
-			$wpdb->update(
-				$wpdb->stream,
-				array(
-					'author_role' => $user->roles[0],
-				),
-				array( 'ID' => $record->ID )
-			);
+		if ( ! $user || ! isset( $user->roles[0] ) ) {
+			continue;
 		}
+
+		$wpdb->update(
+			$wpdb->stream,
+			array( 'author_role' => $user->roles[0] ),
+			array( 'ID' => $record->ID )
+		);
 	}
 
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
@@ -147,7 +222,7 @@ function wp_stream_update_140( $db_version, $current_version ) {
 function wp_stream_update_131( $db_version, $current_version ) {
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
-	add_action( 'wp_stream_after_connectors_registration', 'migrate_installer_edits_to_theme_editor_connector' );
+	add_action( 'wp_stream_after_connectors_registration', 'wp_stream_update_migrate_installer_edits_to_theme_editor_connector' );
 
 	WP_Stream_Connectors::load();
 
@@ -157,12 +232,10 @@ function wp_stream_update_131( $db_version, $current_version ) {
 }
 
 /**
- * @param $labels array connectors terms labels
- *
- * @action wp_stream_after_connectors_registration
+ * @action   wp_stream_after_connectors_registration
  * @return string $current_version if updated correctly
  */
-function migrate_installer_edits_to_theme_editor_connector() {
+function wp_stream_update_migrate_installer_edits_to_theme_editor_connector() {
 	global $wpdb;
 
 	$db_version      = WP_Stream_Install::$db_version;
@@ -238,7 +311,7 @@ function migrate_installer_edits_to_theme_editor_connector() {
 function wp_stream_update_130( $db_version, $current_version ) {
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
-	add_action( 'wp_stream_after_connectors_registration', 'migrate_old_options_to_exclude_tab' );
+	add_action( 'wp_stream_after_connectors_registration', 'wp_stream_update_migrate_old_options_to_exclude_tab' );
 
 	WP_Stream_Connectors::load();
 
@@ -253,7 +326,7 @@ function wp_stream_update_130( $db_version, $current_version ) {
  * @action wp_stream_after_connectors_registration
  * @return string $current_version if updated correctly
  */
-function migrate_old_options_to_exclude_tab( $labels ) {
+function wp_stream_update_migrate_old_options_to_exclude_tab( $labels ) {
 	global $wpdb;
 
 	$db_version      = WP_Stream_Install::$db_version;
@@ -303,9 +376,19 @@ function migrate_old_options_to_exclude_tab( $labels ) {
  * @return string $current_version if updated correctly
  */
 function wp_stream_update_128( $db_version, $current_version ) {
-	global $wpdb;
-
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
+
+	add_action( 'wp_stream_after_connectors_registration', 'wp_stream_update_migrate_media_to_attachment_type' );
+
+	WP_Stream_Connectors::load();
+
+	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, false );
+
+	return $current_version;
+}
+
+function wp_stream_update_migrate_media_to_attachment_type() {
+	global $wpdb;
 
 	$sql = "SELECT r.ID id, r.object_id pid, c.meta_id mid
 		FROM $wpdb->stream r
@@ -330,14 +413,6 @@ function wp_stream_update_128( $db_version, $current_version ) {
 			);
 		}
 	}
-
-	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
-
-	if ( $wpdb->last_error ) {
-		return esc_html__( 'Database Update Error', 'stream' );
-	}
-
-	return $current_version;
 }
 
 /**

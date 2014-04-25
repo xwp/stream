@@ -9,6 +9,9 @@
 
 class WP_Stream_Network {
 
+	const NETWORK_SETTINGS_PAGE_SLUG = 'wp_stream_network_settings';
+	const DEFAULT_SETTINGS_PAGE_SLUG = 'wp_stream_default_settings';
+
 	function __construct() {
 		$this->actions();
 		$this->filters();
@@ -37,6 +40,7 @@ class WP_Stream_Network {
 		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
 		add_filter( 'wp_stream_query_args', array( __CLASS__, 'set_network_option_value' ) );
 		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
+		add_filter( 'wp_stream_connectors', array( $this, 'hide_blogs_connector' ) );
 	}
 
 	/**
@@ -123,7 +127,7 @@ class WP_Stream_Network {
 			__( 'Stream Network Settings', 'stream' ),
 			__( 'Network Settings', 'stream' ),
 			WP_Stream_Admin::SETTINGS_CAP,
-			'wp_stream_network_settings',
+			self::NETWORK_SETTINGS_PAGE_SLUG,
 			array( 'WP_Stream_Admin', 'render_page' )
 		);
 
@@ -133,7 +137,7 @@ class WP_Stream_Network {
 				__( 'New Site Settings', 'stream' ),
 				__( 'Site Defaults', 'stream' ),
 				WP_Stream_Admin::SETTINGS_CAP,
-				'wp_stream_default_settings',
+				self::DEFAULT_SETTINGS_PAGE_SLUG,
 				array( 'WP_Stream_Admin', 'render_page' )
 			);
 		}
@@ -203,10 +207,10 @@ class WP_Stream_Network {
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 
 		switch ( $current_page ) {
-			case 'wp_stream_network_settings' :
+			case self::NETWORK_SETTINGS_PAGE_SLUG :
 				$description = __( 'These settings apply to all sites on the network.', 'stream' );
 				break;
-			case 'wp_stream_default_settings' :
+			case self::DEFAULT_SETTINGS_PAGE_SLUG :
 				$description = __( 'These default settings will apply to new sites created on the network. These settings do not alter existing sites.', 'stream' );
 				break;
 		}
@@ -350,8 +354,8 @@ class WP_Stream_Network {
 	 */
 	function network_options_action() {
 		$allowed_referers = array(
-			'wp_stream_network_settings',
-			'wp_stream_default_settings',
+			self::NETWORK_SETTINGS_PAGE_SLUG,
+			self::DEFAULT_SETTINGS_PAGE_SLUG,
 		);
 		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers ) ) {
 			return;
@@ -422,7 +426,7 @@ class WP_Stream_Network {
 	 * @return array
 	 */
 	function list_table_filters( $filters ) {
-		if ( is_network_admin() ) {
+		if ( is_network_admin() && ! wp_is_large_network() ) {
 			$blogs = array();
 
 			// display network blog as the first option
@@ -520,4 +524,17 @@ class WP_Stream_Network {
 		return $columns;
 	}
 
+	/**
+	 * Prevent the Blogs connector from loading when not in network_admin
+	 *
+	 * @param $args
+	 *
+	 * @return mixed
+	 */
+	function hide_blogs_connector( $connectors ) {
+		if ( ! is_network_admin() ) {
+			return array_diff( $connectors, array( 'WP_Stream_Connector_Blogs' ) );
+		}
+		return $connectors;
+	}
 }

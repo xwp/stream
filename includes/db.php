@@ -104,6 +104,7 @@ class WP_Stream_DB {
 
 		foreach ( $recordarr['meta'] as $key => $vals ) {
 			foreach ( (array) $vals as $val ) {
+				$val = maybe_serialize( $val );
 				$this->insert_meta( $record_id, $key, $val );
 			}
 		}

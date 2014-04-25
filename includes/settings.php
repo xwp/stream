@@ -90,8 +90,9 @@ class WP_Stream_Settings {
 			'message' => __( 'There was an error in the request', 'stream' ),
 		);
 
+		$search  = ( isset( $_POST['find'] )? wp_unslash( trim( $_POST['find'] ) ) : '' );
 		$request = (object) array(
-			'find' => ( isset( $_POST['find'] )? wp_unslash( trim( $_POST['find'] ) ) : '' ),
+			'find' => $search,
 		);
 
 		add_filter( 'user_search_columns', array( __CLASS__, 'add_display_name_search_columns' ), 10, 3 );
@@ -123,7 +124,7 @@ class WP_Stream_Settings {
 			$gravatar_url = null;
 
 			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->ID, 16 ), $gravatar_src_match ) ) {
-				list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
+				$gravatar_url = $gravatar_src_match[1];
 			}
 
 			$args = array(
@@ -147,6 +148,15 @@ class WP_Stream_Settings {
 			}
 
 			$response->users[] = $args;
+		}
+
+		if ( empty( $search ) || preg_match( '/wp|cli/i', $search ) ) {
+			$response->users[] = array(
+				'id'      => 0,
+				'text'    => 'WP-CLI',
+				'icon'    => WP_STREAM_URL . 'ui/stream-icons/wp-cli.png',
+				'tooltip' => '',
+			);
 		}
 
 		wp_send_json_success( $response );
@@ -248,11 +258,17 @@ class WP_Stream_Settings {
 							'title'       => __( 'Private Feeds', 'stream' ),
 							'type'        => 'checkbox',
 							'desc'        => sprintf(
-								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely.', 'stream' ),
+								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
 								sprintf(
 									'<a href="%s" title="%s">',
 									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
 									esc_attr__( 'View Profile', 'stream' )
+								),
+								'</a>',
+								sprintf(
+									'<a href="%s" title="%s" target="_blank">',
+									esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
+									esc_attr__( 'View Codex', 'stream' )
 								),
 								'</a>'
 							),
