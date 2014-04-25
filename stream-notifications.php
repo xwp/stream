@@ -4,7 +4,7 @@
  * Depends: Stream
  * Plugin URI: http://x-team.com
  * Description: TBD
- * Version: 0.1.0
+ * Version: 0.1.1
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+

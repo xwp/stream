@@ -2,7 +2,7 @@
 Contributors:      X-team, shadyvb, fjarrett, dero, jonathanbardo, powelski
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.7
-Tested up to:      3.8.1
+Tested up to:      3.9
 Stable tag:        trunk
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
@@ -15,4 +15,6 @@ TBD
 
 == Changelog ==
 
-TBD
+= 0.1.1 - First update =
+
+= 0.1.0 - First release =
