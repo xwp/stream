@@ -916,7 +916,7 @@ class WP_Stream_Reports_Metaboxes {
 			}
 
 			$section['disabled'] = $payload;
-		} else if ( 'group' === $type ) {
+		} elseif ( 'group' === $type ) {
 			$payload = wp_stream_filter_input( INPUT_GET, 'update_payload', FILTER_SANITIZE_STRING );
 			$section['group'] = 'true' === $payload;
 		}
@@ -971,8 +971,8 @@ class WP_Stream_Reports_Metaboxes {
 		$section = $this->parse_section( $section );
 
 		$section['key'] = $id;
-		return $section;
 
+		return $section;
 	}
 
 	/**
