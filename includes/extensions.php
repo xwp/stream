@@ -110,32 +110,32 @@ class WP_Stream_Extensions {
 	 * @return stdClass
 	 */
 	function filter_plugin_api_info( $false, $action, $args ) {
-		if ( 'query_plugins' === $action ) {
+		if ( admin_url( 'admin.php?page=wp_stream_extensions' ) !== wp_get_referer() ) {
 			return $false;
-		}
-		if ( ! $this->verify_membership() ) {
-			$message = '<p>' . sprintf( __( 'You must connect to your %s account to install extensions.', 'stream' ), '<strong>' . esc_html__( 'Stream Premium', 'stream' ) . '</strong>' ) . '</p><p>' . esc_html__( "Don't have an account?", 'stream' ) . '</p><p><a href="https://wp-stream.com/join/" target="_blank" class="button">' . esc_html__( 'Join Stream Premium', 'stream' ) . '</a></p>';
-			wp_die( $message, 'Stream Extension Installation', array( 'response' => 200, 'back_link' => true ) ); // xss ok
-		}
-		if ( 'plugin_information' == $action && empty( $false ) ) {
+		} elseif ( 'plugin_information' == $action && empty( $false ) ) {
 			/** @internal The querying the api using the filter endpoint doesn't seem to work. For now I'm looping through all the extensions to get the api info for using WordPress install api  */
 			$site    = esc_url_raw( parse_url( get_option( 'siteurl' ), PHP_URL_HOST ) );
 			$license = get_site_option( WP_Stream_Updater::LICENSE_KEY );
 			foreach ( $this->get_extension_data() as $extension ) {
 				if ( $extension->slug == $args->slug ) {
-					$api = new stdClass();
-					$api->name = $extension->title;
-					$api->version = $extension->post_meta->current_version[0];
-					$api->download_link = add_query_arg(
-						array(
-							'site'    => $site,
-							'license' => $license,
-							'key'  => 'install',
-						),
-						$extension->post_meta->download_url[0]
-					);
+					if ( $this->verify_membership() ) {
+						$api = new stdClass();
+						$api->name = $extension->title;
+						$api->version = $extension->post_meta->current_version[0];
+						$api->download_link = add_query_arg(
+							array(
+								'site'    => $site,
+								'license' => $license,
+								'key'  => 'install',
+							),
+							$extension->post_meta->download_url[0]
+						);
 
-					return $api;
+						return $api;
+					} else {
+						$message = '<p>' . sprintf( __( 'You must connect to your %s account to install extensions.', 'stream' ), '<strong>' . esc_html__( 'Stream Premium', 'stream' ) . '</strong>' ) . '</p><p>' . esc_html__( "Don't have an account?", 'stream' ) . '</p><p><a href="https://wp-stream.com/join/" target="_blank" class="button">' . esc_html__( 'Join Stream Premium', 'stream' ) . '</a></p>';
+						wp_die( $message, 'Stream Extension Installation', array( 'response' => 200, 'back_link' => true ) ); // xss ok
+					}
 				}
 			}
 		}
