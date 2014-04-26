@@ -11,7 +11,7 @@ Stream Notifications allows you to create custom rules that will notify you when
 
 == Description ==
 
-TBD
+Stream Notifications allows you to be in the loop with the Stream data you care about. Using an easy-to-use interface you will be able to create fine-grained rules based on user interactions and send notifications to your email or mobile device.
 
 == Changelog ==
 

@@ -3,7 +3,7 @@
  * Plugin Name: Stream Notifications
  * Depends: Stream
  * Plugin URI: http://x-team.com
- * Description: TBD
+ * Description: Stream Notifications allows you to create custom rules that will notify you when certain actions are performed in the WordPress admin.
  * Version: 0.1.1
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
