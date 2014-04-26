@@ -3,7 +3,7 @@
  * Plugin Name: Stream Reports
  * Depends: Stream
  * Plugin URI: http://x-team.com
- * Description: TBD
+ * Description: Stream Reports allows you to generate beautiful visuals of your logged-in user activity data that is captured by Stream.
  * Version: 0.1.0
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
