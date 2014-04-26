@@ -56,6 +56,8 @@ class WP_Stream_Extensions {
 
 		add_filter( 'plugins_api', array( $this, 'filter_plugin_api_info' ), 99, 3 );
 		add_filter( 'http_request_host_is_external', array( $this, 'filter_allowed_external_host' ), 10, 3 );
+
+		add_filter( 'upgrader_pre_download', array( $this, 'pre_update_download_check' ), 10, 3 );
 	}
 
 	/**
@@ -168,6 +170,26 @@ class WP_Stream_Extensions {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Filters the WP_Upgrader download method to check if user is connected to stream premium before attempting the update download
+	 *
+	 * @param bool $false
+	 * @param string $package The url to the download zip file
+	 *
+	 * @return mixed
+	 */
+	function pre_update_download_check( $false, $package ) {
+		if ( false === strpos( $package, self::API_DOMAIN ) ) {
+			return $false;
+		}
+
+		if (  $this->verify_membership() ) {
+			wp_die( __( 'Please connect your site to stream premium to enable updates', 'stream' ), 'Stream Update Error', array( 'response' => 200, 'back_link' => true ) );
+		}
+
+		return $false;
 	}
 
 	/**
