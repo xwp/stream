@@ -655,6 +655,7 @@ class WP_Stream_Admin {
 				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 				delete_site_option( WP_Stream_Updater::LICENSE_KEY );
 				delete_site_option( WP_Stream_Updater::LICENSEE_KEY );
+				delete_site_option( WP_Stream_Install::KEY );
 				delete_site_option( WP_Stream_Settings::KEY );
 				delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
 				delete_site_option( WP_Stream_Settings::NETWORK_KEY );
