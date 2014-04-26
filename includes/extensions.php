@@ -110,6 +110,9 @@ class WP_Stream_Extensions {
 	 * @return stdClass
 	 */
 	function filter_plugin_api_info( $false, $action, $args ) {
+		if ( 'query_plugins' === $action ) {
+			return $false;
+		}
 		if ( ! $this->verify_membership() ) {
 			$message = '<p>' . sprintf( __( 'You must connect to your %s account to install extensions.', 'stream' ), '<strong>' . esc_html__( 'Stream Premium', 'stream' ) . '</strong>' ) . '</p><p>' . esc_html__( "Don't have an account?", 'stream' ) . '</p><p><a href="https://wp-stream.com/join/" target="_blank" class="button">' . esc_html__( 'Join Stream Premium', 'stream' ) . '</a></p>';
 			wp_die( $message, 'Stream Extension Installation', array( 'response' => 200, 'back_link' => true ) ); // xss ok
