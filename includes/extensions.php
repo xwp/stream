@@ -185,7 +185,7 @@ class WP_Stream_Extensions {
 			return $false;
 		}
 
-		if (  $this->verify_membership() ) {
+		if ( ! $this->verify_membership() ) {
 			wp_die( __( 'Please connect your site to stream premium to enable updates', 'stream' ), 'Stream Update Error', array( 'response' => 200, 'back_link' => true ) );
 		}
 
