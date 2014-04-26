@@ -231,7 +231,7 @@ class WP_Stream_Reports_Settings {
 			wp_redirect(
 				add_query_arg(
 					array( 'page' => WP_Stream_Reports::REPORTS_PAGE_SLUG ),
-					admin_url( 'admin.php' )
+					self_admin_url( 'admin.php' )
 				)
 			);
 			exit;
