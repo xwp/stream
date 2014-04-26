@@ -22,7 +22,7 @@ class WP_Stream_Dashboard_Widget {
 
 		wp_add_dashboard_widget(
 			'dashboard_stream_activity',
-			esc_html__( 'Stream Activity', 'stream' ),
+			is_network_admin() ? esc_html__( 'Network Stream Activity', 'stream' ) : esc_html__( 'Stream Activity', 'stream' ),
 			array( __CLASS__, 'stream_activity_initial_contents' ),
 			array( __CLASS__, 'stream_activity_options' )
 		);
@@ -95,7 +95,7 @@ class WP_Stream_Dashboard_Widget {
 
 		$records_link = add_query_arg(
 			array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ),
-			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 		);
 
 		$html_view_all = sprintf(
@@ -210,8 +210,16 @@ class WP_Stream_Dashboard_Widget {
 			array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ),
 			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 		);
+		$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
+		$is_wp_cli   = ! empty( $author_meta['is_wp_cli'] );
 
-		$author      = get_userdata( $item->author );
+		if ( 0 === (int)$item->author ) {
+			$author      = new WP_User( 0 );
+			$author_name = $is_wp_cli ? 'WP-CLI' : __( 'N/A', 'stream' );
+		} else {
+			$author      = get_userdata( $item->author );
+			$author_name = $author->display_name;
+		}
 		$author_link = add_query_arg(
 			array( 'author' => isset( $author->ID ) ? absint( $author->ID ) : 0 ),
 			$records_link
@@ -226,7 +234,7 @@ class WP_Stream_Dashboard_Widget {
 				),
 				human_time_diff( strtotime( $item->created ) ),
 				esc_url( $author_link ),
-				esc_html( $author->display_name )
+				esc_html( $author_name )
 			);
 		} else {
 			$time_author = sprintf(
@@ -242,12 +250,25 @@ class WP_Stream_Dashboard_Widget {
 				$class = 'alternate';
 			}
 		}
+
+		if ( 0 === $author->ID ) {
+			if ( $is_wp_cli ) {
+				$avatar_url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+				$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-72 photo" height="72" width="72">', esc_attr( $author_name ), esc_url( $avatar_url ) );
+			} else {
+				$author_avatar = get_avatar( 'system@wp-stream.com', 72, get_option( 'avatar_default' ) ?: 'mystery', $author_name );
+				$author_avatar = preg_replace( "/src='(.+?)'/", "src='\$1&amp;forcedefault=1'", $author_avatar );
+			}
+		} else {
+			$author_avatar = get_avatar( $author->ID, 72 );
+		}
+
 		ob_start()
 		?><li class="<?php echo esc_html( $class ) ?>" data-id="<?php echo esc_html( $item->ID ) ?>">
 			<?php if ( $author ) : ?>
 				<div class="record-avatar">
 					<a href="<?php echo esc_url( $author_link ) ?>">
-						<?php echo get_avatar( $author->ID, 36 ) ?>
+					<?php echo $author_avatar; // xss ok ?>
 					</a>
 				</div>
 			<?php endif; ?>

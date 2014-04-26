@@ -69,8 +69,8 @@ class WP_Stream_Connectors {
 		 */
 		self::$connectors = apply_filters( 'wp_stream_connectors', $classes );
 
-		foreach ( $classes as $class ) {
-			self::$term_labels['stream_connector'][ $class::$name ] = $class::get_label();
+		foreach ( self::$connectors as $connector ) {
+			self::$term_labels['stream_connector'][ $connector::$name ] = $connector::get_label();
 		}
 
 		// Get excluded connectors

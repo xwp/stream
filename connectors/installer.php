@@ -90,8 +90,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @action transition_post_status
 	 */
 	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
-		$logs = array(); // If doing a bulk update, store log info in an array
-
+		$logs    = array();
 		$success = ! is_wp_error( $upgrader->skin->result );
 		$error   = null;
 
@@ -113,32 +112,24 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		}
 
 		if ( 'install' === $action ) {
-			$from = $upgrader->skin->options['type'];
-			if ( 'upload' === $from ) {
-				if ( 'plugin' === $type ) {
-					$cached_plugins = wp_cache_get( 'plugins', 'plugins' );
-					$plugin_data    = $cached_plugins[ '/' . $upgrader->result['destination_name'] ];
-					if ( $plugin_data ) {
-						$plugin_data = reset( $plugin_data );
-					} else { // Probably a failed installation
-						return;
-					}
-					$slug    = $upgrader->result['destination_name'];
-					$name    = $plugin_data['Name'];
-					$version = $plugin_data['Version'];
-				} elseif ( 'theme' === $type ) {
-					$slug = $upgrader->result['destination_name'];
-					$theme_data = wp_get_theme( $slug );
-					if ( empty( $theme_data ) ) {
-						return;
-					}
-					$name    = $theme_data->get( 'Name' );
-					$version = $theme_data->get( 'Version' );
+			if ( 'plugin' === $type ) {
+				$path = $upgrader->plugin_info();
+				if ( ! $path ) {
+					return;
 				}
-			} else {
-				$slug    = $upgrader->skin->api->slug;
-				$name    = $upgrader->skin->api->name;
-				$version = $upgrader->skin->api->version;
+				$data    = get_plugin_data( $upgrader->skin->result['local_destination'] . '/' . $path );
+				$slug    = $upgrader->result['destination_name'];
+				$name    = $data['Name'];
+				$version = $data['Version'];
+			} else { // theme
+				$slug = $upgrader->theme_info();
+				if ( ! $slug ) {
+					return;
+				}
+				wp_clean_themes_cache();
+				$theme   = wp_get_theme( $slug );
+				$name    = $theme->name;
+				$version = $theme->version;
 			}
 			$action  = 'installed';
 			$message = _x(
@@ -146,61 +137,55 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				'Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
 				'stream'
 			);
+			$logs[]  = compact( 'slug', 'name', 'version', 'message', 'action', 'message' );
 		} elseif ( 'update' === $action ) {
-			if ( 'plugin' === $type ) {
-				if ( isset( $extra['bulk'] ) && true == $extra['bulk'] ) {
-					$slugs = $extra['plugins'];
-				} else {
-					$slugs = array( $upgrader->skin->plugin );
-				}
-				$logs    = array();
-				$plugins = get_plugins();
-				foreach ( $slugs as $slug ) {
-					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
-					$logs[] = array(
-						'name'        => $plugin_data['Name'],
-						'version'     => $plugin_data['Version'],
-						'old_version' => $plugins[ $slug ]['Version'],
-					);
-				}
-			}
-			elseif ( 'theme' === $type ) {
-				if ( isset( $extra['bulk'] ) && true == $extra['bulk'] ) {
-					$slugs = $extra['themes'];
-				} else {
-					$slugs = array( $upgrader->skin->theme );
-				}
-				$logs = array();
-				foreach ( $slugs as $slug ) {
-					$theme      = wp_get_theme( $slug );
-					$stylesheet = $theme['Stylesheet Dir'] . '/style.css';
-					$theme_data = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
-					$logs[] = array(
-						'name'        => $theme['Name'],
-						'old_version' => $theme['Version'],
-						'version'     => $theme_data['Version'],
-					);
-				}
-			}
 			$action  = 'updated';
 			$message = _x(
 				'Updated %1$s: %2$s %3$s',
 				'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
 				'stream'
 			);
+			if ( 'plugin' === $type ) {
+				if ( isset( $extra['bulk'] ) && true == $extra['bulk'] ) {
+					$slugs = $extra['plugins'];
+				} else {
+					$slugs = array( $upgrader->skin->plugin );
+				}
+				$plugins = get_plugins();
+				foreach ( $slugs as $slug ) {
+					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
+					$name        = $plugin_data['Name'];
+					$version     = $plugin_data['Version'];
+					$old_version = $plugins[ $slug ]['Version'];
+
+					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action', 'message' );
+				}
+			} else { // theme
+				if ( isset( $extra['bulk'] ) && true == $extra['bulk'] ) {
+					$slugs = $extra['themes'];
+				} else {
+					$slugs = array( $upgrader->skin->theme );
+				}
+				foreach ( $slugs as $slug ) {
+					$theme       = wp_get_theme( $slug );
+					$stylesheet  = $theme['Stylesheet Dir'] . '/style.css';
+					$theme_data  = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
+					$name        = $theme['Name'];
+					$old_version = $theme['Version'];
+					$version     = $theme_data['Version'];
+
+					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action', 'message' );
+				}
+			}
 		} else {
 			return false;
 		}
 
 		$context = $type . 's';
 
-		// If not doing bulk, simulate one to trigger a log operation
-		if ( ! $logs ) {
-			$logs[] = array();
-		}
-
 		foreach ( $logs as $log ) {
 			extract( $log );
+			unset( $log['action'] );
 			self::log(
 				$message,
 				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'from' , 'old_version' ),
@@ -255,15 +240,26 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		);
 	}
 
+	/**
+	 * @todo Core needs a delete_theme hook
+	 */
 	public static function callback_delete_site_transient_update_themes() {
-		$stylesheet = wp_stream_filter_input( INPUT_GET, 'stylesheet' );
 
-		if ( 'delete' !== wp_stream_filter_input( INPUT_GET, 'action' ) || ! $stylesheet ) {
+		$backtrace = debug_backtrace();
+		$delete_theme_call = null;
+		foreach ( $backtrace as $call ) {
+			if ( isset( $call['function'] ) && 'delete_theme' === $call['function'] ) {
+				$delete_theme_call = $call;
+				break;
+			}
+		}
+
+		if ( empty( $delete_theme_call ) ) {
 			return;
 		}
 
-		$theme = $GLOBALS['theme'];
-		$name  = $theme['Name'];
+		$name = $delete_theme_call['args'][0];
+		// @todo Can we get the name of the theme? Or has it already been eliminated
 
 		self::log(
 			__( '"%s" theme deleted', 'stream' ),
@@ -273,6 +269,10 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		);
 	}
 
+	/**
+	 * @todo Core needs an uninstall_plugin hook
+	 * @todo This does not work in WP-CLI
+	 */
 	public static function callback_pre_option_uninstall_plugins() {
 		global $plugins;
 
@@ -291,6 +291,10 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		return false;
 	}
 
+	/**
+	 * @todo Core needs a delete_plugin hook
+	 * @todo This does not work in WP-CLI
+	 */
 	public static function callback_pre_set_site_transient_update_plugins( $value ) {
 		if ( ! wp_stream_filter_input( INPUT_POST, 'verify-delete' ) || ! ( $plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' ) ) ) {
 			return $value;

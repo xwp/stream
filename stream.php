@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: http://wordpress.org/plugins/stream/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 1.3.2
+ * Version: 1.4.2
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -36,7 +36,7 @@ class WP_Stream {
 	 *
 	 * @const string
 	 */
-	const VERSION = '1.3.2';
+	const VERSION = '1.4.2';
 
 	/**
 	 * Hold Stream instance
@@ -51,16 +51,15 @@ class WP_Stream {
 	public $db = null;
 
 	/**
-	 * Admin notices messages
-	 *
-	 * @var array
+	 * @var WP_Stream_Network
 	 */
-	public static $messages = array();
+	public $network = null;
 
 	/**
 	 * Class constructor
 	 */
 	private function __construct() {
+		define( 'WP_STREAM_PLUGIN', plugin_basename( __FILE__ ) );
 		define( 'WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
@@ -72,12 +71,8 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'db.php';
 		$this->db = new WP_Stream_DB;
 
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			return;
-		}
-
 		// Check DB and add message if not present
-		$this->verify_database_present();
+		add_action( 'plugins_loaded', array( $this, 'verify_database_present' ) );
 
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -85,6 +80,12 @@ class WP_Stream {
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_INC_DIR . 'settings.php';
 		add_action( 'init', array( 'WP_Stream_Settings', 'load' ) );
+
+		// Load network class
+		if ( is_multisite() ) {
+			require_once WP_STREAM_INC_DIR . 'network.php';
+			$this->network = new WP_Stream_Network;
+		}
 
 		// Load logger class
 		require_once WP_STREAM_INC_DIR . 'log.php';
@@ -106,7 +107,7 @@ class WP_Stream {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 
-			add_action( 'init', array( __CLASS__, 'install' ) );
+			add_action( 'init', array( __CLASS__, 'install' ), 10, 1 );
 
 			// Registers a hook that connectors and other plugins can use whenever a stream update happens
 			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
@@ -127,12 +128,8 @@ class WP_Stream {
 	 * add the error message to the admin notices
 	 */
 	static function fail_php_version() {
-		add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
-		self::$messages[] = sprintf(
-			'<div class="error"><p>%s</p></div>',
-			__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' )
-		);
+		self::notice( __( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' ) );
 	}
 
 	/**
@@ -173,7 +170,11 @@ class WP_Stream {
 	 *
 	 * @return void
 	 */
-	private function verify_database_present() {
+	public function verify_database_present() {
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
 		/**
 		 * Filter will halt verify_database_present() if set to true
 		 *
@@ -186,21 +187,30 @@ class WP_Stream {
 
 		global $wpdb;
 
-		$message = '';
+		$database_message  = '';
+		$uninstall_message = '';
 
 		// Check if all needed DB is present
 		foreach ( $this->db->get_table_names() as $table_name ) {
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-				$message .= sprintf( '<p>%s %s</p>', __( 'The following table is not present in the WordPress database :', 'stream' ), $table_name );
+				$database_message .= sprintf( '%s %s', __( 'The following table is not present in the WordPress database:', 'stream' ), $table_name );
 			}
 		}
 
-		if ( ! empty( $message ) ) {
-			self::$messages['wp_stream_db_error'] = sprintf(
-				'<div class="error">%s<p>%s</p></div>',
-				$message,
-				sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) )
-			); // xss ok
+		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) && current_user_can( 'manage_network_plugins' ) ) {
+			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), network_admin_url( 'plugins.php#stream' ) );
+		} elseif ( current_user_can( 'activate_plugins' ) ) {
+			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
+		}
+
+		// Check upgrade routine
+		self::install();
+
+		if ( ! empty( $database_message ) ) {
+			self::notice( $database_message );
+			if ( ! empty( $uninstall_message ) ) {
+				self::notice( $uninstall_message );
+			}
 		}
 	}
 
@@ -209,22 +219,36 @@ class WP_Stream {
 	}
 
 	/**
-	 * Display a notice about php version
+	 * Whether the current PHP version meets the minimum requirements
 	 *
-	 * @action all_admin_notices
+	 * @return bool
 	 */
 	public static function is_valid_php_version() {
 		return version_compare( PHP_VERSION, '5.3', '>=' );
 	}
 
 	/**
-	 * Display all messages on admin board
+	 * Show an error or other message, using admin_notice or WP-CLI logger
 	 *
+	 * @param string $message
+	 * @param bool $is_error
 	 * @return void
 	 */
-	public static function admin_notices() {
-		foreach ( self::$messages as $message ) {
-			echo wp_kses_post( $message );
+	public static function notice( $message, $is_error = true ) {
+		if ( defined( 'WP_CLI' ) ) {
+			$message = strip_tags( $message );
+			if ( $is_error ) {
+				WP_CLI::warning( $message );
+			} else {
+				WP_CLI::success( $message );
+			}
+		} else {
+			$print_message = function () use ( $message, $is_error ) {
+				$class_name   = ( $is_error ? 'error' : 'updated' );
+				$html_message = sprintf( '<div class="%s">%s</div>', $class_name, wpautop( $message ) );
+				echo wp_kses_post( $html_message );
+			};
+			add_action( 'all_admin_notices', $print_message );
 		}
 	}
 
