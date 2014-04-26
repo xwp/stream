@@ -342,8 +342,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		}
 		elseif ( 'plugin' === $type ) {
 			global $plugin, $plugins;
-			$data = $plugins[ $plugin ];
-			$name = $data['Name'];
+			$plugin_base = current( explode( '/', $plugin ) );
+			foreach ( $plugins as $key => $plugin_data ) {
+				if ( $plugin_base === current( explode( '/', $key ) ) ) {
+					$name = $plugin_data['Name'];
+					break;
+				}
+			}
 		}
 
 		self::log(
