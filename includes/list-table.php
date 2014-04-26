@@ -557,7 +557,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'items' => $this->assemble_records( 'action' ),
 		);
 
-
 		/**
 		 * Filter allows additional filters in the list table dropdowns
 		 * Note the format of the filters above, with they key and array

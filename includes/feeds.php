@@ -187,7 +187,7 @@ class WP_Stream_Feeds {
 		$die_title   = esc_html__( 'Access Denied', 'stream' );
 		$die_message = '<h1>' . $die_title .'</h1><p>' . esc_html__( 'You don\'t have permission to view this feed, please contact your site Administrator.', 'stream' ) . '</p>';
 
-		if ( ! isset( $_GET[self::FEED_QUERY_VAR] ) || empty( $_GET[self::FEED_QUERY_VAR] ) ) {
+		if ( ! isset( $_GET[ self::FEED_QUERY_VAR ] ) || empty( $_GET[ self::FEED_QUERY_VAR ] ) ) {
 			wp_die( $die_message, $die_title );
 		}
 

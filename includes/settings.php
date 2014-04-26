@@ -591,7 +591,7 @@ class WP_Stream_Settings {
 				$output .= '</fieldset></div>';
 				break;
 			case 'select':
-				$current_value = (array) self::$options[$section . '_' . $name];
+				$current_value = (array) self::$options[ $section . '_' . $name ];
 				$default_value = isset( $default['value'] ) ? $default['value'] : '-1';
 				$default_name  = isset( $default['name'] ) ? $default['name'] : 'Choose Setting';
 
