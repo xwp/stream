@@ -29,6 +29,14 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	);
 
 	/**
+	 * Store the initial sidebars_widgets option when the customizer does its
+	 * multiple rounds of saving to the sidebars_widgets option.
+	 *
+	 * @var array
+	 */
+	protected static $customizer_initial_sidebars_widgets = null;
+
+	/**
 	 * Return translated context label
 	 *
 	 * @return string Translated context label
@@ -107,14 +115,44 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return void
 	 */
 	public static function callback_update_option_sidebars_widgets( $old, $new ) {
-
 		// Disable listener if we're switching themes
 		if ( did_action( 'after_switch_theme' ) ) {
 			return;
 		}
 
+		if ( did_action( 'customize_save' ) ) {
+			if ( is_null( self::$customizer_initial_sidebars_widgets ) ) {
+				self::$customizer_initial_sidebars_widgets = $old;
+				add_action( 'customize_save_after', array( __CLASS__, '_callback_customize_save_after' ) );
+			}
+		} else {
+			self::handle_sidebars_widgets_changes( $old, $new );
+		}
+	}
+
+	/**
+	 * Since the sidebars_widgets may get updated multiple times when saving
+	 * changes to Widgets in the Customizer, defer handling the changes until
+	 * customize_save_after.
+	 *
+	 * @see self::callback_update_option_sidebars_widgets()
+	 */
+	public static function _callback_customize_save_after() {
+		$old_sidebars_widgets = self::$customizer_initial_sidebars_widgets;
+		$new_sidebars_widgets = get_option( 'sidebars_widgets' );
+		self::handle_sidebars_widgets_changes( $old_sidebars_widgets, $new_sidebars_widgets );
+	}
+
+	/**
+	 * @param array $old
+	 * @param array $new
+	 */
+	protected static function handle_sidebars_widgets_changes( $old, $new ) {
 		unset( $old['array_version'] );
 		unset( $new['array_version'] );
+		if ( $old === $new ) {
+			return;
+		}
 
 		self::handle_deactivated_widgets( $old, $new );
 		self::handle_reactivated_widgets( $old, $new );
@@ -123,7 +161,6 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		self::handle_widget_reordering( $old, $new );
 		self::handle_widget_moved( $old, $new );
 	}
-
 
 	/**
 	 * Track deactivation of widgets from sidebars
