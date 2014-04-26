@@ -79,12 +79,19 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 
 			$response = (array) $this->request( array_intersect_key( $transient->checked, $this->plugins ) );
 
-			$license  = get_site_option( WP_Stream_Updater::LICENSE_KEY );
-			$site     = parse_url( get_site_url(), PHP_URL_HOST );
+			$license = get_site_option( WP_Stream_Updater::LICENSE_KEY );
+			$site    = esc_url_raw( parse_url( get_option( 'siteurl' ), PHP_URL_HOST ) );
 			if ( $response ) {
 				foreach ( $response as $key => $value ) {
 					if ( $license ) {
-						$value->package .= '&license=' . $license . '&site=' . $site;
+						$value->package = add_query_arg(
+							array(
+								'key'     => 'update',
+								'license' => $license,
+								'site'    => $site
+							),
+							esc_url_raw( $value->package )
+						);
 					} else {
 						$value->package = '';
 					}
