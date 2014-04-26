@@ -24,7 +24,8 @@ class WP_Stream_Network {
 		add_action( 'network_admin_notices', array( 'WP_Stream_Admin', 'admin_notices' ) );
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
 		add_action( 'wp_network_dashboard_setup', array( 'WP_Stream_Dashboard_Widget', 'stream_activity' ) );
-		add_action( 'wp_stream_admin_menu_screens', array( $this, 'admin_menu_screens' ) );
+		add_action( 'admin_menu', array( $this, 'admin_menu_screens' ) );
+		add_action( 'network_admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'update_site_option_' . WP_Stream_Settings::NETWORK_KEY, array( $this, 'updated_option_ttl_remove_records' ), 10, 3 );
 	}
 
@@ -139,6 +140,26 @@ class WP_Stream_Network {
 				WP_Stream_Admin::SETTINGS_CAP,
 				self::DEFAULT_SETTINGS_PAGE_SLUG,
 				array( 'WP_Stream_Admin', 'render_page' )
+			);
+		}
+		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			WP_Stream_Admin::$screen_id['extensions'] = add_submenu_page(
+				WP_Stream_Admin::RECORDS_PAGE_SLUG,
+				__( 'Stream Extensions', 'stream' ),
+				__( 'Extensions', 'stream' ),
+				WP_Stream_Admin::SETTINGS_CAP,
+				WP_Stream_Admin::EXTENSIONS_PAGE_SLUG,
+				array( 'WP_Stream_Admin', 'render_extensions_page' )
+			);
+		} else {
+			WP_Stream_Admin::$screen_id['extensions'] = add_menu_page(
+				__( 'Stream Extensions', 'stream' ),
+				__( 'Stream', 'stream' ),
+				WP_Stream_Admin::SETTINGS_CAP,
+				WP_Stream_Admin::EXTENSIONS_PAGE_SLUG,
+				array( 'WP_Stream_Admin', 'render_extensions_page' ),
+				'div',
+				'2.999999' // Using longtail decimal string to reduce the chance of position conflicts, see Codex
 			);
 		}
 	}
