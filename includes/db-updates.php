@@ -26,7 +26,7 @@ function wp_stream_update_142( $db_version, $current_version ) {
 		$versions = WP_Stream_Install::db_update_versions();
 		foreach ( $versions as $version ) {
 			// Further updates will apply themselves on their on.
-			if ( $version === $current_version ) {
+			if ( '1.4.2' === $version ) {
 				break;
 			}
 
@@ -39,7 +39,6 @@ function wp_stream_update_142( $db_version, $current_version ) {
 			}
 		}
 	}
-
 	return $current_version;
 }
 
