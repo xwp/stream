@@ -126,7 +126,7 @@ class WP_Stream_Extensions {
 							array(
 								'site'    => $site,
 								'license' => $license,
-								'key'  => 'install',
+								'key'     => 'install',
 							),
 							$extension->post_meta->download_url[0]
 						);
