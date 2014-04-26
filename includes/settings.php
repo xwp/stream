@@ -228,13 +228,10 @@ class WP_Stream_Reports_Settings {
 		$is_saved = self::update_user_option( $key, $option );
 
 		if ( $is_saved ) {
-
-			$url = is_network_admin() ? network_admin_url( 'admin.php' ) : admin_url( 'admin.php' );
-
 			wp_redirect(
 				add_query_arg(
 					array( 'page' => WP_Stream_Reports::REPORTS_PAGE_SLUG ),
-					$url
+					self_admin_url( 'admin.php' )
 				)
 			);
 			exit;
