@@ -88,7 +88,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 							array(
 								'key'     => 'update',
 								'license' => $license,
-								'site'    => $site
+								'site'    => $site,
 							),
 							esc_url_raw( $value->package )
 						);
