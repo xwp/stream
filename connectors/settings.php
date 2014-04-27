@@ -289,6 +289,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'banned_email_domains'          => __( 'Banned Email Domains', 'stream' ),
 			'WPLANG'                        => __( 'Network Language', 'stream' ),
 			'admin_email'                   => __( 'Network Admin Email', 'stream' ),
+			// Other
+			'wp_stream_db'                  => __( 'Stream Database Version', 'stream' ),
 		);
 
 		if ( isset( $labels[ $field_key ] ) ) {
