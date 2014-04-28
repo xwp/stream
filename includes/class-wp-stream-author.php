@@ -15,7 +15,7 @@ class WP_Stream_Author {
 	/**
 	 * @var WP_User
 	 */
-	protected $user_obj;
+	protected $user;
 
 	/**
 	 * @param int $user_id
@@ -25,7 +25,7 @@ class WP_Stream_Author {
 		$this->id   = $user_id;
 		$this->meta = $author_meta;
 		if ( $this->id ) {
-			$this->user_obj = new WP_User( $this->id );
+			$this->user = new WP_User( $this->id );
 		}
 	}
 
@@ -45,8 +45,8 @@ class WP_Stream_Author {
 			return $this->get_role();
 		} elseif ( 'agent' === $name ) {
 			return $this->get_agent();
-		} elseif ( ! empty( $this->user_obj ) && 0 !== $this->user_obj->ID ) {
-			return $this->user_obj->$name;
+		} elseif ( ! empty( $this->user ) && 0 !== $this->user->ID ) {
+			return $this->user->$name;
 		} else {
 			throw new Exception( "Unrecognized magic '$name'" );
 		}
@@ -67,10 +67,10 @@ class WP_Stream_Author {
 				} else {
 					return __( 'N/A', 'stream' );
 				}
-			} elseif ( ! empty( $this->user_obj->display_name ) ) {
-				return $this->user_obj->display_name;
+			} elseif ( ! empty( $this->user->display_name ) ) {
+				return $this->user->display_name;
 			} else {
-				return $this->user_obj->user_login;
+				return $this->user->user_login;
 			}
 		}
 	}
@@ -134,8 +134,8 @@ class WP_Stream_Author {
 			$author_role = $wp_roles->role_names[ $this->meta['author_role'] ];
 		} elseif ( ! empty( $this->meta['user_role_label'] ) ) {
 			$author_role = $this->meta['user_role_label'];
-		} elseif ( isset( $this->user_obj->roles[0] ) && isset( $wp_roles->role_names[ $this->user_obj->roles[0] ] ) ) {
-			$author_role = $wp_roles->role_names[ $this->user_obj->roles[0] ];
+		} elseif ( isset( $this->user->roles[0] ) && isset( $wp_roles->role_names[ $this->user->roles[0] ] ) ) {
+			$author_role = $wp_roles->role_names[ $this->user->roles[0] ];
 		} else {
 			$author_role = null;
 		}
@@ -160,7 +160,7 @@ class WP_Stream_Author {
 	 * @return bool
 	 */
 	function is_deleted() {
-		return ( 0 !== $this->id && 0 === $this->user_obj->ID );
+		return ( 0 !== $this->id && 0 === $this->user->ID );
 	}
 
 	/**

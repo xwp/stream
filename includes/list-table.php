@@ -425,7 +425,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				if ( $hide_disabled_column_filter && in_array( $author->id, $excluded_records ) ) {
 					continue;
 				}
-				$all_records[ $author->id ] = $author;
+				$all_records[ $author->id ] = $author->get_display_name();
 			}
 		} else {
 			$prefixed_column = sprintf( 'stream_%s', $column );

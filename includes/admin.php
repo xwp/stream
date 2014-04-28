@@ -754,8 +754,9 @@ class WP_Stream_Admin {
 
 				break;
 		}
-
-		echo json_encode( array_values( $results ) );
+		if ( isset( $results ) ) {
+			echo json_encode( array_values( $results ) );
+		}
 		die();
 	}
 
@@ -790,19 +791,21 @@ class WP_Stream_Admin {
 		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
 
 		$authors_records = array();
-		foreach ( $authors as $user_id => $author ) {
-			$author_obj = new WP_Stream_Author( $user_id );
+
+		foreach ( $authors as $user_id => $args ) {
+			$author   = new WP_Stream_Author( $user_id );
+			$disabled = isset( $args['disabled'] ) ? $args['disabled'] : null;
+
 			$authors_records[ $user_id ] = array(
-				'text'     => $author_obj->get_display_name(),
+				'text'     => $author->get_display_name(),
 				'id'       => $user_id,
-				'label'    => $author_obj->get_display_name(),
-				'icon'     => $author_obj->get_avatar_src( 32 ),
+				'label'    => $author->get_display_name(),
+				'icon'     => $author->get_avatar_src( 32 ),
 				'title'    => '',
-				'disabled' => ( is_array( $author ) && isset( $author['disabled'] ) ) ? $author['disabled'] : null, // @todo hacky
+				'disabled' => $disabled,
 			);
 		}
 
 		return $authors_records;
 	}
-
 }
