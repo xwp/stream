@@ -747,8 +747,9 @@ class WP_Stream_Admin {
 	public static function _filter_user_caps( $allcaps, $caps, $args, $user = null ) {
 		global $wp_roles;
 
-		if ( ! isset( $wp_roles ) )
+		if ( ! isset( $wp_roles ) ) {
 			$wp_roles = new WP_Roles();
+		}
 
 		$user = is_a( $user, 'WP_User' ) ? $user : wp_get_current_user();
 
