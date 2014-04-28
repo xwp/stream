@@ -123,6 +123,10 @@ class WP_Stream {
 
 			require_once WP_STREAM_INC_DIR . 'live-update.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Live_Update', 'load' ) );
+
+			require_once WP_STREAM_INC_DIR . 'pointers.php';
+			add_action( 'admin_enqueue_scripts', array( 'WP_Stream_Pointers', 'enqueue_scripts' ) );
+			add_action( 'user_register', array( 'WP_Stream_Pointers', 'dismiss_pointers_for_new_users' ) );
 		}
 
 		// Load deprecated functions

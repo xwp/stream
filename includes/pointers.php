@@ -1,0 +1,138 @@
+<?php
+/**
+ * Stream pointers. Based on WP core internal pointers.
+ *
+ * @since 1.4.4
+ */
+class WP_Stream_Pointers {
+	/**
+	 * Initializes the pointers.
+	 *
+	 * @since 1.4.4
+	 *
+	 * All pointers can be disabled using the following:
+	 *     remove_action( 'admin_enqueue_scripts', array( 'WP_Stream_Pointers', 'enqueue_scripts' ) );
+	 *
+	 * Individual pointers (e.g. wpstream143_extensions) can be disabled using the following:
+	 *     remove_action( 'admin_print_footer_scripts', array( 'WP_Stream_Pointers', 'pointer_wpstream143_extensions' ) );
+	 */
+	public static function enqueue_scripts( $hook_suffix ) {
+		/*
+		 * Register feature pointers
+		 * Format: array( hook_suffix => pointer_id )
+		 */
+
+		$registered_pointers = array(
+			'index.php' => 'wpstream143_extensions',
+			'toplevel_page_wp_stream' => 'wpstream143_extensions',
+			'stream_page_wp_stream_settings' => 'wpstream143_extensions',
+		);
+
+		// Check if screen related pointer is registered
+		if ( empty( $registered_pointers[ $hook_suffix ] ) )
+			return;
+
+		$pointers = (array) $registered_pointers[ $hook_suffix ];
+
+		$caps_required = array(
+			'wpstream143_extensions' => array( 'install_plugins' ),
+		);
+
+		// Get dismissed pointers
+		$dismissed = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
+
+		$got_pointers = false;
+		foreach ( array_diff( $pointers, $dismissed ) as $pointer ) {
+			if ( isset( $caps_required[ $pointer ] ) ) {
+				foreach ( $caps_required[ $pointer ] as $cap ) {
+					if ( ! current_user_can( $cap ) )
+						continue 2;
+				}
+			}
+
+			// Bind pointer print function
+			add_action( 'admin_print_footer_scripts', array( 'WP_Stream_Pointers', 'pointer_' . $pointer ) );
+			$got_pointers = true;
+		}
+
+		if ( ! $got_pointers )
+			return;
+
+		// Add pointers script and style to queue
+		wp_enqueue_style( 'wp-pointer' );
+		wp_enqueue_script( 'wp-pointer' );
+	}
+
+	/**
+	 * Print the pointer javascript data.
+	 *
+	 * @since 1.4.4
+	 *
+	 * @param string $pointer_id The pointer ID.
+	 * @param string $selector The HTML elements, on which the pointer should be attached.
+	 * @param array  $args Arguments to be passed to the pointer JS (see wp-pointer.js).
+	 */
+	private static function print_js( $pointer_id, $selector, $args ) {
+		if ( empty( $pointer_id ) || empty( $selector ) || empty( $args ) || empty( $args['content'] ) )
+			return;
+
+		?>
+		<script type="text/javascript">
+		//<![CDATA[
+		(function($){
+			var options = <?php echo json_encode( $args ); ?>, setup;
+
+			if ( ! options )
+				return;
+
+			options = $.extend( options, {
+				close: function() {
+					$.post( ajaxurl, {
+						pointer: '<?php echo $pointer_id; ?>',
+						action: 'dismiss-wp-pointer'
+					});
+				}
+			});
+
+			setup = function() {
+				$('<?php echo $selector; ?>').first().pointer( options ).pointer('open');
+			};
+
+			if ( options.position && options.position.defer_loading )
+				$(window).bind( 'load.wp-pointers', setup );
+			else
+				$(document).ready( setup );
+
+		})( jQuery );
+		//]]>
+		</script>
+		<?php
+	}
+
+	public static function pointer_wpstream143_extensions() {
+		$content  = '<h3>' . __( 'Extensions' ) . '</h3>';
+		$content .= '<p>' . __( 'Extensions are now available for Stream!' ) . '</p>';
+
+		if ( 'dashboard' === get_current_screen()->id ) {
+			$selector = '#toplevel_page_wp_stream';
+			$position = array( 'edge' => is_rtl() ? 'right' : 'left', 'align' => 'center' );
+		} else {
+			$selector = 'a[href="admin.php?page=wp_stream_extensions"]';
+			$position = array( 'edge' => is_rtl() ? 'right' : 'left', 'align' => 'center' );
+		}
+
+		self::print_js( 'wpstream143_extensions', $selector, array(
+			'content' => $content,
+			'position' => $position,
+		) );
+	}
+
+	/**
+	 * Prevents new users from seeing existing 'new feature' pointers.
+	 *
+	 * @since 1.4.4
+	 */
+	public static function dismiss_pointers_for_new_users( $user_id ) {
+		add_user_meta( $user_id, 'dismissed_wp_pointers', '' );
+	}
+}
