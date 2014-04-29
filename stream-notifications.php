@@ -40,6 +40,14 @@ class WP_Stream_Notifications {
 	const STREAM_MIN_VERSION = '1.4.0';
 
 	/**
+	 * Holds this plugin version
+	 * Used in assets cache
+	 *
+	 * @const string
+	 */
+	const VERSION = '0.1.1';
+
+	/**
 	 * Hold Stream instance
 	 *
 	 * @var string
