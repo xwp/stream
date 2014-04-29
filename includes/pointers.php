@@ -7,7 +7,7 @@
 class WP_Stream_Pointers {
 
 	public static $pointers = array();
-	public static $caps = array();
+	public static $caps     = array();
 
 	public static function init_core_pointers() {
 
@@ -75,7 +75,6 @@ class WP_Stream_Pointers {
 				add_action( 'admin_print_footer_scripts', array( $context, 'pointer_' . $pointer ) );
 				$got_pointers = true;
 			}
-
 		}
 		if ( ! $got_pointers )
 			return;
@@ -110,14 +109,14 @@ class WP_Stream_Pointers {
 			options = $.extend( options, {
 				close: function() {
 					$.post( ajaxurl, {
-						pointer: '<?php echo $pointer_id; ?>',
+						pointer: '<?php echo esc_attr( $pointer_id ); ?>',
 						action: 'dismiss-wp-pointer'
 					});
 				}
 			});
 
 			setup = function() {
-				$('<?php echo $selector; ?>').first().pointer( options ).pointer('open');
+				$('<?php echo esc_attr( $selector ); ?>').first().pointer( options ).pointer('open');
 			};
 
 			if ( options.position && options.position.defer_loading )
@@ -143,10 +142,14 @@ class WP_Stream_Pointers {
 			$position = array( 'edge' => is_rtl() ? 'right' : 'left', 'align' => 'center' );
 		}
 
-		self::print_js( 'wpstream143_extensions', $selector, array(
-			'content' => $content,
-			'position' => $position,
-		) );
+		self::print_js(
+			'wpstream143_extensions',
+			$selector,
+			array(
+				'content' => $content,
+				'position' => $position,
+			)
+		);
 	}
 
 	/**
