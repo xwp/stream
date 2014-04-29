@@ -123,7 +123,7 @@ class WP_Stream_Admin {
 			self::RECORDS_PAGE_SLUG,
 			array( __CLASS__, 'stream_page' ),
 			'div',
-			'2.999999' // Using longtail decimal string to reduce the chance of position conflicts, see Codex
+			apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
 		);
 
 		self::$screen_id['settings'] = add_submenu_page(
