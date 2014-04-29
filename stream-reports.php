@@ -144,7 +144,7 @@ class WP_Stream_Reports {
 
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
-		add_action( 'admin_print_scripts', array( $this, 'dequeue_media_conflics' ), 9999 );
+		add_action( 'admin_print_scripts', array( $this, 'dequeue_media_conflicts' ), 9999 );
 
 		// Register to Stream updates
 		if ( class_exists( 'WP_Stream_Updater' ) ) {
