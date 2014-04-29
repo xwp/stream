@@ -385,7 +385,7 @@ class WP_Stream_Reports {
 	}
 
 	/**
-	 * Remove conflicting javascript libraries left by careless developers.
+	 * Remove conflicting JS libraries caused by other plugins loading on pages not belonging to them
 	 */
 	function dequeue_media_conflicts() {
 		if ( 'stream_page_wp_stream_reports' !== get_current_screen() ) {
