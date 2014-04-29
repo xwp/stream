@@ -4,7 +4,7 @@
  * Depends: Stream
  * Plugin URI: http://x-team.com
  * Description: Stream Reports allows you to generate beautiful visuals of your logged-in user activity data that is captured by Stream.
- * Version: 0.1.0
+ * Version: 0.1.1
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -45,7 +45,7 @@ class WP_Stream_Reports {
 	 *
 	 * @const string
 	 */
-	const VERSION = '0.1.0';
+	const VERSION = '0.1.1';
 
 	/**
 	 * Hold Stream Reports instance

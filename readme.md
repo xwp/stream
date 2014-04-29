@@ -16,5 +16,9 @@ Bring your Stream activity data to life with fully-interactive charts. Stream Re
 
 ## Changelog ##
 
-= 0.1.0 - First release =
+### 0.1.1 - April 29, 2014 ###
+* Force dequeue media scripts loaded by other plugins
+
+Props [c3mdigital](http://profiles.wordpress.org/c3mdigital/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
 
