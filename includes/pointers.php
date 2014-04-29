@@ -119,14 +119,14 @@ class WP_Stream_Pointers {
 			options = $.extend( options, {
 				close: function() {
 					$.post( ajaxurl, {
-						pointer: '<?php echo json_encode( $pointer_id ); ?>',
+						pointer: <?php echo json_encode( $pointer_id ); ?>,
 						action: 'dismiss-wp-pointer'
 					});
 				}
 			});
 
 			setup = function() {
-				$('<?php echo json_encode( $selector ); ?>').first().pointer( options ).pointer('open');
+				$(<?php echo json_encode( $selector ); ?>).first().pointer( options ).pointer('open');
 			};
 
 			if ( options.position && options.position.defer_loading ) {
