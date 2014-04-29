@@ -37,7 +37,7 @@ class WP_Stream_Notifications {
 	 *
 	 * @const string
 	 */
-	const STREAM_MIN_VERSION = '1.4.0';
+	const STREAM_MIN_VERSION = '1.4.3';
 
 	/**
 	 * Holds this plugin version
