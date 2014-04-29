@@ -9,6 +9,11 @@ class WP_Stream_Pointers {
 	public static $pointers = array();
 	public static $caps     = array();
 
+	public static function load() {
+		add_action( 'admin_enqueue_scripts', array( 'WP_Stream_Pointers', 'enqueue_scripts' ) );
+		add_action( 'user_register', array( 'WP_Stream_Pointers', 'dismiss_pointers_for_new_users' ) );
+	}
+
 	public static function init_core_pointers() {
 
 		self::$pointers = array(
@@ -52,8 +57,9 @@ class WP_Stream_Pointers {
 		foreach ( $get_pointers as $context => $registered_pointers ) {
 
 			// Check if screen related pointer is registered
-			if ( empty( $registered_pointers[ $hook_suffix ] ) )
+			if ( empty( $registered_pointers[ $hook_suffix ] ) ) {
 				return;
+			}
 
 			$pointers = (array) $registered_pointers[ $hook_suffix ];
 
@@ -66,8 +72,9 @@ class WP_Stream_Pointers {
 			foreach ( array_diff( $pointers, $dismissed ) as $pointer ) {
 				if ( isset( $caps_required[ $pointer ] ) ) {
 					foreach ( $caps_required[ $pointer ] as $cap ) {
-						if ( ! current_user_can( $cap ) )
+						if ( ! current_user_can( $cap ) ) {
 							continue 2;
+						}
 					}
 				}
 
@@ -76,8 +83,9 @@ class WP_Stream_Pointers {
 				$got_pointers = true;
 			}
 		}
-		if ( ! $got_pointers )
+		if ( ! $got_pointers ) {
 			return;
+		}
 
 		// Add pointers script and style to queue
 		wp_enqueue_style( 'wp-pointer' );
@@ -94,8 +102,9 @@ class WP_Stream_Pointers {
 	 * @param array  $args Arguments to be passed to the pointer JS (see wp-pointer.js).
 	 */
 	public static function print_js( $pointer_id, $selector, $args ) {
-		if ( empty( $pointer_id ) || empty( $selector ) || empty( $args ) || empty( $args['content'] ) )
+		if ( empty( $pointer_id ) || empty( $selector ) || empty( $args ) || empty( $args['content'] ) ) {
 			return;
+		}
 
 		?>
 		<script type="text/javascript">
@@ -103,26 +112,29 @@ class WP_Stream_Pointers {
 		(function($){
 			var options = <?php echo json_encode( $args ); ?>, setup;
 
-			if ( ! options )
+			if ( ! options ) {
 				return;
+			}
 
 			options = $.extend( options, {
 				close: function() {
 					$.post( ajaxurl, {
-						pointer: '<?php echo esc_attr( $pointer_id ); ?>',
+						pointer: '<?php echo json_encode( $pointer_id ); ?>',
 						action: 'dismiss-wp-pointer'
 					});
 				}
 			});
 
 			setup = function() {
-				$('<?php echo esc_attr( $selector ); ?>').first().pointer( options ).pointer('open');
+				$('<?php echo json_encode( $selector ); ?>').first().pointer( options ).pointer('open');
 			};
 
-			if ( options.position && options.position.defer_loading )
+			if ( options.position && options.position.defer_loading ) {
 				$(window).bind( 'load.wp-pointers', setup );
-			else
+			}
+			else {
 				$(document).ready( setup );
+			}
 
 		})( jQuery );
 		//]]>
