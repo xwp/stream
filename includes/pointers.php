@@ -5,6 +5,28 @@
  * @since 1.4.4
  */
 class WP_Stream_Pointers {
+
+	public static $pointers = array();
+	public static $caps = array();
+
+	public static function init_core_pointers() {
+
+		self::$pointers = array(
+			'WP_Stream_Pointers' => array(
+				'index.php' => 'wpstream143_extensions',
+				'toplevel_page_wp_stream' => 'wpstream143_extensions',
+				'stream_page_wp_stream_settings' => 'wpstream143_extensions',
+			)
+		);
+
+		self::$caps = array(
+			'WP_Stream_Pointers' => array(
+				'wpstream143_extensions' => array( 'install_plugins' ),
+			)
+		);
+
+	}
+
 	/**
 	 * Initializes the pointers.
 	 *
@@ -22,39 +44,39 @@ class WP_Stream_Pointers {
 		 * Format: array( hook_suffix => pointer_id )
 		 */
 
-		$registered_pointers = array(
-			'index.php' => 'wpstream143_extensions',
-			'toplevel_page_wp_stream' => 'wpstream143_extensions',
-			'stream_page_wp_stream_settings' => 'wpstream143_extensions',
-		);
+		self::init_core_pointers();
 
-		// Check if screen related pointer is registered
-		if ( empty( $registered_pointers[ $hook_suffix ] ) )
-			return;
+		$get_pointers = array_merge( self::$pointers, apply_filters( 'wp_stream_pointers', array() ) );
+		$caps = array_merge( self::$caps, apply_filters( 'wp_stream_pointer_caps', array() ) );
 
-		$pointers = (array) $registered_pointers[ $hook_suffix ];
+		foreach ( $get_pointers as $context => $registered_pointers ) {
 
-		$caps_required = array(
-			'wpstream143_extensions' => array( 'install_plugins' ),
-		);
+			// Check if screen related pointer is registered
+			if ( empty( $registered_pointers[ $hook_suffix ] ) )
+				return;
 
-		// Get dismissed pointers
-		$dismissed = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
+			$pointers = (array) $registered_pointers[ $hook_suffix ];
 
-		$got_pointers = false;
-		foreach ( array_diff( $pointers, $dismissed ) as $pointer ) {
-			if ( isset( $caps_required[ $pointer ] ) ) {
-				foreach ( $caps_required[ $pointer ] as $cap ) {
-					if ( ! current_user_can( $cap ) )
-						continue 2;
+			$caps_required = $caps[ $context ];
+
+			// Get dismissed pointers
+			$dismissed = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
+
+			$got_pointers = false;
+			foreach ( array_diff( $pointers, $dismissed ) as $pointer ) {
+				if ( isset( $caps_required[ $pointer ] ) ) {
+					foreach ( $caps_required[ $pointer ] as $cap ) {
+						if ( ! current_user_can( $cap ) )
+							continue 2;
+					}
 				}
+
+				// Bind pointer print function
+				add_action( 'admin_print_footer_scripts', array( $context, 'pointer_' . $pointer ) );
+				$got_pointers = true;
 			}
 
-			// Bind pointer print function
-			add_action( 'admin_print_footer_scripts', array( 'WP_Stream_Pointers', 'pointer_' . $pointer ) );
-			$got_pointers = true;
 		}
-
 		if ( ! $got_pointers )
 			return;
 
@@ -72,7 +94,7 @@ class WP_Stream_Pointers {
 	 * @param string $selector The HTML elements, on which the pointer should be attached.
 	 * @param array  $args Arguments to be passed to the pointer JS (see wp-pointer.js).
 	 */
-	private static function print_js( $pointer_id, $selector, $args ) {
+	public static function print_js( $pointer_id, $selector, $args ) {
 		if ( empty( $pointer_id ) || empty( $selector ) || empty( $args ) || empty( $args['content'] ) )
 			return;
 
