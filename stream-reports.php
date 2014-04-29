@@ -144,6 +144,7 @@ class WP_Stream_Reports {
 
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
+		add_action( 'admin_print_scripts', array( $this, 'dequeue_media_conflics' ), 9999 );
 
 		// Register to Stream updates
 		if ( class_exists( 'WP_Stream_Updater' ) ) {
@@ -381,6 +382,23 @@ class WP_Stream_Reports {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Remove conflicting javascript libraries left by careless developers.
+	 */
+	function dequeue_media_conflicts() {
+		if ( 'stream_page_wp_stream_reports' !== get_current_screen() ) {
+			return;
+		}
+
+		wp_dequeue_script( 'media-upload' );
+		wp_enqueue_script( 'media-editor' );
+		wp_dequeue_script( 'media-audiovideo' );
+		wp_dequeue_script( 'mce-view' );
+		wp_dequeue_script( 'image-edit' );
+		wp_dequeue_script( 'media-editor' );
+		wp_dequeue_script( 'media-audiovideo' );
 	}
 
 	/**
