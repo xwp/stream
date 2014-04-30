@@ -112,6 +112,19 @@ abstract class WP_Stream_DB_Base {
 			return;
 		}
 
+		// Fill in defaults
+		$defaults = array(
+			'type' => 'stream',
+			'site_id' => 1,
+			'blog_id' => 0,
+			'object_id' => null,
+			'author' => 0,
+			'author_role' => '',
+			'visibility' => 'publish',
+			'parent' => 0,
+		);
+		$data = wp_parse_args( $data, $defaults );
+
 		// TODO: Check/Validate *required* fields
 
 		if ( isset( $data['ID'] ) ) {
