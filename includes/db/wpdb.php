@@ -452,7 +452,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 				)
 			);
 			$records = $this->query( $args );
-			$ids = wp_list_pluck( $records, 'ID' );
+			$ids     = wp_list_pluck( $records, 'ID' );
 
 			if ( ! $ids ) {
 				return false;
