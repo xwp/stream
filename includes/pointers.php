@@ -19,8 +19,8 @@ class WP_Stream_Pointers {
 		self::$pointers = array(
 			'WP_Stream_Pointers' => array(
 				'index.php' => 'wpstream143_extensions',
-				'toplevel_page_wp_stream' => 'wpstream143_extensions',
-				'stream_page_wp_stream_settings' => 'wpstream143_extensions',
+				'toplevel_page_' . WP_Stream_Admin::RECORDS_PAGE_SLUG => 'wpstream143_extensions',
+				'stream_page_' . WP_Stream_Admin::SETTINGS_PAGE_SLUG => 'wpstream143_extensions',
 			)
 		);
 
