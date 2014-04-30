@@ -280,7 +280,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'id' :
-				$out = absint( $item->ID );
+				$out = $item->ID;
 				break;
 
 			case 'blog_id':
