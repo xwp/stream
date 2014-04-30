@@ -46,12 +46,13 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		);
 	}
 
-	protected function insert( $recordarr ) {
+	protected function insert( $data ) {
 		global $wpdb;
 
-		$result = $wpdb->insert(
+		$recordarr = array_diff_key( $data, array_fill_keys( array( 'contexts', 'meta', 'connector' ), null ) );
+		$result    = $wpdb->insert(
 			self::$table,
-			$data
+			$recordarr
 		);
 
 		if ( empty( $wpdb->last_error ) ) {
@@ -62,13 +63,13 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 
 		$this->prev_record = $record_id;
 
-		$connector = $recordarr['connector'];
+		$connector = $data['connector'];
 
-		foreach ( (array) $recordarr['contexts'] as $context => $action ) {
+		foreach ( (array) $data['contexts'] as $context => $action ) {
 			$this->insert_context( $record_id, $connector, $context, $action );
 		}
 
-		foreach ( $recordarr['meta'] as $key => $vals ) {
+		foreach ( $data['meta'] as $key => $vals ) {
 			foreach ( (array) $vals as $val ) {
 				$val = maybe_serialize( $val );
 				$this->insert_meta( $record_id, $key, $val );

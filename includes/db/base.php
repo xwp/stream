@@ -96,7 +96,7 @@ abstract class WP_Stream_DB_Base {
 
 		// Take only whats ours!
 		$valid_keys = get_class_vars( 'WP_Stream_Record' );
-		$data       = array_intersect_key( $data, array_flip( $valid_keys ) );
+		$data       = array_intersect_key( $data, $valid_keys );
 		$data       = array_filter( $data );
 
 		/**
@@ -116,6 +116,10 @@ abstract class WP_Stream_DB_Base {
 
 		if ( isset( $data['ID'] ) ) {
 			$result = $this->update( $data );
+			// TODO: provide actions/filters on result
+			return $result;
+		} else {
+			$result = $this->insert( $data );
 
 			if ( is_wp_error( $result ) ) {
 				/**
@@ -135,8 +139,6 @@ abstract class WP_Stream_DB_Base {
 				do_action( 'wp_stream_post_inserted', $result, $data );
 				return $result; // record_id
 			}
-		} else {
-			return $this->insert( $data );
 		}
 	}
 

@@ -18,6 +18,7 @@ class WP_Stream_Record
 
 	public $meta;
 	public $contexts;
+	public $connector;
 
 	public function __construct( $id = null ) {
 		if ( $id ) {
