@@ -175,21 +175,18 @@ class WP_Stream_Settings {
 
 		check_ajax_referer( 'stream_get_ips', 'nonce' );
 
-		global $wpdb;
-
-		$results = $wpdb->get_col(
-			$wpdb->prepare(
-				"
-					SELECT distinct(`ip`)
-					FROM `{$wpdb->stream}`
-					WHERE `ip` LIKE %s
-					ORDER BY inet_aton(`ip`) ASC
-					LIMIT %d;
-				",
-				like_escape( $_POST['find'] ) . '%',
-				$_POST['limit']
+		$results = wp_stream_query(
+			array(
+				'fields'           => 'ip',
+				'distinct'         => true,
+				'search'           => like_escape( $_POST['find'] ),
+				'search_field'     => 'ip',
+				'records_per_page' => wp_stream_filter_input( INPUT_POST, 'limit' ),
 			)
 		);
+		if ( $results ) {
+			$results = wp_list_pluck( $results, 'ip' );
+		}
 
 		wp_send_json_success( $results );
 	}
