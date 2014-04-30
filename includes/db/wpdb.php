@@ -11,8 +11,6 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	public $found_rows;
 
 	public function __construct() {
-		parent::__construct();
-
 		global $wpdb;
 
 		/**
