@@ -28,28 +28,5 @@ function wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value 
  * @return array   Array of items to be output to select dropdowns
  */
 function wp_stream_existing_records( $column, $table = '' ) {
-	global $wpdb;
-
-	switch ( $table ) {
-		case 'stream' :
-			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->stream} GROUP BY {$column}", 'ARRAY_A' );
-			break;
-		case 'meta' :
-			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streammeta} GROUP BY {$column}", 'ARRAY_A' );
-			break;
-		default :
-			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streamcontext} GROUP BY {$column}", 'ARRAY_A' );
-	}
-
-	if ( is_array( $rows ) && ! empty( $rows ) ) {
-		foreach ( $rows as $row ) {
-			foreach ( $row as $cell => $value ) {
-				$output_array[ $value ] = $value;
-			}
-		}
-		return (array) $output_array;
-	} else {
-		$column = sprintf( 'stream_%s', $column );
-		return isset( WP_Stream_Connectors::$term_labels[ $column ] ) ? WP_Stream_Connectors::$term_labels[ $column ] : array();
-	}
+	return WP_Stream::$db->get_existing_records( $column, $table );
 }
