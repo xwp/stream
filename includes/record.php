@@ -27,7 +27,7 @@ class WP_Stream_Record
 	}
 
 	public function load( $id ) {
-		$records = WP_Stream::get_instance()->db->query( array( 'id' => $id ) );
+		$records = WP_Stream::$db->query( array( 'id' => $id ) );
 
 		if ( $record ) {
 			$this->populate( $record );
@@ -39,7 +39,7 @@ class WP_Stream_Record
 			return new WP_Error( 'validation-error', __( 'Could not validate record data.', 'stream' ) );
 		}
 
-		return WP_Stream::get_instance()->db->store( (array) $this );
+		return WP_Stream::$db->store( (array) $this );
 	}
 
 	public function populate( array $data ) {
