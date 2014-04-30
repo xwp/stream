@@ -46,7 +46,7 @@ class WP_Stream_Record
 		$data = array_intersect_key( $raw, $valid );
 		foreach ( $data as $key => $val ) {
 			$this->{$key} = $val;
- 		}
+		}
 	}
 
 	public function validate() {
