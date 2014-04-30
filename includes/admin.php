@@ -616,16 +616,13 @@ class WP_Stream_Admin {
 			if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 				$blog_id = get_current_blog_id();
 
-				$wpdb->query( "DELETE FROM {$wpdb->base_prefix}stream WHERE blog_id = $blog_id" );
+				self::$db->delete( array( 'blog_id' => $blog_id ) );
 
 				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 				delete_option( WP_Stream_Install::KEY );
 				delete_option( WP_Stream_Settings::KEY );
 			} else {
-				// Delete all tables
-				foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
-					$wpdb->query( "DROP TABLE $table" );
-				}
+				self::$db->reset();
 
 				// Delete database options
 				if ( is_multisite() ) {
@@ -687,29 +684,18 @@ class WP_Stream_Admin {
 
 		$days = $options['general_records_ttl'];
 		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
-
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
-		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
+		$args = array(
+			'date_to' => $date->format( 'Y-m-d H:i:s' ),
+			'type'    => 'stream',
+		);
 
 		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+			$args['blog_id'] = get_current_blog_id();
 		}
 
-		$wpdb->query(
-			$wpdb->prepare(
-				"DELETE `stream`, `context`, `meta`
-				FROM {$wpdb->stream} AS `stream`
-				LEFT JOIN {$wpdb->streamcontext} AS `context`
-				ON `context`.`record_id` = `stream`.`ID`
-				LEFT JOIN {$wpdb->streammeta} AS `meta`
-				ON `meta`.`record_id` = `stream`.`ID`
-				WHERE `stream`.`type` = %s
-				$where;",
-				'stream',
-				$date->format( 'Y-m-d H:i:s' )
-			)
-		);
+		WP_Stream::$db->delete( $args );
 	}
 
 	private static function _role_can_view_stream( $role ) {
