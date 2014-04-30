@@ -75,7 +75,7 @@ class WP_Stream {
 			require_once WP_STREAM_INC_DIR . "db/$driver.php";
 		}
 		if ( ! self::$db ) {
-			throw new Exception( __( 'Could not load chosen DB driver.', 'stream' ) );
+			wp_die( __( 'Stream: Could not load chosen DB driver.', 'stream' ), 'Stream DB Error' );
 		}
 
 		// Check DB and add message if not present
