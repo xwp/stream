@@ -11,6 +11,8 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	public $found_rows;
 
 	public function __construct() {
+		parent::__construct();
+
 		global $wpdb;
 
 		/**
@@ -46,55 +48,18 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		);
 	}
 
-	/**
-	 * Store a record data
-	 *
-	 * TODO: Make/Use an update method, we currently only have an insert method
-	 *
-	 * @param  array   $recordarr Record instance
-	 * @return integer            ID of record if successful
-	 */
-	public function store( $recordarr ) {
-		return $this->insert( $recordarr );
-	}
-
-	public function insert( $recordarr ) {
+	protected function insert( $recordarr ) {
 		global $wpdb;
-
-		/**
-		 * Filter allows modification of record information
-		 *
-		 * @param  array  array of record information
-		 * @return array  udpated array of record information
-		 */
-		$recordarr = apply_filters( 'wp_stream_record_array', $recordarr );
-
-		// Allow extensions to handle the saving process
-		if ( empty( $recordarr ) ) {
-			return;
-		}
-
-		$fields = array( 'object_id', 'site_id', 'blog_id', 'author', 'author_role', 'created', 'summary', 'parent', 'visibility', 'ip' );
-		$data   = array_intersect_key( $recordarr, array_flip( $fields ) );
-		$data   = array_filter( $data );
-
-		// TODO: Check/Validate *required* fields
 
 		$result = $wpdb->insert(
 			self::$table,
 			$data
 		);
 
-		if ( 1 === $result ) {
+		if ( empty( $wpdb->last_error ) ) {
 			$record_id = $wpdb->insert_id;
 		} else {
-			/**
-			 * Action Hook that fires on an error during post insertion
-			 *
-			 * @param  int  $record_id  Record being inserted
-			 */
-			do_action( 'wp_stream_post_insert_error', $result );
-			return $result;
+			return new WP_Error( 'record-insert-error', $wpdb->last_error );
 		}
 
 		$this->prev_record = $record_id;
@@ -111,14 +76,6 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 				$this->insert_meta( $record_id, $key, $val );
 			}
 		}
-
-		/**
-		 * Fires when A Post is inserted
-		 *
-		 * @param  int    $record_id  Inserted record ID
-		 * @param  array  $recordarr  Array of information on this record
-		 */
-		do_action( 'wp_stream_post_inserted', $record_id, $recordarr );
 
 		return $record_id;
 	}
@@ -152,6 +109,15 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		);
 
 		return $result;
+	}
+
+	/**
+	 * TODO Update a record information
+	 *
+	 * @param  array  $data Record data
+	 * @return mixed        Record ID if successful, WP_Error if not
+	 */
+	protected function update( $data ) {
 	}
 
 	public function query( $args ) {

@@ -82,20 +82,74 @@ abstract class WP_Stream_DB_Base {
 		return $args;
 	}
 
-	function query( $args ) {
-		throw new Exception( 'Database drivers should all implement `query` method.' );
-	}
+	abstract function query( $args );
 
+	/**
+	 * Store a record
+	 *
+	 * Inserts/Updates records in DB
+	 *
+	 * @param  array $data  Record data
+	 * @return mixed       Record ID if successful, WP_Error if not
+	 */
 	function store( $data ) {
-		throw new Exception( 'Database drivers should all implement `store` method.' );
+
+		// Take only whats ours!
+		$valid_keys = get_class_vars( 'WP_Stream_Record' );
+		$data       = array_intersect_key( $data, array_flip( $valid_keys ) );
+		$data       = array_filter( $data );
+
+		/**
+		 * Filter allows modification of record information
+		 *
+		 * @param  array  array of record information
+		 * @return array  udpated array of record information
+		 */
+		$data = apply_filters( 'wp_stream_record_array', $data );
+
+		// Allow extensions to handle the saving process
+		if ( empty( $data ) ) {
+			return;
+		}
+
+		// TODO: Check/Validate *required* fields
+
+		if ( isset( $data['ID'] ) ) {
+			$result = $this->update( $data );
+
+			if ( is_wp_error( $result ) ) {
+				/**
+				 * Fires on errors during post insertion
+				 *
+				 * @param  string  DB Error encountered
+				 */
+				do_action( 'wp_stream_post_insert_error', $result->get_error_message() );
+				return $result;
+			} else {
+				/**
+				 * Fires when A Post is inserted
+				 *
+				 * @param  int    Inserted record ID
+				 * @param  array  Array of information on this record
+				 */
+				do_action( 'wp_stream_post_inserted', $result, $data );
+				return $result; // record_id
+			}
+		} else {
+			return $this->insert( $data );
+		}
 	}
 
-	function delete( $args ) {
-		throw new Exception( 'Database drivers should all implement `delete` method.' );
-	}
+	abstract protected function insert( $data );
 
-	function reset() {
-		throw new Exception( 'Database drivers should all implement `reset` method.' );
-	}
+	abstract protected function update( $data );
+
+	abstract function delete( $args );
+
+	abstract function reset();
+
+	abstract function get_existing_records( $column, $table = '' );
+
+	abstract function get_found_rows();
 
 }
