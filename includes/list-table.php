@@ -169,10 +169,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 		return $items;
 	}
 
+	/**
+	 * Get last query found rows
+	 *
+	 * @return integer
+	 */
 	function get_total_found_rows() {
-		global $wpdb;
-
-		return $wpdb->get_var( 'SELECT FOUND_ROWS()' );
+		return WP_Stream::$db->get_found_rows();
 	}
 
 	function column_default( $item, $column_name ) {
