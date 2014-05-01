@@ -117,7 +117,7 @@ class WP_Stream_Extensions {
 	 * @return string A query string of the format '?ref=1', where 1 is the affiliate ID
 	 */
 	function get_affiliate() {
-		return ( defined( 'WP_STREAM_AFFILIATE_ID' ) ? '?ref=' . urlencode( WP_STREAM_AFFILIATE_ID ) : '' );
+		return ( defined( 'WP_STREAM_AFFILIATE_ID' ) && is_int( WP_STREAM_AFFILIATE_ID ) ) ? sprintf( '?ref=%d', absint( WP_STREAM_AFFILIATE_ID ) ) : null;
 	}
 
 	/**
