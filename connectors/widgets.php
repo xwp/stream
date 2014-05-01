@@ -183,20 +183,19 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$title = self::get_widget_title( $widget_id );
 			$name = self::get_widget_name( $widget_id );
 			if ( $name && $title ) {
-				$message = __( '"{title}" ({name}) widget deactivated', 'stream' );
+				$message = _x( '"%1$s" (%2$s) deactivated', '1: Title, 2: Name', 'stream' );
 			} else if ( $name ) {
 				// Empty title, but we have the name
-				$message = __( '{name} widget deactivated', 'stream' );
+				$message = _x( '%2$s deactivated', '2: Name', 'stream' );
 			} else if ( $title ) {
 				// Likely a single widget since no name is available
-				$message = __( '"{title}" widget deactivated', 'stream' );
+				$message = _x( '"%1$s" widget deactivated', '1: Title', 'stream' );
 			} else {
 				// Neither a name nor a title are available, so use the widget ID
-				$message = __( '{widget_id} widget deactivated', 'stream' );
+				$message = _x( '%3$s widget deactivated', '3: Widget ID', 'stream' );
 			}
-			$tpl_vars = compact( 'name', 'title', 'widget_id' );
-			$message = self::apply_tpl_vars( $message, $tpl_vars );
 
+			$message = sprintf( $message, $title, $name, $widget_id );
 			self::log(
 				$message,
 				compact( 'title', 'name', 'widget_id', 'sidebar_id' ),
@@ -229,20 +228,19 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$title = self::get_widget_title( $widget_id );
 			$name = self::get_widget_name( $widget_id );
 			if ( $name && $title ) {
-				$message = __( '"{title}" ({name}) widget reactivated', 'stream' );
+				$message = _x( '"%1$s" (%2$s) reactivated', '1: Title, 2: Name', 'stream' );
 			} else if ( $name ) {
 				// Empty title, but we have the name
-				$message = __( '{name} widget reactivated', 'stream' );
+				$message = _x( '%2$s reactivated', '2: Name', 'stream' );
 			} else if ( $title ) {
 				// Likely a single widget since no name is available
-				$message = __( '"{title}" widget reactivated', 'stream' );
+				$message = _x( '"%1$s" widget reactivated', '1: Title', 'stream' );
 			} else {
 				// Neither a name nor a title are available, so use the widget ID
-				$message = __( '{widget_id} widget reactivated', 'stream' );
+				$message = _x( '%3$s widget reactivated', '3: Widget ID', 'stream' );
 			}
 
-			$tpl_vars = compact( 'name', 'title', 'widget_id' );
-			$message = self::apply_tpl_vars( $message, $tpl_vars );
+			$message = sprintf( $message, $title, $name, $widget_id );
 			self::log(
 				$message,
 				compact( 'title', 'name', 'widget_id', 'sidebar_id' ),
@@ -278,20 +276,19 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$title = self::get_widget_title( $widget_id );
 			$name = self::get_widget_name( $widget_id );
 			if ( $name && $title ) {
-				$message = __( '"{title}" ({name}) widget removed', 'stream' );
+				$message = _x( '"%1$s" (%2$s) removed', '1: Title, 2: Name', 'stream' );
 			} else if ( $name ) {
 				// Empty title, but we have the name
-				$message = __( '{name} widget removed', 'stream' );
+				$message = _x( '%2$s removed', '2: Name', 'stream' );
 			} else if ( $title ) {
 				// Likely a single widget since no name is available
-				$message = __( '"{title}" widget removed', 'stream' );
+				$message = _x( '"%1$s" widget removed', '1: Title', 'stream' );
 			} else {
 				// Neither a name nor a title are available, so use the widget ID
-				$message = __( '{widget_id} widget removed', 'stream' );
+				$message = _x( '%3$s widget removed', '3: Widget ID', 'stream' );
 			}
 
-			$tpl_vars = compact( 'name', 'title', 'widget_id' );
-			$message = self::apply_tpl_vars( $message, $tpl_vars );
+			$message = sprintf( $message, $title, $name, $widget_id );
 			self::log(
 				$message,
 				compact( 'widget_id', 'sidebar_id' ),
@@ -325,20 +322,19 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$title = self::get_widget_title( $widget_id );
 			$name = self::get_widget_name( $widget_id );
 			if ( $name && $title ) {
-				$message = __( '"{title}" ({name}) widget added', 'stream' );
+				$message = _x( '"%1$s" (%2$s) added', '1: Title, 2: Name', 'stream' );
 			} else if ( $name ) {
 				// Empty title, but we have the name
-				$message = __( '{name} widget added', 'stream' );
+				$message = _x( '%2$s added', '2: Name', 'stream' );
 			} else if ( $title ) {
 				// Likely a single widget since no name is available
-				$message = __( '"{title}" widget added', 'stream' );
+				$message = _x( '"%1$s" widget added', '1: Title', 'stream' );
 			} else {
 				// Neither a name nor a title are available, so use the widget ID
-				$message = __( '{widget_id} widget added', 'stream' );
+				$message = _x( '%3$s widget added', '3: Widget ID', 'stream' );
 			}
 
-			$tpl_vars = compact( 'name', 'title', 'widget_id' );
-			$message = self::apply_tpl_vars( $message, $tpl_vars );
+			$message = sprintf( $message, $title, $name, $widget_id );
 			self::log(
 				$message,
 				compact( 'widget_id', 'sidebar_id' ), // @todo Do we care about sidebar_id in meta if it is already context? But there is no 'context' for what the context signifies
@@ -375,8 +371,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
 				$old_widget_ids = $old[ $sidebar_id ];
-				$message = __( 'Widgets in "{sidebar_name}" were reordered', 'stream' );
-				$message = self::apply_tpl_vars( $message, compact( 'sidebar_name' ) );
+				$message = _x( 'Widgets in "%s" were reordered', 'Sidebar name', 'stream' );
+				$message = sprintf( $message, $sidebar_name );
 				self::log(
 					$message,
 					compact( 'sidebar_id', 'old_widget_ids' ),
@@ -425,21 +421,19 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$title = self::get_widget_title( $widget_id );
 				$name = self::get_widget_name( $widget_id );
 				if ( $name && $title ) {
-					$message = __( '"{title}" ({name}) widget moved from {old_sidebar_name} to {new_sidebar_name}', 'stream' );
+					$message = _x( '"%1$s" (%2$s) widget moved from %4$s to %5$s', '1: Title, 2: Name, 4: Old Sidebar, 5: New Sidebar', 'stream' );
 				} else if ( $name ) {
 					// Empty title, but we have the name
-					$message = __( '{name} widget moved from {old_sidebar_name} to {new_sidebar_name}', 'stream' );
+					$message = _x( '%2$s widget moved from %4$s to %5$s', '2: Name, 4: Old Sidebar, 5: New Sidebar', 'stream' );
 				} else if ( $title ) {
 					// Likely a single widget since no name is available
-					$message = __( '"{title}" widget moved from {old_sidebar_name} to {new_sidebar_name}', 'stream' );
+					$message = _x( '"%1$s" widget moved from %4$s to %5$s', '1: Title, 4: Old Sidebar, 5: New Sidebar', 'stream' );
 				} else {
 					// Neither a name nor a title are available, so use the sidebar ID
-					$message = __( '{widget_id} widget moved from {old_sidebar_name} to {new_sidebar_name}', 'stream' );
+					$message = _x( '%3$s widget moved from %4$s to %5$s', '3: Widget ID, 4: Old Sidebar, 5: New Sidebar', 'stream' );
 				}
 
-				$tpl_vars = compact( 'title', 'name', 'old_sidebar_name', 'new_sidebar_name' );
-				$message = self::apply_tpl_vars( $message, $tpl_vars );
-
+				$message = sprintf( $message, $title, $name, $widget_id, $old_sidebar_name, $new_sidebar_name );
 				$sidebar_id = $old_sidebar_id;
 				self::log(
 					$message,
@@ -542,20 +536,19 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		 */
 		foreach ( $updates as $update ) {
 			if ( $update['name'] && $update['title'] ) {
-				$message = __( '"{title}" ({name}) updated', 'stream' );
+				$message = _x( '"%1$s" (%2$s) updated', '1: Title, 2: Name', 'stream' );
 			} else if ( $update['name'] ) {
 				// Empty title, but we have the name
-				$message = __( '{name} widget updated', 'stream' );
+				$message = _x( '%2$s widget updated', '2: Name', 'stream' );
 			} else if ( $update['title'] ) {
 				// Likely a single widget since no name is available
-				$message = __( '"{title}" widget updated', 'stream' );
+				$message = _x( '"%1$s" widget updated', '1: Title', 'stream' );
 			} else {
 				// Neither a name nor a title are available, so use the sidebar ID
-				$message = __( '{widget_id} widget updated', 'stream' );
+				$message = _x( '%3$s widget updated', '3: Widget ID', 'stream' );
 			}
 
-			$tpl_vars = $update;
-			$message = self::apply_tpl_vars( $message, $tpl_vars );
+			$message = sprintf( $message, $update['title'], $update['name'], $update['widget_id'] );
 			$contexts = array( $update['sidebar_id'] => 'updated' );
 			unset( $update['title'], $update['name'] );
 			self::log( $message, $update, null, $contexts );
@@ -577,20 +570,19 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			 */
 			foreach ( $creates as $create ) {
 				if ( $create['name'] && $create['title'] ) {
-					$message = __( '"{title}" ({name}) created', 'stream' );
+					$message = _x( '"%1$s" (%2$s) created', '1: Title, 2: Name', 'stream' );
 				} else if ( $create['name'] ) {
 					// Empty title, but we have the name
-					$message = __( '{name} widget created', 'stream' );
+					$message = _x( '%2$s widget created', '2: Name', 'stream' );
 				} else if ( $create['title'] ) {
 					// Likely a single widget since no name is available
-					$message = __( '"{title}" widget created', 'stream' );
+					$message = _x( '"%1$s" widget created', '1: Title', 'stream' );
 				} else {
 					// Neither a name nor a title are available, so use the sidebar ID
-					$message = __( '{widget_id} widget created', 'stream' );
+					$message = _x( '%3$s widget created', '3: Widget ID', 'stream' );
 				}
 
-				$tpl_vars = $create;
-				$message = self::apply_tpl_vars( $message, $tpl_vars );
+				$message = sprintf( $message, $create['title'], $create['name'], $create['widget_id'] );
 				$contexts = array( $create['sidebar_id'] => 'created' );
 				unset( $create['title'], $create['name'] );
 				self::log( $message, $create, null, $contexts );
@@ -601,44 +593,24 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			 */
 			foreach ( $deletes as $delete ) {
 				if ( $delete['name'] && $delete['title'] ) {
-					$message = __( '"{title}" ({name}) deleted', 'stream' );
+					$message = _x( '"%1$s" (%2$s) deleted', '1: Title, 2: Name', 'stream' );
 				} else if ( $delete['name'] ) {
 					// Empty title, but we have the name
-					$message = __( '{name} widget deleted', 'stream' );
+					$message = _x( '%2$s widget deleted', '1: Name', 'stream' );
 				} else if ( $delete['title'] ) {
 					// Likely a single widget since no name is available
-					$message = __( '"{title}" widget deleted', 'stream' );
+					$message = _x( '"%1$s" widget deleted', '1: Title', 'stream' );
 				} else {
 					// Neither a name nor a title are available, so use the sidebar ID
-					$message = __( '{widget_id} widget deleted', 'stream' );
+					$message = _x( '%3$s widget deleted', '3: Widget ID', 'stream' );
 				}
 
-				$tpl_vars = $delete;
-				$message = self::apply_tpl_vars( $message, $tpl_vars );
+				$message = sprintf( $message, $delete['title'], $delete['name'], $delete['widget_id'] );
 				$contexts = array( $delete['sidebar_id'] => 'deleted' );
 				unset( $delete['title'], $delete['name'] );
 				self::log( $message, $delete, null, $contexts );
 			}
 		}
-	}
-
-	/**
-	 * Replace in $message any $tpl_vars array keys bounded by curly-braces,
-	 * supplying the $tpl_vars array values in their place. A saner approach
-	 * than using vsprintf.
-	 *
-	 * @param string $message
-	 * @param array $tpl_vars
-	 * @return string
-	 */
-	public static function apply_tpl_vars( $message, array $tpl_vars ) {
-		$tpl_vars = array_filter( $tpl_vars, function ( $v ) { return is_string( $v ) || is_numeric( $v ); } );
-		$message = str_replace(
-			array_map( function ( $m ) { return '{' . $m . '}'; }, array_keys( $tpl_vars ) ),
-			array_values( $tpl_vars ),
-			$message
-		);
-		return $message;
 	}
 
 	/**
