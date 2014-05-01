@@ -54,6 +54,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		return array(
 			'added'       => __( 'Added', 'stream' ),
 			'removed'     => __( 'Removed', 'stream' ),
+			'moved'       => __( 'Moved', 'stream' ),
 			'created'     => __( 'Created', 'stream' ),
 			'deleted'     => __( 'Deleted', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
@@ -434,20 +435,12 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				}
 
 				$message = sprintf( $message, $title, $name, $widget_id, $old_sidebar_name, $new_sidebar_name );
-				$sidebar_id = $old_sidebar_id;
-				self::log(
-					$message,
-					compact( 'widget_id', 'sidebar_id' ),
-					null,
-					array( $sidebar_id => 'removed', )
-				);
-
 				$sidebar_id = $new_sidebar_id;
 				self::log(
 					$message,
-					compact( 'widget_id', 'sidebar_id' ),
+					compact( 'widget_id', 'sidebar_id', 'old_sidebar_id' ),
 					null,
-					array( $sidebar_id => 'added', )
+					array( $sidebar_id => 'moved', )
 				);
 			}
 		}
