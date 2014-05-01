@@ -193,7 +193,7 @@ class WP_Stream_Feeds {
 
 		$args = array(
 			'meta_key'   => self::USER_FEED_KEY,
-			'meta_value' => $_GET[ self::FEED_KEY_QUERY_VAR ],
+			'meta_value' => $_GET[ self::FEED_QUERY_VAR ],
 			'number'     => 1,
 		);
 		$user = get_users( $args );
