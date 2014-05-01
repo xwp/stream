@@ -11,10 +11,10 @@
  * More details on the Stream Premium affiliate program here:
  * https://wp-stream.com/affiliates/
  *
- * Uncomment the line below, and change the "1" to be your affiliate ID.
+ * Copy and paste the line below into your `wp-config.php` file, and change the "1" to be your affiliate ID:
+ *
+ * define( 'WP_STREAM_AFFILIATE_ID', 1 );
  */
-
-//define( 'WP_STREAM_AFFILIATE_ID', 1 );
 
 class WP_Stream_Extensions {
 
