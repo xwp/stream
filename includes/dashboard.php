@@ -296,7 +296,7 @@ class WP_Stream_Dashboard_Widget {
 
 		$send = array();
 
-		$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
+		$last_id = $data['wp-stream-heartbeat-last-id'];
 
 		$updated_items = self::gather_updated_items( $last_id );
 
@@ -326,7 +326,7 @@ class WP_Stream_Dashboard_Widget {
 		}
 
 		$default = array(
-			'record_greater_than' => (int) $last_id,
+			'record_greater_than' => $last_id,
 		);
 
 		// Filter default
