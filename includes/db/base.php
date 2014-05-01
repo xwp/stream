@@ -9,7 +9,7 @@ abstract class WP_Stream_DB_Base {
 			'paged'                 => 1,
 			// Search param
 			'search'                => null,
-			'search_field'          => null,
+			'search_field'          => 'summary',
 			// Stream core fields filtering
 			'type'                  => 'stream',
 			'object_id'             => null,
