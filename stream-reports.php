@@ -2,18 +2,18 @@
 /**
  * Plugin Name: Stream Reports
  * Depends: Stream
- * Plugin URI: http://x-team.com
+ * Plugin URI: https://wp-stream.com/extension/reports/
  * Description: Stream Reports allows you to generate beautiful visuals of your logged-in user activity data that is captured by Stream.
  * Version: 0.1.1
- * Author: X-Team
- * Author URI: http://x-team.com/wordpress/
+ * Author: Stream, X-Team
+ * Author URI: https://wp-stream.com/
  * License: GPLv2+
  * Text Domain: stream-reports
  * Domain Path: /languages
  */
 
 /**
- * Copyright (c) 2014 X-Team (http://x-team.com/)
+ * Copyright (c) 2014 WP Stream Pty Ltd (https://wp-stream.com/)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2 or, at
