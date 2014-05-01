@@ -3,6 +3,11 @@
 
 set -e
 
+WPCS_STANDARD=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi)
+if [ -e .ci-env.sh ]; then
+	source .ci-env.sh
+fi
+
 message="Checking staged changes..."
 git_status_egrep='^[MARC].+'
 
@@ -44,9 +49,30 @@ if [ ${#staged_php_files[@]} != 0 ]; then
 	# PHPUnit
 	if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
 		echo "## phpunit"
-		if [ "$USER" != 'vagrant' ] && command -v vagrant >/dev/null 2>&1 && command -v vassh >/dev/null 2>&1; then
-			echo "Running phpunit in vagrant..."
-			vassh phpunit
+		if [ "$USER" != 'vagrant' ]; then
+
+			# Check if we're in VVV
+			plugin_dir=$(pwd)
+			while [ ! -e Vagrantfile ]; do
+				if [ $(pwd) == '/' ] || [ "$last_dir" == $(pwd) ]; then
+					break
+				fi
+				last_dir=$(pwd)
+				cd ..
+			done
+			if [ -e Vagrantfile ] && grep -q vvv Vagrantfile; then
+				vvv_root=$(pwd)
+				absolute_vvv_plugin_path=/srv${plugin_dir:${#vvv_root}}
+			fi
+			cd $plugin_dir
+
+			if [ ! -z "$absolute_vvv_plugin_path" ]; then
+				echo "Running phpunit in VVV"
+				vagrant ssh -c "cd $absolute_vvv_plugin_path && phpunit"
+			elif command -v vassh >/dev/null 2>&1; then
+				echo "Running phpunit in vagrant via vassh..."
+				vassh phpunit
+			fi
 		elif ! command -v phpunit >/dev/null 2>&1;then
 			echo "Skipping phpunit since not installed"
 		elif [ -z "$WP_TESTS_DIR" ]; then
@@ -59,8 +85,7 @@ if [ ${#staged_php_files[@]} != 0 ]; then
 	# PHP_CodeSniffer WordPress Coding Standards
 	echo "## phpcs"
 	if command -v phpcs >/dev/null 2>&1; then
-		phpcs_standard=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi)
-		phpcs -p -s -v --standard=$phpcs_standard "${staged_php_files[@]}"
+		phpcs -p -s -v --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi) "${staged_php_files[@]}"
 	else
 		echo "Skipping phpcs since not installed"
 	fi
