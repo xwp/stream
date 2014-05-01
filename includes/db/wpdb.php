@@ -161,9 +161,10 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 
 		if ( $args['search'] ) {
 			$search_field = $args['search_field'];
+			$search = sprintf( '%%%s%%', like_escape( trim( $args['search'], '%' ) ) );
 			$where .= $wpdb->prepare(
 				" AND $wpdb->stream.{$search_field} LIKE %s",
-				( false === strpos( $args['search'], '%' ) ) ? "%{$args['search']}%" : $args['search']
+				$search
 			);
 		}
 
