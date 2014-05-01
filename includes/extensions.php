@@ -136,6 +136,9 @@ class WP_Stream_Extensions {
 			/** @internal The querying the api using the filter endpoint doesn't seem to work. For now I'm looping through all the extensions to get the api info for using WordPress install api  */
 			$site    = esc_url_raw( parse_url( get_option( 'siteurl' ), PHP_URL_HOST ) );
 			$license = get_site_option( WP_Stream_Updater::LICENSE_KEY );
+
+			$join_url = self::API_TRANSPORT . self::API_DOMAIN . '/join/' . $this->get_affiliate();
+
 			foreach ( $this->get_extension_data() as $extension ) {
 				if ( $extension->slug == $args->slug ) {
 					if ( $this->verify_membership() ) {
@@ -153,7 +156,7 @@ class WP_Stream_Extensions {
 
 						return $api;
 					} else {
-						$message = '<p>' . sprintf( __( 'You must connect to your %s account to install extensions.', 'stream' ), '<strong>' . esc_html__( 'Stream Premium', 'stream' ) . '</strong>' ) . '</p><p>' . esc_html__( "Don't have an account?", 'stream' ) . '</p><p><a href="https://wp-stream.com/join/' . $this->get_affiliate() . '" target="_blank" class="button">' . esc_html__( 'Join Stream Premium', 'stream' ) . '</a></p>';
+						$message = '<p>' . sprintf( __( 'You must connect to your %s account to install extensions.', 'stream' ), '<strong>' . esc_html__( 'Stream Premium', 'stream' ) . '</strong>' ) . '</p><p>' . esc_html__( "Don't have an account?", 'stream' ) . '</p><p><a href="' . esc_url( $join_url ) . '" target="_blank" class="button">' . esc_html__( 'Join Stream Premium', 'stream' ) . '</a></p>';
 						wp_die( $message, 'Stream Extension Installation', array( 'response' => 200, 'back_link' => true ) ); // xss ok
 					}
 				}
@@ -216,6 +219,7 @@ class WP_Stream_Extensions {
 	 * @return mixed
 	 */
 	function extensions_display_header( $extensions ) {
+		$join_url = self::API_TRANSPORT . self::API_DOMAIN . '/join/' . $this->get_affiliate();
 		?>
 		<h2><?php esc_html_e( 'Stream Extensions', 'stream' ) ?>
 			<span class="theme-count"><?php echo absint( count( $extensions ) ) ?></span>
@@ -230,7 +234,7 @@ class WP_Stream_Extensions {
 		<?php if ( ! $this->verify_membership() ) : ?>
 			<p class="description">
 			<?php esc_html_e( "Connect your Stream Premium account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?>
-				<a href="<?php echo esc_url( self::API_TRANSPORT . self::API_DOMAIN . '/join/' . $this->get_affiliate() ) ?>" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
+				<a href="<?php echo esc_url( $join_url ) ?>" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
 			</p>
 		<?php else : ?>
 			<p class="description" style="color: green;">
