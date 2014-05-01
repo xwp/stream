@@ -33,6 +33,9 @@ before_script:
 
 script:
     - find . -path ./bin -prune -o \( -name '*.php' -o -name '*.inc' \) -exec php -lf {} \;
-    - if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then phpunit; fi
+    - if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then phpunit $( if [ -e .coveralls.yml ]; then echo --coverage-clover build/logs/clover.xml; fi ); fi
     - $PHPCS_DIR/scripts/phpcs --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi) $(find . -name '*.php')
     - jshint .
+
+after_script:
+    - if [ -e .coveralls.yml ]; then php vendor/bin/coveralls; fi

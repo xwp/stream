@@ -98,6 +98,9 @@ class WordPress_Readme_Parser {
 				if ( isset( $params['travis_ci_url'] ) ) {
 					$body .= sprintf( "\n\n[![Build Status](%s.png?branch=master)](%s)", $params['travis_ci_url'], $params['travis_ci_url'] );
 				}
+				if ( isset( $params['coveralls_url'] ) ) {
+					$body .= sprintf( "\n\n[![Build Status](%s)](%s)", $params['coveralls_badge_src'], $params['coveralls_url'] );
+				}
 				return $body;
 			},
 			'Screenshots' => function ( $body ) {

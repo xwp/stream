@@ -89,6 +89,8 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 [![Build Status](https://travis-ci.org/x-team/wp-stream.png?branch=master)](https://travis-ci.org/x-team/wp-stream)
 
+[![Build Status](https://coveralls.io/repos/x-team/wp-stream/badge.png)](https://coveralls.io/r/x-team/wp-stream)
+
 ## Screenshots ##
 
 ### Every logged-in user action is logged in the activity stream and organized for easy filtering and searching.
