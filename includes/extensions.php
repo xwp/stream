@@ -44,7 +44,7 @@ class WP_Stream_Extensions {
 	/**
 	 * @var string|null
 	 */
-	var $license_key = NULL;
+	var $license_key = null;
 
 	/**
 	 * @var bool
@@ -52,9 +52,9 @@ class WP_Stream_Extensions {
 	public static $instance = false;
 
 	public static function get_instance() {
-		if ( ! self::$instance )
+		if ( ! self::$instance ) {
 			self::$instance = new self();
-
+		}
 		return self::$instance;
 	}
 
@@ -202,7 +202,7 @@ class WP_Stream_Extensions {
 		$plugin_paths = array();
 		foreach ( get_plugins() as $path => $data ) {
 			if ( isset( $data['TextDomain'] ) && ! empty( $data['TextDomain'] ) ) {
-				$plugin_paths[$data['TextDomain']] = $path;
+				$plugin_paths[ $data['TextDomain'] ] = $path;
 			}
 		}
 		return $plugin_paths;
@@ -249,12 +249,13 @@ class WP_Stream_Extensions {
 	 * @return void
 	 */
 	function extensions_display_body( $extensions ) {
+		$extensions_url = self::API_TRANSPORT . self::API_DOMAIN . '/#extensions' . $this->get_affiliate();
 		if ( empty( $extensions ) ) { ?>
 			<h2><?php _e( 'Stream Extensions', 'stream' ) ?></h2>
 			<p>
 				<em><?php esc_html_e( 'Sorry, there was a problem loading the list of extensions.', 'stream' ) ?></em></p>
 			<p>
-				<a class="button button-primary" href="<?php echo esc_url( self::API_TRANSPORT . self::API_DOMAIN . '/#extensions' . $this->get_affiliate() ) ?>" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a>
+				<a class="button button-primary" href="<?php echo esc_url( $extensions_url ) ?>" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a>
 			</p>
 			<?php
 			return;
@@ -365,8 +366,8 @@ class WP_Stream_Extensions {
 				'activate18n'  => __( 'Activate', 'stream' ),
 				'active18n'    => __( 'Active', 'stream' ),
 				'actions'      => array(
-					'activate' => wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] ),
-					'install'  => wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug ),
+					'activate' => wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] ), // xss ok (todo fix WPCS sniff)
+					'install'  => wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug ), // xss ok (todo fix WPCS sniff)
 					'delete'   => null,
 				),
 			);
