@@ -49,9 +49,30 @@ if [ ${#staged_php_files[@]} != 0 ]; then
 	# PHPUnit
 	if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
 		echo "## phpunit"
-		if [ "$USER" != 'vagrant' ] && command -v vagrant >/dev/null 2>&1 && command -v vassh >/dev/null 2>&1; then
-			echo "Running phpunit in vagrant..."
-			vassh phpunit
+		if [ "$USER" != 'vagrant' ]; then
+
+			# Check if we're in VVV
+			plugin_dir=$(pwd)
+			while [ ! -e Vagrantfile ]; do
+				if [ $(pwd) == '/' ] || [ "$last_dir" == $(pwd) ]; then
+					break
+				fi
+				last_dir=$(pwd)
+				cd ..
+			done
+			if [ -e Vagrantfile ] && grep -q vvv Vagrantfile; then
+				vvv_root=$(pwd)
+				absolute_vvv_plugin_path=/srv${plugin_dir:${#vvv_root}}
+			fi
+			cd $plugin_dir
+
+			if [ ! -z "$absolute_vvv_plugin_path" ]; then
+				echo "Running phpunit in VVV"
+				vagrant ssh -c "cd $absolute_vvv_plugin_path && phpunit"
+			elif command -v vassh >/dev/null 2>&1; then
+				echo "Running phpunit in vagrant via vassh..."
+				vassh phpunit
+			fi
 		elif ! command -v phpunit >/dev/null 2>&1;then
 			echo "Skipping phpunit since not installed"
 		elif [ -z "$WP_TESTS_DIR" ]; then
