@@ -10,10 +10,10 @@ node_js:
     - 0.10
 
 env:
-    - WP_VERSION=master WP_MULTISITE=0
-    - WP_VERSION=master WP_MULTISITE=1
     - WP_VERSION=latest WP_MULTISITE=0
     - WP_VERSION=latest WP_MULTISITE=1
+    - WP_VERSION=3.8 WP_MULTISITE=0
+    - WP_VERSION=3.8 WP_MULTISITE=1
 
 before_script:
     - export WP_TESTS_DIR=/tmp/wordpress-tests/
