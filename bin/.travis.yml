@@ -22,6 +22,7 @@ before_script:
     - export PHPCS_DIR=/tmp/phpcs
     - export PHPCS_GITHUB_SRC=squizlabs/PHP_CodeSniffer
     - export PHPCS_GIT_TREE=master
+    - export PHPCS_IGNORE='tests/*,vendor/*'
     - export WPCS_GITHUB_SRC=WordPress-Coding-Standards/WordPress-Coding-Standards
     - export WPCS_GIT_TREE=master
     - export WPCS_STANDARD=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi)
