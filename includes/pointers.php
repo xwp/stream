@@ -15,12 +15,11 @@ class WP_Stream_Pointers {
 	}
 
 	public static function init_core_pointers() {
-
 		self::$pointers = array(
 			'WP_Stream_Pointers' => array(
-				'index.php' => 'wpstream143_extensions',
+				'index.php'                                           => 'wpstream143_extensions',
 				'toplevel_page_' . WP_Stream_Admin::RECORDS_PAGE_SLUG => 'wpstream143_extensions',
-				'stream_page_' . WP_Stream_Admin::SETTINGS_PAGE_SLUG => 'wpstream143_extensions',
+				'stream_page_' . WP_Stream_Admin::SETTINGS_PAGE_SLUG  => 'wpstream143_extensions',
 			)
 		);
 
@@ -29,7 +28,6 @@ class WP_Stream_Pointers {
 				'wpstream143_extensions' => array( 'install_plugins' ),
 			)
 		);
-
 	}
 
 	/**
@@ -48,11 +46,10 @@ class WP_Stream_Pointers {
 		 * Register feature pointers
 		 * Format: array( hook_suffix => pointer_id )
 		 */
-
 		self::init_core_pointers();
 
 		$get_pointers = array_merge( self::$pointers, apply_filters( 'wp_stream_pointers', array() ) );
-		$caps = array_merge( self::$caps, apply_filters( 'wp_stream_pointer_caps', array() ) );
+		$caps         = array_merge( self::$caps, apply_filters( 'wp_stream_pointer_caps', array() ) );
 
 		foreach ( $get_pointers as $context => $registered_pointers ) {
 
@@ -80,9 +77,11 @@ class WP_Stream_Pointers {
 
 				// Bind pointer print function
 				add_action( 'admin_print_footer_scripts', array( $context, 'pointer_' . $pointer ) );
+
 				$got_pointers = true;
 			}
 		}
+
 		if ( ! $got_pointers ) {
 			return;
 		}
@@ -110,7 +109,7 @@ class WP_Stream_Pointers {
 		<script type="text/javascript">
 		//<![CDATA[
 		(function($){
-			var options = <?php echo json_encode( $args ); ?>, setup;
+			var options = <?php echo json_encode( $args ) ?>, setup;
 
 			if ( ! options ) {
 				return;
@@ -119,20 +118,19 @@ class WP_Stream_Pointers {
 			options = $.extend( options, {
 				close: function() {
 					$.post( ajaxurl, {
-						pointer: <?php echo json_encode( $pointer_id ); ?>,
+						pointer: <?php echo json_encode( $pointer_id ) ?>,
 						action: 'dismiss-wp-pointer'
 					});
 				}
 			});
 
 			setup = function() {
-				$(<?php echo json_encode( $selector ); ?>).first().pointer( options ).pointer('open');
+				$(<?php echo json_encode( $selector ) ?>).first().pointer( options ).pointer('open');
 			};
 
 			if ( options.position && options.position.defer_loading ) {
 				$(window).bind( 'load.wp-pointers', setup );
-			}
-			else {
+			} else {
 				$(document).ready( setup );
 			}
 
@@ -143,8 +141,8 @@ class WP_Stream_Pointers {
 	}
 
 	public static function pointer_wpstream143_extensions() {
-		$content  = '<h3>' . __( 'Extensions' ) . '</h3>';
-		$content .= '<p>' . __( 'Extensions are now available for Stream!' ) . '</p>';
+		$content  = '<h3>' . esc_html__( 'Extensions', 'stream' ) . '</h3>';
+		$content .= '<p>' . esc_html__( 'Extensions are now available for Stream!', 'stream' ) . '</p>';
 
 		if ( 'dashboard' === get_current_screen()->id ) {
 			$selector = '#toplevel_page_wp_stream';
@@ -158,7 +156,7 @@ class WP_Stream_Pointers {
 			'wpstream143_extensions',
 			$selector,
 			array(
-				'content' => $content,
+				'content'  => $content,
 				'position' => $position,
 			)
 		);
@@ -172,4 +170,5 @@ class WP_Stream_Pointers {
 	public static function dismiss_pointers_for_new_users( $user_id ) {
 		add_user_meta( $user_id, 'dismissed_wp_pointers', '' );
 	}
+
 }
