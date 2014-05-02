@@ -10,24 +10,29 @@ node_js:
     - 0.10
 
 env:
-    - WP_VERSION=master WP_MULTISITE=0
-    - WP_VERSION=master WP_MULTISITE=1
     - WP_VERSION=latest WP_MULTISITE=0
     - WP_VERSION=latest WP_MULTISITE=1
+    - WP_VERSION=3.8 WP_MULTISITE=0
+    - WP_VERSION=3.8 WP_MULTISITE=1
 
 before_script:
     - export WP_TESTS_DIR=/tmp/wordpress-tests/
     - export PLUGIN_DIR=$(pwd)
     - export PLUGIN_SLUG=$(basename $(pwd) | sed 's/^wp-//')
-    - if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION; cd /tmp/wordpress/wp-content/plugins; ln -s $PLUGIN_DIR $PLUGIN_SLUG; cd $PLUGIN_DIR; fi
-    - pear config-set auto_discover 1
-    - pear install PHP_CodeSniffer
-    - git clone git://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress
-    - phpenv rehash
+    - export PHPCS_DIR=/tmp/phpcs
+    - export PHPCS_GITHUB_SRC=squizlabs/PHP_CodeSniffer
+    - export PHPCS_GIT_TREE=master
+    - export WPCS_GITHUB_SRC=WordPress-Coding-Standards/WordPress-Coding-Standards
+    - export WPCS_GIT_TREE=master
+    - export WPCS_STANDARD=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi)
+    - if [ -e .ci-env.sh ]; then source .ci-env.sh; fi
+    - if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then wget -O /tmp/install-wp-tests.sh https://raw.githubusercontent.com/wp-cli/wp-cli/master/templates/install-wp-tests.sh; bash /tmp/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION; cd /tmp/wordpress/wp-content/plugins; ln -s $PLUGIN_DIR $PLUGIN_SLUG; cd $PLUGIN_DIR; fi
+    - mkdir -p $PHPCS_DIR && curl -L https://github.com/$PHPCS_GITHUB_SRC/archive/$PHPCS_GIT_TREE.tar.gz | tar xvz --strip-components=1 -C $PHPCS_DIR
+    - mkdir -p $PHPCS_DIR/CodeSniffer/Standards/WordPress && curl -L https://github.com/$WPCS_GITHUB_SRC/archive/$WPCS_GIT_TREE.tar.gz | tar xvz --strip-components=1 -C $PHPCS_DIR/CodeSniffer/Standards/WordPress
     - npm install -g jshint
 
 script:
     - find . -path ./bin -prune -o \( -name '*.php' -o -name '*.inc' \) -exec php -lf {} \;
     - if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then phpunit; fi
-    - phpcs --standard=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi) $(find . -name '*.php')
+    - $PHPCS_DIR/scripts/phpcs --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi) $(find . -name '*.php')
     - jshint .

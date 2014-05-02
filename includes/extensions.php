@@ -4,6 +4,17 @@
  *
  * @author Chris Olbekson <chris@x-team.com>
  */
+/**
+ * By defining the WP_STREAM_AFFILIATE_ID constant, links on the Extensions page
+ * will be appended with the ID specified.
+ *
+ * More details on the Stream Premium affiliate program here:
+ * https://wp-stream.com/affiliates/
+ *
+ * Copy and paste the line below into your `wp-config.php` file, and change the "1" to be your affiliate ID:
+ *
+ * define( 'WP_STREAM_AFFILIATE_ID', 1 );
+ */
 
 class WP_Stream_Extensions {
 
@@ -33,7 +44,7 @@ class WP_Stream_Extensions {
 	/**
 	 * @var string|null
 	 */
-	var $license_key = NULL;
+	var $license_key = null;
 
 	/**
 	 * @var bool
@@ -41,9 +52,9 @@ class WP_Stream_Extensions {
 	public static $instance = false;
 
 	public static function get_instance() {
-		if ( ! self::$instance )
+		if ( ! self::$instance ) {
 			self::$instance = new self();
-
+		}
 		return self::$instance;
 	}
 
@@ -101,6 +112,15 @@ class WP_Stream_Extensions {
 	}
 
 	/**
+	 * Gets the affiliate reference portion of a URL if the affiliate ID constant is set.
+	 *
+	 * @return string A query string of the format '?ref=1', where 1 is the affiliate ID
+	 */
+	function get_affiliate() {
+		return ( defined( 'WP_STREAM_AFFILIATE_ID' ) && is_int( WP_STREAM_AFFILIATE_ID ) ) ? sprintf( '?ref=%d', absint( WP_STREAM_AFFILIATE_ID ) ) : null;
+	}
+
+	/**
 	 * Filters the plugin install api
 	 *
 	 * @param $false
@@ -116,6 +136,9 @@ class WP_Stream_Extensions {
 			/** @internal The querying the api using the filter endpoint doesn't seem to work. For now I'm looping through all the extensions to get the api info for using WordPress install api  */
 			$site    = esc_url_raw( parse_url( get_option( 'siteurl' ), PHP_URL_HOST ) );
 			$license = get_site_option( WP_Stream_Updater::LICENSE_KEY );
+
+			$join_url = self::API_TRANSPORT . self::API_DOMAIN . '/join/' . $this->get_affiliate();
+
 			foreach ( $this->get_extension_data() as $extension ) {
 				if ( $extension->slug == $args->slug ) {
 					if ( $this->verify_membership() ) {
@@ -133,7 +156,7 @@ class WP_Stream_Extensions {
 
 						return $api;
 					} else {
-						$message = '<p>' . sprintf( __( 'You must connect to your %s account to install extensions.', 'stream' ), '<strong>' . esc_html__( 'Stream Premium', 'stream' ) . '</strong>' ) . '</p><p>' . esc_html__( "Don't have an account?", 'stream' ) . '</p><p><a href="https://wp-stream.com/join/" target="_blank" class="button">' . esc_html__( 'Join Stream Premium', 'stream' ) . '</a></p>';
+						$message = '<p>' . sprintf( __( 'You must connect to your %s account to install extensions.', 'stream' ), '<strong>' . esc_html__( 'Stream Premium', 'stream' ) . '</strong>' ) . '</p><p>' . esc_html__( "Don't have an account?", 'stream' ) . '</p><p><a href="' . esc_url( $join_url ) . '" target="_blank" class="button">' . esc_html__( 'Join Stream Premium', 'stream' ) . '</a></p>';
 						wp_die( $message, 'Stream Extension Installation', array( 'response' => 200, 'back_link' => true ) ); // xss ok
 					}
 				}
@@ -182,7 +205,7 @@ class WP_Stream_Extensions {
 		$plugin_paths = array();
 		foreach ( get_plugins() as $path => $data ) {
 			if ( isset( $data['TextDomain'] ) && ! empty( $data['TextDomain'] ) ) {
-				$plugin_paths[$data['TextDomain']] = $path;
+				$plugin_paths[ $data['TextDomain'] ] = $path;
 			}
 		}
 		return $plugin_paths;
@@ -196,6 +219,7 @@ class WP_Stream_Extensions {
 	 * @return mixed
 	 */
 	function extensions_display_header( $extensions ) {
+		$join_url = self::API_TRANSPORT . self::API_DOMAIN . '/join/' . $this->get_affiliate();
 		?>
 		<h2><?php esc_html_e( 'Stream Extensions', 'stream' ) ?>
 			<span class="theme-count"><?php echo absint( count( $extensions ) ) ?></span>
@@ -210,7 +234,7 @@ class WP_Stream_Extensions {
 		<?php if ( ! $this->verify_membership() ) : ?>
 			<p class="description">
 			<?php esc_html_e( "Connect your Stream Premium account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?>
-				<a href="<?php echo esc_url( self::API_TRANSPORT . self::API_DOMAIN . '/join/' ) ?>" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
+				<a href="<?php echo esc_url( $join_url ) ?>" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
 			</p>
 		<?php else : ?>
 			<p class="description" style="color: green;">
@@ -229,12 +253,13 @@ class WP_Stream_Extensions {
 	 * @return void
 	 */
 	function extensions_display_body( $extensions ) {
+		$extensions_url = self::API_TRANSPORT . self::API_DOMAIN . '/#extensions' . $this->get_affiliate();
 		if ( empty( $extensions ) ) { ?>
 			<h2><?php _e( 'Stream Extensions', 'stream' ) ?></h2>
 			<p>
 				<em><?php esc_html_e( 'Sorry, there was a problem loading the list of extensions.', 'stream' ) ?></em></p>
 			<p>
-				<a class="button button-primary" href="<?php echo esc_url( self::API_TRANSPORT . self::API_DOMAIN . '/#extensions' ) ?>" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a>
+				<a class="button button-primary" href="<?php echo esc_url( $extensions_url ) ?>" target="_blank"><?php esc_html_e( 'Browse All Extensions', 'stream' ) ?></a>
 			</p>
 			<?php
 			return;
@@ -345,8 +370,8 @@ class WP_Stream_Extensions {
 				'activate18n'  => __( 'Activate', 'stream' ),
 				'active18n'    => __( 'Active', 'stream' ),
 				'actions'      => array(
-					'activate' => wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] ),
-					'install'  => wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug ),
+					'activate' => wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] ), // xss ok (todo fix WPCS sniff)
+					'install'  => wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug ), // xss ok (todo fix WPCS sniff)
 					'delete'   => null,
 				),
 			);
