@@ -148,7 +148,7 @@ class WP_Stream_Pointers {
 			$selector = sprintf( '#toplevel_page_%s', WP_Stream_Admin::RECORDS_PAGE_SLUG );
 			$position = array( 'edge' => is_rtl() ? 'right' : 'left', 'align' => 'center' );
 		} else {
-			$selector = sprintf( 'a[href="admin.php?page=%s"]', WP_Stream_Admin::EXTENSIONS_PAGE_SLUG );
+			$selector = sprintf( 'a[href="%s?page=%s"]', WP_Stream_Admin::ADMIN_PARENT_PAGE, WP_Stream_Admin::EXTENSIONS_PAGE_SLUG );
 			$position = array( 'edge' => is_rtl() ? 'right' : 'left', 'align' => 'center' );
 		}
 
