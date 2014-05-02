@@ -1,0 +1,14 @@
+{
+    "name": "x-team/wp-stream",
+    "type": "project",
+    "description": "Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail.",
+    "keywords": ["actions", "activity", "admin", "analytics", "dashboard", "log", "notification", "stream", "users"],
+    "homepage": "https://wp-stream.com/",
+    "license": "GPL-2.0+",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "satooshi/php-coveralls": "dev-master"
+    }
+}
