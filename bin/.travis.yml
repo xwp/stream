@@ -30,6 +30,7 @@ before_script:
     - mkdir -p $PHPCS_DIR && curl -L https://github.com/$PHPCS_GITHUB_SRC/archive/$PHPCS_GIT_TREE.tar.gz | tar xvz --strip-components=1 -C $PHPCS_DIR
     - mkdir -p $PHPCS_DIR/CodeSniffer/Standards/WordPress && curl -L https://github.com/$WPCS_GITHUB_SRC/archive/$WPCS_GIT_TREE.tar.gz | tar xvz --strip-components=1 -C $PHPCS_DIR/CodeSniffer/Standards/WordPress
     - npm install -g jshint
+    - if [ -e composer.json ]; then wget http://getcomposer.org/composer.phar && php composer.phar install --dev; fi
 
 script:
     - find . -path ./bin -prune -o \( -name '*.php' -o -name '*.inc' \) -exec php -lf {} \;
