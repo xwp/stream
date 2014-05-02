@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: http://wordpress.org/plugins/stream/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 1.4.1
+ * Version: 1.4.3
  * Author: X-Team
  * Author URI: http://x-team.com/wordpress/
  * License: GPLv2+
@@ -36,7 +36,7 @@ class WP_Stream {
 	 *
 	 * @const string
 	 */
-	const VERSION = '1.4.1';
+	const VERSION = '1.4.3';
 
 	/**
 	 * Hold Stream instance
@@ -72,7 +72,7 @@ class WP_Stream {
 		$this->db = new WP_Stream_DB;
 
 		// Check DB and add message if not present
-		add_action( 'plugins_loaded', array( $this, 'verify_database_present' ) );
+		add_action( 'init', array( $this, 'verify_database_present' ) );
 
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -103,9 +103,15 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'feeds.php';
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
 
+		// Include Stream extension updater
+		require_once WP_STREAM_INC_DIR . 'updater.php';
+		WP_Stream_Updater::instance();
+
 		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
+			require_once WP_STREAM_INC_DIR . 'extensions.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
+			add_action( 'admin_init', array( 'WP_Stream_Extensions', 'get_instance' ) );
 
 			add_action( 'init', array( __CLASS__, 'install' ), 10, 1 );
 
@@ -117,6 +123,9 @@ class WP_Stream {
 
 			require_once WP_STREAM_INC_DIR . 'live-update.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Live_Update', 'load' ) );
+
+			require_once WP_STREAM_INC_DIR . 'pointers.php';
+			add_action( 'plugins_loaded', array( 'WP_Stream_Pointers', 'load' ) );
 		}
 
 		// Load deprecated functions

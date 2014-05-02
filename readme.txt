@@ -11,17 +11,19 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 == Description ==
 
-[youtube http://www.youtube.com/watch?v=H9TnZMUE_Y8]
+[youtube http://www.youtube.com/watch?v=t_qD4Sp4E70]
 
 **Note: This plugin requires PHP 5.3 or higher to be activated.**
 
-Never be in the dark about WP Admin activity again. Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
+To join Stream Premium, please visit [wp-stream.com](https://wp-stream.com/)
+
+Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them. Never be in the dark about WP Admin activity again.
 
 Every logged-in user action is logged in a user activity stream and organized for easy filtering by connector, context, action and IP address.
 
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
-Stream is built to extend, allowing developers to easily build their own connectors to track any type of action in the activity stream (developer documentation coming soon).
+Visit the Stream Extensions screen inside the plugin to learn more about the powerful
 
 **Recorded activity:**
 
@@ -41,10 +43,12 @@ Stream is built to extend, allowing developers to easily build their own connect
  * Media Library
  * Widgets
  * Comments
+ * Theme Editor
  * WordPress Core Updates
 
 **Noteworthy features:**
 
+ * Install a variety of powerful Extensions via Stream Premium
  * Multisite view of all activity records on a network
  * Dashboard widget of most recent user activity
  * Limit who can view user activity records by user role
@@ -90,10 +94,25 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 1.4.3 - April 26, 2014 =
+
+* New: Introducing the Stream Extensions screen! ([#396](https://github.com/x-team/wp-stream/issues/396))
+
+Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [c3mdigital](http://profiles.wordpress.org/c3mdigital/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 1.4.2 - April 24, 2014 =
+
+* Fix: Update Database button redirecting to previous screen ([#443](https://github.com/x-team/wp-stream/issues/443))
+* Fix: Update routine hotfix that was causing records to disappear ([#447](https://github.com/x-team/wp-stream/issues/447))
+
+Props [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [westonruter](http://profiles.wordpress.org/westonruter/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
 = 1.4.1 - April 24, 2014 =
 
 * Fix: Scripts and styles not using Stream version number ([#440](https://github.com/x-team/wp-stream/issues/440))
 * Fix: WP-CLI incorrectly referenced in records ([#441](https://github.com/x-team/wp-stream/issues/441))
+
+Props [westonruter](http://profiles.wordpress.org/westonruter/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
 = 1.4.0 - April 24, 2014 =
 

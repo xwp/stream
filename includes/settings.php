@@ -587,7 +587,7 @@ class WP_Stream_Settings {
 				$output .= '</fieldset></div>';
 				break;
 			case 'select':
-				$current_value = (array) self::$options[$section . '_' . $name];
+				$current_value = (array) self::$options[ $section . '_' . $name ];
 				$default_value = isset( $default['value'] ) ? $default['value'] : '-1';
 				$default_name  = isset( $default['name'] ) ? $default['name'] : 'Choose Setting';
 
@@ -827,8 +827,8 @@ class WP_Stream_Settings {
 	 */
 	public static function get_terms_labels( $column ) {
 		$return_labels = array();
-		if ( isset ( WP_Stream_Connectors::$term_labels['stream_' . $column ] ) ) {
-			$return_labels = WP_Stream_Connectors::$term_labels['stream_' . $column ];
+		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
+			$return_labels = WP_Stream_Connectors::$term_labels[ 'stream_' . $column ];
 			ksort( $return_labels );
 		}
 
