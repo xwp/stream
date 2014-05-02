@@ -8,7 +8,7 @@
  * By defining the WP_STREAM_AFFILIATE_ID constant, links on the Extensions page
  * will be appended with the ID specified.
  *
- * More details on the Stream Premium affiliate program here:
+ * More details on the Stream Extensions affiliate program here:
  * https://wp-stream.com/affiliates/
  *
  * Copy and paste the line below into your `wp-config.php` file, and change the "1" to be your affiliate ID:
@@ -156,7 +156,7 @@ class WP_Stream_Extensions {
 
 						return $api;
 					} else {
-						$message = '<p>' . sprintf( __( 'You must connect to your %s account to install extensions.', 'stream' ), '<strong>' . esc_html__( 'Stream Premium', 'stream' ) . '</strong>' ) . '</p><p>' . esc_html__( "Don't have an account?", 'stream' ) . '</p><p><a href="' . esc_url( $join_url ) . '" target="_blank" class="button">' . esc_html__( 'Join Stream Premium', 'stream' ) . '</a></p>';
+						$message = '<p>' . sprintf( __( 'You must connect to your %s account to install extensions.', 'stream' ), '<strong>' . esc_html__( 'Stream Extensions', 'stream' ) . '</strong>' ) . '</p><p>' . esc_html__( "Don't have an account?", 'stream' ) . '</p><p><a href="' . esc_url( $join_url ) . '" target="_blank" class="button">' . esc_html__( 'Join Stream Extensions', 'stream' ) . '</a></p>';
 						wp_die( $message, 'Stream Extension Installation', array( 'response' => 200, 'back_link' => true ) ); // xss ok
 					}
 				}
@@ -224,17 +224,17 @@ class WP_Stream_Extensions {
 		<h2><?php esc_html_e( 'Stream Extensions', 'stream' ) ?>
 			<span class="theme-count"><?php echo absint( count( $extensions ) ) ?></span>
 			<?php if ( ! $this->verify_membership() ) : ?>
-				<a href="#" class="button button-primary stream-premium-connect" data-stream-connect="1"><?php esc_html_e( 'Connect to Stream Premium', 'stream' ) ?></a>
+				<a href="#" class="button button-primary stream-extensions-connect" data-stream-connect="1"><?php esc_html_e( 'Connect to Stream Extensions', 'stream' ) ?></a>
 			<?php else : ?>
-				<a href="#" class="button button-secondary stream-premium-disconnect" data-stream-disconnect="1"><?php esc_html_e( 'Disconnect', 'stream' ) ?></a>
+				<a href="#" class="button button-secondary stream-extensions-disconnect" data-stream-disconnect="1"><?php esc_html_e( 'Disconnect', 'stream' ) ?></a>
 			<?php endif; ?>
 			<span class="spinner" style="float: none"></span>
 		</h2>
 
 		<?php if ( ! $this->verify_membership() ) : ?>
 			<p class="description">
-			<?php esc_html_e( "Connect your Stream Premium account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?>
-				<a href="<?php echo esc_url( $join_url ) ?>" class="stream-premium-join"><?php esc_html_e( 'Join Stream Premium', 'stream' ) ?></a>
+			<?php esc_html_e( "Connect your Stream Extensions account and authorize this domain to install and receive automatic updates for premium extensions. Don't have an account?", 'stream' ) ?>
+				<a href="<?php echo esc_url( $join_url ) ?>" class="stream-extensions-join"><?php esc_html_e( 'Join Stream Extensions', 'stream' ) ?></a>
 			</p>
 		<?php else : ?>
 			<p class="description" style="color: green;">

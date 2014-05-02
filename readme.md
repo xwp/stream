@@ -17,7 +17,7 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 **Note: This plugin requires PHP 5.3 or higher to be activated.**
 
-To join Stream Premium, please visit [wp-stream.com](https://wp-stream.com/)
+To join Stream Extensions, please visit [wp-stream.com](https://wp-stream.com/)
 
 Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them. Never be in the dark about WP Admin activity again.
 
@@ -50,7 +50,7 @@ Visit the Stream Extensions screen inside the plugin to learn more about the pow
 
 **Noteworthy features:**
 
- * Install a variety of powerful Extensions via Stream Premium
+ * Install a variety of powerful Extensions via Stream Extensions
  * Multisite view of all activity records on a network
  * Dashboard widget of most recent user activity
  * Limit who can view user activity records by user role
