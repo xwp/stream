@@ -254,31 +254,23 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		}
 
 		if ( $args['author_role__in'] ) {
-			if ( ! empty( $args['author_role__in'] ) ) {
-				$author_role__in = '(' . join( ',', array_fill( 0, count( $args['author_role__in'] ), '%s' ) ) . ')';
-				$where          .= $wpdb->prepare( " AND $wpdb->stream.author_role IN {$author_role__in}", $args['author_role__in'] );
-			}
+			$author_role__in = '(' . join( ',', array_fill( 0, count( $args['author_role__in'] ), '%s' ) ) . ')';
+			$where          .= $wpdb->prepare( " AND $wpdb->stream.author_role IN {$author_role__in}", $args['author_role__in'] );
 		}
 
 		if ( $args['author_role__not_in'] ) {
-			if ( ! empty( $args['author_role__not_in'] ) ) {
-				$author_role__not_in = '(' . join( ',', array_fill( 0, count( $args['author_role__not_in'] ), '%s' ) ) . ')';
-				$where              .= $wpdb->prepare( " AND $wpdb->stream.author_role NOT IN {$author_role__not_in}", $args['author_role__not_in'] );
-			}
+			$author_role__not_in = '(' . join( ',', array_fill( 0, count( $args['author_role__not_in'] ), '%s' ) ) . ')';
+			$where              .= $wpdb->prepare( " AND $wpdb->stream.author_role NOT IN {$author_role__not_in}", $args['author_role__not_in'] );
 		}
 
 		if ( $args['ip__in'] ) {
-			if ( ! empty( $args['ip__in'] ) ) {
-				$ip__in = '(' . join( ',', array_fill( 0, count( $args['ip__in'] ), '%s' ) ) . ')';
-				$where .= $wpdb->prepare( " AND $wpdb->stream.ip IN {$ip__in}", $args['ip__in'] );
-			}
+			$ip__in = '(' . join( ',', array_fill( 0, count( $args['ip__in'] ), '%s' ) ) . ')';
+			$where .= $wpdb->prepare( " AND $wpdb->stream.ip IN {$ip__in}", $args['ip__in'] );
 		}
 
 		if ( $args['ip__not_in'] ) {
-			if ( ! empty( $args['ip__not_in'] ) ) {
-				$ip__not_in = '(' . join( ',', array_fill( 0, count( $args['ip__not_in'] ), '%s' ) ) . ')';
-				$where     .= $wpdb->prepare( " AND $wpdb->stream.ip NOT IN {$ip__not_in}", $args['ip__not_in'] );
-			}
+			$ip__not_in = '(' . join( ',', array_fill( 0, count( $args['ip__not_in'] ), '%s' ) ) . ')';
+			$where     .= $wpdb->prepare( " AND $wpdb->stream.ip NOT IN {$ip__not_in}", $args['ip__not_in'] );
 		}
 
 		/**
