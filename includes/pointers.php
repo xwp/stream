@@ -141,8 +141,8 @@ class WP_Stream_Pointers {
 	}
 
 	public static function pointer_wpstream143_extensions() {
-		$content  = '<h3>' . esc_html__( 'Extensions', 'stream' ) . '</h3>';
-		$content .= '<p>' . esc_html__( 'Extensions are now available for Stream!', 'stream' ) . '</p>';
+		$content  = '<h3>' . esc_html__( 'Stream Extensions', 'stream' ) . '</h3>';
+		$content .= '<p>' . esc_html__( 'Extension plugins are now available for Stream!', 'stream' ) . '</p>';
 
 		if ( 'dashboard' === get_current_screen()->id ) {
 			$selector = sprintf( '#toplevel_page_%s', WP_Stream_Admin::RECORDS_PAGE_SLUG );
