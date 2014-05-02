@@ -81,7 +81,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 			$menu_ids = wp_list_pluck( $menus, 'term_id' );
 
 			if ( in_array( $record->object_id, $menu_ids ) ) {
-				$links[ __( 'Edit Menu', 'stream' ) ] = admin_url( 'nav-menus.php?action=edit&menu=' . $record->object_id );
+				$links[ __( 'Edit Menu', 'stream' ) ] = admin_url( 'nav-menus.php?action=edit&menu=' . $record->object_id ); // xss ok (@todo fix WPCS rule)
 			}
 		}
 
@@ -148,7 +148,9 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 */
 	public static function callback_update_option_theme_mods( $old, $new ) {
 		// Disable if we're switching themes
-		if ( did_action( 'after_switch_theme' ) ) return;
+		if ( did_action( 'after_switch_theme' ) ) {
+			return;
+		}
 
 		$key = 'nav_menu_locations';
 
