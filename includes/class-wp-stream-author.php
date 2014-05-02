@@ -57,7 +57,7 @@ class WP_Stream_Author {
 	 */
 	function get_display_name() {
 		if ( 0 === $this->id ) {
-			return __( 'N/A', 'stream' );
+			return esc_html__( 'N/A', 'stream' );
 		} else {
 			if ( $this->is_deleted() ) {
 				if ( ! empty( $this->meta['display_name'] ) ) {
@@ -65,7 +65,7 @@ class WP_Stream_Author {
 				} elseif ( ! empty( $this->meta['user_login'] ) ) {
 					return $this->meta['user_login'];
 				} else {
-					return __( 'N/A', 'stream' );
+					return esc_html__( 'N/A', 'stream' );
 				}
 			} elseif ( ! empty( $this->user->display_name ) ) {
 				return $this->user->display_name;
@@ -80,11 +80,13 @@ class WP_Stream_Author {
 	 */
 	function get_agent() {
 		$agent = null;
+
 		if ( ! empty( $this->meta['agent'] ) ) {
 			$agent = $this->meta['agent'];
 		} elseif ( ! empty( $this->meta['is_wp_cli'] ) ) {
 			$agent = 'wp_cli'; // legacy
 		}
+
 		return $agent;
 	}
 
@@ -104,6 +106,7 @@ class WP_Stream_Author {
 				$avatar = get_avatar( $this->id, $size );
 			}
 		}
+
 		return $avatar;
 	}
 
@@ -115,6 +118,7 @@ class WP_Stream_Author {
 		$img = $this->get_avatar_img( $size );
 		assert( preg_match( '/src=([\'"])(.*?)\1/', $img, $matches ) );
 		$src = html_entity_decode( $matches[2] );
+
 		return $src;
 	}
 
@@ -130,6 +134,7 @@ class WP_Stream_Author {
 	 */
 	function get_role() {
 		global $wp_roles;
+
 		if ( ! empty( $this->meta['author_role'] ) && isset( $wp_roles->role_names[ $this->meta['author_role'] ] ) ) {
 			$author_role = $wp_roles->role_names[ $this->meta['author_role'] ];
 		} elseif ( ! empty( $this->meta['user_role_label'] ) ) {
@@ -139,6 +144,7 @@ class WP_Stream_Author {
 		} else {
 			$author_role = null;
 		}
+
 		return $author_role;
 	}
 
@@ -153,6 +159,7 @@ class WP_Stream_Author {
 			),
 			self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 		);
+
 		return $url;
 	}
 
@@ -184,12 +191,15 @@ class WP_Stream_Author {
 	 */
 	static function get_current_agent() {
 		$agent = null;
+
 		if ( defined( 'WP_CLI' ) ) {
 			$agent = 'wp_cli';
 		} elseif ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 			$agent = 'wp_cron';
 		}
+
 		$agent = apply_filters( 'wp_stream_current_agent', $agent );
+
 		return $agent;
 	}
 
@@ -199,13 +209,16 @@ class WP_Stream_Author {
 	 */
 	static function get_agent_label( $agent ) {
 		if ( 'wp_cli' === $agent ) {
-			$label = __( 'via WP-CLI', 'stream' );
+			$label = esc_html__( 'via WP-CLI', 'stream' );
 		} elseif ( 'wp_cron' === $agent ) {
-			$label = __( 'during WP Cron', 'stream' );
+			$label = esc_html__( 'during WP Cron', 'stream' );
 		} else {
 			$label = null;
 		}
+
 		$label = apply_filters( 'wp_stream_agent_label', $label, $agent );
+
 		return $label;
 	}
+
 }
