@@ -130,7 +130,7 @@ class WP_Stream_Extensions {
 	 * @return stdClass
 	 */
 	function filter_plugin_api_info( $false, $action, $args ) {
-		if ( admin_url( 'admin.php?page=wp_stream_extensions' ) !== wp_get_referer() ) {
+		if ( self_admin_url( 'admin.php?page=wp_stream_extensions' ) !== wp_get_referer() ) {
 			return $false;
 		} elseif ( 'plugin_information' == $action && empty( $false ) ) {
 			/** @internal The querying the api using the filter endpoint doesn't seem to work. For now I'm looping through all the extensions to get the api info for using WordPress install api  */
