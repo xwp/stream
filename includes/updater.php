@@ -281,7 +281,7 @@ if ( ! class_exists( 'WP_Stream_Updater_0_1' ) ) {
 		public function premium_connect_notice( $plugin, $r ) {
 			if ( empty( $r->package ) ) {
 				printf(
-					'<em>, Please <a href="%s">connect this site</a> to Stream Premium to enable automatic updates.</em>',
+					'<em>, Please <a href="%s">connect this site</a> to Stream Extensions to enable automatic updates.</em>',
 					admin_url( 'admin.php?page=wp_stream_extensions' )
 				);
 			}

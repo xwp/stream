@@ -479,7 +479,7 @@ class WP_Stream_Admin {
 				),
 				'i18n' => array(
 					'connected'       => __( 'Connected', 'stream' ),
-					'login_to_stream' => __( 'Connect to Stream Premium', 'stream' ),
+					'login_to_stream' => __( 'Connect to Stream Extensions', 'stream' ),
 				),
 			)
 		);
