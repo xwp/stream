@@ -145,10 +145,10 @@ class WP_Stream_Pointers {
 		$content .= '<p>' . esc_html__( 'Extensions are now available for Stream!', 'stream' ) . '</p>';
 
 		if ( 'dashboard' === get_current_screen()->id ) {
-			$selector = '#toplevel_page_wp_stream';
+			$selector = sprintf( '#toplevel_page_%s', WP_Stream_Admin::RECORDS_PAGE_SLUG );
 			$position = array( 'edge' => is_rtl() ? 'right' : 'left', 'align' => 'center' );
 		} else {
-			$selector = 'a[href="admin.php?page=wp_stream_extensions"]';
+			$selector = sprintf( 'a[href="admin.php?page=%s"]', WP_Stream_Admin::EXTENSIONS_PAGE_SLUG );
 			$position = array( 'edge' => is_rtl() ? 'right' : 'left', 'align' => 'center' );
 		}
 
