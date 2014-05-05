@@ -408,6 +408,10 @@
 	margin-right: 0;
 }
 
+.stream_page_wp_stream_extensions .theme .theme-name span {
+	float: left;
+}
+
 .stream_page_wp_stream_extensions .theme .theme-name span.inactive {
 	float: right;
 	margin-right: -5px;
