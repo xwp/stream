@@ -222,7 +222,7 @@ jQuery(function( $ ) {
 							var roleVal = $input_user.data( 'select2' )
 								.search
 								.val()
-								.toLowerCase(),
+								.toLowerCase();
 							var rolePos = role
 								.text
 								.toLowerCase()
@@ -682,39 +682,34 @@ jQuery(function( $ ) {
 					}
 				});
 
-				from.on({
-					'change': function() {
-
-						if ( '' !== from.val() ) {
-							from_remove.show();
-							to.datepicker( 'option', 'minDate', from.val() );
-						} else {
-							from_remove.hide();
-						}
-
-						if ( true === arguments[ arguments.length - 1 ] ) {
-							return false;
-						}
-
-						predefined.trigger( 'check_options' );
+				from.on( 'change', function() {
+					if ( '' !== from.val() ) {
+						from_remove.show();
+						to.datepicker( 'option', 'minDate', from.val() );
+					} else {
+						from_remove.hide();
 					}
+
+					if ( true === arguments[ arguments.length - 1 ] ) {
+						return false;
+					}
+
+					predefined.trigger( 'check_options' );
 				});
 
-				to.on({
-					'change': function() {
-						if ( '' !== to.val() ) {
-							to_remove.show();
-							from.datepicker( 'option', 'maxDate', to.val() );
-						} else {
-							to_remove.hide();
-						}
-
-						if ( true === arguments[ arguments.length - 1 ] ) {
-							return false;
-						}
-
-						predefined.trigger( 'check_options' );
+				to.on( 'change', function() {
+					if ( '' !== to.val() ) {
+						to_remove.show();
+						from.datepicker( 'option', 'maxDate', to.val() );
+					} else {
+						to_remove.hide();
 					}
+
+					if ( true === arguments[ arguments.length - 1 ] ) {
+						return false;
+					}
+
+					predefined.trigger( 'check_options' );
 				});
 
 				// Trigger change on load
