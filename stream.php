@@ -103,6 +103,9 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'feeds.php';
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
 
+		// Add frontend indicator
+		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
+
 		// Include Stream extension updater
 		require_once WP_STREAM_INC_DIR . 'updater.php';
 		WP_Stream_Updater::instance();
@@ -259,6 +262,33 @@ class WP_Stream {
 			};
 			add_action( 'all_admin_notices', $print_message );
 		}
+	}
+
+	/**
+	 * Displays an HTML comment in the frontend head to indicate that Stream is activated,
+	 * and which version of Stream is currently in use.
+	 *
+	 * @since 1.4.5
+	 *
+	 * @action wp_head
+	 * @return string|void An HTML comment, or nothing if the value is filtered out.
+	 */
+	public function frontend_indicator() {
+		$comment = sprintf( 'Stream WordPress user activity plugin v%s', esc_html( self::VERSION ) ); // Localization not needed
+
+		/**
+		 * Filter allows the HTML output of the frontend indicator comment
+		 * to be altered or removed, if desired.
+		 *
+		 * @return string $comment The content of the HTML comment
+		 */
+		$comment = apply_filters( 'wp_stream_frontend_indicator', $comment );
+
+		if ( ! empty( $comment ) ) {
+			echo sprintf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok
+		}
+
+		return;
 	}
 
 	/**
