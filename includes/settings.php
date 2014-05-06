@@ -87,7 +87,7 @@ class WP_Stream_Settings {
 
 		$response = (object) array(
 			'status'  => false,
-			'message' => __( 'There was an error in the request', 'stream' ),
+			'message' => esc_html__( 'There was an error in the request', 'stream' ),
 		);
 
 		$search  = ( isset( $_POST['find'] )? wp_unslash( trim( $_POST['find'] ) ) : '' );
@@ -151,7 +151,7 @@ class WP_Stream_Settings {
 				'id'      => $author->id,
 				'text'    => $author->get_display_name(),
 				'icon'    => $author->get_avatar_src( 32 ),
-				'tooltip' => __( 'Actions performed by the system when a user is not logged in (e.g. auto site upgrader, or invoking WP-CLI without --user)', 'stream' ),
+				'tooltip' => esc_html__( 'Actions performed by the system when a user is not logged in (e.g. auto site upgrader, or invoking WP-CLI without --user)', 'stream' ),
 			);
 		}
 
@@ -239,19 +239,19 @@ class WP_Stream_Settings {
 		if ( empty( self::$fields ) ) {
 			$fields = array(
 				'general' => array(
-					'title'  => __( 'General', 'stream' ),
+					'title'  => esc_html__( 'General', 'stream' ),
 					'fields' => array(
 						array(
 							'name'        => 'role_access',
-							'title'       => __( 'Role Access', 'stream' ),
+							'title'       => esc_html__( 'Role Access', 'stream' ),
 							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
+							'desc'        => esc_html__( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
 							'choices'     => self::get_roles(),
 							'default'     => array( 'administrator' ),
 						),
 						array(
 							'name'        => 'private_feeds',
-							'title'       => __( 'Private Feeds', 'stream' ),
+							'title'       => esc_html__( 'Private Feeds', 'stream' ),
 							'type'        => 'checkbox',
 							'desc'        => sprintf(
 								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
@@ -268,21 +268,21 @@ class WP_Stream_Settings {
 								),
 								'</a>'
 							),
-							'after_field' => __( 'Enabled' ),
+							'after_field' => esc_html__( 'Enabled', 'stream' ),
 							'default'     => 0,
 						),
 						array(
 							'name'        => 'records_ttl',
-							'title'       => __( 'Keep Records for', 'stream' ),
+							'title'       => esc_html__( 'Keep Records for', 'stream' ),
 							'type'        => 'number',
 							'class'       => 'small-text',
-							'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
+							'desc'        => esc_html__( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
 							'default'     => 90,
-							'after_field' => __( 'days', 'stream' ),
+							'after_field' => esc_html__( 'days', 'stream' ),
 						),
 						array(
 							'name'        => 'delete_all_records',
-							'title'       => __( 'Reset Stream Database', 'stream' ),
+							'title'       => esc_html__( 'Reset Stream Database', 'stream' ),
 							'type'        => 'link',
 							'href'        => add_query_arg(
 								array(
@@ -291,66 +291,66 @@ class WP_Stream_Settings {
 								),
 								admin_url( 'admin-ajax.php' )
 							),
-							'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
+							'desc'        => esc_html__( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
 							'default'     => 0,
 						),
 					),
 				),
 				'exclude' => array(
-					'title' => __( 'Exclude', 'stream' ),
+					'title' => esc_html__( 'Exclude', 'stream' ),
 					'fields' => array(
 						array(
 							'name'        => 'authors_and_roles',
-							'title'       => __( 'Authors & Roles', 'stream' ),
+							'title'       => esc_html__( 'Authors & Roles', 'stream' ),
 							'type'        => 'select2_user_role',
-							'desc'        => __( 'No activity will be logged for these authors and/or roles.', 'stream' ),
+							'desc'        => esc_html__( 'No activity will be logged for these authors and/or roles.', 'stream' ),
 							'choices'     => self::get_roles(),
 							'default'     => array(),
 						),
 						array(
 							'name'        => 'connectors',
-							'title'       => __( 'Connectors', 'stream' ),
+							'title'       => esc_html__( 'Connectors', 'stream' ),
 							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these connectors.', 'stream' ),
+							'desc'        => esc_html__( 'No activity will be logged for these connectors.', 'stream' ),
 							'choices'     => array( __CLASS__, 'get_terms_labels' ),
 							'param'       => 'connector',
 							'default'     => array(),
 						),
 						array(
 							'name'        => 'contexts',
-							'title'       => __( 'Contexts', 'stream' ),
+							'title'       => esc_html__( 'Contexts', 'stream' ),
 							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these contexts.', 'stream' ),
+							'desc'        => esc_html__( 'No activity will be logged for these contexts.', 'stream' ),
 							'choices'     => array( __CLASS__, 'get_terms_labels' ),
 							'param'       => 'context',
 							'default'     => array(),
 						),
 						array(
 							'name'        => 'actions',
-							'title'       => __( 'Actions', 'stream' ),
+							'title'       => esc_html__( 'Actions', 'stream' ),
 							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these actions.', 'stream' ),
+							'desc'        => esc_html__( 'No activity will be logged for these actions.', 'stream' ),
 							'choices'     => array( __CLASS__, 'get_terms_labels' ),
 							'param'       => 'action',
 							'default'     => array(),
 						),
 						array(
 							'name'        => 'ip_addresses',
-							'title'       => __( 'IP Addresses', 'stream' ),
+							'title'       => esc_html__( 'IP Addresses', 'stream' ),
 							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these IP addresses.', 'stream' ),
+							'desc'        => esc_html__( 'No activity will be logged for these IP addresses.', 'stream' ),
 							'class'       => 'ip-addresses',
 							'default'     => array(),
 							'nonce'       => 'stream_get_ips',
 						),
 						array(
 							'name'        => 'hide_previous_records',
-							'title'       => __( 'Visibility', 'stream' ),
+							'title'       => esc_html__( 'Visibility', 'stream' ),
 							'type'        => 'checkbox',
 							'desc'        => sprintf(
-								__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
+								esc_html__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
 							),
-							'after_field' => __( 'Hide Previous Records', 'stream' ),
+							'after_field' => esc_html__( 'Hide Previous Records', 'stream' ),
 							'default'     => 0,
 						),
 					),
