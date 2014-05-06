@@ -538,9 +538,10 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	}
 
 	/**
-	 * Track added settings
+	 * Track added settings, proxied to callback_updated_option
 	 *
 	 * @action added_option
+	 * @uses   callback_updated_option
 	 */
 	public static function callback_added_option( $option, $value ) {
 		self::callback_updated_option( $option, null, $value );
