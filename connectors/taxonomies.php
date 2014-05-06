@@ -45,13 +45,6 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	public static $context_labels;
 
 	/**
-	 * Cached taxonomy singular labels, to be used in summaries
-	 *
-	 * @var array
-	 */
-	public static $singular_labels;
-
-	/**
 	 * Return translated context label
 	 *
 	 * @return string Translated context label
@@ -84,7 +77,6 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 		$labels = wp_list_pluck( $wp_taxonomies, 'labels' );
 
 		self::$context_labels  = wp_list_pluck( $labels, 'name' );
-		self::$singular_labels = array_map( 'strtolower', wp_list_pluck( $labels, 'singular_name' ) );
 
 		return self::$context_labels;
 	}
