@@ -205,64 +205,19 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'author' :
-				$user        = get_user_by( 'id', $item->author );
+				require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
+
 				$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
-				$is_wp_cli   = ! empty( $author_meta['is_wp_cli'] );
-				$author_role = null;
-
-				global $wp_roles;
-				$author_ID    = isset( $item->author ) ? $item->author : 0;
-				$user_deleted = false;
-
-				/**
-				 * Tries to find a label for the record's author_role.
-				 *
-				 * If the author_role exists, use the label associated with it
-				 * Otherwise, if there is a user role label stored as Stream meta then use that
-				 * Otherwise, if the user exists, use the label associated with their current role
-				 * Otherwise, use the role slug as the label
-				 */
-				if ( ! empty( $item->author_role ) && isset( $wp_roles->role_names[ $item->author_role ] ) ) {
-					$author_role = $wp_roles->role_names[ $item->author_role ];
-				} elseif ( ! empty( $author_meta['user_role_label'] ) ) {
-					$author_role = $author_meta['user_role_label'];
-				} elseif ( isset( $user->roles[0] ) && isset( $wp_roles->role_names[ $user->roles[0] ] ) ) {
-					$author_role = $wp_roles->role_names[ $user->roles[0] ];
-				} else {
-					$author_role = $item->author_role;
-				}
-
-				if ( $user ) {
-					$author_name   = isset( $user->display_name ) ? $user->display_name : $user->user_login;
-					$author_avatar = get_avatar( $author_ID, 80 );
-				} elseif ( $is_wp_cli ) {
-					$author_name   = 'WP-CLI';
-					$avatar_url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
-					$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-80 photo" height="80" width="80">', esc_attr( $author_name ), esc_url( $avatar_url ) );
-				} elseif ( ! $is_wp_cli ) {
-					$author_name   = __( 'N/A', 'stream' );
-					$author_avatar = get_avatar( 'system@wp-stream.com', 80, get_option( 'avatar_default' ) ?: 'mystery', $author_name );
-					$author_avatar = preg_replace( "/src='(.+?)'/", "src='\$1&amp;forcedefault=1'", $author_avatar );
-				} else {
-					$user_deleted  = true;
-					$author_name   = ! empty( $author_meta['display_name'] ) ? $author_meta['display_name'] : $author_meta['user_login'];
-					$author_avatar = get_avatar( $author_meta['user_email'], 80 );
-				}
+				$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
 
 				$out = sprintf(
 					'<a href="%s">%s <span>%s</span></a>%s%s%s',
-					add_query_arg(
-						array(
-							'page'   => WP_Stream_Admin::RECORDS_PAGE_SLUG,
-							'author' => absint( $author_ID ),
-						),
-						self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-					),
-					$author_avatar,
-					$author_name,
-					$user_deleted ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
-					$author_role ? sprintf( '<br /><small>%s</small>', $author_role ) : '',
-					$user && $is_wp_cli ? sprintf( '<br /><small>%s</small>', __( 'via WP-CLI', 'stream' ) ) : ''
+					$author->get_records_page_url(),
+					$author->get_avatar_img( 80 ),
+					$author->get_display_name(),
+					$author->is_deleted() ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
+					$author->get_role() ? sprintf( '<br /><small>%s</small>', $author->get_role() ) : '',
+					$author->get_agent() ? sprintf( '<br /><small>%s</small>', WP_Stream_Author::get_agent_label( $author->get_agent() ) ) : ''
 				);
 				break;
 
@@ -444,6 +399,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		// @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object
 		if ( 'author' === $column ) {
+			require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
 			$all_records = array();
 
 			// Short circuit and return empty array if we have more than 10 users, to use Ajax instead
@@ -453,19 +409,23 @@ class WP_Stream_List_Table extends WP_List_Table {
 				return array();
 			}
 
-			$wp_cli_user = new WP_User( 0 );
-			$authors     = get_users();
-			$authors[]   = $wp_cli_user;
+			$authors = array_map(
+				function ( $user_id ) {
+					return new WP_Stream_Author( $user_id );
+				},
+				get_users( array( 'fields' => 'ID' ) )
+			);
+			$authors[] = new WP_Stream_Author( 0, array( 'is_wp_cli' => true ) );
 
 			if ( $hide_disabled_column_filter ) {
 				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
 			}
 
 			foreach ( $authors as $author ) {
-				if ( $hide_disabled_column_filter && in_array( $author->ID, $excluded_records ) ) {
+				if ( $hide_disabled_column_filter && in_array( $author->id, $excluded_records ) ) {
 					continue;
 				}
-				$all_records[ $author->ID ] = $author;
+				$all_records[ $author->id ] = $author->get_display_name();
 			}
 		} else {
 			$prefixed_column = sprintf( 'stream_%s', $column );
@@ -499,14 +459,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		$sort = function ( $a, $b ) use ( $column ) {
-			// @todo we should ideally not have this author condition; the label should be an object with toString()
-			if ( 'author' === $column ) {
-				$label_a = ( 0 === $a['label']->ID ) ? 'WP-CLI' : $a['label']->display_name;
-				$label_b = ( 0 === $b['label']->ID ) ? 'WP-CLI' : $b['label']->display_name;
-			} else {
-				$label_a = $a['label'];
-				$label_b = $b['label'];
-			}
+			$label_a = (string) $a['label'];
+			$label_b = (string) $b['label'];
 			if ( $label_a === $label_b ) {
 				return 0;
 			}

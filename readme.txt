@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:      X-team, shadyvb, fjarrett, lukecarbis, westonruter, powelski, jonathanbardo, c3mdigital, johnregan3, akeda, kucrut, topher1kenobe
+Contributors:      X-team, fjarrett, westonruter, japh, lukecarbis, shadyvb, powelski, jonathanbardo, c3mdigital, johnregan3, akeda, kucrut, topher1kenobe
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.7
 Tested up to:      3.9
@@ -15,7 +15,7 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 **Note: This plugin requires PHP 5.3 or higher to be activated.**
 
-To join Stream Premium, please visit [wp-stream.com](https://wp-stream.com/)
+To join Stream Extensions, please visit [wp-stream.com](https://wp-stream.com/)
 
 Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them. Never be in the dark about WP Admin activity again.
 
@@ -48,7 +48,7 @@ Visit the Stream Extensions screen inside the plugin to learn more about the pow
 
 **Noteworthy features:**
 
- * Install a variety of powerful Extensions via Stream Premium
+ * Install a variety of powerful Extensions via Stream Extensions
  * Multisite view of all activity records on a network
  * Dashboard widget of most recent user activity
  * Limit who can view user activity records by user role
@@ -93,6 +93,19 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.4.4 - May 6, 2014 =
+
+* New: Admin pointers to highlight when new admin screens are introduced ([#466](https://github.com/x-team/wp-stream/issues/466))
+* Tweak: Filter introduced to allow the Stream admin menu position to be changed ([#99](https://github.com/x-team/wp-stream/issues/99))
+* Tweak: Provide option label for Stream database update ([#444](https://github.com/x-team/wp-stream/pull/444))
+* Tweak: Better handling of authors in the list table ([#448](https://github.com/x-team/wp-stream/pull/448))
+* Tweak: Way for developers to set their Stream Extensions affiliate ID on links from the Extensions screen ([#482](https://github.com/x-team/wp-stream/issues/482))
+* Fix: Extensions screen CSS bug in Firefox ([#464](https://github.com/x-team/wp-stream/issues/464))
+* Fix: Error when installing extensions from the Network Admin ([#491](https://github.com/x-team/wp-stream/issues/491))
+* Fix: Undefined notice in admin.php ([#468](https://github.com/x-team/wp-stream/issues/468))
+
+Props [westonruter](http://profiles.wordpress.org/westonruter/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [japh](http://profiles.wordpress.org/japh/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [bordoni](http://profiles.wordpress.org/bordoni/)
 
 = 1.4.3 - April 26, 2014 =
 
