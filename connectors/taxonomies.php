@@ -120,10 +120,11 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 		if ( in_array( $taxonomy, self::$excluded_taxonomies ) ) {
 			return;
 		}
+		global $wp_taxonomies;
 
 		$term           = get_term( $term_id, $taxonomy );
 		$term_name      = $term->name;
-		$taxonomy_label = self::$singular_labels[ $taxonomy ];
+		$taxonomy_label = $wp_taxonomies[ $taxonomy ]->labels->singular_name;
 		$term_parent    = $term->parent;
 
 		self::log(
