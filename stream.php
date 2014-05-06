@@ -282,10 +282,10 @@ class WP_Stream {
 		 *
 		 * @return string $comment The content of the HTML comment
 		 */
-		$comment = apply_filters( 'wp_stream_frontend_indicator', $comment ); // xss ok
+		$comment = apply_filters( 'wp_stream_frontend_indicator', $comment );
 
 		if ( ! empty( $comment ) ) {
-			echo sprintf( "<!-- %s -->\n", esc_html( $comment ) );
+			echo sprintf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok
 		}
 
 		return;
