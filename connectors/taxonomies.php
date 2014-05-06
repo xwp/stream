@@ -148,10 +148,11 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 		if ( in_array( $taxonomy, self::$excluded_taxonomies ) ) {
 			return;
 		}
+		global $wp_taxonomies;
 
 		$term_name      = $deleted_term->name;
 		$term_parent    = $deleted_term->parent;
-		$taxonomy_label = self::$singular_labels[ $taxonomy ];
+		$taxonomy_label = $wp_taxonomies[ $taxonomy ]->labels->singular_name;
 
 		self::log(
 			_x(
@@ -178,6 +179,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 		if ( in_array( $taxonomy, self::$excluded_taxonomies ) ) {
 			return;
 		}
+		global $wp_taxonomies;
 
 		$term = self::$cached_term_before_update;
 
@@ -186,7 +188,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 		}
 
 		$term_name      = $term->name;
-		$taxonomy_label = self::$singular_labels[ $taxonomy ];
+		$taxonomy_label = $wp_taxonomies[ $taxonomy ]->labels->singular_name;
 		$term_parent    = $term->parent;
 
 		self::log(
