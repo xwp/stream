@@ -55,6 +55,7 @@ class WP_Stream_Extensions {
 		if ( ! self::$instance ) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 
@@ -134,9 +135,8 @@ class WP_Stream_Extensions {
 			return $false;
 		} elseif ( 'plugin_information' == $action && empty( $false ) ) {
 			/** @internal The querying the api using the filter endpoint doesn't seem to work. For now I'm looping through all the extensions to get the api info for using WordPress install api  */
-			$site    = esc_url_raw( parse_url( get_option( 'siteurl' ), PHP_URL_HOST ) );
-			$license = get_site_option( WP_Stream_Updater::LICENSE_KEY );
-
+			$site     = esc_url_raw( parse_url( get_option( 'siteurl' ), PHP_URL_HOST ) );
+			$license  = get_site_option( WP_Stream_Updater::LICENSE_KEY );
 			$join_url = self::API_TRANSPORT . self::API_DOMAIN . '/join/' . $this->get_affiliate();
 
 			foreach ( $this->get_extension_data() as $extension ) {
@@ -203,11 +203,13 @@ class WP_Stream_Extensions {
 	 */
 	function get_plugin_paths() {
 		$plugin_paths = array();
+
 		foreach ( get_plugins() as $path => $data ) {
 			if ( isset( $data['TextDomain'] ) && ! empty( $data['TextDomain'] ) ) {
 				$plugin_paths[ $data['TextDomain'] ] = $path;
 			}
 		}
+
 		return $plugin_paths;
 	}
 
