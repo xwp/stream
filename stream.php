@@ -48,7 +48,7 @@ class WP_Stream {
 	/**
 	 * @var WP_Stream_DB
 	 */
-	public $db = null;
+	public static $db = null;
 
 	/**
 	 * @var WP_Stream_Network
@@ -67,9 +67,16 @@ class WP_Stream {
 		// Load filters polyfill
 		require_once WP_STREAM_INC_DIR . 'filter-input.php';
 
-		// Load DB helper class
-		require_once WP_STREAM_INC_DIR . 'db.php';
-		$this->db = new WP_Stream_DB;
+		// Load DB helper interface/class
+		require_once WP_STREAM_INC_DIR . 'record.php';
+		require_once WP_STREAM_INC_DIR . 'db/base.php';
+		$driver = apply_filters( 'wp_stream_db_adapter', 'wpdb' );
+		if ( file_exists( WP_STREAM_INC_DIR . "db/$driver.php" ) ) {
+			require_once WP_STREAM_INC_DIR . "db/$driver.php";
+		}
+		if ( ! self::$db ) {
+			wp_die( __( 'Stream: Could not load chosen DB driver.', 'stream' ), 'Stream DB Error' );
+		}
 
 		// Check DB and add message if not present
 		add_action( 'init', array( $this, 'verify_database_present' ) );
@@ -203,7 +210,7 @@ class WP_Stream {
 		$uninstall_message = '';
 
 		// Check if all needed DB is present
-		foreach ( $this->db->get_table_names() as $table_name ) {
+		foreach ( self::$db->get_table_names() as $table_name ) {
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
 				$database_message .= sprintf( '%s %s', __( 'The following table is not present in the WordPress database:', 'stream' ), $table_name );
 			}
