@@ -206,16 +206,17 @@ class WP_Stream {
 				$missing_tables[] = $table_name;
 			}
 		}
+
 		if ( $missing_tables ) {
 			$database_message .= sprintf(
-				'%s %s',
+				'%s <strong>%s</strong>',
 				_n(
 					'The following table is not present in the WordPress database:',
 					'The following tables are not present in the WordPress database:',
 					count( $missing_tables ),
 					'stream'
 				),
-				'<strong>' . implode( ', ', $missing_tables ) . '</strong>'
+				esc_html( implode( ', ', $missing_tables ) )
 			);
 		}
 
