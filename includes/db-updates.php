@@ -16,7 +16,7 @@ function wp_stream_update_145( $db_version, $current_version ) {
 		set_time_limit( 0 ); // This will probably take abit of time!
 		global $wpdb;
 		// Get all author_meta meta values, serialize them properly
-		$sql = "SELECT record_id, meta_value WHERE meta_key = 'author_meta'";
+		$sql  = "SELECT record_id, meta_value WHERE meta_key = 'author_meta'";
 		$rows = $wpdb->get_results( $sql );
 		foreach ( $rows as $row ) {
 			$row->meta_value = maybe_unserialize( $row->meta_value );
