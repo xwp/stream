@@ -207,7 +207,16 @@ class WP_Stream {
 			}
 		}
 		if ( $missing_tables ) {
-			$database_message .= sprintf( '%s %s', __( 'The following table(s) are not present in the WordPress database: ', 'stream' ), implode( ', ', $missing_tables ) );
+			$database_message .= sprintf(
+				'%s %s',
+				_n(
+					'The following table is not present in the WordPress database:',
+					'The following tables are not present in the WordPress database:',
+					count( $missing_tables ),
+					'stream'
+				),
+				'<strong>' . implode( ', ', $missing_tables ) . '</strong>'
+			);
 		}
 
 		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) && current_user_can( 'manage_network_plugins' ) ) {
