@@ -1,6 +1,37 @@
 <?php
 
 /**
+ * Version 1.4.5
+ *
+ * Fix double serialized values in DB
+ *
+ * @param string $db_version Database version updating from
+ * @param string $current_version Database version updating to
+ *
+ * @return string $current_version if updated correctly
+ */
+function wp_stream_update_145( $db_version, $current_version ) {
+	// If $db_version if 1.4.1 then we need to run all auto updates again. Otherwise. We skip this update.
+	if ( version_compare( $db_version, '1.4.5', '<' ) ) {
+		set_time_limit( 0 ); // This will probably take abit of time!
+		global $wpdb;
+		// Get all author_meta meta values, serialize them properly
+		$sql = "SELECT record_id, meta_value WHERE meta_key = 'author_meta'";
+		$rows = $wpdb->get_results( $sql );
+		foreach ( $rows as $row ) {
+			$row->meta_value = maybe_unserialize( $row->meta_value );
+			if ( is_serialized( $row->meta_value ) ) {
+				$row->meta_value = maybe_unserialize( $meta_value );
+			}
+			// update_metadata will serialize it back
+			wp_stream_update_meta( $row->record_id, 'author_meta', $row->meta_value );
+		}
+	}
+
+	return $current_version;
+}
+
+/**
  * Version 1.4.2
  *
  * Fix rare case where Multisite update would not trigger when jumping from ealier version
