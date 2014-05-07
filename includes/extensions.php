@@ -372,7 +372,7 @@ class WP_Stream_Extensions {
 				'activate18n'  => __( 'Activate', 'stream' ),
 				'active18n'    => __( 'Active', 'stream' ),
 				'actions'      => array(
-					'activate' => wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $extension->post_meta->plugin_path[0], 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $extension->post_meta->plugin_path[0] ), // xss ok (todo fix WPCS sniff)
+					'activate' => wp_nonce_url( add_query_arg( array( 'action' => 'activate', 'plugin' => $plugin_path, 'plugin_status' => 'all', 'paged' => '1' ), self_admin_url( 'plugins.php' ) ), 'activate-plugin_' . $plugin_path ), // xss ok (todo fix WPCS sniff)
 					'install'  => wp_nonce_url( add_query_arg( array( 'action' => 'install-plugin', 'plugin' => $extension->slug ), self_admin_url( 'update.php' ) ), 'install-plugin_' . $extension->slug ), // xss ok (todo fix WPCS sniff)
 					'delete'   => null,
 				),
