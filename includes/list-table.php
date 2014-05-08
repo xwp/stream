@@ -560,15 +560,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 		} else {
 			$options  = array( '<option value=""></option>' );
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
-			foreach ( $items as $v => $label ) {
+			foreach ( $items as $value => $item ) {
 				$options[] = sprintf(
 					'<option value="%s" %s %s %s title="%s">%s</option>',
-					$v,
-					selected( $v, $selected, false ),
-					isset( $label['disabled'] ) ? $label['disabled'] : '', // xss ok
-					isset( $label['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $label['icon'] ) ) : '',
-					isset( $label['tooltip'] ) ? esc_attr( $label['tooltip'] ) : '',
-					$label['label']
+					$value,
+					selected( $value, $selected, false ),
+					isset( $item['disabled'] ) ? $item['disabled'] : '', // xss ok
+					isset( $item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $item['icon'] ) ) : '',
+					isset( $item['tooltip'] ) ? esc_attr( $item['tooltip'] ) : '',
+					$item['label']
 				);
 			}
 			$out = sprintf(
