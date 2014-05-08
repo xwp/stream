@@ -537,10 +537,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$connectors = $this->assemble_records( 'connector' );
 				foreach ( $connectors as $connector => $item ) {
 					$context_items[ $connector ]['label'] = $item['label'];
-					foreach ( $data['items'] as $context_value => $context_items ) {
+					foreach ( $data['items'] as $context_value => $context_item ) {
 						if ( array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
-							$context_items[ $connector ][ 'children' ][ $context_value ] = $context_items;
+							$context_items[ $connector ][ 'children' ][ $context_value ] = $context_item;
 						}
+					}
+				}
+				foreach( $context_items as $context_value => $context_item ) {
+					if ( ! isset( $context_item['children'] ) || empty( $context_item['children'] ) ) {
+						unset( $context_items[ $context_value ] );
 					}
 				}
 				$data['items'] = $context_items;
