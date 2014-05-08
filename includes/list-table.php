@@ -495,11 +495,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'ajax'  => count( $authors_records ) <= 0,
 		);
 
-		$filters['connector'] = array(
-			'title' => __( 'connectors', 'stream' ),
-			'items' => $this->assemble_records( 'connector' ),
-		);
-
 		$filters['context'] = array(
 			'title' => __( 'contexts', 'stream' ),
 			'items' => $this->assemble_records( 'context' ),
@@ -538,11 +533,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 				continue;
 			}
 			if ( 'context' === $name ) {
-				foreach ( WP_Stream_Connectors::$contexts as $connector => $contexts ) {
-					$context_items[ $connector ]['label'] = WP_Stream_Connectors::$term_labels['stream_connector'][ $connector ];
-					foreach ( $data['items'] as $value => $items ) {
-						if ( array_key_exists( $value, $contexts ) ) {
-							$context_items[ $connector ][ 'children' ][ $value ] = $items;
+				// Add Connectors as parents, and apply the Contexts as children
+				$connectors = $this->assemble_records( 'connector' );
+				foreach ( $connectors as $connector => $item ) {
+					$context_items[ $connector ]['label'] = $item['label'];
+					foreach ( $data['items'] as $context_value => $context_items ) {
+						if ( array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
+							$context_items[ $connector ][ 'children' ][ $context_value ] = $context_items;
 						}
 					}
 				}
