@@ -3,10 +3,16 @@
 class WP_Stream_Connectors {
 
 	/**
-	 * Contexts registered
+	 * Connectors registered
 	 * @var array
 	 */
 	public static $connectors = array();
+
+	/**
+	 * Contexts registered to Connectors
+	 * @var array
+	 */
+	public static $contexts = array();
 
 	/**
 	 * Action taxonomy terms
@@ -110,6 +116,9 @@ class WP_Stream_Connectors {
 			if ( ! $exclude_all_connector ) {
 				$connector::register();
 			}
+
+			// Link context labels to their connector
+			self::$contexts[ $connector::$name ] = $connector::get_context_labels();
 
 			// Add new terms to our label lookup array
 			self::$term_labels['stream_action']  = array_merge(

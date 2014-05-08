@@ -363,8 +363,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	public function get_term_title( $term, $type ) {
 		if ( isset( WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ] ) ) {
 			return WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ];
-		}
-		else {
+		} else {
 			return $term;
 		}
 	}
