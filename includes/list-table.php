@@ -537,6 +537,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$filters_string .= $this->filter_date( $data['items'] );
 				continue;
 			}
+			if ( 'context' === $name ) {
+				foreach ( WP_Stream_Connectors::$contexts as $connector => $contexts ) {
+					$context_items[ $connector ]['label'] = WP_Stream_Connectors::$term_labels['stream_connector'][ $connector ];
+					foreach ( $data['items'] as $value => $items ) {
+						if ( array_key_exists( $value, $contexts ) ) {
+							$context_items[ $connector ][ 'children' ][ $value ] = $items;
+						}
+					}
+				}
+				$data['items'] = $context_items;
+			}
 			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'] );
 		}
 
@@ -560,15 +571,44 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$options  = array( '<option value=""></option>' );
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
 			foreach ( $items as $value => $item ) {
-				$options[] = sprintf(
-					'<option value="%s" %s %s %s title="%s">%s</option>',
-					$value,
-					selected( $value, $selected, false ),
-					isset( $item['disabled'] ) ? $item['disabled'] : '', // xss ok
-					isset( $item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $item['icon'] ) ) : '',
-					isset( $item['tooltip'] ) ? esc_attr( $item['tooltip'] ) : '',
-					$item['label']
-				);
+				if ( isset( $item['children'] ) ) {
+					$group = sprintf(
+						'<optgroup value="%s" %s %s %s title="%s" label="%s">',
+						$value,
+						selected( $value, $selected, false ),
+						isset( $item['disabled'] ) ? $item['disabled'] : '', // xss ok
+						isset( $item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $item['icon'] ) ) : '',
+						isset( $item['tooltip'] ) ? esc_attr( $item['tooltip'] ) : '',
+						$item['label']
+					);
+
+					$group_options = array();
+					foreach ( $item['children'] as $child_value => $child_item ) {
+						$group_options[] = sprintf(
+							'<option value="%s" %s %s %s title="%s">%s</option>',
+							$child_value,
+							selected( $child_value, $selected, false ),
+							isset( $child_item['disabled'] ) ? $child_item['disabled'] : '', // xss ok
+							isset( $child_item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $child_item['icon'] ) ) : '',
+							isset( $child_item['tooltip'] ) ? esc_attr( $child_item['tooltip'] ) : '',
+							$child_item['label']
+						);
+					}
+
+					$group .= implode( '', $group_options );
+					$group .= '</optgroup>';
+					$options[] = $group;
+				} else {
+					$options[] = sprintf(
+						'<option value="%s" %s %s %s title="%s">%s</option>',
+						$value,
+						selected( $value, $selected, false ),
+						isset( $item['disabled'] ) ? $item['disabled'] : '', // xss ok
+						isset( $item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $item['icon'] ) ) : '',
+						isset( $item['tooltip'] ) ? esc_attr( $item['tooltip'] ) : '',
+						$item['label']
+					);
+				}
 			}
 			$out = sprintf(
 				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',

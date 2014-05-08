@@ -78,6 +78,13 @@ class WP_Stream_Connectors {
 		foreach ( self::$connectors as $connector ) {
 			self::$term_labels['stream_connector'][ $connector::$name ] = $connector::get_label();
 		}
+		asort( self::$term_labels['stream_connector'] );
+
+		$labels = array_keys( self::$term_labels['stream_connector'] );
+		$sort = function ( $a, $b ) use ( $labels ) {
+			return array_search( $a::$name, $labels ) < array_search( $b::$name, $labels ) ? -1 : 1;
+		};
+		uasort( self::$connectors, $sort );
 
 		// Get excluded connectors
 		$excluded_connectors = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
