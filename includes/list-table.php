@@ -495,9 +495,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'ajax'  => count( $authors_records ) <= 0,
 		);
 
+		$filters['connector'] = array(
+			'items' => $this->assemble_records( 'connector' ),
+		);
+
 		$filters['context'] = array(
-			'title' => __( 'contexts', 'stream' ),
-			'items' => $this->assemble_records( 'context' ),
+			'title'  => __( 'contexts', 'stream' ),
+			'items'  => $this->assemble_records( 'context' ),
+			'helper' => 'connector',
 		);
 
 		$filters['action'] = array(
@@ -528,8 +533,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters_string .= sprintf( __( '%1$sShow filter controls via the screen options tab above%2$s', 'stream' ), '<span class="filter_info" style="display:none">', '</span>' );
 
 		foreach ( $filters as $name => $data ) {
+			// @todo: Make this a switch statement
 			if ( 'date' === $name ) {
 				$filters_string .= $this->filter_date( $data['items'] );
+				continue;
+			}
+			if ( 'connector' === $name ) {
+				$filters_string .= sprintf(
+					'<input type="hidden" name="%s" value="%s" />',
+					esc_attr( $name ),
+					esc_attr( wp_stream_filter_input( INPUT_GET, $name ) )
+				);
 				continue;
 			}
 			if ( 'context' === $name ) {
@@ -550,7 +564,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				}
 				$data['items'] = $context_items;
 			}
-			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'] );
+			$filters_string .= $this->filter_select( $name, $data );
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
@@ -560,9 +574,18 @@ class WP_Stream_List_Table extends WP_List_Table {
 		printf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
 
-	function filter_select( $name, $title, $items, $ajax ) {
+	function filter_select( $name, $args ) {
 
-		if ( $ajax ) {
+		$defaults = array(
+			'title'  => '',
+			'items'  => array(),
+			'helper' => false,
+			'ajax'   => false,
+		);
+		wp_parse_args( $args, $defaults );
+		extract( $args );
+
+		if ( isset( $ajax ) && $ajax ) {
 			$out = sprintf(
 				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s"/>',
 				esc_attr( $name ),
@@ -575,25 +598,25 @@ class WP_Stream_List_Table extends WP_List_Table {
 			foreach ( $items as $value => $item ) {
 				if ( isset( $item['children'] ) ) {
 					$group = sprintf(
-						'<optgroup value="%s" %s %s %s title="%s" label="%s">',
-						$value,
-						selected( $value, $selected, false ),
+						'<optgroup data-value="%s" data-helper-input="%s" %s %s title="%s" label="%s">',
+						esc_attr( $value ),
+						$helper ? esc_attr( $helper ) : '',
 						isset( $item['disabled'] ) ? $item['disabled'] : '', // xss ok
 						isset( $item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $item['icon'] ) ) : '',
 						isset( $item['tooltip'] ) ? esc_attr( $item['tooltip'] ) : '',
-						$item['label']
+						esc_html( $item['label'] )
 					);
 
 					$group_options = array();
 					foreach ( $item['children'] as $child_value => $child_item ) {
 						$group_options[] = sprintf(
 							'<option value="%s" %s %s %s title="%s">%s</option>',
-							$child_value,
+							esc_attr( $child_value ),
 							selected( $child_value, $selected, false ),
 							isset( $child_item['disabled'] ) ? $child_item['disabled'] : '', // xss ok
 							isset( $child_item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $child_item['icon'] ) ) : '',
 							isset( $child_item['tooltip'] ) ? esc_attr( $child_item['tooltip'] ) : '',
-							$child_item['label']
+							esc_html( $child_item['label'] )
 						);
 					}
 
@@ -603,12 +626,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 				} else {
 					$options[] = sprintf(
 						'<option value="%s" %s %s %s title="%s">%s</option>',
-						$value,
+						esc_attr( $value ),
 						selected( $value, $selected, false ),
 						isset( $item['disabled'] ) ? $item['disabled'] : '', // xss ok
 						isset( $item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $item['icon'] ) ) : '',
 						isset( $item['tooltip'] ) ? esc_attr( $item['tooltip'] ) : '',
-						$item['label']
+						esc_html( $item['label'] )
 					);
 				}
 			}
