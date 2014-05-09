@@ -93,8 +93,7 @@ abstract class WP_Stream_DB_Base {
 	 * @return mixed       Record ID if successful, WP_Error if not
 	 */
 	function store( $data ) {
-
-		// Take only whats ours!
+		// Take only what's ours!
 		$valid_keys = get_class_vars( 'WP_Stream_Record' );
 		$data       = array_intersect_key( $data, $valid_keys );
 		$data       = array_filter( $data );
@@ -129,6 +128,7 @@ abstract class WP_Stream_DB_Base {
 
 		if ( isset( $data['ID'] ) ) {
 			$result = $this->update( $data );
+
 			// TODO: provide actions/filters on result
 			return $result;
 		} else {
@@ -141,6 +141,7 @@ abstract class WP_Stream_DB_Base {
 				 * @param  string  DB Error encountered
 				 */
 				do_action( 'wp_stream_post_insert_error', $result->get_error_message() );
+
 				return $result;
 			} else {
 				/**
@@ -150,6 +151,7 @@ abstract class WP_Stream_DB_Base {
 				 * @param  array  Array of information on this record
 				 */
 				do_action( 'wp_stream_post_inserted', $result, $data );
+
 				return $result; // record_id
 			}
 		}
