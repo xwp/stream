@@ -409,6 +409,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
 			return;
 		}
+
 		if ( 'approved' !== $new_status && 'unapproved' !== $new_status || 'trash' === $old_status || 'spam' === $old_status ) {
 			return;
 		}
