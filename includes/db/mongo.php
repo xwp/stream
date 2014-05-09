@@ -172,11 +172,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 
 		$distinct = ( 1 === count( $fields ) && $args['distinct'] );
 
-		if ( $distinct ) {
-			$cursor = self::$coll->distinct( key( $select ), $query );
-		} else {
-			$cursor = self::$coll->find( $query );
-		}
+		$cursor = $distinct ? self::$coll->distinct( key( $select ), $query ) : self::$coll->find( $query );
 
 		/**
 		 * PARSE SORTING/ORDER PARAMS
