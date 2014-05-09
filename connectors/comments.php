@@ -442,6 +442,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 
 		$comment_id = $wpdb->last_result[0]->comment_ID;
 		$comment    = get_comment( $comment_id );
+
+		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+			return;
+		}
+
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
