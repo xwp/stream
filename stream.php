@@ -301,8 +301,6 @@ class WP_Stream {
 		if ( ! empty( $comment ) ) {
 			echo sprintf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok
 		}
-
-		return;
 	}
 
 	/**
