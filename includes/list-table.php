@@ -534,37 +534,38 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		foreach ( $filters as $name => $data ) {
 			// @todo: Make this a switch statement
-			if ( 'date' === $name ) {
-				$filters_string .= $this->filter_date( $data['items'] );
-				continue;
-			}
-			if ( 'connector' === $name ) {
-				$filters_string .= sprintf(
-					'<input type="hidden" name="%s" value="%s" />',
-					esc_attr( $name ),
-					esc_attr( wp_stream_filter_input( INPUT_GET, $name ) )
-				);
-				continue;
-			}
-			if ( 'context' === $name ) {
-				// Add Connectors as parents, and apply the Contexts as children
-				$connectors = $this->assemble_records( 'connector' );
-				foreach ( $connectors as $connector => $item ) {
-					$context_items[ $connector ]['label'] = $item['label'];
-					foreach ( $data['items'] as $context_value => $context_item ) {
-						if ( array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
-							$context_items[ $connector ][ 'children' ][ $context_value ] = $context_item;
+			switch ( $name ) {
+				case 'date' :
+					$filters_string .= $this->filter_date( $data['items'] );
+					break;
+				case 'connector' :
+					$filters_string .= sprintf(
+						'<input type="hidden" name="%s" value="%s" />',
+						esc_attr( $name ),
+						esc_attr( wp_stream_filter_input( INPUT_GET, $name ) )
+					);
+					break;
+				case 'context' :
+					// Add Connectors as parents, and apply the Contexts as children
+					$connectors = $this->assemble_records( 'connector' );
+					foreach ( $connectors as $connector => $item ) {
+						$context_items[ $connector ]['label'] = $item['label'];
+						foreach ( $data['items'] as $context_value => $context_item ) {
+							if ( array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
+								$context_items[ $connector ][ 'children' ][ $context_value ] = $context_item;
+							}
 						}
 					}
-				}
-				foreach( $context_items as $context_value => $context_item ) {
-					if ( ! isset( $context_item['children'] ) || empty( $context_item['children'] ) ) {
-						unset( $context_items[ $context_value ] );
+					foreach( $context_items as $context_value => $context_item ) {
+						if ( ! isset( $context_item['children'] ) || empty( $context_item['children'] ) ) {
+							unset( $context_items[ $context_value ] );
+						}
 					}
-				}
-				$data['items'] = $context_items;
+					$data['items'] = $context_items;
+					// Intentionally no break here
+				default:
+					$filters_string .= $this->filter_select( $name, $data );
 			}
-			$filters_string .= $this->filter_select( $name, $data );
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
