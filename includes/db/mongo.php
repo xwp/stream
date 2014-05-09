@@ -1,21 +1,20 @@
 <?php
 
-class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
-{
+class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 
 	private static $conn;
 	private static $db;
 	private static $coll;
 
 	public function __construct() {
-
 		// Check requirements
 		if ( ! class_exists( 'MongoClient' ) ) {
-			wp_die( __( 'Mongo PHP extension is not loaded, therefore you cannot use Mongo as your DB adapter', 'stream' ), 'Stream DB Error' );
+			wp_die( esc_html__( 'Mongo PHP extension is not loaded, therefore you cannot use Mongo as your DB adapter', 'stream' ), esc_html__( 'Stream DB Error', 'stream' ) );
 		}
 
 		$dsn = ''; // TODO: Provide settings panel for this
 		$db  = 'stream'; // TODO: Provide settings panel for this
+
 		self::$conn = new MongoClient( $dsn );
 		self::$db   = self::$conn->{$db};
 		self::$coll = self::$db->stream;
@@ -53,6 +52,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 
 		if ( $args['search'] ) {
 			$search = sprintf( '/%s/i', trim( $args['search'], '%' ) );
+
 			$query[ $args['search_field'] ]['$regex'] = $search;
 		}
 
@@ -126,7 +126,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 		// TODO: Parsing Data filters {date/date_from/date_to}
 		if ( $args['date'] ) {
 			$date_from = strtotime( $args['date'] );
-			$date_to = $date_from;
+			$date_to   = $date_from;
 		} else {
 			if ( $args['date_from'] ) {
 				$date_from = strtotime( $args['date_from'] );
@@ -135,9 +135,11 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 				$date_to = strtotime( $args['date_to'] );
 			}
 		}
+
 		if ( isset( $date_from ) ) {
 			$query['created']['$gt'] = $this->create_mongo_date( $date_from );
 		}
+
 		if ( isset( $date_to ) ) {
 			$date_to += DAY_IN_SECONDS - 1; // till end of the day
 			$query['created']['$lt'] = $this->create_mongo_date( $date_to );
@@ -160,7 +162,8 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 		 * PARSE FIELDS PARAMETER
 		 */
 		$select = array();
-		if( $args['fields'] ) {
+
+		if ( $args['fields'] ) {
 			$fields = array_filter( explode( ',', $args['fields'] ) );
 			$fields = array_intersect( $fields, array_keys( get_class_vars( 'WP_Stream_Record' ) ) );
 			$fields = array_diff( $fields, array( 'meta', 'contexts' ) );
@@ -168,6 +171,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 		}
 
 		$distinct = ( 1 === count( $fields ) && $args['distinct'] );
+
 		if ( $distinct ) {
 			$cursor = self::$coll->distinct( key( $select ), $query );
 		} else {
@@ -178,8 +182,9 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 		 * PARSE SORTING/ORDER PARAMS
 		 */
 		if ( $args['order'] && $args['orderby'] ) {
-			$order = strtolower( $args['order'] ) === 'desc' ? -1 : 1;
-			$orderby = ( empty( $args['orderby'] ) || $args['orderby'] === 'ID' ) ? '_id' : $args['orderby'];
+			$order   = 'desc' === strtolower( $args['order'] ) ? -1 : 1;
+			$orderby = ( empty( $args['orderby'] ) || 'ID' === $args['orderby'] ) ? '_id' : $args['orderby'];
+
 			$cursor->sort( array( $orderby => $order ) );
 		}
 
@@ -187,12 +192,16 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 		 * PARSE PAGINATION AND LIMIT
 		 */
 		$perpage = intval( $args['records_per_page'] );
-		if ( $perpage === -1 ) {
+
+		if ( -1 === $perpage ) {
 			$perpage = 0;
 		}
+
 		$cursor->limit( $perpage );
+
 		// Pagination
 		$paged = intval( $args['paged'] );
+
 		if ( $perpage > 0 && $paged > 1 ) {
 			$cursor->skip( ( $paged - 1 ) * $perpage );
 		}
@@ -201,6 +210,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 		 * FORMAT RESULTS
 		 */
 		$results = array();
+
 		if ( $distinct ) {
 			foreach ( $cursor as $value ) {
 				// Return an object as well
@@ -208,10 +218,10 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 			}
 		} else {
 			foreach ( $cursor as $document ) {
-				$object = (object) $document;
-				$object->ID = (string) $document['_id'];
+				$object          = (object) $document;
+				$object->ID      = (string) $document['_id'];
 				$object->created = date( 'Y-m-d H:i:s', $document['created']->sec );
-				$results[] = $object;
+				$results[]       = $object;
 			}
 		}
 
@@ -221,10 +231,12 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 	protected function insert( $data ) {
 		// Resolve the context=>action complex
 		// Pending decision to eliminate the multiple contexts requirement
-		$data['action'] = reset( $data['contexts'] );
+		$data['action']  = reset( $data['contexts'] );
 		$data['context'] = key( $data['contexts'] );
 		$data['created'] = $this->create_mongo_date( $data['created'] );
+
 		unset( $data['contexts'] );
+
 		self::$coll->insert( $data );
 	}
 
@@ -234,6 +246,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 
 	function delete( $args ) {
 		$query = $this->parse( $args );
+
 		self::$coll->remove( $query );
 	}
 
@@ -257,6 +270,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 		if ( ! is_numeric( $time ) ) {
 			$time = strtotime( $time );
 		}
+
 		return new MongoDate( $time );
 	}
 
