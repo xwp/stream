@@ -11,8 +11,6 @@
  * @return string $current_version if updated correctly
  */
 function wp_stream_update_145( $db_version, $current_version ) {
-	set_time_limit( 0 ); // This will probably take abit of time!
-
 	global $wpdb;
 
 	// Get only the author_meta values that are double-serialized
