@@ -27,7 +27,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		'profile_update',
 		'password_reset',
 		'retrieve_password',
-		'wp_login',
+		'set_logged_in_cookie',
 		'clear_auth_cookie',
 		'delete_user',
 		'deleted_user',
@@ -241,10 +241,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	/**
 	 * Log user login
 	 *
-	 * @action wp_login
+	 * @action set_logged_in_cookie
 	 */
-	public static function callback_wp_login( $user_login ) {
-		$user = get_user_by( 'login', $user_login );
+	public static function callback_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
+		$user = get_user_by( 'id', $user_id );
 
 		if ( WP_Stream_Connectors::is_logging_enabled_for_user( $user ) ) {
 			self::log(

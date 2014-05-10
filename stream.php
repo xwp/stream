@@ -203,10 +203,24 @@ class WP_Stream {
 		$uninstall_message = '';
 
 		// Check if all needed DB is present
+		$missing_tables = array();
 		foreach ( $this->db->get_table_names() as $table_name ) {
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-				$database_message .= sprintf( '%s %s', __( 'The following table is not present in the WordPress database:', 'stream' ), $table_name );
+				$missing_tables[] = $table_name;
 			}
+		}
+
+		if ( $missing_tables ) {
+			$database_message .= sprintf(
+				'%s <strong>%s</strong>',
+				_n(
+					'The following table is not present in the WordPress database:',
+					'The following tables are not present in the WordPress database:',
+					count( $missing_tables ),
+					'stream'
+				),
+				esc_html( implode( ', ', $missing_tables ) )
+			);
 		}
 
 		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) && current_user_can( 'manage_network_plugins' ) ) {
@@ -287,8 +301,6 @@ class WP_Stream {
 		if ( ! empty( $comment ) ) {
 			echo sprintf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok
 		}
-
-		return;
 	}
 
 	/**
