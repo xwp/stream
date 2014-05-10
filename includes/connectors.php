@@ -51,8 +51,8 @@ class WP_Stream_Connectors {
 		$classes = array();
 		foreach ( $connectors as $connector ) {
 			include_once WP_STREAM_DIR . '/connectors/' . $connector .'.php';
-			$class      = "WP_Stream_Connector_$connector";
-			$classes[]  = $class;
+			$class     = "WP_Stream_Connector_$connector";
+			$classes[] = $class;
 		}
 
 		$exclude_all_connector = false;
