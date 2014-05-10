@@ -14,17 +14,12 @@ function wp_stream_update_145( $db_version, $current_version ) {
 	set_time_limit( 0 ); // This will probably take abit of time!
 	global $wpdb;
 	// Get all author_meta meta values, serialize them properly
-	$sql  = "SELECT record_id, meta_value WHERE meta_key = 'author_meta'";
+	$sql  = "SELECT record_id, meta_value WHERE meta_key = 'author_meta' AND meta_value LIKE 's:%' ";
 	$rows = $wpdb->get_results( $sql );
 	foreach ( $rows as $row ) {
-		$row->meta_value = maybe_unserialize( $row->meta_value );
-		// if it is double serialized, we need to fix it, otherwise, nothing
-		// should be done
-		if ( is_serialized( $row->meta_value ) ) {
-			$row->meta_value = maybe_unserialize( $meta_value );
-			// update_metadata will serialize it back
-			wp_stream_update_meta( $row->record_id, 'author_meta', $row->meta_value );
-		}
+		$row->meta_value = maybe_unserialize( maybe_unserialize( $row->meta_value ) );
+		// update_metadata will serialize it back
+		wp_stream_update_meta( $row->record_id, 'author_meta', $row->meta_value );
 	}
 	return $current_version;
 }
