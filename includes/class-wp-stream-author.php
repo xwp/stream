@@ -95,6 +95,10 @@ class WP_Stream_Author {
 	 * @return string
 	 */
 	function get_avatar_img( $size = 80 ) {
+		if ( ! get_option( 'show_avatars' ) ) {
+			return false;
+		}
+
 		if ( 0 === $this->id ) {
 			$url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
 			$avatar = sprintf( '<img alt="%1$s" src="%2$s" class="avatar avatar-%3$s photo" height="%3$s" width="%3$s">', esc_attr( $this->get_display_name() ), esc_url( $url ), esc_attr( $size ) );
