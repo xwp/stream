@@ -116,6 +116,9 @@ class WP_Stream_Author {
 	 */
 	function get_avatar_src( $size = 80 ) {
 		$img = $this->get_avatar_img( $size );
+		if ( ! $img ) {
+			return false;
+		}
 		assert( preg_match( '/src=([\'"])(.*?)\1/', $img, $matches ) );
 		$src = html_entity_decode( $matches[2] );
 
