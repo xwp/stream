@@ -64,17 +64,25 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( get_post( $record->object_id ) ) {
-			if ( $link = get_edit_post_link( $record->object_id ) ) {
-				$post_type_name = self::get_post_type_name( get_post_type( $record->object_id ) );
-				$links[ sprintf( _x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
-			}
-			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
-				$links[ __( 'View', 'stream' ) ] = $link;
-			}
-			if ( 'updated' == $record->action ) {
-				if ( $revision_id = wp_stream_get_meta( $record->ID, 'revision_id', true ) ) {
-					$links[ __( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
+			if ( $record->action !== 'trashed' ) {
+				if ( $link = get_edit_post_link( $record->object_id ) ) {
+					$post_type_name = self::get_post_type_name( get_post_type( $record->object_id ) );
+					$links[ sprintf( _x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
 				}
+				if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
+					$links[ __( 'View', 'stream' ) ] = $link;
+				}
+				if ( 'updated' == $record->action ) {
+					if ( $revision_id = wp_stream_get_meta( $record->ID, 'revision_id', true ) ) {
+						$links[ __( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
+					}
+				}
+			} else {
+				$post_type_name = self::get_post_type_name( get_post_type( $record->object_id ) );
+				$untrash = wp_nonce_url( admin_url( "post.php?action=untrash&amp;post={$record->object_id}" ), 'untrash-post_' . $record->object_id );
+				$links[ __( 'Restore', 'stream' ) ] = $untrash;
+				$delete = wp_nonce_url( admin_url( "post.php?action=delete&amp;post={$record->object_id}" ), 'delete-post_' . $record->object_id );
+				$links[ sprintf( _x( 'Delete %s Permenantly', 'Post type singular name', 'stream' ), $post_type_name ) ] = $delete;
 			}
 		}
 
