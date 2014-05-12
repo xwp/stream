@@ -132,9 +132,11 @@ class WP_Stream_Author {
 			return false;
 		}
 
-		preg_match( '/src=([\'"])(.*?)\1/', $img, $matches );
-
-		$src = html_entity_decode( $matches[2] );
+		if ( preg_match( '/src=([\'"])(.*?)\1/', $img, $matches ) === 1 ) {
+			$src = html_entity_decode( $matches[2] );
+		} else {
+			return false;
+		}
 
 		return $src;
 	}
