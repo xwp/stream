@@ -348,10 +348,10 @@ class WP_Stream_Admin {
 		$plugin = plugin_basename( $file );
 
 		if ( is_plugin_active_for_network( $plugin ) ) {
-			$current_versions = get_site_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$current_versions = get_site_option( WP_Stream_Install_WPDB::KEY . '_connectors', array() );
 			$network          = true;
 		} elseif ( is_plugin_active( $plugin ) ) {
-			$current_versions = get_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$current_versions = get_option( WP_Stream_Install_WPDB::KEY . '_connectors', array() );
 			$network          = false;
 		} else {
 			return;
@@ -363,9 +363,9 @@ class WP_Stream_Admin {
 		}
 
 		if ( $network ) {
-			update_site_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+			update_site_option( WP_Stream_Install_WPDB::KEY . '_registered_connectors', $current_versions );
 		} else {
-			update_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+			update_option( WP_Stream_Install_WPDB::KEY . '_registered_connectors', $current_versions );
 		}
 
 		return;
@@ -619,7 +619,7 @@ class WP_Stream_Admin {
 				self::$db->delete( array( 'blog_id' => $blog_id ) );
 
 				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-				delete_option( WP_Stream_Install::KEY );
+				delete_option( WP_Stream_Install_WPDB::KEY );
 				delete_option( WP_Stream_Settings::KEY );
 			} else {
 				self::$db->reset();
@@ -630,7 +630,7 @@ class WP_Stream_Admin {
 					foreach ( $blogs as $blog ) {
 						switch_to_blog( $blog['blog_id'] );
 						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-						delete_option( WP_Stream_Install::KEY );
+						delete_option( WP_Stream_Install_WPDB::KEY );
 						delete_option( WP_Stream_Settings::KEY );
 					}
 					restore_current_blog();
@@ -640,7 +640,7 @@ class WP_Stream_Admin {
 				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 				delete_site_option( WP_Stream_Updater::LICENSE_KEY );
 				delete_site_option( WP_Stream_Updater::LICENSEE_KEY );
-				delete_site_option( WP_Stream_Install::KEY );
+				delete_site_option( WP_Stream_Install_WPDB::KEY );
 				delete_site_option( WP_Stream_Settings::KEY );
 				delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
 				delete_site_option( WP_Stream_Settings::NETWORK_KEY );

@@ -46,6 +46,22 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		);
 	}
 
+	public function install() {
+		/**
+		 * Filter will halt install() if set to true
+		 *
+		 * @param  bool
+		 * @return bool
+		 */
+		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
+			return;
+		}
+
+		// Install plugin tables
+		require_once WP_STREAM_INC_DIR . 'db/install/wpdb.php';
+		$update = WP_Stream_Install_WPDB::get_instance();
+	}
+
 	protected function insert( $data ) {
 		global $wpdb;
 

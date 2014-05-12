@@ -1,6 +1,6 @@
 <?php
 
-class WP_Stream_Install {
+class WP_Stream_Install_WPDB {
 
 	/**
 	 * Option key to store database version
@@ -77,7 +77,7 @@ class WP_Stream_Install {
 	 * Gets instance of singleton class
 	 *
 	 * @access public
-	 * @return bool|object|WP_Stream_Install
+	 * @return bool|object|WP_Stream_Install_WPDB
 	 */
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
@@ -269,7 +269,7 @@ class WP_Stream_Install {
 	 * @return mixed Version number on success, true on no update needed, mysql error message on error
 	 */
 	public static function update( $db_version, $current, $update_args ) {
-		require_once WP_STREAM_INC_DIR . 'db-updates.php';
+		require_once WP_STREAM_INC_DIR . 'db/install/wpdb-updates.php';
 
 		$versions = self::db_update_versions();
 

@@ -2,6 +2,8 @@
 
 abstract class WP_Stream_DB_Base {
 
+	abstract function install();
+
 	function parse( $args ) {
 		$defaults = array(
 			// Pagination params

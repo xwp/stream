@@ -23,6 +23,10 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base
 		// TODO: ->ENSUREINDEX()
 	}
 
+	public function install() {
+		// TODO: Install tables and ensure indexes exist
+	}
+
 	function parse( $args ) {
 		$args = parent::parse( $args );
 

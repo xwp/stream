@@ -46,7 +46,7 @@ class WP_Stream {
 	public static $instance;
 
 	/**
-	 * @var WP_Stream_DB
+	 * @var WP_Stream_DB_Base
 	 */
 	public static $db = null;
 
@@ -163,19 +163,7 @@ class WP_Stream {
 	 * @return void
 	 */
 	public static function install() {
-		/**
-		 * Filter will halt install() if set to true
-		 *
-		 * @param  bool
-		 * @return bool
-		 */
-		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
-			return;
-		}
-
-		// Install plugin tables
-		require_once WP_STREAM_INC_DIR . 'install.php';
-		$update = WP_Stream_Install::get_instance();
+		self::$db->install();
 	}
 
 	/**

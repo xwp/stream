@@ -75,8 +75,8 @@ class WP_Stream_Context_Query {
 			return array( 'join' => '', 'where' => '' );
 		}
 
-		$context_table  = WP_Stream_DB::$table_context;
-		$main_table     = WP_Stream_DB::$table;
+		$context_table  = WP_Stream_DB_WPDB::$table_context;
+		$main_table     = WP_Stream_DB_WPDB::$table;
 		$meta_id_column = 'meta_id';
 
 		$join  = array();

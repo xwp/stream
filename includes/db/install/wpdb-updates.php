@@ -23,7 +23,7 @@ function wp_stream_update_auto_142( $db_version, $current_version ) {
 function wp_stream_update_142( $db_version, $current_version ) {
 	// If $db_version if 1.4.1 then we need to run all updates again. Otherwise. We skip this update.
 	if ( version_compare( $db_version, '1.4.1', '=' ) ) {
-		$versions = WP_Stream_Install::db_update_versions();
+		$versions = WP_Stream_Install_WPDB::db_update_versions();
 		foreach ( $versions as $version ) {
 			// Further updates will apply themselves on their on.
 			if ( '1.4.2' === $version ) {
@@ -56,7 +56,7 @@ function wp_stream_update_142( $db_version, $current_version ) {
 function wp_stream_update_auto_140( $db_version, $current_version ) {
 	global $wpdb;
 
-	$prefix = WP_Stream_Install::$table_prefix;
+	$prefix = WP_Stream_Install_WPDB::$table_prefix;
 
 	do_action( 'wp_stream_before_auto_db_update_' . $db_version, $current_version );
 
@@ -99,7 +99,7 @@ function wp_stream_update_auto_140( $db_version, $current_version ) {
 function wp_stream_update_140( $db_version, $current_version ) {
 	global $wpdb;
 
-	$prefix = WP_Stream_Install::$table_prefix;
+	$prefix = WP_Stream_Install_WPDB::$table_prefix;
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
@@ -237,8 +237,8 @@ function wp_stream_update_131( $db_version, $current_version ) {
 function wp_stream_update_migrate_installer_edits_to_theme_editor_connector() {
 	global $wpdb;
 
-	$db_version      = WP_Stream_Install::$db_version;
-	$current_version = WP_Stream_Install::$current;
+	$db_version      = WP_Stream_Install_WPDB::$db_version;
+	$current_version = WP_Stream_Install_WPDB::$current;
 
 	$args = array(
 		'connector' => 'installer',
@@ -328,8 +328,8 @@ function wp_stream_update_130( $db_version, $current_version ) {
 function wp_stream_update_migrate_old_options_to_exclude_tab( $labels ) {
 	global $wpdb;
 
-	$db_version      = WP_Stream_Install::$db_version;
-	$current_version = WP_Stream_Install::$current;
+	$db_version      = WP_Stream_Install_WPDB::$db_version;
+	$current_version = WP_Stream_Install_WPDB::$current;
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
@@ -478,7 +478,7 @@ function wp_stream_update_125( $db_version, $current_version ) {
 function wp_stream_update_117( $db_version, $current_version ) {
 	global $wpdb;
 
-	$prefix = WP_Stream_Install::$table_prefix;
+	$prefix = WP_Stream_Install_WPDB::$table_prefix;
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
@@ -506,7 +506,7 @@ function wp_stream_update_117( $db_version, $current_version ) {
 function wp_stream_update_114( $db_version, $current_version ) {
 	global $wpdb;
 
-	$prefix = WP_Stream_Install::$table_prefix;
+	$prefix = WP_Stream_Install_WPDB::$table_prefix;
 
 	if ( ! empty( $wpdb->charset ) ) {
 		return $current_version;
