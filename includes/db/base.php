@@ -165,7 +165,7 @@ abstract class WP_Stream_DB_Base {
 
 	abstract function reset();
 
-	abstract function get_existing_records( $column, $table = '' );
+	abstract function get_col( $column );
 
 	abstract function get_found_rows();
 

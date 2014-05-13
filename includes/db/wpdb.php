@@ -6,8 +6,6 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 
 	public static $table_meta;
 
-	public static $table_context;
-
 	public $found_rows;
 
 	public function __construct() {
@@ -23,11 +21,9 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 
 		self::$table         = $prefix . 'stream';
 		self::$table_meta    = $prefix . 'stream_meta';
-		self::$table_context = $prefix . 'stream_context';
 
 		$wpdb->stream        = self::$table;
 		$wpdb->streammeta    = self::$table_meta;
-		$wpdb->streamcontext = self::$table_context;
 
 		// Hack for get_metadata
 		$wpdb->recordmeta = self::$table_meta;
@@ -42,7 +38,6 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		return array(
 			self::$table,
 			self::$table_meta,
-			self::$table_context,
 		);
 	}
 
@@ -65,8 +60,17 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	protected function insert( $data ) {
 		global $wpdb;
 
-		$recordarr = array_diff_key( $data, array_fill_keys( array( 'contexts', 'meta', 'connector' ), null ) );
-		$result    = $wpdb->insert(
+		$recordarr = $data;
+		unset( $recordarr['meta'] );
+
+		// Fallback from `contexts` to the new flat table structure
+		if ( isset( $recordarr['contexts'] ) ) {
+			$recordarr['action'] = reset( $recordarr['contexts'] );
+			$recordarr['context'] = key( $recordarr['contexts'] );
+			unset( $recordarr['contexts'] );
+		}
+
+		$result = $wpdb->insert(
 			self::$table,
 			$recordarr
 		);
@@ -79,51 +83,35 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 
 		$this->prev_record = $record_id;
 
-		$connector = $data['connector'];
-
-		foreach ( (array) $data['contexts'] as $context => $action ) {
-			$this->insert_context( $record_id, $connector, $context, $action );
-		}
-
 		foreach ( $data['meta'] as $key => $vals ) {
-			foreach ( (array) $vals as $val ) {
-				$val = maybe_serialize( $val );
-				$this->insert_meta( $record_id, $key, $val );
+			if ( ! is_array( $vals ) ) {
+				$vals = array( $vals );
+			}
+			if ( 0 !== key( $vals ) ) {
+				$vals = array( $vals );
+			}
+			foreach ( $vals as $val ) {
+				$this->add_meta( $record_id, $key, $val );
 			}
 		}
 
 		return $record_id;
 	}
 
-	private function insert_context( $record_id, $connector, $context, $action ) {
-		global $wpdb;
-
-		$result = $wpdb->insert(
-			self::$table_context,
-			array(
-				'record_id' => $record_id,
-				'connector' => $connector,
-				'context'   => $context,
-				'action'    => $action,
-			)
-		);
-
-		return $result;
+	public function get_meta( $record_id, $key, $single = false ) {
+		return get_metadata( 'record', $record_id, $key, $single = false );
 	}
 
-	private function insert_meta( $record_id, $key, $val ) {
-		global $wpdb;
+	public function add_meta( $record_id, $key, $val ) {
+		return add_metadata( 'record', $record_id, $key, $val );
+	}
 
-		$result = $wpdb->insert(
-			self::$table_meta,
-			array(
-				'record_id'  => $record_id,
-				'meta_key'   => $key,
-				'meta_value' => $val,
-			)
-		);
+	public function update_meta( $record_id, $key, $val, $prev = null ) {
+		return update_metadata( 'record', $record_id, $key, $val, $prev );
+	}
 
-		return $result;
+	public function delete_meta( $record_id, $key, $val = null, $delete_all = false ) {
+		return delete_metadata( 'record', $record_id, $key, $val = null, $delete_all = false );
 	}
 
 	/**
@@ -135,22 +123,11 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	protected function update( $data ) {
 	}
 
-	public function query( $args ) {
+	public function query( $query ) {
 		global $wpdb;
-
-		$args = $this->parse( $args );
 
 		$join  = '';
 		$where = '';
-
-		// Only join with context table for correct types of records
-		if ( ! $args['ignore_context'] ) {
-			$join = sprintf(
-				' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
-				$wpdb->streamcontext,
-				$wpdb->stream
-			);
-		}
 
 		/**
 		 * PARSE CORE FILTERS
@@ -444,6 +421,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	}
 
 	public function reset() {
+		global $wpdb;
 		// Delete all tables
 		foreach ( $this->get_table_names() as $table ) {
 			$wpdb->query( "DROP TABLE $table" );
@@ -462,30 +440,12 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * @see    assemble_records
 	 * @since  1.0.4
 	 * @param  string  Requested Column (i.e., 'context')
-	 * @param  string  Requested Table
-	 * @return array   Array of items to be output to select dropdowns
+	 * @return array   Array of distinct values
 	 */
-	public function get_existing_records( $column, $table = '' ) {
+	public function get_col( $column ) {
 		global $wpdb;
-
-		switch ( $table ) {
-			case 'stream' :
-				$values = $wpdb->get_col( "SELECT DISTINCT {$column} FROM {$wpdb->stream}" );
-				break;
-			case 'meta' :
-				$values = $wpdb->get_col( "SELECT DISTINCT {$column} FROM {$wpdb->streammeta}" );
-				break;
-			default:
-				$values = $wpdb->get_col( "SELECT DISTINCT {$column} FROM {$wpdb->streamcontext}" );
-				break;
-		}
-
-		if ( is_array( $values ) && ! empty( $values ) ) {
-			return array_combine( $values, $values );
-		} else {
-			$column = sprintf( 'stream_%s', $column );
-			return isset( WP_Stream_Connectors::$term_labels[ $column ] ) ? WP_Stream_Connectors::$term_labels[ $column ] : array();
-		}
+		$values = $wpdb->get_col( "SELECT DISTINCT {$column} FROM {$wpdb->stream}" );
+		return $values;
 	}
 
 	/**
