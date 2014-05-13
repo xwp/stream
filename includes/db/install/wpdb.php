@@ -254,6 +254,7 @@ class WP_Stream_Install_WPDB {
 			'1.3.1' /* @version 1.3.1 Update records of Installer to Theme Editor connector */,
 			'1.4.0' /* @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
 			'1.4.2' /* @version 1.4.2 Patch to fix rare multisite upgrade not triggering */,
+			'2.0.0' /* @version 2.0.0 Removing context table, adding columns to base table */,
 		);
 
 		return apply_filters( 'wp_stream_db_update_versions', $db_update_versions );
@@ -297,6 +298,7 @@ class WP_Stream_Install_WPDB {
 	 * @uses dbDelta()
 	 * @param string $current Current version of plugin installed
 	 * @return string Current version of plugin installed
+	 * @todo  Test this after the 2.0 version change
 	 */
 	public static function install( $current ) {
 		global $wpdb;
@@ -316,6 +318,9 @@ class WP_Stream_Install_WPDB {
 			visibility varchar(20) NOT NULL DEFAULT 'publish',
 			parent bigint(20) unsigned NOT NULL DEFAULT '0',
 			type varchar(20) NOT NULL DEFAULT 'stream',
+			connector varchar(255) NOT NULL,
+			context varchar(255) NOT NULL,
+			action varchar(255) NOT NULL,
 			created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 			ip varchar(39) NULL,
 			PRIMARY KEY  (ID),
@@ -324,6 +329,9 @@ class WP_Stream_Install_WPDB {
 			KEY parent (parent),
 			KEY author (author),
 			KEY created (created)
+			KEY connector (created)
+			KEY context (created)
+			KEY action (created)
 		)";
 
 		if ( ! empty( $wpdb->charset ) ) {

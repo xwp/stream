@@ -1,5 +1,39 @@
 <?php
 
+// TODO: Test this update routine
+function wp_stream_update_auto_200( $db_version, $current_version ) {
+	$prefix = WP_Stream_Install_WPDB::$table_prefix;
+
+	do_action( 'wp_stream_before_auto_db_update_' . $db_version, $current_version );
+
+	// Check to see if our new columns already exists
+	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field IN ('connector', 'context', 'action')" );
+
+	// If ALL new columns don't exist, carry on
+	if ( empty( $rows ) ) {
+		// Create new columns
+		$wpdb->query( "ALTER TABLE `{$prefix}_stream`
+			ADD `connector` VARCHAR(255) NOT NULL AFTER `type`,
+			ADD `context` VARCHAR(255) NOT NULL AFTER `connector`,
+			ADD `action` VARCHAR(255) NOT NULL AFTER `context`" );
+		// Add indexes for them
+		$wpdb->query( "CREATE INDEX connector ON `{$prefix}_stream` (connector)" );
+		$wpdb->query( "CREATE INDEX context ON `{$prefix}_stream` (context)" );
+		$wpdb->query( "CREATE INDEX action ON `{$prefix}_stream` (action)" );
+		// Drop the deprecated table
+		$wpdb->query( "DROP TABLE `{$prefix}_stream_context`" );
+	// Else, fail the procedure alltogether
+	} elseif ( count( $rows ) < 3 ) {
+		wp_die( 'Invalid DB schema' );
+	}
+
+	// TODO: We should also migrate existing data to the new table, probably
+	// save it to a temporary table before we DROP the context table, then add
+	// them later after creating the new columns
+
+	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
+}
+
 /**
  * Version 1.4.2
  *
