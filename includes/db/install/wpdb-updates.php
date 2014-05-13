@@ -2,6 +2,7 @@
 
 // TODO: Test this update routine
 function wp_stream_update_auto_200( $db_version, $current_version ) {
+	global $wpdb;
 	$prefix = WP_Stream_Install_WPDB::$table_prefix;
 
 	do_action( 'wp_stream_before_auto_db_update_' . $db_version, $current_version );
