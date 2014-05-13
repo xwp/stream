@@ -64,7 +64,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( get_post( $record->object_id ) ) {
-			if ( $record->action !== 'trashed' ) {
+			if ( 'trashed' !== $record->action ) {
 				if ( $link = get_edit_post_link( $record->object_id ) ) {
 					$post_type_name = self::get_post_type_name( get_post_type( $record->object_id ) );
 					$links[ sprintf( _x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
