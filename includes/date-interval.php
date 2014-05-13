@@ -122,7 +122,6 @@ class WP_Stream_Date_Interval {
 				'order'            => 'ASC',
 				'orderby'          => 'created',
 				'records_per_page' => 1,
-				'ignore_context'   => true,
 			)
 		);
 
