@@ -161,7 +161,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		self::log(
 			$message,
 			array(
-				'post_title'    => $post->post_title,
+				'post_title'    => apply_filters( 'the_title', $post->post_title ),
 				'singular_name' => $post_type_name,
 				'new_status'    => $new,
 				'old_status'    => $old,
