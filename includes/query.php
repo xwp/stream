@@ -109,7 +109,6 @@ class WP_Stream_Query {
 			$args['action__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
 
 			// Remove record of excluded author
-			// TODO: authors_and_*roles* are not suitable for author (only) parameter
 			$args['author__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
 
 			// Remove record of excluded ip
