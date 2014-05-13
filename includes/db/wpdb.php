@@ -252,6 +252,8 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * @return string           Properly escaped SQL WHERE rule
 	 */
 	private function parse_rule( $db_col, $operator, $value ) {
+		global $wpdb;
+
 		// Handle `like` operator
 		if ( 'like' === $operator ) {
 			$value   = like_escape( trim( $args['search'], '%' ) );
