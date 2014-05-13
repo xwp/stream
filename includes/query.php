@@ -160,24 +160,24 @@ class WP_Stream_Query {
 		 * PARSE CUSTOM CORE FILTERS
 		 */
 		if ( $args['search'] ) {
-			$query[ 'summary' ][ 'like' ] = $args['search'];
+			$query['summary']['like'] = $args['search'];
 		}
 
 		if ( $args['record_greater_than'] ) {
-			$query[ 'ID' ][ 'gt' ] = $args['record_greater_than'];
+			$query['ID']['gt'] = $args['record_greater_than'];
 		}
 
 		/**
 		 * PARSE DATE FILTERS
 		 */
 		if ( $args['date'] ) {
-			$query[ 'created' ][ 'in' ] = $args[ 'date' ];
+			$query['created']['in'] = $args['date'];
 		} else {
 			if ( $args['date_from'] ) {
-				$query[ 'created' ][ 'gte' ] = $args['date_from'];
+				$query['created']['gte'] = $args['date_from'];
 			}
 			if ( $args['date_to'] ) {
-				$query[ 'created' ][ 'lte' ] = $args['date_from'];
+				$query['created']['lte'] = $args['date_from'];
 			}
 		}
 
