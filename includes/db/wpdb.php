@@ -99,7 +99,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	}
 
 	public function get_meta( $record_id, $key, $single = false ) {
-		return get_metadata( 'record', $record_id, $key, $single = false );
+		return get_metadata( 'record', $record_id, $key, $single );
 	}
 
 	public function add_meta( $record_id, $key, $val ) {
@@ -111,7 +111,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	}
 
 	public function delete_meta( $record_id, $key, $val = null, $delete_all = false ) {
-		return delete_metadata( 'record', $record_id, $key, $val = null, $delete_all = false );
+		return delete_metadata( 'record', $record_id, $key, $val, $delete_all );
 	}
 
 	/**
