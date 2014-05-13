@@ -328,10 +328,10 @@ class WP_Stream_Install_WPDB {
 			KEY blog_id (blog_id),
 			KEY parent (parent),
 			KEY author (author),
-			KEY created (created)
-			KEY connector (created)
-			KEY context (created)
-			KEY action (created)
+			KEY created (created),
+			KEY connector (connector),
+			KEY context (context),
+			KEY action (action)
 		)";
 
 		if ( ! empty( $wpdb->charset ) ) {
