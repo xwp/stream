@@ -322,12 +322,6 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * Returns array of existing values for requested column.
 	 * Used to fill search filters with only used items, instead of all items.
 	 *
-	 * GROUP BY allows query to find just the first occurance of each value in the column,
-	 * increasing the efficiency of the query.
-	 *
-	 * @todo   increase security against injections
-	 *
-	 * @see    assemble_records
 	 * @since  1.0.4
 	 * @param  string  Requested Column (i.e., 'context')
 	 * @return array   Array of distinct values
