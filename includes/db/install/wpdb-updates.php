@@ -13,16 +13,16 @@ function wp_stream_update_auto_200( $db_version, $current_version ) {
 	// If ALL new columns don't exist, carry on
 	if ( empty( $rows ) ) {
 		// Create new columns
-		$wpdb->query( "ALTER TABLE `{$prefix}_stream`
+		$wpdb->query( "ALTER TABLE `{$prefix}stream`
 			ADD `connector` VARCHAR(255) NOT NULL AFTER `type`,
 			ADD `context` VARCHAR(255) NOT NULL AFTER `connector`,
 			ADD `action` VARCHAR(255) NOT NULL AFTER `context`" );
 		// Add indexes for them
-		$wpdb->query( "CREATE INDEX connector ON `{$prefix}_stream` (connector)" );
-		$wpdb->query( "CREATE INDEX context ON `{$prefix}_stream` (context)" );
-		$wpdb->query( "CREATE INDEX action ON `{$prefix}_stream` (action)" );
+		$wpdb->query( "CREATE INDEX connector ON `{$prefix}stream` (connector)" );
+		$wpdb->query( "CREATE INDEX context ON `{$prefix}stream` (context)" );
+		$wpdb->query( "CREATE INDEX action ON `{$prefix}stream` (action)" );
 		// Drop the deprecated table
-		$wpdb->query( "DROP TABLE `{$prefix}_stream_context`" );
+		$wpdb->query( "DROP TABLE `{$prefix}stream_context`" );
 	// Else, fail the procedure alltogether
 	} elseif ( count( $rows ) < 3 ) {
 		wp_die( 'Invalid DB schema' );
