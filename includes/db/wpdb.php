@@ -133,6 +133,10 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		 * PARSE CORE FILTERS
 		 */
 		foreach ( $query as $column => $rules ) {
+			// Skip special query parameters
+			if ( 0 === strpos( $column, '_' ) ) {
+				continue;
+			}
 			$db_col = "$wpdb->stream.{$column}";
 			// Handle date column properly
 			if ( 'created' === $column ) {
