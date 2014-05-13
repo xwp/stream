@@ -346,30 +346,6 @@ class WP_Stream_Install_WPDB {
 
 		dbDelta( $sql );
 
-		$sql = "CREATE TABLE {$prefix}stream_context (
-			meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-			record_id bigint(20) unsigned NOT NULL,
-			context varchar(100) NOT NULL,
-			action varchar(100) NOT NULL,
-			connector varchar(100) NOT NULL,
-			PRIMARY KEY  (meta_id),
-			KEY context (context),
-			KEY action (action),
-			KEY connector (connector)
-		)";
-
-		if ( ! empty( $wpdb->charset ) ) {
-			$sql .= " CHARACTER SET $wpdb->charset";
-		}
-
-		if ( ! empty( $wpdb->collate ) ) {
-			$sql .= " COLLATE $wpdb->collate";
-		}
-
-		$sql .= ';';
-
-		dbDelta( $sql );
-
 		$sql = "CREATE TABLE {$prefix}stream_meta (
 			meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			record_id bigint(20) unsigned NOT NULL,
