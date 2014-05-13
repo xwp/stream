@@ -622,7 +622,7 @@ class WP_Stream_Admin {
 				delete_option( WP_Stream_Install_WPDB::KEY );
 				delete_option( WP_Stream_Settings::KEY );
 			} else {
-				self::$db->reset();
+				WP_Stream::$db->reset();
 
 				// Delete database options
 				if ( is_multisite() ) {
