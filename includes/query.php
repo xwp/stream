@@ -39,7 +39,7 @@ class WP_Stream_Query {
 			// Meta/Taxonomy sub queries
 			'meta'                  => array(),
 			// Fields selection
-			'fields'                => '',
+			'fields'                => '*',
 			// Hide records that match the exclude rules
 			'hide_excluded'         => ! empty( WP_Stream_Settings::$options['exclude_hide_previous_records'] ),
 		);
@@ -184,22 +184,28 @@ class WP_Stream_Query {
 		/**
 		 * PARSE META QUERY PARAMS
 		 * This is breaking change, meta should now be defined as:
-		 * args[ 'meta' ] => array( %key => %value )
-		 * args[ 'meta' ] => array( %key => array %values )
-		 * args[ 'meta' ] => array( %key => array( 'in' => array %values )
-		 * args[ 'meta' ] => array( %key => array( 'not_in' => array %values )
+		 * #1 args[ 'meta' ] => array( %key => %value )
+		 * #2 args[ 'meta' ] => array( %key => array %values )
+		 * #3 args[ 'meta' ] => array( %key => array( 'in' => array %values )
+		 *   While 'in' can be one of in/not_in/like/gt/lt/gte/lte ( just like core filters )
 		 */
 		if ( $args['meta'] ) {
 			$meta = (array) $args['meta'];
 			foreach ( $meta as $key => $values ) {
+				// #1
 				if ( ! is_array( $values ) ) {
 					$values   = (array) $values;
 				}
+				// #2
 				if ( 0 === key( $values ) ) {
 					$query['_meta'][ $key ]['in'] = $values;
-				} else {
-					foreach ( $values as $operator => $_values ) {
-						$query['_meta'][ $key ][ $operator ] = $_values;
+				}
+				// #3
+				else {
+					foreach ( $values as $operator => $_value ) {
+						if ( in_array( $operator, array( 'in', 'not_in', 'like', 'gt', 'gte', 'lt', 'lte' ) ) ) {
+							$query['_meta'][ $key ][ $operator ] = $_value;
+						}
 					}
 				}
 			}
@@ -222,9 +228,11 @@ class WP_Stream_Query {
 		$order     = esc_sql( $args['order'] );
 		$orderby   = $args['orderby'] ? esc_sql( $args['orderby'] ) : 'ID';
 		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'author', 'author_role', 'summary', 'visibility', 'parent', 'type', 'created' );
-		// TODO: Order by meta value
-		if ( in_array( $orderby, $orderable ) || false !== strpos( $orderby, 'meta.' )) {
-			$query['_order'] = array( $orderby => $order );
+		// TODO: Order by meta value, currently not possible without knowing the alias
+		if ( in_array( $orderby, $orderable ) /*|| false !== strpos( $orderby, 'meta.' )*/ ) {
+			if ( in_array( strtolower( $order ), array( 'asc', 'desc' ) ) ) {
+				$query['_order'] = array( $orderby => $order );
+			}
 		}
 
 		/**
@@ -275,6 +283,22 @@ function wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value 
 
 function wp_stream_delete_meta( $record_id, $meta_key, $meta_value = null, $delete_all = false ) {
 	return WP_Stream::$db->delete_meta( $record_id, $key, $meta_value, $delete_all );
+}
+
+function wp_stream_delete_records( $args = array() ) {
+	if ( $args ) {
+		$args['fields']           = 'ID';
+		$args['records_per_page'] = -1;
+		$records                  = wp_stream_query( $args );
+		$params                   = wp_list_pluck( $records, 'ID' );
+		if ( empty( $ids ) ) {
+			return 0;
+		}
+	} else {
+		$params = true; // Delete them ALL!
+	}
+
+	return WP_Stream::$db->delete( $params );
 }
 
 /**
