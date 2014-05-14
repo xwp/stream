@@ -19,7 +19,7 @@ tests_add_filter(
 		require dirname( dirname( __FILE__ ) ) . '/stream.php';
 
 		// Call Activate plugin function
-		WP_Stream::install();
+		WP_Stream::$db->install();
 	}
 );
 

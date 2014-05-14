@@ -41,6 +41,58 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		);
 	}
 
+	/**
+	 * Verify that all needed databases are present and add an error message if not.
+	 */
+	public function check_db() {
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
+		/**
+		 * Filter will halt DB check if set to true
+		 *
+		 * @param  bool
+		 * @return bool
+		 */
+		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
+			return;
+		}
+
+		global $wpdb;
+
+		$database_message  = '';
+		$uninstall_message = '';
+
+		// Check if all needed DB is present
+		foreach ( $this->get_table_names() as $table_name ) {
+			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
+				$database_message .= sprintf( '%s %s', __( 'The following table is not present in the WordPress database:', 'stream' ), $table_name );
+			}
+		}
+
+		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) && current_user_can( 'manage_network_plugins' ) ) {
+			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), network_admin_url( 'plugins.php#stream' ) );
+		} elseif ( current_user_can( 'activate_plugins' ) ) {
+			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
+		}
+
+		// Check upgrade routine
+		$this->install();
+
+		if ( ! empty( $database_message ) ) {
+			WP_Stream::notice( $database_message );
+			if ( ! empty( $uninstall_message ) ) {
+				WP_Stream::notice( $uninstall_message );
+			}
+		}
+	}
+
+	/**
+	 * Install or update DB schema
+	 *
+	 * @internal Used by check_db()
+	 */
 	public function install() {
 		/**
 		 * Filter will halt install() if set to true
@@ -57,7 +109,25 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		$update = WP_Stream_Install_WPDB::get_instance();
 	}
 
-	protected function insert( $data ) {
+	/**
+	 * Remove DB tables/schema
+	 */
+	public function reset() {
+		global $wpdb;
+		// Delete all tables
+		foreach ( $this->get_table_names() as $table ) {
+			$wpdb->query( "DROP TABLE $table" );
+		}
+	}
+
+	/**
+	 * Insert a new record
+	 *
+	 * @internal Used by store()
+	 * @param  array   $data Record data
+	 * @return integer       ID of the inserted record
+	 */
+	protected function insert( array $data ) {
 		global $wpdb;
 
 		$recordarr = $data;
@@ -98,31 +168,24 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		return $record_id;
 	}
 
-	public function get_meta( $record_id, $key, $single = false ) {
-		return get_metadata( 'record', $record_id, $key, $single );
-	}
-
-	public function add_meta( $record_id, $key, $val ) {
-		return add_metadata( 'record', $record_id, $key, $val );
-	}
-
-	public function update_meta( $record_id, $key, $val, $prev = null ) {
-		return update_metadata( 'record', $record_id, $key, $val, $prev );
-	}
-
-	public function delete_meta( $record_id, $key, $val = null, $delete_all = false ) {
-		return delete_metadata( 'record', $record_id, $key, $val, $delete_all );
+	/**
+	 * Update a single record
+	 * TODO: Implement
+	 *
+	 * @internal Used by store()
+	 * @param  array    $data Record data to be updated, must include ID
+	 * @return mixed          Record ID if successful, WP_Error if not
+	 */
+	protected function update( array $data ) {
 	}
 
 	/**
-	 * TODO Update a record information
+	 * Query records
 	 *
-	 * @param  array  $data Record data
-	 * @return mixed        Record ID if successful, WP_Error if not
+	 * @internal Used by WP_Stream_Query, and is not designed to be called explicitly
+	 * @param  array  $query Query arguments
+	 * @return array         List of records that match query
 	 */
-	protected function update( $data ) {
-	}
-
 	public function query( $query ) {
 		global $wpdb;
 
@@ -292,6 +355,20 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		}
 	}
 
+	/**
+	 * Get total count of the last query using query() method
+	 *
+	 * @return integer  Total item count
+	 */
+	public function get_found_rows() {
+		return $this->found_rows;
+	}
+
+	/**
+	 * Delete records with matching IDs
+	 * @param  array|true $ids Array of IDs, or True to delete all records
+	 * @return mixed           True if no errors, WP_Error if arguments fail
+	 */
 	public function delete( $ids ) {
 		global $wpdb;
 
@@ -308,14 +385,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		$wpdb->query( "DELETE FROM $wpdb->stream $where" );
 		$where = str_replace( 'ID', 'record_id', $where );
 		$wpdb->query( "DELETE FROM $wpdb->streammeta $where" );
-	}
-
-	public function reset() {
-		global $wpdb;
-		// Delete all tables
-		foreach ( $this->get_table_names() as $table ) {
-			$wpdb->query( "DROP TABLE $table" );
-		}
+		return true;
 	}
 
 	/**
@@ -333,14 +403,58 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	}
 
 	/**
-	 * Get total count of the last query using query() method
+	 * Retrieve metadata of a single record
 	 *
-	 * @return integer  Total item count
+	 * @internal User by wp_stream_get_meta()
+	 * @param  integer $record_id Record ID
+	 * @param  string  $key       Optional, Meta key, if omitted, retrieve all meta data of this record.
+	 * @param  boolean $single    Default: false, Return single meta value, or all meta values under specified key.
+	 * @return string|array       Single/Array of meta data.
 	 */
-	public function get_found_rows() {
-		return $this->found_rows;
+	public function get_meta( $record_id, $key, $single = false ) {
+		return get_metadata( 'record', $record_id, $key, $single );
 	}
 
+	/**
+	 * Add metadata for a single record
+	 *
+	 * @internal User by wp_stream_add_meta()
+	 * @param  integer $record_id Record ID
+	 * @param  string  $key       Meta key
+	 * @param  mixed   $val       Meta value, will be serialized if non-scalar
+	 * @return int|bool           Meta ID on success, false on failure
+	 */
+	public function add_meta( $record_id, $key, $val ) {
+		return add_metadata( 'record', $record_id, $key, $val );
+	}
+
+	/**
+	 * Update metadata for a single record
+	 *
+	 * @internal User by wp_stream_update_meta()
+	 * @param  integer $record_id Record ID
+	 * @param  string  $key       Meta key
+	 * @param  mixed   $val       Meta value, will be serialized if non-scalar
+	 * @param  mixed   $prev      Optional, Previous Meta value to replace, will be serialized if non-scalar
+	 * @return int|bool           Meta ID if meta-key didn't exist, true on successful update, false on failure
+	 */
+	public function update_meta( $record_id, $key, $val, $prev = null ) {
+		return update_metadata( 'record', $record_id, $key, $val, $prev );
+	}
+
+	/**
+	 * Delete metadata for specified record(s)
+	 *
+	 * @internal Used by wp_stream_delete_meta()
+	 * @param  integer $record_id  Record ID, can be omitted if delete_all=true
+	 * @param  string  $key        Meta key
+	 * @param  mixed   $val        Optional, only delete entries with this value, will be serialized if non-scalar
+	 * @param  boolean $delete_all Default: false, delete all matching entries from all objects
+	 * @return boolean             True on success, false on failure
+	 */
+	public function delete_meta( $record_id, $key, $val = null, $delete_all = false ) {
+		return delete_metadata( 'record', $record_id, $key, $val, $delete_all );
+	}
 }
 
 WP_Stream::$db = new WP_Stream_DB_WPDB();

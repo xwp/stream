@@ -79,7 +79,7 @@ class WP_Stream {
 		}
 
 		// Check DB and add message if not present
-		add_action( 'init', array( $this, 'verify_database_present' ) );
+		add_action( 'init', array( self::$db, 'check_db' ) );
 
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -153,65 +153,6 @@ class WP_Stream {
 	 */
 	public static function i18n() {
 		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-	}
-
-	/**
-	 * Installation / Upgrade checks
-	 *
-	 * @action register_activation_hook
-	 * @return void
-	 */
-	public static function install() {
-		self::$db->install();
-	}
-
-	/**
-	 * Verify that all needed databases are present and add an error message if not.
-	 *
-	 * @return void
-	 */
-	public function verify_database_present() {
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		}
-
-		/**
-		 * Filter will halt verify_database_present() if set to true
-		 *
-		 * @param  bool
-		 * @return bool
-		 */
-		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
-			return;
-		}
-
-		global $wpdb;
-
-		$database_message  = '';
-		$uninstall_message = '';
-
-		// Check if all needed DB is present
-		foreach ( self::$db->get_table_names() as $table_name ) {
-			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-				$database_message .= sprintf( '%s %s', __( 'The following table is not present in the WordPress database:', 'stream' ), $table_name );
-			}
-		}
-
-		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) && current_user_can( 'manage_network_plugins' ) ) {
-			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), network_admin_url( 'plugins.php#stream' ) );
-		} elseif ( current_user_can( 'activate_plugins' ) ) {
-			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
-		}
-
-		// Check upgrade routine
-		self::install();
-
-		if ( ! empty( $database_message ) ) {
-			self::notice( $database_message );
-			if ( ! empty( $uninstall_message ) ) {
-				self::notice( $uninstall_message );
-			}
-		}
 	}
 
 	static function update_activation_hook() {
