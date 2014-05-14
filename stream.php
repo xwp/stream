@@ -154,7 +154,7 @@ class WP_Stream {
 	}
 
 	static function update_activation_hook() {
-		WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( __CLASS__, 'install' ), self::VERSION );
+		WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( self::$db, 'install' ), self::VERSION );
 	}
 
 	/**
