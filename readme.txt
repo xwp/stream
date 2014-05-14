@@ -98,7 +98,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 * New: Admin pointers to highlight when new admin screens are introduced ([#466](https://github.com/x-team/wp-stream/issues/466))
 * Tweak: Filter introduced to allow the Stream admin menu position to be changed ([#99](https://github.com/x-team/wp-stream/issues/99))
-* Tweak: Provide option label for Stream database update ([#444](https://github.com/x-team/wp-stream/pull/444))
+* Tweak: Provide option label for records that show when the Stream database has updated ([#444](https://github.com/x-team/wp-stream/pull/444))
 * Tweak: Better handling of authors in the list table ([#448](https://github.com/x-team/wp-stream/pull/448))
 * Tweak: Way for developers to set their Stream Extensions affiliate ID on links from the Extensions screen ([#482](https://github.com/x-team/wp-stream/issues/482))
 * Fix: Extensions screen CSS bug in Firefox ([#464](https://github.com/x-team/wp-stream/issues/464))
