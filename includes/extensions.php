@@ -348,6 +348,10 @@ class WP_Stream_Extensions {
 	 * @return array
 	 */
 	function prepare_extensions_for_js( $extensions ) {
+		if ( false === $extensions ) {
+			return array();
+		}
+
 		$prepared_extensions = array();
 
 		foreach ( (array) $extensions as $extension ) {
