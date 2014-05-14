@@ -534,7 +534,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters_string .= sprintf( __( '%1$sShow filter controls via the screen options tab above%2$s', 'stream' ), '<span class="filter_info" style="display:none">', '</span>' );
 
 		foreach ( $filters as $name => $data ) {
-			// @todo: Make this a switch statement
 			switch ( $name ) {
 				case 'date' :
 					$filters_string .= $this->filter_date( $data['items'] );
@@ -587,6 +586,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 		wp_parse_args( $args, $defaults );
 		extract( $args );
 
+		if ( ! isset( $helper ) ) {
+			$helper = false;
+		}
+
 		if ( isset( $ajax ) && $ajax ) {
 			$out = sprintf(
 				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s"/>',
@@ -595,13 +598,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 				esc_html( $title )
 			);
 		} else {
-			$options  = array( '<option value=""></option>' );
-			$selected = wp_stream_filter_input( INPUT_GET, $name );
+			$options   = array( '<option value=""></option>' );
+			$context   = wp_stream_filter_input( INPUT_GET, $name );
+			$connector = wp_stream_filter_input( INPUT_GET, $helper );
 			foreach ( $items as $value => $item ) {
 				if ( isset( $item['children'] ) ) {
 					$group = sprintf(
-						'<optgroup data-value="%s" data-helper-input="%s" %s %s title="%s" label="%s">',
+						'<optgroup data-value="%s" data-selected="%s" data-helper-input="%s" %s %s title="%s" label="%s">',
 						esc_attr( $value ),
+						$connector === $value ? 'true' : 'false',
 						$helper ? esc_attr( $helper ) : '',
 						isset( $item['disabled'] ) ? $item['disabled'] : '', // xss ok
 						isset( $item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $item['icon'] ) ) : '',
@@ -614,7 +619,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 						$group_options[] = sprintf(
 							'<option value="%s" %s %s %s title="%s">%s</option>',
 							esc_attr( $child_value ),
-							selected( $child_value, $selected, false ),
+							selected( $child_value, $context, false ),
 							isset( $child_item['disabled'] ) ? $child_item['disabled'] : '', // xss ok
 							isset( $child_item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $child_item['icon'] ) ) : '',
 							isset( $child_item['tooltip'] ) ? esc_attr( $child_item['tooltip'] ) : '',
@@ -629,7 +634,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$options[] = sprintf(
 						'<option value="%s" %s %s %s title="%s">%s</option>',
 						esc_attr( $value ),
-						selected( $value, $selected, false ),
+						selected( $value, $context, false ),
 						isset( $item['disabled'] ) ? $item['disabled'] : '', // xss ok
 						isset( $item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $item['icon'] ) ) : '',
 						isset( $item['tooltip'] ) ? esc_attr( $item['tooltip'] ) : '',
