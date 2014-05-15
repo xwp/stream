@@ -24,6 +24,7 @@ class WP_Stream_Author {
 	function __construct( $user_id, $author_meta = array() ) {
 		$this->id   = $user_id;
 		$this->meta = $author_meta;
+
 		if ( $this->id ) {
 			$this->user = new WP_User( $this->id );
 		}
@@ -91,10 +92,18 @@ class WP_Stream_Author {
 	}
 
 	/**
-	 * @param int $size
-	 * @return string
+	 * Return a Gravatar image as an HTML element.
+	 *
+	 * This function will not return an avatar if "Show Avatars" is unchecked in Settings > Discussion.
+	 *
+	 * @param int $size (optional) Size of Gravatar to return (in pixels), max is 512, default is 80
+	 * @return string An img HTML element
 	 */
 	function get_avatar_img( $size = 80 ) {
+		if ( ! get_option( 'show_avatars' ) ) {
+			return false;
+		}
+
 		if ( 0 === $this->id ) {
 			$url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
 			$avatar = sprintf( '<img alt="%1$s" src="%2$s" class="avatar avatar-%3$s photo" height="%3$s" width="%3$s">', esc_attr( $this->get_display_name() ), esc_url( $url ), esc_attr( $size ) );
@@ -111,13 +120,23 @@ class WP_Stream_Author {
 	}
 
 	/**
-	 * @param int $size
-	 * @return string
+	 * Return the URL of a Gravatar image.
+	 *
+	 * @param int $size (optional) Size of Gravatar to return (in pixels), max is 512, default is 80
+	 * @return string Gravatar image URL
 	 */
 	function get_avatar_src( $size = 80 ) {
 		$img = $this->get_avatar_img( $size );
-		assert( preg_match( '/src=([\'"])(.*?)\1/', $img, $matches ) );
-		$src = html_entity_decode( $matches[2] );
+
+		if ( ! $img ) {
+			return false;
+		}
+
+		if ( 1 === preg_match( '/src=([\'"])(.*?)\1/', $img, $matches ) ) {
+			$src = html_entity_decode( $matches[2] );
+		} else {
+			return false;
+		}
 
 		return $src;
 	}
@@ -125,10 +144,13 @@ class WP_Stream_Author {
 	/**
 	 * Tries to find a label for the record's author_role.
 	 *
-	 * If the author_role exists, use the label associated with it
-	 * Otherwise, if there is a user role label stored as Stream meta then use that
-	 * Otherwise, if the user exists, use the label associated with their current role
-	 * Otherwise, use the role slug as the label
+	 * If the author_role exists, use the label associated with it.
+	 *
+	 * Otherwise, if there is a user role label stored as Stream meta then use that.
+	 *
+	 * Otherwise, if the user exists, use the label associated with their current role.
+	 *
+	 * Otherwise, use the role slug as the label.
 	 *
 	 * @return string|null
 	 */

@@ -103,6 +103,10 @@ class WP_Stream_DB {
 		}
 
 		foreach ( $recordarr['meta'] as $key => $vals ) {
+			// If associative array, serialize it, otherwise loop on its members
+			if ( is_array( $vals ) && 0 !== key( $vals ) ) {
+				$vals = array( $vals );
+			}
 			foreach ( (array) $vals as $val ) {
 				$val = maybe_serialize( $val );
 				$this->insert_meta( $record_id, $key, $val );

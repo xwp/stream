@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:      X-team, fjarrett, westonruter, japh, lukecarbis, shadyvb, powelski, jonathanbardo, c3mdigital, johnregan3, akeda, kucrut, topher1kenobe
+Contributors:      stream, X-team, fjarrett, westonruter, japh, lukecarbis, shadyvb, jonathanbardo, c3mdigital, johnregan3, akeda, kucrut, topher1kenobe
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.7
 Tested up to:      3.9
@@ -24,6 +24,13 @@ Every logged-in user action is logged in a user activity stream and organized fo
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
 Visit the Stream Extensions screen inside the plugin to learn more about the powerful
+
+**Extensions:**
+
+ * [Notifications](https://wp-stream.com/extension/notifications/)
+ * [Reports](https://wp-stream.com/extension/reports/)
+ * [Data Exporter](https://wp-stream.com/extension/data-exporter/)
+ * [Cherry-Pick](https://wp-stream.com/extensions/cherry-pick/)
 
 **Recorded activity:**
 
@@ -94,11 +101,28 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 1.4.5 - May 15, 2014 =
+
+* New: Lightweight frontend indicator for sites using Stream ([#507](https://github.com/x-team/wp-stream/issues/507))
+* Tweak: Add filterable method for excluded comment types ([#487](https://github.com/x-team/wp-stream/issues/487))
+* Tweak: Rename "ID" column label to "Record ID" ([#490](https://github.com/x-team/wp-stream/issues/490))
+* Tweak: One admin notice for any missing DB tables ([#506](https://github.com/x-team/wp-stream/pull/506))
+* Fix: Custom authentication schemes not tracking user logins correctly ([#434](https://github.com/x-team/wp-stream/issues/434))
+* Fix: Taxonomy connector conflicts with Edit Flow plugin ([#498](https://github.com/x-team/wp-stream/issues/498))
+* Fix: Switching user is incorrectly tracked ([#501](https://github.com/x-team/wp-stream/issues/501))
+* Fix: Extension activation links broken when plugin folders are renamed ([#502](https://github.com/x-team/wp-stream/issues/502))
+* Fix: Author info showing up incorrectly ([#505](https://github.com/x-team/wp-stream/issues/505))
+* Fix: Incompatibility with multi-server environments ([#517](https://github.com/x-team/wp-stream/issues/517))
+* Fix: Warnings seen when Show Avatars is disabled ([#518](https://github.com/x-team/wp-stream/issues/518))
+* Fix: Notices for non-existent extension data after timeout ([#529](https://github.com/x-team/wp-stream/pull/529))
+
+Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [japh](http://profiles.wordpress.org/japh/)
+
 = 1.4.4 - May 6, 2014 =
 
 * New: Admin pointers to highlight when new admin screens are introduced ([#466](https://github.com/x-team/wp-stream/issues/466))
 * Tweak: Filter introduced to allow the Stream admin menu position to be changed ([#99](https://github.com/x-team/wp-stream/issues/99))
-* Tweak: Provide option label for Stream database update ([#444](https://github.com/x-team/wp-stream/pull/444))
+* Tweak: Provide option label for records that show when the Stream database has updated ([#444](https://github.com/x-team/wp-stream/pull/444))
 * Tweak: Better handling of authors in the list table ([#448](https://github.com/x-team/wp-stream/pull/448))
 * Tweak: Way for developers to set their Stream Extensions affiliate ID on links from the Extensions screen ([#482](https://github.com/x-team/wp-stream/issues/482))
 * Fix: Extensions screen CSS bug in Firefox ([#464](https://github.com/x-team/wp-stream/issues/464))
