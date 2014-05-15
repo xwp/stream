@@ -23,11 +23,9 @@ class WP_Stream_DB {
 
 		self::$table         = $prefix . 'stream';
 		self::$table_meta    = $prefix . 'stream_meta';
-		self::$table_context = $prefix . 'stream_context';
 
 		$wpdb->stream        = self::$table;
 		$wpdb->streammeta    = self::$table_meta;
-		$wpdb->streamcontext = self::$table_context;
 
 		// Hack for get_metadata
 		$wpdb->recordmeta = self::$table_meta;

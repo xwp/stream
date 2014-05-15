@@ -265,6 +265,9 @@ function wp_stream_update_131( $db_version, $current_version ) {
 function wp_stream_update_migrate_installer_edits_to_theme_editor_connector() {
 	global $wpdb;
 
+	$prefix = WP_Stream_Install::$table_prefix;
+	$wpdb->streamcontext = $prefix . 'stream_context';
+
 	$db_version      = WP_Stream_Install::$db_version;
 	$current_version = WP_Stream_Install::$current;
 
@@ -417,6 +420,9 @@ function wp_stream_update_128( $db_version, $current_version ) {
 function wp_stream_update_migrate_media_to_attachment_type() {
 	global $wpdb;
 
+	$prefix = WP_Stream_Install::$table_prefix;
+	$wpdb->streamcontext = $prefix . 'stream_context';
+
 	$sql = "SELECT r.ID id, r.object_id pid, c.meta_id mid
 		FROM $wpdb->stream r
 		JOIN $wpdb->streamcontext c
@@ -454,6 +460,9 @@ function wp_stream_update_migrate_media_to_attachment_type() {
  */
 function wp_stream_update_125( $db_version, $current_version ) {
 	global $wpdb;
+
+	$prefix = WP_Stream_Install::$table_prefix;
+	$wpdb->streamcontext = $prefix . 'stream_context';
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
