@@ -239,7 +239,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		// Handle `in`/`not_in` operators
 		elseif ( in_array( $operator, array( 'in', 'not_in') ) ) {
 			$values  = is_array( $value ) ? $value : array( $value );
-			$db_op   = $operator === 'in' ? '$in' : '$nin';
+			$op   = $operator === 'in' ? '$in' : '$nin';
 			$query[ $col ][ $op ] = $values;
 			return $query;
 		}
@@ -302,9 +302,9 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	 * @return string|array       Single/Array of meta data.
 	 */
 	public function get_meta( $record_id, $key, $single = false ) {
-		if ( $record = self::$coll->findOne( array( '_id' => $this->create_mongo_id( $id ) ) ) ) {
+		if ( $record = self::$coll->findOne( array( '_id' => $this->create_mongo_id( $record_id ) ) ) ) {
 			if ( $key ) {
-				$meta = $record->meta->{$key};
+				$meta = $record['meta'][ $key ];
 				if ( empty( $meta ) ) {
 					return false;
 				}
@@ -315,7 +315,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 					return $meta;
 				}
 			} else {
-				return $record->meta;
+				return $record['meta'];
 			}
 		}
 		else {
