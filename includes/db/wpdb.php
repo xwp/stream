@@ -267,7 +267,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 			$select = implode( ', ', $select );
 
 			// TODO: Implement `distinct` parameter in WP_Stream_Query
-			if ( 1 === count( $fields ) && $query['_distinct'] ) {
+			if ( 1 === count( explode( ',', $select ) ) && ! empty( $query['_distinct'] ) ) {
 				$select = 'DISTINCT ' . $select;
 			} elseif ( ! empty( $select ) ) {
 				$select .= ", `$wpdb->stream`.`ID`";
@@ -290,7 +290,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		 * Allows developers to change final SQL of Stream Query
 		 *
 		 * @param  string $sql   SQL statement
-		 * @param  array  $args  Arguments passed to query
+		 * @param  array  $args  Arguments passed to query()
 		 * @return string
 		 */
 		$sql = apply_filters( 'wp_stream_query_sql', $sql, $query );

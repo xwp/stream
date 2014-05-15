@@ -80,212 +80,6 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		self::$coll->drop();
 	}
 
-	function parse( $args ) {
-		$args = parent::parse( $args );
-
-		// ignore_contexts is not really useful here since we're
-		// using document-based DB, so we'll skip that
-
-		$query = array();
-
-		$whitelisted = array(
-			'object_id',
-			'type',
-			'ip',
-			'author_role',
-			'visibility',
-			'site_id',
-			'blog_id',
-		);
-
-		foreach ( $whitelisted as $key ) {
-			if ( $args[ $key ] ) {
-				$query[ $key ] = $args[ $key ];
-			}
-		}
-
-		if ( $args['author'] || 0 === $args['author'] ) {
-			$query['author'] = intval( $args['author'] );
-		}
-
-		if ( $args['search'] ) {
-			$search = sprintf( '/%s/i', trim( $args['search'], '%' ) );
-
-			$query[ $args['search_field'] ]['$regex'] = $search;
-		}
-
-		// record_greater_than, curtsey of live-update
-		if ( $args['record_greater_than'] ) {
-			$query['_id']['$gt'] = new MongoId( $args['record_greater_than'] );
-		}
-
-		if ( $args['record__in'] ) {
-			$query['_id']['$in'] = array_map(
-				array( $this, 'create_mongo_id' ),
-				(array) $args['record__in']
-			);
-		}
-
-		if ( $args['record__not_in'] ) {
-			$query['_id']['$nin'] = array_map(
-				array( $this, 'create_mongo_id' ),
-				(array) $args['record__not_in']
-			);
-		}
-
-		if ( $args['record_parent'] ) {
-			$query['parent'] = $args['record_parent'];
-		}
-
-		if ( $args['record_parent__in'] ) {
-			$query['parent']['$in'] = array_map(
-				array( $this, 'create_mongo_id' ),
-				(array) $args['record_parent__in']
-			);
-		}
-
-		if ( $args['record_parent__not_in'] ) {
-			$query['parent']['$nin'] = array_map(
-				array( $this, 'create_mongo_id' ),
-				(array) $args['record_parent__not_in']
-			);
-		}
-
-		if ( $args['author__in'] ) {
-			$author__in = array_filter( (array) $args['author__in'], 'is_numeric' );
-			if ( $author__in ) {
-				$query['author']['$in'] = $author__in;
-			}
-		}
-
-		if ( $args['author__not_in'] ) {
-			$author__not_in = array_filter( (array) $args['author__not_in'], 'is_numeric' );
-			if ( $author__not_in ) {
-				$query['author']['$nin'] = $author__not_in;
-			}
-		}
-
-		if ( $args['author_role__in'] ) {
-			$query['author_role']['$in'] = (array) $args['author_role__in'];
-		}
-
-		if ( $args['author_role__not_in'] ) {
-			$query['author_role']['$nin'] = (array) $args['author_role__not_in'];
-		}
-
-		if ( $args['ip__in'] ) {
-			$query['ip']['$in'] = (array) $args['ip__in'];
-		}
-
-		if ( $args['ip__not_in'] ) {
-			$query['ip']['$nin'] = (array) $args['ip__not_in'];
-		}
-
-		// TODO: Parsing Data filters {date/date_from/date_to}
-		if ( $args['date'] ) {
-			$date_from = strtotime( $args['date'] );
-			$date_to   = $date_from;
-		} else {
-			if ( $args['date_from'] ) {
-				$date_from = strtotime( $args['date_from'] );
-			}
-			if ( $args['date_to'] ) {
-				$date_to = strtotime( $args['date_to'] );
-			}
-		}
-
-		if ( isset( $date_from ) ) {
-			$query['created']['$gt'] = $this->create_mongo_date( $date_from );
-		}
-
-		if ( isset( $date_to ) ) {
-			$date_to += DAY_IN_SECONDS - 1; // till end of the day
-			$query['created']['$lt'] = $this->create_mongo_date( $date_to );
-		}
-
-		// TODO: Meta query
-		// TODO: Context query
-
-		// Pagination params handled by query()
-		// Order params handled by query()
-		// Fields/Distinct params handled by query()
-
-		return array( $args, $query );
-	}
-
-	function query( $args ) {
-		list( $args, $query ) = $this->parse( $args );
-
-		/**
-		 * PARSE FIELDS PARAMETER
-		 */
-		$select = array();
-
-		if ( $args['fields'] ) {
-			$fields = array_filter( explode( ',', $args['fields'] ) );
-			$fields = array_intersect( $fields, array_keys( get_class_vars( 'WP_Stream_Record' ) ) );
-			$fields = array_diff( $fields, array( 'meta', 'contexts' ) );
-			$select = array_fill_keys( $fields, 1 );
-		}
-
-		$distinct = ( 1 === count( $fields ) && $args['distinct'] );
-
-		if ( $distinct ) {
-			$cursor = self::$coll->distinct( key( $select ), $query );
-		} else {
-			$cursor = self::$coll->find( $query );
-		}
-
-		/**
-		 * PARSE SORTING/ORDER PARAMS
-		 */
-		if ( $args['order'] && $args['orderby'] ) {
-			$order   = 'desc' === strtolower( $args['order'] ) ? -1 : 1;
-			$orderby = ( empty( $args['orderby'] ) || 'ID' === $args['orderby'] ) ? '_id' : $args['orderby'];
-
-			$cursor->sort( array( $orderby => $order ) );
-		}
-
-		/**
-		 * PARSE PAGINATION AND LIMIT
-		 */
-		$perpage = intval( $args['records_per_page'] );
-
-		if ( -1 === $perpage ) {
-			$perpage = 0;
-		}
-
-		$cursor->limit( $perpage );
-
-		// Pagination
-		$paged = intval( $args['paged'] );
-
-		if ( $perpage > 0 && $paged > 1 ) {
-			$cursor->skip( ( $paged - 1 ) * $perpage );
-		}
-
-		/**
-		 * FORMAT RESULTS
-		 */
-		$results = array();
-
-		if ( $distinct ) {
-			foreach ( $cursor as $value ) {
-				// Return an object as well
-				$results[] = (object) array( key( $search ) => $value );
-			}
-		} else {
-			foreach ( $cursor as $document ) {
-				$object          = (object) $document;
-				$object->ID      = (string) $document['_id'];
-				$object->created = date( 'Y-m-d H:i:s', $document['created']->sec );
-				$results[]       = $object;
-			}
-		}
-
-		return $results;
-	}
-
 	/**
 	 * Insert a new record
 	 *
@@ -318,9 +112,157 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		return (bool) self::$coll->update( array( '_id' => $data['_id'] ), $data );
 	}
 
-	// TODO
+	/**
+	 * Query records
+	 *
+	 * @internal Used by WP_Stream_Query, and is not designed to be called explicitly
+	 * @param  array  $query Query arguments
+	 * @return array         List of records that match query
+	 */
+	public function query( $query ) {
+		$_query = array();
+
+		/**
+		 * PARSE CORE FILTERS
+		 */
+		foreach ( $query as $column => $rules ) {
+			// Skip special query parameters
+			if ( 0 === strpos( $column, '_' ) ) {
+				continue;
+			}
+			foreach ( $rules as $operator => $value ) {
+				$_query = $this->parse_rule( $column, $operator, $value, $_query );
+			}
+		}
+
+		/**
+		 * PARSE META FILTERS
+		 */
+		if ( isset( $query['_meta'] ) ) {
+			foreach ( $query['_meta'] as $meta_key => $rules ) {
+				$meta_key = 'meta.' . $meta_key;
+				foreach ( $rules as $operator => $value ) {
+					$_query = $this->parse_rule( $meta_key, $operator, $value, $_query );
+				}
+			}
+		}
+
+		/**
+		 * PARSE SELECT PARAMETER
+		 */
+		if ( empty( $query['_select'] ) || '*' === $query['_select'][0] ) {
+			$select = array();
+		} else {
+			$select = $query['_select'];
+		}
+
+		/**
+		 * Allows developers to change final Query
+		 *
+		 * @param  array  $_query  MongoDB Query statement
+		 * @param  array  $args    Arguments passed to query()
+		 * @return array
+		 */
+		$_query = apply_filters( 'wp_stream_query_mongodb', $_query, $query );
+
+		$distinct = ( 1 === count( $select ) && ! empty( $query['_distinct'] ) );
+		$cursor = $distinct
+			? self::$coll->distinct( key( $select ), $_query )
+			: self::$coll->find( $_query, $select );
+
+		$this->found_rows = self::$coll->count( $_query );
+
+		/**
+		 * PARSE SORTING/ORDER PARAMS
+		 */
+		$order   = 'desc' === strtolower( key( $query['_order'] ) ) ? -1 : 1;
+		$orderby = current( $query['_order'] );
+		$cursor->sort( array( $orderby => $order ) );
+
+		/**
+		 * PARSE PAGINATION AND LIMIT
+		 */
+		if ( isset( $query['_perpage'] ) ) {
+			$offset  = $query['_offset'];
+			$perpage = $query['_perpage'];
+			$cursor->skip( $offset )->limit( $perpage );
+		}
+
+		/**
+		 * FORMAT RESULTS
+		 */
+		$results = array();
+
+		if ( $distinct ) {
+			foreach ( $cursor as $value ) {
+				// Return an object as well
+				$results[] = (object) array( key( $search ) => $value );
+			}
+		} else {
+			foreach ( $cursor as $document ) {
+				$object          = (object) $document;
+				$object->ID      = (string) $document['_id'];
+				$object->created = date( 'Y-m-d H:i:s', $document['created']->sec );
+				$results[]       = $object;
+			}
+		}
+
+		/**
+		 * Allows developers to change the final result set of records
+		 *
+		 * @param  array  $results SQL result
+		 * @return array  Filtered array of records
+		 */
+		return apply_filters( 'wp_stream_query_results', $results );
+	}
+
+	/**
+	 * Parse a single query rule
+	 *
+	 * eg: %column => %operator => array %values
+	 *
+	 * @param  string $col      Column name
+	 * @param  string $operator Comparison operator, from [like/in/not_in/gt(e)/lt(e)]
+	 * @param  mixed  $value    Value to compare to, can be string/array
+	 * @param  array  $query    Query array to append to
+	 * @return array            A single MongoDB criteria rule
+	 */
+	private function parse_rule( $col, $operator, $value, array $query = array() ) {
+
+		// Handle `like` operator
+		if ( 'like' === $operator ) {
+			$value = sprintf( '/%s/i', trim( $value, '%' ) );
+			$query[ $col ]['$regex'] = $value;
+			return $query;
+		}
+
+		// Handle `in`/`not_in` operators
+		elseif ( in_array( $operator, array( 'in', 'not_in') ) ) {
+			$values  = is_array( $value ) ? $value : array( $value );
+			$db_op   = $operator === 'in' ? '$in' : '$nin';
+			$query[ $col ][ $op ] = $values;
+			return $query;
+		}
+
+		// Handle numerical comparison operators
+		elseif ( in_array( $operator, array( 'gt', 'lt', 'gte', 'lte' ) ) ) {
+			$op = '$' . $operator;
+			// Handling dates
+			if ( $col === 'created' ) {
+				$value = $this->create_mongo_date( $value );
+			}
+			$query[ $col ][ $op ] = $value;
+			return $query;
+		}
+	}
+
+	/**
+	 * Get total count of the last query using query() method
+	 *
+	 * @return integer  Total item count
+	 */
 	function get_found_rows() {
-		return 0;
+		return $this->found_rows;
 	}
 
 	/**
