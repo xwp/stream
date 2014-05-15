@@ -1,3 +1,4 @@
+
 <?php
 
 /**
@@ -66,6 +67,7 @@ function wp_stream_update_142( $db_version, $current_version ) {
 			}
 		}
 	}
+
 	return $current_version;
 }
 
