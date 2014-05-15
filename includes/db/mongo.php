@@ -55,7 +55,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		$collections = self::$db->getCollectionNames();
 		if ( in_array( 'stream', $collections ) ) {
 			// No update routines here
-			continue;
+			return;
 		} else {
 			// Create collection and proper indexes
 			$this->install();
@@ -87,7 +87,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	 * @param  array   $data Record data
 	 * @return integer       ID of the inserted record
 	 */
-	protected function insert( $data ) {
+	protected function insert( array $data ) {
 		// Fallback from `contexts` to the new flat table structure
 		if ( isset( $data['contexts'] ) ) {
 			$data['action']  = reset( $data['contexts'] );
@@ -108,7 +108,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	 * @param  array    $data Record data to be updated, must include ID
 	 * @return mixed          True if successful, WP_Error if not
 	 */
-	protected function update( $data ) {
+	protected function update( array $data ) {
 		return (bool) self::$coll->update( array( '_id' => $data['_id'] ), $data );
 	}
 
@@ -261,7 +261,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	 *
 	 * @return integer  Total item count
 	 */
-	function get_found_rows() {
+	public function get_found_rows() {
 		return $this->found_rows;
 	}
 
@@ -270,7 +270,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	 * @param  array|true $ids Array of IDs, or True to delete all records
 	 * @return mixed           True if no errors, WP_Error if arguments fail
 	 */
-	function delete( $ids ) {
+	public function delete( $ids ) {
 		if ( is_array( $ids ) ) {
 			$ids = array_map( array( $this, 'create_mongo_id' ), $ids );
 			return self::$coll->remove( array( '_id' => array( '$in' => $ids ) ) );
