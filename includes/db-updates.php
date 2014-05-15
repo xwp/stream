@@ -14,8 +14,9 @@ function wp_stream_update_145( $db_version, $current_version ) {
 	global $wpdb;
 
 	// Get only the author_meta values that are double-serialized
-	$sql  = "SELECT record_id, meta_value WHERE meta_key = 'author_meta' AND meta_value LIKE 's:%'";
-	$rows = $wpdb->get_results( $sql );
+	$prefix = WP_Stream_Install::$table_prefix;
+	$sql    = "SELECT record_id, meta_value FROM {$prefix}stream_meta WHERE meta_key = 'author_meta' AND meta_value LIKE 's:%'";
+	$rows   = $wpdb->get_results( $sql );
 
 	foreach ( $rows as $row ) {
 		$row->meta_value = maybe_unserialize( maybe_unserialize( $row->meta_value ) );
