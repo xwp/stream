@@ -80,9 +80,6 @@ class WP_Stream_Log {
 				'agent'           => WP_Stream_Author::get_current_agent(),
 			);
 		}
-		if ( isset( $args['author_meta'] ) ) {
-			$args['author_meta'] = maybe_serialize( $args['author_meta'] );
-		}
 
 		// Remove meta with null values from being logged
 		$meta = array_filter(
