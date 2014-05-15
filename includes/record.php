@@ -13,12 +13,13 @@ class WP_Stream_Record
 	public $visibility;
 	public $parent;
 	public $type;
+	public $connector;
+	public $context;
+	public $action;
 	public $created;
 	public $ip;
 
 	public $meta;
-	public $contexts;
-	public $connector;
 
 	public function __construct( $id = null ) {
 		if ( $id ) {
