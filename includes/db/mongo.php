@@ -70,7 +70,12 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	public function install() {
 		self::$db->createCollection('stream');
 		$fields = get_class_vars('WP_Stream_Record');
-		self::$db->createIndex( $fields );
+		// TODO: Provide more effecient indexes
+		// @see http://docs.mongodb.org/manual/core/index-types/
+		$indexes = array_fill_keys( array_keys( $fields ), 1 );
+		foreach ( $indexes as $index => $type ) {
+			self::$coll->createIndex( array( $index => $type ) );
+		}
 	}
 
 	/**
@@ -175,9 +180,14 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		/**
 		 * PARSE SORTING/ORDER PARAMS
 		 */
-		$order   = 'desc' === strtolower( key( $query['_order'] ) ) ? -1 : 1;
-		$orderby = current( $query['_order'] );
-		$cursor->sort( array( $orderby => $order ) );
+		if ( isset( $query['_order'] ) ) {
+			$order   = 'desc' === strtolower( current( $query['_order'] ) ) ? -1 : 1;
+			$orderby = key( $query['_order'] );
+			if ( 'id' === strtolower( $orderby ) ) {
+				$orderby = '_id';
+			}
+			$cursor->sort( array( $orderby => $order ) );
+		}
 
 		/**
 		 * PARSE PAGINATION AND LIMIT
@@ -200,10 +210,10 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 			}
 		} else {
 			foreach ( $cursor as $document ) {
-				$object          = (object) $document;
-				$object->ID      = (string) $document['_id'];
-				$object->created = date( 'Y-m-d H:i:s', $document['created']->sec );
-				$results[]       = $object;
+				$document['ID']      = (string) $document['_id'];
+				$document['created'] = date( 'Y-m-d H:i:s', $document['created']->sec );
+				$object              = WP_Stream_Record::instance( $document );
+				$results[]           = $object;
 			}
 		}
 
@@ -240,6 +250,11 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		elseif ( in_array( $operator, array( 'in', 'not_in') ) ) {
 			$values  = is_array( $value ) ? $value : array( $value );
 			$op   = $operator === 'in' ? '$in' : '$nin';
+			// Handling _id column
+			if ( strtolower( $col ) === 'id' ) {
+				$col = '_id';
+				$values = array_map( array( $this, 'create_mongo_id' ), $values );
+			}
 			$query[ $col ][ $op ] = $values;
 			return $query;
 		}

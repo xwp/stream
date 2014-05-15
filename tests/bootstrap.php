@@ -29,6 +29,7 @@ tests_add_filter(
 		'shutdown',
 	function() {
 		// Empty all tables so we don't deal with leftovers
+		WP_Stream::$db->drop();
 		drop_tables();
 	},
 	999999

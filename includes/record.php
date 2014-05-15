@@ -21,6 +21,9 @@ class WP_Stream_Record
 
 	public $meta;
 
+	// Deprecated
+	public $contexts;
+
 	public function __construct( $id = null ) {
 		if ( $id ) {
 			$this->load( $id );
@@ -43,9 +46,13 @@ class WP_Stream_Record
 		return WP_Stream::$db->store( (array) $this );
 	}
 
-	public function populate( array $data ) {
-		$keys = get_class_vars( self );
-		$data = array_intersect_key( $raw, $valid );
+	public function populate( array $raw ) {
+		$keys = get_class_vars( __CLASS__ );
+		$data = array_intersect_key( $raw, $keys );
+		if ( ! empty( $data['contexts'] ) ) {
+			$data['context'] = key( $data['contexts'] );
+			$data['action'] = current( $data['contexts'] );
+		}
 		foreach ( $data as $key => $val ) {
 			$this->{$key} = $val;
 		}
@@ -53,6 +60,12 @@ class WP_Stream_Record
 
 	public function validate() {
 		return true;
+	}
+
+	public static function instance( array $data ) {
+		$object = new self();
+		$object->populate( $data );
+		return $object;
 	}
 
 }

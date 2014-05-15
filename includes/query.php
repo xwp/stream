@@ -226,6 +226,9 @@ class WP_Stream_Query {
 		 */
 		$order     = esc_sql( $args['order'] );
 		$orderby   = $args['orderby'] ? esc_sql( $args['orderby'] ) : 'ID';
+		if ( 'date' === $orderby ) {
+			$orderby = 'created';
+		}
 		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'author', 'author_role', 'summary', 'visibility', 'parent', 'type', 'created' );
 		// TODO: Order by meta value, currently not possible without knowing the alias
 		if ( in_array( $orderby, $orderable ) /*|| false !== strpos( $orderby, 'meta.' )*/ ) {
