@@ -26,6 +26,7 @@ Built with performance in mind, Stream won't pollute your default posts table wi
 Visit the Stream Extensions screen inside the plugin to learn more about the powerful
 
 **Extensions:**
+
  * [Notifications](https://wp-stream.com/extension/notifications/)
  * [Reports](https://wp-stream.com/extension/reports/)
  * [Data Exporter](https://wp-stream.com/extension/data-exporter/)
