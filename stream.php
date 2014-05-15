@@ -75,7 +75,7 @@ class WP_Stream {
 		add_action( 'init', array( $this, 'verify_database_present' ) );
 
 		// Install the plugin
-		add_action( 'wp_stream_install', array( __CLASS__, 'install' ) );
+		add_action( 'wp_stream_before_db_notices', array( __CLASS__, 'install' ) );
 
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -221,8 +221,10 @@ class WP_Stream {
 			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
 		}
 
-		// Install the plugin
-		do_action( 'wp_stream_install' );
+		/**
+		 * Fires before admin notices are triggered for missing database tables.
+		 */
+		do_action( 'wp_stream_before_db_notices' );
 
 		if ( ! empty( $database_message ) ) {
 			self::notice( $database_message );
