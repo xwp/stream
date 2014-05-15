@@ -174,7 +174,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 *
 	 * @internal Used by store()
 	 * @param  array    $data Record data to be updated, must include ID
-	 * @return mixed          Record ID if successful, WP_Error if not
+	 * @return mixed          True if successful, WP_Error if not
 	 */
 	protected function update( array $data ) {
 	}
@@ -392,7 +392,6 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * Returns array of existing values for requested column.
 	 * Used to fill search filters with only used items, instead of all items.
 	 *
-	 * @since  1.0.4
 	 * @param  string  Requested Column (i.e., 'context')
 	 * @return array   Array of distinct values
 	 */
@@ -422,10 +421,10 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * @param  integer $record_id Record ID
 	 * @param  string  $key       Meta key
 	 * @param  mixed   $val       Meta value, will be serialized if non-scalar
-	 * @return int|bool           Meta ID on success, false on failure
+	 * @return bool               True on success, false on failure
 	 */
 	public function add_meta( $record_id, $key, $val ) {
-		return add_metadata( 'record', $record_id, $key, $val );
+		return (bool) add_metadata( 'record', $record_id, $key, $val );
 	}
 
 	/**
@@ -436,10 +435,10 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * @param  string  $key       Meta key
 	 * @param  mixed   $val       Meta value, will be serialized if non-scalar
 	 * @param  mixed   $prev      Optional, Previous Meta value to replace, will be serialized if non-scalar
-	 * @return int|bool           Meta ID if meta-key didn't exist, true on successful update, false on failure
+	 * @return bool               True on successful update, false on failure
 	 */
 	public function update_meta( $record_id, $key, $val, $prev = null ) {
-		return update_metadata( 'record', $record_id, $key, $val, $prev );
+		return (bool) update_metadata( 'record', $record_id, $key, $val, $prev );
 	}
 
 	/**

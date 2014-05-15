@@ -2,8 +2,22 @@
 
 class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 
+	/**
+	 * Mongo Connection
+	 * @var MongoClient
+	 */
 	private static $conn;
+
+	/**
+	 * Mongo DB Object
+	 * @var MongoDB
+	 */
 	private static $db;
+
+	/**
+	 * Mongo Collection Object
+	 * @var MongoCollection
+	 */
 	private static $coll;
 
 	public function __construct() {
@@ -12,18 +26,58 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 			wp_die( esc_html__( 'Mongo PHP extension is not loaded, therefore you cannot use Mongo as your DB adapter', 'stream' ), esc_html__( 'Stream DB Error', 'stream' ) );
 		}
 
-		$dsn = ''; // TODO: Provide settings panel for this
-		$db  = 'stream'; // TODO: Provide settings panel for this
+		/**
+		 * Filter the DSN connection path for Mongo
+		 * eg: mongodb://localhost:27017
+		 *
+		 * @var string
+		 */
+		$dsn = apply_filters( 'wp_stream_db_mongo_dsn', '' );
+
+		/**
+		 * Filter DB name for Stream
+		 * @var string
+		 */
+		$db  = apply_filters( 'wp_stream_db_mongo_collection', 'stream' ); // TODO: Provide settings panel for this
 
 		self::$conn = new MongoClient( $dsn );
 		self::$db   = self::$conn->{$db};
 		self::$coll = self::$db->stream;
-
-		// TODO: ->ENSUREINDEX()
 	}
 
+	/**
+	 * Runs on each page load
+	 *
+	 * @action init
+	 */
+	public function check_db() {
+		// Check if collection exists
+		$collections = self::$db->getCollectionNames();
+		if ( in_array( 'stream', $collections ) ) {
+			// No update routines here
+			continue;
+		} else {
+			// Create collection and proper indexes
+			$this->install();
+		}
+	}
+
+	/**
+	 * Install or update DB schema
+	 *
+	 * @internal Used by check_db()
+	 */
 	public function install() {
-		// TODO: Install tables and ensure indexes exist
+		self::$db->createCollection('stream');
+		$fields = get_class_vars('WP_Stream_Record');
+		self::$db->createIndex( $fields );
+	}
+
+	/**
+	 * Remove DB tables/schema
+	 */
+	public function reset() {
+		self::$coll->drop();
 	}
 
 	function parse( $args ) {
@@ -228,42 +282,197 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		return $results;
 	}
 
+	/**
+	 * Insert a new record
+	 *
+	 * @internal Used by store()
+	 * @param  array   $data Record data
+	 * @return integer       ID of the inserted record
+	 */
 	protected function insert( $data ) {
-		// Resolve the context=>action complex
-		// Pending decision to eliminate the multiple contexts requirement
-		$data['action']  = reset( $data['contexts'] );
-		$data['context'] = key( $data['contexts'] );
+		// Fallback from `contexts` to the new flat table structure
+		if ( isset( $data['contexts'] ) ) {
+			$data['action']  = reset( $data['contexts'] );
+			$data['context'] = key( $data['contexts'] );
+			unset( $data['contexts'] );
+		}
+
 		$data['created'] = $this->create_mongo_date( $data['created'] );
 
-		unset( $data['contexts'] );
-
+		// TODO: Return the last inserted ID
 		self::$coll->insert( $data );
 	}
 
+	/**
+	 * Update a single record
+	 *
+	 * @internal Used by store()
+	 * @param  array    $data Record data to be updated, must include ID
+	 * @return mixed          True if successful, WP_Error if not
+	 */
 	protected function update( $data ) {
-
+		return (bool) self::$coll->update( array( '_id' => $data['_id'] ), $data );
 	}
 
-	function delete( $args ) {
-		$query = $this->parse( $args );
-
-		self::$coll->remove( $query );
-	}
-
-	function reset() {
-		self::$db->drop();
-	}
-
-	function get_existing_records( $column, $table = '' ) {
-		return array();
-	}
-
+	// TODO
 	function get_found_rows() {
 		return 0;
 	}
 
+	/**
+	 * Delete records with matching IDs
+	 * @param  array|true $ids Array of IDs, or True to delete all records
+	 * @return mixed           True if no errors, WP_Error if arguments fail
+	 */
+	function delete( $ids ) {
+		if ( is_array( $ids ) ) {
+			$ids = array_map( array( $this, 'create_mongo_id' ), $ids );
+			return self::$coll->remove( array( '_id' => array( '$in' => $ids ) ) );
+		} elseif ( true === $ids ) {
+			return self::$coll->remove();
+		} else {
+			return new WP_Error( 'invalid-arguments', 'Invalid arguments' );
+		}
+	}
+
+	/**
+	 * Returns array of existing values for requested column.
+	 * Used to fill search filters with only used items, instead of all items.
+	 *
+	 * @param  string  Requested Column (i.e., 'context')
+	 * @return array   Array of distinct values
+	 */
+	public function get_col( $column ) {
+		return self::$coll->distinct( $column );
+	}
+
+	/**
+	 * Retrieve metadata of a single record
+	 *
+	 * @internal User by wp_stream_get_meta()
+	 * @param  integer $record_id Record ID
+	 * @param  string  $key       Optional, Meta key, if omitted, retrieve all meta data of this record.
+	 * @param  boolean $single    Default: false, Return single meta value, or all meta values under specified key.
+	 * @return string|array       Single/Array of meta data.
+	 */
+	public function get_meta( $record_id, $key, $single = false ) {
+		if ( $record = self::$coll->findOne( array( '_id' => $this->create_mongo_id( $id ) ) ) ) {
+			if ( $key ) {
+				$meta = $record->meta->{$key};
+				if ( empty( $meta ) ) {
+					return false;
+				}
+				$meta = (array) $meta;
+				if ( $single ) {
+					return $meta[0];
+				} else {
+					return $meta;
+				}
+			} else {
+				return $record->meta;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+
+	/**
+	 * Add metadata for a single record
+	 *
+	 * @internal User by wp_stream_add_meta()
+	 * @param  integer $record_id Record ID
+	 * @param  string  $key       Meta key
+	 * @param  mixed   $val       Meta value, will be serialized if non-scalar
+	 * @return bool               True on success, false on failure
+	 */
+	public function add_meta( $record_id, $key, $val ) {
+		$record = self::$coll->findOne( array( '_id' => $this->create_mongo_id( $record_id ) ) );
+		if ( $record ) {
+			$meta = $record['meta'];
+			if ( isset( $meta[ $key ] ) ) {
+				$meta[ $key ] = array_merge( (array) $meta[ $key ], array( $val ) );
+			} else {
+				$meta[ $key ] = array( $val );
+			}
+			$record['meta'] = $meta;
+			self::$coll->save( $record );
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Update metadata for a single record
+	 *
+	 * @internal User by wp_stream_update_meta()
+	 * @param  integer $record_id Record ID
+	 * @param  string  $key       Meta key
+	 * @param  mixed   $val       Meta value, will be serialized if non-scalar
+	 * @param  mixed   $prev      Optional, Previous Meta value to replace, will be serialized if non-scalar
+	 * @return int|bool           Meta ID if meta-key didn't exist, true on successful update, false on failure
+	 */
+	public function update_meta( $record_id, $key, $val, $prev = null ) {
+		$record = self::$coll->findOne( array( '_id' => $this->create_mongo_id( $record_id ) ) );
+		if ( $record ) {
+			$meta = $record['meta'];
+			if ( isset( $prev ) && isset( $meta[ $key ] ) ) {
+				$_key = array_search( $prev, (array) $meta[ $key ] );
+				if ( $_key && is_array( $meta[ $key ] ) ) {
+					unset( $meta[ $key ] [ $_key ] );
+					$meta[ $key ][] = $val;
+				} elseif ( ! is_array( $meta[ $key ] ) && $meta[ $key ] === $prev ) {
+					$meta[ $key  ] = array( $val );
+				}
+			} else {
+				$meta[ $key ] = array( $val );
+			}
+			$record['meta'] = $meta;
+			return self::$coll->save( $record );
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Delete metadata for specified record(s)
+	 *
+	 * @internal Used by wp_stream_delete_meta()
+	 * @param  integer $record_id  Record ID, can be omitted if delete_all=true
+	 * @param  string  $key        Meta key
+	 * @param  mixed   $val        Optional, only delete entries with this value, will be serialized if non-scalar
+	 * @param  boolean $delete_all Default: false, delete all matching entries from all objects
+	 * @return boolean             True on success, false on failure
+	 */
+	public function delete_meta( $record_id, $key, $val = null, $delete_all = false ) {
+		if ( ! $record_id && ! $delete_all ) {
+			return false;
+		}
+		if ( $record_id ) {
+			$record = self::$coll->findOne( array( '_id' => $this->create_mongo_id( $record_id ) ) );
+			$meta   = $record['meta'];
+			if ( isset( $meta[ $key ] ) ) {
+				if ( isset( $val ) ) {
+					if ( $_key = array_search( $val, $meta ) ) {
+						unset( $meta[ $key ][ $_key ] );
+					}
+				} else {
+					unset( $meta[ $key ] );
+				}
+
+				$record['meta'] = $meta;
+				return self::$coll->save( $record );
+			} else {
+				return false;
+			}
+		} elseif ( $delete_all ) {
+			// TODO: Handle batch update of records
+		}
+	}
+
 	private function create_mongo_id( $string ) {
-		return new MongoId( $string );
+		return is_object( $string ) ? $string : new MongoId( $string );
 	}
 
 	private function create_mongo_date( $time ) {

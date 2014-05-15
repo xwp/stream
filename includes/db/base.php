@@ -27,7 +27,7 @@ abstract class WP_Stream_DB_Base {
 	 * Inserts/Updates (based on ID existence) a single record in DB
 	 *
 	 * @param  array $data  Record data
-	 * @return mixed       Record ID if successful, WP_Error if not
+	 * @return mixed        Record ID if inserted successful, True if updated, false|WP_Error if not
 	 */
 	public function store( $data ) {
 		// Take only what's ours!
@@ -161,7 +161,7 @@ abstract class WP_Stream_DB_Base {
 	 * @param  integer $record_id Record ID
 	 * @param  string  $key       Meta key
 	 * @param  mixed   $val       Meta value, will be serialized if non-scalar
-	 * @return int|bool           Meta ID on success, false on failure
+	 * @return bool               True on success, false on failure
 	 */
 	abstract public function add_meta( $record_id, $key, $val );
 
@@ -173,7 +173,7 @@ abstract class WP_Stream_DB_Base {
 	 * @param  string  $key       Meta key
 	 * @param  mixed   $val       Meta value, will be serialized if non-scalar
 	 * @param  mixed   $prev      Optional, Previous Meta value to replace, will be serialized if non-scalar
-	 * @return int|bool           Meta ID if meta-key didn't exist, true on successful update, false on failure
+	 * @return bool               True on successful update, false on failure
 	 */
 	abstract public function update_meta( $record_id, $key, $val, $prev = null );
 
