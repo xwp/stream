@@ -57,7 +57,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				'context'   => __( 'Context', 'stream' ),
 				'action'    => __( 'Action', 'stream' ),
 				'ip'        => __( 'IP Address', 'stream' ),
-				'id'        => __( 'ID', 'stream' ),
+				'id'        => __( 'Record ID', 'stream' ),
 			)
 		);
 	}
