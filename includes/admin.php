@@ -607,6 +607,9 @@ class WP_Stream_Admin {
 		global $wpdb;
 
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+		if ( ! class_exists( WP_Stream_Install_WPDB ) ) {
+			include WP_STREAM_INC_DIR . '/db/install/wpdb.php';
+		}
 
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			// Prevent stream action from being fired on plugin
