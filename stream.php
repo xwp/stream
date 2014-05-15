@@ -161,16 +161,6 @@ class WP_Stream {
 	 * @return void
 	 */
 	public static function install() {
-		/**
-		 * Filter will halt install() if set to true
-		 *
-		 * @param  bool
-		 * @return bool
-		 */
-		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
-			return;
-		}
-
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
 		$update = WP_Stream_Install::get_instance();
@@ -187,7 +177,7 @@ class WP_Stream {
 		}
 
 		/**
-		 * Filter will halt verify_database_present() if set to true
+		 * Filter will halt verify_database_present() and install() if set to true
 		 *
 		 * @param  bool
 		 * @return bool
