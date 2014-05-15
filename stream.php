@@ -93,7 +93,7 @@ class WP_Stream {
 
 		// Load connectors
 		require_once WP_STREAM_INC_DIR . 'connectors.php';
-		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ), 2 ); // Just after widgets_init at 1
+		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ), 9 );
 
 		// Load query class
 		require_once WP_STREAM_INC_DIR . 'query.php';
