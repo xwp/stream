@@ -49,7 +49,9 @@ class WP_Stream_Query {
 			'type'          => array(
 				'default' => 'stream',
 			),
-			'object_id'     => array(),
+			'object_id'     => array(
+				'is_int'  => true,
+			),
 			'ip'            => array(),
 			'site_id'       => array(
 				'default' => is_multisite() ? get_current_site()->id : 1,
