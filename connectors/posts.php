@@ -102,7 +102,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				}
 
 				if ( $revision_id = wp_stream_get_meta( $record->ID, 'revision_id', true ) ) {
-					$links[ esc_html__( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
+					$links[ esc_html__( 'Revision', 'default' ) ] = get_edit_post_link( $revision_id );
 				}
 			}
 		}
