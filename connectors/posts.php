@@ -35,10 +35,11 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'updated' => __( 'Updated', 'stream' ),
-			'created' => __( 'Created', 'stream' ),
-			'trashed' => __( 'Trashed', 'stream' ),
-			'deleted' => __( 'Deleted', 'stream' ),
+			'updated'   => __( 'Updated', 'stream' ),
+			'created'   => __( 'Created', 'stream' ),
+			'trashed'   => __( 'Trashed', 'stream' ),
+			'untrashed' => __( 'Restored', 'stream' ),
+			'deleted'   => __( 'Deleted', 'stream' ),
 		);
 	}
 
@@ -154,6 +155,13 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'stream'
 			);
 			$action  = 'trashed';
+		} elseif ( $old == 'trash' && $new != 'trash' ) {
+			$message = _x(
+				'"%1$s" %2$s restored from trash',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
+			$action  = 'untrashed';
 		} else {
 			$message = _x(
 				'"%1$s" %2$s updated',
