@@ -69,10 +69,10 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			$post_type_name = self::get_post_type_name( get_post_type( $post->ID ) );
 
 			if ( 'trash' === $post->post_status ) {
-				$restore = wp_nonce_url(
+				$untrash = wp_nonce_url(
 					add_query_arg(
 						array(
-							'action' => 'restore',
+							'action' => 'untrash',
 							'post'   => $post->ID,
 						),
 						admin_url( 'post.php' )
@@ -91,7 +91,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 					sprintf( 'delete-post_%d', $post->ID )
 				);
 
-				$links[ sprintf( esc_html_x( 'Restore %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $restore;
+				$links[ sprintf( esc_html_x( 'Restore %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $untrash;
 				$links[ sprintf( esc_html_x( 'Delete %s Permenantly', 'Post type singular name', 'stream' ), $post_type_name ) ] = $delete;
 			} else {
 				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_edit_post_link( $post->ID );
