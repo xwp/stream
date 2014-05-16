@@ -118,7 +118,8 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 				'site_name' => $blog->blogname,
 			),
 			$blog_id,
-			array( $context => 'created' )
+			$context,
+			'created'
 		);
 	}
 
@@ -140,7 +141,8 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 				'site_name' => $blog->blogname,
 			),
 			$blog_id,
-			array( $context => 'created' ),
+			$context,
+			'created'
 			$user_id
 		);
 	}
@@ -172,7 +174,8 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 				'role_name' => $role,
 			),
 			$blog_id,
-			array( $context => 'updated' )
+			$context,
+			'updated'
 		);
 	}
 
@@ -201,7 +204,8 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 				'site_name' => $blog->blogname,
 			),
 			$blog_id,
-			array( $context => 'updated' )
+			$context,
+			'updated'
 		);
 	}
 
@@ -301,7 +305,8 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 				'status'    => $status,
 			),
 			$blog_id,
-			array( $context => $action )
+			$context,
+			$action
 		);
 
 	}

@@ -8,8 +8,6 @@ class WP_Stream_DB {
 
 	public static $table_meta;
 
-	public static $table_context;
-
 	public function __construct() {
 		global $wpdb;
 
@@ -49,7 +47,6 @@ class WP_Stream_DB {
 		return array(
 			self::$table,
 			self::$table_meta,
-			self::$table_context,
 		);
 	}
 
@@ -69,7 +66,7 @@ class WP_Stream_DB {
 			return;
 		}
 
-		$fields = array( 'object_id', 'site_id', 'blog_id', 'author', 'author_role', 'created', 'summary', 'parent', 'visibility', 'ip' );
+		$fields = array( 'object_id', 'site_id', 'blog_id', 'author', 'author_role', 'connector', 'context', 'action', 'created', 'summary', 'parent', 'visibility', 'ip' );
 		$data   = array_intersect_key( $recordarr, array_flip( $fields ) );
 		$data   = array_filter( $data );
 
@@ -94,12 +91,6 @@ class WP_Stream_DB {
 
 		self::$instance->prev_record = $record_id;
 
-		$connector = $recordarr['connector'];
-
-		foreach ( (array) $recordarr['contexts'] as $context => $action ) {
-			$this->insert_context( $record_id, $connector, $context, $action );
-		}
-
 		foreach ( $recordarr['meta'] as $key => $vals ) {
 			// If associative array, serialize it, otherwise loop on its members
 			if ( is_array( $vals ) && 0 !== key( $vals ) ) {
@@ -120,22 +111,6 @@ class WP_Stream_DB {
 		do_action( 'wp_stream_post_inserted', $record_id, $recordarr );
 
 		return $record_id;
-	}
-
-	public function insert_context( $record_id, $connector, $context, $action ) {
-		global $wpdb;
-
-		$result = $wpdb->insert(
-			self::$table_context,
-			array(
-				'record_id' => $record_id,
-				'connector' => $connector,
-				'context'   => $context,
-				'action'    => $action,
-			)
-		);
-
-		return $result;
 	}
 
 	public function insert_meta( $record_id, $key, $val ) {

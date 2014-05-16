@@ -75,7 +75,6 @@ class WP_Stream_Context_Query {
 			return array( 'join' => '', 'where' => '' );
 		}
 
-		$context_table  = WP_Stream_DB::$table_context;
 		$main_table     = WP_Stream_DB::$table;
 		$meta_id_column = 'meta_id';
 
@@ -85,9 +84,6 @@ class WP_Stream_Context_Query {
 		$queries = $this->queries;
 
 		$meta_query = new WP_Meta_Query;
-
-		// Context table is always joined
-		// $join[] = " INNER JOIN $context_table ON $main_table.ID = $context_table.record_id";
 
 		foreach ( $queries as $i => $query ) {
 			foreach ( $query as $key => $args ) {
@@ -141,7 +137,7 @@ class WP_Stream_Context_Query {
 					$where[ $i ] = '';
 				}
 
-				$where[ $i ] = ' (' . $where[ $i ] . $wpdb->prepare( "CAST($context_table.$key AS {$type}) {$compare} {$compare_string})", $value );
+				$where[ $i ] = ' (' . $where[ $i ] . $wpdb->prepare( "CAST($main_table.$key AS {$type}) {$compare} {$compare_string})", $value );
 			}
 		}
 

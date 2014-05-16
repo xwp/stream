@@ -83,26 +83,32 @@ abstract class WP_Stream_Connector {
 	 * @param  string $message   sprintf-ready error message string
 	 * @param  array  $args      sprintf (and extra) arguments to use
 	 * @param  int    $object_id Target object id
-	 * @param  array  $contexts  Contexts of the action
+	 * @param  string $context   Context of the action
+	 * @param  string $action    The action which we are logging
 	 * @param  int    $user_id   User responsible for the action
 	 *
 	 * @internal param string $action Action performed (stream_action)
 	 * @return void
 	 */
-	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
-		// Prevent inserting Excluded Context & Actions
-		foreach ( $contexts as $context => $action ) {
-			if ( ! WP_Stream_Connectors::is_logging_enabled( 'contexts', $context ) ) {
-				unset( $contexts[ $context ] );
-			} else {
-				if ( ! WP_Stream_Connectors::is_logging_enabled( 'actions', $action ) ) {
-					unset( $contexts[ $context ] );
-				}
+	public static function log( $message, $args, $object_id, $context, $action = null, $user_id = null ) {
+		// Backward Compatibility for old connectors
+		if ( is_array( $context ) ) {
+			$contexts = $context;
+
+			if ( $action || '0' == $action ) {
+				$user_id = $action;
 			}
+
+			$context  = array_shift( array_keys( $context ) );
+			$action   = $contexts[ $context ];
 		}
 
-		if ( count( $contexts ) == 0 ){
-			return ;
+		// Prevent inserting Excluded Context & Actions
+		if ( ! WP_Stream_Connectors::is_logging_enabled( 'contexts', $context ) ) {
+			return;
+		}
+		if ( ! WP_Stream_Connectors::is_logging_enabled( 'actions', $action ) ) {
+			return
 		}
 
 		$class = get_called_class();
@@ -112,7 +118,8 @@ abstract class WP_Stream_Connector {
 			$message,
 			$args,
 			$object_id,
-			$contexts,
+			$context,
+			$action,
 			$user_id
 		);
 	}

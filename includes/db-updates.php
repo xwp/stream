@@ -1,6 +1,91 @@
 <?php
 
 /**
+ * Version 1.4.6
+ *
+ * Move entries from the context table to the stream table.
+ * Then, delete the context table.
+ *
+ * @param string $db_version Database version updating from
+ * @param string $current_version Database version updating to
+ *
+ * @return string $current_version if updated correctly
+ */
+function wp_stream_update_146( $db_version, $current_version ) {
+	global $wpdb;
+
+	$prefix = WP_Stream_Install::$table_prefix;
+
+	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
+
+	$sql  = "SELECT * FROM {$prefix}stream_context";
+	$rows = $wpdb->get_results( $sql );
+
+	foreach ( $rows as $row ) {
+		$data = array( 'connector' => $row->connector, 'context' => $row->context, 'action' => $row->action );
+		$wpdb->update( $prefix . 'stream', $data, array( 'ID' => $row->record_id ) );
+	}
+
+	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
+
+	if ( $wpdb->last_error ) {
+		return __( 'Database Update Error', 'stream' );
+	}
+
+	return $current_version;
+}
+
+/**
+ * Version 1.4.6
+ *
+ * Add the connector, context and action columns to the stream table.
+ *
+ * @param string $db_version Database version updating from
+ * @param string $current_version Database version updating to
+ *
+ * @return string $current_version if updated correctly
+ */
+function wp_stream_update_auto_146( $db_version, $current_version ) {
+	global $wpdb;
+
+	$prefix = WP_Stream_Install::$table_prefix;
+
+	do_action( 'wp_stream_before_auto_db_update_' . $db_version, $current_version );
+
+	// Check to see if the connector column already exists
+	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'connector'" );
+
+	// If the connector doesn't exist, then create it and update records retroactively
+	if ( empty( $rows ) ) {
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD connector varchar(100) NOT NULL AFTER author_role" );
+	}
+
+	// Check to see if the context column already exists
+	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'context'" );
+
+	// If the context doesn't exist, then create it
+	if ( empty( $rows ) ) {
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD context varchar(100) NOT NULL AFTER connector" );
+	}
+
+	// Check to see if the action column already exists
+	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field = 'action'" );
+
+	// If the action doesn't exist, then create it
+	if ( empty( $rows ) ) {
+		$wpdb->query( "ALTER TABLE {$prefix}stream ADD action varchar(100) NOT NULL AFTER context" );
+	}
+
+	do_action( 'wp_stream_after_auto_db_update_' . $db_version, $current_version, $wpdb->last_error );
+
+	if ( $wpdb->last_error ) {
+		return __( 'Database Update Error', 'stream' );
+	}
+
+	return $current_version;
+}
+
+/**
  * Version 1.4.5
  *
  * Fix double-serialized values in the database.

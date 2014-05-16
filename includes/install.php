@@ -255,6 +255,7 @@ class WP_Stream_Install {
 			'1.4.0' /* @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
 			'1.4.2' /* @version 1.4.2 Patch to fix rare multisite upgrade not triggering */,
 			'1.4.5' /* @version 1.4.5 Patch to fix author_meta broken values */,
+			'1.4.6' /* @version 1.4.6 Move the data in the context table to the stream table, then delete it */,
 		);
 
 		return apply_filters( 'wp_stream_db_update_versions', $db_update_versions );
@@ -313,6 +314,9 @@ class WP_Stream_Install {
 			object_id bigint(20) unsigned NULL,
 			author bigint(20) unsigned NOT NULL DEFAULT '0',
 			author_role varchar(20) NOT NULL DEFAULT '',
+			connector varchar(100) NOT NULL,
+			context varchar(100) NOT NULL,
+			action varchar(100) NOT NULL,
 			summary longtext NOT NULL,
 			visibility varchar(20) NOT NULL DEFAULT 'publish',
 			parent bigint(20) unsigned NOT NULL DEFAULT '0',
