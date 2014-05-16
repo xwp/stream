@@ -142,7 +142,7 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 			),
 			$blog_id,
 			$context,
-			'created'
+			'created',
 			$user_id
 		);
 	}

@@ -108,7 +108,7 @@ abstract class WP_Stream_Connector {
 			return;
 		}
 		if ( ! WP_Stream_Connectors::is_logging_enabled( 'actions', $action ) ) {
-			return
+			return;
 		}
 
 		$class = get_called_class();
