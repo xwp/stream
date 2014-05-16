@@ -85,6 +85,15 @@ class WP_Stream_Query {
 		$join  = '';
 		$where = '';
 
+		// Only join with context table for correct types of records
+		if ( ! $args['ignore_context'] ) {
+			$join = sprintf(
+				' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
+				$wpdb->streamcontext,
+				$wpdb->stream
+			);
+		}
+
 		/**
 		 * PARSE CORE FILTERS
 		 */
@@ -265,10 +274,12 @@ class WP_Stream_Query {
 		 */
 		$order     = esc_sql( $args['order'] );
 		$orderby   = esc_sql( $args['orderby'] );
-		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'author', 'author_role', 'connector', 'context', 'action', 'summary', 'visibility', 'parent', 'type', 'created' );
+		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'author', 'author_role', 'summary', 'visibility', 'parent', 'type', 'created' );
 
 		if ( in_array( $orderby, $orderable ) ) {
 			$orderby = $wpdb->stream . '.' . $orderby;
+		} elseif ( in_array( $orderby, array( 'connector', 'context', 'action' ) ) ) {
+			$orderby = $wpdb->streamcontext . '.' . $orderby;
 		} elseif ( 'meta_value_num' === $orderby && ! empty( $args['meta_key'] ) ) {
 			$orderby = "CAST($wpdb->streammeta.meta_value AS SIGNED)";
 		} elseif ( 'meta_value' === $orderby && ! empty( $args['meta_key'] ) ) {
@@ -281,19 +292,11 @@ class WP_Stream_Query {
 		/**
 		 * PARSE FIELDS PARAMETER
 		 */
-		$fields     = $args['fields'];
-		$select     = '';
-		$selectable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'author', 'author_role', 'summary', 'visibility', 'parent', 'type', 'created', 'ip' );
-
-		foreach ( $selectable as $key => $column ) {
-			if ( 0 !== $key ) {
-				$select .= ", ";
-			}
-			$select .= "$wpdb->stream.$column";
-		}
+		$fields = $args['fields'];
+		$select = "$wpdb->stream.*";
 
 		if ( ! $args['ignore_context'] ) {
-			$select .= ", $wpdb->stream.connector, $wpdb->stream.context, $wpdb->stream.action";
+			$select .= ", $wpdb->streamcontext.context, $wpdb->streamcontext.action, $wpdb->streamcontext.connector";
 		}
 
 		if ( 'ID' === $fields ) {
@@ -392,7 +395,7 @@ function wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value 
  *
  * @see    assemble_records
  * @since  1.0.4
- * @param  string  Requested Column (i.e., 'meta')
+ * @param  string  Requested Column (i.e., 'context')
  * @param  string  Requested Table
  * @return array   Array of items to be output to select dropdowns
  */
@@ -400,12 +403,14 @@ function wp_stream_existing_records( $column, $table = '' ) {
 	global $wpdb;
 
 	switch ( $table ) {
+		case 'stream' :
+			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->stream} GROUP BY {$column}", 'ARRAY_A' );
+			break;
 		case 'meta' :
 			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streammeta} GROUP BY {$column}", 'ARRAY_A' );
 			break;
 		default :
-			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->stream} GROUP BY {$column}", 'ARRAY_A' );
-			break;
+			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streamcontext} GROUP BY {$column}", 'ARRAY_A' );
 	}
 
 	if ( is_array( $rows ) && ! empty( $rows ) ) {
