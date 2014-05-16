@@ -50,9 +50,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		return apply_filters(
 			'wp_stream_list_table_columns',
 			array(
-				'date'      => __( 'Date', 'stream' ),
-				'summary'   => __( 'Summary', 'stream' ),
-				'author'    => __( 'Author', 'stream' ),
+				'date'      => __( 'Date', 'default' ),
+				'summary'   => __( 'Summary', 'default' ),
+				'author'    => __( 'Author', 'default' ),
 				'connector' => __( 'Connector', 'stream' ),
 				'context'   => __( 'Context', 'stream' ),
 				'action'    => __( 'Action', 'stream' ),
@@ -541,7 +541,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'] );
 		}
 
-		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'stream' ) );
+		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'default' ) );
 
 		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
@@ -613,7 +613,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			<select class="field-predefined hide-if-no-js" name="date_predefined" data-placeholder="<?php _e( 'All Time', 'stream' ); ?>">
 				<option></option>
-				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
+				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'default' ) ?></option>
 				<?php foreach ( $items as $key => $interval ) {
 					printf(
 						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
@@ -632,7 +632,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					<input type="text"
 						   name="date_from"
 						   class="date-picker field-from"
-						   placeholder="<?php esc_attr_e( 'Start date', 'stream' ) ?>"
+						   placeholder="<?php esc_attr_e( 'Start Date', 'default' ) ?>"
 						   value="<?php echo esc_attr( $date_from ) ?>">
 				</div>
 				<span class="connector dashicons"></span>
@@ -642,7 +642,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					<input type="text"
 						   name="date_to"
 						   class="date-picker field-to"
-						   placeholder="<?php esc_attr_e( 'End date', 'stream' ) ?>"
+						   placeholder="<?php esc_attr_e( 'End Date', 'default' ) ?>"
 						   value="<?php echo esc_attr( $date_to ) ?>">
 				</div>
 			</div>

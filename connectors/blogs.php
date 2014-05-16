@@ -3,13 +3,14 @@
 class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 
 	/**
-	 * Context name
+	 * Connector slug
+	 *
 	 * @var string
 	 */
 	public static $name = 'blogs';
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 * @var array
 	 */
 	public static $actions = array(
@@ -30,12 +31,12 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Return translated context label
+	 * Return translated connector label
 	 *
-	 * @return string Translated context label
+	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Sites', 'stream' );
+		return __( 'Sites', 'default' );
 	}
 
 	/**
@@ -79,12 +80,12 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		$links [ __( 'Site Admin', 'stream' ) ] = get_admin_url( $record->object_id );
+		$links [ __( 'Site Admin', 'default' ) ] = get_admin_url( $record->object_id );
 		if ( $record->object_id ) {
 			$site_admin_link = get_admin_url( $record->object_id );
 
 			if ( $site_admin_link ) {
-				$links [ __( 'Site Admin', 'stream' ) ] = $site_admin_link;
+				$links [ __( 'Site Admin', 'default' ) ] = $site_admin_link;
 			}
 
 			$site_settings_link = add_query_arg(

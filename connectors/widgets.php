@@ -3,14 +3,14 @@
 class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 	/**
-	 * Context name
+	 * Connector slug
 	 *
 	 * @var string
 	 */
 	public static $name = 'widgets';
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
@@ -22,12 +22,12 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Return translated context label
+	 * Return translated connector label
 	 *
-	 * @return string Translated context label
+	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Widgets', 'stream' );
+		return __( 'Widgets', 'default' );
 	}
 
 	/**
@@ -59,7 +59,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$labels[ $sidebar['id'] ] = $sidebar['name'];
 		}
 
-		$labels['wp_inactive_widgets'] = esc_html__( 'Inactive Widgets', 'stream' );
+		$labels['wp_inactive_widgets'] = esc_html__( 'Inactive Widgets', 'default' );
 
 		return $labels;
 	}
@@ -266,7 +266,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		if ( isset( $changed ) ) {
 			$sidebar      = $changed;
-			$sidebar_name = isset( $labels[ $sidebar ] ) ? $labels[ $sidebar ] : esc_html__( 'Widgets', 'stream' );
+			$sidebar_name = isset( $labels[ $sidebar ] ) ? $labels[ $sidebar ] : esc_html__( 'Widgets', 'default' );
 
 			// Saving this in a global var, so it can be accessed and
 			// executed by self::callback_update_option_sidebars_widgets
@@ -313,7 +313,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		foreach ( $sidebars as $_sidebar_id => $_sidebar ) {
 			if ( is_array( $_sidebar ) && in_array( $id, $_sidebar ) ) {
 				$sidebar      = $_sidebar_id;
-				$sidebar_name = isset( $labels[ $sidebar ] ) ? $labels[ $sidebar ] : esc_html__( 'Widgets', 'stream' );
+				$sidebar_name = isset( $labels[ $sidebar ] ) ? $labels[ $sidebar ] : esc_html__( 'Widgets', 'default' );
 				break;
 			}
 		}

@@ -3,14 +3,14 @@
 class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 
 	/**
-	 * Context name
+	 * Connector slug
 	 *
 	 * @var string
 	 */
 	public static $name = 'comments';
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
@@ -28,12 +28,12 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Return translated context label
+	 * Return translated connector label
 	 *
-	 * @return string Translated context label
+	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Comments', 'stream' );
+		return __( 'Comments', 'default' );
 	}
 
 	/**
@@ -65,7 +65,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'comments' => __( 'Comments', 'stream' ),
+			'comments' => __( 'Comments', 'default' ),
 		);
 	}
 
@@ -83,7 +83,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				$del_nonce     = wp_create_nonce( "delete-comment_$comment->comment_ID" );
 				$approve_nonce = wp_create_nonce( "approve-comment_$comment->comment_ID" );
 
-				$links[ __( 'Edit', 'stream' ) ] = admin_url( "comment.php?action=editcomment&c=$comment->comment_ID" );
+				$links[ __( 'Edit', 'default' ) ] = admin_url( "comment.php?action=editcomment&c=$comment->comment_ID" );
 
 				if ( 1 === $comment->comment_approved ) {
 					$links[ __( 'Unapprove', 'stream' ) ] = admin_url(

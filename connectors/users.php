@@ -3,7 +3,7 @@
 class WP_Stream_Connector_Users extends WP_Stream_Connector {
 
 	/**
-	 * Context name
+	 * Connector slug
 	 *
 	 * @var string
 	 */
@@ -18,7 +18,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	protected static $_users_object_pre_deleted = array();
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
@@ -36,12 +36,12 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Return translated context label
+	 * Return translated connector label
 	 *
-	 * @return string Translated context label
+	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Users', 'stream' );
+		return __( 'Users', 'default' );
 	}
 
 	/**
@@ -54,10 +54,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			'updated'         => __( 'Updated', 'stream' ),
 			'created'         => __( 'Created', 'stream' ),
 			'deleted'         => __( 'Deleted', 'stream' ),
-			'password-reset'  => __( 'Password Reset', 'stream' ),
-			'forgot-password' => __( 'Forgot Password', 'stream' ),
-			'login'           => __( 'Login', 'stream' ),
-			'logout'          => __( 'Logout', 'stream' ),
+			'password-reset'  => __( 'Password Reset', 'default' ),
+			'forgot-password' => __( 'Lost Password', 'default' ),
+			'login'           => __( 'Log In', 'default' ),
+			'logout'          => __( 'Log Out', 'default' ),
 			'failed_login'    => __( 'Failed Login', 'stream' ),
 		);
 	}
@@ -69,7 +69,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'users'    => __( 'Users', 'stream' ),
+			'users'    => __( 'Users', 'default' ),
 			'sessions' => __( 'Sessions', 'stream' ),
 			'profiles' => __( 'Profiles', 'stream' ),
 		);
@@ -86,7 +86,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			if ( $link = get_edit_user_link( $record->object_id ) ) {
-				$links [ __( 'Edit Profile', 'stream' ) ] = $link;
+				$links [ __( 'Edit User', 'default' ) ] = $link;
 			}
 		}
 
