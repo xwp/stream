@@ -62,7 +62,7 @@ class WP_Stream_DB {
 		 * Filter allows modification of record information
 		 *
 		 * @param  array  array of record information
-		 * @return array  udpated array of record information
+		 * @return array  updated array of record information
 		 */
 		$recordarr = apply_filters( 'wp_stream_record_array', $recordarr );
 
