@@ -53,7 +53,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 				'date'      => __( 'Date', 'stream' ),
 				'summary'   => __( 'Summary', 'stream' ),
 				'author'    => __( 'Author', 'stream' ),
-				'connector' => __( 'Connector', 'stream' ),
 				'context'   => __( 'Context', 'stream' ),
 				'action'    => __( 'Action', 'stream' ),
 				'ip'        => __( 'IP Address', 'stream' ),
@@ -137,8 +136,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		// Filters
 		$allowed_params = array(
-			'connector',
-			'context',
 			'action',
 			'author',
 			'author_role',
@@ -159,6 +156,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 		$args['paged'] = $this->get_pagenum();
+
+		$context = explode( '-', wp_stream_filter_input( INPUT_GET, 'context' ) );
+		if ( isset( $context[0] ) ) {
+			$args['connector'] = $context[0];
+		}
+		if ( isset( $context[1] ) ) {
+			$args['context'] = $context[1];
+		}
 
 		if ( ! isset( $args['records_per_page'] ) ) {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
@@ -221,8 +226,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 				);
 				break;
 
-			case 'connector':
 			case 'context':
+				$out = $this->column_link( $this->get_term_title( $item->{'connector'}, 'connector' ), 'context', $item->{'connector'} );
+				$out .= '<br />&#8627; ';
+				$out .= $this->column_link( $this->get_term_title( $item->{'context'}, 'context' ), 'context', implode( '-', array( $item->{'connector'}, $item->{'context'} ) ) );
+				break;
 			case 'action':
 				$out = $this->column_link( $this->get_term_title( $item->{$column_name}, $column_name ), $column_name, $item->{$column_name} );
 				break;
@@ -495,15 +503,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'ajax'  => count( $authors_records ) <= 0,
 		);
 
-		$filters['connector'] = array(
-			'title' => __( 'connector', 'stream' ),
-			'items' => $this->assemble_records( 'connector' ),
-		);
-
 		$filters['context'] = array(
 			'title'  => __( 'contexts', 'stream' ),
 			'items'  => $this->assemble_records( 'context' ),
-			'helper' => 'connector',
 		);
 
 		$filters['action'] = array(
@@ -536,12 +538,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 		foreach ( $filters as $name => $data ) {
 			if ( 'date' === $name ) {
 				$filters_string .= $this->filter_date( $data['items'] );
-			} elseif ( 'connector' === $name ) {
-				$filters_string .= sprintf(
-					'<input type="hidden" name="%s" value="%s" />',
-					esc_attr( $name ),
-					esc_attr( wp_stream_filter_input( INPUT_GET, $name ) )
-				);
 			} else {
 				if ( 'context' === $name ) {
 					// Add Connectors as parents, and apply the Contexts as children
@@ -573,81 +569,84 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filter_select( $name, $args ) {
-
 		$defaults = array(
 			'title'  => '',
 			'items'  => array(),
-			'helper' => false,
 			'ajax'   => false,
 		);
 		wp_parse_args( $args, $defaults );
-		extract( $args );
 
-		if ( ! isset( $helper ) ) {
-			$helper = false;
-		}
-
-		if ( isset( $ajax ) && $ajax ) {
+		if ( isset( $args['ajax'] ) && $args['ajax'] ) {
 			$out = sprintf(
 				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s"/>',
 				esc_attr( $name ),
 				esc_attr( wp_stream_filter_input( INPUT_GET, $name ) ),
-				esc_html( $title )
+				esc_html( $args['title'] )
 			);
 		} else {
-			$options   = array( '<option value=""></option>' );
-			$context   = wp_stream_filter_input( INPUT_GET, $name );
-			$connector = wp_stream_filter_input( INPUT_GET, $helper );
-			foreach ( $items as $value => $item ) {
+			$options  = array( '<option value=""></option>' );
+			$selected = wp_stream_filter_input( INPUT_GET, $name );
+			foreach ( $args['items'] as $value => $item ) {
+				$option_args = array(
+					'value'    => $value,
+					'selected' => selected( $value, $selected, false ),
+					'disabled' => isset( $item['disabled'] ) ? $item['disabled'] : '',
+					'icon'     => isset( $item['icon'] ) ? $item['icon'] : '',
+					'tooltip'  => isset( $item['tooltip'] ) ? $item['tooltip'] : '',
+					'class'    => isset( $item['children'] ) ? 'level-1' : '',
+					'label'    => isset( $item['label'] ) ? $item['label'] : '',
+				);
+				$options[] = $this->filter_option( $option_args );
+
 				if ( isset( $item['children'] ) ) {
-					$group = sprintf(
-						'<optgroup data-value="%s" data-selected="%s" data-helper-input="%s" %s %s title="%s" label="%s">',
-						esc_attr( $value ),
-						$connector === $value ? 'true' : 'false',
-						$helper ? esc_attr( $helper ) : '',
-						isset( $item['disabled'] ) ? $item['disabled'] : '', // xss ok
-						isset( $item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $item['icon'] ) ) : '',
-						isset( $item['tooltip'] ) ? esc_attr( $item['tooltip'] ) : '',
-						esc_html( $item['label'] )
-					);
-
-					$group_options = array();
 					foreach ( $item['children'] as $child_value => $child_item ) {
-						$group_options[] = sprintf(
-							'<option value="%s" %s %s %s title="%s">%s</option>',
-							esc_attr( $child_value ),
-							selected( $child_value, $context, false ),
-							isset( $child_item['disabled'] ) ? $child_item['disabled'] : '', // xss ok
-							isset( $child_item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $child_item['icon'] ) ) : '',
-							isset( $child_item['tooltip'] ) ? esc_attr( $child_item['tooltip'] ) : '',
-							esc_html( $child_item['label'] )
+						$option_value = implode( '-', array( $value, $child_value ) );
+						$option_args  = array(
+							'value'    => $option_value,
+							'selected' => selected( $option_value, $selected, false ),
+							'disabled' => isset( $child_item['disabled'] ) ? $child_item['disabled'] : '',
+							'icon'     => isset( $child_item['icon'] ) ? $child_item['icon'] : '',
+							'tooltip'  => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : '',
+							'class'    => 'level-2',
+							'label'    => isset( $child_item['label'] ) ? $child_item['label'] : '',
 						);
+						$options[] = $this->filter_option( $option_args );
 					}
-
-					$group .= implode( '', $group_options );
-					$group .= '</optgroup>';
-					$options[] = $group;
-				} else {
-					$options[] = sprintf(
-						'<option value="%s" %s %s %s title="%s">%s</option>',
-						esc_attr( $value ),
-						selected( $value, $context, false ),
-						isset( $item['disabled'] ) ? $item['disabled'] : '', // xss ok
-						isset( $item['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $item['icon'] ) ) : '',
-						isset( $item['tooltip'] ) ? esc_attr( $item['tooltip'] ) : '',
-						esc_html( $item['label'] )
-					);
 				}
 			}
 			$out = sprintf(
 				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
 				esc_attr( $name ),
-				sprintf( esc_attr__( 'Show all %s', 'stream' ), $title ),
+				sprintf( esc_attr__( 'Show all %s', 'stream' ), $args['title'] ),
 				implode( '', $options )
 			);
 		}
 
 		return $out;
+	}
+
+	function filter_option( $args ) {
+		$defaults = array(
+			'value'    => '',
+			'selected' => '',
+			'disabled' => '',
+			'icon'     => '',
+			'tooltip'  => '',
+			'class'    => '',
+			'label'    => '',
+		);
+		wp_parse_args( $args, $defaults );
+
+		return sprintf(
+			'<option value="%s" %s %s %s title="%s" class="%s">%s</option>',
+			esc_attr( $args['value'] ),
+			$args['selected'],
+			$args['selected'],
+			sprintf( ' data-icon="%s"', esc_attr( $args['icon'] ) ),
+			esc_attr( $args['tooltip'] ),
+			esc_attr( $args['class'] ),
+			esc_html( $args['label'] )
+		);
 	}
 
 	function filter_search() {
