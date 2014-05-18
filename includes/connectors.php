@@ -42,7 +42,6 @@ class WP_Stream_Connectors {
 		require_once WP_STREAM_INC_DIR . 'connector.php';
 
 		$connectors = array(
-			'blogs',
 			'comments',
 			'editor',
 			'installer',
@@ -54,6 +53,11 @@ class WP_Stream_Connectors {
 			'users',
 			'widgets',
 		);
+
+		if ( is_network_admin() ) {
+			$connectors[] = 'blogs';
+		}
+
 		$classes = array();
 		foreach ( $connectors as $connector ) {
 			include_once WP_STREAM_DIR . '/connectors/' . $connector .'.php';
