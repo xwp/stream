@@ -557,7 +557,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					}
 					$data['items'] = $context_items;
 				}
-				$filters_string .= $this->filter_select( $name, $data );
+				$filters_string .= $this->filter_select( $name, $data['title'], $data['items'] );
 			}
 		}
 
@@ -568,25 +568,18 @@ class WP_Stream_List_Table extends WP_List_Table {
 		printf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
 
-	function filter_select( $name, $args ) {
-		$defaults = array(
-			'title'  => '',
-			'items'  => array(),
-			'ajax'   => false,
-		);
-		wp_parse_args( $args, $defaults );
-
-		if ( isset( $args['ajax'] ) && $args['ajax'] ) {
+	function filter_select( $name, $title, $items, $ajax = false ) {
+		if ( $ajax ) {
 			$out = sprintf(
 				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s"/>',
 				esc_attr( $name ),
 				esc_attr( wp_stream_filter_input( INPUT_GET, $name ) ),
-				esc_html( $args['title'] )
+				esc_html( $title )
 			);
 		} else {
 			$options  = array( '<option value=""></option>' );
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
-			foreach ( $args['items'] as $value => $item ) {
+			foreach ( $items as $value => $item ) {
 				$option_args = array(
 					'value'    => $value,
 					'selected' => selected( $value, $selected, false ),
@@ -617,7 +610,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$out = sprintf(
 				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
 				esc_attr( $name ),
-				sprintf( esc_attr__( 'Show all %s', 'stream' ), $args['title'] ),
+				sprintf( esc_attr__( 'Show all %s', 'stream' ), $title ),
 				implode( '', $options )
 			);
 		}
