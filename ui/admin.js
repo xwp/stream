@@ -76,27 +76,6 @@ jQuery(function($){
 		}
 
 		$( el ).select2( args );
-
-		// Assign the optgroup helper input a value if an optgroup is selected
-		$( el ).on( 'change',function( e ) {
-			var	$e = $( e.added.element );
-
-			if ( $e.is( 'optgroup' ) ) {
-				var	optgroupHelper = $e.data( 'helper-input' );
-			} else if ( $e.parent().is( 'optgroup' ) ) {
-				var	optgroupHelper = $e.parent().data( 'helper-input' );
-			} else {
-				return;
-			}
-
-			$helper = $e.closest( 'div' ).find( 'input[name="' + optgroupHelper + '"]' );
-
-			if ( null === e.val ) {
-				$helper.val( $e.data( 'value' ) );
-			} else {
-				$helper.val( '' );
-			}
-		});
 	});
 
 	var stream_select2_change_handler = function (e, input) {
