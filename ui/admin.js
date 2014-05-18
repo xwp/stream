@@ -32,17 +32,6 @@ jQuery(function($){
 				allowClear: true,
 				width: '165px'
 			};
-			if ( $(el).find('optgroup').length > 0 ) {
-				args.sortResults = function( results ) {
-					for( i = 0; i < results.length; ++i ) {
-						// Make optgroup selectable
-						if ( $( results[i].element ).is( 'optgroup' ) ) {
-							results[i].id = 'optgroup-' + $( results[i].element ).data( 'value' );
-						}
-					}
-					return results;
-				}
-			}
 		} else {
 			args = {
 				minimumInputLength: 3,
