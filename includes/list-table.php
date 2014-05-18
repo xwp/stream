@@ -546,11 +546,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 						$context_items[ $connector ]['label'] = $item['label'];
 						foreach ( $data['items'] as $context_value => $context_item ) {
 							if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
-								$context_items[ $connector ][ 'children' ][ $context_value ] = $context_item;
+								$context_items[ $connector ]['children'][ $context_value ] = $context_item;
 							}
 						}
 					}
-					foreach( $context_items as $context_value => $context_item ) {
+					foreach ( $context_items as $context_value => $context_item ) {
 						if ( ! isset( $context_item['children'] ) || empty( $context_item['children'] ) ) {
 							unset( $context_items[ $context_value ] );
 						}
