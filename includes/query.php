@@ -4,6 +4,9 @@ class WP_Stream_Query {
 
 	public static $instance;
 
+	/**
+	 * @return WP_Stream_Query
+	 */
 	public static function instance() {
 		if ( ! self::$instance ) {
 			$class = __CLASS__;
