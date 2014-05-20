@@ -26,14 +26,14 @@ tests_add_filter(
 // Removes all sql tables on shutdown
 // Do this action last
 tests_add_filter(
-		'shutdown',
+	'shutdown',
 	function() {
 		// Empty all tables so we don't deal with leftovers
 		WP_Stream::$db->reset();
-		drop_tables();
 	},
 	999999
 );
+
 
 require getenv( 'WP_TESTS_DIR' ) . 'includes/bootstrap.php';
 require dirname( __FILE__ ) . '/testcase.php';
