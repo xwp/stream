@@ -224,26 +224,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$connector_title = $this->get_term_title( $item->{'connector'}, 'connector' );
 				$context_title   = $this->get_term_title( $item->{'context'}, 'context' );
 
-				// If the Connector and Context titles loosely match then only display the Context
-				if ( $connector_title == $context_title ) {
-					$out = $this->column_link(
-						$context_title,
-						array(
-							'connector' => $item->{'connector'},
-							'context'   => $item->{'context'},
-						)
-					);
-				} else {
-					$out = $this->column_link( $connector_title, 'connector', $item->{'connector'} );
-					$out .= '<br />&#8627;&nbsp;';
-					$out .= $this->column_link(
-						$context_title,
-						array(
-							'connector' => $item->{'connector'},
-							'context'   => $item->{'context'},
-						)
-					);
-				}
+				$out = $this->column_link( $connector_title, 'connector', $item->{'connector'} );
+				$out .= '<br />&#8627;&nbsp;';
+				$out .= $this->column_link(
+					$context_title,
+					array(
+						'connector' => $item->{'connector'},
+						'context'   => $item->{'context'},
+					)
+				);
 				break;
 
 			case 'action':
