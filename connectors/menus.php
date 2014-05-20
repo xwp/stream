@@ -3,14 +3,14 @@
 class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 
 	/**
-	 * Context name
+	 * Connector slug
 	 *
 	 * @var string
 	 */
 	public static $name = 'menus';
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
@@ -21,12 +21,12 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Return translated context label
+	 * Return translated connector label
 	 *
-	 * @return string Translated context label
+	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Menus', 'stream' );
+		return __( 'Menus', 'default' );
 	}
 
 	/**

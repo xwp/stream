@@ -3,21 +3,21 @@
 class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 
 	/**
-	 * Context name
+	 * Connector slug
 	 *
 	 * @var string
 	 */
 	public static $name = 'editor';
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
 	public static $actions = array();
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
@@ -35,9 +35,9 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	}
 
 	/**
-	 * Return translated context label
+	 * Return translated connector label
 	 *
-	 * @return string Translated context label
+	 * @return string Translated connector label
 	 */
 	public static function get_label() {
 		return __( 'Theme Editor', 'stream' );
