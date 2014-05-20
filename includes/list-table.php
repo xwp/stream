@@ -576,6 +576,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 
+		$filters_string .= '<input type="hidden" name="connector" id="record-filter-connector">';
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'default' ) );
 
 		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
@@ -596,26 +597,28 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
 			foreach ( $items as $value => $item ) {
 				$option_args = array(
-					'value'    => $value,
-					'selected' => selected( $value, $selected, false ),
-					'disabled' => isset( $item['disabled'] ) ? $item['disabled'] : null,
-					'icon'     => isset( $item['icon'] ) ? $item['icon'] : null,
-					'tooltip'  => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
-					'class'    => isset( $item['children'] ) ? 'level-1' : null,
-					'label'    => isset( $item['label'] ) ? $item['label'] : null,
+					'value'     => $value,
+					'selected'  => selected( $value, $selected, false ),
+					'disabled'  => isset( $item['disabled'] ) ? $item['disabled'] : null,
+					'icon'      => isset( $item['icon'] ) ? $item['icon'] : null,
+					'connector' => $value,
+					'tooltip'   => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
+					'class'     => isset( $item['children'] ) ? 'level-1' : null,
+					'label'     => isset( $item['label'] ) ? $item['label'] : null,
 				);
 				$options[] = $this->filter_option( $option_args );
 
 				if ( isset( $item['children'] ) ) {
 					foreach ( $item['children'] as $child_value => $child_item ) {
 						$option_args  = array(
-							'value'    => $child_value,
-							'selected' => selected( $child_value, $selected, false ),
-							'disabled' => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
-							'icon'     => isset( $child_item['icon'] ) ? $child_item['icon'] : null,
-							'tooltip'  => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
-							'class'    => 'level-2',
-							'label'    => isset( $child_item['label'] ) ? $child_item['label'] : null,
+							'value'     => $child_value,
+							'selected'  => selected( $child_value, $selected, false ),
+							'disabled'  => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
+							'icon'      => isset( $child_item['icon'] ) ? $child_item['icon'] : null,
+							'connector' => $value,
+							'tooltip'   => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
+							'class'     => 'level-2',
+							'label'     => isset( $child_item['label'] ) ? $child_item['label'] : null,
 						);
 						$options[] = $this->filter_option( $option_args );
 					}
@@ -638,6 +641,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'selected'  => null,
 			'disabled'  => null,
 			'icon'      => null,
+			'connector' => null,
 			'tooltip'   => null,
 			'class'     => null,
 			'label'     => null,
@@ -645,11 +649,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 		wp_parse_args( $args, $defaults );
 
 		return sprintf(
-			'<option value="%s" %s %s %s %s class="%s">%s</option>',
+			'<option value="%s" %s %s %s %s %s class="%s">%s</option>',
 			esc_attr( $args['value'] ),
 			$args['selected'],
 			$args['disabled'],
 			$args['icon'] ? sprintf( 'data-icon="%s"', esc_attr( $args['icon'] ) ) : null,
+			$args['connector'] ? sprintf( 'data-connector="%s"', esc_attr( $args['connector'] ) ) : null,
 			$args['tooltip'] ? sprintf( 'title="%s"', esc_attr( $args['tooltip'] ) ) : null,
 			$args['class'] ? esc_attr( $args['class'] ) : null,
 			esc_html( $args['label'] )
@@ -730,7 +735,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function display() {
 		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
-		echo '<form method="get" action="' . esc_url( $url ) . '">';
+		echo '<form method="get" action="' . esc_url( $url ) . '" id="record-filter-form">';
 		echo $this->filter_search(); // xss ok
 
 		parent::display();
