@@ -597,7 +597,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
 			foreach ( $items as $value => $item ) {
 				$option_args = array(
-					'value'     => $value,
+					'value'     => "connector-{$value}",
 					'selected'  => selected( $value, $selected, false ),
 					'disabled'  => isset( $item['disabled'] ) ? $item['disabled'] : null,
 					'icon'      => isset( $item['icon'] ) ? $item['icon'] : null,

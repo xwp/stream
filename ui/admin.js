@@ -82,7 +82,7 @@ jQuery(function($){
 	var $context_input = $('.toplevel_page_wp_stream :input.chosen-select[name=context]');
 
 	if ( ( 'undefined' === typeof $query_vars.context || '' === $query_vars.context ) && 'undefined' !== typeof $query_vars.connector ) {
-		$context_input.select2( 'val', $query_vars.connector );
+		$context_input.select2( 'val', 'connector-' + $query_vars.connector );
 	}
 
 	$('#record-filter-form').submit( function() {
