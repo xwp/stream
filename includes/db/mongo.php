@@ -70,12 +70,32 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	public function install() {
 		self::$db->createCollection('stream');
 		$fields = get_class_vars('WP_Stream_Record');
-		// TODO: Provide more effecient indexes
 		// @see http://docs.mongodb.org/manual/core/index-types/
 		$indexes = array_fill_keys( array_keys( $fields ), 1 );
-		foreach ( $indexes as $index => $type ) {
-			self::$coll->createIndex( array( $index => $type ) );
+
+		/**
+		 * Allow users to enable text indexes, which is disabled by default,
+		 * because it is disabled by default in mongodb installation, and,
+		 * if enabled, text indexes tend to be large in size
+		 *
+		 * @param  bool Enable text indexes
+		 *
+		 * @return bool
+		 */
+		if ( apply_filters( 'wp_stream_mongodb_enable_text_index', false ) ) {
+			$indexes['summary'] = 'text';
 		}
+		foreach ( $indexes as $index => $type ) {
+			$fn = method_exists( self::$coll, 'createIndex' )
+			  ? array( self::$coll, 'createIndex' )
+			  : array( self::$coll, 'ensureIndex' );
+			call_user_func( $fn, array( $index => $type ) );
+		}
+
+		/**
+		 * Allow devs to hook into the process of installing MongoDB database
+		 */
+		do_action( 'wp_stream_mongodb_install' );
 	}
 
 	/**
