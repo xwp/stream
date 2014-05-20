@@ -136,6 +136,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		// Filters
 		$allowed_params = array(
+			'connector',
+			'context',
 			'action',
 			'author',
 			'author_role',
@@ -156,14 +158,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 		$args['paged'] = $this->get_pagenum();
-
-		$context = explode( '-', wp_stream_filter_input( INPUT_GET, 'context' ) );
-		if ( isset( $context[0] ) ) {
-			$args['connector'] = $context[0];
-		}
-		if ( isset( $context[1] ) ) {
-			$args['context'] = $context[1];
-		}
 
 		if ( ! isset( $args['records_per_page'] ) ) {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
@@ -227,10 +221,31 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'context':
-				$out = $this->column_link( $this->get_term_title( $item->{'connector'}, 'connector' ), 'context', $item->{'connector'} );
-				$out .= '<br />&#8627; ';
-				$out .= $this->column_link( $this->get_term_title( $item->{'context'}, 'context' ), 'context', implode( '-', array( $item->{'connector'}, $item->{'context'} ) ) );
+				$connector_title = $this->get_term_title( $item->{'connector'}, 'connector' );
+				$context_title   = $this->get_term_title( $item->{'context'}, 'context' );
+
+				// If the Connector and Context titles loosely match then only display the Context
+				if ( $connector_title == $context_title ) {
+					$out = $this->column_link(
+						$context_title,
+						array(
+							'connector' => $item->{'connector'},
+							'context'   => $item->{'context'},
+						)
+					);
+				} else {
+					$out = $this->column_link( $connector_title, 'connector', $item->{'connector'} );
+					$out .= '<br />&#8627;&nbsp;';
+					$out .= $this->column_link(
+						$context_title,
+						array(
+							'connector' => $item->{'connector'},
+							'context'   => $item->{'context'},
+						)
+					);
+				}
 				break;
+
 			case 'action':
 				$out = $this->column_link( $this->get_term_title( $item->{$column_name}, $column_name ), $column_name, $item->{$column_name} );
 				break;
@@ -574,7 +589,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s"/>',
 				esc_attr( $name ),
 				esc_attr( wp_stream_filter_input( INPUT_GET, $name ) ),
-				esc_html( $title )
+				esc_attr( $title )
 			);
 		} else {
 			$options  = array( '<option value=""></option>' );
@@ -583,25 +598,24 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$option_args = array(
 					'value'    => $value,
 					'selected' => selected( $value, $selected, false ),
-					'disabled' => isset( $item['disabled'] ) ? $item['disabled'] : '',
-					'icon'     => isset( $item['icon'] ) ? $item['icon'] : '',
-					'tooltip'  => isset( $item['tooltip'] ) ? $item['tooltip'] : '',
-					'class'    => isset( $item['children'] ) ? 'level-1' : '',
-					'label'    => isset( $item['label'] ) ? $item['label'] : '',
+					'disabled' => isset( $item['disabled'] ) ? $item['disabled'] : null,
+					'icon'     => isset( $item['icon'] ) ? $item['icon'] : null,
+					'tooltip'  => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
+					'class'    => isset( $item['children'] ) ? 'level-1' : null,
+					'label'    => isset( $item['label'] ) ? $item['label'] : null,
 				);
 				$options[] = $this->filter_option( $option_args );
 
 				if ( isset( $item['children'] ) ) {
 					foreach ( $item['children'] as $child_value => $child_item ) {
-						$option_value = implode( '-', array( $value, $child_value ) );
 						$option_args  = array(
-							'value'    => $option_value,
-							'selected' => selected( $option_value, $selected, false ),
-							'disabled' => isset( $child_item['disabled'] ) ? $child_item['disabled'] : '',
-							'icon'     => isset( $child_item['icon'] ) ? $child_item['icon'] : '',
-							'tooltip'  => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : '',
+							'value'    => $child_value,
+							'selected' => selected( $child_value, $selected, false ),
+							'disabled' => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
+							'icon'     => isset( $child_item['icon'] ) ? $child_item['icon'] : null,
+							'tooltip'  => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
 							'class'    => 'level-2',
-							'label'    => isset( $child_item['label'] ) ? $child_item['label'] : '',
+							'label'    => isset( $child_item['label'] ) ? $child_item['label'] : null,
 						);
 						$options[] = $this->filter_option( $option_args );
 					}
@@ -620,24 +634,24 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function filter_option( $args ) {
 		$defaults = array(
-			'value'    => '',
-			'selected' => '',
-			'disabled' => '',
-			'icon'     => '',
-			'tooltip'  => '',
-			'class'    => '',
-			'label'    => '',
+			'value'     => null,
+			'selected'  => null,
+			'disabled'  => null,
+			'icon'      => null,
+			'tooltip'   => null,
+			'class'     => null,
+			'label'     => null,
 		);
 		wp_parse_args( $args, $defaults );
 
 		return sprintf(
-			'<option value="%s" %s %s %s title="%s" class="%s">%s</option>',
+			'<option value="%s" %s %s %s %s class="%s">%s</option>',
 			esc_attr( $args['value'] ),
 			$args['selected'],
-			$args['selected'],
-			sprintf( ' data-icon="%s"', esc_attr( $args['icon'] ) ),
-			esc_attr( $args['tooltip'] ),
-			esc_attr( $args['class'] ),
+			$args['disabled'],
+			$args['icon'] ? sprintf( 'data-icon="%s"', esc_attr( $args['icon'] ) ) : null,
+			$args['tooltip'] ? sprintf( 'title="%s"', esc_attr( $args['tooltip'] ) ) : null,
+			$args['class'] ? esc_attr( $args['class'] ) : null,
 			esc_html( $args['label'] )
 		);
 	}
