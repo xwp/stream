@@ -669,7 +669,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 						esc_attr( $key ),
 						esc_attr( $interval['start']->format( 'Y/m/d' ) ),
-						esc_attr( $interval['end']->format( 'Y/m/d' ) ),
+						isset( $interval['end'] ) ? esc_attr( $interval['end']->format( 'Y/m/d' ) ) : '',
 						selected( $key === $date_predefined ),
 						esc_html( $interval['label'] )
 					); // xss ok

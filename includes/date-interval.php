@@ -50,7 +50,6 @@ class WP_Stream_Date_Interval {
 				'today' => array(
 					'label' => esc_html__( 'Today', 'stream' ),
 					'start' => Carbon::today( $timezone )->startOfDay(),
-					'end'   => Carbon::today( $timezone )->startOfDay(),
 				),
 				'yesterday' => array(
 					'label' => esc_html__( 'Yesterday', 'stream' ),
