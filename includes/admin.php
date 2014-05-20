@@ -129,7 +129,7 @@ class WP_Stream_Admin {
 		self::$screen_id['settings'] = add_submenu_page(
 			self::RECORDS_PAGE_SLUG,
 			__( 'Stream Settings', 'stream' ),
-			__( 'Settings', 'stream' ),
+			__( 'Settings', 'default' ),
 			self::SETTINGS_CAP,
 			self::SETTINGS_PAGE_SLUG,
 			array( __CLASS__, 'render_page' )
@@ -316,7 +316,7 @@ class WP_Stream_Admin {
 			} else {
 				$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
 			}
-			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
+			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
 
 			$url = add_query_arg(
 				array(

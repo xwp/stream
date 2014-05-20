@@ -236,7 +236,7 @@ class WP_Stream_Settings {
 		if ( empty( self::$fields ) ) {
 			$fields = array(
 				'general' => array(
-					'title'  => esc_html__( 'General', 'stream' ),
+					'title'  => esc_html__( 'General', 'default' ),
 					'fields' => array(
 						array(
 							'name'        => 'role_access',
@@ -298,7 +298,7 @@ class WP_Stream_Settings {
 					'fields' => array(
 						array(
 							'name'        => 'authors_and_roles',
-							'title'       => esc_html__( 'Authors & Roles', 'stream' ),
+							'title'       => __( 'Authors &amp; Roles', 'stream' ),
 							'type'        => 'select2_user_role',
 							'desc'        => esc_html__( 'No activity will be logged for these authors and/or roles.', 'stream' ),
 							'choices'     => self::get_roles(),

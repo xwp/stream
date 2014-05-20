@@ -3,14 +3,14 @@
 class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 
 	/**
-	 * Context name
+	 * Connector slug
 	 *
 	 * @var string
 	 */
 	public static $name = 'posts';
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
@@ -20,12 +20,12 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Return translated context label
+	 * Return translated connector label
 	 *
-	 * @return string Translated context label
+	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Posts', 'stream' );
+		return __( 'Posts', 'default' );
 	}
 
 	/**
@@ -230,7 +230,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 * @return  string  Post type label
 	 */
 	private static function get_post_type_name( $post_type_slug ) {
-		$name = __( 'Post', 'stream' ); // Default
+		$name = __( 'Post', 'default' ); // Default
 
 		if ( post_type_exists( $post_type_slug ) ) {
 			$post_type = get_post_type_object( $post_type_slug );

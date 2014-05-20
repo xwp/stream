@@ -23,7 +23,7 @@ Every logged-in user action is logged in a user activity stream and organized fo
 
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
-Visit the Stream Extensions screen inside the plugin to learn more about the powerful
+Visit the Stream Extensions screen inside the plugin to learn more about making Stream even more powerful.
 
 **Extensions:**
 
