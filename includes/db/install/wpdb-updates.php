@@ -1,6 +1,16 @@
 <?php
 
 // TODO: Test this update routine
+/**
+ * Version 2.0.0
+ *
+ * Drop the contexts table, introduce new columns to _stream, and migrate data
+ *
+ * @param string $db_version Database version updating from
+ * @param string $current_version Database version updating to
+ *
+ * @return string $current_version if updated correctly
+ */
 function wp_stream_update_auto_200( $db_version, $current_version ) {
 	global $wpdb;
 	$prefix = WP_Stream_Install_WPDB::$table_prefix;
@@ -21,11 +31,20 @@ function wp_stream_update_auto_200( $db_version, $current_version ) {
 		$wpdb->query( "CREATE INDEX connector ON `{$prefix}stream` (connector)" );
 		$wpdb->query( "CREATE INDEX context ON `{$prefix}stream` (context)" );
 		$wpdb->query( "CREATE INDEX action ON `{$prefix}stream` (action)" );
+
+		// Move data over from the old table to the new columns
+		$sql = "UPDATE {$prefix}stream stream
+		LEFT JOIN {$prefix}stream_context context ON stream.ID = context.record_id
+		SET stream.context = context.context,
+		stream.connector = context.connector,
+		stream.action = context.action";
+		$wpdb->query( $sql );
+
 		// Drop the deprecated table
 		$wpdb->query( "DROP TABLE `{$prefix}stream_context`" );
 	// Else, fail the procedure alltogether
 	} elseif ( count( $rows ) < 3 ) {
-		wp_die( 'Invalid DB schema' );
+		wp_die( 'Invalid/Incomplete DB schema' );
 	}
 
 	// TODO: We should also migrate existing data to the new table, probably
