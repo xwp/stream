@@ -66,7 +66,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		$post = get_post( $record->object_id );
 
-		if ( $post ) {
+		if ( $post && $post->post_status === wp_stream_get_meta( $record->ID, 'new_status', true ) ) {
 			$post_type_name = self::get_post_type_name( get_post_type( $post->ID ) );
 
 			if ( 'trash' === $post->post_status ) {
