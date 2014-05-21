@@ -21,7 +21,11 @@ Stream Notifications allows you to be in the loop with the Stream data you care 
 
 Props [japh](http://profiles.wordpress.org/japh/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
-### 0.1.1 - First update ###
-= 0.1.0 - First release =
+### 0.1.1 - April 29, 2014 ###
+* Adding version constant
+* Update minimum Stream version requirement
+
+### 0.1.0 ###
+First release!
 
 
