@@ -82,19 +82,19 @@ jQuery(function($){
 	var $context_input = $('.toplevel_page_wp_stream :input.chosen-select[name=context]');
 
 	if ( ( 'undefined' === typeof $query_vars.context || '' === $query_vars.context ) && 'undefined' !== typeof $query_vars.connector ) {
-		$context_input.select2( 'val', 'connector-' + $query_vars.connector );
+		$context_input.select2( 'val', 'group-' + $query_vars.connector );
 	}
 
 	$('#record-filter-form').submit( function() {
-		var $context          = $('.toplevel_page_wp_stream :input.chosen-select[name=context]');
-		var $option           = $( $context ).find('option:selected');
-		var $option_connector = $( $option ).data('connector');
-		var $option_class     = $( $option ).prop('class');
-		var $connector        = $('#record-filter-connector');
+		var	$context         = $( '.toplevel_page_wp_stream :input.chosen-select[name=context]' ),
+			$option          = $context.find( 'option:selected' ),
+			$connector       = $context.parent().find( '.record-filter-connector' ),
+			option_connector = $option.data( 'group' ),
+			option_class     = $option.prop( 'class' );
 
-		$connector.val( $option_connector );
+		$connector.val( option_connector );
 
-		if ( 'level-1' === $option_class ) {
+		if ( 'level-1' === option_class ) {
 			$option.val('');
 		}
 	});

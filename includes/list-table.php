@@ -541,7 +541,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters = $this->get_filters();
 
-		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
+		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s" />', 'wp_stream' );
 		$filters_string .= sprintf( __( '%1$sShow filter controls via the screen options tab above%2$s', 'stream' ), '<span class="filter_info" style="display:none">', '</span>' );
 
 		foreach ( $filters as $name => $data ) {
@@ -559,18 +559,22 @@ class WP_Stream_List_Table extends WP_List_Table {
 							}
 						}
 					}
+
 					foreach ( $context_items as $context_value => $context_item ) {
 						if ( ! isset( $context_item['children'] ) || empty( $context_item['children'] ) ) {
 							unset( $context_items[ $context_value ] );
 						}
 					}
+
 					$data['items'] = $context_items;
+
+					// Ouput a hidden input to handle the connector value
+					$filters_string .= '<input type="hidden" name="connector" class="record-filter-connector" />';
 				}
 				$filters_string .= $this->filter_select( $name, $data['title'], $data['items'] );
 			}
 		}
 
-		$filters_string .= '<input type="hidden" name="connector" id="record-filter-connector">';
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'default' ) );
 
 		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
@@ -589,13 +593,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 		} else {
 			$options  = array( '<option value=""></option>' );
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
-			foreach ( $items as $value => $item ) {
+			foreach ( $items as $key => $item ) {
+				$value = isset( $item['children'] ) ? 'group-' . $key : $key;
 				$option_args = array(
-					'value'     => "connector-{$value}",
+					'value'     => $value,
 					'selected'  => selected( $value, $selected, false ),
 					'disabled'  => isset( $item['disabled'] ) ? $item['disabled'] : null,
 					'icon'      => isset( $item['icon'] ) ? $item['icon'] : null,
-					'connector' => $value,
+					'group'     => isset( $item['children'] ) ? $value : null,
 					'tooltip'   => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
 					'class'     => isset( $item['children'] ) ? 'level-1' : null,
 					'label'     => isset( $item['label'] ) ? $item['label'] : null,
@@ -609,7 +614,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 							'selected'  => selected( $child_value, $selected, false ),
 							'disabled'  => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
 							'icon'      => isset( $child_item['icon'] ) ? $child_item['icon'] : null,
-							'connector' => $value,
+							'group'     => $key,
 							'tooltip'   => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
 							'class'     => 'level-2',
 							'label'     => isset( $child_item['label'] ) ? $child_item['label'] : null,
@@ -635,7 +640,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'selected'  => null,
 			'disabled'  => null,
 			'icon'      => null,
-			'connector' => null,
+			'group'     => null,
 			'tooltip'   => null,
 			'class'     => null,
 			'label'     => null,
@@ -648,7 +653,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$args['selected'],
 			$args['disabled'],
 			$args['icon'] ? sprintf( 'data-icon="%s"', esc_attr( $args['icon'] ) ) : null,
-			$args['connector'] ? sprintf( 'data-connector="%s"', esc_attr( $args['connector'] ) ) : null,
+			$args['group'] ? sprintf( 'data-group="%s"', esc_attr( $args['group'] ) ) : null,
 			$args['tooltip'] ? sprintf( 'title="%s"', esc_attr( $args['tooltip'] ) ) : null,
 			$args['class'] ? esc_attr( $args['class'] ) : null,
 			esc_html( $args['label'] )
