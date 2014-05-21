@@ -600,7 +600,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					'selected'  => selected( $value, $selected, false ),
 					'disabled'  => isset( $item['disabled'] ) ? $item['disabled'] : null,
 					'icon'      => isset( $item['icon'] ) ? $item['icon'] : null,
-					'group'     => isset( $item['children'] ) ? $value : null,
+					'group'     => isset( $item['children'] ) ? $key : null,
 					'tooltip'   => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
 					'class'     => isset( $item['children'] ) ? 'level-1' : null,
 					'label'     => isset( $item['label'] ) ? $item['label'] : null,
