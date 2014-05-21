@@ -282,11 +282,6 @@ class WP_Stream_Notifications {
 	}
 
 	public function page_form_save() {
-		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'list-table.php';
-		self::$list_table = new WP_Stream_Notifications_List_Table( array( 'screen' => self::$screen_id ) );
-
-		// TODO check author/user permission to update record
-
 		$view     = wp_stream_filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
 		$action   = wp_stream_filter_input( INPUT_GET, 'action', FILTER_DEFAULT );
 		$id       = wp_stream_filter_input( INPUT_GET, 'id' );
@@ -336,7 +331,11 @@ class WP_Stream_Notifications {
 			}
 		}
 
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'list-table.php';
+		self::$list_table = new WP_Stream_Notifications_List_Table( array( 'screen' => self::$screen_id ) );
+
 		if ( 'list' === $view && 'render' !== $action ) {
+
 			if ( has_action( 'wp_stream_notifications_handle_' . $action ) ) {
 				if ( $bulk_ids ) {
 					foreach ( $bulk_ids as $id ) {
