@@ -62,7 +62,7 @@ class WP_Stream_DB {
 		 * Filter allows modification of record information
 		 *
 		 * @param  array  array of record information
-		 * @return array  udpated array of record information
+		 * @return array  updated array of record information
 		 */
 		$recordarr = apply_filters( 'wp_stream_record_array', $recordarr );
 
@@ -103,6 +103,10 @@ class WP_Stream_DB {
 		}
 
 		foreach ( $recordarr['meta'] as $key => $vals ) {
+			// If associative array, serialize it, otherwise loop on its members
+			if ( is_array( $vals ) && 0 !== key( $vals ) ) {
+				$vals = array( $vals );
+			}
 			foreach ( (array) $vals as $val ) {
 				$val = maybe_serialize( $val );
 				$this->insert_meta( $record_id, $key, $val );

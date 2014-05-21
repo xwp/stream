@@ -49,7 +49,6 @@ class WP_Stream_Settings {
 	 * @return \WP_Stream_Settings
 	 */
 	public static function load() {
-
 		self::$option_key = self::get_option_key();
 		self::$options    = self::get_options();
 
@@ -69,7 +68,6 @@ class WP_Stream_Settings {
 
 		// Ajax callback function to search IPs
 		add_action( 'wp_ajax_stream_get_ips', array( __CLASS__, 'get_ips' ) );
-
 	}
 
 	/**
@@ -87,7 +85,7 @@ class WP_Stream_Settings {
 
 		$response = (object) array(
 			'status'  => false,
-			'message' => __( 'There was an error in the request', 'stream' ),
+			'message' => esc_html__( 'There was an error in the request', 'stream' ),
 		);
 
 		$search  = ( isset( $_POST['find'] )? wp_unslash( trim( $_POST['find'] ) ) : '' );
@@ -120,42 +118,38 @@ class WP_Stream_Settings {
 		$response->message = '';
 		$response->users   = array();
 
-		foreach ( $users->results as $key => $user ) {
-			$gravatar_url = null;
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
 
-			if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->ID, 16 ), $gravatar_src_match ) ) {
-				$gravatar_url = $gravatar_src_match[1];
-			}
+		foreach ( $users->results as $key => $user ) {
+			$author = new WP_Stream_Author( $user->ID );
 
 			$args = array(
-				'id'       => $user->ID,
-				'text'     => $user->display_name,
+				'id'   => $author->ID,
+				'text' => $author->display_name,
 			);
 
-			$user_roles = array_map( 'ucwords', $user->roles );
 			$args['tooltip'] = esc_attr(
 				sprintf(
 					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
-					$user->ID,
-					$user->user_login,
-					$user->user_email,
-					implode( ', ', $user_roles )
+					$author->id,
+					$author->user_login,
+					$author->user_email,
+					ucwords( $author->get_role() )
 				)
 			);
 
-			if ( null !== $gravatar_url ) {
-				$args['icon'] = $gravatar_url;
-			}
+			$args['icon'] = $author->get_avatar_src( 32 );
 
 			$response->users[] = $args;
 		}
 
-		if ( empty( $search ) || preg_match( '/wp|cli/i', $search ) ) {
+		if ( empty( $search ) || preg_match( '/wp|cli|system|unknown/i', $search ) ) {
+			$author = new WP_Stream_Author( 0 );
 			$response->users[] = array(
-				'id'      => 0,
-				'text'    => 'WP-CLI',
-				'icon'    => WP_STREAM_URL . 'ui/stream-icons/wp-cli.png',
-				'tooltip' => '',
+				'id'      => $author->id,
+				'text'    => $author->get_display_name(),
+				'icon'    => $author->get_avatar_src( 32 ),
+				'tooltip' => esc_html__( 'Actions performed by the system when a user is not logged in (e.g. auto site upgrader, or invoking WP-CLI without --user)', 'stream' ),
 			);
 		}
 
@@ -197,16 +191,15 @@ class WP_Stream_Settings {
 	/**
 	 * Filter the columns to search in a WP_User_Query search.
 	 *
-	 *
 	 * @param array  $search_columns Array of column names to be searched.
 	 * @param string $search         Text being searched.
 	 * @param WP_User_Query $query	 current WP_User_Query instance.
-	 *
 	 *
 	 * @return array
 	 */
 	public static function add_display_name_search_columns( $search_columns, $search, $query ){
 		$search_columns[] = 'display_name';
+
 		return $search_columns;
 	}
 
@@ -243,19 +236,19 @@ class WP_Stream_Settings {
 		if ( empty( self::$fields ) ) {
 			$fields = array(
 				'general' => array(
-					'title'  => __( 'General', 'stream' ),
+					'title'  => esc_html__( 'General', 'default' ),
 					'fields' => array(
 						array(
 							'name'        => 'role_access',
-							'title'       => __( 'Role Access', 'stream' ),
+							'title'       => esc_html__( 'Role Access', 'stream' ),
 							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
+							'desc'        => esc_html__( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
 							'choices'     => self::get_roles(),
 							'default'     => array( 'administrator' ),
 						),
 						array(
 							'name'        => 'private_feeds',
-							'title'       => __( 'Private Feeds', 'stream' ),
+							'title'       => esc_html__( 'Private Feeds', 'stream' ),
 							'type'        => 'checkbox',
 							'desc'        => sprintf(
 								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
@@ -272,21 +265,21 @@ class WP_Stream_Settings {
 								),
 								'</a>'
 							),
-							'after_field' => __( 'Enabled' ),
+							'after_field' => esc_html__( 'Enabled', 'stream' ),
 							'default'     => 0,
 						),
 						array(
 							'name'        => 'records_ttl',
-							'title'       => __( 'Keep Records for', 'stream' ),
+							'title'       => esc_html__( 'Keep Records for', 'stream' ),
 							'type'        => 'number',
 							'class'       => 'small-text',
-							'desc'        => __( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
+							'desc'        => esc_html__( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
 							'default'     => 90,
-							'after_field' => __( 'days', 'stream' ),
+							'after_field' => esc_html__( 'days', 'stream' ),
 						),
 						array(
 							'name'        => 'delete_all_records',
-							'title'       => __( 'Reset Stream Database', 'stream' ),
+							'title'       => esc_html__( 'Reset Stream Database', 'stream' ),
 							'type'        => 'link',
 							'href'        => add_query_arg(
 								array(
@@ -295,66 +288,66 @@ class WP_Stream_Settings {
 								),
 								admin_url( 'admin-ajax.php' )
 							),
-							'desc'        => __( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
+							'desc'        => esc_html__( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
 							'default'     => 0,
 						),
 					),
 				),
 				'exclude' => array(
-					'title' => __( 'Exclude', 'stream' ),
+					'title' => esc_html__( 'Exclude', 'stream' ),
 					'fields' => array(
 						array(
 							'name'        => 'authors_and_roles',
-							'title'       => __( 'Authors & Roles', 'stream' ),
+							'title'       => __( 'Authors &amp; Roles', 'stream' ),
 							'type'        => 'select2_user_role',
-							'desc'        => __( 'No activity will be logged for these authors and/or roles.', 'stream' ),
+							'desc'        => esc_html__( 'No activity will be logged for these authors and/or roles.', 'stream' ),
 							'choices'     => self::get_roles(),
 							'default'     => array(),
 						),
 						array(
 							'name'        => 'connectors',
-							'title'       => __( 'Connectors', 'stream' ),
+							'title'       => esc_html__( 'Connectors', 'stream' ),
 							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these connectors.', 'stream' ),
+							'desc'        => esc_html__( 'No activity will be logged for these connectors.', 'stream' ),
 							'choices'     => array( __CLASS__, 'get_terms_labels' ),
 							'param'       => 'connector',
 							'default'     => array(),
 						),
 						array(
 							'name'        => 'contexts',
-							'title'       => __( 'Contexts', 'stream' ),
+							'title'       => esc_html__( 'Contexts', 'stream' ),
 							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these contexts.', 'stream' ),
+							'desc'        => esc_html__( 'No activity will be logged for these contexts.', 'stream' ),
 							'choices'     => array( __CLASS__, 'get_terms_labels' ),
 							'param'       => 'context',
 							'default'     => array(),
 						),
 						array(
 							'name'        => 'actions',
-							'title'       => __( 'Actions', 'stream' ),
+							'title'       => esc_html__( 'Actions', 'stream' ),
 							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these actions.', 'stream' ),
+							'desc'        => esc_html__( 'No activity will be logged for these actions.', 'stream' ),
 							'choices'     => array( __CLASS__, 'get_terms_labels' ),
 							'param'       => 'action',
 							'default'     => array(),
 						),
 						array(
 							'name'        => 'ip_addresses',
-							'title'       => __( 'IP Addresses', 'stream' ),
+							'title'       => esc_html__( 'IP Addresses', 'stream' ),
 							'type'        => 'select2',
-							'desc'        => __( 'No activity will be logged for these IP addresses.', 'stream' ),
+							'desc'        => esc_html__( 'No activity will be logged for these IP addresses.', 'stream' ),
 							'class'       => 'ip-addresses',
 							'default'     => array(),
 							'nonce'       => 'stream_get_ips',
 						),
 						array(
 							'name'        => 'hide_previous_records',
-							'title'       => __( 'Visibility', 'stream' ),
+							'title'       => esc_html__( 'Visibility', 'stream' ),
 							'type'        => 'checkbox',
 							'desc'        => sprintf(
-								__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
+								esc_html__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
 							),
-							'after_field' => __( 'Hide Previous Records', 'stream' ),
+							'after_field' => esc_html__( 'Hide Previous Records', 'stream' ),
 							'default'     => 0,
 						),
 					),
@@ -431,7 +424,6 @@ class WP_Stream_Settings {
 				$defaults
 			)
 		);
-
 	}
 
 	/**
@@ -440,7 +432,6 @@ class WP_Stream_Settings {
 	 * @return void
 	 */
 	public static function register_settings() {
-
 		$sections = self::get_fields();
 
 		register_setting( self::$option_key, self::$option_key );
@@ -487,6 +478,7 @@ class WP_Stream_Settings {
 		if ( is_array( $new_value ) && is_array( $old_value ) ) {
 			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
 			$old_value = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value['general_private_feeds'] : 0;
+
 			if ( $new_value !== $old_value ) {
 				delete_option( 'rewrite_rules' );
 			}
@@ -500,8 +492,7 @@ class WP_Stream_Settings {
 	 * @return string         HTML to be displayed
 	 */
 	public static function render_field( $field ) {
-		$output = null;
-
+		$output        = null;
 		$type          = isset( $field['type'] ) ? $field['type'] : null;
 		$section       = isset( $field['section'] ) ? $field['section'] : null;
 		$name          = isset( $field['name'] ) ? $field['name'] : null;
@@ -781,11 +772,13 @@ class WP_Stream_Settings {
 	 */
 	public static function output_field( $field ) {
 		$method = 'output_' . $field['name'];
+
 		if ( method_exists( __CLASS__, $method ) ) {
 			return call_user_func( array( __CLASS__, $method ), $field );
 		}
 
 		$output = self::render_field( $field );
+
 		echo $output; // xss okay
 	}
 
@@ -831,6 +824,7 @@ class WP_Stream_Settings {
 	 */
 	public static function get_terms_labels( $column ) {
 		$return_labels = array();
+
 		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
 			$return_labels = WP_Stream_Connectors::$term_labels[ 'stream_' . $column ];
 			ksort( $return_labels );
@@ -859,10 +853,13 @@ class WP_Stream_Settings {
 	public static function get_excluded_by_key( $column ) {
 		$option_name     = 'exclude_' . $column;
 		$excluded_values = ( isset( self::$options[ $option_name ] ) ) ? self::$options[ $option_name ] : array();
+
 		if ( is_callable( $excluded_values ) ) {
 			$excluded_values = call_user_func( $excluded_values );
 		}
+
 		$excluded_values = wp_list_filter( $excluded_values, array( '__placeholder__' ), 'NOT' );
+
 		return $excluded_values;
 	}
 

@@ -4,7 +4,7 @@
 ![Banner](assets/banner-1544x500.png)
 Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail.
 
-**Contributors:** [x-team](http://profiles.wordpress.org/x-team), [shadyvb](http://profiles.wordpress.org/shadyvb), [fjarrett](http://profiles.wordpress.org/fjarrett), [lukecarbis](http://profiles.wordpress.org/lukecarbis), [westonruter](http://profiles.wordpress.org/westonruter), [powelski](http://profiles.wordpress.org/powelski), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [c3mdigital](http://profiles.wordpress.org/c3mdigital), [johnregan3](http://profiles.wordpress.org/johnregan3), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe)  
+**Contributors:** [stream](http://profiles.wordpress.org/stream), [x-team](http://profiles.wordpress.org/x-team), [fjarrett](http://profiles.wordpress.org/fjarrett), [westonruter](http://profiles.wordpress.org/westonruter), [japh](http://profiles.wordpress.org/japh), [lukecarbis](http://profiles.wordpress.org/lukecarbis), [shadyvb](http://profiles.wordpress.org/shadyvb), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [c3mdigital](http://profiles.wordpress.org/c3mdigital), [johnregan3](http://profiles.wordpress.org/johnregan3), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
 **Tested up to:** 3.9  
@@ -25,7 +25,14 @@ Every logged-in user action is logged in a user activity stream and organized fo
 
 Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
 
-Visit the Stream Extensions screen inside the plugin to learn more about the powerful
+Visit the Stream Extensions screen inside the plugin to learn more about making Stream even more powerful.
+
+**Extensions:**
+
+ * [Notifications](https://wp-stream.com/extension/notifications/)
+ * [Reports](https://wp-stream.com/extension/reports/)
+ * [Data Exporter](https://wp-stream.com/extension/data-exporter/)
+ * [Cherry-Pick](https://wp-stream.com/extensions/cherry-pick/)
 
 **Recorded activity:**
 
@@ -108,6 +115,34 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
+
+### 1.4.5 - May 15, 2014 ###
+* New: Lightweight frontend indicator for sites using Stream ([#507](https://github.com/x-team/wp-stream/issues/507))
+* Tweak: Add filterable method for excluded comment types ([#487](https://github.com/x-team/wp-stream/issues/487))
+* Tweak: Rename "ID" column label to "Record ID" ([#490](https://github.com/x-team/wp-stream/issues/490))
+* Tweak: One admin notice for any missing DB tables ([#506](https://github.com/x-team/wp-stream/pull/506))
+* Fix: Custom authentication schemes not tracking user logins correctly ([#434](https://github.com/x-team/wp-stream/issues/434))
+* Fix: Taxonomy connector conflicts with Edit Flow plugin ([#498](https://github.com/x-team/wp-stream/issues/498))
+* Fix: Switching user is incorrectly tracked ([#501](https://github.com/x-team/wp-stream/issues/501))
+* Fix: Extension activation links broken when plugin folders are renamed ([#502](https://github.com/x-team/wp-stream/issues/502))
+* Fix: Author info showing up incorrectly ([#505](https://github.com/x-team/wp-stream/issues/505))
+* Fix: Incompatibility with multi-server environments ([#517](https://github.com/x-team/wp-stream/issues/517))
+* Fix: Warnings seen when Show Avatars is disabled ([#518](https://github.com/x-team/wp-stream/issues/518))
+* Fix: Notices for non-existent extension data after timeout ([#529](https://github.com/x-team/wp-stream/pull/529))
+
+Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [japh](http://profiles.wordpress.org/japh/)
+
+### 1.4.4 - May 6, 2014 ###
+* New: Admin pointers to highlight when new admin screens are introduced ([#466](https://github.com/x-team/wp-stream/issues/466))
+* Tweak: Filter introduced to allow the Stream admin menu position to be changed ([#99](https://github.com/x-team/wp-stream/issues/99))
+* Tweak: Provide option label for records that show when the Stream database has updated ([#444](https://github.com/x-team/wp-stream/pull/444))
+* Tweak: Better handling of authors in the list table ([#448](https://github.com/x-team/wp-stream/pull/448))
+* Tweak: Way for developers to set their Stream Extensions affiliate ID on links from the Extensions screen ([#482](https://github.com/x-team/wp-stream/issues/482))
+* Fix: Extensions screen CSS bug in Firefox ([#464](https://github.com/x-team/wp-stream/issues/464))
+* Fix: Error when installing extensions from the Network Admin ([#491](https://github.com/x-team/wp-stream/issues/491))
+* Fix: Undefined notice in admin.php ([#468](https://github.com/x-team/wp-stream/issues/468))
+
+Props [westonruter](http://profiles.wordpress.org/westonruter/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [japh](http://profiles.wordpress.org/japh/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [bordoni](http://profiles.wordpress.org/bordoni/)
 
 ### 1.4.3 - April 26, 2014 ###
 * New: Introducing the Stream Extensions screen! ([#396](https://github.com/x-team/wp-stream/issues/396))

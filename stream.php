@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Stream
- * Plugin URI: http://wordpress.org/plugins/stream/
+ * Plugin URI: https://wp-stream.com/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 1.4.3
+ * Version: 1.4.5
  * Author: X-Team
- * Author URI: http://x-team.com/wordpress/
+ * Author URI: https://wp-stream.com/
  * License: GPLv2+
  * Text Domain: stream
  * Domain Path: /languages
@@ -36,7 +36,7 @@ class WP_Stream {
 	 *
 	 * @const string
 	 */
-	const VERSION = '1.4.3';
+	const VERSION = '1.4.5';
 
 	/**
 	 * Hold Stream instance
@@ -71,8 +71,11 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'db.php';
 		$this->db = new WP_Stream_DB;
 
-		// Check DB and add message if not present
+		// Check DB and display an admin notice if there are tables missing
 		add_action( 'init', array( $this, 'verify_database_present' ) );
+
+		// Install the plugin
+		add_action( 'wp_stream_before_db_notices', array( __CLASS__, 'install' ) );
 
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -93,7 +96,7 @@ class WP_Stream {
 
 		// Load connectors
 		require_once WP_STREAM_INC_DIR . 'connectors.php';
-		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ) );
+		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ), 9 );
 
 		// Load query class
 		require_once WP_STREAM_INC_DIR . 'query.php';
@@ -103,17 +106,19 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'feeds.php';
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
 
+		// Add frontend indicator
+		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
+
 		// Include Stream extension updater
 		require_once WP_STREAM_INC_DIR . 'updater.php';
 		WP_Stream_Updater::instance();
 
 		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
-			require_once WP_STREAM_INC_DIR . 'extensions.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
-			add_action( 'admin_init', array( 'WP_Stream_Extensions', 'get_instance' ) );
 
-			add_action( 'init', array( __CLASS__, 'install' ), 10, 1 );
+			require_once WP_STREAM_INC_DIR . 'extensions.php';
+			add_action( 'admin_init', array( 'WP_Stream_Extensions', 'get_instance' ) );
 
 			// Registers a hook that connectors and other plugins can use whenever a stream update happens
 			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
@@ -159,16 +164,6 @@ class WP_Stream {
 	 * @return void
 	 */
 	public static function install() {
-		/**
-		 * Filter will halt install() if set to true
-		 *
-		 * @param  bool
-		 * @return bool
-		 */
-		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
-			return;
-		}
-
 		// Install plugin tables
 		require_once WP_STREAM_INC_DIR . 'install.php';
 		$update = WP_Stream_Install::get_instance();
@@ -180,12 +175,8 @@ class WP_Stream {
 	 * @return void
 	 */
 	public function verify_database_present() {
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		}
-
 		/**
-		 * Filter will halt verify_database_present() if set to true
+		 * Filter will halt install() if set to true
 		 *
 		 * @param  bool
 		 * @return bool
@@ -194,16 +185,34 @@ class WP_Stream {
 			return;
 		}
 
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
 		global $wpdb;
 
 		$database_message  = '';
 		$uninstall_message = '';
 
 		// Check if all needed DB is present
+		$missing_tables = array();
 		foreach ( $this->db->get_table_names() as $table_name ) {
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-				$database_message .= sprintf( '%s %s', __( 'The following table is not present in the WordPress database:', 'stream' ), $table_name );
+				$missing_tables[] = $table_name;
 			}
+		}
+
+		if ( $missing_tables ) {
+			$database_message .= sprintf(
+				'%s <strong>%s</strong>',
+				_n(
+					'The following table is not present in the WordPress database:',
+					'The following tables are not present in the WordPress database:',
+					count( $missing_tables ),
+					'stream'
+				),
+				esc_html( implode( ', ', $missing_tables ) )
+			);
 		}
 
 		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) && current_user_can( 'manage_network_plugins' ) ) {
@@ -212,8 +221,10 @@ class WP_Stream {
 			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
 		}
 
-		// Check upgrade routine
-		self::install();
+		/**
+		 * Fires before admin notices are triggered for missing database tables.
+		 */
+		do_action( 'wp_stream_before_db_notices' );
 
 		if ( ! empty( $database_message ) ) {
 			self::notice( $database_message );
@@ -258,6 +269,31 @@ class WP_Stream {
 				echo wp_kses_post( $html_message );
 			};
 			add_action( 'all_admin_notices', $print_message );
+		}
+	}
+
+	/**
+	 * Displays an HTML comment in the frontend head to indicate that Stream is activated,
+	 * and which version of Stream is currently in use.
+	 *
+	 * @since 1.4.5
+	 *
+	 * @action wp_head
+	 * @return string|void An HTML comment, or nothing if the value is filtered out.
+	 */
+	public function frontend_indicator() {
+		$comment = sprintf( 'Stream WordPress user activity plugin v%s', esc_html( self::VERSION ) ); // Localization not needed
+
+		/**
+		 * Filter allows the HTML output of the frontend indicator comment
+		 * to be altered or removed, if desired.
+		 *
+		 * @return string $comment The content of the HTML comment
+		 */
+		$comment = apply_filters( 'wp_stream_frontend_indicator', $comment );
+
+		if ( ! empty( $comment ) ) {
+			echo sprintf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok
 		}
 	}
 

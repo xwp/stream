@@ -3,7 +3,7 @@
 class WP_Stream_Connector_Users extends WP_Stream_Connector {
 
 	/**
-	 * Context name
+	 * Connector slug
 	 *
 	 * @var string
 	 */
@@ -18,7 +18,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	protected static $_users_object_pre_deleted = array();
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
@@ -27,7 +27,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		'profile_update',
 		'password_reset',
 		'retrieve_password',
-		'wp_login',
+		'set_logged_in_cookie',
 		'clear_auth_cookie',
 		'delete_user',
 		'deleted_user',
@@ -36,12 +36,12 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Return translated context label
+	 * Return translated connector label
 	 *
-	 * @return string Translated context label
+	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Users', 'stream' );
+		return __( 'Users', 'default' );
 	}
 
 	/**
@@ -54,10 +54,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			'updated'         => __( 'Updated', 'stream' ),
 			'created'         => __( 'Created', 'stream' ),
 			'deleted'         => __( 'Deleted', 'stream' ),
-			'password-reset'  => __( 'Password Reset', 'stream' ),
-			'forgot-password' => __( 'Forgot Password', 'stream' ),
-			'login'           => __( 'Login', 'stream' ),
-			'logout'          => __( 'Logout', 'stream' ),
+			'password-reset'  => __( 'Password Reset', 'default' ),
+			'forgot-password' => __( 'Lost Password', 'default' ),
+			'login'           => __( 'Log In', 'default' ),
+			'logout'          => __( 'Log Out', 'default' ),
 			'failed_login'    => __( 'Failed Login', 'stream' ),
 		);
 	}
@@ -69,7 +69,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'users'    => __( 'Users', 'stream' ),
+			'users'    => __( 'Users', 'default' ),
 			'sessions' => __( 'Sessions', 'stream' ),
 			'profiles' => __( 'Profiles', 'stream' ),
 		);
@@ -86,7 +86,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			if ( $link = get_edit_user_link( $record->object_id ) ) {
-				$links [ __( 'Edit Profile', 'stream' ) ] = $link;
+				$links [ __( 'Edit User', 'default' ) ] = $link;
 			}
 		}
 
@@ -241,10 +241,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	/**
 	 * Log user login
 	 *
-	 * @action wp_login
+	 * @action set_logged_in_cookie
 	 */
-	public static function callback_wp_login( $user_login ) {
-		$user = get_user_by( 'login', $user_login );
+	public static function callback_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
+		$user = get_user_by( 'id', $user_id );
 
 		if ( WP_Stream_Connectors::is_logging_enabled_for_user( $user ) ) {
 			self::log(

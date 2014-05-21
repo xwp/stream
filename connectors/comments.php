@@ -3,14 +3,14 @@
 class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 
 	/**
-	 * Context name
+	 * Connector slug
 	 *
 	 * @var string
 	 */
 	public static $name = 'comments';
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
@@ -28,12 +28,12 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Return translated context label
+	 * Return translated connector label
 	 *
-	 * @return string Translated context label
+	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Comments', 'stream' );
+		return __( 'Comments', 'default' );
 	}
 
 	/**
@@ -65,7 +65,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'comments' => __( 'Comments', 'stream' ),
+			'comments' => __( 'Comments', 'default' ),
 		);
 	}
 
@@ -83,7 +83,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				$del_nonce     = wp_create_nonce( "delete-comment_$comment->comment_ID" );
 				$approve_nonce = wp_create_nonce( "approve-comment_$comment->comment_ID" );
 
-				$links[ __( 'Edit', 'stream' ) ] = admin_url( "comment.php?action=editcomment&c=$comment->comment_ID" );
+				$links[ __( 'Edit', 'default' ) ] = admin_url( "comment.php?action=editcomment&c=$comment->comment_ID" );
 
 				if ( 1 === $comment->comment_approved ) {
 					$links[ __( 'Unapprove', 'stream' ) ] = admin_url(
@@ -179,6 +179,10 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action wp_insert_comment
 	 */
 	public static function callback_wp_insert_comment( $comment_id, $comment ) {
+		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+			return;
+		}
+
 		$user_id        = self::get_comment_author( $comment, 'id' );
 		$user_name      = self::get_comment_author( $comment, 'name' );
 		$post_id        = $comment->comment_post_ID;
@@ -222,7 +226,12 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action edit_comment
 	 */
 	public static function callback_edit_comment( $comment_id ) {
-		$comment    = get_comment( $comment_id );
+		$comment = get_comment( $comment_id );
+
+		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+			return;
+		}
+
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
@@ -247,7 +256,12 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action delete_comment
 	 */
 	public static function callback_delete_comment( $comment_id ) {
-		$comment    = get_comment( $comment_id );
+		$comment = get_comment( $comment_id );
+
+		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+			return;
+		}
+
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
@@ -272,7 +286,12 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action trash_comment
 	 */
 	public static function callback_trash_comment( $comment_id ) {
-		$comment    = get_comment( $comment_id );
+		$comment = get_comment( $comment_id );
+
+		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+			return;
+		}
+
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
@@ -297,7 +316,12 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action untrash_comment
 	 */
 	public static function callback_untrash_comment( $comment_id ) {
-		$comment    = get_comment( $comment_id );
+		$comment = get_comment( $comment_id );
+
+		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+			return;
+		}
+
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
@@ -322,7 +346,12 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action spam_comment
 	 */
 	public static function callback_spam_comment( $comment_id ) {
-		$comment    = get_comment( $comment_id );
+		$comment = get_comment( $comment_id );
+
+		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+			return;
+		}
+
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
@@ -347,7 +376,12 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action unspam_comment
 	 */
 	public static function callback_unspam_comment( $comment_id ) {
-		$comment    = get_comment( $comment_id );
+		$comment = get_comment( $comment_id );
+
+		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+			return;
+		}
+
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
@@ -372,6 +406,10 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	* @action transition_comment_status
 	*/
 	public static function callback_transition_comment_status( $new_status, $old_status, $comment ) {
+		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+			return;
+		}
+
 		if ( 'approved' !== $new_status && 'unapproved' !== $new_status || 'trash' === $old_status || 'spam' === $old_status ) {
 			return;
 		}
@@ -404,6 +442,11 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 
 		$comment_id = $wpdb->last_result[0]->comment_ID;
 		$comment    = get_comment( $comment_id );
+
+		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+			return;
+		}
+
 		$user_id    = self::get_comment_author( $comment, 'id' );
 		$user_name  = self::get_comment_author( $comment, 'name' );
 		$post_id    = $comment->comment_post_ID;
@@ -419,6 +462,18 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
 			array( $post_type => 'duplicate' )
+		);
+	}
+
+	/**
+	 * Constructs list of ignored comment types for the comments connector
+	 *
+	 * @return  array  List of ignored comment types
+	 */
+	public static function get_ignored_comment_types() {
+		return apply_filters(
+			'wp_stream_comment_exclude_comment_types',
+			array()
 		);
 	}
 
