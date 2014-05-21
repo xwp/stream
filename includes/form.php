@@ -15,10 +15,27 @@ class WP_Stream_Notifications_Form {
 	}
 
 	public function load() {
-		$view = wp_stream_filter_input( INPUT_GET, 'view' );
+		$view   = wp_stream_filter_input( INPUT_GET, 'view' );
+		$action = wp_stream_filter_input( INPUT_GET, 'action' );
+		$id     = wp_stream_filter_input( INPUT_GET, 'id' );
 
 		// Control screen layout
 		if ( 'rule' === $view ) {
+
+			if ( ! empty( $_POST ) ) {
+				$result = $this->save( $id, wp_unslash( $_POST ) );
+				if ( $result && 'edit' !== $action ) {
+					wp_redirect(
+						add_query_arg(
+							array(
+								'action' => 'edit',
+								'id'     => $rule->ID,
+							)
+						)
+					);
+				}
+			}
+
 			add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
 
 			// Register metaboxes
@@ -51,6 +68,42 @@ class WP_Stream_Notifications_Form {
 				'side'
 			);
 		}
+	}
+
+	/**
+	 * Save rule data
+	 *
+	 * @param int   $id   Rule ID
+	 * @param array $data Data array
+	 *
+	 * @return bool
+	 */
+	public function save( $id, array $data ) {
+		$rule   = new WP_Stream_Notification_Rule( $id );
+
+		if ( ! wp_verify_nonce( wp_stream_filter_input( INPUT_POST, '_wpnonce' ), 'stream-notifications-form' ) ) {
+			wp_die( __( 'Invalid form parameters.', 'stream-notifications' ) );
+		}
+
+		if ( empty( $data['triggers'] ) ) {
+			wp_die( __( 'Rules cannot be saved without triggers!', 'stream-notifications' ) );
+		}
+
+		if ( ! isset( $data['visibility'] ) ) {
+			$data['visibility'] = 'inactive'; // Checkbox woraround
+		}
+
+		$data['summary'] = trim( $data['summary'] );
+
+		$result = $rule->load_from_array( $data )->save();
+
+		if ( $result ) {
+			// Should not follow the WP naming convention, to avoid conflicts
+			// if/when Stream migrates to using WP tables
+			do_action( 'saved_stream_notification_rule', $rule );
+		}
+
+		return $result;
 	}
 
 	/**

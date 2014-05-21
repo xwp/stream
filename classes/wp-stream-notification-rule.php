@@ -47,6 +47,11 @@ class WP_Stream_Notification_Rule {
 		return (bool) $this->ID;
 	}
 
+	/**
+	 * Save Notification Rule to DB
+	 *
+	 * @return bool
+	 */
 	function save() {
 		global $wpdb;
 
