@@ -66,44 +66,46 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		$post = get_post( $record->object_id );
 
-		if ( $post && $post->post_status === wp_stream_get_meta( $record->ID, 'new_status', true ) ) {
-			$post_type_name = self::get_post_type_name( get_post_type( $post->ID ) );
+		if ( $post && $post->post_status !== wp_stream_get_meta( $record->ID, 'new_status', true ) ) {
+			return $links;
+		}
 
-			if ( 'trash' === $post->post_status ) {
-				$untrash = wp_nonce_url(
-					add_query_arg(
-						array(
-							'action' => 'untrash',
-							'post'   => $post->ID,
-						),
-						admin_url( 'post.php' )
+		$post_type_name = self::get_post_type_name( get_post_type( $post->ID ) );
+
+		if ( 'trash' === $post->post_status ) {
+			$untrash = wp_nonce_url(
+				add_query_arg(
+					array(
+						'action' => 'untrash',
+						'post'   => $post->ID,
 					),
-					sprintf( 'untrash-post_%d', $post->ID )
-				);
+					admin_url( 'post.php' )
+				),
+				sprintf( 'untrash-post_%d', $post->ID )
+			);
 
-				$delete = wp_nonce_url(
-					add_query_arg(
-						array(
-							'action' => 'delete',
-							'post'   => $post->ID,
-						),
-						admin_url( 'post.php' )
+			$delete = wp_nonce_url(
+				add_query_arg(
+					array(
+						'action' => 'delete',
+						'post'   => $post->ID,
 					),
-					sprintf( 'delete-post_%d', $post->ID )
-				);
+					admin_url( 'post.php' )
+				),
+				sprintf( 'delete-post_%d', $post->ID )
+			);
 
-				$links[ sprintf( esc_html_x( 'Restore %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $untrash;
-				$links[ sprintf( esc_html_x( 'Delete %s Permenantly', 'Post type singular name', 'stream' ), $post_type_name ) ] = $delete;
-			} else {
-				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_edit_post_link( $post->ID );
+			$links[ sprintf( esc_html_x( 'Restore %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $untrash;
+			$links[ sprintf( esc_html_x( 'Delete %s Permenantly', 'Post type singular name', 'stream' ), $post_type_name ) ] = $delete;
+		} else {
+			$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_edit_post_link( $post->ID );
 
-				if ( $view_link = get_permalink( $post->ID ) ) {
-					$links[ esc_html__( 'View', 'default' ) ] = $view_link;
-				}
+			if ( $view_link = get_permalink( $post->ID ) ) {
+				$links[ esc_html__( 'View', 'default' ) ] = $view_link;
+			}
 
-				if ( $revision_id = wp_stream_get_meta( $record->ID, 'revision_id', true ) ) {
-					$links[ esc_html__( 'Revision', 'default' ) ] = get_edit_post_link( $revision_id );
-				}
+			if ( $revision_id = wp_stream_get_meta( $record->ID, 'revision_id', true ) ) {
+				$links[ esc_html__( 'Revision', 'default' ) ] = get_edit_post_link( $revision_id );
 			}
 		}
 
