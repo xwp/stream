@@ -86,15 +86,15 @@ jQuery(function($){
 	}
 
 	$('#record-filter-form').submit( function() {
-		var	$context         = $( '.toplevel_page_wp_stream :input.chosen-select[name=context]' ),
-			$option          = $context.find( 'option:selected' ),
-			$connector       = $context.parent().find( '.record-filter-connector' ),
-			option_connector = $option.data( 'group' ),
-			option_class     = $option.prop( 'class' );
+		var	$context        = $( '.toplevel_page_wp_stream :input.chosen-select[name=context]' ),
+			$option         = $context.find( 'option:selected' ),
+			$connector      = $context.parent().find( '.record-filter-connector' ),
+			optionConnector = $option.data( 'group' ),
+			optionClass     = $option.prop( 'class' );
 
-		$connector.val( option_connector );
+		$connector.val( optionConnector );
 
-		if ( 'level-1' === option_class ) {
+		if ( 'level-1' === optionClass ) {
 			$option.val('');
 		}
 	});
