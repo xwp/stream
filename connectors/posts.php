@@ -35,10 +35,11 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'updated' => __( 'Updated', 'stream' ),
-			'created' => __( 'Created', 'stream' ),
-			'trashed' => __( 'Trashed', 'stream' ),
-			'deleted' => __( 'Deleted', 'stream' ),
+			'updated'   => __( 'Updated', 'stream' ),
+			'created'   => __( 'Created', 'stream' ),
+			'trashed'   => __( 'Trashed', 'stream' ),
+			'untrashed' => __( 'Restored', 'stream' ),
+			'deleted'   => __( 'Deleted', 'stream' ),
 		);
 	}
 
@@ -63,17 +64,45 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		if ( get_post( $record->object_id ) ) {
-			if ( $link = get_edit_post_link( $record->object_id ) ) {
-				$post_type_name = self::get_post_type_name( get_post_type( $record->object_id ) );
-				$links[ sprintf( _x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
-			}
-			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
-				$links[ __( 'View', 'stream' ) ] = $link;
-			}
-			if ( 'updated' == $record->action ) {
+		$post = get_post( $record->object_id );
+
+		if ( $post && $post->post_status === wp_stream_get_meta( $record->ID, 'new_status', true ) ) {
+			$post_type_name = self::get_post_type_name( get_post_type( $post->ID ) );
+
+			if ( 'trash' === $post->post_status ) {
+				$untrash = wp_nonce_url(
+					add_query_arg(
+						array(
+							'action' => 'untrash',
+							'post'   => $post->ID,
+						),
+						admin_url( 'post.php' )
+					),
+					sprintf( 'untrash-post_%d', $post->ID )
+				);
+
+				$delete = wp_nonce_url(
+					add_query_arg(
+						array(
+							'action' => 'delete',
+							'post'   => $post->ID,
+						),
+						admin_url( 'post.php' )
+					),
+					sprintf( 'delete-post_%d', $post->ID )
+				);
+
+				$links[ sprintf( esc_html_x( 'Restore %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $untrash;
+				$links[ sprintf( esc_html_x( 'Delete %s Permenantly', 'Post type singular name', 'stream' ), $post_type_name ) ] = $delete;
+			} else {
+				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_edit_post_link( $post->ID );
+
+				if ( $view_link = get_permalink( $post->ID ) ) {
+					$links[ esc_html__( 'View', 'default' ) ] = $view_link;
+				}
+
 				if ( $revision_id = wp_stream_get_meta( $record->ID, 'revision_id', true ) ) {
-					$links[ __( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
+					$links[ esc_html__( 'Revision', 'default' ) ] = get_edit_post_link( $revision_id );
 				}
 			}
 		}
@@ -126,6 +155,13 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'stream'
 			);
 			$action  = 'trashed';
+		} elseif ( $old == 'trash' && $new != 'trash' ) {
+			$message = _x(
+				'"%1$s" %2$s restored from trash',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
+			$action  = 'untrashed';
 		} else {
 			$message = _x(
 				'"%1$s" %2$s updated',
