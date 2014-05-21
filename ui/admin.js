@@ -8,6 +8,10 @@ jQuery(function($){
 					$elem = $(record.element),
 					icon = '';
 
+				if ( '- ' === record.text.substring( 0, 2 ) ) {
+					record.text = record.text.substring( 2 );
+				}
+
 				if ( undefined !== record.icon ) {
 					icon = record.icon;
 				} else if ( undefined !== $elem.attr('data-icon') ) {
@@ -24,11 +28,17 @@ jQuery(function($){
 
 				return result;
 			};
-
+			formatSelection = function( record, container ) {
+				if ( '- ' === record.text.substring( 0, 2 ) ) {
+					record.text = record.text.substring( 2 );
+				}
+				return record.text;
+			};
 		if ( $(el).find('option').length > 0 ) {
 			args = {
 				minimumResultsForSearch: 10,
 				formatResult: formatResult,
+				formatSelection: formatSelection,
 				allowClear: true,
 				width: '165px'
 			};
@@ -52,6 +62,7 @@ jQuery(function($){
 					}
 				},
 				formatResult: formatResult,
+				formatSelection: formatSelection,
 				initSelection: function (element, callback) {
 					var id = $(element).val();
 					if(id !== '') {

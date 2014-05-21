@@ -617,7 +617,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 							'group'     => $key,
 							'tooltip'   => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
 							'class'     => 'level-2',
-							'label'     => isset( $child_item['label'] ) ? $child_item['label'] : null,
+							'label'     => isset( $child_item['label'] ) ? '- ' . $child_item['label'] : null,
 						);
 						$options[] = $this->filter_option( $option_args );
 					}
