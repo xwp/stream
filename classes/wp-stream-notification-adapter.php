@@ -33,10 +33,12 @@ abstract class WP_Stream_Notification_Adapter {
 					case 'summary':
 					case 'object_id':
 					case 'author':
-					case 'connector':
 					case 'ip':
 					case 'created':
 						$value = $log[ $placeholder ];
+						break;
+					case 'connector':
+						$value = WP_Stream_Connectors::$term_labels['stream_connector'][ $log['connector'] ];
 						break;
 					case 'context':
 						$value = WP_Stream_Connectors::$term_labels['stream_context'][ key( $log['contexts'] ) ];
