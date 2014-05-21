@@ -89,11 +89,11 @@ jQuery(function($){
 		$( el ).select2( args );
 	});
 
-	var $query_vars    = $.getQueryParameters();
-	var $context_input = $('.toplevel_page_wp_stream :input.chosen-select[name=context]');
+	var $queryVars    = $.getQueryParameters();
+	var $contextInput = $( '.toplevel_page_wp_stream :input.chosen-select[name=context]' );
 
-	if ( ( 'undefined' === typeof $query_vars.context || '' === $query_vars.context ) && 'undefined' !== typeof $query_vars.connector ) {
-		$context_input.select2( 'val', 'group-' + $query_vars.connector );
+	if ( ( 'undefined' === typeof $queryVars.context || '' === $queryVars.context ) && 'undefined' !== typeof $queryVars.connector ) {
+		$contextInput.select2( 'val', 'group-' + $queryVars.connector );
 	}
 
 	$('#record-filter-form').submit( function() {

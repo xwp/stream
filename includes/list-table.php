@@ -161,7 +161,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		if ( isset( $args['context'] ) && 0 === strpos( $args['context'], 'connector-' ) ) {
 			$args['connector'] = str_replace( 'connector-', '', $args['context'] );
-			$args['context'] = '';
+			$args['context']   = '';
 		}
 
 		if ( ! isset( $args['records_per_page'] ) ) {
@@ -187,7 +187,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$item->created,
 					get_date_from_gmt( $item->created, 'Y/m/d' )
 				);
-				$out         = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out  = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
 				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
 				break;
@@ -229,7 +229,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$connector_title = $this->get_term_title( $item->{'connector'}, 'connector' );
 				$context_title   = $this->get_term_title( $item->{'context'}, 'context' );
 
-				$out = $this->column_link( $connector_title, 'connector', $item->{'connector'} );
+				$out  = $this->column_link( $connector_title, 'connector', $item->{'connector'} );
 				$out .= '<br />&#8627;&nbsp;';
 				$out .= $this->column_link(
 					$context_title,
@@ -513,8 +513,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 
 		$filters['context'] = array(
-			'title'  => __( 'contexts', 'stream' ),
-			'items'  => $this->assemble_records( 'context' ),
+			'title' => __( 'contexts', 'stream' ),
+			'items' => $this->assemble_records( 'context' ),
 		);
 
 		$filters['action'] = array(
