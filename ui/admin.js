@@ -27,8 +27,8 @@ jQuery(function($){
 				container.attr('title', $elem.attr('title'));
 
 				return result;
-			};
-			formatSelection = function( record, container ) {
+			},
+			formatSelection = function( record ) {
 				if ( '- ' === record.text.substring( 0, 2 ) ) {
 					record.text = record.text.substring( 2 );
 				}
