@@ -15,6 +15,12 @@ Stream Notifications allows you to be in the loop with the Stream data you care 
 
 == Changelog ==
 
+= 0.1.2 - May 21, 2014 =
+
+* Fix: Basic data tags not being replaced in alerts ([#159](https://github.com/x-team/wp-stream-notifications/issues/159))
+
+Props [japh](http://profiles.wordpress.org/japh/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
+
 = 0.1.1 - First update =
 
 = 0.1.0 - First release =
