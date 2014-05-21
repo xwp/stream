@@ -339,6 +339,9 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	public function get_meta( $record_id, $key, $single = false ) {
 		if ( $record = self::$coll->findOne( array( '_id' => $this->create_mongo_id( $record_id ) ) ) ) {
 			if ( $key ) {
+				if ( ! isset( $record['meta'][ $key ] ) ) {
+					return false;
+				}
 				$meta = $record['meta'][ $key ];
 				if ( empty( $meta ) ) {
 					return false;
