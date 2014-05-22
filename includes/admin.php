@@ -222,7 +222,7 @@ class WP_Stream_Admin {
 	 */
 	public static function admin_body_class( $classes ) {
 		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
-			$classes .= ' ' . self::ADMIN_BODY_CLASS . ' ';
+			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
 		}
 
 		return $classes;
