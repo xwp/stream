@@ -12,6 +12,7 @@
 
 			this.$ = this.wrapper.each(function () {
 				var container   = $(_.last(arguments)),
+					dateinputs  = container.find('.date-inputs'),
 					from        = container.find('.field-from'),
 					to          = container.find('.field-to'),
 					to_remove   = to.prev('.date-remove'),
@@ -20,14 +21,35 @@
 					datepickers = $('').add(to).add(from);
 
 				if (_.isFunction($.fn.datepicker)) {
-					to.datepicker({
-						dateFormat: 'yy/mm/dd',
-						maxDate: 0
-					});
 
-					from.datepicker({
+					// Apply a GMT offset due to Date() using the visitor's local time
+					var siteGMTOffsetHours  = parseFloat( streamReportsLocal.gmt_offset );
+					var localGMTOffsetHours = new Date().getTimezoneOffset() / 60 * -1;
+					var totalGMTOffsetHours = siteGMTOffsetHours - localGMTOffsetHours;
+
+					var localTime = new Date();
+					var siteTime = new Date( localTime.getTime() + ( totalGMTOffsetHours * 60 * 60 * 1000 ) );
+					var dayOffset = '0';
+
+					// check if the site date is different from the local date, and set a day offset
+					if ( localTime.getDate() !== siteTime.getDate() || localTime.getMonth() !== siteTime.getMonth() ) {
+						if ( localTime.getTime() < siteTime.getTime() ) {
+							dayOffset = '+1d';
+						} else {
+							dayOffset = '-1d';
+						}
+					}
+
+					datepickers.datepicker({
 						dateFormat: 'yy/mm/dd',
-						maxDate: 0
+						maxDate: dayOffset,
+						defaultDate: siteTime,
+						beforeShow: function() {
+							$(this).prop( 'disabled', true );
+						},
+						onClose: function() {
+							$(this).prop( 'disabled', false );
+						}
 					});
 
 					datepickers.datepicker('widget').addClass('stream-datepicker');
@@ -39,6 +61,14 @@
 					});
 				}
 
+				if ('' !== from.val()) {
+					from_remove.show();
+				}
+
+				if ('' !== to.val()) {
+					to_remove.show();
+				}
+
 				predefined.on({
 					'change': function () {
 						var value    = $(this).val(),
@@ -47,7 +77,12 @@
 							from_val = option.data('from');
 
 						if ('custom' === value) {
+							dateinputs.show();
+							from.datepicker('show');
 							return false;
+						} else {
+							dateinputs.hide();
+							datepickers.datepicker('hide');
 						}
 
 						from.val(from_val).trigger('change', [true]);
@@ -64,22 +99,24 @@
 						if ('' !== to.val() && '' !== from.val()) {
 							var option = predefined.find('option').filter('[data-to="' + to.val() + '"]').filter('[data-from="' + from.val() + '"]');
 							if (0 !== option.length) {
-								predefined.val(option.attr('value')).trigger('change');
+								predefined.val(option.attr('value')).trigger('change',[true]);
 							} else {
-								predefined.val('custom').trigger('change');
+								predefined.val('custom').trigger('change',[true]);
 							}
 						} else if ('' === to.val() && '' === from.val()) {
-							predefined.val('').trigger('change');
+							predefined.val('').trigger('change',[true]);
 						} else {
-							predefined.val('custom').trigger('change');
+							predefined.val('custom').trigger('change',[true]);
 						}
 					}
 				});
 
 				from.on({
 					'change': function () {
+
 						if ('' !== from.val()) {
 							from_remove.show();
+							to.datepicker('option', 'minDate', from.val());
 						} else {
 							from_remove.hide();
 						}
@@ -88,7 +125,6 @@
 							return false;
 						}
 
-						to.datepicker('option', 'minDate', from.val());
 						predefined.trigger('check_options');
 					}
 				});
@@ -97,6 +133,7 @@
 					'change': function () {
 						if ('' !== to.val()) {
 							to_remove.show();
+							from.datepicker('option', 'maxDate', to.val());
 						} else {
 							to_remove.hide();
 						}
@@ -105,7 +142,6 @@
 							return false;
 						}
 
-						from.datepicker('option', 'maxDate', to.val());
 						predefined.trigger('check_options');
 					}
 				});

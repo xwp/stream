@@ -8,7 +8,7 @@
 				'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 				esc_attr( $key ),
 				esc_attr( $interval['start']->format( 'Y/m/d' ) ),
-				esc_attr( $interval['end']->format( 'Y/m/d' ) ),
+				esc_attr( isset( $interval['end'] ) ? $interval['end']->format( 'Y/m/d' ) : $interval['start']->format( 'Y/m/d' ) ),
 				selected( $key === $user_interval['key'] ),
 				esc_html( $interval['label'] )
 			); // xss ok
