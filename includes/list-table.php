@@ -159,8 +159,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 		$args['paged'] = $this->get_pagenum();
 
-		if ( isset( $args['context'] ) && 0 === strpos( $args['context'], 'connector-' ) ) {
-			$args['connector'] = str_replace( 'connector-', '', $args['context'] );
+		if ( isset( $args['context'] ) && 0 === strpos( $args['context'], 'group-' ) ) {
+			$args['connector'] = str_replace( 'group-', '', $args['context'] );
 			$args['context']   = '';
 		}
 
