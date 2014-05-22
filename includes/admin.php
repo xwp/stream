@@ -216,13 +216,13 @@ class WP_Stream_Admin {
 	 *
 	 * @filter admin_body_class
 	 *
-	 * @param  array $classes
+	 * @param  string $classes
 	 *
-	 * @return array $classes
+	 * @return string $classes
 	 */
 	public static function admin_body_class( $classes ) {
 		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
-			$classes .= self::ADMIN_BODY_CLASS;
+			$classes .= ' ' . self::ADMIN_BODY_CLASS . ' ';
 		}
 
 		return $classes;
