@@ -90,7 +90,7 @@ jQuery(function( $ ) {
 		$( el ).select2( args );
 	});
 
-	var $queryVars    = $.getQueryParameters();
+	var $queryVars    = $.streamGetQueryVars();
 	var $contextInput = $( '.toplevel_page_wp_stream :input.chosen-select[name=context]' );
 
 	if ( ( 'undefined' === typeof $queryVars.context || '' === $queryVars.context ) && 'undefined' !== typeof $queryVars.connector ) {
@@ -801,7 +801,7 @@ jQuery(function( $ ) {
 });
 
 jQuery.extend({
-	getQueryParameters : function( str ) {
+	streamGetQueryVars: function( str ) {
 		return (str || document.location.search).replace(/(^\?)/,'').split('&').map(function(n){return n = n.split('='),this[n[0]] = n[1],this;}.bind({}))[0];
 	}
 });
