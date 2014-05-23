@@ -65,7 +65,6 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		'admin_email',
 	);
 
-
 	/**
 	 * Register all context hooks
 	 *
