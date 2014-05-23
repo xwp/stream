@@ -864,11 +864,13 @@ class WP_Stream_Settings {
 
 		if ( 'authors' === $column || 'roles' === $column ) {
 			// Convert numeric strings to integers
-			array_walk( $excluded_values, function ( &$value ) {
-				if ( is_numeric( $value ) ) {
-					$value = absint( $value );
+			array_walk( $excluded_values,
+				function ( &$value ) {
+					if ( is_numeric( $value ) ) {
+						$value = absint( $value );
+					}
 				}
-			});
+			);
 
 			if ( 'authors' === $column ) {
 				$filter = 'is_int'; // Author ID's are always integers
