@@ -862,7 +862,7 @@ class WP_Stream_Settings {
 
 		$excluded_values = wp_list_filter( $excluded_values, array( '__placeholder__' ), 'NOT' );
 
-		if ( 'authors' === $column || 'roles' === $column ) {
+		if ( 'exclude_authors_and_roles' === $option_name ) {
 			// Convert numeric strings to integers
 			array_walk( $excluded_values,
 				function ( &$value ) {
