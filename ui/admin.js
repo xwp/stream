@@ -478,7 +478,7 @@ jQuery(function( $ ) {
 		function toggle_filter_submit() {
 			var all_hidden = true;
 			// If all filters are hidden, hide the button
-			if ( ! $( 'div.date-interval' ).is( ':hidden' ) ) {
+			if ( $( 'div.metabox-prefs [id="date-hide"]' ).is( ':checked' ) ) {
 				all_hidden = false;
 			}
 			var divs = $( 'div.alignleft.actions div.select2-container' );
@@ -497,67 +497,44 @@ jQuery(function( $ ) {
 			}
 		}
 
-		if ( $( 'div.stream-toggle-filters [id="date"]' ).is( ':checked' ) ) {
+		if ( $( 'div.metabox-prefs [id="date-hide"]' ).is( ':checked' ) ) {
 			$( 'div.date-interval' ).show();
 		} else {
 			$( 'div.date-interval' ).hide();
 		}
 
-		for ( var filter in wp_stream.filters ) {
-			if ( $( 'div.stream-toggle-filters [id="' + filter + '"]'  ).is( ':checked' ) ) {
-				$( '[name="' + filter + '"]' ).prev( '.select2-container' ).show();
+		$( 'div.actions select.chosen-select' ).each(function() {
+			var name = $( this ).prop( 'name' );
+
+			if ( $( 'div.metabox-prefs [id="' + name + '-hide"]' ).is( ':checked' ) ) {
+				$( this ).prev( '.select2-container' ).show();
 			} else {
-				$( '[name="' + filter + '"]' ).prev( '.select2-container' ).hide();
+				$( this ).prev( '.select2-container' ).hide();
 			}
-		}
+		});
 
 		toggle_filter_submit();
 
-		//Enable Filter Toggle Checkbox Ajax
-		$( 'div.stream-toggle-filters input[type=checkbox]' ).click(function() {
+		$( 'div.metabox-prefs [type="checkbox"]' ).click(function() {
+			var id = $( this ).prop( 'id' );
 
-			// Disable other checkboxes for duration of request to avoid "clickjacking"
-			var	siblings = $( this ).closest( 'div' ).find( 'input:checkbox' ),
-				nonce = $( '#toggle_filters_nonce' ).val(),
-				user = $( '#toggle_filters_user' ).val(),
-				checked = 'unchecked',
-				checkbox = $( this ).attr( 'id' );
+			if ( 'date-hide' === id ) {
+				if ( $( this ).is( ':checked' ) ) {
+					$( 'div.date-interval' ).show();
+				} else {
+					$( 'div.date-interval' ).hide();
+				}
+			} else {
+				id = id.replace( '-hide','' );
 
-			siblings.attr( 'disabled', true );
-
-			if ( $( this ).is( ':checked' ) ) {
-				checked = 'checked';
+				if ( $( this ).is( ':checked' ) ) {
+					$( '[name="' + id + '"]' ).prev( '.select2-container' ).show();
+				} else {
+					$( '[name="' + id + '"]' ).prev( '.select2-container' ).hide();
+				}
 			}
 
-			$.ajax({
-				type: 'POST',
-				url: ajaxurl,
-				data: {
-					action:   'stream_toggle_filters',
-					nonce:    nonce,
-					user:     user,
-					checked:  checked,
-					checkbox: checkbox
-				},
-				dataType: 'json',
-				beforeSend: function() {
-					$( checkbox + ' .spinner' ).show().css( { 'display': 'inline-block' } );
-				},
-				success: function( data ) {
-					var date_interval_div = $( 'div.date-interval' );
-					// toggle visibility of input whose name attr matches checkbox ID
-					if ( 'date' === data.control ) {
-						date_interval_div.toggle();
-					} else {
-						var control = $( '[name="' + data.control + '"]' );
-						if ( control.is( 'select' ) ) {
-							$( control ).prev( '.select2-container' ).toggle();
-						}
-					}
-					toggle_filter_submit();
-				}
-			});
-			siblings.attr( 'disabled', false );
+			toggle_filter_submit();
 		});
 
 		$( '#ui-datepicker-div' ).addClass( 'stream-datepicker' );
