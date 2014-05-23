@@ -846,12 +846,13 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * @param $column string name of the setting key (actions|ip_addresses|contexts|connectors)
+	 * @param $column string name of the setting key (authors|roles|actions|ip_addresses|contexts|connectors)
 	 *
 	 * @return array
 	 */
 	public static function get_excluded_by_key( $column ) {
-		$option_name     = 'exclude_' . $column;
+		$option_name = ( 'authors' === $column || 'roles' === $column ) ? 'exclude_authors_and_roles' : 'exclude_' . $column;
+
 		$excluded_values = ( isset( self::$options[ $option_name ] ) ) ? self::$options[ $option_name ] : array();
 
 		if ( is_callable( $excluded_values ) ) {
@@ -859,6 +860,25 @@ class WP_Stream_Settings {
 		}
 
 		$excluded_values = wp_list_filter( $excluded_values, array( '__placeholder__' ), 'NOT' );
+
+		if ( 'authors' === $column || 'roles' === $column ) {
+			// Convert numeric strings to integers
+			array_walk( $excluded_values, function ( &$value ) {
+				if ( is_numeric( $value ) ) {
+					$value = absint( $value );
+				}
+			});
+
+			if ( 'authors' === $column ) {
+				$filter = 'is_int'; // Author ID's are always integers
+			}
+
+			if ( 'roles' === $column ) {
+				$filter = 'is_string'; // Author roles are always strings
+			}
+
+			$excluded_values = array_values( array_filter( $excluded_values, $filter ) ); // Reset the array keys
+		}
 
 		return $excluded_values;
 	}
