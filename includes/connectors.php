@@ -173,7 +173,7 @@ class WP_Stream_Connectors {
 		} else {
 			// If a user is part of a role that we don't want to log, we disable it
 			$user_roles   = array_values( $user->roles );
-			$roles_logged = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
+			$roles_logged = WP_Stream_Settings::get_excluded_by_key( 'roles' );
 			$bool         = ( 0 === count( array_intersect( $user_roles, $roles_logged ) ) );
 			//Check user id in exclude array
 			if ( $bool ) {
