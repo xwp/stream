@@ -525,7 +525,7 @@ jQuery(function( $ ) {
 					$( 'div.date-interval' ).hide();
 				}
 			} else {
-				id = id.replace( '-hide','' );
+				id = id.replace( '-hide', '' );
 
 				if ( $( this ).is( ':checked' ) ) {
 					$( '[name="' + id + '"]' ).prev( '.select2-container' ).show();
