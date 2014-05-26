@@ -528,7 +528,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$filters = $this->get_filters();
 
 		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
-		$filters_string .= sprintf( '<span class="filter_info" style="display:none;">%s</span>', esc_html__( 'Show filter controls via the screen options tab above.', 'stream' ) );
+		$filters_string .= sprintf( '<span class="filter_info hidden">%s</span>', esc_html__( 'Show filter controls via the screen options tab above.', 'stream' ) );
 
 		foreach ( $filters as $name => $data ) {
 			if ( 'date' === $name ) {
