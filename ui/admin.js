@@ -351,7 +351,7 @@ jQuery(function( $ ) {
 
 				msg = msg.replace( /%d/g, itemCount );
 
-				var more = '<tr class="record-group" data-group-id="' + groupID + '"><td colspan="' + colCount + '" style="text-align:center;"><strong><a href="javascript:void(0)"><div class="dashicons dashicons-arrow-up"></div> ' + msg + '</a></strong></td></tr>';
+				var more = '<tr class="record-group" data-group-id="' + groupID + '"><td colspan="' + colCount + '"><a href="javascript:void(0)"><div class="dashicons dashicons-arrow-up"></div> ' + msg + '</a></td></tr>';
 				$row.after( more );
 
 				itemCount = 0;
