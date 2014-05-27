@@ -294,70 +294,86 @@ jQuery(function( $ ) {
 
 	// Group records functionality
 	$( window ).load(function() {
-		if ( 'on' !== wp_stream.group_records ) {
-			return false;
+		if ( 'on' === wp_stream.group_records ) {
+			group_records();
 		}
 
-		var itemCount = 0;
-		var groupID   = 1;
-
-		$( '.toplevel_page_wp_stream #the-list tr' ).each(function() {
-			var $row     = $( this );
-			var $rowPrev = $row.prev();
-			var $rowNext = $row.next();
-			var cols     = [ 'author', 'connector', 'context', 'action' ];
-			var colCount = $row.find( 'td' ).filter(function() {
-				return 'none' !== $( this ).css( 'display' );
-			}).length;
-			var rowKeys  = [];
-			var prevKeys = [];
-			var nextKeys = [];
-
-			// Get data keys from the current row
-			$.each( cols, function( index, value ) {
-				rowKeys[ index ] = $row.find( 'td.' + value + ' a' ).data( 'group-key' );
+		function ungroup_records() {
+			$( '.toplevel_page_wp_stream #the-list tr' ).each(function() {
+				$( this ).removeClass( 'first' );
+				$( this ).removeClass( 'hidden' );
+				if ( $( this ).hasClass( 'record-group' ) ) {
+					$( this ).remove();
+				}
 			});
 
-			// Get data keys from the previous row
-			$.each( cols, function( index, value ) {
-				prevKeys[ index ] = $rowPrev.find( 'td.' + value + ' a' ).data( 'group-key' );
-			});
+			regenerate_row_alt();
+		}
 
-			// Get data keys from the next row
-			$.each( cols, function( index, value ) {
-				nextKeys[ index ] = $rowNext.find( 'td.' + value + ' a' ).data( 'group-key' );
-			});
+		function group_records() {
+			var itemCount = 0;
+			var groupID   = 1;
 
-			// Identify the first record in a group
-			if ( rowKeys.join() === nextKeys.join() && rowKeys.join() !== prevKeys.join() ) {
-				$row.addClass( 'first' );
-				$row.attr( 'data-group-id', groupID );
-			}
+			$( '.toplevel_page_wp_stream #the-list tr' ).each(function() {
+				var $row     = $( this );
+				var $rowPrev = $row.prev();
+				var $rowNext = $row.next();
+				var cols     = [ 'author', 'connector', 'context', 'action' ];
+				var colCount = $row.find( 'td' ).filter(function() {
+					return 'none' !== $( this ).css( 'display' );
+				}).length;
+				var rowKeys  = [];
+				var prevKeys = [];
+				var nextKeys = [];
 
-			// Identify and hide duplicate records in a group
-			if ( rowKeys.join() === nextKeys.join() ) {
-				$rowNext.addClass( 'hidden' );
-				$rowNext.attr( 'data-group-id', groupID );
-				itemCount++;
-			}
+				// Get data keys from the current row
+				$.each( cols, function( index, value ) {
+					rowKeys[ index ] = $row.find( 'td.' + value + ' a' ).data( 'group-key' );
+				});
 
-			// Add an ending record group row
-			if ( rowKeys.join() !== nextKeys.join() && rowKeys.join() === prevKeys.join() ) {
-				var msg = wp_stream.i18n.group_records_plural;
+				// Get data keys from the previous row
+				$.each( cols, function( index, value ) {
+					prevKeys[ index ] = $rowPrev.find( 'td.' + value + ' a' ).data( 'group-key' );
+				});
 
-				if ( 1 === itemCount ) {
-					msg = wp_stream.i18n.group_records_singular;
+				// Get data keys from the next row
+				$.each( cols, function( index, value ) {
+					nextKeys[ index ] = $rowNext.find( 'td.' + value + ' a' ).data( 'group-key' );
+				});
+
+				// Identify the first record in a group
+				if ( rowKeys.join() === nextKeys.join() && rowKeys.join() !== prevKeys.join() ) {
+					$row.addClass( 'first' );
+					$row.attr( 'data-group-id', groupID );
 				}
 
-				msg = msg.replace( /%d/g, itemCount );
+				// Identify and hide duplicate records in a group
+				if ( rowKeys.join() === nextKeys.join() ) {
+					$rowNext.addClass( 'hidden' );
+					$rowNext.attr( 'data-group-id', groupID );
+					itemCount++;
+				}
 
-				var more = '<tr class="record-group" data-group-id="' + groupID + '"><td colspan="' + colCount + '"><a href="javascript:void(0)"><div class="dashicons dashicons-arrow-up"></div> ' + msg + '</a></td></tr>';
-				$row.after( more );
+				// Add an ending record group row
+				if ( rowKeys.join() !== nextKeys.join() && rowKeys.join() === prevKeys.join() ) {
+					var msg = wp_stream.i18n.group_records_plural;
 
-				itemCount = 0;
-				groupID++;
-			}
-		});
+					if ( 1 === itemCount ) {
+						msg = wp_stream.i18n.group_records_singular;
+					}
+
+					msg = msg.replace( /%d/g, itemCount );
+
+					var more = '<tr class="record-group" data-group-id="' + groupID + '"><td colspan="' + colCount + '"><a href="javascript:void(0)"><div class="dashicons dashicons-arrow-up"></div> ' + msg + '</a></td></tr>';
+					$row.after( more );
+
+					itemCount = 0;
+					groupID++;
+				}
+			});
+
+			regenerate_row_alt();
+		}
 
 		// Regenerate zebra stripes based on visible rows
 		function regenerate_row_alt() {
@@ -388,8 +404,6 @@ jQuery(function( $ ) {
 			});
 		}
 
-		regenerate_row_alt();
-
 		// Recalcuate the colspan on group rows when columns are changed in Screen Options
 		$( '.metabox-prefs input' ).on( 'click', function() {
 			var colCount = $( '.toplevel_page_wp_stream #the-list tr:first' ).find( 'td' ).filter(function() {
@@ -416,6 +430,40 @@ jQuery(function( $ ) {
 			$rowGroup.hide();
 
 			regenerate_row_alt();
+		});
+
+		// Enable Grouped Records Checkbox Ajax
+		$( '#enable_group_records' ).click(function() {
+			var nonce   = $( '#stream_group_records_nonce' ).val();
+			var user    = $( '#stream_screen_options_user' ).val();
+			var checked = 'unchecked';
+
+			if ( $( '#enable_group_records' ).is( ':checked' ) ) {
+				checked = 'checked';
+			}
+
+			$.ajax({
+				type: 'POST',
+				url: ajaxurl,
+				data: {
+					action: 'stream_enable_group_records',
+					nonce: nonce,
+					user: user,
+					checked: checked
+				},
+				dataType: 'json',
+				beforeSend: function() {
+					$( '.stream-group-records-checkbox .spinner' ).show().css( { 'display': 'inline-block' } );
+				},
+				success: function() {
+					$( '.stream-group-records-checkbox .spinner' ).hide();
+					if ( $( '#enable_group_records' ).is( ':checked' ) ) {
+						group_records();
+					} else {
+						ungroup_records();
+					}
+				}
+			});
 		});
 	});
 
@@ -598,34 +646,6 @@ jQuery(function( $ ) {
 				},
 				success: function() {
 					$( '.stream-live-update-checkbox .spinner' ).hide();
-				}
-			});
-		});
-
-		// Enable Grouped Records Checkbox Ajax
-		$( '#enable_group_records' ).click(function() {
-			var nonce   = $( '#stream_group_records_nonce' ).val();
-			var user    = $( '#stream_screen_options_user' ).val();
-			var checked = 'unchecked';
-			if ( $( '#enable_group_records' ).is( ':checked' ) ) {
-				checked = 'checked';
-			}
-
-			$.ajax({
-				type: 'POST',
-				url: ajaxurl,
-				data: {
-					action: 'stream_enable_group_records',
-					nonce: nonce,
-					user: user,
-					checked: checked
-				},
-				dataType: 'json',
-				beforeSend: function() {
-					$( '.stream-group-records-checkbox .spinner' ).show().css( { 'display': 'inline-block' } );
-				},
-				success: function() {
-					$( '.stream-group-records-checkbox .spinner' ).hide();
 				}
 			});
 		});
