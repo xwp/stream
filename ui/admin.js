@@ -398,6 +398,7 @@ jQuery(function( $ ) {
 
 			$groupItems.fadeIn();
 			$groupItems.removeClass( 'hidden' );
+			$groupItems.removeClass( 'first' );
 			$rowGroup.hide();
 
 			regenerate_row_alt();
