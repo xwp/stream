@@ -214,6 +214,14 @@
 	margin-top: -2px;
 }
 
+.toplevel_page_wp_stream #the-list .first td {
+	padding-bottom: 0;
+}
+
+.toplevel_page_wp_stream #the-list .record-group td {
+	padding-top: 0;
+}
+
 
 /* Live Update */
 

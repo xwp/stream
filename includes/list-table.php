@@ -211,8 +211,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
 
 				$out = sprintf(
-					'<a href="%s">%s <span>%s</span></a>%s%s%s',
+					'<a href="%s" data-group-key="%d">%s <span>%s</span></a>%s%s%s',
 					$author->get_records_page_url(),
+					isset( $author->ID ) ? $author->ID : 0,
 					$author->get_avatar_img( 80 ),
 					$author->get_display_name(),
 					$author->is_deleted() ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
@@ -353,10 +354,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		return sprintf(
-			'<a href="%s" title="%s">%s</a>',
+			'<a href="%s" %s %s>%s</a>',
 			esc_url( $url ),
-			esc_attr( $title ),
-			$display
+			$title ? sprintf( 'title="%s"', esc_attr( $title ) ) : null,
+			$value ? sprintf( 'data-group-key="%s"', esc_attr( $value ) ) : null,
+			$display // xss ok
 		);
 	}
 
@@ -748,6 +750,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 				<label for="enable_live_update">
 					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( $option, 'on' ) ?> />
 					<?php esc_html_e( 'Enabled', 'stream' ) ?><span class="spinner"></span>
+				</label>
+				<label for="enable_group_records">
+					<input type="checkbox" value="on" name="enable_group_records" id="enable_group_records" <?php checked( $option, 'on' ) ?> />
+					<?php esc_html_e( 'Group similar records', 'stream' ) ?><span class="spinner"></span>
 				</label>
 			</div>
 		</fieldset>
