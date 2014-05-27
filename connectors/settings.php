@@ -65,7 +65,6 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		'admin_email',
 	);
 
-
 	/**
 	 * Register all context hooks
 	 *
@@ -113,17 +112,17 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		$context_labels = array(
-			'settings'           => __( 'Settings', 'default' ),
-			'general'            => __( 'General', 'default' ),
-			'writing'            => __( 'Writing', 'default' ),
-			'reading'            => __( 'Reading', 'default' ),
-			'discussion'         => __( 'Discussion', 'default' ),
-			'media'              => __( 'Media', 'default' ),
-			'permalink'          => __( 'Permalinks', 'default' ),
-			'network'            => __( 'Network', 'default' ),
-			'wp_stream'          => __( 'Stream', 'stream' ),
-			'custom_background ' => __( 'Custom Background', 'default' ),
-			'custom_header'      => __( 'Custom Header', 'default' ),
+			'settings'          => __( 'Settings', 'default' ),
+			'general'           => __( 'General', 'default' ),
+			'writing'           => __( 'Writing', 'default' ),
+			'reading'           => __( 'Reading', 'default' ),
+			'discussion'        => __( 'Discussion', 'default' ),
+			'media'             => __( 'Media', 'default' ),
+			'permalink'         => __( 'Permalinks', 'default' ),
+			'network'           => __( 'Network', 'default' ),
+			'wp_stream'         => __( 'Stream', 'stream' ),
+			'custom_background' => __( 'Custom Background', 'default' ),
+			'custom_header'     => __( 'Custom Header', 'default' ),
 		);
 
 		if ( is_network_admin() ) {
