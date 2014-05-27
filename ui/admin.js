@@ -343,8 +343,17 @@ jQuery(function( $ ) {
 
 			// Add an ending record group row
 			if ( rowKeys.join() !== nextKeys.join() && rowKeys.join() === prevKeys.join() ) {
-				var more = '<tr class="record-group" data-group-id="' + groupID + '"><td colspan="' + colCount + '" style="text-align:center;"><strong><a href="javascript:void(0)"><div class="dashicons dashicons-arrow-up"></div> Show ' + itemCount + ' others</a></strong></td></tr>';
+				var msg = wp_stream.i18n.group_records_plural;
+
+				if ( 1 === itemCount ) {
+					msg = wp_stream.i18n.group_records_singular;
+				}
+
+				msg = msg.replace( /%d/g, itemCount );
+
+				var more = '<tr class="record-group" data-group-id="' + groupID + '"><td colspan="' + colCount + '" style="text-align:center;"><strong><a href="javascript:void(0)"><div class="dashicons dashicons-arrow-up"></div> ' + msg + '</a></strong></td></tr>';
 				$row.after( more );
+
 				itemCount = 0;
 				groupID++;
 			}
