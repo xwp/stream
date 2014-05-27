@@ -292,7 +292,12 @@ jQuery(function( $ ) {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
 	});
 
+	// Group records functionality
 	$( window ).load(function() {
+		if ( 'on' !== wp_stream.group_records ) {
+			return false;
+		}
+
 		var itemCount = 0;
 		var groupID   = 1;
 
@@ -402,6 +407,36 @@ jQuery(function( $ ) {
 			$rowGroup.hide();
 
 			regenerate_row_alt();
+		});
+	});
+
+	// Enable Grouped Records Checkbox Ajax
+	$( window ).load(function() {
+		$( '#enable_group_records' ).click(function() {
+			var nonce   = $( '#stream_group_records_nonce' ).val();
+			var user    = $( '#stream_screen_options_user' ).val();
+			var checked = 'unchecked';
+			if ( $( '#enable_group_records' ).is( ':checked' ) ) {
+				checked = 'checked';
+			}
+
+			$.ajax({
+				type: 'POST',
+				url: ajaxurl,
+				data: {
+					action: 'stream_enable_group_records',
+					nonce: nonce,
+					user: user,
+					checked: checked
+				},
+				dataType: 'json',
+				beforeSend: function() {
+					$( '.stream-group-records-checkbox .spinner' ).show().css( { 'display': 'inline-block' } );
+				},
+				success: function() {
+					$( '.stream-group-records-checkbox .spinner' ).hide();
+				}
+			});
 		});
 	});
 
@@ -560,10 +595,10 @@ jQuery(function( $ ) {
 
 		});
 
-		//Enable Live Update Checkbox Ajax
+		// Enable Live Update Checkbox Ajax
 		$( '#enable_live_update' ).click(function() {
 			var nonce   = $( '#stream_live_update_nonce' ).val();
-			var user    = $( '#enable_live_update_user' ).val();
+			var user    = $( '#stream_screen_options_user' ).val();
 			var checked = 'unchecked';
 			if ( $( '#enable_live_update' ).is( ':checked' ) ) {
 				checked = 'checked';

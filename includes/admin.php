@@ -75,6 +75,9 @@ class WP_Stream_Admin {
 		// Toggle filters in list table on/off
 		add_action( 'wp_ajax_stream_toggle_filters', array( __CLASS__, 'toggle_filters' ) );
 
+		// Toggle group records screen option per user
+		add_action( 'wp_ajax_stream_enable_group_records', array( __CLASS__, 'enable_group_records' ) );
+
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
@@ -205,6 +208,7 @@ class WP_Stream_Admin {
 					'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 					'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
 					'current_query'  => json_encode( $_GET ),
+					'group_records'  => get_user_meta( get_current_user_id(), 'stream_group_records', true ),
 					'filters'        => self::$list_table ? self::$list_table->get_filters() : false,
 				)
 			);
@@ -885,6 +889,38 @@ class WP_Stream_Admin {
 		}
 		echo json_encode( $value );
 		wp_die();
+	}
+
+	/**
+	 * Ajax function to enable/disable group records
+	 *
+	 * @return void/json
+	 */
+	public static function enable_group_records() {
+		check_ajax_referer( 'stream_group_records_nonce', 'nonce' );
+
+		$input = array(
+			'checked' => FILTER_SANITIZE_STRING,
+			'user'    => FILTER_SANITIZE_STRING,
+		);
+
+		$input = filter_input_array( INPUT_POST, $input );
+
+		if ( false === $input ) {
+			wp_send_json_error( 'Error in group records checkbox' );
+		}
+
+		$checked = ( 'checked' === $input['checked'] ) ? 'on' : 'off';
+
+		$user = (int) $input['user'];
+
+		$success = update_user_meta( $user, 'stream_group_records', $checked );
+
+		if ( $success ) {
+			wp_send_json_success( 'Group Records Enabled' );
+		} else {
+			wp_send_json_error( 'Group Records checkbox error' );
+		}
 	}
 
 	public static function get_authors_record_meta( $authors ) {
