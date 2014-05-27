@@ -376,7 +376,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * results of existing records.  All items that do not exist in records
 	 * get assigned a disabled value of "true".
 	 *
-	 * @uses   wp_stream_existing_records (see query.php)
+	 * @uses   wp_stream_existing_records (see class-wp-stream-query.php)
 	 * @since  1.0.4
 	 *
 	 * @param  string  Column requested
@@ -478,7 +478,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	public function get_filters() {
 		$filters = array();
 
-		require_once WP_STREAM_INC_DIR . 'date-interval.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-date-interval.php';
 		$date_interval = new WP_Stream_Date_Interval();
 
 		$filters['date'] = array(

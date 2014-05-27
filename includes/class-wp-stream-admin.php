@@ -509,7 +509,7 @@ class WP_Stream_Admin {
 	}
 
 	public static function register_list_table() {
-		require_once WP_STREAM_INC_DIR . 'list-table.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-list-table.php';
 		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::$screen_id['main'] ) );
 	}
 

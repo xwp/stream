@@ -65,10 +65,10 @@ class WP_Stream {
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 
 		// Load filters polyfill
-		require_once WP_STREAM_INC_DIR . 'filter-input.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-filter-input.php';
 
 		// Load DB helper class
-		require_once WP_STREAM_INC_DIR . 'db.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-db.php';
 		$this->db = new WP_Stream_DB;
 
 		// Check DB and display an admin notice if there are tables missing
@@ -84,55 +84,55 @@ class WP_Stream {
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
 
 		// Load settings, enabling extensions to hook in
-		require_once WP_STREAM_INC_DIR . 'settings.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-settings.php';
 		add_action( 'init', array( 'WP_Stream_Settings', 'load' ) );
 
 		// Load network class
 		if ( is_multisite() ) {
-			require_once WP_STREAM_INC_DIR . 'network.php';
+			require_once WP_STREAM_INC_DIR . 'class-wp-stream-network.php';
 			$this->network = new WP_Stream_Network;
 		}
 
 		// Load logger class
-		require_once WP_STREAM_INC_DIR . 'log.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-log.php';
 		add_action( 'plugins_loaded', array( 'WP_Stream_Log', 'load' ) );
 
 		// Load connectors
-		require_once WP_STREAM_INC_DIR . 'connectors.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-connectors.php';
 		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ), 9 );
 
 		// Load query class
-		require_once WP_STREAM_INC_DIR . 'query.php';
-		require_once WP_STREAM_INC_DIR . 'context-query.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-query.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-context-query.php';
 
 		// Load support for feeds
-		require_once WP_STREAM_INC_DIR . 'feeds.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-feeds.php';
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
 
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
 
 		// Include Stream extension updater
-		require_once WP_STREAM_INC_DIR . 'updater.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-updater.php';
 		WP_Stream_Updater::instance();
 
 		if ( is_admin() ) {
-			require_once WP_STREAM_INC_DIR . 'admin.php';
+			require_once WP_STREAM_INC_DIR . 'class-wp-stream-admin.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 
-			require_once WP_STREAM_INC_DIR . 'extensions.php';
+			require_once WP_STREAM_INC_DIR . 'class-wp-stream-extensions.php';
 			add_action( 'admin_init', array( 'WP_Stream_Extensions', 'get_instance' ) );
 
 			// Registers a hook that connectors and other plugins can use whenever a stream update happens
 			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
 
-			require_once WP_STREAM_INC_DIR . 'dashboard.php';
+			require_once WP_STREAM_INC_DIR . 'class-wp-stream-dashboard.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
 
-			require_once WP_STREAM_INC_DIR . 'live-update.php';
+			require_once WP_STREAM_INC_DIR . 'class-wp-stream-live-update.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Live_Update', 'load' ) );
 
-			require_once WP_STREAM_INC_DIR . 'pointers.php';
+			require_once WP_STREAM_INC_DIR . 'class-wp-stream-pointers.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Pointers', 'load' ) );
 		}
 
@@ -168,7 +168,7 @@ class WP_Stream {
 	 */
 	public static function install() {
 		// Install plugin tables
-		require_once WP_STREAM_INC_DIR . 'install.php';
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-install.php';
 		$update = WP_Stream_Install::get_instance();
 	}
 
