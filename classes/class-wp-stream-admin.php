@@ -72,9 +72,6 @@ class WP_Stream_Admin {
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
-		// Toggle filters in list table on/off
-		add_action( 'wp_ajax_stream_toggle_filters', array( __CLASS__, 'toggle_filters' ) );
-
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
@@ -796,28 +793,6 @@ class WP_Stream_Admin {
 		}
 
 		return $allcaps;
-	}
-
-	public static function toggle_filters() {
-		check_ajax_referer( 'stream_toggle_filters_nonce', 'nonce' );
-
-		$input = array(
-			'checked'  => wp_stream_filter_input( INPUT_POST, 'checked', FILTER_SANITIZE_STRING ),
-			'user'     => wp_stream_filter_input( INPUT_POST, 'user', FILTER_SANITIZE_NUMBER_INT ),
-			'checkbox' => sanitize_key( $_POST['checkbox'] ),
-		);
-
-		$filters_option = get_user_meta( $input['user'], 'stream_toggle_filters', true );
-
-		$filters_option[ $input['checkbox'] ] = ( 'checked' === $input['checked'] );
-
-		$success = update_user_meta( $input['user'], 'stream_toggle_filters', $filters_option );
-
-		if ( $success ) {
-			wp_send_json( array( 'control' => $input['checkbox'] ) );
-		} else {
-			wp_send_json_error( 'Toggled filter checkbox error' );
-		}
 	}
 
 	/**

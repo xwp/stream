@@ -385,7 +385,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * @return array   options to be displayed in search filters
 	 */
 	function assemble_records( $column, $table = '' ) {
-
 		$setting_key = self::get_column_excluded_setting_key( $column );
 
 		$exclude_hide_previous_records = isset( WP_Stream_Settings::$options['exclude_hide_previous_records'] ) ? WP_Stream_Settings::$options['exclude_hide_previous_records'] : 0;
@@ -525,13 +524,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filters_form() {
-
 		$user_id = get_current_user_id();
-
 		$filters = $this->get_filters();
 
 		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
-		$filters_string .= sprintf( __( '%1$sShow filter controls via the screen options tab above%2$s', 'stream' ), '<span class="filter_info" style="display:none">', '</span>' );
+		$filters_string .= sprintf( '<span class="filter_info hidden">%s</span>', esc_html__( 'Show filter controls via the screen options tab above.', 'stream' ) );
 
 		foreach ( $filters as $name => $data ) {
 			if ( 'date' === $name ) {
@@ -549,7 +546,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filter_select( $name, $title, $items, $ajax ) {
-
 		if ( $ajax ) {
 			$out = sprintf(
 				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s"/>',
@@ -597,10 +593,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function filter_date( $items ) {
-
 		wp_enqueue_style( 'jquery-ui' );
 		wp_enqueue_style( 'wp-stream-datepicker' );
-
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 
 		$date_predefined = wp_stream_filter_input( INPUT_GET, 'date_predefined' );
@@ -701,7 +695,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 	static function set_live_update_option( $dummy, $option, $value ) {
 		if ( 'stream_live_update_records' === $option ) {
 			$value = $_POST['stream_live_update_records'];
-
 			return $value;
 		} else {
 			return $dummy;
@@ -709,30 +702,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	public function screen_controls( $status, $args ) {
-
 		$user_id = get_current_user_id();
 		$option  = get_user_meta( $user_id, 'stream_live_update_records', true );
 
-		$filters = $this->get_filters();
-
-		foreach ( $filters as $key => $val ) {
-			$filters_option_defaults[ $key ] = true;
-		}
-
-		$filters_option = apply_filters(
-			'wp_stream_filters_option',
-			wp_parse_args(
-				(array) get_user_meta( $user_id, 'stream_toggle_filters', true ),
-				$filters_option_defaults
-			)
-		);
-
-		if ( empty( $filters_option ) ) {
-			update_user_meta( $user_id, 'stream_toggle_filters', $filters_option_defaults );
-			$filters_option = get_user_meta( $user_id, 'stream_toggle_filters', true );
-		}
 		$stream_live_update_records_nonce = wp_create_nonce( 'stream_live_update_records_nonce' );
-		$stream_toggle_filters_nonce      = wp_create_nonce( 'stream_toggle_filters_nonce' );
+
 		ob_start();
 		?>
 		<fieldset>
@@ -751,26 +725,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 				</label>
 			</div>
 		</fieldset>
-		<fieldset>
-			<h5><?php esc_html_e( 'Show filters', 'stream' ) ?></h5>
-
-			<div>
-				<input type="hidden" name="toggle_filters_nonce" id="toggle_filters_nonce" value="<?php echo esc_attr( $stream_toggle_filters_nonce ) ?>" />
-			</div>
-			<div>
-				<input type="hidden" name="toggle_filters_user" id="toggle_filters_user" value="<?php echo absint( $user_id ) ?>" />
-			</div>
-			<div class="metabox-prefs stream-toggle-filters">
-				<?php foreach ( $filters as $key => $val ) : ?>
-				<label for="<?php echo esc_attr( $key ); ?>">
-					<input type="hidden" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" value="0" />
-					<input type="checkbox" value="1" name="stream_toggle_filters[<?php echo esc_attr( $key ); ?>]" id="<?php echo esc_attr( $key ); ?>" <?php checked( $filters_option[ $key ] ) ?> />
-					<?php echo esc_html( ucwords( $val['title'] ) ); ?><span class="spinner"></span>
-				</label>
-				<?php endforeach; ?>
-			</div>
-		</fieldset>
-
 		<?php
 		return ob_get_clean();
 	}
