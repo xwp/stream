@@ -300,9 +300,7 @@ jQuery(function( $ ) {
 
 		function ungroup_records() {
 			$( '.toplevel_page_wp_stream #the-list tr' ).each(function() {
-				$( this ).removeAttr( 'data-group-id' );
-				$( this ).removeClass( 'first' );
-				$( this ).removeClass( 'hidden' );
+				$( this ).removeAttr( 'data-group-id' ).removeClass( 'first hidden' ).show();
 				if ( $( this ).hasClass( 'record-group' ) ) {
 					$( this ).remove();
 				}
@@ -425,8 +423,7 @@ jQuery(function( $ ) {
 			var groupID     = $rowGroup.data( 'group-id' );
 			var $groupItems = $( '*[data-group-id="' + groupID + '"]' );
 
-			$groupItems.fadeIn();
-			$groupItems.removeClass( 'first' );
+			$groupItems.fadeIn().removeClass( 'hidden first' );
 			$rowGroup.hide();
 
 			regenerate_row_alt();
