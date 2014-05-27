@@ -66,7 +66,7 @@ class WP_Stream_Log {
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
-		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
+		require_once WP_STREAM_CLASS_DIR . 'class-wp-stream-author.php';
 
 		$user  = new WP_User( $user_id );
 		$roles = get_option( $wpdb->get_blog_prefix() . 'user_roles' );

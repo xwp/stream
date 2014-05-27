@@ -32,7 +32,7 @@ class Test_WP_Stream_Admin extends WP_StreamTestCase {
 		wp_set_current_user( $administrator_id );
 
 		//Load the class manually like if we were in the admin
-		require_once WP_STREAM_INC_DIR . 'class-wp-stream-admin.php';
+		require_once WP_STREAM_CLASS_DIR . 'class-wp-stream-admin.php';
 		call_user_func( array( self::CLASSNAME, 'load' ) );
 	}
 

@@ -33,7 +33,7 @@ class WP_Stream_Connectors {
 	public static function load() {
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
-		require_once WP_STREAM_INC_DIR . 'class-wp-stream-connector.php';
+		require_once WP_STREAM_CLASS_DIR . 'class-wp-stream-connector.php';
 
 		$connectors = array(
 			'blogs',
