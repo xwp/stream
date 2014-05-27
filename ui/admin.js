@@ -419,36 +419,6 @@ jQuery(function( $ ) {
 		});
 	});
 
-	// Enable Grouped Records Checkbox Ajax
-	$( window ).load(function() {
-		$( '#enable_group_records' ).click(function() {
-			var nonce   = $( '#stream_group_records_nonce' ).val();
-			var user    = $( '#stream_screen_options_user' ).val();
-			var checked = 'unchecked';
-			if ( $( '#enable_group_records' ).is( ':checked' ) ) {
-				checked = 'checked';
-			}
-
-			$.ajax({
-				type: 'POST',
-				url: ajaxurl,
-				data: {
-					action: 'stream_enable_group_records',
-					nonce: nonce,
-					user: user,
-					checked: checked
-				},
-				dataType: 'json',
-				beforeSend: function() {
-					$( '.stream-group-records-checkbox .spinner' ).show().css( { 'display': 'inline-block' } );
-				},
-				success: function() {
-					$( '.stream-group-records-checkbox .spinner' ).hide();
-				}
-			});
-		});
-	});
-
 	// Confirmation on some important actions
 	$( '#wp_stream_general_delete_all_records, #wp_stream_network_general_delete_all_records' ).click(function( e ) {
 		if ( ! confirm( wp_stream.i18n.confirm_purge ) ) {
@@ -628,6 +598,34 @@ jQuery(function( $ ) {
 				},
 				success: function() {
 					$( '.stream-live-update-checkbox .spinner' ).hide();
+				}
+			});
+		});
+
+		// Enable Grouped Records Checkbox Ajax
+		$( '#enable_group_records' ).click(function() {
+			var nonce   = $( '#stream_group_records_nonce' ).val();
+			var user    = $( '#stream_screen_options_user' ).val();
+			var checked = 'unchecked';
+			if ( $( '#enable_group_records' ).is( ':checked' ) ) {
+				checked = 'checked';
+			}
+
+			$.ajax({
+				type: 'POST',
+				url: ajaxurl,
+				data: {
+					action: 'stream_enable_group_records',
+					nonce: nonce,
+					user: user,
+					checked: checked
+				},
+				dataType: 'json',
+				beforeSend: function() {
+					$( '.stream-group-records-checkbox .spinner' ).show().css( { 'display': 'inline-block' } );
+				},
+				success: function() {
+					$( '.stream-group-records-checkbox .spinner' ).hide();
 				}
 			});
 		});
