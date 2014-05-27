@@ -1,6 +1,6 @@
 <?php
 
-require_once WP_STREAM_INC_DIR . 'admin.php';
+require_once WP_STREAM_CLASSES_DIR . 'class-wp-stream-admin.php';
 
 class WP_Stream_Feeds {
 
