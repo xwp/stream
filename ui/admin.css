@@ -225,7 +225,8 @@
 
 /* Live Update */
 
-.toplevel_page_wp_stream .stream-live-update-checkbox .spinner {
+.toplevel_page_wp_stream .stream-live-update-checkbox .spinner,
+.toplevel_page_wp_stream .stream-group-records-checkbox .spinner {
 	margin-top: 5px;
 }
 
