@@ -300,6 +300,7 @@ jQuery(function( $ ) {
 
 		function ungroup_records() {
 			$( '.toplevel_page_wp_stream #the-list tr' ).each(function() {
+				$( this ).removeAttr( 'data-group-id' );
 				$( this ).removeClass( 'first' );
 				$( this ).removeClass( 'hidden' );
 				if ( $( this ).hasClass( 'record-group' ) ) {
@@ -425,7 +426,6 @@ jQuery(function( $ ) {
 			var $groupItems = $( '*[data-group-id="' + groupID + '"]' );
 
 			$groupItems.fadeIn();
-			$groupItems.removeClass( 'hidden' );
 			$groupItems.removeClass( 'first' );
 			$rowGroup.hide();
 
