@@ -42,8 +42,7 @@ function wp_stream_update_auto_200( $db_version, $current_version ) {
 
 		// Drop the deprecated table
 		$wpdb->query( "DROP TABLE `{$prefix}stream_context`" );
-	// Else, fail the procedure alltogether
-	} elseif ( count( $rows ) < 3 ) {
+	} elseif ( count( $rows ) < 3 ) { // Else, fail the procedure alltogether
 		wp_die( 'Invalid/Incomplete DB schema' );
 	}
 

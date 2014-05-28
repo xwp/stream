@@ -2,11 +2,7 @@
 <ruleset name="WordPress Coding Standards for Plugins">
 	<description>Generally-applicable sniffs for WordPress plugins</description>
 
-	<rule ref="WordPress">
-		<exclude name="WordPress.VIP.RestrictedFunctions"/>
-		<exclude name="WordPress.VIP.SuperGlobalInputUsage"/>
-		<exclude name="WordPress.VIP.ValidatedSanitizedInput"/>
-		<exclude name="WordPress.VIP.DirectDatabaseQuery"/>
+	<rule ref="WordPress:core">
 		<exclude name="WordPress.Arrays.ArrayKeySpacingRestrictions"/>
 	</rule>
 

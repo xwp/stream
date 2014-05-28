@@ -33,7 +33,7 @@ class WP_Stream_Extensions {
 	/**
 	 * @var string|null
 	 */
-	var $license_key = NULL;
+	var $license_key = null;
 
 	/**
 	 * @var bool
@@ -41,8 +41,9 @@ class WP_Stream_Extensions {
 	public static $instance = false;
 
 	public static function get_instance() {
-		if ( ! self::$instance )
+		if ( ! self::$instance ) {
 			self::$instance = new self();
+		}
 
 		return self::$instance;
 	}
