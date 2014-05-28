@@ -101,7 +101,7 @@ class WP_Stream_Install_WPDB {
 		/**
 		 * Allows developers to alter the tables prefix, default to base_prefix
 		 *
-		 * @var string $prefix  database prefix
+		 * @var string $prefix       database prefix
 		 * @var string $table_prefix updated database prefix
 		 */
 		$prefix = $wpdb->base_prefix;
@@ -126,12 +126,12 @@ class WP_Stream_Install_WPDB {
 			self::install( self::$current );
 		} elseif ( self::$db_version !== self::$current ) {
 
-			if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
+			if ( ! isset( $_REQUEST[ 'wp_stream_update' ] ) ) {
 				self::$update_required = true;
-				$update_args = array( 'type' => 'auto' );
-				self::$success_db = self::update( self::$db_version, self::$current, $update_args );
-			} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
-				$update_args = array( 'type' => 'user' );
+				$update_args           = array( 'type' => 'auto' );
+				self::$success_db      = self::update( self::$db_version, self::$current, $update_args );
+			} elseif ( 'update_and_continue' === $_REQUEST[ 'wp_stream_update' ] ) {
+				$update_args      = array( 'type' => 'user' );
 				self::$success_db = self::update( self::$db_version, self::$current, $update_args );
 			}
 
@@ -153,10 +153,10 @@ class WP_Stream_Install_WPDB {
 		if ( ! $version ) {
 			$old_key = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%stream%_db'" );
 			if ( ! empty( $old_key ) && is_array( $old_key ) ) {
-				$version = get_option( $old_key[0] );
+				$version = get_option( $old_key[ 0 ] );
 
 				update_site_option( self::KEY, $version );
-				delete_option( $old_key[0] );
+				delete_option( $old_key[ 0 ] );
 			}
 		}
 
@@ -184,9 +184,9 @@ class WP_Stream_Install_WPDB {
 			return;
 		}
 
-		if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
+		if ( ! isset( $_REQUEST[ 'wp_stream_update' ] ) ) {
 			self::prompt_update();
-		} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
+		} elseif ( 'update_and_continue' === $_REQUEST[ 'wp_stream_update' ] ) {
 			self::prompt_update_status();
 		}
 	}
@@ -209,7 +209,7 @@ class WP_Stream_Install_WPDB {
 				<?php submit_button( esc_html__( 'Update Database', 'stream' ), 'primary', 'stream-update-db-submit' ) ?>
 			</form>
 		</div>
-		<?php
+	<?php
 	}
 
 	/**
@@ -229,7 +229,7 @@ class WP_Stream_Install_WPDB {
 				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ) ?>
 			</form>
 		</div>
-		<?php
+	<?php
 	}
 
 	/**
@@ -247,14 +247,14 @@ class WP_Stream_Install_WPDB {
 	 */
 	public static function db_update_versions() {
 		$db_update_versions = array(
-			'1.1.4' /* @version 1.1.4 Fix mysql character set issues */,
-			'1.1.7' /* @version 1.1.7 Modified the ip column to varchar(39) */,
-			'1.2.8' /* @version 1.2.8 Change the context for Media connectors to the attachment type */,
-			'1.3.0' /* @version 1.3.0 Backward settings compatibility for old version plugins */,
-			'1.3.1' /* @version 1.3.1 Update records of Installer to Theme Editor connector */,
-			'1.4.0' /* @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
-			'1.4.2' /* @version 1.4.2 Patch to fix rare multisite upgrade not triggering */,
-			'2.0.0' /* @version 2.0.0 Removing context table, adding columns to base table */,
+			'1.1.4'/* @version 1.1.4 Fix mysql character set issues */,
+			'1.1.7'/* @version 1.1.7 Modified the ip column to varchar(39) */,
+			'1.2.8'/* @version 1.2.8 Change the context for Media connectors to the attachment type */,
+			'1.3.0'/* @version 1.3.0 Backward settings compatibility for old version plugins */,
+			'1.3.1'/* @version 1.3.1 Update records of Installer to Theme Editor connector */,
+			'1.4.0'/* @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
+			'1.4.2'/* @version 1.4.2 Patch to fix rare multisite upgrade not triggering */,
+			'2.0.0'/* @version 2.0.0 Removing context table, adding columns to base table */,
 		);
 
 		return apply_filters( 'wp_stream_db_update_versions', $db_update_versions );
@@ -263,8 +263,8 @@ class WP_Stream_Install_WPDB {
 	/**
 	 * Database user controlled update routine
 	 *
-	 * @param int $db_version last updated version of database stored in plugin options
-	 * @param int $current    Current running plugin version
+	 * @param int   $db_version last updated version of database stored in plugin options
+	 * @param int   $current    Current running plugin version
 	 * @param array $update_args
 	 *
 	 * @return mixed Version number on success, true on no update needed, mysql error message on error
@@ -275,11 +275,11 @@ class WP_Stream_Install_WPDB {
 		$versions = self::db_update_versions();
 
 		foreach ( $versions as $version ) {
-			if ( ! isset( $update_args['type'] ) ) {
-				$update_args['type'] = 'user';
+			if ( ! isset( $update_args[ 'type' ] ) ) {
+				$update_args[ 'type' ] = 'user';
 			}
 
-			$function = 'wp_stream_update_' . ( 'user' === $update_args['type'] ? '' : $update_args['type'] . '_' ) . str_ireplace( '.', '', $version );
+			$function = 'wp_stream_update_' . ( 'user' === $update_args[ 'type' ] ? '' : $update_args[ 'type' ] . '_' ) . str_ireplace( '.', '', $version );
 
 			if ( version_compare( $db_version, $version, '<' ) ) {
 				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current ) : $current;
@@ -295,8 +295,10 @@ class WP_Stream_Install_WPDB {
 	/**
 	 * Initial database install routine
 	 *
-	 * @uses dbDelta()
+	 * @uses  dbDelta()
+	 *
 	 * @param string $current Current version of plugin installed
+	 *
 	 * @return string Current version of plugin installed
 	 * @todo  Test this after the 2.0 version change
 	 */

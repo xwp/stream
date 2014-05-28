@@ -7,6 +7,7 @@
 		<exclude name="WordPress.VIP.SuperGlobalInputUsage"/>
 		<exclude name="WordPress.VIP.ValidatedSanitizedInput"/>
 		<exclude name="WordPress.VIP.DirectDatabaseQuery"/>
+		<exclude name="WordPress.Arrays.ArrayKeySpacingRestrictions"/>
 	</rule>
 
 	<exclude-pattern>/tests/*</exclude-pattern>
