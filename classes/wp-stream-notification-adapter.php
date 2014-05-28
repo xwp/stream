@@ -33,16 +33,18 @@ abstract class WP_Stream_Notification_Adapter {
 					case 'summary':
 					case 'object_id':
 					case 'author':
-					case 'connector':
 					case 'ip':
 					case 'created':
-						$value = $log[$placeholder];
+						$value = $log[ $placeholder ];
+						break;
+					case 'connector':
+						$value = WP_Stream_Connectors::$term_labels['stream_connector'][ $log[ $placeholder ] ];
 						break;
 					case 'context':
-						$value = WP_Stream_Connectors::$term_labels[ 'stream_context' ][ key( $log['contexts'] ) ];
+						$value = WP_Stream_Connectors::$term_labels['stream_context'][ key( $log['contexts'] ) ];
 						break;
 					case 'action':
-						$value = WP_Stream_Connectors::$term_labels[ 'stream_action' ][ reset( $log['contexts'] ) ];
+						$value = WP_Stream_Connectors::$term_labels['stream_action'][ reset( $log['contexts'] ) ];
 						break;
 					case ( false !== strpos( $placeholder, 'meta.' ) ):
 						$meta_key = substr( $placeholder, 5 );
