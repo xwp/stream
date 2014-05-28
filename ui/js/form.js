@@ -1,4 +1,4 @@
-/* globals stream_notifications, ajaxurl, _, notification_rule, alert, confirm */
+/* globals stream_notifications, ajaxurl, _, alert, confirm */
 jQuery(function($){
 	'use strict';
 
@@ -11,8 +11,8 @@ jQuery(function($){
 
 	var types = stream_notifications.types,
 
-		divTriggers = $('#triggers'), // Trigger Playground
-		divAlerts   = $('#alerts .inside'), // Alerts Playground
+		divTriggers = $('#stream-notifications-triggers'), // Trigger Playground
+		divAlerts   = $('#stream-notifications-alerts .inside'), // Alerts Playground
 
 		iGroup = 0,
 
@@ -76,7 +76,7 @@ jQuery(function($){
 			$(elements).filter(':not(.select2-offscreen)').each( function() {
 				var $this = $(this),
 					elementArgs = jQuery.extend( {}, args ),
-					tORa = $this.closest('#alerts, #triggers').attr('id')
+					tORa = $this.closest('#stream-notifications-alerts, #stream-notifications-triggers').attr('id').replace('stream-notifications-', '');
 				;
 				elementArgs.width = parseInt( $this.css('width'), 10 ) + 30;
 				if ( $this.hasClass('ip') ) {
@@ -90,7 +90,6 @@ jQuery(function($){
 								find:   term,
 								limit:  10,
 								action: 'stream_get_ips',
-								nonce:  $("input[name=ip_nonce]").val()
 							};
 						},
 						results: function (response) {
@@ -435,17 +434,17 @@ jQuery(function($){
 	;
 
 	// Populate form values if it exists
-	if ( typeof notification_rule !== 'undefined'  ) {
+	if ( typeof stream_notifications.meta!== 'undefined'  ) {
 
 		// Triggers
-		jQuery.each( notification_rule.triggers, function(i, trigger) {
+		jQuery.each( stream_notifications.meta.triggers, function(i, trigger) {
 			var groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']'),
 				row,
 				valueField;
 
 			// create the group if it doesn't exist
 			if ( ! groupDiv.size() ) {
-				var group = notification_rule.groups[trigger.group];
+				var group = stream_notifications.meta.groups[trigger.group];
 				$( btns.add_group ).filter('[data-group='+group.group+']').trigger('click', trigger.group);
 				groupDiv = divTriggers.find('.group').filter('[rel='+trigger.group+']');
 				groupDiv.find('select.group-relation').select2( 'val', group.relation );
@@ -474,7 +473,7 @@ jQuery(function($){
 		} );
 
 		// Alerts
-		jQuery.each( notification_rule.alerts, function(i, alert) {
+		jQuery.each( stream_notifications.meta.alerts, function(i, alert) {
 			var row,
 				optionFields;
 

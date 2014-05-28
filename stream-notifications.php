@@ -95,7 +95,8 @@ class WP_Stream_Notifications {
 
 	/**
 	 * Matcher object
-	 * @var  WP_Stream_Notification_Rule_Matcher
+	 *
+*@var  WP_Stream_Notifications_Rule_Matcher
 	 */
 	public $matcher;
 
@@ -112,6 +113,20 @@ class WP_Stream_Notifications {
 	 */
 	const VIEW_CAP = 'view_stream_notifications';
 
+
+	/**
+	 * Return active instance of WP_Stream, create one if it doesn't exist
+	 *
+	 * @return WP_Stream
+	 */
+	public static function get_instance() {
+		if ( empty( self::$instance ) ) {
+			$class = __CLASS__;
+			self::$instance = new $class;
+		}
+		return self::$instance;
+	}
+
 	/**
 	 * Class constructor
 	 */
@@ -120,9 +135,16 @@ class WP_Stream_Notifications {
 		define( 'WP_STREAM_NOTIFICATIONS_DIR', plugin_dir_path( __FILE__ ) ); // Has trailing slash
 		define( 'WP_STREAM_NOTIFICATIONS_URL', plugin_dir_url( __FILE__ ) ); // Has trailing slash
 		define( 'WP_STREAM_NOTIFICATIONS_INC_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'includes/' ); // Has trailing slash
-		define( 'WP_STREAM_NOTIFICATIONS_CLASS_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'classes/' ); // Has trailing slash
 
 		add_action( 'plugins_loaded', array( $this, 'load' ) );
+
+		// Register post type
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'post-type.php';
+		WP_Stream_Notifications_Post_Type::get_instance();
+
+		// Refresh rules cache on updating/deleting posts
+		add_action( 'save_post', array( $this, 'callback_save_post_refresh_cache' ), 10, 2 );
+		add_action( 'delete_post', array( $this, 'callback_save_post_refresh_cache' ), 10, 1 );
 	}
 
 	/**
@@ -140,22 +162,11 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			return;
-		}
-
-		// Load all classes in /classes folder
-		foreach ( glob( WP_STREAM_NOTIFICATIONS_DIR . 'classes/*.php' ) as $class ) {
-			include $class;
-		}
-
 		// Include all adapters
-		$adapters = array(
-			'email',
-		    'push',
-		);
+		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapter.php';
+		$adapters = array( 'email', 'push' );
 		foreach ( $adapters as $adapter ) {
-			include WP_STREAM_NOTIFICATIONS_DIR . 'classes/adapters/' . $adapter . '.php';
+			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/' . $adapter . '.php';
 		}
 
 		if ( is_multisite() ) {
@@ -164,23 +175,17 @@ class WP_Stream_Notifications {
 
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'settings.php';
-		add_action( 'init', array( 'WP_Stream_Notification_Settings', 'load' ), 9 );
+		add_action( 'init', array( 'WP_Stream_Notifications_Settings', 'load' ), 9 );
 
 		// Load network class
 		if ( is_multisite() ) {
 			require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'network.php';
 			$this->network = new WP_Stream_Notifications_Network;
-		}
 
-		// Register export page
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		}
-		if ( is_plugin_active_for_network( WP_STREAM_NOTIFICATIONS_PLUGIN ) ) {
-			add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
-		}
-		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) ) {
-			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+			require_once WP_ADMIN . '/includes/plugins.php';
+			if ( is_plugin_active_for_network( WP_STREAM_NOTIFICATIONS_PLUGIN ) ) {
+				add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
+			}
 		}
 
 		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) ) {
@@ -190,21 +195,14 @@ class WP_Stream_Notifications {
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
 
 		// Default list actions handlers
-		add_action( 'wp_stream_notifications_handle_deactivate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
-		add_action( 'wp_stream_notifications_handle_activate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
-		add_action( 'wp_stream_notifications_handle_delete', array( $this, 'handle_rule_deletion' ), 10, 3 );
+		// @todo use save_post instead
+//		add_action( 'wp_stream_notifications_handle_deactivate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
+//		add_action( 'wp_stream_notifications_handle_activate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
+//		add_action( 'wp_stream_notifications_handle_delete', array( $this, 'handle_rule_deletion' ), 10, 3 );
 
 		// Load Matcher
-		$this->matcher = new WP_Stream_Notification_Rule_Matcher();
-
-		// Load form class
-
-		if ( is_admin() ) {
-			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'form.php';
-			$this->form = new WP_Stream_Notifications_Form;
-
-			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'export.php';
-		}
+		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'rule-match.php';
+		$this->matcher = new WP_Stream_Notifications_Rule_Matcher();
 
 		// Register to Stream updates
 		if ( class_exists( 'WP_Stream_Updater' ) ) {
@@ -224,10 +222,18 @@ class WP_Stream_Notifications {
 			__( 'Notifications', 'stream-notifications' ),
 			__( 'Notifications', 'stream-notifications' ),
 			self::VIEW_CAP,
-			self::NOTIFICATIONS_PAGE_SLUG,
-			array( $this, 'page' )
+			'edit.php?post_type=stream-notification'
 		);
 
+		add_submenu_page(
+			'wp_stream',
+			__( '--- Add rule', 'stream-notifications' ),
+			__( '--- Add rule', 'stream-notifications' ),
+			self::VIEW_CAP,
+			'post-new.php?post_type=stream-notification'
+		);
+
+		// @todo fix this
 		add_action( 'load-' . self::$screen_id, array( $this, 'load_list_table' ) );
 		add_action( 'load-' . self::$screen_id, array( $this->form, 'load' ) );
 	}
@@ -251,36 +257,6 @@ class WP_Stream_Notifications {
 				),
 			) );
 		}
-	}
-
-	/**
-	 * Admin page callback function, redirects to each respective method based
-	 * on $_GET['view']
-	 *
-	 * @return void
-	 */
-	public function page() {
-		$view = wp_stream_filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
-
-		switch ( $view ) {
-			case 'rule':
-				$this->page_form();
-				break;
-
-			default:
-				$this->page_list();
-		}
-	}
-
-	/**
-	 * Admin page callback for form actions
-	 *
-	 * @return void
-	 */
-	public function page_form() {
-		$id   = wp_stream_filter_input( INPUT_GET, 'id' );
-		$rule = new WP_Stream_Notification_Rule( $id );
-		include WP_STREAM_NOTIFICATIONS_DIR . 'views/rule-form.php';
 	}
 
 	/**
@@ -372,10 +348,11 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		$this->update_record(
-			$id,
-			array( 'visibility' => $visibility ),
-			array( '%s' )
+		wp_update_post(
+			array(
+				'ID'          => $id,
+				'post_status' => 'publish',
+			)
 		);
 
 		wp_redirect(
@@ -408,7 +385,7 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		$this->delete_record( $id );
+		wp_delete_post( $id );
 
 		wp_redirect(
 			add_query_arg(
@@ -422,33 +399,27 @@ class WP_Stream_Notifications {
 		);
 	}
 
-	public function update_record( $id, $fields, $formats ) {
-		global $wpdb;
+	public function callback_save_post_refresh_cache( $post_id, $post = null ) {
+		if ( ! isset( $post ) ) {
+			$post = get_post( $post_id );
+		}
 
-		$wpdb->update(
-			WP_Stream_DB::$table,
-			$fields,
-			array( 'ID' => $id, 'type' => 'notification_rule' ),
-			$formats,
-			array( '%d', '%s' )
-		); // db call ok, cache ok
-
-		// Refresh rule cache
-		$this->matcher->refresh();
+		if ( 'stream-notification' === $post->post_type ) {
+			$this->matcher->refresh();
+		}
 	}
 
-	public function delete_record( $id ) {
-		global $wpdb;
+	public function callback_delete_post_refresh_cache( $post_id ) {
+		$post = get_post( $post_id );
+		if ( 'stream-notification' !== $post->post_type ) {
+			return;
+		}
 
-		$wpdb->delete(
-			WP_Stream_DB::$table,
-			array(
-				'ID' => $id,
-			)
-		); // db call ok, cache ok
-
-		// Refresh rule cache
-		$this->matcher->refresh();
+		add_action( 'deleted_post', function( $deleted_id ) use ( $post_id ) {
+			if ( $deleted_id === $post_id ) {
+				$this->matcher->refresh();
+			}
+		} );
 	}
 
 	/**
@@ -510,12 +481,13 @@ class WP_Stream_Notifications {
 	 *
 	 */
 	public function add_sample_rule() {
-		$rule = new WP_Stream_Notification_Rule();
-		$details = array(
-			'author'     => 0,
-			'summary'    => __( 'Sample Rule', 'stream-notifications' ),
-			'visibility' => 'inactive',
-			'type'       => 'notification_rule',
+		$postarr = array(
+			'post_title'    => __( 'Sample Rule', 'stream-notifications' ),
+			'post_status' => 'draft',
+			'post_type'       => 'stream-notification',
+		);
+
+		$meta = array(
 			'triggers'   => array(
 				array(
 					'group'    => 0,
@@ -569,21 +541,16 @@ class WP_Stream_Notifications {
 				),
 			),
 		);
-		$rule->load_from_array( $details );
-		$rule->save();
-	}
 
-	/**
-	 * Return active instance of WP_Stream, create one if it doesn't exist
-	 *
-	 * @return WP_Stream
-	 */
-	public static function get_instance() {
-		if ( empty( self::$instance ) ) {
-			$class = __CLASS__;
-			self::$instance = new $class;
+		$post_id = wp_insert_post( $postarr );
+
+		if ( is_a( $post_id, 'WP_Error' ) ) {
+			return $post_id;
 		}
-		return self::$instance;
+
+		foreach ( $meta as $key => $val ) {
+			update_post_meta( $post_id, $key, $val );
+		}
 	}
 
 }

@@ -2,7 +2,7 @@
 	height: 0;
 	margin: 0;
 }
-#triggers .field, .trigger-type, .trigger-options, .trigger-value { float: left; }
+#stream-notifications-triggers .field, .trigger-type, .trigger-options, .trigger-value { float: left; }
 .trigger .form-row {
 	clear: both;
 	overflow: hidden;
@@ -13,14 +13,14 @@
 .trigger-value {
 	width: 200px;
 }
-#triggers .inside {
+#stream-notifications-triggers .inside {
 	padding-bottom: 3px;
 }
-#triggers .inside,
-#alerts .inside {
+#stream-notifications-triggers .inside,
+#stream-notifications-alerts .inside {
 	margin-top: 12px;
 }
-#alerts .inside {
+#stream-notifications-alerts .inside {
 	padding: 0;
 }
 .group {
@@ -139,10 +139,10 @@
 	     -o-transition: all 0 none;
 	        transition: none;
 }
-#alerts .add-alert {
+#stream-notifications-alerts .add-alert {
 	margin: 0 0 12px 12px;
 }
-#alerts .select2-container {
+#stream-notifications-alerts .select2-container {
 	max-width: 300px;
 }
 .select2-container.alert-type {
@@ -266,3 +266,20 @@ table.alert-options tbody tr td {
 	   -moz-border-radius: 0;
 	        border-radius: 0;
 }
+
+/* Hide post publish stuff */
+#preview-action {
+	display: none;
+	}
+
+.misc-pub-section.misc-pub-visibility {
+	display: none;
+	}
+
+#normal-sortables {
+	display: none;
+	}
+
+#edit-slug-box {
+	display: none;
+	}

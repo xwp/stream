@@ -1,6 +1,6 @@
 <?php
 
-class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter {
+class WP_Stream_Notifications_Adapter_Push extends WP_Stream_Notifications_Adapter {
 
 	const PUSHOVER_OPTION_NAME = 'ckpn_pushover_notifications_settings';
 
@@ -187,4 +187,4 @@ class WP_Stream_Notification_Adapter_Push extends WP_Stream_Notification_Adapter
 
 }
 
-WP_Stream_Notification_Adapter_Push::register();
+WP_Stream_Notifications_Adapter_Push::register();

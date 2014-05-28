@@ -5,7 +5,7 @@
  * @author X-Team <x-team.com>
  * @author Shady Sharaf <shady@x-team.com>, Jaroslav Polakovič <dero@x-team.com>
  */
-class WP_Stream_Notification_Settings {
+class WP_Stream_Notifications_Settings {
 
 	public static $fields = array();
 

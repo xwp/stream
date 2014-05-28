@@ -1,6 +1,6 @@
 <?php
 
-class WP_Stream_Notification_Adapter_Email extends WP_Stream_Notification_Adapter {
+class WP_Stream_Notifications_Adapter_Email extends WP_Stream_Notifications_Adapter {
 
 	public static function register( $title = '' ) {
 		parent::register( __( 'Email', 'stream-notifications' ) );
@@ -59,4 +59,4 @@ class WP_Stream_Notification_Adapter_Email extends WP_Stream_Notification_Adapte
 
 }
 
-WP_Stream_Notification_Adapter_Email::register();
+WP_Stream_Notifications_Adapter_Email::register();

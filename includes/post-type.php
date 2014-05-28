@@ -1,10 +1,25 @@
 <?php
 
-class WP_Stream_Notifications_Form {
+class WP_Stream_Notifications_Post_Type {
 
-	function __construct() {
+	private static $instance;
+
+	const POSTTYPE = 'stream-notification';
+
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	private function __construct() {
+		$this->register_post_type();
+
 		// AJAX end point for form auto completion
 		add_action( 'wp_ajax_stream_notification_endpoint', array( $this, 'form_ajax_ep' ) );
+		// Occurance reset
 		add_action( 'wp_ajax_stream-notifications-reset-occ', array( $this, 'ajax_reset_occ' ) );
 
 		// Enqueue our form scripts
@@ -12,130 +27,254 @@ class WP_Stream_Notifications_Form {
 
 		// define `search_in` arg for WP_User_Query
 		add_filter( 'user_search_columns', array( $this, 'define_search_in_arg' ), 10, 3 );
+
+		// Change title placeholder
+		add_filter( 'enter_title_here', array( $this, 'title_placeholder' ), 10, 2 );
+
+		// Save meta data
+		add_action( 'save_post', array( $this, 'save' ), 10, 2 );
 	}
 
-	public function load() {
-		$view   = wp_stream_filter_input( INPUT_GET, 'view' );
-		$action = wp_stream_filter_input( INPUT_GET, 'action' );
-		$id     = wp_stream_filter_input( INPUT_GET, 'id' );
+	private function register_post_type() {
+		register_post_type(
+			self::POSTTYPE, array(
+				'label'                => __( 'Stream Notification Rule', 'stream-notification' ),
+				'labels'               => array(
+					'name'          => __( 'Stream Notification Rule', 'stream-notification' ),
+					'singular_name' => __( 'Stream Notification Rule', 'stream-notification' ),
+					'menu_name'     => __( 'Notifications', 'stream-notification' ),
+					'add_new'       => _x( 'New Rule', 'Stream Notification', 'stream-notification' ),
+					'add_new_item'  => _x( 'Add New Rule', 'Stream Notification', 'stream-notification' ),
+					'edit_item'     => _x( 'Edit Stream Notification Rule', 'Stream Notification', 'stream-notification' ),
+					'new_item'      => _x( 'New Stream Notification Rule', 'Stream Notification', 'stream-notification' ),
+					'view_item'     => _x( 'View Stream Notification Rule', 'Stream Notification', 'stream-notification' ),
+					'search_items'  => _x( 'Search rules', 'Stream Notification', 'stream-notification' ),
+				),
+				'public'               => true,
+				'show_ui'              => true,
+				'show_in_nav_menus'    => false,
+				'show_in_menu'         => false,
+				'exclude_from_search'  => true,
+				'publicly_queryable'   => false,
+				'supports'             => array( 'title', 'author' ),
+				'register_meta_box_cb' => array( $this, 'metaboxes' ),
+				'rewrite'              => false,
+			)
+		);
+	}
 
-		// Control screen layout
-		if ( 'rule' === $view ) {
+	public function metaboxes( $post ) {
+		if ( self::POSTTYPE !== $post->post_type ) {
+			return;
+		}
 
-			if ( ! empty( $_POST ) ) {
-				$result = $this->save( $id, wp_unslash( $_POST ) );
-				if ( $result && 'edit' !== $action ) {
-					wp_redirect(
-						add_query_arg(
-							array(
-								'action' => 'edit',
-								'id'     => $rule->ID,
-							)
-						)
-					);
-				}
+		add_meta_box( 'stream-notifications-triggers', __( 'Triggers', 'stream-notifications' ), array( $this, 'metabox_triggers' ), self::POSTTYPE );
+		add_meta_box( 'stream-notifications-alerts', __( 'Alerts', 'stream-notifications' ), array( $this, 'metabox_alerts' ), self::POSTTYPE );
+
+		add_action( 'post_submitbox_misc_actions', array( $this, 'metabox_save' ) );
+
+		add_action(
+			'edit_form_advanced', function () {
+				global $post;
+				include WP_STREAM_NOTIFICATIONS_DIR . 'views/form-templates.php';
 			}
-
-			add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
-
-			// Register metaboxes
-			add_meta_box(
-				'triggers',
-				esc_html__( 'Triggers', 'stream-notifications' ),
-				array( $this, 'metabox_triggers' ),
-				WP_Stream_Notifications::$screen_id,
-				'normal'
-			);
-			add_meta_box(
-				'alerts',
-				esc_html__( 'Alerts', 'stream-notifications' ),
-				array( $this, 'metabox_alerts' ),
-				WP_Stream_Notifications::$screen_id,
-				'normal'
-			);
-			add_meta_box(
-				'submitdiv',
-				esc_html__( 'Save', 'stream-notifications' ),
-				array( $this, 'metabox_save' ),
-				WP_Stream_Notifications::$screen_id,
-				'side'
-			);
-			add_meta_box(
-				'data-tags',
-				esc_html__( 'Data Tags', 'stream-notifications' ),
-				array( $this, 'metabox_data_tags' ),
-				WP_Stream_Notifications::$screen_id,
-				'side'
-			);
-		}
-	}
-
-	/**
-	 * Save rule data
-	 *
-	 * @param int   $id   Rule ID
-	 * @param array $data Data array
-	 *
-	 * @return bool
-	 */
-	public function save( $id, array $data ) {
-		$rule   = new WP_Stream_Notification_Rule( $id );
-
-		if ( ! wp_verify_nonce( wp_stream_filter_input( INPUT_POST, '_wpnonce' ), 'stream-notifications-form' ) ) {
-			wp_die( __( 'Invalid form parameters.', 'stream-notifications' ) );
-		}
-
-		if ( empty( $data['triggers'] ) ) {
-			wp_die( __( 'Rules cannot be saved without triggers!', 'stream-notifications' ) );
-		}
-
-		if ( ! isset( $data['visibility'] ) ) {
-			$data['visibility'] = 'inactive'; // Checkbox woraround
-		}
-
-		$data['summary'] = trim( $data['summary'] );
-
-		$result = $rule->load_from_array( $data )->save();
-
-		if ( $result ) {
-			// Should not follow the WP naming convention, to avoid conflicts
-			// if/when Stream migrates to using WP tables
-			do_action( 'saved_stream_notification_rule', $rule );
-		}
-
-		return $result;
+		);
 	}
 
 	/**
 	 * Enqueue our scripts, in our own page only
 	 *
 	 * @action admin_enqueue_scripts
+	 *
 	 * @param  string $hook Current admin page slug
+	 *
 	 * @return void
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( WP_Stream_Notifications::$screen_id !== $hook || 'rule' !== wp_stream_filter_input( INPUT_GET, 'view' ) ) {
+		global $typenow;
+		if ( ! in_array( $hook, array( 'post-new.php', 'post.php' ) ) || self::POSTTYPE !== $typenow ) {
 			return;
 		}
 
-		$view = wp_stream_filter_input( INPUT_GET, 'view', FILTER_DEFAULT, array( 'options' => array( 'default' => 'list' ) ) );
-
-		if ( 'rule' === $view ) {
-			wp_enqueue_script( 'dashboard' );
-			wp_enqueue_style( 'select2' );
-			wp_enqueue_script( 'select2' );
-			wp_enqueue_script( 'underscore' );
-			wp_enqueue_style( 'jquery-ui' );
-			wp_enqueue_script( 'jquery-ui-datepicker' );
-			wp_enqueue_style( 'wp-stream-datepicker' );
-			wp_enqueue_script( 'jquery-ui-accordion' );
-			wp_enqueue_script( 'accordion' );
-			wp_enqueue_style( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/css/form.css' );
-			wp_enqueue_script( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/form.js', array( 'underscore', 'select2' ) );
-			wp_localize_script( 'stream-notifications-form', 'stream_notifications', $this->get_js_options() );
-		}
+		wp_enqueue_style( 'select2' );
+		wp_enqueue_script( 'select2' );
+		wp_enqueue_script( 'underscore' );
+		wp_enqueue_style( 'jquery-ui' );
+		wp_enqueue_script( 'jquery-ui-datepicker' );
+		wp_enqueue_style( 'wp-stream-datepicker' );
+		wp_enqueue_script( 'jquery-ui-accordion' );
+		wp_enqueue_script( 'accordion' );
+		wp_enqueue_style( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/css/form.css' );
+		wp_enqueue_script( 'stream-notifications-form', WP_STREAM_NOTIFICATIONS_URL . '/ui/js/form.js', array( 'underscore', 'select2' ) );
+		wp_localize_script( 'stream-notifications-form', 'stream_notifications', $this->get_js_options() );
 	}
 
+	public function metabox_triggers() {
+		?>
+		<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php esc_html_e( '+ Add Trigger', 'stream-notifications' ) ?></a>
+		<a class="add-trigger-group button button-primary" href="#add-trigger-group" data-group="0"><?php esc_html_e( '+ Add Group', 'stream-notifications' ) ?></a>
+		<div class="group" rel="0"></div>
+	<?php
+	}
+
+	public function metabox_alerts() {
+		?>
+		<a class="add-alert button button-secondary" href="#add-alert"><?php esc_html_e( '+ Add Alert', 'stream-notifications' ) ?></a>
+	<?php
+	}
+
+	public function metabox_save() {
+		global $post;
+		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		$reset_link = add_query_arg(
+			array(
+				'action'          => 'stream-notifications-reset-occ',
+				'id'              => absint( $post->ID ),
+				'wp_stream_nonce' => wp_create_nonce( 'reset-occ_' . absint( $post->ID ) ),
+			),
+			admin_url( 'admin-ajax.php' )
+		);
+
+		$occ = absint( get_post_meta( $post->ID, 'occurrences', true ) );
+
+		?>
+		<div class="occurrences misc-pub-section">
+			<p>
+				<?php
+				echo sprintf(
+					_n(
+						'This rule has occurred %1$s time.',
+						'This rule has occurred %1$s times.',
+						$occ,
+						'stream-notifications'
+					),
+					sprintf( '<strong>%d</strong>', $occ ? $occ : 0 )
+				) // xss okay
+				?>
+			</p>
+			<?php if ( 0 !== $occ ) : ?>
+				<p>
+				<a href="<?php echo esc_url( $reset_link ) ?>" class="button button-secondary reset-occ">
+					<?php esc_html_e( 'Reset Count', 'stream-notifications' ) ?>
+				</a>
+			</p>
+			<?php endif; ?>
+		</div>
+	<?php
+	}
+
+	public function metabox_data_tags() {
+		$data_tags    = array(
+			__( 'Basic', 'stream-notifications' )    => array(
+				'summary'   => __( 'Summary message of the triggered record.', 'stream-notifications' ),
+				'author'    => __( 'User ID of the triggered record author.', 'stream-notifications' ),
+				'connector' => __( 'Connector of the triggered record.', 'stream-notifications' ),
+				'context'   => __( 'Context of the triggered record.', 'stream-notifications' ),
+				'action'    => __( 'Action of the triggered record.', 'stream-notifications' ),
+				'created'   => __( 'Timestamp of triggered record.', 'stream-notifications' ),
+				'ip'        => __( 'IP of the triggered record author.', 'stream-notifications' ),
+				'object_id' => __( 'Object ID of the triggered record.', 'stream-notifications' ),
+			),
+			__( 'Advanced', 'stream-notifications' ) => array(
+				'object.' => __(
+					'Specific object data of the record, relative to what the object type is:
+										<br /><br />
+										<strong>{object.post_title}</strong>
+										<br />
+										<strong>{object.post_excerpt}</strong>
+										<br />
+										<strong>{object.post_status}</strong>
+										<br />
+										<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more Post values</a>
+										<br /><br />
+										<strong>{object.name}</strong>
+										<br />
+										<strong>{object.taxonomy}</strong>
+										<br />
+										<strong>{object.description}</strong>
+										<br />
+										<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more Term values</a>', 'stream-notifications'
+				),
+
+				'author.' => __(
+					'Specific user data of the record author:
+										<br /><br />
+										<strong>{author.display_name}</strong>
+										<br />
+										<strong>{author.user_email}</strong>
+										<br />
+										<strong>{author.user_login}</strong>
+										<br />
+										<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more User values</a>', 'stream-notifications'
+				),
+				'meta.'   => __(
+					'Specific meta data of the record, used to display specific meta values created by Connectors.
+										<br /><br />
+										Example: <strong>{meta.old_theme}</strong> to display the old theme name when a new theme is activated.', 'stream-notifications'
+				),
+			),
+		);
+		$allowed_html = array(
+			'a'      => array(
+				'href'   => array(),
+				'target' => array(),
+			),
+			'code'   => array(),
+			'strong' => array(),
+			'br'     => array(),
+		);
+		?>
+		<div id="data-tag-glossary" class="accordion-container">
+			<ul class="outer-border">
+				<?php foreach ( $data_tags as $section => $tags ) : ?>
+					<li class="control-section accordion-section">
+					<h3 class="accordion-section-title hndle" title="<?php echo esc_attr( $section ) ?>"><?php echo esc_html( $section ) ?></h3>
+					<div class="accordion-section-content">
+						<div class="inside">
+							<dl>
+								<?php foreach ( $tags as $tag => $desc ) : ?>
+									<dt><code>{<?php echo esc_html( $tag ) ?>}</code></dt>
+									<dd><?php echo wp_kses( $desc, $allowed_html ) ?></dd>
+								<?php endforeach; ?>
+							</dl>
+						</div>
+					</div>
+				</li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+	<?php
+	}
+
+	/**
+	 * Save rule meta data
+	 *
+	 * @param $post_id
+	 * @param $post
+	 *
+	 * @return void
+	 */
+	public function save( $post_id, $post ) {
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return;
+		}
+
+		$defaults = array(
+			'triggers' => array(),
+			'groups' => array(),
+			'alerts' => array(),
+		);
+
+		$args = wp_parse_args( $_POST, $defaults );
+		$meta = array_intersect_key( $args, array_flip( array( 'triggers', 'groups', 'alerts' ) ) );
+
+		foreach ( $meta as $key => $vals ) {
+			update_post_meta( $post_id, $key, $vals );
+		}
+	}
 
 	/**
 	 * Callback for form AJAX operations
@@ -167,9 +306,9 @@ class WP_Stream_Notifications_Form {
 					);
 					if ( $user_query->results ) {
 						$data = $this->format_json_for_select2(
-							$user_query->results,
-							'ID',
-							'display_name'
+						             $user_query->results,
+							             'ID',
+							             'display_name'
 						);
 					} else {
 						$data = array();
@@ -178,10 +317,10 @@ class WP_Stream_Notifications_Form {
 				case 'post':
 				case 'post_parent':
 					$args  = array(
-						'post_type' => 'any',
-						'post_status' => 'any',
-						'posts_per_page' => -1,
-						'post__in' => explode( ',', $query ),
+						'post_type'      => 'any',
+						'post_status'    => 'any',
+						'posts_per_page' => - 1,
+						'post__in'       => explode( ',', $query ),
 					);
 					$posts = get_posts( $args );
 					$items = array_combine( wp_list_pluck( $posts, 'ID' ), wp_list_pluck( $posts, 'post_title' ) );
@@ -197,7 +336,7 @@ class WP_Stream_Notifications_Form {
 					break;
 				case 'term':
 				case 'term_parent':
-					$tax   = isset( $args['tax'] ) ? $args['tax'] : null;
+					$tax   = isset( $args[ 'tax' ] ) ? $args[ 'tax' ] : null;
 					$query = explode( ',', $query );
 					$terms = $this->get_terms( $query, $tax );
 					$data  = $this->format_json_for_select2( $terms );
@@ -217,14 +356,14 @@ class WP_Stream_Notifications_Form {
 								'user_email',
 								'user_nicename',
 							),
-							'meta_key'  => ( isset( $args['push'] ) && $args['push'] ) ? 'ckpn_user_key' : null,
+							'meta_key'  => ( isset( $args[ 'push' ] ) && $args[ 'push' ] ) ? 'ckpn_user_key' : null,
 						)
 					);
-					$data = $this->format_json_for_select2( $users, 'ID', 'display_name' );
+					$data  = $this->format_json_for_select2( $users, 'ID', 'display_name' );
 					break;
 				case 'action':
 				case 'context':
-					$items = WP_Stream_Connectors::$term_labels['stream_' . $type];
+					$items = WP_Stream_Connectors::$term_labels[ 'stream_' . $type ];
 					$items = preg_grep( sprintf( '/%s/i', $query ), $items );
 					$data  = $this->format_json_for_select2( $items );
 					break;
@@ -243,7 +382,7 @@ class WP_Stream_Notifications_Form {
 					break;
 				case 'term':
 				case 'term_parent':
-					$tax   = isset( $args['tax'] ) ? $args['tax'] : null;
+					$tax   = isset( $args[ 'tax' ] ) ? $args[ 'tax' ] : null;
 					$terms = $this->get_terms( $query, $tax );
 					$data  = $this->format_json_for_select2( $terms );
 					break;
@@ -253,14 +392,14 @@ class WP_Stream_Notifications_Form {
 		// Add gravatar for authors
 		if ( 'author' === $type && get_option( 'show_avatars' ) ) {
 			foreach ( $data as $i => $item ) {
-				if ( $avatar = get_avatar( $item['id'], 20 ) ) {
-					$item['avatar'] = $avatar;
+				if ( $avatar = get_avatar( $item[ 'id' ], 20 ) ) {
+					$item[ 'avatar' ] = $avatar;
 				}
-				$data[$i] = $item;
+				$data[ $i ] = $item;
 			}
 		}
 
-		if ( ! empty( $data )  ) {
+		if ( ! empty( $data ) ) {
 			wp_send_json_success( $data );
 		} else {
 			wp_send_json_error();
@@ -268,30 +407,8 @@ class WP_Stream_Notifications_Form {
 	}
 
 	/**
-	 * Take an (associative) array and format it for select2 AJAX result parser
-	 * @param  array  $data (associative) Data array
-	 * @param  string $key  Key of the ID column, null if associative array
-	 * @param  string $val  Key of the Title column, null if associative array
-	 * @return array        Formatted array, [ { id: %, title: % }, .. ]
+	 * Callback for Reset Occurrences count AJAX request
 	 */
-	public function format_json_for_select2( $data, $key = null, $val = null ) {
-		$return = array();
-		if ( is_null( $key ) && is_null( $val ) ) { // for flat associative array
-			$keys = array_keys( $data );
-			$vals = array_values( $data );
-		} else {
-			$keys = wp_list_pluck( $data, $key );
-			$vals = wp_list_pluck( $data, $val );
-		}
-		foreach ( $keys as $idx => $key ) {
-			$return[] = array(
-				'id'   => $key,
-				'text' => $vals[$idx],
-			);
-		}
-		return $return;
-	}
-
 	public function ajax_reset_occ() {
 		$id    = wp_stream_filter_input( INPUT_GET, 'id' );
 		$nonce = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
@@ -304,7 +421,7 @@ class WP_Stream_Notifications_Form {
 			wp_send_json_error( esc_html__( 'Invalid record ID', 'stream-notifications' ) );
 		}
 
-		wp_stream_update_meta( $id, 'occurrences', 0 );
+		update_post_meta( $id, 'occurrences', 0 );
 		wp_send_json_success();
 	}
 
@@ -317,7 +434,7 @@ class WP_Stream_Notifications_Form {
 		global $wp_roles;
 		$args = array();
 
-		$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
+		$connectors = WP_Stream_Connectors::$term_labels[ 'stream_connector' ];
 		asort( $connectors );
 
 		$roles     = $wp_roles->roles;
@@ -349,13 +466,13 @@ class WP_Stream_Notifications_Form {
 			'>=' => esc_html__( 'equal or greater than', 'stream-notifications' ),
 		);
 
-		$args['types'] = array(
-			'search' => array(
+		$args[ 'types' ] = array(
+			'search'      => array(
 				'title'     => esc_html__( 'Summary', 'stream-notifications' ),
 				'type'      => 'text',
 				'operators' => $text_operator,
 			),
-			'object_id' => array(
+			'object_id'   => array(
 				'title'     => esc_html__( 'Object ID', 'stream-notifications' ),
 				'type'      => 'text',
 				'tags'      => true,
@@ -367,17 +484,17 @@ class WP_Stream_Notifications_Form {
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
-				'options' => $roles_arr,
+				'options'   => $roles_arr,
 			),
 
-			'author' => array(
+			'author'      => array(
 				'title'     => esc_html__( 'Author', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => $default_operators,
 			),
 
-			'ip' => array(
+			'ip'          => array(
 				'title'     => esc_html__( 'IP', 'stream-notifications' ),
 				'type'      => 'text',
 				'subtype'   => 'ip',
@@ -385,7 +502,7 @@ class WP_Stream_Notifications_Form {
 				'operators' => $default_operators,
 			),
 
-			'date' => array(
+			'date'        => array(
 				'title'     => esc_html__( 'Date', 'stream-notifications' ),
 				'type'      => 'date',
 				'operators' => array(
@@ -398,23 +515,24 @@ class WP_Stream_Notifications_Form {
 				),
 			),
 
-			'weekday' => array(
+			'weekday'     => array(
 				'title'     => esc_html__( 'Day of Week', 'stream-notifications' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
 				'options'   => array_combine(
 					array_map(
-						function( $weekday_index ) {
+						function ( $weekday_index ) {
 							return sprintf( 'weekday_%d', $weekday_index % 7 );
 						},
 						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
 					),
 					array_map(
-						function( $weekday_index ) {
+						function ( $weekday_index ) {
+							/** @var $wp_locale WP_Locale */
 							global $wp_locale;
 
-							return $wp_locale->get_weekday ( $weekday_index % 7 );
+							return $wp_locale->get_weekday( $weekday_index % 7 );
 						},
 						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
 					)
@@ -425,91 +543,91 @@ class WP_Stream_Notifications_Form {
 			// generated on run time with no prior definition
 			// 'meta_query'            => array(),
 
-			'connector' => array(
+			'connector'   => array(
 				'title'     => esc_html__( 'Connector', 'stream-notifications' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
 				'options'   => $connectors,
 			),
-			'context' => array(
+			'context'     => array(
 				'title'     => esc_html__( 'Context', 'stream-notifications' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
-				'options'   => WP_Stream_Connectors::$term_labels['stream_context'],
+				'options'   => WP_Stream_Connectors::$term_labels[ 'stream_context' ],
 			),
-			'action' => array(
+			'action'      => array(
 				'title'     => esc_html__( 'Action', 'stream-notifications' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
-				'options'   => WP_Stream_Connectors::$term_labels['stream_action'],
+				'options'   => WP_Stream_Connectors::$term_labels[ 'stream_action' ],
 			),
 		);
 
 		// Connector-based triggers
-		$args['special_types'] = array(
-			'post' => array(
+		$args[ 'special_types' ] = array(
+			'post'                => array(
 				'title'     => esc_html__( '- Post', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
-			'post_title' => array(
+			'post_title'          => array(
 				'title'     => esc_html__( '- Post: Title', 'stream-notifications' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
-			'post_slug' => array(
+			'post_slug'           => array(
 				'title'     => esc_html__( '- Post: Slug', 'stream-notifications' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
-			'post_content' => array(
+			'post_content'        => array(
 				'title'     => esc_html__( '- Post: Content', 'stream-notifications' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
-			'post_excerpt' => array(
+			'post_excerpt'        => array(
 				'title'     => esc_html__( '- Post: Excerpt', 'stream-notifications' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
-			'post_author' => array(
+			'post_author'         => array(
 				'title'     => esc_html__( '- Post: Author', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
-			'post_status' => array(
+			'post_status'         => array(
 				'title'     => esc_html__( '- Post: Status', 'stream-notifications' ),
 				'type'      => 'select',
 				'connector' => 'posts',
-				'options'   => wp_list_pluck( $GLOBALS['wp_post_statuses'], 'label' ),
+				'options'   => wp_list_pluck( $GLOBALS[ 'wp_post_statuses' ], 'label' ),
 				'operators' => $default_operators,
 			),
-			'post_format' => array(
+			'post_format'         => array(
 				'title'     => esc_html__( '- Post: Format', 'stream-notifications' ),
 				'type'      => 'select',
 				'connector' => 'posts',
 				'options'   => get_post_format_strings(),
 				'operators' => $default_operators,
 			),
-			'post_parent' => array(
+			'post_parent'         => array(
 				'title'     => esc_html__( '- Post: Parent', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
-			'post_thumbnail' => array(
+			'post_thumbnail'      => array(
 				'title'     => esc_html__( '- Post: Featured Image', 'stream-notifications' ),
 				'type'      => 'select',
 				'connector' => 'posts',
@@ -529,41 +647,41 @@ class WP_Stream_Notifications_Form {
 				),
 				'operators' => $default_operators,
 			),
-			'post_comment_count' => array(
+			'post_comment_count'  => array(
 				'title'     => esc_html__( '- Post: Comment Count', 'stream-notifications' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $numeric_operators,
 			),
-			'user' => array(
+			'user'                => array(
 				'title'     => esc_html__( '- User', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'users',
 				'operators' => $default_operators,
 			),
-			'user_role' => array(
+			'user_role'           => array(
 				'title'     => esc_html__( '- User: Role', 'stream-notifications' ),
 				'type'      => 'select',
 				'connector' => 'users',
 				'options'   => $roles_arr,
 				'operators' => $default_operators,
 			),
-			'tax' => array(
+			'tax'                 => array(
 				'title'     => esc_html__( '- Taxonomy', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'taxonomies',
 				'operators' => $default_operators,
 			),
-			'term' => array(
+			'term'                => array(
 				'title'     => esc_html__( '- Term', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'taxonomies',
 				'operators' => $default_operators,
 			),
-			'term_parent' => array(
+			'term_parent'         => array(
 				'title'     => esc_html__( '- Term: Parent', 'stream-notifications' ),
 				'type'      => 'text',
 				'ajax'      => true,
@@ -572,37 +690,74 @@ class WP_Stream_Notifications_Form {
 			),
 		);
 
-		$args['adapters'] = array();
+		$args[ 'adapters' ] = array();
 
 		foreach ( WP_Stream_Notifications::$adapters as $name => $options ) {
-			$args['adapters'][$name] = array(
-				'title'  => $options['title'],
-				'fields' => $options['class']::fields(),
-				'hints'  => $options['class']::hints(),
+			$args[ 'adapters' ][ $name ] = array(
+				'title'  => $options[ 'title' ],
+				'fields' => $options[ 'class' ]::fields(),
+				'hints'  => $options[ 'class' ]::hints(),
 			);
 		}
 
 		// Localization
-		$args['i18n'] = array(
+		$args[ 'i18n' ] = array(
 			'empty_triggers'        => esc_html__( 'You cannot save a rule without any triggers.', 'stream-notifications' ),
 			'invalid_first_trigger' => esc_html__( 'You cannot save a rule with an empty first trigger.', 'stream-notifications' ),
 			'ajax_error'            => esc_html__( 'There was an error submitting your request, please try again.', 'stream-notifications' ),
 			'confirm_reset'         => esc_html__( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream-notifications' ),
 		);
 
+		global $post;
+
+		if ( ( $meta = get_post_meta( $post->ID ) ) && isset( $meta[ 'triggers' ] ) ) {
+
+			$args[ 'meta' ] = array(
+				'triggers' => maybe_unserialize( $meta[ 'triggers' ][ 0 ] ),
+				'groups'   => maybe_unserialize( $meta[ 'groups' ][ 0 ] ),
+				'alerts'   => maybe_unserialize( $meta[ 'alerts' ][ 0 ] ),
+			);
+		}
+
 		return apply_filters( 'stream_notification_js_args', $args );
 	}
 
 	/**
-	 * @filter user_search_columns
+	 * Take an (associative) array and format it for select2 AJAX result parser
+	 *
+	 * @param  array  $data (associative) Data array
+	 * @param  string $key  Key of the ID column, null if associative array
+	 * @param  string $val  Key of the Title column, null if associative array
+	 *
+	 * @return array        Formatted array, [ { id: %, title: % }, .. ]
 	 */
-	public function define_search_in_arg( $search_columns, $search, $query ) {
-		$search_in      = $query->get( 'search_in' );
-		$search_columns = ! is_null( $search_in ) ? (array) $search_in : $search_columns;
+	public function format_json_for_select2( $data, $key = null, $val = null ) {
+		$return = array();
+		if ( is_null( $key ) && is_null( $val ) ) { // for flat associative array
+			$keys = array_keys( $data );
+			$vals = array_values( $data );
+		} else {
+			$keys = wp_list_pluck( $data, $key );
+			$vals = wp_list_pluck( $data, $val );
+		}
+		foreach ( $keys as $idx => $key ) {
+			$return[ ] = array(
+				'id'   => $key,
+				'text' => $vals[ $idx ],
+			);
+		}
 
-		return $search_columns;
+		return $return;
 	}
 
+	/**
+	 * Search for terms in a specific taxonomy
+	 *
+	 * @param string $search     Search keyword
+	 * @param array  $taxonomies Taxonomies to search in
+	 *
+	 * @return array
+	 */
 	public function get_terms( $search, $taxonomies = array() ) {
 		global $wpdb;
 		$taxonomies = (array) $taxonomies;
@@ -615,7 +770,7 @@ class WP_Stream_Notifications_Form {
 
 		if ( is_array( $search ) ) {
 			$search = array_map( 'intval', $search );
-			$where = sprintf( 'tt.term_taxonomy_id IN ( %s )', implode( ', ', $search ) );
+			$where  = sprintf( 'tt.term_taxonomy_id IN ( %s )', implode( ', ', $search ) );
 		} else {
 			$where = '
 				t.name LIKE %s
@@ -632,180 +787,40 @@ class WP_Stream_Notifications_Form {
 		$sql .= $where;
 		$results = $wpdb->get_results( $sql );
 
-		$return  = array();
+		$return = array();
 		foreach ( $results as $result ) {
 			$return[ $result->id ] = sprintf( '%s - %s', $result->name, $result->taxonomy );
 		}
+
 		return $return;
 	}
 
-	public function metabox_triggers() {
-		?>
-		<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php esc_html_e( '+ Add Trigger', 'stream-notifications' ) ?></a>
-		<a class="add-trigger-group button button-primary" href="#add-trigger-group" data-group="0"><?php esc_html_e( '+ Add Group', 'stream-notifications' ) ?></a>
-		<div class="group" rel="0"></div>
-		<?php
+	/**
+	 * @filter user_search_columns
+	 */
+	public function define_search_in_arg( $search_columns, $search, $query ) {
+		$search_in      = $query->get( 'search_in' );
+		$search_columns = ! is_null( $search_in ) ? (array) $search_in : $search_columns;
+
+		return $search_columns;
 	}
 
-	public function metabox_alerts() {
-		?>
-		<a class="add-alert button button-secondary" href="#add-alert"><?php esc_html_e( '+ Add Alert', 'stream-notifications' ) ?></a>
-		<?php
+	/**
+	 * Change Post Title placeholder in post edit screen
+	 *
+	 * @filter enter_title_here
+	 *
+	 * @param $text
+	 * @param $post
+	 *
+	 * @return string
+	 */
+	public function title_placeholder( $text, $post ) {
+		if ( self::POSTTYPE === $post->post_type ) {
+			$text = __( 'Enter Rule Title here', 'stream-notifications' );
+		}
+
+		return $text;
 	}
 
-	public function metabox_save( $rule ) {
-		$reset_link = add_query_arg(
-			array(
-				'action'          => 'stream-notifications-reset-occ',
-				'id'              => absint( $rule->ID ),
-				'wp_stream_nonce' => wp_create_nonce( 'reset-occ_' . absint( $rule->ID ) ),
-			),
-			admin_url( 'admin-ajax.php' )
-		);
-		?>
-		<div class="submitbox" id="submitpost">
-			<div id="minor-publishing">
-				<div id="misc-publishing-actions">
-					<div class="misc-pub-section misc-pub-post-status">
-						<label for="notification_visibility">
-							<input type="checkbox" name="visibility" id="notification_visibility" value="active" <?php checked( ! $rule->exists() || 'active' === $rule->visibility ) ?>>
-							<?php esc_html_e( 'Active', 'stream-notifications' ) ?>
-						</label>
-					</div>
-					<?php if ( $rule->exists() ) : ?>
-					<div class="misc-pub-section">
-						<?php $occ = absint( wp_stream_get_meta( $rule->ID, 'occurrences', true ) ) ?>
-						<div class="occurrences">
-							<p>
-								<?php
-								echo sprintf(
-									_n(
-										'This rule has occurred %1$s time.',
-										'This rule has occurred %1$s times.',
-										$occ,
-										'stream-notifications'
-									),
-									sprintf( '<strong>%d</strong>', $occ ? $occ : 0 )
-								) // xss okay
-								?>
-							</p>
-							<?php if ( 0 !== $occ ) : ?>
-								<p>
-									<a href="<?php echo esc_url( $reset_link ) ?>" class="button button-secondary reset-occ">
-										<?php esc_html_e( 'Reset Count', 'stream-notifications' ) ?>
-									</a>
-								</p>
-							<?php endif; ?>
-						</div>
-					</div>
-					<?php endif; ?>
-				</div>
-			</div>
-
-			<div id="major-publishing-actions">
-				<?php if ( $rule->exists() ) : ?>
-					<div id="delete-action">
-						<?php
-						$delete_link = add_query_arg(
-							array(
-								'page'            => WP_Stream_Notifications::NOTIFICATIONS_PAGE_SLUG,
-								'action'          => 'delete',
-								'id'              => absint( $rule->ID ),
-								'wp_stream_nonce' => wp_create_nonce( 'delete-record_' . absint( $rule->ID ) ),
-							),
-							is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-						);
-						?>
-						<a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ) ?>">
-							<?php esc_html_e( 'Delete Permanently', 'stream-notifications' ) ?>
-						</a>
-					</div>
-				<?php endif; ?>
-
-				<div id="publishing-action">
-					<span class="spinner"></span>
-					<input type="submit" name="publish" id="publish" class="button button-primary button-large" value="<?php $rule->exists() ? esc_attr_e( 'Update', 'stream-notifications' ) : esc_attr_e( 'Save', 'stream-notifications' ) ?>" accesskey="s">
-				</div>
-				<div class="clear"></div>
-			</div>
-		</div>
-		<?php
-	}
-
-	public function metabox_data_tags() {
-		$data_tags = array(
-			__( 'Basic', 'stream-notifications' ) => array(
-				'summary'   => __( 'Summary message of the triggered record.', 'stream-notifications' ),
-				'author'    => __( 'User ID of the triggered record author.', 'stream-notifications' ),
-				'connector' => __( 'Connector of the triggered record.', 'stream-notifications' ),
-				'context'   => __( 'Context of the triggered record.', 'stream-notifications' ),
-				'action'    => __( 'Action of the triggered record.', 'stream-notifications' ),
-				'created'   => __( 'Timestamp of triggered record.', 'stream-notifications' ),
-				'ip'        => __( 'IP of the triggered record author.', 'stream-notifications' ),
-				'object_id' => __( 'Object ID of the triggered record.', 'stream-notifications' ),
-			),
-			__( 'Advanced', 'stream-notifications' ) => array(
-				'object.' => __( 'Specific object data of the record, relative to what the object type is:
-					<br /><br />
-					<strong>{object.post_title}</strong>
-					<br />
-					<strong>{object.post_excerpt}</strong>
-					<br />
-					<strong>{object.post_status}</strong>
-					<br />
-					<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more Post values</a>
-					<br /><br />
-					<strong>{object.name}</strong>
-					<br />
-					<strong>{object.taxonomy}</strong>
-					<br />
-					<strong>{object.description}</strong>
-					<br />
-					<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more Term values</a>', 'stream-notifications' ),
-
-				'author.' => __( 'Specific user data of the record author:
-					<br /><br />
-					<strong>{author.display_name}</strong>
-					<br />
-					<strong>{author.user_email}</strong>
-					<br />
-					<strong>{author.user_login}</strong>
-					<br />
-					<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more User values</a>', 'stream-notifications' ),
-				'meta.' => __( 'Specific meta data of the record, used to display specific meta values created by Connectors.
-					<br /><br />
-					Example: <strong>{meta.old_theme}</strong> to display the old theme name when a new theme is activated.', 'stream-notifications' ),
-			),
-		);
-		$allowed_html = array(
-			'a'      => array(
-				'href'   => array(),
-				'target' => array(),
-			),
-			'code'   => array(),
-			'strong' => array(),
-			'br'     => array(),
-		);
-		?>
-		<div id="data-tag-glossary" class="accordion-container">
-			<ul class="outer-border">
-				<?php foreach ( $data_tags as $section => $tags ) : ?>
-				<li class="control-section accordion-section">
-					<h3 class="accordion-section-title hndle" title="<?php echo esc_attr( $section ) ?>"><?php echo esc_html( $section ) ?></h3>
-					<div class="accordion-section-content">
-						<div class="inside">
-							<dl>
-								<?php foreach ( $tags as $tag => $desc ) : ?>
-									<dt><code>{<?php echo esc_html( $tag ) ?>}</code></dt>
-									<dd><?php echo wp_kses( $desc, $allowed_html ) ?></dd>
-								<?php endforeach; ?>
-							</dl>
-						</div>
-					</div>
-				</li>
-				<?php endforeach; ?>
-			</ul>
-		</div>
-		<?php
-	}
 }
