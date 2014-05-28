@@ -238,7 +238,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 			if ( $aliases ) {
 				foreach ( $aliases as $alias => $meta_key ) {
 					$joins[ $alias ] = $wpdb->prepare(
-						"LEFT JOIN `$wpdb->stream_meta` `$alias`
+						"LEFT JOIN `$wpdb->streammeta` `$alias`
 						ON `$alias`.`record_id` = `$wpdb->stream`.`ID`
 						AND `$alias`.`meta_key` = %s",
 						$meta_key
