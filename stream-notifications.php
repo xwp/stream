@@ -155,7 +155,7 @@ class WP_Stream_Notifications {
 		    'push',
 		);
 		foreach ( $adapters as $adapter ) {
-			include WP_STREAM_NOTIFICATIONS_DIR . 'classes/adapters/' . $class . '.php';
+			include WP_STREAM_NOTIFICATIONS_DIR . 'classes/adapters/' . $adapter . '.php';
 		}
 
 		if ( is_multisite() ) {
