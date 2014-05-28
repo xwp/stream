@@ -132,9 +132,9 @@ class WP_Stream_Feeds {
 					</p>
 					<p class="description"><?php esc_html_e( 'This is your private key used for accessing feeds of Stream Records securely. You can change your key at any time by generating a new one using the link above.', 'stream' ) ?></p>
 					<p class="wp-stream-feeds-links">
-						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'xml' ), $link )  ) ?>" class="rss-feed" target="_blank"><?php echo esc_html_e( 'RSS Feed' ) ?></a>
+						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'xml' ), $link )  ) ?>" class="rss-feed" target="_blank"><?php echo esc_html_e( 'RSS Feed', 'stream' ) ?></a>
 						|
-						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'json' ), $link ) ) ?>" class="json-feed" target="_blank"><?php echo esc_html_e( 'JSON Feed' ) ?></a>
+						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'json' ), $link ) ) ?>" class="json-feed" target="_blank"><?php echo esc_html_e( 'JSON Feed', 'stream' ) ?></a>
 					</p>
 				</td>
 			</tr>
@@ -185,13 +185,13 @@ class WP_Stream_Feeds {
 		$die_title   = esc_html__( 'Access Denied', 'stream' );
 		$die_message = '<h1>' . $die_title .'</h1><p>' . esc_html__( 'You don\'t have permission to view this feed, please contact your site Administrator.', 'stream' ) . '</p>';
 
-		if ( ! isset( $_GET[self::FEED_QUERY_VAR] ) || empty( $_GET[self::FEED_QUERY_VAR] ) ) {
+		if ( ! isset( $_GET[ self::FEED_QUERY_VAR ] ) || empty( $_GET[ self::FEED_QUERY_VAR ] ) ) {
 			wp_die( $die_message, $die_title );
 		}
 
 		$args = array(
 			'meta_key'   => self::USER_FEED_KEY,
-			'meta_value' => $_GET[self::FEED_QUERY_VAR],
+			'meta_value' => $_GET[ self::FEED_QUERY_VAR ],
 			'number'     => 1,
 		);
 		$user = get_users( $args );
