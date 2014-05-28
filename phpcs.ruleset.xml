@@ -6,6 +6,7 @@
 		<exclude name="WordPress.VIP.RestrictedFunctions"/>
 		<exclude name="WordPress.VIP.SuperGlobalInputUsage"/>
 		<exclude name="WordPress.VIP.ValidatedSanitizedInput"/>
+		<exclude name="WordPress.VIP.DirectDatabaseQuery"/>
 	</rule>
 
 	<exclude-pattern>/tests/*</exclude-pattern>

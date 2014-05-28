@@ -15,15 +15,16 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		 * Allows devs to alter the tables prefix, default to base_prefix
 		 *
 		 * @param  string  database prefix
+		 *
 		 * @return string  udpated database prefix
 		 */
 		$prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
 
-		self::$table         = $prefix . 'stream';
-		self::$table_meta    = $prefix . 'stream_meta';
+		self::$table      = $prefix . 'stream';
+		self::$table_meta = $prefix . 'stream_meta';
 
-		$wpdb->stream        = self::$table;
-		$wpdb->streammeta    = self::$table_meta;
+		$wpdb->stream     = self::$table;
+		$wpdb->streammeta = self::$table_meta;
 
 		// Hack for get_metadata
 		$wpdb->recordmeta = self::$table_meta;
@@ -53,6 +54,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		 * Filter will halt DB check if set to true
 		 *
 		 * @param  bool
+		 *
 		 * @return bool
 		 */
 		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
@@ -98,6 +100,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		 * Filter will halt install() if set to true
 		 *
 		 * @param  bool
+		 *
 		 * @return bool
 		 */
 		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
@@ -124,7 +127,9 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * Insert a new record
 	 *
 	 * @internal Used by store()
-	 * @param  array   $data Record data
+	 *
+	 * @param  array $data Record data
+	 *
 	 * @return integer       ID of the inserted record
 	 */
 	protected function insert( array $data ) {
@@ -135,15 +140,12 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 
 		// Fallback from `contexts` to the new flat table structure
 		if ( isset( $recordarr['contexts'] ) ) {
-			$recordarr['action'] = reset( $recordarr['contexts'] );
+			$recordarr['action']  = reset( $recordarr['contexts'] );
 			$recordarr['context'] = key( $recordarr['contexts'] );
 			unset( $recordarr['contexts'] );
 		}
 
-		$result = $wpdb->insert(
-			self::$table,
-			$recordarr
-		);
+		$result = $wpdb->insert( self::$table, $recordarr );
 
 		if ( empty( $wpdb->last_error ) ) {
 			$record_id = $wpdb->insert_id;
@@ -173,7 +175,9 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * TODO: Implement
 	 *
 	 * @internal Used by store()
-	 * @param  array    $data Record data to be updated, must include ID
+	 *
+	 * @param  array $data Record data to be updated, must include ID
+	 *
 	 * @return mixed          True if successful, WP_Error if not
 	 */
 	protected function update( array $data ) {
@@ -183,7 +187,9 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * Query records
 	 *
 	 * @internal Used by WP_Stream_Query, and is not designed to be called explicitly
-	 * @param  array  $query Query arguments
+	 *
+	 * @param  array $query Query arguments
+	 *
 	 * @return array         List of records that match query
 	 */
 	public function query( $query ) {
@@ -206,7 +212,10 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 				$db_col = "DATE($db_col)";
 			}
 			foreach ( $rules as $operator => $value ) {
-				$where[] = $this->parse_rule( $db_col, $operator, $value );
+				$rule = $this->parse_rule( $db_col, $operator, $value );
+				if ( ! is_a( $rule, 'WP_Error' ) ) { // @todo We should handle query format errors
+					$where[] = $rule;
+				}
 			}
 		}
 
@@ -217,9 +226,9 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 			$aliases = array(); // Table aliases for meta table joins
 			foreach ( $query['_meta'] as $meta_key => $rules ) {
 				// Handling meta-table aliasing
-				$alias     = 'meta_' . $meta_key . '_' . $operator;
+				$alias             = 'meta_' . $meta_key . '_' . $operator;
 				$aliases[ $alias ] = $meta_key; // Use this to create a join statement later
-				$db_col = "{$alias}.meta_value";
+				$db_col            = "{$alias}.meta_value";
 				foreach ( $rules as $operator => $value ) {
 					$where[] = $this->parse_rule( $db_col, $operator, $value );
 				}
@@ -252,7 +261,6 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		 * PARSE ORDER PARAMS
 		 */
 		$orderby = sprintf( 'ORDER BY %s %s', key( $query['_order'] ), reset( $query['_order'] ) );
-
 
 		/**
 		 * PARSE SELECT PARAMETER
@@ -289,8 +297,9 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		/**
 		 * Allows developers to change final SQL of Stream Query
 		 *
-		 * @param  string $sql   SQL statement
-		 * @param  array  $args  Arguments passed to query()
+		 * @param  string $sql  SQL statement
+		 * @param  array  $args Arguments passed to query()
+		 *
 		 * @return string
 		 */
 		$sql = apply_filters( 'wp_stream_query_sql', $sql, $query );
@@ -302,9 +311,11 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		/**
 		 * Allows developers to change the final result set of records
 		 *
-		 * @param  array  $results SQL result
+		 * @param  array $results SQL result
+		 *
 		 * @return array  Filtered array of records
 		 */
+
 		return apply_filters( 'wp_stream_query_results', $results );
 	}
 
@@ -316,28 +327,26 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * @param  string $db_col   Column name, in table/alias.column format
 	 * @param  string $operator Comparison operator, from [like/in/not_in/gt(e)/lt(e)]
 	 * @param  mixed  $value    Value to compare to, can be string/array
-	 * @return string           Properly escaped SQL WHERE rule
+	 *
+	 * @return string|WP_Error           Properly escaped SQL WHERE rule, or WP_Error
 	 */
 	private function parse_rule( $db_col, $operator, $value ) {
 		global $wpdb;
 
 		// Handle `like` operator
 		if ( 'like' === $operator ) {
-			$value   = like_escape( trim( $args['search'], '%' ) );
-			return $wpdb->prepare( "$db_col LIKE %s", "%{$value}%" );
-		}
+			$value = like_escape( trim( $value, '%' ) );
 
-		// Handle `in`/`not_in` operators
-		elseif ( in_array( $operator, array( 'in', 'not_in') ) ) {
+			return $wpdb->prepare( "$db_col LIKE %s", "%{$value}%" ); // db call okay, db cache okay
+		} // Handle `in`/`not_in` operators
+		elseif ( in_array( $operator, array( 'in', 'not_in' ) ) ) {
 			$values  = is_array( $value ) ? $value : array( $value );
-			// TODO: Think about handling integer values, specially for $format param (%s vs %d)
 			$_format = count( $values ) === count( array_filter( $values, 'is_int' ) ) ? '%d' : '%s';
 			$format  = '(' . join( ',', array_fill( 0, count( $values ), $_format ) ) . ')';
 			$db_op   = $operator === 'in' ? 'IN' : 'NOT IN';
-			return $wpdb->prepare( "$db_col {$db_op} {$format}", $values );
-		}
 
-		// Handle numerical comparison operators
+			return $wpdb->prepare( "$db_col {$db_op} {$format}", $values ); // db call okay, db cache okay
+		} // Handle numerical comparison operators
 		elseif ( in_array( $operator, array( 'gt', 'lt', 'gte', 'lte' ) ) ) {
 			// Resolve to proper DB comparison operator
 			if ( 'gt' === $operator ) {
@@ -348,10 +357,13 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 				$db_op = '<';
 			} elseif ( 'lte' === $operator ) {
 				$db_op = '<=';
+			} else {
+				return new WP_Error( 'invalid-operator', __( 'Invalid operator', 'stream' ) );
 			}
 
 			$format = is_int( $value ) ? '%d' : '%s';
-			return $wpdb->prepare( "$db_col $db_op $format", $value );
+
+			return $wpdb->prepare( "$db_col $db_op $format", $value ); // db call okay, db cache okay
 		}
 	}
 
@@ -366,15 +378,18 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 
 	/**
 	 * Delete records with matching IDs
+	 *
 	 * @param  array|true $ids Array of IDs, or True to delete all records
+	 *
 	 * @return mixed           True if no errors, WP_Error if arguments fail
 	 */
 	public function delete( $ids ) {
+		/** @var $wpdb wpdb */
 		global $wpdb;
 
 		if ( is_array( $ids ) ) {
-			$format  = '(' . join( ',', array_fill( 0, count( $ids ), '%d' ) ) . ')';
-			$where = 'WHERE ' . $wpdb->prepare( "ID IN $format", $ids );
+			$format = '(' . join( ',', array_fill( 0, count( $ids ), '%d' ) ) . ')';
+			$where  = 'WHERE ' . $wpdb->prepare( "ID IN $format", $ids ); // db call ok cache ok
 		} elseif ( true === $ids ) {
 			$where = '';
 		} else {
@@ -382,9 +397,9 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 		}
 
 		// Remove records, and all of their meta data
-		$wpdb->query( "DELETE FROM $wpdb->stream $where" );
+		$wpdb->query( "DELETE FROM $wpdb->stream $where" ); // db call ok cache ok
 		$where = str_replace( 'ID', 'record_id', $where );
-		$wpdb->query( "DELETE FROM $wpdb->streammeta $where" );
+		$wpdb->query( "DELETE FROM $wpdb->streammeta $where" ); // db call ok cache ok
 		return true;
 	}
 
@@ -392,12 +407,14 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * Returns array of existing values for requested column.
 	 * Used to fill search filters with only used items, instead of all items.
 	 *
-	 * @param  string  Requested Column (i.e., 'context')
+	 * @param  string $column Requested Column (i.e., 'context')
+	 *
 	 * @return array   Array of distinct values
 	 */
 	public function get_col( $column ) {
 		global $wpdb;
 		$values = $wpdb->get_col( "SELECT DISTINCT {$column} FROM {$wpdb->stream}" );
+
 		return $values;
 	}
 
@@ -405,9 +422,11 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * Retrieve metadata of a single record
 	 *
 	 * @internal User by wp_stream_get_meta()
+	 *
 	 * @param  integer $record_id Record ID
 	 * @param  string  $key       Optional, Meta key, if omitted, retrieve all meta data of this record.
 	 * @param  boolean $single    Default: false, Return single meta value, or all meta values under specified key.
+	 *
 	 * @return string|array       Single/Array of meta data.
 	 */
 	public function get_meta( $record_id, $key, $single = false ) {
@@ -418,9 +437,11 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * Add metadata for a single record
 	 *
 	 * @internal User by wp_stream_add_meta()
+	 *
 	 * @param  integer $record_id Record ID
 	 * @param  string  $key       Meta key
 	 * @param  mixed   $val       Meta value, will be serialized if non-scalar
+	 *
 	 * @return bool               True on success, false on failure
 	 */
 	public function add_meta( $record_id, $key, $val ) {
@@ -431,10 +452,12 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * Update metadata for a single record
 	 *
 	 * @internal User by wp_stream_update_meta()
+	 *
 	 * @param  integer $record_id Record ID
 	 * @param  string  $key       Meta key
 	 * @param  mixed   $val       Meta value, will be serialized if non-scalar
 	 * @param  mixed   $prev      Optional, Previous Meta value to replace, will be serialized if non-scalar
+	 *
 	 * @return bool               True on successful update, false on failure
 	 */
 	public function update_meta( $record_id, $key, $val, $prev = null ) {
@@ -445,10 +468,12 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 	 * Delete metadata for specified record(s)
 	 *
 	 * @internal Used by wp_stream_delete_meta()
+	 *
 	 * @param  integer $record_id  Record ID, can be omitted if delete_all=true
 	 * @param  string  $key        Meta key
 	 * @param  mixed   $val        Optional, only delete entries with this value, will be serialized if non-scalar
 	 * @param  boolean $delete_all Default: false, delete all matching entries from all objects
+	 *
 	 * @return boolean             True on success, false on failure
 	 */
 	public function delete_meta( $record_id, $key, $val = null, $delete_all = false ) {

@@ -38,14 +38,14 @@ abstract class WP_Stream_DB_Base {
 		/**
 		 * Filter allows modification of record information
 		 *
-		 * @param  array  array of record information
-		 * @return array  udpated array of record information
+		 * @param  array  $data Array of record information
+		 * @return array  $data Updated array of record information
 		 */
 		$data = apply_filters( 'wp_stream_record_array', $data );
 
 		// Allow extensions to handle the saving process
 		if ( empty( $data ) ) {
-			return;
+			return false;
 		}
 
 		// Fill in defaults
@@ -75,7 +75,7 @@ abstract class WP_Stream_DB_Base {
 				/**
 				 * Fires on errors during post insertion
 				 *
-				 * @param  string  DB Error encountered
+				 * @param  string $errors DB Error encountered
 				 */
 				do_action( 'wp_stream_post_insert_error', $result->get_error_message() );
 
@@ -84,8 +84,8 @@ abstract class WP_Stream_DB_Base {
 				/**
 				 * Fires when A Post is inserted
 				 *
-				 * @param  int    Inserted record ID
-				 * @param  array  Array of information on this record
+				 * @param  int   $result Inserted record ID
+				 * @param  array $data   Array of information on this record
 				 */
 				do_action( 'wp_stream_post_inserted', $result, $data );
 
@@ -99,7 +99,7 @@ abstract class WP_Stream_DB_Base {
 	 *
 	 * @internal Used by store()
 	 * @param  array   $data Record data
-	 * @return integer       ID of the inserted record
+	 * @return int|WP_Error       ID of the inserted record
 	 */
 	abstract protected function insert( array $data );
 
