@@ -191,8 +191,6 @@ class WP_Stream_Notifications {
 			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		}
 
-		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
-
 		// Default list actions handlers
 		// @todo use save_post instead
 //		add_action( 'wp_stream_notifications_handle_deactivate', array( $this, 'handle_rule_activation_status_change' ), 10, 3 );
