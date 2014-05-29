@@ -19,10 +19,6 @@ class WP_Stream_Notifications_Settings {
 
 		// Add Notifications settings tab to Stream settings
 		add_filter( 'wp_stream_options_fields', array( __CLASS__, '_register_settings' ) );
-
-		// Export function
-		add_action( 'wp_ajax_wp_stream_notifications_export', array( 'WP_Stream_Notifications_Import_Export', 'export' ) );
-		add_filter( 'pre_update_option_' . WP_Stream_Settings::KEY, array( 'WP_Stream_Notifications_Import_Export', 'import' ) );
 	}
 
 	public static function get_fields() {
