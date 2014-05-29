@@ -155,10 +155,9 @@ class WP_Stream_Notifications {
 	 */
 	public function load() {
 
-		// Admin notices
-		add_action( 'all_admin_notices', array( $this, 'admin_notices' ) );
-
+		// Plugin dependency and admin notices
 		if ( ! $this->is_dependency_satisfied() ) {
+			add_action( 'all_admin_notices', array( $this, 'admin_notices' ) );
 			return;
 		}
 
