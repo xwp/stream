@@ -33,6 +33,10 @@ class WP_Stream_Notifications_Post_Type {
 
 		// Save meta data
 		add_action( 'save_post', array( $this, 'save' ), 10, 2 );
+
+		// Refresh rules cache on updating/deleting posts
+		add_action( 'save_post', array( $this, 'refresh_cache_on_save' ), 10, 2 );
+		add_action( 'delete_post', array( $this, 'refresh_cache_on_delete' ), 10, 1 );
 	}
 
 	private function register_post_type() {
@@ -823,4 +827,45 @@ class WP_Stream_Notifications_Post_Type {
 		return $text;
 	}
 
+	/**
+	 * Refresh cache on saving a rule
+	 *
+	 * @action save_post
+	 *
+	 * @param      $post_id
+	 * @param null $post
+	 *
+	 * @return void
+	 */
+	public function refresh_cache_on_save( $post_id, $post = null ) {
+		if ( ! isset( $post ) ) {
+			$post = get_post( $post_id );
+		}
+
+		if ( self::POSTTYPE === $post->post_type ) {
+			WP_Stream_Notifications::get_instance()->matcher->refresh();
+		}
+	}
+
+	/**
+	 * Refresh cache on deleting a rule
+	 *
+	 * @action delete_post
+	 *
+	 * @param $post_id
+	 *
+	 * @return void
+	 */
+	public function refresh_cache_on_delete( $post_id ) {
+		$post = get_post( $post_id );
+		if ( self::POSTTYPE !== $post->post_type ) {
+			return;
+		}
+
+		add_action( 'deleted_post', function( $deleted_id ) use ( $post_id ) {
+			if ( $deleted_id === $post_id ) {
+				WP_Stream_Notifications::get_instance()->matcher->refresh();
+			}
+		} );
+	}
 }
