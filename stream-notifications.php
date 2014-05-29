@@ -208,7 +208,7 @@ class WP_Stream_Notifications {
 
 		add_submenu_page(
 			'wp_stream',
-			__( '--- Add rule', 'stream-notifications' ),
+			__( 'Add rule', 'stream-notifications' ),
 			__( '--- Add rule', 'stream-notifications' ),
 			self::VIEW_CAP,
 			'post-new.php?post_type=stream-notification'
