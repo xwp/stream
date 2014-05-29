@@ -868,4 +868,21 @@ class WP_Stream_Notifications_Post_Type {
 			}
 		} );
 	}
+
+	/**
+	 * Apply list actions, and load our list-table object
+	 *
+	 * @action load-edit.php
+	 *
+	 * @return void
+	 */
+	public function load_list_table() {
+		if ( get_current_screen()->post_type !== WP_Stream_Notifications_Post_Type::POSTTYPE ) {
+			return;
+		}
+
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'list-table.php';
+		new WP_Stream_Notifications_List_Table;
+	}
+
 }

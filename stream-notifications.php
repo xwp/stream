@@ -214,7 +214,7 @@ class WP_Stream_Notifications {
 			'post-new.php?post_type=stream-notification'
 		);
 
-		add_action( 'load-edit.php', array( $this, 'load_list_table' ) );
+		add_action( 'load-edit.php', array( WP_Stream_Notifications_Post_Type::get_instance(), 'load_list_table' ) );
 	}
 
 	public static function register_adapter( $adapter, $name, $title ) {
@@ -222,22 +222,6 @@ class WP_Stream_Notifications {
 			'title' => $title,
 			'class' => $adapter,
 		);
-	}
-
-	/**
-	 * Apply list actions, and load our list-table object
-	 *
-	 * @action load-edit.php
-	 *
-	 * @return void
-	 */
-	public function load_list_table() {
-		if ( get_current_screen()->post_type !== WP_Stream_Notifications_Post_Type::POSTTYPE ) {
-			return;
-		}
-
-		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'list-table.php';
-		self::$list_table = new WP_Stream_Notifications_List_Table( array( 'screen' => self::$screen_id ) );
 	}
 
 	/**
