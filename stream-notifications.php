@@ -241,32 +241,6 @@ class WP_Stream_Notifications {
 	}
 
 	/**
-	 * Admin page callback for list view
-	 *
-	 * @return void
-	 */
-	public function page_list() {
-		self::$list_table->prepare_items();
-
-		echo '<div class="wrap">';
-		echo sprintf(
-			'<h2>%s <a href="%s" class="add-new-h2">%s</a></h2>',
-			__( 'Stream Notifications', 'stream-notifications' ),
-			add_query_arg(
-				array(
-					'page' => self::NOTIFICATIONS_PAGE_SLUG,
-					'view' => 'rule',
-				),
-				is_network_admin() ? network_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE ) : admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-			),
-			__( 'Add New' )
-		); // xss okay
-
-		self::$list_table->display();
-		echo '</div>';
-	}
-
-	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
 	 *
 	 * @return bool
