@@ -376,9 +376,10 @@ jQuery(function( $ ) {
 
 		// Regenerate zebra stripes based on visible rows
 		function regenerate_row_alt() {
-			$( '.toplevel_page_wp_stream #the-list tr' ).removeClass( 'alternate' );
-
 			var itemCount = 0;
+			var rowAlt    = false;
+
+			$( '.toplevel_page_wp_stream #the-list tr' ).removeClass( 'alternate' );
 
 			$( '.toplevel_page_wp_stream #the-list tr:visible' ).not( '.record-group' ).each(function() {
 				if ( 0 === itemCount % 2 ) {
@@ -388,8 +389,6 @@ jQuery(function( $ ) {
 				}
 				itemCount++;
 			});
-
-			var rowAlt = false;
 
 			$( '.toplevel_page_wp_stream #the-list tr:visible' ).each(function() {
 				if ( $( this ).hasClass( 'first' ) ) {
