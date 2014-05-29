@@ -272,9 +272,13 @@ class WP_Stream_Notifications {
 	 */
 	public function on_activation() {
 		// Add sample rule
-		if ( function_exists( 'wp_stream_query' ) && ! wp_stream_query( 'type=notification_rule&ignore_context=1' ) ) {
-			$this->load();
-			$this->add_sample_rule();
+		$args = array(
+			'post_type' => WP_Stream_Notifications_Post_Type::POSTTYPE,
+			'post_status' => 'any',
+			'posts_per_page' => 1,
+		);
+		if ( ! get_posts( $args ) ) {
+			add_action( 'plugins_loaded', array( $this, 'add_sample_rule' ), 11 );
 		}
 	}
 
