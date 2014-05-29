@@ -405,9 +405,7 @@ jQuery(function( $ ) {
 
 		// Recalcuate the colspan on group rows when columns are changed in Screen Options
 		$( '.metabox-prefs input' ).on( 'click', function() {
-			var colCount = $( '.toplevel_page_wp_stream #the-list tr:first' ).find( 'td' ).filter(function() {
-				return 'none' !== $( this ).css( 'display' );
-			}).length;
+			var colCount = $( '.toplevel_page_wp_stream #the-list tr:first' ).find( 'td:visible' ).length;
 
 			if ( 0 === colCount ) {
 				$( 'tr.record-group' ).hide();
