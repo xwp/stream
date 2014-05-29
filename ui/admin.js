@@ -310,20 +310,20 @@ jQuery(function( $ ) {
 		}
 
 		function group_records() {
-			var itemCount = 0;
-			var groupID   = 1;
+			var itemCount = 0,
+				groupID   = 1;
 
 			$( '.toplevel_page_wp_stream #the-list tr' ).each(function() {
-				var $row     = $( this );
-				var $rowPrev = $row.prev();
-				var $rowNext = $row.next();
-				var cols     = [ 'author', 'connector', 'context', 'action' ];
-				var colCount = $row.find( 'td' ).filter(function() {
-					return 'none' !== $( this ).css( 'display' );
-				}).length;
-				var rowKeys  = [];
-				var prevKeys = [];
-				var nextKeys = [];
+				var $row     = $( this ),
+					$rowPrev = $row.prev(),
+					$rowNext = $row.next(),
+					cols     = [ 'author', 'connector', 'context', 'action' ],
+					colCount = $row.find( 'td' ).filter(function() {
+						return 'none' !== $( this ).css( 'display' );
+					}).length,
+					rowKeys  = [],
+					prevKeys = [],
+					nextKeys = [];
 
 				// Get data keys from the current row
 				$.each( cols, function( index, value ) {
@@ -376,8 +376,8 @@ jQuery(function( $ ) {
 
 		// Regenerate zebra stripes based on visible rows
 		function regenerate_row_alt() {
-			var itemCount = 0;
-			var rowAlt    = false;
+			var itemCount = 0,
+				rowAlt    = false;
 
 			$( '.toplevel_page_wp_stream #the-list tr' ).removeClass( 'alternate' );
 
@@ -416,9 +416,9 @@ jQuery(function( $ ) {
 
 		// Reveal hidden rows in a group when clicked
 		$( 'tr.record-group td a' ).on( 'click', function() {
-			var $rowGroup   = $( this ).closest( 'tr.record-group' );
-			var groupID     = $rowGroup.data( 'group-id' );
-			var $groupItems = $( '*[data-group-id="' + groupID + '"]' );
+			var $rowGroup   = $( this ).closest( 'tr.record-group' ),
+				groupID     = $rowGroup.data( 'group-id' ),
+				$groupItems = $( '*[data-group-id="' + groupID + '"]' );
 
 			$groupItems.fadeIn().removeClass( 'hidden first' );
 			$rowGroup.hide();
@@ -428,9 +428,9 @@ jQuery(function( $ ) {
 
 		// Enable Grouped Records Checkbox Ajax
 		$( '#enable_group_records' ).click(function() {
-			var nonce   = $( '#stream_group_records_nonce' ).val();
-			var user    = $( '#stream_screen_options_user' ).val();
-			var checked = 'unchecked';
+			var nonce   = $( '#stream_group_records_nonce' ).val(),
+				user    = $( '#stream_screen_options_user' ).val(),
+				checked = 'unchecked';
 
 			if ( $( '#enable_group_records' ).is( ':checked' ) ) {
 				checked = 'checked';
