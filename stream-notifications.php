@@ -168,16 +168,13 @@ class WP_Stream_Notifications {
 			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/' . $adapter . '.php';
 		}
 
-		if ( is_multisite() ) {
-			add_filter( 'wp_stream_notifications_disallow_site_access', array( 'WP_Stream_Network', 'disable_admin_access' ) );
-		}
-
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'settings.php';
 		add_action( 'init', array( 'WP_Stream_Notifications_Settings', 'load' ), 9 );
 
 		// Load network class
 		if ( is_multisite() ) {
+
 			require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'network.php';
 			$this->network = new WP_Stream_Notifications_Network;
 
@@ -185,6 +182,9 @@ class WP_Stream_Notifications {
 			if ( is_plugin_active_for_network( WP_STREAM_NOTIFICATIONS_PLUGIN ) ) {
 				add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
 			}
+
+			// Allow Stream to override the admin_menu creation if on multisite
+			add_filter( 'wp_stream_notifications_disallow_site_access', array( 'WP_Stream_Network', 'disable_admin_access' ) );
 		}
 
 		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) ) {
