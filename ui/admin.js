@@ -393,14 +393,11 @@ jQuery(function( $ ) {
 				itemCount++;
 			});
 
-			$( '.toplevel_page_wp_stream #the-list tr:visible' ).each(function() {
-				if ( $( this ).hasClass( 'first' ) ) {
-					rowAlt = $( this ).hasClass( 'alternate' );
-				}
+			$( '.toplevel_page_wp_stream #the-list tr.record-group:visible' ).each(function() {
+				var $first = $( this ).prevAll( '.first' ).eq( 0 );
 
-				if ( $( this ).hasClass( 'record-group' ) && rowAlt ) {
+				if ( $first.hasClass( 'alternate' ) ) {
 					$( this ).addClass( 'alternate' );
-					rowAlt = false;
 				}
 			});
 		}
