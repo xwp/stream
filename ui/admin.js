@@ -379,8 +379,7 @@ jQuery(function( $ ) {
 
 		// Regenerate zebra stripes based on visible rows
 		function regenerate_row_alt() {
-			var itemCount = 0,
-			    rowAlt    = false;
+			var itemCount = 0;
 
 			$( '.toplevel_page_wp_stream #the-list tr' ).removeClass( 'alternate' );
 
