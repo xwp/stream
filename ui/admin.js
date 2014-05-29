@@ -329,32 +329,35 @@ jQuery(function( $ ) {
 				$.each( cols, function( index, value ) {
 					rowKeys[ index ] = $row.find( 'td.' + value + ' a' ).data( 'group-key' );
 				});
+				rowKeys = rowKeys.join();
 
 				// Get data keys from the previous row
 				$.each( cols, function( index, value ) {
 					prevKeys[ index ] = $rowPrev.find( 'td.' + value + ' a' ).data( 'group-key' );
 				});
+				prevKeys = prevKeys.join();
 
 				// Get data keys from the next row
 				$.each( cols, function( index, value ) {
 					nextKeys[ index ] = $rowNext.find( 'td.' + value + ' a' ).data( 'group-key' );
 				});
+				nextKeys = nextKeys.join();
 
 				// Identify the first record in a group
-				if ( rowKeys.join() === nextKeys.join() && rowKeys.join() !== prevKeys.join() ) {
+				if ( rowKeys === nextKeys && rowKeys !== prevKeys ) {
 					$row.addClass( 'first' );
 					$row.attr( 'data-group-id', groupID );
 				}
 
 				// Identify and hide duplicate records in a group
-				if ( rowKeys.join() === nextKeys.join() ) {
+				if ( rowKeys === nextKeys ) {
 					$rowNext.addClass( 'hidden' );
 					$rowNext.attr( 'data-group-id', groupID );
 					itemCount++;
 				}
 
 				// Add an ending record group row
-				if ( rowKeys.join() !== nextKeys.join() && rowKeys.join() === prevKeys.join() ) {
+				if ( rowKeys !== nextKeys && rowKeys === prevKeys ) {
 					var msg = wp_stream.i18n.group_records_plural;
 
 					if ( 1 === itemCount ) {
