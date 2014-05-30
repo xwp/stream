@@ -83,9 +83,9 @@ class WP_Stream {
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
 
-		// Load settings, enabling extensions to hook in
+		// Load settings at the same priority as connectors to support exclusions
 		require_once WP_STREAM_INC_DIR . 'settings.php';
-		add_action( 'init', array( 'WP_Stream_Settings', 'load' ) );
+		add_action( 'init', array( 'WP_Stream_Settings', 'load' ), 9 );
 
 		// Load network class
 		if ( is_multisite() ) {
@@ -97,7 +97,7 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'log.php';
 		add_action( 'plugins_loaded', array( 'WP_Stream_Log', 'load' ) );
 
-		// Load connectors
+		// Load connectors after widgets_init, but before the default of 10
 		require_once WP_STREAM_INC_DIR . 'connectors.php';
 		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ), 9 );
 

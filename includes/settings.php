@@ -213,6 +213,7 @@ class WP_Stream_Settings {
 		$option_key = self::KEY;
 
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+
 		if ( ! $current_page ) {
 			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
 		}
@@ -872,13 +873,7 @@ class WP_Stream_Settings {
 				}
 			);
 
-			if ( 'authors' === $column ) {
-				$filter = 'is_int'; // Author ID's are always integers
-			}
-
-			if ( 'roles' === $column ) {
-				$filter = 'is_string'; // Author roles are always strings
-			}
+			$filter = ( 'roles' === $column ) ? 'is_string' : 'is_int'; // Author roles are always strings and author ID's are always integers
 
 			$excluded_values = array_values( array_filter( $excluded_values, $filter ) ); // Reset the array keys
 		}
