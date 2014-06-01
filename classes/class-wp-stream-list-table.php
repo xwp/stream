@@ -401,7 +401,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			require_once WP_STREAM_CLASS_DIR . 'class-wp-stream-author.php';
 			$all_records = array();
 
-			// Short circuit and return empty array if we have more than 10 users, to use Ajax instead
+			// If the number of users exceeds the max authors constant value then return an empty array and use AJAX instead
 			$user_count  = count_users();
 			$total_users = $user_count['total_users'];
 			if ( $total_users > WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
@@ -751,7 +751,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$output = 'ip_addresses';
 				break;
 			case 'author':
-				$output = 'authors_and_roles';
+				$output = 'authors';
 				break;
 			default:
 				$output = false;

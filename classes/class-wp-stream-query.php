@@ -362,7 +362,10 @@ class WP_Stream_Query {
 		$args['action__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
 
 		// Remove record of excluded author
-		$args['author__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
+		$args['author__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'authors' );
+
+		// Remove record of excluded author role
+		$args['author_role__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'roles' );
 
 		// Remove record of excluded ip
 		$args['ip__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'ip_addresses' );
