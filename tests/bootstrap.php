@@ -22,8 +22,7 @@ tests_add_filter(
 		require dirname( dirname( __FILE__ ) ) . '/stream.php';
 
 		// Call Activate plugin function
-		$plugin = $GLOBALS['wp_stream'];
-		$plugin::install();
+		WP_Stream::install();
 	}
 );
 
