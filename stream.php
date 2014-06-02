@@ -143,7 +143,7 @@ class WP_Stream {
 	* @return void
 	*/
 	function autoload( $class ) {
-		$class_file = WP_STREAM_CLASS_DIR . 'class-' . str_replace( '_', '-', $class ) . '.php';
+		$class_file = WP_STREAM_CLASS_DIR . 'class-' . str_replace( '_', '-', sanitize_title( $class ) ) . '.php';
 		if ( is_readable( $class_file ) ) {
 			require_once $class_file;
 		}
