@@ -33,7 +33,7 @@ class WP_Stream_Dashboard_Widget {
 	}
 
 	public static function stream_activity_update_contents() {
-		$paged = ! empty( $_POST['stream-paged'] ) ? absint( $_POST['stream-paged'] ) : 1;
+		$paged = ! empty( $_POST[ 'stream-paged' ] ) ? absint( $_POST[ 'stream-paged' ] ) : 1;
 		self::stream_activity_contents( $paged );
 		die;
 	}
@@ -43,14 +43,14 @@ class WP_Stream_Dashboard_Widget {
 	 */
 	public static function stream_activity_contents( $paged = 1 ) {
 		$options          = get_option( 'dashboard_stream_activity_options', array() );
-		$records_per_page = isset( $options['records_per_page'] ) ? absint( $options['records_per_page'] ) : 5;
+		$records_per_page = isset( $options[ 'records_per_page' ] ) ? absint( $options[ 'records_per_page' ] ) : 5;
 		$args             = array(
 			'records_per_page' => $records_per_page,
 			'paged'            => $paged,
 		);
 
 		$records     = wp_stream_query( $args );
-		$all_records = wp_stream_query( array( 'records_per_page' => -1, 'paged' => 0 ) );
+		$total_items = WP_Stream::$db->get_found_rows();
 
 		if ( ! $records ) {
 			?>
@@ -59,19 +59,12 @@ class WP_Stream_Dashboard_Widget {
 			return;
 		}
 
-		$i = 0;
+		printf(
+			'<ul>%s</ul>',
+			implode( '', array_map( array( __CLASS__, 'widget_row' ), $records ) )
+		);
 
-		echo '<ul>';
-
-		foreach ( $records as $record ) {
-			$i++;
-			echo self::widget_row( $record, $i ); //xss okay
-		}
-
-		echo '</ul>';
-
-		$total_items = count( $all_records );
-		$args        = array(
+		$args = array(
 			'total_pages' => absint( ceil( $total_items / $records_per_page ) ), // Cast as an integer, not a float
 			'current'     => $paged,
 		);
@@ -118,7 +111,7 @@ class WP_Stream_Dashboard_Widget {
 			$disable_last = ' disabled';
 		}
 
-		$page_links[] = sprintf(
+		$page_links[ ] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="1">%s</a>',
 			'first-page' . $disable_first,
 			esc_attr__( 'Go to the first page', 'default' ),
@@ -126,7 +119,7 @@ class WP_Stream_Dashboard_Widget {
 			'&laquo;'
 		);
 
-		$page_links[] = sprintf(
+		$page_links[ ] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'prev-page' . $disable_first,
 			esc_attr__( 'Go to the previous page', 'default' ),
@@ -136,9 +129,9 @@ class WP_Stream_Dashboard_Widget {
 		);
 
 		$html_total_pages = sprintf( '<span class="total-pages">%s</span>', number_format_i18n( $total_pages ) );
-		$page_links[]     = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), number_format_i18n( $current ), $html_total_pages ) . '</span>';
+		$page_links[ ]    = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), number_format_i18n( $current ), $html_total_pages ) . '</span>';
 
-		$page_links[] = sprintf(
+		$page_links[ ] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'next-page' . $disable_last,
 			esc_attr__( 'Go to the next page', 'default' ),
@@ -147,7 +140,7 @@ class WP_Stream_Dashboard_Widget {
 			'&rsaquo;'
 		);
 
-		$page_links[] = sprintf(
+		$page_links[ ] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'last-page' . $disable_last,
 			esc_attr__( 'Go to the last page', 'default' ),
@@ -173,23 +166,23 @@ class WP_Stream_Dashboard_Widget {
 	public static function stream_activity_options() {
 		$options = get_option( 'dashboard_stream_activity_options', array() );
 
-		if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
-			$options['records_per_page'] = absint( $_POST['dashboard_stream_activity_options']['records_per_page'] );
-			$options['live_update'] = isset( $_POST['dashboard_stream_activity_options']['live_update'] ) ? 'on' : 'off';;
+		if ( 'POST' === $_SERVER[ 'REQUEST_METHOD' ] && isset( $_POST[ 'dashboard_stream_activity_options' ] ) ) {
+			$options[ 'records_per_page' ] = absint( $_POST[ 'dashboard_stream_activity_options' ][ 'records_per_page' ] );
+			$options[ 'live_update' ]      = isset( $_POST[ 'dashboard_stream_activity_options' ][ 'live_update' ] ) ? 'on' : 'off';;
 			update_option( 'dashboard_stream_activity_options', $options );
 		}
 
-		if ( ! isset( $options['records_per_page'] ) ) {
-			$options['records_per_page'] = 5;
+		if ( ! isset( $options[ 'records_per_page' ] ) ) {
+			$options[ 'records_per_page' ] = 5;
 		}
 
 		?>
 		<div id="dashboard-stream-activity-options">
 			<p>
-				<input type="number" step="1" min="1" max="999" class="screen-per-page" name="dashboard_stream_activity_options[records_per_page]" id="dashboard_stream_activity_options[records_per_page]" value="<?php echo absint( $options['records_per_page'] ) ?>">
+				<input type="number" step="1" min="1" max="999" class="screen-per-page" name="dashboard_stream_activity_options[records_per_page]" id="dashboard_stream_activity_options[records_per_page]" value="<?php echo absint( $options[ 'records_per_page' ] ) ?>">
 				<label for="dashboard_stream_activity_options[records_per_page]"><?php esc_html_e( 'Records per page', 'stream' ) ?></label>
 			</p>
-			<?php $value = isset( $options['live_update'] ) ? $options['live_update'] : 'on'; ?>
+			<?php $value = isset( $options[ 'live_update' ] ) ? $options[ 'live_update' ] : 'on'; ?>
 			<p>
 				<input type="checkbox" name="dashboard_stream_activity_options[live_update]" id="dashboard_stream_activity_options[live_update]" value='on' <?php checked( $value, 'on' ) ?> />
 				<label for="dashboard_stream_activity_options[live_update]"><?php esc_html_e( 'Enable live updates', 'stream' ) ?></label>
@@ -203,9 +196,10 @@ class WP_Stream_Dashboard_Widget {
 	 *
 	 * @param  obj     Record to be inserted
 	 * @param  int     Row number
+	 *
 	 * @return string  Contents of new row
 	 */
-	public static function widget_row( $item, $i = null ) {
+	public static function widget_row( $item ) {
 		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
 
 		$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
@@ -226,18 +220,17 @@ class WP_Stream_Dashboard_Widget {
 			$time_author .= sprintf( ' %s', WP_Stream_Author::get_agent_label( $author->get_agent() ) );
 		}
 
-		$class = ( isset( $i ) && $i % 2 ) ? 'alternate' : '';
-
 		ob_start()
-		?><li class="<?php echo esc_html( $class ) ?>" data-id="<?php echo esc_html( $item->ID ) ?>">
-			<div class="record-avatar">
+		?>
+		<li data-id="<?php echo esc_html( $item->ID ) ?>">
+		<div class="record-avatar">
 				<a href="<?php echo esc_url( $author->get_records_page_url() ) ?>">
 					<?php echo $author->get_avatar_img( 72 ); // xss ok ?>
 				</a>
 			</div>
-			<span class="record-meta"><?php echo $time_author; // xss ok ?></span>
-			<br />
-			<?php echo esc_html( $item->summary ) ?>
+		<span class="record-meta"><?php echo $time_author; // xss ok ?></span>
+		<br/>
+		<?php echo esc_html( $item->summary ) ?>
 		</li><?php
 
 		return ob_get_clean();
@@ -250,16 +243,17 @@ class WP_Stream_Dashboard_Widget {
 	 *
 	 * @param  array  Response to heartbeat
 	 * @param  array  Response from heartbeat
+	 *
 	 * @return array  Data sent to heartbeat
 	 */
 	public static function live_update( $response, $data ) {
-		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
+		if ( ! isset( $data[ 'wp-stream-heartbeat-last-id' ] ) ) {
 			return;
 		}
 
 		$send = array();
 
-		$last_id = $data['wp-stream-heartbeat-last-id'];
+		$last_id = $data[ 'wp-stream-heartbeat-last-id' ];
 
 		$updated_items = self::gather_updated_items( $last_id );
 
@@ -275,7 +269,7 @@ class WP_Stream_Dashboard_Widget {
 		return $send;
 	}
 
-		/**
+	/**
 	 * Sends Updated Actions to the List Table View
 	 *
 	 * @param       int    Timestamp of last update
