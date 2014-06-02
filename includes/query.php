@@ -276,20 +276,20 @@ function wp_stream_query( $args = array() ) {
 	return WP_Stream_Query::instance()->query( $args );
 }
 
-function wp_stream_get_meta( $record_id, $key = '', $single = false ) {
-	return WP_Stream::$db->get_meta( $record_id, $key, $single );
+function wp_stream_get_meta( $record_id, $meta_key = '', $single = false ) {
+	return WP_Stream::$db->get_meta( $record_id, $meta_key, $single );
 }
 
 function wp_stream_add_meta( $record_id, $meta_key, $meta_value ) {
-	return WP_Stream::$db->add_meta( $record_id, $key, $meta_value );
+	return WP_Stream::$db->add_meta( $record_id, $meta_key, $meta_value );
 }
 
 function wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
-	return WP_Stream::$db->update_meta( $record_id, $key, $meta_value, $prev_value );
+	return WP_Stream::$db->update_meta( $record_id, $meta_key, $meta_value, $prev_value );
 }
 
 function wp_stream_delete_meta( $record_id, $meta_key, $meta_value = null, $delete_all = false ) {
-	return WP_Stream::$db->delete_meta( $record_id, $key, $meta_value, $delete_all );
+	return WP_Stream::$db->delete_meta( $record_id, $meta_key, $meta_value, $delete_all );
 }
 
 function wp_stream_delete_records( $args = array() ) {
