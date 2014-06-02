@@ -208,8 +208,6 @@ class WP_Stream_Dashboard_Widget {
 	 * @return string  Contents of new row
 	 */
 	public static function widget_row( $item, $i = null ) {
-		require_once WP_STREAM_CLASS_DIR . 'class-wp-stream-author.php';
-
 		$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
 		$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
 
