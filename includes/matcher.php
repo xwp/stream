@@ -1,6 +1,6 @@
 <?php
 
-class WP_Stream_Notifications_Rule_Matcher {
+class WP_Stream_Notifications_Matcher {
 
 	const CACHE_KEY = 'stream-notification-rules';
 
@@ -8,20 +8,69 @@ class WP_Stream_Notifications_Rule_Matcher {
 	 * @todo fix deprecated actions/filters
 	 */
 	public function __construct() {
-		// Refresh cache on update/create of a new rule
-		add_action( 'saved_stream_notification_rule', array( $this, 'refresh' ) );
+		// Refresh rules cache on updating/deleting posts
+		add_action( 'save_post', array( $this, 'refresh_cache_on_save' ), 10, 2 );
+		add_action( 'delete_post', array( $this, 'refresh_cache_on_delete' ), 10, 1 );
 
 		// Match all new type=stream records
 		add_action( 'wp_stream_post_inserted', array( $this, 'match' ), 10, 2 );
 	}
 
-	public function refresh() {
-		$this->rules( true );
+	/**
+	 * Refresh cache on saving a rule
+	 *
+	 * @action save_post
+	 *
+	 * @param      $post_id
+	 * @param null $post
+	 *
+	 * @return void
+	 */
+	public function refresh_cache_on_save( $post_id, $post = null ) {
+		if ( ! isset( $post ) ) {
+			$post = get_post( $post_id );
+		}
+
+		if ( WP_Stream_Notifications_Post_Type::POSTTYPE === $post->post_type ) {
+			$this->rules( true );
+		}
 	}
 
+	/**
+	 * Refresh cache on deleting a rule
+	 *
+	 * @action delete_post
+	 *
+	 * @param $post_id
+	 *
+	 * @return void
+	 */
+	public function refresh_cache_on_delete( $post_id ) {
+		$post = get_post( $post_id );
+		if ( WP_Stream_Notifications_Post_Type::POSTTYPE !== $post->post_type ) {
+			return;
+		}
+
+		add_action(
+			'deleted_post', function ( $deleted_id ) use ( $post_id ) {
+				if ( $deleted_id === $post_id ) {
+					$this->rules( true );
+				}
+			}
+		);
+	}
+
+	/**
+	 * Generate a proper format of triggers/alerts to be used/cached
+	 *
+	 * @param bool $force_refresh Ignore cached version
+	 *
+	 * @return array|mixed|void
+	 */
 	public function rules( $force_refresh = false ) {
-		# DEBUG
-		$force_refresh = true;
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			$force_refresh = true;
+		}
 		// Check if we have a valid cache
 		if ( ! $force_refresh && false !== ( $rules = get_transient( self::CACHE_KEY ) ) ) {
 			return $rules;
@@ -29,29 +78,22 @@ class WP_Stream_Notifications_Rule_Matcher {
 
 		// Get rules
 		$args  = array(
-			'type'             => 'notification_rule',
-			'ignore_context'   => true,
-			'records_per_page' => - 1,
-			'fields'           => 'ID',
-			'visibility'       => 'active', // Active rules only
+			'post_type'      => WP_Stream_Notifications_Post_Type::POSTTYPE,
+			'post_status'    => 'publish',
+			'posts_per_page' => - 1,
 		);
-		$rules = wp_stream_query( $args );
+		$query = new WP_Query( $args );
+		$rules = $query->get_posts();
 
-		if ( is_multisite() && is_plugin_active_for_network( WP_STREAM_NOTIFICATIONS_PLUGIN ) ) {
-			$args          = array(
-				'blog_id'          => '0',
-				'type'             => 'notification_rule',
-				'ignore_context'   => true,
-				'records_per_page' => - 1,
-				'fields'           => 'ID',
-				'visibility'       => 'active', // Active rules only
-			);
-			$network_rules = wp_stream_query( $args );
-
-			$rules = array_merge( $rules, $network_rules );
-		}
-
-		$rules = wp_list_pluck( $rules, 'ID' );
+		/**
+		 * Allow developers to add/modify rules
+		 *
+		 * @param array $rules Rules for the current blog
+		 * @param array $args  Query args used
+		 *
+		 * @return array
+		 */
+		$rules = apply_filters( 'wp_stream_notifications_rules', $rules, $args );
 
 		$rules = $this->format( $rules );
 
@@ -269,27 +311,39 @@ class WP_Stream_Notifications_Rule_Matcher {
 	 */
 	private function format( $rules ) {
 		$output = array();
-		foreach ( $rules as $rule_id ) {
+		foreach ( $rules as $rule ) {
+			$rule_id = $rule->ID;
+			$meta    = get_post_meta( $rule_id );
+			$args    = array();
+
+			foreach ( array( 'triggers', 'groups', 'alerts' ) as $key ) {
+				if ( isset( $meta[ $key ] ) ) {
+					$args[ $key ] = array_filter( maybe_unserialize( $meta[ $key ][ 0 ] ) );
+				}
+			}
+
+			// Bail early if no triggers or alerts are defined
+			if ( empty( $args[ 'triggers' ] ) || empty( $args[ 'alerts' ] ) ) {
+				continue;
+			}
+
 			$output[ $rule_id ] = array();
-			$triggers           = array_filter( (array) get_post_meta( $rule_id, 'triggers', true ) );
-			$groups             = array_filter( (array) get_post_meta( $rule_id, 'triggers', true ) );
-			$alerts             = array_filter( (array) get_post_meta( $rule_id, 'alerts', true ) );
 
 			// Generate an easy-to-parse tree of triggers/groups
-			$triggers = $this->generate_tree(
-			                 $this->generate_flattened_tree(
-			                      $triggers,
-				                      $groups
-			                 )
+			$args[ 'triggers' ] = $this->generate_tree(
+			                           $this->generate_flattened_tree(
+			                                $args[ 'triggers' ],
+			                                $args[ 'groups' ]
+			                           )
 			);
 
 			// Chunkify! @see generate_group_chunks
-			$output[ $rule_id ][ 'triggers' ] = $this->generate_group_chunks(
-			                                         $triggers[ 0 ][ 'triggers' ]
+			$args[ 'triggers' ] = $this->generate_group_chunks(
+			                           $args[ 'triggers' ][ 0 ][ 'triggers' ]
 			);
 
 			// Add alerts
-			$output[ $rule_id ][ 'alerts' ] = $alerts;
+			$output[ $rule_id ] = $args;
 		}
 
 		return $output;
@@ -391,7 +445,9 @@ class WP_Stream_Notifications_Rule_Matcher {
 	 * A chunk would be a bulk of triggers that only matches if ANY of its
 	 * nested triggers are matched
 	 *
-	 * @param  array $group Group array, ex: array(
+	 * @param $triggers
+	 *
+	 * @internal array $group Group array, ex: array(
 	 *                      'relation' => 'and',
 	 *                      'trigger'  => array( arr trigger1, arr trigger2 )
 	 *                      );
@@ -421,10 +477,10 @@ class WP_Stream_Notifications_Rule_Matcher {
 	private function alert( $rules, $log ) {
 		foreach ( $rules as $rule_id => $rule ) {
 			// Update occurrences
-			wp_stream_update_meta(
+			update_post_meta(
 				$rule_id,
 				'occurrences',
-				( (int) wp_stream_get_meta( $rule_id, 'occurrences', true ) ) + 1
+				( (int) get_post_meta( $rule_id, 'occurrences', true ) ) + 1
 			);
 			foreach ( $rule[ 'alerts' ] as $alert ) {
 				if ( ! isset( WP_Stream_Notifications::$adapters[ $alert[ 'type' ] ] ) ) {

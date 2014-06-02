@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Multisite Stream Notifications Network Class
  *
@@ -6,7 +7,6 @@
  * @author Chris Olbekson <chris@x-team.com>
  *
  */
-
 class WP_Stream_Notifications_Network {
 
 	function __construct() {
@@ -18,7 +18,10 @@ class WP_Stream_Notifications_Network {
 	}
 
 	function filters() {
+		// Add settings section
 		add_filter( 'wp_stream_notifications_options_fields', array( $this, 'get_network_notifications_admin_fields' ) );
+		// Add site-wide rules to matcher
+		add_filter( 'wp_stream_notifications_rules', array( $this, 'site_rules' ) );
 	}
 
 	/**
@@ -48,25 +51,47 @@ class WP_Stream_Notifications_Network {
 
 		// Remove settings
 		foreach ( $fields as $section_key => $section ) {
-			foreach ( $section['fields'] as $key => $field ) {
+			foreach ( $section[ 'fields' ] as $key => $field ) {
 				if ( ! isset( $hidden_options[ $section_key ] ) ) {
 					continue;
 				}
-				if ( in_array( $field['name'], $hidden_options[ $section_key ] ) ) {
-					unset( $fields[ $section_key ]['fields'][ $key ] );
+				if ( in_array( $field[ 'name' ], $hidden_options[ $section_key ] ) ) {
+					unset( $fields[ $section_key ][ 'fields' ][ $key ] );
 				}
 			}
 		}
 
 		// Remove empty settings sections
 		foreach ( $fields as $section_key => $section ) {
-			if ( empty( $section['fields'] ) ) {
+			if ( empty( $section[ 'fields' ] ) ) {
 				unset( $fields[ $section_key ] );
 			}
 		}
 
 		return $fields;
 
+	}
+
+	/**
+	 * Add rules of the network site
+	 *
+	 * @param array $rules
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	public function site_rules( array $rules, array $args ) {
+		if ( ! is_multisite() || ! is_plugin_active_for_network( WP_STREAM_NOTIFICATIONS_PLUGIN ) ) {
+			return $rules;
+		}
+
+		$blog_id = get_current_blog_id();
+		switch_to_blog( 1 );
+		$query = new WP_Query( $args );
+		$rules = array_merge( $rules, $query->get_posts() );
+		switch_to_blog( $blog_id );
+
+		return $rules;
 	}
 
 }

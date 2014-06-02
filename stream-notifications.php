@@ -61,12 +61,6 @@ class WP_Stream_Notifications {
 	public static $screen_id;
 
 	/**
-	 * List table object
-	 * @var WP_Stream_Notifications_List_Table
-	 */
-	public static $list_table = null;
-
-	/**
 	 * @var WP_Stream_Notifications_Network
 	 */
 	public $network = null;
@@ -96,7 +90,7 @@ class WP_Stream_Notifications {
 	/**
 	 * Matcher object
 	 *
-	 * @var  WP_Stream_Notifications_Rule_Matcher
+	 * @var  WP_Stream_Notifications_Matcher
 	 */
 	public $matcher;
 
@@ -109,14 +103,13 @@ class WP_Stream_Notifications {
 
 
 	/**
-	 * Return active instance of WP_Stream, create one if it doesn't exist
+	 * Return active instance of this class, create one if it doesn't exist
 	 *
 	 * @return WP_Stream_Notifications
 	 */
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
-			$class = __CLASS__;
-			self::$instance = new $class;
+			self::$instance = new self();
 		}
 		return self::$instance;
 	}
@@ -182,8 +175,8 @@ class WP_Stream_Notifications {
 		}
 
 		// Load Matcher
-		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'rule-match.php';
-		$this->matcher = new WP_Stream_Notifications_Rule_Matcher();
+		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'matcher.php';
+		$this->matcher = new WP_Stream_Notifications_Matcher();
 
 		// Register to Stream updates
 		if ( class_exists( 'WP_Stream_Updater' ) ) {
@@ -213,8 +206,6 @@ class WP_Stream_Notifications {
 			self::VIEW_CAP,
 			'post-new.php?post_type=stream-notification'
 		);
-
-		add_action( 'load-edit.php', array( WP_Stream_Notifications_Post_Type::get_instance(), 'load_list_table' ) );
 	}
 
 	public static function register_adapter( $adapter, $name, $title ) {
