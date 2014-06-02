@@ -318,6 +318,8 @@ function wp_stream_delete_records( $args = array() ) {
  * @return array   Array of items to be output to select dropdowns
  */
 function wp_stream_existing_records( $column ) {
+	// Short circuit for now, till Facets is available
+	return array();
 	$values = WP_Stream::$db->get_col( $column );
 	if ( is_array( $values ) && ! empty( $values ) ) {
 		return array_combine( $values, $values );

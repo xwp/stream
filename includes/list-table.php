@@ -443,6 +443,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 
+		/* Tempo */
+		$active_records   = array();
+		$disabled_records = array();
+		foreach ( $all_records as $record => $label ) {
+			$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
+		}
+
+		/*
 		$existing_records = wp_stream_existing_records( $column, $table );
 		$active_records   = array();
 		$disabled_records = array();
@@ -459,6 +467,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		if ( isset( $disabled_records[0] ) ) {
 			unset( $disabled_records[0] );
 		}
+		*/
 
 		$sort = function ( $a, $b ) use ( $column ) {
 			$label_a = (string) $a['label'];
