@@ -3,14 +3,14 @@
 abstract class WP_Stream_Connector {
 
 	/**
-	* Name/slug of the context
+	* Connector slug
 	*
 	* @var string
 	*/
 	public static $name = null;
 
 	/**
-	* Actions this context is hooked to
+	* Actions registered for this connector
 	*
 	* @var array
 	*/

@@ -103,7 +103,7 @@ class WP_Stream_Dashboard_Widget {
 			'view-all',
 			esc_attr__( 'View all records', 'stream' ),
 			esc_url( $records_link ),
-			esc_html__( 'View All', 'stream' )
+			esc_html__( 'View All', 'default' )
 		);
 
 		$page_links    = array();
@@ -121,7 +121,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="1">%s</a>',
 			'first-page' . $disable_first,
-			esc_attr__( 'Go to the first page', 'stream' ),
+			esc_attr__( 'Go to the first page', 'default' ),
 			esc_url( remove_query_arg( 'paged', $records_link ) ),
 			'&laquo;'
 		);
@@ -129,7 +129,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'prev-page' . $disable_first,
-			esc_attr__( 'Go to the previous page', 'stream' ),
+			esc_attr__( 'Go to the previous page', 'default' ),
 			esc_url( add_query_arg( 'paged', max( 1, $current - 1 ), $records_link ) ),
 			max( 1, $current - 1 ),
 			'&lsaquo;'
@@ -141,7 +141,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'next-page' . $disable_last,
-			esc_attr__( 'Go to the next page', 'stream' ),
+			esc_attr__( 'Go to the next page', 'default' ),
 			esc_url( add_query_arg( 'paged', min( $total_pages, $current + 1 ), $records_link ) ),
 			min( $total_pages, $current + 1 ),
 			'&rsaquo;'
@@ -150,7 +150,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'last-page' . $disable_last,
-			esc_attr__( 'Go to the last page', 'stream' ),
+			esc_attr__( 'Go to the last page', 'default' ),
 			esc_url( add_query_arg( 'paged', $total_pages, $records_link ) ),
 			$total_pages,
 			'&raquo;'
@@ -206,73 +206,36 @@ class WP_Stream_Dashboard_Widget {
 	 * @return string  Contents of new row
 	 */
 	public static function widget_row( $item, $i = null ) {
-		$records_link = add_query_arg(
-			array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ),
-			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-		);
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
+
 		$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
-		$is_wp_cli   = ! empty( $author_meta['is_wp_cli'] );
+		$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
 
-		if ( 0 === (int)$item->author ) {
-			$author      = new WP_User( 0 );
-			$author_name = $is_wp_cli ? 'WP-CLI' : __( 'N/A', 'stream' );
-		} else {
-			$author      = get_userdata( $item->author );
-			$author_name = $author->display_name;
-		}
-		$author_link = add_query_arg(
-			array( 'author' => isset( $author->ID ) ? absint( $author->ID ) : 0 ),
-			$records_link
+		$time_author = sprintf(
+			_x(
+				'%1$s ago by <a href="%2$s">%3$s</a>',
+				'1: Time, 2: User profile URL, 3: User display name',
+				'stream'
+			),
+			human_time_diff( strtotime( $item->created ) ),
+			esc_url( $author->get_records_page_url() ),
+			esc_html( $author->get_display_name() )
 		);
 
-		if ( $author ) {
-			$time_author = sprintf(
-				_x(
-					'%1$s ago by <a href="%2$s">%3$s</a>',
-					'1: Time, 2: User profile URL, 3: User display name',
-					'stream'
-				),
-				human_time_diff( strtotime( $item->created ) ),
-				esc_url( $author_link ),
-				esc_html( $author_name )
-			);
-		} else {
-			$time_author = sprintf(
-				__( '%s ago', 'stream' ),
-				human_time_diff( strtotime( $item->created ) )
-			);
+		if ( $author->get_agent() ) {
+			$time_author .= sprintf( ' %s', WP_Stream_Author::get_agent_label( $author->get_agent() ) );
 		}
 
-		$class = '';
-
-		if ( isset( $i ) ) {
-			if ( $i % 2 ) {
-				$class = 'alternate';
-			}
-		}
-
-		if ( 0 === $author->ID ) {
-			if ( $is_wp_cli ) {
-				$avatar_url    = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
-				$author_avatar = sprintf( '<img alt="%s" src="%s" class="avatar avatar-72 photo" height="72" width="72">', esc_attr( $author_name ), esc_url( $avatar_url ) );
-			} else {
-				$author_avatar = get_avatar( 'system@wp-stream.com', 72, get_option( 'avatar_default' ) ?: 'mystery', $author_name );
-				$author_avatar = preg_replace( "/src='(.+?)'/", "src='\$1&amp;forcedefault=1'", $author_avatar );
-			}
-		} else {
-			$author_avatar = get_avatar( $author->ID, 72 );
-		}
+		$class = ( isset( $i ) && $i % 2 ) ? 'alternate' : '';
 
 		ob_start()
 		?><li class="<?php echo esc_html( $class ) ?>" data-id="<?php echo esc_html( $item->ID ) ?>">
-			<?php if ( $author ) : ?>
-				<div class="record-avatar">
-					<a href="<?php echo esc_url( $author_link ) ?>">
-					<?php echo $author_avatar; // xss ok ?>
-					</a>
-				</div>
-			<?php endif; ?>
-			<span class="record-meta"><?php echo $time_author // xss ok ?></span>
+			<div class="record-avatar">
+				<a href="<?php echo esc_url( $author->get_records_page_url() ) ?>">
+					<?php echo $author->get_avatar_img( 72 ); // xss ok ?>
+				</a>
+			</div>
+			<span class="record-meta"><?php echo $time_author; // xss ok ?></span>
 			<br />
 			<?php echo esc_html( $item->summary ) ?>
 		</li><?php
@@ -337,7 +300,5 @@ class WP_Stream_Dashboard_Widget {
 
 		return $items;
 	}
-
-
 
 }

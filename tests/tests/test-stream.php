@@ -21,7 +21,7 @@ class Test_WP_Stream extends WP_StreamTestCase {
 		$actions_tests = array(
 			array( 'init', 'WP_Stream_Settings', 'load' ),
 			array( 'plugins_loaded', 'WP_Stream_Log', 'load' ),
-			array( 'init', 'WP_Stream_Connectors', 'load' ),
+			array( 'init', 'WP_Stream_Connectors', 'load', 9 ),
 		);
 
 		$this->do_action_validation( $actions_tests );

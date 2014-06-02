@@ -45,7 +45,7 @@ class WP_Stream_Date_Interval {
 			'wp_stream_predefined_date_intervals',
 			array(
 				'today' => array(
-					'label' => esc_html__( 'Today', 'stream' ),
+					'label' => esc_html__( 'Today', 'default' ),
 					'start' => Carbon::today( $timezone )->startOfDay(),
 				),
 				'yesterday' => array(

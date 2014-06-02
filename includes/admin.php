@@ -72,9 +72,6 @@ class WP_Stream_Admin {
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
-		// Toggle filters in list table on/off
-		add_action( 'wp_ajax_stream_toggle_filters', array( __CLASS__, 'toggle_filters' ) );
-
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
@@ -129,7 +126,7 @@ class WP_Stream_Admin {
 		self::$screen_id['settings'] = add_submenu_page(
 			self::RECORDS_PAGE_SLUG,
 			__( 'Stream Settings', 'stream' ),
-			__( 'Settings', 'stream' ),
+			__( 'Settings', 'default' ),
 			self::SETTINGS_CAP,
 			self::SETTINGS_PAGE_SLUG,
 			array( __CLASS__, 'render_page' )
@@ -216,13 +213,13 @@ class WP_Stream_Admin {
 	 *
 	 * @filter admin_body_class
 	 *
-	 * @param  array $classes
+	 * @param  string $classes
 	 *
-	 * @return array $classes
+	 * @return string $classes
 	 */
 	public static function admin_body_class( $classes ) {
 		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
-			$classes .= self::ADMIN_BODY_CLASS;
+			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
 		}
 
 		return $classes;
@@ -316,7 +313,7 @@ class WP_Stream_Admin {
 			} else {
 				$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
 			}
-			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
+			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
 
 			$url = add_query_arg(
 				array(
@@ -479,7 +476,7 @@ class WP_Stream_Admin {
 				),
 				'i18n' => array(
 					'connected'       => __( 'Connected', 'stream' ),
-					'login_to_stream' => __( 'Connect to Stream Premium', 'stream' ),
+					'login_to_stream' => __( 'Connect to Stream Extensions', 'stream' ),
 				),
 			)
 		);
@@ -722,7 +719,14 @@ class WP_Stream_Admin {
 	 * @return array
 	 */
 	public static function _filter_user_caps( $allcaps, $caps, $args, $user = null ) {
+		global $wp_roles;
+
+		if ( ! isset( $wp_roles ) ) {
+			$wp_roles = new WP_Roles();
+		}
+
 		$user = is_a( $user, 'WP_User' ) ? $user : wp_get_current_user();
+
 		// @see
 		// https://github.com/WordPress/WordPress/blob/c67c9565f1495255807069fdb39dac914046b1a0/wp-includes/capabilities.php#L758
 		$roles = array_unique(
@@ -730,7 +734,7 @@ class WP_Stream_Admin {
 				$user->roles,
 				array_filter(
 					array_keys( $user->caps ),
-					array( $GLOBALS['wp_roles'], 'is_role' )
+					array( $wp_roles, 'is_role' )
 				)
 			)
 		);
@@ -768,28 +772,6 @@ class WP_Stream_Admin {
 		return $allcaps;
 	}
 
-	public static function toggle_filters() {
-		check_ajax_referer( 'stream_toggle_filters_nonce', 'nonce' );
-
-		$input = array(
-			'checked'  => wp_stream_filter_input( INPUT_POST, 'checked', FILTER_SANITIZE_STRING ),
-			'user'     => wp_stream_filter_input( INPUT_POST, 'user', FILTER_SANITIZE_NUMBER_INT ),
-			'checkbox' => sanitize_key( $_POST['checkbox'] ),
-		);
-
-		$filters_option = get_user_meta( $input['user'], 'stream_toggle_filters', true );
-
-		$filters_option[ $input['checkbox'] ] = ( 'checked' === $input['checked'] );
-
-		$success = update_user_meta( $input['user'], 'stream_toggle_filters', $filters_option );
-
-		if ( $success ) {
-			wp_send_json( array( 'control' => $input['checkbox'] ) );
-		} else {
-			wp_send_json_error( 'Toggled filter checkbox error' );
-		}
-	}
-
 	/**
 	 * @action wp_ajax_wp_stream_filters
 	 */
@@ -824,8 +806,9 @@ class WP_Stream_Admin {
 
 				break;
 		}
-
-		echo json_encode( array_values( $results ) );
+		if ( isset( $results ) ) {
+			echo json_encode( array_values( $results ) );
+		}
 		die();
 	}
 
@@ -857,43 +840,24 @@ class WP_Stream_Admin {
 	}
 
 	public static function get_authors_record_meta( $authors ) {
+		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
+
 		$authors_records = array();
-		foreach ( $authors as $user_id => $author ) {
-			$icon  = '';
-			$title = '';
-			if ( 0 === $user_id ) {
-				$name  = 'WP-CLI';
-				$icon  = WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
-				$title = 'WP-CLI Operation';
-			} else {
-				$user = is_a( $author, 'WP_User' ) ? $author : $author['label']; // @todo hacky. Stop using WP_User as label
-				$name = $user->display_name;
 
-				if ( preg_match( '# src=[\'" ]([^\'" ]*)#', get_avatar( $user->user_email, 32 ), $gravatar_src_match ) ) {
-					list( $gravatar_src, $gravatar_url ) = $gravatar_src_match;
-					$icon = $gravatar_url;
-				}
-
-				$title = sprintf(
-					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
-					$user->ID,
-					$user->user_login,
-					$user->user_email,
-					implode( ', ', array_map( 'ucwords', $user->roles ) )
-				);
-			}
+		foreach ( $authors as $user_id => $args ) {
+			$author   = new WP_Stream_Author( $user_id );
+			$disabled = isset( $args['disabled'] ) ? $args['disabled'] : null;
 
 			$authors_records[ $user_id ] = array(
-				'text'     => $name,
+				'text'     => $author->get_display_name(),
 				'id'       => $user_id,
-				'label'    => $name,
-				'icon'     => $icon,
-				'title'    => $title,
-				'disabled' => ( is_array( $author ) && isset( $author['disabled'] ) ) ? $author['disabled'] : null,
+				'label'    => $author->get_display_name(),
+				'icon'     => $author->get_avatar_src( 32 ),
+				'title'    => '',
+				'disabled' => $disabled,
 			);
 		}
 
 		return $authors_records;
 	}
-
 }

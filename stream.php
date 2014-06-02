@@ -1,18 +1,18 @@
 <?php
 /**
  * Plugin Name: Stream
- * Plugin URI: http://wordpress.org/plugins/stream/
+ * Plugin URI: https://wp-stream.com/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
  * Version: 2.0.0
- * Author: X-Team
- * Author URI: http://x-team.com/wordpress/
+ * Author: Stream
+ * Author URI: https://wp-stream.com/
  * License: GPLv2+
  * Text Domain: stream
  * Domain Path: /languages
  */
 
 /**
- * Copyright (c) 2014 X-Team (http://x-team.com/)
+ * Copyright (c) 2014 WP Stream Pty Ltd (https://wp-stream.com/)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2 or, at
@@ -81,6 +81,12 @@ class WP_Stream {
 		// Check DB and add message if not present
 		add_action( 'init', array( self::$db, 'check_db' ) );
 
+		// Install the plugin
+		add_action( 'wp_stream_before_db_notices', array( __CLASS__, 'install' ) );
+
+		// Trigger admin notices
+		add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
+
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
 
@@ -100,7 +106,7 @@ class WP_Stream {
 
 		// Load connectors
 		require_once WP_STREAM_INC_DIR . 'connectors.php';
-		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ) );
+		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ), 9 );
 
 		// Load query class
 		require_once WP_STREAM_INC_DIR . 'query.php';
@@ -109,14 +115,18 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'feeds.php';
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
 
+		// Add frontend indicator
+		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
+
 		// Include Stream extension updater
 		require_once WP_STREAM_INC_DIR . 'updater.php';
 		WP_Stream_Updater::instance();
 
 		if ( is_admin() ) {
 			require_once WP_STREAM_INC_DIR . 'admin.php';
-			require_once WP_STREAM_INC_DIR . 'extensions.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
+
+			require_once WP_STREAM_INC_DIR . 'extensions.php';
 			add_action( 'admin_init', array( 'WP_Stream_Extensions', 'get_instance' ) );
 
 			// Registers a hook that connectors and other plugins can use whenever a stream update happens
@@ -127,6 +137,9 @@ class WP_Stream {
 
 			require_once WP_STREAM_INC_DIR . 'live-update.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Live_Update', 'load' ) );
+
+			require_once WP_STREAM_INC_DIR . 'pointers.php';
+			add_action( 'plugins_loaded', array( 'WP_Stream_Pointers', 'load' ) );
 		}
 
 		// Load deprecated functions
@@ -167,7 +180,7 @@ class WP_Stream {
 	}
 
 	/**
-	 * Show an error or other message, using admin_notice or WP-CLI logger
+	 * Handle notice messages according to the appropriate context (WP-CLI or the WP Admin)
 	 *
 	 * @param string $message
 	 * @param bool $is_error
@@ -182,12 +195,50 @@ class WP_Stream {
 				WP_CLI::success( $message );
 			}
 		} else {
-			$print_message = function () use ( $message, $is_error ) {
-				$class_name   = ( $is_error ? 'error' : 'updated' );
-				$html_message = sprintf( '<div class="%s">%s</div>', $class_name, wpautop( $message ) );
-				echo wp_kses_post( $html_message );
-			};
-			add_action( 'all_admin_notices', $print_message );
+			self::admin_notices( $message, $is_error );
+		}
+	}
+
+	/**
+	 * Show an error or other message in the WP Admin
+	 *
+	 * @param string $message
+	 * @param bool $is_error
+	 * @return void
+	 */
+	public static function admin_notices( $message, $is_error = true ) {
+		if ( empty( $message ) ) {
+			return;
+		}
+
+		$class_name   = $is_error ? 'error' : 'updated';
+		$html_message = sprintf( '<div class="%s">%s</div>', esc_attr( $class_name ), wpautop( $message ) );
+
+		echo wp_kses_post( $html_message );
+	}
+
+	/**
+	 * Displays an HTML comment in the frontend head to indicate that Stream is activated,
+	 * and which version of Stream is currently in use.
+	 *
+	 * @since 1.4.5
+	 *
+	 * @action wp_head
+	 * @return string|void An HTML comment, or nothing if the value is filtered out.
+	 */
+	public function frontend_indicator() {
+		$comment = sprintf( 'Stream WordPress user activity plugin v%s', esc_html( self::VERSION ) ); // Localization not needed
+
+		/**
+		 * Filter allows the HTML output of the frontend indicator comment
+		 * to be altered or removed, if desired.
+		 *
+		 * @return string $comment The content of the HTML comment
+		 */
+		$comment = apply_filters( 'wp_stream_frontend_indicator', $comment );
+
+		if ( ! empty( $comment ) ) {
+			echo sprintf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok
 		}
 	}
 
