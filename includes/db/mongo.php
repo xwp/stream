@@ -365,7 +365,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 				if ( empty( $meta ) ) {
 					return false;
 				}
-				$meta = (array) $meta;
+				$meta = array( $meta );
 				if ( $single ) {
 					return $meta[ 0 ];
 				} else {
