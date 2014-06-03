@@ -3,10 +3,16 @@
 class WP_Stream_Connectors {
 
 	/**
-	 * Contexts registered
+	 * Connectors registered
 	 * @var array
 	 */
 	public static $connectors = array();
+
+	/**
+	 * Contexts registered to Connectors
+	 * @var array
+	 */
+	public static $contexts = array();
 
 	/**
 	 * Action taxonomy terms
@@ -34,7 +40,6 @@ class WP_Stream_Connectors {
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
 		$connectors = array(
-			'blogs',
 			'comments',
 			'editor',
 			'installer',
@@ -46,6 +51,11 @@ class WP_Stream_Connectors {
 			'users',
 			'widgets',
 		);
+
+		if ( is_network_admin() ) {
+			$connectors[] = 'blogs';
+		}
+
 		$classes = array();
 		foreach ( $connectors as $connector ) {
 			include_once WP_STREAM_DIR . '/connectors/' . $connector .'.php';
@@ -115,6 +125,9 @@ class WP_Stream_Connectors {
 			if ( ! $exclude_all_connector ) {
 				$connector::register();
 			}
+
+			// Link context labels to their connector
+			self::$contexts[ $connector::$name ] = $connector::get_context_labels();
 
 			// Add new terms to our label lookup array
 			self::$term_labels['stream_action']  = array_merge(
