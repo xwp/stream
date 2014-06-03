@@ -1,7 +1,5 @@
 <?php
 
-require_once WP_STREAM_INC_DIR . 'admin.php';
-
 class WP_Stream_Feeds {
 
 	const FEED_QUERY_VAR         = 'stream';

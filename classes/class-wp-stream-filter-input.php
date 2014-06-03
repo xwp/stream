@@ -113,11 +113,3 @@ class WP_Stream_Filter_Input {
 	}
 
 }
-
-function wp_stream_filter_input( $type, $variable_name, $filter = null, $options = array() ) {
-	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'super' ), func_get_args() );
-}
-
-function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
-	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'filter' ), func_get_args() );
-}
