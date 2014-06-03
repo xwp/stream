@@ -105,6 +105,7 @@ class WP_Stream_Settings {
 					'user_url',
 				),
 				'orderby' => 'display_name',
+				'number'  => WP_Stream_Admin::PRELOAD_AUTHORS_MAX,
 			)
 		);
 
@@ -117,8 +118,6 @@ class WP_Stream_Settings {
 		$response->status  = true;
 		$response->message = '';
 		$response->users   = array();
-
-		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
 
 		foreach ( $users->results as $key => $user ) {
 			$author = new WP_Stream_Author( $user->ID );
@@ -209,6 +208,7 @@ class WP_Stream_Settings {
 		$option_key = self::KEY;
 
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+
 		if ( ! $current_page ) {
 			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
 		}
@@ -843,12 +843,13 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * @param $column string name of the setting key (actions|ip_addresses|contexts|connectors)
+	 * @param $column string name of the setting key (authors|roles|actions|ip_addresses|contexts|connectors)
 	 *
 	 * @return array
 	 */
 	public static function get_excluded_by_key( $column ) {
-		$option_name     = 'exclude_' . $column;
+		$option_name = ( 'authors' === $column || 'roles' === $column ) ? 'exclude_authors_and_roles' : 'exclude_' . $column;
+
 		$excluded_values = ( isset( self::$options[ $option_name ] ) ) ? self::$options[ $option_name ] : array();
 
 		if ( is_callable( $excluded_values ) ) {
@@ -856,6 +857,21 @@ class WP_Stream_Settings {
 		}
 
 		$excluded_values = wp_list_filter( $excluded_values, array( '__placeholder__' ), 'NOT' );
+
+		if ( 'exclude_authors_and_roles' === $option_name ) {
+			// Convert numeric strings to integers
+			array_walk( $excluded_values,
+				function ( &$value ) {
+					if ( is_numeric( $value ) ) {
+						$value = absint( $value );
+					}
+				}
+			);
+
+			$filter = ( 'roles' === $column ) ? 'is_string' : 'is_int'; // Author roles are always strings and author ID's are always integers
+
+			$excluded_values = array_values( array_filter( $excluded_values, $filter ) ); // Reset the array keys
+		}
 
 		return $excluded_values;
 	}

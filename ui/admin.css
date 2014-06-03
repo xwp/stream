@@ -326,6 +326,14 @@
 	margin-bottom: 1px;
 }
 
+.wp_stream_screen li.select2-result.level-1 {
+	font-weight: bold;
+}
+
+.wp_stream_screen li.select2-result.level-2 {
+	padding-left: 1em;
+}
+
 .wp_stream_screen .select2-results .select2-disabled {
 	background: transparent;
 	color: #aaa;

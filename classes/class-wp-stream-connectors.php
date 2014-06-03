@@ -3,10 +3,16 @@
 class WP_Stream_Connectors {
 
 	/**
-	 * Contexts registered
+	 * Connectors registered
 	 * @var array
 	 */
 	public static $connectors = array();
+
+	/**
+	 * Contexts registered to Connectors
+	 * @var array
+	 */
+	public static $contexts = array();
 
 	/**
 	 * Action taxonomy terms
@@ -33,10 +39,7 @@ class WP_Stream_Connectors {
 	public static function load() {
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
-		require_once WP_STREAM_INC_DIR . 'connector.php';
-
 		$connectors = array(
-			'blogs',
 			'comments',
 			'editor',
 			'installer',
@@ -48,6 +51,11 @@ class WP_Stream_Connectors {
 			'users',
 			'widgets',
 		);
+
+		if ( is_network_admin() ) {
+			$connectors[] = 'blogs';
+		}
+
 		$classes = array();
 		foreach ( $connectors as $connector ) {
 			include_once WP_STREAM_DIR . '/connectors/' . $connector .'.php';
@@ -118,6 +126,9 @@ class WP_Stream_Connectors {
 				$connector::register();
 			}
 
+			// Link context labels to their connector
+			self::$contexts[ $connector::$name ] = $connector::get_context_labels();
+
 			// Add new terms to our label lookup array
 			self::$term_labels['stream_action']  = array_merge(
 				self::$term_labels['stream_action'],
@@ -167,18 +178,24 @@ class WP_Stream_Connectors {
 			$user = wp_get_current_user();
 		}
 
-		// If the user is not a valid user then we log action
+		$bool             = true;
+		$user_roles       = array_values( $user->roles );
+		$excluded_authors = WP_Stream_Settings::get_excluded_by_key( 'authors' );
+		$excluded_roles   = WP_Stream_Settings::get_excluded_by_key( 'roles' );
+
+		// Don't log excluded users
+		if ( in_array( $user->ID, $excluded_authors ) ) {
+			$bool = false;
+		}
+
+		// Don't log excluded user roles
+		if ( 0 !== count( array_intersect( $user_roles, $excluded_roles ) ) ) {
+			$bool = false;
+		}
+
+		// If the user is not a valid user then we always log the action
 		if ( ! ( $user instanceof WP_User ) || 0 === $user->ID ) {
 			$bool = true;
-		} else {
-			// If a user is part of a role that we don't want to log, we disable it
-			$user_roles   = array_values( $user->roles );
-			$roles_logged = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
-			$bool         = ( 0 === count( array_intersect( $user_roles, $roles_logged ) ) );
-			//Check user id in exclude array
-			if ( $bool ) {
-				$bool = ! ( in_array( $user->ID, $roles_logged ) );
-			}
 		}
 
 		/**
