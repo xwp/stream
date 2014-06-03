@@ -72,8 +72,8 @@ class WP_Stream_Dashboard_Widget {
 
 		$total_items = count( $all_records );
 		$args        = array(
-			'total_pages' => absint( ceil( $total_items / $records_per_page ) ), // Cast as an integer, not a float
 			'current'     => $paged,
+			'total_pages' => absint( ceil( $total_items / $records_per_page ) ), // Cast as an integer, not a float
 		);
 
 		self::pagination( $args );
@@ -91,7 +91,9 @@ class WP_Stream_Dashboard_Widget {
 				'total_pages' => 1,
 			)
 		);
-		extract( $args );
+
+		$current     = $args['current'];
+		$total_pages = $args['total_pages'];
 
 		$records_link = add_query_arg(
 			array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ),
@@ -206,8 +208,6 @@ class WP_Stream_Dashboard_Widget {
 	 * @return string  Contents of new row
 	 */
 	public static function widget_row( $item, $i = null ) {
-		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
-
 		$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
 		$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
 

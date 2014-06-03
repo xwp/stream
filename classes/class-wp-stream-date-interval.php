@@ -2,7 +2,7 @@
 
 // Load Carbon to Handle dates much easier
 if ( ! class_exists( 'Carbon\Carbon' ) ) {
-	require_once WP_STREAM_INC_DIR . 'vendor/Carbon.php';
+	require_once WP_STREAM_INC_DIR . 'lib/Carbon.php';
 }
 
 use Carbon\Carbon;

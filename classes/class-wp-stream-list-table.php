@@ -209,8 +209,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'author' :
-				require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
-
 				$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
 				$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
 
@@ -392,7 +390,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * results of existing records.  All items that do not exist in records
 	 * get assigned a disabled value of "true".
 	 *
-	 * @uses   wp_stream_existing_records (see query.php)
+	 * @uses   wp_stream_existing_records (see class-wp-stream-query.php)
 	 * @since  1.0.4
 	 *
 	 * @param  string  Column requested
@@ -414,10 +412,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		// @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object
 		if ( 'author' === $column ) {
-			require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
 			$all_records = array();
 
-			// Short circuit and return empty array if we have more than 10 users, to use Ajax instead
+			// If the number of users exceeds the max authors constant value then return an empty array and use AJAX instead
 			$user_count  = count_users();
 			$total_users = $user_count['total_users'];
 			if ( $total_users > WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
@@ -493,7 +490,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 	public function get_filters() {
 		$filters = array();
 
-		require_once WP_STREAM_INC_DIR . 'date-interval.php';
 		$date_interval = new WP_Stream_Date_Interval();
 
 		$filters['date'] = array(
@@ -830,7 +826,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$output = 'ip_addresses';
 				break;
 			case 'author':
-				$output = 'authors_and_roles';
+				$output = 'authors';
 				break;
 			default:
 				$output = false;

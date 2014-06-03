@@ -254,7 +254,8 @@ class WP_Stream_Network {
 					'private_feeds',
 				),
 				'exclude' => array(
-					'authors_and_roles',
+					'authors',
+					'roles',
 					'connectors',
 					'contexts',
 					'actions',

@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: https://wp-stream.com/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 1.4.5
+ * Version: 1.4.6
  * Author: Stream
  * Author URI: https://wp-stream.com/
  * License: GPLv2+
@@ -36,7 +36,7 @@ class WP_Stream {
 	 *
 	 * @const string
 	 */
-	const VERSION = '1.4.5';
+	const VERSION = '1.4.6';
 
 	/**
 	 * Hold Stream instance
@@ -63,12 +63,14 @@ class WP_Stream {
 		define( 'WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
+		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 
-		// Load filters polyfill
-		require_once WP_STREAM_INC_DIR . 'filter-input.php';
+		spl_autoload_register( array( $this, 'autoload' ) );
+
+		// Load helper functions
+		require_once WP_STREAM_INC_DIR . 'functions.php';
 
 		// Load DB helper class
-		require_once WP_STREAM_INC_DIR . 'db.php';
 		$this->db = new WP_Stream_DB;
 
 		// Check DB and display an admin notice if there are tables missing
@@ -84,55 +86,40 @@ class WP_Stream {
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
 
 		// Load settings, enabling extensions to hook in
-		require_once WP_STREAM_INC_DIR . 'settings.php';
-		add_action( 'init', array( 'WP_Stream_Settings', 'load' ) );
+		add_action( 'init', array( 'WP_Stream_Settings', 'load' ), 9 );
 
 		// Load network class
 		if ( is_multisite() ) {
-			require_once WP_STREAM_INC_DIR . 'network.php';
 			$this->network = new WP_Stream_Network;
 		}
 
 		// Load logger class
-		require_once WP_STREAM_INC_DIR . 'log.php';
 		add_action( 'plugins_loaded', array( 'WP_Stream_Log', 'load' ) );
 
-		// Load connectors
-		require_once WP_STREAM_INC_DIR . 'connectors.php';
+		// Load connectors after widgets_init, but before the default of 10
 		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ), 9 );
 
-		// Load query class
-		require_once WP_STREAM_INC_DIR . 'query.php';
-		require_once WP_STREAM_INC_DIR . 'context-query.php';
-
 		// Load support for feeds
-		require_once WP_STREAM_INC_DIR . 'feeds.php';
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
 
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
 
 		// Include Stream extension updater
-		require_once WP_STREAM_INC_DIR . 'updater.php';
 		WP_Stream_Updater::instance();
 
 		if ( is_admin() ) {
-			require_once WP_STREAM_INC_DIR . 'admin.php';
-			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
-
-			require_once WP_STREAM_INC_DIR . 'extensions.php';
-			add_action( 'admin_init', array( 'WP_Stream_Extensions', 'get_instance' ) );
-
 			// Registers a hook that connectors and other plugins can use whenever a stream update happens
 			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
 
-			require_once WP_STREAM_INC_DIR . 'dashboard.php';
+			add_action( 'admin_init', array( 'WP_Stream_Extensions', 'get_instance' ) );
+
+			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
+
 			add_action( 'plugins_loaded', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
 
-			require_once WP_STREAM_INC_DIR . 'live-update.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Live_Update', 'load' ) );
 
-			require_once WP_STREAM_INC_DIR . 'pointers.php';
 			add_action( 'plugins_loaded', array( 'WP_Stream_Pointers', 'load' ) );
 		}
 
@@ -147,6 +134,20 @@ class WP_Stream {
 	static function fail_php_version() {
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
 		self::notice( __( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' ) );
+	}
+
+	/**
+	* Autoloader for classes
+	*
+	* @param  string $class
+	* @return void
+	*/
+	function autoload( $class ) {
+		$class      = strtolower( str_replace( '_', '-', $class ) );
+		$class_file = sprintf( '%sclass-%s.php', WP_STREAM_CLASS_DIR, $class );
+		if ( is_readable( $class_file ) ) {
+			require_once $class_file;
+		}
 	}
 
 	/**
@@ -168,7 +169,6 @@ class WP_Stream {
 	 */
 	public static function install() {
 		// Install plugin tables
-		require_once WP_STREAM_INC_DIR . 'install.php';
 		$update = WP_Stream_Install::get_instance();
 	}
 
