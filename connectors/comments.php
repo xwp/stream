@@ -70,6 +70,42 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Return translated comment type labels
+	 *
+	 * @return array Comment type label translations
+	 */
+	public static function get_comment_type_labels() {
+		return apply_filters(
+			'wp_stream_comment_type_labels',
+			array(
+				'comment'   => __( 'Comment', 'default' ),
+				'trackback' => __( 'Trackback', 'default' ),
+				'pingback'  => __( 'Pingback', 'default' ),
+			)
+		);
+	}
+
+	/**
+	 * Return the comment type label for a given comment ID
+	 *
+	 * @param  int    $comment_id  ID of the comment
+	 * @return string              The comment type label
+	 */
+	public static function get_comment_type_label( $comment_id ) {
+		$comment_type = get_comment_type( $comment_id );
+
+		if ( empty( $comment_type ) ) {
+			$comment_type = 'comment';
+		}
+
+		$comment_type_labels = self::get_comment_type_labels();
+
+		$label = isset( $comment_type_labels[ $comment_type ] ) ? $comment_type_labels[ $comment_type ] : $comment_type;
+
+		return $label;
+	}
+
+	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
 	 * @filter wp_stream_action_links_{connector}
@@ -189,7 +225,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_type      = get_post_type( $post_id );
 		$post_title     = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 		$comment_status = ( 1 == $comment->comment_approved ) ? __( 'approved automatically', 'stream' ) : __( 'pending approval', 'stream' );
-		$comment_type   = get_comment_type( $comment_id );
+		$comment_type   = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		if ( $comment->comment_parent ) {
 			$parent_user_id   = get_comment_author( $comment->comment_parent, 'id' );
@@ -238,7 +274,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
-		$comment_type = get_comment_type( $comment_id );
+		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
 			_x(
@@ -269,7 +305,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
-		$comment_type = get_comment_type( $comment_id );
+		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
 			_x(
@@ -300,7 +336,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
-		$comment_type = get_comment_type( $comment_id );
+		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
 			_x(
@@ -331,7 +367,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
-		$comment_type = get_comment_type( $comment_id );
+		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
 			_x(
@@ -362,7 +398,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
-		$comment_type = get_comment_type( $comment_id );
+		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
 			_x(
@@ -393,7 +429,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
-		$comment_type = get_comment_type( $comment_id );
+		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
 			_x(
@@ -460,7 +496,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
-		$comment_type = get_comment_type( $comment_id );
+		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
 			_x(
