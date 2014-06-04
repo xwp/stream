@@ -292,6 +292,174 @@ jQuery(function( $ ) {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
 	});
 
+	// Group records functionality
+	$( window ).load(function() {
+		if ( 'on' === wp_stream.group_records ) {
+			group_records();
+		}
+
+		function ungroup_records() {
+			$( '.toplevel_page_wp_stream #the-list tr' ).each(function() {
+				$( this ).removeAttr( 'data-group-id' ).removeClass( 'first hidden' ).show();
+				if ( $( this ).hasClass( 'record-group' ) ) {
+					$( this ).remove();
+				}
+			});
+
+			regenerate_row_alt();
+		}
+
+		function group_records() {
+			var itemCount = 0,
+				groupID   = 1;
+
+			$( '.toplevel_page_wp_stream #the-list tr' ).each(function() {
+				var $row     = $( this ),
+				    $rowPrev = $row.prev(),
+				    $rowNext = $row.next(),
+				    cols     = [ 'author', 'connector', 'context', 'action' ],
+				    colCount = $row.find( 'td' ).filter(function() {
+				    	return 'none' !== $( this ).css( 'display' );
+				    }).length,
+				    rowKeys  = [],
+				    prevKeys = [],
+				    nextKeys = [];
+
+				// Get data keys from the current row
+				$.each( cols, function( index, value ) {
+					rowKeys[ index ] = $row.find( 'td.' + value + ' a' ).data( 'group-key' );
+				});
+				rowKeys = rowKeys.join();
+
+				// Get data keys from the previous row
+				$.each( cols, function( index, value ) {
+					prevKeys[ index ] = $rowPrev.find( 'td.' + value + ' a' ).data( 'group-key' );
+				});
+				prevKeys = prevKeys.join();
+
+				// Get data keys from the next row
+				$.each( cols, function( index, value ) {
+					nextKeys[ index ] = $rowNext.find( 'td.' + value + ' a' ).data( 'group-key' );
+				});
+				nextKeys = nextKeys.join();
+
+				// Identify the first record in a group
+				if ( rowKeys === nextKeys && rowKeys !== prevKeys ) {
+					$row.addClass( 'first' );
+					$row.attr( 'data-group-id', groupID );
+				}
+
+				// Identify and hide duplicate records in a group
+				if ( rowKeys === nextKeys ) {
+					$rowNext.addClass( 'hidden' );
+					$rowNext.attr( 'data-group-id', groupID );
+					itemCount++;
+				}
+
+				// Add an ending record group row
+				if ( rowKeys !== nextKeys && rowKeys === prevKeys ) {
+					var msg = wp_stream.i18n.group_records_plural;
+
+					if ( 1 === itemCount ) {
+						msg = wp_stream.i18n.group_records_singular;
+					}
+
+					msg = msg.replace( /%d/g, itemCount );
+
+					var more = '<tr class="record-group" data-group-id="' + groupID + '"><td colspan="' + colCount + '"><a href="javascript:void(0)"><div class="dashicons dashicons-arrow-up"></div> ' + msg + '</a></td></tr>';
+					$row.after( more );
+
+					itemCount = 0;
+					groupID++;
+				}
+			});
+
+			regenerate_row_alt();
+		}
+
+		// Regenerate zebra stripes based on visible rows
+		function regenerate_row_alt() {
+			var itemCount = 0;
+
+			$( '.toplevel_page_wp_stream #the-list tr' ).removeClass( 'alternate' );
+
+			$( '.toplevel_page_wp_stream #the-list tr:visible' ).not( '.record-group' ).each(function() {
+				if ( 0 === itemCount % 2 ) {
+					$( this ).addClass( 'alternate' );
+				} else {
+					$( this ).removeClass( 'alternate' );
+				}
+				itemCount++;
+			});
+
+			$( '.toplevel_page_wp_stream #the-list tr.record-group:visible' ).each(function() {
+				var $first = $( this ).prevAll( '.first' ).eq( 0 );
+
+				if ( $first.hasClass( 'alternate' ) ) {
+					$( this ).addClass( 'alternate' );
+				}
+			});
+		}
+
+		// Recalcuate the colspan on group rows when columns are changed in Screen Options
+		$( '.metabox-prefs input' ).on( 'click', function() {
+			var colCount = $( '.toplevel_page_wp_stream #the-list tr:first' ).find( 'td:visible' ).length;
+
+			if ( 0 === colCount ) {
+				$( 'tr.record-group' ).hide();
+			} else {
+				$( 'tr.record-group' ).show();
+				$( 'tr.record-group td' ).prop( 'colspan', colCount );
+			}
+		});
+
+		// Reveal hidden rows in a group when clicked
+		$( 'tr.record-group td a' ).on( 'click', function() {
+			var $rowGroup   = $( this ).closest( 'tr.record-group' ),
+			    groupID     = $rowGroup.data( 'group-id' ),
+			    $groupItems = $( '*[data-group-id="' + groupID + '"]' );
+
+			$groupItems.fadeIn().removeClass( 'hidden first' );
+			$rowGroup.hide();
+
+			regenerate_row_alt();
+		});
+
+		// Enable Grouped Records Checkbox Ajax
+		$( '#enable_group_records' ).click(function() {
+			var nonce   = $( '#stream_group_records_nonce' ).val(),
+			    user    = $( '#stream_screen_options_user' ).val(),
+			    checked = 'unchecked';
+
+			if ( $( '#enable_group_records' ).is( ':checked' ) ) {
+				checked = 'checked';
+			}
+
+			$.ajax({
+				type: 'POST',
+				url: ajaxurl,
+				data: {
+					action: 'stream_enable_group_records',
+					nonce: nonce,
+					user: user,
+					checked: checked
+				},
+				dataType: 'json',
+				beforeSend: function() {
+					$( '.stream-group-records-checkbox .spinner' ).show().css( { 'display': 'inline-block' } );
+				},
+				success: function() {
+					$( '.stream-group-records-checkbox .spinner' ).hide();
+					if ( $( '#enable_group_records' ).is( ':checked' ) ) {
+						group_records();
+					} else {
+						ungroup_records();
+					}
+				}
+			});
+		});
+	});
+
 	// Confirmation on some important actions
 	$( '#wp_stream_general_delete_all_records, #wp_stream_network_general_delete_all_records' ).click(function( e ) {
 		if ( ! confirm( wp_stream.i18n.confirm_purge ) ) {
@@ -447,10 +615,10 @@ jQuery(function( $ ) {
 
 		});
 
-		//Enable Live Update Checkbox Ajax
+		// Enable Live Update Checkbox Ajax
 		$( '#enable_live_update' ).click(function() {
 			var nonce   = $( '#stream_live_update_nonce' ).val();
-			var user    = $( '#enable_live_update_user' ).val();
+			var user    = $( '#stream_screen_options_user' ).val();
 			var checked = 'unchecked';
 			if ( $( '#enable_live_update' ).is( ':checked' ) ) {
 				checked = 'checked';

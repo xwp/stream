@@ -10,11 +10,11 @@ class WP_Stream_Live_Update {
 
 		// Enable/Disable live update per user
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
-
 	}
 
 	/**
 	 * Ajax function to enable/disable live update
+	 *
 	 * @return void/json
 	 */
 	public static function enable_live_update() {

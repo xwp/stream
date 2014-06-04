@@ -211,8 +211,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
 
 				$out = sprintf(
-					'<a href="%s">%s <span>%s</span></a>%s%s%s',
+					'<a href="%s" data-group-key="%d">%s <span>%s</span></a>%s%s%s',
 					$author->get_records_page_url(),
+					isset( $author->ID ) ? $author->ID : 0,
 					$author->get_avatar_img( 80 ),
 					$author->get_display_name(),
 					$author->is_deleted() ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
@@ -353,10 +354,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		return sprintf(
-			'<a href="%s" title="%s">%s</a>',
+			'<a href="%s" %s %s>%s</a>',
 			esc_url( $url ),
-			esc_attr( $title ),
-			$display
+			$title ? sprintf( 'title="%s"', esc_attr( $title ) ) : null,
+			$value ? sprintf( 'data-group-key="%s"', esc_attr( $value ) ) : null,
+			$display // xss ok
 		);
 	}
 
@@ -701,28 +703,47 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 	}
 
+	static function set_group_records_option( $dummy, $option, $value ) {
+		if ( 'stream_group_records' === $option ) {
+			$value = $_POST['stream_group_records'];
+			return $value;
+		} else {
+			return $dummy;
+		}
+	}
+
 	public function screen_controls( $status, $args ) {
-		$user_id = get_current_user_id();
-		$option  = get_user_meta( $user_id, 'stream_live_update_records', true );
+		$user_id              = get_current_user_id();
+		$enable_live_update   = get_user_meta( $user_id, 'stream_live_update_records', true );
+		$enable_group_records = get_user_meta( $user_id, 'stream_group_records', true );
 
 		$stream_live_update_records_nonce = wp_create_nonce( 'stream_live_update_records_nonce' );
+		$stream_group_records_nonce       = wp_create_nonce( 'stream_group_records_nonce' );
+		$stream_toggle_filters_nonce      = wp_create_nonce( 'stream_toggle_filters_nonce' );
 
 		ob_start();
 		?>
 		<fieldset>
-			<h5><?php esc_html_e( 'Live updates', 'stream' ) ?></h5>
+			<h5><?php esc_html_e( 'Advanced options', 'stream' ) ?></h5>
 
 			<div>
 				<input type="hidden" name="stream_live_update_nonce" id="stream_live_update_nonce" value="<?php echo esc_attr( $stream_live_update_records_nonce ) ?>" />
+				<input type="hidden" name="stream_group_records_nonce" id="stream_group_records_nonce" value="<?php echo esc_attr( $stream_group_records_nonce ) ?>" />
+				<input type="hidden" name="stream_screen_options_user" id="stream_screen_options_user" value="<?php echo absint( $user_id ) ?>" />
 			</div>
-			<div>
-				<input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ) ?>" />
-			</div>
-			<div class="metabox-prefs stream-live-update-checkbox">
-				<label for="enable_live_update">
-					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( $option, 'on' ) ?> />
-					<?php esc_html_e( 'Enabled', 'stream' ) ?><span class="spinner"></span>
-				</label>
+			<div class="metabox-prefs">
+				<div class="stream-live-update-checkbox">
+					<label for="enable_live_update">
+						<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( $enable_live_update, 'on' ) ?> />
+						<?php esc_html_e( 'Live updates', 'stream' ) ?><span class="spinner"></span>
+					</label>
+				</div>
+				<div class="stream-group-records-checkbox">
+					<label for="enable_group_records">
+						<input type="checkbox" value="on" name="enable_group_records" id="enable_group_records" <?php checked( $enable_group_records, 'on' ) ?> />
+						<?php esc_html_e( 'Group similar records', 'stream' ) ?><span class="spinner"></span>
+					</label>
+				</div>
 			</div>
 		</fieldset>
 		<?php

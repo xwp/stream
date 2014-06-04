@@ -72,6 +72,9 @@ class WP_Stream_Admin {
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
+		// Toggle group records screen option per user
+		add_action( 'wp_ajax_stream_enable_group_records', array( __CLASS__, 'enable_group_records' ) );
+
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
@@ -193,15 +196,18 @@ class WP_Stream_Admin {
 				'wp_stream',
 				array(
 					'i18n'            => array(
-						'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
-						'confirm_defaults'  => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
-						'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
+						'confirm_purge'          => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+						'confirm_defaults'       => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+						'confirm_uninstall'      => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
+						'group_records_singular' => __( 'Show 1 other', 'stream' ),
+						'group_records_plural'   => __( 'Show %d others', 'stream' ),
 					),
 					'gmt_offset'     => get_option( 'gmt_offset' ),
 					'current_screen' => $hook,
 					'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 					'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
 					'current_query'  => json_encode( $_GET ),
+					'group_records'  => get_user_meta( get_current_user_id(), 'stream_group_records', true ),
 					'filters'        => self::$list_table ? self::$list_table->get_filters() : false,
 				)
 			);
@@ -860,6 +866,38 @@ class WP_Stream_Admin {
 		}
 		echo json_encode( $value );
 		wp_die();
+	}
+
+	/**
+	 * Ajax function to enable/disable group records
+	 *
+	 * @return void/json
+	 */
+	public static function enable_group_records() {
+		check_ajax_referer( 'stream_group_records_nonce', 'nonce' );
+
+		$input = array(
+			'checked' => FILTER_SANITIZE_STRING,
+			'user'    => FILTER_SANITIZE_STRING,
+		);
+
+		$input = filter_input_array( INPUT_POST, $input );
+
+		if ( false === $input ) {
+			wp_send_json_error( 'Error in group records checkbox' );
+		}
+
+		$checked = ( 'checked' === $input['checked'] ) ? 'on' : 'off';
+
+		$user = (int) $input['user'];
+
+		$success = update_user_meta( $user, 'stream_group_records', $checked );
+
+		if ( $success ) {
+			wp_send_json_success( 'Group Records Enabled' );
+		} else {
+			wp_send_json_error( 'Group Records checkbox error' );
+		}
 	}
 
 	public static function get_authors_record_meta( $authors ) {
