@@ -71,7 +71,6 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'functions.php';
 
 		// Load DB helper interface/class
-		require_once WP_STREAM_INC_DIR . 'db/base.php';
 		$driver = apply_filters( 'wp_stream_db_adapter', 'wpdb' );
 		if ( file_exists( WP_STREAM_INC_DIR . "db/$driver.php" ) ) {
 			require_once WP_STREAM_INC_DIR . "db/$driver.php";
