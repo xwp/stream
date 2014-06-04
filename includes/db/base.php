@@ -66,7 +66,7 @@ abstract class WP_Stream_DB_Base {
 
 		// TODO: Check/Validate *required* fields
 
-		if ( isset( $data[ 'ID' ] ) ) {
+		if ( isset( $data['ID'] ) ) {
 			$result = $this->update( $data );
 
 			// TODO: provide actions/filters on result

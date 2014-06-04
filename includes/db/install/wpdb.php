@@ -126,11 +126,11 @@ class WP_Stream_Install_WPDB {
 			self::install( self::$current );
 		} elseif ( self::$db_version !== self::$current ) {
 
-			if ( ! isset( $_REQUEST[ 'wp_stream_update' ] ) ) {
+			if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 				self::$update_required = true;
 				$update_args           = array( 'type' => 'auto' );
 				self::$success_db      = self::update( self::$db_version, self::$current, $update_args );
-			} elseif ( 'update_and_continue' === $_REQUEST[ 'wp_stream_update' ] ) {
+			} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
 				$update_args      = array( 'type' => 'user' );
 				self::$success_db = self::update( self::$db_version, self::$current, $update_args );
 			}
@@ -153,10 +153,10 @@ class WP_Stream_Install_WPDB {
 		if ( ! $version ) {
 			$old_key = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%stream%_db'" );
 			if ( ! empty( $old_key ) && is_array( $old_key ) ) {
-				$version = get_option( $old_key[ 0 ] );
+				$version = get_option( $old_key[0] );
 
 				update_site_option( self::KEY, $version );
-				delete_option( $old_key[ 0 ] );
+				delete_option( $old_key[0] );
 			}
 		}
 
@@ -184,9 +184,9 @@ class WP_Stream_Install_WPDB {
 			return;
 		}
 
-		if ( ! isset( $_REQUEST[ 'wp_stream_update' ] ) ) {
+		if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 			self::prompt_update();
-		} elseif ( 'update_and_continue' === $_REQUEST[ 'wp_stream_update' ] ) {
+		} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
 			self::prompt_update_status();
 		}
 	}
@@ -275,11 +275,11 @@ class WP_Stream_Install_WPDB {
 		$versions = self::db_update_versions();
 
 		foreach ( $versions as $version ) {
-			if ( ! isset( $update_args[ 'type' ] ) ) {
-				$update_args[ 'type' ] = 'user';
+			if ( ! isset( $update_args['type'] ) ) {
+				$update_args['type'] = 'user';
 			}
 
-			$function = 'wp_stream_update_' . ( 'user' === $update_args[ 'type' ] ? '' : $update_args[ 'type' ] . '_' ) . str_ireplace( '.', '', $version );
+			$function = 'wp_stream_update_' . ( 'user' === $update_args['type'] ? '' : $update_args['type'] . '_' ) . str_ireplace( '.', '', $version );
 
 			if ( version_compare( $db_version, $version, '<' ) ) {
 				$result = function_exists( $function ) ? call_user_func( $function, $db_version, $current ) : $current;

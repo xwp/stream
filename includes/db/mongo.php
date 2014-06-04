@@ -87,7 +87,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		 * @return bool
 		 */
 		if ( apply_filters( 'wp_stream_mongodb_enable_text_index', false ) ) {
-			$indexes[ 'summary' ] = 'text';
+			$indexes['summary'] = 'text';
 		}
 		foreach ( $indexes as $index => $type ) {
 			$fn = method_exists( self::$coll, 'createIndex' )
@@ -120,13 +120,13 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	 */
 	protected function insert( array $data ) {
 		// Fallback from `contexts` to the new flat table structure
-		if ( isset( $data[ 'contexts' ] ) ) {
-			$data[ 'action' ]  = reset( $data[ 'contexts' ] );
-			$data[ 'context' ] = key( $data[ 'contexts' ] );
-			unset( $data[ 'contexts' ] );
+		if ( isset( $data['contexts'] ) ) {
+			$data['action']  = reset( $data['contexts'] );
+			$data['context'] = key( $data['contexts'] );
+			unset( $data['contexts'] );
 		}
 
-		$data[ 'created' ] = $this->create_mongo_date( $data[ 'created' ] );
+		$data['created'] = $this->create_mongo_date( $data['created'] );
 
 		// TODO: Return the last inserted ID
 		self::$coll->insert( $data );
@@ -142,7 +142,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	 * @return mixed          True if successful, WP_Error if not
 	 */
 	protected function update( array $data ) {
-		return (bool) self::$coll->update( array( '_id' => $data[ '_id' ] ), $data );
+		return (bool) self::$coll->update( array( '_id' => $data['_id'] ), $data );
 	}
 
 	/**
@@ -173,8 +173,8 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		/**
 		 * PARSE META FILTERS
 		 */
-		if ( isset( $query[ '_meta' ] ) ) {
-			foreach ( $query[ '_meta' ] as $meta_key => $rules ) {
+		if ( isset( $query['_meta'] ) ) {
+			foreach ( $query['_meta'] as $meta_key => $rules ) {
 				$meta_key = 'meta.' . $meta_key;
 				foreach ( $rules as $operator => $value ) {
 					$_query = $this->parse_rule( $meta_key, $operator, $value, $_query );
@@ -185,10 +185,10 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		/**
 		 * PARSE SELECT PARAMETER
 		 */
-		if ( empty( $query[ '_select' ] ) || '*' === $query[ '_select' ][ 0 ] ) {
+		if ( empty( $query['_select'] ) || '*' === $query['_select'][0] ) {
 			$select = array();
 		} else {
-			$select = $query[ '_select' ];
+			$select = $query['_select'];
 		}
 
 		/**
@@ -201,7 +201,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		 */
 		$_query = apply_filters( 'wp_stream_query_mongodb', $_query, $query );
 
-		$distinct = ( 1 === count( $select ) && ! empty( $query[ '_distinct' ] ) );
+		$distinct = ( 1 === count( $select ) && ! empty( $query['_distinct'] ) );
 		$cursor   = $distinct
 			? self::$coll->distinct( key( $select ), $_query )
 			: self::$coll->find( $_query, $select );
@@ -211,9 +211,9 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		/**
 		 * PARSE SORTING/ORDER PARAMS
 		 */
-		if ( isset( $query[ '_order' ] ) ) {
-			$order   = intval( 'desc' === strtolower( current( $query[ '_order' ] ) ) ? '-1' : '1' );
-			$orderby = key( $query[ '_order' ] );
+		if ( isset( $query['_order'] ) ) {
+			$order   = intval( 'desc' === strtolower( current( $query['_order'] ) ) ? '-1' : '1' );
+			$orderby = key( $query['_order'] );
 			if ( 'id' === strtolower( $orderby ) ) {
 				$orderby = '_id';
 			}
@@ -223,9 +223,9 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		/**
 		 * PARSE PAGINATION AND LIMIT
 		 */
-		if ( isset( $query[ '_perpage' ] ) ) {
-			$offset  = $query[ '_offset' ];
-			$perpage = $query[ '_perpage' ];
+		if ( isset( $query['_perpage'] ) ) {
+			$offset  = $query['_offset'];
+			$perpage = $query['_perpage'];
 			$cursor->skip( $offset )->limit( $perpage );
 		}
 
@@ -237,14 +237,14 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		if ( $distinct ) {
 			foreach ( $cursor as $value ) {
 				// Return an object as well
-				$results[ ] = (object) array( key( $search ) => $value );
+				$results[] = (object) array( key( $search ) => $value );
 			}
 		} else {
 			foreach ( $cursor as $document ) {
-				$document[ 'ID' ]      = (string) $document[ '_id' ];
-				$document[ 'created' ] = date( 'Y-m-d H:i:s', $document[ 'created' ]->sec );
-				$object                = WP_Stream_Record::instance( $document );
-				$results[ ]            = $object;
+				$document['ID']      = (string) $document['_id'];
+				$document['created'] = date( 'Y-m-d H:i:s', $document['created']->sec );
+				$object              = WP_Stream_Record::instance( $document );
+				$results[]           = $object;
 			}
 		}
 
@@ -276,7 +276,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		// Handle `like` operator
 		if ( 'like' === $operator ) {
 			$value                     = sprintf( '/%s/i', trim( $value, '%' ) );
-			$query[ $col ][ '$regex' ] = $value;
+			$query[ $col ]['$regex'] = $value;
 
 			return $query;
 		} // Handle `in`/`not_in` operators
@@ -358,21 +358,21 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	public function get_meta( $record_id, $key, $single = false ) {
 		if ( $record = self::$coll->findOne( array( '_id' => $this->create_mongo_id( $record_id ) ) ) ) {
 			if ( $key ) {
-				if ( ! isset( $record[ 'meta' ][ $key ] ) ) {
+				if ( ! isset( $record['meta'][ $key ] ) ) {
 					return false;
 				}
-				$meta = $record[ 'meta' ][ $key ];
+				$meta = $record['meta'][ $key ];
 				if ( empty( $meta ) ) {
 					return false;
 				}
 				$meta = array( $meta );
 				if ( $single ) {
-					return $meta[ 0 ];
+					return $meta[0];
 				} else {
 					return $meta;
 				}
 			} else {
-				return $record[ 'meta' ];
+				return $record['meta'];
 			}
 		} else {
 			return false;
@@ -393,13 +393,13 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	public function add_meta( $record_id, $key, $val ) {
 		$record = self::$coll->findOne( array( '_id' => $this->create_mongo_id( $record_id ) ) );
 		if ( $record ) {
-			$meta = $record[ 'meta' ];
+			$meta = $record['meta'];
 			if ( isset( $meta[ $key ] ) ) {
 				$meta[ $key ] = array_merge( (array) $meta[ $key ], array( $val ) );
 			} else {
 				$meta[ $key ] = array( $val );
 			}
-			$record[ 'meta' ] = $meta;
+			$record['meta'] = $meta;
 			self::$coll->save( $record );
 
 			return true;
@@ -423,7 +423,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 	public function update_meta( $record_id, $key, $val, $prev = null ) {
 		$record = self::$coll->findOne( array( '_id' => $this->create_mongo_id( $record_id ) ) );
 		if ( $record ) {
-			$meta = $record[ 'meta' ];
+			$meta = $record['meta'];
 			if ( isset( $prev ) && isset( $meta[ $key ] ) ) {
 				$_key = array_search( $prev, (array) $meta[ $key ] );
 				if ( $_key && is_array( $meta[ $key ] ) ) {
@@ -435,7 +435,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 			} else {
 				$meta[ $key ] = array( $val );
 			}
-			$record[ 'meta' ] = $meta;
+			$record['meta'] = $meta;
 
 			return self::$coll->save( $record );
 		} else {
@@ -461,7 +461,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 		}
 		if ( $record_id ) {
 			$record = self::$coll->findOne( array( '_id' => $this->create_mongo_id( $record_id ) ) );
-			$meta   = $record[ 'meta' ];
+			$meta   = $record['meta'];
 			if ( isset( $meta[ $key ] ) ) {
 				if ( isset( $val ) ) {
 					if ( $_key = array_search( $val, $meta ) ) {
@@ -471,7 +471,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 					unset( $meta[ $key ] );
 				}
 
-				$record[ 'meta' ] = $meta;
+				$record['meta'] = $meta;
 
 				return self::$coll->save( $record );
 			} else {
