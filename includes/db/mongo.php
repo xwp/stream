@@ -428,7 +428,7 @@ class WP_Stream_DB_Mongo extends WP_Stream_DB_Base {
 				$_key = array_search( $prev, (array) $meta[ $key ] );
 				if ( $_key && is_array( $meta[ $key ] ) ) {
 					unset( $meta[ $key ] [ $_key ] );
-					$meta[ $key ][ ] = $val;
+					$meta[ $key ][] = $val;
 				} elseif ( ! is_array( $meta[ $key ] ) && $meta[ $key ] === $prev ) {
 					$meta[ $key ] = array( $val );
 				}
