@@ -31,6 +31,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	public static function register() {
 		parent::register();
 		add_action( 'load-theme-editor.php', array( __CLASS__, 'get_edition_data' ) );
+		add_action( 'load-plugin-editor.php', array( __CLASS__, 'get_edition_data' ) );
 		add_filter( 'wp_redirect', array( __CLASS__, 'log_changes' ) );
 	}
 
@@ -40,7 +41,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Theme Editor', 'stream' );
+		return __( 'Editor', 'default' );
 	}
 
 	/**
@@ -60,27 +61,59 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * @return array Context label translations
 	 */
 	public static function get_context_labels() {
-		$themes = wp_get_themes();
-
-		$themes_slugs = array_map(
-			function( $theme ) {
-				return $theme->get_template();
-			},
-			$themes
+		/**
+		 * Filter available context labels for the Editor connector
+		 *
+		 * @return array Array of context slugs and their translated labels
+		 */
+		return apply_filters(
+			'wp_stream_editor_context_labels',
+			array(
+				'editor'  => __( 'Editor', 'default' ),
+				'themes'  => __( 'Themes', 'default' ),
+				'plugins' => __( 'Plugins', 'default' ),
+			)
 		);
-
-		$themes_names = array_map(
-			function( $theme ) {
-				return (string) $theme;
-			},
-			$themes
-		);
-
-		return array_combine( $themes_slugs, $themes_names );
 	}
 
+	/**
+	 * Get the context based on wp_redirect location
+	 *
+	 * @param  string $location The URL of the redirect
+	 * @return string           Context slug, defaults to 'editor'
+	 */
+	public static function get_context( $location ) {
+		$context = 'editor';
+
+		if ( false !== strpos( $location, 'theme-editor.php' ) ) {
+			$context = 'themes';
+		}
+
+		if ( false !== strpos( $location, 'plugin-editor.php' ) ) {
+			$context = 'plugins';
+		}
+
+		/**
+		 * Filter available contexts for the Editor connector
+		 *
+		 * @param  string  $context  Context slug, default to 'editor'
+		 * @param  string  $location The URL of the redirect
+		 * @return string            Context slug
+		 */
+		return apply_filters( 'wp_stream_editor_context', $context, $location );
+	}
+
+	/**
+	 * Get the message format for file updates
+	 *
+	 * @return string Translated string
+	 */
 	public static function get_message() {
-		return __( '"%1$s" in "%2$s" updated', 'stream' );
+		return _x(
+			'"%1$s" in "%2$s" updated',
+			'1: File name, 2: Theme/plugin name',
+			'stream'
+		);
 	}
 
 	/**
@@ -93,24 +126,41 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( current_user_can( 'edit_theme_options' ) ) {
-			$file_name  = wp_stream_get_meta( $record->ID, 'file', true );
-			$theme_slug = wp_stream_get_meta( $record->ID, 'theme_slug', true );
+			$file_name = wp_stream_get_meta( $record->ID, 'file', true );
+			$file_path = wp_stream_get_meta( $record->ID, 'file_path', true );
 
-			if ( '' !== $file_name && '' !== $theme_slug ) {
-				$links[ __( 'Edit File', 'stream' ) ] = admin_url(
-					sprintf(
-						'theme-editor.php?theme=%s&file=%s',
-						$theme_slug,
-						$file_name
-					)
-				);
+			if ( ! empty( $file_name ) && ! empty( $file_path ) ) {
+				$theme_slug    = wp_stream_get_meta( $record->ID, 'theme_slug', true );
+				$plugin_slug   = wp_stream_get_meta( $record->ID, 'plugin_slug', true );
+				$theme_exists  = ( ! empty( $theme_slug ) && file_exists( $file_path ) );
+				$plugin_exists = ( ! empty( $plugin_slug ) && file_exists( $file_path ) );
 
-				$links[ __( 'Edit Theme', 'stream' ) ] = admin_url(
-					sprintf(
-						'themes.php?theme=%s',
-						$theme_slug
-					)
-				);
+				if ( $theme_exists ) {
+					$links[ __( 'Edit File', 'stream' ) ] = add_query_arg(
+						array(
+							'theme' => urlencode( $theme_slug ),
+							'file'  => urlencode( $file_name ),
+						),
+						self_admin_url( 'theme-editor.php' )
+					);
+
+					$links[ __( 'Theme Details', 'default' ) ] = add_query_arg(
+						array(
+							'theme' => urlencode( $theme_slug ),
+						),
+						self_admin_url( 'themes.php' )
+					);
+				}
+
+				if ( $plugin_exists ) {
+					$links[ __( 'Edit File', 'stream' ) ] = add_query_arg(
+						array(
+							'plugin' => urlencode( $plugin_slug ),
+							'file'   => urlencode( str_ireplace( trailingslashit( WP_PLUGIN_DIR ), '', $file_path ) ),
+						),
+						self_admin_url( 'plugin-editor.php' )
+					);
+				}
 			}
 		}
 
@@ -119,18 +169,30 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 
 	/**
 	 * @action load-theme-editor.php
+	 * @action load-plugin-editor.php
 	 */
 	public static function get_edition_data() {
-		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
+		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] || 'update' !== wp_stream_filter_input( INPUT_POST, 'action' ) ) {
 			return;
 		}
 
-		if ( 'update' !== wp_stream_filter_input( INPUT_POST, 'action' ) ) {
-			return;
+		if ( $slug = wp_stream_filter_input( INPUT_POST, 'theme' ) ) {
+			self::$edited_file = self::get_theme_data( $slug );
 		}
 
-		$theme_slug = wp_stream_filter_input( INPUT_POST, 'theme' ) ? wp_stream_filter_input( INPUT_POST, 'theme' ) : get_stylesheet();
-		$theme      = wp_get_theme( $theme_slug );
+		if ( $slug = wp_stream_filter_input( INPUT_POST, 'plugin' ) ) {
+			self::$edited_file = self::get_plugin_data( $slug );
+		}
+	}
+
+	/**
+	 * Retrieve theme data needed for the log message
+	 *
+	 * @param  string $slug   The theme slug (e.g. twentyfourteen)
+	 * @return mixed  $output Compacted variables
+	 */
+	public static function get_theme_data( $slug ) {
+		$theme = wp_get_theme( $slug );
 
 		if ( ! $theme->exists() || ( $theme->errors() && 'theme_no_stylesheet' === $theme->errors()->get_error_code() ) ) {
 			return;
@@ -151,12 +213,55 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 
 		$file_contents_before = file_get_contents( $file_path );
 
-		self::$edited_file = compact(
+		$name = $theme->get( 'Name' );
+
+		$output = compact(
 			'file_name',
 			'file_path',
 			'file_contents_before',
-			'theme'
+			'slug',
+			'name'
 		);
+
+		return $output;
+	}
+
+	/**
+	 * Retrieve plugin data needed for the log message
+	 *
+	 * @param  string $slug   The plugin file base name (e.g. akismet/akismet.php)
+	 * @return mixed  $output Compacted variables
+	 */
+	public static function get_plugin_data( $slug ) {
+		$base                 = null;
+		$name                 = null;
+		$slug                 = current( explode( '/', $slug ) );
+		$file_name            = wp_stream_filter_input( INPUT_POST, 'file' );
+		$file_path            = WP_PLUGIN_DIR . '/' . $file_name;
+		$file_contents_before = file_get_contents( $file_path );
+
+		$plugins = get_plugins();
+
+		foreach ( $plugins as $key => $plugin_data ) {
+			if ( 0 === strpos( $key, $slug ) ) {
+				$base = $key;
+				$name = $plugin_data['Name'];
+				break;
+			}
+		}
+
+		$file_name = str_ireplace( trailingslashit( $slug ), '', $file_name );
+		$slug      = ! empty( $base ) ? $base : $slug;
+
+		$output = compact(
+			'file_name',
+			'file_path',
+			'file_contents_before',
+			'slug',
+			'name'
+		);
+
+		return $output;
 	}
 
 	/**
@@ -164,21 +269,34 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 */
 	public static function log_changes( $location ) {
 		if ( ! empty( self::$edited_file ) ) {
-			$file_contents_after = file_get_contents( self::$edited_file['file_path'] );
+			if ( file_get_contents( self::$edited_file['file_path'] ) !== self::$edited_file['file_contents_before'] ) {
+				$context = self::get_context( $location );
 
-			if ( $file_contents_after !== self::$edited_file['file_contents_before'] ) {
-				$theme_slug = self::$edited_file['theme']->get_template();
-				$properties = array(
-					'file'       => self::$edited_file['file_name'],
-					'theme_name' => (string) self::$edited_file['theme'],
-					'theme_slug' => $theme_slug,
-				);
+				switch ( $context ) {
+					case 'themes':
+						$name_key = 'theme_name';
+						$slug_key = 'theme_slug';
+						break;
+					case 'plugins':
+						$name_key = 'plugin_name';
+						$slug_key = 'plugin_slug';
+						break;
+					default:
+						$name_key = 'name';
+						$slug_key = 'slug';
+						break;
+				}
 
 				self::log(
 					self::get_message(),
-					$properties,
+					array(
+						'file'      => self::$edited_file['file_name'],
+						$name_key   => (string) self::$edited_file['name'],
+						$slug_key   => self::$edited_file['slug'],
+						'file_path' => self::$edited_file['file_path'],
+					),
 					null,
-					array( $theme_slug => 'updated' )
+					array( $context => 'updated' )
 				);
 			}
 		}
