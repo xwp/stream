@@ -291,10 +291,10 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 				self::log(
 					self::get_message(),
 					array(
-						'file'      => self::$edited_file['file_name'],
+						'file'      => (string) self::$edited_file['file_name'],
 						$name_key   => (string) self::$edited_file['name'],
-						$slug_key   => self::$edited_file['slug'],
-						'file_path' => self::$edited_file['file_path'],
+						$slug_key   => (string) self::$edited_file['slug'],
+						'file_path' => (string) self::$edited_file['file_path'],
 					),
 					null,
 					array( $context => 'updated' )
