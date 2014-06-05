@@ -171,7 +171,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 *
 	 * @action load-theme-editor.php
 	 * @action load-plugin-editor.php
-	 * @return viod
+	 * @return void
 	 */
 	public static function get_edition_data() {
 		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] || 'update' !== wp_stream_filter_input( INPUT_POST, 'action' ) ) {
