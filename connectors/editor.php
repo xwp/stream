@@ -167,8 +167,11 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Retrieves data submitted on the screen, and prepares it for the appropriate context type
+	 *
 	 * @action load-theme-editor.php
 	 * @action load-plugin-editor.php
+	 * @return viod
 	 */
 	public static function get_edition_data() {
 		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] || 'update' !== wp_stream_filter_input( INPUT_POST, 'action' ) ) {
