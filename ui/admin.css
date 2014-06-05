@@ -245,9 +245,8 @@
 }
 
 .stream_page_wp_stream_settings .select2-container {
-	width: 350px;
+	width: 100%;
 }
-
 
 /* Date Interval Common */
 
@@ -314,7 +313,6 @@
 	content: '\f345';
 }
 
-
 /* Select2 Common */
 
 .wp_stream_screen li.select2-searching {
@@ -324,6 +322,14 @@
 
 .wp_stream_screen li.select2-result {
 	margin-bottom: 1px;
+}
+
+.wp_stream_screen li.select2-result.level-1 {
+	font-weight: bold;
+}
+
+.wp_stream_screen li.select2-result.level-2 {
+	padding-left: 1em;
 }
 
 .wp_stream_screen .select2-results .select2-disabled {
@@ -365,6 +371,32 @@
 	   -moz-filter: grayscale(100%); /* Firefox < 3.5 */
 }
 
+/* Exclude List Table */
+.stream-exclude-list {
+	margin-top: 1em;
+}
+
+.stream-exclude-list th {
+	font-weight: normal;
+	padding: 8px 10px;
+}
+
+.stream-exclude-list tbody th.check-column {
+	padding: 16px 0 0 3px;
+}
+
+@media screen and ( max-width: 782px ) {
+	.stream_page_wp_stream_settings .stream-exclude-list td {
+		padding: 10px 10px 0 0;
+	}
+	.stream_page_wp_stream_settings .stream-exclude-list .check-column {
+		display: table-cell;
+		padding: 13px 10px 0 3px;
+	}
+	.stream_page_wp_stream_settings .stream-exclude-list tfoot {
+		display: none;
+	}
+}
 
 /* User Profile */
 
