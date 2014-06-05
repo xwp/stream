@@ -284,7 +284,6 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 					default:
 						$name_key = 'name';
 						$slug_key = 'slug';
-						break;
 				}
 
 				self::log(
