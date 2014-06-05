@@ -297,48 +297,11 @@ class WP_Stream_Settings {
 					'title' => esc_html__( 'Exclude', 'stream' ),
 					'fields' => array(
 						array(
-							'name'        => 'authors_and_roles',
-							'title'       => __( 'Authors &amp; Roles', 'stream' ),
-							'type'        => 'select2_user_role',
-							'desc'        => esc_html__( 'No activity will be logged for these authors and/or roles.', 'stream' ),
-							'choices'     => self::get_roles(),
+							'name'        => 'exclude_rule_list',
+							'title'       => esc_html__( 'Exclude Rules', 'stream' ),
+							'type'        => 'exclude_rule_list',
+							'desc'        => esc_html__( 'Create rules for excluding certain scenarios from ever being logged by Stream.', 'stream' ),
 							'default'     => array(),
-						),
-						array(
-							'name'        => 'connectors',
-							'title'       => esc_html__( 'Connectors', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these connectors.', 'stream' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'connector',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'contexts',
-							'title'       => esc_html__( 'Contexts', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these contexts.', 'stream' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'context',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'actions',
-							'title'       => esc_html__( 'Actions', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these actions.', 'stream' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'action',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'ip_addresses',
-							'title'       => esc_html__( 'IP Addresses', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these IP addresses.', 'stream' ),
-							'class'       => 'ip-addresses',
-							'default'     => array(),
-							'nonce'       => 'stream_get_ips',
 						),
 						array(
 							'name'        => 'hide_previous_records',
@@ -504,8 +467,14 @@ class WP_Stream_Settings {
 		$default       = isset( $field['default'] ) ? $field['default'] : null;
 		$title         = isset( $field['title'] ) ? $field['title'] : null;
 		$nonce         = isset( $field['nonce'] ) ? $field['nonce'] : null;
-		$current_value = self::$options[ $section . '_' . $name ];
-		$option_key    = self::$option_key;
+
+		if ( isset( $field['value'] ) ) {
+			$current_value = array( $field['value'] );
+		} else {
+			$current_value = self::$options[ $section . '_' . $name ];
+		}
+
+		$option_key = self::$option_key;
 
 		if ( is_callable( $current_value ) ) {
 			$current_value = call_user_func( $current_value );
@@ -628,6 +597,120 @@ class WP_Stream_Settings {
 					esc_attr( $title )
 				);
 				break;
+			case 'exclude_rule_list' :
+				$output  = '<p class="description">' . esc_html( $description ) . '</p>';
+				$output .= '<table class="wp-list-table widefat fixed stream-exclude-list">';
+
+				unset( $description );
+
+				$heading_row = sprintf(
+					'<tr>
+						<th scrope="col" class="check-column manage-column">%1$s</td>
+						<th scope="col" class="manage-column">%2$s</th>
+						<th scope="col" class="manage-column">%3$s</th>
+						<th scope="col" class="manage-column">%4$s</th>
+						<th scope="col" class="manage-column">%5$s</th>
+					</tr>',
+					'<input class="cb-select" type="checkbox" />',
+					esc_html__( 'Authors & Roles', 'stream' ),
+					esc_html__( 'Contexts', 'stream' ),
+					esc_html__( 'Actions', 'stream' ),
+					esc_html__( 'IP Addresses', 'stream' )
+				);
+
+				$exclude_rows = array();
+
+				if ( empty( $current_value ) || ! is_array( $current_value ) ) {
+					// Create an empty row if there is nothing saved
+					$current_value = array(
+						array(
+							'authors_and_roles' => '',
+							'contexts'          => '',
+							'actions'           => '',
+							'ip_addresses'      => '',
+						)
+					);
+				}
+
+				// Reset keys, just in case
+				$current_value = array_values( $current_value );
+
+				foreach ( $current_value as $key => $exclude_row ) {
+					$user_role_select = self::render_field(
+						array(
+							'name'    => $name . '_authors_and_roles',
+							'title'   => esc_html__( 'Authors &amp; Roles', 'stream' ),
+							'type'    => 'select2_user_role',
+							'section' => $section,
+							'class'   => 'authors_and_roles',
+							'choices' => self::get_roles(),
+							'default' => array(),
+							'value'   => ( isset( $exclude_row['authors_and_roles'] ) ? $exclude_row['authors_and_roles'] : '' ),
+						)
+					);
+					$context_select = self::render_field(
+						array(
+							'name'    => $name . '_contexts',
+							'title'   => esc_html__( 'Contexts', 'stream' ),
+							'type'    => 'select2',
+							'section' => $section,
+							'class'   => 'contexts',
+							'choices' => array( __CLASS__, 'get_terms_labels' ),
+							'param'   => 'context',
+							'default' => array(),
+							'value'   => ( isset( $exclude_row['contexts'] ) ? $exclude_row['contexts'] : '' ),
+						)
+					);
+					$action_select = self::render_field(
+						array(
+							'name'    => $name . '_actions',
+							'title'   => esc_html__( 'Actions', 'stream' ),
+							'type'    => 'select2',
+							'section' => $section,
+							'class'   => 'actions',
+							'choices' => array( __CLASS__, 'get_terms_labels' ),
+							'param'   => 'action',
+							'default' => array(),
+							'value'   => ( isset( $exclude_row['actions'] ) ? $exclude_row['actions'] : '' ),
+						)
+					);
+					$ip_address_select = self::render_field(
+						array(
+							'name'    => $name . '_ip_addresses',
+							'title'   => esc_html__( 'IP Addresses', 'stream' ),
+							'type'    => 'select2',
+							'section' => $section,
+							'class'   => 'ip_addresses',
+							'default' => array(),
+							'nonce'   => 'stream_get_ips',
+							'value'   => ( isset( $exclude_row['ip_addresses'] ) ? $exclude_row['ip_addresses'] : '' ),
+						)
+					);
+
+					$exclude_rows[] = sprintf(
+						'<tr class="%1$s">
+							<th scrope="row" class="check-column">%2$s</td>
+							<td>%3$s</td>
+							<td>%4$s</td>
+							<td>%5$s</td>
+							<td>%6$s</td>
+						</tr>',
+						( 0 === $key % 2 ) ? 'alternate' : '',
+						'<input class="cb-select" type="checkbox" />',
+						$user_role_select,
+						$context_select,
+						$action_select,
+						$ip_address_select
+					);
+				}
+
+
+				$output .= '<thead>' . $heading_row . '</thead>';
+				$output .= '<tfoot>' . $heading_row . '</tfoot>';
+				$output .= '<tbody>' . implode( '', $exclude_rows ) . '</tbody>';
+
+				$output .= '</table>';
+				break;
 			case 'select2' :
 				if ( ! isset ( $current_value ) ) {
 					$current_value = array();
@@ -739,12 +822,13 @@ class WP_Stream_Settings {
 					esc_attr( $name )
 				);
 				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %5$s" data-select-placeholder="%4$s-%5$s-select-placeholder" data-nonce="%6$s" />',
+					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %5$s %6$s" data-select-placeholder="%4$s-%5$s-select-placeholder" data-nonce="%7$s" />',
 					json_encode( $data_values ),
 					json_encode( $selected_values ),
 					esc_attr( implode( ',', $current_value ) ),
 					esc_attr( $section ),
 					esc_attr( $name ),
+					$class,
 					esc_attr( wp_create_nonce( 'stream_get_users' ) )
 				);
 				// to store data with default value if nothing is selected

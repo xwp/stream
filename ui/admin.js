@@ -130,7 +130,6 @@ jQuery(function( $ ) {
 		var $input = $( el );
 		$input.select2({
 			multiple: true,
-			width: 350,
 			data: $input.data( 'values' ),
 			query: function( query ) {
 				var data = { results: [] };
@@ -150,12 +149,11 @@ jQuery(function( $ ) {
 			stream_select2_change_handler( e , $input );
 		}).trigger( 'change' );
 	});
-	$( '#tab-content-settings input[type=hidden].select2-select.ip-addresses' ).each(function( k, el ) {
+	$( '#tab-content-settings input[type=hidden].select2-select.ip_addresses' ).each(function( k, el ) {
 		var $input = $( el );
 
 		$input.select2({
 			tags: $input.data( 'selected' ),
-			width: 350,
 			ajax: {
 				type: 'POST',
 				url: ajaxurl,
@@ -231,7 +229,6 @@ jQuery(function( $ ) {
 
 		$input_user.select2({
 			multiple: true,
-			width: 350,
 			ajax: {
 				type: 'POST',
 				url: ajaxurl,
