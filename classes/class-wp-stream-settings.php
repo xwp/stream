@@ -628,7 +628,7 @@ class WP_Stream_Settings {
 							'contexts'          => '',
 							'actions'           => '',
 							'ip_addresses'      => '',
-						)
+						),
 					);
 				}
 
@@ -703,7 +703,6 @@ class WP_Stream_Settings {
 						$ip_address_select
 					);
 				}
-
 
 				$output .= '<thead>' . $heading_row . '</thead>';
 				$output .= '<tfoot>' . $heading_row . '</tfoot>';
