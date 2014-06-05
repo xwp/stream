@@ -69,7 +69,6 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		return apply_filters(
 			'wp_stream_editor_context_labels',
 			array(
-				'editor'  => __( 'Editor', 'default' ),
 				'themes'  => __( 'Themes', 'default' ),
 				'plugins' => __( 'Plugins', 'default' ),
 			)
@@ -80,10 +79,10 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * Get the context based on wp_redirect location
 	 *
 	 * @param  string $location The URL of the redirect
-	 * @return string           Context slug, defaults to 'editor'
+	 * @return string           Context slug
 	 */
 	public static function get_context( $location ) {
-		$context = 'editor';
+		$context = null;
 
 		if ( false !== strpos( $location, 'theme-editor.php' ) ) {
 			$context = 'themes';
@@ -96,7 +95,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		/**
 		 * Filter available contexts for the Editor connector
 		 *
-		 * @param  string  $context  Context slug, default to 'editor'
+		 * @param  string  $context  Context slug
 		 * @param  string  $location The URL of the redirect
 		 * @return string            Context slug
 		 */
