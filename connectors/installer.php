@@ -45,7 +45,6 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			'activated'   => __( 'Activated', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
 			'deleted'     => __( 'Deleted', 'stream' ),
-			'edited'      => __( 'Edited', 'stream' ),
 			'updated'     => __( 'Updated', 'stream' ),
 		);
 	}
