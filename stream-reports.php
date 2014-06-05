@@ -131,7 +131,7 @@ class WP_Stream_Reports {
 		add_action( 'init', array( 'WP_Stream_Reports_Metaboxes', 'get_instance' ), 12 );
 
 		// Load Interval/Date class.
-		require_once WP_STREAM_INC_DIR . 'date-interval.php';
+		require_once WP_STREAM_CLASS_DIR . 'class-wp-stream-date-interval.php';
 		require_once WP_STREAM_REPORTS_INC_DIR . 'date-interval.php';
 
 		add_action( 'init', array( 'WP_Stream_Reports_Date_Interval', 'get_instance' ) );
