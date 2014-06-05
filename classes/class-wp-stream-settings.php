@@ -119,8 +119,6 @@ class WP_Stream_Settings {
 		$response->message = '';
 		$response->users   = array();
 
-		require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
-
 		foreach ( $users->results as $key => $user ) {
 			$author = new WP_Stream_Author( $user->ID );
 
