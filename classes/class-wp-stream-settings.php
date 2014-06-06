@@ -461,6 +461,7 @@ class WP_Stream_Settings {
 		$name          = isset( $field['name'] ) ? $field['name'] : null;
 		$class         = isset( $field['class'] ) ? $field['class'] : null;
 		$placeholder   = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
+		$group         = isset( $field['group'] ) ? $field['group'] : null;
 		$description   = isset( $field['desc'] ) ? $field['desc'] : null;
 		$href          = isset( $field['href'] ) ? $field['href'] : null;
 		$after_field   = isset( $field['after_field'] ) ? $field['after_field'] : null;
@@ -804,10 +805,10 @@ class WP_Stream_Settings {
 					esc_attr( json_encode( $selected_values ) ),
 					esc_attr( implode( ',', $current_value ) ),
 					$class,
-					esc_html__( 'Any', 'stream' ),
+					sprintf( esc_html__( 'Any %s', 'stream' ), $title ),
 					esc_attr( $section ),
 					esc_attr( $name ),
-					isset( $field['group'] ) ? ' data-group-placeholder="' . $field['group'] . '-select-placeholder"' : '',
+					isset( $group ) ? ' data-group-placeholder="' . $group . '-select-placeholder"' : '',
 					isset( $nonce ) ? sprintf( ' data-nonce="%s"', esc_attr( wp_create_nonce( $nonce ) ) ) : ''
 				);
 				// to store data with default value if nothing is selected
@@ -879,7 +880,7 @@ class WP_Stream_Settings {
 					esc_attr( $section ),
 					esc_attr( $name ),
 					$class,
-					esc_html__( 'Any', 'stream' ),
+					sprintf( esc_html__( 'Any %s', 'stream' ), $title ),
 					esc_attr( wp_create_nonce( 'stream_get_users' ) )
 				);
 				// to store data with default value if nothing is selected
