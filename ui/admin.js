@@ -112,18 +112,32 @@ jQuery(function( $ ) {
 	});
 
 	var stream_select2_change_handler = function( e, input ) {
-		var $placeholder_class = input.data( 'select-placeholder' );
-		var $placeholder_child_class = $placeholder_class + '-child';
-		var $placeholder = input.siblings( '.' + $placeholder_class );
+		var $placeholder_class       = input.data( 'select-placeholder' ),
+			$placeholder_child_class = $placeholder_class + '-child',
+			$placeholder             = input.siblings( '.' + $placeholder_class ),
+			$group_class             = input.data( 'group-placeholder' ),
+			$group_child_class       = $group_class + '-child',
+			$group                   = input.closest( 'td' ).find( '.' + $group_class );
+
 		jQuery( '.' + $placeholder_child_class ).off().remove();
+		jQuery( '.' + $group_child_class ).off().remove();
+
 		if ( 'undefined' === typeof e.val ) {
 			e.val = input.val().split( ',' );
 		}
+
 		$.each( e.val.reverse(), function( value, key ) {
 			if ( null === key || '__placeholder__' === key || '' === key ) {
 				return true;
 			}
-			$placeholder.after( $placeholder.clone( true ).attr( 'class', $placeholder_child_class ).val( key ) );
+			var option = $.grep( input.select2('data'), function( e ) {
+				return e.id == key;
+			});
+			if ( 'undefined' === typeof option[0].children ) {
+				$placeholder.after( $placeholder.clone( true ).attr( 'class', $placeholder_child_class ).val( key ) );
+			} else {
+				$group.after( $group.clone( true ).attr( 'class', $group_child_class ).val( key ) );
+			}
 		});
 	};
 	$( '#tab-content-settings input[type=hidden].select2-select.with-source' ).each(function( k, el ) {
@@ -131,20 +145,10 @@ jQuery(function( $ ) {
 		$input.select2({
 			multiple: true,
 			data: $input.data( 'values' ),
-			query: function( query ) {
-				var data = { results: [] };
-				if ( 'undefined' !== typeof query.term ) {
-					$.each( $input.data( 'values' ), function() {
-						if ( query.term.length === 0 || this.text.toUpperCase().indexOf( query.term.toUpperCase() ) >= 0 ) {
-							data.results.push( { id: this.id, text: this.text } );
-						}
-					});
-				}
-				query.callback( data );
-			},
 			initSelection: function( item, callback ) {
 				callback( item.data( 'selected' ) );
-			}
+			},
+			placeholder: $input.data( 'placeholder' )
 		}).on( 'change', function( e ) {
 			stream_select2_change_handler( e , $input );
 		}).trigger( 'change' );
@@ -218,7 +222,8 @@ jQuery(function( $ ) {
 					id: term,
 					text: term
 				};
-			}
+			},
+			placeholder: $input.data( 'placeholder' )
 		}).on( 'change', function( e ) {
 			stream_select2_change_handler( e , $input );
 		}).trigger( 'change' );
@@ -313,7 +318,8 @@ jQuery(function( $ ) {
 			},
 			initSelection: function( item, callback ) {
 				callback( item.data( 'selected' ) );
-			}
+			},
+			placeholder: $input_user.data( 'placeholder' )
 		});
 	}).on( 'change', function( e ) {
 		stream_select2_change_handler( e, $input_user );

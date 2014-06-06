@@ -597,6 +597,27 @@ class WP_Stream_Settings {
 					esc_attr( $title )
 				);
 				break;
+			case 'placeholder':
+				$output = sprintf(
+					'<input type="hidden" name="%1$s[%2$s_%3$s][]" id="%1$s_%2$s_%3$s" class="%4$s-select-placeholder" value="__placeholder__">',
+					esc_attr( $option_key ),
+					esc_attr( $section ),
+					esc_attr( $name ),
+					esc_attr( $class )
+				);
+				foreach ( $current_value as $value ) {
+					if ( ! empty( $value ) ) {
+						$output .= sprintf(
+							'<input type="hidden" name="%1$s[%2$s_%3$s][]" id="%1$s_%2$s_%3$s" class="%4$s-select-placeholder" value="%5$s">',
+							esc_attr( $option_key ),
+							esc_attr( $section ),
+							esc_attr( $name ),
+							esc_attr( $class ),
+							esc_attr( $value )
+						);
+					}
+				}
+				break;
 			case 'exclude_rule_list' :
 				$output  = '<p class="description">' . esc_html( $description ) . '</p>';
 				$output .= '<table class="wp-list-table widefat fixed stream-exclude-list">';
@@ -648,6 +669,16 @@ class WP_Stream_Settings {
 							'value'   => ( isset( $exclude_row['authors_and_roles'] ) ? $exclude_row['authors_and_roles'] : '' ),
 						)
 					);
+					$connector_select = self::render_field(
+						array(
+							'name'    => $name . '_connectors',
+							'title'   => esc_html__( 'Connectors', 'stream' ),
+							'type'    => 'placeholder',
+							'section' => $section,
+							'class'   => 'connectors',
+							'value'   => ( isset( $exclude_row['connectors'] ) ? $exclude_row['connectors'] : '' ),
+						)
+					);
 					$context_select = self::render_field(
 						array(
 							'name'    => $name . '_contexts',
@@ -658,6 +689,7 @@ class WP_Stream_Settings {
 							'choices' => array( __CLASS__, 'get_terms_labels' ),
 							'param'   => 'context',
 							'default' => array(),
+							'group'   => 'connectors',
 							'value'   => ( isset( $exclude_row['contexts'] ) ? $exclude_row['contexts'] : '' ),
 						)
 					);
@@ -691,13 +723,14 @@ class WP_Stream_Settings {
 						'<tr class="%1$s">
 							<th scrope="row" class="check-column">%2$s</td>
 							<td>%3$s</td>
-							<td>%4$s</td>
-							<td>%5$s</td>
+							<td>%4$s%5$s</td>
 							<td>%6$s</td>
+							<td>%7$s</td>
 						</tr>',
 						( 0 === $key % 2 ) ? 'alternate' : '',
 						'<input class="cb-select" type="checkbox" />',
 						$user_role_select,
+						$connector_select,
 						$context_select,
 						$action_select,
 						$ip_address_select
@@ -728,9 +761,25 @@ class WP_Stream_Settings {
 						$choices = call_user_func( $choices, $param );
 					}
 					foreach ( $choices as $key => $value ) {
-						$data_values[] = array( 'id' => $key, 'text' => $value );
-						if ( in_array( $key, $current_value ) ) {
-							$selected_values[] = array( 'id' => $key, 'text' => $value );
+						if ( is_array( $value ) ) {
+							$child_values = array();
+							if ( isset( $value['children'] ) ) {
+								$child_values = array();
+								foreach ( $value['children'] as $child_key => $child_value ) {
+									$child_values[] = array( 'id' => $child_key, 'text' => $child_value );
+									if ( in_array( $child_key, $current_value ) ) {
+										$selected_values[] = array( 'id' => $child_key, 'text' => $child_value );
+									}
+								}
+							}
+							if ( isset( $value['label'] ) ) {
+								$data_values[] = array( 'id' => $key, 'text' => $value['label'], 'children' => $child_values );
+							}
+						} else {
+							$data_values[] = array( 'id' => $key, 'text' => $value );
+							if ( in_array( $key, $current_value ) ) {
+								$selected_values[] = array( 'id' => $key, 'text' => $value );
+							}
 						}
 					}
 					$class .= ' with-source';
@@ -750,13 +799,15 @@ class WP_Stream_Settings {
 					esc_attr( $name )
 				);
 				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %4$s" data-select-placeholder="%5$s-%6$s-select-placeholder" %7$s />',
+					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %4$s" data-placeholder="%5$s" data-select-placeholder="%6$s-%7$s-select-placeholder" %8$s %9$s />',
 					esc_attr( json_encode( $data_values ) ),
 					esc_attr( json_encode( $selected_values ) ),
 					esc_attr( implode( ',', $current_value ) ),
 					$class,
+					esc_html__( 'Any', 'stream' ),
 					esc_attr( $section ),
 					esc_attr( $name ),
+					isset( $field['group'] ) ? ' data-group-placeholder="' . $field['group'] . '-select-placeholder"' : '',
 					isset( $nonce ) ? sprintf( ' data-nonce="%s"', esc_attr( wp_create_nonce( $nonce ) ) ) : ''
 				);
 				// to store data with default value if nothing is selected
@@ -821,13 +872,14 @@ class WP_Stream_Settings {
 					esc_attr( $name )
 				);
 				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %5$s %6$s" data-select-placeholder="%4$s-%5$s-select-placeholder" data-nonce="%7$s" />',
+					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %5$s %6$s" data-placeholder="%7$s" data-select-placeholder="%4$s-%5$s-select-placeholder" data-nonce="%8$s" />',
 					json_encode( $data_values ),
 					json_encode( $selected_values ),
 					esc_attr( implode( ',', $current_value ) ),
 					esc_attr( $section ),
 					esc_attr( $name ),
 					$class,
+					esc_html__( 'Any', 'stream' ),
 					esc_attr( wp_create_nonce( 'stream_get_users' ) )
 				);
 				// to store data with default value if nothing is selected
@@ -909,23 +961,26 @@ class WP_Stream_Settings {
 		$return_labels = array();
 
 		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
-			$return_labels = WP_Stream_Connectors::$term_labels[ 'stream_' . $column ];
+			if ( 'context' === $column && isset( WP_Stream_Connectors::$term_labels[ 'stream_connector' ] ) ) {
+				$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
+				$contexts   = WP_Stream_Connectors::$term_labels['stream_context'];
+
+				foreach ( $connectors as $connector => $connector_label ) {
+					$return_labels[ $connector ]['label'] = $connector_label;
+					foreach ( $contexts as $context => $context_label ) {
+						if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
+							$return_labels[ $connector ]['children'][ $context ] = $context_label;
+						}
+					}
+				}
+			} else {
+				$return_labels = WP_Stream_Connectors::$term_labels[ 'stream_' . $column ];
+			}
+
 			ksort( $return_labels );
 		}
 
 		return $return_labels;
-	}
-	/**
-	 * Get an array of active Connectors
-	 *
-	 * @return array
-	 */
-	public static function get_active_connectors() {
-		$excluded_connectors = self::get_excluded_by_key( 'connectors' );
-		$active_connectors   = array_diff( array_keys( self::get_terms_labels( 'connector' ) ), $excluded_connectors );
-		$active_connectors   = wp_list_filter( $active_connectors, array( '__placeholder__' ), 'NOT' );
-
-		return $active_connectors;
 	}
 
 	/**
