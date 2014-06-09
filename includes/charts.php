@@ -3,15 +3,13 @@
 class WP_Stream_Reports_Charts {
 
 	public function __construct() {
-
 		// Make charts
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'pie_chart_coordinates' ), 10, 2 );
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'bar_chart_coordinates' ), 10, 2 );
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'line_chart_coordinates' ), 10, 2 );
-
 	}
-	
-	function line_chart_coordinates( $records, $args ) {
+
+	public function line_chart_coordinates( $records, $args ) {
 		if ( 'line' !== $args['chart_type'] ) {
 			return $records;
 		}
@@ -30,6 +28,7 @@ class WP_Stream_Reports_Charts {
 		}
 
 		$coordinates = array();
+
 		foreach ( $sorted as $line_name => $points ) {
 			$line_data = array(
 				'key'    => $line_name,
@@ -49,10 +48,11 @@ class WP_Stream_Reports_Charts {
 		return $coordinates;
 	}
 
-	function pie_chart_coordinates( $records, $args ) {
+	public function pie_chart_coordinates( $records, $args ) {
 		if ( 'pie' !== $args['chart_type'] ) {
 			return $records;
 		}
+
 		$counts = array();
 
 		foreach ( $records as $type => $items ) {
@@ -65,7 +65,7 @@ class WP_Stream_Reports_Charts {
 		return $counts;
 	}
 
-	function bar_chart_coordinates( $records, $args ) {
+	public function bar_chart_coordinates( $records, $args ) {
 		if ( 'multibar' !== $args['chart_type'] ) {
 			return $records;
 		}
@@ -125,6 +125,7 @@ class WP_Stream_Reports_Charts {
 	 */
 	public function group_by_field( $field, $records, $callback = '' ) {
 		$sorted = array();
+
 		foreach ( $records as $record ) {
 			$key = $record->$field;
 
@@ -176,4 +177,3 @@ class WP_Stream_Reports_Charts {
 	}
 
 }
-
