@@ -235,7 +235,7 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$chart_height   = WP_Stream_Reports_Settings::get_user_options( 'chart_height' , 300 );
-		$data_types     = $this->get_data_types();
+		$data_types     = $this->get_contexts();
 		$selector_types = $this->get_selector_types();
 
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
@@ -805,6 +805,83 @@ class WP_Stream_Reports_Metaboxes {
 		$section['key'] = $id;
 
 		return $section;
+	}
+
+	public function get_contexts() {
+		// Add Connectors as parents, and apply the Contexts as children
+		$contexts   = $this->assemble_records( 'context' );
+		$connectors = $this->assemble_records( 'connector' );
+		foreach ( $connectors as $connector => $item ) {
+			$context_items[ $connector ]['label'] = $item['label'];
+			foreach ( $contexts as $context_value => $context_item ) {
+				if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
+					$context_items[ $connector ]['children'][ $context_value ] = $context_item;
+				}
+			}
+		}
+
+		foreach ( $context_items as $context_value => $context_item ) {
+			if ( ! isset( $context_item['children'] ) || empty( $context_item['children'] ) ) {
+				unset( $context_items[ $context_value ] );
+			}
+		}
+
+		return $context_items;
+	}
+
+	/**
+	 * Assembles records for display
+	 *
+	 * Gathers list of all authors/connectors, then compares it to
+	 * results of existing records.  All items that do not exist in records
+	 * get assigned a disabled value of "true".
+	 *
+	 * @param  string  Column requested
+	 *
+	 * @return array   options to be displayed in search filters
+	 */
+	function assemble_records( $column ) {
+
+		$available_columns = array( 'context', 'connector' );
+		if ( ! in_array( $column, $available_columns ) ) {
+			return;
+		}
+
+		$prefixed_column = sprintf( 'stream_%s', $column );
+		$all_records     = WP_Stream_Connectors::$term_labels[ $prefixed_column ];
+
+		$existing_records = wp_stream_existing_records( $column );
+		$active_records   = array();
+		$disabled_records = array();
+
+		foreach ( $all_records as $record => $label ) {
+			if ( array_key_exists( $record, $existing_records ) ) {
+				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
+			} else {
+				$disabled_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
+			}
+		}
+
+		// Remove WP-CLI pseudo user if no records with user=0 exist
+		if ( isset( $disabled_records[0] ) ) {
+			unset( $disabled_records[0] );
+		}
+
+		$sort = function ( $a, $b ) use ( $column ) {
+			$label_a = (string) $a['label'];
+			$label_b = (string) $b['label'];
+			if ( $label_a === $label_b ) {
+				return 0;
+			}
+			return strtolower( $label_a ) < strtolower( $label_b ) ? -1 : 1;
+		};
+		uasort( $active_records, $sort );
+		uasort( $disabled_records, $sort );
+
+		// Not using array_merge() in order to preserve the array index for the Authors dropdown which uses the user_id as the key
+		$all_records = $active_records + $disabled_records;
+
+		return $all_records;
 	}
 
 	/**
