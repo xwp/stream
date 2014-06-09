@@ -813,6 +813,7 @@ class WP_Stream_Reports_Metaboxes {
 		$connectors = $this->assemble_records( 'connector' );
 		foreach ( $connectors as $connector => $item ) {
 			$context_items[ $connector ]['label'] = $item['label'];
+			$context_items[ $connector ]['type'] = $item['type'];
 			foreach ( $contexts as $context_value => $context_item ) {
 				if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
 					$context_items[ $connector ]['children'][ $context_value ] = $context_item;
@@ -856,9 +857,9 @@ class WP_Stream_Reports_Metaboxes {
 
 		foreach ( $all_records as $record => $label ) {
 			if ( array_key_exists( $record, $existing_records ) ) {
-				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
+				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '', 'type' => $column );
 			} else {
-				$disabled_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
+				$disabled_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"', 'type' => $column );
 			}
 		}
 

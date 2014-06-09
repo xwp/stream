@@ -359,7 +359,7 @@
 					action: 'wp_stream_reports_save_metabox_config',
 					wp_stream_reports_nonce : $('#wp_stream_reports_nonce').val(),
 					chart_type : parent.find('.chart-types .active').data('type'),
-					data_group : parent.find( '.chart-dataset' ).select2('data').element[0].dataset.group,
+					data_group : parent.find( '.chart-dataset' ).select2('data').element[0].dataset.type,
 					data_type : parent.find('.chart-dataset').select2('data').id,
 					selector_type : parent.find('.chart-selector').select2('data').id,
 					section_id : id,

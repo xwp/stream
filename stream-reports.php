@@ -128,6 +128,7 @@ class WP_Stream_Reports {
 
 		// Load sections here
 		require_once WP_STREAM_REPORTS_INC_DIR . 'meta-boxes.php';
+		require_once WP_STREAM_REPORTS_INC_DIR . 'template-tags.php';
 		require_once WP_STREAM_REPORTS_INC_DIR . 'charts.php';
 		add_action( 'init', array( 'WP_Stream_Reports_Metaboxes', 'get_instance' ), 12 );
 
