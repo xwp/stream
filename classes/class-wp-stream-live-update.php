@@ -62,7 +62,7 @@ class WP_Stream_Live_Update {
 			return;
 		}
 
-		$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
+		$last_id = $data['wp-stream-heartbeat-last-id'];
 		$query   = $data['wp-stream-heartbeat-query'];
 		if ( empty( $query ) ) {
 			$query = array();

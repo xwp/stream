@@ -27,7 +27,8 @@ class Test_WP_Stream extends WP_StreamTestCase {
 
 		$this->do_action_validation( $actions_tests );
 
-		$this->assertInstanceOf( 'WP_Stream_DB', $this->plugin->db );
+		$plugin = $this->plugin;
+		$this->assertInstanceOf( 'WP_Stream_DB_Base', $plugin::$db );
 	}
 
 	/**

@@ -9,53 +9,56 @@ function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
 }
 
 function wp_stream_query( $args = array() ) {
-	return WP_Stream_Query::get_instance()->query( $args );
+	return WP_Stream_Query::instance()->query( $args );
 }
 
-function wp_stream_get_meta( $record_id, $key = '', $single = false ) {
-	return maybe_unserialize( get_metadata( 'record', $record_id, $key, $single ) );
+function wp_stream_get_meta( $record_id, $meta_key = '', $single = false ) {
+	return WP_Stream::$db->get_meta( $record_id, $meta_key, $single );
+}
+
+function wp_stream_add_meta( $record_id, $meta_key, $meta_value ) {
+	return WP_Stream::$db->add_meta( $record_id, $meta_key, $meta_value );
 }
 
 function wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
-	return update_metadata( 'record', $record_id, $meta_key, $meta_value, $prev_value );
+	return WP_Stream::$db->update_meta( $record_id, $meta_key, $meta_value, $prev_value );
+}
+
+function wp_stream_delete_meta( $record_id, $meta_key, $meta_value = null, $delete_all = false ) {
+	return WP_Stream::$db->delete_meta( $record_id, $meta_key, $meta_value, $delete_all );
+}
+
+function wp_stream_delete_records( $args = array() ) {
+	if ( $args ) {
+		$args['fields']           = 'ID';
+		$args['records_per_page'] = -1;
+		$records                  = wp_stream_query( $args );
+		$params                   = wp_list_pluck( $records, 'ID' );
+		if ( empty( $ids ) ) {
+			return 0;
+		}
+	} else {
+		$params = true; // Delete them ALL!
+	}
+
+	return WP_Stream::$db->delete( $params );
 }
 
 /**
  * Returns array of existing values for requested column.
  * Used to fill search filters with only used items, instead of all items.
  *
- * GROUP BY allows query to find just the first occurance of each value in the column,
- * increasing the efficiency of the query.
- *
- * @todo   increase security against injections
- *
  * @see    assemble_records
  * @since  1.0.4
  * @param  string  Requested Column (i.e., 'context')
- * @param  string  Requested Table
  * @return array   Array of items to be output to select dropdowns
  */
-function wp_stream_existing_records( $column, $table = '' ) {
-	global $wpdb;
-
-	switch ( $table ) {
-		case 'stream' :
-			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->stream} GROUP BY {$column}", 'ARRAY_A' );
-			break;
-		case 'meta' :
-			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streammeta} GROUP BY {$column}", 'ARRAY_A' );
-			break;
-		default :
-			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streamcontext} GROUP BY {$column}", 'ARRAY_A' );
-	}
-
-	if ( is_array( $rows ) && ! empty( $rows ) ) {
-		foreach ( $rows as $row ) {
-			foreach ( $row as $cell => $value ) {
-				$output_array[ $value ] = $value;
-			}
-		}
-		return (array) $output_array;
+function wp_stream_existing_records( $column ) {
+	// Short circuit for now, till Facets is available
+	return array();
+	$values = WP_Stream::$db->get_col( $column );
+	if ( is_array( $values ) && ! empty( $values ) ) {
+		return array_combine( $values, $values );
 	} else {
 		$column = sprintf( 'stream_%s', $column );
 		return isset( WP_Stream_Connectors::$term_labels[ $column ] ) ? WP_Stream_Connectors::$term_labels[ $column ] : array();

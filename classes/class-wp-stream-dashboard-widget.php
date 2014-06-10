@@ -50,7 +50,7 @@ class WP_Stream_Dashboard_Widget {
 		);
 
 		$records     = wp_stream_query( $args );
-		$all_records = wp_stream_query( array( 'records_per_page' => -1, 'paged' => 0 ) );
+		$total_items = WP_Stream::$db->get_found_rows();
 
 		if ( ! $records ) {
 			?>
@@ -59,19 +59,12 @@ class WP_Stream_Dashboard_Widget {
 			return;
 		}
 
-		$i = 0;
+		printf(
+			'<ul>%s</ul>',
+			implode( '', array_map( array( __CLASS__, 'widget_row' ), $records ) )
+		);
 
-		echo '<ul>';
-
-		foreach ( $records as $record ) {
-			$i++;
-			echo self::widget_row( $record, $i ); //xss okay
-		}
-
-		echo '</ul>';
-
-		$total_items = count( $all_records );
-		$args        = array(
+		$args = array(
 			'current'     => $paged,
 			'total_pages' => absint( ceil( $total_items / $records_per_page ) ), // Cast as an integer, not a float
 		);
@@ -138,7 +131,7 @@ class WP_Stream_Dashboard_Widget {
 		);
 
 		$html_total_pages = sprintf( '<span class="total-pages">%s</span>', number_format_i18n( $total_pages ) );
-		$page_links[]     = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), number_format_i18n( $current ), $html_total_pages ) . '</span>';
+		$page_links[]    = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging', 'stream' ), number_format_i18n( $current ), $html_total_pages ) . '</span>';
 
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
@@ -177,7 +170,7 @@ class WP_Stream_Dashboard_Widget {
 
 		if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
 			$options['records_per_page'] = absint( $_POST['dashboard_stream_activity_options']['records_per_page'] );
-			$options['live_update'] = isset( $_POST['dashboard_stream_activity_options']['live_update'] ) ? 'on' : 'off';;
+			$options['live_update']      = isset( $_POST['dashboard_stream_activity_options']['live_update'] ) ? 'on' : 'off';;
 			update_option( 'dashboard_stream_activity_options', $options );
 		}
 
@@ -205,9 +198,10 @@ class WP_Stream_Dashboard_Widget {
 	 *
 	 * @param  obj     Record to be inserted
 	 * @param  int     Row number
+	 *
 	 * @return string  Contents of new row
 	 */
-	public static function widget_row( $item, $i = null ) {
+	public static function widget_row( $item ) {
 		$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
 		$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
 
@@ -226,18 +220,17 @@ class WP_Stream_Dashboard_Widget {
 			$time_author .= sprintf( ' %s', WP_Stream_Author::get_agent_label( $author->get_agent() ) );
 		}
 
-		$class = ( isset( $i ) && $i % 2 ) ? 'alternate' : '';
-
 		ob_start()
-		?><li class="<?php echo esc_html( $class ) ?>" data-id="<?php echo esc_html( $item->ID ) ?>">
-			<div class="record-avatar">
+		?>
+		<li data-id="<?php echo esc_html( $item->ID ) ?>">
+		<div class="record-avatar">
 				<a href="<?php echo esc_url( $author->get_records_page_url() ) ?>">
 					<?php echo $author->get_avatar_img( 72 ); // xss ok ?>
 				</a>
 			</div>
-			<span class="record-meta"><?php echo $time_author; // xss ok ?></span>
-			<br />
-			<?php echo esc_html( $item->summary ) ?>
+		<span class="record-meta"><?php echo $time_author; // xss ok ?></span>
+		<br/>
+		<?php echo esc_html( $item->summary ) ?>
 		</li><?php
 
 		return ob_get_clean();
@@ -250,6 +243,7 @@ class WP_Stream_Dashboard_Widget {
 	 *
 	 * @param  array  Response to heartbeat
 	 * @param  array  Response from heartbeat
+	 *
 	 * @return array  Data sent to heartbeat
 	 */
 	public static function live_update( $response, $data ) {
@@ -259,7 +253,7 @@ class WP_Stream_Dashboard_Widget {
 
 		$send = array();
 
-		$last_id = intval( $data['wp-stream-heartbeat-last-id'] );
+		$last_id = $data['wp-stream-heartbeat-last-id'];
 
 		$updated_items = self::gather_updated_items( $last_id );
 
@@ -275,7 +269,7 @@ class WP_Stream_Dashboard_Widget {
 		return $send;
 	}
 
-		/**
+	/**
 	 * Sends Updated Actions to the List Table View
 	 *
 	 * @param       int    Timestamp of last update
@@ -289,7 +283,7 @@ class WP_Stream_Dashboard_Widget {
 		}
 
 		$default = array(
-			'record_greater_than' => (int) $last_id,
+			'record_greater_than' => $last_id,
 		);
 
 		// Filter default
