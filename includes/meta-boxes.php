@@ -34,13 +34,8 @@ class WP_Stream_Reports_Metaboxes {
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 		$this->charts   = new WP_Stream_Reports_Charts();
 
-		// Load records
-		add_filter( 'wp_stream_reports_load_records', array( $this, 'sort_coordinates_by_count' ), 10, 2 );
-		add_filter( 'wp_stream_reports_load_records', array( $this, 'limit_coordinates' ), 10, 2 );
-
 		// Finalize charts
 		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'translate_labels' ), 10, 2 );
-		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'apply_chart_settings' ), 10, 2 );
 
 		// Get chart labels
 		add_filter( 'wp_stream_reports_get_label', array( $this, 'translate_data_type_labels' ), 10, 2 );
@@ -251,7 +246,7 @@ class WP_Stream_Reports_Metaboxes {
 			'type'       => $args['chart_type'],
 			'guidelines' => true,
 			'tooltip'    => array(
-				'show' => true,
+				'show'   => true,
 			),
 			'values'     => $values,
 			'controls'   => $show_controls,
@@ -285,19 +280,9 @@ class WP_Stream_Reports_Metaboxes {
 		return apply_filters( 'wp_stream_reports_finalize_chart', $coordinates, $args );
 	}
 
-	public function apply_chart_settings( $coordinates, $args ) {
-		foreach ( $coordinates as $key => $dataset ) {
-			if ( in_array( $key, $args['disabled'] ) ) {
-				$coordinates[ $key ]['disabled'] = true;
-			}
-		}
-
-		return $coordinates;
-	}
-
 	public function translate_labels( $coordinates, $args ) {
 		foreach ( $coordinates as $key => $dataset ) {
-			$coordinates[ $key ]['key'] = $this->get_label( $dataset['key'], $args['selector_type'] );
+			$coordinates[ $key ]['key'] = $this->get_label( $dataset['key'], $args['selector_id'] );
 		}
 
 		return $coordinates;
@@ -474,36 +459,28 @@ class WP_Stream_Reports_Metaboxes {
 			'date_to'          => $date_interval['end'],
 		);
 
-		switch ( $args['data_group'] ) {
-			case 'action':
-				$query_args['action'] = $args['data_type'];
-				break;
-			case 'blog_id':
-				$query_args['blog_id'] = $args['data_type'];
-				break;
-			case 'connector':
-				$query_args['connector'] = $args['data_type'];
-				break;
-			case 'context':
-				$query_args['context'] = $args['data_type'];
-				break;
-			case 'other':
-				// all selector requires no query arg modifications
-				break;
-			default:
-				return array();
+		$available_args = array( 
+			'action'    => 'action_id',
+			'blog_id'   => 'blog_id',
+			'connector' => 'connector_id', 
+			'context'   => 'context_id',
+		);
+		foreach ( $available_args as $query_key => $args_key ) {
+			if ( isset( $args[ $args_key ] ) ) {
+				$query_args[ $query_key ] = $args[ $args_key ];
+			}
 		}
 
-		$grouping_field   = $args['selector_type'];
-		$available_fields = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip', 'blog_id' );
+		$selector            = $args['selector_id'];
+		$available_selectors = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip', 'blog_id' );
 
-		if ( ! in_array( $grouping_field, $available_fields ) ) {
+		if ( ! in_array( $selector, $available_selectors ) ) {
 			return array();
 		}
 
 		$query_args = apply_filters( 'wp_stream_reports_query_args', $query_args, $args );
 		$unsorted   = wp_stream_query( $query_args );
-		if ( 'author_role' === $grouping_field ) {
+		if ( 'author_role' === $selector ) {
 			foreach ( $unsorted as $key => $record ) {
 				$user = get_userdata( $record->author );
 				if ( $user ) {
@@ -515,75 +492,10 @@ class WP_Stream_Reports_Metaboxes {
 				}
 			}
 		}
-		$sorted = $this->charts->group_by_field( $grouping_field, $unsorted );
+		$sorted = $this->charts->group_by_field( $selector, $unsorted );
 
 		return $sorted;
 	}
-
-	public function multisite_query_args( $query_args, $args ) {
-		if ( 'blog_id' === $args['data_group'] ) {
-			$query_args['blog_id'] = $args['data_type'];
-		}
-
-		return $query_args;
-	}
-
-	/**
-	 * Sorts each set of data by the number of records in them
-	 */
-	public function sort_coordinates_by_count( $records ) {
-		$counts = array();
-		foreach ( $records as $field => $data ){
-
-			$count = count( $data );
-			if ( ! array_key_exists( $count, $counts ) ) {
-				$counts[ $count ] = array();
-			}
-
-			$counts[ $count ][] = array(
-				'key' => $field,
-				'data' => $data,
-			);
-		}
-
-		krsort( $counts );
-
-		$output = array();
-		foreach ( $counts as $count => $element ) {
-
-			foreach ( $element as $element_data ) {
-				$output[ $element_data['key'] ] = $element_data['data'];
-			}
-		}
-
-		return $output;
-	}
-
-	/**
-	 * Merges all records past limit into single record
-	 */
-	public function limit_coordinates( $records, $args ) {
-		$limit = apply_filters( 'wp_stream_reports_record_limit', 10 );
-		if ( 0 === $limit ) {
-			return $records;
-		}
-
-		$top_elements      = array_slice( $records, 0, $limit, true );
-		$leftover_elements = array_slice( $records, $limit );
-
-		if ( ! $leftover_elements ) {
-			return $top_elements;
-		}
-
-		$other_element = array();
-		foreach ( $leftover_elements as $data ) {
-			$other_element = array_merge( $other_element, $data );
-		}
-
-		$top_elements['report-others'] = $other_element;
-
-		return $top_elements;
-	}	
 
 	/**
 	 * Creates a title generated from the arguments for the chart
@@ -593,8 +505,10 @@ class WP_Stream_Reports_Metaboxes {
 			return sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $args['key'] + 1 ) );
 		}
 
+		return 'Todo: Labeling Unfinished';
+
 		$type_label     = $this->get_label( $args['data_type'], $args['data_group'] );
-		$selector_label = $this->get_selector_types( $args['selector_type'] );
+		$selector_label = $this->get_selector_types( $args['selector_id'] );
 
 		// Don't add 'Activity' to special cases that already have it
 		$exceptions = array( 'all' );
