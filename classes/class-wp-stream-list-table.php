@@ -35,7 +35,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function extra_tablenav( $which ) {
 		if ( 'top' === $which ) {
-			echo $this->filters_form();
+			echo $this->filters_form(); //xss ok
 		}
 	}
 
