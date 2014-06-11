@@ -218,8 +218,14 @@ class WP_Stream_Admin {
 	 * @return string $classes
 	 */
 	public static function admin_body_class( $classes ) {
-		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
+		if ( isset( $_GET['page'] ) && $_GET['page'] !== self::RECORDS_PAGE_SLUG ) {
 			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
+		}
+
+		$settings_pages = array( self::SETTINGS_PAGE_SLUG, WP_Stream_Network::NETWORK_SETTINGS_PAGE_SLUG, WP_Stream_Network::DEFAULT_SETTINGS_PAGE_SLUG );
+
+		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $settings_pages ) ) {
+			$classes .= sprintf( ' %s ', self::SETTINGS_PAGE_SLUG );
 		}
 
 		return $classes;
