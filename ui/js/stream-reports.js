@@ -353,6 +353,8 @@
 			var option    = parent.find( '.chart-dataset' ).select2('data').element[0].dataset;
 			var connector = option.connector;
 			var context   = option.context;
+			var action    = parent.find( '.chart-action' ).select2('data').element[0].dataset.action;
+			console.log(action);
 			var selector  = parent.find('.chart-selector').select2('data').id;
 
 			// Send the new
@@ -369,6 +371,7 @@
 
 					data_connector : connector,
 					data_context   : context,
+					data_action    : action,
 					data_selector  : selector,
 
 				},

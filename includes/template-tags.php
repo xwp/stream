@@ -1,12 +1,14 @@
 <?php
 
-function wp_stream_reports_selector( $data_types, $args ) {
+function wp_stream_reports_selector( $data_types, $args, $class ) {
 
 	$options  = array();
 	foreach ( $data_types as $key => $item ) {
 		$selected = false;
 
-		if ( $item['connector'] == $args['connector_id'] && isset( $item['context'] ) && $item['context'] == null ) {
+		if ( isset( $item['connector'] ) && $item['connector'] == $args['connector_id'] && isset( $item['context'] ) && $item['context'] == null ) {
+			$selected = true;
+		} else if ( isset( $item['action'] ) && $item['action'] == $args['action_id'] ) {
 			$selected = true;
 		}
 
@@ -46,7 +48,8 @@ function wp_stream_reports_selector( $data_types, $args ) {
 		}
 	}
 	$out = sprintf(
-		'<select class="chart-option chart-dataset">%s</select>',
+		'<select class="%s">%s</select>',
+		$class,
 		implode( '', $options )
 	);
 

@@ -482,38 +482,60 @@ class WP_Stream_Reports_Metaboxes {
 	 * Creates a title generated from the arguments for the chart
 	 */
 	protected function get_generated_title( $args ) {
-		if ( empty( $args['connector_id'] ) ) {
+
+		if ( ! isset( $args['selector_id'] ) ) {
 			return sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $args['key'] + 1 ) );
 		}
 
-		if ( isset( $args['connector_id'] ) ) {
-			$connector = $this->get_label( $args['connector_id'], 'connector' );
-		}
-
 		if ( isset( $args['context_id'] ) ) {
-			$context = $this->get_label( $args['context_id'], 'context' );
+			$dataset = $this->get_label( $args['context_id'], 'context' );
+		} else if ( isset( $args['connector_id'] ) ) {
+			$dataset = $this->get_label( $args['connector_id'], 'connector' );
+		} else {
+			$dataset = '';
 		}
 
-		if ( isset( $args['action_id'] ) ) {
+		if ( ! empty( $args['action_id'] ) ) {
 			$action = $this->get_label( $args['action_id'], 'action' );
 		}
 
-		$selector_label = $this->get_selector_types( $args['selector_id'] );
+		$selector = $this->get_selector_types( $args['selector_id'] );
 
-		// Don't add 'Activity' to special cases that already have it
-		$string = _x(
-			'%1$s Activity by %2$s',
-			'1: Dataset 2: Selector',
-			'stream-reports'
-		);
+		if ( isset( $action ) ) {
 
-		$type_label = ( isset( $context ) ) ? $context : $connector;
-		$title      = sprintf( $string, $type_label, $selector_label );
+			if ( ! empty( $dataset ) ) {
+				$string = _x(
+					'%1$s in %2$s by %3$s',
+					'1: Action 2: Dataset 3: Selector',
+					'stream-reports'
+				);	
+			} else {
+				$string = _x(
+					'All %1$s by %3$s',
+					'1: Action 3: Selector',
+					'stream-reports'
+				);	
+			}
+			
+			$title = sprintf( $string, $action, $dataset, $selector );
+		} else if ( isset( $args['connector_id'] ) ) {
+			$string = _x(
+				'%1$s Activity by %2$s',
+				'1: Dataset 2: Selector',
+				'stream-reports'
+			);
+			$title = sprintf( $string, $dataset, $selector );
+		} else {
+			$string = _x(
+				'All Activity by %1$s',
+				'Selector',
+				'stream-reports'
+			);
+			$title = sprintf( $string, $selector );
+		}
 
-		return apply_filters( 'wp_stream_reports_chart_title', $title, $args );
+		return $title;
 	}
-
-
 
 	/**
 	 * Update configuration array from ajax call and save this to the user option
@@ -531,7 +553,7 @@ class WP_Stream_Reports_Metaboxes {
 			'selector_id'  => wp_stream_filter_input( INPUT_GET, 'data_selector', FILTER_SANITIZE_STRING ),
 		);
 
-		$required_fields = array( 'id', 'title', 'chart_type', 'connector_id', 'selector_id' );
+		$required_fields = array( 'id', 'title', 'chart_type', 'selector_id' );
 		foreach ( $required_fields as $key ){
 			if ( $input[ $key ] === null ) {
 				wp_send_json_error( array( 'missing' => $key, 'value' => $input[ $key ] ) );
@@ -715,6 +737,7 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function get_contexts() {
+
 		// Add Connectors as parents, and apply the Contexts as children
 		$contexts   = $this->assemble_records( 'context' );
 		$connectors = $this->assemble_records( 'connector' );
@@ -736,11 +759,23 @@ class WP_Stream_Reports_Metaboxes {
 			}
 		}
 
-		return $context_items;
+		$all_items = array(
+			'label' => __( 'All Contexts', 'stream-reports' )
+		);
+
+		return array_merge( array( $all_items ), $context_items );
 	}
 
 	public function get_actions() {
-		return $this->assemble_records( 'action' );
+		$actions = $this->assemble_records( 'action' );
+		foreach ( $actions as $id => $item ) {
+			$actions[ $id ]['action'] = $id;
+		}
+
+		$all_actions = array(
+			'label' => __( 'All Actions', 'stream-reports' )
+		);
+		return array_merge( array( $all_actions ), $actions );
 	}
 
 	/**
@@ -756,7 +791,7 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	function assemble_records( $column ) {
 
-		$available_columns = array( 'context', 'connector' );
+		$available_columns = array( 'context', 'connector', 'action' );
 		if ( ! in_array( $column, $available_columns ) ) {
 			return;
 		}
