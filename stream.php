@@ -98,8 +98,10 @@ class WP_Stream {
 		add_action( 'plugins_loaded', array( 'WP_Stream_Log', 'load' ) );
 
 		// Load connectors after widgets_init, but before the default of 10
+		// Then load them again much later to properly capture any labels registered on init
 		require_once WP_STREAM_INC_DIR . 'connectors.php';
 		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ), 9 );
+		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ), 99 );
 
 		// Load query class
 		require_once WP_STREAM_INC_DIR . 'query.php';
