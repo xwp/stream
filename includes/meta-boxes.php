@@ -411,26 +411,6 @@ class WP_Stream_Reports_Metaboxes {
 		return array_merge( $labels, $new_labels );
 	}
 
-	protected function get_date_interval(){
-		$date             = new WP_Stream_Date_Interval();
-		$default_interval = array(
-			'key'   => 'all-time',
-			'start' => '',
-			'end'   => '',
-		);
-
-		$user_interval       = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
-		$user_interval_key   = $user_interval['key'];
-		$available_intervals = $date->get_predefined_intervals();
-
-		if ( array_key_exists( $user_interval_key, $available_intervals ) ) {
-			$user_interval['start'] = $available_intervals[ $user_interval_key ]['start'];
-			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
-		}
-
-		return $user_interval;
-	}
-
 	public function load_metabox_records( $args ) {
 
 		$date_interval = $this->get_date_interval();
@@ -478,36 +458,59 @@ class WP_Stream_Reports_Metaboxes {
 		return apply_filters( 'wp_stream_reports_load_records', $sorted, $args );
 	}
 
+	protected function get_date_interval(){
+		$date             = new WP_Stream_Date_Interval();
+		$default_interval = array(
+			'key'   => 'all-time',
+			'start' => '',
+			'end'   => '',
+		);
+
+		$user_interval       = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
+		$user_interval_key   = $user_interval['key'];
+		$available_intervals = $date->get_predefined_intervals();
+
+		if ( array_key_exists( $user_interval_key, $available_intervals ) ) {
+			$user_interval['start'] = $available_intervals[ $user_interval_key ]['start'];
+			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
+		}
+
+		return $user_interval;
+	}
+
 	/**
 	 * Creates a title generated from the arguments for the chart
 	 */
 	protected function get_generated_title( $args ) {
-		if ( empty( $args['data_type'] ) ) {
+		if ( empty( $args['connector_id'] ) ) {
 			return sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $args['key'] + 1 ) );
 		}
 
-		return 'Todo: Labeling Unfinished';
+		if ( isset( $args['connector_id'] ) ) {
+			$connector = $this->get_label( $args['connector_id'], 'connector' );
+		}
 
-		$type_label     = $this->get_label( $args['data_type'], $args['data_group'] );
+		if ( isset( $args['context_id'] ) ) {
+			$context = $this->get_label( $args['context_id'], 'context' );
+		}
+
+		if ( isset( $args['action_id'] ) ) {
+			$action = $this->get_label( $args['action_id'], 'action' );
+		}
+
 		$selector_label = $this->get_selector_types( $args['selector_id'] );
 
 		// Don't add 'Activity' to special cases that already have it
-		$exceptions = array( 'all' );
-		if ( in_array( $args['data_type'], $exceptions ) ) {
-			$string = _x(
-				'%1$s by %2$s',
-				'Special case for activities that do not add activity suffix. 1: Dataset 2: Selector',
-				'stream-reports'
-			);
-		} else {
-			$string = _x(
-				'%1$s Activity by %2$s',
-				'1: Dataset 2: Selector',
-				'stream-reports'
-			);
-		}
+		$string = _x(
+			'%1$s Activity by %2$s',
+			'1: Dataset 2: Selector',
+			'stream-reports'
+		);
 
-		return sprintf( $string, $type_label, $selector_label );
+		$type_label = ( isset( $context ) ) ? $context : $connector;
+		$title      = sprintf( $string, $type_label, $selector_label );
+
+		return apply_filters( 'wp_stream_reports_chart_title', $title, $args );
 	}
 
 
