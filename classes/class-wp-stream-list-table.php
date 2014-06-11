@@ -35,7 +35,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function extra_tablenav( $which ) {
 		if ( 'top' === $which ) {
-			$this->filters_form();
+			echo $this->filters_form();
 		}
 	}
 
@@ -572,7 +572,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
-		printf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
+		return sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
 
 	function filter_select( $name, $title, $items, $ajax = false ) {

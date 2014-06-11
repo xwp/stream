@@ -156,38 +156,6 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Ajax callback function to search IP addresses that is used on exclude setting page
-	 *
-	 * @uses WP_User_Query WordPress User Query class.
-	 * @return void
-	 */
-	public static function get_ips(){
-		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
-			return;
-		}
-
-		check_ajax_referer( 'stream_get_ips', 'nonce' );
-
-		global $wpdb;
-
-		$results = $wpdb->get_col(
-			$wpdb->prepare(
-				"
-					SELECT distinct(`ip`)
-					FROM `{$wpdb->stream}`
-					WHERE `ip` LIKE %s
-					ORDER BY inet_aton(`ip`) ASC
-					LIMIT %d;
-				",
-				like_escape( $_POST['find'] ) . '%',
-				$_POST['limit']
-			)
-		);
-
-		wp_send_json_success( $results );
-	}
-
-	/**
 	 * Filter the columns to search in a WP_User_Query search.
 	 *
 	 * @param array  $search_columns Array of column names to be searched.
@@ -470,7 +438,7 @@ class WP_Stream_Settings {
 		$nonce         = isset( $field['nonce'] ) ? $field['nonce'] : null;
 
 		if ( isset( $field['value'] ) ) {
-			$current_value = array( $field['value'] );
+			$current_value = $field['value'];
 		} else {
 			$current_value = self::$options[ $section . '_' . $name ];
 		}
@@ -552,7 +520,7 @@ class WP_Stream_Settings {
 				$output .= '</fieldset></div>';
 				break;
 			case 'select':
-				$current_value = (array) self::$options[ $section . '_' . $name ];
+				$current_value = self::$options[ $section . '_' . $name ];
 				$default_value = isset( $default['value'] ) ? $default['value'] : '-1';
 				$default_name  = isset( $default['name'] ) ? $default['name'] : 'Choose Setting';
 
@@ -565,14 +533,14 @@ class WP_Stream_Settings {
 				$output .= sprintf(
 					'<option value="%1$s" %2$s>%3$s</option>',
 					esc_attr( $default_value ),
-					checked( in_array( $default_value, $current_value ), true, false ),
+					checked( $default_value === $current_value, true, false ),
 					esc_html( $default_name )
 				);
 				foreach ( $field['choices'] as $value => $label ) {
 					$output .= sprintf(
 						'<option value="%1$s" %2$s>%3$s</option>',
 						esc_attr( $value ),
-						checked( in_array( $value, $current_value ), true, false ),
+						checked( $value === $current_value, true, false ),
 						esc_html( $label )
 					);
 				}
@@ -606,17 +574,15 @@ class WP_Stream_Settings {
 					esc_attr( $name ),
 					esc_attr( $class )
 				);
-				foreach ( $current_value as $value ) {
-					if ( ! empty( $value ) ) {
-						$output .= sprintf(
-							'<input type="hidden" name="%1$s[%2$s_%3$s][]" id="%1$s_%2$s_%3$s" class="%4$s-select-placeholder" value="%5$s">',
-							esc_attr( $option_key ),
-							esc_attr( $section ),
-							esc_attr( $name ),
-							esc_attr( $class ),
-							esc_attr( $value )
-						);
-					}
+				if ( ! empty( $current_value ) ) {
+					$output .= sprintf(
+						'<input type="hidden" name="%1$s[%2$s_%3$s][]" id="%1$s_%2$s_%3$s" class="%4$s-select-placeholder" value="%5$s">',
+						esc_attr( $option_key ),
+						esc_attr( $section ),
+						esc_attr( $name ),
+						esc_attr( $class ),
+						esc_attr( $current_value )
+					);
 				}
 				break;
 			case 'exclude_rule_list' :
@@ -637,7 +603,7 @@ class WP_Stream_Settings {
 					esc_html__( 'Authors & Roles', 'stream' ),
 					esc_html__( 'Contexts', 'stream' ),
 					esc_html__( 'Actions', 'stream' ),
-					esc_html__( 'IP Addresses', 'stream' )
+					esc_html__( 'IP Address', 'stream' )
 				);
 
 				$exclude_rows = array();
@@ -649,7 +615,7 @@ class WP_Stream_Settings {
 							'authors_and_roles' => '',
 							'contexts'          => '',
 							'actions'           => '',
-							'ip_addresses'      => '',
+							'ip_address'        => '',
 						),
 					);
 				}
@@ -709,14 +675,13 @@ class WP_Stream_Settings {
 					);
 					$ip_address_select = self::render_field(
 						array(
-							'name'    => $name . '_ip_addresses',
-							'title'   => esc_html__( 'IP Addresses', 'stream' ),
-							'type'    => 'select2',
+							'name'    => $name . '_ip_address',
+							'title'   => esc_html__( 'IP Address', 'stream' ),
+							'type'    => 'text',
 							'section' => $section,
-							'class'   => 'ip_addresses',
-							'default' => array(),
-							'nonce'   => 'stream_get_ips',
-							'value'   => ( isset( $exclude_row['ip_addresses'] ) ? $exclude_row['ip_addresses'] : '' ),
+							'class'   => 'ip_address',
+							'default' => '',
+							'value'   => ( isset( $exclude_row['ip_address'] ) ? $exclude_row['ip_address'] : '' ),
 						)
 					);
 
@@ -745,16 +710,12 @@ class WP_Stream_Settings {
 				$output .= '</table>';
 				break;
 			case 'select2' :
-				if ( ! isset ( $current_value ) ) {
-					$current_value = array();
+				if ( ! isset ( $current_value ) || '__placeholder__' === $current_value ) {
+					$current_value = '';
 				}
 
-				if ( false !== ( $key = array_search( '__placeholder__', $current_value ) ) ) {
-					unset( $current_value[ $key ] );
-				}
+				$data_values = array();
 
-				$data_values     = array();
-				$selected_values = array();
 				if ( isset( $field['choices'] ) ) {
 					$choices = $field['choices'];
 					if ( is_callable( $choices ) ) {
@@ -768,9 +729,6 @@ class WP_Stream_Settings {
 								$child_values = array();
 								foreach ( $value['children'] as $child_key => $child_value ) {
 									$child_values[] = array( 'id' => $child_key, 'text' => $child_value );
-									if ( in_array( $child_key, $current_value ) ) {
-										$selected_values[] = array( 'id' => $child_key, 'text' => $child_value );
-									}
 								}
 							}
 							if ( isset( $value['label'] ) ) {
@@ -778,19 +736,9 @@ class WP_Stream_Settings {
 							}
 						} else {
 							$data_values[] = array( 'id' => $key, 'text' => $value );
-							if ( in_array( $key, $current_value ) ) {
-								$selected_values[] = array( 'id' => $key, 'text' => $value );
-							}
 						}
 					}
 					$class .= ' with-source';
-				} else {
-					foreach ( $current_value as $value ) {
-						if ( '__placeholder__' === $value || '' === $value ) {
-							continue;
-						}
-						$selected_values[] = array( 'id' => $value, 'text' => $value );
-					}
 				}
 
 				$output  = sprintf(
@@ -800,10 +748,9 @@ class WP_Stream_Settings {
 					esc_attr( $name )
 				);
 				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %4$s" data-placeholder="%5$s" data-select-placeholder="%6$s-%7$s-select-placeholder" %8$s %9$s />',
+					'<input type="hidden" data-values=\'%1$s\' value="%2$s" class="select2-select %3$s" data-placeholder="%4$s" data-select-placeholder="%5$s-%6$s-select-placeholder" %7$s %8$s />',
 					esc_attr( json_encode( $data_values ) ),
-					esc_attr( json_encode( $selected_values ) ),
-					esc_attr( implode( ',', $current_value ) ),
+					esc_attr( $current_value ),
 					$class,
 					sprintf( esc_html__( 'Any %s', 'stream' ), $title ),
 					esc_attr( $section ),
@@ -821,7 +768,6 @@ class WP_Stream_Settings {
 				$output .= '</div>';
 				break;
 			case 'select2_user_role':
-				$current_value = (array)$current_value;
 				$data_values   = array();
 
 				if ( isset( $field['choices'] ) ) {
@@ -843,27 +789,8 @@ class WP_Stream_Settings {
 					$data_values[] = $args;
 				}
 
-				$selected_values = array();
-				foreach ( $current_value as $value ) {
-					if ( ! is_string( $value ) && ! is_numeric( $value ) ) {
-						continue;
-					}
-
-					if ( '__placeholder__' === $value || '' === $value ) {
-						continue;
-					}
-
-					if ( is_numeric( $value ) ) {
-						$user              = new WP_User( $value );
-						$selected_values[] = array( 'id' => $user->ID, 'text' => $user->display_name );
-					} else {
-						foreach ( $data_values as $role ) {
-							if ( $role['id'] !== $value ) {
-								continue;
-							}
-							$selected_values[] = $role;
-						}
-					}
+				if ( '__placeholder__' === $current_value ) {
+					$current_value = '';
 				}
 
 				$output  = sprintf(
@@ -873,10 +800,9 @@ class WP_Stream_Settings {
 					esc_attr( $name )
 				);
 				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %5$s %6$s" data-placeholder="%7$s" data-select-placeholder="%4$s-%5$s-select-placeholder" data-nonce="%8$s" />',
+					'<input type="hidden" data-values=\'%1$s\' value="%2$s" class="select2-select %3$s %5$s" data-placeholder="%6$s" data-select-placeholder="%3$s-%4$s-select-placeholder" data-nonce="%7$s" />',
 					json_encode( $data_values ),
-					json_encode( $selected_values ),
-					esc_attr( implode( ',', $current_value ) ),
+					esc_attr( $current_value ),
 					esc_attr( $section ),
 					esc_attr( $name ),
 					$class,
@@ -962,7 +888,7 @@ class WP_Stream_Settings {
 		$return_labels = array();
 
 		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
-			if ( 'context' === $column && isset( WP_Stream_Connectors::$term_labels[ 'stream_connector' ] ) ) {
+			if ( 'context' === $column && isset( WP_Stream_Connectors::$term_labels['stream_connector'] ) ) {
 				$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
 				$contexts   = WP_Stream_Connectors::$term_labels['stream_context'];
 
@@ -985,7 +911,7 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * @param $column string name of the setting key (authors|roles|actions|ip_addresses|contexts|connectors)
+	 * @param $column string name of the setting key (authors|roles|actions|ip_address|contexts|connectors)
 	 *
 	 * @return array
 	 */
