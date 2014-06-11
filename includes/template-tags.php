@@ -32,7 +32,7 @@ function wp_stream_reports_selector( $data_types, $args ) {
 
 				$option_args  = array(
 					'value'     => $child_value,
-					'label'     => isset( $child_item['label'] ) ? '- ' . $child_item['label'] : null,
+					'label'     => isset( $child_item['label'] ) ? $child_item['label'] : null,
 					'selected'  => selected( $child_value, $selected, false ),
 					'disabled'  => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
 					'class'     => 'level-2',
