@@ -14,7 +14,7 @@
 
 			<select class="chart-option chart-selector">
 				<?php foreach ( $selector_types as $type => $text ) : ?>
-					<option value="<?php echo esc_attr( $type ) ?>" <?php selected( $type === $args['selector_type'] ) ?>><?php echo esc_html( $text ) ?></option>
+					<option value="<?php echo esc_attr( $type ) ?>" <?php selected( $type === $args['selector_id'] ) ?>><?php echo esc_html( $text ) ?></option>
 				<?php endforeach; ?>
 			</select>
 
