@@ -584,6 +584,11 @@ class WP_Stream_Settings {
 				break;
 			case 'rule_list' :
 				$output  = '<p class="description">' . esc_html( $description ) . '</p>';
+
+				$actions  = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  __( 'New rule', 'stream' ) );
+				$actions .= sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ),  __( 'Remove selected rules', 'stream' ) );
+
+				$output .= sprintf( '<div class="tablenav top">%1$s</div>', $actions );
 				$output .= '<table class="wp-list-table widefat fixed stream-exclude-list">';
 
 				unset( $description );

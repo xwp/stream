@@ -111,112 +111,146 @@ jQuery(function( $ ) {
 		}
 	});
 
-	$( '#tab-content-settings input[type=hidden].select2-select.with-source' ).each(function( k, el ) {
-		var $input = $( el );
-		$input.select2({
-			data: $input.data( 'values' ),
-			allowClear: true,
-			placeholder: $input.data( 'placeholder' )
+	var initSettingsSelect2 = function() {
+		$( '#tab-content-settings input[type=hidden].select2-select.with-source' ).each(function( k, el ) {
+			var $input = $( el );
+			$input.select2({
+				data: $input.data( 'values' ),
+				allowClear: true,
+				placeholder: $input.data( 'placeholder' )
+			});
 		});
-	});
 
-	var $input_user;
-	$( '#tab-content-settings input[type=hidden].select2-select.author_or_role' ).each(function( k, el ) {
-		$input_user = $( el );
+		var $input_user;
+		$( '#tab-content-settings input[type=hidden].select2-select.author_or_role' ).each(function( k, el ) {
+			$input_user = $( el );
 
-		$input_user.select2({
-			ajax: {
-				type: 'POST',
-				url: ajaxurl,
-				dataType: 'json',
-				quietMillis: 500,
-				data: function( term, page ) {
-					return {
-						find: term,
-						limit: 10,
-						pager: page,
-						action: 'stream_get_users',
-						nonce: $input_user.data('nonce')
-					};
-				},
-				results: function( response ) {
-					var roles  = [],
-						answer = [];
+			$input_user.select2({
+				ajax: {
+					type: 'POST',
+					url: ajaxurl,
+					dataType: 'json',
+					quietMillis: 500,
+					data: function( term, page ) {
+						return {
+							find: term,
+							limit: 10,
+							pager: page,
+							action: 'stream_get_users',
+							nonce: $input_user.data('nonce')
+						};
+					},
+					results: function( response ) {
+						var roles  = [],
+							answer = [];
 
-					roles = $.grep(
-						$input_user.data( 'values' ),
-						function( role ) {
-							var roleVal = $input_user.data( 'select2' )
-								.search
-								.val()
-								.toLowerCase();
-							var rolePos = role
-								.text
-								.toLowerCase()
-								.indexOf( roleVal );
-							return rolePos >= 0;
-						}
-					);
-
-					answer = {
-						results: [
-							{
-								text: 'Roles',
-								children: roles
-							},
-							{
-								text: 'Users',
-								children: []
+						roles = $.grep(
+							$input_user.data( 'values' ),
+							function( role ) {
+								var roleVal = $input_user.data( 'select2' )
+									.search
+									.val()
+									.toLowerCase();
+								var rolePos = role
+									.text
+									.toLowerCase()
+									.indexOf( roleVal );
+								return rolePos >= 0;
 							}
-						]
-					};
+						);
 
-					if ( true !== response.success || undefined === response.data || true !== response.data.status ) {
+						answer = {
+							results: [
+								{
+									text: 'Roles',
+									children: roles
+								},
+								{
+									text: 'Users',
+									children: []
+								}
+							]
+						};
+
+						if ( true !== response.success || undefined === response.data || true !== response.data.status ) {
+							return answer;
+						}
+						$.each( response.data.users, function( k, user ) {
+							if ( $.contains( roles, user.id ) ) {
+								user.disabled = true;
+							}
+						});
+						answer.results[ 1 ].children = response.data.users;
+						// notice we return the value of more so Select2 knows if more results can be loaded
 						return answer;
 					}
-					$.each( response.data.users, function( k, user ) {
-						if ( $.contains( roles, user.id ) ) {
-							user.disabled = true;
-						}
-					});
-					answer.results[ 1 ].children = response.data.users;
-					// notice we return the value of more so Select2 knows if more results can be loaded
-					return answer;
-				}
-			},
-			formatResult: function( object, container ) {
-				var result = object.text;
+				},
+				formatResult: function( object, container ) {
+					var result = object.text;
 
-				if ( 'undefined' !== typeof object.icon && object.icon ) {
-					result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
+					if ( 'undefined' !== typeof object.icon && object.icon ) {
+						result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
+						// Add more info to the container
+						container.attr( 'title', object.tooltip );
+					}
 					// Add more info to the container
-					container.attr( 'title', object.tooltip );
-				}
-				// Add more info to the container
-				if ( 'undefined' !== typeof object.tooltip ) {
-					container.attr( 'title', object.tooltip );
-				} else if ( 'undefined' !== typeof object.user_count ) {
-					container.attr( 'title', object.user_count );
-				}
-				return result;
-			},
-			formatSelection: function( object ){
-				if ( $.isNumeric( object.id ) && object.text.indexOf( 'icon-users' ) < 0 ) {
-					object.text += '<i class="icon16 icon-users"></i>';
-				}
+					if ( 'undefined' !== typeof object.tooltip ) {
+						container.attr( 'title', object.tooltip );
+					} else if ( 'undefined' !== typeof object.user_count ) {
+						container.attr( 'title', object.user_count );
+					}
+					return result;
+				},
+				formatSelection: function( object ){
+					if ( $.isNumeric( object.id ) && object.text.indexOf( 'icon-users' ) < 0 ) {
+						object.text += '<i class="icon16 icon-users"></i>';
+					}
 
-				return object.text;
-			},
-			allowClear: true,
-			placeholder: $input_user.data( 'placeholder' )
+					return object.text;
+				},
+				allowClear: true,
+				placeholder: $input_user.data( 'placeholder' )
+			});
 		});
-	});
+	};
+	initSettingsSelect2();
 
 	$( '#tab-content-settings input.ip_addresses' ).each(function( k, el ) {
 		var $input = $( el );
 		$input.on( 'change', function() {
 			// TO DO: Check for valid IP address
 		}).trigger( 'change' );
+	});
+
+	$( '#exclude_rule_list_new_rule' ).on( 'click', function() {
+		var $excludeList = $( this ).parent().next( 'table.stream-exclude-list' );
+
+		$( '.select2-select', $excludeList ).each( function(){
+			$( this ).select2( 'destroy' );
+		});
+
+		var $lastRow = $( 'tr', $excludeList ).last(),
+			$newRow  = $lastRow.clone();
+
+		$newRow.toggleClass( 'alternate' );
+		$( ':input', $newRow ).val( '' );
+
+		$lastRow.after( $newRow );
+		initSettingsSelect2();
+	});
+
+	$( '#exclude_rule_list_remove_rules' ).on( 'click', function() {
+		var $excludeList = $( this ).parent().next( 'table.stream-exclude-list' ),
+			selectedRows = $( 'tbody input.cb-select:checked', $excludeList ).closest( 'tr' );
+
+		if ( ( $( 'tbody tr', $excludeList ).length - selectedRows.length ) >= 1 ) {
+			selectedRows.remove();
+			$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
+			$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
+		} else {
+			$( ':input', selectedRows ).val( '' );
+			$( '.select2-select', selectedRows ).select2( 'val', '' );
+		}
 	});
 
 	$( window ).load(function() {

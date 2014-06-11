@@ -248,6 +248,14 @@
 	width: 100%;
 }
 
+.wp_stream_settings .tablenav {
+	margin-top: 16px;
+}
+
+.wp_stream_settings .tablenav input {
+	margin-right: 1em;
+}
+
 /* Date Interval Common */
 
 .wp_stream_screen .date-interval .field-predefined {
