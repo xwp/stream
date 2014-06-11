@@ -185,6 +185,9 @@ jQuery(function( $ ) {
 						return answer;
 					}
 				},
+				initSelection: function( item, callback ) {
+					callback( { id: item.data( 'selected-id' ), text: item.data( 'selected-text' ) } );
+				},
 				formatResult: function( object, container ) {
 					var result = object.text;
 
@@ -210,6 +213,10 @@ jQuery(function( $ ) {
 				},
 				allowClear: true,
 				placeholder: $input_user.data( 'placeholder' )
+			}).on( 'change', function() {
+				var value = $( this ).select2( 'data' );
+				$( this ).data( 'selected-id', value.id );
+				$( this ).data( 'selected-text', value.text );
 			});
 		});
 	};
@@ -249,6 +256,7 @@ jQuery(function( $ ) {
 			$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
 		} else {
 			$( ':input', selectedRows ).val( '' );
+			$( selectedRows ).not( ':first' ).remove();
 			$( '.select2-select', selectedRows ).select2( 'val', '' );
 		}
 	});

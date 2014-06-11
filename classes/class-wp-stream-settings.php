@@ -776,6 +776,7 @@ class WP_Stream_Settings {
 				}
 
 				$data_values   = array();
+				$data_selected = array();
 
 				if ( isset( $field['choices'] ) ) {
 					$choices = $field['choices'];
@@ -793,17 +794,27 @@ class WP_Stream_Settings {
 					if ( count( $users ) ) {
 						$args['user_count'] = sprintf( _n( '1 user', '%s users', count( $users ), 'stream' ), count( $users ) );
 					}
+					if ( $key === $current_value ) {
+						$data_selected['id'] = $key;
+						$data_selected['text'] = $role;
+					}
 					$data_values[] = $args;
 				}
 
+				if ( empty( $data_selected ) && is_numeric( $current_value ) ) {
+					$user          = new WP_User( $current_value );
+					$data_selected = array( 'id' => $user->ID, 'text' => $user->display_name );
+				}
+
 				$input = sprintf(
-					'<input type="hidden" name="%1$s[%2$s_%3$s]%4$s" data-values=\'%5$s\' value="%6$s" class="select2-select %7$s" data-placeholder="%8$s" data-nonce="%9$s" />',
+					'<input type="hidden" name="%1$s[%2$s_%3$s]%4$s" data-values=\'%5$s\' data-selected-id=\'%6$s\' data-selected-text=\'%7$s\' value="%6$s" class="select2-select %8$s" data-placeholder="%9$s" data-nonce="%10$s" />',
 					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
 					$multiple ? '[]' : '',
 					esc_attr( json_encode( $data_values ) ),
-					esc_attr( $current_value ),
+					isset( $data_selected['id'] ) ? esc_attr( $data_selected['id'] ) : '',
+					isset( $data_selected['text'] ) ? esc_attr( $data_selected['text'] ) : '',
 					$class,
 					sprintf( esc_html__( 'Any %s', 'stream' ), $title ),
 					esc_attr( wp_create_nonce( 'stream_get_users' ) )
