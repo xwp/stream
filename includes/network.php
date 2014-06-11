@@ -82,7 +82,7 @@ class WP_Stream_Network {
 	public static function get_network_blog() {
 		$blog           = new stdClass;
 		$blog->blog_id  = 0;
-		$blog->blogname = __( 'Network Admin', 'stream' );
+		$blog->blogname = __( 'Network Admin', 'default' );
 
 		return $blog;
 	}
@@ -126,7 +126,7 @@ class WP_Stream_Network {
 		WP_Stream_Admin::$screen_id['network_settings'] = add_submenu_page(
 			WP_Stream_Admin::RECORDS_PAGE_SLUG,
 			__( 'Stream Network Settings', 'stream' ),
-			__( 'Network Settings', 'stream' ),
+			__( 'Network Settings', 'default' ),
 			WP_Stream_Admin::SETTINGS_CAP,
 			self::NETWORK_SETTINGS_PAGE_SLUG,
 			array( 'WP_Stream_Admin', 'render_page' )
@@ -135,7 +135,7 @@ class WP_Stream_Network {
 		if ( ! WP_Stream_Admin::$disable_access ) {
 			WP_Stream_Admin::$screen_id['default_settings'] = add_submenu_page(
 				WP_Stream_Admin::RECORDS_PAGE_SLUG,
-				__( 'New Site Settings', 'stream' ),
+				__( 'New Site Settings', 'default' ),
 				__( 'Site Defaults', 'stream' ),
 				WP_Stream_Admin::SETTINGS_CAP,
 				self::DEFAULT_SETTINGS_PAGE_SLUG,
@@ -254,7 +254,8 @@ class WP_Stream_Network {
 					'private_feeds',
 				),
 				'exclude' => array(
-					'authors_and_roles',
+					'authors',
+					'roles',
 					'connectors',
 					'contexts',
 					'actions',
@@ -287,7 +288,7 @@ class WP_Stream_Network {
 			$new_fields['general']['fields'][] = array(
 				'name'        => 'enable_site_access',
 				'title'       => __( 'Enable Site Access', 'stream' ),
-				'after_field' => __( 'Enabled' ),
+				'after_field' => __( 'Enabled', 'stream' ),
 				'default'     => 1,
 				'desc'        => __( 'When site access is disabled Stream can only be accessed from the network administration.', 'stream' ),
 				'type'        => 'checkbox',
@@ -392,7 +393,7 @@ class WP_Stream_Network {
 		}
 
 		if ( ! count( get_settings_errors() ) ) {
-			add_settings_error( 'general', 'settings_updated', __( 'Settings saved.', 'stream' ), 'updated' );
+			add_settings_error( 'general', 'settings_updated', __( 'Settings saved.', 'default' ), 'updated' );
 		}
 
 		set_transient( 'settings_errors', get_settings_errors(), 30 );

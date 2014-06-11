@@ -12,14 +12,14 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	public static $verbose_widget_created_deleted_actions = false;
 
 	/**
-	 * Context name
+	 * Connector slug
 	 *
 	 * @var string
 	 */
 	public static $name = 'widgets';
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
@@ -37,12 +37,12 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	protected static $customizer_initial_sidebars_widgets = null;
 
 	/**
-	 * Return translated context label
+	 * Return translated connector label
 	 *
-	 * @return string Translated context label
+	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Widgets', 'stream' );
+		return __( 'Widgets', 'default' );
 	}
 
 	/**
@@ -78,9 +78,9 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$labels[ $sidebar['id'] ] = $sidebar['name'];
 		}
 
-		$labels['wp_inactive_widgets'] = esc_html__( 'Inactive Widgets' ); // @todo Why esc_html??
-		$labels['orphaned_widgets'] = esc_html__( 'Orphaned Widgets' );
-		$labels[''] = esc_html__( 'Unknown', 'stream' );
+		$labels['wp_inactive_widgets'] = __( 'Inactive Widgets', 'default' );
+		$labels['orphaned_widgets']    = __( 'Orphaned Widgets', 'stream' );
+		$labels['']                    = __( 'Unknown', 'stream' );
 
 		return $labels;
 	}

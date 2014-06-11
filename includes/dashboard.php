@@ -72,8 +72,8 @@ class WP_Stream_Dashboard_Widget {
 
 		$total_items = count( $all_records );
 		$args        = array(
-			'total_pages' => absint( ceil( $total_items / $records_per_page ) ), // Cast as an integer, not a float
 			'current'     => $paged,
+			'total_pages' => absint( ceil( $total_items / $records_per_page ) ), // Cast as an integer, not a float
 		);
 
 		self::pagination( $args );
@@ -91,7 +91,9 @@ class WP_Stream_Dashboard_Widget {
 				'total_pages' => 1,
 			)
 		);
-		extract( $args );
+
+		$current     = $args['current'];
+		$total_pages = $args['total_pages'];
 
 		$records_link = add_query_arg(
 			array( 'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG ),
@@ -103,7 +105,7 @@ class WP_Stream_Dashboard_Widget {
 			'view-all',
 			esc_attr__( 'View all records', 'stream' ),
 			esc_url( $records_link ),
-			esc_html__( 'View All', 'stream' )
+			esc_html__( 'View All', 'default' )
 		);
 
 		$page_links    = array();
@@ -121,7 +123,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="1">%s</a>',
 			'first-page' . $disable_first,
-			esc_attr__( 'Go to the first page', 'stream' ),
+			esc_attr__( 'Go to the first page', 'default' ),
 			esc_url( remove_query_arg( 'paged', $records_link ) ),
 			'&laquo;'
 		);
@@ -129,7 +131,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'prev-page' . $disable_first,
-			esc_attr__( 'Go to the previous page', 'stream' ),
+			esc_attr__( 'Go to the previous page', 'default' ),
 			esc_url( add_query_arg( 'paged', max( 1, $current - 1 ), $records_link ) ),
 			max( 1, $current - 1 ),
 			'&lsaquo;'
@@ -141,7 +143,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'next-page' . $disable_last,
-			esc_attr__( 'Go to the next page', 'stream' ),
+			esc_attr__( 'Go to the next page', 'default' ),
 			esc_url( add_query_arg( 'paged', min( $total_pages, $current + 1 ), $records_link ) ),
 			min( $total_pages, $current + 1 ),
 			'&rsaquo;'
@@ -150,7 +152,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'last-page' . $disable_last,
-			esc_attr__( 'Go to the last page', 'stream' ),
+			esc_attr__( 'Go to the last page', 'default' ),
 			esc_url( add_query_arg( 'paged', $total_pages, $records_link ) ),
 			$total_pages,
 			'&raquo;'
@@ -300,7 +302,5 @@ class WP_Stream_Dashboard_Widget {
 
 		return $items;
 	}
-
-
 
 }

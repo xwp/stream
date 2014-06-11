@@ -8,19 +8,19 @@
 
 	var Extensions = {
 
-		load : function() {
-			var template = $( '.theme-wrap' );
-			var overlay  = $( '.theme-overlay' );
-			var ext_obj  = stream_extensions.extensions;
+		load: function() {
+			var	template = $( '.theme-wrap' ),
+				overlay  = $( '.theme-overlay' ),
+				ext_obj  = stream_extensions.extensions;
 
 			$( '.theme .more-details, .theme .theme-screenshot' ).on( 'click', function() {
 				var extension = $( this ).parent().addClass( 'open' ).data( 'extension' );
 				var ext_data;
 
-				if ( ext_obj[ extension ] === null ) {
+				if ( null === ext_obj[ extension ] ) {
 					return;
 				} else {
-					ext_data  = ext_obj[ extension ];
+					ext_data = ext_obj[ extension ];
 				}
 
 				template.find( '.theme-name' ).html( ext_data.name + '<span class="theme-version"></span>' );

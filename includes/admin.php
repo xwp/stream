@@ -72,9 +72,6 @@ class WP_Stream_Admin {
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
-		// Toggle filters in list table on/off
-		add_action( 'wp_ajax_stream_toggle_filters', array( __CLASS__, 'toggle_filters' ) );
-
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
@@ -129,7 +126,7 @@ class WP_Stream_Admin {
 		self::$screen_id['settings'] = add_submenu_page(
 			self::RECORDS_PAGE_SLUG,
 			__( 'Stream Settings', 'stream' ),
-			__( 'Settings', 'stream' ),
+			__( 'Settings', 'default' ),
 			self::SETTINGS_CAP,
 			self::SETTINGS_PAGE_SLUG,
 			array( __CLASS__, 'render_page' )
@@ -216,13 +213,13 @@ class WP_Stream_Admin {
 	 *
 	 * @filter admin_body_class
 	 *
-	 * @param  array $classes
+	 * @param  string $classes
 	 *
-	 * @return array $classes
+	 * @return string $classes
 	 */
 	public static function admin_body_class( $classes ) {
 		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
-			$classes .= self::ADMIN_BODY_CLASS;
+			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
 		}
 
 		return $classes;
@@ -316,7 +313,7 @@ class WP_Stream_Admin {
 			} else {
 				$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
 			}
-			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
+			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
 
 			$url = add_query_arg(
 				array(
@@ -796,28 +793,6 @@ class WP_Stream_Admin {
 		}
 
 		return $allcaps;
-	}
-
-	public static function toggle_filters() {
-		check_ajax_referer( 'stream_toggle_filters_nonce', 'nonce' );
-
-		$input = array(
-			'checked'  => wp_stream_filter_input( INPUT_POST, 'checked', FILTER_SANITIZE_STRING ),
-			'user'     => wp_stream_filter_input( INPUT_POST, 'user', FILTER_SANITIZE_NUMBER_INT ),
-			'checkbox' => sanitize_key( $_POST['checkbox'] ),
-		);
-
-		$filters_option = get_user_meta( $input['user'], 'stream_toggle_filters', true );
-
-		$filters_option[ $input['checkbox'] ] = ( 'checked' === $input['checked'] );
-
-		$success = update_user_meta( $input['user'], 'stream_toggle_filters', $filters_option );
-
-		if ( $success ) {
-			wp_send_json( array( 'control' => $input['checkbox'] ) );
-		} else {
-			wp_send_json_error( 'Toggled filter checkbox error' );
-		}
 	}
 
 	/**

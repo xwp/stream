@@ -3,14 +3,14 @@
 class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 
 	/**
-	 * Context name
+	 * Context slug
 	 *
 	 * @var string
 	 */
 	public static $name = 'installer';
 
 	/**
-	 * Actions registered for this context
+	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
@@ -27,9 +27,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Return translated context label
+	 * Return translated connector label
 	 *
-	 * @return string Translated context label
+	 * @return string Translated connector label
 	 */
 	public static function get_label() {
 		return __( 'Installer', 'stream' );
@@ -58,9 +58,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'plugins'   => __( 'Plugins', 'stream' ),
-			'themes'    => __( 'Themes', 'stream' ),
-			'wordpress' => __( 'WordPress', 'stream' ),
+			'plugins'   => __( 'Plugins', 'default' ),
+			'themes'    => __( 'Themes', 'default' ),
+			'wordpress' => __( 'WordPress', 'default' ),
 		);
 	}
 
@@ -137,7 +137,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				'Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
 				'stream'
 			);
-			$logs[]  = compact( 'slug', 'name', 'version', 'message', 'action', 'message' );
+			$logs[]  = compact( 'slug', 'name', 'version', 'message', 'action' );
 		} elseif ( 'update' === $action ) {
 			$action  = 'updated';
 			$message = _x(
@@ -158,7 +158,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 					$version     = $plugin_data['Version'];
 					$old_version = $plugins[ $slug ]['Version'];
 
-					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action', 'message' );
+					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
 				}
 			} else { // theme
 				if ( isset( $extra['bulk'] ) && true == $extra['bulk'] ) {
@@ -174,7 +174,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 					$old_version = $theme['Version'];
 					$version     = $theme_data['Version'];
 
-					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action', 'message' );
+					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
 				}
 			}
 		} else {
@@ -184,11 +184,15 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		$context = $type . 's';
 
 		foreach ( $logs as $log ) {
-			extract( $log );
-			unset( $log['action'] );
+			$name        = isset( $log['name'] ) ? $log['name'] : null;
+			$version     = isset( $log['version'] ) ? $log['version'] : null;
+			$slug        = isset( $log['slug'] ) ? $log['slug'] : null;
+			$old_version = isset( $log['old_version'] ) ? $log['old_version'] : null;
+			$message     = isset( $log['message'] ) ? $log['message'] : null;
+			$action      = isset( $log['action'] ) ? $log['action'] : null;
 			self::log(
 				$message,
-				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'from' , 'old_version' ),
+				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' ),
 				null,
 				array( $context => $action )
 			);
