@@ -196,9 +196,10 @@ class WP_Stream_Reports_Metaboxes {
 			'priority'      => 'default',
 			'context'       => 'normal',
 			'chart_type'    => 'line',
-			'data_type'     => '',
-			'data_group'    => '',
-			'selector_type' => '',
+			'connector_id'  => '',
+			'context_id'    => '',
+			'action_id'     => '',
+			'selector_id'   => '',
 			'is_new'        => false,
 			'disabled'      => array(),
 			'group'         => false,
@@ -236,6 +237,7 @@ class WP_Stream_Reports_Metaboxes {
 
 		$chart_height   = WP_Stream_Reports_Settings::get_user_options( 'chart_height' , 300 );
 		$data_types     = $this->get_contexts();
+		$action_types   = $this->get_actions();
 		$selector_types = $this->get_selector_types();
 
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
@@ -620,16 +622,20 @@ class WP_Stream_Reports_Metaboxes {
 		$id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
 
 		$input = array(
-			'id'            => wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT ),
-			'title'         => wp_stream_filter_input( INPUT_GET, 'title', FILTER_SANITIZE_STRING ),
-			'chart_type'    => wp_stream_filter_input( INPUT_GET, 'chart_type', FILTER_SANITIZE_STRING ),
-			'data_group'    => wp_stream_filter_input( INPUT_GET, 'data_group', FILTER_SANITIZE_STRING ),
-			'data_type'     => wp_stream_filter_input( INPUT_GET, 'data_type', FILTER_SANITIZE_STRING ),
-			'selector_type' => wp_stream_filter_input( INPUT_GET, 'selector_type', FILTER_SANITIZE_STRING ),
+			'id'           => wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT ),
+			'title'        => wp_stream_filter_input( INPUT_GET, 'title', FILTER_SANITIZE_STRING ),
+			'chart_type'   => wp_stream_filter_input( INPUT_GET, 'chart_type', FILTER_SANITIZE_STRING ),
+			'connector_id' => wp_stream_filter_input( INPUT_GET, 'data_connector', FILTER_SANITIZE_STRING ),
+			'context_id'   => wp_stream_filter_input( INPUT_GET, 'data_context', FILTER_SANITIZE_STRING ),
+			'action_id'    => wp_stream_filter_input( INPUT_GET, 'data_action', FILTER_SANITIZE_STRING ),
+			'selector_id'  => wp_stream_filter_input( INPUT_GET, 'data_selector', FILTER_SANITIZE_STRING ),
 		);
 
-		if ( in_array( false, array_values( $input ) ) && false !== $id && ! isset( self::$sections[ $id ] ) ) {
-			wp_send_json_error();
+		$required_fields = array( 'id', 'title', 'chart_type', 'connector_id', 'selector_id' );
+		foreach ( $required_fields as $key ){
+			if ( $input[ $key ] === null ) {
+				wp_send_json_error( array( 'missing' => $key, 'value' => $input[ $key ] ) );
+			}
 		}
 
 		// Store the chart configuration
@@ -813,10 +819,12 @@ class WP_Stream_Reports_Metaboxes {
 		$connectors = $this->assemble_records( 'connector' );
 		foreach ( $connectors as $connector => $item ) {
 			$context_items[ $connector ]['label'] = $item['label'];
-			$context_items[ $connector ]['type'] = $item['type'];
+			$context_items[ $connector ]['connector'] = $connector;
 			foreach ( $contexts as $context_value => $context_item ) {
 				if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
 					$context_items[ $connector ]['children'][ $context_value ] = $context_item;
+					$context_items[ $connector ]['children'][ $context_value ]['connector'] = $connector;
+					$context_items[ $connector ]['children'][ $context_value ]['context'] = $context_value;
 				}
 			}
 		}
@@ -828,6 +836,10 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		return $context_items;
+	}
+
+	public function get_actions() {
+		return $this->assemble_records( 'action' );
 	}
 
 	/**
@@ -857,9 +869,9 @@ class WP_Stream_Reports_Metaboxes {
 
 		foreach ( $all_records as $record => $label ) {
 			if ( array_key_exists( $record, $existing_records ) ) {
-				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '', 'type' => $column );
+				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
 			} else {
-				$disabled_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"', 'type' => $column );
+				$disabled_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
 			}
 		}
 
