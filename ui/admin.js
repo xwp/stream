@@ -214,7 +214,7 @@ jQuery(function( $ ) {
 
 	$( '#tab-content-settings input.ip_addresses' ).each(function( k, el ) {
 		var $input = $( el );
-		$input.on( 'change', function( e ) {
+		$input.on( 'change', function() {
 			// TO DO: Check for valid IP address
 		}).trigger( 'change' );
 	});
