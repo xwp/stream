@@ -585,10 +585,10 @@ class WP_Stream_Settings {
 			case 'rule_list' :
 				$output  = '<p class="description">' . esc_html( $description ) . '</p>';
 
-				$actions  = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  __( 'New rule', 'stream' ) );
-				$actions .= sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ),  __( 'Remove selected rules', 'stream' ) );
+				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  __( 'Add New Rule', 'stream' ) );
+				$actions_bottom = sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ),  __( 'Delete Selected Rules', 'stream' ) );
 
-				$output .= sprintf( '<div class="tablenav top">%1$s</div>', $actions );
+				$output .= sprintf( '<div class="tablenav top">%1$s</div>', $actions_top );
 				$output .= '<table class="wp-list-table widefat fixed stream-exclude-list">';
 
 				unset( $description );
@@ -713,8 +713,9 @@ class WP_Stream_Settings {
 				$output .= '<thead>' . $heading_row . '</thead>';
 				$output .= '<tfoot>' . $heading_row . '</tfoot>';
 				$output .= '<tbody>' . implode( '', $exclude_rows ) . '</tbody>';
-
 				$output .= '</table>';
+				$output .= sprintf( '<div class="tablenav bottom">%1$s</div>', $actions_bottom );
+
 				break;
 			case 'select2' :
 				if ( ! isset ( $current_value ) ) {
