@@ -18,6 +18,26 @@ class WP_Stream_Reports_Charts {
 
 	}
 
+	public function get_chart_options( $args, $records ) {
+
+		$coordinates = apply_filters( 'wp_stream_reports_make_chart', $records, $args );
+		$values      = apply_filters( 'wp_stream_reports_finalize_chart', $coordinates, $args );
+
+		$show_controls = count( $values ) > 1;
+
+		return array(
+			'type'       => $args['chart_type'],
+			'guidelines' => true,
+			'tooltip'    => array(
+				'show'   => true,
+			),
+			'values'     => $values,
+			'controls'   => $show_controls,
+			'stacked'    => (bool) $args['group'],
+			'grouped'    => false,
+		);
+	}
+
 	/**
 	 * Sorts each set of data by the number of records in them
 	 */

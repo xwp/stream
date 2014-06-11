@@ -238,47 +238,7 @@ class WP_Stream_Reports_Metaboxes {
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
 	}
 
-	protected function get_chart_options( $args ) {
-		$values        = $this->get_chart_coordinates( $args );
-		$show_controls = count( $values ) > 1;
-
-		return array(
-			'type'       => $args['chart_type'],
-			'guidelines' => true,
-			'tooltip'    => array(
-				'show'   => true,
-			),
-			'values'     => $values,
-			'controls'   => $show_controls,
-			'stacked'    => (bool) $args['group'],
-			'grouped'    => false,
-		);
-	}
-
-	public function get_chart_coordinates( $args ) {
-		$date = new WP_Stream_Date_Interval();
-
-		$default_interval = array(
-			'key'   => 'all-time',
-			'start' => '',
-			'end'   => '',
-		);
-
-		$user_interval       = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
-		$user_interval_key   = $user_interval['key'];
-		$available_intervals = $date->get_predefined_intervals();
-
-		if ( array_key_exists( $user_interval_key, $available_intervals ) ) {
-			$user_interval['start'] = $available_intervals[ $user_interval_key ]['start'];
-			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
-		}
-
-		$records     = $this->load_metabox_records( $args, $user_interval );
-		$records     = apply_filters( 'wp_stream_reports_load_records', $records, $args );
-		$coordinates = apply_filters( 'wp_stream_reports_make_chart', $records, $args );
-
-		return apply_filters( 'wp_stream_reports_finalize_chart', $coordinates, $args );
-	}
+	
 
 	public function translate_labels( $coordinates, $args ) {
 		foreach ( $coordinates as $key => $dataset ) {
@@ -451,9 +411,30 @@ class WP_Stream_Reports_Metaboxes {
 		return array_merge( $labels, $new_labels );
 	}
 
+	protected function get_date_interval(){
+		$date             = new WP_Stream_Date_Interval();
+		$default_interval = array(
+			'key'   => 'all-time',
+			'start' => '',
+			'end'   => '',
+		);
 
-	public function load_metabox_records( $args, $date_interval ) {
-		$query_args = array(
+		$user_interval       = WP_Stream_Reports_Settings::get_user_options( 'interval', $default_interval );
+		$user_interval_key   = $user_interval['key'];
+		$available_intervals = $date->get_predefined_intervals();
+
+		if ( array_key_exists( $user_interval_key, $available_intervals ) ) {
+			$user_interval['start'] = $available_intervals[ $user_interval_key ]['start'];
+			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
+		}
+
+		return $user_interval;
+	}
+
+	public function load_metabox_records( $args ) {
+
+		$date_interval = $this->get_date_interval();
+		$query_args    = array(
 			'records_per_page' => -1,
 			'date_from'        => $date_interval['start'],
 			'date_to'          => $date_interval['end'],
@@ -494,7 +475,7 @@ class WP_Stream_Reports_Metaboxes {
 		}
 		$sorted = $this->charts->group_by_field( $selector, $unsorted );
 
-		return $sorted;
+		return apply_filters( 'wp_stream_reports_load_records', $sorted, $args );
 	}
 
 	/**
@@ -528,6 +509,8 @@ class WP_Stream_Reports_Metaboxes {
 
 		return sprintf( $string, $type_label, $selector_label );
 	}
+
+
 
 	/**
 	 * Update configuration array from ajax call and save this to the user option
@@ -574,7 +557,8 @@ class WP_Stream_Reports_Metaboxes {
 			$args['chart_type'] = 'line';
 		}
 
-		$chart_options = $this->get_chart_options( $args );
+		$records       = $this->load_metabox_records( $args );
+		$chart_options = $this->charts->get_chart_options( $args, $records );
 
 		wp_send_json_success(
 			array(
