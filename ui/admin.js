@@ -111,52 +111,17 @@ jQuery(function( $ ) {
 		}
 	});
 
-	var stream_select2_change_handler = function( e, input ) {
-		var $placeholder_class       = input.data( 'select-placeholder' ),
-			$placeholder_child_class = $placeholder_class + '-child',
-			$placeholder             = input.siblings( '.' + $placeholder_class ),
-			$group_class             = input.data( 'group-placeholder' ),
-			$group_child_class       = $group_class + '-child',
-			$group                   = input.closest( 'td' ).find( '.' + $group_class );
-
-		jQuery( '.' + $placeholder_child_class ).off().remove();
-		jQuery( '.' + $group_child_class ).off().remove();
-
-		if ( 'undefined' === typeof e.val ) {
-			e.val = input.val().split( ',' );
-		}
-
-		$.each( e.val.reverse(), function( value, key ) {
-			if ( null === key || '__placeholder__' === key || '' === key ) {
-				return true;
-			}
-			var option = $.grep( input.select2('data'), function( e ) {
-				return e.id == key;
-			});
-			if ( 'undefined' === typeof option[0].children ) {
-				$placeholder.after( $placeholder.clone( true ).attr( 'class', $placeholder_child_class ).val( key ) );
-			} else {
-				$group.after( $group.clone( true ).attr( 'class', $group_child_class ).val( key ) );
-			}
-		});
-	};
 	$( '#tab-content-settings input[type=hidden].select2-select.with-source' ).each(function( k, el ) {
 		var $input = $( el );
 		$input.select2({
 			data: $input.data( 'values' ),
+			allowClear: true,
 			placeholder: $input.data( 'placeholder' )
-		}).on( 'change', function( e ) {
-			stream_select2_change_handler( e , $input );
-		}).trigger( 'change' );
+		});
 	});
-	$( '#tab-content-settings input.ip_addresses' ).each(function( k, el ) {
-		var $input = $( el );
-		$input.on( 'change', function( e ) {
-			// TO DO: Check for valid IP address
-		}).trigger( 'change' );
-	});
+
 	var $input_user;
-	$( '#tab-content-settings input[type=hidden].select2-select.authors_and_roles' ).each(function( k, el ) {
+	$( '#tab-content-settings input[type=hidden].select2-select.author_or_role' ).each(function( k, el ) {
 		$input_user = $( el );
 
 		$input_user.select2({
@@ -242,11 +207,17 @@ jQuery(function( $ ) {
 
 				return object.text;
 			},
+			allowClear: true,
 			placeholder: $input_user.data( 'placeholder' )
 		});
-	}).on( 'change', function( e ) {
-		stream_select2_change_handler( e, $input_user );
-	}).trigger( 'change' );
+	});
+
+	$( '#tab-content-settings input.ip_addresses' ).each(function( k, el ) {
+		var $input = $( el );
+		$input.on( 'change', function( e ) {
+			// TO DO: Check for valid IP address
+		}).trigger( 'change' );
+	});
 
 	$( window ).load(function() {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );

@@ -265,9 +265,9 @@ class WP_Stream_Settings {
 					'title' => esc_html__( 'Exclude', 'stream' ),
 					'fields' => array(
 						array(
-							'name'        => 'exclude_rule_list',
+							'name'        => 'rule_list',
 							'title'       => esc_html__( 'Exclude Rules', 'stream' ),
-							'type'        => 'exclude_rule_list',
+							'type'        => 'rule_list',
 							'desc'        => esc_html__( 'Create rules for excluding certain scenarios from ever being logged by Stream.', 'stream' ),
 							'default'     => array(),
 						),
@@ -566,26 +566,17 @@ class WP_Stream_Settings {
 					esc_attr( $title )
 				);
 				break;
-			case 'placeholder':
-				$output = sprintf(
-					'<input type="hidden" name="%1$s[%2$s_%3$s][]" id="%1$s_%2$s_%3$s" class="%4$s-select-placeholder" value="__placeholder__">',
+			case 'hidden':
+				$output .= sprintf(
+					'<input type="hidden" name="%1$s[%2$s_%3$s][]" id="%1$s_%2$s_%3$s" class="%4$s" value="%5$s">',
 					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
-					esc_attr( $class )
+					esc_attr( $class ),
+					esc_attr( $current_value )
 				);
-				if ( ! empty( $current_value ) ) {
-					$output .= sprintf(
-						'<input type="hidden" name="%1$s[%2$s_%3$s][]" id="%1$s_%2$s_%3$s" class="%4$s-select-placeholder" value="%5$s">',
-						esc_attr( $option_key ),
-						esc_attr( $section ),
-						esc_attr( $name ),
-						esc_attr( $class ),
-						esc_attr( $current_value )
-					);
-				}
 				break;
-			case 'exclude_rule_list' :
+			case 'rule_list' :
 				$output  = '<p class="description">' . esc_html( $description ) . '</p>';
 				$output .= '<table class="wp-list-table widefat fixed stream-exclude-list">';
 
@@ -600,9 +591,9 @@ class WP_Stream_Settings {
 						<th scope="col" class="manage-column">%5$s</th>
 					</tr>',
 					'<input class="cb-select" type="checkbox" />',
-					esc_html__( 'Authors & Roles', 'stream' ),
-					esc_html__( 'Contexts', 'stream' ),
-					esc_html__( 'Actions', 'stream' ),
+					esc_html__( 'Author or Role', 'stream' ),
+					esc_html__( 'Context', 'stream' ),
+					esc_html__( 'Action', 'stream' ),
 					esc_html__( 'IP Address', 'stream' )
 				);
 
@@ -612,10 +603,10 @@ class WP_Stream_Settings {
 					// Create an empty row if there is nothing saved
 					$current_value = array(
 						array(
-							'authors_and_roles' => '',
-							'contexts'          => '',
-							'actions'           => '',
-							'ip_address'        => '',
+							'author_or_role' => '',
+							'context'        => '',
+							'action'         => '',
+							'ip_address'     => '',
 						),
 					);
 				}
@@ -626,51 +617,51 @@ class WP_Stream_Settings {
 				foreach ( $current_value as $key => $exclude_row ) {
 					$user_role_select = self::render_field(
 						array(
-							'name'    => $name . '_authors_and_roles',
-							'title'   => esc_html__( 'Authors &amp; Roles', 'stream' ),
+							'name'    => $name . '_author_or_role',
+							'title'   => esc_html__( 'Author or Role', 'stream' ),
 							'type'    => 'select2_user_role',
 							'section' => $section,
-							'class'   => 'authors_and_roles',
+							'class'   => 'author_or_role',
 							'choices' => self::get_roles(),
 							'default' => array(),
-							'value'   => ( isset( $exclude_row['authors_and_roles'] ) ? $exclude_row['authors_and_roles'] : '' ),
+							'value'   => ( isset( $exclude_row['author_or_role'] ) ? $exclude_row['author_or_role'] : '' ),
 						)
 					);
 					$connector_select = self::render_field(
 						array(
-							'name'    => $name . '_connectors',
-							'title'   => esc_html__( 'Connectors', 'stream' ),
-							'type'    => 'placeholder',
+							'name'    => $name . '_connector',
+							'title'   => esc_html__( 'Connector', 'stream' ),
+							'type'    => 'hidden',
 							'section' => $section,
-							'class'   => 'connectors',
-							'value'   => ( isset( $exclude_row['connectors'] ) ? $exclude_row['connectors'] : '' ),
+							'class'   => 'connector',
+							'value'   => ( isset( $exclude_row['connector'] ) ? $exclude_row['connector'] : '' ),
 						)
 					);
 					$context_select = self::render_field(
 						array(
-							'name'    => $name . '_contexts',
-							'title'   => esc_html__( 'Contexts', 'stream' ),
+							'name'    => $name . '_context',
+							'title'   => esc_html__( 'Context', 'stream' ),
 							'type'    => 'select2',
 							'section' => $section,
-							'class'   => 'contexts',
+							'class'   => 'context',
 							'choices' => array( __CLASS__, 'get_terms_labels' ),
 							'param'   => 'context',
 							'default' => array(),
-							'group'   => 'connectors',
-							'value'   => ( isset( $exclude_row['contexts'] ) ? $exclude_row['contexts'] : '' ),
+							'group'   => 'connector',
+							'value'   => ( isset( $exclude_row['context'] ) ? $exclude_row['context'] : '' ),
 						)
 					);
 					$action_select = self::render_field(
 						array(
-							'name'    => $name . '_actions',
-							'title'   => esc_html__( 'Actions', 'stream' ),
+							'name'    => $name . '_action',
+							'title'   => esc_html__( 'Action', 'stream' ),
 							'type'    => 'select2',
 							'section' => $section,
-							'class'   => 'actions',
+							'class'   => 'action',
 							'choices' => array( __CLASS__, 'get_terms_labels' ),
 							'param'   => 'action',
 							'default' => array(),
-							'value'   => ( isset( $exclude_row['actions'] ) ? $exclude_row['actions'] : '' ),
+							'value'   => ( isset( $exclude_row['action'] ) ? $exclude_row['action'] : '' ),
 						)
 					);
 					$ip_address_select = self::render_field(
@@ -741,31 +732,27 @@ class WP_Stream_Settings {
 					$class .= ' with-source';
 				}
 
-				$output  = sprintf(
-					'<div id="%1$s[%2$s_%3$s]">',
+				$input = sprintf(
+					'<input type="hidden" name="%1$s[%2$s_%3$s]%4$s" data-values=\'%5$s\' value="%6$s" class="select2-select %7$s" data-placeholder="%8$s" %9$s />',
 					esc_attr( $option_key ),
 					esc_attr( $section ),
-					esc_attr( $name )
-				);
-				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' value="%2$s" class="select2-select %3$s" data-placeholder="%4$s" data-select-placeholder="%5$s-%6$s-select-placeholder" %7$s %8$s />',
+					esc_attr( $name ),
+					'[]',
 					esc_attr( json_encode( $data_values ) ),
 					esc_attr( $current_value ),
 					$class,
 					sprintf( esc_html__( 'Any %s', 'stream' ), $title ),
-					esc_attr( $section ),
-					esc_attr( $name ),
-					isset( $group ) ? ' data-group-placeholder="' . $group . '-select-placeholder"' : '',
-					isset( $nonce ) ? sprintf( ' data-nonce="%s"', esc_attr( wp_create_nonce( $nonce ) ) ) : ''
+					isset( $group ) ? ' data-group="' . esc_attr( $group ) . '"' : ''
 				);
-				// to store data with default value if nothing is selected
-				$output .= sprintf(
-					'<input type="hidden" name="%1$s[%2$s_%3$s][]" class="%2$s-%3$s-select-placeholder" value="__placeholder__" />',
+
+				$output = sprintf(
+					'<div class="%1$s_%2$s_%3$s">%4$s</div>',
 					esc_attr( $option_key ),
 					esc_attr( $section ),
-					esc_attr( $name )
+					esc_attr( $name ),
+					$input
 				);
-				$output .= '</div>';
+
 				break;
 			case 'select2_user_role':
 				$data_values   = array();
@@ -861,24 +848,6 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Get an array of registered Connectors
-	 *
-	 * @return array
-	 */
-	public static function get_connectors() {
-		return WP_Stream_Connectors::$term_labels['stream_connector'];
-	}
-
-	/**
-	 * Get an array of registered Connectors
-	 *
-	 * @return array
-	 */
-	public static function get_default_connectors() {
-		return array_keys( WP_Stream_Connectors::$term_labels['stream_connector'] );
-	}
-
-	/**
 	 * Function will return all terms labels of given column
 	 *
 	 * @param $column string  Name of the column
@@ -911,12 +880,12 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * @param $column string name of the setting key (authors|roles|actions|ip_address|contexts|connectors)
+	 * @param $column string name of the setting key (author|role|action|ip_address|context|connector)
 	 *
 	 * @return array
 	 */
 	public static function get_excluded_by_key( $column ) {
-		$option_name = ( 'authors' === $column || 'roles' === $column ) ? 'exclude_authors_and_roles' : 'exclude_' . $column;
+		$option_name = ( 'author' === $column || 'role' === $column ) ? 'exclude_author_or_role' : 'exclude_' . $column;
 
 		$excluded_values = ( isset( self::$options[ $option_name ] ) ) ? self::$options[ $option_name ] : array();
 
@@ -926,7 +895,7 @@ class WP_Stream_Settings {
 
 		$excluded_values = wp_list_filter( $excluded_values, array( '__placeholder__' ), 'NOT' );
 
-		if ( 'exclude_authors_and_roles' === $option_name ) {
+		if ( 'exclude_author_or_role' === $option_name ) {
 			// Convert numeric strings to integers
 			array_walk( $excluded_values,
 				function ( &$value ) {
@@ -936,7 +905,7 @@ class WP_Stream_Settings {
 				}
 			);
 
-			$filter = ( 'roles' === $column ) ? 'is_string' : 'is_int'; // Author roles are always strings and author ID's are always integers
+			$filter = ( 'role' === $column ) ? 'is_string' : 'is_int'; // Author roles are always strings and author ID's are always integers
 
 			$excluded_values = array_values( array_filter( $excluded_values, $filter ) ); // Reset the array keys
 		}
