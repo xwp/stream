@@ -734,6 +734,7 @@ class WP_Stream_Reports_Metaboxes {
 		foreach ( $connectors as $connector => $item ) {
 			$context_items[ $connector ]['label'] = $item['label'];
 			$context_items[ $connector ]['connector'] = $connector;
+			$context_items[ $connector ]['disabled'] = $item['disabled'];
 			foreach ( $contexts as $context_value => $context_item ) {
 				if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
 					$context_items[ $connector ]['children'][ $context_value ] = $context_item;
