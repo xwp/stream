@@ -71,34 +71,28 @@ class WP_Stream_Reports_Metaboxes {
 				'id'            => 0,
 				'title'         => __( 'All Activity by Author', 'stream-reports' ),
 				'chart_type'    => 'line',
-				'data_group'    => 'other',
-				'data_type'     => 'all',
-				'selector_type' => 'author',
+				'selector_id'   => 'author',
 			),
 			array(
 				'id'            => 1,
 				'title'         => __( 'All Activity by Action', 'stream-reports' ),
 				'chart_type'    => 'line',
-				'data_group'    => 'other',
-				'data_type'     => 'all',
-				'selector_type' => 'action',
+				'selector_id'   => 'action',
 			),
 			array(
 				'id'            => 2,
 				'title'         => __( 'All Activity by Author Role', 'stream-reports' ),
 				'chart_type'    => 'multibar',
-				'data_group'    => 'other',
-				'data_type'     => 'all',
-				'selector_type' => 'author_role',
+				'selector_id'   => 'author_role',
 				'group'         => true,
 			),
 			array(
 				'id'            => 3,
 				'title'         => __( 'Comments Activity by Action', 'stream-reports' ),
 				'chart_type'    => 'pie',
-				'data_group'    => 'connector',
-				'data_type'     => 'comments',
-				'selector_type' => 'action',
+				'connector_id'  => 'comments',
+				'context_id'    => 'comments',
+				'selector_id'   => 'action',
 			),
 		);
 
@@ -483,7 +477,7 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	protected function get_generated_title( $args ) {
 
-		if ( ! isset( $args['selector_id'] ) ) {
+		if ( empty( $args['selector_id'] ) ) {
 			return sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $args['key'] + 1 ) );
 		}
 
@@ -496,7 +490,7 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$action   = ( ! empty( $args['action_id'] ) ) ? $this->get_label( $args['action_id'], 'action' ) : null;
-		$selector = $this->get_selector_types( $args['selector_id'] );
+		$selector = ( ! empty( $args['selector_id'] ) ) ? $this->get_selector_types( $args['selector_id'] ) : null;
 
 		if ( ! empty( $action ) ) {
 
