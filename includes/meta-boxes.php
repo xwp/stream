@@ -495,13 +495,10 @@ class WP_Stream_Reports_Metaboxes {
 			$dataset = '';
 		}
 
-		if ( ! empty( $args['action_id'] ) ) {
-			$action = $this->get_label( $args['action_id'], 'action' );
-		}
-
+		$action   = ( ! empty( $args['action_id'] ) ) ? $this->get_label( $args['action_id'], 'action' ) : null;
 		$selector = $this->get_selector_types( $args['selector_id'] );
 
-		if ( isset( $action ) ) {
+		if ( ! empty( $action ) ) {
 
 			if ( ! empty( $dataset ) ) {
 				$string = _x(
@@ -517,23 +514,22 @@ class WP_Stream_Reports_Metaboxes {
 				);	
 			}
 			
-			$title = sprintf( $string, $action, $dataset, $selector );
+			
 		} else if ( isset( $args['connector_id'] ) ) {
 			$string = _x(
-				'%1$s Activity by %2$s',
-				'1: Dataset 2: Selector',
+				'All Activity in %1$s by %3$s',
+				'1: Dataset 3: Selector',
 				'stream-reports'
 			);
-			$title = sprintf( $string, $dataset, $selector );
 		} else {
 			$string = _x(
-				'All Activity by %1$s',
+				'All Activity by %3$s',
 				'Selector',
 				'stream-reports'
 			);
-			$title = sprintf( $string, $selector );
 		}
 
+		$title = sprintf( $string, $action, $dataset, $selector );
 		return $title;
 	}
 
