@@ -42,7 +42,7 @@ class WP_Stream_Query {
 			'date_from'             => null,
 			'date_to'               => null,
 			// Visibility filters
-			'visibility'            => null,
+			'visibility'            => empty( WP_Stream_Settings::$options['exclude_hide_previous_records'] ) ? null : 'published',
 			// __in params
 			'record_greater_than'   => null,
 			'record__in'            => array(),
@@ -77,10 +77,6 @@ class WP_Stream_Query {
 		 * @return array  Updated array of query arguments
 		 */
 		$args = apply_filters( 'wp_stream_query_args', $args );
-
-		if ( true === $args['hide_excluded'] ) {
-			$args = self::add_excluded_record_args( $args );
-		}
 
 		$join  = '';
 		$where = '';
@@ -342,35 +338,6 @@ class WP_Stream_Query {
 		}
 
 		return $results;
-	}
-
-	/**
-	 * Function will add excluded settings args into stream query
-	 *
-	 * @param $args array query args passed to stream_query
-	 *
-	 * @return array
-	 */
-	public static function add_excluded_record_args( $args ) {
-		// Remove record of excluded connector
-		$args['connector__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
-
-		// Remove record of excluded context
-		$args['context__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'contexts' );
-
-		// Remove record of excluded actions
-		$args['action__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
-
-		// Remove record of excluded author
-		$args['author__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'authors' );
-
-		// Remove record of excluded author role
-		$args['author_role__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'roles' );
-
-		// Remove record of excluded ip
-		$args['ip__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'ip_addresses' );
-
-		return $args;
 	}
 
 }

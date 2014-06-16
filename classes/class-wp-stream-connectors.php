@@ -63,18 +63,6 @@ class WP_Stream_Connectors {
 			$classes[] = $class;
 		}
 
-		$exclude_all_connector = false;
-
-		// Check if logging action is enable for user or provide a hook for plugin to override on specific cases
-		if ( ! self::is_logging_enabled_for_user() ) {
-			$exclude_all_connector = true;
-		}
-
-		// Check if logging action is enable for ip or provide a hook for plugin to override on specific cases
-		if ( ! self::is_logging_enabled_for_ip() ) {
-			$exclude_all_connector = true;
-		}
-
 		/**
 		 * Filter allows for adding additional connectors via classes that extend
 		 * WP_Stream_Connector
@@ -89,7 +77,7 @@ class WP_Stream_Connectors {
 		}
 
 		// Get excluded connectors
-		$excluded_connectors = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
+		$excluded_connectors = array();
 
 		foreach ( self::$connectors as $connector ) {
 			// Check if the connectors extends the WP_Stream_Connector class, if not skip it
@@ -122,9 +110,7 @@ class WP_Stream_Connectors {
 				continue;
 			}
 
-			if ( ! $exclude_all_connector ) {
-				$connector::register();
-			}
+			$connector::register();
 
 			// Link context labels to their connector
 			self::$contexts[ $connector::$name ] = $connector::get_context_labels();
@@ -164,96 +150,5 @@ class WP_Stream_Connectors {
 			</div>
 			<?php
 		endif;
-	}
-
-	/**
-	 * Check if we need to record action for specific users
-	 *
-	 * @param null $user
-	 *
-	 * @return mixed|void
-	 */
-	public static function is_logging_enabled_for_user( $user = null ) {
-		if ( is_null( $user ) ) {
-			$user = wp_get_current_user();
-		}
-
-		$bool             = true;
-		$user_roles       = array_values( $user->roles );
-		$excluded_authors = WP_Stream_Settings::get_excluded_by_key( 'authors' );
-		$excluded_roles   = WP_Stream_Settings::get_excluded_by_key( 'roles' );
-
-		// Don't log excluded users
-		if ( in_array( $user->ID, $excluded_authors ) ) {
-			$bool = false;
-		}
-
-		// Don't log excluded user roles
-		if ( 0 !== count( array_intersect( $user_roles, $excluded_roles ) ) ) {
-			$bool = false;
-		}
-
-		// If the user is not a valid user then we always log the action
-		if ( ! ( $user instanceof WP_User ) || 0 === $user->ID ) {
-			$bool = true;
-		}
-
-		/**
-		 * Filter sets boolean result value for this method
-		 *
-		 * @param      bool
-		 * @param  obj $user         Current user object
-		 * @param      string        Current class name
-		 *
-		 * @return bool
-		 */
-		return apply_filters( 'wp_stream_record_log', $bool, $user, get_called_class() );
-	}
-
-	/**
-	 * Check if we need to record action for IP
-	 *
-	 * @param null $ip
-	 *
-	 * @return mixed|void
-	 */
-	public static function is_logging_enabled_for_ip( $ip = null ) {
-		if ( is_null( $ip ) ) {
-			$ip = wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
-		} else {
-			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
-		}
-
-		// If ip is not valid the we will log the action
-		if ( false === $ip ) {
-			$bool = true;
-		} else {
-			$bool = self::is_logging_enabled( 'ip_addresses', $ip );
-		}
-
-		/**
-		 * Filter to exclude actions of a specific ip from being logged
-		 *
-		 * @param         bool      True if logging is enable else false
-		 * @param  string $ip       Current user ip address
-		 * @param         string    Current class name
-		 *
-		 * @return bool
-		 */
-		return apply_filters( 'wp_stream_ip_record_log', $bool, $ip, get_called_class() );
-	}
-
-	/**
-	 * This function is use to check whether logging is enabled
-	 *
-	 * @param $column string name of the setting key (actions|ip_addresses|contexts|connectors)
-	 * @param $value string to check in excluded array
-	 * @return array
-	 */
-	public static function is_logging_enabled( $column, $value ) {
-		$excluded_values = WP_Stream_Settings::get_excluded_by_key( $column );
-		$bool            = ( ! in_array( $value, $excluded_values ) );
-
-		return $bool;
 	}
 }

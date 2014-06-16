@@ -403,13 +403,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$exclude_hide_previous_records = isset( WP_Stream_Settings::$options['exclude_hide_previous_records'] ) ? WP_Stream_Settings::$options['exclude_hide_previous_records'] : 0;
 
-		/**
-		 * Toggle visibility of disabled connectors/actions/contexts on list table filter dropdown
-		 *
-		 * @param bool $hidden Visibility status, default is Hide Previous Record value set in Exclude setting.
-		 */
-		$hide_disabled_column_filter = apply_filters( 'wp_stream_list_table_hide_disabled_ ' . $setting_key, ( 0 === $exclude_hide_previous_records ) ? false : true );
-
 		// @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object
 		if ( 'author' === $column ) {
 			$all_records = array();
@@ -429,28 +422,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 			);
 			$authors[] = new WP_Stream_Author( 0, array( 'is_wp_cli' => true ) );
 
-			if ( $hide_disabled_column_filter ) {
-				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
-			}
-
 			foreach ( $authors as $author ) {
-				if ( $hide_disabled_column_filter && in_array( $author->id, $excluded_records ) ) {
-					continue;
-				}
 				$all_records[ $author->id ] = $author->get_display_name();
 			}
 		} else {
 			$prefixed_column = sprintf( 'stream_%s', $column );
 			$all_records     = WP_Stream_Connectors::$term_labels[ $prefixed_column ];
-
-			if ( true === $hide_disabled_column_filter ) {
-				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
-				foreach ( array_keys( $all_records ) as $_connector ) {
-					if ( in_array( $_connector, $excluded_records ) ) {
-						unset( $all_records[ $_connector ] );
-					}
-				}
-			}
 		}
 
 		$existing_records = wp_stream_existing_records( $column, $table );

@@ -662,11 +662,11 @@ class WP_Stream_Settings {
 
 				foreach ( $current_value['exclude_row'] as $key => $value ) {
 					// Prepare values
-					$author_or_role = isset ( $current_value['author_or_role'][ $key ] ) ? $current_value['author_or_role'][ $key ] : '';
-					$connector      = isset ( $current_value['connector'][ $key ] ) ? $current_value['connector'][ $key ] : '';
-					$context        = isset ( $current_value['context'][ $key ] ) ? $current_value['context'][ $key ] : '';
-					$action         = isset ( $current_value['action'][ $key ] ) ? $current_value['action'][ $key ] : '';
-					$ip_address     = isset ( $current_value['ip_address'][ $key ] ) ? $current_value['ip_address'][ $key ] : '';
+					$author_or_role = isset( $current_value['author_or_role'][ $key ] ) ? $current_value['author_or_role'][ $key ] : '';
+					$connector      = isset( $current_value['connector'][ $key ] ) ? $current_value['connector'][ $key ] : '';
+					$context        = isset( $current_value['context'][ $key ] ) ? $current_value['context'][ $key ] : '';
+					$action         = isset( $current_value['action'][ $key ] ) ? $current_value['action'][ $key ] : '';
+					$ip_address     = isset( $current_value['ip_address'][ $key ] ) ? $current_value['ip_address'][ $key ] : '';
 
 					// Check if rule is empty
 					if ( empty( $author_or_role ) && empty( $connector ) && empty( $context ) && empty( $action ) && empty( $ip_address ) ) {
@@ -891,40 +891,6 @@ class WP_Stream_Settings {
 		}
 
 		return $return_labels;
-	}
-
-	/**
-	 * @param $column string name of the setting key (author|role|action|ip_address|context|connector)
-	 *
-	 * @return array
-	 */
-	public static function get_excluded_by_key( $column ) {
-		$option_name = ( 'author' === $column || 'role' === $column ) ? 'exclude_author_or_role' : 'exclude_' . $column;
-
-		$excluded_values = ( isset( self::$options[ $option_name ] ) ) ? self::$options[ $option_name ] : array();
-
-		if ( is_callable( $excluded_values ) ) {
-			$excluded_values = call_user_func( $excluded_values );
-		}
-
-		$excluded_values = wp_list_filter( $excluded_values, array( '__placeholder__' ), 'NOT' );
-
-		if ( 'exclude_author_or_role' === $option_name ) {
-			// Convert numeric strings to integers
-			array_walk( $excluded_values,
-				function ( &$value ) {
-					if ( is_numeric( $value ) ) {
-						$value = absint( $value );
-					}
-				}
-			);
-
-			$filter = ( 'role' === $column ) ? 'is_string' : 'is_int'; // Author roles are always strings and author ID's are always integers
-
-			$excluded_values = array_values( array_filter( $excluded_values, $filter ) ); // Reset the array keys
-		}
-
-		return $excluded_values;
 	}
 
 	/**

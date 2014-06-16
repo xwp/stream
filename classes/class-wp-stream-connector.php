@@ -90,21 +90,6 @@ abstract class WP_Stream_Connector {
 	 * @return void
 	 */
 	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
-		// Prevent inserting Excluded Context & Actions
-		foreach ( $contexts as $context => $action ) {
-			if ( ! WP_Stream_Connectors::is_logging_enabled( 'contexts', $context ) ) {
-				unset( $contexts[ $context ] );
-			} else {
-				if ( ! WP_Stream_Connectors::is_logging_enabled( 'actions', $action ) ) {
-					unset( $contexts[ $context ] );
-				}
-			}
-		}
-
-		if ( count( $contexts ) == 0 ){
-			return ;
-		}
-
 		$class = get_called_class();
 
 		return WP_Stream_Log::get_instance()->log(

@@ -244,15 +244,13 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	public static function callback_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
 		$user = get_user_by( 'id', $user_id );
 
-		if ( WP_Stream_Connectors::is_logging_enabled_for_user( $user ) ) {
-			self::log(
-				__( '%s logged in', 'stream' ),
-				array( 'display_name' => $user->display_name ),
-				$user->ID,
-				array( 'sessions' => 'login' ),
-				$user->ID
-			);
-		}
+		self::log(
+			__( '%s logged in', 'stream' ),
+			array( 'display_name' => $user->display_name ),
+			$user->ID,
+			array( 'sessions' => 'login' ),
+			$user->ID
+		);
 	}
 
 	/**
