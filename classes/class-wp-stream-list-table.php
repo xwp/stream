@@ -129,7 +129,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$order = 'DESC';
 		}
 		if ( ! $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
-			$orderby = '';
+			$orderby = 'ID';
 		}
 		$args['order']   = $order;
 		$args['orderby'] = $orderby;
@@ -173,10 +173,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 		return $items;
 	}
 
+	/**
+	 * Get last query found rows
+	 *
+	 * @return integer
+	 */
 	function get_total_found_rows() {
-		global $wpdb;
-
-		return $wpdb->get_var( 'SELECT FOUND_ROWS()' );
+		return WP_Stream::$db->get_found_rows();
 	}
 
 	function column_default( $item, $column_name ) {
@@ -247,7 +250,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'id' :
-				$out = absint( $item->ID );
+				$out = $item->ID;
 				break;
 
 			case 'blog_id':
@@ -430,6 +433,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$all_records     = WP_Stream_Connectors::$term_labels[ $prefixed_column ];
 		}
 
+		/* Tempo */
+		$active_records   = array();
+		$disabled_records = array();
+		foreach ( $all_records as $record => $label ) {
+			$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
+		}
+
+		/*
 		$existing_records = wp_stream_existing_records( $column, $table );
 		$active_records   = array();
 		$disabled_records = array();
@@ -446,6 +457,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		if ( isset( $disabled_records[0] ) ) {
 			unset( $disabled_records[0] );
 		}
+		*/
 
 		$sort = function ( $a, $b ) use ( $column ) {
 			$label_a = (string) $a['label'];
@@ -665,7 +677,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 						esc_attr( $key ),
 						esc_attr( $interval['start']->format( 'Y/m/d' ) ),
-						esc_attr( $interval['end']->format( 'Y/m/d' ) ),
+						isset( $interval['end'] ) ? esc_attr( $interval['end']->format( 'Y/m/d' ) ) : '',
 						selected( $key === $date_predefined ),
 						esc_html( $interval['label'] )
 					); // xss ok

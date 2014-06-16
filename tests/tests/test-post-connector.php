@@ -8,7 +8,7 @@
 class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 
 	/**
-	 * Check if post status log action is triggered correcltly
+	 * Check if post status log action is triggered correctly
 	 */
 	public function test_transition_post_status() {
 		//Create a post
@@ -32,8 +32,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 				'object_id'  => $post_id,
 				'context'    => 'post',
 				'action'     => 'updated',
-				'meta_key'   => 'new_status',
-				'meta_value' => 'private',
+				'meta'       => array( 'new_status' => 'private' ),
 			)
 		);
 

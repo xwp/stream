@@ -351,10 +351,10 @@ class WP_Stream_Admin {
 		$plugin = plugin_basename( $file );
 
 		if ( is_plugin_active_for_network( $plugin ) ) {
-			$current_versions = get_site_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$current_versions = get_site_option( WP_Stream_Install_WPDB::KEY . '_connectors', array() );
 			$network          = true;
 		} elseif ( is_plugin_active( $plugin ) ) {
-			$current_versions = get_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$current_versions = get_option( WP_Stream_Install_WPDB::KEY . '_connectors', array() );
 			$network          = false;
 		} else {
 			return;
@@ -366,9 +366,9 @@ class WP_Stream_Admin {
 		}
 
 		if ( $network ) {
-			update_site_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+			update_site_option( WP_Stream_Install_WPDB::KEY . '_registered_connectors', $current_versions );
 		} else {
-			update_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+			update_option( WP_Stream_Install_WPDB::KEY . '_registered_connectors', $current_versions );
 		}
 
 		return;
@@ -555,24 +555,12 @@ class WP_Stream_Admin {
 	private static function erase_stream_records() {
 		global $wpdb;
 
-		$where = '';
+		$args = array();
 		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+			$args['blog_id'] = get_current_blog_id();
 		}
 
-		$wpdb->query(
-			$wpdb->prepare(
-				"DELETE `stream`, `context`, `meta`
-				FROM {$wpdb->stream} AS `stream`
-				LEFT JOIN {$wpdb->streamcontext} AS `context`
-				ON `context`.`record_id` = `stream`.`ID`
-				LEFT JOIN {$wpdb->streammeta} AS `meta`
-				ON `meta`.`record_id` = `stream`.`ID`
-				WHERE `stream`.`type` = %s
-				$where;",
-				'stream'
-			)
-		);
+		wp_stream_delete_records( $args );
 	}
 
 	public static function wp_ajax_defaults() {
@@ -621,6 +609,9 @@ class WP_Stream_Admin {
 		global $wpdb;
 
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+		if ( ! class_exists( WP_Stream_Install_WPDB ) ) {
+			include WP_STREAM_INC_DIR . '/db/install/wpdb.php';
+		}
 
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			// Prevent stream action from being fired on plugin
@@ -630,16 +621,13 @@ class WP_Stream_Admin {
 			if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 				$blog_id = get_current_blog_id();
 
-				$wpdb->query( "DELETE FROM {$wpdb->base_prefix}stream WHERE blog_id = $blog_id" );
+				wp_stream_delete_records( array( 'blog_id' => $blog_id ) );
 
 				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-				delete_option( WP_Stream_Install::KEY );
+				delete_option( WP_Stream_Install_WPDB::KEY );
 				delete_option( WP_Stream_Settings::KEY );
 			} else {
-				// Delete all tables
-				foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
-					$wpdb->query( "DROP TABLE $table" );
-				}
+				WP_Stream::$db->reset();
 
 				// Delete database options
 				if ( is_multisite() ) {
@@ -647,7 +635,7 @@ class WP_Stream_Admin {
 					foreach ( $blogs as $blog ) {
 						switch_to_blog( $blog['blog_id'] );
 						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-						delete_option( WP_Stream_Install::KEY );
+						delete_option( WP_Stream_Install_WPDB::KEY );
 						delete_option( WP_Stream_Settings::KEY );
 					}
 					restore_current_blog();
@@ -657,7 +645,7 @@ class WP_Stream_Admin {
 				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 				delete_site_option( WP_Stream_Updater::LICENSE_KEY );
 				delete_site_option( WP_Stream_Updater::LICENSEE_KEY );
-				delete_site_option( WP_Stream_Install::KEY );
+				delete_site_option( WP_Stream_Install_WPDB::KEY );
 				delete_site_option( WP_Stream_Settings::KEY );
 				delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
 				delete_site_option( WP_Stream_Settings::NETWORK_KEY );
@@ -701,29 +689,18 @@ class WP_Stream_Admin {
 
 		$days = $options['general_records_ttl'];
 		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
-
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
-		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
+		$args = array(
+			'date_to' => $date->format( 'Y-m-d H:i:s' ),
+			'type'    => 'stream',
+		);
 
 		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+			$args['blog_id'] = get_current_blog_id();
 		}
 
-		$wpdb->query(
-			$wpdb->prepare(
-				"DELETE `stream`, `context`, `meta`
-				FROM {$wpdb->stream} AS `stream`
-				LEFT JOIN {$wpdb->streamcontext} AS `context`
-				ON `context`.`record_id` = `stream`.`ID`
-				LEFT JOIN {$wpdb->streammeta} AS `meta`
-				ON `meta`.`record_id` = `stream`.`ID`
-				WHERE `stream`.`type` = %s
-				$where;",
-				'stream',
-				$date->format( 'Y-m-d H:i:s' )
-			)
-		);
+		wp_stream_delete_records( $args );
 	}
 
 	private static function _role_can_view_stream( $role ) {

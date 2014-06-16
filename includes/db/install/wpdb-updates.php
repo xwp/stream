@@ -1,5 +1,58 @@
 <?php
 
+// TODO: Test this update routine
+/**
+ * Version 2.0.0
+ *
+ * Drop the contexts table, introduce new columns to _stream, and migrate data
+ *
+ * @param string $db_version Database version updating from
+ * @param string $current_version Database version updating to
+ *
+ * @return string $current_version if updated correctly
+ */
+function wp_stream_update_auto_200( $db_version, $current_version ) {
+	global $wpdb;
+	$prefix = WP_Stream_Install_WPDB::$table_prefix;
+
+	do_action( 'wp_stream_before_auto_db_update_' . $db_version, $current_version );
+
+	// Check to see if our new columns already exists
+	$rows = $wpdb->get_results( "SHOW COLUMNS FROM `{$prefix}stream` WHERE field IN ('connector', 'context', 'action')" );
+
+	// If ALL new columns don't exist, carry on
+	if ( empty( $rows ) ) {
+		// Create new columns
+		$wpdb->query( "ALTER TABLE `{$prefix}stream`
+			ADD `connector` VARCHAR(255) NOT NULL AFTER `type`,
+			ADD `context` VARCHAR(255) NOT NULL AFTER `connector`,
+			ADD `action` VARCHAR(255) NOT NULL AFTER `context`" );
+		// Add indexes for them
+		$wpdb->query( "CREATE INDEX connector ON `{$prefix}stream` (connector)" );
+		$wpdb->query( "CREATE INDEX context ON `{$prefix}stream` (context)" );
+		$wpdb->query( "CREATE INDEX action ON `{$prefix}stream` (action)" );
+
+		// Move data over from the old table to the new columns
+		$sql = "UPDATE {$prefix}stream stream
+		LEFT JOIN {$prefix}stream_context context ON stream.ID = context.record_id
+		SET stream.context = context.context,
+		stream.connector = context.connector,
+		stream.action = context.action";
+		$wpdb->query( $sql );
+
+		// Drop the deprecated table
+		$wpdb->query( "DROP TABLE `{$prefix}stream_context`" );
+	} elseif ( count( $rows ) < 3 ) { // Else, fail the procedure alltogether
+		wp_die( 'Invalid/Incomplete DB schema' );
+	}
+
+	// TODO: We should also migrate existing data to the new table, probably
+	// save it to a temporary table before we DROP the context table, then add
+	// them later after creating the new columns
+
+	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
+}
+
 /**
  * Version 1.4.5
  *
@@ -50,7 +103,7 @@ function wp_stream_update_auto_142( $db_version, $current_version ) {
 function wp_stream_update_142( $db_version, $current_version ) {
 	// If $db_version if 1.4.1 then we need to run all updates again. Otherwise. We skip this update.
 	if ( version_compare( $db_version, '1.4.1', '=' ) ) {
-		$versions = WP_Stream_Install::db_update_versions();
+		$versions = WP_Stream_Install_WPDB::db_update_versions();
 		foreach ( $versions as $version ) {
 			// Further updates will apply themselves on their on.
 			if ( '1.4.2' === $version ) {
@@ -84,7 +137,7 @@ function wp_stream_update_142( $db_version, $current_version ) {
 function wp_stream_update_auto_140( $db_version, $current_version ) {
 	global $wpdb;
 
-	$prefix = WP_Stream_Install::$table_prefix;
+	$prefix = WP_Stream_Install_WPDB::$table_prefix;
 
 	do_action( 'wp_stream_before_auto_db_update_' . $db_version, $current_version );
 
@@ -127,7 +180,7 @@ function wp_stream_update_auto_140( $db_version, $current_version ) {
 function wp_stream_update_140( $db_version, $current_version ) {
 	global $wpdb;
 
-	$prefix = WP_Stream_Install::$table_prefix;
+	$prefix = WP_Stream_Install_WPDB::$table_prefix;
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
@@ -265,8 +318,8 @@ function wp_stream_update_131( $db_version, $current_version ) {
 function wp_stream_update_migrate_installer_edits_to_theme_editor_connector() {
 	global $wpdb;
 
-	$db_version      = WP_Stream_Install::$db_version;
-	$current_version = WP_Stream_Install::$current;
+	$db_version      = WP_Stream_Install_WPDB::$db_version;
+	$current_version = WP_Stream_Install_WPDB::$current;
 
 	$args = array(
 		'connector' => 'installer',
@@ -356,8 +409,8 @@ function wp_stream_update_130( $db_version, $current_version ) {
 function wp_stream_update_migrate_old_options_to_exclude_tab( $labels ) {
 	global $wpdb;
 
-	$db_version      = WP_Stream_Install::$db_version;
-	$current_version = WP_Stream_Install::$current;
+	$db_version      = WP_Stream_Install_WPDB::$db_version;
+	$current_version = WP_Stream_Install_WPDB::$current;
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
@@ -506,7 +559,7 @@ function wp_stream_update_125( $db_version, $current_version ) {
 function wp_stream_update_117( $db_version, $current_version ) {
 	global $wpdb;
 
-	$prefix = WP_Stream_Install::$table_prefix;
+	$prefix = WP_Stream_Install_WPDB::$table_prefix;
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
@@ -534,7 +587,7 @@ function wp_stream_update_117( $db_version, $current_version ) {
 function wp_stream_update_114( $db_version, $current_version ) {
 	global $wpdb;
 
-	$prefix = WP_Stream_Install::$table_prefix;
+	$prefix = WP_Stream_Install_WPDB::$table_prefix;
 
 	if ( ! empty( $wpdb->charset ) ) {
 		return $current_version;

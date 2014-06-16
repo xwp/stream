@@ -3,10 +3,11 @@
 
 set -e
 
-WPCS_STANDARD=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi)
 if [ -e .ci-env.sh ]; then
 	source .ci-env.sh
 fi
+
+WPCS_STANDARD=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi)
 
 message="Checking staged changes..."
 git_status_egrep='^[MARC].+'
@@ -46,6 +47,14 @@ if [ ${#staged_php_files[@]} != 0 ]; then
 		php -lf $php_file
 	done
 
+	# PHP_CodeSniffer WordPress Coding Standards
+	echo "## phpcs"
+	if command -v phpcs >/dev/null 2>&1; then
+		phpcs -p -s -v --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi) "${staged_php_files[@]}"
+	else
+		echo "Skipping phpcs since not installed"
+	fi
+
 	# PHPUnit
 	if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
 		echo "## phpunit"
@@ -80,14 +89,6 @@ if [ ${#staged_php_files[@]} != 0 ]; then
 		else
 			phpunit
 		fi
-	fi
-
-	# PHP_CodeSniffer WordPress Coding Standards
-	echo "## phpcs"
-	if command -v phpcs >/dev/null 2>&1; then
-		phpcs -p -s -v --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi) "${staged_php_files[@]}"
-	else
-		echo "Skipping phpcs since not installed"
 	fi
 fi
 

@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: https://wp-stream.com/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 1.4.6
+ * Version: 2.0.0
  * Author: Stream
  * Author URI: https://wp-stream.com/
  * License: GPLv2+
@@ -36,7 +36,7 @@ class WP_Stream {
 	 *
 	 * @const string
 	 */
-	const VERSION = '1.4.6';
+	const VERSION = '2.0.0';
 
 	/**
 	 * Hold Stream instance
@@ -46,9 +46,9 @@ class WP_Stream {
 	public static $instance;
 
 	/**
-	 * @var WP_Stream_DB
+	 * @var WP_Stream_DB_Base
 	 */
-	public $db = null;
+	public static $db = null;
 
 	/**
 	 * @var WP_Stream_Network
@@ -70,11 +70,17 @@ class WP_Stream {
 		// Load helper functions
 		require_once WP_STREAM_INC_DIR . 'functions.php';
 
-		// Load DB helper class
-		$this->db = new WP_Stream_DB;
+		// Load DB helper interface/class
+		$driver = apply_filters( 'wp_stream_db_adapter', 'wpdb' );
+		if ( file_exists( WP_STREAM_INC_DIR . "db/$driver.php" ) ) {
+			require_once WP_STREAM_INC_DIR . "db/$driver.php";
+		}
+		if ( ! self::$db ) {
+			wp_die( __( 'Stream: Could not load chosen DB driver.', 'stream' ), 'Stream DB Error' );
+		}
 
-		// Check DB and display an admin notice if there are tables missing
-		add_action( 'init', array( $this, 'verify_database_present' ) );
+		// Check DB and add message if not present
+		add_action( 'init', array( self::$db, 'check_db' ) );
 
 		// Install the plugin
 		add_action( 'wp_stream_before_db_notices', array( __CLASS__, 'install' ) );
@@ -161,84 +167,8 @@ class WP_Stream {
 		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
-	/**
-	 * Installation / Upgrade checks
-	 *
-	 * @action register_activation_hook
-	 * @return void
-	 */
-	public static function install() {
-		// Install plugin tables
-		$update = WP_Stream_Install::get_instance();
-	}
-
-	/**
-	 * Verify that all needed databases are present and add an error message if not.
-	 *
-	 * @return void
-	 */
-	public function verify_database_present() {
-		/**
-		 * Filter will halt install() if set to true
-		 *
-		 * @param  bool
-		 * @return bool
-		 */
-		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
-			return;
-		}
-
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		}
-
-		global $wpdb;
-
-		$database_message  = '';
-		$uninstall_message = '';
-
-		// Check if all needed DB is present
-		$missing_tables = array();
-		foreach ( $this->db->get_table_names() as $table_name ) {
-			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-				$missing_tables[] = $table_name;
-			}
-		}
-
-		if ( $missing_tables ) {
-			$database_message .= sprintf(
-				'%s <strong>%s</strong>',
-				_n(
-					'The following table is not present in the WordPress database:',
-					'The following tables are not present in the WordPress database:',
-					count( $missing_tables ),
-					'stream'
-				),
-				esc_html( implode( ', ', $missing_tables ) )
-			);
-		}
-
-		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) && current_user_can( 'manage_network_plugins' ) ) {
-			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), network_admin_url( 'plugins.php#stream' ) );
-		} elseif ( current_user_can( 'activate_plugins' ) ) {
-			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
-		}
-
-		/**
-		 * Fires before admin notices are triggered for missing database tables.
-		 */
-		do_action( 'wp_stream_before_db_notices' );
-
-		if ( ! empty( $database_message ) ) {
-			self::notice( $database_message );
-			if ( ! empty( $uninstall_message ) ) {
-				self::notice( $uninstall_message );
-			}
-		}
-	}
-
 	static function update_activation_hook() {
-		WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( __CLASS__, 'install' ), self::VERSION );
+		WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( self::$db, 'install' ), self::VERSION );
 	}
 
 	/**
@@ -331,7 +261,7 @@ class WP_Stream {
 
 if ( WP_Stream::is_valid_php_version() ) {
 	$GLOBALS['wp_stream'] = WP_Stream::get_instance();
-	register_activation_hook( __FILE__, array( 'WP_Stream', 'install' ) );
+	register_activation_hook( __FILE__, array( WP_Stream::$db, 'install' ) );
 } else {
 	WP_Stream::fail_php_version();
 }
