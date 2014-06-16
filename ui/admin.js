@@ -230,7 +230,7 @@ jQuery(function( $ ) {
 	});
 
 	$( '#exclude_rule_list_new_rule' ).on( 'click', function() {
-		var $excludeList = $( this ).parent().next( 'table.stream-exclude-list' );
+		var $excludeList = $( this ).parent().parent().find( 'table.stream-exclude-list' );
 
 		$( '.select2-select', $excludeList ).each( function(){
 			$( this ).select2( 'destroy' );
@@ -247,7 +247,7 @@ jQuery(function( $ ) {
 	});
 
 	$( '#exclude_rule_list_remove_rules' ).on( 'click', function() {
-		var $excludeList = $( this ).parent().next( 'table.stream-exclude-list' ),
+		var $excludeList = $( this ).parent().parent().find( 'table.stream-exclude-list' ),
 			selectedRows = $( 'tbody input.cb-select:checked', $excludeList ).closest( 'tr' );
 
 		if ( ( $( 'tbody tr', $excludeList ).length - selectedRows.length ) >= 1 ) {
