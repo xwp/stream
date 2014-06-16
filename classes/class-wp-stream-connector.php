@@ -92,14 +92,18 @@ abstract class WP_Stream_Connector {
 	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
 		$class = get_called_class();
 
-		return WP_Stream_Log::get_instance()->log(
-			$class::$name,
-			$message,
-			$args,
-			$object_id,
-			$contexts,
-			$user_id
-		);
+		// Insert multiple entries for multiple contexts
+		foreach ( $contexts as $context => $action ) {
+			$status = WP_Stream_Log::get_instance()->log(
+				$class::$name,
+				$message,
+				$args,
+				$object_id,
+				$context,
+				$action,
+				$user_id
+			);
+		}
 	}
 
 	/**

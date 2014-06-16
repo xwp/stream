@@ -54,27 +54,22 @@ class WP_Stream_Log {
 	 * @param  string $message   sprintf-ready error message string
 	 * @param  array  $args      sprintf (and extra) arguments to use
 	 * @param  int    $object_id Target object id
-	 * @param  array  $contexts  Contexts of the action
+	 * @param  array  $context   Context of the action
 	 * @param  int    $user_id   User responsible for the action
 	 *
 	 * @internal param string $action Action performed (stream_action)
 	 * @return int
 	 */
-	public function log( $connector, $message, $args, $object_id, $contexts, $user_id = null ) {
+	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null ) {
 		global $wpdb;
 
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
 
-		foreach ( $contexts as $context => $action ) {
-			if ( self::is_record_excluded( $connector, $context, $action, $user_id ) ) {
-				unset( $contexts[ $context ] );
-			}
-		}
-
-		if ( empty( $contexts ) ) {
-			return false;
+		$visibility = 'publish';
+		if ( self::is_record_excluded( $connector, $context, $action, $user_id ) ) {
+			$visibility = 'private';
 		}
 
 		$user  = new WP_User( $user_id );
@@ -105,10 +100,12 @@ class WP_Stream_Log {
 			'author'      => $user_id,
 			'author_role' => ! empty( $user->roles ) ? $user->roles[0] : null,
 			'created'     => current_time( 'mysql', 1 ),
+			'visibility'  => $visibility,
 			'summary'     => vsprintf( $message, $args ),
 			'parent'      => self::$instance->prev_record,
 			'connector'   => $connector,
-			'contexts'    => $contexts,
+			'context'     => $context,
+			'action'      => $action,
 			'meta'        => $meta,
 			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
@@ -178,7 +175,7 @@ class WP_Stream_Log {
 				}
 			}
 
-			$exclude_rules = array_filter( $exclude, 'is_null' );
+			$exclude_rules = array_filter( $exclude, 'strlen' );
 
 			if ( ! empty( $exclude_rules ) ) {
 				$excluded = true;
