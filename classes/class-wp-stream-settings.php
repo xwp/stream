@@ -265,7 +265,7 @@ class WP_Stream_Settings {
 					'title' => esc_html__( 'Exclude', 'stream' ),
 					'fields' => array(
 						array(
-							'name'        => 'rule_list',
+							'name'        => 'rules',
 							'title'       => esc_html__( 'Exclude Rules', 'stream' ),
 							'type'        => 'rule_list',
 							'desc'        => esc_html__( 'Create rules for excluding certain scenarios from ever being logged by Stream.', 'stream' ),
@@ -661,12 +661,19 @@ class WP_Stream_Settings {
 				}
 
 				foreach ( $current_value['exclude_row'] as $key => $value ) {
+					// Prepare values
+					$author_or_role = isset ( $current_value['author_or_role'][ $key ] ) ? $current_value['author_or_role'][ $key ] : '';
+					$connector      = isset ( $current_value['connector'][ $key ] ) ? $current_value['connector'][ $key ] : '';
+					$context        = isset ( $current_value['context'][ $key ] ) ? $current_value['context'][ $key ] : '';
+					$action         = isset ( $current_value['action'][ $key ] ) ? $current_value['action'][ $key ] : '';
+					$ip_address     = isset ( $current_value['ip_address'][ $key ] ) ? $current_value['ip_address'][ $key ] : '';
 
-					// Author or Role dropdown menu
-					if ( ! isset ( $current_value['author_or_role'][ $key ] ) ) {
-						$current_value['author_or_role'][ $key ] = '';
+					// Check if rule is empty
+					if ( empty( $author_or_role ) && empty( $connector ) && empty( $context ) && empty( $action ) && empty( $ip_address ) ) {
+						continue;
 					}
 
+					// Author or Role dropdown menu
 					$author_or_role_values   = array();
 					$author_or_role_selected = array();
 
@@ -676,15 +683,15 @@ class WP_Stream_Settings {
 						if ( count( $users ) ) {
 							$args['user_count'] = sprintf( _n( '1 user', '%s users', count( $users ), 'stream' ), count( $users ) );
 						}
-						if ( $role_id === $current_value['author_or_role'][ $key ] ) {
+						if ( $role_id === $author_or_role ) {
 							$author_or_role_selected['id'] = $role_id;
 							$author_or_role_selected['text'] = $role;
 						}
 						$author_or_role_values[] = $args;
 					}
 
-					if ( empty( $author_or_role_selected ) && is_numeric( $current_value['author_or_role'][ $key ] ) ) {
-						$user                    = new WP_User( $current_value['author_or_role'][ $key ] );
+					if ( empty( $author_or_role_selected ) && is_numeric( $author_or_role ) ) {
+						$user                    = new WP_User( $author_or_role );
 						$author_or_role_selected = array( 'id' => $user->ID, 'text' => $user->display_name );
 					}
 
@@ -702,35 +709,27 @@ class WP_Stream_Settings {
 					);
 
 					// Context dropdown menu
-					if ( ! isset ( $current_value['connector'][ $key ] ) ) {
-						$current_value['connector'][ $key ] = '';
-					}
-
-					if ( ! isset ( $current_value['context'][ $key ] ) ) {
-						$current_value['context'][ $key ] = '';
-					}
-
 					$context_values = array();
 
-					foreach ( self::get_terms_labels( 'context' ) as $context_id => $context ) {
-						if ( is_array( $context ) ) {
+					foreach ( self::get_terms_labels( 'context' ) as $context_id => $context_data ) {
+						if ( is_array( $context_data ) ) {
 							$child_values = array();
-							if ( isset( $context['children'] ) ) {
+							if ( isset( $context_data['children'] ) ) {
 								$child_values = array();
-								foreach ( $context['children'] as $child_id => $child_value ) {
+								foreach ( $context_data['children'] as $child_id => $child_value ) {
 									$child_values[] = array( 'id' => $child_id, 'text' => $child_value );
 								}
 							}
-							if ( isset( $context['label'] ) ) {
-								$context_values[] = array( 'id' => 'group-' . $context_id, 'text' => $context['label'], 'children' => $child_values );
+							if ( isset( $context_data['label'] ) ) {
+								$context_values[] = array( 'id' => 'group-' . $context_id, 'text' => $context_data['label'], 'children' => $child_values );
 							}
 						} else {
-							$context_values[] = array( 'id' => $context_id, 'text' => $context );
+							$context_values[] = array( 'id' => $context_id, 'text' => $context_data );
 						}
 					}
 
-					if ( empty( $current_value['context'][ $key ] ) && ! empty( $current_value['connector'][ $key ] ) ) {
-						$current_value['context'][ $key ] = 'group-' . $current_value['connector'][ $key ];
+					if ( empty( $context ) && ! empty( $connector ) ) {
+						$context = 'group-' . $connector;
 					}
 
 					$connector_input = sprintf(
@@ -739,7 +738,7 @@ class WP_Stream_Settings {
 						esc_attr( $section ),
 						esc_attr( $name ),
 						esc_attr( 'connector' ),
-						esc_attr( $current_value['connector'][ $key ] )
+						esc_attr( $connector )
 					);
 
 					$context_input = sprintf(
@@ -749,20 +748,16 @@ class WP_Stream_Settings {
 						esc_attr( $name ),
 						'context',
 						esc_attr( json_encode( $context_values ) ),
-						esc_attr( $current_value['context'][ $key ] ),
+						esc_attr( $context ),
 						esc_html__( 'Any Context', 'stream' ),
 						'connector'
 					);
 
 					// Action dropdown menu
-					if ( ! isset ( $current_value['action'][ $key ] ) ) {
-						$current_value['action'][ $key ] = '';
-					}
-
 					$action_values = array();
 
-					foreach ( self::get_terms_labels( 'action' ) as $action_id => $action ) {
-						$action_values[] = array( 'id' => $action_id, 'text' => $action );
+					foreach ( self::get_terms_labels( 'action' ) as $action_id => $action_data ) {
+						$action_values[] = array( 'id' => $action_id, 'text' => $action_data );
 					}
 
 					$action_input = sprintf(
@@ -772,15 +767,11 @@ class WP_Stream_Settings {
 						esc_attr( $name ),
 						'action',
 						esc_attr( json_encode( $action_values ) ),
-						esc_attr( $current_value['action'][ $key ] ),
+						esc_attr( $action ),
 						esc_html__( 'Any Action', 'stream' )
 					);
 
 					// IP Address text input
-					if ( ! isset ( $current_value['ip_address'][ $key ] ) ) {
-						$current_value['ip_address'][ $key ] = '';
-					}
-
 					$ip_address_input = sprintf(
 						'<input type="text" name="%1$s[%2$s_%3$s][%4$s][]" class="%4$s" placeholder="%5$s" value="%6$s" />',
 						esc_attr( $option_key ),
@@ -788,7 +779,7 @@ class WP_Stream_Settings {
 						esc_attr( $name ),
 						'ip_address',
 						esc_attr( $placeholder ),
-						esc_attr( $current_value['ip_address'][ $key ] )
+						esc_attr( $ip_address )
 					);
 
 					// Hidden helper input
