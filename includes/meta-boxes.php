@@ -722,9 +722,8 @@ class WP_Stream_Reports_Metaboxes {
 		if ( empty( self::$sections ) ) {
 			self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 		}
-		$sections = $this->migrate_settings();
 
-		$section = $sections[ $id ];
+		$section = self::$sections[ $id ];
 		$section = $this->parse_section( $section );
 
 		$section['key'] = $id;
@@ -852,16 +851,16 @@ class WP_Stream_Reports_Metaboxes {
 				$sections[ $key ]['selector_id'] = $args['selector_type'];
 			}
 
-			unset( $sections[ $key]['data_group'] );
-			unset( $sections[ $key]['data_type'] );
-			unset( $sections[ $key]['selector_type'] );
+			unset( $sections[ $key ]['data_group'] );
+			unset( $sections[ $key ]['data_type'] );
+			unset( $sections[ $key ]['selector_type'] );
 		}
 
-		return $sections;
+		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'sections', $sections );
 	}
 
 	public function find_connector_by_context( $context ) {
-		$output     = '';
+		$output     = 'unknown';
 		$connectors = $this->assemble_records( 'connector' );
 		foreach ( $connectors as $connector => $item ) {
 			if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
