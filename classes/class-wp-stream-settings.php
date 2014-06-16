@@ -429,7 +429,6 @@ class WP_Stream_Settings {
 		$name        = isset( $field['name'] ) ? $field['name'] : null;
 		$class       = isset( $field['class'] ) ? $field['class'] : null;
 		$placeholder = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
-		$group       = isset( $field['group'] ) ? $field['group'] : null;
 		$description = isset( $field['desc'] ) ? $field['desc'] : null;
 		$href        = isset( $field['href'] ) ? $field['href'] : null;
 		$after_field = isset( $field['after_field'] ) ? $field['after_field'] : null;
@@ -599,15 +598,14 @@ class WP_Stream_Settings {
 				}
 
 				$input_html = sprintf(
-					'<input type="hidden" name="%1$s[%2$s_%3$s]" data-values=\'%4$s\' value="%5$s" class="select2-select %6$s" data-placeholder="%7$s" %8$s />',
+					'<input type="hidden" name="%1$s[%2$s_%3$s]" data-values=\'%4$s\' value="%5$s" class="select2-select %6$s" data-placeholder="%7$s" />',
 					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
 					esc_attr( json_encode( $data_values ) ),
 					esc_attr( $current_value ),
 					$class,
-					sprintf( esc_html__( 'Any %s', 'stream' ), $title ),
-					isset( $group ) ? ' data-group="' . esc_attr( $group ) . '"' : ''
+					sprintf( esc_html__( 'Any %s', 'stream' ), $title )
 				);
 
 				$output = sprintf(
@@ -685,8 +683,8 @@ class WP_Stream_Settings {
 						$author_or_role_values[] = $args;
 					}
 
-					if ( empty( $author_or_role_selected ) && is_numeric( $current_value ) ) {
-						$user                    = new WP_User( $current_value );
+					if ( empty( $author_or_role_selected ) && is_numeric( $current_value['author_or_role'][ $key ] ) ) {
+						$user                    = new WP_User( $current_value['author_or_role'][ $key ] );
 						$author_or_role_selected = array( 'id' => $user->ID, 'text' => $user->display_name );
 					}
 
@@ -724,11 +722,15 @@ class WP_Stream_Settings {
 								}
 							}
 							if ( isset( $context['label'] ) ) {
-								$context_values[] = array( 'id' => $context_id, 'text' => $context['label'], 'children' => $child_values );
+								$context_values[] = array( 'id' => 'group-' . $context_id, 'text' => $context['label'], 'children' => $child_values );
 							}
 						} else {
 							$context_values[] = array( 'id' => $context_id, 'text' => $context );
 						}
+					}
+
+					if ( empty( $current_value['context'][ $key ] ) && ! empty( $current_value['connector'][ $key ] ) ) {
+						$current_value['context'][ $key ] = 'group-' . $current_value['connector'][ $key ];
 					}
 
 					$connector_input = sprintf(

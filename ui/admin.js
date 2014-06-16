@@ -97,7 +97,7 @@ jQuery(function( $ ) {
 		$contextInput.select2( 'val', 'group-' + $queryVars.connector );
 	}
 
-	$('#record-filter-form').submit( function() {
+	$( '#record-filter-form' ).submit( function() {
 		var	$context        = $( '.toplevel_page_wp_stream :input.chosen-select[name=context]' ),
 			$option         = $context.find( 'option:selected' ),
 			$connector      = $context.parent().find( '.record-filter-connector' ),
@@ -259,6 +259,20 @@ jQuery(function( $ ) {
 			$( selectedRows ).not( ':first' ).remove();
 			$( '.select2-select', selectedRows ).select2( 'val', '' );
 		}
+	});
+
+	$( '.stream-exclude-list' ).closest( 'form' ).submit( function() {
+		var	contexts = $( '.stream-exclude-list :input.select2-select.context' );
+
+		contexts.each( function() {
+			var selected  = $( this ).select2( 'val' ),
+				connector = $( this ).prevAll( ':input.connector' );
+
+			if ( 'group-' === selected.substr( 0, 6 ) ) {
+				$( this ).select2( 'val', '' );
+				connector.val( selected.substr( 6 ) );
+			}
+		});
 	});
 
 	$( window ).load(function() {
