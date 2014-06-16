@@ -34,6 +34,10 @@ class WP_Stream_Reports_Metaboxes {
 		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 		$this->charts   = new WP_Stream_Reports_Charts();
 
+		if ( isset( self::$sections[0] ) && isset( self::$sections[0]['data_type'] ) ) {
+			$this->migrate_settings();
+		}
+
 		// Finalize charts
 		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'translate_labels' ), 10, 2 );
 
@@ -430,6 +434,7 @@ class WP_Stream_Reports_Metaboxes {
 		$available_selectors = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip', 'blog_id' );
 
 		if ( ! in_array( $selector, $available_selectors ) ) {
+			echo 'fail';
 			return array();
 		}
 
@@ -717,8 +722,9 @@ class WP_Stream_Reports_Metaboxes {
 		if ( empty( self::$sections ) ) {
 			self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 		}
+		$sections = $this->migrate_settings();
 
-		$section = self::$sections[ $id ];
+		$section = $sections[ $id ];
 		$section = $this->parse_section( $section );
 
 		$section['key'] = $id;
@@ -822,6 +828,49 @@ class WP_Stream_Reports_Metaboxes {
 		$all_records = $active_records + $disabled_records;
 
 		return $all_records;
+	}
+
+	public function migrate_settings() { 
+		$sections = self::$sections;
+		foreach ( $sections as $key => $args ) {
+			switch ( $args['data_group'] ) {
+				case  'action' :
+					$sections[ $key ]['action_id'] = $args['data_type'];
+					break;
+				case  'connector' :
+					$sections[ $key ]['connector_id'] = $args['data_type'];
+					break;
+				case  'context' :
+					$sections[ $key ]['connector_id'] = $this->find_connector_by_context( $args['data_type'] );
+					$sections[ $key ]['context_id'] = $args['data_type'];
+					break;
+				case 'other' :
+					break;
+			}
+
+			if ( isset( $args['selector_type'] ) ) {
+				$sections[ $key ]['selector_id'] = $args['selector_type'];
+			}
+
+			unset( $sections[ $key]['data_group'] );
+			unset( $sections[ $key]['data_type'] );
+			unset( $sections[ $key]['selector_type'] );
+		}
+
+		return $sections;
+	}
+
+	public function find_connector_by_context( $context ) {
+		$output     = '';
+		$connectors = $this->assemble_records( 'connector' );
+		foreach ( $connectors as $connector => $item ) {
+			if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
+				$output = $connector;
+				break;
+			}
+		}
+
+		return $output;
 	}
 
 	/**
