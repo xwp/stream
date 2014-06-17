@@ -136,8 +136,8 @@ class WP_Stream_Log {
 			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
 		}
 
-		$user      = new WP_User( $user_id );
-		$user_role = $user->roles[0];
+		$user      = new WP_User();
+		$user_role = isset( $user->roles[0] ) ? $user->roles[0] : null;
 
 		$record = array(
 			'connector'  => $connector,
@@ -150,45 +150,47 @@ class WP_Stream_Log {
 
 		$exclude_settings = WP_Stream_Settings::$options['exclude_rules'];
 
-		foreach ( $exclude_settings['exclude_row'] as $key => $value ) {
-			// Prepare values
-			$author_or_role = isset( $exclude_settings['author_or_role'][ $key ] ) ? $exclude_settings['author_or_role'][ $key ] : '';
-			$connector      = isset( $exclude_settings['connector'][ $key ] ) ? $exclude_settings['connector'][ $key ] : '';
-			$context        = isset( $exclude_settings['context'][ $key ] ) ? $exclude_settings['context'][ $key ] : '';
-			$action         = isset( $exclude_settings['action'][ $key ] ) ? $exclude_settings['action'][ $key ] : '';
-			$ip_address     = isset( $exclude_settings['ip_address'][ $key ] ) ? $exclude_settings['ip_address'][ $key ] : '';
+		if ( isset( $exclude_settings['exclude_row'] ) && ! is_empty( $exclude_settings['exclude_row'] ) ) {
+			foreach ( $exclude_settings['exclude_row'] as $key => $value ) {
+				// Prepare values
+				$author_or_role = isset( $exclude_settings['author_or_role'][ $key ] ) ? $exclude_settings['author_or_role'][ $key ] : '';
+				$connector      = isset( $exclude_settings['connector'][ $key ] ) ? $exclude_settings['connector'][ $key ] : '';
+				$context        = isset( $exclude_settings['context'][ $key ] ) ? $exclude_settings['context'][ $key ] : '';
+				$action         = isset( $exclude_settings['action'][ $key ] ) ? $exclude_settings['action'][ $key ] : '';
+				$ip_address     = isset( $exclude_settings['ip_address'][ $key ] ) ? $exclude_settings['ip_address'][ $key ] : '';
 
-			$exclude = array(
-				'connector'  => ! empty( $connector ) ? $connector : null,
-				'context'    => ! empty( $context ) ? $context : null,
-				'action'     => ! empty( $action ) ? $action : null,
-				'ip_address' => ! empty( $ip_address ) ? $ip_address : null,
-				'author'     => null,
-				'role'       => null,
-			);
+				$exclude = array(
+					'connector'  => ! empty( $connector ) ? $connector : null,
+					'context'    => ! empty( $context ) ? $context : null,
+					'action'     => ! empty( $action ) ? $action : null,
+					'ip_address' => ! empty( $ip_address ) ? $ip_address : null,
+					'author'     => null,
+					'role'       => null,
+				);
 
-			if ( ! empty( $author_or_role ) ) {
-				if ( is_numeric( $author_or_role ) ) {
-					$exclude['author'] = $author_or_role;
-				} else {
-					$exclude['role'] = $author_or_role;
-				}
-			}
-
-			$exclude_rules = array_filter( $exclude, 'strlen' );
-
-			if ( ! empty( $exclude_rules ) ) {
-				$excluded = true;
-
-				foreach ( $exclude_rules as $exclude_key => $exclude_value ) {
-					if ( $record[ $exclude_key ] !== $exclude_value ) {
-						$excluded = false;
-						break;
+				if ( ! empty( $author_or_role ) ) {
+					if ( is_numeric( $author_or_role ) ) {
+						$exclude['author'] = $author_or_role;
+					} else {
+						$exclude['role'] = $author_or_role;
 					}
 				}
 
-				if ( $excluded ) {
-					return true;
+				$exclude_rules = array_filter( $exclude, 'strlen' );
+
+				if ( ! empty( $exclude_rules ) ) {
+					$excluded = true;
+
+					foreach ( $exclude_rules as $exclude_key => $exclude_value ) {
+						if ( $record[ $exclude_key ] !== $exclude_value ) {
+							$excluded = false;
+							break;
+						}
+					}
+
+					if ( $excluded ) {
+						return true;
+					}
 				}
 			}
 		}
