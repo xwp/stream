@@ -1,7 +1,6 @@
 <?php
 
 function wp_stream_reports_selector( $data_types, $args, $class ) {
-
 	$options  = array();
 	foreach ( $data_types as $key => $item ) {
 		$selected = false;
@@ -15,7 +14,7 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 		$option_args = array(
 			'value'     => $key,
 			'label'     => isset( $item['label'] ) ? $item['label'] : null,
-			'selected'  => selected( $key, $selected, false ),
+			'selected'  => selected( $selected, true, false ),
 			'disabled'  => isset( $item['disabled'] ) ? $item['disabled'] : null,
 			'class'     => isset( $item['children'] ) ? 'level-1' : null,
 
@@ -35,7 +34,7 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 				$option_args  = array(
 					'value'     => $child_value,
 					'label'     => isset( $child_item['label'] ) ? $child_item['label'] : null,
-					'selected'  => selected( $child_value, $selected, false ),
+					'selected'  => selected( $selected, true, false ),
 					'disabled'  => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
 					'class'     => 'level-2',
 					

@@ -277,7 +277,6 @@ class WP_Stream_Reports_Metaboxes {
 				$output = apply_filters( 'wp_stream_reports_get_label', $value, $grouping );
 				break;
 		}
-
 		return $output;
 	}
 
@@ -486,9 +485,9 @@ class WP_Stream_Reports_Metaboxes {
 			return sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $args['key'] + 1 ) );
 		}
 
-		if ( isset( $args['context_id'] ) ) {
+		if ( ! empty( $args['context_id'] ) ) {
 			$dataset = $this->get_label( $args['context_id'], 'context' );
-		} else if ( isset( $args['connector_id'] ) ) {
+		} else if ( ! empty( $args['connector_id'] ) ) {
 			$dataset = $this->get_label( $args['connector_id'], 'connector' );
 		} else {
 			$dataset = '';
@@ -514,16 +513,16 @@ class WP_Stream_Reports_Metaboxes {
 			}
 			
 			
-		} else if ( isset( $args['connector_id'] ) ) {
+		} else if ( ! empty( $args['connector_id'] ) ) {
 			$string = _x(
-				'All Activity in %1$s by %3$s',
-				'1: Dataset 3: Selector',
+				'All Activity in %2$s by %3$s',
+				'2: Dataset 3: Selector',
 				'stream-reports'
 			);
 		} else {
 			$string = _x(
 				'All Activity by %3$s',
-				'Selector',
+				'3: Selector',
 				'stream-reports'
 			);
 		}
