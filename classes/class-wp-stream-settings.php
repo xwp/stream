@@ -268,18 +268,8 @@ class WP_Stream_Settings {
 							'name'        => 'rules',
 							'title'       => esc_html__( 'Exclude Rules', 'stream' ),
 							'type'        => 'rule_list',
-							'desc'        => esc_html__( 'Create rules for excluding certain scenarios from ever being logged by Stream.', 'stream' ),
+							'desc'        => esc_html__( 'Create rules for excluding certain kinds of records from appearing in Stream.', 'stream' ),
 							'default'     => array(),
-						),
-						array(
-							'name'        => 'hide_previous_records',
-							'title'       => esc_html__( 'Visibility', 'stream' ),
-							'type'        => 'checkbox',
-							'desc'        => sprintf(
-								esc_html__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
-							),
-							'after_field' => esc_html__( 'Hide Previous Records', 'stream' ),
-							'default'     => 0,
 						),
 					),
 				),
