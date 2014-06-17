@@ -46,10 +46,10 @@ class WP_Stream_Reports_Metaboxes {
 
 		// Specific data for multisite
 		if ( is_multisite() && is_network_admin() ) {
-			add_filter( 'wp_stream_reports_data_types', array( $this, 'mutlisite_data_types' ), 10 );
+			add_filter( 'wp_stream_reports_data_types', array( $this, 'multisite_contexts' ), 10 );
 			add_filter( 'wp_stream_reports_selector_types', array( $this, 'mutlisite_selector_types' ), 10 );
 			add_filter( 'wp_stream_reports_get_label', array( $this, 'multisite_labels' ), 10, 2 );
-			add_filter( 'wp_stream_reports_query_args', array( $this, 'multisite_query_args' ), 10, 2 );
+			add_filter( 'wp_stream_reports_get_contexts', array( $this, 'multisite_contexts' ), 10 );
 		}
 
 		$ajax_hooks = array(
@@ -192,6 +192,7 @@ class WP_Stream_Reports_Metaboxes {
 			'connector_id'  => '',
 			'context_id'    => '',
 			'action_id'     => '',
+			'blog_id'       => '',
 			'selector_id'   => '',
 			'is_new'        => false,
 			'disabled'      => array(),
@@ -339,26 +340,25 @@ class WP_Stream_Reports_Metaboxes {
 		return $output;
 	}
 
-	public function mutlisite_data_types( $old_labels ) {
-		$options = array();
-		$sites   = wp_get_sites();
+	public function multisite_contexts( $old_labels ) {
+		$children = array();
+		$sites    = wp_get_sites();
 		foreach ( $sites as $site ) {
 			$details = get_blog_details( $site['blog_id'] );
-			$options[ $site['blog_id'] ] = $details->blogname;
+			$children[ $site['blog_id'] ] = array(
+				'label'   => $details->blogname,
+				'blog'    => $site['blog_id'],
+			);
 		}
 
 		// Position sites label right after 'all' dataset
-		$labels         = array( 'all' => array() );
-		$labels['site'] = array(
-			'title'   => __( 'Site Activity', 'stream-reports' ),
-			'group'   => 'blog_id',
-			'options' => $options,
-			'disable' => array(
-				'blog_id',
-			),
+		$labels = array(
+			'label'     => __( 'Site Activity', 'stream-reports' ),
+			'children'  => $children,
 		);
-
-		return array_merge( $labels, $old_labels );
+		
+		$new_array = array_merge( array( $labels ), $old_labels );
+		return $new_array;
 	}
 
 	/**
@@ -433,7 +433,6 @@ class WP_Stream_Reports_Metaboxes {
 		$available_selectors = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip', 'blog_id' );
 
 		if ( ! in_array( $selector, $available_selectors ) ) {
-			echo 'fail';
 			return array();
 		}
 
@@ -489,6 +488,8 @@ class WP_Stream_Reports_Metaboxes {
 			$dataset = $this->get_label( $args['context_id'], 'context' );
 		} else if ( ! empty( $args['connector_id'] ) ) {
 			$dataset = $this->get_label( $args['connector_id'], 'connector' );
+		} else if ( ! empty( $args['blog_id'] ) ) {
+			$dataset = $this->get_label( $args['blog_id'], 'blog_id' );
 		} else {
 			$dataset = '';
 		}
@@ -513,7 +514,7 @@ class WP_Stream_Reports_Metaboxes {
 			}
 			
 			
-		} else if ( ! empty( $args['connector_id'] ) ) {
+		} else if ( ! empty( $dataset ) ) {
 			$string = _x(
 				'All Activity in %2$s by %3$s',
 				'2: Dataset 3: Selector',
@@ -544,6 +545,7 @@ class WP_Stream_Reports_Metaboxes {
 			'connector_id' => wp_stream_filter_input( INPUT_GET, 'data_connector', FILTER_SANITIZE_STRING ),
 			'context_id'   => wp_stream_filter_input( INPUT_GET, 'data_context', FILTER_SANITIZE_STRING ),
 			'action_id'    => wp_stream_filter_input( INPUT_GET, 'data_action', FILTER_SANITIZE_STRING ),
+			'blog_id'      => wp_stream_filter_input( INPUT_GET, 'data_blog', FILTER_SANITIZE_STRING ),
 			'selector_id'  => wp_stream_filter_input( INPUT_GET, 'data_selector', FILTER_SANITIZE_STRING ),
 		);
 
@@ -758,7 +760,9 @@ class WP_Stream_Reports_Metaboxes {
 			'label' => __( 'All Contexts', 'stream-reports' )
 		);
 
-		return array_merge( array( $all_items ), $context_items );
+		
+		$new_array = apply_filters( 'wp_stream_reports_get_contexts', $context_items );
+		return array_merge( array( $all_items ), $new_array );
 	}
 
 	public function get_actions() {
@@ -770,7 +774,9 @@ class WP_Stream_Reports_Metaboxes {
 		$all_actions = array(
 			'label' => __( 'All Actions', 'stream-reports' )
 		);
-		return array_merge( array( $all_actions ), $actions );
+
+		$new_array = array_merge( array( $all_actions ), $actions );
+		return apply_filters( 'wp_stream_get_actions', $new_array );
 	}
 
 	/**
