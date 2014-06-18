@@ -74,11 +74,19 @@ class WP_Stream_Log {
 		if ( ! isset( $args['author_meta'] ) ) {
 			$args['author_meta'] = array(
 				'user_email'      => $user->user_email,
-				'display_name'    => ( defined( 'WP_CLI' ) && empty( $user->display_name ) ) ? 'WP-CLI' : $user->display_name, // @todo
+				'display_name'    => ( defined( 'WP_CLI' ) && empty( $user->display_name ) ) ? 'WP-CLI' : $user->display_name,
 				'user_login'      => $user->user_login,
 				'user_role_label' => ! empty( $user->roles ) ? $roles[ $user->roles[0] ]['name'] : null,
 				'agent'           => WP_Stream_Author::get_current_agent(),
 			);
+
+			if ( ( defined( 'WP_CLI' ) ) && function_exists( 'posix_getuid' ) ) {
+				$uid       = posix_getuid();
+				$user_info = posix_getpwuid( $uid );
+
+				$args['author_meta']['system_user_id']   = $uid;
+				$args['author_meta']['system_user_name'] = $user_info['name'];
+			}
 		}
 
 		// Remove meta with null values from being logged
