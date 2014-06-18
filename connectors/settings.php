@@ -2,6 +2,11 @@
 
 class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
+	/**
+	 * Prefix for the highlight URL hash
+	 *
+	 * @const string
+	 */
 	const HIGHLIGHT_FIELD_URL_HASH_PREFIX = 'wp-stream-highlight:';
 
 	/**
