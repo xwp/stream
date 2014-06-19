@@ -75,17 +75,16 @@ function wp_stream_update_auto_200( $db_version, $current_version ) {
 		update_site_option( WP_Stream_Settings::$option_key, wp_stream_update_200_migrate_old_exclude_options( $options ) );
 	}
 
-	die();
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
 }
 
 function wp_stream_update_200_migrate_old_exclude_options( $options ) {
 	$old_exclude_settings = array(
-		'authors_and_roles' => $options['exclude_authors_and_roles'],
-		'connectors'        => $options['exclude_connectors'],
-		'contexts'          => $options['exclude_contexts'],
-		'actions'           => $options['exclude_actions'],
-		'ip_addresses'      => $options['exclude_ip_addresses'],
+		'authors_and_roles' => isset( $options['exclude_authors_and_roles'] ) ? $options['exclude_authors_and_roles'] : array(),
+		'connectors'        => isset( $options['exclude_authors_and_roles'] ) ? $options['exclude_connectors'] : array(),
+		'contexts'          => isset( $options['exclude_authors_and_roles'] ) ? $options['exclude_contexts'] : array(),
+		'actions'           => isset( $options['exclude_authors_and_roles'] ) ? $options['exclude_actions'] : array(),
+		'ip_addresses'      => isset( $options['exclude_authors_and_roles'] ) ? $options['exclude_ip_addresses'] : array(),
 	);
 
 	$new_exclude_settings = array(
@@ -111,6 +110,9 @@ function wp_stream_update_200_migrate_old_exclude_options( $options ) {
 		}
 
 		foreach ( $old_rules as $old_rule ) {
+			if ( '__placeholder__' === $old_rule ) {
+				$old_rule = '';
+			}
 			foreach ( $new_exclude_settings as $new_type => $new_rules ) {
 				if ( $new_type === $type_match[ $old_type ] ) {
 					$new_exclude_settings[ $new_type ][] = $old_rule;
