@@ -625,6 +625,7 @@ class WP_Stream_Settings {
 						<th scope="col" class="manage-column">%3$s</th>
 						<th scope="col" class="manage-column">%4$s</th>
 						<th scope="col" class="manage-column">%5$s</th>
+						<th scope="col" class="delete-column manage-column"></th>
 					</tr>',
 					'<input class="cb-select" type="checkbox" />',
 					esc_html__( 'Author or Role', 'stream' ),
@@ -791,6 +792,7 @@ class WP_Stream_Settings {
 							<td>%5$s %6$s</td>
 							<td>%7$s</td>
 							<td>%8$s</td>
+							<th scope="row" class="delete-column">%9$s</th>
 						</tr>',
 						( 0 === $key % 2 ) ? 'alternate' : '',
 						'<input class="cb-select" type="checkbox" />',
@@ -799,7 +801,8 @@ class WP_Stream_Settings {
 						$connector_input,
 						$context_input,
 						$action_input,
-						$ip_address_input
+						$ip_address_input,
+						'<a href="#" class="exclude_rules_remove_rule_row">Delete Rule</a>'
 					);
 				}
 

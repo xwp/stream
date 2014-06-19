@@ -261,6 +261,16 @@ jQuery(function( $ ) {
 		}
 	});
 
+	$( document ).on( 'click', '.exclude_rules_remove_rule_row', function() {
+		var $excludeList = $( 'table.stream-exclude-list' ),
+			$thisRow     = $( this ).parent().parent();
+
+		$thisRow.remove();
+
+		$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
+		$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
+	});
+
 	$( '.stream-exclude-list' ).closest( 'form' ).submit( function() {
 		var	contexts = $( '.stream-exclude-list :input.select2-select.context' );
 

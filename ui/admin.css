@@ -393,6 +393,36 @@
 	padding: 16px 0 0 3px;
 }
 
+.stream-exclude-list thead th.delete-column {
+	width: 5em;
+}
+
+.stream-exclude-list tbody th.delete-column {
+	padding: 21px 10px 20px 0;
+}
+
+.stream-exclude-list tbody th.delete-column a {
+	display: none;
+	color: #a00;
+	font-size: 13px;
+}
+
+.stream-exclude-list tbody tr:hover th.delete-column a {
+	display: block;
+}
+
+.stream-exclude-list tbody th.delete-column a:hover {
+	color: #f00;
+}
+
+.stream-exclude-list tbody th.delete-column .dashicons {
+	margin-top: 4px;
+}
+
+.stream-exclude-list tbody td .ip_address {
+	width: 100%;
+}
+
 @media screen and ( max-width: 782px ) {
 	.wp_stream_settings .stream-exclude-list td {
 		padding: 10px 10px 0 0;
