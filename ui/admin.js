@@ -253,7 +253,7 @@ jQuery(function( $ ) {
 		if ( ( $( 'tbody tr', $excludeList ).length - selectedRows.length ) >= 1 ) {
 			selectedRows.remove();
 			$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
-			$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
+			$( 'tbody tr:odd', $excludeList ).addClass( 'alternate' );
 		} else {
 			$( ':input', selectedRows ).val( '' );
 			$( selectedRows ).not( ':first' ).remove();
@@ -268,7 +268,7 @@ jQuery(function( $ ) {
 		$thisRow.remove();
 
 		$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
-		$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
+		$( 'tbody tr:odd', $excludeList ).addClass( 'alternate' );
 	});
 
 	$( '.stream-exclude-list' ).closest( 'form' ).submit( function() {
