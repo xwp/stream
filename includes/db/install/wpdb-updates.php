@@ -88,10 +88,10 @@ function wp_stream_update_auto_200( $db_version, $current_version ) {
 function wp_stream_update_200_migrate_old_exclude_options( $options ) {
 	$old_exclude_settings = array(
 		'authors_and_roles' => isset( $options['exclude_authors_and_roles'] ) ? $options['exclude_authors_and_roles'] : array(),
-		'connectors'        => isset( $options['exclude_authors_and_roles'] ) ? $options['exclude_connectors'] : array(),
-		'contexts'          => isset( $options['exclude_authors_and_roles'] ) ? $options['exclude_contexts'] : array(),
-		'actions'           => isset( $options['exclude_authors_and_roles'] ) ? $options['exclude_actions'] : array(),
-		'ip_addresses'      => isset( $options['exclude_authors_and_roles'] ) ? $options['exclude_ip_addresses'] : array(),
+		'connectors'        => isset( $options['exclude_connectors'] ) ? $options['exclude_connectors'] : array(),
+		'contexts'          => isset( $options['exclude_contexts'] ) ? $options['exclude_contexts'] : array(),
+		'actions'           => isset( $options['exclude_actions'] ) ? $options['exclude_actions'] : array(),
+		'ip_addresses'      => isset( $options['exclude_ip_addresses'] ) ? $options['exclude_ip_addresses'] : array(),
 	);
 
 	$new_exclude_settings = array(
