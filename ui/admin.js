@@ -297,8 +297,6 @@ jQuery(function( $ ) {
 		var $allRows     = $( 'table.stream-exclude-list tbody tr' ),
 			$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' );
 
-		console.log( $allRows.length );
-
 		if ( $allRows.length < 3 ) {
 			$noRulesFound.show();
 		} else {
