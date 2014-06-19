@@ -259,6 +259,8 @@ jQuery(function( $ ) {
 			$( selectedRows ).not( ':first' ).remove();
 			$( '.select2-select', selectedRows ).select2( 'val', '' );
 		}
+
+		$excludeList.find( 'input.cb-select' ).prop( 'checked', false );
 	});
 
 	$( document ).on( 'click', '.exclude_rules_remove_rule_row', function() {
