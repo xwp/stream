@@ -640,6 +640,7 @@ class WP_Stream_Settings {
 					$current_value = array(
 						'exclude_row'    => array(),
 						'author_or_role' => array(),
+						'connector'      => array(),
 						'context'        => array(),
 						'action'         => array(),
 						'ip_address'     => array(),

@@ -43,14 +43,97 @@ function wp_stream_update_auto_200( $db_version, $current_version ) {
 		// Drop the deprecated table
 		$wpdb->query( "DROP TABLE `{$prefix}stream_context`" );
 	} elseif ( count( $rows ) < 3 ) { // Else, fail the procedure alltogether
-		wp_die( 'Invalid/Incomplete DB schema' );
+		wp_die( 'Invalid / Incomplete DB schema' );
 	}
 
 	// TODO: We should also migrate existing data to the new table, probably
 	// save it to a temporary table before we DROP the context table, then add
 	// them later after creating the new columns
 
+	// Migrate existing exclude rules to the new exclude format
+	if ( is_multisite() ) {
+		WP_Stream_Settings::$option_key = WP_Stream_Settings::KEY;
+
+		$sites = wp_get_sites();
+
+		foreach ( $sites as $blog ) {
+			switch_to_blog( $blog['blog_id'] );
+			$options = WP_Stream_Settings::get_options();
+			update_option( WP_Stream_Settings::$option_key, wp_stream_update_200_migrate_old_exclude_options( $options ) );
+		}
+		restore_current_blog();
+
+		WP_Stream_Settings::$option_key = WP_Stream_Settings::NETWORK_KEY;
+		$network_options = WP_Stream_Settings::get_options();
+		update_site_option( WP_Stream_Settings::$option_key, wp_stream_update_200_migrate_old_exclude_options( $network_options ) );
+
+		WP_Stream_Settings::$option_key = WP_Stream_Settings::DEFAULTS_KEY;
+		$default_options = WP_Stream_Settings::get_options();
+		update_site_option( WP_Stream_Settings::$option_key, wp_stream_update_200_migrate_old_exclude_options( $default_options ) );
+	} else {
+		$options = WP_Stream_Settings::get_options();
+		update_site_option( WP_Stream_Settings::$option_key, wp_stream_update_200_migrate_old_exclude_options( $options ) );
+	}
+
+	die();
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
+}
+
+function wp_stream_update_200_migrate_old_exclude_options( $options ) {
+	$old_exclude_settings = array(
+		'authors_and_roles' => $options['exclude_authors_and_roles'],
+		'connectors'        => $options['exclude_connectors'],
+		'contexts'          => $options['exclude_contexts'],
+		'actions'           => $options['exclude_actions'],
+		'ip_addresses'      => $options['exclude_ip_addresses'],
+	);
+
+	$new_exclude_settings = array(
+		'exclude_row'    => array(),
+		'author_or_role' => array(),
+		'connector'      => array(),
+		'context'        => array(),
+		'action'         => array(),
+		'ip_address'     => array(),
+	);
+
+	$type_match = array(
+		'authors_and_roles' => 'author_or_role',
+		'connectors'        => 'connector',
+		'contexts'          => 'context',
+		'actions'           => 'action',
+		'ip_addresses'      => 'ip_address',
+	);
+
+	foreach ( $old_exclude_settings as $old_type => $old_rules ) {
+		if ( empty( $old_rules ) ) {
+			continue;
+		}
+
+		foreach ( $old_rules as $old_rule ) {
+			foreach ( $new_exclude_settings as $new_type => $new_rules ) {
+				if ( $new_type === $type_match[ $old_type ] ) {
+					$new_exclude_settings[ $new_type ][] = $old_rule;
+				} else {
+					$new_exclude_settings[ $new_type ][] = '';
+				}
+			}
+		}
+	}
+
+	echo '<pre>options: ' . print_r( $options, true ) . '</pre>';
+	echo '<pre>old: ' . print_r( $old_exclude_settings, true ) . '</pre>';
+	echo '<pre>new: ' . print_r( $new_exclude_settings, true ) . '</pre>';
+
+	unset( $options['exclude_authors_and_roles'] );
+	unset( $options['exclude_connectors'] );
+	unset( $options['exclude_contexts'] );
+	unset( $options['exclude_actions'] );
+	unset( $options['exclude_ip_addresses'] );
+
+	$options['exclude_rules'] = $new_exclude_settings;
+
+	return $options;
 }
 
 /**
