@@ -244,16 +244,18 @@ jQuery(function( $ ) {
 
 		$lastRow.after( $newRow );
 		initSettingsSelect2();
+
+		recalculate_rules_found();
 	});
 
 	$( '#exclude_rules_remove_rules' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' ),
 			selectedRows = $( 'tbody input.cb-select:checked', $excludeList ).closest( 'tr' );
 
-		if ( ( $( 'tbody tr', $excludeList ).length - selectedRows.length ) >= 1 ) {
+		if ( ( $( 'tbody tr', $excludeList ).length - selectedRows.length ) >= 2 ) {
 			selectedRows.remove();
 			$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
-			$( 'tbody tr:odd', $excludeList ).addClass( 'alternate' );
+			$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
 		} else {
 			$( ':input', selectedRows ).val( '' );
 			$( selectedRows ).not( ':first' ).remove();
@@ -261,6 +263,8 @@ jQuery(function( $ ) {
 		}
 
 		$excludeList.find( 'input.cb-select' ).prop( 'checked', false );
+
+		recalculate_rules_found();
 	});
 
 	$( document ).on( 'click', '.exclude_rules_remove_rule_row', function() {
@@ -270,7 +274,9 @@ jQuery(function( $ ) {
 		$thisRow.remove();
 
 		$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
-		$( 'tbody tr:odd', $excludeList ).addClass( 'alternate' );
+		$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
+
+		recalculate_rules_found();
 	});
 
 	$( '.stream-exclude-list' ).closest( 'form' ).submit( function() {
@@ -285,6 +291,23 @@ jQuery(function( $ ) {
 				connector.val( selected.substr( 6 ) );
 			}
 		});
+	});
+
+	function recalculate_rules_found() {
+		var $allRows     = $( 'table.stream-exclude-list tbody tr' ),
+			$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' );
+
+		console.log( $allRows.length );
+
+		if ( $allRows.length < 3 ) {
+			$noRulesFound.show();
+		} else {
+			$noRulesFound.hide();
+		}
+	}
+
+	$( window ).load(function() {
+		recalculate_rules_found();
 	});
 
 	$( window ).load(function() {

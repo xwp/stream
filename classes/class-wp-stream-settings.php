@@ -806,9 +806,14 @@ class WP_Stream_Settings {
 					);
 				}
 
+				$no_rules_found_row = sprintf(
+					'<tr class="no-items"><td class="colspanchange" colspan="6">%1$s</td></tr>',
+					esc_html__( 'No rules found.', 'stream' )
+				);
+
 				$output .= '<thead>' . $heading_row . '</thead>';
 				$output .= '<tfoot>' . $heading_row . '</tfoot>';
-				$output .= '<tbody>' . implode( '', $exclude_rows ) . '</tbody>';
+				$output .= '<tbody>' . $no_rules_found_row . implode( '', $exclude_rows ) . '</tbody>';
 
 				$output .= '</table>';
 

@@ -389,8 +389,13 @@
 	padding: 8px 10px;
 }
 
-.stream-exclude-list tbody tr:first-child {
+.stream-exclude-list tbody tr:first-child,
+.stream-exclude-list tbody tr:nth-child(2) {
 	display: none;
+}
+
+.stream-exclude-list tbody tr.no-items td {
+	font-size: 13px;
 }
 
 .stream-exclude-list tbody th.check-column {
