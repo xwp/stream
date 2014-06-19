@@ -620,7 +620,7 @@ class WP_Stream_Settings {
 
 				$heading_row = sprintf(
 					'<tr>
-						<th scrope="col" class="check-column manage-column">%1$s</td>
+						<th scope="col" class="check-column manage-column">%1$s</th>
 						<th scope="col" class="manage-column">%2$s</th>
 						<th scope="col" class="manage-column">%3$s</th>
 						<th scope="col" class="manage-column">%4$s</th>
@@ -786,7 +786,7 @@ class WP_Stream_Settings {
 
 					$exclude_rows[] = sprintf(
 						'<tr class="%1$s">
-							<th scrope="row" class="check-column">%2$s %3$s</td>
+							<th scope="row" class="check-column">%2$s %3$s</th>
 							<td>%4$s</td>
 							<td>%5$s %6$s</td>
 							<td>%7$s</td>
