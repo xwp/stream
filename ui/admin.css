@@ -394,7 +394,12 @@
 	display: none;
 }
 
+.stream-exclude-list tbody tr.no-items {
+	background-color: #fff;
+}
+
 .stream-exclude-list tbody tr.no-items td {
+	padding: 8px 10px;
 	font-size: 13px;
 }
 
