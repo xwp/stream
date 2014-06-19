@@ -229,7 +229,7 @@ jQuery(function( $ ) {
 		}).trigger( 'change' );
 	});
 
-	$( '#exclude_rule_list_new_rule' ).on( 'click', function() {
+	$( '#exclude_rules_new_rule' ).on( 'click', function() {
 		var $excludeList = $( this ).parent().parent().find( 'table.stream-exclude-list' );
 
 		$( '.select2-select', $excludeList ).each( function(){
@@ -246,7 +246,7 @@ jQuery(function( $ ) {
 		initSettingsSelect2();
 	});
 
-	$( '#exclude_rule_list_remove_rules' ).on( 'click', function() {
+	$( '#exclude_rules_remove_rules' ).on( 'click', function() {
 		var $excludeList = $( this ).parent().parent().find( 'table.stream-exclude-list' ),
 			selectedRows = $( 'tbody input.cb-select:checked', $excludeList ).closest( 'tr' );
 

@@ -150,7 +150,7 @@ class WP_Stream_Log {
 
 		$exclude_settings = WP_Stream_Settings::$options['exclude_rules'];
 
-		if ( isset( $exclude_settings['exclude_row'] ) && ! is_empty( $exclude_settings['exclude_row'] ) ) {
+		if ( isset( $exclude_settings['exclude_row'] ) && ! empty( $exclude_settings['exclude_row'] ) ) {
 			foreach ( $exclude_settings['exclude_row'] as $key => $value ) {
 				// Prepare values
 				$author_or_role = isset( $exclude_settings['author_or_role'][ $key ] ) ? $exclude_settings['author_or_role'][ $key ] : '';
