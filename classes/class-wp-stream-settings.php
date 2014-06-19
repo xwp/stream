@@ -659,9 +659,9 @@ class WP_Stream_Settings {
 					$action         = isset( $current_value['action'][ $key ] ) ? $current_value['action'][ $key ] : '';
 					$ip_address     = isset( $current_value['ip_address'][ $key ] ) ? $current_value['ip_address'][ $key ] : '';
 
-					// Check if rule is empty, but allow the first empty row
+					// Check if rule is empty, but allow a single empty row
 					if ( empty( $author_or_role ) && empty( $connector ) && empty( $context ) && empty( $action ) && empty( $ip_address ) ) {
-						if ( $key > 0 ) {
+						if ( count( $current_value['exclude_row'] ) > 1 || $key > 0 ) {
 							continue;
 						}
 					}

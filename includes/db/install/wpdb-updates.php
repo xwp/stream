@@ -69,7 +69,6 @@ function wp_stream_update_auto_200( $db_version, $current_version ) {
 		WP_Stream_Settings::$option_key = WP_Stream_Settings::NETWORK_KEY;
 		$network_options = WP_Stream_Settings::get_options();
 		if ( isset( $network_options['exclude_authors_and_roles'] ) ) {
-		echo '<pre>' . print_r( $network_options, true ) . '</pre>';
 			update_site_option( WP_Stream_Settings::NETWORK_KEY, wp_stream_update_200_migrate_old_exclude_options( $network_options ) );
 		}
 

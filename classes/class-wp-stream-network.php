@@ -412,10 +412,7 @@ class WP_Stream_Network {
 	 */
 	function get_network_options( $options, $option_key ) {
 		if ( is_network_admin() ) {
-			$options = wp_parse_args(
-				(array) get_site_option( $option_key, array() ),
-				WP_Stream_Settings::get_defaults( $option_key )
-			);
+			$options = (array) get_site_option( $option_key, array() );
 		}
 
 		return $options;
