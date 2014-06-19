@@ -59,7 +59,8 @@ function wp_stream_update_auto_200( $db_version, $current_version ) {
 		foreach ( $sites as $blog ) {
 			switch_to_blog( $blog['blog_id'] );
 			$options = WP_Stream_Settings::get_options();
-			if ( ! isset( $options['exclude_rules'] ) ) {
+
+			if ( isset( $options['exclude_authors_and_roles'] ) ) {
 				update_option( WP_Stream_Settings::$option_key, wp_stream_update_200_migrate_old_exclude_options( $options ) );
 			}
 		}
@@ -67,14 +68,15 @@ function wp_stream_update_auto_200( $db_version, $current_version ) {
 
 		WP_Stream_Settings::$option_key = WP_Stream_Settings::NETWORK_KEY;
 		$network_options = WP_Stream_Settings::get_options();
-		if ( ! isset( $network_options['exclude_rules'] ) ) {
-			update_site_option( WP_Stream_Settings::$option_key, wp_stream_update_200_migrate_old_exclude_options( $network_options ) );
+		if ( isset( $network_options['exclude_authors_and_roles'] ) ) {
+		echo '<pre>' . print_r( $network_options, true ) . '</pre>';
+			update_site_option( WP_Stream_Settings::NETWORK_KEY, wp_stream_update_200_migrate_old_exclude_options( $network_options ) );
 		}
 
 		WP_Stream_Settings::$option_key = WP_Stream_Settings::DEFAULTS_KEY;
 		$default_options = WP_Stream_Settings::get_options();
-		if ( ! isset( $default_options['exclude_rules'] ) ) {
-			update_site_option( WP_Stream_Settings::$option_key, wp_stream_update_200_migrate_old_exclude_options( $default_options ) );
+		if ( isset( $default_options['exclude_authors_and_roles'] ) ) {
+			update_site_option( WP_Stream_Settings::DEFAULTS_KEY, wp_stream_update_200_migrate_old_exclude_options( $default_options ) );
 		}
 	} else {
 		$options = WP_Stream_Settings::get_options();
@@ -128,10 +130,6 @@ function wp_stream_update_200_migrate_old_exclude_options( $options ) {
 			}
 		}
 	}
-
-	echo '<pre>options: ' . print_r( $options, true ) . '</pre>';
-	echo '<pre>old: ' . print_r( $old_exclude_settings, true ) . '</pre>';
-	echo '<pre>new: ' . print_r( $new_exclude_settings, true ) . '</pre>';
 
 	unset( $options['exclude_authors_and_roles'] );
 	unset( $options['exclude_connectors'] );
