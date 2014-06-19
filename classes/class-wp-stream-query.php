@@ -82,7 +82,7 @@ class WP_Stream_Query {
 				'is_int' => true,
 			),
 			'visibility'    => array(
-				'default' => ! empty( WP_Stream_Settings::$options['exclude_hide_previous_records'] ) ? null : 'publish',
+				'default' => 'publish',
 			),
 			'record'        => array(
 				'column' => 'ID',

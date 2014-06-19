@@ -404,8 +404,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function assemble_records( $column, $table = '' ) {
 		$setting_key = self::get_column_excluded_setting_key( $column );
 
-		$exclude_hide_previous_records = isset( WP_Stream_Settings::$options['exclude_hide_previous_records'] ) ? WP_Stream_Settings::$options['exclude_hide_previous_records'] : 0;
-
 		// @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object
 		if ( 'author' === $column ) {
 			$all_records = array();
