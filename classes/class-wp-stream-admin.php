@@ -390,6 +390,13 @@ class WP_Stream_Admin {
 		$sections   = WP_Stream_Settings::get_fields();
 		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 
+		wp_enqueue_script(
+			'stream-settings',
+			plugins_url( '../ui/js/settings.js', __FILE__ ),
+			array( 'jquery' ),
+			WP_Stream::VERSION,
+			true
+		);
 		?>
 		<div class="wrap">
 
