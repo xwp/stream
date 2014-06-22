@@ -595,6 +595,13 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		}
 
 		foreach ( $changed_options as $properties ) {
+			/**
+			 * Allow devs to override log field label, or skip the log altogether
+			 *
+			 * @var $properties Log properties, containing option key
+			 *
+			 * @return array|bool Modified array, or false to skip the log
+			 */
 			$properties = apply_filters( 'wp-stream-setting-field-log', $properties );
 			if ( ! $properties ) {
 				continue;
