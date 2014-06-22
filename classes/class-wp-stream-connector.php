@@ -106,15 +106,14 @@ abstract class WP_Stream_Connector {
 		}
 
 		$class = get_called_class();
+		$connector = $class::$name;
 
-		return WP_Stream_Log::get_instance()->log(
-			$class::$name,
-			$message,
-			$args,
-			$object_id,
-			$contexts,
-			$user_id
+		$data = apply_filters(
+			'wp-stream-log-data',
+			compact( 'connector', 'message', 'args', 'object_id', 'contexts', 'user_id' )
 		);
+
+		return call_user_func_array( array( WP_Stream_Log::get_instance(), 'log' ), $data );
 	}
 
 	/**
