@@ -437,6 +437,10 @@
 	width: 100%;
 }
 
+.stream-exclude-list tbody td .ip_address.invalid {
+	border: 1px solid rgba(160,0,0,0.75);
+}
+
 @media screen and ( max-width: 782px ) {
 	.wp_stream_settings .stream-exclude-list td {
 		padding: 10px 10px 0 0;

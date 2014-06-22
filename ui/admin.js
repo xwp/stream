@@ -226,15 +226,31 @@ jQuery(function( $ ) {
 				$( this ).data( 'selected-text', value.text );
 			});
 		});
+
+		$( '#tab-content-settings input[type=hidden].select2-select.context' ).on( 'change', function( val ) {
+			var $connector = $( this ).prevAll( ':input.connector' );
+
+			if ( undefined !== val.added.parent ) {
+				$connector.val( val.added.parent );
+			} else {
+				$connector.val( $( this ).val() );
+				$( this ).val( '' );
+			}
+		});
+
+		$( '#tab-content-settings input.ip_address' ).on( 'change', function() {
+			var ipv4Expression = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,
+				ipv6Expression = /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/,
+				ip = $( this ).val();
+			if ( ! ipv4Expression.test( ip ) && ! ipv6Expression.test( ip ) && '' !== ip ) {
+				$( this ).addClass( 'invalid' );
+			} else {
+				$( this ).removeClass( 'invalid' );
+			}
+		}).trigger( 'change' );
+
 	};
 	initSettingsSelect2();
-
-	$( '#tab-content-settings input.ip_addresses' ).each(function( k, el ) {
-		var $input = $( el );
-		$input.on( 'change', function() {
-			// TO DO: Check for valid IP address
-		}).trigger( 'change' );
-	});
 
 	$( '#exclude_rules_new_rule' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' );
@@ -247,7 +263,7 @@ jQuery(function( $ ) {
 			$newRow  = $lastRow.clone();
 
 		$newRow.toggleClass( 'alternate' );
-		$( ':input', $newRow ).val( '' );
+		$( ':input', $newRow ).off().val( '' );
 
 		$lastRow.after( $newRow );
 		initSettingsSelect2();
@@ -274,7 +290,7 @@ jQuery(function( $ ) {
 		recalculate_rules_found();
 	});
 
-	$( document ).on( 'click', '.exclude_rules_remove_rule_row', function() {
+	$( '.exclude_rules_remove_rule_row' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' ),
 			$thisRow     = $( this ).parent().parent();
 
@@ -286,17 +302,12 @@ jQuery(function( $ ) {
 		recalculate_rules_found();
 	});
 
-	$( '#tab-content-settings input[type=hidden].select2-select.context' ).on( 'change', function( val ) {
-		var $connector = $( this ).prevAll( ':input.connector' );
-
-		if ( undefined !== val.added.parent ) {
-			$connector.val( val.added.parent );
-		} else {
-			$connector.val( $( this ).val() );
-			$( this ).val( '' );
+	$( '.stream-exclude-list' ).closest( 'form' ).submit( function() {
+		if ( $( ':input.invalid', this ).length > 0 ) {
+			$( ':input.invalid', this ).first().focus();
+			return false;
 		}
 	});
-
 	function recalculate_rules_found() {
 		var $allRows     = $( 'table.stream-exclude-list tbody tr' ),
 			$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' );
