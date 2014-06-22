@@ -711,19 +711,15 @@ class WP_Stream_Settings {
 							if ( isset( $context_data['children'] ) ) {
 								$child_values = array();
 								foreach ( $context_data['children'] as $child_id => $child_value ) {
-									$child_values[] = array( 'id' => $child_id, 'text' => $child_value );
+									$child_values[] = array( 'id' => $child_id, 'text' => $child_value, 'parent' => $context_id );
 								}
 							}
 							if ( isset( $context_data['label'] ) ) {
-								$context_values[] = array( 'id' => 'group-' . $context_id, 'text' => $context_data['label'], 'children' => $child_values );
+								$context_values[] = array( 'id' => $context_id, 'text' => $context_data['label'], 'children' => $child_values );
 							}
 						} else {
 							$context_values[] = array( 'id' => $context_id, 'text' => $context_data );
 						}
-					}
-
-					if ( empty( $context ) && ! empty( $connector ) ) {
-						$context = 'group-' . $connector;
 					}
 
 					$connector_input = sprintf(

@@ -113,12 +113,19 @@ jQuery(function( $ ) {
 
 	var initSettingsSelect2 = function() {
 		$( '#tab-content-settings input[type=hidden].select2-select.with-source' ).each(function( k, el ) {
-			var $input = $( el );
+			var $input = $( el ),
+				$connector = $( this ).prevAll( ':input.connector' );
+
 			$input.select2({
 				data: $input.data( 'values' ),
 				allowClear: true,
 				placeholder: $input.data( 'placeholder' )
 			});
+
+			if ( '' === $input.val() && '' !== $connector.val() ) {
+				$input.select2( 'val', $connector.val() );
+				$input.val( '' );
+			}
 		});
 
 		var $input_user;
@@ -279,18 +286,15 @@ jQuery(function( $ ) {
 		recalculate_rules_found();
 	});
 
-	$( '.stream-exclude-list' ).closest( 'form' ).submit( function() {
-		var	contexts = $( '.stream-exclude-list :input.select2-select.context' );
+	$( '#tab-content-settings input[type=hidden].select2-select.context' ).on( 'change', function( val ) {
+		var $connector = $( this ).prevAll( ':input.connector' );
 
-		contexts.each( function() {
-			var selected  = $( this ).select2( 'val' ),
-				connector = $( this ).prevAll( ':input.connector' );
-
-			if ( 'group-' === selected.substr( 0, 6 ) ) {
-				$( this ).select2( 'val', '' );
-				connector.val( selected.substr( 6 ) );
-			}
-		});
+		if ( undefined !== val.added.parent ) {
+			$connector.val( val.added.parent );
+		} else {
+			$connector.val( $( this ).val() );
+			$( this ).val( '' );
+		}
 	});
 
 	function recalculate_rules_found() {
