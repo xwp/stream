@@ -1,4 +1,4 @@
-/* globals confirm, wp_stream, ajaxurl */
+/* globals wp_stream, ajaxurl */
 jQuery(function( $ ) {
 
 	$( '.toplevel_page_wp_stream :input.chosen-select' ).each(function( i, el ) {

@@ -424,6 +424,7 @@ class WP_Stream_Admin {
 			<div class="nav-tab-content" id="tab-content-settings">
 
 				<form method="post" action="<?php echo esc_attr( $form_action ) ?>" enctype="multipart/form-data">
+					<div class="settings-sections">
 		<?php
 		$i = 0;
 		foreach ( $sections as $section => $data ) {
@@ -434,8 +435,9 @@ class WP_Stream_Admin {
 				do_settings_sections( $option_key );
 			}
 		}
-		submit_button();
 		?>
+					</div>
+					<?php submit_button() ?>
 				</form>
 
 			</div>
