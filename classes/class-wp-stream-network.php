@@ -129,7 +129,7 @@ class WP_Stream_Network {
 			__( 'Network Settings', 'default' ),
 			WP_Stream_Admin::SETTINGS_CAP,
 			self::NETWORK_SETTINGS_PAGE_SLUG,
-			array( 'WP_Stream_Admin', 'render_page' )
+			array( 'WP_Stream_Admin', 'render_settings_page' )
 		);
 
 		if ( ! WP_Stream_Admin::$disable_access ) {
@@ -139,7 +139,7 @@ class WP_Stream_Network {
 				__( 'Site Defaults', 'stream' ),
 				WP_Stream_Admin::SETTINGS_CAP,
 				self::DEFAULT_SETTINGS_PAGE_SLUG,
-				array( 'WP_Stream_Admin', 'render_page' )
+				array( 'WP_Stream_Admin', 'render_settings_page' )
 			);
 		}
 		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {

@@ -118,7 +118,7 @@ class WP_Stream_Admin {
 			__( 'Stream', 'stream' ),
 			self::VIEW_CAP,
 			self::RECORDS_PAGE_SLUG,
-			array( __CLASS__, 'stream_page' ),
+			array( __CLASS__, 'render_stream_page' ),
 			'div',
 			apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
 		);
@@ -129,7 +129,7 @@ class WP_Stream_Admin {
 			__( 'Settings', 'default' ),
 			self::SETTINGS_CAP,
 			self::SETTINGS_PAGE_SLUG,
-			array( __CLASS__, 'render_page' )
+			array( __CLASS__, 'render_settings_page' )
 		);
 
 		if ( ! is_multisite() ) {
@@ -379,7 +379,7 @@ class WP_Stream_Admin {
 	 *
 	 * @return void
 	 */
-	public static function render_page() {
+	public static function render_settings_page() {
 
 		$option_key  = WP_Stream_Settings::$option_key;
 		$form_action = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
@@ -515,7 +515,7 @@ class WP_Stream_Admin {
 		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::$screen_id['main'] ) );
 	}
 
-	public static function stream_page() {
+	public static function render_stream_page() {
 		$page_title = __( 'Stream Records', 'stream' );
 
 		echo '<div class="wrap">';
