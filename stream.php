@@ -181,6 +181,34 @@ class WP_Stream {
 	}
 
 	/**
+	 * Is Stream connected?
+	 *
+	 * @return bool
+	 */
+	public static function is_connected() {
+		return (bool) get_option( WP_Stream_Settings::SITE_ID_KEY, false );
+	}
+
+	/**
+	 * Is Stream in development mode?
+	 *
+	 * @return bool
+	 */
+	public static function is_development_mode() {
+		$development_mode = false;
+
+		if ( defined( 'WP_STREAM_DEV_DEBUG' ) ) {
+			$development_mode = WP_STREAM_DEV_DEBUG;
+		}
+
+		elseif ( site_url() && false === strpos( site_url(), '.' ) ) {
+			$development_mode = true;
+		}
+
+		return apply_filters( 'wp_stream_development_mode', $development_mode );
+	}
+
+	/**
 	 * Handle notice messages according to the appropriate context (WP-CLI or the WP Admin)
 	 *
 	 * @param string $message

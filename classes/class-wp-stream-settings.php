@@ -23,6 +23,11 @@ class WP_Stream_Settings {
 	const DEFAULTS_KEY = 'wp_stream_defaults';
 
 	/**
+	 * Site ID key/identifier
+	 */
+	const SITE_ID_KEY = 'wp_stream_site_id';
+
+	/**
 	 * Plugin settings
 	 *
 	 * @var array

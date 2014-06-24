@@ -11,6 +11,7 @@ class WP_Stream_Network {
 
 	const NETWORK_SETTINGS_PAGE_SLUG = 'wp_stream_network_settings';
 	const DEFAULT_SETTINGS_PAGE_SLUG = 'wp_stream_default_settings';
+	const SITES_CONNECTED_KEY        = 'wp_stream_sites_connected';
 
 	function __construct() {
 		$this->actions();

@@ -1,0 +1,149 @@
+/* Stream Connect Prompt */
+#stream-message.stream-connect {
+	border-left: 4px solid #e14d43;
+	color: #616161;
+	overflow: hidden;
+	margin-bottom: 26px;
+	padding: 26px 20px;
+	position: relative;
+}
+
+#stream-message.stream-network-connect {
+	margin: 2em 0;
+}
+
+#stream-message.stream-connect .stream-install-container {
+	float: left;
+	overflow: hidden;
+	margin: 0 18px 0 0;
+}
+
+#stream-message.stream-connect .stream-install-container .submit {
+	margin: 5px 0 10px;
+	padding: 2px 0;
+}
+
+#stream-message.stream-connect .stream-install-container .submit a {
+	font: 400 1.5em 'Open Sans', Helvetica, sans-serif;
+	padding: 0.38095em 0.85714em 0.38095em 0.57143em;
+	background-clip: padding-box;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+	border: none;
+	background: #e14d43;
+	color: #fff;
+	position: relative;
+	-webkit-background-clip: padding-box;
+	   -moz-background-clip: padding;
+	-webkit-border-radius: 6px;
+	   -moz-border-radius: 6px;
+	        border-radius: 6px;
+	-webkit-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+	   -moz-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+	        box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+	-webkit-transition: all 0.1s ease-in;
+	     -o-transition: all 0.1s ease-in;
+	   -moz-transition: all 0.1s ease-in;
+	        transition: all 0.1s ease-in;
+}
+
+#stream-message.stream-connect .stream-install-container .submit i.dashicons {
+	font-size: 1em;
+	line-height: 26px;
+	margin-right: 0.57143em;
+}
+
+#stream-message.stream-connect .stream-install-container .submit a:hover,
+#stream-message.stream-connect .stream-install-container .submit a:focus {
+	background: #ef5c52;
+}
+
+#stream-message.stream-connect .stream-install-container .submit a:active {
+	outline: none;
+	top: 4px;
+	-webkit-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
+	-moz-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
+	box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
+}
+
+#stream-message.stream-connect .stream-close-button-container {
+	right: 18px;
+	position: absolute;
+	top: 18px;
+}
+
+#stream-message.stream-connect .stream-close-button-container a {
+	opacity: 0.33;
+}
+
+#stream-message.stream-connect .stream-close-button-container a:before {
+	color: #616161;
+	content: '\f158';
+	font: normal 20px/1 'dashicons';
+}
+
+#stream-message.stream-connect .stream-close-button-container a:hover {
+	opacity: 1;
+}
+
+#stream-message.stream-connect .stream-close-button-container a:active {
+	opacity: 1;
+	outline: none;
+}
+
+#stream-message.stream-connect .stream-text-container {
+	float: left;
+	margin-top: -4px;
+}
+
+#stream-message.stream-connect .stream-text-container p {
+	margin: 0;
+	padding: 0;
+}
+
+#stream-message.stream-connect .stream-text-container p strong {
+	color: #363b3f;
+	display: block;
+	font-size: 170%;
+	font-weight: normal;
+}
+
+#stream-message.stream-network-connect .stream-text-container p strong {
+	margin-bottom: 0.5em;
+}
+
+@media (max-width:1130px){
+	#stream-message.stream-connect .stream-install-container {
+		float: none;
+	}
+
+	#stream-message.stream-connect .stream-text-container {
+		float: none;
+		margin-top: 18px;
+		padding-right: 30px;
+	}
+
+	#stream-message.stream-connect .stream-text-container p {
+		float: left;
+		font-size: 14px;
+		margin-right: 4px;
+	}
+
+	#stream-message.stream-connect .stream-text-container p strong {
+		font-size: 14px;
+		font-weight: bold;
+	}
+}
+
+@media (max-width:420px){
+	#stream-message.stream-connect .stream-install-container .submit a {
+        font-size: 16px;
+        letter-spacing: -0.05em;
+        display: block;
+        text-align: center;
+        width: 80%;
+    }
+
+    #stream-message.stream-connect .stream-install-container .submit i.dashicons {
+        display: none;
+    }
+}

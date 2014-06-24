@@ -45,6 +45,12 @@ class WP_Stream_Admin {
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
+		if ( ! WP_Stream::is_connected() && ! WP_Stream::is_development_mode() ) {
+			// Show connect notice on dashboard and plugins pages
+			add_action( 'load-index.php', array( __CLASS__, 'prepare_connect_notice' ) );
+			add_action( 'load-plugins.php', array( __CLASS__, 'prepare_connect_notice' ) );
+		}
+
 		// Add admin body class
 		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
 
@@ -77,6 +83,48 @@ class WP_Stream_Admin {
 
 		// Ajax author's name by ID
 		add_action( 'wp_ajax_wp_stream_get_filter_value_by_id', array( __CLASS__, 'get_filter_value_by_id' ) );
+	}
+
+	/**
+	 * Prepare the Connect to Stream prompt
+	 *
+	 * @return void
+	 */
+	public static function prepare_connect_notice() {
+		wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
+		add_action( 'admin_notices', array( __CLASS__, 'admin_connect_notice' ) );
+	}
+
+	/**
+	 * Prompt the user to connect to Stream
+	 *
+	 * @return void
+	 */
+	public static function admin_connect_notice() {
+		if ( ! current_user_can( self::SETTINGS_CAP ) ) {
+			return;
+		}
+
+		$dismiss_and_deactivate_url = wp_nonce_url( 'plugins.php?action=deactivate&plugin=' . WP_STREAM_PLUGIN, 'deactivate-plugin_' . WP_STREAM_PLUGIN );
+		$connect_url = add_query_arg( array( 'page' => self::RECORDS_PAGE_SLUG ), self::ADMIN_PARENT_PAGE );
+		?>
+		<div id="stream-message" class="updated stream-connect" style="display:block !important;">
+		<?php if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) : // Can't deactivate if network activated ?>
+			<div id="stream-dismiss" class="stream-close-button-container">
+				<a class="stream-close-button" href="<?php echo esc_url( $dismiss_and_deactivate_url ); ?>" title="<?php _e( 'Dismiss this notice and deactivate Stream.', 'stream' ); ?>"></a>
+			</div>
+		<?php endif; ?>
+			<div class="stream-wrap-container">
+				<div class="stream-install-container">
+						<p class="submit"><a href="<?php echo esc_url( $connect_url ); ?>"><i class="dashicons dashicons-admin-plugins"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
+				</div>
+				<div class="stream-text-container">
+						<p><strong><?php _e( 'Stream is almost ready!', 'stream' ); ?></strong></p>
+						<p><?php _e( 'Connect now to see every change made to your WordPress site in beautifully organized detail.', 'stream' ); ?></p>
+				</div>
+			</div>
+		</div>
+		<?php
 	}
 
 	/**
@@ -512,17 +560,39 @@ class WP_Stream_Admin {
 	public static function stream_page() {
 		$page_title = __( 'Stream Records', 'stream' );
 
+		self::$list_table->prepare_items();
+
 		echo '<div class="wrap">';
 
 		if ( is_network_admin() ) {
-			$site_count = sprintf( _n( '1 site', '%d sites', get_blog_count(), 'stream' ), get_blog_count() );
-			printf( '<h2>%s (%s)</h2>', __( 'Stream Records', 'stream' ), $site_count ); // xss ok
+			$sites_connected = (int) get_site_option( WP_Stream_Network::SITES_CONNECTED_KEY, 0 );
+			$site_count = sprintf( _n( '1 site', '%d sites', $sites_connected, 'stream' ), $sites_connected );
+
+			if ( $site_count > 0 ) {
+				printf( '<h2>%s (%s)</h2>', __( 'Stream Records', 'stream' ), $site_count ); // xss ok
+			} else {
+				printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
+			}
 		} else {
 			printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
 		}
 
-		self::$list_table->prepare_items();
-		self::$list_table->display();
+		if ( is_network_admin() && ! $sites_connected ) {
+			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
+			?>
+			<div id="stream-message" class="updated stream-network-connect stream-connect" style="display:block !important;">
+				<div class="stream-wrap-container">
+					<div class="stream-text-container">
+							<p><strong><?php _e( 'Get started with Stream for Multisite!', 'stream' ); ?></strong></p>
+							<p><?php _e( 'Welcome to your Network Stream! Each site on your network must be connected individually by an admin on that site for it to show here.', 'stream' ); ?></p>
+					</div>
+				</div>
+			</div>
+			<?php
+		} else {
+			self::$list_table->display();
+		}
+
 		echo '</div>';
 	}
 
@@ -631,6 +701,7 @@ class WP_Stream_Admin {
 						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 						delete_option( WP_Stream_Install_WPDB::KEY );
 						delete_option( WP_Stream_Settings::KEY );
+						delete_option( WP_Stream_Settings::SITE_ID_KEY );
 					}
 					restore_current_blog();
 				}
@@ -643,7 +714,7 @@ class WP_Stream_Admin {
 				delete_site_option( WP_Stream_Settings::KEY );
 				delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
 				delete_site_option( WP_Stream_Settings::NETWORK_KEY );
-				delete_site_option( 'dashboard_stream_activity_options' );
+				delete_site_option( WP_Stream_Network::SITES_CONNECTED_KEY );
 			}
 
 			// Delete scheduled cron event hooks
