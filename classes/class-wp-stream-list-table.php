@@ -50,14 +50,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 		return apply_filters(
 			'wp_stream_list_table_columns',
 			array(
-				'date'      => __( 'Date', 'default' ),
-				'summary'   => __( 'Summary', 'default' ),
-				'author'    => __( 'Author', 'default' ),
-				'connector' => __( 'Connector', 'stream' ),
-				'context'   => __( 'Context', 'stream' ),
-				'action'    => __( 'Action', 'stream' ),
-				'ip'        => __( 'IP Address', 'stream' ),
-				'id'        => __( 'Record ID', 'stream' ),
+				'date'    => __( 'Date', 'default' ),
+				'summary' => __( 'Summary', 'default' ),
+				'author'  => __( 'Author', 'default' ),
+				'context' => __( 'Context', 'stream' ),
+				'action'  => __( 'Action', 'stream' ),
+				'ip'      => __( 'IP Address', 'stream' ),
+				'id'      => __( 'Record ID', 'stream' ),
 			)
 		);
 	}
@@ -130,7 +129,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$order = 'DESC';
 		}
 		if ( ! $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
-			$orderby = '';
+			$orderby = 'ID';
 		}
 		$args['order']   = $order;
 		$args['orderby'] = $orderby;
@@ -160,6 +159,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 		$args['paged'] = $this->get_pagenum();
 
+		if ( isset( $args['context'] ) && 0 === strpos( $args['context'], 'group-' ) ) {
+			$args['connector'] = str_replace( 'group-', '', $args['context'] );
+			$args['context']   = '';
+		}
+
 		if ( ! isset( $args['records_per_page'] ) ) {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
@@ -169,10 +173,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 		return $items;
 	}
 
+	/**
+	 * Get last query found rows
+	 *
+	 * @return integer
+	 */
 	function get_total_found_rows() {
-		global $wpdb;
-
-		return $wpdb->get_var( 'SELECT FOUND_ROWS()' );
+		return WP_Stream::$db->get_found_rows();
 	}
 
 	function column_default( $item, $column_name ) {
@@ -183,7 +190,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 					$item->created,
 					get_date_from_gmt( $item->created, 'Y/m/d' )
 				);
-				$out         = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out  = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
 				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
 				break;
@@ -205,8 +212,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'author' :
-				require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
-
 				$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
 				$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
 
@@ -221,8 +226,21 @@ class WP_Stream_List_Table extends WP_List_Table {
 				);
 				break;
 
-			case 'connector':
 			case 'context':
+				$connector_title = $this->get_term_title( $item->{'connector'}, 'connector' );
+				$context_title   = $this->get_term_title( $item->{'context'}, 'context' );
+
+				$out  = $this->column_link( $connector_title, 'connector', $item->{'connector'} );
+				$out .= '<br />&#8627;&nbsp;';
+				$out .= $this->column_link(
+					$context_title,
+					array(
+						'connector' => $item->{'connector'},
+						'context'   => $item->{'context'},
+					)
+				);
+				break;
+
 			case 'action':
 				$out = $this->column_link( $this->get_term_title( $item->{$column_name}, $column_name ), $column_name, $item->{$column_name} );
 				break;
@@ -232,7 +250,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'id' :
-				$out = absint( $item->ID );
+				$out = $item->ID;
 				break;
 
 			case 'blog_id':
@@ -363,8 +381,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	public function get_term_title( $term, $type ) {
 		if ( isset( WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ] ) ) {
 			return WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ];
-		}
-		else {
+		} else {
 			return $term;
 		}
 	}
@@ -376,7 +393,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * results of existing records.  All items that do not exist in records
 	 * get assigned a disabled value of "true".
 	 *
-	 * @uses   wp_stream_existing_records (see query.php)
+	 * @uses   wp_stream_existing_records (see class-wp-stream-query.php)
 	 * @since  1.0.4
 	 *
 	 * @param  string  Column requested
@@ -398,7 +415,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		// @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object
 		if ( 'author' === $column ) {
-			require_once WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
 			$all_records = array();
 
 			// If the number of users exceeds the max authors constant value then return an empty array and use AJAX instead
@@ -440,6 +456,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 
+		/* Tempo */
+		$active_records   = array();
+		$disabled_records = array();
+		foreach ( $all_records as $record => $label ) {
+			$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
+		}
+
+		/*
 		$existing_records = wp_stream_existing_records( $column, $table );
 		$active_records   = array();
 		$disabled_records = array();
@@ -456,6 +480,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		if ( isset( $disabled_records[0] ) ) {
 			unset( $disabled_records[0] );
 		}
+		*/
 
 		$sort = function ( $a, $b ) use ( $column ) {
 			$label_a = (string) $a['label'];
@@ -477,7 +502,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 	public function get_filters() {
 		$filters = array();
 
-		require_once WP_STREAM_INC_DIR . 'date-interval.php';
 		$date_interval = new WP_Stream_Date_Interval();
 
 		$filters['date'] = array(
@@ -493,11 +517,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'title' => __( 'authors', 'stream' ),
 			'items' => $authors_records,
 			'ajax'  => count( $authors_records ) <= 0,
-		);
-
-		$filters['connector'] = array(
-			'title' => __( 'connectors', 'stream' ),
-			'items' => $this->assemble_records( 'connector' ),
 		);
 
 		$filters['context'] = array(
@@ -527,15 +546,38 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$user_id = get_current_user_id();
 		$filters = $this->get_filters();
 
-		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s"/>', 'wp_stream' );
+		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s" />', 'wp_stream' );
 		$filters_string .= sprintf( '<span class="filter_info hidden">%s</span>', esc_html__( 'Show filter controls via the screen options tab above.', 'stream' ) );
 
 		foreach ( $filters as $name => $data ) {
 			if ( 'date' === $name ) {
 				$filters_string .= $this->filter_date( $data['items'] );
-				continue;
+			} else {
+				if ( 'context' === $name ) {
+					// Add Connectors as parents, and apply the Contexts as children
+					$connectors = $this->assemble_records( 'connector' );
+					foreach ( $connectors as $connector => $item ) {
+						$context_items[ $connector ]['label'] = $item['label'];
+						foreach ( $data['items'] as $context_value => $context_item ) {
+							if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
+								$context_items[ $connector ]['children'][ $context_value ] = $context_item;
+							}
+						}
+					}
+
+					foreach ( $context_items as $context_value => $context_item ) {
+						if ( ! isset( $context_item['children'] ) || empty( $context_item['children'] ) ) {
+							unset( $context_items[ $context_value ] );
+						}
+					}
+
+					$data['items'] = $context_items;
+
+					// Ouput a hidden input to handle the connector value
+					$filters_string .= '<input type="hidden" name="connector" class="record-filter-connector" />';
+				}
+				$filters_string .= $this->filter_select( $name, $data['title'], $data['items'] );
 			}
-			$filters_string .= $this->filter_select( $name, $data['title'], isset( $data['items'] ) ? $data['items'] : array(), isset( $data['ajax'] ) && $data['ajax'] );
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'default' ) );
@@ -545,27 +587,46 @@ class WP_Stream_List_Table extends WP_List_Table {
 		printf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
 
-	function filter_select( $name, $title, $items, $ajax ) {
+	function filter_select( $name, $title, $items, $ajax = false ) {
 		if ( $ajax ) {
 			$out = sprintf(
 				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s"/>',
 				esc_attr( $name ),
 				esc_attr( wp_stream_filter_input( INPUT_GET, $name ) ),
-				esc_html( $title )
+				esc_attr( $title )
 			);
 		} else {
 			$options  = array( '<option value=""></option>' );
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
-			foreach ( $items as $v => $label ) {
-				$options[] = sprintf(
-					'<option value="%s" %s %s %s title="%s">%s</option>',
-					$v,
-					selected( $v, $selected, false ),
-					isset( $label['disabled'] ) ? $label['disabled'] : '', // xss ok
-					isset( $label['icon'] ) ? sprintf( ' data-icon="%s"', esc_attr( $label['icon'] ) ) : '',
-					isset( $label['tooltip'] ) ? esc_attr( $label['tooltip'] ) : '',
-					$label['label']
+			foreach ( $items as $key => $item ) {
+				$value = isset( $item['children'] ) ? 'group-' . $key : $key;
+				$option_args = array(
+					'value'     => $value,
+					'selected'  => selected( $value, $selected, false ),
+					'disabled'  => isset( $item['disabled'] ) ? $item['disabled'] : null,
+					'icon'      => isset( $item['icon'] ) ? $item['icon'] : null,
+					'group'     => isset( $item['children'] ) ? $key : null,
+					'tooltip'   => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
+					'class'     => isset( $item['children'] ) ? 'level-1' : null,
+					'label'     => isset( $item['label'] ) ? $item['label'] : null,
 				);
+				$options[] = $this->filter_option( $option_args );
+
+				if ( isset( $item['children'] ) ) {
+					foreach ( $item['children'] as $child_value => $child_item ) {
+						$option_args  = array(
+							'value'     => $child_value,
+							'selected'  => selected( $child_value, $selected, false ),
+							'disabled'  => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
+							'icon'      => isset( $child_item['icon'] ) ? $child_item['icon'] : null,
+							'group'     => $key,
+							'tooltip'   => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
+							'class'     => 'level-2',
+							'label'     => isset( $child_item['label'] ) ? '- ' . $child_item['label'] : null,
+						);
+						$options[] = $this->filter_option( $option_args );
+					}
+				}
 			}
 			$out = sprintf(
 				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
@@ -576,6 +637,32 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		return $out;
+	}
+
+	function filter_option( $args ) {
+		$defaults = array(
+			'value'     => null,
+			'selected'  => null,
+			'disabled'  => null,
+			'icon'      => null,
+			'group'     => null,
+			'tooltip'   => null,
+			'class'     => null,
+			'label'     => null,
+		);
+		wp_parse_args( $args, $defaults );
+
+		return sprintf(
+			'<option value="%s" %s %s %s %s %s class="%s">%s</option>',
+			esc_attr( $args['value'] ),
+			$args['selected'],
+			$args['disabled'],
+			$args['icon'] ? sprintf( 'data-icon="%s"', esc_attr( $args['icon'] ) ) : null,
+			$args['group'] ? sprintf( 'data-group="%s"', esc_attr( $args['group'] ) ) : null,
+			$args['tooltip'] ? sprintf( 'title="%s"', esc_attr( $args['tooltip'] ) ) : null,
+			$args['class'] ? esc_attr( $args['class'] ) : null,
+			esc_html( $args['label'] )
+		);
 	}
 
 	function filter_search() {
@@ -613,7 +700,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 						esc_attr( $key ),
 						esc_attr( $interval['start']->format( 'Y/m/d' ) ),
-						esc_attr( $interval['end']->format( 'Y/m/d' ) ),
+						isset( $interval['end'] ) ? esc_attr( $interval['end']->format( 'Y/m/d' ) ) : '',
 						selected( $key === $date_predefined ),
 						esc_html( $interval['label'] )
 					); // xss ok
@@ -650,7 +737,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function display() {
 		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
-		echo '<form method="get" action="' . esc_url( $url ) . '">';
+		echo '<form method="get" action="' . esc_url( $url ) . '" id="record-filter-form">';
 		echo $this->filter_search(); // xss ok
 
 		parent::display();

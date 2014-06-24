@@ -1,6 +1,6 @@
 <?php
 
-class WP_Stream_Install {
+class WP_Stream_Install_WPDB {
 
 	/**
 	 * Option key to store database version
@@ -77,7 +77,7 @@ class WP_Stream_Install {
 	 * Gets instance of singleton class
 	 *
 	 * @access public
-	 * @return bool|object|WP_Stream_Install
+	 * @return bool|object|WP_Stream_Install_WPDB
 	 */
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
@@ -101,7 +101,7 @@ class WP_Stream_Install {
 		/**
 		 * Allows developers to alter the tables prefix, default to base_prefix
 		 *
-		 * @var string $prefix  database prefix
+		 * @var string $prefix       database prefix
 		 * @var string $table_prefix updated database prefix
 		 */
 		$prefix = $wpdb->base_prefix;
@@ -128,10 +128,10 @@ class WP_Stream_Install {
 
 			if ( ! isset( $_REQUEST['wp_stream_update'] ) ) {
 				self::$update_required = true;
-				$update_args = array( 'type' => 'auto' );
-				self::$success_db = self::update( self::$db_version, self::$current, $update_args );
+				$update_args           = array( 'type' => 'auto' );
+				self::$success_db      = self::update( self::$db_version, self::$current, $update_args );
 			} elseif ( 'update_and_continue' === $_REQUEST['wp_stream_update'] ) {
-				$update_args = array( 'type' => 'user' );
+				$update_args      = array( 'type' => 'user' );
 				self::$success_db = self::update( self::$db_version, self::$current, $update_args );
 			}
 
@@ -209,7 +209,7 @@ class WP_Stream_Install {
 				<?php submit_button( esc_html__( 'Update Database', 'stream' ), 'primary', 'stream-update-db-submit' ) ?>
 			</form>
 		</div>
-		<?php
+	<?php
 	}
 
 	/**
@@ -229,7 +229,7 @@ class WP_Stream_Install {
 				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ) ?>
 			</form>
 		</div>
-		<?php
+	<?php
 	}
 
 	/**
@@ -247,14 +247,14 @@ class WP_Stream_Install {
 	 */
 	public static function db_update_versions() {
 		$db_update_versions = array(
-			'1.1.4' /* @version 1.1.4 Fix mysql character set issues */,
-			'1.1.7' /* @version 1.1.7 Modified the ip column to varchar(39) */,
-			'1.2.8' /* @version 1.2.8 Change the context for Media connectors to the attachment type */,
-			'1.3.0' /* @version 1.3.0 Backward settings compatibility for old version plugins */,
-			'1.3.1' /* @version 1.3.1 Update records of Installer to Theme Editor connector */,
-			'1.4.0' /* @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
-			'1.4.2' /* @version 1.4.2 Patch to fix rare multisite upgrade not triggering */,
-			'1.4.5' /* @version 1.4.5 Patch to fix author_meta broken values */,
+			'1.1.4'/* @version 1.1.4 Fix mysql character set issues */,
+			'1.1.7'/* @version 1.1.7 Modified the ip column to varchar(39) */,
+			'1.2.8'/* @version 1.2.8 Change the context for Media connectors to the attachment type */,
+			'1.3.0'/* @version 1.3.0 Backward settings compatibility for old version plugins */,
+			'1.3.1'/* @version 1.3.1 Update records of Installer to Theme Editor connector */,
+			'1.4.0'/* @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
+			'1.4.2'/* @version 1.4.2 Patch to fix rare multisite upgrade not triggering */,
+			'2.0.0'/* @version 2.0.0 Removing context table, adding columns to base table */,
 		);
 
 		return apply_filters( 'wp_stream_db_update_versions', $db_update_versions );
@@ -263,14 +263,14 @@ class WP_Stream_Install {
 	/**
 	 * Database user controlled update routine
 	 *
-	 * @param int $db_version last updated version of database stored in plugin options
-	 * @param int $current    Current running plugin version
+	 * @param int   $db_version last updated version of database stored in plugin options
+	 * @param int   $current    Current running plugin version
 	 * @param array $update_args
 	 *
 	 * @return mixed Version number on success, true on no update needed, mysql error message on error
 	 */
 	public static function update( $db_version, $current, $update_args ) {
-		require_once WP_STREAM_INC_DIR . 'db-updates.php';
+		require_once WP_STREAM_INC_DIR . 'db/install/wpdb-updates.php';
 
 		$versions = self::db_update_versions();
 
@@ -295,9 +295,12 @@ class WP_Stream_Install {
 	/**
 	 * Initial database install routine
 	 *
-	 * @uses dbDelta()
+	 * @uses  dbDelta()
+	 *
 	 * @param string $current Current version of plugin installed
+	 *
 	 * @return string Current version of plugin installed
+	 * @todo  Test this after the 2.0 version change
 	 */
 	public static function install( $current ) {
 		global $wpdb;
@@ -317,6 +320,9 @@ class WP_Stream_Install {
 			visibility varchar(20) NOT NULL DEFAULT 'publish',
 			parent bigint(20) unsigned NOT NULL DEFAULT '0',
 			type varchar(20) NOT NULL DEFAULT 'stream',
+			connector varchar(255) NOT NULL,
+			context varchar(255) NOT NULL,
+			action varchar(255) NOT NULL,
 			created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 			ip varchar(39) NULL,
 			PRIMARY KEY  (ID),
@@ -324,31 +330,10 @@ class WP_Stream_Install {
 			KEY blog_id (blog_id),
 			KEY parent (parent),
 			KEY author (author),
-			KEY created (created)
-		)";
-
-		if ( ! empty( $wpdb->charset ) ) {
-			$sql .= " CHARACTER SET $wpdb->charset";
-		}
-
-		if ( ! empty( $wpdb->collate ) ) {
-			$sql .= " COLLATE $wpdb->collate";
-		}
-
-		$sql .= ';';
-
-		dbDelta( $sql );
-
-		$sql = "CREATE TABLE {$prefix}stream_context (
-			meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-			record_id bigint(20) unsigned NOT NULL,
-			context varchar(100) NOT NULL,
-			action varchar(100) NOT NULL,
-			connector varchar(100) NOT NULL,
-			PRIMARY KEY  (meta_id),
+			KEY created (created),
+			KEY connector (connector),
 			KEY context (context),
-			KEY action (action),
-			KEY connector (connector)
+			KEY action (action)
 		)";
 
 		if ( ! empty( $wpdb->charset ) ) {

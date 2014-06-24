@@ -22,20 +22,20 @@ tests_add_filter(
 		require dirname( dirname( __FILE__ ) ) . '/stream.php';
 
 		// Call Activate plugin function
-		WP_Stream::install();
+		WP_Stream::$db->install();
 	}
 );
 
 // Removes all sql tables on shutdown
 // Do this action last
 tests_add_filter(
-		'shutdown',
+	'shutdown',
 	function() {
 		// Empty all tables so we don't deal with leftovers
-		drop_tables();
+		WP_Stream::$db->reset();
 	},
 	999999
 );
 
-require $_tests_dir . '/includes/bootstrap.php';
+require getenv( 'WP_TESTS_DIR' ) . 'includes/bootstrap.php';
 require dirname( __FILE__ ) . '/testcase.php';

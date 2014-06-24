@@ -2,7 +2,7 @@
 
 // Load Carbon to Handle dates much easier
 if ( ! class_exists( 'Carbon\Carbon' ) ) {
-	require_once WP_STREAM_INC_DIR . 'vendor/Carbon.php';
+	require_once WP_STREAM_INC_DIR . 'lib/Carbon.php';
 }
 
 use Carbon\Carbon;
@@ -20,9 +20,6 @@ class WP_Stream_Date_Interval {
 	 * Class constructor
 	 */
 	public function __construct() {
-		// Filter the Predefined list of intervals to make it work
-		add_filter( 'wp_stream_predefined_date_intervals', array( $this, 'filter_predefined_intervals' ), 20 );
-
 		// Get all default intervals
 		$this->intervals = $this->get_predefined_intervals();
 	}
@@ -50,7 +47,6 @@ class WP_Stream_Date_Interval {
 				'today' => array(
 					'label' => esc_html__( 'Today', 'default' ),
 					'start' => Carbon::today( $timezone )->startOfDay(),
-					'end'   => Carbon::today( $timezone )->startOfDay(),
 				),
 				'yesterday' => array(
 					'label' => esc_html__( 'Yesterday', 'stream' ),
@@ -108,46 +104,6 @@ class WP_Stream_Date_Interval {
 			),
 			$timezone
 		);
-	}
-
-	/**
-	 * Filter the predefined intervals to reflect db oldest value
-	 * @param $intervals
-	 *
-	 * @return array
-	 */
-	public function filter_predefined_intervals( $intervals ) {
-		$query = wp_stream_query(
-			array(
-				'order'            => 'ASC',
-				'orderby'          => 'created',
-				'records_per_page' => 1,
-				'ignore_context'   => true,
-			)
-		);
-
-		$first_stream_item = reset( $query );
-
-		if ( false === $first_stream_item ) {
-			return array();
-		}
-
-		$first_stream_date = \Carbon\Carbon::parse( $first_stream_item->created );
-
-		foreach ( $intervals as $key => $interval ) {
-			if ( ! isset( $interval['start'] ) || false === $interval['start'] ) {
-				$intervals[ $key ]['start'] = $interval['start'] = $first_stream_date;
-			}
-			if ( ! isset( $interval['end'] ) || false === $interval['end'] ) {
-				$intervals[ $key ]['end'] = $interval['end'] = \Carbon\Carbon::now();
-			}
-			if ( ! is_a( $interval['start'], '\Carbon\Carbon' ) || ! is_a( $interval['end'], '\Carbon\Carbon' ) ) {
-				unset( $intervals[ $key ] );
-				continue;
-			}
-		}
-
-		return $intervals;
 	}
 
 }

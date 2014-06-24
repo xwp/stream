@@ -3,7 +3,7 @@
 class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 
 	/**
-	 * Context slug
+	 * Connector slug
 	 *
 	 * @var string
 	 */
@@ -22,7 +22,6 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		'delete_site_transient_update_themes', // themes::deleted
 		'pre_option_uninstall_plugins', // plugins::deleted
 		'pre_set_site_transient_update_plugins',
-		'wp_redirect',
 		'_core_updated_successfully',
 	);
 
@@ -46,7 +45,6 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			'activated'   => __( 'Activated', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
 			'deleted'     => __( 'Deleted', 'stream' ),
-			'edited'      => __( 'Edited', 'stream' ),
 			'updated'     => __( 'Updated', 'stream' ),
 		);
 	}
@@ -319,54 +317,6 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		delete_option( 'wp_stream_plugins_to_delete' );
 
 		return $value;
-	}
-
-	public static function callback_wp_redirect( $location ) {
-		if ( ! preg_match( '#(plugin)-editor.php#', $location, $match ) ) {
-			return $location;
-		}
-
-		$type = $match[1];
-
-		list( $url, $query ) = explode( '?', $location );
-
-		$query = wp_parse_args( $query );
-		$file  = $query['file'];
-
-		if ( empty( $query['file'] ) ) {
-			return $location;
-		}
-
-		if ( 'theme' === $type ) {
-			if ( empty( $query['updated'] ) ) {
-				return $location;
-			}
-			$theme = wp_get_theme( $query['theme'] );
-			$name  = $theme['Name'];
-		}
-		elseif ( 'plugin' === $type ) {
-			global $plugin, $plugins;
-			$plugin_base = current( explode( '/', $plugin ) );
-			foreach ( $plugins as $key => $plugin_data ) {
-				if ( $plugin_base === current( explode( '/', $key ) ) ) {
-					$name = $plugin_data['Name'];
-					break;
-				}
-			}
-		}
-
-		self::log(
-			_x(
-				'Edited %1$s: %2$s',
-				'Plugin/theme editing. 1: Type (plugin/theme), 2: Plugin/theme name',
-				'stream'
-			),
-			compact( 'type', 'name', 'file' ),
-			null,
-			array( $type . 's' => 'edited' )
-		);
-
-		return $location;
 	}
 
 	public static function callback__core_updated_successfully( $new_version ) {

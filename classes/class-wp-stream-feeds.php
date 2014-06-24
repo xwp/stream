@@ -1,7 +1,5 @@
 <?php
 
-require_once WP_STREAM_INC_DIR . 'admin.php';
-
 class WP_Stream_Feeds {
 
 	const FEED_QUERY_VAR         = 'stream';
@@ -225,7 +223,7 @@ class WP_Stream_Feeds {
 			'record_parent'    => wp_stream_filter_input( INPUT_GET, 'record_parent', FILTER_SANITIZE_NUMBER_INT ),
 			'order'            => wp_stream_filter_input( INPUT_GET, 'order', FILTER_DEFAULT, array( 'options' => array( 'default' => 'desc' ) ) ),
 			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby', FILTER_DEFAULT, array( 'options' => array( 'default' => 'ID' ) ) ),
-			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields', FILTER_DEFAULT, array( 'options' => array( 'default' => 'with-meta' ) ) ),
+			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields', FILTER_DEFAULT, array( 'options' => array( 'default' => 'meta' ) ) ),
 		);
 
 		$records = wp_stream_query( $args );
