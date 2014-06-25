@@ -804,7 +804,7 @@ class WP_Stream_Settings {
 				}
 
 				$no_rules_found_row = sprintf(
-					'<tr class="no-items"><td class="colspanchange" colspan="6">%1$s</td></tr>',
+					'<tr class="no-items"><td class="colspanchange" colspan="5">%1$s</td></tr>',
 					esc_html__( 'No rules found.', 'stream' )
 				);
 
