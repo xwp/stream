@@ -41,8 +41,8 @@
 	   -moz-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
 	        box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
 	-webkit-transition: all 0.1s ease-in;
-	     -o-transition: all 0.1s ease-in;
 	   -moz-transition: all 0.1s ease-in;
+	     -o-transition: all 0.1s ease-in;
 	        transition: all 0.1s ease-in;
 }
 
@@ -61,8 +61,8 @@
 	outline: none;
 	top: 4px;
 	-webkit-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
-	-moz-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
-	box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
+	   -moz-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
+	        box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
 }
 
 #stream-message.stream-connect .stream-close-button-container {
@@ -150,46 +150,60 @@
 
 /* Stream Connect Page */
 #wp-stream-connect {
+	text-align: center;
+	background-color: #69a8bb;
+	color: #fff;
+	padding: 0;
 	margin: 0;
-	height: auto;
-	min-height: 100%;
+	height: 100%;
 	width: 100%;
 	position: relative;
 	width: 100%;
 	-webkit-font-smoothing: antialiased;
-	font-size: 15px;
+	font-size: 14px;
 }
 
-#wp-stream-connect .masthead {
+#wp-stream-connect .wrap {
+	padding: 4em 0;
+	margin: 0;
 	position: relative;
-	text-align: center;
-	background-color: #69a8bb;
-	color: #fff;
-	padding: 3em 0 4em;
+	width: 100%;
 }
 
-#wp-stream-connect .masthead a {
+#wp-stream-connect a {
 	color: #fff;
 	text-decoration: none;
+	opacity: 0.67;
+	-webkit-transition: all 0.1s ease-in;
+       -moz-transition: all 0.1s ease-in;
+	     -o-transition: all 0.1s ease-in;
+	        transition: all 0.1s ease-in;
 }
 
-#wp-stream-connect .masthead h1 {
-	padding: 0 0 1em;
+#wp-stream-connect a:hover {
+	color: #fff;
+	text-decoration: none;
+	opacity: 1;
+}
+
+#wp-stream-connect h1 {
+	padding: 0 1em 1.5em;
 	margin: 0 auto;
 	max-width: 22em;
 	color: #fff;
-	font: 300 2.5em/1.4em 'Open Sans', Helvetica, sans-serif;
+	font: 300 3em/1.4em 'Open Sans', Helvetica, sans-serif;
 	position: relative;
 	text-shadow: 0 1px 1px rgba(0, 0, 0, .12);
 }
 
-#wp-stream-connect .masthead .submit {
+#wp-stream-connect .submit {
 	margin: 1em 0;
 	padding: 0;
 	text-align: center;
+	font-size: 1em;
 }
 
-#wp-stream-connect .masthead .submit a {
+#wp-stream-connect .submit a {
 	font: 400 2.5em 'Open Sans', Helvetica, sans-serif;
 	padding: 0.38095em 0.85714em 0.38095em;
 	background-clip: padding-box;
@@ -198,34 +212,35 @@
 	border: none;
 	background: #e14d43;
 	color: #fff;
+	opacity: 1;
 	position: relative;
 	-webkit-background-clip: padding-box;
 	-moz-background-clip: padding;
 	-webkit-border-radius: 6px;
-	-moz-border-radius: 6px;
-			border-radius: 6px;
+	   -moz-border-radius: 6px;
+	        border-radius: 6px;
 	-webkit-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
-	-moz-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
-			box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+	   -moz-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+	        box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
 	-webkit-transition: all 0.1s ease-in;
-		-o-transition: all 0.1s ease-in;
-	-moz-transition: all 0.1s ease-in;
-			transition: all 0.1s ease-in;
+	   -moz-transition: all 0.1s ease-in;
+	     -o-transition: all 0.1s ease-in;
+	        transition: all 0.1s ease-in;
 }
 
-#wp-stream-connect .masthead .submit i.dashicons {
+#wp-stream-connect .submit i.dashicons {
 	font-size: 1em;
 	line-height: 1.45em;
 	margin-right: 0.85714em;
 	color: #fff;
 }
 
-#wp-stream-connect .masthead .submit a:hover,
-#wp-stream-connect .masthead .submit a:focus {
+#wp-stream-connect .submit a:hover,
+#wp-stream-connect .submit a:focus {
 	background: #ef5c52;
 }
 
-#wp-stream-connect .masthead .submit a:active {
+#wp-stream-connect .submit a:active {
 	outline: none;
 	top: 4px;
 	-webkit-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
@@ -233,57 +248,58 @@
 	box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
 }
 
-#wp-stream-connect .features {
-	background: #fff;
-	border-top: 1px solid #d6d6d6;
-	padding: 2em 0;
-	text-align: center;
+@media (max-width:1130px){
+
 }
 
-#wp-stream-connect .features h2 {
-	color: #616161;
-	font: 300 2.5em/1.4em 'Open Sans', Helvetica, sans-serif;
-	margin: 0 0 1em;
-	text-align: center;
-	text-shadow: 0 1px 1px #fff;
-}
+@media (max-width:420px){
 
-#wp-stream-connect .features .feature-list {
-	display: inline-block;
-}
-
-#wp-stream-connect .features .feature {
-	float: left;
-	background-color: #f5f5f5;
-	border: 1px solid #d6d6d6;
-	color: #717171;
-	margin: 0 1em 1em;
-	padding: 1em;
-	width: 300px;
-	line-height: 2em;
-}
-
-#wp-stream-connect .features .feature i {
-	display: block;
-	margin: 0 auto 1em;
-	color: #69a8bb;
-	font-size: 3em;
-}
-
-#wp-stream-connect .features .feature h4 {
-	font-size: 1.1em;
-	margin: 0.5em 0;
-}
-
-#wp-stream-connect .features .feature p {
-	line-height: 1.6em;
-	margin-top: 0;
 }
 
 /* WordPress overrides */
+.toplevel_page_wp_stream.wp_stream_disconnected #wpwrap,
+.toplevel_page_wp_stream.wp_stream_disconnected #wpcontent,
+.toplevel_page_wp_stream.wp_stream_disconnected #wpbody,
+.toplevel_page_wp_stream.wp_stream_disconnected #wpbody-content {
+	height: 100%;
+	padding: 0;
+}
+
 .toplevel_page_wp_stream.wp_stream_disconnected #wpcontent {
 	margin-left: 160px;
 }
+
+.toplevel_page_wp_stream.wp_stream_disconnected.folded #wpcontent {
+	margin-left: 36px;
+}
+
 .toplevel_page_wp_stream.wp_stream_disconnected #wpfooter {
 	display: none;
+}
+
+@media (max-width:900px){
+	.toplevel_page_wp_stream.wp_stream_disconnected.auto-fold #wpcontent {
+		margin-left: 36px;
+	}
+	#wp-stream-connect {
+		font-size: 12px;
+	}
+}
+
+@media (max-width:782px){
+	.toplevel_page_wp_stream.wp_stream_disconnected.auto-fold #wpcontent {
+		margin-left: 0;
+	}
+	#wp-stream-connect {
+		font-size: 11px;
+	}
+}
+
+@media (max-width:600px){
+	#wp-stream-connect .wrap {
+		padding-top: 8em;
+	}
+	#wp-stream-connect {
+		font-size: 9px;
+	}
 }
