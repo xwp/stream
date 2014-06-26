@@ -71,7 +71,7 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Ajax callback function to search users that is used on exclude setting page
+	 * Ajax callback function to search users, used on exclude setting page
 	 *
 	 * @uses WP_User_Query WordPress User Query class.
 	 * @return void
@@ -153,6 +153,35 @@ class WP_Stream_Settings {
 		}
 
 		wp_send_json_success( $response );
+	}
+
+	/**
+	* Ajax callback function to search IP addresses, used on exclude setting page
+	*
+	* @uses WP_User_Query WordPress User Query class.
+	* @return void
+	*/
+	public static function get_ips(){
+		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
+			return;
+		}
+
+		check_ajax_referer( 'stream_get_ips', 'nonce' );
+
+		$results = wp_stream_query(
+			array(
+				'fields'           => 'ip',
+				'distinct'         => true,
+				'search'           => like_escape( $_POST['find'] ),
+				'search_field'     => 'ip',
+				'records_per_page' => wp_stream_filter_input( INPUT_POST, 'limit' ),
+			)
+		);
+		if ( $results ) {
+			$results = wp_list_pluck( $results, 'ip' );
+		}
+
+		wp_send_json_success( $results );
 	}
 
 	/**
@@ -742,15 +771,16 @@ class WP_Stream_Settings {
 						esc_html__( 'Any Action', 'stream' )
 					);
 
-					// IP Address text input
+					// IP Address input
 					$ip_address_input = sprintf(
-						'<input type="text" name="%1$s[%2$s_%3$s][%4$s][]" class="%4$s" placeholder="%5$s" value="%6$s" />',
+						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" value="%5$s" class="select2-select %4$s" data-placeholder="%6$s" data-nonce="%7$s" />',
 						esc_attr( $option_key ),
 						esc_attr( $section ),
 						esc_attr( $name ),
 						'ip_address',
+						esc_attr( $ip_address ),
 						esc_html__( 'Any IP Address', 'stream' ),
-						esc_attr( $ip_address )
+						esc_attr( wp_create_nonce( 'stream_get_ips' ) )
 					);
 
 					// Hidden helper input

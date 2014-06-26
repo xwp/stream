@@ -18,7 +18,81 @@ jQuery(function( $ ) {
 			}
 		});
 
-		var $input_user;
+		var $input_user, $input_ip;
+
+		$( '#tab-content-settings input[type=hidden].select2-select.ip_address' ).each(function( k, el ) {
+			$input_ip = $( el );
+			$input_ip.select2({
+				ajax: {
+					type: 'POST',
+					url: ajaxurl,
+					dataType: 'json',
+					quietMillis: 500,
+					data: function( term ) {
+						return {
+							find: term,
+							limit: 10,
+							action: 'stream_get_ips',
+							nonce: $input_ip.data( 'nonce' )
+						};
+					},
+					results: function( response ) {
+						var answer = { results: [] };
+
+						if ( true !== response.success || undefined === response.data ) {
+							return answer;
+						}
+
+						$.each( response.data, function( key, ip ) {
+							answer.results.push({
+								id: ip,
+								text: ip
+							});
+						});
+
+						return answer;
+					}
+				},
+				initSelection: function( item, callback ) {
+					callback( item.data( 'selected' ) );
+				},
+				formatNoMatches: function(){
+					return '';
+				},
+				createSearchChoice: function( term ) {
+					var ip_chunks = [];
+
+					ip_chunks = term.match( /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/ );
+
+					if ( null === ip_chunks ) {
+						return;
+					}
+
+					// remove whole match
+					ip_chunks.shift();
+
+					ip_chunks = $.grep(
+						ip_chunks,
+						function( chunk ) {
+							var numeric = parseInt(chunk, 10);
+							return numeric <= 255 && numeric.toString() === chunk;
+						}
+					);
+
+					if ( ip_chunks.length < 4 ) {
+						return;
+					}
+
+					return {
+						id: term,
+						text: term
+					};
+				},
+				allowClear: true,
+				placeholder: $input_ip.data( 'placeholder' )
+			});
+		});
+
 		$( '#tab-content-settings input[type=hidden].select2-select.author_or_role' ).each(function( k, el ) {
 			$input_user = $( el );
 
