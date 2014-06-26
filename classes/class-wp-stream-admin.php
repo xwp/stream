@@ -32,6 +32,7 @@ class WP_Stream_Admin {
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
 	const PRELOAD_AUTHORS_MAX  = 50;
+	const CONNECT_URL          = 'https://staging.wp-stream.com/connect/';
 
 	public static function load() {
 		// User and role caps
@@ -292,6 +293,11 @@ class WP_Stream_Admin {
 	public static function admin_body_class( $classes ) {
 		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
 			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
+			if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
+				$classes .= sprintf( ' wp_stream_connected ' );
+			} else {
+				$classes .= sprintf( ' wp_stream_disconnected ' );
+			}
 		}
 
 		return $classes;
@@ -604,11 +610,33 @@ class WP_Stream_Admin {
 
 		$page_title = apply_filters( 'wp_stream_connect_page_title', get_admin_page_title() );
 
+		wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
 		?>
-		<div class="wrap">
-
-			<h2><?php echo esc_html( $page_title ); ?></h2>
-
+		<div id="wp-stream-connect">
+			<div class="masthead">
+				<h1><?php _e( 'Stream tracks every action in WordPress and takes the guess-work out of troubleshooting.', 'stream' ); ?></h1>
+				<p class="submit"><a href="<?php echo esc_url( self::CONNECT_URL ); ?>"><i class="dashicons dashicons-admin-plugins"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
+			</div>
+			<div class="features">
+				<h2><?php _e( 'Stream Features', 'stream' ); ?></h2>
+				<div class="feature-list">
+					<div class="feature">
+						<i class="dashicons dashicons-backup"></i>
+						<h4><?php _e( 'A Time Machine for your Content', 'stream' ); ?></h4>
+						<p><?php _e( 'Stream allows you to quickly revert settings, posts and pages on your WordPress site with just a few clicks. It\'s version control in the cloud for your most important content.', 'stream' ); ?></p>
+					</div>
+					<div class="feature">
+						<i class="dashicons dashicons-visibility"></i>
+						<h4><?php _e( 'Review &amp; Monitor Changes', 'stream' ); ?></h4>
+						<p><?php _e( 'Review changes that are happening to your site and which users are performing them. With Stream you\'ll get a birds-eye view of every change published on your site.', 'stream' ); ?></p>
+					</div>
+					<div class="feature">
+						<i class="dashicons dashicons-lock"></i>
+						<h4><?php _e( 'Secure Audit History', 'stream' ); ?></h4>
+						<p><?php _e( 'If your site is hacked, Stream will show you a play-by-play of any content that may have been tampered with. Your activity history is stored securely in the cloud, immune to any intruder.', 'stream' ); ?></p>
+					</div>
+				</div>
+			</div>
 		</div>
 		<?php
 	}
