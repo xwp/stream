@@ -626,13 +626,13 @@ class WP_Stream_Admin {
 
 		if ( is_network_admin() ) {
 			$sites_connected = (int) get_site_option( WP_Stream_Network::SITES_CONNECTED_KEY, 0 );
-			$site_count = sprintf( _n( '1 site', '%d sites', $sites_connected, 'stream' ), $sites_connected );
+			$site_count      = '';
 
-			if ( $site_count > 0 ) {
-				printf( '<h2>%s (%s)</h2>', __( 'Stream Records', 'stream' ), $site_count ); // xss ok
-			} else {
-				printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
+			if ( $sites_connected > 0 ) {
+				$site_count = sprintf( _n( ' (1 site)', ' (%d sites)', $sites_connected, 'stream' ), $sites_connected );
 			}
+
+			printf( '<h2>%s%s</h2>', __( 'Stream Records', 'stream' ), $site_count ); // xss ok
 		} else {
 			printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
 		}
