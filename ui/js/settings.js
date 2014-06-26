@@ -128,6 +128,18 @@ jQuery(function( $ ) {
 			}
 		});
 
+		$( '.exclude_rules_remove_rule_row' ).on( 'click', function() {
+			var $excludeList = $( 'table.stream-exclude-list' ),
+				$thisRow     = $( this ).closest( 'tr' );
+
+			$thisRow.remove();
+
+			$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
+			$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
+
+			recalculate_rules_found();
+		});
+
 		$( '#tab-content-settings input.ip_address' ).on( 'change', function() {
 			var ipv4Expression = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,
 				ipv6Expression = /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/,
@@ -180,18 +192,6 @@ jQuery(function( $ ) {
 		recalculate_rules_found();
 	});
 
-	$( '.exclude_rules_remove_rule_row' ).on( 'click', function() {
-		var $excludeList = $( 'table.stream-exclude-list' ),
-			$thisRow     = $( this ).closest( 'tr' );
-
-		$thisRow.remove();
-
-		$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
-		$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
-
-		recalculate_rules_found();
-	});
-
 	$( '.stream-exclude-list' ).closest( 'form' ).submit( function() {
 		if ( $( ':input.invalid', this ).length > 0 ) {
 			$( ':input.invalid', this ).first().focus();
@@ -204,6 +204,7 @@ jQuery(function( $ ) {
 			}
 		});
 	});
+
 	function recalculate_rules_found() {
 		var $allRows     = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
 			$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' );
