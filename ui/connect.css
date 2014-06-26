@@ -151,8 +151,7 @@
 /* Stream Connect Page */
 #wp-stream-connect {
 	text-align: center;
-	background-color: #69a8bb;
-	color: #fff;
+	color: #616161;
 	padding: 0;
 	margin: 0;
 	height: 100%;
@@ -168,32 +167,6 @@
 	margin: 0;
 	position: relative;
 	width: 100%;
-}
-
-#wp-stream-connect a {
-	color: #fff;
-	text-decoration: none;
-	opacity: 0.67;
-	-webkit-transition: all 0.1s ease-in;
-       -moz-transition: all 0.1s ease-in;
-	     -o-transition: all 0.1s ease-in;
-	        transition: all 0.1s ease-in;
-}
-
-#wp-stream-connect a:hover {
-	color: #fff;
-	text-decoration: none;
-	opacity: 1;
-}
-
-#wp-stream-connect p.quote {
-	padding: 1em 1em 0.5em;
-	margin: 0 auto;
-	max-width: 22em;
-	color: #fff;
-	font: 300 3em/1.4em 'Open Sans', Helvetica, sans-serif;
-	position: relative;
-	text-shadow: 0 1px 1px rgba(0, 0, 0, .12);
 }
 
 #wp-stream-connect p {
@@ -254,23 +227,16 @@
 	box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
 }
 
-@media (max-width:1130px){
-
-}
-
-@media (max-width:420px){
-
+#wp-stream-connect p.quote {
+	padding: 1em 1em 0.5em;
+	margin: 0 auto;
+	max-width: 22em;
+	font: 300 3em/1.4em 'Open Sans', Helvetica, sans-serif;
+	position: relative;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .1);
 }
 
 /* WordPress overrides */
-.toplevel_page_wp_stream.wp_stream_disconnected #wpwrap,
-.toplevel_page_wp_stream.wp_stream_disconnected #wpcontent,
-.toplevel_page_wp_stream.wp_stream_disconnected #wpbody,
-.toplevel_page_wp_stream.wp_stream_disconnected #wpbody-content {
-	height: 100%;
-	padding: 0;
-}
-
 .toplevel_page_wp_stream.wp_stream_disconnected #wpcontent {
 	margin-left: 160px;
 }
@@ -281,11 +247,6 @@
 
 .toplevel_page_wp_stream.wp_stream_disconnected #wpfooter {
 	display: none;
-}
-
-.toplevel_page_wp_stream.wp_stream_disconnected ul#adminmenu a.wp-has-current-submenu::after,
-.toplevel_page_wp_stream.wp_stream_disconnected ul#adminmenu > li.current > a.current::after {
-	border-right-color: #69a8bb;
 }
 
 @media (max-width:900px){
@@ -307,9 +268,6 @@
 }
 
 @media (max-width:600px){
-	#wp-stream-connect .wrap {
-		padding-top: 8em;
-	}
 	#wp-stream-connect {
 		font-size: 9px;
 	}
