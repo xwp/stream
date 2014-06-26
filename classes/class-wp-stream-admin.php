@@ -27,6 +27,7 @@ class WP_Stream_Admin {
 	const RECORDS_PAGE_SLUG    = 'wp_stream';
 	const SETTINGS_PAGE_SLUG   = 'wp_stream_settings';
 	const EXTENSIONS_PAGE_SLUG = 'wp_stream_extensions';
+	const ACCOUNT_PAGE_SLUG    = 'wp_stream_account';
 	const ADMIN_PARENT_PAGE    = 'admin.php';
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
@@ -161,42 +162,65 @@ class WP_Stream_Admin {
 			return false;
 		}
 
-		self::$screen_id['main'] = add_menu_page(
-			__( 'Stream', 'stream' ),
-			__( 'Stream', 'stream' ),
-			self::VIEW_CAP,
-			self::RECORDS_PAGE_SLUG,
-			array( __CLASS__, 'stream_page' ),
-			'div',
-			apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
-		);
-
-		self::$screen_id['settings'] = add_submenu_page(
-			self::RECORDS_PAGE_SLUG,
-			__( 'Stream Settings', 'stream' ),
-			__( 'Settings', 'default' ),
-			self::SETTINGS_CAP,
-			self::SETTINGS_PAGE_SLUG,
-			array( __CLASS__, 'render_page' )
-		);
-
-		if ( ! is_multisite() ) {
-			self::$screen_id['extensions'] = add_submenu_page(
+		if ( is_network_admin() || WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
+			self::$screen_id['main'] = add_menu_page(
+				__( 'Stream', 'stream' ),
+				__( 'Stream', 'stream' ),
+				self::VIEW_CAP,
 				self::RECORDS_PAGE_SLUG,
-				__( 'Stream Extensions', 'stream' ),
-				__( 'Extensions', 'stream' ),
+				array( __CLASS__, 'stream_page' ),
+				'div',
+				apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
+			);
+
+			self::$screen_id['settings'] = add_submenu_page(
+				self::RECORDS_PAGE_SLUG,
+				__( 'Stream Settings', 'stream' ),
+				__( 'Settings', 'default' ),
 				self::SETTINGS_CAP,
-				self::EXTENSIONS_PAGE_SLUG,
-				array( __CLASS__, 'render_extensions_page' )
+				self::SETTINGS_PAGE_SLUG,
+				array( __CLASS__, 'render_page' )
+			);
+
+			if ( ! is_multisite() ) {
+				self::$screen_id['extensions'] = add_submenu_page(
+					self::RECORDS_PAGE_SLUG,
+					__( 'Stream Extensions', 'stream' ),
+					__( 'Extensions', 'stream' ),
+					self::SETTINGS_CAP,
+					self::EXTENSIONS_PAGE_SLUG,
+					array( __CLASS__, 'render_extensions_page' )
+				);
+			}
+
+			self::$screen_id['account'] = add_submenu_page(
+				self::ACCOUNT_PAGE_SLUG,
+				__( 'Stream Account', 'stream' ),
+				__( 'Account', 'default' ),
+				self::SETTINGS_CAP,
+				self::SETTINGS_PAGE_SLUG,
+				array( __CLASS__, 'render_account_page' )
+			);
+
+		} else {
+			self::$screen_id['connect'] = add_menu_page(
+				__( 'Connect to Stream', 'stream' ),
+				__( 'Stream', 'stream' ),
+				self::SETTINGS_CAP,
+				self::RECORDS_PAGE_SLUG,
+				array( __CLASS__, 'render_connect_page' ),
+				'div',
+				apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
 			);
 		}
 
-		// Register the list table early, so it associates the column headers with 'Screen settings'
-		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
-		do_action( 'wp_stream_admin_menu_screens' );
+		if ( isset( self::$screen_id['main'] ) ) {
+			add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
+			do_action( 'wp_stream_admin_menu_screens' );
 
-		// Register the list table early, so it associates the column headers with 'Screen settings'
-		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
+			// Register the list table early, so it associates the column headers with 'Screen settings'
+			add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
+		}
 	}
 
 	/**
@@ -553,6 +577,42 @@ class WP_Stream_Admin {
 		WP_Stream_Updater::instance()->install_extension( $extension );
 	}
 
+	/**
+	 * Render account page
+	 *
+	 * @return void
+	 */
+	public static function render_account_page() {
+
+		$page_title = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
+
+		?>
+		<div class="wrap">
+
+			<h2><?php echo esc_html( $page_title ); ?></h2>
+
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render connect page
+	 *
+	 * @return void
+	 */
+	public static function render_connect_page() {
+
+		$page_title = apply_filters( 'wp_stream_connect_page_title', get_admin_page_title() );
+
+		?>
+		<div class="wrap">
+
+			<h2><?php echo esc_html( $page_title ); ?></h2>
+
+		</div>
+		<?php
+	}
+
 	public static function register_list_table() {
 		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::$screen_id['main'] ) );
 	}
@@ -577,7 +637,7 @@ class WP_Stream_Admin {
 			printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
 		}
 
-		if ( is_network_admin() && ! $sites_connected ) {
+		if ( is_network_admin() && ! $sites_connected && ! WP_Stream::is_development_mode() ) {
 			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
 			?>
 			<div id="stream-message" class="updated stream-network-connect stream-connect" style="display:block !important;">
