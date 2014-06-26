@@ -152,7 +152,7 @@ jQuery(function( $ ) {
 		var $lastRow = $( 'tr', $excludeList ).last(),
 			$newRow  = $lastRow.clone();
 
-		$newRow.toggleClass( 'alternate' );
+		$newRow.toggleClass( 'alternate' ).removeAttr( 'class' );
 		$( ':input', $newRow ).off().val( '' );
 
 		$lastRow.after( $newRow );
@@ -182,7 +182,7 @@ jQuery(function( $ ) {
 
 	$( '.exclude_rules_remove_rule_row' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' ),
-			$thisRow     = $( this ).parent().parent();
+			$thisRow     = $( this ).closest( 'tr' );
 
 		$thisRow.remove();
 
@@ -197,12 +197,18 @@ jQuery(function( $ ) {
 			$( ':input.invalid', this ).first().focus();
 			return false;
 		}
+		$( '.stream-exclude-list tbody tr', this ).each( function() {
+			if ( 0 === $( this ).find( ':input[value][value!=""]' ).length ) {
+				// Don't send inputs in this row
+				$( this ).find( ':input[value]' ).removeAttr( 'name' );
+			}
+		});
 	});
 	function recalculate_rules_found() {
-		var $allRows     = $( 'table.stream-exclude-list tbody tr' ),
+		var $allRows     = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
 			$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' );
 
-		if ( $allRows.length < 3 ) {
+		if ( 0 === $allRows.length ) {
 			$noRulesFound.show();
 		} else {
 			$noRulesFound.hide();
@@ -240,7 +246,7 @@ jQuery(function( $ ) {
 		hashIndex      = window.location.hash.match( /^#(\d+)$/ ),
 		currentHash    = ( null !== hashIndex ? hashIndex[ 1 ] : defaultIndex ),
 		syncFormAction = function( index ) {
-			var $optionsForm  = $( 'input[name="option_page"][value^="wp_stream"]' ).parent( 'form' );
+			var $optionsForm  = $( 'input[name="option_page"][value^="wp_stream"]' ).closest( 'form' );
 			var currentAction = $optionsForm.attr( 'action' );
 
 			$optionsForm.prop( 'action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ) );

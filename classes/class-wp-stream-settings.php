@@ -608,7 +608,7 @@ class WP_Stream_Settings {
 
 				break;
 			case 'rule_list' :
-				$output  = '<p class="description">' . esc_html( $description ) . '</p>';
+				$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
 				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  __( 'Add New Rule', 'stream' ) );
 				$actions_bottom = sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ),  __( 'Delete Selected Rules', 'stream' ) );
@@ -637,21 +637,8 @@ class WP_Stream_Settings {
 
 				$exclude_rows = array();
 
-				// Create an empty row if there is nothing saved
-				if ( empty( $current_value ) || ! is_array( $current_value ) ) {
-					$current_value = array(
-						'exclude_row'    => array(),
-						'author_or_role' => array(),
-						'connector'      => array(),
-						'context'        => array(),
-						'action'         => array(),
-						'ip_address'     => array(),
-					);
-				}
-
-				if ( empty( $current_value['exclude_row'] ) || ! is_array( $current_value['exclude_row'] ) ) {
-					$current_value['exclude_row'][] = array();
-				}
+				// Prepend an empty row
+				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
 
 				foreach ( $current_value['exclude_row'] as $key => $value ) {
 					// Prepare values
@@ -660,13 +647,6 @@ class WP_Stream_Settings {
 					$context        = isset( $current_value['context'][ $key ] ) ? $current_value['context'][ $key ] : '';
 					$action         = isset( $current_value['action'][ $key ] ) ? $current_value['action'][ $key ] : '';
 					$ip_address     = isset( $current_value['ip_address'][ $key ] ) ? $current_value['ip_address'][ $key ] : '';
-
-					// Check if rule is empty, but allow a single empty row
-					if ( empty( $author_or_role ) && empty( $connector ) && empty( $context ) && empty( $action ) && empty( $ip_address ) ) {
-						if ( count( $current_value['exclude_row'] ) > 1 || $key > 0 ) {
-							continue;
-						}
-					}
 
 					// Author or Role dropdown menu
 					$author_or_role_values   = array();
@@ -679,7 +659,7 @@ class WP_Stream_Settings {
 							$args['user_count'] = sprintf( _n( '1 user', '%s users', count( $users ), 'stream' ), count( $users ) );
 						}
 						if ( $role_id === $author_or_role ) {
-							$author_or_role_selected['id'] = $role_id;
+							$author_or_role_selected['id']   = $role_id;
 							$author_or_role_selected['text'] = $role;
 						}
 						$author_or_role_values[] = $args;
@@ -783,15 +763,16 @@ class WP_Stream_Settings {
 					);
 
 					$exclude_rows[] = sprintf(
-						'<tr class="%1$s">
-							<th scope="row" class="check-column">%2$s %3$s</th>
-							<td>%4$s</td>
-							<td>%5$s %6$s</td>
-							<td>%7$s</td>
+						'<tr class="%1$s %2$s">
+							<th scope="row" class="check-column">%3$s %4$s</th>
+							<td>%5$s</td>
+							<td>%6$s %7$s</td>
 							<td>%8$s</td>
-							<th scope="row" class="actions-column">%9$s</th>
+							<td>%9$s</td>
+							<th scope="row" class="actions-column">%10$s</th>
 						</tr>',
 						( 0 !== $key % 2 ) ? 'alternate' : '',
+						( 'helper' === $key ) ? 'hidden helper' : '',
 						'<input class="cb-select" type="checkbox" />',
 						$helper_input,
 						$author_or_role_input,
@@ -804,7 +785,7 @@ class WP_Stream_Settings {
 				}
 
 				$no_rules_found_row = sprintf(
-					'<tr class="no-items"><td class="colspanchange" colspan="6">%1$s</td></tr>',
+					'<tr class="no-items hidden"><td class="colspanchange" colspan="6">%1$s</td></tr>',
 					esc_html__( 'No rules found.', 'stream' )
 				);
 

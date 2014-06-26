@@ -394,11 +394,6 @@
 	width: auto;
 }
 
-.stream-exclude-list tbody tr:first-child,
-.stream-exclude-list tbody tr:nth-child(2) {
-	display: none;
-}
-
 .stream-exclude-list tbody tr.no-items {
 	background-color: #fff;
 }
