@@ -186,8 +186,8 @@
 	opacity: 1;
 }
 
-#wp-stream-connect h1 {
-	padding: 0 1em 1.5em;
+#wp-stream-connect p.quote {
+	padding: 1em 1em 0.5em;
 	margin: 0 auto;
 	max-width: 22em;
 	color: #fff;
@@ -196,9 +196,15 @@
 	text-shadow: 0 1px 1px rgba(0, 0, 0, .12);
 }
 
-#wp-stream-connect .submit {
-	margin: 1em 0;
+#wp-stream-connect p {
 	padding: 0;
+	margin: 0 auto;
+	font: 300 2em/1.4em 'Open Sans', Helvetica, sans-serif;
+}
+
+#wp-stream-connect .submit {
+	margin: 0 0 1em;
+	padding: 1em 0;
 	text-align: center;
 	font-size: 1em;
 }
@@ -275,6 +281,11 @@
 
 .toplevel_page_wp_stream.wp_stream_disconnected #wpfooter {
 	display: none;
+}
+
+.toplevel_page_wp_stream.wp_stream_disconnected ul#adminmenu a.wp-has-current-submenu::after,
+.toplevel_page_wp_stream.wp_stream_disconnected ul#adminmenu > li.current > a.current::after {
+	border-right-color: #69a8bb;
 }
 
 @media (max-width:900px){

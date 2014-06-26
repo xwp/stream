@@ -608,14 +608,39 @@ class WP_Stream_Admin {
 	 */
 	public static function render_connect_page() {
 
-		$page_title = apply_filters( 'wp_stream_connect_page_title', get_admin_page_title() );
+		$page_title   = apply_filters( 'wp_stream_connect_page_title', get_admin_page_title() );
+		$testimonials = array(
+			array(
+				'quote'        => __( 'Stream is easily one of the most exciting projects in WordPress today.', 'stream' ),
+				'author'       => __( 'Zack Tollman', 'stream' ),
+				'organization' => __( 'The Theme Foundry', 'stream' ),
+			),
+			array(
+				'quote'        => __( 'First of all, the plugin is just damn pretty, from code to UI. Everything about Stream is absolutely top notch. Top notch.', 'stream' ),
+				'author'       => __( 'Pippin Williamson', 'stream' ),
+				'organization' => __( 'PippinsPlugins.com', 'stream' ),
+			),
+			array(
+				'quote'        => __( 'Stream is a fine example of a plugin built well. It puts performance top of mind, and limits features to only the essential to create something that is useful and stable.', 'stream' ),
+				'author'       => __( 'Jay Hoffmann', 'stream' ),
+				'organization' => __( 'Tidy Repo', 'stream' ),
+			),
+			array(
+				'quote'        => __( 'Sometimes clients cannot remember what action they took in the admin to cause changes to the site. The Stream plugin goes a long way to help with troubleshooting.', 'stream' ),
+				'author'       => __( 'Sarah Gooding', 'stream' ),
+				'organization' => __( 'WP Tavern', 'stream' ),
+			),
+		);
+		$testimonial = $testimonials[ array_rand( $testimonials ) ];
 
 		wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
 		?>
 		<div id="wp-stream-connect">
 			<div class="wrap">
-				<h1><?php _e( 'Stream tracks every action in WordPress and takes the guess-work out of troubleshooting.', 'stream' ); ?></h1>
 				<p class="submit"><a href="<?php echo esc_url( self::CONNECT_URL ); ?>"><i class="dashicons dashicons-admin-plugins"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
+				<p><?php _e( 'with WordPress.com', 'stream' ); ?></p>
+				<p class="quote">&ldquo;<?php echo esc_html( $testimonial['quote'] ); ?>&rdquo;</p>
+				<p class="author">&dash; <?php echo esc_html( $testimonial['author'] ); ?>, <span class="organization"><?php echo esc_html( $testimonial['organization'] ); ?></span></p>
 			</div>
 		</div>
 		<?php
