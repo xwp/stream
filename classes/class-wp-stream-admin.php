@@ -118,7 +118,7 @@ class WP_Stream_Admin {
 		<?php endif; ?>
 			<div class="stream-wrap-container">
 				<div class="stream-install-container">
-						<p class="submit"><a href="<?php echo esc_url( $connect_url ); ?>"><i class="dashicons dashicons-admin-plugins"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
+						<p class="stream-connect-button"><a href="<?php echo esc_url( $connect_url ); ?>"><i class="dashicons dashicons-admin-plugins"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
 				</div>
 				<div class="stream-text-container">
 						<p><strong><?php _e( 'Stream is almost ready!', 'stream' ); ?></strong></p>
@@ -637,7 +637,7 @@ class WP_Stream_Admin {
 		?>
 		<div id="wp-stream-connect">
 			<div class="wrap">
-				<p class="submit"><a href="<?php echo esc_url( self::CONNECT_URL ); ?>"><i class="dashicons dashicons-admin-plugins"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
+				<p class="stream-connect-button"><a href="<?php echo esc_url( self::CONNECT_URL ); ?>"><i class="dashicons dashicons-admin-plugins"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
 				<p><?php _e( 'with WordPress.com', 'stream' ); ?></p>
 				<p class="quote">&ldquo;<?php echo esc_html( $testimonial['quote'] ); ?>&rdquo;</p>
 				<p class="author">&dash; <?php echo esc_html( $testimonial['author'] ); ?>, <span class="organization"><?php echo esc_html( $testimonial['organization'] ); ?></span></p>

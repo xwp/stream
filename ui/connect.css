@@ -1,3 +1,63 @@
+/* Stream Connect Button */
+.stream-connect-button a {
+	font: 400 1.5em 'Open Sans', Helvetica, sans-serif;
+	padding: 0.38095em 0.85714em 0.38095em 0.57143em;
+	background-clip: padding-box;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+	text-decoration: none;
+	border: none;
+	background: #e14d43;
+	color: #fff;
+	position: relative;
+	-webkit-background-clip: padding-box;
+	   -moz-background-clip: padding;
+	-webkit-border-radius: 6px;
+	   -moz-border-radius: 6px;
+	        border-radius: 6px;
+	-webkit-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+	   -moz-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+	        box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+	-webkit-transition: all 0.1s ease-in;
+	   -moz-transition: all 0.1s ease-in;
+	     -o-transition: all 0.1s ease-in;
+	        transition: all 0.1s ease-in;
+}
+
+.stream-connect-button i.dashicons {
+	font-size: 1em;
+	line-height: 1.45em;
+	margin-right: 0.57143em;
+}
+
+.stream-connect-button a:hover,
+.stream-connect-button a:focus,
+.stream-connect-button a:active {
+	background: #ef5c52;
+	color: #fff;
+}
+
+.stream-connect-button a:active {
+	outline: none;
+	top: 4px;
+	-webkit-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
+	   -moz-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
+	        box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
+}
+
+@media (max-width:420px){
+	.stream-connect-button a {
+        font-size: 16px;
+        letter-spacing: -0.05em;
+        display: block;
+        text-align: center;
+        width: 80%;
+    }
+
+    .stream-connect-button i.dashicons {
+        display: none;
+    }
+}
+
 /* Stream Connect Prompt */
 #stream-message.stream-connect {
 	border-left: 4px solid #e14d43;
@@ -18,51 +78,9 @@
 	margin: 0 18px 0 0;
 }
 
-#stream-message.stream-connect .stream-install-container .submit {
+#stream-message.stream-connect .stream-install-container .stream-connect-button {
 	margin: 5px 0 10px;
 	padding: 2px 0;
-}
-
-#stream-message.stream-connect .stream-install-container .submit a {
-	font: 400 1.5em 'Open Sans', Helvetica, sans-serif;
-	padding: 0.38095em 0.85714em 0.38095em 0.57143em;
-	background-clip: padding-box;
-	text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
-	border: none;
-	background: #e14d43;
-	color: #fff;
-	position: relative;
-	-webkit-background-clip: padding-box;
-	   -moz-background-clip: padding;
-	-webkit-border-radius: 6px;
-	   -moz-border-radius: 6px;
-	        border-radius: 6px;
-	-webkit-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
-	   -moz-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
-	        box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
-	-webkit-transition: all 0.1s ease-in;
-	   -moz-transition: all 0.1s ease-in;
-	     -o-transition: all 0.1s ease-in;
-	        transition: all 0.1s ease-in;
-}
-
-#stream-message.stream-connect .stream-install-container .submit i.dashicons {
-	font-size: 1em;
-	line-height: 26px;
-	margin-right: 0.57143em;
-}
-
-#stream-message.stream-connect .stream-install-container .submit a:hover,
-#stream-message.stream-connect .stream-install-container .submit a:focus {
-	background: #ef5c52;
-}
-
-#stream-message.stream-connect .stream-install-container .submit a:active {
-	outline: none;
-	top: 4px;
-	-webkit-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
-	   -moz-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
-	        box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
 }
 
 #stream-message.stream-connect .stream-close-button-container {
@@ -134,20 +152,6 @@
 	}
 }
 
-@media (max-width:420px){
-	#stream-message.stream-connect .stream-install-container .submit a {
-        font-size: 16px;
-        letter-spacing: -0.05em;
-        display: block;
-        text-align: center;
-        width: 80%;
-    }
-
-    #stream-message.stream-connect .stream-install-container .submit i.dashicons {
-        display: none;
-    }
-}
-
 /* Stream Connect Page */
 #wp-stream-connect {
 	text-align: center;
@@ -175,56 +179,20 @@
 	font: 300 2em/1.4em 'Open Sans', Helvetica, sans-serif;
 }
 
-#wp-stream-connect .submit {
+#wp-stream-connect .stream-connect-button {
 	margin: 0 0 1em;
 	padding: 1em 0;
 	text-align: center;
 	font-size: 1em;
 }
 
-#wp-stream-connect .submit a {
-	font: 400 2.5em 'Open Sans', Helvetica, sans-serif;
-	padding: 0.38095em 0.85714em 0.38095em;
-	background-clip: padding-box;
-	text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
-	text-decoration: none;
-	border: none;
-	background: #e14d43;
-	color: #fff;
-	opacity: 1;
-	position: relative;
-	-webkit-background-clip: padding-box;
-	-moz-background-clip: padding;
-	-webkit-border-radius: 6px;
-	   -moz-border-radius: 6px;
-	        border-radius: 6px;
-	-webkit-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
-	   -moz-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
-	        box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
-	-webkit-transition: all 0.1s ease-in;
-	   -moz-transition: all 0.1s ease-in;
-	     -o-transition: all 0.1s ease-in;
-	        transition: all 0.1s ease-in;
+#wp-stream-connect .stream-connect-button a {
+	font-size: 2.5em;
+	padding: 0.38095em 0.85714em 0.38095em 0.57143em;
 }
 
-#wp-stream-connect .submit i.dashicons {
-	font-size: 1em;
-	line-height: 1.45em;
+#wp-stream-connect .stream-connect-button i.dashicons {
 	margin-right: 0.85714em;
-	color: #fff;
-}
-
-#wp-stream-connect .submit a:hover,
-#wp-stream-connect .submit a:focus {
-	background: #ef5c52;
-}
-
-#wp-stream-connect .submit a:active {
-	outline: none;
-	top: 4px;
-	-webkit-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
-	-moz-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
-	box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
 }
 
 #wp-stream-connect p.quote {
