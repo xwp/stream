@@ -29,6 +29,7 @@ class WP_Stream_Query {
 			// Search param
 			'search'                => null,
 			'record_greater_than'   => null,
+			'distinct'              => null,
 			// Date-based filters
 			'date'                  => null,
 			'date_from'             => null,
@@ -241,6 +242,13 @@ class WP_Stream_Query {
 		 */
 		$fields = $args['fields'];
 		$query['_select'] = is_array( $fields ) ? $fields : explode( ',', $fields );
+
+		/**
+		 * PARSE DISTINCT PARAMETER
+		 */
+		if ( $args['distinct'] ) {
+			$query['_distinct'] = true;
+		}
 
 		/**
 		 * Allows developers to change final query

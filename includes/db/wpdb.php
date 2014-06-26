@@ -274,7 +274,6 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 			}
 			$select = implode( ', ', $select );
 
-			// TODO: Implement `distinct` parameter in WP_Stream_Query
 			if ( 1 === count( explode( ',', $select ) ) && ! empty( $query['_distinct'] ) ) {
 				$select = 'DISTINCT ' . $select;
 			} elseif ( ! empty( $select ) ) {
