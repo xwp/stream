@@ -120,7 +120,7 @@ abstract class WP_Stream_Connector {
 			}
 		}
 
-		if ( 0 === count( $contexts ) ){
+		if ( 0 === count( $contexts ) ) {
 			return;
 		}
 
