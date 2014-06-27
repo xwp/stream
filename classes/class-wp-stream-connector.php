@@ -90,6 +90,25 @@ abstract class WP_Stream_Connector {
 	 * @return void
 	 */
 	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
+		$class     = get_called_class();
+		$connector = $class::$name;
+
+		$data = apply_filters(
+			'wp_stream_log_data',
+			compact( 'connector', 'message', 'args', 'object_id', 'contexts', 'user_id' )
+		);
+
+		if ( ! $data ) {
+			return;
+		} else {
+			$connector = $data['connector'];
+			$message   = $data['message'];
+			$args      = $data['args'];
+			$object_id = $data['object_id'];
+			$contexts  = $data['contexts'];
+			$user_id   = $data['user_id'];
+		}
+
 		// Prevent inserting Excluded Context & Actions
 		foreach ( $contexts as $context => $action ) {
 			if ( ! WP_Stream_Connectors::is_logging_enabled( 'contexts', $context ) ) {
@@ -101,20 +120,11 @@ abstract class WP_Stream_Connector {
 			}
 		}
 
-		if ( count( $contexts ) == 0 ){
-			return ;
+		if ( 0 === count( $contexts ) ) {
+			return;
 		}
 
-		$class = get_called_class();
-
-		return WP_Stream_Log::get_instance()->log(
-			$class::$name,
-			$message,
-			$args,
-			$object_id,
-			$contexts,
-			$user_id
-		);
+		return call_user_func_array( array( WP_Stream_Log::get_instance(), 'log' ), compact( 'connector', 'message', 'args', 'object_id', 'contexts', 'user_id' ) );
 	}
 
 	/**
