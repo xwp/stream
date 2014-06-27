@@ -2,7 +2,7 @@
 Contributors:      stream, X-team, fjarrett, westonruter, japh, lukecarbis, shadyvb, jonathanbardo, c3mdigital, johnregan3, akeda, kucrut, topher1kenobe
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.7
-Tested up to:      3.9
+Tested up to:      3.9.1
 Stable tag:        trunk
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
@@ -100,6 +100,16 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 1.4.7 - June 27, 2014 =
+
+* New: Comment Type support added to the Comments connector ([#558](https://github.com/x-team/wp-stream/issues/558))
+* Fix: Datepicker opens again with each paged view ([#568](https://github.com/x-team/wp-stream/issues/568))
+* Fix: PHP warning when deleting network users ([#579](https://github.com/x-team/wp-stream/issues/579))
+* Fix: Track user count setting changes ([#583](https://github.com/x-team/wp-stream/issues/583))
+* Fix: .po and .pot files out-of-date for translators ([#584](https://github.com/x-team/wp-stream/issues/584))
+
+Props [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [bordoni](http://profiles.wordpress.org/bordoni/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 = 1.4.6 - May 30, 2014 =
 
