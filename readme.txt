@@ -31,6 +31,7 @@ Visit the Stream Extensions screen inside the plugin to learn more about making 
  * [Reports](https://wp-stream.com/extension/reports/)
  * [Data Exporter](https://wp-stream.com/extension/data-exporter/)
  * [Cherry-Pick](https://wp-stream.com/extensions/cherry-pick/)
+ * [WooCommerce Connector](https://wp-stream.com/extension/connector-woocommerce/)
 
 **Recorded activity:**
 
