@@ -63,6 +63,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		'banned_email_domains',
 		'WPLANG',
 		'admin_email',
+		'user_count',
 	);
 
 	/**
@@ -288,6 +289,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'banned_email_domains'          => __( 'Banned Email Domains', 'default' ),
 			'WPLANG'                        => __( 'Network Language', 'default' ),
 			'admin_email'                   => __( 'Network Admin Email', 'default' ),
+			'user_count'                    => __( 'User Count', 'stream' ),
 			// Other
 			'wp_stream_db'                  => __( 'Stream Database Version', 'stream' ),
 		);
