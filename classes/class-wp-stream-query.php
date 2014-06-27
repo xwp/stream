@@ -29,6 +29,7 @@ class WP_Stream_Query {
 			// Search param
 			'search'                => null,
 			'record_greater_than'   => null,
+			'distinct'              => null,
 			// Date-based filters
 			'date'                  => null,
 			'date_from'             => null,
@@ -100,7 +101,7 @@ class WP_Stream_Query {
 			if ( ! isset( $defaults[ $_field ] ) ) {
 				$defaults[ $_field ] = isset( $_def['default'] ) ? $_def['default'] : null;
 			}
-			$defaults[ "{$_field}__in" ] = null; // Null makes `isset` return false
+			$defaults[ "{$_field}__in" ]     = null; // Null makes `isset` return false
 			$defaults[ "{$_field}__not_in" ] = null;
 		}
 
@@ -114,13 +115,13 @@ class WP_Stream_Query {
 		 */
 		$args = apply_filters( 'wp_stream_query_args', $args );
 
-		$query  = array();
+		$query = array();
 
 		/**
 		 * PARSE CORE FILTERS, PLUS __IN / __NOT_IN VARIATIONS
 		 */
 		foreach ( $columns as $field => $def ) {
-			$is_int  = isset( $def['is_int'] );
+			$is_int = isset( $def['is_int'] );
 			$column = isset( $def['column'] ) ? $def['column'] : $field;
 
 			// Parse basic filter, eg: author=1
@@ -192,7 +193,7 @@ class WP_Stream_Query {
 			foreach ( $meta as $key => $values ) {
 				// #1
 				if ( ! is_array( $values ) ) {
-					$values   = (array) $values;
+					$values = (array) $values;
 				}
 				// #2
 				if ( 0 === key( $values ) ) {
@@ -216,15 +217,15 @@ class WP_Stream_Query {
 		$perpage = intval( $args['records_per_page'] );
 
 		if ( $perpage >= 0 ) {
-			$query['_offset'] = ( $page - 1 ) * $perpage;
+			$query['_offset']  = ( $page - 1 ) * $perpage;
 			$query['_perpage'] = $perpage;
 		}
 
 		/**
 		 * PARSE ORDER PARAMS
 		 */
-		$order     = esc_sql( $args['order'] );
-		$orderby   = $args['orderby'] ? esc_sql( $args['orderby'] ) : 'ID';
+		$order   = esc_sql( $args['order'] );
+		$orderby = $args['orderby'] ? esc_sql( $args['orderby'] ) : 'ID';
 		if ( 'date' === $orderby ) {
 			$orderby = 'created';
 		}
@@ -241,6 +242,13 @@ class WP_Stream_Query {
 		 */
 		$fields = $args['fields'];
 		$query['_select'] = is_array( $fields ) ? $fields : explode( ',', $fields );
+
+		/**
+		 * PARSE DISTINCT PARAMETER
+		 */
+		if ( $args['distinct'] ) {
+			$query['_distinct'] = true;
+		}
 
 		/**
 		 * Allows developers to change final query

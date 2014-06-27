@@ -71,7 +71,7 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Ajax callback function to search users that is used on exclude setting page
+	 * Ajax callback function to search users, used on exclude setting page
 	 *
 	 * @uses WP_User_Query WordPress User Query class.
 	 * @return void
@@ -153,6 +153,35 @@ class WP_Stream_Settings {
 		}
 
 		wp_send_json_success( $response );
+	}
+
+	/**
+	* Ajax callback function to search IP addresses, used on exclude setting page
+	*
+	* @uses WP_User_Query WordPress User Query class.
+	* @return void
+	*/
+	public static function get_ips(){
+		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
+			return;
+		}
+
+		check_ajax_referer( 'stream_get_ips', 'nonce' );
+
+		$results = wp_stream_query(
+			array(
+				'fields'           => 'ip',
+				'distinct'         => true,
+				'search'           => like_escape( $_POST['find'] ),
+				'search_field'     => 'ip',
+				'records_per_page' => wp_stream_filter_input( INPUT_POST, 'limit' ),
+			)
+		);
+		if ( $results ) {
+			$results = wp_list_pluck( $results, 'ip' );
+		}
+
+		wp_send_json_success( $results );
 	}
 
 	/**
@@ -608,7 +637,7 @@ class WP_Stream_Settings {
 
 				break;
 			case 'rule_list' :
-				$output  = '<p class="description">' . esc_html( $description ) . '</p>';
+				$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
 				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  __( 'Add New Rule', 'stream' ) );
 				$actions_bottom = sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ),  __( 'Delete Selected Rules', 'stream' ) );
@@ -637,21 +666,8 @@ class WP_Stream_Settings {
 
 				$exclude_rows = array();
 
-				// Create an empty row if there is nothing saved
-				if ( empty( $current_value ) || ! is_array( $current_value ) ) {
-					$current_value = array(
-						'exclude_row'    => array(),
-						'author_or_role' => array(),
-						'connector'      => array(),
-						'context'        => array(),
-						'action'         => array(),
-						'ip_address'     => array(),
-					);
-				}
-
-				if ( empty( $current_value['exclude_row'] ) || ! is_array( $current_value['exclude_row'] ) ) {
-					$current_value['exclude_row'][] = array();
-				}
+				// Prepend an empty row
+				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
 
 				foreach ( $current_value['exclude_row'] as $key => $value ) {
 					// Prepare values
@@ -660,13 +676,6 @@ class WP_Stream_Settings {
 					$context        = isset( $current_value['context'][ $key ] ) ? $current_value['context'][ $key ] : '';
 					$action         = isset( $current_value['action'][ $key ] ) ? $current_value['action'][ $key ] : '';
 					$ip_address     = isset( $current_value['ip_address'][ $key ] ) ? $current_value['ip_address'][ $key ] : '';
-
-					// Check if rule is empty, but allow a single empty row
-					if ( empty( $author_or_role ) && empty( $connector ) && empty( $context ) && empty( $action ) && empty( $ip_address ) ) {
-						if ( count( $current_value['exclude_row'] ) > 1 || $key > 0 ) {
-							continue;
-						}
-					}
 
 					// Author or Role dropdown menu
 					$author_or_role_values   = array();
@@ -679,7 +688,7 @@ class WP_Stream_Settings {
 							$args['user_count'] = sprintf( _n( '1 user', '%s users', count( $users ), 'stream' ), count( $users ) );
 						}
 						if ( $role_id === $author_or_role ) {
-							$author_or_role_selected['id'] = $role_id;
+							$author_or_role_selected['id']   = $role_id;
 							$author_or_role_selected['text'] = $role;
 						}
 						$author_or_role_values[] = $args;
@@ -762,15 +771,16 @@ class WP_Stream_Settings {
 						esc_html__( 'Any Action', 'stream' )
 					);
 
-					// IP Address text input
+					// IP Address input
 					$ip_address_input = sprintf(
-						'<input type="text" name="%1$s[%2$s_%3$s][%4$s][]" class="%4$s" placeholder="%5$s" value="%6$s" />',
+						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" value="%5$s" class="select2-select %4$s" data-placeholder="%6$s" data-nonce="%7$s" />',
 						esc_attr( $option_key ),
 						esc_attr( $section ),
 						esc_attr( $name ),
 						'ip_address',
+						esc_attr( $ip_address ),
 						esc_html__( 'Any IP Address', 'stream' ),
-						esc_attr( $ip_address )
+						esc_attr( wp_create_nonce( 'stream_get_ips' ) )
 					);
 
 					// Hidden helper input
@@ -783,15 +793,16 @@ class WP_Stream_Settings {
 					);
 
 					$exclude_rows[] = sprintf(
-						'<tr class="%1$s">
-							<th scope="row" class="check-column">%2$s %3$s</th>
-							<td>%4$s</td>
-							<td>%5$s %6$s</td>
-							<td>%7$s</td>
+						'<tr class="%1$s %2$s">
+							<th scope="row" class="check-column">%3$s %4$s</th>
+							<td>%5$s</td>
+							<td>%6$s %7$s</td>
 							<td>%8$s</td>
-							<th scope="row" class="actions-column">%9$s</th>
+							<td>%9$s</td>
+							<th scope="row" class="actions-column">%10$s</th>
 						</tr>',
 						( 0 !== $key % 2 ) ? 'alternate' : '',
+						( 'helper' === $key ) ? 'hidden helper' : '',
 						'<input class="cb-select" type="checkbox" />',
 						$helper_input,
 						$author_or_role_input,

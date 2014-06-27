@@ -18,7 +18,81 @@ jQuery(function( $ ) {
 			}
 		});
 
-		var $input_user;
+		var $input_user, $input_ip;
+
+		$( '#tab-content-settings input[type=hidden].select2-select.ip_address' ).each(function( k, el ) {
+			$input_ip = $( el );
+			$input_ip.select2({
+				ajax: {
+					type: 'POST',
+					url: ajaxurl,
+					dataType: 'json',
+					quietMillis: 500,
+					data: function( term ) {
+						return {
+							find: term,
+							limit: 10,
+							action: 'stream_get_ips',
+							nonce: $input_ip.data( 'nonce' )
+						};
+					},
+					results: function( response ) {
+						var answer = { results: [] };
+
+						if ( true !== response.success || undefined === response.data ) {
+							return answer;
+						}
+
+						$.each( response.data, function( key, ip ) {
+							answer.results.push({
+								id: ip,
+								text: ip
+							});
+						});
+
+						return answer;
+					}
+				},
+				initSelection: function( item, callback ) {
+					callback( item.data( 'selected' ) );
+				},
+				formatNoMatches: function(){
+					return '';
+				},
+				createSearchChoice: function( term ) {
+					var ip_chunks = [];
+
+					ip_chunks = term.match( /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/ );
+
+					if ( null === ip_chunks ) {
+						return;
+					}
+
+					// remove whole match
+					ip_chunks.shift();
+
+					ip_chunks = $.grep(
+						ip_chunks,
+						function( chunk ) {
+							var numeric = parseInt(chunk, 10);
+							return numeric <= 255 && numeric.toString() === chunk;
+						}
+					);
+
+					if ( ip_chunks.length < 4 ) {
+						return;
+					}
+
+					return {
+						id: term,
+						text: term
+					};
+				},
+				allowClear: true,
+				placeholder: $input_ip.data( 'placeholder' )
+			});
+		});
+
 		$( '#tab-content-settings input[type=hidden].select2-select.author_or_role' ).each(function( k, el ) {
 			$input_user = $( el );
 
@@ -128,6 +202,18 @@ jQuery(function( $ ) {
 			}
 		});
 
+		$( '.exclude_rules_remove_rule_row' ).on( 'click', function() {
+			var $excludeList = $( 'table.stream-exclude-list' ),
+				$thisRow     = $( this ).closest( 'tr' );
+
+			$thisRow.remove();
+
+			$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
+			$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
+
+			recalculate_rules_found();
+		});
+
 		$( '#tab-content-settings input.ip_address' ).on( 'change', function() {
 			var ipv4Expression = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,
 				ipv6Expression = /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/,
@@ -152,7 +238,7 @@ jQuery(function( $ ) {
 		var $lastRow = $( 'tr', $excludeList ).last(),
 			$newRow  = $lastRow.clone();
 
-		$newRow.toggleClass( 'alternate' );
+		$newRow.toggleClass( 'alternate' ).removeAttr( 'class' );
 		$( ':input', $newRow ).off().val( '' );
 
 		$lastRow.after( $newRow );
@@ -180,29 +266,24 @@ jQuery(function( $ ) {
 		recalculate_rules_found();
 	});
 
-	$( '.exclude_rules_remove_rule_row' ).on( 'click', function() {
-		var $excludeList = $( 'table.stream-exclude-list' ),
-			$thisRow     = $( this ).parent().parent();
-
-		$thisRow.remove();
-
-		$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
-		$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
-
-		recalculate_rules_found();
-	});
-
 	$( '.stream-exclude-list' ).closest( 'form' ).submit( function() {
 		if ( $( ':input.invalid', this ).length > 0 ) {
 			$( ':input.invalid', this ).first().focus();
 			return false;
 		}
+		$( '.stream-exclude-list tbody tr', this ).each( function() {
+			if ( 0 === $( this ).find( ':input[value][value!=""]' ).length ) {
+				// Don't send inputs in this row
+				$( this ).find( ':input[value]' ).removeAttr( 'name' );
+			}
+		});
 	});
+
 	function recalculate_rules_found() {
-		var $allRows     = $( 'table.stream-exclude-list tbody tr' ),
+		var $allRows     = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
 			$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' );
 
-		if ( $allRows.length < 3 ) {
+		if ( 0 === $allRows.length ) {
 			$noRulesFound.show();
 		} else {
 			$noRulesFound.hide();
@@ -240,7 +321,7 @@ jQuery(function( $ ) {
 		hashIndex      = window.location.hash.match( /^#(\d+)$/ ),
 		currentHash    = ( null !== hashIndex ? hashIndex[ 1 ] : defaultIndex ),
 		syncFormAction = function( index ) {
-			var $optionsForm  = $( 'input[name="option_page"][value^="wp_stream"]' ).parent( 'form' );
+			var $optionsForm  = $( 'input[name="option_page"][value^="wp_stream"]' ).closest( 'form' );
 			var currentAction = $optionsForm.attr( 'action' );
 
 			$optionsForm.prop( 'action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ) );

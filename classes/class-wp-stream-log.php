@@ -148,7 +148,7 @@ class WP_Stream_Log {
 			'ip_address' => $ip,
 		);
 
-		$exclude_settings = WP_Stream_Settings::$options['exclude_rules'];
+		$exclude_settings = isset( WP_Stream_Settings::$options['exclude_rules'] ) ? WP_Stream_Settings::$options['exclude_rules'] : array();
 
 		if ( isset( $exclude_settings['exclude_row'] ) && ! empty( $exclude_settings['exclude_row'] ) ) {
 			foreach ( $exclude_settings['exclude_row'] as $key => $value ) {
