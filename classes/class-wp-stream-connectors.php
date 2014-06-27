@@ -148,7 +148,6 @@ class WP_Stream_Connectors {
 		do_action( 'wp_stream_after_connectors_registration', self::$term_labels['stream_connector'] );
 	}
 
-
 	/**
 	 * Print admin notices
 	 *
