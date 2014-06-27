@@ -2,6 +2,11 @@
 
 class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
+	/**
+	 * Prefix for the highlight URL hash
+	 *
+	 * @const string
+	 */
 	const HIGHLIGHT_FIELD_URL_HASH_PREFIX = 'wp-stream-highlight:';
 
 	/**
@@ -590,12 +595,11 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		}
 
 		foreach ( $changed_options as $properties ) {
-			$context = $properties['context'];
 			self::log(
 				__( '"%s" setting was updated', 'stream' ),
 				$properties,
 				null,
-				array( $context => 'updated' )
+				array( $properties['context'] => 'updated' )
 			);
 		}
 	}

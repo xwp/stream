@@ -3,7 +3,7 @@
 class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 
 	/**
-	 * Context slug
+	 * Connector slug
 	 *
 	 * @var string
 	 */
