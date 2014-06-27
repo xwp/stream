@@ -109,21 +109,6 @@ abstract class WP_Stream_Connector {
 			$user_id   = $data['user_id'];
 		}
 
-		// Prevent inserting Excluded Context & Actions
-		foreach ( $contexts as $context => $action ) {
-			if ( ! WP_Stream_Connectors::is_logging_enabled( 'contexts', $context ) ) {
-				unset( $contexts[ $context ] );
-			} else {
-				if ( ! WP_Stream_Connectors::is_logging_enabled( 'actions', $action ) ) {
-					unset( $contexts[ $context ] );
-				}
-			}
-		}
-
-		if ( 0 === count( $contexts ) ) {
-			return;
-		}
-
 		return call_user_func_array( array( WP_Stream_Log::get_instance(), 'log' ), compact( 'connector', 'message', 'args', 'object_id', 'contexts', 'user_id' ) );
 	}
 
