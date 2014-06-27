@@ -213,7 +213,8 @@ abstract class WP_Stream_Connector {
 				if ( is_array( $old_value[ $key ] ) && is_array( $new_value[ $key ] ) ) {
 					$inner  = array();
 					$parent = $key;
-					$changed = self::get_changed_keys( $old_value[ $key ], $new_value[ $key ], --$deep );
+					$deep--;
+					$changed = self::get_changed_keys( $old_value[ $key ], $new_value[ $key ], $deep );
 					foreach ( $changed as $child => $change ) {
 						$inner[ $parent . '::' . $child ] = $change;
 					}
