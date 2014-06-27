@@ -4,19 +4,22 @@ class WP_Stream_Connectors {
 
 	/**
 	 * Connectors registered
+	 *
 	 * @var array
 	 */
 	public static $connectors = array();
 
 	/**
 	 * Contexts registered to Connectors
+	 *
 	 * @var array
 	 */
 	public static $contexts = array();
 
 	/**
 	 * Action taxonomy terms
-	 * Holds slug to -localized- label association
+	 * Holds slug to localized label association
+	 *
 	 * @var array
 	 */
 	public static $term_labels = array(
@@ -64,11 +67,10 @@ class WP_Stream_Connectors {
 		}
 
 		/**
-		 * Filter allows for adding additional connectors via classes that extend
-		 * WP_Stream_Connector
+		 * Filter allows for adding additional connectors via classes that extend WP_Stream_Connector
 		 *
-		 * @param  array  Connector Class names
-		 * @return array  Updated Array of Connector Class names
+		 * @param  array Connector class names
+		 * @return array Updated array of Connector class names
 		 */
 		self::$connectors = apply_filters( 'wp_stream_connectors', $classes );
 
@@ -99,9 +101,9 @@ class WP_Stream_Connectors {
 			/**
 			 * Filter allows to continue register excluded connector
 			 *
-			 * @param boolean TRUE if exclude otherwise false
-			 * @param string connector unique name
-			 * @param array Excluded connector array
+			 * @param bool   True if excluded, otherwise false
+			 * @param string Connector unique name
+			 * @param array  Excluded connector array
 			 */
 
 			$is_excluded_connector = apply_filters( 'wp_stream_check_connector_is_excluded', in_array( $connector::$name, $excluded_connectors ), $connector::$name, $excluded_connectors );
@@ -137,7 +139,8 @@ class WP_Stream_Connectors {
 	/**
 	 * Print admin notices
 	 *
-	 * @since 1.2.3
+	 * @since  1.2.3
+	 * @return void
 	 */
 	public static function admin_notices() {
 		if ( ! empty( self::$admin_notices ) ) :
@@ -154,8 +157,7 @@ class WP_Stream_Connectors {
 	/**
 	 * Check if we need to record action for specific users
 	 *
-	 * @param null $user
-	 *
+	 * @param  obj        $user
 	 * @return mixed|void
 	 */
 	public static function is_logging_enabled_for_user( $user = null ) {
@@ -186,10 +188,9 @@ class WP_Stream_Connectors {
 		/**
 		 * Filter sets boolean result value for this method
 		 *
-		 * @param      bool
-		 * @param  obj $user         Current user object
-		 * @param      string        Current class name
-		 *
+		 * @param  bool
+		 * @param  obj    $user Current user object
+		 * @param  string       Current class name
 		 * @return bool
 		 */
 		return apply_filters( 'wp_stream_record_log', $bool, $user, get_called_class() );
@@ -198,8 +199,7 @@ class WP_Stream_Connectors {
 	/**
 	 * Check if we need to record action for IP
 	 *
-	 * @param null $ip
-	 *
+	 * @param  string     $ip
 	 * @return mixed|void
 	 */
 	public static function is_logging_enabled_for_ip( $ip = null ) {
@@ -219,10 +219,9 @@ class WP_Stream_Connectors {
 		/**
 		 * Filter to exclude actions of a specific ip from being logged
 		 *
-		 * @param         bool      True if logging is enable else false
-		 * @param  string $ip       Current user ip address
-		 * @param         string    Current class name
-		 *
+		 * @param  bool       True if logging is enable else false
+		 * @param  string $ip Current user IP address
+		 * @param  string     Current class name
 		 * @return bool
 		 */
 		return apply_filters( 'wp_stream_ip_record_log', $bool, $ip, get_called_class() );
@@ -231,15 +230,14 @@ class WP_Stream_Connectors {
 	/**
 	 * This function is use to check whether logging is enabled
 	 *
-	 * @param $column string name of the setting key (actions|ip_addresses|contexts|connectors)
-	 * @param $value string to check in excluded array
-	 * @return array
+	 * @param  string $column Name of the setting key (actions|ip_addresses|contexts|connectors)
+	 * @param  string $value  String to check in excluded array
+	 * @return bool
 	 */
 	public static function is_logging_enabled( $column, $value ) {
 		$excluded_values = WP_Stream_Settings::get_excluded_by_key( $column );
-		$bool            = ( ! in_array( $value, $excluded_values ) );
 
-		return $bool;
+		return ( ! in_array( $value, $excluded_values ) );
 	}
 
 }
