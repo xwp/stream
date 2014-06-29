@@ -78,6 +78,8 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 
 		self::$context_labels  = wp_list_pluck( $labels, 'name' );
 
+		add_action( 'registered_taxonomy', array( __CLASS__, '_registered_taxonomy' ), 10, 3 );
+
 		return self::$context_labels;
 	}
 
@@ -101,6 +103,21 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 		}
 
 		return $links;
+	}
+
+	/**
+	 * Catch registration of taxonomies after inital loading, so we can cache its labels
+	 *
+	 * @action registered_taxonomy
+	 *
+	 * @param $taxonomy_slug
+	 * @param $object_types
+	 * @param $args
+	 */
+	public static function _registered_taxonomy( $taxonomy_slug, $object_types, $args ) {
+		$label = get_taxonomy_labels( $args )->name;
+		self::$context_labels[ $taxonomy_slug ] = $label;
+		WP_Stream_Connectors::$term_labels['stream_context'][ $taxonomy_slug ] = $label;
 	}
 
 	/**
