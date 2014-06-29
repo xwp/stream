@@ -225,6 +225,15 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_type      = get_post_type( $post_id );
 		$post_title     = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 		$comment_status = ( 1 == $comment->comment_approved ) ? __( 'approved automatically', 'stream' ) : __( 'pending approval', 'stream' );
+		$is_spam        = false;
+		// Auto-marked spam comments
+		if ( class_exists( 'Akismet' ) && Akismet::matches_last_comment( $comment ) ) {
+			$ak_last_comment = Akismet::get_last_comment();
+			if ( $ak_last_comment['akismet_result'] == 'true' ) {
+				$is_spam        = true;
+				$comment_status = __( 'marked as spam', 'stream' );
+			}
+		}
 		$comment_type   = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		if ( $comment->comment_parent ) {
@@ -251,7 +260,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				),
 				compact( 'user_name', 'post_title', 'comment_status', 'comment_type', 'post_id' ),
 				$comment_id,
-				array( $post_type => 'created' ),
+				array( $post_type => $is_spam ? 'spammed' : 'created' ),
 				$user_id
 			);
 		}
