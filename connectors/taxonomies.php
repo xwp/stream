@@ -130,11 +130,9 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			return;
 		}
 
-		global $wp_taxonomies;
-
 		$term           = get_term( $term_id, $taxonomy );
 		$term_name      = $term->name;
-		$taxonomy_label = strtolower( $wp_taxonomies[ $taxonomy ]->labels->singular_name );
+		$taxonomy_label = strtolower( self::$context_labels[ $taxonomy ] );
 		$term_parent    = $term->parent;
 
 		self::log(
@@ -159,11 +157,9 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			return;
 		}
 
-		global $wp_taxonomies;
-
 		$term_name      = $deleted_term->name;
 		$term_parent    = $deleted_term->parent;
-		$taxonomy_label = strtolower( $wp_taxonomies[ $taxonomy ]->labels->singular_name );
+		$taxonomy_label = strtolower( self::$context_labels[ $taxonomy ] );
 
 		self::log(
 			_x(
@@ -191,8 +187,6 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			return;
 		}
 
-		global $wp_taxonomies;
-
 		$term = self::$cached_term_before_update;
 
 		if ( ! $term ) { // For some reason!
@@ -200,7 +194,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 		}
 
 		$term_name      = $term->name;
-		$taxonomy_label = strtolower( $wp_taxonomies[ $taxonomy ]->labels->singular_name );
+		$taxonomy_label = strtolower( self::$context_labels[ $taxonomy ] );
 		$term_parent    = $term->parent;
 
 		self::log(
