@@ -229,7 +229,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		// Auto-marked spam comments
 		if ( class_exists( 'Akismet' ) && Akismet::matches_last_comment( $comment ) ) {
 			$ak_last_comment = Akismet::get_last_comment();
-			if ( $ak_last_comment['akismet_result'] == 'true' ) {
+			if ( 'true' == $ak_last_comment['akismet_result'] ) {
 				$is_spam        = true;
 				$comment_status = __( 'marked as spam', 'stream' );
 			}
