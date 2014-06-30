@@ -19,6 +19,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	public static $actions = array(
 		'whitelist_options',
 		'update_site_option',
+		'add_site_option',
 		'update_option_permalink_structure',
 		'update_option_category_base',
 		'update_option_tag_base',
@@ -487,6 +488,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function callback_whitelist_options( $options ) {
 		add_action( 'updated_option', array( __CLASS__, 'callback' ), 10, 3 );
+		add_action( 'added_option', array( __CLASS__, 'callback' ), 10, 3 );
 
 		return $options;
 	}
@@ -510,6 +512,15 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Trigger this connector core tracker, only on network/settings.php page
+	 *
+	 * @action add_site_option
+	 */
+	public static function callback_add_site_option( $option, $value ) {
+		self::callback_added_option( $option, $value );
+	}
+
+	/**
 	 * Trigger this connector core tracker, only on options-permalink.php page
 	 *
 	 * @action update_option_category_base
@@ -525,6 +536,16 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function callback_update_option_tag_base( $old_value, $value ) {
 		self::callback_updated_option( 'tag_base', $old_value, $value );
+	}
+
+	/**
+	 * Track added settings, proxied to callback_updated_option
+	 *
+	 * @action added_option
+	 * @uses   callback_updated_option
+	 */
+	public static function callback_added_option( $option, $value ) {
+		self::callback_updated_option( $option, null, $value );
 	}
 
 	/**
