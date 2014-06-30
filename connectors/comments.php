@@ -231,7 +231,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			$ak_last_comment = Akismet::get_last_comment();
 			if ( 'true' == $ak_last_comment['akismet_result'] ) {
 				$is_spam        = true;
-				$comment_status = __( 'marked as spam', 'stream' );
+				$comment_status = __( 'automatically marked as spam by Akismet', 'stream' );
 			}
 		}
 		$comment_type   = mb_strtolower( self::get_comment_type_label( $comment_id ) );
@@ -258,7 +258,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 					'1: Comment author, 2: Post title 3: Comment status, 4: Comment type',
 					'stream'
 				),
-				compact( 'user_name', 'post_title', 'comment_status', 'comment_type', 'post_id' ),
+				compact( 'user_name', 'post_title', 'comment_status', 'comment_type', 'post_id', 'is_spam' ),
 				$comment_id,
 				array( $post_type => $is_spam ? 'spammed' : 'created' ),
 				$user_id
