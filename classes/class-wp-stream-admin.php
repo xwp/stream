@@ -23,6 +23,13 @@ class WP_Stream_Admin {
 	 */
 	public static $disable_access = false;
 
+	/**
+	 * URL used to authenticate with Stream
+	 *
+	 * @var string
+	 */
+	public static $connect_url;
+
 	const ADMIN_BODY_CLASS     = 'wp_stream_screen';
 	const RECORDS_PAGE_SLUG    = 'wp_stream';
 	const SETTINGS_PAGE_SLUG   = 'wp_stream_settings';
@@ -32,7 +39,7 @@ class WP_Stream_Admin {
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
 	const PRELOAD_AUTHORS_MAX  = 50;
-	const CONNECT_URL          = 'https://staging.wp-stream.com/connect/';
+	const NEW_SITE_URL         = 'https://staging.wp-stream.com/pricing/';
 
 	public static function load() {
 		// User and role caps
@@ -40,6 +47,17 @@ class WP_Stream_Admin {
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
 		self::$disable_access = apply_filters( 'wp_stream_disable_admin_access', false );
+
+		$site_url          = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
+		$connect_nonce     = wp_create_nonce( 'stream_connect_site-' . sanitize_key( $site_url ) );
+		self::$connect_url = add_query_arg(
+			array(
+				'auth'       => 'true',
+				'action'     => 'connect',
+				'plugin_url' => urlencode( admin_url( 'admin.php?page=wp_stream&nonce=' . $connect_nonce ) ),
+			),
+			self::NEW_SITE_URL
+		);
 
 		// Register settings page
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
@@ -108,7 +126,6 @@ class WP_Stream_Admin {
 		}
 
 		$dismiss_and_deactivate_url = wp_nonce_url( 'plugins.php?action=deactivate&plugin=' . WP_STREAM_PLUGIN, 'deactivate-plugin_' . WP_STREAM_PLUGIN );
-		$connect_url = add_query_arg( array( 'page' => self::RECORDS_PAGE_SLUG ), self::ADMIN_PARENT_PAGE );
 		?>
 		<div id="stream-message" class="updated stream-connect" style="display:block !important;">
 		<?php if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) : // Can't deactivate if network activated ?>
@@ -118,7 +135,7 @@ class WP_Stream_Admin {
 		<?php endif; ?>
 			<div class="stream-wrap-container">
 				<div class="stream-install-container">
-						<p class="stream-connect-button"><a href="<?php echo esc_url( $connect_url ); ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
+						<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ); ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
 				</div>
 				<div class="stream-text-container">
 						<p><strong><?php _e( 'Stream is almost ready!', 'stream' ); ?></strong></p>
@@ -614,21 +631,25 @@ class WP_Stream_Admin {
 				'quote'        => __( 'Stream is easily one of the most exciting projects in WordPress today.', 'stream' ),
 				'author'       => __( 'Zack Tollman', 'stream' ),
 				'organization' => __( 'The Theme Foundry', 'stream' ),
+				'link'         => 'https://thethemefoundry.com',
 			),
 			array(
 				'quote'        => __( 'First of all, the plugin is just damn pretty, from code to UI. Everything about Stream is absolutely top notch. Top notch.', 'stream' ),
 				'author'       => __( 'Pippin Williamson', 'stream' ),
 				'organization' => __( 'PippinsPlugins.com', 'stream' ),
+				'link'         => 'http://pippinsplugins.com',
 			),
 			array(
 				'quote'        => __( 'Stream is a fine example of a plugin built well. It puts performance top of mind, and limits features to only the essential to create something that is useful and stable.', 'stream' ),
 				'author'       => __( 'Jay Hoffmann', 'stream' ),
 				'organization' => __( 'Tidy Repo', 'stream' ),
+				'link'         => 'http://tidyrepo.com',
 			),
 			array(
 				'quote'        => __( 'Sometimes clients cannot remember what action they took in the admin to cause changes to the site. The Stream plugin goes a long way to help with troubleshooting.', 'stream' ),
 				'author'       => __( 'Sarah Gooding', 'stream' ),
 				'organization' => __( 'WP Tavern', 'stream' ),
+				'link'         => 'http://wptavern.com',
 			),
 		);
 		$testimonial = $testimonials[ array_rand( $testimonials ) ];
@@ -637,10 +658,10 @@ class WP_Stream_Admin {
 		?>
 		<div id="wp-stream-connect">
 			<div class="wrap">
-				<p class="stream-connect-button"><a href="<?php echo esc_url( self::CONNECT_URL ); ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
+				<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ); ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
 				<p><?php _e( 'with WordPress.com', 'stream' ); ?></p>
 				<p class="quote">&ldquo;<?php echo esc_html( $testimonial['quote'] ); ?>&rdquo;</p>
-				<p class="author">&dash; <?php echo esc_html( $testimonial['author'] ); ?>, <span class="organization"><?php echo esc_html( $testimonial['organization'] ); ?></span></p>
+				<p class="author">&dash; <?php echo esc_html( $testimonial['author'] ); ?>, <a class="organization" href="<?php echo esc_url( $testimonial['link'] ); ?>"><?php echo esc_html( $testimonial['organization'] ); ?></a></p>
 			</div>
 		</div>
 		<?php

@@ -194,6 +194,16 @@
 	font: 300 2em/1.4em 'Open Sans', Helvetica, sans-serif;
 }
 
+#wp-stream-connect a {
+	color: #616161;
+	text-decoration: none;
+}
+
+#wp-stream-connect a:hover {
+	text-decoration: none;
+	border-bottom: 1px dotted #ccc;
+}
+
 #wp-stream-connect .stream-connect-button {
 	margin: 0 0 1em;
 	padding: 1em 0;
@@ -204,6 +214,11 @@
 #wp-stream-connect .stream-connect-button a {
 	font-size: 2.5em;
 	padding: 0.38095em 0.85714em 0.38095em 0.57143em;
+	color: #fff;
+}
+
+#wp-stream-connect .stream-connect-button a:hover {
+	border-bottom: none;
 }
 
 #wp-stream-connect .stream-connect-button i.stream-icon {
