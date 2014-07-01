@@ -127,7 +127,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 					'page' => $record->context,
 				),
 				admin_url( 'admin.php' )
-			) . '#stream-highlight-' . esc_url( $key );
+			) . '#stream-highlight-' . $key;
 		}
 		elseif ( 'wpseo_files' === $record->context ) {
 			$links[ __( 'Edit', 'default' ) ] = add_query_arg(
@@ -194,7 +194,15 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 			);
 		}
 
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
 		add_filter( 'wp_stream_log_data', array( __CLASS__, 'log_override' ) );
+	}
+
+	public function admin_enqueue_scripts( $hook ) {
+		if ( 0 === strpos( $hook, 'seo_page_' ) ) {
+			$src = WP_STREAM_URL . '/ui/wpseo-admin.js';
+			wp_enqueue_script( 'stream-connector-wpseo', $src, array( 'jquery' ), WP_Stream::VERSION );
+		}
 	}
 
 	/**
