@@ -28,18 +28,14 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 		'update_site_option',
 		'add_site_option',
 		'delete_site_option',
-
 		'edd_pre_update_discount_status',
-
 		'edd_generate_pdf',
 		'edd_earnings_export',
 		'edd_payment_export',
 		'edd_email_export',
 		'edd_downloads_history_export',
-
 		'edd_import_settings',
 		'edd_export_settings',
-
 		'add_user_meta',
 		'update_user_meta',
 		'delete_user_meta',
@@ -143,7 +139,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			'discounts'         => __( 'Discounts', 'edd' ),
 			'reports'           => __( 'Reports', 'edd' ),
 			'api_keys'          => __( 'API Keys', 'edd' ),
-			//'payments'          => __( 'Payments', 'edd' ),
+			//'payments'        => __( 'Payments', 'edd' ),
 		);
 	}
 
@@ -160,22 +156,23 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( in_array( $record->context, array( 'downloads' ) ) ) {
 			$links = WP_Stream_Connector_Posts::action_links( $links, $record );
-		}
-		elseif ( in_array( $record->context, array( 'discounts' ) ) ) {
+		} elseif ( in_array( $record->context, array( 'discounts' ) ) ) {
 			$post_type_label = get_post_type_labels( get_post_type_object( 'edd_discount' ) )->singular_name;
-			$base = admin_url( 'edit.php?post_type=download&page=edd-discounts' );
+			$base            = admin_url( 'edit.php?post_type=download&page=edd-discounts' );
+
 			$links[ sprintf( __( 'Edit %s', 'default' ), $post_type_label ) ] = add_query_arg(
 				array(
 					'edd-action' => 'edit_discount',
-					'discount' => $record->object_id,
+					'discount'   => $record->object_id,
 				),
 				$base
 			);
+
 			if ( 'active' === get_post( $record->object_id )->post_status ) {
 				$links[ sprintf( __( 'Deactivate %s', 'stream' ), $post_type_label ) ] = add_query_arg(
 					array(
 						'edd-action' => 'deactivate_discount',
-						'discount' => $record->object_id,
+						'discount'   => $record->object_id,
 					),
 					$base
 				);
@@ -183,24 +180,25 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 				$links[ sprintf( __( 'Activate %s', 'stream' ), $post_type_label ) ] = add_query_arg(
 					array(
 						'edd-action' => 'activate_discount',
-						'discount' => $record->object_id,
+						'discount'   => $record->object_id,
 					),
 					$base
 				);
 			}
-		}
-		elseif ( in_array( $record->context, array( 'download_category', 'download_tag' ) ) ) {
+		} elseif ( in_array( $record->context, array( 'download_category', 'download_tag' ) ) ) {
 			$tax_label = get_taxonomy_labels( get_taxonomy( $record->context ) )->singular_name;
 			$links[ sprintf( __( 'Edit %s', 'default' ), $tax_label ) ] = get_edit_term_link( $record->object_id, wp_stream_get_meta( $record->ID, 'taxonomy', true ) );
-		}
-		elseif ( 'api_keys' === $record->context ) {
+		} elseif ( 'api_keys' === $record->context ) {
 			$user = new WP_User( $record->object_id );
+
 			if ( apply_filters( 'edd_api_log_requests', true ) ) {
 				$links[ __( 'View API Log', 'edd' ) ] = add_query_arg( array( 'view' => 'api_requests', 'post_type' => 'download', 'page' => 'edd-reports', 'tab' => 'logs', 's' => $user->user_email ), 'edit.php' );
 			}
-			$links[ __( 'Revoke', 'edd' ) ] = add_query_arg( array( 'post_type' => 'download', 'user_id' => $record->object_id, 'edd_action' => 'process_api_key', 'edd_api_process' => 'revoke' ), 'edit.php' );
+
+			$links[ __( 'Revoke', 'edd' ) ]  = add_query_arg( array( 'post_type' => 'download', 'user_id' => $record->object_id, 'edd_action' => 'process_api_key', 'edd_api_process' => 'revoke' ), 'edit.php' );
 			$links[ __( 'Reissue', 'edd' ) ] = add_query_arg( array( 'post_type' => 'download', 'user_id' => $record->object_id, 'edd_action' => 'process_api_key', 'edd_api_process' => 'regenerate' ), 'edit.php' );
 		}
+
 		return $links;
 	}
 
@@ -238,7 +236,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 		self::check( $option, null, null );
 	}
 
-	public static function check( $option, $old_value, $new_value ){
+	public static function check( $option, $old_value, $new_value ) {
 		if ( ! array_key_exists( $option, self::$options ) ) {
 			return;
 		}
@@ -248,9 +246,10 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 		if ( method_exists( __CLASS__, 'check_' . $replacement ) ) {
 			call_user_func( array( __CLASS__, 'check_' . $replacement ), $old_value, $new_value );
 		} else {
-			$data = self::$options[ $option ];
+			$data         = self::$options[ $option ];
 			$option_title = $data['label'];
-			$context = isset( $data['context'] ) ? $data['context'] : 'settings';
+			$context      = isset( $data['context'] ) ? $data['context'] : 'settings';
+
 			self::log(
 				__( '"%s" setting was updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
@@ -283,9 +282,10 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 					'name' => __( 'Banned emails', 'edd' ),
 				);
 				$page = 'edd-tools';
-				$tab = 'general';
+				$tab  = 'general';
 			} else {
 				$page = 'edd-settings';
+
 				foreach ( $settings as $tab => $fields ) {
 					if ( isset( $fields[ $option ] ) ) {
 						$field = $fields[ $option ];
@@ -323,46 +323,40 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 * @return array|bool
 	 */
 	public static function log_override( array $data ) {
-		// Download posts operations
 		if ( 'posts' === $data['connector'] && 'download' === key( $data['contexts'] ) ) {
-			$data['contexts'] = array( 'downloads' => current( $data['contexts'] ) );
+			// Download posts operations
+			$data['contexts']  = array( 'downloads' => current( $data['contexts'] ) );
 			$data['connector'] = self::$name;
-		}
-		// Discount posts operations
-		elseif ( 'posts' === $data['connector'] && 'edd_discount' === key( $data['contexts'] ) ) {
+		} elseif ( 'posts' === $data['connector'] && 'edd_discount' === key( $data['contexts'] ) ) {
+			// Discount posts operations
 			if ( self::$is_discount_status_change ) {
 				return false;
 			}
+
 			if ( 'deleted' === current( $data['contexts'] ) ) {
 				$data['message'] = __( '"%1s" discount deleted', 'stream' );
 			}
+
 			$data['contexts']  = array( 'discounts' => current( $data['contexts'] ) );
 			$data['connector'] = self::$name;
-		}
-		// Payment posts operations
-		elseif ( 'posts' === $data['connector'] && 'edd_payment' === key( $data['contexts'] )  ) {
+		} elseif ( 'posts' === $data['connector'] && 'edd_payment' === key( $data['contexts'] )  ) {
+			// Payment posts operations
 			return false; // Do not track payments, they're well logged!
-		}
-		// Logging operations
-		elseif ( 'posts' === $data['connector'] && 'edd_log' === key( $data['contexts'] )  ) {
+		} elseif ( 'posts' === $data['connector'] && 'edd_log' === key( $data['contexts'] )  ) {
+			// Logging operations
 			return false; // Do not track notes, because they're basically logs
-		}
-		// Payment notes ( comments ) operations
-		elseif ( 'comments' === $data['connector'] && 'edd_payment' === key( $data['contexts'] )  ) {
+		} elseif ( 'comments' === $data['connector'] && 'edd_payment' === key( $data['contexts'] )  ) {
+			// Payment notes ( comments ) operations
 			return false; // Do not track notes, because they're basically logs
-		}
-		elseif ( 'taxonomies' === $data['connector'] && 'download_category' === key( $data['contexts'] ) ) {
-			$data['contexts'] = array( 'download_category' => current( $data['contexts'] ) );
+		} elseif ( 'taxonomies' === $data['connector'] && 'download_category' === key( $data['contexts'] ) ) {
+			$data['contexts']  = array( 'download_category' => current( $data['contexts'] ) );
 			$data['connector'] = self::$name;
-		}
-		elseif ( 'taxonomies' === $data['connector'] && 'download_tag' === key( $data['contexts'] ) ) {
-			$data['contexts'] = array( 'download_tag' => current( $data['contexts'] ) );
+		} elseif ( 'taxonomies' === $data['connector'] && 'download_tag' === key( $data['contexts'] ) ) {
+			$data['contexts']  = array( 'download_tag' => current( $data['contexts'] ) );
 			$data['connector'] = self::$name;
-		}
-		elseif ( 'taxonomies' === $data['connector'] && 'edd_log_type' === key( $data['contexts'] ) ) {
+		} elseif ( 'taxonomies' === $data['connector'] && 'edd_log_type' === key( $data['contexts'] ) ) {
 			return false;
-		}
-		elseif ( 'settings' === $data['connector'] && 'edd_settings' === $data['args']['option'] ) {
+		} elseif ( 'settings' === $data['connector'] && 'edd_settings' === $data['args']['option'] ) {
 			return false;
 		}
 
@@ -371,6 +365,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 
 	public static function callback_edd_pre_update_discount_status( $code_id, $new_status ) {
 		self::$is_discount_status_change = true;
+
 		self::log(
 			sprintf(
 				__( '%s discount "%s"', 'stream' ),
@@ -407,19 +402,16 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	private static function report_generated( $type ) {
 		if ( 'pdf' === $type ) {
 			$label = __( 'Sales and earnings', 'stream' );
-		}
-		elseif ( 'earnings' ) {
+		} elseif ( 'earnings' ) {
 			$label = __( 'Earnings', 'stream' );
-		}
-		elseif ( 'payments' ) {
+		} elseif ( 'payments' ) {
 			$label = __( 'Payments', 'stream' );
-		}
-		elseif ( 'emails' ) {
+		} elseif ( 'emails' ) {
 			$label = __( 'Emails', 'stream' );
-		}
-		elseif ( 'download-history' ) {
+		} elseif ( 'download-history' ) {
 			$label = __( 'Download History', 'stream' );
 		}
+
 		self::log(
 			sprintf(
 				__( 'Generated %s Report', 'stream' ),
@@ -473,7 +465,9 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 		if ( ! in_array( $key, self::$user_meta ) ) {
 			return false;
 		}
+
 		$key = str_replace( '-', '_', $key );
+
 		if ( method_exists( __CLASS__, 'meta_' . $key ) ) {
 			return call_user_func( array( __CLASS__, 'meta_' . $key ), $object_id, $value, $is_add );
 		}
@@ -481,13 +475,13 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 
 	private static function meta_edd_user_public_key( $user_id, $value, $is_add = false ) {
 		if ( is_null( $value ) ) {
-			$action = 'revoked';
+			$action       = 'revoked';
 			$action_title = __( 'Revoked', 'stream' );
 		} elseif ( $is_add ) {
-			$action = 'created';
+			$action       = 'created';
 			$action_title = __( 'Created', 'stream' );
 		} else {
-			$action = 'updated';
+			$action       = 'updated';
 			$action_title = __( 'Updated', 'stream' );
 		}
 

@@ -191,6 +191,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 				$post_type_name = WP_Stream_Connector_Posts::get_post_type_name( get_post_type( $record->object_id ) );
 				$links[ sprintf( _x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
 			}
+
 			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
 				$links[ __( 'View', 'stream' ) ] = $link;
 			}
@@ -208,6 +209,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 				array( 'page' => $option_page, 'tab' => $option_tab, 'section' => $option_section ),
 				admin_url( 'admin.php' ) // Not self_admin_url here, as WooCommerce doesn't exist in Network Admin
 			);
+
 			$links[ $text ] = $url . '#wp-stream-highlight:' . $option_key;
 		}
 
@@ -224,6 +226,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 */
 	public static function exclude_order_post_types( $post_types ) {
 		$post_types[] = 'shop_order';
+
 		return $post_types;
 	}
 
@@ -237,6 +240,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 */
 	public static function exclude_order_comment_types( $comment_types ) {
 		$comment_types[] = 'order_note';
+
 		return $comment_types;
 	}
 
@@ -386,7 +390,6 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		$order           = new WC_Order( $order_id );
 		$order_title     = __( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
 		$order_type_name = __( 'order', 'stream' );
-
 		$new_status_name = strtolower( $new_status->name );
 		$old_status_name = strtolower( $old_status->name );
 
@@ -623,8 +626,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 				$info       = $page->add_settings_page( array() );
 				$page_id    = key( $info );
 				$page_label = current( $info );
+				$sections   = $page->get_sections();
 
-				$sections = $page->get_sections();
 				if ( empty( $sections ) ) {
 					$sections[''] = $page_label;
 				}
@@ -641,6 +644,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 							return isset( $item['id'] ) && ( ! in_array( $item['type'], array( 'title', 'sectionend' ) ) );
 						}
 					);
+
 					foreach ( $_fields as $field ) {
 						$title = isset( $field['title'] ) ? $field['title'] : $field['desc'];
 						$fields[ $field['id'] ] = array(
@@ -678,6 +682,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 					'type'    => __( 'payment gateway', 'stream' ),
 				);
 			}
+
 			$settings = array_merge( $settings, $payment_gateway_settings );
 
 			// Load Shipping Method Settings
@@ -696,6 +701,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 					'type'    => __( 'shipping method', 'stream' ),
 				);
 			}
+
 			$settings = array_merge( $settings, $shipping_method_settings );
 
 			// Load Email Settings
@@ -714,12 +720,14 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 					'type'    => __( 'email', 'stream' ),
 				);
 			}
+
 			$settings = array_merge( $settings, $email_settings );
 
 			// Tools page
 			$tools_page = array(
 				'tools' => __( 'Tools', 'default' )
 			);
+
 			$settings_pages = array_merge( $settings_pages, $tools_page );
 
 			// Cache the results
@@ -727,6 +735,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 				'settings'       => $settings,
 				'settings_pages' => $settings_pages,
 			);
+
 			set_transient( $settings_cache_key, $settings_cache, MINUTE_IN_SECONDS * 60 * 6 );
 		}
 
