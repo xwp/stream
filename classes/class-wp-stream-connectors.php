@@ -55,6 +55,7 @@ class WP_Stream_Connectors {
 			'widgets',
 			'jetpack',
 			'woocommerce',
+			'gravityforms',
 		);
 
 		if ( is_network_admin() ) {
