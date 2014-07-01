@@ -54,6 +54,7 @@ class WP_Stream_Connectors {
 			'users',
 			'widgets',
 			'jetpack',
+			'woocommerce',
 		);
 
 		if ( is_network_admin() ) {
