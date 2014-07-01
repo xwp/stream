@@ -53,6 +53,7 @@ class WP_Stream_Connectors {
 			'taxonomies',
 			'users',
 			'widgets',
+			'jetpack',
 		);
 
 		if ( is_network_admin() ) {

@@ -10,6 +10,13 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	public static $name = 'jetpack';
 
 	/**
+	 * Holds tracked plugin minimum version required
+	 *
+	 * @const string
+	 */
+	const PLUGIN_MIN_VERSION = '3.0.2';
+
+	/**
 	 * Actions registered for this connector
 	 *
 	 * @var array
@@ -39,6 +46,31 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 * @var array
 	 */
 	public static $options_override = array();
+
+	/**
+	 * Check if plugin dependencies are satisfied and add an admin notice if not
+	 *
+	 * @return bool
+	 */
+	public static function is_dependency_satisfied() {
+		$met = true;
+
+		if ( ! class_exists( 'Jetpack' ) ) {
+			WP_Stream::notice(
+				sprintf( __( '<strong>Stream Jetpack Connector</strong> requires the <a href="%1$s" target="_blank">Jetpack</a> plugin to be installed and activated.', 'stream-connector-jetpack' ), esc_url( 'http://wordpress.org/plugins/stream/' ) ),
+				true
+			);
+			$meta = false;
+		} elseif ( defined( 'PLUGIN_MIN_VERSION' ) && version_compare( PLUGIN_MIN_VERSION, self::PLUGIN_MIN_VERSION, '<' ) ) {
+			WP_Stream::notice(
+				sprintf( __( 'Please <a href="%1$s" target="_blank">install Jetpack</a> version %2$s or higher for the <strong>Stream Jetpack Connector</strong> plugin to work properly.', 'stream-connector-jetpack' ), esc_url( 'http://wordpress.org/plugins/jetpack/' ), self::PLUGIN_MIN_VERSION ),
+				true
+			);
+			$meta = false;
+		}
+
+		return $met;
+	}
 
 	/**
 	 * Return translated connector label
