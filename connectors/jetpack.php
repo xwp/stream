@@ -330,9 +330,11 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			);
 		} elseif ( in_array( $method, array( 'authorize', 'unlink' ) ) ) {
 			$user_id = intval( $data );
+
 			if ( empty( $user_id ) ) {
 				$user_id = get_current_user_id();
 			}
+
 			$user       = new WP_User( $user_id );
 			$user_email = $user->user_email;
 			$user_login = $user->user_login;
@@ -349,13 +351,14 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$context      = 'blogs';
 			$action       = str_replace( 'subsite', '', $method );
 			$is_multisite = ( 0 === strpos( $method, 'subsite' ) );
-			$blog_id      = $is_multisite
-				? ( isset( $_GET[ 'site_id' ] ) ? intval( $_GET[ 'site_id' ] ) : null )
-				: get_current_blog_id();
+			$blog_id      = $is_multisite ? ( isset( $_GET[ 'site_id' ] ) ? intval( $_GET[ 'site_id' ] ) : null ) : get_current_blog_id();
+
 			if ( empty( $blog_id ) ) {
 				return;
 			}
+
 			$meta = array();
+
 			if ( ! $is_multisite ) {
 				$message = sprintf(
 					__( 'Site %1$s Jetpack', 'stream' ),
@@ -364,7 +367,8 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			} else {
 				$blog_details = get_blog_details( array( 'blog_id' => $blog_id ) );
 				$blog_name    = $blog_details->blogname;
-				$meta += compact( 'blog_id', 'blog_name' );
+				$meta        += compact( 'blog_id', 'blog_name' );
+
 				$message = sprintf(
 					__( '"%1$s" blog %2$s Jetpack', 'stream' ),
 					$blog_name,
@@ -414,6 +418,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	public static function callback_jetpack_module_configuration_load_monitor() {
 		if ( $_POST ) {
 			$active = isset( $_POST[ 'receive_jetpack_monitor_notification' ] );
+
 			self::log(
 				__( 'Monitor notifications %1$s', 'stream' ),
 				array(
