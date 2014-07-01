@@ -103,7 +103,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'EDD', 'edd' );
+		return __( 'Easy Digital Downloads', 'edd' );
 	}
 
 	/**
@@ -113,16 +113,16 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'    => __( 'Created', 'stream' ),
-			'updated'    => __( 'Updated', 'stream' ),
-			'added'      => __( 'Added', 'stream' ),
-			'deleted'    => __( 'Deleted', 'stream' ),
-			'trashed'    => __( 'Trashed', 'stream' ),
-			'restored'   => __( 'Restored', 'stream' ),
-			'generated'  => __( 'Generated', 'stream' ),
-			'imported'   => __( 'Imported', 'stream' ),
-			'exported'   => __( 'Exported', 'stream' ),
-			'revoked'    => __( 'Revoked', 'stream' ),
+			'created'   => __( 'Created', 'stream' ),
+			'updated'   => __( 'Updated', 'stream' ),
+			'added'     => __( 'Added', 'stream' ),
+			'deleted'   => __( 'Deleted', 'stream' ),
+			'trashed'   => __( 'Trashed', 'stream' ),
+			'restored'  => __( 'Restored', 'stream' ),
+			'generated' => __( 'Generated', 'stream' ),
+			'imported'  => __( 'Imported', 'stream' ),
+			'exported'  => __( 'Exported', 'stream' ),
+			'revoked'   => __( 'Revoked', 'edd' ),
 		);
 	}
 
@@ -133,7 +133,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'downloads'         => __( 'Downloads', 'default' ),
+			'downloads'         => __( 'Downloads', 'edd' ),
 			'download_category' => __( 'Categories', 'default' ),
 			'download_tag'      => __( 'Tags', 'default' ),
 			'discounts'         => __( 'Discounts', 'edd' ),
