@@ -95,7 +95,7 @@ Great! There are several ways you can get involved to help make Stream better:
 
 Thank you for wanting to make Stream better for everyone! We salute you.
 
-[![Build Status](https://travis-ci.org/wp-stream/wp-stream.png?branch=master)](https://travis-ci.org/wp-stream/wp-stream)
+[![Build Status](https://travis-ci.org/x-team/wp-stream.png?branch=master)](https://travis-ci.org/x-team/wp-stream)
 
 ## Screenshots ##
 
