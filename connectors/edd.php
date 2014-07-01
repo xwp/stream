@@ -80,7 +80,6 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 */
 	public static $is_payment_status_change = false;
 
-
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
 	 *
