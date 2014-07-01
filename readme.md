@@ -7,7 +7,7 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 **Contributors:** [stream](http://profiles.wordpress.org/stream), [x-team](http://profiles.wordpress.org/x-team), [fjarrett](http://profiles.wordpress.org/fjarrett), [westonruter](http://profiles.wordpress.org/westonruter), [japh](http://profiles.wordpress.org/japh), [lukecarbis](http://profiles.wordpress.org/lukecarbis), [shadyvb](http://profiles.wordpress.org/shadyvb), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [c3mdigital](http://profiles.wordpress.org/c3mdigital), [johnregan3](http://profiles.wordpress.org/johnregan3), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
-**Tested up to:** 3.9  
+**Tested up to:** 3.9.1  
 **Stable tag:** trunk (master)  
 **License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
 
@@ -33,6 +33,7 @@ Visit the Stream Extensions screen inside the plugin to learn more about making 
  * [Reports](https://wp-stream.com/extension/reports/)
  * [Data Exporter](https://wp-stream.com/extension/data-exporter/)
  * [Cherry-Pick](https://wp-stream.com/extensions/cherry-pick/)
+ * [WooCommerce Connector](https://wp-stream.com/extension/connector-woocommerce/)
 
 **Recorded activity:**
 
@@ -115,6 +116,15 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
+
+### 1.4.7 - June 27, 2014 ###
+* New: Comment Type support added to the Comments connector ([#558](https://github.com/x-team/wp-stream/issues/558))
+* Fix: Datepicker opens again with each paged view ([#568](https://github.com/x-team/wp-stream/issues/568))
+* Fix: PHP warning when deleting network users ([#579](https://github.com/x-team/wp-stream/issues/579))
+* Fix: Track user count setting changes ([#583](https://github.com/x-team/wp-stream/issues/583))
+* Fix: .po and .pot files out-of-date for translators ([#584](https://github.com/x-team/wp-stream/issues/584))
+
+Props [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [bordoni](http://profiles.wordpress.org/bordoni/), [shadyvb](http://profiles.wordpress.org/shadyvb/)
 
 ### 1.4.6 - May 30, 2014 ###
 * Tweak: Actions provided for trashed posts are irrelevant ([#523](https://github.com/x-team/wp-stream/issues/523))

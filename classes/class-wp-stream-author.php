@@ -58,6 +58,9 @@ class WP_Stream_Author {
 	 */
 	function get_display_name() {
 		if ( 0 === $this->id ) {
+			if ( isset( $this->meta['system_user_name'] ) ) {
+				return esc_html( $this->meta['system_user_name'] );
+			}
 			return esc_html__( 'N/A', 'stream' );
 		} else {
 			if ( $this->is_deleted() ) {
