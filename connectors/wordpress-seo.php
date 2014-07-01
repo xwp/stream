@@ -45,15 +45,15 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	 */
 	public static function is_dependency_satisfied() {
 		if ( ! defined( 'WPSEO_VERSION' ) ) {
-			WP_Stream::notice(
-				sprintf( __( '<strong>Stream WordPress SEO Connector</strong> requires the <a href="%1$s" target="_blank">WordPress SEO</a> plugin to be installed and activated.', 'stream' ), esc_url( 'http://wordpress.org/plugins/wordpress-seo/' ) ),
-				true
-			);
+			//WP_Stream::notice(
+			//	sprintf( __( '<strong>Stream WordPress SEO Connector</strong> requires the <a href="%1$s" target="_blank">WordPress SEO</a> plugin to be installed and activated.', 'stream' ), esc_url( 'http://wordpress.org/plugins/wordpress-seo/' ) ),
+			//	true
+			//);
 		} elseif ( version_compare( WPSEO_VERSION, self::PLUGIN_MIN_VERSION, '<' ) ) {
-			WP_Stream::notice(
-				sprintf( __( 'Please <a href="%1$s" target="_blank">install WordPress SEO</a> version %2$s or higher for the <strong>Stream WordPress SEO Connector</strong> plugin to work properly.', 'stream' ), esc_url( 'http://wordpress.org/plugins/wordpress-seo/' ), self::PLUGIN_MIN_VERSION ),
-				true
-			);
+			//WP_Stream::notice(
+			//	sprintf( __( 'Please <a href="%1$s" target="_blank">install WordPress SEO</a> version %2$s or higher for the <strong>Stream WordPress SEO Connector</strong> plugin to work properly.', 'stream' ), esc_url( 'http://wordpress.org/plugins/wordpress-seo/' ), self::PLUGIN_MIN_VERSION ),
+			//	true
+			//);
 		} else {
 			return true;
 		}
