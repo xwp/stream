@@ -56,15 +56,15 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'activated'   => __( 'Activated', 'stream-connector-jetpack' ),
-			'deactivated' => __( 'Dectivated', 'stream-connector-jetpack' ),
-			'register'    => __( 'Connected', 'stream-connector-jetpack' ),
-			'disconnect'  => __( 'Disconnected', 'stream-connector-jetpack' ),
-			'authorize'   => __( 'Link', 'stream-connector-jetpack' ),
+			'activated'   => __( 'Activated', 'stream' ),
+			'deactivated' => __( 'Dectivated', 'stream' ),
+			'register'    => __( 'Connected', 'stream' ),
+			'disconnect'  => __( 'Disconnected', 'stream' ),
+			'authorize'   => __( 'Link', 'stream' ),
 			'unlink'      => __( 'Unlink', 'jetpack' ),
 			'updated'     => __( 'Updated', 'stream' ),
-			'added'       => __( 'Added', 'stream-connector-jetpack' ),
-			'removed'     => __( 'Removed', 'stream-connector-jetpack' ),
+			'added'       => __( 'Added', 'stream' ),
+			'removed'     => __( 'Removed', 'stream' ),
 		);
 	}
 
@@ -75,28 +75,28 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'modules' => __( 'Modules', 'jetpack' ),
-			'blogs'   => __( 'Blogs', 'default' ),
-			'users'   => __( 'Users', 'default' ),
-			'options' => __( 'Options', 'default' ),
-			'sharedaddy' => __( 'Sharing', 'jetpack' ),
-			'publicize' => __( 'Publicize', 'jetpack' ),
-			'gplus-authorship' => __( 'Google+ Profile', 'jetpack' ),
-			'stats'   => __( 'WordPress.com Stats', 'jetpack' ),
-			'carousel'   => __( 'Carousel', 'jetpack' ),
-			'custom-css' => __( 'Custom CSS', 'jetpack' ),
-			'subscriptions' => __( 'Subscriptions', 'jetpack' ),
-			'jetpack-comments' => __( 'Comments', 'default' ),
-			'infinite-scroll' => __( 'Infinite Scroll', 'jetpack' ),
-			'sso' => __( 'SSO', 'stream-connector-jetpack' ),
-			'likes' => __( 'Likes', 'stream-connector-jetpack' ),
-			'minileven' => __( 'Mobile', 'stream-connector-jetpack' ),
-			'monitor' => __( 'Monitor', 'stream-connector-jetpack' ),
-			'post-by-email' => __( 'Post by Email', 'jetpack' ),
-			'related-posts' => __( 'Related Posts', 'jetpack' ),
+			'modules'            => __( 'Modules', 'jetpack' ),
+			'blogs'              => __( 'Blogs', 'default' ),
+			'users'              => __( 'Users', 'default' ),
+			'options'            => __( 'Options', 'default' ),
+			'sharedaddy'         => __( 'Sharing', 'jetpack' ),
+			'publicize'          => __( 'Publicize', 'jetpack' ),
+			'gplus-authorship'   => __( 'Google+ Profile', 'jetpack' ),
+			'stats'              => __( 'WordPress.com Stats', 'jetpack' ),
+			'carousel'           => __( 'Carousel', 'jetpack' ),
+			'custom-css'         => __( 'Custom CSS', 'jetpack' ),
+			'subscriptions'      => __( 'Subscriptions', 'jetpack' ),
+			'jetpack-comments'   => __( 'Comments', 'default' ),
+			'infinite-scroll'    => __( 'Infinite Scroll', 'jetpack' ),
+			'sso'                => __( 'SSO', 'stream' ),
+			'likes'              => __( 'Likes', 'stream' ),
+			'minileven'          => __( 'Mobile', 'stream' ),
+			'monitor'            => __( 'Monitor', 'stream' ),
+			'post-by-email'      => __( 'Post by Email', 'jetpack' ),
+			'related-posts'      => __( 'Related Posts', 'jetpack' ),
 			'verification-tools' => __( 'Site Verification', 'jetpack' ),
-			'tiled-gallery' => __( 'Tiled Galleries', 'jetpack' ),
-			'videopress' => __( 'VideoPress', 'jetpack' ),
+			'tiled-gallery'      => __( 'Tiled Galleries', 'jetpack' ),
+			'videopress'         => __( 'VideoPress', 'jetpack' ),
 		);
 	}
 
@@ -115,7 +115,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		if ( 'jetpack' === $record->connector ) {
 			if ( 'modules' === $record->context ) {
 				$slug = wp_stream_get_meta( $record->ID, 'module_slug', true );
-				if ( Jetpack::is_module_active( $slug )  ) {
+				if ( Jetpack::is_module_active( $slug ) ) {
 					if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
 						$links[ __( 'Configure', 'jetpack' ) ] = Jetpack::module_configuration_url( $slug );;
 					}
@@ -141,14 +141,14 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 						'jetpack_activate-' . sanitize_title( $slug )
 					);
 				}
-			}
-			elseif ( Jetpack::is_module_active( str_replace( 'jetpack-', '', $record->context ) ) ) {
+			} elseif ( Jetpack::is_module_active( str_replace( 'jetpack-', '', $record->context ) ) ) {
 				$slug = str_replace( 'jetpack-', '', $record->context ); // handling jetpack-comment anomaly
 				if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
-					$links[ __( 'Configure module', 'stream-connector-jetpack' ) ] = Jetpack::module_configuration_url( $slug );;
+					$links[ __( 'Configure module', 'stream' ) ] = Jetpack::module_configuration_url( $slug );;
 				}
 			}
 		}
+
 		return $links;
 	}
 
@@ -158,22 +158,22 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		add_filter( 'wp_stream_log_data', array( __CLASS__, 'log_override' ) );
 
 		self::$options = array(
-			'jetpack_options' => null,
+			'jetpack_options'                   => null,
 			// Sharing module
-			'hide_gplus' => null,
-			'gplus_authors' => null,
-			'sharing-options' => array(
-				'label' => __( 'Sharing options', 'stream-connector-jetpack' ),
+			'hide_gplus'                        => null,
+			'gplus_authors'                     => null,
+			'sharing-options'                   => array(
+				'label'   => __( 'Sharing options', 'stream' ),
 				'context' => 'sharedaddy',
 			),
-			'sharedaddy_disable_resources' => null,
-			'jetpack-twitter-cards-site-tag' => array(
-				'label' => __( 'Twitter site tag', 'stream-connector-jetpack' ),
+			'sharedaddy_disable_resources'      => null,
+			'jetpack-twitter-cards-site-tag'    => array(
+				'label'   => __( 'Twitter site tag', 'stream' ),
 				'context' => 'sharedaddy',
 			),
 			// Stats module
-			'stats_options' => array(
-				'label' => __( 'WordPress.com Stats', 'stream-connector-jetpack' ),
+			'stats_options'                     => array(
+				'label'   => __( 'WordPress.com Stats', 'stream' ),
 				'context' => 'stats',
 			),
 			// Comments
@@ -182,88 +182,88 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 				'context' => 'jetpack-comments',
 			),
 			// Likes
-			'disabled_likes' => array(
-				'label'   => __( 'WP.com Site-wide Likes', 'stream-connector-jetpack' ),
+			'disabled_likes'                    => array(
+				'label'   => __( 'WP.com Site-wide Likes', 'stream' ),
 				'context' => 'likes',
 			),
 			// Mobile
-			'wp_mobile_excerpt' => array(
-				'label' => __( 'Excerpts appearance' , 'stream-connector-jetpack' ),
+			'wp_mobile_excerpt'                 => array(
+				'label'   => __( 'Excerpts appearance', 'stream' ),
 				'context' => 'minileven',
 			),
-			'wp_mobile_app_promos' => array(
-				'label' => __( 'App promos' , 'stream-connector-jetpack' ),
+			'wp_mobile_app_promos'              => array(
+				'label'   => __( 'App promos', 'stream' ),
 				'context' => 'minileven',
 			),
 		);
 
 		self::$options_override = array(
 			// Carousel Module
-			'carousel_background_color' => array(
-				'label' => __( 'Background color', 'jetpack' ),
+			'carousel_background_color'        => array(
+				'label'   => __( 'Background color', 'jetpack' ),
 				'context' => 'carousel',
 			),
-			'carousel_display_exif' => array(
-				'label' => __( 'Metadata', 'jetpack' ),
+			'carousel_display_exif'            => array(
+				'label'   => __( 'Metadata', 'jetpack' ),
 				'context' => 'carousel',
 			),
 			// Subscriptions
-			'stb_enabled' => array(
-				'label' => __( 'Follow blog comment form button', 'jetpack' ),
+			'stb_enabled'                      => array(
+				'label'   => __( 'Follow blog comment form button', 'jetpack' ),
 				'context' => 'subscriptions',
 			),
-			'stc_enabled' => array(
-				'label' => __( 'Follow comments form button', 'jetpack' ),
+			'stc_enabled'                      => array(
+				'label'   => __( 'Follow comments form button', 'jetpack' ),
 				'context' => 'subscriptions',
 			),
 			// Jetpack comments
-			'highlander_comment_form_prompt' => array(
-				'label' => __( 'Greeting Text', 'jetpack' ),
+			'highlander_comment_form_prompt'   => array(
+				'label'   => __( 'Greeting Text', 'jetpack' ),
 				'context' => 'jetpack-comments',
 			),
 			// Infinite Scroll
 			'infinite_scroll_google_analytics' => array(
-				'label' => __( 'Infinite Scroll Google Analytics', 'jetpack' ),
+				'label'   => __( 'Infinite Scroll Google Analytics', 'jetpack' ),
 				'context' => 'infinite-scroll',
 			),
 			// SSO
-			'jetpack_sso_require_two_step' => array(
-				'label' => __( 'Require Two-Step Authentication' , 'jetpack' ),
+			'jetpack_sso_require_two_step'     => array(
+				'label'   => __( 'Require Two-Step Authentication', 'jetpack' ),
 				'context' => 'sso',
 			),
-			'jetpack_sso_match_by_email' => array(
-				'label' => __( 'Match by Email' , 'jetpack' ),
+			'jetpack_sso_match_by_email'       => array(
+				'label'   => __( 'Match by Email', 'jetpack' ),
 				'context' => 'sso',
 			),
 			// Related posts
-			'jetpack_relatedposts' => array(
-				'show_headline' => array(
-					'label' => __( 'Show Related Posts Headline' , 'stream-connector-jetpack' ),
+			'jetpack_relatedposts'             => array(
+				'show_headline'   => array(
+					'label'   => __( 'Show Related Posts Headline', 'stream' ),
 					'context' => 'related-posts',
 				),
 				'show_thumbnails' => array(
-					'label' => __( 'Show Related Posts Thumbnails' , 'stream-connector-jetpack' ),
+					'label'   => __( 'Show Related Posts Thumbnails', 'stream' ),
 					'context' => 'related-posts',
 				),
 			),
 			// Site verification
-			'verification_services_codes' => array(
-				'google' => array(
-					'label' => __( 'Google Webmaster Tools Token' , 'stream-connector-jetpack' ),
+			'verification_services_codes'      => array(
+				'google'    => array(
+					'label'   => __( 'Google Webmaster Tools Token', 'stream' ),
 					'context' => 'verification-tools',
 				),
-				'bing' => array(
-					'label' => __( 'Bing Webmaster Center Token' , 'stream-connector-jetpack' ),
+				'bing'      => array(
+					'label'   => __( 'Bing Webmaster Center Token', 'stream' ),
 					'context' => 'verification-tools',
 				),
 				'pinterest' => array(
-					'label' => __( 'Pinterest Site Verification Token' , 'stream-connector-jetpack' ),
+					'label'   => __( 'Pinterest Site Verification Token', 'stream' ),
 					'context' => 'verification-tools',
 				),
 			),
 			// Tiled galleries
-			'tiled_galleries' => array(
-				'label' => __( 'Tiled Galleries', 'jetpack' ),
+			'tiled_galleries'                  => array(
+				'label'   => __( 'Tiled Galleries', 'jetpack' ),
 				'context' => 'tiled-gallery',
 			),
 		);
@@ -279,22 +279,22 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 * @param array $entry
 	 */
 	public static function callback_jetpack_log_entry( array $entry ) {
-		$method  = $entry['code'];
-		$data    = $entry['data'];
+		$method  = $entry[ 'code' ];
+		$data    = $entry[ 'data' ];
 		$context = null;
 		$action  = null;
 
 		if ( in_array( $method, array( 'activate', 'deactivate' ) ) ) {
 			$module_slug = $data;
 			$module      = Jetpack::get_module( $module_slug );
-			$module_name = $module['name'];
+			$module_name = $module[ 'name' ];
 			$context     = 'modules';
 			$action      = $method . 'd';
 			$meta        = compact( 'module_slug' );
 			$message     = sprintf(
-				__( '%s module has been %s', 'stream-connector-jetpack' ),
+				__( '%s module has been %s', 'stream' ),
 				$module_name,
-				( $action === 'activated' ) ? __( 'activated', 'stream-connector-jetpack' ) : __( 'deactivated', 'stream-connector-jetpack' )
+				( $action === 'activated' ) ? __( 'activated', 'stream' ) : __( 'deactivated', 'stream' )
 			);
 		} elseif ( in_array( $method, array( 'authorize', 'unlink' ) ) ) {
 			$user_id = intval( $data );
@@ -308,17 +308,17 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$action     = $method;
 			$meta       = compact( 'user_id', 'user_email', 'user_login' );
 			$message    = sprintf(
-				__( '%s %s his account %s Jetpack', 'stream-connector-jetpack' ),
+				__( '%s %s his account %s Jetpack', 'stream' ),
 				$user->display_name,
-				( $action === 'unlink' ) ? __( 'unlinked', 'stream-connector-jetpack' ) : __( 'linked', 'stream-connector-jetpack' ),
-				( $action === 'unlink' ) ? __( 'from', 'stream-connector-jetpack' ) : __( 'to', 'stream-connector-jetpack' )
+				( $action === 'unlink' ) ? __( 'unlinked', 'stream' ) : __( 'linked', 'stream' ),
+				( $action === 'unlink' ) ? __( 'from', 'stream' ) : __( 'to', 'stream' )
 			);
 		} elseif ( in_array( $method, array( 'register', 'disconnect', 'subsiteregister', 'subsitedisconnect' ) ) ) {
 			$context      = 'blogs';
 			$action       = str_replace( 'subsite', '', $method );
 			$is_multisite = ( 0 === strpos( $method, 'subsite' ) );
 			$blog_id      = $is_multisite
-				? ( isset( $_GET['site_id'] ) ? intval( $_GET['site_id'] ) : null )
+				? ( isset( $_GET[ 'site_id' ] ) ? intval( $_GET[ 'site_id' ] ) : null )
 				: get_current_blog_id();
 			if ( empty( $blog_id ) ) {
 				return;
@@ -326,17 +326,17 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$meta = array();
 			if ( ! $is_multisite ) {
 				$message = sprintf(
-					__( 'Site has been %s Jetpack', 'stream-connector-jetpack' ),
-					( $action === 'register' ) ? __( 'registered to', 'stream-connector-jetpack' ) : __( 'disconnected from', 'stream-connector-jetpack' )
+					__( 'Site has been %s Jetpack', 'stream' ),
+					( $action === 'register' ) ? __( 'registered to', 'stream' ) : __( 'disconnected from', 'stream' )
 				);
 			} else {
 				$blog_details = get_blog_details( array( 'blog_id' => $blog_id ) );
 				$blog_name    = $blog_details->blogname;
 				$meta += compact( 'blog_id', 'blog_name' );
 				$message = sprintf(
-					__( '"%s" blog has been %s Jetpack', 'stream-connector-jetpack' ),
+					__( '"%s" blog has been %s Jetpack', 'stream' ),
 					$blog_name,
-					( $action === 'register' ) ? __( 'registered to', 'stream-connector-jetpack' ) : __( 'disconnected from', 'stream-connector-jetpack' )
+					( $action === 'register' ) ? __( 'registered to', 'stream' ) : __( 'disconnected from', 'stream' )
 				);
 			}
 		}
@@ -355,7 +355,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 */
 	public static function callback_sharing_get_services_state( $state ) {
 		self::log(
-			__( 'Sharing services has been updated', 'stream-connector-jetpack' ),
+			__( 'Sharing services has been updated', 'stream' ),
 			$state,
 			null,
 			array(
@@ -381,14 +381,14 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 */
 	public static function callback_jetpack_module_configuration_load_monitor() {
 		if ( $_POST ) {
-			$active = isset( $_POST['receive_jetpack_monitor_notification'] );
+			$active = isset( $_POST[ 'receive_jetpack_monitor_notification' ] );
 			self::log(
-				__( 'Monitor notifications was %s', 'stream-connector-jetpack' ),
+				__( 'Monitor notifications was %s', 'stream' ),
 				array(
-					'status' => $active ? __( 'Activated', 'stream-connector-stream' ) : __( 'Deactivated', 'stream-connector-stream' ),
-					'option' => 'receive_jetpack_monitor_notification',
+					'status'    => $active ? __( 'Activated', 'stream-connector-stream' ) : __( 'Deactivated', 'stream-connector-stream' ),
+					'option'    => 'receive_jetpack_monitor_notification',
 					'old_value' => ! $active,
-					'value' => $active,
+					'value'     => $active,
 				),
 				null,
 				array( 'monitor' => 'updated' )
@@ -399,28 +399,31 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	public static function callback_wp_ajax_jetpack_post_by_email_enable() {
 		self::track_post_by_email( true );
 	}
+
 	public static function callback_wp_ajax_jetpack_post_by_email_regenerate() {
 		self::track_post_by_email( null );
 	}
+
 	public static function callback_wp_ajax_jetpack_post_by_email_disable() {
 		self::track_post_by_email( false );
 	}
+
 	public static function track_post_by_email( $status ) {
 		if ( true === $status ) {
-			$action = __( 'Enabled', 'stream-connector-jetpack' );
+			$action = __( 'Enabled', 'stream' );
 		} elseif ( false === $status ) {
-			$action = __( 'Disabled', 'stream-connector-jetpack' );
+			$action = __( 'Disabled', 'stream' );
 		} elseif ( null === $status ) {
-			$action = __( 'Renegerated', 'stream-connector-jetpack' );
+			$action = __( 'Renegerated', 'stream' );
 		}
 
 		$user = wp_get_current_user();
 		self::log(
-			__( '%1$s has %2$s Post by Email', 'stream-connector-jetpack' ),
+			__( '%1$s has %2$s Post by Email', 'stream' ),
 			array(
 				'user_displayname' => $user->display_name,
-				'action' => $action,
-				'status' => $status,
+				'action'           => $action,
+				'status'           => $status,
 			),
 			null,
 			array(
@@ -429,7 +432,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		);
 	}
 
-	public static function check( $option, $old_value, $new_value ){
+	public static function check( $option, $old_value, $new_value ) {
 		if ( ! array_key_exists( $option, self::$options ) ) {
 			return;
 		}
@@ -437,14 +440,14 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		if ( is_null( self::$options[ $option ] ) ) {
 			call_user_func( array( __CLASS__, 'check_' . str_replace( '-', '_', $option ) ), $old_value, $new_value );
 		} else {
-			$data = self::$options[ $option ];
-			$option_title = $data['label'];
+			$data         = self::$options[ $option ];
+			$option_title = $data[ 'label' ];
 			self::log(
 				__( '"%s" setting was updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
 				array(
-					$data['context'] => isset( $data['action'] ) ? $data['action'] : 'updated',
+					$data[ 'context' ] => isset( $data[ 'action' ] ) ? $data[ 'action' ] : 'updated',
 				)
 			);
 		}
@@ -471,18 +474,18 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 				continue;
 			}
 
-			$settings['meta'] += array(
+			$settings[ 'meta' ] += array(
 				'option'    => $option,
 				'old_value' => maybe_serialize( $old_value ),
 				'value'     => maybe_serialize( $new_value ),
 			);
 
 			self::log(
-				$settings['message'],
-				$settings['meta'],
-				isset( $settings['object_id'] ) ? $settings['object_id'] : null,
+				$settings[ 'message' ],
+				$settings[ 'meta' ],
+				isset( $settings[ 'object_id' ] ) ? $settings[ 'object_id' ] : null,
 				array(
-					$settings['context'] => $settings['action'],
+					$settings[ 'context' ] => $settings[ 'action' ],
 				)
 			);
 		}
@@ -495,7 +498,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		}
 
 		self::log(
-			__( 'G+ profile display was %s', 'stream-connector-jetpack' ),
+			__( 'G+ profile display was %s', 'stream' ),
 			array(
 				'action' => $status ? __( 'Enabled', 'stream' ) : __( 'Disabled', 'stream' ),
 			),
@@ -511,10 +514,10 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		$connected = is_array( $new_value ) && array_key_exists( $user->ID, $new_value );
 
 		self::log(
-			__( '%s has %s his Google+ account', 'stream-connector-jetpack' ),
+			__( '%s has %s his Google+ account', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
-				'action'       => $connected ? __( 'connected', 'stream-connector-jetpack' ) : __( 'disconnected', 'stream-connector-jetpack' ),
+				'action'       => $connected ? __( 'connected', 'stream' ) : __( 'disconnected', 'stream' ),
 				'user_id'      => $user->ID,
 			),
 			$user->ID,
@@ -530,7 +533,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		}
 		$status = ! $new_value ? 'enabled' : 'disabled'; // disabled = 1
 		self::log(
-			__( 'Sharing CSS/JS has been %s', 'stream-connector-jetpack' ),
+			__( 'Sharing CSS/JS has been %s', 'stream' ),
 			compact( 'status', 'old_value', 'new_value' ),
 			null,
 			array(
@@ -548,28 +551,27 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 */
 	public static function log_override( array $data ) {
 		// Handling our Settings
-		if ( 'settings' === $data['connector'] && isset( self::$options_override[ $data['args']['option'] ] ) ) {
-			if ( isset( $data['args']['option_key'] ) ) {
-				$overrides = self::$options_override[ $data['args']['option'] ][ $data['args']['option_key'] ];
+		if ( 'settings' === $data[ 'connector' ] && isset( self::$options_override[ $data[ 'args' ][ 'option' ] ] ) ) {
+			if ( isset( $data[ 'args' ][ 'option_key' ] ) ) {
+				$overrides = self::$options_override[ $data[ 'args' ][ 'option' ] ][ $data[ 'args' ][ 'option_key' ] ];
 			} else {
-				$overrides = self::$options_override[ $data['args']['option'] ];
+				$overrides = self::$options_override[ $data[ 'args' ][ 'option' ] ];
 			}
 			if ( isset( $overrides ) ) {
-				$data['args']['label'] = $overrides['label'];
-				$data['args']['context'] = $overrides['context'];
-				$data['contexts'] = array( $overrides['context'] => current( $data['contexts'] ) );
-				$data['connector'] = self::$name;
+				$data[ 'args' ][ 'label' ]   = $overrides[ 'label' ];
+				$data[ 'args' ][ 'context' ] = $overrides[ 'context' ];
+				$data[ 'contexts' ]          = array( $overrides[ 'context' ] => current( $data[ 'contexts' ] ) );
+				$data[ 'connector' ]         = self::$name;
 			}
-		}
-		elseif ( 'posts' === $data['connector'] && isset( $data['contexts']['safecss'] ) ) {
+		} elseif ( 'posts' === $data[ 'connector' ] && isset( $data[ 'contexts' ][ 'safecss' ] ) ) {
 			$data = array_merge(
 				$data,
 				array(
 					'connector' => self::$name,
-					'message' => __( 'Custom CSS has been updated', 'stream-connector-jetpack' ),
-					'args' => array(),
+					'message'   => __( 'Custom CSS has been updated', 'stream' ),
+					'args'      => array(),
 					'object_id' => null,
-					'contexts' => array( 'custom-css' => 'updated' ),
+					'contexts'  => array( 'custom-css' => 'updated' ),
 				)
 			);
 		}
@@ -584,10 +586,10 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$name = str_replace( 'publicize_connections::', '', $key );
 
 			return array(
-				'message' => __( '%s connection has been %s', 'stream-connector-jetpack' ),
+				'message' => __( '%s connection has been %s', 'stream' ),
 				'meta'    => array(
 					'connection' => $publicize_ui->publicize->get_service_label( $name ),
-					'action'     => $value ? __( 'added', 'stream-connector-jetpack' ) : __( 'removed', 'stream-connector-jetpack' ),
+					'action'     => $value ? __( 'added', 'stream' ) : __( 'removed', 'stream' ),
 					'option'     => 'jetpack_options',
 					'option_key' => $key,
 				),
@@ -595,24 +597,25 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 				'context' => 'publicize',
 			);
 		} elseif ( 0 === strpos( $key, 'videopress::' ) ) {
-			$name = str_replace( 'videopress::', '', $key );
+			$name    = str_replace( 'videopress::', '', $key );
 			$options = array(
-				'access' => __( 'Video Library Access', 'jetpack' ),
-				'upload' => __( 'Allow users to upload videos', 'jetpack' ),
+				'access'  => __( 'Video Library Access', 'jetpack' ),
+				'upload'  => __( 'Allow users to upload videos', 'jetpack' ),
 				'freedom' => __( 'Free formats', 'jetpack' ),
-				'hd' => __( 'Default quality', 'jetpack' ),
+				'hd'      => __( 'Default quality', 'jetpack' ),
 			);
 			if ( ! isset( $options[ $name ] ) ) {
 				return false;
 			}
+
 			return array(
 				'message' => __( '"%s" setting has been updated' ),
-				'meta' => array(
+				'meta'    => array(
 					'option_name' => $options[ $name ],
-					'option' => 'jetpack_options',
-					'option_key' => $key,
+					'option'      => 'jetpack_options',
+					'option_key'  => $key,
 				),
-				'action' => 'updated',
+				'action'  => 'updated',
 				'context' => 'videopress',
 			);
 		}
