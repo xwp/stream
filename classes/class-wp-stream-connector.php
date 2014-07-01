@@ -204,4 +204,13 @@ abstract class WP_Stream_Connector {
 		return array_values( array_unique( $result ) );
 	}
 
+	/**
+	 * Allow connectors to determine if their dependencies is satisfied or not
+	 *
+	 * @return bool
+	 */
+	public static function is_dependency_satisfied() {
+		return true;
+	}
+
 }
