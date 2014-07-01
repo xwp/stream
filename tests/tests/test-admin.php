@@ -73,7 +73,7 @@ class Test_WP_Stream_Admin extends WP_StreamTestCase {
 		//Check main menu
 		$this->assertTrue( in_array( 'wp_stream', reset( $menu ) ) );
 
-		if ( ! in_array( 'Connect to Stream', reset( $menu ) ) ) {
+		if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
 			//Check submenu
 			$this->assertTrue( in_array( 'wp_stream_settings', $submenu['wp_stream'][1] ) );
 		}
