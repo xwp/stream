@@ -58,6 +58,7 @@ class WP_Stream_Connectors {
 			'gravityforms',
 			'edd',
 			'wordpress-seo',
+			'buddypress',
 		);
 
 		if ( is_network_admin() ) {
