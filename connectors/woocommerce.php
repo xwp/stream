@@ -188,7 +188,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( in_array( $record->context, self::$post_types ) && get_post( $record->object_id ) ) {
 			if ( $link = get_edit_post_link( $record->object_id ) ) {
-				$post_type_name = self::get_post_type_name( get_post_type( $record->object_id ) );
+				$post_type_name = WP_Stream_Connector_Posts::get_post_type_name( get_post_type( $record->object_id ) );
 				$links[ sprintf( _x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
 			}
 			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
@@ -735,23 +735,6 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		self::$settings_pages = $settings_pages;
 
 		return self::$settings;
-	}
-
-	/**
-	 * Gets the singular post type label
-	 *
-	 * @param   string  $post_type_slug
-	 * @return  string  Post type label
-	 */
-	private static function get_post_type_name( $post_type_slug ) {
-		$name = ''; // Default
-
-		if ( post_type_exists( $post_type_slug ) ) {
-			$post_type = get_post_type_object( $post_type_slug );
-			$name      = $post_type->labels->singular_name;
-		}
-
-		return $name;
 	}
 
 }
