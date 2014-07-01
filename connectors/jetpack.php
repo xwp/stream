@@ -324,7 +324,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$action      = $method . 'd';
 			$meta        = compact( 'module_slug' );
 			$message     = sprintf(
-				__( '%s module has been %s', 'stream' ),
+				__( '%1$s module %2$s', 'stream' ),
 				$module_name,
 				( 'activated' === $action ) ? __( 'activated', 'stream' ) : __( 'deactivated', 'stream' )
 			);
@@ -340,7 +340,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$action     = $method;
 			$meta       = compact( 'user_id', 'user_email', 'user_login' );
 			$message    = sprintf(
-				__( '%s %s his account %s Jetpack', 'stream' ),
+				__( "%1$s's account %2$s %3$s Jetpack", 'stream' ),
 				$user->display_name,
 				( 'unlink' === $action ) ? __( 'unlinked', 'stream' ) : __( 'linked', 'stream' ),
 				( 'unlink' === $action ) ? __( 'from', 'stream' ) : __( 'to', 'stream' )
@@ -358,17 +358,17 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$meta = array();
 			if ( ! $is_multisite ) {
 				$message = sprintf(
-					__( 'Site has been %s Jetpack', 'stream' ),
-					( 'register' === $action ) ? __( 'registered to', 'stream' ) : __( 'disconnected from', 'stream' )
+					__( 'Site %1$s Jetpack', 'stream' ),
+					( 'register' === $action ) ? __( 'connected to', 'stream' ) : __( 'disconnected from', 'stream' )
 				);
 			} else {
 				$blog_details = get_blog_details( array( 'blog_id' => $blog_id ) );
 				$blog_name    = $blog_details->blogname;
 				$meta += compact( 'blog_id', 'blog_name' );
 				$message = sprintf(
-					__( '"%s" blog has been %s Jetpack', 'stream' ),
+					__( '"%1$s" blog %2$s Jetpack', 'stream' ),
 					$blog_name,
-					( 'register' === $action ) ? __( 'registered to', 'stream' ) : __( 'disconnected from', 'stream' )
+					( 'register' === $action ) ? __( 'connected to', 'stream' ) : __( 'disconnected from', 'stream' )
 				);
 			}
 		}
@@ -387,7 +387,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 */
 	public static function callback_sharing_get_services_state( $state ) {
 		self::log(
-			__( 'Sharing services has been updated', 'stream' ),
+			__( 'Sharing services updated', 'stream' ),
 			$state,
 			null,
 			array(
@@ -415,9 +415,9 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		if ( $_POST ) {
 			$active = isset( $_POST[ 'receive_jetpack_monitor_notification' ] );
 			self::log(
-				__( 'Monitor notifications was %s', 'stream' ),
+				__( 'Monitor notifications %1$s', 'stream' ),
 				array(
-					'status'    => $active ? __( 'Activated', 'stream-connector-stream' ) : __( 'Deactivated', 'stream-connector-stream' ),
+					'status'    => $active ? __( 'activated', 'stream' ) : __( 'deactivated', 'stream' ),
 					'option'    => 'receive_jetpack_monitor_notification',
 					'old_value' => ! $active,
 					'value'     => $active,
@@ -442,17 +442,17 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 
 	public static function track_post_by_email( $status ) {
 		if ( true === $status ) {
-			$action = __( 'Enabled', 'stream' );
+			$action = __( 'enabled', 'stream' );
 		} elseif ( false === $status ) {
-			$action = __( 'Disabled', 'stream' );
+			$action = __( 'disabled', 'stream' );
 		} elseif ( null === $status ) {
-			$action = __( 'Renegerated', 'stream' );
+			$action = __( 'regenerated', 'stream' );
 		}
 
 		$user = wp_get_current_user();
 
 		self::log(
-			__( '%1$s has %2$s Post by Email', 'stream' ),
+			__( '%1$s %2$s Post by Email', 'stream' ),
 			array(
 				'user_displayname' => $user->display_name,
 				'action'           => $action,
@@ -477,7 +477,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$option_title = $data[ 'label' ];
 
 			self::log(
-				__( '"%s" setting was updated', 'stream' ),
+				__( '"%1$s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
 				array(
@@ -534,9 +534,9 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		}
 
 		self::log(
-			__( 'G+ profile display was %s', 'stream' ),
+			__( 'G+ profile display %1$s', 'stream' ),
 			array(
-				'action' => $status ? __( 'Enabled', 'stream' ) : __( 'Disabled', 'stream' ),
+				'action' => $status ? __( 'enabled', 'stream' ) : __( 'disabled', 'stream' ),
 			),
 			null,
 			array(
@@ -550,7 +550,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		$connected = is_array( $new_value ) && array_key_exists( $user->ID, $new_value );
 
 		self::log(
-			__( '%s has %s his Google+ account', 'stream' ),
+			__( "%1$s's Google+ account %2$s", 'stream' ),
 			array(
 				'display_name' => $user->display_name,
 				'action'       => $connected ? __( 'connected', 'stream' ) : __( 'disconnected', 'stream' ),
@@ -571,7 +571,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		$status = ! $new_value ? 'enabled' : 'disabled'; // disabled = 1
 
 		self::log(
-			__( 'Sharing CSS/JS has been %s', 'stream' ),
+			__( 'Sharing CSS/JS %1$s', 'stream' ),
 			compact( 'status', 'old_value', 'new_value' ),
 			null,
 			array(
@@ -607,7 +607,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 				$data,
 				array(
 					'connector' => self::$name,
-					'message'   => __( 'Custom CSS has been updated', 'stream' ),
+					'message'   => __( 'Custom CSS updated', 'stream' ),
 					'args'      => array(),
 					'object_id' => null,
 					'contexts'  => array( 'custom-css' => 'updated' ),
@@ -626,7 +626,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$name = str_replace( 'publicize_connections::', '', $key );
 
 			return array(
-				'message' => __( '%s connection has been %s', 'stream' ),
+				'message' => __( '%1$s connection %2$s', 'stream' ),
 				'meta'    => array(
 					'connection' => $publicize_ui->publicize->get_service_label( $name ),
 					'action'     => $value ? __( 'added', 'stream' ) : __( 'removed', 'stream' ),
@@ -650,7 +650,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			}
 
 			return array(
-				'message' => __( '"%s" setting has been updated' ),
+				'message' => __( '"%1$s" setting updated' ),
 				'meta'    => array(
 					'option_name' => $options[ $name ],
 					'option'      => 'jetpack_options',
