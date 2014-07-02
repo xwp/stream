@@ -204,7 +204,8 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'revision_id'   => $revision_id,
 			),
 			$post->ID,
-			array( $post->post_type => $action )
+			$post->post_type,
+			$action
 		);
 	}
 
@@ -239,7 +240,8 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'singular_name' => $post_type_name,
 			),
 			$post->ID,
-			array( $post->post_type => 'deleted' )
+			$post->post_type,
+			'deleted'
 		);
 	}
 

@@ -169,7 +169,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			__( 'Comment flooding by %s detected and prevented', 'stream' ),
 			compact( 'user_name', 'user_id', 'time_lastcomment', 'time_newcomment' ),
 			null,
-			array( 'comments' => 'flood' )
+			'comments',
+			'flood'
 		);
 	}
 
@@ -202,7 +203,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				),
 				compact( 'parent_user_name', 'user_name', 'post_title', 'comment_status', 'post_id', 'parent_user_id' ),
 				$comment_id,
-				array( $post_type => 'replied' ),
+				$post_type,
+				'replied',
 				$user_id
 			);
 		} else {
@@ -214,7 +216,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				),
 				compact( 'user_name', 'post_title', 'comment_status', 'post_id' ),
 				$comment_id,
-				array( $post_type => 'created' ),
+				$post_type,
+				'created',
 				$user_id
 			);
 		}
@@ -246,7 +249,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( $post_type => 'edited' )
+			$post_type,
+			'edited'
 		);
 	}
 
@@ -276,7 +280,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( $post_type => 'deleted' )
+			$post_type,
+			'deleted'
 		);
 	}
 
@@ -306,7 +311,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( $post_type => 'trashed' )
+			$post_type,
+			'trashed'
 		);
 	}
 
@@ -336,7 +342,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( $post_type => 'untrashed' )
+			$post_type,
+			'untrashed'
 		);
 	}
 
@@ -366,7 +373,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( $post_type => 'spammed' )
+			$post_type,
+			'spammed'
 		);
 	}
 
@@ -396,7 +404,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( $post_type => 'unspammed' )
+			$post_type,
+			'unspammed'
 		);
 	}
 
@@ -428,7 +437,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'new_status', 'old_status', 'post_title', 'post_id', 'user_id' ),
 			$comment->comment_ID,
-			array( $post_type => $new_status )
+			$post_type,
+			$new_status
 		);
 	}
 
@@ -461,7 +471,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			),
 			compact( 'user_name', 'post_title', 'post_id', 'user_id' ),
 			$comment_id,
-			array( $post_type => 'duplicate' )
+			$post_type,
+			'duplicate'
 		);
 	}
 
