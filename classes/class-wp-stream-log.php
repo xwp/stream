@@ -54,13 +54,13 @@ class WP_Stream_Log {
 	 * @param  string $message   sprintf-ready error message string
 	 * @param  array  $args      sprintf (and extra) arguments to use
 	 * @param  int    $object_id Target object id
-	 * @param  array  $contexts  Contexts of the action
-	 * @param  int    $user_id   User responsible for the action
+	 * @param  string $context   Context of the event
+	 * @param  string $action    Action of the event
+	 * @param  int    $user_id   User responsible for the event
 	 *
-	 * @internal param string $action Action performed (stream_action)
 	 * @return int
 	 */
-	public function log( $connector, $message, $args, $object_id, $contexts, $user_id = null ) {
+	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null ) {
 		global $wpdb;
 
 		if ( is_null( $user_id ) ) {
@@ -106,7 +106,8 @@ class WP_Stream_Log {
 			'summary'     => vsprintf( $message, $args ),
 			'parent'      => self::$instance->prev_record,
 			'connector'   => $connector,
-			'contexts'    => $contexts,
+			'context'     => $context,
+			'action'      => $action,
 			'meta'        => $meta,
 			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);

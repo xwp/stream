@@ -83,48 +83,35 @@ abstract class WP_Stream_Connector {
 	 * @param  string $message   sprintf-ready error message string
 	 * @param  array  $args      sprintf (and extra) arguments to use
 	 * @param  int    $object_id Target object id
-	 * @param  array  $contexts  Contexts of the action
-	 * @param  int    $user_id   User responsible for the action
+	 * @param  string $context   Context of the event
+	 * @param  string $action    Action of the event
+	 * @param  int    $user_id   User responsible for the event
 	 *
 	 * @internal param string $action Action performed (stream_action)
-	 * @return void
+	 * @return bool
 	 */
-	public static function log( $message, $args, $object_id, $contexts, $user_id = null ) {
+	public static function log( $message, $args, $object_id, $context, $action, $user_id = null ) {
 		$class     = get_called_class();
 		$connector = $class::$name;
 
 		$data = apply_filters(
 			'wp_stream_log_data',
-			compact( 'connector', 'message', 'args', 'object_id', 'contexts', 'user_id' )
+			compact( 'connector', 'message', 'args', 'object_id', 'context', 'action', 'user_id' )
 		);
 
 		if ( ! $data ) {
-			return;
+			return false;
 		} else {
 			$connector = $data['connector'];
 			$message   = $data['message'];
 			$args      = $data['args'];
 			$object_id = $data['object_id'];
-			$contexts  = $data['contexts'];
+			$context   = $data['context'];
+			$action    = $data['action'];
 			$user_id   = $data['user_id'];
 		}
 
-		// Prevent inserting Excluded Context & Actions
-		foreach ( $contexts as $context => $action ) {
-			if ( ! WP_Stream_Connectors::is_logging_enabled( 'contexts', $context ) ) {
-				unset( $contexts[ $context ] );
-			} else {
-				if ( ! WP_Stream_Connectors::is_logging_enabled( 'actions', $action ) ) {
-					unset( $contexts[ $context ] );
-				}
-			}
-		}
-
-		if ( 0 === count( $contexts ) ) {
-			return;
-		}
-
-		return call_user_func_array( array( WP_Stream_Log::get_instance(), 'log' ), compact( 'connector', 'message', 'args', 'object_id', 'contexts', 'user_id' ) );
+		return call_user_func_array( array( WP_Stream_Log::get_instance(), 'log' ), compact( 'connector', 'message', 'args', 'object_id', 'context', 'action', 'user_id' ) );
 	}
 
 	/**

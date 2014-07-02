@@ -297,7 +297,8 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 						'file_path' => (string) self::$edited_file['file_path'],
 					),
 					null,
-					array( $context => 'updated' )
+					$context,
+					'updated'
 				);
 			}
 		}
