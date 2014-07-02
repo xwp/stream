@@ -39,7 +39,7 @@ class WP_Stream_Admin {
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
 	const PRELOAD_AUTHORS_MAX  = 50;
-	const NEW_SITE_URL         = 'https://staging.wp-stream.com/pricing/';
+	const NEW_SITE_URL         = 'https://vvv.wp-stream.com/pricing/';
 
 	public static function load() {
 		// User and role caps
@@ -58,6 +58,10 @@ class WP_Stream_Admin {
 			),
 			self::NEW_SITE_URL
 		);
+
+		if ( isset( $_GET['api_key'] ) ) {
+			add_action( 'admin_init', array( __CLASS__, 'save_api_key' ) );
+		}
 
 		// Register settings page
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
@@ -310,10 +314,12 @@ class WP_Stream_Admin {
 	public static function admin_body_class( $classes ) {
 		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
 			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
-			if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
-				$classes .= sprintf( ' wp_stream_connected ' );
-			} else {
-				$classes .= sprintf( ' wp_stream_disconnected ' );
+			if ( ! is_network_admin() ) {
+				if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
+					$classes .= sprintf( ' wp_stream_connected ' );
+				} else {
+					$classes .= sprintf( ' wp_stream_disconnected ' );
+				}
 			}
 		}
 
@@ -424,6 +430,27 @@ class WP_Stream_Admin {
 	}
 
 	/**
+	 * Handle return from external site after connecting Stream
+	 *
+	 * @return void
+	 */
+	public static function save_api_key() {
+		$site_url           = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
+		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $site_url );
+		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], $connect_nonce_name ) ) {
+			wp_die( 'Doing it wrong.' );
+		}
+
+		$api_key = $_GET['api_key'];
+
+		update_option( WP_Stream_Settings::API_KEY_KEY, $api_key );
+
+		do_action( 'wp_stream_site_connected', $api_key );
+
+		wp_redirect( admin_url( 'admin.php?page=' . self::RECORDS_PAGE_SLUG ) );
+	}
+
+	/**
 	 * Register a routine to be called when stream or a stream connector has been updated
 	 * It works by comparing the current version with the version previously stored in the database.
 	 *
@@ -454,11 +481,7 @@ class WP_Stream_Admin {
 			$current_versions[ $plugin ] = $version;
 		}
 
-		if ( $network ) {
-			update_site_option( WP_Stream_Install_WPDB::KEY . '_registered_connectors', $current_versions );
-		} else {
-			update_option( WP_Stream_Install_WPDB::KEY . '_registered_connectors', $current_versions );
-		}
+		update_site_option( WP_Stream_Install_WPDB::KEY . '_registered_connectors', $current_versions );
 
 		return;
 	}
@@ -624,7 +647,6 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_connect_page() {
-
 		$page_title   = apply_filters( 'wp_stream_connect_page_title', get_admin_page_title() );
 		$testimonials = array(
 			array(
@@ -679,7 +701,7 @@ class WP_Stream_Admin {
 		echo '<div class="wrap">';
 
 		if ( is_network_admin() ) {
-			$sites_connected = (int) get_site_option( WP_Stream_Network::SITES_CONNECTED_KEY, 0 );
+			$sites_connected = WP_Stream_Network::$sites_connected;
 			$site_count      = '';
 
 			if ( $sites_connected > 0 ) {
@@ -815,7 +837,7 @@ class WP_Stream_Admin {
 						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 						delete_option( WP_Stream_Install_WPDB::KEY );
 						delete_option( WP_Stream_Settings::KEY );
-						delete_option( WP_Stream_Settings::SITE_ID_KEY );
+						delete_option( WP_Stream_Settings::API_KEY_KEY );
 					}
 					restore_current_blog();
 				}

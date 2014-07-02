@@ -23,9 +23,9 @@ class WP_Stream_Settings {
 	const DEFAULTS_KEY = 'wp_stream_defaults';
 
 	/**
-	 * Site ID key/identifier
+	 * API Key key/identifier
 	 */
-	const SITE_ID_KEY = 'wp_stream_site_id';
+	const API_KEY_KEY = 'wp_stream_api_key';
 
 	/**
 	 * Plugin settings
@@ -49,6 +49,13 @@ class WP_Stream_Settings {
 	public static $fields = array();
 
 	/**
+	 * API Key
+	 *
+	 * @var string
+	 */
+	public static $api_key = '';
+
+	/**
 	 * Public constructor
 	 *
 	 * @return \WP_Stream_Settings
@@ -56,6 +63,8 @@ class WP_Stream_Settings {
 	public static function load() {
 		self::$option_key = self::get_option_key();
 		self::$options    = self::get_options();
+
+		self::$api_key = get_option( self::API_KEY_KEY, 0 );
 
 		// Register settings, and fields
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
@@ -346,9 +355,7 @@ class WP_Stream_Settings {
 							'name'        => 'hide_previous_records',
 							'title'       => esc_html__( 'Visibility', 'stream' ),
 							'type'        => 'checkbox',
-							'desc'        => sprintf(
-								esc_html__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' )
-							),
+							'desc'        => esc_html__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' ),
 							'after_field' => esc_html__( 'Hide Previous Records', 'stream' ),
 							'default'     => 0,
 						),
@@ -865,7 +872,8 @@ class WP_Stream_Settings {
 
 		if ( 'exclude_authors_and_roles' === $option_name ) {
 			// Convert numeric strings to integers
-			array_walk( $excluded_values,
+			array_walk(
+				$excluded_values,
 				function ( &$value ) {
 					if ( is_numeric( $value ) ) {
 						$value = absint( $value );

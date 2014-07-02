@@ -186,7 +186,7 @@ class WP_Stream {
 	 * @return bool
 	 */
 	public static function is_connected() {
-		return (bool) get_option( WP_Stream_Settings::SITE_ID_KEY, false );
+		return (bool) WP_Stream_Settings::$api_key;
 	}
 
 	/**
