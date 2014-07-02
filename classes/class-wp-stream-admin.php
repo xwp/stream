@@ -215,14 +215,16 @@ class WP_Stream_Admin {
 				);
 			}
 
-			self::$screen_id['account'] = add_submenu_page(
-				self::RECORDS_PAGE_SLUG,
-				__( 'Stream Account', 'stream' ),
-				__( 'Account', 'default' ),
-				self::SETTINGS_CAP,
-				self::ACCOUNT_PAGE_SLUG,
-				array( __CLASS__, 'render_account_page' )
-			);
+			if ( ! is_network_admin() ) {
+				self::$screen_id['account'] = add_submenu_page(
+					self::RECORDS_PAGE_SLUG,
+					__( 'Stream Account', 'stream' ),
+					__( 'Account', 'default' ),
+					self::SETTINGS_CAP,
+					self::ACCOUNT_PAGE_SLUG,
+					array( __CLASS__, 'render_account_page' )
+				);
+			}
 
 		} else {
 			self::$screen_id['connect'] = add_menu_page(
