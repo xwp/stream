@@ -216,11 +216,11 @@ class WP_Stream_Admin {
 			}
 
 			self::$screen_id['account'] = add_submenu_page(
-				self::ACCOUNT_PAGE_SLUG,
+				self::RECORDS_PAGE_SLUG,
 				__( 'Stream Account', 'stream' ),
 				__( 'Account', 'default' ),
 				self::SETTINGS_CAP,
-				self::SETTINGS_PAGE_SLUG,
+				self::ACCOUNT_PAGE_SLUG,
 				array( __CLASS__, 'render_account_page' )
 			);
 
