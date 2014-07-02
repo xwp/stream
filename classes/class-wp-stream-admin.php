@@ -39,7 +39,7 @@ class WP_Stream_Admin {
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
 	const PRELOAD_AUTHORS_MAX  = 50;
-	const NEW_SITE_URL         = 'https://vvv.wp-stream.com/pricing/';
+	const NEW_SITE_URL         = 'https://staging.wp-stream.com/pricing/';
 
 	public static function load() {
 		// User and role caps
