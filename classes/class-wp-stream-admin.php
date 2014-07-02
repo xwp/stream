@@ -69,11 +69,9 @@ class WP_Stream_Admin {
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
-		if ( ! WP_Stream::is_connected() && ! WP_Stream::is_development_mode() ) {
-			// Show connect notice on dashboard and plugins pages
-			add_action( 'load-index.php', array( __CLASS__, 'prepare_connect_notice' ) );
-			add_action( 'load-plugins.php', array( __CLASS__, 'prepare_connect_notice' ) );
-		}
+		// Show connect notice on dashboard and plugins pages
+		add_action( 'load-index.php', array( __CLASS__, 'prepare_connect_notice' ) );
+		add_action( 'load-plugins.php', array( __CLASS__, 'prepare_connect_notice' ) );
 
 		// Add admin body class
 		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
@@ -115,8 +113,10 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function prepare_connect_notice() {
-		wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
-		add_action( 'admin_notices', array( __CLASS__, 'admin_connect_notice' ) );
+		if ( ! WP_Stream::is_connected() && ! WP_Stream::is_development_mode() ) {
+			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
+			add_action( 'admin_notices', array( __CLASS__, 'admin_connect_notice' ) );
+		}
 	}
 
 	/**
