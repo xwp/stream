@@ -25,7 +25,7 @@ class WP_Stream_Settings {
 	/**
 	 * API Key key/identifier
 	 */
-	const API_KEY_OPTION = 'wp_stream_api_key';
+	const API_KEY_OPTION = 'wp_stream_api_master_key';
 
 	/**
 	 * Plugin settings
