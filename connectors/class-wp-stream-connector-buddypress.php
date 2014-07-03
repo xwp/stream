@@ -450,7 +450,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 		self::log(
 			sprintf(
-				__( 'Deleted activity "%s"', 'stream' ),
+				__( '"%s" activity deleted', 'stream' ),
 				strip_tags( $activity->action )
 			),
 			array(
@@ -469,7 +469,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	public static function callback_bp_activity_mark_as_spam( $activity, $by ) {
 		self::log(
 			sprintf(
-				__( 'Spammed activity "%s"', 'stream' ),
+				__( 'Marked activity "%s" as spam', 'stream' ),
 				strip_tags( $activity->action )
 			),
 			array(
@@ -488,7 +488,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	public static function callback_bp_activity_mark_as_ham( $activity, $by ) {
 		self::log(
 			sprintf(
-				__( 'Unspammed activity "%s"', 'stream' ),
+				__( 'Unmarked activity "%s" as spam', 'stream' ),
 				strip_tags( $activity->action )
 			),
 			array(
@@ -507,7 +507,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	public static function callback_bp_activity_admin_edit_after( $activity, $error ) {
 		self::log(
 			sprintf(
-				__( 'Updated activity "%s"', 'stream' ),
+				__( '"%s" activity updated', 'stream' ),
 				strip_tags( $activity->action )
 			),
 			array(
@@ -536,13 +536,13 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			// Do nothing
 		}
 		elseif ( 'created' === $action ) {
-			$message = __( 'Created group "%s"', 'stream' );
+			$message = __( '"%s" group created', 'stream' );
 		}
 		elseif ( 'updated' === $action ) {
-			$message = __( 'Updated group "%s"', 'stream' );
+			$message = __( '"%s" group updated', 'stream' );
 		}
 		elseif ( 'deleted' === $action ) {
-			$message = __( 'Deleted group "%s"', 'stream' );
+			$message = __( '"%s" group deleted', 'stream' );
 		}
 		elseif ( 'joined' === $action ) {
 			$message = __( 'Joined group "%s"', 'stream' );
