@@ -673,7 +673,6 @@ class WP_Stream_Admin {
 	}
 
 	public static function stream_page() {
-
 		if ( wp_stream_filter_input( INPUT_GET, 'connected' ) && self::RECORDS_PAGE_SLUG === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
 			WP_Stream::notice(
 				sprintf(
@@ -1014,6 +1013,7 @@ class WP_Stream_Admin {
 	 */
 	public static function get_filter_value_by_id() {
 		$filter = wp_stream_filter_input( INPUT_POST, 'filter' );
+
 		switch ( $filter ) {
 			case 'author':
 				$id = wp_stream_filter_input( INPUT_POST, 'id' );
@@ -1030,9 +1030,10 @@ class WP_Stream_Admin {
 				break;
 			default:
 				$value = '';
-				break;
 		}
+
 		echo json_encode( $value );
+
 		wp_die();
 	}
 
