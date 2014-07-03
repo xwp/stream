@@ -18,13 +18,13 @@ class WP_Stream_Network {
 
 	const NETWORK_SETTINGS_PAGE_SLUG = 'wp_stream_network_settings';
 	const DEFAULT_SETTINGS_PAGE_SLUG = 'wp_stream_default_settings';
-	const SITES_CONNECTED_OPTION     = 'wp_stream_sites_connected';
+	const SITES_CONNECTED_OPTION_KEY = 'wp_stream_sites_connected';
 
 	function __construct() {
 		$this->actions();
 		$this->filters();
 
-		self::$sites_connected = get_site_option( self::SITES_CONNECTED_OPTION, 0 );
+		self::$sites_connected = get_site_option( self::SITES_CONNECTED_OPTION_KEY, 0 );
 	}
 
 	function actions() {
@@ -36,7 +36,7 @@ class WP_Stream_Network {
 		add_action( 'wp_network_dashboard_setup', array( 'WP_Stream_Dashboard_Widget', 'stream_activity' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'network_admin_menu', array( $this, 'admin_menu_screens' ) );
-		add_action( 'update_site_option_' . WP_Stream_Settings::NETWORK_OPTION, array( $this, 'updated_option_ttl_remove_records' ), 10, 3 );
+		add_action( 'update_site_option_' . WP_Stream_Settings::NETWORK_OPTION_KEY, array( $this, 'updated_option_ttl_remove_records' ), 10, 3 );
 		add_action( 'wp_stream_site_connected', array( $this, 'site_connected' ) );
 		add_action( 'wp_stream_site_disconnected', array( $this, 'site_disconnected' ) );
 	}
@@ -111,7 +111,7 @@ class WP_Stream_Network {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		}
 		if ( ! is_network_admin() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$settings = (array) get_site_option( WP_Stream_Settings::NETWORK_OPTION, array() );
+			$settings = (array) get_site_option( WP_Stream_Settings::NETWORK_OPTION_KEY, array() );
 
 			if ( isset( $settings['general_enable_site_access'] ) && false === $settings['general_enable_site_access'] ) {
 				return true;
@@ -278,7 +278,7 @@ class WP_Stream_Network {
 		);
 
 		// Remove settings based on context
-		if ( WP_Stream_Settings::NETWORK_OPTION === WP_Stream_Settings::$option_key ) {
+		if ( WP_Stream_Settings::NETWORK_OPTION_KEY === WP_Stream_Settings::$option_key ) {
 			$hidden_options = $network_hidden_options;
 		} else {
 			$hidden_options = $stream_hidden_options;
@@ -296,7 +296,7 @@ class WP_Stream_Network {
 		}
 
 		// Add settings based on context
-		if ( WP_Stream_Settings::NETWORK_OPTION === WP_Stream_Settings::$option_key ) {
+		if ( WP_Stream_Settings::NETWORK_OPTION_KEY === WP_Stream_Settings::$option_key ) {
 			$new_fields['general']['fields'][] = array(
 				'name'        => 'enable_site_access',
 				'title'       => __( 'Enable Site Access', 'stream' ),
@@ -343,8 +343,8 @@ class WP_Stream_Network {
 	 * @return array Multidimensional array of fields
 	 */
 	function get_settings_translations( $labels ) {
-		$network_key  = WP_Stream_Settings::NETWORK_OPTION;
-		$defaults_key = WP_Stream_Settings::DEFAULTS_OPTION;
+		$network_key  = WP_Stream_Settings::NETWORK_OPTION_KEY;
+		$defaults_key = WP_Stream_Settings::DEFAULTS_OPTION_KEY;
 
 		if ( ! isset( $labels[ $network_key ] ) ) {
 			$labels[ $network_key ] = array();
@@ -560,7 +560,7 @@ class WP_Stream_Network {
 	 */
 	function site_connected() {
 		self::$sites_connected++;
-		update_site_option( self::SITES_CONNECTED_OPTION, self::$sites_connected );
+		update_site_option( self::SITES_CONNECTED_OPTION_KEY, self::$sites_connected );
 	}
 
 	/**
@@ -570,6 +570,6 @@ class WP_Stream_Network {
 	 */
 	function site_disconnected() {
 		self::$sites_connected--;
-		update_site_option( self::SITES_CONNECTED_OPTION, self::$sites_connected );
+		update_site_option( self::SITES_CONNECTED_OPTION_KEY, self::$sites_connected );
 	}
 }
