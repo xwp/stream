@@ -39,7 +39,7 @@ class WP_Stream_Admin {
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
 	const PRELOAD_AUTHORS_MAX  = 50;
-	const NEW_SITE_URL         = 'https://sandbox.wp-stream.com/pricing/';
+	const NEW_SITE_URL         = 'http://s7215.p35.sites.pressdns.com/pricing/';
 
 	public static function load() {
 		// User and role caps
@@ -139,11 +139,11 @@ class WP_Stream_Admin {
 		<?php endif; ?>
 			<div class="stream-wrap-container">
 				<div class="stream-install-container">
-						<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ) ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a></p>
+					<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ) ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a></p>
 				</div>
 				<div class="stream-text-container">
-						<p><strong><?php _e( 'Stream is almost ready!', 'stream' ) ?></strong></p>
-						<p><?php _e( 'Connect now to see every change made to your WordPress site in beautifully organized detail.', 'stream' ) ?></p>
+					<p><strong><?php _e( 'Stream is almost ready!', 'stream' ) ?></strong></p>
+					<p><?php _e( 'Connect now to see every change made to your WordPress site in beautifully organized detail.', 'stream' ) ?></p>
 				</div>
 			</div>
 		</div>
@@ -439,6 +439,7 @@ class WP_Stream_Admin {
 	public static function save_api_key() {
 		$site_url           = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
 		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $site_url );
+
 		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], $connect_nonce_name ) ) {
 			wp_die( 'Doing it wrong.' );
 		}
@@ -494,19 +495,14 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_page() {
-
-		$option_key  = WP_Stream_Settings::$option_key;
-		$form_action = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
-
+		$option_key       = WP_Stream_Settings::$option_key;
+		$form_action      = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
 		$page_title       = apply_filters( 'wp_stream_settings_form_title', get_admin_page_title() );
 		$page_description = apply_filters( 'wp_stream_settings_form_description', '' );
-
-		$sections   = WP_Stream_Settings::get_fields();
-		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
-
+		$sections         = WP_Stream_Settings::get_fields();
+		$active_tab       = wp_stream_filter_input( INPUT_GET, 'tab' );
 		?>
 		<div class="wrap">
-
 			<h2><?php echo esc_html( $page_title ) ?></h2>
 
 			<?php if ( ! empty( $page_description ) ) : ?>
@@ -529,24 +525,25 @@ class WP_Stream_Admin {
 			<?php endif; ?>
 
 			<div class="nav-tab-content" id="tab-content-settings">
-
 				<form method="post" action="<?php echo esc_attr( $form_action ) ?>" enctype="multipart/form-data">
-		<?php
-		$i = 0;
-		foreach ( $sections as $section => $data ) {
-			$i++;
-			$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
-			if ( $is_active ) {
-				settings_fields( $option_key );
-				do_settings_sections( $option_key );
-			}
-		}
-		submit_button();
-		?>
+					<?php
+					$i = 0;
+
+					foreach ( $sections as $section => $data ) {
+						$i++;
+
+						$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
+
+						if ( $is_active ) {
+							settings_fields( $option_key );
+							do_settings_sections( $option_key );
+						}
+					}
+
+					submit_button();
+					?>
 				</form>
-
 			</div>
-
 		</div>
 	<?php
 	}
@@ -557,7 +554,6 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_extensions_page() {
-
 		$extensions = WP_Stream_Extensions::get_instance();
 
 		if ( $install = wp_stream_filter_input( INPUT_GET, 'install' ) ) {
@@ -565,6 +561,7 @@ class WP_Stream_Admin {
 		}
 
 		wp_enqueue_style( 'thickbox' );
+
 		wp_enqueue_script(
 			'stream-activation',
 			plugins_url( '../ui/license.js', __FILE__ ),
@@ -572,6 +569,7 @@ class WP_Stream_Admin {
 			WP_Stream::VERSION,
 			true
 		);
+
 		wp_enqueue_script(
 			'stream-extensions',
 			plugins_url( '../ui/extensions.js', __FILE__ ),
@@ -579,7 +577,9 @@ class WP_Stream_Admin {
 			WP_Stream::VERSION,
 			true
 		);
+
 		$action = 'license';
+
 		wp_localize_script(
 			'stream-activation',
 			'stream_activation',
@@ -600,7 +600,9 @@ class WP_Stream_Admin {
 				),
 			)
 		);
+
 		wp_localize_script( 'stream-extensions', 'stream_extensions', array( 'extensions' => $extensions->prepare_extensions_for_js( $extensions->extensions ) ) );
+
 		add_thickbox();
 		?>
 		<div class="themes-php">
@@ -622,6 +624,7 @@ class WP_Stream_Admin {
 				); // xss okay
 			}
 		);
+
 		WP_Stream_Updater::instance()->install_extension( $extension );
 	}
 
@@ -631,14 +634,10 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_account_page() {
-
 		$page_title = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
-
 		?>
 		<div class="wrap">
-
 			<h2><?php echo esc_html( $page_title ) ?></h2>
-
 		</div>
 		<?php
 	}
