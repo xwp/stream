@@ -340,7 +340,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 			self::log(
 				sprintf(
-					__( '"%1$s" page set to "%1$s"', 'stream' ),
+					__( '"%1$s" page set to "%2$s"', 'stream' ),
 					$pages[ $option ],
 					$page
 				),
