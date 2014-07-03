@@ -714,8 +714,8 @@ class WP_Stream_Admin {
 			WP_Stream::notice(
 				sprintf(
 					'<strong>%s</strong> %s',
-					__( 'Everything is awesome!', 'stream' ),
-					__( 'You have successfully connected to Stream. Now start doing stuff and it will show up here.', 'stream' )
+					__( 'You have successfully connected to Stream!', 'stream' ),
+					__( 'Check back here to see a history of the changes being made to this site.', 'stream' )
 				),
 				false
 			);
