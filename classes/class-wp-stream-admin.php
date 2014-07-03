@@ -39,7 +39,7 @@ class WP_Stream_Admin {
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
 	const PRELOAD_AUTHORS_MAX  = 50;
-	const STREAM_SERVER_URL    = 'http://s7215.p35.sites.pressdns.com'; // TODO: Point to sandbox once DNS is configured
+	const STREAM_SERVER_URL    = 'http://sandbox.wp-stream.com';
 
 	public static function load() {
 		// User and role caps
