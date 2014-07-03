@@ -259,7 +259,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			$page         = isset( $data['page'] ) ? $data['page'] : null;
 
 			self::log(
-				__( '"%s" setting was updated', 'stream' ),
+				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value', 'page' ),
 				null,
 				array(
@@ -294,7 +294,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 			self::log(
 				sprintf(
-					__( '"%s" component was %s', 'stream' ),
+					__( '"%s" component %s', 'stream' ),
 					$components[ $option ]['title'],
 					$actions[ $option_value ]
 				),
@@ -340,7 +340,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 			self::log(
 				sprintf(
-					__( '"%s" page was set to "%s"', 'stream' ),
+					__( '"%s" page set to "%s"', 'stream' ),
 					$pages[ $option ],
 					$page
 				),
