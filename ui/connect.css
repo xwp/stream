@@ -191,7 +191,7 @@
 #wp-stream-connect p {
 	padding: 0;
 	margin: 0 auto;
-	font: 300 2em/1.4em 'Open Sans', Helvetica, sans-serif;
+	font: 300 1.5em/1.4em 'Open Sans', Helvetica, sans-serif;
 }
 
 #wp-stream-connect a {
@@ -229,7 +229,7 @@
 	padding: 1em 1em 0.5em;
 	margin: 0 auto;
 	max-width: 22em;
-	font: 300 3em/1.4em 'Open Sans', Helvetica, sans-serif;
+	font: 300 2.5em/1.4em 'Open Sans', Helvetica, sans-serif;
 	position: relative;
 	text-shadow: 0 1px 1px rgba(0, 0, 0, .1);
 }
