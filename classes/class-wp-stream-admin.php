@@ -39,7 +39,7 @@ class WP_Stream_Admin {
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
 	const PRELOAD_AUTHORS_MAX  = 50;
-	const NEW_SITE_URL         = 'http://s7215.p35.sites.pressdns.com/pricing/';
+	const NEW_SITE_URL         = 'http://s7215.p35.sites.pressdns.com/pricing/'; // TODO: Point to sandbox once DNS is configured
 
 	public static function load() {
 		// User and role caps
