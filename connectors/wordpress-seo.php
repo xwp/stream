@@ -226,7 +226,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 			if ( isset( $opts[ $key ] ) ) {
 				self::log(
 					sprintf(
-						__( 'Imported settings from %s%s', 'stream' ),
+						__( 'Imported settings from %1$s%2$s', 'stream' ),
 						$name,
 						isset( $opts['deleteolddata'] ) ? __( ', and deleted old data', 'stream' ) : ''
 					),
@@ -327,7 +327,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 
 		self::log(
 			sprintf(
-				__( 'Updated "%s" of "%s" %s', 'stream' ),
+				__( 'Updated "%1$s" of "%2$s" %3$s', 'stream' ),
 				$field['title'],
 				$post->post_title,
 				$post_type_label
@@ -365,7 +365,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 			}
 
 			if ( ! ( $label = self::settings_labels( $data['args']['option_key'] ) ) ) {
-				$data['message'] = __( '%s settings have been updated', 'stream' );
+				$data['message'] = __( '%s settings updated', 'stream' );
 				$label           = $labels[ $page ];
 			}
 

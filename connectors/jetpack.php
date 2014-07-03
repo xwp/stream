@@ -361,7 +361,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 
 			if ( ! $is_multisite ) {
 				$message = sprintf(
-					__( 'Site %1$s Jetpack', 'stream' ),
+					__( 'Site %s Jetpack', 'stream' ),
 					( 'register' === $action ) ? __( 'connected to', 'stream' ) : __( 'disconnected from', 'stream' )
 				);
 			} else {
@@ -420,7 +420,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$active = isset( $_POST[ 'receive_jetpack_monitor_notification' ] );
 
 			self::log(
-				__( 'Monitor notifications %1$s', 'stream' ),
+				__( 'Monitor notifications %s', 'stream' ),
 				array(
 					'status'    => $active ? __( 'activated', 'stream' ) : __( 'deactivated', 'stream' ),
 					'option'    => 'receive_jetpack_monitor_notification',
@@ -482,7 +482,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$option_title = $data[ 'label' ];
 
 			self::log(
-				__( '"%1$s" setting updated', 'stream' ),
+				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
 				array(
@@ -539,7 +539,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		}
 
 		self::log(
-			__( 'G+ profile display %1$s', 'stream' ),
+			__( 'G+ profile display %s', 'stream' ),
 			array(
 				'action' => $status ? __( 'enabled', 'stream' ) : __( 'disabled', 'stream' ),
 			),
@@ -576,7 +576,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		$status = ! $new_value ? 'enabled' : 'disabled'; // disabled = 1
 
 		self::log(
-			__( 'Sharing CSS/JS %1$s', 'stream' ),
+			__( 'Sharing CSS/JS %s', 'stream' ),
 			compact( 'status', 'old_value', 'new_value' ),
 			null,
 			array(
@@ -655,7 +655,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			}
 
 			return array(
-				'message' => __( '"%1$s" setting updated' ),
+				'message' => __( '"%s" setting updated', 'stream' ),
 				'meta'    => array(
 					'option_name' => $options[ $name ],
 					'option'      => 'jetpack_options',

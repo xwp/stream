@@ -160,7 +160,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			$post_type_label = get_post_type_labels( get_post_type_object( 'edd_discount' ) )->singular_name;
 			$base            = admin_url( 'edit.php?post_type=download&page=edd-discounts' );
 
-			$links[ sprintf( __( 'Edit %1$s', 'default' ), $post_type_label ) ] = add_query_arg(
+			$links[ sprintf( __( 'Edit %s', 'default' ), $post_type_label ) ] = add_query_arg(
 				array(
 					'edd-action' => 'edit_discount',
 					'discount'   => $record->object_id,
@@ -169,7 +169,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			);
 
 			if ( 'active' === get_post( $record->object_id )->post_status ) {
-				$links[ sprintf( __( 'Deactivate %1$s', 'stream' ), $post_type_label ) ] = add_query_arg(
+				$links[ sprintf( __( 'Deactivate %s', 'stream' ), $post_type_label ) ] = add_query_arg(
 					array(
 						'edd-action' => 'deactivate_discount',
 						'discount'   => $record->object_id,
@@ -177,7 +177,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 					$base
 				);
 			} else {
-				$links[ sprintf( __( 'Activate %1$s', 'stream' ), $post_type_label ) ] = add_query_arg(
+				$links[ sprintf( __( 'Activate %s', 'stream' ), $post_type_label ) ] = add_query_arg(
 					array(
 						'edd-action' => 'activate_discount',
 						'discount'   => $record->object_id,
@@ -187,7 +187,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			}
 		} elseif ( in_array( $record->context, array( 'download_category', 'download_tag' ) ) ) {
 			$tax_label = get_taxonomy_labels( get_taxonomy( $record->context ) )->singular_name;
-			$links[ sprintf( __( 'Edit %1$s', 'default' ), $tax_label ) ] = get_edit_term_link( $record->object_id, wp_stream_get_meta( $record->ID, 'taxonomy', true ) );
+			$links[ sprintf( __( 'Edit %s', 'default' ), $tax_label ) ] = get_edit_term_link( $record->object_id, wp_stream_get_meta( $record->ID, 'taxonomy', true ) );
 		} elseif ( 'api_keys' === $record->context ) {
 			$user = new WP_User( $record->object_id );
 
@@ -251,7 +251,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			$context      = isset( $data['context'] ) ? $data['context'] : 'settings';
 
 			self::log(
-				__( '"%1$s" setting updated', 'stream' ),
+				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
 				array(
@@ -299,7 +299,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			}
 
 			self::log(
-				__( '"%1$s" setting updated', 'stream' ),
+				__( '"%s" setting updated', 'stream' ),
 				array(
 					'option_title' => $field['name'],
 					'option'       => $option,
@@ -414,7 +414,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 
 		self::log(
 			sprintf(
-				__( 'Generated %1$s report', 'stream' ),
+				__( 'Generated %s report', 'stream' ),
 				$label
 			),
 			array(
@@ -487,7 +487,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 
 		self::log(
 			sprintf(
-				__( 'User API Key %1$s', 'stream' ),
+				__( 'User API Key %s', 'stream' ),
 				$action_title
 			),
 			array(

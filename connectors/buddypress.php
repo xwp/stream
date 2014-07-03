@@ -294,7 +294,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 			self::log(
 				sprintf(
-					__( '"%s" component %s', 'stream' ),
+					__( '"%1$s" component %2$s', 'stream' ),
 					$components[ $option ]['title'],
 					$actions[ $option_value ]
 				),
@@ -340,7 +340,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 			self::log(
 				sprintf(
-					__( '"%s" page set to "%s"', 'stream' ),
+					__( '"%1$s" page set to "%1$s"', 'stream' ),
 					$pages[ $option ],
 					$page
 				),

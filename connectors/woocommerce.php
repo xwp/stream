@@ -274,28 +274,28 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			return;
 		} elseif ( 'auto-draft' === $old && 'publish' === $new ) {
 			$message = _x(
-				'%1$s created',
+				'%s created',
 				'Order title',
 				'stream'
 			);
 			$action  = 'created';
 		} elseif ( 'trash' === $new ) {
 			$message = _x(
-				'%1$s trashed',
+				'%s trashed',
 				'Order title',
 				'stream'
 			);
 			$action  = 'trashed';
 		} elseif ( 'trash' === $old && 'publish' === $new ) {
 			$message = _x(
-				'%1$s restored from the trash',
+				'%s restored from the trash',
 				'Order title',
 				'stream'
 			);
 			$action  = 'restored';
 		} else {
 			$message = _x(
-				'%1$s updated',
+				'%s updated',
 				'Order title',
 				'stream'
 			);
@@ -349,7 +349,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 
 		self::log(
 			_x(
-				'"%1$s" deleted from trash',
+				'"%s" deleted from trash',
 				'Order title',
 				'stream'
 			),
@@ -382,7 +382,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		}
 
 		$message = _x(
-			'%1$s status changed from %3$s to %2$s',
+			'%1$s status changed from %2$s to %3$s',
 			'1. Order title, 2. Old status, 3. New status',
 			'stream'
 		);
@@ -397,8 +397,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			$message,
 			array(
 				'post_title'      => $order_title,
-				'new_status_name' => $new_status_name,
 				'old_status_name' => $old_status_name,
+				'new_status_name' => $new_status_name,
 				'singular_name'   => $order_type_name,
 				'new_status'      => $new,
 				'old_status'      => $old,
@@ -417,7 +417,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	public static function callback_woocommerce_attribute_added( $attribute_id, $attribute ) {
 		self::log(
 			_x(
-				'"%1$s" product attribute created',
+				'"%s" product attribute created',
 				'Term name',
 				'stream'
 			),
@@ -435,7 +435,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	public static function callback_woocommerce_attribute_updated( $attribute_id, $attribute ) {
 		self::log(
 			_x(
-				'"%1$s" product attribute updated',
+				'"%s" product attribute updated',
 				'Term name',
 				'stream'
 			),
@@ -453,7 +453,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	public static function callback_woocommerce_attribute_deleted( $attribute_id, $attribute_name ) {
 		self::log(
 			_x(
-				'"%1$s" product attribute deleted',
+				'"%s" product attribute deleted',
 				'Term name',
 				'stream'
 			),
@@ -520,7 +520,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 
 		self::log(
 			_x(
-				'"%1$s" tax rate deleted',
+				'"%s" tax rate deleted',
 				'Tax rate name',
 				'stream'
 			),

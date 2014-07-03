@@ -387,7 +387,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		$form = self::get_form( $id );
 
 		self::log(
-			__( '"%1$s" form views reset', 'stream' ),
+			__( '"%s" form views reset', 'stream' ),
 			array(
 				'title'   => $form['title'],
 				'form_id' => $form['id'],
@@ -495,7 +495,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			$context      = isset( $data['context'] ) ? $data['context'] : 'settings';
 
 			self::log(
-				__( '"%1$s" setting updated', 'stream' ),
+				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
 				array(
@@ -511,7 +511,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 
 		self::log(
 			sprintf(
-				__( 'Gravity Forms license key %1$s', 'stream' ),
+				__( 'Gravity Forms license key %s', 'stream' ),
 				$is_update ? __( 'updated', 'stream' ) : __( 'deleted', 'stream' )
 			),
 			compact( 'option', 'old_value', 'new_value' ),
@@ -526,7 +526,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		$form = self::get_form( $form_id );
 
 		self::log(
-			__( '"%1$s" form exported', 'stream' ),
+			__( '"%s" form exported', 'stream' ),
 			array(
 				'form_title' => $form['title'],
 				'form_id'    => $form_id,
@@ -577,7 +577,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		$form = self::get_form( $id );
 
 		self::log(
-			__( '"%1$s" form deleted', 'stream' ),
+			__( '"%s" form deleted', 'stream' ),
 			array(
 				'form_title' => $form['title'],
 				'form_id'    => $id,
