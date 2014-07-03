@@ -674,12 +674,12 @@ class WP_Stream_Admin {
 
 	public static function stream_page() {
 
-		if ( isset( $_GET['connected'] ) ) {
+		if ( wp_stream_filter_input( INPUT_GET, 'connected' ) && self::RECORDS_PAGE_SLUG === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
 			WP_Stream::notice(
 				sprintf(
-					'<strong>%s</strong> %s',
-					__( 'You have successfully connected to Stream!', 'stream' ),
-					__( 'Check back here to see a history of the changes being made to this site.', 'stream' )
+					'<strong>%s</strong></p><p>%s',
+					esc_html__( 'You have successfully connected to Stream!', 'stream' ),
+					esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
 				),
 				false
 			);
