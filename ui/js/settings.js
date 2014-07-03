@@ -194,7 +194,7 @@ jQuery(function( $ ) {
 		$( '#tab-content-settings input[type=hidden].select2-select.context' ).on( 'change', function( val ) {
 			var $connector = $( this ).prevAll( ':input.connector' );
 
-			if ( undefined !== val.added.parent ) {
+			if ( undefined !== val.added && undefined !== val.added.parent ) {
 				$connector.val( val.added.parent );
 			} else {
 				$connector.val( $( this ).val() );
