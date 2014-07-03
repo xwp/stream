@@ -728,7 +728,7 @@ class WP_Stream_Admin {
 		echo '<div class="wrap">';
 
 		if ( is_network_admin() ) {
-			$sites_connected = WP_Stream_Network::$sites_connected;
+			$sites_connected = WP_Stream_Network::get_instance()->sites_connected;
 			$site_count      = '';
 
 			if ( $sites_connected > 0 ) {

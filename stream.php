@@ -48,12 +48,17 @@ class WP_Stream {
 	/**
 	 * @var WP_Stream_DB_Base
 	 */
-	public static $db = null;
+	public static $db;
 
 	/**
 	 * @var WP_Stream_Network
 	 */
-	public $network = null;
+	public $network;
+
+	/**
+	 * @var WP_Stream_API
+	 */
+	public $api;
 
 	/**
 	 * Class constructor
@@ -96,7 +101,7 @@ class WP_Stream {
 
 		// Load network class
 		if ( is_multisite() ) {
-			$this->network = new WP_Stream_Network;
+			WP_Stream_Network::get_instance();
 		}
 
 		// Load logger class
