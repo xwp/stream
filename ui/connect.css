@@ -1,22 +1,26 @@
 /* Stream Connect Button */
 .stream-connect-button a {
-	font: 400 1.5em 'Open Sans', Helvetica, sans-serif;
-	padding: 0.38095em 0.85714em 0.38095em 0.57143em;
-	background-clip: padding-box;
-	text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
-	text-decoration: none;
-	border: none;
-	background: #e14d43;
-	color: #fff;
 	position: relative;
+	padding: 0.38095em 0.85714em 0.38095em 0.57143em;
+	border: none;
+	font: 400 1.5em 'Open Sans', Helvetica, sans-serif;
+	text-decoration: none;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+	background: #e14d43;
+	background-clip: padding-box;
+	color: #fff;
+
 	-webkit-background-clip: padding-box;
 	   -moz-background-clip: padding;
+
 	-webkit-border-radius: 6px;
 	   -moz-border-radius: 6px;
 	        border-radius: 6px;
+
 	-webkit-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
 	   -moz-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
 	        box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+
 	-webkit-transition: all 0.1s ease-in;
 	   -moz-transition: all 0.1s ease-in;
 	     -o-transition: all 0.1s ease-in;
@@ -24,18 +28,20 @@
 }
 
 .stream-connect-button i.stream-icon {
+	display: inline-block;
+	margin-right: 0.57143em;
 	font-size: 1em;
 	line-height: 1.4em;
-	margin-right: 0.57143em;
-	color: #fff;
-	display: inline-block;
 	font-weight: 400;
 	font-style: normal;
-	vertical-align: top;
 	text-align: center;
+	vertical-align: top;
+	color: #fff;
+
 	-webkit-transition: color .1s ease-in 0;
-	transition: color .1s ease-in 0;
-	-webkit-font-smoothing: antialiased;
+	        transition: color .1s ease-in 0;
+
+	 -webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale
 }
 
@@ -52,20 +58,21 @@
 }
 
 .stream-connect-button a:active {
-	outline: none;
 	top: 4px;
+	outline: none;
+
 	-webkit-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
 	   -moz-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
 	        box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
 }
 
-@media (max-width:420px){
+@media only screen and (max-width: 420px) {
 	.stream-connect-button a {
-		font-size: 16px;
-		letter-spacing: -0.05em;
 		display: block;
-		text-align: center;
 		width: 80%;
+		font-size: 16px;
+		text-align: center;
+		letter-spacing: -0.05em;
 	}
 
 	.stream-connect-button i.stream-icon {
@@ -75,12 +82,12 @@
 
 /* Stream Connect Prompt */
 #stream-message.stream-connect {
-	border-left: 4px solid #e14d43;
-	color: #616161;
+	position: relative;
 	overflow: hidden;
 	margin-bottom: 26px;
 	padding: 26px 20px;
-	position: relative;
+	border-left: 4px solid #e14d43;
+	color: #616161;
 }
 
 #stream-message.stream-network-connect {
@@ -99,9 +106,9 @@
 }
 
 #stream-message.stream-connect .stream-close-button-container {
-	right: 18px;
 	position: absolute;
 	top: 18px;
+	right: 18px;
 }
 
 #stream-message.stream-connect .stream-close-button-container a {
@@ -109,9 +116,9 @@
 }
 
 #stream-message.stream-connect .stream-close-button-container a:before {
-	color: #616161;
-	content: '\f158';
 	font: normal 20px/1 'dashicons';
+	content: '\f158';
+	color: #616161;
 }
 
 #stream-message.stream-connect .stream-close-button-container a:hover {
@@ -134,17 +141,17 @@
 }
 
 #stream-message.stream-connect .stream-text-container p strong {
-	color: #363b3f;
 	display: block;
 	font-size: 170%;
 	font-weight: normal;
+	color: #363b3f;
 }
 
 #stream-message.stream-network-connect .stream-text-container p strong {
 	margin-bottom: 0.5em;
 }
 
-@media (max-width:1130px){
+@media only screen and (max-width: 1130px) {
 	#stream-message.stream-connect .stream-install-container {
 		float: none;
 	}
@@ -157,8 +164,8 @@
 
 	#stream-message.stream-connect .stream-text-container p {
 		float: left;
-		font-size: 14px;
 		margin-right: 4px;
+		font-size: 14px;
 	}
 
 	#stream-message.stream-connect .stream-text-container p strong {
@@ -169,51 +176,51 @@
 
 /* Stream Connect Page */
 #wp-stream-connect {
-	text-align: center;
-	color: #616161;
-	padding: 0;
-	margin: 0;
-	height: 100%;
-	width: 100%;
 	position: relative;
 	width: 100%;
-	-webkit-font-smoothing: antialiased;
+	height: 100%;
+	margin: 0;
+	padding: 0;
 	font-size: 14px;
+	text-align: center;
+	color: #616161;
+
+	-webkit-font-smoothing: antialiased;
 }
 
 #wp-stream-connect .wrap {
-	padding: 4em 0;
-	margin: 0;
 	position: relative;
 	width: 100%;
+	margin: 0;
+	padding: 4em 0;
 }
 
 #wp-stream-connect p {
-	padding: 0;
 	margin: 0 auto;
+	padding: 0;
 	font: 300 1.5em/1.4em 'Open Sans', Helvetica, sans-serif;
 }
 
 #wp-stream-connect a {
-	color: #616161;
 	text-decoration: none;
+	color: #616161;
 }
 
 #wp-stream-connect a:hover {
-	text-decoration: none;
 	border-bottom: 1px dotted #ccc;
+	text-decoration: none;
 }
 
 #wp-stream-connect .stream-connect-button {
 	margin: 0 0 1em;
 	padding: 1em 0;
-	text-align: center;
 	font-size: 1em;
+	text-align: center;
 }
 
 #wp-stream-connect .stream-connect-button a {
-	font-size: 2.5em;
 	padding: 0.38095em 0.85714em 0.38095em 0.57143em;
+	font-size: 2.5em;
 	color: #fff;
 }
 
@@ -226,11 +233,11 @@
 }
 
 #wp-stream-connect p.quote {
-	padding: 1em 1em 0.5em;
-	margin: 0 auto;
-	max-width: 22em;
-	font: 300 2.5em/1.4em 'Open Sans', Helvetica, sans-serif;
 	position: relative;
+	max-width: 22em;
+	margin: 0 auto;
+	padding: 1em 1em 0.5em;
+	font: 300 2.5em/1.4em 'Open Sans', Helvetica, sans-serif;
 	text-shadow: 0 1px 1px rgba(0, 0, 0, .1);
 }
 
@@ -247,7 +254,7 @@
 	display: none;
 }
 
-@media (max-width:900px){
+@media only screen and (max-width: 900px) {
 	.toplevel_page_wp_stream.wp_stream_disconnected.auto-fold #wpcontent {
 		margin-left: 36px;
 	}
@@ -256,7 +263,7 @@
 	}
 }
 
-@media (max-width:782px){
+@media only screen and (max-width: 782px) {
 	.toplevel_page_wp_stream.wp_stream_disconnected.auto-fold #wpcontent {
 		margin-left: 0;
 		padding-left: 0;
@@ -266,13 +273,13 @@
 	}
 }
 
-@media (max-width:600px){
+@media only screen and (max-width: 600px) {
 	#wp-stream-connect {
 		font-size: 9px;
 	}
 }
 
-@media (max-width:420px){
+@media only screen and (max-width: 420px) {
 	.stream-connect-button a {
 		margin: 0 auto;
 	}
