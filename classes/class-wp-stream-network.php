@@ -408,7 +408,7 @@ class WP_Stream_Network {
 			add_settings_error( 'general', 'settings_updated', __( 'Settings saved.', 'default' ), 'updated' );
 		}
 
-		set_transient( 'settings_errors', get_settings_errors(), 30 );
+		set_transient( 'wp_stream_settings_errors', get_settings_errors(), 30 );
 
 		$go_back = add_query_arg( 'settings-updated', 'true', wp_get_referer() );
 		wp_redirect( $go_back );

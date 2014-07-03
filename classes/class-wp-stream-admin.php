@@ -39,7 +39,7 @@ class WP_Stream_Admin {
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
 	const PRELOAD_AUTHORS_MAX  = 50;
-	const NEW_SITE_URL         = 'http://s7215.p35.sites.pressdns.com/pricing/'; // TODO: Point to sandbox once DNS is configured
+	const STREAM_SERVER_URL    = 'http://s7215.p35.sites.pressdns.com'; // TODO: Point to sandbox once DNS is configured
 
 	public static function load() {
 		// User and role caps
@@ -56,7 +56,7 @@ class WP_Stream_Admin {
 				'action'     => 'connect',
 				'plugin_url' => urlencode( admin_url( 'admin.php?page=wp_stream&nonce=' . $connect_nonce ) ),
 			),
-			self::NEW_SITE_URL
+			self::STREAM_SERVER_URL . '/pricing'
 		);
 
 		if ( isset( $_GET['api_key'] ) ) {
@@ -460,6 +460,34 @@ class WP_Stream_Admin {
 		wp_redirect( $redirect_url );
 	}
 
+	public static function get_testimonials() {
+		$testimonials = get_site_transient( 'wp_stream_testimonials' );
+
+		if ( false !== $testimonials ) {
+			return $testimonials;
+		}
+
+		$ch = curl_init();
+
+		curl_setopt( $ch, CURLOPT_URL, self::STREAM_SERVER_URL . '/wp-content/themes/wp-stream.com/assets/testimonials.json' );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+
+		$testimonials_json = curl_exec( $ch );
+
+		curl_close( $ch );
+
+		$testimonials = $testimonials_json ? json_decode( $testimonials_json, true ) : false;
+
+		// Store failed curl and decode attempts as zero, to distinguish them from expired transients
+		if ( ! $testimonials ) {
+			$testimonials = 0;
+		}
+
+		set_site_transient( 'wp_stream_testimonials', $testimonials, 1 * WEEK_IN_SECONDS );
+
+		return $testimonials;
+	}
+
 	/**
 	 * Register a routine to be called when stream or a stream connector has been updated
 	 * It works by comparing the current version with the version previously stored in the database.
@@ -656,33 +684,10 @@ class WP_Stream_Admin {
 	 */
 	public static function render_connect_page() {
 		$page_title   = apply_filters( 'wp_stream_connect_page_title', get_admin_page_title() );
-		$testimonials = array(
-			array(
-				'quote'        => __( 'Stream is easily one of the most exciting projects in WordPress today.', 'stream' ),
-				'author'       => __( 'Zack Tollman', 'stream' ),
-				'organization' => __( 'The Theme Foundry', 'stream' ),
-				'link'         => 'https://thethemefoundry.com',
-			),
-			array(
-				'quote'        => __( 'First of all, the plugin is just damn pretty, from code to UI. Everything about Stream is absolutely top notch. Top notch.', 'stream' ),
-				'author'       => __( 'Pippin Williamson', 'stream' ),
-				'organization' => __( 'PippinsPlugins.com', 'stream' ),
-				'link'         => 'http://pippinsplugins.com',
-			),
-			array(
-				'quote'        => __( 'Stream is a fine example of a plugin built well. It puts performance top of mind, and limits features to only the essential to create something that is useful and stable.', 'stream' ),
-				'author'       => __( 'Jay Hoffmann', 'stream' ),
-				'organization' => __( 'Tidy Repo', 'stream' ),
-				'link'         => 'http://tidyrepo.com',
-			),
-			array(
-				'quote'        => __( 'Sometimes clients cannot remember what action they took in the admin to cause changes to the site. The Stream plugin goes a long way to help with troubleshooting.', 'stream' ),
-				'author'       => __( 'Sarah Gooding', 'stream' ),
-				'organization' => __( 'WP Tavern', 'stream' ),
-				'link'         => 'http://wptavern.com',
-			),
-		);
-		$testimonial = $testimonials[ array_rand( $testimonials ) ];
+
+		if ( $testimonials = self::get_testimonials() ) {
+			$testimonial = $testimonials[ array_rand( $testimonials ) ];
+		}
 
 		wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
 		?>
@@ -690,8 +695,10 @@ class WP_Stream_Admin {
 			<div class="wrap">
 				<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ) ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a></p>
 				<p><?php _e( 'with WordPress.com', 'stream' ) ?></p>
+				<?php if ( isset( $testimonial ) ) : ?>
 				<p class="quote">&ldquo;<?php echo esc_html( $testimonial['quote'] ) ?>&rdquo;</p>
 				<p class="author">&dash; <?php echo esc_html( $testimonial['author'] ) ?>, <a class="organization" href="<?php echo esc_url( $testimonial['link'] ) ?>"><?php echo esc_html( $testimonial['organization'] ) ?></a></p>
+				<?php endif ?>
 			</div>
 		</div>
 		<?php
