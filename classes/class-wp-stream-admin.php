@@ -56,7 +56,7 @@ class WP_Stream_Admin {
 				'action'     => 'connect',
 				'plugin_url' => urlencode( admin_url( 'admin.php?page=wp_stream&nonce=' . $connect_nonce ) ),
 			),
-			self::PUBLIC_URL . '/pricing'
+			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/pricing/' )
 		);
 
 		// Register settings page
