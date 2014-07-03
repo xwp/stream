@@ -10,22 +10,22 @@ class WP_Stream_Settings {
 	/**
 	 * Settings key/identifier
 	 */
-	const KEY = 'wp_stream';
+	const OPTION = 'wp_stream';
 
 	/**
 	 * Settings key/identifier
 	 */
-	const NETWORK_KEY = 'wp_stream_network';
+	const NETWORK_OPTION = 'wp_stream_network';
 
 	/**
 	 * Default Settings key/identifier
 	 */
-	const DEFAULTS_KEY = 'wp_stream_defaults';
+	const DEFAULTS_OPTION = 'wp_stream_defaults';
 
 	/**
 	 * API Key key/identifier
 	 */
-	const API_KEY_KEY = 'wp_stream_api_key';
+	const API_KEY_OPTION = 'wp_stream_api_key';
 
 	/**
 	 * Plugin settings
@@ -64,16 +64,16 @@ class WP_Stream_Settings {
 		self::$option_key = self::get_option_key();
 		self::$options    = self::get_options();
 
-		self::$api_key = get_option( self::API_KEY_KEY, 0 );
+		self::$api_key = get_option( self::API_KEY_OPTION, 0 );
 
 		// Register settings, and fields
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 
 		// Check if we need to flush rewrites rules
-		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
+		add_action( 'update_option_' . self::OPTION, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
 
 		// Remove records when records TTL is shortened
-		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
+		add_action( 'update_option_' . self::OPTION, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
 
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
 
@@ -219,7 +219,7 @@ class WP_Stream_Settings {
 	 * @return string Option key for this page
 	 */
 	public static function get_option_key() {
-		$option_key = self::KEY;
+		$option_key = self::OPTION;
 
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 
@@ -228,11 +228,11 @@ class WP_Stream_Settings {
 		}
 
 		if ( 'wp_stream_default_settings' === $current_page ) {
-			$option_key = self::DEFAULTS_KEY;
+			$option_key = self::DEFAULTS_OPTION;
 		}
 
 		if ( 'wp_stream_network_settings' === $current_page ) {
-			$option_key = self::NETWORK_KEY;
+			$option_key = self::NETWORK_OPTION;
 		}
 
 		return apply_filters( 'wp_stream_settings_option_key', $option_key );
@@ -265,7 +265,7 @@ class WP_Stream_Settings {
 								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
 								sprintf(
 									'<a href="%s" title="%s">',
-									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
+									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_OPTION ) ),
 									esc_attr__( 'View Profile', 'stream' )
 								),
 								'</a>',
@@ -383,7 +383,7 @@ class WP_Stream_Settings {
 
 		$defaults = self::get_defaults( $option_key );
 
-		if ( self::DEFAULTS_KEY === $option_key ) {
+		if ( self::DEFAULTS_OPTION === $option_key ) {
 			return $defaults;
 		}
 
@@ -429,7 +429,7 @@ class WP_Stream_Settings {
 		return apply_filters(
 			'wp_stream_option_defaults',
 			wp_parse_args(
-				(array) get_site_option( self::DEFAULTS_KEY, array() ),
+				(array) get_site_option( self::DEFAULTS_OPTION, array() ),
 				$defaults
 			)
 		);
@@ -896,13 +896,13 @@ class WP_Stream_Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_settings_translations( $labels ) {
-		if ( ! isset( $labels[ self::KEY ] ) ) {
-			$labels[ self::KEY ] = array();
+		if ( ! isset( $labels[ self::OPTION ] ) ) {
+			$labels[ self::OPTION ] = array();
 		}
 
 		foreach ( self::get_fields() as $section_slug => $section ) {
 			foreach ( $section['fields'] as $field ) {
-				$labels[ self::KEY ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
+				$labels[ self::OPTION ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
 			}
 		}
 

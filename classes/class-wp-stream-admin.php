@@ -446,7 +446,7 @@ class WP_Stream_Admin {
 
 		$api_key = $_GET['api_key'];
 
-		update_option( WP_Stream_Settings::API_KEY_KEY, $api_key );
+		update_option( WP_Stream_Settings::API_KEY_OPTION, $api_key );
 
 		do_action( 'wp_stream_site_connected', $api_key );
 
@@ -470,10 +470,10 @@ class WP_Stream_Admin {
 		$plugin = plugin_basename( $file );
 
 		if ( is_plugin_active_for_network( $plugin ) ) {
-			$current_versions = get_site_option( WP_Stream_Install_WPDB::KEY . '_connectors', array() );
+			$current_versions = get_site_option( WP_Stream_Install_WPDB::OPTION . '_connectors', array() );
 			$network          = true;
 		} elseif ( is_plugin_active( $plugin ) ) {
-			$current_versions = get_option( WP_Stream_Install_WPDB::KEY . '_connectors', array() );
+			$current_versions = get_option( WP_Stream_Install_WPDB::OPTION . '_connectors', array() );
 			$network          = false;
 		} else {
 			return;
@@ -484,7 +484,7 @@ class WP_Stream_Admin {
 			$current_versions[ $plugin ] = $version;
 		}
 
-		update_site_option( WP_Stream_Install_WPDB::KEY . '_registered_connectors', $current_versions );
+		update_site_option( WP_Stream_Install_WPDB::OPTION . '_registered_connectors', $current_versions );
 
 		return;
 	}
@@ -796,7 +796,7 @@ class WP_Stream_Admin {
 		if ( $blogs ) {
 			foreach ( $blogs as $blog ) {
 				switch_to_blog( $blog['blog_id'] );
-				delete_option( WP_Stream_Settings::KEY );
+				delete_option( WP_Stream_Settings::OPTION );
 			}
 			restore_current_blog();
 		}
@@ -825,8 +825,8 @@ class WP_Stream_Admin {
 				wp_stream_delete_records( array( 'blog_id' => $blog_id ) );
 
 				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-				delete_option( WP_Stream_Install_WPDB::KEY );
-				delete_option( WP_Stream_Settings::KEY );
+				delete_option( WP_Stream_Install_WPDB::OPTION );
+				delete_option( WP_Stream_Settings::OPTION );
 			} else {
 				WP_Stream::$db->reset();
 
@@ -836,9 +836,9 @@ class WP_Stream_Admin {
 					foreach ( $blogs as $blog ) {
 						switch_to_blog( $blog['blog_id'] );
 						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-						delete_option( WP_Stream_Install_WPDB::KEY );
-						delete_option( WP_Stream_Settings::KEY );
-						delete_option( WP_Stream_Settings::API_KEY_KEY );
+						delete_option( WP_Stream_Install_WPDB::OPTION );
+						delete_option( WP_Stream_Settings::OPTION );
+						delete_option( WP_Stream_Settings::API_KEY_OPTION );
 					}
 					restore_current_blog();
 				}
@@ -847,11 +847,11 @@ class WP_Stream_Admin {
 				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 				delete_site_option( WP_Stream_Updater::LICENSE_KEY );
 				delete_site_option( WP_Stream_Updater::LICENSEE_KEY );
-				delete_site_option( WP_Stream_Install_WPDB::KEY );
-				delete_site_option( WP_Stream_Settings::KEY );
-				delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
-				delete_site_option( WP_Stream_Settings::NETWORK_KEY );
-				delete_site_option( WP_Stream_Network::SITES_CONNECTED_KEY );
+				delete_site_option( WP_Stream_Install_WPDB::OPTION );
+				delete_site_option( WP_Stream_Settings::OPTION );
+				delete_site_option( WP_Stream_Settings::DEFAULTS_OPTION );
+				delete_site_option( WP_Stream_Settings::NETWORK_OPTION );
+				delete_site_option( WP_Stream_Network::SITES_CONNECTED_OPTION );
 			}
 
 			// Delete scheduled cron event hooks
@@ -884,7 +884,7 @@ class WP_Stream_Admin {
 		}
 
 		if ( is_multisite() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$options = (array) get_site_option( WP_Stream_Settings::NETWORK_KEY, array() );
+			$options = (array) get_site_option( WP_Stream_Settings::NETWORK_OPTION, array() );
 		} else {
 			$options = WP_Stream_Settings::get_options();
 		}

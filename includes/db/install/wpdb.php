@@ -7,7 +7,7 @@ class WP_Stream_Install_WPDB {
 	 *
 	 * @var string
 	 */
-	const KEY = 'wp_stream_db';
+	const OPTION = 'wp_stream_db';
 
 	/**
 	 * Holds the database table prefix
@@ -148,14 +148,14 @@ class WP_Stream_Install_WPDB {
 	public static function get_db_version() {
 		global $wpdb;
 
-		$version = get_site_option( self::KEY );
+		$version = get_site_option( self::OPTION );
 
 		if ( ! $version ) {
 			$old_key = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%stream%_db'" );
 			if ( ! empty( $old_key ) && is_array( $old_key ) ) {
 				$version = get_option( $old_key[0] );
 
-				update_site_option( self::KEY, $version );
+				update_site_option( self::OPTION, $version );
 				delete_option( $old_key[0] );
 			}
 		}
@@ -165,7 +165,7 @@ class WP_Stream_Install_WPDB {
 
 	public static function update_db_option() {
 		if ( self::$success_db ) {
-			$success_op = update_site_option( self::KEY, self::$current );
+			$success_op = update_site_option( self::OPTION, self::$current );
 		}
 
 		if ( empty( self::$success_db ) || empty( $success_op ) ) {
@@ -371,7 +371,7 @@ class WP_Stream_Install_WPDB {
 
 		dbDelta( $sql );
 
-		update_site_option( self::KEY, self::$current );
+		update_site_option( self::OPTION, self::$current );
 
 		return $current;
 	}
