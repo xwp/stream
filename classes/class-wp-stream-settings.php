@@ -23,11 +23,6 @@ class WP_Stream_Settings {
 	const DEFAULTS_OPTION_KEY = 'wp_stream_defaults';
 
 	/**
-	 * API Key key/identifier
-	 */
-	const API_KEY_OPTION_KEY = 'wp_stream_api_master_key';
-
-	/**
 	 * Plugin settings
 	 *
 	 * @var array
@@ -49,22 +44,13 @@ class WP_Stream_Settings {
 	public static $fields = array();
 
 	/**
-	 * API Key
-	 *
-	 * @var string
-	 */
-	public static $api_key = '';
-
-	/**
 	 * Public constructor
 	 *
-	 * @return \WP_Stream_Settings
+	 * @return void
 	 */
 	public static function load() {
 		self::$option_key = self::get_option_key();
 		self::$options    = self::get_options();
-
-		self::$api_key = get_option( self::API_KEY_OPTION_KEY, 0 );
 
 		// Register settings, and fields
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );

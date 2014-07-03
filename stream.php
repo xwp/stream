@@ -51,14 +51,9 @@ class WP_Stream {
 	public static $db;
 
 	/**
-	 * @var WP_Stream_Network
-	 */
-	public $network;
-
-	/**
 	 * @var WP_Stream_API
 	 */
-	public $api;
+	public static $api;
 
 	/**
 	 * Class constructor
@@ -86,6 +81,9 @@ class WP_Stream {
 
 		// Check DB and add message if not present
 		add_action( 'init', array( self::$db, 'check_db' ) );
+
+		// Load API helper interface/class
+		self::$api = new WP_Stream_API;
 
 		// Install the plugin
 		add_action( 'wp_stream_before_db_notices', array( __CLASS__, 'install' ) );
@@ -191,7 +189,7 @@ class WP_Stream {
 	 * @return bool
 	 */
 	public static function is_connected() {
-		return (bool) WP_Stream_Settings::$api_key;
+		return (bool) self::$api->api_key;
 	}
 
 	/**

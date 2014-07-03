@@ -39,7 +39,7 @@ class WP_Stream_Admin {
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
 	const PRELOAD_AUTHORS_MAX  = 50;
-	const STREAM_SERVER_URL    = 'http://sandbox.wp-stream.com';
+	const PUBLIC_URL           = 'http://sandbox.wp-stream.com';
 
 	public static function load() {
 		// User and role caps
@@ -56,12 +56,8 @@ class WP_Stream_Admin {
 				'action'     => 'connect',
 				'plugin_url' => urlencode( admin_url( 'admin.php?page=wp_stream&nonce=' . $connect_nonce ) ),
 			),
-			self::STREAM_SERVER_URL . '/pricing'
+			self::PUBLIC_URL . '/pricing'
 		);
-
-		if ( isset( $_GET['api_key'] ) ) {
-			add_action( 'admin_init', array( __CLASS__, 'save_api_key' ) );
-		}
 
 		// Register settings page
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
@@ -431,35 +427,6 @@ class WP_Stream_Admin {
 		return $links;
 	}
 
-	/**
-	 * Handle return from external site after connecting Stream
-	 *
-	 * @return void
-	 */
-	public static function save_api_key() {
-		$site_url           = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
-		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $site_url );
-
-		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], $connect_nonce_name ) ) {
-			wp_die( 'Doing it wrong.' );
-		}
-
-		$api_key = $_GET['api_key'];
-
-		update_option( WP_Stream_Settings::API_KEY_OPTION_KEY, $api_key );
-
-		do_action( 'wp_stream_site_connected', $api_key );
-
-		$redirect_url = add_query_arg(
-			array(
-				'page'      => self::RECORDS_PAGE_SLUG,
-				'connected' => 1,
-			),
-			admin_url( 'admin.php' )
-		);
-		wp_redirect( $redirect_url );
-	}
-
 	public static function get_testimonials() {
 		$testimonials = get_site_transient( 'wp_stream_testimonials' );
 
@@ -467,23 +434,20 @@ class WP_Stream_Admin {
 			return $testimonials;
 		}
 
-		$ch = curl_init();
+		$request = wp_remote_request( self::PUBLIC_URL . '/wp-content/themes/wp-stream.com/assets/testimonials.json' );
 
-		curl_setopt( $ch, CURLOPT_URL, self::STREAM_SERVER_URL . '/wp-content/themes/wp-stream.com/assets/testimonials.json' );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+		if ( $request['response']['code'] === 200 && ! is_wp_error( $request ) ) {
+			$testimonials = json_decode( $request['body'], true );
+		} else {
+			$testimonials = false;
+		}
 
-		$testimonials_json = curl_exec( $ch );
-
-		curl_close( $ch );
-
-		$testimonials = $testimonials_json ? json_decode( $testimonials_json, true ) : false;
-
-		// Store failed curl and decode attempts as zero, to distinguish them from expired transients
+		// Cache failed attempts as zero, to distinguish them from expired transients
 		if ( ! $testimonials ) {
 			$testimonials = 0;
 		}
 
-		set_site_transient( 'wp_stream_testimonials', $testimonials, 1 * WEEK_IN_SECONDS );
+		set_site_transient( 'wp_stream_testimonials', $testimonials, WEEK_IN_SECONDS );
 
 		return $testimonials;
 	}
