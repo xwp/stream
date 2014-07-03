@@ -54,7 +54,7 @@ class WP_Stream_API {
 		}
 	}
 
-	private function update_api_authentication() {
+	public function update_api_authentication() {
 		$site_url           = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
 		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $site_url );
 
@@ -62,15 +62,28 @@ class WP_Stream_API {
 			wp_die( 'Doing it wrong.' );
 		}
 
-		$api_key = $_GET['api_key'];
+		$this->api_key = $_GET['api_key'];
 
-		update_option( WP_Stream_Settings::API_KEY_OPTION_KEY, $api_key );
+		update_option( self::API_KEY_OPTION_KEY, $this->api_key );
 
-		do_action( 'wp_stream_site_connected', $api_key );
+		$uuid_request_headers = array( 'stream-api-master-key' => $this->api_key );
+		$uuid_request         = $this->remote_request( $this->api_url . '/validate-key', $uuid_request_headers );
+
+		if ( isset( $uuid_request->site_id ) ) {
+			$this->uuid = $uuid_request->site_id;
+		}
+
+		update_option( self::UUID_OPTION_KEY, $this->uuid );
+
+		do_action( 'wp_stream_site_connected', $this->api_key, $this->uuid );
+
+		if ( ! $this->api_key || ! $this->uuid ) {
+			wp_die( __( 'There was a problem connecting to Stream. Please try again later.', 'stream' ) );
+		}
 
 		$redirect_url = add_query_arg(
 			array(
-				'page'      => self::RECORDS_PAGE_SLUG,
+				'page'      => WP_Stream_Admin::RECORDS_PAGE_SLUG,
 				'connected' => 1,
 			),
 			admin_url( 'admin.php' )
@@ -111,19 +124,20 @@ class WP_Stream_API {
 	}
 
 	/**
-	* Helper function to query the marketplace API via wp_remote_request.
-	*
-	* @param string The url to access.
-	*
-	* @return object The results of the wp_remote_request request.
-	*/
-	protected function remote_request( $url ) {
+	 * Helper function to query the marketplace API via wp_remote_request.
+	 *
+	 * @param string The url to access.
+	 *
+	 * @return object The results of the wp_remote_request request.
+	 */
+	protected function remote_request( $url, $headers = array() ) {
 
 		if ( empty( $url ) ) {
 			return false;
 		}
 
-		$request = wp_remote_request( $url );
+		$args = array( 'headers' => $headers );
+		$request = wp_remote_request( $url, $args );
 
 		if ( is_wp_error( $request ) ) {
 			echo $request->get_error_message();
