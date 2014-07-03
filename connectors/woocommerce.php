@@ -580,7 +580,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			}
 
 			self::log(
-				__( '"%s" %s was updated', 'stream' ),
+				__( '"%1$s" %2$s updated', 'stream' ),
 				array(
 					'label'     => self::$settings[ $option ]['title'],
 					'type'      => self::$settings[ $option ]['type'],
