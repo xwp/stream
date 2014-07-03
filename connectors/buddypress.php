@@ -32,6 +32,43 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		'add_user_meta',
 		'update_user_meta',
 		'delete_user_meta',
+
+		'bp_activity_delete',
+		'bp_activity_mark_as_spam',
+		'bp_activity_mark_as_ham',
+		'bp_activity_admin_edit_after',
+
+		'groups_create_group',
+		'groups_update_group',
+		'groups_before_delete_group',
+		'groups_details_updated',
+		'groups_settings_updated',
+
+		'groups_leave_group',
+		'groups_join_group',
+
+		'groups_promote_member',
+		'groups_demote_member',
+		'groups_ban_member',
+		'groups_unban_member',
+		'groups_remove_member',
+
+		'xprofile_field_after_save',
+		'xprofile_fields_deleted_field',
+
+		'xprofile_group_after_save',
+		'xprofile_groups_deleted_group',
+
+		// @todo implement the following
+		//'groups_membership_accepted',
+		//'groups_membership_rejected',
+		//'groups_accept_all_pending_membership_requests',
+		//'groups_send_invites',
+		//'groups_delete_invite',
+		//'groups_reject_invite',
+		//'groups_accept_invite',
+		//'groups_uninvite_user',
+		//'groups_invite_user',
 	);
 
 	/**
@@ -58,6 +95,13 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	 * @var array
 	 */
 	public static $user_meta = array();
+
+	/**
+	 * Flag to stop logging update logic twice
+	 *
+	 * @var bool
+	 */
+	public static $is_update = false;
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
@@ -106,6 +150,10 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			'generated'   => __( 'Generated', 'stream' ),
 			'imported'    => __( 'Imported', 'stream' ),
 			'exported'    => __( 'Exported', 'stream' ),
+			'spammed'     => __( 'Marked as spam', 'stream' ),
+			'unspammed'   => __( 'Unmarked as spam', 'stream' ),
+			'promoted'    => __( 'Promoted', 'stream' ),
+			'demoted'     => __( 'Demoted', 'stream' ),
 		);
 	}
 
@@ -117,6 +165,9 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	public static function get_context_labels() {
 		return array(
 			'components' => __( 'Components', 'stream' ),
+			'groups' => __( 'Groups', 'stream' ),
+			'activity' => __( 'Activity', 'stream' ),
+			'profile_fields' => __( 'Profile fields', 'stream' ),
 		);
 	}
 
@@ -387,6 +438,310 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		if ( method_exists( __CLASS__, 'meta_' . $key ) ) {
 			return call_user_func( array( __CLASS__, 'meta_' . $key ), $object_id, $value, $is_add );
 		}
+	}
+
+	public static function callback_bp_activity_delete( $args ) {
+		$activity = new BP_Activity_Activity( $args['id'] );
+
+		self::log(
+			sprintf(
+				__( 'Deleted activity "%s"', 'stream' ),
+				strip_tags( $activity->action )
+			),
+			array(
+				'id' => $activity->id,
+				'item_id' => $activity->item_id,
+				'type' => $activity->type,
+				'author' => $activity->user_id,
+			),
+			$activity->id,
+			array(
+				$activity->component => 'deleted',
+			)
+		);
+	}
+
+	public static function callback_bp_activity_mark_as_spam( $activity, $by ) {
+		self::log(
+			sprintf(
+				__( 'Spammed activity "%s"', 'stream' ),
+				strip_tags( $activity->action )
+			),
+			array(
+				'id' => $activity->id,
+				'item_id' => $activity->item_id,
+				'type' => $activity->type,
+				'author' => $activity->user_id,
+			),
+			$activity->id,
+			array(
+				$activity->component => 'spammed',
+			)
+		);
+	}
+
+	public static function callback_bp_activity_mark_as_ham( $activity, $by ) {
+		self::log(
+			sprintf(
+				__( 'Unspammed activity "%s"', 'stream' ),
+				strip_tags( $activity->action )
+			),
+			array(
+				'id' => $activity->id,
+				'item_id' => $activity->item_id,
+				'type' => $activity->type,
+				'author' => $activity->user_id,
+			),
+			$activity->id,
+			array(
+				$activity->component => 'unspammed',
+			)
+		);
+	}
+
+	public static function callback_bp_activity_admin_edit_after( $activity, $error ) {
+		self::log(
+			sprintf(
+				__( 'Updated activity "%s"', 'stream' ),
+				strip_tags( $activity->action )
+			),
+			array(
+				'id' => $activity->id,
+				'item_id' => $activity->item_id,
+				'type' => $activity->type,
+				'author' => $activity->user_id,
+			),
+			$activity->id,
+			array(
+				'activity' => 'updated',
+			)
+		);
+	}
+
+	public static function group_action( $group, $action, $meta = array(), $message = null ) {
+		if ( is_numeric( $group ) ) {
+			$group = groups_get_group( array( 'group_id' => $group ) );
+		}
+
+		$replacements = array(
+			$group->name,
+		);
+
+		if ( $message ) {
+			// Do nothing
+		}
+		elseif ( 'created' === $action ) {
+			$message = __( 'Created group "%s"', 'stream' );
+		}
+		elseif ( 'updated' === $action ) {
+			$message = __( 'Updated group "%s"', 'stream' );
+		}
+		elseif ( 'deleted' === $action ) {
+			$message = __( 'Deleted group "%s"', 'stream' );
+		}
+		elseif ( 'joined' === $action ) {
+			$message = __( 'Joined group "%s"', 'stream' );
+		}
+		elseif ( 'left' === $action ) {
+			$message = __( 'Left group "%s"', 'stream' );
+		}
+		elseif ( 'banned' === $action ) {
+			$message = __( 'Banned "%2$s" from "%1$s"', 'stream' );
+			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
+		}
+		elseif ( 'unbanned' === $action ) {
+			$message = __( 'Unbanned "%2$s" from "%1$s"', 'stream' );
+			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
+		}
+		elseif ( 'removed' === $action ) {
+			$message = __( 'Removed "%2$s" from "%1$s"', 'stream' );
+			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
+		}
+		else {
+			return;
+		}
+
+		self::log(
+			vsprintf(
+				$message,
+				$replacements
+			),
+			array_merge(
+				array(
+					'id' => $group->id,
+					'name' => $group->name,
+					'slug' => $group->slug,
+				),
+				$meta
+			),
+			$group->id,
+			array(
+				'groups' => $action,
+			)
+		);
+	}
+
+	public static function callback_groups_create_group( $group_id, $member, $group ) {
+		self::group_action( $group, 'created' );
+	}
+	public static function callback_groups_update_group( $group_id, $group ) {
+		self::group_action( $group, 'updated' );
+	}
+	public static function callback_groups_before_delete_group( $group_id ) {
+		self::group_action( $group_id, 'deleted' );
+	}
+	public static function callback_groups_details_updated( $group_id ) {
+		self::$is_update = true;
+		self::group_action( $group_id, 'updated' );
+	}
+	public static function callback_groups_settings_updated( $group_id ) {
+		if ( self::$is_update ) {
+			return;
+		}
+		self::group_action( $group_id, 'updated' );
+	}
+
+	public static function callback_groups_leave_group( $group_id, $user_id ) {
+		self::group_action( $group_id, 'left', compact( 'user_id' ) );
+	}
+	public static function callback_groups_join_group( $group_id, $user_id ) {
+		self::group_action( $group_id, 'joined', compact( 'user_id' ) );
+	}
+
+	public static function callback_groups_promote_member( $group_id, $user_id, $status ) {
+		$group = groups_get_group( array( 'group_id' => $group_id ) );
+		$user = new WP_User( $user_id );
+		$roles = array(
+			'admin' => __( 'Administrator', 'buddypress' ),
+			'mod' => __( 'Moderator', 'buddypress' ),
+		);
+		$message = sprintf(
+			__( 'Promoted "%s" to "%s" in "%s"', 'stream' ),
+			$user->display_name,
+			$roles[ $status ],
+			$group->name
+		);
+		self::group_action( $group_id, 'promoted', compact( 'user_id', 'status' ), $message );
+	}
+	public static function callback_groups_demote_member( $group_id, $user_id ) {
+		$group = groups_get_group( array( 'group_id' => $group_id ) );
+		$user = new WP_User( $user_id );
+		$message = sprintf(
+			__( 'Demoted "%s" to "%s" in "%s"', 'stream' ),
+			$user->display_name,
+			__( 'Member', 'buddypress' ),
+			$group->name
+		);
+		self::group_action( $group_id, 'demoted', compact( 'user_id' ), $message );
+	}
+	public static function callback_groups_ban_member( $group_id, $user_id ) {
+		self::group_action( $group_id, 'banned', compact( 'user_id' ) );
+	}
+	public static function callback_groups_unban_member( $group_id, $user_id ) {
+		self::group_action( $group_id, 'unbanned', compact( 'user_id' ) );
+	}
+	public static function callback_groups_remove_member( $group_id, $user_id ) {
+		self::group_action( $group_id, 'removed', compact( 'user_id' ) );
+	}
+
+	public static function field_action( $field, $action, $meta = array(), $message = null ) {
+		$replacements = array(
+			$field->name,
+		);
+
+		if ( $message ) {
+			// Do nothing
+		}
+		elseif ( 'created' === $action ) {
+			$message = __( 'Created profile field "%s"', 'stream' );
+		}
+		elseif ( 'updated' === $action ) {
+			$message = __( 'Updated profile field "%s"', 'stream' );
+		}
+		elseif ( 'deleted' === $action ) {
+			$message = __( 'Deleted profile field "%s"', 'stream' );
+		}
+		else {
+			return;
+		}
+
+		self::log(
+			vsprintf(
+				$message,
+				$replacements
+			),
+			array_merge(
+				array(
+					'id' => $field->id,
+					'name' => $field->name,
+				),
+				$meta
+			),
+			$field->id,
+			array(
+				'profile_fields' => $action,
+			)
+		);
+	}
+
+	public static function callback_xprofile_field_after_save( $field ) {
+		$action = isset( $field->id ) ? 'updated' : 'created';
+		self::field_action( $field, $action );
+	}
+
+	public static function callback_xprofile_fields_deleted_field( $field ){
+		self::field_action( $field, 'deleted' );
+	}
+
+	public static function field_group_action( $group, $action, $meta = array(), $message = null ) {
+		$replacements = array(
+			$group->name,
+		);
+
+		if ( $message ) {
+			// Do nothing
+		}
+		elseif ( 'created' === $action ) {
+			$message = __( 'Created profile field group "%s"', 'stream' );
+		}
+		elseif ( 'updated' === $action ) {
+			$message = __( 'Updated profile field group "%s"', 'stream' );
+		}
+		elseif ( 'deleted' === $action ) {
+			$message = __( 'Deleted profile field group "%s"', 'stream' );
+		}
+		else {
+			return;
+		}
+
+		self::log(
+			vsprintf(
+				$message,
+				$replacements
+			),
+			array_merge(
+				array(
+					'id' => $group->id,
+					'name' => $group->name,
+				),
+				$meta
+			),
+			$group->id,
+			array(
+				'profile_fields' => $action,
+			)
+		);
+	}
+
+	public static function callback_xprofile_group_after_save( $group ) {
+		global $wpdb;
+		// a bit hacky, due to inconsistency with BP action scheme, see callback_xprofile_field_after_save for correct behavior
+		$action = ( $group->id === $wpdb->insert_id ) ? 'created' : 'updated';
+		self::field_group_action( $group, $action );
+	}
+
+	public static function callback_xprofile_groups_deleted_group( $group ){
+		self::field_group_action( $group, 'deleted' );
 	}
 
 	private static function bp_get_directory_pages() {
