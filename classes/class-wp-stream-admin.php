@@ -134,16 +134,16 @@ class WP_Stream_Admin {
 		<div id="stream-message" class="updated stream-connect" style="display:block !important;">
 		<?php if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) : // Can't deactivate if network activated ?>
 			<div id="stream-dismiss" class="stream-close-button-container">
-				<a class="stream-close-button" href="<?php echo esc_url( $dismiss_and_deactivate_url ); ?>" title="<?php _e( 'Dismiss this notice and deactivate Stream.', 'stream' ); ?>"></a>
+				<a class="stream-close-button" href="<?php echo esc_url( $dismiss_and_deactivate_url ) ?>" title="<?php _e( 'Dismiss this notice and deactivate Stream.', 'stream' ) ?>"></a>
 			</div>
 		<?php endif; ?>
 			<div class="stream-wrap-container">
 				<div class="stream-install-container">
-						<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ); ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
+						<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ) ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a></p>
 				</div>
 				<div class="stream-text-container">
-						<p><strong><?php _e( 'Stream is almost ready!', 'stream' ); ?></strong></p>
-						<p><?php _e( 'Connect now to see every change made to your WordPress site in beautifully organized detail.', 'stream' ); ?></p>
+						<p><strong><?php _e( 'Stream is almost ready!', 'stream' ) ?></strong></p>
+						<p><?php _e( 'Connect now to see every change made to your WordPress site in beautifully organized detail.', 'stream' ) ?></p>
 				</div>
 			</div>
 		</div>
@@ -507,10 +507,10 @@ class WP_Stream_Admin {
 		?>
 		<div class="wrap">
 
-			<h2><?php echo esc_html( $page_title ); ?></h2>
+			<h2><?php echo esc_html( $page_title ) ?></h2>
 
 			<?php if ( ! empty( $page_description ) ) : ?>
-				<p><?php echo esc_html( $page_description ); ?></p>
+				<p><?php echo esc_html( $page_description ) ?></p>
 			<?php endif; ?>
 
 			<?php settings_errors() ?>
@@ -637,7 +637,7 @@ class WP_Stream_Admin {
 		?>
 		<div class="wrap">
 
-			<h2><?php echo esc_html( $page_title ); ?></h2>
+			<h2><?php echo esc_html( $page_title ) ?></h2>
 
 		</div>
 		<?php
@@ -682,10 +682,10 @@ class WP_Stream_Admin {
 		?>
 		<div id="wp-stream-connect">
 			<div class="wrap">
-				<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ); ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ); ?></a></p>
-				<p><?php _e( 'with WordPress.com', 'stream' ); ?></p>
-				<p class="quote">&ldquo;<?php echo esc_html( $testimonial['quote'] ); ?>&rdquo;</p>
-				<p class="author">&dash; <?php echo esc_html( $testimonial['author'] ); ?>, <a class="organization" href="<?php echo esc_url( $testimonial['link'] ); ?>"><?php echo esc_html( $testimonial['organization'] ); ?></a></p>
+				<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ) ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a></p>
+				<p><?php _e( 'with WordPress.com', 'stream' ) ?></p>
+				<p class="quote">&ldquo;<?php echo esc_html( $testimonial['quote'] ) ?>&rdquo;</p>
+				<p class="author">&dash; <?php echo esc_html( $testimonial['author'] ) ?>, <a class="organization" href="<?php echo esc_url( $testimonial['link'] ) ?>"><?php echo esc_html( $testimonial['organization'] ) ?></a></p>
 			</div>
 		</div>
 		<?php
@@ -721,8 +721,8 @@ class WP_Stream_Admin {
 			<div id="stream-message" class="updated stream-network-connect stream-connect" style="display:block !important;">
 				<div class="stream-wrap-container">
 					<div class="stream-text-container">
-							<p><strong><?php _e( 'Get started with Stream for Multisite!', 'stream' ); ?></strong></p>
-							<p><?php _e( 'Welcome to your Network Stream! Each site on your network must be connected individually by an admin on that site for it to show here.', 'stream' ); ?></p>
+							<p><strong><?php _e( 'Get started with Stream for Multisite!', 'stream' ) ?></strong></p>
+							<p><?php _e( 'Welcome to your Network Stream! Each site on your network must be connected individually by an admin on that site for it to show here.', 'stream' ) ?></p>
 					</div>
 				</div>
 			</div>
