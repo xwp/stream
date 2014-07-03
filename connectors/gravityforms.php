@@ -558,7 +558,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		$titles = wp_list_pluck( $forms, 'title' );
 
 		self::log(
-			__( 'Export process started for %1$d forms', 'stream' ),
+			__( 'Export process started for %d forms', 'stream' ),
 			array(
 				'count'  => count( $forms ),
 				'ids'    => $ids,
