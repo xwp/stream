@@ -450,7 +450,14 @@ class WP_Stream_Admin {
 
 		do_action( 'wp_stream_site_connected', $api_key );
 
-		wp_redirect( admin_url( 'admin.php?page=' . self::RECORDS_PAGE_SLUG ) );
+		$redirect_url = add_query_arg(
+			array(
+				'page'      => self::RECORDS_PAGE_SLUG,
+				'connected' => 1,
+			),
+			admin_url( 'admin.php' )
+		);
+		wp_redirect( $redirect_url );
 	}
 
 	/**
@@ -695,6 +702,18 @@ class WP_Stream_Admin {
 	}
 
 	public static function stream_page() {
+
+		if ( isset( $_GET['connected'] ) ) {
+			WP_Stream::notice(
+				sprintf(
+					'<strong>%s</strong> %s',
+					__( 'Everything is awesome!', 'stream' ),
+					__( 'You have successfully connected to Stream. Now start doing stuff and it will show up here.', 'stream' )
+				),
+				false
+			);
+		}
+
 		$page_title = __( 'Stream Records', 'stream' );
 
 		self::$list_table->prepare_items();
