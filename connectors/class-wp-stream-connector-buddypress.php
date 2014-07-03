@@ -28,7 +28,6 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		'update_site_option',
 		'add_site_option',
 		'delete_site_option',
-
 		'add_user_meta',
 		'update_user_meta',
 		'delete_user_meta',
@@ -78,8 +77,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	 */
 	public static $options = array(
 		'bp-active-components' => null,
-		'bp-pages' => null,
-		'buddypress' => null,
+		'bp-pages'             => null,
+		'buddypress'           => null,
 	);
 
 	/**
@@ -184,6 +183,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( in_array( $record->context, array( 'components' ) ) ) {
 			$option_key = wp_stream_get_meta( $record->ID, 'option_key', true );
+
 			if ( 'bp-active-components' === $option_key ) {
 				$links[ __( 'Edit', 'stream' ) ] = add_query_arg(
 					array(
@@ -191,22 +191,22 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 					),
 					admin_url( 'admin.php' )
 				);
-			}
-			elseif ( 'bp-pages' === $option_key ) {
+			} elseif ( 'bp-pages' === $option_key ) {
 				$page_id = wp_stream_get_meta( $record->ID, 'page_id', true );
+
 				$links[ __( 'Edit setting', 'stream' ) ] = add_query_arg(
 					array(
 						'page' => 'bp-page-settings',
 					),
 					admin_url( 'admin.php' )
 				);
+
 				if ( $page_id ) {
 					$links[ __( 'Edit Page', 'stream' ) ] = get_edit_post_link( $page_id );
-					$links[ __( 'View', 'stream' ) ] = get_permalink( $page_id );
+					$links[ __( 'View', 'stream' ) ]      = get_permalink( $page_id );
 				}
 			}
-		}
-		elseif ( in_array( $record->context, array( 'settings' ) ) ) {
+		} elseif ( in_array( $record->context, array( 'settings' ) ) ) {
 			$links[ __( 'Edit setting', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => wp_stream_get_meta( $record->ID, 'page', true ),
@@ -214,6 +214,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				admin_url( 'admin.php' )
 			);
 		}
+
 		return $links;
 	}
 
@@ -226,44 +227,44 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			self::$options,
 			array(
 				'hide-loggedout-adminbar'       => array(
-					'label'   => __( 'Toolbar', 'buddypress' ),
-					'page' => 'bp-settings',
+					'label' => __( 'Toolbar', 'buddypress' ),
+					'page'  => 'bp-settings',
 				),
 				'_bp_force_buddybar'            => array(
-					'label'   => __( 'Toolbar', 'buddypress' ),
-					'page' => 'bp-settings',
+					'label' => __( 'Toolbar', 'buddypress' ),
+					'page'  => 'bp-settings',
 				),
 				'bp-disable-account-deletion'   => array(
-					'label'   => __( 'Account Deletion', 'buddypress' ),
-					'page' => 'bp-settings',
+					'label' => __( 'Account Deletion', 'buddypress' ),
+					'page'  => 'bp-settings',
 				),
 				'bp-disable-profile-sync'       => array(
-					'label'   => __( 'Profile Syncing', 'buddypress' ),
-					'page' => 'bp-settings',
+					'label' => __( 'Profile Syncing', 'buddypress' ),
+					'page'  => 'bp-settings',
 				),
 				'bp_restrict_group_creation'    => array(
-					'label'   => __( 'Group Creation', 'buddypress' ),
-					'page' => 'bp-settings',
+					'label' => __( 'Group Creation', 'buddypress' ),
+					'page'  => 'bp-settings',
 				),
 				'bb-config-location'            => array(
-					'label'   => __( 'bbPress Configuration', 'buddypress' ),
-					'page' => 'bp-settings',
+					'label' => __( 'bbPress Configuration', 'buddypress' ),
+					'page'  => 'bp-settings',
 				),
 				'bp-disable-blogforum-comments' => array(
-					'label'   => __( 'Blog &amp; Forum Comments', 'buddypress' ),
-					'page' => 'bp-settings',
+					'label' => __( 'Blog &amp; Forum Comments', 'buddypress' ),
+					'page'  => 'bp-settings',
 				),
 				'_bp_enable_heartbeat_refresh'  => array(
-					'label'   => __( 'Activity auto-refresh', 'buddypress' ),
-					'page' => 'bp-settings',
+					'label' => __( 'Activity auto-refresh', 'buddypress' ),
+					'page'  => 'bp-settings',
 				),
 				'_bp_enable_akismet'            => array(
-					'label'   => __( 'Akismet', 'buddypress' ),
-					'page' => 'bp-settings',
+					'label' => __( 'Akismet', 'buddypress' ),
+					'page'  => 'bp-settings',
 				),
 				'bp-disable-avatar-uploads'     => array(
-					'label'   => __( 'Avatar Uploads', 'buddypress' ),
-					'page' => 'bp-settings',
+					'label' => __( 'Avatar Uploads', 'buddypress' ),
+					'page'  => 'bp-settings',
 				),
 			)
 		);
@@ -293,7 +294,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		self::check( $option, null, null );
 	}
 
-	public static function check( $option, $old_value, $new_value ){
+	public static function check( $option, $old_value, $new_value ) {
 		if ( ! array_key_exists( $option, self::$options ) ) {
 			return;
 		}
@@ -307,8 +308,9 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			$option_title = $data['label'];
 			$context      = isset( $data['context'] ) ? $data['context'] : 'settings';
 			$page         = isset( $data['page'] ) ? $data['page'] : null;
+
 			self::log(
-				__( '"%s" setting was updated', 'stream' ),
+				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value', 'page' ),
 				null,
 				array(
@@ -343,15 +345,15 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 			self::log(
 				sprintf(
-					__( '"%s" component was %s', 'stream' ),
+					__( '"%1$s" component %2$s', 'stream' ),
 					$components[ $option ]['title'],
 					$actions[ $option_value ]
 				),
 				array(
-					'option'       => $option,
-					'option_key'   => 'bp-active-components',
-					'old_value'    => maybe_serialize( $old_value ),
-					'value'        => maybe_serialize( $new_value ),
+					'option'     => $option,
+					'option_key' => 'bp-active-components',
+					'old_value'  => maybe_serialize( $old_value ),
+					'value'      => maybe_serialize( $new_value ),
 				),
 				null,
 				array(
@@ -363,6 +365,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 	public static function check_bp_pages( $old_value, $new_value ) {
 		$options = array();
+
 		if ( ! is_array( $old_value ) || ! is_array( $new_value ) ) {
 			return;
 		}
@@ -388,16 +391,16 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 			self::log(
 				sprintf(
-					__( '"%s" page was set to "%s"', 'stream' ),
+					__( '"%1$s" page set to "%2$s"', 'stream' ),
 					$pages[ $option ],
 					$page
 				),
 				array(
-					'option'       => $option,
-					'option_key'   => 'bp-pages',
-					'old_value'    => maybe_serialize( $old_value ),
-					'value'        => maybe_serialize( $new_value ),
-					'page_id'      => empty( $new_value[ $option ] ) ? 0 : $new_value[ $option ],
+					'option'     => $option,
+					'option_key' => 'bp-pages',
+					'old_value'  => maybe_serialize( $old_value ),
+					'value'      => maybe_serialize( $new_value ),
+					'page_id'    => empty( $new_value[ $option ] ) ? 0 : $new_value[ $option ],
 				),
 				null,
 				array(
@@ -434,7 +437,9 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		if ( ! in_array( $key, self::$user_meta ) ) {
 			return false;
 		}
+
 		$key = str_replace( '-', '_', $key );
+
 		if ( method_exists( __CLASS__, 'meta_' . $key ) ) {
 			return call_user_func( array( __CLASS__, 'meta_' . $key ), $object_id, $value, $is_add );
 		}
@@ -745,20 +750,20 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	}
 
 	private static function bp_get_directory_pages() {
-		$bp = buddypress();
+		$bp              = buddypress();
 		$directory_pages = array();
+
 		// Loop through loaded components and collect directories
 		if ( is_array( $bp->loaded_components ) ) {
 			foreach ( $bp->loaded_components as $component_slug => $component_id ) {
-
 				// Only components that need directories should be listed here
 				if ( isset( $bp->{$component_id} ) && ! empty( $bp->{$component_id}->has_directory ) ) {
-
 					// component->name was introduced in BP 1.5, so we must provide a fallback
 					$directory_pages[ $component_id ] = ! empty ( $bp->{ $component_id }->name ) ? $bp->{ $component_id }->name : ucwords( $component_id );
 				}
 			}
 		}
+
 		return $directory_pages;
 	}
 

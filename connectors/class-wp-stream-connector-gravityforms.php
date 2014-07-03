@@ -122,11 +122,11 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'forms' => __( 'Forms', 'gravityforms' ),
+			'forms'    => __( 'Forms', 'gravityforms' ),
 			'settings' => __( 'Settings', 'gravityforms' ),
-			'export' => __( 'Import/Export', 'gravityforms' ),
-			'entries' => __( 'Entries', 'gravityforms' ),
-			'notes' => __( 'Notes', 'gravityforms' ),
+			'export'   => __( 'Import/Export', 'gravityforms' ),
+			'entries'  => __( 'Entries', 'gravityforms' ),
+			'notes'    => __( 'Notes', 'gravityforms' ),
 		);
 	}
 
@@ -149,8 +149,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				),
 				admin_url( 'admin.php' )
 			);
-		}
-		elseif ( 'entries' === $record->context ) {
+		} elseif ( 'entries' === $record->context ) {
 			$links[ __( 'View', 'gravityforms' ) ] = add_query_arg(
 				array(
 					'page' => 'gf_entries',
@@ -160,8 +159,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				),
 				admin_url( 'admin.php' )
 			);
-		}
-		elseif ( 'notes' === $record->context ) {
+		} elseif ( 'notes' === $record->context ) {
 			$links[ __( 'View', 'gravityforms' ) ] = add_query_arg(
 				array(
 					'page' => 'gf_entries',
@@ -171,8 +169,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				),
 				admin_url( 'admin.php' )
 			);
-		}
-		elseif ( 'settings' === $record->context ) {
+		} elseif ( 'settings' === $record->context ) {
 			$links[ __( 'Edit Settings', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => 'gf_settings',
@@ -180,6 +177,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				admin_url( 'admin.php' )
 			);
 		}
+
 		return $links;
 	}
 
@@ -187,25 +185,25 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		parent::register();
 
 		self::$options = array(
-			'rg_gforms_disable_css' => array(
+			'rg_gforms_disable_css'         => array(
 				'label' => __( 'Output CSS', 'gravityforms' ),
 			),
-			'rg_gforms_enable_html5' => array(
+			'rg_gforms_enable_html5'        => array(
 				'label' => __( 'Output HTML5', 'gravityforms' ),
 			),
-			'gform_enable_noconflict' => array(
+			'gform_enable_noconflict'       => array(
 				'label' => __( 'No-Conflict Mode', 'gravityforms' ),
 			),
-			'rg_gforms_currency' => array(
+			'rg_gforms_currency'            => array(
 				'label' => __( 'Currency', 'gravityforms' ),
 			),
-			'rg_gforms_captcha_public_key' => array(
+			'rg_gforms_captcha_public_key'  => array(
 				'label' => __( 'reCAPTCHA Public Key', 'gravityforms' ),
 			),
 			'rg_gforms_captcha_private_key' => array(
 				'label' => __( 'reCAPTCHA Private Key', 'gravityforms' ),
 			),
-			'rg_gforms_key' => null,
+			'rg_gforms_key'                 => null,
 		);
 	}
 
@@ -221,14 +219,14 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 
 		self::log(
 			sprintf(
-				__( '%s form "%s"', 'stream' ),
-				$is_new ? __( 'Created', 'stream' ) : __( 'Updated', 'stream' ),
-				$title
+				__( '"%1$s" form %2$s', 'stream' ),
+				$title,
+				$is_new ? __( 'created', 'stream' ) : __( 'updated', 'stream' )
 			),
 			array(
 				'action' => $is_new,
-				'id' => $id,
-				'title' => $title,
+				'id'     => $id,
+				'title'  => $title,
 			),
 			$id,
 			array(
@@ -250,15 +248,16 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		if ( ! isset( $is_new ) ) {
 			$is_new = false;
 		}
+
 		self::log(
 			sprintf(
-				__( '"%s" confirmation has been %s for "%s"', 'stream' ),
+				__( '"%1$s" confirmation %2$s for "%3$s"', 'stream' ),
 				$confirmation['name'],
-				$is_new ? __( 'Created', 'stream' ) : __( 'Updated', 'stream' ),
+				$is_new ? __( 'created', 'stream' ) : __( 'updated', 'stream' ),
 				$form['title']
 			),
 			array(
-				'is_new' => $is_new,
+				'is_new'  => $is_new,
 				'form_id' => $form['id'],
 			),
 			$form['id'],
@@ -283,16 +282,17 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		if ( ! isset( $is_new ) ) {
 			$is_new = false;
 		}
+
 		self::log(
 			sprintf(
-				__( '"%s" notification has been %s for "%s"', 'stream' ),
+				__( '"%1$s" notification %2$s for "%3$s"', 'stream' ),
 				$notification['name'],
-				$is_new ? __( 'Created', 'stream' ) : __( 'Updated', 'stream' ),
+				$is_new ? __( 'created', 'stream' ) : __( 'updated', 'stream' ),
 				$form['title']
 			),
 			array(
 				'is_update' => $is_new,
-				'form_id' => $form['id'],
+				'form_id'   => $form['id'],
 			),
 			$form['id'],
 			array(
@@ -312,12 +312,12 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	public static function callback_gform_notification_delete( $notification, $form ) {
 		self::log(
 			sprintf(
-				__( '"%s" notification has been deleted from "%s"', 'stream' ),
+				__( '"%1$s" notification deleted from "%2$s"', 'stream' ),
 				$notification['name'],
 				$form['title']
 			),
 			array(
-				'form_id' => $form['id'],
+				'form_id'      => $form['id'],
 				'notification' => $notification,
 			),
 			$form['id'],
@@ -336,12 +336,12 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	public static function callback_gform_confirmation_delete( $confirmation, $form ) {
 		self::log(
 			sprintf(
-				__( '"%s" confirmation has been deleted from "%s"', 'stream' ),
+				__( '"%1$s" confirmation deleted from "%2$s"', 'stream' ),
 				$confirmation['name'],
 				$form['title']
 			),
 			array(
-				'form_id' => $form['id'],
+				'form_id'      => $form['id'],
 				'confirmation' => $confirmation,
 			),
 			$form['id'],
@@ -361,15 +361,15 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	public static function callback_gform_confirmation_status( $confirmation, $form, $is_active ) {
 		self::log(
 			sprintf(
-				__( '"%s" confirmation has been %s from "%s"', 'stream' ),
+				__( '"%1$s" confirmation %2$s from "%3$s"', 'stream' ),
 				$confirmation['name'],
 				$is_active ? __( 'activated', 'stream' ) : __( 'deactivated', 'stream' ),
 				$form['title']
 			),
 			array(
-				'form_id' => $form['id'],
+				'form_id'      => $form['id'],
 				'confirmation' => $confirmation,
-				'is_active' => $is_active,
+				'is_active'    => $is_active,
 			),
 			null,
 			array(
@@ -385,10 +385,11 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 */
 	public static function callback_gform_form_reset_views( $id ) {
 		$form = self::get_form( $id );
+
 		self::log(
-			__( '"%s" form views has been reset', 'stream' ),
+			__( '"%s" form views reset', 'stream' ),
 			array(
-				'title' => $form['title'],
+				'title'   => $form['title'],
 				'form_id' => $form['id'],
 			),
 			$form['id'],
@@ -408,15 +409,15 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	public static function callback_gform_notification_status( $notification, $form, $is_active ) {
 		self::log(
 			sprintf(
-				__( '"%s" notification has been %s from "%s"', 'stream' ),
+				__( '"%1$s" notification %2$s from "%3$s"', 'stream' ),
 				$notification['name'],
 				$is_active ? __( 'activated', 'stream' ) : __( 'deactivated', 'stream' ),
 				$form['title']
 			),
 			array(
-				'form_id' => $form['id'],
+				'form_id'      => $form['id'],
 				'notification' => $notification,
-				'is_active' => $is_active,
+				'is_active'    => $is_active,
 			),
 			$form['id'],
 			array(
@@ -432,22 +433,23 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 * @param $action
 	 */
 	public static function callback_gform_form_status_change( $id, $action ) {
-		$form = self::get_form( $id );
+		$form    = self::get_form( $id );
 		$actions = array(
-			'activated' => __( 'Activated', 'stream' ),
+			'activated'   => __( 'Activated', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
-			'trashed' => __( 'Trashed', 'default' ),
-			'restored' => __( 'Restored', 'default' ),
+			'trashed'     => __( 'Trashed', 'default' ),
+			'restored'    => __( 'Restored', 'default' ),
 		);
+
 		self::log(
 			sprintf(
-				__( '%s form "%s"', 'stream' ),
-				$actions[ $action ],
-				$form['title']
+				__( '"%1$s" form %2$s', 'stream' ),
+				$form['title'],
+				$actions[ $action ]
 			),
 			array(
 				'form_title' => $form['title'],
-				'form_id' => $id,
+				'form_id'    => $id,
 			),
 			$form['id'],
 			array(
@@ -480,7 +482,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		self::check( $option, null, null );
 	}
 
-	public static function check( $option, $old_value, $new_value ){
+	public static function check( $option, $old_value, $new_value ) {
 		if ( ! array_key_exists( $option, self::$options ) ) {
 			return;
 		}
@@ -488,12 +490,12 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		if ( is_null( self::$options[ $option ] ) ) {
 			call_user_func( array( __CLASS__, 'check_' . str_replace( '-', '_', $option ) ), $old_value, $new_value );
 		} else {
-
-			$data = self::$options[ $option ];
+			$data         = self::$options[ $option ];
 			$option_title = $data['label'];
-			$context = isset( $data['context'] ) ? $data['context'] : 'settings';
+			$context      = isset( $data['context'] ) ? $data['context'] : 'settings';
+
 			self::log(
-				__( '"%s" setting was updated', 'stream' ),
+				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
 				array(
@@ -505,10 +507,11 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 
 	public static function check_rg_gforms_key( $old_value, $new_value ) {
 		$is_update = ( $new_value && strlen( $new_value ) );
-		$option = 'rg_gforms_key';
+		$option    = 'rg_gforms_key';
+
 		self::log(
 			sprintf(
-				__( 'Gravity Forms License Key was %s', 'stream' ),
+				__( 'Gravity Forms license key %s', 'stream' ),
 				$is_update ? __( 'updated', 'stream' ) : __( 'deleted', 'stream' )
 			),
 			compact( 'option', 'old_value', 'new_value' ),
@@ -521,40 +524,44 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 
 	public static function callback_gform_export_separator( $dummy, $form_id ) {
 		$form = self::get_form( $form_id );
+
 		self::log(
-			__( 'Form "%s" was exported', 'stream' ),
+			__( '"%s" form exported', 'stream' ),
 			array(
 				'form_title' => $form['title'],
-				'form_id' => $form_id,
+				'form_id'    => $form_id,
 			),
 			$form_id,
 			array(
 				'export' => 'exported',
 			)
 		);
+
 		return $dummy;
 	}
 
 	public static function callback_gform_import_form_xml_options( $dummy ) {
 		self::log(
-			__( 'Started Import process', 'stream' ),
+			__( 'Import process started', 'stream' ),
 			array(),
 			null,
 			array(
 				'export' => 'imported',
 			)
 		);
+
 		return $dummy;
 	}
 
 	public static function callback_gform_export_options( $dummy, $forms ) {
-		$ids = wp_list_pluck( $forms, 'id' );
+		$ids    = wp_list_pluck( $forms, 'id' );
 		$titles = wp_list_pluck( $forms, 'title' );
+
 		self::log(
-			__( 'Started Forms Export process, for "%d" forms', 'stream' ),
+			__( 'Export process started for %d forms', 'stream' ),
 			array(
-				'count' => count( $forms ),
-				'ids' => $ids,
+				'count'  => count( $forms ),
+				'ids'    => $ids,
 				'titles' => $titles,
 			),
 			null,
@@ -562,16 +569,18 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'export' => 'imported',
 			)
 		);
+
 		return $dummy;
 	}
 
 	public static function callback_gform_before_delete_form( $id ) {
 		$form = self::get_form( $id );
+
 		self::log(
-			__( 'Deleted form "%s"', 'stream' ),
+			__( '"%s" form deleted', 'stream' ),
 			array(
 				'form_title' => $form['title'],
-				'form_id' => $id,
+				'form_id'    => $id,
 			),
 			$form['id'],
 			array(
@@ -582,14 +591,15 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 
 	public static function callback_gform_form_duplicate( $id, $new_id ) {
 		$form = self::get_form( $id );
-		$new = self::get_form( $new_id );
+		$new  = self::get_form( $new_id );
+
 		self::log(
-			__( 'Created form "%s" as duplicate from "%s"', 'stream' ),
+			__( '"%1$s" form created as duplicate from "%2$s"', 'stream' ),
 			array(
 				'new_form_title' => $new['title'],
-				'form_title' => $form['title'],
-				'form_id' => $id,
-				'new_id' => $new_id,
+				'form_title'     => $form['title'],
+				'form_id'        => $id,
+				'new_id'         => $new_id,
 			),
 			$new_id,
 			array(
@@ -601,12 +611,13 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	public static function callback_gform_delete_lead( $lead_id ) {
 		$lead = GFFormsModel::get_lead( $lead_id );
 		$form = self::get_form( $lead['form_id'] );
+
 		self::log(
-			__( 'Deleted lead #%d from "%s"', 'stream' ),
+			__( 'Lead #%1$d from "%2$s" deleted', 'stream' ),
 			array(
-				'lead_id' => $lead_id,
+				'lead_id'    => $lead_id,
 				'form_title' => $form['title'],
-				'form_id' => $form['id'],
+				'form_id'    => $form['id'],
 			),
 			$lead_id,
 			array(
@@ -618,13 +629,14 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	public static function callback_gform_insert_note( $note_id, $lead_id, $user_id, $user_name, $note, $note_type ) {
 		$lead = GFFormsModel::get_lead( $lead_id );
 		$form = self::get_form( $lead['form_id'] );
+
 		self::log(
-			__( 'Added note #%d to lead #%d on "%s"', 'stream' ),
+			__( 'Note #%1$d added to lead #%2$d on "%3$s" form', 'stream' ),
 			array(
-				'note_id' => $note_id,
-				'lead_id' => $lead_id,
+				'note_id'    => $note_id,
+				'lead_id'    => $lead_id,
 				'form_title' => $form['title'],
-				'form_id' => $form['id'],
+				'form_id'    => $form['id'],
 			),
 			$note_id,
 			array(
@@ -636,13 +648,14 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	public static function callback_gform_delete_note( $note_id, $lead_id ) {
 		$lead = GFFormsModel::get_lead( $lead_id );
 		$form = self::get_form( $lead['form_id'] );
+
 		self::log(
-			__( 'Deleted note #%d from lead #%d on "%s"', 'stream' ),
+			__( 'Note #%1$d deleted from lead #%2$d on "%3$s" form', 'stream' ),
 			array(
-				'note_id' => $note_id,
-				'lead_id' => $lead_id,
+				'note_id'    => $note_id,
+				'lead_id'    => $lead_id,
 				'form_title' => $form['title'],
-				'form_id' => $form['id'],
+				'form_id'    => $form['id'],
 			),
 			$note_id,
 			array(
@@ -654,32 +667,35 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	public static function callback_gform_update_status( $lead_id, $status, $prev = '' ) {
 		$lead = GFFormsModel::get_lead( $lead_id );
 		$form = self::get_form( $lead['form_id'] );
+
 		if ( 'active' === $status && 'trash' === $prev ) {
 			$status = 'restore';
 		}
+
 		$actions = array(
-			'active' => __( 'Activated', 'stream' ),
-			'spam' => __( 'Spam', 'stream' ),
-			'trash' => __( 'Trashed', 'default' ),
-			'restore' => __( 'Restored', 'default' ),
+			'active'  => __( 'activated', 'stream' ),
+			'spam'    => __( 'marked as spam', 'stream' ),
+			'trash'   => __( 'trashed', 'stream' ),
+			'restore' => __( 'restored', 'stream' ),
 		);
 
 		if ( ! isset( $actions[ $status ] ) ) {
 			return;
 		}
+
 		self::log(
 			sprintf(
-				__( '%s lead #%d on "%s"', 'stream' ),
-				$actions[ $status ],
+				__( 'Lead #%1$d %2$s on "%3$s" form', 'stream' ),
 				$lead_id,
+				$actions[ $status ],
 				$form['title']
 			),
 			array(
-				'lead_id' => $lead_id,
+				'lead_id'    => $lead_id,
 				'form_title' => $form['title'],
-				'form_id' => $form['id'],
-				'status' => $status,
-				'prev' => $prev,
+				'form_id'    => $form['id'],
+				'status'     => $status,
+				'prev'       => $prev,
 			),
 			$lead_id,
 			array(
@@ -694,16 +710,16 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 
 		self::log(
 			sprintf(
-				__( 'Marked lead #%d on "%s" as %s', 'stream' ),
+				__( 'Lead #%1$d marked as %2$s on "%3$s" form', 'stream' ),
 				$lead_id,
-				$form['title'],
-				$status ? __( 'Read', 'stream' ) : __( 'Unread', 'stream' )
+				$status ? __( 'read', 'stream' ) : __( 'unread', 'stream' ),
+				$form['title']
 			),
 			array(
-				'lead_id' => $lead_id,
+				'lead_id'    => $lead_id,
 				'form_title' => $form['title'],
-				'form_id' => $form['id'],
-				'status' => $status,
+				'form_id'    => $form['id'],
+				'status'     => $status,
 			),
 			$lead_id,
 			array(
@@ -718,16 +734,16 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 
 		self::log(
 			sprintf(
-				__( '%s lead #%d on "%s"', 'stream' ),
-				$status ? __( 'Starred', 'stream' ) : __( 'Unstarred', 'stream' ),
+				__( 'Lead #%1$d %2$s on "%3$s" form', 'stream' ),
 				$lead_id,
+				$status ? __( 'starred', 'stream' ) : __( 'unstarred', 'stream' ),
 				$form['title']
 			),
 			array(
-				'lead_id' => $lead_id,
+				'lead_id'    => $lead_id,
 				'form_title' => $form['title'],
-				'form_id' => $form['id'],
-				'status' => $status,
+				'form_id'    => $form['id'],
+				'status'     => $status,
 			),
 			$lead_id,
 			array(

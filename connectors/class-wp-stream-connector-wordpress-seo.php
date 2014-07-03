@@ -25,7 +25,6 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 		'wpseo_handle_import',
 		'wpseo_import',
 		'seo_page_wpseo_files',
-
 		'added_post_meta',
 		'updated_post_meta',
 		'deleted_post_meta',
@@ -75,12 +74,12 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'    => __( 'Created', 'stream' ),
-			'updated'    => __( 'Updated', 'stream' ),
-			'added'      => __( 'Added', 'stream' ),
-			'deleted'    => __( 'Deleted', 'stream' ),
-			'exported'   => __( 'Exported', 'stream' ),
-			'imported'   => __( 'Imported', 'stream' ),
+			'created'  => __( 'Created', 'stream' ),
+			'updated'  => __( 'Updated', 'stream' ),
+			'added'    => __( 'Added', 'stream' ),
+			'deleted'  => __( 'Deleted', 'stream' ),
+			'exported' => __( 'Exported', 'stream' ),
+			'imported' => __( 'Imported', 'stream' ),
 		);
 	}
 
@@ -119,17 +118,18 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		$contexts = self::get_context_labels();
+
 		// Options
 		if ( $option = wp_stream_get_meta( $record->ID, 'option', true ) ) {
 			$key = wp_stream_get_meta( $record->ID, 'option_key', true );
+
 			$links[ __( 'Edit', 'default' ) ] = add_query_arg(
 				array(
 					'page' => $record->context,
 				),
 				admin_url( 'admin.php' )
 			) . '#stream-highlight-' . $key;
-		}
-		elseif ( 'wpseo_files' === $record->context ) {
+		} elseif ( 'wpseo_files' === $record->context ) {
 			$links[ __( 'Edit', 'default' ) ] = add_query_arg(
 				array(
 					'page' => $record->context,
@@ -180,6 +180,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 				}
 			}
 		}
+
 		return $links;
 	}
 
@@ -210,13 +211,13 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	 */
 	public static function callback_wpseo_handle_import() {
 		$imports = array(
-			'importheadspace'                 => __( 'HeadSpace2', 'stream' ), # type = checkbox
-			'importaioseo'                    => __( 'All-in-One SEO', 'stream' ), # type = checkbox
-			'importaioseoold'                 => __( 'OLD All-in-One SEO', 'stream' ), # type = checkbox
-			'importwoo'                       => __( 'WooThemes SEO framework', 'stream' ), # type = checkbox
-			'importrobotsmeta'                => __( 'Robots Meta (by Yoast)', 'stream' ), # type = checkbox
-			'importrssfooter'                 => __( 'RSS Footer (by Yoast)', 'stream' ), # type = checkbox
-			'importbreadcrumbs'               => __( 'Yoast Breadcrumbs', 'stream' ), # type = checkbox
+			'importheadspace'   => __( 'HeadSpace2', 'stream' ), # type = checkbox
+			'importaioseo'      => __( 'All-in-One SEO', 'stream' ), # type = checkbox
+			'importaioseoold'   => __( 'OLD All-in-One SEO', 'stream' ), # type = checkbox
+			'importwoo'         => __( 'WooThemes SEO framework', 'stream' ), # type = checkbox
+			'importrobotsmeta'  => __( 'Robots Meta (by Yoast)', 'stream' ), # type = checkbox
+			'importrssfooter'   => __( 'RSS Footer (by Yoast)', 'stream' ), # type = checkbox
+			'importbreadcrumbs' => __( 'Yoast Breadcrumbs', 'stream' ), # type = checkbox
 		);
 
 		$opts = wp_stream_filter_input( INPUT_POST, 'wpseo' );
@@ -225,7 +226,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 			if ( isset( $opts[ $key ] ) ) {
 				self::log(
 					sprintf(
-						__( 'Imported settings from %s%s', 'stream' ),
+						__( 'Imported settings from %1$s%2$s', 'stream' ),
 						$name,
 						isset( $opts['deleteolddata'] ) ? __( ', and deleted old data', 'stream' ) : ''
 					),
@@ -255,9 +256,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 				null,
 				array( 'wpseo_import' => 'exported' )
 			);
-		}
-
-		elseif ( isset( $_FILES['settings_import_file'] ) ) {
+		} elseif ( isset( $_FILES['settings_import_file'] ) ) {
 			self::log(
 				sprintf(
 					__( 'Tried importing settings from "%s"', 'stream' ),
@@ -275,11 +274,9 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	public static function callback_seo_page_wpseo_files() {
 		if ( wp_stream_filter_input( INPUT_POST, 'create_robots' ) ) {
 			$message = __( 'Tried creating robots.txt file', 'stream' );
-		}
-		elseif ( wp_stream_filter_input( INPUT_POST, 'submitrobots' ) ) {
+		} elseif ( wp_stream_filter_input( INPUT_POST, 'submitrobots' ) ) {
 			$message = __( 'Tried updating robots.txt file', 'stream' );
-		}
-		elseif ( wp_stream_filter_input( INPUT_POST, 'submithtaccess' ) ) {
+		} elseif ( wp_stream_filter_input( INPUT_POST, 'submithtaccess' ) ) {
 			$message = __( 'Tried updating htaccess file', 'stream' );
 		}
 
@@ -305,11 +302,13 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 
 	private static function meta( $object_id, $meta_key, $meta_value ) {
 		$prefix = WPSEO_Meta::$meta_prefix;
+
 		WPSEO_Metabox::translate_meta_boxes();
 
 		if ( 0 !== strpos( $meta_key, $prefix ) ) {
 			return;
 		}
+
 		$key = str_replace( $prefix, '', $meta_key );
 
 		foreach ( WPSEO_Meta::$meta_fields as $tab => $fields ) {
@@ -323,12 +322,12 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 			return;
 		}
 
-		$post = get_post( $object_id );
+		$post            = get_post( $object_id );
 		$post_type_label = get_post_type_labels( get_post_type_object( $post->post_type ) )->singular_name;
 
 		self::log(
 			sprintf(
-				__( 'Updated "%s" of "%s" %s', 'stream' ),
+				__( 'Updated "%1$s" of "%2$s" %3$s', 'stream' ),
 				$field['title'],
 				$post->post_title,
 				$post_type_label
@@ -352,25 +351,28 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	 */
 	public static function log_override( array $data ) {
 		global $pagenow;
+
 		if ( 'options.php' === $pagenow && 'settings' === $data['connector'] && wp_stream_filter_input( INPUT_POST, '_wp_http_referer' ) ) {
 			if ( ! isset( $data['args']['context'] ) || ! isset( self::$option_groups[ $data['args']['context'] ] ) ) {
 				return $data;
 			}
 
-			$page = preg_match( '#page=([^&]*)#', wp_stream_filter_input( INPUT_POST, '_wp_http_referer' ), $match ) ? $match[1] : '';
+			$page   = preg_match( '#page=([^&]*)#', wp_stream_filter_input( INPUT_POST, '_wp_http_referer' ), $match ) ? $match[1] : '';
 			$labels = self::get_context_labels();
+
 			if ( ! isset( $labels[ $page ] ) ) {
 				return $data;
 			}
 
 			if ( ! ( $label = self::settings_labels( $data['args']['option_key'] ) ) ) {
-				$data['message'] = __( '%s settings have been updated', 'stream' );
-				$label = $labels[ $page ];
+				$data['message'] = __( '%s settings updated', 'stream' );
+				$label           = $labels[ $page ];
 			}
-			$data['args']['label'] = $label;
+
+			$data['args']['label']   = $label;
 			$data['args']['context'] = $page;
-			$data['contexts'] = array( $page => 'updated' );
-			$data['connector'] = self::$name;
+			$data['contexts']        = array( $page => 'updated' );
+			$data['connector']       = self::$name;
 		}
 
 		return $data;
@@ -474,9 +476,11 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 						return $trans;
 					}
 				}
+
 				return false;
 			}
 		}
+
 		return $labels;
 	}
 
