@@ -10,7 +10,7 @@ class WP_Stream_API {
 	/**
 	 * Site UUID key/identifier
 	 */
-	const UUID_OPTION_KEY = 'wp_stream_site_uuid';
+	const SITE_UUID_OPTION_KEY = 'wp_stream_site_uuid';
 
 	/**
 	 * The site's API Key
@@ -24,7 +24,7 @@ class WP_Stream_API {
 	 *
 	 * @var string
 	 */
-	protected $uuid = false;
+	protected $site_uuid = false;
 
 	/**
 	 * The API URL
@@ -46,8 +46,8 @@ class WP_Stream_API {
 	 * @return void
 	 */
 	public function __construct() {
-		$this->api_key = get_option( self::API_KEY_OPTION_KEY, 0 );
-		$this->uuid    = get_option( self::UUID_OPTION_KEY, 0 );
+		$this->api_key   = get_option( self::API_KEY_OPTION_KEY, 0 );
+		$this->site_uuid = get_option( self::SITE_UUID_OPTION_KEY, 0 );
 
 		if ( isset( $_GET['api_key'] ) ) {
 			add_action( 'admin_init', array( $this, 'update_api_authentication' ) );
@@ -66,18 +66,17 @@ class WP_Stream_API {
 
 		update_option( self::API_KEY_OPTION_KEY, $this->api_key );
 
-		$uuid_request_headers = array( 'stream-api-master-key' => $this->api_key );
-		$uuid_request         = $this->remote_request( $this->api_url . '/validate-key', $uuid_request_headers );
+		$site_uuid_request = $this->remote_request( $this->api_url . '/validate-key' );
 
-		if ( isset( $uuid_request->site_id ) ) {
-			$this->uuid = $uuid_request->site_id;
+		if ( isset( $site_uuid_request->site_id ) ) {
+			$this->site_uuid = $site_uuid_request->site_id;
 		}
 
-		update_option( self::UUID_OPTION_KEY, $this->uuid );
+		update_option( self::SITE_UUID_OPTION_KEY, $this->site_uuid );
 
-		do_action( 'wp_stream_site_connected', $this->api_key, $this->uuid );
+		do_action( 'wp_stream_site_connected', $this->api_key, $this->site_uuid );
 
-		if ( ! $this->api_key || ! $this->uuid ) {
+		if ( ! $this->api_key || ! $this->site_uuid ) {
 			wp_die( __( 'There was a problem connecting to Stream. Please try again later.', 'stream' ) );
 		}
 
@@ -118,25 +117,32 @@ class WP_Stream_API {
 	 * @return    void
 	 */
 	public function clear_cache( $transient ) {
-
 		delete_transient( $transient );
-
 	}
 
 	/**
 	 * Helper function to query the marketplace API via wp_remote_request.
 	 *
 	 * @param string The url to access.
+	 * @param string The method of the request.
+	 * @param array  The headers sent during the request.
 	 *
 	 * @return object The results of the wp_remote_request request.
 	 */
-	protected function remote_request( $url, $headers = array() ) {
-
+	protected function remote_request( $url, $method = 'GET', $headers = array(), $body = null ) {
 		if ( empty( $url ) ) {
 			return false;
 		}
 
-		$args = array( 'headers' => $headers );
+		if ( ! isset( $headers['stream-api-master-key'] ) ) {
+			$headers['stream-api-master-key'] = $this->api_key;
+		}
+
+		$args = array(
+			'headers' => $headers,
+			'method' => $method,
+			'body' => $body
+		);
 		$request = wp_remote_request( $url, $args );
 
 		if ( is_wp_error( $request ) ) {
