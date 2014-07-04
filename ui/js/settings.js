@@ -239,7 +239,7 @@ jQuery(function( $ ) {
 			$newRow  = $lastRow.clone();
 
 		$newRow.toggleClass( 'alternate' ).removeAttr( 'class' );
-		$( '.stream-exclude-list :input' ).off();
+		$( '.stream-exclude-list tbody :input' ).off();
 		$( ':input', $newRow ).off().val( '' );
 
 		$lastRow.after( $newRow );
