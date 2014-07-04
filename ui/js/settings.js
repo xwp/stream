@@ -2,7 +2,7 @@
 jQuery(function( $ ) {
 
 	var initSettingsSelect2 = function() {
-		$( '#tab-content-settings input[type=hidden].select2-select.with-source' ).each(function( k, el ) {
+		$( '.stream-exclude-list tr:not(.hidden) input[type=hidden].select2-select.with-source' ).each(function( k, el ) {
 			var $input = $( el ),
 				$connector = $( this ).prevAll( ':input.connector' );
 
@@ -20,7 +20,7 @@ jQuery(function( $ ) {
 
 		var $input_user, $input_ip;
 
-		$( '#tab-content-settings input[type=hidden].select2-select.ip_address' ).each(function( k, el ) {
+		$( '.stream-exclude-list tr:not(.hidden) input[type=hidden].select2-select.ip_address' ).each(function( k, el ) {
 			$input_ip = $( el );
 			$input_ip.select2({
 				ajax: {
@@ -93,7 +93,7 @@ jQuery(function( $ ) {
 			});
 		});
 
-		$( '#tab-content-settings input[type=hidden].select2-select.author_or_role' ).each(function( k, el ) {
+		$( '.stream-exclude-list tr:not(.hidden) input[type=hidden].select2-select.author_or_role' ).each(function( k, el ) {
 			$input_user = $( el );
 
 			$input_user.select2({
@@ -191,7 +191,7 @@ jQuery(function( $ ) {
 			});
 		});
 
-		$( '#tab-content-settings input[type=hidden].select2-select.context' ).on( 'change', function( val ) {
+		$( '.stream-exclude-list tr:not(.hidden) input[type=hidden].select2-select.context' ).on( 'change', function( val ) {
 			var $connector = $( this ).prevAll( ':input.connector' );
 
 			if ( undefined !== val.added && undefined !== val.added.parent ) {
@@ -202,7 +202,7 @@ jQuery(function( $ ) {
 			}
 		});
 
-		$( '.exclude_rules_remove_rule_row' ).on( 'click', function() {
+		$( '.stream-exclude-list tr:not(.hidden) .exclude_rules_remove_rule_row' ).on( 'click', function() {
 			var $excludeList = $( 'table.stream-exclude-list' ),
 				$thisRow     = $( this ).closest( 'tr' );
 
@@ -214,7 +214,7 @@ jQuery(function( $ ) {
 			recalculate_rules_found();
 		});
 
-		$( '#tab-content-settings input.ip_address' ).on( 'change', function() {
+		$( '.stream-exclude-list tr:not(.hidden) input.ip_address' ).on( 'change', function() {
 			var ipv4Expression = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,
 				ipv6Expression = /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/,
 				ip = $( this ).val();
@@ -239,6 +239,7 @@ jQuery(function( $ ) {
 			$newRow  = $lastRow.clone();
 
 		$newRow.toggleClass( 'alternate' ).removeAttr( 'class' );
+		$( '.stream-exclude-list :input' ).off();
 		$( ':input', $newRow ).off().val( '' );
 
 		$lastRow.after( $newRow );
