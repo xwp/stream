@@ -34,6 +34,13 @@ class WP_Stream_API {
 	protected $api_url = 'http://api.wp-stream.com';
 
 	/**
+	 * The API Version
+	 *
+	 * @var string
+	 */
+	protected $api_version = 'v1';
+
+	/**
 	 * Error messages
 	 *
 	 * @var array
@@ -101,7 +108,7 @@ class WP_Stream_API {
 	 * @return string A properly escaped URL.
 	 */
 	protected function request_url( $path, $args = array() ) {
-		return esc_url_raw( add_query_arg( $args, untrailingslashit( $this->api_url ) . $path ) );
+		return esc_url_raw( add_query_arg( $args, trailingslashit( $this->api_url ) . $api_version . $path ) );
 	}
 
 	/**
