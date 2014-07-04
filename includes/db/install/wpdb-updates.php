@@ -414,7 +414,7 @@ function wp_stream_update_migrate_old_options_to_exclude_tab( $labels ) {
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
-	$old_options = get_option( WP_Stream_Settings::KEY, array() );
+	$old_options = get_option( WP_Stream_Settings::OPTION_KEY, array() );
 
 	// Stream > Settings > General > Log Activity for
 	if ( isset( $old_options['general_log_activity_for'] ) ) {
@@ -434,7 +434,7 @@ function wp_stream_update_migrate_old_options_to_exclude_tab( $labels ) {
 		unset( WP_Stream_Settings::$options['connectors_active_connectors'] );
 	}
 
-	update_option( WP_Stream_Settings::KEY, WP_Stream_Settings::$options );
+	update_option( WP_Stream_Settings::OPTION_KEY, WP_Stream_Settings::$options );
 
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
 

@@ -23,14 +23,23 @@ class WP_Stream_Admin {
 	 */
 	public static $disable_access = false;
 
+	/**
+	 * URL used to authenticate with Stream
+	 *
+	 * @var string
+	 */
+	public static $connect_url;
+
 	const ADMIN_BODY_CLASS     = 'wp_stream_screen';
 	const RECORDS_PAGE_SLUG    = 'wp_stream';
 	const SETTINGS_PAGE_SLUG   = 'wp_stream_settings';
 	const EXTENSIONS_PAGE_SLUG = 'wp_stream_extensions';
+	const ACCOUNT_PAGE_SLUG    = 'wp_stream_account';
 	const ADMIN_PARENT_PAGE    = 'admin.php';
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
 	const PRELOAD_AUTHORS_MAX  = 50;
+	const PUBLIC_URL           = 'http://sandbox.wp-stream.com';
 
 	public static function load() {
 		// User and role caps
@@ -39,11 +48,26 @@ class WP_Stream_Admin {
 
 		self::$disable_access = apply_filters( 'wp_stream_disable_admin_access', false );
 
+		$site_url          = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
+		$connect_nonce     = wp_create_nonce( 'stream_connect_site-' . sanitize_key( $site_url ) );
+		self::$connect_url = add_query_arg(
+			array(
+				'auth'       => 'true',
+				'action'     => 'connect',
+				'plugin_url' => urlencode( admin_url( 'admin.php?page=wp_stream&nonce=' . $connect_nonce ) ),
+			),
+			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/pricing/' )
+		);
+
 		// Register settings page
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
 
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
+
+		// Show connect notice on dashboard and plugins pages
+		add_action( 'load-index.php', array( __CLASS__, 'prepare_connect_notice' ) );
+		add_action( 'load-plugins.php', array( __CLASS__, 'prepare_connect_notice' ) );
 
 		// Add admin body class
 		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
@@ -80,6 +104,49 @@ class WP_Stream_Admin {
 	}
 
 	/**
+	 * Prepare the Connect to Stream prompt
+	 *
+	 * @return void
+	 */
+	public static function prepare_connect_notice() {
+		if ( ! WP_Stream::is_connected() && ! WP_Stream::is_development_mode() ) {
+			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
+			add_action( 'admin_notices', array( __CLASS__, 'admin_connect_notice' ) );
+		}
+	}
+
+	/**
+	 * Prompt the user to connect to Stream
+	 *
+	 * @return void
+	 */
+	public static function admin_connect_notice() {
+		if ( ! current_user_can( self::SETTINGS_CAP ) ) {
+			return;
+		}
+
+		$dismiss_and_deactivate_url = wp_nonce_url( 'plugins.php?action=deactivate&plugin=' . WP_STREAM_PLUGIN, 'deactivate-plugin_' . WP_STREAM_PLUGIN );
+		?>
+		<div id="stream-message" class="updated stream-connect" style="display:block !important;">
+		<?php if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) : // Can't deactivate if network activated ?>
+			<div id="stream-dismiss" class="stream-close-button-container">
+				<a class="stream-close-button" href="<?php echo esc_url( $dismiss_and_deactivate_url ) ?>" title="<?php _e( 'Dismiss this notice and deactivate Stream.', 'stream' ) ?>"></a>
+			</div>
+		<?php endif; ?>
+			<div class="stream-wrap-container">
+				<div class="stream-install-container">
+					<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ) ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a></p>
+				</div>
+				<div class="stream-text-container">
+					<p><strong><?php _e( 'Stream is almost ready!', 'stream' ) ?></strong></p>
+					<p><?php _e( 'Connect now to see every change made to your WordPress site in beautifully organized detail.', 'stream' ) ?></p>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Output specific update
 	 *
 	 * @action admin_notices
@@ -113,42 +180,67 @@ class WP_Stream_Admin {
 			return false;
 		}
 
-		self::$screen_id['main'] = add_menu_page(
-			__( 'Stream', 'stream' ),
-			__( 'Stream', 'stream' ),
-			self::VIEW_CAP,
-			self::RECORDS_PAGE_SLUG,
-			array( __CLASS__, 'stream_page' ),
-			'div',
-			apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
-		);
-
-		self::$screen_id['settings'] = add_submenu_page(
-			self::RECORDS_PAGE_SLUG,
-			__( 'Stream Settings', 'stream' ),
-			__( 'Settings', 'default' ),
-			self::SETTINGS_CAP,
-			self::SETTINGS_PAGE_SLUG,
-			array( __CLASS__, 'render_page' )
-		);
-
-		if ( ! is_multisite() ) {
-			self::$screen_id['extensions'] = add_submenu_page(
+		if ( is_network_admin() || WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
+			self::$screen_id['main'] = add_menu_page(
+				__( 'Stream', 'stream' ),
+				__( 'Stream', 'stream' ),
+				self::VIEW_CAP,
 				self::RECORDS_PAGE_SLUG,
-				__( 'Stream Extensions', 'stream' ),
-				__( 'Extensions', 'stream' ),
+				array( __CLASS__, 'stream_page' ),
+				'div',
+				apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
+			);
+
+			self::$screen_id['settings'] = add_submenu_page(
+				self::RECORDS_PAGE_SLUG,
+				__( 'Stream Settings', 'stream' ),
+				__( 'Settings', 'default' ),
 				self::SETTINGS_CAP,
-				self::EXTENSIONS_PAGE_SLUG,
-				array( __CLASS__, 'render_extensions_page' )
+				self::SETTINGS_PAGE_SLUG,
+				array( __CLASS__, 'render_page' )
+			);
+
+			if ( ! is_multisite() ) {
+				self::$screen_id['extensions'] = add_submenu_page(
+					self::RECORDS_PAGE_SLUG,
+					__( 'Stream Extensions', 'stream' ),
+					__( 'Extensions', 'stream' ),
+					self::SETTINGS_CAP,
+					self::EXTENSIONS_PAGE_SLUG,
+					array( __CLASS__, 'render_extensions_page' )
+				);
+			}
+
+			if ( ! is_network_admin() ) {
+				self::$screen_id['account'] = add_submenu_page(
+					self::RECORDS_PAGE_SLUG,
+					__( 'Stream Account', 'stream' ),
+					__( 'Account', 'default' ),
+					self::SETTINGS_CAP,
+					self::ACCOUNT_PAGE_SLUG,
+					array( __CLASS__, 'render_account_page' )
+				);
+			}
+
+		} else {
+			self::$screen_id['connect'] = add_menu_page(
+				__( 'Connect to Stream', 'stream' ),
+				__( 'Stream', 'stream' ),
+				self::SETTINGS_CAP,
+				self::RECORDS_PAGE_SLUG,
+				array( __CLASS__, 'render_connect_page' ),
+				'div',
+				apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
 			);
 		}
 
-		// Register the list table early, so it associates the column headers with 'Screen settings'
-		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
-		do_action( 'wp_stream_admin_menu_screens' );
+		if ( isset( self::$screen_id['main'] ) ) {
+			add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
+			do_action( 'wp_stream_admin_menu_screens' );
 
-		// Register the list table early, so it associates the column headers with 'Screen settings'
-		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
+			// Register the list table early, so it associates the column headers with 'Screen settings'
+			add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
+		}
 	}
 
 	/**
@@ -220,6 +312,13 @@ class WP_Stream_Admin {
 	public static function admin_body_class( $classes ) {
 		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
 			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
+			if ( ! is_network_admin() ) {
+				if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
+					$classes .= sprintf( ' wp_stream_connected ' );
+				} else {
+					$classes .= sprintf( ' wp_stream_disconnected ' );
+				}
+			}
 		}
 
 		return $classes;
@@ -328,6 +427,31 @@ class WP_Stream_Admin {
 		return $links;
 	}
 
+	public static function get_testimonials() {
+		$testimonials = get_site_transient( 'wp_stream_testimonials' );
+
+		if ( false !== $testimonials ) {
+			return $testimonials;
+		}
+
+		$request = wp_remote_request( esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/wp-content/themes/wp-stream.com/assets/testimonials.json' ) );
+
+		if ( $request['response']['code'] === 200 && ! is_wp_error( $request ) ) {
+			$testimonials = json_decode( $request['body'], true );
+		} else {
+			$testimonials = false;
+		}
+
+		// Cache failed attempts as zero, to distinguish them from expired transients
+		if ( ! $testimonials ) {
+			$testimonials = 0;
+		}
+
+		set_site_transient( 'wp_stream_testimonials', $testimonials, WEEK_IN_SECONDS );
+
+		return $testimonials;
+	}
+
 	/**
 	 * Register a routine to be called when stream or a stream connector has been updated
 	 * It works by comparing the current version with the version previously stored in the database.
@@ -345,10 +469,10 @@ class WP_Stream_Admin {
 		$plugin = plugin_basename( $file );
 
 		if ( is_plugin_active_for_network( $plugin ) ) {
-			$current_versions = get_site_option( WP_Stream_Install_WPDB::KEY . '_connectors', array() );
+			$current_versions = get_site_option( WP_Stream_Install_WPDB::OPTION_KEY . '_connectors', array() );
 			$network          = true;
 		} elseif ( is_plugin_active( $plugin ) ) {
-			$current_versions = get_option( WP_Stream_Install_WPDB::KEY . '_connectors', array() );
+			$current_versions = get_option( WP_Stream_Install_WPDB::OPTION_KEY . '_connectors', array() );
 			$network          = false;
 		} else {
 			return;
@@ -359,11 +483,7 @@ class WP_Stream_Admin {
 			$current_versions[ $plugin ] = $version;
 		}
 
-		if ( $network ) {
-			update_site_option( WP_Stream_Install_WPDB::KEY . '_registered_connectors', $current_versions );
-		} else {
-			update_option( WP_Stream_Install_WPDB::KEY . '_registered_connectors', $current_versions );
-		}
+		update_site_option( WP_Stream_Install_WPDB::OPTION_KEY . '_registered_connectors', $current_versions );
 
 		return;
 	}
@@ -374,23 +494,18 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_page() {
-
-		$option_key  = WP_Stream_Settings::$option_key;
-		$form_action = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
-
+		$option_key       = WP_Stream_Settings::$option_key;
+		$form_action      = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
 		$page_title       = apply_filters( 'wp_stream_settings_form_title', get_admin_page_title() );
 		$page_description = apply_filters( 'wp_stream_settings_form_description', '' );
-
-		$sections   = WP_Stream_Settings::get_fields();
-		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
-
+		$sections         = WP_Stream_Settings::get_fields();
+		$active_tab       = wp_stream_filter_input( INPUT_GET, 'tab' );
 		?>
 		<div class="wrap">
-
-			<h2><?php echo esc_html( $page_title ); ?></h2>
+			<h2><?php echo esc_html( $page_title ) ?></h2>
 
 			<?php if ( ! empty( $page_description ) ) : ?>
-				<p><?php echo esc_html( $page_description ); ?></p>
+				<p><?php echo esc_html( $page_description ) ?></p>
 			<?php endif; ?>
 
 			<?php settings_errors() ?>
@@ -409,24 +524,25 @@ class WP_Stream_Admin {
 			<?php endif; ?>
 
 			<div class="nav-tab-content" id="tab-content-settings">
-
 				<form method="post" action="<?php echo esc_attr( $form_action ) ?>" enctype="multipart/form-data">
-		<?php
-		$i = 0;
-		foreach ( $sections as $section => $data ) {
-			$i++;
-			$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
-			if ( $is_active ) {
-				settings_fields( $option_key );
-				do_settings_sections( $option_key );
-			}
-		}
-		submit_button();
-		?>
+					<?php
+					$i = 0;
+
+					foreach ( $sections as $section => $data ) {
+						$i++;
+
+						$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
+
+						if ( $is_active ) {
+							settings_fields( $option_key );
+							do_settings_sections( $option_key );
+						}
+					}
+
+					submit_button();
+					?>
 				</form>
-
 			</div>
-
 		</div>
 	<?php
 	}
@@ -437,7 +553,6 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_extensions_page() {
-
 		$extensions = WP_Stream_Extensions::get_instance();
 
 		if ( $install = wp_stream_filter_input( INPUT_GET, 'install' ) ) {
@@ -445,6 +560,7 @@ class WP_Stream_Admin {
 		}
 
 		wp_enqueue_style( 'thickbox' );
+
 		wp_enqueue_script(
 			'stream-activation',
 			plugins_url( '../ui/license.js', __FILE__ ),
@@ -452,6 +568,7 @@ class WP_Stream_Admin {
 			WP_Stream::VERSION,
 			true
 		);
+
 		wp_enqueue_script(
 			'stream-extensions',
 			plugins_url( '../ui/extensions.js', __FILE__ ),
@@ -459,7 +576,9 @@ class WP_Stream_Admin {
 			WP_Stream::VERSION,
 			true
 		);
+
 		$action = 'license';
+
 		wp_localize_script(
 			'stream-activation',
 			'stream_activation',
@@ -480,7 +599,9 @@ class WP_Stream_Admin {
 				),
 			)
 		);
+
 		wp_localize_script( 'stream-extensions', 'stream_extensions', array( 'extensions' => $extensions->prepare_extensions_for_js( $extensions->extensions ) ) );
+
 		add_thickbox();
 		?>
 		<div class="themes-php">
@@ -502,7 +623,49 @@ class WP_Stream_Admin {
 				); // xss okay
 			}
 		);
+
 		WP_Stream_Updater::instance()->install_extension( $extension );
+	}
+
+	/**
+	 * Render account page
+	 *
+	 * @return void
+	 */
+	public static function render_account_page() {
+		$page_title = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
+		?>
+		<div class="wrap">
+			<h2><?php echo esc_html( $page_title ) ?></h2>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render connect page
+	 *
+	 * @return void
+	 */
+	public static function render_connect_page() {
+		$page_title   = apply_filters( 'wp_stream_connect_page_title', get_admin_page_title() );
+
+		if ( $testimonials = self::get_testimonials() ) {
+			$testimonial = $testimonials[ array_rand( $testimonials ) ];
+		}
+
+		wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
+		?>
+		<div id="wp-stream-connect">
+			<div class="wrap">
+				<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ) ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a></p>
+				<p><?php _e( 'with WordPress.com', 'stream' ) ?></p>
+				<?php if ( isset( $testimonial ) ) : ?>
+				<p class="quote">&ldquo;<?php echo esc_html( $testimonial['quote'] ) ?>&rdquo;</p>
+				<p class="author">&dash; <?php echo esc_html( $testimonial['author'] ) ?>, <a class="organization" href="<?php echo esc_url( $testimonial['link'] ) ?>"><?php echo esc_html( $testimonial['organization'] ) ?></a></p>
+				<?php endif ?>
+			</div>
+		</div>
+		<?php
 	}
 
 	public static function register_list_table() {
@@ -510,19 +673,52 @@ class WP_Stream_Admin {
 	}
 
 	public static function stream_page() {
+		if ( wp_stream_filter_input( INPUT_GET, 'connected' ) && self::RECORDS_PAGE_SLUG === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
+			WP_Stream::notice(
+				sprintf(
+					'<strong>%s</strong></p><p>%s',
+					esc_html__( 'You have successfully connected to Stream!', 'stream' ),
+					esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
+				),
+				false
+			);
+		}
+
 		$page_title = __( 'Stream Records', 'stream' );
+
+		self::$list_table->prepare_items();
 
 		echo '<div class="wrap">';
 
 		if ( is_network_admin() ) {
-			$site_count = sprintf( _n( '1 site', '%d sites', get_blog_count(), 'stream' ), get_blog_count() );
-			printf( '<h2>%s (%s)</h2>', __( 'Stream Records', 'stream' ), $site_count ); // xss ok
+			$sites_connected = WP_Stream_Network::get_instance()->sites_connected;
+			$site_count      = '';
+
+			if ( $sites_connected > 0 ) {
+				$site_count = sprintf( _n( ' (1 site)', ' (%d sites)', $sites_connected, 'stream' ), $sites_connected );
+			}
+
+			printf( '<h2>%s%s</h2>', __( 'Stream Records', 'stream' ), $site_count ); // xss ok
 		} else {
 			printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
 		}
 
-		self::$list_table->prepare_items();
-		self::$list_table->display();
+		if ( is_network_admin() && ! $sites_connected && ! WP_Stream::is_development_mode() ) {
+			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
+			?>
+			<div id="stream-message" class="updated stream-network-connect stream-connect" style="display:block !important;">
+				<div class="stream-wrap-container">
+					<div class="stream-text-container">
+							<p><strong><?php _e( 'Get started with Stream for Multisite!', 'stream' ) ?></strong></p>
+							<p><?php _e( 'Welcome to your Network Stream! Each site on your network must be connected individually by an admin on that site for it to show here.', 'stream' ) ?></p>
+					</div>
+				</div>
+			</div>
+			<?php
+		} else {
+			self::$list_table->display();
+		}
+
 		echo '</div>';
 	}
 
@@ -589,7 +785,7 @@ class WP_Stream_Admin {
 		if ( $blogs ) {
 			foreach ( $blogs as $blog ) {
 				switch_to_blog( $blog['blog_id'] );
-				delete_option( WP_Stream_Settings::KEY );
+				delete_option( WP_Stream_Settings::OPTION_KEY );
 			}
 			restore_current_blog();
 		}
@@ -618,8 +814,8 @@ class WP_Stream_Admin {
 				wp_stream_delete_records( array( 'blog_id' => $blog_id ) );
 
 				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-				delete_option( WP_Stream_Install_WPDB::KEY );
-				delete_option( WP_Stream_Settings::KEY );
+				delete_option( WP_Stream_Install_WPDB::OPTION_KEY );
+				delete_option( WP_Stream_Settings::OPTION_KEY );
 			} else {
 				WP_Stream::$db->reset();
 
@@ -629,8 +825,9 @@ class WP_Stream_Admin {
 					foreach ( $blogs as $blog ) {
 						switch_to_blog( $blog['blog_id'] );
 						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-						delete_option( WP_Stream_Install_WPDB::KEY );
-						delete_option( WP_Stream_Settings::KEY );
+						delete_option( WP_Stream_Install_WPDB::OPTION_KEY );
+						delete_option( WP_Stream_Settings::OPTION_KEY );
+						delete_option( WP_Stream_Settings::API_KEY_OPTION_KEY );
 					}
 					restore_current_blog();
 				}
@@ -639,11 +836,11 @@ class WP_Stream_Admin {
 				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 				delete_site_option( WP_Stream_Updater::LICENSE_KEY );
 				delete_site_option( WP_Stream_Updater::LICENSEE_KEY );
-				delete_site_option( WP_Stream_Install_WPDB::KEY );
-				delete_site_option( WP_Stream_Settings::KEY );
-				delete_site_option( WP_Stream_Settings::DEFAULTS_KEY );
-				delete_site_option( WP_Stream_Settings::NETWORK_KEY );
-				delete_site_option( 'dashboard_stream_activity_options' );
+				delete_site_option( WP_Stream_Install_WPDB::OPTION_KEY );
+				delete_site_option( WP_Stream_Settings::OPTION_KEY );
+				delete_site_option( WP_Stream_Settings::DEFAULTS_OPTION_KEY );
+				delete_site_option( WP_Stream_Settings::NETWORK_OPTION_KEY );
+				delete_site_option( WP_Stream_Network::SITES_CONNECTED_OPTION_KEY );
 			}
 
 			// Delete scheduled cron event hooks
@@ -676,7 +873,7 @@ class WP_Stream_Admin {
 		}
 
 		if ( is_multisite() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$options = (array) get_site_option( WP_Stream_Settings::NETWORK_KEY, array() );
+			$options = (array) get_site_option( WP_Stream_Settings::NETWORK_OPTION_KEY, array() );
 		} else {
 			$options = WP_Stream_Settings::get_options();
 		}
@@ -816,6 +1013,7 @@ class WP_Stream_Admin {
 	 */
 	public static function get_filter_value_by_id() {
 		$filter = wp_stream_filter_input( INPUT_POST, 'filter' );
+
 		switch ( $filter ) {
 			case 'author':
 				$id = wp_stream_filter_input( INPUT_POST, 'id' );
@@ -832,9 +1030,10 @@ class WP_Stream_Admin {
 				break;
 			default:
 				$value = '';
-				break;
 		}
+
 		echo json_encode( $value );
+
 		wp_die();
 	}
 

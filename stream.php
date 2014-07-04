@@ -48,12 +48,12 @@ class WP_Stream {
 	/**
 	 * @var WP_Stream_DB_Base
 	 */
-	public static $db = null;
+	public static $db;
 
 	/**
-	 * @var WP_Stream_Network
+	 * @var WP_Stream_API
 	 */
-	public $network = null;
+	public static $api;
 
 	/**
 	 * Class constructor
@@ -82,6 +82,9 @@ class WP_Stream {
 		// Check DB and add message if not present
 		add_action( 'init', array( self::$db, 'check_db' ) );
 
+		// Load API helper interface/class
+		self::$api = new WP_Stream_API;
+
 		// Install the plugin
 		add_action( 'wp_stream_before_db_notices', array( __CLASS__, 'install' ) );
 
@@ -96,7 +99,7 @@ class WP_Stream {
 
 		// Load network class
 		if ( is_multisite() ) {
-			$this->network = new WP_Stream_Network;
+			WP_Stream_Network::get_instance();
 		}
 
 		// Load logger class
@@ -178,6 +181,34 @@ class WP_Stream {
 	 */
 	public static function is_valid_php_version() {
 		return version_compare( PHP_VERSION, '5.3', '>=' );
+	}
+
+	/**
+	 * Is Stream connected?
+	 *
+	 * @return bool
+	 */
+	public static function is_connected() {
+		return (bool) self::$api->api_key;
+	}
+
+	/**
+	 * Is Stream in development mode?
+	 *
+	 * @return bool
+	 */
+	public static function is_development_mode() {
+		$development_mode = false;
+
+		if ( defined( 'WP_STREAM_DEV_DEBUG' ) ) {
+			$development_mode = WP_STREAM_DEV_DEBUG;
+		}
+
+		elseif ( site_url() && false === strpos( site_url(), '.' ) ) {
+			$development_mode = true;
+		}
+
+		return apply_filters( 'wp_stream_development_mode', $development_mode );
 	}
 
 	/**

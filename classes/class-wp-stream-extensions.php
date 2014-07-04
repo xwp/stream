@@ -18,13 +18,13 @@
 
 class WP_Stream_Extensions {
 
-	const EXTENSIONS_KEY = 'wp_stream_extensions_';
-	const MEMBER_KEY     = 'wp_stream_member';
-	const API_EP         = '/wp-json/posts/';
-	const API_LICENSE_EP = '/api/';
-	const API_DOMAIN     = 'wp-stream.com';
-	const API_TRANSPORT  = 'https://';
-	const API_QUERY      = '?type=extension';
+	const EXTENSIONS_OPTION_KEY = 'wp_stream_extensions_';
+	const MEMBER_OPTION_KEY         = 'wp_stream_member';
+	const API_EP                = '/wp-json/posts/';
+	const API_LICENSE_EP        = '/api/';
+	const API_DOMAIN            = 'wp-stream.com';
+	const API_TRANSPORT         = 'https://';
+	const API_QUERY             = '?type=extension';
 
 	/**
 	 * @var array|mixed
@@ -86,11 +86,11 @@ class WP_Stream_Extensions {
 	 * @return array|mixed
 	 */
 	function get_extension_data( $force = false ) {
-		if ( $force || false === ( $api_transient = get_transient( self::EXTENSIONS_KEY ) ) ) {
+		if ( $force || false === ( $api_transient = get_transient( self::EXTENSIONS_OPTION_KEY ) ) ) {
 			$api_transient = $this->get_extension_api();
 
 			if ( $api_transient && ! empty( $api_transient ) ) {
-				set_transient( self::EXTENSIONS_KEY, $this->get_extension_api(), MINUTE_IN_SECONDS * 60 * 6 );
+				set_transient( self::EXTENSIONS_OPTION_KEY, $this->get_extension_api(), MINUTE_IN_SECONDS * 60 * 6 );
 			}
 			return $api_transient;
 		}
