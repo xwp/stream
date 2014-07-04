@@ -59,6 +59,10 @@ class WP_Stream_Admin {
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/pricing/' )
 		);
 
+		if ( isset( $_GET['api_key'] ) ) {
+			add_action( 'admin_init', array( __CLASS__, 'save_api_authentication' ) );
+		}
+
 		// Register settings page
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
 
@@ -425,6 +429,42 @@ class WP_Stream_Admin {
 		}
 
 		return $links;
+	}
+
+	public static function save_api_authentication() {
+		$site_url           = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
+		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $site_url );
+
+		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], $connect_nonce_name ) ) {
+			wp_die( 'Doing it wrong.' );
+		}
+
+		WP_Stream::$api->api_key = $_GET['api_key'];
+
+		update_option( WP_Stream::$api->API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
+
+		$validate_key_request = WP_Stream::$api->validate_key( WP_Stream::$api->api_key );
+
+		if ( isset( $validate_key_request->site_id ) ) {
+			WP_Stream::$api->site_uuid = $validate_key_request->site_id;
+		}
+
+		update_option( WP_Stream::$api->SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
+
+		do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
+
+		if ( ! WP_Stream::$api->api_key || ! WP_Stream::$api->site_uuid ) {
+			wp_die( __( 'There was a problem connecting to Stream. Please try again later.', 'stream' ) );
+		}
+
+		$redirect_url = add_query_arg(
+			array(
+				'page'      => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+				'connected' => 1,
+			),
+			admin_url( 'admin.php' )
+		);
+		wp_redirect( $redirect_url );
 	}
 
 	public static function get_testimonials() {

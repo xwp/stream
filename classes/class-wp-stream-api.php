@@ -48,46 +48,18 @@ class WP_Stream_API {
 	public function __construct() {
 		$this->api_key   = get_option( self::API_KEY_OPTION_KEY, 0 );
 		$this->site_uuid = get_option( self::SITE_UUID_OPTION_KEY, 0 );
-
-		if ( isset( $_GET['api_key'] ) ) {
-			add_action( 'admin_init', array( $this, 'update_api_authentication' ) );
-		}
 	}
 
-	public function update_api_authentication() {
-		$site_url           = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
-		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $site_url );
-
-		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], $connect_nonce_name ) ) {
-			wp_die( 'Doing it wrong.' );
+	public function validate_key( $api_key = null ) {
+		if ( ! $api_key ) {
+			$api_key = $this->api_key;
 		}
 
-		$this->api_key = $_GET['api_key'];
+		$url     = request_url( '/validate-key' );
+		$method  = 'GET';
+		$headers = array( 'stream-api-master-key' => $api_key );
 
-		update_option( self::API_KEY_OPTION_KEY, $this->api_key );
-
-		$site_uuid_request = $this->remote_request( $this->api_url . '/validate-key' );
-
-		if ( isset( $site_uuid_request->site_id ) ) {
-			$this->site_uuid = $site_uuid_request->site_id;
-		}
-
-		update_option( self::SITE_UUID_OPTION_KEY, $this->site_uuid );
-
-		do_action( 'wp_stream_site_connected', $this->api_key, $this->site_uuid );
-
-		if ( ! $this->api_key || ! $this->site_uuid ) {
-			wp_die( __( 'There was a problem connecting to Stream. Please try again later.', 'stream' ) );
-		}
-
-		$redirect_url = add_query_arg(
-			array(
-				'page'      => WP_Stream_Admin::RECORDS_PAGE_SLUG,
-				'connected' => 1,
-			),
-			admin_url( 'admin.php' )
-		);
-		wp_redirect( $redirect_url );
+		return $this->remote_request( $url, $method, $headers );
 	}
 
 	/**
@@ -121,6 +93,18 @@ class WP_Stream_API {
 	}
 
 	/**
+	 * Helper function to create and escape a URL for an API request.
+	 *
+	 * @param string The endpoint path, with a starting slash.
+	 * @param array  The $_GET args.
+	 *
+	 * @return string A properly escaped URL.
+	 */
+	protected function request_url( $path, $args = array() ) {
+		return esc_url_raw( add_query_arg( $args, untrailingslashit( $this->api_url ) . $path ) );
+	}
+
+	/**
 	 * Helper function to query the marketplace API via wp_remote_request.
 	 *
 	 * @param string The url to access.
@@ -129,7 +113,7 @@ class WP_Stream_API {
 	 *
 	 * @return object The results of the wp_remote_request request.
 	 */
-	protected function remote_request( $url, $method = 'GET', $headers = array(), $body = null ) {
+	protected function remote_request( $url = '', $method = 'GET', $headers = array(), $body = null ) {
 		if ( empty( $url ) ) {
 			return false;
 		}
@@ -143,6 +127,7 @@ class WP_Stream_API {
 			'method' => $method,
 			'body' => $body
 		);
+
 		$request = wp_remote_request( $url, $args );
 
 		if ( is_wp_error( $request ) ) {
