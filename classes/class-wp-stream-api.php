@@ -69,6 +69,18 @@ class WP_Stream_API {
 		return $this->remote_request( $url, $method, $headers );
 	}
 
+	public function invalidate_key( $api_key = null ) {
+		if ( ! $api_key ) {
+			$api_key = $this->api_key;
+		}
+
+		$url     = request_url( '/invalidate-key' );
+		$method  = 'DELETE';
+		$headers = array( 'stream-api-master-key' => $api_key );
+
+		return $this->remote_request( $url, $method, $headers );
+	}
+
 	/**
 	 * Set cache with the Transients API.
 	 *
