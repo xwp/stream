@@ -81,6 +81,17 @@ class WP_Stream_API {
 		return $this->remote_request( $url, $method, $headers );
 	}
 
+	public function get_user( $user_id = false ) {
+		if ( false === $user_id ) {
+			return false;
+		}
+
+		$url    = request_url( '/users/' . intval( $user_id ) );
+		$method = 'GET';
+
+		return $this->remote_request( $url, $method );
+	}
+
 	/**
 	 * Set cache with the Transients API.
 	 *
