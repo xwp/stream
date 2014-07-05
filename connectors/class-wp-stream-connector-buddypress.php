@@ -82,20 +82,6 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Tracking registered Settings, with overridden data
-	 *
-	 * @var array
-	 */
-	public static $options_override = array();
-
-	/**
-	 * Tracking user meta updates related to this connector
-	 *
-	 * @var array
-	 */
-	public static $user_meta = array();
-
-	/**
 	 * Flag to stop logging update logic twice
 	 *
 	 * @var bool
@@ -220,8 +206,6 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 	public static function register() {
 		parent::register();
-
-		add_filter( 'wp_stream_log_data', array( __CLASS__, 'log_override' ) );
 
 		self::$options = array_merge(
 			self::$options,
@@ -407,41 +391,6 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 					'components' => 'updated',
 				)
 			);
-		}
-	}
-
-	/**
-	 * Override connector log for our own Settings / Actions
-	 *
-	 * @param array $data
-	 *
-	 * @return array|bool
-	 */
-	public static function log_override( array $data ) {
-		return $data;
-	}
-
-	public static function callback_update_user_meta( $meta_id, $object_id, $meta_key, $_meta_value ) {
-		self::meta( $object_id, $meta_key, $_meta_value );
-	}
-
-	public static function callback_add_user_meta( $object_id, $meta_key, $_meta_value ) {
-		self::meta( $object_id, $meta_key, $_meta_value, true );
-	}
-
-	public static function callback_delete_user_meta( $meta_id, $object_id, $meta_key, $_meta_value ) {
-		self::meta( $object_id, $meta_key, null );
-	}
-
-	public static function meta( $object_id, $key, $value, $is_add = false ) {
-		if ( ! in_array( $key, self::$user_meta ) ) {
-			return false;
-		}
-
-		$key = str_replace( '-', '_', $key );
-
-		if ( method_exists( __CLASS__, 'meta_' . $key ) ) {
-			return call_user_func( array( __CLASS__, 'meta_' . $key ), $object_id, $value, $is_add );
 		}
 	}
 
