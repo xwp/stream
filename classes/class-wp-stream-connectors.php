@@ -59,6 +59,7 @@ class WP_Stream_Connectors {
 			'edd',
 			'wordpress-seo',
 			'buddypress',
+			'bbpress',
 		);
 
 		if ( is_network_admin() ) {
