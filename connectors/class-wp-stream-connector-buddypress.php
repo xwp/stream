@@ -28,9 +28,6 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		'update_site_option',
 		'add_site_option',
 		'delete_site_option',
-		'add_user_meta',
-		'update_user_meta',
-		'delete_user_meta',
 
 		'bp_before_activity_delete',
 		'bp_activity_deleted_activities',
@@ -59,17 +56,6 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 		'xprofile_group_after_save',
 		'xprofile_groups_deleted_group',
-
-		// @todo implement the following
-		//'groups_membership_accepted',
-		//'groups_membership_rejected',
-		//'groups_accept_all_pending_membership_requests',
-		//'groups_send_invites',
-		//'groups_delete_invite',
-		//'groups_reject_invite',
-		//'groups_accept_invite',
-		//'groups_uninvite_user',
-		//'groups_invite_user',
 	);
 
 	/**
