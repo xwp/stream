@@ -216,6 +216,86 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				),
 				admin_url( 'admin.php' )
 			);
+		} elseif ( in_array( $record->context, array( 'groups' ) ) ) {
+			$group_id = wp_stream_get_meta( $record->ID, 'id', true );
+			$group = groups_get_group( array( 'group_id' => $group_id ) );
+
+			if ( $group ) {
+				// Build actions URLs
+				$base_url   = bp_get_admin_url( 'admin.php?page=bp-groups&amp;gid=' . $group_id );
+				$delete_url = wp_nonce_url( $base_url . '&amp;action=delete', 'bp-groups-delete' );
+				$edit_url   = $base_url . '&amp;action=edit';
+				$visit_url  = bp_get_group_permalink( $group );
+
+				$links[ __( 'Edit group', 'stream' ) ] = $edit_url;
+				$links[ __( 'View group', 'stream' ) ] = $visit_url;
+				$links[ __( 'Delete group', 'stream' ) ] = $delete_url;
+			}
+		} elseif ( in_array( $record->context, array( 'activity' ) ) ) {
+			$activity_id = wp_stream_get_meta( $record->ID, 'id', true );
+			$activities = bp_activity_get( array( 'in' => $activity_id, 'spam' => 'all' ) );
+			if ( ! empty( $activities['activities'] ) ) {
+				$activity = reset( $activities['activities'] );
+
+				$base_url   = bp_get_admin_url( 'admin.php?page=bp-activity&amp;aid=' . $activity->id );
+				$spam_nonce = esc_html( '_wpnonce=' . wp_create_nonce( 'spam-activity_' . $activity->id ) );
+				$delete_url = $base_url . "&amp;action=delete&amp;$spam_nonce";
+				$edit_url   = $base_url . '&amp;action=edit';
+				$ham_url    = $base_url . "&amp;action=ham&amp;$spam_nonce";
+				$spam_url   = $base_url . "&amp;action=spam&amp;$spam_nonce";
+
+				if ( $activity->is_spam ) {
+					$links[ __( 'Ham', 'stream' ) ] = $ham_url;
+				} else {
+					$links[ __( 'Edit', 'stream' ) ] = $edit_url;
+					$links[ __( 'Spam', 'stream' ) ] = $spam_url;
+				}
+				$links[ __( 'Delete', 'stream' ) ] = $delete_url;
+			}
+		} elseif ( in_array( $record->context, array( 'profile_fields' ) ) ) {
+			$field_id = wp_stream_get_meta( $record->ID, 'field_id', true );
+			$group_id = wp_stream_get_meta( $record->ID, 'group_id', true );
+
+			if ( empty( $field_id ) ) { // is a group action
+				$links[ __( 'Edit', 'stream' ) ] = add_query_arg(
+					array(
+						'page' => 'bp-profile-setup',
+						'mode' => 'edit_group',
+						'group_id' => $group_id,
+					),
+					admin_url( 'users.php' )
+				);
+				$links[ __( 'Delete', 'stream' ) ] = add_query_arg(
+					array(
+						'page' => 'bp-profile-setup',
+						'mode' => 'delete_group',
+						'group_id' => $group_id,
+					),
+					admin_url( 'users.php' )
+				);
+			} else {
+				$field = new BP_XProfile_Field( $field_id );
+				if ( empty( $field->type ) ) {
+					return $links;
+				}
+				$links[ __( 'Edit', 'stream' ) ] = add_query_arg(
+					array(
+						'page' => 'bp-profile-setup',
+						'mode' => 'edit_field',
+						'group_id' => $group_id,
+						'field_id' => $field_id,
+					),
+					admin_url( 'users.php' )
+				);
+				$links[ __( 'Delete', 'stream' ) ] = add_query_arg(
+					array(
+						'page' => 'bp-profile-setup',
+						'mode' => 'delete_field',
+						'field_id' => $field_id,
+					),
+					admin_url( 'users.php' )
+				);
+			}
 		}
 
 		return $links;
@@ -678,8 +758,9 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			),
 			array_merge(
 				array(
-					'id' => $field->id,
-					'name' => $field->name,
+					'field_id' => $field->id,
+					'field_name' => $field->name,
+					'group_id' => $field->group_id,
 				),
 				$meta
 			),
@@ -727,8 +808,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			),
 			array_merge(
 				array(
-					'id' => $group->id,
-					'name' => $group->name,
+					'group_id' => $group->id,
+					'group_name' => $group->name,
 				),
 				$meta
 			),
