@@ -99,12 +99,12 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	public static function is_dependency_satisfied() {
 		if ( ! class_exists( 'BuddyPress' ) ) {
 			//WP_Stream::notice(
-			//	sprintf( __( '<strong>Stream EDD Connector</strong> requires the <a href="%1$s" target="_blank">EDD</a> plugin to be installed and activated.', 'stream' ), esc_url( 'https://easydigitaldownloads.com' ) ),
+			//	sprintf( __( '<strong>Stream BuddyPress Connector</strong> requires the <a href="%1$s" target="_blank">BuddyPress</a> plugin to be installed and activated.', 'stream' ), esc_url( 'https://wordpress.org/plugins/buddypress' ) ),
 			//	true
 			//);
 		} elseif ( version_compare( BuddyPress::instance()->version, self::PLUGIN_MIN_VERSION, '<' ) ) {
 			//WP_Stream::notice(
-			//	sprintf( __( 'Please <a href="%1$s" target="_blank">install EDD</a> version %2$s or higher for the <strong>Stream EDD Connector</strong> plugin to work properly.', 'stream' ), esc_url( 'https://easydigitaldownloads.com' ), self::PLUGIN_MIN_VERSION ),
+			//	sprintf( __( 'Please <a href="%1$s" target="_blank">install BuddyPress</a> version %2$s or higher for the <strong>Stream BuddyPress Connector</strong> plugin to work properly.', 'stream' ), esc_url( 'https://wordpress.org/plugins/buddypress' ), self::PLUGIN_MIN_VERSION ),
 			//	true
 			//);
 		} else {
