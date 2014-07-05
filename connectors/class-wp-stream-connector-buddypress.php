@@ -32,7 +32,9 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		'update_user_meta',
 		'delete_user_meta',
 
-		'bp_activity_delete',
+		'bp_before_activity_delete',
+		'bp_activity_deleted_activities',
+
 		'bp_activity_mark_as_spam',
 		'bp_activity_mark_as_ham',
 		'bp_activity_admin_edit_after',
@@ -87,6 +89,21 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	 * @var bool
 	 */
 	public static $is_update = false;
+
+	/**
+	 * @var bool
+	 */
+	public static $_deleted_activity = false;
+
+	/**
+	 * @var array
+	 */
+	public static $_delete_activity_args = array();
+
+	/**
+	 * @var bool
+	 */
+	public static $ignore_activity_bulk_deletion = false;
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
@@ -394,25 +411,59 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		}
 	}
 
-	public static function callback_bp_activity_delete( $args ) {
+	public static function callback_bp_before_activity_delete( $args ) {
+		if ( empty( $args['id'] ) ) { // Bail if we're deleting in bulk
+			self::$_delete_activity_args = $args;
+			return;
+		}
+
 		$activity = new BP_Activity_Activity( $args['id'] );
 
-		self::log(
-			sprintf(
-				__( '"%s" activity deleted', 'stream' ),
-				strip_tags( $activity->action )
-			),
-			array(
-				'id' => $activity->id,
-				'item_id' => $activity->item_id,
-				'type' => $activity->type,
-				'author' => $activity->user_id,
-			),
-			$activity->id,
-			array(
-				$activity->component => 'deleted',
-			)
-		);
+		self::$_deleted_activity = $activity;
+	}
+
+	public static function callback_bp_activity_deleted_activities( $activities_ids ) {
+		if ( 1 === count( $activities_ids ) && isset( self::$_deleted_activity ) ) { // Single activity deletion
+			$activity = self::$_deleted_activity;
+			self::log(
+				sprintf(
+					__( '"%s" activity deleted', 'stream' ),
+					strip_tags( $activity->action )
+				),
+				array(
+					'id' => $activity->id,
+					'item_id' => $activity->item_id,
+					'type' => $activity->type,
+					'author' => $activity->user_id,
+				),
+				$activity->id,
+				array(
+					$activity->component => 'deleted',
+				)
+			);
+		} else { // Bulk deletion
+			// Sometimes some objects removal are followed by deleting relevant
+			// activities, so we probably don't need to track those
+			if ( self::$ignore_activity_bulk_deletion ) {
+				self::$ignore_activity_bulk_deletion = false;
+				return;
+			}
+			self::log(
+				sprintf(
+					__( '"%s" activities were deleted', 'stream' ),
+					count( $activities_ids )
+				),
+				array(
+					'count' => count( $activities_ids ),
+					'args'  => self::$_delete_activity_args,
+					'ids'   => $activities_ids,
+				),
+				null,
+				array(
+					'activity' => 'deleted',
+				)
+			);
+		}
 	}
 
 	public static function callback_bp_activity_mark_as_spam( $activity, $by ) {
@@ -542,6 +593,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		self::group_action( $group, 'updated' );
 	}
 	public static function callback_groups_before_delete_group( $group_id ) {
+		self::$ignore_activity_bulk_deletion = true;
 		self::group_action( $group_id, 'deleted' );
 	}
 	public static function callback_groups_details_updated( $group_id ) {
