@@ -254,9 +254,8 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
-				array(
-					$context => isset( $data['action'] ) ? $data['action'] : 'updated',
-				)
+				$context,
+				isset( $data['action'] ) ? $data['action'] : 'updated'
 			);
 		}
 	}
@@ -308,9 +307,8 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 					'tab'          => $tab,
 				),
 				null,
-				array(
-					'settings' => 'updated',
-				)
+				'settings',
+				'updated'
 			);
 		}
 	}
@@ -323,38 +321,36 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 * @return array|bool
 	 */
 	public static function log_override( array $data ) {
-		if ( 'posts' === $data['connector'] && 'download' === key( $data['contexts'] ) ) {
+		if ( 'posts' === $data['connector'] && 'download' === $data['context'] ) {
 			// Download posts operations
-			$data['contexts']  = array( 'downloads' => current( $data['contexts'] ) );
+			$data['context']  = 'downloads';
 			$data['connector'] = self::$name;
-		} elseif ( 'posts' === $data['connector'] && 'edd_discount' === key( $data['contexts'] ) ) {
+		} elseif ( 'posts' === $data['connector'] && 'edd_discount' === $data['context'] ) {
 			// Discount posts operations
 			if ( self::$is_discount_status_change ) {
 				return false;
 			}
 
-			if ( 'deleted' === current( $data['contexts'] ) ) {
+			if ( 'deleted' === $data['action'] ) {
 				$data['message'] = __( '"%1s" discount deleted', 'stream' );
 			}
 
-			$data['contexts']  = array( 'discounts' => current( $data['contexts'] ) );
+			$data['context']  = 'discounts';
 			$data['connector'] = self::$name;
-		} elseif ( 'posts' === $data['connector'] && 'edd_payment' === key( $data['contexts'] )  ) {
+		} elseif ( 'posts' === $data['connector'] && 'edd_payment' === $data['context'] ) {
 			// Payment posts operations
 			return false; // Do not track payments, they're well logged!
-		} elseif ( 'posts' === $data['connector'] && 'edd_log' === key( $data['contexts'] )  ) {
+		} elseif ( 'posts' === $data['connector'] && 'edd_log' === $data['context'] ) {
 			// Logging operations
 			return false; // Do not track notes, because they're basically logs
-		} elseif ( 'comments' === $data['connector'] && 'edd_payment' === key( $data['contexts'] )  ) {
+		} elseif ( 'comments' === $data['connector'] && 'edd_payment' === $data['context'] ) {
 			// Payment notes ( comments ) operations
 			return false; // Do not track notes, because they're basically logs
-		} elseif ( 'taxonomies' === $data['connector'] && 'download_category' === key( $data['contexts'] ) ) {
-			$data['contexts']  = array( 'download_category' => current( $data['contexts'] ) );
+		} elseif ( 'taxonomies' === $data['connector'] && 'download_category' === $data['context'] ) {
 			$data['connector'] = self::$name;
-		} elseif ( 'taxonomies' === $data['connector'] && 'download_tag' === key( $data['contexts'] ) ) {
-			$data['contexts']  = array( 'download_tag' => current( $data['contexts'] ) );
+		} elseif ( 'taxonomies' === $data['connector'] && 'download_tag' === $data['contexts'] ) {
 			$data['connector'] = self::$name;
-		} elseif ( 'taxonomies' === $data['connector'] && 'edd_log_type' === key( $data['contexts'] ) ) {
+		} elseif ( 'taxonomies' === $data['connector'] && 'edd_log_type' === $data['contexts'] ) {
 			return false;
 		} elseif ( 'settings' === $data['connector'] && 'edd_settings' === $data['args']['option'] ) {
 			return false;
@@ -377,9 +373,8 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 				'status'  => $new_status,
 			),
 			$code_id,
-			array(
-				'discounts' => 'updated',
-			)
+			'discounts',
+			'updated'
 		);
 	}
 
@@ -421,9 +416,8 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 				'type' => $type,
 			),
 			null,
-			array(
-				'reports' => 'generated',
-			)
+			'reports',
+			'generated'
 		);
 	}
 
@@ -432,9 +426,8 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			__( 'Exported Settings', 'stream' ),
 			array(),
 			null,
-			array(
-				'settings' => 'exported',
-			)
+			'settings',
+			'exported'
 		);
 	}
 
@@ -443,9 +436,8 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			__( 'Imported Settings', 'stream' ),
 			array(),
 			null,
-			array(
-				'settings' => 'imported',
-			)
+			'settings',
+			'imported'
 		);
 	}
 
@@ -494,9 +486,8 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 				'meta_value' => $value,
 			),
 			$user_id,
-			array(
-				'api_keys' => $action,
-			)
+			'api_keys',
+			$action
 		);
 	}
 

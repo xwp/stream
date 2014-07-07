@@ -235,7 +235,8 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 						'deleteolddata' => isset( $opts['deleteolddata'] ),
 					),
 					null,
-					array( 'wpseo_import' => 'imported' )
+					'wpseo_import',
+					'imported'
 				);
 			}
 		}
@@ -254,7 +255,8 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 					'include_taxonomy_meta' => isset( $opts['include_taxonomy_meta'] ),
 				),
 				null,
-				array( 'wpseo_import' => 'exported' )
+				'wpseo_import',
+				'exported'
 			);
 		} elseif ( isset( $_FILES['settings_import_file'] ) ) {
 			self::log(
@@ -266,7 +268,8 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 					'file' => $_FILES['settings_import_file']['name'],
 				),
 				null,
-				array( 'wpseo_import' => 'exported' )
+				'wpseo_import',
+				'exported'
 			);
 		}
 	}
@@ -285,7 +288,8 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 				$message,
 				array(),
 				null,
-				array( 'wpseo_files' => 'updated' )
+				'wpseo_files',
+				'updated'
 			);
 		}
 	}
@@ -338,7 +342,8 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 				'post_type' => $post->post_type,
 			),
 			$object_id,
-			array( 'wpseo_meta' => 'updated' )
+			'wpseo_meta',
+			'updated'
 		);
 	}
 
@@ -371,7 +376,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 
 			$data['args']['label']   = $label;
 			$data['args']['context'] = $page;
-			$data['contexts']        = array( $page => 'updated' );
+			$data['context']         = $page;
 			$data['connector']       = self::$name;
 		}
 

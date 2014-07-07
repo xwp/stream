@@ -261,7 +261,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		}
 
 		// Don't track minor status change actions
-		if ( in_array( $_GET['action'], array( 'mark_processing', 'mark_on-hold', 'mark_completed' ) ) || defined( 'DOING_AJAX' ) ) {
+		if ( in_array( wp_stream_filter_input( INPUT_GET, 'action' ), array( 'mark_processing', 'mark_on-hold', 'mark_completed' ) ) || defined( 'DOING_AJAX' ) ) {
 			return;
 		}
 
@@ -319,7 +319,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 				'revision_id'   => null,
 			),
 			$post->ID,
-			array( $post->post_type => $action )
+			$post->post_type,
+			$action
 		);
 
 		self::$order_update_logged = $post->ID;
@@ -358,7 +359,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 				'singular_name' => $order_type_name,
 			),
 			$post->ID,
-			array( $post->post_type => 'deleted' )
+			$post->post_type,
+			'deleted'
 		);
 	}
 
@@ -405,7 +407,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 				'revision_id'     => null,
 			),
 			$order_id,
-			array( 'shop_order' => $new_status_name )
+			'shop_order',
+			$new_status_name
 		);
 	}
 
@@ -423,7 +426,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			),
 			$attribute,
 			$attribute_id,
-			array( 'attributes' => 'created' )
+			'attributes',
+			'created'
 		);
 	}
 
@@ -441,7 +445,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			),
 			$attribute,
 			$attribute_id,
-			array( 'attributes' => 'updated' )
+			'attributes',
+			'updated'
 		);
 	}
 
@@ -461,7 +466,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 				'attribute_name' => $attribute_name,
 			),
 			$attribute_id,
-			array( 'attributes' => 'deleted' )
+			'attributes',
+			'deleted'
 		);
 	}
 
@@ -479,7 +485,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			),
 			$tax_rate,
 			$tax_rate_id,
-			array( 'tax' => 'created' )
+			'tax',
+			'created'
 		);
 	}
 
@@ -497,7 +504,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			),
 			$tax_rate,
 			$tax_rate_id,
-			array( 'tax' => 'updated' )
+			'tax',
+			'updated'
 		);
 	}
 
@@ -528,7 +536,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 				'tax_rate_name' => $tax_rate_name,
 			),
 			$tax_rate_id,
-			array( 'tax' => 'deleted' )
+			'tax',
+			'deleted'
 		);
 	}
 
@@ -536,24 +545,17 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * Filter records and take-over our precious data
 	 *
 	 * @filter wp_stream_record_array
-	 * @param  array  $recordarr Record data to be inserted
-	 * @return array             Filtered record data
+	 *
+	 * @param  array $recordarr Record data to be inserted
+	 *
+	 * @return array            Filtered record data
 	 */
 	public static function callback_wp_stream_record_array( $recordarr ) {
 		// Change connector::posts records
-		if ( 'posts' === $recordarr['connector'] ) {
-			$post_type = key( $recordarr['contexts'] );
-
-			// Change connector if the post_type matches on of our own
-			if ( in_array( $post_type, self::$post_types ) ) {
-				$recordarr['connector'] = self::$name;
-			}
-		} elseif ( 'taxonomies' === $recordarr['connector'] ) {
-			$taxonomy = key( $recordarr['contexts'] );
-
-			if ( in_array( $taxonomy, self::$taxonomies ) ) {
-				$recordarr['connector'] = self::$name;
-			}
+		if ( 'posts' === $recordarr['connector'] && in_array( $recordarr['context'], self::$post_types ) ) {
+			$recordarr['connector'] = self::$name;
+		} elseif ( 'taxonomies' === $recordarr['connector'] && in_array( $recordarr['context'], self::$taxonomies ) ) {
+			$recordarr['connector'] = self::$name;
 		} elseif ( 'settings' === $recordarr['connector'] ) {
 			$option = isset( $recordarr['meta']['option_key'] ) ? $recordarr['meta']['option_key'] : false;
 
@@ -593,9 +595,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 					'value'     => maybe_serialize( $value ),
 				),
 				null,
-				array(
-					self::$settings[ $option ]['tab'] => 'updated',
-				)
+				self::$settings[ $option ]['tab'],
+				'updated'
 			);
 		}
 	}

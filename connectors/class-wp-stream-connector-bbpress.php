@@ -173,12 +173,13 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 			}
 
 			$data['args']['label'] = $field['title'];
-			$data['connector'] = self::$name;
-			$data['contexts'] = array( 'settings' => 'updated' );
+			$data['connector']     = self::$name;
+			$data['context']       = 'settings';
+			$data['action']        = 'updated';
 		}
-		elseif ( 'posts' === $data['connector'] && in_array( key( $data['contexts'] ), array( 'forum', 'topic', 'reply' ) ) ) {
-			if ( 'reply' === key( $data['contexts'] ) ) {
-				if ( 'updated' === current( $data['contexts'] ) ) {
+		elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ) ) ) {
+			if ( 'reply' === $data['context'] ) {
+				if ( 'updated' === $data['action'] ) {
 					$data['message'] = __( 'Replied on "%1$s"', 'stream' );
 					$data['args']['post_title'] = get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title;
 				}
@@ -190,7 +191,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 
 			$data['connector'] = self::$name;
 		}
-		elseif ( 'taxonomies' === $data['connector'] && in_array( key( $data['contexts'] ), array( 'topic-tag' ) ) ) {
+		elseif ( 'taxonomies' === $data['connector'] && in_array( $data['context'], array( 'topic-tag' ) ) ) {
 			$data['connector'] = self::$name;
 		}
 
@@ -221,7 +222,8 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 				'action' => $action,
 			),
 			$topic->ID,
-			array( 'topic' => $action )
+			'topic',
+			$action
 		);
 	}
 

@@ -229,9 +229,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'title'  => $title,
 			),
 			$id,
-			array(
-				'forms' => $is_new ? 'created' : 'updated',
-			)
+			'forms',
+			$is_new ? 'created' : 'updated'
 		);
 	}
 
@@ -261,9 +260,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'form_id' => $form['id'],
 			),
 			$form['id'],
-			array(
-				'forms' => 'updated',
-			)
+			'forms',
+			'updated'
 		);
 
 		return $confirmation;
@@ -295,9 +293,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'form_id'   => $form['id'],
 			),
 			$form['id'],
-			array(
-				'forms' => 'updated',
-			)
+			'forms',
+			'updated'
 		);
 
 		return $notification;
@@ -321,9 +318,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'notification' => $notification,
 			),
 			$form['id'],
-			array(
-				'forms' => 'updated',
-			)
+			'forms',
+			'updated'
 		);
 	}
 
@@ -345,9 +341,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'confirmation' => $confirmation,
 			),
 			$form['id'],
-			array(
-				'forms' => 'updated',
-			)
+			'forms',
+			'updated'
 		);
 	}
 
@@ -372,9 +367,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'is_active'    => $is_active,
 			),
 			null,
-			array(
-				'forms' => 'updated',
-			)
+			'forms',
+			'updated'
 		);
 	}
 
@@ -393,9 +387,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'form_id' => $form['id'],
 			),
 			$form['id'],
-			array(
-				'forms' => 'updated',
-			)
+			'forms',
+			'updated'
 		);
 	}
 
@@ -420,9 +413,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'is_active'    => $is_active,
 			),
 			$form['id'],
-			array(
-				'forms' => 'updated',
-			)
+			'forms',
+			'updated'
 		);
 	}
 
@@ -452,9 +444,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'form_id'    => $id,
 			),
 			$form['id'],
-			array(
-				'forms' => $action,
-			)
+			'forms',
+			$action
 		);
 	}
 
@@ -498,9 +489,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
-				array(
-					$context => isset( $data['action'] ) ? $data['action'] : 'updated',
-				)
+				$context,
+				isset( $data['action'] ) ? $data['action'] : 'updated'
 			);
 		}
 	}
@@ -516,9 +506,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			),
 			compact( 'option', 'old_value', 'new_value' ),
 			null,
-			array(
-				'settings' => $is_update ? 'updated' : 'deleted',
-			)
+			'settings',
+			$is_update ? 'updated' : 'deleted'
 		);
 	}
 
@@ -532,9 +521,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'form_id'    => $form_id,
 			),
 			$form_id,
-			array(
-				'export' => 'exported',
-			)
+			'export',
+			'exported'
 		);
 
 		return $dummy;
@@ -545,9 +533,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			__( 'Import process started', 'stream' ),
 			array(),
 			null,
-			array(
-				'export' => 'imported',
-			)
+			'export',
+			'imported'
 		);
 
 		return $dummy;
@@ -565,9 +552,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'titles' => $titles,
 			),
 			null,
-			array(
-				'export' => 'imported',
-			)
+			'export',
+			'imported'
 		);
 
 		return $dummy;
@@ -583,9 +569,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'form_id'    => $id,
 			),
 			$form['id'],
-			array(
-				'forms' => 'deleted',
-			)
+			'forms',
+			'deleted'
 		);
 	}
 
@@ -602,9 +587,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'new_id'         => $new_id,
 			),
 			$new_id,
-			array(
-				'forms' => 'duplicated',
-			)
+			'forms',
+			'duplicated'
 		);
 	}
 
@@ -620,9 +604,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'form_id'    => $form['id'],
 			),
 			$lead_id,
-			array(
-				'entries' => 'deleted',
-			)
+			'entries',
+			'deleted'
 		);
 	}
 
@@ -639,9 +622,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'form_id'    => $form['id'],
 			),
 			$note_id,
-			array(
-				'notes' => 'added',
-			)
+			'notes',
+			'added'
 		);
 	}
 
@@ -658,9 +640,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'form_id'    => $form['id'],
 			),
 			$note_id,
-			array(
-				'notes' => 'deleted',
-			)
+			'notes',
+			'deleted'
 		);
 	}
 
@@ -698,9 +679,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'prev'       => $prev,
 			),
 			$lead_id,
-			array(
-				'entries' => $status,
-			)
+			'entries',
+			$status
 		);
 	}
 
@@ -722,9 +702,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'status'     => $status,
 			),
 			$lead_id,
-			array(
-				'entries' => 'updated',
-			)
+			'entries',
+			'updated'
 		);
 	}
 
@@ -746,9 +725,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				'status'     => $status,
 			),
 			$lead_id,
-			array(
-				'entries' => 'updated',
-			)
+			'entries',
+			'updated'
 		);
 	}
 

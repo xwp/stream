@@ -375,9 +375,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value', 'page' ),
 				null,
-				array(
-					$context => isset( $data['action'] ) ? $data['action'] : 'updated',
-				)
+				$context,
+				isset( $data['action'] ) ? $data['action'] : 'updated'
 			);
 		}
 	}
@@ -418,9 +417,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 					'value'      => maybe_serialize( $new_value ),
 				),
 				null,
-				array(
-					'components' => $option_value ? 'activated' : 'deactivated',
-				)
+				'components',
+				$option_value ? 'activated' : 'deactivated'
 			);
 		}
 	}
@@ -465,9 +463,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 					'page_id'    => empty( $new_value[ $option ] ) ? 0 : $new_value[ $option ],
 				),
 				null,
-				array(
-					'components' => 'updated',
-				)
+				'components',
+				'updated'
 			);
 		}
 	}
@@ -498,9 +495,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 					'author' => $activity->user_id,
 				),
 				$activity->id,
-				array(
-					$activity->component => 'deleted',
-				)
+				$activity->component,
+				'deleted'
 			);
 		} else { // Bulk deletion
 			// Sometimes some objects removal are followed by deleting relevant
@@ -520,9 +516,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 					'ids'   => $activities_ids,
 				),
 				null,
-				array(
-					'activity' => 'deleted',
-				)
+				'activity',
+				'deleted'
 			);
 		}
 	}
@@ -540,9 +535,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				'author' => $activity->user_id,
 			),
 			$activity->id,
-			array(
-				$activity->component => 'spammed',
-			)
+			$activity->component,
+			'spammed'
 		);
 	}
 
@@ -559,9 +553,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				'author' => $activity->user_id,
 			),
 			$activity->id,
-			array(
-				$activity->component => 'unspammed',
-			)
+			$activity->component,
+			'unspammed'
 		);
 	}
 
@@ -578,9 +571,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				'author' => $activity->user_id,
 			),
 			$activity->id,
-			array(
-				'activity' => 'updated',
-			)
+			'activity',
+			'updated'
 		);
 	}
 
@@ -641,9 +633,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				$meta
 			),
 			$group->id,
-			array(
-				'groups' => $action,
-			)
+			'groups',
+			$action
 		);
 	}
 
@@ -746,9 +737,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				$meta
 			),
 			$field->id,
-			array(
-				'profile_fields' => $action,
-			)
+			'profile_fields',
+			$action
 		);
 	}
 
@@ -795,9 +785,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				$meta
 			),
 			$group->id,
-			array(
-				'profile_fields' => $action,
-			)
+			'profile_fields',
+			$action
 		);
 	}
 
