@@ -57,6 +57,13 @@ class WP_Stream_API {
 		$this->site_uuid = get_option( self::SITE_UUID_OPTION_KEY, 0 );
 	}
 
+	/**
+	 * Validate a site API key.
+	 *
+	 * @param string The API Key.
+	 *
+	 * @return mixed
+	 */
 	public function validate_key( $api_key = null ) {
 		if ( ! $api_key ) {
 			$api_key = $this->api_key;
@@ -69,6 +76,13 @@ class WP_Stream_API {
 		return $this->remote_request( $url, $method, null, $headers );
 	}
 
+	/**
+	 * Invalidate a site API key.
+	 *
+	 * @param string The API Key.
+	 *
+	 * @return mixed
+	 */
 	public function invalidate_key( $api_key = null ) {
 		if ( ! $api_key ) {
 			$api_key = $this->api_key;
@@ -81,6 +95,13 @@ class WP_Stream_API {
 		return $this->remote_request( $url, $method, null, $headers );
 	}
 
+	/**
+	 * Get the details for a specific user.
+	 *
+	 * @param int A user ID.
+	 *
+	 * @return mixed
+	 */
 	public function get_user( $user_id = false ) {
 		if ( false === $user_id ) {
 			return false;
@@ -92,6 +113,14 @@ class WP_Stream_API {
 		return $this->remote_request( $url, $method );
 	}
 
+	/**
+	 * Get a specific record.
+	 *
+	 * @param string A record ID.
+	 * @param array  Returns specified fields only.
+	 *
+	 * @return mixed
+	 */
 	public function get_record( $record_id = false, $fields = array() ) {
 		if ( false === $record_id ) {
 			return false;
@@ -113,6 +142,13 @@ class WP_Stream_API {
 		return $this->remote_request( $url, $method );
 	}
 
+	/**
+	 * Get all records.
+	 *
+	 * @param array Returns specified fields only.
+	 *
+	 * @return mixed
+	 */
 	public function get_records( $fields = array() ) {
 		if ( ! $this->site_uuid ) {
 			return false;
@@ -130,6 +166,14 @@ class WP_Stream_API {
 		return $this->remote_request( $url, $method );
 	}
 
+	/**
+	 * Create a new record.
+	 *
+	 * @param array Record data.
+	 * @param array Returns specified fields only.
+	 *
+	 * @return mixed
+	 */
 	public function new_record( $record, $fields = array() ) {
 		if ( ! $this->site_uuid ) {
 			return false;
@@ -152,10 +196,10 @@ class WP_Stream_API {
 	/**
 	 * Set cache with the Transients API.
 	 *
-	 * @param string  Transient ID.
-	 * @param int     Set transient timeout. Default 300 seconds (5 minutes).
+	 * @param string Transient ID.
+	 * @param int    Set transient timeout. Default 300 seconds (5 minutes).
 	 *
-	 * @return    mixed
+	 * @return mixed
 	 */
 	public function set_cache( $transient, $url, $timeout = 300 ) {
 		$results = get_transient( $transient );
