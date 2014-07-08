@@ -3,7 +3,7 @@
 
 set -e
 
-WPCS_STANDARD=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress; fi)
+WPCS_STANDARD=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress-Core; fi)
 if [ -e .ci-env.sh ]; then
 	source .ci-env.sh
 fi
