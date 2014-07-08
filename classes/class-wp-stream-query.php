@@ -28,6 +28,7 @@ class WP_Stream_Query {
 		$defaults = array(
 			// Search param
 			'search'                => null,
+			'search_field'          => 'summary',
 			'record_greater_than'   => null,
 			'distinct'              => null,
 			// Date-based filters
@@ -158,8 +159,9 @@ class WP_Stream_Query {
 		/**
 		 * PARSE CUSTOM CORE FILTERS
 		 */
-		if ( $args['search'] ) {
-			$query['summary']['like'] = $args['search'];
+		if ( $args['search'] && $args['search_field'] ) {
+			$search_field = $args['search_field'];
+			$query[ $search_field ]['like'] = $args['search'];
 		}
 
 		if ( $args['record_greater_than'] ) {
