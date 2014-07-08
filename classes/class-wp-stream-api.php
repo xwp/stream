@@ -84,20 +84,6 @@ class WP_Stream_API {
 	}
 
 	/**
-	 * Invalidate a site API key.
-	 *
-	 * @param string The API Key.
-	 *
-	 * @return mixed
-	 */
-	public function invalidate_key( $api_key = null ) {
-		$url     = $this->request_url( '/invalidate-key' );
-		$method  = 'DELETE';
-
-		return $this->remote_request( $url, $method );
-	}
-
-	/**
 	 * Get the details for a specific user.
 	 *
 	 * @param int  A user ID.
