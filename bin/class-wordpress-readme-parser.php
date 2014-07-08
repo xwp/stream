@@ -41,7 +41,7 @@ class WordPress_Readme_Parser {
 			if ( ! preg_match( '/^(.+?):\s+(.+)$/', $metadatum, $metadataum_matches ) ) {
 				throw new Exception( "Parse error in $metadatum" );
 			}
-			list( $name, $value ) = array_slice( $metadataum_matches, 1, 2 );
+			list( $name, $value )    = array_slice( $metadataum_matches, 1, 2 );
 			$this->metadata[ $name ] = $value;
 		}
 		$this->metadata['Contributors'] = preg_split( '/\s*,\s*/', $this->metadata['Contributors'] );
