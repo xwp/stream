@@ -332,8 +332,9 @@
 	padding: 3px 7px 0;
 }
 
-.wp_stream_screen li.select2-result {
-	margin-bottom: 1px;
+.wp_stream_screen li.select2-result,
+.wp_stream_settings li.select2-result {
+	margin-bottom: 0;
 }
 
 .wp_stream_screen li.select2-result.level-1 {
