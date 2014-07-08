@@ -260,6 +260,7 @@
 	display: none;
 }
 
+
 /* Date Interval Common */
 
 .wp_stream_screen .date-interval .field-predefined {
@@ -325,6 +326,7 @@
 	content: '\f345';
 }
 
+
 /* Select2 Common */
 
 .wp_stream_screen li.select2-searching {
@@ -383,6 +385,7 @@
 	-webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */
 	   -moz-filter: grayscale(100%); /* Firefox < 3.5 */
 }
+
 
 /* Exclude List Table */
 .stream-exclude-list {
@@ -475,6 +478,7 @@
 		display: none;
 	}
 }
+
 
 /* User Profile */
 
