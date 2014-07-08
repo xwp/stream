@@ -62,7 +62,7 @@ class WP_Stream_API {
 			$api_key = $this->api_key;
 		}
 
-		$url     = request_url( '/validate-key' );
+		$url     = $this->request_url( '/validate-key' );
 		$method  = 'GET';
 		$headers = array( 'stream-api-master-key' => $api_key );
 
@@ -74,7 +74,7 @@ class WP_Stream_API {
 			$api_key = $this->api_key;
 		}
 
-		$url     = request_url( '/invalidate-key' );
+		$url     = $this->request_url( '/invalidate-key' );
 		$method  = 'DELETE';
 		$headers = array( 'stream-api-master-key' => $api_key );
 
@@ -86,7 +86,28 @@ class WP_Stream_API {
 			return false;
 		}
 
-		$url    = request_url( '/users/' . intval( $user_id ) );
+		$url    = $this->request_url( '/users/' . intval( $user_id ) );
+		$method = 'GET';
+
+		return $this->remote_request( $url, $method );
+	}
+
+	public function get_record( $record_id = false, $fields = array() ) {
+		if ( false === $record_id ) {
+			return false;
+		}
+
+		if ( ! $this->site_uuid ) {
+			return false;
+		}
+
+		$args = array();
+
+		if ( ! empty( $fields ) ) {
+			$args['fields'] = implode( ',', $fields );
+		}
+
+		$url    = $this->request_url( '/sites/' . $this->site_uuid . '/record/' . $record_id, $args );
 		$method = 'GET';
 
 		return $this->remote_request( $url, $method );
@@ -131,7 +152,12 @@ class WP_Stream_API {
 	 * @return string A properly escaped URL.
 	 */
 	protected function request_url( $path, $args = array() ) {
-		return esc_url_raw( add_query_arg( $args, trailingslashit( $this->api_url ) . $api_version . $path ) );
+		return esc_url_raw(
+			add_query_arg(
+				$args,
+				trailingslashit( $this->api_url ) . $this->api_version . $path
+			)
+		);
 	}
 
 	/**
