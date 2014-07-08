@@ -296,7 +296,9 @@ class WP_Stream_API {
 
 		$data = json_decode( $request['body'] );
 
-		if ( $request['response']['code'] >= 200 && $request['response']['code'] <= 204 ) {
+		$success_status_codes = array( 200, 201, 204 );
+
+		if ( in_array( $request['response']['code'], $success_status_codes ) ) {
 			return $data;
 		} else {
 			$this->errors['errors']['http_code'] = $request['response']['code'];
