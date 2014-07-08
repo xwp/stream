@@ -41,7 +41,7 @@ class WordPress_Readme_Parser {
 			if ( ! preg_match( '/^(.+?):\s+(.+)$/', $metadatum, $metadataum_matches ) ) {
 				throw new Exception( "Parse error in $metadatum" );
 			}
-			list( $name, $value )  = array_slice( $metadataum_matches, 1, 2 );
+			list( $name, $value ) = array_slice( $metadataum_matches, 1, 2 );
 			$this->metadata[ $name ] = $value;
 		}
 		$this->metadata['Contributors'] = preg_split( '/\s*,\s*/', $this->metadata['Contributors'] );
@@ -97,6 +97,9 @@ class WordPress_Readme_Parser {
 			'Description' => function ( $body ) use ( $params ) {
 				if ( isset( $params['travis_ci_url'] ) ) {
 					$body .= sprintf( "\n\n[![Build Status](%s.png?branch=master)](%s)", $params['travis_ci_url'], $params['travis_ci_url'] );
+				}
+				if ( isset( $params['coveralls_url'] ) ) {
+					$body .= sprintf( "\n\n[![Build Status](%s?branch=master)](%s)", $params['coveralls_badge_src'], $params['coveralls_url'] );
 				}
 				return $body;
 			},
