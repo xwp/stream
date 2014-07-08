@@ -443,14 +443,15 @@ class WP_Stream_Admin {
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 
 		$validate_key_request = WP_Stream::$api->validate_key( WP_Stream::$api->api_key );
+		$uuid_pattern         = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/';
 
-		if ( isset( $validate_key_request->site_id ) ) {
+		if ( isset( $validate_key_request->site_id ) && preg_match( $uuid_pattern, $validate_key_request->site_id ) ) {
 			WP_Stream::$api->site_uuid = $validate_key_request->site_id;
+
+			update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
+
+			do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
 		}
-
-		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
-
-		do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
 
 		if ( ! WP_Stream::$api->api_key || ! WP_Stream::$api->site_uuid ) {
 			wp_die( __( 'There was a problem connecting to Stream. Please try again later.', 'stream' ) );

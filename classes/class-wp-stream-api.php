@@ -76,7 +76,7 @@ class WP_Stream_API {
 	public function validate_key( $allow_cache = true, $expiration = 300 ) {
 		$url = $this->request_url( '/validate-key' );
 
-		return $this->remote_request( $url, $allow_cache, $expiration );
+		return $this->remote_request( $url, 'GET', null, $allow_cache, $expiration );
 	}
 
 	/**
@@ -95,7 +95,7 @@ class WP_Stream_API {
 
 		$url = $this->request_url( '/users/' . intval( $user_id ) );
 
-		return $this->remote_request( $url, $allow_cache, $expiration );
+		return $this->remote_request( $url, 'GET', null, $allow_cache, $expiration );
 	}
 
 	/**
@@ -125,7 +125,7 @@ class WP_Stream_API {
 
 		$url = $this->request_url( '/sites/' . $this->site_uuid . '/records/' . $record_id, $args );
 
-		return $this->remote_request( $url, $allow_cache, $expiration );
+		return $this->remote_request( $url, 'GET', null, $allow_cache, $expiration );
 	}
 
 	/**
