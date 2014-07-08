@@ -54,7 +54,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			'unspammed'  => __( 'Unmarked as Spam', 'stream' ),
 			'deleted'    => __( 'Deleted', 'stream' ),
 			'duplicate'  => __( 'Duplicate', 'stream' ),
-			'throttled'  => __( 'Throttled', 'stream' ),
+			'flood'      => __( 'Throttled', 'stream' ),
 		);
 	}
 
