@@ -61,19 +61,26 @@ class WP_Stream_API {
 	 * Validate a site API key.
 	 *
 	 * @param string The API Key.
+	 * @param bool   Allow API calls to be cached.
+	 * @param int    Set transient timeout in seconds.
 	 *
 	 * @return mixed
 	 */
-	public function validate_key( $api_key = null ) {
-		if ( ! $api_key ) {
-			$api_key = $this->api_key;
+	public function validate_key( $allow_cache = true, $timeout = 300 ) {
+		$url = $this->request_url( '/validate-key' );
+
+		if ( $allow_cache ) {
+			$results = $this->set_cache( $url, $timeout );
+		} else {
+			$results = $this->remote_request( $url );
 		}
 
-		$url     = $this->request_url( '/validate-key' );
-		$method  = 'GET';
-		$headers = array( 'stream-api-master-key' => $api_key );
+		if ( ! empty( $this->errors ) ) {
+			$this->clear_cache( $url );
+			return $this->errors;
+		}
 
-		return $this->remote_request( $url, $method, null, $headers );
+		return $results;
 	}
 
 	/**
@@ -84,33 +91,40 @@ class WP_Stream_API {
 	 * @return mixed
 	 */
 	public function invalidate_key( $api_key = null ) {
-		if ( ! $api_key ) {
-			$api_key = $this->api_key;
-		}
-
 		$url     = $this->request_url( '/invalidate-key' );
 		$method  = 'DELETE';
-		$headers = array( 'stream-api-master-key' => $api_key );
 
-		return $this->remote_request( $url, $method, null, $headers );
+		return $this->remote_request( $url, $method );
 	}
 
 	/**
 	 * Get the details for a specific user.
 	 *
-	 * @param int A user ID.
+	 * @param int  A user ID.
+	 * @param bool Allow API calls to be cached.
+	 * @param int  Set transient timeout in seconds.
 	 *
 	 * @return mixed
 	 */
-	public function get_user( $user_id = false ) {
+	public function get_user( $user_id = false, $allow_cache = true, $timeout = 300 ) {
 		if ( false === $user_id ) {
 			return false;
 		}
 
-		$url    = $this->request_url( '/users/' . intval( $user_id ) );
-		$method = 'GET';
+		$url = $this->request_url( '/users/' . intval( $user_id ) );
 
-		return $this->remote_request( $url, $method );
+		if ( $allow_cache ) {
+			$results = $this->set_cache( $url, $timeout );
+		} else {
+			$results = $this->remote_request( $url );
+		}
+
+		if ( ! empty( $this->errors ) ) {
+			$this->clear_cache( $url );
+			return $this->errors;
+		}
+
+		return $results;
 	}
 
 	/**
@@ -118,10 +132,12 @@ class WP_Stream_API {
 	 *
 	 * @param string A record ID.
 	 * @param array  Returns specified fields only.
+	 * @param bool   Allow API calls to be cached.
+	 * @param int    Set transient timeout in seconds.
 	 *
 	 * @return mixed
 	 */
-	public function get_record( $record_id = false, $fields = array() ) {
+	public function get_record( $record_id = false, $fields = array(), $allow_cache = true, $timeout = 30 ) {
 		if ( false === $record_id ) {
 			return false;
 		}
@@ -136,20 +152,32 @@ class WP_Stream_API {
 			$args['fields'] = implode( ',', $fields );
 		}
 
-		$url    = $this->request_url( '/sites/' . $this->site_uuid . '/records/' . $record_id, $args );
-		$method = 'GET';
+		$url = $this->request_url( '/sites/' . $this->site_uuid . '/records/' . $record_id, $args );
 
-		return $this->remote_request( $url, $method );
+		if ( $allow_cache ) {
+			$results = $this->set_cache( $url, $timeout );
+		} else {
+			$results = $this->remote_request( $url );
+		}
+
+		if ( ! empty( $this->errors ) ) {
+			$this->clear_cache( $url );
+			return $this->errors;
+		}
+
+		return $results;
 	}
 
 	/**
 	 * Get all records.
 	 *
 	 * @param array Returns specified fields only.
+	 * @param bool  Allow API calls to be cached.
+	 * @param int   Set transient timeout in seconds.
 	 *
 	 * @return mixed
 	 */
-	public function get_records( $fields = array() ) {
+	public function get_records( $fields = array(), $allow_cache = true, $timeout = 120 ) {
 		if ( ! $this->site_uuid ) {
 			return false;
 		}
@@ -160,10 +188,20 @@ class WP_Stream_API {
 			$args['fields'] = implode( ',', $fields );
 		}
 
-		$url    = $this->request_url( '/sites/' . $this->site_uuid . '/records', $args );
-		$method = 'GET';
+		$url = $this->request_url( '/sites/' . $this->site_uuid . '/records', $args );
 
-		return $this->remote_request( $url, $method );
+		if ( $allow_cache ) {
+			$results = $this->set_cache( $url, $timeout );
+		} else {
+			$results = $this->remote_request( $url );
+		}
+
+		if ( ! empty( $this->errors ) ) {
+			$this->clear_cache( $url );
+			return $this->errors;
+		}
+
+		return $results;
 	}
 
 	/**
@@ -196,17 +234,19 @@ class WP_Stream_API {
 	/**
 	 * Set cache with the Transients API.
 	 *
-	 * @param string Transient ID.
-	 * @param int    Set transient timeout. Default 300 seconds (5 minutes).
+	 * @param string The URL of the API request.
+	 * @param int    Set transient timeout in seconds.
 	 *
 	 * @return mixed
 	 */
-	public function set_cache( $transient, $url, $timeout = 300 ) {
-		$results = get_transient( $transient );
+	public function set_cache( $url, $timeout = 120 ) {
+		$transient = 'wp_stream_' . md5( $url );
+		$results   = get_transient( $transient );
 
 		if ( false === $results ) {
 			$results = apply_filters( 'wp_stream_api_set_cache', $this->remote_request( $url ), $transient );
 			set_transient( $transient, $results, $timeout );
+			$results = get_transient( $transient );
 		}
 
 		return $results;
@@ -215,11 +255,12 @@ class WP_Stream_API {
 	/**
 	 * Clear cache with the Transients API.
 	 *
-	 * @param string Transient ID.
+	 * @param string The URL of the API request.
 	 *
-	 * @return    void
+	 * @return void
 	 */
-	public function clear_cache( $transient ) {
+	public function clear_cache( $url ) {
+		$transient = 'wp_stream_api_' . md5( $url );
 		delete_transient( $transient );
 	}
 
@@ -235,7 +276,7 @@ class WP_Stream_API {
 		return esc_url_raw(
 			add_query_arg(
 				$args,
-				untrailingslashit( $this->api_url ) . $path //use this when versions implemented: trailingslashit( $this->api_url ) . $this->api_version . $path
+				untrailingslashit( $this->api_url ) . $path //use this when /version/ is implemented: trailingslashit( $this->api_url ) . $this->api_version . $path
 			)
 		);
 	}
@@ -249,19 +290,15 @@ class WP_Stream_API {
 	 *
 	 * @return object The results of the wp_remote_request request.
 	 */
-	protected function remote_request( $url = '', $method = 'GET', $body = null, $headers = array() ) {
+	protected function remote_request( $url = '', $method = 'GET', $body = null ) {
 		if ( empty( $url ) ) {
 			return false;
 		}
 
-		if ( ! isset( $headers['stream-api-master-key'] ) ) {
-			$headers['stream-api-master-key'] = $this->api_key;
-		}
-
 		$args = array(
-			'headers' => $headers,
-			'method' => $method,
-			'body' => isset( $body ) ? json_encode( $body ) : '',
+			'headers' => array( 'stream-api-master-key' => $this->api_key ),
+			'method'  => $method,
+			'body'    => isset( $body ) ? json_encode( $body ) : '',
 		);
 
 		$request = wp_remote_request( $url, $args );
