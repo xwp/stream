@@ -24,7 +24,7 @@ class WP_Stream_API {
 	 *
 	 * @var string
 	 */
-	protected $site_uuid = false;
+	public $site_uuid = false;
 
 	/**
 	 * The API URL
@@ -66,7 +66,7 @@ class WP_Stream_API {
 		$method  = 'GET';
 		$headers = array( 'stream-api-master-key' => $api_key );
 
-		return $this->remote_request( $url, $method, $headers );
+		return $this->remote_request( $url, $method, null, $headers );
 	}
 
 	public function invalidate_key( $api_key = null ) {
@@ -78,7 +78,7 @@ class WP_Stream_API {
 		$method  = 'DELETE';
 		$headers = array( 'stream-api-master-key' => $api_key );
 
-		return $this->remote_request( $url, $method, $headers );
+		return $this->remote_request( $url, $method, null, $headers );
 	}
 
 	public function get_user( $user_id = false ) {
@@ -107,17 +107,53 @@ class WP_Stream_API {
 			$args['fields'] = implode( ',', $fields );
 		}
 
-		$url    = $this->request_url( '/sites/' . $this->site_uuid . '/record/' . $record_id, $args );
+		$url    = $this->request_url( '/sites/' . $this->site_uuid . '/records/' . $record_id, $args );
 		$method = 'GET';
 
 		return $this->remote_request( $url, $method );
 	}
 
+	public function get_records( $fields = array() ) {
+		if ( ! $this->site_uuid ) {
+			return false;
+		}
+
+		$args = array();
+
+		if ( ! empty( $fields ) ) {
+			$args['fields'] = implode( ',', $fields );
+		}
+
+		$url    = $this->request_url( '/sites/' . $this->site_uuid . '/records', $args );
+		$method = 'GET';
+
+		return $this->remote_request( $url, $method );
+	}
+
+	public function new_record( $record, $fields = array() ) {
+		if ( ! $this->site_uuid ) {
+			return false;
+		}
+
+		$record['site_id'] = $this->site_uuid;
+
+		$args = array();
+
+		if ( ! empty( $fields ) ) {
+			$args['fields'] = implode( ',', $fields );
+		}
+
+		$url    = $this->request_url( '/sites/' . $this->site_uuid . '/records', array(), $record );
+		$method = 'POST';
+
+		return $this->remote_request( $url, $method, $record );
+	}
+
 	/**
 	 * Set cache with the Transients API.
 	 *
-	 * @param string Transient ID.
-	 * @param int    Set transient timeout. Default 300 seconds (5 minutes).
+	 * @param string  Transient ID.
+	 * @param int     Set transient timeout. Default 300 seconds (5 minutes).
 	 *
 	 * @return    mixed
 	 */
@@ -155,7 +191,7 @@ class WP_Stream_API {
 		return esc_url_raw(
 			add_query_arg(
 				$args,
-				trailingslashit( $this->api_url ) . $this->api_version . $path
+				untrailingslashit( $this->api_url ) . $path //use this when versions implemented: trailingslashit( $this->api_url ) . $this->api_version . $path
 			)
 		);
 	}
@@ -169,7 +205,7 @@ class WP_Stream_API {
 	 *
 	 * @return object The results of the wp_remote_request request.
 	 */
-	protected function remote_request( $url = '', $method = 'GET', $headers = array(), $body = null ) {
+	protected function remote_request( $url = '', $method = 'GET', $body = null, $headers = array() ) {
 		if ( empty( $url ) ) {
 			return false;
 		}
@@ -181,7 +217,7 @@ class WP_Stream_API {
 		$args = array(
 			'headers' => $headers,
 			'method' => $method,
-			'body' => $body
+			'body' => isset( $body ) ? json_encode( $body ) : '',
 		);
 
 		$request = wp_remote_request( $url, $args );
@@ -193,7 +229,7 @@ class WP_Stream_API {
 
 		$data = json_decode( $request['body'] );
 
-		if ( $request['response']['code'] == 200 ) {
+		if ( $request['response']['code'] >= 200 && $request['response']['code'] <= 204 ) {
 			return $data;
 		} else {
 			$this->errors['errors']['http_code'] = $request['response']['code'];
