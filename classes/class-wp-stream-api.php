@@ -233,7 +233,7 @@ class WP_Stream_API {
 		if ( ! is_wp_error( $request ) ) {
 			$data = apply_filters( 'wp_stream_api_request_data', json_decode( $request['body'] ), $url, $args );
 
-			if ( 200 == $request['response']['code'] || 201 == $request['response']['code'] ) {
+			if ( 200 === $request['response']['code'] || 201 === $request['response']['code'] ) {
 				return $data;
 			} else {
 				$this->errors['errors']['http_code'] = $request['response']['code'];
