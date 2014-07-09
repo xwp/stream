@@ -41,13 +41,6 @@ class WP_Stream_API {
 	protected $api_version = 'v1';
 
 	/**
-	 * Status codes which indicate a successful request
-	 *
-	 * @var string
-	 */
-	protected $success_status_codes = array( 200, 201, 204 );
-
-	/**
 	 * Error messages
 	 *
 	 * @var array
@@ -233,7 +226,7 @@ class WP_Stream_API {
 		if ( ! is_wp_error( $request ) ) {
 			$data = apply_filters( 'wp_stream_api_request_data', json_decode( $request['body'] ), $url, $args );
 
-			if ( in_array( $request['response']['code'], $this->success_status_codes ) ) {
+			if ( 200 == $request['response']['code'] || 201 == $request['response']['code'] ) {
 				return $data;
 			} else {
 				$this->errors['errors']['http_code'] = $request['response']['code'];
