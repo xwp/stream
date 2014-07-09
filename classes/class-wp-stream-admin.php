@@ -869,7 +869,8 @@ class WP_Stream_Admin {
 						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 						delete_option( WP_Stream_Install_WPDB::OPTION_KEY );
 						delete_option( WP_Stream_Settings::OPTION_KEY );
-						delete_option( WP_Stream_Settings::API_KEY_OPTION_KEY );
+						delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
+						delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
 					}
 					restore_current_blog();
 				}
@@ -882,6 +883,8 @@ class WP_Stream_Admin {
 				delete_site_option( WP_Stream_Settings::OPTION_KEY );
 				delete_site_option( WP_Stream_Settings::DEFAULTS_OPTION_KEY );
 				delete_site_option( WP_Stream_Settings::NETWORK_OPTION_KEY );
+				delete_site_option( WP_Stream_API::API_KEY_OPTION_KEY );
+				delete_site_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
 				delete_site_option( WP_Stream_Network::SITES_CONNECTED_OPTION_KEY );
 			}
 
