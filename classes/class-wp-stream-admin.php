@@ -59,7 +59,7 @@ class WP_Stream_Admin {
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/pricing/' )
 		);
 
-		if ( isset( $_GET['api_key'] ) ) {
+		if ( ! empty( wp_stream_filter_input( INPUT_GET, 'api_key' ) ) ) {
 			add_action( 'admin_init', array( __CLASS__, 'save_api_authentication' ) );
 		}
 
@@ -439,7 +439,7 @@ class WP_Stream_Admin {
 			wp_die( 'Doing it wrong.' );
 		}
 
-		WP_Stream::$api->api_key = $_GET['api_key'];
+		WP_Stream::$api->api_key = wp_stream_filter_input( INPUT_GET, 'api_key' );
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 
 		$validate_key_request = WP_Stream::$api->validate_key( WP_Stream::$api->api_key );
