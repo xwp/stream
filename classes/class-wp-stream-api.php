@@ -55,7 +55,6 @@ class WP_Stream_API {
 	public function __construct() {
 		$this->api_key   = get_option( self::API_KEY_OPTION_KEY, 0 );
 		$this->site_uuid = get_option( self::SITE_UUID_OPTION_KEY, 0 );
-		$this->get_records();
 	}
 
 	/**
