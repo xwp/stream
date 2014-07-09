@@ -443,9 +443,11 @@ class WP_Stream_Admin {
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 
 		$validate_key_request = WP_Stream::$api->validate_key( WP_Stream::$api->api_key );
-		$uuid_pattern         = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/';
 
-		if ( isset( $validate_key_request->site_id ) && preg_match( $uuid_pattern, $validate_key_request->site_id ) ) {
+		// Regular expression to match UUID v1
+		$pattern = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/';
+
+		if ( isset( $validate_key_request->site_id ) && preg_match( $pattern, $validate_key_request->site_id ) ) {
 			WP_Stream::$api->site_uuid = $validate_key_request->site_id;
 
 			update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
