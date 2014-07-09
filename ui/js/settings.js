@@ -54,7 +54,9 @@ jQuery(function( $ ) {
 					}
 				},
 				initSelection: function( item, callback ) {
-					callback( item.data( 'selected' ) );
+					var data = [];
+					data.push( { id: item.val(), text: item.val() } );
+					callback( data );
 				},
 				formatNoMatches: function(){
 					return '';
