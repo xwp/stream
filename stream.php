@@ -71,16 +71,13 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'functions.php';
 
 		// Load DB helper interface/class
-		$driver = apply_filters( 'wp_stream_db_adapter', 'wpdb' );
+		$driver = apply_filters( 'wp_stream_db_adapter', 'stream' );
 		if ( file_exists( WP_STREAM_INC_DIR . "db/$driver.php" ) ) {
 			require_once WP_STREAM_INC_DIR . "db/$driver.php";
 		}
 		if ( ! self::$db ) {
 			wp_die( __( 'Stream: Could not load chosen DB driver.', 'stream' ), 'Stream DB Error' );
 		}
-
-		// Check DB and add message if not present
-		add_action( 'init', array( self::$db, 'check_db' ) );
 
 		// Load API helper interface/class
 		self::$api = new WP_Stream_API;

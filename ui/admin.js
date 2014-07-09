@@ -326,13 +326,6 @@ jQuery(function( $ ) {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
 	});
 
-	// Confirmation on some important actions
-	$( '#wp_stream_general_delete_all_records, #wp_stream_network_general_delete_all_records' ).click(function( e ) {
-		if ( ! confirm( wp_stream.i18n.confirm_purge ) ) {
-			e.preventDefault();
-		}
-	});
-
 	$( '#wp_stream_general_reset_site_settings, #wp_stream_network_general_reset_site_settings' ).click(function( e ) {
 		if ( ! confirm( wp_stream.i18n.confirm_defaults ) ) {
 			e.preventDefault();

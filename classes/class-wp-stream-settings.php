@@ -265,29 +265,6 @@ class WP_Stream_Settings {
 							'after_field' => esc_html__( 'Enabled', 'stream' ),
 							'default'     => 0,
 						),
-						array(
-							'name'        => 'records_ttl',
-							'title'       => esc_html__( 'Keep Records for', 'stream' ),
-							'type'        => 'number',
-							'class'       => 'small-text',
-							'desc'        => esc_html__( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
-							'default'     => 90,
-							'after_field' => esc_html__( 'days', 'stream' ),
-						),
-						array(
-							'name'        => 'delete_all_records',
-							'title'       => esc_html__( 'Reset Stream Database', 'stream' ),
-							'type'        => 'link',
-							'href'        => add_query_arg(
-								array(
-									'action'          => 'wp_stream_reset',
-									'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-								),
-								admin_url( 'admin-ajax.php' )
-							),
-							'desc'        => esc_html__( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
-							'default'     => 0,
-						),
 					),
 				),
 				'exclude' => array(

@@ -811,14 +811,10 @@ class WP_Stream_Admin {
 			if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 				$blog_id = get_current_blog_id();
 
-				wp_stream_delete_records( array( 'blog_id' => $blog_id ) );
-
 				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 				delete_option( WP_Stream_Install_WPDB::OPTION_KEY );
 				delete_option( WP_Stream_Settings::OPTION_KEY );
 			} else {
-				WP_Stream::$db->reset();
-
 				// Delete database options
 				if ( is_multisite() ) {
 					$blogs = wp_get_sites();
@@ -832,7 +828,7 @@ class WP_Stream_Admin {
 					restore_current_blog();
 				}
 
-				// Delete database option
+				// Delete database options
 				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
 				delete_site_option( WP_Stream_Updater::LICENSE_KEY );
 				delete_site_option( WP_Stream_Updater::LICENSEE_KEY );
@@ -891,7 +887,6 @@ class WP_Stream_Admin {
 			$args['blog_id'] = get_current_blog_id();
 		}
 
-		wp_stream_delete_records( $args );
 	}
 
 	private static function _role_can_view_stream( $role ) {

@@ -16,34 +16,6 @@ function wp_stream_get_meta( $record_id, $meta_key = '', $single = false ) {
 	return WP_Stream::$db->get_meta( $record_id, $meta_key, $single );
 }
 
-function wp_stream_add_meta( $record_id, $meta_key, $meta_value ) {
-	return WP_Stream::$db->add_meta( $record_id, $meta_key, $meta_value );
-}
-
-function wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
-	return WP_Stream::$db->update_meta( $record_id, $meta_key, $meta_value, $prev_value );
-}
-
-function wp_stream_delete_meta( $record_id, $meta_key, $meta_value = null, $delete_all = false ) {
-	return WP_Stream::$db->delete_meta( $record_id, $meta_key, $meta_value, $delete_all );
-}
-
-function wp_stream_delete_records( $args = array() ) {
-	if ( $args ) {
-		$args['fields']           = 'ID';
-		$args['records_per_page'] = -1;
-		$records                  = wp_stream_query( $args );
-		$params                   = wp_list_pluck( $records, 'ID' );
-		if ( empty( $ids ) ) {
-			return 0;
-		}
-	} else {
-		$params = true; // Delete them ALL!
-	}
-
-	return WP_Stream::$db->delete( $params );
-}
-
 /**
  * Returns array of existing values for requested column.
  * Used to fill search filters with only used items, instead of all items.
