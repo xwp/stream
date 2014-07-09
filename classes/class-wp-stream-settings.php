@@ -58,9 +58,6 @@ class WP_Stream_Settings {
 		// Check if we need to flush rewrites rules
 		add_action( 'update_option_' . self::OPTION_KEY, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
 
-		// Remove records when records TTL is shortened
-		add_action( 'update_option_' . self::OPTION_KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
-
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
 
 		// Ajax callback function to search users
@@ -870,26 +867,5 @@ class WP_Stream_Settings {
 		}
 
 		return $labels;
-	}
-
-	/**
-	 * Remove records when records TTL is shortened
-	 *
-	 * @param array $old_value
-	 * @param array $new_value
-	 *
-	 * @action update_option_wp_stream
-	 * @return void
-	 */
-	public static function updated_option_ttl_remove_records( $old_value, $new_value ) {
-		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : -1;
-		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : -1;
-
-		if ( $ttl_after < $ttl_before ) {
-			/**
-			 * Action assists in purging when TTL is shortened
-			 */
-			do_action( 'wp_stream_auto_purge' );
-		}
 	}
 }

@@ -80,18 +80,11 @@ class WP_Stream_Admin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_menu_css' ) );
 
-		// Reset Streams database
-		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
-
 		// Reset Streams settings
 		add_action( 'wp_ajax_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
 
 		// Uninstall Streams and Deactivate plugin
 		add_action( 'wp_ajax_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
-
-		// Auto purge setup
-		add_action( 'wp_loaded', array( __CLASS__, 'purge_schedule_setup' ) );
-		add_action( 'wp_stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
 
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
@@ -285,7 +278,6 @@ class WP_Stream_Admin {
 				'wp_stream',
 				array(
 					'i18n'            => array(
-						'confirm_purge'     => __( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
 						'confirm_defaults'  => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 						'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
 					),
@@ -722,37 +714,6 @@ class WP_Stream_Admin {
 		echo '</div>';
 	}
 
-	public static function wp_ajax_reset() {
-		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
-
-		if ( current_user_can( self::SETTINGS_CAP ) ) {
-			self::erase_stream_records();
-			wp_redirect(
-				add_query_arg(
-					array(
-						'page'    => is_network_admin() ? 'wp_stream_network_settings' : 'wp_stream_settings',
-						'message' => 'data_erased',
-					),
-					is_plugin_active_for_network( WP_STREAM_PLUGIN ) ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
-				)
-			);
-			exit;
-		} else {
-			wp_die( "You don't have sufficient privileges to do this action." );
-		}
-	}
-
-	private static function erase_stream_records() {
-		global $wpdb;
-
-		$args = array();
-		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$args['blog_id'] = get_current_blog_id();
-		}
-
-		wp_stream_delete_records( $args );
-	}
-
 	public static function wp_ajax_defaults() {
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
 
@@ -839,10 +800,6 @@ class WP_Stream_Admin {
 				delete_site_option( WP_Stream_Network::SITES_CONNECTED_OPTION_KEY );
 			}
 
-			// Delete scheduled cron event hooks
-			wp_clear_scheduled_hook( 'stream_auto_purge' ); // Deprecated hook
-			wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
-
 			// Deactivate the plugin
 			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
 
@@ -852,41 +809,6 @@ class WP_Stream_Admin {
 		} else {
 			wp_die( "You don't have sufficient privileges to do this action." );
 		}
-	}
-
-	public static function purge_schedule_setup() {
-		if ( ! wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
-			wp_schedule_event( time(), 'twicedaily', 'wp_stream_auto_purge' );
-		}
-	}
-
-	public static function purge_scheduled_action() {
-		global $wpdb;
-
-		// Don't purge if in Network Admin if Stream isn't network enabled
-		if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			return;
-		}
-
-		if ( is_multisite() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$options = (array) get_site_option( WP_Stream_Settings::NETWORK_OPTION_KEY, array() );
-		} else {
-			$options = WP_Stream_Settings::get_options();
-		}
-
-		$days = $options['general_records_ttl'];
-		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
-		$date->sub( DateInterval::createFromDateString( "$days days" ) );
-
-		$args = array(
-			'date_to' => $date->format( 'Y-m-d H:i:s' ),
-			'type'    => 'stream',
-		);
-
-		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$args['blog_id'] = get_current_blog_id();
-		}
-
 	}
 
 	private static function _role_can_view_stream( $role ) {
