@@ -163,8 +163,6 @@ class WP_Stream_API {
 			return false;
 		}
 
-		$record['site_id'] = $this->site_uuid;
-
 		$args = array();
 
 		if ( ! empty( $fields ) ) {
@@ -172,7 +170,7 @@ class WP_Stream_API {
 		}
 
 		$url  = $this->request_url( sprintf( '/sites/%s/records/', esc_attr( $this->site_uuid ) ), $args );
-		$args = array( 'method' => 'GET', 'body' => json_encode( $record ) );
+		$args = array( 'method' => 'POST', 'body' => json_encode( $record ) );
 
 		return $this->remote_request( $url, $args );
 	}
@@ -216,8 +214,7 @@ class WP_Stream_API {
 			'body'    => '',
 		);
 
-		$args = wp_parse_args( $args, $defaults );
-
+		$args      = wp_parse_args( $args, $defaults );
 		$transient = 'wp_stream_' . md5( $url );
 
 		if ( 'GET' === $args['method'] && $allow_cache ) {

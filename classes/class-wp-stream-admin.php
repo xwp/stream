@@ -442,7 +442,7 @@ class WP_Stream_Admin {
 		WP_Stream::$api->api_key = wp_stream_filter_input( INPUT_GET, 'api_key' );
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 
-		$validate_key_request = WP_Stream::$api->validate_key( WP_Stream::$api->api_key );
+		$validate_key_request = WP_Stream::$api->validate_key( WP_Stream::$api->api_key, false );
 
 		// Regular expression to match UUID v1
 		$pattern = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/';
@@ -883,8 +883,6 @@ class WP_Stream_Admin {
 				delete_site_option( WP_Stream_Settings::OPTION_KEY );
 				delete_site_option( WP_Stream_Settings::DEFAULTS_OPTION_KEY );
 				delete_site_option( WP_Stream_Settings::NETWORK_OPTION_KEY );
-				delete_site_option( WP_Stream_API::API_KEY_OPTION_KEY );
-				delete_site_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
 				delete_site_option( WP_Stream_Network::SITES_CONNECTED_OPTION_KEY );
 			}
 
