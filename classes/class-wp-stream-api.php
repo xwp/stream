@@ -170,7 +170,7 @@ class WP_Stream_API {
 		}
 
 		$url  = $this->request_url( sprintf( '/sites/%s/records/', esc_attr( $this->site_uuid ) ), $args );
-		$args = array( 'method' => 'POST', 'body' => json_encode( $record ) );
+		$args = array( 'method' => 'POST', 'body' => json_encode( $record, JSON_FORCE_OBJECT ) );
 
 		return $this->remote_request( $url, $args );
 	}
@@ -209,12 +209,16 @@ class WP_Stream_API {
 		}
 
 		$defaults = array(
-			'headers' => array( 'stream-api-master-key' => $this->api_key ),
+			'headers' => array(),
 			'method'  => 'GET',
 			'body'    => '',
 		);
 
-		$args      = wp_parse_args( $args, $defaults );
+		$args = wp_parse_args( $args, $defaults );
+
+		$args['headers']['stream-api-master-key'] = $this->api_key;
+		$args['headers']['Content-Type']          = 'application/json';
+
 		$transient = 'wp_stream_' . md5( $url );
 
 		if ( 'GET' === $args['method'] && $allow_cache ) {
