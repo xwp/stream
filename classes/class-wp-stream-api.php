@@ -67,7 +67,7 @@ class WP_Stream_API {
 	 * @return mixed
 	 */
 	public function validate_key( $allow_cache = true, $expiration = 300 ) {
-		$url  = $this->request_url( '/validate-key/' );
+		$url  = $this->request_url( '/validate-key' );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
@@ -87,7 +87,7 @@ class WP_Stream_API {
 			return false;
 		}
 
-		$url  = $this->request_url( sprintf( '/users/%s/', esc_attr( intval( $user_id ) ) ) );
+		$url  = $this->request_url( sprintf( '/users/%s', esc_attr( intval( $user_id ) ) ) );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
@@ -118,7 +118,7 @@ class WP_Stream_API {
 			$params['fields'] = implode( ',', $fields );
 		}
 
-		$url  = $this->request_url( sprintf( '/sites/%s/records/%s/', esc_attr( $this->site_uuid ), esc_attr( $record_id ) ), $params );
+		$url  = $this->request_url( sprintf( '/sites/%s/records/%s', esc_attr( $this->site_uuid ), esc_attr( $record_id ) ), $params );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
@@ -144,7 +144,7 @@ class WP_Stream_API {
 			$params['fields'] = implode( ',', $fields );
 		}
 
-		$url  = $this->request_url( sprintf( '/sites/%s/records/', esc_attr( $this->site_uuid ) ), $params );
+		$url  = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $params );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
@@ -169,7 +169,7 @@ class WP_Stream_API {
 			$args['fields'] = implode( ',', $fields );
 		}
 
-		$url  = $this->request_url( sprintf( '/sites/%s/records/', esc_attr( $this->site_uuid ) ), $args );
+		$url  = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $args );
 		$args = array( 'method' => 'POST', 'body' => json_encode( $record, JSON_FORCE_OBJECT ) );
 
 		return $this->remote_request( $url, $args );
