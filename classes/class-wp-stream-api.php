@@ -55,6 +55,7 @@ class WP_Stream_API {
 	public function __construct() {
 		$this->api_key   = get_option( self::API_KEY_OPTION_KEY, 0 );
 		$this->site_uuid = get_option( self::SITE_UUID_OPTION_KEY, 0 );
+		$this->get_records();
 	}
 
 	/**
@@ -67,10 +68,10 @@ class WP_Stream_API {
 	 * @return mixed
 	 */
 	public function validate_key( $allow_cache = true, $expiration = 300 ) {
-		$url    = $this->request_url( '/validate-key/' );
-		$method = 'GET';
+		$url  = $this->request_url( '/validate-key/' );
+		$args = array( 'method' => 'GET' );
 
-		return $this->remote_request( $url, $method, null, $allow_cache, $expiration );
+		return $this->remote_request( $url, $args, $allow_cache, $expiration );
 	}
 
 	/**
@@ -87,10 +88,10 @@ class WP_Stream_API {
 			return false;
 		}
 
-		$url    = $this->request_url( sprintf( '/users/%s/', esc_attr( intval( $user_id ) ) ) );
-		$method = 'GET';
+		$url  = $this->request_url( sprintf( '/users/%s/', esc_attr( intval( $user_id ) ) ) );
+		$args = array( 'method' => 'GET' );
 
-		return $this->remote_request( $url, $method, null, $allow_cache, $expiration );
+		return $this->remote_request( $url, $args, $allow_cache, $expiration );
 	}
 
 	/**
@@ -112,16 +113,16 @@ class WP_Stream_API {
 			return false;
 		}
 
-		$args = array();
+		$params = array();
 
 		if ( ! empty( $fields ) ) {
-			$args['fields'] = implode( ',', $fields );
+			$params['fields'] = implode( ',', $fields );
 		}
 
-		$url    = $this->request_url( sprintf( '/sites/%s/records/%s/', esc_attr( $this->site_uuid ), esc_attr( $record_id ) ), $args );
-		$method = 'GET';
+		$url  = $this->request_url( sprintf( '/sites/%s/records/%s/', esc_attr( $this->site_uuid ), esc_attr( $record_id ) ), $params );
+		$args = array( 'method' => 'GET' );
 
-		return $this->remote_request( $url, $method, null, $allow_cache, $expiration );
+		return $this->remote_request( $url, $args, $allow_cache, $expiration );
 	}
 
 	/**
@@ -138,16 +139,16 @@ class WP_Stream_API {
 			return false;
 		}
 
-		$args = array();
+		$params = array();
 
 		if ( ! empty( $fields ) ) {
-			$args['fields'] = implode( ',', $fields );
+			$params['fields'] = implode( ',', $fields );
 		}
 
-		$url    = $this->request_url( sprintf( '/sites/%s/records/', esc_attr( $this->site_uuid ) ) );
-		$method = 'GET';
+		$url  = $this->request_url( sprintf( '/sites/%s/records/', esc_attr( $this->site_uuid ) ), $params );
+		$args = array( 'method' => 'GET' );
 
-		return $this->remote_request( $url, $method, null, $allow_cache, $expiration );
+		return $this->remote_request( $url, $args, $allow_cache, $expiration );
 	}
 
 	/**
@@ -171,24 +172,24 @@ class WP_Stream_API {
 			$args['fields'] = implode( ',', $fields );
 		}
 
-		$url    = $this->request_url( sprintf( '/sites/%s/records/', esc_attr( $this->site_uuid ) ) );
-		$method = 'POST';
+		$url  = $this->request_url( sprintf( '/sites/%s/records/', esc_attr( $this->site_uuid ) ), $args );
+		$args = array( 'method' => 'GET', 'body' => json_encode( $record ) );
 
-		return $this->remote_request( $url, $method, $record );
+		return $this->remote_request( $url, $args );
 	}
 
 	/**
 	 * Helper function to create and escape a URL for an API request.
 	 *
 	 * @param string The endpoint path, with a starting slash.
-	 * @param array  The $_GET args.
+	 * @param array  The $_GET parameters.
 	 *
 	 * @return string A properly escaped URL.
 	 */
-	protected function request_url( $path, $args = array() ) {
+	protected function request_url( $path, $params = array() ) {
 		return esc_url_raw(
 			add_query_arg(
-				$args,
+				$params,
 				untrailingslashit( $this->api_url ) . $path //use this when /version/ is implemented: trailingslashit( $this->api_url ) . $this->api_version . $path
 			)
 		);
@@ -205,20 +206,22 @@ class WP_Stream_API {
 	 *
 	 * @return object The results of the wp_remote_request request.
 	 */
-	protected function remote_request( $url = '', $method = 'GET', $body = null, $allow_cache = true, $expiration = 300 ) {
+	protected function remote_request( $url = '', $args = array(), $allow_cache = true, $expiration = 300 ) {
 		if ( empty( $url ) ) {
 			return false;
 		}
 
-		$args = array(
+		$defaults = array(
 			'headers' => array( 'stream-api-master-key' => $this->api_key ),
-			'method'  => $method,
-			'body'    => isset( $body ) ? json_encode( $body ) : '',
+			'method'  => 'GET',
+			'body'    => '',
 		);
+
+		$args = wp_parse_args( $args, $defaults );
 
 		$transient = 'wp_stream_' . md5( $url );
 
-		if ( 'GET' === $method && $allow_cache ) {
+		if ( 'GET' === $args['method'] && $allow_cache ) {
 			if ( false === ( $request = get_transient( $transient ) ) ) {
 				$request = wp_remote_request( $url, $args );
 				set_transient( $transient, $request, $expiration );
