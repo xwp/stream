@@ -67,9 +67,10 @@ class WP_Stream_API {
 	 * @return mixed
 	 */
 	public function validate_key( $allow_cache = true, $expiration = 300 ) {
-		$url = $this->request_url( '/validate-key' );
+		$url    = $this->request_url( '/validate-key/' );
+		$method = 'GET';
 
-		return $this->remote_request( $url, 'GET', null, $allow_cache, $expiration );
+		return $this->remote_request( $url, $method, null, $allow_cache, $expiration );
 	}
 
 	/**
@@ -86,9 +87,10 @@ class WP_Stream_API {
 			return false;
 		}
 
-		$url = $this->request_url( '/users/' . intval( $user_id ) );
+		$url    = $this->request_url( sprintf( '/users/%s/', esc_attr( intval( $user_id ) ) ) );
+		$method = 'GET';
 
-		return $this->remote_request( $url, 'GET', null, $allow_cache, $expiration );
+		return $this->remote_request( $url, $method, null, $allow_cache, $expiration );
 	}
 
 	/**
@@ -116,9 +118,10 @@ class WP_Stream_API {
 			$args['fields'] = implode( ',', $fields );
 		}
 
-		$url = $this->request_url( '/sites/' . $this->site_uuid . '/records/' . $record_id, $args );
+		$url    = $this->request_url( sprintf( '/sites/%s/records/%s/', esc_attr( $this->site_uuid ), esc_attr( $record_id ) ), $args );
+		$method = 'GET';
 
-		return $this->remote_request( $url, 'GET', null, $allow_cache, $expiration );
+		return $this->remote_request( $url, $method, null, $allow_cache, $expiration );
 	}
 
 	/**
@@ -141,9 +144,10 @@ class WP_Stream_API {
 			$args['fields'] = implode( ',', $fields );
 		}
 
-		$url = $this->request_url( '/sites/' . $this->site_uuid . '/records', $args );
+		$url    = $this->request_url( sprintf( '/sites/%s/records/', esc_attr( $this->site_uuid ) ) );
+		$method = 'GET';
 
-		return $this->remote_request( $url, 'GET', null, $allow_cache, $expiration );
+		return $this->remote_request( $url, $method, null, $allow_cache, $expiration );
 	}
 
 	/**
@@ -167,7 +171,7 @@ class WP_Stream_API {
 			$args['fields'] = implode( ',', $fields );
 		}
 
-		$url    = $this->request_url( '/sites/' . $this->site_uuid . '/records', array(), $record );
+		$url    = $this->request_url( sprintf( '/sites/%s/records/', esc_attr( $this->site_uuid ) ) );
 		$method = 'POST';
 
 		return $this->remote_request( $url, $method, $record );
