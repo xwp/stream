@@ -394,7 +394,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$labels         = self::get_context_labels();
 				$sidebar_name   = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 				$old_widget_ids = $old[ $sidebar_id ];
-				$message        = _x( 'Widgets in "%s" were reordered', 'Sidebar name', 'stream' );
+				$message        = _x( 'Widgets reordered in "%s"', 'Sidebar name', 'stream' );
 				$message        = sprintf( $message, $sidebar_name );
 
 				self::log(
