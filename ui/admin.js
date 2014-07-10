@@ -623,7 +623,6 @@ jQuery(function( $ ) {
 
 						if ( 'custom' === value ) {
 							dateinputs.show();
-							from.datepicker( 'show' );
 							return false;
 						} else {
 							dateinputs.hide();

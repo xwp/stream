@@ -103,7 +103,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		}
 
 		if ( ! is_a( $user, 'WP_User' ) ) {
-			return;
+			return array();
 		}
 
 		global $wp_roles;
