@@ -192,7 +192,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				$message,
 				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' ),
 				null,
-				array( $context => $action )
+				$context,
+				$action
 			);
 		}
 	}
@@ -210,7 +211,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			),
 			compact( 'name', 'network_wide' ),
 			null,
-			array( 'plugins' => 'activated' )
+			'plugins',
+			'activated'
 		);
 	}
 
@@ -227,7 +229,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			),
 			compact( 'name', 'network_wide' ),
 			null,
-			array( 'plugins' => 'deactivated' )
+			'plugins',
+			'deactivated'
 		);
 	}
 
@@ -238,7 +241,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			__( '"%s" theme activated', 'stream' ),
 			compact( 'name' ),
 			null,
-			array( 'themes' => 'activated' )
+			'themes',
+			'activated'
 		);
 	}
 
@@ -267,7 +271,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			__( '"%s" theme deleted', 'stream' ),
 			compact( 'name' ),
 			null,
-			array( 'themes' => 'deleted' )
+			'themes',
+			'deleted'
 		);
 	}
 
@@ -310,7 +315,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				__( '"%s" plugin deleted', 'stream' ),
 				compact( 'name', 'plugin', 'network_wide' ),
 				null,
-				array( 'plugins' => 'deleted' )
+				'plugins',
+				'deleted'
 			);
 		}
 
@@ -335,7 +341,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			$message,
 			compact( 'new_version', 'old_version', 'auto_updated' ),
 			null,
-			array( 'wordpress' => 'updated' )
+			'wordpress',
+			'updated'
 		);
 	}
 

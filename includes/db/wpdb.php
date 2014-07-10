@@ -274,7 +274,6 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 			}
 			$select = implode( ', ', $select );
 
-			// TODO: Implement `distinct` parameter in WP_Stream_Query
 			if ( 1 === count( explode( ',', $select ) ) && ! empty( $query['_distinct'] ) ) {
 				$select = 'DISTINCT ' . $select;
 			} elseif ( ! empty( $select ) ) {
@@ -335,7 +334,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 
 		// Handle `like` operator
 		if ( 'like' === $operator ) {
-			$value = like_escape( trim( $value, '%' ) );
+			$value = esc_sql( trim( $value, '%' ) );
 
 			return $wpdb->prepare( "$db_col LIKE %s", "%{$value}%" ); // db call okay, db cache okay
 		} // Handle `in`/`not_in` operators
