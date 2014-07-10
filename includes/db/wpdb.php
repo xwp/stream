@@ -334,7 +334,7 @@ class WP_Stream_DB_WPDB extends WP_Stream_DB_Base {
 
 		// Handle `like` operator
 		if ( 'like' === $operator ) {
-			$value = like_escape( trim( $value, '%' ) );
+			$value = $wpdb->esc_like( trim( $value, '%' ) );
 
 			return $wpdb->prepare( "$db_col LIKE %s", "%{$value}%" ); // db call okay, db cache okay
 		} // Handle `in`/`not_in` operators
