@@ -192,16 +192,16 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
 			if ( $name && $title ) {
-				$message = _x( '%1$s widget named "%2$s" in "%3$s" deactivated', '1: Name, 2: Title, 3: Sidebar Name', 'stream' );
+				$message = _x( '%1$s widget named "%2$s" from "%3$s" deactivated', '1: Name, 2: Title, 3: Sidebar Name', 'stream' );
 			} elseif ( $name ) {
 				// Empty title, but we have the name
-				$message = _x( '%1$s widget in "%3$s" deactivated', '1: Name, 3: Sidebar Name', 'stream' );
+				$message = _x( '%1$s widget from "%3$s" deactivated', '1: Name, 3: Sidebar Name', 'stream' );
 			} elseif ( $title ) {
 				// Likely a single widget since no name is available
-				$message = _x( 'Unknown widget type named "%2$s" in "%3$s" deactivated', '2: Title, 3: Sidebar Name', 'stream' );
+				$message = _x( 'Unknown widget type named "%2$s" from "%3$s" deactivated', '2: Title, 3: Sidebar Name', 'stream' );
 			} else {
 				// Neither a name nor a title are available, so use the widget ID
-				$message = _x( '%4$s widget in "%3$s" deactivated', '4: Widget ID, 3: Sidebar Name', 'stream' );
+				$message = _x( '%4$s widget from "%3$s" deactivated', '4: Widget ID, 3: Sidebar Name', 'stream' );
 			}
 
 			$message = sprintf( $message, $name, $title, $sidebar_name, $widget_id );
@@ -214,7 +214,6 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			);
 		}
 	}
-
 
 	/**
 	 * Track reactivation of widgets from sidebars
@@ -236,26 +235,24 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				}
 			}
 
-			$action       = 'reactivated';
-			$name         = self::get_widget_name( $widget_id );
-			$title        = self::get_widget_title( $widget_id );
-			$labels       = self::get_context_labels();
-			$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
+			$action = 'reactivated';
+			$name   = self::get_widget_name( $widget_id );
+			$title  = self::get_widget_title( $widget_id );
 
 			if ( $name && $title ) {
-				$message = _x( '%1$s widget named "%2$s" in "%3$s" reactivated', '1: Name, 2: Title, 3: Sidebar Name', 'stream' );
+				$message = _x( '%1$s widget named "%2$s" reactivated', '1: Name, 2: Title', 'stream' );
 			} elseif ( $name ) {
 				// Empty title, but we have the name
-				$message = _x( '%1$s widget in "%3$s" reactivated', '1: Name, 3: Sidebar Name', 'stream' );
+				$message = _x( '%1$s widget reactivated', '1: Name', 'stream' );
 			} elseif ( $title ) {
 				// Likely a single widget since no name is available
-				$message = _x( 'Unknown widget type named "%2$s" in "%3$s" reactivated', '2: Title, 3: Sidebar Name', 'stream' );
+				$message = _x( 'Unknown widget type named "%2$s" reactivated', '2: Title', 'stream' );
 			} else {
 				// Neither a name nor a title are available, so use the widget ID
-				$message = _x( '%4$s widget in "%3$s" reactivated', '4: Widget ID, 3: Sidebar Name', 'stream' );
+				$message = _x( '%3$s widget reactivated', '3: Widget ID', 'stream' );
 			}
 
-			$message = sprintf( $message, $name, $title, $sidebar_name, $widget_id );
+			$message = sprintf( $message, $name, $title, $widget_id );
 
 			self::log(
 				$message,
