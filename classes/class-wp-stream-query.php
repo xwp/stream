@@ -160,8 +160,8 @@ class WP_Stream_Query {
 		 * PARSE CUSTOM CORE FILTERS
 		 */
 		if ( $args['search'] && $args['search_field'] ) {
-			$search_field = $args['search_field'];
-			$query[ $search_field ]['like'] = $args['search'];
+			$search_field = esc_sql( $args['search_field'] );
+			$query[ $search_field ]['like'] = esc_sql( $args['search'] );
 		}
 
 		if ( $args['record_greater_than'] ) {

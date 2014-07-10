@@ -172,8 +172,8 @@ class WP_Stream_Settings {
 			array(
 				'fields'           => 'ip',
 				'distinct'         => true,
-				'search'           => like_escape( $_POST['find'] ),
 				'search_field'     => 'ip',
+				'search'           => wp_stream_filter_input( INPUT_POST, 'find' ),
 				'records_per_page' => wp_stream_filter_input( INPUT_POST, 'limit' ),
 			)
 		);
