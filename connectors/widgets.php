@@ -607,19 +607,19 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			 */
 			foreach ( $creates as $create ) {
 				if ( $create['name'] && $create['title'] ) {
-					$message = _x( '"%1$s" (%2$s) created', '1: Title, 2: Name', 'stream' );
+					$message = _x( '%1$s widget named "%2$s" created in "%3$s"', '1: Name, 2: Title, 3: Sidebar Name', 'stream' );
 				} elseif ( $create['name'] ) {
 					// Empty title, but we have the name
-					$message = _x( '%2$s widget created', '2: Name', 'stream' );
+					$message = _x( '%1$s widget created in "%3$s"', '1: Name, 3: Sidebar Name', 'stream' );
 				} elseif ( $create['title'] ) {
 					// Likely a single widget since no name is available
-					$message = _x( '"%1$s" widget created', '1: Title', 'stream' );
+					$message = _x( 'Unknown widget type named "%2$s" created in "%3$s"', '2: Title, 3: Sidebar Name', 'stream' );
 				} else {
-					// Neither a name nor a title are available, so use the sidebar ID
-					$message = _x( '%3$s widget created', '3: Widget ID', 'stream' );
+					// Neither a name nor a title are available, so use the widget ID
+					$message = _x( '%4$s widget created in "%3$s"', '4: Widget ID, 3: Sidebar Name', 'stream' );
 				}
 
-				$message  = sprintf( $message, $create['title'], $create['name'], $create['widget_id'] );
+				$message  = sprintf( $message, $create['name'], $create['title'], $create['sidebar_name'], $create['widget_id'] );
 				$contexts = array( $create['sidebar_id'] => 'created' );
 
 				unset( $create['title'], $create['name'] );
