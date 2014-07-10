@@ -506,13 +506,15 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$created_widget_numbers = array_diff( array_keys( $new_value ), array_keys( $old_value ) );
 
 			foreach ( $created_widget_numbers as $widget_number ) {
-				$instance   = $new_value[ $widget_number ];
-				$widget_id  = sprintf( $widget_id_format, $widget_number );
-				$title      = ! empty( $instance['title'] ) ? $instance['title'] : null;
-				$name       = self::get_widget_name( $widget_id );
-				$sidebar_id = self::get_widget_sidebar_id( $widget_id ); // @todo May not be assigned yet
+				$instance     = $new_value[ $widget_number ];
+				$widget_id    = sprintf( $widget_id_format, $widget_number );
+				$title        = ! empty( $instance['title'] ) ? $instance['title'] : null;
+				$name         = self::get_widget_name( $widget_id );
+				$sidebar_id   = self::get_widget_sidebar_id( $widget_id ); // @todo May not be assigned yet
+				$labels       = self::get_context_labels();
+				$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
-				$creates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
+				$creates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance', 'sidebar_name' );
 			}
 
 			/**
@@ -525,12 +527,14 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$old_instance = $old_value[ $widget_number ];
 
 				if ( $old_instance !== $new_instance ) {
-					$widget_id  = sprintf( $widget_id_format, $widget_number );
-					$title      = ! empty( $new_instance['title'] ) ? $new_instance['title'] : null;
-					$name       = self::get_widget_name( $widget_id );
-					$sidebar_id = self::get_widget_sidebar_id( $widget_id );
+					$widget_id    = sprintf( $widget_id_format, $widget_number );
+					$title        = ! empty( $new_instance['title'] ) ? $new_instance['title'] : null;
+					$name         = self::get_widget_name( $widget_id );
+					$sidebar_id   = self::get_widget_sidebar_id( $widget_id );
+					$labels       = self::get_context_labels();
+					$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
-					$updates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'old_instance' );
+					$updates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'old_instance', 'sidebar_name' );
 				}
 			}
 
@@ -540,13 +544,15 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$deleted_widget_numbers = array_diff( array_keys( $old_value ), array_keys( $new_value ) );
 
 			foreach ( $deleted_widget_numbers as $widget_number ) {
-				$instance   = $old_value[ $widget_number ];
-				$widget_id  = sprintf( $widget_id_format, $widget_number );
-				$title      = ! empty( $instance['title'] ) ? $instance['title'] : null;
-				$name       = self::get_widget_name( $widget_id );
-				$sidebar_id = self::get_widget_sidebar_id( $widget_id ); // @todo May not be assigned anymore
+				$instance     = $old_value[ $widget_number ];
+				$widget_id    = sprintf( $widget_id_format, $widget_number );
+				$title        = ! empty( $instance['title'] ) ? $instance['title'] : null;
+				$name         = self::get_widget_name( $widget_id );
+				$sidebar_id   = self::get_widget_sidebar_id( $widget_id ); // @todo May not be assigned anymore
+				$labels       = self::get_context_labels();
+				$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
-				$deletes[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
+				$deletes[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance', 'sidebar_name' );
 			}
 		} else {
 			// Doing our best guess for tracking changes to old single widgets, assuming their options start with 'widget_'
@@ -555,8 +561,10 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$title        = ! empty( $new_value['title'] ) ? $new_value['title'] : null;
 			$sidebar_id   = self::get_widget_sidebar_id( $widget_id );
 			$old_instance = $old_value;
+			$labels       = self::get_context_labels();
+			$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
-			$updates[] = compact( 'widget_id', 'title', 'name', 'sidebar_id', 'old_instance' );
+			$updates[] = compact( 'widget_id', 'title', 'name', 'sidebar_id', 'old_instance', 'sidebar_name' );
 		}
 
 		/**
@@ -564,19 +572,19 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 		 */
 		foreach ( $updates as $update ) {
 			if ( $update['name'] && $update['title'] ) {
-				$message = _x( '"%1$s" (%2$s) updated', '1: Title, 2: Name', 'stream' );
+				$message = _x( '%1$s widget named "%2$s" in "%3$s" updated', '1: Name, 2: Title, 3: Sidebar Name', 'stream' );
 			} elseif ( $update['name'] ) {
 				// Empty title, but we have the name
-				$message = _x( '%2$s widget updated', '2: Name', 'stream' );
+				$message = _x( '%1$s widget in "%3$s" updated', '1: Name, 3: Sidebar Name', 'stream' );
 			} elseif ( $update['title'] ) {
 				// Likely a single widget since no name is available
-				$message = _x( '"%1$s" widget updated', '1: Title', 'stream' );
+				$message = _x( 'Unknown widget type named "%2$s" in "%3$s" updated', '2: Title, 3: Sidebar Name', 'stream' );
 			} else {
-				// Neither a name nor a title are available, so use the sidebar ID
-				$message = _x( '%3$s widget updated', '3: Widget ID', 'stream' );
+				// Neither a name nor a title are available, so use the widget ID
+				$message = _x( '%4$s widget in "%3$s" updated', '4: Widget ID, 3: Sidebar Name', 'stream' );
 			}
 
-			$message  = sprintf( $message, $update['title'], $update['name'], $update['widget_id'] );
+			$message  = sprintf( $message, $update['name'], $update['title'], $update['sidebar_name'], $update['widget_id'] );
 			$contexts = array( $update['sidebar_id'] => 'updated' );
 
 			unset( $update['title'], $update['name'] );
