@@ -35,7 +35,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function extra_tablenav( $which ) {
 		if ( 'top' === $which ) {
-			$this->filters_form();
+			echo $this->filters_form(); //xss ok
 		}
 	}
 
@@ -404,15 +404,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function assemble_records( $column, $table = '' ) {
 		$setting_key = self::get_column_excluded_setting_key( $column );
 
-		$exclude_hide_previous_records = isset( WP_Stream_Settings::$options['exclude_hide_previous_records'] ) ? WP_Stream_Settings::$options['exclude_hide_previous_records'] : 0;
-
-		/**
-		 * Toggle visibility of disabled connectors/actions/contexts on list table filter dropdown
-		 *
-		 * @param bool $hidden Visibility status, default is Hide Previous Record value set in Exclude setting.
-		 */
-		$hide_disabled_column_filter = apply_filters( 'wp_stream_list_table_hide_disabled_ ' . $setting_key, ( 0 === $exclude_hide_previous_records ) ? false : true );
-
 		// @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object
 		if ( 'author' === $column ) {
 			$all_records = array();
@@ -432,28 +423,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 			);
 			$authors[] = new WP_Stream_Author( 0, array( 'is_wp_cli' => true ) );
 
-			if ( $hide_disabled_column_filter ) {
-				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
-			}
-
 			foreach ( $authors as $author ) {
-				if ( $hide_disabled_column_filter && in_array( $author->id, $excluded_records ) ) {
-					continue;
-				}
 				$all_records[ $author->id ] = $author->get_display_name();
 			}
 		} else {
 			$prefixed_column = sprintf( 'stream_%s', $column );
 			$all_records     = WP_Stream_Connectors::$term_labels[ $prefixed_column ];
-
-			if ( true === $hide_disabled_column_filter ) {
-				$excluded_records = WP_Stream_Settings::get_excluded_by_key( $setting_key );
-				foreach ( array_keys( $all_records ) as $_connector ) {
-					if ( in_array( $_connector, $excluded_records ) ) {
-						unset( $all_records[ $_connector ] );
-					}
-				}
-			}
 		}
 
 		/* Tempo */
@@ -584,7 +559,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
-		printf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
+		return sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
 
 	function filter_select( $name, $title, $items, $ajax = false ) {

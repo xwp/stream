@@ -28,11 +28,26 @@ class WP_Stream_Query {
 		$defaults = array(
 			// Search param
 			'search'                => null,
+			'search_field'          => 'summary',
 			'record_greater_than'   => null,
+			'distinct'              => null,
 			// Date-based filters
 			'date'                  => null,
 			'date_from'             => null,
 			'date_to'               => null,
+			// __in params
+			'record_greater_than'   => null,
+			'record__in'            => array(),
+			'record__not_in'        => array(),
+			'record_parent'         => '',
+			'record_parent__in'     => array(),
+			'record_parent__not_in' => array(),
+			'author__in'            => array(),
+			'author__not_in'        => array(),
+			'author_role__in'       => array(),
+			'author_role__not_in'   => array(),
+			'ip__in'                => array(),
+			'ip__not_in'            => array(),
 			// Pagination params
 			'records_per_page'      => get_option( 'posts_per_page' ),
 			'paged'                 => 1,
@@ -43,8 +58,6 @@ class WP_Stream_Query {
 			'meta'                  => array(),
 			// Fields selection
 			'fields'                => '*',
-			// Hide records that match the exclude rules
-			'hide_excluded'         => ! empty( WP_Stream_Settings::$options['exclude_hide_previous_records'] ),
 		);
 
 		// Stream core fields filtering
@@ -89,7 +102,7 @@ class WP_Stream_Query {
 			if ( ! isset( $defaults[ $_field ] ) ) {
 				$defaults[ $_field ] = isset( $_def['default'] ) ? $_def['default'] : null;
 			}
-			$defaults[ "{$_field}__in" ] = null; // Null makes `isset` return false
+			$defaults[ "{$_field}__in" ]     = null; // Null makes `isset` return false
 			$defaults[ "{$_field}__not_in" ] = null;
 		}
 
@@ -103,30 +116,13 @@ class WP_Stream_Query {
 		 */
 		$args = apply_filters( 'wp_stream_query_args', $args );
 
-		if ( true === $args['hide_excluded'] ) {
-			// Remove record of excluded connector
-			$args['connector__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'connectors' );
-
-			// Remove record of excluded context
-			$args['context__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'contexts' );
-
-			// Remove record of excluded actions
-			$args['action__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'actions' );
-
-			// Remove record of excluded author
-			$args['author__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'authors_and_roles' );
-
-			// Remove record of excluded ip
-			$args['ip__not_in'] = WP_Stream_Settings::get_excluded_by_key( 'ip_addresses' );
-		}
-
-		$query  = array();
+		$query = array();
 
 		/**
 		 * PARSE CORE FILTERS, PLUS __IN / __NOT_IN VARIATIONS
 		 */
 		foreach ( $columns as $field => $def ) {
-			$is_int  = isset( $def['is_int'] );
+			$is_int = isset( $def['is_int'] );
 			$column = isset( $def['column'] ) ? $def['column'] : $field;
 
 			// Parse basic filter, eg: author=1
@@ -163,8 +159,9 @@ class WP_Stream_Query {
 		/**
 		 * PARSE CUSTOM CORE FILTERS
 		 */
-		if ( $args['search'] ) {
-			$query['summary']['like'] = $args['search'];
+		if ( $args['search'] && $args['search_field'] ) {
+			$search_field = esc_sql( $args['search_field'] );
+			$query[ $search_field ]['like'] = esc_sql( $args['search'] );
 		}
 
 		if ( $args['record_greater_than'] ) {
@@ -187,18 +184,18 @@ class WP_Stream_Query {
 
 		/**
 		 * PARSE META QUERY PARAMS
-		 * This is breaking change, meta should now be defined as:
-		 * #1 args[ 'meta' ] => array( %key => %value )
-		 * #2 args[ 'meta' ] => array( %key => array %values )
-		 * #3 args[ 'meta' ] => array( %key => array( 'in' => array %values )
-		 *   While 'in' can be one of in/not_in/like/gt/lt/gte/lte ( just like core filters )
+		 * Meta should be defined as:
+		 * #1 args['meta'] => array( %key => %value )
+		 * #2 args['meta'] => array( %key => array %values )
+		 * #3 args['meta'] => array( %key => array( 'in' => array %values )
+		 * Where 'in' can be one of in/not_in/like/gt/lt/gte/lte (just like core filters)
 		 */
 		if ( $args['meta'] ) {
 			$meta = (array) $args['meta'];
 			foreach ( $meta as $key => $values ) {
 				// #1
 				if ( ! is_array( $values ) ) {
-					$values   = (array) $values;
+					$values = (array) $values;
 				}
 				// #2
 				if ( 0 === key( $values ) ) {
@@ -222,15 +219,15 @@ class WP_Stream_Query {
 		$perpage = intval( $args['records_per_page'] );
 
 		if ( $perpage >= 0 ) {
-			$query['_offset'] = ( $page - 1 ) * $perpage;
+			$query['_offset']  = ( $page - 1 ) * $perpage;
 			$query['_perpage'] = $perpage;
 		}
 
 		/**
 		 * PARSE ORDER PARAMS
 		 */
-		$order     = esc_sql( $args['order'] );
-		$orderby   = $args['orderby'] ? esc_sql( $args['orderby'] ) : 'ID';
+		$order   = esc_sql( $args['order'] );
+		$orderby = $args['orderby'] ? esc_sql( $args['orderby'] ) : 'ID';
 		if ( 'date' === $orderby ) {
 			$orderby = 'created';
 		}
@@ -247,6 +244,13 @@ class WP_Stream_Query {
 		 */
 		$fields = $args['fields'];
 		$query['_select'] = is_array( $fields ) ? $fields : explode( ',', $fields );
+
+		/**
+		 * PARSE DISTINCT PARAMETER
+		 */
+		if ( $args['distinct'] ) {
+			$query['_distinct'] = true;
+		}
 
 		/**
 		 * Allows developers to change final query
