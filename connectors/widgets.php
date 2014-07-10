@@ -441,26 +441,26 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 				assert( $old_sidebar_id !== $new_sidebar_id );
 
-				$labels           = self::get_context_labels();
-				$new_sidebar_name = isset( $labels[ $new_sidebar_id ] ) ? $labels[ $new_sidebar_id ] : $new_sidebar_id;
-				$old_sidebar_name = isset( $labels[ $old_sidebar_id ] ) ? $labels[ $old_sidebar_id ] : $old_sidebar_id;
-				$title            = self::get_widget_title( $widget_id );
 				$name             = self::get_widget_name( $widget_id );
+				$title            = self::get_widget_title( $widget_id );
+				$labels           = self::get_context_labels();
+				$old_sidebar_name = isset( $labels[ $old_sidebar_id ] ) ? $labels[ $old_sidebar_id ] : $old_sidebar_id;
+				$new_sidebar_name = isset( $labels[ $new_sidebar_id ] ) ? $labels[ $new_sidebar_id ] : $new_sidebar_id;
 
 				if ( $name && $title ) {
-					$message = _x( '"%1$s" (%2$s) widget moved from %4$s to %5$s', '1: Title, 2: Name, 4: Old Sidebar, 5: New Sidebar', 'stream' );
+					$message = _x( '%1$s widget named "%2$s" moved from "%4$s" to "%5$s"', '1: Name, 2: Title, 4: Old Sidebar Name, 5: New Sidebar Name', 'stream' );
 				} elseif ( $name ) {
 					// Empty title, but we have the name
-					$message = _x( '%2$s widget moved from %4$s to %5$s', '2: Name, 4: Old Sidebar, 5: New Sidebar', 'stream' );
+					$message = _x( '%1$s widget moved from "%4$s" to "%5$s"', '1: Name, 4: Old Sidebar Name, 5: New Sidebar Name', 'stream' );
 				} elseif ( $title ) {
 					// Likely a single widget since no name is available
-					$message = _x( '"%1$s" widget moved from %4$s to %5$s', '1: Title, 4: Old Sidebar, 5: New Sidebar', 'stream' );
+					$message = _x( 'Unknown widget type named "%2$s" moved from "%4$s" to "%5$s"', '2: Title, 4: Old Sidebar Name, 5: New Sidebar Name', 'stream' );
 				} else {
-					// Neither a name nor a title are available, so use the sidebar ID
-					$message = _x( '%3$s widget moved from %4$s to %5$s', '3: Widget ID, 4: Old Sidebar, 5: New Sidebar', 'stream' );
+					// Neither a name nor a title are available, so use the widget ID
+					$message = _x( '%3$s widget moved from "%4$s" to "%5$s"', '3: Widget ID, 4: Old Sidebar Name, 5: New Sidebar Name', 'stream' );
 				}
 
-				$message    = sprintf( $message, $title, $name, $widget_id, $old_sidebar_name, $new_sidebar_name );
+				$message    = sprintf( $message, $name, $title, $widget_id, $old_sidebar_name, $new_sidebar_name );
 				$sidebar_id = $new_sidebar_id;
 
 				self::log(
