@@ -337,24 +337,26 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				}
 			}
 
-			$action = 'added';
-			$title  = self::get_widget_title( $widget_id );
-			$name   = self::get_widget_name( $widget_id );
+			$action       = 'added';
+			$title        = self::get_widget_title( $widget_id );
+			$name         = self::get_widget_name( $widget_id );
+			$labels       = self::get_context_labels();
+			$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
 			if ( $name && $title ) {
-				$message = _x( '"%1$s" (%2$s) added', '1: Title, 2: Name', 'stream' );
+				$message = _x( '%1$s widget named "%2$s" added to "%3$s"', '1: Name, 2: Title, 3: Sidebar Name', 'stream' );
 			} elseif ( $name ) {
 				// Empty title, but we have the name
-				$message = _x( '%2$s added', '2: Name', 'stream' );
+				$message = _x( '%1$s widget added to "%3$s"', '1: Name, 3: Sidebar Name', 'stream' );
 			} elseif ( $title ) {
 				// Likely a single widget since no name is available
-				$message = _x( '"%1$s" widget added', '1: Title', 'stream' );
+				$message = _x( 'Unknown widget type named "%2$s" added to "%3$s"', '2: Title, 3: Sidebar Name', 'stream' );
 			} else {
 				// Neither a name nor a title are available, so use the widget ID
-				$message = _x( '%3$s widget added', '3: Widget ID', 'stream' );
+				$message = _x( '%4$s widget added to "%3$s"', '4: Widget ID, 3: Sidebar Name', 'stream' );
 			}
 
-			$message = sprintf( $message, $title, $name, $widget_id );
+			$message = sprintf( $message, $name, $title, $sidebar_name, $widget_id );
 
 			self::log(
 				$message,
