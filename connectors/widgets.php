@@ -124,7 +124,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$message,
 				compact( 'title', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
 				null,
-				array( 'wp_inactive_widgets' => $action )
+				'wp_inactive_widgets',
+				$action
 			);
 
 			$wp_stream_widget_order_operation = null;
@@ -182,7 +183,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 					$message,
 					compact( 'title', 'sidebar_name', 'id_base', 'widget_id', 'sidebar' ),
 					null,
-					array( $sidebar => $action )
+					$sidebar,
+					$action
 				);
 
 				$widget_id = null;
@@ -225,7 +227,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				),
 				compact( 'name', 'sidebar_name', 'title', 'id_base', 'sidebar', 'widget_id', 'new_instance', 'old_instance' ),
 				null,
-				array( $sidebar => 'updated' )
+				$sidebar,
+				'updated'
 			);
 		}
 

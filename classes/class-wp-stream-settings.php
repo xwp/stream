@@ -71,7 +71,7 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Ajax callback function to search users that is used on exclude setting page
+	 * Ajax callback function to search users, used on exclude setting page
 	 *
 	 * @uses WP_User_Query WordPress User Query class.
 	 * @return void
@@ -156,11 +156,11 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Ajax callback function to search IP addresses that is used on exclude setting page
-	 *
-	 * @uses WP_User_Query WordPress User Query class.
-	 * @return void
-	 */
+	* Ajax callback function to search IP addresses, used on exclude setting page
+	*
+	* @uses WP_User_Query WordPress User Query class.
+	* @return void
+	*/
 	public static function get_ips(){
 		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
 			return;
@@ -172,8 +172,8 @@ class WP_Stream_Settings {
 			array(
 				'fields'           => 'ip',
 				'distinct'         => true,
-				'search'           => like_escape( $_POST['find'] ),
 				'search_field'     => 'ip',
+				'search'           => wp_stream_filter_input( INPUT_POST, 'find' ),
 				'records_per_page' => wp_stream_filter_input( INPUT_POST, 'limit' ),
 			)
 		);
@@ -294,56 +294,12 @@ class WP_Stream_Settings {
 					'title' => esc_html__( 'Exclude', 'stream' ),
 					'fields' => array(
 						array(
-							'name'        => 'authors_and_roles',
-							'title'       => __( 'Authors &amp; Roles', 'stream' ),
-							'type'        => 'select2_user_role',
-							'desc'        => esc_html__( 'No activity will be logged for these authors and/or roles.', 'stream' ),
-							'choices'     => self::get_roles(),
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'connectors',
-							'title'       => esc_html__( 'Connectors', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these connectors.', 'stream' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'connector',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'contexts',
-							'title'       => esc_html__( 'Contexts', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these contexts.', 'stream' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'context',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'actions',
-							'title'       => esc_html__( 'Actions', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these actions.', 'stream' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'action',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'ip_addresses',
-							'title'       => esc_html__( 'IP Addresses', 'stream' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these IP addresses.', 'stream' ),
-							'class'       => 'ip-addresses',
+							'name'        => 'rules',
+							'title'       => esc_html__( 'Exclude Rules', 'stream' ),
+							'type'        => 'rule_list',
+							'desc'        => esc_html__( 'Create rules for excluding certain kinds of records from appearing in Stream.', 'stream' ),
 							'default'     => array(),
 							'nonce'       => 'stream_get_ips',
-						),
-						array(
-							'name'        => 'hide_previous_records',
-							'title'       => esc_html__( 'Visibility', 'stream' ),
-							'type'        => 'checkbox',
-							'desc'        => esc_html__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'stream' ),
-							'after_field' => esc_html__( 'Hide Previous Records', 'stream' ),
-							'default'     => 0,
 						),
 					),
 				),
@@ -487,20 +443,26 @@ class WP_Stream_Settings {
 	 * @return string         HTML to be displayed
 	 */
 	public static function render_field( $field ) {
-		$output        = null;
-		$type          = isset( $field['type'] ) ? $field['type'] : null;
-		$section       = isset( $field['section'] ) ? $field['section'] : null;
-		$name          = isset( $field['name'] ) ? $field['name'] : null;
-		$class         = isset( $field['class'] ) ? $field['class'] : null;
-		$placeholder   = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
-		$description   = isset( $field['desc'] ) ? $field['desc'] : null;
-		$href          = isset( $field['href'] ) ? $field['href'] : null;
-		$after_field   = isset( $field['after_field'] ) ? $field['after_field'] : null;
-		$default       = isset( $field['default'] ) ? $field['default'] : null;
-		$title         = isset( $field['title'] ) ? $field['title'] : null;
-		$nonce         = isset( $field['nonce'] ) ? $field['nonce'] : null;
-		$current_value = self::$options[ $section . '_' . $name ];
-		$option_key    = self::$option_key;
+		$output      = null;
+		$type        = isset( $field['type'] ) ? $field['type'] : null;
+		$section     = isset( $field['section'] ) ? $field['section'] : null;
+		$name        = isset( $field['name'] ) ? $field['name'] : null;
+		$class       = isset( $field['class'] ) ? $field['class'] : null;
+		$placeholder = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
+		$description = isset( $field['desc'] ) ? $field['desc'] : null;
+		$href        = isset( $field['href'] ) ? $field['href'] : null;
+		$after_field = isset( $field['after_field'] ) ? $field['after_field'] : null;
+		$default     = isset( $field['default'] ) ? $field['default'] : null;
+		$title       = isset( $field['title'] ) ? $field['title'] : null;
+		$nonce       = isset( $field['nonce'] ) ? $field['nonce'] : null;
+
+		if ( isset( $field['value'] ) ) {
+			$current_value = $field['value'];
+		} else {
+			$current_value = self::$options[ $section . '_' . $name ];
+		}
+
+		$option_key = self::$option_key;
 
 		if ( is_callable( $current_value ) ) {
 			$current_value = call_user_func( $current_value );
@@ -577,12 +539,12 @@ class WP_Stream_Settings {
 				$output .= '</fieldset></div>';
 				break;
 			case 'select':
-				$current_value = (array) self::$options[ $section . '_' . $name ];
+				$current_value = self::$options[ $section . '_' . $name ];
 				$default_value = isset( $default['value'] ) ? $default['value'] : '-1';
 				$default_name  = isset( $default['name'] ) ? $default['name'] : 'Choose Setting';
 
 				$output  = sprintf(
-					'<select name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s">',
+					'<select name="%1$s[%2$s_%3$s]" class="%1$s_%2$s_%3$s">',
 					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name )
@@ -590,14 +552,14 @@ class WP_Stream_Settings {
 				$output .= sprintf(
 					'<option value="%1$s" %2$s>%3$s</option>',
 					esc_attr( $default_value ),
-					checked( in_array( $default_value, $current_value ), true, false ),
+					checked( $default_value === $current_value, true, false ),
 					esc_html( $default_name )
 				);
 				foreach ( $field['choices'] as $value => $label ) {
 					$output .= sprintf(
 						'<option value="%1$s" %2$s>%3$s</option>',
 						esc_attr( $value ),
-						checked( in_array( $value, $current_value ), true, false ),
+						checked( $value === $current_value, true, false ),
 						esc_html( $label )
 					);
 				}
@@ -605,7 +567,7 @@ class WP_Stream_Settings {
 				break;
 			case 'file':
 				$output = sprintf(
-					'<input type="file" name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s" class="%4$s">',
+					'<input type="file" name="%1$s[%2$s_%3$s]" class="%4$s">',
 					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
@@ -625,15 +587,11 @@ class WP_Stream_Settings {
 				break;
 			case 'select2' :
 				if ( ! isset ( $current_value ) ) {
-					$current_value = array();
+					$current_value = '';
 				}
 
-				if ( false !== ( $key = array_search( '__placeholder__', $current_value ) ) ) {
-					unset( $current_value[ $key ] );
-				}
+				$data_values = array();
 
-				$data_values     = array();
-				$selected_values = array();
 				if ( isset( $field['choices'] ) ) {
 					$choices = $field['choices'];
 					if ( is_callable( $choices ) ) {
@@ -641,115 +599,235 @@ class WP_Stream_Settings {
 						$choices = call_user_func( $choices, $param );
 					}
 					foreach ( $choices as $key => $value ) {
-						$data_values[] = array( 'id' => $key, 'text' => $value );
-						if ( in_array( $key, $current_value ) ) {
-							$selected_values[] = array( 'id' => $key, 'text' => $value );
+						if ( is_array( $value ) ) {
+							$child_values = array();
+							if ( isset( $value['children'] ) ) {
+								$child_values = array();
+								foreach ( $value['children'] as $child_key => $child_value ) {
+									$child_values[] = array( 'id' => $child_key, 'text' => $child_value );
+								}
+							}
+							if ( isset( $value['label'] ) ) {
+								$data_values[] = array( 'id' => $key, 'text' => $value['label'], 'children' => $child_values );
+							}
+						} else {
+							$data_values[] = array( 'id' => $key, 'text' => $value );
 						}
 					}
 					$class .= ' with-source';
-				} else {
-					foreach ( $current_value as $value ) {
-						if ( '__placeholder__' === $value || '' === $value ) {
-							continue;
-						}
-						$selected_values[] = array( 'id' => $value, 'text' => $value );
-					}
 				}
 
-				$output  = sprintf(
-					'<div id="%1$s[%2$s_%3$s]">',
+				$input_html = sprintf(
+					'<input type="hidden" name="%1$s[%2$s_%3$s]" data-values=\'%4$s\' value="%5$s" class="select2-select %6$s" data-placeholder="%7$s" />',
 					esc_attr( $option_key ),
 					esc_attr( $section ),
-					esc_attr( $name )
-				);
-				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %4$s" data-select-placeholder="%5$s-%6$s-select-placeholder" %7$s />',
+					esc_attr( $name ),
 					esc_attr( json_encode( $data_values ) ),
-					esc_attr( json_encode( $selected_values ) ),
-					esc_attr( implode( ',', $current_value ) ),
+					esc_attr( $current_value ),
 					$class,
-					esc_attr( $section ),
-					esc_attr( $name ),
-					isset( $nonce ) ? sprintf( ' data-nonce="%s"', esc_attr( wp_create_nonce( $nonce ) ) ) : ''
+					sprintf( esc_html__( 'Any %s', 'stream' ), $title )
 				);
-				// to store data with default value if nothing is selected
-				$output .= sprintf(
-					'<input type="hidden" name="%1$s[%2$s_%3$s][]" class="%2$s-%3$s-select-placeholder" value="__placeholder__" />',
+
+				$output = sprintf(
+					'<div class="%1$s_%2$s_%3$s">%4$s</div>',
 					esc_attr( $option_key ),
 					esc_attr( $section ),
-					esc_attr( $name )
+					esc_attr( $name ),
+					$input_html
 				);
-				$output .= '</div>';
+
 				break;
-			case 'select2_user_role':
-				$current_value = (array)$current_value;
-				$data_values   = array();
+			case 'rule_list' :
+				$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
-				if ( isset( $field['choices'] ) ) {
-					$choices = $field['choices'];
-					if ( is_callable( $choices ) ) {
-						$param   = ( isset( $field['param'] ) ) ? $field['param'] : null;
-						$choices = call_user_func( $choices, $param );
+				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  __( 'Add New Rule', 'stream' ) );
+				$actions_bottom = sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ),  __( 'Delete Selected Rules', 'stream' ) );
+
+				$output .= sprintf( '<div class="tablenav top">%1$s</div>', $actions_top );
+				$output .= '<table class="wp-list-table widefat fixed stream-exclude-list">';
+
+				unset( $description );
+
+				$heading_row = sprintf(
+					'<tr>
+						<th scope="col" class="check-column manage-column">%1$s</th>
+						<th scope="col" class="manage-column">%2$s</th>
+						<th scope="col" class="manage-column">%3$s</th>
+						<th scope="col" class="manage-column">%4$s</th>
+						<th scope="col" class="manage-column">%5$s</th>
+						<th scope="col" class="actions-column manage-column"><span class="hidden">%6$s</span></th>
+					</tr>',
+					'<input class="cb-select" type="checkbox" />',
+					esc_html__( 'Author or Role', 'stream' ),
+					esc_html__( 'Context', 'stream' ),
+					esc_html__( 'Action', 'stream' ),
+					esc_html__( 'IP Address', 'stream' ),
+					esc_html__( 'Filters', 'stream' )
+				);
+
+				$exclude_rows = array();
+
+				// Prepend an empty row
+				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
+
+				foreach ( $current_value['exclude_row'] as $key => $value ) {
+					// Prepare values
+					$author_or_role = isset( $current_value['author_or_role'][ $key ] ) ? $current_value['author_or_role'][ $key ] : '';
+					$connector      = isset( $current_value['connector'][ $key ] ) ? $current_value['connector'][ $key ] : '';
+					$context        = isset( $current_value['context'][ $key ] ) ? $current_value['context'][ $key ] : '';
+					$action         = isset( $current_value['action'][ $key ] ) ? $current_value['action'][ $key ] : '';
+					$ip_address     = isset( $current_value['ip_address'][ $key ] ) ? $current_value['ip_address'][ $key ] : '';
+
+					// Author or Role dropdown menu
+					$author_or_role_values   = array();
+					$author_or_role_selected = array();
+
+					foreach ( self::get_roles() as $role_id => $role ) {
+						$args  = array( 'id' => $role_id, 'text' => $role );
+						$users = get_users( array( 'role' => $role_id ) );
+						if ( count( $users ) ) {
+							$args['user_count'] = sprintf( _n( '1 user', '%s users', count( $users ), 'stream' ), count( $users ) );
+						}
+						if ( $role_id === $author_or_role ) {
+							$author_or_role_selected['id']   = $role_id;
+							$author_or_role_selected['text'] = $role;
+						}
+						$author_or_role_values[] = $args;
 					}
-				} else {
-					$choices = array();
-				}
 
-				foreach ( $choices as $key => $role ) {
-					$args  = array( 'id' => $key, 'text' => $role );
-					$users = get_users( array( 'role' => $key ) );
-					if ( count( $users ) ) {
-						$args['user_count'] = sprintf( _n( '1 user', '%s users', count( $users ), 'stream' ), count( $users ) );
-					}
-					$data_values[] = $args;
-				}
-
-				$selected_values = array();
-				foreach ( $current_value as $value ) {
-					if ( ! is_string( $value ) && ! is_numeric( $value ) ) {
-						continue;
+					if ( empty( $author_or_role_selected ) && is_numeric( $author_or_role ) ) {
+						$user                    = new WP_User( $author_or_role );
+						$author_or_role_selected = array( 'id' => $user->ID, 'text' => $user->display_name );
 					}
 
-					if ( '__placeholder__' === $value || '' === $value ) {
-						continue;
-					}
+					$author_or_role_input = sprintf(
+						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" data-values=\'%5$s\' data-selected-id=\'%6$s\' data-selected-text=\'%7$s\' value="%6$s" class="select2-select %4$s" data-placeholder="%8$s" data-nonce="%9$s" />',
+						esc_attr( $option_key ),
+						esc_attr( $section ),
+						esc_attr( $name ),
+						'author_or_role',
+						esc_attr( json_encode( $author_or_role_values ) ),
+						isset( $author_or_role_selected['id'] ) ? esc_attr( $author_or_role_selected['id'] ) : '',
+						isset( $author_or_role_selected['text'] ) ? esc_attr( $author_or_role_selected['text'] ) : '',
+						esc_html__( 'Any Author or Role', 'stream' ),
+						esc_attr( wp_create_nonce( 'stream_get_users' ) )
+					);
 
-					if ( is_numeric( $value ) ) {
-						$user              = new WP_User( $value );
-						$selected_values[] = array( 'id' => $user->ID, 'text' => $user->display_name );
-					} else {
-						foreach ( $data_values as $role ) {
-							if ( $role['id'] !== $value ) {
-								continue;
+					// Context dropdown menu
+					$context_values = array();
+
+					foreach ( self::get_terms_labels( 'context' ) as $context_id => $context_data ) {
+						if ( is_array( $context_data ) ) {
+							$child_values = array();
+							if ( isset( $context_data['children'] ) ) {
+								$child_values = array();
+								foreach ( $context_data['children'] as $child_id => $child_value ) {
+									$child_values[] = array( 'id' => $child_id, 'text' => $child_value, 'parent' => $context_id );
+								}
 							}
-							$selected_values[] = $role;
+							if ( isset( $context_data['label'] ) ) {
+								$context_values[] = array( 'id' => $context_id, 'text' => $context_data['label'], 'children' => $child_values );
+							}
+						} else {
+							$context_values[] = array( 'id' => $context_id, 'text' => $context_data );
 						}
 					}
+
+					$connector_input = sprintf(
+						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" class="%4$s" value="%5$s">',
+						esc_attr( $option_key ),
+						esc_attr( $section ),
+						esc_attr( $name ),
+						esc_attr( 'connector' ),
+						esc_attr( $connector )
+					);
+
+					$context_input = sprintf(
+						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" data-values=\'%5$s\' value="%6$s" class="select2-select with-source %4$s" data-placeholder="%7$s" data-group="%8$s" />',
+						esc_attr( $option_key ),
+						esc_attr( $section ),
+						esc_attr( $name ),
+						'context',
+						esc_attr( json_encode( $context_values ) ),
+						esc_attr( $context ),
+						esc_html__( 'Any Context', 'stream' ),
+						'connector'
+					);
+
+					// Action dropdown menu
+					$action_values = array();
+
+					foreach ( self::get_terms_labels( 'action' ) as $action_id => $action_data ) {
+						$action_values[] = array( 'id' => $action_id, 'text' => $action_data );
+					}
+
+					$action_input = sprintf(
+						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" data-values=\'%5$s\' value="%6$s" class="select2-select with-source %4$s" data-placeholder="%7$s" />',
+						esc_attr( $option_key ),
+						esc_attr( $section ),
+						esc_attr( $name ),
+						'action',
+						esc_attr( json_encode( $action_values ) ),
+						esc_attr( $action ),
+						esc_html__( 'Any Action', 'stream' )
+					);
+
+					// IP Address input
+					$ip_address_input = sprintf(
+						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" value="%5$s" class="select2-select %4$s" data-placeholder="%6$s" data-nonce="%7$s" />',
+						esc_attr( $option_key ),
+						esc_attr( $section ),
+						esc_attr( $name ),
+						'ip_address',
+						esc_attr( $ip_address ),
+						esc_html__( 'Any IP Address', 'stream' ),
+						esc_attr( wp_create_nonce( 'stream_get_ips' ) )
+					);
+
+					// Hidden helper input
+					$helper_input = sprintf(
+						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" value="" />',
+						esc_attr( $option_key ),
+						esc_attr( $section ),
+						esc_attr( $name ),
+						'exclude_row'
+					);
+
+					$exclude_rows[] = sprintf(
+						'<tr class="%1$s %2$s">
+							<th scope="row" class="check-column">%3$s %4$s</th>
+							<td>%5$s</td>
+							<td>%6$s %7$s</td>
+							<td>%8$s</td>
+							<td>%9$s</td>
+							<th scope="row" class="actions-column">%10$s</th>
+						</tr>',
+						( 0 !== $key % 2 ) ? 'alternate' : '',
+						( 'helper' === $key ) ? 'hidden helper' : '',
+						'<input class="cb-select" type="checkbox" />',
+						$helper_input,
+						$author_or_role_input,
+						$connector_input,
+						$context_input,
+						$action_input,
+						$ip_address_input,
+						'<a href="#" class="exclude_rules_remove_rule_row">Delete</a>'
+					);
 				}
 
-				$output  = sprintf(
-					'<div id="%1$s[%2$s_%3$s]">',
-					esc_attr( $option_key ),
-					esc_attr( $section ),
-					esc_attr( $name )
+				$no_rules_found_row = sprintf(
+					'<tr class="no-items hidden"><td class="colspanchange" colspan="5">%1$s</td></tr>',
+					esc_html__( 'No rules found.', 'stream' )
 				);
-				$output .= sprintf(
-					'<input type="hidden" data-values=\'%1$s\' data-selected=\'%2$s\' value="%3$s" class="select2-select %5$s" data-select-placeholder="%4$s-%5$s-select-placeholder" data-nonce="%6$s" />',
-					json_encode( $data_values ),
-					json_encode( $selected_values ),
-					esc_attr( implode( ',', $current_value ) ),
-					esc_attr( $section ),
-					esc_attr( $name ),
-					esc_attr( wp_create_nonce( 'stream_get_users' ) )
-				);
-				// to store data with default value if nothing is selected
-				$output .= sprintf(
-					'<input type="hidden" name="%1$s[%2$s_%3$s][]" class="%2$s-%3$s-select-placeholder" value="__placeholder__" />',
-					esc_attr( $option_key ),
-					esc_attr( $section ),
-					esc_attr( $name )
-				);
-				$output .= '</div>';
+
+				$output .= '<thead>' . $heading_row . '</thead>';
+				$output .= '<tfoot>' . $heading_row . '</tfoot>';
+				$output .= '<tbody>' . $no_rules_found_row . implode( '', $exclude_rows ) . '</tbody>';
+
+				$output .= '</table>';
+
+				$output .= sprintf( '<div class="tablenav bottom">%1$s</div>', $actions_bottom );
+
 				break;
 		}
 		$output .= ! empty( $description ) ? sprintf( '<p class="description">%s</p>', $description /* xss ok */ ) : null;
@@ -794,24 +872,6 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Get an array of registered Connectors
-	 *
-	 * @return array
-	 */
-	public static function get_connectors() {
-		return WP_Stream_Connectors::$term_labels['stream_connector'];
-	}
-
-	/**
-	 * Get an array of registered Connectors
-	 *
-	 * @return array
-	 */
-	public static function get_default_connectors() {
-		return array_keys( WP_Stream_Connectors::$term_labels['stream_connector'] );
-	}
-
-	/**
 	 * Function will return all terms labels of given column
 	 *
 	 * @param $column string  Name of the column
@@ -821,58 +881,26 @@ class WP_Stream_Settings {
 		$return_labels = array();
 
 		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
-			$return_labels = WP_Stream_Connectors::$term_labels[ 'stream_' . $column ];
+			if ( 'context' === $column && isset( WP_Stream_Connectors::$term_labels['stream_connector'] ) ) {
+				$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
+				$contexts   = WP_Stream_Connectors::$term_labels['stream_context'];
+
+				foreach ( $connectors as $connector => $connector_label ) {
+					$return_labels[ $connector ]['label'] = $connector_label;
+					foreach ( $contexts as $context => $context_label ) {
+						if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
+							$return_labels[ $connector ]['children'][ $context ] = $context_label;
+						}
+					}
+				}
+			} else {
+				$return_labels = WP_Stream_Connectors::$term_labels[ 'stream_' . $column ];
+			}
+
 			ksort( $return_labels );
 		}
 
 		return $return_labels;
-	}
-	/**
-	 * Get an array of active Connectors
-	 *
-	 * @return array
-	 */
-	public static function get_active_connectors() {
-		$excluded_connectors = self::get_excluded_by_key( 'connectors' );
-		$active_connectors   = array_diff( array_keys( self::get_terms_labels( 'connector' ) ), $excluded_connectors );
-		$active_connectors   = wp_list_filter( $active_connectors, array( '__placeholder__' ), 'NOT' );
-
-		return $active_connectors;
-	}
-
-	/**
-	 * @param $column string name of the setting key (authors|roles|actions|ip_addresses|contexts|connectors)
-	 *
-	 * @return array
-	 */
-	public static function get_excluded_by_key( $column ) {
-		$option_name = ( 'authors' === $column || 'roles' === $column ) ? 'exclude_authors_and_roles' : 'exclude_' . $column;
-
-		$excluded_values = ( isset( self::$options[ $option_name ] ) ) ? self::$options[ $option_name ] : array();
-
-		if ( is_callable( $excluded_values ) ) {
-			$excluded_values = call_user_func( $excluded_values );
-		}
-
-		$excluded_values = wp_list_filter( $excluded_values, array( '__placeholder__' ), 'NOT' );
-
-		if ( 'exclude_authors_and_roles' === $option_name ) {
-			// Convert numeric strings to integers
-			array_walk(
-				$excluded_values,
-				function ( &$value ) {
-					if ( is_numeric( $value ) ) {
-						$value = absint( $value );
-					}
-				}
-			);
-
-			$filter = ( 'roles' === $column ) ? 'is_string' : 'is_int'; // Author roles are always strings and author ID's are always integers
-
-			$excluded_values = array_values( array_filter( $excluded_values, $filter ) ); // Reset the array keys
-		}
-
-		return $excluded_values;
 	}
 
 	/**
