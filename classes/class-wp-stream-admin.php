@@ -110,7 +110,7 @@ class WP_Stream_Admin {
 	 */
 	public static function prepare_connect_notice() {
 		if ( ! WP_Stream::is_connected() && ! WP_Stream::is_development_mode() ) {
-			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
+			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/css/connect.css', array(), WP_Stream::VERSION );
 			add_action( 'admin_notices', array( __CLASS__, 'admin_connect_notice' ) );
 		}
 	}
@@ -668,7 +668,7 @@ class WP_Stream_Admin {
 			$testimonial = $testimonials[ array_rand( $testimonials ) ];
 		}
 
-		wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
+		wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/css/connect.css', array(), WP_Stream::VERSION );
 		?>
 		<div id="wp-stream-connect">
 			<div class="wrap">
@@ -719,7 +719,7 @@ class WP_Stream_Admin {
 		}
 
 		if ( is_network_admin() && ! $sites_connected && ! WP_Stream::is_development_mode() ) {
-			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/connect.css', array(), WP_Stream::VERSION );
+			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/css/connect.css', array(), WP_Stream::VERSION );
 			?>
 			<div id="stream-message" class="updated stream-network-connect stream-connect" style="display:block !important;">
 				<div class="stream-wrap-container">
