@@ -58,9 +58,6 @@ jQuery(function( $ ) {
 					data.push( { id: item.val(), text: item.val() } );
 					callback( data );
 				},
-				formatNoMatches: function(){
-					return '';
-				},
 				createSearchChoice: function( term ) {
 					var ip_chunks = [];
 
