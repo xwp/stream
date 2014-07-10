@@ -338,8 +338,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			}
 
 			$action       = 'added';
-			$title        = self::get_widget_title( $widget_id );
 			$name         = self::get_widget_name( $widget_id );
+			$title        = self::get_widget_title( $widget_id );
 			$labels       = self::get_context_labels();
 			$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
@@ -508,8 +508,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			foreach ( $created_widget_numbers as $widget_number ) {
 				$instance     = $new_value[ $widget_number ];
 				$widget_id    = sprintf( $widget_id_format, $widget_number );
-				$title        = ! empty( $instance['title'] ) ? $instance['title'] : null;
 				$name         = self::get_widget_name( $widget_id );
+				$title        = ! empty( $instance['title'] ) ? $instance['title'] : null;
 				$sidebar_id   = self::get_widget_sidebar_id( $widget_id ); // @todo May not be assigned yet
 
 				$creates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
@@ -526,8 +526,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 				if ( $old_instance !== $new_instance ) {
 					$widget_id    = sprintf( $widget_id_format, $widget_number );
-					$title        = ! empty( $new_instance['title'] ) ? $new_instance['title'] : null;
 					$name         = self::get_widget_name( $widget_id );
+					$title        = ! empty( $new_instance['title'] ) ? $new_instance['title'] : null;
 					$sidebar_id   = self::get_widget_sidebar_id( $widget_id );
 					$labels       = self::get_context_labels();
 					$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
@@ -544,8 +544,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			foreach ( $deleted_widget_numbers as $widget_number ) {
 				$instance     = $old_value[ $widget_number ];
 				$widget_id    = sprintf( $widget_id_format, $widget_number );
-				$title        = ! empty( $instance['title'] ) ? $instance['title'] : null;
 				$name         = self::get_widget_name( $widget_id );
+				$title        = ! empty( $instance['title'] ) ? $instance['title'] : null;
 				$sidebar_id   = self::get_widget_sidebar_id( $widget_id ); // @todo May not be assigned anymore
 
 				$deletes[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
