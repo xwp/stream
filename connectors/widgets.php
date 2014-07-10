@@ -511,10 +511,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$title        = ! empty( $instance['title'] ) ? $instance['title'] : null;
 				$name         = self::get_widget_name( $widget_id );
 				$sidebar_id   = self::get_widget_sidebar_id( $widget_id ); // @todo May not be assigned yet
-				$labels       = self::get_context_labels();
-				$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
-				$creates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance', 'sidebar_name' );
+				$creates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
 			}
 
 			/**
@@ -549,10 +547,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 				$title        = ! empty( $instance['title'] ) ? $instance['title'] : null;
 				$name         = self::get_widget_name( $widget_id );
 				$sidebar_id   = self::get_widget_sidebar_id( $widget_id ); // @todo May not be assigned anymore
-				$labels       = self::get_context_labels();
-				$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
-				$deletes[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance', 'sidebar_name' );
+				$deletes[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
 			}
 		} else {
 			// Doing our best guess for tracking changes to old single widgets, assuming their options start with 'widget_'
@@ -607,19 +603,19 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			 */
 			foreach ( $creates as $create ) {
 				if ( $create['name'] && $create['title'] ) {
-					$message = _x( '%1$s widget named "%2$s" created in "%3$s"', '1: Name, 2: Title, 3: Sidebar Name', 'stream' );
+					$message = _x( '%1$s widget named "%2$s" created', '1: Name, 2: Title', 'stream' );
 				} elseif ( $create['name'] ) {
 					// Empty title, but we have the name
-					$message = _x( '%1$s widget created in "%3$s"', '1: Name, 3: Sidebar Name', 'stream' );
+					$message = _x( '%1$s widget created', '1: Name', 'stream' );
 				} elseif ( $create['title'] ) {
 					// Likely a single widget since no name is available
-					$message = _x( 'Unknown widget type named "%2$s" created in "%3$s"', '2: Title, 3: Sidebar Name', 'stream' );
+					$message = _x( 'Unknown widget type named "%2$s" created', '2: Title', 'stream' );
 				} else {
 					// Neither a name nor a title are available, so use the widget ID
-					$message = _x( '%4$s widget created in "%3$s"', '4: Widget ID, 3: Sidebar Name', 'stream' );
+					$message = _x( '%3$s widget created', '3: Widget ID', 'stream' );
 				}
 
-				$message  = sprintf( $message, $create['name'], $create['title'], $create['sidebar_name'], $create['widget_id'] );
+				$message  = sprintf( $message, $create['name'], $create['title'], $create['widget_id'] );
 				$contexts = array( $create['sidebar_id'] => 'created' );
 
 				unset( $create['title'], $create['name'] );
@@ -632,19 +628,19 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			 */
 			foreach ( $deletes as $delete ) {
 				if ( $delete['name'] && $delete['title'] ) {
-					$message = _x( '"%1$s" (%2$s) deleted', '1: Title, 2: Name', 'stream' );
+					$message = _x( '%1$s widget named "%2$s" deleted', '1: Name, 2: Title', 'stream' );
 				} elseif ( $delete['name'] ) {
 					// Empty title, but we have the name
-					$message = _x( '%2$s widget deleted', '1: Name', 'stream' );
+					$message = _x( '%1$s widget deleted', '1: Name', 'stream' );
 				} elseif ( $delete['title'] ) {
 					// Likely a single widget since no name is available
-					$message = _x( '"%1$s" widget deleted', '1: Title', 'stream' );
+					$message = _x( 'Unknown widget type named "%2$s" deleted', '2: Title', 'stream' );
 				} else {
-					// Neither a name nor a title are available, so use the sidebar ID
+					// Neither a name nor a title are available, so use the widget ID
 					$message = _x( '%3$s widget deleted', '3: Widget ID', 'stream' );
 				}
 
-				$message  = sprintf( $message, $delete['title'], $delete['name'], $delete['widget_id'] );
+				$message  = sprintf( $message, $delete['name'], $delete['title'], $delete['widget_id'] );
 				$contexts = array( $delete['sidebar_id'] => 'deleted' );
 
 				unset( $delete['title'], $delete['name'] );
