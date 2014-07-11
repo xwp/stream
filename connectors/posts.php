@@ -16,8 +16,16 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static $actions = array(
 		'transition_post_status',
+		'save_post',
 		'deleted_post',
 	);
+
+	/**
+	 * Holds the post transition before passing to post save
+	 *
+	 * @var array
+	 */
+	protected static $transition_post_status = array();
 
 	/**
 	 * Return translated connector label
@@ -125,47 +133,47 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		if ( in_array( $new, array( 'auto-draft', 'inherit' ) ) ) {
 			return;
 		} elseif ( 'auto-draft' === $old && 'draft' === $new ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s drafted',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-			$action = 'created';
+			$action  = 'created';
 		} elseif ( 'auto-draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-			$action = 'created';
+			$action  = 'created';
 		} elseif ( 'draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 		} elseif ( 'publish' === $old && ( in_array( $new, array( 'draft' ) ) ) ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s unpublished',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 		} elseif ( 'trash' === $new ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s trashed',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-			$action = 'trashed';
+			$action  = 'trashed';
 		} elseif ( 'trash' === $old && 'trash' !== $new ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s restored from trash',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-			$action = 'untrashed';
+			$action  = 'untrashed';
 		} else {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s updated',
 				'1: Post title, 2: Post type singular name',
 				'stream'
@@ -174,6 +182,32 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 
 		if ( empty( $action ) ) {
 			$action = 'updated';
+		}
+
+		// Hold the post transition data for use in callback_save_post
+		self::$transition_post_status = array(
+			'new_status' => $new,
+			'old_status' => $old,
+			'summary'    => $summary,
+			'action'     => $action,
+		);
+	}
+
+	/**
+	 * Log all post saves
+	 *
+	 * We don't log a record until after the post is saved in order to
+	 * properly capture the post revision ID (if one exists).
+	 *
+	 * New post status, old post status, summary and action pulled from
+	 * the $transition_post_status property which is defined in during
+	 * the transition_post_status action which happens before save_post.
+	 *
+	 * @action save_post
+	 */
+	public static function callback_save_post( $post_ID, $post, $update ) {
+		if ( in_array( $post->post_type, self::get_ignored_post_types() ) ) {
+			return;
 		}
 
 		$revision_id = null;
@@ -198,16 +232,16 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
 
 		self::log(
-			$message,
+			self::$transition_post_status['summary'],
 			array(
 				'post_title'    => $post->post_title,
 				'singular_name' => $post_type_name,
-				'new_status'    => $new,
-				'old_status'    => $old,
+				'new_status'    => self::$transition_post_status['new_status'],
+				'old_status'    => self::$transition_post_status['old_status'],
 				'revision_id'   => $revision_id,
 			),
 			$post->ID,
-			array( $post->post_type => $action )
+			array( $post->post_type => self::$transition_post_status['action'] )
 		);
 	}
 
