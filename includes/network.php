@@ -55,9 +55,27 @@ class WP_Stream_Network {
 	}
 
 	/**
+	 * Returns true if Stream is network activated, otherwise false
+	 *
+	 * @return bool
+	 */
+	public static function is_network_activated() {
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
+		return is_plugin_active_for_network( WP_STREAM_PLUGIN );
+	}
+
+	/**
 	 * Adds Stream to the admin bar under the "My Sites > Network Admin" menu
+	 * if Stream has been network-activated
 	 */
 	function network_admin_bar_menu( $admin_bar ) {
+		if ( ! self::is_network_activated() ) {
+			return;
+		}
+
 		$href = add_query_arg(
 			array(
 				'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG,
@@ -77,6 +95,7 @@ class WP_Stream_Network {
 
 	/**
 	 * Builds a stdClass object used when displaying actions done in network administration
+	 *
 	 * @return stdClass
 	 */
 	public static function get_network_blog() {
@@ -95,10 +114,7 @@ class WP_Stream_Network {
 	 * @return boolean
 	 */
 	public static function disable_admin_access( $disable_access ) {
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		}
-		if ( ! is_network_admin() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+		if ( ! is_network_admin() && self::is_network_activated() ) {
 			$settings = (array) get_site_option( WP_Stream_Settings::NETWORK_KEY, array() );
 
 			if ( isset( $settings['general_enable_site_access'] ) && false === $settings['general_enable_site_access'] ) {
@@ -142,7 +158,7 @@ class WP_Stream_Network {
 				array( 'WP_Stream_Admin', 'render_page' )
 			);
 		}
-		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+		if ( self::is_network_activated() ) {
 			WP_Stream_Admin::$screen_id['extensions'] = add_submenu_page(
 				WP_Stream_Admin::RECORDS_PAGE_SLUG,
 				__( 'Stream Extensions', 'stream' ),
@@ -228,11 +244,7 @@ class WP_Stream_Network {
 	 * @return mixed
 	 */
 	function get_network_admin_fields( $fields ) {
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		}
-
-		if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+		if ( ! self::is_network_activated() ) {
 			return $fields;
 		}
 
@@ -538,6 +550,7 @@ class WP_Stream_Network {
 		if ( ! is_network_admin() ) {
 			return array_diff( $connectors, array( 'WP_Stream_Connector_Blogs' ) );
 		}
+
 		return $connectors;
 	}
 }
