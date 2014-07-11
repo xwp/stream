@@ -140,7 +140,8 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 			$message,
 			compact( 'name', 'parent_title', 'parent_id', 'url' ),
 			$post_id,
-			array( $attachment_type => $post->post_parent ? 'attached' : 'uploaded' )
+			$attachment_type,
+			$post->post_parent ? 'attached' : 'uploaded'
 		);
 	}
 
@@ -159,7 +160,8 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 			$message,
 			compact( 'name' ),
 			$post_id,
-			array( $attachment_type => 'updated' )
+			$attachment_type,
+			'updated'
 		);
 	}
 
@@ -181,7 +183,8 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 			$message,
 			compact( 'name', 'parent_id', 'url' ),
 			$post_id,
-			array( $attachment_type => 'deleted' )
+			$attachment_type,
+			'deleted'
 		);
 	}
 
@@ -198,7 +201,8 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 			__( 'Edited image "%s"', 'stream' ),
 			compact( 'name', 'filename', 'post_id' ),
 			$post_id,
-			array( $attachment_type => 'edited' )
+			$attachment_type,
+			'edited'
 		);
 	}
 

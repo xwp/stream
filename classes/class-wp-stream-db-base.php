@@ -42,7 +42,8 @@ abstract class WP_Stream_DB_Base {
 			'visibility'  => 'publish',
 			'parent'      => 0,
 		);
-		$data     = wp_parse_args( $data, $defaults );
+
+		$data = wp_parse_args( $data, $defaults );
 
 		// TODO: Check/Validate *required* fields
 
