@@ -21,7 +21,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	);
 
 	/**
-	 * Holds the post transition before passing to post save
+	 * Holds the post transition data to be called in callback_save_post
 	 *
 	 * @var array
 	 */
