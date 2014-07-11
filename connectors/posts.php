@@ -130,14 +130,14 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-			$action  = 'created';
+			$action = 'created';
 		} elseif ( 'auto-draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
 			$message = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-			$action  = 'created';
+			$action = 'created';
 		} elseif ( 'draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
 			$message = _x(
 				'"%1$s" %2$s published',
@@ -156,14 +156,14 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-			$action  = 'trashed';
+			$action = 'trashed';
 		} elseif ( 'trash' === $old && 'trash' !== $new ) {
 			$message = _x(
 				'"%1$s" %2$s restored from trash',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-			$action  = 'untrashed';
+			$action = 'untrashed';
 		} else {
 			$message = _x(
 				'"%1$s" %2$s updated',
