@@ -5,7 +5,7 @@ jQuery(function ($) {
 		var $bulkSelect = $( '.bulkactions select' ),
 			opts = '';
 
-		_.each(stream_notifications_options.bulkActions, function (el, i) {
+		_.each( stream_notifications_options.bulkActions, function ( el, i ) {
 			opts += '<option value="%">%</option>'.replace( '%', i ).replace( '%', el );
 		});
 
