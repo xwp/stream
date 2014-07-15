@@ -147,7 +147,9 @@ class WP_Stream_Notifications_List_Table {
 	 * @return array
 	 */
 	public function row_actions( $actions ) {
-		if ( WP_Stream_Notifications_Post_Type::POSTTYPE !== get_current_screen()->post_type ) {
+		global $typenow;
+
+		if ( WP_Stream_Notifications_Post_Type::POSTTYPE !== $typenow ) {
 			return $actions;
 		}
 
