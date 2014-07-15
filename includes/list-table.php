@@ -2,7 +2,6 @@
 
 class WP_Stream_Notifications_List_Table {
 
-
 	/**
 	 * Hold Singleton instance
 	 *
@@ -19,6 +18,7 @@ class WP_Stream_Notifications_List_Table {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 
@@ -93,6 +93,7 @@ class WP_Stream_Notifications_List_Table {
 		if ( ! is_admin() ) {
 			return $vars;
 		}
+
 		if ( isset( $vars['orderby'] ) && 'occurrences' === $vars['orderby'] ) {
 			$vars['meta_query'] = array(
 				'relation' => 'OR',
@@ -121,6 +122,7 @@ class WP_Stream_Notifications_List_Table {
 	 */
 	function get_rule_alert_types( $post_id ) {
 		$alerts = get_post_meta( $post_id, 'alerts', true );
+
 		if ( empty( $alerts ) ) {
 			return esc_html__( 'N/A', 'stream-notifications' );
 		} else {
@@ -193,13 +195,15 @@ class WP_Stream_Notifications_List_Table {
 		}
 
 		if ( in_array( $action, array( 'publish', 'unpublish' ) ) ) {
-			$status = 'publish' === $action ? 'publish' : 'draft';
+			$status = ( 'publish' === $action ) ? 'publish' : 'draft';
 
 			foreach ( $ids as $id ) {
-				wp_update_post( array(
-					'ID' => $id,
-					'post_status' => $status,
-				) );
+				wp_update_post(
+					array(
+						'ID'          => $id,
+						'post_status' => $status,
+					)
+				);
 			}
 
 			wp_redirect(
@@ -207,7 +211,9 @@ class WP_Stream_Notifications_List_Table {
 					array(
 						'updated' => count( $ids ),
 					),
-					remove_query_arg( array( 'action', 'action2', 'id', 'ids', 'post', '_wp_http_referer', 'post_status', 'mode', 'm' ) )
+					remove_query_arg(
+						array( 'action', 'action2', 'id', 'ids', 'post', '_wp_http_referer', 'post_status', 'mode', 'm' )
+					)
 				)
 			);
 			exit; // Without this, the page displays the weird 'Are you sure you want this?'
@@ -218,17 +224,20 @@ class WP_Stream_Notifications_List_Table {
 	 * @filter admin_head
 	 */
 	public function scripts() {
-
 		if ( 'edit-' . WP_Stream_Notifications_Post_Type::POSTTYPE !== get_current_screen()->id ) {
 			return;
 		}
+
 		wp_enqueue_script( 'stream-notifications-list-actions', WP_STREAM_NOTIFICATIONS_URL . 'ui/js/list.js', array( 'jquery', 'underscore' ), WP_Stream_Notifications::VERSION );
-		wp_localize_script( 'stream-notifications-list-actions', 'stream_notifications_options', array(
-			'bulkActions' => array(
-				'publish' => __( 'Publish', 'stream-notifications' ),
-				'unpublish' => __( 'Unpublish', 'stream-notifications' ),
+
+		wp_localize_script( 'stream-notifications-list-actions', 'stream_notifications_options',
+			array(
+				'bulkActions' => array(
+					'publish'   => __( 'Publish', 'stream-notifications' ),
+					'unpublish' => __( 'Unpublish', 'stream-notifications' ),
+				)
 			)
-		) );
+		);
 	}
 
 }
