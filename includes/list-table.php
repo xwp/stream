@@ -93,8 +93,8 @@ class WP_Stream_Notifications_List_Table {
 		if ( ! is_admin() ) {
 			return $vars;
 		}
-		if ( isset( $vars[ 'orderby' ] ) && 'occurrences' === $vars[ 'orderby' ] ) {
-			$vars[ 'meta_query' ] = array(
+		if ( isset( $vars['orderby'] ) && 'occurrences' === $vars['orderby'] ) {
+			$vars['meta_query'] = array(
 				'relation' => 'OR',
 				array(
 					'key'     => 'occurrences',
@@ -105,8 +105,8 @@ class WP_Stream_Notifications_List_Table {
 					'compare' => 'NOT EXISTS',
 				),
 			);
-			$vars[ 'meta_key' ]   = 'occurrences';
-			$vars[ 'orderby' ]    = 'meta_value_num';
+			$vars['meta_key']   = 'occurrences';
+			$vars['orderby']    = 'meta_value_num';
 		}
 
 		return $vars;
@@ -149,8 +149,8 @@ class WP_Stream_Notifications_List_Table {
 			return $actions;
 		}
 
-		unset( $actions[ 'view' ] );
-		unset( $actions[ 'inline hide-if-no-js' ] );
+		unset( $actions['view'] );
+		unset( $actions['inline hide-if-no-js'] );
 
 		global $post;
 
@@ -167,7 +167,7 @@ class WP_Stream_Notifications_List_Table {
 				admin_url( 'edit.php' )
 			)
 		);
-		$new[ 'publish' ] = sprintf(
+		$new['publish'] = sprintf(
 			'<a href="%s">%s</a>',
 			$url,
 			$published ? __( 'Deactivate', 'stream-notifications' ) : __( 'Activate', 'stream-notifications' )
@@ -180,18 +180,13 @@ class WP_Stream_Notifications_List_Table {
 	 * @action load-edit.php
 	 */
 	public function actions() {
-		if ( ! isset( $_REQUEST[ 'action' ] ) ) {
+		if ( ! isset( $_REQUEST['action'] ) ) {
 			return;
 		}
 
-
-		$action = $_REQUEST[ 'action' ];
-		$ids = array_map( 'absint',
-			isset( $_REQUEST[ 'post' ] )
-				? ( is_array( $_REQUEST['post'] ) ? $_REQUEST['post'] : explode( ',', $_REQUEST[ 'post' ] ) )
-				: array( $_REQUEST[ 'id' ] )
-		);
-
+		$action  = $_REQUEST['action'];
+		$request = isset( $_REQUEST['post'] ) ? ( is_array( $_REQUEST['post'] ) ? $_REQUEST['post'] : explode( ',', $_REQUEST['post'] ) ) : array( $_REQUEST['id'] );
+		$ids     = array_map( 'absint', $request );
 
 		if ( empty( $action ) || empty( $ids ) ) {
 			return;
@@ -199,6 +194,7 @@ class WP_Stream_Notifications_List_Table {
 
 		if ( in_array( $action, array( 'publish', 'unpublish' ) ) ) {
 			$status = 'publish' === $action ? 'publish' : 'draft';
+
 			foreach ( $ids as $id ) {
 				wp_update_post( array(
 					'ID' => $id,
