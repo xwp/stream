@@ -2,11 +2,13 @@
 jQuery(function ($) {
 
 	if ( stream_notifications_options.bulkActions ) {
-		var bulkSelect = $('.bulkactions select'),
+		var $bulkSelect = $( '.bulkactions select' ),
 			opts = '';
+
 		_.each(stream_notifications_options.bulkActions, function (el, i) {
-			opts += '<option value="%">%</option>'.replace('%', i).replace('%', el);
+			opts += '<option value="%">%</option>'.replace( '%', i ).replace( '%', el );
 		});
-		bulkSelect.find('option:first').after( opts );
+
+		$bulkSelect.find( 'option:first' ).after( opts );
 	}
 });
