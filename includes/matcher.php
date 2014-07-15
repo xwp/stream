@@ -47,6 +47,7 @@ class WP_Stream_Notifications_Matcher {
 	 */
 	public function refresh_cache_on_delete( $post_id ) {
 		$post = get_post( $post_id );
+
 		if ( WP_Stream_Notifications_Post_Type::POSTTYPE !== $post->post_type ) {
 			return;
 		}
@@ -71,6 +72,7 @@ class WP_Stream_Notifications_Matcher {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			$force_refresh = true;
 		}
+
 		// Check if we have a valid cache
 		if ( ! $force_refresh && false !== ( $rules = get_transient( self::CACHE_KEY ) ) ) {
 			return $rules;
@@ -104,12 +106,11 @@ class WP_Stream_Notifications_Matcher {
 	}
 
 	public function match( $record_id, $log ) {
-
 		$rules      = $this->rules();
 		$rule_match = array();
 
 		foreach ( $rules as $rule_id => $rule ) {
-			$rule_match[ $rule_id ] = $this->match_group( $rule[ 'triggers' ], $log );
+			$rule_match[ $rule_id ] = $this->match_group( $rule['triggers'], $log );
 		}
 
 		$rule_match     = array_keys( array_filter( $rule_match ) );
@@ -131,17 +132,19 @@ class WP_Stream_Notifications_Matcher {
 		// and not have to traverse the whole trigger tree
 		foreach ( $chunks as $chunk ) {
 			$results = array();
+
 			foreach ( $chunk as $trigger ) {
-				$is_group = isset( $trigger[ 'triggers' ] );
+				$is_group = isset( $trigger['triggers'] );
 
 				if ( $is_group ) {
-					$results[ ] = $this->match_group( $trigger[ 'triggers' ], $log );
+					$results[ ] = $this->match_group( $trigger['triggers'], $log );
 				} else {
 					$results[ ] = $this->match_trigger( $trigger, $log );
 				}
 			}
+
 			// If the whole chunk fails, fail the whole group
-			if ( count( array_filter( $results ) ) == 0 ) {
+			if ( 0 === count( array_filter( $results ) ) ) {
 				return false;
 			}
 		}
@@ -151,15 +154,16 @@ class WP_Stream_Notifications_Matcher {
 	}
 
 	public function match_trigger( $trigger, $log ) {
-		$type     = isset( $trigger[ 'type' ] ) ? $trigger[ 'type' ] : null;
-		$needle   = isset( $trigger[ 'value' ] ) ? $trigger[ 'value' ] : null;
-		$operator = isset( $trigger[ 'operator' ] ) ? $trigger[ 'operator' ] : null;
-		$negative = ( isset( $operator[ 0 ] ) && '!' == $operator[ 0 ] );
+		$type     = isset( $trigger['type'] )     ? $trigger['type']     : null;
+		$needle   = isset( $trigger['value'] )    ? $trigger['value']    : null;
+		$operator = isset( $trigger['operator'] ) ? $trigger['operator'] : null;
+		$negative = ( isset( $operator[0] ) && '!' === $operator[0] );
 		$haystack = null;
 
 		// Post-specific triggers dirty work
-		if ( false !== strpos( $trigger[ 'type' ], 'post_' ) ) {
-			$post = get_post( $log[ 'object_id' ] );
+		if ( false !== strpos( $trigger['type'], 'post_' ) ) {
+			$post = get_post( $log['object_id'] );
+
 			if ( empty( $post ) ) {
 				return false;
 			}
@@ -167,49 +171,49 @@ class WP_Stream_Notifications_Matcher {
 
 		switch ( $type ) {
 			case 'search':
-				$haystack = $log[ 'summary' ];
+				$haystack = $log['summary'];
 				break;
 			case 'object_id':
-				$haystack = $log[ 'object_id' ];
+				$haystack = $log['object_id'];
 				break;
 			case 'author':
-				$haystack = $log[ 'author' ];
+				$haystack = $log['author'];
 				break;
 			case 'author_role':
-				$user     = get_userdata( $log[ 'author' ] );
-				$haystack = ( is_object( $user ) && $user->exists() && $user->roles ) ? $user->roles[ 0 ] : false;
+				$user     = get_userdata( $log['author'] );
+				$haystack = ( is_object( $user ) && $user->exists() && $user->roles ) ? $user->roles[0] : false;
 				break;
 			case 'ip':
-				$haystack = $log[ 'ip' ];
+				$haystack = $log['ip'];
 				break;
 			case 'date':
-				$haystack = date( 'Ymd', strtotime( $log[ 'created' ] ) );
+				$haystack = date( 'Ymd', strtotime( $log['created'] ) );
 				$needle   = date( 'Ymd', strtotime( $needle ) );
 				break;
 			case 'weekday':
 				if ( preg_match( '#\d+#', $needle, $weekday_match ) ) {
-					$haystack = date( 'w', strtotime( $log[ 'created' ] ) );
-					$needle   = $weekday_match[ 0 ];
+					$haystack = date( 'w', strtotime( $log['created'] ) );
+					$needle   = $weekday_match[0];
 				}
 				break;
 			case 'connector':
-				$haystack = $log[ 'connector' ];
+				$haystack = $log['connector'];
 				break;
 			case 'context':
-				$haystack = key( $log[ 'contexts' ] );
+				$haystack = key( $log['contexts'] );
 				break;
 			case 'action':
-				$haystack = reset( $log[ 'contexts' ] );
+				$haystack = reset( $log['contexts'] );
 				break;
 
 			/* Context-aware triggers */
 			case 'post':
 			case 'user':
 			case 'term':
-				$haystack = $log[ 'object_id' ];
+				$haystack = $log['object_id'];
 				break;
 			case 'term_parent':
-				$parent = get_term( $log[ 'meta' ][ 'term_parent' ], $log[ 'meta' ][ 'taxonomy' ] );
+				$parent = get_term( $log['meta']['term_parent'], $log['meta']['taxonomy'] );
 				if ( empty( $parent ) || is_wp_error( $parent ) ) {
 					return false;
 				} else {
@@ -217,10 +221,10 @@ class WP_Stream_Notifications_Matcher {
 				}
 				break;
 			case 'tax':
-				if ( empty( $log[ 'meta' ][ 'taxonomy' ] ) ) {
+				if ( empty( $log['meta']['taxonomy'] ) ) {
 					return false;
 				}
-				$haystack = $log[ 'meta' ][ 'taxonomy' ];
+				$haystack = $log['meta']['taxonomy'];
 				break;
 
 			case 'post_title':
@@ -262,12 +266,13 @@ class WP_Stream_Notifications_Matcher {
 		}
 
 		$match = false;
+
 		switch ( $operator ) {
 			case '=':
 			case '!=':
 			case '>=':
 			case '<=':
-				$match = ( $haystack == $needle );
+				$match = ( $haystack == $needle ); // Loose comparison needed
 			case 'in':
 			case '!in':
 				$needle = is_array( $needle ) ? $needle : explode( ',', $needle );
@@ -297,7 +302,8 @@ class WP_Stream_Notifications_Matcher {
 				$match = $match || ( $haystack > $needle );
 				break;
 		}
-		$result = ( $match == ! $negative );
+
+		$result = ( $match == ! $negative ); // Loose comparison needed
 
 		return $result;
 	}
@@ -311,6 +317,7 @@ class WP_Stream_Notifications_Matcher {
 	 */
 	private function format( $rules ) {
 		$output = array();
+
 		foreach ( $rules as $rule ) {
 			$rule_id = $rule->ID;
 			$meta    = get_post_meta( $rule_id );
@@ -318,28 +325,28 @@ class WP_Stream_Notifications_Matcher {
 
 			foreach ( array( 'triggers', 'groups', 'alerts' ) as $key ) {
 				if ( isset( $meta[ $key ] ) ) {
-					$args[ $key ] = array_filter( maybe_unserialize( $meta[ $key ][ 0 ] ) );
+					$args[ $key ] = array_filter( maybe_unserialize( $meta[ $key ][0] ) );
 				}
 			}
 
 			// Bail early if no triggers or alerts are defined
-			if ( empty( $args[ 'triggers' ] ) || empty( $args[ 'alerts' ] ) ) {
+			if ( empty( $args['triggers'] ) || empty( $args['alerts'] ) ) {
 				continue;
 			}
 
 			$output[ $rule_id ] = array();
 
 			// Generate an easy-to-parse tree of triggers/groups
-			$args[ 'triggers' ] = $this->generate_tree(
-			                           $this->generate_flattened_tree(
-			                                $args[ 'triggers' ],
-			                                $args[ 'groups' ]
-			                           )
+			$args['triggers'] = $this->generate_tree(
+				$this->generate_flattened_tree(
+					$args['triggers'],
+					$args['groups']
+				)
 			);
 
 			// Chunkify! @see generate_group_chunks
-			$args[ 'triggers' ] = $this->generate_group_chunks(
-			                           $args[ 'triggers' ][ 0 ][ 'triggers' ]
+			$args['triggers'] = $this->generate_group_chunks(
+				$args['triggers'][0]['triggers']
 			);
 
 			// Add alerts
@@ -354,9 +361,10 @@ class WP_Stream_Notifications_Matcher {
 	 */
 	private function generate_group_chain( $groups, $group_id ) {
 		$chain = array();
+
 		while ( isset( $groups[ $group_id ] ) ) {
 			$chain[ ] = $group_id;
-			$group_id = $groups[ $group_id ][ 'group' ];
+			$group_id = $groups[ $group_id ]['group'];
 		}
 
 		return array_reverse( $chain );
@@ -369,10 +377,11 @@ class WP_Stream_Notifications_Matcher {
 	 */
 	private function generate_flattened_tree( $triggers, $groups ) {
 		// Seed the tree with the universal group
-		if ( ! isset( $groups[ 0 ] ) ) {
-			$groups[ 0 ] = array( 'group' => null, 'relation' => 'and' );
+		if ( ! isset( $groups[0] ) ) {
+			$groups[0] = array( 'group' => null, 'relation' => 'and' );
 		}
-		$flattened_tree      = array( array( 'item' => $groups[ '0' ], 'level' => 0, 'type' => 'group' ) );
+
+		$flattened_tree      = array( array( 'item' => $groups['0'], 'level' => 0, 'type' => 'group' ) );
 		$current_group_chain = array( '0' );
 		$level               = 1;
 
@@ -380,9 +389,8 @@ class WP_Stream_Notifications_Matcher {
 			$active_group = end( $current_group_chain );
 
 			// If the trigger goes to any other than actually opened group, we need to traverse the tree first
-			if ( $trigger[ 'group' ] != $active_group ) {
-
-				$trigger_group_chain   = $this->generate_group_chain( $groups, $trigger[ 'group' ] );
+			if ( $trigger['group'] != $active_group ) {
+				$trigger_group_chain   = $this->generate_group_chain( $groups, $trigger['group'] );
 				$common_ancestors      = array_intersect( $current_group_chain, $trigger_group_chain );
 				$newly_inserted_groups = array_diff( $trigger_group_chain, $current_group_chain );
 				$steps_back            = $level - count( $common_ancestors );
@@ -399,6 +407,7 @@ class WP_Stream_Notifications_Matcher {
 					$current_group_chain[ ] = $group;
 				}
 			}
+
 			// Now we're sure the trigger goes to a correct position
 			$flattened_tree[ ] = array( 'item' => $trigger, 'level' => $level, 'type' => 'trigger' );
 		}
@@ -413,21 +422,22 @@ class WP_Stream_Notifications_Matcher {
 		// Our recurrent step
 		$recurrent_step = function ( $level, $i ) use ( $flattened_tree, &$recurrent_step ) {
 			$return = array();
+
 			for ( $i; $i < count( $flattened_tree ); $i ++ ) {
 				// If we're on the correct level, we're going to insert the node
-				if ( $flattened_tree[ $i ][ 'level' ] == $level ) {
-					if ( 'trigger' == $flattened_tree[ $i ][ 'type' ] ) {
-						$return[ ] = $flattened_tree[ $i ][ 'item' ];
+				if ( $flattened_tree[ $i ]['level'] === $level ) {
+					if ( 'trigger' === $flattened_tree[ $i ]['type'] ) {
+						$return[ ] = $flattened_tree[ $i ]['item'];
 						// If the node is a group, we need to call the recursive function
 						// in order to construct the tree for us further
 					} else {
 						$return[ ] = array(
-							'relation' => $flattened_tree[ $i ][ 'item' ][ 'relation' ],
+							'relation' => $flattened_tree[ $i ]['item']['relation'],
 							'triggers' => call_user_func( $recurrent_step, $level + 1, $i + 1 ),
 						);
 					}
 					// If we're on a lower level, we came back and we can return this branch
-				} elseif ( $flattened_tree[ $i ][ 'level' ] < $level ) {
+				} elseif ( $flattened_tree[ $i ]['level'] < $level ) {
 					return $return;
 				}
 			}
@@ -456,14 +466,16 @@ class WP_Stream_Notifications_Matcher {
 	 */
 	private function generate_group_chunks( $triggers ) {
 		$chunks        = array();
-		$current_chunk = - 1;
+		$current_chunk = -1;
+
 		foreach ( $triggers as $trigger ) {
 			// If is a group, chunks its children as well
-			if ( isset( $trigger[ 'triggers' ] ) ) {
-				$trigger[ 'triggers' ] = $this->generate_group_chunks( $trigger[ 'triggers' ] );
+			if ( isset( $trigger['triggers'] ) ) {
+				$trigger['triggers'] = $this->generate_group_chunks( $trigger['triggers'] );
 			}
+
 			// If relation=and, start a new chunk, else join the previous chunk
-			if ( 'and' == $trigger[ 'relation' ] ) {
+			if ( 'and' === $trigger['relation'] ) {
 				$chunks[ ]     = array( $trigger );
 				$current_chunk = count( $chunks ) - 1;
 			} else {
@@ -482,11 +494,13 @@ class WP_Stream_Notifications_Matcher {
 				'occurrences',
 				( (int) get_post_meta( $rule_id, 'occurrences', true ) ) + 1
 			);
-			foreach ( $rule[ 'alerts' ] as $alert ) {
-				if ( ! isset( WP_Stream_Notifications::$adapters[ $alert[ 'type' ] ] ) ) {
+
+			foreach ( $rule['alerts'] as $alert ) {
+				if ( ! isset( WP_Stream_Notifications::$adapters[ $alert['type'] ] ) ) {
 					continue;
 				}
-				$adapter = new WP_Stream_Notifications::$adapters[ $alert[ 'type' ] ][ 'class' ];
+
+				$adapter = new WP_Stream_Notifications::$adapters[ $alert['type'] ]['class'];
 				$adapter->load( $alert )->send( $log );
 			}
 		}
