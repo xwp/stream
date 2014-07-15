@@ -268,9 +268,10 @@ class WP_Stream_Reports {
 			'stream-reports',
 			'streamReportsLocal',
 			array(
-				'configure' => __( 'Configure', 'stream-reports' ),
-				'cancel'    => __( 'Cancel', 'stream-reports' ),
-				'deletemsg' => __( 'Do you really want to delete this section? This cannot be undone.', 'stream-reports' )
+				'configure'  => __( 'Configure', 'stream-reports' ),
+				'cancel'     => __( 'Cancel', 'stream-reports' ),
+				'deletemsg'  => __( 'Do you really want to delete this section? This cannot be undone.', 'stream-reports' ),
+				'gmt_offset' => get_option( 'gmt_offset' ),
 			)
 		);
 
