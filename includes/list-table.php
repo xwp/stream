@@ -153,7 +153,8 @@ class WP_Stream_Notifications_List_Table {
 		unset( $actions[ 'inline hide-if-no-js' ] );
 
 		global $post;
-		$published = 'publish' === $post->post_status;
+
+		$published = ( 'publish' === $post->post_status );
 
 		$new              = array();
 		$url              = wp_nonce_url(
