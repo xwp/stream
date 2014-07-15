@@ -47,10 +47,12 @@ class WP_Stream_Notifications_List_Table {
 	public function column_heads( $cols ) {
 		$new = array(
 			'type' => esc_html__( 'Type', 'stream-notifications' ),
-			'occ'  => esc_html__( 'occurrences', 'stream-notifications' ),
+			'occ'  => esc_html__( 'Occurrences', 'stream-notifications' ),
 		);
 
-		return ( array_splice( $cols, 0, 2 ) + $new + array_splice( $cols, 0 ) );
+		$cols = array_merge( array_splice( $cols, 0, 2 ), $new, array_splice( $cols, 0 ) );
+
+		return $cols;
 	}
 
 	/**
