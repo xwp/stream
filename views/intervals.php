@@ -1,15 +1,15 @@
 <div class="date-interval">
 
-	<select class="field-predefined" data-placeholder="<?php esc_attr_e( 'All Time', 'stream-reports' ); ?>">
+	<select class="field-predefined" data-placeholder="<?php esc_attr_e( 'All Time', 'stream-reports' ) ?>">
 		<option></option>
-		<option value="custom" <?php selected( 'custom' === $user_interval['key'] ); ?>><?php esc_attr_e( 'Custom', 'stream-reports' ) ?></option>
+		<option value="custom" <?php selected( 'custom' === $user_interval['key'] ) ?>><?php esc_attr_e( 'Custom', 'stream-reports' ) ?></option>
 		<?php foreach ( $date->intervals as $key => $interval ) {
 			echo sprintf(
 				'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 				esc_attr( $key ),
-				esc_attr( $interval['start']->format( 'Y/m/d' ) ),
-				esc_attr( isset( $interval['end'] ) ? $interval['end']->format( 'Y/m/d' ) : $interval['start']->format( 'Y/m/d' ) ),
-				selected( $key === $user_interval['key'] ),
+				isset( $interval['start'] ) ? esc_attr( $interval['start']->format( 'Y/m/d' ) ) : null,
+				isset( $interval['end'] ) ? esc_attr( $interval['end']->format( 'Y/m/d' ) ) : date( 'Y/m/d' ),
+				( $key === $user_interval['key'] ) ? 'selected="selected"' : null,
 				esc_html( $interval['label'] )
 			); // xss ok
 		} ?>

@@ -384,7 +384,13 @@
 			// Cancel button
 			$cancelBtn = $postbox.find('.hndle .open-box');
 
-			var id = $(this).data('id');
+			var id        = $(this).data('id');
+			var option    = parent.find( '.chart-dataset' ).select2('data').element[0].dataset;
+			var connector = option.connector;
+			var context   = option.context;
+			var blog      = option.blog;
+			var action    = parent.find( '.chart-action' ).select2('data').element[0].dataset.action;
+			var selector  = parent.find('.chart-selector').select2('data').id;
 
 			// Send the new
 			$.ajax({
@@ -393,12 +399,17 @@
 				data: {
 					action: 'wp_stream_reports_save_metabox_config',
 					wp_stream_reports_nonce : $('#wp_stream_reports_nonce').val(),
-					chart_type : parent.find('.chart-types .active').data('type'),
-					data_group : parent.find( '.chart-dataset' ).select2('data').element[0].dataset.group,
-					data_type : parent.find('.chart-dataset').select2('data').id,
-					selector_type : parent.find('.chart-selector').select2('data').id,
+
 					section_id : id,
 					title : $postbox.find('.title').val(),
+					chart_type : parent.find('.chart-types .active').data('type'),
+
+					data_connector : connector,
+					data_context   : context,
+					data_action    : action,
+					data_blog      : blog,
+					data_selector  : selector,
+
 				},
 				dataType: 'json',
 				success : function(data) {

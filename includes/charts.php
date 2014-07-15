@@ -3,10 +3,96 @@
 class WP_Stream_Reports_Charts {
 
 	public function __construct() {
+
+		// Load records
+		add_filter( 'wp_stream_reports_load_records', array( $this, 'sort_coordinates_by_count' ), 10, 2 );
+		add_filter( 'wp_stream_reports_load_records', array( $this, 'limit_coordinates' ), 10, 2 );
+
 		// Make charts
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'pie_chart_coordinates' ), 10, 2 );
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'bar_chart_coordinates' ), 10, 2 );
 		add_filter( 'wp_stream_reports_make_chart', array( $this, 'line_chart_coordinates' ), 10, 2 );
+
+		// Chart finalization
+		add_filter( 'wp_stream_reports_finalize_chart', array( $this, 'apply_chart_settings' ), 10, 2 );
+
+	}
+
+	public function get_chart_options( $args, $records ) {
+
+		$coordinates = apply_filters( 'wp_stream_reports_make_chart', $records, $args );
+		$values      = apply_filters( 'wp_stream_reports_finalize_chart', $coordinates, $args );
+
+		$show_controls = count( $values ) > 1;
+
+		return array(
+			'type'       => $args['chart_type'],
+			'guidelines' => true,
+			'tooltip'    => array(
+				'show'   => true,
+			),
+			'values'     => $values,
+			'controls'   => $show_controls,
+			'stacked'    => (bool) $args['group'],
+			'grouped'    => false,
+		);
+	}
+
+	/**
+	 * Sorts each set of data by the number of records in them
+	 */
+	public function sort_coordinates_by_count( $records ) {
+		$counts = array();
+		foreach ( $records as $field => $data ){
+
+			$count = count( $data );
+			if ( ! array_key_exists( $count, $counts ) ) {
+				$counts[ $count ] = array();
+			}
+
+			$counts[ $count ][] = array(
+				'key' => $field,
+				'data' => $data,
+			);
+		}
+
+		krsort( $counts );
+
+		$output = array();
+		foreach ( $counts as $count => $element ) {
+
+			foreach ( $element as $element_data ) {
+				$output[ $element_data['key'] ] = $element_data['data'];
+			}
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Merges all records past limit into single record
+	 */
+	public function limit_coordinates( $records, $args ) {
+		$limit = apply_filters( 'wp_stream_reports_record_limit', 10 );
+		if ( 0 === $limit ) {
+			return $records;
+		}
+
+		$top_elements      = array_slice( $records, 0, $limit, true );
+		$leftover_elements = array_slice( $records, $limit );
+
+		if ( ! $leftover_elements ) {
+			return $top_elements;
+		}
+
+		$other_element = array();
+		foreach ( $leftover_elements as $data ) {
+			$other_element = array_merge( $other_element, $data );
+		}
+
+		$top_elements['report-others'] = $other_element;
+
+		return $top_elements;
 	}
 
 	public function line_chart_coordinates( $records, $args ) {
@@ -174,6 +260,19 @@ class WP_Stream_Reports_Charts {
 	 */
 	protected function collapse_dates( $date ) {
 		return strtotime( date( 'Y-m-d', strtotime( $date ) ) );
+	}
+
+	/**
+	 * Disable coordinate plots that have been disabled by the user
+	 */
+	public function apply_chart_settings( $coordinates, $args ) {
+		foreach ( $coordinates as $key => $dataset ) {
+			if ( in_array( $key, $args['disabled'] ) ) {
+				$coordinates[ $key ]['disabled'] = true;
+			}
+		}
+
+		return $coordinates;
 	}
 
 }
