@@ -176,6 +176,35 @@ class WP_Stream_API {
 	}
 
 	/**
+	 * Search all records.
+	 *
+	 * @param array Elasticsearch's Query DSL query object.
+	 * @param array Elasticsearch's Query DSL aggregations object.
+	 * @param array Returns specified fields only.
+	 * @param bool  Allow API calls to be cached.
+	 * @param int   Set transient expiration in seconds.
+	 *
+	 * @return mixed
+	 */
+	public function search( $query = array(), $aggregations = array(), $fields = array(), $allow_cache = true, $expiration = 120 ) {
+		if ( ! $this->site_uuid ) {
+			return false;
+		}
+
+		$params = array();
+
+		if ( ! empty( $fields ) ) {
+			$params['fields'] = implode( ',', $fields );
+		}
+
+		$url  = $this->request_url( sprintf( '/search', esc_attr( $this->site_uuid ) ), $params );
+		$body = array( 'query' => $query, 'aggregations' => $aggregations );
+		$args = array( 'method' => 'POST', 'body' => json_encode( $body, JSON_FORCE_OBJECT ) );
+
+		return $this->remote_request( $url, $args, $allow_cache, $expiration );
+	}
+
+	/**
 	 * Helper function to create and escape a URL for an API request.
 	 *
 	 * @param string The endpoint path, with a starting slash.
