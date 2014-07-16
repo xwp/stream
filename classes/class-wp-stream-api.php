@@ -216,7 +216,7 @@ class WP_Stream_API {
 		return esc_url_raw(
 			add_query_arg(
 				$params,
-				untrailingslashit( $this->api_url ) . $path //use this when /version/ is implemented: trailingslashit( $this->api_url ) . $this->api_version . $path
+				untrailingslashit( $this->api_url ) . $path
 			)
 		);
 	}
