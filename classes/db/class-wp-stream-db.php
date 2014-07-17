@@ -57,29 +57,29 @@ class WP_Stream_DB extends WP_Stream_DB_Base {
 
 		// PARSE DATE
 		if ( ! empty( $args['date_from'] ) ) {
-			$query_dsl['filter']['range']['created']['from'] = date( 'c', strtotime( $args['date_from'] . ' 00:00:00' ) );
+			$query_dsl['query']['filter']['range']['created']['from'] = date( 'c', strtotime( $args['date_from'] . ' 00:00:00' ) );
 		}
 
 		if ( ! empty( $args['date_to'] ) ) {
-			$query_dsl['filter']['range']['created']['to'] = date( 'c', strtotime( $args['date_to'] . ' 23:59:59' ) );
+			$query_dsl['query']['filter']['range']['created']['to'] = date( 'c', strtotime( $args['date_to'] . ' 23:59:59' ) );
 		}
 
 		if ( ! empty( $args['date'] ) ) {
-			$query_dsl['filter']['range']['created']['from'] = date( 'c', strtotime( $args['date'] . ' 00:00:00' ) );
-			$query_dsl['filter']['range']['created']['to']   = date( 'c', strtotime( $args['date'] . ' 23:59:59' ) );
+			$query_dsl['query']['filter']['range']['created']['from'] = date( 'c', strtotime( $args['date'] . ' 00:00:00' ) );
+			$query_dsl['query']['filter']['range']['created']['to']   = date( 'c', strtotime( $args['date'] . ' 23:59:59' ) );
 		}
 
 		// PARSE RECORD
 		if ( ! empty( $args['record__in'] ) ) {
-			$query_dsl['filter']['ids']['values'] = (array) $args['record__in'];
+			$query_dsl['query']['filter']['ids']['values'] = (array) $args['record__in'];
 		}
 
 		if ( ! empty( $args['record__in'] ) ) {
-			$query_dsl['filter']['ids']['values'] = (array) $args['record__in'];
+			$query_dsl['query']['filter']['ids']['values'] = (array) $args['record__in'];
 		}
 
 		if ( ! empty( $args['record__not_in'] ) ) {
-			$query_dsl['filter']['not']['ids']['values'] = (array) $args['record__not_in'];
+			$query_dsl['query']['filter']['not']['ids']['values'] = (array) $args['record__not_in'];
 		}
 
 		$properties = array(
@@ -99,15 +99,15 @@ class WP_Stream_DB extends WP_Stream_DB_Base {
 
 		foreach ( $properties as $property ) {
 			if ( ! empty( $args[ $property ] ) ) {
-				$query_dsl['filter']['term'][ $property ] = $args[ $property ];
+				$query_dsl['query']['filter']['term'][ $property ] = $args[ $property ];
 			}
 
 			if ( ! empty( $args["{$property}__in"] ) ) {
-				$query_dsl['filter']['term'][ $property ] = $args["{$property}__in"];
+				$query_dsl['query']['filter']['term'][ $property ] = $args["{$property}__in"];
 			}
 
 			if ( ! empty( $args["{$property}__not_in"] ) ) {
-				$query_dsl['filter']['not']['term'][ $property ] = $args["{$property}__in"];
+				$query_dsl['query']['filter']['not']['term'][ $property ] = $args["{$property}__in"];
 			}
 		}
 
