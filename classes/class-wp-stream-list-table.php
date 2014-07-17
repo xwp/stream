@@ -129,7 +129,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$order = 'DESC';
 		}
 		if ( ! $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
-			$orderby = 'ID';
+			$orderby = 'date';
 		}
 		$args['order']   = $order;
 		$args['orderby'] = $orderby;

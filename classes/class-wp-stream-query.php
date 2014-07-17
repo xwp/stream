@@ -28,36 +28,50 @@ class WP_Stream_Query {
 		$defaults = array(
 			// Search param
 			'search'                => null,
-			'search_field'          => null,
+			'search_field'          => 'summary',
 			'distinct'              => null,
 			'record_greater_than'   => null,
 			// Date-based filters
 			'date'                  => null,
 			'date_from'             => null,
 			'date_to'               => null,
-			// __in params
-			'record__in'            => array(),
-			'record__not_in'        => array(),
-			'record_parent'         => '',
-			'record_parent__in'     => array(),
-			'record_parent__not_in' => array(),
-			'author__in'            => array(),
-			'author__not_in'        => array(),
-			'author_role__in'       => array(),
-			'author_role__not_in'   => array(),
-			'ip__in'                => array(),
-			'ip__not_in'            => array(),
 			// Pagination params
 			'records_per_page'      => get_option( 'posts_per_page' ),
 			'paged'                 => 1,
 			// Order
 			'order'                 => 'desc',
-			'orderby'               => 'ID',
+			'orderby'               => 'date',
 			// Meta/Taxonomy sub queries
 			'meta'                  => array(),
 			// Fields selection
 			'fields'                => null,
 		);
+
+		// Additional property fields
+		$properties = array(
+			'record'        => null,
+			'type'          => 'stream',
+			'record_parent' => null,
+			'author'        => null,
+			'author_role'   => null,
+			'ip'            => null,
+			'object_id'     => null,
+			'site_id'       => null,
+			'blog_id'       => null,
+			'visibility'    => null,
+			'connector'     => null,
+			'context'       => null,
+			'action'        => null,
+		);
+
+		// Add property fields to defaults, including their __in/__not_in variations
+		foreach ( $properties as $property => $default ) {
+			if ( ! isset( $defaults[ $property ] ) ) {
+				$defaults[ $property ] = $default;
+			}
+			$defaults[ "{$property}__in" ]     = array();
+			$defaults[ "{$property}__not_in" ] = array();
+		}
 
 		$args = wp_parse_args( $args, $defaults );
 

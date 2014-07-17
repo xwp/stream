@@ -31,106 +31,119 @@ class WP_Stream_DB extends WP_Stream_DB_Base {
 	 * @return array List of records that match query
 	 */
 	public function query( $args ) {
-		$query  = array();
-		$aggs   = array();
-		$fields = array();
+		$query_dsl = array();
+		$fields    = array();
 
 		// PARSE SEARCH
-		if ( isset( $args['search'] ) ) {
-			if ( isset( $args['search_field'] ) ) {
+		if ( ! empty( $args['search'] ) ) {
+			if ( ! empty( $args['search_field'] ) ) {
 				$search_field = $args['search_field'];
-				$query['filtered']['query']['match'][ $search_field ] = $args['search'];
+				$query_dsl['query']['match'][ $search_field ] = $args['search'];
 			} else {
-				$query['filtered']['query']['match']['_all'] = $args['search'];
+				$query_dsl['query']['match']['summary'] = $args['search'];
 			}
 		}
 
 		// PARSE FIELDS
-		if ( isset( $args['fields'] ) ) {
+		if ( ! empty( $args['fields'] ) ) {
 			$fields = is_array( $args['fields'] ) ? $args['fields'] : explode( ',', $args['fields'] );
 		}
 
 		// PARSE DISTINCT
-		if ( true === $args['distinct'] && isset( $args['search_field'] ) ) {
+		if ( true === $args['distinct'] && ! empty( $args['search_field'] ) ) {
 			$search_field = $args['search_field'];
-			$aggs[ $search_field ] = array(
-				'terms' => array(
-					'field' => $search_field,
-				),
-			);
+			$query_dsl['aggs'][ $search_field ]['terms']['field'] = $search_field;
 		}
 
 		// PARSE DATE
-		if ( isset( $args['date_from'] ) ) {
-			$query['filtered']['filter']['range']['created']['from']['gte'] = date( 'Y-m-d H:i:s', strtotime( $args['date_from'] . ' 00:00:00' ) );
+		if ( ! empty( $args['date_from'] ) ) {
+			$query_dsl['filter']['range']['created']['from'] = date( 'c', strtotime( $args['date_from'] . ' 00:00:00' ) );
 		}
 
-		if ( isset( $args['date_to'] ) ) {
-			$query['filtered']['filter']['range']['created']['from']['lte'] = date( 'Y-m-d H:i:s', strtotime( $args['date_to'] . ' 23:59:59' ) );
+		if ( ! empty( $args['date_to'] ) ) {
+			$query_dsl['filter']['range']['created']['to'] = date( 'c', strtotime( $args['date_to'] . ' 23:59:59' ) );
 		}
 
-		if ( isset( $args['date'] ) ) {
-			$query['filtered']['filter']['range']['created']['from']['gte'] = date( 'Y-m-d H:i:s', strtotime( $args['date'] . ' 00:00:00' ) );
-			$query['filtered']['filter']['range']['created']['from']['lte'] = date( 'Y-m-d H:i:s', strtotime( $args['date'] . ' 23:59:59' ) );
+		if ( ! empty( $args['date'] ) ) {
+			$query_dsl['filter']['range']['created']['from'] = date( 'c', strtotime( $args['date'] . ' 00:00:00' ) );
+			$query_dsl['filter']['range']['created']['to']   = date( 'c', strtotime( $args['date'] . ' 23:59:59' ) );
 		}
 
 		// PARSE RECORD
-		if ( isset( $args['record__in'] ) ) {
-			$query['filtered']['filter']['ids']['values'] = (array) $args['record__in'];
+		if ( ! empty( $args['record__in'] ) ) {
+			$query_dsl['filter']['ids']['values'] = (array) $args['record__in'];
 		}
 
-		if ( isset( $args['record__not_in'] ) ) {
-			$query['filtered']['filter']['not']['ids']['values'] = (array) $args['record__not_in'];
+		if ( ! empty( $args['record__in'] ) ) {
+			$query_dsl['filter']['ids']['values'] = (array) $args['record__in'];
 		}
 
-		if ( isset( $args['record_parent'] ) ) {
-			$query['filtered']['filter']['term']['parent'] = $args['record_parent'];
+		if ( ! empty( $args['record__not_in'] ) ) {
+			$query_dsl['filter']['not']['ids']['values'] = (array) $args['record__not_in'];
 		}
 
-		if ( isset( $args['record_parent__in'] ) ) {
-			$query['filtered']['filter']['term']['parent'] = (array) $args['record_parent__in'];
-		}
+		$properties = array(
+			'author',
+			'author_role',
+			'ip',
+			'type',
+			'record_parent',
+			'object_id',
+			'site_id',
+			'blog_id',
+			'visibility',
+			'connector',
+			'context',
+			'action',
+		);
 
-		if ( isset( $args['record_parent__not_in'] ) ) {
-			$query['filtered']['filter']['not']['term']['parent'] = (array) $args['record_parent__not_in'];
-		}
+		foreach ( $properties as $property ) {
+			if ( ! empty( $args[ $property ] ) ) {
+				$query_dsl['filter']['term'][ $property ] = $args[ $property ];
+			}
 
-		// PARSE AUTHOR
-		if ( isset( $args['author__in'] ) ) {
-			$query['filtered']['filter']['term']['author'] = (array) $args['author__in'];
-		}
+			if ( ! empty( $args["{$property}__in"] ) ) {
+				$query_dsl['filter']['term'][ $property ] = $args["{$property}__in"];
+			}
 
-		if ( isset( $args['author__not_in'] ) ) {
-			$query['filtered']['filter']['not']['term']['author'] = (array) $args['author__not_in'];
-		}
-
-		if ( isset( $args['author_role__in'] ) ) {
-			$query['filtered']['filter']['term']['author_role'] = (array) $args['author_role__in'];
-		}
-
-		if ( isset( $args['author_role__not_in'] ) ) {
-			$query['filtered']['filter']['not']['term']['author_role'] = (array) $args['author_role__not_in'];
-		}
-
-		// PARSE IP
-		if ( isset( $args['ip__in'] ) ) {
-			$query['filtered']['filter']['term']['ip'] = (array) $args['ip__in'];
-		}
-
-		if ( isset( $args['ip__not_in'] ) ) {
-			$query['filtered']['filter']['not']['term']['ip'] = (array) $args['ip__not_in'];
+			if ( ! empty( $args["{$property}__not_in"] ) ) {
+				$query_dsl['filter']['not']['term'][ $property ] = $args["{$property}__in"];
+			}
 		}
 
 		// PARSE PAGINATION
+		if ( ! empty( $args['records_per_page'] ) ) {
+			$query_dsl['size'] = (int) $args['records_per_page'];
+		} else {
+			$query_dsl['size'] = get_option( 'posts_per_page', 20 );
+		}
+
+		if ( ! empty( $args['paged'] ) ) {
+			$query_dsl['from'] = ( (int) $args['paged'] - 1 ) * $query_dsl['size'];
+		}
 
 		// PARSE ORDER
+		$query_dsl['sort'] = array();
+
+		$orderby = ! empty( $args['orderby'] ) ? $args['orderby'] : 'created';
+		$order   = ! empty( $args['order'] ) ? $args['order'] : 'desc';
+
+		if ( 'date' === $orderby ) {
+			$orderby = 'created';
+		}
+
+		$query_dsl['sort'][][ $orderby ]['order'] = strtolower( $order );
 
 		// PARSE META
 
-		$query = apply_filters( 'wp_stream_db_query', $query );
-		$aggs  = apply_filters( 'wp_stream_db_aggs', $aggs );
+		if ( ! isset( $query_dsl['query'] ) || empty( $query_dsl['query'] ) ) {
+			$query_dsl['query']['match_all'] = new stdClass();
+		}
 
-		$response = WP_Stream::$api->search( $query, $aggs, $fields );
+		$query_dsl = apply_filters( 'wp_stream_db_query_dsl', $query_dsl );
+		$fields    = apply_filters( 'wp_stream_db_fields', $fields );
+
+		$response = WP_Stream::$api->search( $query_dsl, $fields );
 
 		$this->found_rows = $response->meta->total;
 
@@ -142,7 +155,7 @@ class WP_Stream_DB extends WP_Stream_DB_Base {
 				$results[] = $bucket->key;
 			}
 		} else {
-			$results = $response->hits;
+			$results = $response->records;
 		}
 
 		/**

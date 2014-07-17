@@ -66,7 +66,7 @@ class WP_Stream_API {
 	 *
 	 * @return mixed
 	 */
-	public function validate_key( $allow_cache = true, $expiration = 300 ) {
+	public function validate_key( $allow_cache = false, $expiration = 300 ) {
 		$url  = $this->request_url( '/validate-key' );
 		$args = array( 'method' => 'GET' );
 
@@ -179,14 +179,13 @@ class WP_Stream_API {
 	 * Search all records.
 	 *
 	 * @param array Elasticsearch's Query DSL query object.
-	 * @param array Elasticsearch's Query DSL aggregations object.
 	 * @param array Returns specified fields only.
 	 * @param bool  Allow API calls to be cached.
 	 * @param int   Set transient expiration in seconds.
 	 *
 	 * @return mixed
 	 */
-	public function search( $query = array(), $aggs = array(), $fields = array(), $sites = array(), $allow_cache = true, $expiration = 120 ) {
+	public function search( $query_dsl = array(), $fields = array(), $sites = array(), $allow_cache = false, $expiration = 120 ) {
 		if ( ! $this->site_uuid ) {
 			return false;
 		}
@@ -202,7 +201,14 @@ class WP_Stream_API {
 		}
 
 		$url  = $this->request_url( sprintf( '/search', esc_attr( $this->site_uuid ) ), $params );
-		$body = array( 'query' => (object) $query, 'aggs' => (object) $aggs, 'sites' => $sites );
+
+		if ( ! empty( $query_dsl ) ) {
+			$body['query_dsl'] = (object) $query_dsl;
+		}
+
+		if ( ! empty( $sites ) ) {
+			$body['sites'] = (array) $sites;
+		}
 
 		$args = array( 'method' => 'POST', 'body' => json_encode( $body ) );
 
