@@ -186,9 +186,13 @@ class WP_Stream_API {
 	 *
 	 * @return mixed
 	 */
-	public function search( $query = array(), $aggregations = array(), $fields = array(), $allow_cache = true, $expiration = 120 ) {
+	public function search( $query = array(), $aggs = array(), $fields = array(), $sites = array(), $allow_cache = true, $expiration = 120 ) {
 		if ( ! $this->site_uuid ) {
 			return false;
+		}
+
+		if ( empty( $sites ) ) {
+			$sites[] = $this->site_uuid;
 		}
 
 		$params = array();
@@ -198,8 +202,9 @@ class WP_Stream_API {
 		}
 
 		$url  = $this->request_url( sprintf( '/search', esc_attr( $this->site_uuid ) ), $params );
-		$body = array( 'query' => $query, 'aggregations' => $aggregations );
-		$args = array( 'method' => 'POST', 'body' => json_encode( $body, JSON_FORCE_OBJECT ) );
+		$body = array( 'query' => (object) $query, 'aggs' => (object) $aggs, 'sites' => $sites );
+
+		$args = array( 'method' => 'POST', 'body' => json_encode( $body ) );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
 	}
