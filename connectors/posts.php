@@ -225,7 +225,8 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			);
 
 			if ( $revision ) {
-				$revision_id = key( $revision );
+				$revision    = array_values( $revision );
+				$revision_id = $revision[0]->ID;
 			}
 		}
 
