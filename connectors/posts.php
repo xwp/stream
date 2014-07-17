@@ -219,13 +219,13 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 					'post_status'    => 'inherit',
 					'post_parent'    => $post->ID,
 					'posts_per_page' => 1,
-					'order'          => 'desc',
-					'fields'         => 'ids',
+					'order'          => 'DESC',
+					'orderby'        => 'post_date',
 				)
 			);
 
 			if ( $revision ) {
-				$revision_id = $revision[0];
+				$revision_id = key( $revision );
 			}
 		}
 
