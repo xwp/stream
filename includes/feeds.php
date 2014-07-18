@@ -80,6 +80,7 @@ class WP_Stream_Feeds {
 	 *
 	 * @action show_user_profile
 	 * @action edit_user_profile
+	 * @param WP_User $user
 	 * @return void
 	 */
 	public static function save_user_feed_key( $user ) {
@@ -104,6 +105,7 @@ class WP_Stream_Feeds {
 	 *
 	 * @action show_user_profile
 	 * @action edit_user_profile
+	 * @param WP_User $user
 	 * @return string
 	 */
 	public static function user_feed_key( $user ) {
