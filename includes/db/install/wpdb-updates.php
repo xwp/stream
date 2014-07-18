@@ -43,14 +43,102 @@ function wp_stream_update_auto_200( $db_version, $current_version ) {
 		// Drop the deprecated table
 		$wpdb->query( "DROP TABLE `{$prefix}stream_context`" );
 	} elseif ( count( $rows ) < 3 ) { // Else, fail the procedure alltogether
-		wp_die( 'Invalid/Incomplete DB schema' );
+		wp_die( 'Invalid / Incomplete DB schema' );
 	}
 
 	// TODO: We should also migrate existing data to the new table, probably
 	// save it to a temporary table before we DROP the context table, then add
 	// them later after creating the new columns
 
+	// Migrate existing exclude rules to the new exclude format
+	if ( is_multisite() ) {
+		WP_Stream_Settings::$option_key = WP_Stream_Settings::KEY;
+
+		$sites = wp_get_sites();
+
+		foreach ( $sites as $blog ) {
+			switch_to_blog( $blog['blog_id'] );
+			$options = WP_Stream_Settings::get_options();
+
+			if ( isset( $options['exclude_authors_and_roles'] ) ) {
+				update_option( WP_Stream_Settings::$option_key, wp_stream_update_200_migrate_old_exclude_options( $options ) );
+			}
+		}
+		restore_current_blog();
+
+		WP_Stream_Settings::$option_key = WP_Stream_Settings::NETWORK_KEY;
+		$network_options = WP_Stream_Settings::get_options();
+		if ( isset( $network_options['exclude_authors_and_roles'] ) ) {
+			update_site_option( WP_Stream_Settings::NETWORK_KEY, wp_stream_update_200_migrate_old_exclude_options( $network_options ) );
+		}
+
+		WP_Stream_Settings::$option_key = WP_Stream_Settings::DEFAULTS_KEY;
+		$default_options = WP_Stream_Settings::get_options();
+		if ( isset( $default_options['exclude_authors_and_roles'] ) ) {
+			update_site_option( WP_Stream_Settings::DEFAULTS_KEY, wp_stream_update_200_migrate_old_exclude_options( $default_options ) );
+		}
+	} else {
+		$options = WP_Stream_Settings::get_options();
+		update_site_option( WP_Stream_Settings::$option_key, wp_stream_update_200_migrate_old_exclude_options( $options ) );
+	}
+
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
+}
+
+function wp_stream_update_200_migrate_old_exclude_options( $options ) {
+	$old_exclude_settings = array(
+		'authors_and_roles' => isset( $options['exclude_authors_and_roles'] ) ? $options['exclude_authors_and_roles'] : array(),
+		'connectors'        => isset( $options['exclude_connectors'] ) ? $options['exclude_connectors'] : array(),
+		'contexts'          => isset( $options['exclude_contexts'] ) ? $options['exclude_contexts'] : array(),
+		'actions'           => isset( $options['exclude_actions'] ) ? $options['exclude_actions'] : array(),
+		'ip_addresses'      => isset( $options['exclude_ip_addresses'] ) ? $options['exclude_ip_addresses'] : array(),
+	);
+
+	$new_exclude_settings = array(
+		'exclude_row'    => array(),
+		'author_or_role' => array(),
+		'connector'      => array(),
+		'context'        => array(),
+		'action'         => array(),
+		'ip_address'     => array(),
+	);
+
+	$type_match = array(
+		'authors_and_roles' => 'author_or_role',
+		'connectors'        => 'connector',
+		'contexts'          => 'context',
+		'actions'           => 'action',
+		'ip_addresses'      => 'ip_address',
+	);
+
+	foreach ( $old_exclude_settings as $old_type => $old_rules ) {
+		if ( empty( $old_rules ) ) {
+			continue;
+		}
+
+		foreach ( $old_rules as $old_rule ) {
+			if ( '__placeholder__' === $old_rule ) {
+				$old_rule = '';
+			}
+			foreach ( $new_exclude_settings as $new_type => $new_rules ) {
+				if ( $new_type === $type_match[ $old_type ] ) {
+					$new_exclude_settings[ $new_type ][] = $old_rule;
+				} else {
+					$new_exclude_settings[ $new_type ][] = '';
+				}
+			}
+		}
+	}
+
+	unset( $options['exclude_authors_and_roles'] );
+	unset( $options['exclude_connectors'] );
+	unset( $options['exclude_contexts'] );
+	unset( $options['exclude_actions'] );
+	unset( $options['exclude_ip_addresses'] );
+
+	$options['exclude_rules'] = $new_exclude_settings;
+
+	return $options;
 }
 
 /**
@@ -414,7 +502,7 @@ function wp_stream_update_migrate_old_options_to_exclude_tab( $labels ) {
 
 	do_action( 'wp_stream_before_db_update_' . $db_version, $current_version );
 
-	$old_options = get_option( WP_Stream_Settings::KEY, array() );
+	$old_options = get_option( WP_Stream_Settings::OPTION_KEY, array() );
 
 	// Stream > Settings > General > Log Activity for
 	if ( isset( $old_options['general_log_activity_for'] ) ) {
@@ -434,7 +522,7 @@ function wp_stream_update_migrate_old_options_to_exclude_tab( $labels ) {
 		unset( WP_Stream_Settings::$options['connectors_active_connectors'] );
 	}
 
-	update_option( WP_Stream_Settings::KEY, WP_Stream_Settings::$options );
+	update_option( WP_Stream_Settings::OPTION_KEY, WP_Stream_Settings::$options );
 
 	do_action( 'wp_stream_after_db_update_' . $db_version, $current_version, $wpdb->last_error );
 

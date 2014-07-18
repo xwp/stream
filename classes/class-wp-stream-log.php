@@ -67,6 +67,11 @@ class WP_Stream_Log {
 			$user_id = get_current_user_id();
 		}
 
+		$visibility = 'publish';
+		if ( self::is_record_excluded( $connector, $context, $action, $user_id ) ) {
+			$visibility = 'private';
+		}
+
 		$user  = new WP_User( $user_id );
 		$roles = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
 
@@ -103,6 +108,7 @@ class WP_Stream_Log {
 			'author'      => $user_id,
 			'author_role' => ! empty( $user->roles ) ? $user->roles[0] : null,
 			'created'     => current_time( 'mysql', 1 ),
+			'visibility'  => $visibility,
 			'summary'     => vsprintf( $message, $args ),
 			'parent'      => self::$instance->prev_record,
 			'connector'   => $connector,
@@ -115,6 +121,89 @@ class WP_Stream_Log {
 		$record_id = WP_Stream::$db->store( $recordarr );
 
 		return $record_id;
+	}
+
+	/**
+	 * This function is use to check whether or not a record should be excluded from the log
+	 *
+	 * @param $connector string name of the connector being logged
+	 * @param $context   string name of the context being logged
+	 * @param $action    string name of the action being logged
+	 * @param $user_id   int    id of the user being logged
+	 * @param $ip        string ip address being logged
+	 * @return bool
+	 */
+	public function is_record_excluded( $connector, $context, $action, $user_id = null, $ip = null ) {
+		if ( is_null( $user_id ) ) {
+			$user_id = get_current_user_id();
+		}
+
+		if ( is_null( $ip ) ) {
+			$ip = wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
+		} else {
+			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
+		}
+
+		$user      = new WP_User();
+		$user_role = isset( $user->roles[0] ) ? $user->roles[0] : null;
+
+		$record = array(
+			'connector'  => $connector,
+			'context'    => $context,
+			'action'     => $action,
+			'author'     => $user_id,
+			'role'       => $user_role,
+			'ip_address' => $ip,
+		);
+
+		$exclude_settings = isset( WP_Stream_Settings::$options['exclude_rules'] ) ? WP_Stream_Settings::$options['exclude_rules'] : array();
+
+		if ( isset( $exclude_settings['exclude_row'] ) && ! empty( $exclude_settings['exclude_row'] ) ) {
+			foreach ( $exclude_settings['exclude_row'] as $key => $value ) {
+				// Prepare values
+				$author_or_role = isset( $exclude_settings['author_or_role'][ $key ] ) ? $exclude_settings['author_or_role'][ $key ] : '';
+				$connector      = isset( $exclude_settings['connector'][ $key ] ) ? $exclude_settings['connector'][ $key ] : '';
+				$context        = isset( $exclude_settings['context'][ $key ] ) ? $exclude_settings['context'][ $key ] : '';
+				$action         = isset( $exclude_settings['action'][ $key ] ) ? $exclude_settings['action'][ $key ] : '';
+				$ip_address     = isset( $exclude_settings['ip_address'][ $key ] ) ? $exclude_settings['ip_address'][ $key ] : '';
+
+				$exclude = array(
+					'connector'  => ! empty( $connector ) ? $connector : null,
+					'context'    => ! empty( $context ) ? $context : null,
+					'action'     => ! empty( $action ) ? $action : null,
+					'ip_address' => ! empty( $ip_address ) ? $ip_address : null,
+					'author'     => null,
+					'role'       => null,
+				);
+
+				if ( ! empty( $author_or_role ) ) {
+					if ( is_numeric( $author_or_role ) ) {
+						$exclude['author'] = $author_or_role;
+					} else {
+						$exclude['role'] = $author_or_role;
+					}
+				}
+
+				$exclude_rules = array_filter( $exclude, 'strlen' );
+
+				if ( ! empty( $exclude_rules ) ) {
+					$excluded = true;
+
+					foreach ( $exclude_rules as $exclude_key => $exclude_value ) {
+						if ( $record[ $exclude_key ] !== $exclude_value ) {
+							$excluded = false;
+							break;
+						}
+					}
+
+					if ( $excluded ) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 }

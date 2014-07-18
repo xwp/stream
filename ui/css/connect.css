@@ -1,0 +1,286 @@
+/* Stream Connect Button */
+.stream-connect-button a {
+	position: relative;
+	padding: 0.38095em 0.85714em 0.38095em 0.57143em;
+	border: none;
+	font: 400 1.5em 'Open Sans', Helvetica, sans-serif;
+	text-decoration: none;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+	background: #e14d43;
+	background-clip: padding-box;
+	color: #fff;
+
+	-webkit-background-clip: padding-box;
+	   -moz-background-clip: padding;
+
+	-webkit-border-radius: 6px;
+	   -moz-border-radius: 6px;
+	        border-radius: 6px;
+
+	-webkit-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+	   -moz-box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+	        box-shadow: 0 4px 0 #b63f37, 0 4px 2px rgba(0, 0, 0, 0.4);
+
+	-webkit-transition: all 0.1s ease-in;
+	   -moz-transition: all 0.1s ease-in;
+	     -o-transition: all 0.1s ease-in;
+	        transition: all 0.1s ease-in;
+}
+
+.stream-connect-button i.stream-icon {
+	display: inline-block;
+	margin-right: 0.57143em;
+	font-size: 1em;
+	line-height: 1.4em;
+	font-weight: 400;
+	font-style: normal;
+	text-align: center;
+	vertical-align: top;
+	color: #fff;
+
+	-webkit-transition: color .1s ease-in 0;
+	        transition: color .1s ease-in 0;
+
+	 -webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale
+}
+
+.stream-connect-button i.stream-icon:before {
+	font-family: 'WP Stream' !important;
+	content: '\73' !important;
+}
+
+.stream-connect-button a:hover,
+.stream-connect-button a:focus,
+.stream-connect-button a:active {
+	background: #ef5c52;
+	color: #fff;
+}
+
+.stream-connect-button a:active {
+	top: 4px;
+	outline: none;
+
+	-webkit-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
+	   -moz-box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
+	        box-shadow: 0 0px 0 #b63f37, 0 0 0 rgba(0, 0, 0, .2);
+}
+
+@media only screen and (max-width: 420px) {
+	.stream-connect-button a {
+		display: block;
+		width: 80%;
+		font-size: 16px;
+		text-align: center;
+		letter-spacing: -0.05em;
+	}
+
+	.stream-connect-button i.stream-icon {
+		display: none;
+	}
+}
+
+/* Stream Connect Prompt */
+#stream-message.stream-connect {
+	position: relative;
+	overflow: hidden;
+	margin-bottom: 26px;
+	padding: 26px 20px;
+	border-left: 4px solid #e14d43;
+	color: #616161;
+}
+
+#stream-message.stream-network-connect {
+	margin: 2em 0;
+}
+
+#stream-message.stream-connect .stream-install-container {
+	float: left;
+	overflow: hidden;
+	margin: 0 18px 0 0;
+}
+
+#stream-message.stream-connect .stream-install-container .stream-connect-button {
+	margin: 5px 0 10px;
+	padding: 2px 0;
+}
+
+#stream-message.stream-connect .stream-close-button-container {
+	position: absolute;
+	top: 18px;
+	right: 18px;
+}
+
+#stream-message.stream-connect .stream-close-button-container a {
+	opacity: 0.33;
+}
+
+#stream-message.stream-connect .stream-close-button-container a:before {
+	font: normal 20px/1 'dashicons';
+	content: '\f158';
+	color: #616161;
+}
+
+#stream-message.stream-connect .stream-close-button-container a:hover {
+	opacity: 1;
+}
+
+#stream-message.stream-connect .stream-close-button-container a:active {
+	opacity: 1;
+	outline: none;
+}
+
+#stream-message.stream-connect .stream-text-container {
+	float: left;
+	margin-top: -4px;
+}
+
+#stream-message.stream-connect .stream-text-container p {
+	margin: 0;
+	padding: 0;
+}
+
+#stream-message.stream-connect .stream-text-container p strong {
+	display: block;
+	font-size: 170%;
+	font-weight: normal;
+	color: #363b3f;
+}
+
+#stream-message.stream-network-connect .stream-text-container p strong {
+	margin-bottom: 0.5em;
+}
+
+@media only screen and (max-width: 1130px) {
+	#stream-message.stream-connect .stream-install-container {
+		float: none;
+	}
+
+	#stream-message.stream-connect .stream-text-container {
+		float: none;
+		margin-top: 18px;
+		padding-right: 30px;
+	}
+
+	#stream-message.stream-connect .stream-text-container p {
+		float: left;
+		margin-right: 4px;
+		font-size: 14px;
+	}
+
+	#stream-message.stream-connect .stream-text-container p strong {
+		font-size: 14px;
+		font-weight: bold;
+	}
+}
+
+/* Stream Connect Page */
+#wp-stream-connect {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	font-size: 14px;
+	text-align: center;
+	color: #616161;
+
+	-webkit-font-smoothing: antialiased;
+}
+
+#wp-stream-connect .wrap {
+	position: relative;
+	width: 100%;
+	margin: 0;
+	padding: 4em 0;
+}
+
+#wp-stream-connect p {
+	margin: 0 auto;
+	padding: 0;
+	font: 300 1.5em/1.4em 'Open Sans', Helvetica, sans-serif;
+}
+
+#wp-stream-connect a {
+	text-decoration: none;
+	color: #616161;
+}
+
+#wp-stream-connect a:hover {
+	border-bottom: 1px dotted #ccc;
+	text-decoration: none;
+}
+
+#wp-stream-connect .stream-connect-button {
+	margin: 0 0 1em;
+	padding: 1em 0;
+	font-size: 1em;
+	text-align: center;
+}
+
+#wp-stream-connect .stream-connect-button a {
+	padding: 0.38095em 0.85714em 0.38095em 0.57143em;
+	font-size: 2.5em;
+	color: #fff;
+}
+
+#wp-stream-connect .stream-connect-button a:hover {
+	border-bottom: none;
+}
+
+#wp-stream-connect .stream-connect-button i.stream-icon {
+	margin-right: 0.57143em;
+}
+
+#wp-stream-connect p.quote {
+	position: relative;
+	max-width: 22em;
+	margin: 0 auto;
+	padding: 1em 1em 0.5em;
+	font: 300 2.5em/1.4em 'Open Sans', Helvetica, sans-serif;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+}
+
+/* WordPress overrides */
+.toplevel_page_wp_stream.wp_stream_disconnected #wpcontent {
+	margin-left: 160px;
+}
+
+.toplevel_page_wp_stream.wp_stream_disconnected.folded #wpcontent {
+	margin-left: 36px;
+}
+
+.toplevel_page_wp_stream.wp_stream_disconnected #wpfooter {
+	display: none;
+}
+
+@media only screen and (max-width: 900px) {
+	.toplevel_page_wp_stream.wp_stream_disconnected.auto-fold #wpcontent {
+		margin-left: 36px;
+	}
+	#wp-stream-connect {
+		font-size: 12px;
+	}
+}
+
+@media only screen and (max-width: 782px) {
+	.toplevel_page_wp_stream.wp_stream_disconnected.auto-fold #wpcontent {
+		margin-left: 0;
+		padding-left: 0;
+	}
+	#wp-stream-connect {
+		font-size: 11px;
+	}
+}
+
+@media only screen and (max-width: 600px) {
+	#wp-stream-connect {
+		font-size: 9px;
+	}
+}
+
+@media only screen and (max-width: 420px) {
+	.stream-connect-button a {
+		margin: 0 auto;
+	}
+}
