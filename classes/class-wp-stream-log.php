@@ -58,7 +58,6 @@ class WP_Stream_Log {
 	 * @param  string $action    Action of the event
 	 * @param  int    $user_id   User responsible for the event
 	 *
-	 * @internal param string $action Action performed (stream_action)
 	 * @return int
 	 */
 	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null ) {

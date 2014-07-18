@@ -53,6 +53,13 @@ class WP_Stream_Connectors {
 			'taxonomies',
 			'users',
 			'widgets',
+			'jetpack',
+			'woocommerce',
+			'gravityforms',
+			'edd',
+			'wordpress-seo',
+			'buddypress',
+			'bbpress',
 		);
 
 		if ( is_network_admin() ) {
@@ -61,9 +68,11 @@ class WP_Stream_Connectors {
 
 		$classes = array();
 		foreach ( $connectors as $connector ) {
-			include_once WP_STREAM_DIR . '/connectors/' . $connector .'.php';
-			$class     = "WP_Stream_Connector_$connector";
-			$classes[] = $class;
+			include_once WP_STREAM_DIR . '/connectors/class-wp-stream-connector-' . $connector .'.php';
+			$class = sprintf( 'WP_Stream_Connector_%s', str_replace( '-', '_', $connector ) );
+			if ( $class::is_dependency_satisfied() ) {
+				$classes[] = $class;
+			}
 		}
 
 		/**

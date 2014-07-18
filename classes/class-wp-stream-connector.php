@@ -88,7 +88,7 @@ abstract class WP_Stream_Connector {
 	 * @param  int    $user_id   User responsible for the event
 	 *
 	 * @internal param string $action Action performed (stream_action)
-	 * @return void
+	 * @return bool
 	 */
 	public static function log( $message, $args, $object_id, $context, $action, $user_id = null ) {
 		$class     = get_called_class();
@@ -100,7 +100,7 @@ abstract class WP_Stream_Connector {
 		);
 
 		if ( ! $data ) {
-			return;
+			return false;
 		} else {
 			$connector = $data['connector'];
 			$message   = $data['message'];
@@ -146,11 +146,14 @@ abstract class WP_Stream_Connector {
 
 	/**
 	 * Compare two values and return changed keys if they are arrays
-	 * @param  mixed  $old_value  Value before change
-	 * @param  mixed  $new_value  Value after change
+	 *
+	 * @param  mixed    $old_value Value before change
+	 * @param  mixed    $new_value Value after change
+	 * @param  bool|int $deep      Get array children changes keys as well, not just parents
+	 *
 	 * @return array
 	 */
-	public static function get_changed_keys( $old_value, $new_value ) {
+	public static function get_changed_keys( $old_value, $new_value, $deep = false ) {
 		if ( ! is_array( $old_value ) && ! is_array( $new_value ) ) {
 			return array();
 		}
@@ -188,7 +191,45 @@ abstract class WP_Stream_Connector {
 			}
 		);
 
-		return array_values( array_unique( $result ) );
+		$result = array_values( array_unique( $result ) );
+
+		if ( false === $deep ) {
+			return $result; // Return an numerical based array with changed TOP PARENT keys only
+		}
+
+		$result = array_fill_keys( $result, null );
+
+		foreach ( $result as $key => $val ) {
+			if ( in_array( $key, $unique_keys_old ) ) {
+				$result[ $key ] = false; // Removed
+			}
+			elseif ( in_array( $key, $unique_keys_new ) ) {
+				$result[ $key ] = true; // Added
+			}
+			elseif ( $deep ) { // Changed, find what changed, only if we're allowed to explore a new level
+				if ( is_array( $old_value[ $key ] ) && is_array( $new_value[ $key ] ) ) {
+					$inner  = array();
+					$parent = $key;
+					$changed = self::get_changed_keys( $old_value[ $key ], $new_value[ $key ], --$deep );
+					foreach ( $changed as $child => $change ) {
+						$inner[ $parent . '::' . $child ] = $change;
+					}
+					$result[ $key ] = 0; // Changed parent which has a changed children
+					$result = array_merge( $result, $inner );
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Allow connectors to determine if their dependencies is satisfied or not
+	 *
+	 * @return bool
+	 */
+	public static function is_dependency_satisfied() {
+		return true;
 	}
 
 }
