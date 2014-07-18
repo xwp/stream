@@ -120,7 +120,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ### 1.4.8 - July 18, 2014 ###
 * New: Greatly improved widget tracking, including changes performed in Customizer ([#391](https://github.com/x-team/wp-stream/pull/391))
 * New: Now tracking when Akismet automatically marks comments as spam ([#587](https://github.com/x-team/wp-stream/pull/587))
-* Tweak: Log WP-CLI details to Stream author meta ([#470](https://github.com/x-team/wp-stream/issue/470))
+* Tweak: Log WP-CLI details to Stream author meta ([#470](https://github.com/x-team/wp-stream/issues/470))
 * Tweak: Track changes to options more deeply ([#573](https://github.com/x-team/wp-stream/pull/573))
 * Fix: Labels not seen for CPT registered on init with default priority ([#565](https://github.com/x-team/wp-stream/issues/565))
 * Fix: Stream menu appearing in Network menu when not network activated ([#582](https://github.com/x-team/wp-stream/issues/582))
