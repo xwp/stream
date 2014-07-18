@@ -118,11 +118,13 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 *
 	 * @action registered_post_type
 	 *
-	 * @param $post_type_slug
-	 * @param $args
+	 * @param string $post_type Post type slug
+	 * @param array  $args      Arguments used to register the post type
 	 */
-	public static function _registered_post_type( $post_type_slug, $args  ) {
-		$label = $args->label;
+	public static function _registered_post_type( $post_type, $args ) {
+		$post_type_obj = get_post_type_object( $post_type );
+		$label         = $post_type_obj->label;
+
 		WP_Stream_Connectors::$term_labels['stream_context'][ $post_type_slug ] = $label;
 	}
 

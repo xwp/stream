@@ -110,14 +110,17 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 *
 	 * @action registered_taxonomy
 	 *
-	 * @param $taxonomy_slug
-	 * @param $object_types
-	 * @param $args
+	 * @param string       $taxonomy    Taxonomy slug
+	 * @param array|string $object_type Object type or array of object types
+	 * @param array|string $args        Array or string of taxonomy registration arguments
 	 */
-	public static function _registered_taxonomy( $taxonomy_slug, $object_types, $args ) {
-		$label = get_taxonomy_labels( $args )->name;
-		self::$context_labels[ $taxonomy_slug ] = $label;
-		WP_Stream_Connectors::$term_labels['stream_context'][ $taxonomy_slug ] = $label;
+	public static function _registered_taxonomy( $taxonomy, $object_type, $args ) {
+		$taxonomy_obj = get_taxonomy( $taxonomy );
+		$label        = get_taxonomy_labels( $taxonomy_obj )->name;
+
+		self::$context_labels[ $taxonomy ] = $label;
+
+		WP_Stream_Connectors::$term_labels['stream_context'][ $taxonomy ] = $label;
 	}
 
 	/**
