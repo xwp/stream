@@ -102,6 +102,20 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 1.4.8 - July 18, 2014 =
+
+* New: Greatly improved widget tracking, including changes performed in Customizer ([#391](https://github.com/x-team/wp-stream/pull/391))
+* New: Now tracking when Akismet automatically marks comments as spam ([#587](https://github.com/x-team/wp-stream/pull/587))
+* Tweak: Log WP-CLI details to Stream author meta ([#470](https://github.com/x-team/wp-stream/issue/470))
+* Tweak: Track changes to options more deeply ([#573](https://github.com/x-team/wp-stream/pull/573))
+* Fix: Labels not seen for CPT registered on init with default priority ([#565](https://github.com/x-team/wp-stream/issues/565))
+* Fix: Stream menu appearing in Network menu when not network activated ([#582](https://github.com/x-team/wp-stream/issues/582))
+* Fix: Post Revision ID associated to record is not the most recent one ([#585](https://github.com/x-team/wp-stream/issues/585))
+* Fix: Incorrect action label for comment throttling ([#591](https://github.com/x-team/wp-stream/issues/591))
+
+
+Props [westonruter](http://profiles.wordpress.org/westonruter/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [chacha](https://github.com/chacha/)
+
 = 1.4.7 - June 27, 2014 =
 
 * New: Comment Type support added to the Comments connector ([#558](https://github.com/x-team/wp-stream/issues/558))
