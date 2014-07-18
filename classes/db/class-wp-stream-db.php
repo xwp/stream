@@ -128,13 +128,10 @@ class WP_Stream_DB extends WP_Stream_DB_Base {
 		$orderby = ! empty( $args['orderby'] ) ? $args['orderby'] : 'created';
 		$order   = ! empty( $args['order'] ) ? $args['order'] : 'desc';
 
-		if ( 'date' === $orderby ) {
-			$orderby = 'created';
-		}
-
-		$query_dsl['sort'][][ $orderby ]['order'] = strtolower( $order );
+		$query_dsl['sort'] = $orderby . '.' . strtolower( $order );
 
 		// PARSE META
+
 
 		if ( ! isset( $query_dsl['query'] ) || empty( $query_dsl['query'] ) ) {
 			$query_dsl['query']['match_all'] = new stdClass();

@@ -202,13 +202,9 @@ class WP_Stream_API {
 
 		$url  = $this->request_url( sprintf( '/search', esc_attr( $this->site_uuid ) ), $params );
 
-		if ( ! empty( $query_dsl ) ) {
-			$body['query_dsl'] = (object) $query_dsl;
-		}
+		$query_dsl['sites'] = (array) $sites;
 
-		if ( ! empty( $sites ) ) {
-			$body['sites'] = (array) $sites;
-		}
+		$body = (object) $query_dsl;
 
 		$args = array( 'method' => 'POST', 'body' => json_encode( $body ) );
 
