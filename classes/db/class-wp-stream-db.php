@@ -92,7 +92,7 @@ class WP_Stream_DB extends WP_Stream_DB_Base {
 		}
 
 		if ( $single ) {
-			return $meta;
+			return (array) $meta;
 		} else {
 			return array( $key => $meta );
 		}
