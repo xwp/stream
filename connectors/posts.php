@@ -125,7 +125,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		$post_type_obj = get_post_type_object( $post_type );
 		$label         = $post_type_obj->label;
 
-		WP_Stream_Connectors::$term_labels['stream_context'][ $post_type_slug ] = $label;
+		WP_Stream_Connectors::$term_labels['stream_context'][ $post_type ] = $label;
 	}
 
 	/**
