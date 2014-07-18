@@ -52,6 +52,9 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		global $wp_post_types;
 		$post_types = wp_filter_object_list( $wp_post_types, array(), null, 'label' );
 		$post_types = array_diff_key( $post_types, array_flip( self::get_ignored_post_types() ) );
+
+		add_action( 'registered_post_type', array( __CLASS__, '_registered_post_type' ), 10, 2 );
+
 		return $post_types;
 	}
 
@@ -108,6 +111,21 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		}
 
 		return $links;
+	}
+
+	/**
+	 * Catch registeration of post_types after initial loading, to cache its labels
+	 *
+	 * @action registered_post_type
+	 *
+	 * @param string $post_type Post type slug
+	 * @param array  $args      Arguments used to register the post type
+	 */
+	public static function _registered_post_type( $post_type, $args ) {
+		$post_type_obj = get_post_type_object( $post_type );
+		$label         = $post_type_obj->label;
+
+		WP_Stream_Connectors::$term_labels['stream_context'][ $post_type ] = $label;
 	}
 
 	/**
