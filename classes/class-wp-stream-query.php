@@ -83,17 +83,121 @@ class WP_Stream_Query {
 		 */
 		$args = apply_filters( 'wp_stream_query_args', $args );
 
+		$query  = array();
+		$fields = array();
+
+		// PARSE SEARCH
+		if ( ! empty( $args['search'] ) ) {
+			if ( ! empty( $args['search_field'] ) ) {
+				$search_field = $args['search_field'];
+				$query['query']['match'][ $search_field ] = $args['search'];
+			} else {
+				$query['query']['match']['summary'] = $args['search'];
+			}
+		}
+
+		// PARSE FIELDS
+		if ( ! empty( $args['fields'] ) ) {
+			$fields = is_array( $args['fields'] ) ? $args['fields'] : explode( ',', $args['fields'] );
+		}
+		$fields[] = 'created';
+		$fields[] = 'summary';
+
+		// PARSE DISTINCT
+		if ( true === $args['distinct'] && ! empty( $args['search_field'] ) ) {
+			$search_field = $args['search_field'];
+			$query['aggs'][ $search_field ]['terms']['field'] = $search_field;
+		}
+
+		// PARSE DATE
+		if ( ! empty( $args['date_from'] ) ) {
+			$query['query']['filter']['range']['created']['from'] = date( 'c', strtotime( $args['date_from'] . ' 00:00:00' ) );
+		}
+
+		if ( ! empty( $args['date_to'] ) ) {
+			$query['query']['filter']['range']['created']['to'] = date( 'c', strtotime( $args['date_to'] . ' 23:59:59' ) );
+		}
+
+		if ( ! empty( $args['date'] ) ) {
+			$query['query']['filter']['range']['created']['from'] = date( 'c', strtotime( $args['date'] . ' 00:00:00' ) );
+			$query['query']['filter']['range']['created']['to']   = date( 'c', strtotime( $args['date'] . ' 23:59:59' ) );
+		}
+
+		// PARSE RECORD
+		if ( ! empty( $args['record__in'] ) ) {
+			$query['query']['filter']['ids']['values'] = (array) $args['record__in'];
+		}
+
+		if ( ! empty( $args['record__in'] ) ) {
+			$query['query']['filter']['ids']['values'] = (array) $args['record__in'];
+		}
+
+		if ( ! empty( $args['record__not_in'] ) ) {
+			$query['query']['filter']['not']['ids']['values'] = (array) $args['record__not_in'];
+		}
+
+		$properties = array(
+			'author',
+			'author_role',
+			'ip',
+			'type',
+			'record_parent',
+			'object_id',
+			'site_id',
+			'blog_id',
+			'visibility',
+			'connector',
+			'context',
+			'action',
+		);
+
+		foreach ( $properties as $property ) {
+			if ( ! empty( $args[ $property ] ) ) {
+				$query['query']['filter']['term'][ $property ] = $args[ $property ];
+			}
+
+			if ( ! empty( $args["{$property}__in"] ) ) {
+				$query['query']['filter']['term'][ $property ] = $args["{$property}__in"];
+			}
+
+			if ( ! empty( $args["{$property}__not_in"] ) ) {
+				$query['query']['filter']['not']['term'][ $property ] = $args["{$property}__in"];
+			}
+		}
+
+		// PARSE PAGINATION
+		if ( ! empty( $args['records_per_page'] ) ) {
+			$query['size'] = (int) $args['records_per_page'];
+		} else {
+			$query['size'] = get_option( 'posts_per_page', 20 );
+		}
+
+		if ( ! empty( $args['paged'] ) ) {
+			$query['from'] = ( (int) $args['paged'] - 1 ) * $query['size'];
+		}
+
+		// PARSE ORDER
+		$query['sort'] = array();
+
+		$orderby = ! empty( $args['orderby'] ) ? $args['orderby'] : 'created';
+		$order   = ! empty( $args['order'] ) ? $args['order'] : 'desc';
+
+		$query['sort'] = $orderby . '.' . strtolower( $order );
+
+		// PARSE META
+
+
+		if ( ! isset( $query['query'] ) || empty( $query['query'] ) ) {
+			$query['query']['match_all'] = new stdClass();
+		}
+
+		$query  = apply_filters( 'wp_stream_db_query', $query );
+		$fields = apply_filters( 'wp_stream_db_fields', $fields );
+
 		/**
 		 * Query results
 		 * @var  array
 		 */
-		$results = WP_Stream::$db->query( $args );
-
-		/**
-		 * Allow developers/extensions to modify results array
-		 * @param   array  $results  Query Results
-		 * @return  array
-		 */
-		return apply_filters( 'wp_stream_results', $results );
+		return WP_Stream::$db->query( $query, $fields );
 	}
 }

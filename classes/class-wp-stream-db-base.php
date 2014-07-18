@@ -87,11 +87,12 @@ abstract class WP_Stream_DB_Base {
 	 *
 	 * @internal Used by WP_Stream_Query, and is not designed to be called explicitly
 	 *
-	 * @param array $query Query arguments
+	 * @param array $query  Query body.
+	 * @param array $fields Returns specified fields only.
 	 *
 	 * @return array List of records that match query
 	 */
-	abstract public function query( $query );
+	abstract public function query( $query, $fields );
 
 	/**
 	 * Get count of total found rows ( with no limit/paging ) for the last run query
