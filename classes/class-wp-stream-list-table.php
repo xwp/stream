@@ -56,14 +56,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 				'context' => __( 'Context', 'stream' ),
 				'action'  => __( 'Action', 'stream' ),
 				'ip'      => __( 'IP Address', 'stream' ),
-				'id'      => __( 'Record ID', 'stream' ),
 			)
 		);
 	}
 
 	function get_sortable_columns() {
 		return array(
-			'id'   => array( 'ID', false ),
 			'date' => array( 'date', false ),
 		);
 	}
@@ -247,10 +245,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			case 'ip' :
 				$out = $this->column_link( $item->{$column_name}, 'ip', $item->{$column_name} );
-				break;
-
-			case 'id' :
-				$out = $item->ID;
 				break;
 
 			case 'blog_id':
