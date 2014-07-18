@@ -175,13 +175,13 @@ jQuery(function( $ ) {
 
 		$( document ).on( 'heartbeat-send.stream', function( e, data ) {
 			data['wp-stream-heartbeat'] = 'live-update';
-			var last_item = $( list_sel + ' tr:first .column-id' );
-			var last_id = 1;
+			var last_item = $( list_sel + ' tr:first .record-created' );
+			var last_time;
 			if ( last_item.length !== 0 ) {
-				last_id = ( '' === last_item.text() ) ? 1 : last_item.text();
+				last_time = last_item.attr( 'datetime' );
+				data['wp-stream-heartbeat-last-time'] = last_time;
+				data['wp-stream-heartbeat-query']     = wp_stream.current_query;
 			}
-			data['wp-stream-heartbeat-last-id'] = last_id;
-			data['wp-stream-heartbeat-query']   = wp_stream.current_query;
 		});
 
 		// Listen for "heartbeat-tick" on $(document).

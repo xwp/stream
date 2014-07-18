@@ -29,8 +29,7 @@ class WP_Stream_Query {
 			// Search param
 			'search'                => null,
 			'search_field'          => 'summary',
-			'distinct'              => null,
-			'record_greater_than'   => null,
+			'record_after'          => null,
 			// Date-based filters
 			'date'                  => null,
 			'date_from'             => null,
@@ -100,40 +99,36 @@ class WP_Stream_Query {
 		if ( ! empty( $args['fields'] ) ) {
 			$fields = is_array( $args['fields'] ) ? $args['fields'] : explode( ',', $args['fields'] );
 		}
-		$fields[] = 'created';
-		$fields[] = 'summary';
-
-		// PARSE DISTINCT
-		if ( true === $args['distinct'] && ! empty( $args['search_field'] ) ) {
-			$search_field = $args['search_field'];
-			$query['aggs'][ $search_field ]['terms']['field'] = $search_field;
-		}
 
 		// PARSE DATE
 		if ( ! empty( $args['date_from'] ) ) {
-			$query['query']['filter']['range']['created']['from'] = date( 'c', strtotime( $args['date_from'] . ' 00:00:00' ) );
+			$query['filter']['and'][]['range']['created']['gte'] = date( 'c', strtotime( $args['date_from'] . ' 00:00:00' ) );
 		}
 
 		if ( ! empty( $args['date_to'] ) ) {
-			$query['query']['filter']['range']['created']['to'] = date( 'c', strtotime( $args['date_to'] . ' 23:59:59' ) );
+			$query['filter']['and'][]['range']['created']['lte'] = date( 'c', strtotime( $args['date_to'] . ' 23:59:59' ) );
 		}
 
 		if ( ! empty( $args['date'] ) ) {
-			$query['query']['filter']['range']['created']['from'] = date( 'c', strtotime( $args['date'] . ' 00:00:00' ) );
-			$query['query']['filter']['range']['created']['to']   = date( 'c', strtotime( $args['date'] . ' 23:59:59' ) );
+			$query['filter']['and'][]['range']['created']['gte'] = date( 'c', strtotime( $args['date'] . ' 00:00:00' ) );
+			$query['filter']['and'][]['range']['created']['lte']   = date( 'c', strtotime( $args['date'] . ' 23:59:59' ) );
 		}
 
 		// PARSE RECORD
-		if ( ! empty( $args['record__in'] ) ) {
-			$query['query']['filter']['ids']['values'] = (array) $args['record__in'];
+		if ( ! empty( $args['record_after'] ) ) {
+			$query['filter']['and'][]['range']['created']['gte'] = date( 'c', strtotime( $args['record_after'] ) );
 		}
 
 		if ( ! empty( $args['record__in'] ) ) {
-			$query['query']['filter']['ids']['values'] = (array) $args['record__in'];
+			$query['filter']['and'][]['ids']['values'] = (array) $args['record__in'];
+		}
+
+		if ( ! empty( $args['record__in'] ) ) {
+			$query['filter']['and'][]['ids']['values'] = (array) $args['record__in'];
 		}
 
 		if ( ! empty( $args['record__not_in'] ) ) {
-			$query['query']['filter']['not']['ids']['values'] = (array) $args['record__not_in'];
+			$query['filter']['and'][]['not']['ids']['values'] = (array) $args['record__not_in'];
 		}
 
 		$properties = array(
@@ -153,15 +148,15 @@ class WP_Stream_Query {
 
 		foreach ( $properties as $property ) {
 			if ( ! empty( $args[ $property ] ) ) {
-				$query['query']['filter']['term'][ $property ] = $args[ $property ];
+				$query['filter']['and'][]['term'][ $property ] = $args[ $property ];
 			}
 
 			if ( ! empty( $args["{$property}__in"] ) ) {
-				$query['query']['filter']['term'][ $property ] = $args["{$property}__in"];
+				$query['filter']['and'][]['term'][ $property ] = $args["{$property}__in"];
 			}
 
 			if ( ! empty( $args["{$property}__not_in"] ) ) {
-				$query['query']['filter']['not']['term'][ $property ] = $args["{$property}__in"];
+				$query['filter']['and'][]['not']['term'][ $property ] = $args["{$property}__in"];
 			}
 		}
 
@@ -182,14 +177,14 @@ class WP_Stream_Query {
 		$orderby = ! empty( $args['orderby'] ) ? $args['orderby'] : 'created';
 		$order   = ! empty( $args['order'] ) ? $args['order'] : 'desc';
 
-		$query['sort'] = $orderby . '.' . strtolower( $order );
+		if ( 'date' === $orderby ) {
+			$orderby = 'created';
+		}
+
+		$query['sort'][][ $orderby ] = $order;
 
 		// PARSE META
 
-
-		if ( ! isset( $query['query'] ) || empty( $query['query'] ) ) {
-			$query['query']['match_all'] = new stdClass();
-		}
 
 		$query  = apply_filters( 'wp_stream_db_query', $query );
 		$fields = apply_filters( 'wp_stream_db_fields', $fields );

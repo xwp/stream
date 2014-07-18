@@ -183,14 +183,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'date' :
+				$created     = date( 'Y-m-d H:i:s', strtotime( $item->created ) );
 				$date_string = sprintf(
-					'<time datetime="%s" class="relative-time">%s</time>',
+					'<time datetime="%s" class="relative-time record-created">%s</time>',
 					$item->created,
-					get_date_from_gmt( $item->created, 'Y/m/d' )
+					get_date_from_gmt( $created, 'Y/m/d' )
 				);
 				$out  = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
-				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
+				$out .= get_date_from_gmt( $created, 'h:i:s A' );
 				break;
 
 			case 'summary' :

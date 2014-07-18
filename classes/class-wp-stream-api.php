@@ -195,7 +195,19 @@ class WP_Stream_API {
 		}
 
 		$url  = $this->request_url( sprintf( '/search', esc_attr( $this->site_uuid ) ) );
-		$body = array( 'body' => $query, 'fields' => $fields, 'sites' => $sites );
+
+		$body = array();
+
+		if ( ! empty( $query ) ) {
+			$body['body'] = $query;
+		}
+		if ( ! empty( $fields ) ) {
+			$body['fields'] = $fields;
+		}
+		if ( ! empty( $sites ) ) {
+			$body['sites'] = $sites;
+		}
+
 		$args = array( 'method' => 'POST', 'body' => json_encode( (object) $body ) );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
