@@ -124,7 +124,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		// Parse sorting params
 		if ( ! $order = wp_stream_filter_input( INPUT_GET, 'order' ) ) {
-			$order = 'DESC';
+			$order = 'desc';
 		}
 		if ( ! $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
 			$orderby = 'date';

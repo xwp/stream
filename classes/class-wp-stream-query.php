@@ -82,8 +82,9 @@ class WP_Stream_Query {
 		 */
 		$args = apply_filters( 'wp_stream_query_args', $args );
 
-		$query  = array();
-		$fields = array();
+		$query   = array();
+		$filters = array();
+		$fields  = array();
 
 		// PARSE SEARCH
 		if ( ! empty( $args['search'] ) ) {
@@ -102,33 +103,33 @@ class WP_Stream_Query {
 
 		// PARSE DATE
 		if ( ! empty( $args['date_from'] ) ) {
-			$query['filter']['and'][]['range']['created']['gte'] = date( 'c', strtotime( $args['date_from'] . ' 00:00:00' ) );
+			$filters[]['range']['created']['gte'] = date( 'c', strtotime( $args['date_from'] . ' 00:00:00' ) );
 		}
 
 		if ( ! empty( $args['date_to'] ) ) {
-			$query['filter']['and'][]['range']['created']['lte'] = date( 'c', strtotime( $args['date_to'] . ' 23:59:59' ) );
+			$filters[]['range']['created']['lte'] = date( 'c', strtotime( $args['date_to'] . ' 23:59:59' ) );
 		}
 
 		if ( ! empty( $args['date'] ) ) {
-			$query['filter']['and'][]['range']['created']['gte'] = date( 'c', strtotime( $args['date'] . ' 00:00:00' ) );
-			$query['filter']['and'][]['range']['created']['lte']   = date( 'c', strtotime( $args['date'] . ' 23:59:59' ) );
+			$filters[]['range']['created']['gte'] = date( 'c', strtotime( $args['date'] . ' 00:00:00' ) );
+			$filters[]['range']['created']['lte']   = date( 'c', strtotime( $args['date'] . ' 23:59:59' ) );
 		}
 
 		// PARSE RECORD
 		if ( ! empty( $args['record_after'] ) ) {
-			$query['filter']['and'][]['range']['created']['gte'] = date( 'c', strtotime( $args['record_after'] ) );
+			$filters[]['range']['created']['gte'] = date( 'c', strtotime( $args['record_after'] ) );
 		}
 
 		if ( ! empty( $args['record__in'] ) ) {
-			$query['filter']['and'][]['ids']['values'] = (array) $args['record__in'];
+			$filters[]['ids']['values'] = (array) $args['record__in'];
 		}
 
 		if ( ! empty( $args['record__in'] ) ) {
-			$query['filter']['and'][]['ids']['values'] = (array) $args['record__in'];
+			$filters[]['ids']['values'] = (array) $args['record__in'];
 		}
 
 		if ( ! empty( $args['record__not_in'] ) ) {
-			$query['filter']['and'][]['not']['ids']['values'] = (array) $args['record__not_in'];
+			$filters[]['not']['ids']['values'] = (array) $args['record__not_in'];
 		}
 
 		$properties = array(
@@ -148,15 +149,15 @@ class WP_Stream_Query {
 
 		foreach ( $properties as $property ) {
 			if ( ! empty( $args[ $property ] ) ) {
-				$query['filter']['and'][]['term'][ $property ] = $args[ $property ];
+				$filters[]['term'][ $property ] = $args[ $property ];
 			}
 
 			if ( ! empty( $args["{$property}__in"] ) ) {
-				$query['filter']['and'][]['term'][ $property ] = $args["{$property}__in"];
+				$filters[]['term'][ $property ] = $args["{$property}__in"];
 			}
 
 			if ( ! empty( $args["{$property}__not_in"] ) ) {
-				$query['filter']['and'][]['not']['term'][ $property ] = $args["{$property}__in"];
+				$filters[]['not']['term'][ $property ] = $args["{$property}__in"];
 			}
 		}
 
@@ -181,10 +182,19 @@ class WP_Stream_Query {
 			$orderby = 'created';
 		}
 
-		$query['sort'][][ $orderby ] = $order;
+		$query['sort'][][ $orderby ]['order'] = $order;
 
 		// PARSE META
 
+
+		// Add filters to query
+		if ( ! empty( $filters ) ) {
+			if ( count( $filters ) > 1 ) {
+				$query['filter']['and'] = $filters;
+			} else {
+				$query['filter'] = current( $filters );
+			}
+		}
 
 		$query  = apply_filters( 'wp_stream_db_query', $query );
 		$fields = apply_filters( 'wp_stream_db_fields', $fields );
