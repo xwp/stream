@@ -117,7 +117,7 @@ class WP_Stream_Query {
 
 		// PARSE RECORD
 		if ( ! empty( $args['record_after'] ) ) {
-			$filters[]['range']['created']['gte'] = date( 'c', strtotime( $args['record_after'] ) );
+			$filters[]['range']['created']['gt'] = date( 'c', strtotime( $args['record_after'] ) );
 		}
 
 		if ( ! empty( $args['record__in'] ) ) {
