@@ -71,10 +71,11 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'functions.php';
 
 		// Load DB helper interface/class
-		$driver = apply_filters( 'wp_stream_db_adapter', WP_STREAM_CLASS_DIR . 'db/class-wp-stream-db.php' );
-		if ( file_exists( $driver ) ) {
-			require_once $driver;
+		$driver = 'WP_Stream_DB';
+		if ( class_exists( $driver ) ) {
+			self::$db = new $driver;
 		}
+
 		if ( ! self::$db ) {
 			wp_die( __( 'Stream: Could not load chosen DB driver.', 'stream' ), 'Stream DB Error' );
 		}
