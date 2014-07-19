@@ -34,6 +34,10 @@ class WP_Stream_DB extends WP_Stream_DB_Base {
 	public function query( $query, $fields ) {
 		$response = WP_Stream::$api->search( $query, $fields );
 
+		if ( empty( $response ) ) {
+			return false;
+		}
+
 		$this->found_rows = $response->meta->total;
 
 		$results = (array) $response->records;
