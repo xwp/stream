@@ -78,6 +78,8 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 
 		self::$context_labels  = wp_list_pluck( $labels, 'name' );
 
+		add_action( 'registered_taxonomy', array( __CLASS__, '_registered_taxonomy' ), 10, 3 );
+
 		return self::$context_labels;
 	}
 
@@ -104,6 +106,24 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Catch registration of taxonomies after inital loading, so we can cache its labels
+	 *
+	 * @action registered_taxonomy
+	 *
+	 * @param string       $taxonomy    Taxonomy slug
+	 * @param array|string $object_type Object type or array of object types
+	 * @param array|string $args        Array or string of taxonomy registration arguments
+	 */
+	public static function _registered_taxonomy( $taxonomy, $object_type, $args ) {
+		$taxonomy_obj = get_taxonomy( $taxonomy );
+		$label        = get_taxonomy_labels( $taxonomy_obj )->name;
+
+		self::$context_labels[ $taxonomy ] = $label;
+
+		WP_Stream_Connectors::$term_labels['stream_context'][ $taxonomy ] = $label;
+	}
+
+	/**
 	 * Tracks creation of terms
 	 *
 	 * @action created_term
@@ -113,11 +133,9 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			return;
 		}
 
-		global $wp_taxonomies;
-
 		$term           = get_term( $term_id, $taxonomy );
 		$term_name      = $term->name;
-		$taxonomy_label = strtolower( $wp_taxonomies[ $taxonomy ]->labels->singular_name );
+		$taxonomy_label = strtolower( self::$context_labels[ $taxonomy ] );
 		$term_parent    = $term->parent;
 
 		self::log(
@@ -142,11 +160,9 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			return;
 		}
 
-		global $wp_taxonomies;
-
 		$term_name      = $deleted_term->name;
 		$term_parent    = $deleted_term->parent;
-		$taxonomy_label = strtolower( $wp_taxonomies[ $taxonomy ]->labels->singular_name );
+		$taxonomy_label = strtolower( self::$context_labels[ $taxonomy ] );
 
 		self::log(
 			_x(
@@ -174,8 +190,6 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			return;
 		}
 
-		global $wp_taxonomies;
-
 		$term = self::$cached_term_before_update;
 
 		if ( ! $term ) { // For some reason!
@@ -183,7 +197,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 		}
 
 		$term_name      = $term->name;
-		$taxonomy_label = strtolower( $wp_taxonomies[ $taxonomy ]->labels->singular_name );
+		$taxonomy_label = strtolower( self::$context_labels[ $taxonomy ] );
 		$term_parent    = $term->parent;
 
 		self::log(
