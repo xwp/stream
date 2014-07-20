@@ -87,8 +87,8 @@ class WP_Stream_Query {
 		$fields  = array();
 
 		// PARSE SEARCH
-		if ( ! empty( $args['search'] ) ) {
-			if ( ! empty( $args['search_field'] ) ) {
+		if ( $args['search'] ) {
+			if ( $args['search_field'] ) {
 				$search_field = $args['search_field'];
 				$query['query']['match'][ $search_field ] = $args['search'];
 			} else {
@@ -97,78 +97,63 @@ class WP_Stream_Query {
 		}
 
 		// PARSE FIELDS
-		if ( ! empty( $args['fields'] ) ) {
+		if ( $args['fields'] ) {
 			$fields = is_array( $args['fields'] ) ? $args['fields'] : explode( ',', $args['fields'] );
 		}
 
 		// PARSE DATE
-		if ( ! empty( $args['date_from'] ) ) {
+		if ( $args['date_from'] ) {
 			$filters[]['range']['created']['gte'] = date( 'c', strtotime( $args['date_from'] . ' 00:00:00' ) );
 		}
 
-		if ( ! empty( $args['date_to'] ) ) {
+		if ( $args['date_to'] ) {
 			$filters[]['range']['created']['lte'] = date( 'c', strtotime( $args['date_to'] . ' 23:59:59' ) );
 		}
 
-		if ( ! empty( $args['date'] ) ) {
+		if ( $args['date'] ) {
 			$filters[]['range']['created']['gte'] = date( 'c', strtotime( $args['date'] . ' 00:00:00' ) );
 			$filters[]['range']['created']['lte']   = date( 'c', strtotime( $args['date'] . ' 23:59:59' ) );
 		}
 
 		// PARSE RECORD
-		if ( ! empty( $args['record_after'] ) ) {
+		if ( $args['record_after'] ) {
 			$filters[]['range']['created']['gt'] = date( 'c', strtotime( $args['record_after'] ) );
 		}
 
-		if ( ! empty( $args['record__in'] ) ) {
+		if ( $args['record__in'] ) {
 			$filters[]['ids']['values'] = (array) $args['record__in'];
 		}
 
-		if ( ! empty( $args['record__in'] ) ) {
+		if ( $args['record__in'] ) {
 			$filters[]['ids']['values'] = (array) $args['record__in'];
 		}
 
-		if ( ! empty( $args['record__not_in'] ) ) {
+		if ( $args['record__not_in'] ) {
 			$filters[]['not']['ids']['values'] = (array) $args['record__not_in'];
 		}
 
-		$properties = array(
-			'author',
-			'author_role',
-			'ip',
-			'type',
-			'record_parent',
-			'object_id',
-			'site_id',
-			'blog_id',
-			'visibility',
-			'connector',
-			'context',
-			'action',
-		);
-
-		foreach ( $properties as $property ) {
-			if ( ! empty( $args[ $property ] ) ) {
+		foreach ( $properties as $property => $default ) {
+			if ( $args[ $property ] ) {
 				$filters[]['term'][ $property ] = $args[ $property ];
 			}
 
-			if ( ! empty( $args["{$property}__in"] ) ) {
+			if ( $args["{$property}__in"] ) {
 				$filters[]['term'][ $property ] = $args["{$property}__in"];
 			}
 
-			if ( ! empty( $args["{$property}__not_in"] ) ) {
+			if ( $args["{$property}__not_in"] ) {
 				$filters[]['not']['term'][ $property ] = $args["{$property}__in"];
 			}
 		}
 
 		// PARSE PAGINATION
-		if ( ! empty( $args['records_per_page'] ) ) {
+		if ( $args['records_per_page'] ) {
 			$query['size'] = (int) $args['records_per_page'];
 		} else {
 			$query['size'] = get_option( 'posts_per_page', 20 );
 		}
 
-		if ( ! empty( $args['paged'] ) ) {
+		if ( $args['paged'] ) {
 			$query['from'] = ( (int) $args['paged'] - 1 ) * $query['size'];
 		}
 
