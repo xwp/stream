@@ -165,20 +165,13 @@ class WP_Stream_Settings {
 
 		check_ajax_referer( 'stream_get_ips', 'nonce' );
 
-		$results = wp_stream_query(
-			array(
-				'fields'           => 'ip',
-				'distinct'         => true,
-				'search_field'     => 'ip',
-				'search'           => wp_stream_filter_input( INPUT_POST, 'find' ),
-				'records_per_page' => wp_stream_filter_input( INPUT_POST, 'limit' ),
-			)
-		);
-		if ( $results ) {
-			$results = wp_list_pluck( $results, 'ip' );
-		}
+		$ips = wp_stream_existing_records( 'ip' );
 
-		wp_send_json_success( $results );
+		if ( $ips ) {
+			wp_send_json_success( $ips );
+		} else {
+			wp_send_json_error();
+		}
 	}
 
 	/**

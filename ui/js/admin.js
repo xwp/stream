@@ -129,7 +129,7 @@ jQuery(function( $ ) {
 		hashIndex      = window.location.hash.match( /^#(\d+)$/ ),
 		currentHash    = ( null !== hashIndex ? hashIndex[ 1 ] : defaultIndex ),
 		syncFormAction = function( index ) {
-			var $optionsForm  = $( 'input[name="option_page"][value^="wp_stream"]' ).parent( 'form' );
+			var $optionsForm  = $( 'input[name="option_page"][value^="wp_stream"]' ).closest( 'form' );
 			var currentAction = $optionsForm.attr( 'action' );
 
 			$optionsForm.prop( 'action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ) );
