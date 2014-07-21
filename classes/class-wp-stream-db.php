@@ -127,15 +127,22 @@ class WP_Stream_DB {
 	}
 
 	/**
-	 * Returns array of existing values for requested column.
+	 * Returns array of existing values for requested field.
 	 * Used to fill search filters with only used items, instead of all items.
 	 *
-	 * @param string Requested Column (i.e., 'context')
+	 * @param string Requested field (i.e., 'context')
 	 *
 	 * @return array Array of distinct values
 	 */
-	public function get_col( $column ) {
-		$values = array();
+	public function get_distinct_field_values( $field ) {
+		$query['aggregations']['fields']['terms']['field'] = $field;
+
+		$values   = array();
+		$response = WP_Stream::$api->search( $query, array( $field ) );
+
+		foreach ( $response->meta->aggregations->fields->buckets as $field ) {
+			$values[] = $field->key;
+		}
 
 		return $values;
 	}

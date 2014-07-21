@@ -17,22 +17,21 @@ function wp_stream_get_meta( $record_id, $meta_key = '', $single = false ) {
 }
 
 /**
- * Returns array of existing values for requested column.
+ * Returns array of existing values for requested field.
  * Used to fill search filters with only used items, instead of all items.
  *
  * @see    assemble_records
  * @since  1.0.4
- * @param  string  Requested Column (i.e., 'context')
+ * @param  string  Requested field (i.e., 'context')
  * @return array   Array of items to be output to select dropdowns
  */
-function wp_stream_existing_records( $column ) {
-	// Short circuit for now, till Facets is available
-	return array();
-	$values = WP_Stream::$db->get_col( $column );
+function wp_stream_existing_records( $field ) {
+	$values = WP_Stream::$db->get_distinct_field_values( $field );
+
 	if ( is_array( $values ) && ! empty( $values ) ) {
 		return array_combine( $values, $values );
 	} else {
-		$column = sprintf( 'stream_%s', $column );
-		return isset( WP_Stream_Connectors::$term_labels[ $column ] ) ? WP_Stream_Connectors::$term_labels[ $column ] : array();
+		$field = sprintf( 'stream_%s', $field );
+		return isset( WP_Stream_Connectors::$term_labels[ $field ] ) ? WP_Stream_Connectors::$term_labels[ $field ] : array();
 	}
 }
