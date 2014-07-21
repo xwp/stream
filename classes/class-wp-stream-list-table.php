@@ -164,6 +164,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
+		add_filter( 'wp_stream_db_query', array( $this, 'set_query_aggregations' ) );
+
 		$items = wp_stream_query( $args );
 
 		return $items;
@@ -424,7 +426,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$all_records     = WP_Stream_Connectors::$term_labels[ $prefixed_column ];
 		}
 
-		$existing_records = wp_stream_existing_records( $column );
+		$query_meta = WP_Stream::$db->get_query_meta();
+
+		if ( isset( $query_meta->aggregations->$column->buckets ) ) {
+			$values = array();
+
+			foreach ( $query_meta->aggregations->$column->buckets as $field ) {
+				$values[ $field->key ] = $field->key;
+			}
+
+			$existing_records = array_combine( $values, $values );
+		} else {
+			$existing_records = wp_stream_existing_records( $column );
+		}
+
 		$active_records   = array();
 		$disabled_records = array();
 
@@ -728,6 +743,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 			</div>
 		<?php
 		endif;
+	}
+
+	/**
+	 * Adds aggregation data to the primary query
+	 *
+	 * @return array
+	 */
+	function set_query_aggregations( $query ) {
+		$query['aggregations']['author']['terms']['field']    = 'author';
+		$query['aggregations']['connector']['terms']['field'] = 'connector';
+		$query['aggregations']['context']['terms']['field']   = 'context';
+		$query['aggregations']['action']['terms']['field']    = 'action';
+
+		return $query;
 	}
 
 	static function set_screen_option( $dummy, $option, $value ) {

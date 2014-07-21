@@ -14,7 +14,7 @@ function wp_stream_query( $args = array() ) {
 
 function wp_stream_get_meta( $record, $meta_key = '', $single = false ) {
 	if ( is_string( $record ) ) {
-		$record_meta = WP_Stream::$db->get_meta( $record, $meta_key, true );
+		$record_meta = WP_Stream::$db->get_record_meta( $record, $meta_key, true );
 	} elseif ( isset( $record->stream_meta ) ) {
 		$record_meta = $record->stream_meta->$meta_key;
 	} else {

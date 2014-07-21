@@ -2,7 +2,7 @@
 
 class WP_Stream_DB {
 
-	public $found_rows;
+	public $query_meta;
 
 	/**
 	 * Store a record
@@ -103,7 +103,7 @@ class WP_Stream_DB {
 			return false;
 		}
 
-		$this->found_rows = $response->meta->total;
+		$this->query_meta = $response->meta;
 
 		$results = (array) $response->records;
 
@@ -123,7 +123,47 @@ class WP_Stream_DB {
 	 * @return integer Total item count
 	 */
 	public function get_found_rows() {
-		return $this->found_rows;
+		return $this->query_meta->total;
+	}
+
+	/**
+	 * Get meta data for last query using query() method
+	 *
+	 * @return integer Total item count
+	 */
+	public function get_query_meta() {
+		return $this->query_meta;
+	}
+
+	/**
+	 * Retrieve metadata of a single record
+	 *
+	 * @internal User by wp_stream_get_meta()
+	 *
+	 * @param  integer $record_id Record ID
+	 * @param  string  $key       Optional, Meta key, if omitted, retrieve all meta data of this record.
+	 * @param  boolean $single    Default: false, Return single meta value, or all meta values under specified key.
+	 *
+	 * @return string|array       Single/Array of meta data.
+	 */
+	public function get_record_meta( $record_id, $key = '', $single = false ) {
+		$record = WP_Stream::$api->get_record( $record_id );
+
+		if ( ! isset( $record->stream_meta ) ) {
+			return array();
+		}
+
+		if ( ! empty( $key ) ) {
+			$meta = $record->stream_meta->$key;
+		} else {
+			$meta = $record->stream_meta;
+		}
+
+		if ( $single ) {
+			return (array) $meta;
+		} else {
+			return array( $key => $meta );
+		}
 	}
 
 	/**
@@ -145,36 +185,5 @@ class WP_Stream_DB {
 		}
 
 		return $values;
-	}
-
-	/**
-	 * Retrieve metadata of a single record
-	 *
-	 * @internal User by wp_stream_get_meta()
-	 *
-	 * @param  integer $record_id Record ID
-	 * @param  string  $key       Optional, Meta key, if omitted, retrieve all meta data of this record.
-	 * @param  boolean $single    Default: false, Return single meta value, or all meta values under specified key.
-	 *
-	 * @return string|array       Single/Array of meta data.
-	 */
-	public function get_meta( $record_id, $key = '', $single = false ) {
-		$record = WP_Stream::$api->get_record( $record_id );
-
-		if ( ! isset( $record->stream_meta ) ) {
-			return array();
-		}
-
-		if ( ! empty( $key ) ) {
-			$meta = $record->stream_meta->$key;
-		} else {
-			$meta = $record->stream_meta;
-		}
-
-		if ( $single ) {
-			return (array) $meta;
-		} else {
-			return array( $key => $meta );
-		}
 	}
 }
