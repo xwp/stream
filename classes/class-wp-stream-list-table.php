@@ -123,14 +123,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$args = array();
 
 		// Parse sorting params
-		if ( ! $order = wp_stream_filter_input( INPUT_GET, 'order' ) ) {
-			$order = 'desc';
+		if ( $order = wp_stream_filter_input( INPUT_GET, 'order' ) ) {
+			$args['order'] = $order;
 		}
-		if ( ! $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
-			$orderby = 'date';
+		if ( $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
+			$args['orderby'] = $orderby;
 		}
-		$args['order']   = $order;
-		$args['orderby'] = $orderby;
 
 		// Filters
 		$allowed_params = array(

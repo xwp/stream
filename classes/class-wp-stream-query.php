@@ -39,7 +39,7 @@ class WP_Stream_Query {
 			'paged'                 => 1,
 			// Order
 			'order'                 => 'desc',
-			'orderby'               => 'date',
+			'orderby'               => isset( $args['search'] ) ? '_score' : 'date',
 			// Meta/Taxonomy sub queries
 			'meta'                  => array(),
 			// Fields selection

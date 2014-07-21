@@ -78,13 +78,12 @@ class WP_Stream_DB {
 	 *
 	 * @internal Used by store()
 	 *
-	 * @param array $data Record data
+	 * @param array   $data     Record data
 	 *
-	 * @return int ID of the inserted record
+	 * @return object $response The inserted record
 	 */
 	protected function insert( array $data ) {
-
-		return true;
+		return WP_Stream::$api->new_record( $data );
 	}
 
 	/**
@@ -154,6 +153,10 @@ class WP_Stream_DB {
 	 */
 	public function get_meta( $record_id, $key = '', $single = false ) {
 		$record = WP_Stream::$api->get_record( $record_id );
+
+		if ( ! isset( $record->stream_meta ) ) {
+			return array();
+		}
 
 		if ( ! empty( $key ) ) {
 			$meta = $record->stream_meta->$key;

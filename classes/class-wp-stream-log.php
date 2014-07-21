@@ -102,20 +102,34 @@ class WP_Stream_Log {
 			}
 		);
 
+		// Get current time with milliseconds
+		$time          = microtime( true );
+		$micro_seconds = sprintf( '%06d', ( $time - floor( $time ) ) * 1000000 );
+
+		$tz = new DateTimeZone( 'UTC' );
+		$dt = new DateTime( date( 'Y-m-d H:i:s.' . $micro_seconds, $time ), $tz );
+
+		$iso_8601_extended_date = sprintf(
+			'%s%03d%s',
+			$dt->format( 'Y-m-d\TH:i:s.' ),
+			floor( $dt->format( 'u' ) / 1000 ),
+			$dt->format( 'O' )
+		);
+
 		$recordarr = array(
 			'object_id'   => $object_id,
 			'site_id'     => is_multisite() ? get_current_site()->id : 1,
 			'blog_id'     => apply_filters( 'blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() ),
 			'author'      => $user_id,
 			'author_role' => ! empty( $user->roles ) ? $user->roles[0] : null,
-			'created'     => current_time( 'mysql', 1 ),
+			'created'     => $iso_8601_extended_date,
 			'visibility'  => $visibility,
 			'summary'     => vsprintf( $message, $args ),
 			'parent'      => self::$instance->prev_record,
 			'connector'   => $connector,
 			'context'     => $context,
 			'action'      => $action,
-			'meta'        => $meta,
+			'stream_meta' => $meta,
 			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 

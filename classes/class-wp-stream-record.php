@@ -18,7 +18,7 @@ class WP_Stream_Record {
 	public $created;
 	public $ip;
 
-	public $meta;
+	public $stream_meta;
 
 	// Deprecated
 	public $contexts;
