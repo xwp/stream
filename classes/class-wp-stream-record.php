@@ -1,7 +1,6 @@
 <?php
 
-class WP_Stream_Record
-{
+class WP_Stream_Record {
 
 	public $ID;
 	public $site_id;
