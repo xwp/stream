@@ -90,12 +90,12 @@ class WP_Stream_Live_Update {
 	/**
 	 * Sends Updated Actions to the List Table View
 	 *
-	 * @param       int    Timestamp of last update
-	 * @param array $query
+	 * @param int   Timestamp of last update
+	 * @param array Query args
 	 *
 	 * @return array  Array of recently updated items
 	 */
-	public static function gather_updated_items( $last_time, $query = array() ) {
+	public static function gather_updated_items( $last_time, $args = array() ) {
 		if ( false === $last_time ) {
 			return '';
 		}
@@ -105,10 +105,10 @@ class WP_Stream_Live_Update {
 		);
 
 		// Filter default
-		$query = wp_parse_args( $query, $default );
+		$args = wp_parse_args( $args, $default );
 
 		// Run query
-		$items = wp_stream_query( $query );
+		$items = wp_stream_query( $args );
 
 		return $items;
 	}

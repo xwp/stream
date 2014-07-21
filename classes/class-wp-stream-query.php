@@ -170,6 +170,22 @@ class WP_Stream_Query {
 		$query['sort'][][ $orderby ]['order'] = $order;
 
 		// PARSE META
+		if ( $args['meta'] ) {
+			$meta = (array) $args['meta'];
+			foreach ( $meta as $key => $values ) {
+				if ( ! is_array( $values ) ) {
+					$values = (array) $values;
+				}
+				$filters[]['nested'] = array(
+					'path'   => 'stream_meta',
+					'filter' => array(
+						'terms' => array(
+							$key => $values,
+						),
+					),
+				);
+			}
+		}
 
 
 		// Add filters to query
