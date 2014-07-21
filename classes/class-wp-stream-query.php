@@ -49,7 +49,7 @@ class WP_Stream_Query {
 		// Additional property fields
 		$properties = array(
 			'record'        => null,
-			'type'          => 'stream',
+			'type'          => null,
 			'record_parent' => null,
 			'author'        => null,
 			'author_role'   => null,
