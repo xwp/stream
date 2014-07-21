@@ -290,7 +290,6 @@ class WP_Stream_Admin {
 					'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 					'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
 					'current_query'  => json_encode( $_GET ),
-					'filters'        => self::$list_table ? self::$list_table->get_filters() : false,
 				)
 			);
 		}

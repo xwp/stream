@@ -394,7 +394,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 *
 	 * @return array   options to be displayed in search filters
 	 */
-	function assemble_records( $column, $table = '' ) {
+	function assemble_records( $column ) {
 		$setting_key = self::get_column_excluded_setting_key( $column );
 
 		// @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object
@@ -424,14 +424,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$all_records     = WP_Stream_Connectors::$term_labels[ $prefixed_column ];
 		}
 
-		/* Tempo */
-		$active_records   = array();
-		$disabled_records = array();
-		foreach ( $all_records as $record => $label ) {
-			$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
-		}
-
-		$existing_records = wp_stream_existing_records( $column, $table );
+		$existing_records = wp_stream_existing_records( $column );
 		$active_records   = array();
 		$disabled_records = array();
 
@@ -476,7 +469,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 
 		$authors_records = WP_Stream_Admin::get_authors_record_meta(
-			$this->assemble_records( 'author', 'stream' )
+			$this->assemble_records( 'author' )
 		);
 
 		$filters['author'] = array(
