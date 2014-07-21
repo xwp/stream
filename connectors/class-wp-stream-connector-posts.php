@@ -267,7 +267,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 * @param   string  $post_type_slug
 	 * @return  string  Post type label
 	 */
-	private static function get_post_type_name( $post_type_slug ) {
+	public static function get_post_type_name( $post_type_slug ) {
 		$name = __( 'Post', 'default' ); // Default
 
 		if ( post_type_exists( $post_type_slug ) ) {

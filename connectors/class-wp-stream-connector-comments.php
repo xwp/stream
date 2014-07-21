@@ -227,7 +227,6 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_title     = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 		$comment_status = ( 1 == $comment->comment_approved ) ? __( 'approved automatically', 'stream' ) : __( 'pending approval', 'stream' );
 		$is_spam        = false;
-
 		// Auto-marked spam comments
 		if ( class_exists( 'Akismet' ) && Akismet::matches_last_comment( $comment ) ) {
 			$ak_last_comment = Akismet::get_last_comment();
