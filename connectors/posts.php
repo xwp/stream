@@ -66,7 +66,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		$post = get_post( $record->object_id );
 
-		if ( $post && $post->post_status === wp_stream_get_meta( $record->ID, 'new_status', true ) ) {
+		if ( $post && $post->post_status === wp_stream_get_meta( $record, 'new_status', true ) ) {
 			$post_type_name = self::get_post_type_name( get_post_type( $post->ID ) );
 
 			if ( 'trash' === $post->post_status ) {
@@ -101,7 +101,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 					$links[ esc_html__( 'View', 'default' ) ] = $view_link;
 				}
 
-				if ( $revision_id = wp_stream_get_meta( $record->ID, 'revision_id', true ) ) {
+				if ( $revision_id = wp_stream_get_meta( $record, 'revision_id', true ) ) {
 					$links[ esc_html__( 'Revision', 'default' ) ] = get_edit_post_link( $revision_id );
 				}
 			}

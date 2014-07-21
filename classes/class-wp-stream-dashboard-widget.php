@@ -202,8 +202,8 @@ class WP_Stream_Dashboard_Widget {
 	 * @return string  Contents of new row
 	 */
 	public static function widget_row( $item ) {
-		$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
-		$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
+		$author_meta = wp_stream_get_meta( $item, 'author_meta', true );
+		$author      = new WP_Stream_Author( (int) $item->author, (array) $author_meta );
 
 		$time_author = sprintf(
 			_x(

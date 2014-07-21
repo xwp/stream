@@ -125,12 +125,12 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( current_user_can( 'edit_theme_options' ) ) {
-			$file_name = wp_stream_get_meta( $record->ID, 'file', true );
-			$file_path = wp_stream_get_meta( $record->ID, 'file_path', true );
+			$file_name = wp_stream_get_meta( $record, 'file', true );
+			$file_path = wp_stream_get_meta( $record, 'file_path', true );
 
 			if ( ! empty( $file_name ) && ! empty( $file_path ) ) {
-				$theme_slug    = wp_stream_get_meta( $record->ID, 'theme_slug', true );
-				$plugin_slug   = wp_stream_get_meta( $record->ID, 'plugin_slug', true );
+				$theme_slug    = wp_stream_get_meta( $record, 'theme_slug', true );
+				$plugin_slug   = wp_stream_get_meta( $record, 'plugin_slug', true );
 				$theme_exists  = ( ! empty( $theme_slug ) && file_exists( $file_path ) );
 				$plugin_exists = ( ! empty( $plugin_slug ) && file_exists( $file_path ) );
 

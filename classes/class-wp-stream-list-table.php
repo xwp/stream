@@ -209,8 +209,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'author' :
-				$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
-				$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
+				$author_meta = wp_stream_get_meta( $item, 'author_meta', true );
+				$author      = new WP_Stream_Author( (int) $item->author, (array) $author_meta );
 
 				$out = sprintf(
 					'<a href="%s">%s <span>%s</span></a>%s%s%s',

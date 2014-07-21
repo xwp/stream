@@ -12,8 +12,20 @@ function wp_stream_query( $args = array() ) {
 	return WP_Stream_Query::instance()->query( $args );
 }
 
-function wp_stream_get_meta( $record_id, $meta_key = '', $single = false ) {
-	return WP_Stream::$db->get_meta( $record_id, $meta_key, $single );
+function wp_stream_get_meta( $record, $meta_key = '', $single = false ) {
+	if ( is_string( $record ) ) {
+		$record_meta = WP_Stream::$db->get_meta( $record, $meta_key, true );
+	} elseif ( isset( $record->stream_meta ) ) {
+		$record_meta = $record->stream_meta->$meta_key;
+	} else {
+		return false;
+	}
+
+	if ( $single ) {
+		return $record_meta;
+	} else {
+		return array( $record_meta );
+	}
 }
 
 /**
