@@ -16,16 +16,8 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static $actions = array(
 		'transition_post_status',
-		'save_post',
 		'deleted_post',
 	);
-
-	/**
-	 * Holds the post transition data to be called in callback_save_post
-	 *
-	 * @var array
-	 */
-	protected static $transition_post_status = array();
 
 	/**
 	 * Return translated connector label
@@ -58,7 +50,6 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		global $wp_post_types;
-
 		$post_types = wp_filter_object_list( $wp_post_types, array(), null, 'label' );
 		$post_types = array_diff_key( $post_types, array_flip( self::get_ignored_post_types() ) );
 
@@ -149,48 +140,48 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 
 		if ( in_array( $new, array( 'auto-draft', 'inherit' ) ) ) {
 			return;
-		} elseif ( 'auto-draft' === $old && 'draft' === $new ) {
-			$summary = _x(
+		} elseif ( $old == 'auto-draft' && $new == 'draft' ) {
+			$message = _x(
 				'"%1$s" %2$s drafted',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'created';
-		} elseif ( 'auto-draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$summary = _x(
+		} elseif ( $old == 'auto-draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
+			$message = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'created';
-		} elseif ( 'draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$summary = _x(
+		} elseif ( $old == 'draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
+			$message = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'publish' === $old && ( in_array( $new, array( 'draft' ) ) ) ) {
-			$summary = _x(
+		} elseif ( $old == 'publish' && ( in_array( $new, array( 'draft' ) ) ) ) {
+			$message = _x(
 				'"%1$s" %2$s unpublished',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( 'trash' === $new ) {
-			$summary = _x(
+		} elseif ( $new == 'trash' ) {
+			$message = _x(
 				'"%1$s" %2$s trashed',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'trashed';
-		} elseif ( 'trash' === $old && 'trash' !== $new ) {
-			$summary = _x(
+		} elseif ( $old == 'trash' && $new != 'trash' ) {
+			$message = _x(
 				'"%1$s" %2$s restored from trash',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'untrashed';
 		} else {
-			$summary = _x(
+			$message = _x(
 				'"%1$s" %2$s updated',
 				'1: Post title, 2: Post type singular name',
 				'stream'
@@ -199,32 +190,6 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 
 		if ( empty( $action ) ) {
 			$action = 'updated';
-		}
-
-		// Hold the post transition data for use in callback_save_post
-		self::$transition_post_status = array(
-			'new_status' => $new,
-			'old_status' => $old,
-			'summary'    => $summary,
-			'action'     => $action,
-		);
-	}
-
-	/**
-	 * Log all post saves
-	 *
-	 * We don't log a record until after the post is saved in order to
-	 * properly capture the post revision ID (if one exists).
-	 *
-	 * New post status, old post status, summary and action pulled from
-	 * the $transition_post_status property which is defined in during
-	 * the transition_post_status action which happens before save_post.
-	 *
-	 * @action save_post
-	 */
-	public static function callback_save_post( $post_ID, $post, $update ) {
-		if ( in_array( $post->post_type, self::get_ignored_post_types() ) ) {
-			return;
 		}
 
 		$revision_id = null;
@@ -236,30 +201,28 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 					'post_status'    => 'inherit',
 					'post_parent'    => $post->ID,
 					'posts_per_page' => 1,
-					'order'          => 'DESC',
-					'orderby'        => 'post_date',
+					'order'          => 'desc',
+					'fields'         => 'ids',
 				)
 			);
-
 			if ( $revision ) {
-				$revision    = array_values( $revision );
-				$revision_id = $revision[0]->ID;
+				$revision_id = $revision[0];
 			}
 		}
 
 		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
 
 		self::log(
-			self::$transition_post_status['summary'],
+			$message,
 			array(
 				'post_title'    => $post->post_title,
 				'singular_name' => $post_type_name,
-				'new_status'    => self::$transition_post_status['new_status'],
-				'old_status'    => self::$transition_post_status['old_status'],
+				'new_status'    => $new,
+				'old_status'    => $old,
 				'revision_id'   => $revision_id,
 			),
 			$post->ID,
-			array( $post->post_type => self::$transition_post_status['action'] )
+			array( $post->post_type => $action )
 		);
 	}
 
