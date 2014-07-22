@@ -115,7 +115,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * @param array|string $args        Array or string of taxonomy registration arguments
 	 */
 	public static function _registered_taxonomy( $taxonomy, $object_type, $args ) {
-		$taxonomy_obj = get_taxonomy( $taxonomy );
+		$taxonomy_obj = (object) $args;
 		$label        = get_taxonomy_labels( $taxonomy_obj )->name;
 
 		self::$context_labels[ $taxonomy ] = $label;
