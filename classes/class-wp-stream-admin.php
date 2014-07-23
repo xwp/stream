@@ -732,7 +732,7 @@ class WP_Stream_Admin {
 							<tr>
 								<th><?php _e( 'API Key', 'stream' ); ?></th>
 								<td>
-									<code class="api-key"><?php echo WP_Stream::$api->site_uuid; ?></code>
+									<code class="api-key"><?php echo WP_Stream::$api->api_key; ?></code>
 								</td>
 							</tr>
 						</tbody>
