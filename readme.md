@@ -119,7 +119,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ### 1.4.9 - July 23, 2014 ###
 * Fix: Revert delayed log mechanism for post transition ([#585](https://github.com/x-team/wp-stream/issues/585))
-* Fix: Revert usage of get_taxonomy() ([#586](https://github.com/x-team/wp-stream/issues/586))
+* Fix: Revert usage of get_taxonomy() ([#586](https://github.com/x-team/wp-stream/pull/586))
 * Fix: Notices not firing on correct action ([#589](https://github.com/x-team/wp-stream/issues/589))
 
 Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
