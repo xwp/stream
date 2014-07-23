@@ -63,6 +63,13 @@ class WP_Stream {
 	public static $notices = array();
 
 	/**
+	 * Admin notices, collected and displayed on proper action
+	 *
+	 * @var array
+	 */
+	public static $notices = array();
+
+	/**
 	 * Class constructor
 	 */
 	private function __construct() {
@@ -94,9 +101,6 @@ class WP_Stream {
 
 		// Install the plugin
 		add_action( 'wp_stream_before_db_notices', array( __CLASS__, 'install' ) );
-
-		// Trigger admin notices
-		add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
 
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -234,6 +238,9 @@ class WP_Stream {
 				WP_CLI::success( $message );
 			}
 		} else {
+			// Trigger admin notices
+			add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
+
 			self::$notices[] = compact( 'message', 'is_error' );
 		}
 	}
