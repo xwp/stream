@@ -2,7 +2,12 @@
 
 class WP_Stream_DB {
 
-	public $query_meta;
+	/**
+	 * Meta information returned in the last query
+	 *
+	 * @var mixed
+	 */
+	public $query_meta = false;
 
 	/**
 	 * Store a record
@@ -123,6 +128,9 @@ class WP_Stream_DB {
 	 * @return integer Total item count
 	 */
 	public function get_found_rows() {
+		if ( ! isset( $this->query_meta->total ) ) {
+			return 0;
+		}
 		return $this->query_meta->total;
 	}
 
@@ -180,8 +188,10 @@ class WP_Stream_DB {
 		$values   = array();
 		$response = WP_Stream::$api->search( $query, array( $field ) );
 
-		foreach ( $response->meta->aggregations->fields->buckets as $field ) {
-			$values[] = $field->key;
+		if ( isset( $response->meta->aggregations->fields->buckets ) ) {
+			foreach ( $response->meta->aggregations->fields->buckets as $field ) {
+				$values[] = $field->key;
+			}
 		}
 
 		return $values;
