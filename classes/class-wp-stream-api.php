@@ -74,6 +74,32 @@ class WP_Stream_API {
 	}
 
 	/**
+	 * Get site details.
+	 *
+	 * @param array Returns specified fields only.
+	 * @param bool  Allow API calls to be cached.
+	 * @param int   Set transient expiration in seconds.
+	 *
+	 * @return mixed
+	 */
+	public function get_site( $fields = array(), $allow_cache = true, $expiration = 300 ) {
+		if ( ! $this->site_uuid ) {
+			return false;
+		}
+
+		$params = array();
+
+		if ( ! empty( $fields ) ) {
+			$params['fields'] = implode( ',', $fields );
+		}
+
+		$url  = $this->request_url( sprintf( '/sites/%s', esc_attr( $this->site_uuid ) ), $params );
+		$args = array( 'method' => 'GET' );
+
+		return $this->remote_request( $url, $args, $allow_cache, $expiration );
+	}
+
+	/**
 	 * Get the details for a specific user.
 	 *
 	 * @param int  A user ID.

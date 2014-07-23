@@ -691,9 +691,59 @@ class WP_Stream_Admin {
 	 */
 	public static function render_account_page() {
 		$page_title = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
+
+		$plan_details = WP_Stream::$api->validate_key();
+		$site_details = WP_Stream::$api->get_site();
+		$plan_label   = __( 'Free', 'stream' );
+
+		$site_details->name = get_bloginfo( 'name' ); // @todo - this can be removed once the get-site endpoint includes the site name
+
+		if ( 0 === strpos( $plan_details->plan, 'pro' ) ) {
+			$plan_label = __( 'Pro', 'stream' );
+		} elseif ( 0 === strpos( $plan_details->plan, 'standard' ) ) {
+			$plan_label = __( 'Standard', 'stream' );
+		}
 		?>
 		<div class="wrap">
 			<h2><?php echo esc_html( $page_title ) ?></h2>
+			<div class="postbox ">
+				<h3><?php echo esc_html( $site_details->name ); ?></h3>
+				<div class="plan-details">
+					<table class="form-table">
+						<tbody>
+							<tr>
+								<th><?php _e( 'Plan', 'stream' ); ?></th>
+								<td><?php echo esc_html( $plan_label ); ?></td>
+							</tr>
+							<?php if ( 'free' !== $plan_details->plan ) : ?>
+							<tr>
+								<th><?php _e( 'Next Billing', 'stream' ); ?></th>
+								<td><?php printf( _x( '<strong>$%1$s</strong> on %2$s', '1: Price, 2: Renewal date', 'stream' ), '9', date( 'Y-m-d', strtotime( $plan_details->expiry->date ) ) ); ?></td>
+							</tr>
+							<?php endif; ?>
+							<tr>
+								<th><?php _e( 'Activity History', 'stream' ); ?></th>
+								<td>7 Days</td> <?php //@todo ?>
+							</tr>
+							<tr>
+								<th><?php _e( 'Created', 'stream' ); ?></th>
+								<td>Jul 23rd, 2014</td> <?php //@todo ?>
+							</tr>
+							<tr>
+								<th><?php _e( 'API Key', 'stream' ); ?></th>
+								<td>
+									<code class="api-key"><?php echo WP_Stream::$api->site_uuid; ?></code>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="plan-actions submitbox">
+					<a href="http://sandbox.wp-stream.com/dashboard/#change-plan-<?php echo esc_html( WP_Stream::$api->site_uuid ); ?>" class="button button-primary button-large"><?php _e( 'Change Plan', 'stream' ); ?></a>
+					<a class="submitdelete disconnect" href="http://sandbox.wp-stream.com/dashboard/#cancel-subscription-<?php echo esc_html( WP_Stream::$api->site_uuid ); ?>">Disconnect</a>
+					<?php // @todo - make these links betterer ?>
+				</div>
+			</div>
 		</div>
 		<?php
 	}
