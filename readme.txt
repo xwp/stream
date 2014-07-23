@@ -102,6 +102,14 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 1.4.9 - July 23, 2014 =
+
+* Fix: Revert delayed log mechanism for post transition ([#585](https://github.com/x-team/wp-stream/issues/585))
+* Fix: Revert usage of get_taxonomy() ([#586](https://github.com/x-team/wp-stream/issues/586))
+* Fix: Notices not firing on correct action ([#589](https://github.com/x-team/wp-stream/issues/589))
+
+Props [shadyvb](http://profiles.wordpress.org/shadyvb/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
 = 1.4.8 - July 18, 2014 =
 
 * New: Greatly improved widget tracking, including changes performed in Customizer ([#391](https://github.com/x-team/wp-stream/pull/391))
@@ -112,7 +120,6 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 * Fix: Stream menu appearing in Network menu when not network activated ([#582](https://github.com/x-team/wp-stream/issues/582))
 * Fix: Post Revision ID associated to record is not the most recent one ([#585](https://github.com/x-team/wp-stream/issues/585))
 * Fix: Incorrect action label for comment throttling ([#591](https://github.com/x-team/wp-stream/issues/591))
-
 
 Props [westonruter](http://profiles.wordpress.org/westonruter/), [fjarrett](http://profiles.wordpress.org/fjarrett/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [chacha](https://github.com/chacha/)
 
