@@ -63,13 +63,6 @@ class WP_Stream {
 	public static $notices = array();
 
 	/**
-	 * Admin notices, collected and displayed on proper action
-	 *
-	 * @var array
-	 */
-	public static $notices = array();
-
-	/**
 	 * Class constructor
 	 */
 	private function __construct() {
