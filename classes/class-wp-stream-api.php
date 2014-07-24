@@ -38,7 +38,7 @@ class WP_Stream_API {
 	 *
 	 * @var string
 	 */
-	protected $api_version = 'v1';
+	protected $api_version = '0.0.1';
 
 	/**
 	 * Error messages
@@ -58,23 +58,34 @@ class WP_Stream_API {
 	}
 
 	/**
-	 * Validate a site API key.
+	 * Get all sites for an API key.
 	 *
-	 * @param string The API Key.
+	 * @param string Returns the specified site only.
+	 * @param array  Returns specified fields only.
 	 * @param bool   Allow API calls to be cached.
 	 * @param int    Set transient expiration in seconds.
 	 *
 	 * @return mixed
 	 */
-	public function validate_key( $allow_cache = true, $expiration = 300 ) {
-		$url  = $this->request_url( '/validate-key' );
+	public function get_sites( $site_url = '', $fields = array(), $allow_cache = true, $expiration = 300 ) {
+		$params = array();
+
+		if ( ! empty( $site_url ) ) {
+			$params['site_url'] = $site_url;
+		}
+
+		if ( ! empty( $fields ) ) {
+			$params['fields'] = implode( ',', $fields );
+		}
+
+		$url  = $this->request_url( '/sites', $params );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
 	}
 
 	/**
-	 * Get site details.
+	 * Get the details for a specific site.
 	 *
 	 * @param array Returns specified fields only.
 	 * @param bool  Allow API calls to be cached.
@@ -243,6 +254,7 @@ class WP_Stream_API {
 		$args = wp_parse_args( $args, $defaults );
 
 		$args['headers']['stream-api-master-key'] = $this->api_key;
+		$args['headers']['Accept-Version']        = $this->api_version;
 		$args['headers']['Content-Type']          = 'application/json';
 
 		$transient = 'wp_stream_' . md5( $url );

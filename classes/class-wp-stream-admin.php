@@ -448,17 +448,21 @@ class WP_Stream_Admin {
 		WP_Stream::$api->api_key = wp_stream_filter_input( INPUT_GET, 'api_key' );
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 
-		$validate_key_request = WP_Stream::$api->validate_key( WP_Stream::$api->api_key, false );
+		$site_details_request = WP_Stream::$api->get_sites( $site_url );
 
-		// Regular expression to match UUID v1
-		$pattern = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/';
+		if ( is_array( $site_details_request->sites ) ) {
+			$site_details = $site_details_request->sites[0];
 
-		if ( isset( $validate_key_request->site_id ) && preg_match( $pattern, $validate_key_request->site_id ) ) {
-			WP_Stream::$api->site_uuid = $validate_key_request->site_id;
+			// Regular expression to match UUID v1
+			$pattern = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/';
 
-			update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
+			if ( isset( $site_details->site_id ) && preg_match( $pattern, $site_details->site_id ) ) {
+				WP_Stream::$api->site_uuid = $site_details->site_id;
 
-			do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
+				update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
+
+				do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
+			}
 		}
 
 		if ( ! WP_Stream::$api->api_key || ! WP_Stream::$api->site_uuid ) {
@@ -692,22 +696,21 @@ class WP_Stream_Admin {
 	public static function render_account_page() {
 		$page_title = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
 
-		$plan_details = WP_Stream::$api->validate_key();
 		$site_details = WP_Stream::$api->get_site();
 		$plan_label   = __( 'Free', 'stream' );
 
-		$site_details->name = get_bloginfo( 'name' ); // @todo - this can be removed once the get-site endpoint includes the site name
-
-		if ( 0 === strpos( $plan_details->plan, 'pro' ) ) {
-			$plan_label = __( 'Pro', 'stream' );
-		} elseif ( 0 === strpos( $plan_details->plan, 'standard' ) ) {
-			$plan_label = __( 'Standard', 'stream' );
+		if ( isset( $site_details->plan ) ) {
+			if ( 0 === strpos( $site_details->plan->type, 'pro' ) ) {
+				$plan_label = __( 'Pro', 'stream' );
+			} elseif ( 0 === strpos( $site_details->plan->type, 'standard' ) ) {
+				$plan_label = __( 'Standard', 'stream' );
+			}
 		}
 		?>
 		<div class="wrap">
 			<h2><?php echo esc_html( $page_title ) ?></h2>
 			<div class="postbox ">
-				<h3><?php echo esc_html( $site_details->name ); ?></h3>
+				<h3><?php echo esc_html( $site_details->site_url ); ?></h3>
 				<div class="plan-details">
 					<table class="form-table">
 						<tbody>
@@ -715,10 +718,10 @@ class WP_Stream_Admin {
 								<th><?php _e( 'Plan', 'stream' ); ?></th>
 								<td><?php echo esc_html( $plan_label ); ?></td>
 							</tr>
-							<?php if ( 'free' !== $plan_details->plan ) : ?>
+							<?php if ( 'free' !== $site_details->plan ) : ?>
 							<tr>
 								<th><?php _e( 'Next Billing', 'stream' ); ?></th>
-								<td><?php printf( _x( '<strong>$%1$s</strong> on %2$s', '1: Price, 2: Renewal date', 'stream' ), '9', date( 'Y-m-d', strtotime( $plan_details->expiry->date ) ) ); ?></td>
+								<td><?php printf( _x( '<strong>$%1$s</strong> on %2$s', '1: Price, 2: Renewal date', 'stream' ), '9', date( 'Y-m-d', strtotime( $site_details->expiry->date ) ) ); ?></td>
 							</tr>
 							<?php endif; ?>
 							<tr>
@@ -727,7 +730,7 @@ class WP_Stream_Admin {
 							</tr>
 							<tr>
 								<th><?php _e( 'Created', 'stream' ); ?></th>
-								<td>Jul 23rd, 2014</td> <?php //@todo ?>
+								<td><?php echo date( 'Y-m-d', strtotime( $site_details->created ) ); ?></td>
 							</tr>
 							<tr>
 								<th><?php _e( 'API Key', 'stream' ); ?></th>
