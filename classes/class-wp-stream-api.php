@@ -5,7 +5,7 @@ class WP_Stream_API {
 	/**
 	 * API Key key/identifier
 	 */
-	const API_KEY_OPTION_KEY = 'wp_stream_api_master_key';
+	const API_KEY_OPTION_KEY = 'wp_stream_site_api_key';
 
 	/**
 	 * Site UUID key/identifier
@@ -226,9 +226,9 @@ class WP_Stream_API {
 
 		$args = wp_parse_args( $args, $defaults );
 
-		$args['headers']['stream-api-master-key'] = $this->api_key;
-		$args['headers']['Accept-Version']        = $this->api_version;
-		$args['headers']['Content-Type']          = 'application/json';
+		$args['headers']['Stream-Site-API-Key'] = $this->api_key;
+		$args['headers']['Accept-Version']      = $this->api_version;
+		$args['headers']['Content-Type']        = 'application/json';
 
 		$transient = 'wp_stream_' . md5( $url );
 
