@@ -742,8 +742,8 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_account_page() {
-		$page_title = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
-
+		$page_title   = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
+		$date_format  = get_option( 'date_format' );
 		$site_details = WP_Stream::$api->get_site();
 
 		if ( ! $site_details ) {
@@ -752,6 +752,7 @@ class WP_Stream_Admin {
 				<div class="updated error"><p><?php _e( 'Error retrieving account details.', 'stream' ); ?></p></div>
 			</div>
 			<?php
+			return;
 		}
 
 		$plan_label = __( 'Free', 'stream' );
@@ -761,6 +762,24 @@ class WP_Stream_Admin {
 			} elseif ( 0 === strpos( $site_details->plan->type, 'standard' ) ) {
 				$plan_label = __( 'Standard', 'stream' );
 			}
+		}
+
+		if ( 'free' !== $site_details->plan->type ) {
+			$next_billing_label = sprintf(
+				_x( '$%1$s on %2$s', '1: Price, 2: Renewal date', 'stream' ),
+				$site_details->plan->amount,
+				date_i18n( $date_format, strtotime( $site_details->expiry->date ) )
+			);
+		}
+
+		$retention_label = '';
+		if ( 0 === $site_details->plan->retention ) {
+			$retention_label = __( 'Unlimited', 'stream' );
+		} else {
+			$retention_label = sprintf(
+				_n( '1 Day', '%s Days', $site_details->plan->retention, 'stream' ),
+				$site_details->plan->retention
+			);
 		}
 		?>
 		<div class="wrap">
@@ -774,24 +793,24 @@ class WP_Stream_Admin {
 								<th><?php _e( 'Plan', 'stream' ); ?></th>
 								<td><?php echo esc_html( $plan_label ); ?></td>
 							</tr>
-							<?php if ( 'free' !== $site_details->plan ) : ?>
+							<?php if ( 'free' !== $site_details->plan->type ) : ?>
 							<tr>
 								<th><?php _e( 'Next Billing', 'stream' ); ?></th>
-								<td><?php printf( _x( '<strong>$%1$s</strong> on %2$s', '1: Price, 2: Renewal date', 'stream' ), '9', date( 'Y-m-d', strtotime( $site_details->expiry->date ) ) ); ?></td>
+								<td><?php echo esc_html( $next_billing_label ); ?></td>
 							</tr>
 							<?php endif; ?>
 							<tr>
 								<th><?php _e( 'Activity History', 'stream' ); ?></th>
-								<td>7 Days</td> <?php //@todo ?>
+								<td><?php echo esc_html( $retention_label ); ?></td>
 							</tr>
 							<tr>
 								<th><?php _e( 'Created', 'stream' ); ?></th>
-								<td><?php echo date( 'Y-m-d', strtotime( $site_details->created ) ); ?></td>
+								<td><?php echo esc_html( date_i18n( $date_format, strtotime( $site_details->created ) ) ); ?></td>
 							</tr>
 							<tr>
 								<th><?php _e( 'API Key', 'stream' ); ?></th>
 								<td>
-									<code class="api-key"><?php echo WP_Stream::$api->api_key; ?></code>
+									<code class="api-key"><?php echo esc_html( WP_Stream::$api->api_key ); ?></code>
 								</td>
 							</tr>
 						</tbody>
