@@ -84,26 +84,6 @@ class WP_Stream_API {
 	}
 
 	/**
-	 * Get the details for a specific user.
-	 *
-	 * @param int  A user ID.
-	 * @param bool Allow API calls to be cached.
-	 * @param int  Set transient expiration in seconds.
-	 *
-	 * @return mixed
-	 */
-	public function get_user( $user_id = false, $allow_cache = true, $expiration = 300 ) {
-		if ( false === $user_id ) {
-			return false;
-		}
-
-		$url  = $this->request_url( sprintf( '/users/%s', esc_attr( intval( $user_id ) ) ) );
-		$args = array( 'method' => 'GET' );
-
-		return $this->remote_request( $url, $args, $allow_cache, $expiration );
-	}
-
-	/**
 	 * Get a specific record.
 	 *
 	 * @param string A record ID.
