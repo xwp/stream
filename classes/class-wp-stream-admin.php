@@ -745,8 +745,16 @@ class WP_Stream_Admin {
 		$page_title = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
 
 		$site_details = WP_Stream::$api->get_site();
-		$plan_label   = __( 'Free', 'stream' );
 
+		if ( ! $site_details ) {
+			?>
+			<div class="wrap">
+				<div class="updated error"><p><?php _e( 'Error retrieving account details.', 'stream' ); ?></p></div>
+			</div>
+			<?php
+		}
+
+		$plan_label = __( 'Free', 'stream' );
 		if ( isset( $site_details->plan ) ) {
 			if ( 0 === strpos( $site_details->plan->type, 'pro' ) ) {
 				$plan_label = __( 'Pro', 'stream' );
