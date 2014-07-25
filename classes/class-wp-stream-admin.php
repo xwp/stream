@@ -24,11 +24,18 @@ class WP_Stream_Admin {
 	public static $disable_access = false;
 
 	/**
-	 * URL used to authenticate with Stream
+	 * URL used for authenticating with Stream
 	 *
 	 * @var string
 	 */
 	public static $connect_url;
+
+	/**
+	 * URL used for account level actions
+	 *
+	 * @var string
+	 */
+	public static $account_url;
 
 	const ADMIN_BODY_CLASS     = 'wp_stream_screen';
 	const RECORDS_PAGE_SLUG    = 'wp_stream';
@@ -50,6 +57,7 @@ class WP_Stream_Admin {
 
 		$site_url          = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
 		$connect_nonce     = wp_create_nonce( 'stream_connect_site-' . sanitize_key( $site_url ) );
+
 		self::$connect_url = add_query_arg(
 			array(
 				'auth'       => 'true',
@@ -59,8 +67,22 @@ class WP_Stream_Admin {
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/pricing/' )
 		);
 
+		self::$account_url = add_query_arg(
+			array(
+				'auth'       => 'true',
+				'plugin_url' => urlencode( admin_url( 'admin.php?page=wp_stream_account' ) ),
+			),
+			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/dashboard/' )
+		);
+
+		// Connect
 		if ( ! empty( wp_stream_filter_input( INPUT_GET, 'api_key' ) ) ) {
 			add_action( 'admin_init', array( __CLASS__, 'save_api_authentication' ) );
+		}
+
+		// Disconnect
+		if ( '1' === wp_stream_filter_input( INPUT_GET, 'disconnect' ) && WP_Stream_Admin::ACCOUNT_PAGE_SLUG === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
+			add_action( 'admin_init', array( __CLASS__, 'remove_api_authentication' ) );
 		}
 
 		// Register settings page
@@ -96,9 +118,6 @@ class WP_Stream_Admin {
 		// Auto purge setup
 		add_action( 'wp_loaded', array( __CLASS__, 'purge_schedule_setup' ) );
 		add_action( 'wp_stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
-
-		// Admin notices
-		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
@@ -158,14 +177,29 @@ class WP_Stream_Admin {
 	 */
 	public static function admin_notices() {
 		$message = wp_stream_filter_input( INPUT_GET, 'message' );
+		$notice  = false;
 
 		switch ( $message ) {
 			case 'data_erased':
-				printf( '<div class="updated"><p>%s</p></div>', __( 'All records have been successfully erased.', 'stream' ) );
+				$notice = esc_html__( 'All records have been successfully erased.', 'stream' );
 				break;
 			case 'settings_reset':
-				printf( '<div class="updated"><p>%s</p></div>', __( 'All site settings have been successfully reset.', 'stream' ) );
+				$notice = esc_html__( 'All site settings have been successfully reset.', 'stream' );
 				break;
+			case 'connected':
+				$notice = sprintf(
+					'<strong>%s</strong></p><p>%s',
+					esc_html__( 'You have successfully connected to Stream!', 'stream' ),
+					esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
+				);
+				break;
+			case 'disconnected':
+				$notice = esc_html__( 'You have successfully disconnected from Stream.', 'stream' );
+				break;
+		}
+
+		if ( $notice ) {
+			WP_Stream::notice( $notice, false );
 		}
 	}
 
@@ -466,8 +500,26 @@ class WP_Stream_Admin {
 
 		$redirect_url = add_query_arg(
 			array(
-				'page'      => WP_Stream_Admin::RECORDS_PAGE_SLUG,
-				'connected' => 1,
+				'page'    => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+				'message' => 'connected',
+			),
+			admin_url( 'admin.php' )
+		);
+
+		wp_redirect( $redirect_url );
+	}
+
+	public static function remove_api_authentication() {
+		WP_Stream::$api->api_key   = false;
+		WP_Stream::$api->site_uuid = false;
+
+		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
+		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
+
+		$redirect_url = add_query_arg(
+			array(
+				'page'    => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+				'message' => 'disconnected',
 			),
 			admin_url( 'admin.php' )
 		);
@@ -738,9 +790,8 @@ class WP_Stream_Admin {
 					</table>
 				</div>
 				<div class="plan-actions submitbox">
-					<a href="http://sandbox.wp-stream.com/dashboard/#change-plan-<?php echo esc_html( WP_Stream::$api->site_uuid ); ?>" class="button button-primary button-large"><?php _e( 'Change Plan', 'stream' ); ?></a>
-					<a class="submitdelete disconnect" href="http://sandbox.wp-stream.com/dashboard/#cancel-subscription-<?php echo esc_html( WP_Stream::$api->site_uuid ); ?>">Disconnect</a>
-					<?php // @todo - make these links betterer ?>
+					<a href="<?php echo esc_url( self::$account_url ); ?>#change-plan-<?php echo esc_html( WP_Stream::$api->site_uuid ); ?>" class="button button-primary button-large"><?php _e( 'Change Plan', 'stream' ); ?></a>
+					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
 				</div>
 			</div>
 		</div>
@@ -763,6 +814,7 @@ class WP_Stream_Admin {
 		?>
 		<div id="wp-stream-connect">
 			<div class="wrap">
+				<?php do_action( 'admin_notices' ); ?>
 				<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ) ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a></p>
 				<p><?php _e( 'with WordPress.com', 'stream' ) ?></p>
 				<?php if ( isset( $testimonial ) ) : ?>
@@ -779,17 +831,6 @@ class WP_Stream_Admin {
 	}
 
 	public static function render_stream_page() {
-		if ( wp_stream_filter_input( INPUT_GET, 'connected' ) && self::RECORDS_PAGE_SLUG === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
-			WP_Stream::notice(
-				sprintf(
-					'<strong>%s</strong></p><p>%s',
-					esc_html__( 'You have successfully connected to Stream!', 'stream' ),
-					esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
-				),
-				false
-			);
-		}
-
 		$page_title = __( 'Stream Records', 'stream' );
 
 		self::$list_table->prepare_items();
