@@ -58,33 +58,6 @@ class WP_Stream_API {
 	}
 
 	/**
-	 * Get all sites for an API key.
-	 *
-	 * @param string Returns the specified site only.
-	 * @param array  Returns specified fields only.
-	 * @param bool   Allow API calls to be cached.
-	 * @param int    Set transient expiration in seconds.
-	 *
-	 * @return mixed
-	 */
-	public function get_sites( $site_url = '', $fields = array(), $allow_cache = true, $expiration = 300 ) {
-		$params = array();
-
-		if ( ! empty( $site_url ) ) {
-			$params['site_url'] = $site_url;
-		}
-
-		if ( ! empty( $fields ) ) {
-			$params['fields'] = implode( ',', $fields );
-		}
-
-		$url  = $this->request_url( '/sites', $params );
-		$args = array( 'method' => 'GET' );
-
-		return $this->remote_request( $url, $args, $allow_cache, $expiration );
-	}
-
-	/**
 	 * Get the details for a specific site.
 	 *
 	 * @param array Returns specified fields only.

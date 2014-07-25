@@ -441,33 +441,28 @@ class WP_Stream_Admin {
 		$site_url           = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
 		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $site_url );
 
+		if ( ! isset( $_GET['api_key'] ) || ! isset( $_GET['site_id'] ) ) {
+			wp_die( 'There was a problem connecting to Stream. Please try again later.', 'stream' );
+		}
+
 		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], $connect_nonce_name ) ) {
-			wp_die( 'Doing it wrong.' );
+			wp_die( 'Doing it wrong.', 'stream' );
 		}
 
-		WP_Stream::$api->api_key = wp_stream_filter_input( INPUT_GET, 'api_key' );
+		WP_Stream::$api->api_key   = wp_stream_filter_input( INPUT_GET, 'api_key' );
+		WP_Stream::$api->site_uuid = wp_stream_filter_input( INPUT_GET, 'site_id' );
+
+		// Verify the API Key and Site UUID
+		$site_details_request = WP_Stream::$api->get_site();
+
+		if ( ! isset( $site_details_request->site_id ) ) {
+			wp_die( 'There was a problem connecting to Stream. Please try again later.', 'stream' );
+		}
+
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
+		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
 
-		$site_details_request = WP_Stream::$api->get_sites( $site_url );
-
-		if ( is_array( $site_details_request->sites ) ) {
-			$site_details = $site_details_request->sites[0];
-
-			// Regular expression to match UUID v1
-			$pattern = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/';
-
-			if ( isset( $site_details->site_id ) && preg_match( $pattern, $site_details->site_id ) ) {
-				WP_Stream::$api->site_uuid = $site_details->site_id;
-
-				update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
-
-				do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
-			}
-		}
-
-		if ( ! WP_Stream::$api->api_key || ! WP_Stream::$api->site_uuid ) {
-			wp_die( __( 'There was a problem connecting to Stream. Please try again later.', 'stream' ) );
-		}
+		do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
 
 		$redirect_url = add_query_arg(
 			array(
@@ -476,6 +471,7 @@ class WP_Stream_Admin {
 			),
 			admin_url( 'admin.php' )
 		);
+
 		wp_redirect( $redirect_url );
 	}
 
