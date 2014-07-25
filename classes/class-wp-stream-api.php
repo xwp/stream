@@ -66,7 +66,7 @@ class WP_Stream_API {
 	 *
 	 * @return mixed
 	 */
-	public function get_site( $fields = array(), $allow_cache = true, $expiration = 300 ) {
+	public function get_site( $fields = array(), $allow_cache = true, $expiration = 30 ) {
 		if ( ! $this->site_uuid ) {
 			return false;
 		}
@@ -123,7 +123,7 @@ class WP_Stream_API {
 	 *
 	 * @return mixed
 	 */
-	public function get_records( $fields = array(), $allow_cache = true, $expiration = 120 ) {
+	public function get_records( $fields = array(), $allow_cache = true, $expiration = 30 ) {
 		if ( ! $this->site_uuid ) {
 			return false;
 		}
