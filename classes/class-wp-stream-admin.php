@@ -76,7 +76,7 @@ class WP_Stream_Admin {
 		);
 
 		// Connect
-		if ( ! empty( wp_stream_filter_input( INPUT_GET, 'api_key' ) ) ) {
+		if ( ! empty( wp_stream_filter_input( INPUT_GET, 'api_key' ) ) && ! empty( wp_stream_filter_input( INPUT_GET, 'site_uuid' ) ) ) {
 			add_action( 'admin_init', array( __CLASS__, 'save_api_authentication' ) );
 		}
 
@@ -475,7 +475,7 @@ class WP_Stream_Admin {
 		$site_url           = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
 		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $site_url );
 
-		if ( ! isset( $_GET['api_key'] ) || ! isset( $_GET['site_id'] ) ) {
+		if ( ! isset( $_GET['api_key'] ) || ! isset( $_GET['site_uuid'] ) ) {
 			wp_die( 'There was a problem connecting to Stream. Please try again later.', 'stream' );
 		}
 
@@ -484,13 +484,13 @@ class WP_Stream_Admin {
 		}
 
 		WP_Stream::$api->api_key   = wp_stream_filter_input( INPUT_GET, 'api_key' );
-		WP_Stream::$api->site_uuid = wp_stream_filter_input( INPUT_GET, 'site_id' );
+		WP_Stream::$api->site_uuid = wp_stream_filter_input( INPUT_GET, 'site_uuid' );
 
 		// Verify the API Key and Site UUID
 		$site_details_request = WP_Stream::$api->get_site();
 
 		if ( ! isset( $site_details_request->site_id ) ) {
-			wp_die( 'There was a problem connecting to Stream. Please try again later.', 'stream' );
+			wp_die( 'There was a problem verifying your site with Stream. Please try again later.', 'stream' );
 		}
 
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
