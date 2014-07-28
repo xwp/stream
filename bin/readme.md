@@ -41,6 +41,17 @@ cd .git/hooks
 ln -s ../../bin/pre-commit .
 ```
 
+You may customize the behavior of the `.travis.yml` and `pre-commit` hook by
+specifying a `.ci-env.sh` in the root of the repo, for example:
+
+```bash
+export PHPCS_GITHUB_SRC=x-team/PHP_CodeSniffer
+export PHPCS_GIT_TREE=master
+export WPCS_GIT_TREE=develop
+export WPCS_STANDARD=WordPress-Core
+export PHPCS_IGNORE='tests/*,includes/vendor/*'
+```
+
 The library includes a WordPress README [parser](class-wordpress-readme-parser.php) and [converter](generate-markdown-readme) to Markdown,
 so you don't have to manually keep your `readme.txt` on WordPress.org in sync with the `readme.md` you have on GitHub. The
 converter will also automatically recognize the presence of projects with Travis CI and include the status image
