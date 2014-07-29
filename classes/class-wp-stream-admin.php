@@ -346,11 +346,11 @@ class WP_Stream_Admin {
 		if ( version_compare( $wp_version, '3.8-alpha', '>=' ) ) {
 			wp_enqueue_style( 'wp-stream-icons' );
 			$css = "
-				#toplevel_page_{$records_page} .wp-menu-image:before
+				#toplevel_page_{$records_page} .wp-menu-image:before {
 					font-family: 'WP Stream' !important;
 					content: '\\73' !important;
 				}
-				#toplevel_page_{$records_page} .wp-menu-image
+				#toplevel_page_{$records_page} .wp-menu-image {
 					background-repeat: no-repeat;
 				}
 				#menu-posts-feedback .wp-menu-image:before {
