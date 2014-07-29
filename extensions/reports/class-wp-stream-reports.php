@@ -33,21 +33,6 @@
 class WP_Stream_Reports {
 
 	/**
-	 * Holds plugin minimum version
-	 *
-	 * @const string
-	 */
-	const STREAM_MIN_VERSION = '1.4.3';
-
-	/**
-	 * Holds this plugin version
-	 * Used in assets cache
-	 *
-	 * @const string
-	 */
-	const VERSION = '0.1.1';
-
-	/**
 	 * Hold Stream Reports instance
 	 *
 	 * @var string
@@ -102,6 +87,10 @@ class WP_Stream_Reports {
 		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' ); // Has trailing slash
 		define( 'WP_STREAM_REPORTS_VIEW_DIR', WP_STREAM_REPORTS_DIR . 'views/' ); // Has trailing slash
 
+		if ( ! apply_filters( 'wp_stream_load_reports', true ) ) {
+			return;
+		}
+
 		add_action( 'plugins_loaded', array( $this, 'load' ) );
 	}
 
@@ -113,14 +102,6 @@ class WP_Stream_Reports {
 	 */
 	public function load() {
 		add_action( 'all_admin_notices', array( $this, 'admin_notices' ) );
-
-		if ( ! $this->is_dependency_satisfied() ) {
-			return;
-		}
-
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			return;
-		}
 
 		// Load settings
 		require_once WP_STREAM_REPORTS_INC_DIR . 'class-wp-stream-reports-settings.php';
@@ -148,11 +129,6 @@ class WP_Stream_Reports {
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
 		add_action( 'admin_print_scripts', array( $this, 'dequeue_media_conflicts' ), 9999 );
-
-		// Register to Stream updates
-		if ( class_exists( 'WP_Stream_Updater' ) ) {
-			WP_Stream_Updater::instance()->register( plugin_basename( __FILE__ ) );
-		}
 	}
 
 	/**
@@ -239,7 +215,7 @@ class WP_Stream_Reports {
 			'stream-reports',
 			WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js',
 			array( 'stream-reports-nvd3', 'jquery', 'underscore', 'jquery-ui-datepicker' ),
-			self::VERSION,
+			WP_STREAM::VERSION,
 			true
 		);
 
@@ -248,7 +224,7 @@ class WP_Stream_Reports {
 			'stream-reports-nvd3',
 			WP_STREAM_REPORTS_URL . 'ui/css/nvd3/nv.d3.min.css',
 			array(),
-			self::VERSION,
+			WP_STREAM::VERSION,
 			'screen'
 		);
 
@@ -256,7 +232,7 @@ class WP_Stream_Reports {
 			'stream-reports',
 			WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css',
 			array( 'stream-reports-nvd3', 'wp-stream-datepicker' ),
-			self::VERSION,
+			WP_STREAM::VERSION,
 			'screen'
 		);
 
@@ -355,37 +331,6 @@ class WP_Stream_Reports {
 		do_action( "stream-reports-view-{$view->slug}", $view );
 
 		include_once $view->path;
-	}
-
-	/**
-	 * Check if plugin dependencies are satisfied and add an admin notice if not
-	 *
-	 * @return bool
-	 */
-	public function is_dependency_satisfied() {
-		$message = '';
-
-		if ( ! class_exists( 'WP_Stream' ) ) {
-			$message .= sprintf( '<p>%s</p>', __( 'Stream Reports requires Stream plugin to be present and activated.', 'stream-reports' ) );
-		} else if ( version_compare( WP_Stream::VERSION, self::STREAM_MIN_VERSION, '<' ) ) {
-			$message .= sprintf( '<p>%s</p>', sprintf( __( 'Stream Reports requires Stream version %s or higher', 'stream-reports' ), self::STREAM_MIN_VERSION ) );
-		}
-
-		if ( ! empty( $message ) ) {
-			self::$messages['wp_stream_db_error'] = sprintf(
-				'<div class="error">%s<p>%s</p></div>',
-				$message,
-				sprintf(
-					__( 'Please <a href="%s" target="_blank">install</a> Stream plugin version %s or higher for Stream Reports to work properly.', 'stream-reports' ),
-					esc_url( 'http://wordpress.org/plugins/stream/' ),
-					self::STREAM_MIN_VERSION
-				)
-			); // xss okay
-
-			return false;
-		}
-
-		return true;
 	}
 
 	/**

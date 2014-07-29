@@ -124,14 +124,9 @@ class WP_Stream {
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
 
-		// Include Stream extension updater
-		WP_Stream_Updater::instance();
-
 		if ( is_admin() ) {
 			// Registers a hook that connectors and other plugins can use whenever a stream update happens
 			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
-
-			add_action( 'admin_init', array( 'WP_Stream_Extensions', 'get_instance' ) );
 
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 

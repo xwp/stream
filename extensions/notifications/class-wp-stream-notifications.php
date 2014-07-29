@@ -33,21 +33,6 @@
 class WP_Stream_Notifications {
 
 	/**
-	 * Holds plugin minimum version
-	 *
-	 * @const string
-	 */
-	const STREAM_MIN_VERSION = '1.4.6';
-
-	/**
-	 * Holds this plugin version
-	 * Used in assets cache
-	 *
-	 * @const string
-	 */
-	const VERSION = '0.1.2';
-
-	/**
 	 * Hold Stream instance
 	 *
 	 * @var string
@@ -122,6 +107,10 @@ class WP_Stream_Notifications {
 		define( 'WP_STREAM_NOTIFICATIONS_URL', WP_STREAM_URL . 'extensions/notifications/' ); // Has trailing slash
 		define( 'WP_STREAM_NOTIFICATIONS_INC_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'includes/' ); // Has trailing slash
 
+		if ( ! apply_filters( 'wp_stream_load_notifications', true ) ) {
+			return;
+		}
+
 		add_action( 'plugins_loaded', array( $this, 'load' ) );
 
 		// Register post type
@@ -136,13 +125,6 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function load() {
-
-		// Plugin dependency and admin notices
-		if ( ! $this->is_dependency_satisfied() ) {
-			add_action( 'all_admin_notices', array( $this, 'admin_notices' ) );
-			return;
-		}
-
 		// Include all adapters
 		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-adapter.php';
 		$adapters = array( 'email', 'push' );
@@ -176,11 +158,6 @@ class WP_Stream_Notifications {
 		// Load Matcher
 		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-matcher.php';
 		$this->matcher = new WP_Stream_Notifications_Matcher();
-
-		// Register to Stream updates
-		if ( class_exists( 'WP_Stream_Updater' ) ) {
-			WP_Stream_Updater::instance()->register( plugin_basename( __FILE__ ) );
-		}
 	}
 
 	/**
@@ -212,37 +189,6 @@ class WP_Stream_Notifications {
 			'title' => $title,
 			'class' => $adapter,
 		);
-	}
-
-	/**
-	 * Check if plugin dependencies are satisfied and add an admin notice if not
-	 *
-	 * @return bool
-	 */
-	public function is_dependency_satisfied() {
-		$message = '';
-
-		if ( ! class_exists( 'WP_Stream' ) ) {
-			$message .= sprintf( '<p>%s</p>', __( 'Stream Notifications requires Stream plugin to be present and activated.', 'stream-notifications' ) );
-		} else if ( version_compare( WP_Stream::VERSION, self::STREAM_MIN_VERSION, '<' ) ) {
-			$message .= sprintf( '<p>%s</p>', sprintf( __( 'Stream Notifications requires Stream version %s or higher', 'stream-notifications' ), self::STREAM_MIN_VERSION ) );
-		}
-
-		if ( ! empty( $message ) ) {
-			self::$messages['wp_stream_db_error'] = sprintf(
-				'<div class="error">%s<p>%s</p></div>',
-				$message,
-				sprintf(
-					__( 'Please <a href="%s" target="_blank">install</a> Stream plugin version %s or higher for Stream Notifications to work properly.', 'stream-notifications' ),
-					esc_url( 'http://wordpress.org/plugins/stream/' ),
-					self::STREAM_MIN_VERSION
-				)
-			); // xss okay
-
-			return false;
-		}
-
-		return true;
 	}
 
 	/**

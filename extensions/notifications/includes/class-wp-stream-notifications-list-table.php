@@ -230,7 +230,7 @@ class WP_Stream_Notifications_List_Table {
 			return;
 		}
 
-		wp_enqueue_script( 'stream-notifications-list-actions', WP_STREAM_NOTIFICATIONS_URL . 'ui/js/list.js', array( 'jquery', 'underscore' ), WP_Stream_Notifications::VERSION );
+		wp_enqueue_script( 'stream-notifications-list-actions', WP_STREAM_NOTIFICATIONS_URL . 'ui/js/list.js', array( 'jquery', 'underscore' ), WP_STREAM::VERSION );
 
 		wp_localize_script( 'stream-notifications-list-actions', 'stream_notifications_options',
 			array(
