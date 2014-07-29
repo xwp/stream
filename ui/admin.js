@@ -375,7 +375,7 @@ jQuery(function( $ ) {
 				beforeSend: function() {
 					$( '.stream-live-update-checkbox .spinner' ).show().css( { 'display': 'inline-block' } );
 				},
-				success: function() {
+				success: function( response ) {
 					$( '.stream-live-update-checkbox .spinner' ).hide();
 
 					if ( false === response.success ) {
