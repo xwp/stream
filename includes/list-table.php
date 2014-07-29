@@ -703,8 +703,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	public function screen_controls( $status, $args ) {
 		$user_id   = get_current_user_id();
-		$option    = get_user_meta( $user_id, 'stream_live_update_records', true );
 		$heartbeat = wp_script_is( 'heartbeat', 'done' ) ? 'true' : 'false';
+		$option    = 'true' === $heartbeat ? get_user_meta( $user_id, 'stream_live_update_records', true ) : 'off';
 
 		$stream_live_update_records_nonce = wp_create_nonce( 'stream_live_update_records_nonce' );
 
