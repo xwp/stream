@@ -75,8 +75,11 @@ class WP_Stream_Admin {
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/dashboard/' )
 		);
 
+		$api_key   = wp_stream_filter_input( INPUT_GET, 'api_key' );
+		$site_uuid = wp_stream_filter_input( INPUT_GET, 'site_uuid' );
+
 		// Connect
-		if ( ! empty( wp_stream_filter_input( INPUT_GET, 'api_key' ) ) && ! empty( wp_stream_filter_input( INPUT_GET, 'site_uuid' ) ) ) {
+		if ( ! empty( $site_api_key ) && ! empty( $site_uuid ) ) {
 			add_action( 'admin_init', array( __CLASS__, 'save_api_authentication' ) );
 		}
 
