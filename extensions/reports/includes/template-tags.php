@@ -40,10 +40,10 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 					'selected'  => selected( $selected, true, false ),
 					'disabled'  => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
 					'class'     => 'level-2',
-					
+
 					'connector' => isset( $child_item['connector'] ) ? $child_item['connector'] : null,
 					'context'   => isset( $child_item['context'] ) ? $child_item['context'] : null,
-					'action'    => isset( $child_item['action'] ) ? $child_item['action'] : null,			
+					'action'    => isset( $child_item['action'] ) ? $child_item['action'] : null,
 					'blog'      => isset( $child_item['blog'] ) ? $child_item['blog'] : null,
 				);
 				$options[] = wp_stream_reports_filter_option( $option_args );
@@ -72,7 +72,7 @@ function wp_stream_reports_filter_option( $args ) {
 			'action'    => null,
 			'blog'      => null,
 		);
-		
+
 		$args = wp_parse_args( $args, $defaults );
 		return sprintf(
 			'<option value="%s" %s %s %s %s %s %s class="%s">%s</option>',
@@ -88,3 +88,25 @@ function wp_stream_reports_filter_option( $args ) {
 		);
 }
 
+function wp_stream_reports_intervals_html() {
+	$date = WP_Stream_Reports_Date_Interval::get_instance();
+
+	// Default interval
+	$default = array(
+		'key'   => 'all-time',
+		'start' => '',
+		'end'   => '',
+	);
+	$user_interval     = WP_Stream_Reports_Settings::get_user_options( 'interval', $default );
+	$save_interval_url = add_query_arg(
+		array_merge(
+			array(
+				'action' => 'wp_stream_reports_save_interval',
+			),
+			WP_Stream_Reports::$nonce
+		),
+		admin_url( 'admin-ajax.php' )
+	);
+
+	include WP_STREAM_REPORTS_VIEW_DIR . 'intervals.php';
+}

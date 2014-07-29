@@ -122,21 +122,22 @@ class WP_Stream_Reports {
 			return;
 		}
 
-		// Load settings, enabling extensions to hook in
-		require_once WP_STREAM_REPORTS_INC_DIR . 'settings.php';
+		// Load settings
+		require_once WP_STREAM_REPORTS_INC_DIR . 'class-wp-stream-reports-settings.php';
 		add_action( 'init', array( 'WP_Stream_Reports_Settings', 'load' ), 9 );
 
-		// Load sections here
-		require_once WP_STREAM_REPORTS_INC_DIR . 'meta-boxes.php';
-		require_once WP_STREAM_REPORTS_INC_DIR . 'template-tags.php';
-		require_once WP_STREAM_REPORTS_INC_DIR . 'charts.php';
+		// Load date interval
+		require_once WP_STREAM_CLASS_DIR . 'class-wp-stream-date-interval.php';
+		require_once WP_STREAM_REPORTS_INC_DIR . 'class-wp-stream-reports-date-interval.php';
+		add_action( 'init', array( 'WP_Stream_Reports_Date_Interval', 'get_instance' ) );
+
+		// Load metaboxes and charts
+		require_once WP_STREAM_REPORTS_INC_DIR . 'class-wp-stream-reports-meta-boxes.php';
+		require_once WP_STREAM_REPORTS_INC_DIR . 'class-wp-stream-reports-charts.php';
 		add_action( 'init', array( 'WP_Stream_Reports_Metaboxes', 'get_instance' ), 12 );
 
-		// Load Interval/Date class.
-		require_once WP_STREAM_CLASS_DIR . 'class-wp-stream-date-interval.php';
-		require_once WP_STREAM_REPORTS_INC_DIR . 'date-interval.php';
-
-		add_action( 'init', array( 'WP_Stream_Reports_Date_Interval', 'get_instance' ) );
+		// Load template tags
+		require_once WP_STREAM_REPORTS_INC_DIR . 'template-tags.php';
 
 		// Register new submenu
 		add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
