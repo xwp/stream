@@ -41,8 +41,8 @@ class WordPress_Readme_Parser {
 			if ( ! preg_match( '/^(.+?):\s+(.+)$/', $metadatum, $metadataum_matches ) ) {
 				throw new Exception( "Parse error in $metadatum" );
 			}
-			list( $name, $value )  = array_slice( $metadataum_matches, 1, 2 );
-			$this->metadata[$name] = $value;
+			list( $name, $value )    = array_slice( $metadataum_matches, 1, 2 );
+			$this->metadata[ $name ] = $value;
 		}
 		$this->metadata['Contributors'] = preg_split( '/\s*,\s*/', $this->metadata['Contributors'] );
 		$this->metadata['Tags'] = preg_split( '/\s*,\s*/', $this->metadata['Tags'] );
@@ -97,6 +97,9 @@ class WordPress_Readme_Parser {
 			'Description' => function ( $body ) use ( $params ) {
 				if ( isset( $params['travis_ci_url'] ) ) {
 					$body .= sprintf( "\n\n[![Build Status](%s.png?branch=master)](%s)", $params['travis_ci_url'], $params['travis_ci_url'] );
+				}
+				if ( isset( $params['coveralls_url'] ) ) {
+					$body .= sprintf( "\n\n[![Build Status](%s?branch=master)](%s)", $params['coveralls_badge_src'], $params['coveralls_url'] );
 				}
 				return $body;
 			},
@@ -181,8 +184,8 @@ class WordPress_Readme_Parser {
 			$body = $section['body'];
 
 			$body = call_user_func( $general_section_formatter, $body );
-			if ( isset( $section_formatters[$section['heading']] ) ) {
-				$body = trim( call_user_func( $section_formatters[$section['heading']], $body ) );
+			if ( isset( $section_formatters[ $section['heading'] ] ) ) {
+				$body = trim( call_user_func( $section_formatters[ $section['heading'] ], $body ) );
 			}
 
 			if ( $body ) {

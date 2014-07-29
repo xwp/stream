@@ -39,8 +39,14 @@ try {
 	$readme = new WordPress_Readme_Parser( array( 'path' => $readme_txt_path ) );
 
 	$md_args = array();
+	$github_url_regex = '#.+github\.com[:/]([^/]+/[^/]+)\.git$#';
+	$origin_url = trim( `git config --get remote.origin.url` );
 	if ( file_exists( $readme_root . '/.travis.yml' ) ) {
-		$md_args['travis_ci_url'] = preg_replace( '/^.+?:(.+)\.git$/', 'https://travis-ci.org/$1', trim( `git config --get remote.origin.url` ) );
+		$md_args['travis_ci_url'] = preg_replace( $github_url_regex, 'https://travis-ci.org/$1', $origin_url );
+	}
+	if ( file_exists( $readme_root . '/.coveralls.yml' ) ) {
+		$md_args['coveralls_badge_src'] = preg_replace( $github_url_regex, 'https://coveralls.io/repos/$1/badge.png', $origin_url );
+		$md_args['coveralls_url'] = preg_replace( $github_url_regex, 'https://coveralls.io/r/$1', $origin_url );
 	}
 	$markdown = $readme->to_markdown( $md_args );
 
