@@ -702,8 +702,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	public function screen_controls( $status, $args ) {
-		$user_id = get_current_user_id();
-		$option  = get_user_meta( $user_id, 'stream_live_update_records', true );
+		$user_id   = get_current_user_id();
+		$option    = get_user_meta( $user_id, 'stream_live_update_records', true );
+		$heartbeat = wp_script_is( 'heartbeat', 'done' ) ? 'true' : 'false';
 
 		$stream_live_update_records_nonce = wp_create_nonce( 'stream_live_update_records_nonce' );
 
@@ -720,7 +721,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			</div>
 			<div class="metabox-prefs stream-live-update-checkbox">
 				<label for="enable_live_update">
-					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" <?php checked( $option, 'on' ) ?> />
+					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" data-heartbeat="<?php echo esc_attr( $heartbeat ) ?>" <?php checked( $option, 'on' ) ?> />
 					<?php esc_html_e( 'Enabled', 'stream' ) ?><span class="spinner"></span>
 				</label>
 			</div>
