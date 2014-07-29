@@ -115,7 +115,7 @@ class WP_Stream {
 
 		// Load extensions
 		foreach ( glob( WP_STREAM_EXTENSIONS_DIR . '*' ) as $extension ) {
-			require_once sprintf( '%s/class-wp-stream-extension-%s.php', $extension, basename( $extension ) );
+			require_once sprintf( '%s/class-wp-stream-%s.php', $extension, basename( $extension ) );
 		}
 
 		// Load support for feeds
