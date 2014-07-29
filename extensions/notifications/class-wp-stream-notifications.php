@@ -125,7 +125,7 @@ class WP_Stream_Notifications {
 		add_action( 'plugins_loaded', array( $this, 'load' ) );
 
 		// Register post type
-		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'post-type.php';
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-post-type.php';
 		WP_Stream_Notifications_Post_Type::get_instance();
 	}
 
@@ -144,20 +144,20 @@ class WP_Stream_Notifications {
 		}
 
 		// Include all adapters
-		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapter.php';
+		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-adapter.php';
 		$adapters = array( 'email', 'push' );
 		foreach ( $adapters as $adapter ) {
-			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/' . $adapter . '.php';
+			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/class-wp-stream-notifications-adapter-' . $adapter . '.php';
 		}
 
 		// Load settings, enabling extensions to hook in
-		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'settings.php';
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-settings.php';
 		add_action( 'init', array( 'WP_Stream_Notifications_Settings', 'load' ), 9 );
 
 		// Load network class
 		if ( is_multisite() ) {
 
-			require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'network.php';
+			require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-network.php';
 			$this->network = new WP_Stream_Notifications_Network;
 
 			require_once WP_ADMIN . '/includes/plugins.php';
@@ -174,7 +174,7 @@ class WP_Stream_Notifications {
 		}
 
 		// Load Matcher
-		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'matcher.php';
+		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-matcher.php';
 		$this->matcher = new WP_Stream_Notifications_Matcher();
 
 		// Register to Stream updates

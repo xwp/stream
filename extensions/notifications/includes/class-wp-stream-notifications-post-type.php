@@ -35,7 +35,7 @@ class WP_Stream_Notifications_Post_Type {
 		add_action( 'save_post', array( $this, 'save' ), 10, 2 );
 
 		// Load list-table customizations
-		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'list-table.php';
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-list-table.php';
 		WP_Stream_Notifications_List_Table::get_instance();
 	}
 
@@ -840,7 +840,7 @@ class WP_Stream_Notifications_Post_Type {
 			return;
 		}
 
-		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'list-table.php';
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-list-table.php';
 		WP_Stream_Notifications_List_Table::get_instance();
 	}
 
