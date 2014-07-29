@@ -79,7 +79,7 @@ class WP_Stream_Admin {
 		$site_uuid = wp_stream_filter_input( INPUT_GET, 'site_uuid' );
 
 		// Connect
-		if ( ! empty( $site_api_key ) && ! empty( $site_uuid ) ) {
+		if ( ! empty( $api_key ) && ! empty( $site_uuid ) ) {
 			add_action( 'admin_init', array( __CLASS__, 'save_api_authentication' ) );
 		}
 
