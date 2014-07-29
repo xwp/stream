@@ -5,10 +5,8 @@ jQuery(function( $ ) {
 
 		// Only run on page 1 when the order is desc and on page wp_stream
 		if (
-			'toplevel_page_wp_stream' !== wp_stream.current_screen
-			||
-			'1' !== wp_stream.current_page
-			||
+			'toplevel_page_wp_stream' !== wp_stream.current_screen ||
+			'1' !== wp_stream.current_page ||
 			'asc' === wp_stream.current_order
 		) {
 			return;
