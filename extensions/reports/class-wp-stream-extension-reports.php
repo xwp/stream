@@ -97,10 +97,10 @@ class WP_Stream_Reports {
 	 * Class constructor
 	 */
 	private function __construct() {
-		define( 'WP_STREAM_REPORTS_DIR', plugin_dir_path( __FILE__ ) );
-		define( 'WP_STREAM_REPORTS_URL', plugin_dir_url( __FILE__ ) );
-		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' );
-		define( 'WP_STREAM_REPORTS_VIEW_DIR', WP_STREAM_REPORTS_DIR . 'views/' );
+		define( 'WP_STREAM_REPORTS_DIR', WP_STREAM_EXTENSIONS_DIR . 'reports/' ); // Has trailing slash
+		define( 'WP_STREAM_REPORTS_URL', WP_STREAM_URL . 'extensions/reports/' ); // Has trailing slash
+		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' ); // Has trailing slash
+		define( 'WP_STREAM_REPORTS_VIEW_DIR', WP_STREAM_REPORTS_DIR . 'views/' ); // Has trailing slash
 
 		add_action( 'plugins_loaded', array( $this, 'load' ) );
 	}

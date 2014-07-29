@@ -118,9 +118,8 @@ class WP_Stream_Notifications {
 	 * Class constructor
 	 */
 	private function __construct() {
-		define( 'WP_STREAM_NOTIFICATIONS_PLUGIN', plugin_basename( __FILE__ ) );
-		define( 'WP_STREAM_NOTIFICATIONS_DIR', plugin_dir_path( __FILE__ ) ); // Has trailing slash
-		define( 'WP_STREAM_NOTIFICATIONS_URL', plugin_dir_url( __FILE__ ) ); // Has trailing slash
+		define( 'WP_STREAM_NOTIFICATIONS_DIR', WP_STREAM_EXTENSIONS_DIR . 'notifications/' ); // Has trailing slash
+		define( 'WP_STREAM_NOTIFICATIONS_URL', WP_STREAM_URL . 'extensions/notifications/' ); // Has trailing slash
 		define( 'WP_STREAM_NOTIFICATIONS_INC_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'includes/' ); // Has trailing slash
 
 		add_action( 'plugins_loaded', array( $this, 'load' ) );
@@ -162,7 +161,7 @@ class WP_Stream_Notifications {
 			$this->network = new WP_Stream_Notifications_Network;
 
 			require_once WP_ADMIN . '/includes/plugins.php';
-			if ( is_plugin_active_for_network( WP_STREAM_NOTIFICATIONS_PLUGIN ) ) {
+			if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 				add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
 			}
 
