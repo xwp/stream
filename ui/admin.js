@@ -382,7 +382,7 @@ jQuery(function( $ ) {
 						$( '#enable_live_update' ).prop( 'checked', false );
 
 						if ( response.data ) {
-							alert( response.data );
+							window.alert( response.data );
 						}
 					}
 				}
