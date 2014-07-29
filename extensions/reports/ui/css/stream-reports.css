@@ -1,0 +1,288 @@
+/* Media queries to alternate between 1 columns and 2 columns depending on screen size */
+
+@media only screen and (max-width: 850px) {
+	#wpbody-content #dashboard-widgets.columns-2 .postbox-container {
+		width: 100% !important;
+	}
+}
+
+
+/**
+ * Configure Section
+ * (There is override of core css declaration)
+ */
+
+.stream_page_wp_stream_reports #dashboard-widgets h3 input.title {
+	width: 220px;
+	line-height: 19px;
+}
+
+.stream_page_wp_stream_reports #dashboard-widgets h3 .postbox-title-action {
+	position: inherit;;
+	padding: 0;
+	margin-right: 7px;
+	float: right;
+}
+
+.js.stream_page_wp_stream_reports #dashboard-widgets h3 .postbox-title-action.postbox-delete-action a {
+	color : #a00;
+	visibility: hidden;
+	margin-right: 7px;
+}
+
+.js.stream_page_wp_stream_reports #dashboard-widgets h3 .postbox-title-action.postbox-delete-action a.visible {
+	visibility: visible;
+}
+
+.js.stream_page_wp_stream_reports #dashboard-widgets h3 .postbox-title-action.postbox-delete-action a:hover {
+	color : #f00;
+}
+
+.stream_page_wp_stream_reports .date-interval {
+	margin: 10px 10px 3px;
+}
+
+.stream_page_wp_stream_reports .postbox:hover .edit-box {
+	display: inline;
+}
+
+.stream_page_wp_stream_reports .postbox.configure .handlediv {
+	visibility: hidden;
+}
+
+.stream_page_wp_stream_reports .postbox > .inside {
+	margin: 0;
+}
+
+.stream_page_wp_stream_reports .postbox .configure {
+	height: 0px;
+	overflow: hidden;
+	margin: -1px 0 0 0;
+	border-bottom: 1px solid #eee;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .inside {
+	margin: 0;
+	padding: 10px 12px 0;
+	min-height: 28px;
+}
+
+.stream_page_wp_stream_reports .postbox .configure.visible {
+	height: auto;
+	overflow: hidden;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .chart-option,
+.stream_page_wp_stream_reports .postbox .configure .grouping-separator,
+.stream_page_wp_stream_reports .postbox .configure .chart-types {
+	float: left;
+	margin-bottom: 10px;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .chart-option {
+	margin-right: 5px;
+	width: 20%;
+	max-width: 150px;
+	min-width: 120px;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .chart-dataset {
+	width: 30%;
+	max-width: 250px;
+	min-width: 165px;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .grouping-separator {
+	margin-right: 5px;
+	margin-left: 2px;
+	line-height: 28px;
+}
+
+.stream_page_wp_stream_reports .postbox .configure input.button {
+	float: right;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .chart-types {
+	display: inline-block;
+	line-height: 28px;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .chart-types .dashicons {
+	padding-left: 5px;
+	color: #888888;
+	cursor: pointer;
+	line-height: 28px;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .spinner {
+	margin: 4px 8px 0 0;
+}
+
+.stream_page_wp_stream_reports .postbox .configure .chart-types .dashicons.active {
+	color: #000;
+}
+
+.stream_page_wp_stream_reports .hndle {
+	position: relative;
+}
+
+.stream_page_wp_stream_reports .postbox .clear-title {
+	display: inline;
+	position: relative;
+	cursor: pointer;
+	left: -20px;
+	top: 2px;
+	width: 20px;
+	height: 28px;
+	font-size: 14px;
+	padding-top: 1px;
+	padding-right: 2px;
+}
+
+.stream_page_wp_stream_reports .postbox .clear-title:before {
+	content: '\f158';
+}
+
+.stream_page_wp_stream_reports .stream-reports-chart-height-option{
+	width: 200px;
+}
+
+.stream_page_wp_stream_reports #dashboard-widgets .postbox-container {
+	position: relative;
+}
+
+.stream_page_wp_stream_reports .no-reports-message {
+	position: absolute;
+	top: calc(50% - 25px);
+	width: calc(100% - 50px);
+	padding: 0 25px;
+	font-size: 18px;
+	line-height: 28px;
+	font-weight: 700;
+	text-align: center;
+	color: #000;
+}
+
+@media only screen and (max-width: 799px) {
+	.stream_page_wp_stream_reports .no-reports-message {
+		margin-top: 50px;
+	}
+}
+
+.stream_page_wp_stream_reports .no-reports-message a {
+	font-weight: normal;
+}
+
+.stream_page_wp_stream_reports .no-reports-message span {
+	padding: 0 5px;
+	text-transform: uppercase;
+}
+
+@media only screen and (max-width: 782px) {
+	.stream_page_wp_stream_reports .date-interval .field-predefined,
+	.stream_page_wp_stream_reports .date-interval .date-inputs {
+		margin-bottom: 10px;
+	}
+
+	.stream_page_wp_stream_reports .date-interval .button {
+		float: left;
+		clear: left;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure .chart-option {
+		width: 46%;
+		margin: 0 0 6px;
+		max-width: none;
+		min-width: 0;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure .chart-selector {
+		float: right;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure .grouping-separator {
+		width: 8%;
+		text-align: center;
+		margin: 0 0 6px;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure .chart-types {
+		clear: left;
+		line-height: 36px;
+		margin-bottom: 0;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure .chart-types .dashicons {
+		line-height: 36px;
+	}
+
+	.stream_page_wp_stream_reports .postbox .configure input.button {
+		margin-bottom: 6px;
+	}
+}
+
+
+/* Charts */
+
+.stream_page_wp_stream_reports .postbox .inside {
+	padding: 0;
+}
+
+.stream_page_wp_stream_reports .postbox .inside .chart {
+	position: relative;
+	padding: 0;
+}
+
+.stream_page_wp_stream_reports .postbox .inside .chart .chart-loading {
+	display: none;
+	position: absolute;
+	top: calc(50% - 12px);
+	width: 100%;
+	font-size: 18px;
+	font-weight: 700;
+	text-align: center;
+	color: #000;
+	z-index: 1;
+}
+
+.stream_page_wp_stream_reports .postbox .inside .chart .chart-loading > span {
+	padding: 6px 12px;
+	background-color: #f9f9f9;
+}
+
+.stream_page_wp_stream_reports .postbox .inside .chart svg {
+	padding: 12px;
+}
+
+.stream_page_wp_stream_reports .postbox .inside .chart svg g.nv-axisMaxMin:nth-child(3) text {
+	text-anchor: end !important;
+}
+
+.stream_page_wp_stream_reports .postbox .inside .chart .chart-loading > span,
+.stream_page_wp_stream_reports .nvtooltip.xy-tooltip {
+	font-family: "Open Sans", sans-serif !important;
+	margin: 20px 0 0 12px;
+	border: 1px solid #e5e5e5;
+
+	-webkit-border-radius: 6px;
+	   -moz-border-radius: 6px;
+	        border-radius: 6px;
+
+	-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+	   -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+	        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.stream_page_wp_stream_reports .nvtooltip.xy-tooltip h3 {
+	font-weight: bold;
+	font-size: 13px;
+}
+
+.stream_page_wp_stream_reports svg text {
+	font-family: "Open Sans", sans-serif !important;
+}
+
+.stream_page_wp_stream_reports svg .nv-axis .tick text,
+.stream_page_wp_stream_reports svg .nv-axis .nv-axisMaxMin text {
+	font-size: 10px;
+}

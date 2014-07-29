@@ -59,7 +59,9 @@ class WP_Stream_Admin {
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/pricing/' )
 		);
 
-		if ( ! empty( wp_stream_filter_input( INPUT_GET, 'api_key' ) ) ) {
+		$api_key = wp_stream_filter_input( INPUT_GET, 'api_key' );
+
+		if ( ! empty( $api_key ) ) {
 			add_action( 'admin_init', array( __CLASS__, 'save_api_authentication' ) );
 		}
 
