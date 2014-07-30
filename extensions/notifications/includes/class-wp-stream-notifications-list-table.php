@@ -189,7 +189,7 @@ class WP_Stream_Notifications_List_Table {
 		}
 
 		$action  = $_REQUEST['action'];
-		$request = isset( $_REQUEST['post'] ) ? ( is_array( $_REQUEST['post'] ) ? $_REQUEST['post'] : explode( ',', $_REQUEST['post'] ) ) : array( $_REQUEST['id'] );
+		$request = isset( $_REQUEST['post'] ) ? ( is_array( $_REQUEST['post'] ) ? $_REQUEST['post'] : explode( ',', $_REQUEST['post'] ) ) : isset( $_REQUEST['id'] ) ? array( $_REQUEST['id'] ) : array();
 		$ids     = array_map( 'absint', $request );
 
 		if ( empty( $action ) || empty( $ids ) ) {
