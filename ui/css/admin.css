@@ -392,6 +392,7 @@
 
 
 /* Exclude List Table */
+
 .stream-exclude-list {
 	margin-top: 1em;
 }
@@ -490,6 +491,13 @@
 	margin-top: 5px;
 	position: absolute;
 	float: none;
+}
+
+
+/* Notifications */
+
+.post-type-stream-notification .view-switch {
+	display: none;
 }
 
 
