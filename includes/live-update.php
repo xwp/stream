@@ -2,10 +2,23 @@
 
 class WP_Stream_Live_Update {
 
+	/**
+	 * User meta key/identifier
+	 *
+	 * @const string
+	 */
 	const USER_META_KEY = 'stream_live_update_records';
 
+	/**
+	 * List table object instance
+	 *
+	 * @var object
+	 */
 	public static $list_table = null;
 
+	/**
+	 * Load live updates methods
+	 */
 	public static function load() {
 		// Heartbeat live update
 		add_filter( 'heartbeat_received', array( __CLASS__, 'heartbeat_received' ), 10, 2 );
@@ -16,7 +29,8 @@ class WP_Stream_Live_Update {
 
 	/**
 	 * Ajax function to enable/disable live update
-	 * @return void/json
+	 *
+	 * @return string Ajax respsonse back in JSON format
 	 */
 	public static function enable_live_update() {
 		check_ajax_referer( self::USER_META_KEY . '_nonce', 'nonce' );
@@ -55,17 +69,17 @@ class WP_Stream_Live_Update {
 	}
 
 	/**
-	 * Sends Updated Actions to the List Table View
+	 * Sends updated actions to the list table view
 	 *
-	 * @todo fix reliability issues with sidebar widgets
+	 * @todo Fix reliability issues with sidebar widgets
 	 *
 	 * @uses gather_updated_items
 	 * @uses generate_row
 	 *
-	 * @param  array  Response to heartbeat
-	 * @param  array  Response from heartbeat
+	 * @param array Response to heartbeat
+	 * @param array Response from heartbeat
 	 *
-	 * @return array  Data sent to heartbeat
+	 * @return array Data sent to heartbeat
 	 */
 	public static function live_update( $response, $data ) {
 		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
@@ -104,9 +118,11 @@ class WP_Stream_Live_Update {
 	 * Handles live updates for both dashboard widget and Stream Post List
 	 *
 	 * @action heartbeat_recieved
-	 * @param  array  Response to be sent to heartbeat tick
-	 * @param  array  Data from heartbeat send
-	 * @return array  Data sent to heartbeat tick
+	 *
+	 * @param array Response to be sent to heartbeat tick
+	 * @param array Data from heartbeat send
+	 *
+	 * @return array Data sent to heartbeat tick
 	 */
 	public static function heartbeat_received( $response, $data ) {
 		$option                  = get_option( 'dashboard_stream_activity_options' );
