@@ -3,34 +3,34 @@
 class WP_Stream_Notifications_Adapter_Email extends WP_Stream_Notifications_Adapter {
 
 	public static function register( $title = '' ) {
-		parent::register( __( 'Email', 'stream-notifications' ) );
+		parent::register( __( 'Email', 'stream' ) );
 	}
 
 	public static function fields() {
 		return array(
 			'users' => array(
-				'title'    => __( 'Send to Users', 'stream-notifications' ),
+				'title'    => __( 'Send to Users', 'stream' ),
 				'type'     => 'hidden',
 				'multiple' => true,
 				'ajax'     => true,
 				'key'      => 'author',
-				'hint'     => __( 'Alert specific users via email.', 'stream-notifications' ),
+				'hint'     => __( 'Alert specific users via email.', 'stream' ),
 			),
 			'emails' => array(
-				'title' => __( 'Send to Emails', 'stream-notifications' ),
+				'title' => __( 'Send to Emails', 'stream' ),
 				'type'  => 'text',
 				'tags'  => true,
-				'hint'  => __( 'Alert any arbitrary email address not tied to a specific user.', 'stream-notifications' ),
+				'hint'  => __( 'Alert any arbitrary email address not tied to a specific user.', 'stream' ),
 			),
 			'subject' => array(
-				'title' => __( 'Subject', 'stream-notifications' ),
+				'title' => __( 'Subject', 'stream' ),
 				'type'  => 'text',
-				'hint'  => __( 'Data tags are allowed.', 'stream-notifications' ),
+				'hint'  => __( 'Data tags are allowed.', 'stream' ),
 			),
 			'message' => array(
-				'title' => __( 'Message', 'stream-notifications' ),
+				'title' => __( 'Message', 'stream' ),
 				'type'  => 'textarea',
-				'hint'  => __( 'HTML and data tags are allowed.', 'stream-notifications' ),
+				'hint'  => __( 'HTML and data tags are allowed.', 'stream' ),
 			),
 		);
 	}

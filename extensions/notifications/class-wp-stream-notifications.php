@@ -169,8 +169,8 @@ class WP_Stream_Notifications {
 	public function register_menu() {
 		self::$screen_id = add_submenu_page(
 			'wp_stream',
-			__( 'Notifications', 'stream-notifications' ),
-			__( 'Notifications', 'stream-notifications' ),
+			__( 'Notifications', 'stream' ),
+			__( 'Notifications', 'stream' ),
 			self::VIEW_CAP,
 			'edit.php?post_type=stream-notification'
 		);
@@ -216,9 +216,9 @@ class WP_Stream_Notifications {
 	 */
 	public function add_sample_rule() {
 		$postarr = array(
-			'post_title'    => __( 'Sample Rule', 'stream-notifications' ),
+			'post_title'  => __( 'Sample Rule', 'stream' ),
 			'post_status' => 'draft',
-			'post_type'       => 'stream-notification',
+			'post_type'   => 'stream-notification',
 		);
 
 		$meta = array(
@@ -270,8 +270,8 @@ class WP_Stream_Notifications {
 					'type'    => 'email',
 					'users'   => '1',
 					'emails'  => '',
-					'subject' => sprintf( __( '[Site Activity Alert] %s', 'stream-notifications' ), get_bloginfo( 'name' ) ),
-					'message' => __( "The following just happened on your site:\r\n\r\n{summary} by {author.display_name}\r\n\r\nDate of action: {created}", 'stream-notifications' )
+					'subject' => sprintf( __( '[Site Activity Alert] %s', 'stream' ), get_bloginfo( 'name' ) ),
+					'message' => __( "The following just happened on your site:\r\n\r\n{summary} by {author.display_name}\r\n\r\nDate of action: {created}", 'stream' )
 				),
 			),
 		);

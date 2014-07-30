@@ -42,17 +42,17 @@ class WP_Stream_Notifications_Post_Type {
 	private function register_post_type() {
 		register_post_type(
 			self::POSTTYPE, array(
-				'label'                => __( 'Stream Notification Rule', 'stream-notification' ),
+				'label'                => __( 'Stream Notification Rule', 'stream' ),
 				'labels'               => array(
-					'name'          => __( 'Stream Notification Rule', 'stream-notification' ),
-					'singular_name' => __( 'Stream Notification Rule', 'stream-notification' ),
-					'menu_name'     => __( 'Notifications', 'stream-notification' ),
-					'add_new'       => _x( 'New Rule', 'Stream Notification', 'stream-notification' ),
-					'add_new_item'  => _x( 'Add New Rule', 'Stream Notification', 'stream-notification' ),
-					'edit_item'     => _x( 'Edit Stream Notification Rule', 'Stream Notification', 'stream-notification' ),
-					'new_item'      => _x( 'New Stream Notification Rule', 'Stream Notification', 'stream-notification' ),
-					'view_item'     => _x( 'View Stream Notification Rule', 'Stream Notification', 'stream-notification' ),
-					'search_items'  => _x( 'Search rules', 'Stream Notification', 'stream-notification' ),
+					'name'          => __( 'Stream Notification Rule', 'stream' ),
+					'singular_name' => __( 'Stream Notification Rule', 'stream' ),
+					'menu_name'     => __( 'Notifications', 'stream' ),
+					'add_new'       => _x( 'New Rule', 'Stream Notification', 'stream' ),
+					'add_new_item'  => _x( 'Add New Rule', 'Stream Notification', 'stream' ),
+					'edit_item'     => _x( 'Edit Stream Notification Rule', 'Stream Notification', 'stream' ),
+					'new_item'      => _x( 'New Stream Notification Rule', 'Stream Notification', 'stream' ),
+					'view_item'     => _x( 'View Stream Notification Rule', 'Stream Notification', 'stream' ),
+					'search_items'  => _x( 'Search rules', 'Stream Notification', 'stream' ),
 				),
 				'public'               => false,
 				'show_ui'              => true,
@@ -72,9 +72,9 @@ class WP_Stream_Notifications_Post_Type {
 			return;
 		}
 
-		add_meta_box( 'stream-notifications-triggers', __( 'Triggers', 'stream-notifications' ), array( $this, 'metabox_triggers' ), self::POSTTYPE );
-		add_meta_box( 'stream-notifications-alerts', __( 'Alerts', 'stream-notifications' ), array( $this, 'metabox_alerts' ), self::POSTTYPE );
-		add_meta_box( 'stream-notifications-data-tags', __( 'Data Tags', 'stream-notifications' ), array( $this, 'metabox_data_tags' ), self::POSTTYPE, 'side' );
+		add_meta_box( 'stream-notifications-triggers', __( 'Triggers', 'stream' ), array( $this, 'metabox_triggers' ), self::POSTTYPE );
+		add_meta_box( 'stream-notifications-alerts', __( 'Alerts', 'stream' ), array( $this, 'metabox_alerts' ), self::POSTTYPE );
+		add_meta_box( 'stream-notifications-data-tags', __( 'Data Tags', 'stream' ), array( $this, 'metabox_data_tags' ), self::POSTTYPE, 'side' );
 
 		add_action( 'post_submitbox_misc_actions', array( $this, 'metabox_save' ) );
 
@@ -116,15 +116,15 @@ class WP_Stream_Notifications_Post_Type {
 
 	public function metabox_triggers() {
 		?>
-		<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php esc_html_e( '+ Add Trigger', 'stream-notifications' ) ?></a>
-		<a class="add-trigger-group button button-primary" href="#add-trigger-group" data-group="0"><?php esc_html_e( '+ Add Group', 'stream-notifications' ) ?></a>
+		<a class="add-trigger button button-secondary" href="#add-trigger" data-group="0"><?php esc_html_e( '+ Add Trigger', 'stream' ) ?></a>
+		<a class="add-trigger-group button button-primary" href="#add-trigger-group" data-group="0"><?php esc_html_e( '+ Add Group', 'stream' ) ?></a>
 		<div class="group" rel="0"></div>
 	<?php
 	}
 
 	public function metabox_alerts() {
 		?>
-		<a class="add-alert button button-secondary" href="#add-alert"><?php esc_html_e( '+ Add Alert', 'stream-notifications' ) ?></a>
+		<a class="add-alert button button-secondary" href="#add-alert"><?php esc_html_e( '+ Add Alert', 'stream' ) ?></a>
 	<?php
 	}
 
@@ -154,7 +154,7 @@ class WP_Stream_Notifications_Post_Type {
 						'This rule has occurred %1$s time.',
 						'This rule has occurred %1$s times.',
 						$occ,
-						'stream-notifications'
+						'stream'
 					),
 					sprintf( '<strong>%d</strong>', $occ ? $occ : 0 )
 				) // xss okay
@@ -163,7 +163,7 @@ class WP_Stream_Notifications_Post_Type {
 			<?php if ( 0 !== $occ ) : ?>
 				<p>
 				<a href="<?php echo esc_url( $reset_link ) ?>" class="button button-secondary reset-occ">
-					<?php esc_html_e( 'Reset Count', 'stream-notifications' ) ?>
+					<?php esc_html_e( 'Reset Count', 'stream' ) ?>
 				</a>
 			</p>
 			<?php endif; ?>
@@ -173,17 +173,17 @@ class WP_Stream_Notifications_Post_Type {
 
 	public function metabox_data_tags() {
 		$data_tags    = array(
-			__( 'Basic', 'stream-notifications' )    => array(
-				'summary'   => __( 'Summary message of the triggered record.', 'stream-notifications' ),
-				'author'    => __( 'User ID of the triggered record author.', 'stream-notifications' ),
-				'connector' => __( 'Connector of the triggered record.', 'stream-notifications' ),
-				'context'   => __( 'Context of the triggered record.', 'stream-notifications' ),
-				'action'    => __( 'Action of the triggered record.', 'stream-notifications' ),
-				'created'   => __( 'Timestamp of triggered record.', 'stream-notifications' ),
-				'ip'        => __( 'IP of the triggered record author.', 'stream-notifications' ),
-				'object_id' => __( 'Object ID of the triggered record.', 'stream-notifications' ),
+			__( 'Basic', 'stream' )    => array(
+				'summary'   => __( 'Summary message of the triggered record.', 'stream' ),
+				'author'    => __( 'User ID of the triggered record author.', 'stream' ),
+				'connector' => __( 'Connector of the triggered record.', 'stream' ),
+				'context'   => __( 'Context of the triggered record.', 'stream' ),
+				'action'    => __( 'Action of the triggered record.', 'stream' ),
+				'created'   => __( 'Timestamp of triggered record.', 'stream' ),
+				'ip'        => __( 'IP of the triggered record author.', 'stream' ),
+				'object_id' => __( 'Object ID of the triggered record.', 'stream' ),
 			),
-			__( 'Advanced', 'stream-notifications' ) => array(
+			__( 'Advanced', 'stream' ) => array(
 				'object.' => __(
 					'Specific object data of the record, relative to what the object type is:
 										<br /><br />
@@ -201,7 +201,7 @@ class WP_Stream_Notifications_Post_Type {
 										<br />
 										<strong>{object.description}</strong>
 										<br />
-										<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more Term values</a>', 'stream-notifications'
+										<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more Term values</a>', 'stream'
 				),
 
 				'author.' => __(
@@ -213,12 +213,12 @@ class WP_Stream_Notifications_Post_Type {
 										<br />
 										<strong>{author.user_login}</strong>
 										<br />
-										<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more User values</a>', 'stream-notifications'
+										<a href="http://codex.wordpress.org/Function_Reference/get_userdata#Notes" target="_blank">See Codex for more User values</a>', 'stream'
 				),
 				'meta.'   => __(
 					'Specific meta data of the record, used to display specific meta values created by Connectors.
 										<br /><br />
-										Example: <strong>{meta.old_theme}</strong> to display the old theme name when a new theme is activated.', 'stream-notifications'
+										Example: <strong>{meta.old_theme}</strong> to display the old theme name when a new theme is activated.', 'stream'
 				),
 			),
 		);
@@ -419,11 +419,11 @@ class WP_Stream_Notifications_Post_Type {
 		$nonce = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 
 		if ( ! wp_verify_nonce( $nonce, 'reset-occ_' . $id ) ) {
-			wp_send_json_error( esc_html__( 'Invalid nonce', 'stream-notifications' ) );
+			wp_send_json_error( esc_html__( 'Invalid nonce', 'stream' ) );
 		}
 
 		if ( empty( $id ) || (int) $id !== $id ) {
-			wp_send_json_error( esc_html__( 'Invalid record ID', 'stream-notifications' ) );
+			wp_send_json_error( esc_html__( 'Invalid record ID', 'stream' ) );
 		}
 
 		update_post_meta( $id, 'occurrences', 0 );
@@ -446,46 +446,46 @@ class WP_Stream_Notifications_Post_Type {
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
 
 		$default_operators = array(
-			'='   => esc_html__( 'is', 'stream-notifications' ),
-			'!='  => esc_html__( 'is not', 'stream-notifications' ),
-			'in'  => esc_html__( 'is in', 'stream-notifications' ),
-			'!in' => esc_html__( 'is not in', 'stream-notifications' ),
+			'='   => esc_html__( 'is', 'stream' ),
+			'!='  => esc_html__( 'is not', 'stream' ),
+			'in'  => esc_html__( 'is in', 'stream' ),
+			'!in' => esc_html__( 'is not in', 'stream' ),
 		);
 
 		$text_operator = array(
-			'='         => esc_html__( 'is', 'stream-notifications' ),
-			'!='        => esc_html__( 'is not', 'stream-notifications' ),
-			'contains'  => esc_html__( 'contains', 'stream-notifications' ),
-			'!contains' => esc_html__( 'does not contain', 'stream-notifications' ),
-			'starts'    => esc_html__( 'starts with', 'stream-notifications' ),
-			'ends'      => esc_html__( 'ends with', 'stream-notifications' ),
-			'regex'     => esc_html__( 'regex', 'stream-notifications' ),
+			'='         => esc_html__( 'is', 'stream' ),
+			'!='        => esc_html__( 'is not', 'stream' ),
+			'contains'  => esc_html__( 'contains', 'stream' ),
+			'!contains' => esc_html__( 'does not contain', 'stream' ),
+			'starts'    => esc_html__( 'starts with', 'stream' ),
+			'ends'      => esc_html__( 'ends with', 'stream' ),
+			'regex'     => esc_html__( 'regex', 'stream' ),
 		);
 
 		$numeric_operators = array(
-			'='  => esc_html__( 'equals', 'stream-notifications' ),
-			'!=' => esc_html__( 'not equal', 'stream-notifications' ),
-			'<'  => esc_html__( 'less than', 'stream-notifications' ),
-			'<=' => esc_html__( 'equal or less than', 'stream-notifications' ),
-			'>'  => esc_html__( 'greater than', 'stream-notifications' ),
-			'>=' => esc_html__( 'equal or greater than', 'stream-notifications' ),
+			'='  => esc_html__( 'equals', 'stream' ),
+			'!=' => esc_html__( 'not equal', 'stream' ),
+			'<'  => esc_html__( 'less than', 'stream' ),
+			'<=' => esc_html__( 'equal or less than', 'stream' ),
+			'>'  => esc_html__( 'greater than', 'stream' ),
+			'>=' => esc_html__( 'equal or greater than', 'stream' ),
 		);
 
 		$args[ 'types' ] = array(
 			'search'      => array(
-				'title'     => esc_html__( 'Summary', 'stream-notifications' ),
+				'title'     => esc_html__( 'Summary', 'stream' ),
 				'type'      => 'text',
 				'operators' => $text_operator,
 			),
 			'object_id'   => array(
-				'title'     => esc_html__( 'Object ID', 'stream-notifications' ),
+				'title'     => esc_html__( 'Object ID', 'stream' ),
 				'type'      => 'text',
 				'tags'      => true,
 				'operators' => $default_operators,
 			),
 
 			'author_role' => array(
-				'title'     => esc_html__( 'Author Role', 'stream-notifications' ),
+				'title'     => esc_html__( 'Author Role', 'stream' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
@@ -493,14 +493,14 @@ class WP_Stream_Notifications_Post_Type {
 			),
 
 			'author'      => array(
-				'title'     => esc_html__( 'Author', 'stream-notifications' ),
+				'title'     => esc_html__( 'Author', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => $default_operators,
 			),
 
 			'ip'          => array(
-				'title'     => esc_html__( 'IP', 'stream-notifications' ),
+				'title'     => esc_html__( 'IP', 'stream' ),
 				'type'      => 'text',
 				'subtype'   => 'ip',
 				'tags'      => true,
@@ -508,20 +508,20 @@ class WP_Stream_Notifications_Post_Type {
 			),
 
 			'date'        => array(
-				'title'     => esc_html__( 'Date', 'stream-notifications' ),
+				'title'     => esc_html__( 'Date', 'stream' ),
 				'type'      => 'date',
 				'operators' => array(
-					'='  => esc_html__( 'is on', 'stream-notifications' ),
-					'!=' => esc_html__( 'is not on', 'stream-notifications' ),
-					'<'  => esc_html__( 'is before', 'stream-notifications' ),
-					'<=' => esc_html__( 'is on or before', 'stream-notifications' ),
-					'>'  => esc_html__( 'is after', 'stream-notifications' ),
-					'>=' => esc_html__( 'is on or after', 'stream-notifications' ),
+					'='  => esc_html__( 'is on', 'stream' ),
+					'!=' => esc_html__( 'is not on', 'stream' ),
+					'<'  => esc_html__( 'is before', 'stream' ),
+					'<=' => esc_html__( 'is on or before', 'stream' ),
+					'>'  => esc_html__( 'is after', 'stream' ),
+					'>=' => esc_html__( 'is on or after', 'stream' ),
 				),
 			),
 
 			'weekday'     => array(
-				'title'     => esc_html__( 'Day of Week', 'stream-notifications' ),
+				'title'     => esc_html__( 'Day of Week', 'stream' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
@@ -549,21 +549,21 @@ class WP_Stream_Notifications_Post_Type {
 			// 'meta_query'            => array(),
 
 			'connector'   => array(
-				'title'     => esc_html__( 'Connector', 'stream-notifications' ),
+				'title'     => esc_html__( 'Connector', 'stream' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
 				'options'   => $connectors,
 			),
 			'context'     => array(
-				'title'     => esc_html__( 'Context', 'stream-notifications' ),
+				'title'     => esc_html__( 'Context', 'stream' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
 				'options'   => WP_Stream_Connectors::$term_labels[ 'stream_context' ],
 			),
 			'action'      => array(
-				'title'     => esc_html__( 'Action', 'stream-notifications' ),
+				'title'     => esc_html__( 'Action', 'stream' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
@@ -574,120 +574,120 @@ class WP_Stream_Notifications_Post_Type {
 		// Connector-based triggers
 		$args[ 'special_types' ] = array(
 			'post'                => array(
-				'title'     => esc_html__( '- Post', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
 			'post_title'          => array(
-				'title'     => esc_html__( '- Post: Title', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Title', 'stream' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
 			'post_slug'           => array(
-				'title'     => esc_html__( '- Post: Slug', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Slug', 'stream' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
 			'post_content'        => array(
-				'title'     => esc_html__( '- Post: Content', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Content', 'stream' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
 			'post_excerpt'        => array(
-				'title'     => esc_html__( '- Post: Excerpt', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Excerpt', 'stream' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
 			'post_author'         => array(
-				'title'     => esc_html__( '- Post: Author', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Author', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
 			'post_status'         => array(
-				'title'     => esc_html__( '- Post: Status', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Status', 'stream' ),
 				'type'      => 'select',
 				'connector' => 'posts',
 				'options'   => wp_list_pluck( $GLOBALS[ 'wp_post_statuses' ], 'label' ),
 				'operators' => $default_operators,
 			),
 			'post_format'         => array(
-				'title'     => esc_html__( '- Post: Format', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Format', 'stream' ),
 				'type'      => 'select',
 				'connector' => 'posts',
 				'options'   => get_post_format_strings(),
 				'operators' => $default_operators,
 			),
 			'post_parent'         => array(
-				'title'     => esc_html__( '- Post: Parent', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Parent', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
 			'post_thumbnail'      => array(
-				'title'     => esc_html__( '- Post: Featured Image', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Featured Image', 'stream' ),
 				'type'      => 'select',
 				'connector' => 'posts',
 				'options'   => array(
-					'0' => esc_html__( 'None', 'stream-notifications' ),
-					'1' => esc_html__( 'Has one', 'stream-notifications' )
+					'0' => esc_html__( 'None', 'stream' ),
+					'1' => esc_html__( 'Has one', 'stream' )
 				),
 				'operators' => $default_operators,
 			),
 			'post_comment_status' => array(
-				'title'     => esc_html__( '- Post: Comment Status', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Comment Status', 'stream' ),
 				'type'      => 'select',
 				'connector' => 'posts',
 				'options'   => array(
-					'open'   => esc_html__( 'Open', 'stream-notifications' ),
-					'closed' => esc_html__( 'Closed', 'stream-notifications' )
+					'open'   => esc_html__( 'Open', 'stream' ),
+					'closed' => esc_html__( 'Closed', 'stream' )
 				),
 				'operators' => $default_operators,
 			),
 			'post_comment_count'  => array(
-				'title'     => esc_html__( '- Post: Comment Count', 'stream-notifications' ),
+				'title'     => esc_html__( '- Post: Comment Count', 'stream' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $numeric_operators,
 			),
 			'user'                => array(
-				'title'     => esc_html__( '- User', 'stream-notifications' ),
+				'title'     => esc_html__( '- User', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'users',
 				'operators' => $default_operators,
 			),
 			'user_role'           => array(
-				'title'     => esc_html__( '- User: Role', 'stream-notifications' ),
+				'title'     => esc_html__( '- User: Role', 'stream' ),
 				'type'      => 'select',
 				'connector' => 'users',
 				'options'   => $roles_arr,
 				'operators' => $default_operators,
 			),
 			'tax'                 => array(
-				'title'     => esc_html__( '- Taxonomy', 'stream-notifications' ),
+				'title'     => esc_html__( '- Taxonomy', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'taxonomies',
 				'operators' => $default_operators,
 			),
 			'term'                => array(
-				'title'     => esc_html__( '- Term', 'stream-notifications' ),
+				'title'     => esc_html__( '- Term', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'taxonomies',
 				'operators' => $default_operators,
 			),
 			'term_parent'         => array(
-				'title'     => esc_html__( '- Term: Parent', 'stream-notifications' ),
+				'title'     => esc_html__( '- Term: Parent', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'taxonomies',
@@ -707,10 +707,10 @@ class WP_Stream_Notifications_Post_Type {
 
 		// Localization
 		$args[ 'i18n' ] = array(
-			'empty_triggers'        => esc_html__( 'You cannot save a rule without any triggers.', 'stream-notifications' ),
-			'invalid_first_trigger' => esc_html__( 'You cannot save a rule with an empty first trigger.', 'stream-notifications' ),
-			'ajax_error'            => esc_html__( 'There was an error submitting your request, please try again.', 'stream-notifications' ),
-			'confirm_reset'         => esc_html__( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream-notifications' ),
+			'empty_triggers'        => esc_html__( 'You cannot save a rule without any triggers.', 'stream' ),
+			'invalid_first_trigger' => esc_html__( 'You cannot save a rule with an empty first trigger.', 'stream' ),
+			'ajax_error'            => esc_html__( 'There was an error submitting your request, please try again.', 'stream' ),
+			'confirm_reset'         => esc_html__( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream' ),
 		);
 
 		global $post;
@@ -822,7 +822,7 @@ class WP_Stream_Notifications_Post_Type {
 	 */
 	public function title_placeholder( $text, $post ) {
 		if ( self::POSTTYPE === $post->post_type ) {
-			$text = __( 'Enter Rule Title here', 'stream-notifications' );
+			$text = __( 'Enter Rule Title here', 'stream' );
 		}
 
 		return $text;

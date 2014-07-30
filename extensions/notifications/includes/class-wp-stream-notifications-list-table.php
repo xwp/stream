@@ -46,8 +46,8 @@ class WP_Stream_Notifications_List_Table {
 	 */
 	public function column_heads( $cols ) {
 		$new = array(
-			'type' => esc_html__( 'Type', 'stream-notifications' ),
-			'occ'  => esc_html__( 'Occurrences', 'stream-notifications' ),
+			'type' => esc_html__( 'Type', 'stream' ),
+			'occ'  => esc_html__( 'Occurrences', 'stream' ),
 		);
 
 		$cols = array_merge( array_splice( $cols, 0, 2 ), $new, array_splice( $cols, 0 ) );
@@ -124,7 +124,7 @@ class WP_Stream_Notifications_List_Table {
 		$alerts = get_post_meta( $post_id, 'alerts', true );
 
 		if ( empty( $alerts ) ) {
-			return esc_html__( 'N/A', 'stream-notifications' );
+			return esc_html__( 'N/A', 'stream' );
 		} else {
 			$types  = wp_list_pluck( $alerts, 'type' );
 			$titles = wp_list_pluck(
@@ -174,7 +174,7 @@ class WP_Stream_Notifications_List_Table {
 		$new['publish'] = sprintf(
 			'<a href="%s">%s</a>',
 			$url,
-			$published ? __( 'Deactivate', 'stream-notifications' ) : __( 'Activate', 'stream-notifications' )
+			$published ? __( 'Deactivate', 'stream' ) : __( 'Activate', 'stream' )
 		);
 
 		return array_merge( $new, $actions );
@@ -235,8 +235,8 @@ class WP_Stream_Notifications_List_Table {
 		wp_localize_script( 'stream-notifications-list-actions', 'stream_notifications_options',
 			array(
 				'bulkActions' => array(
-					'publish'   => __( 'Publish', 'stream-notifications' ),
-					'unpublish' => __( 'Unpublish', 'stream-notifications' ),
+					'publish'   => __( 'Publish', 'stream' ),
+					'unpublish' => __( 'Unpublish', 'stream' ),
 				)
 			)
 		);
