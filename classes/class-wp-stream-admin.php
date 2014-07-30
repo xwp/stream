@@ -820,7 +820,7 @@ class WP_Stream_Admin {
 					</table>
 				</div>
 				<div class="plan-actions submitbox">
-					<a href="<?php echo esc_url( self::$account_url ); ?>#change-plan-<?php echo esc_html( WP_Stream::$api->site_uuid ); ?>" class="button button-primary button-large"><?php _e( 'Change Plan', 'stream' ); ?></a>
+					<a href="<?php echo esc_url( self::$account_url ); ?>#change-plan_<?php echo esc_html( WP_Stream::$api->site_uuid ); ?>" class="button button-primary button-large"><?php _e( 'Change Plan', 'stream' ); ?></a>
 					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
 				</div>
 			</div>
