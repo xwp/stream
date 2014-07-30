@@ -1,5 +1,5 @@
 <div class="wrap">
-	<h2><?php esc_html_e( 'Stream Reports', 'stream-reports' ); ?></h2>
+	<h2><?php esc_html_e( 'Stream Reports', 'stream' ); ?></h2>
 	<?php
 		$args = array(
 			'type' => 'multibar-horizontal',

@@ -39,7 +39,7 @@ class WP_Stream_Reports_Date_Interval extends WP_Stream_Date_Interval {
 		$avail_intervals = $this->get_predefined_intervals();
 
 		if ( '' !== $interval['key'] && 'custom' !== $interval['key']  && ! isset( $avail_intervals[ $interval['key'] ] ) ) {
-			wp_die( esc_html__( 'That time interval is not available.', 'stream-reports' ) );
+			wp_die( esc_html__( 'That time interval is not available.', 'stream' ) );
 		}
 
 		// Only store dates if we are dealing with custom dates and no relative preset

@@ -149,7 +149,7 @@ class WP_Stream_Reports {
 		if ( array_key_exists( $_REQUEST['action'], $ajax_hooks ) ) {
 			// Checking permission
 			if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
-				wp_die( __( 'Cheating huh?', 'stream-reports' ) );
+				wp_die( __( 'Cheating huh?', 'stream' ) );
 			}
 			check_admin_referer( 'stream-reports-page', 'wp_stream_reports_nonce' );
 		}
@@ -169,8 +169,8 @@ class WP_Stream_Reports {
 
 		self::$screen_id = add_submenu_page(
 			WP_Stream_Admin::RECORDS_PAGE_SLUG,
-			__( 'Reports', 'stream-reports' ),
-			__( 'Reports', 'stream-reports' ),
+			__( 'Reports', 'stream' ),
+			__( 'Reports', 'stream' ),
 			self::VIEW_CAP,
 			self::REPORTS_PAGE_SLUG,
 			array( $this, 'page' )
@@ -246,9 +246,9 @@ class WP_Stream_Reports {
 			'stream-reports',
 			'streamReportsLocal',
 			array(
-				'configure'  => __( 'Configure', 'stream-reports' ),
-				'cancel'     => __( 'Cancel', 'stream-reports' ),
-				'deletemsg'  => __( 'Do you really want to delete this section? This cannot be undone.', 'stream-reports' ),
+				'configure'  => __( 'Configure', 'stream' ),
+				'cancel'     => __( 'Cancel', 'stream' ),
+				'deletemsg'  => __( 'Do you really want to delete this section? This cannot be undone.', 'stream' ),
 				'gmt_offset' => get_option( 'gmt_offset' ),
 			)
 		);
@@ -304,7 +304,7 @@ class WP_Stream_Reports {
 			admin_url( 'admin-ajax.php' )
 		);
 
-		$no_reports_message = __( "There's nothing here! Do you want to <a href=\"%s\">create some reports</a>?", 'stream-reports' );
+		$no_reports_message = __( "There's nothing here! Do you want to <a href=\"%s\">create some reports</a>?", 'stream' );
 		$no_reports_message = sprintf( $no_reports_message, $create_url );
 
 		$view = (object) array(

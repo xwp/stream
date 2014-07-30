@@ -3,22 +3,22 @@
 	<?php if ( is_network_admin() ) : ?>
 
 		<?php
-		$site_count = sprintf( _n( '1 site', '%d sites', get_blog_count(), 'stream-reports' ), get_blog_count() );
+		$site_count = sprintf( _n( '1 site', '%d sites', get_blog_count(), 'stream' ), get_blog_count() );
 
 		printf(
 			'<h2>%s (%s)<a href="%s" class="add-new-h2">%s</a></h2>',
-			esc_html__( 'Stream Reports', 'stream-reports' ),
+			esc_html__( 'Stream Reports', 'stream' ),
 			$site_count, // xss ok
 			esc_url( $add_url ),
-			esc_html__( 'Add New', 'stream-reports' )
+			esc_html__( 'Add New', 'stream' )
 		);
 		?>
 
 	<?php else : ?>
 
-		<h2><?php esc_html_e( 'Stream Reports', 'stream-reports' ) ?>
+		<h2><?php esc_html_e( 'Stream Reports', 'stream' ) ?>
 			<a href="<?php echo esc_url( $add_url ) ?>" class="add-new-h2">
-				<?php esc_html_e( 'Add New', 'stream-reports' ) ?>
+				<?php esc_html_e( 'Add New', 'stream' ) ?>
 			</a>
 		</h2>
 
@@ -35,14 +35,14 @@
 		<div class="postbox-container">
 			<?php if ( $no_reports ) : ?>
 				<div class="no-reports-message">
-					<?php esc_html_e( 'Well, this is embarrassing. There are no reports yet!', 'stream-reports' ) ?>
+					<?php esc_html_e( 'Well, this is embarrassing. There are no reports yet!', 'stream' ) ?>
 					<p>
 						<a href="<?php echo esc_url( $add_url ) ?>" class="button button-secondary">
-							<?php esc_html_e( 'Add a new one', 'stream-reports' ) ?>
+							<?php esc_html_e( 'Add a new one', 'stream' ) ?>
 						</a>
-						<span><?php esc_html_e( 'or', 'stream-reports' ) ?></span>
+						<span><?php esc_html_e( 'or', 'stream' ) ?></span>
 						<a href="<?php echo esc_url( $create_url ) ?>" class="button button-primary">
-							<?php esc_html_e( 'Generate some for me', 'stream-reports' ) ?>
+							<?php esc_html_e( 'Generate some for me', 'stream' ) ?>
 						</a>
 					</p>
 				</div>

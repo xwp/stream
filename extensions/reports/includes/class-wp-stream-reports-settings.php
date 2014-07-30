@@ -49,13 +49,13 @@ class WP_Stream_Reports_Settings {
 		if ( empty( self::$fields ) ) {
 			$fields = array(
 				'reports' => array(
-					'title'  => __( 'Reports', 'stream-reports' ),
+					'title'  => __( 'Reports', 'stream' ),
 					'fields' => array(
 						array(
 							'name'        => 'role_access',
-							'title'       => __( 'Role Access', 'stream-reports' ),
+							'title'       => __( 'Role Access', 'stream' ),
 							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Users from the selected roles above will have permission to view and edit Stream Reports. However, only site Administrators can access Stream Reports Settings.', 'stream-reports' ),
+							'desc'        => __( 'Users from the selected roles above will have permission to view and edit Stream Reports. However, only site Administrators can access Stream Reports Settings.', 'stream' ),
 							'choices'     => WP_Stream_Settings::get_roles(),
 							'default'     => array( 'administrator' ),
 						),
@@ -236,7 +236,7 @@ class WP_Stream_Reports_Settings {
 			);
 			exit;
 		} else {
-			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream-reports' ) );
+			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream' ) );
 		}
 	}
 

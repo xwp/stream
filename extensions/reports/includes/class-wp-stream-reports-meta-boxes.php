@@ -73,26 +73,26 @@ class WP_Stream_Reports_Metaboxes {
 		$sections = array(
 			array(
 				'id'            => 0,
-				'title'         => __( 'All Activity by Author', 'stream-reports' ),
+				'title'         => __( 'All Activity by Author', 'stream' ),
 				'chart_type'    => 'line',
 				'selector_id'   => 'author',
 			),
 			array(
 				'id'            => 1,
-				'title'         => __( 'All Activity by Action', 'stream-reports' ),
+				'title'         => __( 'All Activity by Action', 'stream' ),
 				'chart_type'    => 'line',
 				'selector_id'   => 'action',
 			),
 			array(
 				'id'            => 2,
-				'title'         => __( 'All Activity by Author Role', 'stream-reports' ),
+				'title'         => __( 'All Activity by Author Role', 'stream' ),
 				'chart_type'    => 'multibar',
 				'selector_id'   => 'author_role',
 				'group'         => true,
 			),
 			array(
 				'id'            => 3,
-				'title'         => __( 'Comments Activity by Action', 'stream-reports' ),
+				'title'         => __( 'Comments Activity by Action', 'stream' ),
 				'chart_type'    => 'pie',
 				'connector_id'  => 'comments',
 				'context_id'    => 'comments',
@@ -153,8 +153,8 @@ class WP_Stream_Reports_Metaboxes {
 					</a>
 				</span>',
 				esc_url( $delete_url ),
-				esc_html__( 'Delete', 'stream-reports' ),
-				esc_html__( 'Configure', 'stream-reports' )
+				esc_html__( 'Delete', 'stream' ),
+				esc_html__( 'Configure', 'stream' )
 			);
 
 			// Parse default argument
@@ -237,7 +237,7 @@ class WP_Stream_Reports_Metaboxes {
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
 	}
 
-	
+
 
 	public function translate_labels( $coordinates, $args ) {
 		foreach ( $coordinates as $key => $dataset ) {
@@ -249,7 +249,7 @@ class WP_Stream_Reports_Metaboxes {
 
 	protected function get_label( $value, $grouping ) {
 		if ( 'report-others' === $value ) {
-			return __( 'All Others', 'stream-reports' );
+			return __( 'All Others', 'stream' );
 		}
 
 		switch ( $grouping ) {
@@ -259,9 +259,9 @@ class WP_Stream_Reports_Metaboxes {
 			case 'author':
 				if ( $value ) {
 					$user_info = get_userdata( $value );
-					$output    = isset( $user_info->display_name ) ? $user_info->display_name : sprintf( __( 'User ID: %d', 'stream-reports' ), $value );
+					$output    = isset( $user_info->display_name ) ? $user_info->display_name : sprintf( __( 'User ID: %d', 'stream' ), $value );
 				} else {
-					$output = __( 'N/A', 'stream-reports' );
+					$output = __( 'N/A', 'stream' );
 				}
 				break;
 			case 'author_role':
@@ -300,9 +300,9 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	protected function get_data_types( $key = '' ) {
 		$labels = array(
-			'all' => __( 'All Activity', 'stream-reports' ),
+			'all' => __( 'All Activity', 'stream' ),
 			'connector' => array(
-				'title'   => __( 'Connector Activity', 'stream-reports' ),
+				'title'   => __( 'Connector Activity', 'stream' ),
 				'group'   => 'connector',
 				'options' => WP_Stream_Connectors::$term_labels['stream_connector'],
 				'disable' => array(
@@ -310,7 +310,7 @@ class WP_Stream_Reports_Metaboxes {
 				),
 			),
 			'context' => array(
-				'title'   => __( 'Context Activity', 'stream-reports' ),
+				'title'   => __( 'Context Activity', 'stream' ),
 				'group'   => 'context',
 				'options' => WP_Stream_Connectors::$term_labels['stream_context'],
 				'disable' => array(
@@ -318,7 +318,7 @@ class WP_Stream_Reports_Metaboxes {
 				),
 			),
 			'action' => array(
-				'title'   => __( 'Actions Activity', 'stream-reports' ),
+				'title'   => __( 'Actions Activity', 'stream' ),
 				'group'   => 'action',
 				'options' => WP_Stream_Connectors::$term_labels['stream_action'],
 				'disable' => array(
@@ -353,10 +353,10 @@ class WP_Stream_Reports_Metaboxes {
 
 		// Position sites label right after 'all' dataset
 		$labels = array(
-			'label'     => __( 'Site Activity', 'stream-reports' ),
+			'label'     => __( 'Site Activity', 'stream' ),
 			'children'  => $children,
 		);
-		
+
 		$new_array = array_merge( array( $labels ), $old_labels );
 		return $new_array;
 	}
@@ -379,12 +379,12 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	protected function get_selector_types( $key = '' ) {
 		$labels = array(
-			'action'      => __( 'Action', 'stream-reports' ),
-			'author'      => __( 'Author', 'stream-reports' ),
-			'author_role' => __( 'Author Role', 'stream-reports' ),
-			'connector'   => __( 'Connector', 'stream-reports' ),
-			'context'     => __( 'Context', 'stream-reports' ),
-			'ip'          => __( 'IP Address', 'stream-reports' ),
+			'action'      => __( 'Action', 'stream' ),
+			'author'      => __( 'Author', 'stream' ),
+			'author_role' => __( 'Author Role', 'stream' ),
+			'connector'   => __( 'Connector', 'stream' ),
+			'context'     => __( 'Context', 'stream' ),
+			'ip'          => __( 'IP Address', 'stream' ),
 		);
 
 		$labels = apply_filters( 'wp_stream_reports_selector_types', $labels );
@@ -402,7 +402,7 @@ class WP_Stream_Reports_Metaboxes {
 
 	public function mutlisite_selector_types( $labels ) {
 		$new_labels = array(
-			'blog_id' => __( 'Site', 'stream-reports' ),
+			'blog_id' => __( 'Site', 'stream' ),
 		);
 
 		return array_merge( $labels, $new_labels );
@@ -417,10 +417,10 @@ class WP_Stream_Reports_Metaboxes {
 			'date_to'          => $date_interval['end'],
 		);
 
-		$available_args = array( 
+		$available_args = array(
 			'action'    => 'action_id',
 			'blog_id'   => 'blog_id',
-			'connector' => 'connector_id', 
+			'connector' => 'connector_id',
 			'context'   => 'context_id',
 		);
 		foreach ( $available_args as $query_key => $args_key ) {
@@ -444,9 +444,9 @@ class WP_Stream_Reports_Metaboxes {
 				if ( $user ) {
 					$record->author_role = join( ',', $user->roles );
 				} else if ( 0 === $record->author ) {
-					$record->author_role = __( 'N/A', 'stream-reports' );
+					$record->author_role = __( 'N/A', 'stream' );
 				} else {
-					$record->author_role = __( 'Unknown', 'stream-reports' );
+					$record->author_role = __( 'Unknown', 'stream' );
 				}
 			}
 		}
@@ -481,7 +481,7 @@ class WP_Stream_Reports_Metaboxes {
 	protected function get_generated_title( $args ) {
 
 		if ( empty( $args['selector_id'] ) ) {
-			return sprintf( esc_html__( 'Report %d', 'stream-reports' ), absint( $args['key'] + 1 ) );
+			return sprintf( esc_html__( 'Report %d', 'stream' ), absint( $args['key'] + 1 ) );
 		}
 
 		if ( ! empty( $args['context_id'] ) ) {
@@ -503,28 +503,28 @@ class WP_Stream_Reports_Metaboxes {
 				$string = _x(
 					'%1$s in %2$s by %3$s',
 					'1: Action 2: Dataset 3: Selector',
-					'stream-reports'
-				);	
+					'stream'
+				);
 			} else {
 				$string = _x(
 					'All %1$s by %3$s',
 					'1: Action 3: Selector',
-					'stream-reports'
-				);	
+					'stream'
+				);
 			}
-			
-			
+
+
 		} else if ( ! empty( $dataset ) ) {
 			$string = _x(
 				'All Activity in %2$s by %3$s',
 				'2: Dataset 3: Selector',
-				'stream-reports'
+				'stream'
 			);
 		} else {
 			$string = _x(
 				'All Activity by %3$s',
 				'3: Selector',
-				'stream-reports'
+				'stream'
 			);
 		}
 
@@ -709,9 +709,9 @@ class WP_Stream_Reports_Metaboxes {
 			<div class="metabox-prefs stream-reports-chart-height-option">
 				<label for="chart-height">
 					<input type="number" step="50" min="100" max="950" name="chart_height" id="chart_height" maxlength="3" value="<?php echo esc_attr( $option ); ?>">
-					<?php esc_html_e( 'px', 'stream-reports' ); ?>
+					<?php esc_html_e( 'px', 'stream' ); ?>
 				</label>
-				<input type="submit" id="chart_height_apply" class="button" value="<?php esc_attr_e( 'Apply', 'stream-reports' ); ?>">
+				<input type="submit" id="chart_height_apply" class="button" value="<?php esc_attr_e( 'Apply', 'stream' ); ?>">
 				<span class="spinner"></span>
 			</div>
 		</fieldset>
@@ -757,10 +757,10 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$all_items = array(
-			'label' => __( 'All Contexts', 'stream-reports' )
+			'label' => __( 'All Contexts', 'stream' )
 		);
 
-		
+
 		$new_array = apply_filters( 'wp_stream_reports_get_contexts', $context_items );
 		return array_merge( array( $all_items ), $new_array );
 	}
@@ -772,7 +772,7 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$all_actions = array(
-			'label' => __( 'All Actions', 'stream-reports' )
+			'label' => __( 'All Actions', 'stream' )
 		);
 
 		$new_array = array_merge( array( $all_actions ), $actions );
@@ -834,7 +834,7 @@ class WP_Stream_Reports_Metaboxes {
 		return $all_records;
 	}
 
-	public function migrate_settings() { 
+	public function migrate_settings() {
 		$sections = self::$sections;
 		foreach ( $sections as $key => $args ) {
 			switch ( $args['data_group'] ) {
