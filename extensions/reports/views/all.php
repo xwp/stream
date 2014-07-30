@@ -10,7 +10,7 @@
 			esc_html__( 'Stream Reports', 'stream' ),
 			$site_count, // xss ok
 			esc_url( $add_url ),
-			esc_html__( 'Add New', 'stream' )
+			esc_html__( 'New Report', 'stream' )
 		);
 		?>
 
@@ -18,7 +18,7 @@
 
 		<h2><?php esc_html_e( 'Stream Reports', 'stream' ) ?>
 			<a href="<?php echo esc_url( $add_url ) ?>" class="add-new-h2">
-				<?php esc_html_e( 'Add New', 'stream' ) ?>
+				<?php esc_html_e( 'New Report', 'stream' ) ?>
 			</a>
 		</h2>
 
