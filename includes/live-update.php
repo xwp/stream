@@ -54,7 +54,7 @@ class WP_Stream_Live_Update {
 		if ( 'false' === $input['heartbeat'] ) {
 			update_user_meta( $user, self::USER_META_KEY, 'off' );
 
-			wp_send_json_error( esc_html__( "Live updates could not be enabled because Heartbeat is not loaded.\n\nPlease contact your hosting provider as it may have been disabled for performance reasons.", 'stream' ) );
+			wp_send_json_error( esc_html__( "Live updates could not be enabled because Heartbeat is not loaded.\n\nYour hosting provider or another plugin may have disabled it for performance reasons.", 'stream' ) );
 
 			return;
 		}
