@@ -188,7 +188,7 @@ class WP_Stream {
 	 * @return bool
 	 */
 	public static function is_connected() {
-		return (bool) self::$api->api_key;
+		return (bool) self::$api->api_key && (bool) self::$api->site_uuid;
 	}
 
 	/**
