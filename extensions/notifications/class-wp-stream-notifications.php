@@ -168,7 +168,7 @@ class WP_Stream_Notifications {
 	 */
 	public function register_menu() {
 		self::$screen_id = add_submenu_page(
-			'wp_stream',
+			WP_Stream_Admin::RECORDS_PAGE_SLUG,
 			__( 'Notifications', 'stream' ),
 			__( 'Notifications', 'stream' ),
 			self::VIEW_CAP,
