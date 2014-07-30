@@ -846,7 +846,7 @@ class WP_Stream_Admin {
 			<div class="wrap">
 				<?php do_action( 'admin_notices' ); ?>
 				<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ) ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a></p>
-				<p><?php _e( 'with WordPress.com', 'stream' ) ?></p>
+				<p><?php _e( 'with your WordPress.com account', 'stream' ) ?></p>
 				<?php if ( isset( $testimonial ) ) : ?>
 				<p class="quote">&ldquo;<?php echo esc_html( $testimonial['quote'] ) ?>&rdquo;</p>
 				<p class="author">&dash; <?php echo esc_html( $testimonial['author'] ) ?>, <a class="organization" href="<?php echo esc_url( $testimonial['link'] ) ?>"><?php echo esc_html( $testimonial['organization'] ) ?></a></p>
