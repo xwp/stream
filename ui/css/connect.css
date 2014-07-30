@@ -203,7 +203,7 @@
 
 #wp-stream-connect a {
 	text-decoration: none;
-	color: #616161;
+	color: #0074a2;
 }
 
 #wp-stream-connect a:hover {
@@ -242,6 +242,10 @@
 }
 
 /* WordPress overrides */
+.toplevel_page_wp_stream.wp_stream_disconnected div.updated {
+	margin-top: 15px;
+}
+
 .toplevel_page_wp_stream.wp_stream_disconnected #wpcontent {
 	margin-left: 160px;
 }
