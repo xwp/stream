@@ -304,7 +304,13 @@ class WP_Stream_Admin {
 	 * @return string $classes
 	 */
 	public static function admin_body_class( $classes ) {
-		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
+		global $typenow;
+
+		if (
+			( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) )
+			||
+			( WP_Stream_Notifications_Post_Type::POSTTYPE === $typenow )
+		) {
 			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
 
 			if ( ! is_network_admin() ) {
