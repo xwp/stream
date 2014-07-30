@@ -172,7 +172,7 @@ class WP_Stream_Notifications {
 			__( 'Notifications', 'stream' ),
 			__( 'Notifications', 'stream' ),
 			self::VIEW_CAP,
-			'edit.php?post_type=stream-notification'
+			sprintf( 'edit.php?post_type=%s', WP_Stream_Notifications_Post_Type::POSTTYPE )
 		);
 	}
 
@@ -201,8 +201,8 @@ class WP_Stream_Notifications {
 	public function on_activation() {
 		// Add sample rule
 		$args = array(
-			'post_type' => WP_Stream_Notifications_Post_Type::POSTTYPE,
-			'post_status' => 'any',
+			'post_type'      => WP_Stream_Notifications_Post_Type::POSTTYPE,
+			'post_status'    => 'any',
 			'posts_per_page' => 1,
 		);
 		if ( ! get_posts( $args ) ) {
@@ -218,11 +218,11 @@ class WP_Stream_Notifications {
 		$postarr = array(
 			'post_title'  => __( 'Sample Rule', 'stream' ),
 			'post_status' => 'draft',
-			'post_type'   => 'stream-notification',
+			'post_type'   => WP_Stream_Notifications_Post_Type::POSTTYPE,
 		);
 
 		$meta = array(
-			'triggers'   => array(
+			'triggers' => array(
 				array(
 					'group'    => 0,
 					'relation' => 'and',
