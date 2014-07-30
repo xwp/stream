@@ -2,6 +2,8 @@
 
 class WP_Stream_Live_Update {
 
+	const USER_META_KEY = 'stream_live_update_records';
+
 	public static $list_table = null;
 
 	public static function load() {
@@ -17,7 +19,7 @@ class WP_Stream_Live_Update {
 	 * @return void/json
 	 */
 	public static function enable_live_update() {
-		check_ajax_referer( 'stream_live_update_records_nonce', 'nonce' );
+		check_ajax_referer( self::USER_META_KEY . '_nonce', 'nonce' );
 
 		$input = array(
 			'checked'   => FILTER_SANITIZE_STRING,
@@ -36,14 +38,14 @@ class WP_Stream_Live_Update {
 		$user = (int) $input['user'];
 
 		if ( 'false' === $input['heartbeat'] ) {
-			update_user_meta( $user, 'stream_live_update_records', 'off' );
+			update_user_meta( $user, self::USER_META_KEY, 'off' );
 
 			wp_send_json_error( esc_html__( "Live updates could not be enabled because Heartbeat is not loaded.\n\nPlease contact your hosting provider as it may have been disabled for performance reasons.", 'stream' ) );
 
 			return;
 		}
 
-		$success = update_user_meta( $user, 'stream_live_update_records', $checked );
+		$success = update_user_meta( $user, self::USER_META_KEY, $checked );
 
 		if ( $success ) {
 			wp_send_json_success( ( 'on' === $checked ) ? 'Live Updates enabled' : 'Live Updates disabled' );
@@ -108,7 +110,7 @@ class WP_Stream_Live_Update {
 	 */
 	public static function heartbeat_received( $response, $data ) {
 		$option                  = get_option( 'dashboard_stream_activity_options' );
-		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
+		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), self::USER_META_KEY, true ) );
 		$enable_dashboard_update = ( 'off' !== ( $option['live_update'] ) );
 
 		// Register list table
