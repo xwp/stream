@@ -4,8 +4,8 @@
 		<input type="hidden" name="triggers[<%- vars.index %>][group]" value="<%- vars.group %>"/>
 		<div class="field relation">
 			<select name="triggers[<%- vars.index %>][relation]" class="trigger-relation">
-				<option value="and"><?php esc_html_e( 'AND', 'stream-notifications' ) ?></option>
-				<option value="or"><?php esc_html_e( 'OR', 'stream-notifications' ) ?></option>
+				<option value="and"><?php esc_html_e( 'AND', 'stream' ) ?></option>
+				<option value="or"><?php esc_html_e( 'OR', 'stream' ) ?></option>
 			</select>
 		</div>
 		<div class="field type">
@@ -16,7 +16,7 @@
 				<% }); %>
 			</select>
 		</div>
-		<a href="#" class="delete-trigger"><?php esc_html_e( 'Delete', 'stream-notifications' ) ?></a>
+		<a href="#" class="delete-trigger"><?php esc_html_e( 'Delete', 'stream' ) ?></a>
 	</div>
 </div>
 </script>
@@ -27,13 +27,13 @@
 		<input type="hidden" name="groups[<%- vars.index %>][group]" value="<%- vars.parent %>"/>
 		<div class="field relation">
 			<select name="groups[<%- vars.index %>][relation]" class="group-relation">
-				<option value="and"><?php esc_html_e( 'AND', 'stream-notifications' ) ?></option>
-				<option value="or"><?php esc_html_e( 'OR', 'stream-notifications' ) ?></option>
+				<option value="and"><?php esc_html_e( 'AND', 'stream' ) ?></option>
+				<option value="or"><?php esc_html_e( 'OR', 'stream' ) ?></option>
 			</select>
 		</div>
-		<a href="#add-trigger" class="add-trigger button button-secondary" data-group="<%- vars.index %>"><?php esc_html_e( '+ Add Trigger', 'stream-notifications' ) ?></a>
-		<a href="#add-trigger-group" class="add-trigger-group button button-primary" data-group="<%- vars.index %>"><?php esc_html_e( '+ Add Group', 'stream-notifications' ) ?></a>
-		<a href="#" class="delete-group"><?php esc_html_e( 'Delete Group', 'stream-notifications' ) ?></a>
+		<a href="#add-trigger" class="add-trigger button button-secondary" data-group="<%- vars.index %>"><?php esc_html_e( '+ Add Trigger', 'stream' ) ?></a>
+		<a href="#add-trigger-group" class="add-trigger-group button button-primary" data-group="<%- vars.index %>"><?php esc_html_e( '+ Add Group', 'stream' ) ?></a>
+		<a href="#" class="delete-group"><?php esc_html_e( 'Delete Group', 'stream' ) ?></a>
 	</div>
 </div>
 </script>
@@ -75,7 +75,7 @@
 				<option value="<%- name %>"><%- type.title %></option>
 				<% }); %>
 			</select>
-			<a href="#" class="delete-alert alignright"><?php esc_html_e( 'Delete', 'stream-notifications' ) ?></a>
+			<a href="#" class="delete-alert alignright"><?php esc_html_e( 'Delete', 'stream' ) ?></a>
 			<div class="clear"></div>
 		</div>
 	</div>
