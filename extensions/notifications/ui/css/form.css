@@ -120,12 +120,9 @@
 	padding: 0 0 12px;
 }
 
-#stream-notifications-triggers .group-meta a {
-	font-size: 10px;
-}
-
 #stream-notifications-triggers .group-meta a.delete-group {
 	line-height: 28px;
+	font-size: 10px;
 }
 
 #stream-notifications-triggers .group .trigger:first-of-type .field.relation,
