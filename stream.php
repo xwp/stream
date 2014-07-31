@@ -125,8 +125,6 @@ class WP_Stream {
 			// Registers a hook that connectors and other plugins can use whenever a stream update happens
 			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
 
-			add_action( 'admin_init', array( 'WP_Stream_Extensions', 'get_instance' ) );
-
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 
 			add_action( 'plugins_loaded', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
