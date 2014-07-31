@@ -201,7 +201,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 
 	public function admin_enqueue_scripts( $hook ) {
 		if ( 0 === strpos( $hook, 'seo_page_' ) ) {
-			$src = WP_STREAM_URL . '/ui/wpseo-admin.js';
+			$src = WP_STREAM_URL . '/ui/js/wpseo-admin.js';
 			wp_enqueue_script( 'stream-connector-wpseo', $src, array( 'jquery' ), WP_Stream::VERSION );
 		}
 	}
