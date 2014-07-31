@@ -158,7 +158,7 @@ class WP_Stream_Log {
 			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
 		}
 
-		$user      = new WP_User();
+		$user      = new WP_User( $user_id );
 		$user_role = isset( $user->roles[0] ) ? $user->roles[0] : null;
 
 		$record = array(
@@ -186,17 +186,9 @@ class WP_Stream_Log {
 					'context'    => ! empty( $context ) ? $context : null,
 					'action'     => ! empty( $action ) ? $action : null,
 					'ip_address' => ! empty( $ip_address ) ? $ip_address : null,
-					'author'     => null,
-					'role'       => null,
+					'author'     => is_numeric( $author_or_role ) ? $author_or_role : null,
+					'role'       => ( ! empty( $author_or_role ) && ! is_numeric( $author_or_role ) ) ? $author_or_role : null,
 				);
-
-				if ( ! empty( $author_or_role ) ) {
-					if ( is_numeric( $author_or_role ) ) {
-						$exclude['author'] = $author_or_role;
-					} else {
-						$exclude['role'] = $author_or_role;
-					}
-				}
 
 				$exclude_rules = array_filter( $exclude, 'strlen' );
 
