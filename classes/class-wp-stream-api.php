@@ -189,7 +189,7 @@ class WP_Stream_API {
 		$body = array();
 
 		if ( ! empty( $query ) ) {
-			$body['body'] = $query;
+			$body['query'] = $query;
 		}
 		if ( ! empty( $fields ) ) {
 			$body['fields'] = $fields;
