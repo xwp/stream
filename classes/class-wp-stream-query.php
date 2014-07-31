@@ -187,7 +187,6 @@ class WP_Stream_Query {
 			}
 		}
 
-
 		// Add filters to query
 		if ( ! empty( $filters ) ) {
 			if ( count( $filters ) > 1 ) {
