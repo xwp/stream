@@ -85,7 +85,7 @@ class WP_Stream_Admin {
 		}
 
 		// Disconnect
-		if ( '1' === wp_stream_filter_input( INPUT_GET, 'disconnect' ) && WP_Stream_Admin::ACCOUNT_PAGE_SLUG === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
+		if ( self::ACCOUNT_PAGE_SLUG === wp_stream_filter_input( INPUT_GET, 'page' ) && '1' === wp_stream_filter_input( INPUT_GET, 'disconnect' ) ) {
 			add_action( 'admin_init', array( __CLASS__, 'remove_api_authentication' ) );
 		}
 
