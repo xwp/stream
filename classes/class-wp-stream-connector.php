@@ -3,24 +3,24 @@
 abstract class WP_Stream_Connector {
 
 	/**
-	* Connector slug
-	*
-	* @var string
-	*/
+	 * Connector slug
+	 *
+	 * @var string
+	 */
 	public static $name = null;
 
 	/**
-	* Actions registered for this connector
-	*
-	* @var array
-	*/
+	 * Actions registered for this connector
+	 *
+	 * @var array
+	 */
 	public static $actions = array();
 
 	/**
-	* Previous Stream entry in same request
-	*
-	* @var int
-	*/
+	 * Previous Stream entry in same request
+	 *
+	 * @var int
+	 */
 	public static $prev_stream = null;
 
 	/**

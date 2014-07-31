@@ -1,7 +1,7 @@
 /* Stream Connect Button */
 .stream-connect-button a {
 	position: relative;
-	padding: 0.38095em 0.85714em 0.38095em 0.57143em;
+	padding: 0.38095em 0.85714em 0.38095em 0.57143em !important;
 	border: none;
 	font: 400 1.5em 'Open Sans', Helvetica, sans-serif;
 	text-decoration: none;

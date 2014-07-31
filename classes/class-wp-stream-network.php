@@ -255,12 +255,7 @@ class WP_Stream_Network {
 
 		$stream_hidden_options = apply_filters(
 			'wp_stream_hidden_option_fields',
-			array(
-				'general' => array(
-					'delete_all_records',
-					'records_ttl',
-				),
-			)
+			array()
 		);
 
 		$network_hidden_options = apply_filters(

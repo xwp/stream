@@ -202,8 +202,8 @@ class WP_Stream_Dashboard_Widget {
 	 * @return string  Contents of new row
 	 */
 	public static function widget_row( $item ) {
-		$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
-		$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
+		$author_meta = wp_stream_get_meta( $item, 'author_meta', true );
+		$author      = new WP_Stream_Author( (int) $item->author, (array) $author_meta );
 
 		$time_author = sprintf(
 			_x(
@@ -253,9 +253,9 @@ class WP_Stream_Dashboard_Widget {
 
 		$send = array();
 
-		$last_id = $data['wp-stream-heartbeat-last-id'];
+		$last_time = $data['wp-stream-heartbeat-last-time'];
 
-		$updated_items = self::gather_updated_items( $last_id );
+		$updated_items = WP_Stream_Live_Update::gather_updated_items( $last_time );
 
 		if ( ! empty( $updated_items ) ) {
 			ob_start();
@@ -267,32 +267,6 @@ class WP_Stream_Dashboard_Widget {
 		}
 
 		return $send;
-	}
-
-	/**
-	 * Sends Updated Actions to the List Table View
-	 *
-	 * @param       int    Timestamp of last update
-	 * @param array $query
-	 *
-	 * @return array  Array of recently updated items
-	 */
-	public static function gather_updated_items( $last_id, $query = array() ) {
-		if ( false === $last_id ) {
-			return '';
-		}
-
-		$default = array(
-			'record_greater_than' => $last_id,
-		);
-
-		// Filter default
-		$query = wp_parse_args( $query, $default );
-
-		// Run query
-		$items = wp_stream_query( $query );
-
-		return $items;
 	}
 
 }

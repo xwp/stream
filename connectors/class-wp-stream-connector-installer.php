@@ -73,7 +73,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( 'wordpress' === $record->context && 'updated' === $record->action ) {
 			global $wp_version;
-			$version = wp_stream_get_meta( $record->ID, 'new_version', true );
+			$version = wp_stream_get_meta( $record, 'new_version', true );
 			if ( $version === $wp_version ) {
 				$links[ __( 'About', 'stream' ) ] = admin_url( 'about.php?updated' );
 			}

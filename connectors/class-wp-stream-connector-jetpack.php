@@ -145,6 +145,10 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			if ( 'modules' === $record->context ) {
 				$slug = wp_stream_get_meta( $record->ID, 'module_slug', true );
 
+				if ( is_array( $slug ) ) {
+					$slug = current( $slug );
+				}
+
 				if ( Jetpack::is_module_active( $slug ) ) {
 					if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
 						$links[ __( 'Configure', 'jetpack' ) ] = Jetpack::module_configuration_url( $slug );;

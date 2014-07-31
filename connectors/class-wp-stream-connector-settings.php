@@ -367,7 +367,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				'menu_slug'    => 'wp_stream',
 				'submenu_slug' => WP_Stream_Admin::SETTINGS_PAGE_SLUG,
 				'url'          => function( $rule, $record ) {
-					$option_key = wp_stream_get_meta( $record->ID, 'option_key', true );
+					$option_key = wp_stream_get_meta( $record, 'option_key', true );
 					$url_tab    = null;
 
 					if ( '' !== $option_key ) {
@@ -466,10 +466,10 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 					if ( current_user_can( $capability ) ) {
 						$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
 						$text       = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
-						$field_name = wp_stream_get_meta( $record->ID, 'option_key', true );
+						$field_name = wp_stream_get_meta( $record, 'option_key', true );
 
 						if ( '' === $field_name ) {
-							$field_name = wp_stream_get_meta( $record->ID, 'option', true );
+							$field_name = wp_stream_get_meta( $record, 'option', true );
 						}
 
 						if ( '' !== $field_name ) {

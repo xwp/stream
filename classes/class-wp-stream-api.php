@@ -166,6 +166,44 @@ class WP_Stream_API {
 	}
 
 	/**
+	 * Search all records.
+	 *
+	 * @param array Elasticsearch's Query DSL query object.
+	 * @param array Returns specified fields only.
+	 * @param bool  Allow API calls to be cached.
+	 * @param int   Set transient expiration in seconds.
+	 *
+	 * @return mixed
+	 */
+	public function search( $query = array(), $fields = array(), $sites = array(), $allow_cache = false, $expiration = 120 ) {
+		if ( ! $this->site_uuid ) {
+			return false;
+		}
+
+		if ( empty( $sites ) ) {
+			$sites[] = $this->site_uuid;
+		}
+
+		$url  = $this->request_url( sprintf( '/search', esc_attr( $this->site_uuid ) ) );
+
+		$body = array();
+
+		if ( ! empty( $query ) ) {
+			$body['query'] = $query;
+		}
+		if ( ! empty( $fields ) ) {
+			$body['fields'] = $fields;
+		}
+		if ( ! empty( $sites ) ) {
+			$body['sites'] = $sites;
+		}
+
+		$args = array( 'method' => 'POST', 'body' => json_encode( (object) $body ) );
+
+		return $this->remote_request( $url, $args, $allow_cache, $expiration );
+	}
+
+	/**
 	 * Helper function to create and escape a URL for an API request.
 	 *
 	 * @param string The endpoint path, with a starting slash.
@@ -177,7 +215,7 @@ class WP_Stream_API {
 		return esc_url_raw(
 			add_query_arg(
 				$params,
-				untrailingslashit( $this->api_url ) . $path //use this when /version/ is implemented: trailingslashit( $this->api_url ) . $this->api_version . $path
+				untrailingslashit( $this->api_url ) . $path
 			)
 		);
 	}
