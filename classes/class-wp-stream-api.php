@@ -5,7 +5,7 @@ class WP_Stream_API {
 	/**
 	 * API Key key/identifier
 	 */
-	const API_KEY_OPTION_KEY = 'wp_stream_api_master_key';
+	const API_KEY_OPTION_KEY = 'wp_stream_site_api_key';
 
 	/**
 	 * Site UUID key/identifier
@@ -38,7 +38,7 @@ class WP_Stream_API {
 	 *
 	 * @var string
 	 */
-	protected $api_version = 'v1';
+	protected $api_version = '0.0.1';
 
 	/**
 	 * Error messages
@@ -58,36 +58,26 @@ class WP_Stream_API {
 	}
 
 	/**
-	 * Validate a site API key.
+	 * Get the details for a specific site.
 	 *
-	 * @param string The API Key.
-	 * @param bool   Allow API calls to be cached.
-	 * @param int    Set transient expiration in seconds.
-	 *
-	 * @return mixed
-	 */
-	public function validate_key( $allow_cache = true, $expiration = 300 ) {
-		$url  = $this->request_url( '/validate-key' );
-		$args = array( 'method' => 'GET' );
-
-		return $this->remote_request( $url, $args, $allow_cache, $expiration );
-	}
-
-	/**
-	 * Get the details for a specific user.
-	 *
-	 * @param int  A user ID.
-	 * @param bool Allow API calls to be cached.
-	 * @param int  Set transient expiration in seconds.
+	 * @param array Returns specified fields only.
+	 * @param bool  Allow API calls to be cached.
+	 * @param int   Set transient expiration in seconds.
 	 *
 	 * @return mixed
 	 */
-	public function get_user( $user_id = false, $allow_cache = true, $expiration = 300 ) {
-		if ( false === $user_id ) {
+	public function get_site( $fields = array(), $allow_cache = true, $expiration = 30 ) {
+		if ( ! $this->site_uuid ) {
 			return false;
 		}
 
-		$url  = $this->request_url( sprintf( '/users/%s', esc_attr( intval( $user_id ) ) ) );
+		$params = array();
+
+		if ( ! empty( $fields ) ) {
+			$params['fields'] = implode( ',', $fields );
+		}
+
+		$url  = $this->request_url( sprintf( '/sites/%s', esc_attr( $this->site_uuid ) ), $params );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
@@ -133,7 +123,7 @@ class WP_Stream_API {
 	 *
 	 * @return mixed
 	 */
-	public function get_records( $fields = array(), $allow_cache = true, $expiration = 120 ) {
+	public function get_records( $fields = array(), $allow_cache = true, $expiration = 30 ) {
 		if ( ! $this->site_uuid ) {
 			return false;
 		}
@@ -176,6 +166,44 @@ class WP_Stream_API {
 	}
 
 	/**
+	 * Search all records.
+	 *
+	 * @param array Elasticsearch's Query DSL query object.
+	 * @param array Returns specified fields only.
+	 * @param bool  Allow API calls to be cached.
+	 * @param int   Set transient expiration in seconds.
+	 *
+	 * @return mixed
+	 */
+	public function search( $query = array(), $fields = array(), $sites = array(), $allow_cache = false, $expiration = 120 ) {
+		if ( ! $this->site_uuid ) {
+			return false;
+		}
+
+		if ( empty( $sites ) ) {
+			$sites[] = $this->site_uuid;
+		}
+
+		$url  = $this->request_url( sprintf( '/search', esc_attr( $this->site_uuid ) ) );
+
+		$body = array();
+
+		if ( ! empty( $query ) ) {
+			$body['query'] = $query;
+		}
+		if ( ! empty( $fields ) ) {
+			$body['fields'] = $fields;
+		}
+		if ( ! empty( $sites ) ) {
+			$body['sites'] = $sites;
+		}
+
+		$args = array( 'method' => 'POST', 'body' => json_encode( (object) $body ) );
+
+		return $this->remote_request( $url, $args, $allow_cache, $expiration );
+	}
+
+	/**
 	 * Helper function to create and escape a URL for an API request.
 	 *
 	 * @param string The endpoint path, with a starting slash.
@@ -187,7 +215,7 @@ class WP_Stream_API {
 		return esc_url_raw(
 			add_query_arg(
 				$params,
-				untrailingslashit( $this->api_url ) . $path //use this when /version/ is implemented: trailingslashit( $this->api_url ) . $this->api_version . $path
+				untrailingslashit( $this->api_url ) . $path
 			)
 		);
 	}
@@ -216,8 +244,9 @@ class WP_Stream_API {
 
 		$args = wp_parse_args( $args, $defaults );
 
-		$args['headers']['stream-api-master-key'] = $this->api_key;
-		$args['headers']['Content-Type']          = 'application/json';
+		$args['headers']['Stream-Site-API-Key'] = $this->api_key;
+		$args['headers']['Accept-Version']      = $this->api_version;
+		$args['headers']['Content-Type']        = 'application/json';
 
 		$transient = 'wp_stream_' . md5( $url );
 
@@ -236,6 +265,10 @@ class WP_Stream_API {
 			if ( 200 === $request['response']['code'] || 201 === $request['response']['code'] ) {
 				return $data;
 			} else {
+				// Disconnect if unauthorized or no longer exists
+				if ( 403 === $request['response']['code'] || 410 === $request['response']['code'] ) {
+					WP_Stream_Admin::remove_api_authentication();
+				}
 				$this->errors['errors']['http_code'] = $request['response']['code'];
 			}
 

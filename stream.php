@@ -79,16 +79,14 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'functions.php';
 
 		// Load DB helper interface/class
-		$driver = apply_filters( 'wp_stream_db_adapter', 'wpdb' );
-		if ( file_exists( WP_STREAM_INC_DIR . "db/$driver.php" ) ) {
-			require_once WP_STREAM_INC_DIR . "db/$driver.php";
+		$driver = 'WP_Stream_DB';
+		if ( class_exists( $driver ) ) {
+			self::$db = new $driver;
 		}
+
 		if ( ! self::$db ) {
 			wp_die( __( 'Stream: Could not load chosen DB driver.', 'stream' ), 'Stream DB Error' );
 		}
-
-		// Check DB and add message if not present
-		add_action( 'init', array( self::$db, 'check_db' ) );
 
 		// Load API helper interface/class
 		self::$api = new WP_Stream_API;
@@ -136,9 +134,6 @@ class WP_Stream {
 
 			add_action( 'plugins_loaded', array( 'WP_Stream_Pointers', 'load' ) );
 		}
-
-		// Load deprecated functions
-		require_once WP_STREAM_INC_DIR . 'deprecated.php';
 	}
 
 	/**
@@ -194,7 +189,7 @@ class WP_Stream {
 	 * @return bool
 	 */
 	public static function is_connected() {
-		return (bool) self::$api->api_key;
+		return (bool) self::$api->api_key && (bool) self::$api->site_uuid;
 	}
 
 	/**

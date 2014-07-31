@@ -101,20 +101,23 @@ class WP_Stream_Log {
 			}
 		);
 
+		// Get current time with milliseconds
+		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
+
 		$recordarr = array(
 			'object_id'   => $object_id,
 			'site_id'     => is_multisite() ? get_current_site()->id : 1,
 			'blog_id'     => apply_filters( 'blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() ),
 			'author'      => $user_id,
 			'author_role' => ! empty( $user->roles ) ? $user->roles[0] : null,
-			'created'     => current_time( 'mysql', 1 ),
+			'created'     => $iso_8601_extended_date,
 			'visibility'  => $visibility,
 			'summary'     => vsprintf( $message, $args ),
 			'parent'      => self::$instance->prev_record,
 			'connector'   => $connector,
 			'context'     => $context,
 			'action'      => $action,
-			'meta'        => $meta,
+			'stream_meta' => $meta,
 			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
@@ -144,7 +147,7 @@ class WP_Stream_Log {
 			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
 		}
 
-		$user      = new WP_User();
+		$user      = new WP_User( $user_id );
 		$user_role = isset( $user->roles[0] ) ? $user->roles[0] : null;
 
 		$record = array(
@@ -172,17 +175,9 @@ class WP_Stream_Log {
 					'context'    => ! empty( $context ) ? $context : null,
 					'action'     => ! empty( $action ) ? $action : null,
 					'ip_address' => ! empty( $ip_address ) ? $ip_address : null,
-					'author'     => null,
-					'role'       => null,
+					'author'     => is_numeric( $author_or_role ) ? $author_or_role : null,
+					'role'       => ( ! empty( $author_or_role ) && ! is_numeric( $author_or_role ) ) ? $author_or_role : null,
 				);
-
-				if ( ! empty( $author_or_role ) ) {
-					if ( is_numeric( $author_or_role ) ) {
-						$exclude['author'] = $author_or_role;
-					} else {
-						$exclude['role'] = $author_or_role;
-					}
-				}
 
 				$exclude_rules = array_filter( $exclude, 'strlen' );
 

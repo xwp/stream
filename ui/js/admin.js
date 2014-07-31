@@ -115,6 +115,46 @@ jQuery(function( $ ) {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
 	});
 
+	$( '#wp_stream_uninstall' ).click(function( e ) {
+		if ( ! confirm( wp_stream.i18n.confirm_uninstall ) ) {
+			e.preventDefault();
+		}
+	});
+
+	// Admin page tabs
+	var $tabs          = $( '.nav-tab-wrapper' ),
+		$panels        = $( '.nav-tab-content table.form-table' ),
+		$activeTab     = $tabs.find( '.nav-tab-active' ),
+		defaultIndex   = $activeTab.length > 0 ? $tabs.find( 'a' ).index( $activeTab ) : 0,
+		hashIndex      = window.location.hash.match( /^#(\d+)$/ ),
+		currentHash    = ( null !== hashIndex ? hashIndex[ 1 ] : defaultIndex ),
+		syncFormAction = function( index ) {
+			var $optionsForm  = $( 'input[name="option_page"][value^="wp_stream"]' ).closest( 'form' );
+			var currentAction = $optionsForm.attr( 'action' );
+
+			$optionsForm.prop( 'action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ) );
+		};
+
+	$tabs.on( 'click', 'a', function() {
+		var index     = $tabs.find( 'a' ).index( $( this ) ),
+			hashIndex = window.location.hash.match( /^#(\d+)$/ );
+
+		$panels.hide().eq( index ).show();
+		$tabs
+			.find( 'a' )
+			.removeClass( 'nav-tab-active' )
+			.filter( $( this ) )
+			.addClass( 'nav-tab-active' );
+
+		if ( '' === window.location.hash || null !== hashIndex ) {
+			window.location.hash = index;
+		}
+
+		syncFormAction( index );
+		return false;
+	});
+	$tabs.children().eq( currentHash ).trigger( 'click' );
+
 	// Heartbeat for Live Updates
 	// runs only on stream page (not settings)
 	$( document ).ready(function() {
@@ -135,13 +175,13 @@ jQuery(function( $ ) {
 
 		$( document ).on( 'heartbeat-send.stream', function( e, data ) {
 			data['wp-stream-heartbeat'] = 'live-update';
-			var last_item = $( list_sel + ' tr:first .column-id' );
-			var last_id = 1;
+			var last_item = $( list_sel + ' tr:first .record-created' );
+			var last_time;
 			if ( last_item.length !== 0 ) {
-				last_id = ( '' === last_item.text() ) ? 1 : last_item.text();
+				last_time = last_item.attr( 'datetime' );
+				data['wp-stream-heartbeat-last-time'] = last_time;
+				data['wp-stream-heartbeat-query']     = wp_stream.current_query;
 			}
-			data['wp-stream-heartbeat-last-id'] = last_id;
-			data['wp-stream-heartbeat-query']   = wp_stream.current_query;
 		});
 
 		// Listen for "heartbeat-tick" on $(document).

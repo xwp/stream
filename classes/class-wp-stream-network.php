@@ -183,26 +183,6 @@ class WP_Stream_Network {
 				array( 'WP_Stream_Admin', 'render_settings_page' )
 			);
 		}
-		if ( self::is_network_activated() ) {
-			WP_Stream_Admin::$screen_id['extensions'] = add_submenu_page(
-				WP_Stream_Admin::RECORDS_PAGE_SLUG,
-				__( 'Stream Extensions', 'stream' ),
-				__( 'Extensions', 'stream' ),
-				WP_Stream_Admin::SETTINGS_CAP,
-				WP_Stream_Admin::EXTENSIONS_PAGE_SLUG,
-				array( 'WP_Stream_Admin', 'render_extensions_page' )
-			);
-		} else {
-			WP_Stream_Admin::$screen_id['extensions'] = add_menu_page(
-				__( 'Stream Extensions', 'stream' ),
-				__( 'Stream', 'stream' ),
-				WP_Stream_Admin::SETTINGS_CAP,
-				WP_Stream_Admin::EXTENSIONS_PAGE_SLUG,
-				array( 'WP_Stream_Admin', 'render_extensions_page' ),
-				'div',
-				'2.999999' // Using longtail decimal string to reduce the chance of position conflicts, see Codex
-			);
-		}
 	}
 
 	/**
@@ -275,12 +255,7 @@ class WP_Stream_Network {
 
 		$stream_hidden_options = apply_filters(
 			'wp_stream_hidden_option_fields',
-			array(
-				'general' => array(
-					'delete_all_records',
-					'records_ttl',
-				),
-			)
+			array()
 		);
 
 		$network_hidden_options = apply_filters(

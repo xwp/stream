@@ -94,7 +94,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		if ( $sidebar = wp_stream_get_meta( $record->ID, 'sidebar_id', true ) ) {
+		if ( $sidebar = wp_stream_get_meta( $record, 'sidebar_id', true ) ) {
 			global $wp_registered_sidebars;
 
 			if ( array_key_exists( $sidebar, $wp_registered_sidebars ) ) {

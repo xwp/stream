@@ -56,14 +56,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 				'context' => __( 'Context', 'stream' ),
 				'action'  => __( 'Action', 'stream' ),
 				'ip'      => __( 'IP Address', 'stream' ),
-				'id'      => __( 'Record ID', 'stream' ),
 			)
 		);
 	}
 
 	function get_sortable_columns() {
 		return array(
-			'id'   => array( 'ID', false ),
 			'date' => array( 'date', false ),
 		);
 	}
@@ -125,14 +123,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$args = array();
 
 		// Parse sorting params
-		if ( ! $order = wp_stream_filter_input( INPUT_GET, 'order' ) ) {
-			$order = 'DESC';
+		if ( $order = wp_stream_filter_input( INPUT_GET, 'order' ) ) {
+			$args['order'] = $order;
 		}
-		if ( ! $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
-			$orderby = 'ID';
+		if ( $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
+			$args['orderby'] = $orderby;
 		}
-		$args['order']   = $order;
-		$args['orderby'] = $orderby;
 
 		// Filters
 		$allowed_params = array(
@@ -168,6 +164,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
+		add_filter( 'wp_stream_db_query', array( $this, 'set_query_aggregations' ) );
+
 		$items = wp_stream_query( $args );
 
 		return $items;
@@ -185,14 +183,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'date' :
+				$created     = date( 'Y-m-d H:i:s', strtotime( $item->created ) );
 				$date_string = sprintf(
-					'<time datetime="%s" class="relative-time">%s</time>',
+					'<time datetime="%s" class="relative-time record-created">%s</time>',
 					$item->created,
-					get_date_from_gmt( $item->created, 'Y/m/d' )
+					get_date_from_gmt( $created, 'Y/m/d' )
 				);
 				$out  = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
 				$out .= '<br />';
-				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
+				$out .= get_date_from_gmt( $created, 'h:i:s A' );
 				break;
 
 			case 'summary' :
@@ -212,8 +211,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'author' :
-				$author_meta = wp_stream_get_meta( $item->ID, 'author_meta', true );
-				$author      = new WP_Stream_Author( (int) $item->author, $author_meta );
+				$author_meta = wp_stream_get_meta( $item, 'author_meta', true );
+				$author      = new WP_Stream_Author( (int) $item->author, (array) $author_meta );
 
 				$out = sprintf(
 					'<a href="%s">%s <span>%s</span></a>%s%s%s',
@@ -247,10 +246,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			case 'ip' :
 				$out = $this->column_link( $item->{$column_name}, 'ip', $item->{$column_name} );
-				break;
-
-			case 'id' :
-				$out = $item->ID;
 				break;
 
 			case 'blog_id':
@@ -401,7 +396,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 *
 	 * @return array   options to be displayed in search filters
 	 */
-	function assemble_records( $column, $table = '' ) {
+	function assemble_records( $column ) {
 		$setting_key = self::get_column_excluded_setting_key( $column );
 
 		// @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object
@@ -431,15 +426,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$all_records     = WP_Stream_Connectors::$term_labels[ $prefixed_column ];
 		}
 
-		/* Tempo */
-		$active_records   = array();
-		$disabled_records = array();
-		foreach ( $all_records as $record => $label ) {
-			$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
+		$query_meta = WP_Stream::$db->get_query_meta();
+
+		if ( isset( $query_meta->aggregations->$column->buckets ) ) {
+			$values = array();
+
+			foreach ( $query_meta->aggregations->$column->buckets as $field ) {
+				$values[ $field->key ] = $field->key;
+			}
+
+			$existing_records = array_combine( $values, $values );
+		} else {
+			$existing_records = wp_stream_existing_records( $column );
 		}
 
-		/*
-		$existing_records = wp_stream_existing_records( $column, $table );
 		$active_records   = array();
 		$disabled_records = array();
 
@@ -455,7 +455,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 		if ( isset( $disabled_records[0] ) ) {
 			unset( $disabled_records[0] );
 		}
-		*/
 
 		$sort = function ( $a, $b ) use ( $column ) {
 			$label_a = (string) $a['label'];
@@ -485,7 +484,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 
 		$authors_records = WP_Stream_Admin::get_authors_record_meta(
-			$this->assemble_records( 'author', 'stream' )
+			$this->assemble_records( 'author' )
 		);
 
 		$filters['author'] = array(
@@ -744,6 +743,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 			</div>
 		<?php
 		endif;
+	}
+
+	/**
+	 * Adds aggregation data to the primary query
+	 *
+	 * @return array
+	 */
+	function set_query_aggregations( $query ) {
+		$query['aggregations']['author']['terms']['field']    = 'author';
+		$query['aggregations']['connector']['terms']['field'] = 'connector';
+		$query['aggregations']['context']['terms']['field']   = 'context';
+		$query['aggregations']['action']['terms']['field']    = 'action';
+
+		return $query;
 	}
 
 	static function set_screen_option( $dummy, $option, $value ) {

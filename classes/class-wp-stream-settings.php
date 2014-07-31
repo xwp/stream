@@ -58,9 +58,6 @@ class WP_Stream_Settings {
 		// Check if we need to flush rewrites rules
 		add_action( 'update_option_' . self::OPTION_KEY, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
 
-		// Remove records when records TTL is shortened
-		add_action( 'update_option_' . self::OPTION_KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
-
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
 
 		// Ajax callback function to search users
@@ -168,20 +165,13 @@ class WP_Stream_Settings {
 
 		check_ajax_referer( 'stream_get_ips', 'nonce' );
 
-		$results = wp_stream_query(
-			array(
-				'fields'           => 'ip',
-				'distinct'         => true,
-				'search_field'     => 'ip',
-				'search'           => wp_stream_filter_input( INPUT_POST, 'find' ),
-				'records_per_page' => wp_stream_filter_input( INPUT_POST, 'limit' ),
-			)
-		);
-		if ( $results ) {
-			$results = wp_list_pluck( $results, 'ip' );
-		}
+		$ips = wp_stream_existing_records( 'ip' );
 
-		wp_send_json_success( $results );
+		if ( $ips ) {
+			wp_send_json_success( $ips );
+		} else {
+			wp_send_json_error();
+		}
 	}
 
 	/**
@@ -263,29 +253,6 @@ class WP_Stream_Settings {
 								'</a>'
 							),
 							'after_field' => esc_html__( 'Enabled', 'stream' ),
-							'default'     => 0,
-						),
-						array(
-							'name'        => 'records_ttl',
-							'title'       => esc_html__( 'Keep Records for', 'stream' ),
-							'type'        => 'number',
-							'class'       => 'small-text',
-							'desc'        => esc_html__( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
-							'default'     => 90,
-							'after_field' => esc_html__( 'days', 'stream' ),
-						),
-						array(
-							'name'        => 'delete_all_records',
-							'title'       => esc_html__( 'Reset Stream Database', 'stream' ),
-							'type'        => 'link',
-							'href'        => add_query_arg(
-								array(
-									'action'          => 'wp_stream_reset',
-									'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-								),
-								admin_url( 'admin-ajax.php' )
-							),
-							'desc'        => esc_html__( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
 							'default'     => 0,
 						),
 					),
@@ -921,26 +888,5 @@ class WP_Stream_Settings {
 		}
 
 		return $labels;
-	}
-
-	/**
-	 * Remove records when records TTL is shortened
-	 *
-	 * @param array $old_value
-	 * @param array $new_value
-	 *
-	 * @action update_option_wp_stream
-	 * @return void
-	 */
-	public static function updated_option_ttl_remove_records( $old_value, $new_value ) {
-		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : -1;
-		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : -1;
-
-		if ( $ttl_after < $ttl_before ) {
-			/**
-			 * Action assists in purging when TTL is shortened
-			 */
-			do_action( 'wp_stream_auto_purge' );
-		}
 	}
 }
