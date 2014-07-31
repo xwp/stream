@@ -495,7 +495,7 @@ class WP_Stream_Admin {
 
 		$redirect_url = add_query_arg(
 			array(
-				'page'    => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+				'page'    => self::RECORDS_PAGE_SLUG,
 				'message' => 'connected',
 			),
 			admin_url( 'admin.php' )
@@ -513,7 +513,7 @@ class WP_Stream_Admin {
 
 		$redirect_url = add_query_arg(
 			array(
-				'page'    => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+				'page'    => self::RECORDS_PAGE_SLUG,
 				'message' => 'disconnected',
 			),
 			admin_url( 'admin.php' )
