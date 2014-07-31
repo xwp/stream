@@ -55,7 +55,7 @@ class WP_Stream_Admin {
 
 		self::$disable_access = apply_filters( 'wp_stream_disable_admin_access', false );
 
-		$home_url      = str_replace( array( 'http://', 'https://' ), '', home_url() );
+		$home_url      = str_ireplace( array( 'http://', 'https://' ), '', home_url() );
 		$connect_nonce = wp_create_nonce( 'stream_connect_site-' . sanitize_key( $home_url ) );
 
 		self::$connect_url = add_query_arg(
@@ -476,7 +476,7 @@ class WP_Stream_Admin {
 	}
 
 	public static function save_api_authentication() {
-		$home_url           = str_replace( array( 'http://', 'https://' ), '', home_url() );
+		$home_url           = str_ireplace( array( 'http://', 'https://' ), '', home_url() );
 		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $home_url );
 
 		if ( ! isset( $_GET['api_key'] ) || ! isset( $_GET['site_uuid'] ) ) {
