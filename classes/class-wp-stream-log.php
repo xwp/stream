@@ -102,18 +102,7 @@ class WP_Stream_Log {
 		);
 
 		// Get current time with milliseconds
-		$time          = microtime( true );
-		$micro_seconds = sprintf( '%06d', ( $time - floor( $time ) ) * 1000000 );
-
-		$tz = new DateTimeZone( 'UTC' );
-		$dt = new DateTime( date( 'Y-m-d H:i:s.' . $micro_seconds, $time ), $tz );
-
-		$iso_8601_extended_date = sprintf(
-			'%s%03d%s',
-			$dt->format( 'Y-m-d\TH:i:s.' ),
-			floor( $dt->format( 'u' ) / 1000 ),
-			$dt->format( 'O' )
-		);
+		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
 
 		$recordarr = array(
 			'object_id'   => $object_id,

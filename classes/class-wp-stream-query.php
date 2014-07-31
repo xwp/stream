@@ -103,16 +103,16 @@ class WP_Stream_Query {
 
 		// PARSE DATE
 		if ( $args['date_from'] ) {
-			$filters[]['range']['created']['gte'] = date( 'c', strtotime( $args['date_from'] . ' 00:00:00' ) );
+			$filters[]['range']['created']['gte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date_from']  . ' 00:00:00' ) );
 		}
 
 		if ( $args['date_to'] ) {
-			$filters[]['range']['created']['lte'] = date( 'c', strtotime( $args['date_to'] . ' 23:59:59' ) );
+			$filters[]['range']['created']['lte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date_to']  . ' 23:59:59' ) );
 		}
 
 		if ( $args['date'] ) {
-			$filters[]['range']['created']['gte'] = date( 'c', strtotime( $args['date'] . ' 00:00:00' ) );
-			$filters[]['range']['created']['lte']   = date( 'c', strtotime( $args['date'] . ' 23:59:59' ) );
+			$filters[]['range']['created']['gte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date']  . ' 00:00:00' ) );
+			$filters[]['range']['created']['lte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date']  . ' 23:59:59' ) );
 		}
 
 		// PARSE RECORD

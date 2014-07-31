@@ -29,6 +29,32 @@ function wp_stream_get_meta( $record, $meta_key = '', $single = false ) {
 }
 
 /**
+ * Converts a time into an ISO 8601 extended formatted string.
+ *
+ * @param  int    Seconds since unix epoc
+ * @return string an ISO 8601 extended formatted time
+ */
+function wp_stream_get_iso_8601_extended_date( $time = false )	{
+	if ( $time ) {
+		$microtime = (float) $time . '.0000';
+	} else {
+		$microtime = microtime( true );
+	}
+
+	$micro_seconds = sprintf( '%06d', ( $microtime - floor( $microtime ) ) * 1000000 );
+
+	$tz = new DateTimeZone( 'UTC' );
+	$dt = new DateTime( date( 'Y-m-d H:i:s.' . $micro_seconds, $microtime ), $tz );
+
+	return sprintf(
+		'%s%03d%s',
+		$dt->format( 'Y-m-d\TH:i:s.' ),
+		floor( $dt->format( 'u' ) / 1000 ),
+		$dt->format( 'O' )
+	);
+}
+
+/**
  * Returns array of existing values for requested field.
  * Used to fill search filters with only used items, instead of all items.
  *
