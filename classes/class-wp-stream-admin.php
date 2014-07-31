@@ -55,13 +55,14 @@ class WP_Stream_Admin {
 
 		self::$disable_access = apply_filters( 'wp_stream_disable_admin_access', false );
 
-		$site_url          = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
-		$connect_nonce     = wp_create_nonce( 'stream_connect_site-' . sanitize_key( $site_url ) );
+		$home_url      = str_replace( array( 'http://', 'https://' ), '', home_url() );
+		$connect_nonce = wp_create_nonce( 'stream_connect_site-' . sanitize_key( $home_url ) );
 
 		self::$connect_url = add_query_arg(
 			array(
 				'auth'       => 'true',
 				'action'     => 'connect',
+				'home_url'   => urlencode( $home_url ),
 				'plugin_url' => urlencode( admin_url( 'admin.php?page=' . self::RECORDS_PAGE_SLUG . '&nonce=' . $connect_nonce ) ),
 			),
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/pricing/' )
@@ -475,8 +476,8 @@ class WP_Stream_Admin {
 	}
 
 	public static function save_api_authentication() {
-		$site_url           = str_replace( array( 'http://', 'https://' ), '', get_site_url() );
-		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $site_url );
+		$home_url           = str_replace( array( 'http://', 'https://' ), '', home_url() );
+		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $home_url );
 
 		if ( ! isset( $_GET['api_key'] ) || ! isset( $_GET['site_uuid'] ) ) {
 			wp_die( 'There was a problem connecting to Stream. Please try again later.', 'stream' );
