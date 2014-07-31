@@ -48,6 +48,14 @@ class WP_Stream_API {
 	public $errors = array();
 
 	/**
+	 * Total API calls made per page load
+	 * Used for debugging and optimization
+	 *
+	 * @var array
+	 */
+	public $count = 0;
+
+	/**
 	 * Public constructor
 	 *
 	 * @return void
@@ -241,6 +249,8 @@ class WP_Stream_API {
 			'method'  => 'GET',
 			'body'    => '',
 		);
+
+		$this->count++;
 
 		$args = wp_parse_args( $args, $defaults );
 

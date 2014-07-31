@@ -413,8 +413,8 @@ class WP_Stream_Reports_Metaboxes {
 		$date_interval = $this->get_date_interval();
 		$query_args    = array(
 			'records_per_page' => -1,
-			'date_from'        => $date_interval['start'],
-			'date_to'          => $date_interval['end'],
+			'date_from'        => $date_interval['start']->toDateString(),
+			'date_to'          => $date_interval['end']->toDateString(),
 		);
 
 		$available_args = array(
@@ -438,6 +438,7 @@ class WP_Stream_Reports_Metaboxes {
 
 		$query_args = apply_filters( 'wp_stream_reports_query_args', $query_args, $args );
 		$unsorted   = wp_stream_query( $query_args );
+
 		if ( 'author_role' === $selector ) {
 			foreach ( $unsorted as $key => $record ) {
 				$user = get_userdata( $record->author );

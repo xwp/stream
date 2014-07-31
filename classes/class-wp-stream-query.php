@@ -148,7 +148,11 @@ class WP_Stream_Query {
 
 		// PARSE PAGINATION
 		if ( $args['records_per_page'] ) {
-			$query['size'] = (int) $args['records_per_page'];
+			if ( $args['records_per_page'] >= 0 ) {
+				$query['size'] = (int) $args['records_per_page'];
+			} else {
+				$query['size'] = null;
+			}
 		} else {
 			$query['size'] = get_option( 'posts_per_page', 20 );
 		}
