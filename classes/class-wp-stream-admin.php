@@ -62,7 +62,7 @@ class WP_Stream_Admin {
 			array(
 				'auth'       => 'true',
 				'action'     => 'connect',
-				'plugin_url' => urlencode( admin_url( 'admin.php?page=wp_stream&nonce=' . $connect_nonce ) ),
+				'plugin_url' => urlencode( admin_url( 'admin.php?page=' . self::RECORDS_PAGE_SLUG . '&nonce=' . $connect_nonce ) ),
 			),
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/pricing/' )
 		);
@@ -70,7 +70,7 @@ class WP_Stream_Admin {
 		self::$account_url = add_query_arg(
 			array(
 				'auth'       => 'true',
-				'plugin_url' => urlencode( admin_url( 'admin.php?page=wp_stream_account' ) ),
+				'plugin_url' => urlencode( admin_url( 'admin.php?page=' . self::ACCOUNT_PAGE_SLUG ) ),
 			),
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/dashboard/' )
 		);
