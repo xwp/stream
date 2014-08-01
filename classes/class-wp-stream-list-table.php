@@ -547,6 +547,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 					$data['items'] = $context_items;
 
+					ksort( $data['items'] );
+
 					// Ouput a hidden input to handle the connector value
 					$filters_string .= '<input type="hidden" name="connector" class="record-filter-connector" />';
 				}
