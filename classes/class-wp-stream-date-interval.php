@@ -47,6 +47,7 @@ class WP_Stream_Date_Interval {
 				'today' => array(
 					'label' => esc_html__( 'Today', 'default' ),
 					'start' => Carbon::today( $timezone )->startOfDay(),
+					'end'   => Carbon::today( $timezone )->endOfDay(),
 				),
 				'yesterday' => array(
 					'label' => esc_html__( 'Yesterday', 'stream' ),
@@ -70,12 +71,13 @@ class WP_Stream_Date_Interval {
 				),
 				'this-month' => array(
 					'label' => esc_html__( 'This Month', 'stream' ),
-					'start' => Carbon::today( $timezone )->day( 1 ),
+					'start' => Carbon::today( $timezone )->startOfMonth(),
+					'end'   => Carbon::today( $timezone )->endOfMonth(),
 				),
 				'last-month' => array(
 					'label' => esc_html__( 'Last Month', 'stream' ),
-					'start' => Carbon::today( $timezone )->day( 1 )->subMonth(),
-					'end'   => Carbon::today( $timezone )->day( 1 )->subSecond(),
+					'start' => Carbon::today( $timezone )->startOfMonth()->subMonth(),
+					'end'   => Carbon::today( $timezone )->startOfMonth()->subSecond(),
 				),
 				'last-3-months' => array(
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 3 ),
@@ -94,12 +96,13 @@ class WP_Stream_Date_Interval {
 				),
 				'this-year' => array(
 					'label' => esc_html__( 'This Year', 'stream' ),
-					'start' => Carbon::today( $timezone )->day( 1 )->month( 1 ),
+					'start' => Carbon::today( $timezone )->startOfYear(),
+					'end'   => Carbon::today( $timezone )->endOfYear(),
 				),
 				'last-year' => array(
 					'label' => esc_html__( 'Last Year', 'stream' ),
-					'start' => Carbon::today( $timezone )->day( 1 )->month( 1 )->subYear(),
-					'end'   => Carbon::today( $timezone )->day( 1 )->month( 1 )->subSecond(),
+					'start' => Carbon::today( $timezone )->startOfYear()->subYear(),
+					'end'   => Carbon::today( $timezone )->startOfYear()->subSecond(),
 				),
 			),
 			$timezone
