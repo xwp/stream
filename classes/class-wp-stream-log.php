@@ -153,7 +153,7 @@ class WP_Stream_Log {
 			'connector'  => $connector,
 			'context'    => $context,
 			'action'     => $action,
-			'author'     => $user_id,
+			'author'     => $user->ID,
 			'role'       => $user_role,
 			'ip_address' => $ip,
 		);
