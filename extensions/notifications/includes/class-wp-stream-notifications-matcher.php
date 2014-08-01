@@ -187,12 +187,12 @@ class WP_Stream_Notifications_Matcher {
 				$haystack = $log['ip'];
 				break;
 			case 'date':
-				$haystack = date( 'Ymd', strtotime( $log['created'] ) );
-				$needle   = date( 'Ymd', strtotime( $needle ) );
+				$haystack = get_date_from_gmt( date( 'Y-m-d H:i:s', strtotime( $log['created'] ) ), 'Ymd' );
+				$needle   = get_date_from_gmt( date( 'Y-m-d H:i:s', strtotime( $needle ) ), 'Ymd' );
 				break;
 			case 'weekday':
-				if ( preg_match( '#\d+#', $needle, $weekday_match ) ) {
-					$haystack = date( 'w', strtotime( $log['created'] ) );
+				if ( isset( $needle[0] ) && preg_match( '#\d+#', $needle[0], $weekday_match ) ) {
+					$haystack = get_date_from_gmt( date( 'Y-m-d H:i:s', strtotime( $log['created'] ) ), 'w' );
 					$needle   = $weekday_match[0];
 				}
 				break;
@@ -272,7 +272,8 @@ class WP_Stream_Notifications_Matcher {
 			case '!=':
 			case '>=':
 			case '<=':
-				$match = ( $haystack == $needle ); // Loose comparison needed
+				$needle = is_array( $needle ) ? $needle : explode( ',', $needle );
+				$match  = (bool) array_intersect( $needle, (array) $haystack );
 				break;
 			// string special comparison operators
 			case 'contains':
