@@ -19,8 +19,9 @@ class WP_Stream_Query {
 	/**
 	 * Query Stream records
 	 *
-	 * @param  array|string $args Query args
-	 * @return array              Stream Records
+	 * @param array Query args
+	 *
+	 * @return array Stream Records
 	 */
 	public function query( $args ) {
 		global $wpdb;
@@ -42,6 +43,8 @@ class WP_Stream_Query {
 			'orderby'               => isset( $args['search'] ) ? '_score' : 'date',
 			// Meta/Taxonomy sub queries
 			'meta'                  => array(),
+			// Data aggregations
+			'aggregations'          => array(),
 			// Fields selection
 			'fields'                => null,
 		);
@@ -188,6 +191,13 @@ class WP_Stream_Query {
 						),
 					),
 				);
+			}
+		}
+
+		// PARSE AGGREGATIONS
+		if ( ! empty( $args['aggregations'] ) ) {
+			foreach ( $args['aggregations'] as $aggregation_term ) {
+				$query['aggregations'][ $aggregation_term ]['terms']['field'] = $aggregation_term;
 			}
 		}
 

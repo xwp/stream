@@ -31,8 +31,9 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	public function __construct() {
 		// Get all sections from the database
-		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
-		$this->charts   = new WP_Stream_Reports_Charts();
+		self::$sections         = WP_Stream_Reports_Settings::get_user_options( 'sections' );
+		$this->charts           = new WP_Stream_Reports_Charts();
+		$this->existing_records = $this->get_existing_records();
 
 		if ( isset( self::$sections[0] ) && isset( self::$sections[0]['data_type'] ) ) {
 			$this->migrate_settings();
@@ -801,12 +802,11 @@ class WP_Stream_Reports_Metaboxes {
 		$prefixed_column = sprintf( 'stream_%s', $column );
 		$all_records     = WP_Stream_Connectors::$term_labels[ $prefixed_column ];
 
-		$existing_records = wp_stream_existing_records( $column );
 		$active_records   = array();
 		$disabled_records = array();
 
 		foreach ( $all_records as $record => $label ) {
-			if ( array_key_exists( $record, $existing_records ) ) {
+			if ( in_array( $record, $this->existing_records[ $column ] ) ) {
 				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
 			} else {
 				$disabled_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
@@ -833,6 +833,35 @@ class WP_Stream_Reports_Metaboxes {
 		$all_records = $active_records + $disabled_records;
 
 		return $all_records;
+	}
+
+	/**
+	 * Gets existing records for filtering dropdown menus
+	 *
+	 * @return array
+	 */
+	function get_existing_records() {
+		$existing_records = array();
+
+		$args = array(
+			'aggregations' => array(
+				'connector',
+				'context',
+				'action',
+			),
+		);
+
+		$query      = wp_stream_query( $args );
+		$query_meta = WP_Stream::$db->get_query_meta();
+
+		foreach ( $query_meta->aggregations as $field => $aggregation ) {
+			$existing_records[ $field ] = array();
+			foreach ( $aggregation->buckets as $bucket ) {
+				$existing_records[ $field ][] = $bucket->key;
+			}
+		}
+
+		return $existing_records;
 	}
 
 	public function migrate_settings() {

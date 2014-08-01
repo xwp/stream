@@ -164,7 +164,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
-		add_filter( 'wp_stream_db_query', array( $this, 'set_query_aggregations' ) );
+		$args['aggregations'] = array( 'author', 'connector', 'context', 'action' );
 
 		$items = wp_stream_query( $args );
 
@@ -743,20 +743,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 			</div>
 		<?php
 		endif;
-	}
-
-	/**
-	 * Adds aggregation data to the primary query
-	 *
-	 * @return array
-	 */
-	function set_query_aggregations( $query ) {
-		$query['aggregations']['author']['terms']['field']    = 'author';
-		$query['aggregations']['connector']['terms']['field'] = 'connector';
-		$query['aggregations']['context']['terms']['field']   = 'context';
-		$query['aggregations']['action']['terms']['field']    = 'action';
-
-		return $query;
 	}
 
 	static function set_screen_option( $dummy, $option, $value ) {
