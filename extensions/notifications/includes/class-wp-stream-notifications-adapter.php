@@ -34,8 +34,10 @@ abstract class WP_Stream_Notifications_Adapter {
 					case 'object_id':
 					case 'author':
 					case 'ip':
-					case 'created':
 						$value = $log[ $placeholder ];
+						break;
+					case 'created':
+						$value = get_date_from_gmt( date( 'Y-m-d H:i:s', strtotime( $log[ $placeholder ] ) ) );
 						break;
 					case 'connector':
 						$value = WP_Stream_Connectors::$term_labels['stream_connector'][ $log[ $placeholder ] ];
