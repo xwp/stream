@@ -44,7 +44,7 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 )	{
 	}
 
 	$micro_seconds = sprintf( '%06d', ( $microtime - floor( $microtime ) ) * 1000000 );
-	$offset_string = sprintf( 'Etc/GMT%s%s', $offset > 0 ? '+' : '-', abs( $offset ) );
+	$offset_string = sprintf( 'Etc/GMT%s%s', $offset < 0 ? '+' : '-', abs( $offset ) );
 
 	$timezone = new DateTimeZone( $offset_string );
 	$date     = new DateTime( date( 'Y-m-d H:i:s.' . $micro_seconds, $microtime ), $timezone );

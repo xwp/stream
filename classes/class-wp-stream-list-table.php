@@ -186,7 +186,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$created     = date( 'Y-m-d H:i:s', strtotime( $item->created ) );
 				$date_string = sprintf(
 					'<time datetime="%s" class="relative-time record-created">%s</time>',
-					$item->created,
+					wp_stream_get_iso_8601_extended_date( strtotime( $item->created ), get_option( 'gmt_offset' ) ),
 					get_date_from_gmt( $created, 'Y/m/d' )
 				);
 				$out  = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
