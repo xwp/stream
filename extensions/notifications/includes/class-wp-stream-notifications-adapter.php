@@ -41,10 +41,10 @@ abstract class WP_Stream_Notifications_Adapter {
 						$value = WP_Stream_Connectors::$term_labels['stream_connector'][ $log[ $placeholder ] ];
 						break;
 					case 'context':
-						$value = WP_Stream_Connectors::$term_labels['stream_context'][ key( $log['context'] ) ];
+						$value = WP_Stream_Connectors::$term_labels['stream_context'][ $log['context'] ];
 						break;
 					case 'action':
-						$value = WP_Stream_Connectors::$term_labels['stream_action'][ reset( $log['context'] ) ];
+						$value = WP_Stream_Connectors::$term_labels['stream_action'][ $log['action'] ];
 						break;
 					case ( false !== strpos( $placeholder, 'meta.' ) ):
 						$meta_key = substr( $placeholder, 5 );
@@ -62,7 +62,7 @@ abstract class WP_Stream_Notifications_Adapter {
 					// TODO Move this part to Stream base, and abstract it
 					case ( false !== strpos( $placeholder, 'object.' ) ):
 						$meta_key = substr( $placeholder, 7 );
-						$context = key( $log['context'] );
+						$context  = $log['context'];
 						// can only guess the object type, since there is no
 						// actual reference here
 						switch ( $context ) {

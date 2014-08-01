@@ -200,10 +200,10 @@ class WP_Stream_Notifications_Matcher {
 				$haystack = $log['connector'];
 				break;
 			case 'context':
-				$haystack = key( $log['context'] );
+				$haystack = $log['context'];
 				break;
 			case 'action':
-				$haystack = reset( $log['context'] );
+				$haystack = $log['action'];
 				break;
 
 			/* Context-aware triggers */

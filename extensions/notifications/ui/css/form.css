@@ -208,6 +208,10 @@
 	color: #888;
 }
 
+#stream-notifications-alerts table.alert-options tbody tr th .description a {
+	color: #0074a2;
+}
+
 #stream-notifications-alerts table.alert-options tbody tr th,
 #stream-notifications-alerts table.alert-options tbody tr td {
 	padding: 13px 15px;
