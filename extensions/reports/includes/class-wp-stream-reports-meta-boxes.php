@@ -410,13 +410,12 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function load_metabox_records( $args ) {
-
 		$date_interval = $this->get_date_interval();
 
 		$query_args    = array(
 			'records_per_page' => -1,
-			'date_from'        => ! empty( $date_interval['start'] ) ? $date_interval['start']->toDateString() : null,
-			'date_to'          => ! empty( $date_interval['end'] ) ? $date_interval['end']->toDateString() : null,
+			'date_from'        => $date_interval['start'],
+			'date_to'          => $date_interval['end'],
 		);
 
 		$available_args = array(
@@ -471,8 +470,9 @@ class WP_Stream_Reports_Metaboxes {
 		$available_intervals = $date->get_predefined_intervals();
 
 		if ( array_key_exists( $user_interval_key, $available_intervals ) ) {
-			$user_interval['start'] = $available_intervals[ $user_interval_key ]['start'];
-			$user_interval['end']   = $available_intervals[ $user_interval_key ]['end'];
+			$interval = $available_intervals[ $user_interval_key ];
+			$user_interval['start'] = isset( $interval['start'] ) ? $interval['start']->toDateString() : null;
+			$user_interval['end']   = isset( $interval['end'] ) ? $interval['end']->toDateString() : null;
 		}
 
 		return $user_interval;
