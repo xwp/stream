@@ -438,10 +438,10 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$query_args = apply_filters( 'wp_stream_reports_query_args', $query_args, $args );
-		$unsorted   = wp_stream_query( $query_args );
+		$records    = wp_stream_query( $query_args );
 
 		if ( 'author_role' === $selector ) {
-			foreach ( $unsorted as $key => $record ) {
+			foreach ( $records as $key => $record ) {
 				$user = get_userdata( $record->author );
 				if ( $user ) {
 					$record->author_role = join( ',', $user->roles );
@@ -452,9 +452,11 @@ class WP_Stream_Reports_Metaboxes {
 				}
 			}
 		}
-		$sorted = $this->charts->group_by_field( $selector, $unsorted );
 
-		return apply_filters( 'wp_stream_reports_load_records', $sorted, $args );
+		$records = $this->charts->group_by_field( $selector, $records );
+		$records = $this->charts->offset_record_dates( $records );
+
+		return apply_filters( 'wp_stream_reports_load_records', $records, $args );
 	}
 
 	protected function get_date_interval(){
@@ -482,7 +484,6 @@ class WP_Stream_Reports_Metaboxes {
 	 * Creates a title generated from the arguments for the chart
 	 */
 	protected function get_generated_title( $args ) {
-
 		if ( empty( $args['selector_id'] ) ) {
 			return sprintf( esc_html__( 'Report %d', 'stream' ), absint( $args['key'] + 1 ) );
 		}

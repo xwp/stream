@@ -230,6 +230,20 @@ class WP_Stream_Reports_Charts {
 	}
 
 	/**
+	 * Offsets the record created date by the timezone
+	 * @return array
+	 */
+	public function offset_record_dates( $records ) {
+		$offset = get_option( 'gmt_offset' );
+		foreach ( $records as $record => $items ) {
+			foreach ( $items as $key => $item ) {
+				$records[ $record ][ $key ]->created = wp_stream_get_iso_8601_extended_date( strtotime( $item->created ), $offset );
+			}
+		}
+		return $records;
+	}
+
+	/**
 	 * Adds blank fields for all keys present in any array
 	 * @return array
 	 */
