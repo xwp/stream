@@ -23,15 +23,14 @@
 				if (_.isFunction($.fn.datepicker)) {
 
 					// Apply a GMT offset due to Date() using the visitor's local time
-					var siteGMTOffsetHours  = parseFloat( streamReportsLocal.gmt_offset );
-					var localGMTOffsetHours = new Date().getTimezoneOffset() / 60 * -1;
-					var totalGMTOffsetHours = siteGMTOffsetHours - localGMTOffsetHours;
+					var siteGMTOffsetHours  = parseFloat( streamReportsLocal.gmt_offset ),
+						localGMTOffsetHours = new Date().getTimezoneOffset() / 60 * -1,
+						totalGMTOffsetHours = siteGMTOffsetHours - localGMTOffsetHours,
+						localTime           = new Date(),
+						siteTime            = new Date( localTime.getTime() + ( totalGMTOffsetHours * 60 * 60 * 1000 ) ),
+						dayOffset           = '0';
 
-					var localTime = new Date();
-					var siteTime = new Date( localTime.getTime() + ( totalGMTOffsetHours * 60 * 60 * 1000 ) );
-					var dayOffset = '0';
-
-					// check if the site date is different from the local date, and set a day offset
+					// Check if the site date is different from the local date, and set a day offset
 					if ( localTime.getDate() !== siteTime.getDate() || localTime.getMonth() !== siteTime.getMonth() ) {
 						if ( localTime.getTime() < siteTime.getTime() ) {
 							dayOffset = '+1d';
@@ -42,7 +41,7 @@
 
 					datepickers.datepicker({
 						dateFormat: 'yy/mm/dd',
-						maxDate: dayOffset,
+						maxDate: Number( dayOffset ),
 						defaultDate: siteTime,
 						beforeShow: function() {
 							$(this).prop( 'disabled', true );
