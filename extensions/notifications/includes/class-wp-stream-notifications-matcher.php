@@ -171,7 +171,8 @@ class WP_Stream_Notifications_Matcher {
 
 		switch ( $type ) {
 			case 'search':
-				$haystack = $log['summary'];
+				$haystack = strtolower( $log['summary'] );
+				$needle   = strtolower( $needle );
 				break;
 			case 'object_id':
 				$haystack = $log['object_id'];
