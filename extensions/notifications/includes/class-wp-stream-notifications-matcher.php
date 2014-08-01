@@ -273,10 +273,6 @@ class WP_Stream_Notifications_Matcher {
 			case '>=':
 			case '<=':
 				$match = ( $haystack == $needle ); // Loose comparison needed
-			case 'in':
-			case '!in':
-				$needle = is_array( $needle ) ? $needle : explode( ',', $needle );
-				$match  = (bool) array_intersect( $needle, (array) $haystack );
 				break;
 			// string special comparison operators
 			case 'contains':

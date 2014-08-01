@@ -448,10 +448,8 @@ class WP_Stream_Notifications_Post_Type {
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
 
 		$default_operators = array(
-			'='   => esc_html__( 'is', 'stream' ),
-			'!='  => esc_html__( 'is not', 'stream' ),
-			'in'  => esc_html__( 'is in', 'stream' ),
-			'!in' => esc_html__( 'is not in', 'stream' ),
+			'='  => esc_html__( 'is', 'stream' ),
+			'!=' => esc_html__( 'is not', 'stream' ),
 		);
 
 		$text_operator = array(
