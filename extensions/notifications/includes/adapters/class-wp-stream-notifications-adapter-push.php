@@ -142,7 +142,7 @@ class WP_Stream_Notifications_Adapter_Push extends WP_Stream_Notifications_Adapt
 
 		$connection = curl_init();
 
-		if ( ! $users_pushover_keys ) {
+		if ( ! isset ( $users_pushover_keys ) || ! $users_pushover_keys ) {
 			return false;
 		}
 
