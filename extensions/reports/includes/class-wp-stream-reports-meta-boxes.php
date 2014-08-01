@@ -808,7 +808,7 @@ class WP_Stream_Reports_Metaboxes {
 		$disabled_records = array();
 
 		foreach ( $all_records as $record => $label ) {
-			if ( in_array( $record, $this->existing_records[ $column ] ) ) {
+			if ( isset( $this->existing_records[ $column ] ) && in_array( $record, $this->existing_records[ $column ] ) ) {
 				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
 			} else {
 				$disabled_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
@@ -856,10 +856,12 @@ class WP_Stream_Reports_Metaboxes {
 		$query      = wp_stream_query( $args );
 		$query_meta = WP_Stream::$db->get_query_meta();
 
-		foreach ( $query_meta->aggregations as $field => $aggregation ) {
-			$existing_records[ $field ] = array();
-			foreach ( $aggregation->buckets as $bucket ) {
-				$existing_records[ $field ][] = $bucket->key;
+		if ( isset( $query_meta->aggregations ) ) {
+			foreach ( $query_meta->aggregations as $field => $aggregation ) {
+				$existing_records[ $field ] = array();
+				foreach ( $aggregation->buckets as $bucket ) {
+					$existing_records[ $field ][] = $bucket->key;
+				}
 			}
 		}
 
