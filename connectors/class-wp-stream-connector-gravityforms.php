@@ -77,7 +77,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			//	sprintf( __( '<strong>Stream Gravity Forms Connector</strong> requires the <a href="%1$s" target="_blank">Gravity Forms</a> plugin to be installed and activated.', 'stream' ), esc_url( 'http://www.gravityforms.com/' ) ),
 			//	true
 			//);
-		} elseif ( version_compare( GFForms::$version, self::PLUGIN_MIN_VERSION, '<' ) ) {
+		} elseif ( version_compare( GFCommon::$version, self::PLUGIN_MIN_VERSION, '<' ) ) {
 			//WP_Stream::notice(
 			//	sprintf( __( 'Please <a href="%1$s" target="_blank">install Gravity Forms</a> version %2$s or higher for the <strong>Stream Gravity Forms Connector</strong> plugin to work properly.', 'stream' ), esc_url( 'http://www.gravityforms.com/' ), self::PLUGIN_MIN_VERSION ),
 			//	true

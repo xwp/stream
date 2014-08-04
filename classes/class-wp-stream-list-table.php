@@ -164,7 +164,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
-		add_filter( 'wp_stream_db_query', array( $this, 'set_query_aggregations' ) );
+		$args['aggregations'] = array( 'author', 'connector', 'context', 'action' );
 
 		$items = wp_stream_query( $args );
 
@@ -186,10 +186,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$created     = date( 'Y-m-d H:i:s', strtotime( $item->created ) );
 				$date_string = sprintf(
 					'<time datetime="%s" class="relative-time record-created">%s</time>',
-					$item->created,
+					wp_stream_get_iso_8601_extended_date( strtotime( $item->created ), get_option( 'gmt_offset' ) ),
 					get_date_from_gmt( $created, 'Y/m/d' )
 				);
-				$out  = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
+				$out  = $this->column_link( $date_string, 'date', get_date_from_gmt( $created, 'Y/m/d' ) );
 				$out .= '<br />';
 				$out .= get_date_from_gmt( $created, 'h:i:s A' );
 				break;
@@ -547,6 +547,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 					$data['items'] = $context_items;
 
+					ksort( $data['items'] );
+
 					// Ouput a hidden input to handle the connector value
 					$filters_string .= '<input type="hidden" name="connector" class="record-filter-connector" />';
 				}
@@ -743,20 +745,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 			</div>
 		<?php
 		endif;
-	}
-
-	/**
-	 * Adds aggregation data to the primary query
-	 *
-	 * @return array
-	 */
-	function set_query_aggregations( $query ) {
-		$query['aggregations']['author']['terms']['field']    = 'author';
-		$query['aggregations']['connector']['terms']['field'] = 'connector';
-		$query['aggregations']['context']['terms']['field']   = 'context';
-		$query['aggregations']['action']['terms']['field']    = 'action';
-
-		return $query;
 	}
 
 	static function set_screen_option( $dummy, $option, $value ) {

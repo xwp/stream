@@ -331,8 +331,15 @@ class WP_Stream_Admin {
 	 * @return string $classes
 	 */
 	public static function admin_body_class( $classes ) {
-		if ( isset( $_GET['page'] ) && $_GET['page'] === self::RECORDS_PAGE_SLUG ) {
+		global $typenow;
+
+		if (
+			( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) )
+			||
+			( WP_Stream_Notifications_Post_Type::POSTTYPE === $typenow )
+		) {
 			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
+
 			if ( ! is_network_admin() ) {
 				if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
 					$classes .= sprintf( ' wp_stream_connected ' );
@@ -373,7 +380,7 @@ class WP_Stream_Admin {
 		if ( version_compare( $wp_version, '3.8-alpha', '>=' ) ) {
 			wp_enqueue_style( 'wp-stream-icons' );
 			$css = "
-				#toplevel_page_{$records_page} .wp-menu-image:before{
+				#toplevel_page_{$records_page} .wp-menu-image:before {
 					font-family: 'WP Stream' !important;
 					content: '\\73' !important;
 				}

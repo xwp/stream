@@ -71,6 +71,7 @@ class WP_Stream {
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
+		define( 'WP_STREAM_EXTENSIONS_DIR', WP_STREAM_DIR . 'extensions/' );
 
 		spl_autoload_register( array( $this, 'autoload' ) );
 
@@ -109,6 +110,11 @@ class WP_Stream {
 
 		// Load connectors after widgets_init, but before the default of 10
 		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ), 9 );
+
+		// Load extensions
+		foreach ( glob( WP_STREAM_EXTENSIONS_DIR . '*' ) as $extension ) {
+			require_once sprintf( '%s/class-wp-stream-%s.php', $extension, basename( $extension ) );
+		}
 
 		// Load support for feeds
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );

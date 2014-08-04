@@ -67,13 +67,13 @@ class WP_Stream_Log {
 			$user_id = get_current_user_id();
 		}
 
-		$visibility = 'publish';
-		if ( self::is_record_excluded( $connector, $context, $action, $user_id ) ) {
-			$visibility = 'private';
-		}
-
 		$user  = new WP_User( $user_id );
 		$roles = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
+
+		$visibility = 'publish';
+		if ( self::is_record_excluded( $connector, $context, $action, $user ) ) {
+			$visibility = 'private';
+		}
 
 		if ( ! isset( $args['author_meta'] ) ) {
 			$args['author_meta'] = array(
@@ -136,9 +136,9 @@ class WP_Stream_Log {
 	 * @param $ip        string ip address being logged
 	 * @return bool
 	 */
-	public function is_record_excluded( $connector, $context, $action, $user_id = null, $ip = null ) {
-		if ( is_null( $user_id ) ) {
-			$user_id = get_current_user_id();
+	public function is_record_excluded( $connector, $context, $action, $user = null, $ip = null ) {
+		if ( is_null( $user ) ) {
+			$user = wp_get_current_user();
 		}
 
 		if ( is_null( $ip ) ) {
@@ -147,14 +147,13 @@ class WP_Stream_Log {
 			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
 		}
 
-		$user      = new WP_User( $user_id );
 		$user_role = isset( $user->roles[0] ) ? $user->roles[0] : null;
 
 		$record = array(
 			'connector'  => $connector,
 			'context'    => $context,
 			'action'     => $action,
-			'author'     => $user_id,
+			'author'     => $user->ID,
 			'role'       => $user_role,
 			'ip_address' => $ip,
 		);

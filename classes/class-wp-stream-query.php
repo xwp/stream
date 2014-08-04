@@ -19,8 +19,9 @@ class WP_Stream_Query {
 	/**
 	 * Query Stream records
 	 *
-	 * @param  array|string $args Query args
-	 * @return array              Stream Records
+	 * @param array Query args
+	 *
+	 * @return array Stream Records
 	 */
 	public function query( $args ) {
 		global $wpdb;
@@ -42,6 +43,8 @@ class WP_Stream_Query {
 			'orderby'               => isset( $args['search'] ) ? '_score' : 'date',
 			// Meta/Taxonomy sub queries
 			'meta'                  => array(),
+			// Data aggregations
+			'aggregations'          => array(),
 			// Fields selection
 			'fields'                => null,
 		);
@@ -103,16 +106,16 @@ class WP_Stream_Query {
 
 		// PARSE DATE
 		if ( $args['date_from'] ) {
-			$filters[]['range']['created']['gte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date_from']  . ' 00:00:00' ) );
+			$filters[]['range']['created']['gte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date_from']  . ' 00:00:00' ), get_option( 'gmt_offset' ) );
 		}
 
 		if ( $args['date_to'] ) {
-			$filters[]['range']['created']['lte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date_to']  . ' 23:59:59' ) );
+			$filters[]['range']['created']['lte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date_to']  . ' 23:59:59' ), get_option( 'gmt_offset' ) );
 		}
 
 		if ( $args['date'] ) {
-			$filters[]['range']['created']['gte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date']  . ' 00:00:00' ) );
-			$filters[]['range']['created']['lte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date']  . ' 23:59:59' ) );
+			$filters[]['range']['created']['gte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date']  . ' 00:00:00' ), get_option( 'gmt_offset' ) );
+			$filters[]['range']['created']['lte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date']  . ' 23:59:59' ), get_option( 'gmt_offset' ) );
 		}
 
 		// PARSE RECORD
@@ -148,7 +151,11 @@ class WP_Stream_Query {
 
 		// PARSE PAGINATION
 		if ( $args['records_per_page'] ) {
-			$query['size'] = (int) $args['records_per_page'];
+			if ( $args['records_per_page'] >= 0 ) {
+				$query['size'] = (int) $args['records_per_page'];
+			} else {
+				$query['size'] = null;
+			}
 		} else {
 			$query['size'] = get_option( 'posts_per_page', 20 );
 		}
@@ -184,6 +191,13 @@ class WP_Stream_Query {
 						),
 					),
 				);
+			}
+		}
+
+		// PARSE AGGREGATIONS
+		if ( ! empty( $args['aggregations'] ) ) {
+			foreach ( $args['aggregations'] as $aggregation_term ) {
+				$query['aggregations'][ $aggregation_term ]['terms']['field'] = $aggregation_term;
 			}
 		}
 
