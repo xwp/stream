@@ -14,29 +14,13 @@ class WP_Stream_DB {
 	 *
 	 * Inserts/Updates (based on ID existence) a single record in DB
 	 *
-	 * @param  array $data Record data
+	 * @param  array Record data
 	 *
-	 * @return mixed        Record ID if inserted successful, True if updated, false|WP_Error if not
+	 * @return mixed True if updated, false|WP_Error if not
 	 */
-	public function store( $data ) {
+	public function store( $records ) {
 		// Take only what's ours!
 		$valid_keys = get_class_vars( 'WP_Stream_Record' );
-		$data       = array_intersect_key( $data, $valid_keys );
-		$data       = array_filter( $data );
-
-		/**
-		 * Filter allows modification of record information
-		 *
-		 * @param  array $data Array of record information
-		 *
-		 * @return array  $data Updated array of record information
-		 */
-		$data = apply_filters( 'wp_stream_record_array', $data );
-
-		// Allow extensions to handle the saving process
-		if ( empty( $data ) ) {
-			return false;
-		}
 
 		// Fill in defaults
 		$defaults = array(
@@ -50,11 +34,29 @@ class WP_Stream_DB {
 			'parent'      => 0,
 		);
 
-		$data = wp_parse_args( $data, $defaults );
+		foreach ( $records as $key => $record ) {
+			$records[ $key ] = array_intersect_key( $record, $valid_keys );
+			$records[ $key ] = array_filter( $record );
+			$records[ $key ] = wp_parse_args( $record, $defaults );
+		}
+
+		/**
+		 * Filter allows modification of record information
+		 *
+		 * @param  array $records Array of record information
+		 *
+		 * @return array $records Updated array of record information
+		 */
+		$records = apply_filters( 'wp_stream_record_array', $records );
+
+		// Allow extensions to handle the saving process
+		if ( empty( $records ) ) {
+			return false;
+		}
 
 		// TODO: Check/Validate *required* fields
 
-		$result = $this->insert( $data );
+		$result = $this->insert( $records );
 
 		if ( is_wp_error( $result ) ) {
 			/**
@@ -72,9 +74,9 @@ class WP_Stream_DB {
 			 * @param  int   $result Inserted record ID
 			 * @param  array $data   Array of information on this record
 			 */
-			do_action( 'wp_stream_post_inserted', $result, $data );
+			do_action( 'wp_stream_post_inserted', $result, $records );
 
-			return $result; // record_id
+			return $result;
 		}
 	}
 
@@ -83,12 +85,12 @@ class WP_Stream_DB {
 	 *
 	 * @internal Used by store()
 	 *
-	 * @param array   $data     Record data
+	 * @param array   $records  Record data
 	 *
 	 * @return object $response The inserted record
 	 */
-	protected function insert( array $data ) {
-		return WP_Stream::$api->new_record( $data );
+	protected function insert( array $records ) {
+		return WP_Stream::$api->new_records( $records );
 	}
 
 	/**
@@ -137,7 +139,7 @@ class WP_Stream_DB {
 	/**
 	 * Get meta data for last query using query() method
 	 *
-	 * @return integer Total item count
+	 * @return array Meta data for query
 	 */
 	public function get_query_meta() {
 		return $this->query_meta;

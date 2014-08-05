@@ -3,11 +3,30 @@
 class WP_Stream_Log {
 
 	/**
+	 * Log buffer key/identifier
+	 */
+	const LOG_BUFFER_OPTION_KEY = 'wp_stream_log_buffer';
+
+	/**
 	 * Log handler
 	 *
 	 * @var \WP_Stream_Log
 	 */
 	public static $instance = null;
+
+	/**
+	 * Hold record logs in a temporary buffer so we can send them all to the API at once
+	 *
+	 * @var array
+	 */
+	public static $buffer = array();
+
+	/**
+	 * Total number of records to log per API call
+	 *
+	 * @var int
+	 */
+	public static $limit = 500;
 
 	/**
 	 * Previous Stream record ID, used for chaining same-session records
@@ -30,6 +49,10 @@ class WP_Stream_Log {
 		 */
 		$log_handler = apply_filters( 'wp_stream_log_handler', __CLASS__ );
 
+		self::$buffer = self::get_local_records();
+
+		add_action( 'admin_init', array( __CLASS__, 'send_buffer' ), 99 );
+
 		self::$instance = new $log_handler;
 	}
 
@@ -48,6 +71,60 @@ class WP_Stream_Log {
 	}
 
 	/**
+	 * Retrieve records waiting to be logged
+	 *
+	 * @return array
+	 */
+	public static function get_local_records() {
+		global $wpdb;
+
+		$local_records     = array();
+		$local_record_rows = $wpdb->get_col( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
+
+		if ( ! $local_record_rows || empty( $local_record_rows ) ) {
+			return $local_records;
+		}
+
+		foreach( $local_record_rows as $local_record_row ) {
+			array_merge( $local_records, json_decode( $local_record_row ) );
+		}
+
+		return $local_records;
+	}
+
+	/**
+	 * Save any records waiting to be logged in the local database
+	 *
+	 * @return void
+	 */
+	public static function save_local_records() {
+		$grouped_records = array();
+
+		for ( $i = 0; $i < count( self::$buffer ); $i += self::$limit ) {
+			$grouped_records[] = array_slice( self::$buffer, $i, self::$limit );
+		}
+
+		foreach ( $grouped_records as $key => $grouped_record ) {
+			update_option( self::LOG_BUFFER_OPTION_KEY . '_' . $key, json_encode( $grouped_record ) );
+		}
+	}
+
+	/**
+	 * Store the most recent data in the buffer
+	 *
+	 * @return void
+	 */
+	public static function send_buffer() {
+		WP_Stream::$db->store( array_slice( self::$buffer, 0, self::$limit ) );
+
+		if ( WP_Stream::$db->query_meta ) {
+			self::$buffer = array_slice( self::$buffer, self::$limit );
+		}
+
+		self::save_local_records();
+	}
+
+	/**
 	 * Log handler
 	 *
 	 * @param         $connector
@@ -58,7 +135,7 @@ class WP_Stream_Log {
 	 * @param  string $action    Action of the event
 	 * @param  int    $user_id   User responsible for the event
 	 *
-	 * @return int
+	 * @return void
 	 */
 	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null ) {
 		global $wpdb;
@@ -121,9 +198,7 @@ class WP_Stream_Log {
 			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
-		$record_id = WP_Stream::$db->store( $recordarr );
-
-		return $record_id;
+		self::$buffer[] = $recordarr;
 	}
 
 	/**

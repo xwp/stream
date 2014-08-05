@@ -156,7 +156,7 @@ class WP_Stream_API {
 	 *
 	 * @return mixed
 	 */
-	public function new_record( $record, $fields = array() ) {
+	public function new_records( $records, $fields = array() ) {
 		if ( ! $this->site_uuid ) {
 			return false;
 		}
@@ -168,7 +168,7 @@ class WP_Stream_API {
 		}
 
 		$url  = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $args );
-		$args = array( 'method' => 'POST', 'body' => json_encode( $record, JSON_FORCE_OBJECT ) );
+		$args = array( 'method' => 'POST', 'body' => json_encode( $records, JSON_FORCE_OBJECT ) );
 
 		return $this->remote_request( $url, $args );
 	}
