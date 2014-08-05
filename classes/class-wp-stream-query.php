@@ -60,7 +60,7 @@ class WP_Stream_Query {
 			'object_id'     => null,
 			'site_id'       => null,
 			'blog_id'       => null,
-			'visibility'    => 'visible',
+			'visibility'    => 'publish',
 			'connector'     => null,
 			'context'       => null,
 			'action'        => null,
