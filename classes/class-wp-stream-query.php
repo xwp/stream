@@ -52,7 +52,7 @@ class WP_Stream_Query {
 		// Additional property fields
 		$properties = array(
 			'record'        => null,
-			'type'          => null,
+			'type'          => 'stream',
 			'record_parent' => null,
 			'author'        => null,
 			'author_role'   => null,
@@ -60,7 +60,7 @@ class WP_Stream_Query {
 			'object_id'     => null,
 			'site_id'       => null,
 			'blog_id'       => null,
-			'visibility'    => null,
+			'visibility'    => 'publish',
 			'connector'     => null,
 			'context'       => null,
 			'action'        => null,
