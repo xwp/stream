@@ -151,7 +151,7 @@ class WP_Stream_Notifications {
 			add_filter( 'wp_stream_notifications_disallow_site_access', array( 'WP_Stream_Network', 'disable_admin_access' ) );
 		}
 
-		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) ) {
+		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
 			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		}
 
