@@ -43,7 +43,7 @@ class WP_Stream_Legacy_Update {
 	 * Break down the total number of records found into reasonably-sized chunks
 	 * and send each of those chunks to the Stream API
 	 *
-	 * Drops the legacy database tables once the API has consumed everything
+	 * Drops the legacy Stream data from the DB once the API has consumed everything
 	 *
 	 * @return void
 	 */
@@ -61,7 +61,7 @@ class WP_Stream_Legacy_Update {
 			// self::send_chunk( $records );
 		}
 
-		// self::drop_legacy_tables();
+		// self::drop_legacy_data();
 	}
 
 	/**
@@ -118,14 +118,38 @@ class WP_Stream_Legacy_Update {
 	}
 
 	/**
-	 * Drop the legacy Stream MySQL tables
+	 * Drop the legacy Stream tables and options from the database
 	 *
 	 * @return void
 	 */
-	public static function drop_legacy_tables() {
+	public static function drop_legacy_data() {
 		global $wpdb;
 
+		// Drop legacy tables
 		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stream, {$wpdb->prefix}stream_context, {$wpdb->prefix}stream_meta" );
+
+		// Delete legacy multisite options
+		if ( is_multisite() ) {
+			$blogs = wp_get_sites();
+
+			foreach ( $blogs as $blog ) {
+				switch_to_blog( $blog['blog_id'] );
+				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' ); // Deprecated option key
+				delete_option( 'wp_stream_db' );
+			}
+
+			restore_current_blog();
+		}
+
+		// Delete legacy options
+		delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' ); // Deprecated option key
+		delete_site_option( 'wp_stream_db' );
+		delete_site_option( 'wp_stream_license' );
+		delete_site_option( 'wp_stream_licensee' );
+
+		// Delete legacy cron event hooks
+		wp_clear_scheduled_hook( 'stream_auto_purge' ); // Deprecated hook
+		wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
 	}
 
 }
