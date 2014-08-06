@@ -22,9 +22,18 @@ class WP_Stream_Legacy_Update {
 	 * @return void
 	 */
 	public static function load() {
+
+		// @TODO: Make this whole process multisite compat
+
+		if ( false === get_option( 'wp_stream_db' ) ) {
+			return;
+		}
+
 		global $wpdb;
 
 		if ( null === $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}stream'" ) ) {
+			// If there are no legacy records, then clear the legacy options again
+			self::drop_legacy_data();
 			return;
 		}
 
