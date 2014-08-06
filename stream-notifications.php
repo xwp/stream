@@ -161,7 +161,7 @@ class WP_Stream_Notifications {
 			require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'network.php';
 			$this->network = new WP_Stream_Notifications_Network;
 
-			require_once WP_ADMIN . '/includes/plugins.php';
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 			if ( is_plugin_active_for_network( WP_STREAM_NOTIFICATIONS_PLUGIN ) ) {
 				add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
 			}
