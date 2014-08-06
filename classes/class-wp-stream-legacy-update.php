@@ -43,6 +43,8 @@ class WP_Stream_Legacy_Update {
 
 			echo json_encode( $chunk, JSON_PRETTY_PRINT ); // @TODO Remove this, for testing only
 		}
+
+		// self::drop_legacy_tables()
 	}
 
 	public static function get_chunk( $offset = 0 ) {
@@ -79,6 +81,12 @@ class WP_Stream_Legacy_Update {
 		}
 
 		return $records;
+	}
+
+	public static function drop_legacy_tables() {
+		global $wpdb;
+
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stream, {$wpdb->prefix}stream_context, {$wpdb->prefix}stream_meta" );
 	}
 
 }
