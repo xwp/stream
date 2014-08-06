@@ -149,7 +149,7 @@ class WP_Stream_API {
 	}
 
 	/**
-	 * Create a new record.
+	 * Create new records.
 	 *
 	 * @param array Record data.
 	 * @param array Returns specified fields only.

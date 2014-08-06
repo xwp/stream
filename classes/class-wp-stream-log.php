@@ -29,13 +29,6 @@ class WP_Stream_Log {
 	public static $limit = 500;
 
 	/**
-	 * Previous Stream record ID, used for chaining same-session records
-	 *
-	 * @var int
-	 */
-	public $prev_record;
-
-	/**
 	 * Load log handler class, filterable by extensions
 	 *
 	 * @return void
@@ -49,10 +42,9 @@ class WP_Stream_Log {
 		 */
 		$log_handler = apply_filters( 'wp_stream_log_handler', __CLASS__ );
 
-		self::$buffer = self::get_local_records();
+		add_action( 'wp_stream_safe_log_record', array( __CLASS__, 'safe_log_record' ) );
 
-		add_action( 'admin_init', array( __CLASS__, 'send_buffer' ), 99 );
-
+		self::$buffer   = self::get_buffer();
 		self::$instance = new $log_handler;
 	}
 
@@ -71,11 +63,11 @@ class WP_Stream_Log {
 	}
 
 	/**
-	 * Retrieve records waiting to be logged
+	 * Retrieve records waiting to be logged from the local database
 	 *
 	 * @return array
 	 */
-	public static function get_local_records() {
+	public static function get_buffer() {
 		global $wpdb;
 
 		$local_records     = array();
@@ -97,7 +89,11 @@ class WP_Stream_Log {
 	 *
 	 * @return void
 	 */
-	public static function save_local_records() {
+	public static function save_buffer() {
+		if ( empty( self::$buffer ) ) {
+			return;
+		}
+
 		$grouped_records = array();
 
 		for ( $i = 0; $i < count( self::$buffer ); $i += self::$limit ) {
@@ -110,18 +106,25 @@ class WP_Stream_Log {
 	}
 
 	/**
-	 * Store the most recent data in the buffer
+	 * Sends an API call to log records
 	 *
-	 * @return void
+	 * Schedule records for creation in a non-blocking way via WP_Cron
+	 * Stores failed requests in a local database buffer and schedules a retry
+	 *
+	 * @param  array Record to be added
+	 * @return mixed Request data on success|false on failure
 	 */
-	public static function send_buffer() {
-		WP_Stream::$db->store( array_slice( self::$buffer, 0, self::$limit ) );
+	public static function safe_log_record( $record ) {
+		$request = WP_Stream::$api->new_records( array( $record ) );
 
-		if ( WP_Stream::$db->query_meta ) {
-			self::$buffer = array_slice( self::$buffer, self::$limit );
+		if ( ! $request ) {
+			WP_Stream_Log::$buffer = array_merge( WP_Stream_Log::$buffer, $record );
+			WP_Stream_Log::save_buffer();
+
+			// Schedule buffer clearance
 		}
 
-		self::save_local_records();
+		return $request;
 	}
 
 	/**
@@ -189,8 +192,9 @@ class WP_Stream_Log {
 			'author_role' => ! empty( $user->roles ) ? $user->roles[0] : null,
 			'created'     => $iso_8601_extended_date,
 			'visibility'  => $visibility,
+			'type'        => 'stream',
+			'parent'      => 0,
 			'summary'     => vsprintf( $message, $args ),
-			'parent'      => self::$instance->prev_record,
 			'connector'   => $connector,
 			'context'     => $context,
 			'action'      => $action,
@@ -198,7 +202,9 @@ class WP_Stream_Log {
 			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
-		self::$buffer[] = $recordarr;
+		// Schedule the record to be added immediately. This allows sending a new record to the API without effecting load time.
+		wp_schedule_single_event( time(), 'wp_stream_safe_log_record', array( $recordarr ) );
+		wp_cron();
 	}
 
 	/**

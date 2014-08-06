@@ -189,9 +189,6 @@ class WP_Stream_Admin {
 					esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
 				);
 				break;
-			case 'disconnected':
-				$notice = esc_html__( 'You have successfully disconnected from Stream.', 'stream' );
-				break;
 		}
 
 		if ( $notice ) {
@@ -502,16 +499,6 @@ class WP_Stream_Admin {
 
 		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
 		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
-
-		$redirect_url = add_query_arg(
-			array(
-				'page'    => self::RECORDS_PAGE_SLUG,
-				'message' => 'disconnected',
-			),
-			admin_url( 'admin.php' )
-		);
-
-		wp_redirect( $redirect_url );
 	}
 
 	public static function get_testimonials() {
