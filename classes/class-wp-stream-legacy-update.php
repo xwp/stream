@@ -17,7 +17,7 @@ class WP_Stream_Legacy_Update {
 	public static $limit = 500;
 
 	/**
-	 * Check that
+	 * Check that legacy data exists before doing anything
 	 *
 	 * @return void
 	 */
@@ -40,7 +40,10 @@ class WP_Stream_Legacy_Update {
 	}
 
 	/**
-	 * Break down the total number of records into reasonably-sized chunks
+	 * Break down the total number of records found into reasonably-sized chunks
+	 * and send each of those chunks to the Stream API
+	 *
+	 * Drops the legacy database tables once the API has consumed everything
 	 *
 	 * @return void
 	 */
@@ -58,17 +61,7 @@ class WP_Stream_Legacy_Update {
 			// self::send_chunk( $records );
 		}
 
-		// self::drop_legacy_tables()
-	}
-
-	/**
-	 * Send a chunk of records to the Stream API
-	 *
-	 * @return void
-	 */
-	public static function send_chunk( $records ) {
-		// @TODO: Send each chunk to the API via bulk ingestion endpoint
-		// @TODO: Create AJAX callback that returns the success of each chunk to update the progress bar
+		// self::drop_legacy_tables();
 	}
 
 	/**
@@ -112,6 +105,16 @@ class WP_Stream_Legacy_Update {
 		}
 
 		return $records;
+	}
+
+	/**
+	 * Send a JSON chunk of records to the Stream API
+	 *
+	 * @return void
+	 */
+	public static function send_chunk( $records ) {
+		// @TODO: Send each chunk to the API via bulk ingestion endpoint
+		// @TODO: Create AJAX callback that returns the success of each chunk to update the progress bar
 	}
 
 	/**
