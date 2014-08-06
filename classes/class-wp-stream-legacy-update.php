@@ -3,15 +3,24 @@
 class WP_Stream_Legacy_Update {
 
 	/**
-	 * @var int Total number of legacy records found in the DB
+	 * Hold the total number of legacy records found in the DB
+	 *
+	 * @var int
 	 */
 	public static $record_count = 0;
 
 	/**
-	 * @var int Limit payload chunks to a certain number of records
+	 * Limit payload chunks to a certain number of records
+	 *
+	 * @var int
 	 */
-	public static $limit = 100;
+	public static $limit = 500;
 
+	/**
+	 * Check that
+	 *
+	 * @return void
+	 */
 	public static function load() {
 		global $wpdb;
 
@@ -27,27 +36,49 @@ class WP_Stream_Legacy_Update {
 
 		// @TODO: Create admin notice that a database migration is needed
 
-		self::send_chunks();
+		self::create_chunks();
 	}
 
-	public static function send_chunks() {
+	/**
+	 * Break down the total number of records into reasonably-sized chunks
+	 *
+	 * @return void
+	 */
+	public static function create_chunks() {
 		$output = array();
 		$max    = ceil( self::$record_count / self::$limit );
 
 		// @TODO: Create AJAX callback that returns the success of each chunk to update the progress bar
 
 		for ( $i = 0; $i < $max; $i++ ) {
-			$chunk  = self::get_chunk( absint( self::$limit * $i ) );
+			$records  = self::get_records( absint( self::$limit * $i ) );
 
-			// @TODO: Send chunk to the API via bulk ingestion endpoint
+			echo json_encode( $records, JSON_PRETTY_PRINT ); // @TODO Remove this, for testing only
 
-			echo json_encode( $chunk, JSON_PRETTY_PRINT ); // @TODO Remove this, for testing only
+			// self::send_chunk( $records );
 		}
 
 		// self::drop_legacy_tables()
 	}
 
-	public static function get_chunk( $offset = 0 ) {
+	/**
+	 * Send a chunk of records to the Stream API
+	 *
+	 * @return void
+	 */
+	public static function send_chunk( $records ) {
+		// @TODO: Send each chunk to the API via bulk ingestion endpoint
+		// @TODO: Create AJAX callback that returns the success of each chunk to update the progress bar
+	}
+
+	/**
+	 * Get a chunk of records formatted for Stream API ingestion
+	 *
+	 * @param  int    The number of rows to skip
+	 *
+	 * @return array  An array of record arrays
+	 */
+	public static function get_records( $offset = 0 ) {
 		global $wpdb;
 
 		$records = $wpdb->get_results(
@@ -83,6 +114,11 @@ class WP_Stream_Legacy_Update {
 		return $records;
 	}
 
+	/**
+	 * Drop the legacy Stream MySQL tables
+	 *
+	 * @return void
+	 */
 	public static function drop_legacy_tables() {
 		global $wpdb;
 
