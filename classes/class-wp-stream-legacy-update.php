@@ -3,6 +3,11 @@
 class WP_Stream_Legacy_Update {
 
 	/**
+	 * Sync delay transient name/identifier used when user wants to be reminded to sync later
+	 */
+	const SYNC_DELAY_TRANSIENT = 'wp_stream_sync_delayed';
+
+	/**
 	 * Hold the current site ID
 	 *
 	 * @var int
@@ -67,9 +72,28 @@ class WP_Stream_Legacy_Update {
 			return;
 		}
 
-		// @TODO: Create admin notice that a database migration is needed
+		add_action( 'admin_init', array( __CLASS__, 'process_sync_actions' ) );
 
 		self::create_chunks();
+	}
+
+	/**
+	 * Listens for sync action to process
+	 *
+	 * @action admin_init
+	 * @return void
+	 */
+	public static function process_sync_actions() {
+		$action = wp_stream_filter_input( INPUT_GET, 'sync_action' );
+		$nonce  = wp_stream_filter_input( INPUT_GET, 'nonce' );
+
+		if ( ! wp_verify_nonce( $nonce, 'stream_sync_action-' . get_current_blog_id() ) ) {
+			return;
+		}
+
+		if ( 'delay' === $action ) {
+			set_transient( self::SYNC_DELAY_TRANSIENT, '1', 3 * HOUR_IN_SECONDS );
+		}
 	}
 
 	/**

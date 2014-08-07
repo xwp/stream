@@ -503,7 +503,11 @@
 
 /* Stream Sync Message */
 
-.stream-sync-actions button {
+#stream-sync-progress {
+	display: none;
+}
+
+.stream-sync-actions .button {
 	display: inline-block;
 	margin: 0 10px 5px 0 !important;
 }

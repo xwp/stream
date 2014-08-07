@@ -62,7 +62,15 @@ class WP_Stream_Admin {
 				'auth'       => 'true',
 				'action'     => 'connect',
 				'home_url'   => urlencode( $home_url ),
-				'plugin_url' => urlencode( admin_url( 'admin.php?page=' . self::RECORDS_PAGE_SLUG . '&nonce=' . $connect_nonce ) ),
+				'plugin_url' => urlencode(
+					add_query_arg(
+						array(
+							'page'  => self::RECORDS_PAGE_SLUG,
+							'nonce' => $connect_nonce,
+						),
+						admin_url( self::ADMIN_PARENT_PAGE )
+					)
+				),
 			),
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/pricing/' )
 		);
@@ -70,7 +78,14 @@ class WP_Stream_Admin {
 		self::$account_url = add_query_arg(
 			array(
 				'auth'       => 'true',
-				'plugin_url' => urlencode( admin_url( 'admin.php?page=' . self::ACCOUNT_PAGE_SLUG ) ),
+				'plugin_url' => urlencode(
+					add_query_arg(
+						array(
+							'page' => self::RECORDS_PAGE_SLUG,
+						),
+						admin_url( self::ADMIN_PARENT_PAGE )
+					)
+				),
 			),
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/dashboard/' )
 		);
@@ -193,11 +208,20 @@ class WP_Stream_Admin {
 						esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
 					);
 				} else {
+					$nonce  = wp_create_nonce( 'stream_sync_action-' . get_current_blog_id() );
 					$notice = sprintf(
-						'<strong>%s</strong></p><p>%s</p><p class="stream-sync-actions"><button id="stream-start-sync" class="button button-primary">%s</button> <button id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
+						'<strong>%s</strong></p><p>%s</p><div id="stream-sync-progress">test</div><p class="stream-sync-actions"><a id="stream-start-sync" class="button button-primary">%s</a> <a href="%s" id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
 						esc_html__( 'You have successfully connected to Stream!', 'stream' ),
 						esc_html__( 'We found existing Stream records in your database that need to be synced to your Stream account.', 'stream' ),
 						esc_html__( 'Start Syncing Now', 'stream' ),
+						add_query_arg(
+							array(
+								'page'        => self::RECORDS_PAGE_SLUG,
+								'sync_action' => 'delay',
+								'nonce'       => $nonce,
+							),
+							admin_url( self::ADMIN_PARENT_PAGE )
+						),
 						esc_html__( 'Remind Me Later', 'stream' ),
 						esc_html__( 'Delete Existing Records', 'stream' )
 					);
@@ -323,7 +347,7 @@ class WP_Stream_Admin {
 				array(
 					'i18n'            => array(
 						'confirm_start_sync'     => __( 'Please DO NOT exit the syncing process once it has started. This could take several minutes to complete.', 'stream' ),
-						'confirm_sync_reminder'  => __( "Your existing records will not appear in Stream until you have synced them with your account. We'll remind you again in a few hours.", 'stream' ),
+						'confirm_sync_reminder'  => __( 'Your existing records will not appear in Stream until you have synced them to your account. We will remind you again in a few hours.', 'stream' ),
 						'confirm_delete_records' => __( 'Are you sure you want to delete all existing Stream records from the database without syncing? This cannot be undone.', 'stream' ),
 						'confirm_defaults'       => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
@@ -497,7 +521,7 @@ class WP_Stream_Admin {
 				'page'    => self::RECORDS_PAGE_SLUG,
 				'message' => 'connected',
 			),
-			admin_url( 'admin.php' )
+			admin_url( self::ADMIN_PARENT_PAGE )
 		);
 
 		wp_redirect( $redirect_url );
@@ -515,7 +539,7 @@ class WP_Stream_Admin {
 				'page'    => self::RECORDS_PAGE_SLUG,
 				'message' => 'disconnected',
 			),
-			admin_url( 'admin.php' )
+			admin_url( self::ADMIN_PARENT_PAGE )
 		);
 
 		wp_redirect( $redirect_url );
