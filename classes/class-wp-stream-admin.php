@@ -194,7 +194,7 @@ class WP_Stream_Admin {
 					);
 				} else {
 					$notice = sprintf(
-						'<strong>%s</strong></p><p>%s</p><p class="stream-sync-actions"><button class="button button-primary">%s</button> <button class="button button-secondary">%s</button> <a href="#" class="delete">%s</a>',
+						'<strong>%s</strong></p><p>%s</p><p class="stream-sync-actions"><button id="stream-start-sync" class="button button-primary">%s</button> <button id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
 						esc_html__( 'You have successfully connected to Stream!', 'stream' ),
 						esc_html__( 'We found existing Stream records in your database that need to be synced to your Stream account.', 'stream' ),
 						esc_html__( 'Start Syncing Now', 'stream' ),
@@ -322,7 +322,10 @@ class WP_Stream_Admin {
 				'wp_stream',
 				array(
 					'i18n'            => array(
-						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+						'confirm_start_sync'     => __( 'Please DO NOT exit the syncing process once it has started. This could take several minutes to complete.', 'stream' ),
+						'confirm_sync_reminder'  => __( "Your existing records will not appear in Stream until you have synced them with your account. We'll remind you again in a few hours.", 'stream' ),
+						'confirm_delete_records' => __( 'Are you sure you want to delete all existing Stream records from the database without syncing? This cannot be undone.', 'stream' ),
+						'confirm_defaults'       => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
 					'gmt_offset'     => get_option( 'gmt_offset' ),
 					'current_screen' => $hook,
