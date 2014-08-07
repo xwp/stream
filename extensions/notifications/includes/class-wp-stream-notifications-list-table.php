@@ -184,7 +184,7 @@ class WP_Stream_Notifications_List_Table {
 	 * @action load-edit.php
 	 */
 	public function actions() {
-		if ( ! isset( $_REQUEST['action'] ) ) {
+		if ( ! isset( $_REQUEST['action'] ) || ! isset( $_REQUEST['post_type' ] ) || WP_Stream_Notifications_Post_Type::POSTTYPE !== wp_stream_filter_input( INPUT_GET, 'post_type' ) ) {
 			return;
 		}
 

@@ -33,7 +33,6 @@ class WP_Stream_Reports_Metaboxes {
 		// Get all sections from the database
 		self::$sections         = WP_Stream_Reports_Settings::get_user_options( 'sections' );
 		$this->charts           = new WP_Stream_Reports_Charts();
-		$this->existing_records = $this->get_existing_records();
 
 		if ( isset( self::$sections[0] ) && isset( self::$sections[0]['data_type'] ) ) {
 			$this->migrate_settings();
@@ -123,6 +122,8 @@ class WP_Stream_Reports_Metaboxes {
 		if ( is_admin() && WP_Stream_Reports_Settings::is_first_visit() ) {
 			$this->setup_user();
 		}
+
+		$this->existing_records = $this->get_existing_records();
 
 		// Add screen option for chart height
 		add_filter( 'screen_settings', array( $this, 'chart_height_display' ), 10, 2 );

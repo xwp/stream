@@ -142,7 +142,7 @@ class WP_Stream_Notifications {
 			require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-network.php';
 			$this->network = new WP_Stream_Notifications_Network;
 
-			require_once WP_ADMIN . '/includes/plugins.php';
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 			if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 				add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
 			}
@@ -151,7 +151,7 @@ class WP_Stream_Notifications {
 			add_filter( 'wp_stream_notifications_disallow_site_access', array( 'WP_Stream_Network', 'disable_admin_access' ) );
 		}
 
-		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) ) {
+		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
 			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		}
 

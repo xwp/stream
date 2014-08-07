@@ -122,7 +122,10 @@ class WP_Stream_Reports {
 
 		// Register new submenu
 		add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
-		add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+
+		if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
+			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+		}
 
 		self::$disallow_access = apply_filters( 'wp_stream_reports_disallow_site_access', false );
 
