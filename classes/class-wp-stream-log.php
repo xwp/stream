@@ -15,13 +15,6 @@ class WP_Stream_Log {
 	public static $instance = null;
 
 	/**
-	 * Hold record logs in a temporary buffer so we can send them all to the API at once
-	 *
-	 * @var array
-	 */
-	public static $buffer = array();
-
-	/**
 	 * Total number of records to log per API call
 	 *
 	 * @var int
@@ -42,9 +35,8 @@ class WP_Stream_Log {
 		 */
 		$log_handler = apply_filters( 'wp_stream_log_handler', __CLASS__ );
 
-		add_action( 'wp_stream_safe_log_record', array( __CLASS__, 'safe_log_record' ) );
+		add_action( 'wp_stream_insert_new_record', array( __CLASS__, 'insert_new_record' ) );
 
-		self::$buffer   = self::get_buffer();
 		self::$instance = new $log_handler;
 	}
 
@@ -78,7 +70,7 @@ class WP_Stream_Log {
 		}
 
 		foreach( $local_record_rows as $local_record_row ) {
-			array_merge( $local_records, json_decode( $local_record_row ) );
+			$local_records[] = $local_record_row;
 		}
 
 		return $local_records;
@@ -89,15 +81,22 @@ class WP_Stream_Log {
 	 *
 	 * @return void
 	 */
-	public static function save_buffer() {
-		if ( empty( self::$buffer ) ) {
+	public static function save_buffer( $buffer ) {
+		$current_buffer_parts = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(option_id) FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
+		$new_buffer_parts     = ceil( count( $buffer ) / self::$limit );
+
+		for ( $i = $save_buffer_parts; $i <= $current_buffer_parts; $i++ ) {
+			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name = %s", self::LOG_BUFFER_OPTION_KEY . '_' . $i ) );
+		}
+
+		if ( empty( $buffer ) ) {
 			return;
 		}
 
 		$grouped_records = array();
 
-		for ( $i = 0; $i < count( self::$buffer ); $i += self::$limit ) {
-			$grouped_records[] = array_slice( self::$buffer, $i, self::$limit );
+		for ( $i = 0; $i < count( $buffer ); $i += self::$limit ) {
+			$grouped_records[] = array_slice( $buffer, $i, self::$limit );
 		}
 
 		foreach ( $grouped_records as $key => $grouped_record ) {
@@ -114,12 +113,14 @@ class WP_Stream_Log {
 	 * @param  array Record to be added
 	 * @return mixed Request data on success|false on failure
 	 */
-	public static function safe_log_record( $record ) {
+	public static function insert_new_record( $record ) {
 		$request = WP_Stream::$api->new_records( array( $record ) );
 
 		if ( ! $request ) {
-			WP_Stream_Log::$buffer = array_merge( WP_Stream_Log::$buffer, $record );
-			WP_Stream_Log::save_buffer();
+			$buffer   = self::get_buffer();
+			$buffer[] = $record;
+
+			WP_Stream_Log::save_buffer( $buffer );
 
 			// Schedule buffer clearance
 		}
@@ -203,7 +204,7 @@ class WP_Stream_Log {
 		);
 
 		// Schedule the record to be added immediately. This allows sending a new record to the API without effecting load time.
-		wp_schedule_single_event( time(), 'wp_stream_safe_log_record', array( $recordarr ) );
+		wp_schedule_single_event( time(), 'wp_stream_insert_new_record', array( $recordarr ) );
 		wp_cron();
 	}
 
