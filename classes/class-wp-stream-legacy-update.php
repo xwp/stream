@@ -95,7 +95,7 @@ class WP_Stream_Legacy_Update {
 			// self::delete_records( self::$records_raw );
 		}
 
-		// self::drop_legacy_data();
+		self::drop_legacy_data();
 	}
 
 	/**
@@ -189,10 +189,20 @@ class WP_Stream_Legacy_Update {
 	 * @return void
 	 */
 	public static function drop_legacy_data() {
-		// Check first to ensure all the legacy records are gone from all sites/blogs
-		$count_all_records = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}stream`" );
+		global $wpdb;
 
-		if ( $count_all_records ) {
+		if ( is_multisite() ) {
+			$stream_site_blog_pairs = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->prefix}stream WHERE type = 'stream'", ARRAY_A );
+			$stream_site_blog_pairs = array_unique( array_map( 'self::implode_key_value', $stream_site_blog_pairs ) );
+			$wp_site_blog_pairs     = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->prefix}blogs", ARRAY_A );
+			$wp_site_blog_pairs     = array_unique( array_map( 'self::implode_key_value', $wp_site_blog_pairs ) );
+			$records_exist          = array_diff( $wp_site_blog_pairs, $stream_site_blog_pairs );
+		} else {
+			$records_exist = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}stream`" );
+		}
+
+		// If records exist for other sites/blogs then don't proceed, unless those sites/blogs have been deleted
+		if ( $records_exist ) {
 			return;
 		}
 
@@ -223,6 +233,27 @@ class WP_Stream_Legacy_Update {
 		// Delete legacy cron event hooks
 		wp_clear_scheduled_hook( 'stream_auto_purge' ); // Deprecated hook
 		wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
+	}
+
+	/**
+	 * Callback to impode key/value pairs from an associative array into a specially-formatted string
+	 *
+	 * @param  array  $array  An associate array
+	 *
+	 * @return string $output
+	 */
+	public static function implode_key_value( $array ) {
+		$output = implode( ', ',
+			array_map(
+				function ( $v, $k ) {
+					return sprintf( '%s:%s', $k, $v );
+				},
+				$array,
+				array_keys( $array )
+			)
+		);
+
+		return $output;
 	}
 
 }
