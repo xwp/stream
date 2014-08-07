@@ -123,9 +123,6 @@ class WP_Stream {
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
 
 		if ( is_admin() ) {
-			// Registers a hook that connectors and other plugins can use whenever a stream update happens
-			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
-
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 
 			add_action( 'plugins_loaded', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
@@ -168,10 +165,6 @@ class WP_Stream {
 	 */
 	public static function i18n() {
 		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-	}
-
-	static function update_activation_hook() {
-		WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( self::$db, 'install' ), self::VERSION );
 	}
 
 	/**
