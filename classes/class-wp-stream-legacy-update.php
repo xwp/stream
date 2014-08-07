@@ -3,6 +3,20 @@
 class WP_Stream_Legacy_Update {
 
 	/**
+	 * Hold the current site ID
+	 *
+	 * @var int
+	 */
+	public static $site_id = 1;
+
+	/**
+	 * Hold the current blog ID
+	 *
+	 * @var int
+	 */
+	public static $blog_id = 1;
+
+	/**
 	 * Hold the total number of legacy records found in the DB
 	 *
 	 * @var int
@@ -15,6 +29,13 @@ class WP_Stream_Legacy_Update {
 	 * @var int
 	 */
 	public static $limit = 500;
+
+	/**
+	 * Hold a temporary cache of records to preserve IDs which are required for deletion
+	 *
+	 * @var array
+	 */
+	public static $records_raw = array();
 
 	/**
 	 * Check that legacy data exists before doing anything
@@ -32,12 +53,14 @@ class WP_Stream_Legacy_Update {
 		global $wpdb;
 
 		if ( null === $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}stream'" ) ) {
-			// If there are no legacy records, then clear the legacy options again
+			// If there are no legacy records, then clear the legacy options and leave early
 			self::drop_legacy_data();
 			return;
 		}
 
-		self::$record_count = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}stream` WHERE type = 'stream'" );
+		self::$site_id      = is_multisite() ? get_current_site()->id : 1;
+		self::$blog_id      = is_network_admin() ? 0 : get_current_blog_id();
+		self::$record_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$wpdb->prefix}stream` WHERE site_id = %d AND blog_id = %d AND type = 'stream'", self::$site_id, self::$blog_id ) );
 
 		if ( 0 === self::$record_count ) {
 			return;
@@ -63,11 +86,13 @@ class WP_Stream_Legacy_Update {
 		// @TODO: Create AJAX callback that returns the success of each chunk to update the progress bar
 
 		for ( $i = 0; $i < $max; $i++ ) {
-			$records  = self::get_records( absint( self::$limit * $i ) );
+			$records = self::get_records( absint( self::$limit * $i ) );
 
 			// echo json_encode( $records, JSON_PRETTY_PRINT ); // @TODO Remove this, for testing only
 
 			// self::send_chunk( $records );
+
+			// self::delete_records( self::$records_raw );
 		}
 
 		// self::drop_legacy_data();
@@ -76,30 +101,37 @@ class WP_Stream_Legacy_Update {
 	/**
 	 * Get a chunk of records formatted for Stream API ingestion
 	 *
-	 * @param  int    The number of rows to skip
+	 * @param  int    $offset  The number of rows to skip
 	 *
-	 * @return array  An array of record arrays
+	 * @return array           An array of record arrays
 	 */
 	public static function get_records( $offset = 0 ) {
+		self::$records_raw = array();
+
 		global $wpdb;
 
 		$records = $wpdb->get_results(
 			$wpdb->prepare( "
 				SELECT s.*, sc.connector, sc.context, sc.action
 				FROM {$wpdb->prefix}stream AS s, {$wpdb->prefix}stream_context AS sc
-				WHERE s.type = 'stream'
+				WHERE s.site_id = %d
+					AND s.blog_id = %d
+					AND s.type = 'stream'
 					AND sc.record_id = s.ID
 				ORDER BY s.created ASC
 				LIMIT %d, %d
 				",
+				self::$site_id,
+				self::$blog_id,
 				$offset,
 				self::$limit
 			),
 			ARRAY_A
 		);
 
+		self::$records_raw = $records;
+
 		foreach ( $records as $record => $data ) {
-			// @TODO Figure out a way to eliminate this additional query using a JOIN above, if possible
 			$stream_meta        = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->prefix}stream_meta WHERE record_id = %d", $records[ $record ]['ID'] ), ARRAY_A );
 			$stream_meta_output = array();
 
@@ -120,6 +152,8 @@ class WP_Stream_Legacy_Update {
 	/**
 	 * Send a JSON chunk of records to the Stream API
 	 *
+	 * @param  array $records  An array of record arrays
+	 *
 	 * @return void
 	 */
 	public static function send_chunk( $records ) {
@@ -128,12 +162,39 @@ class WP_Stream_Legacy_Update {
 	}
 
 	/**
+	 * Drop the legacy Stream records from the database for the current site/blog
+	 *
+	 * @param  array $records  An array of record arrays
+	 *
+	 * @return void
+	 */
+	public static function delete_records( $records ) {
+		if ( empty( $records ) ) {
+			return;
+		}
+
+		global $wpdb;
+
+		// Delete legacy rows from each Stream table for these records only
+		foreach ( $records as $record ) {
+			$wpdb->delete( 'stream', array( 'ID' => $record['ID'] ), array( '%d' ) );
+			$wpdb->delete( 'stream_context', array( 'record_id' => $record['ID'] ), array( '%d' ) );
+			$wpdb->delete( 'stream_meta', array( 'record_id' => $record['ID'] ), array( '%d' ) );
+		}
+	}
+
+	/**
 	 * Drop the legacy Stream tables and options from the database
 	 *
 	 * @return void
 	 */
 	public static function drop_legacy_data() {
-		global $wpdb;
+		// Check first to ensure all the legacy records are gone from all sites/blogs
+		$count_all_records = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}stream`" );
+
+		if ( $count_all_records ) {
+			return;
+		}
 
 		// Drop legacy tables
 		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stream, {$wpdb->prefix}stream_context, {$wpdb->prefix}stream_meta" );
@@ -146,6 +207,8 @@ class WP_Stream_Legacy_Update {
 				switch_to_blog( $blog['blog_id'] );
 				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' ); // Deprecated option key
 				delete_option( 'wp_stream_db' );
+				delete_option( 'wp_stream_license' );
+				delete_option( 'wp_stream_licensee' );
 			}
 
 			restore_current_blog();
