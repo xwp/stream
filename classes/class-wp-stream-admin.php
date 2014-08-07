@@ -840,6 +840,9 @@ class WP_Stream_Admin {
 			include WP_STREAM_INC_DIR . '/db/install/wpdb.php';
 		}
 
+		wp_clear_scheduled_hook( WP_Stream_Log::LOG_CLEAN_BUFFER_HOOK );
+		wp_clear_scheduled_hook( WP_Stream_Log::LOG_INSERT_RECORD_HOOK );
+
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			// Prevent stream action from being fired on plugin
 			remove_action( 'deactivate_plugin', array( 'WP_Stream_Connector_Installer', 'callback' ), null );

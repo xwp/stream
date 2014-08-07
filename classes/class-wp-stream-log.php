@@ -8,6 +8,16 @@ class WP_Stream_Log {
 	const LOG_BUFFER_OPTION_KEY = 'wp_stream_log_buffer';
 
 	/**
+	 * Buffer schedule hook name
+	 */
+	const LOG_CLEAN_BUFFER_HOOK = 'wp_stream_clean_buffer';
+
+	/**
+	 * Insert record schedule hook name
+	 */
+	const LOG_INSERT_RECORD_HOOK = 'wp_stream_insert_record';
+
+	/**
 	 * Log handler
 	 *
 	 * @var \WP_Stream_Log
@@ -35,7 +45,8 @@ class WP_Stream_Log {
 		 */
 		$log_handler = apply_filters( 'wp_stream_log_handler', __CLASS__ );
 
-		add_action( 'wp_stream_insert_new_record', array( __CLASS__, 'insert_new_record' ) );
+		add_action( self::LOG_CLEAN_BUFFER_HOOK, array( __CLASS__, 'clean_buffer' ) );
+		add_action( self::LOG_INSERT_RECORD_HOOK, array( __CLASS__, 'insert_record' ) );
 
 		self::$instance = new $log_handler;
 	}
@@ -83,9 +94,8 @@ class WP_Stream_Log {
 	 */
 	public static function save_buffer( $buffer ) {
 		$current_buffer_parts = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(option_id) FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
-		$new_buffer_parts     = ceil( count( $buffer ) / self::$limit );
 
-		for ( $i = $save_buffer_parts; $i <= $current_buffer_parts; $i++ ) {
+		for ( $i = count( $buffer ); $i <= $current_buffer_parts; $i++ ) {
 			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name = %s", self::LOG_BUFFER_OPTION_KEY . '_' . $i ) );
 		}
 
@@ -105,15 +115,36 @@ class WP_Stream_Log {
 	}
 
 	/**
+	 * Gets records stored in the buffer and attempts to bulk send them to the API
+	 *
+	 * @return void
+	 */
+	public static function clean_buffer() {
+		$buffer = self::get_buffer();
+
+		$request = WP_Stream::$api->new_records( $buffer[0] );
+
+		// Clear buffer on success
+		if ( $request ) {
+			unset( $buffer[0] );
+			save_buffer( $buffer );
+		}
+
+		if ( empty( $buffer ) ) {
+			wp_clear_scheduled_hook( self::LOG_CLEAN_BUFFER_HOOK );
+		}
+	}
+
+	/**
 	 * Sends an API call to log records
 	 *
-	 * Schedule records for creation in a non-blocking way via WP_Cron
+	 * Used to schedule records for creation in a non-blocking way via WP_Cron
 	 * Stores failed requests in a local database buffer and schedules a retry
 	 *
 	 * @param  array Record to be added
 	 * @return mixed Request data on success|false on failure
 	 */
-	public static function insert_new_record( $record ) {
+	public static function insert_record( $record ) {
 		$request = WP_Stream::$api->new_records( array( $record ) );
 
 		if ( ! $request ) {
@@ -123,6 +154,10 @@ class WP_Stream_Log {
 			WP_Stream_Log::save_buffer( $buffer );
 
 			// Schedule buffer clearance
+			if ( ! wp_next_scheduled( self::LOG_CLEAN_BUFFER_HOOK ) ) {
+				$buffer_schedule = apply_filters( 'wp_stream_buffer_schedule', 'hourly', $buffer );
+				wp_schedule_event( time() + HOUR_IN_SECONDS, $buffer_schedule, self::LOG_CLEAN_BUFFER_HOOK );
+			}
 		}
 
 		return $request;
@@ -204,7 +239,7 @@ class WP_Stream_Log {
 		);
 
 		// Schedule the record to be added immediately. This allows sending a new record to the API without effecting load time.
-		wp_schedule_single_event( time(), 'wp_stream_insert_new_record', array( $recordarr ) );
+		wp_schedule_single_event( time(), self::LOG_INSERT_RECORD_HOOK, array( $recordarr ) );
 		wp_cron();
 	}
 
