@@ -112,9 +112,6 @@ class WP_Stream_Admin {
 		// Reset Streams settings
 		add_action( 'wp_ajax_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
 
-		// Uninstall Streams and Deactivate plugin
-		add_action( 'wp_ajax_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
-
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
@@ -305,8 +302,7 @@ class WP_Stream_Admin {
 				'wp_stream',
 				array(
 					'i18n'            => array(
-						'confirm_defaults'  => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
-						'confirm_uninstall' => __( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
+						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
 					'gmt_offset'     => get_option( 'gmt_offset' ),
 					'current_screen' => $hook,
@@ -429,7 +425,6 @@ class WP_Stream_Admin {
 	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
-
 			// Don't show links in Network Admin if Stream isn't network enabled
 			if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 				return $links;
@@ -440,16 +435,8 @@ class WP_Stream_Admin {
 			} else {
 				$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
 			}
-			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
 
-			$url = add_query_arg(
-				array(
-					'action'          => 'wp_stream_uninstall',
-					'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-				),
-				admin_url( 'admin-ajax.php' )
-			);
-			$links[] = sprintf( '<span id="wp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall', 'stream' ) );
+			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
 		}
 
 		return $links;
@@ -527,42 +514,6 @@ class WP_Stream_Admin {
 		set_site_transient( 'wp_stream_testimonials', $testimonials, WEEK_IN_SECONDS );
 
 		return $testimonials;
-	}
-
-	/**
-	 * Register a routine to be called when stream or a stream connector has been updated
-	 * It works by comparing the current version with the version previously stored in the database.
-	 *
-	 * @param string $file A reference to the main plugin file
-	 * @param string $callback The function to run when the hook is called.
-	 * @param string $version The version to which the plugin is updating.
-	 * @return void
-	 */
-	public static function register_update_hook( $file, $callback, $version ) {
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		$plugin = plugin_basename( $file );
-
-		if ( is_plugin_active_for_network( $plugin ) ) {
-			$current_versions = get_site_option( WP_Stream_Install_WPDB::OPTION_KEY . '_connectors', array() );
-			$network          = true;
-		} elseif ( is_plugin_active( $plugin ) ) {
-			$current_versions = get_option( WP_Stream_Install_WPDB::OPTION_KEY . '_connectors', array() );
-			$network          = false;
-		} else {
-			return;
-		}
-
-		if ( version_compare( $version, $current_versions[ $plugin ], '>' ) ) {
-			call_user_func( $callback, $current_versions[ $plugin ], $network );
-			$current_versions[ $plugin ] = $version;
-		}
-
-		update_site_option( WP_Stream_Install_WPDB::OPTION_KEY . '_registered_connectors', $current_versions );
-
-		return;
 	}
 
 	/**
@@ -828,67 +779,6 @@ class WP_Stream_Admin {
 				delete_option( WP_Stream_Settings::OPTION_KEY );
 			}
 			restore_current_blog();
-		}
-	}
-
-	/**
-	 * This function is used to uninstall all custom tables and uninstall the plugin
-	 * It will also uninstall custom actions
-	 */
-	public static function uninstall_plugin() {
-		global $wpdb;
-
-		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
-		if ( ! class_exists( WP_Stream_Install_WPDB ) ) {
-			include WP_STREAM_INC_DIR . '/db/install/wpdb.php';
-		}
-
-		wp_clear_scheduled_hook( WP_Stream_Log::LOG_CLEAN_BUFFER_CRON_HOOK );
-		wp_clear_scheduled_hook( WP_Stream_Log::LOG_INSERT_RECORD_CRON_HOOK );
-
-		if ( current_user_can( self::SETTINGS_CAP ) ) {
-			// Prevent stream action from being fired on plugin
-			remove_action( 'deactivate_plugin', array( 'WP_Stream_Connector_Installer', 'callback' ), null );
-
-			// Plugin is being uninstalled from only one of the multisite blogs
-			if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-				$blog_id = get_current_blog_id();
-
-				delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-				delete_option( WP_Stream_Install_WPDB::OPTION_KEY );
-				delete_option( WP_Stream_Settings::OPTION_KEY );
-			} else {
-				// Delete database options
-				if ( is_multisite() ) {
-					$blogs = wp_get_sites();
-					foreach ( $blogs as $blog ) {
-						switch_to_blog( $blog['blog_id'] );
-						delete_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-						delete_option( WP_Stream_Install_WPDB::OPTION_KEY );
-						delete_option( WP_Stream_Settings::OPTION_KEY );
-						delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
-						delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
-					}
-					restore_current_blog();
-				}
-
-				// Delete database options
-				delete_site_option( plugin_basename( WP_STREAM_DIR ) . '_db' );
-				delete_site_option( WP_Stream_Install_WPDB::OPTION_KEY );
-				delete_site_option( WP_Stream_Settings::OPTION_KEY );
-				delete_site_option( WP_Stream_Settings::DEFAULTS_OPTION_KEY );
-				delete_site_option( WP_Stream_Settings::NETWORK_OPTION_KEY );
-				delete_site_option( WP_Stream_Network::SITES_CONNECTED_OPTION_KEY );
-			}
-
-			// Deactivate the plugin
-			deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
-
-			// Redirect to plugin page
-			wp_redirect( add_query_arg( array( 'deactivate' => true ), self_admin_url( 'plugins.php' ) ) );
-			exit;
-		} else {
-			wp_die( "You don't have sufficient privileges to do this action." );
 		}
 	}
 

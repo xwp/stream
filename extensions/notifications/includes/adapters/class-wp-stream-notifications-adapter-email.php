@@ -47,7 +47,8 @@ class WP_Stream_Notifications_Adapter_Email extends WP_Stream_Notifications_Adap
 			);
 			$user_emails = wp_list_pluck( $user_query->results, 'user_email' );
 		}
-		$emails = explode( ',', $this->params['emails'] );
+		$emails = $this->replace( $this->params['emails'], $log );
+		$emails = explode( ',', $emails );
 		if ( ! empty( $user_emails ) ) {
 			$emails = array_merge( $emails, $user_emails );
 		}

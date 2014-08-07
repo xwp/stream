@@ -115,12 +115,6 @@ jQuery(function( $ ) {
 		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
 	});
 
-	$( '#wp_stream_uninstall' ).click(function( e ) {
-		if ( ! confirm( wp_stream.i18n.confirm_uninstall ) ) {
-			e.preventDefault();
-		}
-	});
-
 	// Admin page tabs
 	var $tabs          = $( '.nav-tab-wrapper' ),
 		$panels        = $( '.nav-tab-content table.form-table' ),
