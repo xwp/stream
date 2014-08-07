@@ -65,7 +65,7 @@ class WP_Stream_Legacy_Update {
 		for ( $i = 0; $i < $max; $i++ ) {
 			$records  = self::get_records( absint( self::$limit * $i ) );
 
-			//echo json_encode( $records, JSON_PRETTY_PRINT ); // @TODO Remove this, for testing only
+			// echo json_encode( $records, JSON_PRETTY_PRINT ); // @TODO Remove this, for testing only
 
 			// self::send_chunk( $records );
 		}
@@ -111,6 +111,7 @@ class WP_Stream_Legacy_Update {
 			$records[ $record ]['created']     = wp_stream_get_iso_8601_extended_date( strtotime( $records[ $record ]['created'] ) );
 
 			unset( $records[ $record ]['ID'] );
+			unset( $records[ $record ]['parent'] );
 		}
 
 		return $records;
