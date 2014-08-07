@@ -73,18 +73,9 @@ class WP_Stream_Log {
 	public static function get_buffer() {
 		global $wpdb;
 
-		$local_records     = array();
-		$local_record_rows = $wpdb->get_col( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
+		$buffer = $wpdb->get_col( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
 
-		if ( ! $local_record_rows || empty( $local_record_rows ) ) {
-			return $local_records;
-		}
-
-		foreach( $local_record_rows as $local_record_row ) {
-			$local_records[] = $local_record_row;
-		}
-
-		return $local_records;
+		return $buffer;
 	}
 
 	/**
