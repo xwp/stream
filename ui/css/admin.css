@@ -504,10 +504,13 @@
 /* Stream Sync Message */
 
 .stream-sync-actions button {
-	margin-right: 10px !important;
+	display: inline-block;
+	margin: 0 10px 5px 0 !important;
 }
 
 .stream-sync-actions a.delete {
+	display: inline-block;
+	margin-top: 10px;
 	color: #a00;
 }
 
