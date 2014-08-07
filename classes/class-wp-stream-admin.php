@@ -500,8 +500,8 @@ class WP_Stream_Admin {
 		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
 		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
 
-		wp_clear_scheduled_hook( WP_Stream_Log::LOG_CLEAN_BUFFER_HOOK );
-		wp_clear_scheduled_hook( WP_Stream_Log::LOG_INSERT_RECORD_HOOK );
+		wp_clear_scheduled_hook( WP_Stream_Log::LOG_CLEAN_BUFFER_CRON_HOOK );
+		wp_clear_scheduled_hook( WP_Stream_Log::LOG_INSERT_RECORD_CRON_HOOK );
 	}
 
 	public static function get_testimonials() {
@@ -843,8 +843,8 @@ class WP_Stream_Admin {
 			include WP_STREAM_INC_DIR . '/db/install/wpdb.php';
 		}
 
-		wp_clear_scheduled_hook( WP_Stream_Log::LOG_CLEAN_BUFFER_HOOK );
-		wp_clear_scheduled_hook( WP_Stream_Log::LOG_INSERT_RECORD_HOOK );
+		wp_clear_scheduled_hook( WP_Stream_Log::LOG_CLEAN_BUFFER_CRON_HOOK );
+		wp_clear_scheduled_hook( WP_Stream_Log::LOG_INSERT_RECORD_CRON_HOOK );
 
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			// Prevent stream action from being fired on plugin

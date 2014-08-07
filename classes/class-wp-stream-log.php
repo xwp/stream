@@ -10,12 +10,12 @@ class WP_Stream_Log {
 	/**
 	 * Buffer schedule hook name
 	 */
-	const LOG_CLEAN_BUFFER_HOOK = 'wp_stream_clean_buffer';
+	const LOG_CLEAN_BUFFER_CRON_HOOK = 'wp_stream_clean_buffer_cron';
 
 	/**
 	 * Insert record schedule hook name
 	 */
-	const LOG_INSERT_RECORD_HOOK = 'wp_stream_insert_record';
+	const LOG_INSERT_RECORD_CRON_HOOK = 'wp_stream_insert_record_cron';
 
 	/**
 	 * Log handler
@@ -45,8 +45,8 @@ class WP_Stream_Log {
 		 */
 		$log_handler = apply_filters( 'wp_stream_log_handler', __CLASS__ );
 
-		add_action( self::LOG_CLEAN_BUFFER_HOOK, array( __CLASS__, 'clean_buffer' ) );
-		add_action( self::LOG_INSERT_RECORD_HOOK, array( __CLASS__, 'insert_record' ) );
+		add_action( self::LOG_CLEAN_BUFFER_CRON_HOOK, array( __CLASS__, 'clean_buffer' ) );
+		add_action( self::LOG_INSERT_RECORD_CRON_HOOK, array( __CLASS__, 'insert_record' ) );
 
 		self::$instance = new $log_handler;
 	}
@@ -122,7 +122,7 @@ class WP_Stream_Log {
 		}
 
 		if ( empty( $buffer ) ) {
-			wp_clear_scheduled_hook( self::LOG_CLEAN_BUFFER_HOOK );
+			wp_clear_scheduled_hook( self::LOG_CLEAN_BUFFER_CRON_HOOK );
 		}
 	}
 
@@ -145,9 +145,9 @@ class WP_Stream_Log {
 			WP_Stream_Log::save_buffer( $buffer );
 
 			// Schedule buffer clearance
-			if ( ! wp_next_scheduled( self::LOG_CLEAN_BUFFER_HOOK ) ) {
+			if ( ! wp_next_scheduled( self::LOG_CLEAN_BUFFER_CRON_HOOK ) ) {
 				$buffer_schedule = apply_filters( 'wp_stream_buffer_schedule', 'hourly', $buffer );
-				wp_schedule_event( time() + HOUR_IN_SECONDS, $buffer_schedule, self::LOG_CLEAN_BUFFER_HOOK );
+				wp_schedule_event( time() + HOUR_IN_SECONDS, $buffer_schedule, self::LOG_CLEAN_BUFFER_CRON_HOOK );
 			}
 		}
 
@@ -229,7 +229,7 @@ class WP_Stream_Log {
 		);
 
 		// Schedule the record to be added immediately. This allows sending a new record to the API without effecting load time.
-		wp_schedule_single_event( time(), self::LOG_INSERT_RECORD_HOOK, array( $recordarr ) );
+		wp_schedule_single_event( time(), self::LOG_INSERT_RECORD_CRON_HOOK, array( $recordarr ) );
 		wp_cron();
 	}
 
