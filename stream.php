@@ -284,7 +284,6 @@ class WP_Stream {
 
 if ( WP_Stream::is_valid_php_version() ) {
 	$GLOBALS['wp_stream'] = WP_Stream::get_instance();
-	register_activation_hook( __FILE__, array( WP_Stream::$db, 'install' ) );
 } else {
 	WP_Stream::fail_php_version();
 }
