@@ -118,7 +118,7 @@ class WP_Stream_Legacy_Update {
 					AND s.blog_id = %d
 					AND s.type = 'stream'
 					AND sc.record_id = s.ID
-				ORDER BY s.created ASC
+				ORDER BY s.created DESC
 				LIMIT %d, %d
 				",
 				self::$site_id,
