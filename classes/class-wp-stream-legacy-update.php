@@ -196,7 +196,7 @@ class WP_Stream_Legacy_Update {
 			$stream_site_blog_pairs = array_unique( array_map( 'self::implode_key_value', $stream_site_blog_pairs ) );
 			$wp_site_blog_pairs     = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->prefix}blogs", ARRAY_A );
 			$wp_site_blog_pairs     = array_unique( array_map( 'self::implode_key_value', $wp_site_blog_pairs ) );
-			$records_exist          = array_diff( $wp_site_blog_pairs, $stream_site_blog_pairs );
+			$records_exist          = ( array_intersect( $stream_site_blog_pairs, $wp_site_blog_pairs ) ) ? true : false;
 		} else {
 			$records_exist = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}stream`" );
 		}
