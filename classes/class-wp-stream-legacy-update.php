@@ -43,26 +43,27 @@ class WP_Stream_Legacy_Update {
 	 * @return void
 	 */
 	public static function load() {
-
-		// @TODO: Make this whole process multisite compat
-
-		if ( false === get_option( 'wp_stream_db' ) ) {
+		if ( ! is_multisite() && false === get_option( 'wp_stream_db' ) ) {
 			return;
 		}
 
 		global $wpdb;
 
-		if ( null === $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}stream'" ) ) {
-			// If there are no legacy records, then clear the legacy options and leave early
+		// If there are no legacy tables, then attempt to clear all legacy data and exit early
+		if ( null === $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->base_prefix}stream'" ) ) {
 			self::drop_legacy_data();
+
 			return;
 		}
 
 		self::$site_id      = is_multisite() ? get_current_site()->id : 1;
 		self::$blog_id      = is_network_admin() ? 0 : get_current_blog_id();
-		self::$record_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$wpdb->prefix}stream` WHERE site_id = %d AND blog_id = %d AND type = 'stream'", self::$site_id, self::$blog_id ) );
+		self::$record_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$wpdb->base_prefix}stream` WHERE site_id = %d AND blog_id = %d AND type = 'stream'", self::$site_id, self::$blog_id ) );
 
+		// If there are no legacy records for this site/blog, then attempt to clear all legacy data and exit early
 		if ( 0 === self::$record_count ) {
+			self::drop_legacy_data();
+
 			return;
 		}
 
@@ -113,7 +114,7 @@ class WP_Stream_Legacy_Update {
 		$records = $wpdb->get_results(
 			$wpdb->prepare( "
 				SELECT s.*, sc.connector, sc.context, sc.action
-				FROM {$wpdb->prefix}stream AS s, {$wpdb->prefix}stream_context AS sc
+				FROM {$wpdb->base_prefix}stream AS s, {$wpdb->base_prefix}stream_context AS sc
 				WHERE s.site_id = %d
 					AND s.blog_id = %d
 					AND s.type = 'stream'
@@ -132,7 +133,7 @@ class WP_Stream_Legacy_Update {
 		self::$records_raw = $records;
 
 		foreach ( $records as $record => $data ) {
-			$stream_meta        = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->prefix}stream_meta WHERE record_id = %d", $records[ $record ]['ID'] ), ARRAY_A );
+			$stream_meta        = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->base_prefix}stream_meta WHERE record_id = %d", $records[ $record ]['ID'] ), ARRAY_A );
 			$stream_meta_output = array();
 
 			foreach ( $stream_meta as $meta => $value ) {
@@ -192,9 +193,9 @@ class WP_Stream_Legacy_Update {
 		global $wpdb;
 
 		if ( is_multisite() ) {
-			$stream_site_blog_pairs = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->prefix}stream WHERE type = 'stream'", ARRAY_A );
+			$stream_site_blog_pairs = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->base_prefix}stream WHERE type = 'stream'", ARRAY_A );
 			$stream_site_blog_pairs = array_unique( array_map( 'self::implode_key_value', $stream_site_blog_pairs ) );
-			$wp_site_blog_pairs     = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->prefix}blogs", ARRAY_A );
+			$wp_site_blog_pairs     = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->base_prefix}blogs", ARRAY_A );
 			$wp_site_blog_pairs     = array_unique( array_map( 'self::implode_key_value', $wp_site_blog_pairs ) );
 			$records_exist          = ( array_intersect( $stream_site_blog_pairs, $wp_site_blog_pairs ) ) ? true : false;
 		} else {
@@ -207,7 +208,7 @@ class WP_Stream_Legacy_Update {
 		}
 
 		// Drop legacy tables
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}stream, {$wpdb->prefix}stream_context, {$wpdb->prefix}stream_meta" );
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->base_prefix}stream, {$wpdb->base_prefix}stream_context, {$wpdb->base_prefix}stream_meta" );
 
 		// Delete legacy multisite options
 		if ( is_multisite() ) {
