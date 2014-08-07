@@ -295,3 +295,5 @@ if ( WP_Stream::is_valid_php_version() ) {
 } else {
 	WP_Stream::fail_php_version();
 }
+
+register_deactivation_hook( __FILE__, array( 'WP_Stream_Admin', 'remove_api_authentication' ) );
