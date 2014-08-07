@@ -220,7 +220,6 @@ class WP_Stream_Log {
 			'created'     => $iso_8601_extended_date,
 			'visibility'  => $visibility,
 			'type'        => 'stream',
-			'parent'      => 0,
 			'summary'     => vsprintf( $message, $args ),
 			'connector'   => $connector,
 			'context'     => $context,
