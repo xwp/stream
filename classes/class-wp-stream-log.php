@@ -87,7 +87,7 @@ class WP_Stream_Log {
 		$current_buffer_parts = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(option_id) FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
 
 		for ( $i = count( $buffer ); $i <= $current_buffer_parts; $i++ ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name = %s", self::LOG_BUFFER_OPTION_KEY . '_' . $i ) );
+			delete_option( self::LOG_BUFFER_OPTION_KEY . '_' . $i );
 		}
 
 		if ( empty( $buffer ) ) {
