@@ -501,6 +501,21 @@
 }
 
 
+/* Stream Sync Message */
+
+.stream-sync-actions button {
+	margin-right: 10px !important;
+}
+
+.stream-sync-actions a.delete {
+	color: #a00;
+}
+
+.stream-sync-actions a.delete:hover {
+	color: #f00;
+}
+
+
 /* Account Page */
 
 .stream_page_wp_stream_account .postbox {

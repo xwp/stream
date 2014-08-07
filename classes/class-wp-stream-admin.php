@@ -186,11 +186,22 @@ class WP_Stream_Admin {
 				$notice = esc_html__( 'All site settings have been successfully reset.', 'stream' );
 				break;
 			case 'connected':
-				$notice = sprintf(
-					'<strong>%s</strong></p><p>%s',
-					esc_html__( 'You have successfully connected to Stream!', 'stream' ),
-					esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
-				);
+				if ( 0 === WP_Stream_Legacy_Update::$record_count ) {
+					$notice = sprintf(
+						'<strong>%s</strong></p><p>%s',
+						esc_html__( 'You have successfully connected to Stream!', 'stream' ),
+						esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
+					);
+				} else {
+					$notice = sprintf(
+						'<strong>%s</strong></p><p>%s</p><p class="stream-sync-actions"><button class="button button-primary">%s</button> <button class="button button-secondary">%s</button> <a href="#" class="delete">%s</a>',
+						esc_html__( 'You have successfully connected to Stream!', 'stream' ),
+						esc_html__( 'We found existing Stream records in your database that need to be synced to your Stream account.', 'stream' ),
+						esc_html__( 'Start Syncing Now', 'stream' ),
+						esc_html__( 'Remind Me Later', 'stream' ),
+						esc_html__( 'Delete Existing Records', 'stream' )
+					);
+				}
 				break;
 			case 'disconnected':
 				$notice = esc_html__( 'You have successfully disconnected from Stream.', 'stream' );

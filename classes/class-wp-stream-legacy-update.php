@@ -65,7 +65,7 @@ class WP_Stream_Legacy_Update {
 		for ( $i = 0; $i < $max; $i++ ) {
 			$records  = self::get_records( absint( self::$limit * $i ) );
 
-			echo json_encode( $records, JSON_PRETTY_PRINT ); // @TODO Remove this, for testing only
+			//echo json_encode( $records, JSON_PRETTY_PRINT ); // @TODO Remove this, for testing only
 
 			// self::send_chunk( $records );
 		}
