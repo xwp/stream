@@ -38,7 +38,7 @@ class WP_Stream_API {
 	 *
 	 * @var string
 	 */
-	protected $api_version = '0.0.1';
+	protected $api_version = '0.0.2';
 
 	/**
 	 * Error messages
