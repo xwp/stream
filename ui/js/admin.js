@@ -167,8 +167,7 @@ jQuery(function( $ ) {
 	});
 	$tabs.children().eq( currentHash ).trigger( 'click' );
 
-	// Heartbeat for Live Updates
-	// runs only on stream page (not settings)
+	// Live Updates screen option
 	$( document ).ready(function() {
 
 		// Only run on page 1 when the order is desc and on page wp_stream
@@ -271,12 +270,16 @@ jQuery(function( $ ) {
 
 		//Enable Live Update Checkbox Ajax
 		$( '#enable_live_update' ).click(function() {
-			var nonce   = $( '#stream_live_update_nonce' ).val();
-			var user    = $( '#enable_live_update_user' ).val();
-			var checked = 'unchecked';
+			var nonce     = $( '#stream_live_update_nonce' ).val(),
+				user      = $( '#enable_live_update_user' ).val(),
+				checked   = 'unchecked',
+				heartbeat = 'true';
+
 			if ( $( '#enable_live_update' ).is( ':checked' ) ) {
 				checked = 'checked';
 			}
+
+			heartbeat = $( '#enable_live_update' ).data( 'heartbeat' );
 
 			$.ajax({
 				type: 'POST',
@@ -285,31 +288,44 @@ jQuery(function( $ ) {
 					action: 'stream_enable_live_update',
 					nonce: nonce,
 					user: user,
-					checked: checked
+					checked: checked,
+					heartbeat: heartbeat
 				},
 				dataType: 'json',
 				beforeSend: function() {
 					$( '.stream-live-update-checkbox .spinner' ).show().css( { 'display': 'inline-block' } );
 				},
-				success: function() {
+				success: function( response ) {
 					$( '.stream-live-update-checkbox .spinner' ).hide();
+
+					if ( false === response.success ) {
+						$( '#enable_live_update' ).prop( 'checked', false );
+
+						if ( response.data ) {
+							window.alert( response.data );
+						}
+					}
 				}
 			});
 		});
 
 		function toggle_filter_submit() {
 			var all_hidden = true;
+
 			// If all filters are hidden, hide the button
 			if ( $( 'div.metabox-prefs [id="date-hide"]' ).is( ':checked' ) ) {
 				all_hidden = false;
 			}
+
 			var divs = $( 'div.alignleft.actions div.select2-container' );
+
 			divs.each(function() {
 				if ( ! $( this ).is( ':hidden' ) ) {
 					all_hidden = false;
 					return false;
 				}
 			});
+
 			if ( all_hidden ) {
 				$( 'input#record-query-submit' ).hide();
 				$( 'span.filter_info' ).show();

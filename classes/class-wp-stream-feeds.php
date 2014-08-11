@@ -132,7 +132,9 @@ class WP_Stream_Feeds {
 					</p>
 					<p class="description"><?php esc_html_e( 'This is your private key used for accessing feeds of Stream Records securely. You can change your key at any time by generating a new one using the link above.', 'stream' ) ?></p>
 					<p class="wp-stream-feeds-links">
-						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'xml' ), $link )  ) ?>" class="rss-feed" target="_blank"><?php echo esc_html_e( 'RSS Feed', 'stream' ) ?></a>
+						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'rss' ), $link )  ) ?>" class="rss-feed" target="_blank"><?php echo esc_html_e( 'RSS Feed', 'stream' ) ?></a>
+						|
+						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'atom' ), $link )  ) ?>" class="atom-feed" target="_blank"><?php echo esc_html_e( 'ATOM Feed', 'stream' ) ?></a>
 						|
 						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'json' ), $link ) ) ?>" class="json-feed" target="_blank"><?php echo esc_html_e( 'JSON Feed', 'stream' ) ?></a>
 					</p>
@@ -212,7 +214,7 @@ class WP_Stream_Feeds {
 
 		$args = array(
 			'blog_id'          => $blog_id,
-			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT, array( 'options' => array( 'default' => get_option( 'posts_per_rss' ) ) ) ),
+			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT ),
 			'search'           => wp_stream_filter_input( INPUT_GET, 'search' ),
 			'object_id'        => wp_stream_filter_input( INPUT_GET, 'object_id', FILTER_SANITIZE_NUMBER_INT ),
 			'ip'               => wp_stream_filter_input( INPUT_GET, 'ip', FILTER_VALIDATE_IP ),
@@ -222,10 +224,9 @@ class WP_Stream_Feeds {
 			'date_from'        => wp_stream_filter_input( INPUT_GET, 'date_from' ),
 			'date_to'          => wp_stream_filter_input( INPUT_GET, 'date_to' ),
 			'record__in'       => wp_stream_filter_input( INPUT_GET, 'record__in', FILTER_SANITIZE_NUMBER_INT ),
-			'record_parent'    => wp_stream_filter_input( INPUT_GET, 'record_parent', FILTER_SANITIZE_NUMBER_INT ),
-			'order'            => wp_stream_filter_input( INPUT_GET, 'order', FILTER_DEFAULT, array( 'options' => array( 'default' => 'desc' ) ) ),
-			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby', FILTER_DEFAULT, array( 'options' => array( 'default' => 'ID' ) ) ),
-			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields', FILTER_DEFAULT, array( 'options' => array( 'default' => 'meta' ) ) ),
+			'order'            => wp_stream_filter_input( INPUT_GET, 'order' ),
+			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby' ),
+			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields' ),
 		);
 
 		$records = wp_stream_query( $args );
@@ -239,82 +240,28 @@ class WP_Stream_Feeds {
 			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 		);
 
-		if ( 'json' === wp_stream_filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR ) ) {
-			if ( version_compare( PHP_VERSION, '5.4', '>=' ) ) {
-				echo json_encode( $records, JSON_PRETTY_PRINT );
-			} else {
-				echo json_encode( $records );
-			}
-		} else {
-
-			header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_option( 'blog_charset' ), true );
-
-			printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_charset' ) ) );
-			?>
-
-			<rss version="2.0"
-				xmlns:content="http://purl.org/rss/1.0/modules/content/"
-				xmlns:wfw="http://wellformedweb.org/CommentAPI/"
-				xmlns:dc="http://purl.org/dc/elements/1.1/"
-				xmlns:atom="http://www.w3.org/2005/Atom"
-				xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
-				xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
-				<?php
-				/**
-				 * Action fires during RSS xmls printing
-				 */
-				?>
-				<?php do_action( 'rss2_ns' ) ?>
-			>
-				<channel>
-					<title><?php bloginfo_rss( 'name' ) ?> - <?php esc_html_e( 'Stream Feed', 'stream' ) ?></title>
-					<atom:link href="<?php self_link() ?>" rel="self" type="application/rss+xml" />
-					<link><?php echo esc_url( $records_admin_url ) ?></link>
-					<description><?php bloginfo_rss( 'description' ) ?></description>
-					<lastBuildDate><?php echo esc_html( mysql2date( 'r', $latest_record, false ) ) ?></lastBuildDate>
-					<language><?php bloginfo_rss( 'language' ) ?></language>
-					<sy:updatePeriod><?php echo esc_html( 'hourly' ) ?></sy:updatePeriod>
-					<sy:updateFrequency><?php echo absint( 1 ) ?></sy:updateFrequency>
-					<?php
-					/**
-					 * Action fires during RSS head
-					 */
-					?>
-					<?php do_action( 'rss2_head' ) ?>
-					<?php foreach ( $records as $record ) : ?>
-						<?php
-						$record_link  = add_query_arg(
-							array(
-								'record__in' => (int) $record->ID,
-							),
-							$records_admin_url
-						);
-						$author       = get_userdata( $record->author );
-						$display_name = isset( $author->display_name ) ? $author->display_name : 'N/A';
-						?>
-						<item>
-							<title><![CDATA[ <?php echo trim( $record->summary ) // xss ok ?> ]]></title>
-							<pubDate><?php echo esc_html( mysql2date( 'r', $record->created, false ) ) ?></pubDate>
-							<dc:creator><?php echo esc_html( $display_name ) ?></dc:creator>
-							<category domain="connector"><![CDATA[ <?php echo esc_html( $record->connector ) ?> ]]></category>
-							<category domain="context"><![CDATA[ <?php echo esc_html( $record->context ) ?> ]]></category>
-							<category domain="action"><![CDATA[ <?php echo esc_html( $record->action ) ?> ]]></category>
-							<category domain="ip"><?php echo esc_html( $record->ip ) ?></category>
-							<guid isPermaLink="false"><?php echo esc_url( $record_link ) ?></guid>
-							<link><?php echo esc_url( $record_link ) ?></link>
-							<?php
-							/**
-							 * Action fires during RSS item
-							 */
-							?>
-							<?php do_action( 'rss2_item' ) ?>
-						</item>
-					<?php endforeach; ?>
-				</channel>
-			</rss>
-			<?php
-			exit;
+		$latest_link = null;
+		if ( isset( $records[0]->ID ) ) {
+			$latest_link = add_query_arg(
+				array(
+					'record__in' => (int) $records[0]->ID,
+				),
+				$records_admin_url
+			);
 		}
+		$domain = parse_url( $records_admin_url, PHP_URL_HOST );
+
+		$format = wp_stream_filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR );
+
+		if ( 'atom' === $format ) {
+			require_once WP_STREAM_DIR . 'ui/feeds/atom.php';
+		} elseif ( 'json' === $format ) {
+			require_once WP_STREAM_DIR . 'ui/feeds/json.php';
+		} else {
+			require_once WP_STREAM_DIR . 'ui/feeds/rss-2.0.php';
+		}
+
+		exit;
 	}
 
 }
