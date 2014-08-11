@@ -214,7 +214,7 @@ class WP_Stream_Feeds {
 
 		$args = array(
 			'blog_id'          => $blog_id,
-			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT, array( 'options' => array( 'default' => get_option( 'posts_per_rss' ) ) ) ),
+			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT ),
 			'search'           => wp_stream_filter_input( INPUT_GET, 'search' ),
 			'object_id'        => wp_stream_filter_input( INPUT_GET, 'object_id', FILTER_SANITIZE_NUMBER_INT ),
 			'ip'               => wp_stream_filter_input( INPUT_GET, 'ip', FILTER_VALIDATE_IP ),
@@ -224,9 +224,9 @@ class WP_Stream_Feeds {
 			'date_from'        => wp_stream_filter_input( INPUT_GET, 'date_from' ),
 			'date_to'          => wp_stream_filter_input( INPUT_GET, 'date_to' ),
 			'record__in'       => wp_stream_filter_input( INPUT_GET, 'record__in', FILTER_SANITIZE_NUMBER_INT ),
-			'order'            => wp_stream_filter_input( INPUT_GET, 'order', FILTER_DEFAULT, array( 'options' => array( 'default' => 'desc' ) ) ),
-			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby', FILTER_DEFAULT, array( 'options' => array( 'default' => 'ID' ) ) ),
-			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields', FILTER_DEFAULT, array( 'options' => array( 'default' => 'meta' ) ) ),
+			'order'            => wp_stream_filter_input( INPUT_GET, 'order' ),
+			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby' ),
+			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields' ),
 		);
 
 		$records = wp_stream_query( $args );
