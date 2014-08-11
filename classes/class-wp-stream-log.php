@@ -113,7 +113,7 @@ class WP_Stream_Log {
 	public static function clean_buffer() {
 		$buffer = self::get_buffer();
 
-		$request = WP_Stream::$api->new_records( $buffer[0] );
+		$request = WP_Stream::$db->store( $buffer[0] );
 
 		// Clear buffer on success
 		if ( $request ) {
@@ -136,7 +136,7 @@ class WP_Stream_Log {
 	 * @return mixed Request data on success|false on failure
 	 */
 	public static function insert_record( $record ) {
-		$request = WP_Stream::$api->new_records( array( $record ) );
+		$request = WP_Stream::$db->store( array( $record ) );
 
 		if ( ! $request ) {
 			$buffer   = self::get_buffer();
