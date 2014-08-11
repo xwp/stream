@@ -224,7 +224,6 @@ class WP_Stream_Feeds {
 			'date_from'        => wp_stream_filter_input( INPUT_GET, 'date_from' ),
 			'date_to'          => wp_stream_filter_input( INPUT_GET, 'date_to' ),
 			'record__in'       => wp_stream_filter_input( INPUT_GET, 'record__in', FILTER_SANITIZE_NUMBER_INT ),
-			'record_parent'    => wp_stream_filter_input( INPUT_GET, 'record_parent', FILTER_SANITIZE_NUMBER_INT ),
 			'order'            => wp_stream_filter_input( INPUT_GET, 'order', FILTER_DEFAULT, array( 'options' => array( 'default' => 'desc' ) ) ),
 			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby', FILTER_DEFAULT, array( 'options' => array( 'default' => 'ID' ) ) ),
 			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields', FILTER_DEFAULT, array( 'options' => array( 'default' => 'meta' ) ) ),
