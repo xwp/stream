@@ -144,20 +144,29 @@ class WP_Stream_Admin {
 		$dismiss_and_deactivate_url = wp_nonce_url( 'plugins.php?action=deactivate&plugin=' . WP_STREAM_PLUGIN, 'deactivate-plugin_' . WP_STREAM_PLUGIN );
 		?>
 		<div id="stream-message" class="updated stream-connect" style="display:block !important;">
-		<?php if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) : // Can't deactivate if network activated ?>
-			<div id="stream-dismiss" class="stream-close-button-container">
-				<a class="stream-close-button" href="<?php echo esc_url( $dismiss_and_deactivate_url ) ?>" title="<?php _e( 'Dismiss this notice and deactivate Stream.', 'stream' ) ?>"></a>
-			</div>
-		<?php endif; ?>
-			<div class="stream-wrap-container">
-				<div class="stream-install-container">
-					<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ) ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a></p>
+
+			<?php if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) : // Can't deactivate if network activated ?>
+				<div id="stream-dismiss" class="stream-close-button-container">
+					<a class="stream-close-button" href="<?php echo esc_url( $dismiss_and_deactivate_url ) ?>" title="<?php esc_attr_e( 'Dismiss this notice and deactivate Stream.', 'stream' ) ?>">
+					<div class="dashicons dashicons-no-alt"></div></a>
 				</div>
-				<div class="stream-text-container">
-					<p><strong><?php _e( 'Stream is almost ready!', 'stream' ) ?></strong></p>
+			<?php endif; ?>
+
+			<div class="stream-message-container">
+
+				<div class="stream-button-container">
+					<a href="<?php echo esc_url( self::$connect_url ) ?>" class="stream-button"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a>
+				</div>
+
+				<div class="stream-message-text">
+					<h4><?php _e( 'Stream is almost ready!', 'stream' ) ?></h4>
 					<p><?php _e( 'Connect now to see every change made to your WordPress site in beautifully organized detail.', 'stream' ) ?></p>
 				</div>
+
+				<div class="clear"></div>
+
 			</div>
+
 		</div>
 		<?php
 	}
@@ -173,9 +182,6 @@ class WP_Stream_Admin {
 		$notice  = false;
 
 		switch ( $message ) {
-			case 'data_erased':
-				$notice = esc_html__( 'All records have been successfully erased.', 'stream' );
-				break;
 			case 'settings_reset':
 				$notice = esc_html__( 'All site settings have been successfully reset.', 'stream' );
 				break;
@@ -688,15 +694,23 @@ class WP_Stream_Admin {
 		wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/css/connect.css', array(), WP_Stream::VERSION );
 		?>
 		<div id="wp-stream-connect">
+
 			<div class="wrap">
-				<?php do_action( 'admin_notices' ); ?>
-				<p class="stream-connect-button"><a href="<?php echo esc_url( self::$connect_url ) ?>"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a></p>
-				<p><?php _e( 'with your WordPress.com account', 'stream' ) ?></p>
+
+				<div class="stream-connect-container">
+					<a href="<?php echo esc_url( self::$connect_url ) ?>" class="stream-button"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a>
+					<p><?php _e( 'with your WordPress.com account', 'stream' ) ?></p>
+				</div>
+
 				<?php if ( isset( $testimonial ) ) : ?>
-				<p class="quote">&ldquo;<?php echo esc_html( $testimonial['quote'] ) ?>&rdquo;</p>
-				<p class="author">&dash; <?php echo esc_html( $testimonial['author'] ) ?>, <a class="organization" href="<?php echo esc_url( $testimonial['link'] ) ?>"><?php echo esc_html( $testimonial['organization'] ) ?></a></p>
-				<?php endif ?>
+					<div class="stream-quotes-container">
+						<p class="stream-quote">&ldquo;<?php echo esc_html( $testimonial['quote'] ) ?>&rdquo;</p>
+						<p class="stream-quote-author">&dash; <?php echo esc_html( $testimonial['author'] ) ?>, <a class="stream-quote-organization" href="<?php echo esc_url( $testimonial['link'] ) ?>"><?php echo esc_html( $testimonial['organization'] ) ?></a></p>
+					</div>
+				<?php endif; ?>
+
 			</div>
+
 		</div>
 		<?php
 	}
