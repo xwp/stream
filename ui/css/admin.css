@@ -176,7 +176,7 @@
 }
 
 .toplevel_page_wp_stream .column-author a {
-	vertical-align : top;
+	vertical-align: top;
 }
 
 .toplevel_page_wp_stream .column-author img {
@@ -509,12 +509,13 @@
 
 .stream-sync-actions .button {
 	display: inline-block;
+	vertical-align: bottom !important;
 	margin: 0 10px 5px 0 !important;
 }
 
 .stream-sync-actions a.delete {
 	display: inline-block;
-	margin-top: 10px;
+	margin: 10px 0 5px;
 	color: #a00;
 }
 
