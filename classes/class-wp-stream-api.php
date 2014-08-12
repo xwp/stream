@@ -189,7 +189,11 @@ class WP_Stream_API {
 		}
 
 		if ( empty( $sites ) ) {
-			$sites[] = $this->site_uuid;
+			if ( is_network_admin() ) {
+				$sites = array_keys( WP_Stream_Network::get_instance()->connected_sites );
+			} else {
+				$sites[] = $this->site_uuid;
+			}
 		}
 
 		$url  = $this->request_url( sprintf( '/search', esc_attr( $this->site_uuid ) ) );
