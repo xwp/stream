@@ -151,7 +151,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				} else {
 					$slugs = array( $upgrader->skin->plugin );
 				}
+
+				if ( ! function_exists( 'get_plugins' ) ) {
+					require_once ABSPATH . 'wp-admin/includes/plugin.php';
+				}
+
 				$plugins = get_plugins();
+
 				foreach ( $slugs as $slug ) {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
 					$name        = $plugin_data['Name'];
@@ -200,6 +206,10 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	public static function callback_activate_plugin( $slug, $network_wide ) {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
 		$plugins      = get_plugins();
 		$name         = $plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'stream' ) : null;
@@ -217,6 +227,10 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	public static function callback_deactivate_plugin( $slug, $network_wide ) {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
 		$plugins      = get_plugins();
 		$name         = $plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'stream' ) : null;
@@ -282,6 +296,10 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 
 		if ( 'delete-selected' !== wp_stream_filter_input( INPUT_GET, 'action' ) && 'delete-selected' !== wp_stream_filter_input( INPUT_POST, 'action2' ) ) {
 			return false;
+		}
+
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
 		$_plugins = get_plugins();
