@@ -126,10 +126,6 @@ i.stream-icon {
 
 /* Stream Notice Box */
 
-#stream-message {
-	padding: 0;
-}
-
 #stream-message #stream-dismiss {
 	float: right;
 	margin: 8px 8px 0 0;
@@ -148,7 +144,7 @@ i.stream-icon {
 }
 
 #stream-message .stream-message-container {
-	padding: 0 20px;
+	padding: 0 8px;
 }
 
 #stream-message .stream-button-container {

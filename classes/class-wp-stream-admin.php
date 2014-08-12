@@ -755,9 +755,9 @@ class WP_Stream_Admin {
 			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/css/connect.css', array(), WP_Stream::VERSION );
 			?>
 			<div id="stream-message" class="updated stream-network-connect stream-connect" style="display:block !important;">
-				<div class="stream-wrap-container">
-					<div class="stream-text-container">
-							<p><strong><?php _e( 'Get started with Stream for Multisite!', 'stream' ) ?></strong></p>
+				<div class="stream-message-container">
+					<div class="stream-message-text">
+							<h4><?php _e( 'Get started with Stream for Multisite!', 'stream' ) ?></h4>
 							<p><?php _e( 'Welcome to your Network Stream! Each site on your network must be connected individually by an admin on that site for it to show here.', 'stream' ) ?></p>
 					</div>
 				</div>
