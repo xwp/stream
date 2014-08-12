@@ -490,11 +490,13 @@ class WP_Stream_Admin {
 	}
 
 	public static function remove_api_authentication() {
-		WP_Stream::$api->api_key   = false;
-		WP_Stream::$api->site_uuid = false;
-
 		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
 		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
+
+		do_action( 'wp_stream_site_disconnected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
+
+		WP_Stream::$api->api_key   = false;
+		WP_Stream::$api->site_uuid = false;
 
 		$redirect_url = add_query_arg(
 			array(
@@ -737,7 +739,7 @@ class WP_Stream_Admin {
 		echo '<div class="wrap">';
 
 		if ( is_network_admin() ) {
-			$sites_connected = WP_Stream_Network::get_instance()->sites_connected;
+			$sites_connected = count( WP_Stream_Network::get_instance()->connected_sites );
 			$site_count      = '';
 
 			if ( $sites_connected > 0 ) {
