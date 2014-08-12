@@ -137,9 +137,9 @@ class WP_Stream_Notifications_Matcher {
 				$is_group = isset( $trigger['triggers'] );
 
 				if ( $is_group ) {
-					$results[ ] = $this->match_group( $trigger['triggers'], $log );
+					$results[] = $this->match_group( $trigger['triggers'], $log );
 				} else {
-					$results[ ] = $this->match_trigger( $trigger, $log );
+					$results[] = $this->match_trigger( $trigger, $log );
 				}
 			}
 
@@ -361,7 +361,7 @@ class WP_Stream_Notifications_Matcher {
 		$chain = array();
 
 		while ( isset( $groups[ $group_id ] ) ) {
-			$chain[ ] = $group_id;
+			$chain[] = $group_id;
 			$group_id = $groups[ $group_id ]['group'];
 		}
 
@@ -401,13 +401,13 @@ class WP_Stream_Notifications_Matcher {
 
 				// Then go forward and generate group nodes until the trigger is ready to be inserted
 				foreach ( $newly_inserted_groups as $group ) {
-					$flattened_tree[ ]      = array( 'item' => $groups[ $group ], 'level' => $level ++, 'type' => 'group' );
-					$current_group_chain[ ] = $group;
+					$flattened_tree[]      = array( 'item' => $groups[ $group ], 'level' => $level ++, 'type' => 'group' );
+					$current_group_chain[] = $group;
 				}
 			}
 
 			// Now we're sure the trigger goes to a correct position
-			$flattened_tree[ ] = array( 'item' => $trigger, 'level' => $level, 'type' => 'trigger' );
+			$flattened_tree[] = array( 'item' => $trigger, 'level' => $level, 'type' => 'trigger' );
 		}
 
 		return $flattened_tree;
@@ -425,11 +425,11 @@ class WP_Stream_Notifications_Matcher {
 				// If we're on the correct level, we're going to insert the node
 				if ( $flattened_tree[ $i ]['level'] === $level ) {
 					if ( 'trigger' === $flattened_tree[ $i ]['type'] ) {
-						$return[ ] = $flattened_tree[ $i ]['item'];
+						$return[] = $flattened_tree[ $i ]['item'];
 						// If the node is a group, we need to call the recursive function
 						// in order to construct the tree for us further
 					} else {
-						$return[ ] = array(
+						$return[] = array(
 							'relation' => $flattened_tree[ $i ]['item']['relation'],
 							'triggers' => call_user_func( $recurrent_step, $level + 1, $i + 1 ),
 						);
@@ -474,10 +474,10 @@ class WP_Stream_Notifications_Matcher {
 
 			// If relation=and, start a new chunk, else join the previous chunk
 			if ( 'and' === $trigger['relation'] ) {
-				$chunks[ ]     = array( $trigger );
+				$chunks[]     = array( $trigger );
 				$current_chunk = count( $chunks ) - 1;
 			} else {
-				$chunks[ $current_chunk ][ ] = $trigger;
+				$chunks[ $current_chunk ][] = $trigger;
 			}
 		}
 
