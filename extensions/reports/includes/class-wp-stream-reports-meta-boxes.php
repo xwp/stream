@@ -503,7 +503,6 @@ class WP_Stream_Reports_Metaboxes {
 		$selector = ( ! empty( $args['selector_id'] ) ) ? $this->get_selector_types( $args['selector_id'] ) : null;
 
 		if ( ! empty( $action ) ) {
-
 			if ( ! empty( $dataset ) ) {
 				$string = _x(
 					'%1$s in %2$s by %3$s',
@@ -517,8 +516,6 @@ class WP_Stream_Reports_Metaboxes {
 					'stream'
 				);
 			}
-
-
 		} else if ( ! empty( $dataset ) ) {
 			$string = _x(
 				'All Activity in %2$s by %3$s',
@@ -764,7 +761,6 @@ class WP_Stream_Reports_Metaboxes {
 		$all_items = array(
 			'label' => __( 'All Contexts', 'stream' )
 		);
-
 
 		$new_array = apply_filters( 'wp_stream_reports_get_contexts', $context_items );
 		return array_merge( array( $all_items ), $new_array );

@@ -312,11 +312,7 @@ class WP_Stream_Notifications_Post_Type {
 						)
 					);
 					if ( $user_query->results ) {
-						$data = $this->format_json_for_select2(
-						             $user_query->results,
-							             'ID',
-							             'display_name'
-						);
+						$data = $this->format_json_for_select2( $user_query->results, 'ID', 'display_name' );
 					} else {
 						$data = array();
 					}
@@ -343,7 +339,7 @@ class WP_Stream_Notifications_Post_Type {
 					break;
 				case 'term':
 				case 'term_parent':
-					$tax   = isset( $args[ 'tax' ] ) ? $args[ 'tax' ] : null;
+					$tax   = isset( $args['tax'] ) ? $args['tax'] : null;
 					$query = explode( ',', $query );
 					$terms = $this->get_terms( $query, $tax );
 					$data  = $this->format_json_for_select2( $terms );
@@ -363,7 +359,7 @@ class WP_Stream_Notifications_Post_Type {
 								'user_email',
 								'user_nicename',
 							),
-							'meta_key'  => ( isset( $args[ 'push' ] ) && $args[ 'push' ] ) ? 'ckpn_user_key' : null,
+							'meta_key'  => ( isset( $args['push'] ) && $args['push'] ) ? 'ckpn_user_key' : null,
 						)
 					);
 					$data  = $this->format_json_for_select2( $users, 'ID', 'display_name' );
@@ -389,7 +385,7 @@ class WP_Stream_Notifications_Post_Type {
 					break;
 				case 'term':
 				case 'term_parent':
-					$tax   = isset( $args[ 'tax' ] ) ? $args[ 'tax' ] : null;
+					$tax   = isset( $args['tax'] ) ? $args['tax'] : null;
 					$terms = $this->get_terms( $query, $tax );
 					$data  = $this->format_json_for_select2( $terms );
 					break;
@@ -399,8 +395,8 @@ class WP_Stream_Notifications_Post_Type {
 		// Add gravatar for authors
 		if ( 'author' === $type && get_option( 'show_avatars' ) ) {
 			foreach ( $data as $i => $item ) {
-				if ( $avatar = get_avatar( $item[ 'id' ], 20 ) ) {
-					$item[ 'avatar' ] = $avatar;
+				if ( $avatar = get_avatar( $item['id'], 20 ) ) {
+					$item['avatar'] = $avatar;
 				}
 				$data[ $i ] = $item;
 			}
@@ -441,7 +437,7 @@ class WP_Stream_Notifications_Post_Type {
 		global $wp_roles;
 		$args = array();
 
-		$connectors = WP_Stream_Connectors::$term_labels[ 'stream_connector' ];
+		$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
 		asort( $connectors );
 
 		$roles     = $wp_roles->roles;
@@ -471,7 +467,7 @@ class WP_Stream_Notifications_Post_Type {
 			'>=' => esc_html__( 'equal or greater than', 'stream' ),
 		);
 
-		$args[ 'types' ] = array(
+		$args['types'] = array(
 			'search'      => array(
 				'title'     => esc_html__( 'Summary', 'stream' ),
 				'type'      => 'text',
@@ -534,9 +530,7 @@ class WP_Stream_Notifications_Post_Type {
 					),
 					array_map(
 						function ( $weekday_index ) {
-							/** @var $wp_locale WP_Locale */
 							global $wp_locale;
-
 							return $wp_locale->get_weekday( $weekday_index % 7 );
 						},
 						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
@@ -560,79 +554,79 @@ class WP_Stream_Notifications_Post_Type {
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
-				'options'   => WP_Stream_Connectors::$term_labels[ 'stream_context' ],
+				'options'   => WP_Stream_Connectors::$term_labels['stream_context'],
 			),
 			'action'      => array(
 				'title'     => esc_html__( 'Action', 'stream' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
-				'options'   => WP_Stream_Connectors::$term_labels[ 'stream_action' ],
+				'options'   => WP_Stream_Connectors::$term_labels['stream_action'],
 			),
 		);
 
 		// Connector-based triggers
-		$args[ 'special_types' ] = array(
-			'post'                => array(
+		$args['special_types'] = array(
+			'post' => array(
 				'title'     => esc_html__( '- Post', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
-			'post_title'          => array(
+			'post_title' => array(
 				'title'     => esc_html__( '- Post: Title', 'stream' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
-			'post_slug'           => array(
+			'post_slug' => array(
 				'title'     => esc_html__( '- Post: Slug', 'stream' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
-			'post_content'        => array(
+			'post_content' => array(
 				'title'     => esc_html__( '- Post: Content', 'stream' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
-			'post_excerpt'        => array(
+			'post_excerpt' => array(
 				'title'     => esc_html__( '- Post: Excerpt', 'stream' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $text_operator,
 			),
-			'post_author'         => array(
+			'post_author' => array(
 				'title'     => esc_html__( '- Post: Author', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
-			'post_status'         => array(
+			'post_status' => array(
 				'title'     => esc_html__( '- Post: Status', 'stream' ),
 				'type'      => 'select',
 				'connector' => 'posts',
-				'options'   => wp_list_pluck( $GLOBALS[ 'wp_post_statuses' ], 'label' ),
+				'options'   => wp_list_pluck( $GLOBALS['wp_post_statuses'], 'label' ),
 				'operators' => $default_operators,
 			),
-			'post_format'         => array(
+			'post_format' => array(
 				'title'     => esc_html__( '- Post: Format', 'stream' ),
 				'type'      => 'select',
 				'connector' => 'posts',
 				'options'   => get_post_format_strings(),
 				'operators' => $default_operators,
 			),
-			'post_parent'         => array(
+			'post_parent' => array(
 				'title'     => esc_html__( '- Post: Parent', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'posts',
 				'operators' => $default_operators,
 			),
-			'post_thumbnail'      => array(
+			'post_thumbnail' => array(
 				'title'     => esc_html__( '- Post: Featured Image', 'stream' ),
 				'type'      => 'select',
 				'connector' => 'posts',
@@ -652,41 +646,41 @@ class WP_Stream_Notifications_Post_Type {
 				),
 				'operators' => $default_operators,
 			),
-			'post_comment_count'  => array(
+			'post_comment_count' => array(
 				'title'     => esc_html__( '- Post: Comment Count', 'stream' ),
 				'type'      => 'text',
 				'connector' => 'posts',
 				'operators' => $numeric_operators,
 			),
-			'user'                => array(
+			'user' => array(
 				'title'     => esc_html__( '- User', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'users',
 				'operators' => $default_operators,
 			),
-			'user_role'           => array(
+			'user_role' => array(
 				'title'     => esc_html__( '- User: Role', 'stream' ),
 				'type'      => 'select',
 				'connector' => 'users',
 				'options'   => $roles_arr,
 				'operators' => $default_operators,
 			),
-			'tax'                 => array(
+			'tax' => array(
 				'title'     => esc_html__( '- Taxonomy', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'taxonomies',
 				'operators' => $default_operators,
 			),
-			'term'                => array(
+			'term' => array(
 				'title'     => esc_html__( '- Term', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'connector' => 'taxonomies',
 				'operators' => $default_operators,
 			),
-			'term_parent'         => array(
+			'term_parent' => array(
 				'title'     => esc_html__( '- Term: Parent', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
@@ -695,18 +689,18 @@ class WP_Stream_Notifications_Post_Type {
 			),
 		);
 
-		$args[ 'adapters' ] = array();
+		$args['adapters'] = array();
 
 		foreach ( WP_Stream_Notifications::$adapters as $name => $options ) {
-			$args[ 'adapters' ][ $name ] = array(
-				'title'  => $options[ 'title' ],
-				'fields' => $options[ 'class' ]::fields(),
-				'hints'  => $options[ 'class' ]::hints(),
+			$args['adapters'][ $name ] = array(
+				'title'  => $options['title'],
+				'fields' => $options['class']::fields(),
+				'hints'  => $options['class']::hints(),
 			);
 		}
 
 		// Localization
-		$args[ 'i18n' ] = array(
+		$args['i18n'] = array(
 			'empty_triggers'        => esc_html__( 'You cannot save a rule without any triggers.', 'stream' ),
 			'invalid_first_trigger' => esc_html__( 'You cannot save a rule with an empty first trigger.', 'stream' ),
 			'ajax_error'            => esc_html__( 'There was an error submitting your request, please try again.', 'stream' ),
@@ -715,12 +709,12 @@ class WP_Stream_Notifications_Post_Type {
 
 		global $post;
 
-		if ( ( $meta = get_post_meta( $post->ID ) ) && isset( $meta[ 'triggers' ] ) ) {
+		if ( ( $meta = get_post_meta( $post->ID ) ) && isset( $meta['triggers'] ) ) {
 
-			$args[ 'meta' ] = array(
-				'triggers' => maybe_unserialize( $meta[ 'triggers' ][ 0 ] ),
-				'groups'   => maybe_unserialize( $meta[ 'groups' ][ 0 ] ),
-				'alerts'   => maybe_unserialize( $meta[ 'alerts' ][ 0 ] ),
+			$args['meta'] = array(
+				'triggers' => maybe_unserialize( $meta['triggers'][ 0 ] ),
+				'groups'   => maybe_unserialize( $meta['groups'][ 0 ] ),
+				'alerts'   => maybe_unserialize( $meta['alerts'][ 0 ] ),
 			);
 		}
 
@@ -746,7 +740,7 @@ class WP_Stream_Notifications_Post_Type {
 			$vals = wp_list_pluck( $data, $val );
 		}
 		foreach ( $keys as $idx => $key ) {
-			$return[ ] = array(
+			$return[] = array(
 				'id'   => $key,
 				'text' => $vals[ $idx ],
 			);
