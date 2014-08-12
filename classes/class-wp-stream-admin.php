@@ -282,7 +282,6 @@ class WP_Stream_Admin {
 					array( __CLASS__, 'render_account_page' )
 				);
 			}
-
 		} else {
 			self::$screen_id['connect'] = add_menu_page(
 				__( 'Connect to Stream', 'stream' ),

@@ -51,19 +51,19 @@ class WP_Stream_Notifications_Network {
 
 		// Remove settings
 		foreach ( $fields as $section_key => $section ) {
-			foreach ( $section[ 'fields' ] as $key => $field ) {
+			foreach ( $section['fields'] as $key => $field ) {
 				if ( ! isset( $hidden_options[ $section_key ] ) ) {
 					continue;
 				}
-				if ( in_array( $field[ 'name' ], $hidden_options[ $section_key ] ) ) {
-					unset( $fields[ $section_key ][ 'fields' ][ $key ] );
+				if ( in_array( $field['name'], $hidden_options[ $section_key ] ) ) {
+					unset( $fields[ $section_key ]['fields'][ $key ] );
 				}
 			}
 		}
 
 		// Remove empty settings sections
 		foreach ( $fields as $section_key => $section ) {
-			if ( empty( $section[ 'fields' ] ) ) {
+			if ( empty( $section['fields'] ) ) {
 				unset( $fields[ $section_key ] );
 			}
 		}
