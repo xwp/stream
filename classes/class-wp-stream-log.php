@@ -73,7 +73,14 @@ class WP_Stream_Log {
 	public static function get_buffer() {
 		global $wpdb;
 
-		$buffer = $wpdb->get_col( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
+		$buffer = array();
+
+		$buffer_parts = $wpdb->get_col( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
+		$buffer_parts = array_map( 'maybe_unserialize', $buffer_parts );
+
+		foreach ( $buffer_parts as $buffer_part ) {
+			$buffer = array_merge( $buffer, $buffer_part );
+		}
 
 		return $buffer;
 	}
@@ -84,6 +91,8 @@ class WP_Stream_Log {
 	 * @return void
 	 */
 	public static function save_buffer( $buffer ) {
+		global $wpdb;
+
 		$current_buffer_parts = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(option_id) FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
 
 		for ( $i = count( $buffer ); $i <= $current_buffer_parts; $i++ ) {
@@ -101,7 +110,7 @@ class WP_Stream_Log {
 		}
 
 		foreach ( $grouped_records as $key => $grouped_record ) {
-			update_option( self::LOG_BUFFER_OPTION_KEY . '_' . $key, json_encode( $grouped_record ) );
+			update_option( self::LOG_BUFFER_OPTION_KEY . '_' . $key, $grouped_record );
 		}
 	}
 
