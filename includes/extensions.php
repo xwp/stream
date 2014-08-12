@@ -204,6 +204,10 @@ class WP_Stream_Extensions {
 	function get_plugin_paths() {
 		$plugin_paths = array();
 
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
 		foreach ( get_plugins() as $path => $data ) {
 			if ( isset( $data['TextDomain'] ) && ! empty( $data['TextDomain'] ) ) {
 				$plugin_paths[ $data['TextDomain'] ] = $path;
