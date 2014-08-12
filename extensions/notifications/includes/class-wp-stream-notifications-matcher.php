@@ -105,18 +105,20 @@ class WP_Stream_Notifications_Matcher {
 		return $rules;
 	}
 
-	public function match( $record_id, $log ) {
+	public function match( $result, $logs ) {
 		$rules      = $this->rules();
 		$rule_match = array();
 
-		foreach ( $rules as $rule_id => $rule ) {
-			$rule_match[ $rule_id ] = $this->match_group( $rule['triggers'], $log );
+		foreach ( $logs as $log ) {
+			foreach ( $rules as $rule_id => $rule ) {
+				$rule_match[ $rule_id ] = $this->match_group( $rule['triggers'], $log );
+			}
 		}
 
 		$rule_match     = array_keys( array_filter( $rule_match ) );
 		$matching_rules = array_intersect_key( $rules, array_flip( $rule_match ) );
 
-		$this->alert( $matching_rules, $log );
+		$this->alert( $matching_rules, $logs );
 	}
 
 	/**
@@ -484,7 +486,7 @@ class WP_Stream_Notifications_Matcher {
 		return $chunks;
 	}
 
-	private function alert( $rules, $log ) {
+	private function alert( $rules, $logs ) {
 		foreach ( $rules as $rule_id => $rule ) {
 			// Update occurrences
 			update_post_meta(
@@ -493,13 +495,15 @@ class WP_Stream_Notifications_Matcher {
 				( (int) get_post_meta( $rule_id, 'occurrences', true ) ) + 1
 			);
 
-			foreach ( $rule['alerts'] as $alert ) {
-				if ( ! isset( WP_Stream_Notifications::$adapters[ $alert['type'] ] ) ) {
-					continue;
-				}
+			foreach ( $logs as $log ) {
+				foreach ( $rule['alerts'] as $alert ) {
+					if ( ! isset( WP_Stream_Notifications::$adapters[ $alert['type'] ] ) ) {
+						continue;
+					}
 
-				$adapter = new WP_Stream_Notifications::$adapters[ $alert['type'] ]['class'];
-				$adapter->load( $alert )->send( $log );
+					$adapter = new WP_Stream_Notifications::$adapters[ $alert['type'] ]['class'];
+					$adapter->load( $alert )->send( $log );
+				}
 			}
 		}
 	}
