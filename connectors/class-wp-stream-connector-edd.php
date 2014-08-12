@@ -82,19 +82,11 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 * @return bool
 	 */
 	public static function is_dependency_satisfied() {
-		if ( ! class_exists( 'Easy_Digital_Downloads' ) ) {
-			//WP_Stream::notice(
-			//	sprintf( __( '<strong>Stream EDD Connector</strong> requires the <a href="%1$s" target="_blank">EDD</a> plugin to be installed and activated.', 'stream' ), esc_url( 'https://easydigitaldownloads.com' ) ),
-			//	true
-			//);
-		} elseif ( version_compare( EDD_VERSION, self::PLUGIN_MIN_VERSION, '<' ) ) {
-			//WP_Stream::notice(
-			//	sprintf( __( 'Please <a href="%1$s" target="_blank">install EDD</a> version %2$s or higher for the <strong>Stream EDD Connector</strong> plugin to work properly.', 'stream' ), esc_url( 'https://easydigitaldownloads.com' ), self::PLUGIN_MIN_VERSION ),
-			//	true
-			//);
-		} else {
+		if ( class_exists( 'Easy_Digital_Downloads' ) && version_compare( EDD_VERSION, self::PLUGIN_MIN_VERSION, '>=' ) ) {
 			return true;
 		}
+
+		return false;
 	}
 
 	/**
