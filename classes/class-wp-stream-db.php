@@ -57,21 +57,22 @@ class WP_Stream_DB {
 
 		$result = $this->insert( $records );
 
-		if ( is_wp_error( $result ) ) {
+		if ( ! $result || is_wp_error( $result ) ) {
 			/**
 			 * Fires on errors during post insertion
 			 *
-			 * @param  string $errors DB Error encountered
+			 * @param mixed false|WP_Error
 			 */
-			do_action( 'wp_stream_post_insert_error', $result->get_error_message() );
+			do_action( 'wp_stream_post_insert_error', $result );
 
 			return $result;
 		} else {
+
 			/**
 			 * Fires when A Post is inserted
 			 *
-			 * @param  int   $result Inserted record ID
-			 * @param  array $data   Array of information on this record
+			 * @param  int   $result API Result
+			 * @param  array $data   Array of information on these records
 			 */
 			do_action( 'wp_stream_post_inserted', $result, $records );
 
@@ -88,7 +89,7 @@ class WP_Stream_DB {
 	 *
 	 * @return object $response The inserted record
 	 */
-	protected function insert( array $records ) {
+	private function insert( array $records ) {
 		return WP_Stream::$api->new_records( $records );
 	}
 

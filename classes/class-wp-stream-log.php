@@ -138,7 +138,7 @@ class WP_Stream_Log {
 	public static function insert_record( $record ) {
 		$request = WP_Stream::$db->store( array( $record ) );
 
-		if ( ! $request ) {
+		if ( ! $request || is_wp_error( $request ) ) {
 			$buffer   = self::get_buffer();
 			$buffer[] = $record;
 
