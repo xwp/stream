@@ -496,27 +496,27 @@
 
 /* Extensions */
 
-.post-type-stream-notification .view-switch {
+.post-type-stream-notification .view-switch,
+body.wp_stream_restricted #wpbody {
 	display: none;
 }
 
-.stream_page_wp_stream_reports.wp_stream_restricted #wpbody {
-	display: none;
-}
-
-.stream_page_wp_stream_reports .stream-reports-example {
+.stream-example {
 	position: fixed;
 	width: calc(100% - 180px);
 	height: 100%;
-	background-image: url(../../extensions/reports/ui/images/stream-reports-example.jpg);
 	background-repeat: no-repeat;
 }
 
-.stream_page_wp_stream_reports.folded .stream-reports-example {
+.stream_page_wp_stream_reports .stream-example {
+	background-image: url(../../extensions/reports/ui/images/stream-reports-example.jpg);
+}
+
+body.folded .stream-example {
 	width: calc(100% - 56px);
 }
 
-.stream_page_wp_stream_reports .stream-reports-example-modal {
+.stream-example-modal {
 	position: absolute;
 	left: 50%;
 	top: 40%;
@@ -536,42 +536,42 @@
 	        box-shadow: 0 1px 20px 5px rgba(0, 0, 0, 0.1);
 }
 
-.stream_page_wp_stream_reports .stream-reports-example-modal h1,
-.stream_page_wp_stream_reports .stream-reports-example-modal p,
-.stream_page_wp_stream_reports .stream-reports-example-modal li {
+.stream-example-modal h1,
+.stream-example-modal p,
+.stream-example-modal li {
 	 -webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.stream_page_wp_stream_reports .stream-reports-example-modal h1 i {
+.stream-example-modal h1 i {
 	width: 26px;
 	height: 26px;
 	margin-top: -4px;
 	font-size: 26px;
 }
 
-.stream_page_wp_stream_reports .stream-reports-example-modal p {
+.stream-example-modal p {
 	font-size: 1.4em;
 }
 
-.stream_page_wp_stream_reports .stream-reports-example-modal li {
+.stream-example-modal li {
 	font-size: 1.1em;
 }
 
-.stream_page_wp_stream_reports .stream-reports-example-modal li i {
+.stream-example-modal li i {
 	color: #299d30;
 }
 
-.stream_page_wp_stream_reports .stream-reports-example-modal .button {
+.stream-example-modal .button {
 	margin: 5px 0 10px;
 }
 
 @media all and (max-width: 900px) {
-	.stream_page_wp_stream_reports .stream-reports-example {
+	.stream-example {
 		width: calc(100% - 56px);
 	}
 
-	.stream_page_wp_stream_reports .stream-reports-example-modal {
+	.stream-example-modal {
 		top:60px;
 		width: 80%;
 		min-width: 0;
@@ -583,7 +583,7 @@
 }
 
 @media all and (max-width: 782px) {
-	.stream_page_wp_stream_reports .stream-reports-example {
+	.stream-example {
 		left: 0;
 		width: 100% !important;
 	}

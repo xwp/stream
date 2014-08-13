@@ -120,8 +120,8 @@ class WP_Stream_Reports_Metaboxes {
 
 	public static function in_admin_header() {
 		?>
-		<div class="stream-reports-example">
-			<div class="stream-reports-example-modal">
+		<div class="stream-example">
+			<div class="stream-example-modal">
 				<h1><i class="dashicons dashicons-chart-area"></i> <?php _e( 'Stream Reports', 'stream' ) ?></h1>
 				<p><?php _e( 'Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.', 'stream' ) ?></p>
 				<ul>
@@ -261,8 +261,6 @@ class WP_Stream_Reports_Metaboxes {
 
 		include WP_STREAM_REPORTS_VIEW_DIR . 'meta-box.php';
 	}
-
-
 
 	public function translate_labels( $coordinates, $args ) {
 		foreach ( $coordinates as $key => $dataset ) {
