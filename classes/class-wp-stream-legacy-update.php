@@ -72,9 +72,7 @@ class WP_Stream_Legacy_Update {
 			return;
 		}
 
-		if ( self::show_sync_notice() ) {
-			add_action( 'admin_notices', array( __CLASS__, 'sync_notice' ) );
-		}
+		add_action( 'admin_notices', array( __CLASS__, 'sync_notice' ) );
 
 		add_action( 'admin_init', array( __CLASS__, 'process_sync_actions' ) );
 	}
@@ -100,6 +98,10 @@ class WP_Stream_Legacy_Update {
 	 * @return void
 	 */
 	public static function sync_notice() {
+		if ( ! self::show_sync_notice() ) {
+			return;
+		}
+
 		$nonce  = wp_create_nonce( 'stream_sync_action-' . get_current_blog_id() );
 		$notice = sprintf(
 			'<strong>%s</strong></p><p>%s</p><div id="stream-sync-progress">test</div><p class="stream-sync-actions"><a href="%s" id="stream-start-sync" class="button button-primary">%s</a> <a href="%s" id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="%s" id="stream-delete-records" class="delete">%s</a>',
