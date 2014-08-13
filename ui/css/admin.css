@@ -497,7 +497,8 @@
 /* Extensions */
 
 .post-type-stream-notification .view-switch,
-.stream_page_wp_stream_reports.wp_stream_restricted #wpbody {
+.stream_page_wp_stream_reports.wp_stream_restricted #wpbody,
+.post-type-stream-notification.wp_stream_restricted #wpbody {
 	display: none;
 }
 
@@ -506,6 +507,10 @@
 	width: calc(100% - 180px);
 	height: 100%;
 	background-repeat: no-repeat;
+}
+
+.post-type-stream-notification .stream-example {
+	background-image: url(../../extensions/notifications/ui/images/stream-notifications-example.jpg);
 }
 
 .stream_page_wp_stream_reports .stream-example {

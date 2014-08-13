@@ -119,6 +119,7 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public static function in_admin_header() {
+
 		?>
 		<div class="stream-example">
 			<div class="stream-example-modal">
@@ -138,7 +139,6 @@ class WP_Stream_Reports_Metaboxes {
 	public function load_page() {
 		if ( WP_Stream_API::is_restricted() ) {
 			add_action( 'in_admin_header', array( __CLASS__, 'in_admin_header' ) );
-
 			return;
 		}
 
