@@ -31,8 +31,8 @@ class WP_Stream_Reports_Metaboxes {
 	 */
 	public function __construct() {
 		// Get all sections from the database
-		self::$sections         = WP_Stream_Reports_Settings::get_user_options( 'sections' );
-		$this->charts           = new WP_Stream_Reports_Charts();
+		self::$sections = WP_Stream_Reports_Settings::get_user_options( 'sections' );
+		$this->charts   = new WP_Stream_Reports_Charts();
 
 		if ( isset( self::$sections[0] ) && isset( self::$sections[0]['data_type'] ) ) {
 			$this->migrate_settings();
@@ -118,7 +118,30 @@ class WP_Stream_Reports_Metaboxes {
 		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'interval', $interval );
 	}
 
+	public static function in_admin_header() {
+		?>
+		<div class="stream-reports-example">
+			<div class="stream-reports-example-modal">
+				<h1><i class="dashicons dashicons-chart-area"></i> <?php _e( 'Stream Reports', 'stream' ) ?></h1>
+				<p><?php _e( 'Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.', 'stream' ) ?></p>
+				<ul>
+					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Fully-interactive charts', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Monitor team contributions', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Responsive for any screen size', 'stream' ) ?></li>
+				</ul>
+				<a href="<?php echo esc_url( WP_Stream_Admin::$account_url ) ?>#change-plan_<?php echo esc_html( WP_Stream::$api->site_uuid ) ?>" class="button button-primary button-large"><?php _e( 'Upgrade Plan', 'stream' ) ?></a>
+			</div>
+		</div>
+		<?php
+	}
+
 	public function load_page() {
+		if ( WP_Stream_API::is_restricted() ) {
+			add_action( 'in_admin_header', array( __CLASS__, 'in_admin_header' ) );
+
+			return;
+		}
+
 		if ( is_admin() && WP_Stream_Reports_Settings::is_first_visit() ) {
 			$this->setup_user();
 		}
