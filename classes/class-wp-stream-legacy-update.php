@@ -86,17 +86,7 @@ class WP_Stream_Legacy_Update {
 	 * @return void
 	 */
 	public static function show_sync_notice() {
-		if (
-			! isset( $_GET['sync_action'] )
-			&&
-			WP_Stream::is_connected()
-			&&
-			WP_Stream_Admin::is_stream_screen()
-			&&
-			0 !== self::$record_count
-			&&
-			false === get_transient( self::SYNC_DELAY_TRANSIENT )
-		) {
+		if ( ! isset( $_GET['sync_action'] ) && WP_Stream::is_connected() && WP_Stream_Admin::is_stream_screen() && 0 !== self::$record_count && false === get_transient( self::SYNC_DELAY_TRANSIENT ) ) {
 			return true;
 		}
 

@@ -116,19 +116,19 @@ jQuery(function( $ ) {
 	});
 
 	$( '#stream-start-sync' ).click( function( e ) {
-		if ( ! confirm( wp_stream.i18n.confirm_start_sync ) ) {
+		if ( ! window.alert( wp_stream.i18n.confirm_start_sync ) ) {
 			e.preventDefault();
 		}
 	});
 
 	$( '#stream-sync-reminder' ).click( function( e ) {
-		if ( ! confirm( wp_stream.i18n.confirm_sync_reminder ) ) {
+		if ( ! window.alert( wp_stream.i18n.confirm_sync_reminder ) ) {
 			e.preventDefault();
 		}
 	});
 
 	$( '#stream-delete-records' ).click( function( e ) {
-		if ( ! confirm( wp_stream.i18n.confirm_delete_records ) ) {
+		if ( ! window.alert( wp_stream.i18n.confirm_delete_records ) ) {
 			e.preventDefault();
 		}
 	});
