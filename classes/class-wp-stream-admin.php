@@ -201,29 +201,13 @@ class WP_Stream_Admin {
 				$notice = esc_html__( 'All site settings have been successfully reset.', 'stream' );
 				break;
 			case 'connected':
-				if ( 0 === WP_Stream_Legacy_Update::$record_count ) {
+				if ( WP_Stream_Legacy_Update::show_sync_notice() ) {
+					WP_Stream_Legacy_Update::sync_notice();
+				} else {
 					$notice = sprintf(
 						'<strong>%s</strong></p><p>%s',
 						esc_html__( 'You have successfully connected to Stream!', 'stream' ),
 						esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
-					);
-				} else {
-					$nonce  = wp_create_nonce( 'stream_sync_action-' . get_current_blog_id() );
-					$notice = sprintf(
-						'<strong>%s</strong></p><p>%s</p><div id="stream-sync-progress">test</div><p class="stream-sync-actions"><a id="stream-start-sync" class="button button-primary">%s</a> <a href="%s" id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
-						esc_html__( 'You have successfully connected to Stream!', 'stream' ),
-						esc_html__( 'We found existing Stream records in your database that need to be synced to your Stream account.', 'stream' ),
-						esc_html__( 'Start Syncing Now', 'stream' ),
-						add_query_arg(
-							array(
-								'page'        => self::RECORDS_PAGE_SLUG,
-								'sync_action' => 'delay',
-								'nonce'       => $nonce,
-							),
-							admin_url( self::ADMIN_PARENT_PAGE )
-						),
-						esc_html__( 'Remind Me Later', 'stream' ),
-						esc_html__( 'Delete Existing Records', 'stream' )
 					);
 				}
 				break;
@@ -361,6 +345,21 @@ class WP_Stream_Admin {
 	}
 
 	/**
+	 * Check whether or not the current admin screen belongs to Stream
+	 *
+	 * @return bool
+	 */
+	public static function is_stream_screen() {
+		global $typenow;
+
+		if ( is_admin() && ( false !== strpos( wp_stream_filter_input( INPUT_GET, 'page' ), self::RECORDS_PAGE_SLUG ) || WP_Stream_Notifications_Post_Type::POSTTYPE === $typenow ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Add a specific body class to all Stream admin screens
 	 *
 	 * @filter admin_body_class
@@ -370,13 +369,7 @@ class WP_Stream_Admin {
 	 * @return string $classes
 	 */
 	public static function admin_body_class( $classes ) {
-		global $typenow;
-
-		if (
-			( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) )
-			||
-			( WP_Stream_Notifications_Post_Type::POSTTYPE === $typenow )
-		) {
+		if ( self::is_stream_screen() ) {
 			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
 
 			if ( ! is_network_admin() ) {

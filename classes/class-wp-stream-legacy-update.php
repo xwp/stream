@@ -72,9 +72,77 @@ class WP_Stream_Legacy_Update {
 			return;
 		}
 
-		add_action( 'admin_init', array( __CLASS__, 'process_sync_actions' ) );
+		if ( self::show_sync_notice() ) {
+			add_action( 'admin_notices', array( __CLASS__, 'sync_notice' ) );
+		}
 
-		self::create_chunks();
+		add_action( 'admin_init', array( __CLASS__, 'process_sync_actions' ) );
+	}
+
+	/**
+	 * Give the user options for how to handle their legacy Stream records
+	 *
+	 * @action admin_notices
+	 * @return void
+	 */
+	public static function show_sync_notice() {
+		if (
+			WP_Stream_Admin::is_stream_screen()
+			&&
+			! isset( $_GET['sync_action'] )
+			&&
+			0 !== self::$record_count
+			&&
+			false === get_transient( self::SYNC_DELAY_TRANSIENT )
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Give the user options for how to handle their legacy Stream records
+	 *
+	 * @action admin_notices
+	 * @return void
+	 */
+	public static function sync_notice() {
+		$nonce  = wp_create_nonce( 'stream_sync_action-' . get_current_blog_id() );
+		$notice = sprintf(
+			'<strong>%s</strong></p><p>%s</p><div id="stream-sync-progress">test</div><p class="stream-sync-actions"><a href="%s" id="stream-start-sync" class="button button-primary">%s</a> <a href="%s" id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="%s" id="stream-delete-records" class="delete">%s</a>',
+			esc_html__( 'You have successfully connected to Stream!', 'stream' ),
+			esc_html__( 'We found existing Stream records in your database that need to be synced to your Stream account.', 'stream' ),
+			add_query_arg(
+				array(
+					'page'        => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+					'sync_action' => 'sync',
+					'nonce'       => $nonce,
+				),
+				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			),
+			esc_html__( 'Start Syncing Now', 'stream' ),
+			add_query_arg(
+				array(
+					'page'        => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+					'sync_action' => 'delay',
+					'nonce'       => $nonce,
+				),
+				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			),
+			esc_html__( 'Remind Me Later', 'stream' ),
+			add_query_arg(
+				array(
+					'page'        => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+					'sync_action' => 'delete',
+					'nonce'       => $nonce,
+				),
+				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			),
+			esc_html__( 'Delete Existing Records', 'stream' )
+		);
+
+		WP_Stream::notice( $notice, false );
 	}
 
 	/**
@@ -91,8 +159,16 @@ class WP_Stream_Legacy_Update {
 			return;
 		}
 
+		if ( 'sync' === $action ) {
+			self::create_chunks();
+		}
+
 		if ( 'delay' === $action ) {
-			set_transient( self::SYNC_DELAY_TRANSIENT, '1', 3 * HOUR_IN_SECONDS );
+			set_transient( self::SYNC_DELAY_TRANSIENT, '1', HOUR_IN_SECONDS * 3 );
+		}
+
+		if ( 'delete' === $action ) {
+			self::delete_records( self::get_records() );
 		}
 	}
 
