@@ -497,7 +497,7 @@
 /* Extensions */
 
 .post-type-stream-notification .view-switch,
-body.wp_stream_restricted #wpbody {
+.stream_page_wp_stream_reports.wp_stream_restricted #wpbody {
 	display: none;
 }
 
