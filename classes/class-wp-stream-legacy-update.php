@@ -87,9 +87,9 @@ class WP_Stream_Legacy_Update {
 	 */
 	public static function show_sync_notice() {
 		if (
-			WP_Stream_Admin::is_stream_screen()
-			&&
 			! isset( $_GET['sync_action'] )
+			&&
+			WP_Stream_Admin::is_stream_screen()
 			&&
 			0 !== self::$record_count
 			&&
