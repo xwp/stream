@@ -89,6 +89,8 @@ class WP_Stream_Legacy_Update {
 		if (
 			! isset( $_GET['sync_action'] )
 			&&
+			WP_Stream::is_connected()
+			&&
 			WP_Stream_Admin::is_stream_screen()
 			&&
 			0 !== self::$record_count
