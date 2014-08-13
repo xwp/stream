@@ -29,7 +29,7 @@ class Test_WP_Stream extends WP_StreamTestCase {
 
 		$plugin = $this->plugin;
 		$this->assertInstanceOf( 'WP_Stream_DB', $plugin::$db );
-		$this->assertInstanceOf( 'WP_Stream_AI', $plugin::$api );
+		$this->assertInstanceOf( 'WP_Stream_API', $plugin::$api );
 	}
 
 	/**
