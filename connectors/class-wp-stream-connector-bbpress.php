@@ -62,19 +62,11 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 	 * @return bool
 	 */
 	public static function is_dependency_satisfied() {
-		if ( ! class_exists( 'bbPress' ) ) {
-			//WP_Stream::notice(
-			//	sprintf( __( '<strong>Stream bbPress Connector</strong> requires the <a href="%1$s" target="_blank">bbPress</a> plugin to be installed and activated.', 'stream' ), esc_url( 'https://wordpress.org/plugins/bbpress' ) ),
-			//	true
-			//);
-		} elseif ( version_compare( bbp_get_version(), self::PLUGIN_MIN_VERSION, '<' ) ) {
-			//WP_Stream::notice(
-			//	sprintf( __( 'Please <a href="%1$s" target="_blank">install bbPress</a> version %2$s or higher for the <strong>Stream bbPress Connector</strong> plugin to work properly.', 'stream' ), esc_url( 'https://wordpress.org/plugins/bbpress' ), self::PLUGIN_MIN_VERSION ),
-			//	true
-			//);
-		} else {
+		if ( class_exists( 'bbPress' ) && version_compare( bbp_get_version(), self::PLUGIN_MIN_VERSION, '>=' ) ) {
 			return true;
 		}
+
+		return false;
 	}
 
 	/**

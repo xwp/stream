@@ -50,13 +50,12 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 			}
 		}
 	}
-	$out = sprintf(
-		'<select class="%s">%s</select>',
-		$class,
-		implode( '', $options )
-	);
 
-	echo $out;
+	printf(
+		'<select class="%s">%s</select>',
+		esc_attr( $class ),
+		esc_attr( implode( '', $options ) )
+	);
 }
 
 function wp_stream_reports_filter_option( $args ) {

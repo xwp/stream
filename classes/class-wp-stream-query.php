@@ -139,12 +139,12 @@ class WP_Stream_Query {
 				$filters[]['term'][ $property ] = $args[ $property ];
 			}
 
-			if ( $args["{$property}__in"] ) {
-				$filters[]['term'][ $property ] = $args["{$property}__in"];
+			if ( $args[ "{$property}__in" ] ) {
+				$filters[]['term'][ $property ] = $args[ "{$property}__in" ];
 			}
 
-			if ( $args["{$property}__not_in"] ) {
-				$filters[]['not']['term'][ $property ] = $args["{$property}__in"];
+			if ( $args[ "{$property}__not_in" ] ) {
+				$filters[]['not']['term'][ $property ] = $args[ "{$property}__in" ];
 			}
 		}
 

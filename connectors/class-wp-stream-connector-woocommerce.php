@@ -9,6 +9,13 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	public static $name = 'woocommerce';
 
 	/**
+	 * Holds tracked plugin minimum version required
+	 *
+	 * @const string
+	 */
+	const PLUGIN_MIN_VERSION = '2.1.10';
+
+	/**
 	 * Actions registered for this context
 	 * @var array
 	 */
@@ -56,6 +63,21 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		add_action( 'wp_stream_comment_exclude_comment_types', array( __CLASS__, 'exclude_order_comment_types' ) );
 
 		self::get_woocommerce_settings_fields();
+	}
+
+	/**
+	 * Check if plugin dependencies are satisfied and add an admin notice if not
+	 *
+	 * @return bool
+	 */
+	public static function is_dependency_satisfied() {
+		global $woocommerce;
+
+		if ( class_exists( 'WooCommerce' ) && version_compare( $woocommerce->version, self::PLUGIN_MIN_VERSION, '>=' ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*jslint nomen: true */
-/*global jQuery, _, nv, d3, stream, streamReportsLocal, document, window */
+/*global jQuery, _, nv, d3, stream, streamReportsLocal, ajaxurl, document, window */
 (function (window, $, _, nv, d3, streamReportsLocal) {
 	'use strict';
 
@@ -199,7 +199,7 @@
 						chart_height: parent.$chartHeightOption.val(),
 					},
 					dataType: 'json',
-					success : function(data) {
+					success : function() {
 						location.reload(true);
 					}
 				});
@@ -250,14 +250,12 @@
 				}
 			});
 
-			this.$configureDiv.find( '.chart-dataset' ).on( 'change', function( e ) {
-				var dataset = e.val;
-
+			this.$configureDiv.find( '.chart-dataset' ).on( 'change', function() {
 				var selectors = parent.$configureDiv.find( '.chart-selector' );
 				selectors.find( 'option' ).removeAttr( 'disabled' );
 
 				var option = parent.$configureDiv.find('.chart-dataset :selected');
-				if( 'all' == $(option).val() ) {
+				if( 'all' === $(option).val() ) {
 					return;
 				}
 
@@ -265,7 +263,7 @@
 				var disabled_selectors = disable.split(',');
 
 				for( var i = 0; i < disabled_selectors.length; i++ ){
-					var option = selectors.find( 'option[value="' + disabled_selectors[i] + '"]');
+					option = selectors.find( 'option[value="' + disabled_selectors[i] + '"]');
 					option.attr('disabled', 'disabled');
 					if( option.is( ':selected' ) ) {
 						option.removeAttr( 'selected' );
@@ -298,21 +296,23 @@
 
 			// Configuration toggle
 			this.$configureBtn.on('click.streamReports', function () {
-				var $target = $(this), $title;
+				var $target = $(this);
 
 				var $curPostbox = $target.parents('.postbox');
 
 				var realTitle      = $curPostbox.find( '.chart-title' ).val();
 				var generatedTitle = $curPostbox.find( '.chart-generated-title' ).val();
 				var displayedTitle = realTitle;
-				if ( '' == displayedTitle ) {
+				if ( '' === displayedTitle ) {
 					displayedTitle = generatedTitle;
 				}
 
+				var $titleText, $inputBox;
+
 				// Remove event handler added by core and add it back when user click cancel or save
 				if ($target.text() === streamReportsLocal.configure) {
-					var $titleText = $curPostbox.find( '.hndle .title' );
-					var $inputBox  = $( '<input/>', {
+					$titleText = $curPostbox.find( '.hndle .title' );
+					$inputBox  = $( '<input/>', {
 						'type': 'text',
 						'class': 'title',
 						'value': realTitle,
@@ -331,13 +331,13 @@
 					// Switch configure button text
 					$target.text(streamReportsLocal.cancel);
 				} else {
-					var $inputBox  = $curPostbox.find( '.hndle .title' );
-					var $titleText = $( '<span/>', {
+					$inputBox  = $curPostbox.find( '.hndle .title' );
+					$titleText = $( '<span/>', {
 						'class': 'title',
 						'text': displayedTitle,
 					} );
 
-					if ( '' == $titleText.text() ) {
+					if ( '' === $titleText.text() ) {
 						$titleText.text( $inputBox.attr( 'placeholder' ) );
 					}
 
@@ -416,7 +416,7 @@
 						$cancelBtn.trigger('click');
 					});
 
-					if( data.success == true ){
+					if( data.success === true ){
 
 						$.ajax({
 							type: 'GET',
@@ -428,7 +428,7 @@
 							},
 							dataType: 'json',
 							success : stream.report.chart.loadSectionCallback( $postbox ),
-						})
+						});
 
 					}
 
@@ -585,9 +585,9 @@
 		},
 
 		loadSectionCallback: function( $section ) {
-			return function( data ) {
+			return function() {
 				stream.report.chart.loadSection( $section );
-			}
+			};
 		},
 
 		refreshSectionCallback: function( $section, $chart ) {
@@ -749,7 +749,7 @@
 			$('#chart_height_apply')
 		);
 
-		$('.stream_page_wp_stream_reports .postbox').each( function( index ){
+		$('.stream_page_wp_stream_reports .postbox').each( function(){
 			var id = $(this).find( '.section-id' ).val();
 			$(this).data('section-id', id );
 		} );
@@ -759,8 +759,7 @@
 			$('.columns-prefs input[type="radio"]')
 		);
 
-		$('.stream_page_wp_stream_reports .chart').each( function( index ){
-			var id = $(this).parents('.postbox').data('section-id');
+		$('.stream_page_wp_stream_reports .chart').each( function(){
 			stream.report.chart.loadSection( $(this).parents('.postbox') );
 		} );
 
