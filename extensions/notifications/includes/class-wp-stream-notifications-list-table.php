@@ -97,11 +97,11 @@ class WP_Stream_Notifications_List_Table {
 		if ( isset( $vars['orderby'] ) && 'occurrences' === $vars['orderby'] ) {
 			$vars['meta_query'] = array(
 				'relation' => 'OR',
-				array(
+				0 => array(
 					'key'     => 'occurrences',
 					'compare' => 'EXISTS',
 				),
-				array(
+				1 => array(
 					'key'     => 'occurrences',
 					'compare' => 'NOT EXISTS',
 				),
@@ -184,7 +184,7 @@ class WP_Stream_Notifications_List_Table {
 	 * @action load-edit.php
 	 */
 	public function actions() {
-		if ( ! isset( $_REQUEST['action'] ) || ! isset( $_REQUEST['post_type' ] ) || WP_Stream_Notifications_Post_Type::POSTTYPE !== wp_stream_filter_input( INPUT_GET, 'post_type' ) ) {
+		if ( ! isset( $_REQUEST['action'] ) || ! isset( $_REQUEST['post_type'] ) || WP_Stream_Notifications_Post_Type::POSTTYPE !== wp_stream_filter_input( INPUT_GET, 'post_type' ) ) {
 			return;
 		}
 

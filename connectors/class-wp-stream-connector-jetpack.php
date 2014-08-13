@@ -53,20 +53,11 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 * @return bool
 	 */
 	public static function is_dependency_satisfied() {
-		if ( ! class_exists( 'Jetpack' ) ) {
-			//WP_Stream::notice(
-			//	sprintf( __( '<strong>Stream Jetpack Connector</strong> requires the <a href="%1$s" target="_blank">Jetpack</a> plugin to be installed and activated.', 'stream-connector-jetpack' ), esc_url( 'http://wordpress.org/plugins/stream/' ) ),
-			//	true
-			//);
-		} elseif ( defined( 'PLUGIN_MIN_VERSION' ) && version_compare( PLUGIN_MIN_VERSION, self::PLUGIN_MIN_VERSION, '<' ) ) {
-			//WP_Stream::notice(
-			//	sprintf( __( 'Please <a href="%1$s" target="_blank">install Jetpack</a> version %2$s or higher for the <strong>Stream Jetpack Connector</strong> plugin to work properly.', 'stream-connector-jetpack' ), esc_url( 'http://wordpress.org/plugins/jetpack/' ), self::PLUGIN_MIN_VERSION ),
-			//	true
-			//);
-			//$meta = false;
-		} else {
+		if ( class_exists( 'Jetpack' ) && defined( 'JETPACK__VERSION' ) && version_compare( JETPACK__VERSION, self::PLUGIN_MIN_VERSION, '>=' ) ) {
 			return true;
 		}
+
+		return false;
 	}
 
 	/**

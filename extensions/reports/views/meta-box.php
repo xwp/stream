@@ -8,11 +8,11 @@
 			<input type="hidden" class="chart-title" value="<?php echo esc_attr( $args['title'] ); ?>">
 			<input type="hidden" class="chart-generated-title" value="<?php echo esc_attr( $args['generated_title'] ); ?>">
 
-			<?php wp_stream_reports_selector( $action_types, $args, "chart-option chart-action" ); ?>
+			<?php wp_stream_reports_selector( $action_types, $args, 'chart-option chart-action' ); ?>
 
 			<span class="grouping-separator"><?php esc_html_e( 'in', 'stream' ) ?></span>
 
-			<?php wp_stream_reports_selector( $data_types, $args, "chart-option chart-dataset" ); ?>
+			<?php wp_stream_reports_selector( $data_types, $args, 'chart-option chart-dataset' ); ?>
 
 			<span class="grouping-separator"><?php esc_html_e( 'by', 'stream' ) ?></span>
 

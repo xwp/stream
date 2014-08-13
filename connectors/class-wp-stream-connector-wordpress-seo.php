@@ -128,7 +128,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 					'page' => $record->context,
 				),
 				admin_url( 'admin.php' )
-			) . '#stream-highlight-' . $key;
+			) . '#stream-highlight-' . esc_attr( $key );
 		} elseif ( 'wpseo_files' === $record->context ) {
 			$links[ __( 'Edit', 'default' ) ] = add_query_arg(
 				array(

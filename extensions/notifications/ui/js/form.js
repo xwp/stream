@@ -77,7 +77,7 @@ jQuery(function($){
 				var $this = $(this),
 					elementArgs = jQuery.extend( {}, args ),
 					tORa = $this.closest('#stream-notifications-alerts, #stream-notifications-triggers').attr('id').replace('stream-notifications-', '');
-				;
+
 				elementArgs.width = parseInt( $this.css('width'), 10 ) + 30;
 				if ( $this.hasClass('ip') ) {
 					elementArgs.ajax = {
@@ -146,7 +146,7 @@ jQuery(function($){
 							id:   term,
 							text: term
 						};
-					}
+					};
 				} else if ( $this.hasClass('ajax') ) {
 					var type = '';
 					if ( ! ( type = $this.data( 'ajax-key' ) ) ) {
@@ -208,7 +208,7 @@ jQuery(function($){
 						}
 
 						return result;
-					}
+					};
 				}
 
 				$this.select2( elementArgs );
@@ -385,7 +385,7 @@ jQuery(function($){
 			e.preventDefault();
 			add_alert();
 			$('html, body').animate({
-				scrollTop: divAlerts.find(".alert").last().offset().top
+				scrollTop: divAlerts.find('.alert').last().offset().top
 			}, 400);
 		})
 
