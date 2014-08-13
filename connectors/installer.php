@@ -85,6 +85,19 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Wrapper method for calling get_plugins()
+	 *
+	 * @return array
+	 */
+	public static function get_plugins() {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		return get_plugins();
+	}
+
+	/**
 	 * Log plugin installations
 	 *
 	 * @action transition_post_status
@@ -152,11 +165,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 					$slugs = array( $upgrader->skin->plugin );
 				}
 
-				if ( ! function_exists( 'get_plugins' ) ) {
-					require_once ABSPATH . 'wp-admin/includes/plugin.php';
-				}
-
-				$plugins = get_plugins();
+				$plugins = self::get_plugins();
 
 				foreach ( $slugs as $slug ) {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
@@ -206,11 +215,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	public static function callback_activate_plugin( $slug, $network_wide ) {
-		if ( ! function_exists( 'get_plugins' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		$plugins      = get_plugins();
+		$plugins      = self::get_plugins();
 		$name         = $plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'stream' ) : null;
 
@@ -227,11 +232,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	public static function callback_deactivate_plugin( $slug, $network_wide ) {
-		if ( ! function_exists( 'get_plugins' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		$plugins      = get_plugins();
+		$plugins      = self::get_plugins();
 		$name         = $plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'stream' ) : null;
 
@@ -298,11 +299,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			return false;
 		}
 
-		if ( ! function_exists( 'get_plugins' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		$_plugins = get_plugins();
+		$_plugins = self::get_plugins();
 
 		foreach ( $plugins as $plugin ) {
 			$plugins_to_delete[ $plugin ] = $_plugins[ $plugin ];
