@@ -250,7 +250,7 @@
 				}
 			});
 
-			this.$configureDiv.find( '.chart-dataset' ).on( 'change', function( e ) {
+			this.$configureDiv.find( '.chart-dataset' ).on( 'change', function() {
 				var selectors = parent.$configureDiv.find( '.chart-selector' );
 				selectors.find( 'option' ).removeAttr( 'disabled' );
 
