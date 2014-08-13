@@ -201,7 +201,7 @@ class WP_Stream_Reports {
 		// JavaScript registration
 		wp_register_script(
 			'stream-reports-d3',
-			WP_STREAM_URL . 'ui/d3/d3.min.js',
+			WP_STREAM_REPORTS_URL . 'ui/lib/d3/d3.min.js',
 			array(),
 			'3.4.2',
 			true
@@ -209,7 +209,7 @@ class WP_Stream_Reports {
 
 		wp_register_script(
 			'stream-reports-nvd3',
-			WP_STREAM_URL . 'ui/nvd3/nv.d3.min.js',
+			WP_STREAM_REPORTS_URL . 'ui/lib/nvd3/nv.d3.min.js',
 			array( 'stream-reports-d3' ),
 			'1.1.15b',
 			true
@@ -225,7 +225,7 @@ class WP_Stream_Reports {
 		// CSS registration
 		wp_register_style(
 			'stream-reports-nvd3',
-			WP_STREAM_URL . 'ui/nvd3/nv.d3.min.css',
+			WP_STREAM_REPORTS_URL . 'ui/lib/nvd3/nv.d3.min.css',
 			array(),
 			WP_STREAM::VERSION,
 			'screen'

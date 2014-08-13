@@ -1,5 +1,4 @@
 ui/select2/*
 ui/timeago/*
 ui/timeago/locale/*
-ui/d3/*
-ui/nvd3/*
+extensions/*/ui/lib/*

@@ -712,9 +712,9 @@ class WP_Stream_Notifications_Post_Type {
 		if ( ( $meta = get_post_meta( $post->ID ) ) && isset( $meta['triggers'] ) ) {
 
 			$args['meta'] = array(
-				'triggers' => maybe_unserialize( $meta['triggers'][ 0 ] ),
-				'groups'   => maybe_unserialize( $meta['groups'][ 0 ] ),
-				'alerts'   => maybe_unserialize( $meta['alerts'][ 0 ] ),
+				'triggers' => maybe_unserialize( $meta['triggers'][0] ),
+				'groups'   => maybe_unserialize( $meta['groups'][0] ),
+				'alerts'   => maybe_unserialize( $meta['alerts'][0] ),
 			);
 		}
 

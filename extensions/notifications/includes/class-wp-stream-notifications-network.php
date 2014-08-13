@@ -81,7 +81,7 @@ class WP_Stream_Notifications_Network {
 	 * @return array
 	 */
 	public function site_rules( array $rules, array $args ) {
-		if ( ! is_multisite() || ! is_plugin_active_for_network( WP_STREAM_NOTIFICATIONS_PLUGIN ) ) {
+		if ( ! is_multisite() || ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 			return $rules;
 		}
 
