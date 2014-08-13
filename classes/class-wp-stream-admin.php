@@ -329,7 +329,7 @@ class WP_Stream_Admin {
 				'wp_stream',
 				array(
 					'i18n'            => array(
-						'confirm_start_sync'     => __( 'Please DO NOT exit the syncing process once it has started. This could take several minutes to complete.', 'stream' ),
+						'confirm_start_sync'     => __( "Please don't exit the syncing process once it has started. This could take several minutes to complete.", 'stream' ),
 						'confirm_sync_reminder'  => __( 'Your existing records will not appear in Stream until you have synced them to your account. We will remind you again in a few hours.', 'stream' ),
 						'confirm_delete_records' => __( 'Are you sure you want to delete all existing Stream records from the database without syncing? This cannot be undone.', 'stream' ),
 						'confirm_defaults'       => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
