@@ -125,25 +125,34 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function load() {
-		// Include all adapters
-		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-adapter.php';
-		$adapters = array( 'email', 'push' );
-		foreach ( $adapters as $adapter ) {
-			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/class-wp-stream-notifications-adapter-' . $adapter . '.php';
+		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
+			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		}
 
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-settings.php';
 		add_action( 'init', array( 'WP_Stream_Notifications_Settings', 'load' ), 9 );
 
+		if ( WP_Stream_API::is_restricted() ) {
+			add_action( 'in_admin_header', array( __CLASS__, 'in_admin_header' ) );
+			return;
+		}
+
+		// Include all adapters
+		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-adapter.php';
+		$adapters = array( 'email', 'push' );
+
+		foreach ( $adapters as $adapter ) {
+			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/class-wp-stream-notifications-adapter-' . $adapter . '.php';
+		}
+
 		// Load network class
 		if ( is_multisite() ) {
-
 			require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-network.php';
+
 			$this->network = new WP_Stream_Notifications_Network;
 
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-			if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			if ( WP_Stream_Network::is_network_activated() ) {
 				add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
 			}
 
@@ -151,13 +160,32 @@ class WP_Stream_Notifications {
 			add_filter( 'wp_stream_notifications_disallow_site_access', array( 'WP_Stream_Network', 'disable_admin_access' ) );
 		}
 
-		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
-			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
-		}
-
 		// Load Matcher
 		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-matcher.php';
 		$this->matcher = new WP_Stream_Notifications_Matcher();
+	}
+
+	public static function in_admin_header() {
+		global $typenow;
+
+		if ( WP_Stream_Notifications_Post_Type::POSTTYPE !== $typenow ) {
+			return;
+		}
+		?>
+		<div class="stream-example">
+			<div class="stream-example-modal">
+				<h1><i class="dashicons dashicons-admin-comments"></i> <?php _e( 'Stream Notifications', 'stream' ) ?></h1>
+				<p><?php _e( 'Get notified instantly when important changes are made on your site.', 'stream' ) ?></p>
+				<ul>
+					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Create notification rules quickly and easily', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Smart and powerful trigger matching', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Fully customized e-mail and SMS alerts', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Push alerts to your smartphone or tablet', 'stream' ) ?></li>
+				</ul>
+				<a href="<?php echo esc_url( WP_Stream_Admin::$account_url ) ?>#change-plan_<?php echo esc_html( WP_Stream::$api->site_uuid ) ?>" class="button button-primary button-large"><?php _e( 'Upgrade Plan', 'stream' ) ?></a>
+			</div>
+		</div>
+		<?php
 	}
 
 	/**
