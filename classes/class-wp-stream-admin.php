@@ -201,9 +201,7 @@ class WP_Stream_Admin {
 				$notice = esc_html__( 'All site settings have been successfully reset.', 'stream' );
 				break;
 			case 'connected':
-				if ( WP_Stream_Legacy_Update::show_sync_notice() ) {
-					WP_Stream_Legacy_Update::sync_notice();
-				} else {
+				if ( ! WP_Stream_Legacy_Update::show_sync_notice() ) {
 					$notice = sprintf(
 						'<strong>%s</strong></p><p>%s',
 						esc_html__( 'You have successfully connected to Stream!', 'stream' ),
