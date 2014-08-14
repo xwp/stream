@@ -166,8 +166,8 @@
 					<% if ( ['select'].indexOf( field.type ) != -1 ){ %>
 						<select name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat" data-ajax="<% ( field.ajax ) %>" <% if ( field.multiple ){ %>multiple="multiple"<% } %> <%- argsHTML %>>
 							<option></option>
-							<% if ( vars.fields[field] ) { %>
-								<% _.each( vars.fields[field], function( list, name ){ %>
+							<% if ( field.options ) { %>
+								<% _.each( field.options, function( list, name ){ %>
 								<option value="<%- name %>"><%- list %></option>
 								<% }); %>
 							<% } %>
