@@ -337,7 +337,7 @@ class WP_Stream_Admin {
 					'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 					'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
 					'current_query'  => json_encode( $_GET ),
-					'nonce'          => wp_create_nonce( 'wp_stream-' . get_current_blog_id() . get_current_user_id() ),
+					'nonce'          => wp_create_nonce( 'wp_stream-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
 				)
 			);
 		}
