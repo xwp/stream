@@ -86,7 +86,7 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notification_Adapter 
 			'message' => array(
 				'title' => __( 'Message', 'stream-notifications' ),
 				'type'  => 'textarea',
-				'hint'  => __( 'HTML and data tags are allowed.', 'stream-notifications' ),
+				'hint'  => __( 'Data tags are allowed. HTML is not allowed.', 'stream-notifications' ),
 			),
 		);
 	}
@@ -94,7 +94,7 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notification_Adapter 
 	public function send( $log ) {
 		$phone_number = $this->params['phone_number'];
 		$carrier = $this->replace( $this->params['carrier'], $log );
-		$message = $this->replace( $this->params['message'], $log );
+		$message = $this->replace( strip_tags( $this->params['message'] ), $log );
 		wp_mail( $phone_number . $carrier, '', $message );
 	}
 
