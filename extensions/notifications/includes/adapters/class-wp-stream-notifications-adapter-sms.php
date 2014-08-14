@@ -69,7 +69,7 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notifications_Adapter
 					'@utext.com'                => esc_html__( 'Unicel', 'stream-notifications' ),
 					'@email.uscc.net'           => esc_html__( 'US Cellular', 'stream-notifications' ),
 					'@uswestdatamail.com'       => esc_html__( 'US West', 'stream-notifications' ),
-					'@vtext.com'                => esc_html__( 'Verizon', 'stream-notifications' ),
+					'@vtext.com'                => esc_html__( 'Verizon or Straight Talk', 'stream-notifications' ),
 					'@vmobl.com'                => esc_html__( 'Virgin Mobile', 'stream-notifications' ),
 					'@vmobile.ca'               => esc_html__( 'Virgin Mobile Canada', 'stream-notifications' ),
 					'@sms.wcc.net'              => esc_html__( 'West Central Wireless', 'stream-notifications' ),
