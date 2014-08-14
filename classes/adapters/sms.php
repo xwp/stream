@@ -43,7 +43,7 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notification_Adapter 
 					'@mobile.dobson.net'        => esc_html__( 'Dobson', 'stream-notifications' ),
 					'@sms.edgewireless.com'     => esc_html__( 'Edge Wireless', 'stream-notifications' ),
 					'@fido.ca'                  => esc_html__( 'Fido', 'stream-notifications' ),
-					'@sms.goldentele.com'       => esc_html__( 'Golden Telecom', 'stream-notifications' ),\
+					'@sms.goldentele.com'       => esc_html__( 'Golden Telecom', 'stream-notifications' ),
 					'@messaging.sprintpcs.com'  => esc_html__( 'Helio', 'stream-notifications' ),
 					'@text.houstoncellular.net' => esc_html__( 'Houston Cellular', 'stream-notifications' ),
 					'@ideacellular.net'         => esc_html__( 'Idea Cellular', 'stream-notifications' ),
