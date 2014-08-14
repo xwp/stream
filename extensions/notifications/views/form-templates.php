@@ -71,8 +71,8 @@
 			<span class="circle"><%- vars.index + 1 %></span>
 			<select name="alerts[<%- vars.index %>][type]" class="alert-type" rel="<%- vars.index %>" placeholder="Choose Type">
 				<option></option>
-				<% _.each( vars.adapters, function( type, name ){ %>
-				<option value="<%- name %>"><%- type.title %></option>
+				<% _.each( vars.adapters, function( type, name ) { %>
+					<option value="<%- name %>"><%- type.title %></option>
 				<% }); %>
 			</select>
 			<a href="#" class="delete-alert alignright"><?php esc_html_e( 'Delete', 'stream' ) ?></a>
@@ -101,8 +101,8 @@
 					<% if ( ['select'].indexOf( field.type ) != -1 ){ %>
 						<select name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat" data-ajax="<% ( field.ajax ) %>" <% if ( field.multiple ){ %> multiple="multiple"<% } %> <%- argsHTML %>>
 							<option></option>
-							<% if ( vars.fields[field] ) { %>
-								<% _.each( vars.fields[field], function( list, name ){ %>
+							<% if ( field.options ) { %>
+								<% _.each( field.options, function( list, name ){ %>
 								<option value="<%- name %>"><%- list %></option>
 								<% }); %>
 							<% } %>
