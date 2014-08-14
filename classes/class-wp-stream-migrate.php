@@ -77,7 +77,7 @@ class WP_Stream_Migrate {
 	 * @return void
 	 */
 	public static function show_sync_notice() {
-		if ( ! isset( $_GET['sync_action'] ) && WP_Stream::is_connected() && WP_Stream_Admin::is_stream_screen() && 0 !== self::$record_count && false === get_transient( self::SYNC_DELAY_TRANSIENT ) ) {
+		if ( ! isset( $_GET['sync_action'] ) && WP_Stream::is_connected() && WP_Stream_Admin::is_stream_screen() && ! empty( self::$record_count ) && false === get_transient( self::SYNC_DELAY_TRANSIENT ) ) {
 			return true;
 		}
 
@@ -99,7 +99,7 @@ class WP_Stream_Migrate {
 			'<strong>%s</strong></p><p>%s</p><div id="stream-sync-progress"><span class="spinner"></span> <strong>%s</strong> <em></em> <button id="stream-sync-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-sync-actions"><button id="stream-start-sync" class="button button-primary">%s</button> <button id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
 			__( 'You have successfully connected to Stream!', 'stream' ),
 			__( 'We found existing Stream records in your database that need to be synced to your Stream account.', 'stream' ),
-			__( "We're syncing records to your account, please do not exit this page until the process has completed.", 'stream' ),
+			__( 'Please do not exit this page until the process has completed.', 'stream' ),
 			__( 'Close', 'stream' ),
 			__( 'Start Syncing Now', 'stream' ),
 			__( 'Remind Me Later', 'stream' ),
@@ -123,10 +123,14 @@ class WP_Stream_Migrate {
 			return;
 		}
 
+		set_time_limit( 0 ); // These could take a while
+
 		if ( 'sync' === $action ) {
 			self::migrate_notification_rules();
 
 			self::process_chunks( 'send' );
+
+			self::process_chunks( 'delete' );
 
 			wp_send_json_success( __( 'Sync complete!', 'stream' ) );
 		}
@@ -137,7 +141,7 @@ class WP_Stream_Migrate {
 			wp_send_json_success( __( "OK, we'll remind you again in a few hours.", 'stream' ) );
 		}
 
-		if ( 'delay' === $action ) {
+		if ( 'delete' === $action ) {
 			self::process_chunks( 'delete' );
 
 			wp_send_json_success( __( 'All existing records have been deleted from the database.', 'stream' ) );
@@ -213,6 +217,7 @@ class WP_Stream_Migrate {
 			delete_option( 'stream_notifications_' . absint( $rules[ $rule ]['ID'] ) );
 		}
 
+		// No need for chunks since there likely won't be more than a few dozen rules
 		self::delete_records( $rules );
 	}
 
@@ -229,21 +234,17 @@ class WP_Stream_Migrate {
 	public static function process_chunks( $action ) {
 		$max = ceil( self::$record_count / self::$limit );
 
-		if ( 'send' === $action ) {
-			for ( $i = 0; $i < $max; $i++ ) {
+		for ( $i = 0; $i < $max; $i++ ) {
+			// Send records in chunks
+			if ( 'send' === $action ) {
 				$records = self::get_records( absint( self::$limit * $i ), self::$limit );
-
-				// @TODO: Send each chunk to the API via bulk ingestion endpoint
-				// @TODO: Create AJAX callback that returns the success of each chunk to update the progress bar
-				// self::send_chunk( $records );
 
 				// WP_Stream::$api->new_records( $records );
 			}
-		}
 
-		if ( 'delete' === $action ) {
-			for ( $i = 0; $i < $max; $i++ ) {
-				$records = self::get_records( 0, self::$limit );
+			// Delete records in chunks
+			if ( 'delete' === $action ) {
+				$records = self::get_records( absint( self::$limit * $i ), self::$limit, false );
 
 				self::delete_records( $records );
 			}
@@ -255,11 +256,15 @@ class WP_Stream_Migrate {
 	/**
 	 * Get a chunk of records formatted for Stream API ingestion
 	 *
-	 * @param  int    $offset  The number of rows to skip
+	 * @param  int  $offset  The number of rows to skip, 0 by default
+	 * @param  int  $limit   The number of rows to query, 500 by default
+	 * @param  bool $format  Whether or not the output should be formatted for cloud ingestion, true by default
 	 *
-	 * @return array           An array of record arrays
+	 * @return array  An array of record arrays
 	 */
-	public static function get_records( $offset = 0, $limit = 0 ) {
+	public static function get_records( $offset = 0, $limit = 500, $format = true ) {
+		$limit = is_int( $limit ) ? $limit : self::$limit;
+
 		global $wpdb;
 
 		$records = $wpdb->get_results(
@@ -281,6 +286,10 @@ class WP_Stream_Migrate {
 			ARRAY_A
 		);
 
+		if ( empty( $records ) ) {
+			return;
+		}
+
 		foreach ( $records as $record => $data ) {
 			$stream_meta        = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->base_prefix}stream_meta WHERE record_id = %d", $records[ $record ]['ID'] ), ARRAY_A );
 			$stream_meta_output = array();
@@ -290,10 +299,13 @@ class WP_Stream_Migrate {
 			}
 
 			$records[ $record ]['stream_meta'] = $stream_meta_output;
-			$records[ $record ]['created']     = wp_stream_get_iso_8601_extended_date( strtotime( $records[ $record ]['created'] ) );
 
-			unset( $records[ $record ]['ID'] );
-			unset( $records[ $record ]['parent'] );
+			if ( $format ) {
+				$records[ $record ]['created'] = wp_stream_get_iso_8601_extended_date( strtotime( $records[ $record ]['created'] ) );
+
+				unset( $records[ $record ]['ID'] );
+				unset( $records[ $record ]['parent'] );
+			}
 		}
 
 		return $records;
@@ -315,6 +327,10 @@ class WP_Stream_Migrate {
 
 		// Delete legacy rows from each Stream table for these records only
 		foreach ( $records as $record ) {
+			if ( ! isset( $record['ID'] ) ) {
+				continue;
+			}
+
 			$wpdb->delete( $wpdb->base_prefix . 'stream', array( 'ID' => $record['ID'] ), array( '%d' ) );
 			$wpdb->delete( $wpdb->base_prefix . 'stream_context', array( 'record_id' => $record['ID'] ), array( '%d' ) );
 			$wpdb->delete( $wpdb->base_prefix . 'stream_meta', array( 'record_id' => $record['ID'] ), array( '%d' ) );

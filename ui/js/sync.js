@@ -38,7 +38,7 @@ jQuery( function( $ ) {
 			data: data,
 			dataType: 'json',
 			beforeSend: function() {
-				if ( 'sync' === sync_action ) {
+				if ( 'delay' !== sync_action ) {
 					$( '#stream-sync-progress strong' ).show();
 				}
 
