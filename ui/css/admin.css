@@ -599,21 +599,43 @@ body.folded .stream-example {
 
 #stream-sync-progress {
 	display: none;
+	height: 36px;
+	padding: 5px 0;
 }
 
-.stream-sync-actions .button {
+#stream-sync-progress .spinner {
+	display: block;
+	float: left;
+}
+
+#stream-sync-progress strong,
+#stream-sync-progress #stream-sync-actions-close {
+	display: none;
+}
+
+#stream-sync-progress strong {
+	padding-left: 5px;
+}
+
+#stream-sync-progress strong,
+#stream-sync-progress em {
+	line-height: 28px;
+	padding-right: 10px;
+}
+
+#stream-sync-actions .button {
 	display: inline-block;
 	vertical-align: bottom !important;
 	margin: 0 10px 5px 0 !important;
 }
 
-.stream-sync-actions a.delete {
+#stream-sync-actions a.delete {
 	display: inline-block;
 	margin: 10px 0 5px;
 	color: #a00;
 }
 
-.stream-sync-actions a.delete:hover {
+#stream-sync-actions a.delete:hover {
 	color: #f00;
 }
 

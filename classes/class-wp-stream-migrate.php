@@ -36,13 +36,6 @@ class WP_Stream_Migrate {
 	public static $limit = 500;
 
 	/**
-	 * Hold a temporary cache of records to preserve IDs which are required for deletion
-	 *
-	 * @var array
-	 */
-	public static $records_raw = array();
-
-	/**
 	 * Check that legacy data exists before doing anything
 	 *
 	 * @return void
@@ -74,7 +67,7 @@ class WP_Stream_Migrate {
 
 		add_action( 'admin_notices', array( __CLASS__, 'sync_notice' ) );
 
-		add_action( 'admin_init', array( __CLASS__, 'process_sync_actions' ) );
+		add_action( 'wp_ajax_wp_stream_sync_action', array( __CLASS__, 'process_sync_action' ) );
 	}
 
 	/**
@@ -102,68 +95,52 @@ class WP_Stream_Migrate {
 			return;
 		}
 
-		$nonce  = wp_create_nonce( 'stream_sync_action-' . get_current_blog_id() );
 		$notice = sprintf(
-			'<strong>%s</strong></p><p>%s</p><div id="stream-sync-progress">test</div><p class="stream-sync-actions"><a href="%s" id="stream-start-sync" class="button button-primary">%s</a> <a href="%s" id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="%s" id="stream-delete-records" class="delete">%s</a>',
-			esc_html__( 'You have successfully connected to Stream!', 'stream' ),
-			esc_html__( 'We found existing Stream records in your database that need to be synced to your Stream account.', 'stream' ),
-			add_query_arg(
-				array(
-					'page'        => WP_Stream_Admin::RECORDS_PAGE_SLUG,
-					'sync_action' => 'sync',
-					'nonce'       => $nonce,
-				),
-				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-			),
-			esc_html__( 'Start Syncing Now', 'stream' ),
-			add_query_arg(
-				array(
-					'page'        => WP_Stream_Admin::RECORDS_PAGE_SLUG,
-					'sync_action' => 'delay',
-					'nonce'       => $nonce,
-				),
-				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-			),
-			esc_html__( 'Remind Me Later', 'stream' ),
-			add_query_arg(
-				array(
-					'page'        => WP_Stream_Admin::RECORDS_PAGE_SLUG,
-					'sync_action' => 'delete',
-					'nonce'       => $nonce,
-				),
-				admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
-			),
-			esc_html__( 'Delete Existing Records', 'stream' )
+			'<strong>%s</strong></p><p>%s</p><div id="stream-sync-progress"><span class="spinner"></span> <strong>%s</strong> <em></em> <button id="stream-sync-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-sync-actions"><button id="stream-start-sync" class="button button-primary">%s</button> <button id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
+			__( 'You have successfully connected to Stream!', 'stream' ),
+			__( 'We found existing Stream records in your database that need to be synced to your Stream account.', 'stream' ),
+			__( "We're syncing records to your account, please do not exit this page until the process has completed.", 'stream' ),
+			__( 'Close', 'stream' ),
+			__( 'Start Syncing Now', 'stream' ),
+			__( 'Remind Me Later', 'stream' ),
+			__( 'Delete Existing Records', 'stream' )
 		);
 
 		WP_Stream::notice( $notice, false );
 	}
 
 	/**
-	 * Listens for sync action to process
+	 * Ajax callback for processing sync actions
 	 *
-	 * @action admin_init
+	 * @action wp_ajax_wp_stream_sync_action
 	 * @return void
 	 */
-	public static function process_sync_actions() {
-		$action = wp_stream_filter_input( INPUT_GET, 'sync_action' );
-		$nonce  = wp_stream_filter_input( INPUT_GET, 'nonce' );
+	public static function process_sync_action() {
+		$action = wp_stream_filter_input( INPUT_POST, 'sync_action' );
+		$nonce  = wp_stream_filter_input( INPUT_POST, 'nonce' );
 
-		if ( ! wp_verify_nonce( $nonce, 'stream_sync_action-' . get_current_blog_id() ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'wp_stream-' . get_current_blog_id() . get_current_user_id() ) ) {
 			return;
 		}
 
+		self::process_chunks( 'send' );
+
 		if ( 'sync' === $action ) {
-			self::create_chunks();
+			self::process_chunks( 'send' );
+			wp_send_json_success( __( 'Sync complete!', 'stream' ) );
 		}
 
 		if ( 'delay' === $action ) {
-			set_transient( self::SYNC_DELAY_TRANSIENT, '1', HOUR_IN_SECONDS * 3 );
+			set_transient( self::SYNC_DELAY_TRANSIENT, "Don't nag me, bro", HOUR_IN_SECONDS * 3 );
+			wp_send_json_success( __( "OK, we'll remind you again in a few hours.", 'stream' ) );
 		}
 
-		if ( 'delete' === $action ) {
-			self::delete_records( self::get_records() );
+		if ( 'delay' === $action ) {
+			self::process_chunks( 'delete' );
+			wp_send_json_success( __( 'All existing records have been deleted from the database.', 'stream' ) );
 		}
+
+		die();
 	}
 
 	/**
@@ -172,22 +149,31 @@ class WP_Stream_Migrate {
 	 *
 	 * Drops the legacy Stream data from the DB once the API has consumed everything
 	 *
+	 * @param  string $action  How the chunks should be processed
+	 *
 	 * @return void
 	 */
-	public static function create_chunks() {
-		$output = array();
-		$max    = ceil( self::$record_count / self::$limit );
+	public static function process_chunks( $action ) {
+		$max = ceil( self::$record_count / self::$limit );
 
-		// @TODO: Create AJAX callback that returns the success of each chunk to update the progress bar
+		if ( 'send' === $action ) {
+			for ( $i = 0; $i < $max; $i++ ) {
+				$records = self::get_records( absint( self::$limit * $i ), self::$limit );
 
-		for ( $i = 0; $i < $max; $i++ ) {
-			$records = self::get_records( absint( self::$limit * $i ) );
+				// @TODO: Send each chunk to the API via bulk ingestion endpoint
+				// @TODO: Create AJAX callback that returns the success of each chunk to update the progress bar
+				// self::send_chunk( $records );
 
-			// echo json_encode( $records, JSON_PRETTY_PRINT ); // @TODO Remove this, for testing only
+				// WP_Stream::$api->new_records( $records );
+			}
+		}
 
-			// self::send_chunk( $records );
+		if ( 'delete' === $action ) {
+			for ( $i = 0; $i < $max; $i++ ) {
+				$records = self::get_records( 0, self::$limit );
 
-			// self::delete_records( self::$records_raw );
+				self::delete_records( $records );
+			}
 		}
 
 		self::drop_legacy_data();
@@ -200,9 +186,7 @@ class WP_Stream_Migrate {
 	 *
 	 * @return array           An array of record arrays
 	 */
-	public static function get_records( $offset = 0 ) {
-		self::$records_raw = array();
-
+	public static function get_records( $offset = 0, $limit = 0 ) {
 		global $wpdb;
 
 		$records = $wpdb->get_results(
@@ -219,12 +203,10 @@ class WP_Stream_Migrate {
 				self::$site_id,
 				self::$blog_id,
 				$offset,
-				self::$limit
+				$limit
 			),
 			ARRAY_A
 		);
-
-		self::$records_raw = $records;
 
 		foreach ( $records as $record => $data ) {
 			$stream_meta        = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->base_prefix}stream_meta WHERE record_id = %d", $records[ $record ]['ID'] ), ARRAY_A );
@@ -242,18 +224,6 @@ class WP_Stream_Migrate {
 		}
 
 		return $records;
-	}
-
-	/**
-	 * Send a JSON chunk of records to the Stream API
-	 *
-	 * @param  array $records  An array of record arrays
-	 *
-	 * @return void
-	 */
-	public static function send_chunk( $records ) {
-		// @TODO: Send each chunk to the API via bulk ingestion endpoint
-		// @TODO: Create AJAX callback that returns the success of each chunk to update the progress bar
 	}
 
 	/**

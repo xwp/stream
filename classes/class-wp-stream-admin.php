@@ -327,8 +327,8 @@ class WP_Stream_Admin {
 				'wp_stream',
 				array(
 					'i18n'            => array(
-						'confirm_start_sync'     => __( "Please don't exit the syncing process once it has started. This could take several minutes to complete.", 'stream' ),
-						'confirm_sync_reminder'  => __( 'Your existing records will not appear in Stream until you have synced them to your account. We will remind you again in a few hours.', 'stream' ),
+						'confirm_start_sync'     => __( 'Please note: This could take several minutes to complete.', 'stream' ),
+						'confirm_sync_reminder'  => __( 'Please note: Your existing records will not appear in Stream until you have synced them to your account.', 'stream' ),
 						'confirm_delete_records' => __( 'Are you sure you want to delete all existing Stream records from the database without syncing? This cannot be undone.', 'stream' ),
 						'confirm_defaults'       => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
@@ -337,6 +337,7 @@ class WP_Stream_Admin {
 					'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 					'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
 					'current_query'  => json_encode( $_GET ),
+					'nonce'          => wp_create_nonce( 'wp_stream-' . get_current_blog_id() . get_current_user_id() ),
 				)
 			);
 		}
