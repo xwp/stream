@@ -13,7 +13,7 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notification_Adapter 
 				'type'     => 'text',
 				'multiple' => false,
 				'tags'     => true,
-				'hint'     => __( 'Alert any mobile phone number.', 'stream-notifications' ),
+				'hint'     => __( 'Enter mobile numbers without dashes (ex: 8885550000)', 'stream-notifications' ),
 			),
 			'carrier' => array(
 				'title'   => __( 'Carrier', 'stream-notifications' ),
