@@ -131,7 +131,7 @@ class WP_Stream {
 
 			add_action( 'plugins_loaded', array( 'WP_Stream_Pointers', 'load' ) );
 
-			add_action( 'plugins_loaded', array( 'WP_Stream_Legacy_Update', 'load' ) );
+			add_action( 'plugins_loaded', array( 'WP_Stream_Migrate', 'load' ) );
 		}
 	}
 

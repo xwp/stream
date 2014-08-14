@@ -1,6 +1,6 @@
 <?php
 
-class WP_Stream_Legacy_Update {
+class WP_Stream_Migrate {
 
 	/**
 	 * Sync delay transient name/identifier used when user wants to be reminded to sync later
