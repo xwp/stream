@@ -65,7 +65,7 @@ class WP_Stream_Migrate {
 			return;
 		}
 
-		add_action( 'admin_notices', array( __CLASS__, 'sync_notice' ) );
+		add_action( 'admin_notices', array( __CLASS__, 'sync_notice' ), 9 );
 
 		add_action( 'wp_ajax_wp_stream_sync_action', array( __CLASS__, 'process_sync_action' ) );
 	}
@@ -119,28 +119,101 @@ class WP_Stream_Migrate {
 		$action = wp_stream_filter_input( INPUT_POST, 'sync_action' );
 		$nonce  = wp_stream_filter_input( INPUT_POST, 'nonce' );
 
-		if ( ! wp_verify_nonce( $nonce, 'wp_stream-' . get_current_blog_id() . get_current_user_id() ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'wp_stream_sync-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ) ) {
 			return;
 		}
 
-		self::process_chunks( 'send' );
-
 		if ( 'sync' === $action ) {
+			self::migrate_notification_rules();
+
 			self::process_chunks( 'send' );
+
 			wp_send_json_success( __( 'Sync complete!', 'stream' ) );
 		}
 
 		if ( 'delay' === $action ) {
 			set_transient( self::SYNC_DELAY_TRANSIENT, "Don't nag me, bro", HOUR_IN_SECONDS * 3 );
+
 			wp_send_json_success( __( "OK, we'll remind you again in a few hours.", 'stream' ) );
 		}
 
 		if ( 'delay' === $action ) {
 			self::process_chunks( 'delete' );
+
 			wp_send_json_success( __( 'All existing records have been deleted from the database.', 'stream' ) );
 		}
 
 		die();
+	}
+
+	public static function migrate_notification_rules() {
+		global $wpdb;
+
+		$rules = $wpdb->get_results(
+			$wpdb->prepare( "
+				SELECT *
+				FROM {$wpdb->base_prefix}stream
+				WHERE site_id = %d
+					AND blog_id = %d
+					AND type = 'notification_rule'
+				ORDER BY created DESC
+				",
+				self::$site_id,
+				self::$blog_id
+			),
+			ARRAY_A
+		);
+
+		if ( empty( $rules ) ) {
+			return;
+		}
+
+		foreach ( $rules as $rule => $data ) {
+			$rule_post_args = array();
+			$rule_post_meta = array();
+
+			// Set args for the new rule post
+			$rule_post_args['post_title']     = $rules[ $rule ]['summary'];
+			$rule_post_args['post_type']      = WP_Stream_Notifications_Post_Type::POSTTYPE;
+			$rule_post_args['post_status']    = ( 'active' === $rules[ $rule ]['visibility'] ) ? 'publish' : 'draft';
+			$rule_post_args['post_date']      = get_date_from_gmt( $rules[ $rule ]['created'] );
+			$rule_post_args['post_date_gmt']  = $rules[ $rule ]['created']; // May not work, known bug in WP, see workaround below
+			$rule_post_args['comment_status'] = 'closed';
+			$rule_post_args['ping_status']    = 'closed';
+
+			// Get rule meta
+			$stream_rule_meta = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->base_prefix}stream_meta WHERE record_id = %d", $rules[ $rule ]['ID'] ), ARRAY_A );
+
+			// Prepare meta values for rule post meta
+			foreach ( $stream_rule_meta as $meta => $value ) {
+				$rule_post_meta[ $value['meta_key'] ] = maybe_unserialize( $value['meta_value'] );
+			}
+
+			// Get rule option, which is automatically unserialized
+			$stream_rule_option = get_option( 'stream_notifications_' . absint( $rules[ $rule ]['ID'] ) );
+
+			// Prepare option values for rule post meta
+			$rule_post_meta['triggers'] = isset( $stream_rule_option['triggers'] ) ? $stream_rule_option['triggers'] : array();
+			$rule_post_meta['groups']   = isset( $stream_rule_option['groups'] )   ? $stream_rule_option['groups']   : array();
+			$rule_post_meta['alerts']   = isset( $stream_rule_option['alerts'] )   ? $stream_rule_option['alerts']   : array();
+
+			// Insert rule as a new post
+			$post_id = wp_insert_post( $rule_post_args );
+
+			// Workaround to fix bug in wp_insert_post() not honoring the `post_date_gmt` arg
+			// See: https://core.trac.wordpress.org/ticket/15946
+			$wpdb->update( $wpdb->prefix . 'posts', array( 'post_date_gmt' => $rules[ $rule ]['created'] ), array( 'ID' => $post_id ), array( '%s' ), array( '%d' ) );
+
+			// Save the rule post meta
+			foreach ( $rule_post_meta as $key => $value ) {
+				update_post_meta( $post_id, $key, $value );
+			}
+
+			// Delete the old option
+			delete_option( 'stream_notifications_' . absint( $rules[ $rule ]['ID'] ) );
+		}
+
+		self::delete_records( $rules );
 	}
 
 	/**
@@ -242,9 +315,9 @@ class WP_Stream_Migrate {
 
 		// Delete legacy rows from each Stream table for these records only
 		foreach ( $records as $record ) {
-			$wpdb->delete( 'stream', array( 'ID' => $record['ID'] ), array( '%d' ) );
-			$wpdb->delete( 'stream_context', array( 'record_id' => $record['ID'] ), array( '%d' ) );
-			$wpdb->delete( 'stream_meta', array( 'record_id' => $record['ID'] ), array( '%d' ) );
+			$wpdb->delete( $wpdb->base_prefix . 'stream', array( 'ID' => $record['ID'] ), array( '%d' ) );
+			$wpdb->delete( $wpdb->base_prefix . 'stream_context', array( 'record_id' => $record['ID'] ), array( '%d' ) );
+			$wpdb->delete( $wpdb->base_prefix . 'stream_meta', array( 'record_id' => $record['ID'] ), array( '%d' ) );
 		}
 	}
 

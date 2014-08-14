@@ -1,5 +1,5 @@
 /* dashboard pagination */
-jQuery(function( $ ) {
+jQuery( function( $ ) {
 
 	/**
 	 * Dashboard Live Update
@@ -82,4 +82,5 @@ jQuery(function( $ ) {
 			list = widget.find('.inside ul');
 		});
 	});
+
 });

@@ -201,7 +201,7 @@ class WP_Stream_Admin {
 				$notice = esc_html__( 'All site settings have been successfully reset.', 'stream' );
 				break;
 			case 'connected':
-				if ( ! WP_Stream_Legacy_Update::show_sync_notice() ) {
+				if ( ! WP_Stream_Migrate::show_sync_notice() ) {
 					$notice = sprintf(
 						'<strong>%s</strong></p><p>%s',
 						esc_html__( 'You have successfully connected to Stream!', 'stream' ),
@@ -326,18 +326,30 @@ class WP_Stream_Admin {
 				'wp-stream-admin',
 				'wp_stream',
 				array(
-					'i18n'            => array(
-						'confirm_start_sync'     => __( 'Please note: This could take several minutes to complete.', 'stream' ),
-						'confirm_sync_reminder'  => __( 'Please note: Your existing records will not appear in Stream until you have synced them to your account.', 'stream' ),
-						'confirm_delete_records' => __( 'Are you sure you want to delete all existing Stream records from the database without syncing? This cannot be undone.', 'stream' ),
-						'confirm_defaults'       => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+					'i18n'           => array(
+						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
 					'gmt_offset'     => get_option( 'gmt_offset' ),
 					'current_screen' => $hook,
 					'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 					'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
 					'current_query'  => json_encode( $_GET ),
-					'nonce'          => wp_create_nonce( 'wp_stream-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
+				)
+			);
+		}
+
+		if ( WP_Stream_Migrate::show_sync_notice() ) {
+			wp_enqueue_script( 'wp-stream-sync', WP_STREAM_URL . 'ui/js/sync.js', array( 'jquery' ), WP_Stream::VERSION );
+			wp_localize_script(
+				'wp-stream-sync',
+				'wp_stream_sync',
+				array(
+					'i18n'  => array(
+						'confirm_start_sync'     => __( 'Please note: This could take several minutes to complete.', 'stream' ),
+						'confirm_sync_reminder'  => __( 'Please note: Your existing records will not appear in Stream until you have synced them to your account.', 'stream' ),
+						'confirm_delete_records' => __( 'Are you sure you want to delete all existing Stream records from the database without syncing? This cannot be undone.', 'stream' ),
+					),
+					'nonce' => wp_create_nonce( 'wp_stream_sync-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
 				)
 			);
 		}

@@ -4,7 +4,7 @@ class WP_Stream_Notifications_Post_Type {
 
 	private static $instance;
 
-	const POSTTYPE = 'stream-notification';
+	const POSTTYPE = 'stream_notification'; // Must be less than 20 chars
 
 	public static function get_instance() {
 		if ( ! self::$instance ) {
@@ -98,6 +98,7 @@ class WP_Stream_Notifications_Post_Type {
 	 */
 	public function enqueue_scripts( $hook ) {
 		global $typenow;
+
 		if ( ! in_array( $hook, array( 'post-new.php', 'post.php' ) ) || self::POSTTYPE !== $typenow ) {
 			return;
 		}

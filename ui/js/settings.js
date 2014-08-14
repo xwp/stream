@@ -1,5 +1,5 @@
 /* globals confirm, wp_stream, ajaxurl */
-jQuery(function( $ ) {
+jQuery( function( $ ) {
 
 	var initSettingsSelect2 = function() {
 		$( '.stream-exclude-list tr:not(.hidden) input[type=hidden].select2-select.with-source' ).each(function( k, el ) {
@@ -333,6 +333,7 @@ jQuery(function( $ ) {
 		syncFormAction( index );
 		return false;
 	});
+
 	$tabs.children().eq( currentHash ).trigger( 'click' );
 
 });
