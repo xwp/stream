@@ -39,6 +39,7 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notifications_Adapter
 					'@msg.clearnet.com'         => esc_html__( 'Clearnet', 'stream-notifications' ),
 					'@comcastpcs.textmsg.com'   => esc_html__( 'Comcast', 'stream-notifications' ),
 					'@corrwireless.net'         => esc_html__( 'Corr Wireless Communications', 'stream-notifications' ),
+					'@sms.mycricket.com'        => esc_html__( 'Cricket', 'stream-notifications' ),
 					'@mobile.dobson.net'        => esc_html__( 'Dobson', 'stream-notifications' ),
 					'@sms.edgewireless.com'     => esc_html__( 'Edge Wireless', 'stream-notifications' ),
 					'@fido.ca'                  => esc_html__( 'Fido', 'stream-notifications' ),
