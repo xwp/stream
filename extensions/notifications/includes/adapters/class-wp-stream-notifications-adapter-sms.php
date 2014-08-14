@@ -1,6 +1,6 @@
 <?php
 
-class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notification_Adapter {
+class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notifications_Adapter {
 
 	public static function register( $title = '' ) {
 		parent::register( __( 'SMS', 'stream-notifications' ) );
