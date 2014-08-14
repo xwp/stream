@@ -136,8 +136,8 @@
 			<span class="circle"><%- vars.index + 1 %></span>
 			<select name="alerts[<%- vars.index %>][type]" class="alert-type" rel="<%- vars.index %>" placeholder="Choose Type">
 				<option></option>
-				<% _.each( vars.adapters, function( type, name ){ %>
-				<option value="<%- name %>"><%- type.title %></option>
+				<% _.each( vars.adapters, function( type, name ) { %>
+					<option value="<%- name %>"><%- type.title %></option>
 				<% }); %>
 			</select>
 			<a href="#" class="delete-alert alignright"><?php esc_html_e( 'Delete', 'stream-notifications' ) ?></a>
