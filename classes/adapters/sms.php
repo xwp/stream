@@ -85,10 +85,9 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notification_Adapter 
 	}
 
 	public function send( $log ) {
-		$phone_number = $this->params['phone_number'];
-		$carrier = $this->replace( $this->params['carrier'], $log );
+		$email   = sanitize_email( $this->params['phone_number'] . $this->params['carrier'] );
 		$message = $this->replace( strip_tags( $this->params['message'] ), $log );
-		wp_mail( $phone_number . $carrier, '', $message );
+		wp_mail( $email, null, $message );
 	}
 
 }
