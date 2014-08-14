@@ -140,7 +140,7 @@ class WP_Stream_Notifications {
 
 		// Include all adapters
 		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-adapter.php';
-		$adapters = array( 'email', 'push' );
+		$adapters = array( 'email', 'push', 'sms' );
 
 		foreach ( $adapters as $adapter ) {
 			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/class-wp-stream-notifications-adapter-' . $adapter . '.php';
