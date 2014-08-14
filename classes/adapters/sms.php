@@ -18,7 +18,7 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notification_Adapter 
 			'carrier' => array(
 				'title'   => __( 'Carrier', 'stream-notifications' ),
 				'type'    => 'select',
-				'hint'    => __( 'Select your cell provider.', 'stream-notifications' ),
+				'hint'    => __( 'Select your mobile provider.', 'stream-notifications' ),
 				'ajax'    => false,
 				'options' => array(
 					'@sms.3rivers.net'          => esc_html__( '3 River Wireless', 'stream-notifications' ),
