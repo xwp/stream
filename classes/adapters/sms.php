@@ -8,8 +8,8 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notification_Adapter 
 
 	public static function fields() {
 		return array(
-			'phone_number' => array(
-				'title'    => __( 'Send to Phone Number', 'stream-notifications' ),
+			'mobile_number' => array(
+				'title'    => __( 'Send to Mobile Number', 'stream-notifications' ),
 				'type'     => 'text',
 				'multiple' => false,
 				'tags'     => true,
@@ -18,7 +18,7 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notification_Adapter 
 			'carrier' => array(
 				'title'   => __( 'Carrier', 'stream-notifications' ),
 				'type'    => 'select',
-				'hint'    => __( 'Select your mobile provider.', 'stream-notifications' ),
+				'hint'    => __( 'Select your mobile service provider.', 'stream-notifications' ),
 				'ajax'    => false,
 				'options' => array(
 					'@sms.3rivers.net'          => esc_html__( '3 River Wireless', 'stream-notifications' ),
@@ -85,7 +85,7 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notification_Adapter 
 	}
 
 	public function send( $log ) {
-		$number  = preg_replace( '/\D/', '', $this->params['phone_number'] ); // Removes all non-numeric characters
+		$number  = preg_replace( '/\D/', '', $this->params['mobile_number'] ); // Removes all non-numeric characters
 		$to      = sanitize_email( $number . $this->params['carrier'] );
 		$message = $this->replace( strip_tags( $this->params['message'] ), $log );
 
