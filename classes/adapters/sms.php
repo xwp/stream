@@ -8,14 +8,6 @@ class WP_Stream_Notification_Adapter_SMS extends WP_Stream_Notification_Adapter 
 
 	public static function fields() {
 		return array(
-			'users' => array(
-				'title'    => __( 'Send to Users', 'stream-notifications' ),
-				'type'     => 'hidden',
-				'multiple' => true,
-				'ajax'     => true,
-				'key'      => 'author',
-				'hint'     => __( 'Alert specific users via email.', 'stream-notifications' ),
-			),
 			'phone_number' => array(
 				'title'    => __( 'Send to Phone Number', 'stream-notifications' ),
 				'type'     => 'text',
