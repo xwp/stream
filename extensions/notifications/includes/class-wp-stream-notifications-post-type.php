@@ -35,8 +35,7 @@ class WP_Stream_Notifications_Post_Type {
 		add_action( 'save_post', array( $this, 'save' ), 10, 2 );
 
 		// Load list-table customizations
-		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-list-table.php';
-		WP_Stream_Notifications_List_Table::get_instance();
+		add_action( 'admin_init', array( $this, 'load_list_table' ) );
 	}
 
 	private function register_post_type() {
@@ -62,8 +61,8 @@ class WP_Stream_Notifications_Post_Type {
 				'show_in_menu'         => false,
 				'exclude_from_search'  => true,
 				'publicly_queryable'   => false,
-				'supports'             => array( 'title', 'author' ),
-				'register_meta_box_cb' => array( $this, 'metaboxes' ),
+				'supports'             => WP_Stream_API::is_restricted() ? false : array( 'title', 'author' ),
+				'register_meta_box_cb' => WP_Stream_API::is_restricted() ? null : array( $this, 'metaboxes' ),
 				'rewrite'              => false,
 			)
 		);
@@ -830,7 +829,9 @@ class WP_Stream_Notifications_Post_Type {
 	 * @return void
 	 */
 	public function load_list_table() {
-		if ( get_current_screen()->post_type !== WP_Stream_Notifications_Post_Type::POSTTYPE ) {
+		global $typenow;
+
+		if ( self::POSTTYPE !== $typenow || WP_Stream_API::is_restricted() ) {
 			return;
 		}
 
