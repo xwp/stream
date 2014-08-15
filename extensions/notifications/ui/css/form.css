@@ -12,6 +12,7 @@
 #stream-notifications-triggers .trigger-options,
 #stream-notifications-triggers .trigger-value {
 	float: left;
+	margin-right: 6px;
 }
 
 #stream-notifications-triggers .trigger .form-row {
