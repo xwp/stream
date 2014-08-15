@@ -73,7 +73,7 @@ class WP_Stream_API {
 	public static function is_restricted() {
 		$site = WP_Stream::$api->get_site();
 
-		return ( ! isset( $site->plan->type ) || 'free' === $site->plan->type );
+		return ( ! isset( $site->plan->type ) || 'free' === $site->plan->type || is_network_admin() );
 	}
 
 	/**

@@ -389,10 +389,10 @@ class WP_Stream_Admin {
 				} else {
 					$classes .= ' wp_stream_disconnected ';
 				}
+			}
 
-				if ( WP_Stream_API::is_restricted() ) {
-					$classes .= ' wp_stream_restricted ';
-				}
+			if ( WP_Stream_API::is_restricted() ) {
+				$classes .= ' wp_stream_restricted ';
 			}
 		}
 
