@@ -41,7 +41,7 @@ class WP_Stream_Migrate {
 	 * @return void
 	 */
 	public static function load() {
-		if ( ! is_multisite() && false === get_option( 'wp_stream_db' ) ) {
+		if ( false === get_site_option( 'wp_stream_db' ) ) {
 			return;
 		}
 
@@ -49,8 +49,7 @@ class WP_Stream_Migrate {
 
 		// If there are no legacy tables, then attempt to clear all legacy data and exit early
 		if ( null === $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->base_prefix}stream'" ) ) {
-			self::drop_legacy_data();
-
+			self::drop_legacy_data( false );
 			return;
 		}
 
@@ -61,7 +60,6 @@ class WP_Stream_Migrate {
 		// If there are no legacy records for this site/blog, then attempt to clear all legacy data and exit early
 		if ( 0 === self::$record_count ) {
 			self::drop_legacy_data();
-
 			return;
 		}
 
@@ -97,7 +95,7 @@ class WP_Stream_Migrate {
 
 		$notice = sprintf(
 			'<strong>%s</strong></p><p>%s</p><div id="stream-sync-progress"><span class="spinner"></span> <strong>%s</strong> <em></em> <button id="stream-sync-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-sync-actions"><button id="stream-start-sync" class="button button-primary">%s</button> <button id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
-			__( 'You have successfully connected to Stream!', 'stream' ),
+			__( 'Sync Stream Records', 'stream' ),
 			__( 'We found existing Stream records in your database that need to be synced to your Stream account.', 'stream' ),
 			__( 'Please do not exit this page until the process has completed.', 'stream' ),
 			__( 'Close', 'stream' ),
@@ -340,28 +338,32 @@ class WP_Stream_Migrate {
 	/**
 	 * Drop the legacy Stream tables and options from the database
 	 *
+	 * @param bool $drop_tables  If true, attempt to drop the legacy Stream tables
+	 *
 	 * @return void
 	 */
-	public static function drop_legacy_data() {
+	public static function drop_legacy_data( $drop_tables = true ) {
 		global $wpdb;
 
-		if ( is_multisite() ) {
-			$stream_site_blog_pairs = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->base_prefix}stream WHERE type = 'stream'", ARRAY_A );
-			$stream_site_blog_pairs = array_unique( array_map( 'self::implode_key_value', $stream_site_blog_pairs ) );
-			$wp_site_blog_pairs     = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->base_prefix}blogs", ARRAY_A );
-			$wp_site_blog_pairs     = array_unique( array_map( 'self::implode_key_value', $wp_site_blog_pairs ) );
-			$records_exist          = ( array_intersect( $stream_site_blog_pairs, $wp_site_blog_pairs ) ) ? true : false;
-		} else {
-			$records_exist = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}stream`" );
-		}
+		if ( $drop_tables ) {
+			if ( is_multisite() ) {
+				$stream_site_blog_pairs = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->base_prefix}stream WHERE type = 'stream'", ARRAY_A );
+				$stream_site_blog_pairs = array_unique( array_map( 'self::implode_key_value', $stream_site_blog_pairs ) );
+				$wp_site_blog_pairs     = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->base_prefix}blogs", ARRAY_A );
+				$wp_site_blog_pairs     = array_unique( array_map( 'self::implode_key_value', $wp_site_blog_pairs ) );
+				$records_exist          = ( array_intersect( $stream_site_blog_pairs, $wp_site_blog_pairs ) ) ? true : false;
+			} else {
+				$records_exist = $wpdb->get_var( "SELECT * FROM `{$wpdb->prefix}stream` LIMIT 1" );
+			}
 
-		// If records exist for other sites/blogs then don't proceed, unless those sites/blogs have been deleted
-		if ( $records_exist ) {
-			return;
-		}
+			// If records exist for other sites/blogs then don't proceed, unless those sites/blogs have been deleted
+			if ( $records_exist ) {
+				return;
+			}
 
-		// Drop legacy tables
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->base_prefix}stream, {$wpdb->base_prefix}stream_context, {$wpdb->base_prefix}stream_meta" );
+			// Drop legacy tables
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->base_prefix}stream, {$wpdb->base_prefix}stream_context, {$wpdb->base_prefix}stream_meta" );
+		}
 
 		// Delete legacy multisite options
 		if ( is_multisite() ) {
@@ -383,6 +385,9 @@ class WP_Stream_Migrate {
 		delete_site_option( 'wp_stream_db' );
 		delete_site_option( 'wp_stream_license' );
 		delete_site_option( 'wp_stream_licensee' );
+
+		// Delete legacy transients
+		delete_transient( 'wp_stream_extensions_' );
 
 		// Delete legacy cron event hooks
 		wp_clear_scheduled_hook( 'stream_auto_purge' ); // Deprecated hook
