@@ -535,6 +535,8 @@ class WP_Stream_Admin {
 	}
 
 	public static function remove_api_authentication() {
+		do_action( 'wp_stream_site_disconnected', get_current_blog_id(), WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
+
 		WP_Stream::$api->api_key   = false;
 		WP_Stream::$api->site_uuid = false;
 
