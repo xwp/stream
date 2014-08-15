@@ -509,7 +509,7 @@
 	background-repeat: no-repeat;
 }
 
-.post-type-stream-notification .stream-example {
+.post-type-stream_notification .stream-example {
 	background-image: url(../../extensions/notifications/ui/images/stream-notifications-example.jpg);
 }
 
