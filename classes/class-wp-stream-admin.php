@@ -521,7 +521,7 @@ class WP_Stream_Admin {
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
 
-		do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
+		do_action( 'wp_stream_site_connected', get_current_blog_id(), WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
 
 		$redirect_url = add_query_arg(
 			array(
