@@ -50,8 +50,8 @@ class WP_Stream_Network {
 		add_action( 'admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'network_admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'update_site_option_' . WP_Stream_Settings::NETWORK_OPTION_KEY, array( $this, 'updated_option_ttl_remove_records' ), 10, 3 );
-		add_action( 'wp_stream_site_connected', array( $this, 'site_connected' ), 10, 2 );
-		add_action( 'wp_stream_site_disconnected', array( $this, 'site_disconnected' ), 10, 2 );
+		add_action( 'wp_stream_site_connected', array( $this, 'site_connected' ), 10, 3 );
+		add_action( 'wp_stream_site_disconnected', array( $this, 'site_disconnected' ), 10, 3 );
 	}
 
 	function filters() {
@@ -556,7 +556,7 @@ class WP_Stream_Network {
 	 *
 	 * @return void
 	 */
-	function site_connected( $uuid, $api_key ) {
+	function site_connected( $uuid, $api_key, $blog_id ) {
 		$this->connected_sites[ $uuid ] = $api_key;
 		update_site_option( self::CONNECTED_SITES_OPTION_KEY, $this->connected_sites );
 	}
@@ -566,7 +566,7 @@ class WP_Stream_Network {
 	 *
 	 * @return void
 	 */
-	function site_disconnected( $uuid, $api_key ) {
+	function site_disconnected( $uuid, $api_key, $blog_id ) {
 		unset( $this->connected_sites[ $uuid ] );
 		update_site_option( self::CONNECTED_SITES_OPTION_KEY, $this->connected_sites );
 	}

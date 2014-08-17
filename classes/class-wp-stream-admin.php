@@ -475,7 +475,7 @@ class WP_Stream_Admin {
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
 
-		do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
+		do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid, get_current_blog_id );
 
 		$redirect_url = add_query_arg(
 			array(
@@ -492,7 +492,7 @@ class WP_Stream_Admin {
 		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
 		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
 
-		do_action( 'wp_stream_site_disconnected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
+		do_action( 'wp_stream_site_disconnected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid, get_current_blog_id() );
 
 		WP_Stream::$api->api_key   = false;
 		WP_Stream::$api->site_uuid = false;
