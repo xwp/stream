@@ -39,34 +39,6 @@ class WP_Stream_Notifications_Settings {
 							'choices' => WP_Stream_Settings::get_roles(),
 							'default' => array( 'administrator' ),
 						),
-						array(
-							'name'  => 'export_rules',
-							'title' => esc_html__( 'Export Rules', 'stream' ),
-							'type'  => 'link',
-							'href'  => add_query_arg(
-								array(
-									'action'                     => 'wp_stream_notifications_export',
-									'stream_notifications_nonce' => wp_create_nonce( 'stream-notifications-nonce' ),
-								),
-								admin_url( 'admin-ajax.php' )
-							),
-							'desc'    => esc_html__( 'Export all rules to a JSON file.', 'stream' ),
-							'default' => 0,
-						),
-						array(
-							'name'  => 'import_rules',
-							'title' => esc_html__( 'Import Rules', 'stream' ),
-							'type'  => 'file',
-							'href'  => add_query_arg(
-								array(
-									'action'                     => 'wp_stream_notifications_import',
-									'stream_notifications_nonce' => wp_create_nonce( 'stream-notifications-nonce' ),
-								),
-								admin_url( 'admin-ajax.php' )
-							),
-							'desc'    => esc_html__( 'Import rules from a JSON file.', 'stream' ),
-							'default' => 0,
-						),
 					),
 				),
 			);
