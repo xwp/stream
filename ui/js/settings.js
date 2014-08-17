@@ -279,6 +279,8 @@ jQuery( function( $ ) {
 		});
 	});
 
+	$( '.stream-exclude-list' ).closest( 'td' ).prev( 'th' ).hide();
+
 	function recalculate_rules_found() {
 		var $allRows     = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
 			$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' );
