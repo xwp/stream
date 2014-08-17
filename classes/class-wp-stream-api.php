@@ -196,8 +196,7 @@ class WP_Stream_API {
 			}
 		}
 
-		$url  = $this->request_url( sprintf( '/search', esc_attr( $this->site_uuid ) ) );
-
+		$url  = $this->request_url( '/search' );
 		$body = array();
 
 		if ( ! empty( $query ) ) {
