@@ -11,8 +11,8 @@
 		<div class="field type">
 			<select name="triggers[<%- vars.index %>][type]" class="trigger-type" rel="<%- vars.index %>" placeholder="Choose Rule">
 				<option></option>
-				<% _.each( vars.types, function( type, name ){ %>
-				<option value="<%- name %>"><%- type.title %></option>
+				<% _.each( vars.types, function( type, name ) { %>
+					<option value="<%- name %>"><%- type.title %></option>
 				<% }); %>
 			</select>
 		</div>
@@ -42,23 +42,23 @@
 <div class="trigger-options">
 	<div class="field operator">
 		<select name="triggers[<%- vars.index %>][operator]" class="trigger-operator">
-			<% _.each( vars.operators, function( list, name ){ %>
-			<option value="<%- name %>"><%- list %></option>
+			<% _.each( vars.operators, function( list, name ) { %>
+				<option value="<%- name %>"><%- list %></option>
 			<% }); %>
 		</select>
 	</div>
 	<div class="field value">
-		<% if ( ['select', 'ajax'].indexOf( vars.type ) != -1 ){ %>
-		<select name="triggers[<%- vars.index %>][value]<% if ( vars.multiple ){ %>[]<% } %>" class="trigger-value<% if ( vars.subtype ){ %> <%- vars.subtype %><% } %>" data-ajax="<% ( vars.ajax ) %>" <% if ( vars.multiple ){ %> multiple="multiple"<% } %>>
+		<% if ( ['select', 'ajax'].indexOf( vars.type ) != -1 ) { %>
+		<select name="triggers[<%- vars.index %>][value]<% if ( vars.multiple ) { %>[]<% } %>" class="trigger-value<% if ( vars.subtype ) { %> <%- vars.subtype %><% } %>" data-ajax="<% ( vars.ajax ) %>" <% if ( vars.multiple ) { %> multiple="multiple"<% } %>>
 			<option></option>
 			<% if ( vars.options ) { %>
-				<% _.each( vars.options, function( list, name ){ %>
-				<option value="<%- name %>"><%- list %></option>
+				<% _.each( vars.options, function( list, name ) { %>
+					<option value="<%- name %>"><%- list %></option>
 				<% }); %>
 			<% } %>
 		</select>
 		<% } else { %>
-		<input type="text" name="triggers[<%- vars.index %>][value]" class="trigger-value type-<%- vars.type %> <% if ( vars.tags ){ %>tags<% } %> <% if ( vars.ajax ){ %>ajax<% } %><% if ( vars.subtype ){ %> <%- vars.subtype %><% } %>">
+		<input type="text" name="triggers[<%- vars.index %>][value]" class="trigger-value type-<%- vars.type %> <% if ( vars.tags ) { %>tags<% } %> <% if ( vars.ajax ) { %>ajax<% } %><% if ( vars.subtype ) { %> <%- vars.subtype %><% } %>">
 		<% } // endif%>
 	</div>
 </div>
@@ -71,8 +71,8 @@
 			<span class="circle"><%- vars.index + 1 %></span>
 			<select name="alerts[<%- vars.index %>][type]" class="alert-type" rel="<%- vars.index %>" placeholder="Choose Type">
 				<option></option>
-				<% _.each( vars.adapters, function( type, name ){ %>
-				<option value="<%- name %>"><%- type.title %></option>
+				<% _.each( vars.adapters, function( type, name ) { %>
+					<option value="<%- name %>"><%- type.title %></option>
 				<% }); %>
 			</select>
 			<a href="#" class="delete-alert alignright"><?php esc_html_e( 'Delete', 'stream' ) ?></a>
@@ -98,12 +98,12 @@
 			</th>
 			<td>
 				<div class="field value">
-					<% if ( ['select'].indexOf( field.type ) != -1 ){ %>
-						<select name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat" data-ajax="<% ( field.ajax ) %>" <% if ( field.multiple ){ %> multiple="multiple"<% } %> <%- argsHTML %>>
+					<% if ( ['select'].indexOf( field.type ) != -1 ) { %>
+						<select name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat" data-ajax="<% ( field.ajax ) %>" <% if ( field.multiple ) { %> multiple="multiple"<% } %> <%- argsHTML %>>
 							<option></option>
-							<% if ( vars.fields[field] ) { %>
-								<% _.each( vars.fields[field], function( list, name ){ %>
-								<option value="<%- name %>"><%- list %></option>
+							<% if ( field.options ) { %>
+								<% _.each( field.options, function( list, name ) { %>
+									<option value="<%- name %>"><%- list %></option>
 								<% }); %>
 							<% } %>
 						</select>
@@ -112,7 +112,7 @@
 					<% } else if ( ['error'].indexOf( field.type ) != -1 ) { %>
 						<%= field.message %>
 					<% } else { %>
-						<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat <% if ( field.tags ){ %>tags<% } %> <% if ( field.ajax ){ %>ajax<% } %>" <% if ( field.ajax && field.key ){ %> data-ajax-key="<%- field.key %>"<% } %> <%- argsHTML %>>
+						<input type="text" name="alerts[<%- vars.index %>][<%- field_name %>]" class="alert-value widefat <% if ( field.tags ) { %>tags<% } %> <% if ( field.ajax ) { %>ajax<% } %>" <% if ( field.ajax && field.key ) { %> data-ajax-key="<%- field.key %>"<% } %> <%- argsHTML %>>
 					<% } %>
 					<% if ( field.after ) { %>
 						<%- field.after %>

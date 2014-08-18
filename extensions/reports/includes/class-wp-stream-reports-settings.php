@@ -41,6 +41,10 @@ class WP_Stream_Reports_Settings {
 		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
+		if ( WP_Stream_API::is_restricted() ) {
+			return;
+		}
+
 		// Add Reports settings tab to Stream settings
 		add_filter( 'wp_stream_options_fields', array( __CLASS__, '_register_settings' ) );
 	}
@@ -52,12 +56,12 @@ class WP_Stream_Reports_Settings {
 					'title'  => __( 'Reports', 'stream' ),
 					'fields' => array(
 						array(
-							'name'        => 'role_access',
-							'title'       => __( 'Role Access', 'stream' ),
-							'type'        => 'multi_checkbox',
-							'desc'        => __( 'Users from the selected roles above will have permission to view and edit Stream Reports. However, only site Administrators can access Stream Reports Settings.', 'stream' ),
-							'choices'     => WP_Stream_Settings::get_roles(),
-							'default'     => array( 'administrator' ),
+							'name'    => 'role_access',
+							'title'   => esc_html__( 'Role Access', 'stream' ),
+							'type'    => 'multi_checkbox',
+							'desc'    => esc_html__( 'Users from the selected roles above will have permission to view and edit Stream Reports. However, only site Administrators can access Stream Reports Settings.', 'stream' ),
+							'choices' => WP_Stream_Settings::get_roles(),
+							'default' => array( 'administrator' ),
 						),
 					),
 				),

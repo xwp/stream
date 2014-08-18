@@ -343,9 +343,13 @@ class WP_Stream_Admin {
 
 			if ( ! is_network_admin() ) {
 				if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
-					$classes .= sprintf( ' wp_stream_connected ' );
+					$classes .= ' wp_stream_connected ';
 				} else {
-					$classes .= sprintf( ' wp_stream_disconnected ' );
+					$classes .= ' wp_stream_disconnected ';
+				}
+
+				if ( WP_Stream_API::is_restricted() ) {
+					$classes .= ' wp_stream_restricted ';
 				}
 			}
 		}

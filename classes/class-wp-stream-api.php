@@ -66,6 +66,17 @@ class WP_Stream_API {
 	}
 
 	/**
+	 * Check if the current site is restricted
+	 *
+	 * @return bool
+	 */
+	public static function is_restricted() {
+		$site = WP_Stream::$api->get_site();
+
+		return ( ! isset( $site->plan->type ) || 'free' === $site->plan->type );
+	}
+
+	/**
 	 * Get the details for a specific site.
 	 *
 	 * @param array Returns specified fields only.
