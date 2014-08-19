@@ -156,7 +156,7 @@ class WP_Stream_Log {
 			// Schedule buffer clearance
 			if ( ! wp_next_scheduled( self::LOG_CLEAN_BUFFER_CRON_HOOK ) ) {
 				$buffer_schedule = apply_filters( 'wp_stream_buffer_schedule', 'hourly', $buffer );
-				wp_schedule_event( time() + HOUR_IN_SECONDS, $buffer_schedule, self::LOG_CLEAN_BUFFER_CRON_HOOK );
+				wp_schedule_event( time() + 30, $buffer_schedule, self::LOG_CLEAN_BUFFER_CRON_HOOK );
 			}
 		}
 
