@@ -243,7 +243,6 @@ class WP_Stream_Log {
 
 		// Schedule the record to be added immediately. This allows sending a new record to the API without effecting load time.
 		wp_schedule_single_event( time(), self::LOG_INSERT_RECORD_CRON_HOOK, array( $recordarr ) );
-		wp_cron();
 	}
 
 	/**
