@@ -183,6 +183,10 @@ class WP_Stream_Log {
 			$user_id = get_current_user_id();
 		}
 
+		if ( is_null( $object_id ) ) {
+			$object_id = 0;
+		}
+
 		$user  = new WP_User( $user_id );
 		$roles = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
 
