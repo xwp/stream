@@ -185,7 +185,7 @@ class WP_Stream_Feeds {
 	 */
 	public static function feed_template() {
 		$die_title   = esc_html__( 'Access Denied', 'stream' );
-		$die_message = '<h1>' . $die_title .'</h1><p>' . esc_html__( 'You don\'t have permission to view this feed, please contact your site Administrator.', 'stream' ) . '</p>';
+		$die_message = sprintf( '<h1>%s</h1><p>%s</p>', $die_title, esc_html__( "You don't have permission to view this feed, please contact your site Administrator.", 'stream' ) );
 
 		$args = array(
 			'meta_key'   => self::USER_FEED_OPTION_KEY,
