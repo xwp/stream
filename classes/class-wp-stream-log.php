@@ -13,16 +13,18 @@ class WP_Stream_Log {
 	const LOG_CLEAN_BUFFER_CRON_HOOK = 'wp_stream_clean_buffer_cron';
 
 	/**
-	 * Insert record schedule hook name
-	 */
-	const LOG_INSERT_RECORD_CRON_HOOK = 'wp_stream_insert_record_cron';
-
-	/**
 	 * Log handler
 	 *
 	 * @var \WP_Stream_Log
 	 */
 	public static $instance = null;
+
+	/**
+	 * Recording waiting to be logged
+	 *
+	 * @var array
+	 */
+	public static $buffer = null;
 
 	/**
 	 * Total number of records to log per API call
@@ -46,7 +48,6 @@ class WP_Stream_Log {
 		$log_handler = apply_filters( 'wp_stream_log_handler', __CLASS__ );
 
 		add_action( self::LOG_CLEAN_BUFFER_CRON_HOOK, array( __CLASS__, 'clean_buffer' ) );
-		add_action( self::LOG_INSERT_RECORD_CRON_HOOK, array( __CLASS__, 'insert_record' ) );
 
 		self::$instance = new $log_handler;
 	}
@@ -71,18 +72,22 @@ class WP_Stream_Log {
 	 * @return array
 	 */
 	public static function get_buffer() {
-		global $wpdb;
+		if ( ! self::$buffer ) {
+			global $wpdb;
 
-		$buffer = array();
+			$buffer = array();
 
-		$buffer_parts = $wpdb->get_col( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
-		$buffer_parts = array_map( 'maybe_unserialize', $buffer_parts );
+			$buffer_parts = $wpdb->get_col( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
+			$buffer_parts = array_map( 'maybe_unserialize', $buffer_parts );
 
-		foreach ( $buffer_parts as $buffer_part ) {
-			$buffer = array_merge( $buffer, $buffer_part );
+			foreach ( $buffer_parts as $buffer_part ) {
+				$buffer = array_merge( $buffer, $buffer_part );
+			}
+
+			self::$buffer = $buffer;
 		}
 
-		return $buffer;
+		return self::$buffer;
 	}
 
 	/**
@@ -92,6 +97,8 @@ class WP_Stream_Log {
 	 */
 	public static function save_buffer( $buffer ) {
 		global $wpdb;
+
+		self::$buffer = $buffer;
 
 		$current_buffer_parts = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(option_id) FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
 
@@ -130,37 +137,9 @@ class WP_Stream_Log {
 			save_buffer( $buffer );
 		}
 
-		if ( empty( $buffer ) ) {
-			wp_clear_scheduled_hook( self::LOG_CLEAN_BUFFER_CRON_HOOK );
+		if ( ! empty( $buffer ) ) {
+			wp_schedule_single_event( time(), self::LOG_CLEAN_BUFFER_CRON_HOOK );
 		}
-	}
-
-	/**
-	 * Sends an API call to log records
-	 *
-	 * Used to schedule records for creation in a non-blocking way via WP_Cron
-	 * Stores failed requests in a local database buffer and schedules a retry
-	 *
-	 * @param  array Record to be added
-	 * @return mixed Request data on success|false on failure
-	 */
-	public static function insert_record( $record ) {
-		$request = WP_Stream::$db->store( array( $record ) );
-
-		if ( ! $request || is_wp_error( $request ) ) {
-			$buffer   = self::get_buffer();
-			$buffer[] = $record;
-
-			WP_Stream_Log::save_buffer( $buffer );
-
-			// Schedule buffer clearance
-			if ( ! wp_next_scheduled( self::LOG_CLEAN_BUFFER_CRON_HOOK ) ) {
-				$buffer_schedule = apply_filters( 'wp_stream_buffer_schedule', 'hourly', $buffer );
-				wp_schedule_event( time() + 30, $buffer_schedule, self::LOG_CLEAN_BUFFER_CRON_HOOK );
-			}
-		}
-
-		return $request;
 	}
 
 	/**
@@ -241,8 +220,16 @@ class WP_Stream_Log {
 			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
-		// Schedule the record to be added immediately. This allows sending a new record to the API without effecting load time.
-		wp_schedule_single_event( time(), self::LOG_INSERT_RECORD_CRON_HOOK, array( $recordarr ) );
+		// Add the record to the request buffer.
+		$buffer   = self::get_buffer();
+		$buffer[] = $recordarr;
+
+		WP_Stream_Log::save_buffer( $buffer );
+
+		// Schedule buffer clearance as soon as possible
+		if ( ! wp_next_scheduled( self::LOG_CLEAN_BUFFER_CRON_HOOK ) ) {
+			wp_schedule_single_event( time(), self::LOG_CLEAN_BUFFER_CRON_HOOK );
+		}
 	}
 
 	/**
