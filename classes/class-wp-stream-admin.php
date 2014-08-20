@@ -497,7 +497,6 @@ class WP_Stream_Admin {
 		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
 
 		wp_clear_scheduled_hook( WP_Stream_Log::LOG_CLEAN_BUFFER_CRON_HOOK );
-		wp_clear_scheduled_hook( WP_Stream_Log::LOG_INSERT_RECORD_CRON_HOOK );
 	}
 
 	public static function get_testimonials() {
