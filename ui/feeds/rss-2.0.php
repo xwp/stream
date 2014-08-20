@@ -1,6 +1,5 @@
 <?php
 header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_option( 'blog_charset' ), true );
-
 printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_charset' ) ) );
 ?>
 
@@ -15,8 +14,8 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 	/**
 	 * Action fires during RSS xmls printing
 	 */
+	do_action( 'rss2_ns' )
 	?>
-	<?php do_action( 'rss2_ns' ) ?>
 >
 	<channel>
 		<title><?php bloginfo_rss( 'name' ) ?> - <?php esc_html_e( 'Stream Feed', 'stream' ) ?></title>
@@ -31,13 +30,12 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 		/**
 		 * Action fires during RSS head
 		 */
-		?>
-		<?php do_action( 'rss2_head' ) ?>
-		<?php foreach ( $records as $record ) : ?>
-			<?php
+		do_action( 'rss2_head' );
+
+		foreach ( $records as $record ) :
 			$record_link  = add_query_arg(
 				array(
-					'record__in' => (int) $record->ID,
+					'record__in' => $record->ID,
 				),
 				$records_admin_url
 			);
@@ -58,8 +56,8 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 				/**
 				 * Action fires during RSS item
 				 */
+				do_action( 'rss2_item' )
 				?>
-				<?php do_action( 'rss2_item' ) ?>
 			</item>
 		<?php endforeach; ?>
 	</channel>
