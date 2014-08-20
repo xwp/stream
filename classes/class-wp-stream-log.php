@@ -73,8 +73,6 @@ class WP_Stream_Log {
 	 */
 	public static function get_buffer() {
 		if ( ! self::$buffer ) {
-			global $wpdb;
-
 			$buffer        = array();
 			$buffer_chunks = array();
 
@@ -104,8 +102,6 @@ class WP_Stream_Log {
 	 * @return void
 	 */
 	public static function save_buffer( $buffer ) {
-		global $wpdb;
-
 		// Delete unnecessary buffer rows
 		$current_buffer_chunks = ceil( count( self::$buffer ) / self::$limit );
 		$new_buffer_chunks     = ceil( count( $buffer ) / self::$limit );
