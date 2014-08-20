@@ -100,9 +100,9 @@ class WP_Stream_Log {
 
 		self::$buffer = $buffer;
 
-		$current_buffer_parts = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(option_id) FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
+		$buffer_parts = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(option_id) FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
 
-		for ( $i = count( $buffer ); $i <= $current_buffer_parts; $i++ ) {
+		for ( $i = 0; $i <= $buffer_parts; $i++ ) {
 			delete_option( self::LOG_BUFFER_OPTION_KEY . '_' . $i );
 		}
 
@@ -127,17 +127,18 @@ class WP_Stream_Log {
 	 * @return void
 	 */
 	public static function clean_buffer() {
-		$buffer = self::get_buffer();
+		$buffer      = self::get_buffer();
+		$buffer_part = array_slice( $buffer, 0, self::$limit );
 
-		$request = WP_Stream::$db->store( $buffer[0] );
+		$request = WP_Stream::$db->store( $buffer_part );
 
 		// Clear buffer on success
 		if ( $request ) {
-			unset( $buffer[0] );
-			save_buffer( $buffer );
+			self::save_buffer( array_diff_assoc( $buffer, $buffer_part ) );
 		}
 
-		if ( ! empty( $buffer ) ) {
+		// If there's still records in the buffer, reschedule for the next page load
+		if ( ! empty( self::get_buffer() ) ) {
 			wp_schedule_single_event( time(), self::LOG_CLEAN_BUFFER_CRON_HOOK );
 		}
 	}
