@@ -107,7 +107,7 @@ class WP_Stream_Log {
 		}
 
 		if ( empty( $buffer ) ) {
-			return;
+			return false;
 		}
 
 		$grouped_records = array();
@@ -119,6 +119,8 @@ class WP_Stream_Log {
 		foreach ( $grouped_records as $key => $grouped_record ) {
 			update_option( self::LOG_BUFFER_OPTION_KEY . '_' . $key, $grouped_record );
 		}
+
+		return self::$buffer;
 	}
 
 	/**
@@ -134,11 +136,11 @@ class WP_Stream_Log {
 
 		// Clear buffer on success
 		if ( $request ) {
-			self::save_buffer( array_diff_assoc( $buffer, $buffer_chunk ) );
+			$buffer = self::save_buffer( array_diff_assoc( $buffer, $buffer_chunk ) );
 		}
 
 		// If there's still records in the buffer, reschedule for the next page load
-		if ( ! empty( self::get_buffer() ) ) {
+		if ( ! empty( $buffer ) ) {
 			wp_schedule_single_event( time(), self::LOG_CLEAN_BUFFER_CRON_HOOK );
 		}
 	}
@@ -225,7 +227,7 @@ class WP_Stream_Log {
 		$buffer   = self::get_buffer();
 		$buffer[] = $recordarr;
 
-		WP_Stream_Log::save_buffer( $buffer );
+		self::save_buffer( $buffer );
 
 		// Schedule buffer clearance as soon as possible
 		if ( ! wp_next_scheduled( self::LOG_CLEAN_BUFFER_CRON_HOOK ) ) {
