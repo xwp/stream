@@ -254,11 +254,11 @@ class WP_Stream_Feeds {
 		$format = wp_stream_filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR );
 
 		if ( 'atom' === $format ) {
-			require_once WP_STREAM_DIR . 'includes/feeds/atom.php';
+			require_once WP_STREAM_INC_DIR . 'feeds/atom.php';
 		} elseif ( 'json' === $format ) {
-			require_once WP_STREAM_DIR . 'includes/feeds/json.php';
+			require_once WP_STREAM_INC_DIR . 'feeds/json.php';
 		} else {
-			require_once WP_STREAM_DIR . 'includes/feeds/rss-2.0.php';
+			require_once WP_STREAM_INC_DIR . 'feeds/rss-2.0.php';
 		}
 
 		exit;
