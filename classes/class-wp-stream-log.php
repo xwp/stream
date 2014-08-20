@@ -75,10 +75,18 @@ class WP_Stream_Log {
 		if ( ! self::$buffer ) {
 			global $wpdb;
 
-			$buffer = array();
+			$buffer        = array();
+			$buffer_chunks = array();
 
-			$buffer_chunks = $wpdb->get_col( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
-			$buffer_chunks = array_map( 'maybe_unserialize', $buffer_chunks );
+			$i = 0;
+
+			do {
+				$buffer_chunk = get_option( sprintf( '%s_%d', self::LOG_BUFFER_OPTION_KEY, $i ) );
+				if ( $buffer_chunk ) {
+					$buffer_chunks[] = maybe_unserialize( $buffer_chunk );
+				}
+				$i++;
+			} while( false !== $buffer_chunk )
 
 			foreach ( $buffer_chunks as $buffer_chunk ) {
 				$buffer = array_merge( $buffer, $buffer_chunk );
