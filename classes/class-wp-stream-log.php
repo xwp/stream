@@ -98,13 +98,15 @@ class WP_Stream_Log {
 	public static function save_buffer( $buffer ) {
 		global $wpdb;
 
-		self::$buffer = $buffer;
+		// Delete unnecessary buffer rows
+		$current_buffer_chunks = ceil( count( self::$buffer ) / self::$limit );
+		$new_buffer_chunks     = ceil( count( $buffer ) / self::$limit );
 
-		$buffer_chunks = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(option_id) FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
-
-		for ( $i = 0; $i <= $buffer_chunks; $i++ ) {
+		for ( $i = $new_buffer_chunks; $i < $current_buffer_chunks; $i++ ) {
 			delete_option( self::LOG_BUFFER_OPTION_KEY . '_' . $i );
 		}
+
+		self::$buffer = $buffer;
 
 		if ( empty( $buffer ) ) {
 			return false;
@@ -120,7 +122,7 @@ class WP_Stream_Log {
 			update_option( self::LOG_BUFFER_OPTION_KEY . '_' . $key, $grouped_record );
 		}
 
-		return self::$buffer;
+		return $buffer;
 	}
 
 	/**
