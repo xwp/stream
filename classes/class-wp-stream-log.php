@@ -103,7 +103,7 @@ class WP_Stream_Log {
 		$new_buffer_chunks     = ceil( count( $buffer ) / self::$limit );
 
 		for ( $i = $new_buffer_chunks; $i < $current_buffer_chunks; $i++ ) {
-			delete_option( self::LOG_BUFFER_OPTION_KEY . '_' . $i );
+			delete_option( sprintf( '%s_%d', self::LOG_BUFFER_OPTION_KEY, $i ) );
 		}
 
 		self::$buffer = $buffer;
