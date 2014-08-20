@@ -613,46 +613,51 @@ class WP_Stream_Admin {
 		$page_title   = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
 		$date_format  = get_option( 'date_format' );
 		$site_details = WP_Stream::$api->get_site();
-
-		if ( ! $site_details ) {
-			?>
-			<div class="wrap">
-				<div class="updated error"><p><?php _e( 'Error retrieving account details.', 'stream' ); ?></p></div>
-			</div>
-			<?php
-			return;
-		}
-
-		$plan_label = __( 'Free', 'stream' );
-		if ( isset( $site_details->plan ) ) {
-			if ( 0 === strpos( $site_details->plan->type, 'pro' ) ) {
-				$plan_label = __( 'Pro', 'stream' );
-			} elseif ( 0 === strpos( $site_details->plan->type, 'standard' ) ) {
-				$plan_label = __( 'Standard', 'stream' );
-			}
-		}
-
-		if ( 'free' !== $site_details->plan->type ) {
-			$next_billing_label = sprintf(
-				_x( '$%1$s on %2$s', '1: Price, 2: Renewal date', 'stream' ),
-				$site_details->plan->amount,
-				date_i18n( $date_format, strtotime( $site_details->expiry->date ) )
-			);
-		}
-
-		$retention_label = '';
-		if ( 0 === $site_details->plan->retention ) {
-			$retention_label = __( 'Unlimited', 'stream' );
-		} else {
-			$retention_label = sprintf(
-				_n( '1 Day', '%s Days', $site_details->plan->retention, 'stream' ),
-				$site_details->plan->retention
-			);
-		}
 		?>
 		<div class="wrap">
 			<h2><?php echo esc_html( $page_title ) ?></h2>
 			<div class="postbox ">
+		<?php
+		if ( $site_details ) {
+			?>
+				<h3><?php esc_html_e( 'Error retrieving account details.' ); ?></h3>
+				<div class="plan-details">
+					<p><?php esc_html_e( 'If this problem persists, please try reconnecting to Stream.', 'stream' ); ?></p>
+					<p><img src="https://sandbox.wp-stream.com/wp-content/themes/wp-stream.com/_ui/images/404.gif" alt="<?php esc_html_e( 'Error retrieving account details.' ); ?>" /></p>
+				</div>
+				<div class="plan-actions submitbox">
+					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
+				</div>
+			<?php
+		} else {
+			$plan_label = __( 'Free', 'stream' );
+
+			if ( isset( $site_details->plan ) ) {
+				if ( 0 === strpos( $site_details->plan->type, 'pro' ) ) {
+					$plan_label = __( 'Pro', 'stream' );
+				} elseif ( 0 === strpos( $site_details->plan->type, 'standard' ) ) {
+					$plan_label = __( 'Standard', 'stream' );
+				}
+			}
+
+			if ( 'free' !== $site_details->plan->type ) {
+				$next_billing_label = sprintf(
+					_x( '$%1$s on %2$s', '1: Price, 2: Renewal date', 'stream' ),
+					$site_details->plan->amount,
+					date_i18n( $date_format, strtotime( $site_details->expiry->date ) )
+				);
+			}
+
+			$retention_label = '';
+			if ( 0 === $site_details->plan->retention ) {
+				$retention_label = __( 'Unlimited', 'stream' );
+			} else {
+				$retention_label = sprintf(
+					_n( '1 Day', '%s Days', $site_details->plan->retention, 'stream' ),
+					$site_details->plan->retention
+				);
+			}
+			?>
 				<h3><?php echo esc_html( $site_details->site_url ); ?></h3>
 				<div class="plan-details">
 					<table class="form-table">
@@ -688,6 +693,9 @@ class WP_Stream_Admin {
 					<a href="<?php echo esc_url( self::$account_url ); ?>#change-plan_<?php echo esc_html( WP_Stream::$api->site_uuid ); ?>" class="button button-primary button-large"><?php _e( 'Change Plan', 'stream' ); ?></a>
 					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
 				</div>
+			<?php
+			}
+		?>
 			</div>
 		</div>
 		<?php
