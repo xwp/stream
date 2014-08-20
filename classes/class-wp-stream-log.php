@@ -86,7 +86,7 @@ class WP_Stream_Log {
 					$buffer_chunks[] = maybe_unserialize( $buffer_chunk );
 				}
 				$i++;
-			} while( false !== $buffer_chunk )
+			} while( false !== $buffer_chunk );
 
 			foreach ( $buffer_chunks as $buffer_chunk ) {
 				$buffer = array_merge( $buffer, $buffer_chunk );
