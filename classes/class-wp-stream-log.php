@@ -77,11 +77,11 @@ class WP_Stream_Log {
 
 			$buffer = array();
 
-			$buffer_parts = $wpdb->get_col( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
-			$buffer_parts = array_map( 'maybe_unserialize', $buffer_parts );
+			$buffer_chunks = $wpdb->get_col( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
+			$buffer_chunks = array_map( 'maybe_unserialize', $buffer_chunks );
 
-			foreach ( $buffer_parts as $buffer_part ) {
-				$buffer = array_merge( $buffer, $buffer_part );
+			foreach ( $buffer_chunks as $buffer_chunk ) {
+				$buffer = array_merge( $buffer, $buffer_chunk );
 			}
 
 			self::$buffer = $buffer;
@@ -100,9 +100,9 @@ class WP_Stream_Log {
 
 		self::$buffer = $buffer;
 
-		$buffer_parts = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(option_id) FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
+		$buffer_chunks = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(option_id) FROM $wpdb->options WHERE option_name LIKE %s", self::LOG_BUFFER_OPTION_KEY . '_%' ) );
 
-		for ( $i = 0; $i <= $buffer_parts; $i++ ) {
+		for ( $i = 0; $i <= $buffer_chunks; $i++ ) {
 			delete_option( self::LOG_BUFFER_OPTION_KEY . '_' . $i );
 		}
 
@@ -127,14 +127,14 @@ class WP_Stream_Log {
 	 * @return void
 	 */
 	public static function clean_buffer() {
-		$buffer      = self::get_buffer();
-		$buffer_part = array_slice( $buffer, 0, self::$limit );
+		$buffer       = self::get_buffer();
+		$buffer_chunk = array_slice( $buffer, 0, self::$limit );
 
-		$request = WP_Stream::$db->store( $buffer_part );
+		$request = WP_Stream::$db->store( $buffer_chunk );
 
 		// Clear buffer on success
 		if ( $request ) {
-			self::save_buffer( array_diff_assoc( $buffer, $buffer_part ) );
+			self::save_buffer( array_diff_assoc( $buffer, $buffer_chunk ) );
 		}
 
 		// If there's still records in the buffer, reschedule for the next page load
