@@ -48,6 +48,6 @@ foreach ( $records as $record ) :
 			do_action( 'atom_item' )
 			?>
 		</entry>
-<?php endforeach; ?>
+	<?php endforeach; ?>
 </feed>
 <?php

@@ -59,6 +59,6 @@ foreach ( $records as $record ) :
 				do_action( 'rss2_item' )
 				?>
 			</item>
-<?php endforeach; ?>
+		<?php endforeach; ?>
 	</channel>
 </rss>
