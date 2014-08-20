@@ -153,7 +153,7 @@ class WP_Stream_Log {
 
 		// If there's still records in the buffer, reschedule for the next page load
 		if ( ! empty( $buffer ) ) {
-			wp_schedule_single_event( time(), self::LOG_CLEAN_BUFFER_CRON_HOOK );
+			wp_schedule_single_event( time() - 86400, self::LOG_CLEAN_BUFFER_CRON_HOOK );
 		}
 	}
 
@@ -243,7 +243,7 @@ class WP_Stream_Log {
 
 		// Schedule buffer clearance as soon as possible
 		if ( ! wp_next_scheduled( self::LOG_CLEAN_BUFFER_CRON_HOOK ) ) {
-			wp_schedule_single_event( time(), self::LOG_CLEAN_BUFFER_CRON_HOOK );
+			wp_schedule_single_event( time() - 86400, self::LOG_CLEAN_BUFFER_CRON_HOOK );
 		}
 	}
 
