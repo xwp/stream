@@ -186,10 +186,11 @@ class WP_Stream_Feeds {
 	public static function feed_template() {
 		$die_title   = esc_html__( 'Access Denied', 'stream' );
 		$die_message = sprintf( '<h1>%s</h1><p>%s</p>', $die_title, esc_html__( "You don't have permission to view this feed, please contact your site Administrator.", 'stream' ) );
+		$query_var   = is_network_admin() ? self::FEED_NETWORK_QUERY_VAR : self::FEED_QUERY_VAR;
 
 		$args = array(
 			'meta_key'   => self::USER_FEED_OPTION_KEY,
-			'meta_value' => $_GET[ self::FEED_QUERY_VAR ],
+			'meta_value' => $_GET[ $query_var ],
 			'number'     => 1,
 		);
 		$user = get_users( $args );
