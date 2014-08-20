@@ -127,7 +127,9 @@ class WP_Stream_Log {
 		}
 
 		foreach ( $grouped_records as $key => $grouped_record ) {
-			update_option( self::LOG_BUFFER_OPTION_KEY . '_' . $key, $grouped_record );
+			$option_key = sprintf( '%s_%d', self::LOG_BUFFER_OPTION_KEY, $key );
+
+			update_option( $option_key, $grouped_record );
 		}
 
 		return $buffer;
