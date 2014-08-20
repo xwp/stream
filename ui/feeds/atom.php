@@ -45,7 +45,7 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 			/**
 			 * Action fires during Atom item
 			 */
-			do_action( 'atom_item' );
+			do_action( 'atom_item' )
 			?>
 		</entry>
 	<?php endforeach; ?>
