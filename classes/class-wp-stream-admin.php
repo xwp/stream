@@ -506,7 +506,8 @@ class WP_Stream_Admin {
 			return $testimonials;
 		}
 
-		$request = wp_remote_request( esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/wp-content/themes/wp-stream.com/assets/testimonials.json' ) );
+		$url     = sprintf( '%s/wp-content/themes/wp-stream.com/assets/testimonials.json', untrailingslashit( self::PUBLIC_URL ) );
+		$request = wp_remote_request( esc_url_raw( $url ), array( 'sslverify' => false ) );
 
 		if ( ! is_wp_error( $request ) && $request['response']['code'] === 200 ) {
 			$testimonials = json_decode( $request['body'], true );
