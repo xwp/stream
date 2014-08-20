@@ -223,7 +223,7 @@ class WP_Stream_Feeds {
 			'date'             => wp_stream_filter_input( INPUT_GET, 'date' ),
 			'date_from'        => wp_stream_filter_input( INPUT_GET, 'date_from' ),
 			'date_to'          => wp_stream_filter_input( INPUT_GET, 'date_to' ),
-			'record__in'       => wp_stream_filter_input( INPUT_GET, 'record__in', FILTER_SANITIZE_NUMBER_INT ),
+			'record__in'       => wp_stream_filter_input( INPUT_GET, 'record__in' ),
 			'order'            => wp_stream_filter_input( INPUT_GET, 'order' ),
 			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby' ),
 			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields' ),
@@ -244,7 +244,7 @@ class WP_Stream_Feeds {
 		if ( isset( $records[0]->ID ) ) {
 			$latest_link = add_query_arg(
 				array(
-					'record__in' => (int) $records[0]->ID,
+					'record__in' => $records[0]->ID,
 				),
 				$records_admin_url
 			);
