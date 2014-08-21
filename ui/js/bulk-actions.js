@@ -18,7 +18,7 @@ jQuery(function( $ ) {
 	});
 
 	function warning_message( e ) {
-		if ( ! window.confirm( wp_stream_bulk_actions.i18n.confirm_bulk_action ) ) {
+		if ( ! window.confirm( wp_stream_bulk_actions.i18n.confirm_action ) ) {
 			e.preventDefault();
 		}
 	}
