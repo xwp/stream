@@ -3,7 +3,7 @@ jQuery(function( $ ) {
 
 	// List table actions, ignores filtering
 	$( '.actions :submit:not([name="filter_action"])' ).on( 'click', function( e ) {
-		if ( $( 'table.widefat tbody :checkbox:checked' ).length > wp_stream_bulk_actions.bulk_threshold ) {
+		if ( $( 'table.widefat tbody :checkbox:checked' ).length > wp_stream_bulk_actions.threshold ) {
 			warning_message( e );
 		}
 	});
@@ -12,7 +12,7 @@ jQuery(function( $ ) {
 	$( '#delete_all' ).on( 'click', function( e ) {
 		var trash_count = parseInt( $( 'ul.subsubsub li.trash .count' ).text().replace( /\D/g, '' ), 10 );
 
-		if ( trash_count > wp_stream_bulk_actions.bulk_threshold ) {
+		if ( trash_count > wp_stream_bulk_actions.threshold ) {
 			warning_message( e );
 		}
 	});
