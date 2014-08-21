@@ -318,16 +318,19 @@ class WP_Stream_Admin {
 			);
 		}
 
+		$bulk_threshold = apply_filters( 'wp_stream_bulk_threshold', 100 );
+
 		wp_enqueue_script( 'wp-stream-bulk-actions', WP_STREAM_URL . 'ui/js/bulk-actions.js', array( 'jquery' ), WP_Stream::VERSION );
 		wp_localize_script(
 			'wp-stream-bulk-actions',
 			'wp_stream_bulk_actions',
 			array(
 				'i18n' => array(
-					'confirm_bulk_action' => __( 'Are you sure you want to perform bulk actions on over 100 items? This process could take a while to complete.', 'stream' ),
+					'confirm_bulk_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), esc_attr( $bulk_threshold ) ),
 					'confirm_import'      => __( 'The Stream plugin must be deactivated before you can bulk import content into WordPress.', 'stream' ),
 				),
 				'plugins_screen_url' => WP_Stream_Network::is_network_activated() ? network_admin_url( 'plugins.php#stream' ) : self_admin_url( 'plugins.php#stream' ),
+				'bulk_threshold' => $bulk_threshold,
 			)
 		);
 	}
