@@ -12,7 +12,7 @@ jQuery(function( $ ) {
 
 	// Post type empty trash
 	$( '#delete_all' ).on( 'click', function( e ) {
-		var trash_count = Number( $( 'ul.subsubsub li.trash .count' ).text().replace( /\D/g, '' ) );
+		var trash_count = parseInt( $( 'ul.subsubsub li.trash .count' ).text().replace( /\D/g, '' ), 10 );
 
 		if ( trash_count > threshold ) {
 			warning_message( e );
