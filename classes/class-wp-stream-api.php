@@ -13,6 +13,11 @@ class WP_Stream_API {
 	const SITE_UUID_OPTION_KEY = 'wp_stream_site_uuid';
 
 	/**
+	 * Site Retricted key/identifier
+	 */
+	const RESTRICTED_OPTION_KEY = 'wp_stream_site_restricted';
+
+	/**
 	 * The site's API Key
 	 *
 	 * @var string
@@ -25,6 +30,13 @@ class WP_Stream_API {
 	 * @var string
 	 */
 	public $site_uuid = false;
+
+	/**
+	 * The site's restriction status
+	 *
+	 * @var bool
+	 */
+	public static $restricted = true;
 
 	/**
 	 * The API URL
@@ -61,19 +73,26 @@ class WP_Stream_API {
 	 * @return void
 	 */
 	public function __construct() {
-		$this->api_key   = get_option( self::API_KEY_OPTION_KEY, 0 );
-		$this->site_uuid = get_option( self::SITE_UUID_OPTION_KEY, 0 );
+		$this->api_key    = get_option( self::API_KEY_OPTION_KEY, 0 );
+		$this->site_uuid  = get_option( self::SITE_UUID_OPTION_KEY, 0 );
+		self::$restricted = get_option( self::RESTRICTED_OPTION_KEY, 1 );
 	}
 
 	/**
 	 * Check if the current site is restricted
 	 *
+	 * @param bool Force the API to send a request to check the site's plan type
+	 *
 	 * @return bool
 	 */
-	public static function is_restricted() {
-		$site = WP_Stream::$api->get_site();
+	public static function is_restricted( $force_check = false ) {
+		if ( $force_check ) {
+			$site = WP_Stream::$api->get_site();
 
-		return ( ! isset( $site->plan->type ) || 'free' === $site->plan->type );
+			self::$restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type );
+		}
+
+		return self::$restricted;
 	}
 
 	/**

@@ -470,14 +470,17 @@ class WP_Stream_Admin {
 		WP_Stream::$api->site_uuid = wp_stream_filter_input( INPUT_GET, 'site_uuid' );
 
 		// Verify the API Key and Site UUID
-		$site_details_request = WP_Stream::$api->get_site();
+		$site = WP_Stream::$api->get_site();
 
-		if ( ! isset( $site_details_request->site_id ) ) {
+		WP_Stream::$api->restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type );
+
+		if ( ! isset( $site->site_id ) ) {
 			wp_die( 'There was a problem verifying your site with Stream. Please try again later.', 'stream' );
 		}
 
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
+		update_option( WP_Stream_API::RESTRICTED_OPTION_KEY, WP_Stream::$api->restricted );
 
 		do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
 
