@@ -622,8 +622,7 @@ class WP_Stream_Admin {
 			?>
 				<h3><?php esc_html_e( 'Error retrieving account details.' ); ?></h3>
 				<div class="plan-details">
-					<p><?php esc_html_e( 'If this problem persists, please try reconnecting to Stream.', 'stream' ); ?></p>
-					<p><img src="https://sandbox.wp-stream.com/wp-content/themes/wp-stream.com/_ui/images/404.gif" alt="<?php esc_html_e( 'Error retrieving account details.' ); ?>" /></p>
+					<p><?php esc_html_e( 'If this problem persists, please disconnect from Stream and try connecting again.', 'stream' ); ?></p>
 				</div>
 				<div class="plan-actions submitbox">
 					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
