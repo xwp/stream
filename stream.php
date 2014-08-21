@@ -224,7 +224,7 @@ class WP_Stream {
 				);
 			}
 
-			if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) && current_user_can( 'manage_network_plugins' ) ) {
+			if ( is_a( $this->network, 'WP_Stream_Network' ) && $this->network->is_network_activated() && current_user_can( 'manage_network_plugins' ) ) {
 				$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), network_admin_url( 'plugins.php#stream' ) );
 			} elseif ( current_user_can( 'activate_plugins' ) ) {
 				$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
