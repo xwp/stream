@@ -317,6 +317,17 @@ class WP_Stream_Admin {
 				)
 			);
 		}
+
+		wp_enqueue_script( 'wp-stream-bulk-actions', WP_STREAM_URL . 'ui/js/bulk-actions.js', array( 'jquery' ), WP_Stream::VERSION );
+		wp_localize_script(
+			'wp-stream-bulk-actions',
+			'wp_stream_bulk_actions',
+			array(
+				'i18n' => array(
+					'confirm_bulk_action' => __( 'Are you sure you want to perform bulk actions on over 100 items? This could take a while.', 'stream' ),
+				),
+			)
+		);
 	}
 
 	/**
