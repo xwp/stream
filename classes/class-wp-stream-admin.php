@@ -618,7 +618,7 @@ class WP_Stream_Admin {
 			<h2><?php echo esc_html( $page_title ) ?></h2>
 			<div class="postbox ">
 		<?php
-		if ( $site_details ) {
+		if ( ! $site_details ) {
 			?>
 				<h3><?php esc_html_e( 'Error retrieving account details.' ); ?></h3>
 				<div class="plan-details">
