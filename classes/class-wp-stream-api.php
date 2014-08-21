@@ -102,12 +102,12 @@ class WP_Stream_API {
 	 *
 	 * @return bool
 	 */
-	public static function http_api_transport_priority( $transports, $args, $url ) {
+	public static function http_api_transport_priority( $request_order, $args, $url ) {
 		if ( isset( $args['blocking'] ) && false === $args['blocking'] ) {
-			$transports = array( 'streams', 'curl' );
+			$request_order = array( 'streams', 'curl' );
 		}
 
-		return $transports;
+		return $request_order;
 	}
 
 	/**
