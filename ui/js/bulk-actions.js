@@ -1,7 +1,7 @@
 /* globals wp_stream_bulk_actions */
 jQuery(function( $ ) {
 
-	var threshold = 1;
+	var threshold = 100;
 
 	// List table actions, ignores filtering
 	$( '.actions :submit:not([name="filter_action"])' ).on( 'click', function( e ) {
