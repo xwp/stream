@@ -5,7 +5,7 @@ jQuery(function( $ ) {
 
 	// List table actions, ignores filtering
 	$( '.actions :submit:not([name="filter_action"])' ).on( 'click', function( e ) {
-		if ( $( '.check-column :checkbox:checked' ).length > threshold ) {
+		if ( $( '.wp-list-table tbody :checkbox:checked' ).length > threshold ) {
 			warning_message( e );
 		}
 	});
