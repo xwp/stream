@@ -303,8 +303,6 @@ class WP_Stream_API {
 		$args['headers']['Accept-Version']      = $this->api_version;
 		$args['headers']['Content-Type']        = 'application/json';
 
-		$blocking = isset( $args['blocking'] ) ? $args['blocking'] : true;
-
 		add_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10, 3 );
 
 		$transient = 'wp_stream_' . md5( $url );
@@ -320,7 +318,8 @@ class WP_Stream_API {
 
 		remove_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10 );
 
-		if ( ! $blocking ) {
+		// Return early if the request is non blocking
+		if ( isset( $args['blocking'] ) && false === $args['blocking'] ) {
 			return true;
 		}
 
