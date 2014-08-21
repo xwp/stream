@@ -330,7 +330,7 @@ class WP_Stream_Admin {
 					'confirm_import'      => __( 'The Stream plugin must be deactivated before you can bulk import content into WordPress.', 'stream' ),
 				),
 				'plugins_screen_url' => WP_Stream_Network::is_network_activated() ? network_admin_url( 'plugins.php#stream' ) : self_admin_url( 'plugins.php#stream' ),
-				'bulk_threshold' => $bulk_threshold,
+				'bulk_threshold' => absint( $bulk_threshold ),
 			)
 		);
 	}
