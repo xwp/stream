@@ -318,7 +318,7 @@ class WP_Stream_API {
 			$request = wp_remote_request( $url, $args );
 		}
 
-		remove_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10, 3 );
+		remove_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10 );
 
 		if ( ! $blocking ) {
 			return true;
