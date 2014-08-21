@@ -96,15 +96,18 @@ class WP_Stream_API {
 	}
 
 	/**
-	 * Used to filter transport method checks and disable them
+	 * Used to prioritise the streams transport which support non-blocking
 	 *
-	 * @filter use_curl_transport
-	 * @filter use_streams_transport
+	 * @filter http_api_transports
 	 *
 	 * @return bool
 	 */
-	public static function disable_transport() {
-		return false;
+	public static function http_api_transport_priority( $transports, $args, $url ) {
+		if ( isset( $args['blocking'] ) && false === $args['blocking'] ) {
+			$transports = array( 'streams', 'curl' );
+		}
+
+		return $transports;
 	}
 
 	/**
@@ -302,10 +305,7 @@ class WP_Stream_API {
 
 		$blocking = isset( $args['blocking'] ) ? $args['blocking'] : true;
 
-		if ( function_exists( 'fsockopen' ) && ! $blocking ) {
-			add_filter( 'use_curl_transport', array( __CLASS__, 'disable_transport' ) );
-			add_filter( 'use_streams_transport', array( __CLASS__, 'disable_transport' ) );
-		}
+		add_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10, 3 );
 
 		$transient = 'wp_stream_' . md5( $url );
 
@@ -318,10 +318,7 @@ class WP_Stream_API {
 			$request = wp_remote_request( $url, $args );
 		}
 
-		if ( function_exists( 'fsockopen' ) && ! $blocking ) {
-			remove_filter( 'use_curl_transport', array( __CLASS__, 'disable_transport' ) );
-			remove_filter( 'use_streams_transport', array( __CLASS__, 'disable_transport' ) );
-		}
+		remove_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10, 3 );
 
 		if ( ! $blocking ) {
 			return true;
