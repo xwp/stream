@@ -3,7 +3,7 @@ jQuery(function( $ ) {
 
 	// List table actions, ignores filtering
 	$( '.actions :submit:not([name="filter_action"])' ).on( 'click', function( e ) {
-		if ( $( '.wp-list-table tbody :checkbox:checked' ).length > wp_stream_bulk_actions.bulk_threshold ) {
+		if ( $( 'table.widefat tbody :checkbox:checked' ).length > wp_stream_bulk_actions.bulk_threshold ) {
 			warning_message( e );
 		}
 	});
