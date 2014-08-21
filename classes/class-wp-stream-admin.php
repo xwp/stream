@@ -324,8 +324,10 @@ class WP_Stream_Admin {
 			'wp_stream_bulk_actions',
 			array(
 				'i18n' => array(
-					'confirm_bulk_action' => __( 'Are you sure you want to perform bulk actions on over 100 items? This could take a while.', 'stream' ),
+					'confirm_bulk_action' => __( 'Stream Warning: Are you sure you want to perform bulk actions on over 100 items? This could take a while.', 'stream' ),
+					'confirm_import'      => __( 'Please deactivate the Stream plugin before importing content in bulk.', 'stream' ),
 				),
+				'plugins_screen_url' => WP_Stream_Network::is_network_activated() ? network_admin_url( 'plugins.php#stream' ) : self_admin_url( 'plugins.php#stream' ),
 			)
 		);
 	}
