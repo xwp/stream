@@ -472,7 +472,7 @@ class WP_Stream_Admin {
 		// Verify the API Key and Site UUID
 		$site = WP_Stream::$api->get_site();
 
-		WP_Stream::$api->restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type );
+		WP_Stream::$api->restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type ) ? 1 : 0;
 
 		if ( ! isset( $site->site_id ) ) {
 			wp_die( 'There was a problem verifying your site with Stream. Please try again later.', 'stream' );
