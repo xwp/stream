@@ -318,7 +318,7 @@ class WP_Stream_Admin {
 			);
 		}
 
-		$bulk_threshold = apply_filters( 'wp_stream_bulk_action_threshold`', 100 );
+		$bulk_threshold = apply_filters( 'wp_stream_bulk_actions_threshold`', 100 );
 
 		wp_enqueue_script( 'wp-stream-bulk-actions', WP_STREAM_URL . 'ui/js/bulk-actions.js', array( 'jquery' ), WP_Stream::VERSION );
 		wp_localize_script(
