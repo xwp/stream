@@ -1,4 +1,4 @@
-/* globals ajaxurl, wp_stream_bulk_actions */
+/* globals wp_stream_bulk_actions */
 jQuery(function( $ ) {
 
 	var threshold = 100;
