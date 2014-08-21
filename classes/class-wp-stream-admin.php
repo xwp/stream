@@ -306,7 +306,7 @@ class WP_Stream_Admin {
 				'wp-stream-admin',
 				'wp_stream',
 				array(
-					'i18n'            => array(
+					'i18n'           => array(
 						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
 					'gmt_offset'     => get_option( 'gmt_offset' ),
@@ -325,12 +325,12 @@ class WP_Stream_Admin {
 			'wp-stream-bulk-actions',
 			'wp_stream_bulk_actions',
 			array(
-				'i18n' => array(
+				'i18n'               => array(
 					'confirm_bulk_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), esc_attr( $bulk_threshold ) ),
 					'confirm_import'      => __( 'The Stream plugin must be deactivated before you can bulk import content into WordPress.', 'stream' ),
 				),
 				'plugins_screen_url' => WP_Stream_Network::is_network_activated() ? network_admin_url( 'plugins.php#stream' ) : self_admin_url( 'plugins.php#stream' ),
-				'bulk_threshold' => absint( $bulk_threshold ),
+				'bulk_threshold'     => absint( $bulk_threshold ),
 			)
 		);
 	}
