@@ -77,6 +77,18 @@ class WP_Stream_API {
 	}
 
 	/**
+	 * Used to filter transport method checks and disable them
+	 *
+	 * @filter use_curl_transport
+	 * @filter use_streams_transport
+	 *
+	 * @return bool
+	 */
+	public static function disable_transport() {
+		return false;
+	}
+
+	/**
 	 * Get the details for a specific site.
 	 *
 	 * @param array Returns specified fields only.
@@ -165,7 +177,7 @@ class WP_Stream_API {
 	 * @param array Record data.
 	 * @param array Returns specified fields only.
 	 *
-	 * @return mixed
+	 * @return void
 	 */
 	public function new_records( $records, $fields = array() ) {
 		if ( ! $this->site_uuid ) {
@@ -179,9 +191,9 @@ class WP_Stream_API {
 		}
 
 		$url  = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $args );
-		$args = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ) );
+		$args = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ), 'blocking' => false );
 
-		return $this->remote_request( $url, $args );
+		$this->remote_request( $url, $args );
 	}
 
 	/**
@@ -269,6 +281,13 @@ class WP_Stream_API {
 		$args['headers']['Accept-Version']      = $this->api_version;
 		$args['headers']['Content-Type']        = 'application/json';
 
+		$blocking = isset( $args['blocking'] ) ? $args['blocking'] : true;
+
+		if ( function_exists( 'fsockopen' ) && ! $blocking ) {
+			add_filter( 'use_curl_transport', array( __CLASS__, 'disable_transport' ) );
+			add_filter( 'use_streams_transport', array( __CLASS__, 'disable_transport' ) );
+		}
+
 		$transient = 'wp_stream_' . md5( $url );
 
 		if ( 'GET' === $args['method'] && $allow_cache ) {
@@ -278,6 +297,15 @@ class WP_Stream_API {
 			}
 		} else {
 			$request = wp_remote_request( $url, $args );
+		}
+
+		if ( function_exists( 'fsockopen' ) && ! $blocking ) {
+			remove_filter( 'use_curl_transport', array( __CLASS__, 'disable_transport' ) );
+			remove_filter( 'use_streams_transport', array( __CLASS__, 'disable_transport' ) );
+		}
+
+		if ( ! $blocking ) {
+			return true;
 		}
 
 		if ( ! is_wp_error( $request ) ) {

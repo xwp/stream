@@ -10,11 +10,9 @@ class WP_Stream_DB {
 	public $query_meta = false;
 
 	/**
-	 * Store a record
+	 * Store records
 	 *
-	 * Inserts/Updates (based on ID existence) a single record in DB
-	 *
-	 * @param  array Record data
+	 * @param  array Records
 	 *
 	 * @return mixed True if updated, false|WP_Error if not
 	 */

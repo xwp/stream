@@ -3,35 +3,11 @@
 class WP_Stream_Log {
 
 	/**
-	 * Log buffer key/identifier
-	 */
-	const LOG_BUFFER_OPTION_KEY = 'wp_stream_log_buffer';
-
-	/**
-	 * Buffer schedule hook name
-	 */
-	const LOG_CLEAN_BUFFER_CRON_HOOK = 'wp_stream_clean_buffer_cron';
-
-	/**
 	 * Log handler
 	 *
 	 * @var \WP_Stream_Log
 	 */
 	public static $instance = null;
-
-	/**
-	 * Recording waiting to be logged
-	 *
-	 * @var array
-	 */
-	public static $buffer = null;
-
-	/**
-	 * Total number of records to log per API call
-	 *
-	 * @var int
-	 */
-	public static $limit = 500;
 
 	/**
 	 * Load log handler class, filterable by extensions
@@ -46,8 +22,6 @@ class WP_Stream_Log {
 		 * @return string  New Class for log handling
 		 */
 		$log_handler = apply_filters( 'wp_stream_log_handler', __CLASS__ );
-
-		add_action( self::LOG_CLEAN_BUFFER_CRON_HOOK, array( __CLASS__, 'clean_buffer' ) );
 
 		self::$instance = new $log_handler;
 	}
@@ -64,93 +38,6 @@ class WP_Stream_Log {
 		}
 
 		return self::$instance;
-	}
-
-	/**
-	 * Retrieve records waiting to be logged from the local database
-	 *
-	 * @return array
-	 */
-	public static function get_buffer() {
-		if ( ! self::$buffer ) {
-			$buffer        = array();
-			$buffer_chunks = array();
-
-			$i = 0;
-
-			do {
-				$buffer_chunk = get_option( sprintf( '%s_%d', self::LOG_BUFFER_OPTION_KEY, $i ) );
-				if ( $buffer_chunk ) {
-					$buffer_chunks[] = maybe_unserialize( $buffer_chunk );
-				}
-				$i++;
-			} while ( false !== $buffer_chunk );
-
-			foreach ( $buffer_chunks as $buffer_chunk ) {
-				$buffer = array_merge( $buffer, $buffer_chunk );
-			}
-
-			self::$buffer = $buffer;
-		}
-
-		return self::$buffer;
-	}
-
-	/**
-	 * Save any records waiting to be logged in the local database
-	 *
-	 * @return void
-	 */
-	public static function save_buffer( $buffer ) {
-		// Delete unnecessary buffer rows
-		$current_buffer_chunks = ceil( count( self::$buffer ) / self::$limit );
-		$new_buffer_chunks     = ceil( count( $buffer ) / self::$limit );
-
-		for ( $i = $new_buffer_chunks; $i < $current_buffer_chunks; $i++ ) {
-			delete_option( sprintf( '%s_%d', self::LOG_BUFFER_OPTION_KEY, $i ) );
-		}
-
-		self::$buffer = $buffer;
-
-		if ( empty( $buffer ) ) {
-			return false;
-		}
-
-		$grouped_records = array();
-
-		for ( $i = 0; $i < count( $buffer ); $i += self::$limit ) {
-			$grouped_records[] = array_slice( $buffer, $i, self::$limit );
-		}
-
-		foreach ( $grouped_records as $key => $grouped_record ) {
-			$option_key = sprintf( '%s_%d', self::LOG_BUFFER_OPTION_KEY, $key );
-
-			update_option( $option_key, $grouped_record );
-		}
-
-		return $buffer;
-	}
-
-	/**
-	 * Gets records stored in the buffer and attempts to bulk send them to the API
-	 *
-	 * @return void
-	 */
-	public static function clean_buffer() {
-		$buffer       = self::get_buffer();
-		$buffer_chunk = array_slice( $buffer, 0, self::$limit );
-
-		$request = WP_Stream::$db->store( $buffer_chunk );
-
-		// Clear buffer on success
-		if ( $request ) {
-			$buffer = self::save_buffer( array_diff_assoc( $buffer, $buffer_chunk ) );
-		}
-
-		// If there's still records in the buffer, reschedule for the next page load
-		if ( ! empty( $buffer ) ) {
-			wp_schedule_single_event( 1, self::LOG_CLEAN_BUFFER_CRON_HOOK );
-		}
 	}
 
 	/**
@@ -231,16 +118,7 @@ class WP_Stream_Log {
 			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
-		// Add the record to the request buffer.
-		$buffer   = self::get_buffer();
-		$buffer[] = $recordarr;
-
-		self::save_buffer( $buffer );
-
-		// Schedule buffer clearance as soon as possible
-		if ( ! wp_next_scheduled( self::LOG_CLEAN_BUFFER_CRON_HOOK ) ) {
-			wp_schedule_single_event( 1, self::LOG_CLEAN_BUFFER_CRON_HOOK );
-		}
+		WP_Stream::$db->store( array( $recordarr ) );
 	}
 
 	/**
