@@ -319,7 +319,7 @@ class WP_Stream_API {
 		remove_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10 );
 
 		// Return early if the request is non blocking
-		if ( isset( $args['blocking'] ) ? $args['blocking'] : true ) {
+		if ( isset( $args['blocking'] ) && false === $args['blocking'] ) {
 			return true;
 		}
 
