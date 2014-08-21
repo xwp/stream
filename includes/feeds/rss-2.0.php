@@ -1,6 +1,5 @@
 <?php
 header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_option( 'blog_charset' ), true );
-
 printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_charset' ) ) );
 ?>
 
@@ -15,8 +14,8 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 	/**
 	 * Action fires during RSS xmls printing
 	 */
+	do_action( 'rss2_ns' )
 	?>
-	<?php do_action( 'rss2_ns' ) ?>
 >
 	<channel>
 		<title><?php bloginfo_rss( 'name' ) ?> - <?php esc_html_e( 'Stream Feed', 'stream' ) ?></title>
@@ -31,18 +30,17 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 		/**
 		 * Action fires during RSS head
 		 */
-		?>
-		<?php do_action( 'rss2_head' ) ?>
-		<?php foreach ( $records as $record ) : ?>
-			<?php
-			$record_link  = add_query_arg(
-				array(
-					'record__in' => (int) $record->ID,
-				),
-				$records_admin_url
-			);
-			$author       = get_userdata( $record->author );
-			$display_name = isset( $author->display_name ) ? $author->display_name : 'N/A';
+		do_action( 'rss2_head' );
+
+foreach ( $records as $record ) :
+	$record_link  = add_query_arg(
+		array(
+			'record__in' => $record->ID,
+		),
+		$records_admin_url
+	);
+	$author       = get_userdata( $record->author );
+	$display_name = isset( $author->display_name ) ? $author->display_name : 'N/A';
 			?>
 			<item>
 				<title><![CDATA[ <?php echo esc_html( $record->summary ) // xss ok ?> ]]></title>
@@ -58,8 +56,8 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 				/**
 				 * Action fires during RSS item
 				 */
+				do_action( 'rss2_item' )
 				?>
-				<?php do_action( 'rss2_item' ) ?>
 			</item>
 		<?php endforeach; ?>
 	</channel>

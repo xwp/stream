@@ -831,7 +831,7 @@ class WP_Stream_Notifications_Post_Type {
 	public function load_list_table() {
 		global $typenow;
 
-		if ( self::POSTTYPE !== $typenow || WP_Stream_API::is_restricted() ) {
+		if ( self::POSTTYPE !== $typenow || WP_Stream_API::is_restricted( true ) ) {
 			return;
 		}
 

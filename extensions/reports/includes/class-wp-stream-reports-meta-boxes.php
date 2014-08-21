@@ -137,7 +137,7 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function load_page() {
-		if ( WP_Stream_API::is_restricted() ) {
+		if ( WP_Stream_API::is_restricted( true ) ) {
 			add_action( 'in_admin_header', array( __CLASS__, 'in_admin_header' ) );
 			return;
 		}
