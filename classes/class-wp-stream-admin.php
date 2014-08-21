@@ -616,7 +616,7 @@ class WP_Stream_Admin {
 		?>
 		<div class="wrap">
 			<h2><?php echo esc_html( $page_title ) ?></h2>
-			<div class="postbox ">
+			<div class="postbox">
 		<?php
 		if ( ! $site_details ) {
 			?>
