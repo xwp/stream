@@ -485,7 +485,7 @@ class WP_Stream_Admin {
 		// Verify the API Key and Site UUID
 		$site = WP_Stream::$api->get_site();
 
-		WP_Stream::$api->restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type ) ? 1 : 0;
+		WP_Stream_API::$restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type ) ? 1 : 0;
 
 		if ( ! isset( $site->site_id ) ) {
 			wp_die( 'There was a problem verifying your site with Stream. Please try again later.', 'stream' );
@@ -493,9 +493,9 @@ class WP_Stream_Admin {
 
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
-		update_option( WP_Stream_API::RESTRICTED_OPTION_KEY, WP_Stream::$api->restricted );
+		update_option( WP_Stream_API::RESTRICTED_OPTION_KEY, WP_Stream_API::$restricted );
 
-		do_action( 'wp_stream_site_connected', WP_Stream::$api->site_uuid, WP_Stream::$api->api_key, get_current_blog_id );
+		do_action( 'wp_stream_site_connected', WP_Stream::$api->site_uuid, WP_Stream::$api->api_key, get_current_blog_id() );
 
 		$redirect_url = add_query_arg(
 			array(
