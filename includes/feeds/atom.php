@@ -2,7 +2,8 @@
 header( 'Content-Type: ' . feed_content_type( 'atom' ) . '; charset=' . get_option( 'blog_charset' ), true );
 printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_charset' ) ) );
 ?>
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0" xml:lang="<?php echo esc_attr( bloginfo_rss( 'language' ) ); ?>" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" <?php do_action( 'atom_ns' ); ?>>
+
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0" xml:lang="<?php echo esc_attr( bloginfo_rss( 'language' ) ) ?>" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" <?php do_action( 'atom_ns' ) ?>>
 	<title><?php bloginfo_rss( 'name' ) ?> - <?php esc_html_e( 'Stream Feed', 'stream' ) ?></title>
 	<link href="<?php self_link() ?>" rel="self" type="application/rss+xml" />
 	<link href="<?php echo esc_url( $records_admin_url ) ?>" />
@@ -15,18 +16,17 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 	/**
 	 * Action fires during RSS head
 	 */
-	?>
-	<?php do_action( 'atom_head' ) ?>
-	<?php foreach ( $records as $record ) : ?>
-		<?php
-		$record_link  = add_query_arg(
-			array(
-				'record__in' => (int) $record->ID,
-			),
-			$records_admin_url
-		);
-		$author       = get_userdata( $record->author );
-		$display_name = isset( $author->display_name ) ? $author->display_name : 'N/A';
+	do_action( 'atom_head' );
+
+foreach ( $records as $record ) :
+	$record_link  = add_query_arg(
+		array(
+			'record__in' => $record->ID,
+		),
+		$records_admin_url
+	);
+	$author       = get_userdata( $record->author );
+	$display_name = isset( $author->display_name ) ? $author->display_name : 'N/A';
 		?>
 		<entry>
 			<title type="html"><![CDATA[[<?php echo esc_html( $domain ) ?>] <?php echo esc_html( $record->summary ) // xss ok ?> ]]></title>
@@ -45,8 +45,9 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 			/**
 			 * Action fires during Atom item
 			 */
+			do_action( 'atom_item' )
 			?>
-			<?php do_action( 'atom_item' ) ?>
 		</entry>
 	<?php endforeach; ?>
-</feed><?php
+</feed>
+<?php

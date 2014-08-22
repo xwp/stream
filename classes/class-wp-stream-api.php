@@ -13,6 +13,11 @@ class WP_Stream_API {
 	const SITE_UUID_OPTION_KEY = 'wp_stream_site_uuid';
 
 	/**
+	 * Site Retricted key/identifier
+	 */
+	const RESTRICTED_OPTION_KEY = 'wp_stream_site_restricted';
+
+	/**
 	 * The site's API Key
 	 *
 	 * @var string
@@ -25,6 +30,13 @@ class WP_Stream_API {
 	 * @var string
 	 */
 	public $site_uuid = false;
+
+	/**
+	 * The site's restriction status
+	 *
+	 * @var bool
+	 */
+	public static $restricted = true;
 
 	/**
 	 * The API URL
@@ -61,19 +73,41 @@ class WP_Stream_API {
 	 * @return void
 	 */
 	public function __construct() {
-		$this->api_key   = get_option( self::API_KEY_OPTION_KEY, 0 );
-		$this->site_uuid = get_option( self::SITE_UUID_OPTION_KEY, 0 );
+		$this->api_key    = get_option( self::API_KEY_OPTION_KEY, 0 );
+		$this->site_uuid  = get_option( self::SITE_UUID_OPTION_KEY, 0 );
+		self::$restricted = get_option( self::RESTRICTED_OPTION_KEY, 1 );
 	}
 
 	/**
 	 * Check if the current site is restricted
 	 *
+	 * @param bool Force the API to send a request to check the site's plan type
+	 *
 	 * @return bool
 	 */
-	public static function is_restricted() {
-		$site = WP_Stream::$api->get_site();
+	public static function is_restricted( $force_check = false ) {
+		if ( $force_check ) {
+			$site = WP_Stream::$api->get_site();
 
-		return ( ! isset( $site->plan->type ) || 'free' === $site->plan->type );
+			self::$restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type );
+		}
+
+		return self::$restricted;
+	}
+
+	/**
+	 * Used to prioritise the streams transport which support non-blocking
+	 *
+	 * @filter http_api_transports
+	 *
+	 * @return bool
+	 */
+	public static function http_api_transport_priority( $request_order, $args, $url ) {
+		if ( isset( $args['blocking'] ) && false === $args['blocking'] ) {
+			$request_order = array( 'streams', 'curl' );
+		}
+
+		return $request_order;
 	}
 
 	/**
@@ -160,14 +194,14 @@ class WP_Stream_API {
 	}
 
 	/**
-	 * Create a new record.
+	 * Create new records.
 	 *
 	 * @param array Record data.
 	 * @param array Returns specified fields only.
 	 *
-	 * @return mixed
+	 * @return void
 	 */
-	public function new_record( $record, $fields = array() ) {
+	public function new_records( $records, $fields = array() ) {
 		if ( ! $this->site_uuid ) {
 			return false;
 		}
@@ -179,9 +213,9 @@ class WP_Stream_API {
 		}
 
 		$url  = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $args );
-		$args = array( 'method' => 'POST', 'body' => json_encode( $record, JSON_FORCE_OBJECT ) );
+		$args = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ), 'blocking' => false );
 
-		return $this->remote_request( $url, $args );
+		$this->remote_request( $url, $args );
 	}
 
 	/**
@@ -272,6 +306,8 @@ class WP_Stream_API {
 		$args['headers']['Accept-Version']      = $this->api_version;
 		$args['headers']['Content-Type']        = 'application/json';
 
+		add_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10, 3 );
+
 		$transient = 'wp_stream_' . md5( $url );
 
 		if ( 'GET' === $args['method'] && $allow_cache ) {
@@ -281,6 +317,13 @@ class WP_Stream_API {
 			}
 		} else {
 			$request = wp_remote_request( $url, $args );
+		}
+
+		remove_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10 );
+
+		// Return early if the request is non blocking
+		if ( isset( $args['blocking'] ) && false === $args['blocking'] ) {
+			return true;
 		}
 
 		if ( ! is_wp_error( $request ) ) {

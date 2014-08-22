@@ -2,7 +2,7 @@
 Contributors:      stream, X-team, lukecarbis, fjarrett, westonruter, japh, shadyvb, jonathanbardo, c3mdigital, johnregan3, akeda, kucrut, topher1kenobe
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.7
-Tested up to:      3.9.1
+Tested up to:      4.0
 Stable tag:        trunk
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
