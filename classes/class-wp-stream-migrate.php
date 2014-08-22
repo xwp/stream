@@ -36,6 +36,13 @@ class WP_Stream_Migrate {
 	public static $limit = 1000;
 
 	/**
+	 * Hold unformatted records temporarily for deletion
+	 *
+	 * @var array
+	 */
+	private static $_records = array();
+
+	/**
 	 * Check that legacy data exists before doing anything
 	 *
 	 * @return void
@@ -146,6 +153,37 @@ class WP_Stream_Migrate {
 		die();
 	}
 
+	/**
+	 * Break down the total number of records found into reasonably-sized chunks
+	 * and send each of those chunks to the Stream API
+	 *
+	 * Drops the legacy Stream data from the DB once the API has consumed everything
+	 *
+	 * @param  string $action  How the chunks should be processed
+	 *
+	 * @return void
+	 */
+	public static function process_chunks( $action ) {
+		$max = ceil( self::$record_count / self::$limit );
+
+		if ( 'sync' === $action ) {
+			for ( $i = 1; $i <= $max; $i++ ) {
+				$records = self::get_records( self::$limit );
+				WP_Stream::$db->store( $records );
+				self::delete_records( self::$_records );
+			}
+		}
+
+		if ( 'delete' === $action ) {
+			for ( $i = 1; $i <= $max; $i++ ) {
+				$records = self::get_records( self::$limit, 0, false );
+				self::delete_records( $records );
+			}
+		}
+
+		self::drop_legacy_data();
+	}
+
 	public static function migrate_notification_rules() {
 		global $wpdb;
 
@@ -218,40 +256,6 @@ class WP_Stream_Migrate {
 	}
 
 	/**
-	 * Break down the total number of records found into reasonably-sized chunks
-	 * and send each of those chunks to the Stream API
-	 *
-	 * Drops the legacy Stream data from the DB once the API has consumed everything
-	 *
-	 * @param  string $action  How the chunks should be processed
-	 *
-	 * @return void
-	 */
-	public static function process_chunks( $action ) {
-		$max = ceil( self::$record_count / self::$limit );
-
-		for ( $i = 1; $i <= $max; $i++ ) {
-			// Send records in chunks
-			if ( 'sync' === $action ) {
-				$records = self::get_records( self::$limit );
-
-				WP_Stream::$db->store( $records );
-
-				self::delete_records( $records );
-			}
-
-			// Delete records in chunks
-			if ( 'delete' === $action ) {
-				$records = self::get_records( self::$limit, 0, false );
-
-				self::delete_records( $records );
-			}
-		}
-
-		self::drop_legacy_data();
-	}
-
-	/**
 	 * Get a chunk of records formatted for Stream API ingestion
 	 *
 	 * @param  int  $limit   The number of rows to query, 500 by default
@@ -288,6 +292,8 @@ class WP_Stream_Migrate {
 			return;
 		}
 
+		self::$_records = array();
+
 		foreach ( $records as $record => $data ) {
 			$stream_meta        = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->base_prefix}stream_meta WHERE record_id = %d", $records[ $record ]['ID'] ), ARRAY_A );
 			$stream_meta_output = array();
@@ -298,6 +304,16 @@ class WP_Stream_Migrate {
 
 			$records[ $record ]['stream_meta'] = $stream_meta_output;
 
+			// If the array value is numeric then sanitize it from a string to an int
+			array_walk_recursive(
+				$records[ $record ],
+				function( &$v ) {
+					$v = is_numeric( $v ) ? intval( $v ) : $v; // A negative int could potentially exist as meta
+				}
+			);
+
+			self::$_records[] = $records[ $record ];
+
 			if ( $format ) {
 				$records[ $record ]['created'] = wp_stream_get_iso_8601_extended_date( strtotime( $records[ $record ]['created'] ) );
 
@@ -306,14 +322,6 @@ class WP_Stream_Migrate {
 
 				// If the object_id is null, set it to 0
 				$records[ $record ]['object_id'] = is_null( $records[ $record ]['object_id'] ) ? 0 : $records[ $record ]['object_id'];
-
-				// If the array value is numeric then sanitize it from a string to an int
-				array_walk_recursive(
-					$records[ $record ],
-					function( &$v ) {
-						$v = is_numeric( $v ) ? intval( $v ) : $v; // A negative int could potentially exist as meta
-					}
-				);
 			}
 		}
 
