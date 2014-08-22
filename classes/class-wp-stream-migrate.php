@@ -33,7 +33,7 @@ class WP_Stream_Migrate {
 	 *
 	 * @var int
 	 */
-	public static $limit = 500;
+	public static $limit = 1000;
 
 	/**
 	 * Check that legacy data exists before doing anything
@@ -41,13 +41,14 @@ class WP_Stream_Migrate {
 	 * @return void
 	 */
 	public static function load() {
+		// Exit early if there is no option holding the DB version
 		if ( false === get_site_option( 'wp_stream_db' ) ) {
 			return;
 		}
 
 		global $wpdb;
 
-		// If there are no legacy tables, then attempt to clear all legacy data and exit early
+		// If there are no legacy tables found, then attempt to clear all legacy data and exit early
 		if ( null === $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->base_prefix}stream'" ) ) {
 			self::drop_legacy_data( false );
 			return;
@@ -126,11 +127,13 @@ class WP_Stream_Migrate {
 		if ( 'sync' === $action ) {
 			self::migrate_notification_rules();
 
-			self::process_chunks( 'send' );
+			$result = self::process_chunks( 'send' );
 
-			self::process_chunks( 'delete' );
-
-			wp_send_json_success( __( 'Sync complete!', 'stream' ) );
+			if ( isset( $result['error'] ) ) {
+				wp_send_json_error( $result['error'] );
+			} else {
+				wp_send_json_success( __( 'Sync complete!', 'stream' ) );
+			}
 		}
 
 		if ( 'delay' === $action ) {
@@ -235,14 +238,20 @@ class WP_Stream_Migrate {
 		for ( $i = 0; $i < $max; $i++ ) {
 			// Send records in chunks
 			if ( 'send' === $action ) {
-				$records = self::get_records( absint( self::$limit * $i ), self::$limit );
+				$records  = self::get_records( self::$limit );
+				$response = WP_Stream::$api->new_records( $records, array(), true );
 
-				// WP_Stream::$api->new_records( $records );
+				if ( isset( WP_Stream::$api->errors['errors']['remote_request_error'] ) ) {
+					// Stop the loop if there is an error and return the message
+					return array( 'error' => WP_Stream::$api->errors['errors']['remote_request_error'] );
+				} else {
+					self::delete_records( $records );
+				}
 			}
 
 			// Delete records in chunks
 			if ( 'delete' === $action ) {
-				$records = self::get_records( absint( self::$limit * $i ), self::$limit, false );
+				$records = self::get_records( self::$limit, 0, false );
 
 				self::delete_records( $records );
 			}
@@ -254,13 +263,13 @@ class WP_Stream_Migrate {
 	/**
 	 * Get a chunk of records formatted for Stream API ingestion
 	 *
-	 * @param  int  $offset  The number of rows to skip, 0 by default
 	 * @param  int  $limit   The number of rows to query, 500 by default
+	 * @param  int  $offset  The number of rows to skip, 0 by default
 	 * @param  bool $format  Whether or not the output should be formatted for cloud ingestion, true by default
 	 *
 	 * @return array  An array of record arrays
 	 */
-	public static function get_records( $offset = 0, $limit = 500, $format = true ) {
+	public static function get_records( $limit = 500, $offset = 0, $format = true ) {
 		$limit = is_int( $limit ) ? $limit : self::$limit;
 
 		global $wpdb;
