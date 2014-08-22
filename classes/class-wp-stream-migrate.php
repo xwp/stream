@@ -237,7 +237,7 @@ class WP_Stream_Migrate {
 
 				WP_Stream::$db->store( $records );
 
-				//self::delete_records( $records );
+				self::delete_records( $records );
 			}
 
 			// Delete records in chunks
@@ -248,7 +248,7 @@ class WP_Stream_Migrate {
 			}
 		}
 
-		//self::drop_legacy_data();
+		self::drop_legacy_data();
 	}
 
 	/**
