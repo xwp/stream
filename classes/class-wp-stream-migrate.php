@@ -303,6 +303,17 @@ class WP_Stream_Migrate {
 
 				unset( $records[ $record ]['ID'] );
 				unset( $records[ $record ]['parent'] );
+
+				// If the object_id is null, set it to 0
+				$records[ $record ]['object_id'] = is_null( $records[ $record ]['object_id'] ) ? 0 : $records[ $record ]['object_id'];
+
+				// If the array value is numeric then sanitize it from a string to an int
+				array_walk_recursive(
+					$records[ $record ],
+					function( &$v ) {
+						$v = is_numeric( $v ) ? intval( $v ) : $v; // A negative int could potentially exist as meta
+					}
+				);
 			}
 		}
 
