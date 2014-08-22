@@ -314,11 +314,11 @@ class WP_Stream_Migrate {
 				unset( $records[ $record ]['ID'] );
 				unset( $records[ $record ]['parent'] );
 
-				// Sanitize required fields
-				$records[ $record ]['site_id']   = is_int( $records[ $record ]['site_id'] )   ? $records[ $record ]['site_id']   : 0;
-				$records[ $record ]['blog_id']   = is_int( $records[ $record ]['blog_id'] )   ? $records[ $record ]['blog_id']   : 0;
-				$records[ $record ]['object_id'] = is_int( $records[ $record ]['object_id'] ) ? $records[ $record ]['object_id'] : 0;
-				$records[ $record ]['author']    = is_int( $records[ $record ]['author'] )    ? $records[ $record ]['author']    : 0;
+				// Ensure required fields always exist
+				$records[ $record ]['site_id']   = ! empty( $records[ $record ]['site_id'] )   ? $records[ $record ]['site_id']   : 1;
+				$records[ $record ]['blog_id']   = ! empty( $records[ $record ]['blog_id'] )   ? $records[ $record ]['blog_id']   : 1;
+				$records[ $record ]['object_id'] = ! empty( $records[ $record ]['object_id'] ) ? $records[ $record ]['object_id'] : 0;
+				$records[ $record ]['author']    = ! empty( $records[ $record ]['author'] )    ? $records[ $record ]['author']    : 0;
 			}
 
 			// If the array value is numeric then sanitize it from a string to an int
