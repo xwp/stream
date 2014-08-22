@@ -130,7 +130,7 @@ class WP_Stream_API {
 			$params['fields'] = implode( ',', $fields );
 		}
 
-		$url  = $this->request_url( sprintf( '/sites/%s', esc_attr( $this->site_uuid ) ), $params );
+		$url  = $this->request_url( sprintf( '/sites/%s', urlencode( $this->site_uuid ) ), $params );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
@@ -161,7 +161,7 @@ class WP_Stream_API {
 			$params['fields'] = implode( ',', $fields );
 		}
 
-		$url  = $this->request_url( sprintf( '/sites/%s/records/%s', esc_attr( $this->site_uuid ), esc_attr( $record_id ) ), $params );
+		$url  = $this->request_url( sprintf( '/sites/%s/records/%s', urlencode( $this->site_uuid ), urlencode( $record_id ) ), $params );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
@@ -187,7 +187,7 @@ class WP_Stream_API {
 			$params['fields'] = implode( ',', $fields );
 		}
 
-		$url  = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $params );
+		$url  = $this->request_url( sprintf( '/sites/%s/records', urlencode( $this->site_uuid ) ), $params );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
@@ -212,7 +212,7 @@ class WP_Stream_API {
 			$args['fields'] = implode( ',', $fields );
 		}
 
-		$url  = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $args );
+		$url  = $this->request_url( sprintf( '/sites/%s/records', urlencode( $this->site_uuid ) ), $args );
 		$args = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ), 'blocking' => false );
 
 		$this->remote_request( $url, $args );
