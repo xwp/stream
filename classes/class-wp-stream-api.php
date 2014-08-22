@@ -326,11 +326,13 @@ class WP_Stream_API {
 		if ( ! is_wp_error( $request ) ) {
 			$data = apply_filters( 'wp_stream_api_request_data', json_decode( $request['body'] ), $url, $args );
 
-			if ( 200 === $request['response']['code'] || 201 === $request['response']['code'] ) {
+			// Intional loose comparison
+			if ( 200 == $request['response']['code'] || 201 == $request['response']['code'] ) {
 				return $data;
 			} else {
 				// Disconnect if unauthorized or no longer exists
-				if ( 403 === $request['response']['code'] || 410 === $request['response']['code'] ) {
+				// Intional loose comparison
+				if ( 403 == $request['response']['code'] || 410 == $request['response']['code'] ) {
 					WP_Stream_Admin::remove_api_authentication();
 				}
 				$this->errors['errors']['http_code'] = $request['response']['code'];
