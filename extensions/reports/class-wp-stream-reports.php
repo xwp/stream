@@ -1,0 +1,382 @@
+<?php
+/**
+ * Plugin Name: Stream Reports
+ * Depends: Stream
+ * Plugin URI: https://wp-stream.com/extension/reports/
+ * Description: Stream Reports allows you to generate beautiful visuals of your logged-in user activity data that is captured by Stream.
+ * Version: 0.1.1
+ * Author: Stream, X-Team
+ * Author URI: https://wp-stream.com/
+ * License: GPLv2+
+ * Text Domain: stream-reports
+ * Domain Path: /languages
+ */
+
+/**
+ * Copyright (c) 2014 WP Stream Pty Ltd (https://wp-stream.com/)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License, version 2 or, at
+ * your discretion, any later version, as published by the Free
+ * Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+class WP_Stream_Reports {
+
+	/**
+	 * Hold Stream Reports instance
+	 *
+	 * @var string
+	 */
+	public static $instance;
+
+	/**
+	 * Screen ID for my admin page
+	 * @var string
+	 */
+	public static $screen_id;
+
+	/**
+	 * Holds admin notices messages
+	 *
+	 * @var array
+	 */
+	public static $messages = array();
+
+	/**
+	 * Option to disallow access to Stream Reports
+	 *
+	 * @var bool
+	 */
+	public static $disallow_access = false;
+
+	/**
+	 * Page slug for notifications list table screen
+	 *
+	 * @const string
+	 */
+	const REPORTS_PAGE_SLUG = 'wp_stream_reports';
+
+	/**
+	 * Capability for the Notifications to be viewed
+	 *
+	 * @const string
+	 */
+	const VIEW_CAP = 'view_stream_reports';
+
+	/**
+	 * Hold the nonce name
+	 */
+	public static $nonce;
+
+	/**
+	 * Class constructor
+	 */
+	private function __construct() {
+		define( 'WP_STREAM_REPORTS_DIR', WP_STREAM_EXTENSIONS_DIR . 'reports/' ); // Has trailing slash
+		define( 'WP_STREAM_REPORTS_URL', WP_STREAM_URL . 'extensions/reports/' ); // Has trailing slash
+		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' ); // Has trailing slash
+		define( 'WP_STREAM_REPORTS_VIEW_DIR', WP_STREAM_REPORTS_DIR . 'views/' ); // Has trailing slash
+
+		if ( ! apply_filters( 'wp_stream_load_reports', true ) ) {
+			return;
+		}
+
+		add_action( 'plugins_loaded', array( $this, 'load' ) );
+	}
+
+	/**
+	 * Load our classes, actions/filters, only if our big brother is activated.
+	 * GO GO GO!
+	 *
+	 * @return void
+	 */
+	public function load() {
+		add_action( 'all_admin_notices', array( $this, 'admin_notices' ) );
+
+		// Load settings
+		require_once WP_STREAM_REPORTS_INC_DIR . 'class-wp-stream-reports-settings.php';
+		add_action( 'init', array( 'WP_Stream_Reports_Settings', 'load' ), 9 );
+
+		// Load date interval
+		require_once WP_STREAM_CLASS_DIR . 'class-wp-stream-date-interval.php';
+		require_once WP_STREAM_REPORTS_INC_DIR . 'class-wp-stream-reports-date-interval.php';
+		add_action( 'init', array( 'WP_Stream_Reports_Date_Interval', 'get_instance' ) );
+
+		// Load metaboxes and charts
+		require_once WP_STREAM_REPORTS_INC_DIR . 'class-wp-stream-reports-meta-boxes.php';
+		require_once WP_STREAM_REPORTS_INC_DIR . 'class-wp-stream-reports-charts.php';
+		add_action( 'init', array( 'WP_Stream_Reports_Metaboxes', 'get_instance' ), 12 );
+
+		// Load template tags
+		require_once WP_STREAM_REPORTS_INC_DIR . 'template-tags.php';
+
+		// Register new submenu
+		add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
+
+		if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
+			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+		}
+
+		self::$disallow_access = apply_filters( 'wp_stream_reports_disallow_site_access', false );
+
+		// Register and enqueue the administration scripts
+		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
+		add_action( 'admin_print_scripts', array( $this, 'dequeue_media_conflicts' ), 9999 );
+	}
+
+	/**
+	 * @param array $ajax_hooks associative array of ajax hooks action to actual functionname
+	 * @param object $referer Class refering the action
+	 */
+	public static function handle_ajax_request( $ajax_hooks, $referer ) {
+		// If we are not in ajax mode, return early
+		if ( ! defined( 'DOING_AJAX' ) || ! is_object( $referer ) ) {
+			return;
+		}
+
+		foreach ( $ajax_hooks as $hook => $function ) {
+			add_action( "wp_ajax_{$hook}", array( $referer, $function ) );
+		}
+
+		// Check referer here so we don't have to check it on every function call
+		if ( array_key_exists( $_REQUEST['action'], $ajax_hooks ) ) {
+			// Checking permission
+			if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
+				wp_die( __( 'Cheating huh?', 'stream' ) );
+			}
+			check_admin_referer( 'stream-reports-page', 'wp_stream_reports_nonce' );
+		}
+	}
+
+	/**
+	 * Register Notification menu under Stream's main one
+	 *
+	 * @action admin_menu
+	 * @return void
+	 */
+	public function register_menu() {
+
+		if ( self::$disallow_access ) {
+			return false;
+		}
+
+		self::$screen_id = add_submenu_page(
+			WP_Stream_Admin::RECORDS_PAGE_SLUG,
+			__( 'Reports', 'stream' ),
+			__( 'Reports', 'stream' ),
+			self::VIEW_CAP,
+			self::REPORTS_PAGE_SLUG,
+			array( $this, 'page' )
+		);
+
+		// Create nonce right away so it is accessible everywhere
+		self::$nonce = array( 'wp_stream_reports_nonce' => wp_create_nonce( 'stream-reports-page' ) );
+
+		$metabox = WP_Stream_Reports_Metaboxes::get_instance();
+		add_action( 'load-' . self::$screen_id, array( $metabox, 'load_page' ) );
+	}
+
+	/**
+	 * Register and enqueue the scripts related to our plugin.
+	 *
+	 * @action   admin_enqueue_scripts
+	 * @uses     wp_register_script
+	 * @uses     wp_enqueue_script
+	 *
+	 * @param $pagename the actual page name
+	 *
+	 * @return void
+	 */
+	public function register_ui_assets( $pagename ) {
+		// JavaScript registration
+		wp_register_script(
+			'stream-reports-d3',
+			WP_STREAM_REPORTS_URL . 'ui/lib/d3/d3.min.js',
+			array(),
+			'3.4.2',
+			true
+		);
+
+		wp_register_script(
+			'stream-reports-nvd3',
+			WP_STREAM_REPORTS_URL . 'ui/lib/nvd3/nv.d3.min.js',
+			array( 'stream-reports-d3' ),
+			'1.1.15b',
+			true
+		);
+		wp_register_script(
+			'stream-reports',
+			WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js',
+			array( 'stream-reports-nvd3', 'jquery', 'underscore', 'jquery-ui-datepicker' ),
+			WP_STREAM::VERSION,
+			true
+		);
+
+		// CSS registration
+		wp_register_style(
+			'stream-reports-nvd3',
+			WP_STREAM_REPORTS_URL . 'ui/lib/nvd3/nv.d3.min.css',
+			array(),
+			WP_STREAM::VERSION,
+			'screen'
+		);
+
+		wp_register_style(
+			'stream-reports',
+			WP_STREAM_REPORTS_URL . 'ui/css/stream-reports.css',
+			array( 'stream-reports-nvd3', 'wp-stream-datepicker' ),
+			WP_STREAM::VERSION,
+			'screen'
+		);
+
+		// If we are not on the right page we return early
+		if ( $pagename !== self::$screen_id ) {
+			return;
+		}
+
+		// Localization
+		wp_localize_script(
+			'stream-reports',
+			'streamReportsLocal',
+			array(
+				'configure'  => __( 'Configure', 'stream' ),
+				'cancel'     => __( 'Cancel', 'stream' ),
+				'deletemsg'  => __( 'Do you really want to delete this section? This cannot be undone.', 'stream' ),
+				'gmt_offset' => get_option( 'gmt_offset' ),
+			)
+		);
+
+		// JavaScript enqueue
+		wp_enqueue_script(
+			array(
+				'stream-reports',
+				'select2',
+				'common',
+				'dashboard',
+				'postbox',
+			)
+		);
+
+		// CSS enqueue
+		wp_enqueue_style(
+			array(
+				'stream-reports',
+				'select2',
+			)
+		);
+	}
+
+	/**
+	 * Admin page callback function, redirects to each respective method based
+	 * on $_GET['view']
+	 *
+	 * @return void
+	 */
+	public function page() {
+		// Page class
+		$class   = 'metabox-holder columns-' . get_current_screen()->get_columns();
+		$add_url = add_query_arg(
+			array_merge(
+				array(
+					'action' => 'wp_stream_reports_add_metabox',
+				),
+				self::$nonce
+			),
+			admin_url( 'admin-ajax.php' )
+		);
+
+		$sections   = WP_Stream_Reports_Settings::get_user_options( 'sections' );
+		$no_reports = empty( $sections );
+		$create_url = add_query_arg(
+			array_merge(
+				array(
+					'action' => 'wp_stream_reports_default_reports',
+				),
+				self::$nonce
+			),
+			admin_url( 'admin-ajax.php' )
+		);
+
+		$no_reports_message = __( "There's nothing here! Do you want to <a href=\"%s\">create some reports</a>?", 'stream' );
+		$no_reports_message = sprintf( $no_reports_message, $create_url );
+
+		$view = (object) array(
+			'slug' => 'all',
+			'path' => null,
+		);
+
+		// Avoid throwing Notices by testing the variable
+		if ( isset( $_GET['view'] ) && ! empty( $_GET['view'] ) ){
+			$view->slug = sanitize_file_name( wp_unslash( $_GET['view'] ) );
+		}
+
+		// First we check if the file exists in our plugin folder, otherwhise give the user an error
+		if ( ! file_exists( WP_STREAM_REPORTS_VIEW_DIR . $view->slug . '.php' ) ){
+			$view->slug = 'error';
+		}
+
+		// Define the path for the view we
+		$view->path = WP_STREAM_REPORTS_VIEW_DIR . $view->slug . '.php';
+
+		// Execute some actions before including the view, to allow others to hook in here
+		// Use these to do stuff related to the view you are working with
+		do_action( 'stream-reports-view', $view );
+		do_action( "stream-reports-view-{$view->slug}", $view );
+
+		include_once $view->path;
+	}
+
+	/**
+	 * Remove conflicting JS libraries caused by other plugins loading on pages not belonging to them
+	 */
+	function dequeue_media_conflicts() {
+		if ( 'stream_page_' . self::REPORTS_PAGE_SLUG !== get_current_screen()->id ) {
+			return;
+		}
+
+		wp_dequeue_script( 'media-upload' );
+		wp_enqueue_script( 'media-editor' );
+		wp_dequeue_script( 'media-audiovideo' );
+		wp_dequeue_script( 'mce-view' );
+		wp_dequeue_script( 'image-edit' );
+		wp_dequeue_script( 'media-editor' );
+		wp_dequeue_script( 'media-audiovideo' );
+	}
+
+	/**
+	 * Display all messages on admin board
+	 *
+	 * @return void
+	 */
+	public static function admin_notices() {
+		foreach ( self::$messages as $message ) {
+			echo wp_kses_post( $message );
+		}
+	}
+
+	/**
+	 * Return active instance of WP_Stream_Reports, create one if it doesn't exist
+	 *
+	 * @return WP_Stream_Reports
+	 */
+	public static function get_instance() {
+		if ( empty( self::$instance ) ) {
+			$class = __CLASS__;
+			self::$instance = new $class;
+		}
+		return self::$instance;
+	}
+
+}
+
+$GLOBALS['wp_stream_reports'] = WP_Stream_Reports::get_instance();

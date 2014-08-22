@@ -10,13 +10,6 @@ class WP_Stream_Log {
 	public static $instance = null;
 
 	/**
-	 * Previous Stream record ID, used for chaining same-session records
-	 *
-	 * @var int
-	 */
-	public $prev_record;
-
-	/**
 	 * Load log handler class, filterable by extensions
 	 *
 	 * @return void
@@ -58,8 +51,7 @@ class WP_Stream_Log {
 	 * @param  string $action    Action of the event
 	 * @param  int    $user_id   User responsible for the event
 	 *
-	 * @internal param string $action Action performed (stream_action)
-	 * @return int
+	 * @return void
 	 */
 	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null ) {
 		global $wpdb;
@@ -68,13 +60,17 @@ class WP_Stream_Log {
 			$user_id = get_current_user_id();
 		}
 
-		$visibility = 'publish';
-		if ( self::is_record_excluded( $connector, $context, $action, $user_id ) ) {
-			$visibility = 'private';
+		if ( is_null( $object_id ) ) {
+			$object_id = 0;
 		}
 
 		$user  = new WP_User( $user_id );
 		$roles = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
+
+		$visibility = 'publish';
+		if ( self::is_record_excluded( $connector, $context, $action, $user ) ) {
+			$visibility = 'private';
+		}
 
 		if ( ! isset( $args['author_meta'] ) ) {
 			$args['author_meta'] = array(
@@ -102,26 +98,27 @@ class WP_Stream_Log {
 			}
 		);
 
+		// Get current time with milliseconds
+		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
+
 		$recordarr = array(
 			'object_id'   => $object_id,
 			'site_id'     => is_multisite() ? get_current_site()->id : 1,
 			'blog_id'     => apply_filters( 'blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() ),
 			'author'      => $user_id,
 			'author_role' => ! empty( $user->roles ) ? $user->roles[0] : null,
-			'created'     => current_time( 'mysql', 1 ),
+			'created'     => $iso_8601_extended_date,
 			'visibility'  => $visibility,
+			'type'        => 'stream',
 			'summary'     => vsprintf( $message, $args ),
-			'parent'      => self::$instance->prev_record,
 			'connector'   => $connector,
 			'context'     => $context,
 			'action'      => $action,
-			'meta'        => $meta,
+			'stream_meta' => $meta,
 			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
-		$record_id = WP_Stream::$db->store( $recordarr );
-
-		return $record_id;
+		WP_Stream::$db->store( array( $recordarr ) );
 	}
 
 	/**
@@ -134,9 +131,9 @@ class WP_Stream_Log {
 	 * @param $ip        string ip address being logged
 	 * @return bool
 	 */
-	public function is_record_excluded( $connector, $context, $action, $user_id = null, $ip = null ) {
-		if ( is_null( $user_id ) ) {
-			$user_id = get_current_user_id();
+	public function is_record_excluded( $connector, $context, $action, $user = null, $ip = null ) {
+		if ( is_null( $user ) ) {
+			$user = wp_get_current_user();
 		}
 
 		if ( is_null( $ip ) ) {
@@ -145,14 +142,13 @@ class WP_Stream_Log {
 			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
 		}
 
-		$user      = new WP_User();
 		$user_role = isset( $user->roles[0] ) ? $user->roles[0] : null;
 
 		$record = array(
 			'connector'  => $connector,
 			'context'    => $context,
 			'action'     => $action,
-			'author'     => $user_id,
+			'author'     => $user->ID,
 			'role'       => $user_role,
 			'ip_address' => $ip,
 		);
@@ -173,17 +169,9 @@ class WP_Stream_Log {
 					'context'    => ! empty( $context ) ? $context : null,
 					'action'     => ! empty( $action ) ? $action : null,
 					'ip_address' => ! empty( $ip_address ) ? $ip_address : null,
-					'author'     => null,
-					'role'       => null,
+					'author'     => is_numeric( $author_or_role ) ? $author_or_role : null,
+					'role'       => ( ! empty( $author_or_role ) && ! is_numeric( $author_or_role ) ) ? $author_or_role : null,
 				);
-
-				if ( ! empty( $author_or_role ) ) {
-					if ( is_numeric( $author_or_role ) ) {
-						$exclude['author'] = $author_or_role;
-					} else {
-						$exclude['role'] = $author_or_role;
-					}
-				}
 
 				$exclude_rules = array_filter( $exclude, 'strlen' );
 

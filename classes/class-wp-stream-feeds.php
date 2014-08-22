@@ -5,7 +5,7 @@ class WP_Stream_Feeds {
 	const FEED_QUERY_VAR         = 'stream';
 	const FEED_NETWORK_QUERY_VAR = 'network-stream';
 	const FEED_TYPE_QUERY_VAR    = 'type';
-	const USER_FEED_KEY          = 'stream_user_feed_key';
+	const USER_FEED_OPTION_KEY   = 'stream_user_feed_key';
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
 
 	public static $is_network_feed = false;
@@ -53,7 +53,7 @@ class WP_Stream_Feeds {
 
 		if ( $user_id ) {
 			$feed_key = wp_generate_password( 32, false );
-			update_user_meta( $user_id, self::USER_FEED_KEY, $feed_key );
+			update_user_meta( $user_id, self::USER_FEED_OPTION_KEY, $feed_key );
 
 			$link      = self::get_user_feed_url( $feed_key );
 			$xml_feed  = add_query_arg( array( 'type' => 'json' ), $link );
@@ -85,7 +85,7 @@ class WP_Stream_Feeds {
 		$generate_key = isset( $_GET[ self::GENERATE_KEY_QUERY_VAR ] );
 		$verify_nonce = isset( $_GET['wp_stream_nonce'] ) && wp_verify_nonce( $_GET['wp_stream_nonce'], 'wp_stream_generate_key' );
 
-		if ( ! $generate_key && get_user_meta( $user->ID, self::USER_FEED_KEY, true ) ) {
+		if ( ! $generate_key && get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY, true ) ) {
 			return;
 		}
 
@@ -95,7 +95,7 @@ class WP_Stream_Feeds {
 
 		$feed_key = wp_generate_password( 32, false );
 
-		update_user_meta( $user->ID, self::USER_FEED_KEY, $feed_key );
+		update_user_meta( $user->ID, self::USER_FEED_OPTION_KEY, $feed_key );
 	}
 
 	/**
@@ -115,19 +115,19 @@ class WP_Stream_Feeds {
 			return;
 		}
 
-		$key  = get_user_meta( $user->ID, self::USER_FEED_KEY, true );
+		$key  = get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY, true );
 		$link = self::get_user_feed_url( $key );
 
 		$nonce = wp_create_nonce( 'wp_stream_generate_key' );
 		?>
 		<table class="form-table">
 			<tr>
-				<th><label for="<?php echo esc_attr( self::USER_FEED_KEY ) ?>"><?php esc_html_e( 'Stream Feeds Key', 'stream' ) ?></label></th>
+				<th><label for="<?php echo esc_attr( self::USER_FEED_OPTION_KEY ) ?>"><?php esc_html_e( 'Stream Feeds Key', 'stream' ) ?></label></th>
 				<td>
 					<p class="wp-stream-feeds-key">
 						<?php wp_nonce_field( 'wp_stream_generate_key', 'wp_stream_generate_key_nonce' ) ?>
-						<input type="text" name="<?php echo esc_attr( self::USER_FEED_KEY ) ?>" id="<?php echo esc_attr( self::USER_FEED_KEY ) ?>" class="regular-text code" value="<?php echo esc_attr( $key ) ?>" readonly>
-						<small><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true, 'wp_stream_nonce' => $nonce ) ) ) ?>" id="<?php echo esc_attr( self::USER_FEED_KEY ) ?>_generate"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
+						<input type="text" name="<?php echo esc_attr( self::USER_FEED_OPTION_KEY ) ?>" id="<?php echo esc_attr( self::USER_FEED_OPTION_KEY ) ?>" class="regular-text code" value="<?php echo esc_attr( $key ) ?>" readonly>
+						<small><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true, 'wp_stream_nonce' => $nonce ) ) ) ?>" id="<?php echo esc_attr( self::USER_FEED_OPTION_KEY ) ?>_generate"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
 						<span class="spinner" style="display: none;"></span>
 					</p>
 					<p class="description"><?php esc_html_e( 'This is your private key used for accessing feeds of Stream Records securely. You can change your key at any time by generating a new one using the link above.', 'stream' ) ?></p>
@@ -185,15 +185,12 @@ class WP_Stream_Feeds {
 	 */
 	public static function feed_template() {
 		$die_title   = esc_html__( 'Access Denied', 'stream' );
-		$die_message = '<h1>' . $die_title .'</h1><p>' . esc_html__( 'You don\'t have permission to view this feed, please contact your site Administrator.', 'stream' ) . '</p>';
-
-		if ( ! isset( $_GET[ self::FEED_QUERY_VAR ] ) || empty( $_GET[ self::FEED_QUERY_VAR ] ) ) {
-			wp_die( $die_message, $die_title );
-		}
+		$die_message = sprintf( '<h1>%s</h1><p>%s</p>', $die_title, esc_html__( "You don't have permission to view this feed, please contact your site Administrator.", 'stream' ) );
+		$query_var   = is_network_admin() ? self::FEED_NETWORK_QUERY_VAR : self::FEED_QUERY_VAR;
 
 		$args = array(
-			'meta_key'   => self::USER_FEED_KEY,
-			'meta_value' => $_GET[ self::FEED_QUERY_VAR ],
+			'meta_key'   => self::USER_FEED_OPTION_KEY,
+			'meta_value' => $_GET[ $query_var ],
 			'number'     => 1,
 		);
 		$user = get_users( $args );
@@ -214,7 +211,7 @@ class WP_Stream_Feeds {
 
 		$args = array(
 			'blog_id'          => $blog_id,
-			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT, array( 'options' => array( 'default' => get_option( 'posts_per_rss' ) ) ) ),
+			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT ),
 			'search'           => wp_stream_filter_input( INPUT_GET, 'search' ),
 			'object_id'        => wp_stream_filter_input( INPUT_GET, 'object_id', FILTER_SANITIZE_NUMBER_INT ),
 			'ip'               => wp_stream_filter_input( INPUT_GET, 'ip', FILTER_VALIDATE_IP ),
@@ -223,11 +220,10 @@ class WP_Stream_Feeds {
 			'date'             => wp_stream_filter_input( INPUT_GET, 'date' ),
 			'date_from'        => wp_stream_filter_input( INPUT_GET, 'date_from' ),
 			'date_to'          => wp_stream_filter_input( INPUT_GET, 'date_to' ),
-			'record__in'       => wp_stream_filter_input( INPUT_GET, 'record__in', FILTER_SANITIZE_NUMBER_INT ),
-			'record_parent'    => wp_stream_filter_input( INPUT_GET, 'record_parent', FILTER_SANITIZE_NUMBER_INT ),
-			'order'            => wp_stream_filter_input( INPUT_GET, 'order', FILTER_DEFAULT, array( 'options' => array( 'default' => 'desc' ) ) ),
-			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby', FILTER_DEFAULT, array( 'options' => array( 'default' => 'ID' ) ) ),
-			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields', FILTER_DEFAULT, array( 'options' => array( 'default' => 'meta' ) ) ),
+			'record__in'       => wp_stream_filter_input( INPUT_GET, 'record__in' ),
+			'order'            => wp_stream_filter_input( INPUT_GET, 'order' ),
+			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby' ),
+			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields' ),
 		);
 
 		$records = wp_stream_query( $args );
@@ -245,7 +241,7 @@ class WP_Stream_Feeds {
 		if ( isset( $records[0]->ID ) ) {
 			$latest_link = add_query_arg(
 				array(
-					'record__in' => (int) $records[0]->ID,
+					'record__in' => $records[0]->ID,
 				),
 				$records_admin_url
 			);
@@ -255,11 +251,11 @@ class WP_Stream_Feeds {
 		$format = wp_stream_filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR );
 
 		if ( 'atom' === $format ) {
-			require_once WP_STREAM_DIR . 'ui/feeds/atom.php';
+			require_once WP_STREAM_INC_DIR . 'feeds/atom.php';
 		} elseif ( 'json' === $format ) {
-			require_once WP_STREAM_DIR . 'ui/feeds/json.php';
+			require_once WP_STREAM_INC_DIR . 'feeds/json.php';
 		} else {
-			require_once WP_STREAM_DIR . 'ui/feeds/rss-2.0.php';
+			require_once WP_STREAM_INC_DIR . 'feeds/rss-2.0.php';
 		}
 
 		exit;

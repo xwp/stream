@@ -1,7 +1,6 @@
 <?php
 
-class WP_Stream_Record
-{
+class WP_Stream_Record {
 
 	public $ID;
 	public $site_id;
@@ -11,7 +10,6 @@ class WP_Stream_Record
 	public $author_role;
 	public $summary;
 	public $visibility;
-	public $parent;
 	public $type;
 	public $connector;
 	public $context;
@@ -19,7 +17,7 @@ class WP_Stream_Record
 	public $created;
 	public $ip;
 
-	public $meta;
+	public $stream_meta;
 
 	// Deprecated
 	public $contexts;

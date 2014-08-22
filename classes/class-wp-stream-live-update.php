@@ -82,12 +82,12 @@ class WP_Stream_Live_Update {
 	 * @return array Data sent to heartbeat
 	 */
 	public static function live_update( $response, $data ) {
-		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
+		if ( ! isset( $data['wp-stream-heartbeat-last-time'] ) ) {
 			return;
 		}
 
-		$last_id = $data['wp-stream-heartbeat-last-id'];
-		$query   = $data['wp-stream-heartbeat-query'];
+		$last_time = $data['wp-stream-heartbeat-last-time'];
+		$query     = $data['wp-stream-heartbeat-query'];
 
 		if ( empty( $query ) ) {
 			$query = array();
@@ -96,7 +96,7 @@ class WP_Stream_Live_Update {
 		// Decode the query
 		$query = json_decode( wp_kses_stripslashes( $query ) );
 
-		$updated_items = WP_Stream_Dashboard_Widget::gather_updated_items( $last_id, $query );
+		$updated_items = self::gather_updated_items( $last_time, (array) $query );
 
 		if ( ! empty( $updated_items ) ) {
 			ob_start();
@@ -113,6 +113,31 @@ class WP_Stream_Live_Update {
 		return $send;
 	}
 
+	/**
+	 * Sends Updated Actions to the List Table View
+	 *
+	 * @param int   Timestamp of last update
+	 * @param array Query args
+	 *
+	 * @return array  Array of recently updated items
+	 */
+	public static function gather_updated_items( $last_time, $args = array() ) {
+		if ( false === $last_time ) {
+			return '';
+		}
+
+		$default = array(
+			'record_after' => $last_time,
+		);
+
+		// Filter default
+		$args = wp_parse_args( $args, $default );
+
+		// Run query
+		$items = wp_stream_query( $args );
+
+		return $items;
+	}
 
 	/**
 	 * Handles live updates for both dashboard widget and Stream Post List

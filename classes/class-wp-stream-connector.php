@@ -3,24 +3,24 @@
 abstract class WP_Stream_Connector {
 
 	/**
-	* Connector slug
-	*
-	* @var string
-	*/
+	 * Connector slug
+	 *
+	 * @var string
+	 */
 	public static $name = null;
 
 	/**
-	* Actions registered for this connector
-	*
-	* @var array
-	*/
+	 * Actions registered for this connector
+	 *
+	 * @var array
+	 */
 	public static $actions = array();
 
 	/**
-	* Previous Stream entry in same request
-	*
-	* @var int
-	*/
+	 * Previous Stream entry in same request
+	 *
+	 * @var int
+	 */
 	public static $prev_stream = null;
 
 	/**
@@ -88,7 +88,7 @@ abstract class WP_Stream_Connector {
 	 * @param  int    $user_id   User responsible for the event
 	 *
 	 * @internal param string $action Action performed (stream_action)
-	 * @return void
+	 * @return bool
 	 */
 	public static function log( $message, $args, $object_id, $context, $action, $user_id = null ) {
 		$class     = get_called_class();
@@ -100,7 +100,7 @@ abstract class WP_Stream_Connector {
 		);
 
 		if ( ! $data ) {
-			return;
+			return false;
 		} else {
 			$connector = $data['connector'];
 			$message   = $data['message'];
@@ -222,6 +222,15 @@ abstract class WP_Stream_Connector {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Allow connectors to determine if their dependencies is satisfied or not
+	 *
+	 * @return bool
+	 */
+	public static function is_dependency_satisfied() {
+		return true;
 	}
 
 }

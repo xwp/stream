@@ -8,6 +8,7 @@
 
 // Use in code to trigger custom actions
 define( 'STREAM_TESTS', true );
+define( 'WP_STREAM_DEV_DEBUG', true );
 
 $_tests_dir = getenv('WP_TESTS_DIR');
 if ( ! $_tests_dir ) {
@@ -20,21 +21,7 @@ tests_add_filter(
 	function() {
 		// Manually load plugin
 		require dirname( dirname( __FILE__ ) ) . '/stream.php';
-
-		// Call Activate plugin function
-		WP_Stream::$db->install();
 	}
-);
-
-// Removes all sql tables on shutdown
-// Do this action last
-tests_add_filter(
-	'shutdown',
-	function() {
-		// Empty all tables so we don't deal with leftovers
-		WP_Stream::$db->reset();
-	},
-	999999
 );
 
 require getenv( 'WP_TESTS_DIR' ) . 'includes/bootstrap.php';

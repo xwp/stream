@@ -256,11 +256,6 @@
 	margin-right: 1em;
 }
 
-.wp_stream_settings .settings-sections > .form-table:last-child > tbody > tr > th {
-	display: none;
-}
-
-
 /* Date Interval Common */
 
 .wp_stream_screen .date-interval .field-predefined {
@@ -392,6 +387,7 @@
 
 
 /* Exclude List Table */
+
 .stream-exclude-list {
 	margin-top: 1em;
 }
@@ -495,54 +491,143 @@
 
 /* Extensions */
 
-.stream_page_wp_stream_extensions .themes-php .wrap h2 .button {
-	margin: 3px 0 0 0;
+.post-type-stream-notification .view-switch,
+.stream_page_wp_stream_reports.wp_stream_restricted #wpbody,
+.post-type-stream-notification.wp_stream_restricted #wpbody {
+	display: none;
 }
 
-.stream_page_wp_stream_extensions .themes-php .wrap p.description {
-	clear: both;
-	font-size: 15px;
-	margin-bottom: 20px;
+.stream-example {
+	position: fixed;
+	width: calc(100% - 180px);
+	height: 100%;
+	background-repeat: no-repeat;
 }
 
-.stream_page_wp_stream_extensions .license-check th {
+.post-type-stream-notification .stream-example {
+	background-image: url(../../extensions/notifications/ui/images/stream-notifications-example.jpg);
+}
+
+.stream_page_wp_stream_reports .stream-example {
+	background-image: url(../../extensions/reports/ui/images/stream-reports-example.jpg);
+}
+
+body.folded .stream-example {
+	width: calc(100% - 56px);
+}
+
+.stream-example-modal {
+	position: absolute;
+	left: 50%;
+	top: 40%;
+	width: 40%;
+	min-width: 550px;
+	height: auto;
+	text-align: center;
+	padding: 20px;
+	background: #fff;
+
+	-webkit-transform: translate(-50%, -50%);
+	    -ms-transform: translate(-50%, -50%);
+	        transform: translate(-50%, -50%);
+
+	-webkit-box-shadow: 0 1px 20px 5px rgba(0, 0, 0, 0.1);
+	   -moz-box-shadow: 0 1px 20px 5px rgba(0, 0, 0, 0.1);
+	        box-shadow: 0 1px 20px 5px rgba(0, 0, 0, 0.1);
+}
+
+.stream-example-modal h1,
+.stream-example-modal p,
+.stream-example-modal li {
+	 -webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.stream-example-modal h1 i {
+	width: 26px;
+	height: 26px;
+	margin-top: -4px;
+	font-size: 26px;
+}
+
+.stream-example-modal p {
+	font-size: 1.4em;
+}
+
+.stream-example-modal li {
+	font-size: 1.1em;
+}
+
+.stream-example-modal li i {
+	color: #299d30;
+}
+
+.stream-example-modal .button {
+	margin: 5px 0 10px;
+}
+
+@media all and (max-width: 900px) {
+	.stream-example {
+		width: calc(100% - 56px);
+	}
+
+	.stream-example-modal {
+		top:60px;
+		width: 80%;
+		min-width: 0;
+
+		-webkit-transform: translate(-50%, 0);
+		    -ms-transform: translate(-50%, 0);
+		        transform: translate(-50%, 0);
+	}
+}
+
+@media all and (max-width: 782px) {
+	.stream-example {
+		left: 0;
+		width: 100% !important;
+	}
+}
+
+
+/* Account Page */
+
+.stream_page_wp_stream_account .postbox {
+	display: inline-block;
+	margin-top: 1em;
+	max-width: 100%;
+}
+
+.stream_page_wp_stream_account .postbox h3 {
+	margin: 0;
+	padding: 8px 12px;
 	font-size: 14px;
-	font-weight: bold;
-	padding-right: 10px;
+	line-height: 1.4;
+	border-bottom:1px solid #eee;
 }
 
-.stream_page_wp_stream_extensions .theme a {
-	text-decoration: none;
+.stream_page_wp_stream_account .postbox .form-table {
+	margin: 0;
+	max-width: 100%;
 }
 
-.stream_page_wp_stream_extensions .theme.active .theme-actions {
-	padding-top: 15px;
-	height: 33px;
-	color: #fff;
-	text-transform: uppercase;
+.stream_page_wp_stream_account .plan-details {
+	padding: 0 12px;
 }
 
-.stream_page_wp_stream_extensions .theme .theme-actions .button-primary {
-	margin-right: 0;
+.stream_page_wp_stream_account .plan-actions {
+	min-height: 30px;
+	padding: 10px;
+	clear: both;
+	border-top: 1px solid #ddd;
+	background: #f5f5f5;
 }
 
-.stream_page_wp_stream_extensions .theme .theme-name span {
-	float: left;
-}
-
-.stream_page_wp_stream_extensions .theme .theme-name span.inactive {
+.stream_page_wp_stream_account .disconnect {
 	float: right;
-	margin-right: -5px;
-	font-weight: normal;
-	text-transform: uppercase;
-	font-size: 13px;
-	color: #777;
+	line-height: 28px;
 }
 
-.stream_page_wp_stream_extensions .theme:hover .theme-name span.inactive {
-	display: none;
-}
-
-.stream_page_wp_stream_extensions > iframe {
-	display: none;
+.stream_page_wp_stream_account .api-key {
+	word-wrap: break-word;
 }

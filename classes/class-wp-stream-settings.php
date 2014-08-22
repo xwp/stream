@@ -10,17 +10,17 @@ class WP_Stream_Settings {
 	/**
 	 * Settings key/identifier
 	 */
-	const KEY = 'wp_stream';
+	const OPTION_KEY = 'wp_stream';
 
 	/**
 	 * Settings key/identifier
 	 */
-	const NETWORK_KEY = 'wp_stream_network';
+	const NETWORK_OPTION_KEY = 'wp_stream_network';
 
 	/**
 	 * Default Settings key/identifier
 	 */
-	const DEFAULTS_KEY = 'wp_stream_defaults';
+	const DEFAULTS_OPTION_KEY = 'wp_stream_defaults';
 
 	/**
 	 * Plugin settings
@@ -46,7 +46,7 @@ class WP_Stream_Settings {
 	/**
 	 * Public constructor
 	 *
-	 * @return \WP_Stream_Settings
+	 * @return void
 	 */
 	public static function load() {
 		self::$option_key = self::get_option_key();
@@ -56,10 +56,7 @@ class WP_Stream_Settings {
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 
 		// Check if we need to flush rewrites rules
-		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
-
-		// Remove records when records TTL is shortened
-		add_action( 'update_option_' . self::KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
+		add_action( 'update_option_' . self::OPTION_KEY, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
 
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
 
@@ -168,20 +165,13 @@ class WP_Stream_Settings {
 
 		check_ajax_referer( 'stream_get_ips', 'nonce' );
 
-		$results = wp_stream_query(
-			array(
-				'fields'           => 'ip',
-				'distinct'         => true,
-				'search_field'     => 'ip',
-				'search'           => wp_stream_filter_input( INPUT_POST, 'find' ),
-				'records_per_page' => wp_stream_filter_input( INPUT_POST, 'limit' ),
-			)
-		);
-		if ( $results ) {
-			$results = wp_list_pluck( $results, 'ip' );
-		}
+		$ips = wp_stream_existing_records( 'ip' );
 
-		wp_send_json_success( $results );
+		if ( $ips ) {
+			wp_send_json_success( $ips );
+		} else {
+			wp_send_json_error();
+		}
 	}
 
 	/**
@@ -205,7 +195,7 @@ class WP_Stream_Settings {
 	 * @return string Option key for this page
 	 */
 	public static function get_option_key() {
-		$option_key = self::KEY;
+		$option_key = self::OPTION_KEY;
 
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 
@@ -214,11 +204,11 @@ class WP_Stream_Settings {
 		}
 
 		if ( 'wp_stream_default_settings' === $current_page ) {
-			$option_key = self::DEFAULTS_KEY;
+			$option_key = self::DEFAULTS_OPTION_KEY;
 		}
 
 		if ( 'wp_stream_network_settings' === $current_page ) {
-			$option_key = self::NETWORK_KEY;
+			$option_key = self::NETWORK_OPTION_KEY;
 		}
 
 		return apply_filters( 'wp_stream_settings_option_key', $option_key );
@@ -251,7 +241,7 @@ class WP_Stream_Settings {
 								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
 								sprintf(
 									'<a href="%s" title="%s">',
-									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_KEY ) ),
+									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_OPTION_KEY ) ),
 									esc_attr__( 'View Profile', 'stream' )
 								),
 								'</a>',
@@ -265,29 +255,6 @@ class WP_Stream_Settings {
 							'after_field' => esc_html__( 'Enabled', 'stream' ),
 							'default'     => 0,
 						),
-						array(
-							'name'        => 'records_ttl',
-							'title'       => esc_html__( 'Keep Records for', 'stream' ),
-							'type'        => 'number',
-							'class'       => 'small-text',
-							'desc'        => esc_html__( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
-							'default'     => 90,
-							'after_field' => esc_html__( 'days', 'stream' ),
-						),
-						array(
-							'name'        => 'delete_all_records',
-							'title'       => esc_html__( 'Reset Stream Database', 'stream' ),
-							'type'        => 'link',
-							'href'        => add_query_arg(
-								array(
-									'action'          => 'wp_stream_reset',
-									'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-								),
-								admin_url( 'admin-ajax.php' )
-							),
-							'desc'        => esc_html__( 'Warning: Clicking this will delete all activity records from the database.', 'stream' ),
-							'default'     => 0,
-						),
 					),
 				),
 				'exclude' => array(
@@ -299,6 +266,7 @@ class WP_Stream_Settings {
 							'type'        => 'rule_list',
 							'desc'        => esc_html__( 'Create rules for excluding certain kinds of records from appearing in Stream.', 'stream' ),
 							'default'     => array(),
+							'nonce'       => 'stream_get_ips',
 						),
 					),
 				),
@@ -324,7 +292,7 @@ class WP_Stream_Settings {
 
 		$defaults = self::get_defaults( $option_key );
 
-		if ( self::DEFAULTS_KEY === $option_key ) {
+		if ( self::DEFAULTS_OPTION_KEY === $option_key ) {
 			return $defaults;
 		}
 
@@ -370,7 +338,7 @@ class WP_Stream_Settings {
 		return apply_filters(
 			'wp_stream_option_defaults',
 			wp_parse_args(
-				(array) get_site_option( self::DEFAULTS_KEY, array() ),
+				(array) get_site_option( self::DEFAULTS_OPTION_KEY, array() ),
 				$defaults
 			)
 		);
@@ -909,37 +877,16 @@ class WP_Stream_Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public static function get_settings_translations( $labels ) {
-		if ( ! isset( $labels[ self::KEY ] ) ) {
-			$labels[ self::KEY ] = array();
+		if ( ! isset( $labels[ self::OPTION_KEY ] ) ) {
+			$labels[ self::OPTION_KEY ] = array();
 		}
 
 		foreach ( self::get_fields() as $section_slug => $section ) {
 			foreach ( $section['fields'] as $field ) {
-				$labels[ self::KEY ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
+				$labels[ self::OPTION_KEY ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
 			}
 		}
 
 		return $labels;
-	}
-
-	/**
-	 * Remove records when records TTL is shortened
-	 *
-	 * @param array $old_value
-	 * @param array $new_value
-	 *
-	 * @action update_option_wp_stream
-	 * @return void
-	 */
-	public static function updated_option_ttl_remove_records( $old_value, $new_value ) {
-		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : -1;
-		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : -1;
-
-		if ( $ttl_after < $ttl_before ) {
-			/**
-			 * Action assists in purging when TTL is shortened
-			 */
-			do_action( 'wp_stream_auto_purge' );
-		}
 	}
 }

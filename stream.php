@@ -48,12 +48,12 @@ class WP_Stream {
 	/**
 	 * @var WP_Stream_DB_Base
 	 */
-	public static $db = null;
+	public static $db;
 
 	/**
-	 * @var WP_Stream_Network
+	 * @var WP_Stream_API
 	 */
-	public $network = null;
+	public static $api;
 
 	/**
 	 * Admin notices, collected and displayed on proper action
@@ -71,6 +71,7 @@ class WP_Stream {
 		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
+		define( 'WP_STREAM_EXTENSIONS_DIR', WP_STREAM_DIR . 'extensions/' );
 
 		spl_autoload_register( array( $this, 'autoload' ) );
 
@@ -78,16 +79,17 @@ class WP_Stream {
 		require_once WP_STREAM_INC_DIR . 'functions.php';
 
 		// Load DB helper interface/class
-		$driver = apply_filters( 'wp_stream_db_adapter', 'wpdb' );
-		if ( file_exists( WP_STREAM_INC_DIR . "db/$driver.php" ) ) {
-			require_once WP_STREAM_INC_DIR . "db/$driver.php";
+		$driver = 'WP_Stream_DB';
+		if ( class_exists( $driver ) ) {
+			self::$db = new $driver;
 		}
+
 		if ( ! self::$db ) {
 			wp_die( __( 'Stream: Could not load chosen DB driver.', 'stream' ), 'Stream DB Error' );
 		}
 
-		// Check DB and add message if not present
-		add_action( 'init', array( self::$db, 'check_db' ) );
+		// Load API helper interface/class
+		self::$api = new WP_Stream_API;
 
 		// Install the plugin
 		add_action( 'wp_stream_before_db_notices', array( __CLASS__, 'install' ) );
@@ -100,7 +102,7 @@ class WP_Stream {
 
 		// Load network class
 		if ( is_multisite() ) {
-			$this->network = new WP_Stream_Network;
+			WP_Stream_Network::get_instance();
 		}
 
 		// Load logger class
@@ -109,21 +111,18 @@ class WP_Stream {
 		// Load connectors after widgets_init, but before the default of 10
 		add_action( 'init', array( 'WP_Stream_Connectors', 'load' ), 9 );
 
+		// Load extensions
+		foreach ( glob( WP_STREAM_EXTENSIONS_DIR . '*' ) as $extension ) {
+			require_once sprintf( '%s/class-wp-stream-%s.php', $extension, basename( $extension ) );
+		}
+
 		// Load support for feeds
 		add_action( 'init', array( 'WP_Stream_Feeds', 'load' ) );
 
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
 
-		// Include Stream extension updater
-		WP_Stream_Updater::instance();
-
 		if ( is_admin() ) {
-			// Registers a hook that connectors and other plugins can use whenever a stream update happens
-			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
-
-			add_action( 'admin_init', array( 'WP_Stream_Extensions', 'get_instance' ) );
-
 			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
 
 			add_action( 'plugins_loaded', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
@@ -132,9 +131,6 @@ class WP_Stream {
 
 			add_action( 'plugins_loaded', array( 'WP_Stream_Pointers', 'load' ) );
 		}
-
-		// Load deprecated functions
-		require_once WP_STREAM_INC_DIR . 'deprecated.php';
 	}
 
 	/**
@@ -171,10 +167,6 @@ class WP_Stream {
 		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
-	static function update_activation_hook() {
-		WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( self::$db, 'install' ), self::VERSION );
-	}
-
 	/**
 	 * Whether the current PHP version meets the minimum requirements
 	 *
@@ -182,6 +174,34 @@ class WP_Stream {
 	 */
 	public static function is_valid_php_version() {
 		return version_compare( PHP_VERSION, '5.3', '>=' );
+	}
+
+	/**
+	 * Is Stream connected?
+	 *
+	 * @return bool
+	 */
+	public static function is_connected() {
+		return (bool) self::$api->api_key && (bool) self::$api->site_uuid;
+	}
+
+	/**
+	 * Is Stream in development mode?
+	 *
+	 * @return bool
+	 */
+	public static function is_development_mode() {
+		$development_mode = false;
+
+		if ( defined( 'WP_STREAM_DEV_DEBUG' ) ) {
+			$development_mode = WP_STREAM_DEV_DEBUG;
+		}
+
+		elseif ( site_url() && false === strpos( site_url(), '.' ) ) {
+			$development_mode = true;
+		}
+
+		return apply_filters( 'wp_stream_development_mode', $development_mode );
 	}
 
 	/**
@@ -264,7 +284,8 @@ class WP_Stream {
 
 if ( WP_Stream::is_valid_php_version() ) {
 	$GLOBALS['wp_stream'] = WP_Stream::get_instance();
-	register_activation_hook( __FILE__, array( WP_Stream::$db, 'install' ) );
 } else {
 	WP_Stream::fail_php_version();
 }
+
+register_deactivation_hook( __FILE__, array( 'WP_Stream_Admin', 'remove_api_authentication' ) );
