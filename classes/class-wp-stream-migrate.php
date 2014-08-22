@@ -237,8 +237,8 @@ class WP_Stream_Migrate {
 
 		for ( $i = 0; $i < $max; $i++ ) {
 			// Send records in chunks
-			if ( 'send' === $action ) {
-				$records  = self::get_records( self::$limit );
+			if ( 'sync' === $action ) {
+				$records = self::get_records( self::$limit );
 
 				WP_Stream::$api->new_records( $records, array(), true );
 
@@ -247,6 +247,7 @@ class WP_Stream_Migrate {
 					return array( 'error' => WP_Stream::$api->errors['errors']['remote_request_error'] );
 				} else {
 					self::delete_records( $records );
+					self::drop_legacy_data();
 				}
 			}
 
@@ -255,10 +256,10 @@ class WP_Stream_Migrate {
 				$records = self::get_records( self::$limit, 0, false );
 
 				self::delete_records( $records );
+
+				self::drop_legacy_data();
 			}
 		}
-
-		self::drop_legacy_data();
 	}
 
 	/**
