@@ -209,9 +209,6 @@ class WP_Stream_Admin {
 					);
 				}
 				break;
-			case 'disconnected':
-				$notice = esc_html__( 'You have successfully disconnected from Stream.', 'stream' );
-				break;
 		}
 
 		if ( $notice ) {
@@ -353,6 +350,22 @@ class WP_Stream_Admin {
 				)
 			);
 		}
+
+		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
+
+		wp_enqueue_script( 'wp-stream-bulk-actions', WP_STREAM_URL . 'ui/js/bulk-actions.js', array( 'jquery' ), WP_Stream::VERSION );
+		wp_localize_script(
+			'wp-stream-bulk-actions',
+			'wp_stream_bulk_actions',
+			array(
+				'i18n'               => array(
+					'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %d items? This process could take a while to complete.', 'stream' ), absint( $bulk_actions_threshold ) ),
+					'confirm_import' => __( 'The Stream plugin must be deactivated before you can bulk import content into WordPress.', 'stream' ),
+				),
+				'plugins_screen_url' => WP_Stream_Network::is_network_activated() ? network_admin_url( 'plugins.php#stream' ) : self_admin_url( 'plugins.php#stream' ),
+				'threshold'          => absint( $bulk_actions_threshold ),
+			)
+		);
 	}
 
 	/**
@@ -512,14 +525,17 @@ class WP_Stream_Admin {
 		WP_Stream::$api->site_uuid = wp_stream_filter_input( INPUT_GET, 'site_uuid' );
 
 		// Verify the API Key and Site UUID
-		$site_details_request = WP_Stream::$api->get_site();
+		$site = WP_Stream::$api->get_site();
 
-		if ( ! isset( $site_details_request->site_id ) ) {
+		WP_Stream::$api->restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type ) ? 1 : 0;
+
+		if ( ! isset( $site->site_id ) ) {
 			wp_die( 'There was a problem verifying your site with Stream. Please try again later.', 'stream' );
 		}
 
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
+		update_option( WP_Stream_API::RESTRICTED_OPTION_KEY, WP_Stream::$api->restricted );
 
 		do_action( 'wp_stream_site_connected', get_current_blog_id(), WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
 
@@ -535,13 +551,13 @@ class WP_Stream_Admin {
 	}
 
 	public static function remove_api_authentication() {
-		do_action( 'wp_stream_site_disconnected', get_current_blog_id(), WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
+		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
+		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
+
+		do_action( 'wp_stream_site_disconnected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid, get_current_blog_id() );
 
 		WP_Stream::$api->api_key   = false;
 		WP_Stream::$api->site_uuid = false;
-
-		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
-		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
 
 		$redirect_url = add_query_arg(
 			array(
@@ -564,7 +580,7 @@ class WP_Stream_Admin {
 		$url     = sprintf( '%s/wp-content/themes/wp-stream.com/assets/testimonials.json', untrailingslashit( self::PUBLIC_URL ) );
 		$request = wp_remote_request( esc_url_raw( $url ), array( 'sslverify' => false ) );
 
-		if ( $request['response']['code'] === 200 && ! is_wp_error( $request ) ) {
+		if ( ! is_wp_error( $request ) && $request['response']['code'] === 200 ) {
 			$testimonials = json_decode( $request['body'], true );
 		} else {
 			$testimonials = false;
@@ -657,46 +673,50 @@ class WP_Stream_Admin {
 		$page_title   = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
 		$date_format  = get_option( 'date_format' );
 		$site_details = WP_Stream::$api->get_site();
-
-		if ( ! $site_details ) {
-			?>
-			<div class="wrap">
-				<div class="updated error"><p><?php _e( 'Error retrieving account details.', 'stream' ); ?></p></div>
-			</div>
-			<?php
-			return;
-		}
-
-		$plan_label = __( 'Free', 'stream' );
-		if ( isset( $site_details->plan ) ) {
-			if ( 0 === strpos( $site_details->plan->type, 'pro' ) ) {
-				$plan_label = __( 'Pro', 'stream' );
-			} elseif ( 0 === strpos( $site_details->plan->type, 'standard' ) ) {
-				$plan_label = __( 'Standard', 'stream' );
-			}
-		}
-
-		if ( 'free' !== $site_details->plan->type ) {
-			$next_billing_label = sprintf(
-				_x( '$%1$s on %2$s', '1: Price, 2: Renewal date', 'stream' ),
-				$site_details->plan->amount,
-				date_i18n( $date_format, strtotime( $site_details->expiry->date ) )
-			);
-		}
-
-		$retention_label = '';
-		if ( 0 === $site_details->plan->retention ) {
-			$retention_label = __( 'Unlimited', 'stream' );
-		} else {
-			$retention_label = sprintf(
-				_n( '1 Day', '%s Days', $site_details->plan->retention, 'stream' ),
-				$site_details->plan->retention
-			);
-		}
 		?>
 		<div class="wrap">
 			<h2><?php echo esc_html( $page_title ) ?></h2>
-			<div class="postbox ">
+			<div class="postbox">
+		<?php
+		if ( ! $site_details ) {
+			?>
+				<h3><?php esc_html_e( 'Error retrieving account details.' ); ?></h3>
+				<div class="plan-details">
+					<p><?php esc_html_e( 'If this problem persists, please disconnect from Stream and try connecting again.', 'stream' ); ?></p>
+				</div>
+				<div class="plan-actions submitbox">
+					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
+				</div>
+			<?php
+		} else {
+			$plan_label = __( 'Free', 'stream' );
+
+			if ( isset( $site_details->plan ) ) {
+				if ( 0 === strpos( $site_details->plan->type, 'pro' ) ) {
+					$plan_label = __( 'Pro', 'stream' );
+				} elseif ( 0 === strpos( $site_details->plan->type, 'standard' ) ) {
+					$plan_label = __( 'Standard', 'stream' );
+				}
+			}
+
+			if ( 'free' !== $site_details->plan->type ) {
+				$next_billing_label = sprintf(
+					_x( '$%1$s on %2$s', '1: Price, 2: Renewal date', 'stream' ),
+					$site_details->plan->amount,
+					date_i18n( $date_format, strtotime( $site_details->expiry->date ) )
+				);
+			}
+
+			$retention_label = '';
+			if ( 0 === $site_details->plan->retention ) {
+				$retention_label = __( 'Unlimited', 'stream' );
+			} else {
+				$retention_label = sprintf(
+					_n( '1 Day', '%s Days', $site_details->plan->retention, 'stream' ),
+					$site_details->plan->retention
+				);
+			}
+			?>
 				<h3><?php echo esc_html( $site_details->site_url ); ?></h3>
 				<div class="plan-details">
 					<table class="form-table">
@@ -732,6 +752,9 @@ class WP_Stream_Admin {
 					<a href="<?php echo esc_url( self::$account_url ); ?>#change-plan_<?php echo esc_html( WP_Stream::$api->site_uuid ); ?>" class="button button-primary button-large"><?php _e( 'Change Plan', 'stream' ); ?></a>
 					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
 				</div>
+			<?php
+			}
+		?>
 			</div>
 		</div>
 		<?php

@@ -185,15 +185,12 @@ class WP_Stream_Feeds {
 	 */
 	public static function feed_template() {
 		$die_title   = esc_html__( 'Access Denied', 'stream' );
-		$die_message = '<h1>' . $die_title .'</h1><p>' . esc_html__( 'You don\'t have permission to view this feed, please contact your site Administrator.', 'stream' ) . '</p>';
-
-		if ( ! isset( $_GET[ self::FEED_QUERY_VAR ] ) || empty( $_GET[ self::FEED_QUERY_VAR ] ) ) {
-			wp_die( $die_message, $die_title );
-		}
+		$die_message = sprintf( '<h1>%s</h1><p>%s</p>', $die_title, esc_html__( "You don't have permission to view this feed, please contact your site Administrator.", 'stream' ) );
+		$query_var   = is_network_admin() ? self::FEED_NETWORK_QUERY_VAR : self::FEED_QUERY_VAR;
 
 		$args = array(
 			'meta_key'   => self::USER_FEED_OPTION_KEY,
-			'meta_value' => $_GET[ self::FEED_QUERY_VAR ],
+			'meta_value' => $_GET[ $query_var ],
 			'number'     => 1,
 		);
 		$user = get_users( $args );
@@ -223,7 +220,7 @@ class WP_Stream_Feeds {
 			'date'             => wp_stream_filter_input( INPUT_GET, 'date' ),
 			'date_from'        => wp_stream_filter_input( INPUT_GET, 'date_from' ),
 			'date_to'          => wp_stream_filter_input( INPUT_GET, 'date_to' ),
-			'record__in'       => wp_stream_filter_input( INPUT_GET, 'record__in', FILTER_SANITIZE_NUMBER_INT ),
+			'record__in'       => wp_stream_filter_input( INPUT_GET, 'record__in' ),
 			'order'            => wp_stream_filter_input( INPUT_GET, 'order' ),
 			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby' ),
 			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields' ),
@@ -244,7 +241,7 @@ class WP_Stream_Feeds {
 		if ( isset( $records[0]->ID ) ) {
 			$latest_link = add_query_arg(
 				array(
-					'record__in' => (int) $records[0]->ID,
+					'record__in' => $records[0]->ID,
 				),
 				$records_admin_url
 			);
@@ -254,11 +251,11 @@ class WP_Stream_Feeds {
 		$format = wp_stream_filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR );
 
 		if ( 'atom' === $format ) {
-			require_once WP_STREAM_DIR . 'ui/feeds/atom.php';
+			require_once WP_STREAM_INC_DIR . 'feeds/atom.php';
 		} elseif ( 'json' === $format ) {
-			require_once WP_STREAM_DIR . 'ui/feeds/json.php';
+			require_once WP_STREAM_INC_DIR . 'feeds/json.php';
 		} else {
-			require_once WP_STREAM_DIR . 'ui/feeds/rss-2.0.php';
+			require_once WP_STREAM_INC_DIR . 'feeds/rss-2.0.php';
 		}
 
 		exit;

@@ -661,6 +661,7 @@ body.folded .stream-example {
 }
 
 .stream_page_wp_stream_account .plan-actions {
+	min-height: 30px;
 	padding: 10px;
 	clear: both;
 	border-top: 1px solid #ddd;

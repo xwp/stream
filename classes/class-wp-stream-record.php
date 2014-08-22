@@ -10,7 +10,6 @@ class WP_Stream_Record {
 	public $author_role;
 	public $summary;
 	public $visibility;
-	public $parent;
 	public $type;
 	public $connector;
 	public $context;
