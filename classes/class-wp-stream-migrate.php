@@ -33,7 +33,7 @@ class WP_Stream_Migrate {
 	 *
 	 * @var int
 	 */
-	public static $limit = 1000;
+	public static $limit = 0;
 
 	/**
 	 * Hold unformatted records temporarily for deletion
@@ -70,6 +70,8 @@ class WP_Stream_Migrate {
 			self::drop_legacy_data();
 			return;
 		}
+
+		self::$limit = apply_filters( 'wp_stream_migrate_chunk_size', 1000 );
 
 		add_action( 'admin_notices', array( __CLASS__, 'sync_notice' ), 9 );
 
@@ -258,13 +260,13 @@ class WP_Stream_Migrate {
 	/**
 	 * Get a chunk of records formatted for Stream API ingestion
 	 *
-	 * @param  int  $limit   The number of rows to query, 500 by default
+	 * @param  int  $limit   The number of rows to query
 	 * @param  int  $offset  The number of rows to skip, 0 by default
 	 * @param  bool $format  Whether or not the output should be formatted for cloud ingestion, true by default
 	 *
 	 * @return array  An array of record arrays
 	 */
-	public static function get_records( $limit = 1000, $offset = 0, $format = true ) {
+	public static function get_records( $limit = null, $offset = 0, $format = true ) {
 		$limit = is_int( $limit ) ? $limit : self::$limit;
 
 		global $wpdb;
@@ -304,14 +306,6 @@ class WP_Stream_Migrate {
 
 			$records[ $record ]['stream_meta'] = $stream_meta_output;
 
-			// If the array value is numeric then sanitize it from a string to an int
-			array_walk_recursive(
-				$records[ $record ],
-				function( &$v ) {
-					$v = is_numeric( $v ) ? intval( $v ) : $v; // A negative int could potentially exist as meta
-				}
-			);
-
 			self::$_records[] = $records[ $record ];
 
 			if ( $format ) {
@@ -323,6 +317,14 @@ class WP_Stream_Migrate {
 				// If the object_id is null, set it to 0
 				$records[ $record ]['object_id'] = is_null( $records[ $record ]['object_id'] ) ? 0 : $records[ $record ]['object_id'];
 			}
+
+			// If the array value is numeric then sanitize it from a string to an int
+			array_walk_recursive(
+				$records[ $record ],
+				function( &$v ) {
+					$v = is_numeric( $v ) ? intval( $v ) : $v; // A negative int could potentially exist as meta
+				}
+			);
 		}
 
 		return $records;
