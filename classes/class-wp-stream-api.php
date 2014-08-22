@@ -96,6 +96,21 @@ class WP_Stream_API {
 	}
 
 	/**
+	 * Used to prioritise the streams transport which support non-blocking
+	 *
+	 * @filter http_api_transports
+	 *
+	 * @return bool
+	 */
+	public static function http_api_transport_priority( $request_order, $args, $url ) {
+		if ( isset( $args['blocking'] ) && false === $args['blocking'] ) {
+			$request_order = array( 'streams', 'curl' );
+		}
+
+		return $request_order;
+	}
+
+	/**
 	 * Get the details for a specific site.
 	 *
 	 * @param array Returns specified fields only.
@@ -179,14 +194,14 @@ class WP_Stream_API {
 	}
 
 	/**
-	 * Create a new record.
+	 * Create new records.
 	 *
 	 * @param array Record data.
 	 * @param array Returns specified fields only.
 	 *
-	 * @return mixed
+	 * @return void
 	 */
-	public function new_record( $record, $fields = array() ) {
+	public function new_records( $records, $fields = array() ) {
 		if ( ! $this->site_uuid ) {
 			return false;
 		}
@@ -198,9 +213,9 @@ class WP_Stream_API {
 		}
 
 		$url  = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $args );
-		$args = array( 'method' => 'POST', 'body' => json_encode( $record, JSON_FORCE_OBJECT ) );
+		$args = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ), 'blocking' => false );
 
-		return $this->remote_request( $url, $args );
+		$this->remote_request( $url, $args );
 	}
 
 	/**
@@ -288,6 +303,8 @@ class WP_Stream_API {
 		$args['headers']['Accept-Version']      = $this->api_version;
 		$args['headers']['Content-Type']        = 'application/json';
 
+		add_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10, 3 );
+
 		$transient = 'wp_stream_' . md5( $url );
 
 		if ( 'GET' === $args['method'] && $allow_cache ) {
@@ -297,6 +314,13 @@ class WP_Stream_API {
 			}
 		} else {
 			$request = wp_remote_request( $url, $args );
+		}
+
+		remove_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10 );
+
+		// Return early if the request is non blocking
+		if ( isset( $args['blocking'] ) && false === $args['blocking'] ) {
+			return true;
 		}
 
 		if ( ! is_wp_error( $request ) ) {

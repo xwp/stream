@@ -573,16 +573,18 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * @return array            Filtered record data
 	 */
 	public static function callback_wp_stream_record_array( $recordarr ) {
-		// Change connector::posts records
-		if ( 'posts' === $recordarr['connector'] && in_array( $recordarr['context'], self::$post_types ) ) {
-			$recordarr['connector'] = self::$name;
-		} elseif ( 'taxonomies' === $recordarr['connector'] && in_array( $recordarr['context'], self::$taxonomies ) ) {
-			$recordarr['connector'] = self::$name;
-		} elseif ( 'settings' === $recordarr['connector'] ) {
-			$option = isset( $recordarr['meta']['option_key'] ) ? $recordarr['meta']['option_key'] : false;
+		foreach ( $recordarr as $key => $record ) {
+			// Change connector::posts records
+			if ( 'posts' === $record['connector'] && in_array( $record['context'], self::$post_types ) ) {
+				$recordarr[ $key ]['connector'] = self::$name;
+			} elseif ( 'taxonomies' === $record['connector'] && in_array( $record['context'], self::$taxonomies ) ) {
+				$recordarr[ $key ]['connector'] = self::$name;
+			} elseif ( 'settings' === $record['connector'] ) {
+				$option = isset( $record['meta']['option_key'] ) ? $record['meta']['option_key'] : false;
 
-			if ( $option && isset( self::$settings[ $option ] ) ) {
-				return false;
+				if ( $option && isset( self::$settings[ $option ] ) ) {
+					return false;
+				}
 			}
 		}
 

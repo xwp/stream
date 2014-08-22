@@ -192,9 +192,6 @@ class WP_Stream_Admin {
 					esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
 				);
 				break;
-			case 'disconnected':
-				$notice = esc_html__( 'You have successfully disconnected from Stream.', 'stream' );
-				break;
 		}
 
 		if ( $notice ) {
@@ -309,7 +306,7 @@ class WP_Stream_Admin {
 				'wp-stream-admin',
 				'wp_stream',
 				array(
-					'i18n'            => array(
+					'i18n'           => array(
 						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
 					'gmt_offset'     => get_option( 'gmt_offset' ),
@@ -320,6 +317,22 @@ class WP_Stream_Admin {
 				)
 			);
 		}
+
+		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
+
+		wp_enqueue_script( 'wp-stream-bulk-actions', WP_STREAM_URL . 'ui/js/bulk-actions.js', array( 'jquery' ), WP_Stream::VERSION );
+		wp_localize_script(
+			'wp-stream-bulk-actions',
+			'wp_stream_bulk_actions',
+			array(
+				'i18n'               => array(
+					'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %d items? This process could take a while to complete.', 'stream' ), absint( $bulk_actions_threshold ) ),
+					'confirm_import' => __( 'The Stream plugin must be deactivated before you can bulk import content into WordPress.', 'stream' ),
+				),
+				'plugins_screen_url' => WP_Stream_Network::is_network_activated() ? network_admin_url( 'plugins.php#stream' ) : self_admin_url( 'plugins.php#stream' ),
+				'threshold'          => absint( $bulk_actions_threshold ),
+			)
+		);
 	}
 
 	/**
@@ -501,16 +514,6 @@ class WP_Stream_Admin {
 
 		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
 		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
-
-		$redirect_url = add_query_arg(
-			array(
-				'page'    => self::RECORDS_PAGE_SLUG,
-				'message' => 'disconnected',
-			),
-			admin_url( 'admin.php' )
-		);
-
-		wp_redirect( $redirect_url );
 	}
 
 	public static function get_testimonials() {
@@ -523,7 +526,7 @@ class WP_Stream_Admin {
 		$url     = sprintf( '%s/wp-content/themes/wp-stream.com/assets/testimonials.json', untrailingslashit( self::PUBLIC_URL ) );
 		$request = wp_remote_request( esc_url_raw( $url ), array( 'sslverify' => false ) );
 
-		if ( $request['response']['code'] === 200 && ! is_wp_error( $request ) ) {
+		if ( ! is_wp_error( $request ) && $request['response']['code'] === 200 ) {
 			$testimonials = json_decode( $request['body'], true );
 		} else {
 			$testimonials = false;

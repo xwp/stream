@@ -10,13 +10,6 @@ class WP_Stream_Log {
 	public static $instance = null;
 
 	/**
-	 * Previous Stream record ID, used for chaining same-session records
-	 *
-	 * @var int
-	 */
-	public $prev_record;
-
-	/**
 	 * Load log handler class, filterable by extensions
 	 *
 	 * @return void
@@ -58,13 +51,17 @@ class WP_Stream_Log {
 	 * @param  string $action    Action of the event
 	 * @param  int    $user_id   User responsible for the event
 	 *
-	 * @return int
+	 * @return void
 	 */
 	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null ) {
 		global $wpdb;
 
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
+		}
+
+		if ( is_null( $object_id ) ) {
+			$object_id = 0;
 		}
 
 		$user  = new WP_User( $user_id );
@@ -112,8 +109,8 @@ class WP_Stream_Log {
 			'author_role' => ! empty( $user->roles ) ? $user->roles[0] : null,
 			'created'     => $iso_8601_extended_date,
 			'visibility'  => $visibility,
+			'type'        => 'stream',
 			'summary'     => vsprintf( $message, $args ),
-			'parent'      => self::$instance->prev_record,
 			'connector'   => $connector,
 			'context'     => $context,
 			'action'      => $action,
@@ -121,9 +118,7 @@ class WP_Stream_Log {
 			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
-		$record_id = WP_Stream::$db->store( $recordarr );
-
-		return $record_id;
+		WP_Stream::$db->store( array( $recordarr ) );
 	}
 
 	/**
