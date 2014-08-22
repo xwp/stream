@@ -200,7 +200,7 @@ class WP_Stream_API {
 	 * @param array Returns specified fields only.
 	 * @param bool  Set to true when a response is not needed.
 	 *
-	 * @return $response Success or error response from API
+	 * @return void
 	 */
 	public function new_records( $records, $fields = array(), $blocking = false ) {
 		if ( ! $this->site_uuid ) {
@@ -213,11 +213,10 @@ class WP_Stream_API {
 			$args['fields'] = implode( ',', $fields );
 		}
 
-		$url      = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $args );
-		$args     = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ), 'blocking' => $blocking );
-		$response = $this->remote_request( $url, $args );
+		$url  = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $args );
+		$args = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ), 'blocking' => $blocking );
 
-		return $response;
+		$this->remote_request( $url, $args );
 	}
 
 	/**

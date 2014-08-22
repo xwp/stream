@@ -239,7 +239,8 @@ class WP_Stream_Migrate {
 			// Send records in chunks
 			if ( 'send' === $action ) {
 				$records  = self::get_records( self::$limit );
-				$response = WP_Stream::$api->new_records( $records, array(), true );
+
+				WP_Stream::$api->new_records( $records, array(), true );
 
 				if ( isset( WP_Stream::$api->errors['errors']['remote_request_error'] ) ) {
 					// Stop the loop if there is an error and return the message
