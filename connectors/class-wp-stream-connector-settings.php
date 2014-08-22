@@ -297,6 +297,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'user_count'                    => __( 'User Count', 'stream' ),
 			// Other
 			'wp_stream_db'                  => __( 'Stream Database Version', 'stream' ),
+			'wp_stream_connected_sites'     => __( 'Stream Total Sites', 'stream' ),
 		);
 
 		if ( isset( $labels[ $field_key ] ) ) {
