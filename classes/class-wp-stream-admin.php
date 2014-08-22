@@ -179,7 +179,8 @@ class WP_Stream_Admin {
 		$script_screens = array( 'plugins.php', 'user-edit.php', 'user-new.php', 'profile.php' );
 
 		if ( 'index.php' === $hook ) {
-			wp_enqueue_script( 'wp-stream-admin-dashboard', WP_STREAM_URL . 'ui/js/dashboard.js', array( 'jquery', 'heartbeat' ), WP_Stream::VERSION );
+			wp_enqueue_script( 'wp-stream-dashboard', WP_STREAM_URL . 'ui/dashboard.js', array( 'jquery' ), WP_Stream::VERSION );
+			wp_enqueue_script( 'wp-stream-live-updates', WP_STREAM_URL . 'ui/live-updates.js', array( 'jquery', 'heartbeat' ), WP_Stream::VERSION );
 		} elseif ( in_array( $hook, self::$screen_id ) || in_array( $hook, $script_screens ) ) {
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_style( 'select2' );
@@ -187,7 +188,9 @@ class WP_Stream_Admin {
 			wp_enqueue_script( 'timeago' );
 			wp_enqueue_script( 'timeago-locale' );
 
-			wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/js/admin.js', array( 'jquery', 'select2', 'heartbeat' ), WP_Stream::VERSION );
+			wp_enqueue_script( 'wp-stream-admin', WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2' ), WP_Stream::VERSION );
+			wp_enqueue_script( 'wp-stream-live-updates', WP_STREAM_URL . 'ui/live-updates.js', array( 'jquery', 'heartbeat' ), WP_Stream::VERSION );
+
 			wp_localize_script(
 				'wp-stream-admin',
 				'wp_stream',

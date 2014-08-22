@@ -2,27 +2,43 @@
 
 class WP_Stream_Live_Update {
 
+	/**
+	 * User meta key/identifier
+	 *
+	 * @const string
+	 */
+	const USER_META_KEY = 'stream_live_update_records';
+
+	/**
+	 * List table object instance
+	 *
+	 * @var object
+	 */
 	public static $list_table = null;
 
+	/**
+	 * Load live updates methods
+	 */
 	public static function load() {
 		// Heartbeat live update
 		add_filter( 'heartbeat_received', array( __CLASS__, 'heartbeat_received' ), 10, 2 );
 
 		// Enable/Disable live update per user
 		add_action( 'wp_ajax_stream_enable_live_update', array( __CLASS__, 'enable_live_update' ) );
-
 	}
 
 	/**
 	 * Ajax function to enable/disable live update
-	 * @return void/json
+	 *
+	 * @return string Ajax respsonse back in JSON format
 	 */
 	public static function enable_live_update() {
-		check_ajax_referer( 'stream_live_update_records_nonce', 'nonce' );
+		check_ajax_referer( self::USER_META_KEY . '_nonce', 'nonce' );
 
 		$input = array(
-			'checked' => FILTER_SANITIZE_STRING,
-			'user'    => FILTER_SANITIZE_STRING,
+			'checked'   => FILTER_SANITIZE_STRING,
+			'user'      => FILTER_SANITIZE_STRING,
+			'heartbeat' => FILTER_SANITIZE_STRING,
 		);
 
 		$input = filter_input_array( INPUT_POST, $input );
@@ -35,27 +51,35 @@ class WP_Stream_Live_Update {
 
 		$user = (int) $input['user'];
 
-		$success = update_user_meta( $user, 'stream_live_update_records', $checked );
+		if ( 'false' === $input['heartbeat'] ) {
+			update_user_meta( $user, self::USER_META_KEY, 'off' );
+
+			wp_send_json_error( esc_html__( "Live updates could not be enabled because Heartbeat is not loaded.\n\nYour hosting provider or another plugin may have disabled it for performance reasons.", 'stream' ) );
+
+			return;
+		}
+
+		$success = update_user_meta( $user, self::USER_META_KEY, $checked );
 
 		if ( $success ) {
-			wp_send_json_success( 'Live Updates Enabled' );
+			wp_send_json_success( ( 'on' === $checked ) ? 'Live Updates enabled' : 'Live Updates disabled' );
 		} else {
 			wp_send_json_error( 'Live Updates checkbox error' );
 		}
 	}
 
 	/**
-	 * Sends Updated Actions to the List Table View
+	 * Sends updated actions to the list table view
 	 *
-	 * @todo fix reliability issues with sidebar widgets
+	 * @todo Fix reliability issues with sidebar widgets
 	 *
 	 * @uses gather_updated_items
 	 * @uses generate_row
 	 *
-	 * @param  array  Response to heartbeat
-	 * @param  array  Response from heartbeat
+	 * @param array Response to heartbeat
+	 * @param array Response from heartbeat
 	 *
-	 * @return array  Data sent to heartbeat
+	 * @return array Data sent to heartbeat
 	 */
 	public static function live_update( $response, $data ) {
 		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
@@ -64,6 +88,7 @@ class WP_Stream_Live_Update {
 
 		$last_id = $data['wp-stream-heartbeat-last-id'];
 		$query   = $data['wp-stream-heartbeat-query'];
+
 		if ( empty( $query ) ) {
 			$query = array();
 		}
@@ -75,6 +100,7 @@ class WP_Stream_Live_Update {
 
 		if ( ! empty( $updated_items ) ) {
 			ob_start();
+
 			foreach ( $updated_items as $item ) {
 				self::$list_table->single_row( $item );
 			}
@@ -92,13 +118,15 @@ class WP_Stream_Live_Update {
 	 * Handles live updates for both dashboard widget and Stream Post List
 	 *
 	 * @action heartbeat_recieved
-	 * @param  array  Response to be sent to heartbeat tick
-	 * @param  array  Data from heartbeat send
-	 * @return array  Data sent to heartbeat tick
+	 *
+	 * @param array Response to be sent to heartbeat tick
+	 * @param array Data from heartbeat send
+	 *
+	 * @return array Data sent to heartbeat tick
 	 */
 	public static function heartbeat_received( $response, $data ) {
 		$option                  = get_option( 'dashboard_stream_activity_options' );
-		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
+		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), self::USER_META_KEY, true ) );
 		$enable_dashboard_update = ( 'off' !== ( $option['live_update'] ) );
 
 		// Register list table
