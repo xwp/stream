@@ -189,6 +189,9 @@ class WP_Stream_Migrate {
 	public static function migrate_notification_rules() {
 		global $wpdb;
 
+		// Blog ID is set to 0 on single site installs
+		$blog_id = is_multisite() ? self::$blog_id : 0;
+
 		$rules = $wpdb->get_results(
 			$wpdb->prepare( "
 				SELECT *
@@ -199,7 +202,7 @@ class WP_Stream_Migrate {
 				ORDER BY created DESC
 				",
 				self::$site_id,
-				self::$blog_id
+				$blog_id
 			),
 			ARRAY_A
 		);
