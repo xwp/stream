@@ -89,7 +89,7 @@ jQuery(function($){
 							return {
 								find:   term,
 								limit:  10,
-								action: 'stream_get_ips',
+								action: 'stream_get_ips'
 							};
 						},
 						results: function (response) {
@@ -258,7 +258,7 @@ jQuery(function($){
 			;
 
 			if ( ( lastItem = divTriggers.find('.trigger').last() ) && lastItem.size() ) {
-				index = parseInt( lastItem.attr('rel') ) + 1;
+				index = parseInt( lastItem.attr('rel'), 10 ) + 1;
 			}
 
 			// Get adjacent trigger[type=connector] to filter special trigger types
