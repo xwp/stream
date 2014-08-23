@@ -1,11 +1,11 @@
 /* globals stream_notifications_options, _ */
-jQuery(function ($) {
+jQuery( function( $ ) {
 
 	if ( stream_notifications_options.bulkActions ) {
 		var $bulkSelect = $( '.bulkactions select' ),
-			opts = '';
+			opts        = '';
 
-		_.each( stream_notifications_options.bulkActions, function ( el, i ) {
+		_.each( stream_notifications_options.bulkActions, function( el, i ) {
 			opts += '<option value="%">%</option>'.replace( '%', i ).replace( '%', el );
 		});
 

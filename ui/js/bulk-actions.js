@@ -1,5 +1,5 @@
 /* globals wp_stream_bulk_actions */
-jQuery(function( $ ) {
+jQuery( function( $ ) {
 
 	// List table actions, ignores filtering
 	$( '.actions :submit:not([name="filter_action"])' ).on( 'click', function( e ) {

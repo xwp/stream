@@ -5,7 +5,8 @@ jQuery( function( $ ) {
 
 	if ( window.location.hash.substr( 'stream-highlight-' ) ) {
 		highlight = window.location.hash.replace( 'stream-highlight-', '' );
-		input = $( ':input' + highlight );
+		input     = $( ':input' + highlight );
+
 		window.location.hash = '';
 
 		if ( input.length ) {
@@ -16,7 +17,7 @@ jQuery( function( $ ) {
 
 			jQuery( document ).ready( function() {
 				setTimeout( function() {
-					$('body,html').animate({
+					$( 'body,html' ).animate({
 						scrollTop: input.offset().top - 50
 					}, 'slow', function() {
 						input.animate( { backgroundColor: 'yellow' }, 'slow' );

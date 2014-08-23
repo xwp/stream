@@ -1,12 +1,12 @@
 /* globals wp_stream, ajaxurl */
-jQuery(function( $ ) {
+jQuery( function( $ ) {
 
-	$( '.toplevel_page_wp_stream :input.chosen-select' ).each(function( i, el ) {
+	$( '.toplevel_page_wp_stream :input.chosen-select' ).each( function( i, el ) {
 		var args = {},
 			formatResult = function( record, container ) {
 				var result = '',
-					$elem = $( record.element ),
-					icon = '';
+					$elem  = $( record.element ),
+					icon   = '';
 
 				if ( '- ' === record.text.substring( 0, 2 ) ) {
 					record.text = record.text.substring( 2 );
@@ -71,7 +71,7 @@ jQuery(function( $ ) {
 							ajaxurl,
 							{
 								action: 'wp_stream_get_filter_value_by_id',
-								filter: $(element).attr('name'),
+								filter: $(element).attr( 'name' ),
 								id: id
 							},
 							function( response ) {
@@ -107,7 +107,7 @@ jQuery(function( $ ) {
 		$connector.val( optionConnector );
 
 		if ( 'level-1' === optionClass ) {
-			$option.val('');
+			$option.val( '' );
 		}
 	});
 
@@ -145,15 +145,17 @@ jQuery(function( $ ) {
 		}
 
 		syncFormAction( index );
+
 		return false;
 	});
+
 	$tabs.children().eq( currentHash ).trigger( 'click' );
 
 	// Live Updates screen option
-	$( document ).ready(function() {
+	$( document ).ready( function() {
 
 		// Enable Live Updates checkbox ajax
-		$( '#enable_live_update' ).click(function() {
+		$( '#enable_live_update' ).click( function() {
 			var nonce     = $( '#stream_live_update_nonce' ).val(),
 				user      = $( '#enable_live_update_user' ).val(),
 				checked   = 'unchecked',
@@ -203,7 +205,7 @@ jQuery(function( $ ) {
 
 			var divs = $( 'div.alignleft.actions div.select2-container' );
 
-			divs.each(function() {
+			divs.each( function() {
 				if ( ! $( this ).is( ':hidden' ) ) {
 					all_hidden = false;
 					return false;
@@ -225,7 +227,7 @@ jQuery(function( $ ) {
 			$( 'div.date-interval' ).hide();
 		}
 
-		$( 'div.actions select.chosen-select' ).each(function() {
+		$( 'div.actions select.chosen-select' ).each( function() {
 			var name = $( this ).prop( 'name' );
 
 			if ( $( 'div.metabox-prefs [id="' + name + '-hide"]' ).is( ':checked' ) ) {
@@ -237,7 +239,7 @@ jQuery(function( $ ) {
 
 		toggle_filter_submit();
 
-		$( 'div.metabox-prefs [type="checkbox"]' ).click(function() {
+		$( 'div.metabox-prefs [type="checkbox"]' ).click( function() {
 			var id = $( this ).prop( 'id' );
 
 			if ( 'date-hide' === id ) {
@@ -466,6 +468,6 @@ jQuery(function( $ ) {
 
 jQuery.extend({
 	streamGetQueryVars: function( str ) {
-		return (str || document.location.search).replace(/(^\?)/,'').split('&').map(function(n){return n = n.split('='),this[n[0]] = n[1],this;}.bind({}))[0];
+		return ( str || document.location.search ).replace( /(^\?)/, '' ).split( '&' ).map( function( n ) { return n = n.split( '=' ), this[n[0]] = n[1], this; }.bind( {} ) )[0];
 	}
 });
