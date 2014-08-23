@@ -1,14 +1,10 @@
 /* globals wp_stream */
-jQuery(function( $ ) {
+jQuery( function( $ ) {
 
-	$( document ).ready(function() {
+	$( document ).ready( function() {
 
 		// Only run on page 1 when the order is desc and on page wp_stream
-		if (
-			'toplevel_page_wp_stream' !== wp_stream.current_screen ||
-			'1' !== wp_stream.current_page ||
-			'asc' === wp_stream.current_order
-		) {
+		if ( 'toplevel_page_wp_stream' !== wp_stream.current_screen || '1' !== wp_stream.current_page || 'asc' === wp_stream.current_order ) {
 			return;
 		}
 
@@ -51,7 +47,7 @@ jQuery(function( $ ) {
 			var has_class = ( $current_items.first().hasClass( 'alternate' ) );
 
 			// Apply the good class to the list
-			if ( $new_items.length === 1 && ! has_class ) {
+			if ( 1 === $new_items.length && ! has_class ) {
 				$new_items.addClass( 'alternate' );
 			} else {
 				var even_or_odd = ( 0 === $new_items.length % 2 && ! has_class ) ? 'even' : 'odd';
@@ -93,9 +89,9 @@ jQuery(function( $ ) {
 			$( list_sel ).parent().trigger( 'updated' );
 
 			// Remove background after a certain amount of time
-			setTimeout(function() {
-				$('.new-row').addClass( 'fadeout' );
-				setTimeout(function() {
+			setTimeout( function() {
+				$( '.new-row' ).addClass( 'fadeout' );
+				setTimeout( function() {
 					$( list_sel + ' tr' ).removeClass( 'new-row fadeout' );
 				}, 500 );
 			}, 3000 );

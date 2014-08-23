@@ -155,6 +155,7 @@ i.stream-icon {
 
 #stream-message .stream-message-text {
 	display: inline-block;
+	width: calc(100% - 262px);
 	margin: 22px 0 12px;
 }
 
@@ -180,6 +181,10 @@ i.stream-icon {
 
 	#wp-stream-connect p.stream-quote-author {
 		font-size: 0.8em;
+	}
+
+	#stream-message .stream-message-text {
+		width: 100%;
 	}
 
 }
