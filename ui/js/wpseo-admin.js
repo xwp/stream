@@ -1,5 +1,6 @@
 // globals jQuery, $
 jQuery( function( $ ) {
+
 	var highlight, input, tab;
 
 	if ( window.location.hash.substr( 'stream-highlight-' ) ) {
@@ -25,4 +26,5 @@ jQuery( function( $ ) {
 			});
 		}
 	}
+
 });
