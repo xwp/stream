@@ -1,12 +1,12 @@
 /* globals wp_stream, ajaxurl */
-jQuery(function( $ ) {
+jQuery( function( $ ) {
 
 	$( '.toplevel_page_wp_stream :input.chosen-select' ).each(function( i, el ) {
 		var args = {},
 			formatResult = function( record, container ) {
 				var result = '',
-					$elem = $( record.element ),
-					icon = '';
+					$elem  = $( record.element ),
+					icon   = '';
 
 				if ( '- ' === record.text.substring( 0, 2 ) ) {
 					record.text = record.text.substring( 2 );
@@ -71,7 +71,7 @@ jQuery(function( $ ) {
 							ajaxurl,
 							{
 								action: 'wp_stream_get_filter_value_by_id',
-								filter: $(element).attr('name'),
+								filter: $(element).attr( 'name' ),
 								id: id
 							},
 							function( response ) {
@@ -107,7 +107,7 @@ jQuery(function( $ ) {
 		$connector.val( optionConnector );
 
 		if ( 'level-1' === optionClass ) {
-			$option.val('');
+			$option.val( '' );
 		}
 	});
 
@@ -121,7 +121,7 @@ jQuery(function( $ ) {
 		$activeTab     = $tabs.find( '.nav-tab-active' ),
 		defaultIndex   = $activeTab.length > 0 ? $tabs.find( 'a' ).index( $activeTab ) : 0,
 		hashIndex      = window.location.hash.match( /^#(\d+)$/ ),
-		currentHash    = ( null !== hashIndex ? hashIndex[ 1 ] : defaultIndex ),
+		currentHash    = ( null !== hashIndex ? hashIndex[ 1 ] : defaultIndex )
 		syncFormAction = function( index ) {
 			var $optionsForm  = $( 'input[name="option_page"][value^="wp_stream"]' ).closest( 'form' );
 			var currentAction = $optionsForm.attr( 'action' );
@@ -466,6 +466,6 @@ jQuery(function( $ ) {
 
 jQuery.extend({
 	streamGetQueryVars: function( str ) {
-		return (str || document.location.search).replace(/(^\?)/,'').split('&').map(function(n){return n = n.split('='),this[n[0]] = n[1],this;}.bind({}))[0];
+		return ( str || document.location.search ).replace( /(^\?)/, '' ).split( '&' ).map( function( n ) { return n = n.split( '=' ), this[n[0]] = n[1], this; }.bind( {} ) )[0];
 	}
 });
