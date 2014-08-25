@@ -318,10 +318,11 @@ class WP_Stream_Migrate {
 				unset( $records[ $record ]['parent'] );
 
 				// Ensure required fields always exist
-				$records[ $record ]['site_id']   = ! empty( $records[ $record ]['site_id'] )   ? $records[ $record ]['site_id']   : 1;
-				$records[ $record ]['blog_id']   = ! empty( $records[ $record ]['blog_id'] )   ? $records[ $record ]['blog_id']   : 1;
-				$records[ $record ]['object_id'] = ! empty( $records[ $record ]['object_id'] ) ? $records[ $record ]['object_id'] : 0;
-				$records[ $record ]['author']    = ! empty( $records[ $record ]['author'] )    ? $records[ $record ]['author']    : 0;
+				$records[ $record ]['site_id']     = ! empty( $records[ $record ]['site_id'] )     ? $records[ $record ]['site_id']     : 1;
+				$records[ $record ]['blog_id']     = ! empty( $records[ $record ]['blog_id'] )     ? $records[ $record ]['blog_id']     : 1;
+				$records[ $record ]['object_id']   = ! empty( $records[ $record ]['object_id'] )   ? $records[ $record ]['object_id']   : 0;
+				$records[ $record ]['author']      = ! empty( $records[ $record ]['author'] )      ? $records[ $record ]['author']      : 0;
+				$records[ $record ]['author_role'] = ! empty( $records[ $record ]['author_role'] ) ? $records[ $record ]['author_role'] : '';
 			}
 
 			// If the array value is numeric then sanitize it from a string to an int
