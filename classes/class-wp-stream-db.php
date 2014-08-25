@@ -53,29 +53,9 @@ class WP_Stream_DB {
 
 		// TODO: Check/Validate *required* fields
 
-		$result = $this->insert( $records );
+		$this->insert( $records );
 
-		if ( ! $result || is_wp_error( $result ) ) {
-			/**
-			 * Fires on errors during post insertion
-			 *
-			 * @param mixed false|WP_Error
-			 */
-			do_action( 'wp_stream_post_insert_error', $result );
-
-			return $result;
-		} else {
-
-			/**
-			 * Fires when A Post is inserted
-			 *
-			 * @param  int   $result API Result
-			 * @param  array $data   Array of information on these records
-			 */
-			do_action( 'wp_stream_post_inserted', $result, $records );
-
-			return $result;
-		}
+		return true;
 	}
 
 	/**
@@ -85,10 +65,10 @@ class WP_Stream_DB {
 	 *
 	 * @param array   $records  Record data
 	 *
-	 * @return object $response The inserted record
+	 * @return object $response The inserted records
 	 */
 	private function insert( array $records ) {
-		return WP_Stream::$api->new_records( $records );
+		WP_Stream::$api->new_records( $records );
 	}
 
 	/**

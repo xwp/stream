@@ -62,7 +62,15 @@ class WP_Stream_Admin {
 				'auth'       => 'true',
 				'action'     => 'connect',
 				'home_url'   => urlencode( $home_url ),
-				'plugin_url' => urlencode( admin_url( 'admin.php?page=' . self::RECORDS_PAGE_SLUG . '&nonce=' . $connect_nonce ) ),
+				'plugin_url' => urlencode(
+					add_query_arg(
+						array(
+							'page'  => self::RECORDS_PAGE_SLUG,
+							'nonce' => $connect_nonce,
+						),
+						admin_url( self::ADMIN_PARENT_PAGE )
+					)
+				),
 			),
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/pricing/' )
 		);
@@ -70,7 +78,14 @@ class WP_Stream_Admin {
 		self::$account_url = add_query_arg(
 			array(
 				'auth'       => 'true',
-				'plugin_url' => urlencode( admin_url( 'admin.php?page=' . self::ACCOUNT_PAGE_SLUG ) ),
+				'plugin_url' => urlencode(
+					add_query_arg(
+						array(
+							'page' => self::RECORDS_PAGE_SLUG,
+						),
+						admin_url( self::ADMIN_PARENT_PAGE )
+					)
+				),
 			),
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/dashboard/' )
 		);
@@ -186,11 +201,13 @@ class WP_Stream_Admin {
 				$notice = esc_html__( 'All site settings have been successfully reset.', 'stream' );
 				break;
 			case 'connected':
-				$notice = sprintf(
-					'<strong>%s</strong></p><p>%s',
-					esc_html__( 'You have successfully connected to Stream!', 'stream' ),
-					esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
-				);
+				if ( ! WP_Stream_Migrate::show_sync_notice() ) {
+					$notice = sprintf(
+						'<strong>%s</strong></p><p>%s',
+						esc_html__( 'You have successfully connected to Stream!', 'stream' ),
+						esc_html__( 'Check back here regularly to see a history of the changes being made to this site.', 'stream' )
+					);
+				}
 				break;
 		}
 
@@ -321,6 +338,22 @@ class WP_Stream_Admin {
 			);
 		}
 
+		if ( WP_Stream_Migrate::show_sync_notice() ) {
+			wp_enqueue_script( 'wp-stream-sync', WP_STREAM_URL . 'ui/js/sync.js', array( 'jquery' ), WP_Stream::VERSION );
+			wp_localize_script(
+				'wp-stream-sync',
+				'wp_stream_sync',
+				array(
+					'i18n'  => array(
+						'confirm_start_sync'     => __( 'Please note: This could take several minutes to complete.', 'stream' ),
+						'confirm_sync_reminder'  => __( 'Please note: Your existing records will not appear in Stream until you have synced them to your account.', 'stream' ),
+						'confirm_delete_records' => __( 'Are you sure you want to delete all existing Stream records from the database without syncing? This cannot be undone.', 'stream' ),
+					),
+					'nonce' => wp_create_nonce( 'wp_stream_sync-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
+				)
+			);
+		}
+
 		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
 
 		wp_enqueue_script( 'wp-stream-bulk-actions', WP_STREAM_URL . 'ui/js/bulk-actions.js', array( 'jquery' ), WP_Stream::VERSION );
@@ -339,6 +372,21 @@ class WP_Stream_Admin {
 	}
 
 	/**
+	 * Check whether or not the current admin screen belongs to Stream
+	 *
+	 * @return bool
+	 */
+	public static function is_stream_screen() {
+		global $typenow;
+
+		if ( is_admin() && ( false !== strpos( wp_stream_filter_input( INPUT_GET, 'page' ), self::RECORDS_PAGE_SLUG ) || WP_Stream_Notifications_Post_Type::POSTTYPE === $typenow ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Add a specific body class to all Stream admin screens
 	 *
 	 * @filter admin_body_class
@@ -348,13 +396,7 @@ class WP_Stream_Admin {
 	 * @return string $classes
 	 */
 	public static function admin_body_class( $classes ) {
-		global $typenow;
-
-		if (
-			( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) )
-			||
-			( WP_Stream_Notifications_Post_Type::POSTTYPE === $typenow )
-		) {
+		if ( self::is_stream_screen() ) {
 			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
 
 			if ( ! is_network_admin() ) {
@@ -363,10 +405,10 @@ class WP_Stream_Admin {
 				} else {
 					$classes .= ' wp_stream_disconnected ';
 				}
+			}
 
-				if ( WP_Stream_API::is_restricted() ) {
-					$classes .= ' wp_stream_restricted ';
-				}
+			if ( WP_Stream_API::is_restricted() ) {
+				$classes .= ' wp_stream_restricted ';
 			}
 		}
 
@@ -498,25 +540,37 @@ class WP_Stream_Admin {
 		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
 		update_option( WP_Stream_API::RESTRICTED_OPTION_KEY, WP_Stream::$api->restricted );
 
-		do_action( 'wp_stream_site_connected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
+		do_action( 'wp_stream_site_connected', get_current_blog_id(), WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
 
 		$redirect_url = add_query_arg(
 			array(
 				'page'    => self::RECORDS_PAGE_SLUG,
 				'message' => 'connected',
 			),
-			admin_url( 'admin.php' )
+			admin_url( self::ADMIN_PARENT_PAGE )
 		);
 
 		wp_redirect( $redirect_url );
 	}
 
 	public static function remove_api_authentication() {
+		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
+		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
+
+		do_action( 'wp_stream_site_disconnected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid, get_current_blog_id() );
+
 		WP_Stream::$api->api_key   = false;
 		WP_Stream::$api->site_uuid = false;
 
-		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
-		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
+		$redirect_url = add_query_arg(
+			array(
+				'page'    => self::RECORDS_PAGE_SLUG,
+				'message' => 'disconnected',
+			),
+			admin_url( self::ADMIN_PARENT_PAGE )
+		);
+
+		wp_redirect( $redirect_url );
 	}
 
 	public static function get_testimonials() {

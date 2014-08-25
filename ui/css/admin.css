@@ -176,7 +176,7 @@
 }
 
 .toplevel_page_wp_stream .column-author a {
-	vertical-align : top;
+	vertical-align: top;
 }
 
 .toplevel_page_wp_stream .column-author img {
@@ -493,7 +493,7 @@
 
 .post-type-stream-notification .view-switch,
 .stream_page_wp_stream_reports.wp_stream_restricted #wpbody,
-.post-type-stream-notification.wp_stream_restricted #wpbody {
+.post-type-stream_notification.wp_stream_restricted #wpbody {
 	display: none;
 }
 
@@ -504,7 +504,7 @@
 	background-repeat: no-repeat;
 }
 
-.post-type-stream-notification .stream-example {
+.post-type-stream_notification .stream-example {
 	background-image: url(../../extensions/notifications/ui/images/stream-notifications-example.jpg);
 }
 
@@ -587,6 +587,51 @@ body.folded .stream-example {
 		left: 0;
 		width: 100% !important;
 	}
+}
+
+
+/* Stream Sync Message */
+
+#stream-sync-progress {
+	display: none;
+	height: 36px;
+	padding: 5px 0;
+}
+
+#stream-sync-progress .spinner {
+	display: block;
+	float: left;
+}
+
+#stream-sync-progress strong,
+#stream-sync-progress #stream-sync-actions-close {
+	display: none;
+}
+
+#stream-sync-progress strong {
+	padding-left: 5px;
+}
+
+#stream-sync-progress strong,
+#stream-sync-progress em {
+	line-height: 28px;
+	padding-right: 10px;
+}
+
+#stream-sync-actions .button {
+	display: inline-block;
+	vertical-align: bottom !important;
+	margin: 0 10px 5px 0 !important;
+}
+
+#stream-sync-actions a.delete {
+	display: inline-block;
+	margin: 10px 0 5px;
+	color: #a00;
+}
+
+#stream-sync-actions a.delete:hover {
+	color: #f00;
 }
 
 
