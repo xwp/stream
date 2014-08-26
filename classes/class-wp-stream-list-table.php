@@ -131,28 +131,54 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		// Filters
-		$allowed_params = array(
-			'connector',
-			'context',
-			'action',
-			'author',
-			'author_role',
-			'object_id',
+		$params = array(
+			// Search param
 			'search',
+			// Date-based filters
 			'date',
 			'date_from',
 			'date_to',
-			'record__in',
-			'blog_id',
-			'ip',
 		);
 
-		foreach ( $allowed_params as $param ) {
-			$paramval = wp_stream_filter_input( INPUT_GET, $param );
-			if ( $paramval || '0' === $paramval ) {
-				$args[ $param ] = $paramval;
+		foreach ( $params as $param ) {
+			$value = wp_stream_filter_input( INPUT_GET, $param );
+			if ( $value || '0' === $value ) {
+				$args[ $param ] = $value;
 			}
 		}
+
+		// Additional filter properties
+		$properties = array(
+			'record',
+			'author',
+			'author_role',
+			'ip',
+			'object_id',
+			'site_id',
+			'blog_id',
+			'connector',
+			'context',
+			'action',
+		);
+
+		// Add property fields to defaults, including their __in/__not_in variations
+		foreach ( $properties as $property ) {
+			$value = wp_stream_filter_input( INPUT_GET, $property );
+			if ( $value || '0' === $value ) {
+				$args[ $property ] = $value;
+			}
+
+			$value_in = wp_stream_filter_input( INPUT_GET, $property . '__in' );
+			if ( $value_in || '0' === $value_in ) {
+				$args[ $property . '__in' ] = explode( ',', $value_in );
+			}
+
+			$value_not_in = wp_stream_filter_input( INPUT_GET, $property . '__not_in' );
+			if ( $value_not_in  || '0' === $value_not_in) {
+				$args[ $property . '__not_in' ] = explode( ',', $value_not_in );
+			}
+		}
+
 		$args['paged'] = $this->get_pagenum();
 
 		if ( isset( $args['context'] ) && 0 === strpos( $args['context'], 'group-' ) ) {
