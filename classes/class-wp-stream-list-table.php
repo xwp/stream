@@ -140,7 +140,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		foreach ( $params as $param ) {
 			$value = wp_stream_filter_input( INPUT_GET, $param );
-			if ( $value || '0' === $value ) {
+			if ( $value ) {
 				$args[ $param ] = $value;
 			}
 		}
@@ -162,17 +162,17 @@ class WP_Stream_List_Table extends WP_List_Table {
 		// Add property fields to defaults, including their __in/__not_in variations
 		foreach ( $properties as $property ) {
 			$value = wp_stream_filter_input( INPUT_GET, $property );
-			if ( $value || '0' === $value ) {
+			if ( $value ) {
 				$args[ $property ] = $value;
 			}
 
 			$value_in = wp_stream_filter_input( INPUT_GET, $property . '__in' );
-			if ( $value_in || '0' === $value_in ) {
+			if ( $value_in ) {
 				$args[ $property . '__in' ] = explode( ',', $value_in );
 			}
 
 			$value_not_in = wp_stream_filter_input( INPUT_GET, $property . '__not_in' );
-			if ( $value_not_in  || '0' === $value_not_in) {
+			if ( $value_not_in ) {
 				$args[ $property . '__not_in' ] = explode( ',', $value_not_in );
 			}
 		}
