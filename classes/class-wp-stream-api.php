@@ -130,7 +130,7 @@ class WP_Stream_API {
 			$params['fields'] = implode( ',', $fields );
 		}
 
-		$url  = $this->request_url( sprintf( '/sites/%s', esc_attr( $this->site_uuid ) ), $params );
+		$url  = $this->request_url( sprintf( '/sites/%s', urlencode( $this->site_uuid ) ), $params );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
@@ -161,7 +161,7 @@ class WP_Stream_API {
 			$params['fields'] = implode( ',', $fields );
 		}
 
-		$url  = $this->request_url( sprintf( '/sites/%s/records/%s', esc_attr( $this->site_uuid ), esc_attr( $record_id ) ), $params );
+		$url  = $this->request_url( sprintf( '/sites/%s/records/%s', urlencode( $this->site_uuid ), urlencode( $record_id ) ), $params );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
@@ -187,7 +187,7 @@ class WP_Stream_API {
 			$params['fields'] = implode( ',', $fields );
 		}
 
-		$url  = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $params );
+		$url  = $this->request_url( sprintf( '/sites/%s/records', urlencode( $this->site_uuid ) ), $params );
 		$args = array( 'method' => 'GET' );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
@@ -212,7 +212,7 @@ class WP_Stream_API {
 			$args['fields'] = implode( ',', $fields );
 		}
 
-		$url  = $this->request_url( sprintf( '/sites/%s/records', esc_attr( $this->site_uuid ) ), $args );
+		$url  = $this->request_url( sprintf( '/sites/%s/records', urlencode( $this->site_uuid ) ), $args );
 		$args = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ), 'blocking' => false );
 
 		$this->remote_request( $url, $args );
@@ -325,11 +325,13 @@ class WP_Stream_API {
 		if ( ! is_wp_error( $request ) ) {
 			$data = apply_filters( 'wp_stream_api_request_data', json_decode( $request['body'] ), $url, $args );
 
-			if ( 200 === $request['response']['code'] || 201 === $request['response']['code'] ) {
+			// Intentional loose comparison
+			if ( 200 == $request['response']['code'] || 201 == $request['response']['code'] ) {
 				return $data;
 			} else {
 				// Disconnect if unauthorized or no longer exists
-				if ( 403 === $request['response']['code'] || 410 === $request['response']['code'] ) {
+				// Intentional loose comparison
+				if ( 403 == $request['response']['code'] || 410 == $request['response']['code'] ) {
 					WP_Stream_Admin::remove_api_authentication();
 				}
 				$this->errors['errors']['http_code'] = $request['response']['code'];

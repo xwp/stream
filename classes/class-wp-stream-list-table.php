@@ -429,13 +429,16 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$query_meta = WP_Stream::$db->get_query_meta();
 
 		if ( isset( $query_meta->aggregations->$column->buckets ) ) {
-			$values = array();
+			$values           = array();
+			$existing_records = array();
 
 			foreach ( $query_meta->aggregations->$column->buckets as $field ) {
 				$values[ $field->key ] = $field->key;
 			}
 
-			$existing_records = array_combine( $values, $values );
+			if ( ! empty( $values ) ) {
+				$existing_records = array_combine( $values, $values );
+			}
 		} else {
 			$existing_records = wp_stream_existing_records( $column );
 		}

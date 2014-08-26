@@ -130,6 +130,8 @@ class WP_Stream {
 			add_action( 'plugins_loaded', array( 'WP_Stream_Live_Update', 'load' ) );
 
 			add_action( 'plugins_loaded', array( 'WP_Stream_Pointers', 'load' ) );
+
+			add_action( 'plugins_loaded', array( 'WP_Stream_Migrate', 'load' ) );
 		}
 	}
 
@@ -151,6 +153,7 @@ class WP_Stream {
 	function autoload( $class ) {
 		$class      = strtolower( str_replace( '_', '-', $class ) );
 		$class_file = sprintf( '%sclass-%s.php', WP_STREAM_CLASS_DIR, $class );
+
 		if ( is_readable( $class_file ) ) {
 			require_once $class_file;
 		}
@@ -182,7 +185,7 @@ class WP_Stream {
 	 * @return bool
 	 */
 	public static function is_connected() {
-		return (bool) self::$api->api_key && (bool) self::$api->site_uuid;
+		return ( self::$api->api_key && self::$api->site_uuid );
 	}
 
 	/**
@@ -195,9 +198,7 @@ class WP_Stream {
 
 		if ( defined( 'WP_STREAM_DEV_DEBUG' ) ) {
 			$development_mode = WP_STREAM_DEV_DEBUG;
-		}
-
-		elseif ( site_url() && false === strpos( site_url(), '.' ) ) {
+		} else if ( site_url() && false === strpos( site_url(), '.' ) ) {
 			$development_mode = true;
 		}
 
@@ -237,6 +238,7 @@ class WP_Stream {
 		foreach ( self::$notices as $notice ) {
 			$class_name   = empty( $notice['is_error'] ) ? 'updated' : 'error';
 			$html_message = sprintf( '<div class="%s">%s</div>', esc_attr( $class_name ), wpautop( $notice['message'] ) );
+
 			echo wp_kses_post( $html_message );
 		}
 	}

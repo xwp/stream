@@ -87,7 +87,7 @@ class WP_Stream_Reports {
 		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' ); // Has trailing slash
 		define( 'WP_STREAM_REPORTS_VIEW_DIR', WP_STREAM_REPORTS_DIR . 'views/' ); // Has trailing slash
 
-		if ( ! apply_filters( 'wp_stream_load_reports', true ) ) {
+		if ( ! apply_filters( 'wp_stream_load_reports', true ) || is_network_admin() ) {
 			return;
 		}
 
