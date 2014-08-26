@@ -567,11 +567,7 @@ class WP_Stream_Admin {
 				'page'    => self::RECORDS_PAGE_SLUG,
 				'message' => 'disconnected',
 			),
-<<<<<<< HEAD
-			admin_url( 'admin.php' )
-=======
 			admin_url( self::ADMIN_PARENT_PAGE )
->>>>>>> develop
 		);
 
 		wp_redirect( $redirect_url );
