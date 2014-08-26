@@ -10,11 +10,11 @@
 class WP_Stream_Network {
 
 	/**
-	 * Total sites connected to Stream
+	 * The UUIDs of all sites connected to Stream
 	 *
 	 * @var int
 	 */
-	public $sites_connected = 0;
+	public $connected_sites = array();
 
 	/**
 	 * @var mixed
@@ -23,7 +23,7 @@ class WP_Stream_Network {
 
 	const NETWORK_SETTINGS_PAGE_SLUG = 'wp_stream_network_settings';
 	const DEFAULT_SETTINGS_PAGE_SLUG = 'wp_stream_default_settings';
-	const SITES_CONNECTED_OPTION_KEY = 'wp_stream_sites_connected';
+	const CONNECTED_SITES_OPTION_KEY = 'wp_stream_connected_sites';
 
 	public static function get_instance() {
 		if ( ! self::$instance ) {
@@ -37,7 +37,7 @@ class WP_Stream_Network {
 		$this->actions();
 		$this->filters();
 
-		$this->sites_connected = get_site_option( self::SITES_CONNECTED_OPTION_KEY, 0 );
+		$this->connected_sites = get_site_option( self::CONNECTED_SITES_OPTION_KEY, array() );
 	}
 
 	function actions() {
@@ -50,8 +50,8 @@ class WP_Stream_Network {
 		add_action( 'admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'network_admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'update_site_option_' . WP_Stream_Settings::NETWORK_OPTION_KEY, array( $this, 'updated_option_ttl_remove_records' ), 10, 3 );
-		add_action( 'wp_stream_site_connected', array( $this, 'site_connected' ) );
-		add_action( 'wp_stream_site_disconnected', array( $this, 'site_disconnected' ) );
+		add_action( 'wp_stream_site_connected', array( $this, 'site_connected' ), 10, 3 );
+		add_action( 'wp_stream_site_disconnected', array( $this, 'site_disconnected' ), 10, 3 );
 	}
 
 	function filters() {
@@ -556,9 +556,9 @@ class WP_Stream_Network {
 	 *
 	 * @return void
 	 */
-	function site_connected() {
-		$this->sites_connected++;
-		update_site_option( self::SITES_CONNECTED_OPTION_KEY, $this->sites_connected );
+	function site_connected( $uuid, $api_key, $blog_id ) {
+		$this->connected_sites[ $uuid ] = $api_key;
+		update_site_option( self::CONNECTED_SITES_OPTION_KEY, $this->connected_sites );
 	}
 
 	/**
@@ -566,8 +566,8 @@ class WP_Stream_Network {
 	 *
 	 * @return void
 	 */
-	function site_disconnected() {
-		$this->sites_connected--;
-		update_site_option( self::SITES_CONNECTED_OPTION_KEY, $this->sites_connected );
+	function site_disconnected( $uuid, $api_key, $blog_id ) {
+		unset( $this->connected_sites[ $uuid ] );
+		update_site_option( self::CONNECTED_SITES_OPTION_KEY, $this->connected_sites );
 	}
 }

@@ -229,16 +229,15 @@ class WP_Stream_API {
 	 * @return mixed
 	 */
 	public function search( $query = array(), $fields = array(), $sites = array(), $allow_cache = false, $expiration = 120 ) {
-		if ( ! $this->site_uuid ) {
-			return false;
-		}
-
 		if ( empty( $sites ) ) {
-			$sites[] = $this->site_uuid;
+			if ( is_network_admin() ) {
+				$sites = array_keys( WP_Stream_Network::get_instance()->connected_sites );
+			} elseif ( $this->site_uuid ) {
+				$sites[] = $this->site_uuid;
+			}
 		}
 
-		$url  = $this->request_url( sprintf( '/search', esc_attr( $this->site_uuid ) ) );
-
+		$url  = $this->request_url( '/search' );
 		$body = array();
 
 		if ( ! empty( $query ) ) {

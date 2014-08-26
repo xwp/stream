@@ -530,7 +530,7 @@ class WP_Stream_Admin {
 		// Verify the API Key and Site UUID
 		$site = WP_Stream::$api->get_site();
 
-		WP_Stream::$api->restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type ) ? 1 : 0;
+		WP_Stream_API::$restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type ) ? 1 : 0;
 
 		if ( ! isset( $site->site_id ) ) {
 			wp_die( 'There was a problem verifying your site with Stream. Please try again later.', 'stream' );
@@ -538,9 +538,9 @@ class WP_Stream_Admin {
 
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
-		update_option( WP_Stream_API::RESTRICTED_OPTION_KEY, WP_Stream::$api->restricted );
+		update_option( WP_Stream_API::RESTRICTED_OPTION_KEY, WP_Stream_API::$restricted );
 
-		do_action( 'wp_stream_site_connected', get_current_blog_id(), WP_Stream::$api->api_key, WP_Stream::$api->site_uuid );
+		do_action( 'wp_stream_site_connected', WP_Stream::$api->site_uuid, WP_Stream::$api->api_key, get_current_blog_id() );
 
 		$redirect_url = add_query_arg(
 			array(
@@ -811,7 +811,7 @@ class WP_Stream_Admin {
 		echo '<div class="wrap">';
 
 		if ( is_network_admin() ) {
-			$sites_connected = WP_Stream_Network::get_instance()->sites_connected;
+			$sites_connected = count( WP_Stream_Network::get_instance()->connected_sites );
 			$site_count      = '';
 
 			if ( $sites_connected > 0 ) {
@@ -827,16 +827,27 @@ class WP_Stream_Admin {
 			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/css/connect.css', array(), WP_Stream::VERSION );
 			?>
 			<div id="stream-message" class="updated stream-network-connect stream-connect" style="display:block !important;">
-				<div class="stream-wrap-container">
-					<div class="stream-text-container">
-							<p><strong><?php _e( 'Get started with Stream for Multisite!', 'stream' ) ?></strong></p>
+				<div class="stream-message-container">
+					<div class="stream-message-text">
+							<h4><?php _e( 'Get started with Stream for Multisite!', 'stream' ) ?></h4>
 							<p><?php _e( 'Welcome to your Network Stream! Each site on your network must be connected individually by an admin on that site for it to show here.', 'stream' ) ?></p>
 					</div>
 				</div>
 			</div>
 			<?php
 		} else {
-			self::$list_table->display();
+			// TO DO: Add support for a network wide API Key. Until then, keep the next line commented out.
+			//self::$list_table->display();
+			?>
+			<div id="stream-message" class="error stream-network-connect stream-connect" style="display:block !important;">
+				<div class="stream-message-container">
+					<div class="stream-message-text">
+							<h4><?php _e( 'Stream for Multisite is coming soon!', 'stream' ) ?></h4>
+							<p><?php _e( 'Access to all the Stream feeds in your network is currently disabled.', 'stream' ) ?></p>
+					</div>
+				</div>
+			</div>
+			<?php
 		}
 
 		echo '</div>';
