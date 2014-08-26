@@ -132,9 +132,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		// Filters
 		$params = array(
-			// Search param
 			'search',
-			// Date-based filters
 			'date',
 			'date_from',
 			'date_to',
