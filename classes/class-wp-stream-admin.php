@@ -794,7 +794,18 @@ class WP_Stream_Admin {
 			</div>
 			<?php
 		} else {
-			self::$list_table->display();
+			// TO DO: Add support for a network wide API Key. Until then, keep the next line commented out.
+			//self::$list_table->display();
+			?>
+			<div id="stream-message" class="error stream-network-connect stream-connect" style="display:block !important;">
+				<div class="stream-message-container">
+					<div class="stream-message-text">
+							<h4><?php _e( 'Stream for Multisite is coming soon!', 'stream' ) ?></h4>
+							<p><?php _e( 'Access to all the Stream feeds in your network is currently disabled.', 'stream' ) ?></p>
+					</div>
+				</div>
+			</div>
+			<?php
 		}
 
 		echo '</div>';
