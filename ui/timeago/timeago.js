@@ -3,7 +3,7 @@
  * updating fuzzy timestamps (e.g. "4 minutes ago" or "about 1 day ago").
  *
  * @name timeago
- * @version 1.3.1
+ * @version 1.4.1
  * @requires jQuery v1.2.3+
  * @author Ryan McGeary
  * @license MIT License - http://www.opensource.org/licenses/mit-license.php
@@ -39,6 +39,7 @@
   $.extend($.timeago, {
     settings: {
       refreshMillis: 60000,
+      allowPast: true,
       allowFuture: false,
       localeTitle: false,
       cutoff: 0,
@@ -47,6 +48,7 @@
         prefixFromNow: null,
         suffixAgo: "ago",
         suffixFromNow: "from now",
+        inPast: 'any moment now',
         seconds: "less than a minute",
         minute: "about a minute",
         minutes: "%d minutes",
@@ -62,7 +64,12 @@
         numbers: []
       }
     },
+
     inWords: function(distanceMillis) {
+      if(!this.settings.allowPast && ! this.settings.allowFuture) {
+          throw 'timeago allowPast and allowFuture settings can not both be set to false.';
+      }
+
       var $l = this.settings.strings;
       var prefix = $l.prefixAgo;
       var suffix = $l.suffixAgo;
@@ -71,6 +78,10 @@
           prefix = $l.prefixFromNow;
           suffix = $l.suffixFromNow;
         }
+      }
+
+      if(!this.settings.allowPast && distanceMillis >= 0) {
+        return this.settings.strings.inPast;
       }
 
       var seconds = Math.abs(distanceMillis) / 1000;
@@ -101,6 +112,7 @@
       if ($l.wordSeparator === undefined) { separator = " "; }
       return $.trim([prefix, words, suffix].join(separator));
     },
+
     parse: function(iso8601) {
       var s = $.trim(iso8601);
       s = s.replace(/\.\d+/,""); // remove milliseconds
@@ -167,7 +179,7 @@
     var $s = $t.settings;
 
     if (!isNaN(data.datetime)) {
-      if ( $s.cutoff == 0 || distance(data.datetime) < $s.cutoff) {
+      if ( $s.cutoff == 0 || Math.abs(distance(data.datetime)) < $s.cutoff) {
         $(this).text(inWords(data.datetime));
       }
     }
@@ -193,21 +205,7 @@
   }
 
   function distance(date) {
-    // return (new Date().getTime() - date.getTime());
-    var UTC_date_string = new Date().toUTCString(); // get current UTC Time in string form
-    var millis_since_epoch = Date.parse(UTC_date_string); // convert it to milliseconds
-
-    /* The date passed in comes to us in the client's timezone because it was created using the javascript
-     * new Date() constructor when it was parsed form the DOM.  Unforunately, the date in the DOM is from
-     * the server, and already in UTC.  We can account for this discrepancy by subtracting the client's
-     * timezone offset.
-     */
-    var date_millis = date.getTime(); // convert passed in date to milliseconds (still wrong timezone)
-    var minutes_off = date.getTimezoneOffset(); // get the number of minutes this timezone differs from UTC time
-    var millis_off = minutes_off*60*1000; // convert from minutes to milliseconds
-    var date_millis_since_epoch = date_millis - millis_off; // subtract the discrepancy from the date milliseconds
-
-    return (millis_since_epoch - date_millis_since_epoch); // finally, find the difference
+    return (new Date().getTime() - date.getTime());
   }
 
   // fix for IE6 suckage
