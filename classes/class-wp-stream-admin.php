@@ -835,9 +835,8 @@ class WP_Stream_Admin {
 				</div>
 			</div>
 			<?php
-		} else {
-			// TO DO: Add support for a network wide API Key. Until then, keep the next line commented out.
-			//self::$list_table->display();
+		} elseif ( is_network_admin() ) {
+			// TO DO: Add support for a network wide API Key. Until then, show this notice.
 			?>
 			<div id="stream-message" class="error stream-network-connect stream-connect" style="display:block !important;">
 				<div class="stream-message-container">
@@ -848,6 +847,8 @@ class WP_Stream_Admin {
 				</div>
 			</div>
 			<?php
+		} else {
+			self::$list_table->display();
 		}
 
 		echo '</div>';
