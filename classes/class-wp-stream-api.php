@@ -43,7 +43,7 @@ class WP_Stream_API {
 	 *
 	 * @var string
 	 */
-	protected $api_url = 'http://api.wp-stream.com';
+	protected $api_url = 'https://api.wp-stream.com';
 
 	/**
 	 * The API Version
@@ -289,9 +289,10 @@ class WP_Stream_API {
 		}
 
 		$defaults = array(
-			'headers' => array(),
-			'method'  => 'GET',
-			'body'    => '',
+			'headers'   => array(),
+			'method'    => 'GET',
+			'body'      => '',
+			'sslverify' => true,
 		);
 
 		$this->count++;
