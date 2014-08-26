@@ -122,18 +122,6 @@ class WP_Stream_Query {
 			$filters[]['range']['created']['gt'] = date( 'c', strtotime( $args['record_after'] ) );
 		}
 
-		if ( $args['record__in'] ) {
-			$filters[]['ids']['values'] = (array) $args['record__in'];
-		}
-
-		if ( $args['record__in'] ) {
-			$filters[]['ids']['values'] = (array) $args['record__in'];
-		}
-
-		if ( $args['record__not_in'] ) {
-			$filters[]['not']['ids']['values'] = (array) $args['record__not_in'];
-		}
-
 		foreach ( $properties as $property => $default ) {
 			if ( $args[ $property ] ) {
 				$filters[]['term'][ $property ] = $args[ $property ];
