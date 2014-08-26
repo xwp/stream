@@ -35,6 +35,10 @@ class WP_Stream_Query {
 			'date'                  => null,
 			'date_from'             => null,
 			'date_to'               => null,
+			// Record id filters
+			'record'                => null,
+			'record__in'            => null,
+			'record__not_in'        => null,
 			// Pagination params
 			'records_per_page'      => get_option( 'posts_per_page' ),
 			'paged'                 => 1,
@@ -51,7 +55,6 @@ class WP_Stream_Query {
 
 		// Additional property fields
 		$properties = array(
-			'record'        => null,
 			'type'          => 'stream',
 			'author'        => null,
 			'author_role'   => null,
@@ -120,6 +123,15 @@ class WP_Stream_Query {
 		// PARSE RECORD
 		if ( $args['record_after'] ) {
 			$filters[]['range']['created']['gt'] = date( 'c', strtotime( $args['record_after'] ) );
+		}
+		if ( $args['record'] ) {
+			$filters[]['ids']['values'] = array( $args['record'] );
+		}
+		if ( $args['record__in'] ) {
+			$filters[]['ids']['values'] = $args['record__in'];
+		}
+		if ( $args['record__not_in'] ) {
+			$filters[]['not']['ids']['values'] = $args['record__not_in'];
 		}
 
 		// PARSE PROPERTIES
