@@ -122,6 +122,7 @@ class WP_Stream_Query {
 			$filters[]['range']['created']['gt'] = date( 'c', strtotime( $args['record_after'] ) );
 		}
 
+		// PARSE PROPERTIES
 		foreach ( $properties as $property => $default ) {
 			if ( $args[ $property ] ) {
 				$filters[]['term'][ $property ] = $args[ $property ];
