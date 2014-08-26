@@ -141,11 +141,17 @@ class WP_Stream_Query {
 			}
 
 			if ( $args[ "{$property}__in" ] ) {
-				$filters[]['term'][ $property ] = $args[ "{$property}__in" ];
+				$property_in = array();
+				foreach ( $args[ "{$property}__in" ] as $value ) {
+					$property_in[]['term'][ $property ] = $value;
+				}
+				$filters[]['or'] = $property_in;
 			}
 
 			if ( $args[ "{$property}__not_in" ] ) {
-				$filters[]['not']['term'][ $property ] = $args[ "{$property}__in" ];
+				foreach ( $args[ "{$property}__not_in" ] as $value ) {
+					$filters[]['not']['term'][ $property ] = $value;
+				}
 			}
 		}
 
