@@ -30,13 +30,6 @@ class WP_Stream_Admin {
 	 */
 	public static $connect_url;
 
-	/**
-	 * URL used for account level actions
-	 *
-	 * @var string
-	 */
-	public static $account_url;
-
 	const ADMIN_BODY_CLASS    = 'wp_stream_screen';
 	const RECORDS_PAGE_SLUG   = 'wp_stream';
 	const SETTINGS_PAGE_SLUG  = 'wp_stream_settings';
@@ -73,21 +66,6 @@ class WP_Stream_Admin {
 				),
 			),
 			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/pricing/' )
-		);
-
-		self::$account_url = add_query_arg(
-			array(
-				'auth'       => 'true',
-				'plugin_url' => urlencode(
-					add_query_arg(
-						array(
-							'page' => self::RECORDS_PAGE_SLUG,
-						),
-						admin_url( self::ADMIN_PARENT_PAGE )
-					)
-				),
-			),
-			esc_url_raw( untrailingslashit( self::PUBLIC_URL ) . '/dashboard/' )
 		);
 
 		$api_key   = wp_stream_filter_input( INPUT_GET, 'api_key' );
@@ -214,6 +192,30 @@ class WP_Stream_Admin {
 		if ( $notice ) {
 			WP_Stream::notice( $notice, false );
 		}
+	}
+
+	/**
+	 * Return URL used for account level actions
+	 *
+	 * @return string
+	 */
+	public static function account_url( $path = '' ) {
+		$account_url = add_query_arg(
+			array(
+				'auth'       => 'true',
+				'plugin_url' => urlencode(
+					add_query_arg(
+						array(
+							'page' => self::RECORDS_PAGE_SLUG,
+						),
+						admin_url( self::ADMIN_PARENT_PAGE )
+					)
+				),
+			),
+			esc_url_raw( sprintf( '%s/dashboard/%s', untrailingslashit( self::PUBLIC_URL ), untrailingslashit( $path ) ) )
+		);
+
+		return $account_url;
 	}
 
 	/**
@@ -752,8 +754,12 @@ class WP_Stream_Admin {
 					</table>
 				</div>
 				<div class="plan-actions submitbox">
-					<a href="<?php echo esc_url( self::$account_url ); ?>#change-plan_<?php echo esc_html( WP_Stream::$api->site_uuid ); ?>" class="button button-primary button-large"><?php _e( 'Change Plan', 'stream' ); ?></a>
-					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
+					<?php if ( 'free' === $site_details->plan->type ) : ?>
+						<a href="<?php echo WP_Stream_Admin::account_url( sprintf( 'upgrade/?site_uuid=%s', WP_Stream::$api->site_uuid ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
+					<?php else : ?>
+						<a href="<?php echo WP_Stream_Admin::account_url( sprintf( '#%s', WP_Stream::$api->site_uuid ) ); ?>" class="button button-primary button-large"><?php _e( 'Modify This Plan', 'stream' ) ?></a>
+					<?php endif; ?>
+						<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
 				</div>
 			<?php
 			}
