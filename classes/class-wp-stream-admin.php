@@ -755,9 +755,9 @@ class WP_Stream_Admin {
 				</div>
 				<div class="plan-actions submitbox">
 					<?php if ( 'free' === $site_details->plan->type ) : ?>
-						<a href="<?php echo WP_Stream_Admin::account_url( sprintf( 'upgrade/?site_uuid=%s', WP_Stream::$api->site_uuid ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
+						<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade/?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
 					<?php else : ?>
-						<a href="<?php echo WP_Stream_Admin::account_url( sprintf( '#%s', WP_Stream::$api->site_uuid ) ); ?>" class="button button-primary button-large"><?php _e( 'Modify This Plan', 'stream' ) ?></a>
+						<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( '#%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Modify This Plan', 'stream' ) ?></a>
 					<?php endif; ?>
 						<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
 				</div>

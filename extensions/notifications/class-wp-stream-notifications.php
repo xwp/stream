@@ -182,7 +182,7 @@ class WP_Stream_Notifications {
 					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Fully customized e-mail and SMS alerts', 'stream' ) ?></li>
 					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Push alerts to your smartphone or tablet', 'stream' ) ?></li>
 				</ul>
-				<a href="<?php echo WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
+				<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
 			</div>
 		</div>
 		<?php
