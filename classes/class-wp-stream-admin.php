@@ -713,7 +713,8 @@ class WP_Stream_Admin {
 			}
 
 			$retention_label = '';
-			if ( 0 === $site_details->plan->retention ) {
+
+			if ( 0 == $site_details->plan->retention ) { // Loose comparison needed
 				$retention_label = __( 'Unlimited', 'stream' );
 			} else {
 				$retention_label = sprintf(
