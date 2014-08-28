@@ -155,7 +155,7 @@ i.stream-icon {
 
 #stream-message .stream-message-text {
 	display: inline-block;
-	width: calc(100% - 262px);
+	width: calc(100% - 285px);
 	margin: 22px 0 12px;
 }
 
