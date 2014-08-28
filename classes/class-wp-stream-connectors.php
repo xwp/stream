@@ -60,6 +60,7 @@ class WP_Stream_Connectors {
 			'wordpress-seo',
 			'buddypress',
 			'bbpress',
+			'acf',
 		);
 
 		if ( is_network_admin() ) {
