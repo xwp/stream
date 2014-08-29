@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Class WP_Stream_Connector_ACF
- *
- * Tracking admin actions related to ACF plugin
- *
- * @author: Shady Sharaf <shady@x-team.com>
- */
 class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 
 	/**
@@ -36,12 +29,14 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 
 	/**
 	 * Cached location rules, used in shutdown callback to verify changes in meta
+	 *
 	 * @var array
 	 */
 	public static $cached_location_rules = array();
 
 	/**
 	 * Cached field values updates, used by shutdown callback to verify actual changes
+	 *
 	 * @var array
 	 */
 	public static $cached_field_values_updates = array();
@@ -56,6 +51,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 		if ( class_exists( 'acf' ) && version_compare( acf()->settings['version'], self::PLUGIN_MIN_VERSION, '>=' ) ) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -75,10 +71,10 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'   => __( 'Created', 'stream' ),
-			'updated'   => __( 'Updated', 'stream' ),
-			'added'     => __( 'Added', 'stream' ),
-			'deleted'   => __( 'Deleted', 'stream' ),
+			'created' => __( 'Created', 'stream' ),
+			'updated' => __( 'Updated', 'stream' ),
+			'added'   => __( 'Added', 'stream' ),
+			'deleted' => __( 'Deleted', 'stream' ),
 		);
 	}
 
@@ -89,22 +85,25 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'field_groups'  => _x( 'Field groups', 'acf', 'stream' ),
-			'fields'        => _x( 'Fields', 'acf', 'stream' ),
-			'rules'         => _x( 'Rules', 'acf', 'stream' ),
-			'options'       => _x( 'Options', 'acf', 'stream' ),
-			'values'        => _x( 'Values', 'acf', 'stream' ),
+			'field_groups' => _x( 'Field groups', 'acf', 'stream' ),
+			'fields'       => _x( 'Fields', 'acf', 'stream' ),
+			'rules'        => _x( 'Rules', 'acf', 'stream' ),
+			'options'      => _x( 'Options', 'acf', 'stream' ),
+			'values'       => _x( 'Values', 'acf', 'stream' ),
 		);
 	}
 
 	/**
 	 * Register the connector
+	 *
+	 * @return void
 	 */
 	public static function register() {
 		add_filter( 'wp_stream_log_data', array( __CLASS__, 'log_override' ) );
 
 		/**
 		 * Allow devs to disable logging values of rendered forms
+		 *
 		 * @return bool
 		 */
 		if ( apply_filters( 'wp_stream_acf_enable_value_logging', true ) ) {
@@ -122,15 +121,17 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 * @param  array  $links  Previous links registered
 	 * @param  object $record Stream record
 	 *
-	 * @return array             Action links
+	 * @return array          Action links
 	 */
 	public static function action_links( $links, $record ) {
 		$links = WP_Stream_Connector_Posts::action_links( $links, $record );
+
 		return $links;
 	}
 
 	/**
 	 * Track addition of post meta
+	 *
 	 * @action added_post_meta
 	 */
 	public static function callback_added_post_meta() {
@@ -139,6 +140,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 
 	/**
 	 * Track updating post meta
+	 *
 	 * @action updated_post_meta
 	 */
 	public static function callback_updated_post_meta() {
@@ -159,10 +161,12 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 
 	/**
 	 * Track addition of post meta
+	 *
 	 * @action added_post_meta
 	 */
 	public static function check_post_meta( $action, $meta_id, $object_id, $meta_key, $meta_value = null ) {
 		$post = get_post( $object_id );
+
 		if ( ! $post || is_wp_error( $post ) ) {
 			return;
 		}
@@ -179,14 +183,15 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			if ( 'deleted' === $action ) {
 				$meta_value = get_post_meta( $object_id, $meta_key, true );
 			}
+
 			self::log(
 				_x( '%1$s field in "%2$s" %3$s', 'acf', 'stream' ),
 				array(
-					'label' => $meta_value['label'],
-					'title' => $post->post_title,
+					'label'  => $meta_value['label'],
+					'title'  => $post->post_title,
 					'action' => strtolower( $action_labels[ $action ] ),
-					'key' => $meta_value['key'],
-					'name' => $meta_value['name'],
+					'key'    => $meta_value['key'],
+					'name'   => $meta_value['name'],
 				),
 				$object_id,
 				'fields',
@@ -197,6 +202,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 		elseif ( 'rule' === $meta_key ) {
 			if ( 'deleted' === $action ) {
 				self::$cached_location_rules[ $object_id ] = get_post_meta( $object_id, 'rule' );
+
 				add_action( 'shutdown', array( __CLASS__, 'check_location_rules' ), 9 );
 			}
 		}
@@ -205,17 +211,19 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			if ( 'deleted' === $action ) {
 				return;
 			}
+
 			$options = array(
-				'acf_after_title'	=>	__( 'High (after title)', 'acf' ),
-				'normal'			=>	__( 'Normal (after content)', 'acf' ),
-				'side'				=>	__( 'Side', 'acf' ),
+				'acf_after_title' => __( 'High (after title)', 'acf' ),
+				'normal'          => __( 'Normal (after content)', 'acf' ),
+				'side'            => __( 'Side', 'acf' ),
 			);
+
 			self::log(
 				_x( 'Position of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
 				array(
-					'title' => $post->post_title,
+					'title'        => $post->post_title,
 					'option_label' => $options[ $meta_value ],
-					'option' => $meta_key,
+					'option'       => $meta_key,
 					'option_value' => $meta_value,
 				),
 				$object_id,
@@ -228,16 +236,18 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			if ( 'deleted' === $action ) {
 				return;
 			}
+
 			$options = array(
-				'no_box'			=>	__( 'Seamless (no metabox)', 'acf' ),
-				'default'			=>	__( 'Standard (WP metabox)', 'acf' ),
+				'no_box'  => __( 'Seamless (no metabox)', 'acf' ),
+				'default' => __( 'Standard (WP metabox)', 'acf' ),
 			);
+
 			self::log(
 				_x( 'Style of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
 				array(
-					'title' => $post->post_title,
+					'title'        => $post->post_title,
 					'option_label' => $options[ $meta_value ],
-					'option' => $meta_key,
+					'option'       => $meta_key,
 					'option_value' => $meta_value,
 				),
 				$object_id,
@@ -250,22 +260,24 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			if ( 'deleted' === $action ) {
 				return;
 			}
+
 			$options = array(
-				'permalink'			=>	__( 'Permalink', 'acf' ),
-				'the_content'		=>	__( 'Content Editor', 'acf' ),
-				'excerpt'			=>	__( 'Excerpt', 'acf' ),
-				'custom_fields'		=>	__( 'Custom Fields', 'acf' ),
-				'discussion'		=>	__( 'Discussion', 'acf' ),
-				'comments'			=>	__( 'Comments', 'acf' ),
-				'revisions'			=>	__( 'Revisions', 'acf' ),
-				'slug'				=>	__( 'Slug', 'acf' ),
-				'author'			=>	__( 'Author', 'acf' ),
-				'format'			=>	__( 'Format', 'acf' ),
-				'featured_image'	=>	__( 'Featured Image', 'acf' ),
-				'categories'		=>	__( 'Categories', 'acf' ),
-				'tags'				=>	__( 'Tags', 'acf' ),
-				'send-trackbacks'	=>	__( 'Send Trackbacks', 'acf' ),
+				'permalink'       => __( 'Permalink', 'acf' ),
+				'the_content'     => __( 'Content Editor', 'acf' ),
+				'excerpt'         => __( 'Excerpt', 'acf' ),
+				'custom_fields'   => __( 'Custom Fields', 'acf' ),
+				'discussion'      => __( 'Discussion', 'acf' ),
+				'comments'        => __( 'Comments', 'acf' ),
+				'revisions'       => __( 'Revisions', 'acf' ),
+				'slug'            => __( 'Slug', 'acf' ),
+				'author'          => __( 'Author', 'acf' ),
+				'format'          => __( 'Format', 'acf' ),
+				'featured_image'  => __( 'Featured Image', 'acf' ),
+				'categories'      => __( 'Categories', 'acf' ),
+				'tags'            => __( 'Tags', 'acf' ),
+				'send-trackbacks' => __( 'Send Trackbacks', 'acf' ),
 			);
+
 			if ( count( $options ) === count( $meta_value ) ) {
 				$options_label = _x( 'All screens', 'acf', 'stream' );
 			} elseif ( empty( $meta_value ) ) {
@@ -273,12 +285,13 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			} else {
 				$options_label = implode( ', ', array_intersect_key( $options, array_flip( $meta_value ) ) );
 			}
+
 			self::log(
 				_x( '"%1$s" set to display on "%2$s"', 'acf', 'stream' ),
 				array(
-					'title' => $post->post_title,
+					'title'        => $post->post_title,
 					'option_label' => $options_label,
-					'option' => $meta_key,
+					'option'       => $meta_key,
 					'option_value' => $meta_value,
 				),
 				$object_id,
@@ -286,7 +299,6 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 				'updated'
 			);
 		}
-
 	}
 
 	/**
@@ -302,16 +314,18 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 		if ( empty( self::$cached_field_values_updates ) ) {
 			return;
 		}
+
 		if ( isset( self::$cached_field_values_updates[ $object_id ][ $meta_key ] ) ) {
-			$post = get_post( $object_id );
+			$post  = get_post( $object_id );
 			$cache = self::$cached_field_values_updates[ $object_id ][ $meta_key ];
+
 			self::log(
 				_x( '"%1$s" of "%2$s" updated', 'acf', 'stream' ),
 				array(
 					'field_label' => $cache['field']['label'],
-					'title' => $post->post_title,
-					'meta_value' => $meta_value,
-					'meta_key' => $meta_key,
+					'title'       => $post->post_title,
+					'meta_value'  => $meta_value,
+					'meta_key'    => $meta_key,
 				),
 				$object_id,
 				'values',
@@ -326,26 +340,26 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 */
 	public static function check_location_rules() {
 		foreach ( self::$cached_location_rules as $post_id => $old ) {
-			$new = get_post_meta( $post_id, 'rule' );
+			$new  = get_post_meta( $post_id, 'rule' );
 			$post = get_post( $post_id );
+
 			if ( $old === $new ) {
 				continue;
 			}
 
-			$new = array_map( 'json_encode', $new );
-			$old = array_map( 'json_encode', $old );
-
-			$added = array_diff( $new, $old );
+			$new     = array_map( 'json_encode', $new );
+			$old     = array_map( 'json_encode', $old );
+			$added   = array_diff( $new, $old );
 			$deleted = array_diff( $old, $new );
 
 			self::log(
-				_x( 'Updated rules of "%1$s" ( %2$d added, %3$d deleted )', 'acf', 'stream' ),
+				_x( 'Updated rules of "%1$s" (%2$d added, %3$d deleted)', 'acf', 'stream' ),
 				array(
-					'title' => $post->post_title,
-					'no_added' => count( $added ),
+					'title'      => $post->post_title,
+					'no_added'   => count( $added ),
 					'no_deleted' => count( $deleted ),
-					'added' => $added,
-					'deleted' => $deleted,
+					'added'      => $added,
+					'deleted'    => $deleted,
 				),
 				$post_id,
 				'rules',
@@ -363,8 +377,8 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 */
 	public static function log_override( array $data ) {
 		if ( 'posts' === $data['connector'] && 'acf' === $data['context'] ) {
-			$data['context']   = 'field_groups';
-			$data['connector'] = self::$name;
+			$data['context']               = 'field_groups';
+			$data['connector']             = self::$name;
 			$data['args']['singular_name'] = __( 'field group', 'stream' );
 		}
 
