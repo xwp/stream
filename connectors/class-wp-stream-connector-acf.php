@@ -180,7 +180,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 				$meta_value = get_post_meta( $object_id, $meta_key, true );
 			}
 			self::log(
-				_x( '%1$s field in "$2$s" was %2$s', 'acf', 'stream' ),
+				_x( '%1$s field in "%2$s" was %3$s', 'acf', 'stream' ),
 				array(
 					'label' => $meta_value['label'],
 					'title' => $post->post_title,
