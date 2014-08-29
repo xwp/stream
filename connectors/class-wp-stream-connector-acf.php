@@ -185,7 +185,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			}
 
 			self::log(
-				_x( '%1$s field in "%2$s" %3$s', 'acf', 'stream' ),
+				_x( '"%1$s" field in "%2$s" %3$s', 'acf', 'stream' ),
 				array(
 					'label'  => $meta_value['label'],
 					'title'  => $post->post_title,
