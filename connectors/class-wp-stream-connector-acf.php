@@ -316,16 +316,18 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 		}
 
 		if ( isset( self::$cached_field_values_updates[ $object_id ][ $meta_key ] ) ) {
-			$post  = get_post( $object_id );
-			$cache = self::$cached_field_values_updates[ $object_id ][ $meta_key ];
+			$post           = get_post( $object_id );
+			$cache          = self::$cached_field_values_updates[ $object_id ][ $meta_key ];
+			$post_type_name = strtolower( WP_Stream_Connector_Posts::get_post_type_name( $post->post_type ) );
 
 			self::log(
-				_x( '"%1$s" of "%2$s" updated', 'acf', 'stream' ),
+				_x( '"%1$s" of "%2$s" %3$s updated', 'acf', 'stream' ),
 				array(
-					'field_label' => $cache['field']['label'],
-					'title'       => $post->post_title,
-					'meta_value'  => $meta_value,
-					'meta_key'    => $meta_key,
+					'field_label'   => $cache['field']['label'],
+					'title'         => $post->post_title,
+					'singular_name' => $post_type_name,
+					'meta_value'    => $meta_value,
+					'meta_key'      => $meta_key,
 				),
 				$object_id,
 				'values',
