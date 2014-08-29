@@ -302,7 +302,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	}
 
 	/**
-	 * Track changes to cf values within rendered forms
+	 * Track changes to ACF values within rendered post meta forms
 	 *
 	 * @param      $action
 	 * @param      $meta_id
@@ -338,6 +338,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 
 	/**
 	 * Track changes to rules, complements post-meta updates
+	 *
 	 * @action shutdown
 	 */
 	public static function check_location_rules() {
