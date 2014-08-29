@@ -180,7 +180,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 				$meta_value = get_post_meta( $object_id, $meta_key, true );
 			}
 			self::log(
-				_x( '%1$s field in "%2$s" was %3$s', 'acf', 'stream' ),
+				_x( '%1$s field in "%2$s" %3$s', 'acf', 'stream' ),
 				array(
 					'label' => $meta_value['label'],
 					'title' => $post->post_title,
@@ -211,7 +211,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 				'side'				=>	__( 'Side', 'acf' ),
 			);
 			self::log(
-				_x( 'Position of "%1$s" was updated to be "%2$s"', 'acf', 'stream' ),
+				_x( 'Position of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
 				array(
 					'title' => $post->post_title,
 					'option_label' => $options[ $meta_value ],
@@ -233,7 +233,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 				'default'			=>	__( 'Standard (WP metabox)', 'acf' ),
 			);
 			self::log(
-				_x( 'Style of "%1$s" was updated to be "%2$s"', 'acf', 'stream' ),
+				_x( 'Style of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
 				array(
 					'title' => $post->post_title,
 					'option_label' => $options[ $meta_value ],
@@ -306,7 +306,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			$post = get_post( $object_id );
 			$cache = self::$cached_field_values_updates[ $object_id ][ $meta_key ];
 			self::log(
-				_x( '"%1$s" of "%2$s" was updated', 'acf', 'stream' ),
+				_x( '"%1$s" of "%2$s" updated', 'acf', 'stream' ),
 				array(
 					'field_label' => $cache['field']['label'],
 					'title' => $post->post_title,
