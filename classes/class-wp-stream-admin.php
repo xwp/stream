@@ -758,7 +758,7 @@ class WP_Stream_Admin {
 					<?php if ( 'free' === $site_details->plan->type ) : ?>
 						<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade/?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
 					<?php else : ?>
-						<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( '#%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Modify This Plan', 'stream' ) ?></a>
+						<a href="<?php echo esc_url( sprintf( '%s/dashboard/?site_uuid=%s', self::PUBLIC_URL, WP_Stream::$api->site_uuid ) ); ?>" class="button button-primary button-large" target="_blank"><?php _e( 'Modify This Plan', 'stream' ) ?></a>
 					<?php endif; ?>
 						<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
 				</div>
