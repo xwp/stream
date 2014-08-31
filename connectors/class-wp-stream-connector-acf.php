@@ -25,6 +25,13 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 		'added_post_meta',
 		'updated_post_meta',
 		'delete_post_meta',
+		'added_user_meta',
+		'updated_user_meta',
+		'delete_user_meta',
+		'added_option',
+		'updated_option',
+		'deleted_option',
+		'pre_post_update',
 	);
 
 	/**
@@ -135,7 +142,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 * @action added_post_meta
 	 */
 	public static function callback_added_post_meta() {
-		call_user_func_array( array( __CLASS__, 'check_post_meta' ), array_merge( array( 'added' ), func_get_args() ) );
+		call_user_func_array( array( __CLASS__, 'check_meta' ), array_merge( array( 'post', 'added' ), func_get_args() ) );
 	}
 
 	/**
@@ -144,7 +151,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 * @action updated_post_meta
 	 */
 	public static function callback_updated_post_meta() {
-		call_user_func_array( array( __CLASS__, 'check_post_meta' ), array_merge( array( 'updated' ), func_get_args() ) );
+		call_user_func_array( array( __CLASS__, 'check_meta' ), array_merge( array( 'post', 'updated' ), func_get_args() ) );
 	}
 
 	/**
@@ -156,23 +163,52 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 * @action delete_post_meta
 	 */
 	public static function callback_delete_post_meta() {
-		call_user_func_array( array( __CLASS__, 'check_post_meta' ), array_merge( array( 'deleted' ), func_get_args() ) );
+		call_user_func_array( array( __CLASS__, 'check_meta' ), array_merge( array( 'post', 'deleted' ), func_get_args() ) );
 	}
 
 	/**
-	 * Track addition of post meta
+	 * Track addition of user meta
 	 *
-	 * @action added_post_meta
+	 * @action added_user_meta
 	 */
-	public static function check_post_meta( $action, $meta_id, $object_id, $meta_key, $meta_value = null ) {
-		$post = get_post( $object_id );
+	public static function callback_added_user_meta() {
+		call_user_func_array( array( __CLASS__, 'check_meta' ), array_merge( array( 'user', 'added' ), func_get_args() ) );
+	}
 
-		if ( ! $post || is_wp_error( $post ) ) {
-			return;
-		}
+	/**
+	 * Track updating user meta
+	 *
+	 * @action updated_user_meta
+	 */
+	public static function callback_updated_user_meta() {
+		call_user_func_array( array( __CLASS__, 'check_meta' ), array_merge( array( 'user', 'updated' ), func_get_args() ) );
+	}
 
-		if ( 'acf' !== $post->post_type ) {
-			self::check_post_meta_values( $action, $meta_id, $object_id, $meta_key, $meta_value = null );
+	/**
+	 * Track deletion of user meta
+	 *
+	 * Note: Using delete_user_meta instead of deleted_user_meta to be able to
+	 * capture old field value
+	 *
+	 * @action delete_user_meta
+	 */
+	public static function callback_delete_user_meta() {
+		call_user_func_array( array( __CLASS__, 'check_meta' ), array_merge( array( 'user', 'deleted' ), func_get_args() ) );
+	}
+
+	/**
+	 * Track addition of post/user meta
+	 *
+	 * @param string     $type      Type of object, post or user
+	 * @param string     $action    Added, updated, deleted
+	 * @param integer    $meta_id
+	 * @param integer    $object_id
+	 * @param string     $meta_key
+	 * @param mixed|null $meta_value
+	 */
+	public static function check_meta( $type, $action, $meta_id, $object_id, $meta_key, $meta_value = null ) {
+		if ( 'post' !== $type || ! ( $post = get_post( $object_id ) ) || 'acf' !== $post->post_type ) {
+			self::check_meta_values( $type, $action, $meta_id, $object_id, $meta_key, $meta_value = null );
 			return;
 		}
 
@@ -304,36 +340,72 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	/**
 	 * Track changes to ACF values within rendered post meta forms
 	 *
-	 * @param      $action
-	 * @param      $meta_id
-	 * @param      $object_id
-	 * @param      $meta_key
-	 * @param null $meta_value
+	 * @param string     $type      Type of object, post or user
+	 * @param string     $action    Added, updated, deleted
+	 * @param integer    $meta_id
+	 * @param integer    $object_id
+	 * @param string     $key
+	 * @param mixed|null $value
+	 *
+	 * @return bool
 	 */
-	public static function check_post_meta_values( $action, $meta_id, $object_id, $meta_key, $meta_value = null ) {
+	public static function check_meta_values( $type, $action, $meta_id, $object_id, $key, $value = null ) {
 		if ( empty( self::$cached_field_values_updates ) ) {
-			return;
+			return false;
 		}
 
-		if ( isset( self::$cached_field_values_updates[ $object_id ][ $meta_key ] ) ) {
-			$post           = get_post( $object_id );
-			$cache          = self::$cached_field_values_updates[ $object_id ][ $meta_key ];
-			$post_type_name = strtolower( WP_Stream_Connector_Posts::get_post_type_name( $post->post_type ) );
+		$object_key = $object_id;
+
+		if ( 'user' === $type ) {
+			$object_key = 'user_' . $object_id;
+		} elseif ( 'taxonomy' === $type ) {
+			if ( 0 === strpos( $key, '_' ) ) { // Ignore the 'revision' stuff!
+				return false;
+			}
+			if ( preg_match( '#([a-z0-9_-]+)_([\d]+)_([a-z0-9_-]+)#', $key, $matches ) !== 1 ) {
+				return false;
+			}
+			list(, $taxonomy, $term_id, $key ) = $matches;
+			$object_key = $taxonomy . '_' . $term_id;
+		}
+
+		if ( isset( self::$cached_field_values_updates[ $object_key ][ $key ] ) ) {
+			if ( 'post' === $type ) {
+				$post = get_post( $object_id );
+				$title = $post->post_title;
+				$type_name = strtolower( WP_Stream_Connector_Posts::get_post_type_name( $post->post_type ) );
+			} elseif ( 'user' === $type ) {
+				$user = new WP_User( $object_id );
+				$title = $user->get( 'display_name' );
+				$type_name = __( 'user', 'stream' );
+			} elseif ( 'taxonomy' === $type ) {
+				$term = get_term( $term_id, $taxonomy );
+				$title = $term->name;
+				$taxonomy_object = get_taxonomy( $taxonomy );
+				$type_name = get_taxonomy_labels( $taxonomy_object )->singular_name;
+			} else {
+				return false;
+			}
+
+			$cache = self::$cached_field_values_updates[ $object_key ][ $key ];
 
 			self::log(
 				_x( '"%1$s" of "%2$s" %3$s updated', 'acf', 'stream' ),
 				array(
 					'field_label'   => $cache['field']['label'],
-					'title'         => $post->post_title,
-					'singular_name' => $post_type_name,
-					'meta_value'    => $meta_value,
-					'meta_key'      => $meta_key,
+					'title'         => $title,
+					'singular_name' => $type_name,
+					'meta_value'    => $value,
+					'meta_key'      => $key,
+					'meta_type'     => $type,
 				),
 				$object_id,
 				'values',
 				'updated'
 			);
 		}
+
+		return true;
 	}
 
 	/**
@@ -401,4 +473,61 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 		self::$cached_field_values_updates[ $post_id ][ $field['name'] ] = compact( 'field', 'value', 'post_id' );
 	}
 
+	/**
+	 * Track changes to post main attributes, ie: Order no.
+	 *
+	 * @param $post_id
+	 * @param $data Array with the updated post data
+	 */
+	public static function callback_pre_post_update( $post_id, $data ) {
+		$post = get_post( $post_id );
+		if ( 'acf' !== $post->post_type ) {
+			return;
+		}
+
+		// menu_order, aka Order No
+		if ( $data['menu_order'] !== $post->menu_order ) {
+			self::log(
+				_x( 'Updated Order of "%1$s" from %2$d to %3$d', 'acf', 'stream' ),
+				array(
+					'title'          => $post->post_title,
+					'old_menu_order' => $post->menu_order,
+					'menu_order'     => $data['menu_order'],
+				),
+				$post_id,
+				'field_groups',
+				'updated'
+			);
+		}
+	}
+
+	/**
+	 * Track addition of new options
+	 *
+	 * @param $key   Option name
+	 * @param $value Option value
+	 */
+	public static function callback_added_option( $key, $value ) {
+		self::check_meta_values( 'taxonomy', 'added', null, null, $key, $value );
+	}
+
+	/**
+	 * Track addition of new options
+	 *
+	 * @param $key
+	 * @param $old
+	 * @param $value
+	 */
+	public static function callback_updated_option( $key, $old, $value ) {
+		self::check_meta_values( 'taxonomy', 'updated', null, null, $key, $value );
+	}
+
+	/**
+	 * Track addition of new options
+	 *
+	 * @param $key
+	 */
+	public static function callback_deleted_option( $key ) {
+		self::check_meta_values( 'taxonomy', 'deleted', null, null, $key, null );
+	}
 }
