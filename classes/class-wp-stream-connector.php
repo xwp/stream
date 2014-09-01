@@ -70,7 +70,7 @@ abstract class WP_Stream_Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 * @param  array $links      Previous links registered
-	 * @param  int   $record     Stream record
+	 * @param  object $record    Stream record
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {

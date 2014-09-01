@@ -127,8 +127,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array $links  Previous links registered
-	 * @param  int   $record Stream record
+	 * @param  array  $links     Previous links registered
+	 * @param  object $record    Stream record
 	 *
 	 * @return array             Action links
 	 */
