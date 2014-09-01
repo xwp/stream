@@ -47,7 +47,7 @@ abstract class WP_Stream_Connector {
 	public static function callback() {
 		$action   = current_filter();
 		$class    = get_called_class();
-		$callback = array( $class, 'callback_' . str_replace( '-', '_', $action ) );
+		$callback = array( $class, 'callback_' . preg_replace( '/[^a-z0-9_\-]/', '_', $action ) );
 
 		// For the sake of testing, trigger an action with the name of the callback
 		if ( defined( 'STREAM_TESTS' ) ) {
