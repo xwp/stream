@@ -199,8 +199,8 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	/**
 	 * Track addition of post/user meta
 	 *
-	 * @param string     $type      Type of object, post or user
-	 * @param string     $action    Added, updated, deleted
+	 * @param string     $type       Type of object, post or user
+	 * @param string     $action     Added, updated, deleted
 	 * @param integer    $meta_id
 	 * @param integer    $object_id
 	 * @param string     $meta_key
@@ -467,25 +467,25 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 * @param $value
 	 * @param $post_id
 	 * @param $field
-	 *
 	 */
 	public static function callback_acf_update_value( $value, $post_id, $field ) {
 		self::$cached_field_values_updates[ $post_id ][ $field['name'] ] = compact( 'field', 'value', 'post_id' );
 	}
 
 	/**
-	 * Track changes to post main attributes, ie: Order no.
+	 * Track changes to post main attributes, ie: Order No.
 	 *
 	 * @param $post_id
-	 * @param $data Array with the updated post data
+	 * @param $data    Array with the updated post data
 	 */
 	public static function callback_pre_post_update( $post_id, $data ) {
 		$post = get_post( $post_id );
+
 		if ( 'acf' !== $post->post_type ) {
 			return;
 		}
 
-		// menu_order, aka Order No
+		// menu_order, aka Order No.
 		if ( $data['menu_order'] !== $post->menu_order ) {
 			self::log(
 				_x( 'Updated Order of "%1$s" from %2$d to %3$d', 'acf', 'stream' ),
@@ -530,4 +530,5 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	public static function callback_deleted_option( $key ) {
 		self::check_meta_values( 'taxonomy', 'deleted', null, null, $key, null );
 	}
+
 }
