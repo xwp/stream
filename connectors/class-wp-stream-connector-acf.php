@@ -377,12 +377,12 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			} elseif ( 'user' === $type ) {
 				$user = new WP_User( $object_id );
 				$title = $user->get( 'display_name' );
-				$type_name = __( 'user', 'stream' );
+				$type_name = __( 'user', 'default' );
 			} elseif ( 'taxonomy' === $type ) {
 				$term = get_term( $term_id, $taxonomy );
 				$title = $term->name;
 				$taxonomy_object = get_taxonomy( $taxonomy );
-				$type_name = get_taxonomy_labels( $taxonomy_object )->singular_name;
+				$type_name = strtolower( get_taxonomy_labels( $taxonomy_object )->singular_name );
 			} else {
 				return false;
 			}
