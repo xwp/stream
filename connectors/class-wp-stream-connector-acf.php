@@ -367,7 +367,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 				return false;
 			}
 
-			list( , $taxonomy, $term_id, $key ) = $matches;
+			list( , $taxonomy, $term_id, $key ) = $matches; // Skips 0 index
 
 			$object_key = $taxonomy . '_' . $term_id;
 		}
