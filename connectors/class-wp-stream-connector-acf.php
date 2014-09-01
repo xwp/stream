@@ -362,27 +362,30 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			if ( 0 === strpos( $key, '_' ) ) { // Ignore the 'revision' stuff!
 				return false;
 			}
+
 			if ( preg_match( '#([a-z0-9_-]+)_([\d]+)_([a-z0-9_-]+)#', $key, $matches ) !== 1 ) {
 				return false;
 			}
+
 			list(, $taxonomy, $term_id, $key ) = $matches;
+
 			$object_key = $taxonomy . '_' . $term_id;
 		}
 
 		if ( isset( self::$cached_field_values_updates[ $object_key ][ $key ] ) ) {
 			if ( 'post' === $type ) {
-				$post = get_post( $object_id );
-				$title = $post->post_title;
+				$post      = get_post( $object_id );
+				$title     = $post->post_title;
 				$type_name = strtolower( WP_Stream_Connector_Posts::get_post_type_name( $post->post_type ) );
 			} elseif ( 'user' === $type ) {
-				$user = new WP_User( $object_id );
-				$title = $user->get( 'display_name' );
+				$user      = new WP_User( $object_id );
+				$title     = $user->get( 'display_name' );
 				$type_name = __( 'user', 'default' );
 			} elseif ( 'taxonomy' === $type ) {
-				$term = get_term( $term_id, $taxonomy );
-				$title = $term->name;
-				$taxonomy_object = get_taxonomy( $taxonomy );
-				$type_name = strtolower( get_taxonomy_labels( $taxonomy_object )->singular_name );
+				$term      = get_term( $term_id, $taxonomy );
+				$title     = $term->name;
+				$tax_obj   = get_taxonomy( $taxonomy );
+				$type_name = strtolower( get_taxonomy_labels( $tax_obj )->singular_name );
 			} else {
 				return false;
 			}
