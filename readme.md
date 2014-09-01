@@ -27,7 +27,7 @@ Built with performance in mind, Stream won't pollute your default posts table wi
 
 Visit the Stream Extensions screen inside the plugin to learn more about making Stream even more powerful.
 
-**Extensions:**
+**Extensions**
 
  * [Notifications](https://wp-stream.com/extension/notifications/)
  * [Reports](https://wp-stream.com/extension/reports/)
@@ -35,7 +35,7 @@ Visit the Stream Extensions screen inside the plugin to learn more about making 
  * [Cherry-Pick](https://wp-stream.com/extensions/cherry-pick/)
  * [WooCommerce Connector](https://wp-stream.com/extension/connector-woocommerce/)
 
-**Recorded activity:**
+**Recorded Activity**
 
  * Posts
  * Pages
@@ -56,7 +56,7 @@ Visit the Stream Extensions screen inside the plugin to learn more about making 
  * Theme Editor
  * WordPress Core Updates
 
-**Noteworthy features:**
+**Noteworthy Features**
 
  * Install a variety of powerful Extensions via Stream Extensions
  * Multisite view of all activity records on a network
@@ -70,7 +70,7 @@ Visit the Stream Extensions screen inside the plugin to learn more about making 
  * Disable connectors where you don't want user activity tracked
  * Support for IPv6 addresses
 
-**Languages:**
+**Languages Supported**
 
  * English
  * French (France)
@@ -80,7 +80,7 @@ Visit the Stream Extensions screen inside the plugin to learn more about making 
  * Portuguese (Brazil)
  * Spanish (Spain)
 
-**Coming soon:**
+**Coming Soon**
 
  * Limit who can view user activity records by user, not just by role
  * Language support for Arabic (RTL), Czech and Slovak
