@@ -43,6 +43,7 @@ class WP_Stream_Connectors {
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
 		$connectors = array(
+			// Core
 			'comments',
 			'editor',
 			'installer',
@@ -53,14 +54,16 @@ class WP_Stream_Connectors {
 			'taxonomies',
 			'users',
 			'widgets',
+
+			// Extras
+			'acf',
+			'bbpress',
+			'buddypress',
+			'edd',
+			'gravityforms',
 			'jetpack',
 			'woocommerce',
-			'gravityforms',
-			'edd',
 			'wordpress-seo',
-			'buddypress',
-			'bbpress',
-			'acf',
 		);
 
 		if ( is_network_admin() ) {
