@@ -345,9 +345,6 @@ class WP_Stream_Migrate {
 	 * @return void
 	 */
 	public static function delete_records( $records ) {
-		// Prevent record deletion from occurring, while we beta test migration
-		return;
-
 		if ( empty( $records ) ) {
 			return;
 		}
@@ -374,9 +371,6 @@ class WP_Stream_Migrate {
 	 * @return void
 	 */
 	public static function drop_legacy_data( $drop_tables = true ) {
-		// Prevent record deletion from occurring, while we beta test migration
-		return;
-
 		global $wpdb;
 
 		if ( $drop_tables ) {
