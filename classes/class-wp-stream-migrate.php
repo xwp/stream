@@ -107,7 +107,7 @@ class WP_Stream_Migrate {
 			'<strong>%s</strong></p><p>%s</p><div id="stream-sync-progress"><span class="spinner"></span> <strong>%s</strong> <em></em> <button id="stream-sync-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-sync-actions"><button id="stream-start-sync" class="button button-primary">%s</button> <button id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
 			__( 'Sync Stream Records', 'stream' ),
 			__( 'We found existing Stream records in your database that need to be synced to your Stream account.', 'stream' ),
-			__( 'Please do not exit this page until the process has completed.', 'stream' ),
+			__( 'Please do not exit this page until the process has completed. This could take several minutes.', 'stream' ),
 			__( 'Close', 'stream' ),
 			__( 'Start Syncing Now', 'stream' ),
 			__( 'Remind Me Later', 'stream' ),
