@@ -598,9 +598,10 @@ body.folded .stream-example {
 	padding: 5px 0;
 }
 
-#stream-migrate-progress .spinner {
+#stream-migrate-progress progress {
 	display: block;
-	float: left;
+	width: 300px;
+	font-size: 18px;
 }
 
 #stream-migrate-progress strong,

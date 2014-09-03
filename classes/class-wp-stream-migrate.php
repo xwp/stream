@@ -104,7 +104,7 @@ class WP_Stream_Migrate {
 		}
 
 		$notice = sprintf(
-			'<strong>%s</strong></p><p>%s</p><div id="stream-migrate-progress"><span class="spinner"></span> <strong>%s</strong> <em></em> <button id="stream-migrate-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-migrate-actions"><button id="stream-start-migrate" class="button button-primary">%s</button> <button id="stream-migrate-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
+			'<strong>%s</strong></p><p>%s</p><div id="stream-migrate-progress"><progress value="0" max="100"></progress><strong>%s</strong> <em></em> <button id="stream-migrate-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-migrate-actions"><button id="stream-start-migrate" class="button button-primary">%s</button> <button id="stream-migrate-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
 			__( 'Migrate Stream Records', 'stream' ),
 			sprintf( __( 'We found %s existing Stream records in your database that need to be migrated to your Stream account.', 'stream' ), number_format( self::$record_count ) ),
 			__( 'Please do not exit this page until the process has completed. This could take several minutes.', 'stream' ),

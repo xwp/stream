@@ -235,11 +235,27 @@ class WP_Stream {
 	 * @return void
 	 */
 	public static function admin_notices() {
+		global $allowedposttags;
+
+		$custom = array(
+			'progress' => array(
+				'class' => true,
+				'id'    => true,
+				'max'   => true,
+				'style' => true,
+				'value' => true,
+			),
+		);
+
+		$allowed_html = array_merge( $allowedposttags, $custom );
+
+		ksort( $allowed_html );
+
 		foreach ( self::$notices as $notice ) {
 			$class_name   = empty( $notice['is_error'] ) ? 'updated' : 'error';
 			$html_message = sprintf( '<div class="%s">%s</div>', esc_attr( $class_name ), wpautop( $notice['message'] ) );
 
-			echo wp_kses_post( $html_message );
+			echo wp_kses( $html_message, $allowed_html );
 		}
 	}
 
