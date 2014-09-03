@@ -179,7 +179,7 @@ class WP_Stream_Admin {
 				$notice = esc_html__( 'All site settings have been successfully reset.', 'stream' );
 				break;
 			case 'connected':
-				if ( ! WP_Stream_Migrate::show_sync_notice() ) {
+				if ( ! WP_Stream_Migrate::show_migrate_notice() ) {
 					$notice = sprintf(
 						'<strong>%s</strong></p><p>%s',
 						esc_html__( 'You have successfully connected to Stream!', 'stream' ),
@@ -340,18 +340,18 @@ class WP_Stream_Admin {
 			);
 		}
 
-		if ( WP_Stream_Migrate::show_sync_notice() ) {
-			wp_enqueue_script( 'wp-stream-sync', WP_STREAM_URL . 'ui/js/sync.js', array( 'jquery' ), WP_Stream::VERSION );
+		if ( WP_Stream_Migrate::show_migrate_notice() ) {
+			wp_enqueue_script( 'wp-stream-migrate', WP_STREAM_URL . 'ui/js/migrate.js', array( 'jquery' ), WP_Stream::VERSION );
 			wp_localize_script(
-				'wp-stream-sync',
-				'wp_stream_sync',
+				'wp-stream-migrate',
+				'wp_stream_migrate',
 				array(
 					'i18n'  => array(
-						'confirm_start_sync'     => __( 'Please note: This could take several minutes to complete.', 'stream' ),
-						'confirm_sync_reminder'  => __( 'Please note: Your existing records will not appear in Stream until you have synced them to your account.', 'stream' ),
-						'confirm_delete_records' => __( 'Are you sure you want to delete all existing Stream records from the database without syncing? This cannot be undone.', 'stream' ),
+						'confirm_start_migrate'    => __( 'Please note: This could take several minutes to complete.', 'stream' ),
+						'confirm_migrate_reminder' => __( 'Please note: Your existing records will not appear in Stream until you have migrated them to your account.', 'stream' ),
+						'confirm_delete_records'   => __( 'Are you sure you want to delete all existing Stream records from the database without migrating? This cannot be undone.', 'stream' ),
 					),
-					'nonce' => wp_create_nonce( 'wp_stream_sync-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
+					'nonce' => wp_create_nonce( 'wp_stream_migrate-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
 				)
 			);
 		}

@@ -3,9 +3,9 @@
 class WP_Stream_Migrate {
 
 	/**
-	 * Sync delay transient name/identifier used when user wants to be reminded to sync later
+	 * Migrate delay transient name/identifier used when user wants to be reminded to migrate later
 	 */
-	const SYNC_DELAY_TRANSIENT = 'wp_stream_sync_delayed';
+	const MIGRATE_DELAY_TRANSIENT = 'wp_stream_migrate_delayed';
 
 	/**
 	 * Hold the current site ID
@@ -73,9 +73,9 @@ class WP_Stream_Migrate {
 
 		self::$limit = apply_filters( 'wp_stream_migrate_chunk_size', 1000 );
 
-		add_action( 'admin_notices', array( __CLASS__, 'sync_notice' ), 9 );
+		add_action( 'admin_notices', array( __CLASS__, 'migrate_notice' ), 9 );
 
-		add_action( 'wp_ajax_wp_stream_sync_action', array( __CLASS__, 'process_sync_action' ) );
+		add_action( 'wp_ajax_wp_stream_migrate_action', array( __CLASS__, 'process_migrate_action' ) );
 	}
 
 	/**
@@ -84,8 +84,8 @@ class WP_Stream_Migrate {
 	 * @action admin_notices
 	 * @return void
 	 */
-	public static function show_sync_notice() {
-		if ( ! isset( $_GET['sync_action'] ) && WP_Stream::is_connected() && WP_Stream_Admin::is_stream_screen() && ! empty( self::$record_count ) && false === get_transient( self::SYNC_DELAY_TRANSIENT ) ) {
+	public static function show_migrate_notice() {
+		if ( ! isset( $_GET['migrate_action'] ) && WP_Stream::is_connected() && WP_Stream_Admin::is_stream_screen() && ! empty( self::$record_count ) && false === get_transient( self::MIGRATE_DELAY_TRANSIENT ) ) {
 			return true;
 		}
 
@@ -98,18 +98,18 @@ class WP_Stream_Migrate {
 	 * @action admin_notices
 	 * @return void
 	 */
-	public static function sync_notice() {
-		if ( ! self::show_sync_notice() ) {
+	public static function migrate_notice() {
+		if ( ! self::show_migrate_notice() ) {
 			return;
 		}
 
 		$notice = sprintf(
-			'<strong>%s</strong></p><p>%s</p><div id="stream-sync-progress"><span class="spinner"></span> <strong>%s</strong> <em></em> <button id="stream-sync-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-sync-actions"><button id="stream-start-sync" class="button button-primary">%s</button> <button id="stream-sync-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
-			__( 'Sync Stream Records', 'stream' ),
-			__( 'We found existing Stream records in your database that need to be synced to your Stream account.', 'stream' ),
+			'<strong>%s</strong></p><p>%s</p><div id="stream-migrate-progress"><span class="spinner"></span> <strong>%s</strong> <em></em> <button id="stream-migrate-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-migrate-actions"><button id="stream-start-migrate" class="button button-primary">%s</button> <button id="stream-migrate-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
+			__( 'Migrate Stream Records', 'stream' ),
+			__( 'We found existing Stream records in your database that need to be migrated to your Stream account.', 'stream' ),
 			__( 'Please do not exit this page until the process has completed. This could take several minutes.', 'stream' ),
 			__( 'Close', 'stream' ),
-			__( 'Start Syncing Now', 'stream' ),
+			__( 'Start Migration Now', 'stream' ),
 			__( 'Remind Me Later', 'stream' ),
 			__( 'Delete Existing Records', 'stream' )
 		);
@@ -118,30 +118,30 @@ class WP_Stream_Migrate {
 	}
 
 	/**
-	 * Ajax callback for processing sync actions
+	 * Ajax callback for processing migrate actions
 	 *
-	 * @action wp_ajax_wp_stream_sync_action
+	 * @action wp_ajax_wp_stream_migrate_action
 	 * @return void
 	 */
-	public static function process_sync_action() {
-		$action = wp_stream_filter_input( INPUT_POST, 'sync_action' );
+	public static function process_migrate_action() {
+		$action = wp_stream_filter_input( INPUT_POST, 'migrate_action' );
 		$nonce  = wp_stream_filter_input( INPUT_POST, 'nonce' );
 
-		if ( ! wp_verify_nonce( $nonce, 'wp_stream_sync-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'wp_stream_migrate-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ) ) {
 			return;
 		}
 
 		set_time_limit( 0 ); // These could take a while
 
-		if ( 'sync' === $action ) {
+		if ( 'migrate' === $action ) {
 			self::migrate_notification_rules();
-			self::process_chunks( 'sync' );
+			self::process_chunks( 'migrate' );
 
-			wp_send_json_success( __( 'Syncing complete!', 'stream' ) );
+			wp_send_json_success( __( 'Migration complete!', 'stream' ) );
 		}
 
 		if ( 'delay' === $action ) {
-			set_transient( self::SYNC_DELAY_TRANSIENT, "Don't nag me, bro", HOUR_IN_SECONDS * 3 );
+			set_transient( self::MIGRATE_DELAY_TRANSIENT, "Don't nag me, bro", HOUR_IN_SECONDS * 3 );
 
 			wp_send_json_success( __( "OK, we'll remind you again in a few hours.", 'stream' ) );
 		}
@@ -168,7 +168,7 @@ class WP_Stream_Migrate {
 	public static function process_chunks( $action ) {
 		$max = ceil( self::$record_count / self::$limit );
 
-		if ( 'sync' === $action ) {
+		if ( 'migrate' === $action ) {
 			for ( $i = 1; $i <= $max; $i++ ) {
 				$records = self::get_records( self::$limit );
 				WP_Stream::$db->store( $records );
