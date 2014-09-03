@@ -85,6 +85,11 @@ class WP_Stream_Migrate {
 	 * @return void
 	 */
 	public static function show_sync_notice() {
+		// Disable migration admin notice until we're ready to test it
+		if ( ! wp_stream_filter_input( INPUT_GET, 'force_sync' ) ) {
+			return false;
+		}
+
 		if ( ! isset( $_GET['sync_action'] ) && WP_Stream::is_connected() && WP_Stream_Admin::is_stream_screen() && ! empty( self::$record_count ) && false === get_transient( self::SYNC_DELAY_TRANSIENT ) ) {
 			return true;
 		}
