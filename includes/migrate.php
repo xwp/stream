@@ -17,7 +17,7 @@ if ( ! $api_key || $api_key !== $api->api_key ) {
 	wp_die( 'Unauthorized.', 'stream' );
 }
 
-$records = json_encode( $migrate->get_records() ); //xss ok
+$records = json_encode( $migrate->get_records() );
 
 header( 'Content-type: application/json' );
 header( 'Content-Length: ' . strlen( $records ) );
