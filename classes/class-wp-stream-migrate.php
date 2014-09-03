@@ -71,7 +71,7 @@ class WP_Stream_Migrate {
 			return;
 		}
 
-		self::$limit = apply_filters( 'wp_stream_migrate_chunk_size', 1000 );
+		self::$limit = apply_filters( 'wp_stream_migrate_chunk_size', 500 );
 
 		add_action( 'admin_notices', array( __CLASS__, 'migrate_notice' ), 9 );
 
