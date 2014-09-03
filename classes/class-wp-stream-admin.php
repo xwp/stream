@@ -346,12 +346,17 @@ class WP_Stream_Admin {
 				'wp-stream-migrate',
 				'wp_stream_migrate',
 				array(
-					'i18n'  => array(
+					'i18n'         => array(
 						'confirm_start_migrate'    => __( 'Please note: This could take several minutes to complete.', 'stream' ),
 						'confirm_migrate_reminder' => __( 'Please note: Your existing records will not appear in Stream until you have migrated them to your account.', 'stream' ),
-						'confirm_delete_records'   => __( 'Are you sure you want to delete all existing Stream records from the database without migrating? This cannot be undone.', 'stream' ),
+						'confirm_delete_records'   => sprintf( __( 'Are you sure you want to delete all %s existing Stream records from the database without migrating? This cannot be undone.', 'stream' ), number_format( WP_Stream_Migrate::$record_count ) ),
 					),
-					'nonce' => wp_create_nonce( 'wp_stream_migrate-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
+					'api_url'      => esc_url( WP_Stream::$api->api_url ),
+					'api_version'  => esc_html( WP_Stream::$api->api_version ),
+					'api_key'      => esc_html( WP_Stream::$api->api_key ),
+					'site_uuid'    => esc_html( WP_Stream::$api->site_uuid ),
+					'record_count' => absint( WP_Stream_Migrate::$record_count ),
+					'nonce'        => wp_create_nonce( 'wp_stream_migrate-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
 				)
 			);
 		}
