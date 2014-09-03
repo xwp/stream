@@ -175,7 +175,7 @@ class WP_Stream_Migrate {
 
 		if ( 'sync' === $action ) {
 			for ( $i = 1; $i <= $max; $i++ ) {
-				$records = self::get_records();
+				$records = self::get_records( self::$limit );
 				WP_Stream::$db->store( $records );
 				self::delete_records( self::$_records );
 			}
@@ -183,7 +183,7 @@ class WP_Stream_Migrate {
 
 		if ( 'delete' === $action ) {
 			for ( $i = 1; $i <= $max; $i++ ) {
-				$records = self::get_records( false );
+				$records = self::get_records( self::$limit, 0, false );
 				self::delete_records( $records );
 			}
 		}
@@ -274,7 +274,9 @@ class WP_Stream_Migrate {
 	 *
 	 * @return array  An array of record arrays
 	 */
-	public static function get_records( $format = true ) {
+	public static function get_records( $limit = null, $offset = 0, $format = true ) {
+		$limit = is_int( $limit ) ? $limit : self::$limit;
+
 		global $wpdb;
 
 		$records = $wpdb->get_results(
@@ -286,9 +288,12 @@ class WP_Stream_Migrate {
 					AND s.type = 'stream'
 					AND sc.record_id = s.ID
 				ORDER BY s.created DESC
+				LIMIT %d, %d
 				",
 				self::$site_id,
-				self::$blog_id
+				self::$blog_id,
+				$offset,
+				$limit
 			),
 			ARRAY_A
 		);
