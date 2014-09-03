@@ -29,13 +29,6 @@ class WP_Stream_Migrate {
 	public static $record_count = 0;
 
 	/**
-	 * Limit payload chunks to a certain number of records
-	 *
-	 * @var int
-	 */
-	public static $limit = 0;
-
-	/**
 	 * Hold unformatted records temporarily for deletion
 	 *
 	 * @var array
@@ -70,8 +63,6 @@ class WP_Stream_Migrate {
 			self::drop_legacy_data();
 			return;
 		}
-
-		self::$limit = apply_filters( 'wp_stream_migrate_chunk_size', 1000 );
 
 		add_action( 'admin_notices', array( __CLASS__, 'sync_notice' ), 9 );
 
@@ -140,9 +131,27 @@ class WP_Stream_Migrate {
 
 		if ( 'sync' === $action ) {
 			self::migrate_notification_rules();
-			self::process_chunks( 'sync' );
+
+			for ( $i = 1; $i <= self::$record_count; $i++ ) {
+				$records = self::get_records();
+				WP_Stream::$db->store( $records );
+				self::delete_records( self::$_records );
+			}
+
+			self::drop_legacy_data();
 
 			wp_send_json_success( __( 'Syncing complete!', 'stream' ) );
+		}
+
+		if ( 'delete' === $action ) {
+			for ( $i = 1; $i <= self::$record_count; $i++ ) {
+				$records = self::get_records( false );
+				self::delete_records( $records );
+			}
+
+			self::drop_legacy_data();
+
+			wp_send_json_success( __( 'All existing records have been deleted from the database.', 'stream' ) );
 		}
 
 		if ( 'delay' === $action ) {
@@ -151,44 +160,7 @@ class WP_Stream_Migrate {
 			wp_send_json_success( __( "OK, we'll remind you again in a few hours.", 'stream' ) );
 		}
 
-		if ( 'delete' === $action ) {
-			self::process_chunks( 'delete' );
-
-			wp_send_json_success( __( 'All existing records have been deleted from the database.', 'stream' ) );
-		}
-
 		die();
-	}
-
-	/**
-	 * Break down the total number of records found into reasonably-sized chunks
-	 * and send each of those chunks to the Stream API
-	 *
-	 * Drops the legacy Stream data from the DB once the API has consumed everything
-	 *
-	 * @param  string $action  How the chunks should be processed
-	 *
-	 * @return void
-	 */
-	public static function process_chunks( $action ) {
-		$max = ceil( self::$record_count / self::$limit );
-
-		if ( 'sync' === $action ) {
-			for ( $i = 1; $i <= $max; $i++ ) {
-				$records = self::get_records();
-				WP_Stream::$db->store( $records );
-				self::delete_records( self::$_records );
-			}
-		}
-
-		if ( 'delete' === $action ) {
-			for ( $i = 1; $i <= $max; $i++ ) {
-				$records = self::get_records( false );
-				self::delete_records( $records );
-			}
-		}
-
-		self::drop_legacy_data();
 	}
 
 	public static function migrate_notification_rules() {
@@ -268,8 +240,6 @@ class WP_Stream_Migrate {
 	/**
 	 * Get a chunk of records formatted for Stream API ingestion
 	 *
-	 * @param  int  $limit   The number of rows to query
-	 * @param  int  $offset  The number of rows to skip, 0 by default
 	 * @param  bool $format  Whether or not the output should be formatted for cloud ingestion, true by default
 	 *
 	 * @return array  An array of record arrays
