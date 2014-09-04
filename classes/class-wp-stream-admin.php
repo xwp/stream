@@ -366,6 +366,18 @@ class WP_Stream_Admin {
 			);
 		}
 
+		/**
+		 * The maximum number of items that can be updated in bulk without receiving a warning.
+		 *
+		 * Stream watches for bulk actions performed in the WordPress Admin (such as updating
+		 * many posts at once) and warns the user before proceeding if the number of items they
+		 * are attempting to update exceeds this threshold value. Since Stream will try to save
+		 * a log for each item, it will take longer than usual to complete the operation.
+		 *
+		 * The default threshold is 100 items.
+		 *
+		 * @return int
+		 */
 		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
 
 		wp_enqueue_script( 'wp-stream-bulk-actions', WP_STREAM_URL . 'ui/js/bulk-actions.js', array( 'jquery' ), WP_Stream::VERSION );
