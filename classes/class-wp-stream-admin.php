@@ -276,7 +276,13 @@ class WP_Stream_Admin {
 		}
 
 		if ( isset( self::$screen_id['main'] ) ) {
-			add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
+			/**
+			 * Fires just before the Stream list table is registered.
+			 *
+			 * @since 1.4.0
+			 *
+			 * @return void
+			 */
 			do_action( 'wp_stream_admin_menu_screens' );
 
 			// Register the list table early, so it associates the column headers with 'Screen settings'
