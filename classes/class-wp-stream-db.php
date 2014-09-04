@@ -84,7 +84,7 @@ class WP_Stream_DB {
 	public function query( $query, $fields ) {
 		$response = WP_Stream::$api->search( $query, $fields );
 
-		if ( empty( $response ) ) {
+		if ( empty( $response ) || ! isset( $response->meta ) || ! isset( $response->records ) ) {
 			return false;
 		}
 
