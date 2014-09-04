@@ -92,7 +92,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'field_groups' => _x( 'Field groups', 'acf', 'stream' ),
+			'field_groups' => _x( 'Field Groups', 'acf', 'stream' ),
 			'fields'       => _x( 'Fields', 'acf', 'stream' ),
 			'rules'        => _x( 'Rules', 'acf', 'stream' ),
 			'options'      => _x( 'Options', 'acf', 'stream' ),
