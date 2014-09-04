@@ -80,10 +80,11 @@ class WP_Stream_Connectors {
 		}
 
 		/**
-		 * Filter allows for adding additional connectors via classes that extend WP_Stream_Connector
+		 * Allows for adding additional connectors via classes that extend WP_Stream_Connector.
 		 *
-		 * @param  array Connector class names
-		 * @return array Updated array of Connector class names
+		 * @since 0.0.2
+		 *
+		 * @param array $classes An array of connector class names.
 		 */
 		self::$connectors = apply_filters( 'wp_stream_connectors', $classes );
 
@@ -111,15 +112,19 @@ class WP_Stream_Connectors {
 				self::$term_labels['stream_connector'][ $connector::$name ] = $connector::get_label();
 			}
 
-			/**
-			 * Filter allows to continue register excluded connector
-			 *
-			 * @param bool   True if excluded, otherwise false
-			 * @param string Connector unique name
-			 * @param array  Excluded connector array
-			 */
+			$connector   = $connector::$name;
+			$is_excluded = in_array( $connector, $excluded_connectors );
 
-			$is_excluded_connector = apply_filters( 'wp_stream_check_connector_is_excluded', in_array( $connector::$name, $excluded_connectors ), $connector::$name, $excluded_connectors );
+			/**
+			 * Allows excluded connectors to be overridden and registered.
+			 *
+			 * @since 1.3.0
+			 *
+			 * @param bool   $is_excluded         True if excluded, otherwise false.
+			 * @param string $connector           The current connector's slug.
+			 * @param array  $excluded_connectors An array of all excluded connector slugs.
+			 */
+			$is_excluded_connector = apply_filters( 'wp_stream_check_connector_is_excluded', $is_excluded, $connector, $excluded_connectors );
 
 			if ( $is_excluded_connector ) {
 				continue;
@@ -141,18 +146,23 @@ class WP_Stream_Connectors {
 			);
 		}
 
+		$connectors = self::$term_labels['stream_connector'];
+
 		/**
-		 * This allow to perform action after all connectors registration
+		 * Fires after all connectors have been registered.
+		 *
+		 * @since 1.3.0
 		 *
 		 * @param array all register connectors labels array
 		 */
-		do_action( 'wp_stream_after_connectors_registration', self::$term_labels['stream_connector'] );
+		do_action( 'wp_stream_after_connectors_registration', $connectors );
 	}
 
 	/**
 	 * Print admin notices
 	 *
 	 * @since  1.2.3
+	 *
 	 * @return void
 	 */
 	public static function admin_notices() {

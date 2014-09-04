@@ -300,14 +300,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 						 * Also, note that the action name must include the $column_title registered
 						 * with wp_stream_register_column_defaults
 						 */
-						if ( $column_title == $column_name && has_action( 'wp_stream_insert_column_default-' . $column_title ) ) {
+						if ( $column_title == $column_name && has_action( "wp_stream_insert_column_default-{$column_title}" ) ) {
 							/**
-							 * This action allows for the addition of content under the specified column ($column_title)
+							 * Allows for the addition of content under a specified column.
 							 *
-							 * @param  string $column_title Title of the column (set in wp_stream_register_column_defaults)
-							 * @param  obj    $item         Contents of the row
+							 * @since 1.0.0
+							 *
+							 * @param object $item Contents of the row
 							 */
-							$out = do_action( 'wp_stream_insert_column_default-' . $column_title, $item );
+							$out = do_action( "wp_stream_insert_column_default-{$column_title}", $item );
 						} else {
 							$out = $column_name;
 						}
@@ -761,7 +762,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 				<?php
 				/**
-				 * Action allows for mods after the list table display
+				 * Fires after the list table is displayed.
+				 *
+				 * @since 1.0.0
 				 */
 				do_action( 'wp_stream_after_list_table' );
 				$this->pagination( $which );

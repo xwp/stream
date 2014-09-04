@@ -38,11 +38,11 @@ class WP_Stream_DB {
 		}
 
 		/**
-		 * Filter allows modification of record information
+		 * Allows modification of record information just before logging occurs.
 		 *
-		 * @param  array $records Array of record information
+		 * @since 0.0.2
 		 *
-		 * @return array $records Updated array of record information
+		 * @param  array $records An array of record data.
 		 */
 		$records = apply_filters( 'wp_stream_record_array', $records );
 
