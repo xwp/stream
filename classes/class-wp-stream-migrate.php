@@ -158,7 +158,7 @@ class WP_Stream_Migrate {
 
 				wp_send_json_success( 'migrate' );
 			} else {
-				wp_send_json_error( 'error' );
+				wp_send_json_error( __( 'An error occurred during migration. Please try again later.', 'stream' ) );
 			}
 		}
 
