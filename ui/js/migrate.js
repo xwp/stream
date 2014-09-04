@@ -67,14 +67,14 @@ jQuery( function( $ ) {
 		progress_val = ( ( progress_step + progress_val ) < 100 ) ? ( progress_step + progress_val ) : 100;
 
 		$( '#stream-migrate-progress progress' ).val( progress_val );
-		$( '#stream-migrate-progress strong' ).text( progress_val + '%' );
+		$( '#stream-migrate-progress strong' ).text( Math.round( progress_val ) + '%' );
 
 		stream_migrate_action( migrate_action );
 	}
 
 	function stream_migrate_start( migrate_action ) {
 		$( '#stream-migrate-actions' ).hide();
-		$( '#stream-migrate-message' ).text( wp_stream_migrate.process_started ).css( 'font-weight', 'bold' );
+		$( '#stream-migrate-message' ).text( wp_stream_migrate.i18n.process_started );
 		$( '#stream-migrate-progress' ).show();
 
 		if ( 'delay' !== migrate_action ) {
