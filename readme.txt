@@ -1,6 +1,6 @@
 === Stream ===
 Contributors:      lukecarbis, fjarrett, shadyvb, X-team, stream
-Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
+Tags:              actions, activity, admin, analytics, dashboard, log, multisite, notification, security, users
 Requires at least: 3.7
 Tested up to:      4.0
 Stable tag:        trunk
