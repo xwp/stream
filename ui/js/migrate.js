@@ -31,7 +31,7 @@ jQuery( function( $ ) {
 
 	var chunk_size    = parseInt( wp_stream_migrate.chunk_size, 10 );
 	var record_count  = parseInt( wp_stream_migrate.record_count, 10 );
-	var progress_step = ( ( chunk_size / record_count ) < 1 ) ? ( chunk_size / record_count ) * 100 : 100;
+	var progress_step = ( chunk_size < record_count ) ? ( chunk_size / record_count ) * 100 : 100;
 	var progress_val  = 0;
 
 	function stream_migrate_action( migrate_action ) {
@@ -64,7 +64,7 @@ jQuery( function( $ ) {
 	}
 
 	function stream_migrate_progress_loop( migrate_action ) {
-		progress_val = ( ( progress_step + progress_val ) < 100 ) ? ( progress_step + progress_val ) : 100;
+		progress_val = ( ( progress_step + progress_val ) < 100 ) ? progress_step + progress_val : 100;
 
 		$( '#stream-migrate-progress progress' ).val( progress_val );
 		$( '#stream-migrate-progress strong' ).text( Math.round( progress_val ) + '%' );
