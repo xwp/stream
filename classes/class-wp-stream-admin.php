@@ -347,6 +347,7 @@ class WP_Stream_Admin {
 				'wp_stream_migrate',
 				array(
 					'i18n'         => array(
+						'process_started'          => __( 'Please do not exit this page until the process has completed. This could take several minutes.', 'stream' ),
 						'confirm_start_migrate'    => __( 'Please note: This could take several minutes to complete.', 'stream' ),
 						'confirm_migrate_reminder' => __( 'Please note: Your existing records will not appear in Stream until you have migrated them to your account.', 'stream' ),
 						'confirm_delete_records'   => sprintf( __( 'Are you sure you want to delete all %s existing Stream records from the database without migrating? This cannot be undone.', 'stream' ), number_format( WP_Stream_Migrate::$record_count ) ),

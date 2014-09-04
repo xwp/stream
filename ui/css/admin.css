@@ -599,7 +599,6 @@ body.folded .stream-example {
 }
 
 #stream-migrate-progress progress {
-	display: block;
 	width: 300px;
 	font-size: 18px;
 }

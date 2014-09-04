@@ -67,14 +67,14 @@ jQuery( function( $ ) {
 		progress_val = ( ( progress_step + progress_val ) < 100 ) ? ( progress_step + progress_val ) : 100;
 
 		$( '#stream-migrate-progress progress' ).val( progress_val );
-		$( '#stream-migrate-progress strong' ).show().text( progress_val );
+		$( '#stream-migrate-progress strong' ).text( progress_val + '%' );
 
 		stream_migrate_action( migrate_action );
 	}
 
 	function stream_migrate_start( migrate_action ) {
 		$( '#stream-migrate-actions' ).hide();
-		$( '#stream-migrate-message' ).hide();
+		$( '#stream-migrate-message' ).text( wp_stream_migrate.process_started ).css( 'font-weight', 'bold' );
 		$( '#stream-migrate-progress' ).show();
 
 		if ( 'delay' !== migrate_action ) {
@@ -85,6 +85,7 @@ jQuery( function( $ ) {
 	function stream_migrate_end( message, is_error ) {
 		is_error = 'undefined' !== typeof is_error ? is_error : false;
 
+		$( '#stream-migrate-message' ).hide();
 		$( '#stream-migrate-progress progress' ).hide();
 		$( '#stream-migrate-progress strong' ).hide();
 		$( '#stream-migrate-actions-close' ).show();
