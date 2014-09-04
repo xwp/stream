@@ -1,10 +1,10 @@
-/* globals wp_stream */
+/* globals wp_stream_live_updates */
 jQuery( function( $ ) {
 
 	$( document ).ready( function() {
 
-		// Only run on page 1 when the order is desc and on page wp_stream
-		if ( 'toplevel_page_wp_stream' !== wp_stream.current_screen || '1' !== wp_stream.current_page || 'asc' === wp_stream.current_order ) {
+		// Only run on page 1 when the order is desc and on page wp_stream_live_updates
+		if ( 'toplevel_page_wp_stream' !== wp_stream_live_updates.current_screen || '1' !== wp_stream_live_updates.current_page || 'asc' === wp_stream_live_updates.current_order ) {
 			return;
 		}
 
@@ -25,7 +25,7 @@ jQuery( function( $ ) {
 			}
 
 			data['wp-stream-heartbeat-last-id'] = last_id;
-			data['wp-stream-heartbeat-query']   = wp_stream.current_query;
+			data['wp-stream-heartbeat-query']   = wp_stream_live_updates.current_query;
 		});
 
 		// Listen for "heartbeat-tick" on $(document).

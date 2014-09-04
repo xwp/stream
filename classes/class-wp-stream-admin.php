@@ -328,17 +328,24 @@ class WP_Stream_Admin {
 				'wp-stream-admin',
 				'wp_stream',
 				array(
-					'i18n'           => array(
+					'i18n'       => array(
 						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
-					'gmt_offset'     => get_option( 'gmt_offset' ),
-					'current_screen' => $hook,
-					'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
-					'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
-					'current_query'  => json_encode( $_GET ),
+					'gmt_offset' => get_option( 'gmt_offset' ),
 				)
 			);
 		}
+
+		wp_localize_script(
+			'wp-stream-live-updates',
+			'wp_stream_live_updates',
+			array(
+				'current_screen' => $hook,
+				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
+				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
+				'current_query'  => json_encode( $_GET ),
+			)
+		);
 
 		if ( WP_Stream_Migrate::show_migrate_notice() ) {
 			wp_enqueue_script( 'wp-stream-migrate', WP_STREAM_URL . 'ui/js/migrate.js', array( 'jquery' ), WP_Stream::VERSION );
