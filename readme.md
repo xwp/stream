@@ -7,7 +7,7 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 **Contributors:** [lukecarbis](http://profiles.wordpress.org/lukecarbis), [fjarrett](http://profiles.wordpress.org/fjarrett), [shadyvb](http://profiles.wordpress.org/shadyvb), [x-team](http://profiles.wordpress.org/x-team), [stream](http://profiles.wordpress.org/stream)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
-**Tested up to:** 3.9.1  
+**Tested up to:** 4.0  
 **Stable tag:** trunk (master)  
 **License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
 
