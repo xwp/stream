@@ -2,9 +2,9 @@
 jQuery( function( $ ) {
 
 	var chunk_size    = parseInt( wp_stream_migrate.chunk_size, 10 ),
-		record_count  = parseInt( wp_stream_migrate.record_count, 10 ),
-		progress_step = ( chunk_size < record_count ) ? ( chunk_size / record_count ) * 100 : 100,
-		progress_val  = 0;
+	    record_count  = parseInt( wp_stream_migrate.record_count, 10 ),
+	    progress_step = ( chunk_size < record_count ) ? ( chunk_size / record_count ) * 100 : 100,
+	    progress_val  = 0;
 
 	$( document ).on( 'click', '#stream-start-migrate', function( e ) {
 		if ( ! window.confirm( wp_stream_migrate.i18n.confirm_start_migrate ) ) {
