@@ -12,7 +12,7 @@ class WP_Stream_DB {
 	/**
 	 * Store records
 	 *
-	 * @param  array Records
+	 * @param  array $records
 	 *
 	 * @return mixed True if updated, false|WP_Error if not
 	 */
@@ -63,7 +63,7 @@ class WP_Stream_DB {
 	 *
 	 * @internal Used by store()
 	 *
-	 * @param array   $records  Record data
+	 * @param array   $records
 	 *
 	 * @return object $response The inserted records
 	 */

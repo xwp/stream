@@ -1,7 +1,7 @@
 /* globals wp_stream_migrate, ajaxurl */
 jQuery( function( $ ) {
 
-	$( '#stream-start-migrate' ).on( 'click', function( e ) {
+	$( document ).on( 'click', '#stream-start-migrate', function( e ) {
 		if ( ! window.confirm( wp_stream_migrate.i18n.confirm_start_migrate ) ) {
 			e.preventDefault();
 		} else {
@@ -9,7 +9,7 @@ jQuery( function( $ ) {
 		}
 	});
 
-	$( '#stream-migrate-reminder' ).on( 'click', function( e ) {
+	$( document ).on( 'click', '#stream-migrate-reminder', function( e ) {
 		if ( ! window.confirm( wp_stream_migrate.i18n.confirm_migrate_reminder ) ) {
 			e.preventDefault();
 		} else {
@@ -17,13 +17,22 @@ jQuery( function( $ ) {
 		}
 	});
 
-	$( '#stream-delete-records' ).on( 'click', function( e ) {
+	$( document ).on( 'click', '#stream-delete-records', function( e ) {
 		if ( ! window.confirm( wp_stream_migrate.i18n.confirm_delete_records ) ) {
 			e.preventDefault();
 		} else {
 			stream_migrate_action( 'delete' );
 		}
 	});
+
+	$( document ).on( 'click', '#stream-migrate-actions-close', function() {
+		location.reload( true );
+	});
+
+	var chunk_size    = parseInt( wp_stream_migrate.chunk_size, 10 );
+	var record_count  = parseInt( wp_stream_migrate.record_count, 10 );
+	var progress_step = ( ( chunk_size / record_count ) < 1 ) ? ( chunk_size / record_count ) * 100 : 100;
+	var progress_val  = 0;
 
 	function stream_migrate_action( migrate_action ) {
 		var data = {
@@ -38,29 +47,55 @@ jQuery( function( $ ) {
 			data: data,
 			dataType: 'json',
 			beforeSend: function() {
-				if ( 'delay' !== migrate_action ) {
-					$( '#stream-migrate-progress strong' ).show();
-				}
-
-				$( '#stream-migrate-actions' ).hide();
-				$( '#stream-migrate-progress' ).show();
+				stream_migrate_start( migrate_action );
 			},
 			success: function( response ) {
-				$( '#stream-migrate-progress .spinner' ).hide();
-				$( '#stream-migrate-progress strong' ).hide();
-				$( '#stream-migrate-actions-close' ).show();
-
 				if ( false === response.success ) {
-					$( '#stream-migrate-progress em' ).text( response.data ).css( 'color', '#a00' );
+					stream_migrate_end( response.data, true );
 				} else {
-					$( '#stream-migrate-progress em' ).text( response.data );
+					if ( 'migrate' === response.data || 'delete' === response.data ) {
+						stream_migrate_progress_loop( response.data );
+					} else {
+						stream_migrate_end( response.data );
+					}
 				}
-
-				$( '#stream-migrate-actions-close' ).on( 'click', function() {
-					location.reload( true );
-				});
 			}
 		});
+	}
+
+	function stream_migrate_progress_loop( migrate_action ) {
+		progress_val = ( ( progress_step + progress_val ) < 100 ) ? ( progress_step + progress_val ) : 100;
+
+		$( '#stream-migrate-progress progress' ).val( progress_val );
+		$( '#stream-migrate-progress strong' ).show().text( progress_val );
+
+		stream_migrate_action( migrate_action );
+	}
+
+	function stream_migrate_start( migrate_action ) {
+		$( '#stream-migrate-actions' ).hide();
+		$( '#stream-migrate-message' ).hide();
+		$( '#stream-migrate-progress' ).show();
+
+		if ( 'delay' !== migrate_action ) {
+			$( '#stream-migrate-progress strong' ).show();
+		}
+	}
+
+	function stream_migrate_end( message, is_error ) {
+		is_error = 'undefined' !== typeof is_error ? is_error : false;
+
+		$( '#stream-migrate-progress progress' ).hide();
+		$( '#stream-migrate-progress strong' ).hide();
+		$( '#stream-migrate-actions-close' ).show();
+
+		if ( message ) {
+			$( '#stream-migrate-progress em' ).text( message );
+
+			if ( is_error ) {
+				$( '#stream-migrate-progress em' ).css( 'color', '#a00' );
+			}
+		}
 	}
 
 });

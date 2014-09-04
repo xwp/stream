@@ -196,26 +196,20 @@ class WP_Stream_API {
 	/**
 	 * Create new records.
 	 *
-	 * @param array Record data.
-	 * @param array Returns specified fields only.
+	 * @param array $records
+	 * @param bool  $blocking
 	 *
-	 * @return void
+	 * @return mixed
 	 */
-	public function new_records( $records, $fields = array() ) {
+	public function new_records( $records, $blocking = false ) {
 		if ( ! $this->site_uuid ) {
 			return false;
 		}
 
-		$args = array();
+		$url  = $this->request_url( sprintf( '/sites/%s/records', urlencode( $this->site_uuid ) ) );
+		$args = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ), 'blocking' => bool $blocking );
 
-		if ( ! empty( $fields ) ) {
-			$args['fields'] = implode( ',', $fields );
-		}
-
-		$url  = $this->request_url( sprintf( '/sites/%s/records', urlencode( $this->site_uuid ) ), $args );
-		$args = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ), 'blocking' => false );
-
-		$this->remote_request( $url, $args );
+		return $this->remote_request( $url, $args );
 	}
 
 	/**
@@ -310,6 +304,7 @@ class WP_Stream_API {
 		if ( 'GET' === $args['method'] && $allow_cache ) {
 			if ( false === ( $request = get_transient( $transient ) ) ) {
 				$request = wp_remote_request( $url, $args );
+
 				set_transient( $transient, $request, $expiration );
 			}
 		} else {
@@ -326,15 +321,15 @@ class WP_Stream_API {
 		if ( ! is_wp_error( $request ) ) {
 			$data = apply_filters( 'wp_stream_api_request_data', json_decode( $request['body'] ), $url, $args );
 
-			// Intentional loose comparison
+			// Loose comparison needed
 			if ( 200 == $request['response']['code'] || 201 == $request['response']['code'] ) {
 				return $data;
 			} else {
-				// Disconnect if unauthorized or no longer exists
-				// Intentional loose comparison
+				// Disconnect if unauthorized or no longer exists, loose comparison needed
 				if ( 403 == $request['response']['code'] || 410 == $request['response']['code'] ) {
 					WP_Stream_Admin::remove_api_authentication();
 				}
+
 				$this->errors['errors']['http_code'] = $request['response']['code'];
 			}
 
@@ -343,6 +338,7 @@ class WP_Stream_API {
 			}
 		} else {
 			$this->errors['errors']['remote_request_error'] = $request->get_error_message();
+
 			WP_Stream::admin_notices( sprintf( '<strong>%s</strong> %s.', __( 'Stream API Error.', 'stream' ), $this->errors['errors']['remote_request_error'] ) );
 		}
 
@@ -352,4 +348,5 @@ class WP_Stream_API {
 
 		return false;
 	}
+
 }

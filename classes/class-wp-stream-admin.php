@@ -351,6 +351,7 @@ class WP_Stream_Admin {
 						'confirm_migrate_reminder' => __( 'Please note: Your existing records will not appear in Stream until you have migrated them to your account.', 'stream' ),
 						'confirm_delete_records'   => sprintf( __( 'Are you sure you want to delete all %s existing Stream records from the database without migrating? This cannot be undone.', 'stream' ), number_format( WP_Stream_Migrate::$record_count ) ),
 					),
+					'chunk_size'   => absint( WP_Stream_Migrate::$limit ),
 					'record_count' => absint( WP_Stream_Migrate::$record_count ),
 					'nonce'        => wp_create_nonce( 'wp_stream_migrate-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
 				)
