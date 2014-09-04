@@ -112,8 +112,8 @@ class WP_Stream_Connectors {
 				self::$term_labels['stream_connector'][ $connector::$name ] = $connector::get_label();
 			}
 
-			$connector   = $connector::$name;
-			$is_excluded = in_array( $connector, $excluded_connectors );
+			$connector_name = $connector::$name;
+			$is_excluded    = in_array( $connector_name, $excluded_connectors );
 
 			/**
 			 * Allows excluded connectors to be overridden and registered.
@@ -124,7 +124,7 @@ class WP_Stream_Connectors {
 			 * @param string $connector           The current connector's slug.
 			 * @param array  $excluded_connectors An array of all excluded connector slugs.
 			 */
-			$is_excluded_connector = apply_filters( 'wp_stream_check_connector_is_excluded', $is_excluded, $connector, $excluded_connectors );
+			$is_excluded_connector = apply_filters( 'wp_stream_check_connector_is_excluded', $is_excluded, $connector_name, $excluded_connectors );
 
 			if ( $is_excluded_connector ) {
 				continue;
