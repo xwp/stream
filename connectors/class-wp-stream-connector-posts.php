@@ -272,7 +272,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function get_ignored_post_types() {
 		return apply_filters(
-			'wp_stream_post_exclude_post_types',
+			'wp_stream_posts_exclude_post_types',
 			array(
 				'nav_menu_item',
 				'attachment',

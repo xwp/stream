@@ -86,7 +86,7 @@ abstract class WP_Stream_Notifications_Adapter {
 								$object = get_term( $log['object_id'], $log['meta']['taxonomy'] );
 								break;
 							default:
-								$object = apply_filters( 'stream_notifications_record_object', $log['object_id'], $log );
+								$object = apply_filters( 'wp_stream_notifications_record_object', $log['object_id'], $log );
 								break;
 						}
 						if ( is_object( $object ) && isset( $object->{$meta_key} ) ) {

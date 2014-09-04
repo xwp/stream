@@ -22,7 +22,7 @@ class WP_Stream_Notifications_Settings {
 		}
 
 		// Add Notifications settings tab to Stream settings
-		add_filter( 'wp_stream_options_fields', array( __CLASS__, '_register_settings' ) );
+		add_filter( 'wp_stream_settings_option_fields', array( __CLASS__, '_register_settings' ) );
 	}
 
 	public static function get_fields() {
@@ -43,7 +43,7 @@ class WP_Stream_Notifications_Settings {
 				),
 			);
 
-			self::$fields = apply_filters( 'wp_stream_notifications_options_fields', $fields );
+			self::$fields = apply_filters( 'wp_stream_notifications_option_fields', $fields );
 		}
 		return self::$fields;
 	}
@@ -51,7 +51,7 @@ class WP_Stream_Notifications_Settings {
 	/**
 	 * Appends Notifications settings to Stream settings
 	 *
-	 * @filter wp_stream_options_fields
+	 * @filter wp_stream_settings_option_fields
 	 */
 	public static function _register_settings( $stream_fields ) {
 		return array_merge( $stream_fields, self::get_fields() );

@@ -76,7 +76,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 */
 	public static function get_comment_type_labels() {
 		return apply_filters(
-			'wp_stream_comment_type_labels',
+			'wp_stream_comments_comment_type_labels',
 			array(
 				'comment'   => __( 'Comment', 'default' ),
 				'trackback' => __( 'Trackback', 'default' ),
@@ -539,7 +539,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 */
 	public static function get_ignored_comment_types() {
 		return apply_filters(
-			'wp_stream_comment_exclude_comment_types',
+			'wp_stream_comments_exclude_comment_types',
 			array()
 		);
 	}

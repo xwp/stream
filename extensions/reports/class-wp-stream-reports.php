@@ -87,7 +87,7 @@ class WP_Stream_Reports {
 		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' ); // Has trailing slash
 		define( 'WP_STREAM_REPORTS_VIEW_DIR', WP_STREAM_REPORTS_DIR . 'views/' ); // Has trailing slash
 
-		if ( ! apply_filters( 'wp_stream_load_reports', true ) || is_network_admin() ) {
+		if ( ! apply_filters( 'wp_stream_reports_load', true ) || is_network_admin() ) {
 			return;
 		}
 
@@ -330,8 +330,8 @@ class WP_Stream_Reports {
 
 		// Execute some actions before including the view, to allow others to hook in here
 		// Use these to do stuff related to the view you are working with
-		do_action( 'stream-reports-view', $view );
-		do_action( "stream-reports-view-{$view->slug}", $view );
+		do_action( 'wp_stream_reports_view', $view );
+		do_action( "wp_stream_reports_view-{$view->slug}", $view );
 
 		include_once $view->path;
 	}

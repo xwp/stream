@@ -107,7 +107,7 @@ class WP_Stream_Notifications {
 		define( 'WP_STREAM_NOTIFICATIONS_URL', WP_STREAM_URL . 'extensions/notifications/' ); // Has trailing slash
 		define( 'WP_STREAM_NOTIFICATIONS_INC_DIR', WP_STREAM_NOTIFICATIONS_DIR . 'includes/' ); // Has trailing slash
 
-		if ( ! apply_filters( 'wp_stream_load_notifications', true ) ) {
+		if ( ! apply_filters( 'wp_stream_notifications_load', true ) ) {
 			return;
 		}
 

@@ -798,7 +798,7 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		$new_array = array_merge( array( $all_actions ), $actions );
-		return apply_filters( 'wp_stream_get_actions', $new_array );
+		return apply_filters( 'wp_stream_reports_get_actions', $new_array );
 	}
 
 	/**

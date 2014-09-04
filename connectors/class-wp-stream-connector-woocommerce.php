@@ -59,8 +59,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	public static function register() {
 		parent::register();
 
-		add_filter( 'wp_stream_post_exclude_post_types', array( __CLASS__, 'exclude_order_post_types' ) );
-		add_action( 'wp_stream_comment_exclude_comment_types', array( __CLASS__, 'exclude_order_comment_types' ) );
+		add_filter( 'wp_stream_posts_exclude_post_types', array( __CLASS__, 'exclude_order_post_types' ) );
+		add_action( 'wp_stream_comments_exclude_comment_types', array( __CLASS__, 'exclude_order_comment_types' ) );
 
 		self::get_woocommerce_settings_fields();
 	}
@@ -128,7 +128,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			self::$settings_pages
 		);
 
-		return apply_filters( 'wp_stream_connnector_woocommerce_contexts', $context_labels );
+		return apply_filters( 'wp_stream_woocommerce_contexts', $context_labels );
 	}
 
 	/**
@@ -196,7 +196,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			),
 		);
 
-		return apply_filters( 'wp_stream_connnector_woocommerce_custom_settings', $custom_settings );
+		return apply_filters( 'wp_stream_woocommerce_custom_settings', $custom_settings );
 	}
 
 	/**
@@ -244,7 +244,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * Prevent the Stream Posts connector from logging orders
 	 * so that we can handle them differently here
 	 *
-	 * @filter wp_stream_post_exclude_post_types
+	 * @filter wp_stream_posts_exclude_post_types
 	 * @param  array $post_types Ignored post types
 	 * @return array             Filtered post types
 	 */

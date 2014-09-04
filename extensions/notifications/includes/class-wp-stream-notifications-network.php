@@ -19,7 +19,7 @@ class WP_Stream_Notifications_Network {
 
 	function filters() {
 		// Add settings section
-		add_filter( 'wp_stream_notifications_options_fields', array( $this, 'get_network_notifications_admin_fields' ) );
+		add_filter( 'wp_stream_notifications_option_fields', array( $this, 'get_network_notifications_admin_fields' ) );
 		// Add site-wide rules to matcher
 		add_filter( 'wp_stream_notifications_rules', array( $this, 'site_rules' ), 10, 2 );
 	}

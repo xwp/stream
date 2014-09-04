@@ -279,7 +279,7 @@ class WP_Stream_Settings {
 		 * @param  array  array of fields
 		 * @return array  updated array of fields
 		 */
-		return apply_filters( 'wp_stream_options_fields', $fields );
+		return apply_filters( 'wp_stream_settings_option_fields', $fields );
 	}
 
 	/**
@@ -303,7 +303,7 @@ class WP_Stream_Settings {
 		 * @return array  updated array of options
 		 */
 		return apply_filters(
-			'wp_stream_options',
+			'wp_stream_settings_options',
 			wp_parse_args(
 				(array) get_option( $option_key, array() ),
 				$defaults
@@ -336,7 +336,7 @@ class WP_Stream_Settings {
 		 * @return array  updated array of option defaults
 		*/
 		return apply_filters(
-			'wp_stream_option_defaults',
+			'wp_stream_settings_option_defaults',
 			wp_parse_args(
 				(array) get_site_option( self::DEFAULTS_OPTION_KEY, array() ),
 				$defaults

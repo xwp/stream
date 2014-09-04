@@ -46,7 +46,7 @@ class WP_Stream_Reports_Settings {
 		}
 
 		// Add Reports settings tab to Stream settings
-		add_filter( 'wp_stream_options_fields', array( __CLASS__, '_register_settings' ) );
+		add_filter( 'wp_stream_settings_option_fields', array( __CLASS__, '_register_settings' ) );
 	}
 
 	public static function get_fields() {
@@ -67,7 +67,7 @@ class WP_Stream_Reports_Settings {
 				),
 			);
 
-			self::$fields = apply_filters( 'wp_stream_reports_options_fields', $fields );
+			self::$fields = apply_filters( 'wp_stream_reports_option_fields', $fields );
 		}
 
 		return self::$fields;
@@ -76,7 +76,7 @@ class WP_Stream_Reports_Settings {
 	/**
 	 * Appends Reports settings to Stream settings
 	 *
-	 * @filter wp_stream_options_fields
+	 * @filter wp_stream_settings_option_fields
 	 */
 	public static function _register_settings( $stream_fields ) {
 		return array_merge( $stream_fields, self::get_fields() );

@@ -718,7 +718,7 @@ class WP_Stream_Notifications_Post_Type {
 			);
 		}
 
-		return apply_filters( 'stream_notification_js_args', $args );
+		return apply_filters( 'wp_stream_notifications_js_args', $args );
 	}
 
 	/**
