@@ -1,6 +1,11 @@
 /* globals wp_stream_migrate, ajaxurl */
 jQuery( function( $ ) {
 
+	var chunk_size    = parseInt( wp_stream_migrate.chunk_size, 10 ),
+		record_count  = parseInt( wp_stream_migrate.record_count, 10 ),
+		progress_step = ( chunk_size < record_count ) ? ( chunk_size / record_count ) * 100 : 100,
+		progress_val  = 0;
+
 	$( document ).on( 'click', '#stream-start-migrate', function( e ) {
 		if ( ! window.confirm( wp_stream_migrate.i18n.confirm_start_migrate ) ) {
 			e.preventDefault();
@@ -28,11 +33,6 @@ jQuery( function( $ ) {
 	$( document ).on( 'click', '#stream-migrate-actions-close', function() {
 		location.reload( true );
 	});
-
-	var chunk_size    = parseInt( wp_stream_migrate.chunk_size, 10 );
-	var record_count  = parseInt( wp_stream_migrate.record_count, 10 );
-	var progress_step = ( chunk_size < record_count ) ? ( chunk_size / record_count ) * 100 : 100;
-	var progress_val  = 0;
 
 	function stream_migrate_action( migrate_action ) {
 		var data = {
