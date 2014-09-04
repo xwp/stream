@@ -43,14 +43,14 @@ class WP_Stream_API {
 	 *
 	 * @var string
 	 */
-	public $api_url = 'https://api.wp-stream.com';
+	protected $api_url = 'https://api.wp-stream.com';
 
 	/**
 	 * The API Version
 	 *
 	 * @var string
 	 */
-	public $api_version = '0.0.2';
+	protected $api_version = '0.0.2';
 
 	/**
 	 * Error messages
