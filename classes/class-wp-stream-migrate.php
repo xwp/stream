@@ -325,7 +325,7 @@ class WP_Stream_Migrate {
 	 *
 	 * @return array  An array of record arrays
 	 */
-	public static function get_records( $limit = null, $format = true ) {
+	private static function get_records( $limit = null, $format = true ) {
 		$limit = is_int( $limit ) ? $limit : self::$limit;
 
 		global $wpdb;
@@ -427,7 +427,7 @@ class WP_Stream_Migrate {
 	 *
 	 * @return void
 	 */
-	public static function delete_records( $records ) {
+	private static function delete_records( $records ) {
 		if ( empty( $records ) ) {
 			return;
 		}
