@@ -149,15 +149,23 @@ class WP_Stream_Migrate {
 				wp_send_json_success( __( 'Migration complete!', 'stream' ) );
 			}
 
-			$response = WP_Stream::$api->new_records( $records, true ); // Use blocking
+			$response = self::send_records( $records );
 
-			if ( $response ) {
+			if ( true === $response ) {
 				// Delete the records that were just sent to the API successfully
 				self::delete_records( self::$_records );
 
 				wp_send_json_success( 'migrate' );
 			} else {
-				wp_send_json_error( __( 'An error occurred during migration. Please try again later.', 'stream' ) );
+				if ( isset( $response['body']['message'] ) && ! empty( $response['body']['message'] ) ) {
+					$message = $response['body']['message'];
+				} elseif ( isset( $response['response']['message'] ) && ! empty( $response['response']['message'] ) ) {
+					$message = $response['response']['message'];
+				} else {
+					$message = __( 'An unknown error occurred during migration', 'stream' );
+				}
+
+				wp_send_json_error( sprintf( __( '%s. Please try again later or contact support.', 'stream' ), esc_html( $message ) ) );
 			}
 		}
 
@@ -185,7 +193,12 @@ class WP_Stream_Migrate {
 		die();
 	}
 
-	public static function migrate_notification_rules() {
+	/**
+	 * Migrate notification_rule records to the new custom post type
+	 *
+	 * @return void
+	 */
+	private static function migrate_notification_rules() {
 		global $wpdb;
 
 		// Blog ID is set to 0 on single site installs
@@ -260,6 +273,41 @@ class WP_Stream_Migrate {
 	}
 
 	/**
+	 * Send records to the API
+	 *
+	 * @param  array $records
+	 *
+	 * @return mixed True on success, the full response array on failure.
+	 */
+	private static function send_records( $records ) {
+		if ( empty( $records ) || ! WP_Stream::$api->site_uuid ) {
+			return false;
+		}
+
+		$url  = WP_Stream::$api->request_url( sprintf( '/sites/%s/records', urlencode( WP_Stream::$api->site_uuid ) ) );
+		$args = array(
+			'method'    => 'POST',
+			'body'      => json_encode( array( 'records' => $records ) ),
+			'sslverify' => true,
+			'blocking'  => true,
+			'headers'   => array(
+				'Content-Type'        => 'application/json',
+				'Accept-Version'      => WP_Stream::$api->api_version,
+				'Stream-Site-API-Key' => WP_Stream::$api->api_key,
+			),
+		);
+
+		$response = wp_remote_request( $url, $args );
+
+		// Loose comparison needed
+		if ( isset( $response['response']['code'] ) && 201 == $response['response']['code'] ) {
+			return true;
+		} else {
+			return (array) $response;
+		}
+	}
+
+	/**
 	 * Get a chunk of records formatted for Stream API ingestion
 	 *
 	 * @param  int  $limit   The number of rows to query
@@ -267,7 +315,7 @@ class WP_Stream_Migrate {
 	 *
 	 * @return array  An array of record arrays
 	 */
-	public static function get_records( $limit = null, $format = true ) {
+	private static function get_records( $limit = null, $format = true ) {
 		$limit = is_int( $limit ) ? $limit : self::$limit;
 
 		global $wpdb;
@@ -350,7 +398,7 @@ class WP_Stream_Migrate {
 	 *
 	 * @return void
 	 */
-	public static function delete_records( $records ) {
+	private static function delete_records( $records ) {
 		if ( empty( $records ) ) {
 			return;
 		}
@@ -376,7 +424,7 @@ class WP_Stream_Migrate {
 	 *
 	 * @return void
 	 */
-	public static function drop_legacy_data( $drop_tables = true ) {
+	private static function drop_legacy_data( $drop_tables = true ) {
 		global $wpdb;
 
 		if ( $drop_tables ) {
