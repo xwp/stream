@@ -326,7 +326,7 @@ class WP_Stream_Migrate {
 			array_walk_recursive(
 				$records[ $record ],
 				function( &$v ) {
-					$v = is_numeric( $v ) ? intval( $v ) : $v; // A negative int could potentially exist as meta
+					$v = ctype_digit( $v ) ? intval( $v ) : $v; // If the string is comprised of only whole numbers then make it an int
 				}
 			);
 		}
