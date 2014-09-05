@@ -130,6 +130,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		$current_user    = wp_get_current_user();
 		$registered_user = get_user_by( 'id', $user_id );
 
+		if ( ! WP_Stream_Connectors::is_logging_enabled_for_user( $registered_user ) ) {
+			return;
+		}
+
 		if ( ! $current_user->ID ) { // Non logged-in user registered themselves
 			$message     = __( 'New user registration', 'stream' );
 			$user_to_log = $registered_user->ID;
@@ -160,6 +164,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @action profile_update
 	 */
 	public static function callback_profile_update( $user_id, $user ) {
+		if ( ! WP_Stream_Connectors::is_logging_enabled_for_user( $user ) ) {
+			return;
+		}
+
 		self::log(
 			__( '%s\'s profile was updated', 'stream' ),
 			array(
@@ -182,6 +190,12 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 
 		global $wp_roles;
 
+		$user = get_user_by( 'id', $user_id );
+
+		if ( ! WP_Stream_Connectors::is_logging_enabled_for_user( $user ) ) {
+			return;
+		}
+
 		self::log(
 			_x(
 				'%1$s\'s role was changed from %2$s to %3$s',
@@ -189,11 +203,11 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 				'stream'
 			),
 			array(
-				'display_name' => get_user_by( 'id', $user_id )->display_name,
+				'display_name' => $user->display_name,
 				'old_role'     => translate_user_role( $wp_roles->role_names[ $old_roles[0] ] ),
 				'new_role'     => translate_user_role( $wp_roles->role_names[ $new_role ] ),
 			),
-			$user_id,
+			$user->ID,
 			array( 'profiles' => 'updated' )
 		);
 	}
@@ -204,6 +218,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @action password_reset
 	 */
 	public static function callback_password_reset( $user ) {
+		if ( ! WP_Stream_Connectors::is_logging_enabled_for_user( $user ) ) {
+			return;
+		}
+
 		self::log(
 			__( '%s\'s password was reset', 'stream' ),
 			array(
@@ -225,6 +243,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$user = get_user_by( 'email', $user_login );
 		} else {
 			$user = get_user_by( 'login', $user_login );
+		}
+
+		if ( ! WP_Stream_Connectors::is_logging_enabled_for_user( $user ) ) {
+			return;
 		}
 
 		self::log(
@@ -268,6 +290,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			return;
 		}
 
+		if ( ! WP_Stream_Connectors::is_logging_enabled_for_user( $user ) ) {
+			return;
+		}
+
 		self::log(
 			__( '%s logged out', 'stream' ),
 			array( 'display_name' => $user->display_name ),
@@ -303,6 +329,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		$user = wp_get_current_user();
 
 		if ( isset( self::$_users_object_pre_deleted[ $user_id ] ) ) {
+			if ( ! WP_Stream_Connectors::is_logging_enabled_for_user( self::$_users_object_pre_deleted[ $user_id ] ) ) {
+				return;
+			}
+
 			$message      = _x(
 				'%1$s\'s account was deleted (%2$s)',
 				'1: User display name, 2: User roles',
