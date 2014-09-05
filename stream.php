@@ -192,42 +192,49 @@ class WP_Stream {
 			return;
 		}
 
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		}
-
-		global $wpdb;
-
-		$database_message  = '';
-		$uninstall_message = '';
-
-		// Check if all needed DB is present
-		$missing_tables = array();
-		foreach ( $this->db->get_table_names() as $table_name ) {
-			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-				$missing_tables[] = $table_name;
+		$db_ver_trans_key = 'dbvertranskey';
+		if ( false === ( $database_message = get_transient( $db_ver_trans_key ) ) ) {
+			if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+				require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 			}
-		}
 
-		if ( $missing_tables ) {
-			$database_message .= sprintf(
-				'%s <strong>%s</strong>',
-				_n(
-					'The following table is not present in the WordPress database:',
-					'The following tables are not present in the WordPress database:',
-					count( $missing_tables ),
-					'stream'
-				),
-				esc_html( implode( ', ', $missing_tables ) )
-			);
-		}
+			global $wpdb;
 
-		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) && current_user_can( 'manage_network_plugins' ) ) {
-			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), network_admin_url( 'plugins.php#stream' ) );
-		} elseif ( current_user_can( 'activate_plugins' ) ) {
-			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
-		}
+			$database_message  = '';
+			$uninstall_message = '';
 
+			// Check if all needed DB is present
+			$missing_tables = array();
+			foreach ( $this->db->get_table_names() as $table_name ) {
+				if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
+					$missing_tables[] = $table_name;
+				}
+			}
+
+			if ( $missing_tables ) {
+				$database_message .= sprintf(
+					'%s <strong>%s</strong>',
+					_n(
+						'The following table is not present in the WordPress database:',
+						'The following tables are not present in the WordPress database:',
+						count( $missing_tables ),
+						'stream'
+					),
+					esc_html( implode( ', ', $missing_tables ) )
+				);
+			}
+
+			if ( is_a( $this->network, 'WP_Stream_Network' ) && $this->network->is_network_activated() && current_user_can( 'manage_network_plugins' ) ) {
+				$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), network_admin_url( 'plugins.php#stream' ) );
+			} elseif ( current_user_can( 'activate_plugins' ) ) {
+				$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
+			}
+
+			set_transient( $db_ver_trans_key, $database_message, DAY_IN_SECONDS );
+			set_transient( $db_ver_trans_key . 'uninstallmessage', $uninstall_message, DAY_IN_SECONDS );
+		} else {
+			$uninstall_message = get_transient( $db_ver_trans_key . 'uninstallmessage' );
+		}
 		/**
 		 * Fires before admin notices are triggered for missing database tables.
 		 */
