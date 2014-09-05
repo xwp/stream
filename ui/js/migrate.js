@@ -74,8 +74,17 @@ jQuery( function( $ ) {
 
 	function stream_migrate_start( migrate_action ) {
 		$( '#stream-migrate-actions' ).hide();
-		$( '#stream-migrate-message' ).text( wp_stream_migrate.i18n.process_started );
 		$( '#stream-migrate-progress' ).show();
+
+		if ( 'migrate' === migrate_action ) {
+			$( '#stream-migrate-title' ).text( wp_stream_migrate.i18n.migrate_process_title );
+			$( '#stream-migrate-message' ).text( wp_stream_migrate.i18n.migrate_process_message );
+		}
+
+		if ( 'delete' === migrate_action ) {
+			$( '#stream-migrate-title' ).text( wp_stream_migrate.i18n.delete_process_title );
+			$( '#stream-migrate-message' ).text( wp_stream_migrate.i18n.delete_process_message );
+		}
 
 		if ( 'delay' !== migrate_action ) {
 			$( '#stream-migrate-progress strong' ).show();

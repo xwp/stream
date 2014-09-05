@@ -104,7 +104,7 @@ class WP_Stream_Migrate {
 		}
 
 		$notice = sprintf(
-			'<strong>%s</strong></p><p id="stream-migrate-message">%s</p><div id="stream-migrate-progress"><progress value="0" max="100"></progress> <strong>0&#37;</strong> <em></em> <button id="stream-migrate-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-migrate-actions"><button id="stream-start-migrate" class="button button-primary">%s</button> <button id="stream-migrate-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
+			'<strong id="stream-migrate-title">%s</strong></p><p id="stream-migrate-message">%s</p><div id="stream-migrate-progress"><progress value="0" max="100"></progress> <strong>0&#37;</strong> <em></em> <button id="stream-migrate-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-migrate-actions"><button id="stream-start-migrate" class="button button-primary">%s</button> <button id="stream-migrate-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
 			__( 'Migrate Stream Records', 'stream' ),
 			sprintf( __( 'We found %s existing Stream records that need to be migrated to your Stream account.', 'stream' ), number_format( self::$record_count ) ),
 			__( 'Close', 'stream' ),
@@ -176,17 +176,27 @@ class WP_Stream_Migrate {
 		}
 
 		if ( 'delete' === $action ) {
-			$records = self::get_records( self::$limit, false );
+			$success_message = __( 'All existing records have been deleted from the database.', 'stream' );
 
-			if ( ! $records ) {
-				// If all the records are gone, clean everything up
-				self::drop_legacy_data();
+			if ( ! is_multisite() ) {
+				// If this is a single-site install, force delete everything
+				self::drop_legacy_data( true, true );
 
-				wp_send_json_success( __( 'All existing records have been deleted from the database.', 'stream' ) );
+				wp_send_json_success( $success_message );
 			} else {
-				self::delete_records( $records );
+				// If multisite, only delete records for this site - this will take longer
+				$records = self::get_records( self::$limit, false );
 
-				wp_send_json_success( 'delete' );
+				if ( ! $records ) {
+					// If all the records are gone, clean everything up
+					self::drop_legacy_data();
+
+					wp_send_json_success( $success_message );
+				} else {
+					self::delete_records( $records );
+
+					wp_send_json_success( 'delete' );
+				}
 			}
 		}
 
@@ -315,31 +325,52 @@ class WP_Stream_Migrate {
 	 *
 	 * @return array  An array of record arrays
 	 */
-	private static function get_records( $limit = null, $format = true ) {
+	public static function get_records( $limit = null, $format = true ) {
 		$limit = is_int( $limit ) ? $limit : self::$limit;
 
 		global $wpdb;
 
-		$records = $wpdb->get_results(
-			$wpdb->prepare( "
-				SELECT s.*, sc.connector, sc.context, sc.action
-				FROM {$wpdb->base_prefix}stream AS s, {$wpdb->base_prefix}stream_context AS sc
-				WHERE s.site_id = %d
-					AND s.blog_id = %d
-					AND s.type = 'stream'
-					AND sc.record_id = s.ID
-				ORDER BY s.created DESC
-				LIMIT 0, %d
-				",
-				self::$site_id,
-				self::$blog_id,
-				$limit
-			),
-			ARRAY_A
-		);
+		if ( ! $format ) {
+			$records = $wpdb->get_col(
+				$wpdb->prepare( "
+					SELECT s.ID
+					FROM {$wpdb->base_prefix}stream AS s
+					WHERE s.site_id = %d
+						AND s.blog_id = %d
+						AND s.type = 'stream'
+					LIMIT %d
+					",
+					self::$site_id,
+					self::$blog_id,
+					$limit
+				)
+			);
+		} else {
+			$records = $wpdb->get_results(
+				$wpdb->prepare( "
+					SELECT s.*, sc.connector, sc.context, sc.action
+					FROM {$wpdb->base_prefix}stream AS s, {$wpdb->base_prefix}stream_context AS sc
+					WHERE s.site_id = %d
+						AND s.blog_id = %d
+						AND s.type = 'stream'
+						AND sc.record_id = s.ID
+					ORDER BY s.created DESC
+					LIMIT %d
+					",
+					self::$site_id,
+					self::$blog_id,
+					$limit
+				),
+				ARRAY_A
+			);
+		}
 
 		if ( empty( $records ) ) {
 			return;
+		}
+
+		if ( ! $format ) {
+			return $records;
 		}
 
 		self::$_records = array();
@@ -365,19 +396,17 @@ class WP_Stream_Migrate {
 
 			self::$_records[] = $records[ $record ];
 
-			if ( $format ) {
-				$records[ $record ]['created'] = wp_stream_get_iso_8601_extended_date( strtotime( $records[ $record ]['created'] ) );
+			$records[ $record ]['created'] = wp_stream_get_iso_8601_extended_date( strtotime( $records[ $record ]['created'] ) );
 
-				unset( $records[ $record ]['ID'] );
-				unset( $records[ $record ]['parent'] );
+			unset( $records[ $record ]['ID'] );
+			unset( $records[ $record ]['parent'] );
 
-				// Ensure required fields always exist
-				$records[ $record ]['site_id']     = ! empty( $records[ $record ]['site_id'] )     ? $records[ $record ]['site_id']     : 1;
-				$records[ $record ]['blog_id']     = ! empty( $records[ $record ]['blog_id'] )     ? $records[ $record ]['blog_id']     : 1;
-				$records[ $record ]['object_id']   = ! empty( $records[ $record ]['object_id'] )   ? $records[ $record ]['object_id']   : 0;
-				$records[ $record ]['author']      = ! empty( $records[ $record ]['author'] )      ? $records[ $record ]['author']      : 0;
-				$records[ $record ]['author_role'] = ! empty( $records[ $record ]['author_role'] ) ? $records[ $record ]['author_role'] : '';
-			}
+			// Ensure required fields always exist
+			$records[ $record ]['site_id']     = ! empty( $records[ $record ]['site_id'] )     ? $records[ $record ]['site_id']     : 1;
+			$records[ $record ]['blog_id']     = ! empty( $records[ $record ]['blog_id'] )     ? $records[ $record ]['blog_id']     : 1;
+			$records[ $record ]['object_id']   = ! empty( $records[ $record ]['object_id'] )   ? $records[ $record ]['object_id']   : 0;
+			$records[ $record ]['author']      = ! empty( $records[ $record ]['author'] )      ? $records[ $record ]['author']      : 0;
+			$records[ $record ]['author_role'] = ! empty( $records[ $record ]['author_role'] ) ? $records[ $record ]['author_role'] : '';
 
 			// If the array value is numeric then sanitize it from a string to an int
 			array_walk_recursive(
@@ -394,11 +423,11 @@ class WP_Stream_Migrate {
 	/**
 	 * Drop the legacy Stream records from the database for the current site/blog
 	 *
-	 * @param  array $records  An array of record arrays
+	 * @param  array $records  An array of record arrays.
 	 *
 	 * @return void
 	 */
-	private static function delete_records( $records ) {
+	public static function delete_records( $records ) {
 		if ( empty( $records ) ) {
 			return;
 		}
@@ -407,13 +436,15 @@ class WP_Stream_Migrate {
 
 		// Delete legacy rows from each Stream table for these records only
 		foreach ( $records as $record ) {
-			if ( ! isset( $record['ID'] ) ) {
+			$record_id = isset( $record['ID'] ) ? $record['ID'] : is_numeric( $record ) ? $record : false;
+
+			if ( ! $record_id ) {
 				continue;
 			}
 
-			$wpdb->delete( $wpdb->base_prefix . 'stream', array( 'ID' => $record['ID'] ), array( '%d' ) );
-			$wpdb->delete( $wpdb->base_prefix . 'stream_context', array( 'record_id' => $record['ID'] ), array( '%d' ) );
-			$wpdb->delete( $wpdb->base_prefix . 'stream_meta', array( 'record_id' => $record['ID'] ), array( '%d' ) );
+			$wpdb->delete( $wpdb->base_prefix . 'stream', array( 'ID' => $record_id ), array( '%d' ) );
+			$wpdb->delete( $wpdb->base_prefix . 'stream_context', array( 'record_id' => $record_id ), array( '%d' ) );
+			$wpdb->delete( $wpdb->base_prefix . 'stream_meta', array( 'record_id' => $record_id ), array( '%d' ) );
 		}
 	}
 
@@ -421,10 +452,11 @@ class WP_Stream_Migrate {
 	 * Drop the legacy Stream tables and options from the database
 	 *
 	 * @param bool $drop_tables  If true, attempt to drop the legacy Stream tables
+	 * @param bool $force        If true, delete tables even if records still exist
 	 *
 	 * @return void
 	 */
-	private static function drop_legacy_data( $drop_tables = true ) {
+	private static function drop_legacy_data( $drop_tables = true, $force = false ) {
 		global $wpdb;
 
 		if ( $drop_tables ) {
@@ -438,8 +470,8 @@ class WP_Stream_Migrate {
 				$records_exist = $wpdb->get_var( "SELECT * FROM `{$wpdb->prefix}stream` LIMIT 1" );
 			}
 
-			// If records exist for other sites/blogs then don't proceed, unless those sites/blogs have been deleted
-			if ( $records_exist ) {
+			// If records exist for other sites/blogs then don't proceed, unless we're force deleting or those sites/blogs have been deleted
+			if ( $records_exist && ! $force ) {
 				return;
 			}
 
