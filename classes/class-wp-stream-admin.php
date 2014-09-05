@@ -357,7 +357,7 @@ class WP_Stream_Admin {
 			$limit          = absint( WP_Stream_Migrate::$limit );
 			$record_count   = absint( WP_Stream_Migrate::$record_count );
 			$estimated_time = ( $limit < $record_count ) ? round( ( ( $record_count / $limit ) * 15 ) / 60 ) : 0;
-			$time_message   = ( $estimated_time > 1 ) ? sprintf( __( 'This will take about %d minutes.', 'stream' ), $estimated_time ) : __( 'This could take a few minutes.', 'stream' );
+			$time_message   = ( $estimated_time > 1 ) ? sprintf( __( 'This will take about %d minutes.', 'stream' ), absint( $estimated_time ) ) : __( 'This could take a few minutes.', 'stream' );
 
 			wp_enqueue_script( 'wp-stream-migrate', WP_STREAM_URL . 'ui/js/migrate.js', array( 'jquery' ), WP_Stream::VERSION );
 			wp_localize_script(
