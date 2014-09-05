@@ -185,7 +185,7 @@ class WP_Stream_Migrate {
 				wp_send_json_success( $success_message );
 			} else {
 				// If multisite, only delete records for this site - this will take longer
-				$records = self::get_records( self::$limit, false );
+				$records = self::get_record_ids( self::$limit );
 
 				if ( ! $records ) {
 					// If all the records are gone, clean everything up
@@ -320,57 +320,35 @@ class WP_Stream_Migrate {
 	/**
 	 * Get a chunk of records formatted for Stream API ingestion
 	 *
-	 * @param  int  $limit   The number of rows to query
-	 * @param  bool $format  Whether or not the output should be formatted for cloud ingestion, true by default
+	 * @param  int  $limit  The number of rows to query
 	 *
-	 * @return array  An array of record arrays
+	 * @return mixed  An array of record arrays, or FALSE if no records were found
 	 */
-	private static function get_records( $limit = null, $format = true ) {
+	private static function get_records( $limit = null ) {
 		$limit = is_int( $limit ) ? $limit : self::$limit;
 
 		global $wpdb;
 
-		if ( ! $format ) {
-			$records = $wpdb->get_col(
-				$wpdb->prepare( "
-					SELECT s.ID
-					FROM {$wpdb->base_prefix}stream AS s
-					WHERE s.site_id = %d
-						AND s.blog_id = %d
-						AND s.type = 'stream'
-					LIMIT %d
-					",
-					self::$site_id,
-					self::$blog_id,
-					$limit
-				)
-			);
-		} else {
-			$records = $wpdb->get_results(
-				$wpdb->prepare( "
-					SELECT s.*, sc.connector, sc.context, sc.action
-					FROM {$wpdb->base_prefix}stream AS s, {$wpdb->base_prefix}stream_context AS sc
-					WHERE s.site_id = %d
-						AND s.blog_id = %d
-						AND s.type = 'stream'
-						AND sc.record_id = s.ID
-					ORDER BY s.created DESC
-					LIMIT %d
-					",
-					self::$site_id,
-					self::$blog_id,
-					$limit
-				),
-				ARRAY_A
-			);
-		}
+		$records = $wpdb->get_results(
+			$wpdb->prepare( "
+				SELECT s.*, sc.connector, sc.context, sc.action
+				FROM {$wpdb->base_prefix}stream AS s, {$wpdb->base_prefix}stream_context AS sc
+				WHERE s.site_id = %d
+					AND s.blog_id = %d
+					AND s.type = 'stream'
+					AND sc.record_id = s.ID
+				ORDER BY s.created DESC
+				LIMIT %d
+				",
+				self::$site_id,
+				self::$blog_id,
+				$limit
+			),
+			ARRAY_A
+		);
 
 		if ( empty( $records ) ) {
-			return;
-		}
-
-		if ( ! $format ) {
-			return $records;
+			return false;
 		}
 
 		self::$_records = array();
@@ -421,6 +399,40 @@ class WP_Stream_Migrate {
 	}
 
 	/**
+	 * Get a chunk of record IDs
+	 *
+	 * @param  int  $limit  The number of rows to query
+	 *
+	 * @return mixed  An array of record IDs, or FALSE if no records were found
+	 */
+	private static function get_record_ids( $limit = null ) {
+		$limit = is_int( $limit ) ? $limit : self::$limit;
+
+		global $wpdb;
+
+		$records = $wpdb->get_col(
+			$wpdb->prepare( "
+				SELECT s.ID
+				FROM {$wpdb->base_prefix}stream AS s
+				WHERE s.site_id = %d
+					AND s.blog_id = %d
+					AND s.type = 'stream'
+				LIMIT %d
+				",
+				self::$site_id,
+				self::$blog_id,
+				$limit
+			)
+		);
+
+		if ( empty( $records ) ) {
+			return false;
+		}
+
+		return $records;
+	}
+
+	/**
 	 * Drop the legacy Stream records from the database for the current site/blog
 	 *
 	 * @param  array $records  An array of record arrays.
@@ -436,9 +448,10 @@ class WP_Stream_Migrate {
 
 		// Delete legacy rows from each Stream table for these records only
 		foreach ( $records as $record ) {
+			// Get the record ID from an array of records, or from an array of IDs
 			$record_id = isset( $record['ID'] ) ? $record['ID'] : is_numeric( $record ) ? $record : false;
 
-			if ( ! $record_id ) {
+			if ( empty( $record_id ) ) {
 				continue;
 			}
 
