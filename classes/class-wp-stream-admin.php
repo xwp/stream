@@ -354,19 +354,24 @@ class WP_Stream_Admin {
 		);
 
 		if ( WP_Stream_Migrate::show_migrate_notice() ) {
+			$limit          = absint( WP_Stream_Migrate::$limit );
+			$record_count   = absint( WP_Stream_Migrate::$record_count );
+			$estimated_time = ( $limit < $record_count ) ? round( ( ( $record_count / $limit ) * 15 ) / 60 ) : 0;
+			$time_message   = ( $estimated_time > 1 ) ? sprintf( __( 'This will take about %d minutes.', 'stream' ), $estimated_time ) : __( 'This could take a few minutes.', 'stream' );
+
 			wp_enqueue_script( 'wp-stream-migrate', WP_STREAM_URL . 'ui/js/migrate.js', array( 'jquery' ), WP_Stream::VERSION );
 			wp_localize_script(
 				'wp-stream-migrate',
 				'wp_stream_migrate',
 				array(
 					'i18n'         => array(
-						'process_started'          => __( 'Please do not exit this page until the process has completed. This could take several minutes.', 'stream' ),
-						'confirm_start_migrate'    => __( 'Please note: This could take several minutes to complete.', 'stream' ),
+						'process_started'          => __( 'Please do not exit this page until the process has completed.', 'stream' ) . ' ' . esc_html( $time_message ),
+						'confirm_start_migrate'    => ( $estimated_time > 1 ) ? sprintf( __( 'Please note: This process will take about %d minutes to complete.', 'stream' ), absint( $estimated_time ) ) : __( 'Please note: This process could take a few minutes to complete.', 'stream' ),
 						'confirm_migrate_reminder' => __( 'Please note: Your existing records will not appear in Stream until you have migrated them to your account.', 'stream' ),
 						'confirm_delete_records'   => sprintf( __( 'Are you sure you want to delete all %s existing Stream records from the database without migrating? This cannot be undone.', 'stream' ), number_format( WP_Stream_Migrate::$record_count ) ),
 					),
-					'chunk_size'   => absint( WP_Stream_Migrate::$limit ),
-					'record_count' => absint( WP_Stream_Migrate::$record_count ),
+					'chunk_size'   => absint( $limit ),
+					'record_count' => absint( $record_count ),
 					'nonce'        => wp_create_nonce( 'wp_stream_migrate-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
 				)
 			);
