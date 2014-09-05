@@ -302,6 +302,11 @@ class WP_Stream_Migrate {
 
 			foreach ( $stream_meta as $meta => $value ) {
 				$stream_meta_output[ $value['meta_key'] ] = maybe_unserialize( $value['meta_value'] );
+
+				// If any serialized data is still lingering in the meta value that means it's malformed and should be removed
+				if ( 1 === preg_match( '/(a|O|s|b)\x3a[0-9]*?((\x3a((\x7b?(.+)\x7d)|(\x22(.+)\x22\x3b)))|(\x3b))/', $stream_meta_output[ $value['meta_key'] ] ) ) {
+					$stream_meta_output[ $value['meta_key'] ] = '';
+				}
 			}
 
 			$records[ $record ]['stream_meta'] = $stream_meta_output;
