@@ -326,7 +326,7 @@ class WP_Stream_Migrate {
 			array_walk_recursive(
 				$records[ $record ],
 				function( &$v ) {
-					$v = ctype_digit( $v ) ? intval( $v ) : $v; // If the string is comprised of only whole numbers then make it an int
+					$v = ctype_digit( $v ) ? intval( $v ) : $v; // If the value is comprised of only digits then make it an int
 				}
 			);
 		}
