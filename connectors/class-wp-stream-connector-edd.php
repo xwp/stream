@@ -110,7 +110,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			'added'     => __( 'Added', 'stream' ),
 			'deleted'   => __( 'Deleted', 'stream' ),
 			'trashed'   => __( 'Trashed', 'stream' ),
-			'restored'  => __( 'Restored', 'stream' ),
+			'untrashed' => __( 'Restored', 'stream' ),
 			'generated' => __( 'Generated', 'stream' ),
 			'imported'  => __( 'Imported', 'stream' ),
 			'exported'  => __( 'Exported', 'stream' ),

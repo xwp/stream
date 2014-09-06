@@ -91,11 +91,10 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 			'deactivated' => __( 'Deactivated', 'stream' ),
 			'deleted'     => __( 'Deleted', 'stream' ),
 			'trashed'     => __( 'Trashed', 'stream' ),
-			'restored'    => __( 'Restored', 'stream' ),
+			'untrashed'   => __( 'Restored', 'stream' ),
 			'generated'   => __( 'Generated', 'stream' ),
 			'imported'    => __( 'Imported', 'stream' ),
 			'exported'    => __( 'Exported', 'stream' ),
-
 			'closed'      => __( 'Closed', 'stream' ),
 			'opened'      => __( 'Opened', 'stream' ),
 			'sticked'     => __( 'Sticked', 'stream' ),
@@ -196,7 +195,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 			return;
 		}
 
-		$action = $message['bbp_topic_toggle_notice'];
+		$action  = $message['bbp_topic_toggle_notice'];
 		$actions = self::get_action_labels();
 
 		if ( ! isset( $actions[ $action ] ) ) {

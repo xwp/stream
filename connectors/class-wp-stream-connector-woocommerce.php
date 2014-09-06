@@ -316,7 +316,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 				'Order title',
 				'stream'
 			);
-			$action  = 'restored';
+			$action  = 'untrashed';
 		} else {
 			$message = _x(
 				'%s updated',

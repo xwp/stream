@@ -102,7 +102,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			'added'      => __( 'Added', 'stream' ),
 			'deleted'    => __( 'Deleted', 'stream' ),
 			'trashed'    => __( 'Trashed', 'stream' ),
-			'restored'   => __( 'Restored', 'stream' ),
+			'untrashed'  => __( 'Restored', 'stream' ),
 			'duplicated' => __( 'Duplicated', 'stream' ),
 		);
 	}
@@ -422,7 +422,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			'activated'   => __( 'Activated', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
 			'trashed'     => __( 'Trashed', 'default' ),
-			'restored'    => __( 'Restored', 'default' ),
+			'untrashed'   => __( 'Restored', 'default' ),
 		);
 
 		self::log(
