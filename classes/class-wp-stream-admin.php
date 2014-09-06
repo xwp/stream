@@ -768,6 +768,10 @@ class WP_Stream_Admin {
 								<th><?php _e( 'Plan', 'stream' ); ?></th>
 								<td><?php echo esc_html( $plan_label ); ?></td>
 							</tr>
+							<tr>
+								<th><?php _e( 'Activity History', 'stream' ); ?></th>
+								<td><?php echo esc_html( $retention_label ); ?></td>
+							</tr>
 							<?php if ( 'free' !== $site_details->plan->type ) : ?>
 							<tr>
 								<th><?php _e( 'Next Billing', 'stream' ); ?></th>
@@ -775,12 +779,14 @@ class WP_Stream_Admin {
 							</tr>
 							<?php endif; ?>
 							<tr>
-								<th><?php _e( 'Activity History', 'stream' ); ?></th>
-								<td><?php echo esc_html( $retention_label ); ?></td>
-							</tr>
-							<tr>
 								<th><?php _e( 'Created', 'stream' ); ?></th>
 								<td><?php echo esc_html( date_i18n( $date_format, strtotime( $site_details->created ) ) ); ?></td>
+							</tr>
+							<tr>
+								<th><?php _e( 'Site ID', 'stream' ); ?></th>
+								<td>
+									<code class="site-uuid"><?php echo esc_html( WP_Stream::$api->site_uuid ); ?></code>
+								</td>
 							</tr>
 							<tr>
 								<th><?php _e( 'API Key', 'stream' ); ?></th>
