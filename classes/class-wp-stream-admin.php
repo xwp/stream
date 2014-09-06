@@ -356,7 +356,7 @@ class WP_Stream_Admin {
 		if ( WP_Stream_Migrate::show_migrate_notice() ) {
 			$limit                = absint( WP_Stream_Migrate::$limit );
 			$record_count         = absint( WP_Stream_Migrate::$record_count );
-			$estimated_time       = ( $limit < $record_count ) ? round( ( ( $record_count / $limit ) * ( 0.03 * $limit ) ) / 60 ) : 0;
+			$estimated_time       = ( $limit < $record_count ) ? round( ( ( $record_count / $limit ) * ( 0.04 * $limit ) ) / 60 ) : 0;
 			$migrate_time_message = ( $estimated_time > 1 ) ? sprintf( __( 'This will take about %d minutes.', 'stream' ), absint( $estimated_time ) ) : __( 'This could take a few minutes.', 'stream' );
 			$delete_time_message  = ( $estimated_time > 1 && is_multisite() ) ? sprintf( __( 'This will take about %d minutes.', 'stream' ), absint( $estimated_time ) ) : __( 'This could take a few minutes.', 'stream' );
 
