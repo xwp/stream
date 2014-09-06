@@ -744,8 +744,8 @@ class WP_Stream_Admin {
 			if ( 'free' !== $site_details->plan->type ) {
 				$next_billing_label = sprintf(
 					_x( '$%1$s on %2$s', '1: Price, 2: Renewal date', 'stream' ),
-					$site_details->plan->amount,
-					date_i18n( $date_format, strtotime( $site_details->expiry->date ) )
+					isset( $site_details->plan->amount ) ? $site_details->plan->amount : 0,
+					isset( $site_details->expiry->date ) ? date_i18n( $date_format, strtotime( $site_details->expiry->date ) ) : __( 'N/A', 'stream' )
 				);
 			}
 
