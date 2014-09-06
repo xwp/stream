@@ -449,7 +449,13 @@ class WP_Stream_Migrate {
 		// Delete legacy rows from each Stream table for these records only
 		foreach ( $records as $record ) {
 			// Get the record ID from an array of records, or from an array of IDs
-			$record_id = isset( $record['ID'] ) ? $record['ID'] : is_numeric( $record ) ? $record : false;
+			if ( isset( $record['ID'] ) ) {
+				$record_id = $record['ID'];
+			} elseif ( is_numeric( $record ) ) {
+				$record_id = $record;
+			} else {
+				$record_id = false;
+			}
 
 			if ( empty( $record_id ) ) {
 				continue;
