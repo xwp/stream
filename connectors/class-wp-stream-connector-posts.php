@@ -51,7 +51,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	public static function get_context_labels() {
 		global $wp_post_types;
 		$post_types = wp_filter_object_list( $wp_post_types, array(), null, 'label' );
-		$post_types = array_diff_key( $post_types, array_flip( self::get_ignored_post_types() ) );
+		$post_types = array_diff_key( $post_types, array_flip( self::get_excluded_post_types() ) );
 
 		add_action( 'registered_post_type', array( __CLASS__, '_registered_post_type' ), 10, 2 );
 
@@ -136,7 +136,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 * @action transition_post_status
 	 */
 	public static function callback_transition_post_status( $new, $old, $post ) {
-		if ( in_array( $post->post_type, self::get_ignored_post_types() ) ) {
+		if ( in_array( $post->post_type, self::get_excluded_post_types() ) ) {
 			return;
 		}
 
@@ -238,7 +238,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		$post = get_post( $post_id );
 
 		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing
-		if ( ! ( $post instanceof WP_Post ) || in_array( $post->post_type, self::get_ignored_post_types() )  ) {
+		if ( ! ( $post instanceof WP_Post ) || in_array( $post->post_type, self::get_excluded_post_types() )  ) {
 			return;
 		}
 
@@ -266,11 +266,11 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	}
 
 	/**
-	 * Constructs list of ignored post types for the post connector
+	 * Constructs list of excluded post types for the Posts connector
 	 *
-	 * @return  array  List of ignored post types
+	 * @return  array  List of excluded post types
 	 */
-	public static function get_ignored_post_types() {
+	public static function get_excluded_post_types() {
 		return apply_filters(
 			'wp_stream_posts_exclude_post_types',
 			array(

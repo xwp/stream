@@ -10,15 +10,6 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	public static $name = 'taxonomies';
 
 	/**
-	 * Holds excluded taxonomies
-	 *
-	 * @var array
-	 */
-	public static $excluded_taxonomies = array(
-		'nav_menu',
-	);
-
-	/**
 	 * Actions registered for this connector
 	 *
 	 * @var array
@@ -131,7 +122,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * @action created_term
 	 */
 	public static function callback_created_term( $term_id, $tt_id, $taxonomy ) {
-		if ( in_array( $taxonomy, self::$excluded_taxonomies ) ) {
+		if ( in_array( $taxonomy, self::get_excluded_taxonomies() ) ) {
 			return;
 		}
 
@@ -159,7 +150,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * @action delete_term
 	 */
 	public static function callback_delete_term( $term_id, $tt_id, $taxonomy, $deleted_term ) {
-		if ( in_array( $taxonomy, self::$excluded_taxonomies ) ) {
+		if ( in_array( $taxonomy, self::get_excluded_taxonomies() ) ) {
 			return;
 		}
 
@@ -190,7 +181,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	}
 
 	public static function callback_edited_term( $term_id, $tt_id, $taxonomy ) {
-		if ( in_array( $taxonomy, self::$excluded_taxonomies ) ) {
+		if ( in_array( $taxonomy, self::get_excluded_taxonomies() ) ) {
 			return;
 		}
 
@@ -214,6 +205,20 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			$tt_id,
 			$taxonomy,
 			'updated'
+		);
+	}
+
+	/**
+	 * Constructs list of excluded taxonomies for the Taxonomies connector
+	 *
+	 * @return array  List of excluded taxonomies
+	 */
+	public static function get_excluded_taxonomies() {
+		return apply_filters(
+			'wp_stream_taxonomies_exclude_taxonomies',
+			array(
+				'nav_menu',
+			)
 		);
 	}
 
