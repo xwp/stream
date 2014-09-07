@@ -50,7 +50,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			</div>
 			<?php
 		} else {
-			_e( 'Sorry, no activity records were found.' );
+			_e( 'Sorry, no activity records were found.', 'stream' );
 		}
 	}
 
