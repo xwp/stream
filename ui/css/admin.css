@@ -167,6 +167,9 @@
 	.toplevel_page_wp_stream .fixed .column-author {
 		width: 33%;
 	}
+	.toplevel_page_wp_stream .fixed .column-summary {
+		width: 100%;
+	}
 }
 
 @media only screen and (max-width: 480px) {
