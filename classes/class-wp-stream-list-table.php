@@ -44,10 +44,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		if ( 'free' === $site->plan->type ) {
 			?>
-			<div id="stream-list-table-upgrade">
-				<p><?php printf( _n( 'Your free account is limited to viewing 24 hours of activity history.', 'Your free account is limited to viewing <strong>%d days</strong> of activity history.', $site->plan->retention, 'stream' ), absint( $site->plan->retention ) ) ?></p>
-				<p><a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a></p>
-			</div>
+			<p><?php printf( _n( 'Your free account is limited to viewing 24 hours of activity history.', 'Your free account is limited to viewing <strong>%d days</strong> of activity history.', $site->plan->retention, 'stream' ), absint( $site->plan->retention ) ) ?></p>
+			<p><a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a></p>
 			<?php
 		}
 	}

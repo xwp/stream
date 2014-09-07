@@ -237,8 +237,7 @@
 	background-color: transparent;
 }
 
-#stream-list-table-upgrade {
-	width: 100%;
+.toplevel_page_wp_stream #the-list .no-items {
 	text-align: center;
 }
 
