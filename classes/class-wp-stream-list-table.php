@@ -42,11 +42,15 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function no_items() {
 		$site = WP_Stream::$api->get_site();
 
-		if ( 'free' === $site->plan->type ) {
+		if ( 'free' === $site->plan->type && 0 !== $this->get_total_found_rows() ) {
 			?>
-			<p><?php printf( _n( 'Your free account is limited to viewing 24 hours of activity history.', 'Your free account is limited to viewing <strong>%d days</strong> of activity history.', $site->plan->retention, 'stream' ), absint( $site->plan->retention ) ) ?></p>
-			<p><a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a></p>
+			<div class="stream-list-table-upgrade">
+				<p><?php printf( _n( 'Your free account is limited to viewing 24 hours of activity history.', 'Your free account is limited to viewing <strong>%d days</strong> of activity history.', $site->plan->retention, 'stream' ), absint( $site->plan->retention ) ) ?></p>
+				<p><a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a></p>
+			</div>
 			<?php
+		} else {
+			_e( 'No items found.' );
 		}
 	}
 
