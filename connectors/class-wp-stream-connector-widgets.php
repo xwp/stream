@@ -80,7 +80,6 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 
 		$labels['wp_inactive_widgets'] = __( 'Inactive Widgets', 'default' );
 		$labels['orphaned_widgets']    = __( 'Orphaned Widgets', 'stream' );
-		$labels['']                    = __( 'Unknown', 'stream' );
 
 		return $labels;
 	}
