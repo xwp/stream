@@ -339,7 +339,7 @@ class WP_Stream_API {
 		} else {
 			$this->errors['errors']['remote_request_error'] = $request->get_error_message();
 
-			WP_Stream::admin_notices( sprintf( '<strong>%s</strong> %s.', __( 'Stream API Error.', 'stream' ), $this->errors['errors']['remote_request_error'] ) );
+			WP_Stream::notice( sprintf( '<strong>%s</strong> %s.', __( 'Stream API Error.', 'stream' ), $this->errors['errors']['remote_request_error'] ) );
 		}
 
 		if ( ! empty( $this->errors ) ) {
