@@ -158,14 +158,15 @@ class WP_Stream_Migrate {
 				wp_send_json_success( 'migrate' );
 			} else {
 				if ( isset( $response['body']['message'] ) && ! empty( $response['body']['message'] ) ) {
-					$message = $response['body']['message'];
+					$body    = json_decode( $response['body'], true );
+					$message = $body['message'];
 				} elseif ( isset( $response['response']['message'] ) && ! empty( $response['response']['message'] ) ) {
 					$message = $response['response']['message'];
 				} else {
 					$message = __( 'An unknown error occurred during migration', 'stream' );
 				}
 
-				wp_send_json_error( sprintf( __( '%s. Please try again later or contact support.', 'stream' ), esc_html( $message ) ) );
+				wp_send_json_error( sprintf( __( '%s Please try again later or contact support.', 'stream' ), esc_html( $message ) ) );
 			}
 		}
 
