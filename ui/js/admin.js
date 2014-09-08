@@ -87,7 +87,7 @@ jQuery( function( $ ) {
 			};
 		}
 
-		//$( el ).select2( args );
+		$( el ).select2( args );
 	});
 
 	var $queryVars    = $.streamGetQueryVars();
