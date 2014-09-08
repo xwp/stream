@@ -66,7 +66,7 @@ class WP_Stream_Migrate {
 
 		self::$record_count = $wpdb->get_var(
 			$wpdb->prepare( "
-				SELECT COUNT(s.*)
+				SELECT COUNT(*)
 				FROM {$wpdb->base_prefix}stream AS s, {$wpdb->base_prefix}stream_context AS sc
 				WHERE s.site_id = %d
 					AND s.blog_id = %d
