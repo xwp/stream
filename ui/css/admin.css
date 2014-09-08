@@ -365,6 +365,11 @@
 	height: 16px;
 }
 
+.wp_stream_screen .select2-chosen .icon16 {
+	padding-right: 1px;
+}
+
+.wp_stream_screen .select2-chosen .icon16:before,
 .wp_stream_screen .select2-search-choice .icon16:before {
 	font-size: 15px !important;
 	color: #656565;
@@ -378,8 +383,8 @@
 }
 
 .wp-stream-select2-icon {
-	    position: relative;
-	         top: 3px;
+	position: relative;
+	top: 3px;
 	margin-right: 4px;
 	width: 16px;
 	height: 16px;
