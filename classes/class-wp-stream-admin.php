@@ -600,16 +600,6 @@ class WP_Stream_Admin {
 
 		WP_Stream::$api->api_key   = false;
 		WP_Stream::$api->site_uuid = false;
-
-		$redirect_url = add_query_arg(
-			array(
-				'page'    => self::RECORDS_PAGE_SLUG,
-				'message' => 'disconnected',
-			),
-			admin_url( self::ADMIN_PARENT_PAGE )
-		);
-
-		wp_redirect( $redirect_url );
 	}
 
 	public static function get_testimonials() {
