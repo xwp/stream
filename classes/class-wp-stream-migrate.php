@@ -331,13 +331,12 @@ class WP_Stream_Migrate {
 
 		$records = $wpdb->get_results(
 			$wpdb->prepare( "
-				SELECT s.*, sc.connector, sc.context, sc.action
-				FROM {$wpdb->base_prefix}stream AS s, {$wpdb->base_prefix}stream_context AS sc
-				WHERE s.site_id = %d
-					AND s.blog_id = %d
-					AND s.type = 'stream'
-					AND sc.record_id = s.ID
-				ORDER BY s.created DESC
+				SELECT *
+				FROM {$wpdb->base_prefix}stream
+				WHERE site_id = %d
+					AND blog_id = %d
+					AND type = 'stream'
+				ORDER BY created DESC
 				LIMIT %d
 				",
 				self::$site_id,
