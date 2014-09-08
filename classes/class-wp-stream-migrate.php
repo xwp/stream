@@ -365,7 +365,7 @@ class WP_Stream_Migrate {
 				if (
 					is_string( $stream_meta_output[ $value['meta_key'] ] )
 					&&
-					1 === preg_match( '/(a|O|s|b)\x3a[0-9]*?((\x3a((\x7b?(.+)\x7d)|(\x22(.+)\x22\x3b)))|(\x3b))/', $stream_meta_output[ $value['meta_key'] ] )
+					preg_match( '/(a|O) ?\x3a ?[0-9]+ ?\x3a ?\x7b/', $stream_meta_output[ $value['meta_key'] ] ) > 0
 				) {
 					unset( $stream_meta_output[ $value['meta_key'] ] );
 				}
