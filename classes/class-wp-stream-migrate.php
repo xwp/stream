@@ -369,6 +369,11 @@ class WP_Stream_Migrate {
 				) {
 					unset( $stream_meta_output[ $value['meta_key'] ] );
 				}
+
+				// If author meta isn't set properly it should be removed
+				if ( 'author_meta' === $value['meta_key'] && ! is_array( $stream_meta_output[ $value['meta_key'] ] ) ) {
+					unset( $stream_meta_output[ $value['meta_key'] ] );
+				}
 			}
 
 			$records[ $record ]['stream_meta'] = $stream_meta_output;
