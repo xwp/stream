@@ -573,8 +573,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 				if ( 'context' === $name ) {
 					// Add Connectors as parents, and apply the Contexts as children
 					$connectors = $this->assemble_records( 'connector' );
+
 					foreach ( $connectors as $connector => $item ) {
 						$context_items[ $connector ]['label'] = $item['label'];
+
 						foreach ( $data['items'] as $context_value => $context_item ) {
 							if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
 								$context_items[ $connector ]['children'][ $context_value ] = $context_item;
@@ -599,7 +601,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 
-		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'default' ) );
+		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'default' ) );
 
 		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
@@ -609,7 +611,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function filter_select( $name, $title, $items, $ajax = false ) {
 		if ( $ajax ) {
 			$out = sprintf(
-				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s"/>',
+				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s" />',
 				esc_attr( $name ),
 				esc_attr( wp_stream_filter_input( INPUT_GET, $name ) ),
 				esc_attr( $title )
