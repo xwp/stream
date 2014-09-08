@@ -125,10 +125,10 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'downloads'         => __( 'Downloads', 'edd' ),
+			'download'          => __( 'Downloads', 'edd' ),
 			'download_category' => __( 'Categories', 'default' ),
 			'download_tag'      => __( 'Tags', 'default' ),
-			'discounts'         => __( 'Discounts', 'edd' ),
+			'edd_discount'      => __( 'Discounts', 'edd' ),
 			'reports'           => __( 'Reports', 'edd' ),
 			'api_keys'          => __( 'API Keys', 'edd' ),
 			//'payments'        => __( 'Payments', 'edd' ),
@@ -148,7 +148,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( in_array( $record->context, array( 'downloads' ) ) ) {
 			$links = WP_Stream_Connector_Posts::action_links( $links, $record );
-		} elseif ( in_array( $record->context, array( 'discounts' ) ) ) {
+		} elseif ( in_array( $record->context, array( 'edd_discount' ) ) ) {
 			$post_type_label = get_post_type_labels( get_post_type_object( 'edd_discount' ) )->singular_name;
 			$base            = admin_url( 'edit.php?post_type=download&page=edd-discounts' );
 
@@ -315,7 +315,6 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	public static function log_override( array $data ) {
 		if ( 'posts' === $data['connector'] && 'download' === $data['context'] ) {
 			// Download posts operations
-			$data['context']  = 'downloads';
 			$data['connector'] = self::$name;
 		} elseif ( 'posts' === $data['connector'] && 'edd_discount' === $data['context'] ) {
 			// Discount posts operations
@@ -327,7 +326,6 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 				$data['message'] = __( '"%1s" discount deleted', 'stream' );
 			}
 
-			$data['context']  = 'discounts';
 			$data['connector'] = self::$name;
 		} elseif ( 'posts' === $data['connector'] && 'edd_payment' === $data['context'] ) {
 			// Payment posts operations
@@ -365,7 +363,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 				'status'  => $new_status,
 			),
 			$code_id,
-			'discounts',
+			'edd_discount',
 			'updated'
 		);
 	}

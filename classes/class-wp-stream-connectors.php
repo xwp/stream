@@ -135,6 +135,21 @@ class WP_Stream_Connectors {
 			// Link context labels to their connector
 			self::$contexts[ $connector::$name ] = $connector::get_context_labels();
 
+			// Remove post-types and taxonomies from posts/taxonomies connectors'
+			// contexts if they exist in a custom connector
+			if ( isset( self::$contexts['posts'] ) && ! in_array( $connector::$name, array( 'posts', 'woocommerce' ) ) ) {
+				self::$contexts['posts'] = array_diff_key(
+					self::$contexts['posts'],
+					self::$contexts[ $connector::$name ]
+				);
+			}
+			if ( isset( self::$contexts['taxonomies'] ) && ! in_array( $connector::$name, array( 'taxonomies' ) ) ) {
+				self::$contexts['taxonomies'] = array_diff_key(
+					self::$contexts['taxonomies'],
+					self::$contexts[ $connector::$name ]
+				);
+			}
+
 			// Add new terms to our label lookup array
 			self::$term_labels['stream_action']  = array_merge(
 				self::$term_labels['stream_action'],

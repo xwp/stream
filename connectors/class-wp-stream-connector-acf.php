@@ -92,7 +92,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'field_groups' => _x( 'Field Groups', 'acf', 'stream' ),
+			'acf'          => _x( 'Field Groups', 'acf', 'stream' ),
 			'fields'       => _x( 'Fields', 'acf', 'stream' ),
 			'rules'        => _x( 'Rules', 'acf', 'stream' ),
 			'options'      => _x( 'Options', 'acf', 'stream' ),
@@ -455,7 +455,6 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 */
 	public static function log_override( array $data ) {
 		if ( 'posts' === $data['connector'] && 'acf' === $data['context'] ) {
-			$data['context']               = 'field_groups';
 			$data['connector']             = self::$name;
 			$data['args']['singular_name'] = __( 'field group', 'stream' );
 		}
@@ -498,7 +497,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 					'menu_order'     => $data['menu_order'],
 				),
 				$post_id,
-				'field_groups',
+				'acf',
 				'updated'
 			);
 		}
