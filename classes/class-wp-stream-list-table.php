@@ -446,6 +446,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			// If the number of users exceeds the max authors constant value then return an empty array and use AJAX instead
 			$user_count  = count_users();
 			$total_users = $user_count['total_users'];
+
 			if ( $total_users > WP_Stream_Admin::PRELOAD_AUTHORS_MAX ) {
 				return array();
 			}
@@ -456,6 +457,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				},
 				get_users( array( 'fields' => 'ID' ) )
 			);
+
 			$authors[] = new WP_Stream_Author( 0, array( 'is_wp_cli' => true ) );
 
 			foreach ( $authors as $author ) {
@@ -502,11 +504,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$sort = function ( $a, $b ) use ( $column ) {
 			$label_a = (string) $a['label'];
 			$label_b = (string) $b['label'];
+
 			if ( $label_a === $label_b ) {
 				return 0;
 			}
-			return strtolower( $label_a ) < strtolower( $label_b ) ? -1 : 1;
+
+			return ( strtolower( $label_a ) < strtolower( $label_b ) ) ? -1 : 1;
 		};
+
 		uasort( $active_records, $sort );
 		uasort( $disabled_records, $sort );
 
