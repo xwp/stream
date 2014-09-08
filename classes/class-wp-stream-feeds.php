@@ -4,6 +4,7 @@ class WP_Stream_Feeds {
 
 	const FEED_QUERY_VAR         = 'stream';
 	const FEED_NETWORK_QUERY_VAR = 'network-stream';
+	const FEED_KEY_QUERY_VAR     = 'key';
 	const FEED_TYPE_QUERY_VAR    = 'type';
 	const USER_FEED_OPTION_KEY   = 'stream_user_feed_key';
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
@@ -156,15 +157,15 @@ class WP_Stream_Feeds {
 		if ( empty( $pretty_permalinks ) ) {
 			$link = add_query_arg(
 				array(
-					'feed'     => $query_var,
-					$query_var => $key,
+					'feed'                   => $query_var,
+					self::FEED_KEY_QUERY_VAR => $key,
 				),
 				home_url( '/' )
 			);
 		} else {
 			$link = add_query_arg(
 				array(
-					$query_var => $key,
+					self::FEED_KEY_QUERY_VAR => $key,
 				),
 				home_url(
 					sprintf(
@@ -190,10 +191,14 @@ class WP_Stream_Feeds {
 
 		$args = array(
 			'meta_key'   => self::USER_FEED_OPTION_KEY,
-			'meta_value' => $_GET[ $query_var ],
+			'meta_value' => wp_stream_filter_input( INPUT_GET, self::FEED_KEY_QUERY_VAR ),
 			'number'     => 1,
 		);
 		$user = get_users( $args );
+
+		if ( empty( $user ) ) {
+			wp_die( $die_message, $die_title );
+		}
 
 		if ( ! is_super_admin( $user[0]->ID ) ) {
 			$roles = isset( $user[0]->roles ) ? (array) $user[0]->roles : array();
@@ -238,6 +243,7 @@ class WP_Stream_Feeds {
 		);
 
 		$latest_link = null;
+
 		if ( isset( $records[0]->ID ) ) {
 			$latest_link = add_query_arg(
 				array(
@@ -246,8 +252,8 @@ class WP_Stream_Feeds {
 				$records_admin_url
 			);
 		}
-		$domain = parse_url( $records_admin_url, PHP_URL_HOST );
 
+		$domain = parse_url( $records_admin_url, PHP_URL_HOST );
 		$format = wp_stream_filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR );
 
 		if ( 'atom' === $format ) {
