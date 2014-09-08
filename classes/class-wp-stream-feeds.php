@@ -83,14 +83,14 @@ class WP_Stream_Feeds {
 	 * @return void
 	 */
 	public static function save_user_feed_key( $user ) {
-		$generate_key = isset( $_GET[ self::GENERATE_KEY_QUERY_VAR ] );
-		$verify_nonce = isset( $_GET['wp_stream_nonce'] ) && wp_verify_nonce( $_GET['wp_stream_nonce'], 'wp_stream_generate_key' );
+		$generate_key = wp_stream_filter_input( INPUT_GET, self::GENERATE_KEY_QUERY_VAR );
+		$nonce        = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 
 		if ( ! $generate_key && get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY, true ) ) {
 			return;
 		}
 
-		if ( $generate_key && ! $verify_nonce ) {
+		if ( $generate_key && ! wp_verify_nonce( $nonce, 'wp_stream_generate_key' ) ) {
 			return;
 		}
 
