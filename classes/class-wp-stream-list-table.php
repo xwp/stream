@@ -624,31 +624,32 @@ class WP_Stream_List_Table extends WP_List_Table {
 		} else {
 			$options  = array( '<option value=""></option>' );
 			$selected = wp_stream_filter_input( INPUT_GET, $name );
+
 			foreach ( $items as $key => $item ) {
-				$value = isset( $item['children'] ) ? 'group-' . $key : $key;
+				$value       = isset( $item['children'] ) ? 'group-' . $key : $key;
 				$option_args = array(
-					'value'     => $value,
-					'selected'  => selected( $value, $selected, false ),
-					'disabled'  => isset( $item['disabled'] ) ? $item['disabled'] : null,
-					'icon'      => isset( $item['icon'] ) ? $item['icon'] : null,
-					'group'     => isset( $item['children'] ) ? $key : null,
-					'tooltip'   => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
-					'class'     => isset( $item['children'] ) ? 'level-1' : null,
-					'label'     => isset( $item['label'] ) ? $item['label'] : null,
+					'value'    => $value,
+					'selected' => selected( $value, $selected, false ),
+					'disabled' => isset( $item['disabled'] ) ? $item['disabled'] : null,
+					'icon'     => isset( $item['icon'] ) ? $item['icon'] : null,
+					'group'    => isset( $item['children'] ) ? $key : null,
+					'tooltip'  => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
+					'class'    => isset( $item['children'] ) ? 'level-1' : null,
+					'label'    => isset( $item['label'] ) ? $item['label'] : null,
 				);
 				$options[] = $this->filter_option( $option_args );
 
 				if ( isset( $item['children'] ) ) {
 					foreach ( $item['children'] as $child_value => $child_item ) {
 						$option_args  = array(
-							'value'     => $child_value,
-							'selected'  => selected( $child_value, $selected, false ),
-							'disabled'  => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
-							'icon'      => isset( $child_item['icon'] ) ? $child_item['icon'] : null,
-							'group'     => $key,
-							'tooltip'   => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
-							'class'     => 'level-2',
-							'label'     => isset( $child_item['label'] ) ? '- ' . $child_item['label'] : null,
+							'value'    => $child_value,
+							'selected' => selected( $child_value, $selected, false ),
+							'disabled' => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
+							'icon'     => isset( $child_item['icon'] ) ? $child_item['icon'] : null,
+							'group'    => $key,
+							'tooltip'  => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
+							'class'    => 'level-2',
+							'label'    => isset( $child_item['label'] ) ? '- ' . $child_item['label'] : null,
 						);
 						$options[] = $this->filter_option( $option_args );
 					}
@@ -667,14 +668,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	function filter_option( $args ) {
 		$defaults = array(
-			'value'     => null,
-			'selected'  => null,
-			'disabled'  => null,
-			'icon'      => null,
-			'group'     => null,
-			'tooltip'   => null,
-			'class'     => null,
-			'label'     => null,
+			'value'    => null,
+			'selected' => null,
+			'disabled' => null,
+			'icon'     => null,
+			'group'    => null,
+			'tooltip'  => null,
+			'class'    => null,
+			'label'    => null,
 		);
 		wp_parse_args( $args, $defaults );
 
@@ -736,21 +737,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 			<div class="date-inputs">
 				<div class="box">
 					<i class="date-remove dashicons"></i>
-					<input type="text"
-						   name="date_from"
-						   class="date-picker field-from"
-						   placeholder="<?php esc_attr_e( 'Start Date', 'default' ) ?>"
-						   value="<?php echo esc_attr( $date_from ) ?>">
+					<input type="text" name="date_from" class="date-picker field-from" placeholder="<?php esc_attr_e( 'Start Date', 'default' ) ?>" value="<?php echo esc_attr( $date_from ) ?>" />
 				</div>
 				<span class="connector dashicons"></span>
 
 				<div class="box">
 					<i class="date-remove dashicons"></i>
-					<input type="text"
-						   name="date_to"
-						   class="date-picker field-to"
-						   placeholder="<?php esc_attr_e( 'End Date', 'default' ) ?>"
-						   value="<?php echo esc_attr( $date_to ) ?>">
+					<input type="text" name="date_to" class="date-picker field-to" placeholder="<?php esc_attr_e( 'End Date', 'default' ) ?>" value="<?php echo esc_attr( $date_to ) ?>" />
 				</div>
 			</div>
 
