@@ -137,7 +137,7 @@ class WP_Stream_Connectors {
 
 			// Remove post-types and taxonomies from posts/taxonomies connectors'
 			// contexts if they exist in a custom connector
-			if ( isset( self::$contexts['posts'] ) && ! in_array( $connector::$name, array( 'posts', 'woocommerce' ) ) ) {
+			if ( isset( self::$contexts['posts'] ) && ! in_array( $connector::$name, array( 'posts' ) ) ) {
 				self::$contexts['posts'] = array_diff_key(
 					self::$contexts['posts'],
 					self::$contexts[ $connector::$name ]

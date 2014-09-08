@@ -222,4 +222,15 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 		);
 	}
 
+	/**
+	 * Get Taxonomy name from its slug
+	 *
+	 * @param $taxonomy Taxonomy slug
+	 */
+	public static function get_taxonomy_name( $taxonomy ) {
+		$taxonomy = get_taxonomy( $taxonomy );
+
+		return $taxonomy->labels->name;
+	}
+
 }

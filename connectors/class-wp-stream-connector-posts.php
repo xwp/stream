@@ -102,7 +102,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			} else {
 				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_edit_post_link( $post->ID );
 
-				if ( $view_link = get_permalink( $post->ID ) ) {
+				if ( post_type_exists( get_post_type( $post->ID ) ) && $view_link = get_permalink( $post->ID ) ) {
 					$links[ esc_html__( 'View', 'default' ) ] = $view_link;
 				}
 

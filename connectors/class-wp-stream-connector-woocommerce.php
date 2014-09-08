@@ -62,6 +62,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		add_filter( 'wp_stream_posts_exclude_post_types', array( __CLASS__, 'exclude_order_post_types' ) );
 		add_action( 'wp_stream_comments_exclude_comment_types', array( __CLASS__, 'exclude_order_comment_types' ) );
 
+		add_filter( 'wp_stream_log_data', array( __CLASS__, 'log_override' ) );
+
 		self::get_woocommerce_settings_fields();
 	}
 
@@ -109,23 +111,22 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * @return array Context label translations
 	 */
 	public static function get_context_labels() {
-		$context_labels = array();
-
-		if ( class_exists( 'WP_Stream_Connector_Posts' ) ) {
-			$context_labels = array_merge(
-				$context_labels,
-				WP_Stream_Connector_Posts::get_context_labels()
-			);
-		}
-
-		$custom_context_labels = array(
-			'attributes' => __( 'Attributes', 'stream' ),
+		$post_types = array_combine(
+			self::$post_types,
+			array_map( array( 'WP_Stream_Connector_Posts', 'get_post_type_name' ), self::$post_types )
+		);
+		$taxonomies = array_combine(
+			self::$taxonomies,
+			array_map( array( 'WP_Stream_Connector_Taxonomies', 'get_taxonomy_name' ), self::$taxonomies )
 		);
 
 		$context_labels = array_merge(
-			$context_labels,
-			$custom_context_labels,
-			self::$settings_pages
+			$post_types,
+			$taxonomies,
+			self::$settings_pages,
+			array(
+				'attributes' => _x( 'Attributes', 'woocommerce', 'stream' ),
+			)
 		);
 
 		return apply_filters( 'wp_stream_woocommerce_contexts', $context_labels );
@@ -210,31 +211,30 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		if ( in_array( $record->context, self::$post_types ) && get_post( $record->object_id ) ) {
-			if ( $link = get_edit_post_link( $record->object_id ) ) {
-				$post_type_name = WP_Stream_Connector_Posts::get_post_type_name( get_post_type( $record->object_id ) );
-				$links[ sprintf( _x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
-			}
-
-			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
-				$links[ __( 'View', 'stream' ) ] = $link;
-			}
+		if ( in_array( $record->context, self::$post_types ) ) {
+			$links = WP_Stream_Connector_Posts::action_links( $links );
 		}
+		elseif ( in_array( $record->context, self::$taxonomies ) ) {
+			$links = WP_Stream_Connector_Taxonomies::action_links( $links );
+		}
+		else {
+			$meta = wp_stream_get_meta( $record );
+			$meta = reset( $meta ); // due to a bug with wp_stream_get_meta
+			if ( isset( $meta['option'] ) && isset( $meta['tab'] ) ) {
+				$option_key     = $meta['option'];
+				$option_page    = $meta['page'];
+				$option_tab     = $meta['tab'];
+				$option_section = $meta['section'];
 
-		$context_labels = self::get_context_labels();
-		$option_key     = wp_stream_get_meta( $record, 'option', true );
-		$option_page    = wp_stream_get_meta( $record, 'page', true );
-		$option_tab     = wp_stream_get_meta( $record, 'tab', true );
-		$option_section = wp_stream_get_meta( $record, 'section', true );
+				$context_labels = self::get_context_labels();
+				$text = sprintf( __( 'Edit WooCommerce %s', 'stream' ), $context_labels[ $record->context ] );;
+				$url  = add_query_arg(
+					array( 'page' => $option_page, 'tab' => $option_tab, 'section' => $option_section ),
+					admin_url( 'admin.php' ) // Not self_admin_url here, as WooCommerce doesn't exist in Network Admin
+				);
 
-		if ( $option_key && $option_tab ) {
-			$text = sprintf( __( 'Edit WooCommerce %s', 'stream' ), $context_labels[ $record->context ] );;
-			$url  = add_query_arg(
-				array( 'page' => $option_page, 'tab' => $option_tab, 'section' => $option_section ),
-				admin_url( 'admin.php' ) // Not self_admin_url here, as WooCommerce doesn't exist in Network Admin
-			);
-
-			$links[ $text ] = $url . '#wp-stream-highlight:' . $option_key;
+				$links[ $text ] = $url . '#wp-stream-highlight:' . $option_key;
+			}
 		}
 
 		return $links;
@@ -771,6 +771,24 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		self::$settings_pages = $settings_pages;
 
 		return self::$settings;
+	}
+
+	/**
+	 * Override connector log for our own Settings / Actions
+	 *
+	 * @param array $data
+	 *
+	 * @return array|bool
+	 */
+	public static function log_override( array $data ) {
+		if ( 'posts' === $data['connector'] && in_array( $data['context'], self::$post_types ) ) {
+			$data['connector'] = self::$name;
+		}
+		elseif ( 'taxonomies' === $data['connector'] && in_array( $data['context'], self::$taxonomies ) ) {
+			$data['connector'] = self::$name;
+		}
+
+		return $data;
 	}
 
 }
