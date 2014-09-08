@@ -63,15 +63,13 @@ class WP_Stream_Migrate {
 
 		self::$site_id      = is_multisite() ? get_current_site()->id : 1;
 		self::$blog_id      = is_network_admin() ? 0 : get_current_blog_id();
-
 		self::$record_count = $wpdb->get_var(
 			$wpdb->prepare( "
 				SELECT COUNT(*)
-				FROM {$wpdb->base_prefix}stream AS s, {$wpdb->base_prefix}stream_context AS sc
-				WHERE s.site_id = %d
-					AND s.blog_id = %d
-					AND s.type = 'stream'
-					AND sc.record_id = s.ID
+				FROM `{$wpdb->base_prefix}stream`
+				WHERE site_id = %d
+					AND blog_id = %d
+					AND type = 'stream'
 				",
 				self::$site_id,
 				self::$blog_id
