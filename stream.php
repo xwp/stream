@@ -73,6 +73,8 @@ class WP_Stream {
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 		define( 'WP_STREAM_EXTENSIONS_DIR', WP_STREAM_DIR . 'extensions/' );
 
+		add_action( 'admin_init', array( __CLASS__, 'deactivate_legacy_plugins' ) );
+
 		spl_autoload_register( array( $this, 'autoload' ) );
 
 		// Load helper functions
@@ -136,10 +138,45 @@ class WP_Stream {
 	}
 
 	/**
+	 *
+	 *
+	 * @register_activation_hook
+	 *
+	 * @return void
+	 */
+	public static function deactivate_legacy_plugins() {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$plugins = get_plugins();
+
+		foreach ( (array) $plugins as $dir => $data ) {
+			// We will look for the main plugin file instead of the full basename
+			$files = array(
+				'stream-cherry-pick.php',
+				'stream-data-exporter.php',
+				'stream-notifications.php',
+				'stream-reports.php',
+			);
+
+			foreach ( $files as $file ) {
+				if ( is_plugin_active( $dir ) && strlen( $dir ) - strlen( $file ) === strrpos( $dir, $file ) ) {
+					deactivate_plugins( $dir );
+
+					$name = isset( $data['Name'] ) ? $data['Name'] : __( 'That plugin', 'stream' );
+
+					self::notice( sprintf( __( '<strong>%s</strong> is deprecated by <strong>Stream %s</strong> has been automatically deactivated.', 'stream' ), esc_html( $name ), esc_html( self::VERSION ) ) );
+				}
+			}
+		}
+	}
+
+	/**
 	 * Invoked when the PHP version check fails. Load up the translations and
 	 * add the error message to the admin notices
 	 */
-	static function fail_php_version() {
+	public static function fail_php_version() {
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
 		self::notice( __( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' ) );
 	}
