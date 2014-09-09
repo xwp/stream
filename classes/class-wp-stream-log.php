@@ -64,29 +64,29 @@ class WP_Stream_Log {
 			$object_id = 0;
 		}
 
-		$user  = new WP_User( $user_id );
-		$roles = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
-
+		$user       = new WP_User( $user_id );
+		$roles      = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
 		$visibility = 'publish';
+
 		if ( self::is_record_excluded( $connector, $context, $action, $user ) ) {
 			$visibility = 'private';
 		}
 
 		if ( ! isset( $args['author_meta'] ) ) {
 			$args['author_meta'] = array(
-				'user_email'      => $user->user_email,
-				'display_name'    => ( defined( 'WP_CLI' ) && empty( $user->display_name ) ) ? 'WP-CLI' : $user->display_name,
-				'user_login'      => $user->user_login,
-				'user_role_label' => ! empty( $user->roles ) ? $roles[ $user->roles[0] ]['name'] : null,
-				'agent'           => WP_Stream_Author::get_current_agent(),
+				'user_email'      => (string) $user->user_email,
+				'display_name'    => (string) ( defined( 'WP_CLI' ) && empty( $user->display_name ) ) ? 'WP-CLI' : $user->display_name,
+				'user_login'      => (string) $user->user_login,
+				'user_role_label' => ! empty( $user->roles ) ? (string) $roles[ $user->roles[0] ]['name'] : null,
+				'agent'           => (string) WP_Stream_Author::get_current_agent(),
 			);
 
 			if ( ( defined( 'WP_CLI' ) ) && function_exists( 'posix_getuid' ) ) {
 				$uid       = posix_getuid();
 				$user_info = posix_getpwuid( $uid );
 
-				$args['author_meta']['system_user_id']   = $uid;
-				$args['author_meta']['system_user_name'] = $user_info['name'];
+				$args['author_meta']['system_user_id']   = (int) $uid;
+				$args['author_meta']['system_user_name'] = (string) $user_info['name'];
 			}
 		}
 
@@ -102,20 +102,20 @@ class WP_Stream_Log {
 		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
 
 		$recordarr = array(
-			'object_id'   => $object_id,
-			'site_id'     => is_multisite() ? get_current_site()->id : 1,
-			'blog_id'     => apply_filters( 'wp_stream_blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() ),
-			'author'      => $user_id,
-			'author_role' => ! empty( $user->roles ) ? $user->roles[0] : null,
-			'created'     => $iso_8601_extended_date,
-			'visibility'  => $visibility,
+			'object_id'   => (int) $object_id,
+			'site_id'     => (int) is_multisite() ? get_current_site()->id : 1,
+			'blog_id'     => (int) apply_filters( 'wp_stream_blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() ),
+			'author'      => (int) $user_id,
+			'author_role' => ! empty( $user->roles ) ? (string) $user->roles[0] : null,
+			'created'     => (string) $iso_8601_extended_date,
+			'visibility'  => (string) $visibility,
 			'type'        => 'stream',
-			'summary'     => vsprintf( $message, $args ),
-			'connector'   => $connector,
-			'context'     => $context,
-			'action'      => $action,
-			'stream_meta' => $meta,
-			'ip'          => wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
+			'summary'     => (string) vsprintf( $message, $args ),
+			'connector'   => (string) $connector,
+			'context'     => (string) $context,
+			'action'      => (string) $action,
+			'stream_meta' => (array) $meta,
+			'ip'          => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
 		WP_Stream::$db->store( array( $recordarr ) );
