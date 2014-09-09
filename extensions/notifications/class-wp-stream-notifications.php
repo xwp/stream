@@ -1,34 +1,4 @@
 <?php
-/**
- * Plugin Name: Stream Notifications
- * Depends: Stream
- * Plugin URI: https://wp-stream.com/extension/notifications/
- * Description: Stream Notifications allows you to create custom rules that will notify you when certain actions are performed in the WordPress admin.
- * Version: 0.1.2
- * Author: Stream
- * Author URI: https://wp-stream.com/
- * License: GPLv2+
- * Text Domain: stream-notifications
- * Domain Path: /languages
- */
-
-/**
- * Copyright (c) 2014 WP Stream Pty Ltd (https://wp-stream.com/)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2 or, at
- * your discretion, any later version, as published by the Free
- * Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- */
 
 class WP_Stream_Notifications {
 
