@@ -368,31 +368,42 @@ class WP_Stream_Migrate {
 		self::$_records = array();
 
 		foreach ( $records as $record => $data ) {
-			$stream_meta        = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->base_prefix}stream_meta WHERE record_id = %d", $records[ $record ]['ID'] ), ARRAY_A );
-			$stream_meta_output = array();
-			$author_meta_output = ( isset( $stream_meta['author_meta'] ) && is_array( $stream_meta['author_meta'] ) && ! empty( $stream_meta['author_meta'] ) ) ? (array) $stream_meta['author_meta'] : array();
+			$stream_meta = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->base_prefix}stream_meta WHERE record_id = %d", $records[ $record ]['ID'] ), ARRAY_A );
+			$author_meta = ( isset( $stream_meta['author_meta'] ) && is_array( $stream_meta['author_meta'] ) && ! empty( $stream_meta['author_meta'] ) ) ? (array) $stream_meta['author_meta'] : array();
 
 			unset( $stream_meta['author_meta'] );
 
-			foreach ( $stream_meta as $meta => $value ) {
-				// Unserialize meta first so we can then check for malformed serialized strings
-				$stream_meta_output[ $value['meta_key'] ] = maybe_unserialize( $value['meta_value'] );
+			// All Stream meta must be strings
+			array_walk(
+				$stream_meta,
+				function( &$v, $k ) {
+					// Unserialize meta first so we can then check for malformed serialized strings
+					$v = maybe_unserialize( $v );
 
-				// If any serialized data is still lingering in the meta value that means it's malformed and should be removed
-				if (
-					is_string( $stream_meta_output[ $value['meta_key'] ] )
-					&&
-					preg_match( '/(a|O) ?\x3a ?[0-9]+ ?\x3a ?\x7b/', $stream_meta_output[ $value['meta_key'] ] ) > 0
-				) {
-					unset( $stream_meta_output[ $value['meta_key'] ] );
+					// If any serialized data is still lingering in the meta value that means it's malformed and should be removed
+					if (
+						is_string( $v )
+						&&
+						1 === preg_match( '/(a|O) ?\x3a ?[0-9]+ ?\x3a ?\x7b/', $v )
+					) {
+						unset( $stream_meta[ $k ] );
+					}
+
+					// All meta must be strings, so serialize any array meta values again
+					$v = (string) maybe_serialize( $v );
 				}
+			);
 
-				// All meta must be strings, so serialize any array meta values again
-				$stream_meta_output[ $value['meta_key'] ] = (string) maybe_serialize( $stream_meta_output[ $value['meta_key'] ] );
-			}
+			// All author meta must be strings
+			array_walk(
+				$author_meta,
+				function( &$v ) {
+					$v = (string) $v;
+				}
+			);
 
-			$records[ $record ]['stream_meta'] = $stream_meta_output;
-			$records[ $record ]['author_meta'] = $author_meta_output;
+			$records[ $record ]['stream_meta'] = $stream_meta;
+			$records[ $record ]['author_meta'] = $author_meta;
 
 			self::$_records[] = $records[ $record ];
 
