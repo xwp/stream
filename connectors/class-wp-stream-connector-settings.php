@@ -583,8 +583,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 						'option_key' => $field_key,
 						'context'    => ( false !== $key_context ? $key_context : $context ),
 						// Prevent fatal error when saving option as array
-						'old_value'  => isset( $old_value[ $field_key ] ) ? maybe_serialize( $old_value[ $field_key ] ) : null,
-						'value'      => isset( $value[ $field_key ] ) ? maybe_serialize( $value[ $field_key ] ) : null,
+						'old_value'  => isset( $old_value[ $field_key ] ) ? (string) maybe_serialize( $old_value[ $field_key ] ) : null,
+						'value'      => isset( $value[ $field_key ] ) ? (string) maybe_serialize( $value[ $field_key ] ) : null,
 					);
 				}
 			}
@@ -594,8 +594,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				'option'    => $option,
 				'context'   => $context,
 				// Prevent fatal error when saving option as array
-				'old_value' => maybe_serialize( $old_value ),
-				'value'     => maybe_serialize( $value ),
+				'old_value' => (string) maybe_serialize( $old_value ),
+				'value'     => (string) maybe_serialize( $value ),
 			);
 		}
 

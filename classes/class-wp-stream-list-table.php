@@ -42,7 +42,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function no_items() {
 		$site = WP_Stream::$api->get_site();
 
-		if ( 'free' === $site->plan->type && 0 !== $this->get_total_found_rows() ) {
+		if ( isset( $site->plan->type ) && 'free' === $site->plan->type && 0 !== $this->get_total_found_rows() ) {
 			?>
 			<div class="stream-list-table-upgrade">
 				<p><?php printf( _n( 'Your free account is limited to viewing 24 hours of activity history.', 'Your free account is limited to viewing <strong>%d days</strong> of activity history.', $site->plan->retention, 'stream' ), absint( $site->plan->retention ) ) ?></p>
@@ -250,7 +250,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'author' :
-				$author_meta = wp_stream_get_meta( $item, 'author_meta', true );
+				$author_meta = WP_Stream::$db->get_record_author_meta( $item->ID, '', true );
 				$author      = new WP_Stream_Author( (int) $item->author, (array) $author_meta );
 
 				$out = sprintf(

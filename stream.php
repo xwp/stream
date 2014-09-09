@@ -221,10 +221,14 @@ class WP_Stream {
 				WP_CLI::success( $message );
 			}
 		} else {
-			// Trigger admin notices
-			add_action( 'all_admin_notices', array( __CLASS__, 'admin_notices' ) );
+			// Trigger admin notices late, so that any notices which occur during page load are displayed
+			add_action( 'shutdown', array( __CLASS__, 'admin_notices' ) );
 
-			self::$notices[] = compact( 'message', 'is_error' );
+			$notice = compact( 'message', 'is_error' );
+
+			if ( ! in_array( $notice, self::$notices ) ) {
+				self::$notices[] = $notice;
+			}
 		}
 	}
 

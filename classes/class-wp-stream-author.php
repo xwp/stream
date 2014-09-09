@@ -80,10 +80,10 @@ class WP_Stream_Author {
 	}
 
 	/**
-	 * @return string|null
+	 * @return string
 	 */
 	function get_agent() {
-		$agent = null;
+		$agent = '';
 
 		if ( ! empty( $this->meta['agent'] ) ) {
 			$agent = $this->meta['agent'];
@@ -155,7 +155,7 @@ class WP_Stream_Author {
 	 *
 	 * Otherwise, use the role slug as the label.
 	 *
-	 * @return string|null
+	 * @return string
 	 */
 	function get_role() {
 		global $wp_roles;
@@ -167,7 +167,7 @@ class WP_Stream_Author {
 		} elseif ( isset( $this->user->roles[0] ) && isset( $wp_roles->role_names[ $this->user->roles[0] ] ) ) {
 			$author_role = $wp_roles->role_names[ $this->user->roles[0] ];
 		} else {
-			$author_role = null;
+			$author_role = '';
 		}
 
 		return $author_role;
@@ -212,10 +212,10 @@ class WP_Stream_Author {
 	/**
 	 * Look at the environment to detect if an agent is being used
 	 *
-	 * @return null|string
+	 * @return string
 	 */
 	static function get_current_agent() {
-		$agent = null;
+		$agent = '';
 
 		if ( defined( 'WP_CLI' ) ) {
 			$agent = 'wp_cli';
@@ -238,7 +238,7 @@ class WP_Stream_Author {
 		} elseif ( 'wp_cron' === $agent ) {
 			$label = esc_html__( 'during WP Cron', 'stream' );
 		} else {
-			$label = null;
+			$label = '';
 		}
 
 		$label = apply_filters( 'wp_stream_agent_label', $label, $agent );

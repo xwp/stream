@@ -61,9 +61,22 @@ class WP_Stream_Migrate {
 			return;
 		}
 
-		self::$site_id      = is_multisite() ? get_current_site()->id : 1;
-		self::$blog_id      = is_network_admin() ? 0 : get_current_blog_id();
-		self::$record_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$wpdb->base_prefix}stream` WHERE site_id = %d AND blog_id = %d AND type = 'stream'", self::$site_id, self::$blog_id ) );
+		self::$site_id = is_multisite() ? get_current_site()->id : 1;
+		self::$blog_id = is_network_admin() ? 0 : get_current_blog_id();
+
+		self::$record_count = $wpdb->get_var(
+			$wpdb->prepare( "
+				SELECT COUNT(*)
+				FROM {$wpdb->base_prefix}stream AS s, {$wpdb->base_prefix}stream_context AS sc
+				WHERE s.site_id = %d
+					AND s.blog_id = %d
+					AND s.type = 'stream'
+					AND sc.record_id = s.ID
+				",
+				self::$site_id,
+				self::$blog_id
+			)
+		);
 
 		// If there are no legacy records for this site/blog, then attempt to clear all legacy data and exit early
 		if ( 0 === self::$record_count ) {
@@ -355,28 +368,36 @@ class WP_Stream_Migrate {
 		self::$_records = array();
 
 		foreach ( $records as $record => $data ) {
-			$stream_meta        = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->base_prefix}stream_meta WHERE record_id = %d", $records[ $record ]['ID'] ), ARRAY_A );
-			$stream_meta_output = array();
+			$stream_meta = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->base_prefix}stream_meta WHERE record_id = %d", $records[ $record ]['ID'] ), ARRAY_A );
+			$author_meta = ( isset( $stream_meta['author_meta'] ) && is_array( $stream_meta['author_meta'] ) && ! empty( $stream_meta['author_meta'] ) ) ? (array) $stream_meta['author_meta'] : array();
 
-			foreach ( $stream_meta as $meta => $value ) {
-				$stream_meta_output[ $value['meta_key'] ] = maybe_unserialize( $value['meta_value'] );
+			unset( $stream_meta['author_meta'] );
 
-				// If any serialized data is still lingering in the meta value that means it's malformed and should be removed
-				if (
-					is_string( $stream_meta_output[ $value['meta_key'] ] )
-					&&
-					preg_match( '/(a|O) ?\x3a ?[0-9]+ ?\x3a ?\x7b/', $stream_meta_output[ $value['meta_key'] ] ) > 0
-				) {
-					unset( $stream_meta_output[ $value['meta_key'] ] );
+			// All Stream meta must be strings
+			array_walk(
+				$stream_meta,
+				function( &$v, $k ) {
+					// Unserialize meta first so we can then check for malformed serialized strings
+					$v = maybe_unserialize( $v );
+					// If any serialized data is still lingering in the meta value that means it's malformed and should be removed
+					if ( is_string( $v ) && 1 === preg_match( '/(a|O) ?\x3a ?[0-9]+ ?\x3a ?\x7b/', $v ) ) {
+						unset( $stream_meta[ $k ] );
+					}
+					// All meta must be strings, so serialize any array meta values again
+					$v = (string) maybe_serialize( $v );
 				}
+			);
 
-				// If author meta isn't set properly it should be removed
-				if ( 'author_meta' === $value['meta_key'] && ! is_array( $stream_meta_output[ $value['meta_key'] ] ) ) {
-					unset( $stream_meta_output[ $value['meta_key'] ] );
+			// All author meta must be strings
+			array_walk(
+				$author_meta,
+				function( &$v ) {
+					$v = (string) $v;
 				}
-			}
+			);
 
-			$records[ $record ]['stream_meta'] = $stream_meta_output;
+			$records[ $record ]['stream_meta'] = $stream_meta;
+			$records[ $record ]['author_meta'] = $author_meta;
 
 			self::$_records[] = $records[ $record ];
 
@@ -391,14 +412,6 @@ class WP_Stream_Migrate {
 			$records[ $record ]['object_id']   = ! empty( $records[ $record ]['object_id'] )   ? $records[ $record ]['object_id']   : 0;
 			$records[ $record ]['author']      = ! empty( $records[ $record ]['author'] )      ? $records[ $record ]['author']      : 0;
 			$records[ $record ]['author_role'] = ! empty( $records[ $record ]['author_role'] ) ? $records[ $record ]['author_role'] : '';
-
-			// If the array value is numeric then sanitize it from a string to an int
-			array_walk_recursive(
-				$records[ $record ],
-				function( &$v ) {
-					$v = ctype_digit( $v ) ? intval( $v ) : $v; // If the value is comprised of only digits then make it an int
-				}
-			);
 		}
 
 		return $records;
