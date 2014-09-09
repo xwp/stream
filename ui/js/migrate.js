@@ -14,6 +14,11 @@ jQuery( function( $ ) {
 		}
 	});
 
+	$( document ).on( 'click', '#stream-resume-migrate', function( e ) {
+		e.preventDefault();
+		stream_migrate_action( 'migrate' );
+	});
+
 	$( document ).on( 'click', '#stream-migrate-reminder', function( e ) {
 		if ( ! window.confirm( wp_stream_migrate.i18n.confirm_migrate_reminder ) ) {
 			e.preventDefault();
@@ -59,6 +64,9 @@ jQuery( function( $ ) {
 						stream_migrate_end( response.data );
 					}
 				}
+			},
+			error: function() {
+				stream_migrate_end( wp_stream_migrate.i18n.error_message, true );
 			}
 		});
 	}
