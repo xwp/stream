@@ -168,7 +168,7 @@ class WP_Stream {
 				if ( is_plugin_active( $dir ) && strlen( $dir ) - strlen( $file ) === strrpos( $dir, $file ) ) {
 					deactivate_plugins( $dir );
 
-					$name = isset( $data['Name'] ) ? $data['Name'] : __( 'That plugin', 'stream' );
+					$name = isset( $data['Name'] ) ? $data['Name'] : $dir;
 
 					self::notice( sprintf( __( '<strong>%s</strong> is deprecated by <strong>Stream %s</strong> has been automatically deactivated.', 'stream' ), esc_html( $name ), esc_html( self::VERSION ) ) );
 				}
