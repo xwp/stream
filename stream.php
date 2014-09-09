@@ -154,7 +154,9 @@ class WP_Stream {
 		$plugins = get_plugins();
 
 		foreach ( (array) $plugins as $dir => $data ) {
-			// We will look for the main plugin file instead of the full basename
+			// We will look for the main plugin file instead of the full basename.
+			// This will ensure that even if the dirname has been renamed, it will
+			// still be deactivated.
 			$files = array(
 				'stream-cherry-pick.php',
 				'stream-data-exporter.php',
