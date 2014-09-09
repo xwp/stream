@@ -563,8 +563,8 @@ class WP_Stream_Admin {
 			wp_die( 'Doing it wrong.', 'stream' );
 		}
 
-		WP_Stream::$api->api_key   = wp_stream_filter_input( INPUT_GET, 'api_key' );
 		WP_Stream::$api->site_uuid = wp_stream_filter_input( INPUT_GET, 'site_uuid' );
+		WP_Stream::$api->api_key   = wp_stream_filter_input( INPUT_GET, 'api_key' );
 
 		// Verify the API Key and Site UUID
 		$site = WP_Stream::$api->get_site();
@@ -575,8 +575,8 @@ class WP_Stream_Admin {
 			wp_die( 'There was a problem verifying your site with Stream. Please try again later.', 'stream' );
 		}
 
-		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
+		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 		update_option( WP_Stream_API::RESTRICTED_OPTION_KEY, WP_Stream_API::$restricted );
 
 		do_action( 'wp_stream_site_connected', WP_Stream::$api->site_uuid, WP_Stream::$api->api_key, get_current_blog_id() );
@@ -593,23 +593,13 @@ class WP_Stream_Admin {
 	}
 
 	public static function remove_api_authentication() {
-		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
 		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
+		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
 
-		do_action( 'wp_stream_site_disconnected', WP_Stream::$api->api_key, WP_Stream::$api->site_uuid, get_current_blog_id() );
+		do_action( 'wp_stream_site_disconnected', WP_Stream::$api->site_uuid, WP_Stream::$api->api_key, get_current_blog_id() );
 
-		WP_Stream::$api->api_key   = false;
 		WP_Stream::$api->site_uuid = false;
-
-		$redirect_url = add_query_arg(
-			array(
-				'page'    => self::RECORDS_PAGE_SLUG,
-				'message' => 'disconnected',
-			),
-			admin_url( self::ADMIN_PARENT_PAGE )
-		);
-
-		wp_redirect( $redirect_url );
+		WP_Stream::$api->api_key   = false;
 	}
 
 	public static function get_testimonials() {

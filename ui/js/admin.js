@@ -463,6 +463,22 @@ jQuery( function( $ ) {
 
 	$( document ).ready( function() {
 		intervals.init( $( '.date-interval' ) );
+
+		// Disable option groups whose children are all disabled
+		$( 'select[name="context"] .level-1' ).each( function() {
+			var all_disabled = true;
+
+			$( this ).nextUntil( '.level-1' ).each( function() {
+				if ( $( this ).is( ':not(:disabled)' ) ) {
+					all_disabled = false;
+					return false;
+				}
+			});
+
+			if ( true === all_disabled ) {
+				$( this ).prop( 'disabled', true );
+			}
+		});
 	});
 });
 
