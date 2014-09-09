@@ -102,12 +102,12 @@ abstract class WP_Stream_Connector {
 		if ( ! $data ) {
 			return false;
 		} else {
-			$connector = (string) $data['connector'];
-			$message   = (string) $data['message'];
-			$args      = (array) $data['args'];
-			$object_id = (int) $data['object_id'];
-			$context   = (string) $data['context'];
-			$action    = (string) $data['action'];
+			$connector = $data['connector'];
+			$message   = $data['message'];
+			$args      = $data['args'];
+			$object_id = $data['object_id'];
+			$context   = $data['context'];
+			$action    = $data['action'];
 			$user_id   = $data['user_id'];
 		}
 
