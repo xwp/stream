@@ -138,9 +138,11 @@ class WP_Stream {
 	}
 
 	/**
+	 * Auto-deactivate legacy extension plugins that are now deprecated.
 	 *
+	 * @since 2.0.0
 	 *
-	 * @register_activation_hook
+	 * @action admin_init
 	 *
 	 * @return void
 	 */
