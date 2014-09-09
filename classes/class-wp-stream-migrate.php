@@ -381,11 +381,7 @@ class WP_Stream_Migrate {
 					$v = maybe_unserialize( $v );
 
 					// If any serialized data is still lingering in the meta value that means it's malformed and should be removed
-					if (
-						is_string( $v )
-						&&
-						1 === preg_match( '/(a|O) ?\x3a ?[0-9]+ ?\x3a ?\x7b/', $v )
-					) {
+					if ( is_string( $v ) && 1 === preg_match( '/(a|O) ?\x3a ?[0-9]+ ?\x3a ?\x7b/', $v ) ) {
 						unset( $stream_meta[ $k ] );
 					}
 
