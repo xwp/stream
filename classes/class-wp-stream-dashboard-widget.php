@@ -202,7 +202,7 @@ class WP_Stream_Dashboard_Widget {
 	 * @return string  Contents of new row
 	 */
 	public static function widget_row( $item ) {
-		$author_meta = WP_Stream::$db->get_record_author_meta( $item, '', true );
+		$author_meta = WP_Stream::$db->get_record_author_meta( $item->ID, '', true );
 		$author      = new WP_Stream_Author( (int) $item->author, (array) $author_meta );
 
 		$time_author = sprintf(
