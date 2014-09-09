@@ -368,7 +368,7 @@ class WP_Stream_Admin {
 					'i18n'         => array(
 						'migrate_process_title'    => __( 'Migrating Stream Records', 'stream' ),
 						'delete_process_title'     => __( 'Deleting Stream Records', 'stream' ),
-						'error_message'            => sprintf( __( 'An error occurred. %Click here%s to resume.', 'stream' ), '<a href="#" id="stream-resume-migrate">', '</a>' ),
+						'error_message'            => sprintf( __( 'An error occurred. %sClick here%s to resume.', 'stream' ), '<a href="#" id="stream-resume-migrate">', '</a>' ),
 						'migrate_process_message'  => __( 'Please do not exit this page until the process has completed.', 'stream' ) . ' ' . esc_html( $migrate_time_message ),
 						'delete_process_message'   => __( 'Please do not exit this page until the process has completed.', 'stream' ) . ' ' . esc_html( $delete_time_message ),
 						'confirm_start_migrate'    => ( $estimated_time > 1 ) ? sprintf( __( 'Please note: This process will take about %d minutes to complete.', 'stream' ), absint( $estimated_time ) ) : __( 'Please note: This process could take a few minutes to complete.', 'stream' ),

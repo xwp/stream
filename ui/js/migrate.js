@@ -108,7 +108,7 @@ jQuery( function( $ ) {
 		$( '#stream-migrate-actions-close' ).show();
 
 		if ( message ) {
-			$( '#stream-migrate-progress em' ).text( message );
+			$( '#stream-migrate-progress em' ).html( message );
 
 			if ( is_error ) {
 				$( '#stream-migrate-progress em' ).css( 'color', '#a00' );
