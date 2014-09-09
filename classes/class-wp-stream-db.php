@@ -25,7 +25,7 @@ class WP_Stream_DB {
 			'type'        => 'stream',
 			'site_id'     => 1,
 			'blog_id'     => 0,
-			'object_id'   => null,
+			'object_id'   => 0,
 			'author'      => 0,
 			'author_role' => '',
 			'visibility'  => 'publish',
