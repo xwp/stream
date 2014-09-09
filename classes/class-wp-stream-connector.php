@@ -108,7 +108,7 @@ abstract class WP_Stream_Connector {
 			$object_id = (int) $data['object_id'];
 			$context   = (string) $data['context'];
 			$action    = (string) $data['action'];
-			$user_id   = (int) $data['user_id'];
+			$user_id   = $data['user_id'];
 		}
 
 		return call_user_func_array( array( WP_Stream_Log::get_instance(), 'log' ), compact( 'connector', 'message', 'args', 'object_id', 'context', 'action', 'user_id' ) );
