@@ -324,7 +324,7 @@ class WP_Stream_Migrate {
 		$response = wp_remote_request( $url, $args );
 
 		// Loose comparison needed
-		if ( isset( $response['response']['code'] ) && 201 == $response['response']['code'] ) {
+		if ( ! is_wp_error( $response ) && isset( $response['response']['code'] ) && 201 == $response['response']['code'] ) {
 			return true;
 		} else {
 			return (array) $response;
