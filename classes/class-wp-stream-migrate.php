@@ -374,7 +374,8 @@ class WP_Stream_Migrate {
 			unset( $stream_meta['author_meta'] );
 
 			foreach ( $stream_meta as $meta => $value ) {
-				$stream_meta_output[ $value['meta_key'] ] = (string) maybe_unserialize( $value['meta_value'] );
+				// Unserialize meta first so we can then check for malformed serialized strings
+				$stream_meta_output[ $value['meta_key'] ] = maybe_unserialize( $value['meta_value'] );
 
 				// If any serialized data is still lingering in the meta value that means it's malformed and should be removed
 				if (
@@ -384,6 +385,9 @@ class WP_Stream_Migrate {
 				) {
 					unset( $stream_meta_output[ $value['meta_key'] ] );
 				}
+
+				// All meta must be strings, so serialize any array meta values again
+				$stream_meta_output[ $value['meta_key'] ] = (string) maybe_serialize( $stream_meta_output[ $value['meta_key'] ] );
 			}
 
 			$records[ $record ]['stream_meta'] = $stream_meta_output;
@@ -402,14 +406,6 @@ class WP_Stream_Migrate {
 			$records[ $record ]['object_id']   = ! empty( $records[ $record ]['object_id'] )   ? $records[ $record ]['object_id']   : 0;
 			$records[ $record ]['author']      = ! empty( $records[ $record ]['author'] )      ? $records[ $record ]['author']      : 0;
 			$records[ $record ]['author_role'] = ! empty( $records[ $record ]['author_role'] ) ? $records[ $record ]['author_role'] : '';
-
-			// If the array value is numeric then sanitize it from a string to an int
-			array_walk_recursive(
-				$records[ $record ],
-				function( &$v ) {
-					$v = ctype_digit( $v ) ? intval( $v ) : $v; // If the value is comprised of only digits then make it an int
-				}
-			);
 		}
 
 		return $records;

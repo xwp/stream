@@ -104,6 +104,14 @@ class WP_Stream_Log {
 			}
 		);
 
+		// All meta must be strings, so we will serialize any array meta values
+		array_walk(
+			$stream_meta,
+			function( &$v ) {
+				$v = (string) maybe_serialize( $v );
+			}
+		);
+
 		// Get the current time in milliseconds
 		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
 
