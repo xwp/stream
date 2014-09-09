@@ -250,7 +250,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			case 'author' :
-				$author_meta = wp_stream_get_meta( $item, 'author_meta', true );
+				$author_meta = WP_Stream::$db->get_record_author_meta( $item, '', true );
 				$author      = new WP_Stream_Author( (int) $item->author, (array) $author_meta );
 
 				$out = sprintf(

@@ -369,9 +369,12 @@ class WP_Stream_Migrate {
 		foreach ( $records as $record => $data ) {
 			$stream_meta        = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->base_prefix}stream_meta WHERE record_id = %d", $records[ $record ]['ID'] ), ARRAY_A );
 			$stream_meta_output = array();
+			$author_meta_output = ( isset( $stream_meta['author_meta'] ) && is_array( $stream_meta['author_meta'] ) && ! empty( $stream_meta['author_meta'] ) ) ? (array) $stream_meta['author_meta'] : array();
+
+			unset( $stream_meta['author_meta'] );
 
 			foreach ( $stream_meta as $meta => $value ) {
-				$stream_meta_output[ $value['meta_key'] ] = maybe_unserialize( $value['meta_value'] );
+				$stream_meta_output[ $value['meta_key'] ] = (string) maybe_unserialize( $value['meta_value'] );
 
 				// If any serialized data is still lingering in the meta value that means it's malformed and should be removed
 				if (
@@ -384,6 +387,7 @@ class WP_Stream_Migrate {
 			}
 
 			$records[ $record ]['stream_meta'] = $stream_meta_output;
+			$records[ $record ]['author_meta'] = $author_meta_output;
 
 			self::$_records[] = $records[ $record ];
 

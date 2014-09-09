@@ -72,33 +72,39 @@ class WP_Stream_Log {
 			$visibility = 'private';
 		}
 
-		if ( ! isset( $args['author_meta'] ) ) {
-			$args['author_meta'] = array(
-				'user_email'      => (string) $user->user_email,
-				'display_name'    => (string) ( defined( 'WP_CLI' ) && empty( $user->display_name ) ) ? 'WP-CLI' : $user->display_name,
-				'user_login'      => (string) $user->user_login,
-				'user_role_label' => ! empty( $user->roles ) ? (string) $roles[ $user->roles[0] ]['name'] : null,
-				'agent'           => (string) WP_Stream_Author::get_current_agent(),
-			);
-
-			if ( ( defined( 'WP_CLI' ) ) && function_exists( 'posix_getuid' ) ) {
-				$uid       = posix_getuid();
-				$user_info = posix_getpwuid( $uid );
-
-				$args['author_meta']['system_user_id']   = (int) $uid;
-				$args['author_meta']['system_user_name'] = (string) $user_info['name'];
-			}
+		if ( defined( 'WP_CLI' ) && empty( $user->display_name ) ) {
+			$display_name = 'WP-CLI';
+		} elseif ( ! empty( $user->display_name ) ) {
+			$display_name = $user->display_name;
+		} else {
+			$display_name = '';
 		}
 
-		// Remove meta with null values from being logged
-		$meta = array_filter(
+		$author_meta = array(
+			'user_email'      => (string) ! empty( $user->user_email ) ? $user->user_email : '',
+			'display_name'    => (string) $display_name,
+			'user_login'      => (string) ! empty( $user->user_login ) ? $user->user_login : '',
+			'user_role_label' => (string) ! empty( $user->roles ) ? $roles[ $user->roles[0] ]['name'] : '',
+			'agent'           => (string) WP_Stream_Author::get_current_agent(),
+		);
+
+		if ( ( defined( 'WP_CLI' ) ) && function_exists( 'posix_getuid' ) ) {
+			$uid       = posix_getuid();
+			$user_info = posix_getpwuid( $uid );
+
+			$author_meta['system_user_id']   = (int) $uid;
+			$author_meta['system_user_name'] = (string) $user_info['name'];
+		}
+
+		// Prevent any meta with null values from being logged
+		$stream_meta = array_filter(
 			$args,
 			function ( $var ) {
 				return ! is_null( $var );
 			}
 		);
 
-		// Get current time with milliseconds
+		// Get the current time in milliseconds
 		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
 
 		$recordarr = array(
@@ -106,7 +112,8 @@ class WP_Stream_Log {
 			'site_id'     => (int) is_multisite() ? get_current_site()->id : 1,
 			'blog_id'     => (int) apply_filters( 'wp_stream_blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() ),
 			'author'      => (int) $user_id,
-			'author_role' => ! empty( $user->roles ) ? (string) $user->roles[0] : null,
+			'author_role' => (string) ! empty( $user->roles ) ? $user->roles[0] : '',
+			'author_meta' => (array) $author_meta,
 			'created'     => (string) $iso_8601_extended_date,
 			'visibility'  => (string) $visibility,
 			'type'        => 'stream',
@@ -114,7 +121,7 @@ class WP_Stream_Log {
 			'connector'   => (string) $connector,
 			'context'     => (string) $context,
 			'action'      => (string) $action,
-			'stream_meta' => (array) $meta,
+			'stream_meta' => (array) $stream_meta,
 			'ip'          => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
