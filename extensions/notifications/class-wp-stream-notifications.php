@@ -288,4 +288,3 @@ class WP_Stream_Notifications {
 }
 
 $GLOBALS['wp_stream_notifications'] = WP_Stream_Notifications::get_instance();
-register_activation_hook( __FILE__, array( $GLOBALS['wp_stream_notifications'], 'on_activation' ) );
