@@ -29,6 +29,7 @@ class WP_Stream_DB {
 			'author'      => 0,
 			'author_role' => '',
 			'visibility'  => 'publish',
+			'ip'          => '',
 		);
 
 		foreach ( $records as $key => $record ) {

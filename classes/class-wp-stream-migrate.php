@@ -412,6 +412,7 @@ class WP_Stream_Migrate {
 			$records[ $record ]['object_id']   = ! empty( $records[ $record ]['object_id'] )   ? $records[ $record ]['object_id']   : 0;
 			$records[ $record ]['author']      = ! empty( $records[ $record ]['author'] )      ? $records[ $record ]['author']      : 0;
 			$records[ $record ]['author_role'] = ! empty( $records[ $record ]['author_role'] ) ? $records[ $record ]['author_role'] : '';
+			$records[ $record ]['ip']          = ! empty( $records[ $record ]['ip'] )          ? $records[ $record ]['ip']          : '';
 		}
 
 		return $records;
