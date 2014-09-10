@@ -179,26 +179,37 @@ class WP_Stream {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
+		$message = null;
+
 		foreach ( self::$deprecated_extensions as $class => $dir ) {
 			if ( class_exists( $class ) ) {
-				$data = get_plugin_data( sprintf( '%s/%s', WP_PLUGIN_DIR, $dir ) );
-				$name = isset( $data['Name'] ) ? $data['Name'] : $dir;
-
-				ob_start();
-				?>
-				<p>
-					<strong><?php echo esc_html( $name ) ?></strong> <?php _e( 'is deprecated and must be deactivated before activating', 'stream' ) ?> <strong>Stream <?php echo esc_html( self::VERSION ) ?></strong>.
-				</p>
-				<p>
-					<a href='#' onclick="location.reload(true); return false;" class="button button-large"><?php _e( 'OK', 'default' ) ?></a>
-				</p>
-				<?php
-				$message = ob_get_clean();
+				$data     = get_plugin_data( sprintf( '%s/%s', WP_PLUGIN_DIR, $dir ) );
+				$name     = isset( $data['Name'] ) ? $data['Name'] : $dir;
+				$message .= sprintf( '<li><strong>%s</strong></li>', esc_html( $name ) );
 
 				deactivate_plugins( $dir );
-
-				wp_die( $message );
 			}
+		}
+
+		if ( ! empty( $message ) ) {
+			ob_start();
+			?>
+			<h3><?php _e( 'Deprecated Plugins Found', 'stream' ) ?></h3>
+			<p><?php _e( 'The following plugins are deprecated and will be deactivated in order to activate', 'stream' ) ?> <strong>Stream <?php echo esc_html( self::VERSION ) ?></strong>:</p>
+			<ul>
+			<?php
+			$start = ob_get_clean();
+
+			ob_start();
+			?>
+			</ul>
+			<p>
+				<a href='#' onclick="location.reload(true); return false;" class="button button-large"><?php _e( 'Continue', 'stream' ) ?></a>
+			</p>
+			<?php
+			$end = ob_get_clean();
+
+			wp_die( $start . $message . $end, __( 'Deprecated Plugins Found', 'stream' ) );
 		}
 	}
 
