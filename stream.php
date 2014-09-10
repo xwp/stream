@@ -63,6 +63,18 @@ class WP_Stream {
 	public static $notices = array();
 
 	/**
+	 * An array of deprecated extension plugin class/dir pairs
+	 *
+	 * @var array
+	 */
+	public static $deprecated_extensions = array(
+		'WP_Stream_Cherry_Pick'   => 'stream-cherry-pick/stream-cherry-pick.php',
+		'WP_Stream_Data_Exporter' => 'stream-data-exporter/stream-data-exporter.php',
+		'WP_Stream_Notifications' => 'stream-notifications/stream-notifications.php',
+		'WP_Stream_Reports'       => 'stream-reports/stream-reports.php',
+	);
+
+	/**
 	 * Class constructor
 	 */
 	private function __construct() {
@@ -72,8 +84,6 @@ class WP_Stream {
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 		define( 'WP_STREAM_EXTENSIONS_DIR', WP_STREAM_DIR . 'extensions/' );
-
-		add_action( 'admin_init', array( __CLASS__, 'deactivate_legacy_plugins' ) );
 
 		spl_autoload_register( array( $this, 'autoload' ) );
 
@@ -138,51 +148,58 @@ class WP_Stream {
 	}
 
 	/**
-	 * Auto-deactivate legacy extension plugins that are now deprecated.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @action admin_init
-	 *
-	 * @return void
-	 */
-	public static function deactivate_legacy_plugins() {
-		if ( ! function_exists( 'get_plugins' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		$plugins = get_plugins();
-
-		foreach ( (array) $plugins as $dir => $data ) {
-			// We will look for the main plugin file instead of the full basename.
-			// This will ensure that even if the dirname has been renamed, it will
-			// still be deactivated.
-			$files = array(
-				'stream-cherry-pick.php',
-				'stream-data-exporter.php',
-				'stream-notifications.php',
-				'stream-reports.php',
-			);
-
-			foreach ( $files as $file ) {
-				if ( is_plugin_active( $dir ) && strlen( $dir ) - strlen( $file ) === strrpos( $dir, $file ) ) {
-					deactivate_plugins( $dir );
-
-					$name = isset( $data['Name'] ) ? $data['Name'] : $dir;
-
-					self::notice( sprintf( __( '<strong>%s</strong> is deprecated by <strong>Stream %s</strong> has been automatically deactivated.', 'stream' ), esc_html( $name ), esc_html( self::VERSION ) ) );
-				}
-			}
-		}
-	}
-
-	/**
 	 * Invoked when the PHP version check fails. Load up the translations and
 	 * add the error message to the admin notices
 	 */
 	public static function fail_php_version() {
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
 		self::notice( __( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' ) );
+	}
+
+	/**
+	 *
+	 */
+	public static function deprecated_plugins_exist() {
+		foreach ( self::$deprecated_extensions as $class => $dir ) {
+			if ( class_exists( $class ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 *
+	 */
+	public static function deprecated_plugins_notice() {
+		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
+
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		foreach ( self::$deprecated_extensions as $class => $dir ) {
+			if ( class_exists( $class ) ) {
+				$data = get_plugin_data( sprintf( '%s/%s', WP_PLUGIN_DIR, $dir ) );
+				$name = isset( $data['Name'] ) ? $data['Name'] : $dir;
+
+				ob_start();
+				?>
+				<p>
+					<strong><?php echo esc_html( $name ) ?></strong> <?php _e( 'is deprecated and must be deactivated before activating', 'stream' ) ?> <strong>Stream <?php echo esc_html( self::VERSION ) ?></strong>.
+				</p>
+				<p>
+					<a href='#' onclick="location.reload(true); return false;" class="button button-large"><?php _e( 'OK', 'default' ) ?></a>
+				</p>
+				<?php
+				$message = ob_get_clean();
+
+				deactivate_plugins( $dir );
+
+				wp_die( $message );
+			}
+		}
 	}
 
 	/**
@@ -345,10 +362,12 @@ class WP_Stream {
 
 }
 
-if ( WP_Stream::is_valid_php_version() ) {
-	$GLOBALS['wp_stream'] = WP_Stream::get_instance();
-} else {
+if ( ! WP_Stream::is_valid_php_version() ) {
 	WP_Stream::fail_php_version();
+} elseif ( WP_Stream::deprecated_plugins_exist() ) {
+	WP_Stream::deprecated_plugins_notice();
+} else {
+	$GLOBALS['wp_stream'] = WP_Stream::get_instance();
 }
 
 register_deactivation_hook( __FILE__, array( 'WP_Stream_Admin', 'remove_api_authentication' ) );
