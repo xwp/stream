@@ -591,6 +591,7 @@ class WP_Stream_Admin {
 		);
 
 		wp_redirect( $redirect_url );
+		exit;
 	}
 
 	public static function remove_api_authentication() {
@@ -601,6 +602,20 @@ class WP_Stream_Admin {
 
 		WP_Stream::$api->site_uuid = false;
 		WP_Stream::$api->api_key   = false;
+
+		if ( '1' !== wp_stream_filter_input( INPUT_GET, 'disconnect' ) ) {
+			return;
+		}
+
+		$redirect_url = add_query_arg(
+			array(
+				'page' => self::RECORDS_PAGE_SLUG,
+			),
+			admin_url( self::ADMIN_PARENT_PAGE )
+		);
+
+		wp_redirect( $redirect_url );
+		exit;
 	}
 
 	public static function get_testimonials() {
