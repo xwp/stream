@@ -338,7 +338,7 @@ class WP_Stream_Migrate {
 	 *
 	 * @return mixed  An array of record arrays, or FALSE if no records were found
 	 */
-	public static function get_records( $limit = null ) {
+	private static function get_records( $limit = null ) {
 		$limit = is_int( $limit ) ? $limit : self::$limit;
 
 		global $wpdb;
