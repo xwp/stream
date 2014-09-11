@@ -120,8 +120,8 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 		$contexts = self::get_context_labels();
 
 		// Options
-		if ( $option = wp_stream_get_meta( $record->ID, 'option', true ) ) {
-			$key = wp_stream_get_meta( $record->ID, 'option_key', true );
+		if ( $option = wp_stream_get_meta( $record, 'option', true ) ) {
+			$key = wp_stream_get_meta( $record, 'option_key', true );
 
 			$links[ __( 'Edit', 'default' ) ] = add_query_arg(
 				array(
@@ -174,7 +174,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 						$links[ esc_html__( 'View', 'default' ) ] = $view_link;
 					}
 
-					if ( $revision_id = wp_stream_get_meta( $record->ID, 'revision_id', true ) ) {
+					if ( $revision_id = wp_stream_get_meta( $record, 'revision_id', true ) ) {
 						$links[ esc_html__( 'Revision', 'default' ) ] = get_edit_post_link( $revision_id );
 					}
 				}

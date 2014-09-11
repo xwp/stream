@@ -179,7 +179,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			}
 		} elseif ( in_array( $record->context, array( 'download_category', 'download_tag' ) ) ) {
 			$tax_label = get_taxonomy_labels( get_taxonomy( $record->context ) )->singular_name;
-			$links[ sprintf( __( 'Edit %s', 'default' ), $tax_label ) ] = get_edit_term_link( $record->object_id, wp_stream_get_meta( $record->ID, 'taxonomy', true ) );
+			$links[ sprintf( __( 'Edit %s', 'default' ), $tax_label ) ] = get_edit_term_link( $record->object_id, wp_stream_get_meta( $record, 'taxonomy', true ) );
 		} elseif ( 'api_keys' === $record->context ) {
 			$user = new WP_User( $record->object_id );
 
