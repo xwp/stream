@@ -132,12 +132,16 @@ class WP_Stream_API {
 
 		$url  = $this->request_url( sprintf( '/sites/%s', urlencode( $this->site_uuid ) ), $params );
 		$args = array( 'method' => 'GET' );
-
 		$site = $this->remote_request( $url, $args, $allow_cache, $expiration );
 
 		if ( $site && ! is_wp_error( $site ) ) {
-			self::$restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type );
-			update_option( self::RESTRICTED_OPTION_KEY, self::$restricted );
+			$is_restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type ) ? 1 : 0;
+
+			if ( self::$restricted !== (bool) $is_restricted ) {
+				self::$restricted = $is_restricted;
+
+				update_option( self::RESTRICTED_OPTION_KEY, $is_restricted );
+			}
 		}
 
 		return $site;
