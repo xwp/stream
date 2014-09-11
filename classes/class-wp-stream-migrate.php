@@ -308,20 +308,7 @@ class WP_Stream_Migrate {
 			return false;
 		}
 
-		$url  = WP_Stream::$api->request_url( sprintf( '/sites/%s/records', urlencode( WP_Stream::$api->site_uuid ) ) );
-		$args = array(
-			'method'    => 'POST',
-			'body'      => json_encode( array( 'records' => $records ) ),
-			'sslverify' => true,
-			'blocking'  => true,
-			'headers'   => array(
-				'Content-Type'        => 'application/json',
-				'Accept-Version'      => WP_Stream::$api->api_version,
-				'Stream-Site-API-Key' => WP_Stream::$api->api_key,
-			),
-		);
-
-		$response = wp_remote_request( $url, $args );
+		$response = WP_Stream::$api->new_records( $records, true );
 
 		// Loose comparison needed
 		if ( ! is_wp_error( $response ) && isset( $response['response']['code'] ) && 201 == $response['response']['code'] ) {
