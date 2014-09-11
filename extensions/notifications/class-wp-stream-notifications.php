@@ -103,7 +103,7 @@ class WP_Stream_Notifications {
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-settings.php';
 		add_action( 'init', array( 'WP_Stream_Notifications_Settings', 'load' ), 9 );
 
-		if ( WP_Stream_API::is_restricted( true ) ) {
+		if ( WP_Stream_API::is_restricted() ) {
 			add_action( 'in_admin_header', array( __CLASS__, 'in_admin_header' ) );
 			return;
 		}

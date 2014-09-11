@@ -133,7 +133,14 @@ class WP_Stream_API {
 		$url  = $this->request_url( sprintf( '/sites/%s', urlencode( $this->site_uuid ) ), $params );
 		$args = array( 'method' => 'GET' );
 
-		return $this->remote_request( $url, $args, $allow_cache, $expiration );
+		$site = $this->remote_request( $url, $args, $allow_cache, $expiration );
+
+		if ( $site && ! is_wp_error( $site ) ) {
+			self::$restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type );
+			update_option( self::RESTRICTED_OPTION_KEY, self::$restricted );
+		}
+
+		return $site;
 	}
 
 	/**
