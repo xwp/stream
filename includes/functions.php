@@ -57,22 +57,6 @@ function wp_stream_get_meta( $record, $meta_key = '', $single = false ) {
 	}
 }
 
-function wp_stream_get_author_meta( $record, $meta_key = '', $single = false ) {
-	if ( is_string( $record ) ) {
-		$author_meta = WP_Stream::$db->get_record_author_meta( $record, $meta_key, true );
-	} elseif ( isset( $record->author_meta->$meta_key ) ) {
-		$author_meta = $record->author_meta->$meta_key;
-	} else {
-		return '';
-	}
-
-	if ( $single ) {
-		return $author_meta;
-	} else {
-		return array( $author_meta );
-	}
-}
-
 /**
  * Converts a time into an ISO 8601 extended formatted string.
  *

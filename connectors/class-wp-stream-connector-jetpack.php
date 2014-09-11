@@ -134,7 +134,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		// @todo provide proper action links
 		if ( 'jetpack' === $record->connector ) {
 			if ( 'modules' === $record->context ) {
-				$slug = wp_stream_get_meta( $record->ID, 'module_slug', true );
+				$slug = wp_stream_get_meta( $record, 'module_slug', true );
 
 				if ( is_array( $slug ) ) {
 					$slug = current( $slug );

@@ -222,10 +222,10 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		}
 
 		$context_labels = self::get_context_labels();
-		$option_key     = wp_stream_get_meta( $record->ID, 'option', true );
-		$option_page    = wp_stream_get_meta( $record->ID, 'page', true );
-		$option_tab     = wp_stream_get_meta( $record->ID, 'tab', true );
-		$option_section = wp_stream_get_meta( $record->ID, 'section', true );
+		$option_key     = wp_stream_get_meta( $record, 'option', true );
+		$option_page    = wp_stream_get_meta( $record, 'page', true );
+		$option_tab     = wp_stream_get_meta( $record, 'tab', true );
+		$option_section = wp_stream_get_meta( $record, 'section', true );
 
 		if ( $option_key && $option_tab ) {
 			$text = sprintf( __( 'Edit WooCommerce %s', 'stream' ), $context_labels[ $record->context ] );;

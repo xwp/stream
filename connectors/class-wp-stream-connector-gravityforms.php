@@ -147,7 +147,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 					'page' => 'gf_entries',
 					'view' => 'entry',
 					'lid' => $record->object_id,
-					'id' => wp_stream_get_meta( $record->ID, 'form_id', true ),
+					'id' => wp_stream_get_meta( $record, 'form_id', true ),
 				),
 				admin_url( 'admin.php' )
 			);
@@ -156,8 +156,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				array(
 					'page' => 'gf_entries',
 					'view' => 'entry',
-					'lid' => wp_stream_get_meta( $record->ID, 'lead_id', true ),
-					'id' => wp_stream_get_meta( $record->ID, 'form_id', true ),
+					'lid' => wp_stream_get_meta( $record, 'lead_id', true ),
+					'id' => wp_stream_get_meta( $record, 'form_id', true ),
 				),
 				admin_url( 'admin.php' )
 			);

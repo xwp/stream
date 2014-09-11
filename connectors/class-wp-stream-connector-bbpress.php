@@ -127,7 +127,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( 'settings' === $record->context ) {
-			$option = wp_stream_get_meta( $record->ID, 'option', true );
+			$option = wp_stream_get_meta( $record, 'option', true );
 			$links[ __( 'Edit', 'stream' ) ] = esc_url( add_query_arg(
 				array(
 					'page' => 'bbpress',
