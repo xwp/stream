@@ -125,37 +125,6 @@ class WP_Stream_DB {
 	}
 
 	/**
-	 * Retrieve meta data of a single record
-	 *
-	 * @internal Used by wp_stream_get_meta()
-	 *
-	 * @param  int    $record_id Record ID
-	 * @param  string $key       Optional, Meta key, if omitted, retrieve all meta data of this record.
-	 * @param  bool   $single    Default: false, Return single meta value, or all meta values under specified key.
-	 *
-	 * @return string|array      Single/Array of meta data.
-	 */
-	public function get_record_meta( $record_id, $key = '', $single = false ) {
-		$record = WP_Stream::$api->get_record( $record_id );
-
-		if ( ! isset( $record->stream_meta ) ) {
-			return array();
-		}
-
-		if ( ! empty( $key ) ) {
-			$meta = $record->stream_meta->$key;
-		} else {
-			$meta = $record->stream_meta;
-		}
-
-		if ( $single ) {
-			return (array) $meta;
-		} else {
-			return array( $key => $meta );
-		}
-	}
-
-	/**
 	 * Returns array of existing values for requested field.
 	 * Used to fill search filters with only used items, instead of all items.
 	 *
