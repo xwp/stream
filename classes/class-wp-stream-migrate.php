@@ -176,7 +176,7 @@ class WP_Stream_Migrate {
 				} elseif ( isset( $response['response']['message'] ) && ! empty( $response['response']['message'] ) ) {
 					$message = $response['response']['message'];
 				} else {
-					$message = __( 'An unknown error occurred during migration', 'stream' );
+					$message = __( 'An unknown error occurred during migration.', 'stream' );
 				}
 
 				wp_send_json_error( sprintf( __( '%s Please try again later or contact support.', 'stream' ), esc_html( $message ) ) );
