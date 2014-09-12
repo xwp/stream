@@ -150,6 +150,11 @@ class WP_Stream_Live_Update {
 	 * @return array Data sent to heartbeat tick
 	 */
 	public static function heartbeat_received( $response, $data ) {
+		// Only fire on the Stream list table
+		if ( ! isset( $data['wp-stream-heartbeat'] ) ) {
+			return $response;
+		}
+
 		$option                  = get_option( 'dashboard_stream_activity_options' );
 		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), self::USER_META_KEY, true ) );
 		$enable_dashboard_update = ( 'off' !== ( $option['live_update'] ) );
