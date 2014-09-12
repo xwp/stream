@@ -150,7 +150,7 @@ class WP_Stream_Live_Update {
 	 * @return array Data sent to heartbeat tick
 	 */
 	public static function heartbeat_received( $response, $data ) {
-		// Only fire on the Stream list table
+		// Only fire when Stream is requesting a live update
 		if ( ! isset( $data['wp-stream-heartbeat'] ) ) {
 			return $response;
 		}
