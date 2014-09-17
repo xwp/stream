@@ -51,10 +51,23 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 		}
 	}
 
+	$allowed_html = array(
+		'option' => array(
+			'value'          => array(),
+			'selected'       => array(),
+			'disabled'       => array(),
+			'class'          => array(),
+			'data-connector' => array(),
+			'data-context'   => array(),
+			'data-action'    => array(),
+			'data-blog'      => array(),
+		),
+	);
+
 	printf(
 		'<select class="%s">%s</select>',
 		esc_attr( $class ),
-		esc_attr( implode( '', $options ) )
+		wp_kses( implode( '', $options ), $allowed_html )
 	);
 }
 
@@ -65,7 +78,6 @@ function wp_stream_reports_filter_option( $args ) {
 			'disabled'  => null,
 			'class'     => null,
 			'label'     => null,
-
 			'connector' => null,
 			'context'   => null,
 			'action'    => null,
