@@ -4,7 +4,9 @@ jQuery( function( $ ) {
 	/**
 	 * Dashboard Live Update
 	 */
-	wp.heartbeat.interval( 'fast' );
+	if ( undefined !== wp.heartbeat && undefined !== wp.heartbeat.interval ) {
+		wp.heartbeat.interval( 'fast' );
+	}
 
 	var widget = $( '#dashboard_stream_activity' ),
 		list   = widget.find( '.inside ul' );
