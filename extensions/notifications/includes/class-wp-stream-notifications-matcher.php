@@ -13,7 +13,7 @@ class WP_Stream_Notifications_Matcher {
 		add_action( 'delete_post', array( $this, 'refresh_cache_on_delete' ), 10, 1 );
 
 		// Match all new type=stream records
-		add_action( 'wp_stream_post_inserted', array( $this, 'match' ), 10, 2 );
+		add_action( 'wp_stream_records_inserted', array( $this, 'match' ), 10, 2 );
 	}
 
 	/**
@@ -105,20 +105,20 @@ class WP_Stream_Notifications_Matcher {
 		return $rules;
 	}
 
-	public function match( $result, $logs ) {
+	public function match( $records ) {
 		$rules      = $this->rules();
 		$rule_match = array();
 
-		foreach ( $logs as $log ) {
+		foreach ( $records as $record ) {
 			foreach ( $rules as $rule_id => $rule ) {
-				$rule_match[ $rule_id ] = $this->match_group( $rule['triggers'], $log );
+				$rule_match[ $rule_id ] = $this->match_group( $rule['triggers'], $record );
 			}
 		}
 
 		$rule_match     = array_keys( array_filter( $rule_match ) );
 		$matching_rules = array_intersect_key( $rules, array_flip( $rule_match ) );
 
-		$this->alert( $matching_rules, $logs );
+		$this->alert( $matching_rules, $records );
 	}
 
 	/**
@@ -129,7 +129,7 @@ class WP_Stream_Notifications_Matcher {
 	 *
 	 * @return bool           Matching result
 	 */
-	private function match_group( $chunks, $log ) {
+	private function match_group( $chunks, $record ) {
 		// Separate triggers by 'AND'/'OR' relation, to be able to fail early
 		// and not have to traverse the whole trigger tree
 		foreach ( $chunks as $chunk ) {
@@ -139,9 +139,9 @@ class WP_Stream_Notifications_Matcher {
 				$is_group = isset( $trigger['triggers'] );
 
 				if ( $is_group ) {
-					$results[] = $this->match_group( $trigger['triggers'], $log );
+					$results[] = $this->match_group( $trigger['triggers'], $record );
 				} else {
-					$results[] = $this->match_trigger( $trigger, $log );
+					$results[] = $this->match_trigger( $trigger, $record );
 				}
 			}
 
@@ -155,7 +155,7 @@ class WP_Stream_Notifications_Matcher {
 		return true;
 	}
 
-	public function match_trigger( $trigger, $log ) {
+	public function match_trigger( $trigger, $record ) {
 		$type     = isset( $trigger['type'] )     ? $trigger['type']     : null;
 		$needle   = isset( $trigger['value'] )    ? $trigger['value']    : null;
 		$operator = isset( $trigger['operator'] ) ? $trigger['operator'] : null;
@@ -164,7 +164,7 @@ class WP_Stream_Notifications_Matcher {
 
 		// Post-specific triggers dirty work
 		if ( false !== strpos( $trigger['type'], 'post_' ) ) {
-			$post = get_post( $log['object_id'] );
+			$post = get_post( $record['object_id'] );
 
 			if ( empty( $post ) ) {
 				return false;
@@ -173,50 +173,50 @@ class WP_Stream_Notifications_Matcher {
 
 		switch ( $type ) {
 			case 'search':
-				$haystack = strtolower( $log['summary'] );
+				$haystack = strtolower( $record['summary'] );
 				$needle   = strtolower( $needle );
 				break;
 			case 'object_id':
-				$haystack = $log['object_id'];
+				$haystack = $record['object_id'];
 				break;
 			case 'author':
-				$haystack = $log['author'];
+				$haystack = $record['author'];
 				break;
 			case 'author_role':
-				$user     = get_userdata( $log['author'] );
+				$user     = get_userdata( $record['author'] );
 				$haystack = ( is_object( $user ) && $user->exists() && $user->roles ) ? $user->roles[0] : false;
 				break;
 			case 'ip':
-				$haystack = $log['ip'];
+				$haystack = $record['ip'];
 				break;
 			case 'date':
-				$haystack = get_date_from_gmt( date( 'Y-m-d H:i:s', strtotime( $log['created'] ) ), 'Ymd' );
+				$haystack = get_date_from_gmt( date( 'Y-m-d H:i:s', strtotime( $record['created'] ) ), 'Ymd' );
 				$needle   = get_date_from_gmt( date( 'Y-m-d H:i:s', strtotime( $needle ) ), 'Ymd' );
 				break;
 			case 'weekday':
 				if ( isset( $needle[0] ) && preg_match( '#\d+#', $needle[0], $weekday_match ) ) {
-					$haystack = get_date_from_gmt( date( 'Y-m-d H:i:s', strtotime( $log['created'] ) ), 'w' );
+					$haystack = get_date_from_gmt( date( 'Y-m-d H:i:s', strtotime( $record['created'] ) ), 'w' );
 					$needle   = $weekday_match[0];
 				}
 				break;
 			case 'connector':
-				$haystack = $log['connector'];
+				$haystack = $record['connector'];
 				break;
 			case 'context':
-				$haystack = $log['context'];
+				$haystack = $record['context'];
 				break;
 			case 'action':
-				$haystack = $log['action'];
+				$haystack = $record['action'];
 				break;
 
 			/* Context-aware triggers */
 			case 'post':
 			case 'user':
 			case 'term':
-				$haystack = $log['object_id'];
+				$haystack = $record['object_id'];
 				break;
 			case 'term_parent':
-				$parent = get_term( $log['meta']['term_parent'], $log['meta']['taxonomy'] );
+				$parent = get_term( $record['meta']['term_parent'], $record['meta']['taxonomy'] );
 				if ( empty( $parent ) || is_wp_error( $parent ) ) {
 					return false;
 				} else {
@@ -224,10 +224,10 @@ class WP_Stream_Notifications_Matcher {
 				}
 				break;
 			case 'tax':
-				if ( empty( $log['meta']['taxonomy'] ) ) {
+				if ( empty( $record['meta']['taxonomy'] ) ) {
 					return false;
 				}
-				$haystack = $log['meta']['taxonomy'];
+				$haystack = $record['meta']['taxonomy'];
 				break;
 
 			case 'post_title':
@@ -486,7 +486,7 @@ class WP_Stream_Notifications_Matcher {
 		return $chunks;
 	}
 
-	private function alert( $rules, $logs ) {
+	private function alert( $rules, $records ) {
 		foreach ( $rules as $rule_id => $rule ) {
 			// Update occurrences
 			update_post_meta(
@@ -495,14 +495,14 @@ class WP_Stream_Notifications_Matcher {
 				( (int) get_post_meta( $rule_id, 'occurrences', true ) ) + 1
 			);
 
-			foreach ( $logs as $log ) {
+			foreach ( $records as $record ) {
 				foreach ( $rule['alerts'] as $alert ) {
 					if ( ! isset( WP_Stream_Notifications::$adapters[ $alert['type'] ] ) ) {
 						continue;
 					}
 
 					$adapter = new WP_Stream_Notifications::$adapters[ $alert['type'] ]['class'];
-					$adapter->load( $alert )->send( $log );
+					$adapter->load( $alert )->send( $record );
 				}
 			}
 		}
