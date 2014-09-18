@@ -233,7 +233,7 @@ class WP_Stream_API {
 	 *
 	 * @return mixed
 	 */
-	public function search( $query = array(), $fields = array(), $sites = array(), $allow_cache = false, $expiration = 120 ) {
+	public function search( $query = array(), $fields = array(), $sites = array(), $search_type = '', $allow_cache = false, $expiration = 120 ) {
 		if ( empty( $sites ) ) {
 			if ( is_network_admin() ) {
 				$sites = array_keys( WP_Stream_Network::get_instance()->connected_sites );
@@ -253,6 +253,9 @@ class WP_Stream_API {
 		}
 		if ( ! empty( $sites ) ) {
 			$body['sites'] = $sites;
+		}
+		if ( ! empty( $search_type ) ) {
+			$body['search_type'] = $search_type;
 		}
 
 		$args = array( 'method' => 'POST', 'body' => json_encode( (object) $body ) );
