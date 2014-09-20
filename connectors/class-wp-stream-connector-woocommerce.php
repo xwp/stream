@@ -212,10 +212,10 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( in_array( $record->context, self::$post_types ) ) {
-			$links = WP_Stream_Connector_Posts::action_links( $links );
+			$links = WP_Stream_Connector_Posts::action_links( $links, $record );
 		}
 		elseif ( in_array( $record->context, self::$taxonomies ) ) {
-			$links = WP_Stream_Connector_Taxonomies::action_links( $links );
+			$links = WP_Stream_Connector_Taxonomies::action_links( $links, $record );
 		}
 		else {
 			$meta = wp_stream_get_meta( $record );
