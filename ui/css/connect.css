@@ -124,6 +124,14 @@ i.stream-icon {
 }
 
 
+/* Stream Connect Tooltip */
+
+#wp-stream-connect .stream-tooltip,
+#stream-message .stream-tooltip {
+	border-bottom: 1px dotted rgba(0, 0, 0, 0.5);
+	cursor: help;
+}
+
 /* Stream Notice Box */
 
 #stream-message #stream-dismiss {

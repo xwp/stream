@@ -152,8 +152,8 @@ class WP_Stream_Admin {
 				</div>
 
 				<div class="stream-message-text">
-					<h4><?php _e( 'Stream is almost ready!', 'stream' ) ?></h4>
-					<p><?php _e( 'Connect now to see every change made to your WordPress site in beautifully organized detail.', 'stream' ) ?></p>
+					<h4><?php esc_html_e( 'Stream is almost ready!', 'stream' ) ?></h4>
+					<p><?php printf( esc_html__( 'Connect to Stream with your %sWordPress.com ID%s to see every change made to your site in beautifully organized detail.', 'stream' ), '<span class="stream-tooltip">', '</span>' ) ?></p>
 				</div>
 
 				<div class="clear"></div>
@@ -839,7 +839,7 @@ class WP_Stream_Admin {
 
 				<div class="stream-connect-container">
 					<a href="<?php echo esc_url( self::$connect_url ) ?>" class="stream-button"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a>
-					<p><?php _e( 'with your WordPress.com account', 'stream' ) ?></p>
+					<p><?php printf( esc_html__( 'with your %sWordPress.com ID%s', 'stream' ), '<span class="stream-tooltip">', '</span>' ) ?></p>
 				</div>
 
 				<?php if ( isset( $testimonial ) ) : ?>
