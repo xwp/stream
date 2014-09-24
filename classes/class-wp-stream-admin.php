@@ -851,10 +851,10 @@ class WP_Stream_Admin {
 
 				<div class="stream-haiku">
 					<p>
-						<?php esc_html_x( 'A transformation', 'Haiku', 'stream' ) ?><br />
-						<?php esc_html_x( 'Like brook, to river, to sea', 'Haiku', 'stream' ) ?><br />
-						<a href="<?php echo self::PUBLIC_URL ?>/love-letter?site-name=<?php echo urlencode( get_bloginfo( 'name' ) ) ?>" target="_blank">
-							<?php esc_html_x( 'I have a secret', 'Haiku', 'stream' ) ?>
+						<?php echo esc_html_x( 'A transformation', 'Haiku', 'stream' ) ?><br />
+						<?php echo esc_html_x( 'Like brook, to river, to sea', 'Haiku', 'stream' ) ?><br />
+						<a href="<?php echo esc_html( self::PUBLIC_URL ) ?>/love-letter?site-name=<?php echo urlencode( get_bloginfo( 'name' ) ) ?>" target="_blank">
+							<?php echo esc_html_x( 'I have a secret', 'Haiku', 'stream' ) ?>
 						</a>
 					</p>
 				</div>
