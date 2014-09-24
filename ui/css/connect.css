@@ -123,6 +123,27 @@ i.stream-icon {
 	font-size: 1em;
 }
 
+#wp-stream-connect .stream-haiku {
+	position: absolute;
+	right: 3em;
+	top: 2em;
+	font-style: italic;
+	opacity: 0.1;
+	border: 1px solid #ddd;
+	padding: 0 1em;
+	background: #fff;
+	line-height: 2em;
+	-webkit-transition: opacity 2s ease-in-out;
+	   -moz-transition: opacity 2s ease-in-out;
+	     -o-transition: opacity 2s ease-in-out;
+	    -ms-transition: opacity 2s ease-in-out;
+	        transition: opacity 2s ease-in-out;
+}
+
+#wp-stream-connect .stream-haiku:hover {
+	opacity: 1;
+}
+
 
 /* Stream Notice Box */
 
