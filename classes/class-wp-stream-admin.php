@@ -161,8 +161,8 @@ class WP_Stream_Admin {
 							'<a href="https://signup.wordpress.com/signup/">',
 							'</a>'
 						);
-						wp_kses_post(
-							printf(
+						echo wp_kses_post(
+							sprintf(
 								esc_html__( 'Connect to Stream with your %sWordPress.com ID%s to see every change made to your site in beautifully organized detail.', 'stream' ),
 								'<span class="wp-stream-tooltip-text">',
 								'</span><span class="wp-stream-tooltip">' . $tooltip . '</span>'
