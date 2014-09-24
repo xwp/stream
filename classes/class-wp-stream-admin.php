@@ -158,7 +158,7 @@ class WP_Stream_Admin {
 						<?php
 						$tooltip = sprintf(
 							esc_html__( 'Stream uses your WordPress.com ID to authorize your account. You can sign up for free at %swordpress.com/signup%s.' ),
-							'<a href="https://signup.wordpress.com/signup/">',
+							'<a href="https://signup.wordpress.com/signup/?user=1">',
 							'</a>'
 						);
 						wp_kses_post(
@@ -860,7 +860,7 @@ class WP_Stream_Admin {
 						<?php
 						$tooltip = sprintf(
 							esc_html__( 'Stream uses your WordPress.com ID to authorize your account. You can sign up for free at %swordpress.com/signup%s.' ),
-							'<a href="https://signup.wordpress.com/signup/">',
+							'<a href="https://signup.wordpress.com/signup/?user=1">',
 							'</a>'
 						);
 						wp_kses_post(
