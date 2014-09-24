@@ -124,12 +124,29 @@ i.stream-icon {
 }
 
 
-/* Stream Connect Tooltip */
+/* Stream Tooltip */
 
-#wp-stream-connect .stream-tooltip,
-#stream-message .stream-tooltip {
+.wp-stream-tooltip-text {
 	border-bottom: 1px dotted rgba(0, 0, 0, 0.5);
 	cursor: help;
+}
+
+.wp-stream-tooltip {
+	position: absolute;
+	display: none;
+	max-width: 30em;
+	padding: 1em;
+	margin-left: -1em;
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	-webkit-box-shadow: 0 1px 1px rgba(0,0,0,.1);
+	box-shadow: 0 1px 1px rgba(0,0,0,.1);
+	z-index: 10;
+	cursor: default;
+	text-align: left;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 13px;
+	font-weight: 400;
 }
 
 /* Stream Notice Box */
@@ -181,7 +198,6 @@ i.stream-icon {
 /* Mobile */
 
 @media all and (max-width: 782px) {
-
 	#wp-stream-connect .stream-button,
 	#wp-stream-connect .stream-quotes-container p {
 		font-size: 1.4em;
@@ -194,5 +210,4 @@ i.stream-icon {
 	#stream-message .stream-message-text {
 		width: 100%;
 	}
-
 }
