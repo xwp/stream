@@ -221,7 +221,7 @@ class WP_Stream_Dashboard_Widget {
 
 		ob_start()
 		?>
-		<li data-id="<?php echo esc_html( $item->ID ) ?>">
+		<li data-datetime="<?php echo wp_stream_get_iso_8601_extended_date( strtotime( $item->created ) ) ?>">
 		<div class="record-avatar">
 				<a href="<?php echo esc_url( $author->get_records_page_url() ) ?>">
 					<?php echo $author->get_avatar_img( 72 ); // xss ok ?>
@@ -246,7 +246,7 @@ class WP_Stream_Dashboard_Widget {
 	 * @return array  Data sent to heartbeat
 	 */
 	public static function live_update( $response, $data ) {
-		if ( ! isset( $data['wp-stream-heartbeat-last-id'] ) ) {
+		if ( ! isset( $data['wp-stream-heartbeat-last-time'] ) ) {
 			return;
 		}
 

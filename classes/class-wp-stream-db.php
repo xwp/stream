@@ -54,7 +54,17 @@ class WP_Stream_DB {
 
 		// TODO: Check/Validate *required* fields
 
-		$this->insert( $records );
+		$result = $this->insert( $records );
+
+		if ( $result && ! is_wp_error( $result ) ) {
+			/**
+			 * Fires when A Post is inserted
+			 *
+			 * @param  int    $record_id  Inserted record ID
+			 * @param  array  $recordarr  Array of information on this record
+			 */
+			do_action( 'wp_stream_records_inserted', $records );
+		}
 
 		return true;
 	}
@@ -69,7 +79,7 @@ class WP_Stream_DB {
 	 * @return object $response The inserted records
 	 */
 	private function insert( array $records ) {
-		WP_Stream::$api->new_records( $records );
+		return WP_Stream::$api->new_records( $records );
 	}
 
 	/**

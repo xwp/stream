@@ -126,15 +126,19 @@ class WP_Stream_Live_Update {
 			return '';
 		}
 
-		$default = array(
-			'record_after' => $last_time,
-		);
+		if ( empty( self::$list_table->items ) ) {
+			return '';
+		}
 
-		// Filter default
-		$args = wp_parse_args( $args, $default );
+		$items = array();
 
-		// Run query
-		$items = wp_stream_query( $args );
+		foreach ( self::$list_table->items as $item ) {
+			if ( strtotime( $item->created ) > strtotime( $last_time ) ) {
+				$items[] = $item;
+			} else {
+				break;
+			}
+		}
 
 		return $items;
 	}

@@ -4,7 +4,9 @@ jQuery( function( $ ) {
 	/**
 	 * Dashboard Live Update
 	 */
-	wp.heartbeat.interval( 'fast' );
+	if ( undefined !== wp.heartbeat && undefined !== wp.heartbeat.interval ) {
+		wp.heartbeat.interval( 'fast' );
+	}
 
 	var widget = $( '#dashboard_stream_activity' ),
 		list   = widget.find( '.inside ul' );
@@ -14,14 +16,14 @@ jQuery( function( $ ) {
 
 	// Add Stream widget params to heartbeat API requests
 	$( document ).on( 'heartbeat-send.stream', function( e, data ) {
-		data['wp-stream-heartbeat']         = 'dashboard-update';
-		data['wp-stream-heartbeat-last-id'] = $( 'li:first', list ).data( 'id' ) || 1;
+		data['wp-stream-heartbeat']           = 'dashboard-update';
+		data['wp-stream-heartbeat-last-time'] = $( 'li:first', list ).data( 'datetime' ) || 1;
 	});
 
 	// Listen for "heartbeat-tick" on $(document).
 	$( document ).on( 'heartbeat-tick.stream', function( e, data ) {
 		// If this no rows return then we kill the script
-		if ( 'undefined' === typeof data['wp-stream-heartbeat'] || 0 === data['wp-stream-heartbeat'].length ) {
+		if ( undefined === typeof data['wp-stream-heartbeat'] || 0 === data['wp-stream-heartbeat'].length ) {
 			return;
 		}
 

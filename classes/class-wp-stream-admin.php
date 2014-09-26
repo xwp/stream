@@ -120,6 +120,7 @@ class WP_Stream_Admin {
 	public static function prepare_connect_notice() {
 		if ( ! WP_Stream::is_connected() && ! WP_Stream::is_development_mode() ) {
 			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/css/connect.css', array(), WP_Stream::VERSION );
+			wp_enqueue_script( 'wp-stream-connect', WP_STREAM_URL . 'ui/js/connect.js', array(), WP_Stream::VERSION );
 			add_action( 'admin_notices', array( __CLASS__, 'admin_connect_notice' ) );
 		}
 	}
@@ -152,8 +153,23 @@ class WP_Stream_Admin {
 				</div>
 
 				<div class="stream-message-text">
-					<h4><?php _e( 'Stream is almost ready!', 'stream' ) ?></h4>
-					<p><?php _e( 'Connect now to see every change made to your WordPress site in beautifully organized detail.', 'stream' ) ?></p>
+					<h4><?php esc_html_e( 'Stream is almost ready!', 'stream' ) ?></h4>
+					<p>
+						<?php
+						$tooltip = sprintf(
+							esc_html__( 'Stream uses your WordPress.com ID to authorize your account. You can sign up for free at %swordpress.com/signup%s.' ),
+							'<a href="https://signup.wordpress.com/signup/?user=1">',
+							'</a>'
+						);
+						echo wp_kses_post(
+							sprintf(
+								esc_html__( 'Connect to Stream with your %sWordPress.com ID%s to see every change made to your site in beautifully organized detail.', 'stream' ),
+								'<span class="wp-stream-tooltip-text">',
+								'</span><span class="wp-stream-tooltip">' . $tooltip . '</span>' // xss ok
+							)
+						);
+						?>
+					</p>
 				</div>
 
 				<div class="clear"></div>
@@ -832,6 +848,7 @@ class WP_Stream_Admin {
 		}
 
 		wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/css/connect.css', array(), WP_Stream::VERSION );
+		wp_enqueue_script( 'wp-stream-connect', WP_STREAM_URL . 'ui/js/connect.js', array(), WP_Stream::VERSION );
 		?>
 		<div id="wp-stream-connect">
 
@@ -839,7 +856,22 @@ class WP_Stream_Admin {
 
 				<div class="stream-connect-container">
 					<a href="<?php echo esc_url( self::$connect_url ) ?>" class="stream-button"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a>
-					<p><?php _e( 'with your WordPress.com account', 'stream' ) ?></p>
+					<p>
+						<?php
+						$tooltip = sprintf(
+							esc_html__( 'Stream uses your WordPress.com ID to authorize your account. You can sign up for free at %swordpress.com/signup%s.' ),
+							'<a href="https://signup.wordpress.com/signup/?user=1">',
+							'</a>'
+						);
+						wp_kses_post(
+							printf(
+								esc_html__( 'with your %sWordPress.com ID%s', 'stream' ),
+								'<span class="wp-stream-tooltip-text">',
+								'</span><span class="wp-stream-tooltip">' . $tooltip . '</span>' // xss ok
+							)
+						);
+						?>
+					</p>
 				</div>
 
 				<?php if ( isset( $testimonial ) ) : ?>
@@ -848,6 +880,24 @@ class WP_Stream_Admin {
 						<p class="stream-quote-author">&dash; <?php echo esc_html( $testimonial['author'] ) ?>, <a class="stream-quote-organization" href="<?php echo esc_url( $testimonial['link'] ) ?>"><?php echo esc_html( $testimonial['organization'] ) ?></a></p>
 					</div>
 				<?php endif; ?>
+
+				<div class="stream-haiku">
+					<p>
+						<?php echo esc_html_x( 'A transformation', 'Haiku line 1', 'stream' ) ?><br />
+						<?php echo esc_html_x( 'Like brook, to river, to sea', 'Haiku line 2', 'stream' ) ?><br />
+						<?php
+						$love_letter_url = add_query_arg(
+							array(
+								'site-name' => urlencode( get_bloginfo( 'name' ) ),
+							),
+							self::PUBLIC_URL . '/love-letter/'
+						);
+						?>
+						<a href="<?php echo esc_url( $love_letter_url ) ?>" target="_blank">
+							<?php echo esc_html_x( 'I have a secret', 'Haiku line 3', 'stream' ) ?>
+						</a>
+					</p>
+				</div>
 
 			</div>
 
