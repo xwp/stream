@@ -123,6 +123,23 @@ i.stream-icon {
 	font-size: 1em;
 }
 
+#wp-stream-connect .stream-haiku {
+	position: absolute;
+	right: 3em;
+	top: 2em;
+	padding: 0 1em;
+	font-style: italic;
+	line-height: 2em;
+	background: #fff;
+	border: 1px solid #ddd;
+
+	-webkit-transition: opacity 2s ease-in-out;
+	   -moz-transition: opacity 2s ease-in-out;
+	     -o-transition: opacity 2s ease-in-out;
+	    -ms-transition: opacity 2s ease-in-out;
+	        transition: opacity 2s ease-in-out;
+}
+
 
 /* Stream Tooltip */
 
