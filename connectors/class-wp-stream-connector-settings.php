@@ -198,6 +198,31 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Find out if array keys in the option should be logged separately
+	 *
+	 * @return bool Whether the option should be treated as a group
+	 */
+	public static function is_key_option_group( $key, $old_value, $value ) {
+		$not_grouped = array(
+			'wp_stream_connected_sites'
+		);
+
+		if ( in_array( $key, $not_grouped ) ) {
+			return false;
+		}
+
+		if ( ! is_array( $old_value ) && ! is_array( $value ) ) {
+			return false;
+		}
+
+		if ( 0 === count( array_filter( array_keys( $value ), 'is_string' ) ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Return translated labels for all default Settings fields found in WordPress.
 	 *
 	 * @return array Field label translations
@@ -297,7 +322,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'user_count'                    => __( 'User Count', 'stream' ),
 			// Other
 			'wp_stream_db'                  => __( 'Stream Database Version', 'stream' ),
-			'wp_stream_connected_sites'     => __( 'Stream Total Sites', 'stream' ),
+			'wp_stream_connected_sites'     => __( 'Stream Connected Sites', 'stream' ),
 		);
 
 		if ( isset( $labels[ $field_key ] ) ) {
@@ -566,12 +591,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		}
 
 		$changed_options = array();
-		$option_group    = false;
-		if ( is_array( $old_value ) || is_array( $value ) ) {
-			if ( count( array_filter( array_keys( $value ), 'is_string' ) ) > 0 ) {
-				$option_group = true;
-			}
-		}
+		$option_group    = self::is_key_option_group( $option, $old_value, $value );
 
 		if ( $option_group ) {
 			foreach ( self::get_changed_keys( $old_value, $value ) as $field_key ) {
