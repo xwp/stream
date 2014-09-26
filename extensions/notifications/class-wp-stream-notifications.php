@@ -203,8 +203,9 @@ class WP_Stream_Notifications {
 			'post_status'    => 'any',
 			'posts_per_page' => 1,
 		);
+
 		if ( ! get_posts( $args ) ) {
-			add_action( 'plugins_loaded', array( $this, 'add_sample_rule' ), 11 );
+			$this->add_sample_rule();
 		}
 	}
 
@@ -269,7 +270,7 @@ class WP_Stream_Notifications {
 					'users'   => '1',
 					'emails'  => '',
 					'subject' => sprintf( __( '[Site Activity Alert] %s', 'stream' ), get_bloginfo( 'name' ) ),
-					'message' => __( "The following just happened on your site:\r\n\r\n{summary} by {author.display_name}\r\n\r\nDate of action: {created}", 'stream' )
+					'message' => sprintf( __( 'The following just happened on your site: %s by %s Date of action: %s', 'stream' ), "\r\n\r\n{summary}", "{author.display_name}\r\n\r\n", '{created}' )
 				),
 			),
 		);
