@@ -592,11 +592,13 @@ class WP_Stream_Admin {
 			wp_die( 'There was a problem verifying your site with Stream. Please try again later.', 'stream' );
 		}
 
+		if ( ! WP_Stream_API::$restricted ) {
+			WP_Stream_Notifications::$instance->on_activation();
+		}
+
 		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
 		update_option( WP_Stream_API::API_KEY_OPTION_KEY, WP_Stream::$api->api_key );
 		update_option( WP_Stream_API::RESTRICTED_OPTION_KEY, WP_Stream_API::$restricted );
-
-		WP_Stream_Notifications::$instance->on_activation();
 
 		do_action( 'wp_stream_site_connected', WP_Stream::$api->site_uuid, WP_Stream::$api->api_key, get_current_blog_id() );
 
