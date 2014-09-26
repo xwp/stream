@@ -165,7 +165,7 @@ class WP_Stream_Admin {
 							sprintf(
 								esc_html__( 'Connect to Stream with your %sWordPress.com ID%s to see every change made to your site in beautifully organized detail.', 'stream' ),
 								'<span class="wp-stream-tooltip-text">',
-								'</span><span class="wp-stream-tooltip">' . $tooltip . '</span>'
+								'</span><span class="wp-stream-tooltip">' . $tooltip . '</span>' // xss ok
 							)
 						);
 						?>
@@ -867,7 +867,7 @@ class WP_Stream_Admin {
 							printf(
 								esc_html__( 'with your %sWordPress.com ID%s', 'stream' ),
 								'<span class="wp-stream-tooltip-text">',
-								'</span><span class="wp-stream-tooltip">' . $tooltip . '</span>'
+								'</span><span class="wp-stream-tooltip">' . $tooltip . '</span>' // xss ok
 							)
 						);
 						?>
