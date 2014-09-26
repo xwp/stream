@@ -16,11 +16,6 @@ class WP_Stream_Notifications {
 	public static $screen_id;
 
 	/**
-	 * @var WP_Stream_Notifications_Network
-	 */
-	public $network = null;
-
-	/**
 	 * Page slug for notifications list table screen
 	 *
 	 * @const string
@@ -114,20 +109,6 @@ class WP_Stream_Notifications {
 
 		foreach ( $adapters as $adapter ) {
 			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/class-wp-stream-notifications-adapter-' . $adapter . '.php';
-		}
-
-		// Load network class
-		if ( is_multisite() ) {
-			require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-network.php';
-
-			$this->network = new WP_Stream_Notifications_Network;
-
-			if ( WP_Stream_Network::is_network_activated() ) {
-				add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
-			}
-
-			// Allow Stream to override the admin_menu creation if on multisite
-			add_filter( 'wp_stream_notifications_disallow_site_access', array( 'WP_Stream_Network', 'disable_admin_access' ) );
 		}
 
 		// Load Matcher

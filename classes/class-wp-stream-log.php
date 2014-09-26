@@ -118,7 +118,7 @@ class WP_Stream_Log {
 		$recordarr = array(
 			'object_id'   => (int) $object_id,
 			'site_id'     => (int) is_multisite() ? get_current_site()->id : 1,
-			'blog_id'     => (int) apply_filters( 'wp_stream_blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() ),
+			'blog_id'     => (int) apply_filters( 'wp_stream_blog_id_logged', get_current_blog_id() ),
 			'author'      => (int) $user_id,
 			'author_role' => (string) ! empty( $user->roles ) ? $user->roles[0] : '',
 			'author_meta' => (array) $author_meta,

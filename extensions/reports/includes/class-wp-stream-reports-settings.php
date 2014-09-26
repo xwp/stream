@@ -29,11 +29,6 @@ class WP_Stream_Reports_Settings {
 	const OPTION_NAME = 'stream_reports_settings';
 
 	/**
-	 * Holds the user option name for network admin (key)
-	 */
-	const NETWORK_ADMIN_OPTION_NAME = 'stream_reports_network_settings';
-
-	/**
 	 * Public constructor
 	 */
 	public static function load() {
@@ -245,7 +240,7 @@ class WP_Stream_Reports_Settings {
 	}
 
 	public static function get_option_key() {
-		return is_network_admin() ? self::NETWORK_ADMIN_OPTION_NAME : self::OPTION_NAME;
+		return self::OPTION_NAME;
 	}
 
 }

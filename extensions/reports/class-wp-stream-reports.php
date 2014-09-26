@@ -57,7 +57,7 @@ class WP_Stream_Reports {
 		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' ); // Has trailing slash
 		define( 'WP_STREAM_REPORTS_VIEW_DIR', WP_STREAM_REPORTS_DIR . 'views/' ); // Has trailing slash
 
-		if ( ! apply_filters( 'wp_stream_reports_load', true ) || is_network_admin() ) {
+		if ( ! apply_filters( 'wp_stream_reports_load', true ) ) {
 			return;
 		}
 
@@ -91,8 +91,6 @@ class WP_Stream_Reports {
 		require_once WP_STREAM_REPORTS_INC_DIR . 'template-tags.php';
 
 		// Register new submenu
-		add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
-
 		if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
 			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		}

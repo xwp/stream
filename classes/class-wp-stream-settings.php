@@ -13,16 +13,6 @@ class WP_Stream_Settings {
 	const OPTION_KEY = 'wp_stream';
 
 	/**
-	 * Settings key/identifier
-	 */
-	const NETWORK_OPTION_KEY = 'wp_stream_network';
-
-	/**
-	 * Default Settings key/identifier
-	 */
-	const DEFAULTS_OPTION_KEY = 'wp_stream_defaults';
-
-	/**
 	 * Plugin settings
 	 *
 	 * @var array
@@ -203,14 +193,6 @@ class WP_Stream_Settings {
 			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
 		}
 
-		if ( 'wp_stream_default_settings' === $current_page ) {
-			$option_key = self::DEFAULTS_OPTION_KEY;
-		}
-
-		if ( 'wp_stream_network_settings' === $current_page ) {
-			$option_key = self::NETWORK_OPTION_KEY;
-		}
-
 		return apply_filters( 'wp_stream_settings_option_key', $option_key );
 	}
 
@@ -289,12 +271,7 @@ class WP_Stream_Settings {
 	 */
 	public static function get_options() {
 		$option_key = self::$option_key;
-
-		$defaults = self::get_defaults( $option_key );
-
-		if ( self::DEFAULTS_OPTION_KEY === $option_key ) {
-			return $defaults;
-		}
+		$defaults   = self::get_defaults( $option_key );
 
 		/**
 		 * Filter allows for modification of options
@@ -337,10 +314,7 @@ class WP_Stream_Settings {
 		*/
 		return apply_filters(
 			'wp_stream_settings_option_defaults',
-			wp_parse_args(
-				(array) get_site_option( self::DEFAULTS_OPTION_KEY, array() ),
-				$defaults
-			)
+			$defaults
 		);
 	}
 
