@@ -97,6 +97,17 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 2.0.0 - September 27, 2014 =
+
+* All activity is now stored only in the cloud over SSL, local MySQL storage dependence is over!
+* Connector and Context have merged in the UI, now just called Contexts
+* The Exclude Rules UI has been completely revamped
+* Notifications and Reports are now conveniently built into Stream for Pro subscribers
+* Connectors for tracking other popular plugins are now built into Stream, like BuddyPress, Jetpack, Gravity Forms, and more...
+* You create an account for Stream simply by signing in with your WordPress.com ID
+
+**NOTE:** Multisite view of all activity records in the Network Admin has been removed in this release. If you require this feature, please do not update Stream until version 2.1.0 is released.
+
 = 1.4.9 - July 23, 2014 =
 
 * Fix: Revert delayed log mechanism for post transition ([#585](https://github.com/x-team/wp-stream/issues/585))
