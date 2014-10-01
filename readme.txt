@@ -101,7 +101,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 * Tweak: Improved localisation strings throughout the plugin ([#644](https://github.com/wp-stream/stream/pull/644))
 * Tweak: Improved tooltip text explaining WP.com sign in
-* Fix: ACF doesn't save custom field values when Stream enabled ([#642](https://github.com/wp-stream/stream/issues/642))
+* Fix: ACF Pro doesn't save custom field values when Stream enabled ([#642](https://github.com/wp-stream/stream/issues/642))
 
 Props [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
 
