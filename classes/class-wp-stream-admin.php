@@ -150,7 +150,7 @@ class WP_Stream_Admin {
 						<?php
 						$tooltip = sprintf(
 							esc_html__( 'Stream only uses your WordPress.com ID during sign up to authorize your account. You can sign up for free at %swordpress.com/signup%s.', 'stream' ),
-							'<a href="https://signup.wordpress.com/signup/?user=1">',
+							'<a href="https://signup.wordpress.com/signup/?user=1" target="_blank">',
 							'</a>'
 						);
 						echo wp_kses_post(
