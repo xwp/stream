@@ -473,6 +473,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 */
 	public static function callback_acf_update_value( $value, $post_id, $field ) {
 		self::$cached_field_values_updates[ $post_id ][ $field['name'] ] = compact( 'field', 'value', 'post_id' );
+		return $value;
 	}
 
 	/**

@@ -1,28 +1,10 @@
 <div class="wrap">
 
-	<?php if ( is_network_admin() ) : ?>
-
-		<?php
-		$site_count = sprintf( _n( '1 site', '%d sites', get_blog_count(), 'stream' ), get_blog_count() );
-
-		printf(
-			'<h2>%s (%s)<a href="%s" class="add-new-h2">%s</a></h2>',
-			esc_html__( 'Stream Reports', 'stream' ),
-			$site_count, // xss ok
-			esc_url( $add_url ),
-			esc_html__( 'New Report', 'stream' )
-		);
-		?>
-
-	<?php else : ?>
-
-		<h2><?php esc_html_e( 'Stream Reports', 'stream' ) ?>
-			<a href="<?php echo esc_url( $add_url ) ?>" class="add-new-h2">
-				<?php esc_html_e( 'New Report', 'stream' ) ?>
-			</a>
-		</h2>
-
-	<?php endif; ?>
+	<h2><?php esc_html_e( 'Stream Reports', 'stream' ) ?>
+		<a href="<?php echo esc_url( $add_url ) ?>" class="add-new-h2">
+			<?php esc_html_e( 'New Report', 'stream' ) ?>
+		</a>
+	</h2>
 
 	<?php wp_nonce_field( 'stream-reports-page', 'wp_stream_reports_nonce', false ) ?>
 	<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ) ?>

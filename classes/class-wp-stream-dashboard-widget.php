@@ -22,7 +22,7 @@ class WP_Stream_Dashboard_Widget {
 
 		wp_add_dashboard_widget(
 			'dashboard_stream_activity',
-			is_network_admin() ? esc_html__( 'Network Stream Activity', 'stream' ) : esc_html__( 'Stream Activity', 'stream' ),
+			esc_html__( 'Stream Activity', 'stream' ),
 			array( __CLASS__, 'stream_activity_initial_contents' ),
 			array( __CLASS__, 'stream_activity_options' )
 		);

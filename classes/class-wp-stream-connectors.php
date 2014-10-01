@@ -66,10 +66,6 @@ class WP_Stream_Connectors {
 			'wordpress-seo',
 		);
 
-		if ( is_network_admin() ) {
-			$connectors[] = 'blogs';
-		}
-
 		$classes = array();
 		foreach ( $connectors as $connector ) {
 			include_once WP_STREAM_DIR . '/connectors/class-wp-stream-connector-' . $connector .'.php';
