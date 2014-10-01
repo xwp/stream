@@ -97,7 +97,7 @@ cat <(
 	git ls-files --cached --full-name $git_root \
 	&
 	git ls-files --cached --full-name $git_root | xargs -I {} dirname {} | sort | uniq
-) | sort | rsync -avz --delete --delete-excluded --include-from=- --exclude='*' ./ $svn_repo_dir/trunk/
+) | sort | rsync -avz --delete --include-from=- --exclude='*' ./ $svn_repo_dir/trunk/
 
 cd $svn_repo_dir/trunk
 
@@ -123,7 +123,21 @@ svn status . | grep "^\!" | sed 's/^\! *//g' | xargs svn rm
 if [ -d assets ]; then
 	svn add --force assets
 fi
-svn add --force trunk
+svn add --force trunk --auto-props --parents --depth infinity -q
+
+mkdir -p tags
+if [ -e tags/$plugin_version ]; then
+	svn rm tags/$plugin_version
+fi
+cp -r trunk tags/$plugin_version
+svn add --force tags/$plugin_version --auto-props --parents --depth infinity -q
+
+mkdir -p tags
+if [ -e tags/$plugin_version ]; then
+	svn rm tags/$plugin_version
+fi
+cp -r trunk tags/$plugin_version
+svn add --force tags/$plugin_version
 
 # Do SVN commit
 svn_commit_file=$svn_repo_dir/COMMIT_MSG

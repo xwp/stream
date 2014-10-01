@@ -2,14 +2,16 @@
 # Stream
 
 ![Banner](assets/banner-1544x500.png)
-Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail.
+Stream is the easiest and safest way to track content changes happening to your WordPress site and then view them in beautifully organized detail.
 
-**Contributors:** [stream](http://profiles.wordpress.org/stream), [x-team](http://profiles.wordpress.org/x-team), [fjarrett](http://profiles.wordpress.org/fjarrett), [westonruter](http://profiles.wordpress.org/westonruter), [japh](http://profiles.wordpress.org/japh), [lukecarbis](http://profiles.wordpress.org/lukecarbis), [shadyvb](http://profiles.wordpress.org/shadyvb), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo), [c3mdigital](http://profiles.wordpress.org/c3mdigital), [johnregan3](http://profiles.wordpress.org/johnregan3), [akeda](http://profiles.wordpress.org/akeda), [kucrut](http://profiles.wordpress.org/kucrut), [topher1kenobe](http://profiles.wordpress.org/topher1kenobe)  
+**Contributors:** [lukecarbis](http://profiles.wordpress.org/lukecarbis), [fjarrett](http://profiles.wordpress.org/fjarrett), [shadyvb](http://profiles.wordpress.org/shadyvb), [westonruter](http://profiles.wordpress.org/westonruter), [stream](http://profiles.wordpress.org/stream), [x-team](http://profiles.wordpress.org/x-team)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
-**Tested up to:** 3.9.1  
+**Tested up to:** 4.0  
 **Stable tag:** trunk (master)  
 **License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
+
+[![Build Status](https://travis-ci.org/wp-stream/stream.png?branch=master)](https://travis-ci.org/wp-stream/stream) 
 
 ## Description ##
 
@@ -17,25 +19,26 @@ Stream tracks logged-in user activity so you can monitor every change made on yo
 
 **Note: This plugin requires PHP 5.3 or higher to be activated.**
 
-To join Stream Extensions, please visit [wp-stream.com](https://wp-stream.com/)
+Never be in the dark about WP Admin activity again.
 
-Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them. Never be in the dark about WP Admin activity again.
+Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
 
-Every logged-in user action is logged in a user activity stream and organized for easy filtering by connector, context, action and IP address.
+Every logged-in user action is logged in an activity stream and organized for easy filtering by user, role, context, action and IP address.
 
-Built with performance in mind, Stream won't pollute your default posts table with records or slow down content querying on your site.
+Built with performance in mind, Stream won't slow down content querying on your site.
 
-Visit the Stream Extensions screen inside the plugin to learn more about making Stream even more powerful.
+**Built-In Tracking For Popular Plugins:**
 
-**Extensions:**
+ * [Advanced Custom Fields](https://wp-stream.com/connectors/acf/)
+ * [bbPress](https://wp-stream.com/connectors/bbpress/)
+ * [BuddyPress](https://wp-stream.com/connectors/buddypress/)
+ * [Easy Digital Downloads](https://wp-stream.com/connectors/edd/)
+ * [Gravity Forms](https://wp-stream.com/connectors/gravity-forms/)
+ * [Jetpack](https://wp-stream.com/connectors/jetpack/)
+ * [WooCommerce](https://wp-stream.com/connectors/woocommerce/)
+ * [WordPress SEO by Yoast](https://wp-stream.com/connectors/wordpress-seo/)
 
- * [Notifications](https://wp-stream.com/extension/notifications/)
- * [Reports](https://wp-stream.com/extension/reports/)
- * [Data Exporter](https://wp-stream.com/extension/data-exporter/)
- * [Cherry-Pick](https://wp-stream.com/extensions/cherry-pick/)
- * [WooCommerce Connector](https://wp-stream.com/extension/connector-woocommerce/)
-
-**Recorded activity:**
+**Plus Core Tracking For:**
 
  * Posts
  * Pages
@@ -56,21 +59,20 @@ Visit the Stream Extensions screen inside the plugin to learn more about making 
  * Theme Editor
  * WordPress Core Updates
 
-**Noteworthy features:**
+**Other Noteworthy Features:**
 
- * Install a variety of powerful Extensions via Stream Extensions
- * Multisite view of all activity records on a network
  * Dashboard widget of most recent user activity
  * Limit who can view user activity records by user role
- * UI to exclude specific types of user activity from being tracked
+ * Set exclude rules to ignore certain kinds of user activity
  * Live update of user activity records in the Stream
  * Private RSS and JSON feeds of user activity records
- * Set how long records should live before being purged automatically
- * Option to manually purge all user activity records from the database
- * Disable connectors where you don't want user activity tracked
  * Support for IPv6 addresses
 
-**Languages:**
+**Coming Soon:**
+
+ * Multisite view of all activity records on a network
+
+**Languages Supported:**
 
  * English
  * French (France)
@@ -79,11 +81,6 @@ Visit the Stream Extensions screen inside the plugin to learn more about making 
  * Polish
  * Portuguese (Brazil)
  * Spanish (Spain)
-
-**Coming soon:**
-
- * Limit who can view user activity records by user, not just by role
- * Language support for Arabic (RTL), Czech and Slovak
 
 **See room for improvement?**
 
@@ -94,8 +91,6 @@ Great! There are several ways you can get involved to help make Stream better:
 3. **Issue Pull Requests:** If you're a developer, the easiest way to get involved is to help out on [issues already reported](https://github.com/x-team/wp-stream/issues) in GitHub. Be sure to check out the [contributing guide](https://github.com/x-team/wp-stream/blob/master/contributing.md) for developers.
 
 Thank you for wanting to make Stream better for everyone! We salute you.
-
-[![Build Status](https://travis-ci.org/wp-stream/wp-stream.png?branch=master)](https://travis-ci.org/wp-stream/wp-stream)
 
 ## Screenshots ##
 
@@ -116,6 +111,16 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
 
 ## Changelog ##
+
+### 2.0.0 - September 27, 2014 ###
+* All activity is now stored only in the cloud over SSL, local MySQL storage dependence is over!
+* Connector and Context have merged in the UI, now just called Contexts
+* The Exclude Rules UI has been completely revamped
+* Notifications and Reports are now conveniently built into Stream for Pro subscribers
+* Connectors for tracking other popular plugins are now built into Stream, like BuddyPress, Jetpack, Gravity Forms, and more...
+* You create an account for Stream simply by signing in with your WordPress.com ID
+
+**NOTE:** Multisite view of all activity records in the Network Admin has been removed in this release. If you require this feature, please do not update Stream until version 2.1.0 is released.
 
 ### 1.4.9 - July 23, 2014 ###
 * Fix: Revert delayed log mechanism for post transition ([#585](https://github.com/x-team/wp-stream/issues/585))

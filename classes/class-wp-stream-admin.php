@@ -38,7 +38,7 @@ class WP_Stream_Admin {
 	const VIEW_CAP            = 'view_stream';
 	const SETTINGS_CAP        = 'manage_options';
 	const PRELOAD_AUTHORS_MAX = 50;
-	const PUBLIC_URL          = 'https://sandbox.wp-stream.com';
+	const PUBLIC_URL          = 'https://wp-stream.com';
 
 	public static function load() {
 		// User and role caps
@@ -565,6 +565,10 @@ class WP_Stream_Admin {
 
 		if ( ! isset( $site->site_id ) ) {
 			wp_die( 'There was a problem verifying your site with Stream. Please try again later.', 'stream' );
+		}
+
+		if ( ! WP_Stream_API::$restricted ) {
+			WP_Stream_Notifications::$instance->on_activation();
 		}
 
 		update_option( WP_Stream_API::SITE_UUID_OPTION_KEY, WP_Stream::$api->site_uuid );
