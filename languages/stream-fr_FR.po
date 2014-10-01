@@ -1,120 +1,93 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Stream\n"
-"POT-Creation-Date: 2014-10-01 17:25+1000\n"
-"PO-Revision-Date: 2014-10-01 17:26+1000\n"
-"Last-Translator: Luke Carbis <luke@wp-stream.com>\n"
+"POT-Creation-Date: 2014-10-01 20:35+1000\n"
+"PO-Revision-Date: 2014-10-01 20:40+1000\n"
+"Last-Translator: Frankie Jarrett <frankie@wp-stream.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.3\n"
+"X-Generator: Poedit 1.6.9\n"
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-KeywordsList: __;_e;_x;_n;_ex;_nx\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: ../stream.php:100
-msgid "Stream: Could not load chosen DB driver."
-msgstr ""
-
-#: ../stream.php:156
-msgid "Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE."
-msgstr ""
-"Stream requiert une version PHP supérieur à 5.3. Le plugin n'est "
-"présentement PAS ACTIF."
-
-#: ../stream.php:197 ../stream.php:212
-msgid "Deprecated Plugins Found"
-msgstr ""
-
-#: ../stream.php:198
-msgid ""
-"The following plugins are deprecated and will be deactivated in order to "
-"activate"
-msgstr ""
-
-#: ../stream.php:207
-#, fuzzy
-msgid "Continue"
-msgstr "Contexte"
-
 #: ../classes/class-wp-stream-admin.php:144
-msgid "Dismiss this notice and deactivate Stream."
-msgstr ""
-
-#: ../classes/class-wp-stream-admin.php:152
-#: ../classes/class-wp-stream-admin.php:284
-#: ../classes/class-wp-stream-admin.php:862
+#: ../classes/class-wp-stream-admin.php:270
+#: ../classes/class-wp-stream-admin.php:837
 #, fuzzy
 msgid "Connect to Stream"
-msgstr "Connecteur"
+msgstr "Flux Stream"
 
-#: ../classes/class-wp-stream-admin.php:156
+#: ../classes/class-wp-stream-admin.php:148
+#, fuzzy
 msgid "Stream is almost ready!"
-msgstr ""
+msgstr "Flux Stream"
 
-#: ../classes/class-wp-stream-admin.php:160
-#: ../classes/class-wp-stream-admin.php:866
+#: ../classes/class-wp-stream-admin.php:152
+#: ../classes/class-wp-stream-admin.php:841
 #, php-format
 msgid ""
-"Stream uses your WordPress.com ID to authorize your account. You can sign up "
-"for free at %swordpress.com/signup%s."
+"Stream only uses your WordPress.com ID during sign up to authorize your "
+"account. You can sign up for free at %swordpress.com/signup%s."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:166
+#: ../classes/class-wp-stream-admin.php:158
 #, php-format
 msgid ""
 "Connect to Stream with your %sWordPress.com ID%s to see every change made to "
 "your site in beautifully organized detail."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:195
+#: ../classes/class-wp-stream-admin.php:187
 msgid "All site settings have been successfully reset."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:201
+#: ../classes/class-wp-stream-admin.php:193
 msgid "You have successfully connected to Stream!"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:202
+#: ../classes/class-wp-stream-admin.php:194
 msgid ""
 "Check back here regularly to see a history of the changes being made to this "
 "site."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:254
-#: ../classes/class-wp-stream-admin.php:255
-#: ../classes/class-wp-stream-admin.php:285
-#: ../classes/class-wp-stream-network.php:115
+#: ../classes/class-wp-stream-admin.php:242
+#: ../classes/class-wp-stream-admin.php:243
+#: ../classes/class-wp-stream-admin.php:271
 #: ../connectors/class-wp-stream-connector-settings.php:129
+#, fuzzy
 msgid "Stream"
-msgstr ""
+msgstr "Flux Stream"
 
-#: ../classes/class-wp-stream-admin.php:265
+#: ../classes/class-wp-stream-admin.php:253
 msgid "Stream Settings"
 msgstr "Paramètres Stream"
 
-#: ../classes/class-wp-stream-admin.php:266
-#: ../classes/class-wp-stream-admin.php:565
+#: ../classes/class-wp-stream-admin.php:254
+#: ../classes/class-wp-stream-admin.php:540
 #: ../connectors/class-wp-stream-connector-settings.php:100
 #: ../connectors/class-wp-stream-connector-settings.php:121
 #: ../connectors/class-wp-stream-connector-woocommerce.php:693
 msgid "Settings"
 msgstr "Paramètres"
 
-#: ../classes/class-wp-stream-admin.php:275
+#: ../classes/class-wp-stream-admin.php:262
 #, fuzzy
 msgid "Stream Account"
-msgstr "Paramètres Stream"
+msgstr "Le compte utilisateur #%d à été supprimé"
 
-#: ../classes/class-wp-stream-admin.php:276
+#: ../classes/class-wp-stream-admin.php:263
+#, fuzzy
 msgid "Account"
-msgstr ""
+msgstr "Le compte utilisateur #%d à été supprimé"
 
-#: ../classes/class-wp-stream-admin.php:354
+#: ../classes/class-wp-stream-admin.php:340
 #, fuzzy
 msgid ""
 "Are you sure you want to reset all site settings to default? This cannot be "
@@ -123,54 +96,54 @@ msgstr ""
 "Êtes-vous sûr de vouloir supprimer tous les enregistrements d'activité de "
 "flux de la base de données? Cela ne peut pas être annulée."
 
-#: ../classes/class-wp-stream-admin.php:376
-#: ../classes/class-wp-stream-admin.php:377
+#: ../classes/class-wp-stream-admin.php:362
+#: ../classes/class-wp-stream-admin.php:363
 #, php-format
 msgid "This will take about %d minutes."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:376
-#: ../classes/class-wp-stream-admin.php:377
+#: ../classes/class-wp-stream-admin.php:362
+#: ../classes/class-wp-stream-admin.php:363
 msgid "This could take a few minutes."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:385
+#: ../classes/class-wp-stream-admin.php:371
 #, fuzzy
 msgid "Migrating Stream Records"
 msgstr "Registre Stream"
 
-#: ../classes/class-wp-stream-admin.php:386
+#: ../classes/class-wp-stream-admin.php:372
 #, fuzzy
 msgid "Deleting Stream Records"
 msgstr "Registre Stream"
 
-#: ../classes/class-wp-stream-admin.php:387
+#: ../classes/class-wp-stream-admin.php:373
 msgid ""
 "An unknown error occurred during migration. Please try again later or "
 "contact support."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:388
-#: ../classes/class-wp-stream-admin.php:389
+#: ../classes/class-wp-stream-admin.php:374
+#: ../classes/class-wp-stream-admin.php:375
 msgid "Please do not exit this page until the process has completed."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:390
+#: ../classes/class-wp-stream-admin.php:376
 #, php-format
 msgid "Please note: This process will take about %d minutes to complete."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:390
+#: ../classes/class-wp-stream-admin.php:376
 msgid "Please note: This process could take a few minutes to complete."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:391
+#: ../classes/class-wp-stream-admin.php:377
 msgid ""
 "Please note: Your existing records will not appear in Stream until you have "
 "migrated them to your account."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:392
+#: ../classes/class-wp-stream-admin.php:378
 #, fuzzy, php-format
 msgid ""
 "Are you sure you want to delete all %s existing Stream records without "
@@ -179,91 +152,90 @@ msgstr ""
 "Êtes-vous sûr de vouloir supprimer tous les enregistrements d'activité de "
 "flux de la base de données? Cela ne peut pas être annulée."
 
-#: ../classes/class-wp-stream-admin.php:392
-#, php-format
+#: ../classes/class-wp-stream-admin.php:378
+#, fuzzy, php-format
 msgid "about %d"
-msgstr ""
+msgstr "Le compte utilisateur #%d à été supprimé"
 
-#: ../classes/class-wp-stream-admin.php:392
+#: ../classes/class-wp-stream-admin.php:378
 msgid "a few"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:421
+#: ../classes/class-wp-stream-admin.php:407
 #, php-format
 msgid ""
 "Are you sure you want to perform bulk actions on over %d items? This process "
 "could take a while to complete."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:422
+#: ../classes/class-wp-stream-admin.php:408
 msgid ""
 "The Stream plugin must be deactivated before you can bulk import content "
 "into WordPress."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:751
+#: ../classes/class-wp-stream-admin.php:726
 msgid "Error retrieving account details."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:753
+#: ../classes/class-wp-stream-admin.php:728
 msgid ""
 "If this problem persists, please disconnect from Stream and try connecting "
 "again."
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:760
+#: ../classes/class-wp-stream-admin.php:735
 msgid "Free"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:764
+#: ../classes/class-wp-stream-admin.php:739
 msgid "Pro"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:766
+#: ../classes/class-wp-stream-admin.php:741
 msgid "Standard"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:772
+#: ../classes/class-wp-stream-admin.php:747
 #, fuzzy, php-format
 msgctxt "1: Price, 2: Renewal date"
 msgid "$%1$s on %2$s"
-msgstr "L'utilisateur \"%s\" a été ajouté de \"%s\""
+msgstr "%s mis à jour"
 
-#: ../classes/class-wp-stream-admin.php:774
+#: ../classes/class-wp-stream-admin.php:749
 #: ../classes/class-wp-stream-author.php:64
 #: ../classes/class-wp-stream-author.php:72
 #: ../extensions/notifications/includes/class-wp-stream-notifications-list-table.php:127
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:287
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:471
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:279
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:433
 msgid "N/A"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:781
+#: ../classes/class-wp-stream-admin.php:756
 msgid "Unlimited"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:784
+#: ../classes/class-wp-stream-admin.php:759
 #, php-format
 msgid "1 Day"
 msgid_plural "%s Days"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../classes/class-wp-stream-admin.php:794
+#: ../classes/class-wp-stream-admin.php:769
 msgid "Plan"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:798
+#: ../classes/class-wp-stream-admin.php:773
 msgid "Activity History"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:803
+#: ../classes/class-wp-stream-admin.php:778
 msgid "Next Billing"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:808
+#: ../classes/class-wp-stream-admin.php:783
 #: ../connectors/class-wp-stream-connector-acf.php:81
-#: ../connectors/class-wp-stream-connector-blogs.php:50
 #: ../connectors/class-wp-stream-connector-comments.php:46
 #: ../connectors/class-wp-stream-connector-menus.php:39
 #: ../connectors/class-wp-stream-connector-posts.php:39
@@ -273,86 +245,62 @@ msgstr ""
 msgid "Created"
 msgstr "Créé"
 
-#: ../classes/class-wp-stream-admin.php:812
+#: ../classes/class-wp-stream-admin.php:787
+#, fuzzy
 msgid "Site ID"
-msgstr ""
+msgstr "Titre du site"
 
-#: ../classes/class-wp-stream-admin.php:818
+#: ../classes/class-wp-stream-admin.php:793
 msgid "API Key"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:828
+#: ../classes/class-wp-stream-admin.php:803
 #: ../classes/class-wp-stream-list-table.php:49
-#: ../extensions/notifications/class-wp-stream-notifications.php:155
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:133
+#: ../extensions/notifications/class-wp-stream-notifications.php:136
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:125
 msgid "Upgrade to Pro"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:830
+#: ../classes/class-wp-stream-admin.php:805
 msgid "Modify This Plan"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:872
+#: ../classes/class-wp-stream-admin.php:847
 #, php-format
 msgid "with your %sWordPress.com ID%s"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:890
+#: ../classes/class-wp-stream-admin.php:865
 msgctxt "Haiku line 1"
 msgid "A transformation"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:891
+#: ../classes/class-wp-stream-admin.php:866
 msgctxt "Haiku line 2"
 msgid "Like brook, to river, to sea"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:901
+#: ../classes/class-wp-stream-admin.php:876
 msgctxt "Haiku line 3"
 msgid "I have a secret"
 msgstr ""
 
-#: ../classes/class-wp-stream-admin.php:917
-#: ../classes/class-wp-stream-admin.php:931
-#: ../classes/class-wp-stream-admin.php:933
+#: ../classes/class-wp-stream-admin.php:892
+#: ../classes/class-wp-stream-admin.php:898
 msgid "Stream Records"
 msgstr "Registre Stream"
 
-#: ../classes/class-wp-stream-admin.php:928
-#, php-format
-msgid " (1 site)"
-msgid_plural " (%d sites)"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../classes/class-wp-stream-admin.php:942
-msgid "Get started with Stream for Multisite!"
-msgstr ""
-
-#: ../classes/class-wp-stream-admin.php:943
-msgid ""
-"Welcome to your Network Stream! Each site on your network must be connected "
-"individually by an admin on that site for it to show here."
-msgstr ""
-
-#: ../classes/class-wp-stream-admin.php:954
-msgid "Stream for Multisite is coming soon!"
-msgstr ""
-
-#: ../classes/class-wp-stream-admin.php:955
-msgid "Access to all the Stream feeds in your network is currently disabled."
-msgstr ""
-
-#: ../classes/class-wp-stream-admin.php:1104
+#: ../classes/class-wp-stream-admin.php:1038
 #, php-format
 msgid "One more result..."
 msgid_plural "%d more results..."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../classes/class-wp-stream-api.php:360
+#: ../classes/class-wp-stream-api.php:356
+#, fuzzy
 msgid "Stream API Error."
-msgstr ""
+msgstr "Flux Stream"
 
 #: ../classes/class-wp-stream-author.php:237
 msgid "via WP-CLI"
@@ -362,20 +310,15 @@ msgstr ""
 msgid "during WP Cron"
 msgstr ""
 
-#: ../classes/class-wp-stream-connectors.php:102
+#: ../classes/class-wp-stream-connectors.php:98
 #, php-format
 msgid "%s class wasn't loaded because it doesn't extends the %s class."
 msgstr ""
 
 #: ../classes/class-wp-stream-dashboard-widget.php:25
 #, fuzzy
-msgid "Network Stream Activity"
-msgstr "Paramètres Stream"
-
-#: ../classes/class-wp-stream-dashboard-widget.php:25
-#, fuzzy
 msgid "Stream Activity"
-msgstr "Paramètres Stream"
+msgstr "Flux Stream"
 
 #: ../classes/class-wp-stream-dashboard-widget.php:57
 #: ../classes/class-wp-stream-list-table.php:53
@@ -385,7 +328,7 @@ msgstr ""
 #: ../classes/class-wp-stream-dashboard-widget.php:99
 #, fuzzy
 msgid "View all records"
-msgstr "Supprimer toutes les données"
+msgstr "Vue"
 
 #: ../classes/class-wp-stream-dashboard-widget.php:101
 #, fuzzy
@@ -393,26 +336,30 @@ msgid "View All"
 msgstr "Vue"
 
 #: ../classes/class-wp-stream-dashboard-widget.php:119
+#, fuzzy
 msgid "Go to the first page"
-msgstr ""
+msgstr "Registres par page"
 
 #: ../classes/class-wp-stream-dashboard-widget.php:127
+#, fuzzy
 msgid "Go to the previous page"
-msgstr ""
+msgstr "Registres par page"
 
 #: ../classes/class-wp-stream-dashboard-widget.php:134
 #, fuzzy, php-format
 msgctxt "paging"
 msgid "%1$s of %2$s"
-msgstr "L'utilisateur \"%s\" a été ajouté de \"%s\""
+msgstr "%s mis à jour"
 
 #: ../classes/class-wp-stream-dashboard-widget.php:139
+#, fuzzy
 msgid "Go to the next page"
-msgstr ""
+msgstr "Registres par page"
 
 #: ../classes/class-wp-stream-dashboard-widget.php:148
+#, fuzzy
 msgid "Go to the last page"
-msgstr ""
+msgstr "Registres par page"
 
 #: ../classes/class-wp-stream-dashboard-widget.php:185
 #: ../classes/class-wp-stream-list-table.php:22
@@ -441,9 +388,9 @@ msgstr ""
 #: ../classes/class-wp-stream-date-interval.php:58
 #: ../classes/class-wp-stream-date-interval.php:63
 #: ../classes/class-wp-stream-date-interval.php:68
-#, php-format
+#, fuzzy, php-format
 msgid "Last %d Days"
-msgstr ""
+msgstr "Le compte utilisateur #%d à été supprimé"
 
 #: ../classes/class-wp-stream-date-interval.php:73
 msgid "This Month"
@@ -456,9 +403,9 @@ msgstr ""
 #: ../classes/class-wp-stream-date-interval.php:83
 #: ../classes/class-wp-stream-date-interval.php:88
 #: ../classes/class-wp-stream-date-interval.php:93
-#, php-format
+#, fuzzy, php-format
 msgid "Last %d Months"
-msgstr ""
+msgstr "Le compte utilisateur #%d à été supprimé"
 
 #: ../classes/class-wp-stream-date-interval.php:98
 msgid "This Year"
@@ -468,43 +415,43 @@ msgstr ""
 msgid "Last Year"
 msgstr ""
 
-#: ../classes/class-wp-stream-feeds.php:126
+#: ../classes/class-wp-stream-feeds.php:109
 #, fuzzy
 msgid "Stream Feeds Key"
-msgstr "Flux Stream"
+msgstr "RSS privés"
 
-#: ../classes/class-wp-stream-feeds.php:131
+#: ../classes/class-wp-stream-feeds.php:114
 #, fuzzy
 msgid "Generate new key"
-msgstr "Général"
+msgstr "Menu \"%s\" a été créé"
 
-#: ../classes/class-wp-stream-feeds.php:134
+#: ../classes/class-wp-stream-feeds.php:117
 msgid ""
 "This is your private key used for accessing feeds of Stream Records "
 "securely. You can change your key at any time by generating a new one using "
 "the link above."
 msgstr ""
 
-#: ../classes/class-wp-stream-feeds.php:136
+#: ../classes/class-wp-stream-feeds.php:119
 #, fuzzy
 msgid "RSS Feed"
 msgstr "Flux Stream"
 
-#: ../classes/class-wp-stream-feeds.php:138
+#: ../classes/class-wp-stream-feeds.php:121
 #, fuzzy
 msgid "ATOM Feed"
 msgstr "Flux Stream"
 
-#: ../classes/class-wp-stream-feeds.php:140
+#: ../classes/class-wp-stream-feeds.php:123
 #, fuzzy
 msgid "JSON Feed"
 msgstr "Flux Stream"
 
-#: ../classes/class-wp-stream-feeds.php:188
+#: ../classes/class-wp-stream-feeds.php:171
 msgid "Access Denied"
 msgstr "Accès refusé"
 
-#: ../classes/class-wp-stream-feeds.php:189
+#: ../classes/class-wp-stream-feeds.php:172
 msgid ""
 "You don't have permission to view this feed, please contact your site "
 "Administrator."
@@ -517,8 +464,9 @@ msgid "Invalid use, type must be one of INPUT_* family."
 msgstr ""
 
 #: ../classes/class-wp-stream-filter-input.php:65
+#, fuzzy
 msgid "Filter not supported."
-msgstr ""
+msgstr "Filtre"
 
 #: ../classes/class-wp-stream-list-table.php:48
 #, php-format
@@ -531,8 +479,9 @@ msgstr[1] ""
 
 #: ../classes/class-wp-stream-list-table.php:68
 #: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:507
+#, fuzzy
 msgid "Date"
-msgstr ""
+msgstr "Format de la date"
 
 #: ../classes/class-wp-stream-list-table.php:69
 #: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:472
@@ -541,27 +490,27 @@ msgstr "Sommaire"
 
 #: ../classes/class-wp-stream-list-table.php:70
 #: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:492
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:406
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:368
 msgid "Author"
 msgstr "Auteur"
 
 #: ../classes/class-wp-stream-list-table.php:71
-#: ../classes/class-wp-stream-settings.php:629
+#: ../classes/class-wp-stream-settings.php:603
 #: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:553
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:409
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:371
 msgid "Context"
 msgstr "Contexte"
 
 #: ../classes/class-wp-stream-list-table.php:72
-#: ../classes/class-wp-stream-settings.php:630
+#: ../classes/class-wp-stream-settings.php:604
 #: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:560
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:405
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:367
 msgid "Action"
 msgstr "Action"
 
 #: ../classes/class-wp-stream-list-table.php:73
-#: ../classes/class-wp-stream-settings.php:631
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:410
+#: ../classes/class-wp-stream-settings.php:605
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:372
 msgid "IP Address"
 msgstr "Adresse IP"
 
@@ -572,7 +521,7 @@ msgstr ""
 #: ../classes/class-wp-stream-list-table.php:260
 #, fuzzy
 msgid "Deleted User"
-msgstr "\"%s\" Supprimé"
+msgstr "Le compte utilisateur #%d à été supprimé"
 
 #: ../classes/class-wp-stream-list-table.php:527
 #, fuzzy
@@ -600,19 +549,20 @@ msgid "Filter"
 msgstr "Filtre"
 
 #: ../classes/class-wp-stream-list-table.php:658
-#, php-format
+#, fuzzy, php-format
 msgid "Show all %s"
-msgstr ""
+msgstr "La page de blog affiche par défaut"
 
 #: ../classes/class-wp-stream-list-table.php:699
 #, fuzzy
 msgid "Search Records"
-msgstr "Registre Stream"
+msgstr "Affichage dans les moteurs de recherche"
 
 #: ../classes/class-wp-stream-list-table.php:719
 #: ../extensions/reports/views/intervals.php:3
+#, fuzzy
 msgid "All Time"
-msgstr ""
+msgstr "Format de l'heure"
 
 #: ../classes/class-wp-stream-list-table.php:721
 #: ../extensions/reports/views/intervals.php:5
@@ -620,12 +570,14 @@ msgid "Custom"
 msgstr ""
 
 #: ../classes/class-wp-stream-list-table.php:737
+#, fuzzy
 msgid "Start Date"
-msgstr ""
+msgstr "Format de la date"
 
 #: ../classes/class-wp-stream-list-table.php:743
+#, fuzzy
 msgid "End Date"
-msgstr ""
+msgstr "Format de la date"
 
 #: ../classes/class-wp-stream-list-table.php:825
 #, fuzzy
@@ -633,8 +585,7 @@ msgid "Live updates"
 msgstr "Accèes aux rôles suivant:"
 
 #: ../classes/class-wp-stream-list-table.php:836
-#: ../classes/class-wp-stream-network.php:303
-#: ../classes/class-wp-stream-settings.php:255
+#: ../classes/class-wp-stream-settings.php:237
 msgid "Enabled"
 msgstr "Actif"
 
@@ -674,12 +625,14 @@ msgid "Start Migration Now"
 msgstr ""
 
 #: ../classes/class-wp-stream-migrate.php:125
+#, fuzzy
 msgid "Remind Me Later"
-msgstr ""
+msgstr "Envoyé moi un courriel dès que"
 
 #: ../classes/class-wp-stream-migrate.php:126
+#, fuzzy
 msgid "Delete Existing Records"
-msgstr ""
+msgstr "Registre Stream"
 
 #: ../classes/class-wp-stream-migrate.php:162
 msgid "Migration complete!"
@@ -702,81 +655,10 @@ msgstr ""
 msgid "All existing records have been deleted from the database."
 msgstr ""
 
-#: ../classes/class-wp-stream-network.php:129
-msgid "Network Admin"
-msgstr ""
-
-#: ../classes/class-wp-stream-network.php:169
-#, fuzzy
-msgid "Stream Network Settings"
-msgstr "Paramètres Stream"
-
-#: ../classes/class-wp-stream-network.php:170
-#, fuzzy
-msgid "Network Settings"
-msgstr "Paramètres Stream"
-
-#: ../classes/class-wp-stream-network.php:179
-#, fuzzy
-msgid "New Site Settings"
-msgstr "Paramètres Stream"
-
-#: ../classes/class-wp-stream-network.php:180
-msgid "Site Defaults"
-msgstr ""
-
-#: ../classes/class-wp-stream-network.php:234
-msgid "These settings apply to all sites on the network."
-msgstr ""
-
-#: ../classes/class-wp-stream-network.php:237
-msgid ""
-"These default settings will apply to new sites created on the network. These "
-"settings do not alter existing sites."
-msgstr ""
-
-#: ../classes/class-wp-stream-network.php:302
-#, fuzzy
-msgid "Enable Site Access"
-msgstr "Accèes aux rôles suivant:"
-
-#: ../classes/class-wp-stream-network.php:305
-msgid ""
-"When site access is disabled Stream can only be accessed from the network "
-"administration."
-msgstr ""
-
-#: ../classes/class-wp-stream-network.php:321
-#, fuzzy
-msgid "Reset Site Settings"
-msgstr "Paramètres Stream"
-
-#: ../classes/class-wp-stream-network.php:324
-#, fuzzy
-msgid "Warning: Clicking this will override all site settings with defaults."
-msgstr ""
-"Avertissement: la confirmation de cette boîte entraînera la suppression de "
-"tous les entrées de la base de donnée."
-
-#: ../classes/class-wp-stream-network.php:408
-#, fuzzy
-msgid "Settings saved."
-msgstr "Paramètres"
-
-#: ../classes/class-wp-stream-network.php:463
-msgid "sites"
-msgstr ""
-
-#: ../classes/class-wp-stream-network.php:480
-#: ../classes/class-wp-stream-network.php:530
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:428
-msgid "Site"
-msgstr ""
-
 #: ../classes/class-wp-stream-pointers.php:144
 #, fuzzy
 msgid "Stream Extensions"
-msgstr "Paramètres Stream"
+msgstr "Flux Stream"
 
 #: ../classes/class-wp-stream-pointers.php:145
 msgid "Extension plugins are now available for Stream!"
@@ -786,11 +668,11 @@ msgstr ""
 msgid "Could not validate record data."
 msgstr ""
 
-#: ../classes/class-wp-stream-settings.php:85
+#: ../classes/class-wp-stream-settings.php:75
 msgid "There was an error in the request"
 msgstr ""
 
-#: ../classes/class-wp-stream-settings.php:129
+#: ../classes/class-wp-stream-settings.php:119
 #, php-format
 msgid ""
 "ID: %d\n"
@@ -799,25 +681,25 @@ msgid ""
 "Role: %s"
 msgstr ""
 
-#: ../classes/class-wp-stream-settings.php:148
+#: ../classes/class-wp-stream-settings.php:138
 msgid ""
 "Actions performed by the system when a user is not logged in (e.g. auto site "
 "upgrader, or invoking WP-CLI without --user)"
 msgstr ""
 
-#: ../classes/class-wp-stream-settings.php:226
+#: ../classes/class-wp-stream-settings.php:208
 #: ../connectors/class-wp-stream-connector-settings.php:122
 msgid "General"
 msgstr "Général"
 
-#: ../classes/class-wp-stream-settings.php:230
+#: ../classes/class-wp-stream-settings.php:212
 #: ../extensions/notifications/includes/class-wp-stream-notifications-settings.php:36
-#: ../extensions/reports/includes/class-wp-stream-reports-settings.php:60
+#: ../extensions/reports/includes/class-wp-stream-reports-settings.php:55
 #, fuzzy
 msgid "Role Access"
-msgstr "Accèes aux rôles suivant:"
+msgstr "Accès refusé"
 
-#: ../classes/class-wp-stream-settings.php:232
+#: ../classes/class-wp-stream-settings.php:214
 msgid ""
 "Users from the selected roles above will have permission to view Stream "
 "Records. However, only site Administrators can access Stream Settings."
@@ -826,11 +708,11 @@ msgstr ""
 "voir les données enregisté par Stream. Cependant, seuls les administrateurs "
 "du site peuvent accéder aux paramètres Stream."
 
-#: ../classes/class-wp-stream-settings.php:238
+#: ../classes/class-wp-stream-settings.php:220
 msgid "Private Feeds"
 msgstr "RSS privés"
 
-#: ../classes/class-wp-stream-settings.php:241
+#: ../classes/class-wp-stream-settings.php:223
 #, fuzzy, php-format
 msgid ""
 "Users from the selected roles above will be given a private key found in "
@@ -841,81 +723,83 @@ msgstr ""
 "privé URL dans leur %sProfil Utilisateur%s. N'oublier pas de %svider la "
 "cache des permaliens%s après avoir modifié ce paramètre."
 
-#: ../classes/class-wp-stream-settings.php:245
+#: ../classes/class-wp-stream-settings.php:227
 #, fuzzy
 msgid "View Profile"
-msgstr "Modifier le profil"
+msgstr "Vue"
 
-#: ../classes/class-wp-stream-settings.php:251
+#: ../classes/class-wp-stream-settings.php:233
 msgid "View Codex"
 msgstr "Voir Codex"
 
-#: ../classes/class-wp-stream-settings.php:261
+#: ../classes/class-wp-stream-settings.php:243
 msgid "Exclude"
 msgstr ""
 
-#: ../classes/class-wp-stream-settings.php:265
+#: ../classes/class-wp-stream-settings.php:247
 msgid "Exclude Rules"
 msgstr ""
 
-#: ../classes/class-wp-stream-settings.php:267
+#: ../classes/class-wp-stream-settings.php:249
 msgid ""
 "Create rules for excluding certain kinds of records from appearing in Stream."
 msgstr ""
 
-#: ../classes/class-wp-stream-settings.php:595
-#, php-format
+#: ../classes/class-wp-stream-settings.php:569
+#, fuzzy, php-format
 msgid "Any %s"
-msgstr ""
+msgstr "%s mis à jour"
 
-#: ../classes/class-wp-stream-settings.php:610
+#: ../classes/class-wp-stream-settings.php:584
+#, fuzzy
 msgid "Add New Rule"
-msgstr ""
+msgstr "Menu \"%s\" a été créé"
 
-#: ../classes/class-wp-stream-settings.php:611
+#: ../classes/class-wp-stream-settings.php:585
 msgid "Delete Selected Rules"
 msgstr ""
 
-#: ../classes/class-wp-stream-settings.php:628
+#: ../classes/class-wp-stream-settings.php:602
 #, fuzzy
 msgid "Author or Role"
 msgstr "Auteur"
 
-#: ../classes/class-wp-stream-settings.php:632
+#: ../classes/class-wp-stream-settings.php:606
 #, fuzzy
 msgid "Filters"
 msgstr "Filtre"
 
-#: ../classes/class-wp-stream-settings.php:656
-#, php-format
+#: ../classes/class-wp-stream-settings.php:630
+#, fuzzy, php-format
 msgid "1 user"
 msgid_plural "%s users"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Nouveau rôle par défaut des utilisateurs"
+msgstr[1] "Nouveau rôle par défaut des utilisateurs"
 
-#: ../classes/class-wp-stream-settings.php:679
+#: ../classes/class-wp-stream-settings.php:653
 #, fuzzy
 msgid "Any Author or Role"
 msgstr "Auteur"
 
-#: ../classes/class-wp-stream-settings.php:720
+#: ../classes/class-wp-stream-settings.php:694
 #, fuzzy
 msgid "Any Context"
 msgstr "Contexte"
 
-#: ../classes/class-wp-stream-settings.php:739
+#: ../classes/class-wp-stream-settings.php:713
 #, fuzzy
 msgid "Any Action"
 msgstr "Action"
 
-#: ../classes/class-wp-stream-settings.php:750
+#: ../classes/class-wp-stream-settings.php:724
 #, fuzzy
 msgid "Any IP Address"
 msgstr "Adresse IP"
 
-#: ../classes/class-wp-stream-settings.php:787
+#: ../classes/class-wp-stream-settings.php:761
+#, fuzzy
 msgid "No rules found."
-msgstr ""
+msgstr "Paramètres Stream"
 
 #: ../connectors/class-wp-stream-connector-acf.php:71
 msgctxt "acf"
@@ -923,7 +807,6 @@ msgid "ACF"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-acf.php:82
-#: ../connectors/class-wp-stream-connector-blogs.php:49
 #: ../connectors/class-wp-stream-connector-editor.php:54
 #: ../connectors/class-wp-stream-connector-installer.php:48
 #: ../connectors/class-wp-stream-connector-media.php:43
@@ -942,7 +825,6 @@ msgid "Added"
 msgstr "Ajouter"
 
 #: ../connectors/class-wp-stream-connector-acf.php:84
-#: ../connectors/class-wp-stream-connector-blogs.php:52
 #: ../connectors/class-wp-stream-connector-comments.php:55
 #: ../connectors/class-wp-stream-connector-installer.php:47
 #: ../connectors/class-wp-stream-connector-media.php:44
@@ -961,14 +843,16 @@ msgid "Field Groups"
 msgstr "Visualiser le profil"
 
 #: ../connectors/class-wp-stream-connector-acf.php:96
+#, fuzzy
 msgctxt "acf"
 msgid "Fields"
-msgstr ""
+msgstr "Visualiser le profil"
 
 #: ../connectors/class-wp-stream-connector-acf.php:97
+#, fuzzy
 msgctxt "acf"
 msgid "Rules"
-msgstr ""
+msgstr "Rechercher les registres"
 
 #: ../connectors/class-wp-stream-connector-acf.php:98
 #, fuzzy
@@ -988,9 +872,10 @@ msgid "\"%1$s\" field in \"%2$s\" %3$s"
 msgstr "\"%s\" %s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-acf.php:252
+#, fuzzy
 msgctxt "acf"
 msgid "High (after title)"
-msgstr ""
+msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-acf.php:253
 msgctxt "acf"
@@ -1042,9 +927,10 @@ msgid "Excerpt"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-acf.php:304
+#, fuzzy
 msgctxt "acf"
 msgid "Custom Fields"
-msgstr ""
+msgstr "Visualiser le profil"
 
 #: ../connectors/class-wp-stream-connector-acf.php:305
 #, fuzzy
@@ -1079,12 +965,13 @@ msgstr "Auteur"
 #, fuzzy
 msgctxt "acf"
 msgid "Format"
-msgstr "Mise en forme"
+msgstr "Format de la date"
 
 #: ../connectors/class-wp-stream-connector-acf.php:311
+#, fuzzy
 msgctxt "acf"
 msgid "Featured Image"
-msgstr ""
+msgstr "Image \"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-acf.php:312
 #, fuzzy
@@ -1109,9 +996,10 @@ msgid "All screens"
 msgstr "Action"
 
 #: ../connectors/class-wp-stream-connector-acf.php:320
+#, fuzzy
 msgctxt "acf"
 msgid "No screens"
-msgstr ""
+msgstr "Action"
 
 #: ../connectors/class-wp-stream-connector-acf.php:326
 #, fuzzy, php-format
@@ -1120,8 +1008,9 @@ msgid "\"%1$s\" set to display on \"%2$s\""
 msgstr "L'utilisateur \"%s\" a été ajouté de \"%s\""
 
 #: ../connectors/class-wp-stream-connector-acf.php:383
+#, fuzzy
 msgid "user"
-msgstr ""
+msgstr "Nouveau rôle par défaut des utilisateurs"
 
 #: ../connectors/class-wp-stream-connector-acf.php:396
 #, fuzzy, php-format
@@ -1139,16 +1028,17 @@ msgstr "%s: %s %s Mis à jour"
 msgid "field group"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-acf.php:494
+#: ../connectors/class-wp-stream-connector-acf.php:495
 #, fuzzy, php-format
 msgctxt "acf"
 msgid "Updated Order of \"%1$s\" from %2$d to %3$d"
 msgstr "%s: %s %s Mis à jour"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:78
+#, fuzzy
 msgctxt "bbpress"
 msgid "bbPress"
-msgstr ""
+msgstr "Adresse WordPress (URL)"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:88
 #, fuzzy
@@ -1235,9 +1125,10 @@ msgid "Marked as spam"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:103
+#, fuzzy
 msgctxt "bbpress"
 msgid "Unmarked as spam"
-msgstr ""
+msgstr "\"%s\" %s mis à la corbeil"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:114
 #, fuzzy
@@ -1263,113 +1154,20 @@ msgid "Reply Threading"
 msgstr "Lecture"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:174
-#, php-format
+#, fuzzy, php-format
 msgid "Replied on \"%1$s\""
-msgstr ""
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:178
-#, php-format
+#, fuzzy, php-format
 msgid "Reply to: %s"
-msgstr ""
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:209
 #, fuzzy, php-format
 msgctxt "1: Action, 2: Topic title"
 msgid "%1$s \"%2$s\" topic"
 msgstr "\"%s\" %s mis à jour"
-
-#: ../connectors/class-wp-stream-connector-blogs.php:39
-msgid "Sites"
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:51
-msgid "Archived"
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:85
-#: ../connectors/class-wp-stream-connector-blogs.php:90
-#, fuzzy
-msgid "Site Admin"
-msgstr "Titre du site"
-
-#: ../connectors/class-wp-stream-connector-blogs.php:101
-#, fuzzy
-msgid "Site Settings"
-msgstr "Paramètres Stream"
-
-#: ../connectors/class-wp-stream-connector-blogs.php:116
-#, php-format
-msgctxt "1. Site name"
-msgid "A new site called \"%1$s\" has been created."
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:139
-#, php-format
-msgctxt "1. Site name"
-msgid "A new site called \"%1$s\" has been registered."
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:170
-#, fuzzy, php-format
-msgctxt "1. User's name, 2. Site name, 3. Role"
-msgid "%1$s has been added to the site \"%2$s\" with %3$s capabilities."
-msgstr "L'utilisateur \"%s\" a été supprimé de \"%s\""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:201
-#, fuzzy, php-format
-msgctxt "1. User's name, 2. Site name"
-msgid "%1$s has been removed from the site \"%2$s\"."
-msgstr "L'utilisateur \"%s\" a été supprimé de \"%s\""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:220
-#: ../connectors/class-wp-stream-connector-gravityforms.php:650
-msgid "marked as spam"
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:228
-msgid "marked as not spam"
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:236
-msgid "marked as mature"
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:244
-msgid "marked as not mature"
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:252
-msgid "archived"
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:260
-msgid "restored from archive"
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:268
-#: ../connectors/class-wp-stream-connector-gravityforms.php:497
-#, fuzzy
-msgid "deleted"
-msgstr "Supprimé"
-
-#: ../connectors/class-wp-stream-connector-blogs.php:276
-#: ../connectors/class-wp-stream-connector-gravityforms.php:652
-msgid "restored"
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:286
-msgid "marked as public"
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:288
-msgid "marked as private"
-msgstr ""
-
-#: ../connectors/class-wp-stream-connector-blogs.php:302
-#, fuzzy, php-format
-msgctxt "1. Site name, 2. Status"
-msgid "\"%1$s\" has been %2$s."
-msgstr "L'utilisateur \"%s\" a été ajouté de \"%s\""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:113
 #, fuzzy
@@ -1413,9 +1211,10 @@ msgid "Marked as spam"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:129
+#, fuzzy
 msgctxt "buddypress"
 msgid "Unmarked as spam"
-msgstr ""
+msgstr "\"%s\" %s mis à la corbeil"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:130
 msgctxt "buddypress"
@@ -1434,9 +1233,10 @@ msgid "Components"
 msgstr "Commentaire mis en liste noir"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:143
+#, fuzzy
 msgctxt "buddypress"
 msgid "Groups"
-msgstr ""
+msgstr "Visualiser le profil"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:144
 #, fuzzy
@@ -1448,18 +1248,18 @@ msgstr "Activée"
 #, fuzzy
 msgctxt "buddypress"
 msgid "Profile fields"
-msgstr "Modifier le profil"
+msgstr "Le profil de %s a été mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:173
 #: ../connectors/class-wp-stream-connector-buddypress.php:186
 #, fuzzy
 msgid "Edit setting"
-msgstr "Mis à jour %s des paramètres"
+msgstr "Le paramètre \"%s\" a été mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:181
 #, fuzzy
 msgid "Edit Page"
-msgstr "Modifier le profil"
+msgstr "Modifier"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:182
 #: ../connectors/class-wp-stream-connector-gravityforms.php:145
@@ -1475,12 +1275,12 @@ msgstr "Vue"
 #: ../connectors/class-wp-stream-connector-buddypress.php:203
 #, fuzzy
 msgid "Edit group"
-msgstr "Modifier menu"
+msgstr "Modifier"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:204
 #, fuzzy
 msgid "View group"
-msgstr "Visualiser le profil"
+msgstr "Vue"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:205
 #, fuzzy
@@ -1500,7 +1300,7 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-buddypress.php:263
 #: ../extensions/notifications/views/form-templates.php:19
 #: ../extensions/notifications/views/form-templates.php:78
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:181
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:173
 #, fuzzy
 msgid "Delete"
 msgstr "Supprimé"
@@ -1512,15 +1312,16 @@ msgid "Toolbar"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:292
+#, fuzzy
 msgctxt "buddypress"
 msgid "Account Deletion"
-msgstr ""
+msgstr "Le compte utilisateur #%d à été supprimé"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:296
 #, fuzzy
 msgctxt "buddypress"
 msgid "Profile Syncing"
-msgstr "Modifier le profil"
+msgstr "Le profil de %s a été mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:300
 msgctxt "buddypress"
@@ -1538,9 +1339,10 @@ msgid "Blog &amp; Forum Comments"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:312
+#, fuzzy
 msgctxt "buddypress"
 msgid "Activity auto-refresh"
-msgstr ""
+msgstr "Auteur"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:316
 msgctxt "buddypress"
@@ -1551,7 +1353,7 @@ msgstr ""
 #, fuzzy
 msgctxt "buddypress"
 msgid "Avatar Uploads"
-msgstr "Affichage de la photo de l'utilisateur"
+msgstr "Photo par défaut"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:367
 #: ../connectors/class-wp-stream-connector-edd.php:246
@@ -1572,7 +1374,7 @@ msgstr "Le paramètre \"%s\" a été mis à jour"
 #: ../connectors/class-wp-stream-connector-jetpack.php:425
 #, fuzzy
 msgid "activated"
-msgstr "Désactivé"
+msgstr "Activée"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:391
 #: ../connectors/class-wp-stream-connector-edd.php:361
@@ -1601,8 +1403,9 @@ msgid "Activate"
 msgstr "Activée"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:442
+#, fuzzy
 msgid "No page"
-msgstr ""
+msgstr "Registres par page"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:446
 #, fuzzy, php-format
@@ -1612,12 +1415,12 @@ msgstr "L'utilisateur \"%s\" a été ajouté de \"%s\""
 #: ../connectors/class-wp-stream-connector-buddypress.php:480
 #, fuzzy, php-format
 msgid "\"%s\" activity deleted"
-msgstr "Le thème \"%s\" a été supprimé"
+msgstr "\"%s\" Supprimé"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:502
 #, fuzzy, php-format
 msgid "\"%s\" activities were deleted"
-msgstr "Le thème \"%s\" a été supprimé"
+msgstr "\"%s\" Supprimé"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:520
 #, php-format
@@ -1632,32 +1435,32 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-buddypress.php:556
 #, fuzzy, php-format
 msgid "\"%s\" activity updated"
-msgstr "Le thème \"%s\" a été activé"
+msgstr "\"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:584
 #, fuzzy, php-format
 msgid "\"%s\" group created"
-msgstr "\"%s\" %s créé"
+msgstr "Menu \"%s\" a été créé"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:587
 #, fuzzy, php-format
 msgid "\"%s\" group updated"
-msgstr "\"%s\" %s mis à jour"
+msgstr "\"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:590
 #, fuzzy, php-format
 msgid "\"%s\" group deleted"
-msgstr "Le plugin \"%s\" a été supprimé"
+msgstr "\"%s\" Supprimé"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:593
-#, php-format
+#, fuzzy, php-format
 msgid "Joined group \"%s\""
-msgstr ""
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:596
-#, php-format
+#, fuzzy, php-format
 msgid "Left group \"%s\""
-msgstr ""
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:599
 #, fuzzy, php-format
@@ -1675,9 +1478,12 @@ msgid "Removed \"%2$s\" from \"%1$s\""
 msgstr "\"%s\" to \"%s\" a été attaché"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:665
+#, fuzzy
 msgctxt "buddypress"
 msgid "Administrator"
 msgstr ""
+"Vous n'avez pas la permission de voir ce flux, s'il vous plaît contactez "
+"votre administrateur du site."
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:666
 msgctxt "buddypress"
@@ -1687,12 +1493,12 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-buddypress.php:669
 #, fuzzy, php-format
 msgid "Promoted \"%s\" to \"%s\" in \"%s\""
-msgstr "Mis à jour \"%s\" dans \"%s\""
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:680
 #, fuzzy, php-format
 msgid "Demoted \"%s\" to \"%s\" in \"%s\""
-msgstr "Mis à jour \"%s\" dans \"%s\""
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:682
 #, fuzzy
@@ -1703,17 +1509,17 @@ msgstr "Abonnement"
 #: ../connectors/class-wp-stream-connector-buddypress.php:706
 #, fuzzy, php-format
 msgid "Created profile field \"%s\""
-msgstr "Menu \"%s\" a été créé"
+msgstr "Le profil de %s a été mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:709
 #, fuzzy, php-format
 msgid "Updated profile field \"%s\""
-msgstr "Mis à jour \"%s\" dans \"%s\""
+msgstr "Le profil de %s a été mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:712
 #, fuzzy, php-format
 msgid "Deleted profile field \"%s\""
-msgstr "\"%s\" Supprimé"
+msgstr "Le profil de %s a été mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:755
 #, fuzzy, php-format
@@ -1723,7 +1529,7 @@ msgstr "Menu \"%s\" a été créé"
 #: ../connectors/class-wp-stream-connector-buddypress.php:758
 #, fuzzy, php-format
 msgid "Updated profile field group \"%s\""
-msgstr "Menu \"%s\" mis à jour"
+msgstr "Le profil de %s a été mis à jour"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:761
 #, php-format
@@ -1783,7 +1589,7 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-comments.php:81
 #, fuzzy
 msgid "Comment"
-msgstr "Commentaire mis en liste noir"
+msgstr "Commentaire en attente de modération"
 
 #: ../connectors/class-wp-stream-connector-comments.php:82
 msgid "Trackback"
@@ -1824,8 +1630,9 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-comments.php:450
 #: ../connectors/class-wp-stream-connector-comments.php:484
 #: ../connectors/class-wp-stream-connector-comments.php:519
+#, fuzzy
 msgid "a post"
-msgstr ""
+msgstr "Catégorie par défaut des articles"
 
 #: ../connectors/class-wp-stream-connector-comments.php:230
 msgid "approved automatically"
@@ -2007,12 +1814,12 @@ msgstr "%s mis à jour"
 #: ../connectors/class-wp-stream-connector-edd.php:164
 #, fuzzy, php-format
 msgid "Deactivate %s"
-msgstr "Désactivé"
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-edd.php:172
 #, fuzzy, php-format
 msgid "Activate %s"
-msgstr "Activée"
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-edd.php:187
 #, fuzzy
@@ -2035,7 +1842,7 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-edd.php:327
 #, fuzzy, php-format
 msgid "\"%1s\" discount deleted"
-msgstr "Le plugin \"%s\" a été supprimé"
+msgstr "Supprimé"
 
 #: ../connectors/class-wp-stream-connector-edd.php:359
 #, fuzzy, php-format
@@ -2067,17 +1874,17 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-edd.php:404
 #, fuzzy, php-format
 msgid "Generated %s report"
-msgstr "Générer une nouvelle clé"
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-edd.php:418
 #, fuzzy
 msgid "Exported Settings"
-msgstr "Paramètres Stream"
+msgstr "Paramètres"
 
 #: ../connectors/class-wp-stream-connector-edd.php:428
 #, fuzzy
 msgid "Imported Settings"
-msgstr "Paramètres Stream"
+msgstr "Paramètres"
 
 #: ../connectors/class-wp-stream-connector-edd.php:463
 msgid "revoked"
@@ -2130,12 +1937,12 @@ msgstr "\"%s\" %s mis à jour"
 #: ../connectors/class-wp-stream-connector-editor.php:157
 #, fuzzy
 msgid "Edit File"
-msgstr "Modifier le profil"
+msgstr "Modifier"
 
 #: ../connectors/class-wp-stream-connector-editor.php:148
 #, fuzzy
 msgid "Theme Details"
-msgstr "Thème"
+msgstr "Le thème \"%s\" a été activé"
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:88
 msgctxt "gravityforms"
@@ -2248,14 +2055,16 @@ msgid "Currency"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:193
+#, fuzzy
 msgctxt "gravityforms"
 msgid "reCAPTCHA Public Key"
-msgstr ""
+msgstr "RSS privés"
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:196
+#, fuzzy
 msgctxt "gravityforms"
 msgid "reCAPTCHA Private Key"
-msgstr ""
+msgstr "RSS privés"
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:214
 #: ../connectors/class-wp-stream-connector-gravityforms.php:430
@@ -2314,10 +2123,15 @@ msgstr "Désactivé"
 msgid "Gravity Forms license key %s"
 msgstr ""
 
+#: ../connectors/class-wp-stream-connector-gravityforms.php:497
+#, fuzzy
+msgid "deleted"
+msgstr "Supprimé"
+
 #: ../connectors/class-wp-stream-connector-gravityforms.php:510
 #, fuzzy, php-format
 msgid "\"%s\" form exported"
-msgstr "Le thème \"%s\" a été supprimé"
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:525
 msgid "Import process started"
@@ -2331,7 +2145,7 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-gravityforms.php:558
 #, fuzzy, php-format
 msgid "\"%s\" form deleted"
-msgstr "Le thème \"%s\" a été supprimé"
+msgstr "\"%s\" Supprimé"
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:574
 #, fuzzy, php-format
@@ -2353,10 +2167,18 @@ msgstr ""
 msgid "Note #%1$d deleted from lead #%2$d on \"%3$s\" form"
 msgstr ""
 
+#: ../connectors/class-wp-stream-connector-gravityforms.php:650
+msgid "marked as spam"
+msgstr ""
+
 #: ../connectors/class-wp-stream-connector-gravityforms.php:651
 #, fuzzy
 msgid "trashed"
 msgstr "Mis à la corbeil"
+
+#: ../connectors/class-wp-stream-connector-gravityforms.php:652
+msgid "restored"
+msgstr ""
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:661
 #: ../connectors/class-wp-stream-connector-gravityforms.php:708
@@ -2395,16 +2217,18 @@ msgid "Installed"
 msgstr "Installé"
 
 #: ../connectors/class-wp-stream-connector-installer.php:61
+#, fuzzy
 msgid "WordPress"
-msgstr ""
+msgstr "Adresse WordPress (URL)"
 
 #: ../connectors/class-wp-stream-connector-installer.php:80
 msgid "About"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-installer.php:82
+#, fuzzy
 msgid "View Release Notes"
-msgstr ""
+msgstr "Vue"
 
 #: ../connectors/class-wp-stream-connector-installer.php:149
 #, fuzzy, php-format
@@ -2456,19 +2280,20 @@ msgid "\"%s\" plugin deleted"
 msgstr "Le plugin \"%s\" a été supprimé"
 
 #: ../connectors/class-wp-stream-connector-installer.php:352
-#, php-format
+#, fuzzy, php-format
 msgid "WordPress auto-updated to %s"
-msgstr ""
+msgstr "\"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-installer.php:354
-#, php-format
+#, fuzzy, php-format
 msgid "WordPress updated to %s"
-msgstr ""
+msgstr "\"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:69
+#, fuzzy
 msgctxt "jetpack"
 msgid "Jetpack"
-msgstr ""
+msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:79
 #, fuzzy
@@ -2522,14 +2347,16 @@ msgid "Removed"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:98
+#, fuzzy
 msgctxt "jetpack"
 msgid "Modules"
-msgstr ""
+msgstr "Rechercher les registres"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:99
+#, fuzzy
 msgctxt "jetpack"
 msgid "Blogs"
-msgstr ""
+msgstr "La page de blog affiche par défaut"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:100
 #, fuzzy
@@ -2557,12 +2384,13 @@ msgstr ""
 #, fuzzy
 msgctxt "jetpack"
 msgid "Google+ Profile"
-msgstr "Visualiser le profil"
+msgstr "Le profil de %s a été mis à jour"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:105
+#, fuzzy
 msgctxt "jetpack"
 msgid "WordPress.com Stats"
-msgstr ""
+msgstr "Adresse WordPress (URL)"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:106
 msgctxt "jetpack"
@@ -2570,9 +2398,10 @@ msgid "Carousel"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:107
+#, fuzzy
 msgctxt "jetpack"
 msgid "Custom CSS"
-msgstr ""
+msgstr "Mis à jour"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:108
 #, fuzzy
@@ -2613,20 +2442,22 @@ msgid "Monitor"
 msgstr "Modifier"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:115
+#, fuzzy
 msgctxt "jetpack"
 msgid "Post by Email"
-msgstr ""
+msgstr "Catégorie par défaut des articles"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:116
+#, fuzzy
 msgctxt "jetpack"
 msgid "Related Posts"
-msgstr ""
+msgstr "Articles"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:117
 #, fuzzy
 msgctxt "jetpack"
 msgid "Site Verification"
-msgstr "Paramètres Stream"
+msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:118
 msgctxt "jetpack"
@@ -2640,8 +2471,8 @@ msgid "VideoPress"
 msgstr "Adresse IP"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:145
-#: ../extensions/reports/class-wp-stream-reports.php:222
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:182
+#: ../extensions/reports/class-wp-stream-reports.php:220
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:174
 msgid "Configure"
 msgstr ""
 
@@ -2666,8 +2497,9 @@ msgid "Sharing options"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:198
+#, fuzzy
 msgid "Twitter site tag"
-msgstr ""
+msgstr "Structure des Mots clés"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:203
 msgid "WordPress.com Stats"
@@ -2764,17 +2596,21 @@ msgid "linked"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:343
+#, fuzzy
 msgid "from"
 msgstr ""
+"Les utilisateurs des rôles sélectionnés ci-dessus auront la permission de "
+"voir les données enregisté par Stream. Cependant, seuls les administrateurs "
+"du site peuvent accéder aux paramètres Stream."
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:343
 msgid "to"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:359
-#, php-format
+#, fuzzy, php-format
 msgid "Site %s Jetpack"
-msgstr ""
+msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:360
 #: ../connectors/class-wp-stream-connector-jetpack.php:370
@@ -2794,13 +2630,14 @@ msgid "\"%1$s\" blog %2$s Jetpack"
 msgstr "\"%s\" %s mis à la corbeil"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:395
+#, fuzzy
 msgid "Sharing services updated"
-msgstr ""
+msgstr "Mis à jour des services"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:423
-#, php-format
+#, fuzzy, php-format
 msgid "Monitor notifications %s"
-msgstr ""
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:451
 #: ../connectors/class-wp-stream-connector-jetpack.php:542
@@ -2827,7 +2664,7 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-jetpack.php:540
 #, fuzzy, php-format
 msgid "G+ profile display %s"
-msgstr "Page d'accueil du site"
+msgstr "Le profil de %s a été mis à jour"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:555
 #, fuzzy, php-format
@@ -2850,8 +2687,9 @@ msgid "Sharing CSS/JS %s"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:610
+#, fuzzy
 msgid "Custom CSS updated"
-msgstr ""
+msgstr "Mis à jour"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:630
 #, fuzzy, php-format
@@ -2868,8 +2706,9 @@ msgid "removed"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:643
+#, fuzzy
 msgid "Video Library Access"
-msgstr ""
+msgstr "Accès refusé"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:644
 msgid "Allow users to upload videos"
@@ -2909,8 +2748,9 @@ msgid "Unassigned"
 msgstr "Désassigné"
 
 #: ../connectors/class-wp-stream-connector-media.php:59
+#, fuzzy
 msgid "Image"
-msgstr ""
+msgstr "Image \"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-media.php:60
 msgid "Audio"
@@ -2992,7 +2832,7 @@ msgstr "Menu \"%s\" a été créé"
 #, fuzzy, php-format
 msgctxt "Menu name"
 msgid "Updated menu \"%s\""
-msgstr "Menu \"%s\" mis à jour"
+msgstr "Menu \"%s\" a été créé"
 
 #: ../connectors/class-wp-stream-connector-menus.php:141
 #, fuzzy, php-format
@@ -3018,17 +2858,17 @@ msgstr "Articles"
 
 #: ../connectors/class-wp-stream-connector-posts.php:100
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:159
-#, php-format
+#, fuzzy, php-format
 msgctxt "Post type singular name"
 msgid "Restore %s"
-msgstr ""
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-posts.php:101
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:160
-#, php-format
+#, fuzzy, php-format
 msgctxt "Post type singular name"
 msgid "Delete %s Permenantly"
-msgstr ""
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-posts.php:103
 #: ../connectors/class-wp-stream-connector-woocommerce.php:216
@@ -3090,7 +2930,7 @@ msgstr "\"%s\" %s supprimé de la corbeil"
 #: ../connectors/class-wp-stream-connector-posts.php:291
 #, fuzzy
 msgid "Post"
-msgstr "Articles"
+msgstr "Catégorie par défaut des articles"
 
 #: ../connectors/class-wp-stream-connector-settings.php:123
 msgid "Writing"
@@ -3123,12 +2963,12 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-settings.php:138
 #, fuzzy
 msgid "Stream Network"
-msgstr "Registre Stream"
+msgstr "Flux Stream"
 
 #: ../connectors/class-wp-stream-connector-settings.php:139
 #, fuzzy
 msgid "Stream Defaults"
-msgstr "Paramètres Stream"
+msgstr "Flux Stream"
 
 #: ../connectors/class-wp-stream-connector-settings.php:233
 msgid "Site Title"
@@ -3190,7 +3030,7 @@ msgstr "Type d'article par défaut"
 #: ../connectors/class-wp-stream-connector-settings.php:249
 #, fuzzy
 msgid "Mail Server"
-msgstr "Nom du serveur de courriel"
+msgstr "Adresse courriel"
 
 #: ../connectors/class-wp-stream-connector-settings.php:250
 #, fuzzy
@@ -3271,8 +3111,9 @@ msgid "Comment Blacklist"
 msgstr "Commentaire mis en liste noir"
 
 #: ../connectors/class-wp-stream-connector-settings.php:283
+#, fuzzy
 msgid "Show Avatars"
-msgstr ""
+msgstr "La page de blog affiche par défaut"
 
 #: ../connectors/class-wp-stream-connector-settings.php:284
 #, fuzzy
@@ -3310,7 +3151,7 @@ msgstr "Téléversement des fichiers de l'organisation"
 #: ../connectors/class-wp-stream-connector-settings.php:296
 #, fuzzy
 msgid "Permalink Settings"
-msgstr "Permaliens"
+msgstr "Paramètres"
 
 #: ../connectors/class-wp-stream-connector-settings.php:297
 msgid "Category base"
@@ -3321,17 +3162,19 @@ msgid "Tag base"
 msgstr "Structure des Mots clés"
 
 #: ../connectors/class-wp-stream-connector-settings.php:300
+#, fuzzy
 msgid "Registration notification"
-msgstr ""
+msgstr "Nouvel utilisateur enregistré"
 
 #: ../connectors/class-wp-stream-connector-settings.php:301
 #, fuzzy
 msgid "Allow new registrations"
-msgstr "Nouvel utilisateur enregistré"
+msgstr "Menu \"%s\" a été créé"
 
 #: ../connectors/class-wp-stream-connector-settings.php:302
+#, fuzzy
 msgid "Add New Users"
-msgstr ""
+msgstr "Utilisateurs"
 
 #: ../connectors/class-wp-stream-connector-settings.php:303
 msgid "Enable administration menus"
@@ -3342,8 +3185,9 @@ msgid "Site upload space check"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-settings.php:305
+#, fuzzy
 msgid "Site upload space"
-msgstr ""
+msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-settings.php:306
 msgid "Upload file types"
@@ -3355,32 +3199,38 @@ msgid "Network Title"
 msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-settings.php:308
+#, fuzzy
 msgid "First Post"
-msgstr ""
+msgstr "Catégorie par défaut des articles"
 
 #: ../connectors/class-wp-stream-connector-settings.php:309
+#, fuzzy
 msgid "First Page"
-msgstr ""
+msgstr "Registres par page"
 
 #: ../connectors/class-wp-stream-connector-settings.php:310
+#, fuzzy
 msgid "First Comment"
-msgstr ""
+msgstr "Commentaire en attente de modération"
 
 #: ../connectors/class-wp-stream-connector-settings.php:311
+#, fuzzy
 msgid "First Comment URL"
-msgstr ""
+msgstr "Adresse WordPress (URL)"
 
 #: ../connectors/class-wp-stream-connector-settings.php:312
+#, fuzzy
 msgid "First Comment Author"
-msgstr ""
+msgstr "Auteur"
 
 #: ../connectors/class-wp-stream-connector-settings.php:313
 msgid "Welcome Email"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-settings.php:314
+#, fuzzy
 msgid "Welcome User Email"
-msgstr ""
+msgstr "Nouveau rôle par défaut des utilisateurs"
 
 #: ../connectors/class-wp-stream-connector-settings.php:315
 msgid "Max upload file size"
@@ -3412,8 +3262,9 @@ msgid "Network Admin Email"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-settings.php:322
+#, fuzzy
 msgid "User Count"
-msgstr ""
+msgstr "Nouveau rôle par défaut des utilisateurs"
 
 #: ../connectors/class-wp-stream-connector-settings.php:324
 #, fuzzy
@@ -3423,11 +3274,12 @@ msgstr "Remise à zéro de la base de donnée"
 #: ../connectors/class-wp-stream-connector-settings.php:325
 #, fuzzy
 msgid "Stream Connected Sites"
-msgstr "Paramètres Stream"
+msgstr "Flux Stream"
 
 #: ../connectors/class-wp-stream-connector-settings.php:354
+#, fuzzy
 msgid "Background Image"
-msgstr ""
+msgstr "Image \"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-settings.php:355
 msgid "Background Position"
@@ -3446,8 +3298,9 @@ msgid "Background Color"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-settings.php:360
+#, fuzzy
 msgid "Header Image"
-msgstr ""
+msgstr "Image \"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-settings.php:361
 msgid "Text Color"
@@ -3477,7 +3330,7 @@ msgstr "%s mis à jour"
 #, fuzzy, php-format
 msgctxt "1: Term name, 2: Taxonomy singular label"
 msgid "\"%1$s\" %2$s created"
-msgstr "\"%s\" %s créé"
+msgstr "Menu \"%s\" a été créé"
 
 #: ../connectors/class-wp-stream-connector-taxonomies.php:163
 #, fuzzy, php-format
@@ -3503,15 +3356,16 @@ msgstr "Mot de passe remis à zéro"
 #: ../connectors/class-wp-stream-connector-users.php:57
 #, fuzzy
 msgid "Lost Password"
-msgstr "Mot de passe oublié"
+msgstr "Mot de passe remis à zéro"
 
 #: ../connectors/class-wp-stream-connector-users.php:58
 msgid "Log In"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-users.php:59
+#, fuzzy
 msgid "Log Out"
-msgstr ""
+msgstr "L'utilisateur %s s'est déconnecté"
 
 #: ../connectors/class-wp-stream-connector-users.php:71
 #, fuzzy
@@ -3526,7 +3380,7 @@ msgstr "Modifier le profil"
 #: ../connectors/class-wp-stream-connector-users.php:89
 #, fuzzy
 msgid "Edit User"
-msgstr "%s mis à jour"
+msgstr "Modifier"
 
 #: ../connectors/class-wp-stream-connector-users.php:136
 msgid "New user registration"
@@ -3713,7 +3567,7 @@ msgstr "L'utilisateur \"%s\" a été ajouté de \"%s\""
 #, fuzzy, php-format
 msgctxt "Sidebar name"
 msgid "Widgets reordered in \"%s\""
-msgstr "\"%s\" widgets ont été réordonné"
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-widgets.php:460
 #, fuzzy, php-format
@@ -3773,7 +3627,7 @@ msgstr "\"%s\" %s mis à jour"
 #, fuzzy, php-format
 msgctxt "1: Name"
 msgid "%1$s widget created"
-msgstr "\"%s\" %s créé"
+msgstr "Menu \"%s\" a été créé"
 
 #: ../connectors/class-wp-stream-connector-widgets.php:627
 #, fuzzy, php-format
@@ -3785,7 +3639,7 @@ msgstr "\"%s\" %s mis à jour"
 #, fuzzy, php-format
 msgctxt "3: Widget ID"
 msgid "%3$s widget created"
-msgstr "\"%s\" %s créé"
+msgstr "Menu \"%s\" a été créé"
 
 #: ../connectors/class-wp-stream-connector-widgets.php:651
 #, fuzzy, php-format
@@ -3797,7 +3651,7 @@ msgstr "\"%s\" %s mis à jour"
 #, fuzzy, php-format
 msgctxt "1: Name"
 msgid "%1$s widget deleted"
-msgstr "\"%s\" %s supprimé"
+msgstr "\"%s\" Supprimé"
 
 #: ../connectors/class-wp-stream-connector-widgets.php:657
 #, fuzzy, php-format
@@ -3809,12 +3663,13 @@ msgstr "\"%s\" %s mis à jour"
 #, fuzzy, php-format
 msgctxt "3: Widget ID"
 msgid "%3$s widget deleted"
-msgstr "Le thème \"%s\" a été supprimé"
+msgstr "\"%s\" Supprimé"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:89
+#, fuzzy
 msgctxt "woocommerce"
 msgid "WooCommerce"
-msgstr ""
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:99
 #, fuzzy
@@ -3857,11 +3712,12 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-woocommerce.php:682
 #, fuzzy
 msgid "setting"
-msgstr "Paramètres"
+msgstr "Le paramètre \"%s\" a été mis à jour"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:149
+#, fuzzy
 msgid "Gateway Display Default"
-msgstr ""
+msgstr "Photo par défaut"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:156
 #, fuzzy
@@ -3869,8 +3725,9 @@ msgid "Gateway Display Order"
 msgstr "Affichage de la photo de l'utilisateur"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:163
+#, fuzzy
 msgid "Shipping Methods Default"
-msgstr ""
+msgstr "Photo par défaut"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:170
 msgid "Shipping Methods Order"
@@ -3895,15 +3752,15 @@ msgid "Remove post types on uninstall"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:231
-#, php-format
+#, fuzzy, php-format
 msgid "Edit WooCommerce %s"
-msgstr ""
+msgstr "%s mis à jour"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:301
 #, fuzzy, php-format
 msgctxt "Order title"
 msgid "%s created"
-msgstr "Créé"
+msgstr "Menu \"%s\" a été créé"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:308
 #, fuzzy, php-format
@@ -3921,7 +3778,7 @@ msgstr "\"%s\" %s supprimé de la corbeil"
 #, fuzzy, php-format
 msgctxt "Order title"
 msgid "%s updated"
-msgstr "Mis à jour"
+msgstr "\"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:333
 #: ../connectors/class-wp-stream-connector-woocommerce.php:372
@@ -3939,7 +3796,7 @@ msgstr ""
 #, fuzzy, php-format
 msgctxt "Order title"
 msgid "\"%s\" deleted from trash"
-msgstr "\"%s\" %s supprimé de la corbeil"
+msgstr "\"%s\" Supprimé"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:411
 #, fuzzy, php-format
@@ -3951,19 +3808,19 @@ msgstr "Le rôle de %s a été changé de %s à %s"
 #, fuzzy, php-format
 msgctxt "Term name"
 msgid "\"%s\" product attribute created"
-msgstr "Le plugin \"%s\" a été supprimé"
+msgstr "Menu \"%s\" a été créé"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:466
 #, fuzzy, php-format
 msgctxt "Term name"
 msgid "\"%s\" product attribute updated"
-msgstr "Le plugin \"%s\" a été supprimé"
+msgstr "\"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:485
 #, fuzzy, php-format
 msgctxt "Term name"
 msgid "\"%s\" product attribute deleted"
-msgstr "Le plugin \"%s\" a été supprimé"
+msgstr "\"%s\" Supprimé"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:506
 #, fuzzy, php-format
@@ -3981,7 +3838,7 @@ msgstr "Le paramètre \"%s\" a été mis à jour"
 #, fuzzy, php-format
 msgctxt "Tax rate name"
 msgid "\"%s\" tax rate deleted"
-msgstr "Le thème \"%s\" a été supprimé"
+msgstr "\"%s\" Supprimé"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:611
 #, fuzzy, php-format
@@ -4005,9 +3862,10 @@ msgid "Tools"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:59
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "WordPress SEO"
-msgstr ""
+msgstr "Adresse WordPress (URL)"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:69
 #, fuzzy
@@ -4088,14 +3946,16 @@ msgid "Import & Export"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:93
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Bulk Title Editor"
-msgstr ""
+msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:94
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Bulk Description Editor"
-msgstr ""
+msgstr "actions"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:95
 #, fuzzy
@@ -4143,8 +4003,9 @@ msgid "Imported settings from %1$s%2$s"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:222
+#, fuzzy
 msgid ", and deleted old data"
-msgstr ""
+msgstr "Supprimé"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:242
 #, fuzzy, php-format
@@ -4180,7 +4041,7 @@ msgstr "%s: %s %s Mis à jour"
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:364
 #, fuzzy, php-format
 msgid "%s settings updated"
-msgstr "Le paramètre \"%s\" a été mis à jour"
+msgstr "\"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:380
 msgctxt "wordpress-seo"
@@ -4219,9 +4080,10 @@ msgid "Yandex Webmaster Tools"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:389
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Enable Breadcrumbs"
-msgstr ""
+msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:390
 msgctxt "wordpress-seo"
@@ -4249,9 +4111,10 @@ msgid "Prefix for Search Page breadcrumbs"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:395
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Breadcrumb for 404 Page"
-msgstr ""
+msgstr "Registres par page"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:396
 msgctxt "wordpress-seo"
@@ -4299,9 +4162,10 @@ msgid "Hide WLW Manifest Links"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:407
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Hide Shortlink for posts"
-msgstr ""
+msgstr "Articles"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:408
 msgctxt "wordpress-seo"
@@ -4309,14 +4173,16 @@ msgid "Hide RSS Links"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:409
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Disable the author archives"
-msgstr ""
+msgstr "Auteur"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:410
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Disable the date-based archives"
-msgstr ""
+msgstr "Auteur"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:413
 msgctxt "wordpress-seo"
@@ -4329,9 +4195,10 @@ msgid "New blogs get the SEO settings from this blog"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:415
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Blog ID"
-msgstr ""
+msgstr "La page de blog affiche par défaut"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:418
 msgctxt "wordpress-seo"
@@ -4383,9 +4250,10 @@ msgid ""
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:427
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Other variables not to clean"
-msgstr ""
+msgstr "Autres paramètres des commentaires"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:430
 msgctxt "wordpress-seo"
@@ -4393,15 +4261,17 @@ msgid "Add Open Graph meta data"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:431
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Facebook Page URL"
-msgstr ""
+msgstr "Registres par page"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:432
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:434
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Image URL"
-msgstr ""
+msgstr "Image \"%s\" mis à jour"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:433
 #, fuzzy
@@ -4415,9 +4285,10 @@ msgid "Add Twitter card meta data"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:436
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Site Twitter Username"
-msgstr ""
+msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:437
 msgctxt "wordpress-seo"
@@ -4430,9 +4301,10 @@ msgid "Add Google+ specific post meta data (excluding author metadata)"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:439
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Google Publisher Page"
-msgstr ""
+msgstr "Registres par page"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:442
 msgctxt "wordpress-seo"
@@ -4440,9 +4312,10 @@ msgid "Check this box to enable XML sitemap functionality."
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:443
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Disable author/user sitemap"
-msgstr ""
+msgstr "Auteur"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:444
 msgctxt "wordpress-seo"
@@ -4470,9 +4343,10 @@ msgid "Content to put after each post"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:454
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Title template"
-msgstr ""
+msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:455
 msgctxt "wordpress-seo"
@@ -4480,9 +4354,10 @@ msgid "Meta description template"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:456
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Meta keywords template"
-msgstr ""
+msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:457
 msgctxt "wordpress-seo"
@@ -4501,504 +4376,74 @@ msgid "Show date in snippet preview?"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:460
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "WordPress SEO Meta Box"
-msgstr ""
+msgstr "Adresse WordPress (URL)"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:461
+#, fuzzy
 msgctxt "wordpress-seo"
 msgid "Breadcrumbs Title"
-msgstr ""
+msgstr "Titre du site"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:462
 #, fuzzy
 msgctxt "wordpress-seo"
 msgid "Post types"
-msgstr "Articles"
+msgstr "Catégorie par défaut des articles"
 
 #: ../connectors/class-wp-stream-connector-wordpress-seo.php:463
 msgctxt "wordpress-seo"
 msgid "Taxonomies"
 msgstr ""
 
-#: ../extensions/notifications/class-wp-stream-notifications.php:147
+#: ../extensions/notifications/class-wp-stream-notifications.php:128
 #, fuzzy
 msgid "Stream Notifications"
-msgstr "Paramètres Stream"
+msgstr "Flux Stream"
 
-#: ../extensions/notifications/class-wp-stream-notifications.php:148
+#: ../extensions/notifications/class-wp-stream-notifications.php:129
 msgid "Get notified instantly when important changes are made on your site."
 msgstr ""
 
-#: ../extensions/notifications/class-wp-stream-notifications.php:150
+#: ../extensions/notifications/class-wp-stream-notifications.php:131
 msgid "Create notification rules quickly and easily"
 msgstr ""
 
-#: ../extensions/notifications/class-wp-stream-notifications.php:151
+#: ../extensions/notifications/class-wp-stream-notifications.php:132
 msgid "Smart and powerful trigger matching"
 msgstr ""
 
-#: ../extensions/notifications/class-wp-stream-notifications.php:152
+#: ../extensions/notifications/class-wp-stream-notifications.php:133
 msgid "Fully customized e-mail and SMS alerts"
 msgstr ""
 
-#: ../extensions/notifications/class-wp-stream-notifications.php:153
+#: ../extensions/notifications/class-wp-stream-notifications.php:134
 msgid "Push alerts to your smartphone or tablet"
 msgstr ""
 
-#: ../extensions/notifications/class-wp-stream-notifications.php:170
-#: ../extensions/notifications/class-wp-stream-notifications.php:171
+#: ../extensions/notifications/class-wp-stream-notifications.php:151
+#: ../extensions/notifications/class-wp-stream-notifications.php:152
 #: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:48
 #: ../extensions/notifications/includes/class-wp-stream-notifications-settings.php:32
 #, fuzzy
 msgid "Notifications"
 msgstr "actions"
 
-#: ../extensions/notifications/class-wp-stream-notifications.php:218
+#: ../extensions/notifications/class-wp-stream-notifications.php:199
 msgid "Sample Rule"
 msgstr ""
 
-#: ../extensions/notifications/class-wp-stream-notifications.php:272
+#: ../extensions/notifications/class-wp-stream-notifications.php:253
 #, fuzzy, php-format
 msgid "[Site Activity Alert] %s"
 msgstr "Paramètres Stream"
 
-#: ../extensions/notifications/class-wp-stream-notifications.php:273
+#: ../extensions/notifications/class-wp-stream-notifications.php:254
 #, php-format
 msgid "The following just happened on your site: %s by %s Date of action: %s"
 msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-list-table.php:49
-msgid "Type"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-list-table.php:50
-msgid "Occurrences"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-list-table.php:238
-msgid "Publish"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-list-table.php:239
-msgid "Unpublish"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:44
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:47
-msgid "Stream Notification Rule"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:46
-#, fuzzy
-msgid "Stream Notification Rules"
-msgstr "Paramètres Stream"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:49
-#, fuzzy
-msgctxt "Stream Notifications"
-msgid "New Rule"
-msgstr "Rechercher les registres"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:50
-msgctxt "Stream Notifications"
-msgid "Add New Rule"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:51
-#, fuzzy
-msgctxt "Stream Notifications"
-msgid "New Stream Notification Rule"
-msgstr "Paramètres Stream"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:52
-#, fuzzy
-msgctxt "Stream Notifications"
-msgid "Edit Stream Notification Rule"
-msgstr "Paramètres Stream"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:53
-#, fuzzy
-msgctxt "Stream Notifications"
-msgid "View Stream Notification Rule"
-msgstr "Paramètres Stream"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:54
-#, fuzzy
-msgctxt "Stream Notifications"
-msgid "Search Rules"
-msgstr "Rechercher les registres"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:55
-#, fuzzy
-msgctxt "Stream Notifications"
-msgid "No notification rules found."
-msgstr "Paramètres Stream"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:56
-msgctxt "Stream Notifications"
-msgid "No notification rules found in Trash."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:76
-msgid "Triggers"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:77
-msgid "Alerts"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:78
-msgid "Data Tags"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:121
-#: ../extensions/notifications/views/form-templates.php:34
-msgid "+ Add Trigger"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:122
-#: ../extensions/notifications/views/form-templates.php:35
-msgid "+ Add Group"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:129
-msgid "+ Add Alert"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:156
-#, php-format
-msgid "This rule has occurred %1$s time."
-msgid_plural "This rule has occurred %1$s times."
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:168
-msgid "Reset Count"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:178
-msgid "Basic"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:179
-msgid "Summary message of the triggered record."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:180
-msgid "User ID of the triggered record author."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:181
-msgid "Connector of the triggered record."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:182
-msgid "Context of the triggered record."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:183
-msgid "Action of the triggered record."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:184
-msgid "Timestamp of triggered record."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:185
-msgid "IP of the triggered record author."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:186
-msgid "Object ID of the triggered record."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:188
-msgid "Advanced"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:190
-msgid ""
-"Specific object data of the record, relative to what the object type is:\n"
-"\t\t\t\t\t\t\t\t\t\t<br /><br />\n"
-"\t\t\t\t\t\t\t\t\t\t<strong>{object.post_title}</strong>\n"
-"\t\t\t\t\t\t\t\t\t\t<br />\n"
-"\t\t\t\t\t\t\t\t\t\t<strong>{object.post_excerpt}</strong>\n"
-"\t\t\t\t\t\t\t\t\t\t<br />\n"
-"\t\t\t\t\t\t\t\t\t\t<strong>{object.post_status}</strong>\n"
-"\t\t\t\t\t\t\t\t\t\t<br />\n"
-"\t\t\t\t\t\t\t\t\t\t<a href=\"http://codex.wordpress.org/Function_Reference/"
-"get_userdata#Notes\" target=\"_blank\">See Codex for more Post values</a>\n"
-"\t\t\t\t\t\t\t\t\t\t<br /><br />\n"
-"\t\t\t\t\t\t\t\t\t\t<strong>{object.name}</strong>\n"
-"\t\t\t\t\t\t\t\t\t\t<br />\n"
-"\t\t\t\t\t\t\t\t\t\t<strong>{object.taxonomy}</strong>\n"
-"\t\t\t\t\t\t\t\t\t\t<br />\n"
-"\t\t\t\t\t\t\t\t\t\t<strong>{object.description}</strong>\n"
-"\t\t\t\t\t\t\t\t\t\t<br />\n"
-"\t\t\t\t\t\t\t\t\t\t<a href=\"http://codex.wordpress.org/Function_Reference/"
-"get_userdata#Notes\" target=\"_blank\">See Codex for more Term values</a>"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:210
-msgid ""
-"Specific user data of the record author:\n"
-"\t\t\t\t\t\t\t\t\t\t<br /><br />\n"
-"\t\t\t\t\t\t\t\t\t\t<strong>{author.display_name}</strong>\n"
-"\t\t\t\t\t\t\t\t\t\t<br />\n"
-"\t\t\t\t\t\t\t\t\t\t<strong>{author.user_email}</strong>\n"
-"\t\t\t\t\t\t\t\t\t\t<br />\n"
-"\t\t\t\t\t\t\t\t\t\t<strong>{author.user_login}</strong>\n"
-"\t\t\t\t\t\t\t\t\t\t<br />\n"
-"\t\t\t\t\t\t\t\t\t\t<a href=\"http://codex.wordpress.org/Function_Reference/"
-"get_userdata#Notes\" target=\"_blank\">See Codex for more User values</a>"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:221
-msgid ""
-"Specific meta data of the record, used to display specific meta values "
-"created by Connectors.\n"
-"\t\t\t\t\t\t\t\t\t\t<br /><br />\n"
-"\t\t\t\t\t\t\t\t\t\tExample: <strong>{meta.old_theme}</strong> to display "
-"the old theme name when a new theme is activated."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:420
-msgid "Invalid nonce"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:424
-msgid "Invalid record ID"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:447
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:452
-msgid "is"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:448
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:453
-msgid "is not"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:454
-#, fuzzy
-msgid "contains"
-msgstr "contextes"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:455
-msgid "does not contain"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:456
-msgid "starts with"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:457
-msgid "ends with"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:458
-msgid "regex"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:462
-msgid "equals"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:463
-msgid "not equal"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:464
-msgid "less than"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:465
-msgid "equal or less than"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:466
-msgid "greater than"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:467
-msgid "equal or greater than"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:477
-msgid "Object ID"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:484
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:407
-#, fuzzy
-msgid "Author Role"
-msgstr "Auteur"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:499
-msgid "IP"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:510
-msgid "is on"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:511
-msgid "is not on"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:512
-msgid "is before"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:513
-msgid "is on or before"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:514
-msgid "is after"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:515
-msgid "is on or after"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:520
-msgid "Day of Week"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:546
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:408
-msgid "Connector"
-msgstr "Connecteur"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:571
-#, fuzzy
-msgid "- Post"
-msgstr "Articles"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:578
-#, fuzzy
-msgid "- Post: Title"
-msgstr "Titre du site"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:584
-msgid "- Post: Slug"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:590
-#, fuzzy
-msgid "- Post: Content"
-msgstr "Contexte"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:596
-msgid "- Post: Excerpt"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:602
-#, fuzzy
-msgid "- Post: Author"
-msgstr "Auteur"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:609
-msgid "- Post: Status"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:616
-#, fuzzy
-msgid "- Post: Format"
-msgstr "Type d'article par défaut"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:623
-msgid "- Post: Parent"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:630
-msgid "- Post: Featured Image"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:634
-msgid "None"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:635
-msgid "Has one"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:640
-msgid "- Post: Comment Status"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:644
-msgid "Open"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:645
-msgid "Closed"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:650
-msgid "- Post: Comment Count"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:656
-#, fuzzy
-msgid "- User"
-msgstr "Utilisateurs"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:663
-#, fuzzy
-msgid "- User: Role"
-msgstr "Nouveau rôle par défaut des utilisateurs"
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:670
-msgid "- Taxonomy"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:677
-msgid "- Term"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:684
-msgid "- Term: Parent"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:704
-msgid "You cannot save a rule without any triggers."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:705
-msgid "You cannot save a rule with an empty first trigger."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:706
-msgid "There was an error submitting your request, please try again."
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:707
-#, fuzzy
-msgid ""
-"Are you sure you want to reset occurrences for this rule? This cannot be "
-"undone."
-msgstr ""
-"Êtes-vous sûr de vouloir supprimer tous les enregistrements d'activité de "
-"flux de la base de données? Cela ne peut pas être annulée."
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:819
-msgid "Enter Rule Title here"
-msgstr ""
-
-#: ../extensions/notifications/includes/class-wp-stream-notifications-settings.php:38
-#, fuzzy
-msgid ""
-"Users from the selected roles above will have permission to view, create and "
-"edit Stream Notifications. However, only site Administrators can access "
-"Stream Notifications Settings."
-msgstr ""
-"Les utilisateurs des rôles sélectionnés ci-dessus auront la permission de "
-"voir les données enregisté par Stream. Cependant, seuls les administrateurs "
-"du site peuvent accéder aux paramètres Stream."
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-email.php:6
 msgid "Email"
@@ -5008,7 +4453,7 @@ msgstr ""
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:58
 #, fuzzy
 msgid "Send to Users"
-msgstr "%s mis à jour"
+msgstr "Utilisateurs"
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-email.php:17
 msgid "Alert specific users via email."
@@ -5048,8 +4493,9 @@ msgid "Push"
 msgstr ""
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:28
+#, fuzzy
 msgid "Missing Required Plugin"
-msgstr ""
+msgstr "Le plugin \"%s\" a été supprimé"
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:31
 #, php-format
@@ -5062,8 +4508,9 @@ msgid "Pushover Notifications"
 msgstr ""
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:43
+#, fuzzy
 msgid "Required Plugin Not Activated"
-msgstr ""
+msgstr "Activée"
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:46
 #, php-format
@@ -5080,8 +4527,9 @@ msgid "Only those users with a %s in their profile can be selected."
 msgstr ""
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:76
+#, fuzzy
 msgid "Pushover User Key"
-msgstr ""
+msgstr "Nouveau rôle par défaut des utilisateurs"
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:95
 msgid "Application key is missing"
@@ -5101,8 +4549,9 @@ msgid "Application API Token/Key"
 msgstr ""
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:171
+#, fuzzy
 msgid "Your User Key"
-msgstr ""
+msgstr "Nouveau rôle par défaut des utilisateurs"
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:172
 #, fuzzy
@@ -5110,8 +4559,9 @@ msgid "New Users"
 msgstr "Utilisateurs"
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:173
+#, fuzzy
 msgid "New Posts are Published"
-msgstr ""
+msgstr "Articles"
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:174
 msgid "Roles to Notify"
@@ -5120,7 +4570,7 @@ msgstr ""
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:175
 #, fuzzy
 msgid "New Comments"
-msgstr "Commentaire mis en liste noir"
+msgstr "Menu \"%s\" a été créé"
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-push.php:176
 msgid "Notify the Post Author (for multi-author blogs)"
@@ -5240,8 +4690,9 @@ msgid "Comcast"
 msgstr ""
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-sms.php:41
+#, fuzzy
 msgid "Corr Wireless Communications"
-msgstr ""
+msgstr "Paramètres Stream"
 
 #: ../extensions/notifications/includes/adapters/class-wp-stream-notifications-adapter-sms.php:42
 msgid "Cricket"
@@ -5392,6 +4843,458 @@ msgstr ""
 msgid "Data tags are allowed. HTML is not allowed."
 msgstr ""
 
+#: ../extensions/notifications/includes/class-wp-stream-notifications-list-table.php:49
+msgid "Type"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-list-table.php:50
+msgid "Occurrences"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-list-table.php:238
+msgid "Publish"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-list-table.php:239
+msgid "Unpublish"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:44
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:47
+#, fuzzy
+msgid "Stream Notification Rule"
+msgstr "Flux Stream"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:46
+#, fuzzy
+msgid "Stream Notification Rules"
+msgstr "Flux Stream"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:49
+#, fuzzy
+msgctxt "Stream Notifications"
+msgid "New Rule"
+msgstr "Menu \"%s\" a été créé"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:50
+#, fuzzy
+msgctxt "Stream Notifications"
+msgid "Add New Rule"
+msgstr "Menu \"%s\" a été créé"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:51
+#, fuzzy
+msgctxt "Stream Notifications"
+msgid "New Stream Notification Rule"
+msgstr "Paramètres Stream"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:52
+#, fuzzy
+msgctxt "Stream Notifications"
+msgid "Edit Stream Notification Rule"
+msgstr "Paramètres Stream"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:53
+#, fuzzy
+msgctxt "Stream Notifications"
+msgid "View Stream Notification Rule"
+msgstr "Paramètres Stream"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:54
+#, fuzzy
+msgctxt "Stream Notifications"
+msgid "Search Rules"
+msgstr "Affichage dans les moteurs de recherche"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:55
+#, fuzzy
+msgctxt "Stream Notifications"
+msgid "No notification rules found."
+msgstr "Paramètres Stream"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:56
+#, fuzzy
+msgctxt "Stream Notifications"
+msgid "No notification rules found in Trash."
+msgstr "Paramètres Stream"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:76
+msgid "Triggers"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:77
+msgid "Alerts"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:78
+msgid "Data Tags"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:121
+#: ../extensions/notifications/views/form-templates.php:34
+msgid "+ Add Trigger"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:122
+#: ../extensions/notifications/views/form-templates.php:35
+#, fuzzy
+msgid "+ Add Group"
+msgstr "Visualiser le profil"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:129
+msgid "+ Add Alert"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:156
+#, php-format
+msgid "This rule has occurred %1$s time."
+msgid_plural "This rule has occurred %1$s times."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:168
+#, fuzzy
+msgid "Reset Count"
+msgstr "Mot de passe remis à zéro"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:178
+msgid "Basic"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:179
+msgid "Summary message of the triggered record."
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:180
+msgid "User ID of the triggered record author."
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:181
+#, fuzzy
+msgid "Connector of the triggered record."
+msgstr "Connecteur"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:182
+#, fuzzy
+msgid "Context of the triggered record."
+msgstr "Contexte"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:183
+#, fuzzy
+msgid "Action of the triggered record."
+msgstr "Action"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:184
+msgid "Timestamp of triggered record."
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:185
+msgid "IP of the triggered record author."
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:186
+msgid "Object ID of the triggered record."
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:188
+msgid "Advanced"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:190
+msgid ""
+"Specific object data of the record, relative to what the object type is:\n"
+"\t\t\t\t\t\t\t\t\t\t<br /><br />\n"
+"\t\t\t\t\t\t\t\t\t\t<strong>{object.post_title}</strong>\n"
+"\t\t\t\t\t\t\t\t\t\t<br />\n"
+"\t\t\t\t\t\t\t\t\t\t<strong>{object.post_excerpt}</strong>\n"
+"\t\t\t\t\t\t\t\t\t\t<br />\n"
+"\t\t\t\t\t\t\t\t\t\t<strong>{object.post_status}</strong>\n"
+"\t\t\t\t\t\t\t\t\t\t<br />\n"
+"\t\t\t\t\t\t\t\t\t\t<a href=\"http://codex.wordpress.org/Function_Reference/"
+"get_userdata#Notes\" target=\"_blank\">See Codex for more Post values</a>\n"
+"\t\t\t\t\t\t\t\t\t\t<br /><br />\n"
+"\t\t\t\t\t\t\t\t\t\t<strong>{object.name}</strong>\n"
+"\t\t\t\t\t\t\t\t\t\t<br />\n"
+"\t\t\t\t\t\t\t\t\t\t<strong>{object.taxonomy}</strong>\n"
+"\t\t\t\t\t\t\t\t\t\t<br />\n"
+"\t\t\t\t\t\t\t\t\t\t<strong>{object.description}</strong>\n"
+"\t\t\t\t\t\t\t\t\t\t<br />\n"
+"\t\t\t\t\t\t\t\t\t\t<a href=\"http://codex.wordpress.org/Function_Reference/"
+"get_userdata#Notes\" target=\"_blank\">See Codex for more Term values</a>"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:210
+msgid ""
+"Specific user data of the record author:\n"
+"\t\t\t\t\t\t\t\t\t\t<br /><br />\n"
+"\t\t\t\t\t\t\t\t\t\t<strong>{author.display_name}</strong>\n"
+"\t\t\t\t\t\t\t\t\t\t<br />\n"
+"\t\t\t\t\t\t\t\t\t\t<strong>{author.user_email}</strong>\n"
+"\t\t\t\t\t\t\t\t\t\t<br />\n"
+"\t\t\t\t\t\t\t\t\t\t<strong>{author.user_login}</strong>\n"
+"\t\t\t\t\t\t\t\t\t\t<br />\n"
+"\t\t\t\t\t\t\t\t\t\t<a href=\"http://codex.wordpress.org/Function_Reference/"
+"get_userdata#Notes\" target=\"_blank\">See Codex for more User values</a>"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:221
+msgid ""
+"Specific meta data of the record, used to display specific meta values "
+"created by Connectors.\n"
+"\t\t\t\t\t\t\t\t\t\t<br /><br />\n"
+"\t\t\t\t\t\t\t\t\t\tExample: <strong>{meta.old_theme}</strong> to display "
+"the old theme name when a new theme is activated."
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:420
+msgid "Invalid nonce"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:424
+msgid "Invalid record ID"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:447
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:452
+msgid "is"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:448
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:453
+msgid "is not"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:454
+#, fuzzy
+msgid "contains"
+msgstr "contextes"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:455
+msgid "does not contain"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:456
+#, fuzzy
+msgid "starts with"
+msgstr "La semaine commence le"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:457
+msgid "ends with"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:458
+msgid "regex"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:462
+msgid "equals"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:463
+msgid "not equal"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:464
+msgid "less than"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:465
+msgid "equal or less than"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:466
+msgid "greater than"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:467
+msgid "equal or greater than"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:477
+msgid "Object ID"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:484
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:369
+#, fuzzy
+msgid "Author Role"
+msgstr "Auteur"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:499
+#, fuzzy
+msgid "IP"
+msgstr "Adresse IP"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:510
+msgid "is on"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:511
+msgid "is not on"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:512
+#, fuzzy
+msgid "is before"
+msgstr "Un commentaire apparaît"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:513
+#, fuzzy
+msgid "is on or before"
+msgstr "Un commentaire apparaît"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:514
+msgid "is after"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:515
+msgid "is on or after"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:520
+#, fuzzy
+msgid "Day of Week"
+msgstr "La semaine commence le"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:546
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:370
+msgid "Connector"
+msgstr "Connecteur"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:571
+#, fuzzy
+msgid "- Post"
+msgstr "Catégorie par défaut des articles"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:578
+#, fuzzy
+msgid "- Post: Title"
+msgstr "Titre du site"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:584
+#, fuzzy
+msgid "- Post: Slug"
+msgstr "Catégorie par défaut des articles"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:590
+#, fuzzy
+msgid "- Post: Content"
+msgstr "Catégorie par défaut des articles"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:596
+#, fuzzy
+msgid "- Post: Excerpt"
+msgstr "Catégorie par défaut des articles"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:602
+#, fuzzy
+msgid "- Post: Author"
+msgstr "Auteur"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:609
+#, fuzzy
+msgid "- Post: Status"
+msgstr "Catégorie par défaut des articles"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:616
+#, fuzzy
+msgid "- Post: Format"
+msgstr "Type d'article par défaut"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:623
+#, fuzzy
+msgid "- Post: Parent"
+msgstr "Catégorie par défaut des articles"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:630
+#, fuzzy
+msgid "- Post: Featured Image"
+msgstr "Image \"%s\" mis à jour"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:634
+msgid "None"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:635
+msgid "Has one"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:640
+#, fuzzy
+msgid "- Post: Comment Status"
+msgstr "Catégorie par défaut des articles"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:644
+msgid "Open"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:645
+msgid "Closed"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:650
+#, fuzzy
+msgid "- Post: Comment Count"
+msgstr "Catégorie par défaut des articles"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:656
+#, fuzzy
+msgid "- User"
+msgstr "Nouveau rôle par défaut des utilisateurs"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:663
+#, fuzzy
+msgid "- User: Role"
+msgstr "Nouveau rôle par défaut des utilisateurs"
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:670
+msgid "- Taxonomy"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:677
+msgid "- Term"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:684
+msgid "- Term: Parent"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:704
+msgid "You cannot save a rule without any triggers."
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:705
+msgid "You cannot save a rule with an empty first trigger."
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:706
+msgid "There was an error submitting your request, please try again."
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:707
+#, fuzzy
+msgid ""
+"Are you sure you want to reset occurrences for this rule? This cannot be "
+"undone."
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer tous les enregistrements d'activité de "
+"flux de la base de données? Cela ne peut pas être annulée."
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:819
+msgid "Enter Rule Title here"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-settings.php:38
+#, fuzzy
+msgid ""
+"Users from the selected roles above will have permission to view, create and "
+"edit Stream Notifications. However, only site Administrators can access "
+"Stream Notifications Settings."
+msgstr ""
+"Les utilisateurs des rôles sélectionnés ci-dessus auront la permission de "
+"voir les données enregisté par Stream. Cependant, seuls les administrateurs "
+"du site peuvent accéder aux paramètres Stream."
+
 #: ../extensions/notifications/views/form-templates.php:7
 #: ../extensions/notifications/views/form-templates.php:30
 msgid "AND"
@@ -5407,169 +5310,172 @@ msgstr ""
 msgid "Delete Group"
 msgstr "\"%s\" Supprimé"
 
-#: ../extensions/reports/class-wp-stream-reports.php:125
+#: ../extensions/reports/class-wp-stream-reports.php:123
 msgid "Cheating huh?"
 msgstr ""
 
-#: ../extensions/reports/class-wp-stream-reports.php:145
-#: ../extensions/reports/class-wp-stream-reports.php:146
-#: ../extensions/reports/includes/class-wp-stream-reports-settings.php:56
+#: ../extensions/reports/class-wp-stream-reports.php:143
+#: ../extensions/reports/class-wp-stream-reports.php:144
+#: ../extensions/reports/includes/class-wp-stream-reports-settings.php:51
 msgid "Reports"
 msgstr ""
 
-#: ../extensions/reports/class-wp-stream-reports.php:223
+#: ../extensions/reports/class-wp-stream-reports.php:221
 msgid "Cancel"
 msgstr ""
 
-#: ../extensions/reports/class-wp-stream-reports.php:224
+#: ../extensions/reports/class-wp-stream-reports.php:222
 #, fuzzy
 msgid "Do you really want to delete this section? This cannot be undone."
 msgstr ""
 "Êtes-vous sûr de vouloir supprimer tous les enregistrements d'activité de "
 "flux de la base de données? Cela ne peut pas être annulée."
 
-#: ../extensions/reports/class-wp-stream-reports.php:280
+#: ../extensions/reports/class-wp-stream-reports.php:278
 #, php-format
 msgid ""
 "There's nothing here! Do you want to <a href=\"%s\">create some reports</a>?"
 msgstr ""
 
 #: ../extensions/reports/includes/class-wp-stream-reports-date-interval.php:42
+#, fuzzy
 msgid "That time interval is not available."
-msgstr ""
+msgstr "Format de l'heure"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:76
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:68
+#, fuzzy
 msgid "All Activity by Author"
-msgstr ""
+msgstr "Auteur"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:82
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:74
+#, fuzzy
 msgid "All Activity by Action"
-msgstr ""
+msgstr "Action"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:88
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:80
 msgid "All Activity by Author Role"
 msgstr ""
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:95
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:87
+#, fuzzy
 msgid "Comments Activity by Action"
-msgstr ""
+msgstr "Action"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:126
-#: ../extensions/reports/views/all.php:10
-#: ../extensions/reports/views/all.php:19
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:118
+#: ../extensions/reports/views/all.php:3
 #: ../extensions/reports/views/examples.php:2
 #, fuzzy
 msgid "Stream Reports"
-msgstr "Registre Stream"
+msgstr "Flux Stream"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:127
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:119
 msgid ""
 "Generate stunning visuals of logged-in user activity and share them with "
 "stakeholders or your clients."
 msgstr ""
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:129
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:121
 msgid "Fully-interactive charts"
 msgstr ""
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:130
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:122
 msgid "Monitor team contributions"
 msgstr ""
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:131
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:123
 msgid "Responsive for any screen size"
 msgstr ""
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:275
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:267
 msgid "All Others"
 msgstr ""
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:285
-#, php-format
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:277
+#, fuzzy, php-format
 msgid "User ID: %d"
-msgstr ""
+msgstr "Le compte utilisateur #%d à été supprimé"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:326
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:309
 #, fuzzy
 msgid "All Activity"
 msgstr "Paramètres Stream"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:328
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:311
 #, fuzzy
 msgid "Connector Activity"
-msgstr "Paramètres Stream"
+msgstr "Connecteur"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:336
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:319
 #, fuzzy
 msgid "Context Activity"
-msgstr "Paramètres Stream"
+msgstr "Contexte"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:344
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:327
 #, fuzzy
 msgid "Actions Activity"
-msgstr "Paramètres Stream"
+msgstr "actions"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:379
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:390
 #, fuzzy
-msgid "Site Activity"
-msgstr "Paramètres Stream"
+msgid "Site"
+msgstr "Titre du site"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:473
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:435
 msgid "Unknown"
 msgstr ""
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:510
-#, php-format
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:472
+#, fuzzy, php-format
 msgid "Report %d"
-msgstr ""
+msgstr "Le compte utilisateur #%d à été supprimé"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:529
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:491
 #, fuzzy, php-format
 msgctxt "1: Action 2: Dataset 3: Selector"
 msgid "%1$s in %2$s by %3$s"
 msgstr "%s: %s %s Mis à jour"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:535
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:497
 #, fuzzy, php-format
 msgctxt "1: Action 3: Selector"
 msgid "All %1$s by %3$s"
 msgstr "%s: %s %s Installé"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:542
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:504
 #, fuzzy, php-format
 msgctxt "2: Dataset 3: Selector"
 msgid "All Activity in %2$s by %3$s"
 msgstr "%s: %s %s Installé"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:548
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:510
 #, fuzzy, php-format
 msgctxt "3: Selector"
 msgid "All Activity by %3$s"
 msgstr "Paramètres Stream"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:729
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:691
 msgid "Chart height"
 msgstr ""
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:735
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:697
 msgid "px"
 msgstr ""
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:737
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:699
 msgid "Apply"
 msgstr ""
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:783
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:745
 #, fuzzy
 msgid "All Contexts"
-msgstr "Contexte"
+msgstr "contextes"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:797
+#: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:759
 #, fuzzy
 msgid "All Actions"
-msgstr "Action"
+msgstr "actions"
 
-#: ../extensions/reports/includes/class-wp-stream-reports-settings.php:62
+#: ../extensions/reports/includes/class-wp-stream-reports-settings.php:57
 #, fuzzy
 msgid ""
 "Users from the selected roles above will have permission to view and edit "
@@ -5580,39 +5486,32 @@ msgstr ""
 "voir les données enregisté par Stream. Cependant, seuls les administrateurs "
 "du site peuvent accéder aux paramètres Stream."
 
-#: ../extensions/reports/includes/class-wp-stream-reports-settings.php:243
+#: ../extensions/reports/includes/class-wp-stream-reports-settings.php:238
 msgid "Uh no! This wasn't suppose to happen :("
 msgstr ""
 
-#: ../extensions/reports/views/all.php:6
-#, php-format
-msgid "1 site"
-msgid_plural "%d sites"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../extensions/reports/views/all.php:13
-#: ../extensions/reports/views/all.php:21
+#: ../extensions/reports/views/all.php:5
 #, fuzzy
 msgid "New Report"
-msgstr "Registre Stream"
+msgstr "Menu \"%s\" a été créé"
 
-#: ../extensions/reports/views/all.php:38
+#: ../extensions/reports/views/all.php:20
 msgid "Well, this is embarrassing. There are no reports yet!"
 msgstr ""
 
-#: ../extensions/reports/views/all.php:41
+#: ../extensions/reports/views/all.php:23
+#, fuzzy
 msgid "Add a new one"
-msgstr ""
+msgstr "Menu \"%s\" a été créé"
 
-#: ../extensions/reports/views/all.php:43
+#: ../extensions/reports/views/all.php:25
 msgid "or"
 msgstr ""
 
-#: ../extensions/reports/views/all.php:45
+#: ../extensions/reports/views/all.php:27
 #, fuzzy
 msgid "Generate some for me"
-msgstr "Générer une nouvelle clé"
+msgstr "Envoyé moi un courriel dès que"
 
 #: ../extensions/reports/views/error.php:2
 msgid "Oops, that's an error!"
@@ -5623,18 +5522,19 @@ msgid "Yeah... Something went very wrong somewhere along your last actions."
 msgstr ""
 
 #: ../extensions/reports/views/intervals.php:24
+#, fuzzy
 msgid "Start date"
-msgstr ""
+msgstr "Format de la date"
 
 #: ../extensions/reports/views/intervals.php:33
 #, fuzzy
 msgid "End date"
-msgstr "Mis à jour"
+msgstr "Format de la date"
 
 #: ../extensions/reports/views/intervals.php:38
 #, fuzzy
 msgid "Update"
-msgstr "Mis à jour"
+msgstr "Mis à jour des services"
 
 #: ../extensions/reports/views/meta-box.php:13
 msgid "in"
@@ -5655,6 +5555,93 @@ msgstr ""
 #: ../includes/feeds/atom.php:7 ../includes/feeds/rss-2.0.php:21
 msgid "Stream Feed"
 msgstr "Flux Stream"
+
+#: ../stream.php:100
+msgid "Stream: Could not load chosen DB driver."
+msgstr ""
+
+#: ../stream.php:151
+msgid "Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE."
+msgstr ""
+"Stream requiert une version PHP supérieur à 5.3. Le plugin n'est "
+"présentement PAS ACTIF."
+
+#: ../stream.php:192 ../stream.php:207
+msgid "Deprecated Plugins Found"
+msgstr ""
+
+#: ../stream.php:193
+msgid ""
+"The following plugins are deprecated and will be deactivated in order to "
+"activate"
+msgstr ""
+
+#: ../stream.php:202
+#, fuzzy
+msgid "Continue"
+msgstr "Contexte"
+
+#, fuzzy
+#~ msgid "Network Stream Activity"
+#~ msgstr "Paramètres Stream"
+
+#, fuzzy
+#~ msgid "Stream Network Settings"
+#~ msgstr "Paramètres Stream"
+
+#, fuzzy
+#~ msgid "Network Settings"
+#~ msgstr "Paramètres Stream"
+
+#, fuzzy
+#~ msgid "New Site Settings"
+#~ msgstr "Paramètres Stream"
+
+#, fuzzy
+#~ msgid "Enable Site Access"
+#~ msgstr "Accèes aux rôles suivant:"
+
+#, fuzzy
+#~ msgid "Reset Site Settings"
+#~ msgstr "Paramètres Stream"
+
+#, fuzzy
+#~ msgid ""
+#~ "Warning: Clicking this will override all site settings with defaults."
+#~ msgstr ""
+#~ "Avertissement: la confirmation de cette boîte entraînera la suppression "
+#~ "de tous les entrées de la base de donnée."
+
+#, fuzzy
+#~ msgid "Settings saved."
+#~ msgstr "Paramètres"
+
+#, fuzzy
+#~ msgid "Site Admin"
+#~ msgstr "Titre du site"
+
+#, fuzzy
+#~ msgid "Site Settings"
+#~ msgstr "Paramètres Stream"
+
+#, fuzzy
+#~ msgctxt "1. User's name, 2. Site name, 3. Role"
+#~ msgid "%1$s has been added to the site \"%2$s\" with %3$s capabilities."
+#~ msgstr "L'utilisateur \"%s\" a été supprimé de \"%s\""
+
+#, fuzzy
+#~ msgctxt "1. User's name, 2. Site name"
+#~ msgid "%1$s has been removed from the site \"%2$s\"."
+#~ msgstr "L'utilisateur \"%s\" a été supprimé de \"%s\""
+
+#, fuzzy
+#~ msgctxt "1. Site name, 2. Status"
+#~ msgid "\"%1$s\" has been %2$s."
+#~ msgstr "L'utilisateur \"%s\" a été ajouté de \"%s\""
+
+#, fuzzy
+#~ msgid "Site Activity"
+#~ msgstr "Paramètres Stream"
 
 #, fuzzy
 #~ msgid ""
