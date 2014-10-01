@@ -257,27 +257,14 @@ class WP_Stream_Admin {
 				array( __CLASS__, 'render_settings_page' )
 			);
 
-<<<<<<< HEAD
-			if ( ! is_network_admin() ) {
-				self::$screen_id['account'] = add_submenu_page(
-					self::RECORDS_PAGE_SLUG,
-					__( 'Stream Account', 'stream' ),
-					__( 'Account', 'stream' ),
-					self::SETTINGS_CAP,
-					self::ACCOUNT_PAGE_SLUG,
-					array( __CLASS__, 'render_account_page' )
-				);
-			}
-=======
 			self::$screen_id['account'] = add_submenu_page(
 				self::RECORDS_PAGE_SLUG,
 				__( 'Stream Account', 'stream' ),
-				__( 'Account', 'default' ),
+				__( 'Account', 'stream' ),
 				self::SETTINGS_CAP,
 				self::ACCOUNT_PAGE_SLUG,
 				array( __CLASS__, 'render_account_page' )
 			);
->>>>>>> develop
 		} else {
 			self::$screen_id['connect'] = add_menu_page(
 				__( 'Connect to Stream', 'stream' ),
