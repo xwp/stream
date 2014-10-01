@@ -718,7 +718,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 			<select class="field-predefined hide-if-no-js" name="date_predefined" data-placeholder="<?php _e( 'All Time', 'stream' ); ?>">
 				<option></option>
-				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'default' ) ?></option>
+				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
 				<?php foreach ( $items as $key => $interval ) {
 					printf(
 						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
@@ -734,13 +734,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 			<div class="date-inputs">
 				<div class="box">
 					<i class="date-remove dashicons"></i>
-					<input type="text" name="date_from" class="date-picker field-from" placeholder="<?php esc_attr_e( 'Start Date', 'default' ) ?>" value="<?php echo esc_attr( $date_from ) ?>" />
+					<input type="text" name="date_from" class="date-picker field-from" placeholder="<?php esc_attr_e( 'Start Date', 'stream' ) ?>" value="<?php echo esc_attr( $date_from ) ?>" />
 				</div>
 				<span class="connector dashicons"></span>
 
 				<div class="box">
 					<i class="date-remove dashicons"></i>
-					<input type="text" name="date_to" class="date-picker field-to" placeholder="<?php esc_attr_e( 'End Date', 'default' ) ?>" value="<?php echo esc_attr( $date_to ) ?>" />
+					<input type="text" name="date_to" class="date-picker field-to" placeholder="<?php esc_attr_e( 'End Date', 'stream' ) ?>" value="<?php echo esc_attr( $date_to ) ?>" />
 				</div>
 			</div>
 

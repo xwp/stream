@@ -223,7 +223,7 @@ class WP_Stream_Settings {
 		if ( empty( self::$fields ) ) {
 			$fields = array(
 				'general' => array(
-					'title'  => esc_html__( 'General', 'default' ),
+					'title'  => esc_html__( 'General', 'stream' ),
 					'fields' => array(
 						array(
 							'name'        => 'role_access',

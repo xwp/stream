@@ -726,7 +726,7 @@ class WP_Stream_Reports_Metaboxes {
 		ob_start();
 		?>
 		<fieldset>
-			<h5><?php esc_html_e( 'Chart height', 'stream-repotrs' ); ?></h5>
+			<h5><?php esc_html_e( 'Chart height', 'stream' ); ?></h5>
 			<div><input type="hidden" name="update_chart_height_nonce" id="update_chart_height_nonce" value="<?php echo esc_attr( $nonce ); ?>"></div>
 			<div><input type="hidden" name="update_chart_height_user" id="update_chart_height_user" value="<?php echo esc_attr( $user_id ); ?>"></div>
 			<div class="metabox-prefs stream-reports-chart-height-option">
