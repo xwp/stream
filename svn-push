@@ -127,7 +127,7 @@ svn add --force trunk --auto-props --parents --depth infinity -q
 
 mkdir -p tags
 if [ -e tags/$plugin_version ]; then
-	svn rm tags/$plugin_version
+	svn rm --force tags/$plugin_version
 fi
 cp -r trunk tags/$plugin_version
 svn add --force tags/$plugin_version --auto-props --parents --depth infinity -q
