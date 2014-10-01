@@ -65,9 +65,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		return apply_filters(
 			'wp_stream_list_table_columns',
 			array(
-				'date'    => __( 'Date', 'default' ),
-				'summary' => __( 'Summary', 'default' ),
-				'author'  => __( 'Author', 'default' ),
+				'date'    => __( 'Date', 'stream' ),
+				'summary' => __( 'Summary', 'stream' ),
+				'author'  => __( 'Author', 'stream' ),
 				'context' => __( 'Context', 'stream' ),
 				'action'  => __( 'Action', 'stream' ),
 				'ip'      => __( 'IP Address', 'stream' ),
@@ -603,7 +603,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 
-		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'default' ) );
+		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'stream' ) );
 
 		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
 

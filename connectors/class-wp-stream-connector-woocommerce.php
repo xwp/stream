@@ -86,7 +86,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * @return string Translated context label
 	 */
 	public static function get_label() {
-		return __( 'WooCommerce', 'woocommerce' );
+		return _x( 'WooCommerce', 'woocommerce', 'stream' );
 	}
 
 	/**
@@ -96,10 +96,10 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'updated' => __( 'Updated', 'stream' ),
-			'created' => __( 'Created', 'stream' ),
-			'trashed' => __( 'Trashed', 'stream' ),
-			'deleted' => __( 'Deleted', 'stream' ),
+			'updated' => _x( 'Updated', 'woocommerce', 'stream' ),
+			'created' => _x( 'Created', 'woocommerce', 'stream' ),
+			'trashed' => _x( 'Trashed', 'woocommerce', 'stream' ),
+			'deleted' => _x( 'Deleted', 'woocommerce', 'stream' ),
 		);
 	}
 
@@ -119,7 +119,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		}
 
 		$custom_context_labels = array(
-			'attributes' => __( 'Attributes', 'stream' ),
+			'attributes' => _x( 'Attributes', 'woocommerce', 'stream' ),
 		);
 
 		$context_labels = array_merge(
@@ -690,7 +690,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 
 			// Provide additional context for each of the settings pages
 			array_walk( $settings_pages, function( &$value ) {
-				$value .= ' ' . __( 'Settings', 'woocommerce' );
+				$value .= ' ' . __( 'Settings', 'stream' );
 			});
 
 			// Load Payment Gateway Settings
@@ -752,7 +752,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 
 			// Tools page
 			$tools_page = array(
-				'tools' => __( 'Tools', 'default' )
+				'tools' => __( 'Tools', 'stream' )
 			);
 
 			$settings_pages = array_merge( $settings_pages, $tools_page );

@@ -42,7 +42,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Widgets', 'default' );
+		return __( 'Widgets', 'stream' );
 	}
 
 	/**
@@ -78,7 +78,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$labels[ $sidebar['id'] ] = $sidebar['name'];
 		}
 
-		$labels['wp_inactive_widgets'] = __( 'Inactive Widgets', 'default' );
+		$labels['wp_inactive_widgets'] = __( 'Inactive Widgets', 'stream' );
 		$labels['orphaned_widgets']    = __( 'Orphaned Widgets', 'stream' );
 
 		return $labels;

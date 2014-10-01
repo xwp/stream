@@ -36,7 +36,7 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Sites', 'default' );
+		return __( 'Sites', 'stream' );
 	}
 
 	/**
@@ -82,12 +82,12 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		$links [ __( 'Site Admin', 'default' ) ] = get_admin_url( $record->object_id );
+		$links [ __( 'Site Admin', 'stream' ) ] = get_admin_url( $record->object_id );
 		if ( $record->object_id ) {
 			$site_admin_link = get_admin_url( $record->object_id );
 
 			if ( $site_admin_link ) {
-				$links [ __( 'Site Admin', 'default' ) ] = $site_admin_link;
+				$links [ __( 'Site Admin', 'stream' ) ] = $site_admin_link;
 			}
 
 			$site_settings_link = add_query_arg(

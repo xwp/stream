@@ -126,7 +126,7 @@ class WP_Stream_Network {
 	public function get_network_blog() {
 		$blog           = new stdClass;
 		$blog->blog_id  = 0;
-		$blog->blogname = __( 'Network Admin', 'default' );
+		$blog->blogname = __( 'Network Admin', 'stream' );
 
 		return $blog;
 	}
@@ -167,7 +167,7 @@ class WP_Stream_Network {
 		WP_Stream_Admin::$screen_id['network_settings'] = add_submenu_page(
 			WP_Stream_Admin::RECORDS_PAGE_SLUG,
 			__( 'Stream Network Settings', 'stream' ),
-			__( 'Network Settings', 'default' ),
+			__( 'Network Settings', 'stream' ),
 			WP_Stream_Admin::SETTINGS_CAP,
 			self::NETWORK_SETTINGS_PAGE_SLUG,
 			array( 'WP_Stream_Admin', 'render_settings_page' )
@@ -176,7 +176,7 @@ class WP_Stream_Network {
 		if ( ! WP_Stream_Admin::$disable_access ) {
 			WP_Stream_Admin::$screen_id['default_settings'] = add_submenu_page(
 				WP_Stream_Admin::RECORDS_PAGE_SLUG,
-				__( 'New Site Settings', 'default' ),
+				__( 'New Site Settings', 'stream' ),
 				__( 'Site Defaults', 'stream' ),
 				WP_Stream_Admin::SETTINGS_CAP,
 				self::DEFAULT_SETTINGS_PAGE_SLUG,
@@ -405,7 +405,7 @@ class WP_Stream_Network {
 		}
 
 		if ( ! count( get_settings_errors() ) ) {
-			add_settings_error( 'general', 'settings_updated', __( 'Settings saved.', 'default' ), 'updated' );
+			add_settings_error( 'general', 'settings_updated', __( 'Settings saved.', 'stream' ), 'updated' );
 		}
 
 		set_transient( 'wp_stream_settings_errors', get_settings_errors(), 30 );

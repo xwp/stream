@@ -28,7 +28,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Media', 'default' );
+		return __( 'Media', 'stream' );
 	}
 
 	/**
@@ -56,15 +56,15 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'image'       => __( 'Image', 'default' ),
-			'audio'       => __( 'Audio', 'default' ),
-			'video'       => __( 'Video', 'default' ),
+			'image'       => __( 'Image', 'stream' ),
+			'audio'       => __( 'Audio', 'stream' ),
+			'video'       => __( 'Video', 'stream' ),
 			'document'    => __( 'Document', 'stream' ),
 			'spreadsheet' => __( 'Spreadsheet', 'stream' ),
 			'interactive' => __( 'Interactive', 'stream' ),
-			'text'        => __( 'Text', 'default' ),
-			'archive'     => __( 'Archive', 'default' ),
-			'code'        => __( 'Code', 'default' ),
+			'text'        => __( 'Text', 'stream' ),
+			'archive'     => __( 'Archive', 'stream' ),
+			'code'        => __( 'Code', 'stream' ),
 		);
 	}
 
@@ -104,10 +104,10 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			if ( $link = get_edit_post_link( $record->object_id ) ) {
-				$links[ __( 'Edit Media', 'default' ) ] = $link;
+				$links[ __( 'Edit Media', 'stream' ) ] = $link;
 			}
 			if ( $link = get_permalink( $record->object_id ) ) {
-				$links[ __( 'View', 'default' ) ] = $link;
+				$links[ __( 'View', 'stream' ) ] = $link;
 			}
 		}
 

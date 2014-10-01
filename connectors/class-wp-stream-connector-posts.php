@@ -25,7 +25,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Posts', 'default' );
+		return __( 'Posts', 'stream' );
 	}
 
 	/**
@@ -103,11 +103,11 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_edit_post_link( $post->ID );
 
 				if ( $view_link = get_permalink( $post->ID ) ) {
-					$links[ esc_html__( 'View', 'default' ) ] = $view_link;
+					$links[ esc_html__( 'View', 'stream' ) ] = $view_link;
 				}
 
 				if ( $revision_id = wp_stream_get_meta( $record, 'revision_id', true ) ) {
-					$links[ esc_html__( 'Revision', 'default' ) ] = get_edit_post_link( $revision_id );
+					$links[ esc_html__( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
 				}
 			}
 		}
@@ -288,7 +288,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 * @return  string  Post type label
 	 */
 	public static function get_post_type_name( $post_type_slug ) {
-		$name = __( 'Post', 'default' ); // Default
+		$name = __( 'Post', 'stream' ); // Default
 
 		if ( post_type_exists( $post_type_slug ) ) {
 			$post_type = get_post_type_object( $post_type_slug );
