@@ -132,13 +132,6 @@ fi
 cp -r trunk tags/$plugin_version
 svn add --force tags/$plugin_version --auto-props --parents --depth infinity -q
 
-mkdir -p tags
-if [ -e tags/$plugin_version ]; then
-	svn rm tags/$plugin_version
-fi
-cp -r trunk tags/$plugin_version
-svn add --force tags/$plugin_version
-
 # Do SVN commit
 svn_commit_file=$svn_repo_dir/COMMIT_MSG
 last_pushed_commit=$(svn log -l 1 | grep -E -o '^commit ([0-9a-f]{5,})' | head -n 1 | cut -c8-)
