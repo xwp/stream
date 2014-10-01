@@ -68,7 +68,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'ACF', 'acf' );
+		return _x( 'ACF', 'acf', 'stream' );
 	}
 
 	/**
@@ -78,10 +78,10 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created' => __( 'Created', 'stream' ),
-			'updated' => __( 'Updated', 'stream' ),
-			'added'   => __( 'Added', 'stream' ),
-			'deleted' => __( 'Deleted', 'stream' ),
+			'created' => __( 'Created', 'acf', 'stream' ),
+			'updated' => __( 'Updated', 'acf', 'stream' ),
+			'added'   => __( 'Added', 'acf', 'stream' ),
+			'deleted' => __( 'Deleted', 'acf', 'stream' ),
 		);
 	}
 
@@ -249,9 +249,9 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			}
 
 			$options = array(
-				'acf_after_title' => __( 'High (after title)', 'acf' ),
-				'normal'          => __( 'Normal (after content)', 'acf' ),
-				'side'            => __( 'Side', 'acf' ),
+				'acf_after_title' => _x( 'High (after title)', 'acf', 'stream' ),
+				'normal'          => _x( 'Normal (after content)', 'acf', 'stream' ),
+				'side'            => _x( 'Side', 'acf', 'stream' ),
 			);
 
 			self::log(
@@ -274,8 +274,8 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			}
 
 			$options = array(
-				'no_box'  => __( 'Seamless (no metabox)', 'acf' ),
-				'default' => __( 'Standard (WP metabox)', 'acf' ),
+				'no_box'  => _x( 'Seamless (no metabox)', 'acf', 'stream' ),
+				'default' => _x( 'Standard (WP metabox)', 'acf', 'stream' ),
 			);
 
 			self::log(
@@ -298,20 +298,20 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			}
 
 			$options = array(
-				'permalink'       => __( 'Permalink', 'acf' ),
-				'the_content'     => __( 'Content Editor', 'acf' ),
-				'excerpt'         => __( 'Excerpt', 'default' ),
-				'custom_fields'   => __( 'Custom Fields', 'acf' ),
-				'discussion'      => __( 'Discussion', 'acf' ),
-				'comments'        => __( 'Comments', 'default' ),
-				'revisions'       => __( 'Revisions', 'default' ),
-				'slug'            => __( 'Slug', 'acf' ),
-				'author'          => __( 'Author', 'default' ),
-				'format'          => __( 'Format', 'default' ),
-				'featured_image'  => __( 'Featured Image', 'acf' ),
-				'categories'      => __( 'Categories', 'default' ),
-				'tags'            => __( 'Tags', 'default' ),
-				'send-trackbacks' => __( 'Send Trackbacks', 'acf' ),
+				'permalink'       => _x( 'Permalink', 'acf', 'stream' ),
+				'the_content'     => _x( 'Content Editor', 'acf', 'stream' ),
+				'excerpt'         => _x( 'Excerpt', 'acf', 'stream' ),
+				'custom_fields'   => _x( 'Custom Fields', 'acf', 'stream' ),
+				'discussion'      => _x( 'Discussion', 'acf', 'stream' ),
+				'comments'        => _x( 'Comments', 'acf', 'stream' ),
+				'revisions'       => _x( 'Revisions', 'acf', 'stream' ),
+				'slug'            => _x( 'Slug', 'acf', 'stream' ),
+				'author'          => _x( 'Author', 'acf', 'stream' ),
+				'format'          => _x( 'Format', 'acf', 'stream' ),
+				'featured_image'  => _x( 'Featured Image', 'acf', 'stream' ),
+				'categories'      => _x( 'Categories', 'acf', 'stream' ),
+				'tags'            => _x( 'Tags', 'acf', 'stream' ),
+				'send-trackbacks' => _x( 'Send Trackbacks', 'acf', 'stream' ),
 			);
 
 			if ( count( $options ) === count( $meta_value ) ) {
@@ -380,7 +380,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			} elseif ( 'user' === $type ) {
 				$user      = new WP_User( $object_id );
 				$title     = $user->get( 'display_name' );
-				$type_name = __( 'user', 'default' );
+				$type_name = __( 'user', 'stream' );
 			} elseif ( 'taxonomy' === $type ) {
 				$term      = get_term( $term_id, $taxonomy );
 				$title     = $term->name;

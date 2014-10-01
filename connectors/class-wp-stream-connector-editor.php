@@ -41,7 +41,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Editor', 'default' );
+		return __( 'Editor', 'stream' );
 	}
 
 	/**
@@ -69,8 +69,8 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		return apply_filters(
 			'wp_stream_editor_context_labels',
 			array(
-				'themes'  => __( 'Themes', 'default' ),
-				'plugins' => __( 'Plugins', 'default' ),
+				'themes'  => __( 'Themes', 'stream' ),
+				'plugins' => __( 'Plugins', 'stream' ),
 			)
 		);
 	}
@@ -145,7 +145,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 						self_admin_url( 'theme-editor.php' )
 					);
 
-					$links[ __( 'Theme Details', 'default' ) ] = add_query_arg(
+					$links[ __( 'Theme Details', 'stream' ) ] = add_query_arg(
 						array(
 							'theme' => urlencode( $theme_slug ),
 						),

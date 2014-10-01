@@ -26,7 +26,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Menus', 'default' );
+		return __( 'Menus', 'stream' );
 	}
 
 	/**

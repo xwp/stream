@@ -95,7 +95,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Easy Digital Downloads', 'edd' );
+		return _x( 'Easy Digital Downloads', 'edd', 'stream' );
 	}
 
 	/**
@@ -105,16 +105,16 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'   => __( 'Created', 'stream' ),
-			'updated'   => __( 'Updated', 'stream' ),
-			'added'     => __( 'Added', 'stream' ),
-			'deleted'   => __( 'Deleted', 'stream' ),
-			'trashed'   => __( 'Trashed', 'stream' ),
-			'untrashed' => __( 'Restored', 'stream' ),
-			'generated' => __( 'Generated', 'stream' ),
-			'imported'  => __( 'Imported', 'stream' ),
-			'exported'  => __( 'Exported', 'stream' ),
-			'revoked'   => __( 'Revoked', 'edd' ),
+			'created'   => _x( 'Created', 'edd', 'stream' ),
+			'updated'   => _x( 'Updated', 'edd', 'stream' ),
+			'added'     => _x( 'Added', 'edd', 'stream' ),
+			'deleted'   => _x( 'Deleted', 'edd', 'stream' ),
+			'trashed'   => _x( 'Trashed', 'edd', 'stream' ),
+			'untrashed' => _x( 'Restored', 'edd', 'stream' ),
+			'generated' => _x( 'Generated', 'edd', 'stream' ),
+			'imported'  => _x( 'Imported', 'edd', 'stream' ),
+			'exported'  => _x( 'Exported', 'edd', 'stream' ),
+			'revoked'   => _x( 'Revoked', 'edd', 'stream' ),
 		);
 	}
 
@@ -125,13 +125,13 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'downloads'         => __( 'Downloads', 'edd' ),
-			'download_category' => __( 'Categories', 'default' ),
-			'download_tag'      => __( 'Tags', 'default' ),
-			'discounts'         => __( 'Discounts', 'edd' ),
-			'reports'           => __( 'Reports', 'edd' ),
-			'api_keys'          => __( 'API Keys', 'edd' ),
-			//'payments'        => __( 'Payments', 'edd' ),
+			'downloads'         => _x( 'Downloads', 'edd', 'stream' ),
+			'download_category' => _x( 'Categories', 'edd', 'stream' ),
+			'download_tag'      => _x( 'Tags', 'edd', 'stream' ),
+			'discounts'         => _x( 'Discounts', 'edd', 'stream' ),
+			'reports'           => _x( 'Reports', 'edd', 'stream' ),
+			'api_keys'          => _x( 'API Keys', 'edd', 'stream' ),
+			//'payments'        => _x( 'Payments', 'edd', 'stream' ),
 		);
 	}
 
@@ -152,7 +152,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			$post_type_label = get_post_type_labels( get_post_type_object( 'edd_discount' ) )->singular_name;
 			$base            = admin_url( 'edit.php?post_type=download&page=edd-discounts' );
 
-			$links[ sprintf( __( 'Edit %s', 'default' ), $post_type_label ) ] = add_query_arg(
+			$links[ sprintf( __( 'Edit %s', 'stream' ), $post_type_label ) ] = add_query_arg(
 				array(
 					'edd-action' => 'edit_discount',
 					'discount'   => $record->object_id,
@@ -179,16 +179,16 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 			}
 		} elseif ( in_array( $record->context, array( 'download_category', 'download_tag' ) ) ) {
 			$tax_label = get_taxonomy_labels( get_taxonomy( $record->context ) )->singular_name;
-			$links[ sprintf( __( 'Edit %s', 'default' ), $tax_label ) ] = get_edit_term_link( $record->object_id, wp_stream_get_meta( $record, 'taxonomy', true ) );
+			$links[ sprintf( __( 'Edit %s', 'stream' ), $tax_label ) ] = get_edit_term_link( $record->object_id, wp_stream_get_meta( $record, 'taxonomy', true ) );
 		} elseif ( 'api_keys' === $record->context ) {
 			$user = new WP_User( $record->object_id );
 
 			if ( apply_filters( 'edd_api_log_requests', true ) ) {
-				$links[ __( 'View API Log', 'edd' ) ] = add_query_arg( array( 'view' => 'api_requests', 'post_type' => 'download', 'page' => 'edd-reports', 'tab' => 'logs', 's' => $user->user_email ), 'edit.php' );
+				$links[ __( 'View API Log', 'stream' ) ] = add_query_arg( array( 'view' => 'api_requests', 'post_type' => 'download', 'page' => 'edd-reports', 'tab' => 'logs', 's' => $user->user_email ), 'edit.php' );
 			}
 
-			$links[ __( 'Revoke', 'edd' ) ]  = add_query_arg( array( 'post_type' => 'download', 'user_id' => $record->object_id, 'edd_action' => 'process_api_key', 'edd_api_process' => 'revoke' ), 'edit.php' );
-			$links[ __( 'Reissue', 'edd' ) ] = add_query_arg( array( 'post_type' => 'download', 'user_id' => $record->object_id, 'edd_action' => 'process_api_key', 'edd_api_process' => 'regenerate' ), 'edit.php' );
+			$links[ __( 'Revoke', 'stream' ) ]  = add_query_arg( array( 'post_type' => 'download', 'user_id' => $record->object_id, 'edd_action' => 'process_api_key', 'edd_api_process' => 'revoke' ), 'edit.php' );
+			$links[ __( 'Reissue', 'stream' ) ] = add_query_arg( array( 'post_type' => 'download', 'user_id' => $record->object_id, 'edd_action' => 'process_api_key', 'edd_api_process' => 'regenerate' ), 'edit.php' );
 		}
 
 		return $links;
@@ -270,7 +270,7 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 
 			if ( 'banned_email' === $option ) {
 				$field = array(
-					'name' => __( 'Banned emails', 'edd' ),
+					'name' => _x( 'Banned emails', 'edd', 'stream' ),
 				);
 				$page = 'edd-tools';
 				$tab  = 'general';

@@ -56,9 +56,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'plugins'   => __( 'Plugins', 'default' ),
-			'themes'    => __( 'Themes', 'default' ),
-			'wordpress' => __( 'WordPress', 'default' ),
+			'plugins'   => __( 'Plugins', 'stream' ),
+			'themes'    => __( 'Themes', 'stream' ),
+			'wordpress' => __( 'WordPress', 'stream' ),
 		);
 	}
 

@@ -251,7 +251,7 @@ class WP_Stream_Admin {
 			self::$screen_id['settings'] = add_submenu_page(
 				self::RECORDS_PAGE_SLUG,
 				__( 'Stream Settings', 'stream' ),
-				__( 'Settings', 'default' ),
+				__( 'Settings', 'stream' ),
 				self::SETTINGS_CAP,
 				self::SETTINGS_PAGE_SLUG,
 				array( __CLASS__, 'render_settings_page' )
@@ -260,7 +260,7 @@ class WP_Stream_Admin {
 			self::$screen_id['account'] = add_submenu_page(
 				self::RECORDS_PAGE_SLUG,
 				__( 'Stream Account', 'stream' ),
-				__( 'Account', 'default' ),
+				__( 'Account', 'stream' ),
 				self::SETTINGS_CAP,
 				self::ACCOUNT_PAGE_SLUG,
 				array( __CLASS__, 'render_account_page' )
@@ -537,7 +537,7 @@ class WP_Stream_Admin {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
 			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
 
-			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
+			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
 		}
 
 		return $links;

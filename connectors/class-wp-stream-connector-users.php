@@ -40,7 +40,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Users', 'default' );
+		return __( 'Users', 'stream' );
 	}
 
 	/**
@@ -53,10 +53,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			'updated'         => __( 'Updated', 'stream' ),
 			'created'         => __( 'Created', 'stream' ),
 			'deleted'         => __( 'Deleted', 'stream' ),
-			'password-reset'  => __( 'Password Reset', 'default' ),
-			'forgot-password' => __( 'Lost Password', 'default' ),
-			'login'           => __( 'Log In', 'default' ),
-			'logout'          => __( 'Log Out', 'default' ),
+			'password-reset'  => __( 'Password Reset', 'stream' ),
+			'forgot-password' => __( 'Lost Password', 'stream' ),
+			'login'           => __( 'Log In', 'stream' ),
+			'logout'          => __( 'Log Out', 'stream' ),
 		);
 	}
 
@@ -67,7 +67,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'users'    => __( 'Users', 'default' ),
+			'users'    => __( 'Users', 'stream' ),
 			'sessions' => __( 'Sessions', 'stream' ),
 			'profiles' => __( 'Profiles', 'stream' ),
 		);
@@ -86,7 +86,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			if ( $link = get_edit_user_link( $record->object_id ) ) {
-				$links [ __( 'Edit User', 'default' ) ] = $link;
+				$links [ __( 'Edit User', 'stream' ) ] = $link;
 			}
 		}
 
