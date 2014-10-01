@@ -112,11 +112,6 @@ class WP_Stream {
 		// Load settings, enabling extensions to hook in
 		add_action( 'init', array( 'WP_Stream_Settings', 'load' ), 9 );
 
-		// Load network class
-		if ( is_multisite() ) {
-			WP_Stream_Network::get_instance();
-		}
-
 		// Load logger class
 		add_action( 'plugins_loaded', array( 'WP_Stream_Log', 'load' ) );
 

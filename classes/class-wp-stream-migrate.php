@@ -62,7 +62,7 @@ class WP_Stream_Migrate {
 		}
 
 		self::$site_id = is_multisite() ? get_current_site()->id : 1;
-		self::$blog_id = is_network_admin() ? 0 : get_current_blog_id();
+		self::$blog_id = get_current_blog_id();
 
 		self::$record_count = $wpdb->get_var(
 			$wpdb->prepare( "
