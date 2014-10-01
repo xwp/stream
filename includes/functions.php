@@ -37,26 +37,6 @@ function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
 	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'filter' ), func_get_args() );
 }
 
-/**
- * Retrieve the translation of $text for other domains, in an l10n friendly way.
- *
- * Unlike most plugins, Stream has a good reason to use third party text domains.
- * This is because Stream is a logging tool, so we should be logging strings as
- * they appear in WordPress core, or in plugins.
- *
- * @since 2.0.1
- *
- * @see __()
- *
- * @param string $text   Text to translate.
- * @param int    $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- *
- * @return string Translated text
- */
-function stream__( $text, $domain ) {
-	return translate( $text, $domain );
-}
-
 function wp_stream_query( $args = array() ) {
 	return WP_Stream_Query::instance()->query( $args );
 }
