@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Stream\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/stream\n"
-"POT-Creation-Date: 2014-09-27 01:01+1000\n"
-"PO-Revision-Date: 2014-09-27 03:35+1000\n"
+"POT-Creation-Date: 2014-10-01 17:19+1000\n"
+"PO-Revision-Date: 2014-10-01 17:19+1000\n"
 "Last-Translator: Luke Carbis <luke@wp-stream.com>\n"
 "Language-Team: \n"
 "Language: pl_PL\n"
@@ -102,8 +102,6 @@ msgstr "Ustawienia Stream"
 
 #: ../classes/class-wp-stream-admin.php:266
 #: ../classes/class-wp-stream-admin.php:565
-#: ../connectors/class-wp-stream-connector-bbpress.php:114
-#: ../connectors/class-wp-stream-connector-gravityforms.php:118
 #: ../connectors/class-wp-stream-connector-settings.php:100
 #: ../connectors/class-wp-stream-connector-settings.php:121
 #: ../connectors/class-wp-stream-connector-woocommerce.php:693
@@ -270,19 +268,13 @@ msgstr ""
 
 #: ../classes/class-wp-stream-admin.php:808
 #: ../connectors/class-wp-stream-connector-acf.php:81
-#: ../connectors/class-wp-stream-connector-bbpress.php:88
 #: ../connectors/class-wp-stream-connector-blogs.php:50
-#: ../connectors/class-wp-stream-connector-buddypress.php:123
 #: ../connectors/class-wp-stream-connector-comments.php:46
-#: ../connectors/class-wp-stream-connector-edd.php:108
-#: ../connectors/class-wp-stream-connector-gravityforms.php:98
 #: ../connectors/class-wp-stream-connector-menus.php:39
 #: ../connectors/class-wp-stream-connector-posts.php:39
 #: ../connectors/class-wp-stream-connector-taxonomies.php:54
 #: ../connectors/class-wp-stream-connector-users.php:54
 #: ../connectors/class-wp-stream-connector-widgets.php:58
-#: ../connectors/class-wp-stream-connector-woocommerce.php:100
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:77
 msgid "Created"
 msgstr "Utworzono"
 
@@ -552,7 +544,6 @@ msgid "Summary"
 msgstr "Streszczenie"
 
 #: ../classes/class-wp-stream-list-table.php:70
-#: ../connectors/class-wp-stream-connector-acf.php:309
 #: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:492
 #: ../extensions/reports/includes/class-wp-stream-reports-meta-boxes.php:406
 msgid "Author"
@@ -939,18 +930,14 @@ msgid "No rules found."
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-acf.php:71
+msgctxt "acf"
 msgid "ACF"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-acf.php:82
-#: ../connectors/class-wp-stream-connector-bbpress.php:89
 #: ../connectors/class-wp-stream-connector-blogs.php:49
-#: ../connectors/class-wp-stream-connector-buddypress.php:124
-#: ../connectors/class-wp-stream-connector-edd.php:109
 #: ../connectors/class-wp-stream-connector-editor.php:54
-#: ../connectors/class-wp-stream-connector-gravityforms.php:99
 #: ../connectors/class-wp-stream-connector-installer.php:48
-#: ../connectors/class-wp-stream-connector-jetpack.php:85
 #: ../connectors/class-wp-stream-connector-media.php:43
 #: ../connectors/class-wp-stream-connector-menus.php:40
 #: ../connectors/class-wp-stream-connector-posts.php:38
@@ -958,27 +945,17 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-taxonomies.php:55
 #: ../connectors/class-wp-stream-connector-users.php:53
 #: ../connectors/class-wp-stream-connector-widgets.php:62
-#: ../connectors/class-wp-stream-connector-woocommerce.php:99
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:78
 msgid "Updated"
 msgstr "Zaktualizowano"
 
 #: ../connectors/class-wp-stream-connector-acf.php:83
-#: ../connectors/class-wp-stream-connector-edd.php:110
-#: ../connectors/class-wp-stream-connector-gravityforms.php:102
-#: ../connectors/class-wp-stream-connector-jetpack.php:86
 #: ../connectors/class-wp-stream-connector-widgets.php:55
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:79
 msgid "Added"
 msgstr "Dodano"
 
 #: ../connectors/class-wp-stream-connector-acf.php:84
-#: ../connectors/class-wp-stream-connector-bbpress.php:92
 #: ../connectors/class-wp-stream-connector-blogs.php:52
-#: ../connectors/class-wp-stream-connector-buddypress.php:127
 #: ../connectors/class-wp-stream-connector-comments.php:55
-#: ../connectors/class-wp-stream-connector-edd.php:111
-#: ../connectors/class-wp-stream-connector-gravityforms.php:103
 #: ../connectors/class-wp-stream-connector-installer.php:47
 #: ../connectors/class-wp-stream-connector-media.php:44
 #: ../connectors/class-wp-stream-connector-menus.php:41
@@ -986,8 +963,6 @@ msgstr "Dodano"
 #: ../connectors/class-wp-stream-connector-taxonomies.php:56
 #: ../connectors/class-wp-stream-connector-users.php:55
 #: ../connectors/class-wp-stream-connector-widgets.php:59
-#: ../connectors/class-wp-stream-connector-woocommerce.php:102
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:80
 msgid "Deleted"
 msgstr "Usunięto"
 
@@ -1024,14 +999,17 @@ msgid "\"%1$s\" field in \"%2$s\" %3$s"
 msgstr "Zaktualizowano \"%1$s\" w \"%2$s\""
 
 #: ../connectors/class-wp-stream-connector-acf.php:252
+msgctxt "acf"
 msgid "High (after title)"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-acf.php:253
+msgctxt "acf"
 msgid "Normal (after content)"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-acf.php:254
+msgctxt "acf"
 msgid "Side"
 msgstr ""
 
@@ -1042,10 +1020,12 @@ msgid "Position of \"%1$s\" updated to \"%2$s\""
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-acf.php:277
+msgctxt "acf"
 msgid "Seamless (no metabox)"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-acf.php:278
+msgctxt "acf"
 msgid "Standard (WP metabox)"
 msgstr ""
 
@@ -1057,65 +1037,81 @@ msgstr "Załączono \"%1$s\" do \"%2$s\""
 
 #: ../connectors/class-wp-stream-connector-acf.php:301
 #, fuzzy
+msgctxt "acf"
 msgid "Permalink"
 msgstr "Bezpośrednie odnośniki"
 
 #: ../connectors/class-wp-stream-connector-acf.php:302
+#, fuzzy
+msgctxt "acf"
 msgid "Content Editor"
-msgstr ""
+msgstr "Kontekst"
 
 #: ../connectors/class-wp-stream-connector-acf.php:303
+msgctxt "acf"
 msgid "Excerpt"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-acf.php:304
 #, fuzzy
+msgctxt "acf"
 msgid "Custom Fields"
 msgstr "Własny nagłówek"
 
 #: ../connectors/class-wp-stream-connector-acf.php:305
-#: ../connectors/class-wp-stream-connector-settings.php:125
+#, fuzzy
+msgctxt "acf"
 msgid "Discussion"
 msgstr "Dyskusja"
 
 #: ../connectors/class-wp-stream-connector-acf.php:306
-#: ../connectors/class-wp-stream-connector-comments.php:36
-#: ../connectors/class-wp-stream-connector-comments.php:68
-#: ../connectors/class-wp-stream-connector-jetpack.php:109
+#, fuzzy
+msgctxt "acf"
 msgid "Comments"
 msgstr "Komentarze"
 
 #: ../connectors/class-wp-stream-connector-acf.php:307
 #, fuzzy
+msgctxt "acf"
 msgid "Revisions"
 msgstr "Rewizja"
 
 #: ../connectors/class-wp-stream-connector-acf.php:308
+msgctxt "acf"
 msgid "Slug"
 msgstr ""
 
+#: ../connectors/class-wp-stream-connector-acf.php:309
+#, fuzzy
+msgctxt "acf"
+msgid "Author"
+msgstr "Autor"
+
 #: ../connectors/class-wp-stream-connector-acf.php:310
 #, fuzzy
+msgctxt "acf"
 msgid "Format"
 msgstr "Formatowanie"
 
 #: ../connectors/class-wp-stream-connector-acf.php:311
 #, fuzzy
+msgctxt "acf"
 msgid "Featured Image"
 msgstr "Obrazek w nagłówku"
 
 #: ../connectors/class-wp-stream-connector-acf.php:312
-#: ../connectors/class-wp-stream-connector-edd.php:129
 #, fuzzy
+msgctxt "acf"
 msgid "Categories"
 msgstr "Alias kategorii"
 
 #: ../connectors/class-wp-stream-connector-acf.php:313
-#: ../connectors/class-wp-stream-connector-edd.php:130
+msgctxt "acf"
 msgid "Tags"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-acf.php:314
+msgctxt "acf"
 msgid "Send Trackbacks"
 msgstr ""
 
@@ -1163,94 +1159,107 @@ msgstr "Zaktualizowano %1$s: %2$s %3$s"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:78
 #, fuzzy
+msgctxt "bbpress"
 msgid "bbPress"
 msgstr "WordPress"
 
+#: ../connectors/class-wp-stream-connector-bbpress.php:88
+#, fuzzy
+msgctxt "bbpress"
+msgid "Created"
+msgstr "Utworzono"
+
+#: ../connectors/class-wp-stream-connector-bbpress.php:89
+#, fuzzy
+msgctxt "bbpress"
+msgid "Updated"
+msgstr "Zaktualizowano"
+
 #: ../connectors/class-wp-stream-connector-bbpress.php:90
-#: ../connectors/class-wp-stream-connector-buddypress.php:125
-#: ../connectors/class-wp-stream-connector-gravityforms.php:422
-#: ../connectors/class-wp-stream-connector-installer.php:45
-#: ../connectors/class-wp-stream-connector-jetpack.php:79
+#, fuzzy
+msgctxt "bbpress"
 msgid "Activated"
 msgstr "Włączono"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:91
-#: ../connectors/class-wp-stream-connector-buddypress.php:126
-#: ../connectors/class-wp-stream-connector-gravityforms.php:423
-#: ../connectors/class-wp-stream-connector-installer.php:46
-#: ../connectors/class-wp-stream-connector-widgets.php:60
+#, fuzzy
+msgctxt "bbpress"
 msgid "Deactivated"
 msgstr "Wyłączono"
 
+#: ../connectors/class-wp-stream-connector-bbpress.php:92
+#, fuzzy
+msgctxt "bbpress"
+msgid "Deleted"
+msgstr "Usunięto"
+
 #: ../connectors/class-wp-stream-connector-bbpress.php:93
-#: ../connectors/class-wp-stream-connector-comments.php:51
-#: ../connectors/class-wp-stream-connector-edd.php:112
-#: ../connectors/class-wp-stream-connector-gravityforms.php:104
-#: ../connectors/class-wp-stream-connector-gravityforms.php:424
-#: ../connectors/class-wp-stream-connector-posts.php:40
-#: ../connectors/class-wp-stream-connector-woocommerce.php:101
+#, fuzzy
+msgctxt "bbpress"
 msgid "Trashed"
 msgstr "Wyrzucono do kosza"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:94
-#: ../connectors/class-wp-stream-connector-comments.php:52
-#: ../connectors/class-wp-stream-connector-edd.php:113
-#: ../connectors/class-wp-stream-connector-gravityforms.php:105
-#: ../connectors/class-wp-stream-connector-gravityforms.php:425
-#: ../connectors/class-wp-stream-connector-posts.php:41
+#, fuzzy
+msgctxt "bbpress"
 msgid "Restored"
 msgstr "Przywrócono"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:95
-#: ../connectors/class-wp-stream-connector-edd.php:114
 #, fuzzy
+msgctxt "bbpress"
 msgid "Generated"
 msgstr "Ogólne"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:96
-#: ../connectors/class-wp-stream-connector-edd.php:115
-#: ../connectors/class-wp-stream-connector-gravityforms.php:101
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:82
 #, fuzzy
+msgctxt "bbpress"
 msgid "Imported"
 msgstr "Zmieniono kolejność"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:97
-#: ../connectors/class-wp-stream-connector-edd.php:116
-#: ../connectors/class-wp-stream-connector-gravityforms.php:100
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:81
 #, fuzzy
+msgctxt "bbpress"
 msgid "Exported"
 msgstr "Zmieniono kolejność"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:98
-#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:645
+msgctxt "bbpress"
 msgid "Closed"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:99
+msgctxt "bbpress"
 msgid "Opened"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:100
+msgctxt "bbpress"
 msgid "Sticked"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:101
+msgctxt "bbpress"
 msgid "Unsticked"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:102
-#: ../connectors/class-wp-stream-connector-buddypress.php:128
 #, fuzzy
+msgctxt "bbpress"
 msgid "Marked as spam"
 msgstr "Przywrócono ze spamu"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:103
-#: ../connectors/class-wp-stream-connector-buddypress.php:129
 #, fuzzy
+msgctxt "bbpress"
 msgid "Unmarked as spam"
 msgstr "Przywrócono ze spamu"
+
+#: ../connectors/class-wp-stream-connector-bbpress.php:114
+#, fuzzy
+msgctxt "bbpress"
+msgid "Settings"
+msgstr "Ustawienia"
 
 #: ../connectors/class-wp-stream-connector-bbpress.php:131
 #: ../connectors/class-wp-stream-connector-buddypress.php:164
@@ -1259,8 +1268,8 @@ msgstr "Przywrócono ze spamu"
 #: ../connectors/class-wp-stream-connector-buddypress.php:254
 #: ../connectors/class-wp-stream-connector-comments.php:124
 #: ../connectors/class-wp-stream-connector-gravityforms.php:137
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:126
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:133
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:117
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:124
 msgid "Edit"
 msgstr "Edytuj"
 
@@ -1389,33 +1398,82 @@ msgstr "Dodano \"%1$s\" do \"%2$s\""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:113
 #, fuzzy
+msgctxt "buddypress"
 msgid "BuddyPress"
 msgstr "WordPress"
 
+#: ../connectors/class-wp-stream-connector-buddypress.php:123
+#, fuzzy
+msgctxt "buddypress"
+msgid "Created"
+msgstr "Utworzono"
+
+#: ../connectors/class-wp-stream-connector-buddypress.php:124
+#, fuzzy
+msgctxt "buddypress"
+msgid "Updated"
+msgstr "Zaktualizowano"
+
+#: ../connectors/class-wp-stream-connector-buddypress.php:125
+#, fuzzy
+msgctxt "buddypress"
+msgid "Activated"
+msgstr "Włączono"
+
+#: ../connectors/class-wp-stream-connector-buddypress.php:126
+#, fuzzy
+msgctxt "buddypress"
+msgid "Deactivated"
+msgstr "Wyłączono"
+
+#: ../connectors/class-wp-stream-connector-buddypress.php:127
+#, fuzzy
+msgctxt "buddypress"
+msgid "Deleted"
+msgstr "Usunięto"
+
+#: ../connectors/class-wp-stream-connector-buddypress.php:128
+#, fuzzy
+msgctxt "buddypress"
+msgid "Marked as spam"
+msgstr "Przywrócono ze spamu"
+
+#: ../connectors/class-wp-stream-connector-buddypress.php:129
+#, fuzzy
+msgctxt "buddypress"
+msgid "Unmarked as spam"
+msgstr "Przywrócono ze spamu"
+
 #: ../connectors/class-wp-stream-connector-buddypress.php:130
+msgctxt "buddypress"
 msgid "Promoted"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:131
+msgctxt "buddypress"
 msgid "Demoted"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:142
 #, fuzzy
+msgctxt "buddypress"
 msgid "Components"
 msgstr "Komentarze"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:143
+msgctxt "buddypress"
 msgid "Groups"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:144
 #, fuzzy
+msgctxt "buddypress"
 msgid "Activity"
 msgstr "Włączono"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:145
 #, fuzzy
+msgctxt "buddypress"
 msgid "Profile fields"
 msgstr "Profile"
 
@@ -1437,7 +1495,7 @@ msgstr "Edytuj profil"
 #: ../connectors/class-wp-stream-connector-posts.php:106
 #: ../connectors/class-wp-stream-connector-taxonomies.php:94
 #: ../connectors/class-wp-stream-connector-woocommerce.php:220
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:174
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:165
 msgid "View"
 msgstr "Zobacz"
 
@@ -1476,40 +1534,50 @@ msgstr "Usunięto"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:284
 #: ../connectors/class-wp-stream-connector-buddypress.php:288
+msgctxt "buddypress"
 msgid "Toolbar"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:292
+msgctxt "buddypress"
 msgid "Account Deletion"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:296
 #, fuzzy
+msgctxt "buddypress"
 msgid "Profile Syncing"
 msgstr "Profile"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:300
+msgctxt "buddypress"
 msgid "Group Creation"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:304
+msgctxt "buddypress"
 msgid "bbPress Configuration"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:308
+msgctxt "buddypress"
 msgid "Blog &amp; Forum Comments"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:312
+#, fuzzy
+msgctxt "buddypress"
 msgid "Activity auto-refresh"
-msgstr ""
+msgstr "Role zapisywane w dzienniku"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:316
+msgctxt "buddypress"
 msgid "Akismet"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:320
 #, fuzzy
+msgctxt "buddypress"
 msgid "Avatar Uploads"
 msgstr "Wyświetlanie obrazków profilowych"
 
@@ -1550,13 +1618,13 @@ msgid "\"%1$s\" component %2$s"
 msgstr "Komentarz użytkownika %1$s do %2$s został"
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:432
+msgctxt "buddypress"
 msgid "Register"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:433
-#: ../connectors/class-wp-stream-connector-jetpack.php:159
-#: ../extensions/notifications/includes/class-wp-stream-notifications-list-table.php:177
 #, fuzzy
+msgctxt "buddypress"
 msgid "Activate"
 msgstr "Włączono"
 
@@ -1635,10 +1703,12 @@ msgid "Removed \"%2$s\" from \"%1$s\""
 msgstr "Załączono \"%1$s\" do \"%2$s\""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:665
+msgctxt "buddypress"
 msgid "Administrator"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:666
+msgctxt "buddypress"
 msgid "Moderator"
 msgstr ""
 
@@ -1654,6 +1724,7 @@ msgstr "Zaktualizowano \"%1$s\" w \"%2$s\""
 
 #: ../connectors/class-wp-stream-connector-buddypress.php:682
 #, fuzzy
+msgctxt "buddypress"
 msgid "Member"
 msgstr "Członkostwo"
 
@@ -1687,6 +1758,11 @@ msgstr "Zaktualizowano menu \"%s\""
 msgid "Deleted profile field group \"%s\""
 msgstr ""
 
+#: ../connectors/class-wp-stream-connector-comments.php:36
+#: ../connectors/class-wp-stream-connector-comments.php:68
+msgid "Comments"
+msgstr "Komentarze"
+
 #: ../connectors/class-wp-stream-connector-comments.php:47
 msgid "Edited"
 msgstr "Edytowano"
@@ -1702,6 +1778,18 @@ msgstr "Zatwierdzono"
 #: ../connectors/class-wp-stream-connector-comments.php:50
 msgid "Unapproved"
 msgstr "Odrzucono"
+
+#: ../connectors/class-wp-stream-connector-comments.php:51
+#: ../connectors/class-wp-stream-connector-gravityforms.php:424
+#: ../connectors/class-wp-stream-connector-posts.php:40
+msgid "Trashed"
+msgstr "Wyrzucono do kosza"
+
+#: ../connectors/class-wp-stream-connector-comments.php:52
+#: ../connectors/class-wp-stream-connector-gravityforms.php:425
+#: ../connectors/class-wp-stream-connector-posts.php:41
+msgid "Restored"
+msgstr "Przywrócono"
 
 #: ../connectors/class-wp-stream-connector-comments.php:53
 msgid "Marked as Spam"
@@ -1841,30 +1929,99 @@ msgid "Duplicate %3$s by %1$s prevented on %2$s"
 msgstr "Zapobiegnięto duplikatowi komentarza użytkownika %1$s do %2$s"
 
 #: ../connectors/class-wp-stream-connector-edd.php:98
+msgctxt "edd"
 msgid "Easy Digital Downloads"
 msgstr ""
 
+#: ../connectors/class-wp-stream-connector-edd.php:108
+#, fuzzy
+msgctxt "edd"
+msgid "Created"
+msgstr "Utworzono"
+
+#: ../connectors/class-wp-stream-connector-edd.php:109
+#, fuzzy
+msgctxt "edd"
+msgid "Updated"
+msgstr "Zaktualizowano"
+
+#: ../connectors/class-wp-stream-connector-edd.php:110
+#, fuzzy
+msgctxt "edd"
+msgid "Added"
+msgstr "Dodano"
+
+#: ../connectors/class-wp-stream-connector-edd.php:111
+#, fuzzy
+msgctxt "edd"
+msgid "Deleted"
+msgstr "Usunięto"
+
+#: ../connectors/class-wp-stream-connector-edd.php:112
+#, fuzzy
+msgctxt "edd"
+msgid "Trashed"
+msgstr "Wyrzucono do kosza"
+
+#: ../connectors/class-wp-stream-connector-edd.php:113
+#, fuzzy
+msgctxt "edd"
+msgid "Restored"
+msgstr "Przywrócono"
+
+#: ../connectors/class-wp-stream-connector-edd.php:114
+#, fuzzy
+msgctxt "edd"
+msgid "Generated"
+msgstr "Ogólne"
+
+#: ../connectors/class-wp-stream-connector-edd.php:115
+#, fuzzy
+msgctxt "edd"
+msgid "Imported"
+msgstr "Zmieniono kolejność"
+
+#: ../connectors/class-wp-stream-connector-edd.php:116
+#, fuzzy
+msgctxt "edd"
+msgid "Exported"
+msgstr "Zmieniono kolejność"
+
 #: ../connectors/class-wp-stream-connector-edd.php:117
+msgctxt "edd"
 msgid "Revoked"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-edd.php:128
+msgctxt "edd"
 msgid "Downloads"
+msgstr ""
+
+#: ../connectors/class-wp-stream-connector-edd.php:129
+#, fuzzy
+msgctxt "edd"
+msgid "Categories"
+msgstr "Alias kategorii"
+
+#: ../connectors/class-wp-stream-connector-edd.php:130
+msgctxt "edd"
+msgid "Tags"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-edd.php:131
 #, fuzzy
+msgctxt "edd"
 msgid "Discounts"
 msgstr "łączniki"
 
 #: ../connectors/class-wp-stream-connector-edd.php:132
-#: ../extensions/reports/class-wp-stream-reports.php:145
-#: ../extensions/reports/class-wp-stream-reports.php:146
-#: ../extensions/reports/includes/class-wp-stream-reports-settings.php:56
+#, fuzzy
+msgctxt "edd"
 msgid "Reports"
-msgstr ""
+msgstr "Zapisy Stream"
 
 #: ../connectors/class-wp-stream-connector-edd.php:133
+msgctxt "edd"
 msgid "API Keys"
 msgstr ""
 
@@ -1898,6 +2055,7 @@ msgid "Reissue"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-edd.php:273
+msgctxt "edd"
 msgid "Banned emails"
 msgstr ""
 
@@ -2007,27 +2165,88 @@ msgid "Theme Details"
 msgstr "Zobacz wszystko"
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:88
+msgctxt "gravityforms"
 msgid "Gravity Forms"
 msgstr ""
 
+#: ../connectors/class-wp-stream-connector-gravityforms.php:98
+#, fuzzy
+msgctxt "gravityforms"
+msgid "Created"
+msgstr "Utworzono"
+
+#: ../connectors/class-wp-stream-connector-gravityforms.php:99
+#, fuzzy
+msgctxt "gravityforms"
+msgid "Updated"
+msgstr "Zaktualizowano"
+
+#: ../connectors/class-wp-stream-connector-gravityforms.php:100
+#, fuzzy
+msgctxt "gravityforms"
+msgid "Exported"
+msgstr "Zmieniono kolejność"
+
+#: ../connectors/class-wp-stream-connector-gravityforms.php:101
+#, fuzzy
+msgctxt "gravityforms"
+msgid "Imported"
+msgstr "Zmieniono kolejność"
+
+#: ../connectors/class-wp-stream-connector-gravityforms.php:102
+#, fuzzy
+msgctxt "gravityforms"
+msgid "Added"
+msgstr "Dodano"
+
+#: ../connectors/class-wp-stream-connector-gravityforms.php:103
+#, fuzzy
+msgctxt "gravityforms"
+msgid "Deleted"
+msgstr "Usunięto"
+
+#: ../connectors/class-wp-stream-connector-gravityforms.php:104
+#, fuzzy
+msgctxt "gravityforms"
+msgid "Trashed"
+msgstr "Wyrzucono do kosza"
+
+#: ../connectors/class-wp-stream-connector-gravityforms.php:105
+#, fuzzy
+msgctxt "gravityforms"
+msgid "Restored"
+msgstr "Przywrócono"
+
 #: ../connectors/class-wp-stream-connector-gravityforms.php:106
 #, fuzzy
+msgctxt "gravityforms"
 msgid "Duplicated"
 msgstr "Duplikat"
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:117
+#, fuzzy
+msgctxt "gravityforms"
 msgid "Forms"
-msgstr ""
+msgstr "Formatowanie"
+
+#: ../connectors/class-wp-stream-connector-gravityforms.php:118
+#, fuzzy
+msgctxt "gravityforms"
+msgid "Settings"
+msgstr "Ustawienia"
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:119
+msgctxt "gravityforms"
 msgid "Import/Export"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:120
+msgctxt "gravityforms"
 msgid "Entries"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:121
+msgctxt "gravityforms"
 msgid "Notes"
 msgstr ""
 
@@ -2037,26 +2256,33 @@ msgid "Edit Settings"
 msgstr "Edytuj ustawienia %s"
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:181
+#, fuzzy
+msgctxt "gravityforms"
 msgid "Output CSS"
-msgstr ""
+msgstr "Własne"
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:184
+msgctxt "gravityforms"
 msgid "Output HTML5"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:187
+msgctxt "gravityforms"
 msgid "No-Conflict Mode"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:190
+msgctxt "gravityforms"
 msgid "Currency"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:193
+msgctxt "gravityforms"
 msgid "reCAPTCHA Public Key"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:196
+msgctxt "gravityforms"
 msgid "reCAPTCHA Private Key"
 msgstr ""
 
@@ -2100,6 +2326,17 @@ msgstr "Hasło użytkownika %s zostało zresetowane"
 #, php-format
 msgid "\"%1$s\" notification %2$s from \"%3$s\""
 msgstr ""
+
+#: ../connectors/class-wp-stream-connector-gravityforms.php:422
+#: ../connectors/class-wp-stream-connector-installer.php:45
+msgid "Activated"
+msgstr "Włączono"
+
+#: ../connectors/class-wp-stream-connector-gravityforms.php:423
+#: ../connectors/class-wp-stream-connector-installer.php:46
+#: ../connectors/class-wp-stream-connector-widgets.php:60
+msgid "Deactivated"
+msgstr "Wyłączono"
 
 #: ../connectors/class-wp-stream-connector-gravityforms.php:496
 #, php-format
@@ -2258,129 +2495,179 @@ msgid "WordPress updated to %s"
 msgstr "WordPress został zaktualizowany do wersji %s"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:69
+msgctxt "jetpack"
 msgid "Jetpack"
 msgstr ""
 
+#: ../connectors/class-wp-stream-connector-jetpack.php:79
+#, fuzzy
+msgctxt "jetpack"
+msgid "Activated"
+msgstr "Włączono"
+
 #: ../connectors/class-wp-stream-connector-jetpack.php:80
 #, fuzzy
+msgctxt "jetpack"
 msgid "Dectivated"
 msgstr "Wyłączono"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:81
 #, fuzzy
+msgctxt "jetpack"
 msgid "Connected"
 msgstr "Łącznik"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:82
 #, fuzzy
+msgctxt "jetpack"
 msgid "Disconnected"
 msgstr "łączniki"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:83
+msgctxt "jetpack"
 msgid "Link"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:84
+msgctxt "jetpack"
 msgid "Unlink"
 msgstr ""
 
+#: ../connectors/class-wp-stream-connector-jetpack.php:85
+#, fuzzy
+msgctxt "jetpack"
+msgid "Updated"
+msgstr "Zaktualizowano"
+
+#: ../connectors/class-wp-stream-connector-jetpack.php:86
+#, fuzzy
+msgctxt "jetpack"
+msgid "Added"
+msgstr "Dodano"
+
 #: ../connectors/class-wp-stream-connector-jetpack.php:87
-#: ../connectors/class-wp-stream-connector-widgets.php:56
+#, fuzzy
+msgctxt "jetpack"
 msgid "Removed"
-msgstr ""
+msgstr "Zatwierdzono"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:98
+msgctxt "jetpack"
 msgid "Modules"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:99
+msgctxt "jetpack"
 msgid "Blogs"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:100
-#: ../connectors/class-wp-stream-connector-users.php:43
-#: ../connectors/class-wp-stream-connector-users.php:70
+#, fuzzy
+msgctxt "jetpack"
 msgid "Users"
 msgstr "Użytkownicy"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:101
 #, fuzzy
+msgctxt "jetpack"
 msgid "Options"
 msgstr "akcje"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:102
+msgctxt "jetpack"
 msgid "Sharing"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:103
+msgctxt "jetpack"
 msgid "Publicize"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:104
 #, fuzzy
+msgctxt "jetpack"
 msgid "Google+ Profile"
 msgstr "Wyświetl profil"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:105
-#: ../connectors/class-wp-stream-connector-jetpack.php:203
 #, fuzzy
+msgctxt "jetpack"
 msgid "WordPress.com Stats"
 msgstr "WordPress"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:106
+msgctxt "jetpack"
 msgid "Carousel"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:107
 #, fuzzy
+msgctxt "jetpack"
 msgid "Custom CSS"
 msgstr "Własne"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:108
 #, fuzzy
+msgctxt "jetpack"
 msgid "Subscriptions"
 msgstr "akcje"
 
+#: ../connectors/class-wp-stream-connector-jetpack.php:109
+#, fuzzy
+msgctxt "jetpack"
+msgid "Comments"
+msgstr "Komentarze"
+
 #: ../connectors/class-wp-stream-connector-jetpack.php:110
+msgctxt "jetpack"
 msgid "Infinite Scroll"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:111
+msgctxt "jetpack"
 msgid "SSO"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:112
+msgctxt "jetpack"
 msgid "Likes"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:113
+msgctxt "jetpack"
 msgid "Mobile"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:114
+#, fuzzy
+msgctxt "jetpack"
 msgid "Monitor"
-msgstr ""
+msgstr "Edytuj"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:115
+msgctxt "jetpack"
 msgid "Post by Email"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:116
+msgctxt "jetpack"
 msgid "Related Posts"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:117
 #, fuzzy
+msgctxt "jetpack"
 msgid "Site Verification"
 msgstr "Ustawienia Stream"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:118
-#: ../connectors/class-wp-stream-connector-jetpack.php:293
+msgctxt "jetpack"
 msgid "Tiled Galleries"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:119
 #, fuzzy
+msgctxt "jetpack"
 msgid "VideoPress"
 msgstr "Filmy"
 
@@ -2396,6 +2683,12 @@ msgstr ""
 msgid "Deactivate"
 msgstr "Wyłączono"
 
+#: ../connectors/class-wp-stream-connector-jetpack.php:159
+#: ../extensions/notifications/includes/class-wp-stream-notifications-list-table.php:177
+#, fuzzy
+msgid "Activate"
+msgstr "Włączono"
+
 #: ../connectors/class-wp-stream-connector-jetpack.php:174
 msgid "Configure module"
 msgstr ""
@@ -2407,6 +2700,11 @@ msgstr ""
 #: ../connectors/class-wp-stream-connector-jetpack.php:198
 msgid "Twitter site tag"
 msgstr ""
+
+#: ../connectors/class-wp-stream-connector-jetpack.php:203
+#, fuzzy
+msgid "WordPress.com Stats"
+msgstr "WordPress"
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:208
 msgid "Color Scheme"
@@ -2475,6 +2773,10 @@ msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:287
 msgid "Pinterest Site Verification Token"
+msgstr ""
+
+#: ../connectors/class-wp-stream-connector-jetpack.php:293
+msgid "Tiled Galleries"
 msgstr ""
 
 #: ../connectors/class-wp-stream-connector-jetpack.php:322
@@ -2749,14 +3051,14 @@ msgid "Posts"
 msgstr "Wpisy"
 
 #: ../connectors/class-wp-stream-connector-posts.php:100
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:168
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:159
 #, fuzzy, php-format
 msgctxt "Post type singular name"
 msgid "Restore %s"
 msgstr "Przywrócono"
 
 #: ../connectors/class-wp-stream-connector-posts.php:101
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:169
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:160
 #, fuzzy, php-format
 msgctxt "Post type singular name"
 msgid "Delete %s Permenantly"
@@ -2764,14 +3066,14 @@ msgstr "Usunięto \"%s\""
 
 #: ../connectors/class-wp-stream-connector-posts.php:103
 #: ../connectors/class-wp-stream-connector-woocommerce.php:216
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:171
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:162
 #, fuzzy, php-format
 msgctxt "Post type singular name"
 msgid "Edit %s"
 msgstr "Edytuj %s"
 
 #: ../connectors/class-wp-stream-connector-posts.php:110
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:178
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:169
 msgid "Revision"
 msgstr "Rewizja"
 
@@ -2830,8 +3132,11 @@ msgstr "Pisanie"
 msgid "Reading"
 msgstr "Czytanie"
 
+#: ../connectors/class-wp-stream-connector-settings.php:125
+msgid "Discussion"
+msgstr "Dyskusja"
+
 #: ../connectors/class-wp-stream-connector-settings.php:127
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:97
 msgid "Permalinks"
 msgstr "Bezpośrednie odnośniki"
 
@@ -2858,343 +3163,342 @@ msgstr "Zapisy Stream"
 msgid "Stream Defaults"
 msgstr "Ustawienia Stream"
 
-#: ../connectors/class-wp-stream-connector-settings.php:208
+#: ../connectors/class-wp-stream-connector-settings.php:233
 msgid "Site Title"
 msgstr "Tytuł witryny"
 
-#: ../connectors/class-wp-stream-connector-settings.php:209
+#: ../connectors/class-wp-stream-connector-settings.php:234
 msgid "Tagline"
 msgstr "Opis"
 
-#: ../connectors/class-wp-stream-connector-settings.php:210
+#: ../connectors/class-wp-stream-connector-settings.php:235
 msgid "WordPress Address (URL)"
 msgstr "Adres WordPressa (URL)"
 
-#: ../connectors/class-wp-stream-connector-settings.php:211
+#: ../connectors/class-wp-stream-connector-settings.php:236
 msgid "Site Address (URL)"
 msgstr "Adres witryny (URL)"
 
-#: ../connectors/class-wp-stream-connector-settings.php:212
+#: ../connectors/class-wp-stream-connector-settings.php:237
 msgid "E-mail Address"
 msgstr "Adres e-mail"
 
-#: ../connectors/class-wp-stream-connector-settings.php:213
+#: ../connectors/class-wp-stream-connector-settings.php:238
 msgid "Membership"
 msgstr "Członkostwo"
 
-#: ../connectors/class-wp-stream-connector-settings.php:214
+#: ../connectors/class-wp-stream-connector-settings.php:239
 msgid "New User Default Role"
 msgstr "Domyślna rola nowych użytkowników"
 
-#: ../connectors/class-wp-stream-connector-settings.php:215
+#: ../connectors/class-wp-stream-connector-settings.php:240
 msgid "Timezone"
 msgstr "Strefa czasowa"
 
-#: ../connectors/class-wp-stream-connector-settings.php:216
+#: ../connectors/class-wp-stream-connector-settings.php:241
 msgid "Date Format"
 msgstr "Format daty"
 
-#: ../connectors/class-wp-stream-connector-settings.php:217
+#: ../connectors/class-wp-stream-connector-settings.php:242
 msgid "Time Format"
 msgstr "Format godziny"
 
-#: ../connectors/class-wp-stream-connector-settings.php:218
+#: ../connectors/class-wp-stream-connector-settings.php:243
 msgid "Week Starts On"
 msgstr "Pierwszy dzień tygodnia"
 
-#: ../connectors/class-wp-stream-connector-settings.php:220
-#: ../connectors/class-wp-stream-connector-settings.php:221
+#: ../connectors/class-wp-stream-connector-settings.php:245
+#: ../connectors/class-wp-stream-connector-settings.php:246
 msgid "Formatting"
 msgstr "Formatowanie"
 
-#: ../connectors/class-wp-stream-connector-settings.php:222
+#: ../connectors/class-wp-stream-connector-settings.php:247
 msgid "Default Post Category"
 msgstr "Domyślna kategoria wpisów"
 
-#: ../connectors/class-wp-stream-connector-settings.php:223
+#: ../connectors/class-wp-stream-connector-settings.php:248
 msgid "Default Post Format"
 msgstr "Domyślny format wpisu"
 
-#: ../connectors/class-wp-stream-connector-settings.php:224
+#: ../connectors/class-wp-stream-connector-settings.php:249
 #, fuzzy
 msgid "Mail Server"
 msgstr "Adres serwera pocztowego"
 
-#: ../connectors/class-wp-stream-connector-settings.php:225
+#: ../connectors/class-wp-stream-connector-settings.php:250
 #, fuzzy
 msgid "Login Name"
 msgstr "Zalogowano się"
 
-#: ../connectors/class-wp-stream-connector-settings.php:226
+#: ../connectors/class-wp-stream-connector-settings.php:251
 #, fuzzy
 msgid "Password"
 msgstr "Zresetowano hasło"
 
-#: ../connectors/class-wp-stream-connector-settings.php:227
+#: ../connectors/class-wp-stream-connector-settings.php:252
 msgid "Default Mail Category"
 msgstr "Domyślna kategoria wpisów dodawanych przez e-mail"
 
-#: ../connectors/class-wp-stream-connector-settings.php:228
+#: ../connectors/class-wp-stream-connector-settings.php:253
 msgid "Update Services"
 msgstr "Usługi aktualizacji"
 
-#: ../connectors/class-wp-stream-connector-settings.php:230
-#: ../connectors/class-wp-stream-connector-settings.php:231
-#: ../connectors/class-wp-stream-connector-settings.php:232
+#: ../connectors/class-wp-stream-connector-settings.php:255
+#: ../connectors/class-wp-stream-connector-settings.php:256
+#: ../connectors/class-wp-stream-connector-settings.php:257
 msgid "Front page displays"
 msgstr "Strona główna wyświetla"
 
-#: ../connectors/class-wp-stream-connector-settings.php:233
+#: ../connectors/class-wp-stream-connector-settings.php:258
 msgid "Blog pages show at most"
 msgstr "Strony blogu wyświetlają maksymalnie"
 
-#: ../connectors/class-wp-stream-connector-settings.php:234
+#: ../connectors/class-wp-stream-connector-settings.php:259
 msgid "Syndication feeds show the most recent"
 msgstr "Kanały nowości wyświetlają ostatnie"
 
-#: ../connectors/class-wp-stream-connector-settings.php:235
+#: ../connectors/class-wp-stream-connector-settings.php:260
 msgid "For each article in a feed, show"
 msgstr "W kanałach nowości wyświetlaj"
 
-#: ../connectors/class-wp-stream-connector-settings.php:236
+#: ../connectors/class-wp-stream-connector-settings.php:261
 msgid "Search Engine Visibility"
 msgstr "Widoczność dla wyszukiwarek"
 
-#: ../connectors/class-wp-stream-connector-settings.php:238
-#: ../connectors/class-wp-stream-connector-settings.php:239
-#: ../connectors/class-wp-stream-connector-settings.php:240
+#: ../connectors/class-wp-stream-connector-settings.php:263
+#: ../connectors/class-wp-stream-connector-settings.php:264
+#: ../connectors/class-wp-stream-connector-settings.php:265
 msgid "Default article settings"
 msgstr "Domyślne ustawienia nowych artykułów"
 
-#: ../connectors/class-wp-stream-connector-settings.php:241
-#: ../connectors/class-wp-stream-connector-settings.php:242
-#: ../connectors/class-wp-stream-connector-settings.php:243
-#: ../connectors/class-wp-stream-connector-settings.php:244
-#: ../connectors/class-wp-stream-connector-settings.php:245
-#: ../connectors/class-wp-stream-connector-settings.php:246
-#: ../connectors/class-wp-stream-connector-settings.php:247
-#: ../connectors/class-wp-stream-connector-settings.php:248
-#: ../connectors/class-wp-stream-connector-settings.php:249
-#: ../connectors/class-wp-stream-connector-settings.php:250
+#: ../connectors/class-wp-stream-connector-settings.php:266
+#: ../connectors/class-wp-stream-connector-settings.php:267
+#: ../connectors/class-wp-stream-connector-settings.php:268
+#: ../connectors/class-wp-stream-connector-settings.php:269
+#: ../connectors/class-wp-stream-connector-settings.php:270
+#: ../connectors/class-wp-stream-connector-settings.php:271
+#: ../connectors/class-wp-stream-connector-settings.php:272
+#: ../connectors/class-wp-stream-connector-settings.php:273
+#: ../connectors/class-wp-stream-connector-settings.php:274
+#: ../connectors/class-wp-stream-connector-settings.php:275
 msgid "Other comment settings"
 msgstr "Pozostałe ustawienia komentarzy"
 
-#: ../connectors/class-wp-stream-connector-settings.php:251
-#: ../connectors/class-wp-stream-connector-settings.php:252
+#: ../connectors/class-wp-stream-connector-settings.php:276
+#: ../connectors/class-wp-stream-connector-settings.php:277
 msgid "E-mail me whenever"
 msgstr "Wyślij mi e-maila za każdym razem, kiedy"
 
-#: ../connectors/class-wp-stream-connector-settings.php:253
-#: ../connectors/class-wp-stream-connector-settings.php:254
+#: ../connectors/class-wp-stream-connector-settings.php:278
+#: ../connectors/class-wp-stream-connector-settings.php:279
 msgid "Before a comment appears"
 msgstr "Nim komentarz pojawi się na blogu,"
 
-#: ../connectors/class-wp-stream-connector-settings.php:255
-#: ../connectors/class-wp-stream-connector-settings.php:256
+#: ../connectors/class-wp-stream-connector-settings.php:280
+#: ../connectors/class-wp-stream-connector-settings.php:281
 msgid "Comment Moderation"
 msgstr "Moderacja komentarzy"
 
-#: ../connectors/class-wp-stream-connector-settings.php:257
+#: ../connectors/class-wp-stream-connector-settings.php:282
 msgid "Comment Blacklist"
 msgstr "Czarna lista komentarzy"
 
-#: ../connectors/class-wp-stream-connector-settings.php:258
+#: ../connectors/class-wp-stream-connector-settings.php:283
 #, fuzzy
 msgid "Show Avatars"
 msgstr "Wszystko: %s"
 
-#: ../connectors/class-wp-stream-connector-settings.php:259
+#: ../connectors/class-wp-stream-connector-settings.php:284
 #, fuzzy
 msgid "Maximum Rating"
 msgstr "Najwyższa dozwolona kategoria"
 
-#: ../connectors/class-wp-stream-connector-settings.php:260
+#: ../connectors/class-wp-stream-connector-settings.php:285
 msgid "Default Avatar"
 msgstr "Domyślny obrazek profilowy"
 
-#: ../connectors/class-wp-stream-connector-settings.php:262
-#: ../connectors/class-wp-stream-connector-settings.php:263
-#: ../connectors/class-wp-stream-connector-settings.php:264
+#: ../connectors/class-wp-stream-connector-settings.php:287
+#: ../connectors/class-wp-stream-connector-settings.php:288
+#: ../connectors/class-wp-stream-connector-settings.php:289
 #, fuzzy
 msgid "Thumbnail size"
 msgstr "Rozmiar miniatury"
 
-#: ../connectors/class-wp-stream-connector-settings.php:265
-#: ../connectors/class-wp-stream-connector-settings.php:266
+#: ../connectors/class-wp-stream-connector-settings.php:290
+#: ../connectors/class-wp-stream-connector-settings.php:291
 #, fuzzy
 msgid "Medium size"
 msgstr "Średni rozmiar"
 
-#: ../connectors/class-wp-stream-connector-settings.php:267
-#: ../connectors/class-wp-stream-connector-settings.php:268
+#: ../connectors/class-wp-stream-connector-settings.php:292
+#: ../connectors/class-wp-stream-connector-settings.php:293
 #, fuzzy
 msgid "Large size"
 msgstr "Duży rozmiar"
 
-#: ../connectors/class-wp-stream-connector-settings.php:269
+#: ../connectors/class-wp-stream-connector-settings.php:294
 #, fuzzy
 msgid "Uploading Files"
 msgstr "Porządkowanie wysyłanych plików"
 
-#: ../connectors/class-wp-stream-connector-settings.php:271
+#: ../connectors/class-wp-stream-connector-settings.php:296
 #, fuzzy
 msgid "Permalink Settings"
 msgstr "Bezpośrednie odnośniki"
 
-#: ../connectors/class-wp-stream-connector-settings.php:272
+#: ../connectors/class-wp-stream-connector-settings.php:297
 msgid "Category base"
 msgstr "Alias kategorii"
 
-#: ../connectors/class-wp-stream-connector-settings.php:273
+#: ../connectors/class-wp-stream-connector-settings.php:298
 msgid "Tag base"
 msgstr "Alias tagów"
 
-#: ../connectors/class-wp-stream-connector-settings.php:275
+#: ../connectors/class-wp-stream-connector-settings.php:300
 msgid "Registration notification"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:276
+#: ../connectors/class-wp-stream-connector-settings.php:301
 #, fuzzy
 msgid "Allow new registrations"
 msgstr "Rejestracja użytkownika"
 
-#: ../connectors/class-wp-stream-connector-settings.php:277
+#: ../connectors/class-wp-stream-connector-settings.php:302
 msgid "Add New Users"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:278
+#: ../connectors/class-wp-stream-connector-settings.php:303
 msgid "Enable administration menus"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:279
+#: ../connectors/class-wp-stream-connector-settings.php:304
 msgid "Site upload space check"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:280
+#: ../connectors/class-wp-stream-connector-settings.php:305
 msgid "Site upload space"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:281
+#: ../connectors/class-wp-stream-connector-settings.php:306
 msgid "Upload file types"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:282
+#: ../connectors/class-wp-stream-connector-settings.php:307
 #, fuzzy
 msgid "Network Title"
 msgstr "w całej sieci"
 
-#: ../connectors/class-wp-stream-connector-settings.php:283
+#: ../connectors/class-wp-stream-connector-settings.php:308
 msgid "First Post"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:284
+#: ../connectors/class-wp-stream-connector-settings.php:309
 msgid "First Page"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:285
+#: ../connectors/class-wp-stream-connector-settings.php:310
 #, fuzzy
 msgid "First Comment"
 msgstr "Komentarze"
 
-#: ../connectors/class-wp-stream-connector-settings.php:286
+#: ../connectors/class-wp-stream-connector-settings.php:311
 msgid "First Comment URL"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:287
+#: ../connectors/class-wp-stream-connector-settings.php:312
 msgid "First Comment Author"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:288
+#: ../connectors/class-wp-stream-connector-settings.php:313
 msgid "Welcome Email"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:289
+#: ../connectors/class-wp-stream-connector-settings.php:314
 msgid "Welcome User Email"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:290
+#: ../connectors/class-wp-stream-connector-settings.php:315
 msgid "Max upload file size"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:291
+#: ../connectors/class-wp-stream-connector-settings.php:316
 #, fuzzy
 msgid "Terms Enabled"
 msgstr "Włączone"
 
-#: ../connectors/class-wp-stream-connector-settings.php:292
+#: ../connectors/class-wp-stream-connector-settings.php:317
 msgid "Banned Names"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:293
+#: ../connectors/class-wp-stream-connector-settings.php:318
 msgid "Limited Email Registrations"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:294
+#: ../connectors/class-wp-stream-connector-settings.php:319
 msgid "Banned Email Domains"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:295
+#: ../connectors/class-wp-stream-connector-settings.php:320
 msgid "Network Language"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:296
+#: ../connectors/class-wp-stream-connector-settings.php:321
 msgid "Network Admin Email"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:297
+#: ../connectors/class-wp-stream-connector-settings.php:322
 msgid "User Count"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-settings.php:299
+#: ../connectors/class-wp-stream-connector-settings.php:324
 #, fuzzy
 msgid "Stream Database Version"
 msgstr "Wyczyść bazę danych Stream"
 
-#: ../connectors/class-wp-stream-connector-settings.php:300
+#: ../connectors/class-wp-stream-connector-settings.php:325
 #, fuzzy
-msgid "Stream Total Sites"
+msgid "Stream Connected Sites"
 msgstr "Ustawienia Stream"
 
-#: ../connectors/class-wp-stream-connector-settings.php:329
+#: ../connectors/class-wp-stream-connector-settings.php:354
 msgid "Background Image"
 msgstr "Obrazek tła"
 
-#: ../connectors/class-wp-stream-connector-settings.php:330
+#: ../connectors/class-wp-stream-connector-settings.php:355
 msgid "Background Position"
 msgstr "Położenie tła"
 
-#: ../connectors/class-wp-stream-connector-settings.php:331
+#: ../connectors/class-wp-stream-connector-settings.php:356
 msgid "Background Repeat"
 msgstr "Powtarzanie tła"
 
-#: ../connectors/class-wp-stream-connector-settings.php:332
+#: ../connectors/class-wp-stream-connector-settings.php:357
 msgid "Background Attachment"
 msgstr "Zaczepienie tła"
 
-#: ../connectors/class-wp-stream-connector-settings.php:333
+#: ../connectors/class-wp-stream-connector-settings.php:358
 msgid "Background Color"
 msgstr "Kolor tła"
 
-#: ../connectors/class-wp-stream-connector-settings.php:335
+#: ../connectors/class-wp-stream-connector-settings.php:360
 msgid "Header Image"
 msgstr "Obrazek w nagłówku"
 
-#: ../connectors/class-wp-stream-connector-settings.php:336
+#: ../connectors/class-wp-stream-connector-settings.php:361
 msgid "Text Color"
 msgstr "Kolor tekstu"
 
-#: ../connectors/class-wp-stream-connector-settings.php:471
+#: ../connectors/class-wp-stream-connector-settings.php:496
 #, php-format
 msgid "Edit %s Settings"
 msgstr "Edytuj ustawienia %s"
 
-#: ../connectors/class-wp-stream-connector-settings.php:604
+#: ../connectors/class-wp-stream-connector-settings.php:624
 #, php-format
 msgid "\"%s\" setting was updated"
 msgstr "Opcja \"%s\" została zaktualizowana"
 
 #: ../connectors/class-wp-stream-connector-taxonomies.php:44
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:472
 msgid "Taxonomies"
 msgstr "Taksonomie"
 
@@ -3221,6 +3525,11 @@ msgstr "Usunięto %2$s \"%1$s\""
 msgctxt "1: Term name, 2: Taxonomy singular label"
 msgid "\"%1$s\" %2$s updated"
 msgstr "Zaktualizowano %2$s \"%1$s\""
+
+#: ../connectors/class-wp-stream-connector-users.php:43
+#: ../connectors/class-wp-stream-connector-users.php:70
+msgid "Users"
+msgstr "Użytkownicy"
 
 #: ../connectors/class-wp-stream-connector-users.php:56
 msgid "Password Reset"
@@ -3307,6 +3616,10 @@ msgstr "Konto użytkownika #%d zostało usunięte"
 #: ../connectors/class-wp-stream-connector-widgets.php:45
 msgid "Widgets"
 msgstr "Widgety"
+
+#: ../connectors/class-wp-stream-connector-widgets.php:56
+msgid "Removed"
+msgstr ""
 
 #: ../connectors/class-wp-stream-connector-widgets.php:57
 #, fuzzy
@@ -3534,10 +3847,36 @@ msgid "%3$s widget deleted"
 msgstr "Motyw \"%s\" został usunięty"
 
 #: ../connectors/class-wp-stream-connector-woocommerce.php:89
+msgctxt "woocommerce"
 msgid "WooCommerce"
 msgstr ""
 
+#: ../connectors/class-wp-stream-connector-woocommerce.php:99
+#, fuzzy
+msgctxt "woocommerce"
+msgid "Updated"
+msgstr "Zaktualizowano"
+
+#: ../connectors/class-wp-stream-connector-woocommerce.php:100
+#, fuzzy
+msgctxt "woocommerce"
+msgid "Created"
+msgstr "Utworzono"
+
+#: ../connectors/class-wp-stream-connector-woocommerce.php:101
+#, fuzzy
+msgctxt "woocommerce"
+msgid "Trashed"
+msgstr "Wyrzucono do kosza"
+
+#: ../connectors/class-wp-stream-connector-woocommerce.php:102
+#, fuzzy
+msgctxt "woocommerce"
+msgid "Deleted"
+msgstr "Usunięto"
+
 #: ../connectors/class-wp-stream-connector-woocommerce.php:122
+msgctxt "woocommerce"
 msgid "Attributes"
 msgstr ""
 
@@ -3700,398 +4039,526 @@ msgstr ""
 msgid "Tools"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:67
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:59
 #, fuzzy
+msgctxt "wordpress-seo"
 msgid "WordPress SEO"
 msgstr "WordPress"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:93
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:69
+#, fuzzy
+msgctxt "wordpress-seo"
+msgid "Created"
+msgstr "Utworzono"
+
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:70
+#, fuzzy
+msgctxt "wordpress-seo"
+msgid "Updated"
+msgstr "Zaktualizowano"
+
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:71
+#, fuzzy
+msgctxt "wordpress-seo"
+msgid "Added"
+msgstr "Dodano"
+
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:72
+#, fuzzy
+msgctxt "wordpress-seo"
+msgid "Deleted"
+msgstr "Usunięto"
+
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:73
+#, fuzzy
+msgctxt "wordpress-seo"
+msgid "Exported"
+msgstr "Zmieniono kolejność"
+
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:74
+#, fuzzy
+msgctxt "wordpress-seo"
+msgid "Imported"
+msgstr "Zmieniono kolejność"
+
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:85
+msgctxt "wordpress-seo"
 msgid "Dashboard"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:94
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:86
+msgctxt "wordpress-seo"
 msgid "Titles &amp; Metas"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:95
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:87
+msgctxt "wordpress-seo"
 msgid "Social"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:96
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:88
+msgctxt "wordpress-seo"
 msgid "XML Sitemaps"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:98
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:89
 #, fuzzy
+msgctxt "wordpress-seo"
+msgid "Permalinks"
+msgstr "Bezpośrednie odnośniki"
+
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:90
+#, fuzzy
+msgctxt "wordpress-seo"
 msgid "Internal Links"
 msgstr "Bezpośrednie odnośniki"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:99
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:91
+msgctxt "wordpress-seo"
 msgid "RSS"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:100
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:92
+msgctxt "wordpress-seo"
 msgid "Import & Export"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:101
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:93
+msgctxt "wordpress-seo"
 msgid "Bulk Title Editor"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:102
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:94
+msgctxt "wordpress-seo"
 msgid "Bulk Description Editor"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:104
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:95
 #, fuzzy
+msgctxt "wordpress-seo"
 msgid "Files"
 msgstr "Profile"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:105
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:96
 #, fuzzy
+msgctxt "wordpress-seo"
 msgid "Content"
 msgstr "Kontekst"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:214
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:205
 msgid "HeadSpace2"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:215
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:206
 msgid "All-in-One SEO"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:216
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:207
 msgid "OLD All-in-One SEO"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:217
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:208
 msgid "WooThemes SEO framework"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:218
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:209
 msgid "Robots Meta (by Yoast)"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:219
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:210
 msgid "RSS Footer (by Yoast)"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:220
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:211
 msgid "Yoast Breadcrumbs"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:229
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:220
 #, php-format
 msgid "Imported settings from %1$s%2$s"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:231
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:222
 msgid ", and deleted old data"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:251
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:242
 #, fuzzy, php-format
 msgid "Exported settings%s"
 msgstr "Edytuj ustawienia %s"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:252
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:243
 msgid ", including taxonomy meta"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:264
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:255
 #, php-format
 msgid "Tried importing settings from \"%s\""
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:279
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:270
 msgid "Tried creating robots.txt file"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:281
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:272
 msgid "Tried updating robots.txt file"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:283
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:274
 msgid "Tried updating htaccess file"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:334
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:325
 #, fuzzy, php-format
 msgid "Updated \"%1$s\" of \"%2$s\" %3$s"
 msgstr "Zaktualizowano %1$s: %2$s %3$s"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:373
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:364
 #, fuzzy, php-format
 msgid "%s settings updated"
 msgstr "Opcja \"%s\" została zaktualizowana"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:389
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:380
+msgctxt "wordpress-seo"
 msgid "Allow tracking of this WordPress install's anonymous data."
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:390
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:381
+msgctxt "wordpress-seo"
 msgid "Disable the Advanced part of the WordPress SEO meta box"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:391
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:382
+#, fuzzy
+msgctxt "wordpress-seo"
 msgid "Alexa Verification ID"
-msgstr ""
+msgstr "Ustawienia Stream"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:392
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:383
+msgctxt "wordpress-seo"
 msgid "Bing Webmaster Tools"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:393
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:384
+msgctxt "wordpress-seo"
 msgid "Google Webmaster Tools"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:394
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:385
+msgctxt "wordpress-seo"
 msgid "Pinterest"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:395
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:386
+msgctxt "wordpress-seo"
 msgid "Yandex Webmaster Tools"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:398
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:389
+msgctxt "wordpress-seo"
 msgid "Enable Breadcrumbs"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:399
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:390
+msgctxt "wordpress-seo"
 msgid "Separator between breadcrumbs"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:400
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:391
+msgctxt "wordpress-seo"
 msgid "Anchor text for the Homepage"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:401
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:392
+msgctxt "wordpress-seo"
 msgid "Prefix for the breadcrumb path"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:402
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:393
+msgctxt "wordpress-seo"
 msgid "Prefix for Archive breadcrumbs"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:403
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:394
+msgctxt "wordpress-seo"
 msgid "Prefix for Search Page breadcrumbs"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:404
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:395
+msgctxt "wordpress-seo"
 msgid "Breadcrumb for 404 Page"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:405
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:396
+msgctxt "wordpress-seo"
 msgid "Remove Blog page from Breadcrumbs"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:406
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:397
+msgctxt "wordpress-seo"
 msgid "Bold the last page in the breadcrumb"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:409
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:400
+msgctxt "wordpress-seo"
 msgid "Force rewrite titles"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:410
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:401
+msgctxt "wordpress-seo"
 msgid "Noindex subpages of archives"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:411
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:402
+msgctxt "wordpress-seo"
 msgid "Use <code>meta</code> keywords tag?"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:412
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:403
+msgctxt "wordpress-seo"
 msgid "Add <code>noodp</code> meta robots tag sitewide"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:413
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:404
+msgctxt "wordpress-seo"
 msgid "Add <code>noydir</code> meta robots tag sitewide"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:414
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:405
+msgctxt "wordpress-seo"
 msgid "Hide RSD Links"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:415
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:406
+msgctxt "wordpress-seo"
 msgid "Hide WLW Manifest Links"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:416
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:407
+msgctxt "wordpress-seo"
 msgid "Hide Shortlink for posts"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:417
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:408
+msgctxt "wordpress-seo"
 msgid "Hide RSS Links"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:418
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:409
+msgctxt "wordpress-seo"
 msgid "Disable the author archives"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:419
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:410
+msgctxt "wordpress-seo"
 msgid "Disable the date-based archives"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:422
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:413
+msgctxt "wordpress-seo"
 msgid "Who should have access to the WordPress SEO settings"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:423
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:414
+msgctxt "wordpress-seo"
 msgid "New blogs get the SEO settings from this blog"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:424
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:415
+msgctxt "wordpress-seo"
 msgid "Blog ID"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:427
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:418
+msgctxt "wordpress-seo"
 msgid ""
 "Strip the category base (usually <code>/category/</code>) from the category "
 "URL."
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:428
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:419
+msgctxt "wordpress-seo"
 msgid "Enforce a trailing slash on all category and tag URL's"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:429
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:420
+msgctxt "wordpress-seo"
 msgid "Remove stop words from slugs."
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:430
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:421
+msgctxt "wordpress-seo"
 msgid "Redirect attachment URL's to parent post URL."
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:431
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:422
+msgctxt "wordpress-seo"
 msgid "Remove the <code>?replytocom</code> variables."
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:432
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:423
+msgctxt "wordpress-seo"
 msgid ""
 "Redirect ugly URL's to clean permalinks. (Not recommended in many cases!)"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:433
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:424
+msgctxt "wordpress-seo"
 msgid "Force Transport"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:434
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:425
+msgctxt "wordpress-seo"
 msgid "Prevent cleaning out Google Site Search URL's."
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:435
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:426
+msgctxt "wordpress-seo"
 msgid ""
 "Prevent cleaning out Google Analytics Campaign & Google AdWords Parameters."
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:436
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:427
+msgctxt "wordpress-seo"
 msgid "Other variables not to clean"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:439
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:430
+msgctxt "wordpress-seo"
 msgid "Add Open Graph meta data"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:440
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:431
+msgctxt "wordpress-seo"
 msgid "Facebook Page URL"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:441
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:443
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:432
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:434
 #, fuzzy
+msgctxt "wordpress-seo"
 msgid "Image URL"
 msgstr "Obrazek"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:442
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:433
+#, fuzzy
+msgctxt "wordpress-seo"
 msgid "Description"
-msgstr ""
+msgstr "akcje"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:444
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:435
+msgctxt "wordpress-seo"
 msgid "Add Twitter card meta data"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:445
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:436
+msgctxt "wordpress-seo"
 msgid "Site Twitter Username"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:446
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:437
+msgctxt "wordpress-seo"
 msgid "The default card type to use"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:447
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:438
+msgctxt "wordpress-seo"
 msgid "Add Google+ specific post meta data (excluding author metadata)"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:448
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:439
+msgctxt "wordpress-seo"
 msgid "Google Publisher Page"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:451
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:442
+msgctxt "wordpress-seo"
 msgid "Check this box to enable XML sitemap functionality."
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:452
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:443
+msgctxt "wordpress-seo"
 msgid "Disable author/user sitemap"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:453
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:444
+msgctxt "wordpress-seo"
 msgid "Ping Yahoo!"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:454
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:445
+msgctxt "wordpress-seo"
 msgid "Ping Ask.com"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:455
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:446
+msgctxt "wordpress-seo"
 msgid "Max entries per sitemap page"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:458
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:449
+msgctxt "wordpress-seo"
 msgid "Content to put before each post in the feed"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:459
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:450
+msgctxt "wordpress-seo"
 msgid "Content to put after each post"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:463
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:454
+msgctxt "wordpress-seo"
 msgid "Title template"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:464
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:455
+msgctxt "wordpress-seo"
 msgid "Meta description template"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:465
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:456
+msgctxt "wordpress-seo"
 msgid "Meta keywords template"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:466
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:457
+msgctxt "wordpress-seo"
 msgid "Meta Robots"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:467
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:458
 #, fuzzy
+msgctxt "wordpress-seo"
 msgid "Authorship"
 msgstr "Autor"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:468
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:459
+msgctxt "wordpress-seo"
 msgid "Show date in snippet preview?"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:469
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:460
+#, fuzzy
+msgctxt "wordpress-seo"
 msgid "WordPress SEO Meta Box"
-msgstr ""
+msgstr "WordPress"
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:470
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:461
+msgctxt "wordpress-seo"
 msgid "Breadcrumbs Title"
 msgstr ""
 
-#: ../connectors/class-wp-stream-connector-wordpress-seo.php:471
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:462
 #, fuzzy
+msgctxt "wordpress-seo"
 msgid "Post types"
 msgstr "Wpisy"
+
+#: ../connectors/class-wp-stream-connector-wordpress-seo.php:463
+#, fuzzy
+msgctxt "wordpress-seo"
+msgid "Taxonomies"
+msgstr "Taksonomie"
 
 #: ../extensions/notifications/class-wp-stream-notifications.php:147
 #, fuzzy
@@ -4499,6 +4966,10 @@ msgstr ""
 
 #: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:644
 msgid "Open"
+msgstr ""
+
+#: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:645
+msgid "Closed"
 msgstr ""
 
 #: ../extensions/notifications/includes/class-wp-stream-notifications-post-type.php:650
@@ -4972,6 +5443,12 @@ msgstr "Usunięto \"%s\""
 
 #: ../extensions/reports/class-wp-stream-reports.php:125
 msgid "Cheating huh?"
+msgstr ""
+
+#: ../extensions/reports/class-wp-stream-reports.php:145
+#: ../extensions/reports/class-wp-stream-reports.php:146
+#: ../extensions/reports/includes/class-wp-stream-reports-settings.php:56
+msgid "Reports"
 msgstr ""
 
 #: ../extensions/reports/class-wp-stream-reports.php:223
