@@ -31,14 +31,12 @@ Symlink to the `.travis.yml`, `.jshintrc`, and `phpcs.ruleset.xml` inside of the
 ```bash
 ln -s bin/.travis.yml . && git add .travis.yml
 ln -s bin/.jshintrc . && git add .jshintrc
-ln -s bin/phpcs.ruleset.xml . && git add phpcs.ruleset.xml
 ```
 
 Symlink to `pre-commit` from your project's `.git/hooks/pre-commit`:
 
 ```bash
-cd .git/hooks
-ln -s ../../bin/pre-commit .
+cd .git/hooks && ln -s ../../bin/pre-commit . && cd -
 ```
 
 You may customize the behavior of the `.travis.yml` and `pre-commit` hook by
