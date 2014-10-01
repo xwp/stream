@@ -96,7 +96,6 @@ class WP_Stream_Admin {
 
 		// Plugin action links
 		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
-		add_filter( 'network_admin_plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
 
 		// Load admin scripts and styles
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
@@ -138,13 +137,6 @@ class WP_Stream_Admin {
 		$dismiss_and_deactivate_url = wp_nonce_url( 'plugins.php?action=deactivate&plugin=' . WP_STREAM_PLUGIN, 'deactivate-plugin_' . WP_STREAM_PLUGIN );
 		?>
 		<div id="stream-message" class="updated stream-connect" style="display:block !important;">
-
-			<?php if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) : // Can't deactivate if network activated ?>
-				<div id="stream-dismiss" class="stream-close-button-container">
-					<a class="stream-close-button" href="<?php echo esc_url( $dismiss_and_deactivate_url ) ?>" title="<?php esc_attr_e( 'Dismiss this notice and deactivate Stream.', 'stream' ) ?>">
-					<div class="dashicons dashicons-no-alt"></div></a>
-				</div>
-			<?php endif; ?>
 
 			<div class="stream-message-container">
 
@@ -241,15 +233,11 @@ class WP_Stream_Admin {
 	 * @return bool|void
 	 */
 	public static function register_menu() {
-		if ( is_network_admin() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			return false;
-		}
-
 		if ( self::$disable_access ) {
 			return false;
 		}
 
-		if ( is_network_admin() || WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
+		if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
 			self::$screen_id['main'] = add_menu_page(
 				__( 'Stream', 'stream' ),
 				__( 'Stream', 'stream' ),
@@ -269,16 +257,14 @@ class WP_Stream_Admin {
 				array( __CLASS__, 'render_settings_page' )
 			);
 
-			if ( ! is_network_admin() ) {
-				self::$screen_id['account'] = add_submenu_page(
-					self::RECORDS_PAGE_SLUG,
-					__( 'Stream Account', 'stream' ),
-					__( 'Account', 'default' ),
-					self::SETTINGS_CAP,
-					self::ACCOUNT_PAGE_SLUG,
-					array( __CLASS__, 'render_account_page' )
-				);
-			}
+			self::$screen_id['account'] = add_submenu_page(
+				self::RECORDS_PAGE_SLUG,
+				__( 'Stream Account', 'stream' ),
+				__( 'Account', 'default' ),
+				self::SETTINGS_CAP,
+				self::ACCOUNT_PAGE_SLUG,
+				array( __CLASS__, 'render_account_page' )
+			);
 		} else {
 			self::$screen_id['connect'] = add_menu_page(
 				__( 'Connect to Stream', 'stream' ),
@@ -421,7 +407,7 @@ class WP_Stream_Admin {
 					'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %d items? This process could take a while to complete.', 'stream' ), absint( $bulk_actions_threshold ) ),
 					'confirm_import' => __( 'The Stream plugin must be deactivated before you can bulk import content into WordPress.', 'stream' ),
 				),
-				'plugins_screen_url' => WP_Stream_Network::is_network_activated() ? network_admin_url( 'plugins.php#stream' ) : self_admin_url( 'plugins.php#stream' ),
+				'plugins_screen_url' => self_admin_url( 'plugins.php#stream' ),
 				'threshold'          => absint( $bulk_actions_threshold ),
 			)
 		);
@@ -455,12 +441,10 @@ class WP_Stream_Admin {
 		if ( self::is_stream_screen() ) {
 			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
 
-			if ( ! is_network_admin() ) {
-				if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
-					$classes .= ' wp_stream_connected ';
-				} else {
-					$classes .= ' wp_stream_disconnected ';
-				}
+			if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
+				$classes .= ' wp_stream_connected ';
+			} else {
+				$classes .= ' wp_stream_disconnected ';
 			}
 
 			if ( WP_Stream_API::is_restricted() ) {
@@ -468,7 +452,7 @@ class WP_Stream_Admin {
 			}
 		}
 
-		$settings_pages = array( self::SETTINGS_PAGE_SLUG, WP_Stream_Network::NETWORK_SETTINGS_PAGE_SLUG, WP_Stream_Network::DEFAULT_SETTINGS_PAGE_SLUG );
+		$settings_pages = array( self::SETTINGS_PAGE_SLUG );
 
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $settings_pages ) ) {
 			$classes .= sprintf( ' %s ', self::SETTINGS_PAGE_SLUG );
@@ -551,16 +535,7 @@ class WP_Stream_Admin {
 	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
-			// Don't show links in Network Admin if Stream isn't network enabled
-			if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-				return $links;
-			}
-
-			if ( is_network_admin() ) {
-				$admin_page_url = add_query_arg( array( 'page' => WP_Stream_Network::NETWORK_SETTINGS_PAGE_SLUG ), network_admin_url( self::ADMIN_PARENT_PAGE ) );
-			} else {
-				$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
-			}
+			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
 
 			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
 		}
@@ -920,46 +895,9 @@ class WP_Stream_Admin {
 
 		echo '<div class="wrap">';
 
-		if ( is_network_admin() ) {
-			$sites_connected = count( WP_Stream_Network::get_instance()->connected_sites );
-			$site_count      = '';
+		printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
 
-			if ( $sites_connected > 0 ) {
-				$site_count = sprintf( _n( ' (1 site)', ' (%d sites)', $sites_connected, 'stream' ), $sites_connected );
-			}
-
-			printf( '<h2>%s%s</h2>', __( 'Stream Records', 'stream' ), $site_count ); // xss ok
-		} else {
-			printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
-		}
-
-		if ( is_network_admin() && ! $sites_connected && ! WP_Stream::is_development_mode() ) {
-			wp_enqueue_style( 'wp-stream-connect', WP_STREAM_URL . 'ui/css/connect.css', array(), WP_Stream::VERSION );
-			?>
-			<div id="stream-message" class="updated stream-network-connect stream-connect" style="display:block !important;">
-				<div class="stream-message-container">
-					<div class="stream-message-text">
-							<h4><?php _e( 'Get started with Stream for Multisite!', 'stream' ) ?></h4>
-							<p><?php _e( 'Welcome to your Network Stream! Each site on your network must be connected individually by an admin on that site for it to show here.', 'stream' ) ?></p>
-					</div>
-				</div>
-			</div>
-			<?php
-		} elseif ( is_network_admin() ) {
-			// TO DO: Add support for a network wide API Key. Until then, show this notice.
-			?>
-			<div id="stream-message" class="error stream-network-connect stream-connect" style="display:block !important;">
-				<div class="stream-message-container">
-					<div class="stream-message-text">
-							<h4><?php _e( 'Stream for Multisite is coming soon!', 'stream' ) ?></h4>
-							<p><?php _e( 'Access to all the Stream feeds in your network is currently disabled.', 'stream' ) ?></p>
-					</div>
-				</div>
-			</div>
-			<?php
-		} else {
-			self::$list_table->display();
-		}
+		self::$list_table->display();
 
 		echo '</div>';
 	}
@@ -967,19 +905,15 @@ class WP_Stream_Admin {
 	public static function wp_ajax_defaults() {
 		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
 
-		if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			wp_die( "You don't have sufficient privileges to do this action." );
-		}
-
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			self::reset_stream_settings();
 			wp_redirect(
 				add_query_arg(
 					array(
-						'page'    => is_network_admin() ? 'wp_stream_network_settings' : 'wp_stream_settings',
+						'page'    => 'wp_stream_settings',
 						'message' => 'settings_reset',
 					),
-					is_plugin_active_for_network( WP_STREAM_PLUGIN ) ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
+					admin_url( self::ADMIN_PARENT_PAGE )
 				)
 			);
 			exit;

@@ -44,14 +44,6 @@ class WP_Stream_Reports_Metaboxes {
 		// Get chart labels
 		add_filter( 'wp_stream_reports_get_label', array( $this, 'translate_data_type_labels' ), 10, 2 );
 
-		// Specific data for multisite
-		if ( is_multisite() && is_network_admin() ) {
-			add_filter( 'wp_stream_reports_data_types', array( $this, 'multisite_contexts' ), 10 );
-			add_filter( 'wp_stream_reports_selector_types', array( $this, 'mutlisite_selector_types' ), 10 );
-			add_filter( 'wp_stream_reports_get_label', array( $this, 'multisite_labels' ), 10, 2 );
-			add_filter( 'wp_stream_reports_get_contexts', array( $this, 'multisite_contexts' ), 10 );
-		}
-
 		$ajax_hooks = array(
 			'wp_stream_reports_add_metabox'            => 'add_metabox',
 			'wp_stream_reports_delete_metabox'         => 'delete_metabox',
@@ -308,15 +300,6 @@ class WP_Stream_Reports_Metaboxes {
 		return $this->get_data_types( $value ) ? $this->get_data_types( $value ) : $value;
 	}
 
-	public function multisite_labels( $value, $grouping ) {
-		if ( 'blog_id' === $grouping && is_numeric( $value ) ) {
-			$blog  = ( $value && is_multisite() ) ? get_blog_details( $value ) : WP_Stream_Network::get_network_blog();
-			$value = $blog->blogname;
-		}
-
-		return $value;
-	}
-
 	/**
 	 * Returns data type labels, or a single data type's label'
 	 * @return string
@@ -361,27 +344,6 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		return $output;
-	}
-
-	public function multisite_contexts( $old_labels ) {
-		$children = array();
-		$sites    = wp_get_sites();
-		foreach ( $sites as $site ) {
-			$details = get_blog_details( $site['blog_id'] );
-			$children[ $site['blog_id'] ] = array(
-				'label'   => $details->blogname,
-				'blog'    => $site['blog_id'],
-			);
-		}
-
-		// Position sites label right after 'all' dataset
-		$labels = array(
-			'label'     => __( 'Site Activity', 'stream' ),
-			'children'  => $children,
-		);
-
-		$new_array = array_merge( array( $labels ), $old_labels );
-		return $new_array;
 	}
 
 	/**
