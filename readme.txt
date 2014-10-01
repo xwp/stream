@@ -97,6 +97,14 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 2.0.1 - September 30, 2014 =
+
+* Tweak: Improved localisation strings throughout the plugin ([#644](https://github.com/wp-stream/stream/pull/644))
+* Tweak: Improved tooltip text explaining WP.com sign in
+* Fix: ACF doesn't save custom field values when Stream enabled ([#642](https://github.com/wp-stream/stream/issues/642))
+
+Props [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
 = 2.0.0 - September 27, 2014 =
 
 * All activity is now stored only in the cloud over SSL, local MySQL storage dependence is over!
