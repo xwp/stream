@@ -253,6 +253,20 @@ class WP_Stream_Settings {
 					),
 				),
 			);
+
+			// If Akismet is active, allow Admins to opt-in to Akismet tracking
+			if ( class_exists( 'Akismet' ) ) {
+				$akismet_tracking = array(
+					'name'        => 'akismet_tracking',
+					'title'       => esc_html__( 'Akismet Tracking', 'stream' ),
+					'type'        => 'checkbox',
+					'desc'        => __( 'Akismet already keeps statistics for comment attempts that it blocks as SPAM. By default, Stream does not track these attempts unless you opt-in here. Please keep in mind that the volume of these records can be very large and enabling this is not necessary or recommended for most sites.', 'stream' ),
+					'after_field' => esc_html__( 'Enabled', 'stream' ),
+					'default'     => 0,
+				);
+
+				array_push( $fields['general']['fields'], $akismet_tracking );
+			}
 		}
 
 		/**
