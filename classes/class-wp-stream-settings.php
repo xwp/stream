@@ -541,7 +541,7 @@ class WP_Stream_Settings {
 				);
 				break;
 			case 'select2' :
-				if ( ! isset ( $current_value ) ) {
+				if ( ! isset( $current_value ) ) {
 					$current_value = '';
 				}
 
@@ -835,7 +835,7 @@ class WP_Stream_Settings {
 	public static function get_terms_labels( $column ) {
 		$return_labels = array();
 
-		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
+		if ( isset( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
 			if ( 'context' === $column && isset( WP_Stream_Connectors::$term_labels['stream_connector'] ) ) {
 				$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
 				$contexts   = WP_Stream_Connectors::$term_labels['stream_context'];
