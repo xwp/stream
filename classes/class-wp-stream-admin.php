@@ -1059,7 +1059,7 @@ class WP_Stream_Admin {
 		switch ( $filter ) {
 			case 'author':
 				$id = wp_stream_filter_input( INPUT_POST, 'id' );
-				if ( $id === '0' ) {
+				if ( '0' === $id ) {
 					$value = 'WP-CLI';
 					break;
 				}

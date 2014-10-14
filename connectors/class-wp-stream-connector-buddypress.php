@@ -803,7 +803,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				// Only components that need directories should be listed here
 				if ( isset( $bp->{$component_id} ) && ! empty( $bp->{$component_id}->has_directory ) ) {
 					// component->name was introduced in BP 1.5, so we must provide a fallback
-					$directory_pages[ $component_id ] = ! empty ( $bp->{ $component_id }->name ) ? $bp->{ $component_id }->name : ucwords( $component_id );
+					$directory_pages[ $component_id ] = ! empty( $bp->{ $component_id }->name ) ? $bp->{ $component_id }->name : ucwords( $component_id );
 				}
 			}
 		}

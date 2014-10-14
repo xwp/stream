@@ -142,40 +142,40 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 
 		if ( in_array( $new, array( 'auto-draft', 'inherit' ) ) ) {
 			return;
-		} elseif ( $old == 'auto-draft' && $new == 'draft' ) {
+		} elseif ( 'auto-draft' === $old && 'draft' === $new ) {
 			$message = _x(
 				'"%1$s" %2$s drafted',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'created';
-		} elseif ( $old == 'auto-draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
+		} elseif ( 'auto-draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
 			$message = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'created';
-		} elseif ( $old == 'draft' && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
+		} elseif ( 'draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
 			$message = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( $old == 'publish' && ( in_array( $new, array( 'draft' ) ) ) ) {
+		} elseif ( 'publish' === $old && ( in_array( $new, array( 'draft' ) ) ) ) {
 			$message = _x(
 				'"%1$s" %2$s unpublished',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-		} elseif ( $new == 'trash' ) {
+		} elseif ( 'trash' === $new ) {
 			$message = _x(
 				'"%1$s" %2$s trashed',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'trashed';
-		} elseif ( $old == 'trash' && $new != 'trash' ) {
+		} elseif ( 'trash' === $old && 'trash' !== $new ) {
 			$message = _x(
 				'"%1$s" %2$s restored from trash',
 				'1: Post title, 2: Post type singular name',

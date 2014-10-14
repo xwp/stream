@@ -363,7 +363,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 				return false;
 			}
 
-			if ( preg_match( '#([a-z0-9_-]+)_([\d]+)_([a-z0-9_-]+)#', $key, $matches ) !== 1 ) {
+			if ( 1 !== preg_match( '#([a-z0-9_-]+)_([\d]+)_([a-z0-9_-]+)#', $key, $matches ) ) {
 				return false;
 			}
 
