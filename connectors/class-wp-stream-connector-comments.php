@@ -320,6 +320,10 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action before_delete_post
 	 */
 	public static function callback_before_delete_post( $post_id ) {
+		if ( wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
 		self::$delete_post = $post_id;
 	}
 
@@ -329,6 +333,10 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action deleted_post
 	 */
 	public static function callback_deleted_post( $post_id ) {
+		if ( wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
 		self::$delete_post = 0;
 	}
 
