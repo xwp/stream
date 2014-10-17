@@ -18,6 +18,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		'comment_flood_trigger',
 		'wp_insert_comment',
 		'edit_comment',
+		'before_delete_post',
+		'deleted_post',
 		'delete_comment',
 		'trash_comment',
 		'untrash_comment',
@@ -26,6 +28,13 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		'transition_comment_status',
 		'comment_duplicate_trigger',
 	);
+
+	/**
+	 * Catch and store the post ID during post deletion
+	 *
+	 * @var int
+	 */
+	protected static $delete_post = 0;
 
 	/**
 	 * Return translated connector label
@@ -306,6 +315,32 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Catch the post ID during deletion
+	 *
+	 * @action before_delete_post
+	 */
+	public static function callback_before_delete_post( $post_id ) {
+		if ( wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
+		self::$delete_post = $post_id;
+	}
+
+	/**
+	 * Reset the post ID after deletion
+	 *
+	 * @action deleted_post
+	 */
+	public static function callback_deleted_post( $post_id ) {
+		if ( wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
+		self::$delete_post = 0;
+	}
+
+	/**
 	 * Tracks comment delete
 	 *
 	 * @action delete_comment
@@ -319,10 +354,14 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 
 		$user_id      = self::get_comment_author( $comment, 'id' );
 		$user_name    = self::get_comment_author( $comment, 'name' );
-		$post_id      = $comment->comment_post_ID;
+		$post_id      = absint( $comment->comment_post_ID );
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
+
+		if ( self::$delete_post === $post_id ) {
+			return;
+		}
 
 		self::log(
 			_x(
