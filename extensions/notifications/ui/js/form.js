@@ -549,7 +549,7 @@ jQuery( function( $ ) {
 		}
 
 		$.getJSON( this.href, {}, function( j ) {
-			var div = $( '.submitbox .occurrences span' );
+			var div = $( '.submitbox .occurrences strong' );
 			if ( j.success ) {
 				div.html( div.html().replace(/\d+/, 0) );
 			} else {
