@@ -62,10 +62,7 @@ class WP_Stream_Connector_Stream extends WP_Stream_Connector {
 	 */
 	public static function callback_wp_stream_site_connected( $site_uuid, $api_key, $blog_id ) {
 		self::log(
-			sprintf(
-				__( 'Site %1$s to Stream', 'stream' ),
-				__( 'connected', 'stream' )
-			),
+			__( 'Site connected to Stream', 'stream' ),
 			array(
 				'site_uuid' => $site_uuid,
 				'api_key'   => $api_key,
@@ -87,10 +84,7 @@ class WP_Stream_Connector_Stream extends WP_Stream_Connector {
 	 */
 	public static function callback_wp_stream_site_disconnected( $site_uuid, $api_key, $blog_id ) {
 		self::log(
-			sprintf(
-				__( 'Site %1$s from Stream', 'stream' ),
-				__( 'disconnected', 'stream' )
-			),
+			__( 'Site disconnected from Stream', 'stream' ),
 			array(
 				'site_uuid' => $site_uuid,
 				'api_key'   => $api_key,
