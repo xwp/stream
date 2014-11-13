@@ -1,6 +1,8 @@
 /* globals wp_stream, ajaxurl */
 jQuery( function( $ ) {
 
+	$( 'li.toplevel_page_wp_stream.wp-has-current-submenu .update-plugins' ).remove();
+
 	$( '.toplevel_page_wp_stream :input.chosen-select' ).each( function( i, el ) {
 		var args = {},
 			formatResult = function( record, container ) {
