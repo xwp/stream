@@ -110,6 +110,10 @@ class WP_Stream_Admin {
 		add_action( 'show_user_profile', array( __CLASS__, 'unread_count_user_option' ) );
 		add_action( 'edit_user_profile', array( __CLASS__, 'unread_count_user_option' ) );
 
+		// Save unread counts user option
+		add_action( 'personal_options_update', array( __CLASS__, 'save_unread_count_user_option' ) );
+		add_action( 'edit_user_profile_update', array( __CLASS__, 'save_unread_count_user_option' ) );
+
 		// Reset Streams settings
 		add_action( 'wp_ajax_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
 
@@ -556,7 +560,7 @@ class WP_Stream_Admin {
 	 */
 	public static function unread_enabled_for_user() {
 		$enabled = get_user_meta( get_current_user_id(), self::UNREAD_COUNT_OPTION_KEY, true );
-		$enabled = ( '' === $enabled ) ? true : $enabled;
+		$enabled = ( 'off' !== $enabled );
 
 		return (bool) $enabled;
 	}
@@ -660,6 +664,23 @@ class WP_Stream_Admin {
 			</tr>
 		</table>
 		<?php
+	}
+
+	/**
+	 * Saves unread count user meta option in profiles.
+	 *
+	 * @action personal_options_update
+	 * @action edit_user_profile_update
+	 *
+	 * @param $user_id
+	 *
+	 * @return void
+	 */
+	public static function save_unread_count_user_option( $user_id ) {
+		$enabled = wp_stream_filter_input( INPUT_POST, self::UNREAD_COUNT_OPTION_KEY );
+		$enabled = ( '1' === $enabled ) ? 'on' : 'off';
+
+		update_user_meta( $user_id, self::UNREAD_COUNT_OPTION_KEY, $enabled );
 	}
 
 	/**
