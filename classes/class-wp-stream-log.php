@@ -235,9 +235,6 @@ class WP_Stream_Log {
 		$backtrace = ob_get_clean();
 		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );
 
-		print_r($backtrace);
-		die();
-
 		foreach ( $backtrace as $call ) {
 			error_log( sprintf( "Stream %s\n", $call ) );
 		}
