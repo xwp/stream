@@ -115,9 +115,6 @@ class WP_Stream_Log {
 		// Get the current time in milliseconds
 		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
 
-		// Record summary text
-		$summary = vsprintf( $message, $args );
-
 		$recordarr = array(
 			'object_id'   => (int) $object_id,
 			'site_id'     => (int) is_multisite() ? get_current_site()->id : 1,
@@ -128,7 +125,7 @@ class WP_Stream_Log {
 			'created'     => (string) $iso_8601_extended_date,
 			'visibility'  => (string) $visibility,
 			'type'        => 'stream',
-			'summary'     => (string) $summary,
+			'summary'     => (string) vsprintf( $message, $args ),
 			'connector'   => (string) $connector,
 			'context'     => (string) $context,
 			'action'      => (string) $action,
@@ -138,7 +135,7 @@ class WP_Stream_Log {
 
 		WP_Stream::$db->store( array( $recordarr ) );
 
-		self::debug_backtrace( $summary );
+		self::debug_backtrace( $recordarr );
 	}
 
 	/**
@@ -218,12 +215,12 @@ class WP_Stream_Log {
 	/**
 	 * Send a full backtrace of calls to the PHP error log for debugging
 	 *
-	 * @param string $summary
+	 * @param array $recordarr
 	 *
 	 * @return void
 	 */
-	public static function debug_backtrace( $summary ) {
-		if ( true !== apply_filters( 'wp_stream_debug_backtrace', false ) ) {
+	public static function debug_backtrace( $recordarr ) {
+		if ( true !== apply_filters( 'wp_stream_debug_backtrace', false ) || ! is_array( $recordarr ) ) {
 			return;
 		}
 
@@ -239,9 +236,30 @@ class WP_Stream_Log {
 
 		$backtrace = ob_get_clean();
 		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );
+		$summary   = isset( $recordarr['summary'] ) ? $recordarr['summary'] : null;
 
 		foreach ( $backtrace as $call ) {
-			error_log( sprintf( 'WP Stream | %s | %s', $summary, $call ) );
+			error_log( sprintf( 'WP Stream Backtrace | %s | %s', $summary, $call ) );
+		}
+
+		$stream_meta = isset( $recordarr['stream_meta'] ) ? $recordarr['stream_meta'] : null;
+
+		if ( $stream_meta ) {
+			array_walk( $stream_meta, function( &$value, $key ) {
+				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
+			});
+
+			error_log( sprintf( 'WP Stream Record Meta | %s | %s', $summary, implode( ', ', $stream_meta ) ) );
+		}
+
+		$author_meta = isset( $recordarr['author_meta'] ) ? $recordarr['author_meta'] : null;
+
+		if ( $author_meta ) {
+			array_walk( $author_meta, function( &$value, $key ) {
+				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
+			});
+
+			error_log( sprintf( 'WP Stream Author Meta | %s | %s', $summary, implode( ', ', $author_meta ) ) );
 		}
 	}
 
