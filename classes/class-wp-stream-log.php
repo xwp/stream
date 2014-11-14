@@ -223,7 +223,7 @@ class WP_Stream_Log {
 	 * @return void
 	 */
 	public static function debug_backtrace( $summary ) {
-		if ( false === apply_filters( 'wp_stream_debug_backtrace', false ) ) {
+		if ( true !== apply_filters( 'wp_stream_debug_backtrace', false ) ) {
 			return;
 		}
 
