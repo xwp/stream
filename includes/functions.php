@@ -103,3 +103,28 @@ function wp_stream_existing_records( $field ) {
 		return isset( WP_Stream_Connectors::$term_labels[ $field ] ) ? WP_Stream_Connectors::$term_labels[ $field ] : array();
 	}
 }
+
+/**
+ * Determine the title of an object that a record is for.
+ *
+ * @since  2.1.0
+ * @param  object  Record object
+ * @return mixed   The title of the object as a string, otherwise false
+ */
+function wp_stream_get_object_title( $record ) {
+	if ( ! is_object( $record ) || ! isset( $record->object_id ) || empty( $record->object_id ) ) {
+		return false;
+	}
+
+	$output = false;
+
+	if ( isset( $record->stream_meta->post_title ) && ! empty( $record->stream_meta->post_title ) ) {
+		$output = (string) $record->stream_meta->post_title;
+	} elseif ( isset( $record->stream_meta->display_name ) && ! empty( $record->stream_meta->display_name ) ) {
+		$output = (string) $record->stream_meta->display_name;
+	} elseif ( isset( $record->stream_meta->name ) && ! empty( $record->stream_meta->name ) ) {
+		$output = (string) $record->stream_meta->name;
+	}
+
+	return $output;
+}
