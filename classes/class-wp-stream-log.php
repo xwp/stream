@@ -241,7 +241,7 @@ class WP_Stream_Log {
 		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );
 
 		foreach ( $backtrace as $call ) {
-			error_log( sprintf( "WP Stream | {$summary} | %s\n", $call ) );
+			error_log( sprintf( "WP Stream | %s | %s\n", $summary, $call ) );
 		}
 	}
 
