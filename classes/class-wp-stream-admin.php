@@ -573,26 +573,33 @@ class WP_Stream_Admin {
 	 * @return int
 	 */
 	public static function get_unread_count() {
+		if ( ! self::unread_enabled_for_user() ) {
+			return false;
+		}
+
 		$user_id   = get_current_user_id();
 		$cache_key = sprintf( '%s_%d', self::UNREAD_COUNT_OPTION_KEY, $user_id );
 
 		if ( false === ( $count = get_transient( $cache_key ) ) ) {
+			$count     = 0;
 			$last_read = get_user_meta( $user_id, self::LAST_READ_OPTION_KEY, true );
 
-			$args = array(
-				'records_per_page' => 101,
-				'author__not_in'   => array( $user_id ), // Ignore changes authored by the current user
-				'date_after'       => $last_read,
-			);
+			if ( ! empty( $last_read ) ) {
+				$args = array(
+					'records_per_page' => 101,
+					'author__not_in'   => array( $user_id ), // Ignore changes authored by the current user
+					'date_after'       => $last_read,
+				);
 
-			$unread_records = wp_stream_query( $args );
+				$unread_records = wp_stream_query( $args );
 
-			// The filter for 'gt' behaves like 'gte' for some strange reason, so always remove the first result
-			if ( isset( $unread_records[0] ) ) {
-				unset( $unread_records[0] );
+				// The filter for 'gt' behaves like 'gte' for some strange reason, so always remove the first result
+				if ( isset( $unread_records[0] ) ) {
+					unset( $unread_records[0] );
+				}
+
+				$count = count( $unread_records );
 			}
-
-			$count = count( $unread_records );
 
 			set_transient( $cache_key, $count, 5 * 60 ); // TTL 5 min
 		}
@@ -608,11 +615,14 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function mark_as_read() {
+		$user_id   = get_current_user_id();
+		$cache_key = sprintf( '%s_%d', self::UNREAD_COUNT_OPTION_KEY, $user_id );
+
 		if ( ! self::unread_enabled_for_user() ) {
+			delete_transient( $cache_key );
+
 			return;
 		}
-
-		$user_id = get_current_user_id();
 
 		$args = array(
 			'records_per_page' => 1,
@@ -625,8 +635,6 @@ class WP_Stream_Admin {
 		if ( isset( $newest_record[0]->created ) ) {
 			update_user_meta( $user_id, self::LAST_READ_OPTION_KEY, $newest_record[0]->created );
 		}
-
-		$cache_key = sprintf( '%s_%d', self::UNREAD_COUNT_OPTION_KEY, $user_id );
 
 		delete_transient( $cache_key );
 	}
