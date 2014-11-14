@@ -112,11 +112,11 @@ class WP_Stream_Log {
 			}
 		);
 
-		// Record summary text
-		$summary = vsprintf( $message, $args );
-
 		// Get the current time in milliseconds
 		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
+
+		// Record summary text
+		$summary = vsprintf( $message, $args );
 
 		$recordarr = array(
 			'object_id'   => (int) $object_id,
