@@ -112,6 +112,9 @@ class WP_Stream_Log {
 			}
 		);
 
+		// Record summary text
+		$summary = vsprintf( $message, $args );
+
 		// Get the current time in milliseconds
 		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
 
@@ -125,7 +128,7 @@ class WP_Stream_Log {
 			'created'     => (string) $iso_8601_extended_date,
 			'visibility'  => (string) $visibility,
 			'type'        => 'stream',
-			'summary'     => (string) vsprintf( $message, $args ),
+			'summary'     => (string) $summary,
 			'connector'   => (string) $connector,
 			'context'     => (string) $context,
 			'action'      => (string) $action,
@@ -135,7 +138,7 @@ class WP_Stream_Log {
 
 		WP_Stream::$db->store( array( $recordarr ) );
 
-		self::debug_backtrace();
+		self::debug_backtrace( $summary );
 	}
 
 	/**
@@ -213,11 +216,13 @@ class WP_Stream_Log {
 	}
 
 	/**
-	 * Send a full backtrace of calls to the error log for debugging
+	 * Send a full backtrace of calls to the PHP error log for debugging
+	 *
+	 * @param string $summary
 	 *
 	 * @return void
 	 */
-	public static function debug_backtrace() {
+	public static function debug_backtrace( $summary ) {
 		if ( false === apply_filters( 'wp_stream_debug_backtrace', false ) ) {
 			return;
 		}
@@ -236,7 +241,7 @@ class WP_Stream_Log {
 		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );
 
 		foreach ( $backtrace as $call ) {
-			error_log( sprintf( "Stream %s\n", $call ) );
+			error_log( sprintf( "WP Stream | {$summary} | %s\n", $call ) );
 		}
 	}
 
