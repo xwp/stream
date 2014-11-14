@@ -228,7 +228,7 @@ class WP_Stream_Log {
 		}
 
 		if ( version_compare( PHP_VERSION, '5.3.6', '<' ) ) {
-			error_log( 'Stream debug backtrace requires at least PHP 5.3.6' );
+			error_log( 'WP Stream debug backtrace requires at least PHP 5.3.6' );
 			return;
 		}
 
