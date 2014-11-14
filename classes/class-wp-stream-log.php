@@ -134,6 +134,8 @@ class WP_Stream_Log {
 		);
 
 		WP_Stream::$db->store( array( $recordarr ) );
+
+		self::debug_backtrace();
 	}
 
 	/**
@@ -208,6 +210,37 @@ class WP_Stream_Log {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Send a full backtrace of calls to the error log for debugging
+	 *
+	 * @return void
+	 */
+	public static function debug_backtrace() {
+		if ( false === apply_filters( 'wp_stream_debug_backtrace', false ) ) {
+			return;
+		}
+
+		if ( version_compare( PHP_VERSION, '5.3.6', '<' ) ) {
+			error_log( 'Stream debug backtrace requires PHP 5.3.6' );
+			return;
+		}
+
+		ob_start();
+
+		// Option to ignore args requires PHP 5.3.6
+		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+
+		$backtrace = ob_get_clean();
+		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );
+
+		print_r($backtrace);
+		die();
+
+		foreach ( $backtrace as $call ) {
+			error_log( sprintf( "Stream %s\n", $call ) );
+		}
 	}
 
 }
