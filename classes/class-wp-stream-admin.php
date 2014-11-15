@@ -45,8 +45,6 @@ class WP_Stream_Admin {
 		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
-		self::$disable_access = apply_filters( 'wp_stream_disable_admin_access', false );
-
 		$home_url      = str_ireplace( array( 'http://', 'https://' ), '', home_url() );
 		$connect_nonce = wp_create_nonce( 'stream_connect_site-' . sanitize_key( $home_url ) );
 
@@ -81,8 +79,12 @@ class WP_Stream_Admin {
 			add_action( 'admin_init', array( __CLASS__, 'remove_api_authentication' ) );
 		}
 
+		self::$disable_access = apply_filters( 'wp_stream_disable_admin_access', false );
+
 		// Register settings page
-		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
+		if ( ! self::$disable_access ) {
+			add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
+		}
 
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
@@ -233,10 +235,6 @@ class WP_Stream_Admin {
 	 * @return bool|void
 	 */
 	public static function register_menu() {
-		if ( self::$disable_access ) {
-			return false;
-		}
-
 		if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
 			self::$screen_id['main'] = add_menu_page(
 				__( 'Stream', 'stream' ),
@@ -977,8 +975,14 @@ class WP_Stream_Admin {
 			)
 		);
 
+		$stream_view_caps = array(
+			self::VIEW_CAP,
+			WP_Stream_Notifications::VIEW_CAP,
+			WP_Stream_Reports::VIEW_CAP,
+		);
+
 		foreach ( $caps as $cap ) {
-			if ( self::VIEW_CAP === $cap ) {
+			if ( in_array( $cap, $stream_view_caps ) ) {
 				foreach ( $roles as $role ) {
 					if ( self::_role_can_view_stream( $role ) ) {
 						$allcaps[ $cap ] = true;
@@ -1003,7 +1007,13 @@ class WP_Stream_Admin {
 	 * @return array
 	 */
 	public static function _filter_role_caps( $allcaps, $cap, $role ) {
-		if ( self::VIEW_CAP === $cap && self::_role_can_view_stream( $role ) ) {
+		$stream_view_caps = array(
+			self::VIEW_CAP,
+			WP_Stream_Notifications::VIEW_CAP,
+			WP_Stream_Reports::VIEW_CAP,
+		);
+
+		if ( in_array( $cap, $stream_view_caps ) && self::_role_can_view_stream( $role ) ) {
 			$allcaps[ $cap ] = true;
 		}
 
