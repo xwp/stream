@@ -27,24 +27,11 @@ class WP_Stream_Notifications_Settings {
 
 	public static function get_fields() {
 		if ( empty( self::$fields ) ) {
-			$fields = array(
-				'notifications' => array(
-					'title'  => esc_html__( 'Notifications', 'stream' ),
-					'fields' => array(
-						array(
-							'name'    => 'role_access',
-							'title'   => esc_html__( 'Role Access', 'stream' ),
-							'type'    => 'multi_checkbox',
-							'desc'    => esc_html__( 'Users from the selected roles above will have permission to view, create and edit Stream Notifications. However, only site Administrators can access Stream Notifications Settings.', 'stream' ),
-							'choices' => WP_Stream_Settings::get_roles(),
-							'default' => array( 'administrator' ),
-						),
-					),
-				),
-			);
+			$fields = array();
 
 			self::$fields = apply_filters( 'wp_stream_notifications_option_fields', $fields );
 		}
+
 		return self::$fields;
 	}
 
