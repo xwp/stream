@@ -51,7 +51,6 @@ class WP_Stream_Notifications {
 	 */
 	const VIEW_CAP = 'view_stream_notifications';
 
-
 	/**
 	 * Return active instance of this class, create one if it doesn't exist
 	 *
@@ -92,13 +91,7 @@ class WP_Stream_Notifications {
 	 */
 	public function load() {
 		// Register new submenu
-		if (
-			! apply_filters( 'wp_stream_notifications_disallow_site_access', false )
-			&&
-			! WP_Stream_Admin::$disable_access
-			&&
-			( WP_Stream::is_connected() || WP_Stream::is_development_mode() )
-		) {
+		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) && ! WP_Stream_Admin::$disable_access && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
 			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		}
 
