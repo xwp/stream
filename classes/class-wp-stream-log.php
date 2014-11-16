@@ -220,7 +220,21 @@ class WP_Stream_Log {
 	 * @return void
 	 */
 	public static function debug_backtrace( $recordarr ) {
-		if ( true !== apply_filters( 'wp_stream_debug_backtrace', false, $recordarr ) || ! is_array( $recordarr ) ) {
+		/**
+		 * Enable debug backtrace on records.
+		 *
+		 * This filter is for developer use only. When enabled, Stream will send
+		 * a full debug backtrace of PHP calls for each record. Optionally, you may
+		 * use the available $recordarr parameter to specify what types of records to
+		 * create backtrace logs for.
+		 *
+		 * @param array $recordarr
+		 *
+		 * @return bool  Set to FALSE by default (backtrace disabled)
+		 */
+		$enabled = apply_filters( 'wp_stream_debug_backtrace', false, $recordarr );
+
+		if ( ! $enabled ) {
 			return;
 		}
 
