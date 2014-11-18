@@ -110,7 +110,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				$revision_id = absint( wp_stream_get_meta( $record, 'revision_id', true ) );
 				$revision_id = self::get_adjacent_post_revision( $revision_id, false );
 
-				if ( wp_is_post_revision( $revision_id ) ) {
+				if ( $revision_id ) {
 					$links[ esc_html__( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
 				}
 			}
@@ -313,7 +313,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 * @return int  $revision_id
 	 */
 	public static function get_adjacent_post_revision( $revision_id, $previous = true ) {
-		if ( ! wp_is_post_revision( $revision_id ) ) {
+		if ( empty( $revision_id ) || ! wp_is_post_revision( $revision_id ) ) {
 			return false;
 		}
 
