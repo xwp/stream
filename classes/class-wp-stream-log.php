@@ -234,7 +234,7 @@ class WP_Stream_Log {
 		 */
 		$enabled = apply_filters( 'wp_stream_debug_backtrace', false, $recordarr );
 
-		if ( $enabled ) {
+		if ( ! $enabled ) {
 			return;
 		}
 
