@@ -234,7 +234,7 @@ class WP_Stream_Log {
 		 */
 		$enabled = apply_filters( 'wp_stream_debug_backtrace', false, $recordarr );
 
-		if ( ! $enabled ) {
+		if ( $enabled ) {
 			return;
 		}
 
@@ -243,19 +243,14 @@ class WP_Stream_Log {
 			return;
 		}
 
-		ob_start();
-
-		// Option to ignore args requires PHP 5.3.6
-		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
-
-		$backtrace = ob_get_clean();
-		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );
+		// Record details
 		$summary   = isset( $recordarr['summary'] ) ? $recordarr['summary'] : null;
+		$author    = isset( $recordarr['author'] ) ? $recordarr['author'] : null;
+		$connector = isset( $recordarr['connector'] ) ? $recordarr['connector'] : null;
+		$context   = isset( $recordarr['context'] ) ? $recordarr['context'] : null;
+		$action    = isset( $recordarr['action'] ) ? $recordarr['action'] : null;
 
-		foreach ( $backtrace as $call ) {
-			error_log( sprintf( 'WP Stream Backtrace | %s | %s', $summary, $call ) );
-		}
-
+		// Stream meta
 		$stream_meta = isset( $recordarr['stream_meta'] ) ? $recordarr['stream_meta'] : null;
 
 		if ( $stream_meta ) {
@@ -263,9 +258,10 @@ class WP_Stream_Log {
 				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
 			});
 
-			error_log( sprintf( 'WP Stream Record Meta | %s | %s', $summary, implode( ', ', $stream_meta ) ) );
+			$stream_meta = implode( ', ', $stream_meta );
 		}
 
+		// Author meta
 		$author_meta = isset( $recordarr['author_meta'] ) ? $recordarr['author_meta'] : null;
 
 		if ( $author_meta ) {
@@ -273,8 +269,30 @@ class WP_Stream_Log {
 				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
 			});
 
-			error_log( sprintf( 'WP Stream Author Meta | %s | %s', $summary, implode( ', ', $author_meta ) ) );
+			$author_meta = implode( ', ', $author_meta );
 		}
+
+		// Debug backtrace
+		ob_start();
+
+		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ); // Option to ignore args requires PHP 5.3.6
+
+		$backtrace = ob_get_clean();
+		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );
+
+		$output = sprintf(
+			"WP Stream Debug Backtrace\n\n    Summary | %s\n     Author | %s\n  Connector | %s\n    Context | %s\n     Action | %s\nStream Meta | %s\nAuthor Meta | %s\n\n%s\n",
+			$summary,
+			$author,
+			$connector,
+			$context,
+			$action,
+			$stream_meta,
+			$author_meta,
+			implode( "\n", $backtrace )
+		);
+
+		error_log( $output );
 	}
 
 }
