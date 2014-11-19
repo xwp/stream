@@ -50,6 +50,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		global $wp_post_types;
+
 		$post_types = wp_filter_object_list( $wp_post_types, array(), null, 'label' );
 		$post_types = array_diff_key( $post_types, array_flip( self::get_excluded_post_types() ) );
 
@@ -106,7 +107,10 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 					$links[ esc_html__( 'View', 'stream' ) ] = $view_link;
 				}
 
-				if ( $revision_id = wp_stream_get_meta( $record, 'revision_id', true ) ) {
+				$revision_id = absint( wp_stream_get_meta( $record, 'revision_id', true ) );
+				$revision_id = self::get_adjacent_post_revision( $revision_id, false );
+
+				if ( $revision_id ) {
 					$links[ esc_html__( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
 				}
 			}
@@ -143,47 +147,47 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		if ( in_array( $new, array( 'auto-draft', 'inherit' ) ) ) {
 			return;
 		} elseif ( 'auto-draft' === $old && 'draft' === $new ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s drafted',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'created';
 		} elseif ( 'auto-draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'created';
 		} elseif ( 'draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 		} elseif ( 'publish' === $old && ( in_array( $new, array( 'draft' ) ) ) ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s unpublished',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 		} elseif ( 'trash' === $new ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s trashed',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'trashed';
 		} elseif ( 'trash' === $old && 'trash' !== $new ) {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s restored from trash',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 			$action  = 'untrashed';
 		} else {
-			$message = _x(
+			$summary = _x(
 				'"%1$s" %2$s updated',
 				'1: Post title, 2: Post type singular name',
 				'stream'
@@ -203,19 +207,21 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 					'post_status'    => 'inherit',
 					'post_parent'    => $post->ID,
 					'posts_per_page' => 1,
-					'order'          => 'desc',
-					'fields'         => 'ids',
+					'orderby'        => 'post_date',
+					'order'          => 'DESC',
 				)
 			);
+
 			if ( $revision ) {
-				$revision_id = $revision[0];
+				$revision    = array_values( $revision );
+				$revision_id = $revision[0]->ID;
 			}
 		}
 
 		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
 
 		self::log(
-			$message,
+			$summary,
 			array(
 				'post_title'    => $post->post_title,
 				'singular_name' => $post_type_name,
@@ -296,6 +302,49 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 		}
 
 		return $name;
+	}
+
+	/**
+	 * Get an adjacent post revision ID
+	 *
+	 * @param  int  $revision_id
+	 * @param  bool $previous
+	 *
+	 * @return int  $revision_id
+	 */
+	public static function get_adjacent_post_revision( $revision_id, $previous = true ) {
+		if ( empty( $revision_id ) || ! wp_is_post_revision( $revision_id ) ) {
+			return false;
+		}
+
+		$revision = wp_get_post_revision( $revision_id );
+		$operator = ( $previous ) ? '<' : '>';
+		$order    = ( $previous ) ? 'DESC' : 'ASC';
+
+		global $wpdb;
+
+		$revision_id = $wpdb->get_var(
+			$wpdb->prepare( "
+				SELECT p.ID
+				FROM $wpdb->posts AS p
+				WHERE p.post_date {$operator} %s
+					AND p.post_type = 'revision'
+					AND p.post_parent = %d
+				ORDER BY p.post_date {$order}
+				LIMIT 1
+				",
+				$revision->post_date,
+				$revision->post_parent
+			)
+		);
+
+		$revision_id = absint( $revision_id );
+
+		if ( ! wp_is_post_revision( $revision_id ) ) {
+			return false;
+		}
+
+		return $revision_id;
 	}
 
 }
