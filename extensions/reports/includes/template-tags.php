@@ -21,7 +21,6 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 			'connector' => isset( $item['connector'] ) ? $item['connector'] : null,
 			'context'   => isset( $item['context'] ) ? $item['context'] : null,
 			'action'    => isset( $item['action'] ) ? $item['action'] : null,
-			'blog'      => isset( $item['blog'] ) ? $item['blog'] : null,
 		);
 		$options[] = wp_stream_reports_filter_option( $option_args );
 
@@ -29,8 +28,6 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 			foreach ( $item['children'] as $child_value => $child_item ) {
 				$selected = false;
 				if ( isset( $child_item['connector'] ) && $child_item['connector'] == $args['connector_id'] && isset( $child_item['context'] ) && $child_item['context'] == $args['context_id'] ) {
-					$selected = true;
-				} else if ( isset( $child_item['blog'] ) && $child_item['blog'] == $args['blog_id'] ) {
 					$selected = true;
 				}
 
@@ -44,7 +41,6 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 					'connector' => isset( $child_item['connector'] ) ? $child_item['connector'] : null,
 					'context'   => isset( $child_item['context'] ) ? $child_item['context'] : null,
 					'action'    => isset( $child_item['action'] ) ? $child_item['action'] : null,
-					'blog'      => isset( $child_item['blog'] ) ? $child_item['blog'] : null,
 				);
 				$options[] = wp_stream_reports_filter_option( $option_args );
 			}
@@ -60,7 +56,6 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 			'data-connector' => array(),
 			'data-context'   => array(),
 			'data-action'    => array(),
-			'data-blog'      => array(),
 		),
 	);
 
@@ -72,31 +67,29 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 }
 
 function wp_stream_reports_filter_option( $args ) {
-		$defaults = array(
-			'value'     => null,
-			'selected'  => null,
-			'disabled'  => null,
-			'class'     => null,
-			'label'     => null,
-			'connector' => null,
-			'context'   => null,
-			'action'    => null,
-			'blog'      => null,
-		);
+	$defaults = array(
+		'value'     => null,
+		'selected'  => null,
+		'disabled'  => null,
+		'class'     => null,
+		'label'     => null,
+		'connector' => null,
+		'context'   => null,
+		'action'    => null,
+	);
 
-		$args = wp_parse_args( $args, $defaults );
-		return sprintf(
-			'<option value="%s" %s %s %s %s %s %s class="%s">%s</option>',
-			esc_attr( $args['value'] ),
-			$args['selected'],
-			$args['disabled'],
-			$args['connector'] ? sprintf( 'data-connector="%s"', esc_attr( $args['connector'] ) ) : null,
-			$args['context'] ? sprintf( 'data-context="%s"', esc_attr( $args['context'] ) ) : null,
-			$args['action'] ? sprintf( 'data-action="%s"', esc_attr( $args['action'] ) ) : null,
-			$args['blog'] ? sprintf( 'data-blog="%s"', esc_attr( $args['blog'] ) ) : null,
-			$args['class'] ? esc_attr( $args['class'] ) : null,
-			esc_html( $args['label'] )
-		);
+	$args = wp_parse_args( $args, $defaults );
+	return sprintf(
+		'<option value="%s" %s %s %s %s %s class="%s">%s</option>',
+		esc_attr( $args['value'] ),
+		$args['selected'],
+		$args['disabled'],
+		$args['connector'] ? sprintf( 'data-connector="%s"', esc_attr( $args['connector'] ) ) : null,
+		$args['context'] ? sprintf( 'data-context="%s"', esc_attr( $args['context'] ) ) : null,
+		$args['action'] ? sprintf( 'data-action="%s"', esc_attr( $args['action'] ) ) : null,
+		$args['class'] ? esc_attr( $args['class'] ) : null,
+		esc_html( $args['label'] )
+	);
 }
 
 function wp_stream_reports_intervals_html() {
