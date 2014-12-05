@@ -1,0 +1,18 @@
+<phpunit
+	bootstrap="phpunit-plugin-bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	>
+	<php>
+		<const name="WP_TEST_VIP_QUICKSTART_ACTIVATED_PLUGINS" value="jetpack/jetpack.php,media-explorer/media-explorer.php,writing-helper/writing-helper.php,mrss/mrss.php,wordpress-importer/wordpress-importer.php,keyring/keyring.php,polldaddy/polldaddy.php" />
+		<const name="WP_TEST_ACTIVATED_PLUGINS" value="" /> <!-- this list is used if not on VIP Quickstart -->
+	</php>
+	<testsuites>
+		<testsuite>
+			<directory prefix="test-" suffix=".php">../tests/</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>
