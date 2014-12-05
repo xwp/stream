@@ -202,6 +202,12 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action comment_flood_trigger
 	 */
 	public static function callback_comment_flood_trigger( $time_lastcomment, $time_newcomment ) {
+		$flood_tracking = isset( WP_Stream_Settings::$options['general_comment_flood_tracking'] ) ? WP_Stream_Settings::$options['general_comment_flood_tracking'] : false;
+
+		if ( ! $flood_tracking ) {
+			return;
+		}
+
 		$req_user_login = get_option( 'comment_registration' );
 
 		if ( $req_user_login ) {

@@ -168,7 +168,9 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 		}
 
 		$locations = get_registered_nav_menus();
-		$changed   = array_diff_assoc( $old[ $key ], $new[ $key ] ) + array_diff_assoc( $new[ $key ], $old[ $key ] );
+		$old_value = (array) $old[ $key ];
+		$new_value = (array) $new[ $key ];
+		$changed   = array_diff_assoc( $old_value, $new_value ) + array_diff_assoc( $new_value, $old_value );
 
 		if ( $changed ) {
 			foreach ( $changed as $location_id => $menu_id ) {

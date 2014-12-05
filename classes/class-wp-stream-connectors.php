@@ -62,6 +62,7 @@ class WP_Stream_Connectors {
 			'edd',
 			'gravityforms',
 			'jetpack',
+			'stream',
 			'woocommerce',
 			'wordpress-seo',
 		);
