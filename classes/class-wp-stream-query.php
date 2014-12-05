@@ -40,7 +40,7 @@ class WP_Stream_Query {
 			'record__in'            => null,
 			'record__not_in'        => null,
 			// Pagination params
-			'records_per_page'      => get_option( 'posts_per_page' ),
+			'records_per_page'      => get_option( 'posts_per_page', 20 ),
 			'paged'                 => 1,
 			// Order
 			'order'                 => 'desc',
@@ -162,7 +162,7 @@ class WP_Stream_Query {
 			if ( $args['records_per_page'] >= 0 ) {
 				$query['size'] = (int) $args['records_per_page'];
 			} else {
-				$query['size'] = null;
+				$query['size'] = 999999; // Actual limit placed on "unlimited" results
 			}
 		} else {
 			$query['size'] = get_option( 'posts_per_page', 20 );

@@ -253,6 +253,32 @@ class WP_Stream_Settings {
 					),
 				),
 			);
+
+			// If Akismet is active, allow Admins to opt-in to Akismet tracking
+			if ( class_exists( 'Akismet' ) ) {
+				$akismet_tracking = array(
+					'name'        => 'akismet_tracking',
+					'title'       => esc_html__( 'Akismet Tracking', 'stream' ),
+					'type'        => 'checkbox',
+					'desc'        => __( 'Akismet already keeps statistics for comment attempts that it blocks as SPAM. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+					'after_field' => esc_html__( 'Enabled', 'stream' ),
+					'default'     => 0,
+				);
+
+				array_push( $fields['general']['fields'], $akismet_tracking );
+			}
+
+			// Allow Admins to opt-in to Comment Flood tracking
+			$comment_flood_tracking = array(
+				'name'        => 'comment_flood_tracking',
+				'title'       => esc_html__( 'Comment Flood Tracking', 'stream' ),
+				'type'        => 'checkbox',
+				'desc'        => __( 'WordPress will automatically prevent duplicate comments from flooding the database. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+				'after_field' => esc_html__( 'Enabled', 'stream' ),
+				'default'     => 0,
+			);
+
+			array_push( $fields['general']['fields'], $comment_flood_tracking );
 		}
 
 		/**
@@ -527,7 +553,7 @@ class WP_Stream_Settings {
 				);
 				break;
 			case 'select2' :
-				if ( ! isset ( $current_value ) ) {
+				if ( ! isset( $current_value ) ) {
 					$current_value = '';
 				}
 
@@ -821,7 +847,7 @@ class WP_Stream_Settings {
 	public static function get_terms_labels( $column ) {
 		$return_labels = array();
 
-		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
+		if ( isset( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
 			if ( 'context' === $column && isset( WP_Stream_Connectors::$term_labels['stream_connector'] ) ) {
 				$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
 				$contexts   = WP_Stream_Connectors::$term_labels['stream_context'];

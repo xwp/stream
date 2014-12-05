@@ -134,6 +134,8 @@ class WP_Stream_Log {
 		);
 
 		WP_Stream::$db->store( array( $recordarr ) );
+
+		self::debug_backtrace( $recordarr );
 	}
 
 	/**
@@ -208,6 +210,89 @@ class WP_Stream_Log {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Send a full backtrace of calls to the PHP error log for debugging
+	 *
+	 * @param array $recordarr
+	 *
+	 * @return void
+	 */
+	public static function debug_backtrace( $recordarr ) {
+		/**
+		 * Enable debug backtrace on records.
+		 *
+		 * This filter is for developer use only. When enabled, Stream will send
+		 * a full debug backtrace of PHP calls for each record. Optionally, you may
+		 * use the available $recordarr parameter to specify what types of records to
+		 * create backtrace logs for.
+		 *
+		 * @param array $recordarr
+		 *
+		 * @return bool  Set to FALSE by default (backtrace disabled)
+		 */
+		$enabled = apply_filters( 'wp_stream_debug_backtrace', false, $recordarr );
+
+		if ( ! $enabled ) {
+			return;
+		}
+
+		if ( version_compare( PHP_VERSION, '5.3.6', '<' ) ) {
+			error_log( 'WP Stream debug backtrace requires at least PHP 5.3.6' );
+			return;
+		}
+
+		// Record details
+		$summary   = isset( $recordarr['summary'] ) ? $recordarr['summary'] : null;
+		$author    = isset( $recordarr['author'] ) ? $recordarr['author'] : null;
+		$connector = isset( $recordarr['connector'] ) ? $recordarr['connector'] : null;
+		$context   = isset( $recordarr['context'] ) ? $recordarr['context'] : null;
+		$action    = isset( $recordarr['action'] ) ? $recordarr['action'] : null;
+
+		// Stream meta
+		$stream_meta = isset( $recordarr['stream_meta'] ) ? $recordarr['stream_meta'] : null;
+
+		if ( $stream_meta ) {
+			array_walk( $stream_meta, function( &$value, $key ) {
+				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
+			});
+
+			$stream_meta = implode( ', ', $stream_meta );
+		}
+
+		// Author meta
+		$author_meta = isset( $recordarr['author_meta'] ) ? $recordarr['author_meta'] : null;
+
+		if ( $author_meta ) {
+			array_walk( $author_meta, function( &$value, $key ) {
+				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
+			});
+
+			$author_meta = implode( ', ', $author_meta );
+		}
+
+		// Debug backtrace
+		ob_start();
+
+		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ); // Option to ignore args requires PHP 5.3.6
+
+		$backtrace = ob_get_clean();
+		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );
+
+		$output = sprintf(
+			"WP Stream Debug Backtrace\n\n    Summary | %s\n     Author | %s\n  Connector | %s\n    Context | %s\n     Action | %s\nStream Meta | %s\nAuthor Meta | %s\n\n%s\n",
+			$summary,
+			$author,
+			$connector,
+			$context,
+			$action,
+			$stream_meta,
+			$author_meta,
+			implode( "\n", $backtrace )
+		);
+
+		error_log( $output );
 	}
 
 }

@@ -18,6 +18,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		'comment_flood_trigger',
 		'wp_insert_comment',
 		'edit_comment',
+		'before_delete_post',
+		'deleted_post',
 		'delete_comment',
 		'trash_comment',
 		'untrash_comment',
@@ -26,6 +28,13 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		'transition_comment_status',
 		'comment_duplicate_trigger',
 	);
+
+	/**
+	 * Catch and store the post ID during post deletion
+	 *
+	 * @var int
+	 */
+	protected static $delete_post = 0;
 
 	/**
 	 * Return translated connector label
@@ -193,6 +202,12 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action comment_flood_trigger
 	 */
 	public static function callback_comment_flood_trigger( $time_lastcomment, $time_newcomment ) {
+		$flood_tracking = isset( WP_Stream_Settings::$options['general_comment_flood_tracking'] ) ? WP_Stream_Settings::$options['general_comment_flood_tracking'] : false;
+
+		if ( ! $flood_tracking ) {
+			return;
+		}
+
 		$req_user_login = get_option( 'comment_registration' );
 
 		if ( $req_user_login ) {
@@ -229,8 +244,10 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_title     = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 		$comment_status = ( 1 == $comment->comment_approved ) ? __( 'approved automatically', 'stream' ) : __( 'pending approval', 'stream' );
 		$is_spam        = false;
+
 		// Auto-marked spam comments
-		if ( class_exists( 'Akismet' ) && Akismet::matches_last_comment( $comment ) ) {
+		$ak_tracking = isset( WP_Stream_Settings::$options['general_akismet_tracking'] ) ? WP_Stream_Settings::$options['general_akismet_tracking'] : false;
+		if ( class_exists( 'Akismet' ) && $ak_tracking && Akismet::matches_last_comment( $comment ) ) {
 			$ak_last_comment = Akismet::get_last_comment();
 			if ( 'true' == $ak_last_comment['akismet_result'] ) {
 				$is_spam        = true;
@@ -304,6 +321,32 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Catch the post ID during deletion
+	 *
+	 * @action before_delete_post
+	 */
+	public static function callback_before_delete_post( $post_id ) {
+		if ( wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
+		self::$delete_post = $post_id;
+	}
+
+	/**
+	 * Reset the post ID after deletion
+	 *
+	 * @action deleted_post
+	 */
+	public static function callback_deleted_post( $post_id ) {
+		if ( wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
+		self::$delete_post = 0;
+	}
+
+	/**
 	 * Tracks comment delete
 	 *
 	 * @action delete_comment
@@ -317,10 +360,14 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 
 		$user_id      = self::get_comment_author( $comment, 'id' );
 		$user_name    = self::get_comment_author( $comment, 'name' );
-		$post_id      = $comment->comment_post_ID;
+		$post_id      = absint( $comment->comment_post_ID );
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
 		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
+
+		if ( self::$delete_post === $post_id ) {
+			return;
+		}
 
 		self::log(
 			_x(

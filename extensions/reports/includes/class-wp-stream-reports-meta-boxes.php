@@ -209,7 +209,6 @@ class WP_Stream_Reports_Metaboxes {
 			'connector_id'  => '',
 			'context_id'    => '',
 			'action_id'     => '',
-			'blog_id'       => '',
 			'selector_id'   => '',
 			'is_new'        => false,
 			'disabled'      => array(),
@@ -385,14 +384,6 @@ class WP_Stream_Reports_Metaboxes {
 		return $output;
 	}
 
-	public function mutlisite_selector_types( $labels ) {
-		$new_labels = array(
-			'blog_id' => __( 'Site', 'stream' ),
-		);
-
-		return array_merge( $labels, $new_labels );
-	}
-
 	public function load_metabox_records( $args ) {
 		$date_interval = $this->get_date_interval();
 
@@ -404,7 +395,6 @@ class WP_Stream_Reports_Metaboxes {
 
 		$available_args = array(
 			'action'    => 'action_id',
-			'blog_id'   => 'blog_id',
 			'connector' => 'connector_id',
 			'context'   => 'context_id',
 		);
@@ -415,7 +405,7 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$selector            = $args['selector_id'];
-		$available_selectors = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip', 'blog_id' );
+		$available_selectors = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip' );
 
 		if ( ! in_array( $selector, $available_selectors ) ) {
 			return array();
@@ -476,8 +466,6 @@ class WP_Stream_Reports_Metaboxes {
 			$dataset = $this->get_label( $args['context_id'], 'context' );
 		} else if ( ! empty( $args['connector_id'] ) ) {
 			$dataset = $this->get_label( $args['connector_id'], 'connector' );
-		} else if ( ! empty( $args['blog_id'] ) ) {
-			$dataset = $this->get_label( $args['blog_id'], 'blog_id' );
 		} else {
 			$dataset = '';
 		}
@@ -530,7 +518,6 @@ class WP_Stream_Reports_Metaboxes {
 			'connector_id' => wp_stream_filter_input( INPUT_GET, 'data_connector', FILTER_SANITIZE_STRING ),
 			'context_id'   => wp_stream_filter_input( INPUT_GET, 'data_context', FILTER_SANITIZE_STRING ),
 			'action_id'    => wp_stream_filter_input( INPUT_GET, 'data_action', FILTER_SANITIZE_STRING ),
-			'blog_id'      => wp_stream_filter_input( INPUT_GET, 'data_blog', FILTER_SANITIZE_STRING ),
 			'selector_id'  => wp_stream_filter_input( INPUT_GET, 'data_selector', FILTER_SANITIZE_STRING ),
 		);
 
