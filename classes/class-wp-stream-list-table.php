@@ -721,7 +721,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 			<select class="field-predefined hide-if-no-js" name="date_predefined" data-placeholder="<?php _e( 'All Time', 'stream' ); ?>">
 				<option></option>
 				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
-				<?php foreach ( $items as $key => $interval ) {
+				<?php
+				foreach ( $items as $key => $interval ) {
 					printf(
 						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 						esc_attr( $key ),
@@ -730,7 +731,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 						selected( $key === $date_predefined ),
 						esc_html( $interval['label'] )
 					); // xss ok
-				} ?>
+				}
+				?>
 			</select>
 
 			<div class="date-inputs">

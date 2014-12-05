@@ -165,13 +165,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 					$slugs = array( $upgrader->skin->plugin );
 				}
 
-				$plugins = self::get_plugins();
+				$_plugins = self::get_plugins();
 
 				foreach ( $slugs as $slug ) {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
 					$name        = $plugin_data['Name'];
 					$version     = $plugin_data['Version'];
-					$old_version = $plugins[ $slug ]['Version'];
+					$old_version = $_plugins[ $slug ]['Version'];
 
 					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
 				}
@@ -216,8 +216,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	public static function callback_activate_plugin( $slug, $network_wide ) {
-		$plugins      = self::get_plugins();
-		$name         = $plugins[ $slug ]['Name'];
+		$_plugins     = self::get_plugins();
+		$name         = $_plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'stream' ) : null;
 
 		self::log(
@@ -234,8 +234,8 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	public static function callback_deactivate_plugin( $slug, $network_wide ) {
-		$plugins      = self::get_plugins();
-		$name         = $plugins[ $slug ]['Name'];
+		$_plugins     = self::get_plugins();
+		$name         = $_plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'stream' ) : null;
 
 		self::log(

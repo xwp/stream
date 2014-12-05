@@ -537,11 +537,11 @@ class WP_Stream_Notifications_Post_Type {
 					)
 				),
 			),
-
-			// TODO: find a way to introduce meta to the rules, problem: not translatable since it is
-			// generated on run time with no prior definition
-			// 'meta_query'            => array(),
-
+			/**
+			 * TODO: find a way to introduce meta to the rules, problem: not translatable since it is
+			 * generated on run time with no prior definition
+			 * 'meta_query' => array(),
+			 */
 			'connector'   => array(
 				'title'     => esc_html__( 'Connector', 'stream' ),
 				'type'      => 'select',

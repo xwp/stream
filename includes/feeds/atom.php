@@ -18,15 +18,16 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 	 */
 	do_action( 'atom_head' );
 
-foreach ( $records as $record ) :
-	$record_link  = add_query_arg(
-		array(
-			'record__in' => $record->ID,
-		),
-		$records_admin_url
-	);
-	$author       = get_userdata( $record->author );
-	$display_name = isset( $author->display_name ) ? $author->display_name : 'N/A';
+	foreach ( $records as $record ) :
+		$record_link  = add_query_arg(
+			array(
+				'record__in' => $record->ID,
+			),
+			$records_admin_url
+		);
+
+		$author       = get_userdata( $record->author );
+		$display_name = isset( $author->display_name ) ? $author->display_name : 'N/A';
 		?>
 		<entry>
 			<title type="html"><![CDATA[[<?php echo esc_html( $domain ) ?>] <?php echo esc_html( $record->summary ) // xss ok ?> ]]></title>

@@ -805,7 +805,7 @@ class WP_Stream_Admin {
 						<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
 				</div>
 			<?php
-			}
+		}
 		?>
 			</div>
 		</div>
@@ -957,9 +957,7 @@ class WP_Stream_Admin {
 	public static function _filter_user_caps( $allcaps, $caps, $args, $user = null ) {
 		global $wp_roles;
 
-		if ( ! isset( $wp_roles ) ) {
-			$wp_roles = new WP_Roles();
-		}
+		$_wp_roles = isset( $wp_roles ) ? $wp_roles : new WP_Roles();
 
 		$user = is_a( $user, 'WP_User' ) ? $user : wp_get_current_user();
 
@@ -970,7 +968,7 @@ class WP_Stream_Admin {
 				$user->roles,
 				array_filter(
 					array_keys( $user->caps ),
-					array( $wp_roles, 'is_role' )
+					array( $_wp_roles, 'is_role' )
 				)
 			)
 		);
