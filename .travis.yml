@@ -20,7 +20,6 @@ before_script:
     - export DEV_LIB_PATH=bin
     - if [ ! -e "$DEV_LIB_PATH" ] && [ -L .travis.yml ]; then export DEV_LIB_PATH=$( dirname $( readlink .travis.yml ) ); fi
     - source $DEV_LIB_PATH/travis.before_script.sh
-    - WPCS_GIT_TREE=develop
 
 script:
     - $DEV_LIB_PATH/travis.script.sh
