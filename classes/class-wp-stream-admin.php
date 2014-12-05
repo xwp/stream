@@ -557,10 +557,13 @@ class WP_Stream_Admin {
 	 *
 	 * Defaults to TRUE if user option does not exist.
 	 *
+	 * @param int $user_id (optional)
+	 *
 	 * @return bool
 	 */
-	public static function unread_enabled_for_user() {
-		$enabled = get_user_meta( get_current_user_id(), self::UNREAD_COUNT_OPTION_KEY, true );
+	public static function unread_enabled_for_user( $user_id = 0 ) {
+		$user_id = empty( $user_id ) ? get_current_user_id() : $user_id;
+		$enabled = get_user_meta( $user_id, self::UNREAD_COUNT_OPTION_KEY, true );
 		$enabled = ( 'off' !== $enabled );
 
 		return (bool) $enabled;
