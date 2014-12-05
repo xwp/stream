@@ -617,7 +617,7 @@ class WP_Stream_Admin {
 	public static function list_table_db_query( $query ) {
 		$screen        = get_current_screen();
 		$is_list_table = ( isset( $screen->id ) && sprintf( 'toplevel_page_%s', self::RECORDS_PAGE_SLUG ) === $screen->id );
-		$is_first_page = ( isset( $query['from'] ) && 0 === $query['from'] );
+		$is_first_page = empty( $query['from'] );
 		$is_date_desc  = ( isset( $query['sort'][0]['created']['order'] ) && 'desc' === $query['sort'][0]['created']['order'] );
 
 		if ( $is_list_table && $is_first_page && $is_date_desc ) {
