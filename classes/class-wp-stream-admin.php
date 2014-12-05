@@ -116,6 +116,9 @@ class WP_Stream_Admin {
 		add_action( 'personal_options_update', array( __CLASS__, 'save_unread_count_user_option' ) );
 		add_action( 'edit_user_profile_update', array( __CLASS__, 'save_unread_count_user_option' ) );
 
+		// Delete user-specific transient when user is deleted
+		add_action( 'delete_user', array( __CLASS__, 'delete_unread_count_transient' ), 10, 1 );
+
 		// Reset Streams settings
 		add_action( 'wp_ajax_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
 
@@ -646,7 +649,7 @@ class WP_Stream_Admin {
 
 		remove_filter( 'wp_stream_query_results', array( __CLASS__, 'mark_as_read' ) );
 
-		delete_transient( $cache_key );
+		set_transient( $cache_key, 0 ); // No expiration
 
 		return $results;
 	}
@@ -701,6 +704,21 @@ class WP_Stream_Admin {
 		$enabled = ( '1' === $enabled ) ? 'on' : 'off';
 
 		update_user_meta( $user_id, self::UNREAD_COUNT_OPTION_KEY, $enabled );
+	}
+
+	/**
+	 * Delete user-specific transient when a user is deleted
+	 *
+	 * @action delete_user
+	 *
+	 * @param int $user_id
+	 *
+	 * @return void
+	 */
+	public static function delete_unread_count_transient( $user_id ) {
+		$cache_key = sprintf( '%s_%d', self::UNREAD_COUNT_OPTION_KEY, $user_id );
+
+		delete_transient( $cache_key );
 	}
 
 	/**
