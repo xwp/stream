@@ -1,3 +1,0 @@
-[submodule "bin"]
-	path = bin
-	url = https://github.com/xwp/wp-plugin-dev-lib.git
