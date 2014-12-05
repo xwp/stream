@@ -1,1 +1,28 @@
-bin/.travis.yml
+language:
+    - php
+    - node_js
+
+php:
+    - 5.3
+    - 5.4
+    - 5.5
+
+node_js:
+    - 0.10
+
+env:
+    - WP_VERSION=latest WP_MULTISITE=0
+    - WP_VERSION=latest WP_MULTISITE=1
+    - WP_VERSION=3.7 WP_MULTISITE=0
+    - WP_VERSION=3.7 WP_MULTISITE=1
+
+before_script:
+    - export DEV_LIB_PATH=bin
+    - if [ ! -e "$DEV_LIB_PATH" ] && [ -L .travis.yml ]; then export DEV_LIB_PATH=$( dirname $( readlink .travis.yml ) ); fi
+    - source $DEV_LIB_PATH/travis.before_script.sh
+
+script:
+    - $DEV_LIB_PATH/travis.script.sh
+
+after_script:
+    - $DEV_LIB_PATH/travis.after_script.sh
