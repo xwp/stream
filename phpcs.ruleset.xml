@@ -2,10 +2,9 @@
 <ruleset name="WordPress Coding Standards for Plugins">
 	<description>Generally-applicable sniffs for WordPress plugins</description>
 
-	<rule ref="WordPress-Extra" />
-
-	<rule ref="WordPress.WhiteSpace.ScopeIndent">
-		<exclude-pattern>*</exclude-pattern>
+	<rule ref="WordPress-Extra">
+		<exclude name="WordPress.WhiteSpace.PhpIndent" />
+		<exclude name="WordPress.WhiteSpace.ScopeIndent" />
 	</rule>
 
 	<exclude-pattern>bin/*</exclude-pattern>
