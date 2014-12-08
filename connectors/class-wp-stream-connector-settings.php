@@ -510,7 +510,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				}
 			}
 
-		return $links;
+			return $links;
 	}
 
 	/**

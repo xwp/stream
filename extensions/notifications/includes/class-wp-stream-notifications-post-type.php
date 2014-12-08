@@ -694,25 +694,25 @@ class WP_Stream_Notifications_Post_Type {
 				);
 			}
 
-		// Localization
-		$args['i18n'] = array(
-			'empty_triggers'        => esc_html__( 'You cannot save a rule without any triggers.', 'stream' ),
-			'invalid_first_trigger' => esc_html__( 'You cannot save a rule with an empty first trigger.', 'stream' ),
-			'ajax_error'            => esc_html__( 'There was an error submitting your request, please try again.', 'stream' ),
-			'confirm_reset'         => esc_html__( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream' ),
-		);
-
-		global $post;
-
-		if ( $meta = get_post_meta( $post->ID ) && isset( $meta['triggers'] ) ) {
-			$args['meta'] = array(
-				'triggers' => maybe_unserialize( $meta['triggers'][0] ),
-				'groups'   => maybe_unserialize( $meta['groups'][0] ),
-				'alerts'   => maybe_unserialize( $meta['alerts'][0] ),
+			// Localization
+			$args['i18n'] = array(
+				'empty_triggers'        => esc_html__( 'You cannot save a rule without any triggers.', 'stream' ),
+				'invalid_first_trigger' => esc_html__( 'You cannot save a rule with an empty first trigger.', 'stream' ),
+				'ajax_error'            => esc_html__( 'There was an error submitting your request, please try again.', 'stream' ),
+				'confirm_reset'         => esc_html__( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream' ),
 			);
-		}
 
-		return apply_filters( 'wp_stream_notifications_js_args', $args );
+			global $post;
+
+			if ( $meta = get_post_meta( $post->ID ) && isset( $meta['triggers'] ) ) {
+				$args['meta'] = array(
+					'triggers' => maybe_unserialize( $meta['triggers'][0] ),
+					'groups'   => maybe_unserialize( $meta['groups'][0] ),
+					'alerts'   => maybe_unserialize( $meta['alerts'][0] ),
+				);
+			}
+
+			return apply_filters( 'wp_stream_notifications_js_args', $args );
 	}
 
 	/**
