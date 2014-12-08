@@ -577,7 +577,7 @@ class WP_Stream_Migrate {
 			)
 		);
 
-		return $output;
+			return $output;
 	}
 
 }

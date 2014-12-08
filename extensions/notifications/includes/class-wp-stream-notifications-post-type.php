@@ -487,213 +487,212 @@ class WP_Stream_Notifications_Post_Type {
 			)
 		);
 
-		$args['types'] = array(
-			'search'      => array(
-				'title'     => esc_html__( 'Summary', 'stream' ),
-				'type'      => 'text',
-				'operators' => $text_operator,
-			),
-			'object_id'   => array(
-				'title'     => esc_html__( 'Object ID', 'stream' ),
-				'type'      => 'text',
-				'tags'      => true,
-				'operators' => $default_operators,
-			),
-			'author_role' => array(
-				'title'     => esc_html__( 'Author Role', 'stream' ),
-				'type'      => 'select',
-				'multiple'  => true,
-				'operators' => $default_operators,
-				'options'   => $roles_arr,
-			),
-			'author'      => array(
-				'title'     => esc_html__( 'Author', 'stream' ),
-				'type'      => 'text',
-				'ajax'      => true,
-				'operators' => $default_operators,
-			),
-			'ip'          => array(
-				'title'     => esc_html__( 'IP', 'stream' ),
-				'type'      => 'text',
-				'subtype'   => 'ip',
-				'tags'      => true,
-				'operators' => $default_operators,
-			),
-			'date'        => array(
-				'title'     => esc_html__( 'Date', 'stream' ),
-				'type'      => 'date',
-				'operators' => array(
-					'='  => esc_html__( 'is on', 'stream' ),
-					'!=' => esc_html__( 'is not on', 'stream' ),
-					'<'  => esc_html__( 'is before', 'stream' ),
-					'<=' => esc_html__( 'is on or before', 'stream' ),
-					'>'  => esc_html__( 'is after', 'stream' ),
-					'>=' => esc_html__( 'is on or after', 'stream' ),
+			$args['types'] = array(
+				'search'      => array(
+					'title'     => esc_html__( 'Summary', 'stream' ),
+					'type'      => 'text',
+					'operators' => $text_operator,
 				),
-			),
-			'weekday'     => array(
-				'title'     => esc_html__( 'Day of Week', 'stream' ),
-				'type'      => 'select',
-				'multiple'  => true,
-				'operators' => $default_operators,
-				'options'   => $weekday_options,
-			),
-			'connector'   => array(
-				'title'     => esc_html__( 'Connector', 'stream' ),
-				'type'      => 'select',
-				'multiple'  => true,
-				'operators' => $default_operators,
-				'options'   => asort( WP_Stream_Connectors::$term_labels['stream_connector'] ),
-			),
-			'context'     => array(
-				'title'     => esc_html__( 'Context', 'stream' ),
-				'type'      => 'select',
-				'multiple'  => true,
-				'operators' => $default_operators,
-				'options'   => WP_Stream_Connectors::$term_labels['stream_context'],
-			),
-			'action'      => array(
-				'title'     => esc_html__( 'Action', 'stream' ),
-				'type'      => 'select',
-				'multiple'  => true,
-				'operators' => $default_operators,
-				'options'   => WP_Stream_Connectors::$term_labels['stream_action'],
-			),
-		);
-
-		// Connector-based triggers
-		$args['special_types'] = array(
-			'post' => array(
-				'title'     => esc_html__( '- Post', 'stream' ),
-				'type'      => 'text',
-				'ajax'      => true,
-				'connector' => 'posts',
-				'operators' => $default_operators,
-			),
-			'post_title' => array(
-				'title'     => esc_html__( '- Post: Title', 'stream' ),
-				'type'      => 'text',
-				'connector' => 'posts',
-				'operators' => $text_operator,
-			),
-			'post_slug' => array(
-				'title'     => esc_html__( '- Post: Slug', 'stream' ),
-				'type'      => 'text',
-				'connector' => 'posts',
-				'operators' => $text_operator,
-			),
-			'post_content' => array(
-				'title'     => esc_html__( '- Post: Content', 'stream' ),
-				'type'      => 'text',
-				'connector' => 'posts',
-				'operators' => $text_operator,
-			),
-			'post_excerpt' => array(
-				'title'     => esc_html__( '- Post: Excerpt', 'stream' ),
-				'type'      => 'text',
-				'connector' => 'posts',
-				'operators' => $text_operator,
-			),
-			'post_author' => array(
-				'title'     => esc_html__( '- Post: Author', 'stream' ),
-				'type'      => 'text',
-				'ajax'      => true,
-				'connector' => 'posts',
-				'operators' => $default_operators,
-			),
-			'post_status' => array(
-				'title'     => esc_html__( '- Post: Status', 'stream' ),
-				'type'      => 'select',
-				'connector' => 'posts',
-				'options'   => wp_list_pluck( $GLOBALS['wp_post_statuses'], 'label' ),
-				'operators' => $default_operators,
-			),
-			'post_format' => array(
-				'title'     => esc_html__( '- Post: Format', 'stream' ),
-				'type'      => 'select',
-				'connector' => 'posts',
-				'options'   => get_post_format_strings(),
-				'operators' => $default_operators,
-			),
-			'post_parent' => array(
-				'title'     => esc_html__( '- Post: Parent', 'stream' ),
-				'type'      => 'text',
-				'ajax'      => true,
-				'connector' => 'posts',
-				'operators' => $default_operators,
-			),
-			'post_thumbnail' => array(
-				'title'     => esc_html__( '- Post: Featured Image', 'stream' ),
-				'type'      => 'select',
-				'connector' => 'posts',
-				'options'   => array(
-					'0' => esc_html__( 'None', 'stream' ),
-					'1' => esc_html__( 'Has one', 'stream' )
+				'object_id'   => array(
+					'title'     => esc_html__( 'Object ID', 'stream' ),
+					'type'      => 'text',
+					'tags'      => true,
+					'operators' => $default_operators,
 				),
-				'operators' => $default_operators,
-			),
-			'post_comment_status' => array(
-				'title'     => esc_html__( '- Post: Comment Status', 'stream' ),
-				'type'      => 'select',
-				'connector' => 'posts',
-				'options'   => array(
-					'open'   => esc_html__( 'Open', 'stream' ),
-					'closed' => esc_html__( 'Closed', 'stream' )
+				'author_role' => array(
+					'title'     => esc_html__( 'Author Role', 'stream' ),
+					'type'      => 'select',
+					'multiple'  => true,
+					'operators' => $default_operators,
+					'options'   => $roles_arr,
 				),
-				'operators' => $default_operators,
-			),
-			'post_comment_count' => array(
-				'title'     => esc_html__( '- Post: Comment Count', 'stream' ),
-				'type'      => 'text',
-				'connector' => 'posts',
-				'operators' => $numeric_operators,
-			),
-			'user' => array(
-				'title'     => esc_html__( '- User', 'stream' ),
-				'type'      => 'text',
-				'ajax'      => true,
-				'connector' => 'users',
-				'operators' => $default_operators,
-			),
-			'user_role' => array(
-				'title'     => esc_html__( '- User: Role', 'stream' ),
-				'type'      => 'select',
-				'connector' => 'users',
-				'options'   => $roles_arr,
-				'operators' => $default_operators,
-			),
-			'tax' => array(
-				'title'     => esc_html__( '- Taxonomy', 'stream' ),
-				'type'      => 'text',
-				'ajax'      => true,
-				'connector' => 'taxonomies',
-				'operators' => $default_operators,
-			),
-			'term' => array(
-				'title'     => esc_html__( '- Term', 'stream' ),
-				'type'      => 'text',
-				'ajax'      => true,
-				'connector' => 'taxonomies',
-				'operators' => $default_operators,
-			),
-			'term_parent' => array(
-				'title'     => esc_html__( '- Term: Parent', 'stream' ),
-				'type'      => 'text',
-				'ajax'      => true,
-				'connector' => 'taxonomies',
-				'operators' => $default_operators,
-			),
-		);
-
-		$args['adapters'] = array();
-
-		foreach ( WP_Stream_Notifications::$adapters as $name => $options ) {
-			$args['adapters'][ $name ] = array(
-				'title'  => $options['title'],
-				'fields' => $options['class']::fields(),
-				'hints'  => $options['class']::hints(),
+				'author'      => array(
+					'title'     => esc_html__( 'Author', 'stream' ),
+					'type'      => 'text',
+					'ajax'      => true,
+					'operators' => $default_operators,
+				),
+				'ip'          => array(
+					'title'     => esc_html__( 'IP', 'stream' ),
+					'type'      => 'text',
+					'subtype'   => 'ip',
+					'tags'      => true,
+					'operators' => $default_operators,
+				),
+				'date'        => array(
+					'title'     => esc_html__( 'Date', 'stream' ),
+					'type'      => 'date',
+					'operators' => array(
+						'='  => esc_html__( 'is on', 'stream' ),
+						'!=' => esc_html__( 'is not on', 'stream' ),
+						'<'  => esc_html__( 'is before', 'stream' ),
+						'<=' => esc_html__( 'is on or before', 'stream' ),
+						'>'  => esc_html__( 'is after', 'stream' ),
+						'>=' => esc_html__( 'is on or after', 'stream' ),
+					),
+				),
+				'weekday'     => array(
+					'title'     => esc_html__( 'Day of Week', 'stream' ),
+					'type'      => 'select',
+					'multiple'  => true,
+					'operators' => $default_operators,
+					'options'   => $weekday_options,
+				),
+				'connector'   => array(
+					'title'     => esc_html__( 'Connector', 'stream' ),
+					'type'      => 'select',
+					'multiple'  => true,
+					'operators' => $default_operators,
+					'options'   => asort( WP_Stream_Connectors::$term_labels['stream_connector'] ),
+				),
+				'context'     => array(
+					'title'     => esc_html__( 'Context', 'stream' ),
+					'type'      => 'select',
+					'multiple'  => true,
+					'operators' => $default_operators,
+					'options'   => WP_Stream_Connectors::$term_labels['stream_context'],
+				),
+				'action'      => array(
+					'title'     => esc_html__( 'Action', 'stream' ),
+					'type'      => 'select',
+					'multiple'  => true,
+					'operators' => $default_operators,
+					'options'   => WP_Stream_Connectors::$term_labels['stream_action'],
+				),
 			);
-		}
+
+			$args['special_types'] = array(
+				'post' => array(
+					'title'     => esc_html__( '- Post', 'stream' ),
+					'type'      => 'text',
+					'ajax'      => true,
+					'connector' => 'posts',
+					'operators' => $default_operators,
+				),
+				'post_title' => array(
+					'title'     => esc_html__( '- Post: Title', 'stream' ),
+					'type'      => 'text',
+					'connector' => 'posts',
+					'operators' => $text_operator,
+				),
+				'post_slug' => array(
+					'title'     => esc_html__( '- Post: Slug', 'stream' ),
+					'type'      => 'text',
+					'connector' => 'posts',
+					'operators' => $text_operator,
+				),
+				'post_content' => array(
+					'title'     => esc_html__( '- Post: Content', 'stream' ),
+					'type'      => 'text',
+					'connector' => 'posts',
+					'operators' => $text_operator,
+				),
+				'post_excerpt' => array(
+					'title'     => esc_html__( '- Post: Excerpt', 'stream' ),
+					'type'      => 'text',
+					'connector' => 'posts',
+					'operators' => $text_operator,
+				),
+				'post_author' => array(
+					'title'     => esc_html__( '- Post: Author', 'stream' ),
+					'type'      => 'text',
+					'ajax'      => true,
+					'connector' => 'posts',
+					'operators' => $default_operators,
+				),
+				'post_status' => array(
+					'title'     => esc_html__( '- Post: Status', 'stream' ),
+					'type'      => 'select',
+					'connector' => 'posts',
+					'options'   => wp_list_pluck( $GLOBALS['wp_post_statuses'], 'label' ),
+					'operators' => $default_operators,
+				),
+				'post_format' => array(
+					'title'     => esc_html__( '- Post: Format', 'stream' ),
+					'type'      => 'select',
+					'connector' => 'posts',
+					'options'   => get_post_format_strings(),
+					'operators' => $default_operators,
+				),
+				'post_parent' => array(
+					'title'     => esc_html__( '- Post: Parent', 'stream' ),
+					'type'      => 'text',
+					'ajax'      => true,
+					'connector' => 'posts',
+					'operators' => $default_operators,
+				),
+				'post_thumbnail' => array(
+					'title'     => esc_html__( '- Post: Featured Image', 'stream' ),
+					'type'      => 'select',
+					'connector' => 'posts',
+					'options'   => array(
+						'0' => esc_html__( 'None', 'stream' ),
+						'1' => esc_html__( 'Has one', 'stream' )
+					),
+					'operators' => $default_operators,
+				),
+				'post_comment_status' => array(
+					'title'     => esc_html__( '- Post: Comment Status', 'stream' ),
+					'type'      => 'select',
+					'connector' => 'posts',
+					'options'   => array(
+						'open'   => esc_html__( 'Open', 'stream' ),
+						'closed' => esc_html__( 'Closed', 'stream' )
+					),
+					'operators' => $default_operators,
+				),
+				'post_comment_count' => array(
+					'title'     => esc_html__( '- Post: Comment Count', 'stream' ),
+					'type'      => 'text',
+					'connector' => 'posts',
+					'operators' => $numeric_operators,
+				),
+				'user' => array(
+					'title'     => esc_html__( '- User', 'stream' ),
+					'type'      => 'text',
+					'ajax'      => true,
+					'connector' => 'users',
+					'operators' => $default_operators,
+				),
+				'user_role' => array(
+					'title'     => esc_html__( '- User: Role', 'stream' ),
+					'type'      => 'select',
+					'connector' => 'users',
+					'options'   => $roles_arr,
+					'operators' => $default_operators,
+				),
+				'tax' => array(
+					'title'     => esc_html__( '- Taxonomy', 'stream' ),
+					'type'      => 'text',
+					'ajax'      => true,
+					'connector' => 'taxonomies',
+					'operators' => $default_operators,
+				),
+				'term' => array(
+					'title'     => esc_html__( '- Term', 'stream' ),
+					'type'      => 'text',
+					'ajax'      => true,
+					'connector' => 'taxonomies',
+					'operators' => $default_operators,
+				),
+				'term_parent' => array(
+					'title'     => esc_html__( '- Term: Parent', 'stream' ),
+					'type'      => 'text',
+					'ajax'      => true,
+					'connector' => 'taxonomies',
+					'operators' => $default_operators,
+				),
+			);
+
+			$args['adapters'] = array();
+
+			foreach ( WP_Stream_Notifications::$adapters as $name => $options ) {
+				$args['adapters'][ $name ] = array(
+					'title'  => $options['title'],
+					'fields' => $options['class']::fields(),
+					'hints'  => $options['class']::hints(),
+				);
+			}
 
 		// Localization
 		$args['i18n'] = array(
