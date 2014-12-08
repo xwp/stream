@@ -432,6 +432,10 @@ class WP_Stream_Notifications_Post_Type {
 	/**
 	 * Format JS options for the form, to be used with wp_localize_script
 	 *
+	 * TODO: find a way to introduce meta to the rules, problem: not translatable
+	 * since it is generated on run time with no prior definition.
+	 * 'meta_query' => array(),
+	 *
 	 * @return array  Options for our form JS handling
 	 */
 	public function get_js_options() {
@@ -483,11 +487,6 @@ class WP_Stream_Notifications_Post_Type {
 			)
 		);
 
-		/**
-		 * TODO: find a way to introduce meta to the rules, problem: not translatable since it is
-		 * generated on run time with no prior definition
-		 * 'meta_query' => array(),
-		 */
 		$args['types'] = array(
 			'search'      => array(
 				'title'     => esc_html__( 'Summary', 'stream' ),
