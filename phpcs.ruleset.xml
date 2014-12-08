@@ -4,8 +4,9 @@
 
 	<rule ref="WordPress-Extra" />
 
-	<exclude name="WordPress.WhiteSpace.PhpIndent" />
-	<exclude name="WordPress.WhiteSpace.ScopeIndent" />
+	<rule ref="WordPress.WhiteSpace.ScopeIndent">
+		<exclude-pattern>*</exclude-pattern>
+	</rule>
 
 	<exclude-pattern>bin/*</exclude-pattern>
 	<exclude-pattern>tests/*</exclude-pattern>
