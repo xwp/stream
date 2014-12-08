@@ -439,10 +439,6 @@ class WP_Stream_Notifications_Post_Type {
 
 		$args = array();
 
-		$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
-
-		asort( $connectors );
-
 		$roles     = $wp_roles->roles;
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
 
@@ -468,6 +464,23 @@ class WP_Stream_Notifications_Post_Type {
 			'<=' => esc_html__( 'equal or less than', 'stream' ),
 			'>'  => esc_html__( 'greater than', 'stream' ),
 			'>=' => esc_html__( 'equal or greater than', 'stream' ),
+		);
+
+		$weekday_options = array_combine(
+			array_map(
+				function ( $weekday_index ) {
+					return sprintf( 'weekday_%d', $weekday_index % 7 );
+				},
+				range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
+			),
+			array_map(
+				function ( $weekday_index ) {
+					global $wp_locale;
+
+					return $wp_locale->get_weekday( $weekday_index % 7 );
+				},
+				range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
+			)
 		);
 
 		/**
@@ -524,28 +537,14 @@ class WP_Stream_Notifications_Post_Type {
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
-				'options'   => array_combine(
-					array_map(
-						function ( $weekday_index ) {
-							return sprintf( 'weekday_%d', $weekday_index % 7 );
-						},
-						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
-					),
-					array_map(
-						function ( $weekday_index ) {
-							global $wp_locale;
-							return $wp_locale->get_weekday( $weekday_index % 7 );
-						},
-						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
-					)
-				),
+				'options'   => $weekday_options,
 			),
 			'connector'   => array(
 				'title'     => esc_html__( 'Connector', 'stream' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
-				'options'   => $connectors,
+				'options'   => asort( WP_Stream_Connectors::$term_labels['stream_connector'] ),
 			),
 			'context'     => array(
 				'title'     => esc_html__( 'Context', 'stream' ),
