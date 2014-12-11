@@ -463,54 +463,54 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			),
 		);
 
-			if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ) ) ) {
-				global $submenu;
+		if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ) ) ) {
+			global $submenu;
 
-				$applicable_rules = array_filter(
-					$rules,
-					function( $rule ) use ( $submenu, $record ) {
-						return call_user_func( $rule['applicable'], $submenu, $record );
-					}
-				);
+			$applicable_rules = array_filter(
+				$rules,
+				function( $rule ) use ( $submenu, $record ) {
+					return call_user_func( $rule['applicable'], $submenu, $record );
+				}
+			);
 
-				if ( ! empty( $applicable_rules ) ) {
-					// The first applicable rule wins
-					$rule         = array_shift( $applicable_rules );
-					$menu_slug    = $rule['menu_slug'];
-					$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceOf Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
-					$url          = $rule['url']( $rule, $record );
+			if ( ! empty( $applicable_rules ) ) {
+				// The first applicable rule wins
+				$rule         = array_shift( $applicable_rules );
+				$menu_slug    = $rule['menu_slug'];
+				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceOf Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
+				$url          = $rule['url']( $rule, $record );
 
-					if ( isset( $submenu[ $menu_slug ] ) ) {
-						$found_submenus = wp_list_filter(
-							$submenu[ $menu_slug ],
-							array( 2 => $submenu_slug )
-						);
-					}
+				if ( isset( $submenu[ $menu_slug ] ) ) {
+					$found_submenus = wp_list_filter(
+						$submenu[ $menu_slug ],
+						array( 2 => $submenu_slug )
+					);
+				}
 
-					if ( ! empty( $found_submenus ) ) {
-						$target_submenu = array_pop( $found_submenus );
-						list( $menu_title, $capability ) = $target_submenu;
+				if ( ! empty( $found_submenus ) ) {
+					$target_submenu = array_pop( $found_submenus );
+					list( $menu_title, $capability ) = $target_submenu;
 
-						if ( current_user_can( $capability ) ) {
-							$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
-							$text       = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
-							$field_name = wp_stream_get_meta( $record, 'option_key', true );
+					if ( current_user_can( $capability ) ) {
+						$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
+						$text       = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
+						$field_name = wp_stream_get_meta( $record, 'option_key', true );
 
-							if ( '' === $field_name ) {
-								$field_name = wp_stream_get_meta( $record, 'option', true );
-							}
-
-							if ( '' !== $field_name ) {
-								$url = sprintf( '%s#%s%s', rtrim( preg_replace( '/#.*/', '', $url ), '/' ), self::HIGHLIGHT_FIELD_URL_HASH_PREFIX, $field_name );
-							}
-
-							$links[ $text ] = $url;
+						if ( '' === $field_name ) {
+							$field_name = wp_stream_get_meta( $record, 'option', true );
 						}
+
+						if ( '' !== $field_name ) {
+							$url = sprintf( '%s#%s%s', rtrim( preg_replace( '/#.*/', '', $url ), '/' ), self::HIGHLIGHT_FIELD_URL_HASH_PREFIX, $field_name );
+						}
+
+						$links[ $text ] = $url;
 					}
 				}
 			}
+		}
 
-			return $links;
+		return $links;
 	}
 
 	/**
