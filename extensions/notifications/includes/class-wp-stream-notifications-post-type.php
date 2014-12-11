@@ -78,6 +78,7 @@ class WP_Stream_Notifications_Post_Type {
 		add_meta_box( 'stream-notifications-data-tags', __( 'Data Tags', 'stream' ), array( $this, 'metabox_data_tags' ), self::POSTTYPE, 'side' );
 
 		add_action( 'post_submitbox_misc_actions', array( $this, 'metabox_save' ) );
+
 		add_action(
 			'edit_form_advanced', function () {
 				global $post;
@@ -131,7 +132,6 @@ class WP_Stream_Notifications_Post_Type {
 
 	public function metabox_save() {
 		global $post;
-
 		if ( 'auto-draft' === $post->post_status ) {
 			return;
 		}
@@ -420,28 +420,25 @@ class WP_Stream_Notifications_Post_Type {
 			wp_send_json_error( esc_html__( 'Invalid nonce', 'stream' ) );
 		}
 
-		if ( empty( $id ) || (int) $id != $id ) {
+		if ( empty( $id ) || (int) $id !== $id ) {
 			wp_send_json_error( esc_html__( 'Invalid record ID', 'stream' ) );
 		}
 
 		update_post_meta( $id, 'occurrences', 0 );
-
 		wp_send_json_success();
 	}
 
 	/**
 	 * Format JS options for the form, to be used with wp_localize_script
 	 *
-	 * TODO: find a way to introduce meta to the rules, problem: not translatable
-	 * since it is generated on run time with no prior definition.
-	 * 'meta_query' => array(),
-	 *
 	 * @return array  Options for our form JS handling
 	 */
 	public function get_js_options() {
 		global $wp_roles;
-
 		$args = array();
+
+		$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
+		asort( $connectors );
 
 		$roles     = $wp_roles->roles;
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
@@ -470,249 +467,258 @@ class WP_Stream_Notifications_Post_Type {
 			'>=' => esc_html__( 'equal or greater than', 'stream' ),
 		);
 
-		$weekday_options = array_combine(
-			array_map(
-				function ( $weekday_index ) {
-					return sprintf( 'weekday_%d', $weekday_index % 7 );
-				},
-				range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
+		$args['types'] = array(
+			'search'      => array(
+				'title'     => esc_html__( 'Summary', 'stream' ),
+				'type'      => 'text',
+				'operators' => $text_operator,
 			),
-			array_map(
-				function ( $weekday_index ) {
-					global $wp_locale;
+			'object_id'   => array(
+				'title'     => esc_html__( 'Object ID', 'stream' ),
+				'type'      => 'text',
+				'tags'      => true,
+				'operators' => $default_operators,
+			),
 
-					return $wp_locale->get_weekday( $weekday_index % 7 );
-				},
-				range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
-			)
+			'author_role' => array(
+				'title'     => esc_html__( 'Author Role', 'stream' ),
+				'type'      => 'select',
+				'multiple'  => true,
+				'operators' => $default_operators,
+				'options'   => $roles_arr,
+			),
+
+			'author'      => array(
+				'title'     => esc_html__( 'Author', 'stream' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'operators' => $default_operators,
+			),
+
+			'ip'          => array(
+				'title'     => esc_html__( 'IP', 'stream' ),
+				'type'      => 'text',
+				'subtype'   => 'ip',
+				'tags'      => true,
+				'operators' => $default_operators,
+			),
+
+			'date'        => array(
+				'title'     => esc_html__( 'Date', 'stream' ),
+				'type'      => 'date',
+				'operators' => array(
+					'='  => esc_html__( 'is on', 'stream' ),
+					'!=' => esc_html__( 'is not on', 'stream' ),
+					'<'  => esc_html__( 'is before', 'stream' ),
+					'<=' => esc_html__( 'is on or before', 'stream' ),
+					'>'  => esc_html__( 'is after', 'stream' ),
+					'>=' => esc_html__( 'is on or after', 'stream' ),
+				),
+			),
+
+			'weekday'     => array(
+				'title'     => esc_html__( 'Day of Week', 'stream' ),
+				'type'      => 'select',
+				'multiple'  => true,
+				'operators' => $default_operators,
+				'options'   => array_combine(
+					array_map(
+						function ( $weekday_index ) {
+							return sprintf( 'weekday_%d', $weekday_index % 7 );
+						},
+						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
+					),
+					array_map(
+						function ( $weekday_index ) {
+							global $wp_locale;
+							return $wp_locale->get_weekday( $weekday_index % 7 );
+						},
+						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
+					)
+				),
+			),
+
+			// TODO: find a way to introduce meta to the rules, problem: not translatable since it is
+			// generated on run time with no prior definition
+			// 'meta_query'            => array(),
+
+			'connector'   => array(
+				'title'     => esc_html__( 'Connector', 'stream' ),
+				'type'      => 'select',
+				'multiple'  => true,
+				'operators' => $default_operators,
+				'options'   => $connectors,
+			),
+			'context'     => array(
+				'title'     => esc_html__( 'Context', 'stream' ),
+				'type'      => 'select',
+				'multiple'  => true,
+				'operators' => $default_operators,
+				'options'   => WP_Stream_Connectors::$term_labels['stream_context'],
+			),
+			'action'      => array(
+				'title'     => esc_html__( 'Action', 'stream' ),
+				'type'      => 'select',
+				'multiple'  => true,
+				'operators' => $default_operators,
+				'options'   => WP_Stream_Connectors::$term_labels['stream_action'],
+			),
 		);
 
-			$args['types'] = array(
-				'search'      => array(
-					'title'     => esc_html__( 'Summary', 'stream' ),
-					'type'      => 'text',
-					'operators' => $text_operator,
+		// Connector-based triggers
+		$args['special_types'] = array(
+			'post' => array(
+				'title'     => esc_html__( '- Post', 'stream' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'posts',
+				'operators' => $default_operators,
+			),
+			'post_title' => array(
+				'title'     => esc_html__( '- Post: Title', 'stream' ),
+				'type'      => 'text',
+				'connector' => 'posts',
+				'operators' => $text_operator,
+			),
+			'post_slug' => array(
+				'title'     => esc_html__( '- Post: Slug', 'stream' ),
+				'type'      => 'text',
+				'connector' => 'posts',
+				'operators' => $text_operator,
+			),
+			'post_content' => array(
+				'title'     => esc_html__( '- Post: Content', 'stream' ),
+				'type'      => 'text',
+				'connector' => 'posts',
+				'operators' => $text_operator,
+			),
+			'post_excerpt' => array(
+				'title'     => esc_html__( '- Post: Excerpt', 'stream' ),
+				'type'      => 'text',
+				'connector' => 'posts',
+				'operators' => $text_operator,
+			),
+			'post_author' => array(
+				'title'     => esc_html__( '- Post: Author', 'stream' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'posts',
+				'operators' => $default_operators,
+			),
+			'post_status' => array(
+				'title'     => esc_html__( '- Post: Status', 'stream' ),
+				'type'      => 'select',
+				'connector' => 'posts',
+				'options'   => wp_list_pluck( $GLOBALS['wp_post_statuses'], 'label' ),
+				'operators' => $default_operators,
+			),
+			'post_format' => array(
+				'title'     => esc_html__( '- Post: Format', 'stream' ),
+				'type'      => 'select',
+				'connector' => 'posts',
+				'options'   => get_post_format_strings(),
+				'operators' => $default_operators,
+			),
+			'post_parent' => array(
+				'title'     => esc_html__( '- Post: Parent', 'stream' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'posts',
+				'operators' => $default_operators,
+			),
+			'post_thumbnail' => array(
+				'title'     => esc_html__( '- Post: Featured Image', 'stream' ),
+				'type'      => 'select',
+				'connector' => 'posts',
+				'options'   => array(
+					'0' => esc_html__( 'None', 'stream' ),
+					'1' => esc_html__( 'Has one', 'stream' )
 				),
-				'object_id'   => array(
-					'title'     => esc_html__( 'Object ID', 'stream' ),
-					'type'      => 'text',
-					'tags'      => true,
-					'operators' => $default_operators,
+				'operators' => $default_operators,
+			),
+			'post_comment_status' => array(
+				'title'     => esc_html__( '- Post: Comment Status', 'stream' ),
+				'type'      => 'select',
+				'connector' => 'posts',
+				'options'   => array(
+					'open'   => esc_html__( 'Open', 'stream' ),
+					'closed' => esc_html__( 'Closed', 'stream' )
 				),
-				'author_role' => array(
-					'title'     => esc_html__( 'Author Role', 'stream' ),
-					'type'      => 'select',
-					'multiple'  => true,
-					'operators' => $default_operators,
-					'options'   => $roles_arr,
-				),
-				'author'      => array(
-					'title'     => esc_html__( 'Author', 'stream' ),
-					'type'      => 'text',
-					'ajax'      => true,
-					'operators' => $default_operators,
-				),
-				'ip'          => array(
-					'title'     => esc_html__( 'IP', 'stream' ),
-					'type'      => 'text',
-					'subtype'   => 'ip',
-					'tags'      => true,
-					'operators' => $default_operators,
-				),
-				'date'        => array(
-					'title'     => esc_html__( 'Date', 'stream' ),
-					'type'      => 'date',
-					'operators' => array(
-						'='  => esc_html__( 'is on', 'stream' ),
-						'!=' => esc_html__( 'is not on', 'stream' ),
-						'<'  => esc_html__( 'is before', 'stream' ),
-						'<=' => esc_html__( 'is on or before', 'stream' ),
-						'>'  => esc_html__( 'is after', 'stream' ),
-						'>=' => esc_html__( 'is on or after', 'stream' ),
-					),
-				),
-				'weekday'     => array(
-					'title'     => esc_html__( 'Day of Week', 'stream' ),
-					'type'      => 'select',
-					'multiple'  => true,
-					'operators' => $default_operators,
-					'options'   => $weekday_options,
-				),
-				'connector'   => array(
-					'title'     => esc_html__( 'Connector', 'stream' ),
-					'type'      => 'select',
-					'multiple'  => true,
-					'operators' => $default_operators,
-					'options'   => asort( WP_Stream_Connectors::$term_labels['stream_connector'] ),
-				),
-				'context'     => array(
-					'title'     => esc_html__( 'Context', 'stream' ),
-					'type'      => 'select',
-					'multiple'  => true,
-					'operators' => $default_operators,
-					'options'   => WP_Stream_Connectors::$term_labels['stream_context'],
-				),
-				'action'      => array(
-					'title'     => esc_html__( 'Action', 'stream' ),
-					'type'      => 'select',
-					'multiple'  => true,
-					'operators' => $default_operators,
-					'options'   => WP_Stream_Connectors::$term_labels['stream_action'],
-				),
+				'operators' => $default_operators,
+			),
+			'post_comment_count' => array(
+				'title'     => esc_html__( '- Post: Comment Count', 'stream' ),
+				'type'      => 'text',
+				'connector' => 'posts',
+				'operators' => $numeric_operators,
+			),
+			'user' => array(
+				'title'     => esc_html__( '- User', 'stream' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'users',
+				'operators' => $default_operators,
+			),
+			'user_role' => array(
+				'title'     => esc_html__( '- User: Role', 'stream' ),
+				'type'      => 'select',
+				'connector' => 'users',
+				'options'   => $roles_arr,
+				'operators' => $default_operators,
+			),
+			'tax' => array(
+				'title'     => esc_html__( '- Taxonomy', 'stream' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'taxonomies',
+				'operators' => $default_operators,
+			),
+			'term' => array(
+				'title'     => esc_html__( '- Term', 'stream' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'taxonomies',
+				'operators' => $default_operators,
+			),
+			'term_parent' => array(
+				'title'     => esc_html__( '- Term: Parent', 'stream' ),
+				'type'      => 'text',
+				'ajax'      => true,
+				'connector' => 'taxonomies',
+				'operators' => $default_operators,
+			),
+		);
+
+		$args['adapters'] = array();
+
+		foreach ( WP_Stream_Notifications::$adapters as $name => $options ) {
+			$args['adapters'][ $name ] = array(
+				'title'  => $options['title'],
+				'fields' => $options['class']::fields(),
+				'hints'  => $options['class']::hints(),
 			);
+		}
 
-			$args['special_types'] = array(
-				'post' => array(
-					'title'     => esc_html__( '- Post', 'stream' ),
-					'type'      => 'text',
-					'ajax'      => true,
-					'connector' => 'posts',
-					'operators' => $default_operators,
-				),
-				'post_title' => array(
-					'title'     => esc_html__( '- Post: Title', 'stream' ),
-					'type'      => 'text',
-					'connector' => 'posts',
-					'operators' => $text_operator,
-				),
-				'post_slug' => array(
-					'title'     => esc_html__( '- Post: Slug', 'stream' ),
-					'type'      => 'text',
-					'connector' => 'posts',
-					'operators' => $text_operator,
-				),
-				'post_content' => array(
-					'title'     => esc_html__( '- Post: Content', 'stream' ),
-					'type'      => 'text',
-					'connector' => 'posts',
-					'operators' => $text_operator,
-				),
-				'post_excerpt' => array(
-					'title'     => esc_html__( '- Post: Excerpt', 'stream' ),
-					'type'      => 'text',
-					'connector' => 'posts',
-					'operators' => $text_operator,
-				),
-				'post_author' => array(
-					'title'     => esc_html__( '- Post: Author', 'stream' ),
-					'type'      => 'text',
-					'ajax'      => true,
-					'connector' => 'posts',
-					'operators' => $default_operators,
-				),
-				'post_status' => array(
-					'title'     => esc_html__( '- Post: Status', 'stream' ),
-					'type'      => 'select',
-					'connector' => 'posts',
-					'options'   => wp_list_pluck( $GLOBALS['wp_post_statuses'], 'label' ),
-					'operators' => $default_operators,
-				),
-				'post_format' => array(
-					'title'     => esc_html__( '- Post: Format', 'stream' ),
-					'type'      => 'select',
-					'connector' => 'posts',
-					'options'   => get_post_format_strings(),
-					'operators' => $default_operators,
-				),
-				'post_parent' => array(
-					'title'     => esc_html__( '- Post: Parent', 'stream' ),
-					'type'      => 'text',
-					'ajax'      => true,
-					'connector' => 'posts',
-					'operators' => $default_operators,
-				),
-				'post_thumbnail' => array(
-					'title'     => esc_html__( '- Post: Featured Image', 'stream' ),
-					'type'      => 'select',
-					'connector' => 'posts',
-					'options'   => array(
-						'0' => esc_html__( 'None', 'stream' ),
-						'1' => esc_html__( 'Has one', 'stream' )
-					),
-					'operators' => $default_operators,
-				),
-				'post_comment_status' => array(
-					'title'     => esc_html__( '- Post: Comment Status', 'stream' ),
-					'type'      => 'select',
-					'connector' => 'posts',
-					'options'   => array(
-						'open'   => esc_html__( 'Open', 'stream' ),
-						'closed' => esc_html__( 'Closed', 'stream' )
-					),
-					'operators' => $default_operators,
-				),
-				'post_comment_count' => array(
-					'title'     => esc_html__( '- Post: Comment Count', 'stream' ),
-					'type'      => 'text',
-					'connector' => 'posts',
-					'operators' => $numeric_operators,
-				),
-				'user' => array(
-					'title'     => esc_html__( '- User', 'stream' ),
-					'type'      => 'text',
-					'ajax'      => true,
-					'connector' => 'users',
-					'operators' => $default_operators,
-				),
-				'user_role' => array(
-					'title'     => esc_html__( '- User: Role', 'stream' ),
-					'type'      => 'select',
-					'connector' => 'users',
-					'options'   => $roles_arr,
-					'operators' => $default_operators,
-				),
-				'tax' => array(
-					'title'     => esc_html__( '- Taxonomy', 'stream' ),
-					'type'      => 'text',
-					'ajax'      => true,
-					'connector' => 'taxonomies',
-					'operators' => $default_operators,
-				),
-				'term' => array(
-					'title'     => esc_html__( '- Term', 'stream' ),
-					'type'      => 'text',
-					'ajax'      => true,
-					'connector' => 'taxonomies',
-					'operators' => $default_operators,
-				),
-				'term_parent' => array(
-					'title'     => esc_html__( '- Term: Parent', 'stream' ),
-					'type'      => 'text',
-					'ajax'      => true,
-					'connector' => 'taxonomies',
-					'operators' => $default_operators,
-				),
+		// Localization
+		$args['i18n'] = array(
+			'empty_triggers'        => esc_html__( 'You cannot save a rule without any triggers.', 'stream' ),
+			'invalid_first_trigger' => esc_html__( 'You cannot save a rule with an empty first trigger.', 'stream' ),
+			'ajax_error'            => esc_html__( 'There was an error submitting your request, please try again.', 'stream' ),
+			'confirm_reset'         => esc_html__( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream' ),
+		);
+
+		global $post;
+
+		if ( ( $meta = get_post_meta( $post->ID ) ) && isset( $meta['triggers'] ) ) {
+
+			$args['meta'] = array(
+				'triggers' => maybe_unserialize( $meta['triggers'][0] ),
+				'groups'   => maybe_unserialize( $meta['groups'][0] ),
+				'alerts'   => maybe_unserialize( $meta['alerts'][0] ),
 			);
+		}
 
-			$args['adapters'] = array();
-
-			foreach ( WP_Stream_Notifications::$adapters as $name => $options ) {
-				$args['adapters'][ $name ] = array(
-					'title'  => $options['title'],
-					'fields' => $options['class']::fields(),
-					'hints'  => $options['class']::hints(),
-				);
-			}
-
-			// Localization
-			$args['i18n'] = array(
-				'empty_triggers'        => esc_html__( 'You cannot save a rule without any triggers.', 'stream' ),
-				'invalid_first_trigger' => esc_html__( 'You cannot save a rule with an empty first trigger.', 'stream' ),
-				'ajax_error'            => esc_html__( 'There was an error submitting your request, please try again.', 'stream' ),
-				'confirm_reset'         => esc_html__( 'Are you sure you want to reset occurrences for this rule? This cannot be undone.', 'stream' ),
-			);
-
-			global $post;
-
-			if ( $meta = get_post_meta( $post->ID ) && isset( $meta['triggers'] ) ) {
-				$args['meta'] = array(
-					'triggers' => maybe_unserialize( $meta['triggers'][0] ),
-					'groups'   => maybe_unserialize( $meta['groups'][0] ),
-					'alerts'   => maybe_unserialize( $meta['alerts'][0] ),
-				);
-			}
-
-			return apply_filters( 'wp_stream_notifications_js_args', $args );
+		return apply_filters( 'wp_stream_notifications_js_args', $args );
 	}
 
 	/**
@@ -726,7 +732,6 @@ class WP_Stream_Notifications_Post_Type {
 	 */
 	public function format_json_for_select2( $data, $key = null, $val = null ) {
 		$return = array();
-
 		if ( is_null( $key ) && is_null( $val ) ) { // for flat associative array
 			$keys = array_keys( $data );
 			$vals = array_values( $data );
@@ -734,7 +739,6 @@ class WP_Stream_Notifications_Post_Type {
 			$keys = wp_list_pluck( $data, $key );
 			$vals = wp_list_pluck( $data, $val );
 		}
-
 		foreach ( $keys as $idx => $key ) {
 			$return[] = array(
 				'id'   => $key,
@@ -755,7 +759,6 @@ class WP_Stream_Notifications_Post_Type {
 	 */
 	public function get_terms( $search, $taxonomies = array() ) {
 		global $wpdb;
-
 		$taxonomies = (array) $taxonomies;
 
 		$sql = "SELECT tt.term_taxonomy_id id, t.name, t.slug, tt.taxonomy, tt.description
@@ -784,7 +787,6 @@ class WP_Stream_Notifications_Post_Type {
 		$results = $wpdb->get_results( $sql );
 
 		$return = array();
-
 		foreach ( $results as $result ) {
 			$return[ $result->id ] = sprintf( '%s - %s', $result->name, $result->taxonomy );
 		}
@@ -835,7 +837,6 @@ class WP_Stream_Notifications_Post_Type {
 		}
 
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-list-table.php';
-
 		WP_Stream_Notifications_List_Table::get_instance();
 	}
 
