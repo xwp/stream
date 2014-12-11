@@ -420,7 +420,8 @@ class WP_Stream_Notifications_Post_Type {
 			wp_send_json_error( esc_html__( 'Invalid nonce', 'stream' ) );
 		}
 
-		if ( empty( $id ) || (int) $id !== $id ) {
+		// Loose comparison needed
+		if ( empty( $id ) || (int) $id != $id ) {
 			wp_send_json_error( esc_html__( 'Invalid record ID', 'stream' ) );
 		}
 
