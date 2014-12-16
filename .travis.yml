@@ -17,11 +17,11 @@ env:
     - WP_VERSION=3.7 WP_MULTISITE=1
 
 matrix:
-  exclude:
-    - php: 5.5
-      env: WP_VERSION=3.7 WP_MULTISITE=0
-    - php: 5.5
-      env: WP_VERSION=3.7 WP_MULTISITE=1
+    exclude:
+        - php: 5.5
+        env: WP_VERSION=3.7 WP_MULTISITE=0
+        - php: 5.5
+        env: WP_VERSION=3.7 WP_MULTISITE=1
 
 before_script:
     - export DEV_LIB_PATH=bin
