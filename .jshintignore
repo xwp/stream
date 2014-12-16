@@ -1,2 +1,2 @@
-ui/lib/*
-extensions/*/ui/lib/*
+ui/lib/**
+extensions/*/ui/lib/**
