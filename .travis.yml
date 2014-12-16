@@ -16,6 +16,14 @@ env:
     - WP_VERSION=3.7 WP_MULTISITE=0
     - WP_VERSION=3.7 WP_MULTISITE=1
 
+matrix:
+  exclude:
+    - php: 5.5
+      env: WP_VERSION=3.7 WP_MULTISITE=0
+  exclude:
+    - php: 5.5
+      env: WP_VERSION=3.7 WP_MULTISITE=1
+
 before_script:
     - export DEV_LIB_PATH=bin
     - if [ ! -e "$DEV_LIB_PATH" ] && [ -L .travis.yml ]; then export DEV_LIB_PATH=$( dirname $( readlink .travis.yml ) ); fi
