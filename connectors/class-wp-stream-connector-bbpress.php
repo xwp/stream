@@ -62,7 +62,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 	 * @return bool
 	 */
 	public static function is_dependency_satisfied() {
-		if ( class_exists( 'bbPress' ) && version_compare( bbp_get_version(), self::PLUGIN_MIN_VERSION, '>=' ) ) {
+		if ( class_exists( 'bbPress' ) && function_exists( 'bbp_get_version' ) && version_compare( bbp_get_version(), self::PLUGIN_MIN_VERSION, '>=' ) ) {
 			return true;
 		}
 
@@ -75,7 +75,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'bbPress', 'bbpress' );
+		return _x( 'bbPress', 'bbpress', 'stream' );
 	}
 
 	/**
@@ -85,22 +85,22 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'     => __( 'Created', 'stream' ),
-			'updated'     => __( 'Updated', 'stream' ),
-			'activated'   => __( 'Activated', 'stream' ),
-			'deactivated' => __( 'Deactivated', 'stream' ),
-			'deleted'     => __( 'Deleted', 'stream' ),
-			'trashed'     => __( 'Trashed', 'stream' ),
-			'untrashed'   => __( 'Restored', 'stream' ),
-			'generated'   => __( 'Generated', 'stream' ),
-			'imported'    => __( 'Imported', 'stream' ),
-			'exported'    => __( 'Exported', 'stream' ),
-			'closed'      => __( 'Closed', 'stream' ),
-			'opened'      => __( 'Opened', 'stream' ),
-			'sticked'     => __( 'Sticked', 'stream' ),
-			'unsticked'   => __( 'Unsticked', 'stream' ),
-			'spammed'     => __( 'Marked as spam', 'stream' ),
-			'unspammed'   => __( 'Unmarked as spam', 'stream' ),
+			'created'     => _x( 'Created', 'bbpress', 'stream' ),
+			'updated'     => _x( 'Updated', 'bbpress', 'stream' ),
+			'activated'   => _x( 'Activated', 'bbpress', 'stream' ),
+			'deactivated' => _x( 'Deactivated', 'bbpress', 'stream' ),
+			'deleted'     => _x( 'Deleted', 'bbpress', 'stream' ),
+			'trashed'     => _x( 'Trashed', 'bbpress', 'stream' ),
+			'untrashed'   => _x( 'Restored', 'bbpress', 'stream' ),
+			'generated'   => _x( 'Generated', 'bbpress', 'stream' ),
+			'imported'    => _x( 'Imported', 'bbpress', 'stream' ),
+			'exported'    => _x( 'Exported', 'bbpress', 'stream' ),
+			'closed'      => _x( 'Closed', 'bbpress', 'stream' ),
+			'opened'      => _x( 'Opened', 'bbpress', 'stream' ),
+			'sticked'     => _x( 'Sticked', 'bbpress', 'stream' ),
+			'unsticked'   => _x( 'Unsticked', 'bbpress', 'stream' ),
+			'spammed'     => _x( 'Marked as spam', 'bbpress', 'stream' ),
+			'unspammed'   => _x( 'Unmarked as spam', 'bbpress', 'stream' ),
 		);
 	}
 
@@ -111,7 +111,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'settings' => __( 'Settings', 'stream' ),
+			'settings' => _x( 'Settings', 'bbpress', 'stream' ),
 		);
 	}
 
@@ -149,7 +149,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 			$settings = bbp_admin_get_settings_fields();
 
 			/* fix for missing title for this single field */
-			$settings['bbp_settings_features']['_bbp_allow_threaded_replies']['title'] = __( 'Reply Threading', 'bbpress' );
+			$settings['bbp_settings_features']['_bbp_allow_threaded_replies']['title'] = __( 'Reply Threading', 'stream' );
 
 			$option   = $data['args']['option'];
 			foreach ( $settings as $section => $fields ) {

@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:      stream, X-team, lukecarbis, fjarrett, westonruter, japh, shadyvb, jonathanbardo, c3mdigital, johnregan3, akeda, kucrut, topher1kenobe
+Contributors:     lukecarbis, fjarrett, shadyvb, westonruter, stream, xwp
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.7
 Tested up to:      4.0
@@ -25,13 +25,14 @@ Built with performance in mind, Stream won't slow down content querying on your 
 
 **Built-In Tracking For Popular Plugins:**
 
- * [Jetpack](https://wp-stream.com/connector/jetpack/)
- * [Gravity Forms](https://wp-stream.com/connector/gravity-forms/)
- * [WooCommerce](https://wp-stream.com/connector/woocommerce/)
- * [WordPress SEO by Yoast](https://wp-stream.com/connector/wordpress-seo/)
- * [Easy Digital Downloads](https://wp-stream.com/connector/edd/)
- * [BuddyPress](https://wp-stream.com/connector/buddypress/)
- * [bbPress](https://wp-stream.com/connector/bbpress/)
+ * [Advanced Custom Fields](https://wp-stream.com/connectors/acf/)
+ * [bbPress](https://wp-stream.com/connectors/bbpress/)
+ * [BuddyPress](https://wp-stream.com/connectors/buddypress/)
+ * [Easy Digital Downloads](https://wp-stream.com/connectors/edd/)
+ * [Gravity Forms](https://wp-stream.com/connectors/gravity-forms/)
+ * [Jetpack](https://wp-stream.com/connectors/jetpack/)
+ * [WooCommerce](https://wp-stream.com/connectors/woocommerce/)
+ * [WordPress SEO by Yoast](https://wp-stream.com/connectors/wordpress-seo/)
 
 **Plus Core Tracking For:**
 
@@ -56,13 +57,16 @@ Built with performance in mind, Stream won't slow down content querying on your 
 
 **Other Noteworthy Features:**
 
- * Multisite view of all activity records on a network
  * Dashboard widget of most recent user activity
  * Limit who can view user activity records by user role
  * Set exclude rules to ignore certain kinds of user activity
  * Live update of user activity records in the Stream
  * Private RSS and JSON feeds of user activity records
  * Support for IPv6 addresses
+
+**Coming Soon:**
+
+ * Multisite view of all activity records on a network
 
 **Languages Supported:**
 
@@ -92,6 +96,25 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
 
 == Changelog ==
+
+= 2.0.1 - September 30, 2014 =
+
+* Tweak: Improved localisation strings throughout the plugin ([#644](https://github.com/wp-stream/stream/pull/644))
+* Tweak: Improved tooltip text explaining WP.com sign in
+* Fix: ACF Pro doesn't save custom field values when Stream enabled ([#642](https://github.com/wp-stream/stream/issues/642))
+
+Props [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [fjarrett](http://profiles.wordpress.org/fjarrett/)
+
+= 2.0.0 - September 27, 2014 =
+
+* All activity is now stored only in the cloud over SSL, local MySQL storage dependence is over!
+* Connector and Context have merged in the UI, now just called Contexts
+* The Exclude Rules UI has been completely revamped
+* Notifications and Reports are now conveniently built into Stream for Pro subscribers
+* Connectors for tracking other popular plugins are now built into Stream, like BuddyPress, Jetpack, Gravity Forms, and more...
+* You create an account for Stream simply by signing in with your WordPress.com ID
+
+**NOTE:** Multisite view of all activity records in the Network Admin has been removed in this release. If you require this feature, please do not update Stream until version 2.1.0 is released.
 
 = 1.4.9 - July 23, 2014 =
 

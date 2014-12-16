@@ -23,11 +23,9 @@ class WP_Stream_Reports {
 	public static $messages = array();
 
 	/**
-	 * Option to disallow access to Stream Reports
-	 *
-	 * @var bool
+	 * Hold the nonce name
 	 */
-	public static $disallow_access = false;
+	public static $nonce;
 
 	/**
 	 * Page slug for notifications list table screen
@@ -44,11 +42,6 @@ class WP_Stream_Reports {
 	const VIEW_CAP = 'view_stream_reports';
 
 	/**
-	 * Hold the nonce name
-	 */
-	public static $nonce;
-
-	/**
 	 * Class constructor
 	 */
 	private function __construct() {
@@ -57,7 +50,7 @@ class WP_Stream_Reports {
 		define( 'WP_STREAM_REPORTS_INC_DIR', WP_STREAM_REPORTS_DIR . 'includes/' ); // Has trailing slash
 		define( 'WP_STREAM_REPORTS_VIEW_DIR', WP_STREAM_REPORTS_DIR . 'views/' ); // Has trailing slash
 
-		if ( ! apply_filters( 'wp_stream_reports_load', true ) || is_network_admin() ) {
+		if ( ! apply_filters( 'wp_stream_reports_load', true ) ) {
 			return;
 		}
 
@@ -71,6 +64,11 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function load() {
+		// Register new submenu
+		if ( ! apply_filters( 'wp_stream_reports_disallow_site_access', false ) && ! WP_Stream_Admin::$disable_access && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
+			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
+		}
+
 		add_action( 'all_admin_notices', array( $this, 'admin_notices' ) );
 
 		// Load settings
@@ -89,15 +87,6 @@ class WP_Stream_Reports {
 
 		// Load template tags
 		require_once WP_STREAM_REPORTS_INC_DIR . 'template-tags.php';
-
-		// Register new submenu
-		add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
-
-		if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
-			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
-		}
-
-		self::$disallow_access = apply_filters( 'wp_stream_reports_disallow_site_access', false );
 
 		// Register and enqueue the administration scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_ui_assets' ), 20 );
@@ -135,11 +124,6 @@ class WP_Stream_Reports {
 	 * @return void
 	 */
 	public function register_menu() {
-
-		if ( self::$disallow_access ) {
-			return false;
-		}
-
 		self::$screen_id = add_submenu_page(
 			WP_Stream_Admin::RECORDS_PAGE_SLUG,
 			__( 'Reports', 'stream' ),
@@ -173,7 +157,7 @@ class WP_Stream_Reports {
 			'stream-reports-d3',
 			WP_STREAM_REPORTS_URL . 'ui/lib/d3/d3.min.js',
 			array(),
-			'3.4.2',
+			'3.5.2',
 			true
 		);
 
@@ -184,6 +168,7 @@ class WP_Stream_Reports {
 			'1.1.15b',
 			true
 		);
+
 		wp_register_script(
 			'stream-reports',
 			WP_STREAM_REPORTS_URL . 'ui/js/stream-reports.js',

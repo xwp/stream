@@ -66,7 +66,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Jetpack', 'jetpack' );
+		return _x( 'Jetpack', 'jetpack', 'stream' );
 	}
 
 	/**
@@ -76,15 +76,15 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'activated'   => __( 'Activated', 'stream' ),
-			'deactivated' => __( 'Dectivated', 'stream' ),
-			'register'    => __( 'Connected', 'stream' ),
-			'disconnect'  => __( 'Disconnected', 'stream' ),
-			'authorize'   => __( 'Link', 'stream' ),
-			'unlink'      => __( 'Unlink', 'jetpack' ),
-			'updated'     => __( 'Updated', 'stream' ),
-			'added'       => __( 'Added', 'stream' ),
-			'removed'     => __( 'Removed', 'stream' ),
+			'activated'   => _x( 'Activated', 'jetpack', 'stream' ),
+			'deactivated' => _x( 'Dectivated', 'jetpack', 'stream' ),
+			'register'    => _x( 'Connected', 'jetpack', 'stream' ),
+			'disconnect'  => _x( 'Disconnected', 'jetpack', 'stream' ),
+			'authorize'   => _x( 'Link', 'jetpack', 'stream' ),
+			'unlink'      => _x( 'Unlink', 'jetpack', 'stream' ),
+			'updated'     => _x( 'Updated', 'jetpack', 'stream' ),
+			'added'       => _x( 'Added', 'jetpack', 'stream' ),
+			'removed'     => _x( 'Removed', 'jetpack', 'stream' ),
 		);
 	}
 
@@ -95,28 +95,28 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'modules'            => __( 'Modules', 'jetpack' ),
-			'blogs'              => __( 'Blogs', 'default' ),
-			'users'              => __( 'Users', 'default' ),
-			'options'            => __( 'Options', 'default' ),
-			'sharedaddy'         => __( 'Sharing', 'jetpack' ),
-			'publicize'          => __( 'Publicize', 'jetpack' ),
-			'gplus-authorship'   => __( 'Google+ Profile', 'jetpack' ),
-			'stats'              => __( 'WordPress.com Stats', 'jetpack' ),
-			'carousel'           => __( 'Carousel', 'jetpack' ),
-			'custom-css'         => __( 'Custom CSS', 'jetpack' ),
-			'subscriptions'      => __( 'Subscriptions', 'jetpack' ),
-			'jetpack-comments'   => __( 'Comments', 'default' ),
-			'infinite-scroll'    => __( 'Infinite Scroll', 'jetpack' ),
-			'sso'                => __( 'SSO', 'stream' ),
-			'likes'              => __( 'Likes', 'stream' ),
-			'minileven'          => __( 'Mobile', 'stream' ),
-			'monitor'            => __( 'Monitor', 'stream' ),
-			'post-by-email'      => __( 'Post by Email', 'jetpack' ),
-			'related-posts'      => __( 'Related Posts', 'jetpack' ),
-			'verification-tools' => __( 'Site Verification', 'jetpack' ),
-			'tiled-gallery'      => __( 'Tiled Galleries', 'jetpack' ),
-			'videopress'         => __( 'VideoPress', 'jetpack' ),
+			'modules'            => _x( 'Modules', 'jetpack', 'stream' ),
+			'blogs'              => _x( 'Blogs', 'jetpack', 'stream' ),
+			'users'              => _x( 'Users', 'jetpack', 'stream' ),
+			'options'            => _x( 'Options', 'jetpack', 'stream' ),
+			'sharedaddy'         => _x( 'Sharing', 'jetpack', 'stream' ),
+			'publicize'          => _x( 'Publicize', 'jetpack', 'stream' ),
+			'gplus-authorship'   => _x( 'Google+ Profile', 'jetpack', 'stream' ),
+			'stats'              => _x( 'WordPress.com Stats', 'jetpack', 'stream' ),
+			'carousel'           => _x( 'Carousel', 'jetpack', 'stream' ),
+			'custom-css'         => _x( 'Custom CSS', 'jetpack', 'stream' ),
+			'subscriptions'      => _x( 'Subscriptions', 'jetpack', 'stream' ),
+			'jetpack-comments'   => _x( 'Comments', 'jetpack', 'stream' ),
+			'infinite-scroll'    => _x( 'Infinite Scroll', 'jetpack', 'stream' ),
+			'sso'                => _x( 'SSO', 'jetpack', 'stream' ),
+			'likes'              => _x( 'Likes', 'jetpack', 'stream' ),
+			'minileven'          => _x( 'Mobile', 'jetpack', 'stream' ),
+			'monitor'            => _x( 'Monitor', 'jetpack', 'stream' ),
+			'post-by-email'      => _x( 'Post by Email', 'jetpack', 'stream' ),
+			'related-posts'      => _x( 'Related Posts', 'jetpack', 'stream' ),
+			'verification-tools' => _x( 'Site Verification', 'jetpack', 'stream' ),
+			'tiled-gallery'      => _x( 'Tiled Galleries', 'jetpack', 'stream' ),
+			'videopress'         => _x( 'VideoPress', 'jetpack', 'stream' ),
 		);
 	}
 
@@ -142,10 +142,10 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 
 				if ( Jetpack::is_module_active( $slug ) ) {
 					if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
-						$links[ __( 'Configure', 'jetpack' ) ] = Jetpack::module_configuration_url( $slug );;
+						$links[ __( 'Configure', 'stream' ) ] = Jetpack::module_configuration_url( $slug );;
 					}
 
-					$links[ __( 'Deactivate', 'jetpack' ) ] = wp_nonce_url(
+					$links[ __( 'Deactivate', 'stream' ) ] = wp_nonce_url(
 						add_query_arg(
 							array(
 								'action' => 'deactivate',
@@ -156,7 +156,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 						'jetpack_deactivate-' . sanitize_title( $slug )
 					);
 				} else {
-					$links[ __( 'Activate', 'jetpack' ) ] = wp_nonce_url(
+					$links[ __( 'Activate', 'stream' ) ] = wp_nonce_url(
 						add_query_arg(
 							array(
 								'action' => 'activate',
@@ -205,7 +205,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			),
 			// Comments
 			'jetpack_comment_form_color_scheme' => array(
-				'label'   => __( 'Color Scheme', 'jetpack' ),
+				'label'   => __( 'Color Scheme', 'stream' ),
 				'context' => 'jetpack-comments',
 			),
 			// Likes
@@ -227,39 +227,39 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		self::$options_override = array(
 			// Carousel Module
 			'carousel_background_color'        => array(
-				'label'   => __( 'Background color', 'jetpack' ),
+				'label'   => __( 'Background color', 'stream' ),
 				'context' => 'carousel',
 			),
 			'carousel_display_exif'            => array(
-				'label'   => __( 'Metadata', 'jetpack' ),
+				'label'   => __( 'Metadata', 'stream' ),
 				'context' => 'carousel',
 			),
 			// Subscriptions
 			'stb_enabled'                      => array(
-				'label'   => __( 'Follow blog comment form button', 'jetpack' ),
+				'label'   => __( 'Follow blog comment form button', 'stream' ),
 				'context' => 'subscriptions',
 			),
 			'stc_enabled'                      => array(
-				'label'   => __( 'Follow comments form button', 'jetpack' ),
+				'label'   => __( 'Follow comments form button', 'stream' ),
 				'context' => 'subscriptions',
 			),
 			// Jetpack comments
 			'highlander_comment_form_prompt'   => array(
-				'label'   => __( 'Greeting Text', 'jetpack' ),
+				'label'   => __( 'Greeting Text', 'stream' ),
 				'context' => 'jetpack-comments',
 			),
 			// Infinite Scroll
 			'infinite_scroll_google_analytics' => array(
-				'label'   => __( 'Infinite Scroll Google Analytics', 'jetpack' ),
+				'label'   => __( 'Infinite Scroll Google Analytics', 'stream' ),
 				'context' => 'infinite-scroll',
 			),
 			// SSO
 			'jetpack_sso_require_two_step'     => array(
-				'label'   => __( 'Require Two-Step Authentication', 'jetpack' ),
+				'label'   => __( 'Require Two-Step Authentication', 'stream' ),
 				'context' => 'sso',
 			),
 			'jetpack_sso_match_by_email'       => array(
-				'label'   => __( 'Match by Email', 'jetpack' ),
+				'label'   => __( 'Match by Email', 'stream' ),
 				'context' => 'sso',
 			),
 			// Related posts
@@ -290,7 +290,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			),
 			// Tiled galleries
 			'tiled_galleries'                  => array(
-				'label'   => __( 'Tiled Galleries', 'jetpack' ),
+				'label'   => __( 'Tiled Galleries', 'stream' ),
 				'context' => 'tiled-gallery',
 			),
 		);
@@ -640,10 +640,10 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		} elseif ( 0 === strpos( $key, 'videopress::' ) ) {
 			$name    = str_replace( 'videopress::', '', $key );
 			$options = array(
-				'access'  => __( 'Video Library Access', 'jetpack' ),
-				'upload'  => __( 'Allow users to upload videos', 'jetpack' ),
-				'freedom' => __( 'Free formats', 'jetpack' ),
-				'hd'      => __( 'Default quality', 'jetpack' ),
+				'access'  => __( 'Video Library Access', 'stream' ),
+				'upload'  => __( 'Allow users to upload videos', 'stream' ),
+				'freedom' => __( 'Free formats', 'stream' ),
+				'hd'      => __( 'Default quality', 'stream' ),
 			);
 
 			if ( ! isset( $options[ $name ] ) ) {

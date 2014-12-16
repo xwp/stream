@@ -124,20 +124,13 @@ i.stream-icon {
 }
 
 #wp-stream-connect .stream-haiku {
-	position: absolute;
-	right: 3em;
-	top: 2em;
-	padding: 0 1em;
+	margin: 0 auto;
+	margin-top: 100px;
 	font-style: italic;
-	line-height: 2em;
-	background: #fff;
-	border: 1px solid #ddd;
+}
 
-	-webkit-transition: opacity 2s ease-in-out;
-	   -moz-transition: opacity 2s ease-in-out;
-	     -o-transition: opacity 2s ease-in-out;
-	    -ms-transition: opacity 2s ease-in-out;
-	        transition: opacity 2s ease-in-out;
+#wp-stream-connect .stream-haiku a {
+	text-decoration: none;
 }
 
 

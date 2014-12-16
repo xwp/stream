@@ -110,7 +110,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'BuddyPress', 'buddypress' );
+		return _x( 'BuddyPress', 'buddypress', 'stream' );
 	}
 
 	/**
@@ -120,15 +120,15 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'     => __( 'Created', 'stream' ),
-			'updated'     => __( 'Updated', 'stream' ),
-			'activated'   => __( 'Activated', 'stream' ),
-			'deactivated' => __( 'Deactivated', 'stream' ),
-			'deleted'     => __( 'Deleted', 'stream' ),
-			'spammed'     => __( 'Marked as spam', 'stream' ),
-			'unspammed'   => __( 'Unmarked as spam', 'stream' ),
-			'promoted'    => __( 'Promoted', 'stream' ),
-			'demoted'     => __( 'Demoted', 'stream' ),
+			'created'     => _x( 'Created', 'buddypress', 'stream' ),
+			'updated'     => _x( 'Updated', 'buddypress', 'stream' ),
+			'activated'   => _x( 'Activated', 'buddypress', 'stream' ),
+			'deactivated' => _x( 'Deactivated', 'buddypress', 'stream' ),
+			'deleted'     => _x( 'Deleted', 'buddypress', 'stream' ),
+			'spammed'     => _x( 'Marked as spam', 'buddypress', 'stream' ),
+			'unspammed'   => _x( 'Unmarked as spam', 'buddypress', 'stream' ),
+			'promoted'    => _x( 'Promoted', 'buddypress', 'stream' ),
+			'demoted'     => _x( 'Demoted', 'buddypress', 'stream' ),
 		);
 	}
 
@@ -139,10 +139,10 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'components' => __( 'Components', 'stream' ),
-			'groups' => __( 'Groups', 'stream' ),
-			'activity' => __( 'Activity', 'stream' ),
-			'profile_fields' => __( 'Profile fields', 'stream' ),
+			'components'     => _x( 'Components', 'buddypress', 'stream' ),
+			'groups'         => _x( 'Groups', 'buddypress', 'stream' ),
+			'activity'       => _x( 'Activity', 'buddypress', 'stream' ),
+			'profile_fields' => _x( 'Profile fields', 'buddypress', 'stream' ),
 		);
 	}
 
@@ -281,43 +281,43 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			self::$options,
 			array(
 				'hide-loggedout-adminbar'       => array(
-					'label' => __( 'Toolbar', 'buddypress' ),
+					'label' => _x( 'Toolbar', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'_bp_force_buddybar'            => array(
-					'label' => __( 'Toolbar', 'buddypress' ),
+					'label' => _x( 'Toolbar', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bp-disable-account-deletion'   => array(
-					'label' => __( 'Account Deletion', 'buddypress' ),
+					'label' => _x( 'Account Deletion', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bp-disable-profile-sync'       => array(
-					'label' => __( 'Profile Syncing', 'buddypress' ),
+					'label' => _x( 'Profile Syncing', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bp_restrict_group_creation'    => array(
-					'label' => __( 'Group Creation', 'buddypress' ),
+					'label' => _x( 'Group Creation', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bb-config-location'            => array(
-					'label' => __( 'bbPress Configuration', 'buddypress' ),
+					'label' => _x( 'bbPress Configuration', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bp-disable-blogforum-comments' => array(
-					'label' => __( 'Blog &amp; Forum Comments', 'buddypress' ),
+					'label' => _x( 'Blog &amp; Forum Comments', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'_bp_enable_heartbeat_refresh'  => array(
-					'label' => __( 'Activity auto-refresh', 'buddypress' ),
+					'label' => _x( 'Activity auto-refresh', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'_bp_enable_akismet'            => array(
-					'label' => __( 'Akismet', 'buddypress' ),
+					'label' => _x( 'Akismet', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bp-disable-avatar-uploads'     => array(
-					'label' => __( 'Avatar Uploads', 'buddypress' ),
+					'label' => _x( 'Avatar Uploads', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 			)
@@ -429,8 +429,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		$pages = array_merge(
 			self::bp_get_directory_pages(),
 			array(
-				'register' => __( 'Register', 'buddypress' ),
-				'activate' => __( 'Activate', 'buddypress' ),
+				'register' => _x( 'Register', 'buddypress', 'stream' ),
+				'activate' => _x( 'Activate', 'buddypress', 'stream' ),
 			)
 		);
 
@@ -662,8 +662,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		$group = groups_get_group( array( 'group_id' => $group_id ) );
 		$user = new WP_User( $user_id );
 		$roles = array(
-			'admin' => __( 'Administrator', 'buddypress' ),
-			'mod' => __( 'Moderator', 'buddypress' ),
+			'admin' => _x( 'Administrator', 'buddypress', 'stream' ),
+			'mod'   => _x( 'Moderator', 'buddypress', 'stream' ),
 		);
 		$message = sprintf(
 			__( 'Promoted "%s" to "%s" in "%s"', 'stream' ),
@@ -679,7 +679,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		$message = sprintf(
 			__( 'Demoted "%s" to "%s" in "%s"', 'stream' ),
 			$user->display_name,
-			__( 'Member', 'buddypress' ),
+			_x( 'Member', 'buddypress', 'stream' ),
 			$group->name
 		);
 		self::group_action( $group_id, 'demoted', compact( 'user_id' ), $message );
@@ -803,7 +803,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				// Only components that need directories should be listed here
 				if ( isset( $bp->{$component_id} ) && ! empty( $bp->{$component_id}->has_directory ) ) {
 					// component->name was introduced in BP 1.5, so we must provide a fallback
-					$directory_pages[ $component_id ] = ! empty ( $bp->{ $component_id }->name ) ? $bp->{ $component_id }->name : ucwords( $component_id );
+					$directory_pages[ $component_id ] = ! empty( $bp->{ $component_id }->name ) ? $bp->{ $component_id }->name : ucwords( $component_id );
 				}
 			}
 		}

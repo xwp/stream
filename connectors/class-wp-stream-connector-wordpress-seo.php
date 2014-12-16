@@ -43,19 +43,11 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	 * @return bool
 	 */
 	public static function is_dependency_satisfied() {
-		if ( ! defined( 'WPSEO_VERSION' ) ) {
-			//WP_Stream::notice(
-			//	sprintf( __( '<strong>Stream WordPress SEO Connector</strong> requires the <a href="%1$s" target="_blank">WordPress SEO</a> plugin to be installed and activated.', 'stream' ), esc_url( 'http://wordpress.org/plugins/wordpress-seo/' ) ),
-			//	true
-			//);
-		} elseif ( version_compare( WPSEO_VERSION, self::PLUGIN_MIN_VERSION, '<' ) ) {
-			//WP_Stream::notice(
-			//	sprintf( __( 'Please <a href="%1$s" target="_blank">install WordPress SEO</a> version %2$s or higher for the <strong>Stream WordPress SEO Connector</strong> plugin to work properly.', 'stream' ), esc_url( 'http://wordpress.org/plugins/wordpress-seo/' ), self::PLUGIN_MIN_VERSION ),
-			//	true
-			//);
-		} else {
+		if ( defined( 'WPSEO_VERSION' ) && version_compare( WPSEO_VERSION, self::PLUGIN_MIN_VERSION, '>=' ) ) {
 			return true;
 		}
+
+		return false;
 	}
 
 	/**
@@ -64,7 +56,7 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'WordPress SEO', 'wordpress-seo' );
+		return _x( 'WordPress SEO', 'wordpress-seo', 'stream' );
 	}
 
 	/**
@@ -74,12 +66,12 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'  => __( 'Created', 'stream' ),
-			'updated'  => __( 'Updated', 'stream' ),
-			'added'    => __( 'Added', 'stream' ),
-			'deleted'  => __( 'Deleted', 'stream' ),
-			'exported' => __( 'Exported', 'stream' ),
-			'imported' => __( 'Imported', 'stream' ),
+			'created'  => _x( 'Created', 'wordpress-seo', 'stream' ),
+			'updated'  => _x( 'Updated', 'wordpress-seo', 'stream' ),
+			'added'    => _x( 'Added', 'wordpress-seo', 'stream' ),
+			'deleted'  => _x( 'Deleted', 'wordpress-seo', 'stream' ),
+			'exported' => _x( 'Exported', 'wordpress-seo', 'stream' ),
+			'imported' => _x( 'Imported', 'wordpress-seo', 'stream' ),
 		);
 	}
 
@@ -90,19 +82,18 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'wpseo_dashboard'               => __( 'Dashboard', 'wordpress-seo' ),
-			'wpseo_titles'                  => __( 'Titles &amp; Metas', 'wordpress-seo' ),
-			'wpseo_social'                  => __( 'Social', 'wordpress-seo' ),
-			'wpseo_xml'                     => __( 'XML Sitemaps', 'wordpress-seo' ),
-			'wpseo_permalinks'              => __( 'Permalinks', 'wordpress-seo' ),
-			'wpseo_internal-links'          => __( 'Internal Links', 'wordpress-seo' ),
-			'wpseo_rss'                     => __( 'RSS', 'wordpress-seo' ),
-			'wpseo_import'                  => __( 'Import & Export', 'wordpress-seo' ),
-			'wpseo_bulk-title-editor'       => __( 'Bulk Title Editor', 'wordpress-seo' ),
-			'wpseo_bulk-description-editor' => __( 'Bulk Description Editor', 'wordpress-seo' ),
-
-			'wpseo_files'                   => __( 'Files', 'wordpress-seo' ),
-			'wpseo_meta'                    => __( 'Content', 'wordpress-seo' ),
+			'wpseo_dashboard'               => _x( 'Dashboard', 'wordpress-seo', 'stream' ),
+			'wpseo_titles'                  => _x( 'Titles &amp; Metas', 'wordpress-seo', 'stream' ),
+			'wpseo_social'                  => _x( 'Social', 'wordpress-seo', 'stream' ),
+			'wpseo_xml'                     => _x( 'XML Sitemaps', 'wordpress-seo', 'stream' ),
+			'wpseo_permalinks'              => _x( 'Permalinks', 'wordpress-seo', 'stream' ),
+			'wpseo_internal-links'          => _x( 'Internal Links', 'wordpress-seo', 'stream' ),
+			'wpseo_rss'                     => _x( 'RSS', 'wordpress-seo', 'stream' ),
+			'wpseo_import'                  => _x( 'Import & Export', 'wordpress-seo', 'stream' ),
+			'wpseo_bulk-title-editor'       => _x( 'Bulk Title Editor', 'wordpress-seo', 'stream' ),
+			'wpseo_bulk-description-editor' => _x( 'Bulk Description Editor', 'wordpress-seo', 'stream' ),
+			'wpseo_files'                   => _x( 'Files', 'wordpress-seo', 'stream' ),
+			'wpseo_meta'                    => _x( 'Content', 'wordpress-seo', 'stream' ),
 		);
 	}
 
@@ -123,14 +114,14 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 		if ( $option = wp_stream_get_meta( $record, 'option', true ) ) {
 			$key = wp_stream_get_meta( $record, 'option_key', true );
 
-			$links[ __( 'Edit', 'default' ) ] = add_query_arg(
+			$links[ __( 'Edit', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => $record->context,
 				),
 				admin_url( 'admin.php' )
 			) . '#stream-highlight-' . esc_attr( $key );
 		} elseif ( 'wpseo_files' === $record->context ) {
-			$links[ __( 'Edit', 'default' ) ] = add_query_arg(
+			$links[ __( 'Edit', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => $record->context,
 				),
@@ -171,11 +162,11 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 					$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_edit_post_link( $post->ID );
 
 					if ( $view_link = get_permalink( $post->ID ) ) {
-						$links[ esc_html__( 'View', 'default' ) ] = $view_link;
+						$links[ esc_html__( 'View', 'stream' ) ] = $view_link;
 					}
 
 					if ( $revision_id = wp_stream_get_meta( $record, 'revision_id', true ) ) {
-						$links[ esc_html__( 'Revision', 'default' ) ] = get_edit_post_link( $revision_id );
+						$links[ esc_html__( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
 					}
 				}
 			}
@@ -386,90 +377,90 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	private static function settings_labels( $option ) {
 		$labels = array(
 			// wp-content/plugins/wordpress-seo/admin/pages/dashboard.php:
-			'yoast_tracking'                  => __( 'Allow tracking of this WordPress install\'s anonymous data.', 'wordpress-seo' ), # type = checkbox
-			'disableadvanced_meta'            => __( 'Disable the Advanced part of the WordPress SEO meta box', 'wordpress-seo' ), # type = checkbox
-			'alexaverify'                     => __( 'Alexa Verification ID', 'wordpress-seo' ), # type = textinput
-			'msverify'                        => __( 'Bing Webmaster Tools', 'wordpress-seo' ), # type = textinput
-			'googleverify'                    => __( 'Google Webmaster Tools', 'wordpress-seo' ), # type = textinput
-			'pinterestverify'                 => __( 'Pinterest', 'wordpress-seo' ), # type = textinput
-			'yandexverify'                    => __( 'Yandex Webmaster Tools', 'wordpress-seo' ), # type = textinput
+			'yoast_tracking'                  => _x( 'Allow tracking of this WordPress install\'s anonymous data.', 'wordpress-seo', 'stream' ), # type = checkbox
+			'disableadvanced_meta'            => _x( 'Disable the Advanced part of the WordPress SEO meta box', 'wordpress-seo', 'stream' ), # type = checkbox
+			'alexaverify'                     => _x( 'Alexa Verification ID', 'wordpress-seo', 'stream' ), # type = textinput
+			'msverify'                        => _x( 'Bing Webmaster Tools', 'wordpress-seo', 'stream' ), # type = textinput
+			'googleverify'                    => _x( 'Google Webmaster Tools', 'wordpress-seo', 'stream' ), # type = textinput
+			'pinterestverify'                 => _x( 'Pinterest', 'wordpress-seo', 'stream' ), # type = textinput
+			'yandexverify'                    => _x( 'Yandex Webmaster Tools', 'wordpress-seo', 'stream' ), # type = textinput
 
 			// wp-content/plugins/wordpress-seo/admin/pages/internal-links.php:
-			'breadcrumbs-enable'              => __( 'Enable Breadcrumbs', 'wordpress-seo' ), # type = checkbox
-			'breadcrumbs-sep'                 => __( 'Separator between breadcrumbs', 'wordpress-seo' ), # type = textinput
-			'breadcrumbs-home'                => __( 'Anchor text for the Homepage', 'wordpress-seo' ), # type = textinput
-			'breadcrumbs-prefix'              => __( 'Prefix for the breadcrumb path', 'wordpress-seo' ), # type = textinput
-			'breadcrumbs-archiveprefix'       => __( 'Prefix for Archive breadcrumbs', 'wordpress-seo' ), # type = textinput
-			'breadcrumbs-searchprefix'        => __( 'Prefix for Search Page breadcrumbs', 'wordpress-seo' ), # type = textinput
-			'breadcrumbs-404crumb'            => __( 'Breadcrumb for 404 Page', 'wordpress-seo' ), # type = textinput
-			'breadcrumbs-blog-remove'         => __( 'Remove Blog page from Breadcrumbs', 'wordpress-seo' ), # type = checkbox
-			'breadcrumbs-boldlast'            => __( 'Bold the last page in the breadcrumb', 'wordpress-seo' ), # type = checkbox
+			'breadcrumbs-enable'              => _x( 'Enable Breadcrumbs', 'wordpress-seo', 'stream' ), # type = checkbox
+			'breadcrumbs-sep'                 => _x( 'Separator between breadcrumbs', 'wordpress-seo', 'stream' ), # type = textinput
+			'breadcrumbs-home'                => _x( 'Anchor text for the Homepage', 'wordpress-seo', 'stream' ), # type = textinput
+			'breadcrumbs-prefix'              => _x( 'Prefix for the breadcrumb path', 'wordpress-seo', 'stream' ), # type = textinput
+			'breadcrumbs-archiveprefix'       => _x( 'Prefix for Archive breadcrumbs', 'wordpress-seo', 'stream' ), # type = textinput
+			'breadcrumbs-searchprefix'        => _x( 'Prefix for Search Page breadcrumbs', 'wordpress-seo', 'stream' ), # type = textinput
+			'breadcrumbs-404crumb'            => _x( 'Breadcrumb for 404 Page', 'wordpress-seo', 'stream' ), # type = textinput
+			'breadcrumbs-blog-remove'         => _x( 'Remove Blog page from Breadcrumbs', 'wordpress-seo', 'stream' ), # type = checkbox
+			'breadcrumbs-boldlast'            => _x( 'Bold the last page in the breadcrumb', 'wordpress-seo', 'stream' ), # type = checkbox
 
 			// wp-content/plugins/wordpress-seo/admin/pages/metas.php:
-			'forcerewritetitle'               => __( 'Force rewrite titles', 'wordpress-seo' ), # type = checkbox
-			'noindex-subpages-wpseo'          => __( 'Noindex subpages of archives', 'wordpress-seo' ), # type = checkbox
-			'usemetakeywords'                 => __( 'Use <code>meta</code> keywords tag?', 'wordpress-seo' ), # type = checkbox
-			'noodp'                           => __( 'Add <code>noodp</code> meta robots tag sitewide', 'wordpress-seo' ), # type = checkbox
-			'noydir'                          => __( 'Add <code>noydir</code> meta robots tag sitewide', 'wordpress-seo' ), # type = checkbox
-			'hide-rsdlink'                    => __( 'Hide RSD Links', 'wordpress-seo' ), # type = checkbox
-			'hide-wlwmanifest'                => __( 'Hide WLW Manifest Links', 'wordpress-seo' ), # type = checkbox
-			'hide-shortlink'                  => __( 'Hide Shortlink for posts', 'wordpress-seo' ), # type = checkbox
-			'hide-feedlinks'                  => __( 'Hide RSS Links', 'wordpress-seo' ), # type = checkbox
-			'disable-author'                  => __( 'Disable the author archives', 'wordpress-seo' ), # type = checkbox
-			'disable-date'                    => __( 'Disable the date-based archives', 'wordpress-seo' ), # type = checkbox
+			'forcerewritetitle'               => _x( 'Force rewrite titles', 'wordpress-seo', 'stream' ), # type = checkbox
+			'noindex-subpages-wpseo'          => _x( 'Noindex subpages of archives', 'wordpress-seo', 'stream' ), # type = checkbox
+			'usemetakeywords'                 => _x( 'Use <code>meta</code> keywords tag?', 'wordpress-seo', 'stream' ), # type = checkbox
+			'noodp'                           => _x( 'Add <code>noodp</code> meta robots tag sitewide', 'wordpress-seo', 'stream' ), # type = checkbox
+			'noydir'                          => _x( 'Add <code>noydir</code> meta robots tag sitewide', 'wordpress-seo', 'stream' ), # type = checkbox
+			'hide-rsdlink'                    => _x( 'Hide RSD Links', 'wordpress-seo', 'stream' ), # type = checkbox
+			'hide-wlwmanifest'                => _x( 'Hide WLW Manifest Links', 'wordpress-seo', 'stream' ), # type = checkbox
+			'hide-shortlink'                  => _x( 'Hide Shortlink for posts', 'wordpress-seo', 'stream' ), # type = checkbox
+			'hide-feedlinks'                  => _x( 'Hide RSS Links', 'wordpress-seo', 'stream' ), # type = checkbox
+			'disable-author'                  => _x( 'Disable the author archives', 'wordpress-seo', 'stream' ), # type = checkbox
+			'disable-date'                    => _x( 'Disable the date-based archives', 'wordpress-seo', 'stream' ), # type = checkbox
 
 			// wp-content/plugins/wordpress-seo/admin/pages/network.php:
-			'access'                          => __( 'Who should have access to the WordPress SEO settings', 'wordpress-seo' ), # type = select
-			'defaultblog'                     => __( 'New blogs get the SEO settings from this blog', 'wordpress-seo' ), # type = textinput
-			'restoreblog'                     => __( 'Blog ID', 'wordpress-seo' ), # type = textinput
+			'access'                          => _x( 'Who should have access to the WordPress SEO settings', 'wordpress-seo', 'stream' ), # type = select
+			'defaultblog'                     => _x( 'New blogs get the SEO settings from this blog', 'wordpress-seo', 'stream' ), # type = textinput
+			'restoreblog'                     => _x( 'Blog ID', 'wordpress-seo', 'stream' ), # type = textinput
 
 			// wp-content/plugins/wordpress-seo/admin/pages/permalinks.php:
-			'stripcategorybase'               => __( 'Strip the category base (usually <code>/category/</code>) from the category URL.', 'wordpress-seo' ), # type = checkbox
-			'trailingslash'                   => __( 'Enforce a trailing slash on all category and tag URL\'s', 'wordpress-seo' ), # type = checkbox
-			'cleanslugs'                      => __( 'Remove stop words from slugs.', 'wordpress-seo' ), # type = checkbox
-			'redirectattachment'              => __( 'Redirect attachment URL\'s to parent post URL.', 'wordpress-seo' ), # type = checkbox
-			'cleanreplytocom'                 => __( 'Remove the <code>?replytocom</code> variables.', 'wordpress-seo' ), # type = checkbox
-			'cleanpermalinks'                 => __( 'Redirect ugly URL\'s to clean permalinks. (Not recommended in many cases!)', 'wordpress-seo' ), # type = checkbox
-			'force_transport'                 => __( 'Force Transport', 'wordpress-seo' ), # type = select
-			'cleanpermalink-googlesitesearch' => __( 'Prevent cleaning out Google Site Search URL\'s.', 'wordpress-seo' ), # type = checkbox
-			'cleanpermalink-googlecampaign'   => __( 'Prevent cleaning out Google Analytics Campaign & Google AdWords Parameters.', 'wordpress-seo' ), # type = checkbox
-			'cleanpermalink-extravars'        => __( 'Other variables not to clean', 'wordpress-seo' ), # type = textinput
+			'stripcategorybase'               => _x( 'Strip the category base (usually <code>/category/</code>) from the category URL.', 'wordpress-seo', 'stream' ), # type = checkbox
+			'trailingslash'                   => _x( 'Enforce a trailing slash on all category and tag URL\'s', 'wordpress-seo', 'stream' ), # type = checkbox
+			'cleanslugs'                      => _x( 'Remove stop words from slugs.', 'wordpress-seo', 'stream' ), # type = checkbox
+			'redirectattachment'              => _x( 'Redirect attachment URL\'s to parent post URL.', 'wordpress-seo', 'stream' ), # type = checkbox
+			'cleanreplytocom'                 => _x( 'Remove the <code>?replytocom</code> variables.', 'wordpress-seo', 'stream' ), # type = checkbox
+			'cleanpermalinks'                 => _x( 'Redirect ugly URL\'s to clean permalinks. (Not recommended in many cases!)', 'wordpress-seo', 'stream' ), # type = checkbox
+			'force_transport'                 => _x( 'Force Transport', 'wordpress-seo', 'stream' ), # type = select
+			'cleanpermalink-googlesitesearch' => _x( 'Prevent cleaning out Google Site Search URL\'s.', 'wordpress-seo', 'stream' ), # type = checkbox
+			'cleanpermalink-googlecampaign'   => _x( 'Prevent cleaning out Google Analytics Campaign & Google AdWords Parameters.', 'wordpress-seo', 'stream' ), # type = checkbox
+			'cleanpermalink-extravars'        => _x( 'Other variables not to clean', 'wordpress-seo', 'stream' ), # type = textinput
 
 			// wp-content/plugins/wordpress-seo/admin/pages/social.php:
-			'opengraph'                       => __( 'Add Open Graph meta data', 'wordpress-seo' ), # type = checkbox
-			'facebook_site'                   => __( 'Facebook Page URL', 'wordpress-seo' ), # type = textinput
-			'og_frontpage_image'              => __( 'Image URL', 'wordpress-seo' ), # type = textinput
-			'og_frontpage_desc'               => __( 'Description', 'wordpress-seo' ), # type = textinput
-			'og_default_image'                => __( 'Image URL', 'wordpress-seo' ), # type = textinput
-			'twitter'                         => __( 'Add Twitter card meta data', 'wordpress-seo' ), # type = checkbox
-			'twitter_site'                    => __( 'Site Twitter Username', 'wordpress-seo' ), # type = textinput
-			'twitter_card_type'               => __( 'The default card type to use', 'wordpress-seo' ), # type = select
-			'googleplus'                      => __( 'Add Google+ specific post meta data (excluding author metadata)', 'wordpress-seo' ), # type = checkbox
-			'plus-publisher'                  => __( 'Google Publisher Page', 'wordpress-seo' ), # type = textinput
+			'opengraph'                       => _x( 'Add Open Graph meta data', 'wordpress-seo', 'stream' ), # type = checkbox
+			'facebook_site'                   => _x( 'Facebook Page URL', 'wordpress-seo', 'stream' ), # type = textinput
+			'og_frontpage_image'              => _x( 'Image URL', 'wordpress-seo', 'stream' ), # type = textinput
+			'og_frontpage_desc'               => _x( 'Description', 'wordpress-seo', 'stream' ), # type = textinput
+			'og_default_image'                => _x( 'Image URL', 'wordpress-seo', 'stream' ), # type = textinput
+			'twitter'                         => _x( 'Add Twitter card meta data', 'wordpress-seo', 'stream' ), # type = checkbox
+			'twitter_site'                    => _x( 'Site Twitter Username', 'wordpress-seo', 'stream' ), # type = textinput
+			'twitter_card_type'               => _x( 'The default card type to use', 'wordpress-seo', 'stream' ), # type = select
+			'googleplus'                      => _x( 'Add Google+ specific post meta data (excluding author metadata)', 'wordpress-seo', 'stream' ), # type = checkbox
+			'plus-publisher'                  => _x( 'Google Publisher Page', 'wordpress-seo', 'stream' ), # type = textinput
 
 			// wp-content/plugins/wordpress-seo/admin/pages/xml-sitemaps.php:
-			'enablexmlsitemap'                => __( 'Check this box to enable XML sitemap functionality.', 'wordpress-seo' ), # type = checkbox
-			'disable_author_sitemap'          => __( 'Disable author/user sitemap', 'wordpress-seo' ), # type = checkbox
-			'xml_ping_yahoo'                  => __( 'Ping Yahoo!', 'wordpress-seo' ), # type = checkbox
-			'xml_ping_ask'                    => __( 'Ping Ask.com', 'wordpress-seo' ), # type = checkbox
-			'entries-per-page'                => __( 'Max entries per sitemap page', 'wordpress-seo' ), # type = textinput
+			'enablexmlsitemap'                => _x( 'Check this box to enable XML sitemap functionality.', 'wordpress-seo', 'stream' ), # type = checkbox
+			'disable_author_sitemap'          => _x( 'Disable author/user sitemap', 'wordpress-seo', 'stream' ), # type = checkbox
+			'xml_ping_yahoo'                  => _x( 'Ping Yahoo!', 'wordpress-seo', 'stream' ), # type = checkbox
+			'xml_ping_ask'                    => _x( 'Ping Ask.com', 'wordpress-seo', 'stream' ), # type = checkbox
+			'entries-per-page'                => _x( 'Max entries per sitemap page', 'wordpress-seo', 'stream' ), # type = textinput
 
 			// Added manually
-			'rssbefore' => __( 'Content to put before each post in the feed', 'wordpress-seo' ),
-			'rssafter' => __( 'Content to put after each post', 'wordpress-seo' ),
+			'rssbefore'                       => _x( 'Content to put before each post in the feed', 'wordpress-seo', 'stream' ),
+			'rssafter'                        => _x( 'Content to put after each post', 'wordpress-seo', 'stream' ),
 		);
 
 		$ast_labels = array(
-			'title-'        => __( 'Title template', 'wordpress-seo' ), # type = textinput
-			'metadesc-'     => __( 'Meta description template', 'wordpress-seo' ), # type = textarea
-			'metakey-'      => __( 'Meta keywords template', 'wordpress-seo' ), # type = textinput
-			'noindex-'      => __( 'Meta Robots', 'wordpress-seo' ), # type = checkbox
-			'noauthorship-' => __( 'Authorship', 'wordpress-seo' ), # type = checkbox
-			'showdate-'     => __( 'Show date in snippet preview?', 'wordpress-seo' ), # type = checkbox
-			'hideeditbox-'  => __( 'WordPress SEO Meta Box', 'wordpress-seo' ), # type = checkbox
-			'bctitle-'      => __( 'Breadcrumbs Title', 'wordpress-seo' ), # type = textinput
-			'post_types-'   => __( 'Post types', 'wordpress-seo' ), # type = checkbox
-			'taxonomies-'   => __( 'Taxonomies', 'wordpress-seo' ), # type = checkbox
+			'title-'        => _x( 'Title template', 'wordpress-seo', 'stream' ), # type = textinput
+			'metadesc-'     => _x( 'Meta description template', 'wordpress-seo', 'stream' ), # type = textarea
+			'metakey-'      => _x( 'Meta keywords template', 'wordpress-seo', 'stream' ), # type = textinput
+			'noindex-'      => _x( 'Meta Robots', 'wordpress-seo', 'stream' ), # type = checkbox
+			'noauthorship-' => _x( 'Authorship', 'wordpress-seo', 'stream' ), # type = checkbox
+			'showdate-'     => _x( 'Show date in snippet preview?', 'wordpress-seo', 'stream' ), # type = checkbox
+			'hideeditbox-'  => _x( 'WordPress SEO Meta Box', 'wordpress-seo', 'stream' ), # type = checkbox
+			'bctitle-'      => _x( 'Breadcrumbs Title', 'wordpress-seo', 'stream' ), # type = textinput
+			'post_types-'   => _x( 'Post types', 'wordpress-seo', 'stream' ), # type = checkbox
+			'taxonomies-'   => _x( 'Taxonomies', 'wordpress-seo', 'stream' ), # type = checkbox
 		);
 
 		if ( $option ) {

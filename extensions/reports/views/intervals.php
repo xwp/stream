@@ -3,7 +3,8 @@
 	<select class="field-predefined" data-placeholder="<?php esc_attr_e( 'All Time', 'stream' ) ?>">
 		<option></option>
 		<option value="custom" <?php selected( 'custom' === $user_interval['key'] ) ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
-		<?php foreach ( $date->intervals as $key => $interval ) {
+		<?php
+		foreach ( $date->intervals as $key => $interval ) {
 			echo sprintf(
 				'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 				esc_attr( $key ),
@@ -12,7 +13,8 @@
 				( $key === $user_interval['key'] ) ? 'selected="selected"' : null,
 				esc_html( $interval['label'] )
 			); // xss ok
-		} ?>
+		}
+		?>
 	</select>
 
 	<div class="date-inputs">

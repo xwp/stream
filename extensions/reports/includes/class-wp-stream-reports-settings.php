@@ -29,11 +29,6 @@ class WP_Stream_Reports_Settings {
 	const OPTION_NAME = 'stream_reports_settings';
 
 	/**
-	 * Holds the user option name for network admin (key)
-	 */
-	const NETWORK_ADMIN_OPTION_NAME = 'stream_reports_network_settings';
-
-	/**
 	 * Public constructor
 	 */
 	public static function load() {
@@ -51,21 +46,7 @@ class WP_Stream_Reports_Settings {
 
 	public static function get_fields() {
 		if ( empty( self::$fields ) ) {
-			$fields = array(
-				'reports' => array(
-					'title'  => __( 'Reports', 'stream' ),
-					'fields' => array(
-						array(
-							'name'    => 'role_access',
-							'title'   => esc_html__( 'Role Access', 'stream' ),
-							'type'    => 'multi_checkbox',
-							'desc'    => esc_html__( 'Users from the selected roles above will have permission to view and edit Stream Reports. However, only site Administrators can access Stream Reports Settings.', 'stream' ),
-							'choices' => WP_Stream_Settings::get_roles(),
-							'default' => array( 'administrator' ),
-						),
-					),
-				),
-			);
+			$fields = array();
 
 			self::$fields = apply_filters( 'wp_stream_reports_option_fields', $fields );
 		}
@@ -245,7 +226,7 @@ class WP_Stream_Reports_Settings {
 	}
 
 	public static function get_option_key() {
-		return is_network_admin() ? self::NETWORK_ADMIN_OPTION_NAME : self::OPTION_NAME;
+		return self::OPTION_NAME;
 	}
 
 }

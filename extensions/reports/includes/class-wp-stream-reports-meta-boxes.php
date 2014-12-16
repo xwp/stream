@@ -44,14 +44,6 @@ class WP_Stream_Reports_Metaboxes {
 		// Get chart labels
 		add_filter( 'wp_stream_reports_get_label', array( $this, 'translate_data_type_labels' ), 10, 2 );
 
-		// Specific data for multisite
-		if ( is_multisite() && is_network_admin() ) {
-			add_filter( 'wp_stream_reports_data_types', array( $this, 'multisite_contexts' ), 10 );
-			add_filter( 'wp_stream_reports_selector_types', array( $this, 'mutlisite_selector_types' ), 10 );
-			add_filter( 'wp_stream_reports_get_label', array( $this, 'multisite_labels' ), 10, 2 );
-			add_filter( 'wp_stream_reports_get_contexts', array( $this, 'multisite_contexts' ), 10 );
-		}
-
 		$ajax_hooks = array(
 			'wp_stream_reports_add_metabox'            => 'add_metabox',
 			'wp_stream_reports_delete_metabox'         => 'delete_metabox',
@@ -217,7 +209,6 @@ class WP_Stream_Reports_Metaboxes {
 			'connector_id'  => '',
 			'context_id'    => '',
 			'action_id'     => '',
-			'blog_id'       => '',
 			'selector_id'   => '',
 			'is_new'        => false,
 			'disabled'      => array(),
@@ -308,15 +299,6 @@ class WP_Stream_Reports_Metaboxes {
 		return $this->get_data_types( $value ) ? $this->get_data_types( $value ) : $value;
 	}
 
-	public function multisite_labels( $value, $grouping ) {
-		if ( 'blog_id' === $grouping && is_numeric( $value ) ) {
-			$blog  = ( $value && is_multisite() ) ? get_blog_details( $value ) : WP_Stream_Network::get_network_blog();
-			$value = $blog->blogname;
-		}
-
-		return $value;
-	}
-
 	/**
 	 * Returns data type labels, or a single data type's label'
 	 * @return string
@@ -363,27 +345,6 @@ class WP_Stream_Reports_Metaboxes {
 		return $output;
 	}
 
-	public function multisite_contexts( $old_labels ) {
-		$children = array();
-		$sites    = wp_get_sites();
-		foreach ( $sites as $site ) {
-			$details = get_blog_details( $site['blog_id'] );
-			$children[ $site['blog_id'] ] = array(
-				'label'   => $details->blogname,
-				'blog'    => $site['blog_id'],
-			);
-		}
-
-		// Position sites label right after 'all' dataset
-		$labels = array(
-			'label'     => __( 'Site Activity', 'stream' ),
-			'children'  => $children,
-		);
-
-		$new_array = array_merge( array( $labels ), $old_labels );
-		return $new_array;
-	}
-
 	/**
 	 * Returns chart types available
 	 * @return string
@@ -423,14 +384,6 @@ class WP_Stream_Reports_Metaboxes {
 		return $output;
 	}
 
-	public function mutlisite_selector_types( $labels ) {
-		$new_labels = array(
-			'blog_id' => __( 'Site', 'stream' ),
-		);
-
-		return array_merge( $labels, $new_labels );
-	}
-
 	public function load_metabox_records( $args ) {
 		$date_interval = $this->get_date_interval();
 
@@ -442,7 +395,6 @@ class WP_Stream_Reports_Metaboxes {
 
 		$available_args = array(
 			'action'    => 'action_id',
-			'blog_id'   => 'blog_id',
 			'connector' => 'connector_id',
 			'context'   => 'context_id',
 		);
@@ -453,7 +405,7 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$selector            = $args['selector_id'];
-		$available_selectors = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip', 'blog_id' );
+		$available_selectors = array( 'author', 'author_role', 'action', 'context', 'connector', 'ip' );
 
 		if ( ! in_array( $selector, $available_selectors ) ) {
 			return array();
@@ -514,8 +466,6 @@ class WP_Stream_Reports_Metaboxes {
 			$dataset = $this->get_label( $args['context_id'], 'context' );
 		} else if ( ! empty( $args['connector_id'] ) ) {
 			$dataset = $this->get_label( $args['connector_id'], 'connector' );
-		} else if ( ! empty( $args['blog_id'] ) ) {
-			$dataset = $this->get_label( $args['blog_id'], 'blog_id' );
 		} else {
 			$dataset = '';
 		}
@@ -568,7 +518,6 @@ class WP_Stream_Reports_Metaboxes {
 			'connector_id' => wp_stream_filter_input( INPUT_GET, 'data_connector', FILTER_SANITIZE_STRING ),
 			'context_id'   => wp_stream_filter_input( INPUT_GET, 'data_context', FILTER_SANITIZE_STRING ),
 			'action_id'    => wp_stream_filter_input( INPUT_GET, 'data_action', FILTER_SANITIZE_STRING ),
-			'blog_id'      => wp_stream_filter_input( INPUT_GET, 'data_blog', FILTER_SANITIZE_STRING ),
 			'selector_id'  => wp_stream_filter_input( INPUT_GET, 'data_selector', FILTER_SANITIZE_STRING ),
 		);
 
@@ -726,7 +675,7 @@ class WP_Stream_Reports_Metaboxes {
 		ob_start();
 		?>
 		<fieldset>
-			<h5><?php esc_html_e( 'Chart height', 'stream-repotrs' ); ?></h5>
+			<h5><?php esc_html_e( 'Chart height', 'stream' ); ?></h5>
 			<div><input type="hidden" name="update_chart_height_nonce" id="update_chart_height_nonce" value="<?php echo esc_attr( $nonce ); ?>"></div>
 			<div><input type="hidden" name="update_chart_height_user" id="update_chart_height_user" value="<?php echo esc_attr( $user_id ); ?>"></div>
 			<div class="metabox-prefs stream-reports-chart-height-option">

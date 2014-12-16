@@ -22,7 +22,7 @@ class WP_Stream_Dashboard_Widget {
 
 		wp_add_dashboard_widget(
 			'dashboard_stream_activity',
-			is_network_admin() ? esc_html__( 'Network Stream Activity', 'stream' ) : esc_html__( 'Stream Activity', 'stream' ),
+			esc_html__( 'Stream Activity', 'stream' ),
 			array( __CLASS__, 'stream_activity_initial_contents' ),
 			array( __CLASS__, 'stream_activity_options' )
 		);
@@ -98,7 +98,7 @@ class WP_Stream_Dashboard_Widget {
 			'view-all',
 			esc_attr__( 'View all records', 'stream' ),
 			esc_url( $records_link ),
-			esc_html__( 'View All', 'default' )
+			esc_html__( 'View All', 'stream' )
 		);
 
 		$page_links    = array();
@@ -116,7 +116,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="1">%s</a>',
 			'first-page' . $disable_first,
-			esc_attr__( 'Go to the first page', 'default' ),
+			esc_attr__( 'Go to the first page', 'stream' ),
 			esc_url( remove_query_arg( 'paged', $records_link ) ),
 			'&laquo;'
 		);
@@ -124,7 +124,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'prev-page' . $disable_first,
-			esc_attr__( 'Go to the previous page', 'default' ),
+			esc_attr__( 'Go to the previous page', 'stream' ),
 			esc_url( add_query_arg( 'paged', max( 1, $current - 1 ), $records_link ) ),
 			max( 1, $current - 1 ),
 			'&lsaquo;'
@@ -136,7 +136,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'next-page' . $disable_last,
-			esc_attr__( 'Go to the next page', 'default' ),
+			esc_attr__( 'Go to the next page', 'stream' ),
 			esc_url( add_query_arg( 'paged', min( $total_pages, $current + 1 ), $records_link ) ),
 			min( $total_pages, $current + 1 ),
 			'&rsaquo;'
@@ -145,7 +145,7 @@ class WP_Stream_Dashboard_Widget {
 		$page_links[] = sprintf(
 			'<a class="%s" title="%s" href="%s" data-page="%s">%s</a>',
 			'last-page' . $disable_last,
-			esc_attr__( 'Go to the last page', 'default' ),
+			esc_attr__( 'Go to the last page', 'stream' ),
 			esc_url( add_query_arg( 'paged', $total_pages, $records_link ) ),
 			$total_pages,
 			'&raquo;'

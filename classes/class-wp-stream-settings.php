@@ -13,16 +13,6 @@ class WP_Stream_Settings {
 	const OPTION_KEY = 'wp_stream';
 
 	/**
-	 * Settings key/identifier
-	 */
-	const NETWORK_OPTION_KEY = 'wp_stream_network';
-
-	/**
-	 * Default Settings key/identifier
-	 */
-	const DEFAULTS_OPTION_KEY = 'wp_stream_defaults';
-
-	/**
 	 * Plugin settings
 	 *
 	 * @var array
@@ -203,14 +193,6 @@ class WP_Stream_Settings {
 			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
 		}
 
-		if ( 'wp_stream_default_settings' === $current_page ) {
-			$option_key = self::DEFAULTS_OPTION_KEY;
-		}
-
-		if ( 'wp_stream_network_settings' === $current_page ) {
-			$option_key = self::NETWORK_OPTION_KEY;
-		}
-
 		return apply_filters( 'wp_stream_settings_option_key', $option_key );
 	}
 
@@ -223,7 +205,7 @@ class WP_Stream_Settings {
 		if ( empty( self::$fields ) ) {
 			$fields = array(
 				'general' => array(
-					'title'  => esc_html__( 'General', 'default' ),
+					'title'  => esc_html__( 'General', 'stream' ),
 					'fields' => array(
 						array(
 							'name'        => 'role_access',
@@ -271,6 +253,32 @@ class WP_Stream_Settings {
 					),
 				),
 			);
+
+			// If Akismet is active, allow Admins to opt-in to Akismet tracking
+			if ( class_exists( 'Akismet' ) ) {
+				$akismet_tracking = array(
+					'name'        => 'akismet_tracking',
+					'title'       => esc_html__( 'Akismet Tracking', 'stream' ),
+					'type'        => 'checkbox',
+					'desc'        => __( 'Akismet already keeps statistics for comment attempts that it blocks as SPAM. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+					'after_field' => esc_html__( 'Enabled', 'stream' ),
+					'default'     => 0,
+				);
+
+				array_push( $fields['general']['fields'], $akismet_tracking );
+			}
+
+			// Allow Admins to opt-in to Comment Flood tracking
+			$comment_flood_tracking = array(
+				'name'        => 'comment_flood_tracking',
+				'title'       => esc_html__( 'Comment Flood Tracking', 'stream' ),
+				'type'        => 'checkbox',
+				'desc'        => __( 'WordPress will automatically prevent duplicate comments from flooding the database. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+				'after_field' => esc_html__( 'Enabled', 'stream' ),
+				'default'     => 0,
+			);
+
+			array_push( $fields['general']['fields'], $comment_flood_tracking );
 		}
 
 		/**
@@ -289,12 +297,7 @@ class WP_Stream_Settings {
 	 */
 	public static function get_options() {
 		$option_key = self::$option_key;
-
-		$defaults = self::get_defaults( $option_key );
-
-		if ( self::DEFAULTS_OPTION_KEY === $option_key ) {
-			return $defaults;
-		}
+		$defaults   = self::get_defaults( $option_key );
 
 		/**
 		 * Filter allows for modification of options
@@ -337,10 +340,7 @@ class WP_Stream_Settings {
 		*/
 		return apply_filters(
 			'wp_stream_settings_option_defaults',
-			wp_parse_args(
-				(array) get_site_option( self::DEFAULTS_OPTION_KEY, array() ),
-				$defaults
-			)
+			$defaults
 		);
 	}
 
@@ -553,7 +553,7 @@ class WP_Stream_Settings {
 				);
 				break;
 			case 'select2' :
-				if ( ! isset ( $current_value ) ) {
+				if ( ! isset( $current_value ) ) {
 					$current_value = '';
 				}
 
@@ -847,7 +847,7 @@ class WP_Stream_Settings {
 	public static function get_terms_labels( $column ) {
 		$return_labels = array();
 
-		if ( isset ( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
+		if ( isset( WP_Stream_Connectors::$term_labels[ 'stream_' . $column ] ) ) {
 			if ( 'context' === $column && isset( WP_Stream_Connectors::$term_labels['stream_connector'] ) ) {
 				$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
 				$contexts   = WP_Stream_Connectors::$term_labels['stream_context'];

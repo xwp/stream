@@ -30,17 +30,19 @@ class WP_Stream_Query {
 			// Search param
 			'search'                => null,
 			'search_field'          => 'summary',
-			'record_after'          => null,
+			'record_after'          => null, // Deprecated, use date_after instead
 			// Date-based filters
-			'date'                  => null,
-			'date_from'             => null,
-			'date_to'               => null,
-			// Record id filters
+			'date'                  => null, // Ex: 2014-02-17
+			'date_from'             => null, // Ex: 2014-02-17
+			'date_to'               => null, // Ex: 2014-02-17
+			'date_after'            => null, // Ex: 2014-02-17T15:19:21+00:00
+			'date_before'           => null, // Ex: 2014-02-17T15:19:21+00:00
+			// Record ID filters
 			'record'                => null,
-			'record__in'            => null,
-			'record__not_in'        => null,
+			'record__in'            => array(),
+			'record__not_in'        => array(),
 			// Pagination params
-			'records_per_page'      => get_option( 'posts_per_page' ),
+			'records_per_page'      => get_option( 'posts_per_page', 20 ),
 			'paged'                 => 1,
 			// Order
 			'order'                 => 'desc',
@@ -115,24 +117,36 @@ class WP_Stream_Query {
 			$filters[]['range']['created']['lte'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date_to']  . ' 23:59:59' ), get_option( 'gmt_offset' ) );
 		}
 
+		// Support deprecated argument replaced by date_after
+		if ( $args['record_after'] && ! $args['date_after'] ) {
+			$args['date_after'] = $args['record_after'];
+		}
+
+		if ( $args['date_after'] ) {
+			$filters[]['range']['created']['gt'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date_after'] ) );
+		}
+
+		if ( $args['date_before'] ) {
+			$filters[]['range']['created']['lt'] = wp_stream_get_iso_8601_extended_date( strtotime( $args['date_before'] ) );
+		}
+
 		if ( $args['date'] ) {
 			$filters[]['range']['created'] = array(
-				'gte' => wp_stream_get_iso_8601_extended_date( strtotime( $args['date']  . ' 00:00:00' ), get_option( 'gmt_offset' ) ),
-				'lte' => wp_stream_get_iso_8601_extended_date( strtotime( $args['date']  . ' 23:59:59' ), get_option( 'gmt_offset' ) ),
+				'gte' => wp_stream_get_iso_8601_extended_date( strtotime( $args['date'] . ' 00:00:00' ), get_option( 'gmt_offset' ) ),
+				'lte' => wp_stream_get_iso_8601_extended_date( strtotime( $args['date'] . ' 23:59:59' ), get_option( 'gmt_offset' ) ),
 			);
 		}
 
 		// PARSE RECORD
-		if ( $args['record_after'] ) {
-			$filters[]['range']['created']['gt'] = date( 'c', strtotime( $args['record_after'] ) );
-		}
 		if ( $args['record'] ) {
 			$filters[]['ids']['values'] = array( $args['record'] );
 		}
-		if ( $args['record__in'] ) {
+
+		if ( $args['record__in'] && is_array( $args['record__in'] ) ) {
 			$filters[]['ids']['values'] = $args['record__in'];
 		}
-		if ( $args['record__not_in'] ) {
+
+		if ( $args['record__not_in'] && is_array( $args['record__not_in'] ) ) {
 			$filters[]['not']['ids']['values'] = $args['record__not_in'];
 		}
 
@@ -142,7 +156,7 @@ class WP_Stream_Query {
 				$filters[]['term'][ $property ] = $args[ $property ];
 			}
 
-			if ( $args[ "{$property}__in" ] ) {
+			if ( $args[ "{$property}__in" ] && is_array( $args[ "{$property}__in" ] ) ) {
 				$property_in = array();
 				foreach ( $args[ "{$property}__in" ] as $value ) {
 					$property_in[]['term'][ $property ] = $value;
@@ -150,10 +164,12 @@ class WP_Stream_Query {
 				$filters[]['or'] = $property_in;
 			}
 
-			if ( $args[ "{$property}__not_in" ] ) {
+			if ( $args[ "{$property}__not_in" ] && is_array( $args[ "{$property}__not_in" ] ) ) {
+				$property_not_in = array();
 				foreach ( $args[ "{$property}__not_in" ] as $value ) {
-					$filters[]['not']['term'][ $property ] = $value;
+					$property_not_in[]['not']['term'][ $property ] = $value;
 				}
+				$filters[]['or'] = $property_not_in;
 			}
 		}
 
@@ -162,7 +178,7 @@ class WP_Stream_Query {
 			if ( $args['records_per_page'] >= 0 ) {
 				$query['size'] = (int) $args['records_per_page'];
 			} else {
-				$query['size'] = null;
+				$query['size'] = 999999; // Actual limit placed on "unlimited" results
 			}
 		} else {
 			$query['size'] = get_option( 'posts_per_page', 20 );

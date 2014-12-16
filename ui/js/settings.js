@@ -307,7 +307,7 @@ jQuery( function( $ ) {
 	});
 
 	// Confirmation on some important actions
-	$( '#wp_stream_general_reset_site_settings, #wp_stream_network_general_reset_site_settings' ).click( function( e ) {
+	$( '#wp_stream_general_reset_site_settings' ).click( function( e ) {
 		if ( ! confirm( wp_stream.i18n.confirm_defaults ) ) {
 			e.preventDefault();
 		}

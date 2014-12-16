@@ -85,7 +85,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Gravity Forms', 'gravityforms' );
+		return _x( 'Gravity Forms', 'gravityforms', 'stream' );
 	}
 
 	/**
@@ -95,15 +95,15 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'    => __( 'Created', 'stream' ),
-			'updated'    => __( 'Updated', 'stream' ),
-			'exported'   => __( 'Exported', 'stream' ),
-			'imported'   => __( 'Imported', 'stream' ),
-			'added'      => __( 'Added', 'stream' ),
-			'deleted'    => __( 'Deleted', 'stream' ),
-			'trashed'    => __( 'Trashed', 'stream' ),
-			'untrashed'  => __( 'Restored', 'stream' ),
-			'duplicated' => __( 'Duplicated', 'stream' ),
+			'created'    => _x( 'Created', 'gravityforms', 'stream' ),
+			'updated'    => _x( 'Updated', 'gravityforms', 'stream' ),
+			'exported'   => _x( 'Exported', 'gravityforms', 'stream' ),
+			'imported'   => _x( 'Imported', 'gravityforms', 'stream' ),
+			'added'      => _x( 'Added', 'gravityforms', 'stream' ),
+			'deleted'    => _x( 'Deleted', 'gravityforms', 'stream' ),
+			'trashed'    => _x( 'Trashed', 'gravityforms', 'stream' ),
+			'untrashed'  => _x( 'Restored', 'gravityforms', 'stream' ),
+			'duplicated' => _x( 'Duplicated', 'gravityforms', 'stream' ),
 		);
 	}
 
@@ -114,11 +114,11 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'forms'    => __( 'Forms', 'gravityforms' ),
-			'settings' => __( 'Settings', 'gravityforms' ),
-			'export'   => __( 'Import/Export', 'gravityforms' ),
-			'entries'  => __( 'Entries', 'gravityforms' ),
-			'notes'    => __( 'Notes', 'gravityforms' ),
+			'forms'    => _x( 'Forms', 'gravityforms', 'stream' ),
+			'settings' => _x( 'Settings', 'gravityforms', 'stream' ),
+			'export'   => _x( 'Import/Export', 'gravityforms', 'stream' ),
+			'entries'  => _x( 'Entries', 'gravityforms', 'stream' ),
+			'notes'    => _x( 'Notes', 'gravityforms', 'stream' ),
 		);
 	}
 
@@ -134,7 +134,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( 'forms' === $record->context ) {
-			$links[ __( 'Edit', 'gravityforms' ) ] = add_query_arg(
+			$links[ __( 'Edit', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => 'gf_edit_forms',
 					'id' => $record->object_id,
@@ -142,7 +142,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				admin_url( 'admin.php' )
 			);
 		} elseif ( 'entries' === $record->context ) {
-			$links[ __( 'View', 'gravityforms' ) ] = add_query_arg(
+			$links[ __( 'View', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => 'gf_entries',
 					'view' => 'entry',
@@ -152,7 +152,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				admin_url( 'admin.php' )
 			);
 		} elseif ( 'notes' === $record->context ) {
-			$links[ __( 'View', 'gravityforms' ) ] = add_query_arg(
+			$links[ __( 'View', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => 'gf_entries',
 					'view' => 'entry',
@@ -178,22 +178,22 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 
 		self::$options = array(
 			'rg_gforms_disable_css'         => array(
-				'label' => __( 'Output CSS', 'gravityforms' ),
+				'label' => _x( 'Output CSS', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_enable_html5'        => array(
-				'label' => __( 'Output HTML5', 'gravityforms' ),
+				'label' => _x( 'Output HTML5', 'gravityforms', 'stream' ),
 			),
 			'gform_enable_noconflict'       => array(
-				'label' => __( 'No-Conflict Mode', 'gravityforms' ),
+				'label' => _x( 'No-Conflict Mode', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_currency'            => array(
-				'label' => __( 'Currency', 'gravityforms' ),
+				'label' => _x( 'Currency', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_captcha_public_key'  => array(
-				'label' => __( 'reCAPTCHA Public Key', 'gravityforms' ),
+				'label' => _x( 'reCAPTCHA Public Key', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_captcha_private_key' => array(
-				'label' => __( 'reCAPTCHA Private Key', 'gravityforms' ),
+				'label' => _x( 'reCAPTCHA Private Key', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_key'                 => null,
 		);
@@ -421,8 +421,8 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		$actions = array(
 			'activated'   => __( 'Activated', 'stream' ),
 			'deactivated' => __( 'Deactivated', 'stream' ),
-			'trashed'     => __( 'Trashed', 'default' ),
-			'untrashed'   => __( 'Restored', 'default' ),
+			'trashed'     => __( 'Trashed', 'stream' ),
+			'untrashed'   => __( 'Restored', 'stream' ),
 		);
 
 		self::log(

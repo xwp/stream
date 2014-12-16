@@ -62,13 +62,10 @@ class WP_Stream_Connectors {
 			'edd',
 			'gravityforms',
 			'jetpack',
+			'stream',
 			'woocommerce',
 			'wordpress-seo',
 		);
-
-		if ( is_network_admin() ) {
-			$connectors[] = 'blogs';
-		}
 
 		$classes = array();
 		foreach ( $connectors as $connector ) {

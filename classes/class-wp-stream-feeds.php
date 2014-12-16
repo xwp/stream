@@ -3,30 +3,18 @@
 class WP_Stream_Feeds {
 
 	const FEED_QUERY_VAR         = 'stream';
-	const FEED_NETWORK_QUERY_VAR = 'network-stream';
 	const FEED_KEY_QUERY_VAR     = 'key';
 	const FEED_TYPE_QUERY_VAR    = 'type';
 	const USER_FEED_OPTION_KEY   = 'stream_user_feed_key';
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
 
-	public static $is_network_feed = false;
-
 	public static function load() {
-		if ( is_network_admin() ) {
-			self::$is_network_feed = true;
-		}
-
 		if ( ! is_admin() ) {
 			$feed_path = parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH );
-			if ( self::FEED_NETWORK_QUERY_VAR === basename( $feed_path ) ) {
-				self::$is_network_feed = true;
-			}
 		}
 
-		if ( ! self::$is_network_feed ) {
-			if ( ! isset( WP_Stream_Settings::$options['general_private_feeds'] ) || ! WP_Stream_Settings::$options['general_private_feeds'] ) {
-				return;
-			}
+		if ( ! isset( WP_Stream_Settings::$options['general_private_feeds'] ) || ! WP_Stream_Settings::$options['general_private_feeds'] ) {
+			return;
 		}
 
 		add_action( 'show_user_profile', array( __CLASS__, 'save_user_feed_key' ) );
@@ -39,7 +27,6 @@ class WP_Stream_Feeds {
 		add_action( 'wp_ajax_wp_stream_feed_key_generate', array( __CLASS__, 'generate_user_feed_key' ) );
 
 		add_feed( self::FEED_QUERY_VAR, array( __CLASS__, 'feed_template' ) );
-		add_feed( self::FEED_NETWORK_QUERY_VAR, array( __CLASS__, 'feed_template' ) );
 	}
 
 	/**
@@ -108,11 +95,7 @@ class WP_Stream_Feeds {
 	 * @return string
 	 */
 	public static function user_feed_key( $user ) {
-		if ( ! is_network_admin() && ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
-			return;
-		}
-
-		if ( is_network_admin() && ! is_super_admin( $user->ID ) ) {
+		if ( ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 			return;
 		}
 
@@ -133,9 +116,9 @@ class WP_Stream_Feeds {
 					</p>
 					<p class="description"><?php esc_html_e( 'This is your private key used for accessing feeds of Stream Records securely. You can change your key at any time by generating a new one using the link above.', 'stream' ) ?></p>
 					<p class="wp-stream-feeds-links">
-						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'rss' ), $link )  ) ?>" class="rss-feed" target="_blank"><?php echo esc_html_e( 'RSS Feed', 'stream' ) ?></a>
+						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'rss' ), $link ) ) ?>" class="rss-feed" target="_blank"><?php echo esc_html_e( 'RSS Feed', 'stream' ) ?></a>
 						|
-						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'atom' ), $link )  ) ?>" class="atom-feed" target="_blank"><?php echo esc_html_e( 'ATOM Feed', 'stream' ) ?></a>
+						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'atom' ), $link ) ) ?>" class="atom-feed" target="_blank"><?php echo esc_html_e( 'ATOM Feed', 'stream' ) ?></a>
 						|
 						<a href="<?php echo esc_url( add_query_arg( array( 'type' => 'json' ), $link ) ) ?>" class="json-feed" target="_blank"><?php echo esc_html_e( 'JSON Feed', 'stream' ) ?></a>
 					</p>
@@ -152,7 +135,7 @@ class WP_Stream_Feeds {
 	 */
 	public static function get_user_feed_url( $key ) {
 		$pretty_permalinks = get_option( 'permalink_structure' );
-		$query_var         = is_network_admin() ? self::FEED_NETWORK_QUERY_VAR : self::FEED_QUERY_VAR;
+		$query_var         = self::FEED_QUERY_VAR;
 
 		if ( empty( $pretty_permalinks ) ) {
 			$link = add_query_arg(
@@ -187,7 +170,7 @@ class WP_Stream_Feeds {
 	public static function feed_template() {
 		$die_title   = esc_html__( 'Access Denied', 'stream' );
 		$die_message = sprintf( '<h1>%s</h1><p>%s</p>', $die_title, esc_html__( "You don't have permission to view this feed, please contact your site Administrator.", 'stream' ) );
-		$query_var   = is_network_admin() ? self::FEED_NETWORK_QUERY_VAR : self::FEED_QUERY_VAR;
+		$query_var   = self::FEED_QUERY_VAR;
 
 		$args = array(
 			'meta_key'   => self::USER_FEED_OPTION_KEY,
@@ -203,16 +186,12 @@ class WP_Stream_Feeds {
 		if ( ! is_super_admin( $user[0]->ID ) ) {
 			$roles = isset( $user[0]->roles ) ? (array) $user[0]->roles : array();
 
-			if ( self::$is_network_feed ) {
-				wp_die( $die_message, $die_title );
-			}
-
 			if ( ! $roles || ! array_intersect( $roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
 				wp_die( $die_message, $die_title );
 			}
 		}
 
-		$blog_id = self::$is_network_feed ? null : get_current_blog_id();
+		$blog_id = get_current_blog_id();
 
 		$args = array(
 			'blog_id'          => $blog_id,

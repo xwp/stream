@@ -388,7 +388,6 @@
 			var option    = parent.find( '.chart-dataset' ).select2( 'data' ).element[0].dataset;
 			var connector = option.connector;
 			var context   = option.context;
-			var blog      = option.blog;
 			var action    = parent.find( '.chart-action' ).select2( 'data' ).element[0].dataset.action;
 			var selector  = parent.find( '.chart-selector' ).select2( 'data' ).id;
 
@@ -405,7 +404,6 @@
 					data_connector: connector,
 					data_context: context,
 					data_action: action,
-					data_blog: blog,
 					data_selector: selector
 				},
 				dataType: 'json',

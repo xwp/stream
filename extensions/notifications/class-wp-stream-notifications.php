@@ -3,7 +3,7 @@
 class WP_Stream_Notifications {
 
 	/**
-	 * Hold Stream instance
+	 * Hold Stream Notifications instance
 	 *
 	 * @var string
 	 */
@@ -14,20 +14,6 @@ class WP_Stream_Notifications {
 	 * @var string
 	 */
 	public static $screen_id;
-
-	/**
-	 * @var WP_Stream_Notifications_Network
-	 */
-	public $network = null;
-
-	/**
-	 * Page slug for notifications list table screen
-	 *
-	 * @const string
-	 */
-	const NOTIFICATIONS_PAGE_SLUG = 'wp_stream_notifications';
-	// Todo: We should probably check whether the current user has caps to
-	// view and edit the notifications as this can differ from caps to Stream.
 
 	/**
 	 * Holds admin notices messages
@@ -50,12 +36,20 @@ class WP_Stream_Notifications {
 	public $matcher;
 
 	/**
+	 * Page slug for notifications list table screen
+	 *
+	 * @const string
+	 */
+	const NOTIFICATIONS_PAGE_SLUG = 'wp_stream_notifications';
+	// Todo: We should probably check whether the current user has caps to
+	// view and edit the notifications as this can differ from caps to Stream.
+
+	/**
 	 * Capability for the Notifications to be viewed
 	 *
 	 * @const string
 	 */
 	const VIEW_CAP = 'view_stream_notifications';
-
 
 	/**
 	 * Return active instance of this class, create one if it doesn't exist
@@ -85,6 +79,7 @@ class WP_Stream_Notifications {
 
 		// Register post type
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-post-type.php';
+
 		WP_Stream_Notifications_Post_Type::get_instance();
 	}
 
@@ -95,7 +90,8 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function load() {
-		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
+		// Register new submenu
+		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) && ! WP_Stream_Admin::$disable_access && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
 			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		}
 
@@ -114,20 +110,6 @@ class WP_Stream_Notifications {
 
 		foreach ( $adapters as $adapter ) {
 			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/class-wp-stream-notifications-adapter-' . $adapter . '.php';
-		}
-
-		// Load network class
-		if ( is_multisite() ) {
-			require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-network.php';
-
-			$this->network = new WP_Stream_Notifications_Network;
-
-			if ( WP_Stream_Network::is_network_activated() ) {
-				add_action( 'network_admin_menu', array( $this, 'register_menu' ), 11 );
-			}
-
-			// Allow Stream to override the admin_menu creation if on multisite
-			add_filter( 'wp_stream_notifications_disallow_site_access', array( 'WP_Stream_Network', 'disable_admin_access' ) );
 		}
 
 		// Load Matcher
@@ -203,8 +185,9 @@ class WP_Stream_Notifications {
 			'post_status'    => 'any',
 			'posts_per_page' => 1,
 		);
+
 		if ( ! get_posts( $args ) ) {
-			add_action( 'plugins_loaded', array( $this, 'add_sample_rule' ), 11 );
+			$this->add_sample_rule();
 		}
 	}
 
@@ -269,7 +252,7 @@ class WP_Stream_Notifications {
 					'users'   => '1',
 					'emails'  => '',
 					'subject' => sprintf( __( '[Site Activity Alert] %s', 'stream' ), get_bloginfo( 'name' ) ),
-					'message' => __( "The following just happened on your site:\r\n\r\n{summary} by {author.display_name}\r\n\r\nDate of action: {created}", 'stream' )
+					'message' => sprintf( __( 'The following just happened on your site: %s by %s Date of action: %s', 'stream' ), "\r\n\r\n{summary}", "{author.display_name}\r\n\r\n", '{created}' )
 				),
 			),
 		);
