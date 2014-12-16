@@ -20,7 +20,6 @@ matrix:
   exclude:
     - php: 5.5
       env: WP_VERSION=3.7 WP_MULTISITE=0
-  exclude:
     - php: 5.5
       env: WP_VERSION=3.7 WP_MULTISITE=1
 
