@@ -78,6 +78,7 @@ class WP_Stream_Notifications_Post_Type {
 		add_meta_box( 'stream-notifications-data-tags', __( 'Data Tags', 'stream' ), array( $this, 'metabox_data_tags' ), self::POSTTYPE, 'side' );
 
 		add_action( 'post_submitbox_misc_actions', array( $this, 'metabox_save' ) );
+
 		add_action(
 			'edit_form_advanced', function () {
 				global $post;
@@ -131,7 +132,6 @@ class WP_Stream_Notifications_Post_Type {
 
 	public function metabox_save() {
 		global $post;
-
 		if ( 'auto-draft' === $post->post_status ) {
 			return;
 		}
@@ -420,28 +420,26 @@ class WP_Stream_Notifications_Post_Type {
 			wp_send_json_error( esc_html__( 'Invalid nonce', 'stream' ) );
 		}
 
+		// Loose comparison needed
 		if ( empty( $id ) || (int) $id != $id ) {
 			wp_send_json_error( esc_html__( 'Invalid record ID', 'stream' ) );
 		}
 
 		update_post_meta( $id, 'occurrences', 0 );
-
 		wp_send_json_success();
 	}
 
 	/**
 	 * Format JS options for the form, to be used with wp_localize_script
 	 *
-	 * TODO: find a way to introduce meta to the rules, problem: not translatable
-	 * since it is generated on run time with no prior definition.
-	 * 'meta_query' => array(),
-	 *
 	 * @return array  Options for our form JS handling
 	 */
 	public function get_js_options() {
 		global $wp_roles;
-
 		$args = array();
+
+		$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
+		asort( $connectors );
 
 		$roles     = $wp_roles->roles;
 		$roles_arr = array_combine( array_keys( $roles ), wp_list_pluck( $roles, 'name' ) );
@@ -470,23 +468,6 @@ class WP_Stream_Notifications_Post_Type {
 			'>=' => esc_html__( 'equal or greater than', 'stream' ),
 		);
 
-		$weekday_options = array_combine(
-			array_map(
-				function ( $weekday_index ) {
-					return sprintf( 'weekday_%d', $weekday_index % 7 );
-				},
-				range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
-			),
-			array_map(
-				function ( $weekday_index ) {
-					global $wp_locale;
-
-					return $wp_locale->get_weekday( $weekday_index % 7 );
-				},
-				range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
-			)
-		);
-
 		$args['types'] = array(
 			'search'      => array(
 				'title'     => esc_html__( 'Summary', 'stream' ),
@@ -499,6 +480,7 @@ class WP_Stream_Notifications_Post_Type {
 				'tags'      => true,
 				'operators' => $default_operators,
 			),
+
 			'author_role' => array(
 				'title'     => esc_html__( 'Author Role', 'stream' ),
 				'type'      => 'select',
@@ -506,12 +488,14 @@ class WP_Stream_Notifications_Post_Type {
 				'operators' => $default_operators,
 				'options'   => $roles_arr,
 			),
+
 			'author'      => array(
 				'title'     => esc_html__( 'Author', 'stream' ),
 				'type'      => 'text',
 				'ajax'      => true,
 				'operators' => $default_operators,
 			),
+
 			'ip'          => array(
 				'title'     => esc_html__( 'IP', 'stream' ),
 				'type'      => 'text',
@@ -519,6 +503,7 @@ class WP_Stream_Notifications_Post_Type {
 				'tags'      => true,
 				'operators' => $default_operators,
 			),
+
 			'date'        => array(
 				'title'     => esc_html__( 'Date', 'stream' ),
 				'type'      => 'date',
@@ -531,19 +516,39 @@ class WP_Stream_Notifications_Post_Type {
 					'>=' => esc_html__( 'is on or after', 'stream' ),
 				),
 			),
+
 			'weekday'     => array(
 				'title'     => esc_html__( 'Day of Week', 'stream' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
-				'options'   => $weekday_options,
+				'options'   => array_combine(
+					array_map(
+						function ( $weekday_index ) {
+							return sprintf( 'weekday_%d', $weekday_index % 7 );
+						},
+						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
+					),
+					array_map(
+						function ( $weekday_index ) {
+							global $wp_locale;
+							return $wp_locale->get_weekday( $weekday_index % 7 );
+						},
+						range( get_option( 'start_of_week' ), get_option( 'start_of_week' ) + 6 )
+					)
+				),
 			),
+
+			// TODO: find a way to introduce meta to the rules, problem: not translatable since it is
+			// generated on run time with no prior definition
+			// 'meta_query'            => array(),
+
 			'connector'   => array(
 				'title'     => esc_html__( 'Connector', 'stream' ),
 				'type'      => 'select',
 				'multiple'  => true,
 				'operators' => $default_operators,
-				'options'   => asort( WP_Stream_Connectors::$term_labels['stream_connector'] ),
+				'options'   => $connectors,
 			),
 			'context'     => array(
 				'title'     => esc_html__( 'Context', 'stream' ),
@@ -705,7 +710,8 @@ class WP_Stream_Notifications_Post_Type {
 
 		global $post;
 
-		if ( $meta = get_post_meta( $post->ID ) && isset( $meta['triggers'] ) ) {
+		if ( ( $meta = get_post_meta( $post->ID ) ) && isset( $meta['triggers'] ) ) {
+
 			$args['meta'] = array(
 				'triggers' => maybe_unserialize( $meta['triggers'][0] ),
 				'groups'   => maybe_unserialize( $meta['groups'][0] ),
@@ -727,7 +733,6 @@ class WP_Stream_Notifications_Post_Type {
 	 */
 	public function format_json_for_select2( $data, $key = null, $val = null ) {
 		$return = array();
-
 		if ( is_null( $key ) && is_null( $val ) ) { // for flat associative array
 			$keys = array_keys( $data );
 			$vals = array_values( $data );
@@ -735,7 +740,6 @@ class WP_Stream_Notifications_Post_Type {
 			$keys = wp_list_pluck( $data, $key );
 			$vals = wp_list_pluck( $data, $val );
 		}
-
 		foreach ( $keys as $idx => $key ) {
 			$return[] = array(
 				'id'   => $key,
@@ -756,7 +760,6 @@ class WP_Stream_Notifications_Post_Type {
 	 */
 	public function get_terms( $search, $taxonomies = array() ) {
 		global $wpdb;
-
 		$taxonomies = (array) $taxonomies;
 
 		$sql = "SELECT tt.term_taxonomy_id id, t.name, t.slug, tt.taxonomy, tt.description
@@ -785,7 +788,6 @@ class WP_Stream_Notifications_Post_Type {
 		$results = $wpdb->get_results( $sql );
 
 		$return = array();
-
 		foreach ( $results as $result ) {
 			$return[ $result->id ] = sprintf( '%s - %s', $result->name, $result->taxonomy );
 		}
@@ -836,7 +838,6 @@ class WP_Stream_Notifications_Post_Type {
 		}
 
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-list-table.php';
-
 		WP_Stream_Notifications_List_Table::get_instance();
 	}
 

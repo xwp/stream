@@ -1,5 +1,5 @@
 === Stream ===
-Contributors:     lukecarbis, fjarrett, shadyvb, westonruter, stream, X-team
+Contributors:     lukecarbis, fjarrett, shadyvb, westonruter, stream, xwp
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.7
 Tested up to:      4.0
