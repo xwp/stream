@@ -4,7 +4,7 @@
 ![Banner](assets/banner-1544x500.png)
 Stream is the easiest and safest way to track content changes happening to your WordPress site and then view them in beautifully organized detail.
 
-**Contributors:** [lukecarbis](http://profiles.wordpress.org/lukecarbis), [fjarrett](http://profiles.wordpress.org/fjarrett), [shadyvb](http://profiles.wordpress.org/shadyvb), [westonruter](http://profiles.wordpress.org/westonruter), [stream](http://profiles.wordpress.org/stream), [x-team](http://profiles.wordpress.org/x-team)  
+**Contributors:** [lukecarbis](http://profiles.wordpress.org/lukecarbis), [fjarrett](http://profiles.wordpress.org/fjarrett), [shadyvb](http://profiles.wordpress.org/shadyvb), [westonruter](http://profiles.wordpress.org/westonruter), [stream](http://profiles.wordpress.org/stream), [xwp](http://profiles.wordpress.org/xwp)  
 **Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
 **Tested up to:** 4.0  
