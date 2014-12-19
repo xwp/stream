@@ -3,8 +3,13 @@ jQuery( function( $ ) {
 
 	$( document ).ready( function() {
 
-		// Only run on page 1 when the order is desc and on page wp_stream_live_updates
+		// Only run on wp_stream when page is 1 and the order is desc
 		if ( 'toplevel_page_wp_stream' !== wp_stream_live_updates.current_screen || '1' !== wp_stream_live_updates.current_page || 'asc' === wp_stream_live_updates.current_order ) {
+			return;
+		}
+
+		// Do not run if there are filters in use
+		if ( parseInt( wp_stream_live_updates.current_query_count, 10 ) > 1 ) {
 			return;
 		}
 
@@ -58,7 +63,7 @@ jQuery( function( $ ) {
 			// Add element to the dom
 			$( list_sel ).prepend( $new_items );
 
-			$( '.metabox-prefs input' ).each(function() {
+			$( '.metabox-prefs input' ).each( function() {
 				if ( true !== $( this ).prop( 'checked' ) ) {
 					var label = $( this ).val();
 					$( 'td.column-' + label ).hide();
@@ -88,6 +93,9 @@ jQuery( function( $ ) {
 			// Allow others to hook in, ie: timeago
 			$( list_sel ).parent().trigger( 'updated' );
 
+			// Regenerate zebra stripes
+			regenerate_row_alt();
+
 			// Remove background after a certain amount of time
 			setTimeout( function() {
 				$( '.new-row' ).addClass( 'fadeout' );
@@ -97,6 +105,24 @@ jQuery( function( $ ) {
 			}, 3000 );
 
 		});
+
+		// Regenerate zebra stripes on record rows
+		function regenerate_row_alt() {
+			var itemCount = 0,
+			    $rows     = $( '.toplevel_page_wp_stream #the-list tr' );
+
+			$rows.removeClass( 'alternate' );
+
+			$rows.each( function() {
+				if ( 0 === itemCount % 2 ) {
+					$( this ).addClass( 'alternate' );
+				} else {
+					$( this ).removeClass( 'alternate' );
+				}
+
+				itemCount++;
+			});
+		}
 
 	});
 

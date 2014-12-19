@@ -230,7 +230,8 @@ class WP_Stream_Dashboard_Widget {
 		<span class="record-meta"><?php echo $time_author; // xss ok ?></span>
 		<br/>
 		<?php echo esc_html( $item->summary ) ?>
-		</li><?php
+		</li>
+		<?php
 
 		return ob_get_clean();
 	}

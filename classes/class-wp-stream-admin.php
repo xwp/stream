@@ -370,10 +370,11 @@ class WP_Stream_Admin {
 			'wp-stream-live-updates',
 			'wp_stream_live_updates',
 			array(
-				'current_screen' => $hook,
-				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
-				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
-				'current_query'  => json_encode( $_GET ),
+				'current_screen'      => $hook,
+				'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
+				'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
+				'current_query'       => json_encode( $_GET ),
+				'current_query_count' => count( $_GET ),
 			)
 		);
 

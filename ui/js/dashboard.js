@@ -12,7 +12,7 @@ jQuery( function( $ ) {
 		list   = widget.find( '.inside ul' );
 
 	// Add alternate classes to initial items
-	$( 'li:odd', list ).addClass( 'alternate');
+	$( 'li:even', list ).addClass( 'alternate');
 
 	// Add Stream widget params to heartbeat API requests
 	$( document ).on( 'heartbeat-send.stream', function( e, data ) {
@@ -27,13 +27,7 @@ jQuery( function( $ ) {
 			return;
 		}
 
-		var $new_items = $( data['wp-stream-heartbeat'].replace( /(\r\n|\n|\r)/gm, '' ) ).removeClass().addClass( 'new-row' );
-
-		// Apply the good class to the list
-		var even_or_odd = ( $new_items.length % 2 && ! $( 'li:first', list ).hasClass( 'alternate' ) ) ? ':even' : ':odd';
-
-		// Add class to nth child because there is more than one element
-		$new_items.filter(even_or_odd).addClass( 'alternate' );
+		var $new_items = $( data['wp-stream-heartbeat'] ).filter( 'li' ).removeClass().addClass( 'new-row' );
 
 		// Remove the number of element added to the end of the list table
 		var show_on_screen = data.per_page || 5;
@@ -57,6 +51,9 @@ jQuery( function( $ ) {
 			$( '.pagination-links .last-page', widget ).attr( 'data-page', data.total_pages ).attr( 'href', data.last_page_link );
 		}
 
+		// Regenerate zebra stripes
+		regenerate_row_alt();
+
 		// Remove background after a certain amount of time
 		setTimeout( function() {
 			$new_items.addClass( 'fadeout' );
@@ -66,6 +63,24 @@ jQuery( function( $ ) {
 		}, 3000 );
 
 	});
+
+	// Regenerate zebra stripes on record rows
+	function regenerate_row_alt() {
+		var itemCount = 0,
+		    $rows     = $( '#dashboard_stream_activity ul li' );
+
+		$rows.removeClass( 'alternate' );
+
+		$rows.each( function() {
+			if ( 0 === itemCount % 2 ) {
+				$( this ).addClass( 'alternate' );
+			} else {
+				$( this ).removeClass( 'alternate' );
+			}
+
+			itemCount++;
+		});
+	}
 
 	// Pagination links
 	widget.on( 'click', '.pagination-links a', function( e ) {
