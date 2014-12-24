@@ -234,26 +234,18 @@ class WP_Stream_API {
 	 * @return mixed
 	 */
 	public function search( $query = array(), $fields = array(), $sites = array(), $search_type = '', $allow_cache = false, $expiration = 120 ) {
-		if ( empty( $sites ) && $this->site_uuid ) {
-			$sites[] = $this->site_uuid;
+		if ( ! $this->site_uuid ) {
+			return false;
 		}
 
-		$url  = $this->request_url( '/search' );
 		$body = array();
 
-		if ( ! empty( $query ) ) {
-			$body['query'] = $query;
-		}
-		if ( ! empty( $fields ) ) {
-			$body['fields'] = $fields;
-		}
-		if ( ! empty( $sites ) ) {
-			$body['sites'] = $sites;
-		}
-		if ( ! empty( $search_type ) ) {
-			$body['search_type'] = $search_type;
-		}
+		$body['query']       = ! empty( $query ) ? $query : array();
+		$body['fields']      = ! empty( $fields ) ? $fields : array();
+		$body['sites']       = ! empty( $sites ) ? $sites : array( $this->site_uuid );
+		$body['search_type'] = ! empty( $search_type ) ? $search_type : '';
 
+		$url  = $this->request_url( '/search' );
 		$args = array( 'method' => 'POST', 'body' => json_encode( (object) $body ) );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
