@@ -279,6 +279,18 @@ class WP_Stream_Settings {
 			);
 
 			array_push( $fields['general']['fields'], $comment_flood_tracking );
+
+			// Allow Admins to opt-in to WP Cron activity tracking
+			$wp_cron_tracking = array(
+				'name'        => 'wp_cron_tracking',
+				'title'       => esc_html__( 'WP Cron Tracking', 'stream' ),
+				'type'        => 'checkbox',
+				'desc'        => __( 'By default, Stream does not track activity performed by WordPress cron events unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+				'after_field' => esc_html__( 'Enabled', 'stream' ),
+				'default'     => 0,
+			);
+
+			array_push( $fields['general']['fields'], $wp_cron_tracking );
 		}
 
 		/**

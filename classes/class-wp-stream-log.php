@@ -64,6 +64,14 @@ class WP_Stream_Log {
 			$object_id = 0;
 		}
 
+		$wp_cron_tracking = isset( WP_Stream_Settings::$options['general_wp_cron_tracking'] ) ? WP_Stream_Settings::$options['general_wp_cron_tracking'] : false;
+		$agent            = WP_Stream_Author::get_current_agent();
+
+		// WP cron tracking requires opt-in
+		if ( ! $wp_cron_tracking && 'wp_cron' === $agent ) {
+			return;
+		}
+
 		$user       = new WP_User( $user_id );
 		$roles      = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
 		$visibility = 'publish';
@@ -85,7 +93,7 @@ class WP_Stream_Log {
 			'display_name'    => (string) $display_name,
 			'user_login'      => (string) ! empty( $user->user_login ) ? $user->user_login : '',
 			'user_role_label' => (string) ! empty( $user->roles ) ? $roles[ $user->roles[0] ]['name'] : '',
-			'agent'           => (string) WP_Stream_Author::get_current_agent(),
+			'agent'           => (string) $agent,
 		);
 
 		if ( ( defined( 'WP_CLI' ) ) && function_exists( 'posix_getuid' ) ) {
