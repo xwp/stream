@@ -66,19 +66,12 @@ jQuery( function( $ ) {
 
 	// Regenerate zebra stripes on record rows
 	function regenerate_row_alt() {
-		var itemCount = 0,
-		    $rows     = $( '#dashboard_stream_activity ul li' );
+		var $rows = $( '#dashboard_stream_activity ul li' );
 
 		$rows.removeClass( 'alternate' );
 
-		$rows.each( function() {
-			if ( 0 === itemCount % 2 ) {
-				$( this ).addClass( 'alternate' );
-			} else {
-				$( this ).removeClass( 'alternate' );
-			}
-
-			itemCount++;
+		$rows.each( function( index ) {
+			$( this ).addClass( index % 2 ? '' : 'alternate' );
 		});
 	}
 
