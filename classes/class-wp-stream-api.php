@@ -280,7 +280,7 @@ class WP_Stream_API {
 	 * @return object The results of the wp_remote_request request.
 	 */
 	protected function remote_request( $url = '', $args = array(), $allow_cache = true, $expiration = 300 ) {
-		if ( empty( $url ) ) {
+		if ( empty( $url ) || empty( $this->api_key ) ) {
 			return false;
 		}
 
