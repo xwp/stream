@@ -1,9 +1,13 @@
 language:
     - php
+    - node_js
 
 php:
     - 5.4
     - 5.5
+
+node_js:
+    - 0.10
 
 env:
     - WP_VERSION=latest WP_MULTISITE=0
