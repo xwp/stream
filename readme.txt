@@ -1,8 +1,8 @@
 === Stream ===
-Contributors:     lukecarbis, fjarrett, shadyvb, westonruter, stream, xwp
+Contributors:      lukecarbis, fjarrett, shadyvb, westonruter, stream, xwp
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.7
-Tested up to:      4.0
+Tested up to:      4.1
 Stable tag:        trunk
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@ Stream is the easiest and safest way to track content changes happening to your 
 
 [youtube http://www.youtube.com/watch?v=t_qD4Sp4E70]
 
-**Note: This plugin requires PHP 5.3 or higher to be activated.**
+**Note: This plugin requires PHP 5.3 or higher.**
 
 Never be in the dark about WP Admin activity again.
 
