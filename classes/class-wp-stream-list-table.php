@@ -151,6 +151,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'date',
 			'date_from',
 			'date_to',
+			'record_after', // Deprecated, use date_after instead
+			'date_after',
+			'date_before',
 		);
 
 		foreach ( $params as $param ) {
