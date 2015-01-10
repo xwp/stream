@@ -324,7 +324,7 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
-		wp_register_script( 'select2', WP_STREAM_URL . 'ui/lib/select2/select2.min.js', array( 'jquery' ), '3.5.2', true );
+		wp_register_script( 'select2', WP_STREAM_URL . 'ui/lib/select2/select2.js', array( 'jquery' ), '3.5.2', true );
 		wp_register_style( 'select2', WP_STREAM_URL . 'ui/lib/select2/select2.css', array(), '3.5.2' );
 		wp_register_script( 'timeago', WP_STREAM_URL . 'ui/lib/timeago/timeago.min.js', array(), '1.4.1', true );
 

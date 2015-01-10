@@ -1,3 +1,6 @@
 [submodule "dev-lib"]
 	path = dev-lib
 	url = https://github.com/xwp/wp-dev-lib.git
+[submodule "ui/lib/select2"]
+	path = ui/lib/select2
+	url = https://github.com/select2/select2.git
