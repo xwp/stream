@@ -453,8 +453,8 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 *
 	 * @return array|bool
 	 */
-	public static function log_override( array $data ) {
-		if ( 'posts' === $data['connector'] && 'acf' === $data['context'] ) {
+	public static function log_override( $data ) {
+		if ( is_array( $data ) && 'posts' === $data['connector'] && 'acf' === $data['context'] ) {
 			$data['context']               = 'field_groups';
 			$data['connector']             = self::$name;
 			$data['args']['singular_name'] = __( 'field group', 'stream' );

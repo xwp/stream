@@ -144,46 +144,53 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 		add_filter( 'wp_stream_log_data', array( __CLASS__, 'log_override' ) );
 	}
 
-	public static function log_override( array $data ) {
-		if ( 'settings' === $data['connector'] && 'bbpress' === $data['args']['context'] ) {
-			$settings = bbp_admin_get_settings_fields();
+	/**
+	 * Override connector log for our own Settings / Actions
+	 *
+	 * @param array $data
+	 *
+	 * @return array|bool
+	 */
+	public static function log_override( $data ) {
+		if ( is_array( $data ) ) {
+			if ( 'settings' === $data['connector'] && 'bbpress' === $data['args']['context'] ) {
+				$settings = bbp_admin_get_settings_fields();
 
-			/* fix for missing title for this single field */
-			$settings['bbp_settings_features']['_bbp_allow_threaded_replies']['title'] = __( 'Reply Threading', 'stream' );
+				/* fix for missing title for this single field */
+				$settings['bbp_settings_features']['_bbp_allow_threaded_replies']['title'] = __( 'Reply Threading', 'stream' );
 
-			$option   = $data['args']['option'];
-			foreach ( $settings as $section => $fields ) {
-				if ( isset( $fields[ $option ] ) ) {
-					$field = $fields[ $option ];
-					break;
+				$option   = $data['args']['option'];
+				foreach ( $settings as $section => $fields ) {
+					if ( isset( $fields[ $option ] ) ) {
+						$field = $fields[ $option ];
+						break;
+					}
 				}
-			}
 
-			if ( ! isset( $field ) ) {
-				return $data;
-			}
-
-			$data['args']['label'] = $field['title'];
-			$data['connector']     = self::$name;
-			$data['context']       = 'settings';
-			$data['action']        = 'updated';
-		}
-		elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ) ) ) {
-			if ( 'reply' === $data['context'] ) {
-				if ( 'updated' === $data['action'] ) {
-					$data['message'] = __( 'Replied on "%1$s"', 'stream' );
-					$data['args']['post_title'] = get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title;
+				if ( ! isset( $field ) ) {
+					return $data;
 				}
-				$data['args']['post_title'] = sprintf(
-					__( 'Reply to: %s', 'stream' ),
-					get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title
-				);
-			}
 
-			$data['connector'] = self::$name;
-		}
-		elseif ( 'taxonomies' === $data['connector'] && in_array( $data['context'], array( 'topic-tag' ) ) ) {
-			$data['connector'] = self::$name;
+				$data['args']['label'] = $field['title'];
+				$data['connector']     = self::$name;
+				$data['context']       = 'settings';
+				$data['action']        = 'updated';
+			} elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ) ) ) {
+				if ( 'reply' === $data['context'] ) {
+					if ( 'updated' === $data['action'] ) {
+						$data['message'] = __( 'Replied on "%1$s"', 'stream' );
+						$data['args']['post_title'] = get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title;
+					}
+					$data['args']['post_title'] = sprintf(
+						__( 'Reply to: %s', 'stream' ),
+						get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title
+					);
+				}
+
+				$data['connector'] = self::$name;
+			} elseif ( 'taxonomies' === $data['connector'] && in_array( $data['context'], array( 'topic-tag' ) ) ) {
+				$data['connector'] = self::$name;
+			}
 		}
 
 		return $data;

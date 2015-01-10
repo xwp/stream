@@ -312,40 +312,42 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 *
 	 * @return array|bool
 	 */
-	public static function log_override( array $data ) {
-		if ( 'posts' === $data['connector'] && 'download' === $data['context'] ) {
-			// Download posts operations
-			$data['context']  = 'downloads';
-			$data['connector'] = self::$name;
-		} elseif ( 'posts' === $data['connector'] && 'edd_discount' === $data['context'] ) {
-			// Discount posts operations
-			if ( self::$is_discount_status_change ) {
+	public static function log_override( $data ) {
+		if ( is_array( $data ) ) {
+			if ( 'posts' === $data['connector'] && 'download' === $data['context'] ) {
+				// Download posts operations
+				$data['context']  = 'downloads';
+				$data['connector'] = self::$name;
+			} elseif ( 'posts' === $data['connector'] && 'edd_discount' === $data['context'] ) {
+				// Discount posts operations
+				if ( self::$is_discount_status_change ) {
+					return false;
+				}
+
+				if ( 'deleted' === $data['action'] ) {
+					$data['message'] = __( '"%1s" discount deleted', 'stream' );
+				}
+
+				$data['context']  = 'discounts';
+				$data['connector'] = self::$name;
+			} elseif ( 'posts' === $data['connector'] && 'edd_payment' === $data['context'] ) {
+				// Payment posts operations
+				return false; // Do not track payments, they're well logged!
+			} elseif ( 'posts' === $data['connector'] && 'edd_log' === $data['context'] ) {
+				// Logging operations
+				return false; // Do not track notes, because they're basically logs
+			} elseif ( 'comments' === $data['connector'] && 'edd_payment' === $data['context'] ) {
+				// Payment notes ( comments ) operations
+				return false; // Do not track notes, because they're basically logs
+			} elseif ( 'taxonomies' === $data['connector'] && 'download_category' === $data['context'] ) {
+				$data['connector'] = self::$name;
+			} elseif ( 'taxonomies' === $data['connector'] && 'download_tag' === $data['contexts'] ) {
+				$data['connector'] = self::$name;
+			} elseif ( 'taxonomies' === $data['connector'] && 'edd_log_type' === $data['contexts'] ) {
+				return false;
+			} elseif ( 'settings' === $data['connector'] && 'edd_settings' === $data['args']['option'] ) {
 				return false;
 			}
-
-			if ( 'deleted' === $data['action'] ) {
-				$data['message'] = __( '"%1s" discount deleted', 'stream' );
-			}
-
-			$data['context']  = 'discounts';
-			$data['connector'] = self::$name;
-		} elseif ( 'posts' === $data['connector'] && 'edd_payment' === $data['context'] ) {
-			// Payment posts operations
-			return false; // Do not track payments, they're well logged!
-		} elseif ( 'posts' === $data['connector'] && 'edd_log' === $data['context'] ) {
-			// Logging operations
-			return false; // Do not track notes, because they're basically logs
-		} elseif ( 'comments' === $data['connector'] && 'edd_payment' === $data['context'] ) {
-			// Payment notes ( comments ) operations
-			return false; // Do not track notes, because they're basically logs
-		} elseif ( 'taxonomies' === $data['connector'] && 'download_category' === $data['context'] ) {
-			$data['connector'] = self::$name;
-		} elseif ( 'taxonomies' === $data['connector'] && 'download_tag' === $data['contexts'] ) {
-			$data['connector'] = self::$name;
-		} elseif ( 'taxonomies' === $data['connector'] && 'edd_log_type' === $data['contexts'] ) {
-			return false;
-		} elseif ( 'settings' === $data['connector'] && 'edd_settings' === $data['args']['option'] ) {
-			return false;
 		}
 
 		return $data;
