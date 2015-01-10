@@ -4,8 +4,8 @@
 ![Banner](assets/banner-1544x500.png)
 Stream is the easiest and safest way to track content changes happening to your WordPress site and then view them in beautifully organized detail.
 
-**Contributors:** [lukecarbis](http://profiles.wordpress.org/lukecarbis), [fjarrett](http://profiles.wordpress.org/fjarrett), [shadyvb](http://profiles.wordpress.org/shadyvb), [westonruter](http://profiles.wordpress.org/westonruter), [stream](http://profiles.wordpress.org/stream), [xwp](http://profiles.wordpress.org/xwp)  
-**Tags:** [actions](http://wordpress.org/plugins/tags/actions), [activity](http://wordpress.org/plugins/tags/activity), [admin](http://wordpress.org/plugins/tags/admin), [analytics](http://wordpress.org/plugins/tags/analytics), [dashboard](http://wordpress.org/plugins/tags/dashboard), [log](http://wordpress.org/plugins/tags/log), [notification](http://wordpress.org/plugins/tags/notification), [stream](http://wordpress.org/plugins/tags/stream), [users](http://wordpress.org/plugins/tags/users)  
+**Contributors:** [lukecarbis](https://profiles.wordpress.org/lukecarbis), [fjarrett](https://profiles.wordpress.org/fjarrett), [shadyvb](https://profiles.wordpress.org/shadyvb), [westonruter](https://profiles.wordpress.org/westonruter), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
+**Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [admin](https://wordpress.org/plugins/tags/admin), [analytics](https://wordpress.org/plugins/tags/analytics), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [notification](https://wordpress.org/plugins/tags/notification), [stream](https://wordpress.org/plugins/tags/stream), [users](https://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
 **Tested up to:** 4.1  
 **Stable tag:** trunk (master)  
@@ -15,7 +15,7 @@ Stream is the easiest and safest way to track content changes happening to your 
 
 ## Description ##
 
-[![Play video on YouTube](http://i1.ytimg.com/vi/t_qD4Sp4E70/hqdefault.jpg)](http://www.youtube.com/watch?v=t_qD4Sp4E70)
+[![Play video on YouTube](https://i1.ytimg.com/vi/t_qD4Sp4E70/hqdefault.jpg)](https://www.youtube.com/watch?v=t_qD4Sp4E70)
 
 **Note: This plugin requires PHP 5.3 or higher.**
 
