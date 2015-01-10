@@ -361,6 +361,7 @@ class WP_Stream_Admin {
 					'i18n'       => array(
 						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
+					'locale'     => esc_js( $locale ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
 				)
 			);
