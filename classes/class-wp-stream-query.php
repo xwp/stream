@@ -70,6 +70,13 @@ class WP_Stream_Query {
 			'action'        => null,
 		);
 
+		/**
+		 * Filter allows additional query properties to be added
+		 *
+		 * @return array  Array of query properties
+		 */
+		$properties = apply_filters( 'wp_stream_query_properties', $properties );
+
 		// Add property fields to defaults, including their __in/__not_in variations
 		foreach ( $properties as $property => $default ) {
 			if ( ! isset( $defaults[ $property ] ) ) {
@@ -84,8 +91,7 @@ class WP_Stream_Query {
 		/**
 		 * Filter allows additional arguments to query $args
 		 *
-		 * @param  array  Array of query arguments
-		 * @return array  Updated array of query arguments
+		 * @return array  Array of query arguments
 		 */
 		$args = apply_filters( 'wp_stream_query_args', $args );
 
@@ -234,12 +240,24 @@ class WP_Stream_Query {
 			}
 		}
 
-		$query  = apply_filters( 'wp_stream_db_query', $query );
+		/**
+		 * Filter allows the final query args to be modified
+		 *
+		 * @return array  Array of query arguments
+		 */
+		$query = apply_filters( 'wp_stream_db_query', $query );
+
+		/**
+		 * Filter allows the final query fields to be modified
+		 *
+		 * @return array  Array of query fields
+		 */
 		$fields = apply_filters( 'wp_stream_db_fields', $fields );
 
 		/**
 		 * Query results
-		 * @var  array
+		 *
+		 * @var array
 		 */
 		return WP_Stream::$db->query( $query, $fields );
 	}

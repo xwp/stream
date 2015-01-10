@@ -100,8 +100,12 @@ class WP_Stream {
 			wp_die( __( 'Stream: Could not load chosen DB driver.', 'stream' ), 'Stream DB Error' );
 		}
 
-		// Load API helper interface/class
-		self::$api = new WP_Stream_API;
+		/**
+		 * Filter allows a custom Stream API class to be instantiated
+		 *
+		 * @return object  The API class object
+		 */
+		self::$api = apply_filters( 'wp_stream_api_class', new WP_Stream_API );
 
 		// Install the plugin
 		add_action( 'wp_stream_before_db_notices', array( __CLASS__, 'install' ) );
@@ -266,6 +270,11 @@ class WP_Stream {
 			$development_mode = true;
 		}
 
+		/**
+		 * Filter allows development mode to be overridden
+		 *
+		 * @return bool
+		 */
 		return apply_filters( 'wp_stream_development_mode', $development_mode );
 	}
 
@@ -343,7 +352,7 @@ class WP_Stream {
 		 * Filter allows the HTML output of the frontend indicator comment
 		 * to be altered or removed, if desired.
 		 *
-		 * @return string $comment The content of the HTML comment
+		 * @return string  The content of the HTML comment
 		 */
 		$comment = apply_filters( 'wp_stream_frontend_indicator', $comment );
 
