@@ -157,7 +157,7 @@ class WP_Stream_Reports {
 			'stream-reports-d3',
 			WP_STREAM_REPORTS_URL . 'ui/lib/d3/d3.min.js',
 			array(),
-			'3.5.2',
+			'3.5.3',
 			true
 		);
 

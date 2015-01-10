@@ -7,3 +7,6 @@
 [submodule "ui/lib/timeago"]
 	path = ui/lib/timeago
 	url = https://github.com/rmm5t/jquery-timeago.git
+[submodule "extensions/reports/ui/lib/d3"]
+	path = extensions/reports/ui/lib/d3
+	url = https://github.com/mbostock/d3.git
