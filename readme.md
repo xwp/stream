@@ -15,7 +15,7 @@ Stream is the easiest and safest way to track content changes happening to your 
 
 ## Description ##
 
-[youtube https://www.youtube.com/watch?v=t_qD4Sp4E70]
+[![Play video on YouTube](http://i1.ytimg.com/vi/t_qD4Sp4E70/hqdefault.jpg)](http://www.youtube.com/watch?v=t_qD4Sp4E70)
 
 **Note: This plugin requires PHP 5.3 or higher.**
 

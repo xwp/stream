@@ -11,7 +11,7 @@ Stream is the easiest and safest way to track content changes happening to your 
 
 == Description ==
 
-[youtube https://www.youtube.com/watch?v=t_qD4Sp4E70]
+[youtube http://www.youtube.com/watch?v=t_qD4Sp4E70]
 
 **Note: This plugin requires PHP 5.3 or higher.**
 
