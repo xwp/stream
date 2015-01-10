@@ -182,7 +182,7 @@ class WP_Stream_Reports {
 			'stream-reports-nvd3',
 			WP_STREAM_REPORTS_URL . 'ui/lib/nvd3/nv.d3.min.css',
 			array(),
-			WP_STREAM::VERSION,
+			'1.1.15b',
 			'screen'
 		);
 

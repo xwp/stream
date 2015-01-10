@@ -10,3 +10,6 @@
 [submodule "extensions/reports/ui/lib/d3"]
 	path = extensions/reports/ui/lib/d3
 	url = https://github.com/mbostock/d3.git
+[submodule "extensions/reports/ui/lib/nvd3"]
+	path = extensions/reports/ui/lib/nvd3
+	url = https://github.com/novus/nvd3.git
