@@ -1,5 +1,15 @@
-/* globals wp_stream, ajaxurl */
+/* globals wp_stream, ajaxurl, jQuery.timeago */
 jQuery( function( $ ) {
+
+	// Shorter strings for English locale
+	if ( 'en' === wp_stream.locale ) {
+		jQuery.timeago.settings.strings.seconds = 'seconds';
+		jQuery.timeago.settings.strings.minute  = 'a minute';
+		jQuery.timeago.settings.strings.hour    = 'an hour';
+		jQuery.timeago.settings.strings.hours   = '%d hours';
+		jQuery.timeago.settings.strings.month   = 'a month';
+		jQuery.timeago.settings.strings.year    = 'a year';
+	}
 
 	$( 'li.toplevel_page_wp_stream ul li.wp-first-item.current' ).parent().parent().find( '.update-plugins' ).remove();
 
