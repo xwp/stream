@@ -129,6 +129,8 @@ Props [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [fjarrett](http:/
 
 **NOTE:** Multisite view of all activity records in the Network Admin has been removed in this release. If you require this feature, please do not update Stream until version 2.1.0 is released.
 
+Props [fjarrett](http://profiles.wordpress.org/fjarrett/), [lukecarbis](http://profiles.wordpress.org/lukecarbis/), [shadyvb](http://profiles.wordpress.org/shadyvb/), [chacha](https://github.com/chacha), [jonathanbardo](http://profiles.wordpress.org/jonathanbardo/), [bordoni](http://profiles.wordpress.org/bordoni/), [dero](https://github.com/dero), [jeffmatson](http://profiles.wordpress.org/jeffmatson/), [stipsan](https://github.com/stipsan), [c3mdigital](http://profiles.wordpress.org/c3mdigital/), [adamsilverstein](http://profiles.wordpress.org/adamsilverstein/), [westonruter](http://profiles.wordpress.org/westonruter/), [japh](http://profiles.wordpress.org/japh/), [solace](https://github.com/solace), [johnbillion](http://profiles.wordpress.org/johnbillion/)
+
 ### 1.4.9 - July 23, 2014 ###
 * Fix: Revert delayed log mechanism for post transition ([#585](https://github.com/x-team/wp-stream/issues/585))
 * Fix: Revert usage of get_taxonomy() ([#586](https://github.com/x-team/wp-stream/pull/586))
