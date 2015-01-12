@@ -422,17 +422,19 @@ class WP_Stream_Admin {
 		 */
 		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
 
-		wp_enqueue_script( 'wp-stream-bulk-actions', WP_STREAM_URL . 'ui/js/bulk-actions.js', array( 'jquery' ), WP_Stream::VERSION );
+		wp_enqueue_script( 'wp-stream-global', WP_STREAM_URL . 'ui/js/global.js', array( 'jquery' ), WP_Stream::VERSION );
 		wp_localize_script(
-			'wp-stream-bulk-actions',
-			'wp_stream_bulk_actions',
+			'wp-stream-global',
+			'wp_stream_global',
 			array(
-				'i18n'               => array(
-					'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %d items? This process could take a while to complete.', 'stream' ), absint( $bulk_actions_threshold ) ),
-					'confirm_import' => __( 'The Stream plugin must be deactivated before you can bulk import content into WordPress.', 'stream' ),
+				'bulk_actions' => array(
+					'i18n' => array(
+						'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
+						'confirm_import' => __( 'The Stream plugin must be deactivated before you can bulk import content into WordPress.', 'stream' ),
+					),
+					'threshold' => absint( $bulk_actions_threshold ),
 				),
 				'plugins_screen_url' => self_admin_url( 'plugins.php#stream' ),
-				'threshold'          => absint( $bulk_actions_threshold ),
 			)
 		);
 	}

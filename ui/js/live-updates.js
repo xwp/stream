@@ -93,8 +93,8 @@ jQuery( function( $ ) {
 			// Allow others to hook in, ie: timeago
 			$( list_sel ).parent().trigger( 'updated' );
 
-			// Regenerate zebra stripes
-			regenerate_row_alt();
+			// Regenerate alternating row classes
+			wp_stream_regenerate_alt_rows( $( list_sel + 'tr' ) );
 
 			// Remove background after a certain amount of time
 			setTimeout( function() {
@@ -105,17 +105,6 @@ jQuery( function( $ ) {
 			}, 3000 );
 
 		});
-
-		// Regenerate zebra stripes on record rows
-		function regenerate_row_alt() {
-			var $rows = $( '.toplevel_page_wp_stream #the-list tr' );
-
-			$rows.removeClass( 'alternate' );
-
-			$rows.each( function( index ) {
-				$( this ).addClass( index % 2 ? '' : 'alternate' );
-			});
-		}
 
 	});
 

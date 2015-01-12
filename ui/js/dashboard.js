@@ -8,16 +8,16 @@ jQuery( function( $ ) {
 		wp.heartbeat.interval( 'fast' );
 	}
 
-	var widget = $( '#dashboard_stream_activity' ),
-		list   = widget.find( '.inside ul' );
+	var $widget = $( '#dashboard_stream_activity' ),
+		$list   = $widget.find( '.inside ul' );
 
 	// Add alternate classes to initial items
-	$( 'li:even', list ).addClass( 'alternate');
+	$( 'li:even', $list ).addClass( 'alternate');
 
 	// Add Stream widget params to heartbeat API requests
 	$( document ).on( 'heartbeat-send.stream', function( e, data ) {
 		data['wp-stream-heartbeat']           = 'dashboard-update';
-		data['wp-stream-heartbeat-last-time'] = $( 'li:first', list ).data( 'datetime' ) || 1;
+		data['wp-stream-heartbeat-last-time'] = $( 'li:first', $list ).data( 'datetime' ) || 1;
 	});
 
 	// Listen for "heartbeat-tick" on $(document).
@@ -31,28 +31,28 @@ jQuery( function( $ ) {
 
 		// Remove the number of element added to the end of the list table
 		var show_on_screen = data.per_page || 5;
-		var slice_items    = show_on_screen - ( $new_items.length + $( 'li', list ).length );
+		var slice_items    = show_on_screen - ( $new_items.length + $( 'li', $list ).length );
 
 		if ( slice_items < 0 ) {
-			$( 'li', list ).slice( slice_items ).remove();
+			$( 'li', $list ).slice( slice_items ).remove();
 		}
 
 		// Remove the no items paragraph
-		widget.find( 'p.no-items' ).remove();
+		$widget.find( 'p.no-items' ).remove();
 
 		// Add element to the dom
-		$new_items.slice( 0, data.per_page ).prependTo( list );
+		$new_items.slice( 0, data.per_page ).prependTo( $list );
 
 		// Update pagination
 		var total_items_i18n = data.total_items_i18n || '';
 		if ( total_items_i18n ) {
-			$( '.total-pages', widget ).text( data.total_pages_i18n );
-			$( '.pagination-links', widget ).find( '.next-page, .last-page' ) .toggleClass( 'disabled', data.total_pages === $( '.current-page' ).val() );
-			$( '.pagination-links .last-page', widget ).attr( 'data-page', data.total_pages ).attr( 'href', data.last_page_link );
+			$( '.total-pages', $widget ).text( data.total_pages_i18n );
+			$( '.pagination-links', $widget ).find( '.next-page, .last-page' ) .toggleClass( 'disabled', data.total_pages === $( '.current-page' ).val() );
+			$( '.pagination-links .last-page', $widget ).attr( 'data-page', data.total_pages ).attr( 'href', data.last_page_link );
 		}
 
-		// Regenerate zebra stripes
-		regenerate_row_alt();
+		// Regenerate alternating row classes
+		wp_stream_regenerate_alt_rows( $( 'li', $list ) );
 
 		// Remove background after a certain amount of time
 		setTimeout( function() {
@@ -64,19 +64,8 @@ jQuery( function( $ ) {
 
 	});
 
-	// Regenerate zebra stripes on record rows
-	function regenerate_row_alt() {
-		var $rows = $( '#dashboard_stream_activity ul li' );
-
-		$rows.removeClass( 'alternate' );
-
-		$rows.each( function( index ) {
-			$( this ).addClass( index % 2 ? '' : 'alternate' );
-		});
-	}
-
 	// Pagination links
-	widget.on( 'click', '.pagination-links a', function( e ) {
+	$widget.on( 'click', '.pagination-links a', function( e ) {
 		e.preventDefault();
 
 		var data = {
@@ -84,9 +73,18 @@ jQuery( function( $ ) {
 			'stream-paged': $( this ).data( 'page' )
 		};
 
-		$.post( window.ajaxurl, data, function( response ) {
-			$( '.inside', widget ).html( response );
-			list = widget.find( '.inside ul' );
+		$.ajax({
+			type: 'POST',
+			url: window.ajaxurl,
+			data: data,
+			success: function( response ) {
+				$inside = $( '.inside', $widget );
+
+				$inside.html( response );
+
+				// Regenerate alternating row classes
+				wp_stream_regenerate_alt_rows( $( 'ul li', $inside ) );
+			}
 		});
 	});
 
