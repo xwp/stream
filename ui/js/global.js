@@ -1,4 +1,5 @@
 /* globals wp_stream_global */
+/* exported wp_stream_regenerate_alt_rows */
 jQuery( function( $ ) {
 
 	// List table actions, ignores filtering
@@ -33,7 +34,7 @@ jQuery( function( $ ) {
 });
 
 // Regenerate alternating row classes
-function wp_stream_regenerate_alt_rows( $rows ) {
+var wp_stream_regenerate_alt_rows = function( $rows ) {
 	if ( ! $rows.length ) {
 		return false;
 	}
