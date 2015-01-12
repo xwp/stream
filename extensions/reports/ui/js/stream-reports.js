@@ -1,5 +1,5 @@
 /*jslint nomen: true */
-/*global jQuery, _, nv, d3, wp_stream, wp_stream_reports, ajaxurl, document, window */
+/*global jQuery, _, nv, d3, stream, wp_stream_reports, ajaxurl, document, window */
 ( function( window, $, _, nv, d3, wp_stream_reports ) {
 	'use strict';
 
