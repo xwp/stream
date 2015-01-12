@@ -4,6 +4,11 @@ jQuery( function( $ ) {
 
 	_.templateSettings.variable = 'vars';
 
+	$( '#toplevel_page_wp_stream' )
+		.add( '#toplevel_page_wp_stream > a.toplevel_page_wp_stream' )
+		.removeClass( 'wp-not-current-submenu' )
+		.addClass( 'wp-has-current-submenu wp-menu-open' );
+
 	$.datepicker.setDefaults({
 		dateFormat: 'yy/mm/dd',
 		minDate: 0
