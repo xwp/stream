@@ -587,33 +587,35 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 *
 	 * @return array|bool
 	 */
-	public static function log_override( array $data ) {
+	public static function log_override( $data ) {
 		// Handling our Settings
-		if ( 'settings' === $data['connector'] && isset( self::$options_override[ $data['args']['option'] ] ) ) {
-			if ( isset( $data['args']['option_key'] ) ) {
-				$overrides = self::$options_override[ $data['args']['option'] ][ $data['args']['option_key'] ];
-			} else {
-				$overrides = self::$options_override[ $data['args']['option'] ];
-			}
+		if ( is_array( $data ) ) {
+			if ( 'settings' === $data['connector'] && isset( self::$options_override[ $data['args']['option'] ] ) ) {
+				if ( isset( $data['args']['option_key'] ) ) {
+					$overrides = self::$options_override[ $data['args']['option'] ][ $data['args']['option_key'] ];
+				} else {
+					$overrides = self::$options_override[ $data['args']['option'] ];
+				}
 
-			if ( isset( $overrides ) ) {
-				$data['args']['label']   = $overrides['label'];
-				$data['args']['context'] = $overrides['context'];
-				$data['context']         = $overrides['context'];
-				$data['connector']       = self::$name;
+				if ( isset( $overrides ) ) {
+					$data['args']['label']   = $overrides['label'];
+					$data['args']['context'] = $overrides['context'];
+					$data['context']         = $overrides['context'];
+					$data['connector']       = self::$name;
+				}
+			} elseif ( 'posts' === $data['connector'] && 'safecss' === $data['context'] ) {
+				$data = array_merge(
+					$data,
+					array(
+						'connector' => self::$name,
+						'message'   => __( 'Custom CSS updated', 'stream' ),
+						'args'      => array(),
+						'object_id' => null,
+						'context'   => 'custom-css',
+						'action'    => 'updated',
+					)
+				);
 			}
-		} elseif ( 'posts' === $data['connector'] && 'safecss' === $data['context'] ) {
-			$data = array_merge(
-				$data,
-				array(
-					'connector' => self::$name,
-					'message'   => __( 'Custom CSS updated', 'stream' ),
-					'args'      => array(),
-					'object_id' => null,
-					'context'   => 'custom-css',
-					'action'    => 'updated',
-				)
-			);
 		}
 
 		return $data;

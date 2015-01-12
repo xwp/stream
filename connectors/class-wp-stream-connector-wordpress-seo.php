@@ -345,30 +345,32 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	 *
 	 * @return array|bool
 	 */
-	public static function log_override( array $data ) {
-		global $pagenow;
+	public static function log_override( $data ) {
+		if ( is_array( $data ) ) {
+			global $pagenow;
 
-		if ( 'options.php' === $pagenow && 'settings' === $data['connector'] && wp_stream_filter_input( INPUT_POST, '_wp_http_referer' ) ) {
-			if ( ! isset( $data['args']['context'] ) || ! isset( self::$option_groups[ $data['args']['context'] ] ) ) {
-				return $data;
+			if ( 'options.php' === $pagenow && 'settings' === $data['connector'] && wp_stream_filter_input( INPUT_POST, '_wp_http_referer' ) ) {
+				if ( ! isset( $data['args']['context'] ) || ! isset( self::$option_groups[ $data['args']['context'] ] ) ) {
+					return $data;
+				}
+
+				$page   = preg_match( '#page=([^&]*)#', wp_stream_filter_input( INPUT_POST, '_wp_http_referer' ), $match ) ? $match[1] : '';
+				$labels = self::get_context_labels();
+
+				if ( ! isset( $labels[ $page ] ) ) {
+					return $data;
+				}
+
+				if ( ! ( $label = self::settings_labels( $data['args']['option_key'] ) ) ) {
+					$data['message'] = __( '%s settings updated', 'stream' );
+					$label           = $labels[ $page ];
+				}
+
+				$data['args']['label']   = $label;
+				$data['args']['context'] = $page;
+				$data['context']         = $page;
+				$data['connector']       = self::$name;
 			}
-
-			$page   = preg_match( '#page=([^&]*)#', wp_stream_filter_input( INPUT_POST, '_wp_http_referer' ), $match ) ? $match[1] : '';
-			$labels = self::get_context_labels();
-
-			if ( ! isset( $labels[ $page ] ) ) {
-				return $data;
-			}
-
-			if ( ! ( $label = self::settings_labels( $data['args']['option_key'] ) ) ) {
-				$data['message'] = __( '%s settings updated', 'stream' );
-				$label           = $labels[ $page ];
-			}
-
-			$data['args']['label']   = $label;
-			$data['args']['context'] = $page;
-			$data['context']         = $page;
-			$data['connector']       = self::$name;
 		}
 
 		return $data;
