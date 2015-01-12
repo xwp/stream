@@ -1,6 +1,16 @@
 /* globals wp_stream, ajaxurl */
 jQuery( function( $ ) {
 
+	// Shorter timeago strings for English locale
+	if ( 'en' === wp_stream.locale ) {
+		$.timeago.settings.strings.seconds = 'seconds';
+		$.timeago.settings.strings.minute  = 'a minute';
+		$.timeago.settings.strings.hour    = 'an hour';
+		$.timeago.settings.strings.hours   = '%d hours';
+		$.timeago.settings.strings.month   = 'a month';
+		$.timeago.settings.strings.year    = 'a year';
+	}
+
 	$( 'li.toplevel_page_wp_stream ul li.wp-first-item.current' ).parent().parent().find( '.update-plugins' ).remove();
 
 	$( '.toplevel_page_wp_stream :input.chosen-select' ).each( function( i, el ) {

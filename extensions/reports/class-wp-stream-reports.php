@@ -157,7 +157,7 @@ class WP_Stream_Reports {
 			'stream-reports-d3',
 			WP_STREAM_REPORTS_URL . 'ui/lib/d3/d3.min.js',
 			array(),
-			'3.5.2',
+			'3.5.3',
 			true
 		);
 
@@ -182,7 +182,7 @@ class WP_Stream_Reports {
 			'stream-reports-nvd3',
 			WP_STREAM_REPORTS_URL . 'ui/lib/nvd3/nv.d3.min.css',
 			array(),
-			WP_STREAM::VERSION,
+			'1.1.15b',
 			'screen'
 		);
 
@@ -202,33 +202,27 @@ class WP_Stream_Reports {
 		// Localization
 		wp_localize_script(
 			'stream-reports',
-			'streamReportsLocal',
+			'wp_stream_reports',
 			array(
-				'configure'  => __( 'Configure', 'stream' ),
-				'cancel'     => __( 'Cancel', 'stream' ),
-				'deletemsg'  => __( 'Do you really want to delete this section? This cannot be undone.', 'stream' ),
+				'i18n'       => array(
+					'configure' => __( 'Configure', 'stream' ),
+					'cancel'    => __( 'Cancel', 'stream' ),
+					'deletemsg' => __( 'Do you really want to delete this section? This cannot be undone.', 'stream' ),
+				),
 				'gmt_offset' => get_option( 'gmt_offset' ),
 			)
 		);
 
-		// JavaScript enqueue
-		wp_enqueue_script(
-			array(
-				'stream-reports',
-				'select2',
-				'common',
-				'dashboard',
-				'postbox',
-			)
-		);
+		// Scripts
+		wp_enqueue_script( 'stream-reports' );
+		wp_enqueue_script( 'select2' );
+		wp_enqueue_script( 'common' );
+		wp_enqueue_script( 'dashboard' );
+		wp_enqueue_script( 'postbox' );
 
-		// CSS enqueue
-		wp_enqueue_style(
-			array(
-				'stream-reports',
-				'select2',
-			)
-		);
+		// Styles
+		wp_enqueue_style( 'stream-reports' );
+		wp_enqueue_style( 'select2' );
 	}
 
 	/**

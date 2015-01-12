@@ -324,12 +324,12 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function admin_enqueue_scripts( $hook ) {
-		wp_register_script( 'select2', WP_STREAM_URL . 'ui/lib/select2/select2.min.js', array( 'jquery' ), '3.5.2', true );
+		wp_register_script( 'select2', WP_STREAM_URL . 'ui/lib/select2/select2.js', array( 'jquery' ), '3.5.2', true );
 		wp_register_style( 'select2', WP_STREAM_URL . 'ui/lib/select2/select2.css', array(), '3.5.2' );
-		wp_register_script( 'timeago', WP_STREAM_URL . 'ui/lib/timeago/timeago.min.js', array(), '1.4.1', true );
+		wp_register_script( 'timeago', WP_STREAM_URL . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
 
-		$locale    = substr( get_locale(), 0, 2 );
-		$file_tmpl = 'ui/lib/timeago/locale/jquery.timeago.%s.js';
+		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
+		$file_tmpl = 'ui/lib/timeago/locales/jquery.timeago.%s.js';
 
 		if ( file_exists( WP_STREAM_DIR . sprintf( $file_tmpl, $locale ) ) ) {
 			wp_register_script( 'timeago-locale', WP_STREAM_URL . sprintf( $file_tmpl, $locale ), array( 'timeago' ), '1' );
@@ -361,6 +361,7 @@ class WP_Stream_Admin {
 					'i18n'       => array(
 						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
+					'locale'     => esc_js( $locale ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
 				)
 			);
