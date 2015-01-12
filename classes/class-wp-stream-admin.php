@@ -371,10 +371,11 @@ class WP_Stream_Admin {
 			'wp-stream-live-updates',
 			'wp_stream_live_updates',
 			array(
-				'current_screen' => $hook,
-				'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
-				'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
-				'current_query'  => json_encode( $_GET ),
+				'current_screen'      => $hook,
+				'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
+				'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
+				'current_query'       => json_encode( $_GET ),
+				'current_query_count' => count( $_GET ),
 			)
 		);
 
@@ -421,17 +422,19 @@ class WP_Stream_Admin {
 		 */
 		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
 
-		wp_enqueue_script( 'wp-stream-bulk-actions', WP_STREAM_URL . 'ui/js/bulk-actions.js', array( 'jquery' ), WP_Stream::VERSION );
+		wp_enqueue_script( 'wp-stream-global', WP_STREAM_URL . 'ui/js/global.js', array( 'jquery' ), WP_Stream::VERSION );
 		wp_localize_script(
-			'wp-stream-bulk-actions',
-			'wp_stream_bulk_actions',
+			'wp-stream-global',
+			'wp_stream_global',
 			array(
-				'i18n'               => array(
-					'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %d items? This process could take a while to complete.', 'stream' ), absint( $bulk_actions_threshold ) ),
-					'confirm_import' => __( 'The Stream plugin must be deactivated before you can bulk import content into WordPress.', 'stream' ),
+				'bulk_actions' => array(
+					'i18n' => array(
+						'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
+						'confirm_import' => __( 'The Stream plugin must be deactivated before you can bulk import content into WordPress.', 'stream' ),
+					),
+					'threshold' => absint( $bulk_actions_threshold ),
 				),
 				'plugins_screen_url' => self_admin_url( 'plugins.php#stream' ),
-				'threshold'          => absint( $bulk_actions_threshold ),
 			)
 		);
 	}
