@@ -33,7 +33,7 @@ jQuery( function( $ ) {
 });
 
 // Regenerate alternating row classes
-var wp_stream_regenerate_alt_rows = function( $rows ) {
+function wp_stream_regenerate_alt_rows( $rows ) {
 	if ( ! $rows.length ) {
 		return false;
 	}
@@ -43,4 +43,4 @@ var wp_stream_regenerate_alt_rows = function( $rows ) {
 	$rows.each( function( index ) {
 		jQuery( this ).addClass( index % 2 ? '' : 'alternate' );
 	});
-}
+};

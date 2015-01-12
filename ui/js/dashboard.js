@@ -1,4 +1,4 @@
-/* dashboard pagination */
+/* globals wp, wp_stream_regenerate_alt_rows */
 jQuery( function( $ ) {
 
 	/**
@@ -45,6 +45,7 @@ jQuery( function( $ ) {
 
 		// Update pagination
 		var total_items_i18n = data.total_items_i18n || '';
+
 		if ( total_items_i18n ) {
 			$( '.total-pages', $widget ).text( data.total_pages_i18n );
 			$( '.pagination-links', $widget ).find( '.next-page, .last-page' ) .toggleClass( 'disabled', data.total_pages === $( '.current-page' ).val() );
@@ -57,9 +58,11 @@ jQuery( function( $ ) {
 		// Remove background after a certain amount of time
 		setTimeout( function() {
 			$new_items.addClass( 'fadeout' );
+
 			setTimeout( function() {
 				$new_items.removeClass( 'new-row fadeout' );
 			}, 500 );
+
 		}, 3000 );
 
 	});
@@ -78,7 +81,7 @@ jQuery( function( $ ) {
 			url: window.ajaxurl,
 			data: data,
 			success: function( response ) {
-				$inside = $( '.inside', $widget );
+				var $inside = $( '.inside', $widget );
 
 				$inside.html( response );
 
