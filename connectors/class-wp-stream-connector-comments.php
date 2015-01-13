@@ -202,7 +202,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @action comment_flood_trigger
 	 */
 	public static function callback_comment_flood_trigger( $time_lastcomment, $time_newcomment ) {
-		$flood_tracking = isset( WP_Stream_Settings::$options['general_comment_flood_tracking'] ) ? WP_Stream_Settings::$options['general_comment_flood_tracking'] : false;
+		$flood_tracking = isset( WP_Stream_Settings::$options['advanced_comment_flood_tracking'] ) ? WP_Stream_Settings::$options['advanced_comment_flood_tracking'] : false;
 
 		if ( ! $flood_tracking ) {
 			return;
@@ -246,7 +246,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$is_spam        = false;
 
 		// Auto-marked spam comments
-		$ak_tracking = isset( WP_Stream_Settings::$options['general_akismet_tracking'] ) ? WP_Stream_Settings::$options['general_akismet_tracking'] : false;
+		$ak_tracking = isset( WP_Stream_Settings::$options['advanced_akismet_tracking'] ) ? WP_Stream_Settings::$options['advanced_akismet_tracking'] : false;
 		if ( class_exists( 'Akismet' ) && $ak_tracking && Akismet::matches_last_comment( $comment ) ) {
 			$ak_last_comment = Akismet::get_last_comment();
 			if ( 'true' == $ak_last_comment['akismet_result'] ) {
