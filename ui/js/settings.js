@@ -302,7 +302,7 @@ jQuery( function( $ ) {
 		}
 	}
 
-	$( window ).load( function() {
+	$( document ).ready( function() {
 		recalculate_rules_found();
 	});
 
