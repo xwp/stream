@@ -597,6 +597,7 @@ class WP_Stream_Admin {
 					'records_per_page' => 101,
 					'author__not_in'   => array( $user_id ), // Ignore changes authored by the current user
 					'date_after'       => $last_read,
+					'fields'           => array( 'created' ), // We don't need the entire record
 				);
 
 				$unread_records = wp_stream_query( $args );
