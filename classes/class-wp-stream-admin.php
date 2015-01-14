@@ -596,7 +596,7 @@ class WP_Stream_Admin {
 				$args = array(
 					'records_per_page' => 101,
 					'author__not_in'   => array( $user_id ), // Ignore changes authored by the current user
-					'date_after'       => $last_read,
+					'date_after'       => date( 'c', strtotime( $last_read . ' + 1 second' ) ), // Bump time to bypass gte issue
 					'fields'           => array( 'created' ), // We don't need the entire record
 				);
 
