@@ -433,6 +433,8 @@ class WP_Stream_Settings {
 		$placeholder = isset( $field['placeholder'] ) ? $field['placeholder'] : null;
 		$description = isset( $field['desc'] ) ? $field['desc'] : null;
 		$href        = isset( $field['href'] ) ? $field['href'] : null;
+		$rows        = isset( $field['rows'] ) ? $field['rows'] : 10;
+		$cols        = isset( $field['cols'] ) ? $field['cols'] : 50;
 		$after_field = isset( $field['after_field'] ) ? $field['after_field'] : null;
 		$default     = isset( $field['default'] ) ? $field['default'] : null;
 		$title       = isset( $field['title'] ) ? $field['title'] : null;
@@ -472,6 +474,20 @@ class WP_Stream_Settings {
 					esc_attr( $class ),
 					esc_attr( $placeholder ),
 					esc_attr( $current_value ),
+					$after_field // xss ok
+				);
+				break;
+			case 'textarea':
+				$output = sprintf(
+					'<textarea name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s" class="%4$s" placeholder="%5$s" rows="%6$d" cols="%7$d">%8$s</textarea> %9$s',
+					esc_attr( $option_key ),
+					esc_attr( $section ),
+					esc_attr( $name ),
+					esc_attr( $class ),
+					esc_attr( $placeholder ),
+					absint( $rows ),
+					absint( $cols ),
+					esc_textarea( $current_value ),
 					$after_field // xss ok
 				);
 				break;
