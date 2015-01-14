@@ -1,4 +1,4 @@
-/* globals confirm, wp_stream, ajaxurl */
+/* globals confirm, wp_stream, ajaxurl, wp_stream_regenerate_alt_rows */
 jQuery( function( $ ) {
 
 	var initSettingsSelect2 = function() {
@@ -232,9 +232,6 @@ jQuery( function( $ ) {
 
 			$thisRow.remove();
 
-			$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
-			$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
-
 			recalculate_rules_found();
 		});
 
@@ -251,15 +248,21 @@ jQuery( function( $ ) {
 		var $lastRow = $( 'tr', $excludeList ).last(),
 			$newRow  = $lastRow.clone();
 
-		$newRow.toggleClass( 'alternate' ).removeAttr( 'class' );
+		$newRow.removeAttr( 'class' );
 		$( '.stream-exclude-list tbody :input' ).off();
 		$( ':input', $newRow ).off().val( '' );
 
 		$lastRow.after( $newRow );
+
 		initSettingsSelect2();
 
 		recalculate_rules_found();
 	});
+
+	if ( 0 === $( 'table.stream-exclude-list tbody tr:not( .hidden )' ).length ) {
+		$( '.check-column.manage-column .cb-select' ).prop( 'disabled', true );
+		$( '#exclude_rules_remove_rules' ).prop( 'disabled', true );
+	}
 
 	$( '#exclude_rules_remove_rules' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' ),
@@ -267,8 +270,6 @@ jQuery( function( $ ) {
 
 		if ( ( $( 'tbody tr', $excludeList ).length - selectedRows.length ) >= 2 ) {
 			selectedRows.remove();
-			$( 'tbody tr', $excludeList ).removeClass( 'alternate' );
-			$( 'tbody tr:even', $excludeList ).addClass( 'alternate' );
 		} else {
 			$( ':input', selectedRows ).val( '' );
 			$( selectedRows ).not( ':first' ).remove();
@@ -293,13 +294,21 @@ jQuery( function( $ ) {
 
 	function recalculate_rules_found() {
 		var $allRows      = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
-			$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' );
+			$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' ),
+			$selectAll    = $( '.check-column.manage-column .cb-select' ),
+			$deleteButton = $( '#exclude_rules_remove_rules' );
 
 		if ( 0 === $allRows.length ) {
 			$noRulesFound.show();
+			$selectAll.prop( 'disabled', true );
+			$deleteButton.prop( 'disabled', true );
 		} else {
 			$noRulesFound.hide();
+			$selectAll.prop( 'disabled', false );
+			$deleteButton.prop( 'disabled', false );
 		}
+
+		wp_stream_regenerate_alt_rows( $allRows );
 	}
 
 	$( document ).ready( function() {
