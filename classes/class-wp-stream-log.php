@@ -64,7 +64,7 @@ class WP_Stream_Log {
 			$object_id = 0;
 		}
 
-		$wp_cron_tracking = isset( WP_Stream_Settings::$options['general_wp_cron_tracking'] ) ? WP_Stream_Settings::$options['general_wp_cron_tracking'] : false;
+		$wp_cron_tracking = isset( WP_Stream_Settings::$options['advanced_wp_cron_tracking'] ) ? WP_Stream_Settings::$options['advanced_wp_cron_tracking'] : false;
 		$agent            = WP_Stream_Author::get_current_agent();
 
 		// WP cron tracking requires opt-in
