@@ -602,7 +602,7 @@ class WP_Stream_Admin {
 
 				$unread_records = wp_stream_query( $args );
 
-				$count = count( $unread_records );
+				$count = ! empty( $unread_records ) ? count( $unread_records ) : 0;
 			}
 
 			set_transient( $cache_key, $count, 5 * 60 ); // TTL 5 min
