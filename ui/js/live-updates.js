@@ -94,7 +94,7 @@ jQuery( function( $ ) {
 			$( list_sel ).parent().trigger( 'updated' );
 
 			// Regenerate alternating row classes
-			wp_stream_regenerate_alt_rows( $( list_sel + 'tr' ) );
+			wp_stream_regenerate_alt_rows( $( list_sel + ' tr' ) );
 
 			// Remove background after a certain amount of time
 			setTimeout( function() {
