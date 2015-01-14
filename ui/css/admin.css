@@ -240,6 +240,11 @@
 	background-color: transparent;
 }
 
+.toplevel_page_wp_stream .new-row.alternate.fadeout,
+#dashboard_stream_activity .new-row.alternate.fadeout {
+	background-color: #f9f9f9;
+}
+
 .toplevel_page_wp_stream #the-list .no-items .stream-list-table-upgrade {
 	text-align: center;
 }
