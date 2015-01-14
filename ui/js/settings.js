@@ -227,15 +227,16 @@ jQuery( function( $ ) {
 		});
 
 		$( '.stream-exclude-list tr:not(.hidden) .exclude_rules_remove_rule_row' ).on( 'click', function() {
-			var $excludeList = $( 'table.stream-exclude-list' ),
-				$thisRow     = $( this ).closest( 'tr' );
+			var $thisRow = $( this ).closest( 'tr' );
 
 			$thisRow.remove();
 
 			recalculate_rules_found();
+			recalculate_rules_selected();
 		});
 
 	};
+
 	initSettingsSelect2();
 
 	$( '#exclude_rules_new_rule' ).on( 'click', function() {
@@ -257,12 +258,8 @@ jQuery( function( $ ) {
 		initSettingsSelect2();
 
 		recalculate_rules_found();
+		recalculate_rules_selected();
 	});
-
-	if ( 0 === $( 'table.stream-exclude-list tbody tr:not( .hidden )' ).length ) {
-		$( '.check-column.manage-column .cb-select' ).prop( 'disabled', true );
-		$( '#exclude_rules_remove_rules' ).prop( 'disabled', true );
-	}
 
 	$( '#exclude_rules_remove_rules' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' ),
@@ -279,6 +276,7 @@ jQuery( function( $ ) {
 		$excludeList.find( 'input.cb-select' ).prop( 'checked', false );
 
 		recalculate_rules_found();
+		recalculate_rules_selected();
 	});
 
 	$( '.stream-exclude-list' ).closest( 'form' ).submit( function() {
@@ -292,10 +290,25 @@ jQuery( function( $ ) {
 
 	$( '.stream-exclude-list' ).closest( 'td' ).prev( 'th' ).hide();
 
+	$( 'table.stream-exclude-list' ).on( 'click', 'input.cb-select', function() {
+		recalculate_rules_selected();
+	});
+
+	function recalculate_rules_selected() {
+		var $selectedRows = $( 'table.stream-exclude-list tbody tr:not( .hidden ) input.cb-select:checked' ),
+			$deleteButton = $( '#exclude_rules_remove_rules' );
+
+		if ( 0 === $selectedRows.length ) {
+			$deleteButton.prop( 'disabled', true );
+		} else {
+			$deleteButton.prop( 'disabled', false );
+		}
+	}
+
 	function recalculate_rules_found() {
 		var $allRows      = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
 			$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' ),
-			$selectAll    = $( '.check-column.manage-column .cb-select' ),
+			$selectAll    = $( '.check-column.manage-column input.cb-select' ),
 			$deleteButton = $( '#exclude_rules_remove_rules' );
 
 		if ( 0 === $allRows.length ) {
@@ -305,7 +318,6 @@ jQuery( function( $ ) {
 		} else {
 			$noRulesFound.hide();
 			$selectAll.prop( 'disabled', false );
-			$deleteButton.prop( 'disabled', false );
 		}
 
 		wp_stream_regenerate_alt_rows( $allRows );
@@ -313,6 +325,7 @@ jQuery( function( $ ) {
 
 	$( document ).ready( function() {
 		recalculate_rules_found();
+		recalculate_rules_selected();
 	});
 
 	// Confirmation on some important actions
