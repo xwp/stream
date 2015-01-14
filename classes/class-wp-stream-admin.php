@@ -105,8 +105,8 @@ class WP_Stream_Admin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_menu_css' ) );
 
-		// Catch list table DB queries
-		add_filter( 'wp_stream_db_query', array( __CLASS__, 'list_table_db_query' ), 10, 1 );
+		// Catch list table results
+		add_filter( 'wp_stream_query_results', array( __CLASS__, 'mark_as_read' ), 10, 3 );
 
 		// Add user option for enabling unread counts
 		add_action( 'show_user_profile', array( __CLASS__, 'unread_count_user_option' ) );
@@ -602,11 +602,6 @@ class WP_Stream_Admin {
 
 				$unread_records = wp_stream_query( $args );
 
-				// The filter for 'gt' behaves like 'gte' for some strange reason, so always remove the first result
-				if ( isset( $unread_records[0] ) ) {
-					unset( $unread_records[0] );
-				}
-
 				$count = count( $unread_records );
 			}
 
@@ -617,47 +612,36 @@ class WP_Stream_Admin {
 	}
 
 	/**
-	 * Fire method to mark records as read when current user visits Records screen
+	 * Mark records as read based on Records screen results
 	 *
-	 * @filter wp_stream_db_query
+	 * @filter wp_stream_query_results
 	 *
+	 * @param array $results
 	 * @param array $query
+	 * @param array $fields
 	 *
-	 * @return void
+	 * @return array
 	 */
-	public static function list_table_db_query( $query ) {
+	public static function mark_as_read( $results, $query, $fields ) {
+		if ( ! is_admin() ) {
+			return $results;
+		}
+
 		$screen        = get_current_screen();
 		$is_list_table = ( isset( $screen->id ) && sprintf( 'toplevel_page_%s', self::RECORDS_PAGE_SLUG ) === $screen->id );
 		$is_first_page = empty( $query['from'] );
 		$is_date_desc  = ( isset( $query['sort'][0]['created']['order'] ) && 'desc' === $query['sort'][0]['created']['order'] );
 
 		if ( $is_list_table && $is_first_page && $is_date_desc ) {
-			add_filter( 'wp_stream_query_results', array( __CLASS__, 'mark_as_read' ), 10, 1 );
+			$user_id   = get_current_user_id();
+			$cache_key = sprintf( '%s_%d', self::UNREAD_COUNT_OPTION_KEY, $user_id );
+
+			if ( self::unread_enabled_for_user() && isset( $results[0]->created ) ) {
+				update_user_meta( $user_id, self::LAST_READ_OPTION_KEY, date( 'c', strtotime( $results[0]->created ) ) );
+			}
+
+			set_transient( $cache_key, 0 ); // No expiration
 		}
-
-		return $query;
-	}
-
-	/**
-	 * Mark records as read based on Records screen results
-	 *
-	 * @filter wp_stream_query_results
-	 *
-	 * @param array $results
-	 *
-	 * @return void
-	 */
-	public static function mark_as_read( $results ) {
-		$user_id   = get_current_user_id();
-		$cache_key = sprintf( '%s_%d', self::UNREAD_COUNT_OPTION_KEY, $user_id );
-
-		if ( self::unread_enabled_for_user() && isset( $results[0]->created ) ) {
-			update_user_meta( $user_id, self::LAST_READ_OPTION_KEY, $results[0]->created );
-		}
-
-		remove_filter( 'wp_stream_query_results', array( __CLASS__, 'mark_as_read' ) );
-
-		set_transient( $cache_key, 0 ); // No expiration
 
 		return $results;
 	}
@@ -670,7 +654,7 @@ class WP_Stream_Admin {
 	 *
 	 * @param WP_User $user
 	 *
-	 * @return string
+	 * @return void
 	 */
 	public static function unread_count_user_option( $user ) {
 		if ( ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {

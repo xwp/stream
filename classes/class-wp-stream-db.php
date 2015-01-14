@@ -106,11 +106,13 @@ class WP_Stream_DB {
 		/**
 		 * Allows developers to change the final result set of records
 		 *
-		 * @param array $results Query result
+		 * @param array $results
+		 * @param array $query
+		 * @param array $fields
 		 *
-		 * @return array Filtered array of records
+		 * @return array Filtered array of record results
 		 */
-		return apply_filters( 'wp_stream_query_results', $results );
+		return apply_filters( 'wp_stream_query_results', $results, $query, $fields );
 	}
 
 	/**
