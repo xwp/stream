@@ -10,8 +10,12 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	/**
 	 * Query subcommand to retreive a list of activity records
 	 *
-	 * You may use any associative argument available in the
-	 * WP_Stream_Query object.
+	 * You may use any associative argument(s) available in the
+	 * WP_Stream_Query::instance()->query() method.
+	 *
+	 * Examples:
+	 * wp stream query --author_role__not_in=administrator --date_after=2015-01-01T12:00:00
+	 * wp stream query --author=1 --action=login --records_per_page=50 --fields=created
 	 *
 	 * @see WP_Stream_Query
 	 * @subcommand query
