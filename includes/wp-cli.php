@@ -43,10 +43,8 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 
 				$longest = max( array_map( 'strlen', $values ) );
 				$value   = is_array( $record->$field ) ? implode( ', ', $record->$field ) : $record->$field;
-
 				$output .= $value;
-
-				$diff = absint( $longest - strlen( $value ) );
+				$diff    = absint( $longest - strlen( $value ) );
 
 				for ( $i = 0;  $i < $diff; $i++ ) {
 					$output .= ' ';
@@ -55,9 +53,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 				$output .= '   ';
 			}
 
-			$output = trim( $output );
-
-			WP_CLI::line( $output );
+			WP_CLI::line( trim( $output ) );
 		}
 
 		$found   = count( $records );
