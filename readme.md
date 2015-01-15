@@ -116,6 +116,22 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 2.0.2 - January 15, 2015 ###
+* New: Full record backtrace now available to developers for debugging ([#467](https://github.com/wp-stream/stream/issues/467))
+* New: Unread count badge added to Stream menu, opt-out available in User Profile ([#588](https://github.com/wp-stream/stream/issues/588))
+* New: Stream connector to track Stream-specific contexts and actions ([#622](https://github.com/wp-stream/stream/issues/622))
+* Tweak: Inherit role access from Stream Settings for Notifications and Reports ([#641](https://github.com/wp-stream/stream/issues/641))
+* Tweak: Opt-in required for Akismet tracking ([#649](https://github.com/wp-stream/stream/issues/649))
+* Tweak: Ignore comments deleted when deleting parent post ([#652](https://github.com/wp-stream/stream/issues/652))
+* Tweak: Opt-in required for comment flood tracking ([#656](https://github.com/wp-stream/stream/issues/656))
+* Tweak: Opt-in required for WP Cron tracking ([#673](https://github.com/wp-stream/stream/issues/673))
+* Fix: Post revision action link pointing to wrong revision ID ([#585](https://github.com/wp-stream/stream/issues/585))
+* Fix: PHP warnings caused by Menu connector ([#663](https://github.com/wp-stream/stream/issues/663))
+* Fix: Non-static method called statically in WPSEO connector ([#668](https://github.com/wp-stream/stream/issues/668))
+* Fix: Prevent live updates from tampering with filtered results ([#675](https://github.com/wp-stream/stream/issues/675))
+
+Props [@fjarrett](https://github.com/fjarrett), [@lukecarbis](https://github.com/lukecarbis), [@shadyvb](https://github.com/shadyvb), [@jonathanbardo](https://github.com/jonathanbardo), [@westonruter](https://github.com/westonruter)
+
 ### 2.0.1 - September 30, 2014 ###
 * Tweak: Improved localisation strings throughout the plugin ([#644](https://github.com/wp-stream/stream/pull/644))
 * Tweak: Improved tooltip text explaining WP.com sign in
