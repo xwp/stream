@@ -149,13 +149,13 @@ class WP_Stream_Query {
 		}
 
 		if ( $args['record__in'] && is_array( $args['record__in'] ) ) {
-			$values = is_array( $args[ 'record__in' ] ) ? $args[ 'record__in' ] : array_map( 'trim', explode( ',', $args[ 'record__in' ] ) );
+			$values = is_array( $args['record__in'] ) ? $args['record__in'] : array_map( 'trim', explode( ',', $args['record__in'] ) );
 
 			$filters[]['ids']['values'] = $values;
 		}
 
 		if ( $args['record__not_in'] && is_array( $args['record__not_in'] ) ) {
-			$values = is_array( $args[ 'record__not_in' ] ) ? $args[ 'record__not_in' ] : array_map( 'trim', explode( ',', $args[ 'record__not_in' ] ) );
+			$values = is_array( $args['record__not_in'] ) ? $args['record__not_in'] : array_map( 'trim', explode( ',', $args['record__not_in'] ) );
 
 			$filters[]['not']['ids']['values'] = $values;
 		}
