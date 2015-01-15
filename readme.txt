@@ -92,8 +92,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 1. Every logged-in user action is logged in the activity stream and organized for easy filtering and searching.
 2. Enable live updates in Screen Options to watch your site activity flow into the Stream in real-time.
-3. Control which user roles have their activity tracked and which user roles can access Stream.
-4. Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
+3. Build notification rules to be alerted when important changes are made on your site.
+4. Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.
+5. Create rules for excluding certain kinds of records from appearing in Stream.
 
 == Changelog ==
 

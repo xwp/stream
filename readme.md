@@ -102,13 +102,17 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ![Enable live updates in Screen Options to watch your site activity flow into the Stream in real-time.](assets/screenshot-2.png)
 
-### Control which user roles have their activity tracked and which user roles can access Stream.
+### Build notification rules to be alerted when important changes are made on your site.
 
-![Control which user roles have their activity tracked and which user roles can access Stream.](assets/screenshot-3.png)
+![Build notification rules to be alerted when important changes are made on your site.](assets/screenshot-3.png)
 
-### Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.
+### Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.
 
-![Enable private feed access for your activity Stream, determine how long records should live before being purged, or purge them from the database manually at any time.](assets/screenshot-4.png)
+![Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.](assets/screenshot-4.png)
+
+### Create rules for excluding certain kinds of records from appearing in Stream.
+
+![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-5.png)
 
 ## Changelog ##
 
