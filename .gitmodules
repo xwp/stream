@@ -1,3 +1,15 @@
 [submodule "dev-lib"]
 	path = dev-lib
 	url = https://github.com/xwp/wp-dev-lib.git
+[submodule "ui/lib/select2"]
+	path = ui/lib/select2
+	url = https://github.com/select2/select2.git
+[submodule "ui/lib/timeago"]
+	path = ui/lib/timeago
+	url = https://github.com/rmm5t/jquery-timeago.git
+[submodule "extensions/reports/ui/lib/d3"]
+	path = extensions/reports/ui/lib/d3
+	url = https://github.com/mbostock/d3.git
+[submodule "extensions/reports/ui/lib/nvd3"]
+	path = extensions/reports/ui/lib/nvd3
+	url = https://github.com/novus/nvd3.git
