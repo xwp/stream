@@ -149,11 +149,15 @@ class WP_Stream_Query {
 		}
 
 		if ( $args['record__in'] && is_array( $args['record__in'] ) ) {
-			$filters[]['ids']['values'] = $args['record__in'];
+			$values = is_array( $args[ 'record__in' ] ) ? $args[ 'record__in' ] : array_map( 'trim', explode( ',', $args[ 'record__in' ] ) );
+
+			$filters[]['ids']['values'] = $values;
 		}
 
 		if ( $args['record__not_in'] && is_array( $args['record__not_in'] ) ) {
-			$filters[]['not']['ids']['values'] = $args['record__not_in'];
+			$values = is_array( $args[ 'record__not_in' ] ) ? $args[ 'record__not_in' ] : array_map( 'trim', explode( ',', $args[ 'record__not_in' ] ) );
+
+			$filters[]['not']['ids']['values'] = $values;
 		}
 
 		// PARSE PROPERTIES
@@ -162,17 +166,19 @@ class WP_Stream_Query {
 				$filters[]['term'][ $property ] = $args[ $property ];
 			}
 
-			if ( $args[ "{$property}__in" ] && is_array( $args[ "{$property}__in" ] ) ) {
+			if ( $args[ "{$property}__in" ] ) {
+				$values      = is_array( $args[ "{$property}__in" ] ) ? $args[ "{$property}__in" ] : array_map( 'trim', explode( ',', $args[ "{$property}__in" ] ) );
 				$property_in = array();
-				foreach ( $args[ "{$property}__in" ] as $value ) {
+				foreach ( $values as $value ) {
 					$property_in[]['term'][ $property ] = $value;
 				}
 				$filters[]['or'] = $property_in;
 			}
 
-			if ( $args[ "{$property}__not_in" ] && is_array( $args[ "{$property}__not_in" ] ) ) {
+			if ( $args[ "{$property}__not_in" ] ) {
+				$values          = is_array( $args[ "{$property}__not_in" ] ) ? $args[ "{$property}__not_in" ] : array_map( 'trim', explode( ',', $args[ "{$property}__not_in" ] ) );
 				$property_not_in = array();
-				foreach ( $args[ "{$property}__not_in" ] as $value ) {
+				foreach ( $values as $value ) {
 					$property_not_in[]['not']['term'][ $property ] = $value;
 				}
 				$filters[]['or'] = $property_not_in;
