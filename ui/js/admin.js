@@ -2,7 +2,7 @@
 jQuery( function( $ ) {
 
 	// Shorter timeago strings for English locale
-	if ( 'en' === wp_stream.locale ) {
+	if ( 'en' === wp_stream.locale && 'undefined' !== typeof $.timeago ) {
 		$.timeago.settings.strings.seconds = 'seconds';
 		$.timeago.settings.strings.minute  = 'a minute';
 		$.timeago.settings.strings.hour    = 'an hour';
@@ -492,6 +492,7 @@ jQuery( function( $ ) {
 			}
 		});
 	});
+
 });
 
 jQuery.extend({

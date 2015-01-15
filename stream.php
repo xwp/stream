@@ -308,7 +308,7 @@ class WP_Stream {
 	/**
 	 * Show an error or other message in the WP Admin
 	 *
-	 * @action all_admin_notices
+	 * @action shutdown
 	 * @return void
 	 */
 	public static function admin_notices() {
