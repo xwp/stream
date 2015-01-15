@@ -191,24 +191,39 @@ class WP_Stream_Feeds {
 			}
 		}
 
-		$blog_id = get_current_blog_id();
-
 		$args = array(
-			'blog_id'          => $blog_id,
-			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT ),
 			'search'           => wp_stream_filter_input( INPUT_GET, 'search' ),
-			'object_id'        => wp_stream_filter_input( INPUT_GET, 'object_id', FILTER_SANITIZE_NUMBER_INT ),
-			'ip'               => wp_stream_filter_input( INPUT_GET, 'ip', FILTER_VALIDATE_IP ),
-			'author'           => wp_stream_filter_input( INPUT_GET, 'author', FILTER_SANITIZE_NUMBER_INT ),
-			'author_role'      => wp_stream_filter_input( INPUT_GET, 'author_role' ),
+			'record_after'     => wp_stream_filter_input( INPUT_GET, 'record_after' ), // Deprecated, use date_after instead
 			'date'             => wp_stream_filter_input( INPUT_GET, 'date' ),
 			'date_from'        => wp_stream_filter_input( INPUT_GET, 'date_from' ),
 			'date_to'          => wp_stream_filter_input( INPUT_GET, 'date_to' ),
+			'date_after'       => wp_stream_filter_input( INPUT_GET, 'date_after' ),
+			'date_before'      => wp_stream_filter_input( INPUT_GET, 'date_before' ),
+			'record'           => wp_stream_filter_input( INPUT_GET, 'record' ),
 			'record__in'       => wp_stream_filter_input( INPUT_GET, 'record__in' ),
+			'record__not_in'   => wp_stream_filter_input( INPUT_GET, 'record__not_in' ),
+			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT ),
 			'order'            => wp_stream_filter_input( INPUT_GET, 'order' ),
 			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby' ),
+			'meta'             => wp_stream_filter_input( INPUT_GET, 'meta' ),
 			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields' ),
 		);
+
+		$properties = array(
+			'author',
+			'author_role',
+			'ip',
+			'object_id',
+			'connector',
+			'context',
+			'action',
+		);
+
+		foreach ( $properties as $property ) {
+			$args[ $property ]             = wp_stream_filter_input( INPUT_GET, $property );
+			$args[ "{$property}__in" ]     = wp_stream_filter_input( INPUT_GET, "{$property}__in" );
+			$args[ "{$property}__not_in" ] = wp_stream_filter_input( INPUT_GET, "{$property}__not_in" );
+		}
 
 		$records = wp_stream_query( $args );
 
