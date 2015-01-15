@@ -17,6 +17,10 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 			$query_args[ $key ] = $value;
 		}
 
+		if ( empty( $query_args['fields'] ) ) {
+			$query_args['fields'] = 'created,ip,author_meta.user_login,author_role,summary';
+		}
+
 		$records = wp_stream_query( $query_args );
 
 		if ( empty( $records ) ) {
@@ -25,18 +29,30 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 			return;
 		}
 
-		foreach ( $records as $record ) {
-			if ( ! empty( $assoc_args['fields'] ) ) {
-				$fields = array_map( 'trim', explode( ',', $assoc_args['fields'] ) );
-				$output = '';
+		$fields = array_map( 'trim', explode( ',', $query_args['fields'] ) );
 
-				foreach ( $fields as $field ) {
-					$output .= isset( $record->$field ) ? is_array( $record->$field ) ? implode( ', ', $record->$field ) : $record->$field : null;
-					$output .= '   ';
+		foreach ( $records as $record ) {
+			$output   = '';
+
+			foreach ( $fields as $field ) {
+				$values  = wp_list_pluck( $records, $field );
+
+				array_walk( $values, function( &$value ) {
+					$value = is_array( $value ) ? implode( ', ', $value ) : $value;
+				});
+
+				$longest = max( array_map( 'strlen', $values ) );
+				$value   = is_array( $record->$field ) ? implode( ', ', $record->$field ) : $record->$field;
+
+				$output .= $value;
+
+				$diff = absint( $longest - strlen( $value ) );
+
+				for ( $i = 0;  $i < $diff; $i++ ) {
+					$output .= ' ';
 				}
-			} else {
-				$author = new WP_Stream_Author( (int) $record->author, (array) $record->author_meta );
-				$output = sprintf( '%s   %s   %s (%d)   %s', $record->created, $record->ip, $author->get_display_name(), $record->author, $record->summary );
+
+				$output .= '   ';
 			}
 
 			$output = trim( $output );
@@ -44,8 +60,8 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 			WP_CLI::line( $output );
 		}
 
-		$total   = count( $records );
-		$message = sprintf( _n( '1 result found.', '%s results found.', $total, 'stream' ), $total );
+		$found   = count( $records );
+		$message = sprintf( _n( '1 result found.', '%s results found.', $found, 'stream' ), number_format( $found ) );
 
 		WP_CLI::success( $message );
 	}
