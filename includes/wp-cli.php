@@ -18,7 +18,16 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		}
 
 		if ( empty( $query_args['fields'] ) ) {
-			$query_args['fields'] = 'created,ip,author_meta.user_login,author_role,summary';
+			$defaults = array( 'created', 'ip', 'author_meta.user_login', 'author_role', 'summary' );
+
+			/**
+			 * Filter for default fields when arg is not provided
+			 *
+			 * @return array $defaults
+			 */
+			$defaults = apply_filters( 'wp_stream_wp_cli_default_fields', (array) $defaults );
+
+			$query_args['fields'] = implode( ',', array_map( 'trim', $defaults ) );
 		}
 
 		$records = wp_stream_query( $query_args );
