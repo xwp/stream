@@ -8,9 +8,16 @@
 class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 
 	/**
-	 * @subcommand log
+	 * Query subcommand to retreive a list of activity records
+	 *
+	 * You may use any associative argument available in the
+	 * WP_Stream_Query object.
+	 *
+	 * @see WP_Stream_Query
+	 * @subcommand query
+	 * @synopsis [--arg=<key>]
 	 */
-	public function log( $args, $assoc_args ) {
+	public function query( $args, $assoc_args ) {
 		$query_args = array();
 
 		foreach ( $assoc_args as $key => $value ) {
