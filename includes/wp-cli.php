@@ -28,7 +28,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		}
 
 		if ( empty( $query_args['fields'] ) ) {
-			$defaults = array( 'created', 'ip', 'author_meta.user_login', 'author_role', 'summary' );
+			$defaults = array( 'created', 'ip', 'author', 'author_meta.user_login', 'author_role', 'summary' );
 
 			/**
 			 * Filter for default fields when arg is not provided
