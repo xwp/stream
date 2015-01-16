@@ -51,13 +51,13 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		$fields = array_map( 'trim', explode( ',', $query_args['fields'] ) );
 
 		foreach ( $records as $record ) {
-			$output   = '';
+			$output = '';
 
 			foreach ( $fields as $field ) {
-				$values  = wp_list_pluck( $records, $field );
+				$values = wp_list_pluck( $records, $field );
 
 				array_walk( $values, function( &$value ) {
-					$value = is_array( $value ) ? implode( ', ', $value ) : $value;
+					$value = is_array( $value ) ? $value[0] : $value;
 				});
 
 				$longest = max( array_map( 'strlen', $values ) );
@@ -65,7 +65,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 				$output .= $value;
 				$diff    = absint( $longest - strlen( $value ) );
 
-				for ( $i = 0;  $i < $diff; $i++ ) {
+				for ( $i = 0; $i < $diff; $i++ ) {
 					$output .= ' ';
 				}
 
