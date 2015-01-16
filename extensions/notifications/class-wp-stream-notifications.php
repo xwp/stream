@@ -75,7 +75,7 @@ class WP_Stream_Notifications {
 			return;
 		}
 
-		add_action( 'plugins_loaded', array( $this, 'load' ) );
+		add_action( 'init', array( $this, 'load' ) );
 
 		// Register post type
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-post-type.php';
