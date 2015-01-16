@@ -19,7 +19,6 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	 *
 	 * @see WP_Stream_Query
 	 * @subcommand query
-	 * @synopsis [--arg=<key>]
 	 */
 	public function query( $args, $assoc_args ) {
 		$query_args = array();
