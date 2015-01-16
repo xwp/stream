@@ -21,7 +21,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	 * @subcommand query
 	 */
 	public function query( $args, $assoc_args ) {
-		self::is_connected();
+		self::connection();
 
 		$start      = microtime( true );
 		$query_args = array();
@@ -90,7 +90,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	 * @subcommand account
 	 */
 	public function account() {
-		self::is_connected();
+		self::connection();
 
 		$site       = WP_Stream::$api->get_site();
 		$plan       = isset( $site->plan->type ) ? $site->plan->type : 'unknown';
@@ -141,11 +141,11 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Does a small query to see if records are retrievable
+	 * Checks for a Stream connection and displays an error or success message
 	 *
-	 * @return bool
+	 * @return void
 	 */
-	private static function is_connected() {
+	private static function connection() {
 		WP_CLI::line( __( 'Establishing secure connection with Stream...', 'stream' ) );
 
 		$query = wp_stream_query( array( 'records_per_page' => 1, 'fields' => 'created' ) );
