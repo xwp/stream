@@ -144,7 +144,18 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 		add_filter( 'wp_stream_log_data', array( __CLASS__, 'log_override' ) );
 	}
 
-	public static function log_override( array $data ) {
+	/**
+	 * Override connector log for our own Settings / Actions
+	 *
+	 * @param array $data
+	 *
+	 * @return array|bool
+	 */
+	public static function log_override( $data ) {
+		if ( ! is_array( $data ) ) {
+			return $data;
+		}
+
 		if ( 'settings' === $data['connector'] && 'bbpress' === $data['args']['context'] ) {
 			$settings = bbp_admin_get_settings_fields();
 

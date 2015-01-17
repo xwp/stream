@@ -312,7 +312,11 @@ class WP_Stream_Connector_EDD extends WP_Stream_Connector {
 	 *
 	 * @return array|bool
 	 */
-	public static function log_override( array $data ) {
+	public static function log_override( $data ) {
+		if ( ! is_array( $data ) ) {
+			return $data;
+		}
+
 		if ( 'posts' === $data['connector'] && 'download' === $data['context'] ) {
 			// Download posts operations
 			$data['context']  = 'downloads';
