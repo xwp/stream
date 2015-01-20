@@ -134,15 +134,11 @@ class WP_Stream {
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
 
 		if ( is_admin() ) {
-			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
-
-			add_action( 'plugins_loaded', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
-
-			add_action( 'plugins_loaded', array( 'WP_Stream_Live_Update', 'load' ) );
-
-			add_action( 'plugins_loaded', array( 'WP_Stream_Pointers', 'load' ) );
-
-			add_action( 'plugins_loaded', array( 'WP_Stream_Migrate', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Admin', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Live_Update', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Pointers', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Migrate', 'load' ) );
 		}
 	}
 

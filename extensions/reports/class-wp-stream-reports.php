@@ -54,7 +54,7 @@ class WP_Stream_Reports {
 			return;
 		}
 
-		add_action( 'plugins_loaded', array( $this, 'load' ) );
+		add_action( 'init', array( $this, 'load' ) );
 	}
 
 	/**
