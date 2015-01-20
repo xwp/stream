@@ -325,6 +325,18 @@ class WP_Stream_API {
 		}
 
 		if ( ! is_wp_error( $request ) ) {
+			/**
+			 * Filter the request data of the API response.
+			 *
+			 * Does not fire on non-blocking requests.
+			 *
+			 * @since 2.0.0
+			 *
+			 * @param string $url
+			 * @param array  $args
+			 *
+			 * @return array
+			 */
 			$data = apply_filters( 'wp_stream_api_request_data', json_decode( $request['body'] ), $url, $args );
 
 			// Loose comparison needed

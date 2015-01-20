@@ -41,7 +41,7 @@ class WP_Stream_DB {
 		/**
 		 * Allows modification of record information just before logging occurs.
 		 *
-		 * @since 0.0.2
+		 * @since 0.2.0
 		 *
 		 * @param  array $records An array of record data.
 		 */
@@ -57,8 +57,11 @@ class WP_Stream_DB {
 		$result = $this->insert( $records );
 
 		if ( $result && ! is_wp_error( $result ) ) {
+
 			/**
 			 * Fires when A Post is inserted
+			 *
+			 * @since 2.0.0
 			 *
 			 * @param  int    $record_id  Inserted record ID
 			 * @param  array  $recordarr  Array of information on this record
@@ -105,6 +108,8 @@ class WP_Stream_DB {
 
 		/**
 		 * Allows developers to change the final result set of records
+		 *
+		 * @since 2.0.0
 		 *
 		 * @param array $results
 		 * @param array $query

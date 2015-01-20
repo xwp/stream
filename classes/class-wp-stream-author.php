@@ -223,6 +223,13 @@ class WP_Stream_Author {
 			$agent = 'wp_cron';
 		}
 
+		/**
+		 * Filter the current agent string
+		 *
+		 * @since 1.4.4
+		 *
+		 * @return string
+		 */
 		$agent = apply_filters( 'wp_stream_current_agent', $agent );
 
 		return $agent;
@@ -241,6 +248,15 @@ class WP_Stream_Author {
 			$label = '';
 		}
 
+		/**
+		 * Filter agent labels
+		 *
+		 * @since 1.4.4
+		 *
+		 * @param string $agent
+		 *
+		 * @return string
+		 */
 		$label = apply_filters( 'wp_stream_agent_label', $label, $agent );
 
 		return $label;
