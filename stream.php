@@ -140,6 +140,9 @@ class WP_Stream {
 			add_action( 'init', array( 'WP_Stream_Pointers', 'load' ) );
 			add_action( 'init', array( 'WP_Stream_Migrate', 'load' ) );
 		}
+
+		// Disable logging during the content import process
+		add_filter( 'wp_stream_record_array', array( __CLASS__, 'disable_logging_during_import' ), 10, 1 );
 	}
 
 	/**
@@ -272,6 +275,23 @@ class WP_Stream {
 		 * @return bool
 		 */
 		return apply_filters( 'wp_stream_development_mode', $development_mode );
+	}
+
+	/**
+	 * Disable logging during the content import process
+	 *
+	 * @filter wp_stream_record_array
+	 *
+	 * @param array $records
+	 *
+	 * @return array
+	 */
+	public static function disable_logging_during_import( $records ) {
+		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
+			$records = array();
+		}
+
+		return $records;
 	}
 
 	/**

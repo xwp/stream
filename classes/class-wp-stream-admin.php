@@ -430,7 +430,6 @@ class WP_Stream_Admin {
 				'bulk_actions' => array(
 					'i18n' => array(
 						'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
-						'confirm_import' => __( 'The Stream plugin must be deactivated before you can bulk import content into WordPress.', 'stream' ),
 					),
 					'threshold' => absint( $bulk_actions_threshold ),
 				),
