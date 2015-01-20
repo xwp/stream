@@ -288,19 +288,19 @@ class WP_Stream_Settings {
 			array_push( $fields['advanced']['fields'], $akismet_tracking );
 		}
 
-		// Sort option fields in each tab by title ASC
-		foreach ( $fields as $tab => $options ) {
-			$titles = wp_list_pluck( $fields[ $tab ]['fields'], 'title' );
-
-			array_multisort( $titles, SORT_ASC, $fields[ $tab ]['fields'] );
-		}
-
 		/**
 		 * Filter allows for modification of options fields
 		 *
 		 * @return array  Array of option fields
 		 */
 		self::$fields = apply_filters( 'wp_stream_settings_option_fields', $fields );
+
+		// Sort option fields in each tab by title ASC
+		foreach ( self::$fields as $tab => $options ) {
+			$titles = wp_list_pluck( self::$fields[ $tab ]['fields'], 'title' );
+
+			array_multisort( $titles, SORT_ASC, self::$fields[ $tab ]['fields'] );
+		}
 
 		return self::$fields;
 	}
