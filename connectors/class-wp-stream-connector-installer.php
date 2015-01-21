@@ -301,14 +301,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		if (
 			'delete-selected' !== wp_stream_filter_input( INPUT_GET, 'action' )
 			&&
-			'-1' !== wp_stream_filter_input( INPUT_POST, 'action2' )
+			'delete-selected' !== wp_stream_filter_input( INPUT_POST, 'action2' )
 		) {
 			return false;
 		}
 
-		$type    = isset( $_POST['action2'] ) ? INPUT_POST : INPUT_GET;
-		$plugins = wp_stream_filter_input( $type, 'checked' );
-
+		$type     = isset( $_POST['action2'] ) ? INPUT_POST : INPUT_GET;
+		$plugins  = wp_stream_filter_input( $type, 'checked' );
 		$_plugins = self::get_plugins();
 
 		foreach ( (array) $plugins as $plugin ) {
@@ -325,7 +324,11 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @todo This does not work in WP-CLI
 	 */
 	public static function callback_pre_set_site_transient_update_plugins( $value ) {
-		if ( ! wp_stream_filter_input( INPUT_POST, 'verify-delete' ) || ! ( $plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' ) ) ) {
+		if (
+			! wp_stream_filter_input( INPUT_POST, 'verify-delete' )
+			||
+			! ( $plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' ) )
+		) {
 			return $value;
 		}
 
