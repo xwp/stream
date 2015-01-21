@@ -768,7 +768,8 @@ class WP_Stream_Admin {
 			admin_url( self::ADMIN_PARENT_PAGE )
 		);
 
-		wp_redirect( $redirect_url );
+		wp_safe_redirect( $redirect_url );
+
 		exit;
 	}
 
@@ -792,7 +793,8 @@ class WP_Stream_Admin {
 			admin_url( self::ADMIN_PARENT_PAGE )
 		);
 
-		wp_redirect( $redirect_url );
+		wp_safe_redirect( $redirect_url );
+
 		exit;
 	}
 
@@ -1090,7 +1092,8 @@ class WP_Stream_Admin {
 
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			self::reset_stream_settings();
-			wp_redirect(
+
+			wp_safe_redirect(
 				add_query_arg(
 					array(
 						'page'    => 'wp_stream_settings',
@@ -1099,6 +1102,7 @@ class WP_Stream_Admin {
 					admin_url( self::ADMIN_PARENT_PAGE )
 				)
 			);
+
 			exit;
 		} else {
 			wp_die( "You don't have sufficient privileges to do this action." );

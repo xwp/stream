@@ -213,12 +213,13 @@ class WP_Stream_Reports_Settings {
 		$is_saved = self::update_user_option( $key, $option );
 
 		if ( $is_saved ) {
-			wp_redirect(
+			wp_safe_redirect(
 				add_query_arg(
 					array( 'page' => WP_Stream_Reports::REPORTS_PAGE_SLUG ),
 					self_admin_url( 'admin.php' )
 				)
 			);
+
 			exit;
 		} else {
 			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream' ) );
