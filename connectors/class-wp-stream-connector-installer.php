@@ -298,15 +298,20 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @todo This does not work in WP-CLI
 	 */
 	public static function callback_pre_option_uninstall_plugins() {
-		global $plugins;
-
-		if ( 'delete-selected' !== wp_stream_filter_input( INPUT_GET, 'action' ) && 'delete-selected' !== wp_stream_filter_input( INPUT_POST, 'action2' ) ) {
+		if (
+			'delete-selected' !== wp_stream_filter_input( INPUT_GET, 'action' )
+			&&
+			'-1' !== wp_stream_filter_input( INPUT_POST, 'action2' )
+		) {
 			return false;
 		}
 
+		$type    = isset( $_POST['action2'] ) ? INPUT_POST : INPUT_GET;
+		$plugins = wp_stream_filter_input( $type, 'checked' );
+
 		$_plugins = self::get_plugins();
 
-		foreach ( $plugins as $plugin ) {
+		foreach ( (array) $plugins as $plugin ) {
 			$plugins_to_delete[ $plugin ] = $_plugins[ $plugin ];
 		}
 
