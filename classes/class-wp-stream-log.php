@@ -195,7 +195,7 @@ class WP_Stream_Log {
 					'context'    => ! empty( $context ) ? $context : null,
 					'action'     => ! empty( $action ) ? $action : null,
 					'ip_address' => ! empty( $ip_address ) ? $ip_address : null,
-					'author'     => is_numeric( $author_or_role ) ? $author_or_role : null,
+					'author'     => is_numeric( $author_or_role ) ? absint( $author_or_role ) : null,
 					'role'       => ( ! empty( $author_or_role ) && ! is_numeric( $author_or_role ) ) ? $author_or_role : null,
 				);
 
