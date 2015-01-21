@@ -1045,24 +1045,6 @@ class WP_Stream_Admin {
 					</div>
 				<?php endif; ?>
 
-				<div class="stream-haiku">
-					<p>
-						<?php echo esc_html( _x( 'A transformation', 'Haiku line 1', 'stream' ) ) ?><br />
-						<?php echo esc_html( _x( 'Like brook, to river, to sea', 'Haiku line 2', 'stream' ) ) ?><br />
-						<?php
-						$love_letter_url = add_query_arg(
-							array(
-								'site-name' => urlencode( get_bloginfo( 'name' ) ),
-							),
-							self::PUBLIC_URL . '/love-letter/'
-						);
-						?>
-						<a href="<?php echo esc_url( $love_letter_url ) ?>" target="_blank">
-							<?php echo esc_html( _x( 'I have a secret', 'Haiku line 3', 'stream' ) ) ?>
-						</a>
-					</p>
-				</div>
-
 			</div>
 
 		</div>
