@@ -259,6 +259,8 @@ class WP_Stream_Notifications_Post_Type {
 	/**
 	 * Save rule meta data
 	 *
+	 * @action save_post
+	 *
 	 * @param int    $post_id
 	 * @param object $post
 	 *
