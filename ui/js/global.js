@@ -24,13 +24,6 @@ jQuery( function( $ ) {
 		}
 	}
 
-	// Content import
-	$( '#import-upload-form :submit' ).on( 'click', function( e ) {
-		e.preventDefault();
-		window.alert( wp_stream_global.bulk_actions.i18n.confirm_import );
-		window.location.href = wp_stream_global.plugins_screen_url;
-	});
-
 });
 
 // Regenerate alternating row classes
