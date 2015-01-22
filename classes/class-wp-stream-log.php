@@ -18,8 +18,9 @@ class WP_Stream_Log {
 		/**
 		 * Filter allows developers to change log handler class
 		 *
-		 * @param  array   Current Class
-		 * @return string  New Class for log handling
+		 * @since 0.2.0
+		 *
+		 * @return string  Class name to use for log handling
 		 */
 		$log_handler = apply_filters( 'wp_stream_log_handler', __CLASS__ );
 
@@ -194,7 +195,7 @@ class WP_Stream_Log {
 					'context'    => ! empty( $context ) ? $context : null,
 					'action'     => ! empty( $action ) ? $action : null,
 					'ip_address' => ! empty( $ip_address ) ? $ip_address : null,
-					'author'     => is_numeric( $author_or_role ) ? $author_or_role : null,
+					'author'     => is_numeric( $author_or_role ) ? absint( $author_or_role ) : null,
 					'role'       => ( ! empty( $author_or_role ) && ! is_numeric( $author_or_role ) ) ? $author_or_role : null,
 				);
 
@@ -235,6 +236,8 @@ class WP_Stream_Log {
 		 * a full debug backtrace of PHP calls for each record. Optionally, you may
 		 * use the available $recordarr parameter to specify what types of records to
 		 * create backtrace logs for.
+		 *
+		 * @since 2.0.2
 		 *
 		 * @param array $recordarr
 		 *

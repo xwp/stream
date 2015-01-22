@@ -46,7 +46,7 @@ class WP_Stream_Query {
 			'paged'                 => 1,
 			// Order
 			'order'                 => 'desc',
-			'orderby'               => isset( $args['search'] ) ? '_score' : 'date',
+			'orderby'               => 'date',
 			// Meta/Taxonomy sub queries
 			'meta'                  => array(),
 			// Data aggregations
@@ -73,6 +73,8 @@ class WP_Stream_Query {
 		/**
 		 * Filter allows additional query properties to be added
 		 *
+		 * @since 2.0.0
+		 *
 		 * @return array  Array of query properties
 		 */
 		$properties = apply_filters( 'wp_stream_query_properties', $properties );
@@ -90,6 +92,8 @@ class WP_Stream_Query {
 
 		/**
 		 * Filter allows additional arguments to query $args
+		 *
+		 * @since 1.4.0
 		 *
 		 * @return array  Array of query arguments
 		 */
@@ -249,12 +253,16 @@ class WP_Stream_Query {
 		/**
 		 * Filter allows the final query args to be modified
 		 *
+		 * @since 2.0.0
+		 *
 		 * @return array  Array of query arguments
 		 */
 		$query = apply_filters( 'wp_stream_db_query', $query );
 
 		/**
 		 * Filter allows the final query fields to be modified
+		 *
+		 * @since 2.0.0
 		 *
 		 * @return array  Array of query fields
 		 */

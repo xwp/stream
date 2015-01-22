@@ -208,7 +208,7 @@ class WP_Stream_Notifications_List_Table {
 				);
 			}
 
-			wp_redirect(
+			wp_safe_redirect(
 				add_query_arg(
 					array(
 						'updated' => count( $ids ),
@@ -218,6 +218,7 @@ class WP_Stream_Notifications_List_Table {
 					)
 				)
 			);
+
 			exit; // Without this, the page displays the weird 'Are you sure you want this?'
 		}
 	}

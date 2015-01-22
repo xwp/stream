@@ -345,7 +345,11 @@ class WP_Stream_Connector_WordPress_SEO extends WP_Stream_Connector {
 	 *
 	 * @return array|bool
 	 */
-	public static function log_override( array $data ) {
+	public static function log_override( $data ) {
+		if ( ! is_array( $data ) ) {
+			return $data;
+		}
+
 		global $pagenow;
 
 		if ( 'options.php' === $pagenow && 'settings' === $data['connector'] && wp_stream_filter_input( INPUT_POST, '_wp_http_referer' ) ) {

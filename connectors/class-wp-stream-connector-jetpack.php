@@ -587,7 +587,11 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 *
 	 * @return array|bool
 	 */
-	public static function log_override( array $data ) {
+	public static function log_override( $data ) {
+		if ( ! is_array( $data ) ) {
+			return $data;
+		}
+
 		// Handling our Settings
 		if ( 'settings' === $data['connector'] && isset( self::$options_override[ $data['args']['option'] ] ) ) {
 			if ( isset( $data['args']['option_key'] ) ) {

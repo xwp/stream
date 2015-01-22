@@ -259,8 +259,10 @@ class WP_Stream_Notifications_Post_Type {
 	/**
 	 * Save rule meta data
 	 *
-	 * @param $post_id
-	 * @param $post
+	 * @action save_post
+	 *
+	 * @param int    $post_id
+	 * @param object $post
 	 *
 	 * @return void
 	 */
@@ -269,10 +271,14 @@ class WP_Stream_Notifications_Post_Type {
 			return;
 		}
 
+		if ( self::POSTTYPE !== $post->post_type ) {
+			return;
+		}
+
 		$defaults = array(
 			'triggers' => array(),
-			'groups' => array(),
-			'alerts' => array(),
+			'groups'   => array(),
+			'alerts'   => array(),
 		);
 
 		$args = wp_parse_args( $_POST, $defaults );

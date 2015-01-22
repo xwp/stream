@@ -110,6 +110,8 @@ class WP_Stream {
 		/**
 		 * Filter allows a custom Stream API class to be instantiated
 		 *
+		 * @since 2.0.2
+		 *
 		 * @return object  The API class object
 		 */
 		self::$api = apply_filters( 'wp_stream_api_class', new WP_Stream_API );
@@ -140,17 +142,17 @@ class WP_Stream {
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
 
+		// Load admin area classes
 		if ( is_admin() ) {
-			add_action( 'plugins_loaded', array( 'WP_Stream_Admin', 'load' ) );
-
-			add_action( 'plugins_loaded', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
-
-			add_action( 'plugins_loaded', array( 'WP_Stream_Live_Update', 'load' ) );
-
-			add_action( 'plugins_loaded', array( 'WP_Stream_Pointers', 'load' ) );
-
-			add_action( 'plugins_loaded', array( 'WP_Stream_Migrate', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Admin', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Live_Update', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Pointers', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Migrate', 'load' ) );
 		}
+
+		// Disable logging during the content import process
+		add_filter( 'wp_stream_record_array', array( __CLASS__, 'disable_logging_during_import' ), 10, 1 );
 
 		// Load WP-CLI command
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -161,8 +163,11 @@ class WP_Stream {
 	}
 
 	/**
-	 * Invoked when the PHP version check fails. Load up the translations and
-	 * add the error message to the admin notices
+	 * Invoked when the PHP version check fails
+	 *
+	 * Load up the translations and add the error message to the admin notices.
+	 *
+	 * @return void
 	 */
 	public static function fail_php_version() {
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -170,7 +175,9 @@ class WP_Stream {
 	}
 
 	/**
+	 * Check for deprecated extension plugins
 	 *
+	 * @return bool
 	 */
 	public static function deprecated_plugins_exist() {
 		foreach ( self::$deprecated_extensions as $class => $dir ) {
@@ -183,7 +190,9 @@ class WP_Stream {
 	}
 
 	/**
+	 * Display admin notices when deprecated extension plugins exist
 	 *
+	 * @return void
 	 */
 	public static function deprecated_plugins_notice() {
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -227,11 +236,12 @@ class WP_Stream {
 	}
 
 	/**
-	* Autoloader for classes
-	*
-	* @param  string $class
-	* @return void
-	*/
+	 * Autoloader for classes
+	 *
+	 * @param string $class
+	 *
+	 * @return void
+	 */
 	function autoload( $class ) {
 		$class      = strtolower( str_replace( '_', '-', $class ) );
 		$class_file = sprintf( '%sclass-%s.php', WP_STREAM_CLASS_DIR, $class );
@@ -244,8 +254,8 @@ class WP_Stream {
 	/**
 	 * Loads the translation files.
 	 *
-	 * @access public
 	 * @action plugins_loaded
+	 *
 	 * @return void
 	 */
 	public static function i18n() {
@@ -287,9 +297,28 @@ class WP_Stream {
 		/**
 		 * Filter allows development mode to be overridden
 		 *
+		 * @since 2.0.0
+		 *
 		 * @return bool
 		 */
 		return apply_filters( 'wp_stream_development_mode', $development_mode );
+	}
+
+	/**
+	 * Disable logging during the content import process
+	 *
+	 * @filter wp_stream_record_array
+	 *
+	 * @param array $records
+	 *
+	 * @return array
+	 */
+	public static function disable_logging_during_import( $records ) {
+		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
+			$records = array();
+		}
+
+		return $records;
 	}
 
 	/**
@@ -297,6 +326,7 @@ class WP_Stream {
 	 *
 	 * @param string $message
 	 * @param bool $is_error
+	 *
 	 * @return void
 	 */
 	public static function notice( $message, $is_error = true ) {
@@ -323,6 +353,7 @@ class WP_Stream {
 	 * Show an error or other message in the WP Admin
 	 *
 	 * @action shutdown
+	 *
 	 * @return void
 	 */
 	public static function admin_notices() {
@@ -354,9 +385,8 @@ class WP_Stream {
 	 * Displays an HTML comment in the frontend head to indicate that Stream is activated,
 	 * and which version of Stream is currently in use.
 	 *
-	 * @since 1.4.5
-	 *
 	 * @action wp_head
+	 *
 	 * @return string|void An HTML comment, or nothing if the value is filtered out.
 	 */
 	public function frontend_indicator() {
@@ -365,6 +395,8 @@ class WP_Stream {
 		/**
 		 * Filter allows the HTML output of the frontend indicator comment
 		 * to be altered or removed, if desired.
+		 *
+		 * @since 1.4.5
 		 *
 		 * @return string  The content of the HTML comment
 		 */

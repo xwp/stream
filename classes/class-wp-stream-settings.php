@@ -288,19 +288,19 @@ class WP_Stream_Settings {
 			array_push( $fields['advanced']['fields'], $akismet_tracking );
 		}
 
-		// Sort option fields in each tab by title ASC
-		foreach ( $fields as $tab => $options ) {
-			$titles = wp_list_pluck( $fields[ $tab ]['fields'], 'title' );
-
-			array_multisort( $titles, SORT_ASC, $fields[ $tab ]['fields'] );
-		}
-
 		/**
 		 * Filter allows for modification of options fields
 		 *
 		 * @return array  Array of option fields
 		 */
 		self::$fields = apply_filters( 'wp_stream_settings_option_fields', $fields );
+
+		// Sort option fields in each tab by title ASC
+		foreach ( self::$fields as $tab => $options ) {
+			$titles = wp_list_pluck( self::$fields[ $tab ]['fields'], 'title' );
+
+			array_multisort( $titles, SORT_ASC, self::$fields[ $tab ]['fields'] );
+		}
 
 		return self::$fields;
 	}
@@ -683,19 +683,23 @@ class WP_Stream_Settings {
 					foreach ( self::get_roles() as $role_id => $role ) {
 						$args  = array( 'id' => $role_id, 'text' => $role );
 						$users = get_users( array( 'role' => $role_id ) );
+
 						if ( count( $users ) ) {
 							$args['user_count'] = sprintf( _n( '1 user', '%s users', count( $users ), 'stream' ), count( $users ) );
 						}
+
 						if ( $role_id === $author_or_role ) {
 							$author_or_role_selected['id']   = $role_id;
 							$author_or_role_selected['text'] = $role;
 						}
+
 						$author_or_role_values[] = $args;
 					}
 
 					if ( empty( $author_or_role_selected ) && is_numeric( $author_or_role ) ) {
 						$user                    = new WP_User( $author_or_role );
-						$author_or_role_selected = array( 'id' => $user->ID, 'text' => $user->display_name );
+						$display_name            = ( 0 === $user->ID ) ? __( 'N/A', 'stream' ) : $user->display_name;
+						$author_or_role_selected = array( 'id' => $user->ID, 'text' => $display_name );
 					}
 
 					$author_or_role_input = sprintf(
