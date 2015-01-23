@@ -63,6 +63,7 @@ Built with performance in mind, Stream won't slow down content querying on your 
  * Live update of user activity records in the Stream
  * Private RSS and JSON feeds of user activity records
  * Support for IPv6 addresses
+ * WP-CLI command for querying records
 
 **Coming Soon:**
 
