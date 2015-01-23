@@ -39,6 +39,13 @@ class WP_Stream {
 	const VERSION = '2.0.2';
 
 	/**
+	 * WP-CLI command
+	 *
+	 * @const string
+	 */
+	const WP_CLI_COMMAND = 'stream';
+
+	/**
 	 * Hold Stream instance
 	 *
 	 * @var string
@@ -146,6 +153,13 @@ class WP_Stream {
 
 		// Disable logging during the content import process
 		add_filter( 'wp_stream_record_array', array( __CLASS__, 'disable_logging_during_import' ), 10, 1 );
+
+		// Load WP-CLI command
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			require_once WP_STREAM_INC_DIR . 'wp-cli.php';
+
+			WP_CLI::add_command( self::WP_CLI_COMMAND, 'WP_Stream_WP_CLI_Command' );
+		}
 	}
 
 	/**
