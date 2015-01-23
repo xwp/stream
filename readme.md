@@ -8,7 +8,7 @@ Stream is the easiest and safest way to track content changes happening to your 
 **Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [admin](https://wordpress.org/plugins/tags/admin), [analytics](https://wordpress.org/plugins/tags/analytics), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [notification](https://wordpress.org/plugins/tags/notification), [stream](https://wordpress.org/plugins/tags/stream), [users](https://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
 **Tested up to:** 4.1  
-**Stable tag:** trunk (master)  
+**Stable tag:** 2.0.3  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
 [![Build Status](https://travis-ci.org/wp-stream/stream.png?branch=master)](https://travis-ci.org/wp-stream/stream) 
