@@ -98,6 +98,19 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 2.0.3 - January 23, 2015 =
+
+* New: WP-CLI command now available for querying records via the command line ([#499](https://github.com/wp-stream/stream/issues/499))
+* Tweak: Silently disable Stream during content import ([#672](https://github.com/wp-stream/stream/issues/672))
+* Tweak: Search results now ordered by date instead of relevance ([#689](https://github.com/wp-stream/stream/issues/689))
+* Fix: Handle boolean values appropriately during wp_stream_log_data filter ([#680](https://github.com/wp-stream/stream/issues/680))
+* Fix: Hook into external class load methods on init rather than plugins_loaded ([#686](https://github.com/wp-stream/stream/issues/686))
+* Fix: N/A user not working in exclude rules ([#688](https://github.com/wp-stream/stream/issues/688))
+* Fix: Prevent Notification Rule meta from being saved to all post types ([#693](https://github.com/wp-stream/stream/issues/693))
+* Fix: PHP warning shown for some users when deleting plugins ([#695](https://github.com/wp-stream/stream/issues/695))
+
+Props [@fjarrett](https://github.com/fjarrett)
+
 = 2.0.2 - January 15, 2015 =
 
 * New: Full record backtrace now available to developers for debugging ([#467](https://github.com/wp-stream/stream/issues/467))
