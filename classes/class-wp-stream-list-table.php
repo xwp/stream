@@ -291,15 +291,6 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$out = $this->column_link( $item->{$column_name}, 'ip', $item->{$column_name} );
 				break;
 
-			case 'blog_id':
-				$blog = get_blog_details( $item->blog_id );
-				$out  = sprintf(
-					'<a href="%s"><span>%s</span></a>',
-					add_query_arg( array( 'blog_id' => $blog->blog_id ), admin_url( 'admin.php?page=wp_stream' ) ),
-					esc_html( $blog->blogname )
-				);
-				break;
-
 			default :
 				/**
 				 * Registers new Columns to be inserted into the table.  The cell contents of this column is set
@@ -323,17 +314,19 @@ class WP_Stream_List_Table extends WP_List_Table {
 							/**
 							 * Allows for the addition of content under a specified column.
 							 *
-							 * @since 1.0.0
+							 * @since 2.0.4
 							 *
-							 * @param object $item Contents of the row
+							 * @param object $item  Contents of the row
+							 *
+							 * @return string
 							 */
-							$out = do_action( "wp_stream_insert_column_default-{$column_title}", $item );
+							$out = apply_filters( "wp_stream_insert_column_default-{$column_title}", $column_name, $item );
 						} else {
 							$out = $column_name;
 						}
 					}
 				} else {
-					$out = $column_name; // xss ok
+					$out = $column_name;
 				}
 		}
 
