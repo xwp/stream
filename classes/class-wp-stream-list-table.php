@@ -586,6 +586,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 								$context_items[ $connector ]['children'][ $context_value ] = $context_item;
 							}
 						}
+
+						if ( isset( $context_items[ $connector ]['children'] ) ) {
+							$labels = wp_list_pluck( $context_items[ $connector ]['children'], 'label' );
+
+							// Sort child items by label
+							array_multisort( $labels, SORT_ASC, $context_items[ $connector ]['children'] );
+						}
 					}
 
 					foreach ( $context_items as $context_value => $context_item ) {
@@ -596,7 +603,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 					$data['items'] = $context_items;
 
-					ksort( $data['items'] );
+					$labels = wp_list_pluck( $data['items'], 'label' );
+
+					// Sort top-level items by label
+					array_multisort( $labels, SORT_ASC, $data['items'] );
 
 					// Ouput a hidden input to handle the connector value
 					$filters_string .= '<input type="hidden" name="connector" class="record-filter-connector" />';
