@@ -180,16 +180,20 @@ class WP_Stream_List_Table extends WP_List_Table {
 		// Add property fields to defaults, including their __in/__not_in variations
 		foreach ( $properties as $property ) {
 			$value = wp_stream_filter_input( INPUT_GET, $property );
-			if ( $value ) {
+
+			// Allow 0 values
+			if ( isset( $value ) && '' !== $value && false !== $value ) {
 				$args[ $property ] = $value;
 			}
 
 			$value_in = wp_stream_filter_input( INPUT_GET, $property . '__in' );
+
 			if ( $value_in ) {
 				$args[ $property . '__in' ] = explode( ',', $value_in );
 			}
 
 			$value_not_in = wp_stream_filter_input( INPUT_GET, $property . '__not_in' );
+
 			if ( $value_not_in ) {
 				$args[ $property . '__not_in' ] = explode( ',', $value_not_in );
 			}

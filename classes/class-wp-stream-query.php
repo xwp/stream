@@ -166,7 +166,8 @@ class WP_Stream_Query {
 
 		// PARSE PROPERTIES
 		foreach ( $properties as $property => $default ) {
-			if ( $args[ $property ] ) {
+			// Allow 0 values
+			if ( isset( $args[ $property ] ) && '' !== $args[ $property ] && false !== $args[ $property ] && ! is_array( $args[ $property ] ) ) {
 				$filters[]['term'][ $property ] = $args[ $property ];
 			}
 
