@@ -102,6 +102,23 @@
 	overflow: visible;
 }
 
+#record-query-reset {
+	position: relative;
+	margin-left: 5px;
+	text-decoration: none;
+}
+
+#record-query-reset span.dashicons {
+	position: absolute;
+	top: 2px;
+	left: 0;
+	font-size: 13px;
+}
+
+#record-query-reset .record-query-reset-text {
+	margin-left: 19px;
+}
+
 .toplevel_page_wp_stream .chosen-container-single {
 	margin-top: 3px;
 	margin-right: 6px;

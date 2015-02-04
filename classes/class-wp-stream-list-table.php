@@ -630,7 +630,25 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'stream' ) );
 
-		$url = self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE );
+		// Parse all query vars into an array
+		parse_str( $_SERVER['QUERY_STRING'], $query_vars );
+
+		// Ignore the page query var
+		if ( isset( $query_vars['page'] ) ) {
+			unset( $query_vars['page'] );
+		}
+
+		$url = add_query_arg(
+			array(
+				'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+			),
+			self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+		);
+
+		// Display reset action if records are being filtered
+		if ( ! empty( $query_vars ) ) {
+			$filters_string .= sprintf( '<a href="%s" id="record-query-reset"><span class="dashicons dashicons-dismiss"></span> <span class="record-query-reset-text">%s</span></a>', esc_url( $url ), __( 'Reset filters', 'stream' ) );
+		}
 
 		return sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
 	}
