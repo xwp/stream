@@ -105,6 +105,7 @@
 #record-query-reset {
 	position: relative;
 	margin-left: 5px;
+	line-height: 28px;
 	text-decoration: none;
 }
 
