@@ -5,6 +5,14 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function __construct( $args = array() ) {
 
 		$screen_id = isset( $args['screen'] ) ? $args['screen'] : null;
+
+		/**
+		 * Filter the list table screen ID
+		 *
+		 * @since 1.4.0
+		 *
+		 * @return string
+		 */
 		$screen_id = apply_filters( 'wp_stream_list_table_screen_id', $screen_id );
 
 		parent::__construct(
@@ -58,9 +66,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 		/**
 		 * Allows devs to add new columns to table
 		 *
-		 * @param  array  default columns
+		 * @since 0.2.0
 		 *
-		 * @return array  updated list of columns
+		 * @return array
 		 */
 		return apply_filters(
 			'wp_stream_list_table_columns',
@@ -300,7 +308,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 				 * Registers new Columns to be inserted into the table.  The cell contents of this column is set
 				 * below with 'wp_stream_inster_column_default-'
 				 *
-				 * @param array $new_columns Array of new column titles to add
+				 * @since 1.0.0
+				 *
+				 * @return array
 				 */
 				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', $new_columns = array() );
 
@@ -314,7 +324,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 						 * Also, note that the action name must include the $column_title registered
 						 * with wp_stream_register_column_defaults
 						 */
-						if ( $column_title == $column_name && has_action( "wp_stream_insert_column_default-{$column_title}" ) ) {
+						if ( $column_title == $column_name && has_filter( "wp_stream_insert_column_default-{$column_title}" ) ) {
 							/**
 							 * Allows for the addition of content under a specified column.
 							 *
@@ -343,6 +353,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 		/**
 		 * Filter allows modification of action links for a specific connector
 		 *
+		 * @since 0.5.0
+		 *
 		 * @param  string  connector
 		 * @param  array   array of action links for this connector
 		 * @param  obj     record
@@ -353,6 +365,8 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		/**
 		 * Filter allows addition of custom links for a specific connector
+		 *
+		 * @since 1.0.0
 		 *
 		 * @param  string  connector
 		 * @param  array   array of custom links for this connector
@@ -555,11 +569,10 @@ class WP_Stream_List_Table extends WP_List_Table {
 		 * Note the format of the filters above, with they key and array
 		 * containing a title and array of items.
 		 *
-		 * @param  array  Array of filters
+		 * @since 0.2.0
 		 *
-		 * @return array  Updated array of filters
+		 * @return array
 		 */
-
 		return apply_filters( 'wp_stream_list_table_filters', $filters );
 	}
 
