@@ -67,7 +67,7 @@ Please use the [git flow for pull requests](#git-flow) and follow [WordPress Cod
 
    ```bash
    # Clone your fork of the repo into the current directory
-   git clone git@github.com:<YOUR_USERNAME>/wp-stream.git
+   git clone git@github.com:<YOUR_USERNAME>/stream.git
    # Navigate to the newly cloned directory
    cd wp-stream
    # Assign the original repo to a remote called "upstream"
