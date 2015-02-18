@@ -633,9 +633,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 		// Parse all query vars into an array
 		parse_str( $_SERVER['QUERY_STRING'], $query_vars );
 
-		// Ignore the page query var
-		if ( isset( $query_vars['page'] ) ) {
-			unset( $query_vars['page'] );
+		// Ignore certain query vars and query vars that are empty
+		foreach ( $query_vars as $query_var => $value ) {
+			if ( '' === $value || 'page' === $query_var || 'paged' === $query_var ) {
+				unset( $query_vars[ $query_var ] );
+			}
 		}
 
 		$url = add_query_arg(
