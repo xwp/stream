@@ -472,7 +472,7 @@ class WP_Stream_Admin {
 				$classes .= ' wp_stream_disconnected ';
 			}
 
-			if ( WP_Stream_API::is_restricted() ) {
+			if ( WP_Stream::$api->is_restricted() ) {
 				$classes .= ' wp_stream_restricted ';
 			}
 		}
