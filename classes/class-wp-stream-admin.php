@@ -569,7 +569,16 @@ class WP_Stream_Admin {
 		$enabled = get_user_meta( $user_id, self::UNREAD_COUNT_OPTION_KEY, true );
 		$enabled = ( 'off' !== $enabled );
 
-		return (bool) $enabled;
+		/**
+		 * Enable or disable the unread count functionality
+		 *
+		 * @since 2.0.4
+		 *
+		 * @param int $user_id
+		 *
+		 * @return bool
+		 */
+		return (bool) apply_filters( 'wp_stream_unread_enabled', $enabled, $user_id );
 	}
 
 	/**
