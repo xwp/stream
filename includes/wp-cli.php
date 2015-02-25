@@ -99,9 +99,12 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		if ( empty( $assoc_args['fields'] ) ) {
 			$fields = array( 'created', 'ip', 'author', 'author_meta.user_login', 'author_role', 'summary' );
 		} else {
-			$fields = $assoc_args['fields'];
+			$fields = explode( ',', $assoc_args['fields'] );
 		}
 
+		foreach ( $assoc_args as $key => $value ) {
+			$query_args[ $key ] = $value;
+		}
 		$query_args['fields'] = implode( ',', $fields );
 
 		$records = wp_stream_query( $query_args );
