@@ -18,6 +18,9 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	 * [--<field>=<value>]
 	 * : One or more args to pass to wp_stream_query.
 	 *
+	 * [--format=<format>]
+	 * : Accepted values: table, json, csv. Default: table
+ 	 *
 	 * ## AVAILABLE FIELDS TO QUERY
 	 *
 	 * You can build a query from these fields:
