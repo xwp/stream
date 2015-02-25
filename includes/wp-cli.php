@@ -91,7 +91,6 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	 * @see https://github.com/wp-stream/stream/wiki/Query-Reference
 	 */
 	public function query( $args, $assoc_args ) {
-		$start             = microtime( true );
 		$query_args        = array();
 		$formatted_records = array();
 
