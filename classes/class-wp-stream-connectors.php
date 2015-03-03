@@ -124,7 +124,7 @@ class WP_Stream_Connectors {
 			$is_excluded_connector = apply_filters( 'wp_stream_check_connector_is_excluded', $is_excluded, $connector_name, $excluded_connectors );
 
 			$connector::register_global_hooks();
-			
+
 			if ( $is_excluded_connector ) {
 				continue;
 			}
