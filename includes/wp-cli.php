@@ -20,7 +20,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	 *
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
- 	 *
+	 *
 	 * ## AVAILABLE FIELDS TO QUERY
 	 *
 	 * You can build a query from these fields:
@@ -114,9 +114,12 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 
 		// make structure Formatter compatible
 		foreach ( $records as $key => $record ) {
-			$formatted_records[$key] = array();
+			$formatted_records[ $key ] = array();
 			foreach ( $record as $field_name => $field ) {
-				$formatted_records[$key] = array_merge( $formatted_records[$key], $this->any2array( $field_name, $field ) );
+				$formatted_records[ $key ] = array_merge(
+					$formatted_records[ $key ],
+					$this->any2array( $field_name, $field )
+				);
 			}
 		}
 
@@ -142,9 +145,9 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 				$array = array_merge( $array, $this->any2array( $name . '.' . $key, $property ) );
 			}
 		} elseif ( is_array( $object ) ) {
-			$array[$name] = $object[0];
+			$array[ $name ] = $object[0];
 		} else {
-			$array[$name] = $object;
+			$array[ $name ] = $object;
 		}
 		return $array;
 	}
