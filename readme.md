@@ -103,17 +103,17 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ![Enable live updates in Screen Options to watch your site activity flow into the Stream in real-time.](assets/screenshot-2.png)
 
-### Build notification rules to be alerted when important changes are made on your site.
-
-![Build notification rules to be alerted when important changes are made on your site.](assets/screenshot-3.png)
-
-### Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.
-
-![Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.](assets/screenshot-4.png)
-
 ### Create rules for excluding certain kinds of records from appearing in Stream.
 
-![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-5.png)
+![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
+
+### Pro Feature: Build notification rules to be alerted when important changes are made on your site.
+
+![Pro Feature: Build notification rules to be alerted when important changes are made on your site.](assets/screenshot-4.png)
+
+### Pro Feature: Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.
+
+![Pro Feature: Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.](assets/screenshot-5.png)
 
 ## Changelog ##
 
