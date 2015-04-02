@@ -103,14 +103,14 @@ jQuery( function( $ ) {
 	});
 
 	var $queryVars    = $.streamGetQueryVars();
-	var $contextInput = $( '.toplevel_page_wp_stream :input.chosen-select[name=context]' );
+	var $contextInput = $( '.toplevel_page_wp_stream :input.chosen-select[name="context"]' );
 
 	if ( ( 'undefined' === typeof $queryVars.context || '' === $queryVars.context ) && 'undefined' !== typeof $queryVars.connector ) {
 		$contextInput.select2( 'val', 'group-' + $queryVars.connector );
 	}
 
 	$( '#record-filter-form' ).submit( function() {
-		var	$context        = $( '.toplevel_page_wp_stream :input.chosen-select[name=context]' ),
+		var	$context        = $( '.toplevel_page_wp_stream :input.chosen-select[name="context"]' ),
 			$option         = $context.find( 'option:selected' ),
 			$connector      = $context.parent().find( '.record-filter-connector' ),
 			optionConnector = $option.data( 'group' ),
@@ -124,12 +124,12 @@ jQuery( function( $ ) {
 	});
 
 	$( window ).load( function() {
-		$( '.toplevel_page_wp_stream [type=search]' ).off( 'mousedown' );
+		$( '.toplevel_page_wp_stream input[type="search"]' ).off( 'mousedown' );
 	});
 
 	// Admin page tabs
-	var $tabs          = $( '.nav-tab-wrapper' ),
-		$panels        = $( '.nav-tab-content table.form-table' ),
+	var $tabs          = $( '.wp_stream_screen .nav-tab-wrapper' ),
+		$panels        = $( '.wp_stream_screen .nav-tab-content table.form-table' ),
 		$activeTab     = $tabs.find( '.nav-tab-active' ),
 		defaultIndex   = $activeTab.length > 0 ? $tabs.find( 'a' ).index( $activeTab ) : 0,
 		hashIndex      = window.location.hash.match( /^#(\d+)$/ ),
