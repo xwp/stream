@@ -114,7 +114,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		$records = wp_stream_query( $query_args );
 
 		// Make structure Formatter compatible
-		foreach ( $records as $key => $record ) {
+		foreach ( (array) $records as $key => $record ) {
 			$formatted_records[ $key ] = array();
 
 			foreach ( $record as $field_name => $field ) {
@@ -131,6 +131,12 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		);
 
 		$formatter->display_items( $formatted_records );
+
+		if ( 0 === ( $found = count( $records ) ) ) {
+			WP_CLI::line( 'No records found.' );
+		} else {
+			WP_CLI::line( sprintf( _n( '1 record found.', '%s records found.', $found, 'stream' ), number_format( $found ) ) );
+		}
 	}
 
 	/**
