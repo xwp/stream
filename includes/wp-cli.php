@@ -108,17 +108,19 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		foreach ( $assoc_args as $key => $value ) {
 			$query_args[ $key ] = $value;
 		}
+
 		$query_args['fields'] = implode( ',', $fields );
 
 		$records = wp_stream_query( $query_args );
 
-		// make structure Formatter compatible
+		// Make structure Formatter compatible
 		foreach ( $records as $key => $record ) {
 			$formatted_records[ $key ] = array();
+
 			foreach ( $record as $field_name => $field ) {
 				$formatted_records[ $key ] = array_merge(
 					$formatted_records[ $key ],
-					$this->any2array( $field_name, $field )
+					$this->format_field( $field_name, $field )
 				);
 			}
 		}
@@ -127,28 +129,31 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 			$assoc_args,
 			$fields
 		);
+
 		$formatter->display_items( $formatted_records );
 	}
 
 	/**
-	 * Convert any value to a flat array.
+	 * Convert any field to a flat array.
 	 *
-	 * @param string $name The output array element name.
-	 * @param mixed $object Any value to be converted to an array.
-	 * @return array The flat array.
+	 * @param string $name    The output array element name
+	 * @param mixed  $object  Any value to be converted to an array
+	 *
+	 * @return array  The flat array
 	 */
-	private function any2array( $name, $object ) {
+	private function format_field( $name, $object ) {
 		$array = array();
 
 		if ( is_object( $object ) ) {
 			foreach ( $object as $key => $property ) {
-				$array = array_merge( $array, $this->any2array( $name . '.' . $key, $property ) );
+				$array = array_merge( $array, $this->format_field( $name . '.' . $key, $property ) );
 			}
 		} elseif ( is_array( $object ) ) {
 			$array[ $name ] = $object[0];
 		} else {
 			$array[ $name ] = $object;
 		}
+
 		return $array;
 	}
 
