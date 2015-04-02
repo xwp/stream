@@ -4,7 +4,7 @@
 ![Banner](assets/banner-1544x500.png)
 Stream is the easiest and safest way to track content changes happening to your WordPress site and then view them in beautifully organized detail.
 
-**Contributors:** [lukecarbis](https://profiles.wordpress.org/lukecarbis), [fjarrett](https://profiles.wordpress.org/fjarrett), [shadyvb](https://profiles.wordpress.org/shadyvb), [westonruter](https://profiles.wordpress.org/westonruter), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
+**Contributors:** [fjarrett](https://profiles.wordpress.org/fjarrett), [lukecarbis](https://profiles.wordpress.org/lukecarbis), [shadyvb](https://profiles.wordpress.org/shadyvb), [westonruter](https://profiles.wordpress.org/westonruter), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
 **Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [admin](https://wordpress.org/plugins/tags/admin), [analytics](https://wordpress.org/plugins/tags/analytics), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [notification](https://wordpress.org/plugins/tags/notification), [stream](https://wordpress.org/plugins/tags/stream), [users](https://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
 **Tested up to:** 4.1  
@@ -17,17 +17,15 @@ Stream is the easiest and safest way to track content changes happening to your 
 
 [![Play video on YouTube](https://i1.ytimg.com/vi/t_qD4Sp4E70/hqdefault.jpg)](https://www.youtube.com/watch?v=t_qD4Sp4E70)
 
-**Note: This plugin requires PHP 5.3 or higher.**
+**Sign up for free at [https://wp-stream.com](https://wp-stream.com)**
 
 Never be in the dark about WP Admin activity again.
 
 Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
 
-Every logged-in user action is logged in an activity stream and organized for easy filtering by user, role, context, action and IP address.
+Every logged-in user action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action and IP address.
 
-Built with performance in mind, Stream won't slow down content querying on your site.
-
-**Built-In Tracking For Popular Plugins:**
+**Built-In Tracking Integrations For Popular Plugins:**
 
  * [Advanced Custom Fields](https://wp-stream.com/connectors/acf/)
  * [bbPress](https://wp-stream.com/connectors/bbpress/)
@@ -38,7 +36,7 @@ Built with performance in mind, Stream won't slow down content querying on your 
  * [WooCommerce](https://wp-stream.com/connectors/woocommerce/)
  * [WordPress SEO by Yoast](https://wp-stream.com/connectors/wordpress-seo/)
 
-**Plus Core Tracking For:**
+**Built-In Tracking For Core Actions:**
 
  * Posts
  * Pages
@@ -95,13 +93,13 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Screenshots ##
 
-### Every logged-in user action is logged in the activity stream and organized for easy filtering and searching.
+### Every logged-in user action is displayed in an activity stream and organized for easy filtering and searching.
 
-![Every logged-in user action is logged in the activity stream and organized for easy filtering and searching.](assets/screenshot-1.png)
+![Every logged-in user action is displayed in an activity stream and organized for easy filtering and searching.](assets/screenshot-1.png)
 
-### Enable live updates in Screen Options to watch your site activity flow into the Stream in real-time.
+### Enable live updates in Screen Options to watch your site activity appear in near real-time.
 
-![Enable live updates in Screen Options to watch your site activity flow into the Stream in real-time.](assets/screenshot-2.png)
+![Enable live updates in Screen Options to watch your site activity appear in near real-time.](assets/screenshot-2.png)
 
 ### Create rules for excluding certain kinds of records from appearing in Stream.
 
