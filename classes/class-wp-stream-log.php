@@ -52,7 +52,7 @@ class WP_Stream_Log {
 	 * @param  string $action    Action of the event
 	 * @param  int    $user_id   User responsible for the event
 	 *
-	 * @return void
+	 * @return mixed True if updated, otherwise false|WP_Error
 	 */
 	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null ) {
 		global $wpdb;
@@ -70,7 +70,7 @@ class WP_Stream_Log {
 
 		// WP cron tracking requires opt-in
 		if ( ! $wp_cron_tracking && 'wp_cron' === $agent ) {
-			return;
+			return false;
 		}
 
 		$user       = new WP_User( $user_id );
@@ -142,9 +142,11 @@ class WP_Stream_Log {
 			'ip'          => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
-		WP_Stream::$db->store( array( $recordarr ) );
+		$result = WP_Stream::$db->store( array( $recordarr ) );
 
 		self::debug_backtrace( $recordarr );
+
+		return $result;
 	}
 
 	/**

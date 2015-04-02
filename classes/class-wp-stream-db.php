@@ -14,7 +14,7 @@ class WP_Stream_DB {
 	 *
 	 * @param  array $records
 	 *
-	 * @return mixed True if updated, false|WP_Error if not
+	 * @return mixed True if updated, otherwise false|WP_Error
 	 */
 	public function store( $records ) {
 		// Take only what's ours!
@@ -67,9 +67,11 @@ class WP_Stream_DB {
 			 * @param  array  $recordarr  Array of information on this record
 			 */
 			do_action( 'wp_stream_records_inserted', $records );
+
+			return true;
 		}
 
-		return true;
+		return is_wp_error( $result ) ? $result : false;
 	}
 
 	/**
