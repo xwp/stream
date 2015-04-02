@@ -34,6 +34,15 @@ abstract class WP_Stream_Connector {
 		foreach ( $class::$actions as $action ) {
 			add_action( $action, array( $class, 'callback' ), null, 5 );
 		}
+	}
+
+	/**
+	 * Register hooks that are needed even if the plugin is not activated
+	 *
+	 * @return void
+	 */
+	public static function register_global_hooks() {
+		$class = get_called_class();
 
 		add_filter( 'wp_stream_action_links_' . $class::$name, array( $class, 'action_links' ), 10, 2 );
 	}
