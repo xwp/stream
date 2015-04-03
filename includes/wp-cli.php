@@ -122,7 +122,15 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		foreach ( (array) $records as $key => $record ) {
 			$formatted_records[ $key ] = array();
 
+			// Catch any fields missing in records
+			foreach ( $fields as $field ) {
+				if ( ! array_key_exists( $field, $record ) ) {
+					$record->$field = null;
+				}
+			}
+
 			foreach ( $record as $field_name => $field ) {
+
 				$formatted_records[ $key ] = array_merge(
 					$formatted_records[ $key ],
 					$this->format_field( $field_name, $field )
