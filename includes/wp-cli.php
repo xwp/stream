@@ -91,6 +91,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	 *     wp stream query --author=1 --action=login --records_per_page=50 --fields=created
 	 *
 	 * @see WP_Stream_Query
+	 * @see https://github.com/wp-stream/stream/wiki/WP-CLI-Command
 	 * @see https://github.com/wp-stream/stream/wiki/Query-Reference
 	 */
 	public function query( $args, $assoc_args ) {
@@ -117,22 +118,6 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 
 		$records = wp_stream_query( $query_args );
 
-		if ( isset( $assoc_args['format'] ) ) {
-			if ( 'json' === $assoc_args['format'] ) {
-				WP_CLI::line( json_encode( $records ) );
-			}
-
-			if ( 'json_pretty' === $assoc_args['format'] ) {
-				WP_CLI::line( json_encode( $records, JSON_PRETTY_PRINT ) );
-			}
-
-			if ( 'count' === $assoc_args['format'] ) {
-				WP_CLI::line( count( $records ) );
-			}
-
-			return;
-		}
-
 		// Make structure Formatter compatible
 		foreach ( (array) $records as $key => $record ) {
 			$formatted_records[ $key ] = array();
@@ -143,6 +128,22 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 					$this->format_field( $field_name, $field )
 				);
 			}
+		}
+
+		if ( isset( $assoc_args['format'] ) ) {
+			if ( 'count' === $assoc_args['format'] ) {
+				WP_CLI::line( count( $records ) );
+			}
+
+			if ( 'json' === $assoc_args['format'] ) {
+				WP_CLI::line( json_encode( $formatted_records ) );
+			}
+
+			if ( 'json_pretty' === $assoc_args['format'] ) {
+				WP_CLI::line( json_encode( $formatted_records, JSON_PRETTY_PRINT ) );
+			}
+
+			return;
 		}
 
 		$formatter = new \WP_CLI\Formatter(
