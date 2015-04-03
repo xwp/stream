@@ -20,6 +20,8 @@ class WP_Stream_Author {
 	/**
 	 * @param int $user_id
 	 * @param array $author_meta
+	 *
+	 * @return void
 	 */
 	function __construct( $user_id, $author_meta = array() ) {
 		$this->id   = $user_id;
@@ -31,9 +33,13 @@ class WP_Stream_Author {
 	}
 
 	/**
+	 * Get various user meta data
+	 *
 	 * @param string $name
+	 *
 	 * @throws Exception
-	 * @return string|mixed
+	 *
+	 * @return string
 	 */
 	function __get( $name ) {
 		if ( 'display_name' === $name ) {
@@ -54,12 +60,16 @@ class WP_Stream_Author {
 	}
 
 	/**
+	 * Get the display name of the user
+	 *
 	 * @return string
 	 */
 	function get_display_name() {
 		if ( 0 === $this->id ) {
 			if ( isset( $this->meta['system_user_name'] ) ) {
 				return esc_html( $this->meta['system_user_name'] );
+			} elseif ( 'wp_cli' === $this->get_current_agent() ) {
+				return 'WP-CLI'; // No translation needed
 			}
 			return esc_html__( 'N/A', 'stream' );
 		} else {
@@ -80,6 +90,8 @@ class WP_Stream_Author {
 	}
 
 	/**
+	 * Get the agent of the user
+	 *
 	 * @return string
 	 */
 	function get_agent() {
@@ -100,7 +112,8 @@ class WP_Stream_Author {
 	 * This function will not return an avatar if "Show Avatars" is unchecked in Settings > Discussion.
 	 *
 	 * @param int $size (optional) Size of Gravatar to return (in pixels), max is 512, default is 80
-	 * @return string An img HTML element
+	 *
+	 * @return string|bool  An img HTML element, or false if avatars are disabled
 	 */
 	function get_avatar_img( $size = 80 ) {
 		if ( ! get_option( 'show_avatars' ) ) {
@@ -125,8 +138,9 @@ class WP_Stream_Author {
 	/**
 	 * Return the URL of a Gravatar image.
 	 *
-	 * @param int $size (optional) Size of Gravatar to return (in pixels), max is 512, default is 80
-	 * @return string Gravatar image URL
+	 * @param int $size (optional)  Size of Gravatar to return (in pixels), max is 512, default is 80
+	 *
+	 * @return string|bool  Gravatar image URL, or false on failure
 	 */
 	function get_avatar_src( $size = 80 ) {
 		$img = $this->get_avatar_img( $size );
@@ -174,6 +188,8 @@ class WP_Stream_Author {
 	}
 
 	/**
+	 * Construct a URL for viewing user-specific records
+	 *
 	 * @return string
 	 */
 	function get_records_page_url() {
@@ -189,6 +205,8 @@ class WP_Stream_Author {
 	}
 
 	/**
+	 * True if user no longer exists, otherwise false
+	 *
 	 * @return bool
 	 */
 	function is_deleted() {
@@ -196,6 +214,8 @@ class WP_Stream_Author {
 	}
 
 	/**
+	 * True if user is WP-CLI, otherwise false
+	 *
 	 * @return bool
 	 */
 	function is_wp_cli() {
@@ -217,7 +237,7 @@ class WP_Stream_Author {
 	static function get_current_agent() {
 		$agent = '';
 
-		if ( defined( 'WP_CLI' ) ) {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			$agent = 'wp_cli';
 		} elseif ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 			$agent = 'wp_cron';
@@ -236,7 +256,10 @@ class WP_Stream_Author {
 	}
 
 	/**
+	 * Get the agent label
+	 *
 	 * @param string $agent
+	 *
 	 * @return string
 	 */
 	static function get_agent_label( $agent ) {

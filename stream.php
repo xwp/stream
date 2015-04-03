@@ -330,8 +330,9 @@ class WP_Stream {
 	 * @return void
 	 */
 	public static function notice( $message, $is_error = true ) {
-		if ( defined( 'WP_CLI' ) ) {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			$message = strip_tags( $message );
+
 			if ( $is_error ) {
 				WP_CLI::warning( $message );
 			} else {

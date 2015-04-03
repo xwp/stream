@@ -66,7 +66,8 @@ class WP_Stream_Log {
 		}
 
 		$wp_cron_tracking = isset( WP_Stream_Settings::$options['advanced_wp_cron_tracking'] ) ? WP_Stream_Settings::$options['advanced_wp_cron_tracking'] : false;
-		$agent            = WP_Stream_Author::get_current_agent();
+		$author           = new WP_Stream_Author( $user_id );
+		$agent            = $author->get_current_agent();
 
 		// WP cron tracking requires opt-in
 		if ( ! $wp_cron_tracking && 'wp_cron' === $agent ) {
@@ -81,23 +82,15 @@ class WP_Stream_Log {
 			$visibility = 'private';
 		}
 
-		if ( defined( 'WP_CLI' ) && empty( $user->display_name ) ) {
-			$display_name = 'WP-CLI';
-		} elseif ( ! empty( $user->display_name ) ) {
-			$display_name = $user->display_name;
-		} else {
-			$display_name = '';
-		}
-
 		$author_meta = array(
 			'user_email'      => (string) ! empty( $user->user_email ) ? $user->user_email : '',
-			'display_name'    => (string) $display_name,
+			'display_name'    => (string) $author->get_display_name(),
 			'user_login'      => (string) ! empty( $user->user_login ) ? $user->user_login : '',
-			'user_role_label' => (string) ! empty( $user->roles ) ? $roles[ $user->roles[0] ]['name'] : '',
+			'user_role_label' => (string) $author->get_role(),
 			'agent'           => (string) $agent,
 		);
 
-		if ( ( defined( 'WP_CLI' ) ) && function_exists( 'posix_getuid' ) ) {
+		if ( 'wp_cli' === $author->get_current_agent() && function_exists( 'posix_getuid' ) ) {
 			$uid       = posix_getuid();
 			$user_info = posix_getpwuid( $uid );
 
