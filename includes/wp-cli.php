@@ -193,7 +193,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	/**
 	 * Convert an array of flat records to CSV
 	 *
-	 * @param array $array    The input array of records
+	 * @param array $array  The input array of records
 	 *
 	 * @return string  The CSV output
 	 */
