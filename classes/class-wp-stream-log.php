@@ -90,7 +90,7 @@ class WP_Stream_Log {
 			'agent'           => (string) $agent,
 		);
 
-		if ( 'wp_cli' === $author->get_current_agent() && function_exists( 'posix_getuid' ) ) {
+		if ( 'wp_cli' === $agent && function_exists( 'posix_getuid' ) ) {
 			$uid       = posix_getuid();
 			$user_info = posix_getpwuid( $uid );
 
