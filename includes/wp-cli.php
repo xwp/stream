@@ -19,7 +19,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	 * : One or more args to pass to wp_stream_query.
 	 *
 	 * [--format=<format>]
-	 * : Accepted values: table, json, json_pretty. Default: table
+	 * : Accepted values: table, count, json, json_pretty. Default: table
 	 *
 	 * ## AVAILABLE FIELDS TO QUERY
 	 *
@@ -119,9 +119,15 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 
 		if ( isset( $assoc_args['format'] ) ) {
 			if ( 'json' === $assoc_args['format'] ) {
-				echo json_encode( $records ) . "\n";
-			} elseif ( 'json_pretty' === $assoc_args['format'] ) {
-				echo json_encode( $records, JSON_PRETTY_PRINT ) . "\n";
+				WP_CLI::line( json_encode( $records ) );
+			}
+
+			if ( 'json_pretty' === $assoc_args['format'] ) {
+				WP_CLI::line( json_encode( $records, JSON_PRETTY_PRINT ) );
+			}
+
+			if ( 'count' === $assoc_args['format'] ) {
+				WP_CLI::line( count( $records ) );
 			}
 
 			return;
@@ -145,12 +151,6 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		);
 
 		$formatter->display_items( $formatted_records );
-
-		if ( 0 === ( $found = count( $records ) ) ) {
-			WP_CLI::line( __( 'No records found.', 'stream' ) );
-		} else {
-			WP_CLI::line( sprintf( _n( '1 record found.', '%s records found.', $found, 'stream' ), number_format( $found ) ) );
-		}
 	}
 
 	/**
