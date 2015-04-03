@@ -130,7 +130,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 			}
 		}
 
-		if ( isset( $assoc_args['format'] ) ) {
+		if ( isset( $assoc_args['format'] ) && 'table' !== $assoc_args['format'] ) {
 			if ( 'count' === $assoc_args['format'] ) {
 				WP_CLI::line( count( $records ) );
 			}
@@ -142,8 +142,6 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 			if ( 'json_pretty' === $assoc_args['format'] ) {
 				WP_CLI::line( json_encode( $formatted_records, JSON_PRETTY_PRINT ) );
 			}
-
-			return;
 		}
 
 		$formatter = new \WP_CLI\Formatter(
