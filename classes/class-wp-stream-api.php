@@ -46,13 +46,6 @@ class WP_Stream_API {
 	public $api_url = 'https://api.wp-stream.com';
 
 	/**
-	 * The API Version
-	 *
-	 * @var string
-	 */
-	public $api_version = '0.0.2';
-
-	/**
 	 * Error messages
 	 *
 	 * @var array
@@ -296,7 +289,6 @@ class WP_Stream_API {
 		$args = wp_parse_args( $args, $defaults );
 
 		$args['headers']['Stream-Site-API-Key'] = $this->api_key;
-		$args['headers']['Accept-Version']      = $this->api_version;
 		$args['headers']['Content-Type']        = 'application/json';
 
 		if ( WP_Stream::is_development_mode() ) {
