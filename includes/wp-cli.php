@@ -19,7 +19,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 	 * : One or more args to pass to wp_stream_query.
 	 *
 	 * [--format=<format>]
-	 * : Accepted values: table, count, json, json_pretty. Default: table
+	 * : Accepted values: table, count, json, json_pretty, csv. Default: table
 	 *
 	 * ## AVAILABLE FIELDS TO QUERY
 	 *
