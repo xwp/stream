@@ -143,6 +143,10 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 				WP_CLI::line( json_encode( $formatted_records, JSON_PRETTY_PRINT ) );
 			}
 
+			if ( 'csv' === $assoc_args['format'] ) {
+				WP_CLI::line( $this->csv_format( $formatted_records ) );
+			}
+
 			return;
 		}
 
@@ -176,6 +180,23 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		}
 
 		return $array;
+	}
+
+	/**
+	 * Convert an array of flat records to CSV
+	 *
+	 * @param array $array    The input array of records
+	 *
+	 * @return string  The CSV output
+	 */
+	private function csv_format( $array ) {
+		$output = fopen( 'php://output', 'w' );
+
+		foreach ( $array as $line ) {
+			fputcsv( $output, $line );
+		}
+
+		fclose( $output );
 	}
 
 	/**
