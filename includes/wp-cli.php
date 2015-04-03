@@ -142,6 +142,8 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 			if ( 'json_pretty' === $assoc_args['format'] ) {
 				WP_CLI::line( json_encode( $formatted_records, JSON_PRETTY_PRINT ) );
 			}
+
+			return;
 		}
 
 		$formatter = new \WP_CLI\Formatter(
