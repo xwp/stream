@@ -119,9 +119,9 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 
 		if ( isset( $assoc_args['format'] ) ) {
 			if ( 'json' === $assoc_args['format'] ) {
-				echo json_encode( $records );
+				echo json_encode( $records ) . "\n";
 			} elseif ( 'json_pretty' === $assoc_args['format'] ) {
-				echo json_encode( $records, JSON_PRETTY_PRINT );
+				echo json_encode( $records, JSON_PRETTY_PRINT ) . "\n";
 			}
 
 			return;
