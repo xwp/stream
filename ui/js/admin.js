@@ -312,20 +312,27 @@ jQuery( function( $ ) {
 						totalGMTOffsetHours = siteGMTOffsetHours - localGMTOffsetHours,
 						localTime           = new Date(),
 						siteTime            = new Date( localTime.getTime() + ( totalGMTOffsetHours * 60 * 60 * 1000 ) ),
-						dayOffset           = '0';
+						maxOffset           = 0;
+						minOffset           = null;
 
-					// check if the site date is different from the local date, and set a day offset
+					// Check if the site date is different from the local date, and set a day offset
 					if ( localTime.getDate() !== siteTime.getDate() || localTime.getMonth() !== siteTime.getMonth() ) {
 						if ( localTime.getTime() < siteTime.getTime() ) {
-							dayOffset = '+1d';
+							maxOffset = '+1d';
 						} else {
-							dayOffset = '-1d';
+							maxOffset = '-1d';
 						}
+					}
+
+					// Loose comparison needed
+					if ( ! isNaN( wp_stream.plan.retention ) && 0 != wp_stream.plan.retention ) {
+						minOffset = '-' + wp_stream.plan.retention + 'd';
 					}
 
 					datepickers.datepicker({
 						dateFormat: 'yy/mm/dd',
-						maxDate: dayOffset,
+						minDate: minOffset,
+						maxDate: maxOffset,
 						defaultDate: siteTime,
 						beforeShow: function() {
 							$( this ).prop( 'disabled', true );

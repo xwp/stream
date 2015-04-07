@@ -330,6 +330,7 @@ class WP_Stream_Admin {
 
 		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
 		$file_tmpl = 'ui/lib/timeago/locales/jquery.timeago.%s.js';
+		$site      = WP_Stream::$api->get_site();
 
 		if ( file_exists( WP_STREAM_DIR . sprintf( $file_tmpl, $locale ) ) ) {
 			wp_register_script( 'timeago-locale', WP_STREAM_URL . sprintf( $file_tmpl, $locale ), array( 'timeago' ), '1' );
@@ -363,6 +364,10 @@ class WP_Stream_Admin {
 					),
 					'locale'     => esc_js( $locale ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
+					'plan'       => array(
+						'type'      => isset( $site->plan->type ) ? esc_js( $site->plan->type ) : 'free',
+						'retention' => isset( $site->plan->retention ) ? esc_js( $site->plan->retention ) : 30,
+					),
 				)
 			);
 		}
