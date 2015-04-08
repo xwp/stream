@@ -245,7 +245,7 @@
 
 .toplevel_page_wp_stream .new-row,
 #dashboard_stream_activity .new-row {
-	background-color: #ffffe0;
+	background-color: #ffffe0 !important;
 
 	-webkit-transition: background 0.5s linear;
 	   -moz-transition: background 0.5s linear;
@@ -254,14 +254,19 @@
 	        transition: background 0.5s linear;
 }
 
+.toplevel_page_wp_stream .new-row.alternate,
+#dashboard_stream_activity .new-row.alternate {
+	background-color: #ffffcd !important;
+}
+
 .toplevel_page_wp_stream .new-row.fadeout,
 #dashboard_stream_activity .new-row.fadeout {
-	background-color: transparent;
+	background-color: transparent !important;
 }
 
 .toplevel_page_wp_stream .new-row.alternate.fadeout,
 #dashboard_stream_activity .new-row.alternate.fadeout {
-	background-color: #f9f9f9;
+	background-color: #f9f9f9 !important;
 }
 
 .toplevel_page_wp_stream #the-list .no-items .stream-list-table-upgrade {

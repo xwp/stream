@@ -45,7 +45,7 @@ jQuery( function( $ ) {
 				$current_items = $( list_sel + ' tr' ),
 				$new_items     = $( data['wp-stream-heartbeat'] );
 
-			// Remove all class to tr added by WP and add new row class
+			// Remove all default classes and add class to highlight new rows
 			$new_items.removeClass().addClass( 'new-row' );
 
 			// Check if first tr has the alternate class
