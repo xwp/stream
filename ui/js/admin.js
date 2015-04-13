@@ -312,7 +312,7 @@ jQuery( function( $ ) {
 						totalGMTOffsetHours = siteGMTOffsetHours - localGMTOffsetHours,
 						localTime           = new Date(),
 						siteTime            = new Date( localTime.getTime() + ( totalGMTOffsetHours * 60 * 60 * 1000 ) ),
-						maxOffset           = 0;
+						maxOffset           = 0,
 						minOffset           = null;
 
 					// Check if the site date is different from the local date, and set a day offset
@@ -324,8 +324,7 @@ jQuery( function( $ ) {
 						}
 					}
 
-					// Loose comparison needed
-					if ( ! isNaN( wp_stream.plan.retention ) && 0 != wp_stream.plan.retention ) {
+					if ( ! isNaN( wp_stream.plan.retention ) && '0' !== wp_stream.plan.retention ) {
 						minOffset = '-' + wp_stream.plan.retention + 'd';
 					}
 
