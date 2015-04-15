@@ -64,8 +64,7 @@ class WP_Stream_Migrate {
 		self::$site_id = is_multisite() ? get_current_site()->id : 1;
 		self::$blog_id = get_current_blog_id();
 
-		$retention = WP_Stream::$api->get_plan_retention();
-		$since     = ! empty( $retention ) ? date( 'Y-m-d H:i:s', strtotime( sprintf( '%d days ago', $retention ) ) ) : date( 'Y-m-d H:i:s', strtotime( '1 year ago' ) );
+		$since = WP_Stream::$api->get_plan_retention_max_date();
 
 		self::$record_count = $wpdb->get_var(
 			$wpdb->prepare( "
@@ -74,8 +73,8 @@ class WP_Stream_Migrate {
 				WHERE s.site_id = %d
 					AND s.blog_id = %d
 					AND s.type = 'stream'
-					AND sc.record_id = s.ID
 					AND s.created > %s
+					AND sc.record_id = s.ID
 				",
 				self::$site_id,
 				self::$blog_id,
@@ -321,7 +320,6 @@ class WP_Stream_Migrate {
 			'blocking'  => true,
 			'headers'   => array(
 				'Content-Type'        => 'application/json',
-				'Accept-Version'      => WP_Stream::$api->api_version,
 				'Stream-Site-API-Key' => WP_Stream::$api->api_key,
 			),
 		);
@@ -345,6 +343,7 @@ class WP_Stream_Migrate {
 	 */
 	private static function get_records( $limit = null ) {
 		$limit = is_int( $limit ) ? $limit : self::$limit;
+		$since = WP_Stream::$api->get_plan_retention_max_date( 'Y-m-d 00:00:00' );
 
 		global $wpdb;
 
@@ -355,12 +354,14 @@ class WP_Stream_Migrate {
 				WHERE s.site_id = %d
 					AND s.blog_id = %d
 					AND s.type = 'stream'
+					AND s.created > %s
 					AND sc.record_id = s.ID
 				ORDER BY s.created DESC
 				LIMIT %d
 				",
 				self::$site_id,
 				self::$blog_id,
+				$since,
 				$limit
 			),
 			ARRAY_A
@@ -444,6 +445,7 @@ class WP_Stream_Migrate {
 	 */
 	private static function get_record_ids( $limit = null ) {
 		$limit = is_int( $limit ) ? $limit : self::$limit;
+		$since = WP_Stream::$api->get_plan_retention_max_date( 'Y-m-d 00:00:00' );
 
 		global $wpdb;
 
@@ -454,10 +456,13 @@ class WP_Stream_Migrate {
 				WHERE s.site_id = %d
 					AND s.blog_id = %d
 					AND s.type = 'stream'
+					AND s.created > %s
+				ORDER BY s.created DESC
 				LIMIT %d
 				",
 				self::$site_id,
 				self::$blog_id,
+				$since,
 				$limit
 			)
 		);

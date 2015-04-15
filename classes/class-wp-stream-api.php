@@ -201,6 +201,17 @@ class WP_Stream_API {
 	}
 
 	/**
+	 * Return the oldest record date (GMT) allowed for this site's plan
+	 *
+	 * @return string
+	 */
+	public function get_plan_retention_max_date( $format = 'Y-m-d H:i:s' ) {
+		$retention = WP_Stream::$api->get_plan_retention();
+
+		return empty( $retention ) ? gmdate( $format, strtotime( '1 year ago' ) ) : gmdate( $format, strtotime( sprintf( '%d days ago', $retention ) ) );
+	}
+
+	/**
 	 * Return this site's plan amount
 	 *
 	 * @return string
