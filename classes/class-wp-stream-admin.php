@@ -951,7 +951,7 @@ class WP_Stream_Admin {
 			$retention_label = '';
 
 			if ( 0 == $site_details->plan->retention ) { // Loose comparison needed
-				$retention_label = __( 'Unlimited', 'stream' );
+				$retention_label = __( '1 Year', 'stream' );
 			} else {
 				$retention_label = sprintf(
 					_n( '1 Day', '%s Days', $site_details->plan->retention, 'stream' ),
