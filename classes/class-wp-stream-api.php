@@ -148,7 +148,7 @@ class WP_Stream_API {
 	public function get_plan_type() {
 		$site = WP_Stream::$api->get_site();
 
-		return ! isset( $site->plan->type ) ? esc_html( $site->plan->type ) : 'free';
+		return isset( $site->plan->type ) ? esc_html( $site->plan->type ) : 'free';
 	}
 
 	/**
@@ -177,7 +177,7 @@ class WP_Stream_API {
 	public function get_plan_retention() {
 		$site = WP_Stream::$api->get_site();
 
-		return ! isset( $site->plan->retention ) ? absint( $site->plan->retention ) : 30;
+		return isset( $site->plan->retention ) ? absint( $site->plan->retention ) : 30;
 	}
 
 	/**
