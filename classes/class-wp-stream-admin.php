@@ -330,7 +330,6 @@ class WP_Stream_Admin {
 
 		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
 		$file_tmpl = 'ui/lib/timeago/locales/jquery.timeago.%s.js';
-		$site      = WP_Stream::$api->get_site();
 
 		if ( file_exists( WP_STREAM_DIR . sprintf( $file_tmpl, $locale ) ) ) {
 			wp_register_script( 'timeago-locale', WP_STREAM_URL . sprintf( $file_tmpl, $locale ), array( 'timeago' ), '1' );
@@ -365,8 +364,8 @@ class WP_Stream_Admin {
 					'locale'     => esc_js( $locale ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
 					'plan'       => array(
-						'type'      => isset( $site->plan->type ) ? esc_js( $site->plan->type ) : 'free',
-						'retention' => isset( $site->plan->retention ) ? esc_js( $site->plan->retention ) : 30,
+						'type'      => esc_js( WP_Stream::$api->get_plan_type() ),
+						'retention' => esc_js( WP_Stream::$api->get_plan_retention() ),
 					),
 				)
 			);
@@ -755,9 +754,10 @@ class WP_Stream_Admin {
 		WP_Stream::$api->api_key   = wp_stream_filter_input( INPUT_GET, 'api_key' );
 
 		// Verify the API Key and Site UUID
-		$site = WP_Stream::$api->get_site();
+		$site      = WP_Stream::$api->get_site();
+		$plan_type = WP_Stream::$api->get_plan_type();
 
-		WP_Stream_API::$restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type ) ? 1 : 0;
+		WP_Stream_API::$restricted = ( 'free' === $plan_type ) ? 1 : 0;
 
 		if ( ! isset( $site->site_id ) ) {
 			wp_die( 'There was a problem verifying your site with Stream. Please try again later.', 'stream' );
@@ -911,98 +911,84 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_account_page() {
-		$page_title   = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
-		$date_format  = get_option( 'date_format' );
-		$site_details = WP_Stream::$api->get_site();
+		$page_title           = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
+		$date_format          = get_option( 'date_format' );
+		$site                 = WP_Stream::$api->get_site();
+		$plan_type            = WP_Stream::$api->get_plan_type();
+		$plan_type_label      = WP_Stream::$api->get_plan_type_label();
+		$plan_retention       = WP_Stream::$api->get_plan_retention();
+		$plan_retention_label = WP_Stream::$api->get_plan_retention_label();
+		$plan_amount          = WP_Stream::$api->get_plan_amount();
+		$expiry_date          = WP_Stream::$api->get_expiry_date();
+		$created_date         = WP_Stream::$api->get_created_date();
 		?>
 		<div class="wrap">
 			<h2><?php echo esc_html( $page_title ) ?></h2>
 			<div class="postbox">
 		<?php
-		if ( ! $site_details ) {
+		if ( ! $site ) {
 			?>
-				<h3><?php esc_html_e( 'Error retrieving account details.' ); ?></h3>
+				<h3><?php _e( 'Error retrieving account details.' ) ?></h3>
 				<div class="plan-details">
-					<p><?php esc_html_e( 'If this problem persists, please disconnect from Stream and try connecting again.', 'stream' ); ?></p>
+					<p><?php _e( 'If this problem persists, please disconnect from Stream and try connecting again.', 'stream' ) ?></p>
 				</div>
 				<div class="plan-actions submitbox">
-					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
+					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ) ?>"><?php _e( 'Disconnect', 'stream' ) ?></a>
 				</div>
 			<?php
 		} else {
-			$plan_label = __( 'Free', 'stream' );
-
-			if ( isset( $site_details->plan ) ) {
-				if ( 0 === strpos( $site_details->plan->type, 'pro' ) ) {
-					$plan_label = __( 'Pro', 'stream' );
-				} elseif ( 0 === strpos( $site_details->plan->type, 'standard' ) ) {
-					$plan_label = __( 'Standard', 'stream' );
-				}
-			}
-
-			if ( 'free' !== $site_details->plan->type ) {
-				$next_billing_label = sprintf(
-					_x( '$%1$s on %2$s', '1: Price, 2: Renewal date', 'stream' ),
-					isset( $site_details->plan->amount ) ? $site_details->plan->amount : 0,
-					isset( $site_details->expiry->date ) ? date_i18n( $date_format, strtotime( $site_details->expiry->date ) ) : __( 'N/A', 'stream' )
-				);
-			}
-
-			$retention_label = '';
-
-			if ( 0 == $site_details->plan->retention ) { // Loose comparison needed
-				$retention_label = __( '1 Year', 'stream' );
-			} else {
-				$retention_label = sprintf(
-					_n( '1 Day', '%s Days', $site_details->plan->retention, 'stream' ),
-					$site_details->plan->retention
-				);
-			}
 			?>
-				<h3><?php echo esc_html( $site_details->site_url ); ?></h3>
+				<h3><?php echo esc_html( $site->site_url ) ?></h3>
 				<div class="plan-details">
 					<table class="form-table">
 						<tbody>
 							<tr>
-								<th><?php _e( 'Plan', 'stream' ); ?></th>
-								<td><?php echo esc_html( $plan_label ); ?></td>
+								<th><?php _e( 'Plan', 'stream' ) ?></th>
+								<td><?php echo esc_html( $plan_type_label ) ?></td>
 							</tr>
 							<tr>
-								<th><?php _e( 'Activity History', 'stream' ); ?></th>
-								<td><?php echo esc_html( $retention_label ); ?></td>
+								<th><?php _e( 'Activity History', 'stream' ) ?></th>
+								<td><?php echo esc_html( $plan_retention_label ) ?></td>
 							</tr>
-							<?php if ( 'free' !== $site_details->plan->type ) : ?>
+							<?php if ( 'free' !== $plan_type ) : ?>
+							<?php
+							$next_billing_label = sprintf(
+								_x( '$%1$s on %2$s', '1: Price, 2: Renewal date', 'stream' ),
+								esc_html( $plan_amount ),
+								esc_html( $expiry_date )
+							);
+							?>
 							<tr>
-								<th><?php _e( 'Next Billing', 'stream' ); ?></th>
-								<td><?php echo esc_html( $next_billing_label ); ?></td>
+								<th><?php _e( 'Next Billing', 'stream' ) ?></th>
+								<td><?php echo esc_html( $next_billing_label ) ?></td>
 							</tr>
 							<?php endif; ?>
 							<tr>
-								<th><?php _e( 'Created', 'stream' ); ?></th>
-								<td><?php echo esc_html( date_i18n( $date_format, strtotime( $site_details->created ) ) ); ?></td>
+								<th><?php _e( 'Created', 'stream' ) ?></th>
+								<td><?php echo esc_html( $created_date ) ?></td>
 							</tr>
 							<tr>
-								<th><?php _e( 'Site ID', 'stream' ); ?></th>
+								<th><?php _e( 'Site ID', 'stream' ) ?></th>
 								<td>
-									<code class="site-uuid"><?php echo esc_html( WP_Stream::$api->site_uuid ); ?></code>
+									<code class="site-uuid"><?php echo esc_html( WP_Stream::$api->site_uuid ) ?></code>
 								</td>
 							</tr>
 							<tr>
-								<th><?php _e( 'API Key', 'stream' ); ?></th>
+								<th><?php _e( 'API Key', 'stream' ) ?></th>
 								<td>
-									<code class="api-key"><?php echo esc_html( WP_Stream::$api->api_key ); ?></code>
+									<code class="api-key"><?php echo esc_html( WP_Stream::$api->api_key ) ?></code>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 				<div class="plan-actions submitbox">
-					<?php if ( 'free' === $site_details->plan->type ) : ?>
-						<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade/?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
+					<?php if ( 'free' === $plan_type ) : ?>
+						<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade/?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ) ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
 					<?php else : ?>
-						<a href="<?php echo esc_url( sprintf( '%s/dashboard/?site_uuid=%s', self::PUBLIC_URL, WP_Stream::$api->site_uuid ) ); ?>" class="button button-primary button-large" target="_blank"><?php _e( 'Modify This Plan', 'stream' ) ?></a>
+						<a href="<?php echo esc_url( sprintf( '%s/dashboard/?site_uuid=%s', self::PUBLIC_URL, WP_Stream::$api->site_uuid ) ) ?>" class="button button-primary button-large" target="_blank"><?php _e( 'Modify This Plan', 'stream' ) ?></a>
 					<?php endif; ?>
-						<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ); ?>">Disconnect</a>
+						<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ) ?>"><?php _e( 'Disconnect', 'stream' ) ?></a>
 				</div>
 			<?php
 		}

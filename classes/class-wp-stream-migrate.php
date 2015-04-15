@@ -64,6 +64,9 @@ class WP_Stream_Migrate {
 		self::$site_id = is_multisite() ? get_current_site()->id : 1;
 		self::$blog_id = get_current_blog_id();
 
+		$retention = WP_Stream::$api->get_plan_retention();
+		$since     = ! empty( $retention ) ? date( 'Y-m-d H:i:s', strtotime( sprintf( '%d days ago', $retention ) ) ) : date( 'Y-m-d H:i:s', strtotime( '1 year ago' ) );
+
 		self::$record_count = $wpdb->get_var(
 			$wpdb->prepare( "
 				SELECT COUNT(*)
@@ -72,9 +75,11 @@ class WP_Stream_Migrate {
 					AND s.blog_id = %d
 					AND s.type = 'stream'
 					AND sc.record_id = s.ID
+					AND s.created > %s
 				",
 				self::$site_id,
-				self::$blog_id
+				self::$blog_id,
+				$since
 			)
 		);
 
