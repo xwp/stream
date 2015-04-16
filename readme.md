@@ -8,7 +8,7 @@ Stream is the easiest and safest way to track content changes happening to your 
 **Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [admin](https://wordpress.org/plugins/tags/admin), [analytics](https://wordpress.org/plugins/tags/analytics), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [notification](https://wordpress.org/plugins/tags/notification), [stream](https://wordpress.org/plugins/tags/stream), [users](https://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
 **Tested up to:** 4.1  
-**Stable tag:** 2.0.3  
+**Stable tag:** 2.0.4  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
 [![Build Status](https://travis-ci.org/wp-stream/stream.png?branch=master)](https://travis-ci.org/wp-stream/stream) 
@@ -114,6 +114,18 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Pro Feature: Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.](assets/screenshot-5.png)
 
 ## Changelog ##
+
+### 2.0.4 - April 16, 2015 ###
+* New: Add reset button to reset search filters ([#144](https://github.com/wp-stream/stream/issues/144))
+* Tweak: WP-CLI command output improvements via `--format` option for table view, JSON and CSV ([#705](https://github.com/wp-stream/stream/pull/705))
+* Tweak: Add link to https://wp-stream.com in README ([#709](https://github.com/wp-stream/stream/issues/709))
+* Tweak: Better highlighting on multiple live update rows
+* Tweak: Limit custom range datepickers based on the Stream plan type
+* Tweak: Limit legacy record migrations based on the Stream plan type
+* Fix: Allow properties with zero values to be included in queries ([#698](https://github.com/wp-stream/stream/issues/698))
+* Fix: Properly return record success/failure in log and store methods ([#711](https://github.com/wp-stream/stream/issues/711))
+
+Props [@fjarrett](https://github.com/fjarrett), [@szepeviktor](https://github.com/szepeviktor)
 
 ### 2.0.3 - January 23, 2015 ###
 * New: WP-CLI command now available for querying records via the command line ([#499](https://github.com/wp-stream/stream/issues/499))

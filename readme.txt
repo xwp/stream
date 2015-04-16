@@ -3,7 +3,7 @@ Contributors:      fjarrett, lukecarbis, shadyvb, westonruter, stream, xwp
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, stream, users
 Requires at least: 3.7
 Tested up to:      4.1
-Stable tag:        2.0.3
+Stable tag:        2.0.4
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -96,6 +96,19 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 5. Pro Feature: Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.
 
 == Changelog ==
+
+= 2.0.4 - April 16, 2015 =
+
+* New: Add reset button to reset search filters ([#144](https://github.com/wp-stream/stream/issues/144))
+* Tweak: WP-CLI command output improvements via `--format` option for table view, JSON and CSV ([#705](https://github.com/wp-stream/stream/pull/705))
+* Tweak: Add link to https://wp-stream.com in README ([#709](https://github.com/wp-stream/stream/issues/709))
+* Tweak: Better highlighting on multiple live update rows
+* Tweak: Limit custom range datepickers based on the Stream plan type
+* Tweak: Limit legacy record migrations based on the Stream plan type
+* Fix: Allow properties with zero values to be included in queries ([#698](https://github.com/wp-stream/stream/issues/698))
+* Fix: Properly return record success/failure in log and store methods ([#711](https://github.com/wp-stream/stream/issues/711))
+
+Props [@fjarrett](https://github.com/fjarrett), [@szepeviktor](https://github.com/szepeviktor)
 
 = 2.0.3 - January 23, 2015 =
 
