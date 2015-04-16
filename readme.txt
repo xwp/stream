@@ -105,7 +105,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 * Tweak: Better highlighting on multiple live update rows
 * Tweak: Limit custom range datepickers based on the Stream plan type
 * Tweak: Limit legacy record migrations based on the Stream plan type
-* Fix: Allow properties with zero values to be included in queries ([#698](https://github.com/wp-stream/stream/issues/698))
+* Fix: Allow properties with values of zero to be included in queries ([#698](https://github.com/wp-stream/stream/issues/698))
 * Fix: Properly return record success/failure in log and store methods ([#711](https://github.com/wp-stream/stream/issues/711))
 
 Props [@fjarrett](https://github.com/fjarrett), [@szepeviktor](https://github.com/szepeviktor)
