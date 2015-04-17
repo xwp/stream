@@ -90,8 +90,14 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 				$tax_obj   = get_taxonomy( $term->taxonomy );
 				$tax_label = isset( $tax_obj->labels->singular_name ) ? $tax_obj->labels->singular_name : null;
 
-				$links[ sprintf( _x( 'Edit %s', 'Term singular name', 'stream' ), $tax_label ) ] = get_edit_term_link( $term->term_id, $term->taxonomy );
-				$links[ __( 'View', 'stream' ) ] = get_term_link( $term->term_id, $term->taxonomy );
+				if ( function_exists( 'wp_get_split_term' ) ) {
+					$term_id = wp_get_split_term( $term->term_id, $term->taxonomy );
+				}
+
+				$term_id = is_int( $term_id ) ? $term_id : $term->term_id;
+
+				$links[ sprintf( _x( 'Edit %s', 'Term singular name', 'stream' ), $tax_label ) ] = get_edit_term_link( $term_id, $term->taxonomy );
+				$links[ __( 'View', 'stream' ) ] = get_term_link( $term_id, $term->taxonomy );
 			}
 		}
 
