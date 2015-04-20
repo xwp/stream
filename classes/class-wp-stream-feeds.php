@@ -9,10 +9,6 @@ class WP_Stream_Feeds {
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
 
 	public static function load() {
-		if ( ! is_admin() ) {
-			$feed_path = parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH );
-		}
-
 		if ( ! isset( WP_Stream_Settings::$options['general_private_feeds'] ) || ! WP_Stream_Settings::$options['general_private_feeds'] ) {
 			return;
 		}
@@ -241,7 +237,7 @@ class WP_Stream_Feeds {
 		if ( isset( $records[0]->ID ) ) {
 			$latest_link = add_query_arg(
 				array(
-					'record__in' => $records[0]->ID,
+					'record__in' => absint( $records[0]->ID ),
 				),
 				$records_admin_url
 			);
