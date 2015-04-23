@@ -177,6 +177,12 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'1: Post title, 2: Post type singular name, 3: Scheduled post date',
 				'stream'
 			);
+		} elseif ( 'future' === $old && 'publish' === $new ) {
+			$summary = _x(
+				'"%1$s" scheduled %2$s published',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 		} elseif ( 'publish' === $new ) {
 			$summary = _x(
 				'"%1$s" %2$s published',
