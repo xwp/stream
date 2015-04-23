@@ -69,7 +69,7 @@ class WP_Stream_Log {
 		$author           = new WP_Stream_Author( $user_id );
 		$agent            = $author->get_current_agent();
 
-		// WP cron tracking requires opt-in
+		// WP Cron tracking requires opt-in and WP Cron to be enabled
 		if ( ! $wp_cron_tracking && 'wp_cron' === $agent ) {
 			return false;
 		}
