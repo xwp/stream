@@ -7,8 +7,8 @@ Stream is the easiest and safest way to track content changes happening to your 
 **Contributors:** [fjarrett](https://profiles.wordpress.org/fjarrett), [lukecarbis](https://profiles.wordpress.org/lukecarbis), [shadyvb](https://profiles.wordpress.org/shadyvb), [westonruter](https://profiles.wordpress.org/westonruter), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
 **Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [admin](https://wordpress.org/plugins/tags/admin), [analytics](https://wordpress.org/plugins/tags/analytics), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [notification](https://wordpress.org/plugins/tags/notification), [security](https://wordpress.org/plugins/tags/security), [stream](https://wordpress.org/plugins/tags/stream), [users](https://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
-**Tested up to:** 4.1  
-**Stable tag:** 2.0.4  
+**Tested up to:** 4.2  
+**Stable tag:** 2.0.5  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
 [![Build Status](https://travis-ci.org/wp-stream/stream.png?branch=master)](https://travis-ci.org/wp-stream/stream) 
@@ -114,6 +114,15 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Pro Feature: Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.](assets/screenshot-5.png)
 
 ## Changelog ##
+
+### 2.0.5 - April 23, 2015 ###
+* Tweak: Compatibility with split terms introduced in WordPress 4.2 ([#702](https://github.com/wp-stream/stream/issues/702))
+* Tweak: Add support for future and pending post transitions ([#716](https://github.com/wp-stream/stream/pull/716))
+* Tweak: Match new default admin colors introduced in WordPress 4.2 ([#718](https://github.com/wp-stream/stream/pull/718))
+* Fix: Compatibility issues with WP-Cron Control plugin and system crons ([#715](https://github.com/wp-stream/stream/issues/715))
+* Fix: Broken date range filter on Reports screen ([#717](https://github.com/wp-stream/stream/pull/717))
+
+Props [@fjarrett](https://github.com/fjarrett)
 
 ### 2.0.4 - April 16, 2015 ###
 * New: Add reset button to reset search filters ([#144](https://github.com/wp-stream/stream/issues/144))

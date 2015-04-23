@@ -2,8 +2,8 @@
 Contributors:      fjarrett, lukecarbis, shadyvb, westonruter, stream, xwp
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, security, stream, users
 Requires at least: 3.7
-Tested up to:      4.1
-Stable tag:        2.0.4
+Tested up to:      4.2
+Stable tag:        2.0.5
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -96,6 +96,16 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 5. Pro Feature: Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.
 
 == Changelog ==
+
+= 2.0.5 - April 23, 2015 =
+
+* Tweak: Compatibility with split terms introduced in WordPress 4.2 ([#702](https://github.com/wp-stream/stream/issues/702))
+* Tweak: Add support for future and pending post transitions ([#716](https://github.com/wp-stream/stream/pull/716))
+* Tweak: Match new default admin colors introduced in WordPress 4.2 ([#718](https://github.com/wp-stream/stream/pull/718))
+* Fix: Compatibility issues with WP-Cron Control plugin and system crons ([#715](https://github.com/wp-stream/stream/issues/715))
+* Fix: Broken date range filter on Reports screen ([#717](https://github.com/wp-stream/stream/pull/717))
+
+Props [@fjarrett](https://github.com/fjarrett)
 
 = 2.0.4 - April 16, 2015 =
 
