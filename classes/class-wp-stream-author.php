@@ -223,6 +223,25 @@ class WP_Stream_Author {
 	}
 
 	/**
+	 * True if doing WP Cron, otherwise false
+	 *
+	 * Note: If native WP Cron has been disabled and you are
+	 * hitting the cron endpoint with a system cron job, this
+	 * will always return false.
+	 *
+	 * @return bool
+	 */
+	function is_doing_wp_cron() {
+		return (
+			( ! defined( 'DISABLE_WP_CRON' ) || ! DISABLE_WP_CRON )
+			&&
+			defined( 'DOING_CRON' )
+			&&
+			DOING_CRON
+		);
+	}
+
+	/**
 	 * @return string
 	 */
 	function __toString() {
@@ -239,7 +258,7 @@ class WP_Stream_Author {
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			$agent = 'wp_cli';
-		} elseif ( defined( 'DOING_CRON' ) && DOING_CRON ) {
+		} elseif ( $this->is_doing_wp_cron() ) {
 			$agent = 'wp_cron';
 		}
 
