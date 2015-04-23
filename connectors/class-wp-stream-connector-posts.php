@@ -146,29 +146,46 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 
 		if ( in_array( $new, array( 'auto-draft', 'inherit' ) ) ) {
 			return;
-		} elseif ( 'auto-draft' === $old && 'draft' === $new ) {
+		} elseif ( 'draft' === $new && 'publish' === $old ) {
+			$summary = _x(
+				'"%1$s" %2$s unpublished',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
+		} elseif ( 'trash' === $old && 'trash' !== $new ) {
+			$summary = _x(
+				'"%1$s" %2$s restored from trash',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
+			$action  = 'untrashed';
+		} elseif ( 'draft' === $new ) {
 			$summary = _x(
 				'"%1$s" %2$s drafted',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-			$action  = 'created';
-		} elseif ( 'auto-draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
+		} elseif ( 'pending' === $new ) {
+			$summary = _x(
+				'"%1$s" %2$s pending review',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
+		} elseif ( 'future' === $new ) {
+			$summary = _x(
+				'"%1$s" %2$s scheduled for %3$s',
+				'1: Post title, 2: Post type singular name, 3: Scheduled post date',
+				'stream'
+			);
+		} elseif ( 'publish' === $new ) {
 			$summary = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
-			$action  = 'created';
-		} elseif ( 'draft' === $old && ( in_array( $new, array( 'publish', 'private' ) ) ) ) {
+		} elseif ( 'private' === $new ) {
 			$summary = _x(
-				'"%1$s" %2$s published',
-				'1: Post title, 2: Post type singular name',
-				'stream'
-			);
-		} elseif ( 'publish' === $old && ( in_array( $new, array( 'draft' ) ) ) ) {
-			$summary = _x(
-				'"%1$s" %2$s unpublished',
+				'"%1$s" %2$s privately published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
@@ -179,19 +196,16 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 				'stream'
 			);
 			$action  = 'trashed';
-		} elseif ( 'trash' === $old && 'trash' !== $new ) {
-			$summary = _x(
-				'"%1$s" %2$s restored from trash',
-				'1: Post title, 2: Post type singular name',
-				'stream'
-			);
-			$action  = 'untrashed';
 		} else {
 			$summary = _x(
 				'"%1$s" %2$s updated',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
+		}
+
+		if ( 'auto-draft' === $old && 'auto-draft' !== $new ) {
+			$action = 'created';
 		}
 
 		if ( empty( $action ) ) {
@@ -225,6 +239,8 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			array(
 				'post_title'    => $post->post_title,
 				'singular_name' => $post_type_name,
+				'post_date'     => get_date_from_gmt( $post->post_date_gmt, 'M j, Y @ H:i' ),
+				'post_date_gmt' => $post->post_date_gmt,
 				'new_status'    => $new,
 				'old_status'    => $old,
 				'revision_id'   => $revision_id,
