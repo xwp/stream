@@ -11,7 +11,7 @@ Stream is the easiest and safest way to track content changes happening to your 
 **Stable tag:** 2.0.5  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
-[![Build Status](https://travis-ci.org/wp-stream/stream.png?branch=master)](https://travis-ci.org/wp-stream/stream) 
+[![Build Status](https://travis-ci.org/wp-stream/stream.png?branch=master)](https://travis-ci.org/wp-stream/stream) [![Join the chat at https://gitter.im/wp-stream/stream](https://badges.gitter.im/Joinhat.svg)](https://gitter.im/wp-stream/stream) 
 
 ## Description ##
 
