@@ -128,3 +128,12 @@ function wp_stream_get_object_title( $record ) {
 
 	return $output;
 }
+
+/**
+ * True if native WP Cron is enabled, otherwise false
+ *
+ * @return bool
+ */
+function wp_stream_is_wp_cron_enabled() {
+	return ( ! defined( 'DISABLE_WP_CRON' ) || ! DISABLE_WP_CRON );
+}

@@ -227,13 +227,13 @@ class WP_Stream_Author {
 	 *
 	 * Note: If native WP Cron has been disabled and you are
 	 * hitting the cron endpoint with a system cron job, this
-	 * will always return false.
+	 * method will always return false.
 	 *
 	 * @return bool
 	 */
 	static function is_doing_wp_cron() {
 		return (
-			( ! defined( 'DISABLE_WP_CRON' ) || ! DISABLE_WP_CRON )
+			wp_stream_is_wp_cron_enabled()
 			&&
 			defined( 'DOING_CRON' )
 			&&
