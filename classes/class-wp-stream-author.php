@@ -231,7 +231,7 @@ class WP_Stream_Author {
 	 *
 	 * @return bool
 	 */
-	function is_doing_wp_cron() {
+	static function is_doing_wp_cron() {
 		return (
 			( ! defined( 'DISABLE_WP_CRON' ) || ! DISABLE_WP_CRON )
 			&&
@@ -258,7 +258,7 @@ class WP_Stream_Author {
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			$agent = 'wp_cli';
-		} elseif ( $this->is_doing_wp_cron() ) {
+		} elseif ( self::is_doing_wp_cron() ) {
 			$agent = 'wp_cron';
 		}
 
