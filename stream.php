@@ -148,7 +148,11 @@ class WP_Stream {
 			add_action( 'init', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
 			add_action( 'init', array( 'WP_Stream_Live_Update', 'load' ) );
 			add_action( 'init', array( 'WP_Stream_Pointers', 'load' ) );
-			add_action( 'init', array( 'WP_Stream_Migrate', 'load' ) );
+
+			// Ignore migrate class on VIP
+			if ( ! function_exists( 'wpcom_vip_load_plugin' ) ) {
+				add_action( 'init', array( 'WP_Stream_Migrate', 'load' ) );
+			}
 		}
 
 		// Disable logging during the content import process
@@ -245,6 +249,11 @@ class WP_Stream {
 	function autoload( $class ) {
 		$class      = strtolower( str_replace( '_', '-', $class ) );
 		$class_file = sprintf( '%sclass-%s.php', WP_STREAM_CLASS_DIR, $class );
+
+		// Ignore migrate class on VIP
+		if ( function_exists( 'wpcom_vip_load_plugin' ) && 'wp-stream-migrate' === $class ) {
+			return;
+		}
 
 		if ( is_readable( $class_file ) ) {
 			require_once $class_file;
