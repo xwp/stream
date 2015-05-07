@@ -63,7 +63,7 @@ class WP_Stream_Pointers {
 			$caps_required = $caps[ $context ];
 
 			// Get dismissed pointers
-			$dismissed = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
+			$dismissed = explode( ',', (string) wp_stream_get_user_meta( get_current_user_id(), 'dismissed_wp_pointers' ) );
 
 			$got_pointers = false;
 			foreach ( array_diff( $pointers, $dismissed ) as $pointer ) {
@@ -168,7 +168,7 @@ class WP_Stream_Pointers {
 	 * @since 1.4.4
 	 */
 	public static function dismiss_pointers_for_new_users( $user_id ) {
-		add_user_meta( $user_id, 'dismissed_wp_pointers', '' );
+		wp_stream_update_user_meta( $user_id, 'dismissed_wp_pointers', '' );
 	}
 
 }

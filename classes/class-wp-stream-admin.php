@@ -570,7 +570,7 @@ class WP_Stream_Admin {
 	 */
 	public static function unread_enabled_for_user( $user_id = 0 ) {
 		$user_id = empty( $user_id ) ? get_current_user_id() : $user_id;
-		$enabled = get_user_meta( $user_id, self::UNREAD_COUNT_OPTION_KEY, true );
+		$enabled = wp_stream_get_user_meta( $user_id, self::UNREAD_COUNT_OPTION_KEY );
 		$enabled = ( 'off' !== $enabled );
 
 		/**
@@ -602,7 +602,7 @@ class WP_Stream_Admin {
 
 		if ( false === ( $count = get_transient( $cache_key ) ) ) {
 			$count     = 0;
-			$last_read = get_user_meta( $user_id, self::LAST_READ_OPTION_KEY, true );
+			$last_read = wp_stream_get_user_meta( $user_id, self::LAST_READ_OPTION_KEY );
 
 			if ( ! empty( $last_read ) ) {
 				$args = array(
@@ -649,7 +649,7 @@ class WP_Stream_Admin {
 			$cache_key = sprintf( '%s_%d', self::UNREAD_COUNT_OPTION_KEY, $user_id );
 
 			if ( self::unread_enabled_for_user() && isset( $results[0]->created ) ) {
-				update_user_meta( $user_id, self::LAST_READ_OPTION_KEY, date( 'c', strtotime( $results[0]->created ) ) );
+				wp_stream_update_user_meta( $user_id, self::LAST_READ_OPTION_KEY, date( 'c', strtotime( $results[0]->created ) ) );
 			}
 
 			set_transient( $cache_key, 0 ); // No expiration
@@ -707,7 +707,7 @@ class WP_Stream_Admin {
 		$enabled = wp_stream_filter_input( INPUT_POST, self::UNREAD_COUNT_OPTION_KEY );
 		$enabled = ( '1' === $enabled ) ? 'on' : 'off';
 
-		update_user_meta( $user_id, self::UNREAD_COUNT_OPTION_KEY, $enabled );
+		wp_stream_update_user_meta( $user_id, self::UNREAD_COUNT_OPTION_KEY, $enabled );
 	}
 
 	/**

@@ -97,12 +97,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		// Directly checking the user meta; to check whether user has changed screen option or not
-		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
+		$hidden = wp_stream_get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden' );
 
 		// If user meta is not found; add the default hidden column 'id'
 		if ( ! $hidden ) {
 			$hidden = array( 'id' );
-			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+			wp_stream_update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
 		}
 
 		return $hidden;
@@ -857,13 +857,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	public function screen_controls( $status, $args ) {
 		$user_id   = get_current_user_id();
-		$option    = get_user_meta( $user_id, WP_Stream_Live_Update::USER_META_KEY, true );
+		$option    = wp_stream_get_user_meta( $user_id, WP_Stream_Live_Update::USER_META_KEY );
 		$heartbeat = wp_script_is( 'heartbeat', 'done' ) ? 'true' : 'false';
 
 		if ( 'on' === $option && 'false' === $heartbeat ) {
 			$option = 'off';
 
-			update_user_meta( $user_id, WP_Stream_Live_Update::USER_META_KEY, 'off' );
+			wp_stream_update_user_meta( $user_id, WP_Stream_Live_Update::USER_META_KEY, 'off' );
 		}
 
 		$nonce = wp_create_nonce( WP_Stream_Live_Update::USER_META_KEY . '_nonce' );
