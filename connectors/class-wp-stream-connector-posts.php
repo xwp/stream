@@ -226,7 +226,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 					'post_type'      => 'revision',
 					'post_status'    => 'inherit',
 					'post_parent'    => $post->ID,
-					'posts_per_page' => 1,
+					'posts_per_page' => 1, // VIP approved
 					'orderby'        => 'post_date',
 					'order'          => 'DESC',
 				)
