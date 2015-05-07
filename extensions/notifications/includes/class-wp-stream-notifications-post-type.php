@@ -328,10 +328,11 @@ class WP_Stream_Notifications_Post_Type {
 					$args  = array(
 						'post_type'      => 'any',
 						'post_status'    => 'any',
-						'posts_per_page' => - 1,
+						'posts_per_page' => 9999,
 						'post__in'       => explode( ',', $query ),
 					);
-					$posts = get_posts( $args );
+					$posts = new WP_Query( $args );
+					$posts = $posts->get_posts();
 					$items = array_combine( wp_list_pluck( $posts, 'ID' ), wp_list_pluck( $posts, 'post_title' ) );
 					$data  = $this->format_json_for_select2( $items );
 					break;
@@ -378,7 +379,14 @@ class WP_Stream_Notifications_Post_Type {
 					break;
 				case 'post':
 				case 'post_parent':
-					$posts = get_posts( 'post_type=any&post_status=any&posts_per_page=-1&s=' . $query );
+					$args  = array(
+						'post_type'      => 'any',
+						'post_status'    => 'any',
+						'posts_per_page' => 9999,
+						's'              => $query,
+					);
+					$posts = new WP_Query( $args );
+					$posts = $posts->get_posts();
 					$items = array_combine( wp_list_pluck( $posts, 'ID' ), wp_list_pluck( $posts, 'post_title' ) );
 					$data  = $this->format_json_for_select2( $items );
 					break;

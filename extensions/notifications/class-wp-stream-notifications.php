@@ -186,7 +186,9 @@ class WP_Stream_Notifications {
 			'posts_per_page' => 1,
 		);
 
-		if ( ! get_posts( $args ) ) {
+		$query = new WP_Query( $args );
+
+		if ( ! $query->get_posts() ) {
 			$this->add_sample_rule();
 		}
 	}
