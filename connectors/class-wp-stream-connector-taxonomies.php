@@ -90,8 +90,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 			&&
 			'deleted' !== $record->action
 			&&
-			// wpcom_vip_get_term_by() does not support `term_taxonomy_id`
-			( $term = get_term_by( 'term_taxonomy_id', $record->object_id, $record->context ) )
+			( $term = get_term_by( 'term_taxonomy_id', $record->object_id, $record->context ) ) // wpcom_vip_get_term_by() does not indicate support for `term_taxonomy_id`
 		) {
 			if ( ! is_wp_error( $term ) ) {
 				$tax_obj   = get_taxonomy( $term->taxonomy );
