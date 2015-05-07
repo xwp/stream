@@ -399,8 +399,13 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			return;
 		}
 
-		$old_status = get_term_by( 'slug', $old, 'shop_order_status' );
-		$new_status = get_term_by( 'slug', $new, 'shop_order_status' );
+		if ( function_exists( 'wpcom_vip_get_term_by' ) ) {
+			$old_status = wpcom_vip_get_term_by( 'slug', $old, 'shop_order_status' );
+			$new_status = wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' );
+		} else {
+			$old_status = get_term_by( 'slug', $old, 'shop_order_status' );
+			$new_status = get_term_by( 'slug', $new, 'shop_order_status' );
+		}
 
 		// Don't track new statuses
 		if ( ! $old_status ) {

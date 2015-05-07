@@ -85,7 +85,14 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		if ( $record->object_id && 'deleted' !== $record->action && ( $term = get_term_by( 'term_taxonomy_id', $record->object_id, $record->context ) ) ) {
+		if (
+			$record->object_id
+			&&
+			'deleted' !== $record->action
+			&&
+			// wpcom_vip_get_term_by() does not support `term_taxonomy_id`
+			( $term = get_term_by( 'term_taxonomy_id', $record->object_id, $record->context ) )
+		) {
 			if ( ! is_wp_error( $term ) ) {
 				$tax_obj   = get_taxonomy( $term->taxonomy );
 				$tax_label = isset( $tax_obj->labels->singular_name ) ? $tax_obj->labels->singular_name : null;
