@@ -104,7 +104,7 @@ class WP_Stream {
 		}
 
 		if ( ! self::$db ) {
-			wp_die( __( 'Stream: Could not load chosen DB driver.', 'stream' ), 'Stream DB Error' );
+			wp_die( esc_html__( 'Stream: Could not load chosen DB driver.', 'stream' ), 'Stream DB Error' );
 		}
 
 		/**
@@ -171,7 +171,7 @@ class WP_Stream {
 	 */
 	public static function fail_php_version() {
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
-		self::notice( __( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' ) );
+		self::notice( esc_html__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' ) );
 	}
 
 	/**
@@ -216,8 +216,8 @@ class WP_Stream {
 		if ( ! empty( $message ) ) {
 			ob_start();
 			?>
-			<h3><?php _e( 'Deprecated Plugins Found', 'stream' ) ?></h3>
-			<p><?php _e( 'The following plugins are deprecated and will be deactivated in order to activate', 'stream' ) ?> <strong>Stream <?php echo esc_html( self::VERSION ) ?></strong>:</p>
+			<h3><?php esc_html_e( 'Deprecated Plugins Found', 'stream' ) ?></h3>
+			<p><?php esc_html_e( 'The following plugins are deprecated and will be deactivated in order to activate', 'stream' ) ?> <strong>Stream <?php echo esc_html( self::VERSION ) ?></strong>:</p>
 			<ul>
 			<?php
 			$start = ob_get_clean();
@@ -226,12 +226,12 @@ class WP_Stream {
 			?>
 			</ul>
 			<p>
-				<a href='#' onclick="location.reload(true); return false;" class="button button-large"><?php _e( 'Continue', 'stream' ) ?></a>
+				<a href='#' onclick="location.reload(true); return false;" class="button button-large"><?php esc_html_e( 'Continue', 'stream' ) ?></a>
 			</p>
 			<?php
 			$end = ob_get_clean();
 
-			wp_die( $start . $message . $end, __( 'Deprecated Plugins Found', 'stream' ) );
+			wp_die( $start . $message . $end, esc_html__( 'Deprecated Plugins Found', 'stream' ) );
 		}
 	}
 
