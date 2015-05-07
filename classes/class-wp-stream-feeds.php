@@ -176,14 +176,14 @@ class WP_Stream_Feeds {
 		$user = get_users( $args );
 
 		if ( empty( $user ) ) {
-			wp_die( $die_message, $die_title );
+			wp_die( $die_message, $die_title ); // xss ok
 		}
 
 		if ( ! is_super_admin( $user[0]->ID ) ) {
 			$roles = isset( $user[0]->roles ) ? (array) $user[0]->roles : array();
 
 			if ( ! $roles || ! array_intersect( $roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
-				wp_die( $die_message, $die_title );
+				wp_die( $die_message, $die_title ); // xss ok
 			}
 		}
 

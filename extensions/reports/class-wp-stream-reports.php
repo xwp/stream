@@ -112,7 +112,7 @@ class WP_Stream_Reports {
 		if ( array_key_exists( $_REQUEST['action'], $ajax_hooks ) ) {
 			// Checking permission
 			if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
-				wp_die( __( 'Cheating huh?', 'stream' ) );
+				wp_die( esc_html__( 'Cheating huh?', 'stream' ) );
 			}
 			check_admin_referer( 'stream-reports-page', 'wp_stream_reports_nonce' );
 		}
@@ -266,12 +266,12 @@ class WP_Stream_Reports {
 		);
 
 		// Avoid throwing Notices by testing the variable
-		if ( isset( $_GET['view'] ) && ! empty( $_GET['view'] ) ){
+		if ( isset( $_GET['view'] ) && ! empty( $_GET['view'] ) ) {
 			$view->slug = sanitize_file_name( wp_unslash( $_GET['view'] ) );
 		}
 
 		// First we check if the file exists in our plugin folder, otherwhise give the user an error
-		if ( ! file_exists( WP_STREAM_REPORTS_VIEW_DIR . $view->slug . '.php' ) ){
+		if ( ! file_exists( WP_STREAM_REPORTS_VIEW_DIR . $view->slug . '.php' ) ) {
 			$view->slug = 'error';
 		}
 

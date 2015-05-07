@@ -151,15 +151,17 @@ class WP_Stream_Notifications_Post_Type {
 		<div class="occurrences misc-pub-section">
 			<p>
 				<?php
-				echo sprintf(
+				$occ = $occ ? $occ : 0;
+
+				printf(
 					_n(
 						'This rule has occurred %1$s time.',
 						'This rule has occurred %1$s times.',
-						$occ,
+						absint( $occ ),
 						'stream'
 					),
-					sprintf( '<strong>%d</strong>', $occ ? $occ : 0 )
-				) // xss okay
+					sprintf( '<strong>%d</strong>', $occ )
+				) // xss ok
 				?>
 			</p>
 			<?php if ( 0 !== $occ ) : ?>

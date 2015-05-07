@@ -5,12 +5,16 @@
 		<option value="custom" <?php selected( 'custom' === $user_interval['key'] ) ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
 		<?php
 		foreach ( $date->intervals as $key => $interval ) {
+			$start = isset( $interval['start'] ) ? $interval['start']->format( 'Y/m/d' ) : null;
+			$end   = isset( $interval['end'] ) ? $interval['end']->format( 'Y/m/d' ) : date( 'Y/m/d' );
+			$key   = ( $key === $user_interval['key'] ) ? 'selected="selected"' : null;
+
 			echo sprintf(
 				'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 				esc_attr( $key ),
-				isset( $interval['start'] ) ? esc_attr( $interval['start']->format( 'Y/m/d' ) ) : null,
-				isset( $interval['end'] ) ? esc_attr( $interval['end']->format( 'Y/m/d' ) ) : date( 'Y/m/d' ),
-				( $key === $user_interval['key'] ) ? 'selected="selected"' : null,
+				esc_attr( $start ),
+				esc_attr( $end ),
+				$key,
 				esc_html( $interval['label'] )
 			); // xss ok
 		}

@@ -5,7 +5,7 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 	foreach ( $data_types as $key => $item ) {
 		$selected = false;
 
-		if ( isset( $item['connector'] ) && $item['connector'] == $args['connector_id'] && isset( $item['context'] ) && $item['context'] == null ) {
+		if ( isset( $item['connector'] ) && $item['connector'] == $args['connector_id'] && isset( $item['context'] ) && null == $item['context'] ) {
 			$selected = true;
 		} else if ( isset( $item['action'] ) && $item['action'] == $args['action_id'] ) {
 			$selected = true;

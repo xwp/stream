@@ -222,7 +222,7 @@ class WP_Stream_Reports_Settings {
 
 			exit;
 		} else {
-			wp_die( __( "Uh no! This wasn't suppose to happen :(", 'stream' ) );
+			wp_die( esc_html__( "Uh no! This wasn't suppose to happen :(", 'stream' ) );
 		}
 	}
 

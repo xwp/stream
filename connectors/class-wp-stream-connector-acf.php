@@ -233,17 +233,13 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 				'fields',
 				$action
 			);
-		}
-		// Location rules
-		elseif ( 'rule' === $meta_key ) {
+		} elseif ( 'rule' === $meta_key ) {
 			if ( 'deleted' === $action ) {
 				self::$cached_location_rules[ $object_id ] = get_post_meta( $object_id, 'rule' );
 
 				add_action( 'shutdown', array( __CLASS__, 'check_location_rules' ), 9 );
 			}
-		}
-		// Position option
-		elseif ( 'position' === $meta_key ) {
+		} elseif ( 'position' === $meta_key ) {
 			if ( 'deleted' === $action ) {
 				return;
 			}
@@ -266,9 +262,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 				'options',
 				'updated'
 			);
-		}
-		// Layout option
-		elseif ( 'layout' === $meta_key ) {
+		} elseif ( 'layout' === $meta_key ) {
 			if ( 'deleted' === $action ) {
 				return;
 			}
@@ -290,9 +284,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 				'options',
 				'updated'
 			);
-		}
-		// Screen exclusion option
-		elseif ( 'hide_on_screen' === $meta_key ) {
+		} elseif ( 'hide_on_screen' === $meta_key ) {
 			if ( 'deleted' === $action ) {
 				return;
 			}
