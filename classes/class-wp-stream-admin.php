@@ -119,9 +119,6 @@ class WP_Stream_Admin {
 		// Delete user-specific transient when user is deleted
 		add_action( 'delete_user', array( __CLASS__, 'delete_unread_count_transient' ), 10, 1 );
 
-		// Reset Streams settings
-		add_action( 'wp_ajax_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
-
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
@@ -1066,42 +1063,6 @@ class WP_Stream_Admin {
 		self::$list_table->display();
 
 		echo '</div>';
-	}
-
-	public static function wp_ajax_defaults() {
-		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
-
-		if ( current_user_can( self::SETTINGS_CAP ) ) {
-			self::reset_stream_settings();
-
-			wp_safe_redirect(
-				add_query_arg(
-					array(
-						'page'    => 'wp_stream_settings',
-						'message' => 'settings_reset',
-					),
-					admin_url( self::ADMIN_PARENT_PAGE )
-				)
-			);
-
-			exit;
-		} else {
-			wp_die( "You don't have sufficient privileges to do this action." );
-		}
-	}
-
-	private static function reset_stream_settings() {
-		global $wpdb;
-
-		$blogs = wp_get_sites();
-
-		if ( $blogs ) {
-			foreach ( $blogs as $blog ) {
-				switch_to_blog( $blog['blog_id'] );
-				delete_option( WP_Stream_Settings::OPTION_KEY );
-			}
-			restore_current_blog();
-		}
 	}
 
 	private static function _role_can_view_stream( $role ) {
