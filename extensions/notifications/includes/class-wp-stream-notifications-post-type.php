@@ -328,7 +328,7 @@ class WP_Stream_Notifications_Post_Type {
 					$args  = array(
 						'post_type'      => 'any',
 						'post_status'    => 'any',
-						'posts_per_page' => 9999,
+						'posts_per_page' => 999,
 						'post__in'       => explode( ',', $query ),
 					);
 					$posts = new WP_Query( $args );
@@ -382,7 +382,7 @@ class WP_Stream_Notifications_Post_Type {
 					$args  = array(
 						'post_type'      => 'any',
 						'post_status'    => 'any',
-						'posts_per_page' => 9999,
+						'posts_per_page' => 999,
 						's'              => $query,
 					);
 					$posts = new WP_Query( $args );
