@@ -186,8 +186,10 @@ abstract class WP_Stream_Connector {
 		$result = array_filter(
 			$result,
 			function( $value ) {
+				// @codingStandardsIgnoreStart
 				// check if is not valid number (is_int, is_numeric and ctype_digit are not enough)
-				return (string) $value !== (string) (int) $value;
+				return (string) (int) $value !== (string) $value;
+				// @codingStandardsIgnoreEnd
 			}
 		);
 

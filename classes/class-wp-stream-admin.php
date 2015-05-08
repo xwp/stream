@@ -817,7 +817,7 @@ class WP_Stream_Admin {
 		$url     = sprintf( '%s/wp-content/themes/wp-stream.com/assets/testimonials.json', untrailingslashit( self::PUBLIC_URL ) );
 		$request = wp_remote_request( esc_url_raw( $url ), array( 'sslverify' => false ) );
 
-		if ( ! is_wp_error( $request ) && $request['response']['code'] === 200 ) {
+		if ( ! is_wp_error( $request ) && 200 === $request['response']['code'] ) {
 			$testimonials = json_decode( $request['body'], true );
 		} else {
 			$testimonials = false;
@@ -1022,13 +1022,8 @@ class WP_Stream_Admin {
 							'<a href="https://signup.wordpress.com/signup/?user=1" target="_blank">',
 							'</a>'
 						);
-						wp_kses_post(
-							printf(
-								esc_html__( 'with your %sWordPress.com ID%s', 'stream' ),
-								'<span class="wp-stream-tooltip-text">',
-								'</span><span class="wp-stream-tooltip">' . $tooltip . '</span>' // xss ok
-							)
-						);
+
+						wp_kses_post( printf( esc_html__( 'with your %sWordPress.com ID%s', 'stream' ), '<span class="wp-stream-tooltip-text">', '</span><span class="wp-stream-tooltip">' . $tooltip . '</span>' ) ); // xss ok
 						?>
 					</p>
 				</div>

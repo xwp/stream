@@ -59,10 +59,7 @@ class WP_Stream_Dashboard_Widget {
 			return;
 		}
 
-		printf(
-			'<ul>%s</ul>',
-			implode( '', array_map( array( __CLASS__, 'widget_row' ), $records ) )
-		); // xss ok
+		printf( '<ul>%s</ul>', implode( '', array_map( array( __CLASS__, 'widget_row' ), $records ) ) ); // xss ok
 
 		$args = array(
 			'current'     => $paged,

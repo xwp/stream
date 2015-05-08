@@ -692,17 +692,13 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 		if ( $message ) {
 			// Do nothing
-		}
-		elseif ( 'created' === $action ) {
+		} elseif ( 'created' === $action ) {
 			$message = __( 'Created profile field "%s"', 'stream' );
-		}
-		elseif ( 'updated' === $action ) {
+		} elseif ( 'updated' === $action ) {
 			$message = __( 'Updated profile field "%s"', 'stream' );
-		}
-		elseif ( 'deleted' === $action ) {
+		} elseif ( 'deleted' === $action ) {
 			$message = __( 'Deleted profile field "%s"', 'stream' );
-		}
-		else {
+		} else {
 			return;
 		}
 

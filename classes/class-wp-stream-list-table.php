@@ -56,11 +56,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 			?>
 			<div class="stream-list-table-upgrade">
 				<p><?php printf( _n( 'Your free account is limited to viewing <strong>1 day</strong> of activity history.', 'Your free account is limited to viewing <strong>%d days</strong> of activity history.', absint( $plan_retention ), 'stream' ), absint( $plan_retention ) ) // xss ok ?></p>
-				<p><a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a></p>
+				<p><a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php esc_html_e( 'Upgrade to Pro', 'stream' ) ?></a></p>
 			</div>
 			<?php
 		} else {
-			_e( 'Sorry, no activity records were found.', 'stream' );
+			esc_html_e( 'Sorry, no activity records were found.', 'stream' );
 		}
 	}
 
@@ -768,14 +768,16 @@ class WP_Stream_List_Table extends WP_List_Table {
 				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
 				<?php
 				foreach ( $items as $key => $interval ) {
+					$end = isset( $interval['end'] ) ? $interval['end']->format( 'Y/m/d' ) : '';
+
 					printf(
 						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 						esc_attr( $key ),
 						esc_attr( $interval['start']->format( 'Y/m/d' ) ),
-						isset( $interval['end'] ) ? esc_attr( $interval['end']->format( 'Y/m/d' ) ) : '',
+						esc_attr( $end ),
 						selected( $key === $date_predefined ),
 						esc_html( $interval['label'] )
-					); // xss ok
+					);
 				}
 				?>
 			</select>

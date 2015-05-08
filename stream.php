@@ -231,7 +231,7 @@ class WP_Stream {
 			<?php
 			$end = ob_get_clean();
 
-			wp_die( $start . $message . $end, esc_html__( 'Deprecated Plugins Found', 'stream' ) );
+			wp_die( $start . $message . $end, esc_html__( 'Deprecated Plugins Found', 'stream' ) ); // xss ok
 		}
 	}
 
