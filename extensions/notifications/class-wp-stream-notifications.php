@@ -85,35 +85,69 @@ class WP_Stream_Notifications {
 
 	/**
 	 * Load our classes, actions/filters, only if our big brother is activated.
-	 * GO GO GO!
 	 *
 	 * @return void
 	 */
 	public function load() {
+		/**
+		 * Filter to disallow access to Stream Notifications
+		 *
+		 * @return bool
+		 */
+		$disallow = apply_filters( 'wp_stream_notifications_disallow_site_access', false );
+
 		// Register new submenu
-		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) && ! WP_Stream_Admin::$disable_access && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
+		if ( ! $disallow && ! WP_Stream_Admin::$disable_access && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
 			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		}
 
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-settings.php';
+
 		add_action( 'init', array( 'WP_Stream_Notifications_Settings', 'load' ), 9 );
 
 		if ( WP_Stream::$api->is_restricted() ) {
 			add_action( 'in_admin_header', array( __CLASS__, 'in_admin_header' ) );
+
 			return;
 		}
 
-		// Include all adapters
-		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-adapter.php';
-		$adapters = array( 'email', 'push', 'sms' );
+		// Load adapter parent class
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-adapter.php';
 
+		/**
+		 * Filter the Stream Notification adapters that will be made available
+		 *
+		 * To include a custom adapter located outside the main adapter directory,
+		 * simply add it as an array within the array, with a key being the slug name
+		 * and a value being the path to the file:
+		 *
+		 * e.g. array( 'custom-adapter' => '/path/to/custom-adapter.php' )
+		 *
+		 * @return array
+		 */
+		$adapters = apply_filters( 'wp_stream_notifications_adapters', array( 'email', 'push', 'sms' ) );
+
+		// Load all adapters
 		foreach ( $adapters as $adapter ) {
-			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/class-wp-stream-notifications-adapter-' . $adapter . '.php';
+			if ( is_array( $adapter ) ) {
+				$path = array_shift( $adapter );
+
+				if ( file_exists( $path ) ) {
+					include_once $path;
+				}
+			} else {
+				$path = WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/class-wp-stream-notifications-adapter-' . $adapter . '.php';
+
+				if ( file_exists( $path ) ) {
+					include_once $path;
+				}
+			}
 		}
 
-		// Load Matcher
-		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-matcher.php';
+		// Load matcher
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-matcher.php';
+
 		$this->matcher = new WP_Stream_Notifications_Matcher();
 	}
 
