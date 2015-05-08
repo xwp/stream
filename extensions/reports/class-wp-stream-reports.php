@@ -108,12 +108,15 @@ class WP_Stream_Reports {
 			add_action( "wp_ajax_{$hook}", array( $referer, $function ) );
 		}
 
+		$action = wp_stream_filter_input( INPUT_GET, 'action' );
+
 		// Check referer here so we don't have to check it on every function call
-		if ( array_key_exists( $_REQUEST['action'], $ajax_hooks ) ) {
+		if ( array_key_exists( $action, $ajax_hooks ) ) {
 			// Checking permission
 			if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
 				wp_die( esc_html__( 'Cheating huh?', 'stream' ) );
 			}
+
 			check_admin_referer( 'stream-reports-page', 'wp_stream_reports_nonce' );
 		}
 	}
