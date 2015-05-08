@@ -115,14 +115,14 @@ class WP_Stream_Reports_Metaboxes {
 		?>
 		<div class="stream-example">
 			<div class="stream-example-modal">
-				<h1><i class="dashicons dashicons-chart-area"></i> <?php _e( 'Stream Reports', 'stream' ) ?></h1>
-				<p><?php _e( 'Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.', 'stream' ) ?></p>
+				<h1><i class="dashicons dashicons-chart-area"></i> <?php esc_html_e( 'Stream Reports', 'stream' ) ?></h1>
+				<p><?php esc_html_e( 'Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.', 'stream' ) ?></p>
 				<ul>
-					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Fully-interactive charts', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Monitor team contributions', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Responsive for any screen size', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Fully-interactive charts', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Monitor team contributions', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Responsive for any screen size', 'stream' ) ?></li>
 				</ul>
-				<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
+				<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php esc_html_e( 'Upgrade to Pro', 'stream' ) ?></a>
 			</div>
 		</div>
 		<?php
@@ -522,8 +522,8 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		$required_fields = array( 'id', 'title', 'chart_type', 'selector_id' );
-		foreach ( $required_fields as $key ){
-			if ( $input[ $key ] === null ) {
+		foreach ( $required_fields as $key ) {
+			if ( null === $input[ $key ] ) {
 				wp_send_json_error( array( 'missing' => $key, 'value' => $input[ $key ] ) );
 			}
 		}

@@ -126,15 +126,15 @@ class WP_Stream_Notifications {
 		?>
 		<div class="stream-example">
 			<div class="stream-example-modal">
-				<h1><i class="dashicons dashicons-admin-comments"></i> <?php _e( 'Stream Notifications', 'stream' ) ?></h1>
-				<p><?php _e( 'Get notified instantly when important changes are made on your site.', 'stream' ) ?></p>
+				<h1><i class="dashicons dashicons-admin-comments"></i> <?php esc_html_e( 'Stream Notifications', 'stream' ) ?></h1>
+				<p><?php esc_html_e( 'Get notified instantly when important changes are made on your site.', 'stream' ) ?></p>
 				<ul>
-					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Create notification rules quickly and easily', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Smart and powerful trigger matching', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Fully customized e-mail and SMS alerts', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Push alerts to your smartphone or tablet', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Create notification rules quickly and easily', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Smart and powerful trigger matching', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Fully customized e-mail and SMS alerts', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Push alerts to your smartphone or tablet', 'stream' ) ?></li>
 				</ul>
-				<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
+				<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php esc_html_e( 'Upgrade to Pro', 'stream' ) ?></a>
 			</div>
 		</div>
 		<?php
@@ -149,8 +149,8 @@ class WP_Stream_Notifications {
 	public function register_menu() {
 		self::$screen_id = add_submenu_page(
 			WP_Stream_Admin::RECORDS_PAGE_SLUG,
-			__( 'Notifications', 'stream' ),
-			__( 'Notifications', 'stream' ),
+			esc_html__( 'Notifications', 'stream' ),
+			esc_html__( 'Notifications', 'stream' ),
 			self::VIEW_CAP,
 			sprintf( 'edit.php?post_type=%s', WP_Stream_Notifications_Post_Type::POSTTYPE )
 		);
@@ -199,7 +199,7 @@ class WP_Stream_Notifications {
 	 */
 	public function add_sample_rule() {
 		$postarr = array(
-			'post_title'  => __( 'Sample Rule', 'stream' ),
+			'post_title'  => esc_html__( 'Sample Rule', 'stream' ),
 			'post_status' => 'draft',
 			'post_type'   => WP_Stream_Notifications_Post_Type::POSTTYPE,
 		);
@@ -253,8 +253,8 @@ class WP_Stream_Notifications {
 					'type'    => 'email',
 					'users'   => '1',
 					'emails'  => '',
-					'subject' => sprintf( __( '[Site Activity Alert] %s', 'stream' ), get_bloginfo( 'name' ) ),
-					'message' => sprintf( __( 'The following just happened on your site: %s by %s Date of action: %s', 'stream' ), "\r\n\r\n{summary}", "{author.display_name}\r\n\r\n", '{created}' )
+					'subject' => sprintf( esc_html__( '[Site Activity Alert] %s', 'stream' ), get_bloginfo( 'name' ) ),
+					'message' => sprintf( esc_html__( 'The following just happened on your site: %s by %s Date of action: %s', 'stream' ), "\r\n\r\n{summary}", "{author.display_name}\r\n\r\n", '{created}' )
 				),
 			),
 		);

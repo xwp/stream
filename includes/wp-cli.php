@@ -144,11 +144,11 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 			}
 
 			if ( 'json' === $assoc_args['format'] ) {
-				WP_CLI::line( json_encode( $formatted_records ) );
+				WP_CLI::line( wp_json_encode( $formatted_records ) );
 			}
 
 			if ( 'json_pretty' === $assoc_args['format'] ) {
-				WP_CLI::line( json_encode( $formatted_records, JSON_PRETTY_PRINT ) );
+				WP_CLI::line( wp_json_encode( $formatted_records, JSON_PRETTY_PRINT ) );
 			}
 
 			if ( 'csv' === $assoc_args['format'] ) {

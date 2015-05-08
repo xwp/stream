@@ -191,7 +191,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			);
 		} elseif ( in_array( $record->context, array( 'groups' ) ) ) {
 			$group_id = wp_stream_get_meta( $record, 'id', true );
-			$group = groups_get_group( array( 'group_id' => $group_id ) );
+			$group    = groups_get_group( array( 'group_id' => $group_id ) );
 
 			if ( $group ) {
 				// Build actions URLs
@@ -579,35 +579,26 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 		if ( $message ) {
 			// Do nothing
-		}
-		elseif ( 'created' === $action ) {
+		} elseif ( 'created' === $action ) {
 			$message = __( '"%s" group created', 'stream' );
-		}
-		elseif ( 'updated' === $action ) {
+		} elseif ( 'updated' === $action ) {
 			$message = __( '"%s" group updated', 'stream' );
-		}
-		elseif ( 'deleted' === $action ) {
+		} elseif ( 'deleted' === $action ) {
 			$message = __( '"%s" group deleted', 'stream' );
-		}
-		elseif ( 'joined' === $action ) {
+		} elseif ( 'joined' === $action ) {
 			$message = __( 'Joined group "%s"', 'stream' );
-		}
-		elseif ( 'left' === $action ) {
+		} elseif ( 'left' === $action ) {
 			$message = __( 'Left group "%s"', 'stream' );
-		}
-		elseif ( 'banned' === $action ) {
+		} elseif ( 'banned' === $action ) {
 			$message = __( 'Banned "%2$s" from "%1$s"', 'stream' );
 			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
-		}
-		elseif ( 'unbanned' === $action ) {
+		} elseif ( 'unbanned' === $action ) {
 			$message = __( 'Unbanned "%2$s" from "%1$s"', 'stream' );
 			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
-		}
-		elseif ( 'removed' === $action ) {
+		} elseif ( 'removed' === $action ) {
 			$message = __( 'Removed "%2$s" from "%1$s"', 'stream' );
 			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
-		}
-		else {
+		} else {
 			return;
 		}
 
@@ -701,17 +692,13 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 		if ( $message ) {
 			// Do nothing
-		}
-		elseif ( 'created' === $action ) {
+		} elseif ( 'created' === $action ) {
 			$message = __( 'Created profile field "%s"', 'stream' );
-		}
-		elseif ( 'updated' === $action ) {
+		} elseif ( 'updated' === $action ) {
 			$message = __( 'Updated profile field "%s"', 'stream' );
-		}
-		elseif ( 'deleted' === $action ) {
+		} elseif ( 'deleted' === $action ) {
 			$message = __( 'Deleted profile field "%s"', 'stream' );
-		}
-		else {
+		} else {
 			return;
 		}
 
@@ -750,17 +737,13 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 
 		if ( $message ) {
 			// Do nothing
-		}
-		elseif ( 'created' === $action ) {
+		} elseif ( 'created' === $action ) {
 			$message = __( 'Created profile field group "%s"', 'stream' );
-		}
-		elseif ( 'updated' === $action ) {
+		} elseif ( 'updated' === $action ) {
 			$message = __( 'Updated profile field group "%s"', 'stream' );
-		}
-		elseif ( 'deleted' === $action ) {
+		} elseif ( 'deleted' === $action ) {
 			$message = __( 'Deleted profile field group "%s"', 'stream' );
-		}
-		else {
+		} else {
 			return;
 		}
 

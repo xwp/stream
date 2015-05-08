@@ -303,7 +303,7 @@ class WP_Stream_Notifications_Matcher {
 				break;
 		}
 
-		$result = ( $match == ! $negative ); // Loose comparison needed
+		$result = ( ! $negative == $match ); // Loose comparison needed
 
 		return $result;
 	}

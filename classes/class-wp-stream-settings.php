@@ -626,7 +626,7 @@ class WP_Stream_Settings {
 					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
-					esc_attr( json_encode( $data_values ) ),
+					esc_attr( wp_json_encode( $data_values ) ),
 					esc_attr( $current_value ),
 					$class,
 					sprintf( esc_html__( 'Any %s', 'stream' ), $title )
@@ -714,7 +714,7 @@ class WP_Stream_Settings {
 						esc_attr( $section ),
 						esc_attr( $name ),
 						'author_or_role',
-						esc_attr( json_encode( $author_or_role_values ) ),
+						esc_attr( wp_json_encode( $author_or_role_values ) ),
 						isset( $author_or_role_selected['id'] ) ? esc_attr( $author_or_role_selected['id'] ) : '',
 						isset( $author_or_role_selected['text'] ) ? esc_attr( $author_or_role_selected['text'] ) : '',
 						esc_html__( 'Any Author or Role', 'stream' ),
@@ -756,7 +756,7 @@ class WP_Stream_Settings {
 						esc_attr( $section ),
 						esc_attr( $name ),
 						'context',
-						esc_attr( json_encode( $context_values ) ),
+						esc_attr( wp_json_encode( $context_values ) ),
 						esc_attr( $context ),
 						esc_html__( 'Any Context', 'stream' ),
 						'connector'
@@ -775,7 +775,7 @@ class WP_Stream_Settings {
 						esc_attr( $section ),
 						esc_attr( $name ),
 						'action',
-						esc_attr( json_encode( $action_values ) ),
+						esc_attr( wp_json_encode( $action_values ) ),
 						esc_attr( $action ),
 						esc_html__( 'Any Action', 'stream' )
 					);

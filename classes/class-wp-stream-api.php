@@ -130,7 +130,7 @@ class WP_Stream_API {
 		if ( $site && ! is_wp_error( $site ) ) {
 			$is_restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type ) ? 1 : 0;
 
-			if ( self::$restricted !== (bool) $is_restricted ) {
+			if ( (bool) $is_restricted !== self::$restricted ) {
 				self::$restricted = $is_restricted;
 
 				update_option( self::RESTRICTED_OPTION_KEY, $is_restricted );
@@ -317,7 +317,7 @@ class WP_Stream_API {
 		}
 
 		$url  = $this->request_url( sprintf( '/sites/%s/records', urlencode( $this->site_uuid ) ) );
-		$args = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ), 'blocking' => (bool) $blocking );
+		$args = array( 'method' => 'POST', 'body' => wp_json_encode( array( 'records' => $records ) ), 'blocking' => (bool) $blocking );
 
 		return $this->remote_request( $url, $args );
 	}
@@ -345,7 +345,7 @@ class WP_Stream_API {
 		$body['search_type'] = ! empty( $search_type ) ? $search_type : '';
 
 		$url  = $this->request_url( '/search' );
-		$args = array( 'method' => 'POST', 'body' => json_encode( (object) $body ) );
+		$args = array( 'method' => 'POST', 'body' => wp_json_encode( (object) $body ) );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
 	}

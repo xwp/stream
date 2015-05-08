@@ -162,7 +162,8 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 			/* fix for missing title for this single field */
 			$settings['bbp_settings_features']['_bbp_allow_threaded_replies']['title'] = __( 'Reply Threading', 'stream' );
 
-			$option   = $data['args']['option'];
+			$option = $data['args']['option'];
+
 			foreach ( $settings as $section => $fields ) {
 				if ( isset( $fields[ $option ] ) ) {
 					$field = $fields[ $option ];
@@ -178,8 +179,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 			$data['connector']     = self::$name;
 			$data['context']       = 'settings';
 			$data['action']        = 'updated';
-		}
-		elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ) ) ) {
+		} elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ) ) ) {
 			if ( 'reply' === $data['context'] ) {
 				if ( 'updated' === $data['action'] ) {
 					$data['message'] = __( 'Replied on "%1$s"', 'stream' );
@@ -192,8 +192,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 			}
 
 			$data['connector'] = self::$name;
-		}
-		elseif ( 'taxonomies' === $data['connector'] && in_array( $data['context'], array( 'topic-tag' ) ) ) {
+		} elseif ( 'taxonomies' === $data['connector'] && in_array( $data['context'], array( 'topic-tag' ) ) ) {
 			$data['connector'] = self::$name;
 		}
 

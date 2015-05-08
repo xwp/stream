@@ -43,7 +43,8 @@ class WP_Stream_Reports_Charts {
 	 */
 	public function sort_coordinates_by_count( $records ) {
 		$counts = array();
-		foreach ( $records as $field => $data ){
+
+		foreach ( $records as $field => $data ) {
 
 			$count = count( $data );
 			if ( ! array_key_exists( $count, $counts ) ) {
@@ -59,8 +60,8 @@ class WP_Stream_Reports_Charts {
 		krsort( $counts );
 
 		$output = array();
-		foreach ( $counts as $count => $element ) {
 
+		foreach ( $counts as $count => $element ) {
 			foreach ( $element as $element_data ) {
 				$output[ $element_data['key'] ] = $element_data['data'];
 			}
@@ -86,6 +87,7 @@ class WP_Stream_Reports_Charts {
 		}
 
 		$other_element = array();
+
 		foreach ( $leftover_elements as $data ) {
 			$other_element = array_merge( $other_element, $data );
 		}
@@ -235,6 +237,7 @@ class WP_Stream_Reports_Charts {
 	 */
 	public function offset_record_dates( $records ) {
 		$offset = get_option( 'gmt_offset' );
+
 		foreach ( $records as $record => $items ) {
 			foreach ( $items as $key => $item ) {
 				$records[ $record ][ $key ]->created = wp_stream_get_iso_8601_extended_date( strtotime( $item->created ), $offset );

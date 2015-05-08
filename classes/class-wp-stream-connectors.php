@@ -166,9 +166,11 @@ class WP_Stream_Connectors {
 		if ( ! empty( self::$admin_notices ) ) :
 			?>
 			<div class="error">
-				<?php foreach ( self::$admin_notices as $message ) : ?>
-					<?php echo wpautop( esc_html( $message ) ) // xss ok ?>
-				<?php endforeach; ?>
+				<?php
+				foreach ( self::$admin_notices as $message ) {
+					echo wpautop( esc_html( $message ) ); // xss ok
+				}
+				?>
 			</div>
 			<?php
 		endif;

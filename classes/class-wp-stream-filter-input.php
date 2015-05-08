@@ -105,7 +105,7 @@ class WP_Stream_Filter_Input {
 		$test = @preg_match( $var, '' );
 		// @codingStandardsIgnoreEnd
 
-		return $test !== false;
+		return false !== $test;
 	}
 
 	public static function is_ip_address( $var ) {
