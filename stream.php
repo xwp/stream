@@ -150,7 +150,7 @@ class WP_Stream {
 			add_action( 'init', array( 'WP_Stream_Pointers', 'load' ) );
 
 			// Ignore migrate class on VIP
-			if ( ! function_exists( 'wpcom_vip_load_plugin' ) ) {
+			if ( ! self::is_vip() ) {
 				add_action( 'init', array( 'WP_Stream_Migrate', 'load' ) );
 			}
 		}
@@ -191,6 +191,15 @@ class WP_Stream {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Check if Stream is running on WordPress.com VIP
+	 *
+	 * @return bool
+	 */
+	public static function is_vip() {
+		return function_exists( 'wpcom_vip_load_plugin' );
 	}
 
 	/**
@@ -251,7 +260,7 @@ class WP_Stream {
 		$class_file = sprintf( '%sclass-%s.php', WP_STREAM_CLASS_DIR, $class );
 
 		// Ignore migrate class on VIP
-		if ( function_exists( 'wpcom_vip_load_plugin' ) && 'wp-stream-migrate' === $class ) {
+		if ( self::is_vip() && 'wp-stream-migrate' === $class ) {
 			return;
 		}
 

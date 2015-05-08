@@ -103,7 +103,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 				$term_id = empty( $term_id ) ? $term->term_id : $term_id;
 
 				$links[ sprintf( _x( 'Edit %s', 'Term singular name', 'stream' ), $tax_label ) ] = get_edit_term_link( $term_id, $term->taxonomy );
-				$links[ __( 'View', 'stream' ) ] = function_exists( 'wpcom_vip_get_term_link' ) ? wpcom_vip_get_term_link( $term_id, $term->taxonomy ) : get_term_link( $term_id, $term->taxonomy );
+				$links[ __( 'View', 'stream' ) ] = WP_Stream::is_vip() ? wpcom_vip_get_term_link( $term_id, $term->taxonomy ) : get_term_link( $term_id, $term->taxonomy );
 			}
 		}
 

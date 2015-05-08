@@ -97,7 +97,7 @@ class WP_Stream_Notifications {
 		$disallow = apply_filters( 'wp_stream_notifications_disallow_site_access', false );
 
 		// Notifications are not allowed on VIP
-		if ( function_exists( 'wpcom_vip_load_plugin' ) )
+		if ( WP_Stream::is_vip() )
 			$disallow = true;
 		}
 
