@@ -95,19 +95,19 @@ class WP_Stream_Notifications_List_Table {
 		}
 
 		if ( isset( $vars['orderby'] ) && 'occurrences' === $vars['orderby'] ) {
+			$vars['orderby']    = 'meta_value_num';
+			$vars['meta_key']   = 'occurrences';
 			$vars['meta_query'] = array(
 				'relation' => 'OR',
-				0 => array(
+				array(
 					'key'     => 'occurrences',
 					'compare' => 'EXISTS',
 				),
-				1 => array(
+				array(
 					'key'     => 'occurrences',
 					'compare' => 'NOT EXISTS',
 				),
 			);
-			$vars['meta_key']   = 'occurrences';
-			$vars['orderby']    = 'meta_value_num';
 		}
 
 		return $vars;
