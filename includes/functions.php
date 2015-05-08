@@ -148,10 +148,6 @@ function wp_stream_is_wp_cron_enabled() {
  * @return bool|string
  */
 function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
-	if ( JSON_PRETTY_PRINT === $options && version_compare( PHP_VERSION, '5.4', '<' ) ) {
-		$options = 0;
-	}
-
 	if ( function_exists( 'wp_json_encode' ) ) {
 		$json = wp_json_encode( $data, $options, $depth );
 	} else {
