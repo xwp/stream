@@ -82,7 +82,7 @@ class WP_Stream_Notifications_Matcher {
 		$args  = array(
 			'post_type'      => WP_Stream_Notifications_Post_Type::POSTTYPE,
 			'post_status'    => 'publish',
-			'posts_per_page' => 999,
+			'posts_per_page' => 999, // VIP safe
 		);
 		$query = new WP_Query( $args );
 		$rules = $query->get_posts();
