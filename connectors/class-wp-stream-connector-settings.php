@@ -640,7 +640,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		<script>
 			(function ($) {
 				$(function () {
-					var hashPrefix = <?php echo wp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) ?>,
+					var hashPrefix = <?php echo wp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) // xss ok ?>,
 					    hashFieldName = "",
 					    fieldNames = [],
 					    $select2Choices = {},
