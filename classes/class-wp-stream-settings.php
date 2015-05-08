@@ -347,9 +347,7 @@ class WP_Stream_Settings {
 
 		foreach ( $fields as $section_name => $section ) {
 			foreach ( $section['fields'] as $field ) {
-				$defaults[ $section_name.'_'.$field['name'] ] = isset( $field['default'] )
-					? $field['default']
-					: null;
+				$defaults[ $section_name . '_' . $field['name'] ] = isset( $field['default'] ) ? $field['default'] : null;
 			}
 		}
 
@@ -387,6 +385,7 @@ class WP_Stream_Settings {
 				if ( ! isset( $field['type'] ) ) { // No field type associated, skip, no GUI
 					continue;
 				}
+
 				add_settings_field(
 					$field['name'],
 					$field['title'],
@@ -628,7 +627,7 @@ class WP_Stream_Settings {
 					esc_attr( $name ),
 					esc_attr( wp_stream_json_encode( $data_values ) ),
 					esc_attr( $current_value ),
-					$class,
+					esc_attr( $class ),
 					sprintf( esc_html__( 'Any %s', 'stream' ), $title )
 				);
 
