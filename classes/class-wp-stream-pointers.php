@@ -109,7 +109,7 @@ class WP_Stream_Pointers {
 		<script type="text/javascript">
 		//<![CDATA[
 		(function($){
-			var options = <?php echo wp_json_encode( $args ) ?>, setup;
+			var options = <?php echo wp_stream_json_encode( $args ) ?>, setup;
 
 			if ( ! options ) {
 				return;
@@ -118,14 +118,14 @@ class WP_Stream_Pointers {
 			options = $.extend( options, {
 				close: function() {
 					$.post( ajaxurl, {
-						pointer: <?php echo wp_json_encode( $pointer_id ) ?>,
+						pointer: <?php echo wp_stream_json_encode( $pointer_id ) ?>,
 						action: 'dismiss-wp-pointer'
 					});
 				}
 			});
 
 			setup = function() {
-				$(<?php echo wp_json_encode( $selector ) ?>).first().pointer( options ).pointer('open');
+				$(<?php echo wp_stream_json_encode( $selector ) ?>).first().pointer( options ).pointer('open');
 			};
 
 			if ( options.position && options.position.defer_loading ) {

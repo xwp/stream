@@ -375,7 +375,7 @@ class WP_Stream_Admin {
 				'current_screen'      => $hook,
 				'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 				'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
-				'current_query'       => wp_json_encode( $_GET ),
+				'current_query'       => wp_stream_json_encode( $_GET ),
 				'current_query_count' => count( $_GET ),
 			)
 		);
@@ -1179,7 +1179,7 @@ class WP_Stream_Admin {
 		}
 
 		if ( isset( $results ) ) {
-			echo wp_json_encode( array_values( $results ) );
+			echo wp_stream_json_encode( array_values( $results ) );
 		}
 
 		die();
@@ -1209,7 +1209,7 @@ class WP_Stream_Admin {
 				$value = '';
 		}
 
-		echo wp_json_encode( $value );
+		echo wp_stream_json_encode( $value );
 
 		wp_die();
 	}

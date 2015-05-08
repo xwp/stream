@@ -417,8 +417,8 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 				continue;
 			}
 
-			$new     = array_map( 'json_encode', $new );
-			$old     = array_map( 'json_encode', $old );
+			$new     = array_map( 'wp_stream_json_encode', $new );
+			$old     = array_map( 'wp_stream_json_encode', $old );
 			$added   = array_diff( $new, $old );
 			$deleted = array_diff( $old, $new );
 

@@ -71,7 +71,7 @@
 			),
 		);
 	?>
-	<div class="report-chart" style='height: 300px; width: 500px;' data-report='<?php echo wp_json_encode( $args ) ?>'><svg></svg></div>
+	<div class="report-chart" style='height: 300px; width: 500px;' data-report='<?php echo wp_stream_json_encode( $args ) ?>'><svg></svg></div>
 
 	<?php
 		$args = array(
@@ -143,7 +143,7 @@
 			),
 		);
 	?>
-	<div class="report-chart" style='height: 300px; width: 500px;' data-report='<?php echo wp_json_encode( $args ) ?>'><svg></svg></div>
+	<div class="report-chart" style='height: 300px; width: 500px;' data-report='<?php echo wp_stream_json_encode( $args ) ?>'><svg></svg></div>
 
 	<?php
 		$args = array(
@@ -168,7 +168,7 @@
 			),
 		);
 	?>
-	<div class="report-chart" style='height: 300px; width: 500px;' data-report='<?php echo wp_json_encode( $args ) ?>'><svg></svg></div>
+	<div class="report-chart" style='height: 300px; width: 500px;' data-report='<?php echo wp_stream_json_encode( $args ) ?>'><svg></svg></div>
 
 	<div style='clear:both'></div>
 	<?php
@@ -245,5 +245,5 @@
 			),
 		);
 	?>
-	<div class="report-chart" style='height: 300px; width: 500px;' data-report='<?php echo wp_json_encode( $args ) ?>'><svg></svg></div>
+	<div class="report-chart" style='height: 300px; width: 500px;' data-report='<?php echo wp_stream_json_encode( $args ) ?>'><svg></svg></div>
 </div>

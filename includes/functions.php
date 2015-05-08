@@ -137,3 +137,26 @@ function wp_stream_get_object_title( $record ) {
 function wp_stream_is_wp_cron_enabled() {
 	return ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
 }
+
+/**
+ * Encode to JSON in a way that is also backwards compatible
+ *
+ * @param mixed $data
+ * @param int   $options (optional)
+ * @param int   $depth (optional)
+ *
+ * @return bool|string
+ */
+function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
+	if (
+		JSON_PRETTY_PRINT === $options
+		&&
+		version_compare( PHP_VERSION, '5.4', '<' )
+	) {
+		$options = 0;
+	}
+
+	// @codingStandardsIgnoreStart
+	return function_exists( 'wp_json_encode' ) ? wp_json_encode( $data, $options, $depth ) : json_encode( $data, $options, $depth );
+	// @codingStandardsIgnoreEnd
+}
