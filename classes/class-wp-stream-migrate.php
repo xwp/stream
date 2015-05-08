@@ -315,7 +315,7 @@ class WP_Stream_Migrate {
 		$url  = WP_Stream::$api->request_url( sprintf( '/sites/%s/records', urlencode( WP_Stream::$api->site_uuid ) ) );
 		$args = array(
 			'method'    => 'POST',
-			'body'      => wp_json_encode( array( 'records' => $records ) ),
+			'body'      => wp_stream_json_encode( array( 'records' => $records ) ),
 			'sslverify' => true,
 			'blocking'  => true,
 			'headers'   => array(
