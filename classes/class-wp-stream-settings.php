@@ -371,7 +371,7 @@ class WP_Stream_Settings {
 	public static function register_settings() {
 		$sections = self::get_fields();
 
-		register_setting( self::$option_key, self::$option_key );
+		register_setting( self::$option_key, self::$option_key, array( __CLASS__, 'sanitize_settings' ) );
 
 		foreach ( $sections as $section_name => $section ) {
 			add_settings_section(
@@ -399,6 +399,56 @@ class WP_Stream_Settings {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Sanitization callback for settings field values before save
+	 *
+	 * @param array $input
+	 *
+	 * @return array
+	 */
+	public static function sanitize_settings( $input ) {
+		$output   = array();
+		$sections = self::get_fields();
+
+		foreach ( $sections as $section => $data ) {
+			if ( empty( $data['fields'] ) || ! is_array( $data['fields'] ) ) {
+				continue;
+			}
+
+			foreach ( $data['fields'] as $field ) {
+				$type = ! empty( $field['type'] ) ? $field['type'] : null;
+				$name = ! empty( $field['name'] ) ? sprintf( '%s_%s', $section, $field['name'] ) : null;
+
+				if ( empty( $type ) || empty( $input[ $name ] ) ) {
+					continue;
+				}
+
+				// Sanitize depending on the type of field
+				switch ( $type ) {
+					case 'number':
+						$output[ $name ] = is_numeric( $input[ $name ] ) ? intval( trim( $input[ $name ] ) ) : '';
+						break;
+					case 'checkbox':
+						$output[ $name ] = is_numeric( $input[ $name ] ) ? absint( trim( $input[ $name ] ) ) : '';
+						break;
+					default:
+						if ( is_array( $input[ $name ] ) ) {
+							$output[ $name ] = $input[ $name ];
+
+							// Support all values in multidimentional arrays too
+							array_walk_recursive( $output[ $name ], function( &$v, $k ) {
+								$v = trim( $v );
+							} );
+						} else {
+							$output[ $name ] = trim( $input[ $name ] );
+						}
+				}
+			}
+		}
+
+		return $output;
 	}
 
 	/**
