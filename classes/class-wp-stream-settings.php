@@ -687,10 +687,11 @@ class WP_Stream_Settings {
 
 					foreach ( self::get_roles() as $role_id => $role ) {
 						$args  = array( 'id' => $role_id, 'text' => $role );
-						$users = get_users( array( 'role' => $role_id ) );
+						$users = count_users();
+						$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
 
-						if ( count( $users ) ) {
-							$args['user_count'] = sprintf( _n( '1 user', '%s users', count( $users ), 'stream' ), count( $users ) );
+						if ( ! empty( $count ) ) {
+							$args['user_count'] = sprintf( _n( '1 user', '%s users', absint( $count ), 'stream' ), absint( $count ) );
 						}
 
 						if ( $role_id === $author_or_role ) {
