@@ -63,7 +63,7 @@ class WP_Stream_Settings {
 	 * @uses WP_User_Query WordPress User Query class.
 	 * @return void
 	 */
-	public static function get_users(){
+	public static function get_users() {
 		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
 			return;
 		}
@@ -148,7 +148,7 @@ class WP_Stream_Settings {
 	* @uses WP_User_Query WordPress User Query class.
 	* @return void
 	*/
-	public static function get_ips(){
+	public static function get_ips() {
 		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
 			return;
 		}
@@ -173,7 +173,7 @@ class WP_Stream_Settings {
 	 *
 	 * @return array
 	 */
-	public static function add_display_name_search_columns( $search_columns, $search, $query ){
+	public static function add_display_name_search_columns( $search_columns, $search, $query ) {
 		$search_columns[] = 'display_name';
 
 		return $search_columns;
