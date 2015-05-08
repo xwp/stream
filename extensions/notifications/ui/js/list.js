@@ -10,5 +10,6 @@ jQuery( function( $ ) {
 		});
 
 		$bulkSelect.find( 'option:first' ).after( opts );
+		$bulkSelect.find( 'option[value="edit"]' ).remove();
 	}
 });
