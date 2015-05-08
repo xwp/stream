@@ -2,19 +2,17 @@
 
 	<select class="field-predefined" data-placeholder="<?php esc_attr_e( 'All Time', 'stream' ) ?>">
 		<option></option>
-		<option value="custom" <?php selected( 'custom' === $user_interval['key'] ) ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
+		<option value="custom" <?php selected( 'custom', $user_interval['key'] ) ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
 		<?php
 		foreach ( $date->intervals as $key => $interval ) {
 			$start = isset( $interval['start'] ) ? $interval['start']->format( 'Y/m/d' ) : null;
 			$end   = isset( $interval['end'] ) ? $interval['end']->format( 'Y/m/d' ) : date( 'Y/m/d' );
-			$key   = ( $key === $user_interval['key'] ) ? 'selected="selected"' : null;
 
-			printf(
-				'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
+			printf( '<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 				esc_attr( $key ),
 				esc_attr( $start ),
 				esc_attr( $end ),
-				$key, // xss ok
+				selected( $key, $user_interval['key'], false ),
 				esc_html( $interval['label'] )
 			);
 		}
