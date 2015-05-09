@@ -195,14 +195,18 @@ class WP_Stream_Notifications_List_Table {
 			return;
 		}
 
-		$post    = wp_stream_filter_input( INPUT_GET, 'post' );
+		// @codingStandardsIgnoreStart
+		$post = wp_stream_filter_input( INPUT_GET, 'post' ); // We are just reading this global, not overridding it
+		// @codingStandardsIgnoreEnd
+
 		$id      = wp_stream_filter_input( INPUT_GET, 'id' );
 		$request = $post ? is_array( $post ) ? $post : explode( ',', $post ) : ( $id ? array( $id ) : array() );
-		$ids     = array_map( 'absint', $request );
 
-		if ( empty( $ids ) ) {
+		if ( empty( $request ) ) {
 			return;
 		}
+
+		$ids = array_map( 'absint', $request );
 
 		if ( in_array( $action, array( 'publish', 'unpublish' ) ) ) {
 			$status = ( 'publish' === $action ) ? 'publish' : 'draft';
