@@ -199,7 +199,7 @@ class WP_Stream {
 	 * @return bool
 	 */
 	public static function is_vip() {
-		return ( defined( 'WPCOM_IS_VIP_ENV' ) && WPCOM_IS_VIP_ENV );
+		return function_exists( 'wpcom_vip_load_plugin' );
 	}
 
 	/**
