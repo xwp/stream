@@ -48,8 +48,8 @@ class WP_Stream_Migrate {
 	 * @return void
 	 */
 	public static function load() {
-		// Exit early if there is no option holding the DB version
-		if ( false === get_site_option( 'wp_stream_db' ) ) {
+		// Exit early if on VIP or there is no option holding the DB version
+		if ( WP_Stream::is_vip() || false === get_site_option( 'wp_stream_db' ) ) {
 			return;
 		}
 
