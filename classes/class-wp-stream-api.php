@@ -368,7 +368,7 @@ class WP_Stream_API {
 	}
 
 	/**
-	 * Helper function to query the marketplace API via wp_remote_request.
+	 * Helper function to query the marketplace API via wp_safe_remote_request.
 	 *
 	 * @param string The url to access.
 	 * @param string The method of the request.
@@ -376,7 +376,7 @@ class WP_Stream_API {
 	 * @param bool   Allow API calls to be cached.
 	 * @param int    Set transient expiration in seconds.
 	 *
-	 * @return object The results of the wp_remote_request request.
+	 * @return object The results of the wp_safe_remote_request request.
 	 */
 	protected function remote_request( $url = '', $args = array(), $allow_cache = true, $expiration = 300 ) {
 		if ( empty( $url ) || empty( $this->api_key ) ) {
@@ -407,12 +407,12 @@ class WP_Stream_API {
 
 		if ( 'GET' === $args['method'] && $allow_cache ) {
 			if ( false === ( $request = get_transient( $transient ) ) ) {
-				$request = wp_remote_request( $url, $args );
+				$request = wp_safe_remote_request( $url, $args );
 
 				set_transient( $transient, $request, $expiration );
 			}
 		} else {
-			$request = wp_remote_request( $url, $args );
+			$request = wp_safe_remote_request( $url, $args );
 		}
 
 		remove_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10 );
