@@ -87,9 +87,9 @@ class WP_Stream {
 	private function __construct() {
 		$locate = $this->locate_plugin();
 
-		define( 'WP_STREAM_URL', $locate['dir_url'] );
+		define( 'WP_STREAM_PLUGIN', $locate['plugin_basename'] );
 		define( 'WP_STREAM_DIR', $locate['dir_path'] );
-		define( 'WP_STREAM_PLUGIN', WP_STREAM_DIR . basename( __FILE__ ) );
+		define( 'WP_STREAM_URL', $locate['dir_url'] );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 		define( 'WP_STREAM_EXTENSIONS_DIR', WP_STREAM_DIR . 'extensions/' );
@@ -456,8 +456,9 @@ class WP_Stream {
 		$dir_url          = content_url( trailingslashit( $content_sub_path ) );
 		$dir_path         = trailingslashit( $plugin_dir );
 		$dir_basename     = basename( $plugin_dir );
+		$plugin_basename  = trailingslashit( $dir_basename ) . basename( __FILE__ );
 
-		return compact( 'dir_url', 'dir_path', 'dir_basename' );
+		return compact( 'dir_url', 'dir_path', 'dir_basename', 'plugin_basename' );
 	}
 
 	/**
