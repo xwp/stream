@@ -54,8 +54,8 @@ class WP_Stream_Reports {
 			return;
 		}
 
-		// Must be fired on plugins_loaded for date range filters to work properly
-		add_action( 'plugins_loaded', array( $this, 'load' ) );
+		// Must be fired on priority 9 or earlier for date range filters to work properly
+		add_action( 'init', array( $this, 'load' ), 9 );
 	}
 
 	/**
