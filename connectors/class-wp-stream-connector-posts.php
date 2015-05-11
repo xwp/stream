@@ -245,7 +245,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 			array(
 				'post_title'    => $post->post_title,
 				'singular_name' => $post_type_name,
-				'post_date'     => get_date_from_gmt( $post->post_date_gmt, 'M j, Y @ H:i' ),
+				'post_date'     => $post->post_date,
 				'post_date_gmt' => $post->post_date_gmt,
 				'new_status'    => $new,
 				'old_status'    => $old,
