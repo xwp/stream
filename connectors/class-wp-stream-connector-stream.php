@@ -17,7 +17,7 @@ class WP_Stream_Connector_Stream extends WP_Stream_Connector {
 	public static $actions = array(
 		'wp_stream_site_connected',
 		'wp_stream_site_disconnected',
-		'wp_stream_record_array',
+		'wp_stream_log_data',
 	);
 
 	/**
@@ -99,14 +99,18 @@ class WP_Stream_Connector_Stream extends WP_Stream_Connector {
 	/**
 	 * Updates to certain Stream options can skip being logged
 	 *
-	 * @filter wp_stream_record_array
+	 * @filter wp_stream_log_data
 	 *
-	 * @param array $records
+	 * @param array $data
 	 *
-	 * @return array
+	 * @return array|bool
 	 */
-	public static function callback_wp_stream_record_array( $records ) {
-		$stream_options = array(
+	public static function callback_wp_stream_log_data( $data ) {
+		if ( ! is_array( $data ) ) {
+			return $data;
+		}
+
+		$options_override = array(
 			'wp_stream_status',
 			'wp_stream_site_uuid',
 			'wp_stream_site_api_key',
@@ -114,18 +118,18 @@ class WP_Stream_Connector_Stream extends WP_Stream_Connector {
 		);
 
 		if (
-			! empty( $records[0]['connector'] )
+			! empty( $data['connector'] )
 			&&
-			self::$name === $records[0]['connector']
+			'settings' === $data['connector']
 			&&
-			! empty( $records[0]['stream_meta']['option'] )
+			! empty( $data['args']['option'] )
 			&&
-			in_array( $records[0]['stream_meta']['option'], $stream_options )
+			in_array( $data['args']['option'], $options_override )
 		) {
-			return;
+			return false;
 		}
 
-		return $records;
+		return $data;
 	}
 
 }
