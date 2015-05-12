@@ -17,6 +17,7 @@ class WP_Stream_Connector_Stream extends WP_Stream_Connector {
 	public static $actions = array(
 		'wp_stream_site_connected',
 		'wp_stream_site_disconnected',
+		'wp_stream_log_data',
 	);
 
 	/**
@@ -93,6 +94,42 @@ class WP_Stream_Connector_Stream extends WP_Stream_Connector {
 			'site',
 			'disconnected'
 		);
+	}
+
+	/**
+	 * Updates to certain Stream options can skip being logged
+	 *
+	 * @filter wp_stream_log_data
+	 *
+	 * @param array $data
+	 *
+	 * @return array|bool
+	 */
+	public static function callback_wp_stream_log_data( $data ) {
+		if ( ! is_array( $data ) ) {
+			return $data;
+		}
+
+		$options_override = array(
+			'wp_stream_status',
+			'wp_stream_site_uuid',
+			'wp_stream_site_api_key',
+			'wp_stream_site_restricted',
+		);
+
+		if (
+			! empty( $data['connector'] )
+			&&
+			'settings' === $data['connector']
+			&&
+			! empty( $data['args']['option'] )
+			&&
+			in_array( $data['args']['option'], $options_override )
+		) {
+			return false;
+		}
+
+		return $data;
 	}
 
 }
