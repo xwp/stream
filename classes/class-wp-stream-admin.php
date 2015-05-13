@@ -237,12 +237,16 @@ class WP_Stream_Admin {
 			/**
 			 * Filter the main admin page title
 			 *
+			 * @since 2.0.6
+			 *
 			 * @return string
 			 */
 			$main_page_title = apply_filters( 'wp_stream_admin_page_title', esc_html__( 'Stream', 'stream' ) );
 
 			/**
 			 * Filter the main admin menu title
+			 *
+			 * @since 2.0.6
 			 *
 			 * @return string
 			 */
