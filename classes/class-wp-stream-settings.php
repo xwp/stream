@@ -214,28 +214,6 @@ class WP_Stream_Settings {
 						'choices'     => self::get_roles(),
 						'default'     => array( 'administrator' ),
 					),
-					array(
-						'name'        => 'private_feeds',
-						'title'       => esc_html__( 'Private Feeds', 'stream' ),
-						'type'        => 'checkbox',
-						'desc'        => sprintf(
-							__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
-							sprintf(
-								'<a href="%s" title="%s">',
-								admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_OPTION_KEY ) ),
-								esc_attr__( 'View Profile', 'stream' )
-							),
-							'</a>',
-							sprintf(
-								'<a href="%s" title="%s" target="_blank">',
-								esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
-								esc_attr__( 'View Codex', 'stream' )
-							),
-							'</a>'
-						),
-						'after_field' => esc_html__( 'Enabled', 'stream' ),
-						'default'     => 0,
-					),
 				),
 			),
 			'exclude' => array(
@@ -265,6 +243,34 @@ class WP_Stream_Settings {
 				),
 			),
 		);
+
+		// Private feeds not available on VIP
+		if ( ! WP_Stream::is_vip() ) {
+			$private_feeds = array(
+				'name'        => 'private_feeds',
+				'title'       => esc_html__( 'Private Feeds', 'stream' ),
+				'type'        => 'checkbox',
+				'desc'        => sprintf(
+					__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
+					sprintf(
+						'<a href="%s" title="%s">',
+						admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_OPTION_KEY ) ),
+						esc_attr__( 'View Profile', 'stream' )
+					),
+					'</a>',
+					sprintf(
+						'<a href="%s" title="%s" target="_blank">',
+						esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
+						esc_attr__( 'View Codex', 'stream' )
+					),
+					'</a>'
+				),
+				'after_field' => esc_html__( 'Enabled', 'stream' ),
+				'default'     => 0,
+			);
+
+			array_push( $fields['general']['fields'], $private_feeds );
+		}
 
 		// If Akismet is active, allow Admins to opt-in to Akismet tracking
 		if ( class_exists( 'Akismet' ) ) {

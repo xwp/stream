@@ -9,7 +9,13 @@ class WP_Stream_Feeds {
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
 
 	public static function load() {
-		if ( ! isset( WP_Stream_Settings::$options['general_private_feeds'] ) || ! WP_Stream_Settings::$options['general_private_feeds'] ) {
+		if (
+			WP_Stream::is_vip()
+			||
+			! isset( WP_Stream_Settings::$options['general_private_feeds'] )
+			||
+			! WP_Stream_Settings::$options['general_private_feeds']
+		) {
 			return;
 		}
 

@@ -150,6 +150,7 @@ class WP_Stream {
 			add_action( 'init', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
 			add_action( 'init', array( 'WP_Stream_Live_Update', 'load' ) );
 			add_action( 'init', array( 'WP_Stream_Pointers', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Unread', 'load' ) );
 			add_action( 'init', array( 'WP_Stream_Migrate', 'load' ) );
 		}
 
