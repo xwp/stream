@@ -400,7 +400,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		}
 
 		$old_status = WP_Stream::is_vip() ? wpcom_vip_get_term_by( 'slug', $old, 'shop_order_status' ) : get_term_by( 'slug', $old, 'shop_order_status' );
-		$new_status = WP_Stream::is_vip() ?wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' ) : get_term_by( 'slug', $new, 'shop_order_status' );
+		$new_status = WP_Stream::is_vip() ? wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' ) : get_term_by( 'slug', $new, 'shop_order_status' );
 
 		// Don't track new statuses
 		if ( ! $old_status ) {
