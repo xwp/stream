@@ -129,7 +129,7 @@ class WP_Stream_Unread {
 		}
 
 		$screen        = get_current_screen();
-		$is_list_table = ( isset( $screen->id ) && sprintf( 'toplevel_page_%s', self::RECORDS_PAGE_SLUG ) === $screen->id );
+		$is_list_table = ( isset( $screen->id ) && sprintf( 'toplevel_page_%s', WP_Stream_Admin::RECORDS_PAGE_SLUG ) === $screen->id );
 		$is_first_page = empty( $query['from'] );
 		$is_date_desc  = ( isset( $query['sort'][0]['created']['order'] ) && 'desc' === $query['sort'][0]['created']['order'] );
 
