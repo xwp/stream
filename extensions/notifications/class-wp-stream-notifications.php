@@ -144,6 +144,13 @@ class WP_Stream_Notifications {
 		$this->matcher = new WP_Stream_Notifications_Matcher();
 	}
 
+	/**
+	 * Display extension preview info
+	 *
+	 * @action in_admin_header
+	 *
+	 * @return void
+	 */
 	public static function in_admin_header() {
 		global $typenow;
 
@@ -171,6 +178,7 @@ class WP_Stream_Notifications {
 	 * Register Notification menu under Stream's main one
 	 *
 	 * @action admin_menu
+	 *
 	 * @return void
 	 */
 	public function register_menu() {
@@ -191,7 +199,8 @@ class WP_Stream_Notifications {
 	}
 
 	/**
-	 * Plugin activation routine
+	 * Do things when being set up for the first time
+	 *
 	 * @return void
 	 */
 	public function on_activation() {
@@ -205,6 +214,7 @@ class WP_Stream_Notifications {
 	/**
 	 * Add a sample rule, used upon activation
 	 *
+	 * @return void
 	 */
 	public function add_sample_rule() {
 		$postarr = array(

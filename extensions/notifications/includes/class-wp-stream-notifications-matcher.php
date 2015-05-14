@@ -23,7 +23,7 @@ class WP_Stream_Notifications_Matcher {
 		add_action( 'wp_stream_records_inserted', array( $this, 'match' ), 10, 2 );
 
 		// Enforce the max number of active rules allowed with a notice
-		add_action( 'wp', array( $this, 'check_active_rules_count' ) );
+		add_action( 'admin_init', array( $this, 'check_active_rules_count' ) );
 
 		/**
 		 * Filter the total number of active rules allowed
@@ -46,11 +46,13 @@ class WP_Stream_Notifications_Matcher {
 	 * @return void
 	 */
 	public function check_active_rules_count() {
-		if (
-			! is_admin()
-			||
-			WP_Stream_Notifications_Post_Type::POSTTYPE !== get_post_type()
-		) {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		global $typenow;
+
+		if ( WP_Stream_Notifications_Post_Type::POSTTYPE !== $typenow ) {
 			return;
 		}
 
