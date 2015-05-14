@@ -59,6 +59,19 @@ class WP_Stream_Reports {
 	}
 
 	/**
+	 * Return an active instance of this class, and create one if it doesn't exist
+	 *
+	 * @return WP_Stream_Reports
+	 */
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/**
 	 * Load our classes, actions/filters, only if our big brother is activated.
 	 * GO GO GO!
 	 *
@@ -315,19 +328,6 @@ class WP_Stream_Reports {
 		foreach ( self::$messages as $message ) {
 			echo wp_kses_post( $message );
 		}
-	}
-
-	/**
-	 * Return active instance of WP_Stream_Reports, create one if it doesn't exist
-	 *
-	 * @return WP_Stream_Reports
-	 */
-	public static function get_instance() {
-		if ( empty( self::$instance ) ) {
-			$class = __CLASS__;
-			self::$instance = new $class;
-		}
-		return self::$instance;
 	}
 
 }
