@@ -15,13 +15,6 @@ class WP_Stream_Notifications {
 	 */
 	public static $screen_id;
 
-	/**
-	 * Holds admin notices messages
-	 *
-	 * @var array
-	 */
-	public static $messages = array();
-
 	/*
 	 * List of registered adapters
 	 * @var array
@@ -195,17 +188,6 @@ class WP_Stream_Notifications {
 			'title' => $title,
 			'class' => $adapter,
 		);
-	}
-
-	/**
-	 * Display all messages on admin board
-	 *
-	 * @return void
-	 */
-	public static function admin_notices() {
-		foreach ( self::$messages as $message ) {
-			echo wp_kses_post( $message );
-		}
 	}
 
 	/**
