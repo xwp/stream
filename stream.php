@@ -166,6 +166,19 @@ class WP_Stream {
 	}
 
 	/**
+	 * Return an active instance of this class, and create one if it doesn't exist
+	 *
+	 * @return WP_Stream
+	 */
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/**
 	 * Invoked when the PHP version check fails
 	 *
 	 * Load up the translations and add the error message to the admin notices.
@@ -460,20 +473,6 @@ class WP_Stream {
 		$plugin_basename  = trailingslashit( $dir_basename ) . basename( __FILE__ );
 
 		return compact( 'dir_url', 'dir_path', 'dir_basename', 'plugin_basename' );
-	}
-
-	/**
-	 * Return active instance of WP_Stream, create one if it doesn't exist
-	 *
-	 * @return WP_Stream
-	 */
-	public static function get_instance() {
-		if ( empty( self::$instance ) ) {
-			$class = __CLASS__;
-			self::$instance = new $class;
-		}
-
-		return self::$instance;
 	}
 
 }
