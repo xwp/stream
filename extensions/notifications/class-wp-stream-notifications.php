@@ -195,16 +195,9 @@ class WP_Stream_Notifications {
 	 * @return void
 	 */
 	public function on_activation() {
-		// Add sample rule
-		$args = array(
-			'post_type'      => WP_Stream_Notifications_Post_Type::POSTTYPE,
-			'post_status'    => 'any',
-			'posts_per_page' => 1,
-		);
+		$rules = array_sum( (array) wp_count_posts( WP_Stream_Notifications_Post_Type::POSTTYPE ) );
 
-		$query = new WP_Query( $args );
-
-		if ( ! $query->get_posts() ) {
+		if ( empty( $rules ) ) {
 			$this->add_sample_rule();
 		}
 	}
