@@ -8,7 +8,7 @@
 class WP_Stream_Reports_Metaboxes {
 
 	/**
-	 * Hold Stream Reports Section instance
+	 * Hold class instance
 	 *
 	 * @var string
 	 */
@@ -56,6 +56,19 @@ class WP_Stream_Reports_Metaboxes {
 
 		// Register all ajax action and check referer for this class
 		WP_Stream_Reports::handle_ajax_request( $ajax_hooks, $this );
+	}
+
+	/**
+	 * Return an active instance of this class, and create one if it doesn't exist
+	 *
+	 * @return WP_Stream_Reports_Metaboxes
+	 */
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**
@@ -876,20 +889,6 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		return $output;
-	}
-
-	/**
-	 * Return active instance of WP_Stream_Reports_Metaboxes, create one if it doesn't exist
-	 *
-	 * @return WP_Stream_Reports_Metaboxes
-	 */
-	public static function get_instance() {
-		if ( empty( self::$instance ) ) {
-			$class = __CLASS__;
-			self::$instance = new $class;
-		}
-
-		return self::$instance;
 	}
 
 }

@@ -7,7 +7,7 @@ class WP_Stream_Notifications_Post_Type {
 	 *
 	 * @var string
 	 */
-	private static $instance;
+	public static $instance;
 
 	/**
 	 * Hold the max number of items allowed during AJAX form autocomplete

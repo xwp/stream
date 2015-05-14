@@ -3,7 +3,7 @@
 class WP_Stream_Reports {
 
 	/**
-	 * Hold Stream Reports instance
+	 * Hold class instance
 	 *
 	 * @var string
 	 */
@@ -11,6 +11,7 @@ class WP_Stream_Reports {
 
 	/**
 	 * Screen ID for my admin page
+	 *
 	 * @var string
 	 */
 	public static $screen_id;

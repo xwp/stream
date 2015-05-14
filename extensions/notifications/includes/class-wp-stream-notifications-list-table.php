@@ -3,7 +3,7 @@
 class WP_Stream_Notifications_List_Table {
 
 	/**
-	 * Hold Singleton instance
+	 * Hold class instance
 	 *
 	 * @var string
 	 */

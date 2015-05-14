@@ -45,14 +45,15 @@ class WP_Stream_Notifications {
 	const VIEW_CAP = 'view_stream_notifications';
 
 	/**
-	 * Return active instance of this class, create one if it doesn't exist
+	 * Return an active instance of this class, and create one if it doesn't exist
 	 *
 	 * @return WP_Stream_Notifications
 	 */
 	public static function get_instance() {
-		if ( empty( self::$instance ) ) {
+		if ( ! self::$instance ) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 
