@@ -46,7 +46,7 @@ class WP_Stream_Filter_Input {
 		}
 
 		if ( is_null( $super ) ) {
-			throw new Exception( __( 'Invalid use, type must be one of INPUT_* family.', 'stream' ) );
+			throw new Exception( esc_html__( 'Invalid use, type must be one of INPUT_* family.', 'stream' ) );
 		}
 
 		$var = isset( $super[ $variable_name ] ) ? $super[ $variable_name ] : null;
@@ -62,7 +62,7 @@ class WP_Stream_Filter_Input {
 		// Only filter value if it is not null
 		if ( isset( $var ) && $filter && FILTER_DEFAULT !== $filter ) {
 			if ( ! isset( self::$filter_callbacks[ $filter ] ) ) {
-				throw new Exception( __( 'Filter not supported.', 'stream' ) );
+				throw new Exception( esc_html__( 'Filter not supported.', 'stream' ) );
 			}
 
 			$filter_callback = self::$filter_callbacks[ $filter ];

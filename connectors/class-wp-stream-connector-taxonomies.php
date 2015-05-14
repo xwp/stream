@@ -41,7 +41,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Taxonomies', 'stream' );
+		return esc_html__( 'Taxonomies', 'stream' );
 	}
 
 	/**
@@ -51,9 +51,9 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created' => __( 'Created', 'stream' ),
-			'updated' => __( 'Updated', 'stream' ),
-			'deleted' => __( 'Deleted', 'stream' ),
+			'created' => esc_html__( 'Created', 'stream' ),
+			'updated' => esc_html__( 'Updated', 'stream' ),
+			'deleted' => esc_html__( 'Deleted', 'stream' ),
 		);
 	}
 
@@ -103,7 +103,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 				$term_id = empty( $term_id ) ? $term->term_id : $term_id;
 
 				$links[ sprintf( _x( 'Edit %s', 'Term singular name', 'stream' ), $tax_label ) ] = get_edit_term_link( $term_id, $term->taxonomy );
-				$links[ __( 'View', 'stream' ) ] = WP_Stream::is_vip() ? wpcom_vip_get_term_link( $term_id, $term->taxonomy ) : get_term_link( $term_id, $term->taxonomy );
+				$links[ esc_html__( 'View', 'stream' ) ] = WP_Stream::is_vip() ? wpcom_vip_get_term_link( $term_id, $term->taxonomy ) : get_term_link( $term_id, $term->taxonomy );
 			}
 		}
 

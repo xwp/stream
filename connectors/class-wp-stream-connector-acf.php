@@ -68,7 +68,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return _x( 'ACF', 'acf', 'stream' );
+		return esc_html_x( 'ACF', 'acf', 'stream' );
 	}
 
 	/**
@@ -78,10 +78,10 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created' => __( 'Created', 'acf', 'stream' ),
-			'updated' => __( 'Updated', 'acf', 'stream' ),
-			'added'   => __( 'Added', 'acf', 'stream' ),
-			'deleted' => __( 'Deleted', 'acf', 'stream' ),
+			'created' => esc_html__( 'Created', 'acf', 'stream' ),
+			'updated' => esc_html__( 'Updated', 'acf', 'stream' ),
+			'added'   => esc_html__( 'Added', 'acf', 'stream' ),
+			'deleted' => esc_html__( 'Deleted', 'acf', 'stream' ),
 		);
 	}
 
@@ -92,11 +92,11 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'field_groups' => _x( 'Field Groups', 'acf', 'stream' ),
-			'fields'       => _x( 'Fields', 'acf', 'stream' ),
-			'rules'        => _x( 'Rules', 'acf', 'stream' ),
-			'options'      => _x( 'Options', 'acf', 'stream' ),
-			'values'       => _x( 'Values', 'acf', 'stream' ),
+			'field_groups' => esc_html_x( 'Field Groups', 'acf', 'stream' ),
+			'fields'       => esc_html_x( 'Fields', 'acf', 'stream' ),
+			'rules'        => esc_html_x( 'Rules', 'acf', 'stream' ),
+			'options'      => esc_html_x( 'Options', 'acf', 'stream' ),
+			'values'       => esc_html_x( 'Values', 'acf', 'stream' ),
 		);
 	}
 
@@ -221,7 +221,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			}
 
 			self::log(
-				_x( '"%1$s" field in "%2$s" %3$s', 'acf', 'stream' ),
+				esc_html_x( '"%1$s" field in "%2$s" %3$s', 'acf', 'stream' ),
 				array(
 					'label'  => $meta_value['label'],
 					'title'  => $post->post_title,
@@ -245,13 +245,13 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			}
 
 			$options = array(
-				'acf_after_title' => _x( 'High (after title)', 'acf', 'stream' ),
-				'normal'          => _x( 'Normal (after content)', 'acf', 'stream' ),
-				'side'            => _x( 'Side', 'acf', 'stream' ),
+				'acf_after_title' => esc_html_x( 'High (after title)', 'acf', 'stream' ),
+				'normal'          => esc_html_x( 'Normal (after content)', 'acf', 'stream' ),
+				'side'            => esc_html_x( 'Side', 'acf', 'stream' ),
 			);
 
 			self::log(
-				_x( 'Position of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
+				esc_html_x( 'Position of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
 				array(
 					'title'        => $post->post_title,
 					'option_label' => $options[ $meta_value ],
@@ -268,12 +268,12 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			}
 
 			$options = array(
-				'no_box'  => _x( 'Seamless (no metabox)', 'acf', 'stream' ),
-				'default' => _x( 'Standard (WP metabox)', 'acf', 'stream' ),
+				'no_box'  => esc_html_x( 'Seamless (no metabox)', 'acf', 'stream' ),
+				'default' => esc_html_x( 'Standard (WP metabox)', 'acf', 'stream' ),
 			);
 
 			self::log(
-				_x( 'Style of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
+				esc_html_x( 'Style of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
 				array(
 					'title'        => $post->post_title,
 					'option_label' => $options[ $meta_value ],
@@ -290,32 +290,32 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			}
 
 			$options = array(
-				'permalink'       => _x( 'Permalink', 'acf', 'stream' ),
-				'the_content'     => _x( 'Content Editor', 'acf', 'stream' ),
-				'excerpt'         => _x( 'Excerpt', 'acf', 'stream' ),
-				'custom_fields'   => _x( 'Custom Fields', 'acf', 'stream' ),
-				'discussion'      => _x( 'Discussion', 'acf', 'stream' ),
-				'comments'        => _x( 'Comments', 'acf', 'stream' ),
-				'revisions'       => _x( 'Revisions', 'acf', 'stream' ),
-				'slug'            => _x( 'Slug', 'acf', 'stream' ),
-				'author'          => _x( 'Author', 'acf', 'stream' ),
-				'format'          => _x( 'Format', 'acf', 'stream' ),
-				'featured_image'  => _x( 'Featured Image', 'acf', 'stream' ),
-				'categories'      => _x( 'Categories', 'acf', 'stream' ),
-				'tags'            => _x( 'Tags', 'acf', 'stream' ),
-				'send-trackbacks' => _x( 'Send Trackbacks', 'acf', 'stream' ),
+				'permalink'       => esc_html_x( 'Permalink', 'acf', 'stream' ),
+				'the_content'     => esc_html_x( 'Content Editor', 'acf', 'stream' ),
+				'excerpt'         => esc_html_x( 'Excerpt', 'acf', 'stream' ),
+				'custom_fields'   => esc_html_x( 'Custom Fields', 'acf', 'stream' ),
+				'discussion'      => esc_html_x( 'Discussion', 'acf', 'stream' ),
+				'comments'        => esc_html_x( 'Comments', 'acf', 'stream' ),
+				'revisions'       => esc_html_x( 'Revisions', 'acf', 'stream' ),
+				'slug'            => esc_html_x( 'Slug', 'acf', 'stream' ),
+				'author'          => esc_html_x( 'Author', 'acf', 'stream' ),
+				'format'          => esc_html_x( 'Format', 'acf', 'stream' ),
+				'featured_image'  => esc_html_x( 'Featured Image', 'acf', 'stream' ),
+				'categories'      => esc_html_x( 'Categories', 'acf', 'stream' ),
+				'tags'            => esc_html_x( 'Tags', 'acf', 'stream' ),
+				'send-trackbacks' => esc_html_x( 'Send Trackbacks', 'acf', 'stream' ),
 			);
 
 			if ( count( $options ) === count( $meta_value ) ) {
-				$options_label = _x( 'All screens', 'acf', 'stream' );
+				$options_label = esc_html_x( 'All screens', 'acf', 'stream' );
 			} elseif ( empty( $meta_value ) ) {
-				$options_label = _x( 'No screens', 'acf', 'stream' );
+				$options_label = esc_html_x( 'No screens', 'acf', 'stream' );
 			} else {
 				$options_label = implode( ', ', array_intersect_key( $options, array_flip( $meta_value ) ) );
 			}
 
 			self::log(
-				_x( '"%1$s" set to display on "%2$s"', 'acf', 'stream' ),
+				esc_html_x( '"%1$s" set to display on "%2$s"', 'acf', 'stream' ),
 				array(
 					'title'        => $post->post_title,
 					'option_label' => $options_label,
@@ -372,7 +372,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			} elseif ( 'user' === $type ) {
 				$user      = new WP_User( $object_id );
 				$title     = $user->get( 'display_name' );
-				$type_name = __( 'user', 'stream' );
+				$type_name = esc_html__( 'user', 'stream' );
 			} elseif ( 'taxonomy' === $type ) {
 				$term      = get_term( $term_id, $taxonomy );
 				$title     = $term->name;
@@ -385,7 +385,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			$cache = self::$cached_field_values_updates[ $object_key ][ $key ];
 
 			self::log(
-				_x( '"%1$s" of "%2$s" %3$s updated', 'acf', 'stream' ),
+				esc_html_x( '"%1$s" of "%2$s" %3$s updated', 'acf', 'stream' ),
 				array(
 					'field_label'   => $cache['field']['label'],
 					'title'         => $title,
@@ -423,7 +423,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 			$deleted = array_diff( $old, $new );
 
 			self::log(
-				_x( 'Updated rules of "%1$s" (%2$d added, %3$d deleted)', 'acf', 'stream' ),
+				esc_html_x( 'Updated rules of "%1$s" (%2$d added, %3$d deleted)', 'acf', 'stream' ),
 				array(
 					'title'      => $post->post_title,
 					'no_added'   => count( $added ),
@@ -453,7 +453,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 		if ( 'posts' === $data['connector'] && 'acf' === $data['context'] ) {
 			$data['context']               = 'field_groups';
 			$data['connector']             = self::$name;
-			$data['args']['singular_name'] = __( 'field group', 'stream' );
+			$data['args']['singular_name'] = esc_html__( 'field group', 'stream' );
 		}
 
 		return $data;
@@ -488,7 +488,7 @@ class WP_Stream_Connector_ACF extends WP_Stream_Connector {
 		// menu_order, aka Order No.
 		if ( $data['menu_order'] !== $post->menu_order ) {
 			self::log(
-				_x( 'Updated Order of "%1$s" from %2$d to %3$d', 'acf', 'stream' ),
+				esc_html_x( '"%1$s" reordered from %2$d to %3$d', 'acf', 'stream' ),
 				array(
 					'title'          => $post->post_title,
 					'old_menu_order' => $post->menu_order,

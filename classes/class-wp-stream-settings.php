@@ -236,7 +236,7 @@ class WP_Stream_Settings {
 						'name'        => 'comment_flood_tracking',
 						'title'       => esc_html__( 'Comment Flood Tracking', 'stream' ),
 						'type'        => 'checkbox',
-						'desc'        => __( 'WordPress will automatically prevent duplicate comments from flooding the database. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+						'desc'        => esc_html__( 'WordPress will automatically prevent duplicate comments from flooding the database. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
 						'after_field' => esc_html__( 'Enabled', 'stream' ),
 						'default'     => 0,
 					),
@@ -278,7 +278,7 @@ class WP_Stream_Settings {
 				'name'        => 'akismet_tracking',
 				'title'       => esc_html__( 'Akismet Tracking', 'stream' ),
 				'type'        => 'checkbox',
-				'desc'        => __( 'Akismet already keeps statistics for comment attempts that it blocks as SPAM. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+				'desc'        => esc_html__( 'Akismet already keeps statistics for comment attempts that it blocks as SPAM. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
 				'after_field' => esc_html__( 'Enabled', 'stream' ),
 				'default'     => 0,
 			);
@@ -292,7 +292,7 @@ class WP_Stream_Settings {
 				'name'        => 'wp_cron_tracking',
 				'title'       => esc_html__( 'WP Cron Tracking', 'stream' ),
 				'type'        => 'checkbox',
-				'desc'        => __( 'By default, Stream does not track activity performed by WordPress cron events unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+				'desc'        => esc_html__( 'By default, Stream does not track activity performed by WordPress cron events unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
 				'after_field' => esc_html__( 'Enabled', 'stream' ),
 				'default'     => 0,
 			);
@@ -699,8 +699,8 @@ class WP_Stream_Settings {
 			case 'rule_list' :
 				$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
-				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  __( 'Add New Rule', 'stream' ) );
-				$actions_bottom = sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ),  __( 'Delete Selected Rules', 'stream' ) );
+				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  esc_html__( 'Add New Rule', 'stream' ) );
+				$actions_bottom = sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ),  esc_html__( 'Delete Selected Rules', 'stream' ) );
 
 				$output .= sprintf( '<div class="tablenav top">%1$s</div>', $actions_top );
 				$output .= '<table class="wp-list-table widefat fixed stream-exclude-list">';
@@ -760,7 +760,7 @@ class WP_Stream_Settings {
 
 					if ( empty( $author_or_role_selected ) && is_numeric( $author_or_role ) ) {
 						$user                    = new WP_User( $author_or_role );
-						$display_name            = ( 0 === $user->ID ) ? __( 'N/A', 'stream' ) : $user->display_name;
+						$display_name            = ( 0 === $user->ID ) ? esc_html__( 'N/A', 'stream' ) : $user->display_name;
 						$author_or_role_selected = array( 'id' => $user->ID, 'text' => $display_name );
 					}
 
