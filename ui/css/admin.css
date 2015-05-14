@@ -177,7 +177,8 @@
 	}
 	.toplevel_page_wp_stream .fixed .column-date,
 	.toplevel_page_wp_stream .fixed .column-summary,
-	.toplevel_page_wp_stream .fixed .column-author {
+	.toplevel_page_wp_stream .fixed .column-author,
+	.toplevel_page_wp_stream .fixed tbody tr.no-items td {
 		display: table-cell;
 	}
 	.toplevel_page_wp_stream .fixed .column-date {
