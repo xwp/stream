@@ -27,7 +27,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			'per_page',
 			array(
 				'default' => 20,
-				'label'   => __( 'Records per page', 'stream' ),
+				'label'   => esc_html__( 'Records per page', 'stream' ),
 				'option'  => 'edit_stream_per_page',
 			)
 		);
@@ -80,12 +80,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 		return apply_filters(
 			'wp_stream_list_table_columns',
 			array(
-				'date'    => __( 'Date', 'stream' ),
-				'summary' => __( 'Summary', 'stream' ),
-				'author'  => __( 'Author', 'stream' ),
-				'context' => __( 'Context', 'stream' ),
-				'action'  => __( 'Action', 'stream' ),
-				'ip'      => __( 'IP Address', 'stream' ),
+				'date'    => esc_html__( 'Date', 'stream' ),
+				'summary' => esc_html__( 'Summary', 'stream' ),
+				'author'  => esc_html__( 'Author', 'stream' ),
+				'context' => esc_html__( 'Context', 'stream' ),
+				'action'  => esc_html__( 'Action', 'stream' ),
+				'ip'      => esc_html__( 'IP Address', 'stream' ),
 			)
 		);
 	}
@@ -102,12 +102,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		// Directly checking the user meta; to check whether user has changed screen option or not
-		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
+		$hidden = wp_stream_get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden' );
 
 		// If user meta is not found; add the default hidden column 'id'
 		if ( ! $hidden ) {
 			$hidden = array( 'id' );
-			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+			wp_stream_update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
 		}
 
 		return $hidden;
@@ -258,7 +258,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			case 'summary' :
 				$out           = $item->summary;
 				$object_title  = wp_stream_get_object_title( $item );
-				$view_all_text = $object_title ? sprintf( __( 'View all activity for "%s"', 'stream' ), esc_attr( $object_title ) ) : __( 'View all activity for this object', 'stream' );
+				$view_all_text = $object_title ? sprintf( esc_html__( 'View all activity for "%s"', 'stream' ), esc_attr( $object_title ) ) : esc_html__( 'View all activity for this object', 'stream' );
 				if ( $item->object_id ) {
 					$out .= $this->column_link(
 						'<span class="dashicons dashicons-search stream-filter-object-id"></span>',
@@ -547,7 +547,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 		$date_interval = new WP_Stream_Date_Interval();
 
 		$filters['date'] = array(
-			'title' => __( 'dates', 'stream' ),
+			'title' => esc_html__( 'dates', 'stream' ),
 			'items' => $date_interval->intervals,
 		);
 
@@ -556,18 +556,18 @@ class WP_Stream_List_Table extends WP_List_Table {
 		);
 
 		$filters['author'] = array(
-			'title' => __( 'authors', 'stream' ),
+			'title' => esc_html__( 'authors', 'stream' ),
 			'items' => $authors_records,
 			'ajax'  => count( $authors_records ) <= 0,
 		);
 
 		$filters['context'] = array(
-			'title' => __( 'contexts', 'stream' ),
+			'title' => esc_html__( 'contexts', 'stream' ),
 			'items' => $this->assemble_records( 'context' ),
 		);
 
 		$filters['action'] = array(
-			'title' => __( 'actions', 'stream' ),
+			'title' => esc_html__( 'actions', 'stream' ),
 			'items' => $this->assemble_records( 'action' ),
 		);
 
@@ -635,7 +635,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 			}
 		}
 
-		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'stream' ) );
+		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', esc_html__( 'Filter', 'stream' ) );
 
 		// Parse all query vars into an array
 		parse_str( $_SERVER['QUERY_STRING'], $query_vars );
@@ -656,7 +656,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 		// Display reset action if records are being filtered
 		if ( ! empty( $query_vars ) ) {
-			$filters_string .= sprintf( '<a href="%s" id="record-query-reset"><span class="dashicons dashicons-dismiss"></span> <span class="record-query-reset-text">%s</span></a>', esc_url( $url ), __( 'Reset filters', 'stream' ) );
+			$filters_string .= sprintf( '<a href="%s" id="record-query-reset"><span class="dashicons dashicons-dismiss"></span> <span class="record-query-reset-text">%s</span></a>', esc_url( $url ), esc_html__( 'Reset filters', 'stream' ) );
 		}
 
 		return sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
@@ -864,13 +864,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 
 	public function screen_controls( $status, $args ) {
 		$user_id   = get_current_user_id();
-		$option    = get_user_meta( $user_id, WP_Stream_Live_Update::USER_META_KEY, true );
+		$option    = wp_stream_get_user_meta( $user_id, WP_Stream_Live_Update::USER_META_KEY );
 		$heartbeat = wp_script_is( 'heartbeat', 'done' ) ? 'true' : 'false';
 
 		if ( 'on' === $option && 'false' === $heartbeat ) {
 			$option = 'off';
 
-			update_user_meta( $user_id, WP_Stream_Live_Update::USER_META_KEY, 'off' );
+			wp_stream_update_user_meta( $user_id, WP_Stream_Live_Update::USER_META_KEY, 'off' );
 		}
 
 		$nonce = wp_create_nonce( WP_Stream_Live_Update::USER_META_KEY . '_nonce' );

@@ -220,7 +220,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		$query = wp_stream_query( array( 'records_per_page' => 1, 'fields' => 'created' ) );
 
 		if ( ! $query ) {
-			WP_CLI::error( __( 'SITE IS DISCONNECTED', 'stream' ) );
+			WP_CLI::error( esc_html__( 'SITE IS DISCONNECTED', 'stream' ) );
 		}
 	}
 

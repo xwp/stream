@@ -42,7 +42,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Widgets', 'stream' );
+		return esc_html__( 'Widgets', 'stream' );
 	}
 
 	/**
@@ -52,15 +52,15 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'added'       => __( 'Added', 'stream' ),
-			'removed'     => __( 'Removed', 'stream' ),
-			'moved'       => __( 'Moved', 'stream' ),
-			'created'     => __( 'Created', 'stream' ),
-			'deleted'     => __( 'Deleted', 'stream' ),
-			'deactivated' => __( 'Deactivated', 'stream' ),
-			'reactivated' => __( 'Reactivated', 'stream' ),
-			'updated'     => __( 'Updated', 'stream' ),
-			'sorted'      => __( 'Sorted', 'stream' ),
+			'added'       => esc_html__( 'Added', 'stream' ),
+			'removed'     => esc_html__( 'Removed', 'stream' ),
+			'moved'       => esc_html__( 'Moved', 'stream' ),
+			'created'     => esc_html__( 'Created', 'stream' ),
+			'deleted'     => esc_html__( 'Deleted', 'stream' ),
+			'deactivated' => esc_html__( 'Deactivated', 'stream' ),
+			'reactivated' => esc_html__( 'Reactivated', 'stream' ),
+			'updated'     => esc_html__( 'Updated', 'stream' ),
+			'sorted'      => esc_html__( 'Sorted', 'stream' ),
 		);
 	}
 
@@ -78,8 +78,8 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			$labels[ $sidebar['id'] ] = $sidebar['name'];
 		}
 
-		$labels['wp_inactive_widgets'] = __( 'Inactive Widgets', 'stream' );
-		$labels['orphaned_widgets']    = __( 'Orphaned Widgets', 'stream' );
+		$labels['wp_inactive_widgets'] = esc_html__( 'Inactive Widgets', 'stream' );
+		$labels['orphaned_widgets']    = esc_html__( 'Orphaned Widgets', 'stream' );
 
 		return $labels;
 	}
@@ -99,7 +99,7 @@ class WP_Stream_Connector_Widgets extends WP_Stream_Connector {
 			global $wp_registered_sidebars;
 
 			if ( array_key_exists( $sidebar, $wp_registered_sidebars ) ) {
-				$links[ __( 'Edit Widget Area', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar ); // xss ok (@todo fix WPCS rule)
+				$links[ esc_html__( 'Edit Widget Area', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar ); // xss ok (@todo fix WPCS rule)
 			}
 			// @todo Also old_sidebar_id and new_sidebar_id
 			// @todo Add Edit Widget link

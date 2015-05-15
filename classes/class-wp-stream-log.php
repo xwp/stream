@@ -3,11 +3,11 @@
 class WP_Stream_Log {
 
 	/**
-	 * Log handler
+	 * Hold class instance
 	 *
-	 * @var \WP_Stream_Log
+	 * @var string
 	 */
-	public static $instance = null;
+	public static $instance;
 
 	/**
 	 * Load log handler class, filterable by extensions
@@ -28,14 +28,13 @@ class WP_Stream_Log {
 	}
 
 	/**
-	 * Return active instance of this class
+	 * Return an active instance of this class, and create one if it doesn't exist
 	 *
 	 * @return WP_Stream_Log
 	 */
 	public static function get_instance() {
 		if ( ! self::$instance ) {
-			$class = __CLASS__;
-			self::$instance = new $class;
+			self::$instance = new self();
 		}
 
 		return self::$instance;

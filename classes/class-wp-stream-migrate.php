@@ -48,8 +48,8 @@ class WP_Stream_Migrate {
 	 * @return void
 	 */
 	public static function load() {
-		// Exit early if there is no option holding the DB version
-		if ( false === get_site_option( 'wp_stream_db' ) ) {
+		// Exit early if on VIP or there is no option holding the DB version
+		if ( WP_Stream::is_vip() || false === get_site_option( 'wp_stream_db' ) ) {
 			return;
 		}
 
@@ -123,7 +123,7 @@ class WP_Stream_Migrate {
 		$notice = sprintf(
 			'<strong id="stream-migrate-title">%s</strong></p><p id="stream-migrate-message">%s</p><div id="stream-migrate-progress"><progress value="0" max="100"></progress> <strong>0&#37;</strong> <em></em> <button id="stream-migrate-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-migrate-actions"><button id="stream-start-migrate" class="button button-primary">%s</button> <button id="stream-migrate-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
 			__( 'Migrate Stream Records', 'stream' ),
-			sprintf( __( 'We found %s existing Stream records that need to be migrated to your Stream account.', 'stream' ), number_format( self::$record_count ) ),
+			sprintf( esc_html__( 'We found %s existing Stream records that need to be migrated to your Stream account.', 'stream' ), number_format( self::$record_count ) ),
 			__( 'Close', 'stream' ),
 			__( 'Start Migration Now', 'stream' ),
 			__( 'Remind Me Later', 'stream' ),
@@ -163,7 +163,7 @@ class WP_Stream_Migrate {
 				// If all the records are gone, clean everything up
 				self::drop_legacy_data();
 
-				wp_send_json_success( __( 'Migration complete!', 'stream' ) );
+				wp_send_json_success( esc_html__( 'Migration complete!', 'stream' ) );
 			}
 
 			$response = self::send_records( $records );
@@ -180,21 +180,21 @@ class WP_Stream_Migrate {
 				} elseif ( isset( $response['response']['message'] ) && ! empty( $response['response']['message'] ) ) {
 					$message = $response['response']['message'];
 				} else {
-					$message = __( 'An unknown error occurred during migration.', 'stream' );
+					$message = esc_html__( 'An unknown error occurred during migration.', 'stream' );
 				}
 
-				wp_send_json_error( sprintf( __( '%s Please try again later or contact support.', 'stream' ), esc_html( $message ) ) );
+				wp_send_json_error( sprintf( esc_html__( '%s Please try again later or contact support.', 'stream' ), esc_html( $message ) ) );
 			}
 		}
 
 		if ( 'delay' === $action ) {
 			set_transient( self::MIGRATE_DELAY_TRANSIENT, "Don't nag me, bro", HOUR_IN_SECONDS * 3 );
 
-			wp_send_json_success( __( "OK, we'll remind you again in a few hours.", 'stream' ) );
+			wp_send_json_success( esc_html__( "OK, we'll remind you again in a few hours.", 'stream' ) );
 		}
 
 		if ( 'delete' === $action ) {
-			$success_message = __( 'All existing records have been deleted from the database.', 'stream' );
+			$success_message = esc_html__( 'All existing records have been deleted from the database.', 'stream' );
 
 			if ( ! is_multisite() ) {
 				// If this is a single-site install, force delete everything

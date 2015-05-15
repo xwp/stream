@@ -162,3 +162,43 @@ function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
 
 	return $json;
 }
+
+/**
+ * Get user meta in a way that is also safe for VIP
+ *
+ * @param int    $user_id
+ * @param string $meta_key
+ * @param bool   $single (optional)
+ *
+ * @return mixed
+ */
+function wp_stream_get_user_meta( $user_id, $meta_key, $single = true ) {
+	return WP_Stream::is_vip() ? get_user_attribute( $user_id, $meta_key ) : get_user_meta( $user_id, $meta_key, $single );
+}
+
+/**
+ * Update user meta in a way that is also safe for VIP
+ *
+ * @param int    $user_id
+ * @param string $meta_key
+ * @param mixed  $meta_value
+ * @param mixed  $prev_value (optional)
+ *
+ * @return int|bool
+ */
+function wp_stream_update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
+	return WP_Stream::is_vip() ? update_user_attribute( $user_id, $meta_key, $meta_value ) : update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
+}
+
+/**
+ * Delete user meta in a way that is also safe for VIP
+ *
+ * @param int    $user_id
+ * @param string $meta_key
+ * @param mixed  $meta_value (optional)
+ *
+ * @return bool
+ */
+function wp_stream_delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
+	return WP_Stream::is_vip() ? delete_user_attribute( $user_id, $meta_key, $meta_value ) : delete_user_meta( $user_id, $meta_key, $meta_value );
+}

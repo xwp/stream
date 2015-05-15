@@ -2,30 +2,35 @@
 
 class WP_Stream_Notifications_Post_Type {
 
-	private static $instance;
+	/**
+	 * Hold class instance
+	 *
+	 * @var string
+	 */
+	public static $instance;
+
+	/**
+	 * Hold the max number of items allowed during AJAX form autocomplete
+	 *
+	 * @var int
+	 */
+	public static $ajax_items_max;
 
 	const POSTTYPE = 'stream_notification'; // Must be less than 20 chars
-
-	public static function get_instance() {
-		if ( ! self::$instance ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
 
 	private function __construct() {
 		$this->register_post_type();
 
-		// AJAX end point for form auto completion
-		add_action( 'wp_ajax_stream_notification_endpoint', array( $this, 'form_ajax_ep' ) );
-		// Occurance reset
-		add_action( 'wp_ajax_stream-notifications-reset-occ', array( $this, 'ajax_reset_occ' ) );
+		// Endpoint for AJAX form autocomplete
+		add_action( 'wp_ajax_wp_stream_notifications_endpoint', array( $this, 'form_ajax_ep' ) );
+
+		// Rule occurrence reset
+		add_action( 'wp_ajax_wp_stream_notifications_reset_occ', array( $this, 'ajax_reset_occ' ) );
 
 		// Enqueue our form scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11 );
 
-		// define `search_in` arg for WP_User_Query
+		// Define `search_in` arg for WP_User_Query
 		add_filter( 'user_search_columns', array( $this, 'define_search_in_arg' ), 10, 3 );
 
 		// Change title placeholder
@@ -36,24 +41,51 @@ class WP_Stream_Notifications_Post_Type {
 
 		// Load list-table customizations
 		add_action( 'admin_init', array( $this, 'load_list_table' ) );
+
+		/**
+		 * Filter the max number of items allowed during AJAX form autocomplete
+		 *
+		 * @since 2.0.6
+		 *
+		 * @return int
+		 */
+		self::$ajax_items_max = apply_filters( 'wp_stream_notifications_ajax_items_max', 50 );
 	}
 
+	/**
+	 * Return an active instance of this class, and create one if it doesn't exist
+	 *
+	 * @return WP_Stream_Notifications_Post_Type
+	 */
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/**
+	 * Register custom post type
+	 *
+	 * @return void
+	 */
 	private function register_post_type() {
 		register_post_type(
 			self::POSTTYPE, array(
-				'label'                => __( 'Stream Notification Rule', 'stream' ),
+				'label'                => esc_html__( 'Stream Notification Rule', 'stream' ),
 				'labels'               => array(
-					'name'               => __( 'Stream Notification Rules', 'stream' ),
-					'singular_name'      => __( 'Stream Notification Rule', 'stream' ),
-					'menu_name'          => __( 'Notifications', 'stream' ),
-					'add_new'            => _x( 'New Rule', 'Stream Notifications', 'stream' ),
-					'add_new_item'       => _x( 'Add New Rule', 'Stream Notifications', 'stream' ),
-					'new_item'           => _x( 'New Stream Notification Rule', 'Stream Notifications', 'stream' ),
-					'edit_item'          => _x( 'Edit Stream Notification Rule', 'Stream Notifications', 'stream' ),
-					'view_item'          => _x( 'View Stream Notification Rule', 'Stream Notifications', 'stream' ),
-					'search_items'       => _x( 'Search Rules', 'Stream Notifications', 'stream' ),
-					'not_found'          => _x( 'No notification rules found.', 'Stream Notifications', 'stream' ),
-					'not_found_in_trash' => _x( 'No notification rules found in Trash.', 'Stream Notifications', 'stream' ),
+					'name'               => esc_html__( 'Stream Notification Rules', 'stream' ),
+					'singular_name'      => esc_html__( 'Stream Notification Rule', 'stream' ),
+					'menu_name'          => esc_html__( 'Notifications', 'stream' ),
+					'add_new'            => esc_html__( 'New Rule', 'stream' ),
+					'add_new_item'       => esc_html__( 'Add New Rule', 'stream' ),
+					'new_item'           => esc_html__( 'New Stream Notification Rule', 'stream' ),
+					'edit_item'          => esc_html__( 'Edit Stream Notification Rule', 'stream' ),
+					'view_item'          => esc_html__( 'View Stream Notification Rule', 'stream' ),
+					'search_items'       => esc_html__( 'Search Rules', 'stream' ),
+					'not_found'          => esc_html__( 'No notification rules found.', 'stream' ),
+					'not_found_in_trash' => esc_html__( 'No notification rules found in Trash.', 'stream' ),
 				),
 				'public'               => false,
 				'show_ui'              => true,
@@ -68,14 +100,19 @@ class WP_Stream_Notifications_Post_Type {
 		);
 	}
 
+	/**
+	 * Register custom meta boxes
+	 *
+	 * @return void
+	 */
 	public function metaboxes( $post ) {
 		if ( self::POSTTYPE !== $post->post_type ) {
 			return;
 		}
 
-		add_meta_box( 'stream-notifications-triggers', __( 'Triggers', 'stream' ), array( $this, 'metabox_triggers' ), self::POSTTYPE );
-		add_meta_box( 'stream-notifications-alerts', __( 'Alerts', 'stream' ), array( $this, 'metabox_alerts' ), self::POSTTYPE );
-		add_meta_box( 'stream-notifications-data-tags', __( 'Data Tags', 'stream' ), array( $this, 'metabox_data_tags' ), self::POSTTYPE, 'side' );
+		add_meta_box( 'stream-notifications-triggers', esc_html__( 'Triggers', 'stream' ), array( $this, 'metabox_triggers' ), self::POSTTYPE );
+		add_meta_box( 'stream-notifications-alerts', esc_html__( 'Alerts', 'stream' ), array( $this, 'metabox_alerts' ), self::POSTTYPE );
+		add_meta_box( 'stream-notifications-data-tags', esc_html__( 'Data Tags', 'stream' ), array( $this, 'metabox_data_tags' ), self::POSTTYPE, 'side' );
 
 		add_action( 'post_submitbox_misc_actions', array( $this, 'metabox_save' ) );
 
@@ -138,9 +175,9 @@ class WP_Stream_Notifications_Post_Type {
 
 		$reset_link = add_query_arg(
 			array(
-				'action'          => 'stream-notifications-reset-occ',
+				'action'          => 'wp_stream_notifications_reset_occ',
 				'id'              => absint( $post->ID ),
-				'wp_stream_nonce' => wp_create_nonce( 'reset-occ_' . absint( $post->ID ) ),
+				'wp_stream_nonce' => wp_create_nonce( 'wp_stream_notifications_reset_occ-' . absint( $post->ID ) ),
 			),
 			admin_url( 'admin-ajax.php' )
 		);
@@ -170,14 +207,14 @@ class WP_Stream_Notifications_Post_Type {
 	public function metabox_data_tags() {
 		$data_tags    = array(
 			__( 'Basic', 'stream' )    => array(
-				'summary'   => __( 'Summary message of the triggered record.', 'stream' ),
-				'author'    => __( 'User ID of the triggered record author.', 'stream' ),
-				'connector' => __( 'Connector of the triggered record.', 'stream' ),
-				'context'   => __( 'Context of the triggered record.', 'stream' ),
-				'action'    => __( 'Action of the triggered record.', 'stream' ),
-				'created'   => __( 'Timestamp of triggered record.', 'stream' ),
-				'ip'        => __( 'IP of the triggered record author.', 'stream' ),
-				'object_id' => __( 'Object ID of the triggered record.', 'stream' ),
+				'summary'   => esc_html__( 'Summary message of the triggered record.', 'stream' ),
+				'author'    => esc_html__( 'User ID of the triggered record author.', 'stream' ),
+				'connector' => esc_html__( 'Connector of the triggered record.', 'stream' ),
+				'context'   => esc_html__( 'Context of the triggered record.', 'stream' ),
+				'action'    => esc_html__( 'Action of the triggered record.', 'stream' ),
+				'created'   => esc_html__( 'Timestamp of triggered record.', 'stream' ),
+				'ip'        => esc_html__( 'IP of the triggered record author.', 'stream' ),
+				'object_id' => esc_html__( 'Object ID of the triggered record.', 'stream' ),
 			),
 			__( 'Advanced', 'stream' ) => array(
 				'object.' => __(
@@ -286,7 +323,8 @@ class WP_Stream_Notifications_Post_Type {
 	/**
 	 * Callback for form AJAX operations
 	 *
-	 * @action wp_ajax_stream_notifications_endpoint
+	 * @action wp_ajax_wp_stream_notifications_endpoint
+	 *
 	 * @return void
 	 */
 	public function form_ajax_ep() {
@@ -304,28 +342,26 @@ class WP_Stream_Notifications_Post_Type {
 				case 'author':
 				case 'post_author':
 				case 'user':
-					$user_ids   = explode( ',', $query );
-					$user_query = new WP_User_Query(
+					$users_query = new WP_User_Query(
 						array(
-							'include' => $user_ids,
+							'include' => explode( ',', $query ),
 							'fields'  => array( 'ID', 'user_email', 'display_name' ),
+							'number'  => absint( self::$ajax_items_max ), // 50 by default
 						)
 					);
-					if ( $user_query->results ) {
-						$data = $this->format_json_for_select2( $user_query->results, 'ID', 'display_name' );
-					} else {
-						$data = array();
-					}
+					$data = ( $users_query->results ) ? $this->format_json_for_select2( $users_query->results, 'ID', 'display_name' ) : array();
 					break;
 				case 'post':
 				case 'post_parent':
-					$args  = array(
-						'post_type'      => 'any',
-						'post_status'    => 'any',
-						'posts_per_page' => - 1,
-						'post__in'       => explode( ',', $query ),
+					$posts_query = new WP_Query(
+						array(
+							'post_type'      => 'any',
+							'post_status'    => 'any',
+							'posts_per_page' => absint( self::$ajax_items_max ), // 50 by default
+							'post__in'       => explode( ',', $query ),
+						)
 					);
-					$posts = get_posts( $args );
+					$posts = $posts_query->get_posts();
 					$items = array_combine( wp_list_pluck( $posts, 'ID' ), wp_list_pluck( $posts, 'post_title' ) );
 					$data  = $this->format_json_for_select2( $items );
 					break;
@@ -350,19 +386,15 @@ class WP_Stream_Notifications_Post_Type {
 				case 'author':
 				case 'post_author':
 				case 'user':
-					$users = get_users(
+					$users_query = new WP_User_Query(
 						array(
-							'search'    => '*' . $query . '*',
-							'search_in' => array(
-								'user_login',
-								'display_name',
-								'user_email',
-								'user_nicename',
-							),
-							'meta_key'  => ( isset( $args['push'] ) && $args['push'] ) ? 'ckpn_user_key' : null,
+							'search'    => sprintf( '*%s*', $query ),
+							'search_in' => array( 'user_login', 'display_name', 'user_email', 'user_nicename' ), // Custom query arg
+							'meta_key'  => empty( $args['push'] ) ? null : 'ckpn_user_key',
+							'number'    => absint( self::$ajax_items_max ), // 50 by default
 						)
 					);
-					$data  = $this->format_json_for_select2( $users, 'ID', 'display_name' );
+					$data = ( $users_query->results ) ? $this->format_json_for_select2( $users_query->results, 'ID', 'display_name' ) : array();
 					break;
 				case 'action':
 				case 'context':
@@ -372,7 +404,15 @@ class WP_Stream_Notifications_Post_Type {
 					break;
 				case 'post':
 				case 'post_parent':
-					$posts = get_posts( 'post_type=any&post_status=any&posts_per_page=-1&s=' . $query );
+					$posts_query = new WP_Query(
+						array(
+							'post_type'      => 'any',
+							'post_status'    => 'any',
+							'posts_per_page' => absint( self::$ajax_items_max ), // 50 by default
+							's'              => $query,
+						)
+					);
+					$posts = $posts_query->get_posts();
 					$items = array_combine( wp_list_pluck( $posts, 'ID' ), wp_list_pluck( $posts, 'post_title' ) );
 					$data  = $this->format_json_for_select2( $items );
 					break;
@@ -416,7 +456,7 @@ class WP_Stream_Notifications_Post_Type {
 		$id    = wp_stream_filter_input( INPUT_GET, 'id' );
 		$nonce = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 
-		if ( ! wp_verify_nonce( $nonce, 'reset-occ_' . $id ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'wp_stream_notifications_reset_occ-' . $id ) ) {
 			wp_send_json_error( esc_html__( 'Invalid nonce', 'stream' ) );
 		}
 
@@ -426,6 +466,7 @@ class WP_Stream_Notifications_Post_Type {
 		}
 
 		update_post_meta( $id, 'occurrences', 0 );
+
 		wp_send_json_success();
 	}
 
@@ -436,9 +477,11 @@ class WP_Stream_Notifications_Post_Type {
 	 */
 	public function get_js_options() {
 		global $wp_roles;
+
 		$args = array();
 
 		$connectors = WP_Stream_Connectors::$term_labels['stream_connector'];
+
 		asort( $connectors );
 
 		$roles     = $wp_roles->roles;
@@ -796,7 +839,14 @@ class WP_Stream_Notifications_Post_Type {
 	}
 
 	/**
+	 * Custom WP_User_Query arg `search_in`
+	 *
+	 * This is to extend support beyond the default `search_columns`
+	 * that are supported by WP_User_Query.
+	 *
 	 * @filter user_search_columns
+	 *
+	 * @return array
 	 */
 	public function define_search_in_arg( $search_columns, $search, $query ) {
 		$search_in      = $query->get( 'search_in' );
@@ -817,7 +867,7 @@ class WP_Stream_Notifications_Post_Type {
 	 */
 	public function title_placeholder( $text, $post ) {
 		if ( self::POSTTYPE === $post->post_type ) {
-			$text = __( 'Enter Rule Title here', 'stream' );
+			$text = esc_html__( 'Enter Rule Title here', 'stream' );
 		}
 
 		return $text;

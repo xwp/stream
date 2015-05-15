@@ -169,7 +169,7 @@ jQuery( function( $ ) {
 						dataType: 'json',
 						data: function( term ) {
 							return {
-								action: 'stream_notification_endpoint',
+								action: 'wp_stream_notifications_endpoint',
 								type: type,
 								q: term,
 								args: $( this ).attr( 'data-args' )
@@ -187,7 +187,7 @@ jQuery( function( $ ) {
 								url: ajaxurl,
 								type: 'post',
 								data: {
-									action: 'stream_notification_endpoint',
+									action: 'wp_stream_notifications_endpoint',
 									q: id,
 									single: 1,
 									type: type,
@@ -228,7 +228,7 @@ jQuery( function( $ ) {
 							url: ajaxurl,
 							type: 'post',
 							data: {
-								action: 'stream_notification_endpoint',
+								action: 'wp_stream_notifications_endpoint',
 								q: val,
 								single: 1,
 								type: type,

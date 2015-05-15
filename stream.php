@@ -85,9 +85,11 @@ class WP_Stream {
 	 * Class constructor
 	 */
 	private function __construct() {
-		define( 'WP_STREAM_PLUGIN', plugin_basename( __FILE__ ) );
-		define( 'WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
-		define( 'WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
+		$locate = $this->locate_plugin();
+
+		define( 'WP_STREAM_PLUGIN', $locate['plugin_basename'] );
+		define( 'WP_STREAM_DIR', $locate['dir_path'] );
+		define( 'WP_STREAM_URL', $locate['dir_url'] );
 		define( 'WP_STREAM_INC_DIR', WP_STREAM_DIR . 'includes/' );
 		define( 'WP_STREAM_CLASS_DIR', WP_STREAM_DIR . 'classes/' );
 		define( 'WP_STREAM_EXTENSIONS_DIR', WP_STREAM_DIR . 'extensions/' );
@@ -148,6 +150,7 @@ class WP_Stream {
 			add_action( 'init', array( 'WP_Stream_Dashboard_Widget', 'load' ) );
 			add_action( 'init', array( 'WP_Stream_Live_Update', 'load' ) );
 			add_action( 'init', array( 'WP_Stream_Pointers', 'load' ) );
+			add_action( 'init', array( 'WP_Stream_Unread', 'load' ) );
 			add_action( 'init', array( 'WP_Stream_Migrate', 'load' ) );
 		}
 
@@ -160,6 +163,19 @@ class WP_Stream {
 
 			WP_CLI::add_command( self::WP_CLI_COMMAND, 'WP_Stream_WP_CLI_Command' );
 		}
+	}
+
+	/**
+	 * Return an active instance of this class, and create one if it doesn't exist
+	 *
+	 * @return WP_Stream
+	 */
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**
@@ -187,6 +203,15 @@ class WP_Stream {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Check if Stream is running on WordPress.com VIP
+	 *
+	 * @return bool
+	 */
+	public static function is_vip() {
+		return function_exists( 'wpcom_vip_load_plugin' );
 	}
 
 	/**
@@ -409,17 +434,45 @@ class WP_Stream {
 	}
 
 	/**
-	 * Return active instance of WP_Stream, create one if it doesn't exist
+	 * Version of plugin_dir_url() which works for plugins installed in the plugins directory,
+	 * and for plugins bundled with themes.
 	 *
-	 * @return WP_Stream
+	 * @throws \Exception
+	 *
+	 * @return array
 	 */
-	public static function get_instance() {
-		if ( empty( self::$instance ) ) {
-			$class = __CLASS__;
-			self::$instance = new $class;
+	private function locate_plugin() {
+		$reflection = new \ReflectionObject( $this );
+		$file_name  = $reflection->getFileName();
+
+		if ( '/' !== \DIRECTORY_SEPARATOR ) {
+			$file_name = str_replace( \DIRECTORY_SEPARATOR, '/', $file_name ); // Windows compat
 		}
 
-		return self::$instance;
+		$plugin_dir = preg_replace( '#(.*plugins[^/]*/[^/]+)(/.*)?#', '$1', $file_name, 1, $count );
+
+		if ( 0 === $count ) {
+			throw new \Exception( "Class not located within a directory tree containing 'plugins': $file_name" );
+		}
+
+		// Make sure that we can reliably get the relative path inside of the content directory
+		$content_dir = trailingslashit( WP_CONTENT_DIR );
+
+		if ( '/' !== \DIRECTORY_SEPARATOR ) {
+			$content_dir = str_replace( \DIRECTORY_SEPARATOR, '/', $content_dir ); // Windows compat
+		}
+
+		if ( 0 !== strpos( $plugin_dir, $content_dir ) ) {
+			throw new \Exception( 'Plugin dir is not inside of WP_CONTENT_DIR' );
+		}
+
+		$content_sub_path = substr( $plugin_dir, strlen( $content_dir ) );
+		$dir_url          = content_url( trailingslashit( $content_sub_path ) );
+		$dir_path         = trailingslashit( $plugin_dir );
+		$dir_basename     = basename( $plugin_dir );
+		$plugin_basename  = trailingslashit( $dir_basename ) . basename( __FILE__ );
+
+		return compact( 'dir_url', 'dir_path', 'dir_basename', 'plugin_basename' );
 	}
 
 }

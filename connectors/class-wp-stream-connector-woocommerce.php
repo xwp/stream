@@ -86,7 +86,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * @return string Translated context label
 	 */
 	public static function get_label() {
-		return _x( 'WooCommerce', 'woocommerce', 'stream' );
+		return esc_html_x( 'WooCommerce', 'woocommerce', 'stream' );
 	}
 
 	/**
@@ -96,10 +96,10 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'updated' => _x( 'Updated', 'woocommerce', 'stream' ),
-			'created' => _x( 'Created', 'woocommerce', 'stream' ),
-			'trashed' => _x( 'Trashed', 'woocommerce', 'stream' ),
-			'deleted' => _x( 'Deleted', 'woocommerce', 'stream' ),
+			'updated' => esc_html_x( 'Updated', 'woocommerce', 'stream' ),
+			'created' => esc_html_x( 'Created', 'woocommerce', 'stream' ),
+			'trashed' => esc_html_x( 'Trashed', 'woocommerce', 'stream' ),
+			'deleted' => esc_html_x( 'Deleted', 'woocommerce', 'stream' ),
 		);
 	}
 
@@ -119,7 +119,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		}
 
 		$custom_context_labels = array(
-			'attributes' => _x( 'Attributes', 'woocommerce', 'stream' ),
+			'attributes' => esc_html_x( 'Attributes', 'woocommerce', 'stream' ),
 		);
 
 		$context_labels = array_merge(
@@ -139,60 +139,60 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	public static function get_custom_settings() {
 		$custom_settings = array(
 			'woocommerce_frontend_css_colors' => array(
-				'title'   => __( 'Frontend Styles', 'stream' ),
+				'title'   => esc_html__( 'Frontend Styles', 'stream' ),
 				'page'    => 'wc-settings',
 				'tab'     => 'general',
 				'section' => '',
-				'type'    => __( 'setting', 'stream' ),
+				'type'    => esc_html__( 'setting', 'stream' ),
 			),
 			'woocommerce_default_gateway' => array(
-				'title'   => __( 'Gateway Display Default', 'stream' ),
+				'title'   => esc_html__( 'Gateway Display Default', 'stream' ),
 				'page'    => 'wc-settings',
 				'tab'     => 'checkout',
 				'section' => '',
-				'type'    => __( 'setting', 'stream' ),
+				'type'    => esc_html__( 'setting', 'stream' ),
 			),
 			'woocommerce_gateway_order' => array(
-				'title'   => __( 'Gateway Display Order', 'stream' ),
+				'title'   => esc_html__( 'Gateway Display Order', 'stream' ),
 				'page'    => 'wc-settings',
 				'tab'     => 'checkout',
 				'section' => '',
-				'type'    => __( 'setting', 'stream' ),
+				'type'    => esc_html__( 'setting', 'stream' ),
 			),
 			'woocommerce_default_shipping_method' => array(
-				'title'   => __( 'Shipping Methods Default', 'stream' ),
+				'title'   => esc_html__( 'Shipping Methods Default', 'stream' ),
 				'page'    => 'wc-settings',
 				'tab'     => 'shipping',
 				'section' => '',
-				'type'    => __( 'setting', 'stream' ),
+				'type'    => esc_html__( 'setting', 'stream' ),
 			),
 			'woocommerce_shipping_method_order' => array(
-				'title'   => __( 'Shipping Methods Order', 'stream' ),
+				'title'   => esc_html__( 'Shipping Methods Order', 'stream' ),
 				'page'    => 'wc-settings',
 				'tab'     => 'shipping',
 				'section' => '',
-				'type'    => __( 'setting', 'stream' ),
+				'type'    => esc_html__( 'setting', 'stream' ),
 			),
 			'shipping_debug_mode' => array(
-				'title'   => __( 'Shipping Debug Mode', 'stream' ),
+				'title'   => esc_html__( 'Shipping Debug Mode', 'stream' ),
 				'page'    => 'wc-status',
 				'tab'     => 'tools',
 				'section' => '',
-				'type'    => __( 'tool', 'stream' ),
+				'type'    => esc_html__( 'tool', 'stream' ),
 			),
 			'template_debug_mode' => array(
-				'title'   => __( 'Template Debug Mode', 'stream' ),
+				'title'   => esc_html__( 'Template Debug Mode', 'stream' ),
 				'page'    => 'wc-status',
 				'tab'     => 'tools',
 				'section' => '',
-				'type'    => __( 'tool', 'stream' ),
+				'type'    => esc_html__( 'tool', 'stream' ),
 			),
 			'uninstall_data' => array(
-				'title'   => __( 'Remove post types on uninstall', 'stream' ),
+				'title'   => esc_html__( 'Remove post types on uninstall', 'stream' ),
 				'page'    => 'wc-status',
 				'tab'     => 'tools',
 				'section' => '',
-				'type'    => __( 'tool', 'stream' ),
+				'type'    => esc_html__( 'tool', 'stream' ),
 			),
 		);
 
@@ -213,11 +213,11 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		if ( in_array( $record->context, self::$post_types ) && get_post( $record->object_id ) ) {
 			if ( $link = get_edit_post_link( $record->object_id ) ) {
 				$post_type_name = WP_Stream_Connector_Posts::get_post_type_name( get_post_type( $record->object_id ) );
-				$links[ sprintf( _x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
+				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
 			}
 
 			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
-				$links[ __( 'View', 'stream' ) ] = $link;
+				$links[ esc_html__( 'View', 'stream' ) ] = $link;
 			}
 		}
 
@@ -228,7 +228,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		$option_section = wp_stream_get_meta( $record, 'section', true );
 
 		if ( $option_key && $option_tab ) {
-			$text = sprintf( __( 'Edit WooCommerce %s', 'stream' ), $context_labels[ $record->context ] );;
+			$text = sprintf( esc_html__( 'Edit WooCommerce %s', 'stream' ), $context_labels[ $record->context ] );;
 			$url  = add_query_arg(
 				array( 'page' => $option_page, 'tab' => $option_tab, 'section' => $option_section ),
 				admin_url( 'admin.php' ) // Not self_admin_url here, as WooCommerce doesn't exist in Network Admin
@@ -297,28 +297,28 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		if ( in_array( $new, array( 'auto-draft', 'draft', 'inherit' ) ) ) {
 			return;
 		} elseif ( 'auto-draft' === $old && 'publish' === $new ) {
-			$message = _x(
+			$message = esc_html_x(
 				'%s created',
 				'Order title',
 				'stream'
 			);
 			$action  = 'created';
 		} elseif ( 'trash' === $new ) {
-			$message = _x(
+			$message = esc_html_x(
 				'%s trashed',
 				'Order title',
 				'stream'
 			);
 			$action  = 'trashed';
 		} elseif ( 'trash' === $old && 'publish' === $new ) {
-			$message = _x(
+			$message = esc_html_x(
 				'%s restored from the trash',
 				'Order title',
 				'stream'
 			);
 			$action  = 'untrashed';
 		} else {
-			$message = _x(
+			$message = esc_html_x(
 				'%s updated',
 				'Order title',
 				'stream'
@@ -330,8 +330,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		}
 
 		$order           = new WC_Order( $post->ID );
-		$order_title     = __( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
-		$order_type_name = __( 'order', 'stream' );
+		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
+		$order_type_name = esc_html__( 'order', 'stream' );
 
 		self::log(
 			$message,
@@ -369,8 +369,8 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		}
 
 		$order           = new WC_Order( $post->ID );
-		$order_title     = __( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
-		$order_type_name = __( 'order', 'stream' );
+		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
+		$order_type_name = esc_html__( 'order', 'stream' );
 
 		self::log(
 			_x(
@@ -399,23 +399,23 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			return;
 		}
 
-		$old_status = get_term_by( 'slug', $old, 'shop_order_status' );
-		$new_status = get_term_by( 'slug', $new, 'shop_order_status' );
+		$old_status = WP_Stream::is_vip() ? wpcom_vip_get_term_by( 'slug', $old, 'shop_order_status' ) : get_term_by( 'slug', $old, 'shop_order_status' );
+		$new_status = WP_Stream::is_vip() ? wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' ) : get_term_by( 'slug', $new, 'shop_order_status' );
 
 		// Don't track new statuses
 		if ( ! $old_status ) {
 			return;
 		}
 
-		$message = _x(
+		$message = esc_html_x(
 			'%1$s status changed from %2$s to %3$s',
 			'1. Order title, 2. Old status, 3. New status',
 			'stream'
 		);
 
 		$order           = new WC_Order( $order_id );
-		$order_title     = __( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
-		$order_type_name = __( 'order', 'stream' );
+		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
+		$order_type_name = esc_html__( 'order', 'stream' );
 		$new_status_name = strtolower( $new_status->name );
 		$old_status_name = strtolower( $old_status->name );
 
@@ -679,7 +679,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 							'page'    => 'wc-settings',
 							'tab'     => $page_id,
 							'section' => $section_key,
-							'type'    => __( 'setting', 'stream' ),
+							'type'    => esc_html__( 'setting', 'stream' ),
 						);
 					}
 				}
@@ -690,7 +690,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 
 			// Provide additional context for each of the settings pages
 			array_walk( $settings_pages, function( &$value ) {
-				$value .= ' ' . __( 'Settings', 'stream' );
+				$value .= ' ' . esc_html__( 'Settings', 'stream' );
 			});
 
 			// Load Payment Gateway Settings
@@ -706,7 +706,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 					'page'    => 'wc-settings',
 					'tab'     => 'checkout',
 					'section' => strtolower( $section_key ),
-					'type'    => __( 'payment gateway', 'stream' ),
+					'type'    => esc_html__( 'payment gateway', 'stream' ),
 				);
 			}
 
@@ -725,7 +725,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 					'page'    => 'wc-settings',
 					'tab'     => 'shipping',
 					'section' => strtolower( $section_key ),
-					'type'    => __( 'shipping method', 'stream' ),
+					'type'    => esc_html__( 'shipping method', 'stream' ),
 				);
 			}
 
@@ -744,7 +744,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 					'page'    => 'wc-settings',
 					'tab'     => 'email',
 					'section' => strtolower( $section_key ),
-					'type'    => __( 'email', 'stream' ),
+					'type'    => esc_html__( 'email', 'stream' ),
 				);
 			}
 
@@ -752,7 +752,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 
 			// Tools page
 			$tools_page = array(
-				'tools' => __( 'Tools', 'stream' )
+				'tools' => esc_html__( 'Tools', 'stream' )
 			);
 
 			$settings_pages = array_merge( $settings_pages, $tools_page );

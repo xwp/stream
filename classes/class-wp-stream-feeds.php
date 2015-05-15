@@ -9,7 +9,13 @@ class WP_Stream_Feeds {
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
 
 	public static function load() {
-		if ( ! isset( WP_Stream_Settings::$options['general_private_feeds'] ) || ! WP_Stream_Settings::$options['general_private_feeds'] ) {
+		if (
+			WP_Stream::is_vip()
+			||
+			! isset( WP_Stream_Settings::$options['general_private_feeds'] )
+			||
+			! WP_Stream_Settings::$options['general_private_feeds']
+		) {
 			return;
 		}
 
@@ -37,7 +43,8 @@ class WP_Stream_Feeds {
 
 		if ( $user_id ) {
 			$feed_key = wp_generate_password( 32, false );
-			update_user_meta( $user_id, self::USER_FEED_OPTION_KEY, $feed_key );
+
+			wp_stream_update_user_meta( $user_id, self::USER_FEED_OPTION_KEY, $feed_key );
 
 			$link      = self::get_user_feed_url( $feed_key );
 			$xml_feed  = add_query_arg( array( 'type' => 'json' ), $link );
@@ -69,7 +76,7 @@ class WP_Stream_Feeds {
 		$generate_key = wp_stream_filter_input( INPUT_GET, self::GENERATE_KEY_QUERY_VAR );
 		$nonce        = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 
-		if ( ! $generate_key && get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY, true ) ) {
+		if ( ! $generate_key && wp_stream_get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY ) ) {
 			return;
 		}
 
@@ -79,7 +86,7 @@ class WP_Stream_Feeds {
 
 		$feed_key = wp_generate_password( 32, false );
 
-		update_user_meta( $user->ID, self::USER_FEED_OPTION_KEY, $feed_key );
+		wp_stream_update_user_meta( $user->ID, self::USER_FEED_OPTION_KEY, $feed_key );
 	}
 
 	/**
@@ -95,7 +102,7 @@ class WP_Stream_Feeds {
 			return;
 		}
 
-		$key  = get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY, true );
+		$key  = wp_stream_get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY );
 		$link = self::get_user_feed_url( $key );
 
 		$nonce = wp_create_nonce( 'wp_stream_generate_key' );

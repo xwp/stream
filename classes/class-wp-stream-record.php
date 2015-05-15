@@ -38,7 +38,7 @@ class WP_Stream_Record {
 
 	public function save() {
 		if ( ! $this->validate() ) {
-			return new WP_Error( 'validation-error', __( 'Could not validate record data.', 'stream' ) );
+			return new WP_Error( 'validation-error', esc_html__( 'Could not validate record data.', 'stream' ) );
 		}
 
 		return WP_Stream::$db->store( (array) $this );

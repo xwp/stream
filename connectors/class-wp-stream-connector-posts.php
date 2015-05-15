@@ -25,7 +25,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Posts', 'stream' );
+		return esc_html__( 'Posts', 'stream' );
 	}
 
 	/**
@@ -35,11 +35,11 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'updated'   => __( 'Updated', 'stream' ),
-			'created'   => __( 'Created', 'stream' ),
-			'trashed'   => __( 'Trashed', 'stream' ),
-			'untrashed' => __( 'Restored', 'stream' ),
-			'deleted'   => __( 'Deleted', 'stream' ),
+			'updated'   => esc_html__( 'Updated', 'stream' ),
+			'created'   => esc_html__( 'Created', 'stream' ),
+			'trashed'   => esc_html__( 'Trashed', 'stream' ),
+			'untrashed' => esc_html__( 'Restored', 'stream' ),
+			'deleted'   => esc_html__( 'Deleted', 'stream' ),
 		);
 	}
 
@@ -226,7 +226,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 					'post_type'      => 'revision',
 					'post_status'    => 'inherit',
 					'post_parent'    => $post->ID,
-					'posts_per_page' => 1,
+					'posts_per_page' => 1, // VIP safe
 					'orderby'        => 'post_date',
 					'order'          => 'DESC',
 				)
@@ -316,7 +316,7 @@ class WP_Stream_Connector_Posts extends WP_Stream_Connector {
 	 * @return  string  Post type label
 	 */
 	public static function get_post_type_name( $post_type_slug ) {
-		$name = __( 'Post', 'stream' ); // Default
+		$name = esc_html__( 'Post', 'stream' ); // Default
 
 		if ( post_type_exists( $post_type_slug ) ) {
 			$post_type = get_post_type_object( $post_type_slug );

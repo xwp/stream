@@ -110,7 +110,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return _x( 'BuddyPress', 'buddypress', 'stream' );
+		return esc_html_x( 'BuddyPress', 'buddypress', 'stream' );
 	}
 
 	/**
@@ -120,15 +120,15 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'     => _x( 'Created', 'buddypress', 'stream' ),
-			'updated'     => _x( 'Updated', 'buddypress', 'stream' ),
-			'activated'   => _x( 'Activated', 'buddypress', 'stream' ),
-			'deactivated' => _x( 'Deactivated', 'buddypress', 'stream' ),
-			'deleted'     => _x( 'Deleted', 'buddypress', 'stream' ),
-			'spammed'     => _x( 'Marked as spam', 'buddypress', 'stream' ),
-			'unspammed'   => _x( 'Unmarked as spam', 'buddypress', 'stream' ),
-			'promoted'    => _x( 'Promoted', 'buddypress', 'stream' ),
-			'demoted'     => _x( 'Demoted', 'buddypress', 'stream' ),
+			'created'     => esc_html_x( 'Created', 'buddypress', 'stream' ),
+			'updated'     => esc_html_x( 'Updated', 'buddypress', 'stream' ),
+			'activated'   => esc_html_x( 'Activated', 'buddypress', 'stream' ),
+			'deactivated' => esc_html_x( 'Deactivated', 'buddypress', 'stream' ),
+			'deleted'     => esc_html_x( 'Deleted', 'buddypress', 'stream' ),
+			'spammed'     => esc_html_x( 'Marked as spam', 'buddypress', 'stream' ),
+			'unspammed'   => esc_html_x( 'Unmarked as spam', 'buddypress', 'stream' ),
+			'promoted'    => esc_html_x( 'Promoted', 'buddypress', 'stream' ),
+			'demoted'     => esc_html_x( 'Demoted', 'buddypress', 'stream' ),
 		);
 	}
 
@@ -139,10 +139,10 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'components'     => _x( 'Components', 'buddypress', 'stream' ),
-			'groups'         => _x( 'Groups', 'buddypress', 'stream' ),
-			'activity'       => _x( 'Activity', 'buddypress', 'stream' ),
-			'profile_fields' => _x( 'Profile fields', 'buddypress', 'stream' ),
+			'components'     => esc_html_x( 'Components', 'buddypress', 'stream' ),
+			'groups'         => esc_html_x( 'Groups', 'buddypress', 'stream' ),
+			'activity'       => esc_html_x( 'Activity', 'buddypress', 'stream' ),
+			'profile_fields' => esc_html_x( 'Profile fields', 'buddypress', 'stream' ),
 		);
 	}
 
@@ -161,7 +161,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			$option_key = wp_stream_get_meta( $record, 'option_key', true );
 
 			if ( 'bp-active-components' === $option_key ) {
-				$links[ __( 'Edit', 'stream' ) ] = add_query_arg(
+				$links[ esc_html__( 'Edit', 'stream' ) ] = add_query_arg(
 					array(
 						'page' => 'bp-components',
 					),
@@ -170,7 +170,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			} elseif ( 'bp-pages' === $option_key ) {
 				$page_id = wp_stream_get_meta( $record, 'page_id', true );
 
-				$links[ __( 'Edit setting', 'stream' ) ] = add_query_arg(
+				$links[ esc_html__( 'Edit setting', 'stream' ) ] = add_query_arg(
 					array(
 						'page' => 'bp-page-settings',
 					),
@@ -178,12 +178,12 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				);
 
 				if ( $page_id ) {
-					$links[ __( 'Edit Page', 'stream' ) ] = get_edit_post_link( $page_id );
-					$links[ __( 'View', 'stream' ) ]      = get_permalink( $page_id );
+					$links[ esc_html__( 'Edit Page', 'stream' ) ] = get_edit_post_link( $page_id );
+					$links[ esc_html__( 'View', 'stream' ) ]      = get_permalink( $page_id );
 				}
 			}
 		} elseif ( in_array( $record->context, array( 'settings' ) ) ) {
-			$links[ __( 'Edit setting', 'stream' ) ] = add_query_arg(
+			$links[ esc_html__( 'Edit setting', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => wp_stream_get_meta( $record, 'page', true ),
 				),
@@ -200,9 +200,9 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				$edit_url   = $base_url . '&amp;action=edit';
 				$visit_url  = bp_get_group_permalink( $group );
 
-				$links[ __( 'Edit group', 'stream' ) ] = $edit_url;
-				$links[ __( 'View group', 'stream' ) ] = $visit_url;
-				$links[ __( 'Delete group', 'stream' ) ] = $delete_url;
+				$links[ esc_html__( 'Edit group', 'stream' ) ] = $edit_url;
+				$links[ esc_html__( 'View group', 'stream' ) ] = $visit_url;
+				$links[ esc_html__( 'Delete group', 'stream' ) ] = $delete_url;
 			}
 		} elseif ( in_array( $record->context, array( 'activity' ) ) ) {
 			$activity_id = wp_stream_get_meta( $record, 'id', true );
@@ -218,19 +218,19 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				$spam_url   = $base_url . "&amp;action=spam&amp;$spam_nonce";
 
 				if ( $activity->is_spam ) {
-					$links[ __( 'Ham', 'stream' ) ] = $ham_url;
+					$links[ esc_html__( 'Ham', 'stream' ) ] = $ham_url;
 				} else {
-					$links[ __( 'Edit', 'stream' ) ] = $edit_url;
-					$links[ __( 'Spam', 'stream' ) ] = $spam_url;
+					$links[ esc_html__( 'Edit', 'stream' ) ] = $edit_url;
+					$links[ esc_html__( 'Spam', 'stream' ) ] = $spam_url;
 				}
-				$links[ __( 'Delete', 'stream' ) ] = $delete_url;
+				$links[ esc_html__( 'Delete', 'stream' ) ] = $delete_url;
 			}
 		} elseif ( in_array( $record->context, array( 'profile_fields' ) ) ) {
 			$field_id = wp_stream_get_meta( $record, 'field_id', true );
 			$group_id = wp_stream_get_meta( $record, 'group_id', true );
 
 			if ( empty( $field_id ) ) { // is a group action
-				$links[ __( 'Edit', 'stream' ) ] = add_query_arg(
+				$links[ esc_html__( 'Edit', 'stream' ) ] = add_query_arg(
 					array(
 						'page' => 'bp-profile-setup',
 						'mode' => 'edit_group',
@@ -238,7 +238,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 					),
 					admin_url( 'users.php' )
 				);
-				$links[ __( 'Delete', 'stream' ) ] = add_query_arg(
+				$links[ esc_html__( 'Delete', 'stream' ) ] = add_query_arg(
 					array(
 						'page' => 'bp-profile-setup',
 						'mode' => 'delete_group',
@@ -251,7 +251,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				if ( empty( $field->type ) ) {
 					return $links;
 				}
-				$links[ __( 'Edit', 'stream' ) ] = add_query_arg(
+				$links[ esc_html__( 'Edit', 'stream' ) ] = add_query_arg(
 					array(
 						'page' => 'bp-profile-setup',
 						'mode' => 'edit_field',
@@ -260,7 +260,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 					),
 					admin_url( 'users.php' )
 				);
-				$links[ __( 'Delete', 'stream' ) ] = add_query_arg(
+				$links[ esc_html__( 'Delete', 'stream' ) ] = add_query_arg(
 					array(
 						'page' => 'bp-profile-setup',
 						'mode' => 'delete_field',
@@ -281,27 +281,27 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			self::$options,
 			array(
 				'hide-loggedout-adminbar'       => array(
-					'label' => _x( 'Toolbar', 'buddypress', 'stream' ),
+					'label' => esc_html_x( 'Toolbar', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'_bp_force_buddybar'            => array(
-					'label' => _x( 'Toolbar', 'buddypress', 'stream' ),
+					'label' => esc_html_x( 'Toolbar', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bp-disable-account-deletion'   => array(
-					'label' => _x( 'Account Deletion', 'buddypress', 'stream' ),
+					'label' => esc_html_x( 'Account Deletion', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bp-disable-profile-sync'       => array(
-					'label' => _x( 'Profile Syncing', 'buddypress', 'stream' ),
+					'label' => esc_html_x( 'Profile Syncing', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bp_restrict_group_creation'    => array(
-					'label' => _x( 'Group Creation', 'buddypress', 'stream' ),
+					'label' => esc_html_x( 'Group Creation', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bb-config-location'            => array(
-					'label' => _x( 'bbPress Configuration', 'buddypress', 'stream' ),
+					'label' => esc_html_x( 'bbPress Configuration', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bp-disable-blogforum-comments' => array(
@@ -309,15 +309,15 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 					'page'  => 'bp-settings',
 				),
 				'_bp_enable_heartbeat_refresh'  => array(
-					'label' => _x( 'Activity auto-refresh', 'buddypress', 'stream' ),
+					'label' => esc_html_x( 'Activity auto-refresh', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'_bp_enable_akismet'            => array(
-					'label' => _x( 'Akismet', 'buddypress', 'stream' ),
+					'label' => esc_html_x( 'Akismet', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 				'bp-disable-avatar-uploads'     => array(
-					'label' => _x( 'Avatar Uploads', 'buddypress', 'stream' ),
+					'label' => esc_html_x( 'Avatar Uploads', 'buddypress', 'stream' ),
 					'page'  => 'bp-settings',
 				),
 			)
@@ -387,8 +387,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		$components = bp_core_admin_get_components();
 
 		$actions = array(
-			true  => __( 'activated', 'stream' ),
-			false => __( 'deactivated', 'stream' ),
+			true  => esc_html__( 'activated', 'stream' ),
+			false => esc_html__( 'deactivated', 'stream' ),
 		);
 
 		foreach ( $options as $option => $option_value ) {
@@ -429,8 +429,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		$pages = array_merge(
 			self::bp_get_directory_pages(),
 			array(
-				'register' => _x( 'Register', 'buddypress', 'stream' ),
-				'activate' => _x( 'Activate', 'buddypress', 'stream' ),
+				'register' => esc_html_x( 'Register', 'buddypress', 'stream' ),
+				'activate' => esc_html_x( 'Activate', 'buddypress', 'stream' ),
 			)
 		);
 
@@ -439,7 +439,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 				continue;
 			}
 
-			$page = ! empty( $new_value[ $option ] ) ? get_post( $new_value[ $option ] )->post_title : __( 'No page', 'stream' );
+			$page = ! empty( $new_value[ $option ] ) ? get_post( $new_value[ $option ] )->post_title : esc_html__( 'No page', 'stream' );
 
 			self::log(
 				sprintf(
@@ -580,23 +580,23 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		if ( $message ) {
 			// Do nothing
 		} elseif ( 'created' === $action ) {
-			$message = __( '"%s" group created', 'stream' );
+			$message = esc_html__( '"%s" group created', 'stream' );
 		} elseif ( 'updated' === $action ) {
-			$message = __( '"%s" group updated', 'stream' );
+			$message = esc_html__( '"%s" group updated', 'stream' );
 		} elseif ( 'deleted' === $action ) {
-			$message = __( '"%s" group deleted', 'stream' );
+			$message = esc_html__( '"%s" group deleted', 'stream' );
 		} elseif ( 'joined' === $action ) {
-			$message = __( 'Joined group "%s"', 'stream' );
+			$message = esc_html__( 'Joined group "%s"', 'stream' );
 		} elseif ( 'left' === $action ) {
-			$message = __( 'Left group "%s"', 'stream' );
+			$message = esc_html__( 'Left group "%s"', 'stream' );
 		} elseif ( 'banned' === $action ) {
-			$message = __( 'Banned "%2$s" from "%1$s"', 'stream' );
+			$message = esc_html__( 'Banned "%2$s" from "%1$s"', 'stream' );
 			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 		} elseif ( 'unbanned' === $action ) {
-			$message = __( 'Unbanned "%2$s" from "%1$s"', 'stream' );
+			$message = esc_html__( 'Unbanned "%2$s" from "%1$s"', 'stream' );
 			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 		} elseif ( 'removed' === $action ) {
-			$message = __( 'Removed "%2$s" from "%1$s"', 'stream' );
+			$message = esc_html__( 'Removed "%2$s" from "%1$s"', 'stream' );
 			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 		} else {
 			return;
@@ -653,8 +653,8 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		$group = groups_get_group( array( 'group_id' => $group_id ) );
 		$user = new WP_User( $user_id );
 		$roles = array(
-			'admin' => _x( 'Administrator', 'buddypress', 'stream' ),
-			'mod'   => _x( 'Moderator', 'buddypress', 'stream' ),
+			'admin' => esc_html_x( 'Administrator', 'buddypress', 'stream' ),
+			'mod'   => esc_html_x( 'Moderator', 'buddypress', 'stream' ),
 		);
 		$message = sprintf(
 			__( 'Promoted "%s" to "%s" in "%s"', 'stream' ),
@@ -693,11 +693,11 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		if ( $message ) {
 			// Do nothing
 		} elseif ( 'created' === $action ) {
-			$message = __( 'Created profile field "%s"', 'stream' );
+			$message = esc_html__( 'Created profile field "%s"', 'stream' );
 		} elseif ( 'updated' === $action ) {
-			$message = __( 'Updated profile field "%s"', 'stream' );
+			$message = esc_html__( 'Updated profile field "%s"', 'stream' );
 		} elseif ( 'deleted' === $action ) {
-			$message = __( 'Deleted profile field "%s"', 'stream' );
+			$message = esc_html__( 'Deleted profile field "%s"', 'stream' );
 		} else {
 			return;
 		}
@@ -738,11 +738,11 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		if ( $message ) {
 			// Do nothing
 		} elseif ( 'created' === $action ) {
-			$message = __( 'Created profile field group "%s"', 'stream' );
+			$message = esc_html__( 'Created profile field group "%s"', 'stream' );
 		} elseif ( 'updated' === $action ) {
-			$message = __( 'Updated profile field group "%s"', 'stream' );
+			$message = esc_html__( 'Updated profile field group "%s"', 'stream' );
 		} elseif ( 'deleted' === $action ) {
-			$message = __( 'Deleted profile field group "%s"', 'stream' );
+			$message = esc_html__( 'Deleted profile field group "%s"', 'stream' );
 		} else {
 			return;
 		}

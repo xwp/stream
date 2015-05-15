@@ -75,7 +75,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return _x( 'bbPress', 'bbpress', 'stream' );
+		return esc_html_x( 'bbPress', 'bbpress', 'stream' );
 	}
 
 	/**
@@ -85,22 +85,22 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'     => _x( 'Created', 'bbpress', 'stream' ),
-			'updated'     => _x( 'Updated', 'bbpress', 'stream' ),
-			'activated'   => _x( 'Activated', 'bbpress', 'stream' ),
-			'deactivated' => _x( 'Deactivated', 'bbpress', 'stream' ),
-			'deleted'     => _x( 'Deleted', 'bbpress', 'stream' ),
-			'trashed'     => _x( 'Trashed', 'bbpress', 'stream' ),
-			'untrashed'   => _x( 'Restored', 'bbpress', 'stream' ),
-			'generated'   => _x( 'Generated', 'bbpress', 'stream' ),
-			'imported'    => _x( 'Imported', 'bbpress', 'stream' ),
-			'exported'    => _x( 'Exported', 'bbpress', 'stream' ),
-			'closed'      => _x( 'Closed', 'bbpress', 'stream' ),
-			'opened'      => _x( 'Opened', 'bbpress', 'stream' ),
-			'sticked'     => _x( 'Sticked', 'bbpress', 'stream' ),
-			'unsticked'   => _x( 'Unsticked', 'bbpress', 'stream' ),
-			'spammed'     => _x( 'Marked as spam', 'bbpress', 'stream' ),
-			'unspammed'   => _x( 'Unmarked as spam', 'bbpress', 'stream' ),
+			'created'     => esc_html_x( 'Created', 'bbpress', 'stream' ),
+			'updated'     => esc_html_x( 'Updated', 'bbpress', 'stream' ),
+			'activated'   => esc_html_x( 'Activated', 'bbpress', 'stream' ),
+			'deactivated' => esc_html_x( 'Deactivated', 'bbpress', 'stream' ),
+			'deleted'     => esc_html_x( 'Deleted', 'bbpress', 'stream' ),
+			'trashed'     => esc_html_x( 'Trashed', 'bbpress', 'stream' ),
+			'untrashed'   => esc_html_x( 'Restored', 'bbpress', 'stream' ),
+			'generated'   => esc_html_x( 'Generated', 'bbpress', 'stream' ),
+			'imported'    => esc_html_x( 'Imported', 'bbpress', 'stream' ),
+			'exported'    => esc_html_x( 'Exported', 'bbpress', 'stream' ),
+			'closed'      => esc_html_x( 'Closed', 'bbpress', 'stream' ),
+			'opened'      => esc_html_x( 'Opened', 'bbpress', 'stream' ),
+			'sticked'     => esc_html_x( 'Sticked', 'bbpress', 'stream' ),
+			'unsticked'   => esc_html_x( 'Unsticked', 'bbpress', 'stream' ),
+			'spammed'     => esc_html_x( 'Marked as spam', 'bbpress', 'stream' ),
+			'unspammed'   => esc_html_x( 'Unmarked as spam', 'bbpress', 'stream' ),
 		);
 	}
 
@@ -111,7 +111,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'settings' => _x( 'Settings', 'bbpress', 'stream' ),
+			'settings' => esc_html_x( 'Settings', 'bbpress', 'stream' ),
 		);
 	}
 
@@ -128,7 +128,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( 'settings' === $record->context ) {
 			$option = wp_stream_get_meta( $record, 'option', true );
-			$links[ __( 'Edit', 'stream' ) ] = esc_url( add_query_arg(
+			$links[ esc_html__( 'Edit', 'stream' ) ] = esc_url( add_query_arg(
 				array(
 					'page' => 'bbpress',
 				),
@@ -160,7 +160,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 			$settings = bbp_admin_get_settings_fields();
 
 			/* fix for missing title for this single field */
-			$settings['bbp_settings_features']['_bbp_allow_threaded_replies']['title'] = __( 'Reply Threading', 'stream' );
+			$settings['bbp_settings_features']['_bbp_allow_threaded_replies']['title'] = esc_html__( 'Reply Threading', 'stream' );
 
 			$option = $data['args']['option'];
 
@@ -182,7 +182,7 @@ class WP_Stream_Connector_bbPress extends WP_Stream_Connector {
 		} elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ) ) ) {
 			if ( 'reply' === $data['context'] ) {
 				if ( 'updated' === $data['action'] ) {
-					$data['message'] = __( 'Replied on "%1$s"', 'stream' );
+					$data['message'] = esc_html__( 'Replied on "%1$s"', 'stream' );
 					$data['args']['post_title'] = get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title;
 				}
 				$data['args']['post_title'] = sprintf(

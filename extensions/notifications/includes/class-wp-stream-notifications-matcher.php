@@ -2,6 +2,13 @@
 
 class WP_Stream_Notifications_Matcher {
 
+	/**
+	 * Hold the active rules allowed limit value
+	 *
+	 * @var int
+	 */
+	public static $active_rules_max;
+
 	const CACHE_KEY = 'stream-notification-rules';
 
 	/**
@@ -10,10 +17,66 @@ class WP_Stream_Notifications_Matcher {
 	public function __construct() {
 		// Refresh rules cache on updating/deleting posts
 		add_action( 'save_post', array( $this, 'refresh_cache_on_save' ), 10, 2 );
-		add_action( 'delete_post', array( $this, 'refresh_cache_on_delete' ), 10, 1 );
+		add_action( 'delete_post', array( $this, 'refresh_cache_on_delete' ) );
 
 		// Match all new type=stream records
 		add_action( 'wp_stream_records_inserted', array( $this, 'match' ), 10, 2 );
+
+		// Enforce the max number of active rules allowed with a notice
+		add_action( 'admin_init', array( $this, 'check_active_rules_count' ) );
+
+		/**
+		 * Filter the total number of active rules allowed
+		 *
+		 * The idea here is to enforce a sensible limit for the total
+		 * number of active notifications rules that can exist in cache.
+		 *
+		 * @since 2.0.6
+		 *
+		 * @return int
+		 */
+		self::$active_rules_max = absint( apply_filters( 'wp_stream_notifications_active_rules_max', 100 ) );
+	}
+
+	/**
+	 * Display a notice if the number of active rules has exceeded the limit
+	 *
+	 * @action wp
+	 *
+	 * @return void
+	 */
+	public function check_active_rules_count() {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		global $typenow;
+
+		if ( WP_Stream_Notifications_Post_Type::POSTTYPE !== $typenow ) {
+			return;
+		}
+
+		$rules = absint( wp_count_posts( WP_Stream_Notifications_Post_Type::POSTTYPE )->publish );
+
+		if ( $rules <= self::$active_rules_max ) {
+			return;
+		}
+
+		$post_type       = get_post_type_object( WP_Stream_Notifications_Post_Type::POSTTYPE );
+		$post_type_label = ( 1 === self::$active_rules_max ) ? $post_type->labels->singular_name : $post_type->labels->name;
+
+		WP_Stream::notice(
+			sprintf(
+				_n(
+					'<strong>Warning:</strong> You can only have 1 %s active at a time. Please deactivate or delete a few.',
+					'<strong>Warning:</strong> You can only have %s %s active at a time. Please deactivate or delete a few.',
+					self::$active_rules_max,
+					'stream'
+				),
+				number_format( self::$active_rules_max ),
+				esc_html( $post_type_label )
+			)
+		);
 	}
 
 	/**
@@ -82,7 +145,7 @@ class WP_Stream_Notifications_Matcher {
 		$args  = array(
 			'post_type'      => WP_Stream_Notifications_Post_Type::POSTTYPE,
 			'post_status'    => 'publish',
-			'posts_per_page' => -1,
+			'posts_per_page' => self::$active_rules_max, // 100 by default
 		);
 		$query = new WP_Query( $args );
 		$rules = $query->get_posts();

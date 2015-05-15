@@ -26,7 +26,7 @@ class WP_Stream_Connector_Stream extends WP_Stream_Connector {
 	 * @return string
 	 */
 	public static function get_label() {
-		return __( 'Stream', 'stream' );
+		return esc_html__( 'Stream', 'stream' );
 	}
 
 	/**
@@ -36,7 +36,7 @@ class WP_Stream_Connector_Stream extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'site' => __( 'Site', 'stream' ),
+			'site' => esc_html__( 'Site', 'stream' ),
 		);
 	}
 
@@ -47,8 +47,8 @@ class WP_Stream_Connector_Stream extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'connected'    => __( 'Connected', 'stream' ),
-			'disconnected' => __( 'Disconnected', 'stream' ),
+			'connected'    => esc_html__( 'Connected', 'stream' ),
+			'disconnected' => esc_html__( 'Disconnected', 'stream' ),
 		);
 	}
 

@@ -214,28 +214,6 @@ class WP_Stream_Settings {
 						'choices'     => self::get_roles(),
 						'default'     => array( 'administrator' ),
 					),
-					array(
-						'name'        => 'private_feeds',
-						'title'       => esc_html__( 'Private Feeds', 'stream' ),
-						'type'        => 'checkbox',
-						'desc'        => sprintf(
-							__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
-							sprintf(
-								'<a href="%s" title="%s">',
-								admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_OPTION_KEY ) ),
-								esc_attr__( 'View Profile', 'stream' )
-							),
-							'</a>',
-							sprintf(
-								'<a href="%s" title="%s" target="_blank">',
-								esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
-								esc_attr__( 'View Codex', 'stream' )
-							),
-							'</a>'
-						),
-						'after_field' => esc_html__( 'Enabled', 'stream' ),
-						'default'     => 0,
-					),
 				),
 			),
 			'exclude' => array(
@@ -258,7 +236,7 @@ class WP_Stream_Settings {
 						'name'        => 'comment_flood_tracking',
 						'title'       => esc_html__( 'Comment Flood Tracking', 'stream' ),
 						'type'        => 'checkbox',
-						'desc'        => __( 'WordPress will automatically prevent duplicate comments from flooding the database. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+						'desc'        => esc_html__( 'WordPress will automatically prevent duplicate comments from flooding the database. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
 						'after_field' => esc_html__( 'Enabled', 'stream' ),
 						'default'     => 0,
 					),
@@ -266,13 +244,41 @@ class WP_Stream_Settings {
 			),
 		);
 
+		// Private feeds not available on VIP
+		if ( ! WP_Stream::is_vip() ) {
+			$private_feeds = array(
+				'name'        => 'private_feeds',
+				'title'       => esc_html__( 'Private Feeds', 'stream' ),
+				'type'        => 'checkbox',
+				'desc'        => sprintf(
+					__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
+					sprintf(
+						'<a href="%s" title="%s">',
+						admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', WP_Stream_Feeds::USER_FEED_OPTION_KEY ) ),
+						esc_attr__( 'View Profile', 'stream' )
+					),
+					'</a>',
+					sprintf(
+						'<a href="%s" title="%s" target="_blank">',
+						esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
+						esc_attr__( 'View Codex', 'stream' )
+					),
+					'</a>'
+				),
+				'after_field' => esc_html__( 'Enabled', 'stream' ),
+				'default'     => 0,
+			);
+
+			array_push( $fields['general']['fields'], $private_feeds );
+		}
+
 		// If Akismet is active, allow Admins to opt-in to Akismet tracking
 		if ( class_exists( 'Akismet' ) ) {
 			$akismet_tracking = array(
 				'name'        => 'akismet_tracking',
 				'title'       => esc_html__( 'Akismet Tracking', 'stream' ),
 				'type'        => 'checkbox',
-				'desc'        => __( 'Akismet already keeps statistics for comment attempts that it blocks as SPAM. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+				'desc'        => esc_html__( 'Akismet already keeps statistics for comment attempts that it blocks as SPAM. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
 				'after_field' => esc_html__( 'Enabled', 'stream' ),
 				'default'     => 0,
 			);
@@ -286,7 +292,7 @@ class WP_Stream_Settings {
 				'name'        => 'wp_cron_tracking',
 				'title'       => esc_html__( 'WP Cron Tracking', 'stream' ),
 				'type'        => 'checkbox',
-				'desc'        => __( 'By default, Stream does not track activity performed by WordPress cron events unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+				'desc'        => esc_html__( 'By default, Stream does not track activity performed by WordPress cron events unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
 				'after_field' => esc_html__( 'Enabled', 'stream' ),
 				'default'     => 0,
 			);
@@ -371,7 +377,7 @@ class WP_Stream_Settings {
 	public static function register_settings() {
 		$sections = self::get_fields();
 
-		register_setting( self::$option_key, self::$option_key );
+		register_setting( self::$option_key, self::$option_key, array( __CLASS__, 'sanitize_settings' ) );
 
 		foreach ( $sections as $section_name => $section ) {
 			add_settings_section(
@@ -399,6 +405,56 @@ class WP_Stream_Settings {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Sanitization callback for settings field values before save
+	 *
+	 * @param array $input
+	 *
+	 * @return array
+	 */
+	public static function sanitize_settings( $input ) {
+		$output   = array();
+		$sections = self::get_fields();
+
+		foreach ( $sections as $section => $data ) {
+			if ( empty( $data['fields'] ) || ! is_array( $data['fields'] ) ) {
+				continue;
+			}
+
+			foreach ( $data['fields'] as $field ) {
+				$type = ! empty( $field['type'] ) ? $field['type'] : null;
+				$name = ! empty( $field['name'] ) ? sprintf( '%s_%s', $section, $field['name'] ) : null;
+
+				if ( empty( $type ) || empty( $input[ $name ] ) ) {
+					continue;
+				}
+
+				// Sanitize depending on the type of field
+				switch ( $type ) {
+					case 'number':
+						$output[ $name ] = is_numeric( $input[ $name ] ) ? intval( trim( $input[ $name ] ) ) : '';
+						break;
+					case 'checkbox':
+						$output[ $name ] = is_numeric( $input[ $name ] ) ? absint( trim( $input[ $name ] ) ) : '';
+						break;
+					default:
+						if ( is_array( $input[ $name ] ) ) {
+							$output[ $name ] = $input[ $name ];
+
+							// Support all values in multidimentional arrays too
+							array_walk_recursive( $output[ $name ], function( &$v, $k ) {
+								$v = trim( $v );
+							} );
+						} else {
+							$output[ $name ] = trim( $input[ $name ] );
+						}
+				}
+			}
+		}
+
+		return $output;
 	}
 
 	/**
@@ -643,8 +699,8 @@ class WP_Stream_Settings {
 			case 'rule_list' :
 				$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
-				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  __( 'Add New Rule', 'stream' ) );
-				$actions_bottom = sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ),  __( 'Delete Selected Rules', 'stream' ) );
+				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  esc_html__( 'Add New Rule', 'stream' ) );
+				$actions_bottom = sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ),  esc_html__( 'Delete Selected Rules', 'stream' ) );
 
 				$output .= sprintf( '<div class="tablenav top">%1$s</div>', $actions_top );
 				$output .= '<table class="wp-list-table widefat fixed stream-exclude-list">';
@@ -704,7 +760,7 @@ class WP_Stream_Settings {
 
 					if ( empty( $author_or_role_selected ) && is_numeric( $author_or_role ) ) {
 						$user                    = new WP_User( $author_or_role );
-						$display_name            = ( 0 === $user->ID ) ? __( 'N/A', 'stream' ) : $user->display_name;
+						$display_name            = ( 0 === $user->ID ) ? esc_html__( 'N/A', 'stream' ) : $user->display_name;
 						$author_or_role_selected = array( 'id' => $user->ID, 'text' => $display_name );
 					}
 

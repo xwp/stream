@@ -31,7 +31,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Installer', 'stream' );
+		return esc_html__( 'Installer', 'stream' );
 	}
 
 	/**
@@ -41,11 +41,11 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'installed'   => __( 'Installed', 'stream' ),
-			'activated'   => __( 'Activated', 'stream' ),
-			'deactivated' => __( 'Deactivated', 'stream' ),
-			'deleted'     => __( 'Deleted', 'stream' ),
-			'updated'     => __( 'Updated', 'stream' ),
+			'installed'   => esc_html__( 'Installed', 'stream' ),
+			'activated'   => esc_html__( 'Activated', 'stream' ),
+			'deactivated' => esc_html__( 'Deactivated', 'stream' ),
+			'deleted'     => esc_html__( 'Deleted', 'stream' ),
+			'updated'     => esc_html__( 'Updated', 'stream' ),
 		);
 	}
 
@@ -56,9 +56,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'plugins'   => __( 'Plugins', 'stream' ),
-			'themes'    => __( 'Themes', 'stream' ),
-			'wordpress' => __( 'WordPress', 'stream' ),
+			'plugins'   => esc_html__( 'Plugins', 'stream' ),
+			'themes'    => esc_html__( 'Themes', 'stream' ),
+			'wordpress' => esc_html__( 'WordPress', 'stream' ),
 		);
 	}
 
@@ -77,9 +77,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			global $wp_version;
 			$version = wp_stream_get_meta( $record, 'new_version', true );
 			if ( $version === $wp_version ) {
-				$links[ __( 'About', 'stream' ) ] = admin_url( 'about.php?updated' );
+				$links[ esc_html__( 'About', 'stream' ) ] = admin_url( 'about.php?updated' );
 			}
-			$links[ __( 'View Release Notes', 'stream' ) ] = esc_url( sprintf( 'http://codex.wordpress.org/Version_%s', $version ) );
+			$links[ esc_html__( 'View Release Notes', 'stream' ) ] = esc_url( sprintf( 'http://codex.wordpress.org/Version_%s', $version ) );
 		}
 		return $links;
 	}
@@ -218,7 +218,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_activate_plugin( $slug, $network_wide ) {
 		$_plugins     = self::get_plugins();
 		$name         = $_plugins[ $slug ]['Name'];
-		$network_wide = $network_wide ? __( 'network wide', 'stream' ) : null;
+		$network_wide = $network_wide ? esc_html__( 'network wide', 'stream' ) : null;
 
 		self::log(
 			_x(
@@ -236,7 +236,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function callback_deactivate_plugin( $slug, $network_wide ) {
 		$_plugins     = self::get_plugins();
 		$name         = $_plugins[ $slug ]['Name'];
-		$network_wide = $network_wide ? __( 'network wide', 'stream' ) : null;
+		$network_wide = $network_wide ? esc_html__( 'network wide', 'stream' ) : null;
 
 		self::log(
 			_x(
@@ -334,7 +334,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 
 		foreach ( $plugins_to_delete as $plugin => $data ) {
 			$name         = $data['Name'];
-			$network_wide = $data['Network'] ? __( 'network wide', 'stream' ) : '';
+			$network_wide = $data['Network'] ? esc_html__( 'network wide', 'stream' ) : '';
 
 			self::log(
 				__( '"%s" plugin deleted', 'stream' ),
@@ -357,9 +357,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		$auto_updated = ( 'update-core.php' !== $pagenow );
 
 		if ( $auto_updated ) {
-			$message = __( 'WordPress auto-updated to %s', 'stream' );
+			$message = esc_html__( 'WordPress auto-updated to %s', 'stream' );
 		} else {
-			$message = __( 'WordPress updated to %s', 'stream' );
+			$message = esc_html__( 'WordPress updated to %s', 'stream' );
 		}
 
 		self::log(
