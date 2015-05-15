@@ -232,6 +232,17 @@ class WP_Stream_Admin {
 	 * @return bool|void
 	 */
 	public static function register_menu() {
+		/**
+		 * Filter the main admin menu position
+		 *
+		 * Note: Using longtail decimal string to reduce the chance of position conflicts, see Codex
+		 *
+		 * @since 1.4.4
+		 *
+		 * @return string
+		 */
+		$main_menu_position = apply_filters( 'wp_stream_menu_position', '2.999999' );
+
 		if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
 
 			/**
@@ -251,17 +262,6 @@ class WP_Stream_Admin {
 			 * @return string
 			 */
 			$main_menu_title = apply_filters( 'wp_stream_admin_menu_title', esc_html__( 'Stream', 'stream' ) );
-
-			/**
-			 * Filter the main admin menu position
-			 *
-			 * Note: Using longtail decimal string to reduce the chance of position conflicts, see Codex
-			 *
-			 * @since 1.4.4
-			 *
-			 * @return string
-			 */
-			$main_menu_position = apply_filters( 'wp_stream_menu_position', '2.999999' );
 
 			self::$screen_id['main'] = add_menu_page(
 				$main_page_title,
@@ -316,7 +316,7 @@ class WP_Stream_Admin {
 				self::RECORDS_PAGE_SLUG,
 				array( __CLASS__, 'render_connect_page' ),
 				'div',
-				apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
+				$main_menu_position
 			);
 		}
 
