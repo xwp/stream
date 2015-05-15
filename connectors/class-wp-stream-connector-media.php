@@ -136,7 +136,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		$parent_id       = $post->post_parent;
 		$parent          = get_post( $parent_id );
 		$parent_title    = $parent_id ? $parent->post_title : null;
-		$attachment_type = self::get_attachment_type( $post->guid );
+		$attachment_type = self::get_attachment_type( get_attached_file($post->ID) );
 
 		self::log(
 			$message,
@@ -156,7 +156,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		$post            = get_post( $post_id );
 		$message         = __( 'Updated "%s"', 'stream' );
 		$name            = $post->post_title;
-		$attachment_type = self::get_attachment_type( $post->guid );
+		$attachment_type = self::get_attachment_type( get_attached_file($post->ID) );
 
 		self::log(
 			$message,
@@ -179,7 +179,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		$message         = __( 'Deleted "%s"', 'stream' );
 		$name            = $post->post_title;
 		$url             = $post->guid;
-		$attachment_type = self::get_attachment_type( $post->guid );
+		$attachment_type = self::get_attachment_type( get_attached_file($post->ID) );
 
 		self::log(
 			$message,
@@ -197,7 +197,8 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 */
 	public static function callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id ) {
 		$name            = basename( $filename );
-		$attachment_type = self::get_attachment_type( $post->guid );
+		$post            = get_post($post_id);
+		$attachment_type = self::get_attachment_type( get_attached_file($post->ID) );
 
 		self::log(
 			__( 'Edited image "%s"', 'stream' ),

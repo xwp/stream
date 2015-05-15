@@ -163,12 +163,13 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @action profile_update
 	 */
 	public static function callback_profile_update( $user_id, $user ) {
+		$updated_user = get_user_by('id', $user_id);
 		self::log(
 			__( '%s\'s profile was updated', 'stream' ),
 			array(
-				'display_name' => $user->display_name,
+				'display_name' => $updated_user->display_name,
 			),
-			$user->ID,
+			$updated_user->ID,
 			'profiles',
 			'updated'
 		);
@@ -212,7 +213,8 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		self::log(
 			__( '%s\'s password was reset', 'stream' ),
 			array(
-				'email' => $user->display_name,
+				'email' => $user->user_email,
+				'display_name' => $user->display_name,
 			),
 			$user->ID,
 			'profiles',
