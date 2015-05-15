@@ -872,7 +872,7 @@ class WP_Stream_Admin {
 		self::$list_table->prepare_items();
 		?>
 		<div class="wrap">
-			<h2><?php echo get_admin_page_title() ?></h2>
+			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
 			<?php self::$list_table->display() ?>
 		</div>
 		<?php
