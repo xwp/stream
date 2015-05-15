@@ -225,8 +225,7 @@ class WP_Stream_Query {
 
 				if ( ! is_array( $values ) ) {
 					$filters[]['term'][ $key ] = $values;
-				}
-				else {
+				} else {
 					$filters[]['terms'][ $key ] = $values;
 				}
 			}
@@ -239,8 +238,7 @@ class WP_Stream_Query {
 
 				if ( ! is_array( $values ) ) {
 					$filters[]['term'][ $key ] = $values;
-				}
-				else {
+				} else {
 					$filters[]['terms'][ $key ] = $values;
 				}
 			}
