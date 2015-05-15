@@ -46,7 +46,7 @@ class WP_Stream_Admin {
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
 		$home_url      = str_ireplace( array( 'http://', 'https://' ), '', home_url() );
-		$connect_nonce = wp_create_nonce( 'stream_connect_site-' . sanitize_key( $home_url ) );
+		$connect_nonce = wp_create_nonce( 'wp_stream_connect_site-' . sanitize_key( $home_url ) );
 
 		self::$connect_url = add_query_arg(
 			array(
@@ -565,7 +565,7 @@ class WP_Stream_Admin {
 
 	public static function save_api_authentication() {
 		$home_url           = str_ireplace( array( 'http://', 'https://' ), '', home_url() );
-		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $home_url );
+		$connect_nonce_name = 'wp_stream_connect_site-' . sanitize_key( $home_url );
 
 		if ( ! isset( $_GET['api_key'] ) || ! isset( $_GET['site_uuid'] ) ) {
 			wp_die( 'There was a problem connecting to Stream. Please try again later.', 'stream' );
