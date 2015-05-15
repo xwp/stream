@@ -241,7 +241,7 @@ class WP_Stream_Admin {
 			 *
 			 * @return string
 			 */
-			$main_page_title = apply_filters( 'wp_stream_admin_page_title', esc_html__( 'Stream', 'stream' ) );
+			$main_page_title = apply_filters( 'wp_stream_admin_page_title', esc_html__( 'Stream Records', 'stream' ) );
 
 			/**
 			 * Filter the main admin menu title
@@ -823,7 +823,7 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_connect_page() {
-		$page_title   = apply_filters( 'wp_stream_connect_page_title', get_admin_page_title() );
+		$page_title = apply_filters( 'wp_stream_connect_page_title', get_admin_page_title() );
 
 		if ( $testimonials = self::get_testimonials() ) {
 			$testimonial = $testimonials[ array_rand( $testimonials ) ];
@@ -869,17 +869,13 @@ class WP_Stream_Admin {
 	}
 
 	public static function render_stream_page() {
-		$page_title = esc_html__( 'Stream Records', 'stream' );
-
 		self::$list_table->prepare_items();
-
-		echo '<div class="wrap">';
-
-		printf( '<h2>%s</h2>', esc_html__( 'Stream Records', 'stream' ) ); // xss ok
-
-		self::$list_table->display();
-
-		echo '</div>';
+		?>
+		<div class="wrap">
+			<h2><?php echo get_admin_page_title() ?></h2>
+			<?php self::$list_table->display() ?>
+		</div>
+		<?php
 	}
 
 	private static function _role_can_view_stream( $role ) {
