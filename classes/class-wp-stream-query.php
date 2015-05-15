@@ -220,25 +220,28 @@ class WP_Stream_Query {
 
 		// PARSE META
 		if ( $args['meta'] ) {
-			$meta = (array) $args['meta'];
-			foreach ( $meta as $key => $values ) {
+			foreach ( (array) $args['meta'] as $key => $values ) {
+				$key = sprintf( 'stream_meta.%s', $key );
+
 				if ( ! is_array( $values ) ) {
-					$filters[]['term']['stream_meta.' . $key] = $values;
+					$filters[]['term'][ $key ] = $values;
 				}
 				else {
-					$filters[]['terms']['stream_meta.' . $key] = $values;
+					$filters[]['terms'][ $key ] = $values;
 				}
 			}
 		}
 
+		// PARSE AUTHOR META
 		if ( $args['author_meta'] ) {
-			$author_meta = (array) $args['author_meta'];
-			foreach ( $author_meta as $key => $values ) {
+			foreach ( (array) $args['author_meta'] as $key => $values ) {
+				$key = sprintf( 'author_meta.%s', $key );
+
 				if ( ! is_array( $values ) ) {
-					$filters[]['term']['author_meta.' . $key] = $values;
+					$filters[]['term'][ $key ] = $values;
 				}
 				else {
-					$filters[]['terms']['author_meta.' . $key] = $values;
+					$filters[]['terms'][ $key ] = $values;
 				}
 			}
 		}
