@@ -144,11 +144,15 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 			}
 
 			if ( 'json' === $assoc_args['format'] ) {
-				WP_CLI::line( json_encode( $formatted_records ) );
+				WP_CLI::line( wp_stream_json_encode( $formatted_records ) );
 			}
 
 			if ( 'json_pretty' === $assoc_args['format'] ) {
-				WP_CLI::line( json_encode( $formatted_records, JSON_PRETTY_PRINT ) );
+				if ( version_compare( PHP_VERSION, '5.4', '<' ) ) {
+					WP_CLI::line( wp_stream_json_encode( $formatted_records ) ); // xss ok
+				} else {
+					WP_CLI::line( wp_stream_json_encode( $formatted_records, JSON_PRETTY_PRINT ) ); // xss ok
+				}
 			}
 
 			if ( 'csv' === $assoc_args['format'] ) {
@@ -216,7 +220,7 @@ class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
 		$query = wp_stream_query( array( 'records_per_page' => 1, 'fields' => 'created' ) );
 
 		if ( ! $query ) {
-			WP_CLI::error( __( 'SITE IS DISCONNECTED', 'stream' ) );
+			WP_CLI::error( esc_html__( 'SITE IS DISCONNECTED', 'stream' ) );
 		}
 	}
 

@@ -3,7 +3,7 @@
 class WP_Stream_Notifications_List_Table {
 
 	/**
-	 * Hold Singleton instance
+	 * Hold class instance
 	 *
 	 * @var string
 	 */
@@ -95,19 +95,19 @@ class WP_Stream_Notifications_List_Table {
 		}
 
 		if ( isset( $vars['orderby'] ) && 'occurrences' === $vars['orderby'] ) {
+			$vars['orderby']    = 'meta_value_num';
+			$vars['meta_key']   = 'occurrences';
 			$vars['meta_query'] = array(
 				'relation' => 'OR',
-				0 => array(
+				array(
 					'key'     => 'occurrences',
 					'compare' => 'EXISTS',
 				),
-				1 => array(
+				array(
 					'key'     => 'occurrences',
 					'compare' => 'NOT EXISTS',
 				),
 			);
-			$vars['meta_key']   = 'occurrences';
-			$vars['orderby']    = 'meta_value_num';
 		}
 
 		return $vars;
@@ -158,24 +158,28 @@ class WP_Stream_Notifications_List_Table {
 
 		global $post;
 
-		$published = ( 'publish' === $post->post_status );
+		$new = array();
 
-		$new              = array();
-		$url              = wp_nonce_url(
-			add_query_arg(
-				array(
-					'post_type' => WP_Stream_Notifications_Post_Type::POSTTYPE,
-					'action'    => $published ? 'unpublish' : 'publish',
-					'id'        => $post->ID,
-				),
-				admin_url( 'edit.php' )
-			)
-		);
-		$new['publish'] = sprintf(
-			'<a href="%s">%s</a>',
-			$url,
-			$published ? __( 'Deactivate', 'stream' ) : __( 'Activate', 'stream' )
-		);
+		if ( 'trash' !== $post->post_status ) {
+			$published = ( 'publish' === $post->post_status );
+
+			$url = wp_nonce_url(
+				add_query_arg(
+					array(
+						'post_type' => WP_Stream_Notifications_Post_Type::POSTTYPE,
+						'action'    => $published ? 'unpublish' : 'publish',
+						'id'        => $post->ID,
+					),
+					admin_url( 'edit.php' )
+				)
+			);
+
+			$new['publish'] = sprintf(
+				'<a href="%s">%s</a>',
+				$url,
+				$published ? esc_html__( 'Deactivate', 'stream' ) : esc_html__( 'Activate', 'stream' )
+			);
+		}
 
 		return array_merge( $new, $actions );
 	}
@@ -184,17 +188,25 @@ class WP_Stream_Notifications_List_Table {
 	 * @action load-edit.php
 	 */
 	public function actions() {
-		if ( ! isset( $_REQUEST['action'] ) || ! isset( $_REQUEST['post_type'] ) || WP_Stream_Notifications_Post_Type::POSTTYPE !== wp_stream_filter_input( INPUT_GET, 'post_type' ) ) {
+		$action    = wp_stream_filter_input( INPUT_GET, 'action' );
+		$post_type = wp_stream_filter_input( INPUT_GET, 'post_type' );
+
+		if ( empty( $action ) || WP_Stream_Notifications_Post_Type::POSTTYPE !== $post_type ) {
 			return;
 		}
 
-		$action  = $_REQUEST['action'];
-		$request = isset( $_REQUEST['post'] ) ? ( is_array( $_REQUEST['post'] ) ? $_REQUEST['post'] : explode( ',', $_REQUEST['post'] ) ) : isset( $_REQUEST['id'] ) ? array( $_REQUEST['id'] ) : array();
-		$ids     = array_map( 'absint', $request );
+		// @codingStandardsIgnoreStart
+		$post = wp_stream_filter_input( INPUT_GET, 'post' ); // We are just reading this global, not overridding it
+		// @codingStandardsIgnoreEnd
 
-		if ( empty( $action ) || empty( $ids ) ) {
+		$id      = wp_stream_filter_input( INPUT_GET, 'id' );
+		$request = $post ? is_array( $post ) ? $post : explode( ',', $post ) : ( $id ? array( $id ) : array() );
+
+		if ( empty( $request ) ) {
 			return;
 		}
+
+		$ids = array_map( 'absint', $request );
 
 		if ( in_array( $action, array( 'publish', 'unpublish' ) ) ) {
 			$status = ( 'publish' === $action ) ? 'publish' : 'draft';
@@ -231,16 +243,20 @@ class WP_Stream_Notifications_List_Table {
 			return;
 		}
 
+		$bulk_actions = array(
+			'bulkActions' => array(
+				'publish'   => esc_html__( 'Activate', 'stream' ),
+				'unpublish' => esc_html__( 'Deactivate', 'stream' ),
+			),
+		);
+
+		if ( 'trash' === wp_stream_filter_input( INPUT_GET, 'post_status' ) ) {
+			$bulk_actions = array();
+		}
+
 		wp_enqueue_script( 'stream-notifications-list-actions', WP_STREAM_NOTIFICATIONS_URL . 'ui/js/list.js', array( 'jquery', 'underscore' ), WP_STREAM::VERSION );
 
-		wp_localize_script( 'stream-notifications-list-actions', 'stream_notifications_options',
-			array(
-				'bulkActions' => array(
-					'publish'   => __( 'Publish', 'stream' ),
-					'unpublish' => __( 'Unpublish', 'stream' ),
-				)
-			)
-		);
+		wp_localize_script( 'stream-notifications-list-actions', 'stream_notifications_options', $bulk_actions );
 	}
 
 }

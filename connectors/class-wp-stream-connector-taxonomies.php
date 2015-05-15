@@ -41,7 +41,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Taxonomies', 'stream' );
+		return esc_html__( 'Taxonomies', 'stream' );
 	}
 
 	/**
@@ -51,9 +51,9 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created' => __( 'Created', 'stream' ),
-			'updated' => __( 'Updated', 'stream' ),
-			'deleted' => __( 'Deleted', 'stream' ),
+			'created' => esc_html__( 'Created', 'stream' ),
+			'updated' => esc_html__( 'Updated', 'stream' ),
+			'deleted' => esc_html__( 'Deleted', 'stream' ),
 		);
 	}
 
@@ -85,7 +85,13 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * @return array             Action links
 	 */
 	public static function action_links( $links, $record ) {
-		if ( $record->object_id && 'deleted' !== $record->action && ( $term = get_term_by( 'term_taxonomy_id', $record->object_id, $record->context ) ) ) {
+		if (
+			$record->object_id
+			&&
+			'deleted' !== $record->action
+			&&
+			( $term = get_term_by( 'term_taxonomy_id', $record->object_id, $record->context ) ) // wpcom_vip_get_term_by() does not indicate support for `term_taxonomy_id`
+		) {
 			if ( ! is_wp_error( $term ) ) {
 				$tax_obj   = get_taxonomy( $term->taxonomy );
 				$tax_label = isset( $tax_obj->labels->singular_name ) ? $tax_obj->labels->singular_name : null;
@@ -97,7 +103,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 				$term_id = empty( $term_id ) ? $term->term_id : $term_id;
 
 				$links[ sprintf( _x( 'Edit %s', 'Term singular name', 'stream' ), $tax_label ) ] = get_edit_term_link( $term_id, $term->taxonomy );
-				$links[ __( 'View', 'stream' ) ] = get_term_link( $term_id, $term->taxonomy );
+				$links[ esc_html__( 'View', 'stream' ) ] = WP_Stream::is_vip() ? wpcom_vip_get_term_link( $term_id, $term->taxonomy ) : get_term_link( $term_id, $term->taxonomy );
 			}
 		}
 

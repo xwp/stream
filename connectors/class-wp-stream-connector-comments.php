@@ -42,7 +42,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Comments', 'stream' );
+		return esc_html__( 'Comments', 'stream' );
 	}
 
 	/**
@@ -52,18 +52,18 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'    => __( 'Created', 'stream' ),
-			'edited'     => __( 'Edited', 'stream' ),
-			'replied'    => __( 'Replied', 'stream' ),
-			'approved'   => __( 'Approved', 'stream' ),
-			'unapproved' => __( 'Unapproved', 'stream' ),
-			'trashed'    => __( 'Trashed', 'stream' ),
-			'untrashed'  => __( 'Restored', 'stream' ),
-			'spammed'    => __( 'Marked as Spam', 'stream' ),
-			'unspammed'  => __( 'Unmarked as Spam', 'stream' ),
-			'deleted'    => __( 'Deleted', 'stream' ),
-			'duplicate'  => __( 'Duplicate', 'stream' ),
-			'flood'      => __( 'Throttled', 'stream' ),
+			'created'    => esc_html__( 'Created', 'stream' ),
+			'edited'     => esc_html__( 'Edited', 'stream' ),
+			'replied'    => esc_html__( 'Replied', 'stream' ),
+			'approved'   => esc_html__( 'Approved', 'stream' ),
+			'unapproved' => esc_html__( 'Unapproved', 'stream' ),
+			'trashed'    => esc_html__( 'Trashed', 'stream' ),
+			'untrashed'  => esc_html__( 'Restored', 'stream' ),
+			'spammed'    => esc_html__( 'Marked as Spam', 'stream' ),
+			'unspammed'  => esc_html__( 'Unmarked as Spam', 'stream' ),
+			'deleted'    => esc_html__( 'Deleted', 'stream' ),
+			'duplicate'  => esc_html__( 'Duplicate', 'stream' ),
+			'flood'      => esc_html__( 'Throttled', 'stream' ),
 		);
 	}
 
@@ -74,7 +74,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'comments' => __( 'Comments', 'stream' ),
+			'comments' => esc_html__( 'Comments', 'stream' ),
 		);
 	}
 
@@ -87,9 +87,9 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		return apply_filters(
 			'wp_stream_comments_comment_type_labels',
 			array(
-				'comment'   => __( 'Comment', 'stream' ),
-				'trackback' => __( 'Trackback', 'stream' ),
-				'pingback'  => __( 'Pingback', 'stream' ),
+				'comment'   => esc_html__( 'Comment', 'stream' ),
+				'trackback' => esc_html__( 'Trackback', 'stream' ),
+				'pingback'  => esc_html__( 'Pingback', 'stream' ),
 			)
 		);
 	}
@@ -130,10 +130,10 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				$del_nonce     = wp_create_nonce( "delete-comment_$comment->comment_ID" );
 				$approve_nonce = wp_create_nonce( "approve-comment_$comment->comment_ID" );
 
-				$links[ __( 'Edit', 'stream' ) ] = admin_url( "comment.php?action=editcomment&c=$comment->comment_ID" );
+				$links[ esc_html__( 'Edit', 'stream' ) ] = admin_url( "comment.php?action=editcomment&c=$comment->comment_ID" );
 
 				if ( 1 === $comment->comment_approved ) {
-					$links[ __( 'Unapprove', 'stream' ) ] = admin_url(
+					$links[ esc_html__( 'Unapprove', 'stream' ) ] = admin_url(
 						sprintf(
 							'comment.php?action=unapprovecomment&c=%s&_wpnonce=%s',
 							$record->object_id,
@@ -141,7 +141,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 						)
 					);
 				} elseif ( empty( $comment->comment_approved ) ) {
-					$links[ __( 'Approve', 'stream' ) ] = admin_url(
+					$links[ esc_html__( 'Approve', 'stream' ) ] = admin_url(
 						sprintf(
 							'comment.php?action=approvecomment&c=%s&_wpnonce=%s',
 							$record->object_id,
@@ -173,7 +173,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$req_user_login = get_option( 'comment_registration' );
 
 		$user_id   = 0;
-		$user_name = __( 'Guest', 'stream' );
+		$user_name = esc_html__( 'Guest', 'stream' );
 
 		if ( $req_name_email && isset( $comment->comment_author_email ) && isset( $comment->comment_author ) ) {
 			$user      = get_user_by( 'email', $comment->comment_author_email );
@@ -215,7 +215,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			$user_id   = $user->ID;
 			$user_name = $user->display_name;
 		} else {
-			$user_name = __( 'a logged out user', 'stream' );
+			$user_name = esc_html__( 'a logged out user', 'stream' );
 		}
 
 		self::log(
@@ -241,8 +241,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_name      = self::get_comment_author( $comment, 'name' );
 		$post_id        = $comment->comment_post_ID;
 		$post_type      = get_post_type( $post_id );
-		$post_title     = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
-		$comment_status = ( 1 == $comment->comment_approved ) ? __( 'approved automatically', 'stream' ) : __( 'pending approval', 'stream' );
+		$post_title     = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
+		$comment_status = ( 1 == $comment->comment_approved ) ? esc_html__( 'approved automatically', 'stream' ) : esc_html__( 'pending approval', 'stream' );
 		$is_spam        = false;
 
 		// Auto-marked spam comments
@@ -251,7 +251,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			$ak_last_comment = Akismet::get_last_comment();
 			if ( 'true' == $ak_last_comment['akismet_result'] ) {
 				$is_spam        = true;
-				$comment_status = __( 'automatically marked as spam by Akismet', 'stream' );
+				$comment_status = esc_html__( 'automatically marked as spam by Akismet', 'stream' );
 			}
 		}
 		$comment_type   = mb_strtolower( self::get_comment_type_label( $comment_id ) );
@@ -304,7 +304,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_name    = self::get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
+		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
@@ -362,7 +362,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_name    = self::get_comment_author( $comment, 'name' );
 		$post_id      = absint( $comment->comment_post_ID );
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
+		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		if ( self::$delete_post === $post_id ) {
@@ -398,7 +398,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_name    = self::get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
+		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
@@ -430,7 +430,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_name    = self::get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
+		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
@@ -462,7 +462,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_name    = self::get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
+		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
@@ -494,7 +494,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_name    = self::get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
+		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(
@@ -528,7 +528,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_name    = self::get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
+		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = get_comment_type( $comment->comment_ID );
 
 		self::log(
@@ -563,7 +563,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$user_name    = self::get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'stream' );
+		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		self::log(

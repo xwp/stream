@@ -57,14 +57,12 @@ class WP_Stream_DB {
 		$result = $this->insert( $records );
 
 		if ( $result && ! is_wp_error( $result ) ) {
-
 			/**
 			 * Fires when A Post is inserted
 			 *
 			 * @since 2.0.0
 			 *
-			 * @param  int    $record_id  Inserted record ID
-			 * @param  array  $recordarr  Array of information on this record
+			 * @param array $records
 			 */
 			do_action( 'wp_stream_records_inserted', $records );
 

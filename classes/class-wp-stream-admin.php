@@ -37,8 +37,6 @@ class WP_Stream_Admin {
 	const ADMIN_PARENT_PAGE       = 'admin.php';
 	const VIEW_CAP                = 'view_stream';
 	const SETTINGS_CAP            = 'manage_options';
-	const UNREAD_COUNT_OPTION_KEY = 'stream_unread_count';
-	const LAST_READ_OPTION_KEY    = 'stream_last_read';
 	const PRELOAD_AUTHORS_MAX     = 50;
 	const PUBLIC_URL              = 'https://wp-stream.com';
 
@@ -48,7 +46,7 @@ class WP_Stream_Admin {
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
 		$home_url      = str_ireplace( array( 'http://', 'https://' ), '', home_url() );
-		$connect_nonce = wp_create_nonce( 'stream_connect_site-' . sanitize_key( $home_url ) );
+		$connect_nonce = wp_create_nonce( 'wp_stream_connect_site-' . sanitize_key( $home_url ) );
 
 		self::$connect_url = add_query_arg(
 			array(
@@ -105,23 +103,6 @@ class WP_Stream_Admin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_menu_css' ) );
 
-		// Catch list table results
-		add_filter( 'wp_stream_query_results', array( __CLASS__, 'mark_as_read' ), 10, 3 );
-
-		// Add user option for enabling unread counts
-		add_action( 'show_user_profile', array( __CLASS__, 'unread_count_user_option' ) );
-		add_action( 'edit_user_profile', array( __CLASS__, 'unread_count_user_option' ) );
-
-		// Save unread counts user option
-		add_action( 'personal_options_update', array( __CLASS__, 'save_unread_count_user_option' ) );
-		add_action( 'edit_user_profile_update', array( __CLASS__, 'save_unread_count_user_option' ) );
-
-		// Delete user-specific transient when user is deleted
-		add_action( 'delete_user', array( __CLASS__, 'delete_unread_count_transient' ), 10, 1 );
-
-		// Reset Streams settings
-		add_action( 'wp_ajax_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
-
 		// Ajax authors list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
@@ -159,7 +140,7 @@ class WP_Stream_Admin {
 			<div class="stream-message-container">
 
 				<div class="stream-button-container">
-					<a href="<?php echo esc_url( self::$connect_url ) ?>" class="stream-button"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a>
+					<a href="<?php echo esc_url( self::$connect_url ) ?>" class="stream-button"><i class="stream-icon"></i><?php esc_html_e( 'Connect to Stream', 'stream' ) ?></a>
 				</div>
 
 				<div class="stream-message-text">
@@ -251,51 +232,90 @@ class WP_Stream_Admin {
 	 * @return bool|void
 	 */
 	public static function register_menu() {
-		if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
-			$unread_count = self::get_unread_count();
-			$menu_title   = __( 'Stream', 'stream' );
+		/**
+		 * Filter the main admin menu title
+		 *
+		 * @since 2.0.6
+		 *
+		 * @return string
+		 */
+		$main_menu_title = apply_filters( 'wp_stream_admin_menu_title', esc_html__( 'Stream', 'stream' ) );
 
-			if ( self::unread_enabled_for_user() && ! empty( $unread_count ) ) {
-				$formatted_count = ( $unread_count > 99 ) ? __( '99 +', 'stream' ) : absint( $unread_count );
-				$menu_title      = sprintf( '%s <span class="update-plugins count-%d"><span class="plugin-count">%s</span></span>', esc_html( $menu_title ), absint( $unread_count ), esc_html( $formatted_count ) );
-			}
+		/**
+		 * Filter the main admin menu position
+		 *
+		 * Note: Using longtail decimal string to reduce the chance of position conflicts, see Codex
+		 *
+		 * @since 1.4.4
+		 *
+		 * @return string
+		 */
+		$main_menu_position = apply_filters( 'wp_stream_menu_position', '2.999999' );
+
+		if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
+			/**
+			 * Filter the main admin page title
+			 *
+			 * @since 2.0.6
+			 *
+			 * @return string
+			 */
+			$main_page_title = apply_filters( 'wp_stream_admin_page_title', esc_html__( 'Stream Records', 'stream' ) );
 
 			self::$screen_id['main'] = add_menu_page(
-				__( 'Stream', 'stream' ),
-				$menu_title,
+				$main_page_title,
+				$main_menu_title,
 				self::VIEW_CAP,
 				self::RECORDS_PAGE_SLUG,
 				array( __CLASS__, 'render_stream_page' ),
 				'div',
-				apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
+				$main_menu_position
 			);
+
+			/**
+			 * Filter the Settings admin page title
+			 *
+			 * @since 1.4.0
+			 *
+			 * @return string
+			 */
+			$settings_page_title = apply_filters( 'wp_stream_settings_form_title', esc_html__( 'Stream Settings', 'stream' ) );
 
 			self::$screen_id['settings'] = add_submenu_page(
 				self::RECORDS_PAGE_SLUG,
-				__( 'Stream Settings', 'stream' ),
-				__( 'Settings', 'stream' ),
+				$settings_page_title,
+				esc_html__( 'Settings', 'stream' ),
 				self::SETTINGS_CAP,
 				self::SETTINGS_PAGE_SLUG,
 				array( __CLASS__, 'render_settings_page' )
 			);
 
+			/**
+			 * Filter the Account admin page title
+			 *
+			 * @since 2.0.0
+			 *
+			 * @return string
+			 */
+			$account_page_title = apply_filters( 'wp_stream_account_page_title', esc_html__( 'Stream Account', 'stream' ) );
+
 			self::$screen_id['account'] = add_submenu_page(
 				self::RECORDS_PAGE_SLUG,
-				__( 'Stream Account', 'stream' ),
-				__( 'Account', 'stream' ),
+				$account_page_title,
+				esc_html__( 'Account', 'stream' ),
 				self::SETTINGS_CAP,
 				self::ACCOUNT_PAGE_SLUG,
 				array( __CLASS__, 'render_account_page' )
 			);
 		} else {
 			self::$screen_id['connect'] = add_menu_page(
-				__( 'Connect to Stream', 'stream' ),
-				__( 'Stream', 'stream' ),
+				esc_html__( 'Connect to Stream', 'stream' ),
+				$main_menu_title,
 				self::SETTINGS_CAP,
 				self::RECORDS_PAGE_SLUG,
 				array( __CLASS__, 'render_connect_page' ),
 				'div',
-				apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
+				$main_menu_position
 			);
 		}
 
@@ -359,7 +379,7 @@ class WP_Stream_Admin {
 				'wp_stream',
 				array(
 					'i18n'       => array(
-						'confirm_defaults' => __( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+						'confirm_defaults' => esc_html__( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
 					),
 					'locale'     => esc_js( $locale ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
@@ -378,7 +398,7 @@ class WP_Stream_Admin {
 				'current_screen'      => $hook,
 				'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 				'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
-				'current_query'       => json_encode( $_GET ),
+				'current_query'       => wp_stream_json_encode( $_GET ), // xss ok
 				'current_query_count' => count( $_GET ),
 			)
 		);
@@ -387,8 +407,8 @@ class WP_Stream_Admin {
 			$limit                = absint( WP_Stream_Migrate::$limit );
 			$record_count         = absint( WP_Stream_Migrate::$record_count );
 			$estimated_time       = ( $limit < $record_count ) ? round( ( ( $record_count / $limit ) * ( 0.04 * $limit ) ) / 60 ) : 0;
-			$migrate_time_message = ( $estimated_time > 1 ) ? sprintf( __( 'This will take about %d minutes.', 'stream' ), absint( $estimated_time ) ) : __( 'This could take a few minutes.', 'stream' );
-			$delete_time_message  = ( $estimated_time > 1 && is_multisite() ) ? sprintf( __( 'This will take about %d minutes.', 'stream' ), absint( $estimated_time ) ) : __( 'This could take a few minutes.', 'stream' );
+			$migrate_time_message = ( $estimated_time > 1 ) ? sprintf( esc_html__( 'This will take about %d minutes.', 'stream' ), absint( $estimated_time ) ) : esc_html__( 'This could take a few minutes.', 'stream' );
+			$delete_time_message  = ( $estimated_time > 1 && is_multisite() ) ? sprintf( esc_html__( 'This will take about %d minutes.', 'stream' ), absint( $estimated_time ) ) : esc_html__( 'This could take a few minutes.', 'stream' );
 
 			wp_enqueue_script( 'wp-stream-migrate', WP_STREAM_URL . 'ui/js/migrate.js', array( 'jquery' ), WP_Stream::VERSION );
 			wp_localize_script(
@@ -396,14 +416,13 @@ class WP_Stream_Admin {
 				'wp_stream_migrate',
 				array(
 					'i18n'         => array(
-						'migrate_process_title'    => __( 'Migrating Stream Records', 'stream' ),
-						'delete_process_title'     => __( 'Deleting Stream Records', 'stream' ),
-						'error_message'            => __( 'An unknown error occurred during migration. Please try again later or contact support.', 'stream' ),
-						'migrate_process_message'  => __( 'Please do not exit this page until the process has completed.', 'stream' ) . ' ' . esc_html( $migrate_time_message ),
-						'delete_process_message'   => __( 'Please do not exit this page until the process has completed.', 'stream' ) . ' ' . esc_html( $delete_time_message ),
-						'confirm_start_migrate'    => ( $estimated_time > 1 ) ? sprintf( __( 'Please note: This process will take about %d minutes to complete.', 'stream' ), absint( $estimated_time ) ) : __( 'Please note: This process could take a few minutes to complete.', 'stream' ),
-						'confirm_migrate_reminder' => __( 'Please note: Your existing records will not appear in Stream until you have migrated them to your account.', 'stream' ),
-						'confirm_delete_records'   => sprintf( __( 'Are you sure you want to delete all %s existing Stream records without migrating? This will take %s minutes and cannot be undone.', 'stream' ), number_format( WP_Stream_Migrate::$record_count ), ( $estimated_time > 1 && is_multisite() ) ? sprintf( __( 'about %d', 'stream' ), absint( $estimated_time ) ) : __( 'a few', 'stream' ) ),
+						'migrate_process_title'    => esc_html__( 'Migrating Stream Records', 'stream' ),
+						'delete_process_title'     => esc_html__( 'Deleting Stream Records', 'stream' ),
+						'migrate_process_message'  => esc_html__( 'Please do not exit this page until the process has completed.', 'stream' ) . ' ' . esc_html( $migrate_time_message ),
+						'delete_process_message'   => esc_html__( 'Please do not exit this page until the process has completed.', 'stream' ) . ' ' . esc_html( $delete_time_message ),
+						'confirm_start_migrate'    => ( $estimated_time > 1 ) ? sprintf( esc_html__( 'Please note: This process will take about %d minutes to complete.', 'stream' ), absint( $estimated_time ) ) : esc_html__( 'Please note: This process could take a few minutes to complete.', 'stream' ),
+						'confirm_migrate_reminder' => esc_html__( 'Please note: Your existing records will not appear in Stream until you have migrated them to your account.', 'stream' ),
+						'confirm_delete_records'   => sprintf( esc_html__( 'Are you sure you want to delete all %s existing Stream records without migrating? This will take %s minutes and cannot be undone.', 'stream' ), number_format( WP_Stream_Migrate::$record_count ), ( $estimated_time > 1 && is_multisite() ) ? sprintf( esc_html__( 'about %d', 'stream' ), absint( $estimated_time ) ) : esc_html__( 'a few', 'stream' ) ),
 					),
 					'chunk_size'   => absint( $limit ),
 					'record_count' => absint( $record_count ),
@@ -433,7 +452,7 @@ class WP_Stream_Admin {
 			array(
 				'bulk_actions' => array(
 					'i18n' => array(
-						'confirm_action' => sprintf( __( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
+						'confirm_action' => sprintf( esc_html__( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
 					),
 					'threshold' => absint( $bulk_actions_threshold ),
 				),
@@ -462,32 +481,42 @@ class WP_Stream_Admin {
 	 *
 	 * @filter admin_body_class
 	 *
-	 * @param  string $classes
+	 * @param string $classes
 	 *
-	 * @return string $classes
+	 * @return string
 	 */
 	public static function admin_body_class( $classes ) {
+		$stream_classes = array();
+
 		if ( self::is_stream_screen() ) {
-			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
+			$stream_classes[] = self::ADMIN_BODY_CLASS;
 
 			if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
-				$classes .= ' wp_stream_connected ';
+				$stream_classes[] = 'wp_stream_connected';
 			} else {
-				$classes .= ' wp_stream_disconnected ';
+				$stream_classes[] = 'wp_stream_disconnected';
 			}
 
 			if ( WP_Stream::$api->is_restricted() ) {
-				$classes .= ' wp_stream_restricted ';
+				$stream_classes[] = 'wp_stream_restricted';
+			}
+
+			if ( isset( $_GET['page'] ) ) {
+				$stream_classes[] = sanitize_key( $_GET['page'] );
 			}
 		}
 
-		$settings_pages = array( self::SETTINGS_PAGE_SLUG );
+		/**
+		 * Filter the Stream admin body classes
+		 *
+		 * @since 2.0.6
+		 *
+		 * @return array
+		 */
+		$stream_classes = apply_filters( 'wp_stream_admin_body_classes', $stream_classes );
+		$stream_classes = implode( ' ', array_map( 'trim', $stream_classes ) );
 
-		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $settings_pages ) ) {
-			$classes .= sprintf( ' %s ', self::SETTINGS_PAGE_SLUG );
-		}
-
-		return $classes;
+		return sprintf( '%s %s ', $classes, $stream_classes );
 	}
 
 	/**
@@ -560,172 +589,6 @@ class WP_Stream_Admin {
 	}
 
 	/**
-	 * Check whether or not the current user should see the unread counter.
-	 *
-	 * Defaults to TRUE if user option does not exist.
-	 *
-	 * @param int $user_id (optional)
-	 *
-	 * @return bool
-	 */
-	public static function unread_enabled_for_user( $user_id = 0 ) {
-		$user_id = empty( $user_id ) ? get_current_user_id() : $user_id;
-		$enabled = get_user_meta( $user_id, self::UNREAD_COUNT_OPTION_KEY, true );
-		$enabled = ( 'off' !== $enabled );
-
-		/**
-		 * Enable or disable the unread count functionality
-		 *
-		 * @since 2.0.4
-		 *
-		 * @param int $user_id
-		 *
-		 * @return bool
-		 */
-		return (bool) apply_filters( 'wp_stream_unread_enabled', $enabled, $user_id );
-	}
-
-	/**
-	 * Get the unread count for the current user.
-	 *
-	 * Results are cached in transient with a 5 min TTL.
-	 *
-	 * @return int
-	 */
-	public static function get_unread_count() {
-		if ( ! self::unread_enabled_for_user() ) {
-			return false;
-		}
-
-		$user_id   = get_current_user_id();
-		$cache_key = sprintf( '%s_%d', self::UNREAD_COUNT_OPTION_KEY, $user_id );
-
-		if ( false === ( $count = get_transient( $cache_key ) ) ) {
-			$count     = 0;
-			$last_read = get_user_meta( $user_id, self::LAST_READ_OPTION_KEY, true );
-
-			if ( ! empty( $last_read ) ) {
-				$args = array(
-					'records_per_page' => 101,
-					'author__not_in'   => array( $user_id ), // Ignore changes authored by the current user
-					'date_after'       => date( 'c', strtotime( $last_read . ' + 1 second' ) ), // Bump time to bypass gte issue
-					'fields'           => array( 'created' ), // We don't need the entire record
-				);
-
-				$unread_records = wp_stream_query( $args );
-
-				$count = empty( $unread_records ) ? 0 : count( $unread_records );
-			}
-
-			set_transient( $cache_key, $count, 5 * 60 ); // TTL 5 min
-		}
-
-		return absint( $count );
-	}
-
-	/**
-	 * Mark records as read based on Records screen results
-	 *
-	 * @filter wp_stream_query_results
-	 *
-	 * @param array $results
-	 * @param array $query
-	 * @param array $fields
-	 *
-	 * @return array
-	 */
-	public static function mark_as_read( $results, $query, $fields ) {
-		if ( ! is_admin() ) {
-			return $results;
-		}
-
-		$screen        = get_current_screen();
-		$is_list_table = ( isset( $screen->id ) && sprintf( 'toplevel_page_%s', self::RECORDS_PAGE_SLUG ) === $screen->id );
-		$is_first_page = empty( $query['from'] );
-		$is_date_desc  = ( isset( $query['sort'][0]['created']['order'] ) && 'desc' === $query['sort'][0]['created']['order'] );
-
-		if ( $is_list_table && $is_first_page && $is_date_desc ) {
-			$user_id   = get_current_user_id();
-			$cache_key = sprintf( '%s_%d', self::UNREAD_COUNT_OPTION_KEY, $user_id );
-
-			if ( self::unread_enabled_for_user() && isset( $results[0]->created ) ) {
-				update_user_meta( $user_id, self::LAST_READ_OPTION_KEY, date( 'c', strtotime( $results[0]->created ) ) );
-			}
-
-			set_transient( $cache_key, 0 ); // No expiration
-		}
-
-		return $results;
-	}
-
-	/**
-	 * Output for Stream Unread Count field in user profiles.
-	 *
-	 * @action show_user_profile
-	 * @action edit_user_profile
-	 *
-	 * @param WP_User $user
-	 *
-	 * @return void
-	 */
-	public static function unread_count_user_option( $user ) {
-		if ( ! array_intersect( $user->roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
-			return;
-		}
-
-		$unread_enabled = self::unread_enabled_for_user();
-		?>
-		<table class="form-table">
-			<tr>
-				<th scope="row">
-					<label for="<?php echo esc_attr( self::UNREAD_COUNT_OPTION_KEY ) ?>">
-						<?php esc_html_e( 'Stream Unread Count', 'stream' ) ?>
-					</label>
-				</th>
-				<td>
-					<label for="<?php echo esc_attr( self::UNREAD_COUNT_OPTION_KEY ) ?>">
-						<input type="checkbox" name="<?php echo esc_attr( self::UNREAD_COUNT_OPTION_KEY ) ?>" id="<?php echo esc_attr( self::UNREAD_COUNT_OPTION_KEY ) ?>" value="1" <?php checked( $unread_enabled ) ?>>
-						<?php esc_html_e( 'Enabled', 'stream' ) ?>
-					</label>
-				</td>
-			</tr>
-		</table>
-		<?php
-	}
-
-	/**
-	 * Saves unread count user meta option in profiles.
-	 *
-	 * @action personal_options_update
-	 * @action edit_user_profile_update
-	 *
-	 * @param $user_id
-	 *
-	 * @return void
-	 */
-	public static function save_unread_count_user_option( $user_id ) {
-		$enabled = wp_stream_filter_input( INPUT_POST, self::UNREAD_COUNT_OPTION_KEY );
-		$enabled = ( '1' === $enabled ) ? 'on' : 'off';
-
-		update_user_meta( $user_id, self::UNREAD_COUNT_OPTION_KEY, $enabled );
-	}
-
-	/**
-	 * Delete user-specific transient when a user is deleted
-	 *
-	 * @action delete_user
-	 *
-	 * @param int $user_id
-	 *
-	 * @return void
-	 */
-	public static function delete_unread_count_transient( $user_id ) {
-		$cache_key = sprintf( '%s_%d', self::UNREAD_COUNT_OPTION_KEY, $user_id );
-
-		delete_transient( $cache_key );
-	}
-
-	/**
 	 * @filter plugin_action_links
 	 */
 	public static function plugin_action_links( $links, $file ) {
@@ -740,7 +603,7 @@ class WP_Stream_Admin {
 
 	public static function save_api_authentication() {
 		$home_url           = str_ireplace( array( 'http://', 'https://' ), '', home_url() );
-		$connect_nonce_name = 'stream_connect_site-' . sanitize_key( $home_url );
+		$connect_nonce_name = 'wp_stream_connect_site-' . sanitize_key( $home_url );
 
 		if ( ! isset( $_GET['api_key'] ) || ! isset( $_GET['site_uuid'] ) ) {
 			wp_die( 'There was a problem connecting to Stream. Please try again later.', 'stream' );
@@ -821,7 +684,7 @@ class WP_Stream_Admin {
 		$url     = sprintf( '%s/wp-content/themes/wp-stream.com/assets/testimonials.json', untrailingslashit( self::PUBLIC_URL ) );
 		$request = wp_remote_request( esc_url_raw( $url ), array( 'sslverify' => false ) );
 
-		if ( ! is_wp_error( $request ) && $request['response']['code'] === 200 ) {
+		if ( ! is_wp_error( $request ) && 200 === $request['response']['code'] ) {
 			$testimonials = json_decode( $request['body'], true );
 		} else {
 			$testimonials = false;
@@ -843,26 +706,25 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_settings_page() {
-
 		$option_key  = WP_Stream_Settings::$option_key;
 		$form_action = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
 
-		$page_title       = apply_filters( 'wp_stream_settings_form_title', get_admin_page_title() );
+		/**
+		 *
+		 *
+		 * @since
+		 *
+		 * @return string
+		 */
 		$page_description = apply_filters( 'wp_stream_settings_form_description', '' );
 
 		$sections   = WP_Stream_Settings::get_fields();
 		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 
-		wp_enqueue_script(
-			'stream-settings',
-			plugins_url( '../ui/js/settings.js', __FILE__ ),
-			array( 'jquery' ),
-			WP_Stream::VERSION,
-			true
-		);
+		wp_enqueue_script( 'stream-settings', WP_STREAM_URL . 'ui/js/settings.js', array( 'jquery' ), WP_Stream::VERSION, true );
 		?>
 		<div class="wrap">
-			<h2><?php echo esc_html( $page_title ) ?></h2>
+			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
 
 			<?php if ( ! empty( $page_description ) ) : ?>
 				<p><?php echo esc_html( $page_description ) ?></p>
@@ -911,7 +773,6 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_account_page() {
-		$page_title           = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
 		$date_format          = get_option( 'date_format' );
 		$site                 = WP_Stream::$api->get_site();
 		$plan_type            = WP_Stream::$api->get_plan_type();
@@ -923,17 +784,17 @@ class WP_Stream_Admin {
 		$created_date         = WP_Stream::$api->get_created_date();
 		?>
 		<div class="wrap">
-			<h2><?php echo esc_html( $page_title ) ?></h2>
+			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
 			<div class="postbox">
 		<?php
 		if ( ! $site ) {
 			?>
-				<h3><?php _e( 'Error retrieving account details.' ) ?></h3>
+				<h3><?php esc_html_e( 'Error retrieving account details.' ) ?></h3>
 				<div class="plan-details">
-					<p><?php _e( 'If this problem persists, please disconnect from Stream and try connecting again.', 'stream' ) ?></p>
+					<p><?php esc_html_e( 'If this problem persists, please disconnect from Stream and try connecting again.', 'stream' ) ?></p>
 				</div>
 				<div class="plan-actions submitbox">
-					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ) ?>"><?php _e( 'Disconnect', 'stream' ) ?></a>
+					<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ) ?>"><?php esc_html_e( 'Disconnect', 'stream' ) ?></a>
 				</div>
 			<?php
 		} else {
@@ -943,11 +804,11 @@ class WP_Stream_Admin {
 					<table class="form-table">
 						<tbody>
 							<tr>
-								<th><?php _e( 'Plan', 'stream' ) ?></th>
+								<th><?php esc_html_e( 'Plan', 'stream' ) ?></th>
 								<td><?php echo esc_html( $plan_type_label ) ?></td>
 							</tr>
 							<tr>
-								<th><?php _e( 'Activity History', 'stream' ) ?></th>
+								<th><?php esc_html_e( 'Activity History', 'stream' ) ?></th>
 								<td><?php echo esc_html( $plan_retention_label ) ?></td>
 							</tr>
 							<?php if ( 'free' !== $plan_type ) : ?>
@@ -959,22 +820,22 @@ class WP_Stream_Admin {
 							);
 							?>
 							<tr>
-								<th><?php _e( 'Next Billing', 'stream' ) ?></th>
+								<th><?php esc_html_e( 'Next Billing', 'stream' ) ?></th>
 								<td><?php echo esc_html( $next_billing_label ) ?></td>
 							</tr>
 							<?php endif; ?>
 							<tr>
-								<th><?php _e( 'Created', 'stream' ) ?></th>
+								<th><?php esc_html_e( 'Created', 'stream' ) ?></th>
 								<td><?php echo esc_html( $created_date ) ?></td>
 							</tr>
 							<tr>
-								<th><?php _e( 'Site ID', 'stream' ) ?></th>
+								<th><?php esc_html_e( 'Site ID', 'stream' ) ?></th>
 								<td>
 									<code class="site-uuid"><?php echo esc_html( WP_Stream::$api->site_uuid ) ?></code>
 								</td>
 							</tr>
 							<tr>
-								<th><?php _e( 'API Key', 'stream' ) ?></th>
+								<th><?php esc_html_e( 'API Key', 'stream' ) ?></th>
 								<td>
 									<code class="api-key"><?php echo esc_html( WP_Stream::$api->api_key ) ?></code>
 								</td>
@@ -984,11 +845,11 @@ class WP_Stream_Admin {
 				</div>
 				<div class="plan-actions submitbox">
 					<?php if ( 'free' === $plan_type ) : ?>
-						<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade/?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ) ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
+						<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade/?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ) ?>" class="button button-primary button-large"><?php esc_html_e( 'Upgrade to Pro', 'stream' ) ?></a>
 					<?php else : ?>
-						<a href="<?php echo esc_url( sprintf( '%s/dashboard/?site_uuid=%s', self::PUBLIC_URL, WP_Stream::$api->site_uuid ) ) ?>" class="button button-primary button-large" target="_blank"><?php _e( 'Modify This Plan', 'stream' ) ?></a>
+						<a href="<?php echo esc_url( sprintf( '%s/dashboard/?site_uuid=%s', self::PUBLIC_URL, WP_Stream::$api->site_uuid ) ) ?>" class="button button-primary button-large" target="_blank"><?php esc_html_e( 'Modify This Plan', 'stream' ) ?></a>
 					<?php endif; ?>
-						<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ) ?>"><?php _e( 'Disconnect', 'stream' ) ?></a>
+						<a class="submitdelete disconnect" href="<?php echo esc_url( add_query_arg( 'disconnect', '1' ) ) ?>"><?php esc_html_e( 'Disconnect', 'stream' ) ?></a>
 				</div>
 			<?php
 		}
@@ -1004,7 +865,7 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_connect_page() {
-		$page_title   = apply_filters( 'wp_stream_connect_page_title', get_admin_page_title() );
+		$page_title = apply_filters( 'wp_stream_connect_page_title', get_admin_page_title() );
 
 		if ( $testimonials = self::get_testimonials() ) {
 			$testimonial = $testimonials[ array_rand( $testimonials ) ];
@@ -1018,7 +879,7 @@ class WP_Stream_Admin {
 			<div class="wrap">
 
 				<div class="stream-connect-container">
-					<a href="<?php echo esc_url( self::$connect_url ) ?>" class="stream-button"><i class="stream-icon"></i><?php _e( 'Connect to Stream', 'stream' ) ?></a>
+					<a href="<?php echo esc_url( self::$connect_url ) ?>" class="stream-button"><i class="stream-icon"></i><?php esc_html_e( 'Connect to Stream', 'stream' ) ?></a>
 					<p>
 						<?php
 						$tooltip = sprintf(
@@ -1026,13 +887,8 @@ class WP_Stream_Admin {
 							'<a href="https://signup.wordpress.com/signup/?user=1" target="_blank">',
 							'</a>'
 						);
-						wp_kses_post(
-							printf(
-								esc_html__( 'with your %sWordPress.com ID%s', 'stream' ),
-								'<span class="wp-stream-tooltip-text">',
-								'</span><span class="wp-stream-tooltip">' . $tooltip . '</span>' // xss ok
-							)
-						);
+
+						wp_kses_post( printf( esc_html__( 'with your %sWordPress.com ID%s', 'stream' ), '<span class="wp-stream-tooltip-text">', '</span><span class="wp-stream-tooltip">' . $tooltip . '</span>' ) ); // xss ok
 						?>
 					</p>
 				</div>
@@ -1055,53 +911,13 @@ class WP_Stream_Admin {
 	}
 
 	public static function render_stream_page() {
-		$page_title = __( 'Stream Records', 'stream' );
-
 		self::$list_table->prepare_items();
-
-		echo '<div class="wrap">';
-
-		printf( '<h2>%s</h2>', __( 'Stream Records', 'stream' ) ); // xss ok
-
-		self::$list_table->display();
-
-		echo '</div>';
-	}
-
-	public static function wp_ajax_defaults() {
-		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
-
-		if ( current_user_can( self::SETTINGS_CAP ) ) {
-			self::reset_stream_settings();
-
-			wp_safe_redirect(
-				add_query_arg(
-					array(
-						'page'    => 'wp_stream_settings',
-						'message' => 'settings_reset',
-					),
-					admin_url( self::ADMIN_PARENT_PAGE )
-				)
-			);
-
-			exit;
-		} else {
-			wp_die( "You don't have sufficient privileges to do this action." );
-		}
-	}
-
-	private static function reset_stream_settings() {
-		global $wpdb;
-
-		$blogs = wp_get_sites();
-
-		if ( $blogs ) {
-			foreach ( $blogs as $blog ) {
-				switch_to_blog( $blog['blog_id'] );
-				delete_option( WP_Stream_Settings::OPTION_KEY );
-			}
-			restore_current_blog();
-		}
+		?>
+		<div class="wrap">
+			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
+			<?php self::$list_table->display() ?>
+		</div>
+		<?php
 	}
 
 	private static function _role_can_view_stream( $role ) {
@@ -1222,9 +1038,11 @@ class WP_Stream_Admin {
 
 				break;
 		}
+
 		if ( isset( $results ) ) {
-			echo json_encode( array_values( $results ) );
+			echo wp_stream_json_encode( array_values( $results ) ); // xss ok
 		}
+
 		die();
 	}
 
@@ -1252,7 +1070,7 @@ class WP_Stream_Admin {
 				$value = '';
 		}
 
-		echo json_encode( $value );
+		echo wp_stream_json_encode( $value ); // xss ok
 
 		wp_die();
 	}

@@ -137,3 +137,68 @@ function wp_stream_get_object_title( $record ) {
 function wp_stream_is_wp_cron_enabled() {
 	return ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
 }
+
+/**
+ * Encode to JSON in a way that is also backwards compatible
+ *
+ * @param mixed $data
+ * @param int   $options (optional)
+ * @param int   $depth (optional)
+ *
+ * @return bool|string
+ */
+function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
+	if ( function_exists( 'wp_json_encode' ) ) {
+		$json = wp_json_encode( $data, $options, $depth );
+	} else {
+		// @codingStandardsIgnoreStart
+		if ( version_compare( PHP_VERSION, '5.5', '<' ) ) {
+			$json = json_encode( $data, $options );
+		} else {
+			$json = json_encode( $data, $options, $depth );
+		}
+		// @codingStandardsIgnoreEnd
+	}
+
+	return $json;
+}
+
+/**
+ * Get user meta in a way that is also safe for VIP
+ *
+ * @param int    $user_id
+ * @param string $meta_key
+ * @param bool   $single (optional)
+ *
+ * @return mixed
+ */
+function wp_stream_get_user_meta( $user_id, $meta_key, $single = true ) {
+	return WP_Stream::is_vip() ? get_user_attribute( $user_id, $meta_key ) : get_user_meta( $user_id, $meta_key, $single );
+}
+
+/**
+ * Update user meta in a way that is also safe for VIP
+ *
+ * @param int    $user_id
+ * @param string $meta_key
+ * @param mixed  $meta_value
+ * @param mixed  $prev_value (optional)
+ *
+ * @return int|bool
+ */
+function wp_stream_update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
+	return WP_Stream::is_vip() ? update_user_attribute( $user_id, $meta_key, $meta_value ) : update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
+}
+
+/**
+ * Delete user meta in a way that is also safe for VIP
+ *
+ * @param int    $user_id
+ * @param string $meta_key
+ * @param mixed  $meta_value (optional)
+ *
+ * @return bool
+ */
+function wp_stream_delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
+	return WP_Stream::is_vip() ? delete_user_attribute( $user_id, $meta_key, $meta_value ) : delete_user_meta( $user_id, $meta_key, $meta_value );
+}

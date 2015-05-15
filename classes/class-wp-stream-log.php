@@ -3,11 +3,18 @@
 class WP_Stream_Log {
 
 	/**
-	 * Log handler
+	 * Hold class instance
 	 *
-	 * @var \WP_Stream_Log
+	 * @var string
 	 */
-	public static $instance = null;
+	public static $instance;
+
+	/**
+	 * Hold event transaction object
+	 *
+	 * @var object
+	 */
+	private static $transaction;
 
 	/**
 	 * Load log handler class, filterable by extensions
@@ -24,21 +31,51 @@ class WP_Stream_Log {
 		 */
 		$log_handler = apply_filters( 'wp_stream_log_handler', __CLASS__ );
 
-		self::$instance = new $log_handler;
+		self::$instance    = new $log_handler;
+		self::$transaction = new stdClass;
+
+		add_action( 'wp_loaded', array( __CLASS__, 'transaction_start' ), 999 );
+		add_action( 'shutdown', array( __CLASS__, 'transaction_reset' ), 999 );
 	}
 
 	/**
-	 * Return active instance of this class
+	 * Return an active instance of this class, and create one if it doesn't exist
 	 *
 	 * @return WP_Stream_Log
 	 */
 	public static function get_instance() {
 		if ( ! self::$instance ) {
-			$class = __CLASS__;
-			self::$instance = new $class;
+			self::$instance = new self();
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * Start the transaction timer when WordPress is fully loaded
+	 *
+	 * @return void
+	 */
+	public static function transaction_start() {
+		self::$transaction->start = microtime( true );
+
+		/**
+		 * Fires immediately after the transaction timer has started
+		 *
+		 * @since 2.0.6
+		 *
+		 * @param int $transaction_start
+		 */
+		do_action( 'wp_stream_transaction_start', self::$transaction->start );
+	}
+
+	/**
+	 * Reset the transaction timer on shutdown
+	 *
+	 * @return void
+	 */
+	public static function transaction_reset() {
+		self::$transaction->start = null;
 	}
 
 	/**
@@ -134,6 +171,29 @@ class WP_Stream_Log {
 			'stream_meta' => (array) $stream_meta,
 			'ip'          => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
+
+		// Stop the transaction timer and add values to record meta
+		if ( ! empty( self::$transaction->start ) ) {
+			self::$transaction->stop = microtime( true );
+			self::$transaction->time = round( self::$transaction->stop - self::$transaction->start, 3 ) * 1000; // Use milliseconds
+
+			$recordarr['stream_meta']['transaction_start'] = self::$transaction->start;
+			$recordarr['stream_meta']['transaction_stop']  = self::$transaction->stop;
+			$recordarr['stream_meta']['transaction_time']  = self::$transaction->time;
+
+			/**
+			 * Fires immediately after the transaction timer has stopped
+			 *
+			 * @since 2.0.6
+			 *
+			 * @param object $transaction
+			 * @param array  $recordarr
+			 */
+			do_action( 'wp_stream_transaction_stop', self::$transaction, $recordarr );
+
+			// Restart the timer to properly time any subsequent bulk actions
+			self::transaction_start();
+		}
 
 		$result = WP_Stream::$db->store( array( $recordarr ) );
 
@@ -278,10 +338,13 @@ class WP_Stream_Log {
 			$author_meta = implode( ', ', $author_meta );
 		}
 
-		// Debug backtrace
 		ob_start();
 
+		// @codingStandardsIgnoreStart
+
 		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ); // Option to ignore args requires PHP 5.3.6
+
+		// @codingStandardsIgnoreEnd
 
 		$backtrace = ob_get_clean();
 		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );

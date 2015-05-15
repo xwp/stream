@@ -59,10 +59,7 @@ class WP_Stream_Dashboard_Widget {
 			return;
 		}
 
-		printf(
-			'<ul>%s</ul>',
-			implode( '', array_map( array( __CLASS__, 'widget_row' ), $records ) )
-		);
+		printf( '<ul>%s</ul>', implode( '', array_map( array( __CLASS__, 'widget_row' ), $records ) ) ); // xss ok
 
 		$args = array(
 			'current'     => $paged,
@@ -221,15 +218,15 @@ class WP_Stream_Dashboard_Widget {
 
 		ob_start()
 		?>
-		<li data-datetime="<?php echo wp_stream_get_iso_8601_extended_date( strtotime( $item->created ) ) ?>">
-		<div class="record-avatar">
-				<a href="<?php echo esc_url( $author->get_records_page_url() ) ?>">
-					<?php echo $author->get_avatar_img( 72 ); // xss ok ?>
-				</a>
-			</div>
-		<span class="record-meta"><?php echo $time_author; // xss ok ?></span>
-		<br/>
-		<?php echo esc_html( $item->summary ) ?>
+		<li data-datetime="<?php echo esc_attr( wp_stream_get_iso_8601_extended_date( strtotime( $item->created ) ) ) ?>">
+			<div class="record-avatar">
+					<a href="<?php echo esc_url( $author->get_records_page_url() ) ?>">
+						<?php echo $author->get_avatar_img( 72 ); // xss ok ?>
+					</a>
+				</div>
+			<span class="record-meta"><?php echo $time_author; // xss ok ?></span>
+			<br/>
+			<?php echo esc_html( $item->summary ) ?>
 		</li>
 		<?php
 
@@ -259,6 +256,7 @@ class WP_Stream_Dashboard_Widget {
 
 		if ( ! empty( $updated_items ) ) {
 			ob_start();
+
 			foreach ( $updated_items as $item ) {
 				echo self::widget_row( $item ); //xss okay
 			}

@@ -85,7 +85,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return _x( 'Gravity Forms', 'gravityforms', 'stream' );
+		return esc_html_x( 'Gravity Forms', 'gravityforms', 'stream' );
 	}
 
 	/**
@@ -95,15 +95,15 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'    => _x( 'Created', 'gravityforms', 'stream' ),
-			'updated'    => _x( 'Updated', 'gravityforms', 'stream' ),
-			'exported'   => _x( 'Exported', 'gravityforms', 'stream' ),
-			'imported'   => _x( 'Imported', 'gravityforms', 'stream' ),
-			'added'      => _x( 'Added', 'gravityforms', 'stream' ),
-			'deleted'    => _x( 'Deleted', 'gravityforms', 'stream' ),
-			'trashed'    => _x( 'Trashed', 'gravityforms', 'stream' ),
-			'untrashed'  => _x( 'Restored', 'gravityforms', 'stream' ),
-			'duplicated' => _x( 'Duplicated', 'gravityforms', 'stream' ),
+			'created'    => esc_html_x( 'Created', 'gravityforms', 'stream' ),
+			'updated'    => esc_html_x( 'Updated', 'gravityforms', 'stream' ),
+			'exported'   => esc_html_x( 'Exported', 'gravityforms', 'stream' ),
+			'imported'   => esc_html_x( 'Imported', 'gravityforms', 'stream' ),
+			'added'      => esc_html_x( 'Added', 'gravityforms', 'stream' ),
+			'deleted'    => esc_html_x( 'Deleted', 'gravityforms', 'stream' ),
+			'trashed'    => esc_html_x( 'Trashed', 'gravityforms', 'stream' ),
+			'untrashed'  => esc_html_x( 'Restored', 'gravityforms', 'stream' ),
+			'duplicated' => esc_html_x( 'Duplicated', 'gravityforms', 'stream' ),
 		);
 	}
 
@@ -114,11 +114,11 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'forms'    => _x( 'Forms', 'gravityforms', 'stream' ),
-			'settings' => _x( 'Settings', 'gravityforms', 'stream' ),
-			'export'   => _x( 'Import/Export', 'gravityforms', 'stream' ),
-			'entries'  => _x( 'Entries', 'gravityforms', 'stream' ),
-			'notes'    => _x( 'Notes', 'gravityforms', 'stream' ),
+			'forms'    => esc_html_x( 'Forms', 'gravityforms', 'stream' ),
+			'settings' => esc_html_x( 'Settings', 'gravityforms', 'stream' ),
+			'export'   => esc_html_x( 'Import/Export', 'gravityforms', 'stream' ),
+			'entries'  => esc_html_x( 'Entries', 'gravityforms', 'stream' ),
+			'notes'    => esc_html_x( 'Notes', 'gravityforms', 'stream' ),
 		);
 	}
 
@@ -134,7 +134,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	 */
 	public static function action_links( $links, $record ) {
 		if ( 'forms' === $record->context ) {
-			$links[ __( 'Edit', 'stream' ) ] = add_query_arg(
+			$links[ esc_html__( 'Edit', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => 'gf_edit_forms',
 					'id' => $record->object_id,
@@ -142,7 +142,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				admin_url( 'admin.php' )
 			);
 		} elseif ( 'entries' === $record->context ) {
-			$links[ __( 'View', 'stream' ) ] = add_query_arg(
+			$links[ esc_html__( 'View', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => 'gf_entries',
 					'view' => 'entry',
@@ -152,7 +152,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				admin_url( 'admin.php' )
 			);
 		} elseif ( 'notes' === $record->context ) {
-			$links[ __( 'View', 'stream' ) ] = add_query_arg(
+			$links[ esc_html__( 'View', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => 'gf_entries',
 					'view' => 'entry',
@@ -162,7 +162,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 				admin_url( 'admin.php' )
 			);
 		} elseif ( 'settings' === $record->context ) {
-			$links[ __( 'Edit Settings', 'stream' ) ] = add_query_arg(
+			$links[ esc_html__( 'Edit Settings', 'stream' ) ] = add_query_arg(
 				array(
 					'page' => 'gf_settings',
 				),
@@ -178,22 +178,22 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 
 		self::$options = array(
 			'rg_gforms_disable_css'         => array(
-				'label' => _x( 'Output CSS', 'gravityforms', 'stream' ),
+				'label' => esc_html_x( 'Output CSS', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_enable_html5'        => array(
-				'label' => _x( 'Output HTML5', 'gravityforms', 'stream' ),
+				'label' => esc_html_x( 'Output HTML5', 'gravityforms', 'stream' ),
 			),
 			'gform_enable_noconflict'       => array(
-				'label' => _x( 'No-Conflict Mode', 'gravityforms', 'stream' ),
+				'label' => esc_html_x( 'No-Conflict Mode', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_currency'            => array(
-				'label' => _x( 'Currency', 'gravityforms', 'stream' ),
+				'label' => esc_html_x( 'Currency', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_captcha_public_key'  => array(
-				'label' => _x( 'reCAPTCHA Public Key', 'gravityforms', 'stream' ),
+				'label' => esc_html_x( 'reCAPTCHA Public Key', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_captcha_private_key' => array(
-				'label' => _x( 'reCAPTCHA Private Key', 'gravityforms', 'stream' ),
+				'label' => esc_html_x( 'reCAPTCHA Private Key', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_key'                 => null,
 		);
@@ -213,7 +213,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			sprintf(
 				__( '"%1$s" form %2$s', 'stream' ),
 				$title,
-				$is_new ? __( 'created', 'stream' ) : __( 'updated', 'stream' )
+				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' )
 			),
 			array(
 				'action' => $is_new,
@@ -244,7 +244,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			sprintf(
 				__( '"%1$s" confirmation %2$s for "%3$s"', 'stream' ),
 				$confirmation['name'],
-				$is_new ? __( 'created', 'stream' ) : __( 'updated', 'stream' ),
+				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
 				$form['title']
 			),
 			array(
@@ -277,7 +277,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			sprintf(
 				__( '"%1$s" notification %2$s for "%3$s"', 'stream' ),
 				$notification['name'],
-				$is_new ? __( 'created', 'stream' ) : __( 'updated', 'stream' ),
+				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
 				$form['title']
 			),
 			array(
@@ -350,7 +350,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			sprintf(
 				__( '"%1$s" confirmation %2$s from "%3$s"', 'stream' ),
 				$confirmation['name'],
-				$is_active ? __( 'activated', 'stream' ) : __( 'deactivated', 'stream' ),
+				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
 				$form['title']
 			),
 			array(
@@ -396,7 +396,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			sprintf(
 				__( '"%1$s" notification %2$s from "%3$s"', 'stream' ),
 				$notification['name'],
-				$is_active ? __( 'activated', 'stream' ) : __( 'deactivated', 'stream' ),
+				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
 				$form['title']
 			),
 			array(
@@ -419,10 +419,10 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 	public static function callback_gform_form_status_change( $id, $action ) {
 		$form    = self::get_form( $id );
 		$actions = array(
-			'activated'   => __( 'Activated', 'stream' ),
-			'deactivated' => __( 'Deactivated', 'stream' ),
-			'trashed'     => __( 'Trashed', 'stream' ),
-			'untrashed'   => __( 'Restored', 'stream' ),
+			'activated'   => esc_html__( 'Activated', 'stream' ),
+			'deactivated' => esc_html__( 'Deactivated', 'stream' ),
+			'trashed'     => esc_html__( 'Trashed', 'stream' ),
+			'untrashed'   => esc_html__( 'Restored', 'stream' ),
 		);
 
 		self::log(
@@ -494,7 +494,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		self::log(
 			sprintf(
 				__( 'Gravity Forms license key %s', 'stream' ),
-				$is_update ? __( 'updated', 'stream' ) : __( 'deleted', 'stream' )
+				$is_update ? esc_html__( 'updated', 'stream' ) : esc_html__( 'deleted', 'stream' )
 			),
 			compact( 'option', 'old_value', 'new_value' ),
 			null,
@@ -646,10 +646,10 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 		}
 
 		$actions = array(
-			'active'  => __( 'activated', 'stream' ),
-			'spam'    => __( 'marked as spam', 'stream' ),
-			'trash'   => __( 'trashed', 'stream' ),
-			'restore' => __( 'restored', 'stream' ),
+			'active'  => esc_html__( 'activated', 'stream' ),
+			'spam'    => esc_html__( 'marked as spam', 'stream' ),
+			'trash'   => esc_html__( 'trashed', 'stream' ),
+			'restore' => esc_html__( 'restored', 'stream' ),
 		);
 
 		if ( ! isset( $actions[ $status ] ) ) {
@@ -684,7 +684,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			sprintf(
 				__( 'Lead #%1$d marked as %2$s on "%3$s" form', 'stream' ),
 				$lead_id,
-				$status ? __( 'read', 'stream' ) : __( 'unread', 'stream' ),
+				$status ? esc_html__( 'read', 'stream' ) : esc_html__( 'unread', 'stream' ),
 				$form['title']
 			),
 			array(
@@ -707,7 +707,7 @@ class WP_Stream_Connector_GravityForms extends WP_Stream_Connector {
 			sprintf(
 				__( 'Lead #%1$d %2$s on "%3$s" form', 'stream' ),
 				$lead_id,
-				$status ? __( 'starred', 'stream' ) : __( 'unstarred', 'stream' ),
+				$status ? esc_html__( 'starred', 'stream' ) : esc_html__( 'unstarred', 'stream' ),
 				$form['title']
 			),
 			array(

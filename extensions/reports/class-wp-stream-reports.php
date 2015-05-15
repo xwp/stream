@@ -3,7 +3,7 @@
 class WP_Stream_Reports {
 
 	/**
-	 * Hold Stream Reports instance
+	 * Hold class instance
 	 *
 	 * @var string
 	 */
@@ -11,6 +11,7 @@ class WP_Stream_Reports {
 
 	/**
 	 * Screen ID for my admin page
+	 *
 	 * @var string
 	 */
 	public static $screen_id;
@@ -54,8 +55,21 @@ class WP_Stream_Reports {
 			return;
 		}
 
-		// Must be fired on plugins_loaded for date range filters to work properly
-		add_action( 'plugins_loaded', array( $this, 'load' ) );
+		// Must be fired on priority 9 or earlier for date range filters to work properly
+		add_action( 'init', array( $this, 'load' ), 9 );
+	}
+
+	/**
+	 * Return an active instance of this class, and create one if it doesn't exist
+	 *
+	 * @return WP_Stream_Reports
+	 */
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**
@@ -108,12 +122,15 @@ class WP_Stream_Reports {
 			add_action( "wp_ajax_{$hook}", array( $referer, $function ) );
 		}
 
+		$action = wp_stream_filter_input( INPUT_GET, 'action' );
+
 		// Check referer here so we don't have to check it on every function call
-		if ( array_key_exists( $_REQUEST['action'], $ajax_hooks ) ) {
+		if ( array_key_exists( $action, $ajax_hooks ) ) {
 			// Checking permission
 			if ( ! current_user_can( WP_Stream_Reports::VIEW_CAP ) ) {
-				wp_die( __( 'Cheating huh?', 'stream' ) );
+				wp_die( esc_html__( 'Cheating huh?', 'stream' ) );
 			}
+
 			check_admin_referer( 'stream-reports-page', 'wp_stream_reports_nonce' );
 		}
 	}
@@ -266,12 +283,12 @@ class WP_Stream_Reports {
 		);
 
 		// Avoid throwing Notices by testing the variable
-		if ( isset( $_GET['view'] ) && ! empty( $_GET['view'] ) ){
+		if ( isset( $_GET['view'] ) && ! empty( $_GET['view'] ) ) {
 			$view->slug = sanitize_file_name( wp_unslash( $_GET['view'] ) );
 		}
 
 		// First we check if the file exists in our plugin folder, otherwhise give the user an error
-		if ( ! file_exists( WP_STREAM_REPORTS_VIEW_DIR . $view->slug . '.php' ) ){
+		if ( ! file_exists( WP_STREAM_REPORTS_VIEW_DIR . $view->slug . '.php' ) ) {
 			$view->slug = 'error';
 		}
 
@@ -312,19 +329,6 @@ class WP_Stream_Reports {
 		foreach ( self::$messages as $message ) {
 			echo wp_kses_post( $message );
 		}
-	}
-
-	/**
-	 * Return active instance of WP_Stream_Reports, create one if it doesn't exist
-	 *
-	 * @return WP_Stream_Reports
-	 */
-	public static function get_instance() {
-		if ( empty( self::$instance ) ) {
-			$class = __CLASS__;
-			self::$instance = new $class;
-		}
-		return self::$instance;
 	}
 
 }

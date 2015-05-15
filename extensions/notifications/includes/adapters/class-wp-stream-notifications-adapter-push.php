@@ -125,7 +125,7 @@ class WP_Stream_Notifications_Adapter_Push extends WP_Stream_Notifications_Adapt
 			) );
 			$users_pushover_keys = array_map(
 				function( $user_id ) {
-					return get_user_meta( $user_id, 'ckpn_user_key', true );
+					return wp_stream_get_user_meta( $user_id, 'ckpn_user_key' );
 				},
 				$users
 			);

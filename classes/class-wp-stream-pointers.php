@@ -63,7 +63,7 @@ class WP_Stream_Pointers {
 			$caps_required = $caps[ $context ];
 
 			// Get dismissed pointers
-			$dismissed = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
+			$dismissed = explode( ',', (string) wp_stream_get_user_meta( get_current_user_id(), 'dismissed_wp_pointers' ) );
 
 			$got_pointers = false;
 			foreach ( array_diff( $pointers, $dismissed ) as $pointer ) {
@@ -109,7 +109,7 @@ class WP_Stream_Pointers {
 		<script type="text/javascript">
 		//<![CDATA[
 		(function($){
-			var options = <?php echo json_encode( $args ) ?>, setup;
+			var options = <?php echo wp_stream_json_encode( $args ) // xss ok ?>, setup;
 
 			if ( ! options ) {
 				return;
@@ -118,14 +118,14 @@ class WP_Stream_Pointers {
 			options = $.extend( options, {
 				close: function() {
 					$.post( ajaxurl, {
-						pointer: <?php echo json_encode( $pointer_id ) ?>,
+						pointer: <?php echo wp_stream_json_encode( $pointer_id ) // xss ok ?>,
 						action: 'dismiss-wp-pointer'
 					});
 				}
 			});
 
 			setup = function() {
-				$(<?php echo json_encode( $selector ) ?>).first().pointer( options ).pointer('open');
+				$(<?php echo wp_stream_json_encode( $selector ) // xss ok ?>).first().pointer( options ).pointer('open');
 			};
 
 			if ( options.position && options.position.defer_loading ) {
@@ -168,7 +168,7 @@ class WP_Stream_Pointers {
 	 * @since 1.4.4
 	 */
 	public static function dismiss_pointers_for_new_users( $user_id ) {
-		add_user_meta( $user_id, 'dismissed_wp_pointers', '' );
+		wp_stream_update_user_meta( $user_id, 'dismissed_wp_pointers', '' );
 	}
 
 }

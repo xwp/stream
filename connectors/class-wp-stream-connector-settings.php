@@ -97,7 +97,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @return string Translated context label
 	 */
 	public static function get_label() {
-		return __( 'Settings', 'stream' );
+		return esc_html__( 'Settings', 'stream' );
 	}
 
 	/**
@@ -107,7 +107,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'updated' => __( 'Updated', 'stream' ),
+			'updated' => esc_html__( 'Updated', 'stream' ),
 		);
 	}
 
@@ -118,25 +118,25 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		$context_labels = array(
-			'settings'          => __( 'Settings', 'stream' ),
-			'general'           => __( 'General', 'stream' ),
-			'writing'           => __( 'Writing', 'stream' ),
-			'reading'           => __( 'Reading', 'stream' ),
-			'discussion'        => __( 'Discussion', 'stream' ),
-			'media'             => __( 'Media', 'stream' ),
-			'permalink'         => __( 'Permalinks', 'stream' ),
-			'network'           => __( 'Network', 'stream' ),
-			'wp_stream'         => __( 'Stream', 'stream' ),
-			'custom_background' => __( 'Custom Background', 'stream' ),
-			'custom_header'     => __( 'Custom Header', 'stream' ),
+			'settings'          => esc_html__( 'Settings', 'stream' ),
+			'general'           => esc_html__( 'General', 'stream' ),
+			'writing'           => esc_html__( 'Writing', 'stream' ),
+			'reading'           => esc_html__( 'Reading', 'stream' ),
+			'discussion'        => esc_html__( 'Discussion', 'stream' ),
+			'media'             => esc_html__( 'Media', 'stream' ),
+			'permalink'         => esc_html__( 'Permalinks', 'stream' ),
+			'network'           => esc_html__( 'Network', 'stream' ),
+			'wp_stream'         => esc_html__( 'Stream', 'stream' ),
+			'custom_background' => esc_html__( 'Custom Background', 'stream' ),
+			'custom_header'     => esc_html__( 'Custom Header', 'stream' ),
 		);
 
 		if ( is_network_admin() ) {
 			$context_labels = array_merge(
 				$context_labels,
 				array(
-					'wp_stream_network'  => __( 'Stream Network', 'stream' ),
-					'wp_stream_defaults' => __( 'Stream Defaults', 'stream' ),
+					'wp_stream_network'  => esc_html__( 'Stream Network', 'stream' ),
+					'wp_stream_defaults' => esc_html__( 'Stream Defaults', 'stream' ),
 				)
 			);
 		}
@@ -230,99 +230,99 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	public static function get_field_label( $field_key ) {
 		$labels = array(
 			// General
-			'blogname'                      => __( 'Site Title', 'stream' ),
-			'blogdescription'               => __( 'Tagline', 'stream' ),
-			'siteurl'                       => __( 'WordPress Address (URL)', 'stream' ),
-			'home'                          => __( 'Site Address (URL)', 'stream' ),
-			'admin_email'                   => __( 'E-mail Address', 'stream' ),
-			'users_can_register'            => __( 'Membership', 'stream' ),
-			'default_role'                  => __( 'New User Default Role', 'stream' ),
-			'timezone_string'               => __( 'Timezone', 'stream' ),
-			'date_format'                   => __( 'Date Format', 'stream' ),
-			'time_format'                   => __( 'Time Format', 'stream' ),
-			'start_of_week'                 => __( 'Week Starts On', 'stream' ),
+			'blogname'                      => esc_html__( 'Site Title', 'stream' ),
+			'blogdescription'               => esc_html__( 'Tagline', 'stream' ),
+			'siteurl'                       => esc_html__( 'WordPress Address (URL)', 'stream' ),
+			'home'                          => esc_html__( 'Site Address (URL)', 'stream' ),
+			'admin_email'                   => esc_html__( 'E-mail Address', 'stream' ),
+			'users_can_register'            => esc_html__( 'Membership', 'stream' ),
+			'default_role'                  => esc_html__( 'New User Default Role', 'stream' ),
+			'timezone_string'               => esc_html__( 'Timezone', 'stream' ),
+			'date_format'                   => esc_html__( 'Date Format', 'stream' ),
+			'time_format'                   => esc_html__( 'Time Format', 'stream' ),
+			'start_of_week'                 => esc_html__( 'Week Starts On', 'stream' ),
 			// Writing
-			'use_smilies'                   => __( 'Formatting', 'stream' ),
-			'use_balanceTags'               => __( 'Formatting', 'stream' ),
-			'default_category'              => __( 'Default Post Category', 'stream' ),
-			'default_post_format'           => __( 'Default Post Format', 'stream' ),
-			'mailserver_url'                => __( 'Mail Server', 'stream' ),
-			'mailserver_login'              => __( 'Login Name', 'stream' ),
-			'mailserver_pass'               => __( 'Password', 'stream' ),
-			'default_email_category'        => __( 'Default Mail Category', 'stream' ),
-			'ping_sites'                    => __( 'Update Services', 'stream' ),
+			'use_smilies'                   => esc_html__( 'Formatting', 'stream' ),
+			'use_balanceTags'               => esc_html__( 'Formatting', 'stream' ),
+			'default_category'              => esc_html__( 'Default Post Category', 'stream' ),
+			'default_post_format'           => esc_html__( 'Default Post Format', 'stream' ),
+			'mailserver_url'                => esc_html__( 'Mail Server', 'stream' ),
+			'mailserver_login'              => esc_html__( 'Login Name', 'stream' ),
+			'mailserver_pass'               => esc_html__( 'Password', 'stream' ),
+			'default_email_category'        => esc_html__( 'Default Mail Category', 'stream' ),
+			'ping_sites'                    => esc_html__( 'Update Services', 'stream' ),
 			// Reading
-			'show_on_front'                 => __( 'Front page displays', 'stream' ),
-			'page_on_front'                 => __( 'Front page displays', 'stream' ),
-			'page_for_posts'                => __( 'Front page displays', 'stream' ),
-			'posts_per_page'                => __( 'Blog pages show at most', 'stream' ),
-			'posts_per_rss'                 => __( 'Syndication feeds show the most recent', 'stream' ),
-			'rss_use_excerpt'               => __( 'For each article in a feed, show', 'stream' ),
-			'blog_public'                   => __( 'Search Engine Visibility', 'stream' ),
+			'show_on_front'                 => esc_html__( 'Front page displays', 'stream' ),
+			'page_on_front'                 => esc_html__( 'Front page displays', 'stream' ),
+			'page_for_posts'                => esc_html__( 'Front page displays', 'stream' ),
+			'posts_per_page'                => esc_html__( 'Blog pages show at most', 'stream' ),
+			'posts_per_rss'                 => esc_html__( 'Syndication feeds show the most recent', 'stream' ),
+			'rss_use_excerpt'               => esc_html__( 'For each article in a feed, show', 'stream' ),
+			'blog_public'                   => esc_html__( 'Search Engine Visibility', 'stream' ),
 			// Discussion
-			'default_pingback_flag'         => __( 'Default article settings', 'stream' ),
-			'default_ping_status'           => __( 'Default article settings', 'stream' ),
-			'default_comment_status'        => __( 'Default article settings', 'stream' ),
-			'require_name_email'            => __( 'Other comment settings', 'stream' ),
-			'comment_registration'          => __( 'Other comment settings', 'stream' ),
-			'close_comments_for_old_posts'  => __( 'Other comment settings', 'stream' ),
-			'close_comments_days_old'       => __( 'Other comment settings', 'stream' ),
-			'thread_comments'               => __( 'Other comment settings', 'stream' ),
-			'thread_comments_depth'         => __( 'Other comment settings', 'stream' ),
-			'page_comments'                 => __( 'Other comment settings', 'stream' ),
-			'comments_per_page'             => __( 'Other comment settings', 'stream' ),
-			'default_comments_page'         => __( 'Other comment settings', 'stream' ),
-			'comment_order'                 => __( 'Other comment settings', 'stream' ),
-			'comments_notify'               => __( 'E-mail me whenever', 'stream' ),
-			'moderation_notify'             => __( 'E-mail me whenever', 'stream' ),
-			'comment_moderation'            => __( 'Before a comment appears', 'stream' ),
-			'comment_whitelist'             => __( 'Before a comment appears', 'stream' ),
-			'comment_max_links'             => __( 'Comment Moderation', 'stream' ),
-			'moderation_keys'               => __( 'Comment Moderation', 'stream' ),
-			'blacklist_keys'                => __( 'Comment Blacklist', 'stream' ),
-			'show_avatars'                  => __( 'Show Avatars', 'stream' ),
-			'avatar_rating'                 => __( 'Maximum Rating', 'stream' ),
-			'avatar_default'                => __( 'Default Avatar', 'stream' ),
+			'default_pingback_flag'         => esc_html__( 'Default article settings', 'stream' ),
+			'default_ping_status'           => esc_html__( 'Default article settings', 'stream' ),
+			'default_comment_status'        => esc_html__( 'Default article settings', 'stream' ),
+			'require_name_email'            => esc_html__( 'Other comment settings', 'stream' ),
+			'comment_registration'          => esc_html__( 'Other comment settings', 'stream' ),
+			'close_comments_for_old_posts'  => esc_html__( 'Other comment settings', 'stream' ),
+			'close_comments_days_old'       => esc_html__( 'Other comment settings', 'stream' ),
+			'thread_comments'               => esc_html__( 'Other comment settings', 'stream' ),
+			'thread_comments_depth'         => esc_html__( 'Other comment settings', 'stream' ),
+			'page_comments'                 => esc_html__( 'Other comment settings', 'stream' ),
+			'comments_per_page'             => esc_html__( 'Other comment settings', 'stream' ),
+			'default_comments_page'         => esc_html__( 'Other comment settings', 'stream' ),
+			'comment_order'                 => esc_html__( 'Other comment settings', 'stream' ),
+			'comments_notify'               => esc_html__( 'E-mail me whenever', 'stream' ),
+			'moderation_notify'             => esc_html__( 'E-mail me whenever', 'stream' ),
+			'comment_moderation'            => esc_html__( 'Before a comment appears', 'stream' ),
+			'comment_whitelist'             => esc_html__( 'Before a comment appears', 'stream' ),
+			'comment_max_links'             => esc_html__( 'Comment Moderation', 'stream' ),
+			'moderation_keys'               => esc_html__( 'Comment Moderation', 'stream' ),
+			'blacklist_keys'                => esc_html__( 'Comment Blacklist', 'stream' ),
+			'show_avatars'                  => esc_html__( 'Show Avatars', 'stream' ),
+			'avatar_rating'                 => esc_html__( 'Maximum Rating', 'stream' ),
+			'avatar_default'                => esc_html__( 'Default Avatar', 'stream' ),
 			// Media
-			'thumbnail_size_w'              => __( 'Thumbnail size', 'stream' ),
-			'thumbnail_size_h'              => __( 'Thumbnail size', 'stream' ),
-			'thumbnail_crop'                => __( 'Thumbnail size', 'stream' ),
-			'medium_size_w'                 => __( 'Medium size', 'stream' ),
-			'medium_size_h'                 => __( 'Medium size', 'stream' ),
-			'large_size_w'                  => __( 'Large size', 'stream' ),
-			'large_size_h'                  => __( 'Large size', 'stream' ),
-			'uploads_use_yearmonth_folders' => __( 'Uploading Files', 'stream' ),
+			'thumbnail_size_w'              => esc_html__( 'Thumbnail size', 'stream' ),
+			'thumbnail_size_h'              => esc_html__( 'Thumbnail size', 'stream' ),
+			'thumbnail_crop'                => esc_html__( 'Thumbnail size', 'stream' ),
+			'medium_size_w'                 => esc_html__( 'Medium size', 'stream' ),
+			'medium_size_h'                 => esc_html__( 'Medium size', 'stream' ),
+			'large_size_w'                  => esc_html__( 'Large size', 'stream' ),
+			'large_size_h'                  => esc_html__( 'Large size', 'stream' ),
+			'uploads_use_yearmonth_folders' => esc_html__( 'Uploading Files', 'stream' ),
 			// Permalinks
-			'permalink_structure'           => __( 'Permalink Settings', 'stream' ),
-			'category_base'                 => __( 'Category base', 'stream' ),
-			'tag_base'                      => __( 'Tag base', 'stream' ),
+			'permalink_structure'           => esc_html__( 'Permalink Settings', 'stream' ),
+			'category_base'                 => esc_html__( 'Category base', 'stream' ),
+			'tag_base'                      => esc_html__( 'Tag base', 'stream' ),
 			// Network
-			'registrationnotification'      => __( 'Registration notification', 'stream' ),
-			'registration'                  => __( 'Allow new registrations', 'stream' ),
-			'add_new_users'                 => __( 'Add New Users', 'stream' ),
-			'menu_items'                    => __( 'Enable administration menus', 'stream' ),
-			'upload_space_check_disabled'   => __( 'Site upload space check', 'stream' ),
-			'blog_upload_space'             => __( 'Site upload space', 'stream' ),
-			'upload_filetypes'              => __( 'Upload file types', 'stream' ),
-			'site_name'                     => __( 'Network Title', 'stream' ),
-			'first_post'                    => __( 'First Post', 'stream' ),
-			'first_page'                    => __( 'First Page', 'stream' ),
-			'first_comment'                 => __( 'First Comment', 'stream' ),
-			'first_comment_url'             => __( 'First Comment URL', 'stream' ),
-			'first_comment_author'          => __( 'First Comment Author', 'stream' ),
-			'welcome_email'                 => __( 'Welcome Email', 'stream' ),
-			'welcome_user_email'            => __( 'Welcome User Email', 'stream' ),
-			'fileupload_maxk'               => __( 'Max upload file size', 'stream' ),
-			'global_terms_enabled'          => __( 'Terms Enabled', 'stream' ),
-			'illegal_names'                 => __( 'Banned Names', 'stream' ),
-			'limited_email_domains'         => __( 'Limited Email Registrations', 'stream' ),
-			'banned_email_domains'          => __( 'Banned Email Domains', 'stream' ),
-			'WPLANG'                        => __( 'Network Language', 'stream' ),
-			'admin_email'                   => __( 'Network Admin Email', 'stream' ),
-			'user_count'                    => __( 'User Count', 'stream' ),
+			'registrationnotification'      => esc_html__( 'Registration notification', 'stream' ),
+			'registration'                  => esc_html__( 'Allow new registrations', 'stream' ),
+			'add_new_users'                 => esc_html__( 'Add New Users', 'stream' ),
+			'menu_items'                    => esc_html__( 'Enable administration menus', 'stream' ),
+			'upload_space_check_disabled'   => esc_html__( 'Site upload space check', 'stream' ),
+			'blog_upload_space'             => esc_html__( 'Site upload space', 'stream' ),
+			'upload_filetypes'              => esc_html__( 'Upload file types', 'stream' ),
+			'site_name'                     => esc_html__( 'Network Title', 'stream' ),
+			'first_post'                    => esc_html__( 'First Post', 'stream' ),
+			'first_page'                    => esc_html__( 'First Page', 'stream' ),
+			'first_comment'                 => esc_html__( 'First Comment', 'stream' ),
+			'first_comment_url'             => esc_html__( 'First Comment URL', 'stream' ),
+			'first_comment_author'          => esc_html__( 'First Comment Author', 'stream' ),
+			'welcome_email'                 => esc_html__( 'Welcome Email', 'stream' ),
+			'welcome_user_email'            => esc_html__( 'Welcome User Email', 'stream' ),
+			'fileupload_maxk'               => esc_html__( 'Max upload file size', 'stream' ),
+			'global_terms_enabled'          => esc_html__( 'Terms Enabled', 'stream' ),
+			'illegal_names'                 => esc_html__( 'Banned Names', 'stream' ),
+			'limited_email_domains'         => esc_html__( 'Limited Email Registrations', 'stream' ),
+			'banned_email_domains'          => esc_html__( 'Banned Email Domains', 'stream' ),
+			'WPLANG'                        => esc_html__( 'Network Language', 'stream' ),
+			'admin_email'                   => esc_html__( 'Network Admin Email', 'stream' ),
+			'user_count'                    => esc_html__( 'User Count', 'stream' ),
 			// Other
-			'wp_stream_db'                  => __( 'Stream Database Version', 'stream' ),
-			'wp_stream_connected_sites'     => __( 'Stream Connected Sites', 'stream' ),
+			'wp_stream_db'                  => esc_html__( 'Stream Database Version', 'stream' ),
+			'wp_stream_connected_sites'     => esc_html__( 'Stream Connected Sites', 'stream' ),
 		);
 
 		if ( isset( $labels[ $field_key ] ) ) {
@@ -351,14 +351,14 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		$labels = array(
 			'theme_mods' => array(
 				// Custom Background
-				'background_image'       => __( 'Background Image', 'stream' ),
-				'background_position_x'  => __( 'Background Position', 'stream' ),
-				'background_repeat'      => __( 'Background Repeat', 'stream' ),
-				'background_attachment'  => __( 'Background Attachment', 'stream' ),
-				'background_color'       => __( 'Background Color', 'stream' ),
+				'background_image'       => esc_html__( 'Background Image', 'stream' ),
+				'background_position_x'  => esc_html__( 'Background Position', 'stream' ),
+				'background_repeat'      => esc_html__( 'Background Repeat', 'stream' ),
+				'background_attachment'  => esc_html__( 'Background Attachment', 'stream' ),
+				'background_color'       => esc_html__( 'Background Color', 'stream' ),
 				// Custom Header
-				'header_image'           => __( 'Header Image', 'stream' ),
-				'header_textcolor'       => __( 'Text Color', 'stream' ),
+				'header_image'           => esc_html__( 'Header Image', 'stream' ),
+				'header_textcolor'       => esc_html__( 'Text Color', 'stream' ),
 			),
 		);
 
@@ -493,7 +493,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 
 					if ( current_user_can( $capability ) ) {
 						$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
-						$text       = sprintf( __( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
+						$text       = sprintf( esc_html__( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
 						$field_name = wp_stream_get_meta( $record, 'option_key', true );
 
 						if ( '' === $field_name ) {
@@ -640,7 +640,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		<script>
 			(function ($) {
 				$(function () {
-					var hashPrefix = <?php echo json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) ?>,
+					var hashPrefix = <?php echo wp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) // xss ok ?>,
 					    hashFieldName = "",
 					    fieldNames = [],
 					    $select2Choices = {},

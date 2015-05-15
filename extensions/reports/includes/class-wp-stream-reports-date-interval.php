@@ -3,7 +3,7 @@
 class WP_Stream_Reports_Date_Interval extends WP_Stream_Date_Interval {
 
 	/**
-	 * Hold WP_Stream_Reports_Date_Interval instance
+	 * Hold class instance
 	 *
 	 * @var string
 	 */
@@ -23,6 +23,19 @@ class WP_Stream_Reports_Date_Interval extends WP_Stream_Date_Interval {
 
 		// Register all ajax action and check referer for this class
 		WP_Stream_Reports::handle_ajax_request( $ajax_hooks, $this );
+	}
+
+	/**
+	 * Return an active instance of this class, and create one if it doesn't exist
+	 *
+	 * @return WP_Stream_Reports_Date_Interval
+	 */
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**
@@ -49,19 +62,6 @@ class WP_Stream_Reports_Date_Interval extends WP_Stream_Date_Interval {
 		}
 
 		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'interval', $interval );
-	}
-
-	/**
-	 * Return active instance of WP_Stream_Reports, create one if it doesn't exist
-	 *
-	 * @return WP_Stream_Reports
-	 */
-	public static function get_instance() {
-		if ( empty( self::$instance ) ) {
-			$class = __CLASS__;
-			self::$instance = new $class;
-		}
-		return self::$instance;
 	}
 
 }

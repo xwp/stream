@@ -186,8 +186,10 @@ abstract class WP_Stream_Connector {
 		$result = array_filter(
 			$result,
 			function( $value ) {
+				// @codingStandardsIgnoreStart
 				// check if is not valid number (is_int, is_numeric and ctype_digit are not enough)
 				return (string) (int) $value !== (string) $value;
+				// @codingStandardsIgnoreEnd
 			}
 		);
 
@@ -202,11 +204,9 @@ abstract class WP_Stream_Connector {
 		foreach ( $result as $key => $val ) {
 			if ( in_array( $key, $unique_keys_old ) ) {
 				$result[ $key ] = false; // Removed
-			}
-			elseif ( in_array( $key, $unique_keys_new ) ) {
+			} elseif ( in_array( $key, $unique_keys_new ) ) {
 				$result[ $key ] = true; // Added
-			}
-			elseif ( $deep ) { // Changed, find what changed, only if we're allowed to explore a new level
+			} elseif ( $deep ) { // Changed, find what changed, only if we're allowed to explore a new level
 				if ( is_array( $old_value[ $key ] ) && is_array( $new_value[ $key ] ) ) {
 					$inner  = array();
 					$parent = $key;

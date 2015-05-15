@@ -15,13 +15,6 @@ class WP_Stream_Notifications {
 	 */
 	public static $screen_id;
 
-	/**
-	 * Holds admin notices messages
-	 *
-	 * @var array
-	 */
-	public static $messages = array();
-
 	/*
 	 * List of registered adapters
 	 * @var array
@@ -52,14 +45,15 @@ class WP_Stream_Notifications {
 	const VIEW_CAP = 'view_stream_notifications';
 
 	/**
-	 * Return active instance of this class, create one if it doesn't exist
+	 * Return an active instance of this class, and create one if it doesn't exist
 	 *
 	 * @return WP_Stream_Notifications
 	 */
 	public static function get_instance() {
-		if ( empty( self::$instance ) ) {
+		if ( ! self::$instance ) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 
@@ -85,38 +79,79 @@ class WP_Stream_Notifications {
 
 	/**
 	 * Load our classes, actions/filters, only if our big brother is activated.
-	 * GO GO GO!
 	 *
 	 * @return void
 	 */
 	public function load() {
+		/**
+		 * Filter to disallow access to Stream Notifications
+		 *
+		 * @return bool
+		 */
+		$disallow = apply_filters( 'wp_stream_notifications_disallow_site_access', false );
+
 		// Register new submenu
-		if ( ! apply_filters( 'wp_stream_notifications_disallow_site_access', false ) && ! WP_Stream_Admin::$disable_access && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
+		if ( ! $disallow && ! WP_Stream_Admin::$disable_access && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
 			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		}
 
 		// Load settings, enabling extensions to hook in
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-settings.php';
+
 		add_action( 'init', array( 'WP_Stream_Notifications_Settings', 'load' ), 9 );
 
 		if ( WP_Stream::$api->is_restricted() ) {
 			add_action( 'in_admin_header', array( __CLASS__, 'in_admin_header' ) );
+
 			return;
 		}
 
-		// Include all adapters
-		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-adapter.php';
-		$adapters = array( 'email', 'push', 'sms' );
+		// Load adapter parent class
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-adapter.php';
 
+		/**
+		 * Filter the Stream Notification adapters that will be made available
+		 *
+		 * To include a custom adapter located outside the main adapter directory,
+		 * simply add it as an array within the array, with a key being the slug name
+		 * and a value being the path to the file:
+		 *
+		 * e.g. array( 'custom-adapter' => '/path/to/custom-adapter.php' )
+		 *
+		 * @return array
+		 */
+		$adapters = apply_filters( 'wp_stream_notifications_adapters', array( 'email', 'push', 'sms' ) );
+
+		// Load all adapters
 		foreach ( $adapters as $adapter ) {
-			include WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/class-wp-stream-notifications-adapter-' . $adapter . '.php';
+			if ( is_array( $adapter ) ) {
+				$path = array_shift( $adapter );
+
+				if ( file_exists( $path ) ) {
+					include_once $path;
+				}
+			} else {
+				$path = WP_STREAM_NOTIFICATIONS_INC_DIR . 'adapters/class-wp-stream-notifications-adapter-' . $adapter . '.php';
+
+				if ( file_exists( $path ) ) {
+					include_once $path;
+				}
+			}
 		}
 
-		// Load Matcher
-		include_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-matcher.php';
+		// Load matcher
+		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-matcher.php';
+
 		$this->matcher = new WP_Stream_Notifications_Matcher();
 	}
 
+	/**
+	 * Display extension preview info
+	 *
+	 * @action in_admin_header
+	 *
+	 * @return void
+	 */
 	public static function in_admin_header() {
 		global $typenow;
 
@@ -126,15 +161,15 @@ class WP_Stream_Notifications {
 		?>
 		<div class="stream-example">
 			<div class="stream-example-modal">
-				<h1><i class="dashicons dashicons-admin-comments"></i> <?php _e( 'Stream Notifications', 'stream' ) ?></h1>
-				<p><?php _e( 'Get notified instantly when important changes are made on your site.', 'stream' ) ?></p>
+				<h1><i class="dashicons dashicons-admin-comments"></i> <?php esc_html_e( 'Stream Notifications', 'stream' ) ?></h1>
+				<p><?php esc_html_e( 'Get notified instantly when important changes are made on your site.', 'stream' ) ?></p>
 				<ul>
-					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Create notification rules quickly and easily', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Smart and powerful trigger matching', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Fully customized e-mail and SMS alerts', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php _e( 'Push alerts to your smartphone or tablet', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Create notification rules quickly and easily', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Smart and powerful trigger matching', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Fully customized e-mail and SMS alerts', 'stream' ) ?></li>
+					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Push alerts to your smartphone or tablet', 'stream' ) ?></li>
 				</ul>
-				<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php _e( 'Upgrade to Pro', 'stream' ) ?></a>
+				<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php esc_html_e( 'Upgrade to Pro', 'stream' ) ?></a>
 			</div>
 		</div>
 		<?php
@@ -144,13 +179,14 @@ class WP_Stream_Notifications {
 	 * Register Notification menu under Stream's main one
 	 *
 	 * @action admin_menu
+	 *
 	 * @return void
 	 */
 	public function register_menu() {
 		self::$screen_id = add_submenu_page(
 			WP_Stream_Admin::RECORDS_PAGE_SLUG,
-			__( 'Notifications', 'stream' ),
-			__( 'Notifications', 'stream' ),
+			esc_html__( 'Notifications', 'stream' ),
+			esc_html__( 'Notifications', 'stream' ),
 			self::VIEW_CAP,
 			sprintf( 'edit.php?post_type=%s', WP_Stream_Notifications_Post_Type::POSTTYPE )
 		);
@@ -164,29 +200,14 @@ class WP_Stream_Notifications {
 	}
 
 	/**
-	 * Display all messages on admin board
+	 * Do things when being set up for the first time
 	 *
 	 * @return void
 	 */
-	public static function admin_notices() {
-		foreach ( self::$messages as $message ) {
-			echo wp_kses_post( $message );
-		}
-	}
-
-	/**
-	 * Plugin activation routine
-	 * @return void
-	 */
 	public function on_activation() {
-		// Add sample rule
-		$args = array(
-			'post_type'      => WP_Stream_Notifications_Post_Type::POSTTYPE,
-			'post_status'    => 'any',
-			'posts_per_page' => 1,
-		);
+		$rules = array_sum( (array) wp_count_posts( WP_Stream_Notifications_Post_Type::POSTTYPE ) );
 
-		if ( ! get_posts( $args ) ) {
+		if ( empty( $rules ) ) {
 			$this->add_sample_rule();
 		}
 	}
@@ -194,10 +215,11 @@ class WP_Stream_Notifications {
 	/**
 	 * Add a sample rule, used upon activation
 	 *
+	 * @return void
 	 */
 	public function add_sample_rule() {
 		$postarr = array(
-			'post_title'  => __( 'Sample Rule', 'stream' ),
+			'post_title'  => esc_html__( 'Sample Rule', 'stream' ),
 			'post_status' => 'draft',
 			'post_type'   => WP_Stream_Notifications_Post_Type::POSTTYPE,
 		);
@@ -251,8 +273,8 @@ class WP_Stream_Notifications {
 					'type'    => 'email',
 					'users'   => '1',
 					'emails'  => '',
-					'subject' => sprintf( __( '[Site Activity Alert] %s', 'stream' ), get_bloginfo( 'name' ) ),
-					'message' => sprintf( __( 'The following just happened on your site: %s by %s Date of action: %s', 'stream' ), "\r\n\r\n{summary}", "{author.display_name}\r\n\r\n", '{created}' )
+					'subject' => sprintf( esc_html__( '[Site Activity Alert] %s', 'stream' ), get_bloginfo( 'name' ) ),
+					'message' => sprintf( esc_html__( 'The following just happened on your site: %s by %s Date of action: %s', 'stream' ), "\r\n\r\n{summary}", "{author.display_name}\r\n\r\n", '{created}' )
 				),
 			),
 		);

@@ -130,7 +130,7 @@ class WP_Stream_API {
 		if ( $site && ! is_wp_error( $site ) ) {
 			$is_restricted = ( ! isset( $site->plan->type ) || 'free' === $site->plan->type ) ? 1 : 0;
 
-			if ( self::$restricted !== (bool) $is_restricted ) {
+			if ( (bool) $is_restricted !== self::$restricted ) {
 				self::$restricted = $is_restricted;
 
 				update_option( self::RESTRICTED_OPTION_KEY, $is_restricted );
@@ -161,9 +161,9 @@ class WP_Stream_API {
 
 		// Only check the beginning of these type strings
 		if ( 0 === strpos( $type, 'pro' ) ) {
-			$label = __( 'Pro', 'stream' );
+			$label = esc_html__( 'Pro', 'stream' );
 		} else {
-			$label = __( 'Free', 'stream' );
+			$label = esc_html__( 'Free', 'stream' );
 		}
 
 		return $label;
@@ -189,7 +189,7 @@ class WP_Stream_API {
 		$retention = WP_Stream::$api->get_plan_retention();
 
 		if ( 0 === $retention ) {
-			$label = __( '1 Year', 'stream' );
+			$label = esc_html__( '1 Year', 'stream' );
 		} else {
 			$label = sprintf(
 				_n( '1 Day', '%s Days', $retention, 'stream' ),
@@ -231,7 +231,7 @@ class WP_Stream_API {
 		$site        = WP_Stream::$api->get_site();
 		$date_format = get_option( 'date_format' );
 
-		return isset( $site->created ) ? date_i18n( $date_format, strtotime( $site->created ) ) : __( 'N/A', 'stream' );
+		return isset( $site->created ) ? date_i18n( $date_format, strtotime( $site->created ) ) : esc_html__( 'N/A', 'stream' );
 	}
 
 	/**
@@ -243,7 +243,7 @@ class WP_Stream_API {
 		$site        = WP_Stream::$api->get_site();
 		$date_format = get_option( 'date_format' );
 
-		return isset( $site->expiry->date ) ? date_i18n( $date_format, strtotime( $site->expiry->date ) ) : __( 'N/A', 'stream' );
+		return isset( $site->expiry->date ) ? date_i18n( $date_format, strtotime( $site->expiry->date ) ) : esc_html__( 'N/A', 'stream' );
 	}
 
 	/**
@@ -317,7 +317,7 @@ class WP_Stream_API {
 		}
 
 		$url  = $this->request_url( sprintf( '/sites/%s/records', urlencode( $this->site_uuid ) ) );
-		$args = array( 'method' => 'POST', 'body' => json_encode( array( 'records' => $records ) ), 'blocking' => (bool) $blocking );
+		$args = array( 'method' => 'POST', 'body' => wp_stream_json_encode( array( 'records' => $records ) ), 'blocking' => (bool) $blocking );
 
 		return $this->remote_request( $url, $args );
 	}
@@ -345,7 +345,7 @@ class WP_Stream_API {
 		$body['search_type'] = ! empty( $search_type ) ? $search_type : '';
 
 		$url  = $this->request_url( '/search' );
-		$args = array( 'method' => 'POST', 'body' => json_encode( (object) $body ) );
+		$args = array( 'method' => 'POST', 'body' => wp_stream_json_encode( (object) $body ) );
 
 		return $this->remote_request( $url, $args, $allow_cache, $expiration );
 	}
@@ -368,7 +368,7 @@ class WP_Stream_API {
 	}
 
 	/**
-	 * Helper function to query the marketplace API via wp_remote_request.
+	 * Helper function to query the marketplace API via wp_safe_remote_request.
 	 *
 	 * @param string The url to access.
 	 * @param string The method of the request.
@@ -376,7 +376,7 @@ class WP_Stream_API {
 	 * @param bool   Allow API calls to be cached.
 	 * @param int    Set transient expiration in seconds.
 	 *
-	 * @return object The results of the wp_remote_request request.
+	 * @return object The results of the wp_safe_remote_request request.
 	 */
 	protected function remote_request( $url = '', $args = array(), $allow_cache = true, $expiration = 300 ) {
 		if ( empty( $url ) || empty( $this->api_key ) ) {
@@ -407,12 +407,12 @@ class WP_Stream_API {
 
 		if ( 'GET' === $args['method'] && $allow_cache ) {
 			if ( false === ( $request = get_transient( $transient ) ) ) {
-				$request = wp_remote_request( $url, $args );
+				$request = wp_safe_remote_request( $url, $args );
 
 				set_transient( $transient, $request, $expiration );
 			}
 		} else {
-			$request = wp_remote_request( $url, $args );
+			$request = wp_safe_remote_request( $url, $args );
 		}
 
 		remove_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10 );
@@ -455,7 +455,7 @@ class WP_Stream_API {
 		} else {
 			$this->errors['errors']['remote_request_error'] = $request->get_error_message();
 
-			WP_Stream::notice( sprintf( '<strong>%s</strong> %s.', __( 'Stream API Error.', 'stream' ), $this->errors['errors']['remote_request_error'] ) );
+			WP_Stream::notice( sprintf( '<strong>%s</strong> %s.', esc_html__( 'Stream API Error.', 'stream' ), $this->errors['errors']['remote_request_error'] ) );
 		}
 
 		if ( ! empty( $this->errors ) ) {
