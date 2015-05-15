@@ -10,6 +10,13 @@ class WP_Stream_Log {
 	public static $instance;
 
 	/**
+	 * Hold event transaction object
+	 *
+	 * @var object
+	 */
+	private static $transaction;
+
+	/**
 	 * Load log handler class, filterable by extensions
 	 *
 	 * @return void
@@ -24,7 +31,11 @@ class WP_Stream_Log {
 		 */
 		$log_handler = apply_filters( 'wp_stream_log_handler', __CLASS__ );
 
-		self::$instance = new $log_handler;
+		self::$instance    = new $log_handler;
+		self::$transaction = new stdClass;
+
+		add_action( 'wp_loaded', array( __CLASS__, 'transaction_start' ), 999 );
+		add_action( 'shutdown', array( __CLASS__, 'transaction_reset' ), 999 );
 	}
 
 	/**
@@ -38,6 +49,33 @@ class WP_Stream_Log {
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * Start the transaction timer when WordPress is fully loaded
+	 *
+	 * @return void
+	 */
+	public static function transaction_start() {
+		self::$transaction->start = microtime( true );
+
+		/**
+		 * Fires immediately after the transaction timer has started
+		 *
+		 * @since 2.0.6
+		 *
+		 * @param int $transaction_start
+		 */
+		do_action( 'wp_stream_transaction_start', self::$transaction->start );
+	}
+
+	/**
+	 * Reset the transaction timer on shutdown
+	 *
+	 * @return void
+	 */
+	public static function transaction_reset() {
+		self::$transaction->start = null;
 	}
 
 	/**
@@ -133,6 +171,26 @@ class WP_Stream_Log {
 			'stream_meta' => (array) $stream_meta,
 			'ip'          => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
+
+		// Stop the transaction timer and add values to record meta
+		if ( ! empty( self::$transaction->start ) ) {
+			self::$transaction->stop = microtime( true );
+			self::$transaction->time = round( self::$transaction->stop - self::$transaction->start, 3 ) * 1000; // Use milliseconds
+
+			$recordarr['stream_meta']['transaction_start'] = self::$transaction->start;
+			$recordarr['stream_meta']['transaction_stop']  = self::$transaction->stop;
+			$recordarr['stream_meta']['transaction_time']  = self::$transaction->time;
+
+			/**
+			 * Fires immediately after the transaction timer has stopped
+			 *
+			 * @since 2.0.6
+			 *
+			 * @param object $transaction
+			 * @param array  $recordarr
+			 */
+			do_action( 'wp_stream_transaction_stop', self::$transaction, $recordarr );
+		}
 
 		$result = WP_Stream::$db->store( array( $recordarr ) );
 
