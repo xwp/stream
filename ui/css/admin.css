@@ -679,13 +679,13 @@ body.folded .stream-example {
 
 /* Account Page */
 
-.stream_page_wp_stream_account .postbox {
+.wp_stream_account .postbox {
 	display: inline-block;
 	margin-top: 1em;
 	max-width: 100%;
 }
 
-.stream_page_wp_stream_account .postbox h3 {
+.wp_stream_account .postbox h3 {
 	margin: 0;
 	padding: 8px 12px;
 	font-size: 14px;
@@ -693,16 +693,16 @@ body.folded .stream-example {
 	border-bottom:1px solid #eee;
 }
 
-.stream_page_wp_stream_account .postbox .form-table {
+.wp_stream_account .postbox .form-table {
 	margin: 0;
 	max-width: 100%;
 }
 
-.stream_page_wp_stream_account .plan-details {
+.wp_stream_account .plan-details {
 	padding: 0 12px;
 }
 
-.stream_page_wp_stream_account .plan-actions {
+.wp_stream_account .plan-actions {
 	min-height: 30px;
 	padding: 10px;
 	clear: both;
@@ -710,11 +710,11 @@ body.folded .stream-example {
 	background: #f5f5f5;
 }
 
-.stream_page_wp_stream_account .disconnect {
+.wp_stream_account .disconnect {
 	float: right;
 	line-height: 28px;
 }
 
-.stream_page_wp_stream_account .api-key {
+.wp_stream_account .api-key {
 	word-wrap: break-word;
 }

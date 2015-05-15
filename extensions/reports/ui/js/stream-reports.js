@@ -749,17 +749,17 @@
 			$( '#chart_height_apply' )
 		);
 
-		$( '.stream_page_wp_stream_reports .postbox' ).each( function() {
+		$( '.wp_stream_reports .postbox' ).each( function() {
 			var id = $( this ).find( '.section-id' ).val();
 			$( this ).data( 'section-id', id );
 		});
 
 		stream.report.chart.init(
-			$( '.stream_page_wp_stream_reports .chart' ),
+			$( '.wp_stream_reports .chart' ),
 			$( '.columns-prefs input[type="radio"]' )
 		);
 
-		$( '.stream_page_wp_stream_reports .chart' ).each( function() {
+		$( '.wp_stream_reports .chart' ).each( function() {
 			stream.report.chart.loadSection( $( this ).parents( '.postbox' ) );
 		});
 

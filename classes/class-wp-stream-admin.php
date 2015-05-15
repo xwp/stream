@@ -262,18 +262,36 @@ class WP_Stream_Admin {
 				apply_filters( 'wp_stream_menu_position', '2.999999' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
 			);
 
+			/**
+			 * Filter the Settings admin page title
+			 *
+			 * @since 1.4.0
+			 *
+			 * @return string
+			 */
+			$settings_page_title = apply_filters( 'wp_stream_settings_form_title', esc_html__( 'Stream Settings', 'stream' ) );
+
 			self::$screen_id['settings'] = add_submenu_page(
 				self::RECORDS_PAGE_SLUG,
-				esc_html__( 'Stream Settings', 'stream' ),
+				$settings_page_title,
 				esc_html__( 'Settings', 'stream' ),
 				self::SETTINGS_CAP,
 				self::SETTINGS_PAGE_SLUG,
 				array( __CLASS__, 'render_settings_page' )
 			);
 
+			/**
+			 * Filter the Account admin page title
+			 *
+			 * @since 2.0.0
+			 *
+			 * @return string
+			 */
+			$account_page_title = apply_filters( 'wp_stream_account_page_title', esc_html__( 'Stream Account', 'stream' ) );
+
 			self::$screen_id['account'] = add_submenu_page(
 				self::RECORDS_PAGE_SLUG,
-				esc_html__( 'Stream Account', 'stream' ),
+				$account_page_title,
 				esc_html__( 'Account', 'stream' ),
 				self::SETTINGS_CAP,
 				self::ACCOUNT_PAGE_SLUG,
@@ -453,32 +471,42 @@ class WP_Stream_Admin {
 	 *
 	 * @filter admin_body_class
 	 *
-	 * @param  string $classes
+	 * @param string $classes
 	 *
-	 * @return string $classes
+	 * @return string
 	 */
 	public static function admin_body_class( $classes ) {
+		$stream_classes = array();
+
 		if ( self::is_stream_screen() ) {
-			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
+			$stream_classes[] = self::ADMIN_BODY_CLASS;
 
 			if ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) {
-				$classes .= ' wp_stream_connected ';
+				$stream_classes[] = 'wp_stream_connected';
 			} else {
-				$classes .= ' wp_stream_disconnected ';
+				$stream_classes[] = 'wp_stream_disconnected';
 			}
 
 			if ( WP_Stream::$api->is_restricted() ) {
-				$classes .= ' wp_stream_restricted ';
+				$stream_classes[] = 'wp_stream_restricted';
+			}
+
+			if ( isset( $_GET['page'] ) ) {
+				$stream_classes[] = sanitize_key( $_GET['page'] );
 			}
 		}
 
-		$settings_pages = array( self::SETTINGS_PAGE_SLUG );
+		/**
+		 * Filter the Stream admin body classes
+		 *
+		 * @since 2.0.6
+		 *
+		 * @return array
+		 */
+		$stream_classes = apply_filters( 'wp_stream_admin_body_classes', $stream_classes );
+		$stream_classes = implode( ' ', array_map( 'trim', $stream_classes ) );
 
-		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $settings_pages ) ) {
-			$classes .= sprintf( ' %s ', self::SETTINGS_PAGE_SLUG );
-		}
-
-		return $classes;
+		return sprintf( '%s %s ', $classes, $stream_classes );
 	}
 
 	/**
@@ -668,11 +696,16 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_settings_page() {
-
 		$option_key  = WP_Stream_Settings::$option_key;
 		$form_action = apply_filters( 'wp_stream_settings_form_action', admin_url( 'options.php' ) );
 
-		$page_title       = apply_filters( 'wp_stream_settings_form_title', get_admin_page_title() );
+		/**
+		 *
+		 *
+		 * @since
+		 *
+		 * @return string
+		 */
 		$page_description = apply_filters( 'wp_stream_settings_form_description', '' );
 
 		$sections   = WP_Stream_Settings::get_fields();
@@ -681,7 +714,7 @@ class WP_Stream_Admin {
 		wp_enqueue_script( 'stream-settings', WP_STREAM_URL . 'ui/js/settings.js', array( 'jquery' ), WP_Stream::VERSION, true );
 		?>
 		<div class="wrap">
-			<h2><?php echo esc_html( $page_title ) ?></h2>
+			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
 
 			<?php if ( ! empty( $page_description ) ) : ?>
 				<p><?php echo esc_html( $page_description ) ?></p>
@@ -730,7 +763,6 @@ class WP_Stream_Admin {
 	 * @return void
 	 */
 	public static function render_account_page() {
-		$page_title           = apply_filters( 'wp_stream_account_page_title', get_admin_page_title() );
 		$date_format          = get_option( 'date_format' );
 		$site                 = WP_Stream::$api->get_site();
 		$plan_type            = WP_Stream::$api->get_plan_type();
@@ -742,7 +774,7 @@ class WP_Stream_Admin {
 		$created_date         = WP_Stream::$api->get_created_date();
 		?>
 		<div class="wrap">
-			<h2><?php echo esc_html( $page_title ) ?></h2>
+			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
 			<div class="postbox">
 		<?php
 		if ( ! $site ) {
