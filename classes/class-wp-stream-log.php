@@ -190,6 +190,9 @@ class WP_Stream_Log {
 			 * @param array  $recordarr
 			 */
 			do_action( 'wp_stream_transaction_stop', self::$transaction, $recordarr );
+
+			// Restart the timer to properly time any subsequent bulk actions
+			self::transaction_start();
 		}
 
 		$result = WP_Stream::$db->store( array( $recordarr ) );
