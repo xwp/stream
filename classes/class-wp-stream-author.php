@@ -233,7 +233,7 @@ class WP_Stream_Author {
 	 */
 	static function is_doing_wp_cron() {
 		return (
-			wp_stream_is_wp_cron_enabled()
+			WP_Stream::is_wp_cron_enabled()
 			&&
 			defined( 'DOING_CRON' )
 			&&

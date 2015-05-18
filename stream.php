@@ -206,15 +206,6 @@ class WP_Stream {
 	}
 
 	/**
-	 * Check if Stream is running on WordPress.com VIP
-	 *
-	 * @return bool
-	 */
-	public static function is_vip() {
-		return function_exists( 'wpcom_vip_load_plugin' );
-	}
-
-	/**
 	 * Display admin notices when deprecated extension plugins exist
 	 *
 	 * @return void
@@ -327,6 +318,24 @@ class WP_Stream {
 		 * @return bool
 		 */
 		return apply_filters( 'wp_stream_development_mode', $development_mode );
+	}
+
+	/**
+	 * Check if Stream is running on WordPress.com VIP
+	 *
+	 * @return bool
+	 */
+	public static function is_vip() {
+		return function_exists( 'wpcom_vip_load_plugin' );
+	}
+
+	/**
+	 * True if native WP Cron is enabled, otherwise false
+	 *
+	 * @return bool
+	 */
+	public static function is_wp_cron_enabled() {
+		return ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
 	}
 
 	/**
