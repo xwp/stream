@@ -27,6 +27,14 @@ class WP_StreamTestCase extends WP_UnitTestCase {
 	 */
 	function setUp() {
 		parent::setUp();
+
+		$_SERVER['SERVER_NAME'] = 'phpunit';
+		$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
+		// Set the Stream API account details
+		WP_Stream::$api->api_key = getenv('API_KEY');
+		WP_Stream::$api->site_uuid = getenv('SITE_UUID');
+
 		$this->plugin = $GLOBALS['wp_stream'];
 	}
 

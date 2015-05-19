@@ -49,6 +49,7 @@ class WP_Stream_Query {
 			'orderby'               => 'date',
 			// Meta/Taxonomy sub queries
 			'meta'                  => array(),
+			'author_meta'           => array(),
 			// Data aggregations
 			'aggregations'          => array(),
 			// Fields selection
@@ -219,19 +220,27 @@ class WP_Stream_Query {
 
 		// PARSE META
 		if ( $args['meta'] ) {
-			$meta = (array) $args['meta'];
-			foreach ( $meta as $key => $values ) {
+			foreach ( (array) $args['meta'] as $key => $values ) {
+				$key = sprintf( 'stream_meta.%s', $key );
+
 				if ( ! is_array( $values ) ) {
-					$values = (array) $values;
+					$filters[]['term'][ $key ] = $values;
+				} else {
+					$filters[]['terms'][ $key ] = $values;
 				}
-				$filters[]['nested'] = array(
-					'path'   => 'stream_meta',
-					'filter' => array(
-						'terms' => array(
-							$key => $values,
-						),
-					),
-				);
+			}
+		}
+
+		// PARSE AUTHOR META
+		if ( $args['author_meta'] ) {
+			foreach ( (array) $args['author_meta'] as $key => $values ) {
+				$key = sprintf( 'author_meta.%s', $key );
+
+				if ( ! is_array( $values ) ) {
+					$filters[]['term'][ $key ] = $values;
+				} else {
+					$filters[]['terms'][ $key ] = $values;
+				}
 			}
 		}
 
