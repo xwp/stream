@@ -673,7 +673,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 					);
 
 					foreach ( $_fields as $field ) {
-						$title = isset( $field['title'] ) ? $field['title'] : $field['desc'];
+						$title = isset( $field['title'] ) ? $field['title'] : ( isset( $field['desc'] ) ? $field['desc'] : 'N/A' );
 						$fields[ $field['id'] ] = array(
 							'title'   => $title,
 							'page'    => 'wc-settings',
