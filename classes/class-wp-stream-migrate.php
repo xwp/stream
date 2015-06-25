@@ -175,6 +175,31 @@ class WP_Stream_Migrate {
 	}
 
 	/**
+	 * Determine where and when the migrate notice should be displayed
+	 *
+	 * @see WP_Stream_Admin::admin_enqueue_scripts()
+	 *
+	 * @return bool
+	 */
+	public static function show_migrate_notice() {
+		if (
+			! isset( $_GET['migrate_action'] )
+			&&
+			self::is_connected()
+			&&
+			WP_Stream_Admin::is_stream_screen()
+			&&
+			! empty( self::$record_count )
+			&&
+			false === get_transient( 'wp_stream_migrate_delayed' )
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Give the user options for how to handle their records
 	 *
 	 * @action admin_notices
@@ -182,17 +207,7 @@ class WP_Stream_Migrate {
 	 * @return void
 	 */
 	public static function migrate_notice() {
-		if (
-			isset( $_GET['migrate_action'] )
-			||
-			! self::is_connected()
-			||
-			! WP_Stream_Admin::is_stream_screen()
-			||
-			empty( self::$record_count )
-			||
-			false !== get_transient( 'wp_stream_migrate_delayed' )
-		) {
+		if ( ! self::show_migrate_notice() ) {
 			return;
 		}
 
