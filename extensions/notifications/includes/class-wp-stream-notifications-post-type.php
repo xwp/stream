@@ -679,7 +679,7 @@ class WP_Stream_Notifications_Post_Type {
 				'connector' => 'posts',
 				'options'   => array(
 					'0' => esc_html__( 'None', 'stream' ),
-					'1' => esc_html__( 'Has one', 'stream' )
+					'1' => esc_html__( 'Has one', 'stream' ),
 				),
 				'operators' => $default_operators,
 			),

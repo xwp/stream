@@ -171,7 +171,7 @@ class WP_Stream_Reports_Settings {
 		}
 
 		// Don't re-save if the value hasn't changed
-		if ( $user_options[ $key ] != $option ) {
+		if ( $user_options[ $key ] !== $option ) {
 			$user_options[ $key ] = $option;
 			$is_saved = update_user_option( get_current_user_id(), self::get_option_key(), $user_options );
 		} else {
