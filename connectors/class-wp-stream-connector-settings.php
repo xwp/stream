@@ -411,7 +411,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				},
 				'applicable'   => function( $submenu, $record ) {
 					return $record->context === 'wp_stream';
-				}
+				},
 			),
 			'background_header' => array(
 				'menu_slug'    => 'themes.php',
@@ -423,7 +423,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				},
 				'applicable'   => function( $submenu, $record ) {
 					return in_array( $record->context, array( 'custom_header', 'custom_background' ) );
-				}
+				},
 			),
 			'general' => array(
 				'menu_slug'    => 'options-general.php',
@@ -468,7 +468,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 				// The first applicable rule wins
 				$rule         = array_shift( $applicable_rules );
 				$menu_slug    = $rule['menu_slug'];
-				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceOf Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
+				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceof Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
 				$url          = $rule['url']( $rule, $record );
 
 				if ( isset( $submenu[ $menu_slug ] ) ) {

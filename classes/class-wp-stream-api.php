@@ -434,11 +434,19 @@ class WP_Stream_API {
 			$data = apply_filters( 'wp_stream_api_request_data', json_decode( $request['body'] ), $url, $args );
 
 			// Loose comparison needed
-			if ( 200 == $request['response']['code'] || 201 == $request['response']['code'] ) {
+			if (
+				200 === absint( $request['response']['code'] )
+				||
+				201 === absint( $request['response']['code'] )
+			) {
 				return $data;
 			} else {
 				// Disconnect if unauthorized or no longer exists, loose comparison needed
-				if ( 403 == $request['response']['code'] || 410 == $request['response']['code'] ) {
+				if (
+					403 === absint( $request['response']['code'] )
+					||
+					410 === absint( $request['response']['code'] )
+				) {
 					WP_Stream_Admin::remove_api_authentication();
 				}
 

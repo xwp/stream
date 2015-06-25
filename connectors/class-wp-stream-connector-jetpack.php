@@ -143,7 +143,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 
 				if ( Jetpack::is_module_active( $slug ) ) {
 					if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
-						$links[ esc_html__( 'Configure', 'stream' ) ] = Jetpack::module_configuration_url( $slug );;
+						$links[ esc_html__( 'Configure', 'stream' ) ] = Jetpack::module_configuration_url( $slug );
 					}
 
 					$links[ esc_html__( 'Deactivate', 'stream' ) ] = wp_nonce_url(
@@ -172,7 +172,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 				$slug = str_replace( 'jetpack-', '', $record->context ); // handling jetpack-comment anomaly
 
 				if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
-					$links[ esc_html__( 'Configure module', 'stream' ) ] = Jetpack::module_configuration_url( $slug );;
+					$links[ esc_html__( 'Configure module', 'stream' ) ] = Jetpack::module_configuration_url( $slug );
 				}
 			}
 		}
@@ -422,6 +422,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 * Track Monitor module notification status
 	 */
 	public static function callback_jetpack_module_configuration_load_monitor() {
+		// @codingStandardsIgnoreStart
 		if ( $_POST ) {
 			$active = wp_stream_filter_input( INPUT_POST, 'receive_jetpack_monitor_notification' );
 
@@ -438,6 +439,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 				'updated'
 			);
 		}
+		// @codingStandardsIgnoreEnd
 	}
 
 	public static function callback_wp_ajax_jetpack_post_by_email_enable() {
@@ -571,7 +573,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	}
 
 	public static function check_sharedaddy_disable_resources( $old_value, $new_value ) {
-		if ( $old_value == $new_value ) {
+		if ( $old_value === $new_value ) {
 			return;
 		}
 

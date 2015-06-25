@@ -63,7 +63,7 @@ function wp_stream_get_meta( $record, $meta_key = '', $single = false ) {
  *
  * @return string an ISO 8601 extended formatted time
  */
-function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 )	{
+function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 	if ( $time ) {
 		$microtime = (float) $time . '.0000';
 	} else {

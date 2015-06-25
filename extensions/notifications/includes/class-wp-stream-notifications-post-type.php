@@ -312,7 +312,10 @@ class WP_Stream_Notifications_Post_Type {
 			'alerts'   => array(),
 		);
 
+		// @codingStandardsIgnoreStart
 		$args = wp_parse_args( $_POST, $defaults );
+		// @codingStandardsIgnoreEnd
+
 		$meta = array_intersect_key( $args, array_flip( array( 'triggers', 'groups', 'alerts' ) ) );
 
 		foreach ( $meta as $key => $vals ) {
@@ -461,7 +464,7 @@ class WP_Stream_Notifications_Post_Type {
 		}
 
 		// Loose comparison needed
-		if ( empty( $id ) || (int) $id != $id ) {
+		if ( empty( $id ) || (int) $id !== $id ) {
 			wp_send_json_error( esc_html__( 'Invalid record ID', 'stream' ) );
 		}
 
@@ -686,7 +689,7 @@ class WP_Stream_Notifications_Post_Type {
 				'connector' => 'posts',
 				'options'   => array(
 					'open'   => esc_html__( 'Open', 'stream' ),
-					'closed' => esc_html__( 'Closed', 'stream' )
+					'closed' => esc_html__( 'Closed', 'stream' ),
 				),
 				'operators' => $default_operators,
 			),

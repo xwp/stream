@@ -2,12 +2,25 @@
 
 function wp_stream_reports_selector( $data_types, $args, $class ) {
 	$options  = array();
+
 	foreach ( $data_types as $key => $item ) {
 		$selected = false;
 
-		if ( isset( $item['connector'] ) && $item['connector'] == $args['connector_id'] && isset( $item['context'] ) && null == $item['context'] ) {
+		if (
+			isset( $item['connector'] )
+			&&
+			$item['connector'] === $args['connector_id']
+			&&
+			isset( $item['context'] )
+			&&
+			null === $item['context']
+		) {
 			$selected = true;
-		} else if ( isset( $item['action'] ) && $item['action'] == $args['action_id'] ) {
+		} elseif (
+			isset( $item['action'] )
+			&&
+			$item['action'] === $args['action_id']
+		) {
 			$selected = true;
 		}
 
@@ -17,17 +30,26 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 			'selected'  => selected( $selected, true, false ),
 			'disabled'  => isset( $item['disabled'] ) ? $item['disabled'] : null,
 			'class'     => isset( $item['children'] ) ? 'level-1' : null,
-
 			'connector' => isset( $item['connector'] ) ? $item['connector'] : null,
 			'context'   => isset( $item['context'] ) ? $item['context'] : null,
 			'action'    => isset( $item['action'] ) ? $item['action'] : null,
 		);
+
 		$options[] = wp_stream_reports_filter_option( $option_args );
 
 		if ( isset( $item['children'] ) ) {
 			foreach ( $item['children'] as $child_value => $child_item ) {
 				$selected = false;
-				if ( isset( $child_item['connector'] ) && $child_item['connector'] == $args['connector_id'] && isset( $child_item['context'] ) && $child_item['context'] == $args['context_id'] ) {
+
+				if (
+					isset( $child_item['connector'] )
+					&&
+					$child_item['connector'] === $args['connector_id']
+					&&
+					isset( $child_item['context'] )
+					&&
+					$child_item['context'] === $args['context_id']
+				) {
 					$selected = true;
 				}
 
@@ -37,11 +59,11 @@ function wp_stream_reports_selector( $data_types, $args, $class ) {
 					'selected'  => selected( $selected, true, false ),
 					'disabled'  => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
 					'class'     => 'level-2',
-
 					'connector' => isset( $child_item['connector'] ) ? $child_item['connector'] : null,
 					'context'   => isset( $child_item['context'] ) ? $child_item['context'] : null,
 					'action'    => isset( $child_item['action'] ) ? $child_item['action'] : null,
 				);
+
 				$options[] = wp_stream_reports_filter_option( $option_args );
 			}
 		}
@@ -79,6 +101,7 @@ function wp_stream_reports_filter_option( $args ) {
 	);
 
 	$args = wp_parse_args( $args, $defaults );
+
 	return sprintf(
 		'<option value="%s" %s %s %s %s %s class="%s">%s</option>',
 		esc_attr( $args['value'] ),
@@ -101,6 +124,7 @@ function wp_stream_reports_intervals_html() {
 		'start' => '',
 		'end'   => '',
 	);
+
 	$user_interval     = WP_Stream_Reports_Settings::get_user_options( 'interval', $default );
 	$save_interval_url = add_query_arg(
 		array_merge(

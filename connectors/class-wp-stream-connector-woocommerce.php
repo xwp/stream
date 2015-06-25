@@ -228,7 +228,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		$option_section = wp_stream_get_meta( $record, 'section', true );
 
 		if ( $option_key && $option_tab ) {
-			$text = sprintf( esc_html__( 'Edit WooCommerce %s', 'stream' ), $context_labels[ $record->context ] );;
+			$text = sprintf( esc_html__( 'Edit WooCommerce %s', 'stream' ), $context_labels[ $record->context ] );
 			$url  = add_query_arg(
 				array( 'page' => $option_page, 'tab' => $option_tab, 'section' => $option_section ),
 				admin_url( 'admin.php' ) // Not self_admin_url here, as WooCommerce doesn't exist in Network Admin
@@ -752,7 +752,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 
 			// Tools page
 			$tools_page = array(
-				'tools' => esc_html__( 'Tools', 'stream' )
+				'tools' => esc_html__( 'Tools', 'stream' ),
 			);
 
 			$settings_pages = array_merge( $settings_pages, $tools_page );

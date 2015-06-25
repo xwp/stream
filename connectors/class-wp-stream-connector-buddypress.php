@@ -577,6 +577,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			$group->name,
 		);
 
+		// @codingStandardsIgnoreStart
 		if ( $message ) {
 			// Do nothing
 		} elseif ( 'created' === $action ) {
@@ -601,6 +602,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		} else {
 			return;
 		}
+		// @codingStandardsIgnoreEnd
 
 		self::log(
 			vsprintf(
@@ -624,17 +626,21 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	public static function callback_groups_create_group( $group_id, $member, $group ) {
 		self::group_action( $group, 'created' );
 	}
+
 	public static function callback_groups_update_group( $group_id, $group ) {
 		self::group_action( $group, 'updated' );
 	}
+
 	public static function callback_groups_before_delete_group( $group_id ) {
 		self::$ignore_activity_bulk_deletion = true;
 		self::group_action( $group_id, 'deleted' );
 	}
+
 	public static function callback_groups_details_updated( $group_id ) {
 		self::$is_update = true;
 		self::group_action( $group_id, 'updated' );
 	}
+
 	public static function callback_groups_settings_updated( $group_id ) {
 		if ( self::$is_update ) {
 			return;
@@ -645,6 +651,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 	public static function callback_groups_leave_group( $group_id, $user_id ) {
 		self::group_action( $group_id, 'left', compact( 'user_id' ) );
 	}
+
 	public static function callback_groups_join_group( $group_id, $user_id ) {
 		self::group_action( $group_id, 'joined', compact( 'user_id' ) );
 	}
@@ -664,6 +671,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		);
 		self::group_action( $group_id, 'promoted', compact( 'user_id', 'status' ), $message );
 	}
+
 	public static function callback_groups_demote_member( $group_id, $user_id ) {
 		$group = groups_get_group( array( 'group_id' => $group_id ) );
 		$user = new WP_User( $user_id );
@@ -675,12 +683,15 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		);
 		self::group_action( $group_id, 'demoted', compact( 'user_id' ), $message );
 	}
+
 	public static function callback_groups_ban_member( $group_id, $user_id ) {
 		self::group_action( $group_id, 'banned', compact( 'user_id' ) );
 	}
+
 	public static function callback_groups_unban_member( $group_id, $user_id ) {
 		self::group_action( $group_id, 'unbanned', compact( 'user_id' ) );
 	}
+
 	public static function callback_groups_remove_member( $group_id, $user_id ) {
 		self::group_action( $group_id, 'removed', compact( 'user_id' ) );
 	}
@@ -690,6 +701,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			$field->name,
 		);
 
+		// @codingStandardsIgnoreStart
 		if ( $message ) {
 			// Do nothing
 		} elseif ( 'created' === $action ) {
@@ -701,6 +713,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		} else {
 			return;
 		}
+		// @codingStandardsIgnoreEnd
 
 		self::log(
 			vsprintf(
@@ -726,7 +739,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		self::field_action( $field, $action );
 	}
 
-	public static function callback_xprofile_fields_deleted_field( $field ){
+	public static function callback_xprofile_fields_deleted_field( $field ) {
 		self::field_action( $field, 'deleted' );
 	}
 
@@ -735,6 +748,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 			$group->name,
 		);
 
+		// @codingStandardsIgnoreStart
 		if ( $message ) {
 			// Do nothing
 		} elseif ( 'created' === $action ) {
@@ -746,6 +760,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		} else {
 			return;
 		}
+		// @codingStandardsIgnoreEnd
 
 		self::log(
 			vsprintf(
@@ -772,7 +787,7 @@ class WP_Stream_Connector_BuddyPress extends WP_Stream_Connector {
 		self::field_group_action( $group, $action );
 	}
 
-	public static function callback_xprofile_groups_deleted_group( $group ){
+	public static function callback_xprofile_groups_deleted_group( $group ) {
 		self::field_group_action( $group, 'deleted' );
 	}
 

@@ -238,7 +238,7 @@ class WP_Stream_Notifications {
 					'users'   => '1',
 					'emails'  => '',
 					'subject' => sprintf( esc_html__( '[Site Activity Alert] %s', 'stream' ), get_bloginfo( 'name' ) ),
-					'message' => sprintf( esc_html__( 'The following just happened on your site: %s by %s Date of action: %s', 'stream' ), "\r\n\r\n{summary}", "{author.display_name}\r\n\r\n", '{created}' )
+					'message' => sprintf( esc_html__( 'The following just happened on your site: %s by %s Date of action: %s', 'stream' ), "\r\n\r\n{summary}", "{author.display_name}\r\n\r\n", '{created}' ),
 				),
 			),
 		);

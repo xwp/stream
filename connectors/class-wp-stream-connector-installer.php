@@ -75,12 +75,16 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( 'wordpress' === $record->context && 'updated' === $record->action ) {
 			global $wp_version;
+
 			$version = wp_stream_get_meta( $record, 'new_version', true );
+
 			if ( $version === $wp_version ) {
 				$links[ esc_html__( 'About', 'stream' ) ] = admin_url( 'about.php?updated' );
 			}
+
 			$links[ esc_html__( 'View Release Notes', 'stream' ) ] = esc_url( sprintf( 'http://codex.wordpress.org/Version_%s', $version ) );
 		}
+
 		return $links;
 	}
 
@@ -109,6 +113,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 
 		if ( ! $success ) {
 			$errors = $upgrader->skin->result->errors;
+
 			list( $error ) = reset( $errors );
 		}
 
@@ -127,29 +132,36 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		if ( 'install' === $action ) {
 			if ( 'plugin' === $type ) {
 				$path = $upgrader->plugin_info();
+
 				if ( ! $path ) {
 					return;
 				}
+
 				$data    = get_plugin_data( $upgrader->skin->result['local_destination'] . '/' . $path );
 				$slug    = $upgrader->result['destination_name'];
 				$name    = $data['Name'];
 				$version = $data['Version'];
 			} else { // theme
 				$slug = $upgrader->theme_info();
+
 				if ( ! $slug ) {
 					return;
 				}
+
 				wp_clean_themes_cache();
+
 				$theme   = wp_get_theme( $slug );
 				$name    = $theme->name;
 				$version = $theme->version;
 			}
+
 			$action  = 'installed';
 			$message = _x(
 				'Installed %1$s: %2$s %3$s',
 				'Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
 				'stream'
 			);
+
 			$logs[]  = compact( 'slug', 'name', 'version', 'message', 'action' );
 		} elseif ( 'update' === $action ) {
 			$action  = 'updated';
@@ -158,8 +170,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
 				'stream'
 			);
+
 			if ( 'plugin' === $type ) {
-				if ( isset( $extra['bulk'] ) && true == $extra['bulk'] ) {
+				if ( isset( $extra['bulk'] ) && true === $extra['bulk'] ) {
 					$slugs = $extra['plugins'];
 				} else {
 					$slugs = array( $upgrader->skin->plugin );
@@ -176,11 +189,12 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
 				}
 			} else { // theme
-				if ( isset( $extra['bulk'] ) && true == $extra['bulk'] ) {
+				if ( isset( $extra['bulk'] ) && true === $extra['bulk'] ) {
 					$slugs = $extra['themes'];
 				} else {
 					$slugs = array( $upgrader->skin->theme );
 				}
+
 				foreach ( $slugs as $slug ) {
 					$theme       = wp_get_theme( $slug );
 					$stylesheet  = $theme['Stylesheet Dir'] . '/style.css';
@@ -205,6 +219,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			$old_version = isset( $log['old_version'] ) ? $log['old_version'] : null;
 			$message     = isset( $log['message'] ) ? $log['message'] : null;
 			$action      = isset( $log['action'] ) ? $log['action'] : null;
+
 			self::log(
 				$message,
 				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' ),
@@ -267,9 +282,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @todo Core needs a delete_theme hook
 	 */
 	public static function callback_delete_site_transient_update_themes() {
-
 		$backtrace = debug_backtrace();
 		$delete_theme_call = null;
+
 		foreach ( $backtrace as $call ) {
 			if ( isset( $call['function'] ) && 'delete_theme' === $call['function'] ) {
 				$delete_theme_call = $call;
@@ -306,7 +321,10 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			return false;
 		}
 
-		$type     = isset( $_POST['action2'] ) ? INPUT_POST : INPUT_GET;
+		// @codingStandardsIgnoreStart
+		$type = isset( $_POST['action2'] ) ? INPUT_POST : INPUT_GET;
+		// @codingStandardsIgnoreEnd
+
 		$plugins  = wp_stream_filter_input( $type, 'checked' );
 		$_plugins = self::get_plugins();
 

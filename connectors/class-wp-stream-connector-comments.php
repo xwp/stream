@@ -242,18 +242,20 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$post_id        = $comment->comment_post_ID;
 		$post_type      = get_post_type( $post_id );
 		$post_title     = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
-		$comment_status = ( 1 == $comment->comment_approved ) ? esc_html__( 'approved automatically', 'stream' ) : esc_html__( 'pending approval', 'stream' );
+		$comment_status = ( 1 === $comment->comment_approved ) ? esc_html__( 'approved automatically', 'stream' ) : esc_html__( 'pending approval', 'stream' );
 		$is_spam        = false;
 
 		// Auto-marked spam comments
 		$ak_tracking = isset( WP_Stream_Settings::$options['advanced_akismet_tracking'] ) ? WP_Stream_Settings::$options['advanced_akismet_tracking'] : false;
+
 		if ( class_exists( 'Akismet' ) && $ak_tracking && Akismet::matches_last_comment( $comment ) ) {
 			$ak_last_comment = Akismet::get_last_comment();
-			if ( 'true' == $ak_last_comment['akismet_result'] ) {
+			if ( 'true' === $ak_last_comment['akismet_result'] ) {
 				$is_spam        = true;
 				$comment_status = esc_html__( 'automatically marked as spam by Akismet', 'stream' );
 			}
 		}
+
 		$comment_type   = mb_strtolower( self::get_comment_type_label( $comment_id ) );
 
 		if ( $comment->comment_parent ) {

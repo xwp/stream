@@ -33,9 +33,13 @@ class WP_Stream_Dashboard_Widget {
 	}
 
 	public static function stream_activity_update_contents() {
+		// @codingStandardsIgnoreStart
 		$paged = ! empty( $_POST['stream-paged'] ) ? absint( $_POST['stream-paged'] ) : 1;
+		// @codingStandardsIgnoreEnd
+
 		self::stream_activity_contents( $paged );
-		die;
+
+		die();
 	}
 
 	/**
@@ -165,11 +169,14 @@ class WP_Stream_Dashboard_Widget {
 	public static function stream_activity_options() {
 		$options = get_option( 'dashboard_stream_activity_options', array() );
 
+		// @codingStandardsIgnoreStart
 		if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['dashboard_stream_activity_options'] ) ) {
 			$options['records_per_page'] = absint( $_POST['dashboard_stream_activity_options']['records_per_page'] );
-			$options['live_update']      = isset( $_POST['dashboard_stream_activity_options']['live_update'] ) ? 'on' : 'off';;
+			$options['live_update']      = isset( $_POST['dashboard_stream_activity_options']['live_update'] ) ? 'on' : 'off';
+
 			update_option( 'dashboard_stream_activity_options', $options );
 		}
+		// @codingStandardsIgnoreEnd
 
 		if ( ! isset( $options['records_per_page'] ) ) {
 			$options['records_per_page'] = 5;

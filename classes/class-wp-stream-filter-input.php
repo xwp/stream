@@ -27,6 +27,7 @@ class WP_Stream_Filter_Input {
 	public static function super( $type, $variable_name, $filter = null, $options = array() ) {
 		$super = null;
 
+		// @codingStandardsIgnoreStart
 		switch ( $type ) {
 			case INPUT_POST :
 				$super = $_POST;
@@ -44,6 +45,7 @@ class WP_Stream_Filter_Input {
 				$super = $_SERVER;
 				break;
 		}
+		// @codingStandardsIgnoreEnd
 
 		if ( is_null( $super ) ) {
 			throw new Exception( esc_html__( 'Invalid use, type must be one of INPUT_* family.', 'stream' ) );

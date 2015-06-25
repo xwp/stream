@@ -48,7 +48,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function no_items() {
-		if ( empty( $this->get_total_found_rows() ) ) {
+		$rows = $this->get_total_found_rows();
+
+		if ( empty( $rows ) ) {
 			?>
 			<div class="stream-list-table-no-items">
 				<p><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ) ?></p>
@@ -319,7 +321,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 						 * Also, note that the action name must include the $column_title registered
 						 * with wp_stream_register_column_defaults
 						 */
-						if ( $column_title == $column_name && has_filter( "wp_stream_insert_column_default-{$column_title}" ) ) {
+						if ( $column_title === $column_name && has_filter( "wp_stream_insert_column_default-{$column_title}" ) ) {
 							/**
 							 * Allows for the addition of content under a specified column.
 							 *
@@ -426,9 +428,9 @@ class WP_Stream_List_Table extends WP_List_Table {
 	public function get_term_title( $term, $type ) {
 		if ( isset( WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ] ) ) {
 			return WP_Stream_Connectors::$term_labels[ "stream_$type" ][ $term ];
-		} else {
-			return $term;
 		}
+
+		return $term;
 	}
 
 	/**
@@ -836,18 +838,21 @@ class WP_Stream_List_Table extends WP_List_Table {
 	static function set_screen_option( $dummy, $option, $value ) {
 		if ( 'edit_stream_per_page' === $option ) {
 			return $value;
-		} else {
-			return $dummy;
 		}
+
+		return $dummy;
 	}
 
 	static function set_live_update_option( $dummy, $option, $value ) {
 		if ( WP_Stream_Live_Update::USER_META_KEY === $option ) {
+			// @codingStandardsIgnoreStart
 			$value = $_POST[ WP_Stream_Live_Update::USER_META_KEY ];
+			// @codingStandardsIgnoreEnd
+
 			return $value;
-		} else {
-			return $dummy;
 		}
+
+		return $dummy;
 	}
 
 	public function screen_controls( $status, $args ) {

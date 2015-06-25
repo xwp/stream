@@ -20,13 +20,13 @@ class WP_Stream_Pointers {
 				'index.php'                                           => 'wpstream143_extensions',
 				'toplevel_page_' . WP_Stream_Admin::RECORDS_PAGE_SLUG => 'wpstream143_extensions',
 				'stream_page_' . WP_Stream_Admin::SETTINGS_PAGE_SLUG  => 'wpstream143_extensions',
-			)
+			),
 		);
 
 		self::$caps = array(
 			'WP_Stream_Pointers' => array(
 				'wpstream143_extensions' => array( 'install_plugins' ),
-			)
+			),
 		);
 	}
 

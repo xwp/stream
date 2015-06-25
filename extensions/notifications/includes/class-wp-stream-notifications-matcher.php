@@ -452,7 +452,7 @@ class WP_Stream_Notifications_Matcher {
 			$active_group = end( $current_group_chain );
 
 			// If the trigger goes to any other than actually opened group, we need to traverse the tree first
-			if ( $trigger['group'] != $active_group ) {
+			if ( $trigger['group'] !== $active_group ) {
 				$trigger_group_chain   = $this->generate_group_chain( $groups, $trigger['group'] );
 				$common_ancestors      = array_intersect( $current_group_chain, $trigger_group_chain );
 				$newly_inserted_groups = array_diff( $trigger_group_chain, $current_group_chain );
@@ -485,8 +485,9 @@ class WP_Stream_Notifications_Matcher {
 		// Our recurrent step
 		$recurrent_step = function ( $level, $i ) use ( $flattened_tree, &$recurrent_step ) {
 			$return = array();
+			$parts  = count( $flattened_tree );
 
-			for ( $i; $i < count( $flattened_tree ); $i ++ ) {
+			for ( $i; $i < $parts; $i ++ ) {
 				// If we're on the correct level, we're going to insert the node
 				if ( $flattened_tree[ $i ]['level'] === $level ) {
 					if ( 'trigger' === $flattened_tree[ $i ]['type'] ) {

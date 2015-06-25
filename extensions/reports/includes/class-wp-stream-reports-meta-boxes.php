@@ -229,9 +229,12 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$configure_class = '';
+
 		if ( $args['is_new'] ) {
 			$configure_class = 'stream-reports-expand';
+
 			unset( self::$sections[ $key ]['is_new'] );
+
 			WP_Stream_Reports_Settings::update_user_option( 'sections', self::$sections );
 		}
 
@@ -282,6 +285,7 @@ class WP_Stream_Reports_Metaboxes {
 				$output = apply_filters( 'wp_stream_reports_get_label', $value, $grouping );
 				break;
 		}
+
 		return $output;
 	}
 
@@ -388,6 +392,7 @@ class WP_Stream_Reports_Metaboxes {
 			'connector' => 'connector_id',
 			'context'   => 'context_id',
 		);
+
 		foreach ( $available_args as $query_key => $args_key ) {
 			if ( isset( $args[ $args_key ] ) ) {
 				$query_args[ $query_key ] = $args[ $args_key ];
@@ -407,6 +412,7 @@ class WP_Stream_Reports_Metaboxes {
 		if ( 'author_role' === $selector ) {
 			foreach ( $records as $key => $record ) {
 				$user = get_userdata( $record->author );
+
 				if ( $user ) {
 					$record->author_role = join( ',', $user->roles );
 				} else if ( 0 === $record->author ) {
@@ -423,7 +429,7 @@ class WP_Stream_Reports_Metaboxes {
 		return apply_filters( 'wp_stream_reports_load_records', $records, $args );
 	}
 
-	protected function get_date_interval(){
+	protected function get_date_interval() {
 		$date             = new WP_Stream_Date_Interval();
 		$default_interval = array(
 			'key'   => 'all-time',
@@ -492,6 +498,7 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$title = sprintf( $string, $action, $dataset, $selector );
+
 		return $title;
 	}
 
@@ -512,6 +519,7 @@ class WP_Stream_Reports_Metaboxes {
 		);
 
 		$required_fields = array( 'id', 'title', 'chart_type', 'selector_id' );
+
 		foreach ( $required_fields as $key ) {
 			if ( null === $input[ $key ] ) {
 				wp_send_json_error( array( 'missing' => $key, 'value' => $input[ $key ] ) );
@@ -529,11 +537,9 @@ class WP_Stream_Reports_Metaboxes {
 	 * Instantly update chart based on user configuration
 	 */
 	public function update_metabox_display() {
-		$section_id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
-		$section    = $this->get_section( $section_id );
-
-		$args = $this->parse_section( $section );
-
+		$section_id  = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
+		$section     = $this->get_section( $section_id );
+		$args        = $this->parse_section( $section );
 		$chart_types = $this->get_chart_types();
 
 		if ( ! array_key_exists( $args['chart_type'], $chart_types ) ) {
@@ -567,7 +573,9 @@ class WP_Stream_Reports_Metaboxes {
 		$normal_order   = explode( ',', $order['normal'] );
 
 		array_unshift( $normal_order, $new_section_id );
+
 		$order['normal'] = join( ',', $normal_order );
+
 		update_user_option( get_current_user_id(), 'meta-box-order_stream_page_' . WP_Stream_Reports::REPORTS_PAGE_SLUG, $order, true );
 
 		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'sections', self::$sections );
@@ -599,6 +607,7 @@ class WP_Stream_Reports_Metaboxes {
 			// Remove the one we are deleting from the list
 			foreach ( $user_options as $key => &$string ) {
 				$order = explode( ',', $string );
+
 				if ( false !== ( $key = array_search( self::META_PREFIX . $meta_key, $order ) ) ) {
 					unset( $order[ $key ] );
 					$string = implode( ',', $order );
@@ -617,7 +626,7 @@ class WP_Stream_Reports_Metaboxes {
 		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'sections', self::$sections );
 	}
 
-	public function save_chart_options(){
+	public function save_chart_options() {
 		$section_id = wp_stream_filter_input( INPUT_GET, 'section_id', FILTER_SANITIZE_NUMBER_INT );
 		$section    = $this->get_section( $section_id );
 		$type       = wp_stream_filter_input( INPUT_GET, 'update_type', FILTER_SANITIZE_STRING );
@@ -628,6 +637,7 @@ class WP_Stream_Reports_Metaboxes {
 			}
 
 			$payload = array();
+
 			foreach ( $_GET['update_payload'] as $key => $value ) {
 				if ( 'true' === $value ) {
 					$payload[] = absint( $key );
@@ -647,7 +657,7 @@ class WP_Stream_Reports_Metaboxes {
 		WP_Stream_Reports_Settings::ajax_update_user_option( 'sections', self::$sections );
 	}
 
-	public function save_chart_height(){
+	public function save_chart_height() {
 		$chart_height = wp_stream_filter_input( INPUT_GET, 'chart_height', FILTER_SANITIZE_NUMBER_INT );
 
 		if ( false === $chart_height ) {
@@ -662,6 +672,7 @@ class WP_Stream_Reports_Metaboxes {
 		$user_id = get_current_user_id();
 		$option  = WP_Stream_Reports_Settings::get_user_options( 'chart_height', 300 );
 		$nonce   = wp_create_nonce( 'wp_stream_reports_chart_height_nonce' );
+
 		ob_start();
 		?>
 		<fieldset>
@@ -695,14 +706,15 @@ class WP_Stream_Reports_Metaboxes {
 	}
 
 	public function get_contexts() {
-
 		// Add Connectors as parents, and apply the Contexts as children
 		$contexts   = $this->assemble_records( 'context' );
 		$connectors = $this->assemble_records( 'connector' );
+
 		foreach ( $connectors as $connector => $item ) {
 			$context_items[ $connector ]['label'] = $item['label'];
 			$context_items[ $connector ]['connector'] = $connector;
 			$context_items[ $connector ]['disabled'] = $item['disabled'];
+
 			foreach ( $contexts as $context_value => $context_item ) {
 				if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context_value, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
 					$context_items[ $connector ]['children'][ $context_value ] = $context_item;
@@ -719,24 +731,27 @@ class WP_Stream_Reports_Metaboxes {
 		}
 
 		$all_items = array(
-			'label' => __( 'All Contexts', 'stream' )
+			'label' => __( 'All Contexts', 'stream' ),
 		);
 
 		$new_array = apply_filters( 'wp_stream_reports_get_contexts', $context_items );
+
 		return array_merge( array( $all_items ), $new_array );
 	}
 
 	public function get_actions() {
 		$actions = $this->assemble_records( 'action' );
+
 		foreach ( $actions as $id => $item ) {
 			$actions[ $id ]['action'] = $id;
 		}
 
 		$all_actions = array(
-			'label' => __( 'All Actions', 'stream' )
+			'label' => __( 'All Actions', 'stream' ),
 		);
 
 		$new_array = array_merge( array( $all_actions ), $actions );
+
 		return apply_filters( 'wp_stream_reports_get_actions', $new_array );
 	}
 
@@ -752,8 +767,8 @@ class WP_Stream_Reports_Metaboxes {
 	 * @return array   options to be displayed in search filters
 	 */
 	function assemble_records( $column ) {
-
 		$available_columns = array( 'context', 'connector', 'action' );
+
 		if ( ! in_array( $column, $available_columns ) ) {
 			return;
 		}
@@ -780,11 +795,14 @@ class WP_Stream_Reports_Metaboxes {
 		$sort = function ( $a, $b ) use ( $column ) {
 			$label_a = (string) $a['label'];
 			$label_b = (string) $b['label'];
+
 			if ( $label_a === $label_b ) {
 				return 0;
 			}
+
 			return strtolower( $label_a ) < strtolower( $label_b ) ? -1 : 1;
 		};
+
 		uasort( $active_records, $sort );
 		uasort( $disabled_records, $sort );
 
@@ -816,6 +834,7 @@ class WP_Stream_Reports_Metaboxes {
 		if ( isset( $query_meta->aggregations ) ) {
 			foreach ( $query_meta->aggregations as $field => $aggregation ) {
 				$existing_records[ $field ] = array();
+
 				foreach ( $aggregation->buckets as $bucket ) {
 					$existing_records[ $field ][] = $bucket->key;
 				}
@@ -827,6 +846,7 @@ class WP_Stream_Reports_Metaboxes {
 
 	public function migrate_settings() {
 		$sections = self::$sections;
+
 		foreach ( $sections as $key => $args ) {
 			switch ( $args['data_group'] ) {
 				case  'action' :
@@ -858,9 +878,11 @@ class WP_Stream_Reports_Metaboxes {
 	public function find_connector_by_context( $context ) {
 		$output     = 'unknown';
 		$connectors = $this->assemble_records( 'connector' );
+
 		foreach ( $connectors as $connector => $item ) {
 			if ( isset( WP_Stream_Connectors::$contexts[ $connector ] ) && array_key_exists( $context, WP_Stream_Connectors::$contexts[ $connector ] ) ) {
 				$output = $connector;
+
 				break;
 			}
 		}
