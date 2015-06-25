@@ -36,10 +36,6 @@ class WP_Stream_Reports_Settings {
 		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
-		if ( WP_Stream::$api->is_restricted() ) {
-			return;
-		}
-
 		// Add Reports settings tab to Stream settings
 		add_filter( 'wp_stream_settings_option_fields', array( __CLASS__, '_register_settings' ) );
 	}

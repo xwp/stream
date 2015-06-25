@@ -203,14 +203,6 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @return bool Whether the option should be treated as a group
 	 */
 	public static function is_key_option_group( $key, $old_value, $value ) {
-		$not_grouped = array(
-			'wp_stream_connected_sites'
-		);
-
-		if ( in_array( $key, $not_grouped ) ) {
-			return false;
-		}
-
 		if ( ! is_array( $old_value ) && ! is_array( $value ) ) {
 			return false;
 		}
@@ -322,7 +314,6 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'user_count'                    => esc_html__( 'User Count', 'stream' ),
 			// Other
 			'wp_stream_db'                  => esc_html__( 'Stream Database Version', 'stream' ),
-			'wp_stream_connected_sites'     => esc_html__( 'Stream Connected Sites', 'stream' ),
 		);
 
 		if ( isset( $labels[ $field_key ] ) ) {

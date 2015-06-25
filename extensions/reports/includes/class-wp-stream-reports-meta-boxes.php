@@ -123,30 +123,7 @@ class WP_Stream_Reports_Metaboxes {
 		WP_Stream_Reports_Settings::update_user_option_and_redirect( 'interval', $interval );
 	}
 
-	public static function in_admin_header() {
-
-		?>
-		<div class="stream-example">
-			<div class="stream-example-modal">
-				<h1><i class="dashicons dashicons-chart-area"></i> <?php esc_html_e( 'Stream Reports', 'stream' ) ?></h1>
-				<p><?php esc_html_e( 'Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.', 'stream' ) ?></p>
-				<ul>
-					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Fully-interactive charts', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Monitor team contributions', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Responsive for any screen size', 'stream' ) ?></li>
-				</ul>
-				<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php esc_html_e( 'Upgrade to Pro', 'stream' ) ?></a>
-			</div>
-		</div>
-		<?php
-	}
-
 	public function load_page() {
-		if ( WP_Stream::$api->is_restricted() ) {
-			add_action( 'in_admin_header', array( __CLASS__, 'in_admin_header' ) );
-			return;
-		}
-
 		if ( is_admin() && WP_Stream_Reports_Settings::is_first_visit() ) {
 			$this->setup_user();
 		}

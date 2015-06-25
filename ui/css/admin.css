@@ -270,8 +270,12 @@
 	background-color: #f9f9f9 !important;
 }
 
-.toplevel_page_wp_stream #the-list .no-items .stream-list-table-upgrade {
+.toplevel_page_wp_stream #the-list .no-items .stream-list-table-no-items {
 	text-align: center;
+}
+
+.toplevel_page_wp_stream #the-list .no-items .stream-list-table-no-items p {
+	margin: 2px 0;
 }
 
 
@@ -674,47 +678,4 @@ body.folded .stream-example {
 
 #stream-delete-records:hover {
 	color: #f00;
-}
-
-
-/* Account Page */
-
-.wp_stream_account .postbox {
-	display: inline-block;
-	margin-top: 1em;
-	max-width: 100%;
-}
-
-.wp_stream_account .postbox h3 {
-	margin: 0;
-	padding: 8px 12px;
-	font-size: 14px;
-	line-height: 1.4;
-	border-bottom:1px solid #eee;
-}
-
-.wp_stream_account .postbox .form-table {
-	margin: 0;
-	max-width: 100%;
-}
-
-.wp_stream_account .plan-details {
-	padding: 0 12px;
-}
-
-.wp_stream_account .plan-actions {
-	min-height: 30px;
-	padding: 10px;
-	clear: both;
-	border-top: 1px solid #ddd;
-	background: #f5f5f5;
-}
-
-.wp_stream_account .disconnect {
-	float: right;
-	line-height: 28px;
-}
-
-.wp_stream_account .api-key {
-	word-wrap: break-word;
 }

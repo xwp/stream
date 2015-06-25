@@ -397,10 +397,6 @@ class WP_Stream_API {
 		$args['headers']['Stream-Site-API-Key'] = $this->api_key;
 		$args['headers']['Content-Type']        = 'application/json';
 
-		if ( WP_Stream::is_development_mode() ) {
-			$args['blocking'] = true;
-		}
-
 		add_filter( 'http_api_transports', array( __CLASS__, 'http_api_transport_priority' ), 10, 3 );
 
 		$transient = 'wp_stream_' . md5( $url );

@@ -17,10 +17,6 @@ class WP_Stream_Notifications_Settings {
 		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
-		if ( WP_Stream_API::is_restricted() ) {
-			return;
-		}
-
 		// Add Notifications settings tab to Stream settings
 		add_filter( 'wp_stream_settings_option_fields', array( __CLASS__, '_register_settings' ) );
 	}

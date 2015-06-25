@@ -70,18 +70,6 @@ class WP_Stream {
 	public static $notices = array();
 
 	/**
-	 * An array of deprecated extension plugin class/dir pairs
-	 *
-	 * @var array
-	 */
-	public static $deprecated_extensions = array(
-		'WP_Stream_Cherry_Pick'   => 'stream-cherry-pick/stream-cherry-pick.php',
-		'WP_Stream_Data_Exporter' => 'stream-data-exporter/stream-data-exporter.php',
-		'WP_Stream_Notifications' => 'stream-notifications/stream-notifications.php',
-		'WP_Stream_Reports'       => 'stream-reports/stream-reports.php',
-	);
-
-	/**
 	 * Class constructor
 	 */
 	private function __construct() {
@@ -191,67 +179,6 @@ class WP_Stream {
 	}
 
 	/**
-	 * Check for deprecated extension plugins
-	 *
-	 * @return bool
-	 */
-	public static function deprecated_plugins_exist() {
-		foreach ( self::$deprecated_extensions as $class => $dir ) {
-			if ( class_exists( $class ) ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Display admin notices when deprecated extension plugins exist
-	 *
-	 * @return void
-	 */
-	public static function deprecated_plugins_notice() {
-		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
-
-		if ( ! function_exists( 'get_plugins' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		$message = null;
-
-		foreach ( self::$deprecated_extensions as $class => $dir ) {
-			if ( class_exists( $class ) ) {
-				$data     = get_plugin_data( sprintf( '%s/%s', WP_PLUGIN_DIR, $dir ) );
-				$name     = isset( $data['Name'] ) ? $data['Name'] : $dir;
-				$message .= sprintf( '<li><strong>%s</strong></li>', esc_html( $name ) );
-
-				deactivate_plugins( $dir );
-			}
-		}
-
-		if ( ! empty( $message ) ) {
-			ob_start();
-			?>
-			<h3><?php esc_html_e( 'Deprecated Plugins Found', 'stream' ) ?></h3>
-			<p><?php esc_html_e( 'The following plugins are deprecated and will be deactivated in order to activate', 'stream' ) ?> <strong>Stream <?php echo esc_html( self::VERSION ) ?></strong>:</p>
-			<ul>
-			<?php
-			$start = ob_get_clean();
-
-			ob_start();
-			?>
-			</ul>
-			<p>
-				<a href='#' onclick="location.reload(true); return false;" class="button button-large"><?php esc_html_e( 'Continue', 'stream' ) ?></a>
-			</p>
-			<?php
-			$end = ob_get_clean();
-
-			wp_die( $start . $message . $end, esc_html__( 'Deprecated Plugins Found', 'stream' ) ); // xss ok
-		}
-	}
-
-	/**
 	 * Autoloader for classes
 	 *
 	 * @param string $class
@@ -293,31 +220,10 @@ class WP_Stream {
 	 * @return bool
 	 */
 	public static function is_connected() {
-		return ( self::$api->api_key && self::$api->site_uuid );
-	}
+		$api_key   = get_option( 'wp_stream_site_api_key', 0 );
+		$site_uuid = get_option( 'wp_stream_site_uuid', 0 );
 
-	/**
-	 * Is Stream in development mode?
-	 *
-	 * @return bool
-	 */
-	public static function is_development_mode() {
-		$development_mode = false;
-
-		if ( defined( 'WP_STREAM_DEV_DEBUG' ) ) {
-			$development_mode = WP_STREAM_DEV_DEBUG;
-		} else if ( site_url() && false === strpos( site_url(), '.' ) ) {
-			$development_mode = true;
-		}
-
-		/**
-		 * Filter allows development mode to be overridden
-		 *
-		 * @since 2.0.0
-		 *
-		 * @return bool
-		 */
-		return apply_filters( 'wp_stream_development_mode', $development_mode );
+		return ( ! empty( $api_key ) && ! empty( $site_uuid ) );
 	}
 
 	/**
@@ -488,8 +394,6 @@ class WP_Stream {
 
 if ( ! WP_Stream::is_valid_php_version() ) {
 	WP_Stream::fail_php_version();
-} elseif ( WP_Stream::deprecated_plugins_exist() ) {
-	WP_Stream::deprecated_plugins_notice();
 } else {
 	$GLOBALS['wp_stream'] = WP_Stream::get_instance();
 }

@@ -93,8 +93,8 @@ class WP_Stream_Notifications_Post_Type {
 				'show_in_menu'         => false,
 				'exclude_from_search'  => true,
 				'publicly_queryable'   => false,
-				'supports'             => WP_Stream::$api->is_restricted() ? false : array( 'title', 'author' ),
-				'register_meta_box_cb' => WP_Stream::$api->is_restricted() ? null : array( $this, 'metaboxes' ),
+				'supports'             => array( 'title', 'author' ),
+				'register_meta_box_cb' => array( $this, 'metaboxes' ),
 				'rewrite'              => false,
 			)
 		);
@@ -883,7 +883,7 @@ class WP_Stream_Notifications_Post_Type {
 	public function load_list_table() {
 		global $typenow;
 
-		if ( self::POSTTYPE !== $typenow || WP_Stream::$api->is_restricted( true ) ) {
+		if ( self::POSTTYPE !== $typenow ) {
 			return;
 		}
 

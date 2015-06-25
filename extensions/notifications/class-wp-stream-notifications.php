@@ -91,7 +91,7 @@ class WP_Stream_Notifications {
 		$disallow = apply_filters( 'wp_stream_notifications_disallow_site_access', false );
 
 		// Register new submenu
-		if ( ! $disallow && ! WP_Stream_Admin::$disable_access && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
+		if ( ! $disallow && ! WP_Stream_Admin::$disable_access ) {
 			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		}
 
@@ -99,12 +99,6 @@ class WP_Stream_Notifications {
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-settings.php';
 
 		add_action( 'init', array( 'WP_Stream_Notifications_Settings', 'load' ), 9 );
-
-		if ( WP_Stream::$api->is_restricted() ) {
-			add_action( 'in_admin_header', array( __CLASS__, 'in_admin_header' ) );
-
-			return;
-		}
 
 		// Load adapter parent class
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-adapter.php';
@@ -143,36 +137,6 @@ class WP_Stream_Notifications {
 		require_once WP_STREAM_NOTIFICATIONS_INC_DIR . 'class-wp-stream-notifications-matcher.php';
 
 		$this->matcher = new WP_Stream_Notifications_Matcher();
-	}
-
-	/**
-	 * Display extension preview info
-	 *
-	 * @action in_admin_header
-	 *
-	 * @return void
-	 */
-	public static function in_admin_header() {
-		global $typenow;
-
-		if ( WP_Stream_Notifications_Post_Type::POSTTYPE !== $typenow ) {
-			return;
-		}
-		?>
-		<div class="stream-example">
-			<div class="stream-example-modal">
-				<h1><i class="dashicons dashicons-admin-comments"></i> <?php esc_html_e( 'Stream Notifications', 'stream' ) ?></h1>
-				<p><?php esc_html_e( 'Get notified instantly when important changes are made on your site.', 'stream' ) ?></p>
-				<ul>
-					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Create notification rules quickly and easily', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Smart and powerful trigger matching', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Fully customized e-mail and SMS alerts', 'stream' ) ?></li>
-					<li><i class="dashicons dashicons-yes"></i> <?php esc_html_e( 'Push alerts to your smartphone or tablet', 'stream' ) ?></li>
-				</ul>
-				<a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php esc_html_e( 'Upgrade to Pro', 'stream' ) ?></a>
-			</div>
-		</div>
-		<?php
 	}
 
 	/**

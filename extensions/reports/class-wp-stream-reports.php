@@ -80,7 +80,7 @@ class WP_Stream_Reports {
 	 */
 	public function load() {
 		// Register new submenu
-		if ( ! apply_filters( 'wp_stream_reports_disallow_site_access', false ) && ! WP_Stream_Admin::$disable_access && ( WP_Stream::is_connected() || WP_Stream::is_development_mode() ) ) {
+		if ( ! apply_filters( 'wp_stream_reports_disallow_site_access', false ) && ! WP_Stream_Admin::$disable_access ) {
 			add_action( 'admin_menu', array( $this, 'register_menu' ), 11 );
 		}
 

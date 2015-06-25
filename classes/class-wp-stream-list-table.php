@@ -48,24 +48,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function no_items() {
-		$plan_retention = WP_Stream::$api->get_plan_retention();
-
-		if (
-			'free' === WP_Stream::$api->get_plan_type()
-			&&
-			! empty( $plan_retention )
-			&&
-			0 === $this->get_total_found_rows()
-		) {
+		if ( empty( $this->get_total_found_rows() ) ) {
 			?>
-			<div class="stream-list-table-upgrade">
+			<div class="stream-list-table-no-items">
 				<p><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ) ?></p>
-				<p><?php printf( _n( 'Your free plan is limited to <strong>1 day</strong> of activity history.', 'Your free plan is limited to <strong>%d days</strong> of activity history.', absint( $plan_retention ), 'stream' ), absint( $plan_retention ) ) // xss ok ?></p>
-				<p><a href="<?php echo esc_url( WP_Stream_Admin::account_url( sprintf( 'upgrade?site_uuid=%s', WP_Stream::$api->site_uuid ) ) ); ?>" class="button button-primary button-large"><?php esc_html_e( 'Upgrade to Pro', 'stream' ) ?></a></p>
 			</div>
 			<?php
-		} else {
-			esc_html_e( 'Sorry, no activity records were found.', 'stream' );
 		}
 	}
 
