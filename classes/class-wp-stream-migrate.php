@@ -63,8 +63,10 @@ class WP_Stream_Migrate {
 		self::$limit  = absint( apply_filters( 'wp_stream_migrate_chunk_size', 100 ) );
 		self::$chunks = ( self::$record_count > self::$limit ) ? absint( ceil( self::$record_count / self::$limit ) ) : 1;
 
+		// Display admin notice
 		add_action( 'admin_notices', array( __CLASS__, 'migrate_notice' ), 9 );
 
+		// AJAX callback for migrate action
 		add_action( 'wp_ajax_wp_stream_migrate_action', array( __CLASS__, 'migrate_action_callback' ) );
 	}
 
