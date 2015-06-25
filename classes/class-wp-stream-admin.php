@@ -416,31 +416,6 @@ class WP_Stream_Admin {
 		return $links;
 	}
 
-	public static function remove_api_authentication() {
-		delete_option( WP_Stream_API::SITE_UUID_OPTION_KEY );
-		delete_option( WP_Stream_API::API_KEY_OPTION_KEY );
-
-		do_action( 'wp_stream_site_disconnected', WP_Stream::$api->site_uuid, WP_Stream::$api->api_key, get_current_blog_id() );
-
-		WP_Stream::$api->site_uuid = false;
-		WP_Stream::$api->api_key   = false;
-
-		if ( '1' !== wp_stream_filter_input( INPUT_GET, 'disconnect' ) ) {
-			return;
-		}
-
-		$redirect_url = add_query_arg(
-			array(
-				'page' => self::RECORDS_PAGE_SLUG,
-			),
-			admin_url( self::ADMIN_PARENT_PAGE )
-		);
-
-		wp_safe_redirect( $redirect_url );
-
-		exit;
-	}
-
 	/**
 	 * Render settings page
 	 *

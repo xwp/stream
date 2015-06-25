@@ -58,7 +58,7 @@ jQuery( function( $ ) {
 				if ( false === response.success ) {
 					stream_migrate_end( response.data, true );
 				} else {
-					if ( 'migrate' === response.data || 'delete' === response.data ) {
+					if ( 'migrate' === response.data || 'continue' === response.data ) {
 						stream_migrate_progress_loop( response.data );
 					} else {
 						stream_migrate_end( response.data );

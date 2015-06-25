@@ -215,18 +215,6 @@ class WP_Stream {
 	}
 
 	/**
-	 * Is Stream connected?
-	 *
-	 * @return bool
-	 */
-	public static function is_connected() {
-		$api_key   = get_option( 'wp_stream_site_api_key', 0 );
-		$site_uuid = get_option( 'wp_stream_site_uuid', 0 );
-
-		return ( ! empty( $api_key ) && ! empty( $site_uuid ) );
-	}
-
-	/**
 	 * Check if Stream is running on WordPress.com VIP
 	 *
 	 * @return bool
