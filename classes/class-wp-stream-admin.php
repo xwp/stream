@@ -30,7 +30,6 @@ class WP_Stream_Admin {
 	const VIEW_CAP            = 'view_stream';
 	const SETTINGS_CAP        = 'manage_options';
 	const PRELOAD_AUTHORS_MAX = 50;
-	const PUBLIC_URL          = 'https://wp-stream.com';
 
 	public static function load() {
 		// User and role caps
