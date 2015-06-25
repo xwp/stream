@@ -21,21 +21,21 @@ class WP_Stream_Migrate {
 	 *
 	 * @var int
 	 */
-	public static $record_count = 0;
+	public static $record_count;
 
 	/**
 	 * Limit payload chunks to a certain number of records
 	 *
 	 * @var int
 	 */
-	public static $limit = 0;
+	public static $limit;
 
 	/**
 	 * Number of chunks required to migrate
 	 *
 	 * @var int
 	 */
-	public static $chunks = 0;
+	public static $chunks;
 
 	/**
 	 * Load the record migration hooks
@@ -60,8 +60,8 @@ class WP_Stream_Migrate {
 			return;
 		}
 
-		self::$limit  = apply_filters( 'wp_stream_migrate_chunk_size', 100 );
-		self::$chunks = ( self::$record_count > self::$limit ) ? ceil( self::$record_count / self::$limit ) : 1;
+		self::$limit  = absint( apply_filters( 'wp_stream_migrate_chunk_size', 100 ) );
+		self::$chunks = ( self::$record_count > self::$limit ) ? absint( ceil( self::$record_count / self::$limit ) ) : 1;
 
 		add_action( 'admin_notices', array( __CLASS__, 'migrate_notice' ), 9 );
 
@@ -152,12 +152,12 @@ class WP_Stream_Migrate {
 	/**
 	 * Get a chunk of records
 	 *
-	 * @param int $limit
+	 * @param int $limit (optional)
 	 * @param int $offset (optional)
 	 *
 	 * @return array|bool An array of record arrays, or FALSE if no records were found
 	 */
-	private static function get_records( $limit = null, $offset = 0 ) {
+	private static function get_records( $limit = 100, $offset = 0 ) {
 		$limit = is_int( $limit ) ? $limit : self::$limit;
 
 		$query = array(
@@ -219,7 +219,7 @@ class WP_Stream_Migrate {
 			__( 'Close', 'stream' ),
 			__( 'Start Migration Now', 'stream' ),
 			__( 'Remind Me Later', 'stream' ),
-			__( 'No thanks, just delete my cloud records now', 'stream' )
+			__( "No thanks, I don't want to migrate", 'stream' )
 		);
 
 		WP_Stream::notice( $notice, true );
