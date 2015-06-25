@@ -31,6 +31,11 @@ class WP_Stream_Admin {
 	const SETTINGS_CAP        = 'manage_options';
 	const PRELOAD_AUTHORS_MAX = 50;
 
+	/**
+	 * Load the WP Stream admin area hooks
+	 *
+	 * @return void
+	 */
 	public static function load() {
 		// User and role caps
 		add_filter( 'user_has_cap', array( __CLASS__, '_filter_user_caps' ), 10, 4 );
@@ -67,6 +72,7 @@ class WP_Stream_Admin {
 	 * Output specific update
 	 *
 	 * @action admin_notices
+	 *
 	 * @return string
 	 */
 	public static function admin_notices() {
@@ -88,6 +94,7 @@ class WP_Stream_Admin {
 	 * Register menu page
 	 *
 	 * @action admin_menu
+	 *
 	 * @return bool|void
 	 */
 	public static function register_menu() {
@@ -338,7 +345,9 @@ class WP_Stream_Admin {
 	 * Add menu styles for various WP Admin skins
 	 *
 	 * @uses wp_add_inline_style()
+	 *
 	 * @action admin_enqueue_scripts
+	 *
 	 * @return bool true on success false on failure
 	 */
 	public static function admin_menu_css() {
@@ -355,6 +364,7 @@ class WP_Stream_Admin {
 
 		if ( version_compare( $wp_version, '3.8-alpha', '>=' ) ) {
 			wp_enqueue_style( 'wp-stream-icons' );
+
 			$css = "
 				#toplevel_page_{$records_page} .wp-menu-image:before {
 					font-family: 'WP Stream' !important;
@@ -468,7 +478,9 @@ class WP_Stream_Admin {
 		$i = 0;
 		foreach ( $sections as $section => $data ) {
 			$i++;
+
 			$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
+
 			if ( $is_active ) {
 				settings_fields( $option_key );
 				do_settings_sections( $option_key );
@@ -547,6 +559,7 @@ class WP_Stream_Admin {
 				foreach ( $roles as $role ) {
 					if ( self::_role_can_view_stream( $role ) ) {
 						$allcaps[ $cap ] = true;
+
 						break 2;
 					}
 				}
@@ -632,16 +645,21 @@ class WP_Stream_Admin {
 		switch ( $filter ) {
 			case 'author':
 				$id = wp_stream_filter_input( INPUT_POST, 'id' );
+
 				if ( '0' === $id ) {
 					$value = 'WP-CLI';
+
 					break;
 				}
+
 				$user = get_userdata( $id );
+
 				if ( ! $user || is_wp_error( $user ) ) {
 					$value = '';
 				} else {
 					$value = $user->display_name;
 				}
+
 				break;
 			default:
 				$value = '';
@@ -649,7 +667,7 @@ class WP_Stream_Admin {
 
 		echo wp_stream_json_encode( $value ); // xss ok
 
-		wp_die();
+		die();
 	}
 
 	public static function get_authors_record_meta( $authors ) {

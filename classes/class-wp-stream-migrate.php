@@ -38,7 +38,7 @@ class WP_Stream_Migrate {
 	public static $chunks = 0;
 
 	/**
-	 * Check that legacy data exists before doing anything
+	 * Load the record migration hooks
 	 *
 	 * @return void
 	 */
