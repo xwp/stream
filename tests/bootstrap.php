@@ -24,5 +24,5 @@ tests_add_filter(
 	}
 );
 
-require getenv( 'WP_TESTS_DIR' ) . 'includes/bootstrap.php';
+require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
 require dirname( __FILE__ ) . '/testcase.php';
