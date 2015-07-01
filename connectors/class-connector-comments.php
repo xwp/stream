@@ -1,20 +1,20 @@
 <?php
+namespace WP_Stream;
 
-class WP_Stream_Connector_Comments extends WP_Stream_Connector {
-
+class Comments extends Connector {
 	/**
 	 * Connector slug
 	 *
 	 * @var string
 	 */
-	public static $name = 'comments';
+	public $name = 'comments';
 
 	/**
 	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
-	public static $actions = array(
+	public $actions = array(
 		'comment_flood_trigger',
 		'wp_insert_comment',
 		'edit_comment',
@@ -34,14 +34,14 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 *
 	 * @var int
 	 */
-	protected static $delete_post = 0;
+	protected $delete_post = 0;
 
 	/**
 	 * Return translated connector label
 	 *
 	 * @return string Translated connector label
 	 */
-	public static function get_label() {
+	public function get_label() {
 		return esc_html__( 'Comments', 'stream' );
 	}
 
@@ -50,7 +50,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 *
 	 * @return array Action label translations
 	 */
-	public static function get_action_labels() {
+	public function get_action_labels() {
 		return array(
 			'created'    => esc_html__( 'Created', 'stream' ),
 			'edited'     => esc_html__( 'Edited', 'stream' ),
@@ -72,7 +72,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 *
 	 * @return array Context label translations
 	 */
-	public static function get_context_labels() {
+	public function get_context_labels() {
 		return array(
 			'comments' => esc_html__( 'Comments', 'stream' ),
 		);
@@ -83,7 +83,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 *
 	 * @return array Comment type label translations
 	 */
-	public static function get_comment_type_labels() {
+	public function get_comment_type_labels() {
 		return apply_filters(
 			'wp_stream_comments_comment_type_labels',
 			array(
@@ -97,17 +97,18 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	/**
 	 * Return the comment type label for a given comment ID
 	 *
-	 * @param  int    $comment_id  ID of the comment
-	 * @return string              The comment type label
+	 * @param int $comment_id  ID of the comment
+	 *
+	 * @return string The comment type label
 	 */
-	public static function get_comment_type_label( $comment_id ) {
+	public function get_comment_type_label( $comment_id ) {
 		$comment_type = get_comment_type( $comment_id );
 
 		if ( empty( $comment_type ) ) {
 			$comment_type = 'comment';
 		}
 
-		$comment_type_labels = self::get_comment_type_labels();
+		$comment_type_labels = $this->get_comment_type_labels();
 
 		$label = isset( $comment_type_labels[ $comment_type ] ) ? $comment_type_labels[ $comment_type ] : $comment_type;
 
@@ -119,15 +120,14 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param array $links   Previous links registered
+	 * @param object $record Stream record
 	 *
-	 * @return array             Action links
+	 * @return array Action links
 	 */
-	public static function action_links( $links, $record ) {
+	public function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			if ( $comment = get_comment( $record->object_id ) ) {
-				$del_nonce     = wp_create_nonce( "delete-comment_$comment->comment_ID" );
 				$approve_nonce = wp_create_nonce( "approve-comment_$comment->comment_ID" );
 
 				$links[ esc_html__( 'Edit', 'stream' ) ] = admin_url( "comment.php?action=editcomment&c=$comment->comment_ID" );
@@ -162,11 +162,12 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * name and e-mail or that users be logged in to comment. In either case it
 	 * will try to see if the e-mail provided does belong to a registered user.
 	 *
-	 * @param  object|int  $comment  A comment object or comment ID
-	 * @param  string      $field    What field you want to return
-	 * @return int|string  $output   User ID or user display name
+	 * @param object|int $comment A comment object or comment ID
+	 * @param string $field       What field you want to return
+	 *
+	 * @return int|string $output User ID or user display name
 	 */
-	public static function get_comment_author( $comment, $field = 'id' ) {
+	public function get_comment_author( $comment, $field = 'id' ) {
 		$comment = is_object( $comment ) ? $comment : get_comment( absint( $comment ) );
 
 		$req_name_email = get_option( 'require_name_email' );
@@ -174,6 +175,8 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 
 		$user_id   = 0;
 		$user_name = esc_html__( 'Guest', 'stream' );
+
+		$output = '';
 
 		if ( $req_name_email && isset( $comment->comment_author_email ) && isset( $comment->comment_author ) ) {
 			$user      = get_user_by( 'email', $comment->comment_author_email );
@@ -200,9 +203,13 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * Tracks comment flood blocks
 	 *
 	 * @action comment_flood_trigger
+	 *
+	 * @param string $time_lastcomment
+	 * @param string $time_newcomment
 	 */
-	public static function callback_comment_flood_trigger( $time_lastcomment, $time_newcomment ) {
-		$flood_tracking = isset( WP_Stream_Settings::$options['advanced_comment_flood_tracking'] ) ? WP_Stream_Settings::$options['advanced_comment_flood_tracking'] : false;
+	public function callback_comment_flood_trigger( $time_lastcomment, $time_newcomment ) {
+		$options        = wp_stream_get_instance()->settings->options;
+		$flood_tracking = isset( $options['advanced_comment_flood_tracking'] ) ? $options['advanced_comment_flood_tracking'] : false;
 
 		if ( ! $flood_tracking ) {
 			return;
@@ -218,7 +225,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			$user_name = esc_html__( 'a logged out user', 'stream' );
 		}
 
-		self::log(
+		$this->log(
 			__( 'Comment flooding by %s detected and prevented', 'stream' ),
 			compact( 'user_name', 'user_id', 'time_lastcomment', 'time_newcomment' ),
 			null,
@@ -231,14 +238,17 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * Tracks comment creation
 	 *
 	 * @action wp_insert_comment
+	 *
+	 * @param int $comment_id
+	 * @param object $comment
 	 */
-	public static function callback_wp_insert_comment( $comment_id, $comment ) {
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+	public function callback_wp_insert_comment( $comment_id, $comment ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
 			return;
 		}
 
-		$user_id        = self::get_comment_author( $comment, 'id' );
-		$user_name      = self::get_comment_author( $comment, 'name' );
+		$user_id        = $this->get_comment_author( $comment, 'id' );
+		$user_name      = $this->get_comment_author( $comment, 'name' );
 		$post_id        = $comment->comment_post_ID;
 		$post_type      = get_post_type( $post_id );
 		$post_title     = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
@@ -246,23 +256,24 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 		$is_spam        = false;
 
 		// Auto-marked spam comments
-		$ak_tracking = isset( WP_Stream_Settings::$options['advanced_akismet_tracking'] ) ? WP_Stream_Settings::$options['advanced_akismet_tracking'] : false;
+		$options     = wp_stream_get_instance()->settings->options;
+		$ak_tracking = isset( $options['advanced_akismet_tracking'] ) ? $options['advanced_akismet_tracking'] : false;
 
-		if ( class_exists( 'Akismet' ) && $ak_tracking && Akismet::matches_last_comment( $comment ) ) {
-			$ak_last_comment = Akismet::get_last_comment();
+		if ( class_exists( 'Akismet' ) && $ak_tracking && \Akismet::matches_last_comment( $comment ) ) {
+			$ak_last_comment = \Akismet::get_last_comment();
 			if ( 'true' === $ak_last_comment['akismet_result'] ) {
 				$is_spam        = true;
 				$comment_status = esc_html__( 'automatically marked as spam by Akismet', 'stream' );
 			}
 		}
 
-		$comment_type   = mb_strtolower( self::get_comment_type_label( $comment_id ) );
+		$comment_type   = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		if ( $comment->comment_parent ) {
 			$parent_user_id   = get_comment_author( $comment->comment_parent, 'id' );
 			$parent_user_name = get_comment_author( $comment->comment_parent, 'name' );
 
-			self::log(
+			$this->log(
 				_x(
 					'Reply to %1$s\'s %5$s by %2$s on %3$s %4$s',
 					"1: Parent comment's author, 2: Comment author, 3: Post title, 4: Comment status, 5: Comment type",
@@ -275,7 +286,7 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 				$user_id
 			);
 		} else {
-			self::log(
+			$this->log(
 				_x(
 					'New %4$s by %1$s on %2$s %3$s',
 					'1: Comment author, 2: Post title 3: Comment status, 4: Comment type',
@@ -294,22 +305,24 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * Tracks comment updates
 	 *
 	 * @action edit_comment
+	 *
+	 * @param int $comment_id
 	 */
-	public static function callback_edit_comment( $comment_id ) {
+	public function callback_edit_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
 			return;
 		}
 
-		$user_id      = self::get_comment_author( $comment, 'id' );
-		$user_name    = self::get_comment_author( $comment, 'name' );
+		$user_id      = $this->get_comment_author( $comment, 'id' );
+		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
-		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
+		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
-		self::log(
+		$this->log(
 			_x(
 				'%1$s\'s %3$s on %2$s edited',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -326,52 +339,58 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * Catch the post ID during deletion
 	 *
 	 * @action before_delete_post
+	 *
+	 * @param int $post_id
 	 */
-	public static function callback_before_delete_post( $post_id ) {
+	public function callback_before_delete_post( $post_id ) {
 		if ( wp_is_post_revision( $post_id ) ) {
 			return;
 		}
 
-		self::$delete_post = $post_id;
+		$this->delete_post = $post_id;
 	}
 
 	/**
 	 * Reset the post ID after deletion
 	 *
 	 * @action deleted_post
+	 *
+	 * @param int $post_id
 	 */
-	public static function callback_deleted_post( $post_id ) {
+	public function callback_deleted_post( $post_id ) {
 		if ( wp_is_post_revision( $post_id ) ) {
 			return;
 		}
 
-		self::$delete_post = 0;
+		$this->delete_post = 0;
 	}
 
 	/**
 	 * Tracks comment delete
 	 *
 	 * @action delete_comment
+	 *
+	 * @param int $comment_id
 	 */
-	public static function callback_delete_comment( $comment_id ) {
+	public function callback_delete_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
 			return;
 		}
 
-		$user_id      = self::get_comment_author( $comment, 'id' );
-		$user_name    = self::get_comment_author( $comment, 'name' );
+		$user_id      = $this->get_comment_author( $comment, 'id' );
+		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = absint( $comment->comment_post_ID );
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
-		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
+		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
-		if ( self::$delete_post === $post_id ) {
+		if ( $this->delete_post === $post_id ) {
 			return;
 		}
 
-		self::log(
+		$this->log(
 			_x(
 				'%1$s\'s %3$s on %2$s deleted permanently',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -388,22 +407,24 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * Tracks comment trashing
 	 *
 	 * @action trash_comment
+	 *
+	 * @param int $comment_id
 	 */
-	public static function callback_trash_comment( $comment_id ) {
+	public function callback_trash_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
 			return;
 		}
 
-		$user_id      = self::get_comment_author( $comment, 'id' );
-		$user_name    = self::get_comment_author( $comment, 'name' );
+		$user_id      = $this->get_comment_author( $comment, 'id' );
+		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
-		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
+		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
-		self::log(
+		$this->log(
 			_x(
 				'%1$s\'s %3$s on %2$s trashed',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -420,22 +441,24 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * Tracks comment trashing
 	 *
 	 * @action untrash_comment
+	 *
+	 * @param int $comment_id
 	 */
-	public static function callback_untrash_comment( $comment_id ) {
+	public function callback_untrash_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
 			return;
 		}
 
-		$user_id      = self::get_comment_author( $comment, 'id' );
-		$user_name    = self::get_comment_author( $comment, 'name' );
+		$user_id      = $this->get_comment_author( $comment, 'id' );
+		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
-		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
+		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
-		self::log(
+		$this->log(
 			_x(
 				'%1$s\'s %3$s on %2$s restored',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -452,22 +475,24 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * Tracks comment marking as spam
 	 *
 	 * @action spam_comment
+	 *
+	 * @param int $comment_id
 	 */
-	public static function callback_spam_comment( $comment_id ) {
+	public function callback_spam_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
 			return;
 		}
 
-		$user_id      = self::get_comment_author( $comment, 'id' );
-		$user_name    = self::get_comment_author( $comment, 'name' );
+		$user_id      = $this->get_comment_author( $comment, 'id' );
+		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
-		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
+		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
-		self::log(
+		$this->log(
 			_x(
 				'%1$s\'s %3$s on %2$s marked as spam',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -484,22 +509,24 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * Tracks comment unmarking as spam
 	 *
 	 * @action unspam_comment
+	 *
+	 * @param int $comment_id
 	 */
-	public static function callback_unspam_comment( $comment_id ) {
+	public function callback_unspam_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
 			return;
 		}
 
-		$user_id      = self::get_comment_author( $comment, 'id' );
-		$user_name    = self::get_comment_author( $comment, 'name' );
+		$user_id      = $this->get_comment_author( $comment, 'id' );
+		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
-		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
+		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
-		self::log(
+		$this->log(
 			_x(
 				'%1$s\'s %3$s on %2$s unmarked as spam',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -513,12 +540,16 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	}
 
 	/**
-	* Track comment status transition
-	*
-	* @action transition_comment_status
-	*/
-	public static function callback_transition_comment_status( $new_status, $old_status, $comment ) {
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+	 * Track comment status transition
+	 *
+	 * @action transition_comment_status
+	 *
+	 * @param string $new_status
+	 * @param string $old_status
+	 * @param object $comment
+	 */
+	public function callback_transition_comment_status( $new_status, $old_status, $comment ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
 			return;
 		}
 
@@ -526,14 +557,14 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 			return;
 		}
 
-		$user_id      = self::get_comment_author( $comment, 'id' );
-		$user_name    = self::get_comment_author( $comment, 'name' );
+		$user_id      = $this->get_comment_author( $comment, 'id' );
+		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = get_comment_type( $comment->comment_ID );
 
-		self::log(
+		$this->log(
 			_x(
 				'%1$s\'s %3$s %2$s',
 				'Comment status transition. 1: Comment author, 2: Post title, 3: Comment type',
@@ -550,25 +581,28 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 * Track attempts to add duplicate comments
 	 *
 	 * @action comment_duplicate_trigger
+	 *
+	 * @param array $comment_data
 	 */
-	public static function callback_comment_duplicate_trigger( $comment_data ) {
+	public function callback_comment_duplicate_trigger( $comment_data ) {
 		global $wpdb;
+		unset( $comment_data );
 
 		$comment_id = $wpdb->last_result[0]->comment_ID;
 		$comment    = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
 			return;
 		}
 
-		$user_id      = self::get_comment_author( $comment, 'id' );
-		$user_name    = self::get_comment_author( $comment, 'name' );
+		$user_id      = $this->get_comment_author( $comment, 'id' );
+		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
 		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
-		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
+		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
-		self::log(
+		$this->log(
 			_x(
 				'Duplicate %3$s by %1$s prevented on %2$s',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -586,11 +620,10 @@ class WP_Stream_Connector_Comments extends WP_Stream_Connector {
 	 *
 	 * @return  array  List of ignored comment types
 	 */
-	public static function get_ignored_comment_types() {
+	public function get_ignored_comment_types() {
 		return apply_filters(
 			'wp_stream_comments_exclude_comment_types',
 			array()
 		);
 	}
-
 }
