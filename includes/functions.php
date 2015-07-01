@@ -6,8 +6,6 @@
  * This is a polyfill function intended to be used in place of PHP's
  * filter_input() function, which can occasionally be unreliable.
  *
- * @since 1.2.5
- *
  * @param int    $type           One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV.
  * @param string $variable_name  Name of a variable to get.
  * @param int    $filter         The ID of the filter to apply.
@@ -24,8 +22,6 @@ function wp_stream_filter_input( $type, $variable_name, $filter = null, $options
  *
  * This is a polyfill function intended to be used in place of PHP's
  * filter_var() function, which can occasionally be unreliable.
- *
- * @since 1.2.5
  *
  * @param string $var      Value to filter.
  * @param int    $filter   The ID of the filter to apply.
@@ -63,7 +59,7 @@ function wp_stream_get_meta( $record, $meta_key = '', $single = false ) {
  *
  * @return string an ISO 8601 extended formatted time
  */
-function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 )	{
+function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 	if ( $time ) {
 		$microtime = (float) $time . '.0000';
 	} else {
@@ -89,7 +85,7 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 )	{
  * Used to fill search filters with only used items, instead of all items.
  *
  * @see    assemble_records
- * @since  1.0.4
+ *
  * @param  string  Requested field (i.e., 'context')
  * @return array   Array of items to be output to select dropdowns
  */
@@ -107,7 +103,6 @@ function wp_stream_existing_records( $field ) {
 /**
  * Determine the title of an object that a record is for.
  *
- * @since  2.1.0
  * @param  object  Record object
  * @return mixed   The title of the object as a string, otherwise false
  */
@@ -130,10 +125,66 @@ function wp_stream_get_object_title( $record ) {
 }
 
 /**
- * True if native WP Cron is enabled, otherwise false
+ * Encode to JSON in a way that is also backwards compatible
+ *
+ * @param mixed $data
+ * @param int   $options (optional)
+ * @param int   $depth (optional)
+ *
+ * @return bool|string
+ */
+function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
+	if ( function_exists( 'wp_json_encode' ) ) {
+		$json = wp_json_encode( $data, $options, $depth );
+	} else {
+		// @codingStandardsIgnoreStart
+		if ( version_compare( PHP_VERSION, '5.5', '<' ) ) {
+			$json = json_encode( $data, $options );
+		} else {
+			$json = json_encode( $data, $options, $depth );
+		}
+		// @codingStandardsIgnoreEnd
+	}
+
+	return $json;
+}
+
+/**
+ * Get user meta in a way that is also safe for VIP
+ *
+ * @param int    $user_id
+ * @param string $meta_key
+ * @param bool   $single (optional)
+ *
+ * @return mixed
+ */
+function wp_stream_get_user_meta( $user_id, $meta_key, $single = true ) {
+	return WP_Stream::is_vip() ? get_user_attribute( $user_id, $meta_key ) : get_user_meta( $user_id, $meta_key, $single );
+}
+
+/**
+ * Update user meta in a way that is also safe for VIP
+ *
+ * @param int    $user_id
+ * @param string $meta_key
+ * @param mixed  $meta_value
+ * @param mixed  $prev_value (optional)
+ *
+ * @return int|bool
+ */
+function wp_stream_update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
+	return WP_Stream::is_vip() ? update_user_attribute( $user_id, $meta_key, $meta_value ) : update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
+}
+
+/**
+ * Delete user meta in a way that is also safe for VIP
+ *
+ * @param int    $user_id
+ * @param string $meta_key
+ * @param mixed  $meta_value (optional)
  *
  * @return bool
  */
-function wp_stream_is_wp_cron_enabled() {
-	return ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
+function wp_stream_delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
+	return WP_Stream::is_vip() ? delete_user_attribute( $user_id, $meta_key, $meta_value ) : delete_user_meta( $user_id, $meta_key, $meta_value );
 }

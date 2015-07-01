@@ -40,7 +40,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Users', 'stream' );
+		return esc_html__( 'Users', 'stream' );
 	}
 
 	/**
@@ -50,13 +50,13 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'updated'         => __( 'Updated', 'stream' ),
-			'created'         => __( 'Created', 'stream' ),
-			'deleted'         => __( 'Deleted', 'stream' ),
-			'password-reset'  => __( 'Password Reset', 'stream' ),
-			'forgot-password' => __( 'Lost Password', 'stream' ),
-			'login'           => __( 'Log In', 'stream' ),
-			'logout'          => __( 'Log Out', 'stream' ),
+			'updated'         => esc_html__( 'Updated', 'stream' ),
+			'created'         => esc_html__( 'Created', 'stream' ),
+			'deleted'         => esc_html__( 'Deleted', 'stream' ),
+			'password-reset'  => esc_html__( 'Password Reset', 'stream' ),
+			'forgot-password' => esc_html__( 'Lost Password', 'stream' ),
+			'login'           => esc_html__( 'Log In', 'stream' ),
+			'logout'          => esc_html__( 'Log Out', 'stream' ),
 		);
 	}
 
@@ -67,9 +67,9 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'users'    => __( 'Users', 'stream' ),
-			'sessions' => __( 'Sessions', 'stream' ),
-			'profiles' => __( 'Profiles', 'stream' ),
+			'users'    => esc_html__( 'Users', 'stream' ),
+			'sessions' => esc_html__( 'Sessions', 'stream' ),
+			'profiles' => esc_html__( 'Profiles', 'stream' ),
 		);
 	}
 
@@ -86,7 +86,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			if ( $link = get_edit_user_link( $record->object_id ) ) {
-				$links [ __( 'Edit User', 'stream' ) ] = $link;
+				$links [ esc_html__( 'Edit User', 'stream' ) ] = $link;
 			}
 		}
 
@@ -133,7 +133,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 		$registered_user = get_user_by( 'id', $user_id );
 
 		if ( ! $current_user->ID ) { // Non logged-in user registered themselves
-			$message     = __( 'New user registration', 'stream' );
+			$message     = esc_html__( 'New user registration', 'stream' );
 			$user_to_log = $registered_user->ID;
 		} else { // Current logged-in user created a new user
 			$message     = _x(
@@ -319,7 +319,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$deleted_user = self::$_users_object_pre_deleted[ $user_id ];
 			unset( self::$_users_object_pre_deleted[ $user_id ] );
 		} else {
-			$message      = __( 'User account #%d was deleted', 'stream' );
+			$message      = esc_html__( 'User account #%d was deleted', 'stream' );
 			$display_name = $user_id;
 			$deleted_user = $user_id;
 		}

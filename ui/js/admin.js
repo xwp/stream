@@ -324,10 +324,6 @@ jQuery( function( $ ) {
 						}
 					}
 
-					if ( ! isNaN( wp_stream.plan.retention ) && '0' !== wp_stream.plan.retention ) {
-						minOffset = '-' + wp_stream.plan.retention + 'd';
-					}
-
 					datepickers.datepicker({
 						dateFormat: 'yy/mm/dd',
 						minDate: minOffset,

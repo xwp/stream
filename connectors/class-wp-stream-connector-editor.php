@@ -41,7 +41,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Editor', 'stream' );
+		return esc_html__( 'Editor', 'stream' );
 	}
 
 	/**
@@ -51,7 +51,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'updated' => __( 'Updated', 'stream' ),
+			'updated' => esc_html__( 'Updated', 'stream' ),
 		);
 	}
 
@@ -69,8 +69,8 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 		return apply_filters(
 			'wp_stream_editor_context_labels',
 			array(
-				'themes'  => __( 'Themes', 'stream' ),
-				'plugins' => __( 'Plugins', 'stream' ),
+				'themes'  => esc_html__( 'Themes', 'stream' ),
+				'plugins' => esc_html__( 'Plugins', 'stream' ),
 			)
 		);
 	}
@@ -137,7 +137,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 				$plugin_exists = ( ! empty( $plugin_slug ) && file_exists( $file_path ) );
 
 				if ( $theme_exists ) {
-					$links[ __( 'Edit File', 'stream' ) ] = add_query_arg(
+					$links[ esc_html__( 'Edit File', 'stream' ) ] = add_query_arg(
 						array(
 							'theme' => urlencode( $theme_slug ),
 							'file'  => urlencode( $file_name ),
@@ -145,7 +145,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 						self_admin_url( 'theme-editor.php' )
 					);
 
-					$links[ __( 'Theme Details', 'stream' ) ] = add_query_arg(
+					$links[ esc_html__( 'Theme Details', 'stream' ) ] = add_query_arg(
 						array(
 							'theme' => urlencode( $theme_slug ),
 						),
@@ -154,7 +154,7 @@ class WP_Stream_Connector_Editor extends WP_Stream_Connector {
 				}
 
 				if ( $plugin_exists ) {
-					$links[ __( 'Edit File', 'stream' ) ] = add_query_arg(
+					$links[ esc_html__( 'Edit File', 'stream' ) ] = add_query_arg(
 						array(
 							'plugin' => urlencode( $plugin_slug ),
 							'file'   => urlencode( str_ireplace( trailingslashit( WP_PLUGIN_DIR ), '', $file_path ) ),

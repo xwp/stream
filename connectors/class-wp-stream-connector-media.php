@@ -28,7 +28,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Media', 'stream' );
+		return esc_html__( 'Media', 'stream' );
 	}
 
 	/**
@@ -38,12 +38,12 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'attached'   => __( 'Attached', 'stream' ),
-			'uploaded'   => __( 'Uploaded', 'stream' ),
-			'updated'    => __( 'Updated', 'stream' ),
-			'deleted'    => __( 'Deleted', 'stream' ),
-			'assigned'   => __( 'Assigned', 'stream' ),
-			'unassigned' => __( 'Unassigned', 'stream' ),
+			'attached'   => esc_html__( 'Attached', 'stream' ),
+			'uploaded'   => esc_html__( 'Uploaded', 'stream' ),
+			'updated'    => esc_html__( 'Updated', 'stream' ),
+			'deleted'    => esc_html__( 'Deleted', 'stream' ),
+			'assigned'   => esc_html__( 'Assigned', 'stream' ),
+			'unassigned' => esc_html__( 'Unassigned', 'stream' ),
 		);
 	}
 
@@ -56,15 +56,15 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 */
 	public static function get_context_labels() {
 		return array(
-			'image'       => __( 'Image', 'stream' ),
-			'audio'       => __( 'Audio', 'stream' ),
-			'video'       => __( 'Video', 'stream' ),
-			'document'    => __( 'Document', 'stream' ),
-			'spreadsheet' => __( 'Spreadsheet', 'stream' ),
-			'interactive' => __( 'Interactive', 'stream' ),
-			'text'        => __( 'Text', 'stream' ),
-			'archive'     => __( 'Archive', 'stream' ),
-			'code'        => __( 'Code', 'stream' ),
+			'image'       => esc_html__( 'Image', 'stream' ),
+			'audio'       => esc_html__( 'Audio', 'stream' ),
+			'video'       => esc_html__( 'Video', 'stream' ),
+			'document'    => esc_html__( 'Document', 'stream' ),
+			'spreadsheet' => esc_html__( 'Spreadsheet', 'stream' ),
+			'interactive' => esc_html__( 'Interactive', 'stream' ),
+			'text'        => esc_html__( 'Text', 'stream' ),
+			'archive'     => esc_html__( 'Archive', 'stream' ),
+			'code'        => esc_html__( 'Code', 'stream' ),
 		);
 	}
 
@@ -104,10 +104,10 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			if ( $link = get_edit_post_link( $record->object_id ) ) {
-				$links[ __( 'Edit Media', 'stream' ) ] = $link;
+				$links[ esc_html__( 'Edit Media', 'stream' ) ] = $link;
 			}
 			if ( $link = get_permalink( $record->object_id ) ) {
-				$links[ __( 'View', 'stream' ) ] = $link;
+				$links[ esc_html__( 'View', 'stream' ) ] = $link;
 			}
 		}
 
@@ -128,7 +128,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 				'stream'
 			);
 		} else {
-			$message = __( 'Added "%s" to Media library', 'stream' );
+			$message = esc_html__( 'Added "%s" to Media library', 'stream' );
 		}
 
 		$name            = $post->post_title;
@@ -154,7 +154,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 	 */
 	public static function callback_edit_attachment( $post_id ) {
 		$post            = get_post( $post_id );
-		$message         = __( 'Updated "%s"', 'stream' );
+		$message         = esc_html__( 'Updated "%s"', 'stream' );
 		$name            = $post->post_title;
 		$attachment_type = self::get_attachment_type( $post->guid );
 
@@ -176,7 +176,7 @@ class WP_Stream_Connector_Media extends WP_Stream_Connector {
 		$post            = get_post( $post_id );
 		$parent          = $post->post_parent ? get_post( $post->post_parent ) : null;
 		$parent_id       = $parent ? $parent->ID : null;
-		$message         = __( 'Deleted "%s"', 'stream' );
+		$message         = esc_html__( 'Deleted "%s"', 'stream' );
 		$name            = $post->post_title;
 		$url             = $post->guid;
 		$attachment_type = self::get_attachment_type( $post->guid );

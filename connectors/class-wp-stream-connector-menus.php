@@ -26,7 +26,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 * @return string Translated connector label
 	 */
 	public static function get_label() {
-		return __( 'Menus', 'stream' );
+		return esc_html__( 'Menus', 'stream' );
 	}
 
 	/**
@@ -36,11 +36,11 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'created'    => __( 'Created', 'stream' ),
-			'updated'    => __( 'Updated', 'stream' ),
-			'deleted'    => __( 'Deleted', 'stream' ),
-			'assigned'   => __( 'Assigned', 'stream' ),
-			'unassigned' => __( 'Unassigned', 'stream' ),
+			'created'    => esc_html__( 'Created', 'stream' ),
+			'updated'    => esc_html__( 'Updated', 'stream' ),
+			'deleted'    => esc_html__( 'Deleted', 'stream' ),
+			'assigned'   => esc_html__( 'Assigned', 'stream' ),
+			'unassigned' => esc_html__( 'Unassigned', 'stream' ),
 		);
 	}
 
@@ -83,7 +83,7 @@ class WP_Stream_Connector_Menus extends WP_Stream_Connector {
 			$menu_ids = wp_list_pluck( $menus, 'term_id' );
 
 			if ( in_array( $record->object_id, $menu_ids ) ) {
-				$links[ __( 'Edit Menu', 'stream' ) ] = admin_url( 'nav-menus.php?action=edit&menu=' . $record->object_id ); // xss ok (@todo fix WPCS rule)
+				$links[ esc_html__( 'Edit Menu', 'stream' ) ] = admin_url( 'nav-menus.php?action=edit&menu=' . $record->object_id ); // xss ok (@todo fix WPCS rule)
 			}
 		}
 
