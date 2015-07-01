@@ -37,22 +37,42 @@ function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
 	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'filter' ), func_get_args() );
 }
 
+/**
+ * Query records
+ *
+ * @param array $args
+ *
+ * @return array
+ */
 function wp_stream_query( $args = array() ) {
-	return WP_Stream_Query::instance()->query( $args );
+	return WP_Stream_Query::get_instance()->query( $args );
 }
 
-function wp_stream_get_meta( $record, $meta_key = '', $single = false ) {
-	if ( isset( $record->stream_meta->$meta_key ) ) {
-		$record_meta = $record->stream_meta->$meta_key;
-	} else {
-		return '';
-	}
+/**
+ * Query record meta
+ *
+ * @param int    $record_id
+ * @param string $meta_key (optional)
+ * @param bool   $single (optional)
+ *
+ * @return array
+ */
+function wp_stream_get_meta( $record_id, $meta_key = '', $single = false ) {
+	return maybe_unserialize( get_metadata( 'record', $record_id, $meta_key, $single ) );
+}
 
-	if ( $single ) {
-		return $record_meta;
-	} else {
-		return array( $record_meta );
-	}
+/**
+ * Update record meta
+ *
+ * @param int    $record_id
+ * @param string $meta_key
+ * @param string $meta_value
+ * @param string $prev_value (optional)
+ *
+ * @return bool
+ */
+function wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev_value = '' ) {
+	return update_metadata( 'record', $record_id, $meta_key, $meta_value, $prev_value );
 }
 
 /**
@@ -85,23 +105,47 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 }
 
 /**
- * Returns array of existing values for requested field.
+ * Returns array of existing values for requested column.
  * Used to fill search filters with only used items, instead of all items.
  *
- * @see    assemble_records
- * @since  1.0.4
- * @param  string  Requested field (i.e., 'context')
- * @return array   Array of items to be output to select dropdowns
+ * GROUP BY allows query to find just the first occurance of each value in the column,
+ * increasing the efficiency of the query.
+ *
+ * @see assemble_records
+ * @since 1.0.4
+ *
+ * @param string $column
+ * @param string $table (optional)
+ *
+ * @return array
  */
-function wp_stream_existing_records( $field ) {
-	$values = WP_Stream::$db->get_distinct_field_values( $field );
+function wp_stream_existing_records( $column, $table = '' ) {
+	global $wpdb;
 
-	if ( is_array( $values ) && ! empty( $values ) ) {
-		return array_combine( $values, $values );
-	} else {
-		$field = sprintf( 'stream_%s', $field );
-		return isset( WP_Stream_Connectors::$term_labels[ $field ] ) ? WP_Stream_Connectors::$term_labels[ $field ] : array();
+	switch ( $table ) {
+		case 'stream' :
+			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->stream} GROUP BY {$column}", 'ARRAY_A' );
+			break;
+		case 'meta' :
+			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streammeta} GROUP BY {$column}", 'ARRAY_A' );
+			break;
+		default :
+			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streamcontext} GROUP BY {$column}", 'ARRAY_A' );
 	}
+
+	if ( is_array( $rows ) && ! empty( $rows ) ) {
+		foreach ( $rows as $row ) {
+			foreach ( $row as $cell => $value ) {
+				$output_array[ $value ] = $value;
+			}
+		}
+
+		return (array) $output_array;
+	}
+
+	$column = sprintf( 'stream_%s', $column );
+
+	return isset( WP_Stream_Connectors::$term_labels[ $column ] ) ? WP_Stream_Connectors::$term_labels[ $column ] : array();
 }
 
 /**

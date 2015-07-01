@@ -34,36 +34,40 @@ class WP_Stream {
 	/**
 	 * Plugin version number
 	 *
-	 * @const string
+	 * @var string
 	 */
 	const VERSION = '2.0.5';
 
 	/**
 	 * WP-CLI command
 	 *
-	 * @const string
+	 * @var string
 	 */
 	const WP_CLI_COMMAND = 'stream';
 
 	/**
 	 * Hold Stream instance
 	 *
+	 * @access public
+	 * @static
+	 *
 	 * @var string
 	 */
 	public static $instance;
 
 	/**
+	 * @access public
+	 * @static
+	 *
 	 * @var WP_Stream_DB_Base
 	 */
 	public static $db;
 
 	/**
-	 * @var WP_Stream_API
-	 */
-	public static $api;
-
-	/**
 	 * Admin notices, collected and displayed on proper action
+	 *
+	 * @access public
+	 * @static
 	 *
 	 * @var array
 	 */
@@ -71,6 +75,8 @@ class WP_Stream {
 
 	/**
 	 * Class constructor
+	 *
+	 * @access private
 	 */
 	private function __construct() {
 		$locate = $this->locate_plugin();
@@ -84,30 +90,24 @@ class WP_Stream {
 
 		spl_autoload_register( array( $this, 'autoload' ) );
 
-		// Load helper functions
-		require_once WP_STREAM_INC_DIR . 'functions.php';
-
-		// Load DB helper interface/class
-		$driver = 'WP_Stream_DB';
-		if ( class_exists( $driver ) ) {
-			self::$db = new $driver;
-		}
+		// Instantiate DB driver
+		self::$db = new WP_Stream_DB;
 
 		if ( ! self::$db ) {
-			wp_die( esc_html__( 'Stream: Could not load chosen DB driver.', 'stream' ), 'Stream DB Error' );
+			wp_die(
+				__( 'Stream: Could not load chosen DB driver.', 'stream' ),
+				__( 'Stream DB Error', 'stream' )
+			);
 		}
 
-		/**
-		 * Filter allows a custom Stream API class to be instantiated
-		 *
-		 * @since 2.0.2
-		 *
-		 * @return object  The API class object
-		 */
-		self::$api = apply_filters( 'wp_stream_api_class', new WP_Stream_API );
+		// Check DB and display an admin notice if there are tables missing
+		add_action( 'init', array( $this, 'verify_db' ) );
 
 		// Install the plugin
 		add_action( 'wp_stream_before_db_notices', array( __CLASS__, 'install' ) );
+
+		// Load helper functions
+		require_once WP_STREAM_INC_DIR . 'functions.php';
 
 		// Load languages
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
@@ -156,6 +156,9 @@ class WP_Stream {
 	/**
 	 * Return an active instance of this class, and create one if it doesn't exist
 	 *
+	 * @access public
+	 * @static
+	 *
 	 * @return WP_Stream
 	 */
 	public static function get_instance() {
@@ -171,11 +174,161 @@ class WP_Stream {
 	 *
 	 * Load up the translations and add the error message to the admin notices.
 	 *
+	 * @access public
+	 * @static
+	 *
 	 * @return void
 	 */
 	public static function fail_php_version() {
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
 		self::notice( esc_html__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' ) );
+	}
+
+	/**
+	 * Verify that the required DB tables exists
+	 *
+	 * @access public
+	 *
+	 * @return void
+	 */
+	public function verify_db() {
+		/**
+		 * Filter will halt install() if set to true
+		 *
+		 * @param bool
+		 *
+		 * @return bool
+		 */
+		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
+			return;
+		}
+
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
+		global $wpdb;
+
+		$database_message  = '';
+		$uninstall_message = '';
+
+		// Check if all needed DB is present
+		$missing_tables = array();
+
+		foreach ( self::$db->get_table_names() as $table_name ) {
+			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
+				$missing_tables[] = $table_name;
+			}
+		}
+
+		if ( $missing_tables ) {
+			$database_message .= sprintf(
+				'%s <strong>%s</strong>',
+				_n(
+					'The following table is not present in the WordPress database:',
+					'The following tables are not present in the WordPress database:',
+					count( $missing_tables ),
+					'stream'
+				),
+				esc_html( implode( ', ', $missing_tables ) )
+			);
+		}
+
+		if ( is_plugin_active_for_network( WP_STREAM_PLUGIN ) && current_user_can( 'manage_network_plugins' ) ) {
+			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), network_admin_url( 'plugins.php#stream' ) );
+		} elseif ( current_user_can( 'activate_plugins' ) ) {
+			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
+		}
+
+		/**
+		 * Fires before admin notices are triggered for missing database tables.
+		 */
+		do_action( 'wp_stream_before_db_notices' );
+
+		if ( ! empty( $database_message ) ) {
+			self::notice( $database_message );
+
+			if ( ! empty( $uninstall_message ) ) {
+				self::notice( $uninstall_message );
+			}
+		}
+	}
+
+	/**
+	 * DB installation and upgrades
+	 *
+	 * @action register_activation_hook
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @return void
+	 */
+	public static function install() {
+		WP_Stream_Install::get_instance();
+	}
+
+	/**
+	 * DB installation and upgrades
+	 *
+	 * @action register_activation_hook
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @return void
+	 */
+	public static function update_activation_hook() {
+		self::register_update_hook(
+			dirname( plugin_basename( __FILE__ ) ),
+			array( __CLASS__, 'install' ),
+			self::VERSION
+		);
+	}
+
+	/**
+	 * Register a routine to be called when stream or a stream connector has been updated
+	 * It works by comparing the current version with the version previously stored in the database.
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @param string $file     A reference to the main plugin file
+	 * @param string $callback The function to run when the hook is called.
+	 * @param string $version  The version to which the plugin is updating.
+	 *
+	 * @return void
+	 */
+	public static function register_update_hook( $file, $callback, $version ) {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		$plugin = plugin_basename( $file );
+
+		if ( is_plugin_active_for_network( $plugin ) ) {
+			$current_versions = get_site_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$network          = true;
+		} elseif ( is_plugin_active( $plugin ) ) {
+			$current_versions = get_option( WP_Stream_Install::KEY . '_connectors', array() );
+			$network          = false;
+		} else {
+			return;
+		}
+
+		if ( version_compare( $version, $current_versions[ $plugin ], '>' ) ) {
+			call_user_func( $callback, $current_versions[ $plugin ], $network );
+
+			$current_versions[ $plugin ] = $version;
+		}
+
+		if ( $network ) {
+			update_site_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+		} else {
+			update_option( WP_Stream_Install::KEY . '_registered_connectors', $current_versions );
+		}
+
+		return;
 	}
 
 	/**
@@ -380,10 +533,9 @@ class WP_Stream {
 
 }
 
-if ( ! WP_Stream::is_valid_php_version() ) {
-	WP_Stream::fail_php_version();
-} else {
+if ( WP_Stream::is_valid_php_version() ) {
 	$GLOBALS['wp_stream'] = WP_Stream::get_instance();
+	register_activation_hook( __FILE__, array( 'WP_Stream', 'install' ) );
+} else {
+	WP_Stream::fail_php_version();
 }
-
-register_deactivation_hook( __FILE__, array( 'WP_Stream_Admin', 'remove_api_authentication' ) );

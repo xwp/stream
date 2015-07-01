@@ -3,164 +3,227 @@
 class WP_Stream_DB {
 
 	/**
-	 * Meta information returned in the last query
+	 * Hold class instance
 	 *
-	 * @var mixed
+	 * @access public
+	 * @static
+	 *
+	 * @var WP_Stream_DB
 	 */
-	public $query_meta = false;
+	public static $instance;
 
 	/**
-	 * Store records
+	 * Hold records table name
 	 *
-	 * @param  array $records
+	 * @access public
+	 * @static
 	 *
-	 * @return mixed True if updated, otherwise false|WP_Error
+	 * @var string
 	 */
-	public function store( $records ) {
-		// Take only what's ours!
-		$valid_keys = get_class_vars( 'WP_Stream_Record' );
+	public static $table;
 
-		// Fill in defaults
-		$defaults = array(
-			'type'        => 'stream',
-			'site_id'     => 1,
-			'blog_id'     => 0,
-			'object_id'   => 0,
-			'author'      => 0,
-			'author_role' => '',
-			'visibility'  => 'publish',
-			'ip'          => '',
+	/**
+	 * Hold meta table name
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @var string
+	 */
+	public static $table_meta;
+
+	/**
+	 * Hold context table name
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @var string
+	 */
+	public static $table_context;
+
+	/**
+	 * Class constructor
+	 *
+	 * @access public
+	 */
+	public function __construct() {
+		global $wpdb;
+
+		/**
+		 * Allows devs to alter the tables prefix, default to base_prefix
+		 *
+		 * @param string $prefix
+		 *
+		 * @return string
+		 */
+		$prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
+
+		self::$table         = $prefix . 'stream';
+		self::$table_meta    = $prefix . 'stream_meta';
+		self::$table_context = $prefix . 'stream_context';
+
+		$wpdb->stream        = self::$table;
+		$wpdb->streammeta    = self::$table_meta;
+		$wpdb->streamcontext = self::$table_context;
+		$wpdb->recordmeta    = self::$table_meta;
+	}
+
+	/**
+	 * Return an active instance of this class, and create one if it doesn't exist
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @return WP_Stream_DB
+	 */
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/**
+	 * Public getter to return table names
+	 *
+	 * @access public
+	 *
+	 * @return array
+	 */
+	public function get_table_names() {
+		return array(
+			self::$table,
+			self::$table_meta,
+			self::$table_context,
 		);
+	}
 
-		foreach ( $records as $key => $record ) {
-			$records[ $key ] = array_intersect_key( $record, $valid_keys );
-			$records[ $key ] = array_filter( $record );
-			$records[ $key ] = wp_parse_args( $record, $defaults );
-		}
-
+	/**
+	 * Insert a record
+	 *
+	 * @access public
+	 *
+	 * @param array $recordarr
+	 *
+	 * @return int
+	 */
+	public function insert( $recordarr ) {
 		/**
-		 * Allows modification of record information just before logging occurs.
+		 * Filter allows modification of record information
 		 *
-		 * @since 0.2.0
+		 * @param array $recordarr
 		 *
-		 * @param  array $records An array of record data.
+		 * @return array
 		 */
-		$records = apply_filters( 'wp_stream_record_array', $records );
+		$recordarr = apply_filters( 'wp_stream_record_array', $recordarr );
 
-		// Allow extensions to handle the saving process
-		if ( empty( $records ) ) {
-			return false;
+		if ( empty( $recordarr ) ) {
+			return;
 		}
 
-		// TODO: Check/Validate *required* fields
+		global $wpdb;
 
-		$result = $this->insert( $records );
+		$fields = array( 'object_id', 'site_id', 'blog_id', 'author', 'author_role', 'created', 'summary', 'parent', 'visibility', 'ip' );
+		$data   = array_intersect_key( $recordarr, array_flip( $fields ) );
+		$data   = array_filter( $data );
+		$result = $wpdb->insert( self::$table, $data );
 
-		if ( $result && ! is_wp_error( $result ) ) {
+		if ( 1 !== $result ) {
 			/**
-			 * Fires when A Post is inserted
+			 * Fires on a record insertion error
 			 *
-			 * @since 2.0.0
-			 *
-			 * @param array $records
+			 * @param array $recordarr
+			 * @param mixed $result
 			 */
-			do_action( 'wp_stream_records_inserted', $records );
+			do_action( 'wp_stream_record_insert_error', $recordarr, $result );
 
-			return true;
+			return $result;
 		}
 
-		return is_wp_error( $result ) ? $result : false;
-	}
+		$record_id = $wpdb->insert_id;
 
-	/**
-	 * Insert a new record
-	 *
-	 * @internal Used by store()
-	 *
-	 * @param array   $records
-	 *
-	 * @return object $response The inserted records
-	 */
-	private function insert( array $records ) {
-		return WP_Stream::$api->new_records( $records );
-	}
+		self::$instance->prev_record = $record_id;
 
-	/**
-	 * Query records
-	 *
-	 * @internal Used by WP_Stream_Query, and is not designed to be called explicitly
-	 *
-	 * @param  array $query  Query body.
-	 * @param  array $fields Returns specified fields only.
-	 *
-	 * @return array List of records that match query
-	 */
-	public function query( $query, $fields ) {
-		$response = WP_Stream::$api->search( $query, $fields );
+		// Insert context
+		$this->insert_context( $record_id, $recordarr['connector'], $recordarr['context'], $recordarr['action'] );
 
-		if ( empty( $response ) || ! isset( $response->meta ) || ! isset( $response->records ) ) {
-			return false;
-		}
+		// Insert meta
+		foreach ( (array) $recordarr['stream_meta'] as $key => $vals ) {
+			// If associative array, serialize it, otherwise loop on its members
+			$vals = ( is_array( $vals ) && 0 !== key( $vals ) ) ? array( $vals ) : $vals;
 
-		$this->query_meta = $response->meta;
+			foreach ( (array) $vals as $val ) {
+				$val = maybe_serialize( $val );
 
-		$results = (array) $response->records;
-
-		/**
-		 * Allows developers to change the final result set of records
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param array $results
-		 * @param array $query
-		 * @param array $fields
-		 *
-		 * @return array Filtered array of record results
-		 */
-		return apply_filters( 'wp_stream_query_results', $results, $query, $fields );
-	}
-
-	/**
-	 * Get total count of the last query using query() method
-	 *
-	 * @return integer Total item count
-	 */
-	public function get_found_rows() {
-		if ( ! isset( $this->query_meta->total ) ) {
-			return 0;
-		}
-		return $this->query_meta->total;
-	}
-
-	/**
-	 * Get meta data for last query using query() method
-	 *
-	 * @return array Meta data for query
-	 */
-	public function get_query_meta() {
-		return $this->query_meta;
-	}
-
-	/**
-	 * Returns array of existing values for requested field.
-	 * Used to fill search filters with only used items, instead of all items.
-	 *
-	 * @param string Requested field (i.e., 'context')
-	 *
-	 * @return array Array of distinct values
-	 */
-	public function get_distinct_field_values( $field ) {
-		$query['aggregations']['fields']['terms']['field'] = $field;
-
-		$values   = array();
-		$response = WP_Stream::$api->search( $query, array( $field ) );
-
-		if ( isset( $response->meta->aggregations->fields->buckets ) ) {
-			foreach ( $response->meta->aggregations->fields->buckets as $field ) {
-				$values[] = $field->key;
+				$this->insert_meta( $record_id, $key, $val );
 			}
 		}
 
-		return $values;
+		/**
+		 * Fires after a record has been inserted
+		 *
+		 * @param int   $record_id
+		 * @param array $recordarr
+		 */
+		do_action( 'wp_stream_record_inserted', $record_id, $recordarr );
+
+		return absint( $record_id );
 	}
+
+	/**
+	 * Insert record context
+	 *
+	 * @access public
+	 *
+	 * @param int    $record_id
+	 * @param string $connector
+	 * @param string $context
+	 * @param string $action
+	 *
+	 * @return array
+	 */
+	public function insert_context( $record_id, $connector, $context, $action ) {
+		global $wpdb;
+
+		$result = $wpdb->insert(
+			self::$table_context,
+			array(
+				'record_id' => $record_id,
+				'connector' => $connector,
+				'context'   => $context,
+				'action'    => $action,
+			)
+		);
+
+		return $result;
+	}
+
+	/**
+	 * Insert record meta
+	 *
+	 * @access public
+	 *
+	 * @param int    $record_id
+	 * @param string $key
+	 * @param string $val
+	 *
+	 * @return array
+	 */
+	public function insert_meta( $record_id, $key, $val ) {
+		global $wpdb;
+
+		$result = $wpdb->insert(
+			self::$table_meta,
+			array(
+				'record_id'  => $record_id,
+				'meta_key'   => $key,
+				'meta_value' => $val,
+			)
+		);
+
+		return $result;
+	}
+
 }

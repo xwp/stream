@@ -5,19 +5,27 @@ class WP_Stream_Log {
 	/**
 	 * Hold class instance
 	 *
-	 * @var string
+	 * @access public
+	 * @static
+	 *
+	 * @var WP_Stream_Log
 	 */
 	public static $instance;
 
 	/**
-	 * Hold event transaction object
+	 * Previous Stream record ID, used for chaining same-session records
 	 *
-	 * @var object
+	 * @access public
+	 *
+	 * @var int
 	 */
-	private static $transaction;
+	public $prev_record;
 
 	/**
-	 * Load log handler class, filterable by extensions
+	 * Load log handler class
+	 *
+	 * @access public
+	 * @static
 	 *
 	 * @return void
 	 */
@@ -25,21 +33,20 @@ class WP_Stream_Log {
 		/**
 		 * Filter allows developers to change log handler class
 		 *
-		 * @since 0.2.0
+		 * @param  array
 		 *
-		 * @return string  Class name to use for log handling
+		 * @return string
 		 */
 		$log_handler = apply_filters( 'wp_stream_log_handler', __CLASS__ );
 
-		self::$instance    = new $log_handler;
-		self::$transaction = new stdClass;
-
-		add_action( 'wp_loaded', array( __CLASS__, 'transaction_start' ), 999 );
-		add_action( 'shutdown', array( __CLASS__, 'transaction_reset' ), 999 );
+		self::$instance = new $log_handler;
 	}
 
 	/**
 	 * Return an active instance of this class, and create one if it doesn't exist
+	 *
+	 * @access public
+	 * @static
 	 *
 	 * @return WP_Stream_Log
 	 */
@@ -52,42 +59,17 @@ class WP_Stream_Log {
 	}
 
 	/**
-	 * Start the transaction timer when WordPress is fully loaded
-	 *
-	 * @return void
-	 */
-	public static function transaction_start() {
-		self::$transaction->start = microtime( true );
-
-		/**
-		 * Fires immediately after the transaction timer has started
-		 *
-		 * @since 2.0.6
-		 *
-		 * @param int $transaction_start
-		 */
-		do_action( 'wp_stream_transaction_start', self::$transaction->start );
-	}
-
-	/**
-	 * Reset the transaction timer on shutdown
-	 *
-	 * @return void
-	 */
-	public static function transaction_reset() {
-		self::$transaction->start = null;
-	}
-
-	/**
 	 * Log handler
 	 *
-	 * @param         $connector
-	 * @param  string $message   sprintf-ready error message string
-	 * @param  array  $args      sprintf (and extra) arguments to use
-	 * @param  int    $object_id Target object id
-	 * @param  string $context   Context of the event
-	 * @param  string $action    Action of the event
-	 * @param  int    $user_id   User responsible for the event
+	 * @access public
+	 *
+	 * @param  string $connector
+	 * @param  string $message
+	 * @param  array  $args
+	 * @param  int    $object_id
+	 * @param  string $context
+	 * @param  string $action
+	 * @param  int    $user_id
 	 *
 	 * @return mixed True if updated, otherwise false|WP_Error
 	 */
@@ -172,30 +154,7 @@ class WP_Stream_Log {
 			'ip'          => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
-		// Stop the transaction timer and add values to record meta
-		if ( ! empty( self::$transaction->start ) ) {
-			self::$transaction->stop = microtime( true );
-			self::$transaction->time = round( self::$transaction->stop - self::$transaction->start, 3 ) * 1000; // Use milliseconds
-
-			$recordarr['stream_meta']['transaction_start'] = self::$transaction->start;
-			$recordarr['stream_meta']['transaction_stop']  = self::$transaction->stop;
-			$recordarr['stream_meta']['transaction_time']  = self::$transaction->time;
-
-			/**
-			 * Fires immediately after the transaction timer has stopped
-			 *
-			 * @since 2.0.6
-			 *
-			 * @param object $transaction
-			 * @param array  $recordarr
-			 */
-			do_action( 'wp_stream_transaction_stop', self::$transaction, $recordarr );
-
-			// Restart the timer to properly time any subsequent bulk actions
-			self::transaction_start();
-		}
-
-		$result = WP_Stream::$db->store( array( $recordarr ) );
+		$result = WP_Stream::$db->insert( $recordarr );
 
 		self::debug_backtrace( $recordarr );
 
@@ -204,6 +163,8 @@ class WP_Stream_Log {
 
 	/**
 	 * This function is use to check whether or not a record should be excluded from the log
+	 *
+	 * @access public
 	 *
 	 * @param $connector string name of the connector being logged
 	 * @param $context   string name of the context being logged
@@ -279,6 +240,9 @@ class WP_Stream_Log {
 	/**
 	 * Send a full backtrace of calls to the PHP error log for debugging
 	 *
+	 * @access public
+	 * @static
+	 *
 	 * @param array $recordarr
 	 *
 	 * @return void
@@ -338,13 +302,10 @@ class WP_Stream_Log {
 			$author_meta = implode( ', ', $author_meta );
 		}
 
+		// Debug backtrace
 		ob_start();
 
-		// @codingStandardsIgnoreStart
-
 		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ); // Option to ignore args requires PHP 5.3.6
-
-		// @codingStandardsIgnoreEnd
 
 		$backtrace = ob_get_clean();
 		$backtrace = array_values( array_filter( explode( "\n", $backtrace ) ) );
