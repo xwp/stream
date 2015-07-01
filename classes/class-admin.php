@@ -207,7 +207,7 @@ class Admin {
 		$this->screen_id['main'] = add_menu_page(
 			$main_page_title,
 			$main_menu_title,
-			self::VIEW_CAP,
+			$this->view_cap,
 			$this->records_page_slug,
 			array( $this, 'render_list_table' ),
 			'div',
@@ -225,7 +225,7 @@ class Admin {
 			$this->records_page_slug,
 			$settings_page_title,
 			esc_html__( 'Settings', 'stream' ),
-			self::SETTINGS_CAP,
+			$this->settings_cap,
 			$this->settings_page_slug,
 			array( $this, 'render_settings_page' )
 		);
@@ -633,7 +633,7 @@ class Admin {
 			)
 		);
 
-		$stream_view_caps = array( self::VIEW_CAP );
+		$stream_view_caps = array( $this->view_cap );
 
 		foreach ( $caps as $cap ) {
 			if ( in_array( $cap, $stream_view_caps ) ) {
@@ -662,7 +662,7 @@ class Admin {
 	 * @return array
 	 */
 	public function _filter_role_caps( $allcaps, $cap, $role ) {
-		$stream_view_caps = array( self::VIEW_CAP );
+		$stream_view_caps = array( $this->view_cap );
 
 		if ( in_array( $cap, $stream_view_caps ) && $this->role_can_view( $role ) ) {
 			$allcaps[ $cap ] = true;

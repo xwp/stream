@@ -3,12 +3,6 @@ namespace WP_Stream;
 
 abstract class Connector {
 	/**
-	 * Hold Plugin class
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Connector slug
 	 *
 	 * @var string
@@ -35,15 +29,6 @@ abstract class Connector {
 	 * @var int
 	 */
 	public $prev_stream = null;
-
-	/**
-	 * Class constructor.
-	 *
-	 * @param Plugin $plugin The main Plugin class.
-	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-	}
 
 	/**
 	 * Register all context hooks
@@ -108,8 +93,6 @@ abstract class Connector {
 	 * @param string $action  Action of the event
 	 * @param int $user_id    User responsible for the event
 	 *
-	 * @internal param string $action Action performed (stream_action)
-	 *
 	 * @return bool
 	 */
 	public function log( $message, $args, $object_id, $context, $action, $user_id = null ) {
@@ -133,7 +116,7 @@ abstract class Connector {
 			$user_id   = $data['user_id'];
 		}
 
-		return call_user_func_array( array( $this->plugin->log, 'log' ), compact( 'connector', 'message', 'args', 'object_id', 'context', 'action', 'user_id' ) );
+		return call_user_func_array( array( wp_stream_get_instance()->log, 'log' ), compact( 'connector', 'message', 'args', 'object_id', 'context', 'action', 'user_id' ) );
 	}
 
 	/**
