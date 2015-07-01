@@ -6,8 +6,6 @@
  * This is a polyfill function intended to be used in place of PHP's
  * filter_input() function, which can occasionally be unreliable.
  *
- * @since 1.2.5
- *
  * @param int    $type           One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV.
  * @param string $variable_name  Name of a variable to get.
  * @param int    $filter         The ID of the filter to apply.
@@ -24,8 +22,6 @@ function wp_stream_filter_input( $type, $variable_name, $filter = null, $options
  *
  * This is a polyfill function intended to be used in place of PHP's
  * filter_var() function, which can occasionally be unreliable.
- *
- * @since 1.2.5
  *
  * @param string $var      Value to filter.
  * @param int    $filter   The ID of the filter to apply.
@@ -89,7 +85,7 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
  * Used to fill search filters with only used items, instead of all items.
  *
  * @see    assemble_records
- * @since  1.0.4
+ *
  * @param  string  Requested field (i.e., 'context')
  * @return array   Array of items to be output to select dropdowns
  */
@@ -107,7 +103,6 @@ function wp_stream_existing_records( $field ) {
 /**
  * Determine the title of an object that a record is for.
  *
- * @since  2.1.0
  * @param  object  Record object
  * @return mixed   The title of the object as a string, otherwise false
  */

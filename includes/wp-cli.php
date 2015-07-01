@@ -2,7 +2,6 @@
 /**
  * Stream command for WP-CLI
  *
- * @since 2.0.3
  * @see https://github.com/wp-cli/wp-cli
  */
 class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
