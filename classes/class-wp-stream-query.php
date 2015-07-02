@@ -58,8 +58,6 @@ class WP_Stream_Query {
 			// Order
 			'order'            => 'desc',
 			'orderby'          => 'date',
-			// Meta sub queries
-			'meta'             => array(),
 			// Fields selection
 			'fields'           => array(),
 			// Exclude
@@ -242,19 +240,6 @@ class WP_Stream_Query {
 					$where .= $wpdb->prepare( " AND $wpdb->stream.%s NOT IN {$format}", $field, $value );
 				}
 			}
-		}
-
-		/**
-		 * PARSE META QUERY PARAMS
-		 */
-		$meta_query = new WP_Meta_Query;
-
-		$meta_query->parse_query_vars( $args );
-
-		if ( ! empty( $meta_query->queries ) ) {
-			$mclauses = $meta_query->get_sql( 'stream', $wpdb->stream, 'ID' );
-			$join    .= str_replace( 'stream_id', 'record_id', $mclauses['join'] );
-			$where   .= str_replace( 'stream_id', 'record_id', $mclauses['where'] );
 		}
 
 		/**
