@@ -142,8 +142,8 @@ class WP_Stream_Query {
 		}
 
 		if ( ! empty( $args['search'] ) ) {
-			$field = ! empty( $args['search'] ) ? $args['search'] : 'summary';
-			$where .= $wpdb->prepare( " AND $wpdb->stream.%s LIKE %s", $field, "%{$args['search']}%" );
+			$field = ! empty( $args['search_field'] ) ? $args['search_field'] : 'summary';
+			$where .= $wpdb->prepare( " AND $wpdb->stream.{$field} LIKE %s", "%{$args['search']}%" );
 		}
 
 		if ( is_numeric( $args['user_id'] ) ) {
