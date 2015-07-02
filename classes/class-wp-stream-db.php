@@ -131,8 +131,6 @@ class WP_Stream_DB {
 
 		$record_id = $wpdb->insert_id;
 
-		self::$instance->prev_record = $record_id;
-
 		// Insert record meta
 		foreach ( (array) $recordarr['meta'] as $key => $vals ) {
 			// If associative array, serialize it, otherwise loop on its members
