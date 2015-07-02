@@ -394,20 +394,26 @@ class WP_Stream_Install {
 			site_id bigint(20) unsigned NOT NULL DEFAULT '1',
 			blog_id bigint(20) unsigned NOT NULL DEFAULT '0',
 			object_id bigint(20) unsigned NULL,
-			author bigint(20) unsigned NOT NULL DEFAULT '0',
-			author_role varchar(20) NOT NULL DEFAULT '',
+			user_id bigint(20) unsigned NOT NULL DEFAULT '0',
+			user_role varchar(20) NOT NULL DEFAULT '',
 			summary longtext NOT NULL,
 			visibility varchar(20) NOT NULL DEFAULT 'publish',
 			parent bigint(20) unsigned NOT NULL DEFAULT '0',
-			type varchar(20) NOT NULL DEFAULT 'stream',
+			type varchar(20) NOT NULL DEFAULT 'record',
 			created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+			connector varchar(100) NOT NULL,
+			context varchar(100) NOT NULL,
+			action varchar(100) NOT NULL,
 			ip varchar(39) NULL,
 			PRIMARY KEY  (ID),
 			KEY site_id (site_id),
 			KEY blog_id (blog_id),
+			KEY user_id (user_id),
 			KEY parent (parent),
-			KEY author (author),
-			KEY created (created)
+			KEY created (created),
+			KEY connector (connector),
+			KEY context (context),
+			KEY action (action)
 		)";
 
 		if ( ! empty( $wpdb->charset ) ) {
@@ -421,18 +427,6 @@ class WP_Stream_Install {
 		$sql .= ';';
 
 		dbDelta( $sql );
-
-		$sql = "CREATE TABLE {$prefix}stream_context (
-			meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-			record_id bigint(20) unsigned NOT NULL,
-			context varchar(100) NOT NULL,
-			action varchar(100) NOT NULL,
-			connector varchar(100) NOT NULL,
-			PRIMARY KEY  (meta_id),
-			KEY context (context),
-			KEY action (action),
-			KEY connector (connector)
-		)";
 
 		if ( ! empty( $wpdb->charset ) ) {
 			$sql .= " CHARACTER SET $wpdb->charset";

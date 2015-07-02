@@ -101,7 +101,7 @@ class WP_Stream_Log {
 			$visibility = 'private';
 		}
 
-		$author_meta = array(
+		$user_meta = array(
 			'user_email'      => (string) ! empty( $user->user_email ) ? $user->user_email : '',
 			'display_name'    => (string) $author->get_display_name(),
 			'user_login'      => (string) ! empty( $user->user_login ) ? $user->user_login : '',
@@ -113,8 +113,8 @@ class WP_Stream_Log {
 			$uid       = posix_getuid();
 			$user_info = posix_getpwuid( $uid );
 
-			$author_meta['system_user_id']   = (int) $uid;
-			$author_meta['system_user_name'] = (string) $user_info['name'];
+			$user_meta['system_user_id']   = (int) $uid;
+			$user_meta['system_user_name'] = (string) $user_info['name'];
 		}
 
 		// Prevent any meta with null values from being logged
@@ -133,25 +133,27 @@ class WP_Stream_Log {
 			}
 		);
 
+		// Add user meta to Stream meta
+		$stream_meta['user_meta'] = $user_meta;
+
 		// Get the current time in milliseconds
 		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
 
 		$recordarr = array(
-			'object_id'   => (int) $object_id,
-			'site_id'     => (int) is_multisite() ? get_current_site()->id : 1,
-			'blog_id'     => (int) apply_filters( 'wp_stream_blog_id_logged', get_current_blog_id() ),
-			'author'      => (int) $user_id,
-			'author_role' => (string) ! empty( $user->roles ) ? $user->roles[0] : '',
-			'author_meta' => (array) $author_meta,
-			'created'     => (string) $iso_8601_extended_date,
-			'visibility'  => (string) $visibility,
-			'type'        => 'stream',
-			'summary'     => (string) vsprintf( $message, $args ),
-			'connector'   => (string) $connector,
-			'context'     => (string) $context,
-			'action'      => (string) $action,
-			'stream_meta' => (array) $stream_meta,
-			'ip'          => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
+			'object_id'  => (int) $object_id,
+			'site_id'    => (int) is_multisite() ? get_current_site()->id : 1,
+			'blog_id'    => (int) apply_filters( 'wp_stream_blog_id_logged', get_current_blog_id() ),
+			'user_id'    => (int) $user_id,
+			'user_role'  => (string) ! empty( $user->roles ) ? $user->roles[0] : '',
+			'created'    => (string) $iso_8601_extended_date,
+			'visibility' => (string) $visibility,
+			'type'       => 'record',
+			'summary'    => (string) vsprintf( $message, $args ),
+			'connector'  => (string) $connector,
+			'context'    => (string) $context,
+			'action'     => (string) $action,
+			'ip'         => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
+			'meta'       => (array) $stream_meta,
 		);
 
 		$result = WP_Stream::$db->insert( $recordarr );
@@ -166,11 +168,12 @@ class WP_Stream_Log {
 	 *
 	 * @access public
 	 *
-	 * @param $connector string name of the connector being logged
-	 * @param $context   string name of the context being logged
-	 * @param $action    string name of the action being logged
-	 * @param $user_id   int    id of the user being logged
-	 * @param $ip        string ip address being logged
+	 * @param string $connector
+	 * @param string $context
+	 * @param string $action
+	 * @param int    $user_id
+	 * @param string $ip
+	 *
 	 * @return bool
 	 */
 	public function is_record_excluded( $connector, $context, $action, $user = null, $ip = null ) {
@@ -178,11 +181,7 @@ class WP_Stream_Log {
 			$user = wp_get_current_user();
 		}
 
-		if ( is_null( $ip ) ) {
-			$ip = wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
-		} else {
-			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
-		}
+		$ip = is_null( $ip ) ? wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ) : wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
 
 		$user_role = isset( $user->roles[0] ) ? $user->roles[0] : null;
 
@@ -281,7 +280,9 @@ class WP_Stream_Log {
 		$action    = isset( $recordarr['action'] ) ? $recordarr['action'] : null;
 
 		// Stream meta
-		$stream_meta = isset( $recordarr['stream_meta'] ) ? $recordarr['stream_meta'] : null;
+		$stream_meta = isset( $recordarr['meta'] ) ? $recordarr['meta'] : null;
+
+		unset( $stream_meta['user_meta'] );
 
 		if ( $stream_meta ) {
 			array_walk( $stream_meta, function( &$value, $key ) {
@@ -291,15 +292,15 @@ class WP_Stream_Log {
 			$stream_meta = implode( ', ', $stream_meta );
 		}
 
-		// Author meta
-		$author_meta = isset( $recordarr['author_meta'] ) ? $recordarr['author_meta'] : null;
+		// User meta
+		$user_meta = isset( $recordarr['meta']['user_meta'] ) ? $recordarr['meta']['user_meta'] : null;
 
-		if ( $author_meta ) {
-			array_walk( $author_meta, function( &$value, $key ) {
+		if ( $user_meta ) {
+			array_walk( $user_meta, function( &$value, $key ) {
 				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
 			});
 
-			$author_meta = implode( ', ', $author_meta );
+			$user_meta = implode( ', ', $user_meta );
 		}
 
 		// Debug backtrace
@@ -318,7 +319,7 @@ class WP_Stream_Log {
 			$context,
 			$action,
 			$stream_meta,
-			$author_meta,
+			$user_meta,
 			implode( "\n", $backtrace )
 		);
 

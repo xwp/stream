@@ -159,9 +159,9 @@ class WP_Stream_Author {
 	}
 
 	/**
-	 * Tries to find a label for the record's author_role.
+	 * Tries to find a label for the record's user_role.
 	 *
-	 * If the author_role exists, use the label associated with it.
+	 * If the user_role exists, use the label associated with it.
 	 *
 	 * Otherwise, if there is a user role label stored as Stream meta then use that.
 	 *
@@ -174,17 +174,17 @@ class WP_Stream_Author {
 	function get_role() {
 		global $wp_roles;
 
-		if ( ! empty( $this->meta['author_role'] ) && isset( $wp_roles->role_names[ $this->meta['author_role'] ] ) ) {
-			$author_role = $wp_roles->role_names[ $this->meta['author_role'] ];
+		if ( ! empty( $this->meta['user_role'] ) && isset( $wp_roles->role_names[ $this->meta['user_role'] ] ) ) {
+			$user_role = $wp_roles->role_names[ $this->meta['user_role'] ];
 		} elseif ( ! empty( $this->meta['user_role_label'] ) ) {
-			$author_role = $this->meta['user_role_label'];
+			$user_role = $this->meta['user_role_label'];
 		} elseif ( isset( $this->user->roles[0] ) && isset( $wp_roles->role_names[ $this->user->roles[0] ] ) ) {
-			$author_role = $wp_roles->role_names[ $this->user->roles[0] ];
+			$user_role = $wp_roles->role_names[ $this->user->roles[0] ];
 		} else {
-			$author_role = '';
+			$user_role = '';
 		}
 
-		return $author_role;
+		return $user_role;
 	}
 
 	/**

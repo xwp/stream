@@ -39,49 +39,46 @@ class WP_Stream_Query {
 
 		$defaults = array(
 			// Search param
-			'search'                => null,
-			'search_field'          => 'summary',
-			'record_after'          => null, // Deprecated, use date_after instead
+			'search'           => null,
+			'search_field'     => 'summary',
+			'record_after'     => null, // Deprecated, use date_after instead
 			// Date-based filters
-			'date'                  => null, // Ex: 2014-02-17
-			'date_from'             => null, // Ex: 2014-02-17
-			'date_to'               => null, // Ex: 2014-02-17
-			'date_after'            => null, // Ex: 2014-02-17T15:19:21+00:00
-			'date_before'           => null, // Ex: 2014-02-17T15:19:21+00:00
+			'date'             => null, // Ex: 2014-02-17
+			'date_from'        => null, // Ex: 2014-02-17
+			'date_to'          => null, // Ex: 2014-02-17
+			'date_after'       => null, // Ex: 2014-02-17T15:19:21+00:00
+			'date_before'      => null, // Ex: 2014-02-17T15:19:21+00:00
 			// Record ID filters
-			'record'                => null,
-			'record__in'            => array(),
-			'record__not_in'        => array(),
+			'record'           => null,
+			'record__in'       => array(),
+			'record__not_in'   => array(),
 			// Pagination params
-			'records_per_page'      => get_option( 'posts_per_page', 20 ),
-			'paged'                 => 1,
+			'records_per_page' => get_option( 'posts_per_page', 20 ),
+			'paged'            => 1,
 			// Order
-			'order'                 => 'desc',
-			'orderby'               => 'date',
-			// Meta/Taxonomy sub queries
-			'meta'                  => array(),
-			// Data aggregations
-			'aggregations'          => array(),
+			'order'            => 'desc',
+			'orderby'          => 'date',
+			// Meta sub queries
+			'meta'             => array(),
 			// Fields selection
-			'fields'                => null,
+			'fields'           => array(),
 			// Exclude
-			'ignore_context'        => null,
-			'hide_excluded'         => ! empty( WP_Stream_Settings::$options['exclude_hide_previous_records'] ),
+			'hide_excluded'    => ! empty( WP_Stream_Settings::$options['exclude_hide_previous_records'] ),
 		);
 
 		// Additional property fields
 		$properties = array(
-			'type'          => 'stream',
-			'author'        => null,
-			'author_role'   => null,
-			'ip'            => null,
-			'object_id'     => null,
-			'site_id'       => null,
-			'blog_id'       => null,
-			'visibility'    => 'publish',
-			'connector'     => null,
-			'context'       => null,
-			'action'        => null,
+			'type'       => 'record',
+			'user_id'    => null,
+			'user_role'  => null,
+			'ip'         => null,
+			'object_id'  => null,
+			'site_id'    => null,
+			'blog_id'    => null,
+			'visibility' => 'publish',
+			'connector'  => null,
+			'context'    => null,
+			'action'     => null,
 		);
 
 		/**
@@ -121,27 +118,18 @@ class WP_Stream_Query {
 		$join  = '';
 		$where = '';
 
-		// Only join with context table for correct types of records
-		if ( ! $args['ignore_context'] ) {
-			$join = sprintf(
-				' INNER JOIN %1$s ON ( %1$s.record_id = %2$s.ID )',
-				$wpdb->streamcontext,
-				$wpdb->stream
-			);
-		}
-
 		/**
 		 * PARSE CORE PARAMS
 		 */
-		if ( $args['object_id'] ) {
+		if ( ! empty( $args['object_id'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.object_id = %d", $args['object_id'] );
 		}
 
-		if ( $args['type'] ) {
+		if ( ! empty( $args['type'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.type = %s", $args['type'] );
 		}
 
-		if ( $args['ip'] ) {
+		if ( ! empty( $args['ip'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", wp_stream_filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
 		}
 
@@ -153,47 +141,59 @@ class WP_Stream_Query {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.blog_id = %d", $args['blog_id'] );
 		}
 
-		if ( $args['search'] ) {
+		if ( ! empty( $args['search'] ) ) {
 			$field = ! empty( $args['search'] ) ? $args['search'] : 'summary';
 			$where .= $wpdb->prepare( " AND $wpdb->stream.%s LIKE %s", $field, "%{$args['search']}%" );
 		}
 
-		if ( $args['author'] || '0' === $args['author'] ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.author = %d", (int) $args['author'] );
+		if ( is_numeric( $args['user_id'] ) ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.user_id = %d", (int) $args['user_id'] );
 		}
 
-		if ( $args['author_role'] ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.author_role = %s", $args['author_role'] );
+		if ( ! empty( $args['user_role'] ) ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.user_role = %s", $args['user_role'] );
 		}
 
-		if ( $args['visibility'] ) {
+		if ( ! empty( $args['visibility'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.visibility = %s", $args['visibility'] );
+		}
+
+		if ( ! empty( $args['connector'] ) ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.connector = %s", $args['connector'] );
+		}
+
+		if ( ! empty( $args['context'] ) ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.context = %s", $args['context'] );
+		}
+
+		if ( ! empty( $args['action'] ) ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.action = %s", $args['action'] );
 		}
 
 		/**
 		 * PARSE DATE PARAM FAMILY
 		 */
-		if ( $args['date_from'] ) {
+		if ( ! empty( $args['date_from'] ) ) {
 			$date   = date( 'Y-m-d H:i:s', strtotime( $args['date_from'] ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) >= %s", $date );
 		}
 
-		if ( $args['date_to'] ) {
+		if ( ! empty( $args['date_to'] ) ) {
 			$date   = date( 'Y-m-d H:i:s', strtotime( $args['date_to'] ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) <= %s", $date );
 		}
 
-		if ( $args['date_after'] ) {
+		if ( ! empty( $args['date_after'] ) ) {
 			$date   = date( 'Y-m-d H:i:s', strtotime( $args['date_after'] ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) > %s", $date );
 		}
 
-		if ( $args['date_before'] ) {
+		if ( ! empty( $args['date_before'] ) ) {
 			$date   = date( 'Y-m-d H:i:s', strtotime( $args['date_before'] ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) < %s", $date );
 		}
 
-		if ( $args['date'] ) {
+		if ( ! empty( $args['date'] ) ) {
 			$date   = date( 'Y-m-d H:i:s', strtotime( $args['date'] ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) = %s", $date );
 		}
@@ -268,16 +268,6 @@ class WP_Stream_Query {
 		}
 
 		/**
-		 * PARSE CONTEXT PARAMS
-		 */
-		if ( ! $args['ignore_context'] ) {
-			$context_query = new WP_Stream_Context_Query( $args );
-			$cclauses      = $context_query->get_sql();
-			$join         .= $cclauses['join'];
-			$where        .= $cclauses['where'];
-		}
-
-		/**
 		 * PARSE PAGINATION PARAMS
 		 */
 		$limits   = '';
@@ -294,12 +284,10 @@ class WP_Stream_Query {
 		 */
 		$order     = esc_sql( $args['order'] );
 		$orderby   = esc_sql( $args['orderby'] );
-		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'author', 'author_role', 'summary', 'visibility', 'parent', 'type', 'created' );
+		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'summary', 'visibility', 'parent', 'type', 'created', 'connector', 'context', 'action' );
 
 		if ( in_array( $orderby, $orderable ) ) {
 			$orderby = sprintf( '%s.%s', $wpdb->stream, $orderby );
-		} elseif ( in_array( $orderby, array( 'connector', 'context', 'action' ) ) ) {
-			$orderby = sprintf( '%s.%s', $wpdb->streamcontext, $orderby );
 		} elseif ( 'meta_value_num' === $orderby && ! empty( $args['meta_key'] ) ) {
 			$orderby = "CAST($wpdb->streammeta.meta_value AS SIGNED)";
 		} elseif ( 'meta_value' === $orderby && ! empty( $args['meta_key'] ) ) {
@@ -313,18 +301,23 @@ class WP_Stream_Query {
 		/**
 		 * PARSE FIELDS PARAMETER
 		 */
-		$fields = $args['fields'];
-		$select = "$wpdb->stream.*";
+		$fields  = (array) $args['fields'];
+		$selects = array();
 
-		if ( ! $args['ignore_context'] ) {
-			$select .= ", $wpdb->streamcontext.context, $wpdb->streamcontext.action, $wpdb->streamcontext.connector";
+		if ( ! empty( $fields ) ) {
+			foreach ( $fields as $field ) {
+				// We'll query the meta table later
+				if ( 'meta' === $field ) {
+					continue;
+				}
+
+				$selects[] = sprintf( "$wpdb->stream.%s", $field );
+			}
+		} else {
+			$selects[] = "$wpdb->stream.*";
 		}
 
-		if ( 'ID' === $fields ) {
-			$select = "$wpdb->stream.ID";
-		} elseif ( 'summary' === $fields ) {
-			$select = "$wpdb->stream.summary, $wpdb->stream.ID";
-		}
+		$select = implode( ', ', $selects );
 
 		/**
 		 * BUILD THE FINAL QUERY
@@ -351,25 +344,46 @@ class WP_Stream_Query {
 		 */
 		$results = $wpdb->get_results( $query );
 
-		//print_r( $results ); die();
-
-		if ( 'with-meta' === $fields && is_array( $results ) && ! empty( $results ) ) {
-			$ids = array_map( 'absint', wp_list_pluck( $results, 'ID' ) );
-
-			$sql_meta = sprintf(
-				"SELECT * FROM $wpdb->streammeta WHERE record_id IN ( %s )",
-				implode( ',', $ids )
-			);
-
-			$meta  = $wpdb->get_results( $sql_meta );
-			$ids_f = array_flip( $ids );
-
-			foreach ( $meta as $meta_record ) {
-				$results[ $ids_f[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ][] = $meta_record->meta_value;
-			}
+		if ( empty( $fields ) || in_array( 'meta', $fields ) ) {
+			$results = $this->add_record_meta( $results );
 		}
 
+		//print_r( $results );
+
 		return (array) $results;
+	}
+
+	/**
+	 * Add meta to a set of records
+	 *
+	 * @access public
+	 *
+	 * @param array $records
+	 *
+	 * @return array
+	 */
+	public function add_record_meta( $records ) {
+		global $wpdb;
+
+		$record_ids = array_map( 'absint', wp_list_pluck( $records, 'ID' ) );
+
+		if ( empty( $record_ids ) ) {
+			return (array) $records;
+		}
+
+		$sql_meta = sprintf(
+			"SELECT * FROM $wpdb->streammeta WHERE record_id IN ( %s )",
+			implode( ',', $record_ids )
+		);
+
+		$meta  = $wpdb->get_results( $sql_meta );
+		$ids_f = array_flip( $record_ids );
+
+		foreach ( $meta as $meta_record ) {
+			$records[ $ids_f[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ] = $meta_record->meta_value;
+		}
+
+		return (array) $records;
 	}
 
 }

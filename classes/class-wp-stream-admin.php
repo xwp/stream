@@ -23,13 +23,13 @@ class WP_Stream_Admin {
 	 */
 	public static $disable_access = false;
 
-	const ADMIN_BODY_CLASS    = 'wp_stream_screen';
-	const RECORDS_PAGE_SLUG   = 'wp_stream';
-	const SETTINGS_PAGE_SLUG  = 'wp_stream_settings';
-	const ADMIN_PARENT_PAGE   = 'admin.php';
-	const VIEW_CAP            = 'view_stream';
-	const SETTINGS_CAP        = 'manage_options';
-	const PRELOAD_AUTHORS_MAX = 50;
+	const ADMIN_BODY_CLASS   = 'wp_stream_screen';
+	const RECORDS_PAGE_SLUG  = 'wp_stream';
+	const SETTINGS_PAGE_SLUG = 'wp_stream_settings';
+	const ADMIN_PARENT_PAGE  = 'admin.php';
+	const VIEW_CAP           = 'view_stream';
+	const SETTINGS_CAP       = 'manage_options';
+	const PRELOAD_USERS_MAX  = 50;
 
 	/**
 	 * Load the WP Stream admin area hooks
@@ -624,7 +624,7 @@ class WP_Stream_Admin {
 				}
 
 				// Get gravatar / roles for final result set
-				$results = self::get_authors_record_meta( $users );
+				$results = self::get_users_record_meta( $users );
 
 				break;
 		}
@@ -670,23 +670,4 @@ class WP_Stream_Admin {
 		die();
 	}
 
-	public static function get_authors_record_meta( $authors ) {
-		$authors_records = array();
-
-		foreach ( $authors as $user_id => $args ) {
-			$author   = new WP_Stream_Author( $user_id );
-			$disabled = isset( $args['disabled'] ) ? $args['disabled'] : null;
-
-			$authors_records[ $user_id ] = array(
-				'text'     => $author->get_display_name(),
-				'id'       => $user_id,
-				'label'    => $author->get_display_name(),
-				'icon'     => $author->get_avatar_src( 32 ),
-				'title'    => '',
-				'disabled' => $disabled,
-			);
-		}
-
-		return $authors_records;
-	}
 }

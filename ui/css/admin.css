@@ -142,7 +142,7 @@
 	width: 10%;
 }
 
-.toplevel_page_wp_stream .manage-column.column-author {
+.toplevel_page_wp_stream .manage-column.column-user_id {
 	width: 18%;
 }
 
@@ -177,14 +177,14 @@
 	}
 	.toplevel_page_wp_stream .fixed .column-date,
 	.toplevel_page_wp_stream .fixed .column-summary,
-	.toplevel_page_wp_stream .fixed .column-author,
+	.toplevel_page_wp_stream .fixed .column-user_id,
 	.toplevel_page_wp_stream .fixed tbody tr.no-items td {
 		display: table-cell;
 	}
 	.toplevel_page_wp_stream .fixed .column-date {
 		width: 100px;
 	}
-	.toplevel_page_wp_stream .fixed .column-author {
+	.toplevel_page_wp_stream .fixed .column-user_id {
 		width: 50%;
 	}
 	.toplevel_page_wp_stream .fixed .column-summary {
@@ -193,24 +193,23 @@
 }
 
 @media only screen and (max-width: 480px) {
-	.toplevel_page_wp_stream .fixed .column-author {
+	.toplevel_page_wp_stream .fixed .column-user_id {
 		display: none;
 	}
 }
 
-.toplevel_page_wp_stream .column-author a {
+.toplevel_page_wp_stream .column-user_id a {
 	vertical-align: top;
 }
 
-.toplevel_page_wp_stream .column-author img {
+.toplevel_page_wp_stream .column-user_id img {
 	float: left;
-	margin-right: 10px;
-	margin-top: 1px;
-	width: 40px;
-	height: 40px;
+	margin: 1px 10px 8px 0;
+	width: 32px;
+	height: 32px;
 }
 
-.toplevel_page_wp_stream .column-author .deleted {
+.toplevel_page_wp_stream .column-user_id .deleted {
 	font-style: italic;
 	color: #aaa;
 }

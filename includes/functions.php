@@ -115,23 +115,19 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
  * @since 1.0.4
  *
  * @param string $column
- * @param string $table (optional)
  *
  * @return array
  */
-function wp_stream_existing_records( $column, $table = '' ) {
+function wp_stream_existing_records( $column ) {
 	global $wpdb;
 
-	switch ( $table ) {
-		case 'stream' :
-			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->stream} GROUP BY {$column}", 'ARRAY_A' );
-			break;
-		case 'meta' :
-			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streammeta} GROUP BY {$column}", 'ARRAY_A' );
-			break;
-		default :
-			$rows = $wpdb->get_results( "SELECT {$column} FROM {$wpdb->streamcontext} GROUP BY {$column}", 'ARRAY_A' );
-	}
+	$rows = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT {$column} FROM $wpdb->stream GROUP BY %s",
+			$column
+		),
+		'ARRAY_A'
+	);
 
 	if ( is_array( $rows ) && ! empty( $rows ) ) {
 		foreach ( $rows as $row ) {
