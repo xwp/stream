@@ -13,6 +13,16 @@ class WP_Stream_Query {
 	public static $instance;
 
 	/**
+	 * Hold the number of records found
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @var int
+	 */
+	public static $found_records = 0;
+
+	/**
 	 * Return an active instance of this class, and create one if it doesn't exist
 	 *
 	 * @return WP_Stream_Query
@@ -293,7 +303,7 @@ class WP_Stream_Query {
 		 */
 		$query = "SELECT SQL_CALC_FOUND_ROWS {$select}
 		FROM $wpdb->stream
-			{$join}
+		{$join}
 		WHERE 1=1 {$where}
 		{$orderby}
 		{$limits}";
@@ -313,11 +323,13 @@ class WP_Stream_Query {
 		 */
 		$results = $wpdb->get_results( $query );
 
+		// Hold the number of records found
+		self::$found_records = $wpdb->get_var( 'SELECT FOUND_ROWS()' );
+
+		// Add meta to the records, when applicable
 		if ( empty( $fields ) || in_array( 'meta', $fields ) ) {
 			$results = $this->add_record_meta( $results );
 		}
-
-		//print_r( $results );
 
 		return (array) $results;
 	}
@@ -349,7 +361,7 @@ class WP_Stream_Query {
 		$ids_f = array_flip( $record_ids );
 
 		foreach ( $meta as $meta_record ) {
-			$records[ $ids_f[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ] = $meta_record->meta_value;
+			$records[ $ids_f[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ] = maybe_unserialize( $meta_record->meta_value );
 		}
 
 		return (array) $records;

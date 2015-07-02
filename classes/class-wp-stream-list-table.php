@@ -205,9 +205,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	 * @return integer
 	 */
 	public function get_total_found_rows() {
-		global $wpdb;
-
-		return $wpdb->get_var( 'SELECT FOUND_ROWS()' );
+		return absint( WP_Stream_Query::$found_records );
 	}
 
 	function column_default( $item, $column_name ) {
