@@ -129,19 +129,19 @@ jQuery( function( $ ) {
 
 	// Confirmation on some important actions
 	$( 'body' ).on( 'click', '#wp_stream_advanced_delete_all_records, #wp_stream_network_advanced_delete_all_records', function( e ) {
-		if ( ! confirm( wp_stream.i18n.confirm_purge ) ) {
+		if ( ! window.confirm( wp_stream.i18n.confirm_purge ) ) {
 			e.preventDefault();
 		}
 	});
 
 	$( 'body' ).on( 'click', '#wp_stream_advanced_reset_site_settings, #wp_stream_network_advanced_reset_site_settings', function( e ) {
-		if ( ! confirm( wp_stream.i18n.confirm_defaults ) ) {
+		if ( ! window.confirm( wp_stream.i18n.confirm_defaults ) ) {
 			e.preventDefault();
 		}
 	});
 
 	$( 'body' ).on( 'click', '#wp_stream_uninstall', function( e ) {
-		if ( ! confirm( wp_stream.i18n.confirm_uninstall ) ) {
+		if ( ! window.confirm( wp_stream.i18n.confirm_uninstall ) ) {
 			e.preventDefault();
 		}
 	});
