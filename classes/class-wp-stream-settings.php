@@ -769,7 +769,7 @@ class WP_Stream_Settings {
 
 				$heading_row = sprintf(
 					'<tr>
-						<th scope="col" class="check-column manage-column">%1$s</th>
+						<td scope="col" class="manage-column column-cb check-column">%1$s</td>
 						<th scope="col" class="manage-column">%2$s</th>
 						<th scope="col" class="manage-column">%3$s</th>
 						<th scope="col" class="manage-column">%4$s</th>
