@@ -61,6 +61,19 @@ class WP_Stream_Admin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_menu_css' ) );
 
+		// Reset Streams database
+		add_action( 'wp_ajax_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
+
+		// Reset Streams settings
+		add_action( 'wp_ajax_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
+
+		// Uninstall Streams and Deactivate plugin
+		add_action( 'wp_ajax_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
+
+		// Auto purge setup
+		add_action( 'wp_loaded', array( __CLASS__, 'purge_schedule_setup' ) );
+		add_action( 'wp_stream_auto_purge', array( __CLASS__, 'purge_scheduled_action' ) );
+
 		// Ajax users list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
@@ -215,7 +228,9 @@ class WP_Stream_Admin {
 				'wp_stream',
 				array(
 					'i18n'       => array(
-						'confirm_defaults' => esc_html__( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+						'confirm_purge'     => esc_html__( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+						'confirm_defaults'  => esc_html__( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+						'confirm_uninstall' => esc_html__( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
 					),
 					'locale'     => esc_js( $locale ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
@@ -413,15 +428,242 @@ class WP_Stream_Admin {
 		wp_add_inline_style( 'wp-admin', $css );
 	}
 
+	public static function wp_ajax_reset() {
+		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
+		if ( ! current_user_can( self::SETTINGS_CAP ) ) {
+			wp_die(
+				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
+			);
+		}
+
+		self::erase_stream_records();
+
+		wp_redirect(
+			add_query_arg(
+				array(
+					'page'    => is_network_admin() ? WP_Stream_Network::NETWORK_SETTINGS_PAGE_SLUG : WP_Stream_Admin::SETTINGS_PAGE_SLUG,
+					'message' => 'data_erased',
+				),
+				is_plugin_active_for_network( WP_STREAM_PLUGIN ) ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
+			)
+		);
+
+		exit;
+	}
+
+	private static function erase_stream_records() {
+		global $wpdb;
+
+		$where = '';
+
+		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+		}
+
+		$wpdb->query(
+			"DELETE `stream`, `meta`
+			FROM {$wpdb->stream} AS `stream`
+			LEFT JOIN {$wpdb->streammeta} AS `meta`
+			ON `meta`.`record_id` = `stream`.`ID`
+			WHERE 1=1 {$where};"
+		);
+	}
+
+	public static function wp_ajax_defaults() {
+		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
+		if ( ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			wp_die( "You don't have sufficient privileges to do this action." );
+		}
+
+		if ( ! current_user_can( self::SETTINGS_CAP ) ) {
+			wp_die(
+				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
+			);
+		}
+
+		self::reset_stream_settings();
+
+		wp_redirect(
+			add_query_arg(
+				array(
+					'page'    => is_network_admin() ? WP_Stream_Network::NETWORK_SETTINGS_PAGE_SLUG : WP_Stream_Admin::SETTINGS_PAGE_SLUG,
+					'message' => 'settings_reset',
+				),
+				is_plugin_active_for_network( WP_STREAM_PLUGIN ) ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
+			)
+		);
+
+		exit;
+	}
+
+	private static function reset_stream_settings() {
+		global $wpdb;
+
+		$blogs = wp_get_sites();
+
+		if ( $blogs ) {
+			foreach ( $blogs as $blog ) {
+				switch_to_blog( $blog['blog_id'] );
+
+				delete_option( WP_Stream_Settings::OPTION_KEY );
+			}
+
+			restore_current_blog();
+		}
+	}
+
+	/**
+	 * This function is used to uninstall all custom tables and uninstall the plugin
+	 * It will also uninstall custom actions
+	 */
+	public static function uninstall_plugin() {
+		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
+		if ( ! current_user_can( self::SETTINGS_CAP ) ) {
+			wp_die(
+				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
+			);
+		}
+
+		// Prevent this action from being fired
+		remove_action( 'deactivate_plugin', array( 'WP_Stream_Connector_Installer', 'callback' ), null );
+
+		global $wpdb;
+
+		// Multisite but NOT network activated, only uninstall the current blog
+		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$wpdb->base_prefix}stream WHERE blog_id = %d",
+					get_current_blog_id()
+				)
+			);
+
+			// Delete various database options
+			delete_option( WP_Stream_Install::OPTION_KEY );
+			delete_option( WP_Stream_Settings::OPTION_KEY );
+		} else {
+			// Delete all tables
+			foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
+				$wpdb->query( "DROP TABLE $table" );
+			}
+
+			// Multisite and network activated, delete options from each blog
+			if ( is_multisite() ) {
+				foreach ( (array) wp_get_sites() as $blog ) {
+					switch_to_blog( absint( $blog['blog_id'] ) );
+
+					delete_option( WP_Stream_Install::OPTION_KEY );
+					delete_option( WP_Stream_Settings::OPTION_KEY );
+				}
+
+				restore_current_blog();
+			}
+
+			// Delete various database options
+			delete_site_option( WP_Stream_Install::OPTION_KEY );
+			delete_site_option( WP_Stream_Settings::OPTION_KEY );
+			delete_site_option( WP_Stream_Settings::NETWORK_OPTION_KEY );
+		}
+
+		// Delete scheduled cron event hooks
+		wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
+
+		// Deactivate the plugin
+		deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
+
+		// Redirect to plugin page
+		wp_redirect(
+			add_query_arg(
+				array(
+					'deactivate' => true,
+				),
+				self_admin_url( 'plugins.php' )
+			)
+		);
+
+		exit;
+	}
+
+	public static function purge_schedule_setup() {
+		if ( ! wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
+			wp_schedule_event( time(), 'twicedaily', 'wp_stream_auto_purge' );
+		}
+	}
+
+	public static function purge_scheduled_action() {
+		global $wpdb;
+
+		// Don't purge when in Network Admin unless Stream is network activated
+		if (
+			is_multisite()
+			&&
+			is_network_admin()
+			&&
+			! is_plugin_active_for_network( WP_STREAM_PLUGIN )
+		) {
+			return;
+		}
+
+		if ( is_multisite() && is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			$options = (array) get_site_option( WP_Stream_Settings::NETWORK_OPTION_KEY, array() );
+		} else {
+			$options = WP_Stream_Settings::get_options();
+		}
+
+		$days = $options['general_records_ttl'];
+		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
+
+		$date->sub( DateInterval::createFromDateString( "$days days" ) );
+
+		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
+
+		// Multisite but NOT network activated, only purge the current blog
+		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+		}
+
+		$wpdb->query(
+			"DELETE `stream`, `meta`
+			FROM {$wpdb->stream} AS `stream`
+			LEFT JOIN {$wpdb->streammeta} AS `meta`
+			ON `meta`.`record_id` = `stream`.`ID`
+			WHERE 1=1 {$where};"
+		);
+	}
+
 	/**
 	 * @filter plugin_action_links
 	 */
 	public static function plugin_action_links( $links, $file ) {
-		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) === $file ) {
-			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
-
-			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
+		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) !== $file ) {
+			return;
 		}
+
+		// Don't show links in Network Admin if Stream isn't network enabled
+		if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
+			return $links;
+		}
+
+		if ( is_network_admin() ) {
+			$admin_page_url = add_query_arg( array( 'page' => WP_Stream_Network::NETWORK_SETTINGS_PAGE_SLUG ), network_admin_url( self::ADMIN_PARENT_PAGE ) );
+		} else {
+			$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
+		}
+
+		$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
+
+		$url = add_query_arg(
+			array(
+				'action'          => 'wp_stream_uninstall',
+				'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+			),
+			admin_url( 'admin-ajax.php' )
+		);
+
+		$links[] = sprintf( '<span id="wp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall', 'stream' ) );
 
 		return $links;
 	}

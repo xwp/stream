@@ -296,6 +296,14 @@
 	margin-right: 1em;
 }
 
+#wp_stream_advanced_delete_all_records {
+	color: #a00;
+}
+
+#wp_stream_advanced_delete_all_records:hover {
+	color: #f00;
+}
+
 /* Date Interval Common */
 
 .wp_stream_screen .date-interval .field-predefined {

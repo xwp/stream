@@ -4,16 +4,23 @@ class WP_Stream_Settings {
 
 	/**
 	 * Settings key/identifier
+	 *
+	 * @var string
 	 */
 	const OPTION_KEY = 'wp_stream';
 
 	/**
 	 * Settings key/identifier
+	 *
+	 * @var string
 	 */
 	const NETWORK_OPTION_KEY = 'wp_stream_network';
 
 	/**
 	 * Plugin settings
+	 *
+	 * @access public
+	 * @static
 	 *
 	 * @var array
 	 */
@@ -22,6 +29,9 @@ class WP_Stream_Settings {
 	/**
 	 * Option key for current screen
 	 *
+	 * @access public
+	 * @static
+	 *
 	 * @var array
 	 */
 	public static $option_key = '';
@@ -29,12 +39,18 @@ class WP_Stream_Settings {
 	/**
 	 * Settings fields
 	 *
+	 * @access public
+	 * @static
+	 *
 	 * @var array
 	 */
 	public static $fields = array();
 
 	/**
-	 * Public constructor
+	 * Load the settings hooks
+	 *
+	 * @access public
+	 * @static
 	 *
 	 * @return void
 	 */
@@ -48,6 +64,10 @@ class WP_Stream_Settings {
 		// Check if we need to flush rewrites rules
 		add_action( 'update_option_' . self::OPTION_KEY, array( __CLASS__, 'updated_option_trigger_flush_rules' ), 10, 2 );
 
+		// Remove records when records TTL is shortened
+		add_action( 'update_option_' . self::OPTION_KEY, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
+
+		// Apply label translations for settings
 		add_filter( 'wp_stream_serialized_labels', array( __CLASS__, 'get_settings_translations' ) );
 
 		// Ajax callback function to search users
@@ -60,7 +80,10 @@ class WP_Stream_Settings {
 	/**
 	 * Ajax callback function to search users, used on exclude setting page
 	 *
-	 * @uses WP_User_Query WordPress User Query class.
+	 * @access public
+	 * @static
+	 * @uses WP_User_Query
+	 *
 	 * @return void
 	 */
 	public static function get_users() {
@@ -143,11 +166,13 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	* Ajax callback function to search IP addresses, used on exclude setting page
-	*
-	* @uses WP_User_Query WordPress User Query class.
-	* @return void
-	*/
+	 * Ajax callback function to search IP addresses, used on exclude setting page
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @return void
+	 */
 	public static function get_ips() {
 		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( WP_Stream_Admin::SETTINGS_CAP ) ) {
 			return;
@@ -167,9 +192,12 @@ class WP_Stream_Settings {
 	/**
 	 * Filter the columns to search in a WP_User_Query search.
 	 *
-	 * @param array  $search_columns Array of column names to be searched.
-	 * @param string $search         Text being searched.
-	 * @param WP_User_Query $query	 current WP_User_Query instance.
+	 * @access public
+	 * @static
+	 *
+	 * @param array         $search_columns
+	 * @param string        $search
+	 * @param WP_User_Query $query
 	 *
 	 * @return array
 	 */
@@ -182,7 +210,10 @@ class WP_Stream_Settings {
 	/**
 	 * Returns the option key depending on which settings page is being viewed
 	 *
-	 * @return string Option key for this page
+	 * @access public
+	 * @static
+	 *
+	 * @return string
 	 */
 	public static function get_option_key() {
 		$option_key = self::OPTION_KEY;
@@ -199,7 +230,10 @@ class WP_Stream_Settings {
 	/**
 	 * Return settings fields
 	 *
-	 * @return array Multidimensional array of fields
+	 * @access public
+	 * @static
+	 *
+	 * @return array
 	 */
 	public static function get_fields() {
 		$fields = array(
@@ -213,6 +247,15 @@ class WP_Stream_Settings {
 						'desc'        => esc_html__( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
 						'choices'     => self::get_roles(),
 						'default'     => array( 'administrator' ),
+					),
+					array(
+						'name'        => 'records_ttl',
+						'title'       => esc_html__( 'Keep Records for', 'stream' ),
+						'type'        => 'number',
+						'class'       => 'small-text',
+						'desc'        => esc_html__( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
+						'default'     => 30,
+						'after_field' => esc_html__( 'days', 'stream' ),
 					),
 				),
 			),
@@ -239,6 +282,21 @@ class WP_Stream_Settings {
 						'desc'        => esc_html__( 'WordPress will automatically prevent duplicate comments from flooding the database. By default, Stream does not track these attempts unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
 						'after_field' => esc_html__( 'Enabled', 'stream' ),
 						'default'     => 0,
+					),
+					array(
+						'name'        => 'delete_all_records',
+						'title'       => esc_html__( 'Reset Stream Database', 'stream' ),
+						'type'        => 'link',
+						'href'        => add_query_arg(
+							array(
+								'action'          => 'wp_stream_reset',
+								'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+							),
+							admin_url( 'admin-ajax.php' )
+						),
+						'desc'        => esc_html__( 'Warning: This will delete all activity records from the database.', 'stream' ),
+						'default'     => 0,
+						'sticky'      => 'bottom',
 					),
 				),
 			),
@@ -309,7 +367,17 @@ class WP_Stream_Settings {
 
 		// Sort option fields in each tab by title ASC
 		foreach ( self::$fields as $tab => $options ) {
-			$titles = wp_list_pluck( self::$fields[ $tab ]['fields'], 'title' );
+			$titles = array();
+
+			foreach ( $options['fields'] as $field ) {
+				$prefix = null;
+
+				if ( ! empty( $field['sticky'] ) ) {
+					$prefix = ( 'bottom' === $field['sticky'] ) ? 'ZZZ' : 'AAA';
+				}
+
+				$titles[] = $prefix . $field['title'];
+			}
 
 			array_multisort( $titles, SORT_ASC, self::$fields[ $tab ]['fields'] );
 		}
@@ -320,7 +388,10 @@ class WP_Stream_Settings {
 	/**
 	 * Returns a list of options based on the current screen.
 	 *
-	 * @return array Options
+	 * @access public
+	 * @static
+	 *
+	 * @return array
 	 */
 	public static function get_options() {
 		$option_key = self::$option_key;
@@ -345,7 +416,10 @@ class WP_Stream_Settings {
 	/**
 	 * Iterate through registered fields and extract default values
 	 *
-	 * @return array Default option values
+	 * @access public
+	 * @static
+	 *
+	 * @return array
 	 */
 	public static function get_defaults() {
 		$fields   = self::get_fields();
@@ -360,17 +434,18 @@ class WP_Stream_Settings {
 		/**
 		 * Filter allows for modification of options defaults
 		 *
-		 * @param  array  array of options
-		 * @return array  updated array of option defaults
-		*/
-		return apply_filters(
-			'wp_stream_settings_option_defaults',
-			$defaults
-		);
+		 * @param array $defaults
+		 *
+		 * @return array
+		 */
+		return apply_filters( 'wp_stream_settings_option_defaults', $defaults );
 	}
 
 	/**
 	 * Registers settings fields and sections
+	 *
+	 * @access public
+	 * @static
 	 *
 	 * @return void
 	 */
@@ -409,6 +484,9 @@ class WP_Stream_Settings {
 
 	/**
 	 * Sanitization callback for settings field values before save
+	 *
+	 * @access public
+	 * @static
 	 *
 	 * @param array $input
 	 *
@@ -458,32 +536,14 @@ class WP_Stream_Settings {
 	}
 
 	/**
-	 * Check if we have updated a settings that requires rewrite rules to be flushed
-	 *
-	 * @param array $old_value
-	 * @param array $new_value
-	 *
-	 * @internal param $option
-	 * @internal param string $option
-	 * @action   updated_option
-	 * @return void
-	 */
-	public static function updated_option_trigger_flush_rules( $old_value, $new_value ) {
-		if ( is_array( $new_value ) && is_array( $old_value ) ) {
-			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
-			$old_value = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value['general_private_feeds'] : 0;
-
-			if ( $new_value !== $old_value ) {
-				delete_option( 'rewrite_rules' );
-			}
-		}
-	}
-
-	/**
 	 * Compile HTML needed for displaying the field
 	 *
-	 * @param  array  $field  Field settings
-	 * @return string         HTML to be displayed
+	 * @access public
+	 * @static
+	 *
+	 * @param  array $field
+	 *
+	 * @return string
 	 */
 	public static function render_field( $field ) {
 		$output      = null;
@@ -902,10 +962,12 @@ class WP_Stream_Settings {
 	/**
 	 * Render Callback for post_types field
 	 *
+	 * @access public
+	 * @static
+	 *
 	 * @param array $field
 	 *
-	 * @internal param $args
-	 * @return void
+	 * @return string
 	 */
 	public static function output_field( $field ) {
 		$method = 'output_' . $field['name'];
@@ -921,6 +983,9 @@ class WP_Stream_Settings {
 
 	/**
 	 * Get an array of user roles
+	 *
+	 * @access public
+	 * @static
 	 *
 	 * @return array
 	 */
@@ -938,7 +1003,11 @@ class WP_Stream_Settings {
 	/**
 	 * Function will return all terms labels of given column
 	 *
-	 * @param $column string  Name of the column
+	 * @access public
+	 * @static
+	 *
+	 * @param string $column
+	 *
 	 * @return array
 	 */
 	public static function get_terms_labels( $column ) {
@@ -968,6 +1037,55 @@ class WP_Stream_Settings {
 	}
 
 	/**
+	 * Check if we have updated a settings that requires rewrite rules to be flushed
+	 *
+	 * @action updated_option_wp_stream
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @param array $old_value
+	 * @param array $new_value
+	 *
+	 * @return void
+	 */
+	public static function updated_option_trigger_flush_rules( $old_value, $new_value ) {
+		if ( is_array( $new_value ) && is_array( $old_value ) ) {
+			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
+			$old_value = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value['general_private_feeds'] : 0;
+
+			if ( $new_value !== $old_value ) {
+				delete_option( 'rewrite_rules' );
+			}
+		}
+	}
+
+	/**
+	 * Remove records when records TTL is shortened
+	 *
+	 * @action update_option_wp_stream
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @param array $old_value
+	 * @param array $new_value
+	 *
+	 * @return void
+	 */
+	public static function updated_option_ttl_remove_records( $old_value, $new_value ) {
+		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : -1;
+		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : -1;
+
+		if ( $ttl_after < $ttl_before ) {
+			/**
+			 * Action assists in purging when TTL is shortened
+			 */
+			do_action( 'wp_stream_auto_purge' );
+		}
+	}
+
+	/**
 	 * Get translations of serialized Stream settings
 	 *
 	 * @filter wp_stream_serialized_labels
@@ -986,4 +1104,5 @@ class WP_Stream_Settings {
 
 		return $labels;
 	}
+
 }

@@ -127,6 +127,25 @@ jQuery( function( $ ) {
 		$( '.toplevel_page_wp_stream input[type="search"]' ).off( 'mousedown' );
 	});
 
+	// Confirmation on some important actions
+	$( 'body' ).on( 'click', '#wp_stream_advanced_delete_all_records, #wp_stream_network_advanced_delete_all_records', function( e ) {
+		if ( ! confirm( wp_stream.i18n.confirm_purge ) ) {
+			e.preventDefault();
+		}
+	});
+
+	$( 'body' ).on( 'click', '#wp_stream_advanced_reset_site_settings, #wp_stream_network_advanced_reset_site_settings', function( e ) {
+		if ( ! confirm( wp_stream.i18n.confirm_defaults ) ) {
+			e.preventDefault();
+		}
+	});
+
+	$( 'body' ).on( 'click', '#wp_stream_uninstall', function( e ) {
+		if ( ! confirm( wp_stream.i18n.confirm_uninstall ) ) {
+			e.preventDefault();
+		}
+	});
+
 	// Admin page tabs
 	var $tabs          = $( '.wp_stream_screen .nav-tab-wrapper' ),
 		$panels        = $( '.wp_stream_screen .nav-tab-content table.form-table' ),
