@@ -61,10 +61,10 @@ class WP_Stream_Admin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_menu_css' ) );
 
-		// Ajax authors list
+		// Ajax users list
 		add_action( 'wp_ajax_wp_stream_filters', array( __CLASS__, 'ajax_filters' ) );
 
-		// Ajax author's name by ID
+		// Ajax user's name by ID
 		add_action( 'wp_ajax_wp_stream_get_filter_value_by_id', array( __CLASS__, 'get_filter_value_by_id' ) );
 	}
 
@@ -599,7 +599,7 @@ class WP_Stream_Admin {
 	 */
 	public static function ajax_filters() {
 		switch ( wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
-			case 'author':
+			case 'user_id':
 				$users = array_merge(
 					array( 0 => (object) array( 'display_name' => 'WP-CLI' ) ),
 					get_users()
@@ -613,13 +613,13 @@ class WP_Stream_Admin {
 					}
 				);
 
-				if ( count( $users ) > self::PRELOAD_AUTHORS_MAX ) {
-					$users = array_slice( $users, 0, self::PRELOAD_AUTHORS_MAX );
+				if ( count( $users ) > self::PRELOAD_USERS_MAX ) {
+					$users = array_slice( $users, 0, self::PRELOAD_USERS_MAX );
 					// @todo $extra is not used
 					$extra = array(
 						'id'       => 0,
 						'disabled' => true,
-						'text'     => sprintf( _n( 'One more result...', '%d more results...', $results_count - self::PRELOAD_AUTHORS_MAX, 'stream' ), $results_count - self::PRELOAD_AUTHORS_MAX ),
+						'text'     => sprintf( _n( 'One more result...', '%d more results...', $results_count - self::PRELOAD_USERS_MAX, 'stream' ), $results_count - self::PRELOAD_USERS_MAX ),
 					);
 				}
 
@@ -643,7 +643,7 @@ class WP_Stream_Admin {
 		$filter = wp_stream_filter_input( INPUT_POST, 'filter' );
 
 		switch ( $filter ) {
-			case 'author':
+			case 'user_id':
 				$id = wp_stream_filter_input( INPUT_POST, 'id' );
 
 				if ( '0' === $id ) {

@@ -18,14 +18,14 @@ class WP_Stream_Author {
 	protected $user;
 
 	/**
-	 * @param int $user_id
-	 * @param array $author_meta
+	 * @param int   $user_id
+	 * @param array $user_meta
 	 *
 	 * @return void
 	 */
-	function __construct( $user_id, $author_meta = array() ) {
+	function __construct( $user_id, $user_meta = array() ) {
 		$this->id   = $user_id;
-		$this->meta = $author_meta;
+		$this->meta = $user_meta;
 
 		if ( $this->id ) {
 			$this->user = new WP_User( $this->id );
@@ -195,8 +195,8 @@ class WP_Stream_Author {
 	function get_records_page_url() {
 		$url = add_query_arg(
 			array(
-				'page'   => WP_Stream_Admin::RECORDS_PAGE_SLUG,
-				'author' => absint( $this->id ),
+				'page'    => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+				'user_id' => absint( $this->id ),
 			),
 			self_admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
 		);
