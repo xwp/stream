@@ -6,21 +6,16 @@ class WP_Stream_Record {
 	public $site_id;
 	public $blog_id;
 	public $object_id;
-	public $author;
-	public $author_role;
+	public $user_id;
+	public $user_role;
+	public $user_meta;
 	public $summary;
-	public $visibility;
-	public $type;
+	public $created;
 	public $connector;
 	public $context;
 	public $action;
-	public $created;
 	public $ip;
-
-	public $stream_meta;
-
-	// Deprecated
-	public $contexts;
+	public $meta;
 
 	public function __construct( $id = null ) {
 		if ( $id ) {
@@ -47,10 +42,7 @@ class WP_Stream_Record {
 	public function populate( array $raw ) {
 		$keys = get_class_vars( __CLASS__ );
 		$data = array_intersect_key( $raw, $keys );
-		if ( ! empty( $data['contexts'] ) ) {
-			$data['context'] = key( $data['contexts'] );
-			$data['action'] = current( $data['contexts'] );
-		}
+
 		foreach ( $data as $key => $val ) {
 			$this->{$key} = $val;
 		}
@@ -62,7 +54,9 @@ class WP_Stream_Record {
 
 	public static function instance( array $data ) {
 		$object = new self();
+
 		$object->populate( $data );
+
 		return $object;
 	}
 

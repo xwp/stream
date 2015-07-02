@@ -93,12 +93,11 @@ class WP_Stream_Log {
 			return false;
 		}
 
-		$user       = new WP_User( $user_id );
-		$roles      = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
-		$visibility = 'publish';
+		$user  = new WP_User( $user_id );
+		$roles = get_option( $wpdb->get_blog_prefix() . 'user_roles' );
 
 		if ( self::is_record_excluded( $connector, $context, $action, $user ) ) {
-			$visibility = 'private';
+			return false;
 		}
 
 		$user_meta = array(
@@ -146,8 +145,6 @@ class WP_Stream_Log {
 			'user_id'    => (int) $user_id,
 			'user_role'  => (string) ! empty( $user->roles ) ? $user->roles[0] : '',
 			'created'    => (string) $iso_8601_extended_date,
-			'visibility' => (string) $visibility,
-			'type'       => 'record',
 			'summary'    => (string) vsprintf( $message, $args ),
 			'connector'  => (string) $connector,
 			'context'    => (string) $context,
@@ -168,11 +165,11 @@ class WP_Stream_Log {
 	 *
 	 * @access public
 	 *
-	 * @param string $connector
-	 * @param string $context
-	 * @param string $action
-	 * @param int    $user_id
-	 * @param string $ip
+	 * @param string  $connector
+	 * @param string  $context
+	 * @param string  $action
+	 * @param WP_User $user (optional)
+	 * @param string  $ip (optional)
 	 *
 	 * @return bool
 	 */

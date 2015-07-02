@@ -68,17 +68,15 @@ class WP_Stream_Query {
 
 		// Additional property fields
 		$properties = array(
-			'type'       => 'record',
-			'user_id'    => null,
-			'user_role'  => null,
-			'ip'         => null,
-			'object_id'  => null,
-			'site_id'    => null,
-			'blog_id'    => null,
-			'visibility' => 'publish',
-			'connector'  => null,
-			'context'    => null,
-			'action'     => null,
+			'user_id'   => null,
+			'user_role' => null,
+			'ip'        => null,
+			'object_id' => null,
+			'site_id'   => null,
+			'blog_id'   => null,
+			'connector' => null,
+			'context'   => null,
+			'action'    => null,
 		);
 
 		/**
@@ -125,10 +123,6 @@ class WP_Stream_Query {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.object_id = %d", $args['object_id'] );
 		}
 
-		if ( ! empty( $args['type'] ) ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.type = %s", $args['type'] );
-		}
-
 		if ( ! empty( $args['ip'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", wp_stream_filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
 		}
@@ -152,10 +146,6 @@ class WP_Stream_Query {
 
 		if ( ! empty( $args['user_role'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.user_role = %s", $args['user_role'] );
-		}
-
-		if ( ! empty( $args['visibility'] ) ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.visibility = %s", $args['visibility'] );
 		}
 
 		if ( ! empty( $args['connector'] ) ) {
@@ -284,7 +274,7 @@ class WP_Stream_Query {
 		 */
 		$order     = esc_sql( $args['order'] );
 		$orderby   = esc_sql( $args['orderby'] );
-		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'summary', 'visibility', 'parent', 'type', 'created', 'connector', 'context', 'action' );
+		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'summary', 'created', 'connector', 'context', 'action' );
 
 		if ( in_array( $orderby, $orderable ) ) {
 			$orderby = sprintf( '%s.%s', $wpdb->stream, $orderby );
