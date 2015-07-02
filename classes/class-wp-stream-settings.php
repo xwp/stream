@@ -1,16 +1,16 @@
 <?php
-/**
- * Settings class
- *
- * @author X-Team <x-team.com>
- * @author Shady Sharaf <shady@x-team.com>
- */
+
 class WP_Stream_Settings {
 
 	/**
 	 * Settings key/identifier
 	 */
 	const OPTION_KEY = 'wp_stream';
+
+	/**
+	 * Settings key/identifier
+	 */
+	const NETWORK_OPTION_KEY = 'wp_stream_network';
 
 	/**
 	 * Plugin settings

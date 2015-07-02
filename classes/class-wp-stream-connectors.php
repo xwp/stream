@@ -44,6 +44,7 @@ class WP_Stream_Connectors {
 
 		$connectors = array(
 			// Core
+			'blogs',
 			'comments',
 			'editor',
 			'installer',

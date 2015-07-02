@@ -59,9 +59,17 @@ class WP_Stream {
 	 * @access public
 	 * @static
 	 *
-	 * @var WP_Stream_DB_Base
+	 * @var WP_Stream_DB
 	 */
 	public static $db;
+
+	/**
+	 * @access public
+	 * @static
+	 *
+	 * @var WP_Stream_Network
+	 */
+	public static $network = null;
 
 	/**
 	 * Admin notices, collected and displayed on proper action
@@ -114,6 +122,11 @@ class WP_Stream {
 
 		// Load settings, enabling extensions to hook in
 		add_action( 'init', array( 'WP_Stream_Settings', 'load' ), 9 );
+
+		// Maybe load network class
+		if ( is_multisite() ) {
+			self::$network = new WP_Stream_Network;
+		}
 
 		// Load logger class
 		add_action( 'plugins_loaded', array( 'WP_Stream_Log', 'load' ) );
