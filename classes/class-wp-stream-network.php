@@ -151,6 +151,7 @@ class WP_Stream_Network {
 				array( 'WP_Stream_Admin', 'render_page' )
 			);
 		}
+
 		if ( self::is_network_activated() ) {
 			WP_Stream_Admin::$screen_id['extensions'] = add_submenu_page(
 				WP_Stream_Admin::RECORDS_PAGE_SLUG,
@@ -282,6 +283,7 @@ class WP_Stream_Network {
 				if ( ! isset( $hidden_options[ $section_key ] ) ) {
 					continue;
 				}
+
 				if ( in_array( $field['name'], $hidden_options[ $section_key ] ) ) {
 					unset( $fields[ $section_key ]['fields'][ $key ] );
 				}
@@ -365,6 +367,7 @@ class WP_Stream_Network {
 			self::NETWORK_SETTINGS_PAGE_SLUG,
 			self::DEFAULT_SETTINGS_PAGE_SLUG,
 		);
+
 		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers ) ) {
 			return;
 		}
@@ -374,13 +377,14 @@ class WP_Stream_Network {
 		if ( $options ) {
 
 			foreach ( $options as $option ) {
-				$option = trim( $option );
-				$value  = null;
-
+				$option   = trim( $option );
+				$value    = null;
 				$sections = WP_Stream_Settings::get_fields();
+
 				foreach ( $sections as $section_name => $section ) {
 					foreach ( $section['fields'] as $field_idx => $field ) {
 						$option_key = $section_name . '_' . $field['name'];
+
 						if ( isset( $_POST[ $option ][ $option_key ] ) ) {
 							$value[ $option_key ] = $_POST[ $option ][ $option_key ];
 						} else {
@@ -404,7 +408,9 @@ class WP_Stream_Network {
 		set_transient( 'settings_errors', get_settings_errors(), 30 );
 
 		$go_back = add_query_arg( 'settings-updated', 'true', wp_get_referer() );
+
 		wp_redirect( $go_back );
+
 		exit;
 	}
 

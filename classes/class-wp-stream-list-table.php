@@ -50,12 +50,12 @@ class WP_Stream_List_Table extends WP_List_Table {
 	function no_items() {
 		?>
 		<div class="stream-list-table-no-items">
-			<p><?php _e( 'Sorry, no activity records were found.', 'stream' ) ?></p>
+			<p><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ) ?></p>
 		</div>
 		<?php
 	}
 
-	function get_columns(){
+	function get_columns() {
 		/**
 		 * Allows devs to add new columns to table
 		 *
@@ -300,7 +300,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 						 * Also, note that the action name must include the $column_title registered
 						 * with wp_stream_register_column_defaults
 						 */
-						if ( $column_title == $column_name && has_filter( "wp_stream_insert_column_default-{$column_title}" ) ) {
+						if ( $column_title === $column_name && has_filter( "wp_stream_insert_column_default-{$column_title}" ) ) {
 							/**
 							 * Allows for the addition of content under a specified column.
 							 *
@@ -727,14 +727,16 @@ class WP_Stream_List_Table extends WP_List_Table {
 				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
 				<?php
 				foreach ( $items as $key => $interval ) {
+					$end = isset( $interval['end'] ) ? $interval['end']->format( 'Y/m/d' ) : null;
+
 					printf(
 						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
 						esc_attr( $key ),
 						esc_attr( $interval['start']->format( 'Y/m/d' ) ),
-						isset( $interval['end'] ) ? esc_attr( $interval['end']->format( 'Y/m/d' ) ) : '',
+						esc_attr( $end ),
 						selected( $key === $date_predefined ),
 						esc_html( $interval['label'] )
-					); // xss ok
+					);
 				}
 				?>
 			</select>
@@ -806,12 +808,7 @@ class WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	static function set_live_update_option( $dummy, $option, $value ) {
-		if ( WP_Stream_Live_Update::USER_META_KEY === $option ) {
-			$value = $_POST[ WP_Stream_Live_Update::USER_META_KEY ];
-			return $value;
-		} else {
-			return $dummy;
-		}
+		return ( WP_Stream_Live_Update::USER_META_KEY === $option ) ? $_POST[ WP_Stream_Live_Update::USER_META_KEY ] : $dummy;
 	}
 
 	public function screen_controls( $status, $args ) {

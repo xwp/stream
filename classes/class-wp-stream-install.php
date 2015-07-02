@@ -139,7 +139,7 @@ class WP_Stream_Install {
 			return;
 		}
 
-		if ( self::$db_version === WP_Stream::VERSION ) {
+		if ( WP_Stream::VERSION === self::$db_version ) {
 			return;
 		}
 
@@ -215,8 +215,8 @@ class WP_Stream_Install {
 		}
 
 		wp_die(
-			__( 'There was an error updating the Stream database. Please try again.', 'stream' ),
-			__( 'Database Update Error', 'stream' ),
+			esc_html__( 'There was an error updating the Stream database. Please try again.', 'stream' ),
+			esc_html__( 'Database Update Error', 'stream' ),
 			array(
 				'response'  => 200,
 				'back_link' => true,

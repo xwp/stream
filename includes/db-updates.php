@@ -291,9 +291,10 @@ function wp_stream_update_migrate_installer_edits_to_theme_editor_connector() {
 			$matched_themes = array_filter(
 				wp_get_themes(),
 				function ( $theme ) use ( $theme_name ) {
-					return (string)$theme === $theme_name;
+					return (string) $theme === $theme_name;
 				}
 			);
+
 			$theme = array_shift( $matched_themes );
 
 			// `stream`
