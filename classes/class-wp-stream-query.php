@@ -60,8 +60,6 @@ class WP_Stream_Query {
 			'orderby'          => 'date',
 			// Fields selection
 			'fields'           => array(),
-			// Exclude
-			'hide_excluded'    => ! empty( WP_Stream_Settings::$options['exclude_hide_previous_records'] ),
 		);
 
 		// Additional property fields
@@ -106,10 +104,6 @@ class WP_Stream_Query {
 		 * @return array  Array of query arguments
 		 */
 		$args = apply_filters( 'wp_stream_query_args', $args );
-
-		if ( true === $args['hide_excluded'] ) {
-			$args = self::add_excluded_record_args( $args );
-		}
 
 		$join  = '';
 		$where = '';
