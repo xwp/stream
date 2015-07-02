@@ -43,11 +43,11 @@ class WP_Stream_Query {
 			'search_field'     => 'summary',
 			'record_after'     => null, // Deprecated, use date_after instead
 			// Date-based filters
-			'date'             => null, // Ex: 2014-02-17
-			'date_from'        => null, // Ex: 2014-02-17
-			'date_to'          => null, // Ex: 2014-02-17
-			'date_after'       => null, // Ex: 2014-02-17T15:19:21+00:00
-			'date_before'      => null, // Ex: 2014-02-17T15:19:21+00:00
+			'date'             => null, // Ex: 2015-07-01
+			'date_from'        => null, // Ex: 2015-07-01
+			'date_to'          => null, // Ex: 2015-07-01
+			'date_after'       => null, // Ex: 2015-07-01T15:19:21+00:00
+			'date_before'      => null, // Ex: 2015-07-01T15:19:21+00:00
 			// Record ID filters
 			'record'           => null,
 			'record__in'       => array(),
