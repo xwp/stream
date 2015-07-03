@@ -80,22 +80,6 @@ class WP_Stream_Install {
 	private static $instance;
 
 	/**
-	 * Return an active instance of this class, and create one if it doesn't exist
-	 *
-	 * @access public
-	 * @static
-	 *
-	 * @return WP_Stream_Install
-	 */
-	public static function get_instance() {
-		if ( ! self::$instance ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
-
-	/**
 	 * Class constructor
 	 *
 	 * @access private
@@ -116,6 +100,22 @@ class WP_Stream_Install {
 		self::$table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
 
 		self::check();
+	}
+
+	/**
+	 * Return an active instance of this class, and create one if it doesn't exist
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @return WP_Stream_Install
+	 */
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**
@@ -464,4 +464,5 @@ class WP_Stream_Install {
 
 		return $current_version;
 	}
+
 }

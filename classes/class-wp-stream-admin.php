@@ -68,7 +68,7 @@ class WP_Stream_Admin {
 		add_action( 'wp_ajax_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
 
 		// Uninstall Streams and Deactivate plugin
-		add_action( 'wp_ajax_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
+		add_action( 'wp_ajax_wp_stream_uninstall', array( 'WP_Stream_Uninstall', 'uninstall' ) );
 
 		// Auto purge setup
 		add_action( 'wp_loaded', array( __CLASS__, 'purge_schedule_setup' ) );
@@ -512,79 +512,6 @@ class WP_Stream_Admin {
 
 			restore_current_blog();
 		}
-	}
-
-	/**
-	 * This function is used to uninstall all custom tables and uninstall the plugin
-	 * It will also uninstall custom actions
-	 */
-	public static function uninstall_plugin() {
-		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
-
-		if ( ! current_user_can( self::SETTINGS_CAP ) ) {
-			wp_die(
-				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
-			);
-		}
-
-		// Prevent this action from being fired
-		remove_action( 'deactivate_plugin', array( 'WP_Stream_Connector_Installer', 'callback' ), null );
-
-		global $wpdb;
-
-		// Multisite but NOT network activated, only uninstall the current blog
-		if ( is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
-			$wpdb->query(
-				$wpdb->prepare(
-					"DELETE FROM {$wpdb->base_prefix}stream WHERE blog_id = %d",
-					get_current_blog_id()
-				)
-			);
-
-			// Delete various database options
-			delete_option( WP_Stream_Install::OPTION_KEY );
-			delete_option( WP_Stream_Settings::OPTION_KEY );
-		} else {
-			// Delete all tables
-			foreach ( WP_Stream_DB::get_instance()->get_table_names() as $table ) {
-				$wpdb->query( "DROP TABLE $table" );
-			}
-
-			// Multisite and network activated, delete options from each blog
-			if ( is_multisite() ) {
-				foreach ( (array) wp_get_sites() as $blog ) {
-					switch_to_blog( absint( $blog['blog_id'] ) );
-
-					delete_option( WP_Stream_Install::OPTION_KEY );
-					delete_option( WP_Stream_Settings::OPTION_KEY );
-				}
-
-				restore_current_blog();
-			}
-
-			// Delete various database options
-			delete_site_option( WP_Stream_Install::OPTION_KEY );
-			delete_site_option( WP_Stream_Settings::OPTION_KEY );
-			delete_site_option( WP_Stream_Settings::NETWORK_OPTION_KEY );
-		}
-
-		// Delete scheduled cron event hooks
-		wp_clear_scheduled_hook( 'wp_stream_auto_purge' );
-
-		// Deactivate the plugin
-		deactivate_plugins( plugin_basename( WP_STREAM_DIR ) . '/stream.php' );
-
-		// Redirect to plugin page
-		wp_redirect(
-			add_query_arg(
-				array(
-					'deactivate' => true,
-				),
-				self_admin_url( 'plugins.php' )
-			)
-		);
-
-		exit;
 	}
 
 	public static function purge_schedule_setup() {
