@@ -639,10 +639,10 @@ class WP_Stream_Admin {
 	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( WP_STREAM_DIR . 'stream.php' ) !== $file ) {
-			return;
+			return $links;
 		}
 
-		// Don't show links in Network Admin if Stream isn't network enabled
+		// Also don't show links in Network Admin if Stream isn't network enabled
 		if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( WP_STREAM_PLUGIN ) ) {
 			return $links;
 		}
