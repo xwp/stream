@@ -266,7 +266,7 @@ class WP_Stream_Settings {
 						'name'        => 'rules',
 						'title'       => esc_html__( 'Exclude Rules', 'stream' ),
 						'type'        => 'rule_list',
-						'desc'        => esc_html__( 'Create rules for excluding certain kinds of records from appearing in Stream.', 'stream' ),
+						'desc'        => esc_html__( 'Create rules to exclude certain kinds of activity from being recorded by Stream.', 'stream' ),
 						'default'     => array(),
 						'nonce'       => 'stream_get_ips',
 					),
