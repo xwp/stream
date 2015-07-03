@@ -255,6 +255,9 @@ class WP_Stream_Settings {
 						'class'       => 'small-text',
 						'desc'        => esc_html__( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
 						'default'     => 30,
+						'min'         => 0,
+						'max'         => 999,
+						'step'        => 1,
 						'after_field' => esc_html__( 'days', 'stream' ),
 					),
 				),
@@ -505,7 +508,7 @@ class WP_Stream_Settings {
 				$type = ! empty( $field['type'] ) ? $field['type'] : null;
 				$name = ! empty( $field['name'] ) ? sprintf( '%s_%s', $section, $field['name'] ) : null;
 
-				if ( empty( $type ) || empty( $input[ $name ] ) ) {
+				if ( empty( $type ) || '' === $input[ $name ] ) {
 					continue;
 				}
 
@@ -558,6 +561,9 @@ class WP_Stream_Settings {
 		$cols        = isset( $field['cols'] ) ? $field['cols'] : 50;
 		$after_field = isset( $field['after_field'] ) ? $field['after_field'] : null;
 		$default     = isset( $field['default'] ) ? $field['default'] : null;
+		$min         = isset( $field['min'] ) ? $field['min'] : 0;
+		$max         = isset( $field['max'] ) ? $field['max'] : 999;
+		$step        = isset( $field['step'] ) ? $field['step'] : 1;
 		$title       = isset( $field['title'] ) ? $field['title'] : null;
 		$nonce       = isset( $field['nonce'] ) ? $field['nonce'] : null;
 
@@ -587,13 +593,16 @@ class WP_Stream_Settings {
 			case 'text':
 			case 'number':
 				$output = sprintf(
-					'<input type="%1$s" name="%2$s[%3$s_%4$s]" id="%2$s_%3$s_%4$s" class="%5$s" placeholder="%6$s" value="%7$s" /> %8$s',
+					'<input type="%1$s" name="%2$s[%3$s_%4$s]" id="%2$s_%3$s_%4$s" class="%5$s" placeholder="%6$s" min="%7$d" max="%8$d" step="%9$d" value="%10$s" /> %11$s',
 					esc_attr( $type ),
 					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
 					esc_attr( $class ),
 					esc_attr( $placeholder ),
+					esc_attr( $min ),
+					esc_attr( $max ),
+					esc_attr( $step ),
 					esc_attr( $current_value ),
 					$after_field // xss ok
 				);
