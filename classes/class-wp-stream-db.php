@@ -54,6 +54,8 @@ class WP_Stream_DB {
 
 		$wpdb->stream     = self::$table;
 		$wpdb->streammeta = self::$table_meta;
+
+		// Hack for get_metadata
 		$wpdb->recordmeta = self::$table_meta;
 	}
 
