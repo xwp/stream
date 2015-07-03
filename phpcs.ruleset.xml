@@ -4,7 +4,9 @@
 
 	<description>Generally-applicable sniffs for WordPress plugins</description>
 
-	<rule ref="WordPress-Extra">
+	<rule ref="WordPress-Extra" />
+
+	<rule ref="WordPress">
 		<exclude name="WordPress.PHP.StrictComparisons" />
 		<exclude name="WordPress.CSRF.NonceVerification.NoNonceVerification" />
 	</rule>
