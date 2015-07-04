@@ -501,10 +501,12 @@ class WP_Stream_Network {
 	 * @return array
 	 */
 	public static function network_query_args( $args ) {
-		if ( is_multisite() ) {
-			$args['site_id'] = get_current_site()->id;
-			$args['blog_id'] = is_network_admin() ? null : get_current_blog_id();
+		if ( ! is_multisite() ) {
+			return $args;
 		}
+
+		$args['site_id'] = empty( $args['site_id'] ) ? get_current_site()->id : $args['site_id'];
+		$args['blog_id'] = empty( $args['blog_id'] ) ? ( is_network_admin() ? null : get_current_blog_id() ) : $args['blog_id'];
 
 		return $args;
 	}
