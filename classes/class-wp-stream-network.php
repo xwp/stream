@@ -521,8 +521,8 @@ class WP_Stream_Network {
 			return $args;
 		}
 
-		$args['site_id'] = empty( $args['site_id'] ) ? get_current_site()->id : $args['site_id'];
-		$args['blog_id'] = empty( $args['blog_id'] ) ? ( is_network_admin() ? null : get_current_blog_id() ) : $args['blog_id'];
+		$args['site_id'] = is_numeric( $args['site_id'] ) ? $args['site_id'] : get_current_site()->id;
+		$args['blog_id'] = is_numeric( $args['blog_id'] ) ? $args['blog_id'] : ( is_network_admin() ? null : get_current_blog_id() );
 
 		return $args;
 	}
