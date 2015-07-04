@@ -279,6 +279,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$out = $this->column_link( $item->{$column_name}, 'ip', $item->{$column_name} );
 				break;
 
+			case 'blog_id':
+				$blog = ( $item->blog_id && is_multisite() ) ? get_blog_details( $item->blog_id ) : WP_Stream_Network::get_network_blog();
+				$out  = $this->column_link( $blog->blogname, 'blog_id', $blog->blog_id );
+				break;
+
 			default :
 				/**
 				 * Registers new Columns to be inserted into the table.  The cell contents of this column is set
