@@ -319,7 +319,7 @@ class WP_Stream_Network {
 	 */
 	function get_settings_translations( $labels ) {
 		$network_key  = WP_Stream_Settings::NETWORK_OPTION_KEY;
-		$defaults_key = WP_Stream_Settings::DEFAULTS_KEY;
+		$defaults_key = WP_Stream_Settings::SITE_DEFAULTS_OPTION_KEY;
 
 		if ( ! isset( $labels[ $network_key ] ) ) {
 			$labels[ $network_key ] = array();
