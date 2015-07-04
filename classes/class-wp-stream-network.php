@@ -31,8 +31,8 @@ class WP_Stream_Network {
 		add_filter( 'wp_stream_options', array( $this, 'get_network_options' ), 10, 2 );
 		add_filter( 'wp_stream_serialized_labels', array( $this, 'get_settings_translations' ) );
 		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
-		add_filter( 'stream_toggle_filters', array( $this, 'toggle_filters' ) );
 		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
+		add_filter( 'wp_stream_blog_id_logged', array( $this, 'blog_id_logged' ) );
 		add_filter( 'wp_stream_query_args', array( __CLASS__, 'set_network_option_value' ) );
 		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
 		add_filter( 'wp_stream_connectors', array( $this, 'hide_blogs_connector' ) );
@@ -420,32 +420,34 @@ class WP_Stream_Network {
 	 * @return array
 	 */
 	function list_table_filters( $filters ) {
-		if ( is_network_admin() && ! wp_is_large_network() ) {
-			$blogs = array();
+		if ( ! is_network_admin() || wp_is_large_network() ) {
+			return $filters;
+		}
 
-			// display network blog as the first option
-			$network_blog = self::get_network_blog();
+		$blogs = array();
 
-			$blogs['network'] = array(
-				'label'    => $network_blog->blogname,
+		// display network blog as the first option
+		$network_blog = self::get_network_blog();
+
+		$blogs['network'] = array(
+			'label'    => $network_blog->blogname,
+			'disabled' => '',
+		);
+
+		// add all sites
+		foreach ( (array) wp_get_sites() as $blog ) {
+			$blog_data = get_blog_details( $blog );
+
+			$blogs[ $blog['blog_id'] ] = array(
+				'label'    => $blog_data->blogname,
 				'disabled' => '',
 			);
-
-			// add all sites
-			foreach ( (array) wp_get_sites() as $blog ) {
-				$blog_data = get_blog_details( $blog );
-
-				$blogs[ $blog['blog_id'] ] = array(
-					'label'    => $blog_data->blogname,
-					'disabled' => '',
-				);
-			}
-
-			$filters['blog_id'] = array(
-				'title' => __( 'sites', 'stream' ),
-				'items' => $blogs,
-			);
 		}
+
+		$filters['blog_id'] = array(
+			'title' => __( 'sites', 'stream' ),
+			'items' => $blogs,
+		);
 
 		return $filters;
 	}
@@ -480,6 +482,15 @@ class WP_Stream_Network {
 		}
 
 		return $screen_id;
+	}
+
+	/**
+	 * Set blog_id for network admin activity
+	 *
+	 * @return int
+	 */
+	public static function blog_id_logged( $blog_id ) {
+		return is_network_admin() ? 0 : $blog_id;
 	}
 
 	/**
