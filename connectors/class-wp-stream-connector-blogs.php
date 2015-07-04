@@ -5,18 +5,12 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	/**
 	 * Connector slug
 	 *
-	 * @access public
-	 * @static
-	 *
 	 * @var string
 	 */
 	public static $name = 'blogs';
 
 	/**
 	 * Actions registered for this connector
-	 *
-	 * @access public
-	 * @static
 	 *
 	 * @var array
 	 */
@@ -40,37 +34,28 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	/**
 	 * Return translated connector label
 	 *
-	 * @access public
-	 * @static
-	 *
 	 * @return string
 	 */
 	public static function get_label() {
-		return __( 'Sites', 'stream' );
+		return esc_html__( 'Sites' );
 	}
 
 	/**
 	 * Return translated action labels
 	 *
-	 * @access public
-	 * @static
-	 *
 	 * @return array
 	 */
 	public static function get_action_labels() {
 		return array(
-			'updated'      => __( 'Updated', 'stream' ),
-			'created'      => __( 'Created', 'stream' ),
-			'archive_blog' => __( 'Archived', 'stream' ),
-			'deleted'      => __( 'Deleted', 'stream' ),
+			'archive_blog' => esc_html__( 'Archived', 'stream' ),
+			'created'      => esc_html__( 'Created', 'stream' ),
+			'deleted'      => esc_html__( 'Deleted', 'stream' ),
+			'updated'      => esc_html__( 'Updated', 'stream' ),
 		);
 	}
 
 	/**
 	 * Return translated context labels
-	 *
-	 * @access public
-	 * @static
 	 *
 	 * @return array
 	 */
@@ -95,22 +80,19 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @access public
-	 * @static
-	 *
-	 * @param array $links
-	 * @param int   $record
+	 * @param array            $links
+	 * @param WP_Stream_Record $record
 	 *
 	 * @return array
 	 */
 	public static function action_links( $links, $record ) {
-		$links [ __( 'Site Admin', 'stream' ) ] = get_admin_url( $record->object_id );
+		$links [ esc_html__( 'Site Admin' ) ] = get_admin_url( $record->object_id );
 
 		if ( $record->object_id ) {
 			$site_admin_link = get_admin_url( $record->object_id );
 
 			if ( $site_admin_link ) {
-				$links [ __( 'Site Admin', 'stream' ) ] = $site_admin_link;
+				$links [ esc_html__( 'Site Admin' ) ] = $site_admin_link;
 			}
 
 			$site_settings_link = add_query_arg(
@@ -121,7 +103,7 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 			);
 
 			if ( $site_settings_link ) {
-				$links [ __( 'Site Settings', 'stream' ) ] = $site_settings_link;
+				$links [ esc_html__( 'Site Settings', 'stream' ) ] = $site_settings_link;
 			}
 		}
 
@@ -129,20 +111,20 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	}
 
 	/**
+	 * Blog created
+	 *
 	 * @action wpmu_new_blog
 	 *
-	 * @access public
-	 * @static
-	 *
 	 * @param int $blog_id
+	 *
+	 * @return void
 	 */
 	public static function callback_wpmu_new_blog( $blog_id ) {
-		$blog    = get_blog_details( $blog_id );
-		$context = sanitize_key( $blog->blogname );
+		$blog = get_blog_details( $blog_id );
 
 		self::log(
 			_x(
-				'A new site called "%1$s" has been created.',
+				'"%1$s" site was created',
 				'1. Site name',
 				'stream'
 			),
@@ -150,26 +132,27 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 				'site_name' => $blog->blogname,
 			),
 			$blog_id,
-			array( $context => 'created' )
+			sanitize_key( $blog->blogname ),
+			'created'
 		);
 	}
 
 	/**
-	 * @action wpmu_activate_blog
+	 * Blog registered
 	 *
-	 * @access public
-	 * @static
+	 * @action wpmu_activate_blog
 	 *
 	 * @param int $blog_id
 	 * @param int $user_id
+	 *
+	 * @return void
 	 */
 	public static function callback_wpmu_activate_blog( $blog_id, $user_id ) {
-		$blog    = get_blog_details( $blog_id );
-		$context = sanitize_key( $blog->blogname );
+		$blog = get_blog_details( $blog_id );
 
 		self::log(
 			_x(
-				'A new site called "%1$s" has been registered.',
+				'"%1$s" site was registered',
 				'1. Site name',
 				'stream'
 			),
@@ -177,16 +160,16 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 				'site_name' => $blog->blogname,
 			),
 			$blog_id,
-			array( $context => 'created' ),
+			sanitize_key( $blog->blogname ),
+			'created',
 			$user_id
 		);
 	}
 
 	/**
-	 * @action add_user_to_blog
+	 * User added to a blog
 	 *
-	 * @access public
-	 * @static
+	 * @action add_user_to_blog
 	 *
 	 * @param int    $user_id
 	 * @param string $role
@@ -195,9 +178,8 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	 * @return void
 	 */
 	public static function callback_add_user_to_blog( $user_id, $role, $blog_id ) {
-		$blog    = get_blog_details( $blog_id );
-		$user    = get_user_by( 'id', $user_id );
-		$context = sanitize_key( $blog->blogname );
+		$blog = get_blog_details( $blog_id );
+		$user = get_user_by( 'id', $user_id );
 
 		if ( ! is_a( $user, 'WP_User' ) ) {
 			return;
@@ -205,7 +187,7 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 
 		self::log(
 			_x(
-				'%1$s has been added to the site "%2$s" with %3$s capabilities.',
+				'%1$s was added to the "%2$s" site with %3$s capabilities',
 				'1. User\'s name, 2. Site name, 3. Role',
 				'stream'
 			),
@@ -215,15 +197,15 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 				'role_name' => $role,
 			),
 			$blog_id,
-			array( $context => 'updated' )
+			sanitize_key( $blog->blogname ),
+			'updated'
 		);
 	}
 
 	/**
-	 * @action remove_user_from_blog
+	 * User removed from a blog
 	 *
-	 * @access public
-	 * @static
+	 * @action remove_user_from_blog
 	 *
 	 * @param int $user_id
 	 * @param int $blog_id
@@ -231,9 +213,8 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 	 * @return void
 	 */
 	public static function callback_remove_user_from_blog( $user_id, $blog_id ) {
-		$blog    = get_blog_details( $blog_id );
-		$user    = get_user_by( 'id', $user_id );
-		$context = sanitize_key( $blog->blogname );
+		$blog = get_blog_details( $blog_id );
+		$user = get_user_by( 'id', $user_id );
 
 		if ( ! is_a( $user, 'WP_User' ) ) {
 			return;
@@ -241,7 +222,7 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 
 		self::log(
 			_x(
-				'%1$s has been removed from the site "%2$s".',
+				'%1$s was removed from the "%2$s" site',
 				'1. User\'s name, 2. Site name',
 				'stream'
 			),
@@ -250,155 +231,152 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 				'site_name' => $blog->blogname,
 			),
 			$blog_id,
-			array( $context => 'updated' )
+			sanitize_key( $blog->blogname ),
+			'updated'
 		);
 	}
 
 	/**
-	 * @action make_spam_blog
+	 * Blog marked as spam
 	 *
-	 * @access public
-	 * @static
+	 * @action make_spam_blog
 	 *
 	 * @param int $blog_id
 	 *
 	 * @return void
 	 */
 	public static function callback_make_spam_blog( $blog_id ) {
-		self::callback_update_blog_status( $blog_id, __( 'marked as spam', 'stream' ), 'updated' );
+		self::callback_update_blog_status( $blog_id, esc_html__( 'marked as spam', 'stream' ), 'updated' );
 	}
 
 	/**
-	 * @action make_ham_blog
+	 * Blog not marked as spam
 	 *
-	 * @access public
-	 * @static
+	 * @action make_ham_blog
 	 *
 	 * @param int $blog_id
 	 *
 	 * @return void
 	 */
 	public static function callback_make_ham_blog( $blog_id ) {
-		self::callback_update_blog_status( $blog_id, __( 'marked as not spam', 'stream' ), 'updated' );
+		self::callback_update_blog_status( $blog_id, esc_html__( 'marked as not spam', 'stream' ), 'updated' );
 	}
 
 	/**
-	 * @action mature_blog
+	 * Blog marked as mature
 	 *
-	 * @access public
-	 * @static
+	 * @action mature_blog
 	 *
 	 * @param int $blog_id
 	 *
 	 * @return void
 	 */
 	public static function callback_mature_blog( $blog_id ) {
-		self::callback_update_blog_status( $blog_id, __( 'marked as mature', 'stream' ), 'updated' );
+		self::callback_update_blog_status( $blog_id, esc_html__( 'marked as mature', 'stream' ), 'updated' );
 	}
 
 	/**
+	 * Blog not marked as mature
+	 *
 	 * @action unmature_blog
 	 *
-	 * @access public
-	 * @static
-	 *
 	 * @param int $blog_id
 	 *
 	 * @return void
 	 */
-	public static function callback_unmature_blog( $blog ) {
-		self::callback_update_blog_status( $blog_id, __( 'marked as not mature', 'stream' ), 'updated' );
+	public static function callback_unmature_blog( $blog_id ) {
+		self::callback_update_blog_status( $blog_id, esc_html__( 'marked as not mature', 'stream' ), 'updated' );
 	}
 
 	/**
+	 * Blog marked as archived
+	 *
 	 * @action archive_blog
 	 *
-	 * @access public
-	 * @static
-	 *
 	 * @param int $blog_id
 	 *
 	 * @return void
 	 */
-	public static function callback_archive_blog( $blog ) {
-		self::callback_update_blog_status( $blog_id, __( 'archived', 'stream' ), 'archive_blog' );
+	public static function callback_archive_blog( $blog_id ) {
+		self::callback_update_blog_status( $blog_id, esc_html__( 'archived', 'stream' ), 'archive_blog' );
 	}
 
 	/**
-	 * @action unarchive_blog
+	 * Blog not marked as archived
 	 *
-	 * @access public
-	 * @static
+	 * @action unarchive_blog
 	 *
 	 * @param int $blog_id
 	 *
 	 * @return void
 	 */
 	public static function callback_unarchive_blog( $blog_id ) {
-		self::callback_update_blog_status( $blog_id, __( 'restored from archive', 'stream' ), 'updated' );
+		self::callback_update_blog_status( $blog_id, esc_html__( 'restored from archive', 'stream' ), 'updated' );
 	}
 
 	/**
-	 * @action make_delete_blog
+	 * Blog marked as deleted
 	 *
-	 * @access public
-	 * @static
+	 * @action make_delete_blog
 	 *
 	 * @param int $blog_id
 	 *
 	 * @return void
 	 */
 	public static function callback_make_delete_blog( $blog_id ) {
-		self::callback_update_blog_status( $blog_id, __( 'deleted', 'stream' ), 'deleted' );
+		self::callback_update_blog_status( $blog_id, esc_html__( 'deleted', 'stream' ), 'deleted' );
 	}
 
 	/**
-	 * @action make_undelete_blog
+	 * Blog not marked as deleted
 	 *
-	 * @access public
-	 * @static
+	 * @action undelete_blog
 	 *
 	 * @param int $blog_id
 	 *
 	 * @return void
 	 */
 	public static function callback_make_undelete_blog( $blog_id ) {
-		self::callback_update_blog_status( $blog_id, __( 'restored', 'stream' ), 'updated' );
+		self::callback_update_blog_status( $blog_id, esc_html__( 'restored', 'stream' ), 'updated' );
 	}
 
 	/**
+	 * Blog marked as public or private
+	 *
 	 * @action update_blog_public
 	 *
-	 * @access public
-	 * @static
-	 *
-	 * @param int $blog_id
+	 * @param int    $blog_id
+	 * @param string $value
 	 *
 	 * @return void
 	 */
 	public static function callback_update_blog_public( $blog_id, $value ) {
-		$status = ( $value ) ? __( 'marked as public', 'stream' ) : __( 'marked as private', 'stream' );
+		if ( $value ) {
+			$status = esc_html__( 'marked as public', 'stream' );
+		} else {
+			$status = esc_html__( 'marked as private', 'stream' );
+		}
 
 		self::callback_update_blog_status( $blog_id, $status, 'updated' );
 	}
 
 	/**
-	 * @action update_blog_public
+	 * Blog updated
 	 *
-	 * @access public
-	 * @static
+	 * @action update_blog_status
 	 *
-	 * @param int $blog_id
+	 * @param int    $blog_id
+	 * @param string $status
+	 * @param string $action
 	 *
 	 * @return void
 	 */
 	public static function callback_update_blog_status( $blog_id, $status, $action ) {
-		$blog    = get_blog_details( $blog_id );
-		$context = sanitize_key( $blog->blogname );
+		$blog = get_blog_details( $blog_id );
 
 		self::log(
 			_x(
-				'"%1$s" has been %2$s.',
+				'"%1$s" site was %2$s',
 				'1. Site name, 2. Status',
 				'stream'
 			),
@@ -407,7 +385,8 @@ class WP_Stream_Connector_Blogs extends WP_Stream_Connector {
 				'status'    => $status,
 			),
 			$blog_id,
-			array( $context => $action )
+			sanitize_key( $blog->blogname ),
+			$action
 		);
 
 	}
