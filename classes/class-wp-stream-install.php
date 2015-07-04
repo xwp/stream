@@ -219,7 +219,7 @@ class WP_Stream_Install {
 			esc_html__( 'Database Update Error', 'stream' ),
 			array(
 				'response'  => 200,
-				'back_link' => true,
+				'back_link' => 1,
 			)
 		);
 	}
