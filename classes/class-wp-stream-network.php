@@ -33,6 +33,7 @@ class WP_Stream_Network {
 		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
 		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
 		add_filter( 'wp_stream_blog_id_logged', array( $this, 'blog_id_logged' ) );
+		add_filter( 'wp_stream_query_args', array( $this, 'network_query_args' ) );
 		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
 		add_filter( 'wp_stream_connectors', array( $this, 'hide_blogs_connector' ) );
 	}
@@ -490,6 +491,22 @@ class WP_Stream_Network {
 	 */
 	public static function blog_id_logged( $blog_id ) {
 		return is_network_admin() ? 0 : $blog_id;
+	}
+
+	/**
+	 * Customize query args on multisite installs
+	 *
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	public static function network_query_args( $args ) {
+		if ( is_multisite() ) {
+			$args['site_id'] = get_current_site()->id;
+			$args['blog_id'] = is_network_admin() ? null : get_current_blog_id();
+		}
+
+		return $args;
 	}
 
 	/**
