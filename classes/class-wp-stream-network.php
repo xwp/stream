@@ -33,7 +33,6 @@ class WP_Stream_Network {
 		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
 		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
 		add_filter( 'wp_stream_blog_id_logged', array( $this, 'blog_id_logged' ) );
-		add_filter( 'wp_stream_query_args', array( __CLASS__, 'set_network_option_value' ) );
 		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
 		add_filter( 'wp_stream_connectors', array( $this, 'hide_blogs_connector' ) );
 	}
@@ -435,7 +434,7 @@ class WP_Stream_Network {
 		);
 
 		// add all sites
-		foreach ( (array) wp_get_sites() as $blog ) {
+		foreach ( wp_get_sites() as $blog ) {
 			$blog_data = get_blog_details( $blog );
 
 			$blogs[ $blog['blog_id'] ] = array(
@@ -491,21 +490,6 @@ class WP_Stream_Network {
 	 */
 	public static function blog_id_logged( $blog_id ) {
 		return is_network_admin() ? 0 : $blog_id;
-	}
-
-	/**
-	 * Adjust the stream query to work with changes on the network level
-	 *
-	 * @param $args
-	 *
-	 * @return mixed
-	 */
-	public static function set_network_option_value( $args ) {
-		if ( isset( $args['blog_id'] ) && 'network' === $args['blog_id'] ) {
-			$args['blog_id'] = 0;
-		}
-
-		return $args;
 	}
 
 	/**
