@@ -2,12 +2,8 @@
 
 <ruleset name="WordPress Coding Standards for WP Stream">
 
-	<rule ref="WordPress-Extra" />
-	<rule ref="WordPress.PHP.StrictComparisons">
-		<exclude-pattern>classes/*.php</exclude-pattern>
-	</rule>
-	<rule ref="WordPress.CSRF.NonceVerification.NoNonceVerification">
-		<exclude-pattern>classes/*.php</exclude-pattern>
+	<rule ref="WordPress-Extra">
+		<exclude name="WordPress.CSRF.NonceVerification.NoNonceVerification" />
 	</rule>
 
 	<exclude-pattern>*/tests/*</exclude-pattern>
