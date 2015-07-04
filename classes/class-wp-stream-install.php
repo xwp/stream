@@ -392,7 +392,7 @@ class WP_Stream_Install {
 		$sql = "CREATE TABLE {$prefix}stream (
 			ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			site_id bigint(20) unsigned NOT NULL DEFAULT '1',
-			blog_id bigint(20) unsigned NOT NULL DEFAULT '0',
+			blog_id bigint(20) unsigned NOT NULL DEFAULT '1',
 			object_id bigint(20) unsigned NULL,
 			user_id bigint(20) unsigned NOT NULL DEFAULT '0',
 			user_role varchar(20) NOT NULL DEFAULT '',
