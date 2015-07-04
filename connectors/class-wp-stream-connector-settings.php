@@ -67,8 +67,9 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		'limited_email_domains',
 		'banned_email_domains',
 		'WPLANG',
-		'admin_email',
+		'blog_count',
 		'user_count',
+		'admin_email',
 	);
 
 	/**
@@ -226,7 +227,6 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'blogdescription'               => esc_html__( 'Tagline', 'stream' ),
 			'siteurl'                       => esc_html__( 'WordPress Address (URL)', 'stream' ),
 			'home'                          => esc_html__( 'Site Address (URL)', 'stream' ),
-			'admin_email'                   => esc_html__( 'E-mail Address', 'stream' ),
 			'users_can_register'            => esc_html__( 'Membership', 'stream' ),
 			'default_role'                  => esc_html__( 'New User Default Role', 'stream' ),
 			'timezone_string'               => esc_html__( 'Timezone', 'stream' ),
@@ -310,11 +310,14 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'limited_email_domains'         => esc_html__( 'Limited Email Registrations', 'stream' ),
 			'banned_email_domains'          => esc_html__( 'Banned Email Domains', 'stream' ),
 			'WPLANG'                        => esc_html__( 'Network Language', 'stream' ),
-			'admin_email'                   => esc_html__( 'Network Admin Email', 'stream' ),
+			'blog_count'                    => esc_html__( 'Blog Count', 'stream' ),
 			'user_count'                    => esc_html__( 'User Count', 'stream' ),
 			// Other
 			'wp_stream_db'                  => esc_html__( 'Stream Database Version', 'stream' ),
 		);
+
+		// This option is a special case, appearing in both the network admin options and site options
+		$labels['admin_email'] = is_network_admin() ? esc_html__( 'Network Admin Email', 'stream' ) : esc_html__( 'E-mail Address', 'stream' );
 
 		if ( isset( $labels[ $field_key ] ) ) {
 			return $labels[ $field_key ];
