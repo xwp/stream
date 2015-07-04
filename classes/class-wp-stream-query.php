@@ -121,14 +121,6 @@ class WP_Stream_Query {
 		/**
 		 * PARSE CORE PARAMS
 		 */
-		if ( ! empty( $args['object_id'] ) ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.object_id = %d", $args['object_id'] );
-		}
-
-		if ( ! empty( $args['ip'] ) ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", wp_stream_filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
-		}
-
 		if ( is_numeric( $args['site_id'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.site_id = %d", $args['site_id'] );
 		}
@@ -137,17 +129,21 @@ class WP_Stream_Query {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.blog_id = %d", $args['blog_id'] );
 		}
 
-		if ( ! empty( $args['search'] ) ) {
-			$field = ! empty( $args['search_field'] ) ? $args['search_field'] : 'summary';
-			$where .= $wpdb->prepare( " AND $wpdb->stream.{$field} LIKE %s", "%{$args['search']}%" );
+		if ( is_numeric( $args['object_id'] ) ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.object_id = %d", $args['object_id'] );
 		}
 
 		if ( is_numeric( $args['user_id'] ) ) {
-			$where .= $wpdb->prepare( " AND $wpdb->stream.user_id = %d", (int) $args['user_id'] );
+			$where .= $wpdb->prepare( " AND $wpdb->stream.user_id = %d", $args['user_id'] );
 		}
 
 		if ( ! empty( $args['user_role'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.user_role = %s", $args['user_role'] );
+		}
+
+		if ( ! empty( $args['search'] ) ) {
+			$field  = ! empty( $args['search_field'] ) ? $args['search_field'] : 'summary';
+			$where .= $wpdb->prepare( " AND $wpdb->stream.{$field} LIKE %s", "%{$args['search']}%" );
 		}
 
 		if ( ! empty( $args['connector'] ) ) {
@@ -160,6 +156,10 @@ class WP_Stream_Query {
 
 		if ( ! empty( $args['action'] ) ) {
 			$where .= $wpdb->prepare( " AND $wpdb->stream.action = %s", $args['action'] );
+		}
+
+		if ( ! empty( $args['ip'] ) ) {
+			$where .= $wpdb->prepare( " AND $wpdb->stream.ip = %s", wp_stream_filter_var( $args['ip'], FILTER_VALIDATE_IP ) );
 		}
 
 		/**
