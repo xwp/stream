@@ -425,10 +425,10 @@ class WP_Stream_Network {
 
 		$blogs = array();
 
-		// display network blog as the first option
+		// Display network blog as the first option
 		$network_blog = self::get_network_blog();
 
-		$blogs['network'] = array(
+		$blogs[ $network_blog->blog_id ] = array(
 			'label'    => $network_blog->blogname,
 			'disabled' => '',
 		);
