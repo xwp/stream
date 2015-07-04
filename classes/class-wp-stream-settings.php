@@ -122,7 +122,7 @@ class WP_Stream_Settings {
 					'user_url',
 				),
 				'orderby' => 'display_name',
-				'number'  => WP_Stream_Admin::PRELOAD_AUTHORS_MAX,
+				'number'  => WP_Stream_Admin::PRELOAD_USERS_MAX,
 			)
 		);
 
