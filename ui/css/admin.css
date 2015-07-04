@@ -284,7 +284,9 @@
 	border-bottom: 1px solid #ccc;
 }
 
-.wp_stream_settings .select2-container {
+.wp_stream_settings .select2-container,
+.wp_stream_networksettings .select2-container,
+.wp_stream_default_settings .select2-container {
 	width: 100%;
 }
 
@@ -373,16 +375,13 @@
 /* Select2 Common */
 
 .wp_stream_screen li.select2-searching,
-.wp_stream_settings li.select2-searching,
-.wp_stream_screen li.select2-no-results,
-.wp_stream_settings li.select2-no-results  {
+.wp_stream_screen li.select2-no-results {
 	background: none;
 	padding: 7px 7px 0;
 	color: #999;
 }
 
-.wp_stream_screen li.select2-result,
-.wp_stream_settings li.select2-result {
+.wp_stream_screen li.select2-result {
 	margin-bottom: 0;
 }
 
