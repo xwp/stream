@@ -69,6 +69,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		'WPLANG',
 		'blog_count',
 		'user_count',
+		'admin_email',
 		'new_admin_email',
 	);
 
@@ -225,6 +226,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			// General
 			'blogname'                      => esc_html__( 'Site Title', 'stream' ),
 			'blogdescription'               => esc_html__( 'Tagline', 'stream' ),
+			'admin_email'                   => esc_html__( 'E-mail Address', 'stream' ),
 			'new_admin_email'               => esc_html__( 'E-mail Address', 'stream' ),
 			'siteurl'                       => esc_html__( 'WordPress Address (URL)', 'stream' ),
 			'home'                          => esc_html__( 'Site Address (URL)', 'stream' ),
@@ -317,8 +319,9 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'wp_stream_db'                  => esc_html__( 'Stream Database Version', 'stream' ),
 		);
 
-		// This option is a special case because it appears in both the network admin options and site options
+		// These option labels are special and need to change based on multisite context
 		if ( is_network_admin() ) {
+			$labels['admin_email']     = esc_html__( 'Network Admin Email', 'stream' );
 			$labels['new_admin_email'] = esc_html__( 'Network Admin Email', 'stream' );
 		}
 
