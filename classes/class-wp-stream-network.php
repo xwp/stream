@@ -7,45 +7,68 @@ class WP_Stream_Network {
 	const DEFAULT_SETTINGS_PAGE_SLUG = 'wp_stream_default_settings';
 
 	function __construct() {
-		$this->actions();
-		$this->filters();
-	}
+		if ( ! self::is_network_activated() ) {
+			return;
+		}
 
-	function actions() {
-		add_action( 'init', array( $this, 'ajax_network_admin' ), 1 );
-		add_action( 'admin_bar_menu', array( $this, 'network_admin_bar_menu' ), 99, 1 );
+		// Actions
+		add_action( 'init', array( $this, 'ajax_network_admin' ) );
 		add_action( 'network_admin_menu', array( 'WP_Stream_Admin', 'register_menu' ) );
+		add_action( 'network_admin_menu', array( $this, 'admin_menu_screens' ) );
+		add_action( 'admin_menu', array( $this, 'admin_menu_screens' ) );
+		add_action( 'admin_bar_menu', array( $this, 'network_admin_bar_menu' ), 99 );
 		add_action( 'network_admin_notices', array( 'WP_Stream_Admin', 'admin_notices' ) );
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
-		add_action( 'wp_network_dashboard_setup', array( 'WP_Stream_Dashboard_Widget', 'stream_activity' ) );
-		add_action( 'admin_menu', array( $this, 'admin_menu_screens' ) );
-		add_action( 'network_admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'update_site_option_' . WP_Stream_Settings::NETWORK_OPTION_KEY, array( $this, 'updated_option_ttl_remove_records' ), 10, 3 );
-	}
 
-	function filters() {
-		add_filter( 'wp_stream_disable_admin_access', array( __CLASS__, 'disable_admin_access' ) );
+		// Filters
+		add_filter( 'wp_stream_blog_id_logged', array( $this, 'blog_id_logged' ) );
+		add_filter( 'wp_stream_query_args', array( $this, 'network_query_args' ) );
+		add_filter( 'wp_stream_admin_page_title', array( $this, 'network_admin_page_title' ) );
+		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
+		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
+		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
+		add_filter( 'wp_stream_register_column_defaults', array( $this, 'register_blog_id_column_defaults' ) );
+		add_filter( 'wp_stream_insert_column_default-blog_id', array( $this, 'insert_blog_id_column_default' ), 10, 2 );
+		add_filter( 'wp_stream_disable_admin_access', array( $this, 'disable_admin_access' ) );
 		add_filter( 'wp_stream_settings_form_action', array( $this, 'settings_form_action' ) );
 		add_filter( 'wp_stream_settings_form_description', array( $this, 'settings_form_description' ) );
 		add_filter( 'wp_stream_options_fields', array( $this, 'get_network_admin_fields' ) );
 		add_filter( 'wp_stream_options', array( $this, 'get_network_options' ), 10, 2 );
 		add_filter( 'wp_stream_serialized_labels', array( $this, 'get_settings_translations' ) );
-		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
-		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
-		add_filter( 'wp_stream_blog_id_logged', array( $this, 'blog_id_logged' ) );
-		add_filter( 'wp_stream_query_args', array( $this, 'network_query_args' ) );
-		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
 		add_filter( 'wp_stream_connectors', array( $this, 'hide_blogs_connector' ) );
 	}
 
 	/**
-	 * Workaround to get admin-ajax.php to know when the request is from the network admin
-	 * See https://core.trac.wordpress.org/ticket/22589
+	 * Workaround to get admin-ajax.php to know when the request is from the Network Admin
+	 *
+	 * @action init
+	 *
+	 * @see https://core.trac.wordpress.org/ticket/22589
 	 */
-	function ajax_network_admin() {
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && is_multisite() && preg_match( '#^' . network_admin_url() . '#i', $_SERVER['HTTP_REFERER'] ) ) {
+	public function ajax_network_admin() {
+		if (
+			defined( 'DOING_AJAX' )
+			&&
+			DOING_AJAX
+			&&
+			preg_match( '#^' . network_admin_url() . '#i', $_SERVER['HTTP_REFERER'] )
+		) {
 			define( 'WP_NETWORK_ADMIN', true );
 		}
+	}
+
+	/**
+	 * Builds a stdClass object used when displaying actions done in network administration
+	 *
+	 * @return object
+	 */
+	public static function get_network_blog() {
+		$blog           = new stdClass;
+		$blog->blog_id  = 0;
+		$blog->blogname = esc_html__( 'Network Admin', 'stream' );
+
+		return $blog;
 	}
 
 	/**
@@ -63,9 +86,15 @@ class WP_Stream_Network {
 
 	/**
 	 * Adds Stream to the admin bar under the "My Sites > Network Admin" menu
-	 * if Stream has been network-activated
+	 * if Stream has been network-activated.
+	 *
+	 * @action admin_bar_menu
+	 *
+	 * @param object $admin_bar
+	 *
+	 * @return void
 	 */
-	function network_admin_bar_menu( $admin_bar ) {
+	public function network_admin_bar_menu( $admin_bar ) {
 		if ( ! self::is_network_activated() ) {
 			return;
 		}
@@ -88,26 +117,13 @@ class WP_Stream_Network {
 	}
 
 	/**
-	 * Builds a stdClass object used when displaying actions done in network administration
-	 *
-	 * @return stdClass
-	 */
-	public static function get_network_blog() {
-		$blog           = new stdClass;
-		$blog->blog_id  = 0;
-		$blog->blogname = __( 'Network Admin', 'stream' );
-
-		return $blog;
-	}
-
-	/**
 	 * If site access has been disabled from the network admin, disallow access
 	 *
 	 * @param $disable_access
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
-	public static function disable_admin_access( $disable_access ) {
+	public function disable_admin_access( $disable_access ) {
 		if ( ! is_network_admin() && self::is_network_activated() ) {
 			$settings = (array) get_site_option( WP_Stream_Settings::NETWORK_OPTION_KEY, array() );
 
@@ -126,7 +142,7 @@ class WP_Stream_Network {
 	 *
 	 * @return array
 	 */
-	function admin_menu_screens() {
+	public function admin_menu_screens() {
 		if ( ! is_network_admin() ) {
 			return;
 		}
@@ -164,7 +180,7 @@ class WP_Stream_Network {
 	 * @action update_option_wp_stream
 	 * @return void
 	 */
-	function updated_option_ttl_remove_records( $option_key, $new_value, $old_value ) {
+	public function updated_option_ttl_remove_records( $option_key, $new_value, $old_value ) {
 		WP_Stream_Settings::updated_option_ttl_remove_records( $old_value, $new_value );
 	}
 
@@ -175,7 +191,7 @@ class WP_Stream_Network {
 	 *
 	 * @return string
 	 */
-	function settings_form_action( $action ) {
+	public function settings_form_action( $action ) {
 		if ( is_network_admin() ) {
 			$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 			$action       = add_query_arg( array( 'action' => $current_page ), 'edit.php' );
@@ -191,7 +207,7 @@ class WP_Stream_Network {
 	 *
 	 * @return string
 	 */
-	function settings_form_description( $description ) {
+	public function settings_form_description( $description ) {
 		if ( ! is_network_admin() ) {
 			return;
 		}
@@ -217,7 +233,7 @@ class WP_Stream_Network {
 	 *
 	 * @return mixed
 	 */
-	function get_network_admin_fields( $fields ) {
+	public function get_network_admin_fields( $fields ) {
 		if ( ! self::is_network_activated() ) {
 			return $fields;
 		}
@@ -317,7 +333,7 @@ class WP_Stream_Network {
 	 * @filter wp_stream_serialized_labels
 	 * @return array Multidimensional array of fields
 	 */
-	function get_settings_translations( $labels ) {
+	public function get_settings_translations( $labels ) {
 		$network_key  = WP_Stream_Settings::NETWORK_OPTION_KEY;
 		$defaults_key = WP_Stream_Settings::SITE_DEFAULTS_OPTION_KEY;
 
@@ -342,7 +358,7 @@ class WP_Stream_Network {
 	/**
 	 * Wrapper for the settings API to work on the network settings page
 	 */
-	function network_options_action() {
+	public function network_options_action() {
 		$allowed_referers = array(
 			self::NETWORK_SETTINGS_PAGE_SLUG,
 			self::DEFAULT_SETTINGS_PAGE_SLUG,
@@ -401,7 +417,7 @@ class WP_Stream_Network {
 	 *
 	 * @return array
 	 */
-	function get_network_options( $options, $option_key ) {
+	public function get_network_options( $options, $option_key ) {
 		if ( is_network_admin() ) {
 			$options = wp_parse_args(
 				(array) get_site_option( $option_key, array() ),
@@ -413,13 +429,15 @@ class WP_Stream_Network {
 	}
 
 	/**
-	 * Add the Site filter to the stream activity in network admin
+	 * Add the Site filter to the Network records screen
+	 *
+	 * @filter wp_stream_list_table_filters
 	 *
 	 * @param $filters
 	 *
 	 * @return array
 	 */
-	function list_table_filters( $filters ) {
+	public function list_table_filters( $filters ) {
 		if ( ! is_network_admin() || wp_is_large_network() ) {
 			return $filters;
 		}
@@ -459,7 +477,7 @@ class WP_Stream_Network {
 	 *
 	 * @return array
 	 */
-	function toggle_filters( $filters ) {
+	public function toggle_filters( $filters ) {
 		if ( is_network_admin() ) {
 			$filters['blog_id'] = esc_html__( 'Site', 'stream' );
 		}
@@ -474,7 +492,7 @@ class WP_Stream_Network {
 	 *
 	 * @return string
 	 */
-	function list_table_screen_id( $screen_id ) {
+	public function list_table_screen_id( $screen_id ) {
 		if ( $screen_id && is_network_admin() ) {
 			if ( '-network' !== substr( $screen_id, -8 ) ) {
 				$screen_id .= '-network';
@@ -512,13 +530,31 @@ class WP_Stream_Network {
 	}
 
 	/**
+	 * Add site count to the page title in the network admin
+	 *
+	 * @filter wp_stream_admin_page_title
+	 *
+	 * @param string page_title
+	 *
+	 * @return string
+	 */
+	public function network_admin_page_title( $page_title ) {
+		if ( is_network_admin() ) {
+			$site_count = sprintf( _n( '1 site', '%s sites', get_blog_count(), 'stream' ), number_format( get_blog_count() ) );
+			$page_title = sprintf( '%s (%s)', $page_title, $site_count );
+		}
+
+		return $page_title;
+	}
+
+	/**
 	 * Add the Site column to the network stream records
 	 *
 	 * @param $args
 	 *
 	 * @return mixed
 	 */
-	function network_admin_columns( $columns ) {
+	public function network_admin_columns( $columns ) {
 		if ( is_network_admin() ) {
 			$columns = array_merge(
 				array_slice( $columns, 0, -1 ),
@@ -533,13 +569,61 @@ class WP_Stream_Network {
 	}
 
 	/**
-	 * Prevent the Blogs connector from loading when not in network_admin
+	 * Register column defaults for blog_id
+	 *
+	 * @filter wp_stream_register_column_defaults
+	 *
+	 * @param array $new_columns
+	 *
+	 * @return array
+	 */
+	public function register_blog_id_column_defaults( $new_columns ) {
+		if ( is_network_admin() ) {
+			$new_columns[] = 'blog_id';
+		}
+
+		return $new_columns;
+	}
+
+	/**
+	 * Populate the blog_id column with content
+	 *
+	 * @filter wp_stream_insert_column_default-blog_id
+	 *
+	 * @param string $column_name
+	 * @param object $item
+	 *
+	 * @return string
+	 */
+	public function insert_blog_id_column_default( $column_name, $item ) {
+		if ( ! is_network_admin() ) {
+			return;
+		}
+
+		$blog = ( 0 === $item->blog_id ) ? self::get_network_blog() : get_blog_details( $item->blog_id );
+
+		$out = sprintf(
+			'<a href="%s"><span>%s</span></a>',
+			add_query_arg(
+				array(
+					'blog_id' => $blog->blog_id,
+				),
+				network_admin_url( 'admin.php?page=wp_stream' )
+			),
+			esc_html( $blog->blogname )
+		);
+
+		return $out;
+	}
+
+	/**
+	 * Prevent the Blogs connector from loading when not in Network Admin
 	 *
 	 * @param $args
 	 *
 	 * @return mixed
 	 */
-	function hide_blogs_connector( $connectors ) {
+	public function hide_blogs_connector( $connectors ) {
 		if ( ! is_network_admin() ) {
 			return array_diff( $connectors, array( 'WP_Stream_Connector_Blogs' ) );
 		}
