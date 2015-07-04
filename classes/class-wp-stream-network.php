@@ -28,8 +28,6 @@ class WP_Stream_Network {
 		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
 		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
 		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
-		add_filter( 'wp_stream_register_column_defaults', array( $this, 'register_blog_id_column_defaults' ) );
-		add_filter( 'wp_stream_insert_column_default-blog_id', array( $this, 'insert_blog_id_column_default' ), 10, 2 );
 		add_filter( 'wp_stream_disable_admin_access', array( $this, 'disable_admin_access' ) );
 		add_filter( 'wp_stream_settings_form_action', array( $this, 'settings_form_action' ) );
 		add_filter( 'wp_stream_settings_form_description', array( $this, 'settings_form_description' ) );
@@ -566,54 +564,6 @@ class WP_Stream_Network {
 		}
 
 		return $columns;
-	}
-
-	/**
-	 * Register column defaults for blog_id
-	 *
-	 * @filter wp_stream_register_column_defaults
-	 *
-	 * @param array $new_columns
-	 *
-	 * @return array
-	 */
-	public function register_blog_id_column_defaults( $new_columns ) {
-		if ( is_network_admin() ) {
-			$new_columns[] = 'blog_id';
-		}
-
-		return $new_columns;
-	}
-
-	/**
-	 * Populate the blog_id column with content
-	 *
-	 * @filter wp_stream_insert_column_default-blog_id
-	 *
-	 * @param string $column_name
-	 * @param object $item
-	 *
-	 * @return string
-	 */
-	public function insert_blog_id_column_default( $column_name, $item ) {
-		if ( ! is_network_admin() ) {
-			return;
-		}
-
-		$blog = ( 0 === $item->blog_id ) ? self::get_network_blog() : get_blog_details( $item->blog_id );
-
-		$out = sprintf(
-			'<a href="%s"><span>%s</span></a>',
-			add_query_arg(
-				array(
-					'blog_id' => $blog->blog_id,
-				),
-				network_admin_url( 'admin.php?page=wp_stream' )
-			),
-			esc_html( $blog->blogname )
-		);
-
-		return $out;
 	}
 
 	/**

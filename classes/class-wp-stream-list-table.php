@@ -150,11 +150,11 @@ class WP_Stream_List_Table extends WP_List_Table {
 		// Additional filter properties
 		$properties = array(
 			'record',
-			'user_id',
-			'user_role',
-			'object_id',
 			'site_id',
 			'blog_id',
+			'object_id',
+			'user_id',
+			'user_role',
 			'ip',
 			'connector',
 			'context',
@@ -275,13 +275,13 @@ class WP_Stream_List_Table extends WP_List_Table {
 				$out = $this->column_link( $this->get_term_title( $item->{$column_name}, $column_name ), $column_name, $item->{$column_name} );
 				break;
 
-			case 'ip' :
-				$out = $this->column_link( $item->{$column_name}, 'ip', $item->{$column_name} );
-				break;
-
 			case 'blog_id':
 				$blog = ( $item->blog_id && is_multisite() ) ? get_blog_details( $item->blog_id ) : WP_Stream_Network::get_network_blog();
 				$out  = $this->column_link( $blog->blogname, 'blog_id', $blog->blog_id );
+				break;
+
+			case 'ip' :
+				$out = $this->column_link( $item->{$column_name}, 'ip', $item->{$column_name} );
 				break;
 
 			default :

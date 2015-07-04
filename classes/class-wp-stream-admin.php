@@ -445,7 +445,7 @@ class WP_Stream_Admin {
 					'page'    => is_network_admin() ? WP_Stream_Network::NETWORK_SETTINGS_PAGE_SLUG : WP_Stream_Admin::SETTINGS_PAGE_SLUG,
 					'message' => 'data_erased',
 				),
-				is_plugin_active_for_network( WP_STREAM_PLUGIN ) ? network_admin_url( self::ADMIN_PARENT_PAGE ) : admin_url( self::ADMIN_PARENT_PAGE )
+				self_admin_url( self::ADMIN_PARENT_PAGE )
 			)
 		);
 
