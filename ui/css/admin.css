@@ -280,29 +280,35 @@
 
 /* Settings */
 
-.wp_stream_settings .nav-tab-wrapper a:not(.nav-tab-active) {
+.wp_stream_settings .nav-tab-wrapper a:not(.nav-tab-active),
+.wp_stream_network_settings .nav-tab-wrapper a:not(.nav-tab-active)
+.wp_stream_default_settings .nav-tab-wrapper a:not(.nav-tab-active) {
 	border-bottom: 1px solid #ccc;
 }
 
 .wp_stream_settings .select2-container,
-.wp_stream_networksettings .select2-container,
+.wp_stream_network_settings .select2-container,
 .wp_stream_default_settings .select2-container {
 	width: 100%;
 }
 
-.wp_stream_settings .tablenav {
+.wp_stream_settings .tablenav,
+.wp_stream_network_settings .tablenav,
+.wp_stream_default_settings .tablenav {
 	margin-top: 16px;
 }
 
-.wp_stream_settings .tablenav input {
+.wp_stream_settings .tablenav input,
+.wp_stream_network_settings .tablenav input,
+.wp_stream_default_settings .tablenav input {
 	margin-right: 1em;
 }
 
-#wp_stream_advanced_delete_all_records {
+.wp_stream_screen a.warning {
 	color: #a00;
 }
 
-#wp_stream_advanced_delete_all_records:hover {
+.wp_stream_screen a.warning:hover {
 	color: #f00;
 }
 
@@ -498,35 +504,49 @@
 }
 
 @media screen and ( max-width: 900px ) {
+	.wp_stream_settings .stream-exclude-list .actions-column,
+	.wp_stream_network_settings .stream-exclude-list .actions-column,
 	.wp_stream_settings .stream-exclude-list .actions-column {
 		display: none;
 	}
 }
 
 @media screen and ( max-width: 782px ) {
-	.wp_stream_settings .stream-exclude-list td {
+	.wp_stream_settings .stream-exclude-list td,
+	.wp_stream_network_settings .stream-exclude-list td,
+	.wp_stream_default_settings .stream-exclude-list td {
 		padding: 10px 10px 0 0;
 	}
 
-	.wp_stream_settings .stream-exclude-list th {
+	.wp_stream_settings .stream-exclude-list th,
+	.wp_stream_network_settings .stream-exclude-list th,
+	.wp_stream_default_settings .stream-exclude-list th {
 		display: none;
 	}
 
-	.wp_stream_settings .stream-exclude-list .check-column {
+	.wp_stream_settings .stream-exclude-list .check-column,
+	.wp_stream_network_settings .stream-exclude-list .check-column,
+	.wp_stream_default_settings .stream-exclude-list .check-column {
 		display: table-cell;
 		padding: 13px 10px 0 3px;
 	}
 
-	.wp_stream_settings .stream-exclude-list thead .actions-column {
+	.wp_stream_settings .stream-exclude-list thead .actions-column,
+	.wp_stream_network_settings .stream-exclude-list thead .actions-column,
+	.wp_stream_default_settings .stream-exclude-list thead .actions-column {
 		display: table-cell;
 		width: auto;
 	}
 
-	.wp_stream_settings .stream-exclude-list thead .actions-column .hidden {
+	.wp_stream_settings .stream-exclude-list thead .actions-column .hidden,
+	.wp_stream_network_settings .stream-exclude-list thead .actions-column .hidden,
+	.wp_stream_default_settings .stream-exclude-list thead .actions-column .hidden {
 		display: block;
 	}
 
-	.wp_stream_settings .stream-exclude-list tfoot {
+	.wp_stream_settings .stream-exclude-list tfoot,
+	.wp_stream_network_settings .stream-exclude-list tfoot,
+	.wp_stream_default_settings .stream-exclude-list tfoot {
 		display: none;
 	}
 }

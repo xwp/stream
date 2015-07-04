@@ -312,6 +312,7 @@ class WP_Stream_Settings {
 							),
 							admin_url( 'admin-ajax.php' )
 						),
+						'class'       => 'warning',
 						'desc'        => esc_html__( 'Warning: This will delete all activity records from the database.', 'stream' ),
 						'default'     => 0,
 						'sticky'      => 'bottom',
