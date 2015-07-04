@@ -103,8 +103,8 @@ class WP_Stream {
 
 		if ( ! self::$db ) {
 			wp_die(
-				__( 'Stream: Could not load chosen DB driver.', 'stream' ),
-				__( 'Stream DB Error', 'stream' )
+				esc_html__( 'Stream: Could not load chosen DB driver.', 'stream' ),
+				esc_html__( 'Stream DB Error', 'stream' )
 			);
 		}
 

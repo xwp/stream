@@ -1,17 +1,13 @@
 <?xml version="1.0"?>
 
-<ruleset name="WordPress Coding Standards for Plugins">
-
-	<description>Generally-applicable sniffs for WordPress plugins</description>
+<ruleset name="WordPress Coding Standards for WP Stream">
 
 	<rule ref="WordPress-Extra" />
-
 	<rule ref="WordPress.PHP.StrictComparisons">
-		<exclude-pattern>*/*</exclude-pattern>
+		<exclude-pattern>classes/*.php</exclude-pattern>
 	</rule>
-
 	<rule ref="WordPress.CSRF.NonceVerification.NoNonceVerification">
-		<exclude-pattern>*/*</exclude-pattern>
+		<exclude-pattern>classes/*.php</exclude-pattern>
 	</rule>
 
 	<exclude-pattern>*/tests/*</exclude-pattern>
