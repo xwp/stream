@@ -6,9 +6,12 @@
 
 	<rule ref="WordPress-Extra" />
 
-	<rule ref="WordPress">
-		<exclude name="WordPress.PHP.StrictComparisons" />
-		<exclude name="WordPress.CSRF.NonceVerification.NoNonceVerification" />
+	<rule ref="WordPress.PHP.StrictComparisons">
+		<exclude-pattern>*</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.CSRF.NonceVerification.NoNonceVerification">
+		<exclude-pattern>*</exclude-pattern>
 	</rule>
 
 	<exclude-pattern>*/tests/*</exclude-pattern>
