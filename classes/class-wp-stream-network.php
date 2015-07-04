@@ -3,6 +3,7 @@
 class WP_Stream_Network {
 
 	const NETWORK_SETTINGS_PAGE_SLUG = 'wp_stream_network_settings';
+
 	const DEFAULT_SETTINGS_PAGE_SLUG = 'wp_stream_default_settings';
 
 	function __construct() {
@@ -138,7 +139,7 @@ class WP_Stream_Network {
 			__( 'Network Settings', 'stream' ),
 			WP_Stream_Admin::SETTINGS_CAP,
 			self::NETWORK_SETTINGS_PAGE_SLUG,
-			array( 'WP_Stream_Admin', 'render_page' )
+			array( 'WP_Stream_Admin', 'render_settings_page' )
 		);
 
 		if ( ! WP_Stream_Admin::$disable_access ) {
@@ -148,7 +149,7 @@ class WP_Stream_Network {
 				__( 'Site Defaults', 'stream' ),
 				WP_Stream_Admin::SETTINGS_CAP,
 				self::DEFAULT_SETTINGS_PAGE_SLUG,
-				array( 'WP_Stream_Admin', 'render_page' )
+				array( 'WP_Stream_Admin', 'render_settings_page' )
 			);
 		}
 	}

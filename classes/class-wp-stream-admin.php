@@ -596,6 +596,21 @@ class WP_Stream_Admin {
 	}
 
 	/**
+	 * Render main page
+	 *
+	 * @return void
+	 */
+	public static function render_stream_page() {
+		self::$list_table->prepare_items();
+		?>
+		<div class="wrap">
+			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
+			<?php self::$list_table->display() ?>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Render settings page
 	 *
 	 * @return void
@@ -666,16 +681,6 @@ class WP_Stream_Admin {
 
 	public static function register_list_table() {
 		self::$list_table = new WP_Stream_List_Table( array( 'screen' => self::$screen_id['main'] ) );
-	}
-
-	public static function render_stream_page() {
-		self::$list_table->prepare_items();
-		?>
-		<div class="wrap">
-			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
-			<?php self::$list_table->display() ?>
-		</div>
-		<?php
 	}
 
 	private static function _role_can_view_stream( $role ) {
