@@ -2,12 +2,6 @@
 namespace WP_Stream;
 
 class Record {
-	/**
-	 * Hold Plugin class
-	 * @var Plugin
-	 */
-	public $plugin;
-
 	public $ID;
 	public $site_id;
 	public $blog_id;
@@ -23,13 +17,11 @@ class Record {
 	public $created;
 	public $ip;
 
-	public $meta;
+	public $stream_meta;
 
-	public function __construct( $plugin, $id = null ) {
-		$this->plugin = $plugin;
-
+	public function __construct( $id = null ) {
 		if ( $id ) {
-			$records = $this->plugin->db->query->query( array( 'id' => $id ) );
+			$records = wp_stream_get_instance()->db->query->query( array( 'id' => $id ) );
 			if ( isset( $records[0] ) ) {
 				$this->populate( $records[0] );
 			}
@@ -56,18 +48,18 @@ class Record {
 		return true;
 	}
 
-	public function get_meta( $meta_key = '', $single = false ) {
-		if ( isset( $this->meta->$meta_key ) ) {
-			$meta = $this->meta->$meta_key;
+	public function get_stream_meta( $meta_key = '', $single = false ) {
+		if ( isset( $this->stream_meta->$meta_key ) ) {
+			$stream_meta = $this->stream_meta->$meta_key;
 		} else {
 			return '';
 		}
 
 		if ( $single ) {
-			return $meta;
-		} else {
-			return array( $meta );
+			return $stream_meta;
 		}
+
+		return array( $stream_meta );
 	}
 
 	/**
@@ -83,12 +75,12 @@ class Record {
 
 		$output = false;
 
-		if ( isset( $this->meta->post_title ) && ! empty( $this->meta->post_title ) ) {
-			$output = (string) $this->meta->post_title;
-		} elseif ( isset( $this->meta->display_name ) && ! empty( $this->meta->display_name ) ) {
-			$output = (string) $this->meta->display_name;
-		} elseif ( isset( $this->meta->name ) && ! empty( $this->meta->name ) ) {
-			$output = (string) $this->meta->name;
+		if ( isset( $this->$stream_meta->post_title ) && ! empty( $this->$stream_meta->post_title ) ) {
+			$output = (string) $this->$stream_meta->post_title;
+		} elseif ( isset( $this->$stream_meta->display_name ) && ! empty( $this->$stream_meta->display_name ) ) {
+			$output = (string) $this->$stream_meta->display_name;
+		} elseif ( isset( $this->$stream_meta->name ) && ! empty( $this->$stream_meta->name ) ) {
+			$output = (string) $this->$stream_meta->name;
 		}
 
 		return $output;

@@ -243,6 +243,7 @@ class List_Table extends \WP_List_Table {
 
 	function column_default( $item, $column_name ) {
 		$out = '';
+		$record = new Record();
 
 		switch ( $column_name ) {
 			case 'date' :
@@ -259,7 +260,7 @@ class List_Table extends \WP_List_Table {
 
 			case 'summary' :
 				$out           = $item->summary;
-				$object_title  = wp_stream_get_object_title( $item );
+				$object_title  = $record->get_object_title();
 				$view_all_text = $object_title ? sprintf( esc_html__( 'View all activity for "%s"', 'stream' ), esc_attr( $object_title ) ) : esc_html__( 'View all activity for this object', 'stream' );
 				if ( $item->object_id ) {
 					$out .= $this->column_link(

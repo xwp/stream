@@ -148,7 +148,7 @@ class Log {
 			'connector'   => (string) $connector,
 			'context'     => (string) $context,
 			'action'      => (string) $action,
-			'meta'        => (array) $meta,
+			'stream_meta' => (array) $meta,
 			'ip'          => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 		);
 
@@ -157,9 +157,9 @@ class Log {
 			$this->transaction->stop = microtime( true );
 			$this->transaction->time = round( $this->transaction->stop - $this->transaction->start, 3 ) * 1000; // Use milliseconds
 
-			$recordarr['meta']['transaction_start'] = $this->transaction->start;
-			$recordarr['meta']['transaction_stop']  = $this->transaction->stop;
-			$recordarr['meta']['transaction_time']  = $this->transaction->time;
+			$recordarr['stream_meta']['transaction_start'] = $this->transaction->start;
+			$recordarr['stream_meta']['transaction_stop']  = $this->transaction->stop;
+			$recordarr['stream_meta']['transaction_time']  = $this->transaction->time;
 
 			/**
 			 * Fires immediately after the transaction timer has stopped
@@ -294,14 +294,14 @@ class Log {
 		$action    = isset( $recordarr['action'] ) ? $recordarr['action'] : null;
 
 		// Stream meta
-		$meta = isset( $recordarr['meta'] ) ? $recordarr['meta'] : null;
+		$stream_meta = isset( $recordarr['stream_meta'] ) ? $recordarr['stream_meta'] : null;
 
-		if ( $meta ) {
-			array_walk( $meta, function( &$value, $key ) {
+		if ( $stream_meta ) {
+			array_walk( $stream_meta, function( &$value, $key ) {
 				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
 			});
 
-			$meta = implode( ', ', $meta );
+			$stream_meta = implode( ', ', $stream_meta );
 		}
 
 		// Author meta
@@ -333,7 +333,7 @@ class Log {
 			$connector,
 			$context,
 			$action,
-			$meta,
+			$stream_meta,
 			$author_meta,
 			implode( "\n", $backtrace )
 		);
