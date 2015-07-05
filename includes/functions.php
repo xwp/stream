@@ -63,26 +63,6 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 }
 
 /**
- * Returns array of existing values for requested field.
- * Used to fill search filters with only used items, instead of all items.
- *
- * @see    assemble_records
- *
- * @param  string  Requested field (i.e., 'context')
- * @return array   Array of items to be output to select dropdowns
- */
-function wp_stream_existing_records( $field ) {
-	$values = wp_stream_get_instance()->db->get_distinct_field_values( $field );
-
-	if ( is_array( $values ) && ! empty( $values ) ) {
-		return array_combine( $values, $values );
-	} else {
-		$field = sprintf( 'stream_%s', $field );
-		return isset( wp_stream_get_instance()->connectors->term_labels[ $field ] ) ? WP_Stream_Connectors::$term_labels[ $field ] : array();
-	}
-}
-
-/**
  * Determine the title of an object that a record is for.
  *
  * @param  object  Record object

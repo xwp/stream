@@ -176,4 +176,23 @@ class DB {
 
 		return $values;
 	}
+
+	/**
+	 * Returns array of existing values for requested field.
+	 * Used to fill search filters with only used items, instead of all items.
+	 *
+	 * @param string $field Requested field (i.e., 'context')
+	 *
+	 * @return array Array of items to be output to select dropdowns
+	 */
+	function get_existing_records( $field ) {
+		$values = $this->get_distinct_field_values( $field );
+
+		if ( is_array( $values ) && ! empty( $values ) ) {
+			return array_combine( $values, $values );
+		} else {
+			$field = sprintf( 'stream_%s', $field );
+			return isset( $this->plugin->connectors->term_labels[ $field ] ) ? $this->plugin->connectors->term_labels[ $field ] : array();
+		}
+	}
 }

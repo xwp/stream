@@ -442,8 +442,6 @@ class List_Table extends \WP_List_Table {
 	 * results of existing records.  All items that do not exist in records
 	 * get assigned a disabled value of "true".
 	 *
-	 * @uses wp_stream_existing_records (see class-wp-stream-query.php)
-	 *
 	 * @param string $column List table column name
 	 *
 	 * @return array Options to be displayed in search filters

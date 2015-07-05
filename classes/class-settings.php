@@ -164,7 +164,7 @@ class Settings {
 
 		check_ajax_referer( 'stream_get_ips', 'nonce' );
 
-		$ips = wp_stream_existing_records( 'ip' );
+		$ips = $this->plugin->db->get_existing_records( 'ip' );
 
 		if ( $ips ) {
 			wp_send_json_success( $ips );
