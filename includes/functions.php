@@ -63,30 +63,6 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 }
 
 /**
- * Determine the title of an object that a record is for.
- *
- * @param  object  Record object
- * @return mixed   The title of the object as a string, otherwise false
- */
-function wp_stream_get_object_title( $record ) {
-	if ( ! is_object( $record ) || ! isset( $record->object_id ) || empty( $record->object_id ) ) {
-		return false;
-	}
-
-	$output = false;
-
-	if ( isset( $record->stream_meta->post_title ) && ! empty( $record->stream_meta->post_title ) ) {
-		$output = (string) $record->stream_meta->post_title;
-	} elseif ( isset( $record->stream_meta->display_name ) && ! empty( $record->stream_meta->display_name ) ) {
-		$output = (string) $record->stream_meta->display_name;
-	} elseif ( isset( $record->stream_meta->name ) && ! empty( $record->stream_meta->name ) ) {
-		$output = (string) $record->stream_meta->name;
-	}
-
-	return $output;
-}
-
-/**
  * Encode to JSON in a way that is also backwards compatible
  *
  * @param mixed $data
@@ -99,13 +75,11 @@ function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
 	if ( function_exists( 'wp_json_encode' ) ) {
 		$json = wp_json_encode( $data, $options, $depth );
 	} else {
-		// @codingStandardsIgnoreStart
 		if ( version_compare( PHP_VERSION, '5.5', '<' ) ) {
 			$json = json_encode( $data, $options );
 		} else {
 			$json = json_encode( $data, $options, $depth );
 		}
-		// @codingStandardsIgnoreEnd
 	}
 
 	return $json;

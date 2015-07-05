@@ -69,4 +69,28 @@ class Record {
 			return array( $meta );
 		}
 	}
+
+	/**
+	 * Determine the title of an object that a record is for.
+	 *
+	 * @param  object  Record object
+	 * @return mixed   The title of the object as a string, otherwise false
+	 */
+	function get_object_title() {
+		if ( ! isset( $this->object_id ) || empty( $this->object_id ) ) {
+			return false;
+		}
+
+		$output = false;
+
+		if ( isset( $this->meta->post_title ) && ! empty( $this->meta->post_title ) ) {
+			$output = (string) $this->meta->post_title;
+		} elseif ( isset( $this->meta->display_name ) && ! empty( $this->meta->display_name ) ) {
+			$output = (string) $this->meta->display_name;
+		} elseif ( isset( $this->meta->name ) && ! empty( $this->meta->name ) ) {
+			$output = (string) $this->meta->name;
+		}
+
+		return $output;
+	}
 }
