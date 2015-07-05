@@ -363,7 +363,7 @@ class Plugin {
 		$this->register_update_hook(
 			dirname( plugin_basename( __FILE__ ) ),
 			array( $this, 'install' ),
-			self::VERSION
+			$this->get_version()
 		);
 	}
 

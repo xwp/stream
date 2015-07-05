@@ -61,7 +61,7 @@ class Settings {
 		add_action( 'update_option_' . $this->option_key, array( $this, 'updated_option_trigger_flush_rules' ), 10, 2 );
 
 		// Remove records when records TTL is shortened
-		add_action( 'update_option_' . $this->option_key, array( __CLASS__, 'updated_option_ttl_remove_records' ), 10, 2 );
+		add_action( 'update_option_' . $this->option_key, array( $this, 'updated_option_ttl_remove_records' ), 10, 2 );
 
 		// Apply label translations for settings
 		add_filter( 'wp_stream_serialized_labels', array( $this, 'get_settings_translations' ) );
@@ -439,7 +439,7 @@ class Settings {
 		return apply_filters(
 			'wp_stream_settings_option_defaults',
 			wp_parse_args(
-				(array) get_site_option( self::SITE_DEFAULTS_OPTION_KEY, array() ),
+				(array) get_site_option( $this->site_defaults_options_key, array() ),
 				$defaults
 			)
 		);
@@ -1075,13 +1075,13 @@ class Settings {
 	 * @return array Multidimensional array of fields
 	 */
 	public function get_settings_translations( $labels ) {
-		if ( ! isset( $labels[ self::OPTION_KEY ] ) ) {
-			$labels[ self::OPTION_KEY ] = array();
+		if ( ! isset( $labels[ $this->option_key ] ) ) {
+			$labels[ $this->option_key ] = array();
 		}
 
 		foreach ( $this->get_fields() as $section_slug => $section ) {
 			foreach ( $section['fields'] as $field ) {
-				$labels[ self::OPTION_KEY ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
+				$labels[ $this->option_key ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
 			}
 		}
 

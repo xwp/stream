@@ -328,10 +328,7 @@ class Connector_Settings extends Connector {
 			'limited_email_domains'         => esc_html__( 'Limited Email Registrations', 'stream' ),
 			'banned_email_domains'          => esc_html__( 'Banned Email Domains', 'stream' ),
 			'WPLANG'                        => esc_html__( 'Network Language', 'stream' ),
-<<<<<<< HEAD:connectors/class-connector-settings.php
-=======
 			'blog_count'                    => esc_html__( 'Blog Count', 'stream' ),
->>>>>>> lite:connectors/class-wp-stream-connector-settings.php
 			'user_count'                    => esc_html__( 'User Count', 'stream' ),
 			// Other
 			'wp_stream_db'                  => esc_html__( 'Stream Database Version', 'stream' ),

@@ -130,25 +130,7 @@ class Install {
 	 * @return string
 	 */
 	public function get_db_version() {
-		global $wpdb;
-
-		$version = get_site_option( $this->option_key );
-
-		if ( ! empty( $version ) ) {
-			return $version;
-		}
-
-		$old_key = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%stream%_db'" );
-
-		if ( ! empty( $old_key ) && is_array( $old_key ) ) {
-			$version = get_option( $old_key[0] );
-
-			update_site_option( self::KEY, $version );
-
-			delete_option( $old_key[0] );
-		}
-
-		return $version;
+		return get_site_option( $this->option_key );
 	}
 
 	/**
@@ -235,7 +217,7 @@ class Install {
 		<div class="updated">
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ) ) ?>" style="display:inline;">
 				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ) ?></strong></p>
-				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', esc_html( self::$db_version ), esc_html( WP_Stream::VERSION ) ), 'stream' ) ?></p>
+				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', esc_html( $this->db_version ), esc_html( WP_Stream::VERSION ) ), 'stream' ) ?></p>
 				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ) ?>
 			</form>
 		</div>

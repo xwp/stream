@@ -215,7 +215,7 @@ class List_Table extends \WP_List_Table {
 	 * @return integer
 	 */
 	public function get_total_found_rows() {
-		return $this->plugin->db->query->found_records();
+		return $this->plugin->db->query->found_records;
 	}
 
 	function column_default( $item, $column_name ) {
