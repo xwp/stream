@@ -75,8 +75,8 @@ class Plugin {
 			'plugin'    => $locate['plugin_basename'],
 			'dir'       => $locate['dir_path'],
 			'url'       => $locate['dir_url'],
-			'inc_dir'   => $locate['dir_url'] . 'includes/',
-			'class_dir' => $locate['dir_url'] . 'classes/',
+			'inc_dir'   => $locate['dir_path'] . 'includes/',
+			'class_dir' => $locate['dir_path'] . 'classes/',
 		);
 
 		spl_autoload_register( array( $this, 'autoload' ) );
@@ -85,9 +85,9 @@ class Plugin {
 		require_once $this->locations['inc_dir'] . 'functions.php';
 
 		// Load DB helper interface/class
-		$driver = 'WP_Stream\DB';
+		$driver = '\WP_Stream\DB';
 		if ( class_exists( $driver ) ) {
-			$this->db = new $driver( $this );
+			$this->db = new DB( $this );
 		}
 
 		if ( ! $this->db ) {
@@ -145,16 +145,35 @@ class Plugin {
 	}
 
 	/**
+	 * @return \ReflectionObject
+	 */
+	function get_object_reflection() {
+		static $reflection;
+		if ( empty( $reflection ) ) {
+			$reflection = new \ReflectionObject( $this );
+		}
+		return $reflection;
+	}
+
+	/**
 	 * Autoloader for classes
 	 *
 	 * @param string $class
 	 */
 	function autoload( $class ) {
-		$class      = strtolower( str_replace( '_', '-', $class ) );
-		$class_file = sprintf( '%sclass-%s.php', $this->locations['class_dir'], $class );
+		if ( ! preg_match( '/^(?P<namespace>.+)\\\\(?P<autoload>[^\\\\]+)$/', $class, $matches ) ) {
+			return;
+		}
+		if ( $this->get_object_reflection()->getNamespaceName() !== $matches['namespace'] ) {
+			return;
+		}
 
-		if ( is_readable( $class_file ) ) {
-			require_once $class_file;
+		$autoload_name = $matches['autoload'];
+		$autoload_dir  = \trailingslashit( $this->locations['class_dir'] );
+		$autoload_path = sprintf( '%sclass-%s.php', $autoload_dir, strtolower( str_replace( '_', '-', $autoload_name ) ) );
+
+		if ( is_readable( $autoload_path ) ) {
+			require_once $autoload_path;
 		}
 	}
 
@@ -176,13 +195,7 @@ class Plugin {
 	 * @return string
 	 */
 	function prefix( $stem = '', $delimiter = '_' ) {
-		static $reflection;
-
-		if ( empty( $reflection ) ) {
-			$reflection = new \ReflectionObject( $this );
-		}
-
-		$prefix = strtolower( str_replace( '\\', '_', $reflection->getNamespaceName() ) );
+		$prefix = strtolower( str_replace( '\\', '_', $this->get_object_reflection()->getNamespaceName() ) );
 		return $prefix . $delimiter . $stem;
 	}
 
