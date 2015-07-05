@@ -251,7 +251,7 @@ class Plugin {
 			}
 		} else {
 			// Trigger admin notices late, so that any notices which occur during page load are displayed
-			add_action( 'shutdown', array( __CLASS__, 'admin_notices' ) );
+			add_action( 'shutdown', array( $this, 'admin_notices' ) );
 
 			$notice = compact( 'message', 'is_error' );
 

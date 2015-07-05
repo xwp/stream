@@ -2,7 +2,7 @@
 namespace WP_Stream;
 
 class Filter_Input {
-	public $filter_callbacks = array(
+	public static $filter_callbacks = array(
 		FILTER_DEFAULT                => null,
 		// Validate
 		FILTER_VALIDATE_BOOLEAN       => 'is_bool',
@@ -24,7 +24,7 @@ class Filter_Input {
 		FILTER_UNSAFE_RAW             => null,
 	);
 
-	public function super( $type, $variable_name, $filter = null, $options = array() ) {
+	public static function super( $type, $variable_name, $filter = null, $options = array() ) {
 		$super = null;
 
 		// @codingStandardsIgnoreStart
@@ -57,17 +57,17 @@ class Filter_Input {
 		return $var;
 	}
 
-	public function filter( $var, $filter = null, $options = array() ) {
+	public static function filter( $var, $filter = null, $options = array() ) {
 		// Default filter is a sanitizer, not validator
 		$filter_type = 'sanitizer';
 
 		// Only filter value if it is not null
 		if ( isset( $var ) && $filter && FILTER_DEFAULT !== $filter ) {
-			if ( ! isset( $this->filter_callbacks[ $filter ] ) ) {
+			if ( ! isset( self::$filter_callbacks[ $filter ] ) ) {
 				throw new \Exception( esc_html__( 'Filter not supported.', 'stream' ) );
 			}
 
-			$filter_callback = $this->filter_callbacks[ $filter ];
+			$filter_callback = self::$filter_callbacks[ $filter ];
 			$result          = call_user_func( $filter_callback, $var );
 
 			// filter_var / filter_input treats validation/sanitization filters the same

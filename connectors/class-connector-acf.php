@@ -107,7 +107,7 @@ class Connector_ACF extends Connector {
 	 * Register the connector
 	 */
 	public function register() {
-		add_filter( 'wp_stream_log_data', array( __CLASS__, 'log_override' ) );
+		add_filter( 'wp_stream_log_data', array( $this, 'log_override' ) );
 
 		/**
 		 * Allow devs to disable logging values of rendered forms
@@ -239,7 +239,7 @@ class Connector_ACF extends Connector {
 			if ( 'deleted' === $action ) {
 				$this->cached_location_rules[ $object_id ] = get_post_meta( $object_id, 'rule' );
 
-				add_action( 'shutdown', array( __CLASS__, 'check_location_rules' ), 9 );
+				add_action( 'shutdown', array( $this, 'check_location_rules' ), 9 );
 			}
 		} elseif ( 'position' === $meta_key ) {
 			if ( 'deleted' === $action ) {

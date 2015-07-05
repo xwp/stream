@@ -116,8 +116,9 @@ class List_Table extends \WP_List_Table {
 		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
 		$hidden   = $this->get_hidden_columns();
+		$primary  = $columns['summary'];
 
-		$this->_column_headers = array( $columns, $hidden, $sortable );
+		$this->_column_headers = array( $columns, $hidden, $sortable, $primary );
 
 		$this->items = $this->get_records();
 
@@ -581,7 +582,8 @@ class List_Table extends \WP_List_Table {
 			} else {
 				if ( 'context' === $name ) {
 					// Add Connectors as parents, and apply the Contexts as children
-					$connectors = $this->assemble_records( 'connector' );
+					$connectors    = $this->assemble_records( 'connector' );
+					$context_items = array();
 
 					foreach ( $connectors as $connector => $item ) {
 						$context_items[ $connector ]['label'] = $item['label'];

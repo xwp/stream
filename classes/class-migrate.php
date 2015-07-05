@@ -221,7 +221,7 @@ class Migrate {
 			'<strong id="stream-migrate-title">%s</strong></p><p><a href="#" target="_blank">%s</a></p><p id="stream-migrate-message">%s</p><div id="stream-migrate-progress"><progress value="0" max="100"></progress> <strong>0&#37;</strong> <em></em> <button id="stream-migrate-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-migrate-actions"><button id="stream-start-migrate" class="button button-primary">%s</button> <button id="stream-migrate-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
 			__( 'Our cloud storage services will be shutting down permanently on September 1, 2015', 'stream' ),
 			__( 'Read the announcement post', 'stream' ),
-			sprintf( esc_html__( 'We found %s activity records in the cloud that need to be migrated to your local database.', 'stream' ), number_format( self::$record_count ) ),
+			sprintf( esc_html__( 'We found %s activity records in the cloud that need to be migrated to your local database.', 'stream' ), number_format( $this->record_count ) ),
 			__( 'Close', 'stream' ),
 			__( 'Start Migration Now', 'stream' ),
 			__( 'Remind Me Later', 'stream' ),
