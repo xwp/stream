@@ -151,7 +151,7 @@ class Feeds {
 	 *
 	 * @return string
 	 */
-	public static function get_user_feed_url( $key ) {
+	public function get_user_feed_url( $key ) {
 		$pretty_permalinks = get_option( 'permalink_structure' );
 		$query_var         = self::FEED_QUERY_VAR;
 
@@ -185,7 +185,7 @@ class Feeds {
 	 *
 	 * @return xml
 	 */
-	public static function feed_template() {
+	public function feed_template() {
 		$die_title   = esc_html__( 'Access Denied', 'stream' );
 		$die_message = sprintf( '<h1>%s</h1><p>%s</p>', $die_title, esc_html__( "You don't have permission to view this feed, please contact your site Administrator.", 'stream' ) );
 		$query_var   = self::FEED_QUERY_VAR;

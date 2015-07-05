@@ -173,7 +173,7 @@ class Connector_Taxonomies extends Connector {
 	 * @param object $deleted_term
 	 */
 	public function callback_delete_term( $term_id, $tt_id, $taxonomy, $deleted_term ) {
-		if ( in_array( $taxonomy, self::get_excluded_taxonomies() ) ) {
+		if ( in_array( $taxonomy, $this->get_excluded_taxonomies() ) ) {
 			return;
 		}
 

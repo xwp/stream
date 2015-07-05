@@ -104,7 +104,7 @@ class Migrate {
 	 *
 	 * @return int
 	 */
-	private static function get_current_chunk() {
+	private function get_current_chunk() {
 		return absint( get_option( 'wp_stream_migrate_chunk', 1 ) );
 	}
 
@@ -274,7 +274,7 @@ class Migrate {
 	private function migrate() {
 		$chunk   = $this->get_current_chunk();
 		$offset  = ( $chunk - 1 ) * $this->limit;
-		$records = self::get_records( $this->limit, $offset );
+		$records = $this->get_records( $this->limit, $offset );
 
 		// Disconnect when complete
 		if ( empty( $records ) || $chunk > $this->chunks ) {
@@ -288,7 +288,7 @@ class Migrate {
 		if ( true !== $records_saved ) {
 			wp_send_json_error( esc_html__( 'An unknown error occurred during migration. Please try again later or contact support.', 'stream' ) );
 
-			// @TODO: Provide better error messages during self::save_records()
+			// @TODO: Provide better error messages during $this->save_records()
 		}
 
 		// Records have been saved, move on to the next chunk
