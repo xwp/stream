@@ -422,7 +422,7 @@ class Connector_Jetpack extends Connector {
 	 * Track Monitor module notification status
 	 */
 	public function callback_jetpack_module_configuration_load_monitor() {
-		$active = wp_stream_filter_input( INPUT_POST, 'receive_jetpack_monitor_notification' );
+		$active = filter_input( INPUT_POST, 'receive_jetpack_monitor_notification' );
 
 		if ( ! $active ) {
 			return;

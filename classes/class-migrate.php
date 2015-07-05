@@ -242,8 +242,8 @@ class Migrate {
 	 * @action wp_ajax_wp_stream_migrate_action
 	 */
 	public function migrate_action_callback() {
-		$action = wp_stream_filter_input( INPUT_POST, 'migrate_action' );
-		$nonce  = wp_stream_filter_input( INPUT_POST, 'nonce' );
+		$action = filter_input( INPUT_POST, 'migrate_action' );
+		$nonce  = filter_input( INPUT_POST, 'nonce' );
 
 		if ( ! wp_verify_nonce( $nonce, 'wp_stream_migrate-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ) ) {
 			return;

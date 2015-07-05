@@ -110,7 +110,7 @@ class Log {
 			'connector'  => (string) $connector,
 			'context'    => (string) $context,
 			'action'     => (string) $action,
-			'ip'         => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
+			'ip'         => (string) filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
 			'meta'       => (array) $stream_meta,
 		);
 
@@ -138,9 +138,9 @@ class Log {
 		}
 
 		if ( is_null( $ip ) ) {
-			$ip = wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
+			$ip = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
 		} else {
-			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
+			$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 		}
 
 		$user_role = isset( $user->roles[0] ) ? $user->roles[0] : null;

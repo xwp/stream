@@ -182,16 +182,16 @@ class Connector_Editor extends Connector {
 				'POST' !== esc_attr( $_SERVER['REQUEST_METHOD'] )
 			)
 			||
-			'update' !== wp_stream_filter_input( INPUT_POST, 'action' )
+			'update' !== filter_input( INPUT_POST, 'action' )
 		) {
 			return;
 		}
 
-		if ( $slug = wp_stream_filter_input( INPUT_POST, 'theme' ) ) {
+		if ( $slug = filter_input( INPUT_POST, 'theme' ) ) {
 			$this->edited_file = $this->get_theme_data( $slug );
 		}
 
-		if ( $slug = wp_stream_filter_input( INPUT_POST, 'plugin' ) ) {
+		if ( $slug = filter_input( INPUT_POST, 'plugin' ) ) {
 			$this->edited_file = $this->get_plugin_data( $slug );
 		}
 	}
@@ -212,7 +212,7 @@ class Connector_Editor extends Connector {
 
 		$allowed_files = $theme->get_files( 'php', 1 );
 		$style_files   = $theme->get_files( 'css' );
-		$file          = wp_stream_filter_input( INPUT_POST, 'file' );
+		$file          = filter_input( INPUT_POST, 'file' );
 
 		$allowed_files['style.css'] = $style_files['style.css'];
 
@@ -250,7 +250,7 @@ class Connector_Editor extends Connector {
 		$base      = null;
 		$name      = null;
 		$slug      = current( explode( '/', $slug ) );
-		$file_name = wp_stream_filter_input( INPUT_POST, 'file' );
+		$file_name = filter_input( INPUT_POST, 'file' );
 		$file_path = WP_PLUGIN_DIR . '/' . $file_name;
 
 		//TODO: phpcs fix

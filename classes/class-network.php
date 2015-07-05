@@ -198,7 +198,7 @@ class Network {
 	 */
 	public function settings_form_action( $action ) {
 		if ( is_network_admin() ) {
-			$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+			$current_page = filter_input( INPUT_GET, 'page' );
 			$action       = add_query_arg( array( 'action' => $current_page ), 'edit.php' );
 		}
 
@@ -217,7 +217,7 @@ class Network {
 			return '';
 		}
 
-		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		$current_page = filter_input( INPUT_GET, 'page' );
 
 		switch ( $current_page ) {
 			case $this->network_settings_page_slug :

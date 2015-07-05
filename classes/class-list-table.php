@@ -132,11 +132,11 @@ class List_Table extends \WP_List_Table {
 		$args = array();
 
 		// Parse sorting params
-		if ( $order = wp_stream_filter_input( INPUT_GET, 'order' ) ) {
+		if ( $order = filter_input( INPUT_GET, 'order' ) ) {
 			$args['order'] = $order;
 		}
 
-		if ( $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
+		if ( $orderby = filter_input( INPUT_GET, 'orderby' ) ) {
 			$args['orderby'] = $orderby;
 		}
 
@@ -150,7 +150,7 @@ class List_Table extends \WP_List_Table {
 		);
 
 		foreach ( $params as $param ) {
-			$value = wp_stream_filter_input( INPUT_GET, $param );
+			$value = filter_input( INPUT_GET, $param );
 
 			if ( $value ) {
 				$args[ $param ] = $value;
@@ -173,20 +173,20 @@ class List_Table extends \WP_List_Table {
 
 		// Add property fields to defaults, including their __in/__not_in variations
 		foreach ( $properties as $property ) {
-			$value = wp_stream_filter_input( INPUT_GET, $property );
+			$value = filter_input( INPUT_GET, $property );
 
 			// Allow 0 values
 			if ( isset( $value ) && '' !== $value && false !== $value ) {
 				$args[ $property ] = $value;
 			}
 
-			$value_in = wp_stream_filter_input( INPUT_GET, $property . '__in' );
+			$value_in = filter_input( INPUT_GET, $property . '__in' );
 
 			if ( $value_in ) {
 				$args[ $property . '__in' ] = explode( ',', $value_in );
 			}
 
-			$value_not_in = wp_stream_filter_input( INPUT_GET, $property . '__not_in' );
+			$value_not_in = filter_input( INPUT_GET, $property . '__not_in' );
 
 			if ( $value_not_in ) {
 				$args[ $property . '__not_in' ] = explode( ',', $value_not_in );
@@ -626,12 +626,12 @@ class List_Table extends \WP_List_Table {
 			$out = sprintf(
 				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s" />',
 				esc_attr( $name ),
-				esc_attr( wp_stream_filter_input( INPUT_GET, $name ) ),
+				esc_attr( filter_input( INPUT_GET, $name ) ),
 				esc_attr( $title )
 			);
 		} else {
 			$options  = array( '<option value=""></option>' );
-			$selected = wp_stream_filter_input( INPUT_GET, $name );
+			$selected = filter_input( INPUT_GET, $name );
 
 			foreach ( $items as $key => $item ) {
 				$value       = isset( $item['children'] ) ? 'group-' . $key : $key;
@@ -724,9 +724,9 @@ class List_Table extends \WP_List_Table {
 		wp_enqueue_style( 'wp-stream-datepicker' );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 
-		$date_predefined = wp_stream_filter_input( INPUT_GET, 'date_predefined' );
-		$date_from       = wp_stream_filter_input( INPUT_GET, 'date_from' );
-		$date_to         = wp_stream_filter_input( INPUT_GET, 'date_to' );
+		$date_predefined = filter_input( INPUT_GET, 'date_predefined' );
+		$date_from       = filter_input( INPUT_GET, 'date_from' );
+		$date_to         = filter_input( INPUT_GET, 'date_to' );
 
 		ob_start();
 		?>

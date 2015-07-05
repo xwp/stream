@@ -208,10 +208,10 @@ class Settings {
 	public function get_option_key() {
 		$option_key = $this->option_key;
 
-		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
+		$current_page = filter_input( INPUT_GET, 'page' );
 
 		if ( ! $current_page ) {
-			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
+			$current_page = filter_input( INPUT_GET, 'action' );
 		}
 
 		if ( 'wp_stream_default_settings' === $current_page ) {
