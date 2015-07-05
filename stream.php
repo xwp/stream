@@ -31,14 +31,23 @@
 
 if ( ! version_compare( PHP_VERSION, '5.3', '>=' ) ) {
 	load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-	add_action( 'shutdown', function() {
-		$message      = esc_html__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' );
-		$html_message = sprintf( '<div class="error">%s</div>', wpautop( $message ) );
-		echo wp_kses_post( $html_message );
-	} );
+	add_action( 'shutdown', 'wp_stream_fail_php_version' );
 } else {
 	require __DIR__ . '/classes/class-plugin.php';
 	$GLOBALS['wp_stream'] = new WP_Stream\Plugin();
+}
+
+/**
+ * Invoked when the PHP version check fails
+ * Load up the translations and add the error message to the admin notices.
+ */
+function wp_stream_fail_php_version() {
+	load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+
+	$message      = esc_html__( 'Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' );
+	$html_message = sprintf( '<div class="error">%s</div>', wpautop( $message ) );
+
+	echo wp_kses_post( $html_message );
 }
 
 /**
