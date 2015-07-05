@@ -571,7 +571,7 @@ class Admin {
 	 * Instantiate the list table
 	 */
 	public function register_list_table() {
-		$this->list_table = new List_Table( array( 'screen' => $this->screen_id['main'] ) );
+		$this->list_table = new List_Table( $this->plugin, array( 'screen' => $this->screen_id['main'] ) );
 	}
 
 	/**

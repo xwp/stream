@@ -12,6 +12,7 @@ class List_Table extends \WP_List_Table {
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
+	 * @param array $args
 	 */
 	function __construct( $plugin, $args = array() ) {
 		$this->plugin = $plugin;
