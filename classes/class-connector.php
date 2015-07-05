@@ -34,7 +34,8 @@ abstract class Connector {
 	 * Register all context hooks
 	 */
 	public function register() {
-		$class = get_called_class();
+		$class_name = get_called_class();
+		$class = new $class_name;
 
 		foreach ( $class->actions as $action ) {
 			add_action( $action, array( $class, 'callback' ), null, 5 );

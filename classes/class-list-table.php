@@ -220,14 +220,14 @@ class List_Table extends \WP_List_Table {
 
 	function column_default( $item, $column_name ) {
 		$out = '';
-		$record = new Record();
+		$record = new Record( $item );
 
 		switch ( $column_name ) {
 			case 'date' :
-				$created     = date( 'Y-m-d H:i:s', strtotime( $item->created ) );
+				$created     = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
 				$date_string = sprintf(
 					'<time datetime="%s" class="relative-time record-created">%s</time>',
-					wp_stream_get_iso_8601_extended_date( strtotime( $item->created ) ),
+					wp_stream_get_iso_8601_extended_date( strtotime( $record->created ) ),
 					get_date_from_gmt( $created, 'Y/m/d' )
 				);
 				$out  = $this->column_link( $date_string, 'date', get_date_from_gmt( $created, 'Y/m/d' ) );
@@ -236,28 +236,28 @@ class List_Table extends \WP_List_Table {
 				break;
 
 			case 'summary' :
-				$out           = $item->summary;
+				$out           = $record->summary;
 				$object_title  = $record->get_object_title();
 				$view_all_text = $object_title ? sprintf( esc_html__( 'View all activity for "%s"', 'stream' ), esc_attr( $object_title ) ) : esc_html__( 'View all activity for this object', 'stream' );
 
-				if ( $item->object_id ) {
+				if ( $record->object_id ) {
 					$out .= $this->column_link(
 						'<span class="dashicons dashicons-search stream-filter-object-id"></span>',
 						array(
-							'object_id' => $item->object_id,
-							'context'   => $item->context,
+							'object_id' => $record->object_id,
+							'context'   => $record->context,
 						),
 						null,
 						esc_attr( $view_all_text )
 					);
 				}
-				$out .= $this->get_action_links( $item );
+				$out .= $this->get_action_links( $record );
 				break;
 
 			case 'user_id' :
-				$meta      = maybe_unserialize( $item->meta );
+				$meta      = maybe_unserialize( $record->meta );
 				$user_meta = ! empty( $meta['user_meta'] ) ? maybe_unserialize( $meta['user_meta'] ) : array();
-				$user      = new Author( (int) $item->user_id, (array) $user_meta );
+				$user      = new Author( (int) $record->user_id, (array) $user_meta );
 
 				$out = sprintf(
 					'<a href="%s">%s <span>%s</span></a>%s%s%s',
@@ -271,31 +271,31 @@ class List_Table extends \WP_List_Table {
 				break;
 
 			case 'context':
-				$connector_title = $this->get_term_title( $item->{'connector'}, 'connector' );
-				$context_title   = $this->get_term_title( $item->{'context'}, 'context' );
+				$connector_title = $this->get_term_title( $record->{'connector'}, 'connector' );
+				$context_title   = $this->get_term_title( $record->{'context'}, 'context' );
 
 				$out  = $this->column_link( $connector_title, 'connector', $item->{'connector'} );
 				$out .= '<br />&#8627;&nbsp;';
 				$out .= $this->column_link(
 					$context_title,
 					array(
-						'connector' => $item->{'connector'},
-						'context'   => $item->{'context'},
+						'connector' => $record->{'connector'},
+						'context'   => $record->{'context'},
 					)
 				);
 				break;
 
 			case 'action':
-				$out = $this->column_link( $this->get_term_title( $item->{$column_name}, $column_name ), $column_name, $item->{$column_name} );
+				$out = $this->column_link( $this->get_term_title( $record->{$column_name}, $column_name ), $column_name, $record->{$column_name} );
 				break;
 
 			case 'blog_id':
-				$blog = ( $item->blog_id && is_multisite() ) ? get_blog_details( $item->blog_id ) : $this->plugin->admin->network->get_network_blog();
+				$blog = ( $record->blog_id && is_multisite() ) ? get_blog_details( $record->blog_id ) : $this->plugin->admin->network->get_network_blog();
 				$out  = $this->column_link( $blog->blogname, 'blog_id', $blog->blog_id );
 				break;
 
 			case 'ip' :
-				$out = $this->column_link( $item->{$column_name}, 'ip', $item->{$column_name} );
+				$out = $this->column_link( $record->{$column_name}, 'ip', $record->{$column_name} );
 				break;
 
 			default :
@@ -321,11 +321,11 @@ class List_Table extends \WP_List_Table {
 							/**
 							 * Allows for the addition of content under a specified column.
 							 *
-							 * @param object $item  Contents of the row
+							 * @param object $record  Contents of the row
 							 *
 							 * @return string
 							 */
-							$out = apply_filters( "wp_stream_insert_column_default-{$column_title}", $column_name, $item );
+							$out = apply_filters( "wp_stream_insert_column_default-{$column_title}", $column_name, $record );
 						} else {
 							$out = $column_name;
 						}

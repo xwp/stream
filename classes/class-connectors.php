@@ -84,7 +84,7 @@ class Connectors {
 		$classes = array();
 		foreach ( $connectors as $connector ) {
 			include_once $this->plugin->locations['dir'] . '/connectors/class-connector-' . $connector .'.php';
-			$class_name = sprintf( 'Connector_%s', str_replace( '-', '_', $connector ) );
+			$class_name = sprintf( '\WP_Stream\Connector_%s', str_replace( '-', '_', $connector ) );
 			if ( ! class_exists( $class_name ) ) {
 				continue;
 			}
@@ -120,25 +120,25 @@ class Connectors {
 
 		foreach ( $this->connectors as $connector ) {
 			if ( ! method_exists( $connector, 'get_label' ) ) {
-				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the get_label method.", 'stream' ), $connector, 'Connector' );
+				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the get_label method.", 'stream' ), $connector->name, 'Connector' );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'register' ) ) {
-				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the register method.", 'stream' ), $connector, 'Connector' );
+				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the register method.", 'stream' ), $connector->name, 'Connector' );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'get_context_labels' ) ) {
-				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the get_context_labels method.", 'stream' ), $connector, 'Connector' );
+				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the get_context_labels method.", 'stream' ), $connector->name, 'Connector' );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'get_action_labels' ) ) {
-				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the get_action_labels method.", 'stream' ), $connector, 'Connector' );
+				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the get_action_labels method.", 'stream' ), $connector->name, 'Connector' );
 				continue;
 			}
 
 			// Check if the connectors extends the Connector class, if not skip it
-			if ( ! is_subclass_of( $connector, 'Connector' ) ) {
-				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't extends the %s class.", 'stream' ), $connector, 'Connector' );
+			if ( ! is_subclass_of( $connector, '\WP_Stream\Connector' ) ) {
+				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't extends the %s class.", 'stream' ), $connector->name, 'Connector' );
 				continue;
 			}
 

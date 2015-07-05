@@ -3,10 +3,11 @@ namespace WP_Stream;
 
 class Record {
 	public $ID;
+	public $created;
 	public $site_id;
 	public $blog_id;
 	public $object_id;
-	public $user;
+	public $user_id;
 	public $user_role;
 	public $user_meta;
 	public $summary;
@@ -16,12 +17,24 @@ class Record {
 	public $ip;
 	public $meta;
 
-	public function __construct( $id = null ) {
-		if ( $id ) {
-			$records = wp_stream_get_instance()->db->query->query( array( 'id' => $id ) );
-			if ( isset( $records[0] ) ) {
-				$this->populate( $records[0] );
-			}
+	public function __construct( $item ) {
+		$this->ID = isset( $item->ID ) ? $item->ID : null;
+		$this->created = isset( $item->created ) ? $item->created : null;
+		$this->site_id = isset( $item->site_id ) ? $item->site_id : null;
+		$this->blog_id = isset( $item->blog_id ) ? $item->blog_id : null;
+		$this->object_id = isset( $item->object_id ) ? $item->object_id : null;
+		$this->user_id = isset( $item->user_id ) ? $item->user_id : null;
+		$this->user_role = isset( $item->user_role ) ? $item->user_role : null;
+		$this->user_meta = isset( $item->meta['user_meta'] ) ? $item->meta['user_meta'] : null;
+		$this->summary = isset( $item->summary ) ? $item->summary : null;
+		$this->connector = isset( $item->connector ) ? $item->connector : null;
+		$this->context = isset( $item->context ) ? $item->context : null;
+		$this->action = isset( $item->action ) ? $item->action : null;
+		$this->ip = isset( $item->ip ) ? $item->ip : null;
+		$this->meta = isset( $item->meta ) ? $item->meta : null;
+
+		if ( isset( $this->meta['user_meta'] ) ) {
+			unset( $this->meta['user_meta'] );
 		}
 	}
 

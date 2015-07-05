@@ -23,15 +23,6 @@ class Connector_Media extends Connector {
 	);
 
 	/**
-	 * Class constructor.
-	 *
-	 * @param Log $log The main Plugin class.
-	 */
-	public function __construct( $log ) {
-		$this->log = $log;
-	}
-
-	/**
 	 * Return translated connector label
 	 *
 	 * @return string Translated connector label
