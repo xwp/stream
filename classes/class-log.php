@@ -84,7 +84,7 @@ class Log {
 		}
 
 		$wp_cron_tracking = isset( $this->plugin->settings->options['advanced_wp_cron_tracking'] ) ? $this->plugin->settings->options['advanced_wp_cron_tracking'] : false;
-		$author           = new Author( $this->plugin, $user_id );
+		$author           = new Author( $user_id );
 		$agent            = $author->get_current_agent();
 
 		// WP Cron tracking requires opt-in and WP Cron to be enabled

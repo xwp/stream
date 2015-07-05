@@ -329,5 +329,4 @@ class Migrate {
 
 		// @TODO: Save records to the local DB
 	}
-
 }

@@ -115,7 +115,7 @@ class Settings {
 		$response->users   = array();
 
 		foreach ( $users->results as $key => $user ) {
-			$author = new Author( $this->plugin, $user->ID );
+			$author = new Author( $user->ID );
 
 			$args = array(
 				'id'   => $author->ID,
@@ -138,7 +138,7 @@ class Settings {
 		}
 
 		if ( empty( $search ) || preg_match( '/wp|cli|system|unknown/i', $search ) ) {
-			$author = new Author( $this->plugin, 0 );
+			$author = new Author( 0 );
 			$response->users[] = array(
 				'id'      => $author->id,
 				'text'    => $author->get_display_name(),

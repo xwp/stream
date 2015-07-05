@@ -30,14 +30,15 @@ class Author {
 	 * @param int $user_id
 	 * @param array $author_meta
 	 */
-	function __construct( $plugin, $user_id, $author_meta = array() ) {
-		$this->plugin = $plugin;
+	function __construct( $user_id, $author_meta = array() ) {
 		$this->id     = $user_id;
 		$this->meta   = $author_meta;
 
 		if ( $this->id ) {
 			$this->user = new \WP_User( $this->id );
 		}
+
+		$this->plugin = wp_stream_get_instance();
 	}
 
 	/**

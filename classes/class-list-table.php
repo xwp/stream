@@ -276,7 +276,7 @@ class List_Table extends \WP_List_Table {
 				break;
 
 			case 'author' :
-				$author = new Author( $this->plugin, (int) $item->author, (array) $item->author_meta );
+				$author = new Author( (int) $item->author, (array) $item->author_meta );
 
 				$out = sprintf(
 					'<a href="%s">%s <span>%s</span></a>%s%s%s',
@@ -463,12 +463,12 @@ class List_Table extends \WP_List_Table {
 
 			$authors = array_map(
 				function ( $user_id ) {
-					return new Author( $this->plugin, $user_id );
+					return new Author( $user_id );
 				},
 				get_users( array( 'fields' => 'ID' ) )
 			);
 
-			$authors[] = new Author( $this->plugin, 0, array( 'is_wp_cli' => true ) );
+			$authors[] = new Author( 0, array( 'is_wp_cli' => true ) );
 
 			foreach ( $authors as $author ) {
 				$all_records[ $author->id ] = $author->get_display_name();

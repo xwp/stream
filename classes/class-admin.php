@@ -745,7 +745,7 @@ class Admin {
 		$authors_records = array();
 
 		foreach ( $authors as $user_id => $args ) {
-			$author   = new Author( $this->plugin, $user_id );
+			$author   = new Author( $user_id );
 			$disabled = isset( $args['disabled'] ) ? $args['disabled'] : null;
 
 			$authors_records[ $user_id ] = array(
