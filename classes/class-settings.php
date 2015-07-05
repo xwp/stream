@@ -43,7 +43,7 @@ class Settings {
 		$this->plugin = $plugin;
 
 		$this->option_key = $this->get_option_key();
-		$this->$options   = $this->get_options();
+		$this->options    = $this->get_options();
 
 		// Register settings, and fields
 		add_action( 'admin_init', array( $this, 'register_settings' ) );

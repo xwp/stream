@@ -34,7 +34,7 @@ function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
 }
 
 function wp_stream_query( $args = array() ) {
-	return WP_Stream_Query::instance()->query( $args );
+	return wp_stream_get_instance()->db->query->query( $args );
 }
 
 function wp_stream_get_meta( $record, $meta_key = '', $single = false ) {
@@ -90,13 +90,13 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
  * @return array   Array of items to be output to select dropdowns
  */
 function wp_stream_existing_records( $field ) {
-	$values = WP_Stream::$db->get_distinct_field_values( $field );
+	$values = wp_stream_get_instance()->db->get_distinct_field_values( $field );
 
 	if ( is_array( $values ) && ! empty( $values ) ) {
 		return array_combine( $values, $values );
 	} else {
 		$field = sprintf( 'stream_%s', $field );
-		return isset( WP_Stream_Connectors::$term_labels[ $field ] ) ? WP_Stream_Connectors::$term_labels[ $field ] : array();
+		return isset( wp_stream_get_instance()->connectors->term_labels[ $field ] ) ? WP_Stream_Connectors::$term_labels[ $field ] : array();
 	}
 }
 
@@ -159,7 +159,7 @@ function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
  * @return mixed
  */
 function wp_stream_get_user_meta( $user_id, $meta_key, $single = true ) {
-	return WP_Stream::is_vip() ? get_user_attribute( $user_id, $meta_key ) : get_user_meta( $user_id, $meta_key, $single );
+	return wp_stream_get_instance()->is_vip() ? get_user_attribute( $user_id, $meta_key ) : get_user_meta( $user_id, $meta_key, $single );
 }
 
 /**
@@ -173,7 +173,7 @@ function wp_stream_get_user_meta( $user_id, $meta_key, $single = true ) {
  * @return int|bool
  */
 function wp_stream_update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
-	return WP_Stream::is_vip() ? update_user_attribute( $user_id, $meta_key, $meta_value ) : update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
+	return wp_stream_get_instance()->is_vip() ? update_user_attribute( $user_id, $meta_key, $meta_value ) : update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
 }
 
 /**
@@ -186,5 +186,5 @@ function wp_stream_update_user_meta( $user_id, $meta_key, $meta_value, $prev_val
  * @return bool
  */
 function wp_stream_delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
-	return WP_Stream::is_vip() ? delete_user_attribute( $user_id, $meta_key, $meta_value ) : delete_user_meta( $user_id, $meta_key, $meta_value );
+	return wp_stream_get_instance()->is_vip() ? delete_user_attribute( $user_id, $meta_key, $meta_value ) : delete_user_meta( $user_id, $meta_key, $meta_value );
 }
