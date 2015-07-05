@@ -145,17 +145,6 @@ class Plugin {
 	}
 
 	/**
-	 * @return \ReflectionObject
-	 */
-	function get_object_reflection() {
-		static $reflection;
-		if ( empty( $reflection ) ) {
-			$reflection = new \ReflectionObject( $this );
-		}
-		return $reflection;
-	}
-
-	/**
 	 * Autoloader for classes
 	 *
 	 * @param string $class
@@ -164,7 +153,14 @@ class Plugin {
 		if ( ! preg_match( '/^(?P<namespace>.+)\\\\(?P<autoload>[^\\\\]+)$/', $class, $matches ) ) {
 			return;
 		}
-		if ( $this->get_object_reflection()->getNamespaceName() !== $matches['namespace'] ) {
+
+		static $reflection;
+
+		if ( empty( $reflection ) ) {
+			$reflection = new \ReflectionObject( $this );
+		}
+
+		if ( $reflection->getNamespaceName() !== $matches['namespace'] ) {
 			return;
 		}
 
@@ -184,19 +180,6 @@ class Plugin {
 	 */
 	public function i18n() {
 		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-	}
-
-	/**
-	 * Prepend $stem with $this->prefix followed by $delimiter
-	 *
-	 * @param string $stem
-	 * @param string $delimiter
-	 *
-	 * @return string
-	 */
-	function prefix( $stem = '', $delimiter = '_' ) {
-		$prefix = strtolower( str_replace( '\\', '_', $this->get_object_reflection()->getNamespaceName() ) );
-		return $prefix . $delimiter . $stem;
 	}
 
 	/**
