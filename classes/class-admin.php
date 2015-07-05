@@ -9,19 +9,9 @@ class Admin {
 	public $plugin;
 
 	/**
-	 * @var Dashboard_Widget
-	 */
-	public $dashboard_widget;
-
-	/**
 	 * @var Live_Update
 	 */
 	public $live_update;
-
-	/**
-	 * @var Unread
-	 */
-	public $unread;
 
 	/**
 	 * @var Migrate
@@ -145,9 +135,7 @@ class Admin {
 	 * @action init
 	 */
 	public function init() {
-		$this->dashboard_widget = new Dashboard_Widget( $this->plugin );
 		$this->live_update      = new Live_Update( $this->plugin );
-		$this->unread           = new Unread( $this->plugin );
 		$this->migrate          = new Migrate( $this->plugin );
 	}
 
@@ -270,10 +258,7 @@ class Admin {
 
 		$script_screens = array( 'plugins.php', 'user-edit.php', 'user-new.php', 'profile.php' );
 
-		if ( 'index.php' === $hook ) {
-			wp_enqueue_script( 'wp-stream-dashboard', $this->plugin->locations['url'] . 'ui/js/dashboard.js', array( 'jquery' ), $this->plugin->get_version() );
-			wp_enqueue_script( 'wp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.js', array( 'jquery', 'heartbeat' ), $this->plugin->get_version() );
-		} elseif ( in_array( $hook, $this->screen_id ) || in_array( $hook, $script_screens ) ) {
+		if ( in_array( $hook, $this->screen_id ) || in_array( $hook, $script_screens ) ) {
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_style( 'select2' );
 
