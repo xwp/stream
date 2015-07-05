@@ -127,12 +127,12 @@ class Connector_Editor extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		if ( current_user_can( 'edit_theme_options' ) ) {
-			$file_name = wp_stream_get_meta( $record, 'file', true );
-			$file_path = wp_stream_get_meta( $record, 'file_path', true );
+			$file_name = $record->get_meta( 'file', true );
+			$file_path = $record->get_meta( 'file_path', true );
 
 			if ( ! empty( $file_name ) && ! empty( $file_path ) ) {
-				$theme_slug    = wp_stream_get_meta( $record, 'theme_slug', true );
-				$plugin_slug   = wp_stream_get_meta( $record, 'plugin_slug', true );
+				$theme_slug    = $record->get_meta( 'theme_slug', true );
+				$plugin_slug   = $record->get_meta( 'plugin_slug', true );
 				$theme_exists  = ( ! empty( $theme_slug ) && file_exists( $file_path ) );
 				$plugin_exists = ( ! empty( $plugin_slug ) && file_exists( $file_path ) );
 

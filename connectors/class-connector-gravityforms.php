@@ -146,8 +146,8 @@ class Connector_GravityForms extends Connector {
 				array(
 					'page' => 'gf_entries',
 					'view' => 'entry',
-					'lid' => $record->object_id,
-					'id' => wp_stream_get_meta( $record, 'form_id', true ),
+					'lid'  => $record->object_id,
+					'id'   => $record->get_meta( 'form_id', true ),
 				),
 				admin_url( 'admin.php' )
 			);
@@ -156,8 +156,8 @@ class Connector_GravityForms extends Connector {
 				array(
 					'page' => 'gf_entries',
 					'view' => 'entry',
-					'lid' => wp_stream_get_meta( $record, 'lead_id', true ),
-					'id' => wp_stream_get_meta( $record, 'form_id', true ),
+					'lid'  => $record->get_meta( 'lead_id', true ),
+					'id'   => $record->get_meta( 'form_id', true ),
 				),
 				admin_url( 'admin.php' )
 			);

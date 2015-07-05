@@ -77,7 +77,7 @@ class Connector_Installer extends Connector {
 		if ( 'wordpress' === $record->context && 'updated' === $record->action ) {
 			global $wp_version;
 
-			$version = wp_stream_get_meta( $record, 'new_version', true );
+			$version = $record->get_meta( 'new_version', true );
 
 			if ( $version === $wp_version ) {
 				$links[ esc_html__( 'About', 'stream' ) ] = admin_url( 'about.php?updated' );

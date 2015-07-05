@@ -227,7 +227,7 @@ class List_Table extends \WP_List_Table {
 
 		$args['aggregations'] = array( 'author', 'connector', 'context', 'action' );
 
-		$items = wp_stream_query( $args );
+		$items = $this->plugin->db->query->query( $args );
 
 		return $items;
 	}

@@ -33,24 +33,6 @@ function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
 	return call_user_func_array( array( '\WP_Stream\Filter_Input', 'filter' ), func_get_args() );
 }
 
-function wp_stream_query( $args = array() ) {
-	return wp_stream_get_instance()->db->query->query( $args );
-}
-
-function wp_stream_get_meta( $record, $meta_key = '', $single = false ) {
-	if ( isset( $record->stream_meta->$meta_key ) ) {
-		$record_meta = $record->stream_meta->$meta_key;
-	} else {
-		return '';
-	}
-
-	if ( $single ) {
-		return $record_meta;
-	} else {
-		return array( $record_meta );
-	}
-}
-
 /**
  * Converts a time into an ISO 8601 extended formatted string.
  *

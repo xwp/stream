@@ -158,7 +158,7 @@ class Connector_BuddyPress extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		if ( in_array( $record->context, array( 'components' ) ) ) {
-			$option_key = wp_stream_get_meta( $record, 'option_key', true );
+			$option_key = $record->get_meta( 'option_key', true );
 
 			if ( 'bp-active-components' === $option_key ) {
 				$links[ esc_html__( 'Edit', 'stream' ) ] = add_query_arg(
@@ -168,7 +168,7 @@ class Connector_BuddyPress extends Connector {
 					admin_url( 'admin.php' )
 				);
 			} elseif ( 'bp-pages' === $option_key ) {
-				$page_id = wp_stream_get_meta( $record, 'page_id', true );
+				$page_id = $record->get_meta( 'page_id', true );
 
 				$links[ esc_html__( 'Edit setting', 'stream' ) ] = add_query_arg(
 					array(
@@ -185,12 +185,12 @@ class Connector_BuddyPress extends Connector {
 		} elseif ( in_array( $record->context, array( 'settings' ) ) ) {
 			$links[ esc_html__( 'Edit setting', 'stream' ) ] = add_query_arg(
 				array(
-					'page' => wp_stream_get_meta( $record, 'page', true ),
+					'page' => $record->get_meta( 'page', true ),
 				),
 				admin_url( 'admin.php' )
 			);
 		} elseif ( in_array( $record->context, array( 'groups' ) ) ) {
-			$group_id = wp_stream_get_meta( $record, 'id', true );
+			$group_id = $record->get_meta( 'id', true );
 			$group    = \groups_get_group( array( 'group_id' => $group_id ) );
 
 			if ( $group ) {
@@ -205,7 +205,7 @@ class Connector_BuddyPress extends Connector {
 				$links[ esc_html__( 'Delete group', 'stream' ) ] = $delete_url;
 			}
 		} elseif ( in_array( $record->context, array( 'activity' ) ) ) {
-			$activity_id = wp_stream_get_meta( $record, 'id', true );
+			$activity_id = $record->get_meta( 'id', true );
 			$activities = \bp_activity_get( array( 'in' => $activity_id, 'spam' => 'all' ) );
 			if ( ! empty( $activities['activities'] ) ) {
 				$activity = reset( $activities['activities'] );
@@ -226,8 +226,8 @@ class Connector_BuddyPress extends Connector {
 				$links[ esc_html__( 'Delete', 'stream' ) ] = $delete_url;
 			}
 		} elseif ( in_array( $record->context, array( 'profile_fields' ) ) ) {
-			$field_id = wp_stream_get_meta( $record, 'field_id', true );
-			$group_id = wp_stream_get_meta( $record, 'group_id', true );
+			$field_id = $record->get_meta( 'field_id', true );
+			$group_id = $record->get_meta( 'group_id', true );
 
 			if ( empty( $field_id ) ) { // is a group action
 				$links[ esc_html__( 'Edit', 'stream' ) ] = add_query_arg(

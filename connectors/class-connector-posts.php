@@ -72,7 +72,7 @@ class Connector_Posts extends Connector {
 	public function action_links( $links, $record ) {
 		$post = get_post( $record->object_id );
 
-		if ( $post && $post->post_status === wp_stream_get_meta( $record, 'new_status', true ) ) {
+		if ( $post && $post->post_status === $record->get_meta( 'new_status', true ) ) {
 			$post_type_name = $this->get_post_type_name( get_post_type( $post->ID ) );
 
 			if ( 'trash' === $post->post_status ) {
@@ -107,7 +107,7 @@ class Connector_Posts extends Connector {
 					$links[ esc_html__( 'View', 'stream' ) ] = $view_link;
 				}
 
-				$revision_id = absint( wp_stream_get_meta( $record, 'revision_id', true ) );
+				$revision_id = absint( $record->get_meta( 'revision_id', true ) );
 				$revision_id = $this->get_adjacent_post_revision( $revision_id, false );
 
 				if ( $revision_id ) {

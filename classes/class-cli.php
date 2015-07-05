@@ -17,7 +17,7 @@ class CLI extends \WP_CLI_Command {
 	 * : Limit the output to specific object fields.
 	 *
 	 * [--<field>=<value>]
-	 * : One or more args to pass to wp_stream_query.
+	 * : One or more args to pass to WP_Stream_Query.
 	 *
 	 * [--format=<format>]
 	 * : Accepted values: table, count, json, json_pretty, csv. Default: table
@@ -117,7 +117,7 @@ class CLI extends \WP_CLI_Command {
 
 		$query_args['fields'] = implode( ',', $fields );
 
-		$records = wp_stream_query( $query_args );
+		$records = wp_stream_get_instance()->db->query->query( $query_args );
 
 		// Make structure Formatter compatible
 		foreach ( (array) $records as $key => $record ) {
@@ -218,7 +218,7 @@ class CLI extends \WP_CLI_Command {
 	 * @return void
 	 */
 	private function connection() {
-		$query = wp_stream_query( array( 'records_per_page' => 1, 'fields' => 'created' ) );
+		$query = wp_stream_get_instance()->db->query->query( array( 'records_per_page' => 1, 'fields' => 'created' ) );
 
 		if ( ! $query ) {
 			WP_CLI::error( esc_html__( 'SITE IS DISCONNECTED', 'stream' ) );

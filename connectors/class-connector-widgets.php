@@ -96,7 +96,7 @@ class Connector_Widgets extends Connector {
 	 * @return array Action links
 	 */
 	public function action_links( $links, $record ) {
-		if ( $sidebar = wp_stream_get_meta( $record, 'sidebar_id', true ) ) {
+		if ( $sidebar = $record->get_meta( 'sidebar_id', true ) ) {
 			global $wp_registered_sidebars;
 
 			if ( array_key_exists( $sidebar, $wp_registered_sidebars ) ) {

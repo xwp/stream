@@ -222,10 +222,10 @@ class Connector_Woocommerce extends Connector {
 		}
 
 		$context_labels = $this->get_context_labels();
-		$option_key     = wp_stream_get_meta( $record, 'option', true );
-		$option_page    = wp_stream_get_meta( $record, 'page', true );
-		$option_tab     = wp_stream_get_meta( $record, 'tab', true );
-		$option_section = wp_stream_get_meta( $record, 'section', true );
+		$option_key     = $record->get_meta( 'option', true );
+		$option_page    = $record->get_meta( 'page', true );
+		$option_tab     = $record->get_meta( 'tab', true );
+		$option_section = $record->get_meta( 'section', true );
 
 		if ( $option_key && $option_tab ) {
 			$text = sprintf( esc_html__( 'Edit WooCommerce %s', 'stream' ), $context_labels[ $record->context ] );

@@ -403,7 +403,7 @@ class Connector_Settings extends Connector {
 				'menu_slug'    => 'wp_stream',
 				'submenu_slug' => WP_Stream_Admin::SETTINGS_PAGE_SLUG,
 				'url'          => function( $rule, $record ) {
-					$option_key = wp_stream_get_meta( $record, 'option_key', true );
+					$option_key = $record->get_meta( 'option_key', true );
 					$url_tab    = null;
 
 					if ( '' !== $option_key ) {
@@ -502,10 +502,10 @@ class Connector_Settings extends Connector {
 					if ( current_user_can( $capability ) ) {
 						$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
 						$text       = sprintf( esc_html__( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
-						$field_name = wp_stream_get_meta( $record, 'option_key', true );
+						$field_name = $record->get_meta( 'option_key', true );
 
 						if ( '' === $field_name ) {
-							$field_name = wp_stream_get_meta( $record, 'option', true );
+							$field_name = $record->get_meta( 'option', true );
 						}
 
 						if ( '' !== $field_name ) {

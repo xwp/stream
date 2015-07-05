@@ -23,7 +23,7 @@ class Record {
 	public $created;
 	public $ip;
 
-	public $stream_meta;
+	public $meta;
 
 	public function __construct( $plugin, $id = null ) {
 		$this->plugin = $plugin;
@@ -54,5 +54,19 @@ class Record {
 
 	public function validate() {
 		return true;
+	}
+
+	public function get_meta( $meta_key = '', $single = false ) {
+		if ( isset( $this->meta->$meta_key ) ) {
+			$meta = $this->meta->$meta_key;
+		} else {
+			return '';
+		}
+
+		if ( $single ) {
+			return $meta;
+		} else {
+			return array( $meta );
+		}
 	}
 }

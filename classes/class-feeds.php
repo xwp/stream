@@ -243,7 +243,7 @@ class Feeds {
 			$args[ "{$property}__not_in" ] = wp_stream_filter_input( INPUT_GET, "{$property}__not_in" );
 		}
 
-		$records = wp_stream_query( $args );
+		$records = $this->plugin->db->query->query( $args );
 
 		$latest_record = isset( $records[0]->created ) ? $records[0]->created : null;
 

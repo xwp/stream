@@ -135,7 +135,7 @@ class Connector_Jetpack extends Connector {
 		// @todo provide proper action links
 		if ( 'jetpack' === $record->connector ) {
 			if ( 'modules' === $record->context ) {
-				$slug = wp_stream_get_meta( $record, 'module_slug', true );
+				$slug = $record->get_meta( 'module_slug', true );
 
 				if ( is_array( $slug ) ) {
 					$slug = current( $slug );

@@ -127,7 +127,7 @@ class Connector_bbPress extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		if ( 'settings' === $record->context ) {
-			$option = wp_stream_get_meta( $record, 'option', true );
+			$option = $record->get_meta( 'option', true );
 			$links[ esc_html__( 'Edit', 'stream' ) ] = esc_url(
 				add_query_arg(
 					array(
