@@ -407,17 +407,18 @@ class Connector_Settings extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		$context_labels = $this->get_context_labels();
+		$plugin = wp_stream_get_instance();
 
 		$rules = array(
 			'stream' => array(
 				'menu_slug'    => 'wp_stream',
-				'submenu_slug' => WP_Stream_Admin::SETTINGS_PAGE_SLUG,
-				'url'          => function( $rule, $record ) {
+				'submenu_slug' => $plugin->admin->settings_page_slug,
+				'url'          => function( $rule, $record ) use ( $plugin ) {
 					$option_key = $record->get_meta( 'option_key', true );
 					$url_tab    = null;
 
 					if ( '' !== $option_key ) {
-						foreach ( WP_Stream_Settings::get_fields() as $tab_name => $tab_properties ) {
+						foreach ( $plugin->settings->get_fields() as $tab_name => $tab_properties ) {
 							foreach ( $tab_properties['fields'] as $field ) {
 								$field_key = sprintf( '%s_%s', $tab_name, $field['name'] );
 								if ( $field_key === $option_key ) {

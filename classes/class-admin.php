@@ -580,7 +580,7 @@ class Admin {
 			foreach ( $blogs as $blog ) {
 				switch_to_blog( $blog['blog_id'] );
 
-				delete_option( WP_Stream_Settings::OPTION_KEY );
+				delete_option( $this->plugin->settings->option_key );
 			}
 
 			restore_current_blog();

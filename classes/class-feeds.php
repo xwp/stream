@@ -214,7 +214,7 @@ class Feeds {
 		if ( ! is_super_admin( $user[0]->ID ) ) {
 			$roles = isset( $user[0]->roles ) ? (array) $user[0]->roles : array();
 
-			if ( ! $roles || ! array_intersect( $roles, WP_Stream_Settings::$options['general_role_access'] ) ) {
+			if ( ! $roles || ! array_intersect( $roles, $this->plugin->settings->options['general_role_access'] ) ) {
 				wp_die( $die_message, $die_title ); // xss ok
 			}
 		}
@@ -259,9 +259,9 @@ class Feeds {
 
 		$records_admin_url = add_query_arg(
 			array(
-				'page' => WP_Stream_Admin::RECORDS_PAGE_SLUG,
+				'page' => $this->plugin->admin->records_page_slug,
 			),
-			admin_url( WP_Stream_Admin::ADMIN_PARENT_PAGE )
+			admin_url( $this->plugin->admin->admin_parent_page )
 		);
 
 		$latest_link = null;

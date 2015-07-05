@@ -257,7 +257,7 @@ class List_Table extends \WP_List_Table {
 			case 'user_id' :
 				$meta      = maybe_unserialize( $item->meta );
 				$user_meta = ! empty( $meta['user_meta'] ) ? maybe_unserialize( $meta['user_meta'] ) : array();
-				$user      = new WP_Stream_Author( (int) $item->user_id, (array) $user_meta );
+				$user      = new Author( (int) $item->user_id, (array) $user_meta );
 
 				$out = sprintf(
 					'<a href="%s">%s <span>%s</span></a>%s%s%s',
@@ -266,7 +266,7 @@ class List_Table extends \WP_List_Table {
 					$user->get_display_name(),
 					$user->is_deleted() ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
 					$user->get_role() ? sprintf( '<br /><small>%s</small>', $user->get_role() ) : '',
-					$user->get_agent() ? sprintf( '<br /><small>%s</small>', WP_Stream_Author::get_agent_label( $user->get_agent() ) ) : ''
+					$user->get_agent() ? sprintf( '<br /><small>%s</small>', $user->get_agent_label( $user->get_agent() ) ) : ''
 				);
 				break;
 
