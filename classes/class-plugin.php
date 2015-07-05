@@ -139,10 +139,8 @@ class Plugin {
 		add_filter( 'wp_stream_record_array', array( $this, 'disable_logging_during_import' ), 10, 1 );
 
 		// Load WP-CLI command
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			require_once $this->locations['inc_dir'] . 'wp-cli.php';
-
-			WP_CLI::add_command( self::WP_CLI_COMMAND, 'WP_Stream_WP_CLI_Command' );
+		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
+			\WP_CLI::add_command( self::WP_CLI_COMMAND, 'CLI' );
 		}
 	}
 
@@ -211,13 +209,13 @@ class Plugin {
 	 * @param bool $is_error
 	 */
 	public function notice( $message, $is_error = true ) {
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
 			$message = strip_tags( $message );
 
 			if ( $is_error ) {
-				WP_CLI::warning( $message );
+				\WP_CLI::warning( $message );
 			} else {
-				WP_CLI::success( $message );
+				\WP_CLI::success( $message );
 			}
 		} else {
 			// Trigger admin notices late, so that any notices which occur during page load are displayed

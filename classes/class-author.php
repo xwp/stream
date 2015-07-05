@@ -260,7 +260,7 @@ class Author {
 	function get_current_agent() {
 		$agent = '';
 
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
 			$agent = 'wp_cli';
 		} elseif ( $this->is_doing_wp_cron() ) {
 			$agent = 'wp_cron';

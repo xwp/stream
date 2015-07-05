@@ -4,7 +4,9 @@
  *
  * @see https://github.com/wp-cli/wp-cli
  */
-class WP_Stream_WP_CLI_Command extends WP_CLI_Command {
+namespace WP_Stream;
+
+class CLI extends \WP_CLI_Command {
 
 	/**
 	 * Query a set of Stream records.
