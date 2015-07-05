@@ -57,7 +57,7 @@ class Feeds {
 		if ( $user_id ) {
 			$feed_key = wp_generate_password( 32, false );
 
-			wp_stream_update_user_meta( $user_id, self::USER_FEED_OPTION_KEY, $feed_key );
+			$this->plugin->admin->update_user_meta( $user_id, self::USER_FEED_OPTION_KEY, $feed_key );
 
 			$link      = $this->get_user_feed_url( $feed_key );
 			$xml_feed  = add_query_arg( array( 'type' => 'json' ), $link );
@@ -89,7 +89,7 @@ class Feeds {
 		$generate_key = wp_stream_filter_input( INPUT_GET, self::GENERATE_KEY_QUERY_VAR );
 		$nonce        = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 
-		if ( ! $generate_key && wp_stream_get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY ) ) {
+		if ( ! $generate_key && $this->plugin->admin->get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY ) ) {
 			return;
 		}
 
@@ -99,7 +99,7 @@ class Feeds {
 
 		$feed_key = wp_generate_password( 32, false );
 
-		wp_stream_update_user_meta( $user->ID, self::USER_FEED_OPTION_KEY, $feed_key );
+		$this->plugin->admin->update_user_meta( $user->ID, self::USER_FEED_OPTION_KEY, $feed_key );
 	}
 
 	/**
@@ -115,7 +115,7 @@ class Feeds {
 			return;
 		}
 
-		$key  = wp_stream_get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY );
+		$key  = $this->plugin->admin->get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY );
 		$link = $this->get_user_feed_url( $key );
 
 		$nonce = wp_create_nonce( 'wp_stream_generate_key' );

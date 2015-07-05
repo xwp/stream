@@ -62,14 +62,14 @@ class Live_Update {
 		$user = (int) $input['user'];
 
 		if ( 'false' === $input['heartbeat'] ) {
-			wp_stream_update_user_meta( $user, $this->user_meta_key, 'off' );
+			$this->plugin->admin->update_user_meta( $user, $this->user_meta_key, 'off' );
 
 			wp_send_json_error( esc_html__( "Live updates could not be enabled because Heartbeat is not loaded.\n\nYour hosting provider or another plugin may have disabled it for performance reasons.", 'stream' ) );
 
 			return;
 		}
 
-		$success = wp_stream_update_user_meta( $user, $this->user_meta_key, $checked );
+		$success = $this->plugin->admin->update_user_meta( $user, $this->user_meta_key, $checked );
 
 		if ( $success ) {
 			wp_send_json_success( ( 'on' === $checked ) ? 'Live Updates enabled' : 'Live Updates disabled' );
@@ -173,7 +173,7 @@ class Live_Update {
 			return $response;
 		}
 
-		$enable_stream_update = ( 'off' !== wp_stream_get_user_meta( get_current_user_id(), $this->user_meta_key ) );
+		$enable_stream_update = ( 'off' !== $this->plugin->admin->get_user_meta( get_current_user_id(), $this->user_meta_key ) );
 
 		// Register list table
 		$this->list_table = new WP_Stream_List_Table( array( 'screen' => 'toplevel_page_' . $this->plugin->admin->records_page_slug ) );

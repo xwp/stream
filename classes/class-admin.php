@@ -745,4 +745,44 @@ class Admin {
 
 		return $authors_records;
 	}
+
+	/**
+	 * Get user meta in a way that is also safe for VIP
+	 *
+	 * @param int $user_id
+	 * @param string $meta_key
+	 * @param bool $single (optional)
+	 *
+	 * @return mixed
+	 */
+	function get_user_meta( $user_id, $meta_key, $single = true ) {
+		return $this->plugin->is_vip() ? get_user_attribute( $user_id, $meta_key ) : get_user_meta( $user_id, $meta_key, $single );
+	}
+
+	/**
+	 * Update user meta in a way that is also safe for VIP
+	 *
+	 * @param int $user_id
+	 * @param string $meta_key
+	 * @param mixed  $meta_value
+	 * @param mixed $prev_value (optional)
+	 *
+	 * @return int|bool
+	 */
+	function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
+		return $this->plugin->is_vip() ? update_user_attribute( $user_id, $meta_key, $meta_value ) : update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
+	}
+
+	/**
+	 * Delete user meta in a way that is also safe for VIP
+	 *
+	 * @param int $user_id
+	 * @param string $meta_key
+	 * @param mixed $meta_value (optional)
+	 *
+	 * @return bool
+	 */
+	function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
+		return $this->plugin->is_vip() ? delete_user_attribute( $user_id, $meta_key, $meta_value ) : delete_user_meta( $user_id, $meta_key, $meta_value );
+	}
 }
