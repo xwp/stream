@@ -75,12 +75,12 @@ class Record {
 
 		$output = false;
 
-		if ( isset( $this->$stream_meta->post_title ) && ! empty( $this->$stream_meta->post_title ) ) {
-			$output = (string) $this->$stream_meta->post_title;
-		} elseif ( isset( $this->$stream_meta->display_name ) && ! empty( $this->$stream_meta->display_name ) ) {
-			$output = (string) $this->$stream_meta->display_name;
-		} elseif ( isset( $this->$stream_meta->name ) && ! empty( $this->$stream_meta->name ) ) {
-			$output = (string) $this->$stream_meta->name;
+		if ( isset( $this->stream_meta->post_title ) && ! empty( $this->stream_meta->post_title ) ) {
+			$output = (string) $this->stream_meta->post_title;
+		} elseif ( isset( $this->stream_meta->display_name ) && ! empty( $this->stream_meta->display_name ) ) {
+			$output = (string) $this->stream_meta->display_name;
+		} elseif ( isset( $this->stream_meta->name ) && ! empty( $this->stream_meta->name ) ) {
+			$output = (string) $this->stream_meta->name;
 		}
 
 		return $output;
