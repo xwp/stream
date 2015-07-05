@@ -9,6 +9,11 @@ class Admin {
 	public $plugin;
 
 	/**
+	 * @var Network
+	 */
+	public $network;
+
+	/**
 	 * @var Live_Update
 	 */
 	public $live_update;
@@ -86,7 +91,7 @@ class Admin {
 	 *
 	 * @var int
 	 */
-	public $preload_authors_max = 50;
+	public $preload_users_max = 50;
 
 	/**
 	 * Class constructor.
@@ -122,10 +127,29 @@ class Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_menu_css' ) );
 
-		// Ajax authors list
+		// Reset Streams database
+		add_action( 'wp_ajax_wp_stream_reset', array( $this, 'wp_ajax_reset' ) );
+
+		// Reset Streams settings
+		add_action( 'wp_ajax_wp_stream_defaults', array( $this, 'wp_ajax_defaults' ) );
+
+		// Uninstall Streams and Deactivate plugin
+		add_action( 'wp_ajax_wp_stream_uninstall', array( 'WP_Stream_Uninstall', 'uninstall' ) );
+
+		// Auto purge setup
+		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
+		add_action( 'wp_stream_auto_purge', array( $this, 'purge_scheduled_action' ) );
+
+		// Ajax users list
 		add_action( 'wp_ajax_wp_stream_filters', array( $this, 'ajax_filters' ) );
 
-		// Ajax author's name by ID
+		// Ajax user's name by ID
+		add_action( 'wp_ajax_wp_stream_get_filter_value_by_id', array( $this, 'get_filter_value_by_id' ) );
+
+		// Ajax users list
+		add_action( 'wp_ajax_wp_stream_filters', array( $this, 'ajax_filters' ) );
+
+		// Ajax user's name by ID
 		add_action( 'wp_ajax_wp_stream_get_filter_value_by_id', array( $this, 'get_filter_value_by_id' ) );
 	}
 
@@ -135,8 +159,9 @@ class Admin {
 	 * @action init
 	 */
 	public function init() {
-		$this->live_update      = new Live_Update( $this->plugin );
-		$this->migrate          = new Migrate( $this->plugin );
+		$this->network     = new Network( $this->plugin );
+		$this->live_update = new Live_Update( $this->plugin );
+		$this->migrate     = new Migrate( $this->plugin );
 	}
 
 	/**
@@ -273,7 +298,9 @@ class Admin {
 				'wp_stream',
 				array(
 					'i18n'       => array(
-						'confirm_defaults' => esc_html__( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+						'confirm_purge'     => esc_html__( 'Are you sure you want to delete all Stream activity records from the database? This cannot be undone.', 'stream' ),
+						'confirm_defaults'  => esc_html__( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'stream' ),
+						'confirm_uninstall' => esc_html__( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Stream tables from the database and cannot be undone.', 'stream' ),
 					),
 					'locale'     => esc_js( $locale ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
@@ -474,6 +501,139 @@ class Admin {
 		\wp_add_inline_style( 'wp-admin', $css );
 	}
 
+	public function wp_ajax_reset() {
+		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
+		if ( ! current_user_can( $this->settings_cap ) ) {
+			wp_die(
+				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
+			);
+		}
+
+		$this->erase_stream_records();
+
+		wp_redirect(
+			add_query_arg(
+				array(
+					'page'    => is_network_admin() ? $this->network->network_settings_page_slug : $this->settings_page_slug,
+					'message' => 'data_erased',
+				),
+				self_admin_url( $this->admin_parent_page )
+			)
+		);
+
+		exit;
+	}
+
+	private function erase_stream_records() {
+		global $wpdb;
+
+		$where = '';
+
+		if ( is_multisite() && ! is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+		}
+
+		$wpdb->query(
+			"DELETE `stream`, `meta`
+			FROM {$wpdb->stream} AS `stream`
+			LEFT JOIN {$wpdb->streammeta} AS `meta`
+			ON `meta`.`record_id` = `stream`.`ID`
+			WHERE 1=1 {$where};"
+		);
+	}
+
+	public function wp_ajax_defaults() {
+		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
+		if ( ! is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			wp_die( "You don't have sufficient privileges to do this action." );
+		}
+
+		if ( ! current_user_can( $this->settings_cap ) ) {
+			wp_die(
+				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
+			);
+		}
+
+		$this->reset_stream_settings();
+
+		wp_redirect(
+			add_query_arg(
+				array(
+					'page'    => is_network_admin() ? $this->network->network_settings_page_slug : $this->settings_page_slug,
+					'message' => 'settings_reset',
+				),
+				is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ? network_admin_url( $this->admin_parent_page ) : admin_url( $this->admin_parent_page )
+			)
+		);
+
+		exit;
+	}
+
+	private function reset_stream_settings() {
+		global $wpdb;
+
+		$blogs = wp_get_sites();
+
+		if ( $blogs ) {
+			foreach ( $blogs as $blog ) {
+				switch_to_blog( $blog['blog_id'] );
+
+				delete_option( WP_Stream_Settings::OPTION_KEY );
+			}
+
+			restore_current_blog();
+		}
+	}
+
+	public function purge_schedule_setup() {
+		if ( ! wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
+			wp_schedule_event( time(), 'twicedaily', 'wp_stream_auto_purge' );
+		}
+	}
+
+	public function purge_scheduled_action() {
+		global $wpdb;
+
+		// Don't purge when in Network Admin unless Stream is network activated
+		if (
+			is_multisite()
+			&&
+			is_network_admin()
+			&&
+			! is_plugin_active_for_network( $this->plugin->locations['plugin'] )
+		) {
+			return;
+		}
+
+		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			$options = (array) get_site_option( $this->plugin->settings->network_options_key, array() );
+		} else {
+			$options = $this->plugin->settings->get_options();
+		}
+
+		$days = $options['general_records_ttl'];
+		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
+
+		$date->sub( DateInterval::createFromDateString( "$days days" ) );
+
+		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
+
+		// Multisite but NOT network activated, only purge the current blog
+		if ( is_multisite() && ! is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
+		}
+
+		$wpdb->query(
+			"DELETE `stream`, `meta`
+			FROM {$wpdb->stream} AS `stream`
+			LEFT JOIN {$wpdb->streammeta} AS `meta`
+			ON `meta`.`record_id` = `stream`.`ID`
+			WHERE 1=1 {$where};"
+		);
+	}
+
 	/**
 	 * @param array $links
 	 * @param string $file
@@ -483,13 +643,47 @@ class Admin {
 	 * @return array
 	 */
 	public function plugin_action_links( $links, $file ) {
-		if ( plugin_basename( $this->plugin->locations['dir'] . 'stream.php' ) === $file ) {
-			$admin_page_url = add_query_arg( array( 'page' => $this->settings_page_slug ), admin_url( $this->admin_parent_page ) );
-
-			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'stream' ) );
+		if ( plugin_basename( $this->plugin->locations['dir'] . 'stream.php' ) !== $file ) {
+			return $links;
 		}
 
+		// Also don't show links in Network Admin if Stream isn't network enabled
+		if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+			return $links;
+		}
+
+		if ( is_network_admin() ) {
+			$admin_page_url = add_query_arg( array( 'page' => $this->network->network_settings_page_slug ), network_admin_url( $this->admin_parent_page ) );
+		} else {
+			$admin_page_url = add_query_arg( array( 'page' => $this->settings_page_slug ), admin_url( $this->admin_parent_page ) );
+		}
+
+		$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
+
+		$url = add_query_arg(
+			array(
+				'action'          => 'wp_stream_uninstall',
+				'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+			),
+			admin_url( 'admin-ajax.php' )
+		);
+
+		$links[] = sprintf( '<span id="wp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall', 'stream' ) );
+
 		return $links;
+	}
+
+	/**
+	 * Render main page
+	 */
+	public function render_list_table() {
+		$this->list_table->prepare_items();
+		?>
+		<div class="wrap">
+			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
+			<?php $this->list_table->display() ?>
+		</div>
+	<?php
 	}
 
 	/**
@@ -557,19 +751,6 @@ class Admin {
 	 */
 	public function register_list_table() {
 		$this->list_table = new List_Table( $this->plugin, array( 'screen' => $this->screen_id['main'] ) );
-	}
-
-	/**
-	 * Render the list table
-	 */
-	public function render_list_table() {
-		$this->list_table->prepare_items();
-		?>
-		<div class="wrap">
-			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
-			<?php $this->list_table->display() ?>
-		</div>
-		<?php
 	}
 
 	/**
@@ -661,7 +842,7 @@ class Admin {
 	 */
 	public function ajax_filters() {
 		switch ( wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
-			case 'author':
+			case 'user_id':
 				$users = array_merge(
 					array( 0 => (object) array( 'display_name' => 'WP-CLI' ) ),
 					get_users()
@@ -675,12 +856,12 @@ class Admin {
 					}
 				);
 
-				if ( count( $users ) > $this->preload_authors_max ) {
-					$users = array_slice( $users, 0, $this->preload_authors_max );
+				if ( count( $users ) > $this->preload_users_max ) {
+					$users = array_slice( $users, 0, $this->preload_users_max );
 				}
 
 				// Get gravatar / roles for final result set
-				$results = $this->get_authors_record_meta( $users );
+				$results = $this->get_users_record_meta( $users );
 
 				break;
 		}
@@ -699,7 +880,7 @@ class Admin {
 		$filter = wp_stream_filter_input( INPUT_POST, 'filter' );
 
 		switch ( $filter ) {
-			case 'author':
+			case 'user_id':
 				$id = wp_stream_filter_input( INPUT_POST, 'id' );
 
 				if ( '0' === $id ) {
@@ -726,7 +907,7 @@ class Admin {
 		die();
 	}
 
-	public function get_authors_record_meta( $authors ) {
+	public function get_users_record_meta( $authors ) {
 		$authors_records = array();
 
 		foreach ( $authors as $user_id => $args ) {

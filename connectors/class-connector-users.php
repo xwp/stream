@@ -12,9 +12,6 @@ class Connector_Users extends Connector {
 
 	/**
 	 * Stores users object before the user being deleted.
-	 *
-	 * @var array
-	 * @access protected
 	 */
 	protected $_users_object_pre_deleted = array();
 

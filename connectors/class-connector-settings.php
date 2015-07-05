@@ -67,8 +67,10 @@ class Connector_Settings extends Connector {
 		'limited_email_domains',
 		'banned_email_domains',
 		'WPLANG',
-		'admin_email',
+		'blog_count',
 		'user_count',
+		'admin_email',
+		'new_admin_email',
 	);
 
 	/**
@@ -239,9 +241,10 @@ class Connector_Settings extends Connector {
 			// General
 			'blogname'                      => esc_html__( 'Site Title', 'stream' ),
 			'blogdescription'               => esc_html__( 'Tagline', 'stream' ),
+			'admin_email'                   => esc_html__( 'E-mail Address', 'stream' ),
+			'new_admin_email'               => esc_html__( 'E-mail Address', 'stream' ),
 			'siteurl'                       => esc_html__( 'WordPress Address (URL)', 'stream' ),
 			'home'                          => esc_html__( 'Site Address (URL)', 'stream' ),
-			'admin_email'                   => esc_html__( 'E-mail Address', 'stream' ),
 			'users_can_register'            => esc_html__( 'Membership', 'stream' ),
 			'default_role'                  => esc_html__( 'New User Default Role', 'stream' ),
 			'timezone_string'               => esc_html__( 'Timezone', 'stream' ),
@@ -325,10 +328,20 @@ class Connector_Settings extends Connector {
 			'limited_email_domains'         => esc_html__( 'Limited Email Registrations', 'stream' ),
 			'banned_email_domains'          => esc_html__( 'Banned Email Domains', 'stream' ),
 			'WPLANG'                        => esc_html__( 'Network Language', 'stream' ),
+<<<<<<< HEAD:connectors/class-connector-settings.php
+=======
+			'blog_count'                    => esc_html__( 'Blog Count', 'stream' ),
+>>>>>>> lite:connectors/class-wp-stream-connector-settings.php
 			'user_count'                    => esc_html__( 'User Count', 'stream' ),
 			// Other
 			'wp_stream_db'                  => esc_html__( 'Stream Database Version', 'stream' ),
 		);
+
+		// These option labels are special and need to change based on multisite context
+		if ( is_network_admin() ) {
+			$labels['admin_email']     = esc_html__( 'Network Admin Email', 'stream' );
+			$labels['new_admin_email'] = esc_html__( 'Network Admin Email', 'stream' );
+		}
 
 		if ( isset( $labels[ $field_key ] ) ) {
 			return $labels[ $field_key ];

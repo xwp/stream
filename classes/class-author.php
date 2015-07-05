@@ -28,11 +28,11 @@ class Author {
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 * @param int $user_id
-	 * @param array $author_meta
+	 * @param array $user_meta
 	 */
-	function __construct( $user_id, $author_meta = array() ) {
-		$this->id     = $user_id;
-		$this->meta   = $author_meta;
+	function __construct( $user_id, $user_meta = array() ) {
+		$this->id   = $user_id;
+		$this->meta = $user_meta;
 
 		if ( $this->id ) {
 			$this->user = new \WP_User( $this->id );
@@ -168,8 +168,10 @@ class Author {
 	}
 
 	/**
-	 * Tries to find a label for the record's author_role.
-	 * If the author_role exists, use the label associated with it.
+	 * Tries to find a label for the record's user_role.
+	 *
+	 * If the user_role exists, use the label associated with it.
+	 *
 	 * Otherwise, if there is a user role label stored as Stream meta then use that.
 	 * Otherwise, if the user exists, use the label associated with their current role.
 	 * Otherwise, use the role slug as the label.
@@ -179,17 +181,17 @@ class Author {
 	function get_role() {
 		global $wp_roles;
 
-		if ( ! empty( $this->meta['author_role'] ) && isset( $wp_roles->role_names[ $this->meta['author_role'] ] ) ) {
-			$author_role = $wp_roles->role_names[ $this->meta['author_role'] ];
+		if ( ! empty( $this->meta['user_role'] ) && isset( $wp_roles->role_names[ $this->meta['user_role'] ] ) ) {
+			$user_role = $wp_roles->role_names[ $this->meta['user_role'] ];
 		} elseif ( ! empty( $this->meta['user_role_label'] ) ) {
-			$author_role = $this->meta['user_role_label'];
+			$user_role = $this->meta['user_role_label'];
 		} elseif ( isset( $this->user->roles[0] ) && isset( $wp_roles->role_names[ $this->user->roles[0] ] ) ) {
-			$author_role = $wp_roles->role_names[ $this->user->roles[0] ];
+			$user_role = $wp_roles->role_names[ $this->user->roles[0] ];
 		} else {
-			$author_role = '';
+			$user_role = '';
 		}
 
-		return $author_role;
+		return $user_role;
 	}
 
 	/**
@@ -200,8 +202,8 @@ class Author {
 	function get_records_page_url() {
 		$url = add_query_arg(
 			array(
-				'page'   => $this->plugin->admin->records_page_slug,
-				'author' => absint( $this->id ),
+				'page'    => $this->plugin->admin->records_page_slug,
+				'user_id' => absint( $this->id ),
 			),
 			self_admin_url( $this->plugin->admin->admin_parent_page )
 		);

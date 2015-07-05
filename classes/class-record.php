@@ -6,18 +6,15 @@ class Record {
 	public $site_id;
 	public $blog_id;
 	public $object_id;
-	public $author;
-	public $author_role;
+	public $user;
+	public $user_role;
+	public $user_meta;
 	public $summary;
-	public $visibility;
-	public $type;
 	public $connector;
 	public $context;
 	public $action;
-	public $created;
 	public $ip;
-
-	public $stream_meta;
+	public $meta;
 
 	public function __construct( $id = null ) {
 		if ( $id ) {
@@ -33,7 +30,7 @@ class Record {
 			return new \WP_Error( 'validation-error', esc_html__( 'Could not validate record data.', 'stream' ) );
 		}
 
-		return $this->plugin->db->store( (array) $this );
+		return wp_stream_get_instance()->db->insert( (array) $this );
 	}
 
 	public function populate( array $raw ) {
@@ -48,18 +45,29 @@ class Record {
 		return true;
 	}
 
-	public function get_stream_meta( $meta_key = '', $single = false ) {
-		if ( isset( $this->stream_meta->$meta_key ) ) {
-			$stream_meta = $this->stream_meta->$meta_key;
-		} else {
-			return '';
-		}
+	/**
+	 * Query record meta
+	 *
+	 * @param string $meta_key (optional)
+	 * @param bool   $single (optional)
+	 *
+	 * @return array
+	 */
+	public function get_meta( $meta_key = '', $single = false ) {
+		return maybe_unserialize( get_metadata( 'record', $this->ID, $meta_key, $single ) );
+	}
 
-		if ( $single ) {
-			return $stream_meta;
-		}
-
-		return array( $stream_meta );
+	/**
+	 * Update record meta
+	 *
+	 * @param string $meta_key
+	 * @param string $meta_value
+	 * @param string $prev_value (optional)
+	 *
+	 * @return array
+	 */
+	public function update_meta( $meta_key, $meta_value, $prev_value = '' ) {
+		return update_metadata( 'record', $this->ID, $meta_key, $meta_value, $prev_value );
 	}
 
 	/**
@@ -75,12 +83,12 @@ class Record {
 
 		$output = false;
 
-		if ( isset( $this->stream_meta->post_title ) && ! empty( $this->stream_meta->post_title ) ) {
-			$output = (string) $this->stream_meta->post_title;
-		} elseif ( isset( $this->stream_meta->display_name ) && ! empty( $this->stream_meta->display_name ) ) {
-			$output = (string) $this->stream_meta->display_name;
-		} elseif ( isset( $this->stream_meta->name ) && ! empty( $this->stream_meta->name ) ) {
-			$output = (string) $this->stream_meta->name;
+		if ( isset( $this->meta->post_title ) && ! empty( $this->meta->post_title ) ) {
+			$output = (string) $this->meta->post_title;
+		} elseif ( isset( $this->meta->display_name ) && ! empty( $this->meta->display_name ) ) {
+			$output = (string) $this->meta->display_name;
+		} elseif ( isset( $this->meta->name ) && ! empty( $this->meta->name ) ) {
+			$output = (string) $this->meta->name;
 		}
 
 		return $output;

@@ -9,16 +9,18 @@ class DB {
 	public $plugin;
 
 	/**
-	 * @var Query
+	 * Hold records table name
+	 *
+	 * @var string
 	 */
-	public $query;
+	public $table;
 
 	/**
-	 * Meta information returned in the last query
+	 * Hold meta table name
 	 *
-	 * @var mixed
+	 * @var string
 	 */
-	public $query_meta = false;
+	public $table_meta;
 
 	/**
 	 * Class constructor.
@@ -28,171 +30,167 @@ class DB {
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 		$this->query  = new Query( $this );
+
+		global $wpdb;
+
+		/**
+		 * Allows devs to alter the tables prefix, default to base_prefix
+		 *
+		 * @param string $prefix
+		 *
+		 * @return string
+		 */
+		$prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
+
+		$this->table         = $prefix . 'stream';
+		$this->table_meta    = $prefix . 'stream_meta';
+
+		$wpdb->stream        = $this->table;
+		$wpdb->streammeta    = $this->table_meta;
+
+		// Hack for get_metadata
+		$wpdb->recordmeta    = $this->table_meta;
 	}
 
 	/**
-	 * Store records
+	 * Public getter to return table names
 	 *
-	 * @param array $records
-	 *
-	 * @return mixed True if updated, otherwise false|WP_Error
+	 * @return array
 	 */
-	public function store( $records ) {
-		// Take only what's ours!
-		$valid_keys = get_class_vars( 'Record' );
-
-		// Fill in defaults
-		$defaults = array(
-			'type'        => 'stream',
-			'site_id'     => 1,
-			'blog_id'     => 0,
-			'object_id'   => 0,
-			'author'      => 0,
-			'author_role' => '',
-			'visibility'  => 'publish',
-			'ip'          => '',
+	public function get_table_names() {
+		return array(
+			$this->table,
+			$this->table_meta,
 		);
+	}
 
-		foreach ( $records as $key => $record ) {
-			$records[ $key ] = array_intersect_key( $record, $valid_keys );
-			$records[ $key ] = array_filter( $record );
-			$records[ $key ] = wp_parse_args( $record, $defaults );
-		}
-
+	/**
+	 * Insert a record
+	 *
+	 * @param array $recordarr
+	 *
+	 * @return int
+	 */
+	public function insert( $recordarr ) {
 		/**
-		 * Allows modification of record information just before logging occurs.
+		 * Filter allows modification of record information
 		 *
-		 * @param  array $records An array of record data.
+		 * @param array $recordarr
+		 *
+		 * @return array
 		 */
-		$records = apply_filters( 'wp_stream_record_array', $records );
+		$recordarr = apply_filters( 'wp_stream_record_array', $recordarr );
 
-		// Allow extensions to handle the saving process
-		if ( empty( $records ) ) {
+		if ( empty( $recordarr ) ) {
 			return false;
 		}
 
-		// TODO: Check/Validate *required* fields
+		global $wpdb;
 
-		$result = $this->insert( $records );
+		$fields = array( 'object_id', 'site_id', 'blog_id', 'user_id', 'user_role', 'created', 'summary', 'ip', 'connector', 'context', 'action' );
+		$data   = array_intersect_key( $recordarr, array_flip( $fields ) );
+		$data   = array_filter( $data );
+		$result = $wpdb->insert( $this->table, $data );
 
-		if ( $result && ! is_wp_error( $result ) ) {
+		if ( 1 !== $result ) {
 			/**
-			 * Fires when A Post is inserted
+			 * Fires on a record insertion error
 			 *
-			 * @param array $records
+			 * @param array $recordarr
+			 * @param mixed $result
 			 */
-			do_action( 'wp_stream_records_inserted', $records );
+			do_action( 'wp_stream_record_insert_error', $recordarr, $result );
 
-			return true;
+			return $result;
 		}
 
-		return is_wp_error( $result ) ? $result : false;
-	}
+		$record_id = $wpdb->insert_id;
 
-	/**
-	 * Insert a new record
-	 *
-	 * @internal Used by store()
-	 *
-	 * @param array $records
-	 *
-	 * @return object The inserted records
-	 */
-	private function insert( array $records ) {
-		return $this->plugin->api->new_records( $records );
-	}
+		// Insert record meta
+		foreach ( (array) $recordarr['meta'] as $key => $vals ) {
+			// If associative array, serialize it, otherwise loop on its members
+			$vals = ( is_array( $vals ) && 0 !== key( $vals ) ) ? array( $vals ) : $vals;
 
-	/**
-	 * Query records
-	 *
-	 * @param array $query  Query body.
-	 * @param array $fields Returns specified fields only.
-	 *
-	 * @return array List of records that match query
-	 */
-	public function query( $query, $fields ) {
-		$response = $this->plugin->api->search( $query, $fields );
+			foreach ( (array) $vals as $val ) {
+				$val = maybe_serialize( $val );
 
-		if ( empty( $response ) || ! isset( $response->meta ) || ! isset( $response->records ) ) {
-			return false;
-		}
-
-		$this->query_meta = $response->meta;
-
-		$results = (array) $response->records;
-
-		/**
-		 * Allows developers to change the final result set of records
-		 *
-		 * @param array $results
-		 * @param array $query
-		 * @param array $fields
-		 *
-		 * @return array Filtered array of record results
-		 */
-		return apply_filters( 'wp_stream_query_results', $results, $query, $fields );
-	}
-
-	/**
-	 * Get total count of the last query using query() method
-	 *
-	 * @return integer Total item count
-	 */
-	public function get_found_rows() {
-		if ( ! isset( $this->query_meta->total ) ) {
-			return 0;
-		}
-		return $this->query_meta->total;
-	}
-
-	/**
-	 * Get meta data for last query using query() method
-	 *
-	 * @return array Meta data for query
-	 */
-	public function get_query_meta() {
-		return $this->query_meta;
-	}
-
-	/**
-	 * Returns array of existing values for requested field.
-	 * Used to fill search filters with only used items, instead of all items.
-	 *
-	 * @param string $field Requested field (i.e., 'context')
-	 *
-	 * @return array Array of distinct values
-	 */
-	public function get_distinct_field_values( $field ) {
-		$query['aggregations']['fields']['terms']['field'] = $field;
-
-		$values   = array();
-		$response = $this->plugin->api->search( $query, array( $field ) );
-
-		if ( isset( $response->meta->aggregations->fields->buckets ) ) {
-			foreach ( $response->meta->aggregations->fields->buckets as $field ) {
-				$values[] = $field->key;
+				$this->insert_meta( $record_id, $key, $val );
 			}
 		}
 
-		return $values;
+		/**
+		 * Fires after a record has been inserted
+		 *
+		 * @param int   $record_id
+		 * @param array $recordarr
+		 */
+		do_action( 'wp_stream_record_inserted', $record_id, $recordarr );
+
+		return absint( $record_id );
 	}
 
 	/**
-	 * Returns array of existing values for requested field.
+	 * Insert record meta
+	 *
+	 * @param int    $record_id
+	 * @param string $key
+	 * @param string $val
+	 *
+	 * @return array
+	 */
+	public function insert_meta( $record_id, $key, $val ) {
+		global $wpdb;
+
+		$result = $wpdb->insert(
+			$this->table_meta,
+			array(
+				'record_id'  => $record_id,
+				'meta_key'   => $key,
+				'meta_value' => $val,
+			)
+		);
+
+		return $result;
+	}
+
+	/**
+	 * Returns array of existing values for requested column.
 	 * Used to fill search filters with only used items, instead of all items.
 	 *
-	 * @param string $field Requested field (i.e., 'context')
+	 * GROUP BY allows query to find just the first occurance of each value in the column,
+	 * increasing the efficiency of the query.
 	 *
-	 * @return array Array of items to be output to select dropdowns
+	 * @see assemble_records
+	 * @since 1.0.4
+	 *
+	 * @param string $column
+	 *
+	 * @return array
 	 */
-	function get_existing_records( $field ) {
-		$values = $this->get_distinct_field_values( $field );
+	function existing_records( $column ) {
+		global $wpdb;
 
-		if ( is_array( $values ) && ! empty( $values ) ) {
-			return array_combine( $values, $values );
-		} else {
-			$field = sprintf( 'stream_%s', $field );
-			return isset( $this->plugin->connectors->term_labels[ $field ] ) ? $this->plugin->connectors->term_labels[ $field ] : array();
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT {$column} FROM $wpdb->stream GROUP BY %s",
+				$column
+			),
+			'ARRAY_A'
+		);
+
+		if ( is_array( $rows ) && ! empty( $rows ) ) {
+			$output_array = array();
+			foreach ( $rows as $row ) {
+				foreach ( $row as $cell => $value ) {
+					$output_array[ $value ] = $value;
+				}
+			}
+
+			return (array) $output_array;
 		}
+
+		$column = sprintf( 'stream_%s', $column );
+
+		return isset( $this->plugin->connectors->term_labels[ $column ] ) ? $this->plugin->connectors->term_labels[ $column ] : array();
 	}
 }

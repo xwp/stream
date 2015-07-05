@@ -53,7 +53,7 @@
 	width: 10%;
 }
 
-.toplevel_page_wp_stream .manage-column.column-author {
+.toplevel_page_wp_stream .manage-column.column-user_id {
 	width: 18%;
 }
 
@@ -88,14 +88,14 @@
 	}
 	.toplevel_page_wp_stream .fixed .column-date,
 	.toplevel_page_wp_stream .fixed .column-summary,
-	.toplevel_page_wp_stream .fixed .column-author,
+	.toplevel_page_wp_stream .fixed .column-user_id,
 	.toplevel_page_wp_stream .fixed tbody tr.no-items td {
 		display: table-cell;
 	}
 	.toplevel_page_wp_stream .fixed .column-date {
 		width: 100px;
 	}
-	.toplevel_page_wp_stream .fixed .column-author {
+	.toplevel_page_wp_stream .fixed .column-user_id {
 		width: 50%;
 	}
 	.toplevel_page_wp_stream .fixed .column-summary {
@@ -104,24 +104,23 @@
 }
 
 @media only screen and (max-width: 480px) {
-	.toplevel_page_wp_stream .fixed .column-author {
+	.toplevel_page_wp_stream .fixed .column-user_id {
 		display: none;
 	}
 }
 
-.toplevel_page_wp_stream .column-author a {
+.toplevel_page_wp_stream .column-user_id a {
 	vertical-align: top;
 }
 
-.toplevel_page_wp_stream .column-author img {
+.toplevel_page_wp_stream .column-user_id img {
 	float: left;
-	margin-right: 10px;
-	margin-top: 1px;
-	width: 40px;
-	height: 40px;
+	margin: 1px 10px 8px 0;
+	width: 32px;
+	height: 32px;
 }
 
-.toplevel_page_wp_stream .column-author .deleted {
+.toplevel_page_wp_stream .column-user_id .deleted {
 	font-style: italic;
 	color: #aaa;
 }
@@ -192,20 +191,36 @@
 
 /* Settings */
 
-.wp_stream_settings .nav-tab-wrapper a:not(.nav-tab-active) {
+.wp_stream_settings .nav-tab-wrapper a:not(.nav-tab-active),
+.wp_stream_network_settings .nav-tab-wrapper a:not(.nav-tab-active)
+.wp_stream_default_settings .nav-tab-wrapper a:not(.nav-tab-active) {
 	border-bottom: 1px solid #ccc;
 }
 
-.wp_stream_settings .select2-container {
+.wp_stream_settings .select2-container,
+.wp_stream_network_settings .select2-container,
+.wp_stream_default_settings .select2-container {
 	width: 100%;
 }
 
-.wp_stream_settings .tablenav {
+.wp_stream_settings .tablenav,
+.wp_stream_network_settings .tablenav,
+.wp_stream_default_settings .tablenav {
 	margin-top: 16px;
 }
 
-.wp_stream_settings .tablenav input {
+.wp_stream_settings .tablenav input,
+.wp_stream_network_settings .tablenav input,
+.wp_stream_default_settings .tablenav input {
 	margin-right: 1em;
+}
+
+.wp_stream_screen a.warning {
+	color: #a00;
+}
+
+.wp_stream_screen a.warning:hover {
+	color: #f00;
 }
 
 /* Date Interval Common */
@@ -277,16 +292,13 @@
 /* Select2 Common */
 
 .wp_stream_screen li.select2-searching,
-.wp_stream_settings li.select2-searching,
-.wp_stream_screen li.select2-no-results,
-.wp_stream_settings li.select2-no-results  {
+.wp_stream_screen li.select2-no-results {
 	background: none;
 	padding: 7px 7px 0;
 	color: #999;
 }
 
-.wp_stream_screen li.select2-result,
-.wp_stream_settings li.select2-result {
+.wp_stream_screen li.select2-result {
 	margin-bottom: 0;
 }
 
@@ -403,35 +415,49 @@
 }
 
 @media screen and ( max-width: 900px ) {
+	.wp_stream_settings .stream-exclude-list .actions-column,
+	.wp_stream_network_settings .stream-exclude-list .actions-column,
 	.wp_stream_settings .stream-exclude-list .actions-column {
 		display: none;
 	}
 }
 
 @media screen and ( max-width: 782px ) {
-	.wp_stream_settings .stream-exclude-list td {
+	.wp_stream_settings .stream-exclude-list td,
+	.wp_stream_network_settings .stream-exclude-list td,
+	.wp_stream_default_settings .stream-exclude-list td {
 		padding: 10px 10px 0 0;
 	}
 
-	.wp_stream_settings .stream-exclude-list th {
+	.wp_stream_settings .stream-exclude-list th,
+	.wp_stream_network_settings .stream-exclude-list th,
+	.wp_stream_default_settings .stream-exclude-list th {
 		display: none;
 	}
 
-	.wp_stream_settings .stream-exclude-list .check-column {
+	.wp_stream_settings .stream-exclude-list .check-column,
+	.wp_stream_network_settings .stream-exclude-list .check-column,
+	.wp_stream_default_settings .stream-exclude-list .check-column {
 		display: table-cell;
 		padding: 13px 10px 0 3px;
 	}
 
-	.wp_stream_settings .stream-exclude-list thead .actions-column {
+	.wp_stream_settings .stream-exclude-list thead .actions-column,
+	.wp_stream_network_settings .stream-exclude-list thead .actions-column,
+	.wp_stream_default_settings .stream-exclude-list thead .actions-column {
 		display: table-cell;
 		width: auto;
 	}
 
-	.wp_stream_settings .stream-exclude-list thead .actions-column .hidden {
+	.wp_stream_settings .stream-exclude-list thead .actions-column .hidden,
+	.wp_stream_network_settings .stream-exclude-list thead .actions-column .hidden,
+	.wp_stream_default_settings .stream-exclude-list thead .actions-column .hidden {
 		display: block;
 	}
 
-	.wp_stream_settings .stream-exclude-list tfoot {
+	.wp_stream_settings .stream-exclude-list tfoot,
+	.wp_stream_network_settings .stream-exclude-list tfoot,
+	.wp_stream_default_settings .stream-exclude-list tfoot {
 		display: none;
 	}
 }

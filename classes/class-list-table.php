@@ -38,7 +38,7 @@ class List_Table extends \WP_List_Table {
 			'per_page',
 			array(
 				'default' => 20,
-				'label'   => esc_html__( 'Records per page', 'stream' ),
+				'label'   => __( 'Records per page', 'stream' ),
 				'option'  => 'edit_stream_per_page',
 			)
 		);
@@ -54,20 +54,16 @@ class List_Table extends \WP_List_Table {
 
 	function extra_tablenav( $which ) {
 		if ( 'top' === $which ) {
-			echo $this->filters_form(); // xss ok
+			echo $this->filters_form(); //xss ok
 		}
 	}
 
 	function no_items() {
-		$rows = $this->get_total_found_rows();
-
-		if ( empty( $rows ) ) {
-			?>
-			<div class="stream-list-table-no-items">
-				<p><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ) ?></p>
-			</div>
-			<?php
-		}
+		?>
+		<div class="stream-list-table-no-items">
+			<p><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ) ?></p>
+		</div>
+		<?php
 	}
 
 	function get_columns() {
@@ -79,12 +75,12 @@ class List_Table extends \WP_List_Table {
 		return apply_filters(
 			'wp_stream_list_table_columns',
 			array(
-				'date'    => esc_html__( 'Date', 'stream' ),
-				'summary' => esc_html__( 'Summary', 'stream' ),
-				'author'  => esc_html__( 'Author', 'stream' ),
-				'context' => esc_html__( 'Context', 'stream' ),
-				'action'  => esc_html__( 'Action', 'stream' ),
-				'ip'      => esc_html__( 'IP Address', 'stream' ),
+				'date'    => __( 'Date', 'stream' ),
+				'summary' => __( 'Summary', 'stream' ),
+				'user_id' => __( 'User', 'stream' ),
+				'context' => __( 'Context', 'stream' ),
+				'action'  => __( 'Action', 'stream' ),
+				'ip'      => __( 'IP Address', 'stream' ),
 			)
 		);
 	}
@@ -101,12 +97,12 @@ class List_Table extends \WP_List_Table {
 		}
 
 		// Directly checking the user meta; to check whether user has changed screen option or not
-		$hidden = $this->plugin->admin->get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden' );
+		$hidden = $this->plugin->admin->get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
 
 		// If user meta is not found; add the default hidden column 'id'
 		if ( ! $hidden ) {
 			$hidden = array( 'id' );
-			$this->plugin->admin->user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+			$this->plugin->admin->update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
 		}
 
 		return $hidden;
@@ -132,23 +128,6 @@ class List_Table extends \WP_List_Table {
 		);
 	}
 
-	/**
-	 * Render the checkbox column
-	 *
-	 * @param  array $item Contains all the data for the checkbox column
-	 *
-	 * @return string Displays a checkbox
-	 */
-	function column_cb( $item ) {
-		return sprintf(
-			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
-			/*$1%s*/
-			'wp_stream_checkbox',
-			/*$2%s*/
-			$item->ID
-		);
-	}
-
 	function get_records() {
 		$args = array();
 
@@ -156,23 +135,23 @@ class List_Table extends \WP_List_Table {
 		if ( $order = wp_stream_filter_input( INPUT_GET, 'order' ) ) {
 			$args['order'] = $order;
 		}
+
 		if ( $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
 			$args['orderby'] = $orderby;
 		}
 
-		// Filters
 		$params = array(
 			'search',
 			'date',
 			'date_from',
 			'date_to',
-			'record_after', // Deprecated, use date_after instead
 			'date_after',
 			'date_before',
 		);
 
 		foreach ( $params as $param ) {
 			$value = wp_stream_filter_input( INPUT_GET, $param );
+
 			if ( $value ) {
 				$args[ $param ] = $value;
 			}
@@ -181,12 +160,12 @@ class List_Table extends \WP_List_Table {
 		// Additional filter properties
 		$properties = array(
 			'record',
-			'author',
-			'author_role',
-			'ip',
-			'object_id',
 			'site_id',
 			'blog_id',
+			'object_id',
+			'user_id',
+			'user_role',
+			'ip',
 			'connector',
 			'context',
 			'action',
@@ -225,8 +204,6 @@ class List_Table extends \WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
-		$args['aggregations'] = array( 'author', 'connector', 'context', 'action' );
-
 		$items = $this->plugin->db->query->query( $args );
 
 		return $items;
@@ -237,8 +214,8 @@ class List_Table extends \WP_List_Table {
 	 *
 	 * @return integer
 	 */
-	function get_total_found_rows() {
-		return $this->plugin->db->get_found_rows();
+	public function get_total_found_rows() {
+		return $this->plugin->db->query->found_records();
 	}
 
 	function column_default( $item, $column_name ) {
@@ -262,6 +239,7 @@ class List_Table extends \WP_List_Table {
 				$out           = $item->summary;
 				$object_title  = $record->get_object_title();
 				$view_all_text = $object_title ? sprintf( esc_html__( 'View all activity for "%s"', 'stream' ), esc_attr( $object_title ) ) : esc_html__( 'View all activity for this object', 'stream' );
+
 				if ( $item->object_id ) {
 					$out .= $this->column_link(
 						'<span class="dashicons dashicons-search stream-filter-object-id"></span>',
@@ -276,17 +254,19 @@ class List_Table extends \WP_List_Table {
 				$out .= $this->get_action_links( $item );
 				break;
 
-			case 'author' :
-				$author = new Author( (int) $item->author, (array) $item->author_meta );
+			case 'user_id' :
+				$meta      = maybe_unserialize( $item->meta );
+				$user_meta = ! empty( $meta['user_meta'] ) ? maybe_unserialize( $meta['user_meta'] ) : array();
+				$user      = new WP_Stream_Author( (int) $item->user_id, (array) $user_meta );
 
 				$out = sprintf(
 					'<a href="%s">%s <span>%s</span></a>%s%s%s',
-					$author->get_records_page_url(),
-					$author->get_avatar_img( 80 ),
-					$author->get_display_name(),
-					$author->is_deleted() ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
-					$author->get_role() ? sprintf( '<br /><small>%s</small>', $author->get_role() ) : '',
-					$author->get_agent() ? sprintf( '<br /><small>%s</small>', $author->get_agent_label( $author->get_agent() ) ) : ''
+					$user->get_records_page_url(),
+					$user->get_avatar_img( 80 ),
+					$user->get_display_name(),
+					$user->is_deleted() ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
+					$user->get_role() ? sprintf( '<br /><small>%s</small>', $user->get_role() ) : '',
+					$user->get_agent() ? sprintf( '<br /><small>%s</small>', WP_Stream_Author::get_agent_label( $user->get_agent() ) ) : ''
 				);
 				break;
 
@@ -307,6 +287,11 @@ class List_Table extends \WP_List_Table {
 
 			case 'action':
 				$out = $this->column_link( $this->get_term_title( $item->{$column_name}, $column_name ), $column_name, $item->{$column_name} );
+				break;
+
+			case 'blog_id':
+				$blog = ( $item->blog_id && is_multisite() ) ? get_blog_details( $item->blog_id ) : $this->plugin->admin->network->get_network_blog();
+				$out  = $this->column_link( $blog->blogname, 'blog_id', $blog->blog_id );
 				break;
 
 			case 'ip' :
@@ -429,17 +414,17 @@ class List_Table extends \WP_List_Table {
 	}
 
 	public function get_term_title( $term, $type ) {
-		if ( isset( $this->plugin->connectors->term_labels[ "stream_$type" ][ $term ] ) ) {
-			return $this->plugin->connectors->term_labels[ "stream_$type" ][ $term ];
+		if ( ! isset( $this->plugin->connectors->term_labels[ "stream_$type" ][ $term ] ) ) {
+			return $term;
 		}
 
-		return $term;
+		return $this->plugin->connectors->term_labels[ "stream_$type" ][ $term ];
 	}
 
 	/**
 	 * Assembles records for display in search filters
 	 *
-	 * Gathers list of all authors/connectors, then compares it to
+	 * Gathers list of all users/connectors, then compares it to
 	 * results of existing records.  All items that do not exist in records
 	 * get assigned a disabled value of "true".
 	 *
@@ -449,49 +434,35 @@ class List_Table extends \WP_List_Table {
 	 */
 	function assemble_records( $column ) {
 		// @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object
-		if ( 'author' === $column ) {
+		if ( 'user_id' === $column ) {
 			$all_records = array();
 
-			// If the number of users exceeds the max authors constant value then return an empty array and use AJAX instead
+			// If the number of users exceeds the max users constant value then return an empty array and use AJAX instead
 			$user_count  = count_users();
 			$total_users = $user_count['total_users'];
 
-			if ( $total_users > $this->plugin->admin->preload_authors_max ) {
+			if ( $total_users > $this->plugin->admin->preload_users_max ) {
 				return array();
 			}
 
-			$authors = array_map(
+			$users = array_map(
 				function ( $user_id ) {
 					return new Author( $user_id );
 				},
 				get_users( array( 'fields' => 'ID' ) )
 			);
 
-			$authors[] = new Author( 0, array( 'is_wp_cli' => true ) );
+			$users[] = new Author( 0, array( 'is_wp_cli' => true ) );
 
-			foreach ( $authors as $author ) {
-				$all_records[ $author->id ] = $author->get_display_name();
+			foreach ( $users as $user ) {
+				$all_records[ $user->id ] = $user->get_display_name();
 			}
 		} else {
 			$prefixed_column = sprintf( 'stream_%s', $column );
 			$all_records     = $this->plugin->connectors->term_labels[ $prefixed_column ];
 		}
 
-		$query_meta = $this->plugin->db->get_query_meta();
-
-		$values           = array();
-		$existing_records = array();
-
-		if ( isset( $query_meta->aggregations->$column->buckets ) ) {
-			foreach ( $query_meta->aggregations->$column->buckets as $field ) {
-				$values[ $field->key ] = $field->key;
-			}
-
-			if ( ! empty( $values ) ) {
-				$existing_records = array_combine( $values, $values );
-			}
-		}
-
+		$existing_records = $this->plugin->db->existing_records( $column );
 		$active_records   = array();
 		$disabled_records = array();
 
@@ -522,7 +493,7 @@ class List_Table extends \WP_List_Table {
 		uasort( $active_records, $sort );
 		uasort( $disabled_records, $sort );
 
-		// Not using array_merge() in order to preserve the array index for the Authors dropdown which uses the user_id as the key
+		// Not using array_merge() in order to preserve the array index for the users dropdown which uses the user_id as the key
 		$all_records = $active_records + $disabled_records;
 
 		return $all_records;
@@ -534,27 +505,27 @@ class List_Table extends \WP_List_Table {
 		$date_interval = new Date_Interval();
 
 		$filters['date'] = array(
-			'title' => esc_html__( 'dates', 'stream' ),
+			'title' => __( 'dates', 'stream' ),
 			'items' => $date_interval->intervals,
 		);
 
-		$authors_records = $this->plugin->admin->get_authors_record_meta(
-			$this->assemble_records( 'author' )
+		$users = $this->get_users_dropdown_items(
+			$this->assemble_records( 'user_id' )
 		);
 
-		$filters['author'] = array(
-			'title' => esc_html__( 'authors', 'stream' ),
-			'items' => $authors_records,
-			'ajax'  => count( $authors_records ) <= 0,
+		$filters['user_id'] = array(
+			'title' => __( 'users', 'stream' ),
+			'items' => $users,
+			'ajax'  => count( $users ) <= 0,
 		);
 
 		$filters['context'] = array(
-			'title' => esc_html__( 'contexts', 'stream' ),
+			'title' => __( 'contexts', 'stream' ),
 			'items' => $this->assemble_records( 'context' ),
 		);
 
 		$filters['action'] = array(
-			'title' => esc_html__( 'actions', 'stream' ),
+			'title' => __( 'actions', 'stream' ),
 			'items' => $this->assemble_records( 'action' ),
 		);
 
@@ -621,7 +592,7 @@ class List_Table extends \WP_List_Table {
 			}
 		}
 
-		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', esc_html__( 'Filter', 'stream' ) );
+		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'stream' ) );
 
 		// Parse all query vars into an array
 		if ( isset( $_SERVER['QUERY_STRING'] ) ) {
@@ -644,7 +615,7 @@ class List_Table extends \WP_List_Table {
 
 		// Display reset action if records are being filtered
 		if ( ! empty( $query_vars ) ) {
-			$filters_string .= sprintf( '<a href="%s" id="record-query-reset"><span class="dashicons dashicons-dismiss"></span> <span class="record-query-reset-text">%s</span></a>', esc_url( $url ), esc_html__( 'Reset filters', 'stream' ) );
+			$filters_string .= sprintf( '<a href="%s" id="record-query-reset"><span class="dashicons dashicons-dismiss"></span> <span class="record-query-reset-text">%s</span></a>', esc_url( $url ), __( 'Reset filters', 'stream' ) );
 		}
 
 		return sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
@@ -766,7 +737,7 @@ class List_Table extends \WP_List_Table {
 				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
 				<?php
 				foreach ( $items as $key => $interval ) {
-					$end = isset( $interval['end'] ) ? $interval['end']->format( 'Y/m/d' ) : '';
+					$end = isset( $interval['end'] ) ? $interval['end']->format( 'Y/m/d' ) : null;
 
 					printf(
 						'<option value="%s" data-from="%s" data-to="%s" %s>%s</option>',
@@ -839,9 +810,9 @@ class List_Table extends \WP_List_Table {
 	function set_screen_option( $dummy, $option, $value ) {
 		if ( 'edit_stream_per_page' === $option ) {
 			return $value;
+		} else {
+			return $dummy;
 		}
-
-		return $dummy;
 	}
 
 	function set_live_update_option( $dummy, $option, $value ) {
@@ -861,7 +832,7 @@ class List_Table extends \WP_List_Table {
 		unset( $args );
 
 		$user_id   = get_current_user_id();
-		$option    = $this->plugin->admin->get_user_meta( $user_id, $this->plugin->admin->live_update->user_meta_key );
+		$option    = $this->plugin->admin->get_user_meta( $user_id, $this->plugin->admin->live_update->user_meta_key, true );
 		$heartbeat = wp_script_is( 'heartbeat', 'done' ) ? 'true' : 'false';
 
 		if ( 'on' === $option && 'false' === $heartbeat ) {
@@ -915,8 +886,8 @@ class List_Table extends \WP_List_Table {
 			case 'ip':
 				$output = 'ip_addresses';
 				break;
-			case 'author':
-				$output = 'authors';
+			case 'user_id':
+				$output = 'users';
 				break;
 			default:
 				$output = false;
@@ -924,4 +895,32 @@ class List_Table extends \WP_List_Table {
 
 		return $output;
 	}
+
+	/**
+	 * Get users as dropdown items
+	 *
+	 * @param array $users
+	 *
+	 * @return array
+	 */
+	public function get_users_dropdown_items( $users ) {
+		$record_meta = array();
+
+		foreach ( $users as $user_id => $args ) {
+			$user     = new Author( $user_id );
+			$disabled = isset( $args['disabled'] ) ? $args['disabled'] : null;
+
+			$record_meta[ $user_id ] = array(
+				'text'     => $user->get_display_name(),
+				'id'       => $user_id,
+				'label'    => $user->get_display_name(),
+				'icon'     => $user->get_avatar_src( 32 ),
+				'title'    => '',
+				'disabled' => $disabled,
+			);
+		}
+
+		return $record_meta;
+	}
+
 }

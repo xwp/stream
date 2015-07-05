@@ -9,11 +9,11 @@ class Log {
 	public $plugin;
 
 	/**
-	 * Hold event transaction object
+	 * Previous Stream record ID, used for chaining same-session records
 	 *
-	 * @var object
+	 * @var int
 	 */
-	private $transaction;
+	private $prev_record;
 
 	/**
 	 * Class constructor.
@@ -22,43 +22,6 @@ class Log {
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
-
-		/**
-		 * Filter allows developers to change log handler class
-		 *
-		 * @return string Class name to use for log handling
-		 */
-		$log_handler = apply_filters( 'wp_stream_log_handler', $this );
-
-		$this->transaction = new stdClass;
-
-		add_action( 'wp_loaded', array( $this, 'transaction_start' ), 999 );
-		add_action( 'shutdown', array( $this, 'transaction_reset' ), 999 );
-	}
-
-	/**
-	 * Start the transaction timer when WordPress is fully loaded
-	 *
-	 * @return void
-	 */
-	public function transaction_start() {
-		$this->transaction->start = microtime( true );
-
-		/**
-		 * Fires immediately after the transaction timer has started
-		 *
-		 * @param int $transaction_start
-		 */
-		do_action( 'wp_stream_transaction_start', $this->transaction->start );
-	}
-
-	/**
-	 * Reset the transaction timer on shutdown
-	 *
-	 * @return void
-	 */
-	public function transaction_reset() {
-		$this->transaction->start = null;
 	}
 
 	/**
@@ -92,14 +55,13 @@ class Log {
 			return false;
 		}
 
-		$user       = new \WP_User( $user_id );
-		$visibility = 'publish';
+		$user = new \WP_User( $user_id );
 
 		if ( $this->is_record_excluded( $connector, $context, $action, $user ) ) {
-			$visibility = 'private';
+			return false;
 		}
 
-		$author_meta = array(
+		$user_meta = array(
 			'user_email'      => (string) ! empty( $user->user_email ) ? $user->user_email : '',
 			'display_name'    => (string) $author->get_display_name(),
 			'user_login'      => (string) ! empty( $user->user_login ) ? $user->user_login : '',
@@ -111,8 +73,8 @@ class Log {
 			$uid       = posix_getuid();
 			$user_info = posix_getpwuid( $uid );
 
-			$author_meta['system_user_id']   = (int) $uid;
-			$author_meta['system_user_name'] = (string) $user_info['name'];
+			$user_meta['system_user_id']   = (int) $uid;
+			$user_meta['system_user_name'] = (string) $user_info['name'];
 		}
 
 		// Prevent any meta with null values from being logged
@@ -122,6 +84,9 @@ class Log {
 				return ! is_null( $var );
 			}
 		);
+
+		// Add user meta to Stream meta
+		$stream_meta['user_meta'] = $user_meta;
 
 		// All meta must be strings, so we will serialize any array meta values
 		array_walk(
@@ -135,45 +100,21 @@ class Log {
 		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
 
 		$recordarr = array(
-			'object_id'   => (int) $object_id,
-			'site_id'     => (int) is_multisite() ? get_current_site()->id : 1,
-			'blog_id'     => (int) apply_filters( 'wp_stream_blog_id_logged', get_current_blog_id() ),
-			'author'      => (int) $user_id,
-			'author_role' => (string) ! empty( $user->roles ) ? $user->roles[0] : '',
-			'author_meta' => (array) $author_meta,
-			'created'     => (string) $iso_8601_extended_date,
-			'visibility'  => (string) $visibility,
-			'type'        => 'stream',
-			'summary'     => (string) vsprintf( $message, $args ),
-			'connector'   => (string) $connector,
-			'context'     => (string) $context,
-			'action'      => (string) $action,
-			'stream_meta' => (array) $meta,
-			'ip'          => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
+			'object_id'  => (int) $object_id,
+			'site_id'    => (int) is_multisite() ? get_current_site()->id : 1,
+			'blog_id'    => (int) apply_filters( 'wp_stream_blog_id_logged', get_current_blog_id() ),
+			'user_id'    => (int) $user_id,
+			'user_role'  => (string) ! empty( $user->roles ) ? $user->roles[0] : '',
+			'created'    => (string) $iso_8601_extended_date,
+			'summary'    => (string) vsprintf( $message, $args ),
+			'connector'  => (string) $connector,
+			'context'    => (string) $context,
+			'action'     => (string) $action,
+			'ip'         => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
+			'meta'       => (array) $stream_meta,
 		);
 
-		// Stop the transaction timer and add values to record meta
-		if ( ! empty( $this->transaction->start ) ) {
-			$this->transaction->stop = microtime( true );
-			$this->transaction->time = round( $this->transaction->stop - $this->transaction->start, 3 ) * 1000; // Use milliseconds
-
-			$recordarr['stream_meta']['transaction_start'] = $this->transaction->start;
-			$recordarr['stream_meta']['transaction_stop']  = $this->transaction->stop;
-			$recordarr['stream_meta']['transaction_time']  = $this->transaction->time;
-
-			/**
-			 * Fires immediately after the transaction timer has stopped
-			 *
-			 * @param object $transaction
-			 * @param array  $recordarr
-			 */
-			do_action( 'wp_stream_transaction_stop', $this->transaction, $recordarr );
-
-			// Restart the timer to properly time any subsequent bulk actions
-			$this->transaction_start();
-		}
-
-		$result = $this->plugin->db->store( array( $recordarr ) );
+		$result = $this->plugin->db->insert( array( $recordarr ) );
 
 		$this->debug_backtrace( $recordarr );
 
@@ -294,7 +235,9 @@ class Log {
 		$action    = isset( $recordarr['action'] ) ? $recordarr['action'] : null;
 
 		// Stream meta
-		$stream_meta = isset( $recordarr['stream_meta'] ) ? $recordarr['stream_meta'] : null;
+		$stream_meta = isset( $recordarr['meta'] ) ? $recordarr['meta'] : null;
+
+		unset( $stream_meta['user_meta'] );
 
 		if ( $stream_meta ) {
 			array_walk( $stream_meta, function( &$value, $key ) {
@@ -304,23 +247,22 @@ class Log {
 			$stream_meta = implode( ', ', $stream_meta );
 		}
 
-		// Author meta
-		$author_meta = isset( $recordarr['author_meta'] ) ? $recordarr['author_meta'] : null;
+		// User meta
+		$user_meta = isset( $recordarr['meta']['user_meta'] ) ? $recordarr['meta']['user_meta'] : null;
 
-		if ( $author_meta ) {
-			array_walk( $author_meta, function( &$value, $key ) {
+		if ( $user_meta ) {
+			array_walk( $user_meta, function( &$value, $key ) {
 				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
 			});
 
-			$author_meta = implode( ', ', $author_meta );
+			$user_meta = implode( ', ', $user_meta );
 		}
 
+		// Debug backtrace
 		ob_start();
 
 		// @codingStandardsIgnoreStart
-
 		debug_print_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ); // Option to ignore args requires PHP 5.3.6
-
 		// @codingStandardsIgnoreEnd
 
 		$backtrace = ob_get_clean();
@@ -334,7 +276,7 @@ class Log {
 			$context,
 			$action,
 			$stream_meta,
-			$author_meta,
+			$user_meta,
 			implode( "\n", $backtrace )
 		);
 

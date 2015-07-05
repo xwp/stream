@@ -58,6 +58,7 @@ class Connectors {
 	public function load_connectors() {
 		$connectors = array(
 			// Core
+			'blogs',
 			'comments',
 			'editor',
 			'installer',
