@@ -114,7 +114,7 @@ class Log {
 			'meta'       => (array) $stream_meta,
 		);
 
-		$result = $this->plugin->db->insert( array( $recordarr ) );
+		$result = $this->plugin->db->insert( $recordarr );
 
 		$this->debug_backtrace( $recordarr );
 

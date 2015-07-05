@@ -112,9 +112,7 @@ class Plugin {
 		}, 9 );
 
 		// Load logger class
-		add_action( 'plugins_loaded', function() {
-			$this->log = apply_filters( 'wp_stream_log_handler', new Log( $this ) );
-		} );
+		$this->log = apply_filters( 'wp_stream_log_handler', new Log( $this ) );
 
 		// Load connectors after widgets_init, but before the default of 10
 		add_action( 'init', function() {
