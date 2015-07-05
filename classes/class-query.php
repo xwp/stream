@@ -221,7 +221,7 @@ class Query {
 					$values = (array) $values;
 				}
 				$filters[]['nested'] = array(
-					'path'   => 'meta',
+					'path'   => 'stream_meta',
 					'filter' => array(
 						'terms' => array(
 							$key => $values,

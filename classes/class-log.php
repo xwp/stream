@@ -116,7 +116,7 @@ class Log {
 		}
 
 		// Prevent any meta with null values from being logged
-		$meta = array_filter(
+		$stream_meta = array_filter(
 			$args,
 			function ( $var ) {
 				return ! is_null( $var );
@@ -125,7 +125,7 @@ class Log {
 
 		// All meta must be strings, so we will serialize any array meta values
 		array_walk(
-			$meta,
+			$stream_meta,
 			function( &$v ) {
 				$v = (string) maybe_serialize( $v );
 			}

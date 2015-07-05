@@ -80,7 +80,7 @@ class CLI extends \WP_CLI_Command {
 	 * * context
 	 * * action
 	 * * author_meta
-	 * * meta
+	 * * stream_meta
 	 * * meta.links.self
 	 * * meta.links.collection
 	 * * meta.score
