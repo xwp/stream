@@ -48,11 +48,11 @@ class Filter_Input {
 		// @codingStandardsIgnoreEnd
 
 		if ( is_null( $super ) ) {
-			throw new Exception( esc_html__( 'Invalid use, type must be one of INPUT_* family.', 'stream' ) );
+			throw new \Exception( esc_html__( 'Invalid use, type must be one of INPUT_* family.', 'stream' ) );
 		}
 
 		$var = isset( $super[ $variable_name ] ) ? $super[ $variable_name ] : null;
-		$var = $this->filter( $var, $filter, $options );
+		$var = self::filter( $var, $filter, $options );
 
 		return $var;
 	}
@@ -64,7 +64,7 @@ class Filter_Input {
 		// Only filter value if it is not null
 		if ( isset( $var ) && $filter && FILTER_DEFAULT !== $filter ) {
 			if ( ! isset( $this->filter_callbacks[ $filter ] ) ) {
-				throw new Exception( esc_html__( 'Filter not supported.', 'stream' ) );
+				throw new \Exception( esc_html__( 'Filter not supported.', 'stream' ) );
 			}
 
 			$filter_callback = $this->filter_callbacks[ $filter ];
@@ -111,6 +111,6 @@ class Filter_Input {
 	}
 
 	public function is_ip_address( $var ) {
-		return false !== WP_Http::is_ip_address( $var );
+		return false !== \WP_Http::is_ip_address( $var );
 	}
 }
