@@ -1,20 +1,21 @@
 <?php
+namespace WP_Stream;
 
-class WP_Stream_Connector_Installer extends WP_Stream_Connector {
+class Connector_Installer extends Connector {
 
 	/**
 	 * Connector slug
 	 *
 	 * @var string
 	 */
-	public static $name = 'installer';
+	public $name = 'installer';
 
 	/**
 	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
-	public static $actions = array(
+	public $actions = array(
 		'upgrader_process_complete', // plugins::installed | themes::installed
 		'activate_plugin', // plugins::activated
 		'deactivate_plugin', // plugins::deactivated
@@ -30,7 +31,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 *
 	 * @return string Translated connector label
 	 */
-	public static function get_label() {
+	public function get_label() {
 		return esc_html__( 'Installer', 'stream' );
 	}
 
@@ -39,7 +40,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 *
 	 * @return array Action label translations
 	 */
-	public static function get_action_labels() {
+	public function get_action_labels() {
 		return array(
 			'installed'   => esc_html__( 'Installed', 'stream' ),
 			'activated'   => esc_html__( 'Activated', 'stream' ),
@@ -54,7 +55,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 *
 	 * @return array Context label translations
 	 */
-	public static function get_context_labels() {
+	public function get_context_labels() {
 		return array(
 			'plugins'   => esc_html__( 'Plugins', 'stream' ),
 			'themes'    => esc_html__( 'Themes', 'stream' ),
@@ -72,7 +73,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 *
 	 * @return array             Action links
 	 */
-	public static function action_links( $links, $record ) {
+	public function action_links( $links, $record ) {
 		if ( 'wordpress' === $record->context && 'updated' === $record->action ) {
 			global $wp_version;
 
@@ -93,7 +94,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 *
 	 * @return array
 	 */
-	public static function get_plugins() {
+	public function get_plugins() {
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
@@ -105,8 +106,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * Log plugin installations
 	 *
 	 * @action transition_post_status
+	 *
+	 * @param \WP_Upgrader $upgrader
+	 * @param array $extra
+	 *
+	 * @return bool
 	 */
-	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
+	public function callback_upgrader_process_complete( $upgrader, $extra ) {
 		$logs    = array();
 		$success = ! is_wp_error( $upgrader->skin->result );
 		$error   = null;
@@ -126,7 +132,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		$action = $extra['action'];
 
 		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
-			return;
+			return false;
 		}
 
 		if ( 'install' === $action ) {
@@ -134,7 +140,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				$path = $upgrader->plugin_info();
 
 				if ( ! $path ) {
-					return;
+					return false;
 				}
 
 				$data    = get_plugin_data( $upgrader->skin->result['local_destination'] . '/' . $path );
@@ -145,7 +151,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				$slug = $upgrader->theme_info();
 
 				if ( ! $slug ) {
-					return;
+					return false;
 				}
 
 				wp_clean_themes_cache();
@@ -178,7 +184,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 					$slugs = array( $upgrader->skin->plugin );
 				}
 
-				$_plugins = self::get_plugins();
+				$_plugins = $this->get_plugins();
 
 				foreach ( $slugs as $slug ) {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
@@ -220,7 +226,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			$message     = isset( $log['message'] ) ? $log['message'] : null;
 			$action      = isset( $log['action'] ) ? $log['action'] : null;
 
-			self::log(
+			$this->log(
 				$message,
 				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' ),
 				null,
@@ -228,14 +234,16 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 				$action
 			);
 		}
+
+		return true;
 	}
 
-	public static function callback_activate_plugin( $slug, $network_wide ) {
-		$_plugins     = self::get_plugins();
+	public function callback_activate_plugin( $slug, $network_wide ) {
+		$_plugins     = $this->get_plugins();
 		$name         = $_plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? esc_html__( 'network wide', 'stream' ) : null;
 
-		self::log(
+		$this->log(
 			_x(
 				'"%1$s" plugin activated %2$s',
 				'1: Plugin name, 2: Single site or network wide',
@@ -248,12 +256,12 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		);
 	}
 
-	public static function callback_deactivate_plugin( $slug, $network_wide ) {
-		$_plugins     = self::get_plugins();
+	public function callback_deactivate_plugin( $slug, $network_wide ) {
+		$_plugins     = $this->get_plugins();
 		$name         = $_plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? esc_html__( 'network wide', 'stream' ) : null;
 
-		self::log(
+		$this->log(
 			_x(
 				'"%1$s" plugin deactivated %2$s',
 				'1: Plugin name, 2: Single site or network wide',
@@ -266,10 +274,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		);
 	}
 
-	public static function callback_switch_theme( $name, $theme ) {
-		$stylesheet = $theme->get_stylesheet();
-
-		self::log(
+	public function callback_switch_theme( $name, $theme ) {
+		unset( $theme );
+		$this->log(
 			__( '"%s" theme activated', 'stream' ),
 			compact( 'name' ),
 			null,
@@ -281,7 +288,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	/**
 	 * @todo Core needs a delete_theme hook
 	 */
-	public static function callback_delete_site_transient_update_themes() {
+	public function callback_delete_site_transient_update_themes() {
 		$backtrace = debug_backtrace();
 		$delete_theme_call = null;
 
@@ -299,7 +306,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		$name = $delete_theme_call['args'][0];
 		// @todo Can we get the name of the theme? Or has it already been eliminated
 
-		self::log(
+		$this->log(
 			__( '"%s" theme deleted', 'stream' ),
 			compact( 'name' ),
 			null,
@@ -312,7 +319,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	 * @todo Core needs an uninstall_plugin hook
 	 * @todo This does not work in WP-CLI
 	 */
-	public static function callback_pre_option_uninstall_plugins() {
+	public function callback_pre_option_uninstall_plugins() {
 		if (
 			'delete-selected' !== wp_stream_filter_input( INPUT_GET, 'action' )
 			&&
@@ -326,7 +333,9 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		// @codingStandardsIgnoreEnd
 
 		$plugins  = wp_stream_filter_input( $type, 'checked' );
-		$_plugins = self::get_plugins();
+		$_plugins = $this->get_plugins();
+
+		$plugins_to_delete = array();
 
 		foreach ( (array) $plugins as $plugin ) {
 			$plugins_to_delete[ $plugin ] = $_plugins[ $plugin ];
@@ -338,10 +347,13 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 	}
 
 	/**
+	 * @param mixed $value
+	 *
+	 * @return mixed
 	 * @todo Core needs a delete_plugin hook
 	 * @todo This does not work in WP-CLI
 	 */
-	public static function callback_pre_set_site_transient_update_plugins( $value ) {
+	public function callback_pre_set_site_transient_update_plugins( $value ) {
 		if (
 			! wp_stream_filter_input( INPUT_POST, 'verify-delete' )
 			||
@@ -354,7 +366,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			$name         = $data['Name'];
 			$network_wide = $data['Network'] ? esc_html__( 'network wide', 'stream' ) : '';
 
-			self::log(
+			$this->log(
 				__( '"%s" plugin deleted', 'stream' ),
 				compact( 'name', 'plugin', 'network_wide' ),
 				null,
@@ -368,7 +380,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 		return $value;
 	}
 
-	public static function callback__core_updated_successfully( $new_version ) {
+	public function callback__core_updated_successfully( $new_version ) {
 		global $pagenow, $wp_version;
 
 		$old_version  = $wp_version;
@@ -380,7 +392,7 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			$message = esc_html__( 'WordPress updated to %s', 'stream' );
 		}
 
-		self::log(
+		$this->log(
 			$message,
 			compact( 'new_version', 'old_version', 'auto_updated' ),
 			null,
@@ -388,5 +400,4 @@ class WP_Stream_Connector_Installer extends WP_Stream_Connector {
 			'updated'
 		);
 	}
-
 }

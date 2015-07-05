@@ -1,7 +1,7 @@
 <?php
 namespace WP_Stream;
 
-class Comments extends Connector {
+class Connector_Comments extends Connector {
 	/**
 	 * Connector slug
 	 *

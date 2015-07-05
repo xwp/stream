@@ -1,20 +1,20 @@
 <?php
+namespace WP_Stream;
 
-class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
-
+class Connector_Taxonomies extends Connector {
 	/**
 	 * Connector slug
 	 *
 	 * @var string
 	 */
-	public static $name = 'taxonomies';
+	public $name = 'taxonomies';
 
 	/**
 	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
-	public static $actions = array(
+	public $actions = array(
 		'created_term',
 		'delete_term',
 		'edit_term',
@@ -26,21 +26,21 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 *
 	 * @var Object
 	 */
-	public static $cached_term_before_update;
+	public $cached_term_before_update;
 
 	/**
 	 * Cache taxonomy labels
 	 *
 	 * @var array
 	 */
-	public static $context_labels;
+	public $context_labels;
 
 	/**
 	 * Return translated connector label
 	 *
 	 * @return string Translated connector label
 	 */
-	public static function get_label() {
+	public function get_label() {
 		return esc_html__( 'Taxonomies', 'stream' );
 	}
 
@@ -49,7 +49,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 *
 	 * @return array Action label translations
 	 */
-	public static function get_action_labels() {
+	public function get_action_labels() {
 		return array(
 			'created' => esc_html__( 'Created', 'stream' ),
 			'updated' => esc_html__( 'Updated', 'stream' ),
@@ -62,16 +62,16 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 *
 	 * @return array Context label translations
 	 */
-	public static function get_context_labels() {
+	public function get_context_labels() {
 		global $wp_taxonomies;
 
 		$labels = wp_list_pluck( $wp_taxonomies, 'labels' );
 
-		self::$context_labels  = wp_list_pluck( $labels, 'singular_name' );
+		$this->context_labels  = wp_list_pluck( $labels, 'singular_name' );
 
-		add_action( 'registered_taxonomy', array( __CLASS__, '_registered_taxonomy' ), 10, 3 );
+		add_action( 'registered_taxonomy', array( $this, '_registered_taxonomy' ), 10, 3 );
 
-		return self::$context_labels;
+		return $this->context_labels;
 	}
 
 	/**
@@ -79,12 +79,12 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param array  $links  Previous links registered
+	 * @param Record $record Stream record
 	 *
-	 * @return array             Action links
+	 * @return array Action links
 	 */
-	public static function action_links( $links, $record ) {
+	public function action_links( $links, $record ) {
 		if (
 			$record->object_id
 			&&
@@ -103,7 +103,7 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 				$term_id = empty( $term_id ) ? $term->term_id : $term_id;
 
 				$links[ sprintf( _x( 'Edit %s', 'Term singular name', 'stream' ), $tax_label ) ] = get_edit_term_link( $term_id, $term->taxonomy );
-				$links[ esc_html__( 'View', 'stream' ) ] = WP_Stream::is_vip() ? wpcom_vip_get_term_link( $term_id, $term->taxonomy ) : get_term_link( $term_id, $term->taxonomy );
+				$links[ esc_html__( 'View', 'stream' ) ] = wp_stream_get_instance()->is_vip() ? wpcom_vip_get_term_link( $term_id, $term->taxonomy ) : get_term_link( $term_id, $term->taxonomy );
 			}
 		}
 
@@ -115,35 +115,41 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 *
 	 * @action registered_taxonomy
 	 *
-	 * @param string       $taxonomy    Taxonomy slug
+	 * @param string $taxonomy          Taxonomy slug
 	 * @param array|string $object_type Object type or array of object types
 	 * @param array|string $args        Array or string of taxonomy registration arguments
 	 */
-	public static function _registered_taxonomy( $taxonomy, $object_type, $args ) {
+	public function _registered_taxonomy( $taxonomy, $object_type, $args ) {
+		unset( $object_type );
+
 		$taxonomy_obj = (object) $args;
 		$label        = get_taxonomy_labels( $taxonomy_obj )->name;
 
-		self::$context_labels[ $taxonomy ] = $label;
+		$this->context_labels[ $taxonomy ] = $label;
 
-		WP_Stream_Connectors::$term_labels['stream_context'][ $taxonomy ] = $label;
+		wp_stream_get_instance()->connectors->term_labels['stream_context'][ $taxonomy ] = $label;
 	}
 
 	/**
 	 * Tracks creation of terms
 	 *
 	 * @action created_term
+	 *
+	 * @param integer $term_id
+	 * @param integer $tt_id
+	 * @param string $taxonomy
 	 */
-	public static function callback_created_term( $term_id, $tt_id, $taxonomy ) {
-		if ( in_array( $taxonomy, self::get_excluded_taxonomies() ) ) {
+	public function callback_created_term( $term_id, $tt_id, $taxonomy ) {
+		if ( in_array( $taxonomy, $this->get_excluded_taxonomies() ) ) {
 			return;
 		}
 
 		$term           = get_term( $term_id, $taxonomy );
 		$term_name      = $term->name;
-		$taxonomy_label = strtolower( self::$context_labels[ $taxonomy ] );
+		$taxonomy_label = strtolower( $this->context_labels[ $taxonomy ] );
 		$term_parent    = $term->parent;
 
-		self::log(
+		$this->log(
 			_x(
 				'"%1$s" %2$s created',
 				'1: Term name, 2: Taxonomy singular label',
@@ -160,17 +166,22 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * Tracks deletion of taxonomy terms
 	 *
 	 * @action delete_term
+	 *
+	 * @param integer $term_id
+	 * @param integer $tt_id
+	 * @param string $taxonomy
+	 * @param object $deleted_term
 	 */
-	public static function callback_delete_term( $term_id, $tt_id, $taxonomy, $deleted_term ) {
+	public function callback_delete_term( $term_id, $tt_id, $taxonomy, $deleted_term ) {
 		if ( in_array( $taxonomy, self::get_excluded_taxonomies() ) ) {
 			return;
 		}
 
 		$term_name      = $deleted_term->name;
 		$term_parent    = $deleted_term->parent;
-		$taxonomy_label = strtolower( self::$context_labels[ $taxonomy ] );
+		$taxonomy_label = strtolower( $this->context_labels[ $taxonomy ] );
 
-		self::log(
+		$this->log(
 			_x(
 				'"%1$s" %2$s deleted',
 				'1: Term name, 2: Taxonomy singular label',
@@ -187,27 +198,32 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	 * Tracks updates of taxonomy terms
 	 *
 	 * @action edit_term
+	 *
+	 * @param integer $term_id
+	 * @param integer $tt_id
+	 * @param string $taxonomy
 	 */
-	public static function callback_edit_term( $term_id, $tt_id, $taxonomy ) {
-		self::$cached_term_before_update = get_term( $term_id, $taxonomy );
+	public function callback_edit_term( $term_id, $tt_id, $taxonomy ) {
+		unset( $tt_id );
+		$this->$cached_term_before_update = get_term( $term_id, $taxonomy );
 	}
 
-	public static function callback_edited_term( $term_id, $tt_id, $taxonomy ) {
-		if ( in_array( $taxonomy, self::get_excluded_taxonomies() ) ) {
+	public function callback_edited_term( $term_id, $tt_id, $taxonomy ) {
+		if ( in_array( $taxonomy, $this->get_excluded_taxonomies() ) ) {
 			return;
 		}
 
-		$term = self::$cached_term_before_update;
+		$term = $this->cached_term_before_update;
 
 		if ( ! $term ) { // For some reason!
 			$term = get_term( $term_id, $taxonomy );
 		}
 
 		$term_name      = $term->name;
-		$taxonomy_label = strtolower( self::$context_labels[ $taxonomy ] );
+		$taxonomy_label = strtolower( $this->context_labels[ $taxonomy ] );
 		$term_parent    = $term->parent;
 
-		self::log(
+		$this->log(
 			_x(
 				'"%1$s" %2$s updated',
 				'1: Term name, 2: Taxonomy singular label',
@@ -223,9 +239,9 @@ class WP_Stream_Connector_Taxonomies extends WP_Stream_Connector {
 	/**
 	 * Constructs list of excluded taxonomies for the Taxonomies connector
 	 *
-	 * @return array  List of excluded taxonomies
+	 * @return array List of excluded taxonomies
 	 */
-	public static function get_excluded_taxonomies() {
+	public function get_excluded_taxonomies() {
 		return apply_filters(
 			'wp_stream_taxonomies_exclude_taxonomies',
 			array(

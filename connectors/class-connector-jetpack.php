@@ -1,13 +1,13 @@
 <?php
+namespace WP_Stream;
 
-class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
-
+class Connector_Jetpack extends Connector {
 	/**
 	 * Connector slug
 	 *
 	 * @var string
 	 */
-	public static $name = 'jetpack';
+	public $name = 'jetpack';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -21,7 +21,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 *
 	 * @var array
 	 */
-	public static $actions = array(
+	public $actions = array(
 		'jetpack_log_entry',
 		'sharing_get_services_state',
 		'update_option',
@@ -38,21 +38,21 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 *
 	 * @var array
 	 */
-	public static $options = array();
+	public $options = array();
 
 	/**
 	 * Tracking registered Settings, with overridden data
 	 *
 	 * @var array
 	 */
-	public static $options_override = array();
+	public $options_override = array();
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
 	 *
 	 * @return bool
 	 */
-	public static function is_dependency_satisfied() {
+	public function is_dependency_satisfied() {
 		if ( class_exists( 'Jetpack' ) && defined( 'JETPACK__VERSION' ) && version_compare( JETPACK__VERSION, self::PLUGIN_MIN_VERSION, '>=' ) ) {
 			return true;
 		}
@@ -65,7 +65,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 *
 	 * @return string Translated connector label
 	 */
-	public static function get_label() {
+	public function get_label() {
 		return esc_html_x( 'Jetpack', 'jetpack', 'stream' );
 	}
 
@@ -74,7 +74,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 *
 	 * @return array Action label translations
 	 */
-	public static function get_action_labels() {
+	public function get_action_labels() {
 		return array(
 			'activated'   => esc_html_x( 'Activated', 'jetpack', 'stream' ),
 			'deactivated' => esc_html_x( 'Dectivated', 'jetpack', 'stream' ),
@@ -93,7 +93,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 *
 	 * @return array Context label translations
 	 */
-	public static function get_context_labels() {
+	public function get_context_labels() {
 		return array(
 			'blogs'              => esc_html_x( 'Blogs', 'jetpack', 'stream' ),
 			'carousel'           => esc_html_x( 'Carousel', 'jetpack', 'stream' ),
@@ -126,12 +126,12 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param array $links   Previous links registered
+	 * @param object $record Stream record
 	 *
-	 * @return array             Action links
+	 * @return array Action links
 	 */
-	public static function action_links( $links, $record ) {
+	public function action_links( $links, $record ) {
 		// @todo provide proper action links
 		if ( 'jetpack' === $record->connector ) {
 			if ( 'modules' === $record->context ) {
@@ -180,12 +180,12 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		return $links;
 	}
 
-	public static function register() {
+	public function register() {
 		parent::register();
 
-		add_filter( 'wp_stream_log_data', array( __CLASS__, 'log_override' ) );
+		add_filter( 'wp_stream_log_data', array( $this, 'log_override' ) );
 
-		self::$options = array(
+		$this->options = array(
 			'jetpack_options' => null,
 			// Sharing module
 			'hide_gplus'      => null,
@@ -225,7 +225,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			),
 		);
 
-		self::$options_override = array(
+		$this->options_override = array(
 			// Carousel Module
 			'carousel_background_color' => array(
 				'label'   => esc_html__( 'Background color', 'stream' ),
@@ -311,7 +311,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 *
 	 * @param array $entry
 	 */
-	public static function callback_jetpack_log_entry( array $entry ) {
+	public function callback_jetpack_log_entry( array $entry ) {
 		$method  = $entry['code'];
 		$data    = $entry['data'];
 		$context = null;
@@ -319,7 +319,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 
 		if ( in_array( $method, array( 'activate', 'deactivate' ) ) ) {
 			$module_slug = $data;
-			$module      = Jetpack::get_module( $module_slug );
+			$module      = \Jetpack::get_module( $module_slug );
 			$module_name = $module['name'];
 			$context     = 'modules';
 			$action      = $method . 'd';
@@ -336,7 +336,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 				$user_id = get_current_user_id();
 			}
 
-			$user       = new WP_User( $user_id );
+			$user       = new \WP_User( $user_id );
 			$user_email = $user->user_email;
 			$user_login = $user->user_login;
 			$context    = 'users';
@@ -352,7 +352,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			$context      = 'blogs';
 			$action       = str_replace( 'subsite', '', $method );
 			$is_multisite = ( 0 === strpos( $method, 'subsite' ) );
-			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( $_GET['site_id'] ) : null ) : get_current_blog_id();
+			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( wp_unslash( $_GET['site_id'] ) ) : null ) : get_current_blog_id(); // phpcs: input var okay
 
 			if ( empty( $blog_id ) ) {
 				return;
@@ -382,7 +382,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 			return;
 		}
 
-		self::log(
+		$this->log(
 			$message,
 			$meta,
 			null,
@@ -394,10 +394,10 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	/**
 	 * Track visible/enabled sharing services ( buttons )
 	 *
-	 * @param $state
+	 * @param string $state
 	 */
-	public static function callback_sharing_get_services_state( $state ) {
-		self::log(
+	public function callback_sharing_get_services_state( $state ) {
+		$this->log(
 			__( 'Sharing services updated', 'stream' ),
 			$state,
 			null,
@@ -406,55 +406,55 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		);
 	}
 
-	public static function callback_update_option( $option, $old, $new ) {
-		self::check( $option, $old, $new );
+	public function callback_update_option( $option, $old, $new ) {
+		$this->check( $option, $old, $new );
 	}
 
-	public static function callback_add_option( $option, $val ) {
-		self::check( $option, null, $val );
+	public function callback_add_option( $option, $val ) {
+		$this->check( $option, null, $val );
 	}
 
-	public static function callback_delete_option( $option ) {
-		self::check( $option, null, null );
+	public function callback_delete_option( $option ) {
+		$this->check( $option, null, null );
 	}
 
 	/**
 	 * Track Monitor module notification status
 	 */
-	public static function callback_jetpack_module_configuration_load_monitor() {
-		// @codingStandardsIgnoreStart
-		if ( $_POST ) {
-			$active = wp_stream_filter_input( INPUT_POST, 'receive_jetpack_monitor_notification' );
+	public function callback_jetpack_module_configuration_load_monitor() {
+		$active = wp_stream_filter_input( INPUT_POST, 'receive_jetpack_monitor_notification' );
 
-			self::log(
-				__( 'Monitor notifications %s', 'stream' ),
-				array(
-					'status'    => $active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
-					'option'    => 'receive_jetpack_monitor_notification',
-					'old_value' => ! $active,
-					'value'     => $active,
-				),
-				null,
-				'monitor',
-				'updated'
-			);
+		if ( ! $active ) {
+			return;
 		}
-		// @codingStandardsIgnoreEnd
+
+		$this->log(
+			__( 'Monitor notifications %s', 'stream' ),
+			array(
+				'status'    => $active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
+				'option'    => 'receive_jetpack_monitor_notification',
+				'old_value' => ! $active,
+				'value'     => $active,
+			),
+			null,
+			'monitor',
+			'updated'
+		);
 	}
 
-	public static function callback_wp_ajax_jetpack_post_by_email_enable() {
-		self::track_post_by_email( true );
+	public function callback_wp_ajax_jetpack_post_by_email_enable() {
+		$this->track_post_by_email( true );
 	}
 
-	public static function callback_wp_ajax_jetpack_post_by_email_regenerate() {
-		self::track_post_by_email( null );
+	public function callback_wp_ajax_jetpack_post_by_email_regenerate() {
+		$this->track_post_by_email( null );
 	}
 
-	public static function callback_wp_ajax_jetpack_post_by_email_disable() {
-		self::track_post_by_email( false );
+	public function callback_wp_ajax_jetpack_post_by_email_disable() {
+		$this->track_post_by_email( false );
 	}
 
-	public static function track_post_by_email( $status ) {
+	public function track_post_by_email( $status ) {
 		if ( true === $status ) {
 			$action = esc_html__( 'enabled', 'stream' );
 		} elseif ( false === $status ) {
@@ -465,7 +465,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 
 		$user = wp_get_current_user();
 
-		self::log(
+		$this->log(
 			__( '%1$s %2$s Post by Email', 'stream' ),
 			array(
 				'user_displayname' => $user->display_name,
@@ -478,18 +478,18 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		);
 	}
 
-	public static function check( $option, $old_value, $new_value ) {
-		if ( ! array_key_exists( $option, self::$options ) ) {
+	public function check( $option, $old_value, $new_value ) {
+		if ( ! array_key_exists( $option, $this->options ) ) {
 			return;
 		}
 
-		if ( is_null( self::$options[ $option ] ) ) {
-			call_user_func( array( __CLASS__, 'check_' . str_replace( '-', '_', $option ) ), $old_value, $new_value );
+		if ( is_null( $this->options[ $option ] ) ) {
+			call_user_func( array( $this, 'check_' . str_replace( '-', '_', $option ) ), $old_value, $new_value );
 		} else {
-			$data         = self::$options[ $option ];
+			$data         = $this->options[ $option ];
 			$option_title = $data['label'];
 
-			self::log(
+			$this->log(
 				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
@@ -499,19 +499,19 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		}
 	}
 
-	public static function check_jetpack_options( $old_value, $new_value ) {
+	public function check_jetpack_options( $old_value, $new_value ) {
 		$options = array();
 
 		if ( ! is_array( $old_value ) || ! is_array( $new_value ) ) {
 			return;
 		}
 
-		foreach ( self::get_changed_keys( $old_value, $new_value, 1 ) as $field_key => $field_value ) {
+		foreach ( $this->get_changed_keys( $old_value, $new_value, 1 ) as $field_key => $field_value ) {
 			$options[ $field_key ] = $field_value;
 		}
 
 		foreach ( $options as $option => $option_value ) {
-			$settings = self::get_settings_def( $option, $option_value );
+			$settings = $this->get_settings_def( $option, $option_value );
 
 			if ( ! $settings ) {
 				continue;
@@ -527,7 +527,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 				'value'     => maybe_serialize( $new_value ),
 			);
 
-			self::log(
+			$this->log(
 				$settings['message'],
 				$settings['meta'],
 				isset( $settings['object_id'] ) ? $settings['object_id'] : null,
@@ -537,14 +537,14 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		}
 	}
 
-	public static function check_hide_gplus( $old_value, $new_value ) {
+	public function check_hide_gplus( $old_value, $new_value ) {
 		$status = ! is_null( $new_value );
 
 		if ( $status && $old_value ) {
 			return false;
 		}
 
-		self::log(
+		$this->log(
 			__( 'G+ profile display %s', 'stream' ),
 			array(
 				'action' => $status ? esc_html__( 'enabled', 'stream' ) : esc_html__( 'disabled', 'stream' ),
@@ -555,11 +555,13 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		);
 	}
 
-	public static function check_gplus_authors( $old_value, $new_value ) {
+	public function check_gplus_authors( $old_value, $new_value ) {
+		unset( $old_value );
+
 		$user      = wp_get_current_user();
 		$connected = is_array( $new_value ) && array_key_exists( $user->ID, $new_value );
 
-		self::log(
+		$this->log(
 			__( '%1$s\'s Google+ account %2$s', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
@@ -572,14 +574,14 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		);
 	}
 
-	public static function check_sharedaddy_disable_resources( $old_value, $new_value ) {
+	public function check_sharedaddy_disable_resources( $old_value, $new_value ) {
 		if ( $old_value === $new_value ) {
 			return;
 		}
 
 		$status = ! $new_value ? 'enabled' : 'disabled'; // disabled = 1
 
-		self::log(
+		$this->log(
 			__( 'Sharing CSS/JS %s', 'stream' ),
 			compact( 'status', 'old_value', 'new_value' ),
 			null,
@@ -595,30 +597,30 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 	 *
 	 * @return array|bool
 	 */
-	public static function log_override( $data ) {
+	public function log_override( $data ) {
 		if ( ! is_array( $data ) ) {
 			return $data;
 		}
 
 		// Handling our Settings
-		if ( 'settings' === $data['connector'] && isset( self::$options_override[ $data['args']['option'] ] ) ) {
+		if ( 'settings' === $data['connector'] && isset( $this->options_override[ $data['args']['option'] ] ) ) {
 			if ( isset( $data['args']['option_key'] ) ) {
-				$overrides = self::$options_override[ $data['args']['option'] ][ $data['args']['option_key'] ];
+				$overrides = $this->options_override[ $data['args']['option'] ][ $data['args']['option_key'] ];
 			} else {
-				$overrides = self::$options_override[ $data['args']['option'] ];
+				$overrides = $this->options_override[ $data['args']['option'] ];
 			}
 
 			if ( isset( $overrides ) ) {
 				$data['args']['label']   = $overrides['label'];
 				$data['args']['context'] = $overrides['context'];
 				$data['context']         = $overrides['context'];
-				$data['connector']       = self::$name;
+				$data['connector']       = $this->name;
 			}
 		} elseif ( 'posts' === $data['connector'] && 'safecss' === $data['context'] ) {
 			$data = array_merge(
 				$data,
 				array(
-					'connector' => self::$name,
+					'connector' => $this->name,
 					'message'   => esc_html__( 'Custom CSS updated', 'stream' ),
 					'args'      => array(),
 					'object_id' => null,
@@ -631,7 +633,7 @@ class WP_Stream_Connector_Jetpack extends WP_Stream_Connector {
 		return $data;
 	}
 
-	private static function get_settings_def( $key, $value = null ) {
+	private function get_settings_def( $key, $value = null ) {
 		// Sharing
 		if ( 0 === strpos( $key, 'publicize_connections::' ) ) {
 			global $publicize_ui;

@@ -2,20 +2,19 @@
 namespace WP_Stream;
 
 class Connector_Posts extends Connector {
-
 	/**
 	 * Connector slug
 	 *
 	 * @var string
 	 */
-	public static $name = 'posts';
+	public $name = 'posts';
 
 	/**
 	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
-	public static $actions = array(
+	public $actions = array(
 		'transition_post_status',
 		'deleted_post',
 	);
@@ -25,7 +24,7 @@ class Connector_Posts extends Connector {
 	 *
 	 * @return string Translated connector label
 	 */
-	public static function get_label() {
+	public function get_label() {
 		return esc_html__( 'Posts', 'stream' );
 	}
 
@@ -34,7 +33,7 @@ class Connector_Posts extends Connector {
 	 *
 	 * @return array Action label translations
 	 */
-	public static function get_action_labels() {
+	public function get_action_labels() {
 		return array(
 			'updated'   => esc_html__( 'Updated', 'stream' ),
 			'created'   => esc_html__( 'Created', 'stream' ),
@@ -49,13 +48,13 @@ class Connector_Posts extends Connector {
 	 *
 	 * @return array Context label translations
 	 */
-	public static function get_context_labels() {
+	public function get_context_labels() {
 		global $wp_post_types;
 
 		$post_types = wp_filter_object_list( $wp_post_types, array(), null, 'label' );
-		$post_types = array_diff_key( $post_types, array_flip( self::get_excluded_post_types() ) );
+		$post_types = array_diff_key( $post_types, array_flip( $this->get_excluded_post_types() ) );
 
-		add_action( 'registered_post_type', array( __CLASS__, '_registered_post_type' ), 10, 2 );
+		add_action( 'registered_post_type', array( $this, '_registered_post_type' ), 10, 2 );
 
 		return $post_types;
 	}
@@ -65,16 +64,16 @@ class Connector_Posts extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param array $links   Previous links registered
+	 * @param Record $record Stream record
 	 *
-	 * @return array             Action links
+	 * @return array Action links
 	 */
-	public static function action_links( $links, $record ) {
+	public function action_links( $links, $record ) {
 		$post = get_post( $record->object_id );
 
 		if ( $post && $post->post_status === wp_stream_get_meta( $record, 'new_status', true ) ) {
-			$post_type_name = self::get_post_type_name( get_post_type( $post->ID ) );
+			$post_type_name = $this->get_post_type_name( get_post_type( $post->ID ) );
 
 			if ( 'trash' === $post->post_status ) {
 				$untrash = wp_nonce_url(
@@ -109,7 +108,7 @@ class Connector_Posts extends Connector {
 				}
 
 				$revision_id = absint( wp_stream_get_meta( $record, 'revision_id', true ) );
-				$revision_id = self::get_adjacent_post_revision( $revision_id, false );
+				$revision_id = $this->get_adjacent_post_revision( $revision_id, false );
 
 				if ( $revision_id ) {
 					$links[ esc_html__( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
@@ -128,20 +127,26 @@ class Connector_Posts extends Connector {
 	 * @param string $post_type Post type slug
 	 * @param array  $args      Arguments used to register the post type
 	 */
-	public static function _registered_post_type( $post_type, $args ) {
+	public function _registered_post_type( $post_type, $args ) {
+		unset( $args );
+
 		$post_type_obj = get_post_type_object( $post_type );
 		$label         = $post_type_obj->label;
 
-		WP_Stream_Connectors::$term_labels['stream_context'][ $post_type ] = $label;
+		wp_stream_get_instance()->connectors->term_labels['stream_context'][ $post_type ] = $label;
 	}
 
 	/**
 	 * Log all post status changes ( creating / updating / trashing )
 	 *
 	 * @action transition_post_status
+	 *
+	 * @param mixed $new
+	 * @param mixed $old
+	 * @param \WP_Post $post
 	 */
-	public static function callback_transition_post_status( $new, $old, $post ) {
-		if ( in_array( $post->post_type, self::get_excluded_post_types() ) ) {
+	public function callback_transition_post_status( $new, $old, $post ) {
+		if ( in_array( $post->post_type, $this->get_excluded_post_types() ) ) {
 			return;
 		}
 
@@ -239,9 +244,9 @@ class Connector_Posts extends Connector {
 			}
 		}
 
-		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
+		$post_type_name = strtolower( $this->get_post_type_name( $post->post_type ) );
 
-		self::log(
+		$this->log(
 			$summary,
 			array(
 				'post_title'    => $post->post_title,
@@ -262,12 +267,14 @@ class Connector_Posts extends Connector {
 	 * Log post deletion
 	 *
 	 * @action deleted_post
+	 *
+	 * $param integer $post_id
 	 */
-	public static function callback_deleted_post( $post_id ) {
+	public function callback_deleted_post( $post_id ) {
 		$post = get_post( $post_id );
 
 		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing
-		if ( ! ( $post instanceof WP_Post ) || in_array( $post->post_type, self::get_excluded_post_types() )  ) {
+		if ( ! ( $post instanceof \WP_Post ) || in_array( $post->post_type, $this->get_excluded_post_types() )  ) {
 			return;
 		}
 
@@ -276,9 +283,9 @@ class Connector_Posts extends Connector {
 			return;
 		}
 
-		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
+		$post_type_name = strtolower( $this->get_post_type_name( $post->post_type ) );
 
-		self::log(
+		$this->log(
 			_x(
 				'"%1$s" %2$s deleted from trash',
 				'1: Post title, 2: Post type singular name',
@@ -297,9 +304,9 @@ class Connector_Posts extends Connector {
 	/**
 	 * Constructs list of excluded post types for the Posts connector
 	 *
-	 * @return  array  List of excluded post types
+	 * @return array List of excluded post types
 	 */
-	public static function get_excluded_post_types() {
+	public function get_excluded_post_types() {
 		return apply_filters(
 			'wp_stream_posts_exclude_post_types',
 			array(
@@ -313,10 +320,11 @@ class Connector_Posts extends Connector {
 	/**
 	 * Gets the singular post type label
 	 *
-	 * @param   string  $post_type_slug
-	 * @return  string  Post type label
+	 * @param string $post_type_slug
+	 *
+	 * @return string Post type label
 	 */
-	public static function get_post_type_name( $post_type_slug ) {
+	public function get_post_type_name( $post_type_slug ) {
 		$name = esc_html__( 'Post', 'stream' ); // Default
 
 		if ( post_type_exists( $post_type_slug ) ) {
@@ -330,12 +338,12 @@ class Connector_Posts extends Connector {
 	/**
 	 * Get an adjacent post revision ID
 	 *
-	 * @param  int  $revision_id
-	 * @param  bool $previous
+	 * @param int $revision_id
+	 * @param bool $previous
 	 *
-	 * @return int  $revision_id
+	 * @return int $revision_id
 	 */
-	public static function get_adjacent_post_revision( $revision_id, $previous = true ) {
+	public function get_adjacent_post_revision( $revision_id, $previous = true ) {
 		if ( empty( $revision_id ) || ! wp_is_post_revision( $revision_id ) ) {
 			return false;
 		}
@@ -346,7 +354,7 @@ class Connector_Posts extends Connector {
 
 		global $wpdb;
 
-		$revision_id = $wpdb->get_var(
+		$revision_id = $wpdb->get_var( // db call okay
 			$wpdb->prepare( "
 				SELECT p.ID
 				FROM $wpdb->posts AS p
@@ -369,5 +377,4 @@ class Connector_Posts extends Connector {
 
 		return $revision_id;
 	}
-
 }

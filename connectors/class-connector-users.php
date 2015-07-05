@@ -1,13 +1,14 @@
 <?php
+namespace WP_Stream;
 
-class WP_Stream_Connector_Users extends WP_Stream_Connector {
+class Connector_Users extends Connector {
 
 	/**
 	 * Connector slug
 	 *
 	 * @var string
 	 */
-	public static $name = 'users';
+	public $name = 'users';
 
 	/**
 	 * Stores users object before the user being deleted.
@@ -15,14 +16,14 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @var array
 	 * @access protected
 	 */
-	protected static $_users_object_pre_deleted = array();
+	protected $_users_object_pre_deleted = array();
 
 	/**
 	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
-	public static $actions = array(
+	public $actions = array(
 		'user_register',
 		'profile_update',
 		'password_reset',
@@ -39,7 +40,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 *
 	 * @return string Translated connector label
 	 */
-	public static function get_label() {
+	public function get_label() {
 		return esc_html__( 'Users', 'stream' );
 	}
 
@@ -48,7 +49,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 *
 	 * @return array Action terms label translation
 	 */
-	public static function get_action_labels() {
+	public function get_action_labels() {
 		return array(
 			'updated'         => esc_html__( 'Updated', 'stream' ),
 			'created'         => esc_html__( 'Created', 'stream' ),
@@ -65,7 +66,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 *
 	 * @return array Context label translations
 	 */
-	public static function get_context_labels() {
+	public function get_context_labels() {
 		return array(
 			'users'    => esc_html__( 'Users', 'stream' ),
 			'sessions' => esc_html__( 'Sessions', 'stream' ),
@@ -78,12 +79,12 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param array $links   Previous links registered
+	 * @param Record $record Stream record
 	 *
-	 * @return array             Action links
+	 * @return array Action links
 	 */
-	public static function action_links( $links, $record ) {
+	public function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			if ( $link = get_edit_user_link( $record->object_id ) ) {
 				$links [ esc_html__( 'Edit User', 'stream' ) ] = $link;
@@ -96,10 +97,11 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	/**
 	 * Get an array of role lables assigned to a specific user.
 	 *
-	 * @param  object|int $user    User object or user ID to get roles for
-	 * @return array      $labels  An array of role labels
+	 * @param  object|int $user User object or user ID to get roles for
+	 *
+	 * @return array $labels    An array of role labels
 	 */
-	public static function get_role_labels( $user ) {
+	public function get_role_labels( $user ) {
 		if ( is_int( $user ) ) {
 			$user = get_user_by( 'id', $user );
 		}
@@ -126,9 +128,10 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * Log user registrations
 	 *
 	 * @action user_register
+	 *
 	 * @param int $user_id Newly registered user ID
 	 */
-	public static function callback_user_register( $user_id ) {
+	public function callback_user_register( $user_id ) {
 		$current_user    = wp_get_current_user();
 		$registered_user = get_user_by( 'id', $user_id );
 
@@ -144,11 +147,11 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$user_to_log = $current_user->ID;
 		}
 
-		self::log(
+		$this->log(
 			$message,
 			array(
 				'display_name' => ( $registered_user->display_name ) ? $registered_user->display_name : $registered_user->user_login,
-				'roles'        => implode( ', ', self::get_role_labels( $user_id ) ),
+				'roles'        => implode( ', ', $this->get_role_labels( $user_id ) ),
 			),
 			$registered_user->ID,
 			'users',
@@ -161,9 +164,14 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * Log profile update
 	 *
 	 * @action profile_update
+	 *
+	 * @param int $user_id   registered user ID
+	 * @param \WP_User $user registered user object
 	 */
-	public static function callback_profile_update( $user_id, $user ) {
-		self::log(
+	public function callback_profile_update( $user_id, $user ) {
+		unset( $user_id );
+
+		$this->log(
 			__( '%s\'s profile was updated', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
@@ -178,15 +186,19 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * Log role transition
 	 *
 	 * @action set_user_role
+	 *
+	 * @param int $user_id
+	 * @param string $new_role
+	 * @param array $old_roles
 	 */
-	public static function callback_set_user_role( $user_id, $new_role, $old_roles ) {
+	public function callback_set_user_role( $user_id, $new_role, $old_roles ) {
 		if ( empty( $old_roles ) ) {
 			return;
 		}
 
 		global $wp_roles;
 
-		self::log(
+		$this->log(
 			_x(
 				'%1$s\'s role was changed from %2$s to %3$s',
 				'1: User display name, 2: Old role, 3: New role',
@@ -207,9 +219,11 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * Log password reset
 	 *
 	 * @action password_reset
+	 *
+	 * @param \WP_User $user
 	 */
-	public static function callback_password_reset( $user ) {
-		self::log(
+	public function callback_password_reset( $user ) {
+		$this->log(
 			__( '%s\'s password was reset', 'stream' ),
 			array(
 				'email' => $user->display_name,
@@ -225,15 +239,17 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * Log user requests to retrieve passwords
 	 *
 	 * @action retrieve_password
+	 *
+	 * @param string $user_login
 	 */
-	public static function callback_retrieve_password( $user_login ) {
+	public function callback_retrieve_password( $user_login ) {
 		if ( wp_stream_filter_var( $user_login, FILTER_VALIDATE_EMAIL ) ) {
 			$user = get_user_by( 'email', $user_login );
 		} else {
 			$user = get_user_by( 'login', $user_login );
 		}
 
-		self::log(
+		$this->log(
 			__( '%s\'s password was requested to be reset', 'stream' ),
 			array( 'display_name' => $user->display_name ),
 			$user->ID,
@@ -247,11 +263,19 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * Log user login
 	 *
 	 * @action set_logged_in_cookie
+	 *
+	 * @param string $logged_in_cookie
+	 * @param int $expire
+	 * @param int $expiration
+	 * @param int $user_id
 	 */
-	public static function callback_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
+	public function callback_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
+		unset( $logged_in_cookie );
+		unset( $expire );
+		unset( $expiration );
 		$user = get_user_by( 'id', $user_id );
 
-		self::log(
+		$this->log(
 			__( '%s logged in', 'stream' ),
 			array( 'display_name' => $user->display_name ),
 			$user->ID,
@@ -266,7 +290,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 *
 	 * @action clear_auth_cookie
 	 */
-	public static function callback_clear_auth_cookie() {
+	public function callback_clear_auth_cookie() {
 		$user = wp_get_current_user();
 
 		// For some reason, incognito mode calls clear_auth_cookie on failed login attempts
@@ -274,7 +298,7 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			return;
 		}
 
-		self::log(
+		$this->log(
 			__( '%s logged out', 'stream' ),
 			array( 'display_name' => $user->display_name ),
 			$user->ID,
@@ -294,9 +318,9 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @action delete_user
 	 * @param int $user_id User ID that maybe deleted
 	 */
-	public static function callback_delete_user( $user_id ) {
-		if ( ! isset( self::$_users_object_pre_deleted[ $user_id ] ) ) {
-			self::$_users_object_pre_deleted[ $user_id ] = get_user_by( 'id', $user_id );
+	public function callback_delete_user( $user_id ) {
+		if ( ! isset( $this->_users_object_pre_deleted[ $user_id ] ) ) {
+			$this->_users_object_pre_deleted[ $user_id ] = get_user_by( 'id', $user_id );
 		}
 	}
 
@@ -306,29 +330,29 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 	 * @action deleted_user
 	 * @param int $user_id Deleted user ID
 	 */
-	public static function callback_deleted_user( $user_id ) {
+	public function callback_deleted_user( $user_id ) {
 		$user = wp_get_current_user();
 
-		if ( isset( self::$_users_object_pre_deleted[ $user_id ] ) ) {
+		if ( isset( $this->_users_object_pre_deleted[ $user_id ] ) ) {
 			$message      = _x(
 				'%1$s\'s account was deleted (%2$s)',
 				'1: User display name, 2: User roles',
 				'stream'
 			);
-			$display_name = self::$_users_object_pre_deleted[ $user_id ]->display_name;
-			$deleted_user = self::$_users_object_pre_deleted[ $user_id ];
-			unset( self::$_users_object_pre_deleted[ $user_id ] );
+			$display_name = $this->_users_object_pre_deleted[ $user_id ]->display_name;
+			$deleted_user = $this->_users_object_pre_deleted[ $user_id ];
+			unset( $this->_users_object_pre_deleted[ $user_id ] );
 		} else {
 			$message      = esc_html__( 'User account #%d was deleted', 'stream' );
 			$display_name = $user_id;
 			$deleted_user = $user_id;
 		}
 
-		self::log(
+		$this->log(
 			$message,
 			array(
 				'display_name' => $display_name,
-				'roles'        => implode( ', ', self::get_role_labels( $deleted_user ) ),
+				'roles'        => implode( ', ', $this->get_role_labels( $deleted_user ) ),
 			),
 			$user_id,
 			'users',
@@ -336,5 +360,4 @@ class WP_Stream_Connector_Users extends WP_Stream_Connector {
 			$user->ID
 		);
 	}
-
 }

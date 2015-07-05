@@ -1,12 +1,12 @@
 <?php
+namespace WP_Stream;
 
-class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
-
+class Connector_Woocommerce extends Connector {
 	/**
 	 * Context name
 	 * @var string
 	 */
-	public static $name = 'woocommerce';
+	public $name = 'woocommerce';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -19,7 +19,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * Actions registered for this context
 	 * @var array
 	 */
-	public static $actions = array(
+	public $actions = array(
 		'wp_stream_record_array',
 		'updated_option',
 		'transition_post_status',
@@ -33,7 +33,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		'woocommerce_tax_rate_deleted',
 	);
 
-	public static $taxonomies = array(
+	public $taxonomies = array(
 		'product_type',
 		'product_cat',
 		'product_tag',
@@ -41,28 +41,26 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		'shop_order_status',
 	);
 
-	public static $post_types = array(
+	public $post_types = array(
 		'product',
 		'product_variation',
 		'shop_order',
 		'shop_coupon',
 	);
 
-	private static $order_update_logged = false;
+	private $order_update_logged = false;
 
-	private static $settings_pages = array();
+	private $settings_pages = array();
 
-	private static $settings = array();
+	private $settings = array();
 
-	private static $custom_settings = array();
-
-	public static function register() {
+	public function register() {
 		parent::register();
 
-		add_filter( 'wp_stream_posts_exclude_post_types', array( __CLASS__, 'exclude_order_post_types' ) );
-		add_action( 'wp_stream_comments_exclude_comment_types', array( __CLASS__, 'exclude_order_comment_types' ) );
+		add_filter( 'wp_stream_posts_exclude_post_types', array( $this, 'exclude_order_post_types' ) );
+		add_action( 'wp_stream_comments_exclude_comment_types', array( $this, 'exclude_order_comment_types' ) );
 
-		self::get_woocommerce_settings_fields();
+		$this->get_woocommerce_settings_fields();
 	}
 
 	/**
@@ -70,7 +68,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 *
 	 * @return bool
 	 */
-	public static function is_dependency_satisfied() {
+	public function is_dependency_satisfied() {
 		global $woocommerce;
 
 		if ( class_exists( 'WooCommerce' ) && version_compare( $woocommerce->version, self::PLUGIN_MIN_VERSION, '>=' ) ) {
@@ -85,7 +83,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 *
 	 * @return string Translated context label
 	 */
-	public static function get_label() {
+	public function get_label() {
 		return esc_html_x( 'WooCommerce', 'woocommerce', 'stream' );
 	}
 
@@ -94,7 +92,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 *
 	 * @return array Action label translations
 	 */
-	public static function get_action_labels() {
+	public function get_action_labels() {
 		return array(
 			'updated' => esc_html_x( 'Updated', 'woocommerce', 'stream' ),
 			'created' => esc_html_x( 'Created', 'woocommerce', 'stream' ),
@@ -108,13 +106,14 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 *
 	 * @return array Context label translations
 	 */
-	public static function get_context_labels() {
+	public function get_context_labels() {
 		$context_labels = array();
 
-		if ( class_exists( 'WP_Stream_Connector_Posts' ) ) {
+		if ( class_exists( 'Connector_Posts' ) ) {
+			$posts_connector = new Connector_Posts();
 			$context_labels = array_merge(
 				$context_labels,
-				WP_Stream_Connector_Posts::get_context_labels()
+				$posts_connector->get_context_labels()
 			);
 		}
 
@@ -125,7 +124,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		$context_labels = array_merge(
 			$context_labels,
 			$custom_context_labels,
-			self::$settings_pages
+			$this->$settings_pages
 		);
 
 		return apply_filters( 'wp_stream_woocommerce_contexts', $context_labels );
@@ -136,7 +135,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 *
 	 * @return array Custom settings with translated title and page
 	 */
-	public static function get_custom_settings() {
+	public function get_custom_settings() {
 		$custom_settings = array(
 			'woocommerce_frontend_css_colors' => array(
 				'title'   => esc_html__( 'Frontend Styles', 'stream' ),
@@ -204,15 +203,16 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param array $links   Previous links registered
+	 * @param Record $record Stream record
 	 *
-	 * @return array             Action links
+	 * @return array Action links
 	 */
-	public static function action_links( $links, $record ) {
-		if ( in_array( $record->context, self::$post_types ) && get_post( $record->object_id ) ) {
+	public function action_links( $links, $record ) {
+		if ( in_array( $record->context, $this->post_types ) && get_post( $record->object_id ) ) {
 			if ( $link = get_edit_post_link( $record->object_id ) ) {
-				$post_type_name = WP_Stream_Connector_Posts::get_post_type_name( get_post_type( $record->object_id ) );
+				$posts_connector = new Connector_Posts();
+				$post_type_name = $posts_connector->get_post_type_name( get_post_type( $record->object_id ) );
 				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
 			}
 
@@ -221,7 +221,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			}
 		}
 
-		$context_labels = self::get_context_labels();
+		$context_labels = $this->get_context_labels();
 		$option_key     = wp_stream_get_meta( $record, 'option', true );
 		$option_page    = wp_stream_get_meta( $record, 'page', true );
 		$option_tab     = wp_stream_get_meta( $record, 'tab', true );
@@ -245,10 +245,12 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * so that we can handle them differently here
 	 *
 	 * @filter wp_stream_posts_exclude_post_types
-	 * @param  array $post_types Ignored post types
-	 * @return array             Filtered post types
+	 *
+	 * @param array $post_types Ignored post types
+	 *
+	 * @return array Filtered post types
 	 */
-	public static function exclude_order_post_types( $post_types ) {
+	public function exclude_order_post_types( $post_types ) {
 		$post_types[] = 'shop_order';
 
 		return $post_types;
@@ -259,10 +261,12 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * change comments on orders
 	 *
 	 * @filter wp_stream_commnent_exclude_comment_types
-	 * @param  array $comment_types Ignored post types
-	 * @return array                Filtered post types
+	 *
+	 * @param array $comment_types Ignored post types
+	 *
+	 * @return array Filtered post types
 	 */
-	public static function exclude_order_comment_types( $comment_types ) {
+	public function exclude_order_comment_types( $comment_types ) {
 		$comment_types[] = 'order_note';
 
 		return $comment_types;
@@ -272,8 +276,12 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * Log Order major status changes ( creating / updating / trashing )
 	 *
 	 * @action transition_post_status
+	 *
+	 * @param string $new
+	 * @param string $old
+	 * @param \WP_Post $post
 	 */
-	public static function callback_transition_post_status( $new, $old, $post ) {
+	public function callback_transition_post_status( $new, $old, $post ) {
 		// Only track orders
 		if ( 'shop_order' !== $post->post_type ) {
 			return;
@@ -290,7 +298,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		}
 
 		// Don't log updates when more than one happens at the same time
-		if ( $post->ID === self::$order_update_logged ) {
+		if ( $post->ID === $this->order_update_logged ) {
 			return;
 		}
 
@@ -329,11 +337,11 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			$action = 'updated';
 		}
 
-		$order           = new WC_Order( $post->ID );
+		$order           = new \WC_Order( $post->ID );
 		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
 		$order_type_name = esc_html__( 'order', 'stream' );
 
-		self::log(
+		$this->log(
 			$message,
 			array(
 				'post_title'    => $order_title,
@@ -347,19 +355,21 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			$action
 		);
 
-		self::$order_update_logged = $post->ID;
+		$this->order_update_logged = $post->ID;
 	}
 
 	/**
 	 * Log order deletion
 	 *
 	 * @action deleted_post
+	 *
+	 * @param int $post_id
 	 */
-	public static function callback_deleted_post( $post_id ) {
+	public function callback_deleted_post( $post_id ) {
 		$post = get_post( $post_id );
 
 		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing
-		if ( ! ( $post instanceof WP_Post ) || 'shop_order' !== $post->post_type ) {
+		if ( ! ( $post instanceof \WP_Post ) || 'shop_order' !== $post->post_type ) {
 			return;
 		}
 
@@ -368,11 +378,11 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			return;
 		}
 
-		$order           = new WC_Order( $post->ID );
+		$order           = new \WC_Order( $post->ID );
 		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
 		$order_type_name = esc_html__( 'order', 'stream' );
 
-		self::log(
+		$this->log(
 			_x(
 				'"%s" deleted from trash',
 				'Order title',
@@ -392,15 +402,20 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * Log Order minor status changes ( pending / on-hold / failed / processing / completed / refunded / cancelled )
 	 *
 	 * @action woocommerce_order_status_changed
+	 *
+	 * @param int $order_id
+	 * @param string $old
+	 * @param string $new
 	 */
-	public static function callback_woocommerce_order_status_changed( $order_id, $old, $new ) {
+	public function callback_woocommerce_order_status_changed( $order_id, $old, $new ) {
 		// Don't track customer actions
 		if ( ! is_admin() ) {
 			return;
 		}
 
-		$old_status = WP_Stream::is_vip() ? wpcom_vip_get_term_by( 'slug', $old, 'shop_order_status' ) : get_term_by( 'slug', $old, 'shop_order_status' );
-		$new_status = WP_Stream::is_vip() ? wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' ) : get_term_by( 'slug', $new, 'shop_order_status' );
+		$stream = wp_stream_get_instance();
+		$old_status = $stream->is_vip() ? wpcom_vip_get_term_by( 'slug', $old, 'shop_order_status' ) : get_term_by( 'slug', $old, 'shop_order_status' );
+		$new_status = $stream->is_vip() ? wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' ) : get_term_by( 'slug', $new, 'shop_order_status' );
 
 		// Don't track new statuses
 		if ( ! $old_status ) {
@@ -413,13 +428,13 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			'stream'
 		);
 
-		$order           = new WC_Order( $order_id );
+		$order           = new \WC_Order( $order_id );
 		$order_title     = esc_html__( 'Order number', 'stream' ) . ' ' . esc_html( $order->get_order_number() );
 		$order_type_name = esc_html__( 'order', 'stream' );
 		$new_status_name = strtolower( $new_status->name );
 		$old_status_name = strtolower( $old_status->name );
 
-		self::log(
+		$this->log(
 			$message,
 			array(
 				'post_title'      => $order_title,
@@ -440,9 +455,12 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * Log adding a product attribute
 	 *
 	 * @action woocommerce_attribute_added
+	 *
+	 * @param int $attribute_id
+	 * @param array $attribute
 	 */
-	public static function callback_woocommerce_attribute_added( $attribute_id, $attribute ) {
-		self::log(
+	public function callback_woocommerce_attribute_added( $attribute_id, $attribute ) {
+		$this->log(
 			_x(
 				'"%s" product attribute created',
 				'Term name',
@@ -459,9 +477,12 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * Log updating a product attribute
 	 *
 	 * @action woocommerce_attribute_updated
+	 *
+	 * @param int $attribute_id
+	 * @param array $attribute
 	 */
-	public static function callback_woocommerce_attribute_updated( $attribute_id, $attribute ) {
-		self::log(
+	public function callback_woocommerce_attribute_updated( $attribute_id, $attribute ) {
+		$this->log(
 			_x(
 				'"%s" product attribute updated',
 				'Term name',
@@ -478,9 +499,12 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * Log deleting a product attribute
 	 *
 	 * @action woocommerce_attribute_updated
+	 *
+	 * @param int $attribute_id
+	 * @param string $attribute_name
 	 */
-	public static function callback_woocommerce_attribute_deleted( $attribute_id, $attribute_name ) {
-		self::log(
+	public function callback_woocommerce_attribute_deleted( $attribute_id, $attribute_name ) {
+		$this->log(
 			_x(
 				'"%s" product attribute deleted',
 				'Term name',
@@ -499,9 +523,12 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * Log adding a tax rate
 	 *
 	 * @action woocommerce_tax_rate_added
+	 *
+	 * @param int $tax_rate_id
+	 * @param array $tax_rate
 	 */
-	public static function callback_woocommerce_tax_rate_added( $tax_rate_id, $tax_rate ) {
-		self::log(
+	public function callback_woocommerce_tax_rate_added( $tax_rate_id, $tax_rate ) {
+		$this->log(
 			_x(
 				'"%4$s" tax rate created',
 				'Tax rate name',
@@ -518,9 +545,12 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * Log updating a tax rate
 	 *
 	 * @action woocommerce_tax_rate_updated
+	 *
+	 * @param int $tax_rate_id
+	 * @param array $tax_rate
 	 */
-	public static function callback_woocommerce_tax_rate_updated( $tax_rate_id, $tax_rate ) {
-		self::log(
+	public function callback_woocommerce_tax_rate_updated( $tax_rate_id, $tax_rate ) {
+		$this->log(
 			_x(
 				'"%4$s" tax rate updated',
 				'Tax rate name',
@@ -537,8 +567,10 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 * Log deleting a tax rate
 	 *
 	 * @action woocommerce_tax_rate_updated
+	 *
+	 * @param int $tax_rate_id
 	 */
-	public static function callback_woocommerce_tax_rate_deleted( $tax_rate_id ) {
+	public function callback_woocommerce_tax_rate_deleted( $tax_rate_id ) {
 		global $wpdb;
 
 		$tax_rate_name = $wpdb->get_var(
@@ -550,7 +582,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			)
 		);
 
-		self::log(
+		$this->log(
 			_x(
 				'"%s" tax rate deleted',
 				'Tax rate name',
@@ -570,21 +602,21 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 	 *
 	 * @filter wp_stream_record_array
 	 *
-	 * @param  array $recordarr Record data to be inserted
+	 * @param array $recordarr Record data to be inserted
 	 *
-	 * @return array            Filtered record data
+	 * @return array Filtered record data
 	 */
-	public static function callback_wp_stream_record_array( $recordarr ) {
+	public function callback_wp_stream_record_array( $recordarr ) {
 		foreach ( $recordarr as $key => $record ) {
 			// Change connector::posts records
-			if ( 'posts' === $record['connector'] && in_array( $record['context'], self::$post_types ) ) {
-				$recordarr[ $key ]['connector'] = self::$name;
-			} elseif ( 'taxonomies' === $record['connector'] && in_array( $record['context'], self::$taxonomies ) ) {
-				$recordarr[ $key ]['connector'] = self::$name;
+			if ( 'posts' === $record['connector'] && in_array( $record['context'], $this->post_types ) ) {
+				$recordarr[ $key ]['connector'] = $this->name;
+			} elseif ( 'taxonomies' === $record['connector'] && in_array( $record['context'], $this->taxonomies ) ) {
+				$recordarr[ $key ]['connector'] = $this->name;
 			} elseif ( 'settings' === $record['connector'] ) {
 				$option = isset( $record['meta']['option_key'] ) ? $record['meta']['option_key'] : false;
 
-				if ( $option && isset( self::$settings[ $option ] ) ) {
+				if ( $option && isset( $this->settings[ $option ] ) ) {
 					return false;
 				}
 			}
@@ -593,47 +625,47 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 		return $recordarr;
 	}
 
-	public static function callback_updated_option( $option_key, $old_value, $value ) {
+	public function callback_updated_option( $option_key, $old_value, $value ) {
 		$options = array( $option_key );
 
 		if ( is_array( $old_value ) || is_array( $value ) ) {
-			foreach ( self::get_changed_keys( $old_value, $value ) as $field_key ) {
+			foreach ( $this->get_changed_keys( $old_value, $value ) as $field_key ) {
 				$options[] = $field_key;
 			}
 		}
 
 		foreach ( $options as $option ) {
-			if ( ! array_key_exists( $option, self::$settings ) ) {
+			if ( ! array_key_exists( $option, $this->settings ) ) {
 				continue;
 			}
 
-			self::log(
+			$this->log(
 				__( '"%1$s" %2$s updated', 'stream' ),
 				array(
-					'label'     => self::$settings[ $option ]['title'],
-					'type'      => self::$settings[ $option ]['type'],
-					'page'      => self::$settings[ $option ]['page'],
-					'tab'       => self::$settings[ $option ]['tab'],
-					'section'   => self::$settings[ $option ]['section'],
+					'label'     => $this->settings[ $option ]['title'],
+					'type'      => $this->settings[ $option ]['type'],
+					'page'      => $this->settings[ $option ]['page'],
+					'tab'       => $this->settings[ $option ]['tab'],
+					'section'   => $this->settings[ $option ]['section'],
 					'option'    => $option,
 					// Prevent fatal error when saving option as array
 					'old_value' => maybe_serialize( $old_value ),
 					'value'     => maybe_serialize( $value ),
 				),
 				null,
-				self::$settings[ $option ]['tab'],
+				$this->settings[ $option ]['tab'],
 				'updated'
 			);
 		}
 	}
 
-	public static function get_woocommerce_settings_fields() {
+	public function get_woocommerce_settings_fields() {
 		if ( ! defined( 'WC_VERSION' ) || ! class_exists( 'WC_Admin_Settings' ) ) {
-			return;
+			return false;
 		}
 
-		if ( ! empty( self::$settings ) ) {
-			return self::$settings;
+		if ( ! empty( $this->settings ) ) {
+			return $this->settings;
 		}
 
 		$settings_cache_key = 'stream_connector_woocommerce_settings_' . sanitize_key( WC_VERSION );
@@ -647,7 +679,7 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			$settings       = array();
 			$settings_pages = array();
 
-			foreach ( WC_Admin_Settings::get_settings_pages() as $page ) {
+			foreach ( \WC_Admin_Settings::get_settings_pages() as $page ) {
 				// Get ID / Label of the page, since they're protected, by hacking into
 				// the callback filter for 'woocommerce_settings_tabs_array'
 				$info       = $page->add_settings_page( array() );
@@ -766,11 +798,10 @@ class WP_Stream_Connector_Woocommerce extends WP_Stream_Connector {
 			set_transient( $settings_cache_key, $settings_cache, MINUTE_IN_SECONDS * 60 * 6 );
 		}
 
-		$custom_settings      = self::get_custom_settings();
-		self::$settings       = array_merge( $settings, $custom_settings );
-		self::$settings_pages = $settings_pages;
+		$custom_settings      = $this->get_custom_settings();
+		$this->settings       = array_merge( $settings, $custom_settings );
+		$this->settings_pages = $settings_pages;
 
-		return self::$settings;
+		return $this->settings;
 	}
-
 }

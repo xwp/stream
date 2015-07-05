@@ -1,7 +1,7 @@
 <?php
+namespace WP_Stream;
 
-class WP_Stream_Connector_Settings extends WP_Stream_Connector {
-
+class Connector_Settings extends Connector {
 	/**
 	 * Prefix for the highlight URL hash
 	 *
@@ -14,14 +14,14 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @var string
 	 */
-	public static $name = 'settings';
+	public $name = 'settings';
 
 	/**
 	 * Actions registered for this connector
 	 *
 	 * @var array
 	 */
-	public static $actions = array(
+	public $actions = array(
 		'whitelist_options',
 		'update_site_option',
 		'update_option_permalink_structure',
@@ -34,7 +34,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @var array
 	 */
-	public static $permalink_options = array(
+	public $permalink_options = array(
 		'permalink_structure',
 		'category_base',
 		'tag_base',
@@ -45,7 +45,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @var array
 	 */
-	public static $network_options = array(
+	public $network_options = array(
 		'registrationnotification',
 		'registration',
 		'add_new_users',
@@ -76,19 +76,22 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @return void
 	 */
-	public static function register() {
+	public function register() {
 		parent::register();
 
-		add_action( 'admin_head', array( __CLASS__, 'highlight_field' ) );
-		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_jquery_color' ) );
-		add_action( sprintf( 'update_option_theme_mods_%s', get_option( 'stylesheet' ) ), array( __CLASS__, 'log_theme_modification' ), 10, 2 );
+		add_action( 'admin_head', array( $this, 'highlight_field' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_jquery_color' ) );
+		add_action( sprintf( 'update_option_theme_mods_%s', get_option( 'stylesheet' ) ), array( $this, 'log_theme_modification' ), 10, 2 );
 	}
 
 	/**
 	 * @action update_option_theme_mods_{name}
+	 *
+	 * @param mixed $old_value
+	 * @param mixed $new_value
 	 */
-	public static function log_theme_modification( $old_value, $new_value ) {
-		self::callback_updated_option( 'theme_mods', $old_value, $new_value );
+	public function log_theme_modification( $old_value, $new_value ) {
+		$this->callback_updated_option( 'theme_mods', $old_value, $new_value );
 	}
 
 	/**
@@ -96,7 +99,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @return string Translated context label
 	 */
-	public static function get_label() {
+	public function get_label() {
 		return esc_html__( 'Settings', 'stream' );
 	}
 
@@ -105,7 +108,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @return array Action label translations
 	 */
-	public static function get_action_labels() {
+	public function get_action_labels() {
 		return array(
 			'updated' => esc_html__( 'Updated', 'stream' ),
 		);
@@ -116,7 +119,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @return array Context label translations
 	 */
-	public static function get_context_labels() {
+	public function get_context_labels() {
 		$context_labels = array(
 			'settings'          => esc_html__( 'Settings', 'stream' ),
 			'general'           => esc_html__( 'General', 'stream' ),
@@ -147,9 +150,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	/**
 	 * Return context by option name and key
 	 *
+	 * @param string $option_name
+	 * @param string $key
+	 *
 	 * @return string Context slug
 	 */
-	public static function get_context_by_key( $option_name, $key ) {
+	public function get_context_by_key( $option_name, $key ) {
 		$contexts = array(
 			'theme_mods' => array(
 				'custom_background' => array(
@@ -180,9 +186,12 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	/**
 	 * Find out if the option key should be ignored and not logged
 	 *
+	 * @param string $option_name
+	 * @param string $key
+	 *
 	 * @return bool Whether option key is ignored or not
 	 */
-	public static function is_key_ignored( $option_name, $key ) {
+	public function is_key_ignored( $option_name, $key ) {
 		$ignored = array(
 			'theme_mods' => array(
 				'background_image_thumb',
@@ -200,9 +209,13 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	/**
 	 * Find out if array keys in the option should be logged separately
 	 *
+	 * @param string $key
+	 * @param mixed $old_value
+	 * @param mixed $value
+	 *
 	 * @return bool Whether the option should be treated as a group
 	 */
-	public static function is_key_option_group( $key, $old_value, $value ) {
+	public function is_key_option_group( $key, $old_value, $value ) {
 		if ( ! is_array( $old_value ) && ! is_array( $value ) ) {
 			return false;
 		}
@@ -217,9 +230,11 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	/**
 	 * Return translated labels for all default Settings fields found in WordPress.
 	 *
+	 * @param string $field_key
+	 *
 	 * @return array Field label translations
 	 */
-	public static function get_field_label( $field_key ) {
+	public function get_field_label( $field_key ) {
 		$labels = array(
 			// General
 			'blogname'                      => esc_html__( 'Site Title', 'stream' ),
@@ -310,7 +325,6 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			'limited_email_domains'         => esc_html__( 'Limited Email Registrations', 'stream' ),
 			'banned_email_domains'          => esc_html__( 'Banned Email Domains', 'stream' ),
 			'WPLANG'                        => esc_html__( 'Network Language', 'stream' ),
-			'admin_email'                   => esc_html__( 'Network Admin Email', 'stream' ),
 			'user_count'                    => esc_html__( 'User Count', 'stream' ),
 			// Other
 			'wp_stream_db'                  => esc_html__( 'Stream Database Version', 'stream' ),
@@ -329,16 +343,19 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * @action admin_enqueue_scripts
 	 * @return void
 	 */
-	public static function enqueue_jquery_color() {
+	public function enqueue_jquery_color() {
 		wp_enqueue_script( 'jquery-color' );
 	}
 
 	/**
 	 * Return translated labels for all serialized Settings found in WordPress.
 	 *
+	 * @param string $option_name
+	 * @param string $field_key
+	 *
 	 * @return string Field key translation or key itself if not found
 	 */
-	public static function get_serialized_field_label( $option_name, $field_key ) {
+	public function get_serialized_field_label( $option_name, $field_key ) {
 		$labels = array(
 			'theme_mods' => array(
 				// Custom Background
@@ -373,13 +390,13 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param array $links   Previous links registered
+	 * @param Record $record Stream record
 	 *
 	 * @return array             Action links
 	 */
-	public static function action_links( $links, $record ) {
-		$context_labels = self::get_context_labels();
+	public function action_links( $links, $record ) {
+		$context_labels = $this->get_context_labels();
 
 		$rules = array(
 			'stream' => array(
@@ -508,9 +525,13 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * Trigger this connector core tracker, only on options.php page
 	 *
 	 * @action whitelist_options
+	 *
+	 * @param array $options
+	 *
+	 * @return array
 	 */
-	public static function callback_whitelist_options( $options ) {
-		add_action( 'updated_option', array( __CLASS__, 'callback' ), 10, 3 );
+	public function callback_whitelist_options( $options ) {
+		add_action( 'updated_option', array( $this, 'callback' ), 10, 3 );
 
 		return $options;
 	}
@@ -519,44 +540,62 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 * Trigger this connector core tracker, only on options-permalink.php page
 	 *
 	 * @action update_option_permalink_structure
+	 *
+	 * @param mixed $old_value
+	 * @param mixed $value
+	 *
 	 */
-	public static function callback_update_option_permalink_structure( $old_value, $value ) {
-		self::callback_updated_option( 'permalink_structure', $old_value, $value );
+	public function callback_update_option_permalink_structure( $old_value, $value ) {
+		$this->callback_updated_option( 'permalink_structure', $old_value, $value );
 	}
 
 	/**
 	 * Trigger this connector core tracker, only on network/settings.php page
 	 *
 	 * @action update_site_option
+	 *
+	 * @param string $option
+	 * @param mixed $old_value
+	 * @param mixed $value
 	 */
-	public static function callback_update_site_option( $option, $value, $old_value ) {
-		self::callback_updated_option( $option, $value, $old_value );
+	public function callback_update_site_option( $option, $value, $old_value ) {
+		$this->callback_updated_option( $option, $value, $old_value );
 	}
 
 	/**
 	 * Trigger this connector core tracker, only on options-permalink.php page
 	 *
 	 * @action update_option_category_base
+	 *
+	 * @param mixed $old_value
+	 * @param mixed $value
 	 */
-	public static function callback_update_option_category_base( $old_value, $value ) {
-		self::callback_updated_option( 'category_base', $old_value, $value );
+	public function callback_update_option_category_base( $old_value, $value ) {
+		$this->callback_updated_option( 'category_base', $old_value, $value );
 	}
 
 	/**
 	 * Trigger this connector core tracker, only on options-permalink.php page
 	 *
 	 * @action update_option_tag_base
+	 *
+	 * @param mixed $old_value
+	 * @param mixed $value
 	 */
-	public static function callback_update_option_tag_base( $old_value, $value ) {
-		self::callback_updated_option( 'tag_base', $old_value, $value );
+	public function callback_update_option_tag_base( $old_value, $value ) {
+		$this->callback_updated_option( 'tag_base', $old_value, $value );
 	}
 
 	/**
 	 * Track updated settings
 	 *
 	 * @action updated_option
+	 *
+	 * @param string $option
+	 * @param mixed $old_value
+	 * @param mixed $value
 	 */
-	public static function callback_updated_option( $option, $old_value, $value ) {
+	public function callback_updated_option( $option, $old_value, $value ) {
 		global $whitelist_options, $new_whitelist_options;
 
 		if ( 0 === strpos( $option, '_transient_' ) || 0 === strpos( $option, '_site_transient_' ) ) {
@@ -566,8 +605,8 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		$options = array_merge(
 			(array) $whitelist_options,
 			(array) $new_whitelist_options,
-			array( 'permalink' => self::$permalink_options ),
-			array( 'network' => self::$network_options )
+			array( 'permalink' => $this->permalink_options ),
+			array( 'network' => $this->network_options )
 		);
 
 		foreach ( $options as $key => $opts ) {
@@ -582,14 +621,14 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		}
 
 		$changed_options = array();
-		$option_group    = self::is_key_option_group( $option, $old_value, $value );
+		$option_group    = $this->is_key_option_group( $option, $old_value, $value );
 
 		if ( $option_group ) {
-			foreach ( self::get_changed_keys( $old_value, $value ) as $field_key ) {
-				if ( ! self::is_key_ignored( $option, $field_key ) ) {
-					$key_context = self::get_context_by_key( $option, $field_key );
+			foreach ( $this->get_changed_keys( $old_value, $value ) as $field_key ) {
+				if ( ! $this->is_key_ignored( $option, $field_key ) ) {
+					$key_context = $this->get_context_by_key( $option, $field_key );
 					$changed_options[] = array(
-						'label'      => self::get_serialized_field_label( $option, $field_key ),
+						'label'      => $this->get_serialized_field_label( $option, $field_key ),
 						'option'     => $option,
 						'option_key' => $field_key,
 						'context'    => ( false !== $key_context ? $key_context : $context ),
@@ -601,7 +640,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 			}
 		} else {
 			$changed_options[] = array(
-				'label'     => self::get_field_label( $option ),
+				'label'     => $this->get_field_label( $option ),
 				'option'    => $option,
 				'context'   => $context,
 				// Prevent fatal error when saving option as array
@@ -611,7 +650,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		}
 
 		foreach ( $changed_options as $properties ) {
-			self::log(
+			$this->log(
 				__( '"%s" setting was updated', 'stream' ),
 				$properties,
 				null,
@@ -626,7 +665,7 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 	 *
 	 * @action admin_head
 	 */
-	public static function highlight_field() {
+	public function highlight_field() {
 		?>
 		<script>
 			(function ($) {
@@ -689,5 +728,4 @@ class WP_Stream_Connector_Settings extends WP_Stream_Connector {
 		</script>
 		<?php
 	}
-
 }
