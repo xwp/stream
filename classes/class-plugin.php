@@ -168,6 +168,25 @@ class Plugin {
 	}
 
 	/**
+	 * Prepend $stem with $this->prefix followed by $delimiter
+	 *
+	 * @param string $stem
+	 * @param string $delimiter
+	 *
+	 * @return string
+	 */
+	function prefix( $stem = '', $delimiter = '_' ) {
+		static $reflection;
+
+		if ( empty( $reflection ) ) {
+			$reflection = new \ReflectionObject( $this );
+		}
+
+		$prefix = strtolower( str_replace( '\\', '_', $reflection->getNamespaceName() ) );
+		return $prefix . $delimiter . $stem;
+	}
+
+	/**
 	 * Check if Stream is running on WordPress.com VIP
 	 *
 	 * @return bool
