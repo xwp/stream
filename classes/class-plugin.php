@@ -93,21 +93,21 @@ class Plugin {
 		// Load languages
 		add_action( 'plugins_loaded', array( $this, 'i18n' ) );
 
+		// Load support for feeds
+		$this->feeds = new Feeds( $this );
+
+		// Load logger class
+		$this->log = apply_filters( 'wp_stream_log_handler', new Log( $this ) );
+
 		// Load settings, enabling extensions to hook in
 		add_action( 'init', function() {
 			$this->settings = new Settings( $this );
 		}, 9 );
 
-		// Load logger class
-		$this->log = apply_filters( 'wp_stream_log_handler', new Log( $this ) );
-
 		// Load connectors after widgets_init, but before the default of 10
 		add_action( 'init', function() {
 			$this->connectors = new Connectors( $this );
 		}, 9 );
-
-		// Load support for feeds
-		$this->feeds = new Feeds( $this );
 
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
@@ -119,8 +119,8 @@ class Plugin {
 		}
 
 		// Load WP-CLI command
-		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
-			\WP_CLI::add_command( self::WP_CLI_COMMAND, 'CLI' );
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			\WP_CLI::add_command( self::WP_CLI_COMMAND, 'WP_Stream\CLI' );
 		}
 	}
 

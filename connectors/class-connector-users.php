@@ -240,7 +240,7 @@ class Connector_Users extends Connector {
 	 * @param string $user_login
 	 */
 	public function callback_retrieve_password( $user_login ) {
-		if ( filter_var( $user_login, FILTER_VALIDATE_EMAIL ) ) {
+		if ( wp_stream_filter_var( $user_login, FILTER_VALIDATE_EMAIL ) ) {
 			$user = get_user_by( 'email', $user_login );
 		} else {
 			$user = get_user_by( 'login', $user_login );

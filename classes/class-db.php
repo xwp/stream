@@ -174,16 +174,11 @@ class DB {
 	function existing_records( $column ) {
 		global $wpdb;
 
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT {$column} FROM $wpdb->stream GROUP BY %s",
-				$column
-			),
-			'ARRAY_A'
-		);
+		$rows = $wpdb->get_results( "SELECT {$column} FROM $wpdb->stream GROUP BY {$column}", 'ARRAY_A' );
 
 		if ( is_array( $rows ) && ! empty( $rows ) ) {
 			$output_array = array();
+
 			foreach ( $rows as $row ) {
 				foreach ( $row as $cell => $value ) {
 					$output_array[ $value ] = $value;

@@ -212,7 +212,7 @@ class Connector_WordPress_SEO extends Connector {
 			'importbreadcrumbs' => esc_html__( 'Yoast Breadcrumbs', 'stream' ), # type = checkbox
 		);
 
-		$opts = filter_input( INPUT_POST, 'wpseo' );
+		$opts = wp_stream_filter_input( INPUT_POST, 'wpseo' );
 
 		foreach ( $imports as $key => $name ) {
 			if ( isset( $opts[ $key ] ) ) {
@@ -235,9 +235,9 @@ class Connector_WordPress_SEO extends Connector {
 	}
 
 	public function callback_wpseo_import() {
-		$opts = filter_input( INPUT_POST, 'wpseo' );
+		$opts = wp_stream_filter_input( INPUT_POST, 'wpseo' );
 
-		if ( filter_input( INPUT_POST, 'wpseo_export' ) ) {
+		if ( wp_stream_filter_input( INPUT_POST, 'wpseo_export' ) ) {
 			$this->log(
 				sprintf(
 					__( 'Exported settings%s', 'stream' ),
@@ -267,11 +267,11 @@ class Connector_WordPress_SEO extends Connector {
 	}
 
 	public function callback_seo_page_wpseo_files() {
-		if ( filter_input( INPUT_POST, 'create_robots' ) ) {
+		if ( wp_stream_filter_input( INPUT_POST, 'create_robots' ) ) {
 			$message = esc_html__( 'Tried creating robots.txt file', 'stream' );
-		} elseif ( filter_input( INPUT_POST, 'submitrobots' ) ) {
+		} elseif ( wp_stream_filter_input( INPUT_POST, 'submitrobots' ) ) {
 			$message = esc_html__( 'Tried updating robots.txt file', 'stream' );
-		} elseif ( filter_input( INPUT_POST, 'submithtaccess' ) ) {
+		} elseif ( wp_stream_filter_input( INPUT_POST, 'submithtaccess' ) ) {
 			$message = esc_html__( 'Tried updating htaccess file', 'stream' );
 		}
 
@@ -358,12 +358,12 @@ class Connector_WordPress_SEO extends Connector {
 
 		global $pagenow;
 
-		if ( 'options.php' === $pagenow && 'settings' === $data['connector'] && filter_input( INPUT_POST, '_wp_http_referer' ) ) {
+		if ( 'options.php' === $pagenow && 'settings' === $data['connector'] && wp_stream_filter_input( INPUT_POST, '_wp_http_referer' ) ) {
 			if ( ! isset( $data['args']['context'] ) || ! isset( $this->option_groups[ $data['args']['context'] ] ) ) {
 				return $data;
 			}
 
-			$page   = preg_match( '#page=([^&]*)#', filter_input( INPUT_POST, '_wp_http_referer' ), $match ) ? $match[1] : '';
+			$page   = preg_match( '#page=([^&]*)#', wp_stream_filter_input( INPUT_POST, '_wp_http_referer' ), $match ) ? $match[1] : '';
 			$labels = $this->get_context_labels();
 
 			if ( ! isset( $labels[ $page ] ) ) {

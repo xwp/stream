@@ -1,6 +1,10 @@
 <?php
 namespace WP_Stream;
 
+use DateTime;
+use DateTimeZone;
+use DateInterval;
+
 class Admin {
 	/**
 	 * Hold Plugin class
@@ -181,7 +185,7 @@ class Admin {
 	 * @return string
 	 */
 	public function prepare_admin_notices() {
-		$message = filter_input( INPUT_GET, 'message' );
+		$message = wp_stream_filter_input( INPUT_GET, 'message' );
 
 		switch ( $message ) {
 			case 'settings_reset':
@@ -445,7 +449,7 @@ class Admin {
 	 * @return bool
 	 */
 	public function is_stream_screen() {
-		if ( is_admin() && false !== strpos( filter_input( INPUT_GET, 'page' ), $this->records_page_slug ) ) {
+		if ( is_admin() && false !== strpos( wp_stream_filter_input( INPUT_GET, 'page' ), $this->records_page_slug ) ) {
 			return true;
 		}
 
@@ -757,7 +761,7 @@ class Admin {
 		$page_description = apply_filters( 'wp_stream_settings_form_description', '' );
 
 		$sections   = $this->plugin->settings->get_fields();
-		$active_tab = filter_input( INPUT_GET, 'tab' );
+		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 
 		wp_enqueue_script( 'stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.js', array( 'jquery' ), $this->plugin->get_version(), true );
 		?>
@@ -902,7 +906,7 @@ class Admin {
 	 * @action wp_ajax_wp_stream_filters
 	 */
 	public function ajax_filters() {
-		switch ( filter_input( INPUT_GET, 'filter' ) ) {
+		switch ( wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
 			case 'user_id':
 				$users = array_merge(
 					array( 0 => (object) array( 'display_name' => 'WP-CLI' ) ),
@@ -913,7 +917,7 @@ class Admin {
 				$users = array_filter(
 					$users,
 					function ( $user ) {
-						return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( filter_input( INPUT_GET, 'q' ) ) );
+						return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( wp_stream_filter_input( INPUT_GET, 'q' ) ) );
 					}
 				);
 
@@ -938,11 +942,11 @@ class Admin {
 	 * @action wp_ajax_wp_stream_get_filter_value_by_id
 	 */
 	public function get_filter_value_by_id() {
-		$filter = filter_input( INPUT_POST, 'filter' );
+		$filter = wp_stream_filter_input( INPUT_POST, 'filter' );
 
 		switch ( $filter ) {
 			case 'user_id':
-				$id = filter_input( INPUT_POST, 'id' );
+				$id = wp_stream_filter_input( INPUT_POST, 'id' );
 
 				if ( '0' === $id ) {
 					$value = 'WP-CLI';
@@ -1027,4 +1031,5 @@ class Admin {
 	function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
 		return wp_stream_is_vip() ? delete_user_attribute( $user_id, $meta_key, $meta_value ) : delete_user_meta( $user_id, $meta_key, $meta_value );
 	}
+
 }

@@ -293,7 +293,7 @@ class Connector_Woocommerce extends Connector {
 		}
 
 		// Don't track minor status change actions
-		if ( in_array( filter_input( INPUT_GET, 'action' ), array( 'mark_processing', 'mark_on-hold', 'mark_completed' ) ) || defined( 'DOING_AJAX' ) ) {
+		if ( in_array( wp_stream_filter_input( INPUT_GET, 'action' ), array( 'mark_processing', 'mark_on-hold', 'mark_completed' ) ) || defined( 'DOING_AJAX' ) ) {
 			return;
 		}
 

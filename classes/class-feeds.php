@@ -53,7 +53,7 @@ class Feeds {
 	public function generate_user_feed_key() {
 		check_ajax_referer( 'wp_stream_generate_key', 'nonce' );
 
-		$user_id = (int) filter_input( INPUT_POST, 'user', FILTER_SANITIZE_NUMBER_INT );
+		$user_id = (int) wp_stream_filter_input( INPUT_POST, 'user', FILTER_SANITIZE_NUMBER_INT );
 
 		if ( $user_id ) {
 			$feed_key = wp_generate_password( 32, false );
@@ -87,8 +87,8 @@ class Feeds {
 	 * @param \WP_User $user
 	 */
 	public function save_user_feed_key( $user ) {
-		$generate_key = filter_input( INPUT_GET, self::GENERATE_KEY_QUERY_VAR );
-		$nonce        = filter_input( INPUT_GET, 'wp_stream_nonce' );
+		$generate_key = wp_stream_filter_input( INPUT_GET, self::GENERATE_KEY_QUERY_VAR );
+		$nonce        = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 
 		if ( ! $generate_key && $this->plugin->admin->get_user_meta( $user->ID, $this->user_feed_option_key ) ) {
 			return;
@@ -202,7 +202,7 @@ class Feeds {
 
 		$args = array(
 			'meta_key'   => $this->user_feed_option_key,
-			'meta_value' => filter_input( INPUT_GET, self::FEED_KEY_QUERY_VAR ),
+			'meta_value' => wp_stream_filter_input( INPUT_GET, self::FEED_KEY_QUERY_VAR ),
 			'number'     => 1,
 		);
 		$user = get_users( $args );
@@ -220,21 +220,21 @@ class Feeds {
 		}
 
 		$args = array(
-			'search'           => filter_input( INPUT_GET, 'search' ),
-			'record_after'     => filter_input( INPUT_GET, 'record_after' ), // Deprecated, use date_after instead
-			'date'             => filter_input( INPUT_GET, 'date' ),
-			'date_from'        => filter_input( INPUT_GET, 'date_from' ),
-			'date_to'          => filter_input( INPUT_GET, 'date_to' ),
-			'date_after'       => filter_input( INPUT_GET, 'date_after' ),
-			'date_before'      => filter_input( INPUT_GET, 'date_before' ),
-			'record'           => filter_input( INPUT_GET, 'record' ),
-			'record__in'       => filter_input( INPUT_GET, 'record__in' ),
-			'record__not_in'   => filter_input( INPUT_GET, 'record__not_in' ),
-			'records_per_page' => filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT ),
-			'order'            => filter_input( INPUT_GET, 'order' ),
-			'orderby'          => filter_input( INPUT_GET, 'orderby' ),
-			'meta'             => filter_input( INPUT_GET, 'meta' ),
-			'fields'           => filter_input( INPUT_GET, 'fields' ),
+			'search'           => wp_stream_filter_input( INPUT_GET, 'search' ),
+			'record_after'     => wp_stream_filter_input( INPUT_GET, 'record_after' ), // Deprecated, use date_after instead
+			'date'             => wp_stream_filter_input( INPUT_GET, 'date' ),
+			'date_from'        => wp_stream_filter_input( INPUT_GET, 'date_from' ),
+			'date_to'          => wp_stream_filter_input( INPUT_GET, 'date_to' ),
+			'date_after'       => wp_stream_filter_input( INPUT_GET, 'date_after' ),
+			'date_before'      => wp_stream_filter_input( INPUT_GET, 'date_before' ),
+			'record'           => wp_stream_filter_input( INPUT_GET, 'record' ),
+			'record__in'       => wp_stream_filter_input( INPUT_GET, 'record__in' ),
+			'record__not_in'   => wp_stream_filter_input( INPUT_GET, 'record__not_in' ),
+			'records_per_page' => wp_stream_filter_input( INPUT_GET, 'records_per_page', FILTER_SANITIZE_NUMBER_INT ),
+			'order'            => wp_stream_filter_input( INPUT_GET, 'order' ),
+			'orderby'          => wp_stream_filter_input( INPUT_GET, 'orderby' ),
+			'meta'             => wp_stream_filter_input( INPUT_GET, 'meta' ),
+			'fields'           => wp_stream_filter_input( INPUT_GET, 'fields' ),
 		);
 
 		$properties = array(
@@ -248,9 +248,9 @@ class Feeds {
 		);
 
 		foreach ( $properties as $property ) {
-			$args[ $property ]             = filter_input( INPUT_GET, $property );
-			$args[ "{$property}__in" ]     = filter_input( INPUT_GET, "{$property}__in" );
-			$args[ "{$property}__not_in" ] = filter_input( INPUT_GET, "{$property}__not_in" );
+			$args[ $property ]             = wp_stream_filter_input( INPUT_GET, $property );
+			$args[ "{$property}__in" ]     = wp_stream_filter_input( INPUT_GET, "{$property}__in" );
+			$args[ "{$property}__not_in" ] = wp_stream_filter_input( INPUT_GET, "{$property}__not_in" );
 		}
 
 		$records = $this->plugin->db->query->query( $args );
@@ -276,7 +276,7 @@ class Feeds {
 		}
 
 		$domain = parse_url( $records_admin_url, PHP_URL_HOST );
-		$format = filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR );
+		$format = wp_stream_filter_input( INPUT_GET, self::FEED_TYPE_QUERY_VAR );
 
 		if ( 'atom' === $format ) {
 			require_once WP_STREAM_INC_DIR . 'feeds/atom.php';

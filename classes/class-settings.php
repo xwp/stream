@@ -9,6 +9,13 @@ class Settings {
 	public $plugin;
 
 	/**
+	 * Settings key/identifier
+	 *
+	 * @var string
+	 */
+	public $option_key = 'wp_stream';
+
+	/**
 	 * Network settings key/identifier
 	 *
 	 * @var string
@@ -28,13 +35,6 @@ class Settings {
 	 * @var array
 	 */
 	public $options = array();
-
-	/**
-	 * Settings key/identifier
-	 *
-	 * @var string
-	 */
-	public $option_key = '';
 
 	/**
 	 * Settings fields
@@ -208,10 +208,10 @@ class Settings {
 	public function get_option_key() {
 		$option_key = $this->option_key;
 
-		$current_page = filter_input( INPUT_GET, 'page' );
+		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 
 		if ( ! $current_page ) {
-			$current_page = filter_input( INPUT_GET, 'action' );
+			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
 		}
 
 		if ( 'wp_stream_default_settings' === $current_page ) {
@@ -503,7 +503,7 @@ class Settings {
 				$type = ! empty( $field['type'] ) ? $field['type'] : null;
 				$name = ! empty( $field['name'] ) ? sprintf( '%s_%s', $section, $field['name'] ) : null;
 
-				if ( empty( $type ) || '' === $input[ $name ] ) {
+				if ( empty( $type ) || ! isset( $input[ $name ] ) || '' === $input[ $name ] ) {
 					continue;
 				}
 
@@ -976,7 +976,7 @@ class Settings {
 
 		$output = $this->render_field( $field );
 
-		echo $output;
+		echo $output; // xss ok
 	}
 
 	/**

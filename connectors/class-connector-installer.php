@@ -321,9 +321,9 @@ class Connector_Installer extends Connector {
 	 */
 	public function callback_pre_option_uninstall_plugins() {
 		if (
-			'delete-selected' !== filter_input( INPUT_GET, 'action' )
+			'delete-selected' !== wp_stream_filter_input( INPUT_GET, 'action' )
 			&&
-			'delete-selected' !== filter_input( INPUT_POST, 'action2' )
+			'delete-selected' !== wp_stream_filter_input( INPUT_POST, 'action2' )
 		) {
 			return false;
 		}
@@ -332,7 +332,7 @@ class Connector_Installer extends Connector {
 		$type = isset( $_POST['action2'] ) ? INPUT_POST : INPUT_GET;
 		// @codingStandardsIgnoreEnd
 
-		$plugins  = filter_input( $type, 'checked' );
+		$plugins  = wp_stream_filter_input( $type, 'checked' );
 		$_plugins = $this->get_plugins();
 
 		$plugins_to_delete = array();
@@ -355,7 +355,7 @@ class Connector_Installer extends Connector {
 	 */
 	public function callback_pre_set_site_transient_update_plugins( $value ) {
 		if (
-			! filter_input( INPUT_POST, 'verify-delete' )
+			! wp_stream_filter_input( INPUT_POST, 'verify-delete' )
 			||
 			! ( $plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' ) )
 		) {

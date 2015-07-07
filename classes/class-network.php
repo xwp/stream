@@ -198,7 +198,7 @@ class Network {
 	 */
 	public function settings_form_action( $action ) {
 		if ( is_network_admin() ) {
-			$current_page = filter_input( INPUT_GET, 'page' );
+			$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 			$action       = add_query_arg( array( 'action' => $current_page ), 'edit.php' );
 		}
 
@@ -217,7 +217,7 @@ class Network {
 			return '';
 		}
 
-		$current_page = filter_input( INPUT_GET, 'page' );
+		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 
 		switch ( $current_page ) {
 			case $this->network_settings_page_slug :
@@ -373,7 +373,9 @@ class Network {
 			return;
 		}
 
+		// @codingStandardsIgnoreStart
 		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null;
+		// @codingStandardsIgnoreEnd
 
 		if ( $options ) {
 
@@ -386,11 +388,13 @@ class Network {
 					foreach ( $section['fields'] as $field_idx => $field ) {
 						$option_key = $section_name . '_' . $field['name'];
 
+						// @codingStandardsIgnoreStart
 						if ( isset( $_POST[ $option ][ $option_key ] ) ) {
 							$value[ $option_key ] = $_POST[ $option ][ $option_key ];
 						} else {
 							$value[ $option_key ] = false;
 						}
+						// @codingStandardsIgnoreEnd
 					}
 				}
 
