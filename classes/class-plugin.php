@@ -119,8 +119,8 @@ class Plugin {
 		}
 
 		// Load WP-CLI command
-		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
-			\WP_CLI::add_command( self::WP_CLI_COMMAND, 'CLI' );
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			\WP_CLI::add_command( self::WP_CLI_COMMAND, 'WP_Stream\CLI' );
 		}
 	}
 

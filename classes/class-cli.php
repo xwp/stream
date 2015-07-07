@@ -26,12 +26,12 @@ class CLI extends \WP_CLI_Command {
 	 *
 	 * You can build a query from these fields:
 	 *
-	 * * author
-	 * * author__in
-	 * * author__not_in
-	 * * author_role
-	 * * author_role__in
-	 * * author_role__not_in
+	 * * user_id
+	 * * user_id__in
+	 * * user_id__not_in
+	 * * user_id_role
+	 * * user_id_role__in
+	 * * user_id_role__not_in
 	 * * date
 	 * * date_from
 	 * * date_to
@@ -65,9 +65,8 @@ class CLI extends \WP_CLI_Command {
 	 *
 	 * * created
 	 * * ip
-	 * * author
-	 * * author_meta.user_login
-	 * * author_role
+	 * * user_id
+	 * * user_id_role
 	 * * summary
 	 *
 	 * These fields are optionally available:
@@ -79,17 +78,11 @@ class CLI extends \WP_CLI_Command {
 	 * * connector
 	 * * context
 	 * * action
-	 * * author_meta
-	 * * stream_meta
-	 * * meta.links.self
-	 * * meta.links.collection
-	 * * meta.score
-	 * * meta.sort
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp stream query --author_role__not_in=administrator --date_after=2015-01-01T12:00:00
-	 *     wp stream query --author=1 --action=login --records_per_page=50 --fields=created
+	 *     wp stream query --user_role__not_in=administrator --date_after=2015-01-01T12:00:00
+	 *     wp stream query --user_id=1 --action=login --records_per_page=50 --fields=created
 	 *
 	 * @see WP_Stream_Query
 	 * @see https://github.com/wp-stream/stream/wiki/WP-CLI-Command
@@ -102,7 +95,7 @@ class CLI extends \WP_CLI_Command {
 		$this->connection();
 
 		if ( empty( $assoc_args['fields'] ) ) {
-			$fields = array( 'created', 'ip', 'author', 'author_meta.user_login', 'author_role', 'summary' );
+			$fields = array( 'created', 'ip', 'user_id', 'user_role', 'summary' );
 		} else {
 			$fields = explode( ',', $assoc_args['fields'] );
 		}
