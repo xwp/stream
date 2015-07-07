@@ -142,7 +142,8 @@ class Admin {
 		add_action( 'wp_ajax_wp_stream_defaults', array( $this, 'wp_ajax_defaults' ) );
 
 		// Uninstall Streams and Deactivate plugin
-		add_action( 'wp_ajax_wp_stream_uninstall', array( 'WP_Stream_Uninstall', 'uninstall' ) );
+		$uninstall = new Uninstall( $this->plugin );
+		add_action( 'wp_ajax_wp_stream_uninstall', array( $uninstall, 'uninstall' ) );
 
 		// Auto purge setup
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );

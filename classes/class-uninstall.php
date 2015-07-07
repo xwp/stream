@@ -25,12 +25,6 @@ class Uninstall {
 	function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
-		$this->options = array(
-			$this->plugin->install->option_key,
-			$this->plugin->settings->option_key,
-			$this->plugin->settings->network_options_key,
-		);
-
 		$this->user_meta = array(
 			$this->plugin->feeds->user_feed_option_key,
 			'edit_stream_per_page',
@@ -44,6 +38,12 @@ class Uninstall {
 	 */
 	public function uninstall() {
 		//check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
+		$this->options = array(
+			$this->plugin->install->option_key,
+			$this->plugin->settings->option_key,
+			$this->plugin->settings->network_options_key,
+		);
 
 		// Verify current user's permissions before proceeding
 		if ( ! current_user_can( $this->plugin->admin->settings_cap ) ) {
@@ -121,8 +121,6 @@ class Uninstall {
 
 		// Wildcard matches
 		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%wp_stream%';" );
-		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%stream-notification-rules%';" );
-		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%stream_unread_count%';" );
 
 		// Specific options
 		foreach ( $this->options as $option ) {
@@ -136,7 +134,6 @@ class Uninstall {
 
 		// Wildcard matches on network options
 		$wpdb->query( "DELETE FROM {$wpdb->sitemeta} WHERE meta_key LIKE '%wp_stream%';" );
-		$wpdb->query( "DELETE FROM {$wpdb->sitemeta} WHERE meta_key LIKE 'stream_notifications%';" );
 
 		// Delete options from each blog on network
 		foreach ( wp_get_sites() as $blog ) {

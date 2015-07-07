@@ -90,12 +90,6 @@ class Plugin {
 			);
 		}
 
-		// Check DB and display an admin notice if there are tables missing
-		add_action( 'init', array( $this, 'verify_db' ) );
-
-		// Install the plugin
-		add_action( 'wp_stream_before_db_notices', array( $this, 'install' ) );
-
 		// Load languages
 		add_action( 'plugins_loaded', array( $this, 'i18n' ) );
 
@@ -120,7 +114,8 @@ class Plugin {
 
 		// Load admin area classes
 		if ( is_admin() ) {
-			$this->admin = new Admin( $this );
+			$this->admin   = new Admin( $this );
+			$this->install = new Install( $this );
 		}
 
 		// Load WP-CLI command
@@ -165,144 +160,6 @@ class Plugin {
 	 */
 	public function i18n() {
 		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-	}
-
-	/**
-	 * Verify that the required DB tables exists
-	 *
-	 * @return void
-	 */
-	public function verify_db() {
-		/**
-		 * Filter will halt install() if set to true
-		 *
-		 * @param bool
-		 *
-		 * @return bool
-		 */
-		if ( apply_filters( 'wp_stream_no_tables', false ) ) {
-			return;
-		}
-
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		}
-
-		global $wpdb;
-
-		$database_message  = '';
-		$uninstall_message = '';
-
-		// Check if all needed DB is present
-		$missing_tables = array();
-
-		foreach ( $this->db->get_table_names() as $table_name ) {
-			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-				$missing_tables[] = $table_name;
-			}
-		}
-
-		if ( $missing_tables ) {
-			$database_message .= sprintf(
-				'%s <strong>%s</strong>',
-				_n(
-					'The following table is not present in the WordPress database:',
-					'The following tables are not present in the WordPress database:',
-					count( $missing_tables ),
-					'stream'
-				),
-				esc_html( implode( ', ', $missing_tables ) )
-			);
-		}
-
-		if ( is_plugin_active_for_network( $this->locations['plugin'] ) && current_user_can( 'manage_network_plugins' ) ) {
-			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), network_admin_url( 'plugins.php#stream' ) );
-		} elseif ( current_user_can( 'activate_plugins' ) ) {
-			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
-		}
-
-		/**
-		 * Fires before admin notices are triggered for missing database tables.
-		 */
-		do_action( 'wp_stream_before_db_notices' );
-
-		if ( ! empty( $database_message ) ) {
-			$this->admin->notice( $database_message );
-
-			if ( ! empty( $uninstall_message ) ) {
-				$this->admin->notice( $uninstall_message );
-			}
-		}
-	}
-
-	/**
-	 * DB installation and upgrades
-	 *
-	 * @action register_activation_hook
-	 *
-	 * @return void
-	 */
-	public function install() {
-		if ( is_admin() ) {
-			$this->install = new Install( $this );
-		}
-	}
-
-	/**
-	 * DB installation and upgrades
-	 *
-	 * @action register_activation_hook
-	 *
-	 * @return void
-	 */
-	public function update_activation_hook() {
-		$this->register_update_hook(
-			dirname( plugin_basename( __FILE__ ) ),
-			array( $this, 'install' ),
-			$this->get_version()
-		);
-	}
-
-	/**
-	 * Register a routine to be called when stream or a stream connector has been updated
-	 * It works by comparing the current version with the version previously stored in the database.
-	 *
-	 * @param string $file     A reference to the main plugin file
-	 * @param string $callback The function to run when the hook is called.
-	 * @param string $version  The version to which the plugin is updating.
-	 *
-	 * @return void
-	 */
-	public function register_update_hook( $file, $callback, $version ) {
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		$plugin = plugin_basename( $file );
-
-		if ( is_plugin_active_for_network( $plugin ) ) {
-			$current_versions = get_site_option( $this->install->key . '_connectors', array() );
-			$network          = true;
-		} elseif ( is_plugin_active( $plugin ) ) {
-			$current_versions = get_option( $this->install->key . '_connectors', array() );
-			$network          = false;
-		} else {
-			return;
-		}
-
-		if ( version_compare( $version, $current_versions[ $plugin ], '>' ) ) {
-			call_user_func( $callback, $current_versions[ $plugin ], $network );
-
-			$current_versions[ $plugin ] = $version;
-		}
-
-		if ( $network ) {
-			update_site_option( $this->install->key . '_registered_connectors', $current_versions );
-		} else {
-			update_option( $this->install->key . '_registered_connectors', $current_versions );
-		}
-
-		return;
 	}
 
 	/**
@@ -366,7 +223,7 @@ class Plugin {
 		$dir_url          = content_url( trailingslashit( $content_sub_path ) );
 		$dir_path         = trailingslashit( $plugin_dir );
 		$dir_basename     = basename( $plugin_dir );
-		$plugin_basename  = trailingslashit( $dir_basename ) . basename( __FILE__ );
+		$plugin_basename  = trailingslashit( $dir_basename ) . $dir_basename. '.php';
 
 		return compact( 'dir_url', 'dir_path', 'dir_basename', 'plugin_basename' );
 	}
