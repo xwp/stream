@@ -72,6 +72,10 @@ class DB {
 	 * @return int
 	 */
 	public function insert( $recordarr ) {
+		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
+			return false;
+		}
+
 		/**
 		 * Filter allows modification of record information
 		 *

@@ -130,9 +130,6 @@ class Plugin {
 			$this->admin = new Admin( $this );
 		}
 
-		// Disable logging during the content import process
-		add_filter( 'wp_stream_record_array', array( $this, 'disable_logging_during_import' ), 10, 1 );
-
 		// Load WP-CLI command
 		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
 			\WP_CLI::add_command( self::WP_CLI_COMMAND, 'CLI' );
@@ -175,23 +172,6 @@ class Plugin {
 	 */
 	public function i18n() {
 		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-	}
-
-	/**
-	 * Disable logging during the content import process
-	 *
-	 * @param array $records
-	 *
-	 * @filter wp_stream_record_array
-	 *
-	 * @return array
-	 */
-	public function disable_logging_during_import( $records ) {
-		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
-			$records = array();
-		}
-
-		return $records;
 	}
 
 	/**
