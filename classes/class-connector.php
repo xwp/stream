@@ -50,8 +50,7 @@ abstract class Connector {
 	 */
 	public function callback() {
 		$action   = current_filter();
-		$class    = get_called_class();
-		$callback = array( $class, 'callback_' . preg_replace( '/[^a-z0-9_\-]/', '_', $action ) );
+		$callback = array( $this, 'callback_' . preg_replace( '/[^a-z0-9_\-]/', '_', $action ) );
 
 		// For the sake of testing, trigger an action with the name of the callback
 		if ( defined( 'STREAM_TESTS' ) ) {

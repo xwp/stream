@@ -120,9 +120,7 @@ class Plugin {
 		}, 9 );
 
 		// Load support for feeds
-		add_action( 'init', function() {
-			$this->feeds = new Feeds( $this );
-		} );
+		$this->feeds = new Feeds( $this );
 
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
@@ -347,7 +345,9 @@ class Plugin {
 	 * @return void
 	 */
 	public function install() {
-		$this->install = new Install( $this );
+		if ( is_admin() ) {
+			$this->install = new Install( $this );
+		}
 	}
 
 	/**
