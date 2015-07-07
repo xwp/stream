@@ -9,6 +9,13 @@ class Settings {
 	public $plugin;
 
 	/**
+	 * Settings key/identifier
+	 *
+	 * @var string
+	 */
+	public $option_key = 'wp_stream';
+
+	/**
 	 * Network settings key/identifier
 	 *
 	 * @var string
@@ -28,13 +35,6 @@ class Settings {
 	 * @var array
 	 */
 	public $options = array();
-
-	/**
-	 * Settings key/identifier
-	 *
-	 * @var string
-	 */
-	public $option_key = '';
 
 	/**
 	 * Settings fields
@@ -503,7 +503,7 @@ class Settings {
 				$type = ! empty( $field['type'] ) ? $field['type'] : null;
 				$name = ! empty( $field['name'] ) ? sprintf( '%s_%s', $section, $field['name'] ) : null;
 
-				if ( empty( $type ) || '' === $input[ $name ] ) {
+				if ( empty( $type ) || ! isset( $input[ $name ] ) || '' === $input[ $name ] ) {
 					continue;
 				}
 
