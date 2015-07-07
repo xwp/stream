@@ -583,29 +583,29 @@ class Connector_BuddyPress extends Connector {
 			$group->name,
 		);
 
-		if ( $message ) {
-			// Do nothing
-		} elseif ( 'created' === $action ) {
-			$message = esc_html__( '"%s" group created', 'stream' );
-		} elseif ( 'updated' === $action ) {
-			$message = esc_html__( '"%s" group updated', 'stream' );
-		} elseif ( 'deleted' === $action ) {
-			$message = esc_html__( '"%s" group deleted', 'stream' );
-		} elseif ( 'joined' === $action ) {
-			$message = esc_html__( 'Joined group "%s"', 'stream' );
-		} elseif ( 'left' === $action ) {
-			$message = esc_html__( 'Left group "%s"', 'stream' );
-		} elseif ( 'banned' === $action ) {
-			$message = esc_html__( 'Banned "%2$s" from "%1$s"', 'stream' );
-			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
-		} elseif ( 'unbanned' === $action ) {
-			$message = esc_html__( 'Unbanned "%2$s" from "%1$s"', 'stream' );
-			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
-		} elseif ( 'removed' === $action ) {
-			$message = esc_html__( 'Removed "%2$s" from "%1$s"', 'stream' );
-			$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
-		} else {
-			return;
+		if ( ! $message ) {
+			if ( 'created' === $action ) {
+				$message = esc_html__( '"%s" group created', 'stream' );
+			} elseif ( 'updated' === $action ) {
+				$message = esc_html__( '"%s" group updated', 'stream' );
+			} elseif ( 'deleted' === $action ) {
+				$message = esc_html__( '"%s" group deleted', 'stream' );
+			} elseif ( 'joined' === $action ) {
+				$message = esc_html__( 'Joined group "%s"', 'stream' );
+			} elseif ( 'left' === $action ) {
+				$message = esc_html__( 'Left group "%s"', 'stream' );
+			} elseif ( 'banned' === $action ) {
+				$message = esc_html__( 'Banned "%2$s" from "%1$s"', 'stream' );
+				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
+			} elseif ( 'unbanned' === $action ) {
+				$message = esc_html__( 'Unbanned "%2$s" from "%1$s"', 'stream' );
+				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
+			} elseif ( 'removed' === $action ) {
+				$message = esc_html__( 'Removed "%2$s" from "%1$s"', 'stream' );
+				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
+			} else {
+				return;
+			}
 		}
 
 		$this->log(
@@ -710,16 +710,16 @@ class Connector_BuddyPress extends Connector {
 			$field->name,
 		);
 
-		if ( $message ) {
-			// Do nothing
-		} elseif ( 'created' === $action ) {
-			$message = esc_html__( 'Created profile field "%s"', 'stream' );
-		} elseif ( 'updated' === $action ) {
-			$message = esc_html__( 'Updated profile field "%s"', 'stream' );
-		} elseif ( 'deleted' === $action ) {
-			$message = esc_html__( 'Deleted profile field "%s"', 'stream' );
-		} else {
-			return;
+		if ( ! $message ) {
+			if ( 'created' === $action ) {
+				$message = esc_html__( 'Created profile field "%s"', 'stream' );
+			} elseif ( 'updated' === $action ) {
+				$message = esc_html__( 'Updated profile field "%s"', 'stream' );
+			} elseif ( 'deleted' === $action ) {
+				$message = esc_html__( 'Deleted profile field "%s"', 'stream' );
+			} else {
+				return;
+			}
 		}
 
 		$this->log(
@@ -729,9 +729,9 @@ class Connector_BuddyPress extends Connector {
 			),
 			array_merge(
 				array(
-					'field_id' => $field->id,
+					'field_id'   => $field->id,
 					'field_name' => $field->name,
-					'group_id' => $field->group_id,
+					'group_id'   => $field->group_id,
 				),
 				$meta
 			),
@@ -755,16 +755,16 @@ class Connector_BuddyPress extends Connector {
 			$group->name,
 		);
 
-		if ( $message ) {
-			// Do nothing
-		} elseif ( 'created' === $action ) {
-			$message = esc_html__( 'Created profile field group "%s"', 'stream' );
-		} elseif ( 'updated' === $action ) {
-			$message = esc_html__( 'Updated profile field group "%s"', 'stream' );
-		} elseif ( 'deleted' === $action ) {
-			$message = esc_html__( 'Deleted profile field group "%s"', 'stream' );
-		} else {
-			return;
+		if ( ! $message ) {
+			if ( 'created' === $action ) {
+				$message = esc_html__( 'Created profile field group "%s"', 'stream' );
+			} elseif ( 'updated' === $action ) {
+				$message = esc_html__( 'Updated profile field group "%s"', 'stream' );
+			} elseif ( 'deleted' === $action ) {
+				$message = esc_html__( 'Deleted profile field group "%s"', 'stream' );
+			} else {
+				return;
+			}
 		}
 
 		$this->log(
@@ -774,7 +774,7 @@ class Connector_BuddyPress extends Connector {
 			),
 			array_merge(
 				array(
-					'group_id' => $group->id,
+					'group_id'   => $group->id,
 					'group_name' => $group->name,
 				),
 				$meta

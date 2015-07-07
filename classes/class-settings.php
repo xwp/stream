@@ -976,7 +976,7 @@ class Settings {
 
 		$output = $this->render_field( $field );
 
-		echo $output;
+		echo $output; // xss ok
 	}
 
 	/**

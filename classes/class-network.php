@@ -373,7 +373,9 @@ class Network {
 			return;
 		}
 
+		// @codingStandardsIgnoreStart
 		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null;
+		// @codingStandardsIgnoreEnd
 
 		if ( $options ) {
 
@@ -386,11 +388,13 @@ class Network {
 					foreach ( $section['fields'] as $field_idx => $field ) {
 						$option_key = $section_name . '_' . $field['name'];
 
+						// @codingStandardsIgnoreStart
 						if ( isset( $_POST[ $option ][ $option_key ] ) ) {
 							$value[ $option_key ] = $_POST[ $option ][ $option_key ];
 						} else {
 							$value[ $option_key ] = false;
 						}
+						// @codingStandardsIgnoreEnd
 					}
 				}
 

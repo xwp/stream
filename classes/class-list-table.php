@@ -818,11 +818,17 @@ class List_Table extends \WP_List_Table {
 	function set_live_update_option( $dummy, $option, $value ) {
 		unset( $value );
 
-		if ( $this->plugin->admin->live_update->user_meta_key === $option && isset( $_POST[ $this->plugin->admin->live_update->user_meta_key ] ) ) {
+		// @codingStandardsIgnoreStart
+		if (
+			$this->plugin->admin->live_update->user_meta_key === $option
+			&&
+			isset( $_POST[ $this->plugin->admin->live_update->user_meta_key ] )
+		) {
 			$value = esc_attr( $_POST[ $this->plugin->admin->live_update->user_meta_key ] ); //input var okay
 
 			return $value;
 		}
+		// @codingStandardsIgnoreEnd
 
 		return $dummy;
 	}

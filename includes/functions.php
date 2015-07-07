@@ -42,11 +42,13 @@ function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
 	if ( function_exists( 'wp_json_encode' ) ) {
 		$json = wp_json_encode( $data, $options, $depth );
 	} else {
+		// @codingStandardsIgnoreStart
 		if ( version_compare( PHP_VERSION, '5.5', '<' ) ) {
 			$json = json_encode( $data, $options );
 		} else {
 			$json = json_encode( $data, $options, $depth );
 		}
+		// @codingStandardsIgnoreEnd
 	}
 
 	return $json;
