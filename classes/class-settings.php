@@ -976,7 +976,7 @@ class Settings {
 
 		$output = $this->render_field( $field );
 
-		echo wp_kses_post( $output );
+		echo $output;
 	}
 
 	/**
