@@ -302,7 +302,7 @@ class Settings {
 		);
 
 		// Private feeds not available on VIP
-		if ( ! $this->plugin->is_vip() ) {
+		if ( ! wp_stream_is_vip() ) {
 			$private_feeds = array(
 				'name'        => 'private_feeds',
 				'title'       => esc_html__( 'Private Feeds', 'stream' ),

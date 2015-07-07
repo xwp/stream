@@ -937,7 +937,7 @@ class Admin {
 	 * @return mixed
 	 */
 	function get_user_meta( $user_id, $meta_key, $single = true ) {
-		return $this->plugin->is_vip() ? get_user_attribute( $user_id, $meta_key ) : get_user_meta( $user_id, $meta_key, $single );
+		return wp_stream_is_vip() ? get_user_attribute( $user_id, $meta_key ) : get_user_meta( $user_id, $meta_key, $single );
 	}
 
 	/**
@@ -951,7 +951,7 @@ class Admin {
 	 * @return int|bool
 	 */
 	function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
-		return $this->plugin->is_vip() ? update_user_attribute( $user_id, $meta_key, $meta_value ) : update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
+		return wp_stream_is_vip() ? update_user_attribute( $user_id, $meta_key, $meta_value ) : update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
 	}
 
 	/**
@@ -964,6 +964,6 @@ class Admin {
 	 * @return bool
 	 */
 	function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
-		return $this->plugin->is_vip() ? delete_user_attribute( $user_id, $meta_key, $meta_value ) : delete_user_meta( $user_id, $meta_key, $meta_value );
+		return wp_stream_is_vip() ? delete_user_attribute( $user_id, $meta_key, $meta_value ) : delete_user_meta( $user_id, $meta_key, $meta_value );
 	}
 }

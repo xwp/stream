@@ -24,7 +24,7 @@ class Feeds {
 		$this->plugin = $plugin;
 
 		if (
-			$this->plugin->is_vip()
+			wp_stream_is_vip()
 			||
 			! isset( $this->plugin->settings->options['general_private_feeds'] )
 			||

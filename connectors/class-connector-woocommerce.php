@@ -413,9 +413,8 @@ class Connector_Woocommerce extends Connector {
 			return;
 		}
 
-		$stream = wp_stream_get_instance();
-		$old_status = $stream->is_vip() ? wpcom_vip_get_term_by( 'slug', $old, 'shop_order_status' ) : get_term_by( 'slug', $old, 'shop_order_status' );
-		$new_status = $stream->is_vip() ? wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' ) : get_term_by( 'slug', $new, 'shop_order_status' );
+		$old_status = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $old, 'shop_order_status' ) : get_term_by( 'slug', $old, 'shop_order_status' );
+		$new_status = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' ) : get_term_by( 'slug', $new, 'shop_order_status' );
 
 		// Don't track new statuses
 		if ( ! $old_status ) {

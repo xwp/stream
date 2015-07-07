@@ -3,8 +3,8 @@
 /**
  * Converts a time into an ISO 8601 extended formatted string.
  *
- * @param int Seconds since unix epoc
- * @param int Hour offset
+ * @param int|bool $time Seconds since unix epoc
+ * @param int $offset Hour offset
  *
  * @return string an ISO 8601 extended formatted time
  */
@@ -33,10 +33,10 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
  * Encode to JSON in a way that is also backwards compatible
  *
  * @param mixed $data
- * @param int   $options (optional)
- * @param int   $depth (optional)
+ * @param int $options (optional)
+ * @param int $depth (optional)
  *
- * @return bool|string
+ * @return string
  */
 function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
 	if ( function_exists( 'wp_json_encode' ) ) {
@@ -50,4 +50,13 @@ function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
 	}
 
 	return $json;
+}
+
+/**
+ * Check if Stream is running on WordPress.com VIP
+ *
+ * @return bool
+ */
+function wp_stream_is_vip() {
+	return function_exists( 'wpcom_vip_load_plugin' );
 }

@@ -178,15 +178,6 @@ class Plugin {
 	}
 
 	/**
-	 * Check if Stream is running on WordPress.com VIP
-	 *
-	 * @return bool
-	 */
-	public function is_vip() {
-		return function_exists( 'wpcom_vip_load_plugin' );
-	}
-
-	/**
 	 * True if native WP Cron is enabled, otherwise false
 	 *
 	 * @return bool
