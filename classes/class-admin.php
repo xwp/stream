@@ -1,6 +1,10 @@
 <?php
 namespace WP_Stream;
 
+use DateTime;
+use DateTimeZone;
+use DateInterval;
+
 class Admin {
 	/**
 	 * Hold Plugin class
