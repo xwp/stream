@@ -94,6 +94,13 @@ class Admin {
 	public $preload_users_max = 50;
 
 	/**
+	 * Admin notices, collected and displayed on proper action
+	 *
+	 * @var array
+	 */
+	public $notices = array();
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
@@ -115,7 +122,8 @@ class Admin {
 		}
 
 		// Admin notices
-		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+		add_action( 'admin_notices', array( $this, 'prepare_admin_notices' ) );
+		add_action( 'shutdown', array( $this, 'admin_notices' ) );
 
 		// Add admin body class
 		add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
@@ -165,24 +173,76 @@ class Admin {
 	}
 
 	/**
-	 * Output specific update
+	 * Output specific updates passed as URL parameters
 	 *
 	 * @action admin_notices
 	 *
 	 * @return string
 	 */
-	public function admin_notices() {
+	public function prepare_admin_notices() {
 		$message = filter_input( INPUT_GET, 'message' );
-		$notice  = false;
 
 		switch ( $message ) {
 			case 'settings_reset':
-				$notice = esc_html__( 'All site settings have been successfully reset.', 'stream' );
+				$this->notice( esc_html__( 'All site settings have been successfully reset.', 'stream' ) );
 				break;
 		}
+	}
 
-		if ( $notice ) {
-			$this->plugin->notice( $notice, false );
+	/**
+	 * Handle notice messages according to the appropriate context (WP-CLI or the WP Admin)
+	 *
+	 * @param string $message
+	 * @param bool $is_error
+	 */
+	public function notice( $message, $is_error = true ) {
+		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
+			$message = strip_tags( $message );
+
+			if ( $is_error ) {
+				\WP_CLI::warning( $message );
+			} else {
+				\WP_CLI::success( $message );
+			}
+		} else {
+			// Trigger admin notices late, so that any notices which occur during page load are displayed
+			add_action( 'shutdown', array( $this, 'admin_notices' ) );
+
+			$notice = compact( 'message', 'is_error' );
+
+			if ( ! in_array( $notice, $this->notices ) ) {
+				$this->notices[] = $notice;
+			}
+		}
+	}
+
+	/**
+	 * Show an error or other message in the WP Admin
+	 *
+	 * @action shutdown
+	 */
+	public function admin_notices() {
+		global $allowedposttags;
+
+		$custom = array(
+			'progress' => array(
+				'class' => true,
+				'id'    => true,
+				'max'   => true,
+				'style' => true,
+				'value' => true,
+			),
+		);
+
+		$allowed_html = array_merge( $allowedposttags, $custom );
+
+		ksort( $allowed_html );
+
+		foreach ( $this->notices as $notice ) {
+			$class_name   = empty( $notice['is_error'] ) ? 'updated' : 'error';
+			$html_message = sprintf( '<div class="%s">%s</div>', esc_attr( $class_name ), wpautop( $notice['message'] ) );
+
+			echo wp_kses( $html_message, $allowed_html );
 		}
 	}
 

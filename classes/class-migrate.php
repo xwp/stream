@@ -228,7 +228,7 @@ class Migrate {
 			__( "No thanks, I don't want to migrate", 'stream' )
 		);
 
-		$this->plugin->notice( $notice, true );
+		$this->plugin->admin->notice( $notice, true );
 	}
 
 	/**

@@ -52,13 +52,6 @@ class Plugin {
 	public $install;
 
 	/**
-	 * Admin notices, collected and displayed on proper action
-	 *
-	 * @var array
-	 */
-	public $notices = array();
-
-	/**
 	 * URLs and Paths used by the plugin
 	 *
 	 * @var array
@@ -175,63 +168,6 @@ class Plugin {
 	}
 
 	/**
-	 * Handle notice messages according to the appropriate context (WP-CLI or the WP Admin)
-	 *
-	 * @param string $message
-	 * @param bool $is_error
-	 */
-	public function notice( $message, $is_error = true ) {
-		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
-			$message = strip_tags( $message );
-
-			if ( $is_error ) {
-				\WP_CLI::warning( $message );
-			} else {
-				\WP_CLI::success( $message );
-			}
-		} else {
-			// Trigger admin notices late, so that any notices which occur during page load are displayed
-			add_action( 'shutdown', array( $this, 'admin_notices' ) );
-
-			$notice = compact( 'message', 'is_error' );
-
-			if ( ! in_array( $notice, $this->notices ) ) {
-				$this->notices[] = $notice;
-			}
-		}
-	}
-
-	/**
-	 * Show an error or other message in the WP Admin
-	 *
-	 * @action shutdown
-	 */
-	public function admin_notices() {
-		global $allowedposttags;
-
-		$custom = array(
-			'progress' => array(
-				'class' => true,
-				'id'    => true,
-				'max'   => true,
-				'style' => true,
-				'value' => true,
-			),
-		);
-
-		$allowed_html = array_merge( $allowedposttags, $custom );
-
-		ksort( $allowed_html );
-
-		foreach ( $this->notices as $notice ) {
-			$class_name   = empty( $notice['is_error'] ) ? 'updated' : 'error';
-			$html_message = sprintf( '<div class="%s">%s</div>', esc_attr( $class_name ), wpautop( $notice['message'] ) );
-
-			echo wp_kses( $html_message, $allowed_html );
-		}
-	}
-
-	/**
 	 * Verify that the required DB tables exists
 	 *
 	 * @return void
@@ -291,10 +227,10 @@ class Plugin {
 		do_action( 'wp_stream_before_db_notices' );
 
 		if ( ! empty( $database_message ) ) {
-			$this->notice( $database_message );
+			$this->admin->notice( $database_message );
 
 			if ( ! empty( $uninstall_message ) ) {
-				$this->notice( $uninstall_message );
+				$this->admin->notice( $uninstall_message );
 			}
 		}
 	}
