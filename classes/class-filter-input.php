@@ -9,8 +9,8 @@ class Filter_Input {
 		FILTER_VALIDATE_EMAIL         => 'is_email',
 		FILTER_VALIDATE_FLOAT         => 'is_float',
 		FILTER_VALIDATE_INT           => 'is_int',
-		FILTER_VALIDATE_IP            => array( 'WP_Stream_Filter_Input', 'is_ip_address' ),
-		FILTER_VALIDATE_REGEXP        => array( 'WP_Stream_Filter_Input', 'is_regex' ),
+		FILTER_VALIDATE_IP            => array( __CLASS__, 'is_ip_address' ),
+		FILTER_VALIDATE_REGEXP        => array( __CLASS__, 'is_regex' ),
 		FILTER_VALIDATE_URL           => 'wp_http_validate_url',
 		// Sanitize
 		FILTER_SANITIZE_EMAIL         => 'sanitize_email',
@@ -102,7 +102,7 @@ class Filter_Input {
 		return $var;
 	}
 
-	public function is_regex( $var ) {
+	public static function is_regex( $var ) {
 		// @codingStandardsIgnoreStart
 		$test = @preg_match( $var, '' );
 		// @codingStandardsIgnoreEnd
@@ -110,7 +110,7 @@ class Filter_Input {
 		return false !== $test;
 	}
 
-	public function is_ip_address( $var ) {
+	public static function is_ip_address( $var ) {
 		return false !== \WP_Http::is_ip_address( $var );
 	}
 }
