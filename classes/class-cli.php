@@ -29,9 +29,9 @@ class CLI extends \WP_CLI_Command {
 	 * * user_id
 	 * * user_id__in
 	 * * user_id__not_in
-	 * * user_id_role
-	 * * user_id_role__in
-	 * * user_id_role__not_in
+	 * * user_role
+	 * * user_role__in
+	 * * user_role__not_in
 	 * * date
 	 * * date_from
 	 * * date_to
@@ -66,7 +66,7 @@ class CLI extends \WP_CLI_Command {
 	 * * created
 	 * * ip
 	 * * user_id
-	 * * user_id_role
+	 * * user_role
 	 * * summary
 	 *
 	 * These fields are optionally available:
