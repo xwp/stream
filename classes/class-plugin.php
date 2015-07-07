@@ -178,15 +178,6 @@ class Plugin {
 	}
 
 	/**
-	 * True if native WP Cron is enabled, otherwise false
-	 *
-	 * @return bool
-	 */
-	public function is_wp_cron_enabled() {
-		return ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
-	}
-
-	/**
 	 * Disable logging during the content import process
 	 *
 	 * @param array $records

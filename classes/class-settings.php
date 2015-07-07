@@ -344,7 +344,7 @@ class Settings {
 		}
 
 		// If WP Cron is enabled, allow Admins to opt-in to WP Cron tracking
-		if ( $this->plugin->is_wp_cron_enabled() ) {
+		if ( wp_stream_is_cron_enabled() ) {
 			$wp_cron_tracking = array(
 				'name'        => 'wp_cron_tracking',
 				'title'       => esc_html__( 'WP Cron Tracking', 'stream' ),

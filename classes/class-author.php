@@ -240,7 +240,7 @@ class Author {
 	 */
 	function is_doing_wp_cron() {
 		return (
-			$this->plugin->is_wp_cron_enabled()
+			wp_stream_is_cron_enabled()
 			&&
 			defined( 'DOING_CRON' )
 			&&

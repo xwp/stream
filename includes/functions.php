@@ -60,3 +60,12 @@ function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
 function wp_stream_is_vip() {
 	return function_exists( 'wpcom_vip_load_plugin' );
 }
+
+/**
+ * True if native WP Cron is enabled, otherwise false
+ *
+ * @return bool
+ */
+function wp_stream_is_cron_enabled() {
+	return ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
+}
