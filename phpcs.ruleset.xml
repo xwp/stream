@@ -3,7 +3,7 @@
 <ruleset name="WordPress Coding Standards for WP Stream">
 
 	<rule ref="WordPress-Extra">
-		<exclude name="WordPress.CSRF.NonceVerification.NoNonceVerification" />
+		<exclude name="WordPress.CSRF.NonceVerification" />
 	</rule>
 
 	<exclude-pattern>*/tests/*</exclude-pattern>
