@@ -306,7 +306,7 @@ class Query {
 		$results = $wpdb->get_results( $query );
 
 		// Hold the number of records found
-		$this->found_records = $wpdb->get_var( 'SELECT FOUND_ROWS()' );
+		$this->found_records = absint( $wpdb->get_var( 'SELECT FOUND_ROWS()' ) );
 
 		// Add meta to the records, when applicable
 		if ( empty( $fields ) || in_array( 'meta', $fields ) ) {

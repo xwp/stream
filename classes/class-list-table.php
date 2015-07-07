@@ -588,6 +588,7 @@ class List_Table extends \WP_List_Table {
 					// Ouput a hidden input to handle the connector value
 					$filters_string .= '<input type="hidden" name="connector" class="record-filter-connector" />';
 				}
+
 				$filters_string .= $this->filter_select( $name, $data['title'], $data['items'] );
 			}
 		}
