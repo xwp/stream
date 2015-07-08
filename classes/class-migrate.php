@@ -13,14 +13,14 @@ class Migrate {
 	 *
 	 * @var string
 	 */
-	public $api_key;
+	private $api_key;
 
 	/**
 	 * Hold site UUID
 	 *
 	 * @var string
 	 */
-	public $site_uuid;
+	private $site_uuid;
 
 	/**
 	 * Hold the total number of legacy records found in the cloud
@@ -61,10 +61,8 @@ class Migrate {
 
 		$this->record_count = $this->get_record_count();
 
-		// Disconnect and exit if no records exist
-		if ( empty( $this->record_count ) ) {
-			$this->disconnect();
-
+		// Exit if no records exist, but do not disconnect
+		if ( 0 === $this->record_count ) {
 			return;
 		}
 
@@ -83,14 +81,14 @@ class Migrate {
 	 *
 	 * @return bool
 	 */
-	public function is_connected() {
+	private function is_connected() {
 		return ( ! empty( $this->api_key ) && ! empty( $this->site_uuid ) );
 	}
 
 	/**
 	 * Disconnect from WP Stream
 	 */
-	public function disconnect() {
+	private function disconnect() {
 		delete_option( 'wp_stream_site_api_key' );
 		delete_option( 'wp_stream_site_uuid' );
 		delete_option( 'wp_stream_migrate_chunk' );
@@ -218,7 +216,7 @@ class Migrate {
 		}
 
 		$notice = sprintf(
-			'<strong id="stream-migrate-title">%s</strong></p><p><a href="#" target="_blank">%s</a></p><p id="stream-migrate-message">%s</p><div id="stream-migrate-progress"><progress value="0" max="100"></progress> <strong>0&#37;</strong> <em></em> <button id="stream-migrate-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-migrate-actions"><button id="stream-start-migrate" class="button button-primary">%s</button> <button id="stream-migrate-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-delete-records" class="delete">%s</a>',
+			'<strong id="stream-migrate-title">%s</strong></p><p id="stream-migrate-blog-link"><a href="#" target="_blank">%s</a></p><p id="stream-migrate-message">%s</p><div id="stream-migrate-progress"><progress value="0" max="100"></progress> <strong>0&#37;</strong> <em></em> <button id="stream-migrate-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-migrate-actions"><button id="stream-start-migrate" class="button button-primary">%s</button> <button id="stream-migrate-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-ignore-migrate" class="delete">%s</a>',
 			__( 'Our cloud storage services will be shutting down permanently on September 1, 2015', 'stream' ),
 			__( 'Read the announcement post', 'stream' ),
 			sprintf( esc_html__( 'We found %s activity records in the cloud that need to be migrated to your local database.', 'stream' ), number_format( $this->record_count ) ),
@@ -251,16 +249,17 @@ class Migrate {
 
 		set_time_limit( 0 ); // Just in case, this could take a while for some
 
-		if ( 'migrate' === $action ) {
-			$this->migrate();
-		}
-
-		if ( 'delay' === $action ) {
-			$this->delay();
-		}
-
-		if ( 'delete' === $action ) {
-			$this->delete();
+		switch ( $action ) {
+			case 'migrate':
+			case 'continue':
+				$this->migrate();
+				break;
+			case 'delay':
+				$this->delay();
+				break;
+			case 'ignore':
+				$this->ignore();
+				break;
 		}
 
 		die();
@@ -287,8 +286,6 @@ class Migrate {
 
 		if ( true !== $records_saved ) {
 			wp_send_json_error( esc_html__( 'An unknown error occurred during migration. Please try again later or contact support.', 'stream' ) );
-
-			// @TODO: Provide better error messages during $this->save_records()
 		}
 
 		// Records have been saved, move on to the next chunk
@@ -313,8 +310,10 @@ class Migrate {
 	 *
 	 * @return string JSON data
 	 */
-	private function delete() {
-		wp_send_json_success( esc_html__( 'Your records will not be migrated. Thank you for using Stream!', 'stream' ) );
+	private function ignore() {
+		$this->disconnect();
+
+		wp_send_json_success( esc_html__( 'All new activity will be stored in the local database.', 'stream' ) );
 	}
 
 	/**
@@ -325,8 +324,24 @@ class Migrate {
 	 * @return bool
 	 */
 	private function save_records( $records ) {
-		return true;
+		foreach ( $records as $record ) {
+			// Remove existing meta field
+			unset( $record->meta );
 
-		// @TODO: Save records to the local DB
+			// Map fields to the newer data model
+			$record->user_id         = $record->author;
+			$record->user_role       = $record->author_role;
+			$record->meta            = $record->stream_meta;
+			$record->meta->user_meta = $record->author_meta;
+
+			// Convert the record object to a record array
+			$record = json_decode( json_encode( $record ), true );
+
+			// Save the record
+			$this->plugin->db->insert( $record );
+		}
+
+		return true;
 	}
+
 }

@@ -513,12 +513,12 @@
 	margin: 0 10px 5px 0 !important;
 }
 
-#stream-delete-records {
+#stream-ignore-migrate {
 	display: inline-block;
 	margin: 10px 0 5px;
 	color: #a00;
 }
 
-#stream-delete-records:hover {
+#stream-ignore-migrate:hover {
 	color: #f00;
 }
