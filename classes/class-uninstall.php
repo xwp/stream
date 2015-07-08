@@ -26,7 +26,7 @@ class Uninstall {
 		$this->plugin = $plugin;
 
 		$this->user_meta = array(
-			$this->plugin->feeds->user_feed_option_key,
+			Feeds::USER_FEED_OPTION_KEY,
 			'edit_stream_per_page',
 			'stream_last_read', // Deprecated
 			'stream_unread_count', // Deprecated

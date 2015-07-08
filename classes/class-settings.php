@@ -311,7 +311,7 @@ class Settings {
 					__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
 					sprintf(
 						'<a href="%s" title="%s">',
-						$this->plugin->feeds->get_user_feed_settings_admin_url(),
+						self_admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', Feeds::USER_FEED_OPTION_KEY ) ),
 						esc_attr__( 'View Profile', 'stream' )
 					),
 					'</a>',

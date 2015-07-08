@@ -8,12 +8,11 @@ class Feeds {
 	 */
 	public $plugin;
 
-	public $user_feed_option_key = 'stream_user_feed_key';
-
 	const FEED_QUERY_VAR         = 'stream';
 	const FEED_KEY_QUERY_VAR     = 'key';
 	const FEED_TYPE_QUERY_VAR    = 'type';
 	const GENERATE_KEY_QUERY_VAR = 'stream_new_user_feed_key';
+	const USER_FEED_OPTION_KEY   = 'stream_user_feed_key';
 
 	/**
 	 * Class constructor.
@@ -58,7 +57,7 @@ class Feeds {
 		if ( $user_id ) {
 			$feed_key = wp_generate_password( 32, false );
 
-			$this->plugin->admin->update_user_meta( $user_id, $this->user_feed_option_key, $feed_key );
+			$this->plugin->admin->update_user_meta( $user_id, self::USER_FEED_OPTION_KEY, $feed_key );
 
 			$link      = $this->get_user_feed_url( $feed_key );
 			$xml_feed  = add_query_arg( array( 'type' => 'json' ), $link );
@@ -90,7 +89,7 @@ class Feeds {
 		$generate_key = wp_stream_filter_input( INPUT_GET, self::GENERATE_KEY_QUERY_VAR );
 		$nonce        = wp_stream_filter_input( INPUT_GET, 'wp_stream_nonce' );
 
-		if ( ! $generate_key && $this->plugin->admin->get_user_meta( $user->ID, $this->user_feed_option_key ) ) {
+		if ( ! $generate_key && $this->plugin->admin->get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY ) ) {
 			return;
 		}
 
@@ -100,7 +99,7 @@ class Feeds {
 
 		$feed_key = wp_generate_password( 32, false );
 
-		$this->plugin->admin->update_user_meta( $user->ID, $this->user_feed_option_key, $feed_key );
+		$this->plugin->admin->update_user_meta( $user->ID, self::USER_FEED_OPTION_KEY, $feed_key );
 	}
 
 	/**
@@ -116,19 +115,19 @@ class Feeds {
 			return;
 		}
 
-		$key  = $this->plugin->admin->get_user_meta( $user->ID, $this->user_feed_option_key );
+		$key  = $this->plugin->admin->get_user_meta( $user->ID, self::USER_FEED_OPTION_KEY );
 		$link = $this->get_user_feed_url( $key );
 
 		$nonce = wp_create_nonce( 'wp_stream_generate_key' );
 		?>
 		<table class="form-table">
 			<tr>
-				<th><label for="<?php echo esc_attr( $this->user_feed_option_key ) ?>"><?php esc_html_e( 'Stream Feeds Key', 'stream' ) ?></label></th>
+				<th><label for="<?php echo esc_attr( self::USER_FEED_OPTION_KEY ) ?>"><?php esc_html_e( 'Stream Feeds Key', 'stream' ) ?></label></th>
 				<td>
 					<p class="wp-stream-feeds-key">
 						<?php wp_nonce_field( 'wp_stream_generate_key', 'wp_stream_generate_key_nonce' ) ?>
-						<input type="text" name="<?php echo esc_attr( $this->user_feed_option_key ) ?>" id="<?php echo esc_attr( $this->user_feed_option_key ) ?>" class="regular-text code" value="<?php echo esc_attr( $key ) ?>" readonly>
-						<small><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true, 'wp_stream_nonce' => $nonce ) ) ) ?>" id="<?php echo esc_attr( $this->user_feed_option_key ) ?>_generate"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
+						<input type="text" name="<?php echo esc_attr( self::USER_FEED_OPTION_KEY ) ?>" id="<?php echo esc_attr( self::USER_FEED_OPTION_KEY ) ?>" class="regular-text code" value="<?php echo esc_attr( $key ) ?>" readonly>
+						<small><a href="<?php echo esc_url( add_query_arg( array( self::GENERATE_KEY_QUERY_VAR => true, 'wp_stream_nonce' => $nonce ) ) ) ?>" id="<?php echo esc_attr( self::USER_FEED_OPTION_KEY ) ?>_generate"><?php esc_html_e( 'Generate new key', 'stream' ) ?></a></small>
 						<span class="spinner" style="display: none;"></span>
 					</p>
 					<p class="description"><?php esc_html_e( 'This is your private key used for accessing feeds of Stream Records securely. You can change your key at any time by generating a new one using the link above.', 'stream' ) ?></p>
@@ -182,15 +181,6 @@ class Feeds {
 	}
 
 	/**
-	 * Return the Profile admin page, with the feed settings highlighted
-	 *
-	 * @return string
-	 */
-	public function get_user_feed_settings_admin_url() {
-		admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', $this->user_feed_option_key ) );
-	}
-
-	/**
 	 * Output for Stream Records as a feed.
 	 *
 	 * @return xml
@@ -201,7 +191,7 @@ class Feeds {
 		$query_var   = self::FEED_QUERY_VAR;
 
 		$args = array(
-			'meta_key'   => $this->user_feed_option_key,
+			'meta_key'   => self::USER_FEED_OPTION_KEY,
 			'meta_value' => wp_stream_filter_input( INPUT_GET, self::FEED_KEY_QUERY_VAR ),
 			'number'     => 1,
 		);

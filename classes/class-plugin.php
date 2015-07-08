@@ -107,7 +107,9 @@ class Plugin {
 		}, 9 );
 
 		// Load support for feeds
-		$this->feeds = new Feeds( $this );
+		add_action( 'init', function() {
+			$this->feeds = new Feeds( $this );
+		} );
 
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
