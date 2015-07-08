@@ -595,7 +595,7 @@ class List_Table extends \WP_List_Table {
 
 		// Parse all query vars into an array
 		if ( isset( $_SERVER['QUERY_STRING'] ) ) {
-			parse_str( esc_html( $_SERVER['QUERY_STRING'] ), $query_vars );
+			parse_str( urldecode( $_SERVER['QUERY_STRING'] ), $query_vars );
 		}
 
 		// Ignore certain query vars and query vars that are empty
