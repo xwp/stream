@@ -333,7 +333,7 @@ class List_Table extends \WP_List_Table {
 				}
 		}
 
-		echo $out;
+		echo $out; // xss ok
 	}
 
 	public function get_action_links( $record ) {

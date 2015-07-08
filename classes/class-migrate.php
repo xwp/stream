@@ -334,7 +334,9 @@ class Migrate {
 			$record->meta->user_meta = $record->author_meta;
 
 			// Convert the record object to a record array
+			// @codingStandardsIgnoreStart
 			$record = json_decode( json_encode( $record ), true );
+			// @codingStandardsIgnoreEnd
 
 			// Save the record
 			$inserted = $this->plugin->db->insert( $record );
