@@ -386,8 +386,9 @@ class Admin {
 		);
 
 		if ( $this->migrate->show_migrate_notice() ) {
+			$limit                = absint( $this->migrate->limit );
 			$record_count         = absint( $this->migrate->record_count );
-			$chunks               = absint( $this->migrate->chunks );
+			$chunks               = ceil( $record_count / $limit );
 			$estimated_time       = ( $chunks > 1 ) ? round( ( $chunks * 5 ) / 60 ) : 0;
 			$migrate_time_message = ( $estimated_time > 1 ) ? sprintf( esc_html__( 'This will take about %d minutes.', 'stream' ), absint( $estimated_time ) ) : esc_html__( 'This could take a few minutes.', 'stream' );
 

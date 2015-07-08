@@ -37,13 +37,6 @@ class Migrate {
 	public $limit;
 
 	/**
-	 * Number of chunks required to migrate
-	 *
-	 * @var int
-	 */
-	public $chunks;
-
-	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
@@ -66,8 +59,7 @@ class Migrate {
 			return;
 		}
 
-		$this->limit  = absint( apply_filters( 'wp_stream_migrate_chunk_size', 100 ) );
-		$this->chunks = ( $this->record_count > $this->limit ) ? absint( ceil( $this->record_count / $this->limit ) ) : 1;
+		$this->limit = absint( apply_filters( 'wp_stream_migrate_chunk_size', 100 ) );
 
 		// Display admin notice
 		add_action( 'admin_notices', array( $this, 'migrate_notice' ), 9 );
@@ -91,19 +83,10 @@ class Migrate {
 	private function disconnect() {
 		delete_option( 'wp_stream_site_api_key' );
 		delete_option( 'wp_stream_site_uuid' );
-		delete_option( 'wp_stream_migrate_chunk' );
+		delete_option( 'wp_stream_migrate_last' );
 
 		$this->api_key   = false;
 		$this->site_uuid = false;
-	}
-
-	/**
-	 * Get the current chunk number being migrated
-	 *
-	 * @return int
-	 */
-	private function get_current_chunk() {
-		return absint( get_option( 'wp_stream_migrate_chunk', 1 ) );
 	}
 
 	/**
@@ -118,8 +101,34 @@ class Migrate {
 			return false;
 		}
 
+		$defaults = array(
+			'sort' => array(
+				array(
+					'created' => array(
+						'order' => 'asc',
+					),
+				),
+			),
+		);
+
+		$last = get_option( 'wp_stream_migrate_last', false );
+
+		if ( $last ) {
+			$defaults['filter'] = array(
+				'and' => array(
+					array(
+						'range' => array(
+							'created' => array(
+								'gt' => $last,
+							),
+						),
+					),
+				),
+			);
+		}
+
 		$body['sites'] = array( $this->site_uuid );
-		$body['query'] = (array) $query;
+		$body['query'] = array_merge( $defaults, (array) $query );
 
 		$args = array(
 			'headers'   => array(
@@ -271,12 +280,10 @@ class Migrate {
 	 * @return string JSON data
 	 */
 	private function migrate() {
-		$chunk   = $this->get_current_chunk();
-		$offset  = ( $chunk - 1 ) * $this->limit;
-		$records = $this->get_records( $this->limit, $offset );
+		$records = $this->get_records( $this->limit );
 
 		// Disconnect when complete
-		if ( empty( $records ) || $chunk > $this->chunks ) {
+		if ( empty( $records ) ) {
 			$this->disconnect();
 
 			wp_send_json_success( esc_html__( 'Migration complete!', 'stream' ) );
@@ -287,9 +294,6 @@ class Migrate {
 		if ( true !== $records_saved ) {
 			wp_send_json_error( esc_html__( 'An unknown error occurred during migration. Please try again later or contact support.', 'stream' ) );
 		}
-
-		// Records have been saved, move on to the next chunk
-		update_option( 'wp_stream_migrate_chunk', absint( $chunk + 1 ) );
 
 		wp_send_json_success( 'continue' );
 	}
@@ -338,7 +342,12 @@ class Migrate {
 			$record = json_decode( json_encode( $record ), true );
 
 			// Save the record
-			$this->plugin->db->insert( $record );
+			$inserted = $this->plugin->db->insert( $record );
+
+			// Save the date of the last known migrated record
+			if ( false !== $inserted ) {
+				update_option( 'wp_stream_migrate_last', $record['created'] );
+			}
 		}
 
 		return true;
