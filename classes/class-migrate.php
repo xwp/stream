@@ -106,7 +106,7 @@ class Migrate {
 			),
 		);
 
-		$last = get_option( 'wp_stream_migrate_last', false );
+		$last = get_option( 'wp_stream_migrate_last' );
 
 		if ( $last ) {
 			$defaults['filter'] = array(
