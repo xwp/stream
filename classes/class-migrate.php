@@ -52,14 +52,9 @@ class Migrate {
 			return;
 		}
 
-		$this->record_count = $this->get_record_count();
-
-		// Exit if no records exist, but do not disconnect
-		if ( 0 === $this->record_count ) {
-			return;
-		}
-
 		$this->limit = absint( apply_filters( 'wp_stream_migrate_chunk_size', 100 ) );
+
+		$this->record_count = $this->get_record_count();
 
 		// Display admin notice
 		add_action( 'admin_notices', array( $this, 'migrate_notice' ), 9 );
@@ -241,8 +236,8 @@ class Migrate {
 	/**
 	 * Ajax callback for processing migrate actions
 	 *
-	 * Break down the total number of records found into reasonably-sized chunks
-	 * and save records from each of those chunks to the local DB.
+	 * Break down the total number of records found into reasonably-sized
+	 * chunks and save records from each of those chunks to the local DB.
 	 *
 	 * Disconnects from WP Stream once the migration is complete.
 	 *
@@ -282,8 +277,8 @@ class Migrate {
 	private function migrate() {
 		$records = $this->get_records( $this->limit );
 
-		// Disconnect when complete
-		if ( empty( $records ) ) {
+		// Disconnect when there are no records left
+		if ( ! $records ) {
 			$this->disconnect();
 
 			wp_send_json_success( esc_html__( 'Migration complete!', 'stream' ) );
