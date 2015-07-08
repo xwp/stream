@@ -93,9 +93,6 @@ class Plugin {
 		// Load languages
 		add_action( 'plugins_loaded', array( $this, 'i18n' ) );
 
-		// Load support for feeds
-		$this->feeds = new Feeds( $this );
-
 		// Load logger class
 		$this->log = apply_filters( 'wp_stream_log_handler', new Log( $this ) );
 
@@ -108,6 +105,9 @@ class Plugin {
 		add_action( 'init', function() {
 			$this->connectors = new Connectors( $this );
 		}, 9 );
+
+		// Load support for feeds
+		$this->feeds = new Feeds( $this );
 
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
