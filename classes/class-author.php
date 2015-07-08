@@ -26,13 +26,12 @@ class Author {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
-	 * @param int $user_id
-	 * @param array $user_meta
+	 * @param int          $user_id   The user ID.
+	 * @param array|string $user_meta The user meta array, or a serialized string of user meta.
 	 */
 	function __construct( $user_id, $user_meta = array() ) {
-		$this->id   = $user_id;
-		$this->meta = $user_meta;
+		$this->id   = absint( $user_id );
+		$this->meta = maybe_unserialize( $user_meta );
 
 		if ( $this->id ) {
 			$this->user = new \WP_User( $this->id );

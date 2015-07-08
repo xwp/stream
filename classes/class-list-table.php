@@ -255,9 +255,7 @@ class List_Table extends \WP_List_Table {
 				break;
 
 			case 'user_id' :
-				$meta      = maybe_unserialize( $record->meta );
-				$user_meta = ! empty( $meta['user_meta'] ) ? maybe_unserialize( $meta['user_meta'] ) : array();
-				$user      = new Author( (int) $record->user_id, (array) $user_meta );
+				$user = new Author( (int) $record->user_id, (array) maybe_unserialize( $record->user_meta ) );
 
 				$out = sprintf(
 					'<a href="%s">%s <span>%s</span></a>%s%s%s',
