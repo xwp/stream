@@ -124,7 +124,7 @@ class Connector_Woocommerce extends Connector {
 		$context_labels = array_merge(
 			$context_labels,
 			$custom_context_labels,
-			$this->$settings_pages
+			$this->settings_pages
 		);
 
 		return apply_filters( 'wp_stream_woocommerce_contexts', $context_labels );
