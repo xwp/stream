@@ -21,11 +21,11 @@ class Network {
 
 		// Actions
 		add_action( 'init', array( $this, 'ajax_network_admin' ) );
-		add_action( 'network_admin_menu', array( 'WP_Stream_Admin', 'register_menu' ) );
+		add_action( 'network_admin_menu', array( 'Admin', 'register_menu' ) );
 		add_action( 'network_admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu_screens' ) );
 		add_action( 'admin_bar_menu', array( $this, 'network_admin_bar_menu' ), 99 );
-		add_action( 'network_admin_notices', array( 'WP_Stream_Admin', 'admin_notices' ) );
+		add_action( 'network_admin_notices', array( 'Admin', 'admin_notices' ) );
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
 		add_action( 'update_site_option_' . $this->plugin->settings->network_options_key, array( $this, 'updated_option_ttl_remove_records' ), 10, 3 );
 

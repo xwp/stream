@@ -79,6 +79,7 @@ class Migrate {
 		delete_option( 'wp_stream_site_api_key' );
 		delete_option( 'wp_stream_site_uuid' );
 		delete_option( 'wp_stream_delay_migration' );
+		delete_option( 'wp_stream_site_restricted' );
 
 		$this->api_key   = false;
 		$this->site_uuid = false;
