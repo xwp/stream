@@ -159,7 +159,7 @@ class Network {
 			__( 'Network Settings', 'stream' ),
 			$this->plugin->admin->settings_cap,
 			$this->network_settings_page_slug,
-			array( 'Admin', 'render_settings_page' )
+			array( $this->plugin->admin, 'render_settings_page' )
 		);
 
 		if ( ! $this->plugin->admin->disable_access ) {
@@ -169,7 +169,7 @@ class Network {
 				__( 'Site Defaults', 'stream' ),
 				$this->plugin->admin->settings_cap,
 				$this->default_settings_page_slug,
-				array( 'Admin', 'render_settings_page' )
+				array( $this->plugin->admin, 'render_settings_page' )
 			);
 		}
 	}
