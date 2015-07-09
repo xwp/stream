@@ -78,7 +78,7 @@ class Migrate {
 	private function disconnect() {
 		delete_option( 'wp_stream_site_api_key' );
 		delete_option( 'wp_stream_site_uuid' );
-		delete_option( 'wp_stream_last_migrated' );
+		delete_option( 'wp_stream_delay_migration' );
 
 		$this->api_key   = false;
 		$this->site_uuid = false;
