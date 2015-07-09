@@ -78,7 +78,7 @@ class Migrate {
 	private function disconnect() {
 		delete_option( 'wp_stream_site_api_key' );
 		delete_option( 'wp_stream_site_uuid' );
-		delete_option( 'wp_stream_migrate_last' );
+		delete_option( 'wp_stream_last_migrated' );
 
 		$this->api_key   = false;
 		$this->site_uuid = false;
@@ -106,7 +106,7 @@ class Migrate {
 			),
 		);
 
-		$last = get_option( 'wp_stream_migrate_last' );
+		$last = get_option( 'wp_stream_last_migrated' );
 
 		if ( $last ) {
 			$defaults['filter'] = array(
@@ -201,7 +201,7 @@ class Migrate {
 			&&
 			! empty( $this->record_count )
 			&&
-			false === get_transient( 'wp_stream_migrate_delayed' )
+			false === get_transient( 'wp_stream_delay_migration' )
 		) {
 			return true;
 		}
@@ -294,12 +294,12 @@ class Migrate {
 	}
 
 	/**
-	 * Delay the migration of records
+	 * Delay the migration of records for 3 hours
 	 *
 	 * @return string JSON data
 	 */
 	private function delay() {
-		set_transient( 'wp_stream_migrate_delayed', "Don't nag me, bro", HOUR_IN_SECONDS * 3 );
+		set_transient( 'wp_stream_delay_migration', "Don't nag me, bro", HOUR_IN_SECONDS * 3 );
 
 		wp_send_json_success( esc_html__( "OK, we'll remind you again in a few hours.", 'stream' ) );
 	}
@@ -343,7 +343,7 @@ class Migrate {
 
 			// Save the date of the last known migrated record
 			if ( false !== $inserted ) {
-				update_option( 'wp_stream_migrate_last', $record['created'] );
+				update_option( 'wp_stream_last_migrated', $record['created'] );
 			}
 		}
 
