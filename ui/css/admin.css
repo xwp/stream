@@ -463,15 +463,6 @@
 }
 
 
-/* User Profile */
-
-.wp-stream-feeds-key .spinner {
-	margin-top: 5px;
-	position: absolute;
-	float: none;
-}
-
-
 /* Extensions */
 
 .post-type-stream_notification .view-switch {

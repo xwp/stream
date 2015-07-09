@@ -258,7 +258,6 @@ class Network {
 			array(
 				'general' => array(
 					'role_access',
-					'private_feeds',
 				),
 				'exclude' => array(
 					'authors',

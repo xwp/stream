@@ -57,9 +57,6 @@ class Settings {
 		// Register settings, and fields
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 
-		// Check if we need to flush rewrites rules
-		add_action( 'update_option_' . $this->option_key, array( $this, 'updated_option_trigger_flush_rules' ), 10, 2 );
-
 		// Remove records when records TTL is shortened
 		add_action( 'update_option_' . $this->option_key, array( $this, 'updated_option_ttl_remove_records' ), 10, 2 );
 
@@ -300,34 +297,6 @@ class Settings {
 				),
 			),
 		);
-
-		// Private feeds not available on VIP
-		if ( ! wp_stream_is_vip() ) {
-			$private_feeds = array(
-				'name'        => 'private_feeds',
-				'title'       => esc_html__( 'Private Feeds', 'stream' ),
-				'type'        => 'checkbox',
-				'desc'        => sprintf(
-					__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of Stream Records securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'stream' ),
-					sprintf(
-						'<a href="%s" title="%s">',
-						self_admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', Feeds::USER_FEED_OPTION_KEY ) ),
-						esc_attr__( 'View Profile', 'stream' )
-					),
-					'</a>',
-					sprintf(
-						'<a href="%s" title="%s" target="_blank">',
-						esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
-						esc_attr__( 'View Codex', 'stream' )
-					),
-					'</a>'
-				),
-				'after_field' => esc_html__( 'Enabled', 'stream' ),
-				'default'     => 0,
-			);
-
-			array_push( $fields['general']['fields'], $private_feeds );
-		}
 
 		// If Akismet is active, allow Admins to opt-in to Akismet tracking
 		if ( class_exists( 'Akismet' ) ) {
@@ -1026,25 +995,6 @@ class Settings {
 		}
 
 		return $return_labels;
-	}
-
-	/**
-	 * Check if we have updated a settings that requires rewrite rules to be flushed
-	 *
-	 * @action updated_option_wp_stream
-	 *
-	 * @param array $old_value
-	 * @param array $new_value
-	 */
-	public function updated_option_trigger_flush_rules( $old_value, $new_value ) {
-		if ( is_array( $new_value ) && is_array( $old_value ) ) {
-			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
-			$old_value = ( array_key_exists( 'general_private_feeds', $old_value ) ) ? $old_value['general_private_feeds'] : 0;
-
-			if ( $new_value !== $old_value ) {
-				delete_option( 'rewrite_rules' );
-			}
-		}
 	}
 
 	/**

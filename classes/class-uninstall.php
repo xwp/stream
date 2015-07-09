@@ -26,10 +26,10 @@ class Uninstall {
 		$this->plugin = $plugin;
 
 		$this->user_meta = array(
-			Feeds::USER_FEED_OPTION_KEY,
 			'edit_stream_per_page',
 			'stream_last_read', // Deprecated
 			'stream_unread_count', // Deprecated
+			'stream_user_feed_key', // Deprecated
 		);
 	}
 

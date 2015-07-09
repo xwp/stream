@@ -32,11 +32,6 @@ class Plugin {
 	public $db;
 
 	/**
-	 * @var Feeds
-	 */
-	public $feeds;
-
-	/**
 	 * @var Log
 	 */
 	public $log;
@@ -105,11 +100,6 @@ class Plugin {
 		add_action( 'init', function() {
 			$this->connectors = new Connectors( $this );
 		}, 9 );
-
-		// Load support for feeds
-		add_action( 'init', function() {
-			$this->feeds = new Feeds( $this );
-		} );
 
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
