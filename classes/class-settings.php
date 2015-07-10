@@ -361,7 +361,7 @@ class Settings {
 		return apply_filters(
 			'wp_stream_settings_options',
 			wp_parse_args(
-				(array) is_network_admin() ? get_site_option( $option_key, array() ) : get_option( $option_key, array() ),
+				is_network_admin() ? (array) get_site_option( $option_key, array() ) : (array) get_option( $option_key, array() ),
 				$defaults
 			),
 			$option_key
