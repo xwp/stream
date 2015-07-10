@@ -205,7 +205,7 @@ class Connector_Taxonomies extends Connector {
 	 */
 	public function callback_edit_term( $term_id, $tt_id, $taxonomy ) {
 		unset( $tt_id );
-		$this->$cached_term_before_update = get_term( $term_id, $taxonomy );
+		$this->cached_term_before_update = get_term( $term_id, $taxonomy );
 	}
 
 	public function callback_edited_term( $term_id, $tt_id, $taxonomy ) {
