@@ -125,7 +125,12 @@ class Admin {
 		add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( $this, 'filter_role_caps' ), 10, 3 );
 
-		$this->disable_access = apply_filters( 'wp_stream_disable_admin_access', false );
+		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) && ! is_network_admin() ) {
+			$options = (array) get_site_option( 'wp_stream_network', array() );
+			$option  = isset( $options['general_site_access'] ) ? absint( $options['general_site_access'] ) : 1;
+
+			$this->disable_access = ( $option ) ? false : true;
+		}
 
 		// Register settings page
 		if ( ! $this->disable_access ) {

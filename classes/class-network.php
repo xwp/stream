@@ -41,7 +41,6 @@ class Network {
 		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
 		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
 		add_filter( 'wp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
-		add_filter( 'wp_stream_disable_admin_access', array( $this, 'disable_admin_access' ) );
 		add_filter( 'wp_stream_settings_form_action', array( $this, 'settings_form_action' ) );
 		add_filter( 'wp_stream_settings_form_description', array( $this, 'settings_form_description' ) );
 		add_filter( 'wp_stream_settings_option_fields', array( $this, 'get_network_admin_fields' ) );
@@ -124,25 +123,6 @@ class Network {
 				'href'   => esc_url( $href ),
 			)
 		);
-	}
-
-	/**
-	 * If site access has been disabled from the network admin, disallow access
-	 *
-	 * @param $disable_access
-	 *
-	 * @return bool
-	 */
-	public function disable_admin_access( $disable_access ) {
-		if ( ! is_network_admin() && $this->is_network_activated() ) {
-			$settings = (array) get_site_option( $this->plugin->settings->network_options_key, array() );
-
-			if ( isset( $settings['general_enable_site_access'] ) && false === $settings['general_enable_site_access'] ) {
-				return true;
-			}
-		}
-
-		return $disable_access;
 	}
 
 	/**
@@ -286,11 +266,11 @@ class Network {
 		// Add settings based on context
 		if ( $this->plugin->settings->network_options_key === $this->plugin->settings->option_key ) {
 			$new_fields['general']['fields'][] = array(
-				'name'        => 'enable_site_access',
-				'title'       => __( 'Enable Site Access', 'stream' ),
+				'name'        => 'site_access',
+				'title'       => __( 'Site Access', 'stream' ),
 				'after_field' => __( 'Enabled', 'stream' ),
 				'default'     => 1,
-				'desc'        => __( 'When site access is disabled Stream can only be accessed from the network administration.', 'stream' ),
+				'desc'        => __( 'Allow sites on this network to view their Stream activity. Leave unchecked to only allow Stream to be viewed in the Network Admin.', 'stream' ),
 				'type'        => 'checkbox',
 			);
 
