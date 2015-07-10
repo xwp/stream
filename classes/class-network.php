@@ -40,7 +40,6 @@ class Network {
 		add_filter( 'wp_stream_settings_form_action', array( $this, 'settings_form_action' ) );
 		add_filter( 'wp_stream_settings_form_description', array( $this, 'settings_form_description' ) );
 		add_filter( 'wp_stream_settings_option_fields', array( $this, 'get_network_admin_fields' ) );
-		add_filter( 'wp_stream_settings_options', array( $this, 'get_network_options' ), 10, 2 );
 		add_filter( 'wp_stream_serialized_labels', array( $this, 'get_settings_translations' ) );
 		add_filter( 'wp_stream_connectors', array( $this, 'hide_blogs_connector' ) );
 	}
@@ -161,17 +160,6 @@ class Network {
 			$this->network_settings_page_slug,
 			array( $this->plugin->admin, 'render_settings_page' )
 		);
-
-		if ( ! $this->plugin->admin->disable_access ) {
-			$this->plugin->admin->screen_id['default_settings'] = add_submenu_page(
-				$this->plugin->admin->records_page_slug,
-				__( 'New Site Settings', 'stream' ),
-				__( 'Site Defaults', 'stream' ),
-				$this->plugin->admin->settings_cap,
-				$this->default_settings_page_slug,
-				array( $this->plugin->admin, 'render_settings_page' )
-			);
-		}
 	}
 
 	/**
@@ -302,23 +290,6 @@ class Network {
 			);
 
 			$fields = array_merge_recursive( $new_fields, $fields );
-
-			$reset_site_settings_href = add_query_arg(
-				array(
-					'action'          => 'wp_stream_defaults',
-					'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-				),
-				admin_url( 'admin-ajax.php' )
-			);
-
-			$fields['general']['fields'][] = array(
-				'name'    => 'reset_site_settings',
-				'title'   => __( 'Reset Site Settings', 'stream' ),
-				'type'    => 'link',
-				'href'    => $reset_site_settings_href,
-				'desc'    => __( 'Warning: Clicking this will override all site settings with defaults.', 'stream' ),
-				'default' => 0,
-			);
 		}
 
 		// Remove empty settings sections
@@ -332,27 +303,22 @@ class Network {
 	}
 
 	/**
-	 * Get translations of serialized Stream Network and Stream Default settings
+	 * Get translations of serialized Stream Network settings
 	 *
 	 * @filter wp_stream_serialized_labels
+	 *
 	 * @return array Multidimensional array of fields
 	 */
 	public function get_settings_translations( $labels ) {
-		$network_key  = $this->plugin->settings->network_options_key;
-		$defaults_key = $this->plugin->settings->site_defaults_options_key;
+		$network_key = $this->plugin->settings->network_options_key;
 
 		if ( ! isset( $labels[ $network_key ] ) ) {
 			$labels[ $network_key ] = array();
 		}
 
-		if ( ! isset( $labels[ $defaults_key ] ) ) {
-			$labels[ $defaults_key ] = array();
-		}
-
 		foreach ( $this->plugin->settings->get_fields() as $section_slug => $section ) {
 			foreach ( $section['fields'] as $field ) {
-				$labels[ $network_key ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ]  = $field['title'];
-				$labels[ $defaults_key ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
+				$labels[ $network_key ][ sprintf( '%s_%s', $section_slug, $field['name'] ) ] = $field['title'];
 			}
 		}
 
@@ -416,26 +382,6 @@ class Network {
 		wp_redirect( $go_back );
 
 		exit;
-	}
-
-	/**
-	 * Uses network options when on the network settings page
-	 *
-	 * @filter wp_stream_settings_options
-	 *
-	 * @param $options
-	 *
-	 * @return array
-	 */
-	public function get_network_options( $options, $option_key ) {
-		if ( is_network_admin() ) {
-			$options = wp_parse_args(
-				(array) get_site_option( $option_key, array() ),
-				$this->plugin->settings->get_defaults( $option_key )
-			);
-		}
-
-		return $options;
 	}
 
 	/**

@@ -142,9 +142,6 @@ class Admin {
 		// Reset Streams database
 		add_action( 'wp_ajax_wp_stream_reset', array( $this, 'wp_ajax_reset' ) );
 
-		// Reset Streams settings
-		add_action( 'wp_ajax_wp_stream_defaults', array( $this, 'wp_ajax_defaults' ) );
-
 		// Uninstall Streams and Deactivate plugin
 		$uninstall = new Uninstall( $this->plugin );
 		add_action( 'wp_ajax_wp_stream_uninstall', array( $uninstall, 'uninstall' ) );
@@ -604,50 +601,6 @@ class Admin {
 			ON `meta`.`record_id` = `stream`.`ID`
 			WHERE 1=1 {$where};"
 		);
-	}
-
-	public function wp_ajax_defaults() {
-		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
-
-		if ( ! is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
-			wp_die( "You don't have sufficient privileges to do this action." );
-		}
-
-		if ( ! current_user_can( $this->settings_cap ) ) {
-			wp_die(
-				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
-			);
-		}
-
-		$this->reset_stream_settings();
-
-		wp_redirect(
-			add_query_arg(
-				array(
-					'page'    => is_network_admin() ? $this->network->network_settings_page_slug : $this->settings_page_slug,
-					'message' => 'settings_reset',
-				),
-				is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ? network_admin_url( $this->admin_parent_page ) : admin_url( $this->admin_parent_page )
-			)
-		);
-
-		exit;
-	}
-
-	private function reset_stream_settings() {
-		global $wpdb;
-
-		$blogs = wp_get_sites();
-
-		if ( $blogs ) {
-			foreach ( $blogs as $blog ) {
-				switch_to_blog( $blog['blog_id'] );
-
-				delete_option( $this->plugin->settings->option_key );
-			}
-
-			restore_current_blog();
-		}
 	}
 
 	public function purge_schedule_setup() {

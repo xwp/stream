@@ -23,13 +23,6 @@ class Settings {
 	public $network_options_key = 'wp_stream_network';
 
 	/**
-	 * Site setting defaults key/identifier
-	 *
-	 * @var string
-	 */
-	public $site_defaults_options_key = 'wp_stream_defaults';
-
-	/**
 	 * Plugin settings
 	 *
 	 * @var array
@@ -211,10 +204,6 @@ class Settings {
 			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
 		}
 
-		if ( 'wp_stream_default_settings' === $current_page ) {
-			$option_key = $this->site_defaults_options_key;
-		}
-
 		if ( 'wp_stream_network_settings' === $current_page ) {
 			$option_key = $this->network_options_key;
 		}
@@ -362,10 +351,6 @@ class Settings {
 		$option_key = $this->option_key;
 		$defaults   = $this->get_defaults( $option_key );
 
-		if ( $this->site_defaults_options_key === $option_key ) {
-			return $defaults;
-		}
-
 		/**
 		 * Filter allows for modification of options
 		 *
@@ -376,7 +361,7 @@ class Settings {
 		return apply_filters(
 			'wp_stream_settings_options',
 			wp_parse_args(
-				(array) get_option( $option_key, array() ),
+				(array) is_network_admin() ? get_site_option( $option_key, array() ) : get_option( $option_key, array() ),
 				$defaults
 			),
 			$option_key
@@ -398,20 +383,7 @@ class Settings {
 			}
 		}
 
-		/**
-		 * Filter allows for modification of default options
-		 *
-		 * @param array $default_options
-		 *
-		 * @return array
-		*/
-		return apply_filters(
-			'wp_stream_settings_option_defaults',
-			wp_parse_args(
-				(array) get_site_option( $this->site_defaults_options_key, array() ),
-				$defaults
-			)
-		);
+		return (array) $defaults;
 	}
 
 	/**
@@ -531,7 +503,11 @@ class Settings {
 		if ( isset( $field['value'] ) ) {
 			$current_value = $field['value'];
 		} else {
-			$current_value = $this->options[ $section . '_' . $name ];
+			if ( isset( $this->options[ $section . '_' . $name ] ) ) {
+				$current_value = $this->options[ $section . '_' . $name ];
+			} else {
+				$current_value = null;
+			}
 		}
 
 		$option_key = $this->option_key;
