@@ -15,6 +15,12 @@ class Network {
 	function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
+		// Always add default site_id/blog_id params when multisite
+		if ( is_multisite() ) {
+			add_filter( 'wp_stream_query_args', array( $this, 'network_query_args' ) );
+		}
+
+		// Bail early if not network-activated
 		if ( ! $this->is_network_activated() ) {
 			return;
 		}
@@ -31,7 +37,6 @@ class Network {
 
 		// Filters
 		add_filter( 'wp_stream_blog_id_logged', array( $this, 'blog_id_logged' ) );
-		add_filter( 'wp_stream_query_args', array( $this, 'network_query_args' ) );
 		add_filter( 'wp_stream_admin_page_title', array( $this, 'network_admin_page_title' ) );
 		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
 		add_filter( 'wp_stream_list_table_filters', array( $this, 'list_table_filters' ) );
@@ -470,15 +475,13 @@ class Network {
 	/**
 	 * Customize query args on multisite installs
 	 *
+	 * @filter wp_stream_query_args
+	 *
 	 * @param array $args
 	 *
 	 * @return array
 	 */
 	public function network_query_args( $args ) {
-		if ( ! is_multisite() ) {
-			return $args;
-		}
-
 		$args['site_id'] = is_numeric( $args['site_id'] ) ? $args['site_id'] : get_current_site()->id;
 		$args['blog_id'] = is_numeric( $args['blog_id'] ) ? $args['blog_id'] : ( is_network_admin() ? null : get_current_blog_id() );
 
