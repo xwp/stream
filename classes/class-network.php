@@ -39,7 +39,7 @@ class Network {
 		add_filter( 'wp_stream_disable_admin_access', array( $this, 'disable_admin_access' ) );
 		add_filter( 'wp_stream_settings_form_action', array( $this, 'settings_form_action' ) );
 		add_filter( 'wp_stream_settings_form_description', array( $this, 'settings_form_description' ) );
-		add_filter( 'wp_stream_settings_options_fields', array( $this, 'get_network_admin_fields' ) );
+		add_filter( 'wp_stream_settings_option_fields', array( $this, 'get_network_admin_fields' ) );
 		add_filter( 'wp_stream_settings_options', array( $this, 'get_network_options' ), 10, 2 );
 		add_filter( 'wp_stream_serialized_labels', array( $this, 'get_settings_translations' ) );
 		add_filter( 'wp_stream_connectors', array( $this, 'hide_blogs_connector' ) );
@@ -420,6 +420,8 @@ class Network {
 
 	/**
 	 * Uses network options when on the network settings page
+	 *
+	 * @filter wp_stream_settings_options
 	 *
 	 * @param $options
 	 *
