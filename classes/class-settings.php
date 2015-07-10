@@ -1,6 +1,10 @@
 <?php
 namespace WP_Stream;
 
+use \WP_Roles;
+use \WP_User;
+use \WP_User_Query;
+
 class Settings {
 	/**
 	 * Hold Plugin class
@@ -91,7 +95,7 @@ class Settings {
 
 		add_filter( 'user_search_columns', array( $this, 'add_display_name_search_columns' ), 10, 3 );
 
-		$users = new \WP_User_Query(
+		$users = new WP_User_Query(
 			array(
 				'search' => "*{$request->find}*",
 				'search_columns' => array(
@@ -153,8 +157,6 @@ class Settings {
 
 	/**
 	* Ajax callback function to search IP addresses, used on exclude setting page
-	*
-	* @uses \WP_User_Query WordPress User Query class.
 	*/
 	public function get_ips() {
 		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( $this->plugin->admin->settings_cap ) ) {
@@ -163,7 +165,7 @@ class Settings {
 
 		check_ajax_referer( 'stream_get_ips', 'nonce' );
 
-		$ips = $this->plugin->db->get_existing_records( 'ip' );
+		$ips = $this->plugin->db->existing_records( 'ip' );
 
 		if ( $ips ) {
 			wp_send_json_success( $ips );
@@ -765,7 +767,7 @@ class Settings {
 					}
 
 					if ( empty( $author_or_role_selected ) && is_numeric( $author_or_role ) ) {
-						$user                    = new \WP_User( $author_or_role );
+						$user                    = new WP_User( $author_or_role );
 						$display_name            = ( 0 === $user->ID ) ? esc_html__( 'N/A', 'stream' ) : $user->display_name;
 						$author_or_role_selected = array( 'id' => $user->ID, 'text' => $display_name );
 					}
@@ -930,7 +932,7 @@ class Settings {
 	 * @return array
 	 */
 	public function get_roles() {
-		$wp_roles = new \WP_Roles();
+		$wp_roles = new WP_Roles();
 		$roles    = array();
 
 		foreach ( $wp_roles->get_names() as $role => $label ) {
