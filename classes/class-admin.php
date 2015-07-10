@@ -4,6 +4,8 @@ namespace WP_Stream;
 use DateTime;
 use DateTimeZone;
 use DateInterval;
+use \WP_CLI;
+use \WP_Roles;
 
 class Admin {
 	/**
@@ -114,6 +116,11 @@ class Admin {
 
 		add_action( 'init', array( $this, 'init' ) );
 
+		// Ensure function used in various methods is pre-loaded
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
 		// User and role caps
 		add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( $this, 'filter_role_caps' ), 10, 3 );
@@ -198,13 +205,13 @@ class Admin {
 	 * @param bool $is_error
 	 */
 	public function notice( $message, $is_error = true ) {
-		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			$message = strip_tags( $message );
 
 			if ( $is_error ) {
-				\WP_CLI::warning( $message );
+				WP_CLI::warning( $message );
 			} else {
-				\WP_CLI::success( $message );
+				WP_CLI::success( $message );
 			}
 		} else {
 			// Trigger admin notices late, so that any notices which occur during page load are displayed
@@ -624,9 +631,9 @@ class Admin {
 		}
 
 		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
-			$options = (array) get_site_option( $this->plugin->settings->network_options_key, array() );
+			$options = (array) get_site_option( 'wp_stream_network', array() );
 		} else {
-			$options = $this->plugin->settings->get_options();
+			$options = (array) get_option( 'wp_stream', array() );
 		}
 
 		$days = $options['general_records_ttl'];
@@ -799,7 +806,7 @@ class Admin {
 	public function filter_user_caps( $allcaps, $caps, $args, $user = null ) {
 		global $wp_roles;
 
-		$_wp_roles = isset( $wp_roles ) ? $wp_roles : new \WP_Roles();
+		$_wp_roles = isset( $wp_roles ) ? $wp_roles : new WP_Roles();
 
 		$user = is_a( $user, 'WP_User' ) ? $user : wp_get_current_user();
 
