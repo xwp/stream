@@ -1,7 +1,7 @@
 <?php
 namespace WP_Stream;
 
-class Test_WP_Stream extends WP_StreamTestCase {
+class Test_Plugin extends WP_StreamTestCase {
 	/*
 	 * Also tests private method locate_plugin
 	 */
