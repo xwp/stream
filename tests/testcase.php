@@ -1,16 +1,11 @@
 <?php
-/**
- * Tests stream main class
- *
- * @author X-Team
- * @author Jonathan Bardo <jonathan.bardo@x-team.com>
- */
-class WP_StreamTestCase extends WP_UnitTestCase {
+namespace WP_Stream;
 
+class WP_StreamTestCase extends \WP_UnitTestCase {
 	/**
 	 * Holds the plugin base class
 	 *
-	 * @return void
+	 * @var Plugin
 	 */
 	protected $plugin;
 
@@ -28,6 +23,7 @@ class WP_StreamTestCase extends WP_UnitTestCase {
 	function setUp() {
 		parent::setUp();
 		$this->plugin = $GLOBALS['wp_stream'];
+		$this->assertNotEmpty( $this->plugin );
 	}
 
 	/**
@@ -75,5 +71,4 @@ class WP_StreamTestCase extends WP_UnitTestCase {
 	protected function do_filter_validation( array $tests = array() ){
 		$this->do_action_validation( $tests, 'has_filter' );
 	}
-
 }

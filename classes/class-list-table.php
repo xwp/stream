@@ -594,6 +594,8 @@ class List_Table extends \WP_List_Table {
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'stream' ) );
 
 		// Parse all query vars into an array
+		$query_vars = array();
+
 		if ( isset( $_SERVER['QUERY_STRING'] ) ) {
 			parse_str( urldecode( $_SERVER['QUERY_STRING'] ), $query_vars );
 		}

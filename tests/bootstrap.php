@@ -1,13 +1,8 @@
 <?php
-/**
- * Tests bootstrapper
- *
- * @author X-Team <x-team.com>
- * @author Jonathan Bardo <jonathan.bardo@x-team.com>
- */
+namespace WP_Stream;
 
 // Use in code to trigger custom actions
-define( 'STREAM_TESTS', true );
+define( 'WP_STREAM_TESTS', true );
 define( 'WP_STREAM_DEV_DEBUG', true );
 
 $_tests_dir = getenv('WP_TESTS_DIR');

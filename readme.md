@@ -57,17 +57,12 @@ Every logged-in user action is displayed in an activity stream and organized for
 
 **Other Noteworthy Features:**
 
- * Dashboard widget of most recent user activity
+ * Multisite view of all activity records on a network
  * Limit who can view user activity records by user role
  * Set exclude rules to ignore certain kinds of user activity
  * Live update of user activity records in the Stream
- * Private RSS and JSON feeds of user activity records
  * Support for IPv6 addresses
  * WP-CLI command for querying records
-
-**Coming Soon:**
-
- * Multisite view of all activity records on a network
 
 **Languages Supported:**
 

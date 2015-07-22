@@ -105,7 +105,7 @@ class Plugin {
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
 
 		// Load admin area classes
-		if ( is_admin() ) {
+		if ( is_admin() || ( defined( 'WP_STREAM_DEV_DEBUG' ) && WP_STREAM_DEV_DEBUG ) ) {
 			$this->admin   = new Admin( $this );
 			$this->install = new Install( $this );
 		}

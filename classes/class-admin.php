@@ -380,19 +380,19 @@ class Admin {
 					'gmt_offset' => get_option( 'gmt_offset' ),
 				)
 			);
-		}
 
-		wp_localize_script(
-			'wp-stream-live-updates',
-			'wp_stream_live_updates',
-			array(
-				'current_screen'      => $hook,
-				'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1', // input var okay
-				'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc', // input var okay
-				'current_query'       => wp_stream_json_encode( $_GET ), // input var okay
-				'current_query_count' => count( $_GET ), // input var okay
-			)
-		);
+			wp_localize_script(
+				'wp-stream-live-updates',
+				'wp_stream_live_updates',
+				array(
+					'current_screen'      => $hook,
+					'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1', // input var okay
+					'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc', // input var okay
+					'current_query'       => wp_stream_json_encode( $_GET ), // input var okay
+					'current_query_count' => count( $_GET ), // input var okay
+				)
+			);
+		}
 
 		if ( $this->migrate->show_migrate_notice() ) {
 			$limit                = absint( $this->migrate->limit );
@@ -500,8 +500,6 @@ class Admin {
 	 * @uses \wp_add_inline_style()
 	 *
 	 * @action admin_enqueue_scripts
-	 *
-	 * @return bool true on success false on failure
 	 */
 	public function admin_menu_css() {
 		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
@@ -583,6 +581,10 @@ class Admin {
 		}
 
 		$this->erase_stream_records();
+
+		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
+			return true;
+		}
 
 		wp_redirect(
 			add_query_arg(
@@ -726,7 +728,7 @@ class Admin {
 		$sections   = $this->plugin->settings->get_fields();
 		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
 
-		wp_enqueue_script( 'stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.js', array( 'jquery' ), $this->plugin->get_version(), true );
+		wp_enqueue_script( 'wp-stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.js', array( 'jquery' ), $this->plugin->get_version(), true );
 		?>
 		<div class="wrap">
 			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
@@ -855,7 +857,7 @@ class Admin {
 	 *
 	 * @return array
 	 */
-	public function _filter_role_caps( $allcaps, $cap, $role ) {
+	public function filter_role_caps( $allcaps, $cap, $role ) {
 		$stream_view_caps = array( $this->view_cap );
 
 		if ( in_array( $cap, $stream_view_caps ) && $this->role_can_view( $role ) ) {
@@ -876,13 +878,16 @@ class Admin {
 					get_users()
 				);
 
-				// `search` arg for get_users() is not enough
-				$users = array_filter(
-					$users,
-					function ( $user ) {
-						return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( wp_stream_filter_input( INPUT_GET, 'q' ) ) );
-					}
-				);
+				$search = wp_stream_filter_input( INPUT_GET, 'q' );
+				if ( $search ) {
+					// `search` arg for get_users() is not enough
+					$users = array_filter(
+						$users,
+						function ( $user ) use ( $search ) {
+							return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( $search ) );
+						}
+					);
+				}
 
 				if ( count( $users ) > $this->preload_users_max ) {
 					$users = array_slice( $users, 0, $this->preload_users_max );
@@ -896,6 +901,10 @@ class Admin {
 
 		if ( isset( $results ) ) {
 			echo wp_stream_json_encode( array_values( $results ) ); // xss ok
+		}
+
+		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
+			return;
 		}
 
 		die();
@@ -932,6 +941,10 @@ class Admin {
 
 		echo wp_stream_json_encode( $value ); // xss ok
 
+		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
+			return;
+		}
+
 		die();
 	}
 
@@ -939,8 +952,7 @@ class Admin {
 		$authors_records = array();
 
 		foreach ( $authors as $user_id => $args ) {
-			$author   = new Author( $user_id );
-			$disabled = isset( $args['disabled'] ) ? $args['disabled'] : null;
+			$author = new Author( $user_id );
 
 			$authors_records[ $user_id ] = array(
 				'text'     => $author->get_display_name(),
@@ -948,7 +960,6 @@ class Admin {
 				'label'    => $author->get_display_name(),
 				'icon'     => $author->get_avatar_src( 32 ),
 				'title'    => '',
-				'disabled' => $disabled,
 			);
 		}
 
@@ -965,7 +976,10 @@ class Admin {
 	 * @return mixed
 	 */
 	function get_user_meta( $user_id, $meta_key, $single = true ) {
-		return wp_stream_is_vip() ? get_user_attribute( $user_id, $meta_key ) : get_user_meta( $user_id, $meta_key, $single );
+		if ( wp_stream_is_vip() && function_exists( 'get_user_attribute' ) ) {
+			return get_user_attribute( $user_id, $meta_key );
+		}
+		return get_user_meta( $user_id, $meta_key, $single );
 	}
 
 	/**
@@ -979,7 +993,10 @@ class Admin {
 	 * @return int|bool
 	 */
 	function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
-		return wp_stream_is_vip() ? update_user_attribute( $user_id, $meta_key, $meta_value ) : update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
+		if ( wp_stream_is_vip() && function_exists( 'update_user_attribute' ) ) {
+			return update_user_attribute( $user_id, $meta_key, $meta_value );
+		}
+		return update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
 	}
 
 	/**
@@ -992,7 +1009,10 @@ class Admin {
 	 * @return bool
 	 */
 	function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
-		return wp_stream_is_vip() ? delete_user_attribute( $user_id, $meta_key, $meta_value ) : delete_user_meta( $user_id, $meta_key, $meta_value );
+		if ( wp_stream_is_vip() && function_exists( 'delete_user_attribute' ) ) {
+			return delete_user_attribute( $user_id, $meta_key, $meta_value );
+		}
+		return delete_user_meta( $user_id, $meta_key, $meta_value );
 	}
 
 }
