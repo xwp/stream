@@ -91,15 +91,8 @@ class Plugin {
 		// Load logger class
 		$this->log = apply_filters( 'wp_stream_log_handler', new Log( $this ) );
 
-		// Load settings, enabling extensions to hook in
-		add_action( 'init', function() {
-			$this->settings = new Settings( $this );
-		}, 9 );
-
-		// Load connectors after widgets_init, but before the default of 10
-		add_action( 'init', function() {
-			$this->connectors = new Connectors( $this );
-		}, 9 );
+		// Load settings and connectors after widgets_init and before the default init priority
+		add_action( 'init', array( $this, 'init' ), 9 );
 
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
@@ -152,6 +145,16 @@ class Plugin {
 	 */
 	public function i18n() {
 		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	}
+
+	/*
+	 * Load Settings and Connectors
+	 *
+	 * @action init
+	 */
+	public function init() {
+		$this->settings = new Settings( $this );
+		$this->connectors = new Connectors( $this );
 	}
 
 	/**

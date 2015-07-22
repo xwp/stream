@@ -9,9 +9,6 @@ class Test_Admin extends WP_StreamTestCase {
 	 */
 	protected $admin;
 
-	/**
-	 * Change to admin page
-	 */
 	public function setUp() {
 		parent::setUp();
 
