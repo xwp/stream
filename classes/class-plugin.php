@@ -144,7 +144,7 @@ class Plugin {
 	 * @action plugins_loaded
 	 */
 	public function i18n() {
-		load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain( 'stream', false, dirname( $this->locations['plugin'] ) . '/languages/' );
 	}
 
 	/*
@@ -153,7 +153,7 @@ class Plugin {
 	 * @action init
 	 */
 	public function init() {
-		$this->settings = new Settings( $this );
+		$this->settings   = new Settings( $this );
 		$this->connectors = new Connectors( $this );
 	}
 
