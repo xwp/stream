@@ -52,9 +52,12 @@ class Test_Admin extends WP_StreamTestCase {
 	}
 
 	public function test_prepare_admin_notices() {
+		// Test no notices
+		$this->admin->notices = array();
 		$this->admin->prepare_admin_notices();
 		$this->assertEmpty( $this->admin->notices );
 
+		// Test settings reset notice
 		$_GET['message'] = 'settings_reset';
 		$this->admin->prepare_admin_notices();
 		$this->assertNotEmpty( $this->admin->notices );
@@ -64,6 +67,8 @@ class Test_Admin extends WP_StreamTestCase {
 	}
 
 	public function test_notice() {
+		// Start with nothing
+		$this->admin->notices = array();
 		$this->assertEmpty( $this->admin->notices );
 
 		$message  = 'Affirmative, Dave. I read you.';
