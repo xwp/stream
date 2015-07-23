@@ -53,7 +53,7 @@ abstract class Connector {
 		$callback = array( $this, 'callback_' . preg_replace( '/[^a-z0-9_\-]/', '_', $action ) );
 
 		// For the sake of testing, trigger an action with the name of the callback
-		if ( defined( 'STREAM_TESTS' ) ) {
+		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
 			/**
 			 * Action fires during testing to test the current callback
 			 *
@@ -123,9 +123,8 @@ abstract class Connector {
 	 * Save log data till shutdown, so other callbacks would be able to override
 	 *
 	 * @param string $handle Special slug to be shared with other actions
-	 *
-	 * @internal param mixed $arg1 Extra arguments to sent to log()
-	 * @internal param mixed $arg2, etc..
+	 * @note param mixed $arg1 Extra arguments to sent to log()
+	 * @note param param mixed $arg2, etc..
 	 */
 	public function delayed_log( $handle ) {
 		$args = func_get_args();

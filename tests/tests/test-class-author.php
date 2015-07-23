@@ -3,7 +3,7 @@ namespace WP_Stream;
 
 class Test_Author extends WP_StreamTestCase {
 	/**
-	 * Holds the admin base class
+	 * Holds the author base class
 	 *
 	 * @var Author
 	 */

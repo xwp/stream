@@ -7,7 +7,6 @@
 namespace WP_Stream;
 
 class CLI extends \WP_CLI_Command {
-
 	/**
 	 * Query a set of Stream records.
 	 *
@@ -89,6 +88,8 @@ class CLI extends \WP_CLI_Command {
 	 * @see https://github.com/wp-stream/stream/wiki/Query-Reference
 	 */
 	public function query( $args, $assoc_args ) {
+		unset( $args );
+
 		$query_args        = array();
 		$formatted_records = array();
 
@@ -217,5 +218,4 @@ class CLI extends \WP_CLI_Command {
 			WP_CLI::error( esc_html__( 'SITE IS DISCONNECTED', 'stream' ) );
 		}
 	}
-
 }
