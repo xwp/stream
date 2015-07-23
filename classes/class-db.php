@@ -9,6 +9,12 @@ class DB {
 	public $plugin;
 
 	/**
+	 * Hold Query class
+	 * @var Query
+	 */
+	public $query;
+
+	/**
 	 * Hold records table name
 	 *
 	 * @var string
