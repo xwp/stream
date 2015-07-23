@@ -48,7 +48,6 @@ class Connectors {
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
-		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		$this->load_connectors();
 	}
 
@@ -120,25 +119,25 @@ class Connectors {
 
 		foreach ( $this->connectors as $connector ) {
 			if ( ! method_exists( $connector, 'get_label' ) ) {
-				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the get_label method.", 'stream' ), $connector->name, 'Connector' );
+				$this->plugin->admin->notice( sprintf( __( "%s class wasn't loaded because it doesn't implement the get_label method.", 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'register' ) ) {
-				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the register method.", 'stream' ), $connector->name, 'Connector' );
+				$this->plugin->admin->notice( sprintf( __( "%s class wasn't loaded because it doesn't implement the register method.", 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'get_context_labels' ) ) {
-				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the get_context_labels method.", 'stream' ), $connector->name, 'Connector' );
+				$this->plugin->admin->notice( sprintf( __( "%s class wasn't loaded because it doesn't implement the get_context_labels method.", 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'get_action_labels' ) ) {
-				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't implement the get_action_labels method.", 'stream' ), $connector->name, 'Connector' );
+				$this->plugin->admin->notice( sprintf( __( "%s class wasn't loaded because it doesn't implement the get_action_labels method.", 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 
 			// Check if the connectors extends the Connector class, if not skip it
 			if ( ! is_subclass_of( $connector, '\WP_Stream\Connector' ) ) {
-				$this->admin_notices[] = sprintf( __( "%s class wasn't loaded because it doesn't extends the %s class.", 'stream' ), $connector->name, 'Connector' );
+				$this->plugin->admin->notice( sprintf( __( "%s class wasn't loaded because it doesn't extends the %s class.", 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 
@@ -187,22 +186,5 @@ class Connectors {
 		 * @param array $connectors All register connectors labels array
 		 */
 		do_action( 'wp_stream_after_connectors_registration', $connectors );
-	}
-
-	/**
-	 * Print admin notices
-	 */
-	public function admin_notices() {
-		if ( ! empty( $this->admin_notices ) ) :
-			?>
-			<div class="error">
-				<?php
-				foreach ( $this->admin_notices as $message ) {
-					echo wp_kses_post( wpautop( $message ) );
-				}
-				?>
-			</div>
-			<?php
-		endif;
 	}
 }
