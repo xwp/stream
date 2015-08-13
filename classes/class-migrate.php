@@ -198,8 +198,6 @@ class Migrate {
 			&&
 			$this->is_connected()
 			&&
-			$this->plugin->admin->is_stream_screen()
-			&&
 			! empty( $this->record_count )
 			&&
 			false === get_transient( 'wp_stream_delay_migration' )
@@ -221,7 +219,8 @@ class Migrate {
 		}
 
 		$notice = sprintf(
-			'<strong id="stream-migrate-title">%s</strong></p><p id="stream-migrate-blog-link"><a href="#" target="_blank">%s</a></p><p id="stream-migrate-message">%s</p><div id="stream-migrate-progress"><progress value="0" max="100"></progress> <strong>0&#37;</strong> <em></em> <button id="stream-migrate-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-migrate-actions"><button id="stream-start-migrate" class="button button-primary">%s</button> <button id="stream-migrate-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-ignore-migrate" class="delete">%s</a>',
+			'<h3>%s</h3><strong id="stream-migrate-title">%s</strong></p><p id="stream-migrate-blog-link"><a href="#" target="_blank">%s</a></p><p id="stream-migrate-message">%s</p><div id="stream-migrate-progress"><progress value="0" max="100"></progress> <strong>0&#37;</strong> <em></em> <button id="stream-migrate-actions-close" class="button button-secondary">%s</button><div class="clear"></div></div><p id="stream-migrate-actions"><button id="stream-start-migrate" class="button button-primary">%s</button> <button id="stream-migrate-reminder" class="button button-secondary">%s</button> <a href="#" id="stream-ignore-migrate" class="delete">%s</a>',
+			__( 'Stream Records Update' ),
 			__( 'Our cloud storage services will be shutting down permanently on September 1, 2015', 'stream' ),
 			__( 'Read the announcement post', 'stream' ),
 			sprintf( esc_html__( 'We found %s activity records in the cloud that need to be migrated to your local database.', 'stream' ), number_format( $this->record_count ) ),

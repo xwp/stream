@@ -153,6 +153,11 @@ class Install {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		}
 
+		/**
+		 * Fires before admin notices are triggered for missing database tables.
+		 */
+		do_action( 'wp_stream_before_db_notices' );
+
 		global $wpdb;
 
 		$database_message  = '';
@@ -185,11 +190,6 @@ class Install {
 		} elseif ( current_user_can( 'activate_plugins' ) ) {
 			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
 		}
-
-		/**
-		 * Fires before admin notices are triggered for missing database tables.
-		 */
-		do_action( 'wp_stream_before_db_notices' );
 
 		if ( ! empty( $database_message ) ) {
 			$this->plugin->admin->notice( $database_message );
