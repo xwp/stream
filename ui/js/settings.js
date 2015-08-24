@@ -344,6 +344,9 @@ jQuery( function( $ ) {
 		currentHash    = ( null !== hashIndex ? hashIndex[ 1 ] : defaultIndex ),
 		syncFormAction = function( index ) {
 			var $optionsForm  = $( 'input[name="option_page"][value^="wp_stream"]' ).closest( 'form' );
+			if ( $optionsForm.length === 0 ) {
+				return;
+			}
 			var currentAction = $optionsForm.attr( 'action' );
 
 			$optionsForm.prop( 'action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ) );

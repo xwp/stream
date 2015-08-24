@@ -13,8 +13,6 @@ Stream is the easiest and safest way to track content changes happening to your 
 
 [youtube https://www.youtube.com/watch?v=t_qD4Sp4E70]
 
-**Sign up for free at [https://wp-stream.com](https://wp-stream.com)**
-
 Never be in the dark about WP Admin activity again.
 
 Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
@@ -55,17 +53,12 @@ Every logged-in user action is displayed in an activity stream and organized for
 
 **Other Noteworthy Features:**
 
- * Dashboard widget of most recent user activity
+ * Multisite view of all activity records on a network
  * Limit who can view user activity records by user role
  * Set exclude rules to ignore certain kinds of user activity
  * Live update of user activity records in the Stream
- * Private RSS and JSON feeds of user activity records
  * Support for IPv6 addresses
  * WP-CLI command for querying records
-
-**Coming Soon:**
-
- * Multisite view of all activity records on a network
 
 **Languages Supported:**
 
@@ -92,8 +85,8 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 1. Every logged-in user action is displayed in an activity stream and organized for easy filtering and searching.
 2. Enable live updates in Screen Options to watch your site activity appear in near real-time.
 3. Create rules for excluding certain kinds of records from appearing in Stream.
-4. Pro Feature: Build notification rules to be alerted when important changes are made on your site.
-5. Pro Feature: Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.
+4. Build notification rules to be alerted when important changes are made on your site.
+5. Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.
 
 == Changelog ==
 

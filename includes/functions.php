@@ -6,8 +6,6 @@
  * This is a polyfill function intended to be used in place of PHP's
  * filter_input() function, which can occasionally be unreliable.
  *
- * @since 1.2.5
- *
  * @param int    $type           One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV.
  * @param string $variable_name  Name of a variable to get.
  * @param int    $filter         The ID of the filter to apply.
@@ -16,7 +14,7 @@
  * @return Value of the requested variable on success, FALSE if the filter fails, or NULL if the $variable_name is not set.
  */
 function wp_stream_filter_input( $type, $variable_name, $filter = null, $options = array() ) {
-	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'super' ), func_get_args() );
+	return call_user_func_array( array( '\WP_Stream\Filter_Input', 'super' ), func_get_args() );
 }
 
 /**
@@ -25,8 +23,6 @@ function wp_stream_filter_input( $type, $variable_name, $filter = null, $options
  * This is a polyfill function intended to be used in place of PHP's
  * filter_var() function, which can occasionally be unreliable.
  *
- * @since 1.2.5
- *
  * @param string $var      Value to filter.
  * @param int    $filter   The ID of the filter to apply.
  * @param mixed  $options  Associative array of options or bitwise disjunction of flags. If filter accepts options, flags can be provided in "flags" field of array. For the "callback" filter, callable type should be passed. The callback must accept one argument, the value to be filtered, and return the value after filtering/sanitizing it.
@@ -34,36 +30,18 @@ function wp_stream_filter_input( $type, $variable_name, $filter = null, $options
  * @return Returns the filtered data, or FALSE if the filter fails.
  */
 function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
-	return call_user_func_array( array( 'WP_Stream_Filter_Input', 'filter' ), func_get_args() );
-}
-
-function wp_stream_query( $args = array() ) {
-	return WP_Stream_Query::instance()->query( $args );
-}
-
-function wp_stream_get_meta( $record, $meta_key = '', $single = false ) {
-	if ( isset( $record->stream_meta->$meta_key ) ) {
-		$record_meta = $record->stream_meta->$meta_key;
-	} else {
-		return '';
-	}
-
-	if ( $single ) {
-		return $record_meta;
-	} else {
-		return array( $record_meta );
-	}
+	return call_user_func_array( array( '\WP_Stream\Filter_Input', 'filter' ), func_get_args() );
 }
 
 /**
  * Converts a time into an ISO 8601 extended formatted string.
  *
- * @param int Seconds since unix epoc
- * @param int Hour offset
+ * @param int|bool $time Seconds since unix epoc
+ * @param int $offset Hour offset
  *
  * @return string an ISO 8601 extended formatted time
  */
-function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 )	{
+function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 	if ( $time ) {
 		$microtime = (float) $time . '.0000';
 	} else {
@@ -85,48 +63,37 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 )	{
 }
 
 /**
- * Returns array of existing values for requested field.
- * Used to fill search filters with only used items, instead of all items.
+ * Encode to JSON in a way that is also backwards compatible
  *
- * @see    assemble_records
- * @since  1.0.4
- * @param  string  Requested field (i.e., 'context')
- * @return array   Array of items to be output to select dropdowns
+ * @param mixed $data
+ * @param int $options (optional)
+ * @param int $depth (optional)
+ *
+ * @return string
  */
-function wp_stream_existing_records( $field ) {
-	$values = WP_Stream::$db->get_distinct_field_values( $field );
-
-	if ( is_array( $values ) && ! empty( $values ) ) {
-		return array_combine( $values, $values );
+function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
+	if ( function_exists( 'wp_json_encode' ) ) {
+		$json = wp_json_encode( $data, $options, $depth );
 	} else {
-		$field = sprintf( 'stream_%s', $field );
-		return isset( WP_Stream_Connectors::$term_labels[ $field ] ) ? WP_Stream_Connectors::$term_labels[ $field ] : array();
+		// @codingStandardsIgnoreStart
+		if ( version_compare( PHP_VERSION, '5.5', '<' ) ) {
+			$json = json_encode( $data, $options );
+		} else {
+			$json = json_encode( $data, $options, $depth );
+		}
+		// @codingStandardsIgnoreEnd
 	}
+
+	return $json;
 }
 
 /**
- * Determine the title of an object that a record is for.
+ * Check if Stream is running on WordPress.com VIP
  *
- * @since  2.1.0
- * @param  object  Record object
- * @return mixed   The title of the object as a string, otherwise false
+ * @return bool
  */
-function wp_stream_get_object_title( $record ) {
-	if ( ! is_object( $record ) || ! isset( $record->object_id ) || empty( $record->object_id ) ) {
-		return false;
-	}
-
-	$output = false;
-
-	if ( isset( $record->stream_meta->post_title ) && ! empty( $record->stream_meta->post_title ) ) {
-		$output = (string) $record->stream_meta->post_title;
-	} elseif ( isset( $record->stream_meta->display_name ) && ! empty( $record->stream_meta->display_name ) ) {
-		$output = (string) $record->stream_meta->display_name;
-	} elseif ( isset( $record->stream_meta->name ) && ! empty( $record->stream_meta->name ) ) {
-		$output = (string) $record->stream_meta->name;
-	}
-
-	return $output;
+function wp_stream_is_vip() {
+	return function_exists( 'wpcom_vip_load_plugin' );
 }
 
 /**
@@ -134,6 +101,6 @@ function wp_stream_get_object_title( $record ) {
  *
  * @return bool
  */
-function wp_stream_is_wp_cron_enabled() {
+function wp_stream_is_cron_enabled() {
 	return ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
 }

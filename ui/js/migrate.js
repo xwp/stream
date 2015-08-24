@@ -1,9 +1,8 @@
 /* globals wp_stream_migrate, ajaxurl */
 jQuery( function( $ ) {
 
-	var chunk_size    = parseInt( wp_stream_migrate.chunk_size, 10 ),
-	    record_count  = parseInt( wp_stream_migrate.record_count, 10 ),
-	    progress_step = ( chunk_size < record_count ) ? ( chunk_size / record_count ) * 100 : 100,
+	var chunks        = parseInt( wp_stream_migrate.chunks, 10 ),
+	    progress_step = ( chunks > 1 ) ? 100 / chunks : 100,
 	    progress_val  = 0;
 
 	$( document ).on( 'click', '#stream-start-migrate', function( e ) {
@@ -14,11 +13,6 @@ jQuery( function( $ ) {
 		}
 	});
 
-	$( document ).on( 'click', '#stream-resume-migrate', function( e ) {
-		e.preventDefault();
-		stream_migrate_action( 'migrate' );
-	});
-
 	$( document ).on( 'click', '#stream-migrate-reminder', function( e ) {
 		if ( ! window.confirm( wp_stream_migrate.i18n.confirm_migrate_reminder ) ) {
 			e.preventDefault();
@@ -27,11 +21,11 @@ jQuery( function( $ ) {
 		}
 	});
 
-	$( document ).on( 'click', '#stream-delete-records', function( e ) {
-		if ( ! window.confirm( wp_stream_migrate.i18n.confirm_delete_records ) ) {
+	$( document ).on( 'click', '#stream-ignore-migrate', function( e ) {
+		if ( ! window.confirm( wp_stream_migrate.i18n.confirm_ignore_migrate ) ) {
 			e.preventDefault();
 		} else {
-			stream_migrate_action( 'delete' );
+			stream_migrate_action( 'ignore' );
 		}
 	});
 
@@ -58,7 +52,7 @@ jQuery( function( $ ) {
 				if ( false === response.success ) {
 					stream_migrate_end( response.data, true );
 				} else {
-					if ( 'migrate' === response.data || 'delete' === response.data ) {
+					if ( 'migrate' === response.data || 'continue' === response.data ) {
 						stream_migrate_progress_loop( response.data );
 					} else {
 						stream_migrate_end( response.data );
@@ -82,19 +76,20 @@ jQuery( function( $ ) {
 
 	function stream_migrate_start( migrate_action ) {
 		$( '#stream-migrate-actions' ).hide();
+		$( '#stream-migrate-blog-link' ).hide();
 		$( '#stream-migrate-progress' ).show();
 
-		if ( 'migrate' === migrate_action ) {
+		if ( 'migrate' !== migrate_action && 'continue' !== migrate_action ) {
+			$( '#stream-migrate-title' ).text( wp_stream_migrate.i18n.ignore_migrate_title );
+			$( '#stream-migrate-message' ).hide();
+			$( '#stream-migrate-progress progress' ).hide();
+			$( '#stream-migrate-progress strong' ).hide();
+		}
+
+		if ( 'migrate' === migrate_action || 'continue' === migrate_action ) {
 			$( '#stream-migrate-title' ).text( wp_stream_migrate.i18n.migrate_process_title );
 			$( '#stream-migrate-message' ).text( wp_stream_migrate.i18n.migrate_process_message );
-		}
-
-		if ( 'delete' === migrate_action ) {
-			$( '#stream-migrate-title' ).text( wp_stream_migrate.i18n.delete_process_title );
-			$( '#stream-migrate-message' ).text( wp_stream_migrate.i18n.delete_process_message );
-		}
-
-		if ( 'delay' !== migrate_action ) {
+			$( '#stream-migrate-progress progress' ).show();
 			$( '#stream-migrate-progress strong' ).show();
 		}
 	}

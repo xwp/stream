@@ -33,3 +33,5 @@ script:
 
 after_script:
     - $DEV_LIB_PATH/travis.after_script.sh
+
+sudo: false

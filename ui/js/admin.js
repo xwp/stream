@@ -127,6 +127,25 @@ jQuery( function( $ ) {
 		$( '.toplevel_page_wp_stream input[type="search"]' ).off( 'mousedown' );
 	});
 
+	// Confirmation on some important actions
+	$( 'body' ).on( 'click', '#wp_stream_advanced_delete_all_records, #wp_stream_network_advanced_delete_all_records', function( e ) {
+		if ( ! window.confirm( wp_stream.i18n.confirm_purge ) ) {
+			e.preventDefault();
+		}
+	});
+
+	$( 'body' ).on( 'click', '#wp_stream_advanced_reset_site_settings, #wp_stream_network_advanced_reset_site_settings', function( e ) {
+		if ( ! window.confirm( wp_stream.i18n.confirm_defaults ) ) {
+			e.preventDefault();
+		}
+	});
+
+	$( 'body' ).on( 'click', '#wp_stream_uninstall', function( e ) {
+		if ( ! window.confirm( wp_stream.i18n.confirm_uninstall ) ) {
+			e.preventDefault();
+		}
+	});
+
 	// Admin page tabs
 	var $tabs          = $( '.wp_stream_screen .nav-tab-wrapper' ),
 		$panels        = $( '.wp_stream_screen .nav-tab-content table.form-table' ),
@@ -136,6 +155,9 @@ jQuery( function( $ ) {
 		currentHash    = ( null !== hashIndex ? hashIndex[ 1 ] : defaultIndex ),
 		syncFormAction = function( index ) {
 			var $optionsForm  = $( 'input[name="option_page"][value^="wp_stream"]' ).closest( 'form' );
+			if ( $optionsForm.length === 0 ) {
+				return;
+			}
 			var currentAction = $optionsForm.attr( 'action' );
 
 			$optionsForm.prop( 'action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ) );
@@ -324,10 +346,6 @@ jQuery( function( $ ) {
 						}
 					}
 
-					if ( ! isNaN( wp_stream.plan.retention ) && '0' !== wp_stream.plan.retention ) {
-						minOffset = '-' + wp_stream.plan.retention + 'd';
-					}
-
 					datepickers.datepicker({
 						dateFormat: 'yy/mm/dd',
 						minDate: minOffset,
@@ -453,31 +471,6 @@ jQuery( function( $ ) {
 			});
 		}
 	};
-
-	$( '.wp-stream-feeds-key #stream_user_feed_key_generate' ).click( function( e ) {
-		e.preventDefault();
-
-		var user = $( '#user_id' ).val(),
-			nonce  = $( '.wp-stream-feeds-key #wp_stream_generate_key_nonce' ).val();
-
-		$.ajax({
-			type: 'POST',
-			url: ajaxurl,
-			data: { action: 'wp_stream_feed_key_generate', nonce: nonce, user: user },
-			dataType: 'json',
-			beforeSend: function() {
-				$( '.wp-stream-feeds-key .spinner' ).show().css( { 'display': 'inline-block' } );
-			},
-			success: function( response ) {
-				$( '.wp-stream-feeds-key .spinner' ).hide();
-				if ( true === response.success || undefined !== response.data ) {
-					$( '.wp-stream-feeds-key #stream_user_feed_key' ).val( response.data.feed_key );
-					$( '.wp-stream-feeds-links a.rss-feed' ).attr( 'href', response.data.xml_feed );
-					$( '.wp-stream-feeds-links a.json-feed' ).attr( 'href', response.data.json_feed );
-				}
-			}
-		});
-	});
 
 	$( document ).ready( function() {
 		intervals.init( $( '.date-interval' ) );
