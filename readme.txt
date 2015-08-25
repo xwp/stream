@@ -92,10 +92,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 = 3.0.0 - August 25, 2015 =
 
-* New: Activity logs are now stored locally, no data is sent externally. No need to sign in or up to anything.
-* New: Migration to take your records out of the cloud, and onto your own server.
-* New: Various measures and database schema changes which minimise Stream's footprint.
-* Tweak: Just a minor thing... the whole plugin has been re-architected. DI FTW.
+* New: Activity logs are now stored locally. No data is sent externally and no need for registration.
+* New: Migration process to move your records out of the cloud, and into your local database.
+* New: Various measures and database schema changes to minimise Stream's footprint.
 
 = 2.0.5 - April 23, 2015 =
 
