@@ -92,9 +92,12 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 = 3.0.0 - August 25, 2015 =
 
-* New: Activity logs are now stored locally. No data is sent externally and no need for registration.
-* New: Migration process to move your records out of the cloud, and into your local database.
-* New: Various measures and database schema changes to minimise Stream's footprint.
+* New: Activity logs are now stored locally in WordPress. No data is sent externally and no registration required.
+* New: Migration process for Stream 2 users to move records out of the cloud, and into your local database.
+* New: Various measures and database schema changes to improve Stream's performance.
+* Removed: Notifications and Reports have been removed to be reworked for an upcoming release.
+
+Props [@fjarrett](https://github.com/fjarrett), [@lukecarbis](https://github.com/lukecarbis)
 
 = 2.0.5 - April 23, 2015 =
 
