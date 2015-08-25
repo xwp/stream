@@ -3,7 +3,7 @@ Contributors:      fjarrett, lukecarbis, shadyvb, westonruter, stream, xwp
 Tags:              actions, activity, admin, analytics, dashboard, log, notification, security, stream, users
 Requires at least: 3.7
 Tested up to:      4.2
-Stable tag:        2.0.5
+Stable tag:        3.0
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -89,6 +89,13 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 5. Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.
 
 == Changelog ==
+
+= 3.0.0 - August 25, 2015 =
+
+* New: Activity logs are now stored locally, no data is sent externally. No need to sign in or up to anything.
+* New: Migration to take your records out of the cloud, and onto your own server.
+* New: Various measures and database schema changes which minimise Stream's footprint.
+* Tweak: Just a minor thing... the whole plugin has been re-architected. DI FTW.
 
 = 2.0.5 - April 23, 2015 =
 
