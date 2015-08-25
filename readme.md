@@ -8,10 +8,10 @@ Stream is the easiest and safest way to track content changes happening to your 
 **Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [admin](https://wordpress.org/plugins/tags/admin), [analytics](https://wordpress.org/plugins/tags/analytics), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [notification](https://wordpress.org/plugins/tags/notification), [security](https://wordpress.org/plugins/tags/security), [stream](https://wordpress.org/plugins/tags/stream), [users](https://wordpress.org/plugins/tags/users)  
 **Requires at least:** 3.7  
 **Tested up to:** 4.2  
-**Stable tag:** 2.0.5  
+**Stable tag:** 3.0  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
-[![Build Status](https://travis-ci.org/wp-stream/stream.png?branch=master)](https://travis-ci.org/wp-stream/stream) [![Join the chat at https://gitter.im/wp-stream/stream](https://badges.gitter.im/Joinhat.svg)](https://gitter.im/wp-stream/stream) 
+[![Build Status](https://travis-ci.org/xwp/stream.png?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Joinhat.svg)](https://gitter.im/xwp/stream) 
 
 ## Description ##
 
@@ -107,6 +107,14 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.](assets/screenshot-5.png)
 
 ## Changelog ##
+
+### 3.0.0 - August 25, 2015 ###
+* New: Activity logs are now stored locally in WordPress. No data is sent externally and no registration required.
+* New: Migration process for Stream 2 users to move records out of the cloud, and into your local database.
+* New: Various measures and database schema changes to improve Stream's performance.
+* Removed: Notifications and Reports have been removed to be reworked for an upcoming release.
+
+Props [@fjarrett](https://github.com/fjarrett), [@lukecarbis](https://github.com/lukecarbis)
 
 ### 2.0.5 - April 23, 2015 ###
 * Tweak: Compatibility with split terms introduced in WordPress 4.2 ([#702](https://github.com/wp-stream/stream/issues/702))
