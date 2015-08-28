@@ -103,7 +103,7 @@ class Connectors {
 		/**
 		 * Allows for adding additional connectors via classes that extend Connector.
 		 *
-		 * @param array $classes An array of connector class names.
+		 * @param array $classes An array of Connector objects.
 		 */
 		$this->connectors = apply_filters( 'wp_stream_connectors', $classes );
 
