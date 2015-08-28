@@ -170,12 +170,17 @@ class Connector_User_Switching extends Connector {
 	public function callback_switch_back_user( $user_id, $old_user_id ) {
 
 		$user     = get_userdata( $user_id );
-		$old_user = get_userdata( $old_user_id );
 		$message  = _x(
 			'Switched back to %1$s (%2$s)',
 			'1: User display name, 2: User login',
 			'stream'
 		);
+
+		if ( $old_user_id ) {
+			$old_user = get_userdata( $old_user_id );
+		} else {
+			$old_user = $user;
+		}
 
 		$this->log(
 			$message,
