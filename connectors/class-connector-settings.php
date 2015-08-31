@@ -413,7 +413,7 @@ class Connector_Settings extends Connector {
 			'stream' => array(
 				'menu_slug'    => 'wp_stream',
 				'submenu_slug' => $plugin->admin->settings_page_slug,
-				'url'          => function ( $rule, $record ) use ( $plugin ) {
+				'url'          => function( $rule, $record ) use ( $plugin ) {
 					$option_key = $record->get_meta( 'option_key', true );
 					$url_tab    = null;
 
@@ -437,43 +437,43 @@ class Connector_Settings extends Connector {
 						admin_url( 'admin.php' )
 					);
 				},
-				'applicable'   => function ( $submenu, $record ) {
+				'applicable'   => function( $submenu, $record ) {
 					return $record->context === 'wp_stream';
 				},
 			),
 			'background_header' => array(
 				'menu_slug'    => 'themes.php',
-				'submenu_slug' => function ( $record ) {
+				'submenu_slug' => function( $record ) {
 					return str_replace( '_', '-', $record->context );
 				},
-				'url'          => function ( $rule, $record ) {
+				'url'          => function( $rule, $record ) {
 					return add_query_arg( 'page', $rule['submenu_slug']( $record ), admin_url( $rule['menu_slug'] ) );
 				},
-				'applicable'   => function ( $submenu, $record ) {
+				'applicable'   => function( $submenu, $record ) {
 					return in_array( $record->context, array( 'custom_header', 'custom_background' ) );
 				},
 			),
 			'general' => array(
 				'menu_slug'    => 'options-general.php',
-				'submenu_slug' => function ( $record ) {
+				'submenu_slug' => function( $record ) {
 					return sprintf( 'options-%s.php', $record->context );
 				},
-				'url'          => function ( $rule, $record ) {
+				'url'          => function( $rule, $record ) {
 					return admin_url( $rule['submenu_slug']( $record ) );
 				},
-				'applicable'   => function ( $submenu, $record ) {
+				'applicable'   => function( $submenu, $record ) {
 					return ! empty( $submenu['options-general.php'] );
 				},
 			),
 			'network' => array(
 				'menu_slug'    => 'settings.php',
-				'submenu_slug' => function ( $record ) {
+				'submenu_slug' => function( $record ) {
 					return 'settings.php';
 				},
-				'url'          => function ( $rule, $record ) {
+				'url'          => function( $rule, $record ) {
 					return network_admin_url( $rule['menu_slug'] );
 				},
-				'applicable'   => function ( $submenu, $record ) {
+				'applicable'   => function( $submenu, $record ) {
 					if ( ! $record->blog_id ) {
 						return ! empty( $submenu['settings.php'] );
 					}
@@ -487,7 +487,7 @@ class Connector_Settings extends Connector {
 
 			$applicable_rules = array_filter(
 				$rules,
-				function ( $rule ) use ( $submenu, $record ) {
+				function( $rule ) use ( $submenu, $record ) {
 					return call_user_func( $rule['applicable'], $submenu, $record );
 				}
 			);

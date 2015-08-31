@@ -463,7 +463,7 @@ class Settings {
 							$output[ $name ] = $input[ $name ];
 
 							// Support all values in multidimentional arrays too
-							array_walk_recursive( $output[ $name ], function ( &$v, $k ) {
+							array_walk_recursive( $output[ $name ], function( &$v, $k ) {
 								$v = trim( $v );
 							} );
 						} else {

@@ -698,7 +698,7 @@ class Connector_Woocommerce extends Connector {
 				foreach ( $sections as $section_key => $section_label ) {
 					$_fields = array_filter(
 						$page->get_settings( $section_key ),
-						function ( $item ) {
+						function( $item ) {
 							return isset( $item['id'] ) && ( ! in_array( $item['type'], array( 'title', 'sectionend' ) ) );
 						}
 					);
@@ -720,7 +720,7 @@ class Connector_Woocommerce extends Connector {
 			}
 
 			// Provide additional context for each of the settings pages
-			array_walk( $settings_pages, function ( &$value ) {
+			array_walk( $settings_pages, function( &$value ) {
 				$value .= ' ' . esc_html__( 'Settings', 'stream' );
 			});
 
