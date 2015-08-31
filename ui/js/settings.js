@@ -138,14 +138,8 @@ jQuery( function( $ ) {
 
 						answer = {
 							results: [
-								{
-									text: 'Roles',
-									children: roles
-								},
-								{
-									text: 'Users',
-									children: []
-								}
+								{ text: 'Roles', children: roles },
+								{ text: 'Users', children: [] }
 							]
 						};
 

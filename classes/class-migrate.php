@@ -349,5 +349,4 @@ class Migrate {
 
 		return true;
 	}
-
 }

@@ -233,5 +233,4 @@ class Connector_User_Switching extends Connector {
 			}
 		}
 	}
-
 }
