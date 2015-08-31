@@ -249,5 +249,4 @@ class Connector_Taxonomies extends Connector {
 			)
 		);
 	}
-
 }

@@ -83,7 +83,7 @@ jQuery( function( $ ) {
 							ajaxurl,
 							{
 								action: 'wp_stream_get_filter_value_by_id',
-								filter: $(element).attr( 'name' ),
+								filter: $( element ).attr( 'name' ),
 								id: id
 							},
 							function( response ) {
