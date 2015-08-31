@@ -5,7 +5,8 @@
 	<rule ref="WordPress-Extra" />
 
 	<exclude-pattern>*/tests/*</exclude-pattern>
-	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/includes/lib/*</exclude-pattern>
+	<exclude-pattern>*/ui/lib/*</exclude-pattern>
 	<exclude-pattern>*/dev-lib/*</exclude-pattern>
 
 </ruleset>

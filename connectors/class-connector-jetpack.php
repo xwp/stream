@@ -678,5 +678,4 @@ class Connector_Jetpack extends Connector {
 
 		return false;
 	}
-
 }

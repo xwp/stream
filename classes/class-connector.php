@@ -167,7 +167,7 @@ abstract class Connector {
 		$diff = array_udiff_assoc(
 			$old_value,
 			$new_value,
-			function( $value1, $value2 ) {
+			function ( $value1, $value2 ) {
 				return maybe_serialize( $value1 ) !== maybe_serialize( $value2 );
 			}
 		);
@@ -184,7 +184,7 @@ abstract class Connector {
 		// remove numeric indexes
 		$result = array_filter(
 			$result,
-			function( $value ) {
+			function ( $value ) {
 				// @codingStandardsIgnoreStart
 				// check if is not valid number (is_int, is_numeric and ctype_digit are not enough)
 				return (string) (int) $value !== (string) $value;

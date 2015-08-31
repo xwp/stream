@@ -1014,5 +1014,4 @@ class Admin {
 		}
 		return delete_user_meta( $user_id, $meta_key, $meta_value );
 	}
-
 }
