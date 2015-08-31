@@ -55,6 +55,9 @@ class Connector_Users extends Connector {
 			'forgot-password' => esc_html__( 'Lost Password', 'stream' ),
 			'login'           => esc_html__( 'Log In', 'stream' ),
 			'logout'          => esc_html__( 'Log Out', 'stream' ),
+			'switched-to'     => esc_html__( 'Switched To', 'stream' ),
+			'switched-back'   => esc_html__( 'Switched Back', 'stream' ),
+			'switched-off'    => esc_html__( 'Switched Off', 'stream' ),
 		);
 	}
 

@@ -76,6 +76,7 @@ class Connectors {
 			'edd',
 			'gravityforms',
 			'jetpack',
+			'user-switching',
 			'woocommerce',
 			'wordpress-seo',
 		);
@@ -178,13 +179,14 @@ class Connectors {
 			);
 		}
 
-		$connectors = $this->term_labels['stream_connector'];
+		$labels = $this->term_labels['stream_connector'];
 
 		/**
 		 * Fires after all connectors have been registered.
 		 *
-		 * @param array $connectors All register connectors labels array
+		 * @param array      $labels     All register connectors labels array
+		 * @param Connectors $connectors The Connectors object
 		 */
-		do_action( 'wp_stream_after_connectors_registration', $connectors );
+		do_action( 'wp_stream_after_connectors_registration', $labels, $this );
 	}
 }
