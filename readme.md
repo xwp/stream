@@ -15,8 +15,6 @@ Stream is the easiest and safest way to track content changes happening to your 
 
 ## Description ##
 
-[![Play video on YouTube](https://i1.ytimg.com/vi/t_qD4Sp4E70/hqdefault.jpg)](https://www.youtube.com/watch?v=t_qD4Sp4E70)
-
 Never be in the dark about WP Admin activity again.
 
 Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
@@ -64,16 +62,6 @@ Every logged-in user action is displayed in an activity stream and organized for
  * Support for IPv6 addresses
  * WP-CLI command for querying records
 
-**Languages Supported:**
-
- * English
- * French (France)
- * German
- * Indonesian
- * Polish
- * Portuguese (Brazil)
- * Spanish (Spain)
-
 **See room for improvement?**
 
 Great! There are several ways you can get involved to help make Stream better:
@@ -97,14 +85,6 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ### Create rules for excluding certain kinds of records from appearing in Stream.
 
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
-
-### Build notification rules to be alerted when important changes are made on your site.
-
-![Build notification rules to be alerted when important changes are made on your site.](assets/screenshot-4.png)
-
-### Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.
-
-![Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.](assets/screenshot-5.png)
 
 ## Changelog ##
 
