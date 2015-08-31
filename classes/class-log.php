@@ -80,7 +80,7 @@ class Log {
 		// Prevent any meta with null values from being logged
 		$stream_meta = array_filter(
 			$args,
-			function ( $var ) {
+			function( $var ) {
 				return ! is_null( $var );
 			}
 		);
@@ -91,7 +91,7 @@ class Log {
 		// All meta must be strings, so we will serialize any array meta values
 		array_walk(
 			$stream_meta,
-			function ( &$v ) {
+			function( &$v ) {
 				$v = (string) maybe_serialize( $v );
 			}
 		);
@@ -240,7 +240,7 @@ class Log {
 		unset( $stream_meta['user_meta'] );
 
 		if ( $stream_meta ) {
-			array_walk( $stream_meta, function ( &$value, $key ) {
+			array_walk( $stream_meta, function( &$value, $key ) {
 				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
 			});
 
@@ -251,7 +251,7 @@ class Log {
 		$user_meta = isset( $recordarr['meta']['user_meta'] ) ? $recordarr['meta']['user_meta'] : null;
 
 		if ( $user_meta ) {
-			array_walk( $user_meta, function ( &$value, $key ) {
+			array_walk( $user_meta, function( &$value, $key ) {
 				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
 			});
 

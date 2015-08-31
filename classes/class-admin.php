@@ -883,7 +883,7 @@ class Admin {
 					// `search` arg for get_users() is not enough
 					$users = array_filter(
 						$users,
-						function ( $user ) use ( $search ) {
+						function( $user ) use ( $search ) {
 							return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( $search ) );
 						}
 					);
