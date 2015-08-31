@@ -1,6 +1,6 @@
 === Stream ===
 Contributors:      fjarrett, lukecarbis, shadyvb, westonruter, stream, xwp
-Tags:              actions, activity, admin, analytics, dashboard, log, notification, security, stream, users
+Tags:              actions, activity, activity log, activity logs, admin actions, analytics, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
 Requires at least: 3.7
 Tested up to:      4.2
 Stable tag:        3.0
