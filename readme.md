@@ -86,14 +86,6 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
 
-### Build notification rules to be alerted when important changes are made on your site.
-
-![Build notification rules to be alerted when important changes are made on your site.](assets/screenshot-4.png)
-
-### Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.
-
-![Generate stunning visuals of logged-in user activity and share them with stakeholders or your clients.](assets/screenshot-5.png)
-
 ## Changelog ##
 
 ### 3.0.0 - August 25, 2015 ###
