@@ -58,16 +58,6 @@ Every logged-in user action is displayed in an activity stream and organized for
  * Support for IPv6 addresses
  * WP-CLI command for querying records
 
-**Languages Supported:**
-
- * English
- * French (France)
- * German
- * Indonesian
- * Polish
- * Portuguese (Brazil)
- * Spanish (Spain)
-
 **See room for improvement?**
 
 Great! There are several ways you can get involved to help make Stream better:
