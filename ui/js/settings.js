@@ -234,8 +234,8 @@ jQuery( function( $ ) {
 	initSettingsSelect2();
 
 	var keepRecordsIndefinitely = $( '#wp_stream\\[general_keep_records_indefinitely\\]' ),
-		keepRecordsFor          = $( '#wp_stream_general_records_ttl' ),
-		keepRecordsForRow       = keepRecordsFor.closest( 'tr' );
+	    keepRecordsFor          = $( '#wp_stream_general_records_ttl' ),
+	    keepRecordsForRow       = keepRecordsFor.closest( 'tr' );
 
 	function toggleKeepRecordsFor() {
 		if ( keepRecordsIndefinitely.is( ':checked' ) ) {
