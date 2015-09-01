@@ -118,7 +118,7 @@ class Install {
 		}
 
 		if ( 'update_and_continue' === $update ) {
-			$this->$success_db = $this->update( $this->db_version, $this->plugin->get_version(), array( 'type' => 'user' ) );
+			$this->success_db = $this->update( $this->db_version, $this->plugin->get_version(), array( 'type' => 'user' ) );
 		}
 
 		$versions = $this->db_update_versions();
@@ -352,14 +352,7 @@ class Install {
 	 */
 	public function db_update_versions() {
 		$db_update_versions = array(
-			'1.1.4' /* @version 1.1.4 Fix mysql character set issues */,
-			'1.1.7' /* @version 1.1.7 Modified the ip column to varchar(39) */,
-			'1.2.8' /* @version 1.2.8 Change the context for Media connectors to the attachment type */,
-			'1.3.0' /* @version 1.3.0 Backward settings compatibility for old version plugins */,
-			'1.3.1' /* @version 1.3.1 Update records of Installer to Theme Editor connector */,
-			'1.4.0' /* @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
-			'1.4.2' /* @version 1.4.2 Patch to fix rare multisite upgrade not triggering */,
-			'1.4.5' /* @version 1.4.5 Patch to fix author_meta broken values */,
+			'3.0.0' /* @version 3.0.0 Drop the stream_context table, changes to stream table */,
 		);
 
 		/**
@@ -383,6 +376,7 @@ class Install {
 	 */
 	public function update( $db_version, $current_version, $update_args ) {
 		$versions = $this->db_update_versions();
+		include_once( $this->plugin->locations['inc_dir'] . 'db-updates.php' );
 
 		foreach ( $versions as $version ) {
 			if ( ! isset( $update_args['type'] ) ) {
@@ -410,7 +404,7 @@ class Install {
 	 *
 	 * @return string
 	 */
-	private function install( $current_version ) {
+	public function install( $current_version ) {
 		global $wpdb;
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
