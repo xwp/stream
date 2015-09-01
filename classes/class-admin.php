@@ -643,6 +643,10 @@ class Admin {
 			$options = (array) get_option( 'wp_stream', array() );
 		}
 
+		if ( isset( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
+			return;
+		}
+
 		$days = $options['general_records_ttl'];
 		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 
