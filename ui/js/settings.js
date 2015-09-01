@@ -233,6 +233,26 @@ jQuery( function( $ ) {
 
 	initSettingsSelect2();
 
+	var keepRecordsIndefinitely = $( '#wp_stream\\[general_keep_records_indefinitely\\]' ),
+		keepRecordsFor          = $( '#wp_stream_general_records_ttl' ),
+		keepRecordsForRow       = keepRecordsFor.closest( 'tr' );
+
+	function toggleKeepRecordsFor() {
+		if ( keepRecordsIndefinitely.is( ':checked' ) ) {
+			keepRecordsFor.prop( 'disabled', true );
+			keepRecordsForRow.contents().fadeTo( 250, 0.25 );
+		} else {
+			keepRecordsFor.prop( 'disabled', false );
+			keepRecordsForRow.contents().fadeTo( 250, 1.0 );
+		}
+	}
+
+	keepRecordsIndefinitely.on( 'change', function() {
+		toggleKeepRecordsFor();
+	});
+
+	toggleKeepRecordsFor();
+
 	$( '#exclude_rules_new_rule' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' );
 
