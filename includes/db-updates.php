@@ -31,7 +31,7 @@ function wp_stream_update_auto_300( $db_version, $current_version ) {
 			'user_id' => $entry->author,
 			'user_role' => $entry->author_role,
 			'summary' => $entry->summary,
-			'created' => $entry->summary,
+			'created' => $entry->created,
 			'connector' => $context->connector,
 			'context' => $context->context,
 			'action' => $context->action,
