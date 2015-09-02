@@ -236,12 +236,20 @@ class Settings {
 						'title'       => esc_html__( 'Keep Records for', 'stream' ),
 						'type'        => 'number',
 						'class'       => 'small-text',
-						'desc'        => esc_html__( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'stream' ),
+						'desc'        => esc_html__( 'Maximum number of days to keep activity records.', 'stream' ),
 						'default'     => 30,
-						'min'         => 0,
+						'min'         => 1,
 						'max'         => 999,
 						'step'        => 1,
 						'after_field' => esc_html__( 'days', 'stream' ),
+					),
+					array(
+						'name'        => 'keep_records_indefinitely',
+						'title'       => esc_html__( 'Keep Records Indefinitely', 'stream' ),
+						'type'        => 'checkbox',
+						'desc'        => sprintf( '<strong>%s</strong> %s', esc_html__( 'Not recommended.', 'stream' ), esc_html__( 'Purging old records helps to keep your WordPress installation running optimally.', 'stream' ) ),
+						'after_field' => esc_html__( 'Enabled', 'stream' ),
+						'default'     => 0,
 					),
 				),
 			),
@@ -1015,5 +1023,4 @@ class Settings {
 
 		return $labels;
 	}
-
 }

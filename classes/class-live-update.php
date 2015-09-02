@@ -176,7 +176,7 @@ class Live_Update {
 		$enable_stream_update = ( 'off' !== $this->plugin->admin->get_user_meta( get_current_user_id(), $this->user_meta_key ) );
 
 		// Register list table
-		$this->list_table = new WP_Stream_List_Table( array( 'screen' => 'toplevel_page_' . $this->plugin->admin->records_page_slug ) );
+		$this->list_table = new List_Table( $this->plugin, array( 'screen' => 'toplevel_page_' . $this->plugin->admin->records_page_slug ) );
 		$this->list_table->prepare_items();
 
 		$total_items = isset( $this->list_table->_pagination_args['total_items'] ) ? $this->list_table->_pagination_args['total_items'] : null;

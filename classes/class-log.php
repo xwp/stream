@@ -80,7 +80,7 @@ class Log {
 		// Prevent any meta with null values from being logged
 		$stream_meta = array_filter(
 			$args,
-			function ( $var ) {
+			function( $var ) {
 				return ! is_null( $var );
 			}
 		);

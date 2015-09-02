@@ -17,11 +17,13 @@ jQuery( function( $ ) {
 
 			jQuery( document ).ready( function() {
 				setTimeout( function() {
-					$( 'body,html' ).animate({
-						scrollTop: input.offset().top - 50
-					}, 'slow', function() {
-						input.animate( { backgroundColor: 'yellow' }, 'slow' );
-					});
+					$( 'body,html' ).animate(
+						{ scrollTop: input.offset().top - 50 },
+						'slow',
+						function() {
+							input.animate( { backgroundColor: 'yellow' }, 'slow' );
+						}
+					);
 				}, 500 );
 			});
 		}

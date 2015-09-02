@@ -444,7 +444,7 @@ class List_Table extends \WP_List_Table {
 			}
 
 			$users = array_map(
-				function ( $user_id ) {
+				function( $user_id ) {
 					return new Author( $user_id );
 				},
 				get_users( array( 'fields' => 'ID' ) )
@@ -477,7 +477,7 @@ class List_Table extends \WP_List_Table {
 			unset( $disabled_records[0] );
 		}
 
-		$sort = function ( $a, $b ) use ( $column ) {
+		$sort = function( $a, $b ) use ( $column ) {
 			$label_a = (string) $a['label'];
 			$label_b = (string) $b['label'];
 
@@ -929,5 +929,4 @@ class List_Table extends \WP_List_Table {
 
 		return $record_meta;
 	}
-
 }

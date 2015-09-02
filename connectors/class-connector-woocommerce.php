@@ -607,6 +607,10 @@ class Connector_Woocommerce extends Connector {
 	 */
 	public function callback_wp_stream_record_array( $recordarr ) {
 		foreach ( $recordarr as $key => $record ) {
+			if ( ! isset( $record['connector'] ) || ! isset( $record['context'] ) ) {
+				continue;
+			}
+
 			// Change connector::posts records
 			if ( 'posts' === $record['connector'] && in_array( $record['context'], $this->post_types ) ) {
 				$recordarr[ $key ]['connector'] = $this->name;

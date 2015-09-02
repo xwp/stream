@@ -502,8 +502,7 @@ class Admin {
 	 * @action admin_enqueue_scripts
 	 */
 	public function admin_menu_css() {
-		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
-		wp_register_style( 'wp-stream-datepicker', $this->plugin->locations['url'] . 'ui/css/datepicker.css', array( 'jquery-ui' ), $this->plugin->get_version() );
+		wp_register_style( 'wp-stream-datepicker', $this->plugin->locations['url'] . 'ui/css/datepicker.css', array(), $this->plugin->get_version() );
 		wp_register_style( 'wp-stream-icons', $this->plugin->locations['url'] . 'ui/stream-icons/style.css', array(), $this->plugin->get_version() );
 
 		// Make sure we're working off a clean version
@@ -641,6 +640,10 @@ class Admin {
 			$options = (array) get_site_option( 'wp_stream_network', array() );
 		} else {
 			$options = (array) get_option( 'wp_stream', array() );
+		}
+
+		if ( isset( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
+			return;
 		}
 
 		$days = $options['general_records_ttl'];
@@ -883,7 +886,7 @@ class Admin {
 					// `search` arg for get_users() is not enough
 					$users = array_filter(
 						$users,
-						function ( $user ) use ( $search ) {
+						function( $user ) use ( $search ) {
 							return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( $search ) );
 						}
 					);
@@ -1014,5 +1017,4 @@ class Admin {
 		}
 		return delete_user_meta( $user_id, $meta_key, $meta_value );
 	}
-
 }

@@ -7,7 +7,7 @@ class Plugin {
 	 *
 	 * @const string
 	 */
-	const VERSION = '3.0.0';
+	const VERSION = '3.0.1';
 
 	/**
 	 * WP-CLI command
@@ -190,34 +190,9 @@ class Plugin {
 	 * @return array
 	 */
 	private function locate_plugin() {
-		$reflection = new \ReflectionObject( $this );
-		$file_name  = $reflection->getFileName();
-
-		if ( '/' !== \DIRECTORY_SEPARATOR ) {
-			$file_name = str_replace( \DIRECTORY_SEPARATOR, '/', $file_name ); // Windows compat
-		}
-
-		$plugin_dir = preg_replace( '#(.*plugins[^/]*/[^/]+)(/.*)?#', '$1', $file_name, 1, $count );
-
-		if ( 0 === $count ) {
-			throw new \Exception( "Class not located within a directory tree containing 'plugins': $file_name" );
-		}
-
-		// Make sure that we can reliably get the relative path inside of the content directory
-		$content_dir = trailingslashit( WP_CONTENT_DIR );
-
-		if ( '/' !== \DIRECTORY_SEPARATOR ) {
-			$content_dir = str_replace( \DIRECTORY_SEPARATOR, '/', $content_dir ); // Windows compat
-		}
-
-		if ( 0 !== strpos( $plugin_dir, $content_dir ) ) {
-			throw new \Exception( 'Plugin dir is not inside of WP_CONTENT_DIR' );
-		}
-
-		$content_sub_path = substr( $plugin_dir, strlen( $content_dir ) );
-		$dir_url          = content_url( trailingslashit( $content_sub_path ) );
-		$dir_path         = trailingslashit( $plugin_dir );
-		$dir_basename     = basename( $plugin_dir );
+		$dir_url          = trailingslashit( plugins_url( '', dirname( __FILE__ ) ) );
+		$dir_path         = plugin_dir_path( dirname( __FILE__ ) );
+		$dir_basename     = basename( $dir_path );
 		$plugin_basename  = trailingslashit( $dir_basename ) . $dir_basename. '.php';
 
 		return compact( 'dir_url', 'dir_path', 'dir_basename', 'plugin_basename' );
