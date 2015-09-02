@@ -209,7 +209,6 @@ class Test_Admin extends WP_StreamTestCase {
 
 		$this->admin->admin_menu_css();
 
-		$this->assertArrayHasKey( 'jquery-ui', $wp_styles->registered );
 		$this->assertArrayHasKey( 'wp-stream-datepicker', $wp_styles->registered );
 		$this->assertArrayHasKey( 'wp-stream-icons', $wp_styles->registered );
 
