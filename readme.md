@@ -8,7 +8,7 @@ Stream is the easiest and safest way to track content changes happening to your 
 **Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [activity log](https://wordpress.org/plugins/tags/activity log), [activity logs](https://wordpress.org/plugins/tags/activity logs), [admin actions](https://wordpress.org/plugins/tags/admin actions), [analytics](https://wordpress.org/plugins/tags/analytics), [change](https://wordpress.org/plugins/tags/change), [changes](https://wordpress.org/plugins/tags/changes), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [logs](https://wordpress.org/plugins/tags/logs), [stream](https://wordpress.org/plugins/tags/stream), [tracking](https://wordpress.org/plugins/tags/tracking), [troubleshooting](https://wordpress.org/plugins/tags/troubleshooting), [wp stream](https://wordpress.org/plugins/tags/wp stream)  
 **Requires at least:** 3.7  
 **Tested up to:** 4.2  
-**Stable tag:** 3.0  
+**Stable tag:** 3.0.1  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
 [![Build Status](https://travis-ci.org/xwp/stream.png?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Joinhat.svg)](https://gitter.im/xwp/stream) 
@@ -87,6 +87,16 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
 
 ## Changelog ##
+
+### 3.0.1 - September 2, 2015 ###
+* New: Stream and [User Switching](https://wordpress.org/plugins/user-switching/) are now besties ([#744](https://github.com/xwp/stream/pull/744))
+* New: You can now choose to keep your records indefinitely (probably not a good idea) ([#748](https://github.com/xwp/stream/pull/748))
+* Tweak: We're now using local styles for our datepicker, instead of loading them externally ([#751](https://github.com/xwp/stream/pull/751))
+* Fix: Updating from version 1.4.9 no longer breaks your records ([#749](https://github.com/xwp/stream/pull/749))
+* Fix: Stream now works with custom wp-content folder locations ([#745](https://github.com/xwp/stream/pull/745))
+* Fix: Live updates work again ([#739](https://github.com/xwp/stream/pull/739))
+
+Props [@lukecarbis](https://github.com/lukecarbis), [@johnbillion](https://github.com/johnbillion), [@rob](https://github.com/rob)
 
 ### 3.0.0 - August 25, 2015 ###
 * New: Activity logs are now stored locally in WordPress. No data is sent externally and no registration required.
