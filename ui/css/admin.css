@@ -18,11 +18,12 @@
 	margin-left: 5px;
 	line-height: 28px;
 	text-decoration: none;
+	display: inline-block;
 }
 
 #record-query-reset span.dashicons {
 	position: absolute;
-	top: 2px;
+	top: 0.5em;
 	left: 0;
 	font-size: 13px;
 }
