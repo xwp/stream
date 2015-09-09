@@ -312,12 +312,22 @@ class Connector_Jetpack extends Connector {
 	 * @param array $entry
 	 */
 	public function callback_jetpack_log_entry( array $entry ) {
-		$method  = $entry['code'];
-		$data    = $entry['data'];
+		if ( isset( $entry['code'] ) ) {
+			$method = $entry['code'];
+		} else {
+			return;
+		}
+		if ( isset( $entry['data'] ) ) {
+			$data = $entry['data'];
+		} else {
+			$data = null;
+		}
+
 		$context = null;
 		$action  = null;
+		$meta    = array();
 
-		if ( in_array( $method, array( 'activate', 'deactivate' ) ) ) {
+		if ( in_array( $method, array( 'activate', 'deactivate' ) ) && ! is_null( $data ) ) {
 			$module_slug = $data;
 			$module      = \Jetpack::get_module( $module_slug );
 			$module_name = $module['name'];
@@ -329,7 +339,7 @@ class Connector_Jetpack extends Connector {
 				$module_name,
 				( 'activated' === $action ) ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' )
 			);
-		} elseif ( in_array( $method, array( 'authorize', 'unlink' ) ) ) {
+		} elseif ( in_array( $method, array( 'authorize', 'unlink' ) ) && ! is_null( $data ) ) {
 			$user_id = intval( $data );
 
 			if ( empty( $user_id ) ) {
@@ -357,8 +367,6 @@ class Connector_Jetpack extends Connector {
 			if ( empty( $blog_id ) ) {
 				return;
 			}
-
-			$meta = array();
 
 			if ( ! $is_multisite ) {
 				$message = sprintf(
