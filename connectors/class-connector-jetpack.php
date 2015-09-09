@@ -317,6 +317,7 @@ class Connector_Jetpack extends Connector {
 		} else {
 			return;
 		}
+
 		if ( isset( $entry['data'] ) ) {
 			$data = $entry['data'];
 		} else {
