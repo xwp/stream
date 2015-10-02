@@ -26,7 +26,7 @@ class Test_Plugin extends WP_StreamTestCase {
 	}
 
 	public function test_autoload() {
-		$this->assertTrue( class_exists( '\WP_Stream\Migrate' ) );
+		$this->assertTrue( class_exists( '\WP_Stream\Admin' ) );
 		$this->assertFalse( class_exists( '\WP_Stream\HAL9000' ) );
 	}
 

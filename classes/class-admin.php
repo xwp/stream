@@ -25,11 +25,6 @@ class Admin {
 	public $live_update;
 
 	/**
-	 * @var Migrate
-	 */
-	public $migrate;
-
-	/**
 	 * Menu page screen id
 	 *
 	 * @var string
@@ -183,7 +178,6 @@ class Admin {
 	public function init() {
 		$this->network     = new Network( $this->plugin );
 		$this->live_update = new Live_Update( $this->plugin );
-		$this->migrate     = new Migrate( $this->plugin );
 	}
 
 	/**
@@ -390,32 +384,6 @@ class Admin {
 					'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc', // input var okay
 					'current_query'       => wp_stream_json_encode( $_GET ), // input var okay
 					'current_query_count' => count( $_GET ), // input var okay
-				)
-			);
-		}
-
-		if ( $this->migrate->show_migrate_notice() ) {
-			$limit                = absint( $this->migrate->limit );
-			$record_count         = absint( $this->migrate->record_count );
-			$chunks               = ceil( $record_count / $limit );
-			$estimated_time       = ( $chunks > 1 ) ? round( ( $chunks * 5 ) / 60 ) : 0;
-			$migrate_time_message = ( $estimated_time > 1 ) ? sprintf( esc_html__( 'This will take about %d minutes.', 'stream' ), absint( $estimated_time ) ) : esc_html__( 'This could take a few minutes.', 'stream' );
-
-			wp_enqueue_script( 'wp-stream-migrate', $this->plugin->locations['url'] . 'ui/js/migrate.js', array( 'jquery' ), $this->plugin->get_version() );
-			wp_localize_script(
-				'wp-stream-migrate',
-				'wp_stream_migrate',
-				array(
-					'i18n'         => array(
-						'migrate_process_title'    => esc_html__( 'Migrating Stream Records', 'stream' ),
-						'ignore_migrate_title'     => esc_html__( 'No Records Were Migrated', 'stream' ),
-						'migrate_process_message'  => esc_html__( 'Please do not exit this page until the process has completed.', 'stream' ) . ' ' . esc_html( $migrate_time_message ),
-						'confirm_start_migrate'    => ( $estimated_time > 1 ) ? sprintf( esc_html__( 'Please note: This process will take about %d minutes to complete.', 'stream' ), absint( $estimated_time ) ) : esc_html__( 'Please note: This process could take a few minutes to complete.', 'stream' ),
-						'confirm_migrate_reminder' => esc_html__( 'Please note: Your existing records will not appear in Stream until you have migrated them to your local database.', 'stream' ),
-						'confirm_ignore_migrate'   => sprintf( esc_html__( 'Are you sure you want to lose all %s existing Stream records without migrating?', 'stream' ), number_format( $record_count ), ( $estimated_time > 1 && is_multisite() ) ? sprintf( esc_html__( 'about %d', 'stream' ), absint( $estimated_time ) ) : esc_html__( 'a few', 'stream' ) ),
-					),
-					'chunks' => absint( $chunks ),
-					'nonce'  => wp_create_nonce( 'wp_stream_migrate-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
 				)
 			);
 		}
