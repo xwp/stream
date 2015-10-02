@@ -165,6 +165,12 @@ class Connector_Posts extends Connector {
 				'stream'
 			);
 			$action  = 'untrashed';
+		} elseif ( 'draft' === $new && 'draft' === $old ) {
+			$summary = _x(
+				'"%1$s" %2$s draft saved',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 		} elseif ( 'draft' === $new ) {
 			$summary = _x(
 				'"%1$s" %2$s drafted',
