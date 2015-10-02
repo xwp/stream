@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Stream\n"
-"POT-Creation-Date: 2015-10-02 10:19+1000\n"
-"PO-Revision-Date: 2015-10-02 10:19+1000\n"
+"POT-Creation-Date: 2015-10-02 11:57+1000\n"
+"PO-Revision-Date: 2015-10-02 11:57+1000\n"
 "Last-Translator: Luke Carbis <luke@wp-stream.com>\n"
 "Language-Team: Luke Carbis <luke@wp-stream.com>\n"
 "Language: en_US\n"
@@ -171,49 +171,49 @@ msgstr ""
 msgid "Filter not supported."
 msgstr ""
 
-#: classes/class-install.php:179
+#: classes/class-install.php:175
 msgid "The following table is not present in the WordPress database:"
 msgid_plural "The following tables are not present in the WordPress database:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/class-install.php:189 classes/class-install.php:191
+#: classes/class-install.php:185 classes/class-install.php:187
 #, php-format
 msgid ""
 "Please <a href=\"%s\">uninstall</a> the Stream plugin and activate it again."
 msgstr ""
 
-#: classes/class-install.php:265
+#: classes/class-install.php:261
 msgid "There was an error updating the Stream database. Please try again."
 msgstr ""
 
-#: classes/class-install.php:266
+#: classes/class-install.php:262
 msgid "Database Update Error"
 msgstr ""
 
-#: classes/class-install.php:313
+#: classes/class-install.php:309
 msgid "Stream Database Update Required"
 msgstr ""
 
-#: classes/class-install.php:314
+#: classes/class-install.php:310
 msgid ""
 "Stream has updated! Before we send you on your way, we need to update your "
 "database to the newest version."
 msgstr ""
 
-#: classes/class-install.php:315
+#: classes/class-install.php:311
 msgid "This process could take a little while, so please be patient."
 msgstr ""
 
-#: classes/class-install.php:316
+#: classes/class-install.php:312
 msgid "Update Database"
 msgstr ""
 
-#: classes/class-install.php:335
+#: classes/class-install.php:331
 msgid "Update Complete"
 msgstr ""
 
-#: classes/class-install.php:337
+#: classes/class-install.php:333
 msgid "Continue"
 msgstr ""
 
@@ -2598,73 +2598,79 @@ msgstr ""
 msgid "Revision"
 msgstr ""
 
-#: connectors/class-connector-posts.php:157
+#: connectors/class-connector-posts.php:159
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s unpublished"
 msgstr ""
 
-#: connectors/class-connector-posts.php:163
+#: connectors/class-connector-posts.php:165
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s restored from trash"
 msgstr ""
 
-#: connectors/class-connector-posts.php:170
+#: connectors/class-connector-posts.php:172
+#, php-format
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s draft saved"
+msgstr ""
+
+#: connectors/class-connector-posts.php:178
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s drafted"
 msgstr ""
 
-#: connectors/class-connector-posts.php:176
+#: connectors/class-connector-posts.php:184
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s pending review"
 msgstr ""
 
-#: connectors/class-connector-posts.php:182
+#: connectors/class-connector-posts.php:190
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name, 3: Scheduled post date"
 msgid "\"%1$s\" %2$s scheduled for %3$s"
 msgstr ""
 
-#: connectors/class-connector-posts.php:188
+#: connectors/class-connector-posts.php:196
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" scheduled %2$s published"
 msgstr ""
 
-#: connectors/class-connector-posts.php:194
+#: connectors/class-connector-posts.php:202
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s published"
 msgstr ""
 
-#: connectors/class-connector-posts.php:200
+#: connectors/class-connector-posts.php:208
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s privately published"
 msgstr ""
 
-#: connectors/class-connector-posts.php:206
+#: connectors/class-connector-posts.php:214
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s trashed"
 msgstr ""
 
-#: connectors/class-connector-posts.php:213
+#: connectors/class-connector-posts.php:221
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s updated"
 msgstr ""
 
-#: connectors/class-connector-posts.php:290
+#: connectors/class-connector-posts.php:298
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s deleted from trash"
 msgstr ""
 
-#: connectors/class-connector-posts.php:328
+#: connectors/class-connector-posts.php:336
 msgid "Post"
 msgstr ""
 
