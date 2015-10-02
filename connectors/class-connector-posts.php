@@ -152,6 +152,8 @@ class Connector_Posts extends Connector {
 
 		if ( in_array( $new, array( 'auto-draft', 'inherit' ) ) ) {
 			return;
+		} elseif ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
 		} elseif ( 'draft' === $new && 'publish' === $old ) {
 			$summary = _x(
 				'"%1$s" %2$s unpublished',
