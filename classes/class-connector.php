@@ -94,7 +94,7 @@ abstract class Connector {
 	 */
 	public function log( $message, $args, $object_id, $context, $action, $user_id = null ) {
 		$class     = get_called_class();
-		$connector = str_replace( array( 'WP_Stream\\', 'Connector_' ), array( '', '' ), $class );
+		$connector = strtolower( str_replace( array( 'WP_Stream\\', 'Connector_' ), array( '', '' ), $class ) );
 
 		$data = apply_filters(
 			'wp_stream_log_data',

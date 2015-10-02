@@ -1,5 +1,24 @@
 <?php
 /**
+ * Version 3.0.2
+ *
+ * @param string $db_version
+ * @param string $current_version
+ *
+ * @return string
+ */
+function wp_stream_update_auto_302( $db_version, $current_version ) {
+	global $wpdb;
+
+	$plugin = wp_stream_get_instance();
+	$prefix = $plugin->install->table_prefix;
+
+	$wpdb->query( "UPDATE {$prefix}stream SET connector = LOWER(connector)" );
+
+	return $current_version;
+}
+
+/**
  * Version 3.0.0
  *
  * Update from 1.4.9
