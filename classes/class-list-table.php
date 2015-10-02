@@ -204,7 +204,7 @@ class List_Table extends \WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
-		$items = $this->plugin->db->query->query( $args );
+		$items = $this->plugin->db->query( $args );
 
 		return $items;
 	}
