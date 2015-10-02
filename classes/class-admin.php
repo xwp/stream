@@ -506,7 +506,7 @@ class Admin {
 					background: none !important;
 					background-repeat: no-repeat;
 				}
-				body.{$body_class} #wpbody-content .wrap h2:nth-child(1):before {
+				body.{$body_class} #wpbody-content .wrap h1:nth-child(1):before {
 					font-family: 'WP Stream' !important;
 					content: '\\73';
 					padding: 0 8px 0 0;
@@ -681,7 +681,7 @@ class Admin {
 		$this->list_table->prepare_items();
 		?>
 		<div class="wrap">
-			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
+			<h1><?php echo esc_html( get_admin_page_title() ) ?></h1>
 			<?php $this->list_table->display() ?>
 		</div>
 	<?php
@@ -702,7 +702,7 @@ class Admin {
 		wp_enqueue_script( 'wp-stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.js', array( 'jquery' ), $this->plugin->get_version(), true );
 		?>
 		<div class="wrap">
-			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
+			<h1><?php echo esc_html( get_admin_page_title() ) ?></h1>
 
 			<?php if ( ! empty( $page_description ) ) : ?>
 				<p><?php echo esc_html( $page_description ) ?></p>
