@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Stream\n"
-"POT-Creation-Date: 2015-07-22 15:52+1000\n"
-"PO-Revision-Date: 2015-07-22 15:53+1000\n"
+"POT-Creation-Date: 2015-10-02 11:57+1000\n"
+"PO-Revision-Date: 2015-10-02 11:57+1000\n"
 "Last-Translator: Luke Carbis <luke@wp-stream.com>\n"
 "Language-Team: Luke Carbis <luke@wp-stream.com>\n"
 "Language: en_US\n"
@@ -22,117 +22,65 @@ msgstr ""
 msgid "Stream requires PHP version 5.3+, plugin is currently NOT ACTIVE."
 msgstr ""
 
-#: classes/class-admin.php:201
+#: classes/class-admin.php:195
 msgid "All site settings have been successfully reset."
 msgstr ""
 
-#: classes/class-admin.php:276 classes/class-network.php:122
+#: classes/class-admin.php:270 classes/class-network.php:122
 #: connectors/class-connector-settings.php:134
 msgid "Stream"
 msgstr ""
 
-#: classes/class-admin.php:292
+#: classes/class-admin.php:286
 msgid "Stream Records"
 msgstr ""
 
-#: classes/class-admin.php:309
+#: classes/class-admin.php:303
 msgid "Stream Settings"
 msgstr ""
 
-#: classes/class-admin.php:314 classes/class-admin.php:691
+#: classes/class-admin.php:308 classes/class-admin.php:662
 #: connectors/class-connector-settings.php:105
 #: connectors/class-connector-settings.php:126
-#: connectors/class-connector-woocommerce.php:724
+#: connectors/class-connector-woocommerce.php:728
 msgid "Settings"
 msgstr ""
 
-#: classes/class-admin.php:375
+#: classes/class-admin.php:369
 msgid ""
 "Are you sure you want to delete all Stream activity records from the "
 "database? This cannot be undone."
 msgstr ""
 
-#: classes/class-admin.php:376
+#: classes/class-admin.php:370
 msgid ""
 "Are you sure you want to reset all site settings to default? This cannot be "
 "undone."
 msgstr ""
 
-#: classes/class-admin.php:377
+#: classes/class-admin.php:371
 msgid ""
 "Are you sure you want to uninstall and deactivate Stream? This will delete "
 "all Stream tables from the database and cannot be undone."
 msgstr ""
 
-#: classes/class-admin.php:402
-#, php-format
-msgid "This will take about %d minutes."
-msgstr ""
-
-#: classes/class-admin.php:402
-msgid "This could take a few minutes."
-msgstr ""
-
-#: classes/class-admin.php:410
-msgid "Migrating Stream Records"
-msgstr ""
-
-#: classes/class-admin.php:411
-msgid "No Records Were Migrated"
-msgstr ""
-
 #: classes/class-admin.php:412
-msgid "Please do not exit this page until the process has completed."
-msgstr ""
-
-#: classes/class-admin.php:413
-#, php-format
-msgid "Please note: This process will take about %d minutes to complete."
-msgstr ""
-
-#: classes/class-admin.php:413
-msgid "Please note: This process could take a few minutes to complete."
-msgstr ""
-
-#: classes/class-admin.php:414
-msgid ""
-"Please note: Your existing records will not appear in Stream until you have "
-"migrated them to your local database."
-msgstr ""
-
-#: classes/class-admin.php:415
-#, php-format
-msgid ""
-"Are you sure you want to lose all %s existing Stream records without "
-"migrating?"
-msgstr ""
-
-#: classes/class-admin.php:415
-#, php-format
-msgid "about %d"
-msgstr ""
-
-#: classes/class-admin.php:415
-msgid "a few"
-msgstr ""
-
-#: classes/class-admin.php:444
 #, php-format
 msgid ""
 "Are you sure you want to perform bulk actions on over %s items? This process "
 "could take a while to complete."
 msgstr ""
 
-#: classes/class-admin.php:579 classes/class-uninstall.php:51
+#: classes/class-admin.php:546 classes/class-uninstall.php:51
 msgid "You don't have sufficient privileges to do this action."
 msgstr ""
 
-#: classes/class-admin.php:701
+#: classes/class-admin.php:672
 msgid "Uninstall"
 msgstr ""
 
 #: classes/class-author.php:82 classes/class-author.php:90
-#: classes/class-settings.php:771
+#: classes/class-settings.php:779
 msgid "N/A"
 msgstr ""
 
@@ -144,7 +92,7 @@ msgstr ""
 msgid "during WP Cron"
 msgstr ""
 
-#: classes/class-cli.php:217
+#: classes/class-cli.php:218
 msgid "SITE IS DISCONNECTED"
 msgstr ""
 
@@ -223,49 +171,49 @@ msgstr ""
 msgid "Filter not supported."
 msgstr ""
 
-#: classes/class-install.php:174
+#: classes/class-install.php:175
 msgid "The following table is not present in the WordPress database:"
 msgid_plural "The following tables are not present in the WordPress database:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/class-install.php:184 classes/class-install.php:186
+#: classes/class-install.php:185 classes/class-install.php:187
 #, php-format
 msgid ""
 "Please <a href=\"%s\">uninstall</a> the Stream plugin and activate it again."
 msgstr ""
 
-#: classes/class-install.php:265
+#: classes/class-install.php:261
 msgid "There was an error updating the Stream database. Please try again."
 msgstr ""
 
-#: classes/class-install.php:266
+#: classes/class-install.php:262
 msgid "Database Update Error"
 msgstr ""
 
-#: classes/class-install.php:313
+#: classes/class-install.php:309
 msgid "Stream Database Update Required"
 msgstr ""
 
-#: classes/class-install.php:314
+#: classes/class-install.php:310
 msgid ""
 "Stream has updated! Before we send you on your way, we need to update your "
 "database to the newest version."
 msgstr ""
 
-#: classes/class-install.php:315
+#: classes/class-install.php:311
 msgid "This process could take a little while, so please be patient."
 msgstr ""
 
-#: classes/class-install.php:316
+#: classes/class-install.php:312
 msgid "Update Database"
 msgstr ""
 
-#: classes/class-install.php:335
+#: classes/class-install.php:331
 msgid "Update Complete"
 msgstr ""
 
-#: classes/class-install.php:337
+#: classes/class-install.php:333
 msgid "Continue"
 msgstr ""
 
@@ -289,15 +237,15 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: classes/class-list-table.php:81 classes/class-settings.php:729
+#: classes/class-list-table.php:81 classes/class-settings.php:737
 msgid "Context"
 msgstr ""
 
-#: classes/class-list-table.php:82 classes/class-settings.php:730
+#: classes/class-list-table.php:82 classes/class-settings.php:738
 msgid "Action"
 msgstr ""
 
-#: classes/class-list-table.php:83 classes/class-settings.php:731
+#: classes/class-list-table.php:83 classes/class-settings.php:739
 msgid "IP Address"
 msgstr ""
 
@@ -372,8 +320,8 @@ msgid "Live updates"
 msgstr ""
 
 #: classes/class-list-table.php:867 classes/class-network.php:271
-#: classes/class-settings.php:269 classes/class-settings.php:299
-#: classes/class-settings.php:313
+#: classes/class-settings.php:251 classes/class-settings.php:277
+#: classes/class-settings.php:307 classes/class-settings.php:321
 msgid "Enabled"
 msgstr ""
 
@@ -391,57 +339,6 @@ msgid "1 item"
 msgid_plural "%s items"
 msgstr[0] ""
 msgstr[1] ""
-
-#: classes/class-migrate.php:225
-msgid ""
-"Our cloud storage services will be shutting down permanently on September 1, "
-"2015"
-msgstr ""
-
-#: classes/class-migrate.php:226
-msgid "Read the announcement post"
-msgstr ""
-
-#: classes/class-migrate.php:227
-#, php-format
-msgid ""
-"We found %s activity records in the cloud that need to be migrated to your "
-"local database."
-msgstr ""
-
-#: classes/class-migrate.php:228
-msgid "Close"
-msgstr ""
-
-#: classes/class-migrate.php:229
-msgid "Start Migration Now"
-msgstr ""
-
-#: classes/class-migrate.php:230
-msgid "Remind Me Later"
-msgstr ""
-
-#: classes/class-migrate.php:231
-msgid "No thanks, I don't want to migrate"
-msgstr ""
-
-#: classes/class-migrate.php:285
-msgid "Migration complete!"
-msgstr ""
-
-#: classes/class-migrate.php:291
-msgid ""
-"An unknown error occurred during migration. Please try again later or "
-"contact support."
-msgstr ""
-
-#: classes/class-migrate.php:305
-msgid "OK, we'll remind you again in a few hours."
-msgstr ""
-
-#: classes/class-migrate.php:316
-msgid "All new activity will be stored in the local database."
-msgstr ""
 
 #: classes/class-network.php:78
 msgid "Network Admin"
@@ -544,119 +441,131 @@ msgid "Keep Records for"
 msgstr ""
 
 #: classes/class-settings.php:239
-msgid ""
-"Maximum number of days to keep activity records. Leave blank to keep records "
-"forever."
+msgid "Maximum number of days to keep activity records."
 msgstr ""
 
 #: classes/class-settings.php:244
 msgid "days"
 msgstr ""
 
-#: classes/class-settings.php:249
+#: classes/class-settings.php:248
+msgid "Keep Records Indefinitely"
+msgstr ""
+
+#: classes/class-settings.php:250
+msgid "Not recommended."
+msgstr ""
+
+#: classes/class-settings.php:250
+msgid ""
+"Purging old records helps to keep your WordPress installation running "
+"optimally."
+msgstr ""
+
+#: classes/class-settings.php:257
 msgid "Exclude"
 msgstr ""
 
-#: classes/class-settings.php:253
+#: classes/class-settings.php:261
 msgid "Exclude Rules"
 msgstr ""
 
-#: classes/class-settings.php:255
+#: classes/class-settings.php:263
 msgid ""
 "Create rules to exclude certain kinds of activity from being recorded by "
 "Stream."
 msgstr ""
 
-#: classes/class-settings.php:262
+#: classes/class-settings.php:270
 msgid "Advanced"
 msgstr ""
 
-#: classes/class-settings.php:266
+#: classes/class-settings.php:274
 msgid "Comment Flood Tracking"
 msgstr ""
 
-#: classes/class-settings.php:268
+#: classes/class-settings.php:276
 msgid ""
 "WordPress will automatically prevent duplicate comments from flooding the "
 "database. By default, Stream does not track these attempts unless you opt-in "
 "here. Enabling this is not necessary or recommended for most sites."
 msgstr ""
 
-#: classes/class-settings.php:274
+#: classes/class-settings.php:282
 msgid "Reset Stream Database"
 msgstr ""
 
-#: classes/class-settings.php:284
+#: classes/class-settings.php:292
 msgid "Warning: This will delete all activity records from the database."
 msgstr ""
 
-#: classes/class-settings.php:296
+#: classes/class-settings.php:304
 msgid "Akismet Tracking"
 msgstr ""
 
-#: classes/class-settings.php:298
+#: classes/class-settings.php:306
 msgid ""
 "Akismet already keeps statistics for comment attempts that it blocks as "
 "SPAM. By default, Stream does not track these attempts unless you opt-in "
 "here. Enabling this is not necessary or recommended for most sites."
 msgstr ""
 
-#: classes/class-settings.php:310
+#: classes/class-settings.php:318
 msgid "WP Cron Tracking"
 msgstr ""
 
-#: classes/class-settings.php:312
+#: classes/class-settings.php:320
 msgid ""
 "By default, Stream does not track activity performed by WordPress cron "
 "events unless you opt-in here. Enabling this is not necessary or recommended "
 "for most sites."
 msgstr ""
 
-#: classes/class-settings.php:695
+#: classes/class-settings.php:703
 #, php-format
 msgid "Any %s"
 msgstr ""
 
-#: classes/class-settings.php:710
+#: classes/class-settings.php:718
 msgid "Add New Rule"
 msgstr ""
 
-#: classes/class-settings.php:711
+#: classes/class-settings.php:719
 msgid "Delete Selected Rules"
 msgstr ""
 
-#: classes/class-settings.php:728
+#: classes/class-settings.php:736
 msgid "Author or Role"
 msgstr ""
 
-#: classes/class-settings.php:732
+#: classes/class-settings.php:740
 msgid "Filters"
 msgstr ""
 
-#: classes/class-settings.php:758
+#: classes/class-settings.php:766
 #, php-format
 msgid "1 user"
 msgid_plural "%s users"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/class-settings.php:784
+#: classes/class-settings.php:792
 msgid "Any Author or Role"
 msgstr ""
 
-#: classes/class-settings.php:825
+#: classes/class-settings.php:833
 msgid "Any Context"
 msgstr ""
 
-#: classes/class-settings.php:844
+#: classes/class-settings.php:852
 msgid "Any Action"
 msgstr ""
 
-#: classes/class-settings.php:855
+#: classes/class-settings.php:863
 msgid "Any IP Address"
 msgstr ""
 
-#: classes/class-settings.php:892
+#: classes/class-settings.php:900
 msgid "No rules found."
 msgstr ""
 
@@ -1266,8 +1175,8 @@ msgstr ""
 #: connectors/class-connector-edd.php:248
 #: connectors/class-connector-edd.php:293
 #: connectors/class-connector-gravityforms.php:481
-#: connectors/class-connector-jetpack.php:493
-#: connectors/class-connector-jetpack.php:668
+#: connectors/class-connector-jetpack.php:502
+#: connectors/class-connector-jetpack.php:677
 #, php-format
 msgid "\"%s\" setting updated"
 msgstr ""
@@ -1277,8 +1186,8 @@ msgstr ""
 #: connectors/class-connector-gravityforms.php:353
 #: connectors/class-connector-gravityforms.php:399
 #: connectors/class-connector-gravityforms.php:649
-#: connectors/class-connector-jetpack.php:330
-#: connectors/class-connector-jetpack.php:434
+#: connectors/class-connector-jetpack.php:341
+#: connectors/class-connector-jetpack.php:443
 msgid "activated"
 msgstr ""
 
@@ -1286,8 +1195,8 @@ msgstr ""
 #: connectors/class-connector-edd.php:365
 #: connectors/class-connector-gravityforms.php:353
 #: connectors/class-connector-gravityforms.php:399
-#: connectors/class-connector-jetpack.php:330
-#: connectors/class-connector-jetpack.php:434
+#: connectors/class-connector-jetpack.php:341
+#: connectors/class-connector-jetpack.php:443
 msgid "deactivated"
 msgstr ""
 
@@ -2402,133 +2311,133 @@ msgstr ""
 msgid "Tiled Galleries"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:328
+#: connectors/class-connector-jetpack.php:339
 #, php-format
 msgid "%1$s module %2$s"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:346
+#: connectors/class-connector-jetpack.php:357
 #, php-format
 msgid "%1$s's account %2$s %3$s Jetpack"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:348
+#: connectors/class-connector-jetpack.php:359
 msgid "unlinked"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:348
+#: connectors/class-connector-jetpack.php:359
 msgid "linked"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:349
+#: connectors/class-connector-jetpack.php:360
 msgid "from"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:349
+#: connectors/class-connector-jetpack.php:360
 msgid "to"
-msgstr ""
-
-#: connectors/class-connector-jetpack.php:365
-#, php-format
-msgid "Site %s Jetpack"
-msgstr ""
-
-#: connectors/class-connector-jetpack.php:366
-#: connectors/class-connector-jetpack.php:376
-msgid "connected to"
-msgstr ""
-
-#: connectors/class-connector-jetpack.php:366
-#: connectors/class-connector-jetpack.php:376
-msgid "disconnected from"
 msgstr ""
 
 #: connectors/class-connector-jetpack.php:374
 #, php-format
+msgid "Site %s Jetpack"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:375
+#: connectors/class-connector-jetpack.php:385
+msgid "connected to"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:375
+#: connectors/class-connector-jetpack.php:385
+msgid "disconnected from"
+msgstr ""
+
+#: connectors/class-connector-jetpack.php:383
+#, php-format
 msgid "\"%1$s\" blog %2$s Jetpack"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:401
+#: connectors/class-connector-jetpack.php:410
 msgid "Sharing services updated"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:432
+#: connectors/class-connector-jetpack.php:441
 #, php-format
 msgid "Monitor notifications %s"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:459
-#: connectors/class-connector-jetpack.php:550
+#: connectors/class-connector-jetpack.php:468
+#: connectors/class-connector-jetpack.php:559
 msgid "enabled"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:461
-#: connectors/class-connector-jetpack.php:550
+#: connectors/class-connector-jetpack.php:470
+#: connectors/class-connector-jetpack.php:559
 msgid "disabled"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:463
+#: connectors/class-connector-jetpack.php:472
 msgid "regenerated"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:469
+#: connectors/class-connector-jetpack.php:478
 #, php-format
 msgid "%1$s %2$s Post by Email"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:548
+#: connectors/class-connector-jetpack.php:557
 #, php-format
 msgid "G+ profile display %s"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:565
+#: connectors/class-connector-jetpack.php:574
 #, php-format
 msgid "%1$s's Google+ account %2$s"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:568
+#: connectors/class-connector-jetpack.php:577
 msgid "connected"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:568
+#: connectors/class-connector-jetpack.php:577
 msgid "disconnected"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:585
+#: connectors/class-connector-jetpack.php:594
 #, php-format
 msgid "Sharing CSS/JS %s"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:624
+#: connectors/class-connector-jetpack.php:633
 msgid "Custom CSS updated"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:644
+#: connectors/class-connector-jetpack.php:653
 #, php-format
 msgid "%1$s connection %2$s"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:647
+#: connectors/class-connector-jetpack.php:656
 msgid "added"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:647
+#: connectors/class-connector-jetpack.php:656
 msgid "removed"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:657
+#: connectors/class-connector-jetpack.php:666
 msgid "Video Library Access"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:658
+#: connectors/class-connector-jetpack.php:667
 msgid "Allow users to upload videos"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:659
+#: connectors/class-connector-jetpack.php:668
 msgid "Free formats"
 msgstr ""
 
-#: connectors/class-connector-jetpack.php:660
+#: connectors/class-connector-jetpack.php:669
 msgid "Default quality"
 msgstr ""
 
@@ -2689,73 +2598,79 @@ msgstr ""
 msgid "Revision"
 msgstr ""
 
-#: connectors/class-connector-posts.php:157
+#: connectors/class-connector-posts.php:159
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s unpublished"
 msgstr ""
 
-#: connectors/class-connector-posts.php:163
+#: connectors/class-connector-posts.php:165
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s restored from trash"
 msgstr ""
 
-#: connectors/class-connector-posts.php:170
+#: connectors/class-connector-posts.php:172
+#, php-format
+msgctxt "1: Post title, 2: Post type singular name"
+msgid "\"%1$s\" %2$s draft saved"
+msgstr ""
+
+#: connectors/class-connector-posts.php:178
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s drafted"
 msgstr ""
 
-#: connectors/class-connector-posts.php:176
+#: connectors/class-connector-posts.php:184
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s pending review"
 msgstr ""
 
-#: connectors/class-connector-posts.php:182
+#: connectors/class-connector-posts.php:190
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name, 3: Scheduled post date"
 msgid "\"%1$s\" %2$s scheduled for %3$s"
 msgstr ""
 
-#: connectors/class-connector-posts.php:188
+#: connectors/class-connector-posts.php:196
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" scheduled %2$s published"
 msgstr ""
 
-#: connectors/class-connector-posts.php:194
+#: connectors/class-connector-posts.php:202
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s published"
 msgstr ""
 
-#: connectors/class-connector-posts.php:200
+#: connectors/class-connector-posts.php:208
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s privately published"
 msgstr ""
 
-#: connectors/class-connector-posts.php:206
+#: connectors/class-connector-posts.php:214
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s trashed"
 msgstr ""
 
-#: connectors/class-connector-posts.php:213
+#: connectors/class-connector-posts.php:221
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s updated"
 msgstr ""
 
-#: connectors/class-connector-posts.php:290
+#: connectors/class-connector-posts.php:298
 #, php-format
 msgctxt "1: Post title, 2: Post type singular name"
 msgid "\"%1$s\" %2$s deleted from trash"
 msgstr ""
 
-#: connectors/class-connector-posts.php:328
+#: connectors/class-connector-posts.php:336
 msgid "Post"
 msgstr ""
 
@@ -3144,8 +3059,29 @@ msgctxt "1: Term name, 2: Taxonomy singular label"
 msgid "\"%1$s\" %2$s updated"
 msgstr ""
 
+#: connectors/class-connector-user-switching.php:44
+msgctxt "user-switching"
+msgid "User Switching"
+msgstr ""
+
+#: connectors/class-connector-user-switching.php:144
+#, php-format
+msgctxt "1: User display name, 2: User login"
+msgid "Switched user to %1$s (%2$s)"
+msgstr ""
+
+#: connectors/class-connector-user-switching.php:174
+#, php-format
+msgctxt "1: User display name, 2: User login"
+msgid "Switched back to %1$s (%2$s)"
+msgstr ""
+
+#: connectors/class-connector-user-switching.php:208
+msgid "Switched off"
+msgstr ""
+
 #: connectors/class-connector-users.php:41
-#: connectors/class-connector-users.php:68
+#: connectors/class-connector-users.php:71
 msgid "Users"
 msgstr ""
 
@@ -3165,66 +3101,78 @@ msgstr ""
 msgid "Log Out"
 msgstr ""
 
-#: connectors/class-connector-users.php:69
+#: connectors/class-connector-users.php:58
+msgid "Switched To"
+msgstr ""
+
+#: connectors/class-connector-users.php:59
+msgid "Switched Back"
+msgstr ""
+
+#: connectors/class-connector-users.php:60
+msgid "Switched Off"
+msgstr ""
+
+#: connectors/class-connector-users.php:72
 msgid "Sessions"
 msgstr ""
 
-#: connectors/class-connector-users.php:70
+#: connectors/class-connector-users.php:73
 msgid "Profiles"
 msgstr ""
 
-#: connectors/class-connector-users.php:87
+#: connectors/class-connector-users.php:90
 msgid "Edit User"
 msgstr ""
 
-#: connectors/class-connector-users.php:136
+#: connectors/class-connector-users.php:139
 msgid "New user registration"
 msgstr ""
 
-#: connectors/class-connector-users.php:140
+#: connectors/class-connector-users.php:143
 #, php-format
 msgctxt "1: User display name, 2: User role"
 msgid "New user account created for %1$s (%2$s)"
 msgstr ""
 
-#: connectors/class-connector-users.php:172
+#: connectors/class-connector-users.php:175
 #, php-format
 msgid "%s's profile was updated"
 msgstr ""
 
-#: connectors/class-connector-users.php:200
+#: connectors/class-connector-users.php:203
 #, php-format
 msgctxt "1: User display name, 2: Old role, 3: New role"
 msgid "%1$s's role was changed from %2$s to %3$s"
 msgstr ""
 
-#: connectors/class-connector-users.php:224
+#: connectors/class-connector-users.php:227
 #, php-format
 msgid "%s's password was reset"
 msgstr ""
 
-#: connectors/class-connector-users.php:250
+#: connectors/class-connector-users.php:253
 #, php-format
 msgid "%s's password was requested to be reset"
 msgstr ""
 
-#: connectors/class-connector-users.php:276
+#: connectors/class-connector-users.php:279
 #, php-format
 msgid "%s logged in"
 msgstr ""
 
-#: connectors/class-connector-users.php:299
+#: connectors/class-connector-users.php:302
 #, php-format
 msgid "%s logged out"
 msgstr ""
 
-#: connectors/class-connector-users.php:335
+#: connectors/class-connector-users.php:338
 #, php-format
 msgctxt "1: User display name, 2: User roles"
 msgid "%1$s's account was deleted (%2$s)"
 msgstr ""
 
-#: connectors/class-connector-users.php:343
+#: connectors/class-connector-users.php:346
 #, php-format
 msgid "User account #%d was deleted"
 msgstr ""
@@ -3498,7 +3446,7 @@ msgstr ""
 #: connectors/class-connector-woocommerce.php:159
 #: connectors/class-connector-woocommerce.php:166
 #: connectors/class-connector-woocommerce.php:173
-#: connectors/class-connector-woocommerce.php:713
+#: connectors/class-connector-woocommerce.php:717
 msgid "setting"
 msgstr ""
 
@@ -3625,24 +3573,24 @@ msgctxt "Tax rate name"
 msgid "\"%s\" tax rate deleted"
 msgstr ""
 
-#: connectors/class-connector-woocommerce.php:642
+#: connectors/class-connector-woocommerce.php:646
 #, php-format
 msgid "\"%1$s\" %2$s updated"
 msgstr ""
 
-#: connectors/class-connector-woocommerce.php:740
+#: connectors/class-connector-woocommerce.php:744
 msgid "payment gateway"
 msgstr ""
 
-#: connectors/class-connector-woocommerce.php:759
+#: connectors/class-connector-woocommerce.php:763
 msgid "shipping method"
 msgstr ""
 
-#: connectors/class-connector-woocommerce.php:778
+#: connectors/class-connector-woocommerce.php:782
 msgid "email"
 msgstr ""
 
-#: connectors/class-connector-woocommerce.php:786
+#: connectors/class-connector-woocommerce.php:790
 msgid "Tools"
 msgstr ""
 
@@ -4151,4 +4099,16 @@ msgstr ""
 
 #: includes/feeds/atom.php:7 includes/feeds/rss-2.0.php:21
 msgid "Stream Feed"
+msgstr ""
+
+#: tests/tests/test-class-connector.php:191
+msgid "Maintenance"
+msgstr ""
+
+#: tests/tests/test-class-connector.php:201
+msgid "Fault"
+msgstr ""
+
+#: tests/tests/test-class-connector.php:212
+msgid "AE35 Unit"
 msgstr ""

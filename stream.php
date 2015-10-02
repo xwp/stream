@@ -3,16 +3,16 @@
  * Plugin Name: Stream
  * Plugin URI: https://wp-stream.com/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 3.0.1
- * Author: Stream
- * Author URI: https://wp-stream.com/
+ * Version: 3.0.2
+ * Author: XWP
+ * Author URI: https://xwp.co/
  * License: GPLv2+
  * Text Domain: stream
  * Domain Path: /languages
  */
 
 /**
- * Copyright (c) 2015 WP Stream Pty Ltd (https://wp-stream.com/)
+ * Copyright (c) 2015 XWP.Co Pty Ltd. (https://xwp.co/)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2 or, at

@@ -18,11 +18,12 @@
 	margin-left: 5px;
 	line-height: 28px;
 	text-decoration: none;
+	display: inline-block;
 }
 
 #record-query-reset span.dashicons {
 	position: absolute;
-	top: 2px;
+	top: 0.5em;
 	left: 0;
 	font-size: 13px;
 }
@@ -467,49 +468,4 @@
 
 .post-type-stream_notification .view-switch {
 	display: none;
-}
-
-
-/* Stream Migrate Message */
-
-#stream-migrate-progress {
-	display: none;
-	height: 36px;
-	padding: 5px 0;
-}
-
-#stream-migrate-progress progress {
-	width: 300px;
-	font-size: 18px;
-}
-
-#stream-migrate-progress strong,
-#stream-migrate-progress #stream-migrate-actions-close {
-	display: none;
-}
-
-#stream-migrate-progress strong {
-	padding-left: 5px;
-}
-
-#stream-migrate-progress strong,
-#stream-migrate-progress em {
-	line-height: 28px;
-	padding-right: 10px;
-}
-
-#stream-migrate-actions .button {
-	display: inline-block;
-	vertical-align: bottom !important;
-	margin: 0 10px 5px 0 !important;
-}
-
-#stream-ignore-migrate {
-	display: inline-block;
-	margin: 10px 0 5px;
-	color: #a00;
-}
-
-#stream-ignore-migrate:hover {
-	color: #f00;
 }

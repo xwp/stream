@@ -25,11 +25,6 @@ class Admin {
 	public $live_update;
 
 	/**
-	 * @var Migrate
-	 */
-	public $migrate;
-
-	/**
 	 * Menu page screen id
 	 *
 	 * @var string
@@ -183,7 +178,6 @@ class Admin {
 	public function init() {
 		$this->network     = new Network( $this->plugin );
 		$this->live_update = new Live_Update( $this->plugin );
-		$this->migrate     = new Migrate( $this->plugin );
 	}
 
 	/**
@@ -394,32 +388,6 @@ class Admin {
 			);
 		}
 
-		if ( $this->migrate->show_migrate_notice() ) {
-			$limit                = absint( $this->migrate->limit );
-			$record_count         = absint( $this->migrate->record_count );
-			$chunks               = ceil( $record_count / $limit );
-			$estimated_time       = ( $chunks > 1 ) ? round( ( $chunks * 5 ) / 60 ) : 0;
-			$migrate_time_message = ( $estimated_time > 1 ) ? sprintf( esc_html__( 'This will take about %d minutes.', 'stream' ), absint( $estimated_time ) ) : esc_html__( 'This could take a few minutes.', 'stream' );
-
-			wp_enqueue_script( 'wp-stream-migrate', $this->plugin->locations['url'] . 'ui/js/migrate.js', array( 'jquery' ), $this->plugin->get_version() );
-			wp_localize_script(
-				'wp-stream-migrate',
-				'wp_stream_migrate',
-				array(
-					'i18n'         => array(
-						'migrate_process_title'    => esc_html__( 'Migrating Stream Records', 'stream' ),
-						'ignore_migrate_title'     => esc_html__( 'No Records Were Migrated', 'stream' ),
-						'migrate_process_message'  => esc_html__( 'Please do not exit this page until the process has completed.', 'stream' ) . ' ' . esc_html( $migrate_time_message ),
-						'confirm_start_migrate'    => ( $estimated_time > 1 ) ? sprintf( esc_html__( 'Please note: This process will take about %d minutes to complete.', 'stream' ), absint( $estimated_time ) ) : esc_html__( 'Please note: This process could take a few minutes to complete.', 'stream' ),
-						'confirm_migrate_reminder' => esc_html__( 'Please note: Your existing records will not appear in Stream until you have migrated them to your local database.', 'stream' ),
-						'confirm_ignore_migrate'   => sprintf( esc_html__( 'Are you sure you want to lose all %s existing Stream records without migrating?', 'stream' ), number_format( $record_count ), ( $estimated_time > 1 && is_multisite() ) ? sprintf( esc_html__( 'about %d', 'stream' ), absint( $estimated_time ) ) : esc_html__( 'a few', 'stream' ) ),
-					),
-					'chunks' => absint( $chunks ),
-					'nonce'  => wp_create_nonce( 'wp_stream_migrate-' . absint( get_current_blog_id() ) . absint( get_current_user_id() ) ),
-				)
-			);
-		}
-
 		/**
 		 * The maximum number of items that can be updated in bulk without receiving a warning.
 		 *
@@ -538,7 +506,7 @@ class Admin {
 					background: none !important;
 					background-repeat: no-repeat;
 				}
-				body.{$body_class} #wpbody-content .wrap h2:nth-child(1):before {
+				body.{$body_class} #wpbody-content .wrap h1:nth-child(1):before {
 					font-family: 'WP Stream' !important;
 					content: '\\73';
 					padding: 0 8px 0 0;
@@ -713,7 +681,7 @@ class Admin {
 		$this->list_table->prepare_items();
 		?>
 		<div class="wrap">
-			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
+			<h1><?php echo esc_html( get_admin_page_title() ) ?></h1>
 			<?php $this->list_table->display() ?>
 		</div>
 	<?php
@@ -734,7 +702,7 @@ class Admin {
 		wp_enqueue_script( 'wp-stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.js', array( 'jquery' ), $this->plugin->get_version(), true );
 		?>
 		<div class="wrap">
-			<h2><?php echo esc_html( get_admin_page_title() ) ?></h2>
+			<h1><?php echo esc_html( get_admin_page_title() ) ?></h1>
 
 			<?php if ( ! empty( $page_description ) ) : ?>
 				<p><?php echo esc_html( $page_description ) ?></p>

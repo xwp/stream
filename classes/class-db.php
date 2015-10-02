@@ -198,4 +198,17 @@ class DB {
 
 		return isset( $this->plugin->connectors->term_labels[ $column ] ) ? $this->plugin->connectors->term_labels[ $column ] : array();
 	}
+
+	/**
+	 * Helper function for calling $this->query->query()
+	 *
+	 * @see Query->query()
+	 *
+	 * @param array Query args
+	 *
+	 * @return array Stream Records
+	 */
+	function query( $args ) {
+		return $this->query->query( $args );
+	}
 }

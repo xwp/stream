@@ -5,10 +5,10 @@
 Stream is the easiest and safest way to track content changes happening to your WordPress site and then view them in beautifully organized detail.
 
 **Contributors:** [fjarrett](https://profiles.wordpress.org/fjarrett), [lukecarbis](https://profiles.wordpress.org/lukecarbis), [shadyvb](https://profiles.wordpress.org/shadyvb), [westonruter](https://profiles.wordpress.org/westonruter), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
-**Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [activity log](https://wordpress.org/plugins/tags/activity log), [activity logs](https://wordpress.org/plugins/tags/activity logs), [admin actions](https://wordpress.org/plugins/tags/admin actions), [analytics](https://wordpress.org/plugins/tags/analytics), [change](https://wordpress.org/plugins/tags/change), [changes](https://wordpress.org/plugins/tags/changes), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [logs](https://wordpress.org/plugins/tags/logs), [stream](https://wordpress.org/plugins/tags/stream), [tracking](https://wordpress.org/plugins/tags/tracking), [troubleshooting](https://wordpress.org/plugins/tags/troubleshooting), [wp stream](https://wordpress.org/plugins/tags/wp stream)  
+**Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [activity log](https://wordpress.org/plugins/tags/activity log), [activity logs](https://wordpress.org/plugins/tags/activity logs), [admin actions](https://wordpress.org/plugins/tags/admin actions), [analytics](https://wordpress.org/plugins/tags/analytics), [audit](https://wordpress.org/plugins/tags/audit), [audit log](https://wordpress.org/plugins/tags/audit log), [audit logs](https://wordpress.org/plugins/tags/audit logs), [change](https://wordpress.org/plugins/tags/change), [changes](https://wordpress.org/plugins/tags/changes), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [logs](https://wordpress.org/plugins/tags/logs), [stream](https://wordpress.org/plugins/tags/stream), [tracking](https://wordpress.org/plugins/tags/tracking), [troubleshooting](https://wordpress.org/plugins/tags/troubleshooting), [wp stream](https://wordpress.org/plugins/tags/wp stream)  
 **Requires at least:** 3.7  
 **Tested up to:** 4.2  
-**Stable tag:** 3.0.1  
+**Stable tag:** 3.0.2  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
 [![Build Status](https://travis-ci.org/xwp/stream.png?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Joinhat.svg)](https://gitter.im/xwp/stream) 
@@ -23,14 +23,15 @@ Every logged-in user action is displayed in an activity stream and organized for
 
 **Built-In Tracking Integrations For Popular Plugins:**
 
- * [Advanced Custom Fields](https://wp-stream.com/connectors/acf/)
- * [bbPress](https://wp-stream.com/connectors/bbpress/)
- * [BuddyPress](https://wp-stream.com/connectors/buddypress/)
- * [Easy Digital Downloads](https://wp-stream.com/connectors/edd/)
- * [Gravity Forms](https://wp-stream.com/connectors/gravity-forms/)
- * [Jetpack](https://wp-stream.com/connectors/jetpack/)
- * [WooCommerce](https://wp-stream.com/connectors/woocommerce/)
- * [WordPress SEO by Yoast](https://wp-stream.com/connectors/wordpress-seo/)
+ * Advanced Custom Fields
+ * bbPress
+ * BuddyPress
+ * Easy Digital Downloads
+ * Gravity Forms
+ * Jetpack
+ * User Switching
+ * WooCommerce
+ * WordPress SEO by Yoast
 
 **Built-In Tracking For Core Actions:**
 
@@ -87,6 +88,19 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
 
 ## Changelog ##
+
+### 3.0.2 - October 2, 2015 ###
+* Tweak: Helper function for running Stream queries added ([#774](https://github.com/xwp/stream/pull/774))
+* Tweak: Migration dialog removed ([76e809f](https://github.com/xwp/stream/commit/76e809f9abb3dd691b755cf943b50a76a3ffb488))
+* Tweak: Better handling of draft saving and auto-saving ([#775](https://github.com/xwp/stream/pull/775))
+* Tweak: Records page title size now matches other admin pages ([afcced8](https://github.com/xwp/stream/commit/afcced8b590e047e8adfe6ae79483a7436c849f4))
+* Fix: Database update dialog is now displayed correctly ([#773](https://github.com/xwp/stream/pull/773))
+* Fix: The record's connector was being incorrectly stored as the connector name ([#773](https://github.com/xwp/stream/pull/773))
+* Fix: Record action links are back ([#773](https://github.com/xwp/stream/pull/773))
+* Fix: Jetpack is now able to connect without error while Stream is active ([#768](https://github.com/xwp/stream/pull/768))
+* Fix: Reset Filters text no longer wraps to a second line ([#765](https://github.com/xwp/stream/pull/765))
+
+Props [@lukecarbis](https://github.com/lukecarbis)
 
 ### 3.0.1 - September 2, 2015 ###
 * New: Stream and [User Switching](https://wordpress.org/plugins/user-switching/) are now besties ([#744](https://github.com/xwp/stream/pull/744))

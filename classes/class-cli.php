@@ -111,7 +111,7 @@ class CLI extends \WP_CLI_Command {
 
 		$query_args['fields'] = implode( ',', $fields );
 
-		$records = wp_stream_get_instance()->db->query->query( $query_args );
+		$records = wp_stream_get_instance()->db->query( $query_args );
 
 		// Make structure Formatter compatible
 		foreach ( (array) $records as $key => $record ) {
@@ -212,7 +212,7 @@ class CLI extends \WP_CLI_Command {
 	 * @return void
 	 */
 	private function connection() {
-		$query = wp_stream_get_instance()->db->query->query( array( 'records_per_page' => 1, 'fields' => 'created' ) );
+		$query = wp_stream_get_instance()->db->query( array( 'records_per_page' => 1, 'fields' => 'created' ) );
 
 		if ( ! $query ) {
 			WP_CLI::error( esc_html__( 'SITE IS DISCONNECTED', 'stream' ) );

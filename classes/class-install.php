@@ -24,7 +24,7 @@ class Install {
 
 	/**
 	 * Holds version of database at last update
-]	 *
+	 *
 	 * @var string
 	 */
 	public $db_version;
@@ -113,11 +113,7 @@ class Install {
 		if ( ! $update ) {
 			$this->update_required = true;
 			$this->success_db      = $this->update( $this->db_version, $this->plugin->get_version(), array( 'type' => 'auto' ) );
-
-			return;
-		}
-
-		if ( 'update_and_continue' === $update ) {
+		} elseif ( 'update_and_continue' === $update ) {
 			$this->success_db = $this->update( $this->db_version, $this->plugin->get_version(), array( 'type' => 'user' ) );
 		}
 
@@ -333,7 +329,7 @@ class Install {
 		<div class="updated">
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ) ) ?>" style="display:inline;">
 				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ) ?></strong></p>
-				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', esc_html( $this->db_version ), esc_html( WP_Stream::VERSION ) ), 'stream' ) ?></p>
+				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', esc_html( $this->db_version ), esc_html( $this->plugin->get_version() ) ), 'stream' ) ?></p>
 				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ) ?>
 			</form>
 		</div>
@@ -353,6 +349,7 @@ class Install {
 	public function db_update_versions() {
 		$db_update_versions = array(
 			'3.0.0' /* @version 3.0.0 Drop the stream_context table, changes to stream table */,
+			'3.0.2' /* @version 3.0.2 Fix uppercase values in stream table, connector column */,
 		);
 
 		/**
