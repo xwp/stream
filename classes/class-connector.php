@@ -93,8 +93,7 @@ abstract class Connector {
 	 * @return bool
 	 */
 	public function log( $message, $args, $object_id, $context, $action, $user_id = null ) {
-		$class     = get_called_class();
-		$connector = str_replace( array( 'WP_Stream\\', 'Connector_' ), array( '', '' ), $class );
+		$connector = $this->name;
 
 		$data = apply_filters(
 			'wp_stream_log_data',

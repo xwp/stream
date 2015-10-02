@@ -70,7 +70,7 @@ class Test_DB extends WP_StreamTestCase {
 				$this->assertTrue( $dummy_time > 0 );
 				$this->assertTrue( $result_time > 0 );
 				$this->assertTrue( $result_time - $dummy_time < 2 );
-				$this->assertTrue( $result_time - $dummy_time >= 0 );
+				$this->assertTrue( $result_time - $dummy_time >= -2 );
 			} else {
 				$this->assertEquals( $dummy_value, $stream_result[ $dummy_key ] );
 			}

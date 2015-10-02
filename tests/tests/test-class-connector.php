@@ -72,7 +72,7 @@ class Test_Connector extends WP_StreamTestCase {
 		$this->assertNotEmpty( $result );
 
 		$this->assertEquals( sprintf( $message, $percent_failure, $hours_remaining ), $result->summary );
-		$this->assertEquals( 'Maintenance', $result->connector );
+		$this->assertEquals( 'maintenance', $result->connector );
 		$this->assertEquals( 'ae35', $result->context );
 		$this->assertEquals( 'simulate_fault', $result->action );
 	}
