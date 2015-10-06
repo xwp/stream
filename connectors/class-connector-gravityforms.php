@@ -32,7 +32,7 @@ class Connector_GravityForms extends Connector {
 		'gform_form_status_change',
 		'gform_form_reset_views',
 		'gform_before_delete_form',
-		'gform_form_trash',
+		'gform_post_form_trashed',
 		'gform_form_restore',
 		'gform_form_duplicate',
 		'gform_export_separator', // Export entries
@@ -722,7 +722,24 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
+	public function callback_gform_post_form_trashed( $id ) {
+		$form = $this->get_form( $id );
+
+		$this->log(
+			__( '"%s" form trashed', 'stream' ),
+			array(
+				'form_title' => $form['title'],
+				'form_id'    => $id,
+			),
+			$form['id'],
+			'forms',
+			'trashed'
+		);
+	}
+
 	private function get_form( $form_id ) {
-		return reset( \GFFormsModel::get_forms_by_id( $form_id ) );
+		$form = \GFFormsModel::get_form_meta_by_id( $form_id );
+
+		return reset( $form );
 	}
 }
