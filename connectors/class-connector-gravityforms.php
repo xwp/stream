@@ -36,7 +36,7 @@ class Connector_GravityForms extends Connector {
 		'gform_post_form_deactivated',
 		'gform_post_form_duplicated',
 		'gform_post_form_views_deleted',
-		'gform_export_lines', // Export entries
+		'gform_post_export_entries', // Export entries
 		'gform_export_form', // Export forms
 		'gform_import_form_xml_options', // Import
 		'gform_delete_lead',
@@ -454,6 +454,23 @@ class Connector_GravityForms extends Connector {
 			'settings',
 			$is_update ? 'updated' : 'deleted'
 		);
+	}
+
+	public function callback_gform_post_export_entries( $form, $start_date, $end_date, $fields ) {
+
+		$this->log(
+			__( '"%s" form entries exported', 'stream' ),
+			array(
+				'form_title' => $form[ 'title' ],
+				'form_id'    => $form[ 'id' ],
+				'start_date' => empty( $start_date ) ? null : $start_date,
+				'end_date'   => empty( $end_date )   ? null : $end_date
+			),
+			$form[ 'id' ],
+			'export',
+			'exported'
+		);
+
 	}
 
 	public function callback_gform_export_separator( $dummy, $form_id ) {
