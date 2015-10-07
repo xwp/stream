@@ -37,7 +37,6 @@ class Connector_GravityForms extends Connector {
 		'gform_post_form_duplicated',
 		'gform_post_form_views_deleted',
 		'gform_post_export_entries', // Export entries
-		'gform_export_form', // Export forms
 		'gform_import_form_xml_options', // Import
 		'gform_delete_lead',
 		'gform_post_note_added',
