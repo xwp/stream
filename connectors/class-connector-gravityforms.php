@@ -37,6 +37,7 @@ class Connector_GravityForms extends Connector {
 		'gform_post_form_duplicated',
 		'gform_post_form_views_deleted',
 		'gform_post_export_entries',
+		'gform_forms_post_import',
 		'gform_delete_lead',
 		'gform_post_note_added',
 		'gform_pre_note_deleted',
@@ -467,6 +468,27 @@ class Connector_GravityForms extends Connector {
 			$form[ 'id' ],
 			'export',
 			'exported'
+		);
+
+	}
+
+	public function callback_gform_forms_post_import( $forms ) {
+
+		$forms_total  = count( $forms );
+		$forms_label  = ( 1 === $forms_total ) ? 'form' : 'forms';
+		$forms_ids    = wp_list_pluck( $forms, 'id' );
+		$forms_titles = wp_list_pluck( $forms, 'title' );
+
+		$this->log(
+			__( '%d ' . $forms_label . ' imported', 'stream' ),
+			array(
+				'count'  => $forms_total,
+				'ids'    => $forms_ids,
+				'titles' => $forms_titles
+			),
+			null,
+			'export',
+			'imported'
 		);
 
 	}
