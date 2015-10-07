@@ -36,8 +36,7 @@ class Connector_GravityForms extends Connector {
 		'gform_post_form_deactivated',
 		'gform_post_form_duplicated',
 		'gform_post_form_views_deleted',
-		'gform_post_export_entries', // Export entries
-		'gform_import_form_xml_options', // Import
+		'gform_post_export_entries',
 		'gform_delete_lead',
 		'gform_post_note_added',
 		'gform_pre_note_deleted',
@@ -484,18 +483,6 @@ class Connector_GravityForms extends Connector {
 			$form_id,
 			'export',
 			'exported'
-		);
-
-		return $dummy;
-	}
-
-	public function callback_gform_import_form_xml_options( $dummy ) {
-		$this->log(
-			__( 'Import process started', 'stream' ),
-			array(),
-			null,
-			'export',
-			'imported'
 		);
 
 		return $dummy;
