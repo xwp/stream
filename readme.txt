@@ -3,7 +3,7 @@ Contributors:      fjarrett, lukecarbis, shadyvb, westonruter, stream, xwp
 Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
 Requires at least: 3.7
 Tested up to:      4.2
-Stable tag:        3.0.2
+Stable tag:        3.0.3
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,9 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 3. Create rules for excluding certain kinds of records from appearing in Stream.
 
 == Changelog ==
+
+= 3.0.3 - October 8, 2015 =
+ * Fix: Stream fails gracefully on PHP versions lower than 5.3
 
 = 3.0.2 - October 2, 2015 =
 
