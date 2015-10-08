@@ -3,7 +3,7 @@
  * Plugin Name: Stream
  * Plugin URI: https://wp-stream.com/
  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
- * Version: 3.0.2
+ * Version: 3.0.3
  * Author: XWP
  * Author URI: https://xwp.co/
  * License: GPLv2+
@@ -33,8 +33,7 @@ if ( ! version_compare( PHP_VERSION, '5.3', '>=' ) ) {
 	load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	add_action( 'shutdown', 'wp_stream_fail_php_version' );
 } else {
-	require __DIR__ . '/classes/class-plugin.php';
-	$GLOBALS['wp_stream'] = new WP_Stream\Plugin();
+	require __DIR__ . '/stream-53.php';
 }
 
 /**
@@ -48,13 +47,4 @@ function wp_stream_fail_php_version() {
 	$html_message = sprintf( '<div class="error">%s</div>', wpautop( $message ) );
 
 	echo wp_kses_post( $html_message );
-}
-
-/**
- * Helper for external plugins which wish to use Stream
- *
- * @return WP_Stream\Plugin
- */
-function wp_stream_get_instance() {
-	return $GLOBALS['wp_stream'];
 }
