@@ -33,7 +33,11 @@ if ( ! version_compare( PHP_VERSION, '5.3', '>=' ) ) {
 	load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	add_action( 'shutdown', 'wp_stream_fail_php_version' );
 } else {
-	require __DIR__ . '/stream-53.php';
+	require __DIR__ . '/classes/class-plugin.php';
+	$plugin_class_name = 'WP_Stream\Plugin';
+	if ( class_exists( $plugin_class_name ) ) {
+		$GLOBALS['wp_stream'] = new $plugin_class_name();
+	}
 }
 
 /**
@@ -47,4 +51,13 @@ function wp_stream_fail_php_version() {
 	$html_message = sprintf( '<div class="error">%s</div>', wpautop( $message ) );
 
 	echo wp_kses_post( $html_message );
+}
+
+/**
+ * Helper for external plugins which wish to use Stream
+ *
+ * @return WP_Stream\Plugin
+ */
+function wp_stream_get_instance() {
+	return $GLOBALS['wp_stream'];
 }
