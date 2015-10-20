@@ -733,8 +733,6 @@ class Connector_GravityForms extends Connector {
 	}
 
 	private function get_form( $form_id ) {
-		$form = \GFFormsModel::get_form_meta_by_id( $form_id );
-
-		return reset( $form );
+		return \GFFormsModel::get_form_meta( $form_id );
 	}
 }
