@@ -14,7 +14,7 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @const string
 	 */
-	const PLUGIN_MIN_VERSION = '1.9.13.29';
+	const PLUGIN_MIN_VERSION = '1.9.14';
 
 	/**
 	 * Actions registered for this connector
