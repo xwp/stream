@@ -77,7 +77,7 @@ class Connector_Jetpack extends Connector {
 	public function get_action_labels() {
 		return array(
 			'activated'   => esc_html_x( 'Activated', 'jetpack', 'stream' ),
-			'deactivated' => esc_html_x( 'Dectivated', 'jetpack', 'stream' ),
+			'deactivated' => esc_html_x( 'Deactivated', 'jetpack', 'stream' ),
 			'register'    => esc_html_x( 'Connected', 'jetpack', 'stream' ),
 			'disconnect'  => esc_html_x( 'Disconnected', 'jetpack', 'stream' ),
 			'authorize'   => esc_html_x( 'Link', 'jetpack', 'stream' ),
