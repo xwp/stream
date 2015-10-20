@@ -27,8 +27,6 @@ class Connector_GravityForms extends Connector {
 		'gform_pre_notification_save',
 		'gform_pre_notification_deleted',
 		'gform_pre_confirmation_deleted',
-		'gform_notification_status',
-		'gform_confirmation_status',
 		'gform_before_delete_form',
 		'gform_post_form_trashed',
 		'gform_post_form_restored',
