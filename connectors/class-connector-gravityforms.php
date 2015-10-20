@@ -528,7 +528,7 @@ class Connector_GravityForms extends Connector {
 	}
 
 	public function callback_gform_delete_lead( $lead_id ) {
-		$lead = \GFFormsModel::get_lead( $lead_id );
+		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
@@ -563,7 +563,7 @@ class Connector_GravityForms extends Connector {
 	}
 
 	public function callback_gform_pre_note_deleted( $note_id, $lead_id ) {
-		$lead = \GFFormsModel::get_lead( $lead_id );
+		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
@@ -581,7 +581,7 @@ class Connector_GravityForms extends Connector {
 	}
 
 	public function callback_gform_update_status( $lead_id, $status, $prev = '' ) {
-		$lead = \GFFormsModel::get_lead( $lead_id );
+		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
 		if ( 'active' === $status && 'trash' === $prev ) {
@@ -620,7 +620,7 @@ class Connector_GravityForms extends Connector {
 	}
 
 	public function callback_gform_update_is_read( $lead_id, $status ) {
-		$lead = \GFFormsModel::get_lead( $lead_id );
+		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
@@ -643,7 +643,7 @@ class Connector_GravityForms extends Connector {
 	}
 
 	public function callback_gform_update_is_starred( $lead_id, $status ) {
-		$lead = \GFFormsModel::get_lead( $lead_id );
+		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
@@ -730,6 +730,10 @@ class Connector_GravityForms extends Connector {
 			'forms',
 			$action
 		);
+	}
+
+	private function get_lead( $lead_id ) {
+		return \GFFormsModel::get_lead( $lead_id );
 	}
 
 	private function get_form( $form_id ) {
