@@ -34,7 +34,10 @@ if ( ! version_compare( PHP_VERSION, '5.3', '>=' ) ) {
 	add_action( 'shutdown', 'wp_stream_fail_php_version' );
 } else {
 	require __DIR__ . '/classes/class-plugin.php';
-	$GLOBALS['wp_stream'] = new WP_Stream\Plugin();
+	$plugin_class_name = 'WP_Stream\Plugin';
+	if ( class_exists( $plugin_class_name ) ) {
+		$GLOBALS['wp_stream'] = new $plugin_class_name();
+	}
 }
 
 /**
