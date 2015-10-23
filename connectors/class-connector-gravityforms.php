@@ -782,7 +782,7 @@ class Connector_GravityForms extends Connector {
 				__( 'Form #%1$d ("%2$s") %3$s', 'stream' ),
 				$form_id,
 				$form[ 'title' ],
-				strtolower( $actions[ $action ] ),
+				strtolower( $actions[ $action ] )
 			),
 
 			array(
