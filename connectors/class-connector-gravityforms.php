@@ -114,6 +114,8 @@ class Connector_GravityForms extends Connector {
 			'activated'     => esc_html_x( 'Activated', 'gravityforms', 'stream' ),
 			'deactivated'   => esc_html_x( 'Deactivated', 'gravityforms', 'stream' ),
 			'views_deleted' => esc_html_x( 'Views Reset', 'gravityforms', 'stream' ),
+			'starred'       => esc_html_x( 'Starred', 'gravityforms', 'stream' ),
+			'unstarred'     => esc_html_x( 'Unstarred', 'gravityforms', 'stream' ),
 		);
 
 	}
@@ -697,10 +699,10 @@ class Connector_GravityForms extends Connector {
 			),
 
 			array(
-				'lead_id'    => $lead_id,
-				'form_title' => $form[ 'title' ],
-				'form_id'    => $form[ 'id' ],
-				'status'     => $status,
+				'lead_id'     => $lead_id,
+				'lead_status' => $status,
+				'form_id'     => $form[ 'id' ],
+				'form_title'  => $form[ 'title' ],
 			),
 
 			$lead_id,
@@ -722,6 +724,7 @@ class Connector_GravityForms extends Connector {
 		$lead   = $this->get_lead( $lead_id );
 		$form   = $this->get_form( $lead[ 'form_id' ] );
 		$status = ( ! empty( $status ) ) ? esc_html__( 'starred', 'stream' ) : esc_html__( 'unstarred', 'stream' );
+		$action = $status;
 
 		$this->log(
 			sprintf(
@@ -733,15 +736,15 @@ class Connector_GravityForms extends Connector {
 			),
 
 			array(
-				'lead_id'    => $lead_id,
-				'form_title' => $form[ 'title' ],
-				'form_id'    => $form[ 'id' ],
-				'status'     => $status,
+				'lead_id'     => $lead_id,
+				'lead_status' => $status,
+				'form_id'     => $form[ 'id' ],
+				'form_title'  => $form[ 'title' ],
 			),
 
 			$lead_id,
 			'entries',
-			'updated'
+			$action
 		);
 
 	}
