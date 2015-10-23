@@ -1,7 +1,9 @@
 <?php
+
 namespace WP_Stream;
 
 class Connector_GravityForms extends Connector {
+
 	/**
 	 * Connector slug
 	 *
@@ -22,6 +24,7 @@ class Connector_GravityForms extends Connector {
 	 * @var array
 	 */
 	public $actions = array(
+
 		'gform_after_save_form',
 		'gform_pre_confirmation_save',
 		'gform_pre_notification_save',
@@ -48,6 +51,7 @@ class Connector_GravityForms extends Connector {
 		'update_site_option',
 		'add_site_option',
 		'delete_site_option',
+
 	);
 
 	/**
@@ -70,11 +74,13 @@ class Connector_GravityForms extends Connector {
 	 * @return bool
 	 */
 	public function is_dependency_satisfied() {
+
 		if ( class_exists( 'GFForms' ) && version_compare( \GFCommon::$version, self::PLUGIN_MIN_VERSION, '>=' ) ) {
 			return true;
 		}
 
 		return false;
+
 	}
 
 	/**
@@ -83,7 +89,9 @@ class Connector_GravityForms extends Connector {
 	 * @return string Translated connector label
 	 */
 	public function get_label() {
+
 		return esc_html_x( 'Gravity Forms', 'gravityforms', 'stream' );
+
 	}
 
 	/**
@@ -92,6 +100,7 @@ class Connector_GravityForms extends Connector {
 	 * @return array Action label translations
 	 */
 	public function get_action_labels() {
+
 		return array(
 			'created'       => esc_html_x( 'Created', 'gravityforms', 'stream' ),
 			'updated'       => esc_html_x( 'Updated', 'gravityforms', 'stream' ),
@@ -106,6 +115,7 @@ class Connector_GravityForms extends Connector {
 			'deactivated'   => esc_html_x( 'Deactivated', 'gravityforms', 'stream' ),
 			'views_deleted' => esc_html_x( 'Views Reset', 'gravityforms', 'stream' ),
 		);
+
 	}
 
 	/**
@@ -114,6 +124,7 @@ class Connector_GravityForms extends Connector {
 	 * @return array Context label translations
 	 */
 	public function get_context_labels() {
+
 		return array(
 			'forms'    => esc_html_x( 'Forms', 'gravityforms', 'stream' ),
 			'settings' => esc_html_x( 'Settings', 'gravityforms', 'stream' ),
@@ -121,6 +132,7 @@ class Connector_GravityForms extends Connector {
 			'entries'  => esc_html_x( 'Entries', 'gravityforms', 'stream' ),
 			'notes'    => esc_html_x( 'Notes', 'gravityforms', 'stream' ),
 		);
+
 	}
 
 	/**
@@ -134,6 +146,7 @@ class Connector_GravityForms extends Connector {
 	 * @return array             Action links
 	 */
 	public function action_links( $links, $record ) {
+
 		if ( 'forms' === $record->context ) {
 			$links[ esc_html__( 'Edit', 'stream' ) ] = add_query_arg(
 				array(
@@ -172,32 +185,41 @@ class Connector_GravityForms extends Connector {
 		}
 
 		return $links;
+
 	}
 
 	public function register() {
+
 		parent::register();
 
 		$this->options = array(
-			'rg_gforms_disable_css'         => array(
+			'rg_gforms_disable_css' => array(
 				'label' => esc_html_x( 'Output CSS', 'gravityforms', 'stream' ),
 			),
-			'rg_gforms_enable_html5'        => array(
+
+			'rg_gforms_enable_html5' => array(
 				'label' => esc_html_x( 'Output HTML5', 'gravityforms', 'stream' ),
 			),
-			'gform_enable_noconflict'       => array(
+
+			'gform_enable_noconflict' => array(
 				'label' => esc_html_x( 'No-Conflict Mode', 'gravityforms', 'stream' ),
 			),
-			'rg_gforms_currency'            => array(
+
+			'rg_gforms_currency' => array(
 				'label' => esc_html_x( 'Currency', 'gravityforms', 'stream' ),
 			),
-			'rg_gforms_captcha_public_key'  => array(
+
+			'rg_gforms_captcha_public_key' => array(
 				'label' => esc_html_x( 'reCAPTCHA Public Key', 'gravityforms', 'stream' ),
 			),
+
 			'rg_gforms_captcha_private_key' => array(
 				'label' => esc_html_x( 'reCAPTCHA Private Key', 'gravityforms', 'stream' ),
 			),
-			'rg_gforms_key'                 => null,
+
+			'rg_gforms_key' => null,
 		);
+
 	}
 
 	/**
@@ -205,8 +227,10 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @param array $form
 	 * @param bool $is_new
+	 * @return void
 	 */
 	public function callback_gform_after_save_form( $form, $is_new ) {
+
 		$title = $form['title'];
 		$id    = $form['id'];
 
@@ -225,6 +249,7 @@ class Connector_GravityForms extends Connector {
 			'forms',
 			$is_new ? 'created' : 'updated'
 		);
+
 	}
 
 	/**
@@ -233,10 +258,10 @@ class Connector_GravityForms extends Connector {
 	 * @param array $confirmation
 	 * @param array $form
 	 * @param bool $is_new
-	 *
 	 * @return array
 	 */
 	public function callback_gform_pre_confirmation_save( $confirmation, $form, $is_new = true ) {
+
 		if ( ! isset( $is_new ) ) {
 			$is_new = false;
 		}
@@ -258,6 +283,7 @@ class Connector_GravityForms extends Connector {
 		);
 
 		return $confirmation;
+
 	}
 
 	/**
@@ -266,10 +292,10 @@ class Connector_GravityForms extends Connector {
 	 * @param array $notification
 	 * @param array $form
 	 * @param bool $is_new
-	 *
 	 * @return array
 	 */
 	public function callback_gform_pre_notification_save( $notification, $form, $is_new = true ) {
+
 		if ( ! isset( $is_new ) ) {
 			$is_new = false;
 		}
@@ -291,6 +317,7 @@ class Connector_GravityForms extends Connector {
 		);
 
 		return $notification;
+
 	}
 
 	/**
@@ -298,8 +325,10 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @param array $notification
 	 * @param array $form
+	 * @return void
 	 */
 	public function callback_gform_pre_notification_deleted( $notification, $form ) {
+
 		$this->log(
 			sprintf(
 				__( '"%1$s" notification deleted from "%2$s"', 'stream' ),
@@ -314,6 +343,7 @@ class Connector_GravityForms extends Connector {
 			'forms',
 			'updated'
 		);
+
 	}
 
 	/**
@@ -321,8 +351,10 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @param array $confirmation
 	 * @param array $form
+	 * @return void
 	 */
 	public function callback_gform_pre_confirmation_deleted( $confirmation, $form ) {
+
 		$this->log(
 			sprintf(
 				__( '"%1$s" confirmation deleted from "%2$s"', 'stream' ),
@@ -337,6 +369,7 @@ class Connector_GravityForms extends Connector {
 			'forms',
 			'updated'
 		);
+
 	}
 
 	/**
@@ -345,8 +378,10 @@ class Connector_GravityForms extends Connector {
 	 * @param array $confirmation
 	 * @param array $form
 	 * @param bool $is_active
+	 * @return void
 	 */
 	public function callback_gform_confirmation_status( $confirmation, $form, $is_active ) {
+
 		$this->log(
 			sprintf(
 				__( '"%1$s" confirmation %2$s from "%3$s"', 'stream' ),
@@ -363,6 +398,7 @@ class Connector_GravityForms extends Connector {
 			'forms',
 			'updated'
 		);
+
 	}
 
 	/**
@@ -371,8 +407,10 @@ class Connector_GravityForms extends Connector {
 	 * @param array $notification
 	 * @param array $form
 	 * @param bool $is_active
+	 * @return void
 	 */
 	public function callback_gform_notification_status( $notification, $form, $is_active ) {
+
 		$this->log(
 			sprintf(
 				__( '"%1$s" notification %2$s from "%3$s"', 'stream' ),
@@ -389,6 +427,7 @@ class Connector_GravityForms extends Connector {
 			'forms',
 			'updated'
 		);
+
 	}
 
 	public function callback_update_option( $option, $old, $new ) {
@@ -416,6 +455,7 @@ class Connector_GravityForms extends Connector {
 	}
 
 	public function check( $option, $old_value, $new_value ) {
+
 		if ( ! array_key_exists( $option, $this->options ) ) {
 			return;
 		}
@@ -435,9 +475,11 @@ class Connector_GravityForms extends Connector {
 				isset( $data['action'] ) ? $data['action'] : 'updated'
 			);
 		}
+
 	}
 
 	public function check_rg_gforms_key( $old_value, $new_value ) {
+
 		$is_update = ( $new_value && strlen( $new_value ) );
 		$option    = 'rg_gforms_key';
 
@@ -451,6 +493,7 @@ class Connector_GravityForms extends Connector {
 			'settings',
 			$is_update ? 'updated' : 'deleted'
 		);
+
 	}
 
 	public function callback_gform_post_export_entries( $form, $start_date, $end_date, $fields ) {
@@ -492,6 +535,7 @@ class Connector_GravityForms extends Connector {
 	}
 
 	public function callback_gform_export_separator( $dummy, $form_id ) {
+
 		$form = $this->get_form( $form_id );
 
 		$this->log(
@@ -506,9 +550,11 @@ class Connector_GravityForms extends Connector {
 		);
 
 		return $dummy;
+
 	}
 
 	public function callback_gform_export_options( $dummy, $forms ) {
+
 		$ids    = wp_list_pluck( $forms, 'id' );
 		$titles = wp_list_pluck( $forms, 'title' );
 
@@ -525,9 +571,11 @@ class Connector_GravityForms extends Connector {
 		);
 
 		return $dummy;
+
 	}
 
 	public function callback_gform_delete_lead( $lead_id ) {
+
 		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
@@ -542,9 +590,11 @@ class Connector_GravityForms extends Connector {
 			'entries',
 			'deleted'
 		);
+
 	}
 
 	public function callback_gform_post_note_added( $note_id, $lead_id, $user_id, $user_name, $note, $note_type ) {
+
 		$lead = \GFFormsModel::get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
@@ -560,9 +610,11 @@ class Connector_GravityForms extends Connector {
 			'notes',
 			'added'
 		);
+
 	}
 
 	public function callback_gform_pre_note_deleted( $note_id, $lead_id ) {
+
 		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
@@ -578,9 +630,11 @@ class Connector_GravityForms extends Connector {
 			'notes',
 			'deleted'
 		);
+
 	}
 
 	public function callback_gform_update_status( $lead_id, $status, $prev = '' ) {
+
 		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
@@ -617,9 +671,11 @@ class Connector_GravityForms extends Connector {
 			'entries',
 			$status
 		);
+
 	}
 
 	public function callback_gform_update_is_read( $lead_id, $status ) {
+
 		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
@@ -640,9 +696,11 @@ class Connector_GravityForms extends Connector {
 			'entries',
 			'updated'
 		);
+
 	}
 
 	public function callback_gform_update_is_starred( $lead_id, $status ) {
+
 		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
@@ -663,6 +721,7 @@ class Connector_GravityForms extends Connector {
 			'entries',
 			'updated'
 		);
+
 	}
 
 	public function callback_gform_before_delete_form( $form_id ) {
@@ -696,11 +755,13 @@ class Connector_GravityForms extends Connector {
 	/**
 	 * Track status change of forms
 	 *
-	 * @param integer $form_id
+	 * @param int $form_id
 	 * @param string $action
+	 * @return void
 	 */
 	public function log_form_action( $form_id, $action ) {
-		$form    = $this->get_form( $form_id );
+
+		$form = $this->get_form( $form_id );
 
 		if ( empty( $form ) ) {
 			return;
@@ -730,13 +791,31 @@ class Connector_GravityForms extends Connector {
 			'forms',
 			$action
 		);
+
 	}
 
+	/**
+	 * Helper function to get a single entry
+	 *
+	 * @param  int $lead_id Lead ID
+	 * @return array
+	 */
 	private function get_lead( $lead_id ) {
+
 		return \GFFormsModel::get_lead( $lead_id );
+
 	}
 
+	/**
+	 * Helper function to get a single form
+	 *
+	 * @param  int $form_id Form ID
+	 * @return array
+	 */
 	private function get_form( $form_id ) {
+
 		return \GFFormsModel::get_form_meta( $form_id );
+
 	}
+
 }
