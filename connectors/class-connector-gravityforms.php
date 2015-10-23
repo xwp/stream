@@ -724,32 +724,88 @@ class Connector_GravityForms extends Connector {
 
 	}
 
+	/**
+	 * Callback fired when a form is deleted
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
 	public function callback_gform_before_delete_form( $form_id ) {
+
 		$this->log_form_action( $form_id, 'deleted' );
+
 	}
 
+	/**
+	 * Callback fired when a form is trashed
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
 	public function callback_gform_post_form_trashed( $form_id ) {
+
 		$this->log_form_action( $form_id, 'trashed' );
+
 	}
 
+	/**
+	 * Callback fired when a form is restored
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
 	public function callback_gform_post_form_restored( $form_id ) {
+
 		$this->log_form_action( $form_id, 'untrashed' );
+
 	}
 
+	/**
+	 * Callback fired when a form is activated
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
 	public function callback_gform_post_form_activated( $form_id ) {
+
 		$this->log_form_action( $form_id, 'activated' );
+
 	}
 
+	/**
+	 * Callback fired when a form is deactivated
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
 	public function callback_gform_post_form_deactivated( $form_id ) {
+
 		$this->log_form_action( $form_id, 'deactivated' );
+
 	}
 
+	/**
+	 * Callback fired when a form is duplicated
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
 	public function callback_gform_post_form_duplicated( $form_id ) {
+
 		$this->log_form_action( $form_id, 'duplicated' );
+
 	}
 
+	/**
+	 * Callback fired when a form's views are reset
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
 	public function callback_gform_post_form_views_deleted( $form_id ) {
+
 		$this->log_form_action( $form_id, 'views_deleted' );
+
 	}
 
 	/**
