@@ -231,8 +231,8 @@ class Connector_GravityForms extends Connector {
 	 */
 	public function callback_gform_after_save_form( $form, $is_new ) {
 
-		$title = $form['title'];
-		$id    = $form['id'];
+		$title = $form[ 'title' ];
+		$id    = $form[ 'id' ];
 
 		$this->log(
 			sprintf(
@@ -271,13 +271,13 @@ class Connector_GravityForms extends Connector {
 				__( '"%1$s" confirmation %2$s for "%3$s"', 'stream' ),
 				$confirmation['name'],
 				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
-				$form['title']
+				$form[ 'title' ]
 			),
 			array(
 				'is_new'  => $is_new,
-				'form_id' => $form['id'],
+				'form_id' => $form[ 'id' ],
 			),
-			$form['id'],
+			$form[ 'id' ],
 			'forms',
 			'updated'
 		);
@@ -305,13 +305,13 @@ class Connector_GravityForms extends Connector {
 				__( '"%1$s" notification %2$s for "%3$s"', 'stream' ),
 				$notification['name'],
 				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
-				$form['title']
+				$form[ 'title' ]
 			),
 			array(
 				'is_update' => $is_new,
-				'form_id'   => $form['id'],
+				'form_id'   => $form[ 'id' ],
 			),
-			$form['id'],
+			$form[ 'id' ],
 			'forms',
 			'updated'
 		);
@@ -333,13 +333,13 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				__( '"%1$s" notification deleted from "%2$s"', 'stream' ),
 				$notification['name'],
-				$form['title']
+				$form[ 'title' ]
 			),
 			array(
-				'form_id'      => $form['id'],
+				'form_id'      => $form[ 'id' ],
 				'notification' => $notification,
 			),
-			$form['id'],
+			$form[ 'id' ],
 			'forms',
 			'updated'
 		);
@@ -359,13 +359,13 @@ class Connector_GravityForms extends Connector {
 			sprintf(
 				__( '"%1$s" confirmation deleted from "%2$s"', 'stream' ),
 				$confirmation['name'],
-				$form['title']
+				$form[ 'title' ]
 			),
 			array(
-				'form_id'      => $form['id'],
+				'form_id'      => $form[ 'id' ],
 				'confirmation' => $confirmation,
 			),
-			$form['id'],
+			$form[ 'id' ],
 			'forms',
 			'updated'
 		);
@@ -387,10 +387,10 @@ class Connector_GravityForms extends Connector {
 				__( '"%1$s" confirmation %2$s from "%3$s"', 'stream' ),
 				$confirmation['name'],
 				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
-				$form['title']
+				$form[ 'title' ]
 			),
 			array(
-				'form_id'      => $form['id'],
+				'form_id'      => $form[ 'id' ],
 				'confirmation' => $confirmation,
 				'is_active'    => $is_active,
 			),
@@ -416,14 +416,14 @@ class Connector_GravityForms extends Connector {
 				__( '"%1$s" notification %2$s from "%3$s"', 'stream' ),
 				$notification['name'],
 				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
-				$form['title']
+				$form[ 'title' ]
 			),
 			array(
-				'form_id'      => $form['id'],
+				'form_id'      => $form[ 'id' ],
 				'notification' => $notification,
 				'is_active'    => $is_active,
 			),
-			$form['id'],
+			$form[ 'id' ],
 			'forms',
 			'updated'
 		);
@@ -541,7 +541,7 @@ class Connector_GravityForms extends Connector {
 		$this->log(
 			__( '"%s" form exported', 'stream' ),
 			array(
-				'form_title' => $form['title'],
+				'form_title' => $form[ 'title' ],
 				'form_id'    => $form_id,
 			),
 			$form_id,
@@ -577,14 +577,14 @@ class Connector_GravityForms extends Connector {
 	public function callback_gform_delete_lead( $lead_id ) {
 
 		$lead = $this->get_lead( $lead_id );
-		$form = $this->get_form( $lead['form_id'] );
+		$form = $this->get_form( $lead[ 'form_id' ] );
 
 		$this->log(
 			__( 'Lead #%1$d from "%2$s" deleted', 'stream' ),
 			array(
 				'lead_id'    => $lead_id,
-				'form_title' => $form['title'],
-				'form_id'    => $form['id'],
+				'form_title' => $form[ 'title' ],
+				'form_id'    => $form[ 'id' ],
 			),
 			$lead_id,
 			'entries',
@@ -596,15 +596,15 @@ class Connector_GravityForms extends Connector {
 	public function callback_gform_post_note_added( $note_id, $lead_id, $user_id, $user_name, $note, $note_type ) {
 
 		$lead = \GFFormsModel::get_lead( $lead_id );
-		$form = $this->get_form( $lead['form_id'] );
+		$form = $this->get_form( $lead[ 'form_id' ] );
 
 		$this->log(
 			__( 'Note #%1$d added to lead #%2$d on "%3$s" form', 'stream' ),
 			array(
 				'note_id'    => $note_id,
 				'lead_id'    => $lead_id,
-				'form_title' => $form['title'],
-				'form_id'    => $form['id'],
+				'form_title' => $form[ 'title' ],
+				'form_id'    => $form[ 'id' ],
 			),
 			$note_id,
 			'notes',
@@ -616,15 +616,15 @@ class Connector_GravityForms extends Connector {
 	public function callback_gform_pre_note_deleted( $note_id, $lead_id ) {
 
 		$lead = $this->get_lead( $lead_id );
-		$form = $this->get_form( $lead['form_id'] );
+		$form = $this->get_form( $lead[ 'form_id' ] );
 
 		$this->log(
 			__( 'Note #%1$d deleted from lead #%2$d on "%3$s" form', 'stream' ),
 			array(
 				'note_id'    => $note_id,
 				'lead_id'    => $lead_id,
-				'form_title' => $form['title'],
-				'form_id'    => $form['id'],
+				'form_title' => $form[ 'title' ],
+				'form_id'    => $form[ 'id' ],
 			),
 			$note_id,
 			'notes',
@@ -636,7 +636,7 @@ class Connector_GravityForms extends Connector {
 	public function callback_gform_update_status( $lead_id, $status, $prev = '' ) {
 
 		$lead = $this->get_lead( $lead_id );
-		$form = $this->get_form( $lead['form_id'] );
+		$form = $this->get_form( $lead[ 'form_id' ] );
 
 		if ( 'active' === $status && 'trash' === $prev ) {
 			$status = 'restore';
@@ -658,12 +658,12 @@ class Connector_GravityForms extends Connector {
 				__( 'Lead #%1$d %2$s on "%3$s" form', 'stream' ),
 				$lead_id,
 				$actions[ $status ],
-				$form['title']
+				$form[ 'title' ]
 			),
 			array(
 				'lead_id'    => $lead_id,
-				'form_title' => $form['title'],
-				'form_id'    => $form['id'],
+				'form_title' => $form[ 'title' ],
+				'form_id'    => $form[ 'id' ],
 				'status'     => $status,
 				'prev'       => $prev,
 			),
@@ -674,24 +674,35 @@ class Connector_GravityForms extends Connector {
 
 	}
 
+	/**
+	 * Callback fired when an entry is read/unread
+	 *
+	 * @param  int $lead_id
+	 * @param  int $status
+	 * @return void
+	 */
 	public function callback_gform_update_is_read( $lead_id, $status ) {
 
-		$lead = $this->get_lead( $lead_id );
-		$form = $this->get_form( $lead['form_id'] );
+		$lead   = $this->get_lead( $lead_id );
+		$form   = $this->get_form( $lead[ 'form_id' ] );
+		$status = ( ! empty( $status ) ) ? esc_html__( 'read', 'stream' ) : esc_html__( 'unread', 'stream' );
 
 		$this->log(
 			sprintf(
-				__( 'Lead #%1$d marked as %2$s on "%3$s" form', 'stream' ),
+				__( 'Entry #%1$d marked as %2$s on form #%3$d ("%4$s")', 'stream' ),
 				$lead_id,
-				$status ? esc_html__( 'read', 'stream' ) : esc_html__( 'unread', 'stream' ),
-				$form['title']
+				$status,
+				$form[ 'id' ],
+				$form[ 'title' ]
 			),
+
 			array(
 				'lead_id'    => $lead_id,
-				'form_title' => $form['title'],
-				'form_id'    => $form['id'],
+				'form_title' => $form[ 'title' ],
+				'form_id'    => $form[ 'id' ],
 				'status'     => $status,
 			),
+
 			$lead_id,
 			'entries',
 			'updated'
@@ -699,24 +710,35 @@ class Connector_GravityForms extends Connector {
 
 	}
 
+	/**
+	 * Callback fired when an entry is starred/unstarred
+	 *
+	 * @param  int $lead_id
+	 * @param  int $status
+	 * @return void
+	 */
 	public function callback_gform_update_is_starred( $lead_id, $status ) {
 
-		$lead = $this->get_lead( $lead_id );
-		$form = $this->get_form( $lead['form_id'] );
+		$lead   = $this->get_lead( $lead_id );
+		$form   = $this->get_form( $lead[ 'form_id' ] );
+		$status = ( ! empty( $status ) ) ? esc_html__( 'starred', 'stream' ) : esc_html__( 'unstarred', 'stream' );
 
 		$this->log(
 			sprintf(
-				__( 'Lead #%1$d %2$s on "%3$s" form', 'stream' ),
+				__( 'Entry #%1$d %2$s on form #%3$d ("%4$s")', 'stream' ),
 				$lead_id,
-				$status ? esc_html__( 'starred', 'stream' ) : esc_html__( 'unstarred', 'stream' ),
-				$form['title']
+				$status,
+				$form[ 'id' ],
+				$form[ 'title' ]
 			),
+
 			array(
 				'lead_id'    => $lead_id,
-				'form_title' => $form['title'],
-				'form_id'    => $form['id'],
+				'form_title' => $form[ 'title' ],
+				'form_id'    => $form[ 'id' ],
 				'status'     => $status,
 			),
+
 			$lead_id,
 			'entries',
 			'updated'
