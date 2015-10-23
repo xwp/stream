@@ -779,15 +779,19 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
-				__( '"%1$s" form %2$s', 'stream' ),
-				$form['title'],
-				$actions[ $action ]
+				__( 'Form #%1$d ("%2$s") %3$s', 'stream' ),
+				$form_id,
+				$form[ 'title' ],
+				strtolower( $actions[ $action ] ),
 			),
+
 			array(
-				'form_title' => $form['title'],
-				'form_id'    => $form_id,
+				'form_id'     => $form_id,
+				'form_title'  => $form[ 'title' ],
+				'form_status' => strtolower( $action )
 			),
-			$form['id'],
+
+			$form[ 'id' ],
 			'forms',
 			$action
 		);
