@@ -3,7 +3,7 @@ Contributors:      fjarrett, lukecarbis, shadyvb, westonruter, stream, xwp
 Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
 Requires at least: 3.7
 Tested up to:      4.2
-Stable tag:        3.0.2
+Stable tag:        3.0.3
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,17 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 3. Create rules for excluding certain kinds of records from appearing in Stream.
 
 == Changelog ==
+
+= 3.0.3 - November 6, 2015 =
+
+* Tweak: Better compatibility with upcoming WordPress 4.4 ([2b2493c](https://github.com/xwp/stream/commit/2b2493ccb3ef6cba5aeb773433fdb5f0d414e8f3))
+* Tweak: Minor security improvements
+* Fix: New and improved Gravity Forms connector, works much better ([#780](https://github.com/xwp/stream/pull/780)) (thanks [Rob](https://github.com/rob)!)
+* Fix: Stream no longer explodes on < PHP 5.3, when trying to tell you that it explodes on < PHP 5.3 ([#781](https://github.com/xwp/stream/pull/781))
+* Fix: Fixed a smal typo ([62455c5](https://github.com/xwp/stream/commit/62455c518b95ddaf5e6c6c0733e7d03e5aa1311c))
+* Fix: Multiple Multisite Mistakes Mended ([#788](https://github.com/xwp/stream/pull/788))
+* Fix: Internet Explorer 8 fix!! IE8!? Come on, people, it's 2015. ([#789](https://github.com/xwp/stream/pull/789))
+* Fix: EDD connector bug ([#790](https://github.com/xwp/stream/pull/790))
 
 = 3.0.2 - October 2, 2015 =
 

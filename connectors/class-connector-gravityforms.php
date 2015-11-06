@@ -14,7 +14,7 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @const string
 	 */
-	const PLUGIN_MIN_VERSION = '1.8.8';
+	const PLUGIN_MIN_VERSION = '1.9.14';
 
 	/**
 	 * Actions registered for this connector
@@ -25,22 +25,20 @@ class Connector_GravityForms extends Connector {
 		'gform_after_save_form',
 		'gform_pre_confirmation_save',
 		'gform_pre_notification_save',
-		'gform_notification_delete',
-		'gform_confirmation_delete',
-		'gform_notification_status',
-		'gform_confirmation_status',
-		'gform_form_status_change',
-		'gform_form_reset_views',
+		'gform_pre_notification_deleted',
+		'gform_pre_confirmation_deleted',
 		'gform_before_delete_form',
-		'gform_form_trash',
-		'gform_form_restore',
-		'gform_form_duplicate',
-		'gform_export_separator', // Export entries
-		'gform_export_options', // Export forms
-		'gform_import_form_xml_options', // Import
+		'gform_post_form_trashed',
+		'gform_post_form_restored',
+		'gform_post_form_activated',
+		'gform_post_form_deactivated',
+		'gform_post_form_duplicated',
+		'gform_post_form_views_deleted',
+		'gform_post_export_entries',
+		'gform_forms_post_import',
 		'gform_delete_lead',
-		'gform_insert_note',
-		'gform_delete_note',
+		'gform_post_note_added',
+		'gform_pre_note_deleted',
 		'gform_update_status',
 		'gform_update_is_read',
 		'gform_update_is_starred',
@@ -95,15 +93,20 @@ class Connector_GravityForms extends Connector {
 	 */
 	public function get_action_labels() {
 		return array(
-			'created'    => esc_html_x( 'Created', 'gravityforms', 'stream' ),
-			'updated'    => esc_html_x( 'Updated', 'gravityforms', 'stream' ),
-			'exported'   => esc_html_x( 'Exported', 'gravityforms', 'stream' ),
-			'imported'   => esc_html_x( 'Imported', 'gravityforms', 'stream' ),
-			'added'      => esc_html_x( 'Added', 'gravityforms', 'stream' ),
-			'deleted'    => esc_html_x( 'Deleted', 'gravityforms', 'stream' ),
-			'trashed'    => esc_html_x( 'Trashed', 'gravityforms', 'stream' ),
-			'untrashed'  => esc_html_x( 'Restored', 'gravityforms', 'stream' ),
-			'duplicated' => esc_html_x( 'Duplicated', 'gravityforms', 'stream' ),
+			'created'       => esc_html_x( 'Created', 'gravityforms', 'stream' ),
+			'updated'       => esc_html_x( 'Updated', 'gravityforms', 'stream' ),
+			'exported'      => esc_html_x( 'Exported', 'gravityforms', 'stream' ),
+			'imported'      => esc_html_x( 'Imported', 'gravityforms', 'stream' ),
+			'added'         => esc_html_x( 'Added', 'gravityforms', 'stream' ),
+			'deleted'       => esc_html_x( 'Deleted', 'gravityforms', 'stream' ),
+			'trashed'       => esc_html_x( 'Trashed', 'gravityforms', 'stream' ),
+			'untrashed'     => esc_html_x( 'Restored', 'gravityforms', 'stream' ),
+			'duplicated'    => esc_html_x( 'Duplicated', 'gravityforms', 'stream' ),
+			'activated'     => esc_html_x( 'Activated', 'gravityforms', 'stream' ),
+			'deactivated'   => esc_html_x( 'Deactivated', 'gravityforms', 'stream' ),
+			'views_deleted' => esc_html_x( 'Views Reset', 'gravityforms', 'stream' ),
+			'starred'       => esc_html_x( 'Starred', 'gravityforms', 'stream' ),
+			'unstarred'     => esc_html_x( 'Unstarred', 'gravityforms', 'stream' ),
 		);
 	}
 
@@ -177,16 +180,16 @@ class Connector_GravityForms extends Connector {
 		parent::register();
 
 		$this->options = array(
-			'rg_gforms_disable_css'         => array(
+			'rg_gforms_disable_css'        => array(
 				'label' => esc_html_x( 'Output CSS', 'gravityforms', 'stream' ),
 			),
-			'rg_gforms_enable_html5'        => array(
+			'rg_gforms_enable_html5'       => array(
 				'label' => esc_html_x( 'Output HTML5', 'gravityforms', 'stream' ),
 			),
-			'gform_enable_noconflict'       => array(
+			'gform_enable_noconflict'      => array(
 				'label' => esc_html_x( 'No-Conflict Mode', 'gravityforms', 'stream' ),
 			),
-			'rg_gforms_currency'            => array(
+			'rg_gforms_currency'           => array(
 				'label' => esc_html_x( 'Currency', 'gravityforms', 'stream' ),
 			),
 			'rg_gforms_captcha_public_key'  => array(
@@ -204,6 +207,7 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @param array $form
 	 * @param bool $is_new
+	 * @return void
 	 */
 	public function callback_gform_after_save_form( $form, $is_new ) {
 		$title = $form['title'];
@@ -232,7 +236,6 @@ class Connector_GravityForms extends Connector {
 	 * @param array $confirmation
 	 * @param array $form
 	 * @param bool $is_new
-	 *
 	 * @return array
 	 */
 	public function callback_gform_pre_confirmation_save( $confirmation, $form, $is_new = true ) {
@@ -265,7 +268,6 @@ class Connector_GravityForms extends Connector {
 	 * @param array $notification
 	 * @param array $form
 	 * @param bool $is_new
-	 *
 	 * @return array
 	 */
 	public function callback_gform_pre_notification_save( $notification, $form, $is_new = true ) {
@@ -297,8 +299,9 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @param array $notification
 	 * @param array $form
+	 * @return void
 	 */
-	public function callback_gform_notification_delete( $notification, $form ) {
+	public function callback_gform_pre_notification_deleted( $notification, $form ) {
 		$this->log(
 			sprintf(
 				__( '"%1$s" notification deleted from "%2$s"', 'stream' ),
@@ -320,8 +323,9 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @param array $confirmation
 	 * @param array $form
+	 * @return void
 	 */
-	public function callback_gform_confirmation_delete( $confirmation, $form ) {
+	public function callback_gform_pre_confirmation_deleted( $confirmation, $form ) {
 		$this->log(
 			sprintf(
 				__( '"%1$s" confirmation deleted from "%2$s"', 'stream' ),
@@ -344,6 +348,7 @@ class Connector_GravityForms extends Connector {
 	 * @param array $confirmation
 	 * @param array $form
 	 * @param bool $is_active
+	 * @return void
 	 */
 	public function callback_gform_confirmation_status( $confirmation, $form, $is_active ) {
 		$this->log(
@@ -365,31 +370,12 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Track status change of confirmations
-	 *
-	 * @param integer $id
-	 */
-	public function callback_gform_form_reset_views( $id ) {
-		$form = $this->get_form( $id );
-
-		$this->log(
-			__( '"%s" form views reset', 'stream' ),
-			array(
-				'title'   => $form['title'],
-				'form_id' => $form['id'],
-			),
-			$form['id'],
-			'forms',
-			'updated'
-		);
-	}
-
-	/**
 	 * Track status change of notifications
 	 *
 	 * @param array $notification
 	 * @param array $form
 	 * @param bool $is_active
+	 * @return void
 	 */
 	public function callback_gform_notification_status( $notification, $form, $is_active ) {
 		$this->log(
@@ -407,37 +393,6 @@ class Connector_GravityForms extends Connector {
 			$form['id'],
 			'forms',
 			'updated'
-		);
-	}
-
-	/**
-	 * Track status change of forms
-	 *
-	 * @param integer $id
-	 * @param string $action
-	 */
-	public function callback_gform_form_status_change( $id, $action ) {
-		$form    = $this->get_form( $id );
-		$actions = array(
-			'activated'   => esc_html__( 'Activated', 'stream' ),
-			'deactivated' => esc_html__( 'Deactivated', 'stream' ),
-			'trashed'     => esc_html__( 'Trashed', 'stream' ),
-			'untrashed'   => esc_html__( 'Restored', 'stream' ),
-		);
-
-		$this->log(
-			sprintf(
-				__( '"%1$s" form %2$s', 'stream' ),
-				$form['title'],
-				$actions[ $action ]
-			),
-			array(
-				'form_title' => $form['title'],
-				'form_id'    => $id,
-			),
-			$form['id'],
-			'forms',
-			$action
 		);
 	}
 
@@ -503,6 +458,41 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
+	public function callback_gform_post_export_entries( $form, $start_date, $end_date, $fields ) {
+		unset( $fields );
+		$this->log(
+			__( '"%s" form entries exported', 'stream' ),
+			array(
+				'form_title' => $form['title'],
+				'form_id'    => $form['id'],
+				'start_date' => empty( $start_date ) ? null : $start_date,
+				'end_date'   => empty( $end_date )   ? null : $end_date,
+			),
+			$form['id'],
+			'export',
+			'exported'
+		);
+	}
+
+	public function callback_gform_forms_post_import( $forms ) {
+		$forms_total  = count( $forms );
+		$forms_label  = ( 1 === $forms_total ) ? 'form' : 'forms';
+		$forms_ids    = wp_list_pluck( $forms, 'id' );
+		$forms_titles = wp_list_pluck( $forms, 'title' );
+
+		$this->log(
+			__( '%d ' . $forms_label . ' imported', 'stream' ),
+			array(
+				'count'  => $forms_total,
+				'ids'    => $forms_ids,
+				'titles' => $forms_titles,
+			),
+			null,
+			'export',
+			'imported'
+		);
+	}
+
 	public function callback_gform_export_separator( $dummy, $form_id ) {
 		$form = $this->get_form( $form_id );
 
@@ -515,18 +505,6 @@ class Connector_GravityForms extends Connector {
 			$form_id,
 			'export',
 			'exported'
-		);
-
-		return $dummy;
-	}
-
-	public function callback_gform_import_form_xml_options( $dummy ) {
-		$this->log(
-			__( 'Import process started', 'stream' ),
-			array(),
-			null,
-			'export',
-			'imported'
 		);
 
 		return $dummy;
@@ -551,41 +529,8 @@ class Connector_GravityForms extends Connector {
 		return $dummy;
 	}
 
-	public function callback_gform_before_delete_form( $id ) {
-		$form = $this->get_form( $id );
-
-		$this->log(
-			__( '"%s" form deleted', 'stream' ),
-			array(
-				'form_title' => $form['title'],
-				'form_id'    => $id,
-			),
-			$form['id'],
-			'forms',
-			'deleted'
-		);
-	}
-
-	public function callback_gform_form_duplicate( $id, $new_id ) {
-		$form = $this->get_form( $id );
-		$new  = $this->get_form( $new_id );
-
-		$this->log(
-			__( '"%1$s" form created as duplicate from "%2$s"', 'stream' ),
-			array(
-				'new_form_title' => $new['title'],
-				'form_title'     => $form['title'],
-				'form_id'        => $id,
-				'new_id'         => $new_id,
-			),
-			$new_id,
-			'forms',
-			'duplicated'
-		);
-	}
-
 	public function callback_gform_delete_lead( $lead_id ) {
-		$lead = \GFFormsModel::get_lead( $lead_id );
+		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
@@ -601,7 +546,12 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
-	public function callback_gform_insert_note( $note_id, $lead_id, $user_id, $user_name, $note, $note_type ) {
+	public function callback_gform_post_note_added( $note_id, $lead_id, $user_id, $user_name, $note, $note_type ) {
+		unset( $user_id );
+		unset( $user_name );
+		unset( $note );
+		unset( $note_type );
+
 		$lead = \GFFormsModel::get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
@@ -619,8 +569,8 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
-	public function callback_gform_delete_note( $note_id, $lead_id ) {
-		$lead = \GFFormsModel::get_lead( $lead_id );
+	public function callback_gform_pre_note_deleted( $note_id, $lead_id ) {
+		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
@@ -638,7 +588,7 @@ class Connector_GravityForms extends Connector {
 	}
 
 	public function callback_gform_update_status( $lead_id, $status, $prev = '' ) {
-		$lead = \GFFormsModel::get_lead( $lead_id );
+		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
 		if ( 'active' === $status && 'trash' === $prev ) {
@@ -676,22 +626,31 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
+	/**
+	 * Callback fired when an entry is read/unread
+	 *
+	 * @param  int $lead_id
+	 * @param  int $status
+	 * @return void
+	 */
 	public function callback_gform_update_is_read( $lead_id, $status ) {
-		$lead = \GFFormsModel::get_lead( $lead_id );
-		$form = $this->get_form( $lead['form_id'] );
+		$lead   = $this->get_lead( $lead_id );
+		$form   = $this->get_form( $lead['form_id'] );
+		$status = ( ! empty( $status ) ) ? esc_html__( 'read', 'stream' ) : esc_html__( 'unread', 'stream' );
 
 		$this->log(
 			sprintf(
-				__( 'Lead #%1$d marked as %2$s on "%3$s" form', 'stream' ),
+				__( 'Entry #%1$d marked as %2$s on form #%3$d ("%4$s")', 'stream' ),
 				$lead_id,
-				$status ? esc_html__( 'read', 'stream' ) : esc_html__( 'unread', 'stream' ),
+				$status,
+				$form['id'],
 				$form['title']
 			),
 			array(
-				'lead_id'    => $lead_id,
-				'form_title' => $form['title'],
-				'form_id'    => $form['id'],
-				'status'     => $status,
+				'lead_id'     => $lead_id,
+				'lead_status' => $status,
+				'form_id'     => $form['id'],
+				'form_title'  => $form['title'],
 			),
 			$lead_id,
 			'entries',
@@ -699,30 +658,168 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
+	/**
+	 * Callback fired when an entry is starred/unstarred
+	 *
+	 * @param  int $lead_id
+	 * @param  int $status
+	 * @return void
+	 */
 	public function callback_gform_update_is_starred( $lead_id, $status ) {
-		$lead = \GFFormsModel::get_lead( $lead_id );
-		$form = $this->get_form( $lead['form_id'] );
+		$lead   = $this->get_lead( $lead_id );
+		$form   = $this->get_form( $lead['form_id'] );
+		$status = ( ! empty( $status ) ) ? esc_html__( 'starred', 'stream' ) : esc_html__( 'unstarred', 'stream' );
+		$action = $status;
 
 		$this->log(
 			sprintf(
-				__( 'Lead #%1$d %2$s on "%3$s" form', 'stream' ),
+				__( 'Entry #%1$d %2$s on form #%3$d ("%4$s")', 'stream' ),
 				$lead_id,
-				$status ? esc_html__( 'starred', 'stream' ) : esc_html__( 'unstarred', 'stream' ),
+				$status,
+				$form['id'],
 				$form['title']
 			),
 			array(
-				'lead_id'    => $lead_id,
-				'form_title' => $form['title'],
-				'form_id'    => $form['id'],
-				'status'     => $status,
+				'lead_id'     => $lead_id,
+				'lead_status' => $status,
+				'form_id'     => $form['id'],
+				'form_title'  => $form['title'],
 			),
 			$lead_id,
 			'entries',
-			'updated'
+			$action
 		);
 	}
 
+	/**
+	 * Callback fired when a form is deleted
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
+	public function callback_gform_before_delete_form( $form_id ) {
+		$this->log_form_action( $form_id, 'deleted' );
+	}
+
+	/**
+	 * Callback fired when a form is trashed
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
+	public function callback_gform_post_form_trashed( $form_id ) {
+		$this->log_form_action( $form_id, 'trashed' );
+	}
+
+	/**
+	 * Callback fired when a form is restored
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
+	public function callback_gform_post_form_restored( $form_id ) {
+		$this->log_form_action( $form_id, 'untrashed' );
+	}
+
+	/**
+	 * Callback fired when a form is activated
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
+	public function callback_gform_post_form_activated( $form_id ) {
+		$this->log_form_action( $form_id, 'activated' );
+	}
+
+	/**
+	 * Callback fired when a form is deactivated
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
+	public function callback_gform_post_form_deactivated( $form_id ) {
+		$this->log_form_action( $form_id, 'deactivated' );
+	}
+
+	/**
+	 * Callback fired when a form is duplicated
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
+	public function callback_gform_post_form_duplicated( $form_id ) {
+		$this->log_form_action( $form_id, 'duplicated' );
+	}
+
+	/**
+	 * Callback fired when a form's views are reset
+	 *
+	 * @param  int $form_id Form ID
+	 * @return void
+	 */
+	public function callback_gform_post_form_views_deleted( $form_id ) {
+		$this->log_form_action( $form_id, 'views_deleted' );
+	}
+
+	/**
+	 * Track status change of forms
+	 *
+	 * @param int $form_id
+	 * @param string $action
+	 * @return void
+	 */
+	public function log_form_action( $form_id, $action ) {
+		$form = $this->get_form( $form_id );
+
+		if ( empty( $form ) ) {
+			return;
+		}
+
+		$actions = array(
+			'activated'     => esc_html__( 'Activated', 'stream' ),
+			'deactivated'   => esc_html__( 'Deactivated', 'stream' ),
+			'trashed'       => esc_html__( 'Trashed', 'stream' ),
+			'untrashed'     => esc_html__( 'Restored', 'stream' ),
+			'duplicated'    => esc_html__( 'Duplicated', 'stream' ),
+			'deleted'       => esc_html__( 'Deleted', 'stream' ),
+			'views_deleted' => esc_html__( 'Views Reset', 'stream' ),
+		);
+
+		$this->log(
+			sprintf(
+				__( 'Form #%1$d ("%2$s") %3$s', 'stream' ),
+				$form_id,
+				$form['title'],
+				strtolower( $actions[ $action ] )
+			),
+			array(
+				'form_id'     => $form_id,
+				'form_title'  => $form['title'],
+				'form_status' => strtolower( $action ),
+			),
+			$form['id'],
+			'forms',
+			$action
+		);
+	}
+
+	/**
+	 * Helper function to get a single entry
+	 *
+	 * @param  int $lead_id Lead ID
+	 * @return array
+	 */
+	private function get_lead( $lead_id ) {
+		return \GFFormsModel::get_lead( $lead_id );
+	}
+
+	/**
+	 * Helper function to get a single form
+	 *
+	 * @param  int $form_id Form ID
+	 * @return array
+	 */
 	private function get_form( $form_id ) {
-		return reset( \GFFormsModel::get_forms_by_id( $form_id ) );
+		return \GFFormsModel::get_form_meta( $form_id );
 	}
 }

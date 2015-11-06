@@ -99,7 +99,7 @@ class DB {
 
 		$fields = array( 'object_id', 'site_id', 'blog_id', 'user_id', 'user_role', 'created', 'summary', 'ip', 'connector', 'context', 'action' );
 		$data   = array_intersect_key( $recordarr, array_flip( $fields ) );
-		$data   = array_filter( $data );
+
 		$result = $wpdb->insert( $this->table, $data );
 
 		if ( 1 !== $result ) {
@@ -180,7 +180,16 @@ class DB {
 	function existing_records( $column ) {
 		global $wpdb;
 
-		$rows = $wpdb->get_results( "SELECT {$column} FROM $wpdb->stream GROUP BY {$column}", 'ARRAY_A' );
+		// Sanitize column
+		$allowed_columns = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );
+		if ( ! in_array( $column, $allowed_columns ) ) {
+			return array();
+		}
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( "SELECT $column FROM $wpdb->stream GROUP BY %s", $column ), // @codingStandardsIgnoreLine can't prepare column name
+			'ARRAY_A'
+		);
 
 		if ( is_array( $rows ) && ! empty( $rows ) ) {
 			$output_array = array();

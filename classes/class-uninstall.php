@@ -153,10 +153,8 @@ class Uninstall {
 
 		global $wpdb;
 
-		$blog_prefix = $wpdb->get_blog_prefix( $blog_id );
-
 		// Wildcard matches
-		$wpdb->query( "DELETE FROM {$blog_prefix}options WHERE option_name LIKE '%wp_stream%';" );
+		$wpdb->query( "DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%wp_stream%';" );
 
 		// Specific options
 		foreach ( $this->options as $option ) {
@@ -175,7 +173,9 @@ class Uninstall {
 
 		// Specific user meta
 		foreach ( $this->user_meta as $meta_key ) {
-			$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = '{$meta_key}';" );
+			$wpdb->query(
+				$wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = %s;", $meta_key )
+			);
 		}
 	}
 
@@ -191,14 +191,14 @@ class Uninstall {
 
 		global $wpdb;
 
-		$blog_prefix = $wpdb->get_blog_prefix( $blog_id );
-
 		// Wildcard matches
-		$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE '{$blog_prefix}%wp_stream%';" );
+		$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE '{$wpdb->prefix}%wp_stream%';" );
 
 		// Specific user meta
 		foreach ( $this->user_meta as $meta_key ) {
-			$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = '{$blog_prefix}{$meta_key}';" );
+			$wpdb->query(
+				$wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = '{$wpdb->prefix}%s';", $meta_key )
+			);
 		}
 	}
 

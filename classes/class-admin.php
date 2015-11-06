@@ -349,7 +349,7 @@ class Admin {
 
 		wp_enqueue_style( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/css/admin.css', array(), $this->plugin->get_version() );
 
-		$script_screens = array( 'plugins.php', 'user-edit.php', 'user-new.php', 'profile.php' );
+		$script_screens = array( 'plugins.php' );
 
 		if ( in_array( $hook, $this->screen_id ) || in_array( $hook, $script_screens ) ) {
 			wp_enqueue_script( 'select2' );
@@ -580,7 +580,7 @@ class Admin {
 			FROM {$wpdb->stream} AS `stream`
 			LEFT JOIN {$wpdb->streammeta} AS `meta`
 			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};"
+			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
 		);
 	}
 
@@ -631,7 +631,7 @@ class Admin {
 			FROM {$wpdb->stream} AS `stream`
 			LEFT JOIN {$wpdb->streammeta} AS `meta`
 			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};"
+			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
 		);
 	}
 
