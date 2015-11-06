@@ -580,7 +580,7 @@ class Admin {
 			FROM {$wpdb->stream} AS `stream`
 			LEFT JOIN {$wpdb->streammeta} AS `meta`
 			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};"
+			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
 		);
 	}
 
@@ -631,7 +631,7 @@ class Admin {
 			FROM {$wpdb->stream} AS `stream`
 			LEFT JOIN {$wpdb->streammeta} AS `meta`
 			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};"
+			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
 		);
 	}
 

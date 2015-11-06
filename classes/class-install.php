@@ -163,7 +163,10 @@ class Install {
 		$missing_tables = array();
 
 		foreach ( $this->plugin->db->get_table_names() as $table_name ) {
-			if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
+			$table_search = $wpdb->get_var(
+				$wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name )
+			);
+			if ( $table_search !== $table_name ) {
 				$missing_tables[] = $table_name;
 			}
 		}
