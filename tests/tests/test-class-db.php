@@ -107,7 +107,7 @@ class Test_DB extends WP_StreamTestCase {
 
 	private function dummy_stream_data() {
 		return array(
-			'object_id' => null,
+			'object_id' => 9,
 			'site_id' => '1',
 			'blog_id' => get_current_blog_id(),
 			'user_id' => '1',
