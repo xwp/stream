@@ -1,9 +1,7 @@
 <?php
-
 namespace WP_Stream;
 
 class Connector_GravityForms extends Connector {
-
 	/**
 	 * Connector slug
 	 *
