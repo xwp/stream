@@ -569,12 +569,20 @@ class Settings {
 				);
 				break;
 			case 'checkbox':
+				if ( isset( $current_value ) ) {
+					$value = $current_value;
+				} elseif ( isset( $default ) ) {
+					$value = $default;
+				} else {
+					$value = 0;
+				}
+
 				$output = sprintf(
 					'<label><input type="checkbox" name="%1$s[%2$s_%3$s]" id="%1$s[%2$s_%3$s]" value="1" %4$s /> %5$s</label>',
 					esc_attr( $option_key ),
 					esc_attr( $section ),
 					esc_attr( $name ),
-					checked( $current_value, 1, false ),
+					checked( $value, 1, false ),
 					wp_kses_post( $after_field )
 				);
 				break;
