@@ -344,9 +344,9 @@ class Connector_EDD extends Connector {
 			return false; // Do not track notes, because they're basically logs
 		} elseif ( 'taxonomies' === $data['connector'] && 'download_category' === $data['context'] ) {
 			$data['connector'] = $this->name;
-		} elseif ( 'taxonomies' === $data['connector'] && 'download_tag' === $data['contexts'] ) {
+		} elseif ( 'taxonomies' === $data['connector'] && 'download_tag' === $data['context'] ) {
 			$data['connector'] = $this->name;
-		} elseif ( 'taxonomies' === $data['connector'] && 'edd_log_type' === $data['contexts'] ) {
+		} elseif ( 'taxonomies' === $data['connector'] && 'edd_log_type' === $data['context'] ) {
 			return false;
 		} elseif ( 'settings' === $data['connector'] && 'edd_settings' === $data['args']['option'] ) {
 			return false;
