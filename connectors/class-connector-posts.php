@@ -363,18 +363,19 @@ class Connector_Posts extends Connector {
 		global $wpdb;
 
 		$revision_id = $wpdb->get_var( // db call okay
-			$wpdb->prepare( "
-				SELECT p.ID
+			// @codingStandardsIgnoreStart
+			$wpdb->prepare(
+				"SELECT p.ID
 				FROM $wpdb->posts AS p
 				WHERE p.post_date {$operator} %s
 					AND p.post_type = 'revision'
 					AND p.post_parent = %d
 				ORDER BY p.post_date {$order}
-				LIMIT 1
-				",
+				LIMIT 1",
 				$revision->post_date,
 				$revision->post_parent
 			)
+			// @codingStandardsIgnoreEnd prepare okay
 		);
 
 		$revision_id = absint( $revision_id );

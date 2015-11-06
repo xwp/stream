@@ -16,13 +16,6 @@ class Install {
 	public $option_key = 'wp_stream_db';
 
 	/**
-	 * Holds the database table prefix
-	 *
-	 * @var string
-	 */
-	public $table_prefix;
-
-	/**
 	 * Holds version of database at last update
 	 *
 	 * @var string
@@ -88,15 +81,6 @@ class Install {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
 		}
-
-		/**
-		 * Allows devs to alter the tables prefix, default to base_prefix
-		 *
-		 * @param string $prefix
-		 *
-		 * @return string
-		 */
-		$this->table_prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
 
 		if ( empty( $this->db_version ) ) {
 			$this->install( $this->plugin->get_version() );
@@ -409,9 +393,7 @@ class Install {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$prefix = $this->table_prefix;
-
-		$sql = "CREATE TABLE {$prefix}stream (
+		$sql = "CREATE TABLE {$wpdb->base_prefix}stream (
 			ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			site_id bigint(20) unsigned NOT NULL DEFAULT '1',
 			blog_id bigint(20) unsigned NOT NULL DEFAULT '1',
@@ -459,7 +441,7 @@ class Install {
 
 		\dbDelta( $sql );
 
-		$sql = "CREATE TABLE {$prefix}stream_meta (
+		$sql = "CREATE TABLE {$wpdb->base_prefix}stream_meta (
 			meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			record_id bigint(20) unsigned NOT NULL,
 			meta_key varchar(200) NOT NULL,
