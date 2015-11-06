@@ -114,6 +114,10 @@ class Log {
 			'meta'       => (array) $stream_meta,
 		);
 
+		if ( 0 === $recordarr['object_id'] ) {
+			unset( $recordarr['object_id'] );
+		}
+
 		$result = $this->plugin->db->insert( $recordarr );
 
 		$this->debug_backtrace( $recordarr );

@@ -99,7 +99,7 @@ class DB {
 
 		$fields = array( 'object_id', 'site_id', 'blog_id', 'user_id', 'user_role', 'created', 'summary', 'ip', 'connector', 'context', 'action' );
 		$data   = array_intersect_key( $recordarr, array_flip( $fields ) );
-		$data   = array_filter( $data );
+
 		$result = $wpdb->insert( $this->table, $data );
 
 		if ( 1 !== $result ) {
