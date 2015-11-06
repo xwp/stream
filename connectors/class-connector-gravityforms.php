@@ -180,31 +180,25 @@ class Connector_GravityForms extends Connector {
 		parent::register();
 
 		$this->options = array(
-			'rg_gforms_disable_css' => array(
+			'rg_gforms_disable_css'        => array(
 				'label' => esc_html_x( 'Output CSS', 'gravityforms', 'stream' ),
 			),
-
-			'rg_gforms_enable_html5' => array(
+			'rg_gforms_enable_html5'       => array(
 				'label' => esc_html_x( 'Output HTML5', 'gravityforms', 'stream' ),
 			),
-
-			'gform_enable_noconflict' => array(
+			'gform_enable_noconflict'      => array(
 				'label' => esc_html_x( 'No-Conflict Mode', 'gravityforms', 'stream' ),
 			),
-
-			'rg_gforms_currency' => array(
+			'rg_gforms_currency'           => array(
 				'label' => esc_html_x( 'Currency', 'gravityforms', 'stream' ),
 			),
-
-			'rg_gforms_captcha_public_key' => array(
+			'rg_gforms_captcha_public_key'  => array(
 				'label' => esc_html_x( 'reCAPTCHA Public Key', 'gravityforms', 'stream' ),
 			),
-
 			'rg_gforms_captcha_private_key' => array(
 				'label' => esc_html_x( 'reCAPTCHA Private Key', 'gravityforms', 'stream' ),
 			),
-
-			'rg_gforms_key' => null,
+			'rg_gforms_key'                 => null,
 		);
 	}
 
