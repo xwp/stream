@@ -3,12 +3,6 @@ namespace WP_Stream;
 
 class Author {
 	/**
-	 * Hold Plugin class
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * @var int
 	 */
 	public $id;
@@ -36,8 +30,6 @@ class Author {
 		if ( $this->id ) {
 			$this->user = new \WP_User( $this->id );
 		}
-
-		$this->plugin = wp_stream_get_instance();
 	}
 
 	/**
@@ -129,7 +121,8 @@ class Author {
 		}
 
 		if ( 0 === $this->id ) {
-			$url    = $this->plugin->locations['url'] . 'ui/stream-icons/wp-cli.png';
+			$stream = wp_stream_get_instance();
+			$url    = $stream->locations['url'] . 'ui/stream-icons/wp-cli.png';
 			$avatar = sprintf( '<img alt="%1$s" src="%2$s" class="avatar avatar-%3$s photo" height="%3$s" width="%3$s">', esc_attr( $this->get_display_name() ), esc_url( $url ), esc_attr( $size ) );
 		} else {
 			if ( $this->is_deleted() && isset( $this->meta['user_email'] ) ) {
@@ -191,23 +184,6 @@ class Author {
 		}
 
 		return $user_role;
-	}
-
-	/**
-	 * Construct a URL for viewing user-specific records
-	 *
-	 * @return string
-	 */
-	function get_records_page_url() {
-		$url = add_query_arg(
-			array(
-				'page'    => $this->plugin->admin->records_page_slug,
-				'user_id' => absint( $this->id ),
-			),
-			self_admin_url( $this->plugin->admin->admin_parent_page )
-		);
-
-		return $url;
 	}
 
 	/**

@@ -187,7 +187,7 @@ class DB {
 		}
 
 		$rows = $wpdb->get_results(
-			$wpdb->prepare( "SELECT $column FROM $wpdb->stream GROUP BY %s", $column ), // @codingStandardsIgnoreLine can't prepare column name
+			"SELECT DISTINCT $column FROM $wpdb->stream", // @codingStandardsIgnoreLine can't prepare column name
 			'ARRAY_A'
 		);
 

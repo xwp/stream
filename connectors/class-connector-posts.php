@@ -173,6 +173,12 @@ class Connector_Posts extends Connector {
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
+		} elseif ( 'publish' === $new && 'draft' === $old ) {
+			$summary = _x(
+				'"%1$s" %2$s published',
+				'1: Post title, 2: Post type singular name',
+				'stream'
+			);
 		} elseif ( 'draft' === $new ) {
 			$summary = _x(
 				'"%1$s" %2$s drafted',
@@ -194,12 +200,6 @@ class Connector_Posts extends Connector {
 		} elseif ( 'future' === $old && 'publish' === $new ) {
 			$summary = _x(
 				'"%1$s" scheduled %2$s published',
-				'1: Post title, 2: Post type singular name',
-				'stream'
-			);
-		} elseif ( 'publish' === $new ) {
-			$summary = _x(
-				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
