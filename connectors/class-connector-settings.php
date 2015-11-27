@@ -23,6 +23,7 @@ class Connector_Settings extends Connector {
 	 */
 	public $actions = array(
 		'whitelist_options',
+		'update_option',
 		'update_site_option',
 		'update_option_permalink_structure',
 		'update_option_category_base',
@@ -530,6 +531,21 @@ class Connector_Settings extends Connector {
 		}
 
 		return $links;
+	}
+
+	/**
+	 * Trigger this connector from WP CLI
+	 *
+	 * @action update_option
+	 *
+	 * @param string $option
+	 * @param mixed $old_value
+	 * @param mixed $value
+	 */
+	public function callback_update_option( $option, $value, $old_value ) {
+		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
+			$this->callback_updated_option( $option, $value, $old_value );
+		}
 	}
 
 	/**
