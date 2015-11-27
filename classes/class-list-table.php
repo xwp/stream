@@ -257,9 +257,17 @@ class List_Table extends \WP_List_Table {
 			case 'user_id' :
 				$user = new Author( (int) $record->user_id, (array) maybe_unserialize( $record->user_meta ) );
 
+				$filtered_records_url = add_query_arg(
+					array(
+						'page'    => $this->plugin->admin->records_page_slug,
+						'user_id' => absint( $user->id ),
+					),
+					self_admin_url( $this->plugin->admin->admin_parent_page )
+				);
+
 				$out = sprintf(
 					'<a href="%s">%s <span>%s</span></a>%s%s%s',
-					$user->get_records_page_url(),
+					$filtered_records_url,
 					$user->get_avatar_img( 80 ),
 					$user->get_display_name(),
 					$user->is_deleted() ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
