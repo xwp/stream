@@ -3,7 +3,7 @@ Contributors:      fjarrett, lukecarbis, shadyvb, westonruter, stream, xwp
 Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
 Requires at least: 3.7
 Tested up to:      4.4
-Stable tag:        3.0.3
+Stable tag:        3.0.4
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,14 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 3. Create rules for excluding certain kinds of records from appearing in Stream.
 
 == Changelog ==
+
+= 3.0.4 - November 27, 2015 =
+
+* Tweak: Better descriptions when a post changes status ([0eada10](https://github.com/xwp/stream/commit/0eada108b443ed3b6f9bdae3f1e4c87c77128a0a))
+* Fix: Stream no longer crashes every time it tries to use a Jetpack ([#798](https://github.com/xwp/stream/pull/798))
+* Fix: You may now actually choose an item from the filter dropdown menus, instead of having everything greyed out ([#800](https://github.com/xwp/stream/pull/800))
+* Fix: Logging in / out of a Multisite install is now possible ([#801](https://github.com/xwp/stream/pull/801))
+* Fix: The Settings connector now works with WP CLI ([78a56b2](https://github.com/xwp/stream/commit/78a56b2c6b33b4f41c7b4f1f256a4d03ad42b2cb))
 
 = 3.0.3 - November 6, 2015 =
 

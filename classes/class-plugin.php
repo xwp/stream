@@ -7,7 +7,7 @@ class Plugin {
 	 *
 	 * @const string
 	 */
-	const VERSION = '3.0.3';
+	const VERSION = '3.0.4';
 
 	/**
 	 * WP-CLI command
