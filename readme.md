@@ -7,8 +7,8 @@ Stream is the easiest and safest way to track content changes happening to your 
 **Contributors:** [fjarrett](https://profiles.wordpress.org/fjarrett), [lukecarbis](https://profiles.wordpress.org/lukecarbis), [shadyvb](https://profiles.wordpress.org/shadyvb), [westonruter](https://profiles.wordpress.org/westonruter), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
 **Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [activity log](https://wordpress.org/plugins/tags/activity log), [activity logs](https://wordpress.org/plugins/tags/activity logs), [admin actions](https://wordpress.org/plugins/tags/admin actions), [analytics](https://wordpress.org/plugins/tags/analytics), [audit](https://wordpress.org/plugins/tags/audit), [audit log](https://wordpress.org/plugins/tags/audit log), [audit logs](https://wordpress.org/plugins/tags/audit logs), [change](https://wordpress.org/plugins/tags/change), [changes](https://wordpress.org/plugins/tags/changes), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [logs](https://wordpress.org/plugins/tags/logs), [stream](https://wordpress.org/plugins/tags/stream), [tracking](https://wordpress.org/plugins/tags/tracking), [troubleshooting](https://wordpress.org/plugins/tags/troubleshooting), [wp stream](https://wordpress.org/plugins/tags/wp stream)  
 **Requires at least:** 3.7  
-**Tested up to:** 4.2  
-**Stable tag:** 3.0.3  
+**Tested up to:** 4.4  
+**Stable tag:** 3.0.4  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
 [![Build Status](https://travis-ci.org/xwp/stream.png?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Joinhat.svg)](https://gitter.im/xwp/stream) 
@@ -88,6 +88,13 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
 
 ## Changelog ##
+
+### 3.0.4 - November 27, 2015 ###
+* Tweak: Better descriptions when a post changes status ([0eada10](https://github.com/xwp/stream/commit/0eada108b443ed3b6f9bdae3f1e4c87c77128a0a))
+* Fix: Stream no longer crashes every time it tries to use a Jetpack ([#798](https://github.com/xwp/stream/pull/798))
+* Fix: You may now actually choose an item from the filter dropdown menus, instead of having everything greyed out ([#800](https://github.com/xwp/stream/pull/800))
+* Fix: Logging in / out of a Multisite install is now possible ([#801](https://github.com/xwp/stream/pull/801))
+* Fix: The Settings connector now works with WP CLI ([78a56b2](https://github.com/xwp/stream/commit/78a56b2c6b33b4f41c7b4f1f256a4d03ad42b2cb))
 
 ### 3.0.3 - November 6, 2015 ###
 * Tweak: Better compatibility with upcoming WordPress 4.4 ([2b2493c](https://github.com/xwp/stream/commit/2b2493ccb3ef6cba5aeb773433fdb5f0d414e8f3))
