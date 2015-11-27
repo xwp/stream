@@ -22,6 +22,11 @@ class Log {
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
+
+		// Ensure function used in various methods is pre-loaded
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
 	}
 
 	/**
@@ -160,12 +165,7 @@ class Log {
 
 		$exclude_settings = isset( $this->plugin->settings->options['exclude_rules'] ) ? $this->plugin->settings->options['exclude_rules'] : array();
 
-		if (
-			is_multisite() &&
-			function_exists( 'is_plugin_active_for_network' ) &&
-			is_plugin_active_for_network( $this->plugin->locations['plugin'] ) &&
-			! is_network_admin()
-		) {
+		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) && ! is_network_admin() ) {
 			$multisite_options = (array) get_site_option( 'wp_stream_network', array() );
 			$multisite_exclude_settings = isset( $multisite_options['exclude_rules'] ) ? $multisite_options['exclude_rules'] : array();
 
