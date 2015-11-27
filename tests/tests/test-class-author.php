@@ -75,10 +75,6 @@ class Test_Author extends WP_StreamTestCase {
 		$this->assertEquals( 'Administrator', $this->author->get_role() );
 	}
 
-	public function test_get_records_page_url() {
-		$this->assertNotFalse( parse_url( $this->author->get_records_page_url() ) );
-	}
-
 	public function test_is_deleted() {
 		$this->assertFalse( $this->author->is_deleted() );
 	}
