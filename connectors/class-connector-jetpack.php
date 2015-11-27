@@ -141,9 +141,9 @@ class Connector_Jetpack extends Connector {
 					$slug = current( $slug );
 				}
 
-				if ( Jetpack::is_module_active( $slug ) ) {
+				if ( \Jetpack::is_module_active( $slug ) ) {
 					if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
-						$links[ esc_html__( 'Configure', 'stream' ) ] = Jetpack::module_configuration_url( $slug );
+						$links[ esc_html__( 'Configure', 'stream' ) ] = \Jetpack::module_configuration_url( $slug );
 					}
 
 					$links[ esc_html__( 'Deactivate', 'stream' ) ] = wp_nonce_url(
@@ -152,7 +152,7 @@ class Connector_Jetpack extends Connector {
 								'action' => 'deactivate',
 								'module' => $slug,
 							),
-							Jetpack::admin_url()
+							\Jetpack::admin_url()
 						),
 						'jetpack_deactivate-' . sanitize_title( $slug )
 					);
@@ -163,16 +163,16 @@ class Connector_Jetpack extends Connector {
 								'action' => 'activate',
 								'module' => $slug,
 							),
-							Jetpack::admin_url()
+							\Jetpack::admin_url()
 						),
 						'jetpack_activate-' . sanitize_title( $slug )
 					);
 				}
-			} elseif ( Jetpack::is_module_active( str_replace( 'jetpack-', '', $record->context ) ) ) {
+			} elseif ( \Jetpack::is_module_active( str_replace( 'jetpack-', '', $record->context ) ) ) {
 				$slug = str_replace( 'jetpack-', '', $record->context ); // handling jetpack-comment anomaly
 
 				if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
-					$links[ esc_html__( 'Configure module', 'stream' ) ] = Jetpack::module_configuration_url( $slug );
+					$links[ esc_html__( 'Configure module', 'stream' ) ] = \Jetpack::module_configuration_url( $slug );
 				}
 			}
 		}
