@@ -35,7 +35,6 @@ class Test_Author extends WP_StreamTestCase {
 		$this->assertNotEmpty( $this->author->id );
 		$this->assertInternalType( 'array', $this->author->meta );
 		$this->assertNotEmpty( $this->author->meta );
-		$this->assertInstanceOf( '\WP_Stream\Plugin', $this->author->plugin );
 	}
 
 	public function test_get() {
