@@ -35,7 +35,6 @@ class Test_Author extends WP_StreamTestCase {
 		$this->assertNotEmpty( $this->author->id );
 		$this->assertInternalType( 'array', $this->author->meta );
 		$this->assertNotEmpty( $this->author->meta );
-		$this->assertInstanceOf( '\WP_Stream\Plugin', $this->author->plugin );
 	}
 
 	public function test_get() {
@@ -73,10 +72,6 @@ class Test_Author extends WP_StreamTestCase {
 
 	public function test_get_role() {
 		$this->assertEquals( 'Administrator', $this->author->get_role() );
-	}
-
-	public function test_get_records_page_url() {
-		$this->assertNotFalse( parse_url( $this->author->get_records_page_url() ) );
 	}
 
 	public function test_is_deleted() {
