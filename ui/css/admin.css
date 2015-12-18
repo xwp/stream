@@ -85,13 +85,13 @@
 @media only screen and (max-width: 900px) {
 	.toplevel_page_wp_stream .fixed .manage-column,
 	.toplevel_page_wp_stream .fixed tbody tr td {
-		display: none;
+		display: none !important;
 	}
 	.toplevel_page_wp_stream .fixed .column-date,
 	.toplevel_page_wp_stream .fixed .column-summary,
 	.toplevel_page_wp_stream .fixed .column-user_id,
 	.toplevel_page_wp_stream .fixed tbody tr.no-items td {
-		display: table-cell;
+		display: table-cell !important;
 	}
 	.toplevel_page_wp_stream .fixed .column-date {
 		width: 100px;
@@ -108,6 +108,10 @@
 	.toplevel_page_wp_stream .fixed .column-user_id {
 		display: none;
 	}
+}
+
+.toplevel_page_wp_stream .wp-list-table tr td::before {
+	content: "" !important;
 }
 
 .toplevel_page_wp_stream .column-user_id a {
