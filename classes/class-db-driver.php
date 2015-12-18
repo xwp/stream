@@ -1,7 +1,7 @@
 <?php
 namespace WP_Stream;
 
-interface DB_Driver_Interface {
+interface DB_Driver {
 	/**
 	 * Insert a record
 	 *

@@ -1,13 +1,7 @@
 <?php
 namespace WP_Stream;
 
-class DB_Driver_Mysql implements DB_Driver_Interface {
-	/**
-	 * Hold Plugin class
-	 * @var Plugin
-	 */
-	public $plugin;
-
+class DB_Driver_WPDB implements DB_Driver {
 	/**
 	 * Hold Query class
 	 * @var Query
@@ -30,11 +24,8 @@ class DB_Driver_Mysql implements DB_Driver_Interface {
 
 	/**
 	 * Class constructor.
-	 *
-	 * @param Plugin $plugin The main Plugin class.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
+	public function __construct() {
 		$this->query  = new Query( $this );
 
 		global $wpdb;

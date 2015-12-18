@@ -47,11 +47,6 @@ class Plugin {
 	public $install;
 
 	/**
-	 * @var Config
-	 */
-	public $config;
-
-	/**
 	 * URLs and Paths used by the plugin
 	 *
 	 * @var array
@@ -61,7 +56,7 @@ class Plugin {
 	/**
 	 * Class constructor
 	 */
-	public function __construct( $driver = null ) {
+	public function __construct() {
 		$locate = $this->locate_plugin();
 
 		$this->locations = array(
@@ -76,21 +71,20 @@ class Plugin {
 
 		// Load helper functions
 		require_once $this->locations['inc_dir'] . 'functions.php';
-		require_once $this->locations['dir'] . 'config.php';
 
-		$this->config = get_stream_config();
+		// Load DB helper interface/class
+		$driver_class = apply_filters( 'wp_stream_db_driver', '\WP_Stream\DB_Driver_WPDB' );
+		$driver = null;
 
-		if ( ! isset( $driver ) ) {
-			$driver_class = $this->config['storage']['driver'];
-			if ( class_exists( $driver_class ) ) {
-				$driver = new $driver_class( $this );
-			}
+		if ( class_exists( $driver_class ) ) {
+			$driver = new $driver_class();
+			$this->db = new DB( $driver );
 		}
 
 		$error = false;
-		if ( empty( $driver ) ) {
+		if ( ! $this->db ) {
 			$error = 'Stream: Could not load chosen DB driver.';
-		} elseif ( ! $driver instanceof DB_Driver_Interface ) {
+		} elseif ( ! $driver instanceof DB_Driver ) {
 			$error = 'Stream: DB driver must implement DB Driver interface.';
 		}
 
@@ -102,8 +96,9 @@ class Plugin {
 		}
 
 		// TODO: remove tmp action & rework class-install
-		add_action( 'wp_stream_no_tables', function() {return true;} );
-		$this->db = new DB( $this, $driver );
+		add_action( 'wp_stream_no_tables', function() {
+			return true;
+		} );
 
 		// Load languages
 		add_action( 'plugins_loaded', array( $this, 'i18n' ) );

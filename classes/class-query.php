@@ -3,25 +3,11 @@ namespace WP_Stream;
 
 class Query {
 	/**
-	 * @var DB
-	 */
-	public $db;
-
-	/**
 	 * Hold the number of records found
 	 *
 	 * @var int
 	 */
 	public $found_records = 0;
-
-	/**
-	 * Class constructor.
-	 *
-	 * @param DB $db The parent database class.
-	 */
-	public function __construct( $db ) {
-		$this->db = $db;
-	}
 
 	/**
 	 * Query records

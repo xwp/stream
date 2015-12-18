@@ -3,14 +3,8 @@ namespace WP_Stream;
 
 class DB {
 	/**
-	 * Hold Plugin class
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
 	 * Hold Driver class
-	 * @var Driver
+	 * @var DB_Driver
 	 */
 	protected $driver;
 
@@ -22,11 +16,8 @@ class DB {
 
 	/**
 	 * Class constructor.
-	 *
-	 * @param Plugin $plugin The main Plugin class.
 	 */
-	public function __construct( $plugin, $driver ) {
-		$this->plugin = $plugin;
+	public function __construct( $driver ) {
 		$this->driver = $driver;
 	}
 
@@ -38,7 +29,6 @@ class DB {
 	 * @return int
 	 */
 	public function insert( $recordarr ) {
-
 		/**
 		 * Filter allows modification of record information
 		 *
@@ -75,11 +65,11 @@ class DB {
 			 * Fires on a record insertion error
 			 *
 			 * @param array $recordarr
-			 * @param mixed $result
+			 * @param bool false Backwards compatibility
 			 */
-			do_action( 'wp_stream_record_insert_error', $recordarr, $result );
+			do_action( 'wp_stream_record_insert_error', $recordarr, false );
 
-			return $result;
+			return false;
 		}
 
 		/**
@@ -130,7 +120,8 @@ class DB {
 
 		$column = sprintf( 'stream_%s', $column );
 
-		return isset( $this->plugin->connectors->term_labels[ $column ] ) ? $this->plugin->connectors->term_labels[ $column ] : array();
+		$term_labels = wp_stream_get_instance()->connectors->term_labels;
+		return isset( $term_labels[ $column ] ) ? $term_labels[ $column ] : array();
 	}
 
 	/**
@@ -143,40 +134,40 @@ class DB {
 	public function get_records( $args ) {
 		$defaults = array(
 			// Search param
-				'search'           => null,
-				'search_field'     => 'summary',
-				'record_after'     => null, // Deprecated, use date_after instead
+			'search'           => null,
+			'search_field'     => 'summary',
+			'record_after'     => null, // Deprecated, use date_after instead
 			// Date-based filters
-				'date'             => null, // Ex: 2015-07-01
-				'date_from'        => null, // Ex: 2015-07-01
-				'date_to'          => null, // Ex: 2015-07-01
-				'date_after'       => null, // Ex: 2015-07-01T15:19:21+00:00
-				'date_before'      => null, // Ex: 2015-07-01T15:19:21+00:00
+			'date'             => null, // Ex: 2015-07-01
+			'date_from'        => null, // Ex: 2015-07-01
+			'date_to'          => null, // Ex: 2015-07-01
+			'date_after'       => null, // Ex: 2015-07-01T15:19:21+00:00
+			'date_before'      => null, // Ex: 2015-07-01T15:19:21+00:00
 			// Record ID filters
-				'record'           => null,
-				'record__in'       => array(),
-				'record__not_in'   => array(),
-				// Pagination params
-				'records_per_page' => get_option( 'posts_per_page', 20 ),
-				'paged'            => 1,
-				// Order
-				'order'            => 'desc',
-				'orderby'          => 'date',
-				// Fields selection
-				'fields'           => array(),
+			'record'           => null,
+			'record__in'       => array(),
+			'record__not_in'   => array(),
+			// Pagination params
+			'records_per_page' => get_option( 'posts_per_page', 20 ),
+			'paged'            => 1,
+			// Order
+			'order'            => 'desc',
+			'orderby'          => 'date',
+			// Fields selection
+			'fields'           => array(),
 		);
 
 		// Additional property fields
 		$properties = array(
-				'user_id'   => null,
-				'user_role' => null,
-				'ip'        => null,
-				'object_id' => null,
-				'site_id'   => null,
-				'blog_id'   => null,
-				'connector' => null,
-				'context'   => null,
-				'action'    => null,
+			'user_id'   => null,
+			'user_role' => null,
+			'ip'        => null,
+			'object_id' => null,
+			'site_id'   => null,
+			'blog_id'   => null,
+			'connector' => null,
+			'context'   => null,
+			'action'    => null,
 		);
 
 		/**
@@ -209,6 +200,17 @@ class DB {
 		$this->found_records_count = isset( $result['count'] ) ? $result['count'] : 0;
 
 		return empty( $result['items'] ) ? array() : $result['items'];
+	}
+
+	/**
+	 * Helper function, backwards compatibility
+	 *
+	 * @param array Query args
+	 *
+	 * @return array Stream Records
+	 */
+	public function query( $args ) {
+		$this->get_records( $args );
 	}
 
 	/**
