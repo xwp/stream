@@ -204,8 +204,7 @@ class List_Table extends \WP_List_Table {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
 
-		$items = $this->plugin->db->query( $args );
-
+		$items = $this->plugin->db->get_records( $args );
 		return $items;
 	}
 
@@ -215,7 +214,7 @@ class List_Table extends \WP_List_Table {
 	 * @return integer
 	 */
 	public function get_total_found_rows() {
-		return $this->plugin->db->query->found_records;
+		return $this->plugin->db->get_found_records_count();
 	}
 
 	function column_default( $item, $column_name ) {
