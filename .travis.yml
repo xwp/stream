@@ -17,8 +17,8 @@ env:
     - WP_VERSION=latest WP_MULTISITE=1
     - WP_VERSION=trunk WP_MULTISITE=0
     - WP_VERSION=trunk WP_MULTISITE=1
-    - WP_VERSION=3.7 WP_MULTISITE=0
-    - WP_VERSION=3.7 WP_MULTISITE=1
+    - WP_VERSION=3.9 WP_MULTISITE=0
+    - WP_VERSION=3.9 WP_MULTISITE=1
 
 before_script:
     - export DEV_LIB_PATH=dev-lib
