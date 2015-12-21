@@ -334,17 +334,17 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_enqueue_scripts( $hook ) {
-		wp_register_script( 'select2', $this->plugin->locations['url'] . 'ui/lib/select2/select2.js', array( 'jquery' ), '3.5.2', true );
-		wp_register_style( 'select2', $this->plugin->locations['url'] . 'ui/lib/select2/select2.css', array(), '3.5.2' );
-		wp_register_script( 'timeago', $this->plugin->locations['url'] . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
+		wp_register_script( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/select2.js', array( 'jquery' ), '3.5.2', true );
+		wp_register_style( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/select2.css', array(), '3.5.2' );
+		wp_register_script( 'wp-stream-timeago', $this->plugin->locations['url'] . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
 
 		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
 		$file_tmpl = 'ui/lib/timeago/locales/jquery.timeago.%s.js';
 
 		if ( file_exists( $this->plugin->locations['dir'] . sprintf( $file_tmpl, $locale ) ) ) {
-			wp_register_script( 'timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, $locale ), array( 'timeago' ), '1' );
+			wp_register_script( 'wp-stream-timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, $locale ), array( 'wp-stream-timeago' ), '1' );
 		} else {
-			wp_register_script( 'timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ), array( 'timeago' ), '1' );
+			wp_register_script( 'wp-stream-timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ), array( 'wp-stream-timeago' ), '1' );
 		}
 
 		wp_enqueue_style( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/css/admin.css', array(), $this->plugin->get_version() );
@@ -352,13 +352,13 @@ class Admin {
 		$script_screens = array( 'plugins.php' );
 
 		if ( in_array( $hook, $this->screen_id ) || in_array( $hook, $script_screens ) ) {
-			wp_enqueue_script( 'select2' );
-			wp_enqueue_style( 'select2' );
+			wp_enqueue_script( 'wp-stream-select2' );
+			wp_enqueue_style( 'wp-stream-select2' );
 
-			wp_enqueue_script( 'timeago' );
-			wp_enqueue_script( 'timeago-locale' );
+			wp_enqueue_script( 'wp-stream-timeago' );
+			wp_enqueue_script( 'wp-stream-timeago-locale' );
 
-			wp_enqueue_script( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.js', array( 'jquery', 'select2' ), $this->plugin->get_version() );
+			wp_enqueue_script( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.js', array( 'jquery', 'wp-stream-select2' ), $this->plugin->get_version() );
 			wp_enqueue_script( 'wp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.js', array( 'jquery', 'heartbeat' ), $this->plugin->get_version() );
 
 			wp_localize_script(

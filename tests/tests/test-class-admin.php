@@ -159,9 +159,9 @@ class Test_Admin extends WP_StreamTestCase {
 		// Stream screen
 		$this->admin->admin_enqueue_scripts( $this->plugin->admin->screen_id['main'] );
 
-		$this->assertArrayHasKey( 'select2', $wp_scripts->registered );
-		$this->assertArrayHasKey( 'timeago', $wp_scripts->registered );
-		$this->assertArrayHasKey( 'timeago-locale', $wp_scripts->registered );
+		$this->assertArrayHasKey( 'wp-stream-select2', $wp_scripts->registered );
+		$this->assertArrayHasKey( 'wp-stream-timeago', $wp_scripts->registered );
+		$this->assertArrayHasKey( 'wp-stream-timeago-locale', $wp_scripts->registered );
 
 		$this->assertArrayHasKey( 'wp-stream-admin', $wp_scripts->registered );
 		$this->assertArrayHasKey( 'wp-stream-live-updates', $wp_scripts->registered );
