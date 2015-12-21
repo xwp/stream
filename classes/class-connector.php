@@ -35,7 +35,7 @@ abstract class Connector {
 	 */
 	public function register() {
 		foreach ( $this->actions as $action ) {
-			add_action( $action, array( $this, 'callback' ), 10, 5 );
+			add_action( $action, array( $this, 'callback' ), 10, 99 );
 		}
 
 		add_filter( 'wp_stream_action_links_' . $this->name, array( $this, 'action_links' ), 10, 2 );
