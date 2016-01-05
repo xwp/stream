@@ -42,6 +42,11 @@ class Plugin {
 	public $settings;
 
 	/**
+	 * @var Notifications
+	 */
+	public $notifications;
+
+	/**
 	 * @var Install
 	 */
 	public $install;
@@ -148,13 +153,14 @@ class Plugin {
 	}
 
 	/*
-	 * Load Settings and Connectors
+	 * Load Settings, Notifications, and Connectors
 	 *
 	 * @action init
 	 */
 	public function init() {
-		$this->settings   = new Settings( $this );
-		$this->connectors = new Connectors( $this );
+		$this->settings      = new Settings( $this );
+		$this->notifications = new Notifications( $this );
+		$this->connectors    = new Connectors( $this );
 	}
 
 	/**
