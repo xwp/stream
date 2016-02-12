@@ -32,3 +32,10 @@ after_script:
     - $DEV_LIB_PATH/travis.after_script.sh
 
 sudo: false
+
+matrix:
+  exclude:
+    - php: 7.0
+      env: WP_VERSION=3.9 WP_MULTISITE=0
+    - php: 7.0
+      env: WP_VERSION=3.9 WP_MULTISITE=1
