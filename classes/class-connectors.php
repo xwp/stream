@@ -143,12 +143,12 @@ class Connectors {
 			}
 
 			// Store connector label
-			if ( ! in_array( $connector->name, $this->term_labels['stream_connector'] ) ) {
+			if ( ! in_array( $connector->name, $this->term_labels['stream_connector'], true ) ) {
 				$this->term_labels['stream_connector'][ $connector->name ] = $connector->get_label();
 			}
 
 			$connector_name = $connector->name;
-			$is_excluded    = in_array( $connector_name, $excluded_connectors );
+			$is_excluded    = in_array( $connector_name, $excluded_connectors, true );
 
 			/**
 			 * Allows excluded connectors to be overridden and registered.

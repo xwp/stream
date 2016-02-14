@@ -147,10 +147,10 @@ class Connector_EDD extends Connector {
 	 * @return array             Action links
 	 */
 	public function action_links( $links, $record ) {
-		if ( in_array( $record->context, array( 'downloads' ) ) ) {
+		if ( in_array( $record->context, array( 'downloads' ), true ) ) {
 			$posts_connector = new Connector_Posts();
 			$links = $posts_connector->action_links( $links, $record );
-		} elseif ( in_array( $record->context, array( 'discounts' ) ) ) {
+		} elseif ( in_array( $record->context, array( 'discounts' ), true ) ) {
 			$post_type_label = get_post_type_labels( get_post_type_object( 'edd_discount' ) )->singular_name;
 			$base            = admin_url( 'edit.php?post_type=download&page=edd-discounts' );
 
@@ -179,7 +179,7 @@ class Connector_EDD extends Connector {
 					$base
 				);
 			}
-		} elseif ( in_array( $record->context, array( 'download_category', 'download_tag' ) ) ) {
+		} elseif ( in_array( $record->context, array( 'download_category', 'download_tag' ), true ) ) {
 			$tax_label = get_taxonomy_labels( get_taxonomy( $record->context ) )->singular_name;
 			$links[ sprintf( esc_html__( 'Edit %s', 'stream' ), $tax_label ) ] = get_edit_term_link( $record->object_id, $record->get_meta( 'taxonomy', true ) );
 		} elseif ( 'api_keys' === $record->context ) {
@@ -451,7 +451,7 @@ class Connector_EDD extends Connector {
 	}
 
 	public function meta( $object_id, $key, $value, $is_add = false ) {
-		if ( ! in_array( $key, $this->user_meta ) ) {
+		if ( ! in_array( $key, $this->user_meta, true ) ) {
 			return false;
 		}
 

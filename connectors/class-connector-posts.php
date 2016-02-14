@@ -150,7 +150,7 @@ class Connector_Posts extends Connector {
 			return;
 		}
 
-		if ( in_array( $new, array( 'auto-draft', 'inherit' ) ) ) {
+		if ( in_array( $new, array( 'auto-draft', 'inherit' ), true ) ) {
 			return;
 		} elseif ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
@@ -282,7 +282,7 @@ class Connector_Posts extends Connector {
 		$post = get_post( $post_id );
 
 		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing
-		if ( ! ( $post instanceof \WP_Post ) || in_array( $post->post_type, $this->get_excluded_post_types() )  ) {
+		if ( ! ( $post instanceof \WP_Post ) || in_array( $post->post_type, $this->get_excluded_post_types(), true )  ) {
 			return;
 		}
 
