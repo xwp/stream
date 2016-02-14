@@ -361,9 +361,8 @@ class Connector_Posts extends Connector {
 		$order    = ( $previous ) ? 'DESC' : 'ASC';
 
 		global $wpdb;
-
+		// @codingStandardsIgnoreStart
 		$revision_id = $wpdb->get_var( // db call okay
-// @codingStandardsIgnoreStart
 			$wpdb->prepare(
 				"SELECT p.ID
 				FROM $wpdb->posts AS p
@@ -375,9 +374,9 @@ class Connector_Posts extends Connector {
 				$revision->post_date,
 				$revision->post_parent
 			)
-// @codingStandardsIgnoreEnd
-// prepare okay
 		);
+		// @codingStandardsIgnoreEnd
+		// prepare okay
 
 		$revision_id = absint( $revision_id );
 
