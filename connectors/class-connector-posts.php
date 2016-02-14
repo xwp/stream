@@ -146,7 +146,7 @@ class Connector_Posts extends Connector {
 	 * @param \WP_Post $post
 	 */
 	public function callback_transition_post_status( $new, $old, $post ) {
-		if ( in_array( $post->post_type, $this->get_excluded_post_types() ) ) {
+		if ( in_array( $post->post_type, $this->get_excluded_post_types(), true ) ) {
 			return;
 		}
 
