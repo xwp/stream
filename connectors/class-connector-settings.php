@@ -446,7 +446,7 @@ class Connector_Settings extends Connector {
 					);
 				},
 				'applicable'   => function( $submenu, $record ) {
-					return $record->context === 'wp_stream';
+					return 'wp_stream' === $record->context;
 				},
 			),
 			'background_header' => array(
