@@ -104,7 +104,7 @@ class Connectors {
 		 */
 		$this->connectors = apply_filters( 'wp_stream_connectors', $classes );
 
-		if ( empty( $classes ) ) {
+		if ( empty( $this->connectors ) ) {
 			return;
 		}
 
