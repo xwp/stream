@@ -200,9 +200,9 @@ abstract class Connector {
 		$result = array_fill_keys( $result, null );
 
 		foreach ( $result as $key => $val ) {
-			if ( in_array( $key, $unique_keys_old ) ) {
+			if ( in_array( $key, $unique_keys_old, true ) ) {
 				$result[ $key ] = false; // Removed
-			} elseif ( in_array( $key, $unique_keys_new ) ) {
+			} elseif ( in_array( $key, $unique_keys_new, true ) ) {
 				$result[ $key ] = true; // Added
 			} elseif ( $deep ) { // Changed, find what changed, only if we're allowed to explore a new level
 				if ( is_array( $old_value[ $key ] ) && is_array( $new_value[ $key ] ) ) {

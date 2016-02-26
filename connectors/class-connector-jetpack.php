@@ -328,7 +328,7 @@ class Connector_Jetpack extends Connector {
 		$action  = null;
 		$meta    = array();
 
-		if ( in_array( $method, array( 'activate', 'deactivate' ) ) && ! is_null( $data ) ) {
+		if ( in_array( $method, array( 'activate', 'deactivate' ), true ) && ! is_null( $data ) ) {
 			$module_slug = $data;
 			$module      = \Jetpack::get_module( $module_slug );
 			$module_name = $module['name'];
@@ -340,7 +340,7 @@ class Connector_Jetpack extends Connector {
 				$module_name,
 				( 'activated' === $action ) ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' )
 			);
-		} elseif ( in_array( $method, array( 'authorize', 'unlink' ) ) && ! is_null( $data ) ) {
+		} elseif ( in_array( $method, array( 'authorize', 'unlink' ), true ) && ! is_null( $data ) ) {
 			$user_id = intval( $data );
 
 			if ( empty( $user_id ) ) {
@@ -359,7 +359,7 @@ class Connector_Jetpack extends Connector {
 				( 'unlink' === $action ) ? esc_html__( 'unlinked', 'stream' ) : esc_html__( 'linked', 'stream' ),
 				( 'unlink' === $action ) ? esc_html__( 'from', 'stream' ) : esc_html__( 'to', 'stream' )
 			);
-		} elseif ( in_array( $method, array( 'register', 'disconnect', 'subsiteregister', 'subsitedisconnect' ) ) ) {
+		} elseif ( in_array( $method, array( 'register', 'disconnect', 'subsiteregister', 'subsitedisconnect' ), true ) ) {
 			$context      = 'blogs';
 			$action       = str_replace( 'subsite', '', $method );
 			$is_multisite = ( 0 === strpos( $method, 'subsite' ) );

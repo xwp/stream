@@ -218,7 +218,7 @@ class Admin {
 
 			$notice = compact( 'message', 'is_error' );
 
-			if ( ! in_array( $notice, $this->notices ) ) {
+			if ( ! in_array( $notice, $this->notices, true ) ) {
 				$this->notices[] = $notice;
 			}
 		}
@@ -351,7 +351,7 @@ class Admin {
 
 		$script_screens = array( 'plugins.php' );
 
-		if ( in_array( $hook, $this->screen_id ) || in_array( $hook, $script_screens ) ) {
+		if ( in_array( $hook, $this->screen_id, true ) || in_array( $hook, $script_screens, true ) ) {
 			wp_enqueue_script( 'wp-stream-select2' );
 			wp_enqueue_style( 'wp-stream-select2' );
 
@@ -762,7 +762,7 @@ class Admin {
 	 * @return bool
 	 */
 	private function role_can_view( $role ) {
-		if ( in_array( $role, $this->plugin->settings->options['general_role_access'] ) ) {
+		if ( in_array( $role, $this->plugin->settings->options['general_role_access'], true ) ) {
 			return true;
 		}
 
@@ -803,7 +803,7 @@ class Admin {
 		$stream_view_caps = array( $this->view_cap );
 
 		foreach ( $caps as $cap ) {
-			if ( in_array( $cap, $stream_view_caps ) ) {
+			if ( in_array( $cap, $stream_view_caps, true ) ) {
 				foreach ( $roles as $role ) {
 					if ( $this->role_can_view( $role ) ) {
 						$allcaps[ $cap ] = true;
@@ -831,7 +831,7 @@ class Admin {
 	public function filter_role_caps( $allcaps, $cap, $role ) {
 		$stream_view_caps = array( $this->view_cap );
 
-		if ( in_array( $cap, $stream_view_caps ) && $this->role_can_view( $role ) ) {
+		if ( in_array( $cap, $stream_view_caps, true ) && $this->role_can_view( $role ) ) {
 			$allcaps[ $cap ] = true;
 		}
 

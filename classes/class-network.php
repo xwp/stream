@@ -257,7 +257,7 @@ class Network {
 					continue;
 				}
 
-				if ( in_array( $field['name'], $hidden_options[ $section_key ] ) ) {
+				if ( in_array( $field['name'], $hidden_options[ $section_key ], true ) ) {
 					unset( $fields[ $section_key ]['fields'][ $key ] );
 				}
 			}
@@ -319,7 +319,7 @@ class Network {
 			$this->default_settings_page_slug,
 		);
 
-		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers ) ) {
+		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers, true ) ) {
 			return;
 		}
 
