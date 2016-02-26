@@ -287,7 +287,7 @@ class Connector_Settings extends Connector {
 
 		if ( isset( $contexts[ $option_name ] ) ) {
 			foreach ( $contexts[ $option_name ] as $context => $keys ) {
-				if ( in_array( $key, $keys ) ) {
+				if ( in_array( $key, $keys, true ) ) {
 					return $context;
 				}
 			}
@@ -313,7 +313,7 @@ class Connector_Settings extends Connector {
 		);
 
 		if ( isset( $ignored[ $option_name ] ) ) {
-			return in_array( $key, $ignored[ $option_name ] );
+			return in_array( $key, $ignored[ $option_name ], true );
 		}
 
 		return false;
@@ -446,7 +446,7 @@ class Connector_Settings extends Connector {
 					);
 				},
 				'applicable'   => function( $submenu, $record ) {
-					return $record->context === 'wp_stream';
+					return 'wp_stream' === $record->context;
 				},
 			),
 			'background_header' => array(
@@ -458,7 +458,7 @@ class Connector_Settings extends Connector {
 					return add_query_arg( 'page', $rule['submenu_slug']( $record ), admin_url( $rule['menu_slug'] ) );
 				},
 				'applicable'   => function( $submenu, $record ) {
-					return in_array( $record->context, array( 'custom_header', 'custom_background' ) );
+					return in_array( $record->context, array( 'custom_header', 'custom_background' ), true );
 				},
 			),
 			'general' => array(
@@ -490,7 +490,7 @@ class Connector_Settings extends Connector {
 			),
 		);
 
-		if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ) ) ) {
+		if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ), true ) ) {
 			global $submenu;
 
 			$applicable_rules = array_filter(
@@ -644,7 +644,7 @@ class Connector_Settings extends Connector {
 		);
 
 		foreach ( $options as $key => $opts ) {
-			if ( in_array( $option, $opts ) ) {
+			if ( in_array( $option, $opts, true ) ) {
 				$context = $key;
 				break;
 			}

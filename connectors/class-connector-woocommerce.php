@@ -209,7 +209,7 @@ class Connector_Woocommerce extends Connector {
 	 * @return array Action links
 	 */
 	public function action_links( $links, $record ) {
-		if ( in_array( $record->context, $this->post_types ) && get_post( $record->object_id ) ) {
+		if ( in_array( $record->context, $this->post_types, true ) && get_post( $record->object_id ) ) {
 			if ( $link = get_edit_post_link( $record->object_id ) ) {
 				$posts_connector = new Connector_Posts();
 				$post_type_name = $posts_connector->get_post_type_name( get_post_type( $record->object_id ) );
@@ -293,7 +293,7 @@ class Connector_Woocommerce extends Connector {
 		}
 
 		// Don't track minor status change actions
-		if ( in_array( wp_stream_filter_input( INPUT_GET, 'action' ), array( 'mark_processing', 'mark_on-hold', 'mark_completed' ) ) || defined( 'DOING_AJAX' ) ) {
+		if ( in_array( wp_stream_filter_input( INPUT_GET, 'action' ), array( 'mark_processing', 'mark_on-hold', 'mark_completed' ), true ) || defined( 'DOING_AJAX' ) ) {
 			return;
 		}
 
@@ -302,7 +302,7 @@ class Connector_Woocommerce extends Connector {
 			return;
 		}
 
-		if ( in_array( $new, array( 'auto-draft', 'draft', 'inherit' ) ) ) {
+		if ( in_array( $new, array( 'auto-draft', 'draft', 'inherit' ), true ) ) {
 			return;
 		} elseif ( 'auto-draft' === $old && 'publish' === $new ) {
 			$message = esc_html_x(
@@ -612,9 +612,9 @@ class Connector_Woocommerce extends Connector {
 			}
 
 			// Change connector::posts records
-			if ( 'posts' === $record['connector'] && in_array( $record['context'], $this->post_types ) ) {
+			if ( 'posts' === $record['connector'] && in_array( $record['context'], $this->post_types, true ) ) {
 				$recordarr[ $key ]['connector'] = $this->name;
-			} elseif ( 'taxonomies' === $record['connector'] && in_array( $record['context'], $this->taxonomies ) ) {
+			} elseif ( 'taxonomies' === $record['connector'] && in_array( $record['context'], $this->taxonomies, true ) ) {
 				$recordarr[ $key ]['connector'] = $this->name;
 			} elseif ( 'settings' === $record['connector'] ) {
 				$option = isset( $record['meta']['option_key'] ) ? $record['meta']['option_key'] : false;
@@ -703,7 +703,7 @@ class Connector_Woocommerce extends Connector {
 					$_fields = array_filter(
 						$page->get_settings( $section_key ),
 						function( $item ) {
-							return isset( $item['id'] ) && ( ! in_array( $item['type'], array( 'title', 'sectionend' ) ) );
+							return isset( $item['id'] ) && ( ! in_array( $item['type'], array( 'title', 'sectionend' ), true ) );
 						}
 					);
 

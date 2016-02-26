@@ -183,7 +183,7 @@ class Connector_Widgets extends Connector {
 			$sidebar_id = '';
 
 			foreach ( $old as $old_sidebar_id => $old_widget_ids ) {
-				if ( in_array( $widget_id, $old_widget_ids ) ) {
+				if ( in_array( $widget_id, $old_widget_ids, true ) ) {
 					$sidebar_id = $old_sidebar_id;
 					break;
 				}
@@ -234,7 +234,7 @@ class Connector_Widgets extends Connector {
 			$sidebar_id = '';
 
 			foreach ( $new as $new_sidebar_id => $new_widget_ids ) {
-				if ( in_array( $widget_id, $new_widget_ids ) ) {
+				if ( in_array( $widget_id, $new_widget_ids, true ) ) {
 					$sidebar_id = $new_sidebar_id;
 					break;
 				}
@@ -288,7 +288,7 @@ class Connector_Widgets extends Connector {
 			$sidebar_id = '';
 
 			foreach ( $old as $old_sidebar_id => $old_widget_ids ) {
-				if ( in_array( $widget_id, $old_widget_ids ) ) {
+				if ( in_array( $widget_id, $old_widget_ids, true ) ) {
 					$sidebar_id = $old_sidebar_id;
 					break;
 				}
@@ -341,7 +341,7 @@ class Connector_Widgets extends Connector {
 			$sidebar_id = '';
 
 			foreach ( $new as $new_sidebar_id => $new_widget_ids ) {
-				if ( in_array( $widget_id, $new_widget_ids ) ) {
+				if ( in_array( $widget_id, $new_widget_ids, true ) ) {
 					$sidebar_id = $new_sidebar_id;
 					break;
 				}
@@ -441,7 +441,7 @@ class Connector_Widgets extends Connector {
 				// Now find the sidebar that the widget was originally located in, as long it is not wp_inactive_widgets
 				$old_sidebar_id = null;
 				foreach ( $old as $sidebar_id => $old_widget_ids ) {
-					if ( in_array( $widget_id, $old_widget_ids ) ) {
+					if ( in_array( $widget_id, $old_widget_ids, true ) ) {
 						$old_sidebar_id = $sidebar_id;
 						break;
 					}
@@ -804,7 +804,7 @@ class Connector_Widgets extends Connector {
 		unset( $sidebars_widgets['array_version'] );
 
 		foreach ( $sidebars_widgets as $sidebar_id => $widget_ids ) {
-			if ( in_array( $widget_id, $widget_ids ) ) {
+			if ( in_array( $widget_id, $widget_ids, true ) ) {
 				return $sidebar_id;
 			}
 		}
