@@ -50,16 +50,25 @@
 	width: 12%;
 }
 
-.toplevel_page_wp_stream .manage-column.column-date {
-	width: 10%;
+.toplevel_page_wp_stream .column-date {
+	min-width: 10%;
+	white-space: nowrap;
 }
 
-.toplevel_page_wp_stream .manage-column.column-user_id {
+.toplevel_page_wp_stream .column-date .timeago {
+	padding-right: 1em;
+}
+
+.toplevel_page_wp_stream .column-user_id {
 	width: 18%;
 }
 
-.toplevel_page_wp_stream .manage-column.column-summary {
+.toplevel_page_wp_stream .column-summary {
 	width: auto;
+}
+
+.toplevel_page_wp_stream .column-ip {
+	white-space: nowrap;
 }
 
 .toplevel_page_wp_stream .stream-filter-object-id {
