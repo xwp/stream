@@ -62,7 +62,7 @@ class List_Table extends \WP_List_Table {
 			echo sprintf(
 				'<a href="%s">%s</a>',
 				esc_html( $download ),
-				__( 'Download CSV', 'stream' )
+				esc_html( 'Download CSV', 'stream' )
 			);
 		}
 	}
