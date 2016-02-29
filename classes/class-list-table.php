@@ -550,7 +550,7 @@ class List_Table extends \WP_List_Table {
 	}
 
 	function export_link() {
-		$args = array_merge( array( 'output_csv' => 1 ), $_GET );
+		$args = array_merge( array( 'output' => 'csv' ), $_GET );
 		$download = add_query_arg( $args, 'admin.php' );
 		return sprintf(
 			'<div class="stream-export-tablenav"><a href="%s">%s</a></div>',
