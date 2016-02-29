@@ -688,6 +688,13 @@ class Admin {
 	}
 
 	/**
+	 * Increase pagination limit for CSV Output
+	 */
+	public function render_csv_disable_paginate( $records_per_page ) {
+		return 10000;
+	}
+
+	/**
 	 * Render settings page
 	 */
 	public function render_settings_page() {
