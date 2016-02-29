@@ -752,7 +752,7 @@ class Admin {
 		foreach ( $csv_output as $row_data ) {
 			$output .= join( ',', $row_data ) . "\n";
 		}
-		die( $output );
+		die( $output ); // @codingStandardsIgnoreLine text-only output
 	}
 
 	/**
