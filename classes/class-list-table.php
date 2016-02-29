@@ -57,13 +57,7 @@ class List_Table extends \WP_List_Table {
 			echo $this->filters_form(); //xss ok
 		}
 		if ( 'bottom' === $which ) {
-			$args = array_merge( array( 'output_csv' => 1 ), $_GET );
-			$download = add_query_arg( $args, 'admin.php' );
-			echo sprintf(
-				'<a href="%s">%s</a>',
-				esc_html( $download ),
-				esc_html( 'Download CSV', 'stream' )
-			);
+			echo $this->export_link(); //xss ok
 		}
 	}
 
@@ -553,6 +547,16 @@ class List_Table extends \WP_List_Table {
 		 * @return array
 		 */
 		return apply_filters( 'wp_stream_list_table_filters', $filters );
+	}
+
+	function export_link() {
+		$args = array_merge( array( 'output_csv' => 1 ), $_GET );
+		$download = add_query_arg( $args, 'admin.php' );
+		return sprintf(
+			'<div class="stream-export-tablenav"><a href="%s">%s</a></div>',
+			esc_html( $download ),
+			esc_html( 'Download CSV', 'stream' )
+		);
 	}
 
 	function filters_form() {
