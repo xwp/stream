@@ -22,11 +22,11 @@ class Export {
 		$output = wp_stream_filter_input( INPUT_GET, 'output' );
 		$page = wp_stream_filter_input( INPUT_GET, 'page' );
 		if (  'csv' === $output && 'wp_stream' === $page ) {
-			add_action( 'admin_init', array( $this, 'render_csv_page' ) );
+			add_action( 'admin_init', array( $this, 'render_download' ) );
 		}
 	}
 
-	public function render_csv_page() {
+	public function render_download() {
 
 		$this->admin->register_list_table();
 		$list_table = $this->admin->list_table;
@@ -36,55 +36,58 @@ class Export {
 
 		$records = $list_table->get_records();
 		$columns = $list_table->get_columns();
-		$csv_output = array( array_values( $columns ) );
+		$output = array( array_values( $columns ) );
 		foreach ( $records as $item ) {
-			$record = new Record( $item );
-			$row_out = array();
-			foreach ( array_keys( $columns ) as $column_name ) {
-				switch ( $column_name ) {
-				  case 'date' :
-				    $created   = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
-				    $row_out[] = get_date_from_gmt( $created, 'Y/m/d h:i:s A' );
-				    break;
-				  case 'summary' :
-				    $row_out[] = $record->summary;
-				    break;
+			$output[] = $this->build_record( $item, $columns );
+		}
 
-				  case 'user_id' :
-				    $user      = new Author( (int) $record->user_id, (array) maybe_unserialize( $record->user_meta ) );
-				    $row_out[] = $user->get_display_name();
-				    break;
+		$exporter = new Export_CSV;
+		$exporter->output_file( $output );
+		die;
+	}
 
-				  case 'connector':
-				    $row_out[] = $record->{'connector'};
-				    break;
+	protected function build_record ( $item, $columns ) {
 
-				  case 'context':
-				    $row_out[] = $record->{'context'};
-				    break;
+		$record = new Record( $item );
 
-				  case 'action':
-				    $row_out[] = $record->{$column_name};
-				    break;
+		$row_out = array();
+		foreach ( array_keys( $columns ) as $column_name ) {
+			switch ( $column_name ) {
+				case 'date' :
+					$created   = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
+					$row_out[] = get_date_from_gmt( $created, 'Y/m/d h:i:s A' );
+					break;
+				case 'summary' :
+					$row_out[] = $record->summary;
+					break;
 
-				  case 'blog_id':
-				    $row_out[] = $record->blog_id;
-				    break;
-				  case 'ip' :
-				    $row_out[] = $record->{$column_name};
-				    break;
-				}
+				case 'user_id' :
+					$user      = new Author( (int) $record->user_id, (array) maybe_unserialize( $record->user_meta ) );
+					$row_out[] = $user->get_display_name();
+					break;
+
+				case 'connector':
+					$row_out[] = $record->{'connector'};
+					break;
+
+				case 'context':
+					$row_out[] = $record->{'context'};
+					break;
+
+				case 'action':
+					$row_out[] = $record->{$column_name};
+					break;
+
+				case 'blog_id':
+					$row_out[] = $record->blog_id;
+					break;
+				case 'ip' :
+					$row_out[] = $record->{$column_name};
+					break;
 			}
-			$csv_output[] = $row_out;
 		}
 
-		header( 'Content-type: text/csv' );
-		header( 'Content-Disposition: attachment; filename="stream.csv"' );
-		$output = '';
-		foreach ( $csv_output as $row_data ) {
-			$output .= join( ',', $row_data ) . "\n";
-		}
-		die( $output ); // @codingStandardsIgnoreLine text-only output
+		return $row_out;
 	}
 
 	/**
