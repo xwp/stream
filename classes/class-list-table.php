@@ -203,7 +203,8 @@ class List_Table extends \WP_List_Table {
 		if ( ! isset( $args['records_per_page'] ) ) {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
-
+		$args['records_per_page'] = apply_filters( 'stream_records_per_page', $args['records_per_page'] );
+		
 		$items = $this->plugin->db->query( $args );
 
 		return $items;
