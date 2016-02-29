@@ -79,7 +79,7 @@ class Export {
 		}
 
 		header( 'Content-type: text/csv' );
-		header( 'Content-Disposition: attachment; filename="output.csv"' );
+		header( 'Content-Disposition: attachment; filename="stream.csv"' );
 		$output = '';
 		foreach ( $csv_output as $row_data ) {
 			$output .= join( ',', $row_data ) . "\n";
