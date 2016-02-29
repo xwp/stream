@@ -693,7 +693,7 @@ class Admin {
 	public function maybe_render_csv_page() {
 		$page = wp_stream_filter_input( INPUT_GET, 'page' );
 		$output_csv = wp_stream_filter_input( INPUT_GET, 'output_csv' );
-		if (  '1' != $output_csv || 'wp_stream' != $page ) {
+		if (  '1' !== $output_csv || 'wp_stream' !== $page ) {
 			return;
 		}
 
