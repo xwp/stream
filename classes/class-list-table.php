@@ -57,7 +57,7 @@ class List_Table extends \WP_List_Table {
 			echo $this->filters_form(); //xss ok
 		}
 		if ( 'bottom' === $which ) {
-			$args = array_merge( array( 'output_csv' => 1 ), $_GET );
+			$args = array_merge( array( 'output' => 'csv' ), $_GET );
 			$download = add_query_arg( $args, 'admin.php' );
 			echo sprintf(
 				'<a href="%s">%s</a>',
