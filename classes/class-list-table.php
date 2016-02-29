@@ -550,12 +550,27 @@ class List_Table extends \WP_List_Table {
 	}
 
 	function export_link() {
-		$args = array_merge( array( 'output' => 'csv' ), $_GET );
-		$download = add_query_arg( $args, 'admin.php' );
-		return sprintf(
-			'<div class="stream-export-tablenav"><a href="%s">%s</a></div>',
-			esc_html( $download ),
-			esc_html( 'Download CSV', 'stream' )
+
+		$export_links = array();
+		$exporters = apply_filters( 'stream_exporters', array() );
+		if ( empty( $exporters ) ) {
+			return;
+		}
+		
+		foreach ( array_keys( $exporters ) as $export_type ) {
+			$args = array_merge( array( 'output' => $export_type ), $_GET );
+			$download = add_query_arg( $args, 'admin.php' );
+
+			$export_links[] = sprintf(
+				'<a href="%s">%s</a>',
+				esc_html( $download ),
+				esc_html( strtoupper ( $export_type ) )
+			);
+		}
+		echo sprintf(
+			'<div class="stream-export-tablenav">%s %s</div>',
+			__( 'Export as: ', 'stream' ),
+			join( ' | ', $export_links )
 		);
 	}
 

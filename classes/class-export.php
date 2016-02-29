@@ -15,18 +15,26 @@ class Export {
 	*/
 	public $admin;
 
+	public $exporters = array();
+
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 		$this->admin = $plugin->admin;
 
-		$output = wp_stream_filter_input( INPUT_GET, 'output' );
-		$page = wp_stream_filter_input( INPUT_GET, 'page' );
-		if (  'csv' === $output && 'wp_stream' === $page ) {
+		if ( 'wp_stream' === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
 			add_action( 'admin_init', array( $this, 'render_download' ) );
+			add_filter( 'stream_exporters', array( $this, 'register_default_exporters' ) );
 		}
+
 	}
 
 	public function render_download() {
+
+		$this->exporters = apply_filters( 'stream_exporters', array() );
+		$output_type = wp_stream_filter_input( INPUT_GET, 'output' );
+		if ( ! array_key_exists( $output_type, $this->exporters ) ) {
+			return;
+		}
 
 		$this->admin->register_list_table();
 		$list_table = $this->admin->list_table;
@@ -41,7 +49,7 @@ class Export {
 			$output[] = $this->build_record( $item, $columns );
 		}
 
-		$exporter = new Export_CSV;
+		$exporter = $this->exporters[ $output_type ];
 		$exporter->output_file( $output );
 		die;
 	}
@@ -116,6 +124,13 @@ class Export {
 		}
 
 		return $new_columns;
+	}
+
+	public function register_default_exporters ( $exporters ) {
+		$exporters['csv'] = new Export_CSV;
+		$exporters['json'] = new Export_JSON;
+
+		return $exporters;
 	}
 
 }
