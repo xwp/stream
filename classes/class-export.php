@@ -2,7 +2,7 @@
 namespace WP_Stream;
 
 class Export {
-  
+
   /**
 	 * Hold Plugin class
 	 * @var Plugin
@@ -98,16 +98,21 @@ class Export {
 	 * Expand columns for CSV Output
 	 */
 	public function render_csv_expand_columns( $columns ) {
-		return array(
+		$new_columns = array(
 			'date'      => $columns['date'],
 			'summary'   => $columns['summary'],
 			'user_id'   => $columns['user_id'],
 			'connector' => __( 'Connector', 'stream' ),
 			'context'   => $columns['context'],
 			'action'    => $columns['action'],
-			'blog_id'   => __( 'Blog ID', 'stream' ),
 			'ip'        => $columns['ip'],
 		);
+
+    if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+      $new_columns['blog_id'] = __( 'Blog ID', 'stream' );
+    }
+
+    return $new_columns;
 	}
 
 }
