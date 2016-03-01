@@ -1,7 +1,9 @@
 <?php
 namespace WP_Stream;
 
-class Export_JSON {
+class Exporter_JSON extends Exporter {
+
+  public $name = 'json';
 
   public function output_file ( $data ) {
 

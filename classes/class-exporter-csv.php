@@ -1,7 +1,9 @@
 <?php
 namespace WP_Stream;
 
-class Export_CSV {
+class Exporter_CSV extends Exporter{
+
+  public $name = 'csv';
 
   public function output_file ( $data ) {
 
@@ -14,7 +16,7 @@ class Export_CSV {
     }
 
     die( $output ); // @codingStandardsIgnoreLine text-only output
-    
+
   }
 
 }
