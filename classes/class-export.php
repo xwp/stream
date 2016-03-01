@@ -23,14 +23,14 @@ class Export {
 
 		if ( 'wp_stream' === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
 			add_action( 'admin_init', array( $this, 'render_download' ) );
-			add_filter( 'stream_exporters', array( $this, 'register_default_exporters' ) );
+			add_action( 'register_stream_exporters', array( $this, 'register_default_exporters' ), 10, 1 );
 		}
 
 	}
 
 	public function render_download() {
 
-		$this->exporters = apply_filters( 'stream_exporters', array() );
+		$this->get_exporters();
 		$output_type = wp_stream_filter_input( INPUT_GET, 'output' );
 		if ( ! array_key_exists( $output_type, $this->exporters ) ) {
 			return;
@@ -55,7 +55,6 @@ class Export {
 	}
 
 	protected function build_record ( $item, $columns ) {
-
 		$record = new Record( $item );
 
 		$row_out = array();
@@ -126,11 +125,28 @@ class Export {
 		return $new_columns;
 	}
 
-	public function register_default_exporters ( $exporters ) {
-		$exporters['csv'] = new Export_CSV;
-		$exporters['json'] = new Export_JSON;
+	/**
+	 * Register exporter
+	 */
+	public function register_exporter( $exporter ) {
+		if ( ! is_a( $exporter, 'WP_Stream\Exporter' ) ) {
+			trigger_error( __( 'Registered exporters must extend WP_Stream\Exporter.', 'stream' ) );
+		}
 
-		return $exporters;
+		$this->exporters[ $exporter->name ] = $exporter;
+	}
+
+	public function get_exporters() {
+		do_action( 'register_stream_exporters', $this );
+		return $this->exporters;
+	}
+
+	/**
+	 * Register default exporters
+	 */
+	public function register_default_exporters ( $export ) {
+		$export->register_exporter( new Exporter_CSV );
+		$export->register_exporter( new Exporter_JSON );
 	}
 
 }

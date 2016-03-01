@@ -551,12 +551,12 @@ class List_Table extends \WP_List_Table {
 
 	function export_link() {
 
-		$export_links = array();
-		$exporters = apply_filters( 'stream_exporters', array() );
+		$exporters = $this->plugin->admin->export->get_exporters();
 		if ( empty( $exporters ) ) {
 			return;
 		}
-		
+
+		$export_links = array();
 		foreach ( array_keys( $exporters ) as $export_type ) {
 			$args = array_merge( array( 'output' => $export_type ), $_GET );
 			$download = add_query_arg( $args, 'admin.php' );
@@ -564,7 +564,7 @@ class List_Table extends \WP_List_Table {
 			$export_links[] = sprintf(
 				'<a href="%s">%s</a>',
 				esc_html( $download ),
-				esc_html( strtoupper ( $export_type ) )
+				esc_html( $this->plugin->admin->export->exporters[ $export_type ]->name )
 			);
 		}
 		echo sprintf(
