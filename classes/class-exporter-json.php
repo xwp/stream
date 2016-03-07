@@ -5,7 +5,7 @@ class Exporter_JSON extends Exporter {
 
 	public $name = 'json';
 
-	public function output_file ( $data ) {
+	public function output_file( $data ) {
 
 		header( 'Content-type: text/json' );
 		header( 'Content-Disposition: attachment; filename="stream.json"' );
@@ -14,5 +14,4 @@ class Exporter_JSON extends Exporter {
 		die( $output ); // @codingStandardsIgnoreLine text-only output
 
 	}
-
 }

@@ -5,7 +5,7 @@ class Exporter_CSV extends Exporter{
 
 	public $name = 'csv';
 
-	public function output_file ( $data ) {
+	public function output_file( $data ) {
 
 		header( 'Content-type: text/csv' );
 		header( 'Content-Disposition: attachment; filename="stream.csv"' );
@@ -18,5 +18,4 @@ class Exporter_CSV extends Exporter{
 		die( $output ); // @codingStandardsIgnoreLine text-only output
 
 	}
-
 }

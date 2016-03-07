@@ -54,7 +54,7 @@ class Export {
 		die;
 	}
 
-	protected function build_record ( $item, $columns ) {
+	protected function build_record( $item, $columns ) {
 		$record = new Record( $item );
 
 		$row_out = array();
@@ -144,9 +144,8 @@ class Export {
 	/**
 	 * Register default exporters
 	 */
-	public function register_default_exporters ( $export ) {
+	public function register_default_exporters( $export ) {
 		$export->register_exporter( new Exporter_CSV );
 		$export->register_exporter( new Exporter_JSON );
 	}
-
 }

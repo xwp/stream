@@ -4,6 +4,7 @@ namespace WP_Stream;
 class List_Table extends \WP_List_Table {
 	/**
 	 * Hold Plugin class
+	 *
 	 * @var Plugin
 	 */
 	public $plugin;
@@ -54,10 +55,10 @@ class List_Table extends \WP_List_Table {
 
 	function extra_tablenav( $which ) {
 		if ( 'top' === $which ) {
-			echo $this->filters_form(); //xss ok
+			echo $this->filters_form(); // xss ok
 		}
 		if ( 'bottom' === $which ) {
-			echo $this->export_link(); //xss ok
+			echo $this->export_link(); // xss ok
 		}
 	}
 
@@ -556,22 +557,20 @@ class List_Table extends \WP_List_Table {
 			return;
 		}
 
+		echo '<div class="stream-export-tablenav">' . esc_html( __( 'Export as: ', 'stream' ) );
+
 		$export_links = array();
 		foreach ( array_keys( $exporters ) as $export_type ) {
 			$args = array_merge( array( 'output' => $export_type ), $_GET );
 			$download = add_query_arg( $args, 'admin.php' );
 
-			$export_links[] = sprintf(
+			echo sprintf(
 				'<a href="%s">%s</a>',
 				esc_html( $download ),
 				esc_html( $this->plugin->admin->export->exporters[ $export_type ]->name )
 			);
 		}
-		echo sprintf(
-			'<div class="stream-export-tablenav">%s %s</div>',
-			__( 'Export as: ', 'stream' ),
-			join( ' | ', $export_links )
-		);
+		echo '</div>';
 	}
 
 	function filters_form() {
