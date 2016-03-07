@@ -4,19 +4,32 @@ namespace WP_Stream;
 class Export {
 
 	/**
-	* Hold Plugin class
-	* @var Plugin
-	*/
+	 * Hold Plugin class
+	 *
+	 * @var Plugin
+	 */
 	public $plugin;
 
 	/**
-	* Hold Admin class
-	* @var Admin
-	*/
+	 * Hold Admin class
+	 *
+	 * @var Admin
+	 */
 	public $admin;
 
+	/**
+	 * Hold registered exporters
+	 *
+	 * @var array
+	 */
 	public $exporters = array();
 
+	/**
+	 * Class constructor
+	 *
+	 * @param Plugin $plugin The plugin object.
+	 * @return void
+	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 		$this->admin = $plugin->admin;
@@ -28,8 +41,12 @@ class Export {
 
 	}
 
+	/**
+	 * Outputs download file to user based on selected exporter
+	 *
+	 * @return void
+	 */
 	public function render_download() {
-
 		$this->get_exporters();
 		$output_type = wp_stream_filter_input( INPUT_GET, 'output' );
 		if ( ! array_key_exists( $output_type, $this->exporters ) ) {
@@ -54,6 +71,13 @@ class Export {
 		die;
 	}
 
+	/**
+	 * Extracts data from Records
+	 *
+	 * @param array $item Post to extract data from.
+	 * @param array $columns Columns being extracted.
+	 * @return array Numerically-indexed array with extracted data.
+	 */
 	protected function build_record( $item, $columns ) {
 		$record = new Record( $item );
 
@@ -64,6 +88,7 @@ class Export {
 					$created   = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
 					$row_out[] = get_date_from_gmt( $created, 'Y/m/d h:i:s A' );
 					break;
+
 				case 'summary' :
 					$row_out[] = $record->summary;
 					break;
@@ -88,6 +113,7 @@ class Export {
 				case 'blog_id':
 					$row_out[] = $record->blog_id;
 					break;
+
 				case 'ip' :
 					$row_out[] = $record->{$column_name};
 					break;
@@ -98,15 +124,20 @@ class Export {
 	}
 
 	/**
-	* Increase pagination limit for CSV Output
-	*/
+	 * Increase pagination limit for CSV Output
+	 *
+	 * @param int $records_per_page Old limit for records_per_page.
+	 */
 	public function render_csv_disable_paginate( $records_per_page ) {
 		return 10000;
 	}
 
 	/**
-	* Expand columns for CSV Output
-	*/
+	 * Expand columns for CSV Output
+	 *
+	 * @param array $columns Columns currently registered to the list table being exported.
+	 * @return array New columns for exporting.
+	 */
 	public function render_csv_expand_columns( $columns ) {
 		$new_columns = array(
 			'date'      => $columns['date'],
@@ -126,7 +157,10 @@ class Export {
 	}
 
 	/**
-	 * Register exporter
+	 * Registers an exporter for later use
+	 *
+	 * @param Exporter $exporter The exporter to register for use.
+	 * @return void
 	 */
 	public function register_exporter( $exporter ) {
 		if ( ! is_a( $exporter, 'WP_Stream\Exporter' ) ) {
@@ -136,6 +170,11 @@ class Export {
 		$this->exporters[ $exporter->name ] = $exporter;
 	}
 
+	/**
+	 * Returns an array with all available exporters
+	 *
+	 * @return array
+	 */
 	public function get_exporters() {
 		do_action( 'register_stream_exporters', $this );
 		return $this->exporters;
@@ -143,6 +182,8 @@ class Export {
 
 	/**
 	 * Register default exporters
+	 *
+	 * @param Export $export Instance of Export to register to.
 	 */
 	public function register_default_exporters( $export ) {
 		$export->register_exporter( new Exporter_CSV );

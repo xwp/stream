@@ -3,8 +3,19 @@ namespace WP_Stream;
 
 class Exporter_CSV extends Exporter{
 
+	/**
+	 * Exporter slug
+	 *
+	 * @var string
+	 */
 	public $name = 'csv';
 
+	/**
+	 * Outputs CSV data for download
+	 *
+	 * @param array $data Array of data to output.
+	 * @return void
+	 */
 	public function output_file( $data ) {
 
 		header( 'Content-type: text/csv' );
