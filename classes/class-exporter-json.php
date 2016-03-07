@@ -3,16 +3,16 @@ namespace WP_Stream;
 
 class Exporter_JSON extends Exporter {
 
-  public $name = 'json';
+	public $name = 'json';
 
-  public function output_file ( $data ) {
+	public function output_file ( $data ) {
 
-    header( 'Content-type: text/json' );
-    header( 'Content-Disposition: attachment; filename="stream.json"' );
+		header( 'Content-type: text/json' );
+		header( 'Content-Disposition: attachment; filename="stream.json"' );
 
-    $output = json_encode( $data );
-    die( $output ); // @codingStandardsIgnoreLine text-only output
+		$output = json_encode( $data );
+		die( $output ); // @codingStandardsIgnoreLine text-only output
 
-  }
+	}
 
 }
