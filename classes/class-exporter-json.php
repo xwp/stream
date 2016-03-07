@@ -10,7 +10,7 @@ class Exporter_JSON extends Exporter {
 		header( 'Content-type: text/json' );
 		header( 'Content-Disposition: attachment; filename="stream.json"' );
 
-		$output = json_encode( $data );
+		$output = wp_json_encode( $data );
 		die( $output ); // @codingStandardsIgnoreLine text-only output
 
 	}
