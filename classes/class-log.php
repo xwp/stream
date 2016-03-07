@@ -158,8 +158,13 @@ class Log {
 			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
 		}
 
-		$user_role = ! empty( $user->roles ) ? array_values( $user->roles )[0] : null;
-
+		if ( ! empty( $user->roles ) ) {
+			$roles = array_values( $user->roles );
+			$role = $roles[0];
+		} else {
+			$role = '';
+		}
+		
 		$record = array(
 			'connector'  => $connector,
 			'context'    => $context,
