@@ -130,7 +130,7 @@ class Export {
 	 */
 	public function register_exporter( $exporter ) {
 		if ( ! is_a( $exporter, 'WP_Stream\Exporter' ) ) {
-			trigger_error( __( 'Registered exporters must extend WP_Stream\Exporter.', 'stream' ) );
+			trigger_error( __( 'Registered exporters must extend WP_Stream\Exporter.', 'stream' ) ); // @codingStandardsIgnoreLine text-only output
 		}
 
 		$this->exporters[ $exporter->name ] = $exporter;
