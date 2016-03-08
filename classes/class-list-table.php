@@ -565,7 +565,7 @@ class List_Table extends \WP_List_Table {
 			$download = add_query_arg( $args, 'admin.php' );
 
 			echo sprintf(
-				'<a href="%s">%s</a>',
+				'<a href="%s">%s</a> ',
 				esc_html( $download ),
 				esc_html( $this->plugin->admin->export->exporters[ $export_type ]->name )
 			);
