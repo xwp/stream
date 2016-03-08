@@ -78,7 +78,7 @@ class Export {
 	 * @param array $columns Columns being extracted.
 	 * @return array Numerically-indexed array with extracted data.
 	 */
-	protected function build_record( $item, $columns ) {
+	function build_record( $item, $columns ) {
 		$record = new Record( $item );
 
 		$row_out = array();
