@@ -104,12 +104,18 @@ class Log {
 		// Get the current time in milliseconds
 		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
 
+		if ( ! empty( $user->roles ) ) {
+			$roles = array_values( $user->roles );
+			$role = $roles[0];
+		} else {
+			$role = '';
+		}
 		$recordarr = array(
 			'object_id'  => (int) $object_id,
 			'site_id'    => (int) is_multisite() ? get_current_site()->id : 1,
 			'blog_id'    => (int) apply_filters( 'wp_stream_blog_id_logged', get_current_blog_id() ),
 			'user_id'    => (int) $user_id,
-			'user_role'  => (string) ! empty( $user->roles ) ? $user->roles[0] : '',
+			'user_role'  => (string) $role,
 			'created'    => (string) $iso_8601_extended_date,
 			'summary'    => (string) vsprintf( $message, $args ),
 			'connector'  => (string) $connector,
@@ -152,14 +158,18 @@ class Log {
 			$ip = wp_stream_filter_var( $ip, FILTER_VALIDATE_IP );
 		}
 
-		$user_role = isset( $user->roles[0] ) ? $user->roles[0] : null;
-
+		if ( ! empty( $user->roles ) ) {
+			$roles = array_values( $user->roles );
+			$role = $roles[0];
+		} else {
+			$role = '';
+		}
 		$record = array(
 			'connector'  => $connector,
 			'context'    => $context,
 			'action'     => $action,
 			'author'     => $user->ID,
-			'role'       => $user_role,
+			'role'       => $role,
 			'ip_address' => $ip,
 		);
 
