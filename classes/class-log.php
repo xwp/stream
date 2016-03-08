@@ -164,13 +164,12 @@ class Log {
 		} else {
 			$role = '';
 		}
-		
 		$record = array(
 			'connector'  => $connector,
 			'context'    => $context,
 			'action'     => $action,
 			'author'     => $user->ID,
-			'role'       => $user_role,
+			'role'       => $role,
 			'ip_address' => $ip,
 		);
 
