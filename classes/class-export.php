@@ -56,8 +56,8 @@ class Export {
 		$this->admin->register_list_table();
 		$list_table = $this->admin->list_table;
 		$list_table->prepare_items();
-		add_filter( 'stream_records_per_page', array( $this, 'render_csv_disable_paginate' ) );
-		add_filter( 'wp_stream_list_table_columns', array( $this, 'render_csv_expand_columns' ), 10, 1 );
+		add_filter( 'stream_records_per_page', array( $this, 'disable_paginate' ) );
+		add_filter( 'wp_stream_list_table_columns', array( $this, 'expand_columns' ), 10, 1 );
 
 		$records = $list_table->get_records();
 		$columns = $list_table->get_columns();
@@ -128,7 +128,7 @@ class Export {
 	 *
 	 * @param int $records_per_page Old limit for records_per_page.
 	 */
-	public function render_csv_disable_paginate( $records_per_page ) {
+	public function disable_paginate( $records_per_page ) {
 		return 10000;
 	}
 
@@ -138,7 +138,7 @@ class Export {
 	 * @param array $columns Columns currently registered to the list table being exported.
 	 * @return array New columns for exporting.
 	 */
-	public function render_csv_expand_columns( $columns ) {
+	public function expand_columns( $columns ) {
 		$new_columns = array(
 			'date'      => $columns['date'],
 			'summary'   => $columns['summary'],
