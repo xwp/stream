@@ -1,4 +1,6 @@
 <?php
+namespace WP_Stream;
+
 class Test_CSV_Exporters extends WP_StreamTestCase {
 
 	public function test_csv_export() {
