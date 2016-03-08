@@ -66,12 +66,12 @@ class Test_Export extends WP_StreamTestCase {
 	public function test_build_record() {
 
 		$columns = array( 'connector' => '' );
-		$data    = $this->dummy_stream_data;
+		$data    = (object) $this->dummy_stream_data();
 		$output  = $this->export->build_record( $data, $columns );
 
 		$this->assertNotEmpty( $output );
 		$this->assertArrayHasKey( 'connector', $output );
-		$this->assertEquals( $data['connector'], $output['connector'] );
+		$this->assertEquals( $data->connector, $output['connector'] );
 
 		$columns = array( 'context' => '' );
 		$output  = $this->export->build_record( $data, $columns );
@@ -79,7 +79,7 @@ class Test_Export extends WP_StreamTestCase {
 		$this->assertNotEmpty( $output );
 		$this->assertArrayNotHasKey( 'connector', $output );
 		$this->assertArrayHasKey( 'context', $output );
-		$this->assertEquals( $data['context'], $output['context'] );
+		$this->assertEquals( $data->context, $output['context'] );
 
 	}
 

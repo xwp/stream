@@ -99,11 +99,11 @@ class Export {
 					break;
 
 				case 'connector':
-					$row_out[ $column_name ] = $record->{'connector'};
+					$row_out[ $column_name ] = $record->connector;
 					break;
 
 				case 'context':
-					$row_out[ $column_name ] = $record->{'context'};
+					$row_out[ $column_name ] = $record->context;
 					break;
 
 				case 'action':
