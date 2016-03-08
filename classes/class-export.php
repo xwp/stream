@@ -68,7 +68,7 @@ class Export {
 
 		$exporter = $this->exporters[ $output_type ];
 		$exporter->output_file( $output );
-		die;
+		return;
 	}
 
 	/**

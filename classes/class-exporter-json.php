@@ -25,6 +25,9 @@ class Exporter_JSON extends Exporter {
 
 		$output = wp_json_encode( $data );
 		echo $output; // @codingStandardsIgnoreLine text-only output
-		die;
+
+		if ( ! defined( 'WP_STREAM_TESTS' ) || ( defined( 'WP_STREAM_TESTS' ) && ! WP_STREAM_TESTS ) ) {
+			exit;
+		}
 	}
 }

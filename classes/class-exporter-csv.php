@@ -28,7 +28,9 @@ class Exporter_CSV extends Exporter{
 			$output .= join( ',', $row ) . "\n";
 		}
 
-		echo $output; // @codingStandardsIgnoreLine text-only output
-		die;
+		echo $output;
+		if ( ! defined( 'WP_STREAM_TESTS' ) || ( defined( 'WP_STREAM_TESTS' ) && ! WP_STREAM_TESTS ) ) {
+			exit;
+		}
 	}
 }
