@@ -18,15 +18,17 @@ class Exporter_CSV extends Exporter{
 	 */
 	public function output_file( $data ) {
 
-		header( 'Content-type: text/csv' );
-		header( 'Content-Disposition: attachment; filename="stream.csv"' );
+		if ( ! defined( 'WP_STREAM_TESTS' ) || ( defined( 'WP_STREAM_TESTS' ) && ! WP_STREAM_TESTS ) ) {
+			header( 'Content-type: text/csv' );
+			header( 'Content-Disposition: attachment; filename="stream.csv"' );
+		}
 
 		$output = '';
 		foreach ( $data as $row ) {
 			$output .= join( ',', $row ) . "\n";
 		}
 
-		die( $output ); // @codingStandardsIgnoreLine text-only output
-
+		echo $output; // @codingStandardsIgnoreLine text-only output
+		die;
 	}
 }

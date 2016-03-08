@@ -18,11 +18,13 @@ class Exporter_JSON extends Exporter {
 	 */
 	public function output_file( $data ) {
 
-		header( 'Content-type: text/json' );
-		header( 'Content-Disposition: attachment; filename="stream.json"' );
+		if ( ! defined( 'WP_STREAM_TESTS' ) || ( defined( 'WP_STREAM_TESTS' ) && ! WP_STREAM_TESTS ) ) {
+			header( 'Content-type: text/json' );
+			header( 'Content-Disposition: attachment; filename="stream.json"' );
+		}
 
 		$output = wp_json_encode( $data );
-		die( $output ); // @codingStandardsIgnoreLine text-only output
-
+		echo $output; // @codingStandardsIgnoreLine text-only output
+		die;
 	}
 }
