@@ -1,7 +1,7 @@
 <?php
 namespace WP_Stream;
 
-class Test_JSON_Exporters extends WP_StreamTestCase {
+class Test_Exporter_JSON extends WP_StreamTestCase {
 
 	public function test_json_export() {
 		$exporter = new Exporter_JSON;
