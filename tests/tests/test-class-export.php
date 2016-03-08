@@ -187,5 +187,4 @@ class Test_Export extends WP_StreamTestCase {
 			'action' => 'activated',
 		);
 	}
-
 }

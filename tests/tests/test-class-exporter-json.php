@@ -10,8 +10,7 @@ class Test_Exporter_JSON extends WP_StreamTestCase {
 		$exporter = new Exporter_JSON;
 
 		$array = array( 'key' => 'value' );
-		$this->expectOutputString( "{\"key\":\"value\"}" );
+		$this->expectOutputString( '{\"key\":\"value\"}' );
 		$exporter->output_file( $array, array() );
 	}
-
 }

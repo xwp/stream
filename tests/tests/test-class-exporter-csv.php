@@ -15,5 +15,4 @@ class Test_Exporter_CSV extends WP_StreamTestCase {
 		$this->expectOutputString( "Key,Key2\nvalue,value2\n" );
 		$exporter->output_file( $array, $columns );
 	}
-
 }
