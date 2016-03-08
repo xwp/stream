@@ -61,13 +61,13 @@ class Export {
 
 		$records = $list_table->get_records();
 		$columns = $list_table->get_columns();
-		$output = array( array_values( $columns ) );
+		$output = array();
 		foreach ( $records as $item ) {
 			$output[] = $this->build_record( $item, $columns );
 		}
 
 		$exporter = $this->exporters[ $output_type ];
-		$exporter->output_file( $output );
+		$exporter->output_file( $output, $columns );
 		return;
 	}
 
@@ -86,36 +86,36 @@ class Export {
 			switch ( $column_name ) {
 				case 'date' :
 					$created   = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
-					$row_out[] = get_date_from_gmt( $created, 'Y/m/d h:i:s A' );
+					$row_out[ $column_name ] = get_date_from_gmt( $created, 'Y/m/d h:i:s A' );
 					break;
 
 				case 'summary' :
-					$row_out[] = $record->summary;
+					$row_out[ $column_name ] = $record->summary;
 					break;
 
 				case 'user_id' :
 					$user      = new Author( (int) $record->user_id, (array) maybe_unserialize( $record->user_meta ) );
-					$row_out[] = $user->get_display_name();
+					$row_out[ $column_name ] = $user->get_display_name();
 					break;
 
 				case 'connector':
-					$row_out[] = $record->{'connector'};
+					$row_out[ $column_name ] = $record->{'connector'};
 					break;
 
 				case 'context':
-					$row_out[] = $record->{'context'};
+					$row_out[ $column_name ] = $record->{'context'};
 					break;
 
 				case 'action':
-					$row_out[] = $record->{$column_name};
+					$row_out[ $column_name ] = $record->{$column_name};
 					break;
 
 				case 'blog_id':
-					$row_out[] = $record->blog_id;
+					$row_out[ $column_name ] = $record->blog_id;
 					break;
 
 				case 'ip' :
-					$row_out[] = $record->{$column_name};
+					$row_out[ $column_name ] = $record->{$column_name};
 					break;
 			}
 		}

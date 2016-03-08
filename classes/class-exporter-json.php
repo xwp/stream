@@ -14,9 +14,10 @@ class Exporter_JSON extends Exporter {
 	 * Outputs JSON data for download
 	 *
 	 * @param array $data Array of data to output.
+	 * @param array $columns Column names included in data set.
 	 * @return void
 	 */
-	public function output_file( $data ) {
+	public function output_file( $data, $columns ) {
 
 		if ( ! defined( 'WP_STREAM_TESTS' ) || ( defined( 'WP_STREAM_TESTS' ) && ! WP_STREAM_TESTS ) ) {
 			header( 'Content-type: text/json' );

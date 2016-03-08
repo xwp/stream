@@ -14,8 +14,9 @@ abstract class Exporter {
 	 * Output formatted data for download
 	 *
 	 * @param array $data Array of data to output.
+	 * @param array $columns Column names included in data set.
 	 * @return void
 	 */
-	public abstract function output_file( $data );
+	public abstract function output_file( $data, $columns );
 
 }
