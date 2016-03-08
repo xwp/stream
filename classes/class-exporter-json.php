@@ -24,10 +24,10 @@ class Exporter_JSON extends Exporter {
 			header( 'Content-Disposition: attachment; filename="stream.json"' );
 		}
 
-		if ( function_exists ( 'wp_json_encode' ) ) {
+		if ( function_exists( 'wp_json_encode' ) ) {
 			$output = wp_json_encode( $data );
 		} else {
-			$output = json_encode( $data );
+			$output = json_encode( $data ); // @codingStandardsIgnoreLine fallback to discouraged function
 		}
 
 		echo $output; // @codingStandardsIgnoreLine text-only output
