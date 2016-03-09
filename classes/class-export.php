@@ -2,7 +2,6 @@
 namespace WP_Stream;
 
 class Export {
-
 	/**
 	 * Hold Plugin class
 	 *
@@ -36,9 +35,8 @@ class Export {
 
 		if ( 'wp_stream' === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
 			add_action( 'admin_init', array( $this, 'render_download' ) );
-			add_action( 'register_stream_exporters', array( $this, 'register_default_exporters' ), 10, 1 );
+			$this->register_exporters();
 		}
-
 	}
 
 	/**
@@ -157,17 +155,51 @@ class Export {
 	}
 
 	/**
-	 * Registers an exporter for later use
+	 * Registers all available exporters
 	 *
-	 * @param Exporter $exporter The exporter to register for use.
-	 * @return void
+	 * @return null
 	 */
-	public function register_exporter( $exporter ) {
-		if ( ! is_a( $exporter, 'WP_Stream\Exporter' ) ) {
-			trigger_error( __( 'Registered exporters must extend WP_Stream\Exporter.', 'stream' ) ); // @codingStandardsIgnoreLine text-only output
+	public function register_exporters() {
+		$exporters = array(
+			'csv',
+			'json',
+		);
+
+		$classes = array();
+		foreach ( $exporters as $exporter ) {
+			include_once $this->plugin->locations['dir'] . '/exporters/class-exporter-' . $exporter .'.php';
+			$class_name = sprintf( '\WP_Stream\Exporter_%s', str_replace( '-', '_', $exporter ) );
+			if ( ! class_exists( $class_name ) ) {
+				continue;
+			}
+			$class = new $class_name();
+			if ( ! method_exists( $class, 'is_dependency_satisfied' ) ) {
+				continue;
+			}
+			if ( $class->is_dependency_satisfied() ) {
+				$classes[] = $class;
+			}
 		}
 
-		$this->exporters[ $exporter->name ] = $exporter;
+		/**
+		 * Allows for adding additional exporters via classes that extend Exporter.
+		 *
+		 * @param array $classes An array of Exporter objects.
+		 */
+		$this->exporters = apply_filters( 'wp_stream_exporters', $classes );
+
+		// Ensure that all exporters extend Exporter
+		foreach ( $this->exporters as $key => $exporter ) {
+			if ( ! is_a( $exporter, 'WP_Stream\Exporter' ) ) {
+				trigger_error(
+					sprintf(
+						esc_html__( 'Registered exporter %s does not extend WP_Stream\Exporter.', 'stream' ),
+						esc_html( get_class( $exporter ) )
+					)
+				);
+				unset( $this->exporters[ $key ] );
+			}
+		}
 	}
 
 	/**
@@ -176,17 +208,6 @@ class Export {
 	 * @return array
 	 */
 	public function get_exporters() {
-		do_action( 'register_stream_exporters', $this );
 		return $this->exporters;
-	}
-
-	/**
-	 * Register default exporters
-	 *
-	 * @param Export $export Instance of Export to register to.
-	 */
-	public function register_default_exporters( $export ) {
-		$export->register_exporter( new Exporter_CSV );
-		$export->register_exporter( new Exporter_JSON );
 	}
 }

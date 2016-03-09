@@ -2,7 +2,6 @@
 namespace WP_Stream;
 
 abstract class Exporter {
-
 	/**
 	 * Exporter slug
 	 *
@@ -19,4 +18,12 @@ abstract class Exporter {
 	 */
 	public abstract function output_file( $data, $columns );
 
+	/**
+	 * Allow connectors to determine if their dependencies is satisfied or not
+	 *
+	 * @return bool
+	 */
+	public function is_dependency_satisfied() {
+		return true;
+	}
 }
