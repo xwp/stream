@@ -81,7 +81,7 @@
 }
 
 .toplevel_page_wp_stream .tablenav .stream-export-tablenav {
-	margin-top: 3px;
+	margin-top: 6px;
 	height: 28px;
 	float: right;
 }
@@ -95,7 +95,6 @@
 		margin-bottom: 4px;
 	}
 	.toplevel_page_wp_stream .tablenav .stream-export-tablenav {
-		margin-top: 0;
 		margin-bottom: 4px;
 		float: left;
 	}

@@ -57,9 +57,6 @@ class List_Table extends \WP_List_Table {
 		if ( 'top' === $which ) {
 			echo $this->filters_form(); // xss ok
 		}
-		if ( 'bottom' === $which ) {
-			echo $this->export_link(); // xss ok
-		}
 	}
 
 	function no_items() {
@@ -548,29 +545,6 @@ class List_Table extends \WP_List_Table {
 		 * @return array
 		 */
 		return apply_filters( 'wp_stream_list_table_filters', $filters );
-	}
-
-	function export_link() {
-
-		$exporters = $this->plugin->admin->export->get_exporters();
-		if ( empty( $exporters ) ) {
-			return;
-		}
-
-		echo '<div class="stream-export-tablenav">' . esc_html( __( 'Export as: ', 'stream' ) );
-
-		$export_links = array();
-		foreach ( array_keys( $exporters ) as $export_type ) {
-			$args = array_merge( array( 'output' => $export_type ), $_GET );
-			$download = add_query_arg( $args, 'admin.php' );
-
-			echo sprintf(
-				'<a href="%s">%s</a> ',
-				esc_html( $download ),
-				esc_html( $this->plugin->admin->export->exporters[ $export_type ]->name )
-			);
-		}
-		echo '</div>';
 	}
 
 	function filters_form() {

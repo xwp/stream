@@ -35,6 +35,7 @@ class Export {
 
 		if ( 'wp_stream' === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
 			add_action( 'admin_init', array( $this, 'render_download' ) );
+			add_action( 'wp_stream_after_list_table', array( $this, 'download_links' ) );
 			$this->register_exporters();
 		}
 	}
@@ -67,6 +68,30 @@ class Export {
 		$exporter = $this->exporters[ $output_type ];
 		$exporter->output_file( $output, $columns );
 		return;
+	}
+
+	/*
+	 * @return void
+	 */
+	function download_links() {
+		$exporters = $this->plugin->admin->export->get_exporters();
+		if ( empty( $exporters ) ) {
+			return;
+		}
+
+		echo '<div class="stream-export-tablenav">' . esc_html( __( 'Export as: ', 'stream' ) );
+
+		foreach ( array_keys( $exporters ) as $key => $export_type ) {
+			$args = array_merge( array( 'output' => $export_type ), $_GET );
+			$download = add_query_arg( $args, 'admin.php' );
+
+			echo sprintf(
+				'<a href="%s">%s</a> ',
+				esc_html( $download ),
+				esc_html( $this->plugin->admin->export->exporters[ $export_type ]->name )
+			);
+		}
+		echo '</div>';
 	}
 
 	/**
