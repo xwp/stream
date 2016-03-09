@@ -14,7 +14,7 @@ class Export {
 	 *
 	 * @var array
 	 */
-	public $exporters = array();
+	protected $exporters = array();
 
 	/**
 	 * Class constructor
@@ -38,14 +38,13 @@ class Export {
 	 * @return void
 	 */
 	public function render_download() {
-		$this->get_exporters();
 		$action = wp_stream_filter_input( INPUT_GET, 'record-actions' );
 		if ( strpos( $action, 'export-' ) !== 0 ) {
 			return;
 		}
 
 		$output_type = str_replace( 'export-', '', $action );
-		if ( ! array_key_exists( $output_type, $this->exporters ) ) {
+		if ( ! array_key_exists( $output_type, $this->get_exporters() ) ) {
 			return;
 		}
 
@@ -62,7 +61,8 @@ class Export {
 			$output[] = $this->build_record( $item, $columns );
 		}
 
-		$exporter = $this->exporters[ $output_type ];
+		$exporters = $this->get_exporters();
+		$exporter = $exporters[ $output_type ];
 		$exporter->output_file( $output, $columns );
 		return;
 	}
@@ -73,7 +73,7 @@ class Export {
 	 * @return array
 	 */
 	function actions_menu_export_items( $action_menu_items ) {
-		foreach ( $this->exporters as $exporter ) {
+		foreach ( $this->get_exporters() as $exporter ) {
 			$action = 'export-' . $exporter->slug;
 			$action_menu_items[ $action ] = sprintf( __( 'Export as %s', 'stream' ), $exporter->name );
 		}
@@ -185,37 +185,51 @@ class Export {
 				continue;
 			}
 			$class = new $class_name();
-			if ( ! method_exists( $class, 'is_dependency_satisfied' ) ) {
-				continue;
-			}
 			if ( ! property_exists( $class, 'slug' ) ) {
 				continue;
 			}
-			if ( $class->is_dependency_satisfied() ) {
-				$classes[ $class->slug ] = $class;
-			}
+			$classes[ $class->slug ] = $class;
 		}
 
 		/**
 		 * Allows for adding additional exporters via classes that extend Exporter.
 		 *
-		 * @param array $classes An array of Exporter objects.
+		 * @param array $classes An array of Exporter objects. In the format exporter_slug => Exporter_Class()
 		 */
 		$this->exporters = apply_filters( 'wp_stream_exporters', $classes );
 
 		// Ensure that all exporters extend Exporter
 		foreach ( $this->exporters as $key => $exporter ) {
-			if ( ! is_a( $exporter, 'WP_Stream\Exporter' ) ) {
-				trigger_error(
-					sprintf(
-						esc_html__( 'Registered exporter %s does not extend WP_Stream\Exporter.', 'stream' ),
-						esc_html( get_class( $exporter ) )
-					)
-				);
+			if ( ! $this->is_valid_exporter( $exporter ) ) {
 				unset( $this->exporters[ $key ] );
 			}
 		}
 	}
+
+	/**
+	 * Checks whether an exporter class is valid
+	 *
+	 * @param Exporter $exporter The class to check.
+	 * @return bool
+	 */
+	public function is_valid_exporter( $exporter ) {
+		if ( ! is_a( $exporter, 'WP_Stream\Exporter' ) ) {
+			trigger_error(
+				sprintf(
+					esc_html__( 'Registered exporter %s does not extend WP_Stream\Exporter.', 'stream' ),
+					esc_html( get_class( $exporter ) )
+				)
+			);
+			return false;
+		}
+
+		if ( ! method_exists( $exporter, 'is_dependency_satisfied' ) || ! $exporter->is_dependency_satisfied() ) {
+			return false;
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Returns an array with all available exporters

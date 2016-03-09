@@ -14,9 +14,10 @@ class Test_Export extends WP_StreamTestCase {
 	 */
 	public function setUp() {
 		parent::setUp();
+		$_GET['page'] = 'wp_stream';
 		$this->export = $this->plugin->admin->export;
 		$this->assertNotEmpty( $this->export );
-		$this->assertEmpty( $this->export->exporters );
+		$this->assertNotEmpty( $this->export->get_exporters() );
 	}
 
 	/**
@@ -24,19 +25,17 @@ class Test_Export extends WP_StreamTestCase {
 	 */
 	public function test_construct() {
 		$this->assertNotEmpty( $this->export->plugin );
-		$this->assertNotEmpty( $this->export->admin );
 
-		$exporters = $this->export->exporters;
-		$this->assertEmpty( $exporters );
+		$_GET['page'] = 'not_wp_stream';
+		$dummy_export = new Export( $this->plugin );
+		$this->assertEmpty( $dummy_export->get_exporters() );
 	}
 
 	/**
 	 * Test that render download uses selected renderer
 	 */
 	public function test_render_download() {
-
-		$_GET['output'] = 'csv';
-		$this->export->register_exporter( new Exporter_CSV );
+		$_GET['action'] = 'export-csv';
 
 		ob_start();
 		$this->export->render_download();
@@ -45,8 +44,7 @@ class Test_Export extends WP_StreamTestCase {
 		$this->assertNotEmpty( $output );
 		$this->assertStringStartsWith( 'Date,Summary,User,Connector,Context,Action,IP Address', $output );
 
-		$this->export->exporters = array(); // Clean up.
-		unset( $_GET['output'] );
+		unset( $_GET['action'] );
 	}
 
 	/**
@@ -64,7 +62,6 @@ class Test_Export extends WP_StreamTestCase {
 	 * Test that record building grab correct columns
 	 */
 	public function test_build_record() {
-
 		$columns = array( 'connector' => '' );
 		$data    = (object) $this->dummy_stream_data();
 		$output  = $this->export->build_record( $data, $columns );
@@ -80,7 +77,6 @@ class Test_Export extends WP_StreamTestCase {
 		$this->assertArrayNotHasKey( 'connector', $output );
 		$this->assertArrayHasKey( 'context', $output );
 		$this->assertEquals( $data->context, $output['context'] );
-
 	}
 
 	/**
@@ -115,14 +111,18 @@ class Test_Export extends WP_StreamTestCase {
 	}
 
 	/**
-	 * Test register a valid class adds it to the list.
+	 * Test registering exporters.
 	 */
-	public function test_register_exporter() {
-		$this->assertEmpty( $this->export->exporters );
-		$this->export->register_exporter( new Exporter_CSV );
-		$this->assertNotEmpty( $this->export->exporters );
+	public function test_register_exporters() {
+		$_GET['page'] = 'not_wp_stream';
+		$this->export = new Export( $this->plugin );
+		$this->assertEmpty( $this->export->get_exporters() );
 
-		$this->export->exporters = array(); // Clean up.
+		$this->export->register_exporters();
+
+		$this->assertNotEmpty( $this->export->get_exporters() );
+		$this->assertArrayHasKey( 'json', $this->export->get_exporters() );
+		$this->assertArrayHasKey( 'csv', $this->export->get_exporters() );
 	}
 
 	/**
@@ -131,42 +131,30 @@ class Test_Export extends WP_StreamTestCase {
 	 * @expectedException PHPUnit_Framework_Error
 	 */
 	public function test_register_exporter_invalid_class() {
-		$this->export->register_exporter( new \stdClass );
+		add_filter( 'wp_stream_exporters', function( $exporters ) {
+			$exporters['test'] = new \stdClass;
+			return $exporters;
+		});
+
+		$this->export->register_exporters();
 	}
 
 	/**
-	 * Valid classes added are returned.
+	 * Test exporter validation
 	 */
-	public function test_get_exporters() {
-		$this->assertEmpty( $this->export->get_exporters() );
-		$this->export->register_exporter( new Exporter_CSV );
-
+	public function test_is_valid_exporter() {
 		$exporters = $this->export->get_exporters();
-		$this->assertNotEmpty( $exporters );
-		$this->assertArrayHasKey( 'csv', $exporters );
-
-		$this->export->exporters = array(); // Clean up.
+		$this->assertArrayHasKey( 'json', $exporters );
+		$this->assertTrue( $this->export->is_valid_exporter( $exporters['json'] ) );
 	}
 
 	/**
-	 * Test default classes are only registered on WP_Stream page
+	 * Test exporter validation produces an error
+	 *
+	 * @expectedException PHPUnit_Framework_Error
 	 */
-	public function test_register_default_exporters() {
-
-		// Test registration on stream page.
-		$_GET['page'] = 'wp_stream';
-		$export = new Export( $this->plugin );
-
-		$exporters = $export->get_exporters();
-		$this->assertNotEmpty( $exporters );
-		remove_all_actions( 'register_stream_exporters' ); // Clean up.
-
-		// Test no registration on other pages.
-		$_GET['page'] = '';
-		$export = new Export( $this->plugin );
-
-		$exporters = $export->get_exporters();
-		$this->assertEmpty( $exporters );
+	public function test_is_not_valid_exporter() {
+		$this->assertFalse( $this->export->is_valid_exporter( new \stdClass ) );
 	}
 
 	/**
