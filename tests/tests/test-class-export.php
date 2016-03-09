@@ -35,7 +35,7 @@ class Test_Export extends WP_StreamTestCase {
 	 * Test that render download uses selected renderer
 	 */
 	public function test_render_download() {
-		$_GET['action'] = 'export-csv';
+		$_GET['record-actions'] = 'export-csv';
 
 		ob_start();
 		$this->export->render_download();
