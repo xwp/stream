@@ -15,7 +15,7 @@ class Test_Export extends WP_StreamTestCase {
 	public function setUp() {
 		parent::setUp();
 		$_GET['page'] = 'wp_stream';
-		$this->export = $this->plugin->admin->export;
+		$this->export = new Export( $this->plugin );
 		$this->assertNotEmpty( $this->export );
 		$this->assertNotEmpty( $this->export->get_exporters() );
 	}
