@@ -114,7 +114,7 @@ jQuery( function( $ ) {
 		$( this ).attr( 'clicked', 'true' );
 	});
 
-	$( '#record-filter-form' ).submit( function( event ) {
+	$( '#record-filter-form' ).submit( function() {
 		var	$context        = $( '.toplevel_page_wp_stream :input.chosen-select[name="context"]' ),
 			$option         = $context.find( 'option:selected' ),
 			$connector      = $context.parent().find( '.record-filter-connector' ),
