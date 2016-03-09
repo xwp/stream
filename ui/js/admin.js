@@ -109,12 +109,22 @@ jQuery( function( $ ) {
 		$contextInput.select2( 'val', 'group-' + $queryVars.connector );
 	}
 
-	$( '#record-filter-form' ).submit( function() {
+	$( 'input[type=submit]', '#record-filter-form' ).click( function() {
+		$( 'input[type=submit]', $( this ).parents( 'form' )).removeAttr( 'clicked' );
+		$( this ).attr( 'clicked', 'true' );
+	});
+
+	$( '#record-filter-form' ).submit( function( event ) {
 		var	$context        = $( '.toplevel_page_wp_stream :input.chosen-select[name="context"]' ),
 			$option         = $context.find( 'option:selected' ),
 			$connector      = $context.parent().find( '.record-filter-connector' ),
 			optionConnector = $option.data( 'group' ),
-			optionClass     = $option.prop( 'class' );
+			optionClass     = $option.prop( 'class' ),
+			$recordAction   = $( '.recordactions select' );
+
+		if ( $( '#record-actions-submit' ).attr( 'clicked' ) !== 'true' ) {
+			$recordAction.val( '' );
+		}
 
 		$connector.val( optionConnector );
 

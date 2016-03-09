@@ -10,13 +10,6 @@ class Export {
 	public $plugin;
 
 	/**
-	 * Hold Admin class
-	 *
-	 * @var Admin
-	 */
-	public $admin;
-
-	/**
 	 * Hold registered exporters
 	 *
 	 * @var array
@@ -31,11 +24,10 @@ class Export {
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
-		$this->admin = $plugin->admin;
 
 		if ( 'wp_stream' === wp_stream_filter_input( INPUT_GET, 'page' ) ) {
 			add_action( 'admin_init', array( $this, 'render_download' ) );
-			add_action( 'wp_stream_after_list_table', array( $this, 'download_links' ) );
+			add_action( 'wp_stream_record_actions_menu', array( $this, 'actions_menu_export_items' ) );
 			$this->register_exporters();
 		}
 	}
@@ -47,13 +39,18 @@ class Export {
 	 */
 	public function render_download() {
 		$this->get_exporters();
-		$output_type = wp_stream_filter_input( INPUT_GET, 'output' );
+		$action = wp_stream_filter_input( INPUT_GET, 'record-actions' );
+		if ( strpos( $action, 'export-' ) !== 0 ) {
+			return;
+		}
+
+		$output_type = str_replace( 'export-', '', $action );
 		if ( ! array_key_exists( $output_type, $this->exporters ) ) {
 			return;
 		}
 
-		$this->admin->register_list_table();
-		$list_table = $this->admin->list_table;
+		$this->plugin->admin->register_list_table();
+		$list_table = $this->plugin->admin->list_table;
 		$list_table->prepare_items();
 		add_filter( 'stream_records_per_page', array( $this, 'disable_paginate' ) );
 		add_filter( 'wp_stream_list_table_columns', array( $this, 'expand_columns' ), 10, 1 );
@@ -70,28 +67,18 @@ class Export {
 		return;
 	}
 
-	/*
-	 * @return void
+	/**
+	 * Add Export options to record actions menu
+	 *
+	 * @return array
 	 */
-	function download_links() {
-		$exporters = $this->plugin->admin->export->get_exporters();
-		if ( empty( $exporters ) ) {
-			return;
+	function actions_menu_export_items( $action_menu_items ) {
+		foreach ( $this->exporters as $exporter ) {
+			$action = 'export-' . $exporter->slug;
+			$action_menu_items[ $action ] = sprintf( __( 'Export as %s', 'stream' ), $exporter->name );
 		}
 
-		echo '<div class="stream-export-tablenav">' . esc_html( __( 'Export as: ', 'stream' ) );
-
-		foreach ( array_keys( $exporters ) as $key => $export_type ) {
-			$args = array_merge( array( 'output' => $export_type ), $_GET );
-			$download = add_query_arg( $args, 'admin.php' );
-
-			echo sprintf(
-				'<a href="%s">%s</a> ',
-				esc_html( $download ),
-				esc_html( $this->plugin->admin->export->exporters[ $export_type ]->name )
-			);
-		}
-		echo '</div>';
+		return $action_menu_items;
 	}
 
 	/**
@@ -182,7 +169,7 @@ class Export {
 	/**
 	 * Registers all available exporters
 	 *
-	 * @return null
+	 * @return void
 	 */
 	public function register_exporters() {
 		$exporters = array(
@@ -201,8 +188,11 @@ class Export {
 			if ( ! method_exists( $class, 'is_dependency_satisfied' ) ) {
 				continue;
 			}
+			if ( ! property_exists( $class, 'slug' ) ) {
+				continue;
+			}
 			if ( $class->is_dependency_satisfied() ) {
-				$classes[] = $class;
+				$classes[ $class->slug ] = $class;
 			}
 		}
 

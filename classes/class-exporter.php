@@ -3,11 +3,18 @@ namespace WP_Stream;
 
 abstract class Exporter {
 	/**
-	 * Exporter slug
+	 * Exporter name
 	 *
 	 * @var string
 	 */
 	public $name;
+
+	/**
+	 * Exporter slug
+	 *
+	 * @var string
+	 */
+	public $slug;
 
 	/**
 	 * Output formatted data for download

@@ -10,6 +10,13 @@ class Exporter_CSV extends Exporter{
 	public $name = 'CSV';
 
 	/**
+	 * Exporter slug
+	 *
+	 * @var string
+	 */
+	public $slug = 'csv';
+
+	/**
 	 * Outputs CSV data for download
 	 *
 	 * @param array $data Array of data to output.

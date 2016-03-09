@@ -10,6 +10,13 @@ class Exporter_JSON extends Exporter {
 	public $name = 'JSON';
 
 	/**
+	 * Exporter slug
+	 *
+	 * @var string
+	 */
+	public $slug = 'json';
+
+	/**
 	 * Outputs JSON data for download
 	 *
 	 * @param array $data Array of data to output.
