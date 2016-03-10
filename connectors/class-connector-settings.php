@@ -541,7 +541,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Trigger this connector from WP CLI, only for known Settings
+	 * Trigger this connector from WP CLI or the Customizer, only for known Settings
 	 *
 	 * @action update_option
 	 *
