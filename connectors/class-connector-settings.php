@@ -541,7 +541,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Trigger this connector from WP CLI, only for known Settings
+	 * Trigger this connector from WP CLI or the Customizer, only for known Settings
 	 *
 	 * @action update_option
 	 *
@@ -550,7 +550,7 @@ class Connector_Settings extends Connector {
 	 * @param mixed $value
 	 */
 	public function callback_update_option( $option, $value, $old_value ) {
-		if ( defined( '\WP_CLI' ) && \WP_CLI && array_key_exists( $option, $this->labels ) ) {
+		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && array_key_exists( $option, $this->labels ) ) {
 			$this->callback_updated_option( $option, $value, $old_value );
 		}
 	}
