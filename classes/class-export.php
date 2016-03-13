@@ -202,6 +202,12 @@ class Export {
 		foreach ( $this->exporters as $key => $exporter ) {
 			if ( ! $this->is_valid_exporter( $exporter ) ) {
 				unset( $this->exporters[ $key ] );
+				trigger_error(
+					sprintf(
+						esc_html__( 'Registered exporter %s does not extend WP_Stream\Exporter.', 'stream' ),
+						esc_html( get_class( $exporter ) )
+					)
+				);
 			}
 		}
 	}
@@ -214,12 +220,6 @@ class Export {
 	 */
 	public function is_valid_exporter( $exporter ) {
 		if ( ! is_a( $exporter, 'WP_Stream\Exporter' ) ) {
-			trigger_error(
-				sprintf(
-					esc_html__( 'Registered exporter %s does not extend WP_Stream\Exporter.', 'stream' ),
-					esc_html( get_class( $exporter ) )
-				)
-			);
 			return false;
 		}
 

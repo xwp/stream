@@ -133,6 +133,7 @@ class Test_Export extends WP_StreamTestCase {
 	public function test_register_exporter_invalid_class() {
 		add_filter( 'wp_stream_exporters', function( $exporters ) {
 			$exporters['test'] = new \stdClass;
+			remove_all_filters( 'wp_stream_exporters' );
 			return $exporters;
 		});
 
@@ -149,9 +150,7 @@ class Test_Export extends WP_StreamTestCase {
 	}
 
 	/**
-	 * Test exporter validation produces an error
-	 *
-	 * @expectedException PHPUnit_Framework_Error
+	 * Test exporter validation produces false
 	 */
 	public function test_is_not_valid_exporter() {
 		$this->assertFalse( $this->export->is_valid_exporter( new \stdClass ) );
