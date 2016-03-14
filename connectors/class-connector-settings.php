@@ -93,6 +93,7 @@ class Connector_Settings extends Connector {
 			// General
 			'blogname'                      => esc_html__( 'Site Title', 'stream' ),
 			'blogdescription'               => esc_html__( 'Tagline', 'stream' ),
+			'gmt_offset'                    => esc_html__( 'Timezone', 'stream' ),
 			'admin_email'                   => esc_html__( 'E-mail Address', 'stream' ),
 			'new_admin_email'               => esc_html__( 'E-mail Address', 'stream' ),
 			'siteurl'                       => esc_html__( 'WordPress Address (URL)', 'stream' ),
@@ -112,6 +113,7 @@ class Connector_Settings extends Connector {
 			'mailserver_login'              => esc_html__( 'Login Name', 'stream' ),
 			'mailserver_pass'               => esc_html__( 'Password', 'stream' ),
 			'default_email_category'        => esc_html__( 'Default Mail Category', 'stream' ),
+			'default_link_category'         => esc_html__( 'Default Link Category', 'stream' ),
 			'ping_sites'                    => esc_html__( 'Update Services', 'stream' ),
 			// Reading
 			'show_on_front'                 => esc_html__( 'Front page displays', 'stream' ),
@@ -283,6 +285,14 @@ class Connector_Settings extends Connector {
 					'header_textcolor',
 				),
 			),
+
+			'twentyeleven_theme_options' => array(
+				'settings' => array(
+					'color_scheme',
+					'link_color',
+					'theme_layout',
+				)
+			)
 		);
 
 		if ( isset( $contexts[ $option_name ] ) ) {
@@ -385,7 +395,24 @@ class Connector_Settings extends Connector {
 				// Custom Header
 				'header_image'           => esc_html__( 'Header Image', 'stream' ),
 				'header_textcolor'       => esc_html__( 'Text Color', 'stream' ),
+				'header_background_color'=> esc_html__( 'Header and Sidebar Background Color', 'stream' ),
+				// Featured Content
+				'featured_content_layout'=> esc_html__( 'Layout', 'stream' ),
+				// Custom Sidebar
+				'sidebar_textcolor'      => esc_html__( 'Header and Sidebar Text Color', 'stream' ),
+				// Custom Colors
+				'color_scheme'           => esc_html__( 'Color Scheme', 'stream' ),
+				'main_text_color'        => esc_html__( 'Main Text Color', 'stream' ),
+				'secondary_text_color'   => esc_html__( 'Secondary Text Color', 'stream' ),
+				'link_color'             => esc_html__( 'Link Color', 'stream' ),
+				'page_background_color'  => esc_html__( 'Page Background Color', 'stream' ),
 			),
+
+			'twentyeleven_theme_options' => array(
+				'color_scheme'           => esc_html__( 'Color Scheme', 'stream' ),
+				'link_color'             => esc_html__( 'Link Color', 'stream' ),
+				'theme_layout'           => esc_html__( 'Default Layout', 'stream' ),
+			)
 		);
 
 		/**
@@ -550,7 +577,8 @@ class Connector_Settings extends Connector {
 	 * @param mixed $value
 	 */
 	public function callback_update_option( $option, $value, $old_value ) {
-		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && array_key_exists( $option, $this->labels ) ) {
+		$is_theme_option = sprintf( '%s_theme_options', get_option( 'stylesheet' ) ) == $option;
+		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && ( $is_theme_option || array_key_exists( $option, $this->labels ) ) ) {
 			$this->callback_updated_option( $option, $value, $old_value );
 		}
 	}
