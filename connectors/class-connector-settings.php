@@ -291,8 +291,8 @@ class Connector_Settings extends Connector {
 					'color_scheme',
 					'link_color',
 					'theme_layout',
-				)
-			)
+				),
+			),
 		);
 
 		if ( isset( $contexts[ $option_name ] ) ) {
@@ -387,32 +387,32 @@ class Connector_Settings extends Connector {
 		$labels = array(
 			'theme_mods' => array(
 				// Custom Background
-				'background_image'       => esc_html__( 'Background Image', 'stream' ),
-				'background_position_x'  => esc_html__( 'Background Position', 'stream' ),
-				'background_repeat'      => esc_html__( 'Background Repeat', 'stream' ),
-				'background_attachment'  => esc_html__( 'Background Attachment', 'stream' ),
-				'background_color'       => esc_html__( 'Background Color', 'stream' ),
+				'background_image'        => esc_html__( 'Background Image', 'stream' ),
+				'background_position_x'   => esc_html__( 'Background Position', 'stream' ),
+				'background_repeat'       => esc_html__( 'Background Repeat', 'stream' ),
+				'background_attachment'   => esc_html__( 'Background Attachment', 'stream' ),
+				'background_color'        => esc_html__( 'Background Color', 'stream' ),
 				// Custom Header
-				'header_image'           => esc_html__( 'Header Image', 'stream' ),
-				'header_textcolor'       => esc_html__( 'Text Color', 'stream' ),
-				'header_background_color'=> esc_html__( 'Header and Sidebar Background Color', 'stream' ),
+				'header_image'            => esc_html__( 'Header Image', 'stream' ),
+				'header_textcolor'        => esc_html__( 'Text Color', 'stream' ),
+				'header_background_color' => esc_html__( 'Header and Sidebar Background Color', 'stream' ),
 				// Featured Content
-				'featured_content_layout'=> esc_html__( 'Layout', 'stream' ),
+				'featured_content_layout' => esc_html__( 'Layout', 'stream' ),
 				// Custom Sidebar
-				'sidebar_textcolor'      => esc_html__( 'Header and Sidebar Text Color', 'stream' ),
+				'sidebar_textcolor'       => esc_html__( 'Header and Sidebar Text Color', 'stream' ),
 				// Custom Colors
-				'color_scheme'           => esc_html__( 'Color Scheme', 'stream' ),
-				'main_text_color'        => esc_html__( 'Main Text Color', 'stream' ),
-				'secondary_text_color'   => esc_html__( 'Secondary Text Color', 'stream' ),
-				'link_color'             => esc_html__( 'Link Color', 'stream' ),
-				'page_background_color'  => esc_html__( 'Page Background Color', 'stream' ),
+				'color_scheme'            => esc_html__( 'Color Scheme', 'stream' ),
+				'main_text_color'         => esc_html__( 'Main Text Color', 'stream' ),
+				'secondary_text_color'    => esc_html__( 'Secondary Text Color', 'stream' ),
+				'link_color'              => esc_html__( 'Link Color', 'stream' ),
+				'page_background_color'   => esc_html__( 'Page Background Color', 'stream' ),
 			),
 
-			'twentyeleven_theme_options' => array(
-				'color_scheme'           => esc_html__( 'Color Scheme', 'stream' ),
-				'link_color'             => esc_html__( 'Link Color', 'stream' ),
-				'theme_layout'           => esc_html__( 'Default Layout', 'stream' ),
-			)
+			'twentyeleven_theme_options'  => array(
+				'color_scheme'            => esc_html__( 'Color Scheme', 'stream' ),
+				'link_color'              => esc_html__( 'Link Color', 'stream' ),
+				'theme_layout'            => esc_html__( 'Default Layout', 'stream' ),
+			),
 		);
 
 		/**
