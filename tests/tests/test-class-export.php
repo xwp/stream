@@ -92,12 +92,12 @@ class Test_Export extends WP_StreamTestCase {
 	 */
 	public function test_expand_columns() {
 		$test_data = array(
-		 'date'		=> '',
-		 'summary' => '',
-		 'user_id' => '',
-		 'context' => '',
-		 'action'	=> '',
-		 'ip'			=> '',
+			'date'    => '',
+			'summary' => '',
+			'user_id' => '',
+			'context' => '',
+			'action'  => '',
+			'ip'      => '',
 		);
 		$columns = $this->export->expand_columns( $test_data );
 
@@ -162,16 +162,16 @@ class Test_Export extends WP_StreamTestCase {
 	private function dummy_stream_data() {
 		return array(
 			'object_id' => null,
-			'site_id' => '1',
-			'blog_id' => get_current_blog_id(),
-			'user_id' => '1',
+			'site_id'   => '1',
+			'blog_id'   => get_current_blog_id(),
+			'user_id'   => '1',
 			'user_role' => 'administrator',
-			'created' => date( 'Y-m-d H:i:s' ),
-			'summary' => '"Hello Dave" plugin activated',
-			'ip' => '192.168.0.1',
+			'created'   => date( 'Y-m-d H:i:s' ),
+			'summary'   => '"Hello Dave" plugin activated',
+			'ip'        => '192.168.0.1',
 			'connector' => 'installer',
-			'context' => 'plugins',
-			'action' => 'activated',
+			'context'   => 'plugins',
+			'action'    => 'activated',
 		);
 	}
 }
