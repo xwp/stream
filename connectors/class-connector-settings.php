@@ -322,6 +322,27 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
+	 * Find out if the option should be ignored and not logged
+	 *
+	 * @param string $option_name
+	 *
+	 * @return bool Whether the option is ignored or not
+	 */
+	public function is_option_ignored( $option_name ) {
+		if ( 0 === strpos( $option_name, '_transient_' ) || 0 === strpos( $option_name, '_site_transient_' ) ) {
+			return true;
+		}
+
+		$ignored = array(
+			'image_default_link_type',
+			'medium_large_size_w',
+			'medium_large_size_h',
+		);
+
+		return in_array( $option_name, $ignored, true );
+	}
+
+	/**
 	 * Find out if array keys in the option should be logged separately
 	 *
 	 * @param string $key
@@ -645,7 +666,7 @@ class Connector_Settings extends Connector {
 	public function callback_updated_option( $option, $old_value, $value ) {
 		global $whitelist_options, $new_whitelist_options;
 
-		if ( 0 === strpos( $option, '_transient_' ) || 0 === strpos( $option, '_site_transient_' ) ) {
+		if ($this->is_option_ignored($option)) {
 			return;
 		}
 
