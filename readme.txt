@@ -1,21 +1,23 @@
 === Stream ===
-Contributors:      fjarrett, lukecarbis, shadyvb, westonruter, stream, xwp
-Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
+Contributors:      fjarrett, lukecarbis, shadyvb, powelski, chacha102, stream, xwp
+Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, blackbox, black box, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
 Requires at least: 3.9
 Tested up to:      4.5
 Stable tag:        3.0.5
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
-Stream is the easiest and safest way to track content changes happening to your WordPress site and then view them in beautifully organized detail.
+Planes have a black box, WordPress has Stream. When something goes wrong, you need to know how it happened.
 
 == Description ==
 
-Never be in the dark about WP Admin activity again.
+With Stream, you're never left in the dark about WordPress Admin activity.
 
-Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
+Every logged-in user action is displayed in an activity stream and organised for easy filtering by User, Role, Context, Action or IP address.
 
-Every logged-in user action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action and IP address.
+For advanced users, Stream also supports a Multisite view of all activity records on your network, the ability to set exclude rules to ignore certain kinds of user activity, and a WP‑CLI command for querying records.
+
+Stream is perfect for keeping tabs on your clients. When something breaks, Stream is there to help. See what changed and who changed it.
 
 **Built-In Tracking Integrations For Popular Plugins:**
 
@@ -55,8 +57,8 @@ Every logged-in user action is displayed in an activity stream and organized for
  * Multisite view of all activity records on a network
  * Limit who can view user activity records by user role
  * Set exclude rules to ignore certain kinds of user activity
- * Live update of user activity records in the Stream
- * Support for IPv6 addresses
+ * Live updates of user activity records in the Stream
+ * Export your Activity Stream as a CSV or JSON file
  * WP-CLI command for querying records
 
 **See room for improvement?**
@@ -67,7 +69,7 @@ Great! There are several ways you can get involved to help make Stream better:
 2. **Suggest New Features:** Have an awesome idea? Please share it! Simply [create a new topic](https://wordpress.org/support/plugin/stream) in the plugin forum to express your thoughts on why the feature should be included and get a discussion going around your idea.
 3. **Issue Pull Requests:** If you're a developer, the easiest way to get involved is to help out on [issues already reported](https://github.com/x-team/wp-stream/issues) in GitHub. Be sure to check out the [contributing guide](https://github.com/x-team/wp-stream/blob/master/contributing.md) for developers.
 
-Thank you for wanting to make Stream better for everyone! We salute you.
+Thank you for wanting to make Stream better for everyone!
 
 == Screenshots ==
 
