@@ -128,7 +128,7 @@ class Query {
 
 			// Sanitize field
 			$allowed_fields = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );
-			if ( in_array( $field, $allowed_fields ) ) {
+			if ( in_array( $field, $allowed_fields, true ) ) {
 				$where .= $wpdb->prepare( " AND $wpdb->stream.{$field} LIKE %s", "%{$args['search']}%" ); // @codingStandardsIgnoreLine can't prepare column name
 			}
 		}
@@ -252,7 +252,7 @@ class Query {
 		$orderby   = esc_sql( $args['orderby'] );
 		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'summary', 'created', 'connector', 'context', 'action' );
 
-		if ( in_array( $orderby, $orderable ) ) {
+		if ( in_array( $orderby, $orderable, true ) ) {
 			$orderby = sprintf( '%s.%s', $wpdb->stream, $orderby );
 		} elseif ( 'meta_value_num' === $orderby && ! empty( $args['meta_key'] ) ) {
 			$orderby = "CAST($wpdb->streammeta.meta_value AS SIGNED)";
@@ -314,7 +314,7 @@ class Query {
 		$this->found_records = absint( $wpdb->get_var( 'SELECT FOUND_ROWS()' ) );
 
 		// Add meta to the records, when applicable
-		if ( empty( $fields ) || in_array( 'meta', $fields ) ) {
+		if ( empty( $fields ) || in_array( 'meta', $fields, true ) ) {
 			$results = $this->add_record_meta( $results );
 		}
 

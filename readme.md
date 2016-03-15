@@ -6,12 +6,12 @@ Stream is the easiest and safest way to track content changes happening to your 
 
 **Contributors:** [fjarrett](https://profiles.wordpress.org/fjarrett), [lukecarbis](https://profiles.wordpress.org/lukecarbis), [shadyvb](https://profiles.wordpress.org/shadyvb), [westonruter](https://profiles.wordpress.org/westonruter), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
 **Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [activity log](https://wordpress.org/plugins/tags/activity log), [activity logs](https://wordpress.org/plugins/tags/activity logs), [admin actions](https://wordpress.org/plugins/tags/admin actions), [analytics](https://wordpress.org/plugins/tags/analytics), [audit](https://wordpress.org/plugins/tags/audit), [audit log](https://wordpress.org/plugins/tags/audit log), [audit logs](https://wordpress.org/plugins/tags/audit logs), [change](https://wordpress.org/plugins/tags/change), [changes](https://wordpress.org/plugins/tags/changes), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [logs](https://wordpress.org/plugins/tags/logs), [stream](https://wordpress.org/plugins/tags/stream), [tracking](https://wordpress.org/plugins/tags/tracking), [troubleshooting](https://wordpress.org/plugins/tags/troubleshooting), [wp stream](https://wordpress.org/plugins/tags/wp stream)  
-**Requires at least:** 3.7  
-**Tested up to:** 4.4  
-**Stable tag:** 3.0.4  
+**Requires at least:** 3.9  
+**Tested up to:** 4.5  
+**Stable tag:** 3.0.5  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
-[![Build Status](https://travis-ci.org/xwp/stream.png?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Joinhat.svg)](https://gitter.im/xwp/stream) 
+[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/xwp/stream) 
 
 ## Description ##
 
@@ -89,12 +89,25 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 ## Changelog ##
 
+### 3.0.5 - March 15, 2015 ###
+* New: Export your Stream records as CSV or JSON. ([#823](https://github.com/xwp/stream/pull/823))
+* Tweak: More mobile responsive list table ([#810](https://github.com/xwp/stream/pull/810))
+* Tweak: Better Javascript conflict prevention ([#812](https://github.com/xwp/stream/pull/812))
+* Tweak: Minor styling updates. It's about attention to detail. ([#826](https://github.com/xwp/stream/pull/826))
+* Fix: Gravity Forms error when adding a note ([#811](https://github.com/xwp/stream/pull/811))
+* Fix: In some instances, custom roles weren't being logged by Stream ([#824](https://github.com/xwp/stream/pull/824))
+* Fix: The Customiser fix you've been waiting for! Stream now properly records changes made from the Customiser. ([#827](https://github.com/xwp/stream/pull/827))
+
+Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/lukecarbis), [@Stayallive](https://github.com/Stayallive), [@barryceelen](https://github.com/barryceelen), Jonathan Desrosiers, [@marcin-lawrowski](https://github.com/marcin-lawrowski)
+
 ### 3.0.4 - November 27, 2015 ###
 * Tweak: Better descriptions when a post changes status ([0eada10](https://github.com/xwp/stream/commit/0eada108b443ed3b6f9bdae3f1e4c87c77128a0a))
 * Fix: Stream no longer crashes every time it tries to use a Jetpack ([#798](https://github.com/xwp/stream/pull/798))
 * Fix: You may now actually choose an item from the filter dropdown menus, instead of having everything greyed out ([#800](https://github.com/xwp/stream/pull/800))
 * Fix: Logging in / out of a Multisite install is now possible ([#801](https://github.com/xwp/stream/pull/801))
 * Fix: The Settings connector now works with WP CLI ([78a56b2](https://github.com/xwp/stream/commit/78a56b2c6b33b4f41c7b4f1f256a4d03ad42b2cb))
+
+Props [@lukecarbis](https://github.com/lukecarbis)
 
 ### 3.0.3 - November 6, 2015 ###
 * Tweak: Better compatibility with upcoming WordPress 4.4 ([2b2493c](https://github.com/xwp/stream/commit/2b2493ccb3ef6cba5aeb773433fdb5f0d414e8f3))
@@ -105,6 +118,8 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 * Fix: Multiple Multisite Mistakes Mended ([#788](https://github.com/xwp/stream/pull/788))
 * Fix: Internet Explorer 8 fix!! IE8!? Come on, people, it's 2015. ([#789](https://github.com/xwp/stream/pull/789))
 * Fix: EDD connector bug ([#790](https://github.com/xwp/stream/pull/790))
+
+Props [@lukecarbis](https://github.com/lukecarbis), [@rob](https://github.com/rob), [greguly](https://github.com/greguly)
 
 ### 3.0.2 - October 2, 2015 ###
 * Tweak: Helper function for running Stream queries added ([#774](https://github.com/xwp/stream/pull/774))
@@ -117,7 +132,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 * Fix: Jetpack is now able to connect without error while Stream is active ([#768](https://github.com/xwp/stream/pull/768))
 * Fix: Reset Filters text no longer wraps to a second line ([#765](https://github.com/xwp/stream/pull/765))
 
-Props [@lukecarbis](https://github.com/lukecarbis)
+Props [@lukecarbis](https://github.com/lukecarbis), Props [@sirjonathan](https://github.com/sirjonathan)
 
 ### 3.0.1 - September 2, 2015 ###
 * New: Stream and [User Switching](https://wordpress.org/plugins/user-switching/) are now besties ([#744](https://github.com/xwp/stream/pull/744))

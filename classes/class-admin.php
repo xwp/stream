@@ -10,19 +10,31 @@ use \WP_Roles;
 class Admin {
 	/**
 	 * Hold Plugin class
+	 *
 	 * @var Plugin
 	 */
 	public $plugin;
 
 	/**
+	 * Holds Network class
+	 *
 	 * @var Network
 	 */
 	public $network;
 
 	/**
+	 * Holds Live Update class
+	 *
 	 * @var Live_Update
 	 */
 	public $live_update;
+
+	/**
+	 * Holds Export class
+	 *
+	 * @var Export
+	 */
+	public $export;
 
 	/**
 	 * Menu page screen id
@@ -111,12 +123,12 @@ class Admin {
 
 		add_action( 'init', array( $this, 'init' ) );
 
-		// Ensure function used in various methods is pre-loaded
+		// Ensure function used in various methods is pre-loaded.
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		}
 
-		// User and role caps
+		// User and role caps.
 		add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( $this, 'filter_role_caps' ), 10, 3 );
 
@@ -127,46 +139,46 @@ class Admin {
 			$this->disable_access = ( $option ) ? false : true;
 		}
 
-		// Register settings page
+		// Register settings page.
 		if ( ! $this->disable_access ) {
 			add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		}
 
-		// Admin notices
+		// Admin notices.
 		add_action( 'admin_notices', array( $this, 'prepare_admin_notices' ) );
 		add_action( 'shutdown', array( $this, 'admin_notices' ) );
 
-		// Add admin body class
+		// Add admin body class.
 		add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
 
-		// Plugin action links
+		// Plugin action links.
 		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
 
-		// Load admin scripts and styles
+		// Load admin scripts and styles.
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_menu_css' ) );
 
-		// Reset Streams database
+		// Reset Streams database.
 		add_action( 'wp_ajax_wp_stream_reset', array( $this, 'wp_ajax_reset' ) );
 
-		// Uninstall Streams and Deactivate plugin
+		// Uninstall Streams and Deactivate plugin.
 		$uninstall = new Uninstall( $this->plugin );
 		add_action( 'wp_ajax_wp_stream_uninstall', array( $uninstall, 'uninstall' ) );
 
-		// Auto purge setup
+		// Auto purge setup.
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
 		add_action( 'wp_stream_auto_purge', array( $this, 'purge_scheduled_action' ) );
 
-		// Ajax users list
+		// Ajax users list.
 		add_action( 'wp_ajax_wp_stream_filters', array( $this, 'ajax_filters' ) );
 
-		// Ajax user's name by ID
+		// Ajax user's name by ID.
 		add_action( 'wp_ajax_wp_stream_get_filter_value_by_id', array( $this, 'get_filter_value_by_id' ) );
 
-		// Ajax users list
+		// Ajax users list.
 		add_action( 'wp_ajax_wp_stream_filters', array( $this, 'ajax_filters' ) );
 
-		// Ajax user's name by ID
+		// Ajax user's name by ID.
 		add_action( 'wp_ajax_wp_stream_get_filter_value_by_id', array( $this, 'get_filter_value_by_id' ) );
 	}
 
@@ -178,14 +190,15 @@ class Admin {
 	public function init() {
 		$this->network     = new Network( $this->plugin );
 		$this->live_update = new Live_Update( $this->plugin );
+		$this->export      = new Export( $this->plugin );
 	}
 
 	/**
-	 * Output specific updates passed as URL parameters
+	 * Output specific updates passed as URL parameters.
 	 *
 	 * @action admin_notices
 	 *
-	 * @return string
+	 * @return void
 	 */
 	public function prepare_admin_notices() {
 		$message = wp_stream_filter_input( INPUT_GET, 'message' );
@@ -200,8 +213,8 @@ class Admin {
 	/**
 	 * Handle notice messages according to the appropriate context (WP-CLI or the WP Admin)
 	 *
-	 * @param string $message
-	 * @param bool $is_error
+	 * @param string $message Message to output.
+	 * @param bool   $is_error If the message is error_level (true) or warning (false).
 	 */
 	public function notice( $message, $is_error = true ) {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -213,12 +226,12 @@ class Admin {
 				WP_CLI::success( $message );
 			}
 		} else {
-			// Trigger admin notices late, so that any notices which occur during page load are displayed
+			// Trigger admin notices late, so that any notices which occur during page load are displayed.
 			add_action( 'shutdown', array( $this, 'admin_notices' ) );
 
 			$notice = compact( 'message', 'is_error' );
 
-			if ( ! in_array( $notice, $this->notices ) ) {
+			if ( ! in_array( $notice, $this->notices, true ) ) {
 				$this->notices[] = $notice;
 			}
 		}
@@ -259,7 +272,7 @@ class Admin {
 	 *
 	 * @action admin_menu
 	 *
-	 * @return bool|void
+	 * @return void
 	 */
 	public function register_menu() {
 		/**
@@ -319,7 +332,7 @@ class Admin {
 			 */
 			do_action( 'wp_stream_admin_menu_screens' );
 
-			// Register the list table early, so it associates the column headers with 'Screen settings'
+			// Register the list table early, so it associates the column headers with 'Screen settings'.
 			add_action( 'load-' . $this->screen_id['main'], array( $this, 'register_list_table' ) );
 		}
 	}
@@ -334,31 +347,31 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_enqueue_scripts( $hook ) {
-		wp_register_script( 'select2', $this->plugin->locations['url'] . 'ui/lib/select2/select2.js', array( 'jquery' ), '3.5.2', true );
-		wp_register_style( 'select2', $this->plugin->locations['url'] . 'ui/lib/select2/select2.css', array(), '3.5.2' );
-		wp_register_script( 'timeago', $this->plugin->locations['url'] . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
+		wp_register_script( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/select2.js', array( 'jquery' ), '3.5.2', true );
+		wp_register_style( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/select2.css', array(), '3.5.2' );
+		wp_register_script( 'wp-stream-timeago', $this->plugin->locations['url'] . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
 
 		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
 		$file_tmpl = 'ui/lib/timeago/locales/jquery.timeago.%s.js';
 
 		if ( file_exists( $this->plugin->locations['dir'] . sprintf( $file_tmpl, $locale ) ) ) {
-			wp_register_script( 'timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, $locale ), array( 'timeago' ), '1' );
+			wp_register_script( 'wp-stream-timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, $locale ), array( 'wp-stream-timeago' ), '1' );
 		} else {
-			wp_register_script( 'timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ), array( 'timeago' ), '1' );
+			wp_register_script( 'wp-stream-timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ), array( 'wp-stream-timeago' ), '1' );
 		}
 
 		wp_enqueue_style( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/css/admin.css', array(), $this->plugin->get_version() );
 
 		$script_screens = array( 'plugins.php' );
 
-		if ( in_array( $hook, $this->screen_id ) || in_array( $hook, $script_screens ) ) {
-			wp_enqueue_script( 'select2' );
-			wp_enqueue_style( 'select2' );
+		if ( in_array( $hook, $this->screen_id, true ) || in_array( $hook, $script_screens, true ) ) {
+			wp_enqueue_script( 'wp-stream-select2' );
+			wp_enqueue_style( 'wp-stream-select2' );
 
-			wp_enqueue_script( 'timeago' );
-			wp_enqueue_script( 'timeago-locale' );
+			wp_enqueue_script( 'wp-stream-timeago' );
+			wp_enqueue_script( 'wp-stream-timeago-locale' );
 
-			wp_enqueue_script( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.js', array( 'jquery', 'select2' ), $this->plugin->get_version() );
+			wp_enqueue_script( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.js', array( 'jquery', 'wp-stream-select2' ), $this->plugin->get_version() );
 			wp_enqueue_script( 'wp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.js', array( 'jquery', 'heartbeat' ), $this->plugin->get_version() );
 
 			wp_localize_script(
@@ -434,7 +447,7 @@ class Admin {
 	/**
 	 * Add a specific body class to all Stream admin screens
 	 *
-	 * @param string $classes
+	 * @param string $classes CSS classes to output to body
 	 *
 	 * @filter admin_body_class
 	 *
@@ -762,7 +775,7 @@ class Admin {
 	 * @return bool
 	 */
 	private function role_can_view( $role ) {
-		if ( in_array( $role, $this->plugin->settings->options['general_role_access'] ) ) {
+		if ( in_array( $role, $this->plugin->settings->options['general_role_access'], true ) ) {
 			return true;
 		}
 
@@ -803,7 +816,7 @@ class Admin {
 		$stream_view_caps = array( $this->view_cap );
 
 		foreach ( $caps as $cap ) {
-			if ( in_array( $cap, $stream_view_caps ) ) {
+			if ( in_array( $cap, $stream_view_caps, true ) ) {
 				foreach ( $roles as $role ) {
 					if ( $this->role_can_view( $role ) ) {
 						$allcaps[ $cap ] = true;
@@ -831,7 +844,7 @@ class Admin {
 	public function filter_role_caps( $allcaps, $cap, $role ) {
 		$stream_view_caps = array( $this->view_cap );
 
-		if ( in_array( $cap, $stream_view_caps ) && $this->role_can_view( $role ) ) {
+		if ( in_array( $cap, $stream_view_caps, true ) && $this->role_can_view( $role ) ) {
 			$allcaps[ $cap ] = true;
 		}
 

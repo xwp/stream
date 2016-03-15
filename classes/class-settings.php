@@ -614,7 +614,7 @@ class Settings {
 							esc_attr( $section ),
 							esc_attr( $name ),
 							esc_attr( $value ),
-							checked( in_array( $value, $current_value ), true, false )
+							checked( in_array( $value, $current_value, true ), true, false )
 						),
 						esc_html( $label )
 					);

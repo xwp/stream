@@ -131,7 +131,7 @@ class Connector_Installer extends Connector {
 		$type   = $extra['type'];
 		$action = $extra['action'];
 
-		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
+		if ( ! in_array( $type, array( 'plugin', 'theme' ), true ) ) {
 			return false;
 		}
 

@@ -181,7 +181,7 @@ class Connector_bbPress extends Connector {
 			$data['connector']     = $this->name;
 			$data['context']       = 'settings';
 			$data['action']        = 'updated';
-		} elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ) ) ) {
+		} elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ), true ) ) {
 			if ( 'reply' === $data['context'] ) {
 				if ( 'updated' === $data['action'] ) {
 					$data['message'] = esc_html__( 'Replied on "%1$s"', 'stream' );
@@ -194,7 +194,7 @@ class Connector_bbPress extends Connector {
 			}
 
 			$data['connector'] = $this->name;
-		} elseif ( 'taxonomies' === $data['connector'] && in_array( $data['context'], array( 'topic-tag' ) ) ) {
+		} elseif ( 'taxonomies' === $data['connector'] && in_array( $data['context'], array( 'topic-tag' ), true ) ) {
 			$data['connector'] = $this->name;
 		}
 

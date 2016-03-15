@@ -44,9 +44,11 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->init();
 		$this->assertNotEmpty( $this->admin->network );
 		$this->assertNotEmpty( $this->admin->live_update );
+		$this->assertNotEmpty( $this->admin->export );
 
 		$this->assertInstanceOf( '\WP_Stream\Network', $this->admin->network );
 		$this->assertInstanceOf( '\WP_Stream\Live_Update', $this->admin->live_update );
+		$this->assertInstanceOf( '\WP_Stream\Export', $this->admin->export );
 	}
 
 	public function test_prepare_admin_notices() {
@@ -159,9 +161,9 @@ class Test_Admin extends WP_StreamTestCase {
 		// Stream screen
 		$this->admin->admin_enqueue_scripts( $this->plugin->admin->screen_id['main'] );
 
-		$this->assertArrayHasKey( 'select2', $wp_scripts->registered );
-		$this->assertArrayHasKey( 'timeago', $wp_scripts->registered );
-		$this->assertArrayHasKey( 'timeago-locale', $wp_scripts->registered );
+		$this->assertArrayHasKey( 'wp-stream-select2', $wp_scripts->registered );
+		$this->assertArrayHasKey( 'wp-stream-timeago', $wp_scripts->registered );
+		$this->assertArrayHasKey( 'wp-stream-timeago-locale', $wp_scripts->registered );
 
 		$this->assertArrayHasKey( 'wp-stream-admin', $wp_scripts->registered );
 		$this->assertArrayHasKey( 'wp-stream-live-updates', $wp_scripts->registered );
@@ -448,7 +450,7 @@ class Test_Admin extends WP_StreamTestCase {
 			'blog_id' => get_current_blog_id(),
 			'user_id' => '1',
 			'user_role' => 'administrator',
-			'created' => null,
+			'created' => date( 'Y-m-d H:i:s' ),
 			'summary' => '"Hello Dave" plugin activated',
 			'ip' => '192.168.0.1',
 			'connector' => 'installer',
