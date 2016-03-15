@@ -2,8 +2,8 @@
 Contributors:      fjarrett, lukecarbis, shadyvb, westonruter, stream, xwp
 Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
 Requires at least: 3.9
-Tested up to:      4.4
-Stable tag:        3.0.4
+Tested up to:      4.5
+Stable tag:        3.0.5
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +77,18 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 
 == Changelog ==
 
+= 3.0.5 - March 15, 2015 =
+
+* New: Export your Stream records as CSV or JSON. ([#823](https://github.com/xwp/stream/pull/823))
+* Tweak: More mobile responsive list table ([#810](https://github.com/xwp/stream/pull/810))
+* Tweak: Better Javascript conflict prevention ([#812](https://github.com/xwp/stream/pull/812))
+* Tweak: Minor styling updates. It's about attention to detail. ([#826](https://github.com/xwp/stream/pull/826))
+* Fix: Gravity Forms error when adding a note ([#811](https://github.com/xwp/stream/pull/811))
+* Fix: In some instances, custom roles weren't being logged by Stream ([#824](https://github.com/xwp/stream/pull/824))
+* Fix: The Customiser fix you've been waiting for! Stream now properly records changes made from the Customiser. ([#827](https://github.com/xwp/stream/pull/827))
+
+Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/lukecarbis), [@Stayallive](https://github.com/Stayallive), [@barryceelen](https://github.com/barryceelen), Jonathan Desrosiers, [@marcin-lawrowski](https://github.com/marcin-lawrowski)
+
 = 3.0.4 - November 27, 2015 =
 
 * Tweak: Better descriptions when a post changes status ([0eada10](https://github.com/xwp/stream/commit/0eada108b443ed3b6f9bdae3f1e4c87c77128a0a))
@@ -84,6 +96,8 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 * Fix: You may now actually choose an item from the filter dropdown menus, instead of having everything greyed out ([#800](https://github.com/xwp/stream/pull/800))
 * Fix: Logging in / out of a Multisite install is now possible ([#801](https://github.com/xwp/stream/pull/801))
 * Fix: The Settings connector now works with WP CLI ([78a56b2](https://github.com/xwp/stream/commit/78a56b2c6b33b4f41c7b4f1f256a4d03ad42b2cb))
+
+Props [@lukecarbis](https://github.com/lukecarbis)
 
 = 3.0.3 - November 6, 2015 =
 
@@ -95,6 +109,8 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 * Fix: Multiple Multisite Mistakes Mended ([#788](https://github.com/xwp/stream/pull/788))
 * Fix: Internet Explorer 8 fix!! IE8!? Come on, people, it's 2015. ([#789](https://github.com/xwp/stream/pull/789))
 * Fix: EDD connector bug ([#790](https://github.com/xwp/stream/pull/790))
+
+Props [@lukecarbis](https://github.com/lukecarbis), [@rob](https://github.com/rob), [greguly](https://github.com/greguly)
 
 = 3.0.2 - October 2, 2015 =
 
@@ -108,7 +124,7 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 * Fix: Jetpack is now able to connect without error while Stream is active ([#768](https://github.com/xwp/stream/pull/768))
 * Fix: Reset Filters text no longer wraps to a second line ([#765](https://github.com/xwp/stream/pull/765))
 
-Props [@lukecarbis](https://github.com/lukecarbis)
+Props [@lukecarbis](https://github.com/lukecarbis), Props [@sirjonathan](https://github.com/sirjonathan)
 
 = 3.0.1 - September 2, 2015 =
 
