@@ -285,14 +285,6 @@ class Connector_Settings extends Connector {
 					'header_textcolor',
 				),
 			),
-
-			'twentyeleven_theme_options' => array(
-				'settings' => array(
-					'color_scheme',
-					'link_color',
-					'theme_layout',
-				),
-			),
 		);
 
 		if ( isset( $contexts[ $option_name ] ) ) {
@@ -406,12 +398,6 @@ class Connector_Settings extends Connector {
 				'secondary_text_color'    => esc_html__( 'Secondary Text Color', 'stream' ),
 				'link_color'              => esc_html__( 'Link Color', 'stream' ),
 				'page_background_color'   => esc_html__( 'Page Background Color', 'stream' ),
-			),
-
-			'twentyeleven_theme_options'  => array(
-				'color_scheme'            => esc_html__( 'Color Scheme', 'stream' ),
-				'link_color'              => esc_html__( 'Link Color', 'stream' ),
-				'theme_layout'            => esc_html__( 'Default Layout', 'stream' ),
 			),
 		);
 
@@ -577,8 +563,7 @@ class Connector_Settings extends Connector {
 	 * @param mixed $value
 	 */
 	public function callback_update_option( $option, $value, $old_value ) {
-		$is_theme_option = sprintf( '%s_theme_options', get_option( 'stylesheet' ) ) == $option;
-		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && ( $is_theme_option || array_key_exists( $option, $this->labels ) ) ) {
+		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && array_key_exists( $option, $this->labels ) ) {
 			$this->callback_updated_option( $option, $value, $old_value );
 		}
 	}
