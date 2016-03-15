@@ -224,12 +224,6 @@
 
 /* Settings */
 
-.wp_stream_settings .nav-tab-wrapper a:not(.nav-tab-active),
-.wp_stream_network_settings .nav-tab-wrapper a:not(.nav-tab-active)
-.wp_stream_default_settings .nav-tab-wrapper a:not(.nav-tab-active) {
-	border-bottom: 1px solid #ccc;
-}
-
 .wp_stream_settings .select2-container,
 .wp_stream_network_settings .select2-container,
 .wp_stream_default_settings .select2-container {
