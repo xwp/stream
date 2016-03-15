@@ -333,6 +333,10 @@ class Connector_Settings extends Connector {
 			return true;
 		}
 
+		if ( substr( $option_name, -1 ) === '$' ) {
+			return true;
+		}
+
 		$ignored = array(
 			'image_default_link_type',
 			'medium_large_size_w',
@@ -666,7 +670,7 @@ class Connector_Settings extends Connector {
 	public function callback_updated_option( $option, $old_value, $value ) {
 		global $whitelist_options, $new_whitelist_options;
 
-		if ($this->is_option_ignored($option)) {
+		if ( $this->is_option_ignored( $option ) ) {
 			return;
 		}
 
