@@ -4,6 +4,7 @@ namespace WP_Stream;
 class List_Table extends \WP_List_Table {
 	/**
 	 * Hold Plugin class
+	 *
 	 * @var Plugin
 	 */
 	public $plugin;
@@ -54,7 +55,10 @@ class List_Table extends \WP_List_Table {
 
 	function extra_tablenav( $which ) {
 		if ( 'top' === $which ) {
-			echo $this->filters_form(); //xss ok
+			echo $this->filters_form(); // xss ok
+		}
+		if ( 'bottom' === $which ) {
+			echo $this->record_actions_form(); // xss ok
 		}
 	}
 
@@ -203,6 +207,7 @@ class List_Table extends \WP_List_Table {
 		if ( ! isset( $args['records_per_page'] ) ) {
 			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
 		}
+		$args['records_per_page'] = apply_filters( 'stream_records_per_page', $args['records_per_page'] );
 
 		$items = $this->plugin->db->query( $args );
 
@@ -775,6 +780,39 @@ class List_Table extends \WP_List_Table {
 
 		</div>
 		<?php
+
+		return ob_get_clean();
+	}
+
+	/**
+	 * Output a Select dropdown of actions relating to the Stream records
+	 *
+	 * @return string
+	 */
+	function record_actions_form() {
+		/**
+		 * Filter the records screen actions dropdown menu
+		 *
+		 * @return array Should be in the format of action_slug => 'Action Name'
+		 */
+		$actions = apply_filters( 'wp_stream_record_actions_menu', array() );
+
+		if ( empty( $actions ) ) {
+			return '';
+		}
+
+		ob_start();
+		printf( '<div class="alignleft actions recordactions"><select name="%s">', esc_attr( 'record-actions' ) );
+		printf( '<option value="">%s</option>', esc_attr__( 'Record Actions', 'stream' ) );
+		foreach ( $actions as $value => $name ) {
+			printf(
+				'<option value="%s">%s</option>',
+				esc_attr( $value ),
+				esc_attr( $name )
+			);
+		}
+		echo '</select></div>';
+		printf( '<input type="submit" name="" id="record-actions-submit" class="button" value="%s">', esc_attr__( 'Apply', 'stream' ) );
 
 		return ob_get_clean();
 	}

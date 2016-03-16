@@ -44,9 +44,11 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->admin->init();
 		$this->assertNotEmpty( $this->admin->network );
 		$this->assertNotEmpty( $this->admin->live_update );
+		$this->assertNotEmpty( $this->admin->export );
 
 		$this->assertInstanceOf( '\WP_Stream\Network', $this->admin->network );
 		$this->assertInstanceOf( '\WP_Stream\Live_Update', $this->admin->live_update );
+		$this->assertInstanceOf( '\WP_Stream\Export', $this->admin->export );
 	}
 
 	public function test_prepare_admin_notices() {
