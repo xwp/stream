@@ -119,7 +119,7 @@ class Settings {
 		if ( is_multisite() && is_super_admin() ) {
 			$super_admins = get_super_admins();
 			foreach ( $super_admins as $admin ) {
-				$user = get_user_by ( 'login', $admin );
+				$user = get_user_by( 'login', $admin );
 				$users_array[] = $user;
 			}
 		}
@@ -134,7 +134,7 @@ class Settings {
 			if ( array_key_exists( $user->ID, $users_added_to_response ) ) {
 				continue;
 			} else {
-				$users_added_to_response[$user->ID] = true;
+				$users_added_to_response[ $user->ID ] = true;
 			}
 
 			$author = new Author( $user->ID );
