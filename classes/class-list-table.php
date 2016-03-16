@@ -463,6 +463,13 @@ class List_Table extends \WP_List_Table {
 				get_users( array( 'fields' => 'ID' ) )
 			);
 
+			if ( is_multisite() && is_super_admin() ) {
+				$super_admins = get_super_admins();
+				foreach ( $super_admins as $admin ) {
+					$users[] = get_user_by( 'login', $admin );
+				}
+			}
+
 			$users[] = new Author( 0, array( 'is_wp_cli' => true ) );
 
 			foreach ( $users as $user ) {
