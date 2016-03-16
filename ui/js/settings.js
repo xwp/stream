@@ -239,11 +239,11 @@ jQuery( function( $ ) {
 
 	function toggleKeepRecordsFor() {
 		if ( keepRecordsIndefinitely.is( ':checked' ) ) {
-			keepRecordsFor.prop( 'disabled', true );
-			keepRecordsForRow.contents().fadeTo( 250, 0.25 );
+			keepRecordsForRow.addClass( 'hidden' );
+			keepRecordsFor.addClass( 'hidden' );
 		} else {
-			keepRecordsFor.prop( 'disabled', false );
-			keepRecordsForRow.contents().fadeTo( 250, 1.0 );
+			keepRecordsForRow.removeClass( 'hidden' );
+			keepRecordsFor.removeClass( 'hidden' );
 		}
 	}
 
