@@ -333,7 +333,7 @@ class Connector_Settings extends Connector {
 			return true;
 		}
 
-		if ( substr( $option_name, -1 ) === '$' ) {
+		if ( '$' === substr( $option_name, -1 ) ) {
 			return true;
 		}
 
