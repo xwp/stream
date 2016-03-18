@@ -1,7 +1,7 @@
 <?php
 namespace WP_Stream;
 
-class Notifications {
+class Alerts {
 	/**
 	 * Hold Plugin class
 	 * @var Plugin
@@ -39,25 +39,25 @@ class Notifications {
 	 */
 	public function register_post_type() {
 		$labels = array(
-			'name'               => _x( 'Notifications', 'post type general name', 'stream' ),
-			'singular_name'      => _x( 'Notification', 'post type singular name', 'stream' ),
-			'menu_name'          => _x( 'Notifications', 'admin menu', 'stream' ),
-			'name_admin_bar'     => _x( 'Notification', 'add new on admin bar', 'stream' ),
+			'name'               => _x( 'Alerts', 'post type general name', 'stream' ),
+			'singular_name'      => _x( 'Alert', 'post type singular name', 'stream' ),
+			'menu_name'          => _x( 'Alerts', 'admin menu', 'stream' ),
+			'name_admin_bar'     => _x( 'Alert', 'add new on admin bar', 'stream' ),
 			'add_new'            => _x( 'Add New', 'book', 'stream' ),
-			'add_new_item'       => __( 'Add New Notification', 'stream' ),
-			'new_item'           => __( 'New Notification', 'stream' ),
-			'edit_item'          => __( 'Edit Notification', 'stream' ),
-			'view_item'          => __( 'View Notification', 'stream' ),
-			'all_items'          => __( 'Notifications', 'stream' ),
-			'search_items'       => __( 'Search Notifications', 'stream' ),
-			'parent_item_colon'  => __( 'Parent Notifications:', 'stream' ),
-			'not_found'          => __( 'No notifications found.', 'stream' ),
-			'not_found_in_trash' => __( 'No notifications found in Trash.', 'stream' ),
+			'add_new_item'       => __( 'Add New Alert', 'stream' ),
+			'new_item'           => __( 'New Alert', 'stream' ),
+			'edit_item'          => __( 'Edit Alert', 'stream' ),
+			'view_item'          => __( 'View Alert', 'stream' ),
+			'all_items'          => __( 'Alerts', 'stream' ),
+			'search_items'       => __( 'Search Alerts', 'stream' ),
+			'parent_item_colon'  => __( 'Parent Alerts:', 'stream' ),
+			'not_found'          => __( 'No alerts found.', 'stream' ),
+			'not_found_in_trash' => __( 'No alerts found in Trash.', 'stream' ),
 		);
 
 		$args = array(
 			'labels'              => $labels,
-			'description'         => __( 'Notifications for Stream.', 'stream' ),
+			'description'         => __( 'Alerts for Stream.', 'stream' ),
 			'public'              => false,
 			'publicly_queryable'  => false,
 			'exclude_from_search' => true,
@@ -76,7 +76,7 @@ class Notifications {
 			),
 		);
 
-		register_post_type( 'wp_stream_actions', $args );
+		register_post_type( 'wp_stream_alerts', $args );
 	}
 
 	/**
@@ -89,10 +89,10 @@ class Notifications {
 	function register_menu() {
 		add_submenu_page(
 			$this->plugin->admin->records_page_slug,
-			'Notifications',
-			'Notifications',
+			__( 'Alerts', 'stream' ),
+			__( 'Alerts', 'stream' ),
 			'manage_options',
-			'edit.php?post_type=wp_stream_actions'
+			'edit.php?post_type=wp_stream_alerts'
 		);
 	}
 }

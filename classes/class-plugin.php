@@ -22,6 +22,11 @@ class Plugin {
 	public $admin;
 
 	/**
+	 * @var Alerts
+	 */
+	public $alerts;
+
+	/**
 	 * @var Connectors
 	 */
 	public $connectors;
@@ -40,11 +45,6 @@ class Plugin {
 	 * @var Settings
 	 */
 	public $settings;
-
-	/**
-	 * @var Notifications
-	 */
-	public $notifications;
 
 	/**
 	 * @var Install
@@ -159,7 +159,7 @@ class Plugin {
 	 */
 	public function init() {
 		$this->settings      = new Settings( $this );
-		$this->notifications = new Notifications( $this );
+		$this->alerts        = new Alerts( $this );
 		$this->connectors    = new Connectors( $this );
 	}
 
