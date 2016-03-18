@@ -39,14 +39,17 @@ class Test_Plugin extends WP_StreamTestCase {
 
 	public function test_init() {
 		$this->plugin->settings   = null;
+		$this->plugin->alerts     = null;
 		$this->plugin->connectors = null;
 
 		$this->assertEmpty( $this->plugin->settings );
+		$this->assertEmpty( $this->plugin->alerts );
 		$this->assertEmpty( $this->plugin->connectors );
 
 		$this->plugin->init();
 
 		$this->assertNotEmpty( $this->plugin->settings );
+		$this->assertNotEmpty( $this->plugin->alerts );
 		$this->assertNotEmpty( $this->plugin->connectors );
 	}
 
