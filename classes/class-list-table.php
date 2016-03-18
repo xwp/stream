@@ -276,8 +276,8 @@ class List_Table extends \WP_List_Table {
 					$user->get_avatar_img( 80 ),
 					$user->get_display_name(),
 					$user->is_deleted() ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
-					$user->get_role() ? sprintf( '<br /><small>%s</small>', $user->get_role() ) : '',
-					$user->get_agent() ? sprintf( '<br /><small>%s</small>', $user->get_agent_label( $user->get_agent() ) ) : ''
+					sprintf( '<br /><small>%s</small>', $user->get_role() ),
+					sprintf( '<br /><small>%s</small>', $user->get_agent_label( $user->get_agent() ) )
 				);
 				break;
 
@@ -462,6 +462,17 @@ class List_Table extends \WP_List_Table {
 				},
 				get_users( array( 'fields' => 'ID' ) )
 			);
+
+			if ( is_multisite() && is_super_admin() ) {
+				$super_admins = array_map(
+					function( $login ) {
+						$user = get_user_by( 'login', $login );
+						return new Author( $user->ID );
+					},
+					get_super_admins()
+				);
+				$users = array_unique( array_merge( $users, $super_admins ) );
+			}
 
 			$users[] = new Author( 0, array( 'is_wp_cli' => true ) );
 

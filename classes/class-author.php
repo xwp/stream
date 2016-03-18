@@ -60,6 +60,13 @@ class Author {
 	}
 
 	/**
+	 * @return string
+	 */
+	function __toString() {
+		return $this->get_display_name();
+	}
+
+	/**
 	 * Get the display name of the user
 	 *
 	 * @return string
@@ -173,14 +180,16 @@ class Author {
 	function get_role() {
 		global $wp_roles;
 
+		$user_role = '';
+
 		if ( ! empty( $this->meta['user_role'] ) && isset( $wp_roles->role_names[ $this->meta['user_role'] ] ) ) {
 			$user_role = $wp_roles->role_names[ $this->meta['user_role'] ];
 		} elseif ( ! empty( $this->meta['user_role_label'] ) ) {
 			$user_role = $this->meta['user_role_label'];
 		} elseif ( isset( $this->user->roles[0] ) && isset( $wp_roles->role_names[ $this->user->roles[0] ] ) ) {
 			$user_role = $wp_roles->role_names[ $this->user->roles[0] ];
-		} else {
-			$user_role = '';
+		} elseif ( is_multisite() && is_super_admin( $this->id ) ) {
+			$user_role = $wp_roles->role_names['administrator'];
 		}
 
 		return $user_role;
@@ -221,13 +230,6 @@ class Author {
 			&&
 			DOING_CRON
 		);
-	}
-
-	/**
-	 * @return string
-	 */
-	function __toString() {
-		return $this->get_display_name();
 	}
 
 	/**

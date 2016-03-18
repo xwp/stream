@@ -114,12 +114,29 @@ class Settings {
 		if ( 0 === $users->get_total() ) {
 			wp_send_json_error( $response );
 		}
+		$users_array = $users->results;
+
+		if ( is_multisite() && is_super_admin() ) {
+			$super_admins = get_super_admins();
+			foreach ( $super_admins as $admin ) {
+				$user = get_user_by( 'login', $admin );
+				$users_array[] = $user;
+			}
+		}
 
 		$response->status  = true;
 		$response->message = '';
 		$response->users   = array();
+		$users_added_to_response = array();
 
-		foreach ( $users->results as $key => $user ) {
+		foreach ( $users_array as $key => $user ) {
+			// exclude duplications:
+			if ( array_key_exists( $user->ID, $users_added_to_response ) ) {
+				continue;
+			} else {
+				$users_added_to_response[ $user->ID ] = true;
+			}
+
 			$author = new Author( $user->ID );
 
 			$args = array(
@@ -141,6 +158,13 @@ class Settings {
 
 			$response->users[] = $args;
 		}
+
+		usort(
+			$response->users,
+			function( $a, $b ) {
+				return strcmp( $a['text'], $b['text'] );
+			}
+		);
 
 		if ( empty( $search ) || preg_match( '/wp|cli|system|unknown/i', $search ) ) {
 			$author = new Author( 0 );
