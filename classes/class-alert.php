@@ -41,7 +41,7 @@ class Alert {
 		$post_id = wp_insert_post( $args );
 		if ( 0 === $post_id ) {
 			return false;
-		} else if ( null == $this->ID ) {
+		} else if ( null === $this->ID ) {
 			$this->ID = $post_id;
 		}
 
@@ -52,7 +52,7 @@ class Alert {
 			'alert_type'     => $this->alert_type,
 			'alert_meta'     => $this->alert_meta,
 		);
-		foreach( $meta as $key => $value ) {
+		foreach ( $meta as $key => $value ) {
 			$this->update_meta( $key, $value );
 		}
 
