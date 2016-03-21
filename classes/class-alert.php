@@ -35,7 +35,7 @@ class Alert {
 			'ID'           => $this->ID,
 			'post_date'    => $this->date,
 			'post_content' => '',
-			'post_title'   => 'Test Title',
+			'post_title'   => $this->get_title(),
 			'post_author'  => $this->author,
 		);
 		$post_id = wp_insert_post( $args );
@@ -97,18 +97,18 @@ class Alert {
 	}
 
 	/**
-	 * Determine the title of an object that a record is for.
-	 *
-	 * @param  object  Record object
-	 * @return mixed   The title of the object as a string, otherwise false
+	 * Determine the title of the alert.
+	 * @todo enhance human readibility
+	 * @return string   The title of the alert
 	 */
-	function get_object_title() {
-		if ( ! isset( $this->object_id ) || empty( $this->object_id ) ) {
-			return false;
-		}
-
-		trigger_error( 'Alert::get_object_title() is not implemented yet.' );
-
-		return $output;
+	function get_title() {
+		$format = __( '%1$s when %2$s %3$s in %4$s', 'stream' );
+		return sprintf(
+			$format,
+			ucfirst( $this->alert_type ),
+			ucfirst( $this->filter_author ),
+			$this->filter_action,
+			ucfirst( $this->filter_context )
+		);
 	}
 }

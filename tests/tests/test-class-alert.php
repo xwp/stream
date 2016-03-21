@@ -50,6 +50,7 @@ class Test_Alert extends WP_StreamTestCase {
 
     $post = get_post( $alert->ID );
     $this->assertEquals( $post->post_date, $alert->date );
+    $this->assertEquals( $post->post_title, 'Highlight when Administrator activated in Plugins' );
   }
 
   function get_dummy_data() {
