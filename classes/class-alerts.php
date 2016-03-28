@@ -34,12 +34,13 @@ class Alerts {
 		add_action( 'load-post-new.php', array( $this, 'register_meta_boxes' ) );
 
 		// Add scripts to post screens
-		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts') );
+		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
 	}
 
 	function register_scripts( $page ) {
-		if ( 'post.php' == $page|| 'post-new.php' == $page ) {
+		if ( 'post.php' === $page || 'post-new.php' === $page ) {
 			wp_enqueue_script( 'wp-strean-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2' ) );
+			wp_enqueue_style( 'wp-stream-select2' );
 		}
 	}
 
