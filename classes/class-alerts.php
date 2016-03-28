@@ -27,7 +27,7 @@ class Alerts {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 
 		// Add custom post type to menu
-		add_action( 'admin_menu', array( $this, 'register_menu' ) );
+		add_action( 'wp_stream_admin_menu', array( $this, 'register_menu' ) );
 	}
 
 	/**

@@ -309,6 +309,14 @@ class Admin {
 		);
 
 		/**
+		 * Fires before submenu items are added to the Stream menu
+		 * allowing plugins to add menu items before Settings
+		 *
+		 * @return void
+		 */
+		do_action( 'wp_stream_admin_menu' );
+
+		/**
 		 * Filter the Settings admin page title
 		 *
 		 * @return string
