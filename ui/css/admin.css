@@ -176,6 +176,17 @@
 	margin-bottom: 6px;
 }
 
+.post-type-wp_stream_alerts .select2-container {
+	margin-left: 3px;
+	margin-right: 3px;
+	margin-bottom: 6px;
+	min-width: 165px;
+}
+
+.post-type-wp_stream_alerts #post-body-content {
+	display: none;
+}
+
 .toplevel_page_wp_stream .select2-container.select2-allowclear .select2-choice abbr {
 	margin-top: -2px;
 }
