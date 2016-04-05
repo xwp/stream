@@ -137,7 +137,7 @@ class Alerts {
 
 		add_meta_box(
 			'wp_stream_alerts_preview',
-			__( 'Preview', 'stream' ),
+			__( 'Records matching these triggers', 'stream' ),
 			array( $this, 'display_preview_box' ),
 			'wp_stream_alerts',
 			'normal',
@@ -158,21 +158,21 @@ class Alerts {
 			'wp_stream_filter_author',
 			$alert->filter_author,
 			array(),
-			'Any Author'
+			__( 'Any Author', 'stream' )
 		);
 
 		$action_html = $this->create_select2_box(
 			'wp_stream_filter_action',
 			$alert->filter_action,
 			$this->get_action_values(),
-			'Any Action'
+			__( 'Any Action', 'stream' )
 		);
 
 		$context_html = $this->create_select2_box(
 			'wp_stream_filter_context',
 			$alert->filter_context,
 			$this->get_context_values(),
-			'Any Context'
+			__( 'Any Context', 'stream' )
 		);
 
 		echo sprintf(
