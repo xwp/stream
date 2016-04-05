@@ -1,0 +1,52 @@
+<?php
+namespace WP_Stream;
+
+class Preview_List_Table extends List_Table {
+
+  public function __construct( $plugin ) {
+    $this->plugin = $plugin;
+    parent::__construct( $plugin );
+  }
+
+  function set_records( $items ) {
+    $columns  = $this->get_columns();
+		$sortable = $this->get_sortable_columns();
+		$hidden   = $this->get_hidden_columns();
+		$primary  = $columns['summary'];
+
+		$this->_column_headers = array( $columns, $hidden, $sortable, $primary );
+    
+    $this->items = $items;
+  }
+
+  /**
+	 * Display the table
+	 *
+	 * @since 3.1.0
+	 * @access public
+	 */
+	public function display() {
+		$singular = $this->_args['singular'];
+?>
+<table class="wp-list-table <?php echo implode( ' ', $this->get_table_classes() ); ?>">
+	<thead>
+	<tr>
+		<?php $this->print_column_headers(); ?>
+	</tr>
+	</thead>
+
+	<tbody id="the-list">
+		<?php $this->display_rows_or_placeholder(); ?>
+	</tbody>
+
+	<tfoot>
+	<tr>
+		<?php $this->print_column_headers( false ); ?>
+	</tr>
+	</tfoot>
+
+</table>
+<?php
+	}
+
+}

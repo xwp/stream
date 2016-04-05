@@ -134,6 +134,15 @@ class Alerts {
 			'normal',
 			'high'
 		);
+
+		add_meta_box(
+			'wp_stream_alerts_preview',
+			__( 'Preview', 'stream' ),
+			array( $this, 'display_preview_box' ),
+			'wp_stream_alerts',
+			'normal',
+			'high'
+		);
 	}
 
 	/**
@@ -145,35 +154,96 @@ class Alerts {
 
 		$alert = Alert::get_alert( $post->ID );
 
-		$input = sprintf(
-			'<input type="text" name="%s" id="%s" value="%s" size="30" />',
+		$author_html = $this->create_select2_box(
 			'wp_stream_filter_author',
-			'wp_stream_filter_author',
-			$alert->filter_author
+			$alert->filter_author,
+			array(),
+			'Any Author'
 		);
-		echo '<p><label for="">' . __( 'Trigger Authors', 'stream' ) . '</label><br/>' . $input . '</p>';
 
-		// Action dropdown menu
+		$action_html = $this->create_select2_box(
+			'wp_stream_filter_action',
+			$alert->filter_action,
+			$this->get_action_values(),
+			'Any Action'
+		);
+
+		$context_html = $this->create_select2_box(
+			'wp_stream_filter_context',
+			$alert->filter_context,
+			$this->get_context_values(),
+			'Any Context'
+		);
+
+		echo sprintf(
+			__( 'Create alert whenever %1$s %2$s inside of %3$s', 'stream' ),
+			$author_html,
+			$action_html,
+			$context_html
+		); //xss ok
+
+	}
+
+	/**
+	* Display Preview Meta Box
+	*
+	* @return void
+	*/
+	function display_preview_box( $post ) {
+
+		$alert = Alert::get_alert( $post->ID );
+
+		$table = new Preview_List_Table( $this->plugin );
+
+		$items = $this->plugin->db->query( array(
+			'action' => $alert->filter_action,
+			'context' => $alert->filter_context,
+			'records_per_page' => apply_filters( 'stream_records_per_page', 20 ),
+		) );
+
+		$table->set_records( $items );
+		$table->display();
+
+	}
+
+	function get_action_values() {
 		$action_values = array();
-
 		foreach ( $this->get_terms_labels( 'action' ) as $action_id => $action_data ) {
 			$action_values[] = array( 'id' => $action_id, 'text' => $action_data );
 		}
+		return $action_values;
+	}
 
+	function get_context_values() {
+		$context_values = array();
+		foreach ( $this->get_terms_labels( 'context' ) as $context_id => $context_data ) {
+			if ( is_array( $context_data ) ) {
+				$child_values = array();
+				if ( isset( $context_data['children'] ) ) {
+					$child_values = array();
+					foreach ( $context_data['children'] as $child_id => $child_value ) {
+						$child_values[] = array( 'id' => $child_id, 'text' => $child_value, 'parent' => $context_id );
+					}
+				}
+				if ( isset( $context_data['label'] ) ) {
+					$context_values[] = array( 'id' => $context_id, 'text' => $context_data['label'], 'children' => $child_values );
+				}
+			} else {
+				$context_values[] = array( 'id' => $context_id, 'text' => $context_data );
+			}
+		}
+		return $context_values;
+	}
+
+	function create_select2_box( $field_name, $current_value, $value_options, $placeholder ) {
 		$action_input = sprintf(
-			'<select class="chosen-select" name="%1$s"><option>Test</option></select>',
-			'wp_stream_filter_action'
+			'<input type="hidden" class="chosen-select" name="%1$s" value="%2$s" data-values=\'%3$s\' data-placeholder="%4$s"/>',
+			esc_attr( $field_name ),
+			esc_attr( $current_value ),
+			esc_attr( wp_stream_json_encode( $value_options ) ),
+			esc_attr( $placeholder )
 		);
-		echo $action_input;
-
-		$input = sprintf(
-			'<input type="text" name="%s" id="%s" value="%s" size="30" />',
-			'wp_stream_filter_context',
-			'wp_stream_filter_contexts',
-			$alert->filter_context
-		);
-		echo '<p><label for="">' . __( 'Trigger Contexts', 'stream' ) . '</label><br/>' . $input . '</p>';
-
+		return $action_input;
 	}
 
 	function save_meta_boxes( $post_id, $post ) {
