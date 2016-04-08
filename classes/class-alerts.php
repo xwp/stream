@@ -248,7 +248,9 @@ class Alerts {
 
 	function save_meta_boxes( $post_id, $post ) {
 
-		// @todo add nonce check
+		if ( 'wp_stream_alerts' !== $post->post_type ) {
+			return false;
+		}
 
 		$post_type = get_post_type_object( $post->post_type );
 		if ( !current_user_can( $post_type->cap->edit_post, $post_id ) ) {
