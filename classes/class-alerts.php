@@ -35,6 +35,92 @@ class Alerts {
 
 		// Add scripts to post screens
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
+
+		add_filter( 'wp_stream_record_array', array( $this, 'check_records' ) );
+
+		$this->load_notifiers();
+	}
+
+	function load_notifiers() {
+		$notifiers = array(
+			'die',
+			'null',
+			'menu-alert',
+		);
+
+		$classes = array();
+		foreach ( $notifiers as $notifier ) {
+			include_once $this->plugin->locations['dir'] . '/notifiers/class-notifier-' . $notifier .'.php';
+			$class_name = sprintf( '\WP_Stream\Notifier_%s', str_replace( '-', '_', $notifier ) );
+			if ( ! class_exists( $class_name ) ) {
+				continue;
+			}
+			$class = new $class_name();
+			if ( ! property_exists( $class, 'slug' ) ) {
+				continue;
+			}
+			$classes[ $class->slug ] = $class;
+		}
+
+		/**
+		 * Allows for adding additional notifiers via classes that extend Notifier.
+		 *
+		 * @param array $classes An array of Notifier objects. In the format notifier_slug => Notifier_Class()
+		 */
+		$this->notifiers = apply_filters( 'wp_stream_notifiers', $classes );
+
+		// Ensure that all notifiers extend Notifier
+		foreach ( $this->notifiers as $key => $notifier ) {
+			if ( ! $this->is_valid_notifier( $notifier ) ) {
+				unset( $this->notifiers[ $key ] );
+				trigger_error(
+					sprintf(
+						esc_html__( 'Registered notifier %s does not extend WP_Stream\Notifier.', 'stream' ),
+						esc_html( get_class( $notifier ) )
+					)
+				);
+			}
+		}
+	}
+
+	/**
+	 * Checks whether a notifier class is valid
+	 *
+	 * @param Notifier $notifier The class to check.
+	 * @return bool
+	 */
+	public function is_valid_notifier( $notifier ) {
+
+		if ( ! is_a( $notifier, 'WP_Stream\Notifier' ) ) {
+			return false;
+		}
+
+		if ( ! method_exists( $notifier, 'is_dependency_satisfied' ) || ! $notifier->is_dependency_satisfied() ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	function check_records( $recordarr ) {
+
+		$args = array(
+			'post_type' => 'wp_stream_alerts'
+		);
+
+		$alerts = new \WP_Query( $args );
+		foreach ( $alerts->posts as $alert ) {
+			$alert = Alert::get_alert( $alert->ID );
+
+			$status = $alert->check_record( $recordarr );
+			if ( $status ) {
+				$alert->send_alert( $recordarr );
+			}
+
+		}
+
+		return $recordarr;
+
 	}
 
 	function register_scripts( $page ) {

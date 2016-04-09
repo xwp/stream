@@ -12,6 +12,8 @@ class Alert {
 	public $alert_type;
 	public $alert_meta;
 
+	public $notifier;
+
 	public function __construct( $item ) {
 
 		$this->ID      = isset( $item->ID ) ? $item->ID : null;
@@ -24,6 +26,7 @@ class Alert {
 
 		$this->alert_type = isset( $item->alert_type ) ? $item->alert_type : null;
 		$this->alert_meta = isset( $item->alert_meta ) ? $item->alert_meta : null;
+		$this->notifier   = isset( $item->notifier ) ? $item->notifier : null;
 	}
 
 	public static function get_alert( $post_id ) {
@@ -42,7 +45,28 @@ class Alert {
 			'alert_meta'     => isset( $meta['alert_meta'] ) ? $meta['alert_meta'][0] : null,
 		);
 
+		// @todo Load based on alert_type
+		$obj->notifier = new Notifier_Menu_Alert();
+
 		return new Alert( $obj );
+	}
+
+	public function check_record( $recordarr ) {
+
+		if ( ! empty( $this->filter_context ) && $recordarr['context'] !== $this->filter_context ) {
+			return false;
+		}
+
+		if ( ! empty( $this->filter_action ) && $recordarr['action'] !== $this->filter_action ) {
+			return false;
+		}
+
+		return true;
+
+	}
+
+	public function send_alert( $recordarr ) {
+		$this->notifier->notify( $recordarr, array() );
 	}
 
 	public function save() {
