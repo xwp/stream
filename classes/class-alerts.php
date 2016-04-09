@@ -261,11 +261,15 @@ class Alerts {
 		);
 
 		echo sprintf(
+			// @codingStandardsIgnoreStart already filtered
 			__( 'Create alert whenever %1$s %2$s inside of %3$s', 'stream' ),
 			$author_html,
 			$action_html,
 			$context_html
-		); //xss ok
+			// @codingStandardsIgnoreEnd already filtered
+		);
+
+		wp_nonce_field( 'save_post', 'wp_stream_alerts_nonce' );
 
 	}
 
