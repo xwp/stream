@@ -43,7 +43,6 @@ class Alerts {
 
 	function load_notifiers() {
 		$notifiers = array(
-			'die',
 			'null',
 			'menu-alert',
 		);
