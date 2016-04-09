@@ -3,23 +3,23 @@ namespace WP_Stream;
 
 class Preview_List_Table extends List_Table {
 
-  public function __construct( $plugin ) {
-    $this->plugin = $plugin;
-    parent::__construct( $plugin );
-  }
+	public function __construct( $plugin ) {
+		$this->plugin = $plugin;
+		parent::__construct( $plugin );
+	}
 
-  function set_records( $items ) {
-    $columns  = $this->get_columns();
+	function set_records( $items ) {
+		$columns	= $this->get_columns();
 		$sortable = $this->get_sortable_columns();
 		$hidden   = $this->get_hidden_columns();
-		$primary  = $columns['summary'];
+		$primary	= $columns['summary'];
 
 		$this->_column_headers = array( $columns, $hidden, $sortable, $primary );
-    
-    $this->items = $items;
-  }
 
-  /**
+		$this->items = $items;
+	}
+
+	/**
 	 * Display the table
 	 *
 	 * @since 3.1.0
@@ -28,7 +28,7 @@ class Preview_List_Table extends List_Table {
 	public function display() {
 		$singular = $this->_args['singular'];
 ?>
-<table class="wp-list-table <?php echo implode( ' ', $this->get_table_classes() ); ?>">
+<table class="wp-list-table <?php esc_attr_e( implode( ' ', $this->get_table_classes() ) ); ?>">
 	<thead>
 	<tr>
 		<?php $this->print_column_headers(); ?>
@@ -48,5 +48,4 @@ class Preview_List_Table extends List_Table {
 </table>
 <?php
 	}
-
 }
