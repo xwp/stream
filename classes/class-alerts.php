@@ -105,7 +105,7 @@ class Alerts {
 	function check_records( $recordarr ) {
 
 		$args = array(
-			'post_type' => 'wp_stream_alerts'
+			'post_type' => 'wp_stream_alerts',
 		);
 
 		$alerts = new \WP_Query( $args );
@@ -116,7 +116,6 @@ class Alerts {
 			if ( $status ) {
 				$alert->send_alert( $recordarr );
 			}
-
 		}
 
 		return $recordarr;
@@ -188,7 +187,7 @@ class Alerts {
 	*/
 	function register_menu() {
 		add_submenu_page(
-		$this->plugin->admin->records_page_slug,
+			$this->plugin->admin->records_page_slug,
 			__( 'Alerts', 'stream' ),
 			__( 'Alerts', 'stream' ),
 			'manage_options',
@@ -203,7 +202,7 @@ class Alerts {
 	*/
 	function register_meta_boxes() {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
-		add_action( 'save_post', array( $this, 'save_meta_boxes'), 10, 2 );
+		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 10, 2 );
 	}
 
 	/**
@@ -391,8 +390,6 @@ class Alerts {
 
 			ksort( $return_labels );
 		}
-
 		return $return_labels;
 	}
-
 }
