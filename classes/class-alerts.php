@@ -341,10 +341,12 @@ class Alerts {
 			return false;
 		}
 
+		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
+
 		$post_type = get_post_type_object( $post->post_type );
-		if ( !current_user_can( $post_type->cap->edit_post, $post_id ) ) {
-		  return $post_id;
-		};
+		if ( ! current_user_can( $post_type->cap->edit_post, $post_id ) ) {
+			return $post_id;
+		}
 
 		$alert = Alert::get_alert( $post_id );
 
