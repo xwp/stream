@@ -26,6 +26,23 @@ class Notifier_Menu_Alert extends Notifier {
 		return;
 	}
 
+	public function display_settings_form( $alert, $post ) {
+		$options = wp_parse_args( $alert->alert_meta, array(
+			'clear_immediate' => false,
+		) );
+
+		echo sprintf(
+			'<input type="checkbox" name="%1$s" value="1" %3$s>%2$s',
+			'wp_stream_menu_alert_clear_immediate',
+			esc_attr( __( 'Clear alerts after seen.', 'stream' ) ),
+			checked( $options['clear_immediate'], true, false )
+		);
+	}
+
+	public function process_settings_form( $alert, $post ) {
+		$alert->alert_meta['clear_immediate'] = true;
+	}
+
 	public function menu_alert( $wp_admin_bar ) {
 		$notifications = $this->get_notifications();
 		if ( ! $notifications ) {

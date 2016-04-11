@@ -16,6 +16,13 @@ class Alerts {
 	public $meta_prefix = 'wp_stream';
 
 	/**
+	* Notifiers
+	*
+	* @var array
+	*/
+	public $notifiers = array();
+
+	/**
 	* Class constructor.
 	*
 	* @param Plugin $plugin The main Plugin class.
@@ -220,13 +227,43 @@ class Alerts {
 		);
 
 		add_meta_box(
+			'wp_stream_alerts_notification',
+			__( 'Notifications', 'stream' ),
+			array( $this, 'display_notification_box' ),
+			'wp_stream_alerts',
+			'normal',
+			'default'
+		);
+
+		add_meta_box(
 			'wp_stream_alerts_preview',
 			__( 'Records matching these triggers', 'stream' ),
 			array( $this, 'display_preview_box' ),
 			'wp_stream_alerts',
-			'normal',
-			'high'
+			'advanced',
+			'low'
 		);
+	}
+
+	/**
+	* Display Notifications Meta Box
+	*
+	* @return void
+	*/
+	function display_notification_box( $post ) {
+		$alert = Alert::get_alert( $post->ID );
+		$form = new Form_Generator;
+
+		echo $form->render_field( 'select2', array( //xss ok
+			'name'        => 'wp_stream_alert_type',
+			'value'       => $alert->alert_type,
+			'options'     => $this->get_notification_values(),
+			'placeholder' => __( 'No Alert', 'stream' ),
+		) );
+
+		echo '<div class="wp-stream-alert-settings-form">';
+		$alert->display_settings_form( $post );
+		echo '</div>';
 	}
 
 	/**
@@ -237,35 +274,37 @@ class Alerts {
 	function display_triggers_box( $post ) {
 
 		$alert = Alert::get_alert( $post->ID );
+		$form = new Form_Generator;
 
-		$author_html = $this->create_select2_box(
-			'wp_stream_filter_author',
-			$alert->filter_author,
-			array(),
-			__( 'Any Author', 'stream' )
+		$args = array(
+			'name'        => 'wp_stream_filter_author',
+			'value'       => $alert->filter_author,
+			'options'     => array(),
+			'placeholder' => __( 'Any Author', 'stream' ),
 		);
+		$author_html = $form->render_field( 'select2', $args );
 
-		$action_html = $this->create_select2_box(
-			'wp_stream_filter_action',
-			$alert->filter_action,
-			$this->get_action_values(),
-			__( 'Any Action', 'stream' )
+		$args = array(
+			'name'        => 'wp_stream_filter_action',
+			'value'       => $alert->filter_action,
+			'options'     => $this->get_action_values(),
+			'placeholder' => __( 'Any Action', 'stream' ),
 		);
+		$action_html = $form->render_field( 'select2', $args );
 
-		$context_html = $this->create_select2_box(
-			'wp_stream_filter_context',
-			$alert->filter_context,
-			$this->get_context_values(),
-			__( 'Any Context', 'stream' )
+		$args = array(
+			'name'        => 'wp_stream_filter_context',
+			'value'       => $alert->filter_context,
+			'options'     => $this->get_context_values(),
+			'placeholder' => __( 'Any Context', 'stream' ),
 		);
+		$context_html = $form->render_field( 'select2', $args );
 
-		echo sprintf(
-			// @codingStandardsIgnoreStart already filtered
+		echo sprintf( // xss ok
 			__( 'Create alert whenever %1$s %2$s inside of %3$s', 'stream' ),
 			$author_html,
 			$action_html,
 			$context_html
-			// @codingStandardsIgnoreEnd already filtered
 		);
 
 		wp_nonce_field( 'save_post', 'wp_stream_alerts_nonce' );
@@ -323,21 +362,26 @@ class Alerts {
 		return $context_values;
 	}
 
-	function create_select2_box( $field_name, $current_value, $value_options, $placeholder ) {
-		$action_input = sprintf(
-			'<input type="hidden" class="chosen-select" name="%1$s" value="%2$s" data-values=\'%3$s\' data-placeholder="%4$s"/>',
-			esc_attr( $field_name ),
-			esc_attr( $current_value ),
-			esc_attr( wp_stream_json_encode( $value_options ) ),
-			esc_attr( $placeholder )
-		);
-		return $action_input;
+	function get_notification_values() {
+		$result = array();
+		$names  = wp_list_pluck( $this->notifiers, 'name', 'slug' );
+		foreach ( $names as $slug => $name ) {
+			$result[] = array(
+				'id'   => $slug,
+				'text' => $name,
+			);
+		}
+		return $result;
 	}
 
 	function save_meta_boxes( $post_id, $post ) {
 
 		if ( 'wp_stream_alerts' !== $post->post_type ) {
 			return false;
+		}
+
+		if ( isset( $post->post_status ) && 'auto-draft' === $post->post_status ) {
+			return;
 		}
 
 		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
@@ -349,8 +393,9 @@ class Alerts {
 
 		$alert = Alert::get_alert( $post_id );
 
-		// @todo sanitize input
+		// @todo sanitize input based on possible values
 		$triggers = array(
+			'alert_type'     => ! empty( $_POST['wp_stream_alert_type'] ) ? $_POST['wp_stream_alert_type'] : null,
 			'filter_action'  => ! empty( $_POST['wp_stream_filter_action'] ) ? $_POST['wp_stream_filter_action'] : null,
 			'filter_author'  => ! empty( $_POST['wp_stream_filter_author'] ) ? $_POST['wp_stream_filter_author'] : null,
 			'filter_context' => ! empty( $_POST['wp_stream_filter_context'] ) ? $_POST['wp_stream_filter_context'] : null,
@@ -359,6 +404,8 @@ class Alerts {
 		foreach ( $triggers as $field => $value ) {
 			$alert->$field = $value;
 		}
+
+		$alert->process_settings_form( $post );
 
 		remove_action( 'save_post', array( $this, 'save_meta_boxes' ), 10 );
 		$alert->save();

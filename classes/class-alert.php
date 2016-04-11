@@ -42,7 +42,7 @@ class Alert {
 			'filter_author'  => isset( $meta['filter_author'] ) ? $meta['filter_author'][0] : null,
 			'filter_context' => isset( $meta['filter_context'] ) ? $meta['filter_context'][0] : null,
 			'alert_type'     => isset( $meta['alert_type'] ) ? $meta['alert_type'][0] : null,
-			'alert_meta'     => isset( $meta['alert_meta'] ) ? $meta['alert_meta'][0] : null,
+			'alert_meta'     => isset( $meta['alert_meta'] ) ? maybe_unserialize( $meta['alert_meta'][0] ) : array(),
 		);
 
 		// @todo Load based on alert_type
@@ -101,6 +101,14 @@ class Alert {
 		}
 
 		return true;
+	}
+
+	public function display_settings_form( $post ) {
+		$this->notifier->display_settings_form( $this, $post );
+	}
+
+	public function process_settings_form( $post ) {
+		$this->notifier->process_settings_form( $this, $post );
 	}
 
 	public function populate( array $raw ) {
