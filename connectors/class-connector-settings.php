@@ -349,14 +349,12 @@ class Connector_Settings extends Connector {
 	/**
 	 * Find out if array keys in the option should be logged separately
 	 *
-	 * @param string $key
-	 * @param mixed $old_value
 	 * @param mixed $value
 	 *
 	 * @return bool Whether the option should be treated as a group
 	 */
-	public function is_key_option_group( $key, $old_value, $value ) {
-		if ( ! is_array( $old_value ) && ! is_array( $value ) ) {
+	public function is_option_group( $value ) {
+		if ( ! is_array( $value ) ) {
 			return false;
 		}
 
@@ -693,9 +691,8 @@ class Connector_Settings extends Connector {
 		}
 
 		$changed_options = array();
-		$option_group    = $this->is_key_option_group( $option, $old_value, $value );
 
-		if ( $option_group ) {
+		if ( $this->is_option_group( $value ) ) {
 			foreach ( $this->get_changed_keys( $old_value, $value ) as $field_key ) {
 				if ( ! $this->is_key_ignored( $option, $field_key ) ) {
 					$key_context = $this->get_context_by_key( $option, $field_key );
@@ -799,5 +796,23 @@ class Connector_Settings extends Connector {
 			}(jQuery));
 		</script>
 		<?php
+	}
+
+	/**
+	 * Find out if array keys in the option should be logged separately
+	 *
+	 * @deprecated 3.0.6
+	 * @deprecated Use is_option_group()
+	 * @see is_option_group()
+	 *
+	 * @param string $key
+	 * @param mixed $old_value
+	 * @param mixed $value
+	 *
+	 * @return bool Whether the option should be treated as a group
+	 */
+	public function is_key_option_group( $key, $old_value, $value ) {
+		_deprecated_function( __FUNCTION__, '3.0.6', 'is_option_group' );
+		return $this->is_option_group( $value );
 	}
 }
