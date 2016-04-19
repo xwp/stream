@@ -106,6 +106,8 @@ class Plugin {
 		if ( is_admin() || ( defined( 'WP_STREAM_DEV_DEBUG' ) && WP_STREAM_DEV_DEBUG ) ) {
 			$this->admin   = new Admin( $this );
 			$this->install = new Install( $this );
+		} else if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
+			$this->admin = new Admin( $this );
 		}
 
 		// Load WP-CLI command
