@@ -59,31 +59,6 @@ class Record {
 	}
 
 	/**
-	 * Query record meta
-	 *
-	 * @param string $meta_key (optional)
-	 * @param bool   $single (optional)
-	 *
-	 * @return array
-	 */
-	public function get_meta( $meta_key = '', $single = false ) {
-		return maybe_unserialize( get_metadata( 'record', $this->ID, $meta_key, $single ) );
-	}
-
-	/**
-	 * Update record meta
-	 *
-	 * @param string $meta_key
-	 * @param string $meta_value
-	 * @param string $prev_value (optional)
-	 *
-	 * @return array
-	 */
-	public function update_meta( $meta_key, $meta_value, $prev_value = '' ) {
-		return update_metadata( 'record', $this->ID, $meta_key, $meta_value, $prev_value );
-	}
-
-	/**
 	 * Determine the title of an object that a record is for.
 	 *
 	 * @param  object  Record object
