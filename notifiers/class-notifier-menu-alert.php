@@ -17,11 +17,12 @@ class Notifier_Menu_Alert extends Notifier {
 	 */
 	public $slug = 'menu-alert';
 
-	public function __construct() {
+	public function __construct( $plugin ) {
+		parent::__construct( $plugin );
 		add_action( 'admin_bar_menu', array( $this, 'menu_alert' ), 99 );
 	}
 
-	public function notify( $recordarr, $options ) {
+	public function notify( $record_id, $recordarr, $options ) {
 		$this->add_notification( $recordarr['summary'] );
 		return;
 	}
@@ -31,16 +32,19 @@ class Notifier_Menu_Alert extends Notifier {
 			'clear_immediate' => false,
 		) );
 
-		echo sprintf(
-			'<input type="checkbox" name="%1$s" value="1" %3$s>%2$s',
-			'wp_stream_menu_alert_clear_immediate',
-			esc_attr( __( 'Clear alerts after seen.', 'stream' ) ),
-			checked( $options['clear_immediate'], true, false )
-		);
+		$form = new Form_Generator;
+		$form->add_field( 'checkbox', array(
+			'name'  => 'wp_stream_menu_alert_clear_immediate',
+			'text'  => esc_attr( __( 'Clear alerts after seen.', 'stream' ) ),
+			'value' => $options['clear_immediate'],
+		) );
+
+		echo $form->render_all(); // xss ok
 	}
 
 	public function process_settings_form( $alert, $post ) {
-		$alert->alert_meta['clear_immediate'] = true;
+		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
+		$alert->alert_meta['clear_immediate'] = ! empty( $_POST['wp_stream_menu_alert_clear_immediate'] );
 	}
 
 	public function menu_alert( $wp_admin_bar ) {

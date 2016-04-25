@@ -17,7 +17,7 @@ class Notifier_Null extends Notifier {
 	 */
 	public $slug = 'null';
 
-	public function notify( $recordarr, $options ) {
+	public function notify( $record_id, $recordarr, $options ) {
 		return;
 	}
 }

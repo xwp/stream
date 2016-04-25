@@ -17,7 +17,7 @@ class Notifier_Die extends Notifier {
 	 */
 	public $slug = 'die';
 
-	public function notify( $recordarr, $options ) {
+	public function notify( $record_id, $recordarr, $options ) {
 		echo '<pre>';
 		print_r( $recordarr ); // @codingStandardsIgnoreLine debug not loaded in production
 		echo '</pre>';

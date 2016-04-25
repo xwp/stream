@@ -3,6 +3,12 @@ namespace WP_Stream;
 
 abstract class Notifier {
 
+	public $plugin;
+
+	public function __construct( $plugin ) {
+		$this->plugin = $plugin;
+	}
+
 	/**
 	 *	Notify receipients about the new record
 	 *
@@ -10,7 +16,7 @@ abstract class Notifier {
 	 * @param array $options Notification options
 	 *
 	 */
-	abstract public function notify( $recordarr, $options );
+	abstract public function notify( $record_id, $recordarr, $options );
 
 	/**
 	 * Display settings form for configuration individual alerts

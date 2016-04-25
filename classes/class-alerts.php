@@ -43,7 +43,7 @@ class Alerts {
 		// Add scripts to post screens
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
 
-		add_filter( 'wp_stream_record_array', array( $this, 'check_records' ) );
+		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
 
 		$this->load_notifiers();
 	}
@@ -61,7 +61,7 @@ class Alerts {
 			if ( ! class_exists( $class_name ) ) {
 				continue;
 			}
-			$class = new $class_name();
+			$class = new $class_name( $this->plugin );
 			if ( ! property_exists( $class, 'slug' ) ) {
 				continue;
 			}
@@ -108,7 +108,7 @@ class Alerts {
 		return true;
 	}
 
-	function check_records( $recordarr ) {
+	function check_records( $record_id, $recordarr ) {
 
 		$args = array(
 			'post_type' => 'wp_stream_alerts',
@@ -120,7 +120,7 @@ class Alerts {
 
 			$status = $alert->check_record( $recordarr );
 			if ( $status ) {
-				$alert->send_alert( $recordarr );
+				$alert->send_alert( $record_id, $recordarr );
 			}
 		}
 
