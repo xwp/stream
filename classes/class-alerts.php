@@ -116,7 +116,7 @@ class Alerts {
 
 		$alerts = new \WP_Query( $args );
 		foreach ( $alerts->posts as $alert ) {
-			$alert = Alert::get_alert( $alert->ID );
+			$alert = $this->get_alert( $alert->ID );
 
 			$status = $alert->check_record( $recordarr );
 			if ( $status ) {
@@ -182,6 +182,31 @@ class Alerts {
 		);
 
 		register_post_type( 'wp_stream_alerts', $args );
+	}
+
+
+	public function get_alert( $post_id ) {
+			$post = get_post( $post_id );
+			$meta = get_post_custom( $post_id );
+
+			$obj = (object) array(
+				'ID'             => $post->ID,
+				'date'           => $post->post_date,
+				'author'         => $post->post_author,
+				'filter_action'  => isset( $meta['filter_action'] ) ? $meta['filter_action'][0] : null,
+				'filter_author'  => isset( $meta['filter_author'] ) ? $meta['filter_author'][0] : null,
+				'filter_context' => isset( $meta['filter_context'] ) ? $meta['filter_context'][0] : null,
+				'alert_type'     => isset( $meta['alert_type'] ) ? $meta['alert_type'][0] : null,
+				'alert_meta'     => isset( $meta['alert_meta'] ) ? maybe_unserialize( $meta['alert_meta'][0] ) : array(),
+			);
+
+			if ( array_key_exists( $obj->alert_type, $this->notifiers ) ) {
+				$obj->notifier = $this->notifiers[ $obj->alert_type ];
+			} else {
+				$obj->notifier = new Notifier_Null( $this->plugin );
+			}
+
+			return new Alert( $obj );
 	}
 
 	/**
@@ -251,8 +276,8 @@ class Alerts {
 	* @return void
 	*/
 	function display_notification_box( $post ) {
-		$alert = Alert::get_alert( $post->ID );
-		$form = new Form_Generator;
+		$alert = $this->get_alert( $post->ID );
+		$form  = new Form_Generator;
 
 		echo $form->render_field( 'select2', array( //xss ok
 			'name'        => 'wp_stream_alert_type',
@@ -273,8 +298,8 @@ class Alerts {
 	*/
 	function display_triggers_box( $post ) {
 
-		$alert = Alert::get_alert( $post->ID );
-		$form = new Form_Generator;
+		$alert = $this->get_alert( $post->ID );
+		$form  = new Form_Generator;
 
 		$args = array(
 			'name'        => 'wp_stream_filter_author',
@@ -318,8 +343,7 @@ class Alerts {
 	*/
 	function display_preview_box( $post ) {
 
-		$alert = Alert::get_alert( $post->ID );
-
+		$alert = $this->get_alert( $post->ID );
 		$table = new Preview_List_Table( $this->plugin );
 
 		$items = $this->plugin->db->query( array(
@@ -391,7 +415,7 @@ class Alerts {
 			return $post_id;
 		}
 
-		$alert = Alert::get_alert( $post_id );
+		$alert = $this->get_alert( $post_id );
 
 		// @todo sanitize input based on possible values
 		$triggers = array(

@@ -29,28 +29,6 @@ class Alert {
 		$this->notifier   = isset( $item->notifier ) ? $item->notifier : null;
 	}
 
-	public static function get_alert( $post_id ) {
-
-		$post = get_post( $post_id );
-		$meta = get_post_custom( $post_id );
-
-		$obj = (object) array(
-			'ID'             => $post->ID,
-			'date'           => $post->post_date,
-			'author'         => $post->post_author,
-			'filter_action'  => isset( $meta['filter_action'] ) ? $meta['filter_action'][0] : null,
-			'filter_author'  => isset( $meta['filter_author'] ) ? $meta['filter_author'][0] : null,
-			'filter_context' => isset( $meta['filter_context'] ) ? $meta['filter_context'][0] : null,
-			'alert_type'     => isset( $meta['alert_type'] ) ? $meta['alert_type'][0] : null,
-			'alert_meta'     => isset( $meta['alert_meta'] ) ? maybe_unserialize( $meta['alert_meta'][0] ) : array(),
-		);
-
-		// @todo Load based on alert_type
-		$obj->notifier = new Notifier_Menu_Alert();
-
-		return new Alert( $obj );
-	}
-
 	public function check_record( $recordarr ) {
 
 		if ( ! empty( $this->filter_context ) && $recordarr['context'] !== $this->filter_context ) {
@@ -65,8 +43,8 @@ class Alert {
 
 	}
 
-	public function send_alert( $recordarr ) {
-		$this->notifier->notify( $recordarr, array() );
+	public function send_alert( $record_id, $recordarr ) {
+		$this->notifier->notify( $record_id, $recordarr, array() );
 	}
 
 	public function save() {
