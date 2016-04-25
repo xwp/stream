@@ -16,18 +16,24 @@ class Form_Generator {
 	}
 
 	public function render_all() {
-		$output = '';
+		$output = '<table class="form-table">';
 		foreach ( $this->fields as $data ) {
+			$title = ( array_key_exists( 'title', $data['args'] ) ) ? $data['args']['title'] : '';
+
+			$output .= '<tr><th>' . $title . '</th><td>';
 			$output .= $this->render_field( $data['type'], $data['args'] );
+			$output .= '</td><tr>';
 		}
+		$output .= '</table>';
 		return $output;
 	}
 
 	public function render_field( $field_type, $original_args ) {
 
 		$args = wp_parse_args( $original_args, array(
-			'name'  => '',
-			'value' => '',
+			'name'        => '',
+			'value'       => '',
+			'description' => '',
 		) );
 
 		$output = '';
@@ -77,6 +83,8 @@ class Form_Generator {
 				$output = apply_filters( 'wp_stream_form_render_field', $output, $field_type, $original_args );
 				break;
 		}
+
+		$output .= ! empty( $args['description'] ) ? wp_kses_post( sprintf( '<p class="description">%s</p>', $args['description'] ) ) : null;
 
 		return $output;
 	}

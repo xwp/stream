@@ -280,16 +280,16 @@ class Alerts {
 		$alert = $this->get_alert( $post->ID );
 		$form  = new Form_Generator;
 
-		echo $form->render_field( 'select2', array( //xss ok
+		$form->add_field( 'select2', array(
 			'name'        => 'wp_stream_alert_type',
 			'value'       => $alert->alert_type,
 			'options'     => $this->get_notification_values(),
 			'placeholder' => __( 'No Alert', 'stream' ),
+			'title'       => 'Alert Type:',
 		) );
 
-		echo '<div class="wp-stream-alert-settings-form">';
+		echo $form->render_all(); //xss ok
 		$alert->display_settings_form( $post );
-		echo '</div>';
 	}
 
 	/**

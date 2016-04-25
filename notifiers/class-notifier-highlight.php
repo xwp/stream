@@ -36,7 +36,7 @@ class Notifier_Highlight extends Notifier {
 		$form = new Form_Generator;
 		$form->add_field( 'select', array(
 			'name'    => 'wp_stream_highlight_color',
-			'text'    => esc_attr( __( 'Highlight Color', 'stream' ) ),
+			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
 			'options' => $this->get_highlight_options(),
 			'value'   => $options['color'],
 		) );
