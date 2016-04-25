@@ -55,17 +55,15 @@ class Notifier_Highlight extends Notifier {
 		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
 
 		$input_color = $_POST['wp_stream_highlight_color'];
-		if ( ! in_array( $input_color , $this->get_highlight_options() ) ) {
+		if ( ! in_array( $input_color , $this->get_highlight_options(), true ) ) {
 			$alert->alert_meta['color'] = 'yellow';
 		} else {
 			$alert->alert_meta['color'] = $input_color;
 		}
-		print_r( $alert->alert_meta );
-		die;
 	}
 
 	public function post_class( $classes, $recordarr ) {
-		if ( ! empty( $recordarr->meta['highlight'] )) {
+		if ( ! empty( $recordarr->meta['highlight'] ) ) {
 				$classes[] = 'highlight-notification-' . esc_attr( $recordarr->meta['highlight'] );
 		}
 		return $classes;
