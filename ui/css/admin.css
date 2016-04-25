@@ -144,6 +144,10 @@
 	}
 }
 
+.toplevel_page_wp_stream tr.highlight-notification-yellow {
+	background-color: #F3F781;
+}
+
 .toplevel_page_wp_stream .wp-list-table tr td::before {
 	content: "" !important;
 }

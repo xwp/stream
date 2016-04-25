@@ -52,6 +52,7 @@ class Alerts {
 		$notifiers = array(
 			'null',
 			'menu-alert',
+			'highlight',
 		);
 
 		$classes = array();

@@ -838,6 +838,19 @@ class List_Table extends \WP_List_Table {
 		echo '</form>';
 	}
 
+	function single_row( $item ) {
+
+		$classes      = apply_filters( 'wp_stream_record_classes', array(), $item );
+		$class_string = '';
+		if ( ! empty( $classes ) ) {
+			$class_string = ' class="' . esc_attr( join( ',', $classes ) ) . '"';
+		}
+
+		echo sprintf( '<tr%s>', $class_string ); //xss ok
+		$this->single_row_columns( $item );
+		echo '</tr>';
+	}
+
 	function display_tablenav( $which ) {
 		if ( 'top' === $which ) : ?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
