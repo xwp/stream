@@ -44,7 +44,7 @@ class Alert {
 	}
 
 	public function send_alert( $record_id, $recordarr ) {
-		$this->notifier->notify( $record_id, $recordarr, array() );
+		$this->notifier->notify( $record_id, $recordarr, $this->alert_meta );
 	}
 
 	public function save() {
