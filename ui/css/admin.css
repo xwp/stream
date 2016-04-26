@@ -144,10 +144,6 @@
 	}
 }
 
-.toplevel_page_wp_stream tr.highlight-notification-yellow {
-	background-color: #F3F781;
-}
-
 .toplevel_page_wp_stream .wp-list-table tr td::before {
 	content: "" !important;
 }
@@ -193,10 +189,6 @@
 	margin-right: 3px;
 	margin-bottom: 6px;
 	min-width: 165px;
-}
-
-.post-type-wp_stream_alerts #post-body-content {
-	display: none;
 }
 
 .toplevel_page_wp_stream .select2-container.select2-allowclear .select2-choice abbr {
@@ -510,6 +502,24 @@
 	.wp_stream_default_settings .stream-exclude-list tfoot {
 		display: none;
 	}
+}
+
+
+.toplevel_page_wp_stream tr.highlight-notification-yellow {
+	background-color: #F7F8E0;
+}
+
+.toplevel_page_wp_stream tr.highlight-notification-red {
+	background-color: #F8E0E0;
+}
+
+/* Alert Single Page */
+.post-type-wp_stream_alerts #post-body-content {
+	display: none;
+}
+
+#wp_stream_alerts_notification select {
+	min-width: 165px;
 }
 
 
