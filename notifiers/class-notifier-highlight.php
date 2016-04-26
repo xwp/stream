@@ -25,6 +25,9 @@ class Notifier_Highlight extends Notifier {
 	}
 
 	public function notify( $record_id, $recordarr, $options ) {
+		$options = wp_parse_args( $options, array(
+			'color' => 'yellow',
+		) );
 		$this->plugin->db->insert_meta( $record_id, 'highlight', $options['color'] );
 	}
 
@@ -60,6 +63,7 @@ class Notifier_Highlight extends Notifier {
 		} else {
 			$alert->alert_meta['color'] = $input_color;
 		}
+
 	}
 
 	public function post_class( $classes, $recordarr ) {
