@@ -8,7 +8,7 @@ class Notifier_Null extends Notifier {
 	 *
 	 * @var string
 	 */
-	public $name = 'Null Notifier';
+	public $name = 'None';
 
 	/**
 	 * Notifier slug

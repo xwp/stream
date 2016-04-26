@@ -37,6 +37,7 @@ class Notifier_Menu_Alert extends Notifier {
 			'name'  => 'wp_stream_menu_alert_clear_immediate',
 			'text'  => esc_attr( __( 'Clear alerts after seen.', 'stream' ) ),
 			'value' => $options['clear_immediate'],
+			'title' => __( 'Menu Bar', 'stream' ),
 		) );
 
 		echo $form->render_all(); // xss ok
