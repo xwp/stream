@@ -2,7 +2,6 @@
 namespace WP_Stream;
 
 class Notifier_Null extends Notifier {
-
 	/**
 	 * Notifier name
 	 *

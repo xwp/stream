@@ -7,22 +7,24 @@ class Alert {
 	public $author;
 
 	public $filter_author;
-	public $filter_action;
 	public $filter_context;
+	public $filter_action;
 	public $alert_type;
 	public $alert_meta;
 
+	/**
+	 * @var Notifier
+	 */
 	public $notifier;
 
 	public function __construct( $item ) {
-
 		$this->ID      = isset( $item->ID ) ? $item->ID : null;
 		$this->date    = isset( $item->date ) ? $item->date : null;
 		$this->author = isset( $item->author ) ? $item->author : null;
 
-		$this->filter_action  = isset( $item->filter_action ) ? $item->filter_action : null;
 		$this->filter_author  = isset( $item->filter_author ) ? $item->filter_author : null;
 		$this->filter_context = isset( $item->filter_context ) ? $item->filter_context : null;
+		$this->filter_action  = isset( $item->filter_action ) ? $item->filter_action : null;
 
 		$this->alert_type = isset( $item->alert_type ) ? $item->alert_type : null;
 		$this->alert_meta = isset( $item->alert_meta ) ? $item->alert_meta : null;
@@ -30,7 +32,6 @@ class Alert {
 	}
 
 	public function check_record( $recordarr ) {
-
 		if ( ! empty( $this->filter_context ) && $recordarr['context'] !== $this->filter_context ) {
 			return false;
 		}
@@ -60,7 +61,9 @@ class Alert {
 			'post_author'  => $this->author,
 			'post_type'    => 'wp_stream_alerts',
 		);
+
 		$post_id = wp_insert_post( $args );
+
 		if ( 0 === $post_id ) {
 			return false;
 		} else if ( null === $this->ID ) {
@@ -74,6 +77,7 @@ class Alert {
 			'alert_type'     => $this->alert_type,
 			'alert_meta'     => $this->alert_meta,
 		);
+
 		foreach ( $meta as $key => $value ) {
 			$this->update_meta( $key, $value );
 		}

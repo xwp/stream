@@ -27,25 +27,25 @@ class Preview_List_Table extends List_Table {
 	 */
 	public function display() {
 		$singular = $this->_args['singular'];
-?>
-<table class="wp-list-table <?php esc_attr_e( implode( ' ', $this->get_table_classes() ) ); ?>">
-	<thead>
-	<tr>
-		<?php $this->print_column_headers(); ?>
-	</tr>
-	</thead>
+		?>
+		<table class="wp-list-table <?php esc_attr_e( implode( ' ', $this->get_table_classes() ) ); ?>">
+			<thead>
+			<tr>
+				<?php $this->print_column_headers(); ?>
+			</tr>
+			</thead>
 
-	<tbody id="the-list">
-		<?php $this->display_rows_or_placeholder(); ?>
-	</tbody>
+			<tbody id="the-list">
+				<?php $this->display_rows_or_placeholder(); ?>
+			</tbody>
 
-	<tfoot>
-	<tr>
-		<?php $this->print_column_headers( false ); ?>
-	</tr>
-	</tfoot>
+			<tfoot>
+			<tr>
+				<?php $this->print_column_headers( false ); ?>
+			</tr>
+			</tfoot>
 
-</table>
-<?php
+		</table>
+		<?php
 	}
 }

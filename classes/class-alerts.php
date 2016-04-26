@@ -97,7 +97,6 @@ class Alerts {
 	 * @return bool
 	 */
 	public function is_valid_notifier( $notifier ) {
-
 		if ( ! is_a( $notifier, 'WP_Stream\Notifier' ) ) {
 			return false;
 		}
@@ -110,7 +109,6 @@ class Alerts {
 	}
 
 	function check_records( $record_id, $recordarr ) {
-
 		$args = array(
 			'post_type' => 'wp_stream_alerts',
 		);
@@ -298,7 +296,6 @@ class Alerts {
 	* @return void
 	*/
 	function display_triggers_box( $post ) {
-
 		$alert = $this->get_alert( $post->ID );
 		$form  = new Form_Generator;
 
@@ -343,7 +340,6 @@ class Alerts {
 	* @return void
 	*/
 	function display_preview_box( $post ) {
-
 		$alert = $this->get_alert( $post->ID );
 		$table = new Preview_List_Table( $this->plugin );
 
@@ -400,7 +396,6 @@ class Alerts {
 	}
 
 	function save_meta_boxes( $post_id, $post ) {
-
 		if ( 'wp_stream_alerts' !== $post->post_type ) {
 			return false;
 		}
