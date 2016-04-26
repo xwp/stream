@@ -55,7 +55,7 @@ class Notifier_Highlight extends Notifier {
 		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
 
 		$input_color = $_POST['wp_stream_highlight_color'];
-		if ( ! in_array( $input_color , $this->get_highlight_options(), true ) ) {
+		if ( ! array_key_exists( $input_color , $this->get_highlight_options() ) ) {
 			$alert->alert_meta['color'] = 'yellow';
 		} else {
 			$alert->alert_meta['color'] = $input_color;
