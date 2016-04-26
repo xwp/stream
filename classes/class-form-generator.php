@@ -50,7 +50,7 @@ class Form_Generator {
 					$output .= sprintf(
 						'<option value="%1$s" %2$s>%3$s</option>',
 						esc_attr( $value ),
-						checked( $value === $current_value, true, false ),
+						selected( $value === $current_value, true, false ),
 						esc_html( $label )
 					);
 				}
