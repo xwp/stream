@@ -17,6 +17,12 @@ class Notifier_Highlight extends Notifier {
 	 */
 	public $slug = 'highlight';
 
+	/**
+	 * Class Constructor
+	 *
+	 * @param Plugin $plugin Plugin object.
+	 * @return void
+	 */
 	public function __construct( $plugin ) {
 		parent::__construct( $plugin );
 		if ( is_admin() ) {
@@ -24,6 +30,14 @@ class Notifier_Highlight extends Notifier {
 		}
 	}
 
+	/**
+	 * Adds a highlight to the record that triggered the alert.
+	 *
+	 * @param int   $record_id Record that triggered alert.
+	 * @param array $recordarr Record details.
+	 * @param array $options Alert options.
+	 * @return void
+	 */
 	public function notify( $record_id, $recordarr, $options ) {
 		$options = wp_parse_args( $options, array(
 			'color' => 'yellow',
@@ -31,6 +45,13 @@ class Notifier_Highlight extends Notifier {
 		$this->plugin->db->insert_meta( $record_id, 'highlight', $options['color'] );
 	}
 
+	/**
+	 * Displays a settings form for the alert type
+	 *
+	 * @param Alert   $alert Alert object for the currently displayed alert.
+	 * @param WP_Post $post Post object representing the current alert.
+	 * @return void
+	 */
 	public function display_settings_form( $alert, $post ) {
 		$options = wp_parse_args( $alert->alert_meta, array(
 			'color' => 'yellow',
@@ -47,6 +68,11 @@ class Notifier_Highlight extends Notifier {
 		echo $form->render_all(); // xss ok
 	}
 
+	/**
+	 * Lists available color options for alerts.
+	 *
+	 * @return array List of highlight color options.
+	 */
 	public function get_highlight_options() {
 		return array(
 			'yellow' => __( 'Yellow', 'stream' ),
@@ -54,6 +80,13 @@ class Notifier_Highlight extends Notifier {
 		);
 	}
 
+	/**
+	 * Validates and saves form settings for later use.
+	 *
+	 * @param Alert   $alert Alert object for the currently displayed alert.
+	 * @param WP_Post $post Post object representing the current alert.
+	 * @return void
+	 */
 	public function process_settings_form( $alert, $post ) {
 		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
 
@@ -66,6 +99,13 @@ class Notifier_Highlight extends Notifier {
 
 	}
 
+	/**
+	 * Apply highlight to records
+	 *
+	 * @param array $classes List of classes being applied to the post.
+	 * @param array $recordarr Record data.
+	 * @return array New list of classes.
+	 */
 	public function post_class( $classes, $recordarr ) {
 		if ( ! empty( $recordarr->meta['highlight'] ) ) {
 				$classes[] = 'highlight-notification-' . esc_attr( $recordarr->meta['highlight'] );
