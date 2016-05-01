@@ -38,6 +38,13 @@ class Form_Generator {
 
 		$output = '';
 		switch ( $field_type ) {
+			case 'text':
+				$output = sprintf(
+					'<input type="text" name="%1$s" value="%2$s" />',
+					esc_attr( $args['name'] ),
+					esc_attr( $args['value'] )
+				);
+				break;
 			case 'select':
 				$current_value = $args['value'];
 
