@@ -53,6 +53,7 @@ class Alerts {
 			'null',
 			'menu-alert',
 			'highlight',
+			'emailer',
 		);
 
 		$classes = array();
