@@ -104,10 +104,11 @@ class Alert {
 	/**
 	 * Query record meta
 	 *
-	 * @param string $meta_key (optional)
-	 * @param bool   $single (optional)
+	 * @param string $meta_key Meta key to retrieve (optional). Otherwise will
+	 * 	grab all meta data for the ID.
+	 * @param bool   $single Whether to only retrieve the first value (optional).
 	 *
-	 * @return array
+	 * @return mixed Single value if $single is true, array if false.
 	 */
 	public function get_meta( $meta_key = '', $single = false ) {
 		return maybe_unserialize( get_post_meta( $this->ID, $meta_key, $single ) );
@@ -116,10 +117,9 @@ class Alert {
 	/**
 	 * Update record meta
 	 *
-	 * @param string $meta_key
-	 * @param string $meta_value
-	 * @param string $prev_value (optional)
-	 *
+	 * @param string $meta_key Meta key to update.
+	 * @param string $meta_value Value to update with.
+	 * @param string $prev_value Previous value to change (optional).
 	 * @return array
 	 */
 	public function update_meta( $meta_key, $meta_value, $prev_value = '' ) {
@@ -128,8 +128,9 @@ class Alert {
 
 	/**
 	 * Determine the title of the alert.
+	 *
 	 * @todo enhance human readibility
-	 * @return string   The title of the alert
+	 * @return string The title of the alert
 	 */
 	function get_title() {
 		$format = __( '%1$s when %2$s %3$s in %4$s', 'stream' );

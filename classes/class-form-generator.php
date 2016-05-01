@@ -2,12 +2,30 @@
 namespace WP_Stream;
 
 class Form_Generator {
+
+	/**
+	 * List of all registered fields.
+	 *
+	 * @var array
+	 */
 	public $fields = array();
 
+	/**
+	 * Class constructor
+	 *
+	 * @return void
+	 */
 	public function __construct() {
 		$this->fields = array();
 	}
 
+	/**
+	 * Adds a new field to the form.
+	 *
+	 * @param string $field_type The type of field being added.
+	 * @param array  $args Options for the field. See render_field().
+	 * @return void
+	 */
 	public function add_field( $field_type, $args ) {
 		$this->fields[] = array(
 			'type' => $field_type,
@@ -15,6 +33,11 @@ class Form_Generator {
 		);
 	}
 
+	/**
+	 * Renders all fields currently registered.
+	 *
+	 * @return string
+	 */
 	public function render_all() {
 		$output = '<table class="form-table">';
 		foreach ( $this->fields as $data ) {
@@ -28,6 +51,12 @@ class Form_Generator {
 		return $output;
 	}
 
+	/**
+	 * Renders a single field.
+	 *
+	 * @param string $field_type The type of field being rendered.
+	 * @param array  $original_args The options for the field type.
+	 */
 	public function render_field( $field_type, $original_args ) {
 
 		$args = wp_parse_args( $original_args, array(

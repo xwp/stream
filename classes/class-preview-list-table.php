@@ -3,11 +3,23 @@ namespace WP_Stream;
 
 class Preview_List_Table extends List_Table {
 
+	/**
+	 * Class constructor.
+	 *
+	 * @param Plugin $plugin Plugin object.
+	 * @return void
+	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 		parent::__construct( $plugin );
 	}
 
+	/**
+	 * Sets up the records for display.
+	 *
+	 * @param array $items List of items for display.
+	 * @return void
+	 */
 	function set_records( $items ) {
 		$columns	= $this->get_columns();
 		$sortable = $this->get_sortable_columns();

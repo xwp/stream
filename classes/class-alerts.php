@@ -3,44 +3,45 @@ namespace WP_Stream;
 
 class Alerts {
 	/**
-	* Hold Plugin class
-	* @var Plugin
-	*/
+	 * Hold Plugin class
+	 *
+	 * @var Plugin
+	 */
 	public $plugin;
 
 	/**
-	* Post meta prefix
-	*
-	* @var string
-	*/
+	 * Post meta prefix
+	 *
+	 * @var string
+	 */
 	public $meta_prefix = 'wp_stream';
 
 	/**
-	* Notifiers
-	*
-	* @var array
-	*/
+	 * Notifiers
+	 *
+	 * @var array
+	 */
 	public $notifiers = array();
 
 	/**
-	* Class constructor.
-	*
-	* @param Plugin $plugin The main Plugin class.
-	*/
+	 * Class constructor.
+	 *
+	 * @param Plugin $plugin The main Plugin class.
+	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
-		// Register custom post type
+		// Register custom post type.
 		add_action( 'init', array( $this, 'register_post_type' ) );
 
-		// Add custom post type to menu
+		// Add custom post type to menu.
 		add_action( 'wp_stream_admin_menu', array( $this, 'register_menu' ) );
 
-		// Add metaboxes to post screens
+		// Add metaboxes to post screens.
 		add_action( 'load-post.php', array( $this, 'register_meta_boxes' ) );
 		add_action( 'load-post-new.php', array( $this, 'register_meta_boxes' ) );
 
-		// Add scripts to post screens
+		// Add scripts to post screens.
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
 
 		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
@@ -48,6 +49,11 @@ class Alerts {
 		$this->load_notifiers();
 	}
 
+	/**
+	 * Load notifier classes
+	 *
+	 * @return void
+	 */
 	function load_notifiers() {
 		$notifiers = array(
 			'null',
@@ -77,7 +83,7 @@ class Alerts {
 		 */
 		$this->notifiers = apply_filters( 'wp_stream_notifiers', $classes );
 
-		// Ensure that all notifiers extend Notifier
+		// Ensure that all notifiers extend Notifier.
 		foreach ( $this->notifiers as $key => $notifier ) {
 			if ( ! $this->is_valid_notifier( $notifier ) ) {
 				unset( $this->notifiers[ $key ] );
@@ -110,6 +116,13 @@ class Alerts {
 		return true;
 	}
 
+	/**
+	 * Checks record being processed against active alerts.
+	 *
+	 * @param int   $record_id The record being processed.
+	 * @param array $recordarr Record data.
+	 * @return array
+	 */
 	function check_records( $record_id, $recordarr ) {
 
 		$args = array(
@@ -130,6 +143,12 @@ class Alerts {
 
 	}
 
+	/**
+	 * Register scripts for page load
+	 *
+	 * @param string $page Current file name.
+	 * @return void
+	 */
 	function register_scripts( $page ) {
 		if ( 'post.php' === $page || 'post-new.php' === $page ) {
 			wp_enqueue_script( 'wp-strean-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2' ) );
@@ -138,12 +157,12 @@ class Alerts {
 	}
 
 	/**
-	* Register custom post type
-	*
-	* @action init
-	*
-	* @return void
-	*/
+	 * Register custom post type
+	 *
+	 * @action init
+	 *
+	 * @return void
+	 */
 	public function register_post_type() {
 		$labels = array(
 			'name'							 => _x( 'Alerts', 'post type general name', 'stream' ),
@@ -186,7 +205,12 @@ class Alerts {
 		register_post_type( 'wp_stream_alerts', $args );
 	}
 
-
+	/**
+	 * Return alert object of the given ID
+	 *
+	 * @param int $post_id Post ID for the alert.
+	 * @return Alert
+	 */
 	public function get_alert( $post_id ) {
 			$post = get_post( $post_id );
 			$meta = get_post_custom( $post_id );
@@ -212,12 +236,12 @@ class Alerts {
 	}
 
 	/**
-	* Add custom post type to menu
-	*
-	* @action admin_menu
-	*
-	* @return void
-	*/
+	 * Add custom post type to menu
+	 *
+	 * @action admin_menu
+	 *
+	 * @return void
+	 */
 	function register_menu() {
 		add_submenu_page(
 			$this->plugin->admin->records_page_slug,
@@ -229,20 +253,20 @@ class Alerts {
 	}
 
 	/**
-	* Register metaboxes with post screens
-	*
-	* @return void
-	*/
+	 * Register metaboxes with post screens
+	 *
+	 * @return void
+	 */
 	function register_meta_boxes() {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 10, 2 );
 	}
 
 	/**
-	* Add metaboxes to post screens
-	*
-	* @return void
-	*/
+	 * Add metaboxes to post screens
+	 *
+	 * @return void
+	 */
 	function add_meta_boxes() {
 		add_meta_box(
 			'wp_stream_alerts_triggers',
@@ -273,10 +297,11 @@ class Alerts {
 	}
 
 	/**
-	* Display Notifications Meta Box
-	*
-	* @return void
-	*/
+	 * Display Notifications Meta Box
+	 *
+	 * @param WP_Post $post Post object for current alert.
+	 * @return void
+	 */
 	function display_notification_box( $post ) {
 		$alert = $this->get_alert( $post->ID );
 		$form  = new Form_Generator;
@@ -289,15 +314,16 @@ class Alerts {
 			'title'       => 'Alert Type:',
 		) );
 
-		echo $form->render_all(); //xss ok
+		echo $form->render_all(); // xss ok
 		$alert->display_settings_form( $post );
 	}
 
 	/**
-	* Display Trigger Meta Box
-	*
-	* @return void
-	*/
+	 * Display Trigger Meta Box
+	 *
+	 * @param WP_Post $post Post object for current alert.
+	 * @return void
+	 */
 	function display_triggers_box( $post ) {
 
 		$alert = $this->get_alert( $post->ID );
@@ -339,10 +365,11 @@ class Alerts {
 	}
 
 	/**
-	* Display Preview Meta Box
-	*
-	* @return void
-	*/
+	 * Display Preview Meta Box
+	 *
+	 * @param WP_Post $post Post object for current alert.
+	 * @return void
+	 */
 	function display_preview_box( $post ) {
 
 		$alert = $this->get_alert( $post->ID );
@@ -359,6 +386,11 @@ class Alerts {
 
 	}
 
+	/**
+	 * Return all action values.
+	 *
+	 * @return array
+	 */
 	function get_action_values() {
 		$action_values = array();
 		foreach ( $this->get_terms_labels( 'action' ) as $action_id => $action_data ) {
@@ -367,6 +399,11 @@ class Alerts {
 		return $action_values;
 	}
 
+	/**
+	 * Return all context values
+	 *
+	 * @return array
+	 */
 	function get_context_values() {
 		$context_values = array();
 		foreach ( $this->get_terms_labels( 'context' ) as $context_id => $context_data ) {
@@ -388,6 +425,11 @@ class Alerts {
 		return $context_values;
 	}
 
+	/**
+	 * Return all notification values
+	 *
+	 * @return array
+	 */
 	function get_notification_values() {
 		$result = array();
 		$names  = wp_list_pluck( $this->notifiers, 'name', 'slug' );
@@ -400,6 +442,12 @@ class Alerts {
 		return $result;
 	}
 
+	/**
+	 * Process alert settings
+	 *
+	 * @param int     $post_id Post ID for the current alert.
+	 * @param WP_Post $post Post object for the current alert.
+	 */
 	function save_meta_boxes( $post_id, $post ) {
 
 		if ( 'wp_stream_alerts' !== $post->post_type ) {
@@ -443,7 +491,7 @@ class Alerts {
 	 * Function will return all terms labels of given column
 	 *
 	 * @todo refactor Settings::get_terms_labels into general utility
-	 * @param string $column string Name of the column
+	 * @param string $column string Name of the column.
 	 * @return array
 	 */
 	public function get_terms_labels( $column ) {
