@@ -30,7 +30,6 @@ class Alert {
 	 * @var int
 	 */
 	public $filter_author;
-<<<<<<< HEAD
 
 	/**
 	 * Alert trigger action
@@ -51,10 +50,6 @@ class Alert {
 	 *
 	 * @var int
 	 */
-=======
-	public $filter_context;
-	public $filter_action;
->>>>>>> origin/alerts
 	public $alert_type;
 
 	/**
