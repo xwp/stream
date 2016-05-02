@@ -304,7 +304,7 @@ class Alerts {
 		$alert = $this->get_alert( $post->ID );
 		$form  = new Form_Generator;
 
-		$form->add_field( 'select2', array(
+		$field_html = $form->render_field( 'select', array(
 			'name'        => 'wp_stream_alert_type',
 			'value'       => $alert->alert_type,
 			'options'     => $this->get_notification_values(),
