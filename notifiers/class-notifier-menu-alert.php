@@ -2,7 +2,6 @@
 namespace WP_Stream;
 
 class Notifier_Menu_Alert extends Notifier {
-
 	/**
 	 * Notifier name
 	 *

@@ -839,7 +839,6 @@ class List_Table extends \WP_List_Table {
 	}
 
 	function single_row( $item ) {
-
 		$classes      = apply_filters( 'wp_stream_record_classes', array(), $item );
 		$class_string = '';
 		if ( ! empty( $classes ) ) {

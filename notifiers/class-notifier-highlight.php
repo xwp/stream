@@ -2,7 +2,6 @@
 namespace WP_Stream;
 
 class Notifier_Highlight extends Notifier {
-
 	/**
 	 * Notifier name
 	 *

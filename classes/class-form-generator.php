@@ -58,7 +58,6 @@ class Form_Generator {
 	 * @param array  $original_args The options for the field type.
 	 */
 	public function render_field( $field_type, $original_args ) {
-
 		$args = wp_parse_args( $original_args, array(
 			'name'        => '',
 			'value'       => '',
