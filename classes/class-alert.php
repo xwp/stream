@@ -2,18 +2,76 @@
 namespace WP_Stream;
 
 class Alert {
+
+	/**
+	 * Alert post ID
+	 *
+	 * @var int
+	 */
 	public $ID;
+
+	/**
+	 * Creation date
+	 *
+	 * @var string
+	 */
 	public $date;
+
+	/**
+	 * Alert author ID
+	 *
+	 * @var int
+	 */
 	public $author;
 
+	/**
+	 * Alert trigger author
+	 *
+	 * @var int
+	 */
 	public $filter_author;
+
+	/**
+	 * Alert trigger action
+	 *
+	 * @var int
+	 */
 	public $filter_action;
+
+	/**
+	 * Alert trigger context
+	 *
+	 * @var int
+	 */
 	public $filter_context;
+
+	/**
+	 * Alert type
+	 *
+	 * @var int
+	 */
 	public $alert_type;
+
+	/**
+	 * Alert meta data
+	 *
+	 * @var int
+	 */
 	public $alert_meta;
 
+	/**
+	 * Notifier object
+	 *
+	 * @var int
+	 */
 	public $notifier;
 
+	/**
+	 * Class constructor
+	 *
+	 * @param object $item Alert data
+	 * @return void
+	 */
 	public function __construct( $item ) {
 
 		$this->ID      = isset( $item->ID ) ? $item->ID : null;
@@ -29,6 +87,12 @@ class Alert {
 		$this->notifier   = isset( $item->notifier ) ? $item->notifier : null;
 	}
 
+	/**
+	 * Check if record matches trigger criteria.
+	 *
+	 * @param array $recordarr Record data.
+	 * @return bool True if a positive match. False otherwise.
+	 */
 	public function check_record( $recordarr ) {
 
 		if ( ! empty( $this->filter_context ) && $recordarr['context'] !== $this->filter_context ) {
@@ -43,10 +107,22 @@ class Alert {
 
 	}
 
+	/**
+	 * Trigger alert for a specific record.
+	 *
+	 * @param int $record_id Record ID.
+	 * @param int $recordarr Record Data.
+	 * @return void
+	 */
 	public function send_alert( $record_id, $recordarr ) {
 		$this->notifier->notify( $record_id, $recordarr, $this->alert_meta );
 	}
 
+	/**
+	 * Process alert settings
+	 *
+	 * @return bool True if alert was updated, false if inserted.
+	 */
 	public function save() {
 		if ( ! $this->validate() ) {
 			return new \WP_Error( 'validation-error', esc_html__( 'Could not validate record data.', 'stream' ) );
