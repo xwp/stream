@@ -1,16 +1,16 @@
 <?php
 namespace WP_Stream;
 
-class Notifier_Die extends Notifier {
+class Alert_Type_Die extends Alert_Type {
 	/**
-	 * Notifier name
+	 * Alert type name
 	 *
 	 * @var string
 	 */
 	public $name = 'Die Notifier';
 
 	/**
-	 * Notifier slug
+	 * Alert type slug
 	 *
 	 * @var string
 	 */
@@ -24,7 +24,7 @@ class Notifier_Die extends Notifier {
 	 * @param array $options Alert options.
 	 * @return void
 	 */
-	public function notify( $record_id, $recordarr, $options ) {
+	public function alert( $record_id, $recordarr, $options ) {
 		echo '<pre>';
 		print_r( $recordarr ); // @codingStandardsIgnoreLine debug not loaded in production
 		echo '</pre>';

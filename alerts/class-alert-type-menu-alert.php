@@ -1,16 +1,16 @@
 <?php
 namespace WP_Stream;
 
-class Notifier_Menu_Alert extends Notifier {
+class Alert_Type_Menu_Alert extends Alert_Type {
 	/**
-	 * Notifier name
+	 * Alert type name
 	 *
 	 * @var string
 	 */
 	public $name = 'Menu Alert Notifier';
 
 	/**
-	 * Notifier slug
+	 * Alert type slug
 	 *
 	 * @var string
 	 */
@@ -35,8 +35,8 @@ class Notifier_Menu_Alert extends Notifier {
 	 * @param array $options Alert options.
 	 * @return void
 	 */
-	public function notify( $record_id, $recordarr, $options ) {
-		$this->add_notification( $recordarr['summary'] );
+	public function alert( $record_id, $recordarr, $options ) {
+		$this->add_message( $recordarr['summary'] );
 		return;
 	}
 
@@ -82,8 +82,8 @@ class Notifier_Menu_Alert extends Notifier {
 	 * @return bool True if notifications were displayed, false otherwise.
 	 */
 	public function menu_alert( $wp_admin_bar ) {
-		$notifications = $this->get_notifications();
-		if ( ! $notifications ) {
+		$messages = $this->get_messages();
+		if ( ! $messages ) {
 			return false;
 		}
 
@@ -95,7 +95,7 @@ class Notifier_Menu_Alert extends Notifier {
 			'meta' => array( 'class' => 'opposite' ),
 		) );
 
-		foreach ( $this->get_notifications() as $key => $message ) {
+		foreach ( $messages as $key => $message ) {
 			$wp_admin_bar->add_node( array(
 				'id'     => 'wp_stream_alert_notify_' . $key,
 				'parent' => 'wp_stream_alert_notify',
@@ -105,7 +105,7 @@ class Notifier_Menu_Alert extends Notifier {
 			) );
 		}
 
-		$this->clear_notifications();
+		$this->clear_messages();
 		return true;
 	}
 
@@ -114,10 +114,10 @@ class Notifier_Menu_Alert extends Notifier {
 	 *
 	 * @return array List of alert messages
 	 */
-	public function get_notifications() {
+	public function get_messages() {
 		$current_user	= wp_get_current_user();
-		$notifications = get_user_meta( $current_user->ID, $this->get_key(), false );
-		return $notifications;
+		$messages = get_user_meta( $current_user->ID, $this->get_key(), false );
+		return $messages;
 	}
 
 	/**
@@ -126,7 +126,7 @@ class Notifier_Menu_Alert extends Notifier {
 	 * @param string $message Alert message to add.
 	 * @return void
 	 */
-	public function add_notification( $message ) {
+	public function add_message( $message ) {
 		$current_user	= wp_get_current_user();
 		add_user_meta( $current_user->ID, $this->get_key(), $message, false );
 	}
@@ -137,7 +137,7 @@ class Notifier_Menu_Alert extends Notifier {
 	 * @param bool $global Whether to clear globally.
 	 * @return void
 	 */
-	public function clear_notifications( $global = false ) {
+	public function clear_messages( $global = false ) {
 		$current_user	= wp_get_current_user();
 		delete_user_meta( $current_user->ID, $this->get_key(), $global );
 	}

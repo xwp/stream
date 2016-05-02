@@ -1,16 +1,16 @@
 <?php
 namespace WP_Stream;
 
-class Notifier_Highlight extends Notifier {
+class Alert_Type_Highlight extends Alert_Type {
 	/**
-	 * Notifier name
+	 * Alert type name
 	 *
 	 * @var string
 	 */
 	public $name = 'Highlight Notifier';
 
 	/**
-	 * Notifier slug
+	 * Alert type slug
 	 *
 	 * @var string
 	 */
@@ -37,7 +37,7 @@ class Notifier_Highlight extends Notifier {
 	 * @param array $options Alert options.
 	 * @return void
 	 */
-	public function notify( $record_id, $recordarr, $options ) {
+	public function alert( $record_id, $recordarr, $options ) {
 		$options = wp_parse_args( $options, array(
 			'color' => 'yellow',
 		) );

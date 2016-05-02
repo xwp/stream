@@ -48,7 +48,7 @@ class Alert {
 	/**
 	 * Alert type
 	 *
-	 * @var int
+	 * @var string
 	 */
 	public $alert_type;
 
@@ -60,11 +60,11 @@ class Alert {
 	public $alert_meta;
 
 	/**
-	 * Notifier object
+	 * Alert type object
 	 *
-	 * @var Notifier
+	 * @var Alert_Type
 	 */
-	public $notifier;
+	public $alert_type_obj;
 
 	/**
 	 * Class constructor
@@ -83,7 +83,7 @@ class Alert {
 
 		$this->alert_type = isset( $item->alert_type ) ? $item->alert_type : null;
 		$this->alert_meta = isset( $item->alert_meta ) ? $item->alert_meta : null;
-		$this->notifier   = isset( $item->notifier ) ? $item->notifier : null;
+		$this->alert_type_obj   = isset( $item->alert_type_obj ) ? $item->alert_type_obj : null;
 	}
 
 	/**
@@ -113,7 +113,7 @@ class Alert {
 	 * @return void
 	 */
 	public function send_alert( $record_id, $recordarr ) {
-		$this->notifier->notify( $record_id, $recordarr, $this->alert_meta );
+		$this->alert_type_obj->alert( $record_id, $recordarr, $this->alert_meta );
 	}
 
 	/**
@@ -159,11 +159,11 @@ class Alert {
 	}
 
 	public function display_settings_form( $post ) {
-		$this->notifier->display_settings_form( $this, $post );
+		$this->alert_type_obj->display_settings_form( $this, $post );
 	}
 
 	public function process_settings_form( $post ) {
-		$this->notifier->process_settings_form( $this, $post );
+		$this->alert_type_obj->process_settings_form( $this, $post );
 	}
 
 	public function populate( array $raw ) {

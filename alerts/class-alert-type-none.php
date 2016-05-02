@@ -1,7 +1,7 @@
 <?php
 namespace WP_Stream;
 
-class Notifier_Null extends Notifier {
+class Alert_Type_None extends Alert_Type {
 	/**
 	 * Notifier name
 	 *
@@ -24,7 +24,7 @@ class Notifier_Null extends Notifier {
 	 * @param array $options Alert options.
 	 * @return void
 	 */
-	public function notify( $record_id, $recordarr, $options ) {
+	public function alert( $record_id, $recordarr, $options ) {
 		return;
 	}
 }

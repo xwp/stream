@@ -1,17 +1,17 @@
 <?php
 namespace WP_Stream;
 
-class Notifier_Emailer extends Notifier {
+class Alert_Type_Email extends Alert_Type {
 
 	/**
-	 * Notifier name
+	 * Alert type name
 	 *
 	 * @var string
 	 */
 	public $name = 'Email Notifier';
 
 	/**
-	 * Notifier slug
+	 * Alert type slug
 	 *
 	 * @var string
 	 */
@@ -25,7 +25,7 @@ class Notifier_Emailer extends Notifier {
 	 * @param array $options Alert options.
 	 * @return void
 	 */
-	public function notify( $record_id, $recordarr, $options ) {
+	public function alert( $record_id, $recordarr, $options ) {
 		$options = wp_parse_args( $alert->alert_meta, array(
 			'email_recipient' => '',
 			'email_subject'   => '',

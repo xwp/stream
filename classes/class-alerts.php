@@ -21,7 +21,7 @@ class Alerts {
 	 *
 	 * @var array
 	 */
-	public $notifiers = array();
+	public $alert_types = array();
 
 	/**
 	 * Class constructor.
@@ -46,26 +46,26 @@ class Alerts {
 
 		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
 
-		$this->load_notifiers();
+		$this->load_alert_types();
 	}
 
 	/**
-	 * Load notifier classes
+	 * Load alert_type classes
 	 *
 	 * @return void
 	 */
-	function load_notifiers() {
-		$notifiers = array(
-			'null',
+	function load_alert_types() {
+		$alert_types = array(
+			'none',
 			'menu-alert',
 			'highlight',
-			'emailer',
+			'email',
 		);
 
 		$classes = array();
-		foreach ( $notifiers as $notifier ) {
-			include_once $this->plugin->locations['dir'] . '/notifiers/class-notifier-' . $notifier .'.php';
-			$class_name = sprintf( '\WP_Stream\Notifier_%s', str_replace( '-', '_', $notifier ) );
+		foreach ( $alert_types as $alert_type ) {
+			include_once $this->plugin->locations['dir'] . '/alerts/class-alert-type-' . $alert_type .'.php';
+			$class_name = sprintf( '\WP_Stream\Alert_Type_%s', str_replace( '-', '_', $alert_type ) );
 			if ( ! class_exists( $class_name ) ) {
 				continue;
 			}
@@ -77,20 +77,20 @@ class Alerts {
 		}
 
 		/**
-		 * Allows for adding additional notifiers via classes that extend Notifier.
+		 * Allows for adding additional alert_types via classes that extend Notifier.
 		 *
-		 * @param array $classes An array of Notifier objects. In the format notifier_slug => Notifier_Class()
+		 * @param array $classes An array of Notifier objects. In the format alert_type_slug => Notifier_Class()
 		 */
-		$this->notifiers = apply_filters( 'wp_stream_notifiers', $classes );
+		$this->alert_types = apply_filters( 'wp_stream_alert_types', $classes );
 
-		// Ensure that all notifiers extend Notifier.
-		foreach ( $this->notifiers as $key => $notifier ) {
-			if ( ! $this->is_valid_notifier( $notifier ) ) {
-				unset( $this->notifiers[ $key ] );
+		// Ensure that all alert_types extend Notifier.
+		foreach ( $this->alert_types as $key => $alert_type ) {
+			if ( ! $this->is_valid_alert_type( $alert_type ) ) {
+				unset( $this->alert_types[ $key ] );
 				trigger_error(
 					sprintf(
-						esc_html__( 'Registered notifier %s does not extend WP_Stream\Notifier.', 'stream' ),
-						esc_html( get_class( $notifier ) )
+						esc_html__( 'Registered alert_type %s does not extend WP_Stream\Alert_Type.', 'stream' ),
+						esc_html( get_class( $alert_type ) )
 					)
 				);
 			}
@@ -98,17 +98,17 @@ class Alerts {
 	}
 
 	/**
-	 * Checks whether a notifier class is valid
+	 * Checks whether a alert_type class is valid
 	 *
-	 * @param Notifier $notifier The class to check.
+	 * @param Alert_Type $alert_type The class to check.
 	 * @return bool
 	 */
-	public function is_valid_notifier( $notifier ) {
-		if ( ! is_a( $notifier, 'WP_Stream\Notifier' ) ) {
+	public function is_valid_alert_type( $alert_type ) {
+		if ( ! is_a( $alert_type, 'WP_Stream\Alert_Type' ) ) {
 			return false;
 		}
 
-		if ( ! method_exists( $notifier, 'is_dependency_satisfied' ) || ! $notifier->is_dependency_satisfied() ) {
+		if ( ! method_exists( $alert_type, 'is_dependency_satisfied' ) || ! $alert_type->is_dependency_satisfied() ) {
 			return false;
 		}
 
@@ -224,10 +224,10 @@ class Alerts {
 				'alert_meta'     => isset( $meta['alert_meta'] ) ? maybe_unserialize( $meta['alert_meta'][0] ) : array(),
 			);
 
-			if ( array_key_exists( $obj->alert_type, $this->notifiers ) ) {
-				$obj->notifier = $this->notifiers[ $obj->alert_type ];
+			if ( array_key_exists( $obj->alert_type, $this->alert_types ) ) {
+				$obj->alert_type_obj = $this->alert_types[ $obj->alert_type ];
 			} else {
-				$obj->notifier = new Notifier_Null( $this->plugin );
+				$obj->alert_type_obj = new Alert_Type_None( $this->plugin );
 			}
 
 			return new Alert( $obj );
@@ -268,7 +268,7 @@ class Alerts {
 	function add_meta_boxes() {
 		add_meta_box(
 			'wp_stream_alerts_triggers',
-			__( 'Triggers', 'stream' ),
+			__( 'Alert Trigger', 'stream' ),
 			array( $this, 'display_triggers_box' ),
 			'wp_stream_alerts',
 			'normal',
@@ -276,8 +276,8 @@ class Alerts {
 		);
 
 		add_meta_box(
-			'wp_stream_alerts_notification',
-			__( 'Notifications', 'stream' ),
+			'wp_stream_alerts_alert_type',
+			__( 'Alert Type', 'stream' ),
 			array( $this, 'display_notification_box' ),
 			'wp_stream_alerts',
 			'normal',
@@ -295,7 +295,7 @@ class Alerts {
 	}
 
 	/**
-	 * Display Notifications Meta Box
+	 * Display Alert Type Meta Box
 	 *
 	 * @param WP_Post $post Post object for current alert.
 	 * @return void
@@ -428,7 +428,7 @@ class Alerts {
 	 */
 	function get_notification_values() {
 		$result = array();
-		$names  = wp_list_pluck( $this->notifiers, 'name', 'slug' );
+		$names  = wp_list_pluck( $this->alert_types, 'name', 'slug' );
 		foreach ( $names as $slug => $name ) {
 			$result[] = array(
 				'id'   => $slug,

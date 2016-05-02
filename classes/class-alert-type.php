@@ -1,7 +1,7 @@
 <?php
 namespace WP_Stream;
 
-abstract class Notifier {
+abstract class Alert_Type {
 
 	public $plugin;
 
@@ -16,13 +16,13 @@ abstract class Notifier {
 	}
 
 	/**
-	 *	Notify receipients about the new record
+	 *	Alert receipients about the new record
 	 *
 	 * @param int   $record_id Record ID.
 	 * @param array $recordarr Record details.
-	 * @param array $options Notification options.
+	 * @param array $options Alert options.
 	 */
-	abstract public function notify( $record_id, $recordarr, $options );
+	abstract public function alert( $record_id, $recordarr, $options );
 
 	/**
 	 * Display settings form for configuration individual alerts
