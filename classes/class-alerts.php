@@ -312,7 +312,9 @@ class Alerts {
 			'title'       => 'Alert Type:',
 		) );
 
-		echo $form->render_all(); // xss ok
+		echo '<p>' . esc_html__( 'Alert me by:', 'stream' ) . '</p>';
+		echo $field_html; // xss ok
+
 		$alert->display_settings_form( $post );
 	}
 
@@ -329,32 +331,34 @@ class Alerts {
 		$args = array(
 			'name'        => 'wp_stream_filter_author',
 			'value'       => $alert->filter_author,
-			'options'     => array(),
-			'placeholder' => __( 'Any Author', 'stream' ),
+			'options'     => array(), //@TODO Grab real users list.
+			'placeholder' => __( 'Show all users', 'stream' ),
 		);
 		$author_html = $form->render_field( 'select2', $args );
-
-		$args = array(
-			'name'        => 'wp_stream_filter_action',
-			'value'       => $alert->filter_action,
-			'options'     => $this->get_action_values(),
-			'placeholder' => __( 'Any Action', 'stream' ),
-		);
-		$action_html = $form->render_field( 'select2', $args );
 
 		$args = array(
 			'name'        => 'wp_stream_filter_context',
 			'value'       => $alert->filter_context,
 			'options'     => $this->get_context_values(),
-			'placeholder' => __( 'Any Context', 'stream' ),
+			'placeholder' => __( 'Show all contexts', 'stream' ),
 		);
 		$context_html = $form->render_field( 'select2', $args );
 
+		$args = array(
+			'name'        => 'wp_stream_filter_action',
+			'value'       => $alert->filter_action,
+			'options'     => $this->get_action_values(),
+			'placeholder' => __( 'Show all actions', 'stream' ),
+		);
+		$action_html = $form->render_field( 'select2', $args );
+
+		//@todo use human readable text
+		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>';
 		echo sprintf( // xss ok
-			__( 'Create alert whenever %1$s %2$s inside of %3$s', 'stream' ),
+			__( '%1$s %2$s %3$s', 'stream' ),
 			$author_html,
-			$action_html,
-			$context_html
+			$context_html,
+			$action_html
 		);
 
 		wp_nonce_field( 'save_post', 'wp_stream_alerts_nonce' );
@@ -430,10 +434,7 @@ class Alerts {
 		$result = array();
 		$names  = wp_list_pluck( $this->alert_types, 'name', 'slug' );
 		foreach ( $names as $slug => $name ) {
-			$result[] = array(
-				'id'   => $slug,
-				'text' => $name,
-			);
+			$result[ $slug ] = $name;
 		}
 		return $result;
 	}
