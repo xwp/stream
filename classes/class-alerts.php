@@ -105,6 +105,7 @@ class Alerts {
 	 */
 	function load_alert_triggers() {
 		$alert_triggers = array(
+			'author',
 			'action',
 			'context',
 		);
