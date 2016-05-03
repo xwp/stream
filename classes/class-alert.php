@@ -92,17 +92,8 @@ class Alert {
 	 * @param array $recordarr Record data.
 	 * @return bool True if a positive match. False otherwise.
 	 */
-	public function check_record( $recordarr ) {
-		if ( ! empty( $this->filter_context ) && $recordarr['context'] !== $this->filter_context ) {
-			return false;
-		}
-
-		if ( ! empty( $this->filter_action ) && $recordarr['action'] !== $this->filter_action ) {
-			return false;
-		}
-
-		return true;
-
+	public function check_record( $record_id, $recordarr ) {
+		return apply_filters( 'wp_stream_alert_trigger_check', true, $record_id, $recordarr, $this );
 	}
 
 	/**

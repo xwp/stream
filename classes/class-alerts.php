@@ -47,6 +47,7 @@ class Alerts {
 		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
 
 		$this->load_alert_types();
+		$this->load_alert_triggers();
 	}
 
 	/**
@@ -98,7 +99,53 @@ class Alerts {
 	}
 
 	/**
-	 * Checks whether a alert_type class is valid
+	 * Load alert_type classes
+	 *
+	 * @return void
+	 */
+	function load_alert_triggers() {
+		$alert_triggers = array(
+			'action',
+			'context',
+		);
+
+		$classes = array();
+		foreach ( $alert_triggers as $alert_trigger ) {
+			include_once $this->plugin->locations['dir'] . '/alerts/class-alert-trigger-' . $alert_trigger .'.php';
+			$class_name = sprintf( '\WP_Stream\Alert_Trigger_%s', str_replace( '-', '_', $alert_trigger ) );
+			if ( ! class_exists( $class_name ) ) {
+				continue;
+			}
+			$class = new $class_name( $this->plugin );
+			if ( ! property_exists( $class, 'slug' ) ) {
+				continue;
+			}
+			$classes[ $class->slug ] = $class;
+		}
+
+		/**
+		 * Allows for adding additional alert_triggers via classes that extend Notifier.
+		 *
+		 * @param array $classes An array of Notifier objects. In the format alert_trigger_slug => Notifier_Class()
+		 */
+		$this->alert_triggers = apply_filters( 'wp_stream_alert_triggers', $classes );
+
+		// Ensure that all alert_triggers extend Notifier.
+		foreach ( $this->alert_triggers as $key => $alert_trigger ) {
+			if ( ! $this->is_valid_alert_trigger( $alert_trigger ) ) {
+				unset( $this->alert_triggers[ $key ] );
+				trigger_error(
+					sprintf(
+						esc_html__( 'Registered alert_trigger %s does not extend WP_Stream\Alert_Trigger.', 'stream' ),
+						esc_html( get_class( $alert_trigger ) )
+					)
+				);
+			}
+		}
+	}
+
+	/**
+	 * Checks whether a Alert Type class is valid
 	 *
 	 * @param Alert_Type $alert_type The class to check.
 	 * @return bool
@@ -109,6 +156,24 @@ class Alerts {
 		}
 
 		if ( ! method_exists( $alert_type, 'is_dependency_satisfied' ) || ! $alert_type->is_dependency_satisfied() ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Checks whether a Alert Trigger class is valid
+	 *
+	 * @param Alert_Trigger $alert_trigger The class to check.
+	 * @return bool
+	 */
+	public function is_valid_alert_trigger( $alert_trigger ) {
+		if ( ! is_a( $alert_trigger, 'WP_Stream\Alert_Trigger' ) ) {
+			return false;
+		}
+
+		if ( ! method_exists( $alert_trigger, 'is_dependency_satisfied' ) || ! $alert_trigger->is_dependency_satisfied() ) {
 			return false;
 		}
 
@@ -131,7 +196,7 @@ class Alerts {
 		foreach ( $alerts->posts as $alert ) {
 			$alert = $this->get_alert( $alert->ID );
 
-			$status = $alert->check_record( $recordarr );
+			$status = $alert->check_record( $record_id, $recordarr );
 			if ( $status ) {
 				$alert->send_alert( $record_id, $recordarr );
 			}
@@ -326,40 +391,13 @@ class Alerts {
 	 */
 	function display_triggers_box( $post ) {
 		$alert = $this->get_alert( $post->ID );
+
 		$form  = new Form_Generator;
-
-		$args = array(
-			'name'        => 'wp_stream_filter_author',
-			'value'       => $alert->filter_author,
-			'options'     => array(), //@TODO Grab real users list.
-			'placeholder' => __( 'Show all users', 'stream' ),
-		);
-		$author_html = $form->render_field( 'select2', $args );
-
-		$args = array(
-			'name'        => 'wp_stream_filter_context',
-			'value'       => $alert->filter_context,
-			'options'     => $this->get_context_values(),
-			'placeholder' => __( 'Show all contexts', 'stream' ),
-		);
-		$context_html = $form->render_field( 'select2', $args );
-
-		$args = array(
-			'name'        => 'wp_stream_filter_action',
-			'value'       => $alert->filter_action,
-			'options'     => $this->get_action_values(),
-			'placeholder' => __( 'Show all actions', 'stream' ),
-		);
-		$action_html = $form->render_field( 'select2', $args );
+		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
 
 		//@todo use human readable text
 		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>';
-		echo sprintf( // xss ok
-			__( '%1$s %2$s %3$s', 'stream' ),
-			$author_html,
-			$context_html,
-			$action_html
-		);
+		echo $form->render_all(); // xss ok
 
 		wp_nonce_field( 'save_post', 'wp_stream_alerts_nonce' );
 
@@ -375,28 +413,16 @@ class Alerts {
 		$alert = $this->get_alert( $post->ID );
 		$table = new Preview_List_Table( $this->plugin );
 
-		$items = $this->plugin->db->query( array(
-			'action' => $alert->filter_action,
-			'context' => $alert->filter_context,
+		$query = array(
 			'records_per_page' => apply_filters( 'stream_records_per_page', 20 ),
-		) );
+		);
+
+		$query = apply_filters( 'stream_alerts_preview_query', $query, $alert );
+		$items = $this->plugin->db->query( $query );
 
 		$table->set_records( $items );
 		$table->display();
 
-	}
-
-	/**
-	 * Return all action values.
-	 *
-	 * @return array
-	 */
-	function get_action_values() {
-		$action_values = array();
-		foreach ( $this->get_terms_labels( 'action' ) as $action_id => $action_data ) {
-			$action_values[] = array( 'id' => $action_id, 'text' => $action_data );
-		}
-		return $action_values;
 	}
 
 	/**
@@ -466,9 +492,6 @@ class Alerts {
 		// @todo sanitize input based on possible values
 		$triggers = array(
 			'alert_type'     => ! empty( $_POST['wp_stream_alert_type'] ) ? $_POST['wp_stream_alert_type'] : null,
-			'filter_action'  => ! empty( $_POST['wp_stream_filter_action'] ) ? $_POST['wp_stream_filter_action'] : null,
-			'filter_author'  => ! empty( $_POST['wp_stream_filter_author'] ) ? $_POST['wp_stream_filter_author'] : null,
-			'filter_context' => ! empty( $_POST['wp_stream_filter_context'] ) ? $_POST['wp_stream_filter_context'] : null,
 		);
 
 		foreach ( $triggers as $field => $value ) {
@@ -477,41 +500,11 @@ class Alerts {
 
 		$alert->process_settings_form( $post );
 
+		do_action( 'wp_stream_alert_trigger_form_save', $alert );
+
 		remove_action( 'save_post', array( $this, 'save_meta_boxes' ), 10 );
 		$alert->save();
 		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 10, 2 );
 
-	}
-
-	/**
-	 * Function will return all terms labels of given column
-	 *
-	 * @todo refactor Settings::get_terms_labels into general utility
-	 * @param string $column string Name of the column.
-	 * @return array
-	 */
-	public function get_terms_labels( $column ) {
-		$return_labels = array();
-
-		if ( isset( $this->plugin->connectors->term_labels[ 'stream_' . $column ] ) ) {
-			if ( 'context' === $column && isset( $this->plugin->connectors->term_labels['stream_connector'] ) ) {
-				$connectors = $this->plugin->connectors->term_labels['stream_connector'];
-				$contexts   = $this->plugin->connectors->term_labels['stream_context'];
-
-				foreach ( $connectors as $connector => $connector_label ) {
-					$return_labels[ $connector ]['label'] = $connector_label;
-					foreach ( $contexts as $context => $context_label ) {
-						if ( isset( $this->plugin->connectors->contexts[ $connector ] ) && array_key_exists( $context, $this->plugin->connectors->contexts[ $connector ] ) ) {
-							$return_labels[ $connector ]['children'][ $context ] = $context_label;
-						}
-					}
-				}
-			} else {
-				$return_labels = $this->plugin->connectors->term_labels[ 'stream_' . $column ];
-			}
-
-			ksort( $return_labels );
-		}
-		return $return_labels;
 	}
 }
