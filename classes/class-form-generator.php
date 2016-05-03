@@ -39,6 +39,14 @@ class Form_Generator {
 	 * @return string
 	 */
 	public function render_all() {
+		$output = '';
+		foreach ( $this->fields as $data ) {
+			$output .= $this->render_field( $data['type'], $data['args'] );
+		}
+		return $output;
+	}
+
+	public function render_as_table() {
 		$output = '<table class="form-table">';
 		foreach ( $this->fields as $data ) {
 			$title = ( array_key_exists( 'title', $data['args'] ) ) ? $data['args']['title'] : '';
