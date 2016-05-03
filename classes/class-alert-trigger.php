@@ -26,6 +26,23 @@ abstract class Alert_Trigger {
 	abstract public function check_record ( $success, $record_id, $recordarr, $alert );
 
 	/**
+	 * Adds fields to the trigger form.
+	 *
+	 * @param Form_Generator $form The Form Object to add to.
+	 * @param Alert          $alert The Alert being worked on.
+	 * @return void
+	 */
+	abstract public function add_fields( $form, $alert );
+
+	/**
+	 * Validate and save Alert object
+	 *
+	 * @param Alert $alert The Alert being worked on.
+	 * @return void
+	 */
+	abstract public function save_fields( $alert );
+
+	/**
 	 * Alters the preview table query to show records matching this query.
 	 *
 	 * @param array $query_args The database query arguments for the table.
