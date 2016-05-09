@@ -7,7 +7,7 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	public $field_key = 'wp_stream_trigger_author';
 
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
-		if ( ! empty( $alert->alert_meta['trigger_author'] ) && $recordarr['author'] !== $alert->alert_meta['trigger_author'] ) {
+		if ( ! empty( $alert->alert_meta['trigger_author'] ) && intval( $alert->alert_meta['trigger_author'] ) !== $recordarr['user_id'] ) {
 			return false;
 		}
 		return $success;
