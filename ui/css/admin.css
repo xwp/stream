@@ -513,6 +513,11 @@
 	background-color: #F8E0E0;
 }
 
+/* Alert List Page */
+.post-type-wp_stream_alerts #posts-filter #post-query-submit {
+	display: none;
+}
+
 /* Alert Single Page */
 .post-type-wp_stream_alerts #post-body-content {
 	display: none;

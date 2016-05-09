@@ -46,6 +46,9 @@ class Alerts {
 
 		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
 
+		add_filter( 'bulk_actions-edit-wp_stream_alerts', array( $this, 'supress_bulk_actions' ), 10, 1 );
+		add_filter( 'disable_months_dropdown', array( $this, 'supress_months_dropdown' ), 10, 2 );
+
 		$this->load_alert_types();
 		$this->load_alert_triggers();
 	}
@@ -218,6 +221,17 @@ class Alerts {
 			wp_enqueue_script( 'wp-strean-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2' ) );
 			wp_enqueue_style( 'wp-stream-select2' );
 		}
+	}
+
+	public function supress_bulk_actions( $actions ) {
+		return array();
+	}
+
+	public function supress_months_dropdown( $status, $post_type ) {
+		if ( 'wp_stream_alerts' === $post_type ) {
+			$status = true;
+		}
+		return $status;
 	}
 
 	/**
