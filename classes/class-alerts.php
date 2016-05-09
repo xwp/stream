@@ -267,6 +267,26 @@ class Alerts {
 		);
 
 		register_post_type( 'wp_stream_alerts', $args );
+
+		$args = array(
+			'label'                     => _x( 'Enabled', 'alert', 'stream' ),
+			'public'                    => false,
+			'show_in_admin_all_list'    => true,
+			'show_in_admin_status_list' => true,
+			'label_count'               => _n_noop( 'Enabled <span class="count">(%s)</span>', 'Enabled <span class="count">(%s)</span>', 'stream' ),
+		);
+
+		register_post_status( 'wp_stream_enabled', $args );
+
+		$args = array(
+			'label'                     => _x( 'Disabled', 'alert', 'stream' ),
+			'public'                    => false,
+			'show_in_admin_all_list'    => true,
+			'show_in_admin_status_list' => true,
+			'label_count'               => _n_noop( 'Disabled <span class="count">(%s)</span>', 'Disabled <span class="count">(%s)</span>', 'stream' ),
+		);
+
+		register_post_status( 'wp_stream_disabled', $args );
 	}
 
 	/**
@@ -332,6 +352,8 @@ class Alerts {
 	 * @return void
 	 */
 	function add_meta_boxes() {
+		remove_meta_box( 'submitdiv', 'wp_stream_alerts', 'side' );
+
 		add_meta_box(
 			'wp_stream_alerts_triggers',
 			__( 'Alert Trigger', 'stream' ),
@@ -357,6 +379,15 @@ class Alerts {
 			'wp_stream_alerts',
 			'advanced',
 			'low'
+		);
+
+		add_meta_box(
+			'wp_stream_alerts_submit',
+			__( 'Alert Status', 'stream' ),
+			array( $this, 'display_submit_box' ),
+			'wp_stream_alerts',
+			'side',
+			'default'
 		);
 	}
 
@@ -424,6 +455,62 @@ class Alerts {
 		$table->set_records( $items );
 		$table->display();
 
+	}
+
+	/**
+	 * Display Submit Box
+	 *
+	 * @param WP_Post $post Post object for current alert.
+	 * @return void
+	 */
+	function display_submit_box( $post ) {
+		global $action;
+
+		$post_type = $post->post_type;
+		$post_type_object = get_post_type_object( $post_type );
+		$can_publish = current_user_can( $post_type_object->cap->publish_posts );
+		?>
+		<div class="submitbox" id="submitpost">
+			<div id="minor-publishing">
+				<div id="minor-publishing-actions">
+					<div id="save-action">
+						<input type="submit" name="save" id="save-post" value="<?php esc_attr_e( 'Save', 'stream' ); ?>" class="button" />
+						<span class="spinner"></span>
+						<div class="clear"></div>
+					</div>
+				</div>
+				<div id="misc-publishing-actions">
+					<div class="misc-pub-section misc-pub-post-status">
+						<label for="post_status"><?php esc_html_e( 'Status:', 'stream' ) ?></label>
+						<span id="post-status-display">
+						<?php
+						switch ( $post->post_status ) {
+							case 'wp_stream_enabled':
+								esc_html_e( 'Enabled', 'stream' );
+								break;
+							case 'wp_stream_disabled':
+								esc_html_e( 'Disabled', 'stream' );
+								break;
+						}
+						?>
+						</span>
+						<a href="#post_status" class="edit-post-status hide-if-no-js"><span aria-hidden="true"><?php esc_html_e( 'Edit' ); ?></span> <span class="screen-reader-text"><?php esc_html_e( 'Edit status' ); ?></span></a>
+
+						<div id="post-status-select" class="hide-if-js">
+							<input type="hidden" name="hidden_post_status" id="hidden_post_status" value="<?php echo esc_attr( ( 'auto-draft' === $post->post_status ) ? 'draft' : $post->post_status ); ?>" />
+							<select name='post_status' id='post_status'>
+								<option<?php selected( $post->post_status, 'wp_stream_enabled' ); ?> value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
+								<option<?php selected( $post->post_status, 'wp_stream_disabled' ); ?> value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
+							</select>
+							<a href="#post_status" class="save-post-status hide-if-no-js button"><?php esc_html_e( 'OK', 'stream' ); ?></a>
+							<a href="#post_status" class="cancel-post-status hide-if-no-js button-cancel"><?php esc_html_e( 'Cancel', 'stream' ); ?></a>
+						</div>
+						<div class="clear"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php
 	}
 
 	/**
