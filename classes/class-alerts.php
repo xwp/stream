@@ -257,7 +257,6 @@ class Alerts {
 			'cb' => $columns['cb'],
 			'title' => $columns['title'],
 			'status' => __( 'Status', 'stream' ),
-			'date' => $columns['date'],
 		);
 		return $columns;
 	}
