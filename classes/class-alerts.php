@@ -48,6 +48,7 @@ class Alerts {
 
 		add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
 		add_filter( 'manage_wp_stream_alerts_posts_columns', array( $this, 'manage_columns' ) );
+		add_filter( 'views_edit-wp_stream_alerts', array( $this, 'manage_views' ) );
 		add_action( 'manage_wp_stream_alerts_posts_custom_column', array( $this, 'column_data' ), 10, 2 );
 
 		$this->load_alert_types();
@@ -225,6 +226,23 @@ class Alerts {
 			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled' );
 		}
 		return $query_vars;
+	}
+
+	/**
+	 *
+	 *
+	 * @param int   $record_id The record being processed.
+	 * @param array $recordarr Record data.
+	 * @return array
+	 */
+	function manage_views( $views ) {
+
+		// Move trash to end of the list
+		$trash = $views['trash'];
+		unset( $views['trash'] );
+		$views['trash'] = $trash;
+
+		return $views;
 	}
 
 	/**
