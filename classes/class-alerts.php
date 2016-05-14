@@ -222,7 +222,7 @@ class Alerts {
 	function parse_request( $query_vars ) {
 		$screen = get_current_screen();
 		if ( 'edit-wp_stream_alerts' === $screen->id && 'wp_stream_alerts' === $query_vars['post_type'] && empty( $query_vars['post_status'] ) ) {
-			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled', 'trash' );
+			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled' );
 		}
 		return $query_vars;
 	}
