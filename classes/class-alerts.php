@@ -222,7 +222,7 @@ class Alerts {
 	function parse_request( $query_vars ) {
 		$screen = get_current_screen();
 		if ( 'edit-wp_stream_alerts' === $screen->id && 'wp_stream_alerts' === $query_vars['post_type'] && empty( $query_vars['post_status'] ) ) {
-			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled' );
+			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled', 'trash' );
 		}
 		return $query_vars;
 	}
@@ -528,26 +528,39 @@ class Alerts {
 		}
 		?>
 		<div class="submitbox" id="submitpost">
-			<div id="misc-publishing-actions">
-				<div class="misc-pub-section misc-pub-post-status">
-				<label for="wp_stream_alert_status"><?php esc_html_e( 'Currently active:', 'stream' ) ?></label>
-					<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
-						<option<?php selected( $post_status, 'wp_stream_enabled' ); ?> value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
-						<option<?php selected( $post_status, 'wp_stream_disabled' ); ?> value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
-					</select>
-				</div>
-				<div id="minor-publishing">
-					<div id="minor-publishing-actions">
-						<div id="save-action">
-							<input type="submit" name="save" id="save-post" value="<?php esc_attr_e( 'Save', 'stream' ); ?>" class="button" />
-							<span class="spinner"></span>
-							<div class="clear"></div>
-						</div>
+		<div id="minor-publishing">
+				<div id="misc-publishing-actions">
+					<div class="misc-pub-section misc-pub-post-status">
+					<label for="wp_stream_alert_status"><?php esc_html_e( 'Currently active:', 'stream' ) ?></label>
+						<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
+							<option<?php selected( $post_status, 'wp_stream_enabled' ); ?> value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
+							<option<?php selected( $post_status, 'wp_stream_disabled' ); ?> value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
+						</select>
 					</div>
 				</div>
 				<div class="clear"></div>
-			</div>
 		</div>
+
+		<div id="major-publishing-actions">
+			<div id="delete-action">
+				<?php
+				if ( current_user_can( 'delete_post', $post->ID ) ) {
+					if ( ! EMPTY_TRASH_DAYS ) {
+						$delete_text = __( 'Delete Permanently', 'stream' );
+					} else {
+						$delete_text = __( 'Move to Trash', 'stream' );
+					}
+					?>
+				<a class="submitdelete deletion" href="<?php echo get_delete_post_link( $post->ID ); ?>"><?php esc_html_e( $delete_text ); ?></a><?php
+				} ?>
+				</div>
+				<div id="publishing-action">
+					<span class="spinner"></span>
+					<?php submit_button( __( 'Save' ), 'primary button-large', 'publish', false ); ?>
+				</div>
+				<div class="clear"></div>
+			</div>
+	</div>
 		<?php
 	}
 
