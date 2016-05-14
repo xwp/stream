@@ -612,14 +612,16 @@ class Alerts {
 	 */
 	function save_meta_boxes( $post_id, $post ) {
 		if ( 'wp_stream_alerts' !== $post->post_type ) {
-			return false;
+			return;
 		}
 
 		if ( isset( $post->post_status ) && 'auto-draft' === $post->post_status ) {
 			return;
 		}
 
-		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
+		if ( ! isset( $_POST['wp_stream_alerts_nonce'] ) || ! wp_verify_nonce( $_POST['wp_stream_alerts_nonce'], 'save_post' ) ) {
+				return $post_id;
+		}
 
 		$post_type = get_post_type_object( $post->post_type );
 		if ( ! current_user_can( $post_type->cap->edit_post, $post_id ) ) {
