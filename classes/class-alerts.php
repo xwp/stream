@@ -611,11 +611,7 @@ class Alerts {
 	 * @param WP_Post $post Post object for the current alert.
 	 */
 	function save_meta_boxes( $post_id, $post ) {
-		if ( 'wp_stream_alerts' !== $post->post_type ) {
-			return;
-		}
-
-		if ( isset( $post->post_status ) && 'auto-draft' === $post->post_status ) {
+		if ( 'wp_stream_alerts' !== $post->post_type || ( isset( $post->post_status ) && 'auto-draft' === $post->post_status ) ) {
 			return;
 		}
 
