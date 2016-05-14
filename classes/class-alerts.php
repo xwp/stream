@@ -45,6 +45,7 @@ class Alerts {
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
 
 		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
+		add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
 
 		$this->load_alert_types();
 		$this->load_alert_triggers();
@@ -206,6 +207,21 @@ class Alerts {
 
 		return $recordarr;
 
+	}
+
+	/**
+	 * Default to wp_stream_enabled and wp_stream_disabled when querying for alerts
+	 *
+	 * @param int   $record_id The record being processed.
+	 * @param array $recordarr Record data.
+	 * @return array
+	 */
+	function parse_request( $query_vars ) {
+		$screen = get_current_screen();
+		if ( 'edit-wp_stream_alerts' === $screen->id && 'wp_stream_alerts' === $query_vars['post_type'] && empty( $query_vars['post_status'] ) ) {
+			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled' );
+		}
+		return $query_vars;
 	}
 
 	/**
