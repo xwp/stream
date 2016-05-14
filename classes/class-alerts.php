@@ -45,7 +45,10 @@ class Alerts {
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
 
 		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
+
 		add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
+		add_filter( 'manage_wp_stream_alerts_posts_columns', array( $this, 'manage_columns' ) );
+		add_action( 'manage_wp_stream_alerts_posts_custom_column', array( $this, 'column_data' ), 10, 2 );
 
 		$this->load_alert_types();
 		$this->load_alert_triggers();
@@ -222,6 +225,42 @@ class Alerts {
 			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled' );
 		}
 		return $query_vars;
+	}
+
+	/**
+	 *
+	 *
+	 * @param int   $record_id The record being processed.
+	 * @param array $recordarr Record data.
+	 * @return array
+	 */
+	function manage_columns( $columns ) {
+		$columns = array(
+			'cb' => $columns['cb'],
+			'title' => $columns['title'],
+			'status' => __( 'Status', 'stream' ),
+			'date' => $columns['date'],
+		);
+		return $columns;
+	}
+
+	/**
+	 *
+	 *
+	 * @param int   $record_id The record being processed.
+	 * @param array $recordarr Record data.
+	 * @return array
+	 */
+	function column_data( $column_name, $post_id ) {
+		switch ( $column_name ) {
+			case 'status' :
+				$post_status = get_post_status( $post_id );
+				$post_status_object = get_post_status_object( $post_status );
+				if ( $post_status_object ) {
+					esc_html_e( $post_status_object->label );
+				}
+				break;
+		}
 	}
 
 	/**
