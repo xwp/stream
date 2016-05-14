@@ -190,7 +190,8 @@ class Alerts {
 	 */
 	function check_records( $record_id, $recordarr ) {
 		$args = array(
-			'post_type' => 'wp_stream_alerts',
+			'post_type'   => 'wp_stream_alerts',
+			'post_status' => 'wp_stream_enabled',
 		);
 
 		$alerts = new \WP_Query( $args );
@@ -281,6 +282,7 @@ class Alerts {
 		$args = array(
 			'label'                     => _x( 'Disabled', 'alert', 'stream' ),
 			'public'                    => false,
+			'internal'                  => false,
 			'show_in_admin_all_list'    => true,
 			'show_in_admin_status_list' => true,
 			'label_count'               => _n_noop( 'Disabled <span class="count">(%s)</span>', 'Disabled <span class="count">(%s)</span>', 'stream' ),
@@ -464,50 +466,31 @@ class Alerts {
 	 * @return void
 	 */
 	function display_submit_box( $post ) {
-		global $action;
 
-		$post_type = $post->post_type;
-		$post_type_object = get_post_type_object( $post_type );
-		$can_publish = current_user_can( $post_type_object->cap->publish_posts );
+		$post_status = $post->post_status;
+		if ( 'auto-draft' === $post_status ) {
+			$post_status = 'wp_stream_disabled';
+		}
 		?>
 		<div class="submitbox" id="submitpost">
-			<div id="minor-publishing">
-				<div id="minor-publishing-actions">
-					<div id="save-action">
-						<input type="submit" name="save" id="save-post" value="<?php esc_attr_e( 'Save', 'stream' ); ?>" class="button" />
-						<span class="spinner"></span>
-						<div class="clear"></div>
-					</div>
+			<div id="misc-publishing-actions">
+				<div class="misc-pub-section misc-pub-post-status">
+				<label for="wp_stream_alert_status"><?php esc_html_e( 'Currently active:', 'stream' ) ?></label>
+					<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
+						<option<?php selected( $post_status, 'wp_stream_enabled' ); ?> value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
+						<option<?php selected( $post_status, 'wp_stream_disabled' ); ?> value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
+					</select>
 				</div>
-				<div id="misc-publishing-actions">
-					<div class="misc-pub-section misc-pub-post-status">
-						<label for="post_status"><?php esc_html_e( 'Status:', 'stream' ) ?></label>
-						<span id="post-status-display">
-						<?php
-						switch ( $post->post_status ) {
-							case 'wp_stream_enabled':
-								esc_html_e( 'Enabled', 'stream' );
-								break;
-							case 'wp_stream_disabled':
-								esc_html_e( 'Disabled', 'stream' );
-								break;
-						}
-						?>
-						</span>
-						<a href="#post_status" class="edit-post-status hide-if-no-js"><span aria-hidden="true"><?php esc_html_e( 'Edit' ); ?></span> <span class="screen-reader-text"><?php esc_html_e( 'Edit status' ); ?></span></a>
-
-						<div id="post-status-select" class="hide-if-js">
-							<input type="hidden" name="hidden_post_status" id="hidden_post_status" value="<?php echo esc_attr( ( 'auto-draft' === $post->post_status ) ? 'draft' : $post->post_status ); ?>" />
-							<select name='post_status' id='post_status'>
-								<option<?php selected( $post->post_status, 'wp_stream_enabled' ); ?> value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
-								<option<?php selected( $post->post_status, 'wp_stream_disabled' ); ?> value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
-							</select>
-							<a href="#post_status" class="save-post-status hide-if-no-js button"><?php esc_html_e( 'OK', 'stream' ); ?></a>
-							<a href="#post_status" class="cancel-post-status hide-if-no-js button-cancel"><?php esc_html_e( 'Cancel', 'stream' ); ?></a>
+				<div id="minor-publishing">
+					<div id="minor-publishing-actions">
+						<div id="save-action">
+							<input type="submit" name="save" id="save-post" value="<?php esc_attr_e( 'Save', 'stream' ); ?>" class="button" />
+							<span class="spinner"></span>
+							<div class="clear"></div>
 						</div>
-						<div class="clear"></div>
 					</div>
 				</div>
+				<div class="clear"></div>
 			</div>
 		</div>
 		<?php
@@ -576,6 +559,7 @@ class Alerts {
 		}
 
 		$alert = $this->get_alert( $post_id );
+		$alert->status = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
 
 		// @todo sanitize input based on possible values
 		$triggers = array(
