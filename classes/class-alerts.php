@@ -52,6 +52,7 @@ class Alerts {
 		add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
 		add_filter( 'manage_wp_stream_alerts_posts_columns', array( $this, 'manage_columns' ) );
 		add_filter( 'views_edit-wp_stream_alerts', array( $this, 'manage_views' ) );
+		add_filter( 'post_updated_messages', array( $this, 'filter_update_messages' ) );
 		add_action( 'manage_wp_stream_alerts_posts_custom_column', array( $this, 'column_data' ), 10, 2 );
 
 		$this->load_alert_types();
@@ -375,6 +376,26 @@ class Alerts {
 		);
 
 		register_post_status( 'wp_stream_disabled', $args );
+	}
+
+	public function filter_update_messages( $messages ) {
+
+		$updated = __( 'Alert updated.', 'stream' );
+		$messages['wp_stream_alerts'] = array(
+			 0 => '', // Unused.
+			 1 => $updated, // Regular update.
+			 2 => '', // Unused. Custom fields updated.
+			 3 => '', // Unused. Custom fields deleted.
+			 4 => $updated, // Regular update.
+			 5 => '', // Unused. Revision restored.
+			 6 => $updated, // Publish.
+			 7 => $updated, // Save.
+			 8 => '', // Unused. Submit for review.
+			 9 => '', // Unused. Scheduled.
+			10 => $updated, // Draft updated.
+		);
+
+		return $messages;
 	}
 
 	/**
