@@ -236,7 +236,7 @@ class Alert {
 			$context = __( 'Any Context', 'stream' );
 		}
 
-		$format = __( '%1$s when an item in %4$s is %3$s by %2$s', 'stream' );
+		$format = __( '%1$s when %2$s %3$s an item in %4$s.', 'stream' );
 		return sprintf(
 			$format,
 			ucfirst( $alert_type ),
