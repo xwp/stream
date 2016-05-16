@@ -211,13 +211,38 @@ class Alert {
 	 * @return string The title of the alert
 	 */
 	function get_title() {
-		$format = __( '%1$s when %2$s %3$s in %4$s', 'stream' );
+
+		$alert_type = $this->alert_type_obj->name;
+
+		$author = $this->alert_meta['trigger_author'];
+		if ( empty( $author ) ) {
+			$author = __( 'Any Author', 'stream' );
+		} else if ( is_numeric( $author ) ) {
+			$author_data = get_userdata( $author );
+			if ( $author_data ) {
+				$author = $author_data->display_name;
+			} else {
+				$author = __( 'Unknown User', 'stream' );
+			}
+		}
+
+		$action = $this->alert_meta['trigger_action'];
+		if ( empty( $action ) ) {
+			$action = __( 'Any Action', 'stream' );
+		}
+
+		$context = $this->alert_meta['trigger_context'];
+		if ( empty( $context ) ) {
+			$context = __( 'Any Context', 'stream' );
+		}
+
+		$format = __( '%1$s when an item in %4$s is %3$s by %2$s', 'stream' );
 		return sprintf(
 			$format,
-			ucfirst( $this->alert_type ),
-			ucfirst( $this->filter_author ),
-			$this->filter_action,
-			ucfirst( $this->filter_context )
+			ucfirst( $alert_type ),
+			ucfirst( $author ),
+			$action,
+			ucfirst( $context )
 		);
 	}
 }

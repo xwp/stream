@@ -8,7 +8,7 @@ class Alert_Type_Email extends Alert_Type {
 	 *
 	 * @var string
 	 */
-	public $name = 'Email Notifier';
+	public $name = 'Email';
 
 	/**
 	 * Alert type slug

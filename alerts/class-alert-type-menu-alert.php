@@ -7,7 +7,7 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	 *
 	 * @var string
 	 */
-	public $name = 'Menu Alert Notifier';
+	public $name = 'Create Menu Alert';
 
 	/**
 	 * Alert type slug
