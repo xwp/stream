@@ -135,8 +135,36 @@ class Alert {
 		$this->alert_type_obj->display_settings_form( $this, $post );
 	}
 
-	public function process_settings_form( $post ) {
+	public function process_settings_form( $data, $post ) {
+
 		$this->alert_type_obj->process_settings_form( $this, $post );
+
+		if ( ! $this->validate() ) {
+			return new \WP_Error( 'validation-error', esc_html__( 'Could not validate record data.', 'stream' ) );
+		}
+
+		$args = array(
+			'post_date'    => $this->date,
+			'post_status'  => $this->status,
+			'post_title'   => $this->get_title(),
+			'post_author'  => $this->author,
+			'post_type'    => 'wp_stream_alerts',
+		);
+
+		foreach ( $args as $key => $value ) {
+			$data[ $key ] = $value;
+		}
+
+		$meta_input = array(
+			'alert_type'     => $this->alert_type,
+			'alert_meta'     => $this->alert_meta,
+		);
+
+		foreach ( $meta_input as $key => $value ) {
+			$this->update_meta( $key, $value );
+		}
+
+		return $data;
 	}
 
 	public function populate( array $raw ) {
@@ -206,6 +234,8 @@ class Alert {
 		$context = ( ! empty( $this->alert_meta['trigger_context'] ) ) ? $this->alert_meta['trigger_context'] : null;
 		if ( empty( $context ) ) {
 			$context = __( 'any context', 'stream' );
+		} elseif ( strpos( $context, 'group-' ) === 0 ) {
+			$context = substr( $context, strlen( 'group-' ) );
 		}
 
 		$format = __( '%1$s when %2$s %3$s an item in %4$s.', 'stream' );

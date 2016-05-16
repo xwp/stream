@@ -54,6 +54,7 @@ class Alerts {
 		add_filter( 'views_edit-wp_stream_alerts', array( $this, 'manage_views' ) );
 		add_filter( 'post_updated_messages', array( $this, 'filter_update_messages' ) );
 		add_action( 'manage_wp_stream_alerts_posts_custom_column', array( $this, 'column_data' ), 10, 2 );
+		add_filter( 'wp_insert_post_data', array( $this, 'save_post_info' ), 10, 2 );
 
 		$this->load_alert_types();
 		$this->load_alert_triggers();
@@ -452,7 +453,6 @@ class Alerts {
 	 */
 	function register_meta_boxes() {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
-		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 10, 2 );
 	}
 
 	/**
@@ -659,42 +659,33 @@ class Alerts {
 	/**
 	 * Process alert settings
 	 *
-	 * @param int     $post_id Post ID for the current alert.
-	 * @param WP_Post $post Post object for the current alert.
 	 */
-	function save_meta_boxes( $post_id, $post ) {
-		if ( 'wp_stream_alerts' !== $post->post_type || ( isset( $post->post_status ) && 'auto-draft' === $post->post_status ) ) {
-			return;
+	function save_post_info( $data, $postarr ) {
+
+		$post_id = intval( $postarr['ID'] );
+		$post = get_post( $post_id );
+
+		if ( ! $post || 'wp_stream_alerts' !== $post->post_type || ( isset( $post->post_status ) && 'auto-draft' === $post->post_status ) ) {
+			return $data;
 		}
 
 		if ( ! isset( $_POST['wp_stream_alerts_nonce'] ) || ! wp_verify_nonce( $_POST['wp_stream_alerts_nonce'], 'save_post' ) ) {
-				return $post_id;
+				return $data;
 		}
 
 		$post_type = get_post_type_object( $post->post_type );
 		if ( ! current_user_can( $post_type->cap->edit_post, $post_id ) ) {
-			return $post_id;
+			return $data;
 		}
 
 		$alert = $this->get_alert( $post_id );
-		$alert->status = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
-
-		// @todo sanitize input based on possible values
-		$triggers = array(
-			'alert_type'     => ! empty( $_POST['wp_stream_alert_type'] ) ? $_POST['wp_stream_alert_type'] : null,
-		);
-
-		foreach ( $triggers as $field => $value ) {
-			$alert->$field = $value;
-		}
-
-		$alert->process_settings_form( $post );
+		$alert->status     = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
+		$alert->alert_type = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
 
 		do_action( 'wp_stream_alert_trigger_form_save', $alert );
 
-		remove_action( 'save_post', array( $this, 'save_meta_boxes' ), 10 );
-		$alert->save();
-		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 10, 2 );
+		$data = $alert->process_settings_form( $data, $post );
 
+		return $data;
 	}
 }
