@@ -32,27 +32,6 @@ class Alert {
 	public $author;
 
 	/**
-	 * Alert trigger author
-	 *
-	 * @var int
-	 */
-	public $filter_author;
-
-	/**
-	 * Alert trigger action
-	 *
-	 * @var int
-	 */
-	public $filter_action;
-
-	/**
-	 * Alert trigger context
-	 *
-	 * @var int
-	 */
-	public $filter_context;
-
-	/**
 	 * Alert type
 	 *
 	 * @var string
@@ -84,10 +63,6 @@ class Alert {
 		$this->status  = isset( $item->status ) ? $item->status : 'wp_stream_disabled';
 		$this->date    = isset( $item->date ) ? $item->date : null;
 		$this->author  = isset( $item->author ) ? $item->author : null;
-
-		$this->filter_author  = isset( $item->filter_author ) ? $item->filter_author : null;
-		$this->filter_context = isset( $item->filter_context ) ? $item->filter_context : null;
-		$this->filter_action  = isset( $item->filter_action ) ? $item->filter_action : null;
 
 		$this->alert_type = isset( $item->alert_type ) ? $item->alert_type : null;
 		$this->alert_meta = isset( $item->alert_meta ) ? $item->alert_meta : null;
@@ -145,9 +120,6 @@ class Alert {
 		}
 
 		$meta = array(
-			'filter_action'  => $this->filter_action,
-			'filter_author'  => $this->filter_author,
-			'filter_context' => $this->filter_context,
 			'alert_type'     => $this->alert_type,
 			'alert_meta'     => $this->alert_meta,
 		);

@@ -32,9 +32,6 @@ class Test_Alert extends WP_StreamTestCase {
 		$this->assertEquals( $alert->author, $post->post_author );
 
 		$fields = array(
-			'filter_action',
-			'filter_author',
-			'filter_context',
 			'alert_type',
 			'alert_meta',
 		);
@@ -59,7 +56,7 @@ class Test_Alert extends WP_StreamTestCase {
 			'alert_type'		 => 'highlight',
 			'alert_type_obj' => new Alert_Type_Highlight( $this->plugin ),
 			'alert_meta'		 => array(
-        'trigger_action'	=> 'activated',
+        'trigger_action'  => 'activated',
         'trigger_author'	=> 'administrator',
         'trigger_context' => 'plugins',
 			),
