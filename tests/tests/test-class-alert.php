@@ -10,10 +10,8 @@ class Test_Alert extends WP_StreamTestCase {
 		$this->assertNotEmpty( $alert->ID );
 		$this->assertNotEmpty( $alert->date );
 		$this->assertNotEmpty( $alert->author );
-		$this->assertNotEmpty( $alert->filter_action );
-		$this->assertNotEmpty( $alert->filter_author );
-		$this->assertNotEmpty( $alert->filter_context );
 		$this->assertNotEmpty( $alert->alert_type );
+		$this->assertNotEmpty( $alert->alert_type_obj );
 		$this->assertNotEmpty( $alert->alert_meta );
 	}
 
@@ -50,7 +48,7 @@ class Test_Alert extends WP_StreamTestCase {
 
 		$post = get_post( $alert->ID );
 		$this->assertEquals( $post->post_date, $alert->date );
-		$this->assertEquals( $post->post_title, 'Highlight when Administrator activated in Plugins' );
+		$this->assertEquals( 'Highlight when Administrator activated an item in Plugins.', $post->post_title );
 	}
 
 	function get_dummy_data() {
@@ -58,14 +56,12 @@ class Test_Alert extends WP_StreamTestCase {
 			'ID' => 1,
 			'date' => date( 'Y-m-d H:i:s' ),
 			'author' => '1',
-			'filter_action'	=> 'activated',
-			'filter_author'	=> 'administrator',
-			'filter_context' => 'plugins',
 			'alert_type'		 => 'highlight',
 			'alert_type_obj' => new Alert_Type_Highlight( $this->plugin ),
 			'alert_meta'		 => array(
-				'key1'				 => 'value1',
-				'key2'				 => 'value2',
+        'trigger_action'	=> 'activated',
+        'trigger_author'	=> 'administrator',
+        'trigger_context' => 'plugins',
 			),
 		);
 	}
