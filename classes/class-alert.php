@@ -214,7 +214,7 @@ class Alert {
 
 		$alert_type = $this->alert_type_obj->name;
 
-		$author = $this->alert_meta['trigger_author'];
+		$author = ( ! empty( $this->alert_meta['trigger_author'] ) ) ? $this->alert_meta['trigger_author'] : null;
 		if ( empty( $author ) ) {
 			$author = __( 'Any Author', 'stream' );
 		} else if ( is_numeric( $author ) ) {
@@ -226,14 +226,14 @@ class Alert {
 			}
 		}
 
-		$action = $this->alert_meta['trigger_action'];
+		$action = ( ! empty( $this->alert_meta['trigger_action'] ) ) ? $this->alert_meta['trigger_action'] : null;
 		if ( empty( $action ) ) {
-			$action = __( 'Any Action', 'stream' );
+			$action = __( 'preforms any action on', 'stream' );
 		}
 
-		$context = $this->alert_meta['trigger_context'];
+		$context = ( ! empty( $this->alert_meta['trigger_context'] ) ) ? $this->alert_meta['trigger_context'] : null;
 		if ( empty( $context ) ) {
-			$context = __( 'Any Context', 'stream' );
+			$context = __( 'any context', 'stream' );
 		}
 
 		$format = __( '%1$s when %2$s %3$s an item in %4$s.', 'stream' );
