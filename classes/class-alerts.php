@@ -49,6 +49,11 @@ class Alerts {
 		add_filter( 'bulk_actions-edit-wp_stream_alerts', array( $this, 'supress_bulk_actions' ), 10, 1 );
 		add_filter( 'disable_months_dropdown', array( $this, 'supress_months_dropdown' ), 10, 2 );
 
+		add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
+		add_filter( 'manage_wp_stream_alerts_posts_columns', array( $this, 'manage_columns' ) );
+		add_filter( 'views_edit-wp_stream_alerts', array( $this, 'manage_views' ) );
+		add_action( 'manage_wp_stream_alerts_posts_custom_column', array( $this, 'column_data' ), 10, 2 );
+
 		$this->load_alert_types();
 		$this->load_alert_triggers();
 	}
@@ -193,7 +198,8 @@ class Alerts {
 	 */
 	function check_records( $record_id, $recordarr ) {
 		$args = array(
-			'post_type' => 'wp_stream_alerts',
+			'post_type'   => 'wp_stream_alerts',
+			'post_status' => 'wp_stream_enabled',
 		);
 
 		$alerts = new \WP_Query( $args );
@@ -208,6 +214,73 @@ class Alerts {
 
 		return $recordarr;
 
+	}
+
+	/**
+	 * Default to wp_stream_enabled and wp_stream_disabled when querying for alerts
+	 *
+	 * @param int   $record_id The record being processed.
+	 * @param array $recordarr Record data.
+	 * @return array
+	 */
+	function parse_request( $query_vars ) {
+		$screen = get_current_screen();
+		if ( 'edit-wp_stream_alerts' === $screen->id && 'wp_stream_alerts' === $query_vars['post_type'] && empty( $query_vars['post_status'] ) ) {
+			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled' );
+		}
+		return $query_vars;
+	}
+
+	/**
+	 *
+	 *
+	 * @param int   $record_id The record being processed.
+	 * @param array $recordarr Record data.
+	 * @return array
+	 */
+	function manage_views( $views ) {
+
+		// Move trash to end of the list
+		$trash = $views['trash'];
+		unset( $views['trash'] );
+		$views['trash'] = $trash;
+
+		return $views;
+	}
+
+	/**
+	 *
+	 *
+	 * @param int   $record_id The record being processed.
+	 * @param array $recordarr Record data.
+	 * @return array
+	 */
+	function manage_columns( $columns ) {
+		$columns = array(
+			'cb' => $columns['cb'],
+			'title' => $columns['title'],
+			'status' => __( 'Status', 'stream' ),
+		);
+		return $columns;
+	}
+
+	/**
+	 *
+	 *
+	 * @param int   $record_id The record being processed.
+	 * @param array $recordarr Record data.
+	 * @return array
+	 */
+	function column_data( $column_name, $post_id ) {
+		switch ( $column_name ) {
+			case 'status' :
+				$post_status = get_post_status( $post_id );
+				$post_status_object = get_post_status_object( $post_status );
+				if ( $post_status_object ) {
+					esc_html_e( $post_status_object->label );
+				}
+				break;
+		}
 	}
 
 	/**
@@ -281,6 +354,27 @@ class Alerts {
 		);
 
 		register_post_type( 'wp_stream_alerts', $args );
+
+		$args = array(
+			'label'                     => _x( 'Enabled', 'alert', 'stream' ),
+			'public'                    => false,
+			'show_in_admin_all_list'    => true,
+			'show_in_admin_status_list' => true,
+			'label_count'               => _n_noop( 'Enabled <span class="count">(%s)</span>', 'Enabled <span class="count">(%s)</span>', 'stream' ),
+		);
+
+		register_post_status( 'wp_stream_enabled', $args );
+
+		$args = array(
+			'label'                     => _x( 'Disabled', 'alert', 'stream' ),
+			'public'                    => false,
+			'internal'                  => false,
+			'show_in_admin_all_list'    => true,
+			'show_in_admin_status_list' => true,
+			'label_count'               => _n_noop( 'Disabled <span class="count">(%s)</span>', 'Disabled <span class="count">(%s)</span>', 'stream' ),
+		);
+
+		register_post_status( 'wp_stream_disabled', $args );
 	}
 
 	/**
@@ -346,6 +440,8 @@ class Alerts {
 	 * @return void
 	 */
 	function add_meta_boxes() {
+		remove_meta_box( 'submitdiv', 'wp_stream_alerts', 'side' );
+
 		add_meta_box(
 			'wp_stream_alerts_triggers',
 			__( 'Alert Trigger', 'stream' ),
@@ -371,6 +467,15 @@ class Alerts {
 			'wp_stream_alerts',
 			'advanced',
 			'low'
+		);
+
+		add_meta_box(
+			'wp_stream_alerts_submit',
+			__( 'Alert Status', 'stream' ),
+			array( $this, 'display_submit_box' ),
+			'wp_stream_alerts',
+			'side',
+			'default'
 		);
 	}
 
@@ -441,6 +546,56 @@ class Alerts {
 	}
 
 	/**
+	 * Display Submit Box
+	 *
+	 * @param WP_Post $post Post object for current alert.
+	 * @return void
+	 */
+	function display_submit_box( $post ) {
+
+		$post_status = $post->post_status;
+		if ( 'auto-draft' === $post_status ) {
+			$post_status = 'wp_stream_disabled';
+		}
+		?>
+		<div class="submitbox" id="submitpost">
+		<div id="minor-publishing">
+				<div id="misc-publishing-actions">
+					<div class="misc-pub-section misc-pub-post-status">
+					<label for="wp_stream_alert_status"><?php esc_html_e( 'Currently active:', 'stream' ) ?></label>
+						<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
+							<option<?php selected( $post_status, 'wp_stream_enabled' ); ?> value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
+							<option<?php selected( $post_status, 'wp_stream_disabled' ); ?> value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
+						</select>
+					</div>
+				</div>
+				<div class="clear"></div>
+		</div>
+
+		<div id="major-publishing-actions">
+			<div id="delete-action">
+				<?php
+				if ( current_user_can( 'delete_post', $post->ID ) ) {
+					if ( ! EMPTY_TRASH_DAYS ) {
+						$delete_text = __( 'Delete Permanently', 'stream' );
+					} else {
+						$delete_text = __( 'Move to Trash', 'stream' );
+					}
+					?>
+				<a class="submitdelete deletion" href="<?php echo get_delete_post_link( $post->ID ); ?>"><?php esc_html_e( $delete_text ); ?></a><?php
+				} ?>
+				</div>
+				<div id="publishing-action">
+					<span class="spinner"></span>
+					<?php submit_button( __( 'Save' ), 'primary button-large', 'publish', false ); ?>
+				</div>
+				<div class="clear"></div>
+			</div>
+	</div>
+		<?php
+	}
+
+	/**
 	 * Return all context values
 	 *
 	 * @return array
@@ -487,15 +642,13 @@ class Alerts {
 	 * @param WP_Post $post Post object for the current alert.
 	 */
 	function save_meta_boxes( $post_id, $post ) {
-		if ( 'wp_stream_alerts' !== $post->post_type ) {
-			return false;
-		}
-
-		if ( isset( $post->post_status ) && 'auto-draft' === $post->post_status ) {
+		if ( 'wp_stream_alerts' !== $post->post_type || ( isset( $post->post_status ) && 'auto-draft' === $post->post_status ) ) {
 			return;
 		}
 
-		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
+		if ( ! isset( $_POST['wp_stream_alerts_nonce'] ) || ! wp_verify_nonce( $_POST['wp_stream_alerts_nonce'], 'save_post' ) ) {
+				return $post_id;
+		}
 
 		$post_type = get_post_type_object( $post->post_type );
 		if ( ! current_user_can( $post_type->cap->edit_post, $post_id ) ) {
@@ -503,6 +656,7 @@ class Alerts {
 		}
 
 		$alert = $this->get_alert( $post_id );
+		$alert->status = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
 
 		// @todo sanitize input based on possible values
 		$triggers = array(

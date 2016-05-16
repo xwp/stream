@@ -18,6 +18,13 @@ class Alert {
 	public $date;
 
 	/**
+	 * Status
+	 *
+	 * @var string
+	 */
+	public $status;
+
+	/**
 	 * Alert author ID
 	 *
 	 * @var int
@@ -74,8 +81,9 @@ class Alert {
 	 */
 	public function __construct( $item ) {
 		$this->ID      = isset( $item->ID ) ? $item->ID : null;
+		$this->status  = isset( $item->status ) ? $item->status : 'wp_stream_disabled';
 		$this->date    = isset( $item->date ) ? $item->date : null;
-		$this->author = isset( $item->author ) ? $item->author : null;
+		$this->author  = isset( $item->author ) ? $item->author : null;
 
 		$this->filter_author  = isset( $item->filter_author ) ? $item->filter_author : null;
 		$this->filter_context = isset( $item->filter_context ) ? $item->filter_context : null;
@@ -104,6 +112,7 @@ class Alert {
 	 * @return void
 	 */
 	public function send_alert( $record_id, $recordarr ) {
+		//@TODO move to do_action style alert types
 		$this->alert_type_obj->alert( $record_id, $recordarr, $this->alert_meta );
 	}
 
@@ -120,6 +129,7 @@ class Alert {
 		$args = array(
 			'ID'           => $this->ID,
 			'post_date'    => $this->date,
+			'post_status'  => $this->status,
 			'post_content' => '',
 			'post_title'   => $this->get_title(),
 			'post_author'  => $this->author,
