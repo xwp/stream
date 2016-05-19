@@ -56,6 +56,8 @@ class Alerts {
 		add_filter( 'post_updated_messages', array( $this, 'filter_update_messages' ) );
 		add_filter( 'wp_insert_post_data', array( $this, 'save_post_info' ), 10, 2 );
 
+		add_action( 'wp_ajax_load_alerts_settings', array( $this, 'load_alerts_settings' ) );
+
 		$this->load_alert_types();
 		$this->load_alert_triggers();
 	}
@@ -358,6 +360,28 @@ class Alerts {
 
 	}
 
+	function load_alerts_settings() {
+		$post_id = wp_stream_filter_input( INPUT_GET, 'post_id' );
+		$alert = $this->get_alert( $post_id );
+		if ( ! $alert ) {
+			wp_send_json_error( array(
+				'message' => 'Could not find alert.',
+			) );
+		}
+
+		$alert->alert_type = wp_stream_filter_input( INPUT_GET, 'alert_type' );
+		print_r( $alerts->alert_type );
+		$alert->alert_type_obj = $this->alert_types[ $alerts->alert_type ];
+
+		ob_start();
+		$alert->display_settings_form( $post );
+		$output = ob_get_contents();
+		ob_end_clean();
+
+		$data = array( 'html' => $output );
+		wp_send_json_success( $data );
+	}
+
 	/**
 	 * Add custom post type to menu
 	 *
@@ -458,6 +482,7 @@ class Alerts {
 		$form  = new Form_Generator;
 
 		$field_html = $form->render_field( 'select', array(
+			'id'          => 'wp_stream_alert_type',
 			'name'        => 'wp_stream_alert_type',
 			'value'       => $alert->alert_type,
 			'options'     => $this->get_notification_values(),
@@ -468,7 +493,9 @@ class Alerts {
 		echo '<p>' . esc_html__( 'Alert me by:', 'stream' ) . '</p>';
 		echo $field_html; // xss ok
 
+		echo '<div id="wp_stream_alert_type_form">';
 		$alert->display_settings_form( $post );
+		echo '</div>';
 	}
 
 	/**

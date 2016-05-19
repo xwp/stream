@@ -21,7 +21,10 @@ class Alerts_List {
 		add_filter( 'disable_months_dropdown', array( $this, 'supress_months_dropdown' ), 10, 2 );
 		add_filter( 'post_row_actions', array( $this, 'supress_quick_edit' ), 10, 1 );
 
-		add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
+		// @todo Make more specific
+		if ( is_admin() ) {
+				add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
+		}
 		add_filter( 'views_edit-wp_stream_alerts', array( $this, 'manage_views' ) );
 
 		add_filter( 'manage_wp_stream_alerts_posts_columns', array( $this, 'manage_columns' ) );
