@@ -86,6 +86,16 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		return $return_labels;
 	}
 
+	function get_display_value( $context = 'normal', $alert ) {
+		$context = ( ! empty( $alert->alert_meta['trigger_context'] ) ) ? $alert->alert_meta['trigger_context'] : null;
+		if ( empty( $context ) ) {
+			$context = __( 'Any Context', 'stream' );
+		} elseif ( strpos( $context, 'group-' ) === 0 ) {
+			$context = substr( $context, strlen( 'group-' ) );
+		}
+		return ucfirst( $context );
+	}
+
 	public function filter_preview_query( $query_args, $alert ) {
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
 			if ( 0 === strpos( $alert->alert_meta['trigger_context'], 'group-' ) ) {

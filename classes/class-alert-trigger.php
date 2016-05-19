@@ -53,6 +53,8 @@ abstract class Alert_Trigger {
 		return $query_args;
 	}
 
+	abstract public function get_display_value( $context = 'normal', $alert );
+
 	/**
 	 * Allow connectors to determine if their dependencies is satisfied or not
 	 *

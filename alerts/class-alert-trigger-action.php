@@ -84,6 +84,21 @@ class Alert_Trigger_Action extends Alert_Trigger {
 		return $return_labels;
 	}
 
+	function get_display_value( $context = 'normal', $alert ) {
+		$action = ( ! empty( $alerts->alert_meta['trigger_action'] ) ) ? $alert->alert_meta['trigger_action'] : null;
+		if ( empty( $action ) ) {
+			if ( 'post_title' === $context ) {
+				$action = __( 'preformed any action on', 'stream' );
+			} else {
+				$action = __( 'Any Action', 'stream' );
+			}
+		} else {
+			$action = ucfirst( $action );
+		}
+
+		return $action;
+	}
+
 	public function filter_preview_query( $query_args, $alert ) {
 		if ( ! empty( $alert->alert_meta['trigger_action'] ) ) {
 			$query_args['action'] = $alert->alert_meta['trigger_action'];

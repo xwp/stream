@@ -3,7 +3,7 @@ namespace WP_Stream;
 
 class Alert_Trigger_Author extends Alert_Trigger {
 
-	public $slug = 'context';
+	public $slug = 'author';
 	public $field_key = 'wp_stream_trigger_author';
 
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
@@ -71,6 +71,21 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	public function save_fields( $alert ) {
 		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
 		$alert->alert_meta['trigger_author'] = wp_stream_filter_input( INPUT_POST, $this->field_key );
+	}
+
+	function get_display_value( $context = 'normal', $alert ) {
+		$author = ( ! empty( $alert->alert_meta['trigger_author'] ) ) ? $alert->alert_meta['trigger_author'] : null;
+		if ( empty( $author ) ) {
+			$author = __( 'Any Author', 'stream' );
+		} else if ( is_numeric( $author ) ) {
+			$author_data = get_userdata( $author );
+			if ( $author_data ) {
+				$author = $author_data->display_name;
+			} else {
+				$author = __( 'Unknown User', 'stream' );
+			}
+		}
+		return ucfirst( $author );
 	}
 
 	public function filter_preview_query( $query_args, $alert ) {
