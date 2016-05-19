@@ -406,27 +406,34 @@ class Alerts {
 	 * @return Alert
 	 */
 	public function get_alert( $post_id ) {
-			$post = get_post( $post_id );
-			$meta = get_post_custom( $post_id );
 
-			$obj = (object) array(
-				'ID'             => $post->ID,
-				'date'           => $post->post_date,
-				'author'         => $post->post_author,
-				'filter_action'  => isset( $meta['filter_action'] ) ? $meta['filter_action'][0] : null,
-				'filter_author'  => isset( $meta['filter_author'] ) ? $meta['filter_author'][0] : null,
-				'filter_context' => isset( $meta['filter_context'] ) ? $meta['filter_context'][0] : null,
-				'alert_type'     => isset( $meta['alert_type'] ) ? $meta['alert_type'][0] : null,
-				'alert_meta'     => isset( $meta['alert_meta'] ) ? maybe_unserialize( $meta['alert_meta'][0] ) : array(),
-			);
+		if ( ! $post_id ) {
+			$obj = new Alert( null );
+			$obj->alert_type_obj = new Alert_Type_None( $this->plugin );
+			return $obj;
+		}
 
-			if ( array_key_exists( $obj->alert_type, $this->alert_types ) ) {
-				$obj->alert_type_obj = $this->alert_types[ $obj->alert_type ];
-			} else {
-				$obj->alert_type_obj = new Alert_Type_None( $this->plugin );
-			}
+		$post = get_post( $post_id );
+		$meta = get_post_custom( $post_id );
 
-			return new Alert( $obj );
+		$obj = (object) array(
+			'ID'             => $post->ID,
+			'date'           => $post->post_date,
+			'author'         => $post->post_author,
+			'filter_action'  => isset( $meta['filter_action'] ) ? $meta['filter_action'][0] : null,
+			'filter_author'  => isset( $meta['filter_author'] ) ? $meta['filter_author'][0] : null,
+			'filter_context' => isset( $meta['filter_context'] ) ? $meta['filter_context'][0] : null,
+			'alert_type'     => isset( $meta['alert_type'] ) ? $meta['alert_type'][0] : null,
+			'alert_meta'     => isset( $meta['alert_meta'] ) ? maybe_unserialize( $meta['alert_meta'][0] ) : array(),
+		);
+
+		if ( array_key_exists( $obj->alert_type, $this->alert_types ) ) {
+			$obj->alert_type_obj = $this->alert_types[ $obj->alert_type ];
+		} else {
+			$obj->alert_type_obj = new Alert_Type_None( $this->plugin );
+		}
+
+		return new Alert( $obj );
 	}
 
 	/**
@@ -680,18 +687,15 @@ class Alerts {
 	 */
 	function save_post_info( $data, $postarr ) {
 
-		$post_id = intval( $postarr['ID'] );
-		$post = get_post( $post_id );
-
-		if ( ! $post || 'wp_stream_alerts' !== $post->post_type || ( isset( $post->post_status ) && 'auto-draft' === $post->post_status ) ) {
-			return $data;
-		}
-
 		if ( ! isset( $_POST['wp_stream_alerts_nonce'] ) || ! wp_verify_nonce( $_POST['wp_stream_alerts_nonce'], 'save_post' ) ) {
 				return $data;
 		}
 
-		$post_type = get_post_type_object( $post->post_type );
+		if ( 'wp_stream_alerts' !== $data['post_type'] || ( isset( $data['post_status'] ) && 'auto-draft' === $data['post_status'] ) ) {
+			return $data;
+		}
+
+		$post_type = get_post_type_object( $data['post_type'] );
 		if ( ! current_user_can( $post_type->cap->edit_post, $post_id ) ) {
 			return $data;
 		}
