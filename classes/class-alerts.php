@@ -453,6 +453,8 @@ class Alerts {
 	 */
 	function register_meta_boxes() {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
+		add_filter( 'parent_file', array( $this, 'filter_parent_file' ), 10, 1 );
+		add_filter( 'submenu_file', array( $this, 'filter_submenu_file' ), 10, 1 );
 	}
 
 	/**
@@ -498,6 +500,22 @@ class Alerts {
 			'side',
 			'default'
 		);
+	}
+
+	function filter_parent_file( $parent_file ) {
+		$screen = get_current_screen();
+		if ( 'post' === $screen->base && 'wp_stream_alerts' === $screen->post_type ) {
+				$parent_file = 'wp_stream';
+		}
+		return $parent_file;
+	}
+
+	function filter_submenu_file( $submenu_file ) {
+		$screen = get_current_screen();
+		if ( 'post' === $screen->base && 'wp_stream_alerts' === $screen->post_type ) {
+			$submenu_file = 'edit.php?post_type=wp_stream_alerts';
+		}
+		return $submenu_file;
 	}
 
 	/**
