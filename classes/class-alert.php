@@ -58,7 +58,9 @@ class Alert {
 	 * @param object $item Alert data
 	 * @return void
 	 */
-	public function __construct( $item ) {
+	public function __construct( $item, $plugin ) {
+		$this->plugin  = $plugin;
+
 		$this->ID      = isset( $item->ID ) ? $item->ID : null;
 		$this->status  = isset( $item->status ) ? $item->status : 'wp_stream_disabled';
 		$this->date    = isset( $item->date ) ? $item->date : null;
@@ -213,30 +215,9 @@ class Alert {
 	function get_title() {
 
 		$alert_type = $this->alert_type_obj->name;
-
-		$author = ( ! empty( $this->alert_meta['trigger_author'] ) ) ? $this->alert_meta['trigger_author'] : null;
-		if ( empty( $author ) ) {
-			$author = __( 'Any Author', 'stream' );
-		} else if ( is_numeric( $author ) ) {
-			$author_data = get_userdata( $author );
-			if ( $author_data ) {
-				$author = $author_data->display_name;
-			} else {
-				$author = __( 'Unknown User', 'stream' );
-			}
-		}
-
-		$action = ( ! empty( $this->alert_meta['trigger_action'] ) ) ? $this->alert_meta['trigger_action'] : null;
-		if ( empty( $action ) ) {
-			$action = __( 'preforms any action on', 'stream' );
-		}
-
-		$context = ( ! empty( $this->alert_meta['trigger_context'] ) ) ? $this->alert_meta['trigger_context'] : null;
-		if ( empty( $context ) ) {
-			$context = __( 'any context', 'stream' );
-		} elseif ( strpos( $context, 'group-' ) === 0 ) {
-			$context = substr( $context, strlen( 'group-' ) );
-		}
+		$action  = $this->get_trigger_display( 'action', 'post_title' );
+		$author  = $this->get_trigger_display( 'author', 'post_title' );
+		$context = $this->get_trigger_display( 'context', 'post_title' );
 
 		$format = __( '%1$s when %2$s %3$s an item in %4$s.', 'stream' );
 		return sprintf(
@@ -246,5 +227,13 @@ class Alert {
 			$action,
 			ucfirst( $context )
 		);
+	}
+
+	function get_trigger_display( $trigger, $context = 'normal' ) {
+		if ( array_key_exists( $trigger, $this->plugin->alerts->alert_triggers ) ) {
+			return $this->plugin->alerts->alert_triggers[ $trigger ]->get_display_value( $context, $this );
+		} else {
+			return false;
+		}
 	}
 }
