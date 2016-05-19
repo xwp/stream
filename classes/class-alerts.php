@@ -17,11 +17,18 @@ class Alerts {
 	public $meta_prefix = 'wp_stream';
 
 	/**
-	 * Notifiers
+	 * Alert Types
 	 *
 	 * @var array
 	 */
 	public $alert_types = array();
+
+	/**
+	 * Alert Triggers
+	 *
+	 * @var array
+	 */
+	public $alert_triggers = array();
 
 	/**
 	 * Class constructor.
@@ -46,14 +53,7 @@ class Alerts {
 
 		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
 
-		add_filter( 'bulk_actions-edit-wp_stream_alerts', array( $this, 'supress_bulk_actions' ), 10, 1 );
-		add_filter( 'disable_months_dropdown', array( $this, 'supress_months_dropdown' ), 10, 2 );
-
-		add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
-		add_filter( 'manage_wp_stream_alerts_posts_columns', array( $this, 'manage_columns' ) );
-		add_filter( 'views_edit-wp_stream_alerts', array( $this, 'manage_views' ) );
 		add_filter( 'post_updated_messages', array( $this, 'filter_update_messages' ) );
-		add_action( 'manage_wp_stream_alerts_posts_custom_column', array( $this, 'column_data' ), 10, 2 );
 		add_filter( 'wp_insert_post_data', array( $this, 'save_post_info' ), 10, 2 );
 
 		$this->load_alert_types();
@@ -219,73 +219,6 @@ class Alerts {
 	}
 
 	/**
-	 * Default to wp_stream_enabled and wp_stream_disabled when querying for alerts
-	 *
-	 * @param int   $record_id The record being processed.
-	 * @param array $recordarr Record data.
-	 * @return array
-	 */
-	function parse_request( $query_vars ) {
-		$screen = get_current_screen();
-		if ( 'edit-wp_stream_alerts' === $screen->id && 'wp_stream_alerts' === $query_vars['post_type'] && empty( $query_vars['post_status'] ) ) {
-			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled' );
-		}
-		return $query_vars;
-	}
-
-	/**
-	 *
-	 *
-	 * @param int   $record_id The record being processed.
-	 * @param array $recordarr Record data.
-	 * @return array
-	 */
-	function manage_views( $views ) {
-
-		// Move trash to end of the list
-		$trash = $views['trash'];
-		unset( $views['trash'] );
-		$views['trash'] = $trash;
-
-		return $views;
-	}
-
-	/**
-	 *
-	 *
-	 * @param int   $record_id The record being processed.
-	 * @param array $recordarr Record data.
-	 * @return array
-	 */
-	function manage_columns( $columns ) {
-		$columns = array(
-			'cb' => $columns['cb'],
-			'title' => $columns['title'],
-			'status' => __( 'Status', 'stream' ),
-		);
-		return $columns;
-	}
-
-	/**
-	 *
-	 *
-	 * @param int   $record_id The record being processed.
-	 * @param array $recordarr Record data.
-	 * @return array
-	 */
-	function column_data( $column_name, $post_id ) {
-		switch ( $column_name ) {
-			case 'status' :
-				$post_status = get_post_status( $post_id );
-				$post_status_object = get_post_status_object( $post_status );
-				if ( $post_status_object ) {
-					esc_html_e( $post_status_object->label );
-				}
-				break;
-		}
-	}
-
-	/**
 	 * Register scripts for page load
 	 *
 	 * @param string $page Current file name.
@@ -296,17 +229,6 @@ class Alerts {
 			wp_enqueue_script( 'wp-strean-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2' ) );
 			wp_enqueue_style( 'wp-stream-select2' );
 		}
-	}
-
-	public function supress_bulk_actions( $actions ) {
-		return array();
-	}
-
-	public function supress_months_dropdown( $status, $post_type ) {
-		if ( 'wp_stream_alerts' === $post_type ) {
-			$status = true;
-		}
-		return $status;
 	}
 
 	/**
@@ -433,7 +355,8 @@ class Alerts {
 			$obj->alert_type_obj = new Alert_Type_None( $this->plugin );
 		}
 
-		return new Alert( $obj );
+		return new Alert( $obj, $this->plugin );
+
 	}
 
 	/**

@@ -27,6 +27,11 @@ class Plugin {
 	public $alerts;
 
 	/**
+	 * @var Alerts_List
+	 */
+	public $alerts_list;
+
+	/**
 	 * @var Connectors
 	 */
 	public $connectors;
@@ -162,6 +167,7 @@ class Plugin {
 	public function init() {
 		$this->settings      = new Settings( $this );
 		$this->alerts        = new Alerts( $this );
+		$this->alerts_list   = new Alerts_List( $this );
 		$this->connectors    = new Connectors( $this );
 	}
 

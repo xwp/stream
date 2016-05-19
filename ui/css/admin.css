@@ -518,6 +518,29 @@
 	display: none;
 }
 
+.post-type-wp_stream_alerts .wp-list-table .alert_trigger_value {
+	border: 1px solid black;
+	background-color: #EEEEEF;
+	margin-right: 3px;
+	padding: 3px 5px;
+	border-radius: 5px;
+}
+
+.post-type-wp_stream_alerts .wp-list-table .alert_trigger_author {
+	border: 1px solid #0066ff;
+	background-color: #99ccff;
+}
+
+.post-type-wp_stream_alerts .wp-list-table .alert_trigger_context {
+	border: 1px solid #009900;
+	background-color: #ccff99;
+}
+
+.post-type-wp_stream_alerts .wp-list-table .alert_trigger_action {
+	border: 1px solid #990000;
+	background-color: #ff9999;
+}
+
 /* Alert Single Page */
 .post-type-wp_stream_alerts #post-body-content {
 	display: none;
