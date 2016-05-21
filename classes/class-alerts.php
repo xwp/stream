@@ -68,7 +68,6 @@ class Alerts {
 	function load_alert_types() {
 		$alert_types = array(
 			'none',
-			'menu-alert',
 			'highlight',
 			'email',
 		);
