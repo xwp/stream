@@ -117,7 +117,8 @@ class Alerts_List {
 	}
 
 	public function supress_bulk_actions( $actions ) {
-		return array();
+		unset( $actions['edit'] );
+		return $actions;
 	}
 
 	function supress_quick_edit( $actions ) {
