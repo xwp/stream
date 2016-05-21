@@ -54,9 +54,11 @@ class Alerts_List {
 	function manage_views( $views ) {
 
 		// Move trash to end of the list
-		$trash = $views['trash'];
-		unset( $views['trash'] );
-		$views['trash'] = $trash;
+		if ( array_key_exists( 'trash', $views ) ) {
+			$trash = $views['trash'];
+			unset( $views['trash'] );
+			$views['trash'] = $trash;
+		}
 
 		return $views;
 	}
