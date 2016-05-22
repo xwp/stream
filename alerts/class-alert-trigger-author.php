@@ -70,7 +70,12 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	}
 
 	public function save_fields( $alert ) {
-		$alert->alert_meta['trigger_author'] = wp_stream_filter_input( INPUT_POST, $this->field_key );
+		$input = wp_stream_filter_input( INPUT_POST, $this->field_key );
+		if ( array_key_exists( $input, $this->get_values( $alert ) ) ) {
+			$alert->alert_meta['trigger_author'] = $input;
+		} else {
+			$alert->alert_meta['trigger_author'] = '';
+		}
 	}
 
 	function get_display_value( $context = 'normal', $alert ) {

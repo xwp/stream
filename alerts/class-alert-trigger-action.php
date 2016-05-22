@@ -31,12 +31,11 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	}
 
 	public function save_fields( $alert ) {
-
-		$input = $_POST[ $this->field_key ];
+		$input = wp_stream_filter_input( INPUT_POST, $this->field_key );
 		if ( array_key_exists( $input, $this->get_values( $alert, true ) ) ) {
-			$alert->alert_meta[ $this->meta_key ] = $input;
+			$alert->alert_meta['trigger_action'] = $input;
 		} else {
-			$alert->alert_meta[ $this->meta_key ] = '';
+			$alert->alert_meta['trigger_action'] = '';
 		}
 	}
 
