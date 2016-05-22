@@ -30,7 +30,6 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	}
 
 	public function save_fields( $alert ) {
-		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
 		$alert->alert_meta['trigger_context'] = wp_stream_filter_input( INPUT_POST, $this->field_key );
 	}
 

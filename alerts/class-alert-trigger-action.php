@@ -31,7 +31,6 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	}
 
 	public function save_fields( $alert ) {
-		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
 
 		$input = $_POST[ $this->field_key ];
 		if ( array_key_exists( $input, $this->get_values( $alert, true ) ) ) {
