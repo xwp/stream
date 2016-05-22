@@ -24,6 +24,7 @@ class Alert_Trigger_Author extends Alert_Trigger {
 			'value'       => esc_attr( $value ),
 			'options'     => $this->get_values( $alert ),
 			'placeholder' => __( 'Show all users', 'stream' ),
+			'classes'     => 'wp_stream_ajax_forward',
 		);
 		$form->add_field( 'select2', $args );
 	}
