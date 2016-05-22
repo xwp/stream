@@ -52,19 +52,20 @@ class Alert_Type_Email extends Alert_Type {
 		) );
 
 		$form = new Form_Generator;
-		$form->add_field( 'text', array(
+
+		echo '<p>Recipient:</p>';
+		echo $form->render_field( 'text', array( // xss ok
 			'name'    => 'wp_stream_email_recipient',
 			'title'   => esc_attr( __( 'Email Recipient', 'stream' ) ),
 			'value'   => $options['email_recipient'],
 		) );
 
-		$form->add_field( 'text', array(
+		echo '<p>Subject:</p>';
+		echo $form->render_field( 'text', array( // xss ok
 			'name'    => 'wp_stream_email_subject',
 			'title'   => esc_attr( __( 'Email Subject', 'stream' ) ),
 			'value'   => $options['email_subject'],
 		) );
-
-		echo $form->render_all(); // xss ok
 	}
 
 	/**
@@ -78,11 +79,11 @@ class Alert_Type_Email extends Alert_Type {
 		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
 
 		if ( ! empty( $_POST['wp_stream_email_recipient'] ) ) {
-			$alert->alert_meta = $_POST['wp_stream_email_recipient'];
+			$alert->alert_meta['email_recipient'] = $_POST['wp_stream_email_recipient'];
 		}
 
 		if ( ! empty( $_POST['wp_stream_email_subject'] ) ) {
-			$alert->alert_meta = $_POST['wp_stream_email_subject'];
+			$alert->alert_meta['email_subject'] = $_POST['wp_stream_email_subject'];
 		}
 	}
 }

@@ -68,7 +68,7 @@ class Alert {
 
 		$this->alert_type = isset( $item->alert_type ) ? $item->alert_type : null;
 		$this->alert_meta = isset( $item->alert_meta ) ? $item->alert_meta : null;
-		$this->alert_type_obj   = isset( $item->alert_type_obj ) ? $item->alert_type_obj : null;
+		$this->alert_type_obj = isset( $item->alert_type_obj ) ? $item->alert_type_obj : null;
 	}
 
 	/**

@@ -57,14 +57,14 @@ class Alert_Type_Highlight extends Alert_Type {
 		) );
 
 		$form = new Form_Generator;
-		$form->add_field( 'select', array(
+
+		echo '<p>Color:</p>';
+		echo $form->render_field( 'select', array( // xss ok
 			'name'    => 'wp_stream_highlight_color',
 			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
 			'options' => $this->get_highlight_options(),
 			'value'   => $options['color'],
 		) );
-
-		echo $form->render_all(); // xss ok
 	}
 
 	/**
