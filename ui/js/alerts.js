@@ -18,8 +18,33 @@ jQuery( function( $ ) {
       'post_id'    : $('#post_ID').val(),
     };
 
+    $('#wp_stream_alerts_triggers input.wp_stream_ajax_forward').each( function() {
+      data[ $(this).attr('name') ] = $(this).val();
+    } );
+
     $.post(ajaxurl, data, function(response) {
       $alertSettingForm.html( response.data.html );
+    });
+  }
+
+  var $alertTriggersSelect = $('#wp_stream_alerts_triggers input.wp_stream_ajax_forward');
+  var $alertPreviewTable = $('#wp_stream_alerts_preview .inside');
+  $alertTriggersSelect.change( function( el ) {
+    loadAlertPreview();
+  } );
+
+  var loadAlertPreview = function() {
+    var data = {
+      'action'     : 'load_alert_preview',
+      'post_id'    : $('#post_ID').val(),
+    };
+
+    $('#wp_stream_alerts_triggers input.wp_stream_ajax_forward').each( function() {
+      data[ $(this).attr('name') ] = $(this).val();
+    } );
+
+    $.post(ajaxurl, data, function(response) {
+      $alertPreviewTable.html( response.data.html );
     });
   }
 

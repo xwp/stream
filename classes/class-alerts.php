@@ -57,6 +57,7 @@ class Alerts {
 		add_filter( 'wp_insert_post_data', array( $this, 'save_post_info' ), 10, 2 );
 
 		add_action( 'wp_ajax_load_alerts_settings', array( $this, 'load_alerts_settings' ) );
+		add_action( 'wp_ajax_load_alert_preview', array( $this, 'display_preview_box_ajax' ) );
 
 		$this->load_alert_types();
 		$this->load_alert_triggers();
@@ -529,6 +530,10 @@ class Alerts {
 		$alert = $this->get_alert( $post->ID );
 		$table = new Preview_List_Table( $this->plugin );
 
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			do_action( 'wp_stream_alert_trigger_form_save', $alert );
+		}
+
 		$query = array(
 			'records_per_page' => apply_filters( 'stream_records_per_page', 20 ),
 		);
@@ -539,6 +544,39 @@ class Alerts {
 		$table->set_records( $items );
 		$table->display();
 
+	}
+
+	function display_preview_box_ajax() {
+
+		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
+		$post = get_post( $post_id );
+		if ( ! $post ) {
+			wp_send_json_error( array(
+				'message' => 'Could not find alert.',
+			) );
+		}
+
+		$alert = $this->get_alert( $post->ID );
+		$table = new Preview_List_Table( $this->plugin );
+
+		do_action( 'wp_stream_alert_trigger_form_save', $alert );
+
+		$query = array(
+			'records_per_page' => apply_filters( 'stream_records_per_page', 20 ),
+		);
+
+		$query = apply_filters( 'stream_alerts_preview_query', $query, $alert );
+		$items = $this->plugin->db->query( $query );
+
+		ob_start();
+
+		$table->set_records( $items );
+		$table->display();
+		$content = ob_get_contents();
+		ob_end_clean();
+
+		$output = array( 'html' => $content );
+		wp_send_json_success( $output );
 	}
 
 	/**
