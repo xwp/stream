@@ -70,14 +70,16 @@ class Form_Generator {
 			'name'        => '',
 			'value'       => '',
 			'description' => '',
+			'classes'     => '',
 		) );
 
 		$output = '';
 		switch ( $field_type ) {
 			case 'text':
 				$output = sprintf(
-					'<input type="text" name="%1$s" id="%1$s" value="%2$s" />',
+					'<input type="text" name="%1$s" id="%1$s" class="%2$s" value="%3$s" />',
 					esc_attr( $args['name'] ),
+					esc_attr( $args['classes'] ),
 					esc_attr( $args['value'] )
 				);
 				break;
@@ -85,8 +87,9 @@ class Form_Generator {
 				$current_value = $args['value'];
 
 				$output  = sprintf(
-					'<select name="%1$s" id="%1$s">',
-					esc_attr( $args['name'] )
+					'<select name="%1$s" class="%2$s" id="%1$s">',
+					esc_attr( $args['name'] ),
+					esc_attr( $args['classes'] )
 				);
 
 				foreach ( $args['options'] as $value => $label ) {
@@ -105,13 +108,15 @@ class Form_Generator {
 					'value'       => '',
 					'options'     => array(),
 					'placeholder' => '',
+					'classes'     => '',
 				) );
 				$output = sprintf(
-					'<input type="hidden" class="chosen-select" name="%1$s" id="%1$s" value="%2$s" data-values=\'%3$s\' data-placeholder="%4$s"/>',
+					'<input type="hidden" class="chosen-select %5$s" name="%1$s" id="%1$s" value="%2$s" data-values=\'%3$s\' data-placeholder="%4$s"/>',
 					esc_attr( $args['name'] ),
 					esc_attr( $args['value'] ),
 					esc_attr( wp_stream_json_encode( $args['options'] ) ),
-					esc_attr( $args['placeholder'] )
+					esc_attr( $args['placeholder'] ),
+					esc_attr( $args['classes'] )
 				);
 				break;
 			case 'checkbox':
