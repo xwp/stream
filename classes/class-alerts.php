@@ -331,7 +331,7 @@ class Alerts {
 	public function get_alert( $post_id ) {
 
 		if ( ! $post_id ) {
-			$obj = new Alert( null );
+			$obj = new Alert( null, $this->plugin );
 			$obj->alert_type_obj = new Alert_Type_None( $this->plugin );
 			return $obj;
 		}
@@ -347,7 +347,7 @@ class Alerts {
 			'filter_author'  => isset( $meta['filter_author'] ) ? $meta['filter_author'][0] : null,
 			'filter_context' => isset( $meta['filter_context'] ) ? $meta['filter_context'][0] : null,
 			'alert_type'     => isset( $meta['alert_type'] ) ? $meta['alert_type'][0] : null,
-			'alert_meta'     => isset( $meta['alert_meta'] ) ? maybe_unserialize( $meta['alert_meta'][0] ) : array(),
+			'alert_meta'     => isset( $meta['alert_meta'] ) ? (array) maybe_unserialize( $meta['alert_meta'][0] ) : array(),
 		);
 
 		if ( array_key_exists( $obj->alert_type, $this->alert_types ) ) {
@@ -361,7 +361,7 @@ class Alerts {
 	}
 
 	function load_alerts_settings() {
-		$post_id = wp_stream_filter_input( INPUT_GET, 'post_id' );
+		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
 		$alert = $this->get_alert( $post_id );
 		if ( ! $alert ) {
 			wp_send_json_error( array(
@@ -369,12 +369,13 @@ class Alerts {
 			) );
 		}
 
-		$alert->alert_type = wp_stream_filter_input( INPUT_GET, 'alert_type' );
-		print_r( $alerts->alert_type );
-		$alert->alert_type_obj = $this->alert_types[ $alerts->alert_type ];
+		$alert_type = wp_stream_filter_input( INPUT_POST, 'alert_type' );
+		if ( array_key_exists( $alert_type, $this->alert_types ) ) {
+			$alert->alert_type_obj = $this->alert_types[ $alert_type ];
+		}
 
 		ob_start();
-		$alert->display_settings_form( $post );
+		$alert->display_settings_form( get_post( $post_id ) );
 		$output = ob_get_contents();
 		ob_end_clean();
 
@@ -645,17 +646,22 @@ class Alerts {
 		}
 
 		$post_type = get_post_type_object( $data['post_type'] );
-		if ( ! current_user_can( $post_type->cap->edit_post, $post_id ) ) {
+		if ( ! current_user_can( $post_type->cap->edit_post, $postarr['ID'] ) ) {
 			return $data;
 		}
 
-		$alert = $this->get_alert( $post_id );
+		$alert = $this->get_alert( $postarr['ID'] );
 		$alert->status     = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
+
+		// @todo Don't store alert type in alert object
 		$alert->alert_type = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
+		if ( array_key_exists( $alert->alert_type, $this->alert_types ) ) {
+			$alert->alert_type_obj = $this->alert_types[ $alert->alert_type ];
+		}
 
 		do_action( 'wp_stream_alert_trigger_form_save', $alert );
 
-		$data = $alert->process_settings_form( $data, $post );
+		$data = $alert->process_settings_form( $data, $data );
 
 		return $data;
 	}
