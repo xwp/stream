@@ -90,7 +90,12 @@ class DB {
 		 * @return array
 		 */
 		$record = apply_filters( 'wp_stream_record_array', $record );
-		$record = array_map( 'esc_html', $record );
+
+		array_walk( $record, function( &$value, &$key ) {
+			if ( ! is_array( $value ) ) {
+				$value = strip_tags( $value );
+			}
+		});
 
 		if ( empty( $record ) ) {
 			return false;
