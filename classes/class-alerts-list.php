@@ -108,8 +108,7 @@ class Alerts_List {
 					$value = $trigger_obj->get_display_value( 'list_table', $alert );
 					$values[] = '<span class="alert_trigger_value alert_trigger_' . esc_attr( $trigger_type ) . '">' . esc_html( $value ) . '</span>';
 				}
-
-				echo join( '', $values ); // xss ok
+				echo '<div>' . join( '', $values ) . '</div>'; // xss ok
 				break;
 			case 'alert_status' :
 				$post_status = get_post_status( $post_id );
