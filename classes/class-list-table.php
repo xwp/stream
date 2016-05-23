@@ -346,7 +346,11 @@ class List_Table extends \WP_List_Table {
 				}
 		}
 
-		echo $out; // xss ok
+		$allowed_tags = wp_kses_allowed_html( 'post' );
+		$allowed_tags['time'] = array( 'datetime' => true, 'class' => true );
+		$allowed_tags['img']['srcset'] = true;
+
+		echo wp_kses( $out, $allowed_tags );
 	}
 
 	public function get_action_links( $record ) {
