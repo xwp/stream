@@ -5,7 +5,7 @@ class Test_Alert extends WP_StreamTestCase {
 
 	function test_construct() {
 		$data	= $this->get_dummy_data();
-		$alert = new Alert( $data );
+		$alert = new Alert( $data, $this->plugin );
 
 		$this->assertNotEmpty( $alert->ID );
 		$this->assertNotEmpty( $alert->date );
@@ -18,7 +18,7 @@ class Test_Alert extends WP_StreamTestCase {
 	function test_save() {
 		$data		 = $this->get_dummy_data();
 		$data->ID = null;
-		$alert		= new Alert( $data );
+		$alert		= new Alert( $data, $this->plugin );
 
 		$post = get_post( $alert->ID );
 		$this->assertEquals( $post, 0 );
@@ -56,9 +56,9 @@ class Test_Alert extends WP_StreamTestCase {
 			'alert_type'		 => 'highlight',
 			'alert_type_obj' => new Alert_Type_Highlight( $this->plugin ),
 			'alert_meta'		 => array(
-        'trigger_action'  => 'activated',
-        'trigger_author'	=> 'administrator',
-        'trigger_context' => 'plugins',
+				'trigger_action'	=> 'activated',
+				'trigger_author'	=> 'administrator',
+				'trigger_context' => 'plugins',
 			),
 		);
 	}
