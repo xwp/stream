@@ -530,10 +530,6 @@ class Alerts {
 		$alert = $this->get_alert( $post->ID );
 		$table = new Preview_List_Table( $this->plugin );
 
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			do_action( 'wp_stream_alert_trigger_form_save', $alert );
-		}
-
 		$query = array(
 			'records_per_page' => apply_filters( 'stream_records_per_page', 20 ),
 		);
