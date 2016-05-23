@@ -7,7 +7,7 @@ class Alert_Type_Highlight extends Alert_Type {
 	 *
 	 * @var string
 	 */
-	public $name = 'Highlight';
+	public $name = 'Highlight Record';
 
 	/**
 	 * Alert type slug

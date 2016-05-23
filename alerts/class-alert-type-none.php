@@ -7,7 +7,7 @@ class Alert_Type_None extends Alert_Type {
 	 *
 	 * @var string
 	 */
-	public $name = 'None';
+	public $name = 'Do Nothing';
 
 	/**
 	 * Notifier slug
