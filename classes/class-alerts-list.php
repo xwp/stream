@@ -100,7 +100,15 @@ class Alerts_List {
 		switch ( $column_name ) {
 			case 'alert_type' :
 				$alert_type = $alert->alert_type;
-				esc_html_e( $this->plugin->alerts->alert_types[ $alert_type ]->name );
+				echo wp_kses_post(
+					edit_post_link(
+						$this->plugin->alerts->alert_types[ $alert_type ]->name,
+						'<strong>',
+						'</strong>',
+						$post_id,
+						'row-title'
+					)
+				);
 				break;
 			case 'alert_trigger' :
 				$values = array();
