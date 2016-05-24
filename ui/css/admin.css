@@ -520,25 +520,22 @@
 
 .post-type-wp_stream_alerts .wp-list-table .alert_trigger_value {
 	padding: 3px 20px 3px 10px;
-	border-top: 1px solid rgba(0, 115, 170, 1);
-	border-bottom: 1px solid rgba(0, 115, 170, 1);
-	background: rgba(0, 115, 170, 0.1);
+	border-top: 1px solid #e5e5e5;
+	border-bottom: 1px solid #e5e5e5;
+	background: #fff;
 	display: inline-block;
 	height: 22px;
 	line-height: 22px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
 }
 
 .post-type-wp_stream_alerts .wp-list-table .alert_trigger_value:first-child {
-	border-left: 1px solid rgba(0, 115, 170, 1);
-	border-top-left-radius: 3px;
-	border-bottom-left-radius: 3px;
+	border-left: 1px solid #e5e5e5;
 }
 
 .post-type-wp_stream_alerts .wp-list-table .alert_trigger_value:last-child {
 	padding-right: 10px;
-	border-right: 1px solid rgba(0, 115, 170, 1);
-	border-top-right-radius: 3px;
-	border-bottom-right-radius: 3px;
+	border-right: 1px solid #e5e5e5;
 }
 
 .post-type-wp_stream_alerts .wp-list-table .alert_trigger_value:after {
@@ -550,8 +547,8 @@
 	height: 8px;
 	width: 8px;
 	transform: rotate(45deg);
-	border-top: 2px solid rgba(0, 115, 170, 0.67);
-	border-right: 2px solid rgba(0, 115, 170, 0.67);
+	border-top: 2px solid #e5e5e5;
+	border-right: 2px solid #e5e5e5;
 }
 
 .post-type-wp_stream_alerts .wp-list-table .alert_trigger_value:last-child:after {
