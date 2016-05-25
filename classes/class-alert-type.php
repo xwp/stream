@@ -39,7 +39,7 @@ abstract class Alert_Type {
 	/**
 	 * Display settings form for configuration individual alerts
 	 *
-	 * @param Alert   $alert Alert currently being worked on.
+	 * @param Alert $alert Alert currently being worked on.
 	 */
 	public function display_fields( $alert ) {
 		return;
@@ -48,7 +48,7 @@ abstract class Alert_Type {
 	/**
 	 * Process settings form for configuration individual alerts
 	 *
-	 * @param Alert   $alert Alert currently being worked on.
+	 * @param Alert $alert Alert currently being worked on.
 	 */
 	public function save_fields( $alert ) {
 		return;
