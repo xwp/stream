@@ -11,7 +11,6 @@ class Test_Alert extends WP_StreamTestCase {
 		$this->assertNotEmpty( $alert->date );
 		$this->assertNotEmpty( $alert->author );
 		$this->assertNotEmpty( $alert->alert_type );
-		$this->assertNotEmpty( $alert->alert_type_obj );
 		$this->assertNotEmpty( $alert->alert_meta );
 	}
 
@@ -45,7 +44,7 @@ class Test_Alert extends WP_StreamTestCase {
 
 		$post = get_post( $alert->ID );
 		$this->assertEquals( $post->post_date, $alert->date );
-		$this->assertEquals( 'Highlight when Administrator activated an item in Plugins.', $post->post_title );
+		$this->assertEquals( 'Highlight Record when Administrator activated an item in Plugins.', $post->post_title );
 	}
 
 	function get_dummy_data() {
