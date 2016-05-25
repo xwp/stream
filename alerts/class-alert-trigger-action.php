@@ -140,17 +140,19 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 * @return string
 	 */
 	function get_display_value( $context = 'normal', $alert ) {
-		$action = ( ! empty( $alerts->alert_meta['trigger_action'] ) ) ? $alert->alert_meta['trigger_action'] : null;
-		if ( empty( $action ) ) {
-			if ( 'post_title' === $context ) {
+		$action = ( ! empty( $alert->alert_meta['trigger_action'] ) ) ? $alert->alert_meta['trigger_action'] : null;
+
+		if ( 'post_title' === $context ) {
+			if ( empty( $action ) ) {
 				$action = __( 'preformed any action on', 'stream' );
-			} else {
-				$action = __( 'Any Action', 'stream' );
 			}
 		} else {
-			$action = ucfirst( $action );
+			if ( empty( $action ) ) {
+				$action = __( 'Any Action', 'stream' );
+			} else {
+					$action = ucfirst( $action );
+			}
 		}
-
 		return $action;
 	}
 
