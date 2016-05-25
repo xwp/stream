@@ -339,7 +339,6 @@ class Alerts {
 
 		if ( ! $post_id ) {
 			$obj = new Alert( null, $this->plugin );
-			$obj->alert_type_obj = new Alert_Type_None( $this->plugin );
 			return $obj;
 		}
 
@@ -357,42 +356,8 @@ class Alerts {
 			'alert_meta'     => isset( $meta['alert_meta'] ) ? (array) maybe_unserialize( $meta['alert_meta'][0] ) : array(),
 		);
 
-		if ( array_key_exists( $obj->alert_type, $this->alert_types ) ) {
-			$obj->alert_type_obj = $this->alert_types[ $obj->alert_type ];
-		} else {
-			$obj->alert_type_obj = new Alert_Type_None( $this->plugin );
-		}
-
 		return new Alert( $obj, $this->plugin );
 
-	}
-
-	/**
-	 * Returns settings form HTML for AJAX use
-	 *
-	 * @return void
-	 */
-	function load_alerts_settings() {
-		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
-		$alert = $this->get_alert( $post_id );
-		if ( ! $alert ) {
-			wp_send_json_error( array(
-				'message' => 'Could not find alert.',
-			) );
-		}
-
-		$alert_type = wp_stream_filter_input( INPUT_POST, 'alert_type' );
-		if ( array_key_exists( $alert_type, $this->alert_types ) ) {
-			$alert->alert_type_obj = $this->alert_types[ $alert_type ];
-		}
-
-		ob_start();
-		$alert->display_settings_form( get_post( $post_id ) );
-		$output = ob_get_contents();
-		ob_end_clean();
-
-		$data = array( 'html' => $output );
-		wp_send_json_success( $data );
 	}
 
 	/**
@@ -519,8 +484,38 @@ class Alerts {
 		echo $field_html; // Xss ok.
 
 		echo '<div id="wp_stream_alert_type_form">';
-		$alert->display_settings_form( $post );
+		$alert->get_alert_type_obj()->display_fields( $alert );
 		echo '</div>';
+	}
+
+	/**
+	 * Returns settings form HTML for AJAX use
+	 *
+	 * @return void
+	 */
+	function load_alerts_settings() {
+		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
+		$alert = $this->get_alert( $post_id );
+		if ( ! $alert ) {
+			wp_send_json_error( array(
+				'message' => 'Could not find alert.',
+			) );
+		}
+
+		$alert_type = wp_stream_filter_input( INPUT_POST, 'alert_type' );
+		if ( ! array_key_exists( $alert_type, $this->alert_types ) ) {
+			wp_send_json_error( array(
+				'message' => 'Could not find alert type.',
+			) );
+		}
+
+		ob_start();
+		$this->alert_types[ $alert_type ]->display_fields( $alert );
+		$output = ob_get_contents();
+		ob_end_clean();
+
+		$data = array( 'html' => $output );
+		wp_send_json_success( $data );
 	}
 
 	/**
@@ -717,16 +712,12 @@ class Alerts {
 
 		$alert = $this->get_alert( $postarr['ID'] );
 		$alert->status     = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
-
-		// @todo Don't store alert type in alert object
 		$alert->alert_type = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
-		if ( array_key_exists( $alert->alert_type, $this->alert_types ) ) {
-			$alert->alert_type_obj = $this->alert_types[ $alert->alert_type ];
-		}
 
 		do_action( 'wp_stream_alert_trigger_form_save', $alert );
+		$alert->get_alert_type_obj()->save_fields( $alert );
 
-		$data = $alert->process_settings_form( $data, $data );
+		$data = $alert->process_settings_form( $data );
 
 		return $data;
 	}

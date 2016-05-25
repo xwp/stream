@@ -46,13 +46,6 @@ class Alert {
 	public $alert_meta;
 
 	/**
-	 * Alert type object
-	 *
-	 * @var Alert_Type
-	 */
-	public $alert_type_obj;
-
-	/**
 	 * Hold Plugin class
 	 *
 	 * @var Plugin
@@ -76,30 +69,6 @@ class Alert {
 
 		$this->alert_type = isset( $item->alert_type ) ? $item->alert_type : null;
 		$this->alert_meta = isset( $item->alert_meta ) ? $item->alert_meta : null;
-		$this->alert_type_obj = isset( $item->alert_type_obj ) ? $item->alert_type_obj : null;
-	}
-
-	/**
-	 * Check if record matches trigger criteria.
-	 *
-	 * @param int   $record_id Record ID.
-	 * @param array $recordarr Record data.
-	 * @return bool True if a positive match. False otherwise.
-	 */
-	public function check_record( $record_id, $recordarr ) {
-		return apply_filters( 'wp_stream_alert_trigger_check', true, $record_id, $recordarr, $this );
-	}
-
-	/**
-	 * Trigger alert for a specific record.
-	 *
-	 * @param int $record_id Record ID.
-	 * @param int $recordarr Record Data.
-	 * @return void
-	 */
-	public function send_alert( $record_id, $recordarr ) {
-		// @TODO move to do_action style alert types
-		$this->alert_type_obj->alert( $record_id, $recordarr, $this->alert_meta );
 	}
 
 	/**
@@ -143,25 +112,12 @@ class Alert {
 	}
 
 	/**
-	 * Display setting form for the registered alert type
-	 *
-	 * @param WP_Post $post Post Object.
-	 * @return void
-	 */
-	public function display_settings_form( $post ) {
-		$this->alert_type_obj->display_settings_form( $this, $post );
-	}
-
-	/**
 	 * Process settings form data
 	 *
 	 * @param array $data Processed post object data.
-	 * @param array $post Raw POST data.
 	 * @return array New post object data.
 	 */
-	public function process_settings_form( $data, $post ) {
-
-		$this->alert_type_obj->process_settings_form( $this, $post );
+	public function process_settings_form( $data ) {
 
 		$args = array(
 			'post_date'    => $this->date,
@@ -220,7 +176,7 @@ class Alert {
 	 */
 	function get_title() {
 
-		$alert_type = $this->alert_type_obj->name;
+		$alert_type = $this->get_alert_type_obj()->name;
 		$action  = $this->get_trigger_display( 'action', 'post_title' );
 		$author  = $this->get_trigger_display( 'author', 'post_title' );
 		$context = $this->get_trigger_display( 'context', 'post_title' );
@@ -235,18 +191,42 @@ class Alert {
 		);
 	}
 
-	/**
-	 * Get trigger display value
-	 *
-	 * @param string $trigger Trigger type.
-	 * @param sting  $context Context being displayed in.
-	 * @return string
-	 */
-	function get_trigger_display( $trigger, $context = 'normal' ) {
-		if ( array_key_exists( $trigger, $this->plugin->alerts->alert_triggers ) ) {
-			return $this->plugin->alerts->alert_triggers[ $trigger ]->get_display_value( $context, $this );
+	public function get_alert_type_obj() {
+		if ( array_key_exists( $this->alert_type, $this->plugin->alerts->alert_types ) ) {
+			$obj = $this->plugin->alerts->alert_types[ $this->alert_type ];
 		} else {
-			return false;
+			$obj = new Alert_Type_None( $this->plugin );
 		}
+		return $obj;
+	}
+
+	/**
+	 * Check if record matches trigger criteria.
+	 *
+	 * @param int   $record_id Record ID.
+	 * @param array $recordarr Record data.
+	 * @return bool True if a positive match. False otherwise.
+	 */
+	public function check_record( $record_id, $recordarr ) {
+		return apply_filters( 'wp_stream_alert_trigger_check', true, $record_id, $recordarr, $this );
+	}
+
+	/**
+	 * Trigger alert for a specific record.
+	 *
+	 * @param int $record_id Record ID.
+	 * @param int $recordarr Record Data.
+	 * @return void
+	 */
+	public function send_alert( $record_id, $recordarr ) {
+		$this->get_alert_type_obj()->alert( $record_id, $recordarr, $this );
+	}
+
+	public function get_trigger_display( $trigger, $context = 'normal' ) {
+		return apply_filters( 'wp_stream_alert_trigger_display_value', '', $trigger, $context, $this );
+	}
+
+	public function get_trigger_value( $trigger ) {
+		return apply_filters( 'wp_stream_alert_trigger_get_value', '', $trigger, $this );
 	}
 }
