@@ -141,10 +141,6 @@ class Alert {
 
 		$this->alert_type_obj->process_settings_form( $this, $post );
 
-		if ( ! $this->validate() ) {
-			return new \WP_Error( 'validation-error', esc_html__( 'Could not validate record data.', 'stream' ) );
-		}
-
 		$args = array(
 			'post_date'    => $this->date,
 			'post_status'  => $this->status,
@@ -167,10 +163,6 @@ class Alert {
 		}
 
 		return $data;
-	}
-
-	public function validate() {
-		return true;
 	}
 
 	/**
