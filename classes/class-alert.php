@@ -77,9 +77,6 @@ class Alert {
 	 * @return bool True if alert was updated, false if inserted.
 	 */
 	public function save() {
-		if ( ! $this->validate() ) {
-			return new \WP_Error( 'validation-error', esc_html__( 'Could not validate record data.', 'stream' ) );
-		}
 
 		$args = array(
 			'ID'           => $this->ID,
