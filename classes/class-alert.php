@@ -169,14 +169,6 @@ class Alert {
 		return $data;
 	}
 
-	public function populate( array $raw ) {
-		$keys = get_class_vars( $this );
-		$data = array_intersect_key( $raw, $keys );
-		foreach ( $data as $key => $val ) {
-			$this->{$key} = $val;
-		}
-	}
-
 	public function validate() {
 		return true;
 	}
