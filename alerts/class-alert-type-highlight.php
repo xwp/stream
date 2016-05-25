@@ -47,7 +47,7 @@ class Alert_Type_Highlight extends Alert_Type {
 	/**
 	 * Displays a settings form for the alert type
 	 *
-	 * @param Alert   $alert Alert object for the currently displayed alert.
+	 * @param Alert $alert Alert object for the currently displayed alert.
 	 * @return void
 	 */
 	public function display_fields( $alert ) {
@@ -81,7 +81,7 @@ class Alert_Type_Highlight extends Alert_Type {
 	/**
 	 * Validates and saves form settings for later use.
 	 *
-	 * @param Alert   $alert Alert object for the currently displayed alert.
+	 * @param Alert $alert Alert object for the currently displayed alert.
 	 * @return void
 	 */
 	public function save_fields( $alert ) {
