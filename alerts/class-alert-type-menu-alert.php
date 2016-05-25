@@ -60,7 +60,7 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 			'title' => __( 'Menu Bar', 'stream' ),
 		) );
 
-		echo $form->render_all(); // xss ok
+		echo $form->render_all(); // Xss ok.
 	}
 
 	/**

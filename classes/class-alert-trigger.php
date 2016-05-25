@@ -3,9 +3,25 @@ namespace WP_Stream;
 
 abstract class Alert_Trigger {
 
+	/**
+	 * Hold Plugin class
+	 *
+	 * @var Plugin
+	 */
 	public $plugin;
+
+	/**
+	 * Unique identifier
+	 *
+	 * @var string
+	 */
 	public $slug;
 
+	/**
+	 * Class constructor
+	 *
+	 * @param Plugin $plugin Plugin class.
+	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
@@ -18,6 +34,7 @@ abstract class Alert_Trigger {
 	/**
 	 * Checks if a record matches the criteria from the trigger.
 	 *
+	 * @param bool  $success Status of previous checks.
 	 * @param int   $record_id Record ID.
 	 * @param array $recordarr Record data.
 	 * @param Alert $alert The Alert being worked on.
@@ -53,6 +70,13 @@ abstract class Alert_Trigger {
 		return $query_args;
 	}
 
+	/**
+	 * Returns the trigger's value for the given alert.
+	 *
+	 * @param string $context The location this data will be displayed in.
+	 * @param Alert  $alert Alert being processed.
+	 * @return string
+	 */
 	abstract public function get_display_value( $context = 'normal', $alert );
 
 	/**

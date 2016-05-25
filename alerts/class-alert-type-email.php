@@ -54,14 +54,14 @@ class Alert_Type_Email extends Alert_Type {
 		$form = new Form_Generator;
 
 		echo '<p>Recipient:</p>';
-		echo $form->render_field( 'text', array( // xss ok
+		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_email_recipient',
 			'title'   => esc_attr( __( 'Email Recipient', 'stream' ) ),
 			'value'   => $options['email_recipient'],
 		) );
 
 		echo '<p>Subject:</p>';
-		echo $form->render_field( 'text', array( // xss ok
+		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_email_subject',
 			'title'   => esc_attr( __( 'Email Subject', 'stream' ) ),
 			'value'   => $options['email_subject'],

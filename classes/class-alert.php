@@ -53,9 +53,17 @@ class Alert {
 	public $alert_type_obj;
 
 	/**
+	 * Hold Plugin class
+	 *
+	 * @var Plugin
+	 */
+	public $plugin;
+
+	/**
 	 * Class constructor
 	 *
-	 * @param object $item Alert data
+	 * @param object $item Alert data.
+	 * @param Plugin $plugin Plugin class.
 	 * @return void
 	 */
 	public function __construct( $item, $plugin ) {
@@ -74,6 +82,7 @@ class Alert {
 	/**
 	 * Check if record matches trigger criteria.
 	 *
+	 * @param int   $record_id Record ID.
 	 * @param array $recordarr Record data.
 	 * @return bool True if a positive match. False otherwise.
 	 */
@@ -89,7 +98,7 @@ class Alert {
 	 * @return void
 	 */
 	public function send_alert( $record_id, $recordarr ) {
-		//@TODO move to do_action style alert types
+		// @TODO move to do_action style alert types
 		$this->alert_type_obj->alert( $record_id, $recordarr, $this->alert_meta );
 	}
 
@@ -133,10 +142,23 @@ class Alert {
 		return true;
 	}
 
+	/**
+	 * Display setting form for the registered alert type
+	 *
+	 * @param WP_Post $post Post Object.
+	 * @return void
+	 */
 	public function display_settings_form( $post ) {
 		$this->alert_type_obj->display_settings_form( $this, $post );
 	}
 
+	/**
+	 * Process settings form data
+	 *
+	 * @param array $data Processed post object data.
+	 * @param array $post Raw POST data.
+	 * @return array New post object data.
+	 */
 	public function process_settings_form( $data, $post ) {
 
 		$this->alert_type_obj->process_settings_form( $this, $post );
@@ -213,6 +235,13 @@ class Alert {
 		);
 	}
 
+	/**
+	 * Get trigger display value
+	 *
+	 * @param string $trigger Trigger type.
+	 * @param sting  $context Context being displayed in.
+	 * @return string
+	 */
 	function get_trigger_display( $trigger, $context = 'normal' ) {
 		if ( array_key_exists( $trigger, $this->plugin->alerts->alert_triggers ) ) {
 			return $this->plugin->alerts->alert_triggers[ $trigger ]->get_display_value( $context, $this );

@@ -35,8 +35,7 @@ class Alerts_List {
 	/**
 	 * Default to wp_stream_enabled and wp_stream_disabled when querying for alerts
 	 *
-	 * @param int   $record_id The record being processed.
-	 * @param array $recordarr Record data.
+	 * @param array $query_vars Arguments for query to populate table.
 	 * @return array
 	 */
 	function parse_request( $query_vars ) {
@@ -48,15 +47,13 @@ class Alerts_List {
 	}
 
 	/**
+	 * Manages views on the alerts list view
 	 *
-	 *
-	 * @param int   $record_id The record being processed.
-	 * @param array $recordarr Record data.
+	 * @param array $views View links HTML.
 	 * @return array
 	 */
 	function manage_views( $views ) {
 
-		// Move trash to end of the list
 		if ( array_key_exists( 'trash', $views ) ) {
 			$trash = $views['trash'];
 			unset( $views['trash'] );
@@ -67,10 +64,9 @@ class Alerts_List {
 	}
 
 	/**
+	 * Manages columns on the alerts list view
 	 *
-	 *
-	 * @param int   $record_id The record being processed.
-	 * @param array $recordarr Record data.
+	 * @param array $columns Column id -> title array.
 	 * @return array
 	 */
 	function manage_columns( $columns ) {
@@ -84,10 +80,10 @@ class Alerts_List {
 	}
 
 	/**
+	 * Fills in column data for custom columns.
 	 *
-	 *
-	 * @param int   $record_id The record being processed.
-	 * @param array $recordarr Record data.
+	 * @param string $column_name Column name to show data for.
+	 * @param int    $post_id The post being processed.
 	 * @return array
 	 */
 	function column_data( $column_name, $post_id ) {
@@ -116,7 +112,7 @@ class Alerts_List {
 					$value = $trigger_obj->get_display_value( 'list_table', $alert );
 					$values[] = '<span class="alert_trigger_value alert_trigger_' . esc_attr( $trigger_type ) . '">' . esc_html( $value ) . '</span>';
 				}
-				echo '<div>' . join( '', $values ) . '</div>'; // xss ok
+				echo '<div>' . join( '', $values ) . '</div>'; // Xss ok.
 				break;
 			case 'alert_status' :
 				$post_status = get_post_status( $post_id );
@@ -128,16 +124,35 @@ class Alerts_List {
 		}
 	}
 
+	/**
+	 * Remove 'edit' action from bulk actions
+	 *
+	 * @param array $actions List of bulk actions available.
+	 * @return array
+	 */
 	public function supress_bulk_actions( $actions ) {
 		unset( $actions['edit'] );
 		return $actions;
 	}
 
+	/**
+	 * Remove quick edit action from inline edit actions
+	 *
+	 * @param array $actions List of inline edit actions available.
+	 * @return array
+	 */
 	function supress_quick_edit( $actions ) {
 		unset( $actions['inline hide-if-no-js'] );
 		return $actions;
 	}
 
+	/**
+	 * Remove months dropdown from Alerts list page
+	 *
+	 * @param bool   $status Status of months dropdown enabling.
+	 * @param string $post_type Post type status is related to.
+	 * @return bool
+	 */
 	public function supress_months_dropdown( $status, $post_type ) {
 		if ( 'wp_stream_alerts' === $post_type ) {
 			$status = true;

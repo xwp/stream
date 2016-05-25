@@ -303,6 +303,12 @@ class Alerts {
 		register_post_status( 'wp_stream_disabled', $args );
 	}
 
+	/**
+	 * Changes update messages for use with Alerts.
+	 *
+	 * @param array $messages Array of post update messages by post type.
+	 * @return array
+	 */
 	public function filter_update_messages( $messages ) {
 
 		$updated = __( 'Alert updated.', 'stream' );
@@ -361,6 +367,11 @@ class Alerts {
 
 	}
 
+	/**
+	 * Returns settings form HTML for AJAX use
+	 *
+	 * @return void
+	 */
 	function load_alerts_settings() {
 		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
 		$alert = $this->get_alert( $post_id );
@@ -457,6 +468,12 @@ class Alerts {
 		);
 	}
 
+	/**
+	 * Fixes menu highlighting when Alerts are being editted.
+	 *
+	 * @param string $parent_file Top level menu item to highlight.
+	 * @return string
+	 */
 	function filter_parent_file( $parent_file ) {
 		$screen = get_current_screen();
 		if ( 'post' === $screen->base && 'wp_stream_alerts' === $screen->post_type ) {
@@ -465,6 +482,12 @@ class Alerts {
 		return $parent_file;
 	}
 
+	/**
+	 * Fixes menu highlighting when Alerts are being editted.
+	 *
+	 * @param string $submenu_file Submenu level menu item to highlight.
+	 * @return string
+	 */
 	function filter_submenu_file( $submenu_file ) {
 		$screen = get_current_screen();
 		if ( 'post' === $screen->base && 'wp_stream_alerts' === $screen->post_type ) {
@@ -493,7 +516,7 @@ class Alerts {
 		) );
 
 		echo '<p>' . esc_html__( 'Alert me by:', 'stream' ) . '</p>';
-		echo $field_html; // xss ok
+		echo $field_html; // Xss ok.
 
 		echo '<div id="wp_stream_alert_type_form">';
 		$alert->display_settings_form( $post );
@@ -512,9 +535,9 @@ class Alerts {
 		$form  = new Form_Generator;
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
 
-		//@todo use human readable text
+		// @TODO use human readable text.
 		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>';
-		echo $form->render_all(); // xss ok
+		echo $form->render_all(); // Xss ok.
 
 		wp_nonce_field( 'save_post', 'wp_stream_alerts_nonce' );
 
@@ -542,6 +565,11 @@ class Alerts {
 
 	}
 
+	/**
+	 * Output Preview Box based on AJAX changes.
+	 *
+	 * @return void
+	 */
 	function display_preview_box_ajax() {
 
 		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
@@ -668,6 +696,9 @@ class Alerts {
 	/**
 	 * Process alert settings
 	 *
+	 * @param array $data Processed post data.
+	 * @param array $postarr Raw POST data.
+	 * @return array
 	 */
 	function save_post_info( $data, $postarr ) {
 

@@ -3,9 +3,30 @@ namespace WP_Stream;
 
 class Alert_Trigger_Author extends Alert_Trigger {
 
+	/**
+	 * Unique identifier
+	 *
+	 * @var string
+	 */
 	public $slug = 'author';
+
+	/**
+	 * Field key used in database
+	 *
+	 * @var string
+	 */
 	public $field_key = 'wp_stream_trigger_author';
 
+	/**
+	 * Checks if a record matches the criteria from the trigger.
+	 *
+	 * @see Alert_Trigger::check_record().
+	 * @param bool  $success Status of previous checks.
+	 * @param int   $record_id Record ID.
+	 * @param array $recordarr Record data.
+	 * @param Alert $alert The Alert being worked on.
+	 * @return bool False on failure, otherwise should return original value of $success.
+	 */
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
 		if ( ! empty( $alert->alert_meta['trigger_author'] ) && intval( $alert->alert_meta['trigger_author'] ) !== $recordarr['user_id'] ) {
 			return false;
@@ -13,6 +34,14 @@ class Alert_Trigger_Author extends Alert_Trigger {
 		return $success;
 	}
 
+	/**
+	 * Adds fields to the trigger form.
+	 *
+	 * @see Alert_Trigger::add_fields().
+	 * @param Form_Generator $form The Form Object to add to.
+	 * @param Alert          $alert The Alert being worked on.
+	 * @return void
+	 */
 	public function add_fields( $form, $alert ) {
 		$value = '';
 		if ( ! empty( $alert->alert_meta['trigger_author'] ) ) {
@@ -22,17 +51,21 @@ class Alert_Trigger_Author extends Alert_Trigger {
 		$args = array(
 			'name'        => esc_attr( $this->field_key ),
 			'value'       => esc_attr( $value ),
-			'options'     => $this->get_values( $alert ),
+			'options'     => $this->get_values(),
 			'placeholder' => __( 'Show all users', 'stream' ),
 			'classes'     => 'wp_stream_ajax_forward',
 		);
 		$form->add_field( 'select2', $args );
 	}
 
-	public function get_values( $alert ) {
+	/**
+	 * Generate array of possible action values
+	 *
+	 * @return array
+	 */
+	public function get_values() {
 		$all_records = array();
 
-		// If the number of users exceeds the max users constant value then return an empty array and use AJAX instead
 		$user_count  = count_users();
 		$total_users = $user_count['total_users'];
 
@@ -69,6 +102,13 @@ class Alert_Trigger_Author extends Alert_Trigger {
 		return $all_records;
 	}
 
+	/**
+	 * Validate and save Alert object
+	 *
+	 * @see Alert_Trigger::save_fields().
+	 * @param Alert $alert The Alert being worked on.
+	 * @return void
+	 */
 	public function save_fields( $alert ) {
 		$input = wp_stream_filter_input( INPUT_POST, $this->field_key );
 		if ( array_key_exists( $input, $this->get_values( $alert ) ) ) {
@@ -78,6 +118,14 @@ class Alert_Trigger_Author extends Alert_Trigger {
 		}
 	}
 
+	/**
+	 * Returns the trigger's value for the given alert.
+	 *
+	 * @see Alert_Trigger::get_display_value().
+	 * @param string $context The location this data will be displayed in.
+	 * @param Alert  $alert Alert being processed.
+	 * @return string
+	 */
 	function get_display_value( $context = 'normal', $alert ) {
 		$author = ( ! empty( $alert->alert_meta['trigger_author'] ) ) ? $alert->alert_meta['trigger_author'] : null;
 		if ( empty( $author ) ) {
@@ -93,6 +141,14 @@ class Alert_Trigger_Author extends Alert_Trigger {
 		return ucfirst( $author );
 	}
 
+	/**
+	 * Alters the preview table query to show records matching this query.
+	 *
+	 * @see Alert_Trigger::filter_preview_query().
+	 * @param array $query_args The database query arguments for the table.
+	 * @param Alert $alert The Alert being worked on.
+	 * @return array The new query arguments.
+	 */
 	public function filter_preview_query( $query_args, $alert ) {
 		if ( ! empty( $alert->alert_meta['trigger_author'] ) ) {
 			$query_args['user_id'] = $alert->alert_meta['trigger_author'];

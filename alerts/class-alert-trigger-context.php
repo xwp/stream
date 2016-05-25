@@ -3,9 +3,30 @@ namespace WP_Stream;
 
 class Alert_Trigger_Context extends Alert_Trigger {
 
+	/**
+	 * Unique identifier
+	 *
+	 * @var string
+	 */
 	public $slug = 'context';
+
+	/**
+	 * Field key used in database
+	 *
+	 * @var string
+	 */
 	public $field_key = 'wp_stream_trigger_context';
 
+	/**
+	 * Checks if a record matches the criteria from the trigger.
+	 *
+	 * @see Alert_Trigger::check_record().
+	 * @param bool  $success Status of previous checks.
+	 * @param int   $record_id Record ID.
+	 * @param array $recordarr Record data.
+	 * @param Alert $alert The Alert being worked on.
+	 * @return bool False on failure, otherwise should return original value of $success.
+	 */
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) && $recordarr['context'] !== $alert->alert_meta['trigger_context'] ) {
 			return false;
@@ -13,6 +34,14 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		return $success;
 	}
 
+	/**
+	 * Adds fields to the trigger form.
+	 *
+	 * @see Alert_Trigger::add_fields().
+	 * @param Form_Generator $form The Form Object to add to.
+	 * @param Alert          $alert The Alert being worked on.
+	 * @return void
+	 */
 	public function add_fields( $form, $alert ) {
 		$value = '';
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
@@ -29,10 +58,22 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		$form->add_field( 'select2', $args );
 	}
 
+	/**
+	 * Validate and save Alert object
+	 *
+	 * @see Alert_Trigger::save_fields().
+	 * @param Alert $alert The Alert being worked on.
+	 * @return void
+	 */
 	public function save_fields( $alert ) {
 		$alert->alert_meta['trigger_context'] = wp_stream_filter_input( INPUT_POST, $this->field_key );
 	}
 
+	/**
+	 * Generate array of possible action values
+	 *
+	 * @return array
+	 */
 	public function get_values() {
 		$context_values = array();
 		foreach ( $this->get_terms_labels( 'context' ) as $context_id => $context_data ) {
@@ -86,6 +127,14 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		return $return_labels;
 	}
 
+	/**
+	 * Returns the trigger's value for the given alert.
+	 *
+	 * @see Alert_Trigger::get_display_value().
+	 * @param string $context The location this data will be displayed in.
+	 * @param Alert  $alert Alert being processed.
+	 * @return string
+	 */
 	function get_display_value( $context = 'normal', $alert ) {
 		$context = ( ! empty( $alert->alert_meta['trigger_context'] ) ) ? $alert->alert_meta['trigger_context'] : null;
 		if ( empty( $context ) ) {
@@ -96,6 +145,14 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		return ucfirst( $context );
 	}
 
+	/**
+	 * Alters the preview table query to show records matching this query.
+	 *
+	 * @see Alert_Trigger::filter_preview_query().
+	 * @param array $query_args The database query arguments for the table.
+	 * @param Alert $alert The Alert being worked on.
+	 * @return array The new query arguments.
+	 */
 	public function filter_preview_query( $query_args, $alert ) {
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
 			if ( 0 === strpos( $alert->alert_meta['trigger_context'], 'group-' ) ) {

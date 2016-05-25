@@ -3,6 +3,11 @@ namespace WP_Stream;
 
 abstract class Alert_Type {
 
+	/**
+	 * Hold Plugin class
+	 *
+	 * @var Plugin
+	 */
 	public $plugin;
 
 	/**
