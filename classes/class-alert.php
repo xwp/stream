@@ -177,20 +177,27 @@ class Alert {
 	function get_title() {
 
 		$alert_type = $this->get_alert_type_obj()->name;
-		$action  = $this->get_trigger_display( 'action', 'post_title' );
-		$author  = $this->get_trigger_display( 'author', 'post_title' );
-		$context = $this->get_trigger_display( 'context', 'post_title' );
+
+		$output = array();
+		foreach ( array( 'action', 'author', 'context' ) as $trigger_type ) {
+			$output[ $trigger_type ] = $this->plugin->alerts->alert_triggers[ $trigger_type ]->get_display_value( 'post_title', $this );
+		}
 
 		$format = __( '%1$s when %2$s %3$s an item in %4$s.', 'stream' );
 		return sprintf(
 			$format,
 			ucfirst( $alert_type ),
-			ucfirst( $author ),
-			$action,
-			ucfirst( $context )
+			ucfirst( $output['author'] ),
+			$output['action'],
+			ucfirst( $output['context'] )
 		);
 	}
 
+	/**
+	 * Retrive current alert type object
+	 *
+	 * @return Alert_Type
+	 */
 	public function get_alert_type_obj() {
 		if ( array_key_exists( $this->alert_type, $this->plugin->alerts->alert_types ) ) {
 			$obj = $this->plugin->alerts->alert_types[ $this->alert_type ];
@@ -220,13 +227,5 @@ class Alert {
 	 */
 	public function send_alert( $record_id, $recordarr ) {
 		$this->get_alert_type_obj()->alert( $record_id, $recordarr, $this );
-	}
-
-	public function get_trigger_display( $trigger, $context = 'normal' ) {
-		return apply_filters( 'wp_stream_alert_trigger_display_value', '', $trigger, $context, $this );
-	}
-
-	public function get_trigger_value( $trigger ) {
-		return apply_filters( 'wp_stream_alert_trigger_get_value', '', $trigger, $this );
 	}
 }
