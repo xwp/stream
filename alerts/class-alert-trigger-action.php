@@ -58,7 +58,7 @@ class Alert_Trigger_Action extends Alert_Trigger {
 		$args = array(
 			'name'        => esc_attr( $this->field_key ),
 			'value'       => esc_attr( $value ),
-			'options'     => $this->get_values( $alert ),
+			'options'     => $this->get_values(),
 			'placeholder' => __( 'Show all actions', 'stream' ),
 			'classes'     => 'wp_stream_ajax_forward',
 		);
