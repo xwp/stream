@@ -44,10 +44,9 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	 * Displays a settings form for the alert type
 	 *
 	 * @param Alert   $alert Alert object for the currently displayed alert.
-	 * @param WP_Post $post Post object representing the current alert.
 	 * @return void
 	 */
-	public function display_settings_form( $alert, $post ) {
+	public function display_fields( $alert ) {
 		$options = wp_parse_args( $alert->alert_meta, array(
 			'clear_immediate' => false,
 		) );
@@ -67,10 +66,9 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	 * Validates and saves form settings for later use.
 	 *
 	 * @param Alert   $alert Alert object for the currently displayed alert.
-	 * @param WP_Post $post Post object representing the current alert.
 	 * @return void
 	 */
-	public function process_settings_form( $alert, $post ) {
+	public function save_fields( $alert ) {
 		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
 		$alert->alert_meta['clear_immediate'] = ! empty( $_POST['wp_stream_menu_alert_clear_immediate'] );
 	}

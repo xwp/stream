@@ -14,7 +14,7 @@ class Alert_Type_None extends Alert_Type {
 	 *
 	 * @var string
 	 */
-	public $slug = 'null';
+	public $slug = 'none';
 
 	/**
 	 * Does not notify user.

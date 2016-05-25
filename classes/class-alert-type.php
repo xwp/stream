@@ -11,6 +11,13 @@ abstract class Alert_Type {
 	public $plugin;
 
 	/**
+	 * Unique identifier.
+	 *
+	 * @var string
+	 */
+	public $slug;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Plugin object.
@@ -33,9 +40,8 @@ abstract class Alert_Type {
 	 * Display settings form for configuration individual alerts
 	 *
 	 * @param Alert   $alert Alert currently being worked on.
-	 * @param WP_Post $post Post details.
 	 */
-	public function display_settings_form( $alert, $post ) {
+	public function display_fields( $alert ) {
 		return;
 	}
 
@@ -43,9 +49,8 @@ abstract class Alert_Type {
 	 * Process settings form for configuration individual alerts
 	 *
 	 * @param Alert   $alert Alert currently being worked on.
-	 * @param WP_Post $post Post details.
 	 */
-	public function process_settings_form( $alert, $post ) {
+	public function save_fields( $alert ) {
 		return;
 	}
 
