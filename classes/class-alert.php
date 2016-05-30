@@ -72,9 +72,9 @@ class Alert {
 	}
 
 	/**
-	 * Process alert settings
+	 * Save state of the Alert to database
 	 *
-	 * @return bool True if alert was updated, false if inserted.
+	 * @return int The Post ID of the alert.
 	 */
 	public function save() {
 
@@ -88,11 +88,12 @@ class Alert {
 			'post_type'    => 'wp_stream_alerts',
 		);
 
-		$post_id = wp_insert_post( $args );
+		if ( empty( $args['ID'] ) ) {
+			unset( $args['ID'] );
+		}
 
-		if ( 0 === $post_id ) {
-			return false;
-		} else if ( null === $this->ID ) {
+		$post_id = wp_insert_post( $args );
+		if ( empty( $args['ID'] ) ) {
 			$this->ID = $post_id;
 		}
 
@@ -105,7 +106,7 @@ class Alert {
 			$this->update_meta( $key, $value );
 		}
 
-		return true;
+		return $post_id;
 	}
 
 	/**
