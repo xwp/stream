@@ -347,6 +347,7 @@ class Alerts {
 
 		$obj = (object) array(
 			'ID'             => $post->ID,
+			'status'         => $post->post_status,
 			'date'           => $post->post_date,
 			'author'         => $post->post_author,
 			'filter_action'  => isset( $meta['filter_action'] ) ? $meta['filter_action'][0] : null,
