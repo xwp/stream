@@ -335,7 +335,7 @@ class Alerts {
 	 * @param int $post_id Post ID for the alert.
 	 * @return Alert
 	 */
-	public function get_alert( $post_id ) {
+	public function get_alert( $post_id = '' ) {
 
 		if ( ! $post_id ) {
 			$obj = new Alert( null, $this->plugin );
