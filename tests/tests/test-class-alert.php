@@ -7,54 +7,118 @@ class Test_Alert extends WP_StreamTestCase {
 		$data	= $this->get_dummy_data();
 		$alert = new Alert( $data, $this->plugin );
 
-		$this->assertNotEmpty( $alert->ID );
-		$this->assertNotEmpty( $alert->date );
-		$this->assertNotEmpty( $alert->author );
-		$this->assertNotEmpty( $alert->alert_type );
-		$this->assertNotEmpty( $alert->alert_meta );
+		foreach ( $data as $field => $value ) {
+			$this->assertEquals( $alert->$field, $value );
+		}
+	}
+
+	function test_construct_blank() {
+		$data	= $this->get_dummy_data();
+		$alert = new Alert( null, $this->plugin );
+
+		$this->assertEmpty( $alert->ID );
+		$this->assertEmpty( $alert->date );
+		$this->assertEmpty( $alert->author );
+		$this->assertEmpty( $alert->alert_type );
+
+		$this->assertEquals( $alert->status, 'wp_stream_disabled' );
+		$this->assertEquals( $alert->alert_meta, array() );
 	}
 
 	function test_save() {
-		$data		 = $this->get_dummy_data();
-		$data->ID = null;
-		$alert		= new Alert( $data, $this->plugin );
+		$data     = $this->get_dummy_data();
+		$data->ID = 0;
+		$alert    = new Alert( $data, $this->plugin );
 
-		$post = get_post( $alert->ID );
-		$this->assertEquals( $post, 0 );
+		$post_id = $alert->save();
+		$this->assertNotFalse( $post_id );
+		$this->assertNotEquals( 0, $alert->ID );
 
-		$status = $alert->save();
-		$this->assertTrue( $status );
+		$alert->alert_type = 'none';
+		$alert->save();
+		$alert_type = $alert->get_meta( 'alert_type', true );
+		$this->assertEquals( 'none', $alert_type );
 
-		$post = get_post( $alert->ID );
-		$this->assertEquals( $alert->ID, $post->ID );
-		$this->assertEquals( $alert->date, $post->post_date );
-		$this->assertEquals( $alert->author, $post->post_author );
+	}
 
-		$fields = array(
-			'alert_type',
-			'alert_meta',
+	function test_process_settings_form() {
+		$this->markTestIncomplete(
+			'Not implemented yet.'
 		);
-		foreach ( $fields as $field ) {
-			$actual = get_post_meta( $alert->ID, $field, true );
-			$this->assertEquals( $alert->$field, $actual );
-		}
+	}
 
-		$alert->date = date( 'Y-m-d H:i:s', 0 );
+	function test_get_meta() {
+		$data  = $this->get_dummy_data();
+		$data->ID = 0;
+		$alert = new Alert( $data, $this->plugin );
 		$alert->save();
 
-		$post = get_post( $alert->ID );
-		$this->assertEquals( $post->post_date, $alert->date );
-		$this->assertEquals( 'Highlight Record when Administrator activated an item in Plugins.', $post->post_title );
+		$value = $alert->get_meta( 'alert_type', true );
+		$this->assertEquals( 'highlight', $value );
+	}
+
+	function test_update_meta() {
+		$data     = $this->get_dummy_data();
+		$data->ID = 0;
+		$alert    = new Alert( $data, $this->plugin );
+		$alert->save();
+
+		$alert->update_meta( 'test_meta', 'test_value' );
+
+		$value = $alert->get_meta( 'test_meta' );
+		$this->assertContains( 'test_value', $value );
+
+		$value = $alert->get_meta( 'test_meta', true );
+		$this->assertEquals( 'test_value', $value );
+	}
+
+	function test_get_title() {
+		$data		 = $this->get_dummy_data();
+		$alert		= new Alert( $data, $this->plugin );
+
+		$this->assertEquals( 'Highlight Record when Administrator activated an item in Plugins.', $alert->get_title() );
+
+		$alert->alert_meta['trigger_action'] = 'updated';
+		$this->assertEquals( 'Highlight Record when Administrator updated an item in Plugins.', $alert->get_title() );
+
+		$alert->alert_meta['trigger_context'] = 'posts';
+		$this->assertEquals( 'Highlight Record when Administrator updated an item in Posts.', $alert->get_title() );
+
+		$alert->alert_meta['trigger_author'] = '';
+		$this->assertEquals( 'Highlight Record when Any User updated an item in Posts.', $alert->get_title() );
+	}
+
+	function test_get_alert_type_obj() {
+		$data  = $this->get_dummy_data();
+		$alert = new Alert( $data, $this->plugin );
+
+		$alert->alert_type = '';
+		$this->assertEquals( new Alert_Type_None( $this->plugin ), $alert->get_alert_type_obj() );
+
+		$alert->alert_type = 'highlight';
+		$this->assertEquals( new Alert_Type_Highlight( $this->plugin ), $alert->get_alert_type_obj() );
+	}
+
+	function test_check_record() {
+		$this->markTestIncomplete(
+			'Not implemented yet.'
+		);
+	}
+
+	function test_send_alert() {
+		$this->markTestIncomplete(
+			'Not implemented yet.'
+		);
 	}
 
 	function get_dummy_data() {
 		return (object) array(
-			'ID' => 1,
-			'date' => date( 'Y-m-d H:i:s' ),
-			'author' => '1',
-			'alert_type'		 => 'highlight',
-			'alert_type_obj' => new Alert_Type_Highlight( $this->plugin ),
-			'alert_meta'		 => array(
+			'ID'         => 1,
+			'date'       => date( 'Y-m-d H:i:s' ),
+			'status'     => 'wp_stream_enabled',
+			'author'     => '1',
+			'alert_type' => 'highlight',
+			'alert_meta' => array(
 				'trigger_action'	=> 'activated',
 				'trigger_author'	=> 'administrator',
 				'trigger_context' => 'plugins',
