@@ -68,7 +68,7 @@ class Alert {
 		$this->author  = isset( $item->author ) ? $item->author : null;
 
 		$this->alert_type = isset( $item->alert_type ) ? $item->alert_type : null;
-		$this->alert_meta = isset( $item->alert_meta ) ? $item->alert_meta : null;
+		$this->alert_meta = isset( $item->alert_meta ) ? $item->alert_meta : array();
 	}
 
 	/**
