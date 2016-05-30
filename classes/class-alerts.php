@@ -650,32 +650,6 @@ class Alerts {
 	}
 
 	/**
-	 * Return all context values
-	 *
-	 * @return array
-	 */
-	function get_context_values() {
-		$context_values = array();
-		foreach ( $this->get_terms_labels( 'context' ) as $context_id => $context_data ) {
-			if ( is_array( $context_data ) ) {
-				$child_values = array();
-				if ( isset( $context_data['children'] ) ) {
-					$child_values = array();
-					foreach ( $context_data['children'] as $child_id => $child_value ) {
-						$child_values[] = array( 'id' => $child_id, 'text' => $child_value, 'parent' => $context_id );
-					}
-				}
-				if ( isset( $context_data['label'] ) ) {
-					$context_values[] = array( 'id' => $context_id, 'text' => $context_data['label'], 'children' => $child_values );
-				}
-			} else {
-				$context_values[] = array( 'id' => $context_id, 'text' => $context_data );
-			}
-		}
-		return $context_values;
-	}
-
-	/**
 	 * Return all notification values
 	 *
 	 * @return array
