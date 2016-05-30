@@ -228,7 +228,7 @@ class Alerts {
 	 */
 	function register_scripts( $page ) {
 		if ( 'post.php' === $page || 'post-new.php' === $page ) {
-			wp_enqueue_script( 'wp-strean-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2' ) );
+			wp_enqueue_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2' ) );
 			wp_enqueue_style( 'wp-stream-select2' );
 		}
 	}
