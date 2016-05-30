@@ -29,7 +29,7 @@ class Test_Alerts extends WP_StreamTestCase {
 
 		add_filter( 'wp_stream_alert_types', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
 		$alerts = new Alerts( $this->plugin );
-		remove_filter( 'wp_stream_alert_triggers', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
+		remove_filter( 'wp_stream_alert_types', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
 	}
 
 	function test_load_alert_triggers() {
