@@ -20,7 +20,6 @@ class Export {
 	 * Class constructor
 	 *
 	 * @param Plugin $plugin The plugin object.
-	 * @return void
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;

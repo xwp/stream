@@ -457,7 +457,13 @@ class List_Table extends \WP_List_Table {
 			$total_users = $user_count['total_users'];
 
 			if ( $total_users > $this->plugin->admin->preload_users_max ) {
-				return array();
+				$selected_user = wp_stream_filter_input( INPUT_GET, 'user_id' );
+				if ( $selected_user ) {
+					$user = new Author( $selected_user );
+					return array( $selected_user => $user->get_display_name() );
+				} else {
+					return array();
+				}
 			}
 
 			$users = array_map(
@@ -620,6 +626,8 @@ class List_Table extends \WP_List_Table {
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'stream' ) );
+
+		$filters_string .= wp_nonce_field( 'stream_filters_user_search_nonce', 'stream_filters_user_search_nonce' );
 
 		// Parse all query vars into an array
 		$query_vars = array();

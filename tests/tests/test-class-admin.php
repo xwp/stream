@@ -389,21 +389,6 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertInternalType( 'array', $data );
 	}
 
-	public function test_get_filter_value_by_id() {
-		$_POST['filter'] = 'user_id';
-		$_POST['id']     = get_current_user_id();
-
-		ob_start();
-		$this->admin->get_filter_value_by_id();
-		$json = ob_get_clean();
-
-		$this->assertNotEmpty( $json );
-		$data = json_decode( $json );
-		$this->assertNotFalse( $data );
-		$this->assertNotEmpty( $data );
-		$this->assertInternalType( 'string', $data );
-	}
-
 	public function test_get_users_record_meta() {
 		$user_id = get_current_user_id();
 		$authors = array(
