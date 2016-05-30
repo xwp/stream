@@ -835,6 +835,7 @@ class List_Table extends \WP_List_Table {
 			);
 		}
 		echo '</select></div>';
+		echo wp_nonce_field( 'stream_record_actions_nonce', 'stream_record_actions_nonce' );
 		printf( '<input type="submit" name="" id="record-actions-submit" class="button" value="%s">', esc_attr__( 'Apply', 'stream' ) );
 
 		return ob_get_clean();
