@@ -847,7 +847,7 @@ class Admin {
 	 */
 	public function ajax_filters() {
 		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( $this->plugin->admin->settings_cap ) ) {
-			return;
+			wp_die( '-1' );
 		}
 
 		check_ajax_referer( 'stream_filters_user_search_nonce', 'nonce' );
@@ -882,10 +882,6 @@ class Admin {
 
 		if ( isset( $results ) ) {
 			echo wp_stream_json_encode( $results ); // xss ok
-		}
-
-		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
-			return;
 		}
 
 		die();
