@@ -183,7 +183,7 @@ class Export {
 
 		$classes = array();
 		foreach ( $exporters as $exporter ) {
-			include_once $this->plugin->locations['dir'] . '/exporters/class-exporter-' . $exporter .'.php';
+			include_once $this->plugin->locations['dir'] . '/exporters/class-exporter-' . $exporter . '.php';
 			$class_name = sprintf( '\WP_Stream\Exporter_%s', str_replace( '-', '_', $exporter ) );
 			if ( ! class_exists( $class_name ) ) {
 				continue;

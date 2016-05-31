@@ -316,7 +316,7 @@ class Install {
 		<div class="updated">
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ) ) ?>" style="display:inline;">
 				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ) ?></strong></p>
-				<p><?php esc_html_e( sprintf( 'Your Stream database has been successfully updated from %1$s to %2$s!', esc_html( $this->db_version ), esc_html( $this->plugin->get_version() ) ), 'stream' ) ?></p>
+				<p><?php printf( esc_html_e( 'Your Stream database has been successfully updated from %1$s to %2$s!', 'stream' ), esc_html( $this->db_version ), esc_html( $this->plugin->get_version() ) ); ?></p>
 				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ) ?>
 			</form>
 		</div>

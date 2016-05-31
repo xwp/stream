@@ -101,7 +101,7 @@ jQuery( function( $ ) {
 	}
 
 	$( 'input[type=submit]', '#record-filter-form' ).click( function() {
-		$( 'input[type=submit]', $( this ).parents( 'form' )).removeAttr( 'clicked' );
+		$( 'input[type=submit]', $( this ).parents( 'form' ) ).removeAttr( 'clicked' );
 		$( this ).attr( 'clicked', 'true' );
 	});
 

@@ -81,10 +81,10 @@ class Connector_ACF extends Connector {
 	 */
 	public function get_action_labels() {
 		return array(
-			'created' => esc_html__( 'Created', 'acf', 'stream' ),
-			'updated' => esc_html__( 'Updated', 'acf', 'stream' ),
-			'added'   => esc_html__( 'Added', 'acf', 'stream' ),
-			'deleted' => esc_html__( 'Deleted', 'acf', 'stream' ),
+			'created' => esc_html_x( 'Created', 'acf', 'stream' ),
+			'updated' => esc_html_x( 'Updated', 'acf', 'stream' ),
+			'added'   => esc_html_x( 'Added', 'acf', 'stream' ),
+			'deleted' => esc_html_x( 'Deleted', 'acf', 'stream' ),
 		);
 	}
 
