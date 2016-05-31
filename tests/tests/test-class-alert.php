@@ -4,7 +4,7 @@ namespace WP_Stream;
 class Test_Alert extends WP_StreamTestCase {
 
 	function test_construct() {
-		$data	= $this->get_dummy_data();
+		$data	= $this->dummy_alert_data();
 		$alert = new Alert( $data, $this->plugin );
 
 		foreach ( $data as $field => $value ) {
@@ -13,7 +13,7 @@ class Test_Alert extends WP_StreamTestCase {
 	}
 
 	function test_construct_blank() {
-		$data	= $this->get_dummy_data();
+		$data	= $this->dummy_alert_data();
 		$alert = new Alert( null, $this->plugin );
 
 		$this->assertEmpty( $alert->ID );
@@ -26,7 +26,7 @@ class Test_Alert extends WP_StreamTestCase {
 	}
 
 	function test_save() {
-		$data     = $this->get_dummy_data();
+		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
 		$alert    = new Alert( $data, $this->plugin );
 
@@ -48,7 +48,7 @@ class Test_Alert extends WP_StreamTestCase {
 	}
 
 	function test_get_meta() {
-		$data  = $this->get_dummy_data();
+		$data  = $this->dummy_alert_data();
 		$data->ID = 0;
 		$alert = new Alert( $data, $this->plugin );
 		$alert->save();
@@ -58,7 +58,7 @@ class Test_Alert extends WP_StreamTestCase {
 	}
 
 	function test_update_meta() {
-		$data     = $this->get_dummy_data();
+		$data     = $this->dummy_alert_data();
 		$data->ID = 0;
 		$alert    = new Alert( $data, $this->plugin );
 		$alert->save();
@@ -73,7 +73,7 @@ class Test_Alert extends WP_StreamTestCase {
 	}
 
 	function test_get_title() {
-		$data		 = $this->get_dummy_data();
+		$data		 = $this->dummy_alert_data();
 		$alert		= new Alert( $data, $this->plugin );
 
 		$this->assertEquals( 'Highlight Record when Administrator activated an item in Plugins.', $alert->get_title() );
@@ -89,7 +89,7 @@ class Test_Alert extends WP_StreamTestCase {
 	}
 
 	function test_get_alert_type_obj() {
-		$data  = $this->get_dummy_data();
+		$data  = $this->dummy_alert_data();
 		$alert = new Alert( $data, $this->plugin );
 
 		$alert->alert_type = '';
@@ -100,9 +100,14 @@ class Test_Alert extends WP_StreamTestCase {
 	}
 
 	function test_check_record() {
-		$this->markTestIncomplete(
-			'Not implemented yet.'
-		);
+		$action = new \MockAction();
+		$data   = $this->dummy_alert_data();
+		$alert  = new Alert( $data, $this->plugin );
+
+		add_filter( 'wp_stream_alert_trigger_check', array( $action, 'filter' ) );
+		$alert->check_record( 0, $this->dummy_stream_data() );
+
+		$this->assertEquals( 1, $action->get_call_count() );
 	}
 
 	function test_send_alert() {
@@ -111,7 +116,7 @@ class Test_Alert extends WP_StreamTestCase {
 		);
 	}
 
-	function get_dummy_data() {
+	private function dummy_alert_data() {
 		return (object) array(
 			'ID'         => 1,
 			'date'       => date( 'Y-m-d H:i:s' ),
@@ -123,6 +128,22 @@ class Test_Alert extends WP_StreamTestCase {
 				'trigger_author'	=> 'administrator',
 				'trigger_context' => 'plugins',
 			),
+		);
+	}
+
+	private function dummy_stream_data() {
+		return array(
+			'object_id' => null,
+			'site_id'   => '1',
+			'blog_id'   => get_current_blog_id(),
+			'user_id'   => '1',
+			'user_role' => 'administrator',
+			'created'   => date( 'Y-m-d H:i:s' ),
+			'summary'   => '"Hello Dave" plugin activated',
+			'ip'        => '192.168.0.1',
+			'connector' => 'installer',
+			'context'   => 'plugins',
+			'action'    => 'activated',
 		);
 	}
 }
