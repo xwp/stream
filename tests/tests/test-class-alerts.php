@@ -75,7 +75,18 @@ class Test_Alerts extends WP_StreamTestCase {
 	function test_check_records() {
 		$this->markTestIncomplete(
 			'This test is incomplete.'
-		);
+		); // WP_Query not finding active alerts.
+
+		$alerts = new Alerts( $this->plugin );
+		$alert  = new Alert( $this->dummy_alert_data(), $this->plugin );
+		$alert->save();
+
+		$action = new \MockAction;
+		add_filter( 'wp_stream_alert_trigger_check', array( $action, 'filter' ) );
+
+		$alerts->check_records( 0, $this->dummy_stream_data() );
+
+		$this->assertEquals( 1, $action->get_call_count() );
 	}
 
 	function test_register_scripts() {
@@ -90,9 +101,45 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function test_register_post_type() {
-		$this->markTestIncomplete(
-			'This test is incomplete.'
-		);
+		global $wp_post_types, $wp_post_statuses;
+		if ( isset( $wp_post_types['wp_stream_alerts'] ) ) {
+			unset( $wp_post_types['wp_stream_alerts'] );
+		}
+		if ( isset( $wp_post_statuses['wp_stream_enabled'] ) ) {
+			unset( $wp_post_statuses['wp_stream_enabled'] );
+		}
+		if ( isset( $wp_post_statuses['wp_stream_disabled'] ) ) {
+			unset( $wp_post_statuses['wp_stream_disabled'] );
+		}
+
+		$alerts = new Alerts( $this->plugin );
+
+		$alerts->register_post_type();
+
+		$this->assertArrayHasKey( 'wp_stream_alerts', $wp_post_types );
+		$post_type_obj = $wp_post_types['wp_stream_alerts'];
+
+		$this->assertFalse( $post_type_obj->public );
+		$this->assertFalse( $post_type_obj->publicly_queryable );
+		$this->assertTrue( $post_type_obj->exclude_from_search );
+		$this->assertTrue( $post_type_obj->show_ui );
+		$this->assertFalse( $post_type_obj->show_in_menu );
+		$this->assertFalse( $post_type_obj->supports );
+
+		$this->assertArrayHasKey( 'wp_stream_enabled', $wp_post_statuses );
+		$post_status_obj = $wp_post_statuses['wp_stream_enabled'];
+
+		$this->assertFalse( $post_status_obj->public );
+		$this->assertTrue( $post_status_obj->show_in_admin_all_list );
+		$this->assertTrue( $post_status_obj->show_in_admin_status_list );
+
+		$this->assertArrayHasKey( 'wp_stream_disabled', $wp_post_statuses );
+		$post_status_obj = $wp_post_statuses['wp_stream_disabled'];
+
+		$this->assertFalse( $post_status_obj->public );
+		$this->assertTrue( $post_status_obj->show_in_admin_all_list );
+		$this->assertTrue( $post_status_obj->show_in_admin_status_list );
+
 	}
 
 	function test_filter_update_messages() {
@@ -106,7 +153,7 @@ class Test_Alerts extends WP_StreamTestCase {
 	function test_get_alert() {
 		$alerts = new Alerts( $this->plugin );
 
-		$data = $this->get_dummy_data();
+		$data = $this->dummy_alert_data();
 		$data->ID = 0;
 		$original_alert = new Alert( $data, $this->plugin );
 		$post_id = $original_alert->save();
@@ -135,9 +182,17 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function test_register_meta_boxes() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
+		$alerts = new Alerts( $this->plugin );
+
+		$this->assertFalse( has_action( 'add_meta_boxes', array( $alerts, 'add_meta_boxes' ) ) );
+		$this->assertFalse( has_filter( 'filter_parent_file', array( $alerts, 'add_meta_boxes' ) ) );
+		$this->assertFalse( has_filter( 'filter_submenu_file', array( $alerts, 'add_meta_boxes' ) ) );
+
+		$alerts->register_meta_boxes();
+
+		$this->assertNotFalse( has_action( 'add_meta_boxes', array( $alerts, 'add_meta_boxes' ) ) );
+		$this->assertNotFalse( has_filter( 'parent_file', array( $alerts, 'filter_parent_file' ) ) );
+		$this->assertNotFalse( has_filter( 'submenu_file', array( $alerts, 'filter_submenu_file' ) ) );
 	}
 
 	function test_add_meta_boxes() {
@@ -147,15 +202,35 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function test_filter_parent_file() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
+		$alerts = new Alerts( $this->plugin );
+
+		set_current_screen( 'post' );
+		$value = $alerts->filter_parent_file( '' );
+		$this->assertEquals( '', $value );
+
+		set_current_screen( 'wp_stream_alerts' );
+		$value = $alerts->filter_parent_file( '' );
+		$this->assertEquals( 'wp_stream', $value );
+
+		set_current_screen( 'post' );
+		$value = $alerts->filter_parent_file( '' );
+		$this->assertEquals( '', $value );
 	}
 
 	function test_filter_submenu_file() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
+		$alerts = new Alerts( $this->plugin );
+
+		set_current_screen( 'post' );
+		$value = $alerts->filter_submenu_file( '' );
+		$this->assertEquals( '', $value );
+
+		set_current_screen( 'wp_stream_alerts' );
+		$value = $alerts->filter_submenu_file( '' );
+		$this->assertEquals( 'edit.php?post_type=wp_stream_alerts', $value );
+
+		set_current_screen( 'post' );
+		$value = $alerts->filter_submenu_file( '' );
+		$this->assertEquals( '', $value );
 	}
 
 	function test_display_notification_box() {
@@ -207,7 +282,7 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 
-	function get_dummy_data() {
+	private function dummy_alert_data() {
 		return (object) array(
 			'ID'         => 1,
 			'date'       => date( 'Y-m-d H:i:s' ),
@@ -219,6 +294,22 @@ class Test_Alerts extends WP_StreamTestCase {
 				'trigger_author'	=> 'administrator',
 				'trigger_context' => 'plugins',
 			),
+		);
+	}
+
+	private function dummy_stream_data() {
+		return array(
+			'object_id' => null,
+			'site_id'   => '1',
+			'blog_id'   => get_current_blog_id(),
+			'user_id'   => '1',
+			'user_role' => 'administrator',
+			'created'   => date( 'Y-m-d H:i:s' ),
+			'summary'   => '"Hello Dave" plugin activated',
+			'ip'        => '192.168.0.1',
+			'connector' => 'installer',
+			'context'   => 'plugins',
+			'action'    => 'activated',
 		);
 	}
 }
