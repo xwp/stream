@@ -346,7 +346,11 @@ class List_Table extends \WP_List_Table {
 				}
 		}
 
-		echo $out; // xss ok
+		$allowed_tags = wp_kses_allowed_html( 'post' );
+		$allowed_tags['time'] = array( 'datetime' => true, 'class' => true );
+		$allowed_tags['img']['srcset'] = true;
+
+		echo wp_kses( $out, $allowed_tags );
 	}
 
 	public function get_action_links( $record ) {
@@ -453,7 +457,13 @@ class List_Table extends \WP_List_Table {
 			$total_users = $user_count['total_users'];
 
 			if ( $total_users > $this->plugin->admin->preload_users_max ) {
-				return array();
+				$selected_user = wp_stream_filter_input( INPUT_GET, 'user_id' );
+				if ( $selected_user ) {
+					$user = new Author( $selected_user );
+					return array( $selected_user => $user->get_display_name() );
+				} else {
+					return array();
+				}
 			}
 
 			$users = array_map(
@@ -616,6 +626,8 @@ class List_Table extends \WP_List_Table {
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'stream' ) );
+
+		$filters_string .= wp_nonce_field( 'stream_filters_user_search_nonce', 'stream_filters_user_search_nonce' );
 
 		// Parse all query vars into an array
 		$query_vars = array();
@@ -823,6 +835,7 @@ class List_Table extends \WP_List_Table {
 			);
 		}
 		echo '</select></div>';
+		wp_nonce_field( 'stream_record_actions_nonce', 'stream_record_actions_nonce' );
 		printf( '<input type="submit" name="" id="record-actions-submit" class="button" value="%s">', esc_attr__( 'Apply', 'stream' ) );
 
 		return ob_get_clean();

@@ -36,6 +36,7 @@ class Test_Export extends WP_StreamTestCase {
 	 */
 	public function test_render_download() {
 		$_GET['record-actions'] = 'export-csv';
+		$_GET['stream_record_actions_nonce'] = wp_create_nonce( 'stream_record_actions_nonce' );
 
 		ob_start();
 		$this->export->render_download();

@@ -7,7 +7,7 @@ class Plugin {
 	 *
 	 * @const string
 	 */
-	const VERSION = '3.0.5';
+	const VERSION = '3.0.6';
 
 	/**
 	 * WP-CLI command
@@ -111,7 +111,7 @@ class Plugin {
 		if ( is_admin() || ( defined( 'WP_STREAM_DEV_DEBUG' ) && WP_STREAM_DEV_DEBUG ) ) {
 			$this->admin   = new Admin( $this );
 			$this->install = new Install( $this );
-		} else if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
+		} elseif ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 			$this->admin = new Admin( $this );
 		}
 
@@ -207,7 +207,7 @@ class Plugin {
 		$dir_url          = trailingslashit( plugins_url( '', dirname( __FILE__ ) ) );
 		$dir_path         = plugin_dir_path( dirname( __FILE__ ) );
 		$dir_basename     = basename( $dir_path );
-		$plugin_basename  = trailingslashit( $dir_basename ) . $dir_basename. '.php';
+		$plugin_basename  = trailingslashit( $dir_basename ) . $dir_basename . '.php';
 
 		return compact( 'dir_url', 'dir_path', 'dir_basename', 'plugin_basename' );
 	}

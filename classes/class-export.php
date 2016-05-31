@@ -20,7 +20,6 @@ class Export {
 	 * Class constructor
 	 *
 	 * @param Plugin $plugin The plugin object.
-	 * @return void
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
@@ -38,6 +37,11 @@ class Export {
 	 * @return void
 	 */
 	public function render_download() {
+		$nonce = wp_stream_filter_input( INPUT_GET, 'stream_record_actions_nonce' );
+		if ( ! wp_verify_nonce( $nonce, 'stream_record_actions_nonce' ) ) {
+			return;
+		}
+
 		$action = wp_stream_filter_input( INPUT_GET, 'record-actions' );
 		if ( strpos( $action, 'export-' ) !== 0 ) {
 			return;
@@ -179,7 +183,7 @@ class Export {
 
 		$classes = array();
 		foreach ( $exporters as $exporter ) {
-			include_once $this->plugin->locations['dir'] . '/exporters/class-exporter-' . $exporter .'.php';
+			include_once $this->plugin->locations['dir'] . '/exporters/class-exporter-' . $exporter . '.php';
 			$class_name = sprintf( '\WP_Stream\Exporter_%s', str_replace( '-', '_', $exporter ) );
 			if ( ! class_exists( $class_name ) ) {
 				continue;

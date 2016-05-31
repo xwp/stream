@@ -372,15 +372,35 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertFalse( $role->has_cap( $this->admin->view_cap ) );
 	}
 
+	/*
+	 * @group ajax
+	 */
 	public function test_ajax_filters() {
 		$user = new \WP_User( get_current_user_id() );
 
-		$_GET['filter'] = 'user_id';
-		$_GET['q'] = $user->display_name;
+		$this->_setRole( 'subscriber' );
 
-		ob_start();
-		$this->admin->ajax_filters();
-		$json = ob_get_clean();
+		$_POST['filter'] = 'user_id';
+		$_POST['q'] = $user->display_name;
+		$_POST['nonce'] = wp_create_nonce( 'stream_filters_user_search_nonce' );
+
+		$this->setExpectedException( 'WPAjaxDieStopException' );
+
+		try {
+			$this->_handleAjax( 'wp_stream_filters' );
+		} catch ( WPAjaxDieStopException $e ) {}
+
+		// Check that the exception was thrown.
+		$this->assertTrue( isset( $e ) );
+
+		// The output should be a -1 for failure.
+		$this->assertEquals( '-1', $e->getMessage() );
+		unset( $e );
+
+		$this->_setRole( 'administrator' );
+
+		$this->_handleAjax( 'wp_stream_filters' );
+		$json = $this-> _last_response;
 
 		$this->assertNotEmpty( $json );
 		$data = json_decode( $json );
@@ -389,25 +409,10 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertInternalType( 'array', $data );
 	}
 
-	public function test_get_filter_value_by_id() {
-		$_POST['filter'] = 'user_id';
-		$_POST['id']     = get_current_user_id();
-
-		ob_start();
-		$this->admin->get_filter_value_by_id();
-		$json = ob_get_clean();
-
-		$this->assertNotEmpty( $json );
-		$data = json_decode( $json );
-		$this->assertNotFalse( $data );
-		$this->assertNotEmpty( $data );
-		$this->assertInternalType( 'string', $data );
-	}
-
 	public function test_get_users_record_meta() {
 		$user_id = get_current_user_id();
 		$authors = array(
-			$user_id => array(),
+			$user_id => wp_get_current_user(),
 		);
 
 		$records = $this->admin->get_users_record_meta( $authors );
