@@ -3,6 +3,13 @@ namespace WP_Stream;
 
 class Test_Alerts extends WP_StreamTestCase {
 
+	function tearDown() {
+
+		// See test_load_bad_alert_type() and test_load_bad_alert_trigger.
+		remove_filter( 'wp_stream_alert_types', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
+		remove_filter( 'wp_stream_alert_triggers', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
+	}
+
 	function test_construct() {
 		$alerts = new Alerts( $this->plugin );
 
@@ -29,7 +36,7 @@ class Test_Alerts extends WP_StreamTestCase {
 
 		add_filter( 'wp_stream_alert_types', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
 		$alerts = new Alerts( $this->plugin );
-		remove_filter( 'wp_stream_alert_types', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
+		// Hook removed in tearDown().
 	}
 
 	function test_load_alert_triggers() {
@@ -52,7 +59,7 @@ class Test_Alerts extends WP_StreamTestCase {
 
 		add_filter( 'wp_stream_alert_triggers', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
 		$alerts = new Alerts( $this->plugin );
-		remove_filter( 'wp_stream_alert_triggers', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
+		// Hook removed in tearDown().
 	}
 
 	function callback_load_bad_alert_register( $classes ) {
