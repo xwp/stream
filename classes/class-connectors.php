@@ -83,7 +83,7 @@ class Connectors {
 
 		$classes = array();
 		foreach ( $connectors as $connector ) {
-			include_once $this->plugin->locations['dir'] . '/connectors/class-connector-' . $connector .'.php';
+			include_once $this->plugin->locations['dir'] . '/connectors/class-connector-' . $connector . '.php';
 			$class_name = sprintf( '\WP_Stream\Connector_%s', str_replace( '-', '_', $connector ) );
 			if ( ! class_exists( $class_name ) ) {
 				continue;

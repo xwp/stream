@@ -55,7 +55,7 @@ class Test_Connector extends WP_StreamTestCase {
 
 		$message = 'I\'ve just picked up a fault in the AE35 unit. It\'s going to go %1$s%% failure in %2$s hours.';
 
-		$this->connector->log(
+		$id = $this->connector->log(
 			$message,
 			array(
 				$percent_failure,
@@ -68,7 +68,7 @@ class Test_Connector extends WP_StreamTestCase {
 		);
 
 		global $wpdb;
-		$result = $wpdb->get_row( "SELECT * FROM {$wpdb->stream} ORDER BY created DESC LIMIT 1" );
+		$result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->stream} WHERE ID = %d ORDER BY created DESC LIMIT 1", array( $id ) ) );
 		$this->assertNotEmpty( $result );
 
 		$this->assertEquals( sprintf( $message, $percent_failure, $hours_remaining ), $result->summary );

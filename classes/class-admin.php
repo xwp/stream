@@ -171,15 +171,6 @@ class Admin {
 
 		// Ajax users list.
 		add_action( 'wp_ajax_wp_stream_filters', array( $this, 'ajax_filters' ) );
-
-		// Ajax user's name by ID.
-		add_action( 'wp_ajax_wp_stream_get_filter_value_by_id', array( $this, 'get_filter_value_by_id' ) );
-
-		// Ajax users list.
-		add_action( 'wp_ajax_wp_stream_filters', array( $this, 'ajax_filters' ) );
-
-		// Ajax user's name by ID.
-		add_action( 'wp_ajax_wp_stream_get_filter_value_by_id', array( $this, 'get_filter_value_by_id' ) );
 	}
 
 	/**
@@ -347,8 +338,8 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_enqueue_scripts( $hook ) {
-		wp_register_script( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/select2.js', array( 'jquery' ), '3.5.2', true );
-		wp_register_style( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/select2.css', array(), '3.5.2' );
+		wp_register_script( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/js/select2.js', array( 'jquery' ), '3.5.2', true );
+		wp_register_style( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/css/select2.css', array(), '3.5.2' );
 		wp_register_script( 'wp-stream-timeago', $this->plugin->locations['url'] . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
 
 		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
@@ -855,6 +846,12 @@ class Admin {
 	 * @action wp_ajax_wp_stream_filters
 	 */
 	public function ajax_filters() {
+		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( $this->plugin->admin->settings_cap ) ) {
+			wp_die( '-1' );
+		}
+
+		check_ajax_referer( 'stream_filters_user_search_nonce', 'nonce' );
+
 		switch ( wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
 			case 'user_id':
 				$users = array_merge(
@@ -884,49 +881,7 @@ class Admin {
 		}
 
 		if ( isset( $results ) ) {
-			echo wp_stream_json_encode( array_values( $results ) ); // xss ok
-		}
-
-		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
-			return;
-		}
-
-		die();
-	}
-
-	/**
-	 * @action wp_ajax_wp_stream_get_filter_value_by_id
-	 */
-	public function get_filter_value_by_id() {
-		$filter = wp_stream_filter_input( INPUT_POST, 'filter' );
-
-		switch ( $filter ) {
-			case 'user_id':
-				$id = wp_stream_filter_input( INPUT_POST, 'id' );
-
-				if ( '0' === $id ) {
-					$value = 'WP-CLI';
-
-					break;
-				}
-
-				$user = get_userdata( $id );
-
-				if ( ! $user || is_wp_error( $user ) ) {
-					$value = '';
-				} else {
-					$value = $user->display_name;
-				}
-
-				break;
-			default:
-				$value = '';
-		}
-
-		echo wp_stream_json_encode( $value ); // xss ok
-
-		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
-			return;
+			echo wp_stream_json_encode( $results ); // xss ok
 		}
 
 		die();
@@ -936,11 +891,11 @@ class Admin {
 		$authors_records = array();
 
 		foreach ( $authors as $user_id => $args ) {
-			$author = new Author( $user_id );
+			$author = new Author( $args->ID );
 
 			$authors_records[ $user_id ] = array(
 				'text'     => $author->get_display_name(),
-				'id'       => $user_id,
+				'id'       => $author->id,
 				'label'    => $author->get_display_name(),
 				'icon'     => $author->get_avatar_src( 32 ),
 				'title'    => '',

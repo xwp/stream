@@ -2,24 +2,26 @@
 # Stream
 
 ![Banner](assets/banner-1544x500.png)
-Stream is the easiest and safest way to track content changes happening to your WordPress site and then view them in beautifully organized detail.
+Planes have a black box, WordPress has Stream. When something goes wrong, you need to know how it happened.
 
-**Contributors:** [fjarrett](https://profiles.wordpress.org/fjarrett), [lukecarbis](https://profiles.wordpress.org/lukecarbis), [shadyvb](https://profiles.wordpress.org/shadyvb), [westonruter](https://profiles.wordpress.org/westonruter), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
-**Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [activity log](https://wordpress.org/plugins/tags/activity log), [activity logs](https://wordpress.org/plugins/tags/activity logs), [admin actions](https://wordpress.org/plugins/tags/admin actions), [analytics](https://wordpress.org/plugins/tags/analytics), [audit](https://wordpress.org/plugins/tags/audit), [audit log](https://wordpress.org/plugins/tags/audit log), [audit logs](https://wordpress.org/plugins/tags/audit logs), [change](https://wordpress.org/plugins/tags/change), [changes](https://wordpress.org/plugins/tags/changes), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [logs](https://wordpress.org/plugins/tags/logs), [stream](https://wordpress.org/plugins/tags/stream), [tracking](https://wordpress.org/plugins/tags/tracking), [troubleshooting](https://wordpress.org/plugins/tags/troubleshooting), [wp stream](https://wordpress.org/plugins/tags/wp stream)  
+**Contributors:** [fjarrett](https://profiles.wordpress.org/fjarrett), [lukecarbis](https://profiles.wordpress.org/lukecarbis), [shadyvb](https://profiles.wordpress.org/shadyvb), [powelski](https://profiles.wordpress.org/powelski), [chacha102](https://profiles.wordpress.org/chacha102), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
+**Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [activity log](https://wordpress.org/plugins/tags/activity log), [activity logs](https://wordpress.org/plugins/tags/activity logs), [admin actions](https://wordpress.org/plugins/tags/admin actions), [analytics](https://wordpress.org/plugins/tags/analytics), [audit](https://wordpress.org/plugins/tags/audit), [audit log](https://wordpress.org/plugins/tags/audit log), [audit logs](https://wordpress.org/plugins/tags/audit logs), [blackbox](https://wordpress.org/plugins/tags/blackbox), [black box](https://wordpress.org/plugins/tags/black box), [change](https://wordpress.org/plugins/tags/change), [changes](https://wordpress.org/plugins/tags/changes), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [logs](https://wordpress.org/plugins/tags/logs), [stream](https://wordpress.org/plugins/tags/stream), [tracking](https://wordpress.org/plugins/tags/tracking), [troubleshooting](https://wordpress.org/plugins/tags/troubleshooting), [wp stream](https://wordpress.org/plugins/tags/wp stream)  
 **Requires at least:** 3.9  
 **Tested up to:** 4.5  
-**Stable tag:** 3.0.5  
+**Stable tag:** 3.0.6  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
 [![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/xwp/stream) 
 
 ## Description ##
 
-Never be in the dark about WP Admin activity again.
+With Stream, you're never left in the dark about WordPress Admin activity.
 
-Stream allows you to know exactly when changes to your site have been made, and more importantly, who did them.
+Every logged-in user action is displayed in an activity stream and organised for easy filtering by User, Role, Context, Action or IP address.
 
-Every logged-in user action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action and IP address.
+For advanced users, Stream also supports a Multisite view of all activity records on your network, the ability to set exclude rules to ignore certain kinds of user activity, and a WP‑CLI command for querying records.
+
+Stream is perfect for keeping tabs on your clients. When something breaks, Stream is there to help. See what changed and who changed it.
 
 **Built-In Tracking Integrations For Popular Plugins:**
 
@@ -59,8 +61,8 @@ Every logged-in user action is displayed in an activity stream and organized for
  * Multisite view of all activity records on a network
  * Limit who can view user activity records by user role
  * Set exclude rules to ignore certain kinds of user activity
- * Live update of user activity records in the Stream
- * Support for IPv6 addresses
+ * Live updates of user activity records in the Stream
+ * Export your Activity Stream as a CSV or JSON file
  * WP-CLI command for querying records
 
 **See room for improvement?**
@@ -71,7 +73,7 @@ Great! There are several ways you can get involved to help make Stream better:
 2. **Suggest New Features:** Have an awesome idea? Please share it! Simply [create a new topic](https://wordpress.org/support/plugin/stream) in the plugin forum to express your thoughts on why the feature should be included and get a discussion going around your idea.
 3. **Issue Pull Requests:** If you're a developer, the easiest way to get involved is to help out on [issues already reported](https://github.com/x-team/wp-stream/issues) in GitHub. Be sure to check out the [contributing guide](https://github.com/x-team/wp-stream/blob/master/contributing.md) for developers.
 
-Thank you for wanting to make Stream better for everyone! We salute you.
+Thank you for wanting to make Stream better for everyone!
 
 ## Screenshots ##
 
@@ -88,6 +90,16 @@ Thank you for wanting to make Stream better for everyone! We salute you.
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
 
 ## Changelog ##
+
+### 3.0.6 - April 31, 2015 ###
+* New: Better support for default themes ([#831](https://github.com/xwp/stream/pull/831))
+* New: Upgrade filter menus to Select2 4 ([c3f6c65](https://github.com/xwp/stream/pull/c3f6c65c1bd95cebb26da7f00a720050a9144586))
+* Fix: Security Fixes
+* Fix: Cron for purging old records has been fixed ([#843](https://github.com/xwp/stream/pull/843))
+* Fix: Better at storing records for Super Admins ([#835](https://github.com/xwp/stream/pull/835))
+* Fix: Allow Super Admins to be ignored and filtered ([#835](https://github.com/xwp/stream/pull/835))
+
+Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/lukecarbis), [@Stayallive](https://github.com/Stayallive), [@barryceelen](https://github.com/barryceelen), Jonathan Desrosiers, [@marcin-lawrowski](https://github.com/marcin-lawrowski)
 
 ### 3.0.5 - March 15, 2015 ###
 * New: Export your Stream records as CSV or JSON. ([#823](https://github.com/xwp/stream/pull/823))

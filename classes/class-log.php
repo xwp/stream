@@ -43,6 +43,8 @@ class Log {
 	 * @return mixed True if updated, otherwise false|WP_Error
 	 */
 	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null ) {
+		global $wp_roles;
+
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
@@ -106,10 +108,13 @@ class Log {
 
 		if ( ! empty( $user->roles ) ) {
 			$roles = array_values( $user->roles );
-			$role = $roles[0];
+			$role  = $roles[0];
+		} elseif ( is_multisite() && is_super_admin() && $wp_roles->is_role( 'administrator' ) ) {
+			$role = 'administrator';
 		} else {
 			$role = '';
 		}
+
 		$recordarr = array(
 			'object_id'  => (int) $object_id,
 			'site_id'    => (int) is_multisite() ? get_current_site()->id : 1,

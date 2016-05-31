@@ -1,7 +1,7 @@
 <?php
 namespace WP_Stream;
 
-class WP_StreamTestCase extends \WP_UnitTestCase {
+class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	/**
 	 * Holds the plugin base class
 	 *

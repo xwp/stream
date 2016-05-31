@@ -276,8 +276,8 @@ class List_Table extends \WP_List_Table {
 					$user->get_avatar_img( 80 ),
 					$user->get_display_name(),
 					$user->is_deleted() ? sprintf( '<br /><small class="deleted">%s</small>', esc_html__( 'Deleted User', 'stream' ) ) : '',
-					$user->get_role() ? sprintf( '<br /><small>%s</small>', $user->get_role() ) : '',
-					$user->get_agent() ? sprintf( '<br /><small>%s</small>', $user->get_agent_label( $user->get_agent() ) ) : ''
+					sprintf( '<br /><small>%s</small>', $user->get_role() ),
+					sprintf( '<br /><small>%s</small>', $user->get_agent_label( $user->get_agent() ) )
 				);
 				break;
 
@@ -346,7 +346,11 @@ class List_Table extends \WP_List_Table {
 				}
 		}
 
-		echo $out; // xss ok
+		$allowed_tags = wp_kses_allowed_html( 'post' );
+		$allowed_tags['time'] = array( 'datetime' => true, 'class' => true );
+		$allowed_tags['img']['srcset'] = true;
+
+		echo wp_kses( $out, $allowed_tags );
 	}
 
 	public function get_action_links( $record ) {
@@ -453,7 +457,13 @@ class List_Table extends \WP_List_Table {
 			$total_users = $user_count['total_users'];
 
 			if ( $total_users > $this->plugin->admin->preload_users_max ) {
-				return array();
+				$selected_user = wp_stream_filter_input( INPUT_GET, 'user_id' );
+				if ( $selected_user ) {
+					$user = new Author( $selected_user );
+					return array( $selected_user => $user->get_display_name() );
+				} else {
+					return array();
+				}
 			}
 
 			$users = array_map(
@@ -462,6 +472,17 @@ class List_Table extends \WP_List_Table {
 				},
 				get_users( array( 'fields' => 'ID' ) )
 			);
+
+			if ( is_multisite() && is_super_admin() ) {
+				$super_admins = array_map(
+					function( $login ) {
+						$user = get_user_by( 'login', $login );
+						return new Author( $user->ID );
+					},
+					get_super_admins()
+				);
+				$users = array_unique( array_merge( $users, $super_admins ) );
+			}
 
 			$users[] = new Author( 0, array( 'is_wp_cli' => true ) );
 
@@ -605,6 +626,8 @@ class List_Table extends \WP_List_Table {
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'stream' ) );
+
+		$filters_string .= wp_nonce_field( 'stream_filters_user_search_nonce', 'stream_filters_user_search_nonce' );
 
 		// Parse all query vars into an array
 		$query_vars = array();
@@ -812,6 +835,7 @@ class List_Table extends \WP_List_Table {
 			);
 		}
 		echo '</select></div>';
+		wp_nonce_field( 'stream_record_actions_nonce', 'stream_record_actions_nonce' );
 		printf( '<input type="submit" name="" id="record-actions-submit" class="button" value="%s">', esc_attr__( 'Apply', 'stream' ) );
 
 		return ob_get_clean();
