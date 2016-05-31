@@ -3,7 +3,7 @@ Contributors:      fjarrett, lukecarbis, shadyvb, powelski, chacha102, stream, x
 Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, blackbox, black box, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
 Requires at least: 3.9
 Tested up to:      4.5
-Stable tag:        3.0.5
+Stable tag:        3.0.6
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -78,6 +78,17 @@ Thank you for wanting to make Stream better for everyone!
 3. Create rules for excluding certain kinds of records from appearing in Stream.
 
 == Changelog ==
+
+= 3.0.6 - April 31, 2015 =
+
+* New: Better support for default themes ([#831](https://github.com/xwp/stream/pull/831))
+* New: Upgrade filter menus to Select2 4 ([c3f6c65](https://github.com/xwp/stream/pull/c3f6c65c1bd95cebb26da7f00a720050a9144586))
+* Fix: Security Fixes
+* Fix: Cron for purging old records has been fixed ([#843](https://github.com/xwp/stream/pull/843))
+* Fix: Better at storing records for Super Admins ([#835](https://github.com/xwp/stream/pull/835))
+* Fix: Allow Super Admins to be ignored and filtered ([#835](https://github.com/xwp/stream/pull/835))
+
+Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/lukecarbis), [@Stayallive](https://github.com/Stayallive), [@barryceelen](https://github.com/barryceelen), Jonathan Desrosiers, [@marcin-lawrowski](https://github.com/marcin-lawrowski)
 
 = 3.0.5 - March 15, 2015 =
 
