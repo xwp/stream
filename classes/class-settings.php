@@ -813,17 +813,27 @@ class Settings {
 					}
 
 					$author_or_role_input = sprintf(
-						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" data-values=\'%5$s\' data-selected-id=\'%6$s\' data-selected-text=\'%7$s\' value="%6$s" class="select2-select %4$s" data-placeholder="%8$s" data-nonce="%9$s" />',
+						'<select name="%1$s[%2$s_%3$s][%4$s][]" data-selected-id=\'%6$s\' data-selected-text=\'%7$s\' value="%6$s" class="select2-select %4$s" data-placeholder="%8$s" data-nonce="%9$s">',
 						esc_attr( $option_key ),
 						esc_attr( $section ),
 						esc_attr( $name ),
 						'author_or_role',
-						esc_attr( wp_stream_json_encode( $author_or_role_values ) ),
+						'',
 						isset( $author_or_role_selected['id'] ) ? esc_attr( $author_or_role_selected['id'] ) : '',
 						isset( $author_or_role_selected['text'] ) ? esc_attr( $author_or_role_selected['text'] ) : '',
 						esc_html__( 'Any Author or Role', 'stream' ),
 						esc_attr( wp_create_nonce( 'stream_get_users' ) )
 					);
+
+					foreach ( $author_or_role_values as $data ) {
+						$author_or_role_input .= sprintf(
+							'<option value="%1$s">%2$s</option>',
+							$data['id'],
+							$data['text']
+						);
+					}
+
+					$author_or_role_input .= '</select>';
 
 					// Context dropdown menu
 					$context_values = array();
