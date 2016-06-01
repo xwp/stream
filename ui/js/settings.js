@@ -256,7 +256,7 @@ jQuery( function( $ ) {
 	$( '#exclude_rules_new_rule' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' );
 
-		$( '.select2-select', $excludeList ).each( function() {
+		$( 'tr:not(.hidden) input[type=hidden].select2-select', $excludeList ).each( function() {
 			$( this ).select2( 'destroy' );
 		});
 

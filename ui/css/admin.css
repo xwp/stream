@@ -13,14 +13,14 @@
 	overflow: visible;
 }
 
-.toplevel_page_wp_stream .tablenav .select2-selection {
+.wp_stream_screen .select2 .select2-selection {
 	border-color: #ccc;
 	background: #f7f7f7;
 	-webkit-box-shadow: 0 1px 0 #ccc;
 	box-shadow: 0 1px 0 #ccc;
 }
 
-.toplevel_page_wp_stream .tablenav .select2-selection .select2-selection__rendered {
+.wp_stream_screen .select2 .select2-selection .select2-selection__rendered {
 	color: #555;
 }
 
@@ -235,10 +235,10 @@
 
 /* Settings */
 
-.wp_stream_settings .select2-container,
-.wp_stream_network_settings .select2-container,
-.wp_stream_default_settings .select2-container {
-	width: 100%;
+.wp_stream_settings .select2.select2-container,
+.wp_stream_network_settings .select2.select2-container,
+.wp_stream_default_settings .select2.select2-container {
+	min-width: 160px;
 }
 
 .wp_stream_settings .tablenav,
