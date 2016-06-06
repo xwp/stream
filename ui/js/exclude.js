@@ -202,7 +202,7 @@ jQuery( function( $ ) {
 				return false;
 			}
 		});
-		
+
 		$( '.stream-exclude-list tr:not(.hidden) .exclude_rules_remove_rule_row' ).on( 'click', function() {
 			var $thisRow = $( this ).closest( 'tr' );
 
@@ -256,11 +256,8 @@ jQuery( function( $ ) {
 	});
 
 	$( '.stream-exclude-list' ).closest( 'form' ).submit( function() {
-		$( '.stream-exclude-list tbody tr', this ).each( function() {
-			if ( 0 === $( this ).find( ':input[value][value!=""]' ).length ) {
-				// Don't send inputs in this row
-				$( this ).find( ':input[value]' ).removeAttr( 'name' );
-			}
+		$( '.stream-exclude-list tbody tr.hidden', this ).each( function() {
+				$( this ).find( ':input' ).removeAttr( 'name' );
 		});
 	});
 
