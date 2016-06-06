@@ -3,6 +3,20 @@ jQuery( function( $ ) {
 	var initSettingsSelect2 = function() {
 		var $input_user, $input_ip;
 
+		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.context' ).each( function( k, el ) {
+			$context = $( el );
+			$context.select2( {
+				allowClear: true,
+			} );
+		} );
+
+		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.action' ).each( function( k, el ) {
+			$context = $( el );
+			$context.select2( {
+				allowClear: true,
+			} );
+		} );
+
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.author_or_role' ).each( function( k, el ) {
 			$input_user = $( el );
 
@@ -106,7 +120,17 @@ jQuery( function( $ ) {
 			});
 		});
 
-		return;
+		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.context' ).on( 'change', function( val ) {
+			var $connector = $( this ).prevAll( ':input.connector' );
+
+			if ( undefined !== val.added && undefined !== val.added.parent ) {
+				$connector.val( val.added.parent );
+			} else {
+				$connector.val( $( this ).val() );
+				$( this ).val( '' );
+			}
+		});
+
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.ip_address' ).each( function( k, el ) {
 			$input_ip = $( el );
 
@@ -124,7 +148,7 @@ jQuery( function( $ ) {
 							nonce: $input_ip.data( 'nonce' )
 						};
 					},
-					results: function( response ) {
+					processResults: function( response ) {
 						var answer = { results: [] };
 
 						if ( true !== response.success || undefined === response.data ) {
@@ -140,13 +164,6 @@ jQuery( function( $ ) {
 
 						return answer;
 					}
-				},
-				initSelection: function( item, callback ) {
-					var data = [];
-
-					data.push( { id: item.val(), text: item.val() } );
-
-					callback( data );
 				},
 				createSearchChoice: function( term ) {
 					var ip_chunks = [];
@@ -197,17 +214,7 @@ jQuery( function( $ ) {
 			}
 		});
 
-		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.context' ).on( 'change', function( val ) {
-			var $connector = $( this ).prevAll( ':input.connector' );
-
-			if ( undefined !== val.added && undefined !== val.added.parent ) {
-				$connector.val( val.added.parent );
-			} else {
-				$connector.val( $( this ).val() );
-				$( this ).val( '' );
-			}
-		});
-
+		return;
 		$( '.stream-exclude-list tr:not(.hidden) .exclude_rules_remove_rule_row' ).on( 'click', function() {
 			var $thisRow = $( this ).closest( 'tr' );
 
