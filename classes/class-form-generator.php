@@ -126,31 +126,33 @@ class Form_Generator {
 					$this->prepare_data_string( $args['data'] )
 				);
 
-				foreach ( $args['options'] as $option ) {
-					$option = wp_parse_args( $option, array(
+				foreach ( $args['options'] as $parent ) {
+					$parent = wp_parse_args( $parent, array(
 						'value'    => '',
 						'text'     => '',
 						'children' => array(),
 					) );
-					if ( ! empty( $option['children'] ) ) {
+					if ( ! empty( $parent['children'] ) ) {
 						$output .= sprintf(
 							'<optgroup label="%1$s" value="%2$s">',
-							$option['text'],
-							$option['value']
+							$parent['text'],
+							$parent['value']
 						);
-						foreach ( $option['children'] as $child ) {
+						foreach ( $parent['children'] as $child ) {
 							$output .= sprintf(
-								'<option value="%1$s">%2$s</option>',
+								'<option value="%1$s" %3$s>%2$s</option>',
 								$child['value'],
-								$child['text']
+								$child['text'],
+								selected( $args['value'], $child['value'], false )
 							);
 						}
 						$output .= '</optgroup>';
 					} else {
 						$output .= sprintf(
-							'<option value="%1$s">%2$s</option>',
-							$option['value'],
-							$option['text']
+							'<option value="%1$s" %3$s>%2$s</option>',
+							$parent['value'],
+							$parent['text'],
+							selected( $args['value'], $parent['value'], false )
 						);
 					}
 				}
