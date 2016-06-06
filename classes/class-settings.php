@@ -810,7 +810,7 @@ class Settings {
 					if ( empty( $author_or_role_selected ) && is_numeric( $author_or_role ) ) {
 						$user                    = new WP_User( $author_or_role );
 						$display_name            = ( 0 === $user->ID ) ? esc_html__( 'N/A', 'stream' ) : $user->display_name;
-						$author_or_role_selected = array( 'id' => $user->ID, 'text' => $display_name );
+						$author_or_role_selected = array( 'value' => $user->ID, 'text' => $display_name );
 					}
 
 					$author_or_role_input = $form->render_field( 'select2', array(
@@ -846,15 +846,6 @@ class Settings {
 						}
 					}
 
-					$connector_input = sprintf(
-						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" class="%4$s" value="%5$s">',
-						esc_attr( $option_key ),
-						esc_attr( $section ),
-						esc_attr( $name ),
-						esc_attr( 'connector' ),
-						esc_attr( $connector )
-					);
-
 					$context_input = $form->render_field( 'select2', array(
 						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'context' ) ),
 						'value'       => $context,
@@ -875,6 +866,7 @@ class Settings {
 
 					$action_input = $form->render_field( 'select2', array(
 						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'action' ) ),
+						'value'       => $action,
 						'options'     => $action_values,
 						'classes'     => 'action',
 						'data'        => array(
@@ -907,17 +899,16 @@ class Settings {
 						'<tr class="%1$s %2$s">
 							<th scope="row" class="check-column">%3$s %4$s</th>
 							<td>%5$s</td>
-							<td>%6$s %7$s</td>
+							<td>%6$s</td>
+							<td>%7$s</td>
 							<td>%8$s</td>
-							<td>%9$s</td>
-							<th scope="row" class="actions-column">%10$s</th>
+							<th scope="row" class="actions-column">%9$s</th>
 						</tr>',
 						( 0 !== $key % 2 ) ? 'alternate' : '',
 						( 'helper' === $key ) ? 'hidden helper' : '',
 						'<input class="cb-select" type="checkbox" />',
 						$helper_input,
 						$author_or_role_input,
-						$connector_input,
 						$context_input,
 						$action_input,
 						$ip_address_input,
