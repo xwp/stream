@@ -857,6 +857,7 @@ class Settings {
 
 					$context_input = $form->render_field( 'select2', array(
 						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'context' ) ),
+						'value'       => $context,
 						'options'     => $context_values,
 						'classes'     => 'context',
 						'data'        => array(
@@ -887,8 +888,9 @@ class Settings {
 						'value'       => esc_attr( $ip_address ),
 						'classes'     => 'ip_address',
 						'data'        => array(
-							'placeholder' => esc_html__( 'Any IP Address', 'stream' ),
+							'placeholder' => esc_attr__( 'Any IP Address', 'stream' ),
 							'nonce'       => esc_attr( wp_create_nonce( 'stream_get_ips' ) ),
+							'value'       => esc_attr( $ip_address ),
 						),
 					) );
 

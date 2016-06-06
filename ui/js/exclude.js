@@ -120,17 +120,6 @@ jQuery( function( $ ) {
 			});
 		});
 
-		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.context' ).on( 'change', function( val ) {
-			var $connector = $( this ).prevAll( ':input.connector' );
-
-			if ( undefined !== val.added && undefined !== val.added.parent ) {
-				$connector.val( val.added.parent );
-			} else {
-				$connector.val( $( this ).val() );
-				$( this ).val( '' );
-			}
-		});
-
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.ip_address' ).each( function( k, el ) {
 			$input_ip = $( el );
 
@@ -213,8 +202,7 @@ jQuery( function( $ ) {
 				return false;
 			}
 		});
-
-		return;
+		
 		$( '.stream-exclude-list tr:not(.hidden) .exclude_rules_remove_rule_row' ).on( 'click', function() {
 			var $thisRow = $( this ).closest( 'tr' );
 
@@ -230,7 +218,7 @@ jQuery( function( $ ) {
 	$( '#exclude_rules_new_rule' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' );
 
-		$( 'tr:not(.hidden) input[type=hidden].select2-select', $excludeList ).each( function() {
+		$( 'tr:not(.hidden) select.select2-select', $excludeList ).each( function() {
 			$( this ).select2( 'destroy' );
 		});
 
