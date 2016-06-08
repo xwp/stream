@@ -215,6 +215,10 @@ jQuery( function( $ ) {
 
 	initSettingsSelect2();
 
+	$( '.stream-exclude-list tr:not(.hidden) select.select2-select.author_or_role' ).each( function( k, el ) {
+		$( this ).val( $( this ).data( 'selected-id' ) ).trigger( 'change' );
+	} );
+
 	$( '#exclude_rules_new_rule' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' );
 
