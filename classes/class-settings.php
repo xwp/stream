@@ -883,7 +883,6 @@ class Settings {
 						'data'        => array(
 							'placeholder' => esc_attr__( 'Any IP Address', 'stream' ),
 							'nonce'       => esc_attr( wp_create_nonce( 'stream_get_ips' ) ),
-							'value'       => esc_attr( $ip_address ),
 						),
 					) );
 
