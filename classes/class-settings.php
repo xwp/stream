@@ -811,6 +811,7 @@ class Settings {
 						$user                    = new WP_User( $author_or_role );
 						$display_name            = ( 0 === $user->ID ) ? esc_html__( 'N/A', 'stream' ) : $user->display_name;
 						$author_or_role_selected = array( 'value' => $user->ID, 'text' => $display_name );
+						$author_or_role_values[] = $author_or_role_selected;
 					}
 
 					$author_or_role_input = $form->render_field( 'select2', array(
