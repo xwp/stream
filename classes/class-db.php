@@ -24,29 +24,39 @@ class DB {
 	/**
 	 * Insert a record
 	 *
-	 * @param array $recordarr
+	 * @param array $record
 	 *
 	 * @return int
 	 */
-	public function insert( $recordarr ) {
+	public function insert( $record ) {
+		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
+			return false;
+		}
+
 		/**
 		 * Filter allows modification of record information
 		 *
-		 * @param array $recordarr
+		 * @param array $record
 		 *
 		 * @return array
 		 */
-		$recordarr = apply_filters( 'wp_stream_record_array', $recordarr );
+		$record = apply_filters( 'wp_stream_record_array', $record );
 
-		if ( empty( $recordarr ) ) {
+		array_walk( $record, function( &$value, &$key ) {
+			if ( ! is_array( $value ) ) {
+				$value = strip_tags( $value );
+			}
+		});
+
+		if ( empty( $record ) ) {
 			return false;
 		}
 
 		$fields = array( 'object_id', 'site_id', 'blog_id', 'user_id', 'user_role', 'created', 'summary', 'ip', 'connector', 'context', 'action' );
-		$data   = array_intersect_key( $recordarr, array_flip( $fields ) );
+		$data   = array_intersect_key( $record, array_flip( $fields ) );
 
 		$meta = array();
-		foreach ( (array) $recordarr['meta'] as $key => $vals ) {
+		foreach ( (array) $record['meta'] as $key => $vals ) {
 			// If associative array, serialize it, otherwise loop on its members
 			$vals = (is_array( $vals ) && 0 !== key( $vals )) ? array( $vals ) : $vals;
 
@@ -64,10 +74,10 @@ class DB {
 			/**
 			 * Fires on a record insertion error
 			 *
-			 * @param array $recordarr
-			 * @param bool false Backwards compatibility
+			 * @param array $record
+			 * @param mixed $result
 			 */
-			do_action( 'wp_stream_record_insert_error', $recordarr, false );
+			do_action( 'wp_stream_record_insert_error', $record, false );
 
 			return false;
 		}
@@ -76,9 +86,9 @@ class DB {
 		 * Fires after a record has been inserted
 		 *
 		 * @param int   $record_id
-		 * @param array $recordarr
+		 * @param array $record
 		 */
-		do_action( 'wp_stream_record_inserted', $record_id, $recordarr );
+		do_action( 'wp_stream_record_inserted', $record_id, $record );
 
 		return absint( $record_id );
 	}
@@ -100,7 +110,7 @@ class DB {
 	public function existing_records( $column ) {
 		// Sanitize column
 		$allowed_columns = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );
-		if ( ! in_array( $column, $allowed_columns ) ) {
+		if ( ! in_array( $column, $allowed_columns, true ) ) {
 			return array();
 		}
 

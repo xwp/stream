@@ -82,7 +82,7 @@ class Connector_Menus extends Connector {
 			$menus    = wp_get_nav_menus();
 			$menu_ids = wp_list_pluck( $menus, 'term_id' );
 
-			if ( in_array( $record->object_id, $menu_ids ) ) {
+			if ( in_array( $record->object_id, $menu_ids, true ) ) {
 				$links[ esc_html__( 'Edit Menu', 'stream' ) ] = admin_url( 'nav-menus.php?action=edit&menu=' . $record->object_id );
 			}
 		}

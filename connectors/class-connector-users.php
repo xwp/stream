@@ -116,7 +116,7 @@ class Connector_Users extends Connector {
 		$labels = array();
 
 		foreach ( $roles as $role => $label ) {
-			if ( in_array( $role, (array) $user->roles ) ) {
+			if ( in_array( $role, (array) $user->roles, true ) ) {
 				$labels[] = translate_user_role( $label );
 			}
 		}

@@ -1,7 +1,7 @@
 <?php
 namespace WP_Stream;
 
-class WP_StreamTestCase extends \WP_UnitTestCase {
+class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	/**
 	 * Holds the plugin base class
 	 *
@@ -49,7 +49,7 @@ class WP_StreamTestCase extends \WP_UnitTestCase {
 			$priority = isset( $test[3] ) ? $test[3] : 10;
 
 			//Default function call
-			$function_call = ( in_array( $function_call, array( 'has_action', 'has_filter' ) ) ) ? $function_call : 'has_action';
+			$function_call = ( in_array( $function_call, array( 'has_action', 'has_filter' ), true ) ) ? $function_call : 'has_action';
 
 			//Run assertion here
 			$this->assertEquals(

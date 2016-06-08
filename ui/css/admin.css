@@ -13,6 +13,17 @@
 	overflow: visible;
 }
 
+.toplevel_page_wp_stream .tablenav .select2-selection {
+	border-color: #ccc;
+	background: #f7f7f7;
+	-webkit-box-shadow: 0 1px 0 #ccc;
+	box-shadow: 0 1px 0 #ccc;
+}
+
+.toplevel_page_wp_stream .tablenav .select2-selection .select2-selection__rendered {
+	color: #555;
+}
+
 #record-query-reset {
 	position: relative;
 	margin-left: 5px;
@@ -50,29 +61,57 @@
 	width: 12%;
 }
 
-.toplevel_page_wp_stream .manage-column.column-date {
-	width: 10%;
+.toplevel_page_wp_stream .column-date {
+	min-width: 10%;
+	white-space: nowrap;
 }
 
-.toplevel_page_wp_stream .manage-column.column-user_id {
+.toplevel_page_wp_stream .column-date .timeago {
+	padding-right: 1em;
+}
+
+.toplevel_page_wp_stream .column-user_id {
 	width: 18%;
 }
 
-.toplevel_page_wp_stream .manage-column.column-summary {
+.toplevel_page_wp_stream .column-summary {
 	width: auto;
+}
+
+.toplevel_page_wp_stream .column-ip {
+	white-space: nowrap;
 }
 
 .toplevel_page_wp_stream .stream-filter-object-id {
 	padding-left: 5px;
 	visibility: hidden;
 }
+
 .toplevel_page_wp_stream td.summary:hover .stream-filter-object-id {
 	visibility: visible;
+}
+
+.toplevel_page_wp_stream .tablenav .stream-export-tablenav {
+	margin-top: 6px;
+	height: 28px;
+	float: right;
+}
+
+.toplevel_page_wp_stream .tablenav .stream-export-tablenav a {
+	margin-top: 0;
 }
 
 @media only screen and (min-width: 782px) {
 	.toplevel_page_wp_stream .tablenav .tablenav-pages {
 		margin-bottom: 4px;
+	}
+	.toplevel_page_wp_stream .tablenav .stream-export-tablenav {
+		margin-bottom: 4px;
+		float: left;
+	}
+	.toplevel_page_wp_stream .tablenav .stream-export-tablenav a {
+		margin-top: 5px;
+		display: inline-block;
 	}
 }
 
@@ -85,13 +124,13 @@
 @media only screen and (max-width: 900px) {
 	.toplevel_page_wp_stream .fixed .manage-column,
 	.toplevel_page_wp_stream .fixed tbody tr td {
-		display: none;
+		display: none !important;
 	}
 	.toplevel_page_wp_stream .fixed .column-date,
 	.toplevel_page_wp_stream .fixed .column-summary,
 	.toplevel_page_wp_stream .fixed .column-user_id,
 	.toplevel_page_wp_stream .fixed tbody tr.no-items td {
-		display: table-cell;
+		display: table-cell !important;
 	}
 	.toplevel_page_wp_stream .fixed .column-date {
 		width: 100px;
@@ -108,6 +147,10 @@
 	.toplevel_page_wp_stream .fixed .column-user_id {
 		display: none;
 	}
+}
+
+.toplevel_page_wp_stream .wp-list-table tr td::before {
+	content: "" !important;
 }
 
 .toplevel_page_wp_stream .column-user_id a {
@@ -191,12 +234,6 @@
 
 
 /* Settings */
-
-.wp_stream_settings .nav-tab-wrapper a:not(.nav-tab-active),
-.wp_stream_network_settings .nav-tab-wrapper a:not(.nav-tab-active)
-.wp_stream_default_settings .nav-tab-wrapper a:not(.nav-tab-active) {
-	border-bottom: 1px solid #ccc;
-}
 
 .wp_stream_settings .select2-container,
 .wp_stream_network_settings .select2-container,

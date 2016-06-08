@@ -93,6 +93,7 @@ class Connector_Settings extends Connector {
 			// General
 			'blogname'                      => esc_html__( 'Site Title', 'stream' ),
 			'blogdescription'               => esc_html__( 'Tagline', 'stream' ),
+			'gmt_offset'                    => esc_html__( 'Timezone', 'stream' ),
 			'admin_email'                   => esc_html__( 'E-mail Address', 'stream' ),
 			'new_admin_email'               => esc_html__( 'E-mail Address', 'stream' ),
 			'siteurl'                       => esc_html__( 'WordPress Address (URL)', 'stream' ),
@@ -112,6 +113,7 @@ class Connector_Settings extends Connector {
 			'mailserver_login'              => esc_html__( 'Login Name', 'stream' ),
 			'mailserver_pass'               => esc_html__( 'Password', 'stream' ),
 			'default_email_category'        => esc_html__( 'Default Mail Category', 'stream' ),
+			'default_link_category'         => esc_html__( 'Default Link Category', 'stream' ),
 			'ping_sites'                    => esc_html__( 'Update Services', 'stream' ),
 			// Reading
 			'show_on_front'                 => esc_html__( 'Front page displays', 'stream' ),
@@ -287,7 +289,7 @@ class Connector_Settings extends Connector {
 
 		if ( isset( $contexts[ $option_name ] ) ) {
 			foreach ( $contexts[ $option_name ] as $context => $keys ) {
-				if ( in_array( $key, $keys ) ) {
+				if ( in_array( $key, $keys, true ) ) {
 					return $context;
 				}
 			}
@@ -313,23 +315,46 @@ class Connector_Settings extends Connector {
 		);
 
 		if ( isset( $ignored[ $option_name ] ) ) {
-			return in_array( $key, $ignored[ $option_name ] );
+			return in_array( $key, $ignored[ $option_name ], true );
 		}
 
 		return false;
 	}
 
 	/**
+	 * Find out if the option should be ignored and not logged
+	 *
+	 * @param string $option_name
+	 *
+	 * @return bool Whether the option is ignored or not
+	 */
+	public function is_option_ignored( $option_name ) {
+		if ( 0 === strpos( $option_name, '_transient_' ) || 0 === strpos( $option_name, '_site_transient_' ) ) {
+			return true;
+		}
+
+		if ( '$' === substr( $option_name, -1 ) ) {
+			return true;
+		}
+
+		$ignored = array(
+			'image_default_link_type',
+			'medium_large_size_w',
+			'medium_large_size_h',
+		);
+
+		return in_array( $option_name, $ignored, true );
+	}
+
+	/**
 	 * Find out if array keys in the option should be logged separately
 	 *
-	 * @param string $key
-	 * @param mixed $old_value
 	 * @param mixed $value
 	 *
 	 * @return bool Whether the option should be treated as a group
 	 */
-	public function is_key_option_group( $key, $old_value, $value ) {
-		if ( ! is_array( $old_value ) && ! is_array( $value ) ) {
+	public function is_option_group( $value ) {
+		if ( ! is_array( $value ) ) {
 			return false;
 		}
 
@@ -377,14 +402,25 @@ class Connector_Settings extends Connector {
 		$labels = array(
 			'theme_mods' => array(
 				// Custom Background
-				'background_image'       => esc_html__( 'Background Image', 'stream' ),
-				'background_position_x'  => esc_html__( 'Background Position', 'stream' ),
-				'background_repeat'      => esc_html__( 'Background Repeat', 'stream' ),
-				'background_attachment'  => esc_html__( 'Background Attachment', 'stream' ),
-				'background_color'       => esc_html__( 'Background Color', 'stream' ),
+				'background_image'        => esc_html__( 'Background Image', 'stream' ),
+				'background_position_x'   => esc_html__( 'Background Position', 'stream' ),
+				'background_repeat'       => esc_html__( 'Background Repeat', 'stream' ),
+				'background_attachment'   => esc_html__( 'Background Attachment', 'stream' ),
+				'background_color'        => esc_html__( 'Background Color', 'stream' ),
 				// Custom Header
-				'header_image'           => esc_html__( 'Header Image', 'stream' ),
-				'header_textcolor'       => esc_html__( 'Text Color', 'stream' ),
+				'header_image'            => esc_html__( 'Header Image', 'stream' ),
+				'header_textcolor'        => esc_html__( 'Text Color', 'stream' ),
+				'header_background_color' => esc_html__( 'Header and Sidebar Background Color', 'stream' ),
+				// Featured Content
+				'featured_content_layout' => esc_html__( 'Layout', 'stream' ),
+				// Custom Sidebar
+				'sidebar_textcolor'       => esc_html__( 'Header and Sidebar Text Color', 'stream' ),
+				// Custom Colors
+				'color_scheme'            => esc_html__( 'Color Scheme', 'stream' ),
+				'main_text_color'         => esc_html__( 'Main Text Color', 'stream' ),
+				'secondary_text_color'    => esc_html__( 'Secondary Text Color', 'stream' ),
+				'link_color'              => esc_html__( 'Link Color', 'stream' ),
+				'page_background_color'   => esc_html__( 'Page Background Color', 'stream' ),
 			),
 		);
 
@@ -446,7 +482,7 @@ class Connector_Settings extends Connector {
 					);
 				},
 				'applicable'   => function( $submenu, $record ) {
-					return $record->context === 'wp_stream';
+					return 'wp_stream' === $record->context;
 				},
 			),
 			'background_header' => array(
@@ -458,7 +494,7 @@ class Connector_Settings extends Connector {
 					return add_query_arg( 'page', $rule['submenu_slug']( $record ), admin_url( $rule['menu_slug'] ) );
 				},
 				'applicable'   => function( $submenu, $record ) {
-					return in_array( $record->context, array( 'custom_header', 'custom_background' ) );
+					return in_array( $record->context, array( 'custom_header', 'custom_background' ), true );
 				},
 			),
 			'general' => array(
@@ -490,7 +526,7 @@ class Connector_Settings extends Connector {
 			),
 		);
 
-		if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ) ) ) {
+		if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ), true ) ) {
 			global $submenu;
 
 			$applicable_rules = array_filter(
@@ -541,7 +577,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Trigger this connector from WP CLI, only for known Settings
+	 * Trigger this connector from WP CLI or the Customizer, only for known Settings
 	 *
 	 * @action update_option
 	 *
@@ -550,7 +586,7 @@ class Connector_Settings extends Connector {
 	 * @param mixed $value
 	 */
 	public function callback_update_option( $option, $value, $old_value ) {
-		if ( defined( '\WP_CLI' ) && \WP_CLI && array_key_exists( $option, $this->labels ) ) {
+		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && array_key_exists( $option, $this->labels ) ) {
 			$this->callback_updated_option( $option, $value, $old_value );
 		}
 	}
@@ -632,7 +668,7 @@ class Connector_Settings extends Connector {
 	public function callback_updated_option( $option, $old_value, $value ) {
 		global $whitelist_options, $new_whitelist_options;
 
-		if ( 0 === strpos( $option, '_transient_' ) || 0 === strpos( $option, '_site_transient_' ) ) {
+		if ( $this->is_option_ignored( $option ) ) {
 			return;
 		}
 
@@ -644,7 +680,7 @@ class Connector_Settings extends Connector {
 		);
 
 		foreach ( $options as $key => $opts ) {
-			if ( in_array( $option, $opts ) ) {
+			if ( in_array( $option, $opts, true ) ) {
 				$context = $key;
 				break;
 			}
@@ -655,9 +691,8 @@ class Connector_Settings extends Connector {
 		}
 
 		$changed_options = array();
-		$option_group    = $this->is_key_option_group( $option, $old_value, $value );
 
-		if ( $option_group ) {
+		if ( $this->is_option_group( $value ) ) {
 			foreach ( $this->get_changed_keys( $old_value, $value ) as $field_key ) {
 				if ( ! $this->is_key_ignored( $option, $field_key ) ) {
 					$key_context = $this->get_context_by_key( $option, $field_key );
@@ -761,5 +796,23 @@ class Connector_Settings extends Connector {
 			}(jQuery));
 		</script>
 		<?php
+	}
+
+	/**
+	 * Find out if array keys in the option should be logged separately
+	 *
+	 * @deprecated 3.0.6
+	 * @deprecated Use is_option_group()
+	 * @see is_option_group()
+	 *
+	 * @param string $key
+	 * @param mixed $old_value
+	 * @param mixed $value
+	 *
+	 * @return bool Whether the option should be treated as a group
+	 */
+	public function is_key_option_group( $key, $old_value, $value ) {
+		_deprecated_function( __FUNCTION__, '3.0.6', 'is_option_group' );
+		return $this->is_option_group( $value );
 	}
 }

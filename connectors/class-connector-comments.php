@@ -243,7 +243,7 @@ class Connector_Comments extends Connector {
 	 * @param object $comment
 	 */
 	public function callback_wp_insert_comment( $comment_id, $comment ) {
-		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types(), true ) ) {
 			return;
 		}
 
@@ -311,7 +311,7 @@ class Connector_Comments extends Connector {
 	public function callback_edit_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types(), true ) ) {
 			return;
 		}
 
@@ -375,7 +375,7 @@ class Connector_Comments extends Connector {
 	public function callback_delete_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types(), true ) ) {
 			return;
 		}
 
@@ -413,7 +413,7 @@ class Connector_Comments extends Connector {
 	public function callback_trash_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types(), true ) ) {
 			return;
 		}
 
@@ -447,7 +447,7 @@ class Connector_Comments extends Connector {
 	public function callback_untrash_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types(), true ) ) {
 			return;
 		}
 
@@ -481,7 +481,7 @@ class Connector_Comments extends Connector {
 	public function callback_spam_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types(), true ) ) {
 			return;
 		}
 
@@ -515,7 +515,7 @@ class Connector_Comments extends Connector {
 	public function callback_unspam_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types(), true ) ) {
 			return;
 		}
 
@@ -549,7 +549,7 @@ class Connector_Comments extends Connector {
 	 * @param object $comment
 	 */
 	public function callback_transition_comment_status( $new_status, $old_status, $comment ) {
-		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types(), true ) ) {
 			return;
 		}
 
@@ -591,7 +591,7 @@ class Connector_Comments extends Connector {
 		$comment_id = $wpdb->last_result[0]->comment_ID;
 		$comment    = get_comment( $comment_id );
 
-		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types() ) ) {
+		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types(), true ) ) {
 			return;
 		}
 
