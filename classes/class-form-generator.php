@@ -119,6 +119,8 @@ class Form_Generator {
 					'data'        => array(),
 				) );
 
+				$values = array();
+
 				$output = sprintf(
 					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s/>',
 					esc_attr( $args['name'] ),
@@ -145,6 +147,7 @@ class Form_Generator {
 								$child['text'],
 								selected( $args['value'], $child['value'], false )
 							);
+							$values[] = $child['value'];
 						}
 						$output .= '</optgroup>';
 					} else {
@@ -154,7 +157,16 @@ class Form_Generator {
 							$parent['text'],
 							selected( $args['value'], $parent['value'], false )
 						);
+						$values[] = $parent['value'];
 					}
+				}
+
+				if ( ! empty( $args['value'] ) && ! in_array( $args['value'], $values ) ) {
+					$output .= sprintf(
+						'<option value="%1$s" %2$s>%1$s</option>',
+						$args['value'],
+						selected( true, true, false )
+					);
 				}
 
 				$output .= '</select>';
