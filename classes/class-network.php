@@ -394,7 +394,13 @@ class Network {
 		);
 
 		// add all sites
-		foreach ( wp_get_sites() as $blog ) {
+		if ( function_exists( 'get_sites' ) ) {
+			$sites = get_sites();
+		} else {
+			$sites = wp_get_sites();
+		}
+
+		foreach ( $sites as $blog ) {
 			$blog_data = get_blog_details( $blog );
 
 			$blogs[ $blog['blog_id'] ] = array(
