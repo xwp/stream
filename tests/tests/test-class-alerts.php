@@ -241,9 +241,26 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function test_display_notification_box() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
+		$alerts = new Alerts( $this->plugin );
+
+		$data = $this->dummy_alert_data();
+		$data->ID = 0;
+		$alert = new Alert( $data, $this->plugin );
+		$post_id = $alert->save();
+
+		ob_start();
+		$alerts->display_notification_box( get_post( $alert->ID ) );
+		$output = ob_get_contents();
+		ob_end_clean();
+
+		$len_test = strlen( $output ) > 0;
+		$this->assertTrue( $len_test, 'Output length greater than zero.' );
+
+		$field_test = strpos( $output, 'wp_stream_alert_type' ) !== -1;
+		$this->assertTrue( $len_test, 'Alert type field is present.' );
+
+		$form_test = strpos( $output, 'wp_stream_alert_type_form' ) !== -1;
+		$this->assertTrue( $form_test, 'Alert type settings form is present' );
 	}
 
 	function test_load_alerts_settings() {
