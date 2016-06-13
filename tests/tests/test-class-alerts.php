@@ -264,9 +264,46 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function test_load_alerts_settings() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
+		$alerts = new Alerts( $this->plugin );
+
+		$data = $this->dummy_alert_data();
+		$data->ID = 0;
+		$alert = new Alert( $data, $this->plugin );
+		$post_id = $alert->save();
+
+		try {
+			$_POST['post_id'] = $post_id;
+			$_POST['alert_type'] = 'highlight';
+			$this->_handleAjax( 'load_alerts_settings' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			// We expected this, do nothing.
+			$exception = $e;
+		}
+
+		$response = json_decode( $this->_last_response );
+		$this->assertInternalType( 'object', $response );
+		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertTrue( $response->success );
+		$this->assertObjectHasAttribute( 'data', $response );
+
+	}
+
+	function test_load_alerts_settings_bad_alert_type() {
+		$alerts = new Alerts( $this->plugin );
+
+		$data = $this->dummy_alert_data();
+		$data->ID = 0;
+		$alert = new Alert( $data, $this->plugin );
+		$post_id = $alert->save();
+
+		try {
+			$_POST['post_id'] = $post_id;
+			$this->_handleAjax( 'load_alerts_settings' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			// We expected this, do nothing.
+			$exception = $e;
+		}
+
 	}
 
 	function test_display_triggers_box() {
