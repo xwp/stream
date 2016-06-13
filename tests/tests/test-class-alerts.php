@@ -327,9 +327,24 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function test_display_preview_box() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
+		$alerts = new Alerts( $this->plugin );
+
+		$data = $this->dummy_alert_data();
+		$data->ID = 0;
+		$alert = new Alert( $data, $this->plugin );
+		$post_id = $alert->save();
+
+		// @codingStandardsIgnoreStart
+		$GLOBALS['hook_suffix'] = '';
+		// @codingStandardsIgnoreEnd
+
+		ob_start();
+		$alerts->display_preview_box( get_post( $alert->ID ) );
+		$output = ob_get_contents();
+		ob_end_clean();
+
+		$len_test = strlen( $output ) > 0;
+		$this->assertTrue( $len_test, 'Output length greater than zero.' );
 	}
 
 	function test_display_preview_box_ajax() {
