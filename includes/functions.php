@@ -97,7 +97,7 @@ function wp_stream_get_sites() {
 	} else {
 		$sites = array();
 		foreach ( wp_get_sites() as $site ) {
-			$sites = WP_Site::get_instance( $site['blog_id'] );
+			$sites[] = WP_Site::get_instance( $site['blog_id'] );
 		}
 	}
 
