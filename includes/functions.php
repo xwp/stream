@@ -95,7 +95,10 @@ function wp_stream_get_sites() {
 	if ( function_exists( 'get_sites' ) ) {
 		$sites = get_sites();
 	} else {
-		$sites = wp_get_sites();
+		$sites = array();
+		foreach ( wp_get_sites() as $site ) {
+			$sites = get_site( $site['blog_id'] );
+		}
 	}
 
 	return $sites;

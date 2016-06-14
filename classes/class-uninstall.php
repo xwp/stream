@@ -137,7 +137,7 @@ class Uninstall {
 
 		// Delete options from each blog on network
 		foreach ( wp_stream_get_sites() as $blog ) {
-			$this->delete_blog_options( absint( $blog['blog_id'] ) );
+			$this->delete_blog_options( absint( $blog->blog_id ) );
 		}
 	}
 
