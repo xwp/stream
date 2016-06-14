@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Gets a specific external variable by name and optionally filters it.
  *
@@ -85,6 +84,24 @@ function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
 	}
 
 	return $json;
+}
+
+/**
+ * Return an array of sites for a network in a way that is also backwards compatible
+ *
+ * @return array
+ */
+function wp_stream_get_sites() {
+	if ( function_exists( 'get_sites' ) ) {
+		$sites = get_sites();
+	} else {
+		$sites = array();
+		foreach ( wp_get_sites() as $site ) {
+			$sites[] = WP_Site::get_instance( $site['blog_id'] );
+		}
+	}
+
+	return $sites;
 }
 
 /**

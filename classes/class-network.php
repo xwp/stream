@@ -394,10 +394,10 @@ class Network {
 		);
 
 		// add all sites
-		foreach ( wp_get_sites() as $blog ) {
-			$blog_data = get_blog_details( $blog );
+		foreach ( wp_stream_get_sites() as $blog ) {
+			$blog_data = get_blog_details( $blog->blog_id );
 
-			$blogs[ $blog['blog_id'] ] = array(
+			$blogs[ $blog->blog_id ] = array(
 				'label'    => $blog_data->blogname,
 				'disabled' => '',
 			);
