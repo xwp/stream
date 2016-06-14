@@ -135,14 +135,7 @@ class Uninstall {
 		// Wildcard matches on network options
 		$wpdb->query( "DELETE FROM {$wpdb->sitemeta} WHERE meta_key LIKE '%wp_stream%';" );
 
-		// Delete options from each blog on network
-		if ( function_exists( 'get_sites' ) ) {
-			$sites = get_sites();
-		} else {
-			$sites = wp_get_sites();
-		}
-
-		foreach ( $sites as $blog ) {
+		foreach ( wp_stream_get_sites() as $blog ) {
 			$this->delete_blog_options( absint( $blog['blog_id'] ) );
 		}
 	}
