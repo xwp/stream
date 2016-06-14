@@ -161,7 +161,7 @@ class Form_Generator {
 					}
 				}
 
-				if ( ! empty( $args['value'] ) && ! in_array( $args['value'], $values ) ) {
+				if ( ! empty( $args['value'] ) && ! in_array( $args['value'], $values, true ) ) {
 					$output .= sprintf(
 						'<option value="%1$s" %2$s>%1$s</option>',
 						$args['value'],

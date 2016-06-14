@@ -5,17 +5,17 @@ jQuery( function( $ ) {
 
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.context' ).each( function( k, el ) {
 			$context = $( el );
-			$context.select2( {
+			$context.select2({
 				allowClear: true,
-			} );
-		} );
+			});
+		});
 
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.action' ).each( function( k, el ) {
 			$context = $( el );
-			$context.select2( {
+			$context.select2({
 				allowClear: true,
-			} );
-		} );
+			});
+		});
 
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.author_or_role' ).each( function( k, el ) {
 			$input_user = $( el );
@@ -41,16 +41,16 @@ jQuery( function( $ ) {
 
 						var roles = [];
 						$( 'option', $input_user ).each( function() {
-						    roles.push( {
-										'id' : $(this).val(),
-										'text' : $(this).text(),
-								} );
-						} );
+							roles.push({
+								'id' : $( this ).val(),
+								'text' : $( this ).text()
+							});
+						});
 
 						roles = $.grep(
 							roles,
 							function( role ) {
-								var roleVal = $input_user.data('select2' ).dropdown.$search
+								var roleVal = $input_user.data( 'select2' ).dropdown.$search
 									.val()
 									.toLowerCase();
 								var rolePos = role
@@ -217,7 +217,7 @@ jQuery( function( $ ) {
 
 	$( '.stream-exclude-list tr:not(.hidden) select.select2-select.author_or_role' ).each( function( k, el ) {
 		$( this ).val( $( this ).data( 'selected-id' ) ).trigger( 'change' );
-	} );
+	});
 
 	$( '#exclude_rules_new_rule' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' );
@@ -304,4 +304,4 @@ jQuery( function( $ ) {
 		recalculate_rules_found();
 		recalculate_rules_selected();
 	});
-} );
+});
