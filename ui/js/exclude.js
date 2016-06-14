@@ -1,19 +1,17 @@
-/* globals confirm, wp_stream, ajaxurl, wp_stream_regenerate_alt_rows */
+/* globals ajaxurl, wp_stream_regenerate_alt_rows */
 jQuery( function( $ ) {
 	var initSettingsSelect2 = function() {
 		var $input_user, $input_ip;
 
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.context' ).each( function( k, el ) {
-			$context = $( el );
-			$context.select2({
-				allowClear: true,
+			$( el ).select2({
+				allowClear: true
 			});
 		});
 
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.action' ).each( function( k, el ) {
-			$context = $( el );
-			$context.select2({
-				allowClear: true,
+			$( el ).select2({
+				allowClear: true
 			});
 		});
 
@@ -37,9 +35,8 @@ jQuery( function( $ ) {
 					},
 					processResults: function( response ) {
 						var roles  = [],
-							answer = [];
+						    answer = [];
 
-						var roles = [];
 						$( 'option', $input_user ).each( function() {
 							roles.push({
 								'id' : $( this ).val(),
@@ -51,12 +48,12 @@ jQuery( function( $ ) {
 							roles,
 							function( role ) {
 								var roleVal = $input_user.data( 'select2' ).dropdown.$search
-									.val()
-									.toLowerCase();
+								    .val()
+								    .toLowerCase();
 								var rolePos = role
-									.text
-									.toLowerCase()
-									.indexOf( roleVal );
+								    .text
+								    .toLowerCase()
+								    .indexOf( roleVal );
 								return rolePos >= 0;
 							}
 						);
@@ -194,8 +191,8 @@ jQuery( function( $ ) {
 
 		$( 'ul.select2-choices, ul.select2-choices li, input.select2-input', '.stream-exclude-list tr:not(.hidden) .ip_address' ).on( 'mousedown click focus', function() {
 			var $container = $( this ).closest( '.select2-container' ),
-				$input     = $container.find( 'input.select2-input' ),
-				value      = $container.select2( 'data' );
+			    $input     = $container.find( 'input.select2-input' ),
+			    value      = $container.select2( 'data' );
 
 			if ( value.length >= 1 ) {
 				$input.blur();
@@ -215,7 +212,7 @@ jQuery( function( $ ) {
 
 	initSettingsSelect2();
 
-	$( '.stream-exclude-list tr:not(.hidden) select.select2-select.author_or_role' ).each( function( k, el ) {
+	$( '.stream-exclude-list tr:not(.hidden) select.select2-select.author_or_role' ).each( function() {
 		$( this ).val( $( this ).data( 'selected-id' ) ).trigger( 'change' );
 	});
 
@@ -227,7 +224,7 @@ jQuery( function( $ ) {
 		});
 
 		var $lastRow = $( 'tr', $excludeList ).last(),
-			$newRow  = $lastRow.clone();
+		    $newRow  = $lastRow.clone();
 
 		$newRow.removeAttr( 'class' );
 		$( '.stream-exclude-list tbody :input' ).off();
@@ -243,7 +240,7 @@ jQuery( function( $ ) {
 
 	$( '#exclude_rules_remove_rules' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' ),
-			selectedRows = $( 'tbody input.cb-select:checked', $excludeList ).closest( 'tr' );
+		    selectedRows = $( 'tbody input.cb-select:checked', $excludeList ).closest( 'tr' );
 
 		if ( ( $( 'tbody tr', $excludeList ).length - selectedRows.length ) >= 2 ) {
 			selectedRows.remove();
@@ -273,7 +270,7 @@ jQuery( function( $ ) {
 
 	function recalculate_rules_selected() {
 		var $selectedRows = $( 'table.stream-exclude-list tbody tr:not( .hidden ) input.cb-select:checked' ),
-			$deleteButton = $( '#exclude_rules_remove_rules' );
+		    $deleteButton = $( '#exclude_rules_remove_rules' );
 
 		if ( 0 === $selectedRows.length ) {
 			$deleteButton.prop( 'disabled', true );
@@ -284,9 +281,9 @@ jQuery( function( $ ) {
 
 	function recalculate_rules_found() {
 		var $allRows      = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
-			$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' ),
-			$selectAll    = $( '.check-column.manage-column input.cb-select' ),
-			$deleteButton = $( '#exclude_rules_remove_rules' );
+		    $noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' ),
+		    $selectAll    = $( '.check-column.manage-column input.cb-select' ),
+		    $deleteButton = $( '#exclude_rules_remove_rules' );
 
 		if ( 0 === $allRows.length ) {
 			$noRulesFound.show();
