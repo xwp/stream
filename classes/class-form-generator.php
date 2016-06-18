@@ -69,6 +69,7 @@ class Form_Generator {
 			'description' => '',
 			'classes'     => '',
 			'data'        => array(),
+			'multiple'    => false,
 		) );
 
 		$output = '';
@@ -76,6 +77,14 @@ class Form_Generator {
 			case 'text':
 				$output = sprintf(
 					'<input type="text" name="%1$s" id="%1$s" class="%2$s" value="%3$s" />',
+					esc_attr( $args['name'] ),
+					esc_attr( $args['classes'] ),
+					esc_attr( $args['value'] )
+				);
+				break;
+			case 'hidden':
+				$output = sprintf(
+					'<input type="hidden" name="%1$s" id="%1$s" class="%2$s" value="%3$s" />',
 					esc_attr( $args['name'] ),
 					esc_attr( $args['classes'] ),
 					esc_attr( $args['value'] )
@@ -103,12 +112,18 @@ class Form_Generator {
 			case 'select2':
 				$values = array();
 
+				$multiple = ( $args['multiple'] ) ? 'multiple ' : '';
 				$output = sprintf(
-					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s/>',
+					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s%4$s/>',
 					esc_attr( $args['name'] ),
 					esc_attr( $args['classes'] ),
-					$this->prepare_data_attributes_string( $args['data'] )
+					$this->prepare_data_attributes_string( $args['data'] ),
+					$multiple
 				);
+
+				if ( array_key_exists( 'placeholder', $args['data'] ) ) {
+					$output .= '<option value=""></option>';
+				}
 
 				foreach ( $args['options'] as $parent ) {
 					$parent = wp_parse_args( $parent, array(
