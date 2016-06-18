@@ -11,15 +11,6 @@ class Form_Generator {
 	public $fields = array();
 
 	/**
-	 * Class constructor
-	 *
-	 * @return void
-	 */
-	public function __construct() {
-		$this->fields = array();
-	}
-
-	/**
 	 * Adds a new field to the form.
 	 *
 	 * @param string $field_type The type of field being added.
