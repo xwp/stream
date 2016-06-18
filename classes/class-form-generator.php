@@ -29,7 +29,7 @@ class Form_Generator {
 	 *
 	 * @return string
 	 */
-	public function render_all() {
+	public function render_fields() {
 		$output = '';
 		foreach ( $this->fields as $data ) {
 			$output .= $this->render_field( $data['type'], $data['args'] );
@@ -37,7 +37,12 @@ class Form_Generator {
 		return $output;
 	}
 
-	public function render_as_table() {
+	/**
+	 * Renders all fields currently registered as a table.
+	 *
+	 * @return string
+	 */
+	public function render_fields_table() {
 		$output = '<table class="form-table">';
 		foreach ( $this->fields as $data ) {
 			$title = ( array_key_exists( 'title', $data['args'] ) ) ? $data['args']['title'] : '';
@@ -56,12 +61,14 @@ class Form_Generator {
 	 * @param string $field_type The type of field being rendered.
 	 * @param array  $original_args The options for the field type.
 	 */
-	public function render_field( $field_type, $original_args ) {
-		$args = wp_parse_args( $original_args, array(
+	public function render_field( $field_type, $args ) {
+		$args = wp_parse_args( $args, array(
 			'name'        => '',
 			'value'       => '',
+			'options'     => array(),
 			'description' => '',
 			'classes'     => '',
+			'data'        => array(),
 		) );
 
 		$output = '';
@@ -75,14 +82,6 @@ class Form_Generator {
 				);
 				break;
 			case 'select':
-				$args = wp_parse_args( $original_args, array(
-					'name'        => '',
-					'value'       => '',
-					'options'     => array(),
-					'classes'     => '',
-					'data'        => array(),
-				) );
-
 				$current_value = $args['value'];
 
 				$output  = sprintf(
@@ -102,21 +101,13 @@ class Form_Generator {
 				$output .= '</select>';
 				break;
 			case 'select2':
-				$args = wp_parse_args( $original_args, array(
-					'name'        => '',
-					'value'       => '',
-					'options'     => array(),
-					'classes'     => '',
-					'data'        => array(),
-				) );
-
 				$values = array();
 
 				$output = sprintf(
 					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s/>',
 					esc_attr( $args['name'] ),
 					esc_attr( $args['classes'] ),
-					$this->prepare_data_string( $args['data'] )
+					$this->prepare_data_attributes_string( $args['data'] )
 				);
 
 				foreach ( $args['options'] as $parent ) {
@@ -180,7 +171,13 @@ class Form_Generator {
 		return $output;
 	}
 
-	public function prepare_data_string( $data ) {
+	/**
+	 * Prepares string with HTML data attrbiutes
+	 *
+	 * @param $data array List of key/value data pairs to prepare.
+	 * @return string
+	 */
+	public function prepare_data_attributes_string( $data ) {
 		$output = '';
 		foreach ( $data as $key => $value ) {
 			$key = 'data-' . esc_attr( $key );
