@@ -77,6 +77,19 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$this->assertTrue( $found_all_keys );
 	}
 
+	public function test_get_column_values() {
+		$summaries = $this->driver->get_column_values( 'summary' );
+		$this->assertNotEmpty( $summaries );
+
+		global $wpdb;
+		$wpdb->suppress_errors( true );
+
+		$bad_column = $this->driver->get_column_values( 'daisy' );
+		$this->assertEmpty( $bad_column );
+
+		$wpdb->suppress_errors( false );
+	}
+
 	private function dummy_stream_data() {
 		return array(
 				'object_id' => 9,
