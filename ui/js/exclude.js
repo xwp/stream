@@ -5,7 +5,39 @@ jQuery( function( $ ) {
 
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.connector_or_context' ).each( function( k, el ) {
 			$( el ).select2({
-  			allowClear: true
+  			allowClear: true,
+				matcher : function( params, data ) {
+					var match = $.extend(true, {}, data);
+
+					if ( params.term == null || $.trim( params.term ) === '') {
+						return match;
+					}
+
+					var term = params.term.toLowerCase();
+
+					if ( match.text.toLowerCase().indexOf( term ) >= 0 ) {
+						return match;
+					}
+
+					if ( match.children ) {
+
+						for ( var i = match.children.length - 1; i >= 0; i--) {
+							var child = match.children[i];
+
+							// Remove term from results if it doesn't match.
+							if ( child.text.toLowerCase().indexOf( term ) === -1 ) {
+								match.children.splice( i, 1 );
+							}
+						}
+
+						if ( match.children.length > 0 ) {
+							return match;
+						}
+					}
+
+					return null;
+
+				}
 			});
 		});
 
