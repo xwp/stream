@@ -3,9 +3,9 @@ jQuery( function( $ ) {
 	var initSettingsSelect2 = function() {
 		var $input_user, $input_ip;
 
-		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.context' ).each( function( k, el ) {
+		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.connector_or_context' ).each( function( k, el ) {
 			$( el ).select2({
-				allowClear: true
+  			allowClear: true
 			});
 		});
 
@@ -38,6 +38,9 @@ jQuery( function( $ ) {
 						    answer = [];
 
 						$( 'option', $input_user ).each( function() {
+							if( $( this ).val() === '' ) {
+								return;
+							}
 							roles.push({
 								'id' : $( this ).val(),
 								'text' : $( this ).text()
@@ -60,6 +63,7 @@ jQuery( function( $ ) {
 
 						answer = {
 							results: [
+								{ text: '', id: '' },
 								{ text: 'Roles', children: roles },
 								{ text: 'Users', children: [] }
 							]
@@ -75,7 +79,7 @@ jQuery( function( $ ) {
 							}
 						});
 
-						answer.results[ 1 ].children = response.data.users;
+						answer.results[ 2 ].children = response.data.users;
 
 						// Notice we return the value of more so Select2 knows if more results can be loaded
 						return answer;
@@ -216,6 +220,12 @@ jQuery( function( $ ) {
 		$( this ).val( $( this ).data( 'selected-id' ) ).trigger( 'change' );
 	});
 
+	$( '.stream-exclude-list tr:not(.hidden) select.select2-select.connector_or_context' ).each( function() {
+		var connector = $( this ).siblings( '.connector' ).val();
+		var context = $( this ).siblings( '.context' ).val();
+		$( this ).val( connector + "-" + context ).trigger( 'change' );
+	});
+
 	$( '#exclude_rules_new_rule' ).on( 'click', function() {
 		var $excludeList = $( 'table.stream-exclude-list' );
 
@@ -259,6 +269,12 @@ jQuery( function( $ ) {
 	$( '.stream-exclude-list' ).closest( 'form' ).submit( function() {
 		$( '.stream-exclude-list tbody tr.hidden', this ).each( function() {
 				$( this ).find( ':input' ).removeAttr( 'name' );
+		});
+		$( '.stream-exclude-list tbody tr:not(.hidden) select.select2-select.connector_or_context', this ).each( function() {
+				var parts = $( this ).val().split( '-' );
+				$( this ).siblings( '.connector' ).val( parts[0] );
+				$( this ).siblings( '.context' ).val( parts[1] );
+				$( this ).removeAttr( 'name' );
 		});
 	});
 

@@ -836,7 +836,7 @@ class Settings {
 							if ( isset( $context_data['children'] ) ) {
 								$child_values = array();
 								foreach ( $context_data['children'] as $child_id => $child_value ) {
-									$child_values[] = array( 'value' => $child_id, 'text' => $child_value, 'parent' => $context_id );
+									$child_values[] = array( 'value' => $context_id . '-' . $child_id, 'text' => $child_value, 'parent' => $context_id );
 								}
 							}
 							if ( isset( $context_data['label'] ) ) {
@@ -847,15 +847,26 @@ class Settings {
 						}
 					}
 
-					$context_input = $form->render_field( 'select2', array(
-						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'context' ) ),
-						'value'       => $context,
+					$connector_or_context_input = $form->render_field( 'select2', array(
+						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'connector_or_context' ) ),
 						'options'     => $context_values,
-						'classes'     => 'context',
+						'classes'     => 'connector_or_context',
 						'data'        => array(
-							'group' => 'connector',
+							'group'       => 'connector',
 							'placeholder' => __( 'Any Context', 'stream' ),
 						),
+					) );
+
+					$connector_input = $form->render_field( 'hidden', array(
+						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'connector' ) ),
+						'value'       => $connector,
+						'classes'     => 'connector',
+					) );
+
+					$context_input = $form->render_field( 'hidden', array(
+						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'context' ) ),
+						'value'       => $context,
+						'classes'     => 'context',
 					) );
 
 					// Action dropdown menu
@@ -884,6 +895,7 @@ class Settings {
 							'placeholder' => esc_attr__( 'Any IP Address', 'stream' ),
 							'nonce'       => esc_attr( wp_create_nonce( 'stream_get_ips' ) ),
 						),
+						'multiple'    => true,
 					) );
 
 					// Hidden helper input
@@ -899,16 +911,18 @@ class Settings {
 						'<tr class="%1$s %2$s">
 							<th scope="row" class="check-column">%3$s %4$s</th>
 							<td>%5$s</td>
-							<td>%6$s</td>
-							<td>%7$s</td>
-							<td>%8$s</td>
-							<th scope="row" class="actions-column">%9$s</th>
+							<td>%6$s %7$s %8$s</td>
+							<td>%9$s</td>
+							<td>%10$s</td>
+							<th scope="row" class="actions-column">%11$s</th>
 						</tr>',
 						( 0 !== $key % 2 ) ? 'alternate' : '',
 						( 'helper' === $key ) ? 'hidden helper' : '',
 						'<input class="cb-select" type="checkbox" />',
 						$helper_input,
 						$author_or_role_input,
+						$connector_or_context_input,
+						$connector_input,
 						$context_input,
 						$action_input,
 						$ip_address_input,
