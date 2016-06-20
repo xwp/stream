@@ -16,22 +16,6 @@ class Test_DB extends WP_StreamTestCase {
 		$this->assertNotEmpty( $this->db );
 	}
 
-	public function test_construct() {
-		$this->assertNotEmpty( $this->db->plugin );
-		$this->assertInstanceOf( '\WP_Stream\Plugin', $this->db->plugin );
-
-		$this->assertNotEmpty( $this->db->query );
-		$this->assertInstanceOf( '\WP_Stream\Query', $this->db->query );
-
-		$this->assertNotEmpty( $this->db->table );
-		$this->assertNotEmpty( $this->db->table_meta );
-
-		global $wpdb;
-		$this->assertEquals( $this->db->table, $wpdb->stream );
-		$this->assertEquals( $this->db->table_meta, $wpdb->streammeta );
-		$this->assertEquals( $this->db->table_meta, $wpdb->recordmeta );
-	}
-
 	public function test_get_table_names() {
 		$table_names = $this->db->get_table_names();
 
