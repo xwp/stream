@@ -95,7 +95,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 
 		$this->assertNotEmpty( $table_names );
 		$this->assertInternalType( 'array', $table_names );
-		$this->assertEquals( array( $this->db->table, $this->db->table_meta ), $table_names );
+		$this->assertEquals( array( $this->driver->table, $this->driver->table_meta ), $table_names );
 	}
 
 	private function dummy_stream_data() {
