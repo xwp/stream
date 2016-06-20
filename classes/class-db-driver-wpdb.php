@@ -130,6 +130,18 @@ class DB_Driver_WPDB implements DB_Driver {
 	}
 
 	/**
+	 * Public getter to return table names
+	 *
+	 * @return array
+	 */
+	public function get_table_names() {
+		return array(
+			$this->table,
+			$this->table_meta,
+		);
+	}
+
+	/**
 	 * Purge storage
 	 */
 	public function purge_storage() {

@@ -90,6 +90,14 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 		$wpdb->suppress_errors( false );
 	}
 
+	public function test_table_names() {
+		$table_names = $this->driver->get_table_names();
+
+		$this->assertNotEmpty( $table_names );
+		$this->assertInternalType( 'array', $table_names );
+		$this->assertEquals( array( $this->db->table, $this->db->table_meta ), $table_names );
+	}
+
 	private function dummy_stream_data() {
 		return array(
 				'object_id' => 9,
