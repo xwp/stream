@@ -16,14 +16,6 @@ class Test_DB extends WP_StreamTestCase {
 		$this->assertNotEmpty( $this->db );
 	}
 
-	public function test_get_table_names() {
-		$table_names = $this->db->get_table_names();
-
-		$this->assertNotEmpty( $table_names );
-		$this->assertInternalType( 'array', $table_names );
-		$this->assertEquals( array( $this->db->table, $this->db->table_meta ), $table_names );
-	}
-
 	/*
 	 * Also tests the insert_meta method
 	 */
