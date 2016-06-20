@@ -263,9 +263,14 @@ jQuery( function( $ ) {
 	});
 
 	$( '.stream-exclude-list tr:not(.hidden) select.select2-select.connector_or_context' ).each( function() {
-		var connector = $( this ).siblings( '.connector' ).val();
-		var context = $( this ).siblings( '.context' ).val();
-		$( this ).val( connector + "-" + context ).trigger( 'change' );
+		var parts = [
+				$( this ).siblings( '.connector' ).val(),
+				$( this ).siblings( '.context' ).val()
+		];
+		if ( parts[1] === "" ) {
+			parts.splice( 1, 1 );
+		}
+		$( this ).val( parts.join( "-" ) ).trigger( 'change' );
 	});
 
 	$( '#exclude_rules_new_rule' ).on( 'click', function() {
