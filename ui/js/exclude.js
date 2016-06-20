@@ -6,6 +6,16 @@ jQuery( function( $ ) {
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.connector_or_context' ).each( function( k, el ) {
 			$( el ).select2({
   			allowClear: true,
+				templateResult : function( item ) {
+					if ( typeof item.id === "undefined" ) {
+						return item.text;
+					}
+					if ( item.id.indexOf( "-" ) === -1 ) {
+						return $( '<span class="parent">' + item.text + '</span>' );
+					} else {
+						return $( '<span class="child">' + item.text + '</span>' );
+					}
+				},
 				matcher : function( params, data ) {
 					var match = $.extend(true, {}, data);
 

@@ -131,15 +131,17 @@ class Form_Generator {
 						'text'     => '',
 						'children' => array(),
 					) );
+					$output .= sprintf(
+						'<option class="parent" value="%1$s" %3$s>%2$s</option>',
+						$parent['value'],
+						$parent['text'],
+						selected( $args['value'], $parent['value'], false )
+					);
+					$values[] = $parent['value'];
 					if ( ! empty( $parent['children'] ) ) {
-						$output .= sprintf(
-							'<optgroup label="%1$s" value="%2$s">',
-							$parent['text'],
-							$parent['value']
-						);
 						foreach ( $parent['children'] as $child ) {
 							$output .= sprintf(
-								'<option value="%1$s" %3$s>%2$s</option>',
+								'<option class="child" value="%1$s" %3$s>%2$s</option>',
 								$child['value'],
 								$child['text'],
 								selected( $args['value'], $child['value'], false )
@@ -147,14 +149,6 @@ class Form_Generator {
 							$values[] = $child['value'];
 						}
 						$output .= '</optgroup>';
-					} else {
-						$output .= sprintf(
-							'<option value="%1$s" %3$s>%2$s</option>',
-							$parent['value'],
-							$parent['text'],
-							selected( $args['value'], $parent['value'], false )
-						);
-						$values[] = $parent['value'];
 					}
 				}
 

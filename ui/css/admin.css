@@ -452,6 +452,14 @@
 	border: 1px solid rgba(160,0,0,0.75);
 }
 
+.stream_page_wp_stream_settings .select2-results__option .parent {
+	font-weight: bold;
+}
+
+.stream_page_wp_stream_settings .select2-results__option .child {
+	padding-left: 5px;
+}
+
 @media screen and ( max-width: 900px ) {
 	.wp_stream_settings .stream-exclude-list .actions-column,
 	.wp_stream_network_settings .stream-exclude-list .actions-column,
