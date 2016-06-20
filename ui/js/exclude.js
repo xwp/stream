@@ -25,6 +25,7 @@ jQuery( function( $ ) {
 
 					var term = params.term.toLowerCase();
 
+					match.id = match.id.replace( "blogs", "sites" );
 					if ( match.id.toLowerCase().indexOf( term ) >= 0 ) {
 						return match;
 					}
