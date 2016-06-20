@@ -25,7 +25,7 @@ jQuery( function( $ ) {
 
 					var term = params.term.toLowerCase();
 
-					if ( match.text.toLowerCase().indexOf( term ) >= 0 ) {
+					if ( match.id.toLowerCase().indexOf( term ) >= 0 ) {
 						return match;
 					}
 
@@ -35,7 +35,7 @@ jQuery( function( $ ) {
 							var child = match.children[i];
 
 							// Remove term from results if it doesn't match.
-							if ( child.text.toLowerCase().indexOf( term ) === -1 ) {
+							if ( child.id.toLowerCase().indexOf( term ) === -1 ) {
 								match.children.splice( i, 1 );
 							}
 						}
