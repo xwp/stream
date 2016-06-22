@@ -59,7 +59,9 @@ class Form_Generator {
 	 * Renders a single field.
 	 *
 	 * @param string $field_type The type of field being rendered.
-	 * @param array  $original_args The options for the field type.
+	 * @param array  $args The options for the field type.
+	 *
+	 * @return string
 	 */
 	public function render_field( $field_type, $args ) {
 		$args = wp_parse_args( $args, array(
@@ -121,7 +123,7 @@ class Form_Generator {
 					$multiple
 				);
 
-				if ( array_key_exists( 'placeholder', $args['data'] ) ) {
+				if ( array_key_exists( 'placeholder', $args['data'] ) && ! $multiple ) {
 					$output .= '<option value=""></option>';
 				}
 
@@ -131,11 +133,16 @@ class Form_Generator {
 						'text'     => '',
 						'children' => array(),
 					) );
+					if ( is_array( $args['value'] ) ) {
+						$selected = selected( in_array( $parent['value'], $args['value'] ), true, false );
+					} else {
+						$selected = selected( $args['value'], $parent['value'], false );
+					}
 					$output .= sprintf(
 						'<option class="parent" value="%1$s" %3$s>%2$s</option>',
 						$parent['value'],
 						$parent['text'],
-						selected( $args['value'], $parent['value'], false )
+						$selected
 					);
 					$values[] = $parent['value'];
 					if ( ! empty( $parent['children'] ) ) {
@@ -152,12 +159,16 @@ class Form_Generator {
 					}
 				}
 
-				if ( ! empty( $args['value'] ) && ! in_array( $args['value'], $values, true ) ) {
-					$output .= sprintf(
-						'<option value="%1$s" %2$s>%1$s</option>',
-						$args['value'],
-						selected( true, true, false )
-					);
+				$selected_values = explode( ',', $args['value'] );
+
+				foreach ( $selected_values as $selected_value ) {
+					if ( ! empty( $selected_value ) && ! in_array( $selected_value, $values, true ) ) {
+						$output .= sprintf(
+							'<option value="%1$s" %2$s>%1$s</option>',
+							$selected_value,
+							selected( true, true, false )
+						);
+					}
 				}
 
 				$output .= '</select>';
@@ -171,7 +182,7 @@ class Form_Generator {
 				);
 				break;
 			default:
-				$output = apply_filters( 'wp_stream_form_render_field', $output, $field_type, $original_args );
+				$output = apply_filters( 'wp_stream_form_render_field', $output, $field_type, $args );
 				break;
 		}
 

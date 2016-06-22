@@ -165,7 +165,8 @@ jQuery( function( $ ) {
 		});
 
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.ip_address' ).each( function( k, el ) {
-			$input_ip = $( el );
+			var $input_ip  = $( el ),
+			    searchTerm = '';
 
 			$input_ip.select2({
 				ajax: {
@@ -174,6 +175,7 @@ jQuery( function( $ ) {
 					dataType: 'json',
 					quietMillis: 500,
 					data: function( term ) {
+						searchTerm = term.term;
 						return {
 							find: term,
 							limit: 10,
@@ -182,52 +184,51 @@ jQuery( function( $ ) {
 						};
 					},
 					processResults: function( response ) {
-						var answer = { results: [] };
+						var answer = { results: [] },
+							ip_chunks = [];
 
-						if ( true !== response.success || undefined === response.data ) {
+						if ( true === response.success && undefined !== response.data ) {
+							$.each( response.data, function( key, ip ) {
+								answer.results.push({
+									id: ip,
+									text: ip
+								});
+							});
+						}
+
+						if ( undefined === searchTerm ) {
 							return answer;
 						}
 
-						$.each( response.data, function( key, ip ) {
+						ip_chunks = searchTerm.match( /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/ );
+
+						if ( null === ip_chunks ) {
+							return answer;
+						}
+
+						// remove whole match
+						ip_chunks.shift();
+
+						ip_chunks = $.grep(
+							ip_chunks,
+							function( chunk ) {
+								var numeric = parseInt( chunk, 10 );
+								return numeric <= 255 && numeric.toString() === chunk;
+							}
+						);
+						console.log(ip_chunks);
+
+						if ( ip_chunks.length >= 4 ) {
 							answer.results.push({
-								id: ip,
-								text: ip
+								id: searchTerm,
+								text: searchTerm
 							});
-						});
+						}
 
 						return answer;
 					}
 				},
-				createSearchChoice: function( term ) {
-					var ip_chunks = [];
-
-					ip_chunks = term.match( /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/ );
-
-					if ( null === ip_chunks ) {
-						return;
-					}
-
-					// remove whole match
-					ip_chunks.shift();
-
-					ip_chunks = $.grep(
-						ip_chunks,
-						function( chunk ) {
-							var numeric = parseInt( chunk, 10 );
-							return numeric <= 255 && numeric.toString() === chunk;
-						}
-					);
-
-					if ( ip_chunks.length < 4 ) {
-						return;
-					}
-
-					return {
-						id: term,
-						text: term
-					};
-				},
-				allowClear: true,
+				allowClear: false,
 				multiple: true,
 				maximumSelectionSize: 1,
 				placeholder: $input_ip.data( 'placeholder' )
@@ -323,6 +324,13 @@ jQuery( function( $ ) {
 				$( this ).siblings( '.connector' ).val( parts[0] );
 				$( this ).siblings( '.context' ).val( parts[1] );
 				$( this ).removeAttr( 'name' );
+		});
+		$( '.stream-exclude-list tbody tr:not(.hidden) select.select2-select.ip_address', this ).each( function() {
+			var firstSelected = $( 'option:selected', this ).first();
+			$( 'option:selected:not(:first)', this ).each( function() {
+				firstSelected.attr( 'value', firstSelected.attr( 'value' ) + ',' + $( this ).attr( 'value' ) );
+				$( this ).removeAttr( 'selected' );
+			});
 		});
 	});
 

@@ -189,7 +189,14 @@ class Settings {
 
 		check_ajax_referer( 'stream_get_ips', 'nonce' );
 
-		$ips = $this->plugin->db->existing_records( 'ip' );
+		$ips  = $this->plugin->db->existing_records( 'ip' );
+		$find = wp_stream_filter_input( INPUT_POST, 'find' );
+
+		if ( isset( $find['term'] ) && "" !== $find['term'] ) {
+			$ips = array_filter( $ips, function ( $ip ) use ( $find ) {
+				return 0 === strpos( $ip, $find['term'] );
+			} );
+		}
 
 		if ( $ips ) {
 			wp_send_json_success( $ips );
@@ -889,7 +896,7 @@ class Settings {
 					// IP Address input
 					$ip_address_input = $form->render_field( 'select2', array(
 						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'ip_address' ) ),
-						'value'       => esc_attr( $ip_address ),
+						'value'       => $ip_address,
 						'classes'     => 'ip_address',
 						'data'        => array(
 							'placeholder' => esc_attr__( 'Any IP Address', 'stream' ),

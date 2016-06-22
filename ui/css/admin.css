@@ -253,6 +253,7 @@
 .wp_stream_network_settings .select2.select2-container,
 .wp_stream_default_settings .select2.select2-container {
 	min-width: 160px;
+	max-width: 100%;
 }
 
 .wp_stream_settings .tablenav,
