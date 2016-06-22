@@ -1,7 +1,7 @@
 /* globals ajaxurl, wp_stream_regenerate_alt_rows */
 jQuery( function( $ ) {
 	var initSettingsSelect2 = function() {
-		var $input_user, $input_ip;
+		var $input_user;
 
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.connector_or_context' ).each( function( k, el ) {
 			$( el ).select2({
@@ -216,7 +216,6 @@ jQuery( function( $ ) {
 								return numeric <= 255 && numeric.toString() === chunk;
 							}
 						);
-						console.log(ip_chunks);
 
 						if ( ip_chunks.length >= 4 ) {
 							answer.results.push({
