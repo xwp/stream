@@ -230,7 +230,7 @@ jQuery( function( $ ) {
 				multiple: true,
 				maximumSelectionSize: 1,
 				placeholder: $input_ip.data( 'placeholder' ),
-				tags: true,
+				tags: true
 			});
 		}).on( 'change', function() {
 			$( this ).prev( '.select2-container' ).find( 'input.select2-input' ).blur();
