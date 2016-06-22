@@ -227,7 +227,6 @@ jQuery( function( $ ) {
 						text: term
 					};
 				},
-				multiple: true,
 				maximumSelectionSize: 1,
 				placeholder: $input_ip.data( 'placeholder' ),
 				tags: true
