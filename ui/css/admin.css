@@ -20,6 +20,20 @@
 	box-shadow: 0 1px 0 #ccc;
 }
 
+.wp_stream_screen .select2 .select2-selection--multiple {
+	font-size: 0;
+	min-height: 28px;
+}
+
+.wp_stream_screen .select2-container.select2-container--focus .select2-selection--multiple {
+	border: solid #ccc 1px;
+}
+
+.wp_stream_screen .select2-container .select2-selection--multiple .select2-selection__choice {
+	margin-top: 4px;
+	margin-bottom: 3px;
+}
+
 .wp_stream_screen .select2 .select2-selection .select2-selection__rendered {
 	color: #555;
 }
@@ -336,6 +350,10 @@
 	color: #999;
 }
 
+.wp_stream_screen .select2 .select2-selection .select2-selection__placeholder {
+	color: #72777c;
+}
+
 .wp_stream_screen li.select2-result {
 	margin-bottom: 0;
 }
@@ -351,6 +369,12 @@
 .wp_stream_screen .select2-results .select2-disabled {
 	background: transparent;
 	color: #aaa;
+}
+
+.wp_stream_screen .select2 .select2-search--inline {
+	float: none;
+	margin-bottom: 4px;
+	margin-left: 2px;
 }
 
 .wp_stream_screen .select2-search-choice .icon16 {
