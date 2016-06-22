@@ -227,10 +227,10 @@ jQuery( function( $ ) {
 						text: term
 					};
 				},
-				allowClear: true,
 				multiple: true,
 				maximumSelectionSize: 1,
-				placeholder: $input_ip.data( 'placeholder' )
+				placeholder: $input_ip.data( 'placeholder' ),
+				tags: true,
 			});
 		}).on( 'change', function() {
 			$( this ).prev( '.select2-container' ).find( 'input.select2-input' ).blur();
