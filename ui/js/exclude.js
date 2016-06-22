@@ -7,10 +7,10 @@ jQuery( function( $ ) {
 			$( el ).select2({
   			allowClear: true,
 				templateResult : function( item ) {
-					if ( typeof item.id === "undefined" ) {
+					if ( typeof item.id === 'undefined' ) {
 						return item.text;
 					}
-					if ( item.id.indexOf( "-" ) === -1 ) {
+					if ( item.id.indexOf( '-' ) === -1 ) {
 						return $( '<span class="parent">' + item.text + '</span>' );
 					} else {
 						return $( '<span class="child">' + item.text + '</span>' );
@@ -25,7 +25,7 @@ jQuery( function( $ ) {
 
 					var term = params.term.toLowerCase();
 
-					match.id = match.id.replace( "blogs", "sites" );
+					match.id = match.id.replace( 'blogs', 'sites' );
 					if ( match.id.toLowerCase().indexOf( term ) >= 0 ) {
 						return match;
 					}
@@ -268,10 +268,10 @@ jQuery( function( $ ) {
 				$( this ).siblings( '.connector' ).val(),
 				$( this ).siblings( '.context' ).val()
 		];
-		if ( parts[1] === "" ) {
+		if ( parts[1] === '' ) {
 			parts.splice( 1, 1 );
 		}
-		$( this ).val( parts.join( "-" ) ).trigger( 'change' );
+		$( this ).val( parts.join( '-' ) ).trigger( 'change' );
 	});
 
 	$( '#exclude_rules_new_rule' ).on( 'click', function() {
