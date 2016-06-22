@@ -579,6 +579,13 @@ class List_Table extends \WP_List_Table {
 		$filters_string .= sprintf( '<span class="filter_info hidden">%s</span>', esc_html__( 'Show filter controls via the screen options tab above.', 'stream' ) );
 
 		foreach ( $filters as $name => $data ) {
+
+			$data = wp_parse_args( $data, array(
+				'title' => '',
+				'items' => array(),
+				'ajax'  => false,
+			) );
+
 			if ( 'date' === $name ) {
 				$filters_string .= $this->filter_date( $data['items'] );
 			} else {
