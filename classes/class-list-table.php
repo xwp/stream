@@ -620,8 +620,11 @@ class List_Table extends \WP_List_Table {
 					// Sort top-level items by label
 					array_multisort( $labels, SORT_ASC, $data['items'] );
 
-					// Ouput a hidden input to handle the connector value
-					$filters_string .= '<input type="hidden" name="connector" class="record-filter-connector" />';
+					// Output a hidden input to handle the connector value
+					$filters_string .= sprintf(
+						'<input type="hidden" name="connector" class="record-filter-connector" value="%s" />',
+						esc_attr( wp_stream_filter_input( INPUT_GET, 'connector' ) )
+					);
 				}
 
 				$filters_string .= $this->filter_select( $name, $data['title'], $data['items'] );

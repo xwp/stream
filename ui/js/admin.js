@@ -99,10 +99,11 @@ jQuery( function( $ ) {
 	});
 
 	var $queryVars    = $.streamGetQueryVars();
-	var $contextInput = $( '.toplevel_page_wp_stream :input.chosen-select[name="context"]' );
+	var $contextInput = $( '.toplevel_page_wp_stream select.chosen-select[name="context"]' );
 
 	if ( ( 'undefined' === typeof $queryVars.context || '' === $queryVars.context ) && 'undefined' !== typeof $queryVars.connector ) {
-		$contextInput.select2( 'val', 'group-' + $queryVars.connector );
+		$contextInput.val( 'group-' + $queryVars.connector );
+		$contextInput.trigger( 'change' );
 	}
 
 	$( 'input[type=submit]', '#record-filter-form' ).click( function() {
