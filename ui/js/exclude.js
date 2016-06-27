@@ -129,7 +129,7 @@ jQuery( function( $ ) {
 					}
 				},
 				templateResult: function( object ) {
-					var $result = $( '<div>' ).text( object.text  );
+					var $result = $( '<div>' ).text( object.text );
 
 					if ( 'undefined' !== typeof object.icon && object.icon ) {
 						$result.prepend( $( '<img src="' + object.icon + '" class="wp-stream-select2-icon">' ) );
@@ -148,7 +148,7 @@ jQuery( function( $ ) {
 					return $result;
 				},
 				templateSelection: function( object ) {
-					var $result = $( '<div>' ).text( object.text  );
+					var $result = $( '<div>' ).text( object.text );
 
 					if ( $.isNumeric( object.id ) && object.text.indexOf( 'icon-users' ) < 0 ) {
 						$result.append( $( '<i class="icon16 icon-users"></i>' ) );

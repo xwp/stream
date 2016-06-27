@@ -57,9 +57,6 @@ class List_Table extends \WP_List_Table {
 		if ( 'top' === $which ) {
 			echo $this->filters_form(); // xss ok
 		}
-		if ( 'bottom' === $which ) {
-			echo $this->record_actions_form(); // xss ok
-		}
 	}
 
 	function no_items() {
@@ -840,7 +837,18 @@ class List_Table extends \WP_List_Table {
 		}
 		echo '</select></div>';
 		wp_nonce_field( 'stream_record_actions_nonce', 'stream_record_actions_nonce' );
+
+		printf( '<input type="hidden" name="page" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'page' ) ) );
+		printf( '<input type="hidden" name="date_predefined" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'date_predefined' ) ) );
+		printf( '<input type="hidden" name="date_from" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'date_from' ) ) );
+		printf( '<input type="hidden" name="date_to" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'date_to' ) ) );
+		printf( '<input type="hidden" name="user_id" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'user_id' ) ) );
+		printf( '<input type="hidden" name="connector" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'connector' ) ) );
+		printf( '<input type="hidden" name="context" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'context' ) ) );
+		printf( '<input type="hidden" name="action" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'action' ) ) );
+
 		printf( '<input type="submit" name="" id="record-actions-submit" class="button" value="%s">', esc_attr__( 'Apply', 'stream' ) );
+		echo '<div class="clear"></div>';
 
 		return ob_get_clean();
 	}
@@ -850,8 +858,11 @@ class List_Table extends \WP_List_Table {
 
 		echo '<form method="get" action="' . esc_url( $url ) . '" id="record-filter-form">';
 		echo $this->filter_search(); // xss ok
-
 		parent::display();
+		echo '</form>';
+
+		echo '<form method="get" action="' . esc_url( $url ) . '" id="record-actions-form">';
+		echo $this->record_actions_form(); // xss ok
 		echo '</form>';
 	}
 

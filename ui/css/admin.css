@@ -4,8 +4,13 @@
 	padding-top: 6px;
 }
 
-.toplevel_page_wp_stream .tablenav.bottom .button {
-	margin-right: 6px;
+.toplevel_page_wp_stream #record-actions-form {
+	margin-top: -32px;
+}
+
+.toplevel_page_wp_stream #record-actions-form .button {
+	margin-left: 6px;
+	float: left;
 }
 
 .toplevel_page_wp_stream .tablenav .actions {
@@ -482,6 +487,11 @@
 }
 
 @media screen and ( max-width: 782px ) {
+	.toplevel_page_wp_stream #record-actions-form {
+		margin-top: 0;
+		margin-bottom: 35px;
+	}
+
 	.wp_stream_settings .stream-exclude-list td,
 	.wp_stream_network_settings .stream-exclude-list td,
 	.wp_stream_default_settings .stream-exclude-list td {
