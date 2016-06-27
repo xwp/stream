@@ -192,7 +192,7 @@ class Settings {
 		$ips  = $this->plugin->db->existing_records( 'ip' );
 		$find = wp_stream_filter_input( INPUT_POST, 'find' );
 
-		if ( isset( $find['term'] ) && "" !== $find['term'] ) {
+		if ( isset( $find['term'] ) && '' !== $find['term'] ) {
 			$ips = array_filter( $ips, function ( $ip ) use ( $find ) {
 				return 0 === strpos( $ip, $find['term'] );
 			} );

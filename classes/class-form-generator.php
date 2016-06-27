@@ -134,7 +134,7 @@ class Form_Generator {
 						'children' => array(),
 					) );
 					if ( is_array( $args['value'] ) ) {
-						$selected = selected( in_array( $parent['value'], $args['value'] ), true, false );
+						$selected = selected( in_array( $parent['value'], $args['value'], true ), true, false );
 					} else {
 						$selected = selected( $args['value'], $parent['value'], false );
 					}
@@ -192,7 +192,7 @@ class Form_Generator {
 	}
 
 	/**
-	 * Prepares string with HTML data attrbiutes
+	 * Prepares string with HTML data attributes
 	 *
 	 * @param $data array List of key/value data pairs to prepare.
 	 * @return string

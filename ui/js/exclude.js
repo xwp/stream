@@ -5,7 +5,7 @@ jQuery( function( $ ) {
 
 		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.connector_or_context' ).each( function( k, el ) {
 			$( el ).select2({
-  			allowClear: true,
+				allowClear: true,
 				templateResult : function( item ) {
 					if ( typeof item.id === 'undefined' ) {
 						return item.text;
@@ -16,8 +16,8 @@ jQuery( function( $ ) {
 						return $( '<span class="child">' + item.text + '</span>' );
 					}
 				},
-				matcher : function( params, data ) {
-					var match = $.extend(true, {}, data);
+				matcher: function( params, data ) {
+					var match = $.extend( true, {}, data );
 
 					if ( params.term == null || $.trim( params.term ) === '') {
 						return match;
@@ -47,7 +47,6 @@ jQuery( function( $ ) {
 					}
 
 					return null;
-
 				}
 			});
 		});
@@ -77,11 +76,10 @@ jQuery( function( $ ) {
 						};
 					},
 					processResults: function( response ) {
-						var roles  = [],
-						    answer = [];
+						var roles  = [];
 
 						$( 'option', $input_user ).each( function() {
-							if( $( this ).val() === '' ) {
+							if ( $( this ).val() === '' ) {
 								return;
 							}
 							roles.push({
@@ -104,7 +102,7 @@ jQuery( function( $ ) {
 							}
 						);
 
-						answer = {
+						var answer = {
 							results: [
 								{ text: '', id: '' },
 								{ text: 'Roles', children: roles },
