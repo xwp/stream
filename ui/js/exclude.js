@@ -126,31 +126,33 @@ jQuery( function( $ ) {
 						return answer;
 					}
 				},
-				formatResult: function( object, container ) {
-					var result = object.text;
+				templateResult: function( object ) {
+					var $result = $( '<div>' ).text( object.text  );
 
 					if ( 'undefined' !== typeof object.icon && object.icon ) {
-						result = '<img src="' + object.icon + '" class="wp-stream-select2-icon">' + result;
+						$result.prepend( $( '<img src="' + object.icon + '" class="wp-stream-select2-icon">' ) );
 
 						// Add more info to the container
-						container.attr( 'title', object.tooltip );
+						$result.attr( 'title', object.tooltip );
 					}
 
 					// Add more info to the container
 					if ( 'undefined' !== typeof object.tooltip ) {
-						container.attr( 'title', object.tooltip );
+						$result.attr( 'title', object.tooltip );
 					} else if ( 'undefined' !== typeof object.user_count ) {
-						container.attr( 'title', object.user_count );
+						$result.attr( 'title', object.user_count );
 					}
 
-					return result;
+					return $result;
 				},
-				formatSelection: function( object ) {
+				templateSelection: function( object ) {
+					var $result = $( '<div>' ).text( object.text  );
+
 					if ( $.isNumeric( object.id ) && object.text.indexOf( 'icon-users' ) < 0 ) {
-						object.text += '<i class="icon16 icon-users"></i>';
+						$result.append( $( '<i class="icon16 icon-users"></i>' ) );
 					}
 
-					return object.text;
+					return $result;
 				},
 				allowClear: true,
 				placeholder: $input_user.data( 'placeholder' )

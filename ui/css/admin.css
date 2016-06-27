@@ -355,18 +355,6 @@
 	color: #72777c;
 }
 
-.wp_stream_screen li.select2-result {
-	margin-bottom: 0;
-}
-
-.wp_stream_screen li.select2-result.level-1 {
-	font-weight: bold;
-}
-
-.wp_stream_screen li.select2-result.level-2 {
-	padding-left: 1em;
-}
-
 .wp_stream_screen .select2-results .select2-disabled {
 	background: transparent;
 	color: #aaa;
@@ -378,15 +366,15 @@
 	margin-left: 2px;
 }
 
-.wp_stream_screen .select2-search-choice .icon16 {
-	margin: -6px 1px 0 -3px;
+.wp_stream_screen .select2-selection .icon16 {
+	margin: -3px 1px 0 -3px;
 	padding: 0;
 	width: 16px;
 	height: 16px;
 }
 
-.wp_stream_screen .select2-chosen .icon16 {
-	padding-right: 1px;
+.wp_stream_screen .select2-selection .icon16 {
+	padding-right: 8px;
 }
 
 .wp_stream_screen .select2-chosen .icon16:before,
@@ -477,12 +465,12 @@
 	border: 1px solid rgba(160,0,0,0.75);
 }
 
-.stream_page_wp_stream_settings .select2-results__option .parent {
+.wp_stream_screen .select2-results__option .parent {
 	font-weight: bold;
 }
 
-.stream_page_wp_stream_settings .select2-results__option .child {
-	padding-left: 5px;
+.wp_stream_screen .select2-results__option .child {
+	padding-left: 8px;
 }
 
 @media screen and ( max-width: 900px ) {
