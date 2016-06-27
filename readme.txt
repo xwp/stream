@@ -88,7 +88,7 @@ Thank you for wanting to make Stream better for everyone!
 * Fix: Better at storing records for Super Admins ([#835](https://github.com/xwp/stream/pull/835))
 * Fix: Allow Super Admins to be ignored and filtered ([#835](https://github.com/xwp/stream/pull/835))
 
-Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/lukecarbis), [@Stayallive](https://github.com/Stayallive), [@barryceelen](https://github.com/barryceelen), Jonathan Desrosiers, [@marcin-lawrowski](https://github.com/marcin-lawrowski)
+Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/lukecarbis), [@marcin-lawrowski](https://github.com/marcin-lawrowski)
 
 = 3.0.5 - March 15, 2015 =
 
