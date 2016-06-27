@@ -84,11 +84,8 @@ class Settings {
 			'message' => esc_html__( 'There was an error in the request', 'stream' ),
 		);
 
-		$search = '';
-		if ( isset( $_POST['find'] ) ) {
-			// @TODO: Make this pass phpcs
-			$search = esc_html( wp_unslash( trim( $_POST['find'] ) ) ); // input var okay
-		}
+		$search = wp_unslash( trim( wp_stream_filter_input( INPUT_POST, 'find' ) ) );
+
 		$request = (object) array(
 			'find' => $search,
 		);
@@ -169,7 +166,7 @@ class Settings {
 		if ( empty( $search ) || preg_match( '/wp|cli|system|unknown/i', $search ) ) {
 			$author = new Author( 0 );
 			$response->users[] = array(
-				'id'      => $author->id,
+				'id'      => '0',
 				'text'    => $author->get_display_name(),
 				'icon'    => $author->get_avatar_src( 32 ),
 				'tooltip' => esc_html__( 'Actions performed by the system when a user is not logged in (e.g. auto site upgrader, or invoking WP-CLI without --user)', 'stream' ),
@@ -826,7 +823,6 @@ class Settings {
 						'options'     => $author_or_role_values,
 						'classes'     => 'author_or_role',
 						'data'        => array(
-							'group'         => 'connector',
 							'placeholder'   => esc_html__( 'Any Author or Role', 'stream' ),
 							'nonce'         => esc_attr( wp_create_nonce( 'stream_get_users' ) ),
 							'selected-id'   => isset( $author_or_role_selected['value'] ) ? esc_attr( $author_or_role_selected['value'] ) : '',

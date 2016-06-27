@@ -82,10 +82,12 @@ jQuery( function( $ ) {
 							if ( $( this ).val() === '' ) {
 								return;
 							}
-							roles.push({
-								'id' : $( this ).val(),
-								'text' : $( this ).text()
-							});
+							if ( ! $.isNumeric( $( this ).val() ) ) {
+								roles.push({
+									'id' : $( this ).val(),
+									'text' : $( this ).text()
+								});
+							}
 						});
 
 						roles = $.grep(
