@@ -572,7 +572,6 @@ class List_Table extends \WP_List_Table {
 	}
 
 	function filters_form() {
-		$user_id = get_current_user_id();
 		$filters = $this->get_filters();
 
 		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s" />', 'wp_stream' );
@@ -633,8 +632,6 @@ class List_Table extends \WP_List_Table {
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'stream' ) );
-
-		$filters_string .= wp_nonce_field( 'stream_filters_user_search_nonce', 'stream_filters_user_search_nonce' );
 
 		// Parse all query vars into an array
 		$query_vars = array();
