@@ -46,10 +46,13 @@ jQuery( function( $ ) {
         return null;
       }
     }).change( function() {
-				var parts = $( this ).val().split( '-' );
-				$( this ).siblings( '.connector' ).val( parts[0] );
-				$( this ).siblings( '.context' ).val( parts[1] );
-				$( this ).removeAttr( 'name' );
+				var value = $( this ).val()
+        if ( value ) {
+            var parts = value.split( '-' );
+            $( this ).siblings( '.connector' ).val( parts[0] );
+    				$( this ).siblings( '.context' ).val( parts[1] );
+    				$( this ).removeAttr( 'name' );
+        }
 		});
 
     var parts = [
