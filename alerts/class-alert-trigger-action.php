@@ -35,7 +35,7 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 * @return bool False on failure, otherwise should return original value of $success.
 	 */
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
-		if ( ! empty( $alert->alert_meta['trigger_action'] ) && $recordarr['action'] !== $alert->alert_meta['trigger_action'][0] ) {
+		if ( ! empty( $alert->alert_meta['trigger_action'] ) && $recordarr['action'] !== $alert->alert_meta['trigger_action'] ) {
 			return false;
 		}
 		return $success;

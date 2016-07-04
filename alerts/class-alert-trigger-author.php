@@ -28,7 +28,7 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 * @return bool False on failure, otherwise should return original value of $success.
 	 */
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
-		if ( ! empty( $alert->alert_meta['trigger_author'] ) && intval( $alert->alert_meta['trigger_author'] ) !== $recordarr['user_id'] ) {
+		if ( ! empty( $alert->alert_meta['trigger_author'] ) && intval( $alert->alert_meta['trigger_author'] ) !== intval( $recordarr['user_id'] ) ) {
 			return false;
 		}
 		return $success;
