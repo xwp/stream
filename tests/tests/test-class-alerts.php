@@ -4,7 +4,6 @@ namespace WP_Stream;
 class Test_Alerts extends WP_StreamTestCase {
 
 	function tearDown() {
-
 		// See test_load_bad_alert_type() and test_load_bad_alert_trigger.
 		remove_filter( 'wp_stream_alert_types', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
 		remove_filter( 'wp_stream_alert_triggers', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
@@ -12,7 +11,6 @@ class Test_Alerts extends WP_StreamTestCase {
 
 	function test_construct() {
 		$alerts = new Alerts( $this->plugin );
-
 		$this->assertNotEmpty( $alerts->plugin );
 	}
 
@@ -211,9 +209,16 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function test_add_meta_boxes() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
+		global $wp_meta_boxes;
+		$page = convert_to_screen( 'wp_stream_alerts' )->id;
+
+		$alerts = new Alerts( $this->plugin );
+		$alerts->add_meta_boxes();
+
+		$this->assertArrayHasKey( 'wp_stream_alerts_triggers', $wp_meta_boxes[ $page ]['normal']['high'] );
+		$this->assertArrayHasKey( 'wp_stream_alerts_alert_type', $wp_meta_boxes[ $page ]['normal']['default'] );
+		$this->assertArrayHasKey( 'wp_stream_alerts_preview', $wp_meta_boxes[ $page ]['advanced']['low'] );
+		$this->assertArrayHasKey( 'wp_stream_alerts_submit', $wp_meta_boxes[ $page ]['side']['default'] );
 	}
 
 	function test_filter_parent_file() {
