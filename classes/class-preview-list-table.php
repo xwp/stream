@@ -38,7 +38,6 @@ class Preview_List_Table extends List_Table {
 	 * @access public
 	 */
 	public function display() {
-		$singular = $this->_args['singular'];
 		?>
 		<table class="wp-list-table <?php esc_attr_e( implode( ' ', $this->get_table_classes() ) ); ?>">
 			<thead>
