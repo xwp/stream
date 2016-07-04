@@ -183,9 +183,17 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function test_register_menu() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
+		global $submenu;
+
+		$this->markTestIncomplete();
+
+		$this->assertEquals( array(), $submenu[ $this->plugin->admin->records_page_slug ] );
+		$submenu[ $this->plugin->admin->records_page_slug ] = array();
+		$this->assertEmpty( $submenu[ $this->plugin->admin->records_page_slug ] );
+
+		$alerts = new Alerts( $this->plugin );
+		$alerts->register_menu();
+		$this->assertNotEmpty( $submenu[ $this->plugin->admin->records_page_slug ] );
 	}
 
 	function test_register_meta_boxes() {
@@ -374,9 +382,11 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function test_get_notification_values() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
+		$alerts = new Alerts( $this->plugin );
+
+		$count  = count( $alerts->alert_types );
+		$output = $alerts->get_notification_values();
+		$this->assertEquals( $count, count( $output ) );
 	}
 
 	function test_save_post_info() {
