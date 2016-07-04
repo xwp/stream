@@ -533,7 +533,7 @@ class Alerts {
 
 		// @TODO use human readable text.
 		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>';
-		echo $form->render_all(); // Xss ok.
+		echo $form->render_fields(); // Xss ok.
 
 		wp_nonce_field( 'save_post', 'wp_stream_alerts_nonce' );
 
