@@ -193,7 +193,7 @@ class Form_Generator {
 	/**
 	 * Prepares string with HTML data attributes
 	 *
-	 * @param $data array List of key/value data pairs to prepare.
+	 * @param array $data List of key/value data pairs to prepare.
 	 * @return string
 	 */
 	public function prepare_data_attributes_string( $data ) {

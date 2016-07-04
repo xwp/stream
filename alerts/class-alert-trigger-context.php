@@ -56,7 +56,7 @@ class Alert_Trigger_Context extends Alert_Trigger {
 			$context = $alert->alert_meta['trigger_context'];
 		}
 
-		// Context dropdown menu
+		// Context dropdown menu.
 		$context_values = array();
 
 		$form->add_field( 'select2', array(
