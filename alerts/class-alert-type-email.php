@@ -22,20 +22,44 @@ class Alert_Type_Email extends Alert_Type {
 	 *
 	 * @param int   $record_id Record that triggered notification.
 	 * @param array $recordarr Record details.
-	 * @param array $options Alert options.
+	 * @param array $alert Alert options.
 	 * @return void
 	 */
-	public function alert( $record_id, $recordarr, $options ) {
+	public function alert( $record_id, $recordarr, $alert ) {
 		$options = wp_parse_args( $alert->alert_meta, array(
-			'email_recipient' => '',
-			'email_subject'   => '',
+			'email_recipient'   => '',
+			'email_subject'     => '',
+			'trigger_action'    => '',
+			'trigger_connector' => '',
+			'trigger_context'   => '',
 		) );
 
 		if ( empty( $options['email_recipient'] ) && empty( $options['email_subject'] ) ) {
 			return;
 		}
 
-		wp_email( $options['email_recipient'], $options['email_subject'], 'This is a test email.' );
+		$message = __( 'You\'ve received a Stream Alert.', 'stream' ) . "\n\n";
+		$message .= sprintf( __( 'Action: %s', 'stream' ), $alert->alert_meta['trigger_action'] ) . "\n";
+		$message .= sprintf( __( 'Connector: %s', 'stream' ), $alert->alert_meta['trigger_connector'] ) . "\n";
+		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
+			$message .= sprintf( __( 'Context: %s', 'stream' ), $alert->alert_meta['trigger_context'] ) . "\n";
+		}
+
+		$user_id = $recordarr['user_id'];
+		$user = get_user_by( 'id', $user_id );
+		$message .= sprintf( __( 'Triggered By: %s', 'stream' ), $user->user_login ) . "\n";
+		$message .= "\n";
+
+		$post_id = $recordarr['object_id'];
+		$post = get_post( $post_id );
+		$post_type = get_post_type_object( $post->post_type );
+
+		$message .= sprintf( __( 'The alert is in reference to the following %s:', 'stream' ), strtolower( $post_type->labels->singular_name ) ) . "\n\n";
+		$message .= sprintf( __( 'ID: %s', 'stream' ), $post->ID ) . "\n";
+		$message .= sprintf( __( 'Title: %s', 'stream' ), $post->post_title ) . "\n";
+		$message .= sprintf( __( 'Last Updated: %s', 'stream' ), $post->post_modified ) . "\n";
+
+		wp_mail( $options['email_recipient'], $options['email_subject'], $message );
 	}
 
 	/**
