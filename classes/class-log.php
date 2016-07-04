@@ -220,7 +220,13 @@ class Log {
 					$excluded = true;
 
 					foreach ( $exclude_rules as $exclude_key => $exclude_value ) {
-						if ( $record[ $exclude_key ] !== $exclude_value ) {
+						if ( 'ip_address' === $exclude_key ) {
+							$ip_addresses = explode( ',', $exclude_value );
+							if ( ! in_array( $record['ip_address'], $ip_addresses, true ) ) {
+								$excluded = false;
+								break;
+							}
+						} elseif ( $record[ $exclude_key ] !== $exclude_value ) {
 							$excluded = false;
 							break;
 						}

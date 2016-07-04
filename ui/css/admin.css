@@ -4,8 +4,13 @@
 	padding-top: 6px;
 }
 
-.toplevel_page_wp_stream .tablenav.bottom .button {
-	margin-right: 6px;
+.toplevel_page_wp_stream #record-actions-form {
+	margin-top: -32px;
+}
+
+.toplevel_page_wp_stream #record-actions-form .button {
+	margin-left: 6px;
+	float: left;
 }
 
 .toplevel_page_wp_stream .tablenav .actions {
@@ -13,14 +18,28 @@
 	overflow: visible;
 }
 
-.toplevel_page_wp_stream .tablenav .select2-selection {
+.wp_stream_screen .select2 .select2-selection {
 	border-color: #ccc;
 	background: #f7f7f7;
 	-webkit-box-shadow: 0 1px 0 #ccc;
 	box-shadow: 0 1px 0 #ccc;
 }
 
-.toplevel_page_wp_stream .tablenav .select2-selection .select2-selection__rendered {
+.wp_stream_screen .select2 .select2-selection--multiple {
+	font-size: 0;
+	min-height: 28px;
+}
+
+.wp_stream_screen .select2-container.select2-container--focus .select2-selection--multiple {
+	border: solid #ccc 1px;
+}
+
+.wp_stream_screen .select2-container .select2-selection--multiple .select2-selection__choice {
+	margin-top: 4px;
+	margin-bottom: 3px;
+}
+
+.wp_stream_screen .select2 .select2-selection .select2-selection__rendered {
 	color: #555;
 }
 
@@ -250,10 +269,11 @@
 
 /* Settings */
 
-.wp_stream_settings .select2-container,
-.wp_stream_network_settings .select2-container,
-.wp_stream_default_settings .select2-container {
-	width: 100%;
+.wp_stream_settings .select2.select2-container,
+.wp_stream_network_settings .select2.select2-container,
+.wp_stream_default_settings .select2.select2-container {
+	min-width: 160px;
+	max-width: 100%;
 }
 
 .wp_stream_settings .tablenav,
@@ -351,16 +371,8 @@
 	color: #999;
 }
 
-.wp_stream_screen li.select2-result {
-	margin-bottom: 0;
-}
-
-.wp_stream_screen li.select2-result.level-1 {
-	font-weight: bold;
-}
-
-.wp_stream_screen li.select2-result.level-2 {
-	padding-left: 1em;
+.wp_stream_screen .select2 .select2-selection .select2-selection__placeholder {
+	color: #72777c;
 }
 
 .wp_stream_screen .select2-results .select2-disabled {
@@ -368,15 +380,21 @@
 	color: #aaa;
 }
 
-.wp_stream_screen .select2-search-choice .icon16 {
-	margin: -6px 1px 0 -3px;
+.wp_stream_screen .select2 .select2-search--inline {
+	float: none;
+	margin-bottom: 4px;
+	margin-left: 2px;
+}
+
+.wp_stream_screen .select2-selection .icon16 {
+	margin: -3px 1px 0 -3px;
 	padding: 0;
 	width: 16px;
 	height: 16px;
 }
 
-.wp_stream_screen .select2-chosen .icon16 {
-	padding-right: 1px;
+.wp_stream_screen .select2-selection .icon16 {
+	padding-right: 8px;
 }
 
 .wp_stream_screen .select2-chosen .icon16:before,
@@ -467,6 +485,14 @@
 	border: 1px solid rgba(160,0,0,0.75);
 }
 
+.wp_stream_screen .select2-results__option .parent {
+	font-weight: bold;
+}
+
+.wp_stream_screen .select2-results__option .child {
+	padding-left: 8px;
+}
+
 @media screen and ( max-width: 900px ) {
 	.wp_stream_settings .stream-exclude-list .actions-column,
 	.wp_stream_network_settings .stream-exclude-list .actions-column,
@@ -476,6 +502,11 @@
 }
 
 @media screen and ( max-width: 782px ) {
+	.toplevel_page_wp_stream #record-actions-form {
+		margin-top: 0;
+		margin-bottom: 35px;
+	}
+
 	.wp_stream_settings .stream-exclude-list td,
 	.wp_stream_network_settings .stream-exclude-list td,
 	.wp_stream_default_settings .stream-exclude-list td {
