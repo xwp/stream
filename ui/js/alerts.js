@@ -65,7 +65,7 @@ jQuery( function( $ ) {
 
   $( '.select2-select:not(.connector_or_context)' ).each( function() {
     $( this ).select2( {
-      allowClear: true,
+      allowClear: true
     } );
   } );
 
