@@ -441,6 +441,11 @@ class Admin {
 			return true;
 		}
 
+		$screen = get_current_screen();
+		if ( is_admin() && 'post' === $screen->base && 'wp_stream_alerts' === $screen->post_type ) {
+			return true;
+		}
+
 		return false;
 	}
 

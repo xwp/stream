@@ -1,8 +1,70 @@
 jQuery( function( $ ) {
 
-  $( '.select2-select' ).each( function() {
-    var $input = $( this );
-    $input.select2( {
+  $( '.select2-select.connector_or_context' ).each( function( k, el ) {
+    $( el ).select2({
+      allowClear: true,
+      templateResult : function( item ) {
+        if ( typeof item.id === 'undefined' ) {
+          return item.text;
+        }
+        if ( item.id.indexOf( '-' ) === -1 ) {
+          return $( '<span class="parent">' + item.text + '</span>' );
+        } else {
+          return $( '<span class="child">' + item.text + '</span>' );
+        }
+      },
+      matcher: function( params, data ) {
+        var match = $.extend( true, {}, data );
+
+        if ( params.term == null || $.trim( params.term ) === '') {
+          return match;
+        }
+
+        var term = params.term.toLowerCase();
+
+        match.id = match.id.replace( 'blogs', 'sites' );
+        if ( match.id.toLowerCase().indexOf( term ) >= 0 ) {
+          return match;
+        }
+
+        if ( match.children ) {
+
+          for ( var i = match.children.length - 1; i >= 0; i--) {
+            var child = match.children[i];
+
+            // Remove term from results if it doesn't match.
+            if ( child.id.toLowerCase().indexOf( term ) === -1 ) {
+              match.children.splice( i, 1 );
+            }
+          }
+
+          if ( match.children.length > 0 ) {
+            return match;
+          }
+        }
+
+        return null;
+      }
+    }).change( function() {
+				var parts = $( this ).val().split( '-' );
+				$( this ).siblings( '.connector' ).val( parts[0] );
+				$( this ).siblings( '.context' ).val( parts[1] );
+				$( this ).removeAttr( 'name' );
+		});
+
+    var parts = [
+  			$( el ).siblings( '.connector' ).val(),
+  			$( el ).siblings( '.context' ).val()
+  	];
+  	if ( parts[1] === '' ) {
+  		parts.splice( 1, 1 );
+  	}
+  	$( el ).val( parts.join( '-' ) ).trigger( 'change' );
+
+  });
+
+  $( '.select2-select:not(.connector_or_context)' ).each( function() {
+    $( this ).select2( {
       allowClear: true,
     } );
   } );

@@ -28,6 +28,9 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * @return bool False on failure, otherwise should return original value of $success.
 	 */
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
+		if ( ! empty( $alert->alert_meta['trigger_connector'] ) && $recordarr['connector'] !== $alert->alert_meta['trigger_connector'] ) {
+			return false;
+		}
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) && $recordarr['context'] !== $alert->alert_meta['trigger_context'] ) {
 			return false;
 		}
@@ -43,19 +46,37 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * @return void
 	 */
 	public function add_fields( $form, $alert ) {
-		$value = '';
-		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
-			$value = $alert->alert_meta['trigger_context'];
+		$connector = '';
+		if ( ! empty( $alert->alert_meta['trigger_connector'] ) ) {
+			$connector = $alert->alert_meta['trigger_connector'];
 		}
 
-		$args = array(
-			'name'        => esc_attr( $this->field_key ),
-			'value'       => esc_attr( $value ),
-			'options'     => $this->get_values( $alert ),
+		$context = '';
+		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
+			$context = $alert->alert_meta['trigger_context'];
+		}
+
+		// Context dropdown menu
+		$context_values = array();
+
+		$form->add_field( 'select2', array(
+			'name'        => 'wp_stream_trigger_connector_or_context',
+			'options'     => $this->get_values(),
 			'placeholder' => __( 'Show all contexts', 'stream' ),
-			'classes'     => 'wp_stream_ajax_forward',
-		);
-		$form->add_field( 'select2', $args );
+			'classes'     => 'wp_stream_ajax_forward connector_or_context',
+		) );
+
+		$form->add_field( 'hidden', array(
+			'name'        => 'wp_stream_trigger_connector',
+			'value'       => $connector,
+			'classes'     => 'connector wp_stream_ajax_forward',
+		) );
+
+		$form->add_field( 'hidden', array(
+			'name'        => 'wp_stream_trigger_context',
+			'value'       => $context,
+			'classes'     => 'context wp_stream_ajax_forward',
+		) );
 	}
 
 	/**
@@ -66,7 +87,8 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * @return void
 	 */
 	public function save_fields( $alert ) {
-		$alert->alert_meta['trigger_context'] = wp_stream_filter_input( INPUT_POST, $this->field_key );
+		$alert->alert_meta['trigger_connector'] = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_connector' );
+		$alert->alert_meta['trigger_context'] = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_context' );
 	}
 
 	/**
@@ -75,18 +97,17 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * @return array
 	 */
 	public function get_values() {
-		$context_values = array();
 		foreach ( $this->get_terms_labels( 'context' ) as $context_id => $context_data ) {
 			if ( is_array( $context_data ) ) {
 				$child_values = array();
 				if ( isset( $context_data['children'] ) ) {
 					$child_values = array();
 					foreach ( $context_data['children'] as $child_id => $child_value ) {
-						$child_values[] = array( 'id' => $child_id, 'text' => $child_value, 'parent' => $context_id );
+						$child_values[] = array( 'id' => $context_id . '-' . $child_id, 'text' => $child_value, 'parent' => $context_id );
 					}
 				}
 				if ( isset( $context_data['label'] ) ) {
-					$context_values[] = array( 'id' => 'group-' . $context_id, 'text' => $context_data['label'], 'children' => $child_values, 'group' => true );
+					$context_values[] = array( 'id' => $context_id, 'text' => $context_data['label'], 'children' => $child_values );
 				}
 			} else {
 				$context_values[] = array( 'id' => $context_id, 'text' => $context_data );
@@ -154,13 +175,11 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * @return array The new query arguments.
 	 */
 	public function filter_preview_query( $query_args, $alert ) {
+		if ( ! empty( $alert->alert_meta['trigger_connector'] ) ) {
+				$query_args['connector'] = $alert->alert_meta['trigger_connector'];
+		}
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
-			if ( 0 === strpos( $alert->alert_meta['trigger_context'], 'group-' ) ) {
-				$query_args['connector'] = str_replace( 'group-', '', $alert->alert_meta['trigger_context'] );
-				$query_args['context']   = '';
-			} else {
-					$query_args['context'] = $alert->alert_meta['trigger_context'];
-			}
+				$query_args['context'] = $alert->alert_meta['trigger_context'];
 		}
 		return $query_args;
 	}
