@@ -21,3 +21,6 @@ tests_add_filter(
 
 require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
 require dirname( __FILE__ ) . '/testcase.php';
+
+// Base class for future tests
+require dirname( __FILE__ ) . '/tests/test-class-alert-trigger.php';
