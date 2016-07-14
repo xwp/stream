@@ -39,7 +39,7 @@ class Preview_List_Table extends List_Table {
 	 */
 	public function display() {
 		?>
-		<table class="wp-list-table <?php esc_attr_e( implode( ' ', $this->get_table_classes() ) ); ?>">
+		<table class="wp-list-table <?php esc_attr( implode( ' ', $this->get_table_classes() ) ); ?>">
 			<thead>
 			<tr>
 				<?php $this->print_column_headers(); ?>

@@ -130,7 +130,7 @@ class Alert_Trigger_Author extends Alert_Trigger {
 		$author = ( ! empty( $alert->alert_meta['trigger_author'] ) ) ? $alert->alert_meta['trigger_author'] : null;
 		if ( empty( $author ) ) {
 			$author = __( 'Any User', 'stream' );
-		} else if ( is_numeric( $author ) ) {
+		} elseif ( is_numeric( $author ) ) {
 			$author_data = get_userdata( $author );
 			if ( $author_data ) {
 				$author = $author_data->display_name;

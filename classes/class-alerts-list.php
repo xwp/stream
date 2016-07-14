@@ -118,7 +118,7 @@ class Alerts_List {
 				$post_status = get_post_status( $post_id );
 				$post_status_object = get_post_status_object( $post_status );
 				if ( $post_status_object ) {
-					esc_html_e( $post_status_object->label );
+					esc_html( $post_status_object->label );
 				}
 				break;
 		}

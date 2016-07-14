@@ -77,7 +77,7 @@ class Alerts {
 
 		$classes = array();
 		foreach ( $alert_types as $alert_type ) {
-			include_once $this->plugin->locations['dir'] . '/alerts/class-alert-type-' . $alert_type .'.php';
+			include_once $this->plugin->locations['dir'] . '/alerts/class-alert-type-' . $alert_type . '.php';
 			$class_name = sprintf( '\WP_Stream\Alert_Type_%s', str_replace( '-', '_', $alert_type ) );
 			if ( ! class_exists( $class_name ) ) {
 				continue;
@@ -124,7 +124,7 @@ class Alerts {
 
 		$classes = array();
 		foreach ( $alert_triggers as $alert_trigger ) {
-			include_once $this->plugin->locations['dir'] . '/alerts/class-alert-trigger-' . $alert_trigger .'.php';
+			include_once $this->plugin->locations['dir'] . '/alerts/class-alert-trigger-' . $alert_trigger . '.php';
 			$class_name = sprintf( '\WP_Stream\Alert_Trigger_%s', str_replace( '-', '_', $alert_trigger ) );
 			if ( ! class_exists( $class_name ) ) {
 				continue;
@@ -636,7 +636,7 @@ class Alerts {
 						$delete_text = __( 'Move to Trash', 'stream' );
 					}
 					?>
-				<a class="submitdelete deletion" href="<?php echo get_delete_post_link( $post->ID ); ?>"><?php esc_html_e( $delete_text ); ?></a><?php
+				<a class="submitdelete deletion" href="<?php echo get_delete_post_link( $post->ID ); ?>"><?php esc_html( $delete_text ); ?></a><?php
 				} ?>
 				</div>
 				<div id="publishing-action">
