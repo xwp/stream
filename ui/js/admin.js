@@ -15,8 +15,8 @@ jQuery( function( $ ) {
 
 	$( '.toplevel_page_wp_stream :input.chosen-select' ).each( function( i, el ) {
 		var args = {},
-		    formatResult = function( record, container ) {
-		    	var result = '',
+			templateResult = function( record ) {
+		    	var $result = $( '<span>' ),
 		    		$elem  = $( record.element ),
 		    		icon   = '';
 
@@ -24,23 +24,28 @@ jQuery( function( $ ) {
 		    		record.text = record.text.substring( 2 );
 		    	}
 
+				if ( 'undefined' !== typeof record.id ) {
+					if ( record.id.indexOf( 'group-' ) === 0 ) {
+						$result.addClass( 'parent' );
+					} else if ( $elem.hasClass( 'level-2' ) ) {
+						$result.addClass( 'child' );
+					}
+				}
+
 		    	if ( undefined !== record.icon ) {
 		    		icon = record.icon;
-		    	} else if ( undefined !== $elem.attr( 'data-icon' ) ) {
+		    	} else if ( undefined !== $elem && '' !== $elem.data( 'icon' ) ) {
 		    		icon = $elem.data( 'icon' );
 		    	}
-		    	if ( icon ) {
-		    		result += '<img src="' + icon + '" class="wp-stream-select2-icon">';
-		    	}
 
-		    	result += record.text;
+				if ( icon ) {
+					$result.html( '<img src="' + icon + '" class="wp-stream-select2-icon">' );
+				}
+				$result.append( record.text );
 
-		    	// Add more info to the container
-		    	container.attr( 'title', $elem.attr( 'title' ) );
-
-		    	return result;
+		    	return $result;
 		    },
-		    formatSelection = function( record ) {
+			templateSelection = function( record ) {
 		    	if ( '- ' === record.text.substring( 0, 2 ) ) {
 		    		record.text = record.text.substring( 2 );
 		    	}
@@ -50,8 +55,8 @@ jQuery( function( $ ) {
 		if ( $( el ).find( 'option' ).not( ':selected' ).not( ':empty' ).length > 0 ) {
 			args = {
 				minimumResultsForSearch: 10,
-				formatResult: formatResult,
-				formatSelection: formatSelection,
+				templateResult: templateResult,
+				templateSelection: templateSelection,
 				allowClear: true,
 				width: '165px'
 			};
@@ -85,8 +90,8 @@ jQuery( function( $ ) {
 						};
 					}
 				},
-				formatResult: formatResult,
-				formatSelection: formatSelection
+				templateResult: templateResult,
+				templateSelection: templateSelection
 			};
 		}
 
@@ -94,10 +99,11 @@ jQuery( function( $ ) {
 	});
 
 	var $queryVars    = $.streamGetQueryVars();
-	var $contextInput = $( '.toplevel_page_wp_stream :input.chosen-select[name="context"]' );
+	var $contextInput = $( '.toplevel_page_wp_stream select.chosen-select[name="context"]' );
 
 	if ( ( 'undefined' === typeof $queryVars.context || '' === $queryVars.context ) && 'undefined' !== typeof $queryVars.connector ) {
-		$contextInput.select2( 'val', 'group-' + $queryVars.connector );
+		$contextInput.val( 'group-' + $queryVars.connector );
+		$contextInput.trigger( 'change' );
 	}
 
 	$( 'input[type=submit]', '#record-filter-form' ).click( function() {
