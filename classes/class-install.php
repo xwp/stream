@@ -399,7 +399,7 @@ class Install {
 			blog_id bigint(20) unsigned NOT NULL DEFAULT '1',
 			object_id bigint(20) unsigned NULL,
 			user_id bigint(20) unsigned NOT NULL DEFAULT '0',
-			user_role varchar(20) NOT NULL DEFAULT '',
+			user_role varchar(50) NOT NULL DEFAULT '',
 			summary longtext NOT NULL,
 			created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 			connector varchar(100) NOT NULL,
