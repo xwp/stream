@@ -9,7 +9,7 @@
  *
  * @return string
  */
-function wp_stream_update_308( $db_version, $current_version ) {
+function wp_stream_auto_update_308( $db_version, $current_version ) {
 	$plugin = wp_stream_get_instance();
 	$plugin->install->install( $current_version );
 
