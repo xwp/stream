@@ -337,6 +337,7 @@ class Install {
 		$db_update_versions = array(
 			'3.0.0' /* @version 3.0.0 Drop the stream_context table, changes to stream table */,
 			'3.0.2' /* @version 3.0.2 Fix uppercase values in stream table, connector column */,
+			'3.0.8' /* @version 3.0.8 Increase size of user role IDs, user_roll column */,
 		);
 
 		/**
