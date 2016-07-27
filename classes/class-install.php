@@ -76,8 +76,6 @@ class Install {
 	 * @return void
 	 */
 	public function check() {
-		global $wpdb;
-
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
 		}
@@ -97,15 +95,16 @@ class Install {
 		if ( ! $update ) {
 			$this->update_required = true;
 			$this->success_db      = $this->update( $this->db_version, $this->plugin->get_version(), array( 'type' => 'auto' ) );
-		} elseif ( 'update_and_continue' === $update ) {
+		}
+
+		if ( 'update_and_continue' === $update ) {
 			$this->success_db = $this->update( $this->db_version, $this->plugin->get_version(), array( 'type' => 'user' ) );
 		}
 
 		$versions = $this->db_update_versions();
 
-		if ( version_compare( end( $versions ), $this->db_version, '>' ) ) {
+		if ( ! $this->success_db && version_compare( end( $versions ), $this->db_version, '>' ) ) {
 			add_action( 'all_admin_notices', array( $this, 'update_notice_hook' ) );
-
 			return;
 		}
 
