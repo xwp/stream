@@ -422,13 +422,13 @@ class Connector_Woocommerce extends Connector {
 		}
 
 		if ( version_compare( $this->plugin_version, '2.2', '>=' ) ) {
-			$old_status_name = strtolower( wc_get_order_status_name( $old ) );
-			$new_status_name = strtolower( wc_get_order_status_name( $new ) );
+			$old_status_name = wc_get_order_status_name( $old );
+			$new_status_name = wc_get_order_status_name( $new );
 		} else {
 			$old_status = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $old, 'shop_order_status' ) : get_term_by( 'slug', $old, 'shop_order_status' );
 			$new_status = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' ) : get_term_by( 'slug', $new, 'shop_order_status' );
-			$new_status_name = strtolower( $new_status->name );
-			$old_status_name = strtolower( $old_status->name );
+			$new_status_name = $new_status->name;
+			$old_status_name = $old_status->name;
 		}
 
 		$message = esc_html_x(
