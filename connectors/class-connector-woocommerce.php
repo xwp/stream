@@ -454,7 +454,7 @@ class Connector_Woocommerce extends Connector {
 			),
 			$order_id,
 			'shop_order',
-			$new_status_name
+			'updated'
 		);
 	}
 
