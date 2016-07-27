@@ -76,8 +76,6 @@ class Install {
 	 * @return void
 	 */
 	public function check() {
-		global $wpdb;
-
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
 		}
@@ -97,15 +95,16 @@ class Install {
 		if ( ! $update ) {
 			$this->update_required = true;
 			$this->success_db      = $this->update( $this->db_version, $this->plugin->get_version(), array( 'type' => 'auto' ) );
-		} elseif ( 'update_and_continue' === $update ) {
+		}
+
+		if ( 'update_and_continue' === $update ) {
 			$this->success_db = $this->update( $this->db_version, $this->plugin->get_version(), array( 'type' => 'user' ) );
 		}
 
 		$versions = $this->db_update_versions();
 
-		if ( version_compare( end( $versions ), $this->db_version, '>' ) ) {
+		if ( ! $this->success_db && version_compare( end( $versions ), $this->db_version, '>' ) ) {
 			add_action( 'all_admin_notices', array( $this, 'update_notice_hook' ) );
-
 			return;
 		}
 
@@ -337,6 +336,7 @@ class Install {
 		$db_update_versions = array(
 			'3.0.0' /* @version 3.0.0 Drop the stream_context table, changes to stream table */,
 			'3.0.2' /* @version 3.0.2 Fix uppercase values in stream table, connector column */,
+			'3.0.8' /* @version 3.0.8 Increase size of user role IDs, user_roll column */,
 		);
 
 		/**
@@ -399,7 +399,7 @@ class Install {
 			blog_id bigint(20) unsigned NOT NULL DEFAULT '1',
 			object_id bigint(20) unsigned NULL,
 			user_id bigint(20) unsigned NOT NULL DEFAULT '0',
-			user_role varchar(20) NOT NULL DEFAULT '',
+			user_role varchar(50) NOT NULL DEFAULT '',
 			summary longtext NOT NULL,
 			created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 			connector varchar(100) NOT NULL,
