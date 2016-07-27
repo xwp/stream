@@ -751,7 +751,7 @@ class Connector_Woocommerce extends Connector {
 			$shipping_method_settings = array();
 			$shipping_methods         = $woocommerce->shipping();
 
-			foreach ( $shipping_methods->shipping_methods as $section_key => $shipping_method ) {
+			foreach ( (array) $shipping_methods->shipping_methods as $section_key => $shipping_method ) {
 				$title = $shipping_method->title;
 				$key   = $shipping_method->plugin_id . $shipping_method->id . '_settings';
 
