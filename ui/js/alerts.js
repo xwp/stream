@@ -2,6 +2,7 @@ jQuery( function( $ ) {
 	$( '.select2-select.connector_or_context' ).each( function( k, el ) {
 		$( el ).select2({
 			allowClear: true,
+			placeholder: "Any Context",
 			templateResult: function( item ) {
 				if ( 'undefined' === typeof item.id ) {
 					return item.text;
@@ -64,8 +65,12 @@ jQuery( function( $ ) {
 	});
 
 	$( '.select2-select:not(.connector_or_context)' ).each( function() {
+		var element_id_split = $( this ).attr( 'id').split( '_' );
+		var select_name = element_id_split[ element_id_split.length - 1 ].charAt(0).toUpperCase() +
+			element_id_split[ element_id_split.length - 1 ].slice(1);
 		$( this ).select2( {
-			allowClear: true
+			allowClear: true,
+			placeholder: "Any " + select_name,
 		});
 	});
 
