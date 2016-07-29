@@ -1,4 +1,11 @@
 <?php
+/**
+ * @todo docblock for file.
+ * @todo convert post type name to constant.
+ * @todo check if WP_Post is a valid param type.
+ * @todo class Alerts docblock.
+ * @todo mention filters/actions in docblocks.
+ */
 namespace WP_Stream;
 
 class Alerts {
@@ -77,6 +84,8 @@ class Alerts {
 
 		$classes = array();
 		foreach ( $alert_types as $alert_type ) {
+			
+			// @todo check if file exists.
 			include_once $this->plugin->locations['dir'] . '/alerts/class-alert-type-' . $alert_type . '.php';
 			$class_name = sprintf( '\WP_Stream\Alert_Type_%s', str_replace( '-', '_', $alert_type ) );
 			if ( ! class_exists( $class_name ) ) {
@@ -124,6 +133,7 @@ class Alerts {
 
 		$classes = array();
 		foreach ( $alert_triggers as $alert_trigger ) {
+			// @todo check if file exists.
 			include_once $this->plugin->locations['dir'] . '/alerts/class-alert-trigger-' . $alert_trigger . '.php';
 			$class_name = sprintf( '\WP_Stream\Alert_Trigger_%s', str_replace( '-', '_', $alert_trigger ) );
 			if ( ! class_exists( $class_name ) ) {
@@ -212,7 +222,7 @@ class Alerts {
 
 			$status = $alert->check_record( $record_id, $recordarr );
 			if ( $status ) {
-				$alert->send_alert( $record_id, $recordarr );
+				$alert->send_alert( $record_id, $recordarr ); // @todo send_alert expects int, not array.
 			}
 		}
 
@@ -241,6 +251,7 @@ class Alerts {
 	 * @return void
 	 */
 	public function register_post_type() {
+		// @todo convert these to spaces.
 		$labels = array(
 			'name'							 => _x( 'Alerts', 'post type general name', 'stream' ),
 			'singular_name'			 => _x( 'Alert', 'post type singular name', 'stream' ),
@@ -258,6 +269,7 @@ class Alerts {
 			'not_found_in_trash' => __( 'No alerts found in Trash.', 'stream' ),
 		);
 
+		// @todo convert these to spaces.
 		$args = array(
 			'labels'							=> $labels,
 			'description'         => __( 'Alerts for Stream.', 'stream' ),
@@ -443,13 +455,13 @@ class Alerts {
 	function filter_parent_file( $parent_file ) {
 		$screen = get_current_screen();
 		if ( 'post' === $screen->base && 'wp_stream_alerts' === $screen->post_type ) {
-				$parent_file = 'wp_stream';
+			$parent_file = 'wp_stream';
 		}
 		return $parent_file;
 	}
 
 	/**
-	 * Fixes menu highlighting when Alerts are being editted.
+	 * Fixes menu highlighting when Alerts are being edited.
 	 *
 	 * @param string $submenu_file Submenu level menu item to highlight.
 	 * @return string
@@ -499,14 +511,14 @@ class Alerts {
 		$alert = $this->get_alert( $post_id );
 		if ( ! $alert ) {
 			wp_send_json_error( array(
-				'message' => 'Could not find alert.',
+				'message' => 'Could not find alert.',  // @todo l10n?
 			) );
 		}
 
 		$alert_type = wp_stream_filter_input( INPUT_POST, 'alert_type' );
 		if ( ! array_key_exists( $alert_type, $this->alert_types ) ) {
 			wp_send_json_error( array(
-				'message' => 'Could not find alert type.',
+				'message' => 'Could not find alert type.', // @todo l10n?
 			) );
 		}
 
@@ -532,7 +544,7 @@ class Alerts {
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
 
 		// @TODO use human readable text.
-		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>';
+		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>'; // @todo Maybe, "when".
 		echo $form->render_fields(); // Xss ok.
 
 		wp_nonce_field( 'save_post', 'wp_stream_alerts_nonce' );
@@ -546,6 +558,8 @@ class Alerts {
 	 * @return void
 	 */
 	function display_preview_box( $post ) {
+
+		// @todo check that post ID exists.
 		$alert = $this->get_alert( $post->ID );
 		$table = new Preview_List_Table( $this->plugin );
 
@@ -572,7 +586,7 @@ class Alerts {
 		$post = get_post( $post_id );
 		if ( ! $post ) {
 			wp_send_json_error( array(
-				'message' => 'Could not find alert.',
+				'message' => 'Could not find alert.', // @todo l10n?
 			) );
 		}
 
@@ -606,11 +620,13 @@ class Alerts {
 	 * @return void
 	 */
 	function display_submit_box( $post ) {
+		// @todo check that post exists.
 
 		$post_status = $post->post_status;
 		if ( 'auto-draft' === $post_status ) {
 			$post_status = 'wp_stream_disabled';
 		}
+		// @todo send as ob?
 		?>
 		<div class="submitbox" id="submitpost">
 		<div id="minor-publishing">

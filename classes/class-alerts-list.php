@@ -1,9 +1,13 @@
 <?php
+/**
+ * @todo docblock for file, class.
+ * @todo mention filters/actions in docblocks.
+ */
 namespace WP_Stream;
 
 class Alerts_List {
 	/**
-	 * Hold Plugin class
+	 * Hold the Plugin class
 	 *
 	 * @var Plugin
 	 */
@@ -47,7 +51,7 @@ class Alerts_List {
 	}
 
 	/**
-	 * Manages views on the alerts list view
+	 * Manage views on the alerts list view
 	 *
 	 * @param array $views View links HTML.
 	 * @return array

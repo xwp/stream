@@ -1,10 +1,15 @@
 <?php
+/**
+ * @todo docblocks for file, class.
+ * @todo check if Alert is valid param type.
+ * @todo reorder filters/methods to match order.
+ */
 namespace WP_Stream;
 
 abstract class Alert_Trigger {
 
 	/**
-	 * Hold Plugin class
+	 * Hold the Plugin class
 	 *
 	 * @var Plugin
 	 */

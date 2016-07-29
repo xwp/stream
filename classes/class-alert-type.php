@@ -1,10 +1,13 @@
 <?php
+/**
+ * @todo docblocks for file, class.
+ */
 namespace WP_Stream;
 
 abstract class Alert_Type {
 
 	/**
-	 * Hold Plugin class
+	 * Hold the Plugin class
 	 *
 	 * @var Plugin
 	 */
@@ -20,6 +23,8 @@ abstract class Alert_Type {
 	/**
 	 * Class constructor.
 	 *
+	 * @todo no return statement.
+	 *
 	 * @param Plugin $plugin Plugin object.
 	 * @return void
 	 */
@@ -28,7 +33,7 @@ abstract class Alert_Type {
 	}
 
 	/**
-	 *	Alert receipients about the new record
+	 *	Alert recipients about the new record
 	 *
 	 * @param int   $record_id Record ID.
 	 * @param array $recordarr Record details.
@@ -37,7 +42,7 @@ abstract class Alert_Type {
 	abstract public function alert( $record_id, $recordarr, $options );
 
 	/**
-	 * Display settings form for configuration individual alerts
+	 * Display settings form for configuration of individual alerts
 	 *
 	 * @param Alert $alert Alert currently being worked on.
 	 */
@@ -46,7 +51,7 @@ abstract class Alert_Type {
 	}
 
 	/**
-	 * Process settings form for configuration individual alerts
+	 * Process settings form for configuration of individual alerts
 	 *
 	 * @param Alert $alert Alert currently being worked on.
 	 */
@@ -55,7 +60,7 @@ abstract class Alert_Type {
 	}
 
 	/**
-	 * Allow connectors to determine if their dependencies is satisfied or not
+	 * Allow connectors to determine if their dependencies are satisfied or not
 	 *
 	 * @return bool
 	 */
