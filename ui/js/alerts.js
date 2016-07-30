@@ -93,7 +93,7 @@ jQuery( function( $ ) {
 		});
 	};
 
-	var $alertTriggersSelect = $( '#wp_stream_alerts_triggers input.wp_stream_ajax_forward' ),
+	var $alertTriggersSelect = $( '#wp_stream_alerts_triggers select.wp_stream_ajax_forward' ),
 		$alertPreviewTable   = $( '#wp_stream_alerts_preview .inside' );
 
 	$alertTriggersSelect.change( function() {
