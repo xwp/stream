@@ -609,7 +609,7 @@ class Alerts {
 
 		$post_status = $post->post_status;
 		if ( 'auto-draft' === $post_status ) {
-			$post_status = 'wp_stream_disabled';
+			$post_status = 'wp_stream_enabled';
 		}
 		?>
 		<div class="submitbox" id="submitpost">
