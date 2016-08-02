@@ -238,6 +238,6 @@ class DB {
 	 * @return array
 	 */
 	public function get_table_names() {
-		$this->driver->get_table_names();
+		return $this->driver->get_table_names();
 	}
 }
