@@ -33,15 +33,6 @@ if ( ! version_compare( PHP_VERSION, '5.3', '>=' ) ) {
 	load_plugin_textdomain( 'stream', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	add_action( 'shutdown', 'wp_stream_fail_php_version' );
 } else {
-	add_action( 'plugins_loaded', 'wp_stream_loader' );
-
-}
-
-/**
- * Load stream after plugin loaded
- * Allow others to apply some filter
- */
-function wp_stream_loader() {
 	require __DIR__ . '/classes/class-plugin.php';
 	$plugin_class_name = 'WP_Stream\Plugin';
 	if ( class_exists( $plugin_class_name ) ) {

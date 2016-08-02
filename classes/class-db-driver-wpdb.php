@@ -140,7 +140,7 @@ class DB_Driver_WPDB implements DB_Driver {
 			$this->table_meta,
 		);
 	}
-
+	
 	/**
 	 * Purge storage
 	 */
