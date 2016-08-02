@@ -363,6 +363,7 @@ class Admin {
 			wp_enqueue_script( 'wp-stream-timeago-locale' );
 
 			wp_enqueue_script( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.js', array( 'jquery', 'wp-stream-select2' ), $this->plugin->get_version() );
+			wp_enqueue_script( 'wp-stream-admin-exclude', $this->plugin->locations['url'] . 'ui/js/exclude.js', array( 'jquery', 'wp-stream-select2' ), $this->plugin->get_version() );
 			wp_enqueue_script( 'wp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.js', array( 'jquery', 'heartbeat' ), $this->plugin->get_version() );
 
 			wp_localize_script(

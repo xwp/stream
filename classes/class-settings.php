@@ -84,11 +84,8 @@ class Settings {
 			'message' => esc_html__( 'There was an error in the request', 'stream' ),
 		);
 
-		$search = '';
-		if ( isset( $_POST['find'] ) ) {
-			// @TODO: Make this pass phpcs
-			$search = esc_html( wp_unslash( trim( $_POST['find'] ) ) ); // input var okay
-		}
+		$search = wp_unslash( trim( wp_stream_filter_input( INPUT_POST, 'find' ) ) );
+
 		$request = (object) array(
 			'find' => $search,
 		);
@@ -169,7 +166,7 @@ class Settings {
 		if ( empty( $search ) || preg_match( '/wp|cli|system|unknown/i', $search ) ) {
 			$author = new Author( 0 );
 			$response->users[] = array(
-				'id'      => $author->id,
+				'id'      => '0',
 				'text'    => $author->get_display_name(),
 				'icon'    => $author->get_avatar_src( 32 ),
 				'tooltip' => esc_html__( 'Actions performed by the system when a user is not logged in (e.g. auto site upgrader, or invoking WP-CLI without --user)', 'stream' ),
@@ -189,7 +186,14 @@ class Settings {
 
 		check_ajax_referer( 'stream_get_ips', 'nonce' );
 
-		$ips = $this->plugin->db->existing_records( 'ip' );
+		$ips  = $this->plugin->db->existing_records( 'ip' );
+		$find = wp_stream_filter_input( INPUT_POST, 'find' );
+
+		if ( isset( $find['term'] ) && '' !== $find['term'] ) {
+			$ips = array_filter( $ips, function ( $ip ) use ( $find ) {
+				return 0 === strpos( $ip, $find['term'] );
+			} );
+		}
 
 		if ( $ips ) {
 			wp_send_json_success( $ips );
@@ -745,6 +749,7 @@ class Settings {
 
 				break;
 			case 'rule_list' :
+				$form = new Form_Generator;
 				$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
 				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  esc_html__( 'Add New Rule', 'stream' ) );
@@ -790,7 +795,7 @@ class Settings {
 					$author_or_role_selected = array();
 
 					foreach ( $this->get_roles() as $role_id => $role ) {
-						$args  = array( 'id' => $role_id, 'text' => $role );
+						$args  = array( 'value' => $role_id, 'text' => $role );
 						$users = count_users();
 						$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
 
@@ -799,8 +804,8 @@ class Settings {
 						}
 
 						if ( $role_id === $author_or_role ) {
-							$author_or_role_selected['id']   = $role_id;
-							$author_or_role_selected['text'] = $role;
+							$author_or_role_selected['value'] = $role_id;
+							$author_or_role_selected['text']  = $role;
 						}
 
 						$author_or_role_values[] = $args;
@@ -809,21 +814,21 @@ class Settings {
 					if ( empty( $author_or_role_selected ) && is_numeric( $author_or_role ) ) {
 						$user                    = new WP_User( $author_or_role );
 						$display_name            = ( 0 === $user->ID ) ? esc_html__( 'N/A', 'stream' ) : $user->display_name;
-						$author_or_role_selected = array( 'id' => $user->ID, 'text' => $display_name );
+						$author_or_role_selected = array( 'value' => $user->ID, 'text' => $display_name );
+						$author_or_role_values[] = $author_or_role_selected;
 					}
 
-					$author_or_role_input = sprintf(
-						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" data-values=\'%5$s\' data-selected-id=\'%6$s\' data-selected-text=\'%7$s\' value="%6$s" class="select2-select %4$s" data-placeholder="%8$s" data-nonce="%9$s" />',
-						esc_attr( $option_key ),
-						esc_attr( $section ),
-						esc_attr( $name ),
-						'author_or_role',
-						esc_attr( wp_stream_json_encode( $author_or_role_values ) ),
-						isset( $author_or_role_selected['id'] ) ? esc_attr( $author_or_role_selected['id'] ) : '',
-						isset( $author_or_role_selected['text'] ) ? esc_attr( $author_or_role_selected['text'] ) : '',
-						esc_html__( 'Any Author or Role', 'stream' ),
-						esc_attr( wp_create_nonce( 'stream_get_users' ) )
-					);
+					$author_or_role_input = $form->render_field( 'select2', array(
+						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'author_or_role' ) ),
+						'options'     => $author_or_role_values,
+						'classes'     => 'author_or_role',
+						'data'        => array(
+							'placeholder'   => esc_html__( 'Any Author or Role', 'stream' ),
+							'nonce'         => esc_attr( wp_create_nonce( 'stream_get_users' ) ),
+							'selected-id'   => isset( $author_or_role_selected['value'] ) ? esc_attr( $author_or_role_selected['value'] ) : '',
+							'selected-text' => isset( $author_or_role_selected['text'] ) ? esc_attr( $author_or_role_selected['text'] ) : '',
+						),
+					) );
 
 					// Context dropdown menu
 					$context_values = array();
@@ -834,67 +839,67 @@ class Settings {
 							if ( isset( $context_data['children'] ) ) {
 								$child_values = array();
 								foreach ( $context_data['children'] as $child_id => $child_value ) {
-									$child_values[] = array( 'id' => $child_id, 'text' => $child_value, 'parent' => $context_id );
+									$child_values[] = array( 'value' => $context_id . '-' . $child_id, 'text' => $child_value, 'parent' => $context_id );
 								}
 							}
 							if ( isset( $context_data['label'] ) ) {
-								$context_values[] = array( 'id' => $context_id, 'text' => $context_data['label'], 'children' => $child_values );
+								$context_values[] = array( 'value' => $context_id, 'text' => $context_data['label'], 'children' => $child_values );
 							}
 						} else {
-							$context_values[] = array( 'id' => $context_id, 'text' => $context_data );
+							$context_values[] = array( 'value' => $context_id, 'text' => $context_data );
 						}
 					}
 
-					$connector_input = sprintf(
-						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" class="%4$s" value="%5$s">',
-						esc_attr( $option_key ),
-						esc_attr( $section ),
-						esc_attr( $name ),
-						esc_attr( 'connector' ),
-						esc_attr( $connector )
-					);
+					$connector_or_context_input = $form->render_field( 'select2', array(
+						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'connector_or_context' ) ),
+						'options'     => $context_values,
+						'classes'     => 'connector_or_context',
+						'data'        => array(
+							'group'       => 'connector',
+							'placeholder' => __( 'Any Context', 'stream' ),
+						),
+					) );
 
-					$context_input = sprintf(
-						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" data-values=\'%5$s\' value="%6$s" class="select2-select with-source %4$s" data-placeholder="%7$s" data-group="%8$s" />',
-						esc_attr( $option_key ),
-						esc_attr( $section ),
-						esc_attr( $name ),
-						'context',
-						esc_attr( wp_stream_json_encode( $context_values ) ),
-						esc_attr( $context ),
-						esc_html__( 'Any Context', 'stream' ),
-						'connector'
-					);
+					$connector_input = $form->render_field( 'hidden', array(
+						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'connector' ) ),
+						'value'       => $connector,
+						'classes'     => 'connector',
+					) );
+
+					$context_input = $form->render_field( 'hidden', array(
+						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'context' ) ),
+						'value'       => $context,
+						'classes'     => 'context',
+					) );
 
 					// Action dropdown menu
 					$action_values = array();
 
 					foreach ( $this->get_terms_labels( 'action' ) as $action_id => $action_data ) {
-						$action_values[] = array( 'id' => $action_id, 'text' => $action_data );
+						$action_values[] = array( 'value' => $action_id, 'text' => $action_data );
 					}
 
-					$action_input = sprintf(
-						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" data-values=\'%5$s\' value="%6$s" class="select2-select with-source %4$s" data-placeholder="%7$s" />',
-						esc_attr( $option_key ),
-						esc_attr( $section ),
-						esc_attr( $name ),
-						'action',
-						esc_attr( wp_stream_json_encode( $action_values ) ),
-						esc_attr( $action ),
-						esc_html__( 'Any Action', 'stream' )
-					);
+					$action_input = $form->render_field( 'select2', array(
+						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'action' ) ),
+						'value'       => $action,
+						'options'     => $action_values,
+						'classes'     => 'action',
+						'data'        => array(
+							'placeholder' => __( 'Any Action', 'stream' ),
+						),
+					) );
 
 					// IP Address input
-					$ip_address_input = sprintf(
-						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" value="%5$s" class="select2-select %4$s" data-placeholder="%6$s" data-nonce="%7$s" />',
-						esc_attr( $option_key ),
-						esc_attr( $section ),
-						esc_attr( $name ),
-						'ip_address',
-						esc_attr( $ip_address ),
-						esc_html__( 'Any IP Address', 'stream' ),
-						esc_attr( wp_create_nonce( 'stream_get_ips' ) )
-					);
+					$ip_address_input = $form->render_field( 'select2', array(
+						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'ip_address' ) ),
+						'value'       => $ip_address,
+						'classes'     => 'ip_address',
+						'data'        => array(
+							'placeholder' => esc_attr__( 'Any IP Address', 'stream' ),
+							'nonce'       => esc_attr( wp_create_nonce( 'stream_get_ips' ) ),
+						),
+						'multiple'    => true,
+					) );
 
 					// Hidden helper input
 					$helper_input = sprintf(
@@ -909,16 +914,17 @@ class Settings {
 						'<tr class="%1$s %2$s">
 							<th scope="row" class="check-column">%3$s %4$s</th>
 							<td>%5$s</td>
-							<td>%6$s %7$s</td>
-							<td>%8$s</td>
+							<td>%6$s %7$s %8$s</td>
 							<td>%9$s</td>
-							<th scope="row" class="actions-column">%10$s</th>
+							<td>%10$s</td>
+							<th scope="row" class="actions-column">%11$s</th>
 						</tr>',
 						( 0 !== $key % 2 ) ? 'alternate' : '',
 						( 'helper' === $key ) ? 'hidden helper' : '',
 						'<input class="cb-select" type="checkbox" />',
 						$helper_input,
 						$author_or_role_input,
+						$connector_or_context_input,
 						$connector_input,
 						$context_input,
 						$action_input,

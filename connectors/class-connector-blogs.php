@@ -63,10 +63,10 @@ class Connector_Blogs extends Connector {
 		$labels = array();
 
 		if ( is_multisite() && ! wp_is_large_network() ) {
-			$blogs = wp_get_sites();
+			$blogs = wp_stream_get_sites();
 
 			foreach ( $blogs as $blog ) {
-				$blog_details   = get_blog_details( $blog['blog_id'] );
+				$blog_details   = get_blog_details( $blog->blog_id );
 				$key            = sanitize_key( $blog_details->blogname );
 				$labels[ $key ] = $blog_details->blogname;
 			}

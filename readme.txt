@@ -1,9 +1,9 @@
 === Stream ===
-Contributors:      fjarrett, lukecarbis, shadyvb, powelski, chacha102, stream, xwp
+Contributors:      fjarrett, lukecarbis, chacha102, stream, xwp
 Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, blackbox, black box, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
 Requires at least: 3.9
-Tested up to:      4.5
-Stable tag:        3.0.6
+Tested up to:      4.6
+Stable tag:        3.0.7
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,10 +79,21 @@ Thank you for wanting to make Stream better for everyone!
 
 == Changelog ==
 
-= 3.0.6 - April 31, 2015 =
+= 3.0.7 - June 14, 2016 =
+
+* Tweak: Use get_sites instead of wp_get_sites when available ([#856](https://github.com/xwp/stream/pull/856))
+* Tweak: More stable record actions (like exporting) ([71e6ac1](https://github.com/xwp/stream/commit/71e6ac1ff66e4415909c7ae29b243733a1fd209d))
+* Tweak: Better multisite support ([cfab041](https://github.com/xwp/stream/commit/cfab0413e67b83d969bd6612c895ecdb05dbfce4))
+* Fix: Exclude rule settings have been restored and enhanced ([#855](https://github.com/xwp/stream/pull/855))
+* Fix: Loading users via ajax ([#854](https://github.com/xwp/stream/pull/854))
+* Fix: Use the correct label for events relating to taxonomies which are registered late ([#859](https://github.com/xwp/stream/pull/859))
+
+Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/lukecarbis), Eugene Kireev, [@johnbillion](https://github.com/johnbillion)
+
+= 3.0.6 - May 31, 2016 =
 
 * New: Better support for default themes ([#831](https://github.com/xwp/stream/pull/831))
-* New: Upgrade filter menus to Select2 4 ([c3f6c65](https://github.com/xwp/stream/pull/c3f6c65c1bd95cebb26da7f00a720050a9144586))
+* New: Upgrade filter menus to Select2 4 ([c3f6c65](https://github.com/xwp/stream/commit/c3f6c65c1bd95cebb26da7f00a720050a9144586))
 * Fix: Security Fixes
 * Fix: Cron for purging old records has been fixed ([#843](https://github.com/xwp/stream/pull/843))
 * Fix: Better at storing records for Super Admins ([#835](https://github.com/xwp/stream/pull/835))
@@ -90,7 +101,7 @@ Thank you for wanting to make Stream better for everyone!
 
 Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/lukecarbis), [@marcin-lawrowski](https://github.com/marcin-lawrowski)
 
-= 3.0.5 - March 15, 2015 =
+= 3.0.5 - March 15, 2016 =
 
 * New: Export your Stream records as CSV or JSON. ([#823](https://github.com/xwp/stream/pull/823))
 * Tweak: More mobile responsive list table ([#810](https://github.com/xwp/stream/pull/810))
