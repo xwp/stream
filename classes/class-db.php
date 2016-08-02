@@ -231,4 +231,14 @@ class DB {
 	public function get_found_records_count() {
 		return $this->found_records_count;
 	}
+
+	/**
+	 * Public getter to return table names
+	 *
+	 * @return array
+	 */
+	public function get_table_names() {
+		$this->driver->get_table_names();
+	}
+
 }

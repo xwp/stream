@@ -30,6 +30,14 @@ interface DB_Driver {
 	 */
 	public function get_column_values( $column );
 
+
+	/**
+	 * Public getter to return table names
+	 *
+	 * @return array
+	 */
+	public function get_table_names();
+
 	/**
 	 * Init storage
 	 */
