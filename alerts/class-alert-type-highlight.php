@@ -25,7 +25,7 @@ class Alert_Type_Highlight extends Alert_Type {
 	public function __construct( $plugin ) {
 		parent::__construct( $plugin );
 		if ( is_admin() ) {
-				add_filter( 'wp_stream_record_classes', array( $this, 'post_class' ), 10, 2 );
+			add_filter( 'wp_stream_record_classes', array( $this, 'post_class' ), 10, 2 );
 		}
 	}
 

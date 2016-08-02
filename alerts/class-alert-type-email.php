@@ -1,4 +1,8 @@
 <?php
+/**
+ * @todo docblock
+ * Idea for future expansion: allow customization of email.
+ */
 namespace WP_Stream;
 
 class Alert_Type_Email extends Alert_Type {
