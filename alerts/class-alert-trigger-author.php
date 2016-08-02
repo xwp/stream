@@ -1,6 +1,16 @@
 <?php
+/**
+ * Trigger for an Author.
+ *
+ * @package WP_Stream
+ */
 namespace WP_Stream;
 
+/**
+ * Class Alert_Trigger_Author
+ *
+ * @package WP_Stream
+ */
 class Alert_Trigger_Author extends Alert_Trigger {
 
 	/**

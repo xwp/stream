@@ -1,9 +1,19 @@
 <?php
 /**
- * @todo docblocks for file, class.
+ * Alert Type abstract class.
+ *
+ * Used to register new Alert types.
+ *
+ * @package WP_Stream
  */
+
 namespace WP_Stream;
 
+/**
+ * Class Alert_Type
+ *
+ * @package WP_Stream
+ */
 abstract class Alert_Type {
 
 	/**
@@ -22,8 +32,6 @@ abstract class Alert_Type {
 
 	/**
 	 * Class constructor.
-	 *
-	 * @todo no return statement.
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 * @return void

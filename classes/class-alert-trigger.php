@@ -1,11 +1,17 @@
 <?php
 /**
- * @todo docblocks for file, class.
- * @todo check if Alert is valid param type.
- * @todo reorder filters/methods to match order.
+ * Alert Trigger abstract class.
+ *
+ * @package WP_Stream
  */
+
 namespace WP_Stream;
 
+/**
+ * Class Alert_Trigger
+ *
+ * @package WP_Stream
+ */
 abstract class Alert_Trigger {
 
 	/**
@@ -39,6 +45,8 @@ abstract class Alert_Trigger {
 	/**
 	 * Checks if a record matches the criteria from the trigger.
 	 *
+	 * @filter wp_stream_alert_trigger_check
+	 *
 	 * @param bool  $success Status of previous checks.
 	 * @param int   $record_id Record ID.
 	 * @param array $recordarr Record data.
@@ -50,6 +58,8 @@ abstract class Alert_Trigger {
 	/**
 	 * Adds fields to the trigger form.
 	 *
+	 * @action wp_stream_alert_trigger_form_display
+	 *
 	 * @param Form_Generator $form The Form Object to add to.
 	 * @param Alert          $alert The Alert being worked on.
 	 * @return void
@@ -59,6 +69,8 @@ abstract class Alert_Trigger {
 	/**
 	 * Validate and save Alert object
 	 *
+	 * @action wp_stream_alert_trigger_form_save
+	 *
 	 * @param Alert $alert The Alert being worked on.
 	 * @return void
 	 */
@@ -66,6 +78,8 @@ abstract class Alert_Trigger {
 
 	/**
 	 * Alters the preview table query to show records matching this query.
+	 *
+	 * @filter stream_alerts_preview_query
 	 *
 	 * @param array $query_args The database query arguments for the table.
 	 * @param Alert $alert The Alert being worked on.

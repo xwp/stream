@@ -1,6 +1,17 @@
 <?php
+/**
+ * "Do nothing" Alert type.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class Alert_Type_None
+ *
+ * @package WP_Stream
+ */
 class Alert_Type_None extends Alert_Type {
 	/**
 	 * Notifier name

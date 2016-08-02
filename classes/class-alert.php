@@ -1,6 +1,17 @@
 <?php
+/**
+ * Single Alert handler.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class Alert
+ *
+ * @package WP_Stream
+ */
 class Alert {
 
 	/**
@@ -85,7 +96,7 @@ class Alert {
 			'post_content' => '',
 			'post_title'   => $this->get_title(),
 			'post_author'  => $this->author,
-			'post_type'    => 'wp_stream_alerts',
+			'post_type'    => Alerts::POST_TYPE,
 		);
 
 		if ( empty( $args['ID'] ) ) {
@@ -122,7 +133,7 @@ class Alert {
 			'post_status'  => $this->status,
 			'post_title'   => $this->get_title(),
 			'post_author'  => $this->author,
-			'post_type'    => 'wp_stream_alerts',
+			'post_type'    => Alerts::POST_TYPE,
 		);
 
 		foreach ( $args as $key => $value ) {

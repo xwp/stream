@@ -1,10 +1,17 @@
 <?php
 /**
- * @todo docblock for file, class.
- * @todo mention filters/actions in docblocks.
+ * Listing of Alerts in the WP Admin.
+ *
+ * @package WP_Stream
  */
+
 namespace WP_Stream;
 
+/**
+ * Class Alerts_List
+ *
+ * @package WP_Stream
+ */
 class Alerts_List {
 	/**
 	 * Hold the Plugin class
@@ -39,12 +46,14 @@ class Alerts_List {
 	/**
 	 * Default to wp_stream_enabled and wp_stream_disabled when querying for alerts
 	 *
+	 * @filter request
+	 *
 	 * @param array $query_vars Arguments for query to populate table.
 	 * @return array
 	 */
 	function parse_request( $query_vars ) {
 		$screen = get_current_screen();
-		if ( 'edit-wp_stream_alerts' === $screen->id && 'wp_stream_alerts' === $query_vars['post_type'] && empty( $query_vars['post_status'] ) ) {
+		if ( 'edit-wp_stream_alerts' === $screen->id && Alerts::POST_TYPE === $query_vars['post_type'] && empty( $query_vars['post_status'] ) ) {
 			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled' );
 		}
 		return $query_vars;
@@ -52,6 +61,8 @@ class Alerts_List {
 
 	/**
 	 * Manage views on the alerts list view
+	 *
+	 * @filter views_edit-wp_stream_alerts
 	 *
 	 * @param array $views View links HTML.
 	 * @return array
@@ -70,6 +81,8 @@ class Alerts_List {
 	/**
 	 * Manages columns on the alerts list view
 	 *
+	 * @filter manage_wp_stream_alerts_posts_columns
+	 *
 	 * @param array $columns Column id -> title array.
 	 * @return array
 	 */
@@ -85,6 +98,8 @@ class Alerts_List {
 
 	/**
 	 * Fills in column data for custom columns.
+	 *
+	 * @action manage_wp_stream_alerts_posts_custom_column
 	 *
 	 * @param string $column_name Column name to show data for.
 	 * @param int    $post_id The post being processed.
@@ -130,6 +145,8 @@ class Alerts_List {
 	/**
 	 * Remove 'edit' action from bulk actions
 	 *
+	 * @filter bulk_actions-edit-wp_stream_alerts
+	 *
 	 * @param array $actions List of bulk actions available.
 	 * @return array
 	 */
@@ -140,6 +157,8 @@ class Alerts_List {
 
 	/**
 	 * Remove quick edit action from inline edit actions
+	 *
+	 * @filter post_row_actions
 	 *
 	 * @param array $actions List of inline edit actions available.
 	 * @return array
@@ -152,12 +171,14 @@ class Alerts_List {
 	/**
 	 * Remove months dropdown from Alerts list page
 	 *
+	 * @filter disable_months_dropdown
+	 *
 	 * @param bool   $status Status of months dropdown enabling.
 	 * @param string $post_type Post type status is related to.
 	 * @return bool
 	 */
 	public function supress_months_dropdown( $status, $post_type ) {
-		if ( 'wp_stream_alerts' === $post_type ) {
+		if ( Alerts::POST_TYPE === $post_type ) {
 			$status = true;
 		}
 		return $status;

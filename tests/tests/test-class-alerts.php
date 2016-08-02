@@ -400,7 +400,6 @@ class Test_Alerts extends WP_StreamTestCase {
 		);
 	}
 
-
 	private function dummy_alert_data() {
 		return (object) array(
 			'ID'         => 1,
@@ -409,8 +408,8 @@ class Test_Alerts extends WP_StreamTestCase {
 			'author'     => '1',
 			'alert_type' => 'highlight',
 			'alert_meta' => array(
-				'trigger_action'	=> 'activated',
-				'trigger_author'	=> 'administrator',
+				'trigger_action' => 'activated',
+				'trigger_author'  => 'administrator',
 				'trigger_context' => 'plugins',
 			),
 		);

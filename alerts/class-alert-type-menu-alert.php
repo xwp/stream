@@ -1,6 +1,17 @@
 <?php
+/**
+ * Menu Alert type.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class Alert_Type_Menu_Alert
+ *
+ * @package WP_Stream
+ */
 class Alert_Type_Menu_Alert extends Alert_Type {
 	/**
 	 * Alert type name
@@ -70,6 +81,7 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	 */
 	public function save_fields( $alert ) {
 		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
+
 		$alert->alert_meta['clear_immediate'] = ! empty( $_POST['wp_stream_menu_alert_clear_immediate'] );
 	}
 
@@ -110,6 +122,8 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	/**
 	 * Get a list of all current alert messages for current user.
 	 *
+	 * @todo update this for VIP. (get_user_meta)
+	 *
 	 * @return array List of alert messages
 	 */
 	public function get_messages() {
@@ -121,6 +135,8 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	/**
 	 * Adds a new alert message for the current user.
 	 *
+	 * @todo update this for VIP. (add_user_meta)
+	 *
 	 * @param string $message Alert message to add.
 	 * @return void
 	 */
@@ -131,6 +147,8 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 
 	/**
 	 * Clears all alert messages for the current user.
+	 *
+	 * @todo update this for VIP. (delete_user_meta)
 	 *
 	 * @param bool $global Whether to clear globally.
 	 * @return void

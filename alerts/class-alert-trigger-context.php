@@ -1,6 +1,16 @@
 <?php
+/**
+ * Trigger on Context.
+ *
+ * @package WP_Stream
+ */
 namespace WP_Stream;
 
+/**
+ * Class Alert_Trigger_Context
+ *
+ * @package WP_Stream
+ */
 class Alert_Trigger_Context extends Alert_Trigger {
 
 	/**

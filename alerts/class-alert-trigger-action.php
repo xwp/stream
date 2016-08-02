@@ -1,6 +1,16 @@
 <?php
+/**
+ * Trigger on an Action.
+ *
+ * @package WP_Stream
+ */
 namespace WP_Stream;
 
+/**
+ * Class Alert_Trigger_Action
+ *
+ * @package WP_Stream
+ */
 class Alert_Trigger_Action extends Alert_Trigger {
 
 	/**
@@ -144,7 +154,7 @@ class Alert_Trigger_Action extends Alert_Trigger {
 
 		if ( 'post_title' === $context ) {
 			if ( empty( $action ) ) {
-				$action = __( 'preformed any action on', 'stream' );
+				$action = __( 'performed any action on', 'stream' );
 			}
 		} else {
 			if ( empty( $action ) ) {

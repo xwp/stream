@@ -1,6 +1,17 @@
 <?php
+/**
+ * Highlight Alert type.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class Alert_Type_Highlight
+ *
+ * @package WP_Stream
+ */
 class Alert_Type_Highlight extends Alert_Type {
 	/**
 	 * Alert type name
@@ -57,7 +68,7 @@ class Alert_Type_Highlight extends Alert_Type {
 
 		$form = new Form_Generator;
 
-		echo '<p>Color:</p>';
+		echo '<p>' . esc_html__( 'Color', 'stream' ) . ':</p>';
 		echo $form->render_field( 'select', array( // Xss ok.
 			'name'    => 'wp_stream_highlight_color',
 			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
@@ -87,7 +98,7 @@ class Alert_Type_Highlight extends Alert_Type {
 	public function save_fields( $alert ) {
 		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
 
-		$input_color = $_POST['wp_stream_highlight_color'];
+		$input_color = sanitize_text_field( wp_unslash( $_POST['wp_stream_highlight_color'] ) );
 		if ( ! array_key_exists( $input_color , $this->get_highlight_options() ) ) {
 			$alert->alert_meta['color'] = 'yellow';
 		} else {

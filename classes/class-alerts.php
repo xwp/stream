@@ -1,14 +1,24 @@
 <?php
 /**
- * @todo docblock for file.
- * @todo convert post type name to constant.
- * @todo check if WP_Post is a valid param type.
- * @todo class Alerts docblock.
- * @todo mention filters/actions in docblocks.
+ * Alerts feature class.
+ *
+ * @todo replace post type name with a constant.
+ *
+ * @package WP_Stream
  */
+
 namespace WP_Stream;
 
+/**
+ * Class Alerts
+ *
+ * @package WP_Stream
+ */
 class Alerts {
+	/**
+	 * Alerts post type slug
+	 */
+	const POST_TYPE = 'wp_stream_alerts';
 	/**
 	 * Hold Plugin class
 	 *
@@ -84,7 +94,7 @@ class Alerts {
 
 		$classes = array();
 		foreach ( $alert_types as $alert_type ) {
-			
+
 			// @todo check if file exists.
 			include_once $this->plugin->locations['dir'] . '/alerts/class-alert-type-' . $alert_type . '.php';
 			$class_name = sprintf( '\WP_Stream\Alert_Type_%s', str_replace( '-', '_', $alert_type ) );
@@ -206,13 +216,15 @@ class Alerts {
 	/**
 	 * Checks record being processed against active alerts.
 	 *
+	 * @filter wp_stream_record_inserted
+	 *
 	 * @param int   $record_id The record being processed.
 	 * @param array $recordarr Record data.
 	 * @return array
 	 */
 	function check_records( $record_id, $recordarr ) {
 		$args = array(
-			'post_type'   => 'wp_stream_alerts',
+			'post_type'   => self::POST_TYPE,
 			'post_status' => 'wp_stream_enabled',
 		);
 
@@ -232,6 +244,8 @@ class Alerts {
 
 	/**
 	 * Register scripts for page load
+	 *
+	 * @action admin_enqueue_scripts
 	 *
 	 * @param string $page Current file name.
 	 * @return void
@@ -291,7 +305,7 @@ class Alerts {
 			),
 		);
 
-		register_post_type( 'wp_stream_alerts', $args );
+		register_post_type( self::POST_TYPE, $args );
 
 		$args = array(
 			'label'                     => _x( 'Enabled', 'alert', 'stream' ),
@@ -317,6 +331,8 @@ class Alerts {
 
 	/**
 	 * Changes update messages for use with Alerts.
+	 *
+	 * @filter post_updated_messages
 	 *
 	 * @param array $messages Array of post update messages by post type.
 	 * @return array
@@ -344,7 +360,7 @@ class Alerts {
 	/**
 	 * Return alert object of the given ID
 	 *
-	 * @param int $post_id Post ID for the alert.
+	 * @param string $post_id Post ID for the alert.
 	 * @return Alert
 	 */
 	public function get_alert( $post_id = '' ) {
@@ -393,6 +409,8 @@ class Alerts {
 	/**
 	 * Register metaboxes with post screens
 	 *
+	 * @action load-post-new.php
+	 *
 	 * @return void
 	 */
 	function register_meta_boxes() {
@@ -404,16 +422,18 @@ class Alerts {
 	/**
 	 * Add metaboxes to post screens
 	 *
+	 * @filter add_meta_boxes
+	 *
 	 * @return void
 	 */
 	function add_meta_boxes() {
-		remove_meta_box( 'submitdiv', 'wp_stream_alerts', 'side' );
+		remove_meta_box( 'submitdiv',  self::POST_TYPE, 'side' );
 
 		add_meta_box(
 			'wp_stream_alerts_triggers',
 			__( 'Alert Trigger', 'stream' ),
 			array( $this, 'display_triggers_box' ),
-			'wp_stream_alerts',
+			self::POST_TYPE,
 			'normal',
 			'high'
 		);
@@ -422,7 +442,7 @@ class Alerts {
 			'wp_stream_alerts_alert_type',
 			__( 'Alert Type', 'stream' ),
 			array( $this, 'display_notification_box' ),
-			'wp_stream_alerts',
+			self::POST_TYPE,
 			'normal',
 			'default'
 		);
@@ -431,7 +451,7 @@ class Alerts {
 			'wp_stream_alerts_preview',
 			__( 'Records matching these triggers', 'stream' ),
 			array( $this, 'display_preview_box' ),
-			'wp_stream_alerts',
+			self::POST_TYPE,
 			'advanced',
 			'low'
 		);
@@ -440,21 +460,23 @@ class Alerts {
 			'wp_stream_alerts_submit',
 			__( 'Alert Status', 'stream' ),
 			array( $this, 'display_submit_box' ),
-			'wp_stream_alerts',
+			self::POST_TYPE,
 			'side',
 			'default'
 		);
 	}
 
 	/**
-	 * Fixes menu highlighting when Alerts are being editted.
+	 * Fixes menu highlighting when Alerts are being edited.
+	 *
+	 * @filter parent_file
 	 *
 	 * @param string $parent_file Top level menu item to highlight.
 	 * @return string
 	 */
 	function filter_parent_file( $parent_file ) {
 		$screen = get_current_screen();
-		if ( 'post' === $screen->base && 'wp_stream_alerts' === $screen->post_type ) {
+		if ( 'post' === $screen->base && self::POST_TYPE === $screen->post_type ) {
 			$parent_file = 'wp_stream';
 		}
 		return $parent_file;
@@ -463,12 +485,14 @@ class Alerts {
 	/**
 	 * Fixes menu highlighting when Alerts are being edited.
 	 *
+	 * @filter submenu_file
+	 *
 	 * @param string $submenu_file Submenu level menu item to highlight.
 	 * @return string
 	 */
 	function filter_submenu_file( $submenu_file ) {
 		$screen = get_current_screen();
-		if ( 'post' === $screen->base && 'wp_stream_alerts' === $screen->post_type ) {
+		if ( 'post' === $screen->base && self::POST_TYPE === $screen->post_type ) {
 			$submenu_file = 'edit.php?post_type=wp_stream_alerts';
 		}
 		return $submenu_file;
@@ -503,6 +527,8 @@ class Alerts {
 
 	/**
 	 * Returns settings form HTML for AJAX use
+	 *
+	 * @action wp_ajax_load_alerts_settings
 	 *
 	 * @return void
 	 */
@@ -578,6 +604,8 @@ class Alerts {
 	/**
 	 * Output Preview Box based on AJAX changes.
 	 *
+	 * @action wp_ajax_load_alert_preview
+	 *
 	 * @return void
 	 */
 	function display_preview_box_ajax() {
@@ -621,7 +649,6 @@ class Alerts {
 	 */
 	function display_submit_box( $post ) {
 		// @todo check that post exists.
-
 		$post_status = $post->post_status;
 		if ( 'auto-draft' === $post_status ) {
 			$post_status = 'wp_stream_enabled';
@@ -682,17 +709,20 @@ class Alerts {
 	/**
 	 * Process alert settings
 	 *
+	 * @filter wp_insert_post_data
+	 *
 	 * @param array $data Processed post data.
 	 * @param array $postarr Raw POST data.
 	 * @return array
 	 */
 	function save_post_info( $data, $postarr ) {
 
+		// @todo ensure $_POST is sanitized.
 		if ( ! isset( $_POST['wp_stream_alerts_nonce'] ) || ! wp_verify_nonce( $_POST['wp_stream_alerts_nonce'], 'save_post' ) ) {
 				return $data;
 		}
 
-		if ( 'wp_stream_alerts' !== $data['post_type'] || ( isset( $data['post_status'] ) && 'auto-draft' === $data['post_status'] ) ) {
+		if ( self::POST_TYPE !== $data['post_type'] || ( isset( $data['post_status'] ) && 'auto-draft' === $data['post_status'] ) ) {
 			return $data;
 		}
 

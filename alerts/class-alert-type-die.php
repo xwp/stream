@@ -1,6 +1,14 @@
 <?php
+/**
+ * Used for debugging.
+ */
 namespace WP_Stream;
 
+/**
+ * Class Alert_Type_Die
+ *
+ * @package WP_Stream
+ */
 class Alert_Type_Die extends Alert_Type {
 	/**
 	 * Alert type name

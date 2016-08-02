@@ -1,10 +1,19 @@
 <?php
 /**
- * @todo docblock
+ * Email Alerts.
+ *
  * Idea for future expansion: allow customization of email.
+ *
+ * @package WP_Stream
  */
+
 namespace WP_Stream;
 
+/**
+ * Class Alert_Type_Email
+ *
+ * @package WP_Stream
+ */
 class Alert_Type_Email extends Alert_Type {
 
 	/**
@@ -80,14 +89,14 @@ class Alert_Type_Email extends Alert_Type {
 
 		$form = new Form_Generator;
 
-		echo '<p>Recipient:</p>';
+		echo '<p>' . esc_html__( 'Recipient', 'stream' ) . ':</p>';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_email_recipient',
 			'title'   => esc_attr( __( 'Email Recipient', 'stream' ) ),
 			'value'   => $options['email_recipient'],
 		) );
 
-		echo '<p>Subject:</p>';
+		echo '<p>' . esc_html__( 'Subject', 'stream' ) . ':</p>';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_email_subject',
 			'title'   => esc_attr( __( 'Email Subject', 'stream' ) ),
@@ -104,12 +113,12 @@ class Alert_Type_Email extends Alert_Type {
 	public function save_fields( $alert ) {
 		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
 
-		if ( ! empty( $_POST['wp_stream_email_recipient'] ) ) {
-			$alert->alert_meta['email_recipient'] = $_POST['wp_stream_email_recipient'];
+		if ( isset( $_POST['wp_stream_email_recipient'] ) ) {
+			$alert->alert_meta['email_recipient'] = sanitize_text_field( wp_unslash( $_POST['wp_stream_email_recipient'] ) );
 		}
 
-		if ( ! empty( $_POST['wp_stream_email_subject'] ) ) {
-			$alert->alert_meta['email_subject'] = $_POST['wp_stream_email_subject'];
+		if ( isset( $_POST['wp_stream_email_subject'] ) ) {
+			$alert->alert_meta['email_subject'] = sanitize_text_field( wp_unslash( $_POST['wp_stream_email_subject'] ) );
 		}
 	}
 }
