@@ -240,5 +240,4 @@ class DB {
 	public function get_table_names() {
 		$this->driver->get_table_names();
 	}
-
 }
