@@ -253,25 +253,25 @@ class Alerts {
 	public function register_post_type() {
 		// @todo convert these to spaces.
 		$labels = array(
-			'name'							 => _x( 'Alerts', 'post type general name', 'stream' ),
-			'singular_name'			 => _x( 'Alert', 'post type singular name', 'stream' ),
-			'menu_name'					 => _x( 'Alerts', 'admin menu', 'stream' ),
-			'name_admin_bar'		 => _x( 'Alert', 'add new on admin bar', 'stream' ),
-			'add_new'						 => _x( 'Add New', 'book', 'stream' ),
-			'add_new_item'			 => __( 'Add New Alert', 'stream' ),
-			'new_item'					 => __( 'New Alert', 'stream' ),
-			'edit_item'					 => __( 'Edit Alert', 'stream' ),
-			'view_item'					 => __( 'View Alert', 'stream' ),
-			'all_items'					 => __( 'Alerts', 'stream' ),
-			'search_items'			 => __( 'Search Alerts', 'stream' ),
-			'parent_item_colon'	 => __( 'Parent Alerts:', 'stream' ),
-			'not_found'					 => __( 'No alerts found.', 'stream' ),
+			'name'               => _x( 'Alerts', 'post type general name', 'stream' ),
+			'singular_name'      => _x( 'Alert', 'post type singular name', 'stream' ),
+			'menu_name'          => _x( 'Alerts', 'admin menu', 'stream' ),
+			'name_admin_bar'     => _x( 'Alert', 'add new on admin bar', 'stream' ),
+			'add_new'            => _x( 'Add New', 'book', 'stream' ),
+			'add_new_item'       => __( 'Add New Alert', 'stream' ),
+			'new_item'           => __( 'New Alert', 'stream' ),
+			'edit_item'          => __( 'Edit Alert', 'stream' ),
+			'view_item'          => __( 'View Alert', 'stream' ),
+			'all_items'          => __( 'Alerts', 'stream' ),
+			'search_items'       => __( 'Search Alerts', 'stream' ),
+			'parent_item_colon'  => __( 'Parent Alerts:', 'stream' ),
+			'not_found'          => __( 'No alerts found.', 'stream' ),
 			'not_found_in_trash' => __( 'No alerts found in Trash.', 'stream' ),
 		);
 
 		// @todo convert these to spaces.
 		$args = array(
-			'labels'							=> $labels,
+			'labels'              => $labels,
 			'description'         => __( 'Alerts for Stream.', 'stream' ),
 			'public'              => false,
 			'publicly_queryable'  => false,
@@ -279,15 +279,15 @@ class Alerts {
 			'show_ui'             => true,
 			'show_in_menu'        => false, // @see modify_admin_menu
 			'supports'            => false,
-			'capabilities'				=> array(
-				'publish_posts'			  => 'manage_options',
-				'edit_others_posts'	  => 'manage_options',
-				'delete_posts'				=> 'manage_options',
+			'capabilities'        => array(
+				'publish_posts'       => 'manage_options',
+				'edit_others_posts'   => 'manage_options',
+				'delete_posts'        => 'manage_options',
 				'delete_others_posts' => 'manage_options',
-				'read_private_posts'	=> 'manage_options',
-				'edit_post'					  => 'manage_options',
-				'delete_post'				  => 'manage_options',
-				'read_post'					  => 'manage_options',
+				'read_private_posts'  => 'manage_options',
+				'edit_post'           => 'manage_options',
+				'delete_post'         => 'manage_options',
+				'read_post'           => 'manage_options',
 			),
 		);
 
@@ -624,7 +624,7 @@ class Alerts {
 
 		$post_status = $post->post_status;
 		if ( 'auto-draft' === $post_status ) {
-			$post_status = 'wp_stream_disabled';
+			$post_status = 'wp_stream_enabled';
 		}
 		// @todo send as ob?
 		?>

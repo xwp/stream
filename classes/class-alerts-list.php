@@ -119,10 +119,9 @@ class Alerts_List {
 				echo '<div>' . join( '', $values ) . '</div>'; // Xss ok.
 				break;
 			case 'alert_status' :
-				$post_status = get_post_status( $post_id );
-				$post_status_object = get_post_status_object( $post_status );
-				if ( $post_status_object ) {
-					esc_html( $post_status_object->label );
+				$post_status_object = get_post_status_object( get_post_status( $post_id ) );
+				if ( ! empty( $post_status_object ) ) {
+					echo esc_html( $post_status_object->label );
 				}
 				break;
 		}
