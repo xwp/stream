@@ -95,11 +95,6 @@ class Plugin {
 			);
 		}
 
-		// TODO: remove tmp action & rework class-install
-		add_action( 'wp_stream_no_tables', function() {
-			return true;
-		} );
-
 		// Load languages
 		add_action( 'plugins_loaded', array( $this, 'i18n' ) );
 
