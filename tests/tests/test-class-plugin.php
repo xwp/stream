@@ -33,6 +33,16 @@ class Test_Plugin extends WP_StreamTestCase {
 	public function test_i18n() {
 		global $l10n;
 
+		/**
+		 * Make sure we get the correct MO file during tests.
+		 * WP looks in develop installation where MO file is not found.
+		 */
+		add_filter( 'load_textdomain_mofile', function( $mofile ) {
+			$locale = get_locale();
+			$mofile = sprintf( '%s/languages/stream-%s.mo', $this->plugin->locations['dir'], $locale );
+			return $mofile;
+		} );
+
 		$this->plugin->i18n();
 		$this->assertArrayHasKey( 'stream', $l10n );
 	}
