@@ -2,7 +2,7 @@ jQuery( function( $ ) {
 	$( '.select2-select.connector_or_context' ).each( function( k, el ) {
 		$( el ).select2({
 			allowClear: true,
-			placeholder: "Any Context",
+			placeholder: streamAlerts.anyContext,
 			templateResult: function( item ) {
 				if ( 'undefined' === typeof item.id ) {
 					return item.text;
@@ -70,7 +70,7 @@ jQuery( function( $ ) {
 			element_id_split[ element_id_split.length - 1 ].slice(1);
 		$( this ).select2( {
 			allowClear: true,
-			placeholder: "Any " + select_name,
+			placeholder: streamAlerts.any + ' ' + select_name
 		});
 	});
 
