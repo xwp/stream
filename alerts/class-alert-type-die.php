@@ -1,7 +1,10 @@
 <?php
 /**
  * Used for debugging.
+ *
+ * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 /**

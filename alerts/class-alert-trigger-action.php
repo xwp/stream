@@ -4,6 +4,7 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 /**

@@ -2,8 +2,6 @@
 /**
  * Alerts feature class.
  *
- * @todo replace post type name with a constant.
- *
  * @package WP_Stream
  */
 
@@ -265,7 +263,6 @@ class Alerts {
 	 * @return void
 	 */
 	public function register_post_type() {
-		// @todo convert these to spaces.
 		$labels = array(
 			'name'               => _x( 'Alerts', 'post type general name', 'stream' ),
 			'singular_name'      => _x( 'Alert', 'post type singular name', 'stream' ),
@@ -283,7 +280,6 @@ class Alerts {
 			'not_found_in_trash' => __( 'No alerts found in Trash.', 'stream' ),
 		);
 
-		// @todo convert these to spaces.
 		$args = array(
 			'labels'              => $labels,
 			'description'         => __( 'Alerts for Stream.', 'stream' ),
@@ -537,14 +533,14 @@ class Alerts {
 		$alert = $this->get_alert( $post_id );
 		if ( ! $alert ) {
 			wp_send_json_error( array(
-				'message' => 'Could not find alert.',  // @todo l10n?
+				'message' => 'Could not find alert.',
 			) );
 		}
 
 		$alert_type = wp_stream_filter_input( INPUT_POST, 'alert_type' );
 		if ( ! array_key_exists( $alert_type, $this->alert_types ) ) {
 			wp_send_json_error( array(
-				'message' => 'Could not find alert type.', // @todo l10n?
+				'message' => 'Could not find alert type.',
 			) );
 		}
 
@@ -648,12 +644,14 @@ class Alerts {
 	 * @return void
 	 */
 	function display_submit_box( $post ) {
-		// @todo check that post exists.
+		if ( empty( $post ) ) {
+			return;
+		}
+
 		$post_status = $post->post_status;
 		if ( 'auto-draft' === $post_status ) {
 			$post_status = 'wp_stream_enabled';
 		}
-		// @todo send as ob?
 		?>
 		<div class="submitbox" id="submitpost">
 		<div id="minor-publishing">
@@ -717,8 +715,7 @@ class Alerts {
 	 */
 	function save_post_info( $data, $postarr ) {
 
-		// @todo ensure $_POST is sanitized.
-		if ( ! isset( $_POST['wp_stream_alerts_nonce'] ) || ! wp_verify_nonce( $_POST['wp_stream_alerts_nonce'], 'save_post' ) ) {
+		if ( ! isset( $_POST['wp_stream_alerts_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wp_stream_alerts_nonce'] ) ), 'save_post' ) ) {
 				return $data;
 		}
 
