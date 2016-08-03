@@ -133,6 +133,9 @@ class Form_Generator {
 						'text'     => '',
 						'children' => array(),
 					) );
+					if ( empty( $parent['id'] ) ) {
+						continue;
+					}
 					if ( is_array( $args['value'] ) ) {
 						$selected = selected( in_array( $parent['id'], $args['value'], true ), true, false );
 					} else {
