@@ -28,6 +28,13 @@ class Alert_Type_Highlight extends Alert_Type {
 	public $slug = 'highlight';
 
 	/**
+	 * The Plugin
+	 *
+	 * @var Plugin
+	 */
+	public $plugin;
+
+	/**
 	 * Class Constructor
 	 *
 	 * @param Plugin $plugin Plugin object.
@@ -35,24 +42,26 @@ class Alert_Type_Highlight extends Alert_Type {
 	 */
 	public function __construct( $plugin ) {
 		parent::__construct( $plugin );
+		$this->plugin = $plugin;
 		if ( is_admin() ) {
 			add_filter( 'wp_stream_record_classes', array( $this, 'post_class' ), 10, 2 );
 		}
 	}
 
 	/**
-	 * Adds a highlight to the record that triggered the alert.
+	 * Record that the Alert was triggered by a Record.
 	 *
-	 * @param int   $record_id Record that triggered alert.
-	 * @param array $recordarr Record details.
-	 * @param array $options Alert options.
+	 * In self::post_class() this value is checked so we can determine
+	 * if the class should be added to the Record's display.
+	 *
+	 * @param int|string $record_id Record that triggered alert.
+	 * @param array      $recordarr Record details.
+	 * @param object     $alert Alert options.
 	 * @return void
 	 */
-	public function alert( $record_id, $recordarr, $options ) {
-		$options = wp_parse_args( $options, array(
-			'color' => 'yellow',
-		) );
-		$this->plugin->db->insert_meta( $record_id, 'highlight', $options['color'] );
+	public function alert( $record_id, $recordarr, $alert ) {
+		$recordarr['ID'] = $record_id;
+		Alert::update_record_triggered_alerts( (object) $recordarr, $this->slug, $alert->ID );
 	}
 
 	/**
@@ -110,14 +119,24 @@ class Alert_Type_Highlight extends Alert_Type {
 	/**
 	 * Apply highlight to records
 	 *
-	 * @param array $classes List of classes being applied to the post.
-	 * @param array $recordarr Record data.
+	 * @param array  $classes List of classes being applied to the post.
+	 * @param object $record Record data.
 	 * @return array New list of classes.
 	 */
-	public function post_class( $classes, $recordarr ) {
-		if ( ! empty( $recordarr->meta['highlight'] ) ) {
-				$classes[] = 'highlight-notification-' . esc_attr( $recordarr->meta['highlight'] );
+	public function post_class( $classes, $record ) {
+		$alert_item = new \stdClass();
+		$alert = new Alert( $alert_item, $this->plugin );
+		$color = $alert->get_triggered_alert_setting_value( $record, $this->slug, 'color', 'yellow' );
+
+		if ( empty( $color ) || ! is_string( $color ) ) {
+			return $classes;
 		}
+
+		$new_class = 'highlight-notification-' . esc_attr( $color );
+		if ( ! in_array( $new_class, $classes, true ) ) {
+			$classes[] = 'alert-highlight highlight-notification-' . esc_attr( $color );
+		}
+
 		return $classes;
 	}
 }
