@@ -1,4 +1,4 @@
-/* globals wp, jQuery, streamAlerts */
+/* globals jQuery, streamAlerts */
 ( function( $ ) {
 	$( '.select2-select.connector_or_context' ).each( function( k, el ) {
 		$( el ).select2({

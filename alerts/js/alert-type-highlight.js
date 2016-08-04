@@ -53,10 +53,10 @@ var streamAlertTypeHighlight = ( function( $ ) {
 					/**
 					 * Fires when Ajax complete.
 					 */
-					ajaxDone = function() {
+					function ajaxDone() {
 						el.parents( '.alert-highlight' ).removeClass( 'alert-highlight' );
 						el.remove();
-					};
+					}
 				});
 			});
 		}); // End document.ready().
