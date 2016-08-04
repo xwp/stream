@@ -238,33 +238,9 @@ class Alert {
 		$this->get_alert_type_obj()->alert( $record_id, $recordarr, $this );
 	}
 
-	public static function get_record_triggered_alerts( $record, $alert_slug, $single_alert_id ) {
-		if ( ! is_string( $alert_slug ) || ! is_numeric( $single_alert_id ) ) {
-			return false;
-		}
-
-		if ( is_array( $record ) ) {
-			$record = (object) $record;
-		}
-		if ( empty( $record->ID ) ) {
-			return false;
-		}
-		$record = new Record( $record );
-		$alerts_triggered = $record->get_meta( Alerts::ALERTS_TRIGGERED_META_KEY, true );
-
-		if ( empty( $alerts_triggered ) || ! is_array( $alerts_triggered ) ) {
-			$alerts_triggered = array( $alert_slug => array( $single_alert_id ) );
-		} else if ( ! array_key_exists( $alert_slug, $alerts_triggered ) || ! is_array( $alerts_triggered[ $alert_slug ] ) ) {
-			$alerts_triggered[ $alert_slug ] = array( $single_alert_id );
-		} else if ( ! in_array( $single_alert_id, $alerts_triggered[ $alert_slug ] ) ) {
-			$alerts_triggered[ $alert_slug ][] = $single_alert_id;
-		}
-		return $record->update_meta( Alerts::ALERTS_TRIGGERED_META_KEY, $alerts_triggered );
-	}
-
 	/**
 	 * Record Alerts triggered by a Record.
-	 * 
+	 *
 	 * This should be used any time an alert is triggered.
 	 *
 	 * Stores the post ID of an Alert triggered by a record.
@@ -299,7 +275,7 @@ class Alert {
 			$alerts_triggered = array( $alert_slug => array( $single_alert_id ) );
 		} else if ( ! array_key_exists( $alert_slug, $alerts_triggered ) || ! is_array( $alerts_triggered[ $alert_slug ] ) ) {
 			$alerts_triggered[ $alert_slug ] = array( $single_alert_id );
-		} else if ( ! in_array( $single_alert_id, $alerts_triggered[ $alert_slug ] ) ) {
+		} else if ( ! in_array( $single_alert_id, $alerts_triggered[ $alert_slug ], true ) ) {
 			$alerts_triggered[ $alert_slug ][] = $single_alert_id;
 		}
 		return $record->update_meta( Alerts::ALERTS_TRIGGERED_META_KEY, $alerts_triggered );
@@ -361,7 +337,4 @@ class Alert {
 		$value = ! empty( $alert->alert_meta[ $setting ] ) ? $alert->alert_meta[ $setting ] : $default;
 		return $value;
 	}
-
-
-
 }
