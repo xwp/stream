@@ -13,7 +13,7 @@ class List_Table extends \WP_List_Table {
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
-	 * @param array $args
+	 * @param array  $args
 	 */
 	function __construct( $plugin, $args = array() ) {
 		$this->plugin = $plugin;
@@ -873,10 +873,10 @@ class List_Table extends \WP_List_Table {
 		$classes      = apply_filters( 'wp_stream_record_classes', array(), $item );
 		$class_string = '';
 		if ( ! empty( $classes ) ) {
-			$class_string = ' class="' . esc_attr( join( ',', $classes ) ) . '"';
+			$class_string = ' class="' . esc_attr( join( ' ', $classes ) ) . '"';
 		}
 
-		echo sprintf( '<tr%s>', $class_string ); //xss ok
+		echo sprintf( '<tr%s>', $class_string ); // xss ok
 		$this->single_row_columns( $item );
 		echo '</tr>';
 	}

@@ -237,4 +237,131 @@ class Alert {
 	public function send_alert( $record_id, $recordarr ) {
 		$this->get_alert_type_obj()->alert( $record_id, $recordarr, $this );
 	}
+
+	public static function get_record_triggered_alerts( $record, $alert_slug, $single_alert_id ) {
+		if ( ! is_string( $alert_slug ) || ! is_numeric( $single_alert_id ) ) {
+			return false;
+		}
+
+		if ( is_array( $record ) ) {
+			$record = (object) $record;
+		}
+		if ( empty( $record->ID ) ) {
+			return false;
+		}
+		$record = new Record( $record );
+		$alerts_triggered = $record->get_meta( Alerts::ALERTS_TRIGGERED_META_KEY, true );
+
+		if ( empty( $alerts_triggered ) || ! is_array( $alerts_triggered ) ) {
+			$alerts_triggered = array( $alert_slug => array( $single_alert_id ) );
+		} else if ( ! array_key_exists( $alert_slug, $alerts_triggered ) || ! is_array( $alerts_triggered[ $alert_slug ] ) ) {
+			$alerts_triggered[ $alert_slug ] = array( $single_alert_id );
+		} else if ( ! in_array( $single_alert_id, $alerts_triggered[ $alert_slug ] ) ) {
+			$alerts_triggered[ $alert_slug ][] = $single_alert_id;
+		}
+		return $record->update_meta( Alerts::ALERTS_TRIGGERED_META_KEY, $alerts_triggered );
+	}
+
+	/**
+	 * Record Alerts triggered by a Record.
+	 * 
+	 * This should be used any time an alert is triggered.
+	 *
+	 * Stores the post ID of an Alert triggered by a record.
+	 *
+	 * As an example, this exists so that its value(s) can then be used
+	 * to fetch meta from that Alert in later operations.
+	 *
+	 * This also creates the Alert triggered meta if not found.
+	 *
+	 * @see Alert_Type_Highlight::alert() for an example.
+	 *
+	 * @param object     $record The Record.
+	 * @param string     $alert_slug The Alert Type slug.
+	 * @param int|string $single_alert_id The single Alert ID.
+	 * @return bool If the meta was updated successfully.
+	 */
+	public static function update_record_triggered_alerts( $record, $alert_slug, $single_alert_id ) {
+		if ( ! is_string( $alert_slug ) || ! is_numeric( $single_alert_id ) ) {
+			return false;
+		}
+
+		if ( is_array( $record ) ) {
+			$record = (object) $record;
+		}
+		if ( empty( $record->ID ) ) {
+			return false;
+		}
+		$record = new Record( $record );
+		$alerts_triggered = $record->get_meta( Alerts::ALERTS_TRIGGERED_META_KEY, true );
+
+		if ( empty( $alerts_triggered ) || ! is_array( $alerts_triggered ) ) {
+			$alerts_triggered = array( $alert_slug => array( $single_alert_id ) );
+		} else if ( ! array_key_exists( $alert_slug, $alerts_triggered ) || ! is_array( $alerts_triggered[ $alert_slug ] ) ) {
+			$alerts_triggered[ $alert_slug ] = array( $single_alert_id );
+		} else if ( ! in_array( $single_alert_id, $alerts_triggered[ $alert_slug ] ) ) {
+			$alerts_triggered[ $alert_slug ][] = $single_alert_id;
+		}
+		return $record->update_meta( Alerts::ALERTS_TRIGGERED_META_KEY, $alerts_triggered );
+	}
+
+	/**
+	 * Get a meta value from the Alert that a Record has triggered.
+	 *
+	 * If a Record has triggered an Alert (post), this fetches a specific
+	 * Alert meta (i.e., "post meta") value from that Alert.
+	 *
+	 * First, it gets the array of Alerts that the Record has triggered.
+	 * Then, using the requested Alert Type, it grabs the first item (post ID) in
+	 * that Type.
+	 *
+	 * Using that ID, it fetches that Alert post's meta, then
+	 * returns the value of the requested setting (ie., "post meta" field).
+	 *
+	 * @see Alert_Type_Highlight::post_class() for an example.
+	 *
+	 * @param object $record The Record object.
+	 * @param string $alert_slug The slug of the Alert Type.
+	 * @param string $setting The requested meta value of the Alert.
+	 * @param mixed  $default The default value if no value is found.
+	 *
+	 * @return mixed
+	 */
+	public function get_single_alert_setting_from_record( $record, $alert_slug, $setting, $default = false ) {
+		if ( ! is_object( $record ) || ! is_string( $alert_slug ) || ! is_string( $setting ) ) {
+			return false;
+		}
+		$record = new Record( $record );
+		$alerts_triggered = $record->get_meta( Alerts::ALERTS_TRIGGERED_META_KEY, true );
+
+		// Ensure we have a meta array and that this record has triggered a highlight alert.
+		if ( empty( $alerts_triggered ) || ! is_array( $alerts_triggered ) || ! array_key_exists( $alert_slug, $alerts_triggered ) ) {
+			return false;
+		}
+
+		$values = $alerts_triggered[ $alert_slug ];
+		if ( empty( $values ) ) {
+			return false;
+		}
+
+		// Grab an Alert post ID.
+		// @todo determine which Alert post takes priority.
+		if ( is_array( $values ) ) {
+			$post_id = $values[0];
+		} else {
+			$post_id = $values;
+		}
+
+		if ( ! is_numeric( $post_id ) ) {
+			return false;
+		}
+
+		$alert = $this->plugin->alerts->get_alert( $post_id );
+
+		$value = ! empty( $alert->alert_meta[ $setting ] ) ? $alert->alert_meta[ $setting ] : $default;
+		return $value;
+	}
+
+
+
 }

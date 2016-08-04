@@ -17,6 +17,12 @@ class Alerts {
 	 * Alerts post type slug
 	 */
 	const POST_TYPE = 'wp_stream_alerts';
+
+	/**
+	 * Triggered Alerts meta key for Records
+	 */
+	const ALERTS_TRIGGERED_META_KEY = 'wp_stream_alerts_triggered';
+
 	/**
 	 * Hold Plugin class
 	 *

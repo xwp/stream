@@ -547,11 +547,11 @@
 }
 
 
-.toplevel_page_wp_stream tr.highlight-notification-yellow {
+.toplevel_page_wp_stream  .alert-highlight.highlight-yellow {
 	background-color: #F7F8E0;
 }
 
-.toplevel_page_wp_stream tr.highlight-notification-red {
+.toplevel_page_wp_stream .alert-highlight.highlight-red {
 	background-color: #F8E0E0;
 }
 
