@@ -258,7 +258,7 @@ class Alerts {
 	 */
 	function register_scripts( $page ) {
 		if ( 'post.php' === $page || 'post-new.php' === $page ) {
-			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2' ) );
+			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2', 'jquery' ) );
 			wp_localize_script( 'wp-stream-alerts', 'streamAlerts',
 				array(
 					'any'        => __( 'Any', 'stream' ),

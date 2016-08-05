@@ -1,5 +1,5 @@
 /* globals jQuery, streamAlerts */
-( function( $ ) {
+jQuery( function( $ ) {
 	$( '.select2-select.connector_or_context' ).each( function( k, el ) {
 		$( el ).select2({
 			allowClear: true,
@@ -119,5 +119,4 @@
 	$alertSettingSelect.change( function() {
 		loadAlertSettings( $( this ).val() );
 	});
-
-})( jQuery );
+});
