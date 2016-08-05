@@ -555,6 +555,16 @@
 	background-color: #F8E0E0;
 }
 
+.toplevel_page_wp_stream .alert-highlight.highlight-green {
+	background-color: #d9ebb8;
+}
+
+.toplevel_page_wp_stream .alert-highlight.highlight-blue {
+	background-color: #b6d6e4;
+}
+
+
+
 /* Alert List Page */
 .post-type-wp_stream_alerts #posts-filter #post-query-submit {
 	display: none;
