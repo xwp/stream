@@ -25,17 +25,17 @@ var streamAlertTypeHighlight = ( function( $ ) {
 			 * @returns void.
 			 */
 			$( '.alert-highlight .action-link[href="#"]' ).each( function() {
-				var el = $( this );
+				var actionLink = $( this );
 
 				/**
 				 * Ajax call to remove the highlight.
 				 *
 				 * @returns void.
 				 */
-				el.click( function( e ) {
+				actionLink.click( function( e ) {
 					var recordId;
 					e.preventDefault();
-					recordId = el.parents( '.alert-highlight' ).attr( 'class' ).match( /record\-id\-[\w-]*\b/ );
+					recordId = actionLink.parents( '.alert-highlight' ).attr( 'class' ).match( /record\-id\-[\w-]*\b/ );
 					recordId = recordId[0].replace( 'record-id-', '' );
 
 					$.post( self.ajaxUrl,
@@ -54,8 +54,19 @@ var streamAlertTypeHighlight = ( function( $ ) {
 					 * Fires when Ajax complete.
 					 */
 					function ajaxDone() {
-						el.parents( '.alert-highlight' ).removeClass( 'alert-highlight' );
-						el.remove();
+						var row = actionLink.parents( '.alert-highlight' ),
+							odd = $( '.striped > tbody > :nth-child( odd )' );
+						if ( row.is( odd ) ) {
+							row.animate( { backgroundColor: '#f9f9f9' }, 300, function() {
+								row.removeClass( 'alert-highlight' );
+							});
+						} else {
+							row.animate( { backgroundColor: '' }, 300, function() {
+								row.removeClass( 'alert-highlight' );
+							});
+						}
+
+					actionLink.remove();
 					}
 				});
 			});
