@@ -65,8 +65,7 @@ var streamAlertTypeHighlight = ( function( $ ) {
 								row.removeClass( 'alert-highlight' );
 							});
 						}
-
-					actionLink.remove();
+						actionLink.remove();
 					}
 				});
 			});

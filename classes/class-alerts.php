@@ -72,6 +72,8 @@ class Alerts {
 		// Add scripts to post screens.
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
 
+		add_action( 'network_admin_menu', array( $this, 'change_menu_link_url' ), 99 );
+
 		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
 
 		add_filter( 'post_updated_messages', array( $this, 'filter_update_messages' ) );
@@ -406,6 +408,7 @@ class Alerts {
 	 * @return void
 	 */
 	function register_menu() {
+
 		add_submenu_page(
 			$this->plugin->admin->records_page_slug,
 			__( 'Alerts', 'stream' ),
@@ -413,6 +416,58 @@ class Alerts {
 			'manage_options',
 			'edit.php?post_type=wp_stream_alerts'
 		);
+	}
+
+	/**
+	 * Modify the Stream > Alerts Network Admin Menu link.
+	 *
+	 * In self::register_menu(), the Alerts submenu item
+	 * is essentially set to go to the Site's admin area.
+	 *
+	 * However, on the Network admin, we need to redirect
+	 * it to the first site in the network, as this is
+	 * where the true Network Alerts settings page is located.
+	 *
+	 * @action network_admin_menu
+	 * @return bool
+	 */
+	function change_menu_link_url() {
+		global $submenu;
+
+		$parent = 'wp_stream';
+		$page   = 'edit.php?post_type=wp_stream_alerts';
+
+		// If we're not on the Stream menu item, return.
+		if ( ! isset( $submenu[ $parent ] ) ) {
+			return false;
+		}
+
+		// Get the first existing Site in the Network.
+		$sites = wp_get_sites(
+			array(
+				'limit' => 5, // Limit the size of the query.
+			)
+		);
+
+		$site_id = '1';
+
+		// Function wp_get_sites() can return an empty array if the network is too large.
+		if ( ! empty( $sites ) && ! empty( $sites[0]['blog_id'] ) ) {
+			$site_id = $sites[0]['blog_id'];
+		}
+
+		$new_url = get_admin_url( $site_id, $page );
+
+		foreach ( $submenu[ $parent ] as $key => $value ) {
+
+			// Set correct URL for the menu item.
+			if ( $page === $value[2] ) {
+				$submenu[ $parent ][ $key ][2] = $new_url;
+				break;
+			}
+		}
+
+		return true;
 	}
 
 	/**
