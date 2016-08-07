@@ -622,6 +622,9 @@
 	padding: 0;
 }
 
+#wp_stream_alerts_preview td.summary.column-summary .row-actions {
+	display: none;
+}
 /* Extensions */
 
 .post-type-stream_notification .view-switch {
