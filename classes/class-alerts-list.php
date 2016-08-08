@@ -115,9 +115,15 @@ class Alerts_List {
 		switch ( $column_name ) {
 			case 'alert_type' :
 				$alert_type = $alert->alert_type;
+				if ( ! empty( $this->plugin->alerts->alert_types[ $alert_type ]->name ) ) {
+					$alert_name = $this->plugin->alerts->alert_types[ $alert_type ]->name;
+
+				} else {
+					$alert_name = 'Untitled Alert';
+				}
 				echo wp_kses_post(
 					edit_post_link(
-						$this->plugin->alerts->alert_types[ $alert_type ]->name,
+						$alert_name,
 						'<strong>',
 						'</strong>',
 						$post_id,
