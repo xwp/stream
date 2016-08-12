@@ -263,8 +263,6 @@ class Alerts {
 				array(
 					'any'        => __( 'Any', 'stream' ),
 					'anyContext' => __( 'Any Context', 'stream' ),
-					'anyAuthor'  => __( 'Any Author', 'stream' ),
-					'anyAction'  => __( 'Any Action', 'stream' ),
 					)
 			);
 			wp_enqueue_script( 'wp-stream-alerts' );

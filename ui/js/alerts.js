@@ -66,14 +66,12 @@ jQuery( function( $ ) {
 	});
 
 	$( '.select2-select:not(.connector_or_context)' ).each( function() {
-		var element_id = $( this ).attr( 'id');
-		var element_id_split = element_id.split( '_' );
+		var element_id_split = $( this ).attr( 'id').split( '_' );
 		var select_name = element_id_split[ element_id_split.length - 1 ].charAt(0).toUpperCase() +
 			element_id_split[ element_id_split.length - 1 ].slice(1);
-
-		$( '#' + element_id ).select2({
+		$( this ).select2( {
 			allowClear: true,
-			placeHolder: 'Any ' + select_name,
+			placeholder: streamAlerts.any + ' ' + select_name
 		});
 	});
 

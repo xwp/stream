@@ -38,10 +38,10 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * @return bool False on failure, otherwise should return original value of $success.
 	 */
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
-		if ( ! empty( $alert->alert_meta['trigger_context'] ) && $recordarr['context'] !== $alert->alert_meta['trigger_context'] ) {
+		if ( ! empty( $alert->alert_meta['trigger_connector'] ) && $recordarr['connector'] !== $alert->alert_meta['trigger_connector'] ) {
 			return false;
 		}
-		if ( ! empty( $alert->alert_meta['trigger_connector'] ) && $recordarr['connector'] !== $alert->alert_meta['trigger_connector'] ) {
+		if ( ! empty( $alert->alert_meta['trigger_context'] ) && $recordarr['context'] !== $alert->alert_meta['trigger_context'] ) {
 			return false;
 		}
 		return $success;
@@ -72,10 +72,10 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		$form->add_field( 'select2', array(
 			'name'        => 'wp_stream_trigger_connector_or_context',
 			'options'     => $this->get_values(),
-			'data' => array(
+			'classes'     => 'wp_stream_ajax_forward connector_or_context',
+			'data'        => array(
 				'placeholder' => __( 'Any Context', 'stream' ),
 			),
-			'classes'     => 'wp_stream_ajax_forward connector_or_context',
 		) );
 
 		$form->add_field( 'hidden', array(
@@ -187,12 +187,12 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * @return array The new query arguments.
 	 */
 	public function filter_preview_query( $query_args, $alert ) {
+		if ( ! empty( $alert->alert_meta['trigger_connector'] ) ) {
+				$query_args['connector'] = $alert->alert_meta['trigger_connector'];
+		}
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
 				$query_args['context'] = $alert->alert_meta['trigger_context'];
 		}
-		/*if ( ! empty( $alert->alert_meta['trigger_connector'] ) ) {
-			$query_args['connector'] = $alert->alert_meta['trigger_connector'];
-		}*/
 		return $query_args;
 	}
 }

@@ -127,7 +127,7 @@ class Alert_Type_Highlight extends Alert_Type {
 		return array(
 			'yellow' => __( 'Yellow', 'stream' ),
 			'red'    => __( 'Red', 'stream' ),
-			'gree'   => __( 'Green', 'stream' ),
+			'green'  => __( 'Green', 'stream' ),
 			'blue'   => __( 'Blue', 'stream' ),
 		);
 	}

@@ -117,7 +117,6 @@ class Alerts_List {
 				$alert_type = $alert->alert_type;
 				if ( ! empty( $this->plugin->alerts->alert_types[ $alert_type ]->name ) ) {
 					$alert_name = $this->plugin->alerts->alert_types[ $alert_type ]->name;
-
 				} else {
 					$alert_name = 'Untitled Alert';
 				}
