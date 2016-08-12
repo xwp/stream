@@ -96,6 +96,7 @@ class Alerts {
 			'none',
 			'highlight',
 			'email',
+			'iftt',
 		);
 
 		$classes = array();

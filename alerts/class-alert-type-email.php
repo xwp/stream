@@ -33,8 +33,6 @@ class Alert_Type_Email extends Alert_Type {
 	/**
 	 * Sends an email to the given recipient.
 	 *
-	 * @todo ensure all array values are set.
-	 *
 	 * @param int   $record_id Record that triggered notification.
 	 * @param array $recordarr Record details.
 	 * @param array $alert Alert options.
