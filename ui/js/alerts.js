@@ -1,4 +1,4 @@
-/* globals jQuery, streamAlerts */
+/* globals jQuery, streamAlerts, JSON */
 jQuery( function( $ ) {
 	$( '.select2-select.connector_or_context' ).each( function( k, el ) {
 		$( el ).select2({
@@ -124,26 +124,26 @@ jQuery( function( $ ) {
 		});
 	};
 	var updateActions = function( connector ) {
-		var trigger_action = $("#wp_stream_trigger_action");
+		var trigger_action = $('#wp_stream_trigger_action');
 		trigger_action.empty();
-		trigger_action.prop("disabled", true);
+		trigger_action.prop('disabled', true);
 
-		var placeholder = $("<option/>", {value: '', text: ''});
+		var placeholder = $('<option/>', {value: '', text: ''});
 		trigger_action.append( placeholder );
 
 		var data = {
 			'action'    : 'update_actions',
-			'connector' : connector,
+			'connector' : connector
 		};
 
 		$.post( window.ajaxurl, data, function( response ) {
 			var json_response = JSON.parse( response );
 			$.each( json_response, function( index, value ) {
-				var option = $("<option/>", { value: index, text: value } );
+				var option = $('<option/>', { value: index, text: value } );
 				trigger_action.append( option );
 				trigger_action.select2( 'data', { id: index, text: value } );
 			});
-			trigger_action.prop("disabled", false);
+			trigger_action.prop('disabled', false);
 		});
 	};
 
