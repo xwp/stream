@@ -81,6 +81,7 @@ class Alerts {
 
 		add_action( 'wp_ajax_load_alerts_settings', array( $this, 'load_alerts_settings' ) );
 		add_action( 'wp_ajax_load_alert_preview', array( $this, 'display_preview_box_ajax' ) );
+		add_action( 'wp_ajax_update_actions', array( $this, 'update_actions' ) );
 
 		$this->load_alert_types();
 		$this->load_alert_triggers();
@@ -807,5 +808,22 @@ class Alerts {
 		$data = $alert->process_settings_form( $data );
 
 		return $data;
+	}
+
+	/**
+	 * Update actions dropdown options based on the connector selected.
+	 */
+	function update_actions() {
+		$connector = sanitize_text_field( $_POST['connector'] );
+		$actions = $GLOBALS['wp_stream']->connectors->term_labels['stream_action'];
+		if ( ! empty( $connector ) ) {
+			$class_name = '\WP_Stream\Connector_'.ucfirst( $connector );
+			if ( class_exists( $class_name ) ) {
+				$connector_class = new $class_name();
+				$actions         = $connector_class->get_action_labels();
+			}
+		}
+		ksort( $actions );
+		die( json_encode( $actions ) );
 	}
 }

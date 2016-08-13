@@ -99,6 +99,14 @@ jQuery( function( $ ) {
 
 	$alertTriggersSelect.change( function() {
 		loadAlertPreview();
+		if ( 'wp_stream_trigger_connector_or_context' === $(this).attr('id') ) {
+			var connector = $(this).val();
+			if ( 0 < connector.indexOf('-') ) {
+				var connector_split = connector.split('-');
+				connector = connector_split[0];
+			}
+			updateActions( connector );
+		}
 	});
 
 	var loadAlertPreview = function() {
@@ -113,6 +121,29 @@ jQuery( function( $ ) {
 
 		$.post( window.ajaxurl, data, function( response ) {
 			$alertPreviewTable.html( response.data.html );
+		});
+	};
+	var updateActions = function( connector ) {
+		var trigger_action = $("#wp_stream_trigger_action");
+		trigger_action.empty();
+		trigger_action.prop("disabled", true);
+
+		var placeholder = $("<option/>", {value: '', text: ''});
+		trigger_action.append( placeholder );
+
+		var data = {
+			'action'    : 'update_actions',
+			'connector' : connector,
+		};
+
+		$.post( window.ajaxurl, data, function( response ) {
+			var json_response = JSON.parse( response );
+			$.each( json_response, function( index, value ) {
+				var option = $("<option/>", { value: index, text: value } );
+				trigger_action.append( option );
+				trigger_action.select2( 'data', { id: index, text: value } );
+			});
+			trigger_action.prop("disabled", false);
 		});
 	};
 
