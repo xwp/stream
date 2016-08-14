@@ -824,6 +824,6 @@ class Alerts {
 			}
 		}
 		ksort( $actions );
-		die( json_encode( $actions ) );
+		die( wp_json_encode( $actions ) );
 	}
 }
