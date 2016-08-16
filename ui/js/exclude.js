@@ -1,4 +1,4 @@
-/* globals ajaxurl, wp_stream_regenerate_alt_rows */
+/* globals ajaxurl, wp_stream_regenerate_alt_rows, JSON */
 jQuery( function( $ ) {
 	var initSettingsSelect2 = function() {
 		var $input_user;
@@ -383,24 +383,24 @@ jQuery( function( $ ) {
 		var action_select = $(element).closest('td').next('td').children( 'select.select2-select.action' );
 
 		action_select.empty();
-		action_select.prop("disabled", true);
+		action_select.prop('disabled', true);
 
-		var placeholder = $("<option/>", {value: '', text: ''});
+		var placeholder = $('<option/>', {value: '', text: ''});
 		action_select.append( placeholder );
 
 		var data = {
 			'action'    : 'update_actions',
-			'connector' : connector,
+			'connector' : connector
 		};
 
 		$.post( window.ajaxurl, data, function( response ) {
 			var json_response = JSON.parse( response );
 			$.each( json_response, function( index, value ) {
-				var option = $("<option/>", { value: index, text: value } );
+				var option = $('<option/>', { value: index, text: value } );
 				action_select.append( option );
 				action_select.select2( 'data', { id: index, text: value } );
 			});
-			action_select.prop("disabled", false);
+			action_select.prop('disabled', false);
 		});
 	};
 	$( document ).ready( function() {
