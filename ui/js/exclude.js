@@ -48,6 +48,14 @@ jQuery( function( $ ) {
 
 					return null;
 				}
+			}).on( 'change', function() {
+				var connector_element = $(this).closest( '.select2-select.connector_or_context' );
+				var connector = connector_element.val();
+				if ( 0 < connector.indexOf('-') ) {
+					var connector_split = connector.split('-');
+					connector = connector_split[0];
+				}
+				updateExclusionActions( connector, connector_element );
 			});
 		});
 
@@ -371,6 +379,30 @@ jQuery( function( $ ) {
 		wp_stream_regenerate_alt_rows( $allRows );
 	}
 
+	var updateExclusionActions = function( connector, element ) {
+		var action_select = $(element).closest('td').next('td').children( 'select.select2-select.action' );
+
+		action_select.empty();
+		action_select.prop("disabled", true);
+
+		var placeholder = $("<option/>", {value: '', text: ''});
+		action_select.append( placeholder );
+
+		var data = {
+			'action'    : 'update_actions',
+			'connector' : connector,
+		};
+
+		$.post( window.ajaxurl, data, function( response ) {
+			var json_response = JSON.parse( response );
+			$.each( json_response, function( index, value ) {
+				var option = $("<option/>", { value: index, text: value } );
+				action_select.append( option );
+				action_select.select2( 'data', { id: index, text: value } );
+			});
+			action_select.prop("disabled", false);
+		});
+	};
 	$( document ).ready( function() {
 		recalculate_rules_found();
 		recalculate_rules_selected();
