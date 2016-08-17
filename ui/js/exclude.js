@@ -1,5 +1,36 @@
 /* globals ajaxurl, wp_stream_regenerate_alt_rows, JSON */
 jQuery( function( $ ) {
+	var updateExclusionActions = function( element ) {
+		var connector_element = $( element ).closest( '.select2-select.connector_or_context' );
+		var connector = connector_element.val();
+		if ( 0 < connector.indexOf('-') ) {
+			var connector_split = connector.split('-');
+			connector = connector_split[0];
+		}
+		var action_select = $(connector_element).closest('td').next('td').children( 'select.select2-select.action' );
+		var action_value = $( action_select ).val();
+		action_select.empty();
+		action_select.prop('disabled', true);
+
+		var placeholder = $('<option/>', {value: '', text: ''});
+		action_select.append( placeholder );
+
+		var data = {
+			'action'    : 'update_actions',
+			'connector' : connector
+		};
+		$.post( window.ajaxurl, data, function( response ) {
+			var json_response = JSON.parse( response );
+			$.each( json_response, function( index, value ) {
+				var option = $('<option/>', { value: index, text: value } );
+				action_select.append( option );
+				action_select.select2( 'data', { id: index, text: value } );
+			});
+			action_select.val( action_value ).trigger('change');
+			action_select.prop('disabled', false);
+
+		});
+	};
 	var initSettingsSelect2 = function() {
 		var $input_user;
 
@@ -49,13 +80,10 @@ jQuery( function( $ ) {
 					return null;
 				}
 			}).on( 'change', function() {
-				var connector_element = $(this).closest( '.select2-select.connector_or_context' );
-				var connector = connector_element.val();
-				if ( 0 < connector.indexOf('-') ) {
-					var connector_split = connector.split('-');
-					connector = connector_split[0];
-				}
-				updateExclusionActions( connector, connector_element );
+				updateExclusionActions( this );
+			}).on( 'load', function() {
+				updateExclusionActions( this );
+				$(this).val(connector);
 			});
 		});
 
@@ -379,30 +407,6 @@ jQuery( function( $ ) {
 		wp_stream_regenerate_alt_rows( $allRows );
 	}
 
-	var updateExclusionActions = function( connector, element ) {
-		var action_select = $(element).closest('td').next('td').children( 'select.select2-select.action' );
-
-		action_select.empty();
-		action_select.prop('disabled', true);
-
-		var placeholder = $('<option/>', {value: '', text: ''});
-		action_select.append( placeholder );
-
-		var data = {
-			'action'    : 'update_actions',
-			'connector' : connector
-		};
-
-		$.post( window.ajaxurl, data, function( response ) {
-			var json_response = JSON.parse( response );
-			$.each( json_response, function( index, value ) {
-				var option = $('<option/>', { value: index, text: value } );
-				action_select.append( option );
-				action_select.select2( 'data', { id: index, text: value } );
-			});
-			action_select.prop('disabled', false);
-		});
-	};
 	$( document ).ready( function() {
 		recalculate_rules_found();
 		recalculate_rules_selected();
