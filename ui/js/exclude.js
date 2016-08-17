@@ -28,7 +28,6 @@ jQuery( function( $ ) {
 			});
 			action_select.val( action_value ).trigger('change');
 			action_select.prop('disabled', false);
-
 		});
 	};
 	var initSettingsSelect2 = function() {
@@ -83,7 +82,6 @@ jQuery( function( $ ) {
 				updateExclusionActions( this );
 			}).on( 'load', function() {
 				updateExclusionActions( this );
-				$(this).val(connector);
 			});
 		});
 
