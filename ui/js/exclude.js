@@ -16,16 +16,23 @@ jQuery( function( $ ) {
 		action_select.append( placeholder );
 
 		var data = {
-			'action'    : 'update_actions',
+			'action'    : 'get_actions',
 			'connector' : connector
 		};
 		$.post( window.ajaxurl, data, function( response ) {
-			var json_response = JSON.parse( response );
-			$.each( json_response, function( index, value ) {
+			var success = response.success,
+			    actions = response.data;
+
+			if ( ! success ) {
+				return;
+			}
+
+			$.each( actions, function( index, value ) {
 				var option = $('<option/>', { value: index, text: value } );
 				action_select.append( option );
 				action_select.select2( 'data', { id: index, text: value } );
 			});
+
 			action_select.val( action_value ).trigger('change');
 			action_select.prop('disabled', false);
 		});

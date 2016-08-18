@@ -67,7 +67,7 @@ class Settings {
 		add_action( 'wp_ajax_stream_get_ips', array( $this, 'get_ips' ) );
 
 		// Ajax callback function to filter actions based on context
-		add_action( 'wp_ajax_update_actions', array( $this, 'update_actions' ) );
+		add_action( 'wp_ajax_get_actions', array( $this, 'get_actions' ) );
 	}
 
 	/**
@@ -1068,17 +1068,24 @@ class Settings {
 	/**
 	 * Update actions dropdown options based on the connector selected.
 	 */
-	function update_actions() {
-		$connector = sanitize_text_field( $_POST['connector'] );
-		$actions = $GLOBALS['wp_stream']->connectors->term_labels['stream_action'];
-		if ( ! empty( $connector ) ) {
-			$class_name = '\WP_Stream\Connector_'.ucfirst( $connector );
-			if ( class_exists( $class_name ) ) {
-				$connector_class = new $class_name();
-				$actions         = $connector_class->get_action_labels();
+	function get_actions() {
+		$connector_name = wp_stream_filter_input( INPUT_POST, 'connector' );
+
+		if ( empty( $connector_name ) ) {
+			wp_send_json_error();
+		}
+
+		$actions = wp_stream_get_instance()->connectors->term_labels['stream_action'];
+
+		$connector_class = '\WP_Stream\Connector_' . ucfirst( $connector_name );
+		if ( class_exists( $connector_class ) ) {
+			$connector = new $connector_class();
+			if ( method_exists( $connector, 'get_action_labels' ) ) {
+				$actions = $connector->get_action_labels();
 			}
 		}
+
 		ksort( $actions );
-		die( wp_json_encode( $actions ) );
+		wp_send_json_success( $actions );
 	}
 }
