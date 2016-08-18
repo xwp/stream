@@ -1,4 +1,4 @@
-/* globals ajaxurl, wp_stream_regenerate_alt_rows, JSON */
+/* globals ajaxurl, wp_stream_regenerate_alt_rows */
 jQuery( function( $ ) {
 	var updateExclusionActions = function( element ) {
 		var connector_element = $( element ).closest( '.select2-select.connector_or_context' );
