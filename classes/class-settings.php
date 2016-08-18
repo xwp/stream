@@ -1069,17 +1069,20 @@ class Settings {
 	 * Update actions dropdown options based on the connector selected.
 	 */
 	function get_actions() {
+		/**
+		 * @var $connector_name String
+		 */
 		$connector_name = wp_stream_filter_input( INPUT_POST, 'connector' );
 
 		if ( empty( $connector_name ) ) {
 			wp_send_json_error();
 		}
 
-		$actions = wp_stream_get_instance()->connectors->term_labels['stream_action'];
+		$actions    = wp_stream_get_instance()->connectors->term_labels['stream_action'];
+		$connectors = wp_stream_get_instance()->connectors->connectors;
 
-		$connector_class = '\WP_Stream\Connector_' . ucfirst( $connector_name );
-		if ( class_exists( $connector_class ) ) {
-			$connector = new $connector_class();
+		if ( isset( $connectors[ $connector_name ] ) ) {
+			$connector = $connectors[ $connector_name ];
 			if ( method_exists( $connector, 'get_action_labels' ) ) {
 				$actions = $connector->get_action_labels();
 			}

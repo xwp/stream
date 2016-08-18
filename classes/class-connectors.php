@@ -93,7 +93,7 @@ class Connectors {
 				continue;
 			}
 			if ( $class->is_dependency_satisfied() ) {
-				$classes[] = $class;
+				$classes[ $class->name ] = $class;
 			}
 		}
 
