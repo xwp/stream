@@ -803,7 +803,7 @@ class Settings {
 						$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
 
 						if ( ! empty( $count ) ) {
-							$args['user_count'] = sprintf( _n( '1 user', '%s users', absint( $count ), 'stream' ), absint( $count ) );
+							$args['user_count'] = sprintf( _n( '%d user', '%d users', absint( $count ), 'stream' ), absint( $count ) );
 						}
 
 						if ( $role_id === $author_or_role ) {
