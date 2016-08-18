@@ -1,4 +1,5 @@
 /* globals wp_stream, ajaxurl */
+var current_connector;
 jQuery( function( $ ) {
 
 	// Shorter timeago strings for English locale
@@ -498,7 +499,56 @@ jQuery( function( $ ) {
 			}
 		});
 	});
+	var updateFilterActions = function( element ) {
+		var connector = 'Any';
+		var connector_element = $( 'select[name="context"]' );
+		var select2_data = connector_element.select2('data');
+		if ( undefined !== select2_data[0].element['attributes']['data-group'] ) {
+			connector = select2_data[0].element['attributes']['data-group'].value;
+		}
 
+		if ( connector === current_connector ) {
+			return;
+		} else {
+			current_connector = connector;
+		}
+
+		if ( 0 < connector.indexOf('-') ) {
+			var connector_split = connector.split('-');
+			connector = connector_split[0];
+		}
+		var action_select = $( 'select[name="action"]' );
+		var action_value = $( action_select ).val();
+		action_select.empty();
+		action_select.prop('disabled', true);
+
+		var placeholder = $('<option/>', {value: '', text: ''});
+		action_select.append( placeholder );
+		var data = {
+			'action'    : 'get_actions',
+			'connector' : connector
+		};
+		$.post( window.ajaxurl, data, function( response ) {
+			var success = response.success,
+				actions = response.data;
+
+			if ( ! success ) {
+				return;
+			}
+			$.each( actions, function( index, value ) {
+				var option = $('<option/>', { value: index, text: value } );
+				action_select.append( option );
+				action_select.select2( 'data', { id: index, text: value } );
+			});
+			action_select.val( action_value ).trigger('change');
+			action_select.prop('disabled', false);
+		});
+	};
+	var context_selector = $( 'select[name="context"]' );
+	context_selector.on( 'change', function() {
+		updateFilterActions( context_selector );
+	});
+	updateFilterActions( context_selector );
 });
 
 jQuery.extend({
