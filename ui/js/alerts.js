@@ -1,6 +1,12 @@
 /* globals jQuery, streamAlerts, JSON */
 jQuery( function( $ ) {
+	var loadAlertSettings, updateActions,
+		$alertSettingSelect = $( '#wp_stream_alert_type' ),
+		$alertSettingForm = $( '#wp_stream_alert_type_form' ),
+		$alertTriggersSelect = $( '#wp_stream_alerts_triggers select.wp_stream_ajax_forward' );
+
 	$( '.select2-select.connector_or_context' ).each( function( k, el ) {
+		var parts;
 		$( el ).select2({
 			allowClear: true,
 			placeholder: streamAlerts.anyContext,
@@ -15,13 +21,13 @@ jQuery( function( $ ) {
 				}
 			},
 			matcher: function( params, data ) {
-				var match = $.extend( true, {}, data );
+				var term, child, i, match = $.extend( true, {}, data );
 
 				if ( null == params.term || '' === $.trim( params.term ) ) {
 					return match;
 				}
 
-				var term = params.term.toLowerCase();
+				term = params.term.toLowerCase();
 
 				match.id = match.id.replace( 'blogs', 'sites' );
 				if ( match.id.toLowerCase().indexOf( term ) >= 0 ) {
@@ -29,8 +35,8 @@ jQuery( function( $ ) {
 				}
 
 				if ( match.children ) {
-					for ( var i = match.children.length - 1; i >= 0; i-- ) {
-						var child = match.children[i];
+					for ( i = match.children.length - 1; i >= 0; i-- ) {
+						child = match.children[i];
 
 						// Remove term from results if it doesn't match.
 						if ( -1 === child.id.toLowerCase().indexOf( term ) ) {
@@ -46,16 +52,16 @@ jQuery( function( $ ) {
 				return null;
 			}
 		}).change( function() {
-			var value = $( this ).val();
+			var parts, value = $( this ).val();
 			if ( value ) {
-				var parts = value.split( '-' );
+				parts = value.split( '-' );
 				$( this ).siblings( '.connector' ).val( parts[0] );
 				$( this ).siblings( '.context' ).val( parts[1] );
 				$( this ).removeAttr( 'name' );
 			}
 		});
 
-		var parts = [
+		parts = [
 			$( el ).siblings( '.connector' ).val(),
 			$( el ).siblings( '.context' ).val()
 		];
@@ -66,23 +72,20 @@ jQuery( function( $ ) {
 	});
 
 	$( '.select2-select:not(.connector_or_context)' ).each( function() {
-		var element_id_split = $( this ).attr( 'id').split( '_' );
-		var select_name = element_id_split[ element_id_split.length - 1 ].charAt(0).toUpperCase() +
-			element_id_split[ element_id_split.length - 1 ].slice(1);
+		var elementIdSplit = $( this ).attr( 'id' ).split( '_' ),
+			selectName = elementIdSplit[ elementIdSplit.length - 1 ].charAt( 0 ).toUpperCase() +
+			elementIdSplit[ elementIdSplit.length - 1 ].slice( 1 );
 		$( this ).select2( {
 			allowClear: true,
-			placeholder: streamAlerts.any + ' ' + select_name
+			placeholder: streamAlerts.any + ' ' + selectName
 		});
 	});
 
-	var $alertSettingSelect = $( '#wp_stream_alert_type' ),
-		$alertSettingForm   = $( '#wp_stream_alert_type_form' );
-
-	var loadAlertSettings = function( alert_type ) {
+	loadAlertSettings = function( alertType ) {
 		var data = {
-			'action'     : 'load_alerts_settings',
-			'alert_type' : alert_type,
-			'post_id'    : $( '#post_ID' ).val()
+			'action': 'load_alerts_settings',
+			'alert_type': alertType,
+			'post_id': $( '#post_ID' ).val()
 		};
 
 		$( '#wp_stream_alerts_triggers input.wp_stream_ajax_forward' ).each( function() {
@@ -94,56 +97,40 @@ jQuery( function( $ ) {
 		});
 	};
 
-	var $alertTriggersSelect = $( '#wp_stream_alerts_triggers select.wp_stream_ajax_forward' ),
-		$alertPreviewTable   = $( '#wp_stream_alerts_preview .inside' );
-
 	$alertTriggersSelect.change( function() {
-		loadAlertPreview();
-		if ( 'wp_stream_trigger_connector_or_context' === $(this).attr('id') ) {
-			var connector = $(this).val();
-			if ( 0 < connector.indexOf('-') ) {
-				var connector_split = connector.split('-');
-				connector = connector_split[0];
+		var connectorSplit, connector;
+		if ( 'wp_stream_trigger_connector_or_context' === $( this ).attr( 'id' ) ) {
+			connector = $( this ).val();
+			if ( 0 < connector.indexOf( '-' ) ) {
+				connectorSplit = connector.split( '-' );
+				connector = connectorSplit[0];
 			}
 			updateActions( connector );
 		}
 	});
 
-	var loadAlertPreview = function() {
-		var data = {
-			'action' : 'load_alert_preview',
-			'post_id': $( '#post_ID' ).val()
-		};
+	updateActions = function( connector ) {
+		var placeholder, data, triggerAction = $( '#wp_stream_trigger_action' );
+		triggerAction.empty();
+		triggerAction.prop( 'disabled', true );
 
-		$( '#wp_stream_alerts_triggers input.wp_stream_ajax_forward' ).each( function() {
-			data[ $( this ).attr( 'name' ) ] = $( this ).val();
-		});
+		placeholder = $( '<option/>', { value: '', text: '' } );
+		triggerAction.append( placeholder );
 
-		$.post( window.ajaxurl, data, function( response ) {
-			$alertPreviewTable.html( response.data.html );
-		});
-	};
-	var updateActions = function( connector ) {
-		var trigger_action = $('#wp_stream_trigger_action');
-		trigger_action.empty();
-		trigger_action.prop('disabled', true);
-
-		var placeholder = $('<option/>', {value: '', text: ''});
-		trigger_action.append( placeholder );
-
-		var data = {
-			'action'    : 'update_actions',
-			'connector' : connector
+		data = {
+			'action': 'update_actions',
+			'security': streamAlerts.security,
+			'connector': connector
 		};
 
 		$.post( window.ajaxurl, data, function( response ) {
-			var json_response = JSON.parse( response );
-			$.each( json_response, function( index, value ) {
-				var option = $('<option/>', { value: index, text: value } );
-				trigger_action.append( option );
-				trigger_action.select2( 'data', { id: index, text: value } );
+			var jsonResponse = JSON.parse( response );
+			$.each( jsonResponse, function( index, value ) {
+				var option = $( '<option/>', { value: index, text: value } );
+				triggerAction.append( option );
+				triggerAction.select2( 'data', { id: index, text: value } );
 			});
-			trigger_action.prop('disabled', false);
+			triggerAction.prop( 'disabled', false );
 		});
 	};
 

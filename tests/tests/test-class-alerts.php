@@ -217,7 +217,6 @@ class Test_Alerts extends WP_StreamTestCase {
 
 		$this->assertArrayHasKey( 'wp_stream_alerts_triggers', $wp_meta_boxes[ $page ]['normal']['high'] );
 		$this->assertArrayHasKey( 'wp_stream_alerts_alert_type', $wp_meta_boxes[ $page ]['normal']['default'] );
-		$this->assertArrayHasKey( 'wp_stream_alerts_preview', $wp_meta_boxes[ $page ]['advanced']['low'] );
 		$this->assertArrayHasKey( 'wp_stream_alerts_submit', $wp_meta_boxes[ $page ]['side']['default'] );
 	}
 
@@ -336,34 +335,7 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertTrue( $len_test, 'Output length greater than zero.' );
 
 		$field_test = strpos( $output, 'wp_stream_alerts_nonce' ) !== -1;
-		$this->assertTrue( $len_test, 'Nonce field is present.' );
-	}
-
-	function test_display_preview_box() {
-		$alerts = new Alerts( $this->plugin );
-
-		$data = $this->dummy_alert_data();
-		$data->ID = 0;
-		$alert = new Alert( $data, $this->plugin );
-		$post_id = $alert->save();
-
-		// @codingStandardsIgnoreStart
-		$GLOBALS['hook_suffix'] = '';
-		// @codingStandardsIgnoreEnd
-
-		ob_start();
-		$alerts->display_preview_box( get_post( $alert->ID ) );
-		$output = ob_get_contents();
-		ob_end_clean();
-
-		$len_test = strlen( $output ) > 0;
-		$this->assertTrue( $len_test, 'Output length greater than zero.' );
-	}
-
-	function test_display_preview_box_ajax() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
+		$this->assertTrue( $field_test, 'Nonce field is present.' );
 	}
 
 	function test_display_submit_box() {

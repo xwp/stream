@@ -24,6 +24,11 @@ class Alerts {
 	const ALERTS_TRIGGERED_META_KEY = 'wp_stream_alerts_triggered';
 
 	/**
+	 * Nonce name.
+	 */
+	const NONCE_NAME = 'wp-stream-alerts-nonce';
+
+	/**
 	 * Hold Plugin class
 	 *
 	 * @var Plugin
@@ -80,7 +85,6 @@ class Alerts {
 		add_filter( 'wp_insert_post_data', array( $this, 'save_post_info' ), 10, 2 );
 
 		add_action( 'wp_ajax_load_alerts_settings', array( $this, 'load_alerts_settings' ) );
-		add_action( 'wp_ajax_load_alert_preview', array( $this, 'display_preview_box_ajax' ) );
 		add_action( 'wp_ajax_update_actions', array( $this, 'update_actions' ) );
 
 		$this->load_alert_types();
@@ -265,6 +269,7 @@ class Alerts {
 				array(
 					'any'        => __( 'Any', 'stream' ),
 					'anyContext' => __( 'Any Context', 'stream' ),
+					'security'   => wp_create_nonce( self::NONCE_NAME ),
 					)
 			);
 			wp_enqueue_script( 'wp-stream-alerts' );
@@ -514,15 +519,6 @@ class Alerts {
 		);
 
 		add_meta_box(
-			'wp_stream_alerts_preview',
-			__( 'Records matching these triggers', 'stream' ),
-			array( $this, 'display_preview_box' ),
-			self::POST_TYPE,
-			'advanced',
-			'low'
-		);
-
-		add_meta_box(
 			'wp_stream_alerts_submit',
 			__( 'Alert Status', 'stream' ),
 			array( $this, 'display_submit_box' ),
@@ -644,70 +640,6 @@ class Alerts {
 	}
 
 	/**
-	 * Display Preview Meta Box
-	 *
-	 * @param WP_Post $post Post object for current alert.
-	 * @return void
-	 */
-	function display_preview_box( $post ) {
-
-		// @todo check that post ID exists.
-		$alert = $this->get_alert( $post->ID );
-		$table = new Preview_List_Table( $this->plugin );
-
-		$query = array(
-			'records_per_page' => apply_filters( 'stream_records_per_page', 20 ),
-		);
-
-		$query = apply_filters( 'stream_alerts_preview_query', $query, $alert );
-		$items = $this->plugin->db->query( $query );
-
-		$table->set_records( $items );
-		$table->display();
-
-	}
-
-	/**
-	 * Output Preview Box based on AJAX changes.
-	 *
-	 * @action wp_ajax_load_alert_preview
-	 *
-	 * @return void
-	 */
-	function display_preview_box_ajax() {
-
-		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
-		$post = get_post( $post_id );
-		if ( ! $post ) {
-			wp_send_json_error( array(
-				'message' => 'Could not find alert.', // @todo l10n?
-			) );
-		}
-
-		$alert = $this->get_alert( $post->ID );
-		$table = new Preview_List_Table( $this->plugin );
-
-		do_action( 'wp_stream_alert_trigger_form_save', $alert );
-
-		$query = array(
-			'records_per_page' => apply_filters( 'stream_records_per_page', 20 ),
-		);
-
-		$query = apply_filters( 'stream_alerts_preview_query', $query, $alert );
-		$items = $this->plugin->db->query( $query );
-
-		ob_start();
-
-		$table->set_records( $items );
-		$table->display();
-		$content = ob_get_contents();
-		ob_end_clean();
-
-		$output = array( 'html' => $content );
-		wp_send_json_success( $output );
-	}
-
-	/**
 	 * Display Submit Box
 	 *
 	 * @param WP_Post $post Post object for current alert.
@@ -814,10 +746,14 @@ class Alerts {
 	 * Update actions dropdown options based on the connector selected.
 	 */
 	function update_actions() {
-		$connector = sanitize_text_field( $_POST['connector'] );
+		check_ajax_referer( self::NONCE_NAME, 'security' );
+		if ( empty( $_POST['connector'] ) ) {
+			return false;
+		}
+		$connector = sanitize_text_field( wp_unslash( $_POST['connector'] ) );
 		$actions = $GLOBALS['wp_stream']->connectors->term_labels['stream_action'];
 		if ( ! empty( $connector ) ) {
-			$class_name = '\WP_Stream\Connector_'.ucfirst( $connector );
+			$class_name = '\WP_Stream\Connector_' . ucfirst( $connector );
 			if ( class_exists( $class_name ) ) {
 				$connector_class = new $class_name();
 				$actions         = $connector_class->get_action_labels();

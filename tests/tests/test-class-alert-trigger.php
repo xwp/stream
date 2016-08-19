@@ -26,11 +26,6 @@ abstract class Test_Alert_Trigger extends WP_StreamTestCase {
 
 	abstract function test_save_fields();
 
-	function test_filter_preview_query() {
-		$output = $this->trigger->filter_preview_query( array(), $this->alert );
-		$this->assertNotEmpty( $output );
-	}
-
 	function test_get_display_value() {
 		$output = $this->trigger->get_display_value( 'normal', $this->alert );
 		$this->assertNotEmpty( $output );
