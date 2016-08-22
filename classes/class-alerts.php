@@ -263,7 +263,7 @@ class Alerts {
 	 * @return void
 	 */
 	function register_scripts( $page ) {
-		if ( 'post.php' === $page || 'post-new.php' === $page ) {
+		if ( 'post.php' === $page || 'post-new.php' === $page || 'edit.php' === $page ) {
 			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2', 'jquery' ) );
 			wp_localize_script( 'wp-stream-alerts', 'streamAlerts',
 				array(
@@ -632,7 +632,7 @@ class Alerts {
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
 
 		// @TODO use human readable text.
-		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>'; // @todo Maybe, "when".
+		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>';
 		echo $form->render_fields(); // Xss ok.
 
 		wp_nonce_field( 'save_post', 'wp_stream_alerts_nonce' );

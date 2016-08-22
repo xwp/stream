@@ -34,13 +34,14 @@ class Alerts_List {
 
 		// @todo Make more specific
 		if ( is_admin() ) {
-				add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
+			add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
 		}
 		add_filter( 'views_edit-wp_stream_alerts', array( $this, 'manage_views' ) );
 
 		add_filter( 'manage_wp_stream_alerts_posts_columns', array( $this, 'manage_columns' ) );
 		add_action( 'manage_wp_stream_alerts_posts_custom_column', array( $this, 'column_data' ), 10, 2 );
-
+		add_action( 'quick_edit_custom_box', array( $this, 'display_custom_quick_edit' ), 10, 2 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
 	/**
@@ -89,9 +90,9 @@ class Alerts_List {
 	function manage_columns( $columns ) {
 		$columns = array(
 			'cb' => $columns['cb'],
-			'alert_type' => __( 'Type', 'stream' ),
 			'alert_trigger' => __( 'Trigger', 'stream' ),
-			'alert_status' => __( 'Status', 'stream' ),
+			'alert_type'    => __( 'Type', 'stream' ),
+			'alert_status'  => __( 'Status', 'stream' ),
 		);
 		return $columns;
 	}
@@ -113,6 +114,20 @@ class Alerts_List {
 		}
 
 		switch ( $column_name ) {
+			case 'alert_trigger' :
+				$values = array();
+				foreach ( $this->plugin->alerts->alert_triggers as $trigger_type => $trigger_obj ) {
+					$value = $trigger_obj->get_display_value( 'list_table', $alert );
+					$values[] = '<span class="alert_trigger_value alert_trigger_' . esc_attr( $trigger_type ) . '">' . esc_html( $value ) . '</span>';
+				}
+				?>
+				<div><?php echo wp_kses_post( join( '', $values ) ); ?></div>
+				<div class="row-actions wp-stream-show-mobile">
+					<?php echo wp_kses_post( $this->custom_column_actions( $post_id ) ); ?>
+					<button type="button" class="toggle-row"><span class="screen-reader-text"><?php echo esc_html__( 'Show more details', 'stream' ); ?></span></button>
+				</div>
+				<?php
+				break;
 			case 'alert_type' :
 				$alert_type = $alert->alert_type;
 				if ( ! empty( $this->plugin->alerts->alert_types[ $alert_type ]->name ) ) {
@@ -120,23 +135,10 @@ class Alerts_List {
 				} else {
 					$alert_name = 'Untitled Alert';
 				}
-				echo wp_kses_post(
-					edit_post_link(
-						$alert_name,
-						'<strong>',
-						'</strong>',
-						$post_id,
-						'row-title'
-					)
-				);
-				break;
-			case 'alert_trigger' :
-				$values = array();
-				foreach ( $this->plugin->alerts->alert_triggers as $trigger_type => $trigger_obj ) {
-					$value = $trigger_obj->get_display_value( 'list_table', $alert );
-					$values[] = '<span class="alert_trigger_value alert_trigger_' . esc_attr( $trigger_type ) . '">' . esc_html( $value ) . '</span>';
-				}
-				echo '<div>' . join( '', $values ) . '</div>'; // Xss ok.
+				?>
+				<strong class="row-title"><?php echo esc_html( $alert_name ); ?></strong>
+				<?php
+				echo wp_kses_post( $this->custom_column_actions( $post_id ) );
 				break;
 			case 'alert_status' :
 				$post_status_object = get_post_status_object( get_post_status( $post_id ) );
@@ -169,6 +171,12 @@ class Alerts_List {
 	 * @return array
 	 */
 	function supress_quick_edit( $actions ) {
+		if ( Alerts::POST_TYPE !== get_post_type() ) {
+			return $actions;
+		}
+		unset( $actions['edit'] );
+		unset( $actions['view'] );
+		unset( $actions['trash'] );
 		unset( $actions['inline hide-if-no-js'] );
 		return $actions;
 	}
@@ -187,5 +195,82 @@ class Alerts_List {
 			$status = true;
 		}
 		return $status;
+	}
+	
+	public function custom_column_actions( $post_id ) {
+		ob_start();
+		if ( ! empty( $_GET['post_status'] ) && 'trash' === $_GET['post_status'] ) {
+			$bare_url         = '/wp-admin/post.php?post=' . $post_id . '&amp;action=untrash';
+			$nonce_url        = wp_nonce_url( $bare_url, "untrash-post_" . $post_id );
+			$delete_url       = '/wp-admin/post.php?post=' . $post_id . '&amp;action=delete';
+			$nonce_delete_url = wp_nonce_url( $delete_url, "delete-post_" . $post_id );
+			?>
+			<div class="row-actions">
+				<span class="untrash">
+					<a href="<?php echo esc_url( $nonce_url ); ?>" class="untrash"><?php esc_html_e( 'Restore', 'stream' ); ?></a> |
+				</span>
+				<span class="delete">
+					<a href="<?php echo esc_url( $nonce_delete_url ) ?>" class="submitdelete"><?php esc_html_e( 'Delete Permanently', 'stream' ); ?></a>
+				</span>
+			</div>
+			<?php
+		} else {
+			$bare_url  = '/wp-admin/post.php?post=' . $post_id . '&amp;action=trash';
+			$nonce_url = wp_nonce_url( $bare_url, 'trash-post_' . $post_id );
+			?>
+			<div class="row-actions">
+				<span class="inline hide-if-no-js"><a href="#" class="editinline" aria-label="Quick edit “Hello world!” inline"><?php esc_html_e( 'Edit' ); ?></a>&nbsp;|&nbsp;</span>
+				<span class="trash">
+					<a href="<?php echo esc_url( $nonce_url ); ?>" class="submitdelete"><?php esc_html_e( 'Trash', 'stream' ); ?></a>
+				</span>
+				<?php // @todo remove after development. ?>
+				&nbsp;|&nbsp;<?php edit_post_link( '[FULL POST]', '', '', $post_id, '' ); ?>
+			</div>
+		<?php
+		}
+		return ob_get_clean();
+	}
+
+	public function display_custom_quick_edit() {
+		static $fired = false;
+		if ( false !== $fired ) {
+			return;
+		}
+		wp_nonce_field( plugin_basename( __FILE__ ), Alerts::POST_TYPE . '_edit_nonce' );
+
+		$box_type = array(
+			'triggers',
+			'notification',
+			'submit',
+		);
+		?>
+		<legend class="inline-edit-legend"><?php esc_html_e( 'Edit', 'stream' ); ?></legend>
+		<?php
+		foreach ( $box_type as $type ) : // @todo remove inline styles. ?>
+		<fieldset class="inline-edit-col inline-edit-<?php echo esc_attr( Alerts::POST_TYPE ); ?>">
+			<div class="inline-edit-col">
+				<label class="inline-edit-group">
+					<?php
+					$function_name = 'display_' . $type . '_box';
+					call_user_func( array( $this->plugin->alerts, $function_name ), get_post() );
+					?>
+				</label>
+			</div>
+		</fieldset>
+		<?php
+		endforeach;
+		$fired = true;
+
+	}
+
+	public function enqueue_scripts( $page ) {
+		if ( 'edit.php' !== $page ) {
+			return;
+		}
+		wp_register_script( 'wp-stream-alerts-list-js', $this->plugin->locations['url'] . 'ui/js/alerts-list.js', array( 'wp-stream-alerts', 'jquery' ) );
+		wp_enqueue_script( 'wp-stream-alerts-list-js' );
+		wp_register_style( 'wp-stream-alerts-list-css', $this->plugin->locations['url'] . 'ui/css/alerts-list.css' );
+		wp_enqueue_style( 'wp-stream-alerts-list-css' );
+		wp_enqueue_style( 'wp-stream-select2' );
 	}
 }
