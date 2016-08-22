@@ -196,14 +196,21 @@ class Alerts_List {
 		}
 		return $status;
 	}
-	
+
+	/**
+	 * Render custom Action links.
+	 *
+	 * @param int $post_id WP Post ID.
+	 *
+	 * @return mixed
+	 */
 	public function custom_column_actions( $post_id ) {
 		ob_start();
 		if ( ! empty( $_GET['post_status'] ) && 'trash' === $_GET['post_status'] ) {
 			$bare_url         = '/wp-admin/post.php?post=' . $post_id . '&amp;action=untrash';
-			$nonce_url        = wp_nonce_url( $bare_url, "untrash-post_" . $post_id );
+			$nonce_url        = wp_nonce_url( $bare_url, 'untrash-post_' . $post_id );
 			$delete_url       = '/wp-admin/post.php?post=' . $post_id . '&amp;action=delete';
-			$nonce_delete_url = wp_nonce_url( $delete_url, "delete-post_" . $post_id );
+			$nonce_delete_url = wp_nonce_url( $delete_url, 'delete-post_' . $post_id );
 			?>
 			<div class="row-actions">
 				<span class="untrash">
@@ -231,6 +238,9 @@ class Alerts_List {
 		return ob_get_clean();
 	}
 
+	/**
+	 * Display our custom Quick Edit pane.
+	 */
 	public function display_custom_quick_edit() {
 		static $fired = false;
 		if ( false !== $fired ) {
@@ -263,6 +273,11 @@ class Alerts_List {
 
 	}
 
+	/**
+	 * Enqueue scripts and styles.
+	 *
+	 * @param string $page WP Admin page.
+	 */
 	public function enqueue_scripts( $page ) {
 		if ( 'edit.php' !== $page ) {
 			return;
