@@ -55,9 +55,9 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * @param Alert          $alert The Alert being worked on.
 	 * @return void
 	 */
-	public function add_fields( $form, $alert ) {
+	public function add_fields( $form, $alert = array() ) {
 		$connector = '';
-		if ( ! empty( $alert->alert_meta['trigger_connector'] ) ) {
+		if ( is_object( $alert ) && ! empty( $alert->alert_meta['trigger_connector'] ) ) {
 			$connector = $alert->alert_meta['trigger_connector'];
 		}
 

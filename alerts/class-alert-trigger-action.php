@@ -60,9 +60,9 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 * @param Alert          $alert The Alert being worked on.
 	 * @return void
 	 */
-	public function add_fields( $form, $alert ) {
+	public function add_fields( $form, $alert = array() ) {
 		$value = '';
-		if ( ! empty( $alert->alert_meta['trigger_action'] ) ) {
+		if ( is_object( $alert ) && ! empty( $alert->alert_meta['trigger_action'] ) ) {
 			$value = $alert->alert_meta['trigger_action'];
 		}
 

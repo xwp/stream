@@ -34,12 +34,14 @@ class Alerts_List {
 
 		// @todo Make more specific
 		if ( is_admin() ) {
-				add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
+			add_filter( 'request', array( $this, 'parse_request' ), 10, 2 );
 		}
 		add_filter( 'views_edit-wp_stream_alerts', array( $this, 'manage_views' ) );
 
 		add_filter( 'manage_wp_stream_alerts_posts_columns', array( $this, 'manage_columns' ) );
 		add_action( 'manage_wp_stream_alerts_posts_custom_column', array( $this, 'column_data' ), 10, 2 );
+
+		add_action( 'in_admin_footer', array( $this, 'add_new_form' ) );
 
 	}
 
@@ -187,5 +189,26 @@ class Alerts_List {
 			$status = true;
 		}
 		return $status;
+	}
+
+	/**
+	 * Add a new hidden form to use for creating new alerts.
+	 */
+	public function add_new_form() {
+		$screen = get_current_screen();
+		if ( 'edit-wp_stream_alerts' === $screen->id ) {
+			?>
+			<div id="new-alert-triggers">
+				<?php
+				$this->plugin->alerts->display_triggers_box();
+				?>
+			</div>
+			<div id="new-alert-notifications">
+				<?php
+				$this->plugin->alerts->display_notification_box();
+				?>
+			</div>
+			<?php
+		}
 	}
 }

@@ -52,9 +52,9 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 * @param Alert          $alert The Alert being worked on.
 	 * @return void
 	 */
-	public function add_fields( $form, $alert ) {
+	public function add_fields( $form, $alert = array() ) {
 		$value = '';
-		if ( ! empty( $alert->alert_meta['trigger_author'] ) ) {
+		if ( is_object( $alert ) && ! empty( $alert->alert_meta['trigger_author'] ) ) {
 			$value = $alert->alert_meta['trigger_author'];
 		}
 

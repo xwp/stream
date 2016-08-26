@@ -82,6 +82,7 @@ class Alerts {
 		add_action( 'wp_ajax_load_alerts_settings', array( $this, 'load_alerts_settings' ) );
 		add_action( 'wp_ajax_load_alert_preview', array( $this, 'display_preview_box_ajax' ) );
 		add_action( 'wp_ajax_update_actions', array( $this, 'update_actions' ) );
+		add_action( 'wp_ajax_save_new_alert', array( $this, 'save_new_alert' ) );
 
 		$this->load_alert_types();
 		$this->load_alert_triggers();
@@ -259,7 +260,7 @@ class Alerts {
 	 * @return void
 	 */
 	function register_scripts( $page ) {
-		if ( 'post.php' === $page || 'post-new.php' === $page ) {
+		if ( 'post.php' === $page || 'post-new.php' === $page || 'edit.php' === $page ) {
 			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2', 'jquery' ) );
 			wp_localize_script( 'wp-stream-alerts', 'streamAlerts',
 				array(
@@ -570,14 +571,18 @@ class Alerts {
 	 * @param WP_Post $post Post object for current alert.
 	 * @return void
 	 */
-	function display_notification_box( $post ) {
-		$alert = $this->get_alert( $post->ID );
+	function display_notification_box( $post = array() ) {
+		$alert_type = 'none';
+		if ( is_object( $post ) ) {
+			$alert = $this->get_alert( $post->ID );
+			$alert_type = $alert->alert_type;
+		}
 		$form  = new Form_Generator;
 
 		$field_html = $form->render_field( 'select', array(
 			'id'          => 'wp_stream_alert_type',
 			'name'        => 'wp_stream_alert_type',
-			'value'       => $alert->alert_type,
+			'value'       => $alert_type,
 			'options'     => $this->get_notification_values(),
 			'placeholder' => __( 'No Alert', 'stream' ),
 			'title'       => 'Alert Type:',
@@ -587,7 +592,12 @@ class Alerts {
 		echo $field_html; // Xss ok.
 
 		echo '<div id="wp_stream_alert_type_form">';
-		$alert->get_alert_type_obj()->display_fields( $alert );
+		if ( isset( $alert ) && is_object( $alert ) ) {
+			$alert->get_alert_type_obj()->display_fields( $alert );
+		} else {
+			$this->plugin->alerts->alert_types['none']->display_new_fields();
+		}
+
 		echo '</div>';
 	}
 
@@ -599,13 +609,13 @@ class Alerts {
 	 * @return void
 	 */
 	function load_alerts_settings() {
-		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
+		/*$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
 		$alert = $this->get_alert( $post_id );
 		if ( ! $alert ) {
 			wp_send_json_error( array(
 				'message' => 'Could not find alert.',
 			) );
-		}
+		}*/
 
 		$alert_type = wp_stream_filter_input( INPUT_POST, 'alert_type' );
 		if ( ! array_key_exists( $alert_type, $this->alert_types ) ) {
@@ -615,7 +625,8 @@ class Alerts {
 		}
 
 		ob_start();
-		$this->alert_types[ $alert_type ]->display_fields( $alert );
+		//$this->alert_types[ $alert_type ]->display_fields( $alert );
+		$this->alert_types[ $alert_type ]->display_new_fields();
 		$output = ob_get_contents();
 		ob_end_clean();
 
@@ -629,9 +640,12 @@ class Alerts {
 	 * @param WP_Post $post Post object for current alert.
 	 * @return void
 	 */
-	function display_triggers_box( $post ) {
-		$alert = $this->get_alert( $post->ID );
-
+	function display_triggers_box( $post = array() ) {
+		if ( is_object( $post ) ) {
+			$alert = $this->get_alert( $post->ID );
+		} else {
+			$alert = array();
+		}
 		$form  = new Form_Generator;
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
 
@@ -825,5 +839,36 @@ class Alerts {
 		}
 		ksort( $actions );
 		die( wp_json_encode( $actions ) );
+	}
+	/**
+	 * Save a new alert
+	 */
+	function save_new_alert() {
+		$trigger_author = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
+		$trigger_connector_and_context = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_context' );
+		$trigger_connector_and_context_split = explode( '-', $trigger_connector_and_context );
+		$trigger_connector = $trigger_connector_and_context_split[0];
+		$trigger_context = $trigger_connector_and_context_split[1];
+
+		$trigger_action = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_action' );
+		$alert_type = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
+		// $data['post_status'] = 'wp_stream_enabled';
+		// $data['post_type'] = 'wp_stream_alerts';
+
+		$post_id = wp_insert_post( array(
+			'post_type' => 'wp_stream_alerts',
+			'post_status' => 'wp_stream_enabled',
+		) );
+		add_post_meta( $post_id, 'alert_type', $alert_type );
+
+		$alert_meta = array(
+			'trigger_author'    => $trigger_author,
+			'trigger_connector' => $trigger_connector,
+			'trigger_action'    => $trigger_action,
+			'trigger_context'   => $trigger_context,
+		);
+		$alert_meta = apply_filters( 'wp_stream_alerts_save_meta', $alert_meta, $alert_type );
+		add_post_meta( $post_id, 'alert_meta', $alert_meta );
+		wp_send_json_success( array( 'success' => true ) );
 	}
 }
