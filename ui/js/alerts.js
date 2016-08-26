@@ -190,7 +190,7 @@ jQuery( function( $ ) {
 			'wp_stream_trigger_author':  $('#wp_stream_trigger_author').val(),
 			'wp_stream_trigger_context': $('#wp_stream_trigger_connector_or_context').val(),
 			'wp_stream_trigger_action':  $('#wp_stream_trigger_action').val(),
-			'wp_stream_alert_type':      $('#wp_stream_alert_type').val(),
+			'wp_stream_alert_type':      $('#wp_stream_alert_type').val()
 		};
 		$('#wp_stream_alert_type_form :input').each( function(){
 			var alert_type_data_id = $(this).attr('id');
