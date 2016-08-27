@@ -83,6 +83,7 @@ class Alerts {
 		add_action( 'wp_ajax_load_alert_preview', array( $this, 'display_preview_box_ajax' ) );
 		add_action( 'wp_ajax_update_actions', array( $this, 'update_actions' ) );
 		add_action( 'wp_ajax_save_new_alert', array( $this, 'save_new_alert' ) );
+		add_action( 'wp_ajax_get_new_alert_triggers_notifications', array( $this, 'get_new_alert_triggers_notifications' ) );
 
 		$this->load_alert_types();
 		$this->load_alert_triggers();
@@ -870,5 +871,23 @@ class Alerts {
 		$alert_meta = apply_filters( 'wp_stream_alerts_save_meta', $alert_meta, $alert_type );
 		add_post_meta( $post_id, 'alert_meta', $alert_meta );
 		wp_send_json_success( array( 'success' => true ) );
+	}
+
+	/**
+	 *
+	 */
+	function get_new_alert_triggers_notifications() {
+		ob_start();
+		?>
+<fieldset class="inline-edit-col-left">
+	<legend class="inline-edit-legend">Add New Alert</legend>
+	<?php $GLOBALS['wp_stream']->alerts->display_triggers_box(); ?>
+</fieldset>
+<fieldset class="inline-edit-col-right">
+	<?php $GLOBALS['wp_stream']->alerts->display_notification_box(); ?>
+</fieldset>
+	<?php
+		$html = ob_get_clean();
+		wp_send_json_success( array( 'success' => true, 'html' => $html ) );
 	}
 }

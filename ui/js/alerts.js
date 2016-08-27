@@ -1,7 +1,9 @@
 /* globals jQuery, streamAlerts, JSON */
 jQuery( function( $ ) {
+	'use strict';
 	var setupSelectTwo = function setupSelectTwo() {
-		$('#the-list .select2-select.connector_or_context').each(function (k, el) {
+		var the_list = $('#the-list');
+		the_list.find('.select2-select.connector_or_context').each(function (k, el) {
 			$(el).select2({
 				allowClear: true,
 				placeholder: streamAlerts.anyContext,
@@ -18,7 +20,7 @@ jQuery( function( $ ) {
 				matcher: function (params, data) {
 					var match = $.extend(true, {}, data);
 
-					if (null == params.term || '' === $.trim(params.term)) {
+					if (null === params.term || '' === $.trim(params.term)) {
 						return match;
 					}
 
@@ -66,7 +68,7 @@ jQuery( function( $ ) {
 			$(el).val(parts.join('-')).trigger('change');
 		});
 
-		$('#the-list .select2-select:not(.connector_or_context)').each(function () {
+		the_list.find('.select2-select:not(.connector_or_context)').each(function () {
 			var element_id_split = $(this).attr('id').split('_');
 			var select_name = element_id_split[element_id_split.length - 1].charAt(0).toUpperCase() +
 				element_id_split[element_id_split.length - 1].slice(1);
@@ -77,17 +79,15 @@ jQuery( function( $ ) {
 		});
 	};
 	setupSelectTwo();
-	var $alertSettingSelect = $( '#wp_stream_alert_type' ),
-		$alertSettingForm   = $( '#wp_stream_alert_type_form' );
+	var $alertSettingSelect = $( '#wp_stream_alert_type' );
 
 	var loadAlertSettings = function( alert_type ) {
 		var data = {
 			'action'     : 'load_alerts_settings',
-			'alert_type' : alert_type,
-			// 'post_id'    : $( '#post_ID' ).val()
+			'alert_type' : alert_type
 		};
 
-		$( '#wp_stream_alerts_triggers input.wp_stream_ajax_forward' ).each( function() {
+		$( '#wp_stream_alerts_triggers' ).find('input.wp_stream_ajax_forward').each( function() {
 			data[ $( this ).attr( 'name' ) ] = $( this ).val();
 		} );
 		$.post( window.ajaxurl, data, function( response ) {
@@ -95,11 +95,7 @@ jQuery( function( $ ) {
 		});
 	};
 
-	var $alertTriggersSelect = $( '#wp_stream_alerts_triggers select.wp_stream_ajax_forward' ),
-		$alertPreviewTable   = $( '#wp_stream_alerts_preview .inside' );
-	$( 'body' ).on('change', '#wp_stream_trigger_connector_or_context', function() {
-	//$alertTriggersSelect.change( function() {
-		loadAlertPreview();
+	$( '#the-list' ).on('change', '#wp_stream_trigger_connector_or_context', function() {
 		if ( 'wp_stream_trigger_connector_or_context' === $(this).attr('id') ) {
 			var connector = $(this).val();
 			if ( 0 < connector.indexOf('-') ) {
@@ -110,20 +106,6 @@ jQuery( function( $ ) {
 		}
 	});
 
-	var loadAlertPreview = function() {
-		var data = {
-			'action' : 'load_alert_preview',
-			'post_id': $( '#post_ID' ).val()
-		};
-
-		$( '#wp_stream_alerts_triggers input.wp_stream_ajax_forward' ).each( function() {
-			data[ $( this ).attr( 'name' ) ] = $( this ).val();
-		});
-
-		$.post( window.ajaxurl, data, function( response ) {
-			$alertPreviewTable.html( response.data.html );
-		});
-	};
 	var updateActions = function( connector ) {
 		var trigger_action = $('#wp_stream_trigger_action');
 		trigger_action.empty();
@@ -151,18 +133,24 @@ jQuery( function( $ ) {
 	$alertSettingSelect.change( function() {
 		loadAlertSettings( $( this ).val() );
 	});
-	//$('.new-alert-box').hide();
-	var new_alert_triggers = $('#new-alert-triggers').clone( true );
-	var new_alert_notifications = $('#new-alert-notifications').clone( true );
-	$( 'tbody#the-list' ).prepend( '<tr id="add-new-alert" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor" style=""><td colspan="5" class="colspanchange"><fieldset class="inline-edit-col-left"><legend class="inline-edit-legend">Add New Alert</legend>'+new_alert_triggers[0].innerHTML+'</fieldset><fieldset class="inline-edit-col-right">'+new_alert_notifications[0].innerHTML+'</fieldset><p class="submit inline-edit-save"> <button type="button" class="button-secondary cancel alignleft">Cancel</button> <input type="hidden" id="_inline_edit" name="_inline_edit" value="3550d271fe"> <button type="button" class="button-primary save alignright">Update</button> <span class="spinner"></span> <input type="hidden" name="post_view" value="list"> <input type="hidden" name="screen" value="edit-page"> <span class="error" style="display:none"></span> <br class="clear"></p></td></tr>');
-	$('#new-alert-triggers').remove();
-	$('#new-alert-notifications').remove();
-	$('#add-new-alert').hide();
+	var alert_form_html = '';
+	var data = {
+		'action':          'get_new_alert_triggers_notifications'
+	};
+	$.post( window.ajaxurl, data, function( response ) {
+		if ( true === response.success ) {
+			alert_form_html = response.data.html;
+			$( 'tbody#the-list' ).prepend( '<tr id="add-new-alert" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor" style=""><td colspan="5" class="colspanchange">' + alert_form_html + '<p class="submit inline-edit-save"> <button type="button" class="button-secondary cancel alignleft">Cancel</button> <input type="hidden" id="_inline_edit" name="_inline_edit" value="3550d271fe"> <button type="button" class="button-primary save alignright">Update</button> <span class="spinner"></span><span class="error" style="display:none"></span> <br class="clear"></p></td></tr>');
+			$('#add-new-alert').hide();
+			setupSelectTwo();
+		}
+	});
 
-	$( 'a.page-title-action' ).on( 'click', function( e ) {
+	$( '#wpbody-content' ).on( 'click', 'a.page-title-action', function( e ) {
+		var add_new_alert = $( '#add-new-alert' );
 		e.preventDefault();
-		if ( ! $( '#add-new-alert' ).is( ':visible' ) ) {
-			var add_new_alert = $( '#add-new-alert' );
+		if ( ! add_new_alert.is( ':visible' ) ) {
+
 			add_new_alert.show();
 			var current_bg_color = add_new_alert.css( 'background-color' );
 
@@ -172,19 +160,19 @@ jQuery( function( $ ) {
 			setTimeout(function () {
 				add_new_alert.css( 'background-color', current_bg_color );
 			}, 250);
-			setupSelectTwo();
+
 			$( '#wp_stream_alert_type' ).change( function () {
 				loadAlertSettings( $( this ).val() );
 			});
-			$( '#add-new-alert .button-secondary.cancel' ).on( 'click', function () {
+			add_new_alert.on( 'click', '.button-secondary.cancel', function () {
 				$( '#add-new-alert' ).hide();
 			});
-			$( '#add-new-alert .button-primary.save' ).on( 'click', save_new_alert );
+			add_new_alert.on( 'click', '.button-primary.save', save_new_alert );
 		}
 	});
 	var save_new_alert = function save_new_alert( e ) {
 		e.preventDefault();
-
+		$( '#add-new-alert' ).find('p.submit.inline-edit-save span.spinner').css( 'visibility', 'visible' );
 		var data = {
 			'action':          'save_new_alert',
 			'wp_stream_trigger_author':  $('#wp_stream_trigger_author').val(),
@@ -192,7 +180,7 @@ jQuery( function( $ ) {
 			'wp_stream_trigger_action':  $('#wp_stream_trigger_action').val(),
 			'wp_stream_alert_type':      $('#wp_stream_alert_type').val()
 		};
-		$('#wp_stream_alert_type_form :input').each( function(){
+		$('#wp_stream_alert_type_form').find(':input').each( function(){
 			var alert_type_data_id = $(this).attr('id');
 			if ( $(this).val() ) {
 				data[alert_type_data_id] = $(this).val();
@@ -201,7 +189,7 @@ jQuery( function( $ ) {
 
 		$.post( window.ajaxurl, data, function( response ) {
 			if ( true === response.success ) {
-				$( '#add-new-alert' ).css( 'background-color', '#C1E1B9' );
+				$( '#add-new-alert' ).find('p.submit.inline-edit-save span.spinner').css('visibility', 'hidden');
 				location.reload();
 			}
 		});

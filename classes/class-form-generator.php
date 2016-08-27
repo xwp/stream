@@ -116,7 +116,7 @@ class Form_Generator {
 
 				$multiple = ( $args['multiple'] ) ? 'multiple ' : '';
 				$output = sprintf(
-					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s%4$s/>',
+					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s%4$s>',
 					esc_attr( $args['name'] ),
 					esc_attr( $args['classes'] ),
 					$this->prepare_data_attributes_string( $args['data'] ),
