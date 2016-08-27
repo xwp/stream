@@ -294,7 +294,7 @@ class Alert_Type_IFTT extends Alert_Type {
 			}
 			$event_name = wp_stream_filter_input( INPUT_POST, 'wp_stream_iftt_event_name' );
 			if ( ! empty( $event_name ) ) {
-				$alert_meta['$event_name'] = $event_name;
+				$alert_meta['event_name'] = $event_name;
 			}
 		}
 		return $alert_meta;

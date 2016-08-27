@@ -41,6 +41,10 @@ class Alerts_List {
 		add_filter( 'manage_wp_stream_alerts_posts_columns', array( $this, 'manage_columns' ) );
 		add_action( 'manage_wp_stream_alerts_posts_custom_column', array( $this, 'column_data' ), 10, 2 );
 
+		add_action( 'quick_edit_custom_box', array( $this, 'display_custom_quick_edit' ), 10, 2 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+
+		add_action( 'save_post', array( $this, 'save_alert_inline_edit' ) );
 	}
 
 	/**
@@ -113,6 +117,23 @@ class Alerts_List {
 		}
 
 		switch ( $column_name ) {
+			case 'alert_trigger' :
+				$values = array();
+				foreach ( $this->plugin->alerts->alert_triggers as $trigger_type => $trigger_obj ) {
+					$value = $trigger_obj->get_display_value( 'list_table', $alert );
+					$values[] = '<span class="alert_trigger_value alert_trigger_' . esc_attr( $trigger_type ) . '">' . esc_html( $value ) . '</span>';
+				}
+				?>
+				<div><?php echo wp_kses_post( join( '', $values ) ); ?></div>
+				<div class="row-actions wp-stream-show-mobile">
+					<?php echo wp_kses_post( $this->custom_column_actions( $post_id ) ); ?>
+					<button type="button" class="toggle-row"><span class="screen-reader-text"><?php echo esc_html__( 'Show more details', 'stream' ); ?></span></button>
+				</div>
+				<input type="hidden" name="wp_stream_trigger_connector" value="<?php echo esc_attr( $alert->alert_meta['trigger_connector'] ); ?>" />
+				<input type="hidden" name="wp_stream_trigger_context" value="<?php echo esc_attr( $alert->alert_meta['trigger_context'] ); ?>" />
+				<input type="hidden" name="wp_stream_trigger_action" value="<?php echo esc_attr( $alert->alert_meta['trigger_action'] ); ?>" />
+				<?php
+				break;
 			case 'alert_type' :
 				$alert_type = $alert->alert_type;
 				if ( ! empty( $this->plugin->alerts->alert_types[ $alert_type ]->name ) ) {
@@ -120,23 +141,36 @@ class Alerts_List {
 				} else {
 					$alert_name = 'Untitled Alert';
 				}
-				echo wp_kses_post(
-					edit_post_link(
-						$alert_name,
-						'<strong>',
-						'</strong>',
-						$post_id,
-						'row-title'
-					)
-				);
-				break;
-			case 'alert_trigger' :
-				$values = array();
-				foreach ( $this->plugin->alerts->alert_triggers as $trigger_type => $trigger_obj ) {
-					$value = $trigger_obj->get_display_value( 'list_table', $alert );
-					$values[] = '<span class="alert_trigger_value alert_trigger_' . esc_attr( $trigger_type ) . '">' . esc_html( $value ) . '</span>';
+				?>
+				<input type="hidden" name="wp_stream_alert_type" value="<?php echo esc_attr( $alert->alert_type ); ?>" />
+				<strong class="row-title"><?php echo esc_html( $alert_name ); ?></strong>
+				<?php
+				echo wp_kses_post( $this->custom_column_actions( $post_id ) );
+				if ( ! empty( $alert->alert_meta['color'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_highlight_color" value="<?php echo esc_attr( $alert->alert_meta['color'] ); ?>" />
+					<?php
 				}
-				echo '<div>' . join( '', $values ) . '</div>'; // Xss ok.
+				if ( ! empty( $alert->alert_meta['email_recipient'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_email_recipient" value="<?php echo esc_attr( $alert->alert_meta['email_recipient'] ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['email_subject'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_email_subject" value="<?php echo esc_attr( $alert->alert_meta['email_subject'] ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['event_name'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_iftt_event_name" value="<?php echo esc_attr( $alert->alert_meta['event_name'] ); ?>" />
+					<?php
+				}
+				if ( ! empty( $alert->alert_meta['maker_key'] ) ) {
+					?>
+					<input type="hidden" name="wp_stream_iftt_maker_key" value="<?php echo esc_attr( $alert->alert_meta['maker_key'] ); ?>" />
+					<?php
+				}
 				break;
 			case 'alert_status' :
 				$post_status_object = get_post_status_object( get_post_status( $post_id ) );
@@ -169,8 +203,13 @@ class Alerts_List {
 	 * @return array
 	 */
 	function supress_quick_edit( $actions ) {
+		if ( Alerts::POST_TYPE !== get_post_type() ) {
+			return $actions;
+		}
+		unset( $actions['edit'] );
+		unset( $actions['view'] );
+		unset( $actions['trash'] );
 		unset( $actions['inline hide-if-no-js'] );
-		return $actions;
 	}
 
 	/**
@@ -187,5 +226,115 @@ class Alerts_List {
 			$status = true;
 		}
 		return $status;
+	}
+	public function custom_column_actions( $post_id ) {
+		ob_start();
+		if ( ! empty( $_GET['post_status'] ) && 'trash' === $_GET['post_status'] ) {
+			$bare_url         = '/wp-admin/post.php?post=' . $post_id . '&amp;action=untrash';
+			$nonce_url        = wp_nonce_url( $bare_url, "untrash-post_" . $post_id );
+			$delete_url       = '/wp-admin/post.php?post=' . $post_id . '&amp;action=delete';
+			$nonce_delete_url = wp_nonce_url( $delete_url, "delete-post_" . $post_id );
+			?>
+			<div class="row-actions">
+				<span class="untrash">
+					<a href="<?php echo esc_url( $nonce_url ); ?>" class="untrash"><?php esc_html_e( 'Restore', 'stream' ); ?></a> |
+				</span>
+				<span class="delete">
+					<a href="<?php echo esc_url( $nonce_delete_url ) ?>" class="submitdelete"><?php esc_html_e( 'Delete Permanently', 'stream' ); ?></a>
+				</span>
+			</div>
+			<?php
+		} else {
+			$bare_url  = '/wp-admin/post.php?post=' . $post_id . '&amp;action=trash';
+			$nonce_url = wp_nonce_url( $bare_url, 'trash-post_' . $post_id );
+			?>
+			<div class="row-actions">
+				<span class="inline hide-if-no-js"><a href="#" class="editinline" aria-label="Quick edit “Hello world!” inline"><?php esc_html_e( 'Edit' ); ?></a>&nbsp;|&nbsp;</span>
+				<span class="trash">
+					<a href="<?php echo esc_url( $nonce_url ); ?>" class="submitdelete"><?php esc_html_e( 'Trash', 'stream' ); ?></a>
+				</span>
+				<?php // @todo remove after development. ?>
+				&nbsp;|&nbsp;<?php edit_post_link( '[FULL POST]', '', '', $post_id, '' ); ?>
+			</div>
+			<?php
+		}
+		return ob_get_clean();
+	}
+	public function display_custom_quick_edit() {
+		static $fired = false;
+		if ( false !== $fired ) {
+			return;
+		}
+		wp_nonce_field( plugin_basename( __FILE__ ), Alerts::POST_TYPE . '_edit_nonce' );
+		$box_type = array(
+			'triggers',
+			'notification',
+			'submit',
+		);
+		?>
+		<legend class="inline-edit-legend"><?php esc_html_e( 'Edit', 'stream' ); ?></legend>
+		<?php
+		foreach ( $box_type as $type ) : // @todo remove inline styles. ?>
+			<fieldset class="inline-edit-col inline-edit-<?php echo esc_attr( Alerts::POST_TYPE ); ?>">
+				<div class="inline-edit-col">
+					<label class="inline-edit-group">
+						<?php
+						$function_name = 'display_' . $type . '_box';
+						$the_post = get_post();
+						call_user_func( array( $this->plugin->alerts, $function_name ), $the_post );
+						?>
+					</label>
+				</div>
+			</fieldset>
+			<?php
+		endforeach;
+		$fired = true;
+	}
+	public function enqueue_scripts( $page ) {
+		if ( 'edit.php' !== $page ) {
+			return;
+		}
+		wp_register_script( 'wp-stream-alerts-list-js', $this->plugin->locations['url'] . 'ui/js/alerts-list.js', array( 'wp-stream-alerts', 'jquery' ) );
+		wp_enqueue_script( 'wp-stream-alerts-list-js' );
+		wp_register_style( 'wp-stream-alerts-list-css', $this->plugin->locations['url'] . 'ui/css/alerts-list.css' );
+		wp_enqueue_style( 'wp-stream-alerts-list-css' );
+		wp_enqueue_style( 'wp-stream-select2' );
+	}
+
+	function save_alert_inline_edit( $post_id ) {
+		if ( Alerts::POST_TYPE !== $_POST['post_type'] ) {
+			return;
+		}
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+		$_POST += array("{Alerts::POST_TYPE}_edit_nonce" => '');
+		if ( ! wp_verify_nonce( $_POST["{Alerts::POST_TYPE}_edit_nonce"], plugin_basename( __FILE__ ) ) ) {
+			return;
+		}
+
+		$trigger_author = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
+		$trigger_connector_and_context = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_context' );
+		$trigger_connector_and_context_split = explode( '-', $trigger_connector_and_context );
+		$trigger_connector = $trigger_connector_and_context_split[0];
+		$trigger_context = $trigger_connector_and_context_split[1];
+
+		$trigger_action = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_action' );
+		$alert_type = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
+
+		$post_id = wp_update_post( array(
+			'post_type' => 'wp_stream_alerts',
+			'post_status' => 'wp_stream_enabled',
+		) );
+		update_post_meta( $post_id, 'alert_type', $alert_type );
+
+		$alert_meta = array(
+			'trigger_author'    => $trigger_author,
+			'trigger_connector' => $trigger_connector,
+			'trigger_action'    => $trigger_action,
+			'trigger_context'   => $trigger_context,
+		);
+		$alert_meta = apply_filters( 'wp_stream_alerts_save_meta', $alert_meta, $alert_type );
+		update_post_meta( $post_id, 'alert_meta', $alert_meta );
 	}
 }

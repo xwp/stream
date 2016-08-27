@@ -62,7 +62,7 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		}
 
 		$context = '';
-		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
+		if ( is_object( $alert ) && ! empty( $alert->alert_meta['trigger_context'] ) ) {
 			$context = $alert->alert_meta['trigger_context'];
 		}
 
