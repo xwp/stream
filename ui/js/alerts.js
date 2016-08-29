@@ -1,4 +1,4 @@
-/* globals jQuery, streamAlerts, JSON */
+/* globals jQuery, streamAlerts, JSON, inlineEditPost */
 jQuery( function( $ ) {
 	'use strict';
 	var setupSelectTwo = function setupSelectTwo() {
@@ -210,7 +210,7 @@ jQuery( function( $ ) {
 		// get the post ID
 		var $post_id = 0;
 		if ( typeof( id ) === 'object' ) {
-			$post_id = parseInt( this.getId( id ) );
+			$post_id = parseInt( this.getId( id ), 10 );
 		}
 
 		if ( $post_id > 0 ) {
@@ -236,7 +236,7 @@ jQuery( function( $ ) {
 			$edit_row.find('.select2-select.connector_or_context').each(function (k, el) {
 				$(el).select2({
 					allowClear: true,
-					placeholder: streamAlerts.anyContext,
+					placeholder: streamAlerts.anyContext
 				});
 			});
 			$edit_row.find('select.select2-select:not(.connector_or_context)').each(function () {
