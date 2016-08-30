@@ -28,9 +28,9 @@ class Alerts_List {
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
-		add_filter( 'bulk_actions-edit-wp_stream_alerts', array( $this, 'supress_bulk_actions' ), 10, 1 );
-		add_filter( 'disable_months_dropdown', array( $this, 'supress_months_dropdown' ), 10, 2 );
-		add_filter( 'post_row_actions', array( $this, 'supress_quick_edit' ), 10, 1 );
+		add_filter( 'bulk_actions-edit-wp_stream_alerts', array( $this, 'suppress_bulk_actions' ), 10, 1 );
+		add_filter( 'disable_months_dropdown', array( $this, 'suppress_months_dropdown' ), 10, 2 );
+		add_filter( 'post_row_actions', array( $this, 'suppress_quick_edit' ), 10, 1 );
 
 		// @todo Make more specific
 		if ( is_admin() ) {
@@ -92,10 +92,10 @@ class Alerts_List {
 	 */
 	function manage_columns( $columns ) {
 		$columns = array(
-			'cb' => $columns['cb'],
-			'alert_type' => __( 'Type', 'stream' ),
+			'cb'            => $columns['cb'],
 			'alert_trigger' => __( 'Trigger', 'stream' ),
-			'alert_status' => __( 'Status', 'stream' ),
+			'alert_type'    => __( 'Type', 'stream' ),
+			'alert_status'  => __( 'Status', 'stream' ),
 		);
 		return $columns;
 	}
@@ -107,7 +107,7 @@ class Alerts_List {
 	 *
 	 * @param string $column_name Column name to show data for.
 	 * @param int    $post_id The post being processed.
-	 * @return array
+	 * @return mixed
 	 */
 	function column_data( $column_name, $post_id ) {
 
@@ -133,6 +133,7 @@ class Alerts_List {
 				<input type="hidden" name="wp_stream_trigger_context" value="<?php echo esc_attr( $alert->alert_meta['trigger_context'] ); ?>" />
 				<input type="hidden" name="wp_stream_trigger_action" value="<?php echo esc_attr( $alert->alert_meta['trigger_action'] ); ?>" />
 				<?php
+				echo wp_kses_post( $this->custom_column_actions( $post_id ) );
 				break;
 			case 'alert_type' :
 				$alert_type = $alert->alert_type;
@@ -145,7 +146,6 @@ class Alerts_List {
 				<input type="hidden" name="wp_stream_alert_type" value="<?php echo esc_attr( $alert->alert_type ); ?>" />
 				<strong class="row-title"><?php echo esc_html( $alert_name ); ?></strong>
 				<?php
-				echo wp_kses_post( $this->custom_column_actions( $post_id ) );
 				if ( ! empty( $alert->alert_meta['color'] ) ) {
 					?>
 					<input type="hidden" name="wp_stream_highlight_color" value="<?php echo esc_attr( $alert->alert_meta['color'] ); ?>" />
@@ -189,7 +189,7 @@ class Alerts_List {
 	 * @param array $actions List of bulk actions available.
 	 * @return array
 	 */
-	public function supress_bulk_actions( $actions ) {
+	public function suppress_bulk_actions( $actions ) {
 		unset( $actions['edit'] );
 		return $actions;
 	}
@@ -202,7 +202,7 @@ class Alerts_List {
 	 * @param array $actions List of inline edit actions available.
 	 * @return array
 	 */
-	function supress_quick_edit( $actions ) {
+	function suppress_quick_edit( $actions ) {
 		if ( Alerts::POST_TYPE !== get_post_type() ) {
 			return $actions;
 		}
@@ -210,6 +210,7 @@ class Alerts_List {
 		unset( $actions['view'] );
 		unset( $actions['trash'] );
 		unset( $actions['inline hide-if-no-js'] );
+		return $actions;
 	}
 
 	/**
@@ -221,19 +222,28 @@ class Alerts_List {
 	 * @param string $post_type Post type status is related to.
 	 * @return bool
 	 */
-	public function supress_months_dropdown( $status, $post_type ) {
+	public function suppress_months_dropdown( $status, $post_type ) {
 		if ( Alerts::POST_TYPE === $post_type ) {
 			$status = true;
 		}
 		return $status;
 	}
+
+	/**
+	 * Custom column actions for alerts main screen
+	 *
+	 * @param int $post_id The current post ID.
+	 *
+	 * @return string
+	 */
 	public function custom_column_actions( $post_id ) {
+		$post_status = wp_stream_filter_input( INPUT_GET, 'post_status' );
 		ob_start();
-		if ( ! empty( $_GET['post_status'] ) && 'trash' === $_GET['post_status'] ) {
+		if ( ! empty( $post_status ) && 'trash' === $post_status ) {
 			$bare_url         = '/wp-admin/post.php?post=' . $post_id . '&amp;action=untrash';
-			$nonce_url        = wp_nonce_url( $bare_url, "untrash-post_" . $post_id );
+			$nonce_url        = wp_nonce_url( $bare_url, 'untrash-post_' . $post_id );
 			$delete_url       = '/wp-admin/post.php?post=' . $post_id . '&amp;action=delete';
-			$nonce_delete_url = wp_nonce_url( $delete_url, "delete-post_" . $post_id );
+			$nonce_delete_url = wp_nonce_url( $delete_url, 'delete-post_' . $post_id );
 			?>
 			<div class="row-actions">
 				<span class="untrash">
@@ -253,13 +263,15 @@ class Alerts_List {
 				<span class="trash">
 					<a href="<?php echo esc_url( $nonce_url ); ?>" class="submitdelete"><?php esc_html_e( 'Trash', 'stream' ); ?></a>
 				</span>
-				<?php // @todo remove after development. ?>
-				&nbsp;|&nbsp;<?php edit_post_link( '[FULL POST]', '', '', $post_id, '' ); ?>
 			</div>
 			<?php
 		}
 		return ob_get_clean();
 	}
+
+	/**
+	 * Display a custom quick edit form.
+	 */
 	public function display_custom_quick_edit() {
 		static $fired = false;
 		if ( false !== $fired ) {
@@ -290,8 +302,15 @@ class Alerts_List {
 		endforeach;
 		$fired = true;
 	}
+
+	/**
+	 * Enqueue scripts for the alerts list screen.
+	 *
+	 * @param string $page The current page name.
+	 */
 	public function enqueue_scripts( $page ) {
-		if ( 'edit.php' !== $page ) {
+		$screen = get_current_screen();
+		if ( 'edit-wp_stream_alerts' !== $screen->id ) {
 			return;
 		}
 		wp_register_script( 'wp-stream-alerts-list-js', $this->plugin->locations['url'] . 'ui/js/alerts-list.js', array( 'wp-stream-alerts', 'jquery' ) );
@@ -301,15 +320,22 @@ class Alerts_List {
 		wp_enqueue_style( 'wp-stream-select2' );
 	}
 
+	/**
+	 * Save alert meta after using the inline editor
+	 *
+	 * @param int $post_id The post ID of the post being edited.
+	 */
 	function save_alert_inline_edit( $post_id ) {
-		if ( Alerts::POST_TYPE !== $_POST['post_type'] ) {
+		$post_type = wp_stream_filter_input( INPUT_POST, 'post_type' );
+		if ( Alerts::POST_TYPE !== $post_type ) {
 			return;
 		}
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
 		}
-		$_POST += array("{Alerts::POST_TYPE}_edit_nonce" => '');
-		if ( ! wp_verify_nonce( $_POST["{Alerts::POST_TYPE}_edit_nonce"], plugin_basename( __FILE__ ) ) ) {
+
+		$nonce = wp_stream_filter_input( INPUT_POST, Alerts::POST_TYPE .'_edit_nonce' );
+		if ( null === $nonce || ! wp_verify_nonce( $nonce, plugin_basename( __FILE__ ) ) ) {
 			return;
 		}
 

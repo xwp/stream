@@ -268,7 +268,7 @@ jQuery( function( $ ) {
 				if ( 'highlight' === alert_type ) {
 					var highlight_color = $post_row.find( 'input[name="wp_stream_highlight_color"]' ).val();
 					if ( typeof highlight_color !== 'undefined' ) {
-						$edit_row.find( 'select[name="wp_stream_alert_type"] option[value="'+highlight_color+'"]' ).attr( 'selected', 'selected' );
+						$edit_row.find( 'select[name="wp_stream_highlight_color"] option[value="'+highlight_color+'"]' ).attr( 'selected', 'selected' );
 					}
 				}
 				if ( 'iftt' === alert_type ) {
@@ -282,7 +282,7 @@ jQuery( function( $ ) {
 					}
 				}
 				$('#wp_stream_alert_type_form').show();
-			}, 1000);
+			}, 1500);
 
 		}
 	};

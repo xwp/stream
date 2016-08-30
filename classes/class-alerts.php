@@ -65,10 +65,6 @@ class Alerts {
 		// Add custom post type to menu.
 		add_action( 'wp_stream_admin_menu', array( $this, 'register_menu' ) );
 
-		// Add metaboxes to post screens.
-		add_action( 'load-post.php', array( $this, 'register_meta_boxes' ) );
-		add_action( 'load-post-new.php', array( $this, 'register_meta_boxes' ) );
-
 		// Add scripts to post screens.
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
 
@@ -76,11 +72,7 @@ class Alerts {
 
 		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
 
-		add_filter( 'post_updated_messages', array( $this, 'filter_update_messages' ) );
-		add_filter( 'wp_insert_post_data', array( $this, 'save_post_info' ), 10, 2 );
-
 		add_action( 'wp_ajax_load_alerts_settings', array( $this, 'load_alerts_settings' ) );
-		add_action( 'wp_ajax_load_alert_preview', array( $this, 'display_preview_box_ajax' ) );
 		add_action( 'wp_ajax_update_actions', array( $this, 'update_actions' ) );
 		add_action( 'wp_ajax_save_new_alert', array( $this, 'save_new_alert' ) );
 		add_action( 'wp_ajax_get_new_alert_triggers_notifications', array( $this, 'get_new_alert_triggers_notifications' ) );
@@ -345,34 +337,6 @@ class Alerts {
 	}
 
 	/**
-	 * Changes update messages for use with Alerts.
-	 *
-	 * @filter post_updated_messages
-	 *
-	 * @param array $messages Array of post update messages by post type.
-	 * @return array
-	 */
-	public function filter_update_messages( $messages ) {
-
-		$updated = __( 'Alert updated.', 'stream' );
-		$messages['wp_stream_alerts'] = array(
-			 0 => '', // Unused.
-			 1 => $updated, // Regular update.
-			 2 => '', // Unused. Custom fields updated.
-			 3 => '', // Unused. Custom fields deleted.
-			 4 => $updated, // Regular update.
-			 5 => '', // Unused. Revision restored.
-			 6 => $updated, // Publish.
-			 7 => $updated, // Save.
-			 8 => '', // Unused. Submit for review.
-			 9 => '', // Unused. Scheduled.
-			10 => $updated, // Draft updated.
-		);
-
-		return $messages;
-	}
-
-	/**
 	 * Return alert object of the given ID
 	 *
 	 * @param string $post_id Post ID for the alert.
@@ -475,98 +439,6 @@ class Alerts {
 	}
 
 	/**
-	 * Register metaboxes with post screens
-	 *
-	 * @action load-post-new.php
-	 *
-	 * @return void
-	 */
-	function register_meta_boxes() {
-		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
-		add_filter( 'parent_file', array( $this, 'filter_parent_file' ), 10, 1 );
-		add_filter( 'submenu_file', array( $this, 'filter_submenu_file' ), 10, 1 );
-	}
-
-	/**
-	 * Add metaboxes to post screens
-	 *
-	 * @filter add_meta_boxes
-	 *
-	 * @return void
-	 */
-	function add_meta_boxes() {
-		remove_meta_box( 'submitdiv',  self::POST_TYPE, 'side' );
-
-		add_meta_box(
-			'wp_stream_alerts_triggers',
-			__( 'Alert Trigger', 'stream' ),
-			array( $this, 'display_triggers_box' ),
-			self::POST_TYPE,
-			'normal',
-			'high'
-		);
-
-		add_meta_box(
-			'wp_stream_alerts_alert_type',
-			__( 'Alert Type', 'stream' ),
-			array( $this, 'display_notification_box' ),
-			self::POST_TYPE,
-			'normal',
-			'default'
-		);
-
-		add_meta_box(
-			'wp_stream_alerts_preview',
-			__( 'Records matching these triggers', 'stream' ),
-			array( $this, 'display_preview_box' ),
-			self::POST_TYPE,
-			'advanced',
-			'low'
-		);
-
-		add_meta_box(
-			'wp_stream_alerts_submit',
-			__( 'Alert Status', 'stream' ),
-			array( $this, 'display_submit_box' ),
-			self::POST_TYPE,
-			'side',
-			'default'
-		);
-	}
-
-	/**
-	 * Fixes menu highlighting when Alerts are being edited.
-	 *
-	 * @filter parent_file
-	 *
-	 * @param string $parent_file Top level menu item to highlight.
-	 * @return string
-	 */
-	function filter_parent_file( $parent_file ) {
-		$screen = get_current_screen();
-		if ( 'post' === $screen->base && self::POST_TYPE === $screen->post_type ) {
-			$parent_file = 'wp_stream';
-		}
-		return $parent_file;
-	}
-
-	/**
-	 * Fixes menu highlighting when Alerts are being edited.
-	 *
-	 * @filter submenu_file
-	 *
-	 * @param string $submenu_file Submenu level menu item to highlight.
-	 * @return string
-	 */
-	function filter_submenu_file( $submenu_file ) {
-		$screen = get_current_screen();
-		if ( 'post' === $screen->base && self::POST_TYPE === $screen->post_type ) {
-			$submenu_file = 'edit.php?post_type=wp_stream_alerts';
-		}
-		return $submenu_file;
-	}
-
-	/**
 	 * Display Alert Type Meta Box
 	 *
 	 * @param WP_Post $post Post object for current alert.
@@ -659,70 +531,6 @@ class Alerts {
 	}
 
 	/**
-	 * Display Preview Meta Box
-	 *
-	 * @param WP_Post $post Post object for current alert.
-	 * @return void
-	 */
-	function display_preview_box( $post ) {
-
-		// @todo check that post ID exists.
-		$alert = $this->get_alert( $post->ID );
-		$table = new Preview_List_Table( $this->plugin );
-
-		$query = array(
-			'records_per_page' => apply_filters( 'stream_records_per_page', 20 ),
-		);
-
-		$query = apply_filters( 'stream_alerts_preview_query', $query, $alert );
-		$items = $this->plugin->db->query( $query );
-
-		$table->set_records( $items );
-		$table->display();
-
-	}
-
-	/**
-	 * Output Preview Box based on AJAX changes.
-	 *
-	 * @action wp_ajax_load_alert_preview
-	 *
-	 * @return void
-	 */
-	function display_preview_box_ajax() {
-
-		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
-		$post = get_post( $post_id );
-		if ( ! $post ) {
-			wp_send_json_error( array(
-				'message' => 'Could not find alert.', // @todo l10n?
-			) );
-		}
-
-		$alert = $this->get_alert( $post->ID );
-		$table = new Preview_List_Table( $this->plugin );
-
-		do_action( 'wp_stream_alert_trigger_form_save', $alert );
-
-		$query = array(
-			'records_per_page' => apply_filters( 'stream_records_per_page', 20 ),
-		);
-
-		$query = apply_filters( 'stream_alerts_preview_query', $query, $alert );
-		$items = $this->plugin->db->query( $query );
-
-		ob_start();
-
-		$table->set_records( $items );
-		$table->display();
-		$content = ob_get_contents();
-		ob_end_clean();
-
-		$output = array( 'html' => $content );
-		wp_send_json_success( $output );
-	}
-
-	/**
 	 * Display Submit Box
 	 *
 	 * @param WP_Post $post Post object for current alert.
@@ -787,42 +595,6 @@ class Alerts {
 			$result[ $slug ] = $name;
 		}
 		return $result;
-	}
-
-	/**
-	 * Process alert settings
-	 *
-	 * @filter wp_insert_post_data
-	 *
-	 * @param array $data Processed post data.
-	 * @param array $postarr Raw POST data.
-	 * @return array
-	 */
-	function save_post_info( $data, $postarr ) {
-
-		if ( ! isset( $_POST['wp_stream_alerts_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wp_stream_alerts_nonce'] ) ), 'save_post' ) ) {
-				return $data;
-		}
-
-		if ( self::POST_TYPE !== $data['post_type'] || ( isset( $data['post_status'] ) && 'auto-draft' === $data['post_status'] ) ) {
-			return $data;
-		}
-
-		$post_type = get_post_type_object( $data['post_type'] );
-		if ( ! current_user_can( $post_type->cap->edit_post, $postarr['ID'] ) ) {
-			return $data;
-		}
-
-		$alert = $this->get_alert( $postarr['ID'] );
-		$alert->status     = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
-		$alert->alert_type = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
-
-		do_action( 'wp_stream_alert_trigger_form_save', $alert );
-		$alert->get_alert_type_obj()->save_fields( $alert );
-
-		$data = $alert->process_settings_form( $data );
-
-		return $data;
 	}
 
 	/**
