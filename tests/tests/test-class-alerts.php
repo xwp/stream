@@ -147,14 +147,6 @@ class Test_Alerts extends WP_StreamTestCase {
 
 	}
 
-	function test_filter_update_messages() {
-		$alerts   = new Alerts( $this->plugin );
-		$messages = $alerts->filter_update_messages( array() );
-
-		$this->assertArrayHasKey( 'wp_stream_alerts', $messages );
-		$this->assertNotEmpty( $messages['wp_stream_alerts'] );
-	}
-
 	function test_get_alert() {
 		$alerts = new Alerts( $this->plugin );
 
