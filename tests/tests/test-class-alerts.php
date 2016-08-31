@@ -186,65 +186,6 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertNotEmpty( $submenu[ $this->plugin->admin->records_page_slug ] );
 	}
 
-	function test_register_meta_boxes() {
-		$alerts = new Alerts( $this->plugin );
-
-		$this->assertFalse( has_action( 'add_meta_boxes', array( $alerts, 'add_meta_boxes' ) ) );
-		$this->assertFalse( has_filter( 'filter_parent_file', array( $alerts, 'add_meta_boxes' ) ) );
-		$this->assertFalse( has_filter( 'filter_submenu_file', array( $alerts, 'add_meta_boxes' ) ) );
-
-		$alerts->register_meta_boxes();
-
-		$this->assertNotFalse( has_action( 'add_meta_boxes', array( $alerts, 'add_meta_boxes' ) ) );
-		$this->assertNotFalse( has_filter( 'parent_file', array( $alerts, 'filter_parent_file' ) ) );
-		$this->assertNotFalse( has_filter( 'submenu_file', array( $alerts, 'filter_submenu_file' ) ) );
-	}
-
-	function test_add_meta_boxes() {
-		global $wp_meta_boxes;
-		$page = convert_to_screen( 'wp_stream_alerts' )->id;
-
-		$alerts = new Alerts( $this->plugin );
-		$alerts->add_meta_boxes();
-
-		$this->assertArrayHasKey( 'wp_stream_alerts_triggers', $wp_meta_boxes[ $page ]['normal']['high'] );
-		$this->assertArrayHasKey( 'wp_stream_alerts_alert_type', $wp_meta_boxes[ $page ]['normal']['default'] );
-		$this->assertArrayHasKey( 'wp_stream_alerts_preview', $wp_meta_boxes[ $page ]['advanced']['low'] );
-		$this->assertArrayHasKey( 'wp_stream_alerts_submit', $wp_meta_boxes[ $page ]['side']['default'] );
-	}
-
-	function test_filter_parent_file() {
-		$alerts = new Alerts( $this->plugin );
-
-		set_current_screen( 'post' );
-		$value = $alerts->filter_parent_file( '' );
-		$this->assertEquals( '', $value );
-
-		set_current_screen( 'wp_stream_alerts' );
-		$value = $alerts->filter_parent_file( '' );
-		$this->assertEquals( 'wp_stream', $value );
-
-		set_current_screen( 'post' );
-		$value = $alerts->filter_parent_file( '' );
-		$this->assertEquals( '', $value );
-	}
-
-	function test_filter_submenu_file() {
-		$alerts = new Alerts( $this->plugin );
-
-		set_current_screen( 'post' );
-		$value = $alerts->filter_submenu_file( '' );
-		$this->assertEquals( '', $value );
-
-		set_current_screen( 'wp_stream_alerts' );
-		$value = $alerts->filter_submenu_file( '' );
-		$this->assertEquals( 'edit.php?post_type=wp_stream_alerts', $value );
-
-		set_current_screen( 'post' );
-		$value = $alerts->filter_submenu_file( '' );
-		$this->assertEquals( '', $value );
-	}
-
 	function test_display_notification_box() {
 		$alerts = new Alerts( $this->plugin );
 
@@ -329,33 +270,6 @@ class Test_Alerts extends WP_StreamTestCase {
 
 		$field_test = strpos( $output, 'wp_stream_alerts_nonce' ) !== -1;
 		$this->assertTrue( $len_test, 'Nonce field is present.' );
-	}
-
-	function test_display_preview_box() {
-		$alerts = new Alerts( $this->plugin );
-
-		$data = $this->dummy_alert_data();
-		$data->ID = 0;
-		$alert = new Alert( $data, $this->plugin );
-		$post_id = $alert->save();
-
-		// @codingStandardsIgnoreStart
-		$GLOBALS['hook_suffix'] = '';
-		// @codingStandardsIgnoreEnd
-
-		ob_start();
-		$alerts->display_preview_box( get_post( $alert->ID ) );
-		$output = ob_get_contents();
-		ob_end_clean();
-
-		$len_test = strlen( $output ) > 0;
-		$this->assertTrue( $len_test, 'Output length greater than zero.' );
-	}
-
-	function test_display_preview_box_ajax() {
-		$this->markTestIncomplete(
-			'This test is incomplete'
-		);
 	}
 
 	function test_display_submit_box() {
