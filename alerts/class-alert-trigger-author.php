@@ -152,19 +152,4 @@ class Alert_Trigger_Author extends Alert_Trigger {
 		}
 		return ucfirst( $author );
 	}
-
-	/**
-	 * Alters the preview table query to show records matching this query.
-	 *
-	 * @see Alert_Trigger::filter_preview_query().
-	 * @param array $query_args The database query arguments for the table.
-	 * @param Alert $alert The Alert being worked on.
-	 * @return array The new query arguments.
-	 */
-	public function filter_preview_query( $query_args, $alert ) {
-		if ( ! empty( $alert->alert_meta['trigger_author'] ) ) {
-			$query_args['user_id'] = $alert->alert_meta['trigger_author'];
-		}
-		return $query_args;
-	}
 }

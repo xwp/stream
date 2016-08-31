@@ -44,7 +44,7 @@ class Alerts_List {
 		add_action( 'quick_edit_custom_box', array( $this, 'display_custom_quick_edit' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-		add_action( 'save_post', array( $this, 'save_alert_inline_edit' ) );
+		add_filter( 'wp_insert_post_data', array( $this, 'save_alert_inline_edit' ), 99, 2 );
 	}
 
 	/**
@@ -321,37 +321,39 @@ class Alerts_List {
 	}
 
 	/**
-	 * Save alert meta after using the inline editor
+	 * Save alert meta after using the inline editor.
 	 *
-	 * @param int $post_id The post ID of the post being edited.
+	 * @param array $data Filtered post data.
+	 * @param array $postarr Raw post data.
+	 *
+	 * @return array
 	 */
-	function save_alert_inline_edit( $post_id ) {
+	function save_alert_inline_edit( $data, $postarr ) {
+		$post_id = $postarr['ID'];
 		$post_type = wp_stream_filter_input( INPUT_POST, 'post_type' );
 		if ( Alerts::POST_TYPE !== $post_type ) {
-			return;
+			return $data;
 		}
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
-			return;
+			return $data;
 		}
 
 		$nonce = wp_stream_filter_input( INPUT_POST, Alerts::POST_TYPE .'_edit_nonce' );
 		if ( null === $nonce || ! wp_verify_nonce( $nonce, plugin_basename( __FILE__ ) ) ) {
-			return;
+			return $data;
 		}
 
 		$trigger_author = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
-		$trigger_connector_and_context = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_context' );
+		$trigger_connector_and_context = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_connector_or_context' );
 		$trigger_connector_and_context_split = explode( '-', $trigger_connector_and_context );
 		$trigger_connector = $trigger_connector_and_context_split[0];
 		$trigger_context = $trigger_connector_and_context_split[1];
 
 		$trigger_action = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_action' );
 		$alert_type = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
+		$alert_status = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
+		$data['post_status'] = $alert_status;
 
-		$post_id = wp_update_post( array(
-			'post_type' => 'wp_stream_alerts',
-			'post_status' => 'wp_stream_enabled',
-		) );
 		update_post_meta( $post_id, 'alert_type', $alert_type );
 
 		$alert_meta = array(
@@ -362,5 +364,6 @@ class Alerts_List {
 		);
 		$alert_meta = apply_filters( 'wp_stream_alerts_save_meta', $alert_meta, $alert_type );
 		update_post_meta( $post_id, 'alert_meta', $alert_meta );
+		return $data;
 	}
 }

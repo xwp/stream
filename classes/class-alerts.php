@@ -521,13 +521,10 @@ class Alerts {
 		}
 		$form  = new Form_Generator;
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
-
 		// @TODO use human readable text.
 		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>'; // @todo Maybe, "when".
 		echo $form->render_fields(); // Xss ok.
-
 		wp_nonce_field( 'save_post', 'wp_stream_alerts_nonce' );
-
 	}
 
 	/**
@@ -625,12 +622,11 @@ class Alerts {
 
 		$trigger_action = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_action' );
 		$alert_type = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
-		// $data['post_status'] = 'wp_stream_enabled';
-		// $data['post_type'] = 'wp_stream_alerts';
 
+		// Insert the post into the database
 		$post_id = wp_insert_post( array(
+			'post_status'   => 'wp_stream_enabled',
 			'post_type' => 'wp_stream_alerts',
-			'post_status' => 'wp_stream_enabled',
 		) );
 		add_post_meta( $post_id, 'alert_type', $alert_type );
 

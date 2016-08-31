@@ -39,7 +39,6 @@ abstract class Alert_Trigger {
 		add_action( 'wp_stream_alert_trigger_form_display', array( $this, 'add_fields' ), 10, 2 );
 		add_action( 'wp_stream_alert_trigger_form_save', array( $this, 'save_fields' ), 10, 1 );
 		add_filter( 'wp_stream_alert_trigger_check', array( $this, 'check_record' ), 10, 4 );
-		add_filter( 'stream_alerts_preview_query', array( $this, 'filter_preview_query' ), 10, 2 );
 	}
 
 	/**
@@ -75,19 +74,6 @@ abstract class Alert_Trigger {
 	 * @return void
 	 */
 	abstract public function save_fields( $alert );
-
-	/**
-	 * Alters the preview table query to show records matching this query.
-	 *
-	 * @filter stream_alerts_preview_query
-	 *
-	 * @param array $query_args The database query arguments for the table.
-	 * @param Alert $alert The Alert being worked on.
-	 * @return array The new query arguments.
-	 */
-	public function filter_preview_query( $query_args, $alert ) {
-		return $query_args;
-	}
 
 	/**
 	 * Returns the trigger's value for the given alert.
