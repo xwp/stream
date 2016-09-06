@@ -73,7 +73,7 @@ class Alerts {
 		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
 
 		add_action( 'wp_ajax_load_alerts_settings', array( $this, 'load_alerts_settings' ) );
-		add_action( 'wp_ajax_update_actions', array( $this, 'update_actions' ) );
+		add_action( 'wp_ajax_get_actions', array( $this, 'get_actions' ) );
 		add_action( 'wp_ajax_save_new_alert', array( $this, 'save_new_alert' ) );
 		add_action( 'wp_ajax_get_new_alert_triggers_notifications', array( $this, 'get_new_alert_triggers_notifications' ) );
 
@@ -597,18 +597,21 @@ class Alerts {
 	/**
 	 * Update actions dropdown options based on the connector selected.
 	 */
-	function update_actions() {
-		$connector = sanitize_text_field( $_POST['connector'] );
-		$actions = $GLOBALS['wp_stream']->connectors->term_labels['stream_action'];
-		if ( ! empty( $connector ) ) {
-			$class_name = '\WP_Stream\Connector_'.ucfirst( $connector );
-			if ( class_exists( $class_name ) ) {
-				$connector_class = new $class_name();
-				$actions         = $connector_class->get_action_labels();
+	function get_actions() {
+		$connector_name = wp_stream_filter_input( INPUT_POST, 'connector' );
+		if ( ! empty( $connector_name ) ) {
+			$connectors = wp_stream_get_instance()->connectors->connectors;
+			if ( isset( $connectors[ $connector_name ] ) ) {
+				$connector = $connectors[ $connector_name ];
+				if ( method_exists( $connector, 'get_action_labels' ) ) {
+					$actions = $connector->get_action_labels();
+				}
 			}
+		} else {
+			$actions = wp_stream_get_instance()->connectors->term_labels['stream_action'];
 		}
 		ksort( $actions );
-		die( wp_json_encode( $actions ) );
+		wp_send_json_success( $actions );
 	}
 	/**
 	 * Save a new alert

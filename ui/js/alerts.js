@@ -1,4 +1,4 @@
-/* globals jQuery, streamAlerts, JSON, inlineEditPost */
+/* globals jQuery, streamAlerts, inlineEditPost */
 jQuery( function( $ ) {
 	'use strict';
 	var setupSelectTwo = function setupSelectTwo( id ) {
@@ -101,11 +101,11 @@ jQuery( function( $ ) {
 				var connector_split = connector.split('-');
 				connector = connector_split[0];
 			}
-			updateActions( connector );
+			getActions( connector );
 		}
 	});
 
-	var updateActions = function( connector ) {
+	var getActions = function( connector ) {
 		var trigger_action = $('#wp_stream_trigger_action');
 		trigger_action.empty();
 		trigger_action.prop('disabled', true);
@@ -114,13 +114,18 @@ jQuery( function( $ ) {
 		trigger_action.append( placeholder );
 
 		var data = {
-			'action'    : 'update_actions',
+			'action'    : 'get_actions',
 			'connector' : connector
 		};
 
 		$.post( window.ajaxurl, data, function( response ) {
-			var json_response = JSON.parse( response );
-			$.each( json_response, function( index, value ) {
+            var success = response.success,
+                actions = response.data;
+            // if ( ! success ) {
+               // return;
+            // }
+
+            $.each( actions, function( index, value ) {
 				var option = $('<option/>', { value: index, text: value } );
 				trigger_action.append( option );
 				trigger_action.select2( 'data', { id: index, text: value } );
