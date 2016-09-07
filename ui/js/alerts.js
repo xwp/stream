@@ -121,9 +121,9 @@ jQuery( function( $ ) {
 		$.post( window.ajaxurl, data, function( response ) {
             var success = response.success,
                 actions = response.data;
-            // if ( ! success ) {
-               // return;
-            // }
+            if ( ! success ) {
+               return;
+            }
 
             $.each( actions, function( index, value ) {
 				var option = $('<option/>', { value: index, text: value } );
@@ -176,11 +176,12 @@ jQuery( function( $ ) {
 		e.preventDefault();
 		$( '#add-new-alert' ).find('p.submit.inline-edit-save span.spinner').css( 'visibility', 'visible' );
 		var data = {
-			'action':          'save_new_alert',
-			'wp_stream_trigger_author':  $('#wp_stream_trigger_author').val(),
+			'action': 'save_new_alert',
+			'wp_stream_alerts_nonce': $('#wp_stream_alerts_nonce').val(),
+			'wp_stream_trigger_author': $('#wp_stream_trigger_author').val(),
 			'wp_stream_trigger_context': $('#wp_stream_trigger_connector_or_context').val(),
-			'wp_stream_trigger_action':  $('#wp_stream_trigger_action').val(),
-			'wp_stream_alert_type':      $('#wp_stream_alert_type').val()
+			'wp_stream_trigger_action': $('#wp_stream_trigger_action').val(),
+			'wp_stream_alert_type': $('#wp_stream_alert_type').val()
 		};
 		$('#wp_stream_alert_type_form').find(':input').each( function(){
 			var alert_type_data_id = $(this).attr('id');
@@ -193,6 +194,8 @@ jQuery( function( $ ) {
 			if ( true === response.success ) {
 				$( '#add-new-alert' ).find('p.submit.inline-edit-save span.spinner').css('visibility', 'hidden');
 				location.reload();
+			} else {
+				console.log( response );
 			}
 		});
 	};

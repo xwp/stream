@@ -96,7 +96,7 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	 * @return void
 	 */
 	public function save_fields( $alert ) {
-		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
+		check_admin_referer( 'save_alert', 'wp_stream_alerts_nonce' );
 
 		$alert->alert_meta['clear_immediate'] = ! empty( $_POST['wp_stream_menu_alert_clear_immediate'] );
 	}

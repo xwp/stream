@@ -253,7 +253,8 @@ class Alerts {
 	 * @return void
 	 */
 	function register_scripts( $page ) {
-		if ( 'post.php' === $page || 'post-new.php' === $page || 'edit.php' === $page ) {
+		$screen = get_current_screen();
+		if ( 'edit-wp_stream_alerts' === $screen->id ) {
 			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2', 'jquery', 'inline-edit-post' ) );
 			wp_localize_script( 'wp-stream-alerts', 'streamAlerts',
 				array(
@@ -524,7 +525,7 @@ class Alerts {
 		// @TODO use human readable text.
 		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>'; // @todo Maybe, "when".
 		echo $form->render_fields(); // Xss ok.
-		wp_nonce_field( 'save_post', 'wp_stream_alerts_nonce' );
+		wp_nonce_field( 'save_alert', 'wp_stream_alerts_nonce' );
 	}
 
 	/**
@@ -617,20 +618,37 @@ class Alerts {
 	 * Save a new alert
 	 */
 	function save_new_alert() {
-		$trigger_author = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
+		check_ajax_referer( 'save_alert', 'wp_stream_alerts_nonce' );
+		$trigger_author                = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
 		$trigger_connector_and_context = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_context' );
-		$trigger_connector_and_context_split = explode( '-', $trigger_connector_and_context );
-		$trigger_connector = $trigger_connector_and_context_split[0];
-		$trigger_context = $trigger_connector_and_context_split[1];
+		if ( false !== strpos( $trigger_connector_and_context, '-' ) ) {
+			// This is a connector with a context such as posts-post.
+			$trigger_connector_and_context_split = explode( '-', $trigger_connector_and_context );
+			$trigger_connector                   = $trigger_connector_and_context_split[0];
+			$trigger_context                     = $trigger_connector_and_context_split[1];
+		} else {
+			if ( ! empty( $trigger_connector_and_context ) ) {
+				// This is a parent connector with no dash such as posts.
+				$trigger_connector = $trigger_connector_and_context;
+				$trigger_context   = '';
+			} else {
+				// There is no connector or context.
+				$trigger_connector = '';
+				$trigger_context   = '';
+			}
+		}
 
 		$trigger_action = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_action' );
-		$alert_type = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
+		$alert_type     = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
 
 		// Insert the post into the database
 		$post_id = wp_insert_post( array(
-			'post_status'   => 'wp_stream_enabled',
-			'post_type' => 'wp_stream_alerts',
+			'post_status' => 'wp_stream_enabled',
+			'post_type'   => 'wp_stream_alerts',
 		) );
+		if ( empty( $post_id ) ) {
+			wp_send_json_error();
+		}
 		add_post_meta( $post_id, 'alert_type', $alert_type );
 
 		$alert_meta = array(

@@ -150,7 +150,7 @@ class Alert_Type_IFTT extends Alert_Type {
 	 * @return void
 	 */
 	public function save_fields( $alert ) {
-		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
+		check_admin_referer( 'save_alert', 'wp_stream_alerts_nonce' );
 		$alert->alert_meta['maker_key'] = '';
 
 		if ( ! empty( $_POST['wp_stream_iftt_maker_key'] ) ) {

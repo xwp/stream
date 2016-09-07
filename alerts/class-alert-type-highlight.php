@@ -157,7 +157,7 @@ class Alert_Type_Highlight extends Alert_Type {
 	 * @return void
 	 */
 	public function save_fields( $alert ) {
-		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
+		check_admin_referer( 'save_alert', 'wp_stream_alerts_nonce' );
 
 		if ( empty( $_POST['wp_stream_highlight_color'] ) ) {
 			$alert->alert_meta['color'] = 'yellow';
