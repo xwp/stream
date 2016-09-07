@@ -129,9 +129,26 @@ class Alerts_List {
 					<?php echo wp_kses_post( $this->custom_column_actions( $post_id ) ); ?>
 					<button type="button" class="toggle-row"><span class="screen-reader-text"><?php echo esc_html__( 'Show more details', 'stream' ); ?></span></button>
 				</div>
-				<input type="hidden" name="wp_stream_trigger_connector" value="<?php echo esc_attr( $alert->alert_meta['trigger_connector'] ); ?>" />
-				<input type="hidden" name="wp_stream_trigger_context" value="<?php echo esc_attr( $alert->alert_meta['trigger_context'] ); ?>" />
-				<input type="hidden" name="wp_stream_trigger_action" value="<?php echo esc_attr( $alert->alert_meta['trigger_action'] ); ?>" />
+				<?php
+				if ( ! empty( $alert->alert_meta['trigger_connector'] ) ) {
+					$trigger_connector = $alert->alert_meta['trigger_connector'];
+				} else {
+					$trigger_connector = '';
+				}
+				if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
+					$trigger_context = $alert->alert_meta['trigger_context'];
+				} else {
+					$trigger_context = '';
+				}
+				if ( ! empty( $alert->alert_meta['trigger_action'] ) ) {
+					$trigger_action = $alert->alert_meta['trigger_action'];
+				} else {
+					$trigger_action = '';
+				}
+				?>
+				<input type="hidden" name="wp_stream_trigger_connector" value="<?php echo esc_attr( $trigger_connector ); ?>" />
+				<input type="hidden" name="wp_stream_trigger_context" value="<?php echo esc_attr( $trigger_context ); ?>" />
+				<input type="hidden" name="wp_stream_trigger_action" value="<?php echo esc_attr( $trigger_action ); ?>" />
 				<?php
 				echo wp_kses_post( $this->custom_column_actions( $post_id ) );
 				break;

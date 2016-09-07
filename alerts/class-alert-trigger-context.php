@@ -172,6 +172,10 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		$context = ( ! empty( $alert->alert_meta['trigger_context'] ) ) ? $alert->alert_meta['trigger_context'] : null;
 		if ( empty( $context ) ) {
 			$context = __( 'Any Context', 'stream' );
+			$connector = ( ! empty( $alert->alert_meta['trigger_connector'] ) ) ? $alert->alert_meta['trigger_connector'] : null;
+			if ( ! empty( $connector ) ) {
+				$context = $connector;
+			}
 		} elseif ( strpos( $context, 'group-' ) === 0 ) {
 			$context = substr( $context, strlen( 'group-' ) );
 		}
