@@ -1,6 +1,10 @@
 <?php
 namespace WP_Stream;
-
+/**
+ * Class Test_Alerts
+ * @package WP_Stream
+ * @group alerts
+ */
 class Test_Alerts extends WP_StreamTestCase {
 
 	function tearDown() {
@@ -101,7 +105,11 @@ class Test_Alerts extends WP_StreamTestCase {
 
 		$alerts->register_scripts( 'post.php' );
 
-		$this->assertTrue( wp_style_is( 'wp-stream-select2', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'wp-stream-alerts', 'enqueued' ) );
+
+		global $current_screen;
+		$current_screen->id = 'edit-wp_stream_alerts';
+		$alerts->register_scripts( 'post.php' );
 		$this->assertTrue( wp_script_is( 'wp-stream-alerts', 'enqueued' ) );
 	}
 
@@ -306,6 +314,77 @@ class Test_Alerts extends WP_StreamTestCase {
 		);
 	}
 
+	function test_get_actions() {
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['connector'] = '';
+			$this->_handleAjax( 'get_actions' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+		}
+
+		$response = json_decode( $this->_last_response );
+		$this->assertInternalType( 'object', $response );
+		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertTrue( $response->success );
+		$this->assertNotEmpty( $response->data );
+	}
+	function test_save_new_alert_with_parent_context() {
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_context'] = 'posts';
+			$_POST['wp_stream_trigger_action'] = 'edit';
+			$_POST['wp_stream_alert_type'] = 'highlight';
+			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+			$this->_handleAjax( 'save_new_alert' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+		}
+
+		$response = json_decode( $this->_last_response );
+		$this->assertInternalType( 'object', $response );
+		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertTrue( $response->success );
+	}
+	function test_save_new_alert_with_child_context() {
+	$alerts = new Alerts( $this->plugin );
+	try {
+		$_POST['wp_stream_trigger_author'] = 'me';
+		$_POST['wp_stream_trigger_context'] = 'posts-post';
+		$_POST['wp_stream_trigger_action'] = 'edit';
+		$_POST['wp_stream_alert_type'] = 'highlight';
+		$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+		$this->_handleAjax( 'save_new_alert' );
+	} catch ( \WPAjaxDieContinueException $e ) {
+		$exception = $e;
+	}
+
+	$response = json_decode( $this->_last_response );
+	$this->assertInternalType( 'object', $response );
+	$this->assertObjectHasAttribute( 'success', $response );
+	$this->assertTrue( $response->success );
+}
+	function test_save_new_alert_no_nonce() {
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_context'] = 'posts-post';
+			$_POST['wp_stream_trigger_action'] = 'edit';
+			$_POST['wp_stream_alert_type'] = 'highlight';
+			$this->setExpectedException( 'WPAjaxDieStopException' );
+			$this->_handleAjax( 'save_new_alert' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+			// Check that the exception was thrown.
+			$this->assertTrue( isset( $exception ) );
+
+			// The output should be a -1 for failure.
+			$this->assertEquals( '-1', $exception->getMessage() );
+		}
+
+
+	}
 	private function dummy_alert_data() {
 		return (object) array(
 			'ID'         => 1,

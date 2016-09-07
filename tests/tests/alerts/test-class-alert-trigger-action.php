@@ -1,6 +1,10 @@
 <?php
 namespace WP_Stream;
-
+/**
+ * Class Test_Alert_Trigger_Action
+ * @package WP_Stream
+ * @group alerts
+ */
 class Test_Alert_Trigger_Action extends Test_Alert_Trigger {
 
 	public function setUp() {
