@@ -600,8 +600,9 @@ class Alerts {
 	 */
 	function get_actions() {
 		$connector_name = wp_stream_filter_input( INPUT_POST, 'connector' );
+		$stream_connectors = wp_stream_get_instance()->connectors;
 		if ( ! empty( $connector_name ) ) {
-			$connectors = wp_stream_get_instance()->connectors->connectors;
+			$connectors = $stream_connectors->connectors;
 			if ( isset( $connectors[ $connector_name ] ) ) {
 				$connector = $connectors[ $connector_name ];
 				if ( method_exists( $connector, 'get_action_labels' ) ) {
@@ -609,7 +610,7 @@ class Alerts {
 				}
 			}
 		} else {
-			$actions = wp_stream_get_instance()->connectors->term_labels['stream_action'];
+			$actions = $stream_connectors->term_labels['stream_action'];
 		}
 		ksort( $actions );
 		wp_send_json_success( $actions );

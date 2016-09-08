@@ -91,6 +91,7 @@ jQuery( function( $ ) {
 		} );
 		$.post( window.ajaxurl, data, function( response ) {
 			$( '#wp_stream_alert_type_form' ).html( response.data.html );
+			$( document ).trigger( 'alert-type-settings-updated' );
 		});
 	};
 
@@ -131,6 +132,7 @@ jQuery( function( $ ) {
 				trigger_action.select2( 'data', { id: index, text: value } );
 			});
 			trigger_action.prop('disabled', false);
+			$( document ).trigger( 'alert-actions-updated' );
 		});
 	};
 
@@ -234,10 +236,10 @@ jQuery( function( $ ) {
 			$edit_row.find( 'input[name="wp_stream_trigger_connector"]' ).attr( 'value', alert_trigger_connector );
 			$edit_row.find( 'input[name="wp_stream_trigger_context"]' ).attr( 'value', alert_trigger_context );
 			$edit_row.find( 'select[name="wp_stream_trigger_connector_or_context"] option[value="'+alert_trigger_connector_context+'"]' ).attr( 'selected', 'selected' );
-			setTimeout(function () {
+			$( document ).one( 'alert-actions-updated', function() {
 				$edit_row.find('input[name="wp_stream_trigger_action"]').attr('value', alert_trigger_action);
 				$edit_row.find('select[name="wp_stream_trigger_action"] option[value="' + alert_trigger_action + '"]').attr('selected', 'selected').trigger('change');
-			}, 1000 );
+			});
 
 			setupSelectTwo( '#edit-' + post_id );
 
@@ -245,8 +247,7 @@ jQuery( function( $ ) {
 			$('#wp_stream_alert_type_form').hide();
 			var alert_type = $post_row.find( 'input[name="wp_stream_alert_type"]' ).val();
 			$edit_row.find( 'select[name="wp_stream_alert_type"] option[value="'+alert_type+'"]' ).attr( 'selected', 'selected' ).trigger('change');
-
-			setTimeout(function () {
+			$( document ).one( 'alert-type-settings-updated', function () {
 				if ( 'email' === alert_type ) {
 					var email_recipient = $post_row.find( 'input[name="wp_stream_email_recipient"]' ).val();
 					var email_subject = $post_row.find( 'input[name="wp_stream_email_subject"]' ).val();
@@ -274,7 +275,7 @@ jQuery( function( $ ) {
 					}
 				}
 				$('#wp_stream_alert_type_form').show();
-			}, 1000);
+			});
 		}
 	};
 });
