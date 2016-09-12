@@ -74,23 +74,23 @@ class Plugin {
 
 		// Load DB helper interface/class
 		$driver_class = apply_filters( 'wp_stream_db_driver', '\WP_Stream\DB_Driver_WPDB' );
-		$driver = null;
+		$driver       = null;
 
 		if ( class_exists( $driver_class ) ) {
-			$driver = new $driver_class();
+			$driver   = new $driver_class();
 			$this->db = new DB( $driver );
 		}
 
 		$error = false;
 		if ( ! $this->db ) {
-			$error = 'Stream: Could not load chosen DB driver.';
+			$error = esc_html__( 'Stream: Could not load chosen DB driver.', 'stream' );
 		} elseif ( ! $driver instanceof DB_Driver ) {
-			$error = 'Stream: DB driver must implement DB Driver interface.';
+			$error = esc_html__( 'Stream: DB driver must implement DB Driver interface.', 'stream' );
 		}
 
 		if ( $error ) {
 			wp_die(
-				esc_html__( $error, 'stream' ),
+				esc_html( $error ),
 				esc_html__( 'Stream DB Error', 'stream' )
 			);
 		}
@@ -107,7 +107,7 @@ class Plugin {
 		// Add frontend indicator
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
 
-		// Change DB driver after plugin loaded if any add-on want to replace
+		// Change DB driver after plugin loaded if any add-ons want to replace
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 
 		// Load admin area classes
@@ -228,7 +228,7 @@ class Plugin {
 	public function plugins_loaded() {
 		// Load DB helper interface/class
 		$driver_class = apply_filters( 'wp_stream_db_driver', '\WP_Stream\DB_Driver_WPDB' );
-		$driver       = null;
+
 		if ( class_exists( $driver_class ) ) {
 			$driver   = new $driver_class();
 			$this->db = new DB( $driver );

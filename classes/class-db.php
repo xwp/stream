@@ -3,19 +3,23 @@ namespace WP_Stream;
 
 class DB {
 	/**
-	 * Hold Driver class
+	 * Hold the Driver class
+	 *
 	 * @var DB_Driver
 	 */
 	protected $driver;
 
 	/**
-	 * Numbers of records in last request
-	 * @var Int
+	 * Number of records in last request
+	 *
+	 * @var int
 	 */
 	protected $found_records_count = 0;
 
 	/**
 	 * Class constructor.
+	 *
+	 * @param DB_Driver $driver Driver we want to use.
 	 */
 	public function __construct( $driver ) {
 		$this->driver = $driver;
@@ -58,7 +62,7 @@ class DB {
 		$meta = array();
 		foreach ( (array) $record['meta'] as $key => $vals ) {
 			// If associative array, serialize it, otherwise loop on its members
-			$vals = (is_array( $vals ) && 0 !== key( $vals )) ? array( $vals ) : $vals;
+			$vals = ( is_array( $vals ) && 0 !== key( $vals ) ) ? array( $vals ) : $vals;
 
 			foreach ( (array) $vals as $num => $val ) {
 				$vals[ $num ] = maybe_serialize( $val );
@@ -97,7 +101,7 @@ class DB {
 	 * Returns array of existing values for requested column.
 	 * Used to fill search filters with only used items, instead of all items.
 	 *
-	 * GROUP BY allows query to find just the first occurance of each value in the column,
+	 * GROUP BY allows query to find just the first occurrence of each value in the column,
 	 * increasing the efficiency of the query.
 	 *
 	 * @see assemble_records
@@ -183,7 +187,7 @@ class DB {
 		/**
 		 * Filter allows additional query properties to be added
 		 *
-		 * @return array  Array of query properties
+		 * @return array Array of query properties
 		 */
 		$properties = apply_filters( 'wp_stream_query_properties', $properties );
 
@@ -215,12 +219,12 @@ class DB {
 	/**
 	 * Helper function, backwards compatibility
 	 *
-	 * @param array Query args
+	 * @param array $args Query args
 	 *
 	 * @return array Stream Records
 	 */
 	public function query( $args ) {
-		$this->get_records( $args );
+		return $this->get_records( $args );
 	}
 
 	/**

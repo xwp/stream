@@ -3,7 +3,8 @@ namespace WP_Stream;
 
 class DB_Driver_WPDB implements DB_Driver {
 	/**
-	 * Hold Query class
+	 * Holds Query class
+	 *
 	 * @var Query
 	 */
 	protected $query;
@@ -26,25 +27,25 @@ class DB_Driver_WPDB implements DB_Driver {
 	 * Class constructor.
 	 */
 	public function __construct() {
-		$this->query  = new Query( $this );
+		$this->query = new Query( $this );
 
 		global $wpdb;
 		$prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
 
-		$this->table         = $prefix . 'stream';
-		$this->table_meta    = $prefix . 'stream_meta';
+		$this->table      = $prefix . 'stream';
+		$this->table_meta = $prefix . 'stream_meta';
 
-		$wpdb->stream        = $this->table;
-		$wpdb->streammeta    = $this->table_meta;
+		$wpdb->stream     = $this->table;
+		$wpdb->streammeta = $this->table_meta;
 
 		// Hack for get_metadata
-		$wpdb->recordmeta    = $this->table_meta;
+		$wpdb->recordmeta = $this->table_meta;
 	}
 
 	/**
-	 * Insert a record
+	 * Insert a record.
 	 *
-	 * @param array $data
+	 * @param array $data Data to insert.
 	 *
 	 * @return int
 	 */
@@ -114,7 +115,7 @@ class DB_Driver_WPDB implements DB_Driver {
 	 * Returns array of existing values for requested column.
 	 * Used to fill search filters with only used items, instead of all items.
 	 *
-	 * GROUP BY allows query to find just the first occurance of each value in the column,
+	 * GROUP BY allows query to find just the first occurrence of each value in the column,
 	 * increasing the efficiency of the query.
 	 *
 	 * @param string $column
