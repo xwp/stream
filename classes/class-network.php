@@ -221,7 +221,6 @@ class Network {
 			array(
 				'general' => array(
 					'delete_all_records',
-					'records_ttl',
 				),
 			)
 		);
