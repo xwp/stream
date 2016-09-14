@@ -179,6 +179,9 @@ class Connector_WordPress_SEO extends Connector {
 	public function register() {
 		parent::register();
 
+		if ( is_multisite() && is_network_admin() && ! is_plugin_active_for_network( 'wordpress-seo/wordpress-seo-main.php' ) ) {
+			return;
+		}
 		foreach ( \WPSEO_Options::$options as $class ) {
 			/* @var $class WPSEO_Options */
 			$this->option_groups[ $class::get_instance()->group_name ] = array(
