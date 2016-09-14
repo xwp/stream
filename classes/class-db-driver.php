@@ -38,12 +38,16 @@ interface DB_Driver {
 	public function get_table_names();
 
 	/**
-	 * Init storage
+	 * Init storage.
+	 *
+	 * @param \WP_Stream\Plugin $plugin Instance of the plugin.
 	 */
-	public function setup_storage();
+	public function setup_storage( $plugin );
 
 	/**
-	 * Purge storage
+	 * Purge storage.
+	 *
+	 * @param \WP_Stream\Plugin $plugin Instance of the plugin.
 	 */
-	public function purge_storage();
+	public function purge_storage( $plugin );
 }

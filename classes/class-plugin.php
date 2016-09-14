@@ -112,10 +112,10 @@ class Plugin {
 
 		// Load admin area classes
 		if ( is_admin() || ( defined( 'WP_STREAM_DEV_DEBUG' ) && WP_STREAM_DEV_DEBUG ) ) {
-			$this->admin   = new Admin( $this );
-			$this->install = new Install( $this );
+			$this->admin   = new Admin( $this, $driver );
+			$this->install = $driver->setup_storage( $this );
 		} elseif ( defined( 'DOING_CRON' ) && DOING_CRON ) {
-			$this->admin = new Admin( $this );
+			$this->admin = new Admin( $this, $driver );
 		}
 
 		// Load WP-CLI command
