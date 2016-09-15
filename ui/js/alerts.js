@@ -125,12 +125,14 @@ jQuery( function( $ ) {
             if ( ! success ) {
                return;
             }
-
-            $.each( actions, function( index, value ) {
-				var option = $('<option/>', { value: index, text: value } );
-				trigger_action.append( option );
-				trigger_action.select2( 'data', { id: index, text: value } );
-			});
+			for ( var key in actions ) {
+				if ( actions.hasOwnProperty(key) ) {
+					var value = actions[key];
+					var option = $('<option/>', {value: key, text: value});
+					trigger_action.append(option);
+					trigger_action.select2('data', {id: key, text: value});
+				}
+			}
 			trigger_action.prop('disabled', false);
 			$( document ).trigger( 'alert-actions-updated' );
 		});

@@ -602,9 +602,8 @@ class Alerts {
 		$connector_name = wp_stream_filter_input( INPUT_POST, 'connector' );
 		$stream_connectors = wp_stream_get_instance()->connectors;
 		if ( ! empty( $connector_name ) ) {
-			$connectors = $stream_connectors->connectors;
-			if ( isset( $connectors[ $connector_name ] ) ) {
-				$connector = $connectors[ $connector_name ];
+			if ( isset( $stream_connectors->connectors[ $connector_name ] ) ) {
+				$connector = $stream_connectors->connectors[ $connector_name ];
 				if ( method_exists( $connector, 'get_action_labels' ) ) {
 					$actions = $connector->get_action_labels();
 				}
