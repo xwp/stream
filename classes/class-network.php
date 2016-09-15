@@ -220,8 +220,10 @@ class Network {
 			'wp_stream_hidden_option_fields',
 			array(
 				'general' => array(
-					'delete_all_records',
 					'records_ttl',
+				),
+				'advanced' => array(
+					'delete_all_records',
 				),
 			)
 		);
