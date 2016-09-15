@@ -77,6 +77,8 @@ class Alert_Type_Highlight extends Alert_Type {
 				add_filter( 'wp_stream_action_links_' . $connector->name, array( $this, 'action_link_remove_highlight' ), 10, 2 );
 			}
 		}
+
+		add_filter( 'wp_stream_alerts_save_meta', array( $this, 'add_alert_meta' ), 10, 2 );
 	}
 
 	/**
@@ -117,7 +119,23 @@ class Alert_Type_Highlight extends Alert_Type {
 			'value'   => $options['color'],
 		) );
 	}
+	/**
+	 * Displays a settings form for the alert type
+	 *
+	 * @param Alert $alert Alert object for the currently displayed alert.
+	 * @return void
+	 */
+	public function display_new_fields() {
+		$form = new Form_Generator;
 
+		echo '<p>' . esc_html__( 'Color', 'stream' ) . ':</p>';
+		echo $form->render_field( 'select', array( // Xss ok.
+			'name'    => 'wp_stream_highlight_color',
+			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
+			'options' => $this->get_highlight_options(),
+			'value'   => '',
+		) );
+	}
 	/**
 	 * Lists available color options for alerts.
 	 *
@@ -139,7 +157,7 @@ class Alert_Type_Highlight extends Alert_Type {
 	 * @return void
 	 */
 	public function save_fields( $alert ) {
-		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
+		check_admin_referer( 'save_alert', 'wp_stream_alerts_nonce' );
 
 		if ( empty( $_POST['wp_stream_highlight_color'] ) ) {
 			$alert->alert_meta['color'] = 'yellow';
@@ -268,5 +286,25 @@ class Alert_Type_Highlight extends Alert_Type {
 			wp_add_inline_script( self::SCRIPT_HANDLE, 'streamAlertTypeHighlight.init();', 'after' );
 			wp_enqueue_script( self::SCRIPT_HANDLE );
 		}
+	}
+
+	/**
+	 * Add alert meta if this is a highlight alert
+	 *
+	 * @param array  $alert_meta The metadata to be inserted for this alert.
+	 * @param string $alert_type The type of alert being added or updated.
+	 *
+	 * @return mixed
+	 */
+	public function add_alert_meta( $alert_meta, $alert_type ) {
+		if ( $this->slug === $alert_type ) {
+			$color = wp_stream_filter_input( INPUT_POST, 'wp_stream_highlight_color' );
+			if ( empty( $color ) ) {
+				$alert_meta['color'] = 'yellow';
+			} else {
+				$alert_meta['color'] = $color;
+			}
+		}
+		return $alert_meta;
 	}
 }

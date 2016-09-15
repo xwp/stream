@@ -64,6 +64,20 @@ class Alert_Type_IFTT extends Alert_Type {
 	public $slug = 'iftt';
 
 	/**
+	 * Class Constructor
+	 *
+	 * @param Plugin $plugin Plugin object.
+	 * @return void
+	 */
+	public function __construct( $plugin ) {
+		parent::__construct( $plugin );
+		$this->plugin = $plugin;
+		if ( ! is_admin() ) {
+			return;
+		}
+		add_filter( 'wp_stream_alerts_save_meta', array( $this, 'add_alert_meta' ), 10, 2 );
+	}
+		/**
 	 * Record that the Alert was triggered by a Record.
 	 *
 	 * In self::post_class() this value is checked so we can determine
@@ -107,7 +121,28 @@ class Alert_Type_IFTT extends Alert_Type {
 			'value'   => $options['event_name'],
 		) );
 	}
+	/**
+	 * Displays a settings form for the alert type
+	 *
+	 * @param Alert $alert Alert object for the currently displayed alert.
+	 * @return void
+	 */
+	public function display_new_fields() {
+		$form = new Form_Generator;
 
+		echo '<p>' . esc_html__( 'IFTT Maker Key', 'stream' ) . ':</p>';
+		echo $form->render_field( 'text', array( // Xss ok.
+			'name'    => 'wp_stream_iftt_maker_key',
+			'title'   => esc_attr( __( 'Maker Key', 'stream' ) ),
+			'value'   => '',
+		) );
+		echo '<p>' . esc_html__( 'IFTT Event Name', 'stream' ) . ':</p>';
+		echo $form->render_field( 'text', array( // Xss ok.
+			'name'    => 'wp_stream_iftt_event_name',
+			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
+			'value'   => '',
+		) );
+	}
 	/**
 	 * Validates and saves form settings for later use.
 	 *
@@ -115,7 +150,7 @@ class Alert_Type_IFTT extends Alert_Type {
 	 * @return void
 	 */
 	public function save_fields( $alert ) {
-		check_admin_referer( 'save_post', 'wp_stream_alerts_nonce' );
+		check_admin_referer( 'save_alert', 'wp_stream_alerts_nonce' );
 		$alert->alert_meta['maker_key'] = '';
 
 		if ( ! empty( $_POST['wp_stream_iftt_maker_key'] ) ) {
@@ -242,5 +277,26 @@ class Alert_Type_IFTT extends Alert_Type {
 			return false;
 		}
 		return true;
+	}
+	/**
+	 * Add alert meta if this is a highlight alert
+	 *
+	 * @param array  $alert_meta The metadata to be inserted for this alert.
+	 * @param string $alert_type The type of alert being added or updated.
+	 *
+	 * @return mixed
+	 */
+	public function add_alert_meta( $alert_meta, $alert_type ) {
+		if ( $this->slug === $alert_type ) {
+			$maker_key = wp_stream_filter_input( INPUT_POST, 'wp_stream_iftt_maker_key' );
+			if ( ! empty( $maker_key ) ) {
+				$alert_meta['maker_key'] = $maker_key;
+			}
+			$event_name = wp_stream_filter_input( INPUT_POST, 'wp_stream_iftt_event_name' );
+			if ( ! empty( $event_name ) ) {
+				$alert_meta['event_name'] = $event_name;
+			}
+		}
+		return $alert_meta;
 	}
 }

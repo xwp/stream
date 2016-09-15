@@ -24,11 +24,6 @@ class Alerts {
 	const ALERTS_TRIGGERED_META_KEY = 'wp_stream_alerts_triggered';
 
 	/**
-	 * Nonce name.
-	 */
-	const NONCE_NAME = 'wp-stream-alerts-nonce';
-
-	/**
 	 * Hold Plugin class
 	 *
 	 * @var Plugin
@@ -70,10 +65,6 @@ class Alerts {
 		// Add custom post type to menu.
 		add_action( 'wp_stream_admin_menu', array( $this, 'register_menu' ) );
 
-		// Add metaboxes to post screens.
-		add_action( 'load-post.php', array( $this, 'register_meta_boxes' ) );
-		add_action( 'load-post-new.php', array( $this, 'register_meta_boxes' ) );
-
 		// Add scripts to post screens.
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
 
@@ -81,11 +72,10 @@ class Alerts {
 
 		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
 
-		add_filter( 'post_updated_messages', array( $this, 'filter_update_messages' ) );
-		add_filter( 'wp_insert_post_data', array( $this, 'save_post_info' ), 10, 2 );
-
 		add_action( 'wp_ajax_load_alerts_settings', array( $this, 'load_alerts_settings' ) );
-		add_action( 'wp_ajax_update_actions', array( $this, 'update_actions' ) );
+		add_action( 'wp_ajax_get_actions', array( $this, 'get_actions' ) );
+		add_action( 'wp_ajax_save_new_alert', array( $this, 'save_new_alert' ) );
+		add_action( 'wp_ajax_get_new_alert_triggers_notifications', array( $this, 'get_new_alert_triggers_notifications' ) );
 
 		$this->load_alert_types();
 		$this->load_alert_triggers();
@@ -263,13 +253,13 @@ class Alerts {
 	 * @return void
 	 */
 	function register_scripts( $page ) {
-		if ( 'post.php' === $page || 'post-new.php' === $page ) {
-			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2', 'jquery' ) );
+		$screen = get_current_screen();
+		if ( 'edit-wp_stream_alerts' === $screen->id ) {
+			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2', 'jquery', 'inline-edit-post' ) );
 			wp_localize_script( 'wp-stream-alerts', 'streamAlerts',
 				array(
 					'any'        => __( 'Any', 'stream' ),
 					'anyContext' => __( 'Any Context', 'stream' ),
-					'security'   => wp_create_nonce( self::NONCE_NAME ),
 					)
 			);
 			wp_enqueue_script( 'wp-stream-alerts' );
@@ -345,34 +335,6 @@ class Alerts {
 		);
 
 		register_post_status( 'wp_stream_disabled', $args );
-	}
-
-	/**
-	 * Changes update messages for use with Alerts.
-	 *
-	 * @filter post_updated_messages
-	 *
-	 * @param array $messages Array of post update messages by post type.
-	 * @return array
-	 */
-	public function filter_update_messages( $messages ) {
-
-		$updated = __( 'Alert updated.', 'stream' );
-		$messages['wp_stream_alerts'] = array(
-			 0 => '', // Unused.
-			 1 => $updated, // Regular update.
-			 2 => '', // Unused. Custom fields updated.
-			 3 => '', // Unused. Custom fields deleted.
-			 4 => $updated, // Regular update.
-			 5 => '', // Unused. Revision restored.
-			 6 => $updated, // Publish.
-			 7 => $updated, // Save.
-			 8 => '', // Unused. Submit for review.
-			 9 => '', // Unused. Scheduled.
-			10 => $updated, // Draft updated.
-		);
-
-		return $messages;
 	}
 
 	/**
@@ -478,102 +440,23 @@ class Alerts {
 	}
 
 	/**
-	 * Register metaboxes with post screens
-	 *
-	 * @action load-post-new.php
-	 *
-	 * @return void
-	 */
-	function register_meta_boxes() {
-		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
-		add_filter( 'parent_file', array( $this, 'filter_parent_file' ), 10, 1 );
-		add_filter( 'submenu_file', array( $this, 'filter_submenu_file' ), 10, 1 );
-	}
-
-	/**
-	 * Add metaboxes to post screens
-	 *
-	 * @filter add_meta_boxes
-	 *
-	 * @return void
-	 */
-	function add_meta_boxes() {
-		remove_meta_box( 'submitdiv',  self::POST_TYPE, 'side' );
-
-		add_meta_box(
-			'wp_stream_alerts_triggers',
-			__( 'Alert Trigger', 'stream' ),
-			array( $this, 'display_triggers_box' ),
-			self::POST_TYPE,
-			'normal',
-			'high'
-		);
-
-		add_meta_box(
-			'wp_stream_alerts_alert_type',
-			__( 'Alert Type', 'stream' ),
-			array( $this, 'display_notification_box' ),
-			self::POST_TYPE,
-			'normal',
-			'default'
-		);
-
-		add_meta_box(
-			'wp_stream_alerts_submit',
-			__( 'Alert Status', 'stream' ),
-			array( $this, 'display_submit_box' ),
-			self::POST_TYPE,
-			'side',
-			'default'
-		);
-	}
-
-	/**
-	 * Fixes menu highlighting when Alerts are being edited.
-	 *
-	 * @filter parent_file
-	 *
-	 * @param string $parent_file Top level menu item to highlight.
-	 * @return string
-	 */
-	function filter_parent_file( $parent_file ) {
-		$screen = get_current_screen();
-		if ( 'post' === $screen->base && self::POST_TYPE === $screen->post_type ) {
-			$parent_file = 'wp_stream';
-		}
-		return $parent_file;
-	}
-
-	/**
-	 * Fixes menu highlighting when Alerts are being edited.
-	 *
-	 * @filter submenu_file
-	 *
-	 * @param string $submenu_file Submenu level menu item to highlight.
-	 * @return string
-	 */
-	function filter_submenu_file( $submenu_file ) {
-		$screen = get_current_screen();
-		if ( 'post' === $screen->base && self::POST_TYPE === $screen->post_type ) {
-			$submenu_file = 'edit.php?post_type=wp_stream_alerts';
-		}
-		return $submenu_file;
-	}
-
-	/**
 	 * Display Alert Type Meta Box
 	 *
 	 * @param WP_Post $post Post object for current alert.
 	 * @return void
 	 */
-	function display_notification_box( $post ) {
-		$alert = $this->get_alert( $post->ID );
+	function display_notification_box( $post = array() ) {
+		$alert_type = 'none';
+		if ( is_object( $post ) ) {
+			$alert = $this->get_alert( $post->ID );
+			$alert_type = $alert->alert_type;
+		}
 		$form  = new Form_Generator;
 
 		$field_html = $form->render_field( 'select', array(
 			'id'          => 'wp_stream_alert_type',
 			'name'        => 'wp_stream_alert_type',
-			'value'       => $alert->alert_type,
+			'value'       => $alert_type,
 			'options'     => $this->get_notification_values(),
 			'placeholder' => __( 'No Alert', 'stream' ),
 			'title'       => 'Alert Type:',
@@ -583,7 +466,12 @@ class Alerts {
 		echo $field_html; // Xss ok.
 
 		echo '<div id="wp_stream_alert_type_form">';
-		$alert->get_alert_type_obj()->display_fields( $alert );
+		if ( isset( $alert ) && is_object( $alert ) ) {
+			$alert->get_alert_type_obj()->display_fields( $alert );
+		} else {
+			$this->plugin->alerts->alert_types['none']->display_new_fields();
+		}
+
 		echo '</div>';
 	}
 
@@ -595,13 +483,13 @@ class Alerts {
 	 * @return void
 	 */
 	function load_alerts_settings() {
-		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
+		/*$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
 		$alert = $this->get_alert( $post_id );
 		if ( ! $alert ) {
 			wp_send_json_error( array(
 				'message' => 'Could not find alert.',
 			) );
-		}
+		}*/
 
 		$alert_type = wp_stream_filter_input( INPUT_POST, 'alert_type' );
 		if ( ! array_key_exists( $alert_type, $this->alert_types ) ) {
@@ -611,7 +499,8 @@ class Alerts {
 		}
 
 		ob_start();
-		$this->alert_types[ $alert_type ]->display_fields( $alert );
+		//$this->alert_types[ $alert_type ]->display_fields( $alert );
+		$this->alert_types[ $alert_type ]->display_new_fields();
 		$output = ob_get_contents();
 		ob_end_clean();
 
@@ -625,18 +514,18 @@ class Alerts {
 	 * @param WP_Post $post Post object for current alert.
 	 * @return void
 	 */
-	function display_triggers_box( $post ) {
-		$alert = $this->get_alert( $post->ID );
-
+	function display_triggers_box( $post = array() ) {
+		if ( is_object( $post ) ) {
+			$alert = $this->get_alert( $post->ID );
+		} else {
+			$alert = array();
+		}
 		$form  = new Form_Generator;
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
-
 		// @TODO use human readable text.
 		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>'; // @todo Maybe, "when".
 		echo $form->render_fields(); // Xss ok.
-
-		wp_nonce_field( 'save_post', 'wp_stream_alerts_nonce' );
-
+		wp_nonce_field( 'save_alert', 'wp_stream_alerts_nonce' );
 	}
 
 	/**
@@ -707,59 +596,87 @@ class Alerts {
 	}
 
 	/**
-	 * Process alert settings
-	 *
-	 * @filter wp_insert_post_data
-	 *
-	 * @param array $data Processed post data.
-	 * @param array $postarr Raw POST data.
-	 * @return array
+	 * Update actions dropdown options based on the connector selected.
 	 */
-	function save_post_info( $data, $postarr ) {
-
-		if ( ! isset( $_POST['wp_stream_alerts_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wp_stream_alerts_nonce'] ) ), 'save_post' ) ) {
-				return $data;
+	function get_actions() {
+		$connector_name = wp_stream_filter_input( INPUT_POST, 'connector' );
+		$stream_connectors = wp_stream_get_instance()->connectors;
+		if ( ! empty( $connector_name ) ) {
+			if ( isset( $stream_connectors->connectors[ $connector_name ] ) ) {
+				$connector = $stream_connectors->connectors[ $connector_name ];
+				if ( method_exists( $connector, 'get_action_labels' ) ) {
+					$actions = $connector->get_action_labels();
+				}
+			}
+		} else {
+			$actions = $stream_connectors->term_labels['stream_action'];
+		}
+		ksort( $actions );
+		wp_send_json_success( $actions );
+	}
+	/**
+	 * Save a new alert
+	 */
+	function save_new_alert() {
+		check_ajax_referer( 'save_alert', 'wp_stream_alerts_nonce' );
+		$trigger_author                = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
+		$trigger_connector_and_context = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_context' );
+		if ( false !== strpos( $trigger_connector_and_context, '-' ) ) {
+			// This is a connector with a context such as posts-post.
+			$trigger_connector_and_context_split = explode( '-', $trigger_connector_and_context );
+			$trigger_connector                   = $trigger_connector_and_context_split[0];
+			$trigger_context                     = $trigger_connector_and_context_split[1];
+		} else {
+			if ( ! empty( $trigger_connector_and_context ) ) {
+				// This is a parent connector with no dash such as posts.
+				$trigger_connector = $trigger_connector_and_context;
+				$trigger_context   = '';
+			} else {
+				// There is no connector or context.
+				$trigger_connector = '';
+				$trigger_context   = '';
+			}
 		}
 
-		if ( self::POST_TYPE !== $data['post_type'] || ( isset( $data['post_status'] ) && 'auto-draft' === $data['post_status'] ) ) {
-			return $data;
+		$trigger_action = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_action' );
+		$alert_type     = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
+
+		// Insert the post into the database
+		$post_id = wp_insert_post( array(
+			'post_status' => 'wp_stream_enabled',
+			'post_type'   => 'wp_stream_alerts',
+		) );
+		if ( empty( $post_id ) ) {
+			wp_send_json_error();
 		}
+		add_post_meta( $post_id, 'alert_type', $alert_type );
 
-		$post_type = get_post_type_object( $data['post_type'] );
-		if ( ! current_user_can( $post_type->cap->edit_post, $postarr['ID'] ) ) {
-			return $data;
-		}
-
-		$alert = $this->get_alert( $postarr['ID'] );
-		$alert->status     = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
-		$alert->alert_type = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
-
-		do_action( 'wp_stream_alert_trigger_form_save', $alert );
-		$alert->get_alert_type_obj()->save_fields( $alert );
-
-		$data = $alert->process_settings_form( $data );
-
-		return $data;
+		$alert_meta = array(
+			'trigger_author'    => $trigger_author,
+			'trigger_connector' => $trigger_connector,
+			'trigger_action'    => $trigger_action,
+			'trigger_context'   => $trigger_context,
+		);
+		$alert_meta = apply_filters( 'wp_stream_alerts_save_meta', $alert_meta, $alert_type );
+		add_post_meta( $post_id, 'alert_meta', $alert_meta );
+		wp_send_json_success( array( 'success' => true ) );
 	}
 
 	/**
-	 * Update actions dropdown options based on the connector selected.
+	 *
 	 */
-	function update_actions() {
-		check_ajax_referer( self::NONCE_NAME, 'security' );
-		if ( empty( $_POST['connector'] ) ) {
-			return false;
-		}
-		$connector = sanitize_text_field( wp_unslash( $_POST['connector'] ) );
-		$actions = $GLOBALS['wp_stream']->connectors->term_labels['stream_action'];
-		if ( ! empty( $connector ) ) {
-			$class_name = '\WP_Stream\Connector_' . ucfirst( $connector );
-			if ( class_exists( $class_name ) ) {
-				$connector_class = new $class_name();
-				$actions         = $connector_class->get_action_labels();
-			}
-		}
-		ksort( $actions );
-		die( wp_json_encode( $actions ) );
+	function get_new_alert_triggers_notifications() {
+		ob_start();
+		?>
+<fieldset class="inline-edit-col-left">
+	<legend class="inline-edit-legend">Add New Alert</legend>
+	<?php $GLOBALS['wp_stream']->alerts->display_triggers_box(); ?>
+</fieldset>
+<fieldset class="inline-edit-col-right">
+	<?php $GLOBALS['wp_stream']->alerts->display_notification_box(); ?>
+</fieldset>
+	<?php
+		$html = ob_get_clean();
+		wp_send_json_success( array( 'success' => true, 'html' => $html ) );
 	}
 }

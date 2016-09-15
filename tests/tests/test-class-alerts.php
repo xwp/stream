@@ -1,6 +1,10 @@
 <?php
 namespace WP_Stream;
-
+/**
+ * Class Test_Alerts
+ * @package WP_Stream
+ * @group alerts
+ */
 class Test_Alerts extends WP_StreamTestCase {
 
 	function tearDown() {
@@ -101,7 +105,11 @@ class Test_Alerts extends WP_StreamTestCase {
 
 		$alerts->register_scripts( 'post.php' );
 
-		$this->assertTrue( wp_style_is( 'wp-stream-select2', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'wp-stream-alerts', 'enqueued' ) );
+
+		global $current_screen;
+		$current_screen->id = 'edit-wp_stream_alerts';
+		$alerts->register_scripts( 'post.php' );
 		$this->assertTrue( wp_script_is( 'wp-stream-alerts', 'enqueued' ) );
 	}
 
@@ -147,14 +155,6 @@ class Test_Alerts extends WP_StreamTestCase {
 
 	}
 
-	function test_filter_update_messages() {
-		$alerts   = new Alerts( $this->plugin );
-		$messages = $alerts->filter_update_messages( array() );
-
-		$this->assertArrayHasKey( 'wp_stream_alerts', $messages );
-		$this->assertNotEmpty( $messages['wp_stream_alerts'] );
-	}
-
 	function test_get_alert() {
 		$alerts = new Alerts( $this->plugin );
 
@@ -192,64 +192,6 @@ class Test_Alerts extends WP_StreamTestCase {
 		$alerts = new Alerts( $this->plugin );
 		$alerts->register_menu();
 		$this->assertNotEmpty( $submenu[ $this->plugin->admin->records_page_slug ] );
-	}
-
-	function test_register_meta_boxes() {
-		$alerts = new Alerts( $this->plugin );
-
-		$this->assertFalse( has_action( 'add_meta_boxes', array( $alerts, 'add_meta_boxes' ) ) );
-		$this->assertFalse( has_filter( 'filter_parent_file', array( $alerts, 'add_meta_boxes' ) ) );
-		$this->assertFalse( has_filter( 'filter_submenu_file', array( $alerts, 'add_meta_boxes' ) ) );
-
-		$alerts->register_meta_boxes();
-
-		$this->assertNotFalse( has_action( 'add_meta_boxes', array( $alerts, 'add_meta_boxes' ) ) );
-		$this->assertNotFalse( has_filter( 'parent_file', array( $alerts, 'filter_parent_file' ) ) );
-		$this->assertNotFalse( has_filter( 'submenu_file', array( $alerts, 'filter_submenu_file' ) ) );
-	}
-
-	function test_add_meta_boxes() {
-		global $wp_meta_boxes;
-		$page = convert_to_screen( 'wp_stream_alerts' )->id;
-
-		$alerts = new Alerts( $this->plugin );
-		$alerts->add_meta_boxes();
-
-		$this->assertArrayHasKey( 'wp_stream_alerts_triggers', $wp_meta_boxes[ $page ]['normal']['high'] );
-		$this->assertArrayHasKey( 'wp_stream_alerts_alert_type', $wp_meta_boxes[ $page ]['normal']['default'] );
-		$this->assertArrayHasKey( 'wp_stream_alerts_submit', $wp_meta_boxes[ $page ]['side']['default'] );
-	}
-
-	function test_filter_parent_file() {
-		$alerts = new Alerts( $this->plugin );
-
-		set_current_screen( 'post' );
-		$value = $alerts->filter_parent_file( '' );
-		$this->assertEquals( '', $value );
-
-		set_current_screen( 'wp_stream_alerts' );
-		$value = $alerts->filter_parent_file( '' );
-		$this->assertEquals( 'wp_stream', $value );
-
-		set_current_screen( 'post' );
-		$value = $alerts->filter_parent_file( '' );
-		$this->assertEquals( '', $value );
-	}
-
-	function test_filter_submenu_file() {
-		$alerts = new Alerts( $this->plugin );
-
-		set_current_screen( 'post' );
-		$value = $alerts->filter_submenu_file( '' );
-		$this->assertEquals( '', $value );
-
-		set_current_screen( 'wp_stream_alerts' );
-		$value = $alerts->filter_submenu_file( '' );
-		$this->assertEquals( 'edit.php?post_type=wp_stream_alerts', $value );
-
-		set_current_screen( 'post' );
-		$value = $alerts->filter_submenu_file( '' );
-		$this->assertEquals( '', $value );
 	}
 
 	function test_display_notification_box() {
@@ -335,7 +277,7 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertTrue( $len_test, 'Output length greater than zero.' );
 
 		$field_test = strpos( $output, 'wp_stream_alerts_nonce' ) !== -1;
-		$this->assertTrue( $field_test, 'Nonce field is present.' );
+		$this->assertTrue( $len_test, 'Nonce field is present.' );
 	}
 
 	function test_display_submit_box() {
@@ -372,6 +314,77 @@ class Test_Alerts extends WP_StreamTestCase {
 		);
 	}
 
+	function test_get_actions() {
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['connector'] = '';
+			$this->_handleAjax( 'get_actions' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+		}
+
+		$response = json_decode( $this->_last_response );
+		$this->assertInternalType( 'object', $response );
+		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertTrue( $response->success );
+		$this->assertNotEmpty( $response->data );
+	}
+	function test_save_new_alert_with_parent_context() {
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_context'] = 'posts';
+			$_POST['wp_stream_trigger_action'] = 'edit';
+			$_POST['wp_stream_alert_type'] = 'highlight';
+			$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+			$this->_handleAjax( 'save_new_alert' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+		}
+
+		$response = json_decode( $this->_last_response );
+		$this->assertInternalType( 'object', $response );
+		$this->assertObjectHasAttribute( 'success', $response );
+		$this->assertTrue( $response->success );
+	}
+	function test_save_new_alert_with_child_context() {
+	$alerts = new Alerts( $this->plugin );
+	try {
+		$_POST['wp_stream_trigger_author'] = 'me';
+		$_POST['wp_stream_trigger_context'] = 'posts-post';
+		$_POST['wp_stream_trigger_action'] = 'edit';
+		$_POST['wp_stream_alert_type'] = 'highlight';
+		$_POST['wp_stream_alerts_nonce'] = wp_create_nonce( 'save_alert' );
+		$this->_handleAjax( 'save_new_alert' );
+	} catch ( \WPAjaxDieContinueException $e ) {
+		$exception = $e;
+	}
+
+	$response = json_decode( $this->_last_response );
+	$this->assertInternalType( 'object', $response );
+	$this->assertObjectHasAttribute( 'success', $response );
+	$this->assertTrue( $response->success );
+}
+	function test_save_new_alert_no_nonce() {
+		$alerts = new Alerts( $this->plugin );
+		try {
+			$_POST['wp_stream_trigger_author'] = 'me';
+			$_POST['wp_stream_trigger_context'] = 'posts-post';
+			$_POST['wp_stream_trigger_action'] = 'edit';
+			$_POST['wp_stream_alert_type'] = 'highlight';
+			$this->setExpectedException( 'WPAjaxDieStopException' );
+			$this->_handleAjax( 'save_new_alert' );
+		} catch ( \WPAjaxDieContinueException $e ) {
+			$exception = $e;
+			// Check that the exception was thrown.
+			$this->assertTrue( isset( $exception ) );
+
+			// The output should be a -1 for failure.
+			$this->assertEquals( '-1', $exception->getMessage() );
+		}
+
+
+	}
 	private function dummy_alert_data() {
 		return (object) array(
 			'ID'         => 1,

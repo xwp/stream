@@ -55,14 +55,14 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * @param Alert          $alert The Alert being worked on.
 	 * @return void
 	 */
-	public function add_fields( $form, $alert ) {
+	public function add_fields( $form, $alert = array() ) {
 		$connector = '';
-		if ( ! empty( $alert->alert_meta['trigger_connector'] ) ) {
+		if ( is_object( $alert ) && ! empty( $alert->alert_meta['trigger_connector'] ) ) {
 			$connector = $alert->alert_meta['trigger_connector'];
 		}
 
 		$context = '';
-		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
+		if ( is_object( $alert ) && ! empty( $alert->alert_meta['trigger_context'] ) ) {
 			$context = $alert->alert_meta['trigger_context'];
 		}
 
@@ -172,27 +172,13 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		$context = ( ! empty( $alert->alert_meta['trigger_context'] ) ) ? $alert->alert_meta['trigger_context'] : null;
 		if ( empty( $context ) ) {
 			$context = __( 'Any Context', 'stream' );
+			$connector = ( ! empty( $alert->alert_meta['trigger_connector'] ) ) ? $alert->alert_meta['trigger_connector'] : null;
+			if ( ! empty( $connector ) ) {
+				$context = $connector;
+			}
 		} elseif ( strpos( $context, 'group-' ) === 0 ) {
 			$context = substr( $context, strlen( 'group-' ) );
 		}
 		return ucfirst( $context );
-	}
-
-	/**
-	 * Alters the preview table query to show records matching this query.
-	 *
-	 * @see Alert_Trigger::filter_preview_query().
-	 * @param array $query_args The database query arguments for the table.
-	 * @param Alert $alert The Alert being worked on.
-	 * @return array The new query arguments.
-	 */
-	public function filter_preview_query( $query_args, $alert ) {
-		if ( ! empty( $alert->alert_meta['trigger_connector'] ) ) {
-				$query_args['connector'] = $alert->alert_meta['trigger_connector'];
-		}
-		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
-				$query_args['context'] = $alert->alert_meta['trigger_context'];
-		}
-		return $query_args;
 	}
 }

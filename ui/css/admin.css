@@ -625,7 +625,12 @@
 #wp_stream_alerts_preview td.summary.column-summary .row-actions {
 	display: none;
 }
-
+body.post-type-wp_stream_alerts .select2-results__option .parent {
+	font-weight: bold;
+}
+body.post-type-wp_stream_alerts .select2-results__option .child {
+	padding-left: 8px;
+}
 /* Extensions */
 
 .post-type-stream_notification .view-switch {

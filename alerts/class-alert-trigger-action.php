@@ -60,9 +60,9 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 * @param Alert          $alert The Alert being worked on.
 	 * @return void
 	 */
-	public function add_fields( $form, $alert ) {
+	public function add_fields( $form, $alert = array() ) {
 		$value = '';
-		if ( ! empty( $alert->alert_meta['trigger_action'] ) ) {
+		if ( is_object( $alert ) && ! empty( $alert->alert_meta['trigger_action'] ) ) {
 			$value = $alert->alert_meta['trigger_action'];
 		}
 
@@ -167,20 +167,5 @@ class Alert_Trigger_Action extends Alert_Trigger {
 			}
 		}
 		return $action;
-	}
-
-	/**
-	 * Alters the preview table query to show records matching this query.
-	 *
-	 * @see Alert_Trigger::filter_preview_query().
-	 * @param array $query_args The database query arguments for the table.
-	 * @param Alert $alert The Alert being worked on.
-	 * @return array The new query arguments.
-	 */
-	public function filter_preview_query( $query_args, $alert ) {
-		if ( ! empty( $alert->alert_meta['trigger_action'] ) ) {
-			$query_args['action'] = $alert->alert_meta['trigger_action'];
-		}
-		return $query_args;
 	}
 }

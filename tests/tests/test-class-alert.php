@@ -1,6 +1,10 @@
 <?php
 namespace WP_Stream;
-
+/**
+ * Class Test_Alert
+ * @package WP_Stream
+ * @group alerts
+ */
 class Test_Alert extends WP_StreamTestCase {
 
 	function test_construct() {
