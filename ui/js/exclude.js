@@ -1,5 +1,42 @@
 /* globals ajaxurl, wp_stream_regenerate_alt_rows */
 jQuery( function( $ ) {
+	var updateExclusionActions = function( element ) {
+		var connector_element = $( element ).closest( '.select2-select.connector_or_context' );
+		var connector = connector_element.val();
+		if ( 0 < connector.indexOf('-') ) {
+			var connector_split = connector.split('-');
+			connector = connector_split[0];
+		}
+		var action_select = $(connector_element).closest('td').next('td').children( 'select.select2-select.action' );
+		var action_value = $( action_select ).val();
+		action_select.empty();
+		action_select.prop('disabled', true);
+
+		var placeholder = $('<option/>', {value: '', text: ''});
+		action_select.append( placeholder );
+
+		var data = {
+			'action'    : 'get_actions',
+			'connector' : connector
+		};
+		$.post( window.ajaxurl, data, function( response ) {
+			var success = response.success,
+			    actions = response.data;
+
+			if ( ! success ) {
+				return;
+			}
+
+			$.each( actions, function( index, value ) {
+				var option = $('<option/>', { value: index, text: value } );
+				action_select.append( option );
+				action_select.select2( 'data', { id: index, text: value } );
+			});
+
+			action_select.val( action_value ).trigger('change');
+			action_select.prop('disabled', false);
+		});
+	};
 	var initSettingsSelect2 = function() {
 		var $input_user;
 
@@ -48,6 +85,10 @@ jQuery( function( $ ) {
 
 					return null;
 				}
+			}).on( 'change', function() {
+				updateExclusionActions( this );
+			}).on( 'load', function() {
+				updateExclusionActions( this );
 			});
 		});
 

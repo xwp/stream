@@ -65,6 +65,9 @@ class Settings {
 
 		// Ajax callback function to search IPs
 		add_action( 'wp_ajax_stream_get_ips', array( $this, 'get_ips' ) );
+
+		// Ajax callback function to filter actions based on context
+		add_action( 'wp_ajax_get_actions', array( $this, 'get_actions' ) );
 	}
 
 	/**
@@ -800,7 +803,7 @@ class Settings {
 						$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
 
 						if ( ! empty( $count ) ) {
-							$args['user_count'] = sprintf( _n( '1 user', '%s users', absint( $count ), 'stream' ), absint( $count ) );
+							$args['user_count'] = sprintf( _n( '%d user', '%d users', absint( $count ), 'stream' ), absint( $count ) );
 						}
 
 						if ( $role_id === $author_or_role ) {
@@ -1060,5 +1063,32 @@ class Settings {
 		}
 
 		return $labels;
+	}
+
+	/**
+	 * Update actions dropdown options based on the connector selected.
+	 */
+	function get_actions() {
+		/**
+		 * @var $connector_name String
+		 */
+		$connector_name = wp_stream_filter_input( INPUT_POST, 'connector' );
+
+		if ( empty( $connector_name ) ) {
+			wp_send_json_error();
+		}
+
+		$actions    = wp_stream_get_instance()->connectors->term_labels['stream_action'];
+		$connectors = wp_stream_get_instance()->connectors->connectors;
+
+		if ( isset( $connectors[ $connector_name ] ) ) {
+			$connector = $connectors[ $connector_name ];
+			if ( method_exists( $connector, 'get_action_labels' ) ) {
+				$actions = $connector->get_action_labels();
+			}
+		}
+
+		ksort( $actions );
+		wp_send_json_success( $actions );
 	}
 }
