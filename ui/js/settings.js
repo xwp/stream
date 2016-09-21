@@ -1,8 +1,13 @@
 /* globals confirm, wp_stream, ajaxurl, wp_stream_regenerate_alt_rows */
 jQuery( function( $ ) {
-
-	var keepRecordsIndefinitely = $( '#wp_stream\\[general_keep_records_indefinitely\\]' ),
-	    keepRecordsFor          = $( '#wp_stream_general_records_ttl' ),
+	var network_affix;
+	if ( 'wp_stream_network' === $( 'input[name="option_page"]' ).val() ) {
+		network_affix = '_network_affix';
+	} else {
+		network_affix = '';
+	}
+	var keepRecordsIndefinitely = $( '#wp_stream' + network_affix + '\\[general_keep_records_indefinitely\\]' ),
+	    keepRecordsFor          = $( '#wp_stream' + network_affix + '_general_records_ttl' ),
 	    keepRecordsForRow       = keepRecordsFor.closest( 'tr' );
 
 	function toggleKeepRecordsFor() {
@@ -20,7 +25,6 @@ jQuery( function( $ ) {
 	});
 
 	toggleKeepRecordsFor();
-
 	// Confirmation on some important actions
 	$( '#wp_stream_general_reset_site_settings' ).click( function( e ) {
 		if ( ! confirm( wp_stream.i18n.confirm_defaults ) ) {

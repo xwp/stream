@@ -615,7 +615,7 @@ class Admin {
 			$options = (array) get_option( 'wp_stream', array() );
 		}
 
-		if ( isset( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
+		if ( ! empty( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
 			return;
 		}
 
