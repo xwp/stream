@@ -198,8 +198,6 @@ jQuery( function( $ ) {
 			if ( true === response.success ) {
 				$( '#add-new-alert' ).find('p.submit.inline-edit-save span.spinner').css('visibility', 'hidden');
 				location.reload();
-			} else {
-				console.log( response );
 			}
 		});
 	};
