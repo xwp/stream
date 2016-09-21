@@ -143,7 +143,7 @@ class Settings {
 
 			$args['tooltip'] = esc_attr(
 				sprintf(
-					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+					__( 'ID: %1$d\nUser: %2$s\nEmail: %3$s\nRole: %4$s', 'stream' ),
 					$author->id,
 					$author->user_login,
 					$author->user_email,

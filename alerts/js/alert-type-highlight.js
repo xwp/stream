@@ -38,16 +38,16 @@ var streamAlertTypeHighlight = ( function( $ ) {
 					recordId = actionLink.parents( '.alert-highlight' ).attr( 'class' ).match( /record\-id\-[\w-]*\b/ );
 					recordId = recordId[0].replace( 'record-id-', '' );
 
-					$.post( self.ajaxUrl,
-						{
-							action: self.removeAction,
-							security: self.security,
-							recordId: recordId
-						},
-						function( response ) {
-							if ( true === response.success ) {
-								ajaxDone();
-							}
+					var data = {
+						action: self.removeAction,
+						security: self.security,
+						recordId: recordId
+					};
+
+					$.post( self.ajaxUrl, data, function( response ) {
+						if ( true === response.success ) {
+							ajaxDone();
+						}
 					});
 
 					/**

@@ -481,7 +481,7 @@ class Network {
 	 */
 	public function network_admin_page_title( $page_title ) {
 		if ( is_network_admin() ) {
-			$site_count = sprintf( _n( '1 site', '%s sites', get_blog_count(), 'stream' ), number_format( get_blog_count() ) );
+			$site_count = sprintf( _n( '%d site', '%d sites', get_blog_count(), 'stream' ), number_format( get_blog_count() ) );
 			$page_title = sprintf( '%s (%s)', $page_title, $site_count );
 		}
 

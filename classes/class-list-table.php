@@ -308,8 +308,8 @@ class List_Table extends \WP_List_Table {
 
 			default :
 				/**
-				 * Registers new Columns to be inserted into the table.  The cell contents of this column is set
-				 * below with 'wp_stream_inster_column_default-'
+				 * Registers new Columns to be inserted into the table. The cell contents of this column is set
+				 * below with 'wp_stream_insert_column_default_'
 				 *
 				 * @return array
 				 */
@@ -325,7 +325,7 @@ class List_Table extends \WP_List_Table {
 						 * Also, note that the action name must include the $column_title registered
 						 * with wp_stream_register_column_defaults
 						 */
-						if ( $column_title === $column_name && has_filter( "wp_stream_insert_column_default-{$column_title}" ) ) {
+						if ( $column_title === $column_name && has_filter( "wp_stream_insert_column_default_{$column_title}" ) ) {
 							/**
 							 * Allows for the addition of content under a specified column.
 							 *
@@ -333,7 +333,7 @@ class List_Table extends \WP_List_Table {
 							 *
 							 * @return string
 							 */
-							$out = apply_filters( "wp_stream_insert_column_default-{$column_title}", $column_name, $record );
+							$out = apply_filters( "wp_stream_insert_column_default_{$column_title}", $column_name, $record );
 						} else {
 							$out = $column_name;
 						}
