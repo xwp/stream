@@ -33,12 +33,12 @@ var streamAlertTypeHighlight = ( function( $ ) {
 				 * @returns void.
 				 */
 				actionLink.click( function( e ) {
-					var recordId;
+					var recordId, data;
 					e.preventDefault();
 					recordId = actionLink.parents( '.alert-highlight' ).attr( 'class' ).match( /record\-id\-[\w-]*\b/ );
 					recordId = recordId[0].replace( 'record-id-', '' );
 
-					var data = {
+					data = {
 						action: self.removeAction,
 						security: self.security,
 						recordId: recordId
