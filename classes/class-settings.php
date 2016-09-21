@@ -263,7 +263,7 @@ class Settings {
 						'name'        => 'records_ttl',
 						'title'       => esc_html__( 'Keep Records for', 'stream' ),
 						'type'        => 'number',
-						'class'       => 'small-text hidden',
+						'class'       => 'small-text',
 						'desc'        => esc_html__( 'Maximum number of days to keep activity records.', 'stream' ),
 						'default'     => 30,
 						'min'         => 1,
