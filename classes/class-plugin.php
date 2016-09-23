@@ -111,7 +111,7 @@ class Plugin {
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 
 		// Load admin area classes
-		if ( is_admin() || ( defined( 'WP_STREAM_DEV_DEBUG' ) && WP_STREAM_DEV_DEBUG ) ) {
+		if ( is_admin() || ( defined( 'WP_STREAM_DEV_DEBUG' ) && WP_STREAM_DEV_DEBUG ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 			$this->admin   = new Admin( $this, $driver );
 			$this->install = $driver->setup_storage( $this );
 		} elseif ( defined( 'DOING_CRON' ) && DOING_CRON ) {
