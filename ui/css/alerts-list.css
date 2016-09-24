@@ -51,3 +51,7 @@
 .edit-php.post-type-wp_stream_alerts #add-new-alert .select2.select2-container {
 	display: block;
 }
+.edit-php.post-type-wp_stream_alerts #add-new-alert .inline-edit-add-new-notifications,
+.edit-php.post-type-wp_stream_alerts #add-new-alert .inline-edit-add-new-status {
+	margin-top: 33px;
+}
