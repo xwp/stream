@@ -252,7 +252,7 @@ class Alerts {
 	 * @param string $page Current file name.
 	 * @return void
 	 */
-	function register_scripts( $page ) {
+	function register_scripts() {
 		$screen = get_current_screen();
 		if ( 'edit-wp_stream_alerts' === $screen->id ) {
 			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array( 'wp-stream-select2', 'jquery', 'inline-edit-post' ) );
@@ -462,8 +462,10 @@ class Alerts {
 			'title'       => 'Alert Type:',
 		) );
 
-		echo '<p>' . esc_html__( 'Alert me by:', 'stream' ) . '</p>';
+		echo '<label><span class="title">' . esc_html__( 'Alert me by', 'stream' ) . '</span></label>';
+		echo '<span class="input-text-wrap">';
 		echo $field_html; // Xss ok.
+		echo '</span>';
 
 		echo '<div id="wp_stream_alert_type_form">';
 		if ( isset( $alert ) && is_object( $alert ) ) {
@@ -523,7 +525,7 @@ class Alerts {
 		$form  = new Form_Generator;
 		do_action( 'wp_stream_alert_trigger_form_display', $form, $alert );
 		// @TODO use human readable text.
-		echo '<p>' . esc_html__( 'Create an alert whenever:', 'stream' ) . '</p>'; // @todo Maybe, "when".
+		echo '<label>' . esc_html__( 'Alert me when:', 'stream' ) . '</label>';
 		echo $form->render_fields(); // Xss ok.
 		wp_nonce_field( 'save_alert', 'wp_stream_alerts_nonce' );
 	}
@@ -548,11 +550,15 @@ class Alerts {
 		<div id="minor-publishing">
 				<div id="misc-publishing-actions">
 					<div class="misc-pub-section misc-pub-post-status">
-					<label for="wp_stream_alert_status"><?php esc_html_e( 'Currently active:', 'stream' ) ?></label>
-						<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
-							<option<?php selected( $post_status, 'wp_stream_enabled' ); ?> value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
-							<option<?php selected( $post_status, 'wp_stream_disabled' ); ?> value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
-						</select>
+					<label for="wp_stream_alert_status">
+						<span class="title"><?php esc_html_e( 'Status:', 'stream' ) ?></span>
+						<span class="input-text-wrap">
+							<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
+								<option<?php selected( $post_status, 'wp_stream_enabled' ); ?> value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
+								<option<?php selected( $post_status, 'wp_stream_disabled' ); ?> value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
+							</select>
+						</span>
+					</label>
 					</div>
 				</div>
 				<div class="clear"></div>

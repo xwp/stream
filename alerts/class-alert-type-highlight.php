@@ -33,7 +33,7 @@ class Alert_Type_Highlight extends Alert_Type {
 	 *
 	 * @var string
 	 */
-	public $name = 'Highlight Record';
+	public $name = 'Highlight';
 
 	/**
 	 * Alert type slug
@@ -111,13 +111,14 @@ class Alert_Type_Highlight extends Alert_Type {
 
 		$form = new Form_Generator;
 
-		echo '<p>' . esc_html__( 'Color', 'stream' ) . ':</p>';
+		echo '<label for="wp_stream_highlight_color"><span class="title">' . esc_html__( 'Color', 'stream' ) . '</span>';
 		echo $form->render_field( 'select', array( // Xss ok.
 			'name'    => 'wp_stream_highlight_color',
 			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
 			'options' => $this->get_highlight_options(),
 			'value'   => $options['color'],
 		) );
+		echo '</label>';
 	}
 	/**
 	 * Displays a settings form for the alert type
@@ -128,13 +129,14 @@ class Alert_Type_Highlight extends Alert_Type {
 	public function display_new_fields() {
 		$form = new Form_Generator;
 
-		echo '<p>' . esc_html__( 'Color', 'stream' ) . ':</p>';
+		echo '<label for="wp_stream_highlight_color"><span class="title">' . esc_html__( 'Color', 'stream' ) . '</span>';
 		echo $form->render_field( 'select', array( // Xss ok.
 			'name'    => 'wp_stream_highlight_color',
 			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
 			'options' => $this->get_highlight_options(),
 			'value'   => '',
 		) );
+		echo '</label>';
 	}
 	/**
 	 * Lists available color options for alerts.

@@ -294,6 +294,10 @@ class Alerts_List {
 		if ( false !== $fired ) {
 			return;
 		}
+		$screen = get_current_screen();
+		if ( 'edit-wp_stream_alerts' !== $screen->id ) {
+			return;
+		}
 		wp_nonce_field( plugin_basename( __FILE__ ), Alerts::POST_TYPE . '_edit_nonce' );
 		$box_type = array(
 			'triggers',

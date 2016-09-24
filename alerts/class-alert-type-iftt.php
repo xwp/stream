@@ -108,18 +108,21 @@ class Alert_Type_IFTT extends Alert_Type {
 
 		$form = new Form_Generator;
 
-		echo '<p>' . esc_html__( 'IFTT Maker Key', 'stream' ) . ':</p>';
+		echo '<label for="wp_stream_iftt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
+		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_iftt_maker_key',
 			'title'   => esc_attr( __( 'Maker Key', 'stream' ) ),
 			'value'   => $options['maker_key'],
 		) );
-		echo '<p>' . esc_html__( 'IFTT Event Name', 'stream' ) . ':</p>';
+		echo '<span class="input-text-wrap">';
+		echo '</label><label for="wp_stream_iftt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_iftt_event_name',
 			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
 			'value'   => $options['event_name'],
 		) );
+		echo '</label';
 	}
 	/**
 	 * Displays a settings form for the alert type
@@ -130,18 +133,19 @@ class Alert_Type_IFTT extends Alert_Type {
 	public function display_new_fields() {
 		$form = new Form_Generator;
 
-		echo '<p>' . esc_html__( 'IFTT Maker Key', 'stream' ) . ':</p>';
+		echo '<label for="wp_stream_iftt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_iftt_maker_key',
 			'title'   => esc_attr( __( 'Maker Key', 'stream' ) ),
 			'value'   => '',
 		) );
-		echo '<p>' . esc_html__( 'IFTT Event Name', 'stream' ) . ':</p>';
+		echo '</label><label for="wp_stream_iftt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_iftt_event_name',
 			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
 			'value'   => '',
 		) );
+		echo '</label>';
 	}
 	/**
 	 * Validates and saves form settings for later use.

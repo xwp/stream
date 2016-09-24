@@ -32,8 +32,30 @@
     .edit-php.post-type-wp_stream_alerts .inline-edit-col select,
     .edit-php.post-type-wp_stream_alerts .inline-edit-col input,
     .edit-php.post-type-wp_stream_alerts .inline-edit-col .select2-container {
-        width: 100%;
-        max-width: 90%;
-        margin-right: 5%;
+        /*width: 100%;*/
+       /* max-width: 90%;*/
+        /*margin-right: 5%;*/
     }
+}
+
+.edit-php.post-type-wp_stream_alerts .select2 .select2-selection {
+    border-color: #ccc;
+    background: #f7f7f7;
+    -webkit-box-shadow: 0 1px 0 #ccc;
+    box-shadow: 0 1px 0 #ccc;
+}
+.edit-php.post-type-wp_stream_alerts label {
+    font-style: italic;
+   /* display: inline-block;*/
+}
+.edit-php.post-type-wp_stream_alerts select {
+    /*display: inline-block;*/
+    width: auto;
+}
+.edit-php.post-type-wp_stream_alerts span.select2-selection__rendered {
+    font-style: normal;
+}
+
+#add-new-alert.inline-edit-row.inline-edit-row-page .inline-edit-col-right {
+    margin-top: 32px;
 }

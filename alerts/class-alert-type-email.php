@@ -21,7 +21,7 @@ class Alert_Type_Email extends Alert_Type {
 	 *
 	 * @var string
 	 */
-	public $name = 'Send Email';
+	public $name = 'Email';
 
 	/**
 	 * Alert type slug
@@ -104,19 +104,23 @@ class Alert_Type_Email extends Alert_Type {
 
 		$form = new Form_Generator;
 
-		echo '<p>' . esc_html__( 'Recipient', 'stream' ) . ':</p>';
+		echo '<label for="wp_stream_email_recipient"><span class="title">' . esc_html__( 'Recipient', 'stream' ) . '</span>';
+		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_email_recipient',
 			'title'   => esc_attr( __( 'Email Recipient', 'stream' ) ),
 			'value'   => $options['email_recipient'],
 		) );
+		echo '</span></label>';
 
-		echo '<p>' . esc_html__( 'Subject', 'stream' ) . ':</p>';
+		echo '<label for="wp_stream_email_subject"><span class="title">' . esc_html__( 'Subject', 'stream' ) . '</span>';
+		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_email_subject',
 			'title'   => esc_attr( __( 'Email Subject', 'stream' ) ),
 			'value'   => $options['email_subject'],
 		) );
+		echo '</span></label>';
 	}
 
 	/**
@@ -128,19 +132,23 @@ class Alert_Type_Email extends Alert_Type {
 	public function display_new_fields() {
 		$form = new Form_Generator;
 
-		echo '<p>' . esc_html__( 'Recipient', 'stream' ) . ':</p>';
+		echo '<label for="wp_stream_email_recipient"><span class="title">' . esc_html__( 'Recipient', 'stream' ) . '</span>';
+		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_email_recipient',
 			'title'   => esc_attr( __( 'Email Recipient', 'stream' ) ),
 			'value'   => '',
 		) );
+		echo '</span></label>';
 
-		echo '<p>' . esc_html__( 'Subject', 'stream' ) . ':</p>';
+		echo '<label for="wp_stream_email_subject"><span class="title">' . esc_html__( 'Subject', 'stream' ) . '</span>';
+		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_email_subject',
 			'title'   => esc_attr( __( 'Email Subject', 'stream' ) ),
 			'value'   => '',
 		) );
+		echo '</span></label>';
 	}
 	/**
 	 * Validates and saves form settings for later use.
