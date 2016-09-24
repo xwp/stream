@@ -177,6 +177,9 @@ class Connector_WordPress_SEO extends Connector {
 	}
 
 	public function register() {
+		if ( is_network_admin() && ! is_plugin_active_for_network( 'wordpress-seo/wordpress-seo-main.php' ) ) {
+			return;
+		}
 		parent::register();
 
 		foreach ( \WPSEO_Options::$options as $class ) {

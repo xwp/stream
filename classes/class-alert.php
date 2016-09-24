@@ -273,9 +273,9 @@ class Alert {
 
 		if ( empty( $alerts_triggered ) || ! is_array( $alerts_triggered ) ) {
 			$alerts_triggered = array( $alert_slug => array( $single_alert_id ) );
-		} else if ( ! array_key_exists( $alert_slug, $alerts_triggered ) || ! is_array( $alerts_triggered[ $alert_slug ] ) ) {
+		} elseif ( ! array_key_exists( $alert_slug, $alerts_triggered ) || ! is_array( $alerts_triggered[ $alert_slug ] ) ) {
 			$alerts_triggered[ $alert_slug ] = array( $single_alert_id );
-		} else if ( ! in_array( $single_alert_id, $alerts_triggered[ $alert_slug ], true ) ) {
+		} elseif ( ! in_array( $single_alert_id, $alerts_triggered[ $alert_slug ], true ) ) {
 			$alerts_triggered[ $alert_slug ][] = $single_alert_id;
 		}
 		return $record->update_meta( Alerts::ALERTS_TRIGGERED_META_KEY, $alerts_triggered );

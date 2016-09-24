@@ -359,7 +359,7 @@ class Alerts_List {
 			return $data;
 		}
 
-		$nonce = wp_stream_filter_input( INPUT_POST, Alerts::POST_TYPE .'_edit_nonce' );
+		$nonce = wp_stream_filter_input( INPUT_POST, Alerts::POST_TYPE . '_edit_nonce' );
 		if ( null === $nonce || ! wp_verify_nonce( $nonce, plugin_basename( __FILE__ ) ) ) {
 			return $data;
 		}

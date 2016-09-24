@@ -481,7 +481,7 @@ class Connector_GravityForms extends Connector {
 		$forms_titles = wp_list_pluck( $forms, 'title' );
 
 		$this->log(
-			__( '%d %s imported', 'stream' ),
+			__( '%1$d %2$s imported', 'stream' ),
 			array(
 				'count'  => $forms_total,
 				'label'  => $forms_label,
