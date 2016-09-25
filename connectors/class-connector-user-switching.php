@@ -8,7 +8,7 @@ class Connector_User_Switching extends Connector {
 	 *
 	 * @var string
 	 */
-	public $name = 'user-switching';
+	public $name = 'userswitching';
 
 	/**
 	 * Actions registered for this connector
