@@ -170,14 +170,16 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 */
 	function get_display_value( $context = 'normal', $alert ) {
 		$context = ( ! empty( $alert->alert_meta['trigger_context'] ) ) ? $alert->alert_meta['trigger_context'] : null;
-		if ( empty( $context ) ) {
+		$connector = ( ! empty( $alert->alert_meta['trigger_connector'] ) ) ? $alert->alert_meta['trigger_connector'] : null;
+		if ( empty( $context ) && empty( $connector ) ) {
 			$context = __( 'Any Context', 'stream' );
-			$connector = ( ! empty( $alert->alert_meta['trigger_connector'] ) ) ? $alert->alert_meta['trigger_connector'] : null;
-			if ( ! empty( $connector ) ) {
-				$context = $connector;
+		} else {
+			$term_labels = $this->get_terms_labels( 'context' );
+			if ( ! empty( $term_labels[ $connector ]['children'][ $context ] ) ) {
+				$context = $term_labels[ $connector ]['children'][ $context ];
+			} else {
+				$context = $term_labels[ $connector ]['label'];
 			}
-		} elseif ( strpos( $context, 'group-' ) === 0 ) {
-			$context = substr( $context, strlen( 'group-' ) );
 		}
 		return ucfirst( $context );
 	}

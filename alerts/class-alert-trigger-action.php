@@ -163,9 +163,14 @@ class Alert_Trigger_Action extends Alert_Trigger {
 			if ( empty( $action ) ) {
 				$action = __( 'Any Action', 'stream' );
 			} else {
-					$action = ucfirst( $action );
+				$actions = $this->plugin->connectors->term_labels['stream_action'];
+				if ( ! empty( $actions[ $action ] ) ) {
+					$action = $actions[ $action ];
+				}
+				$action = ucfirst( $action );
 			}
 		}
-		return $action;
+
+		return ucfirst( $action );
 	}
 }
