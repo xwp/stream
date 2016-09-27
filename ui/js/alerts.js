@@ -272,14 +272,14 @@ jQuery( function( $ ) {
 				$edit_row.find( 'select[name="wp_stream_highlight_color"] option[value="' + highlight_color + '"]' ).attr( 'selected', 'selected' );
 			}
 		}
-		if ( 'iftt' === alert_type ) {
-			var event_name = $post_row.find( 'input[name="wp_stream_iftt_event_name"]' ).val();
-			var maker_key = $post_row.find( 'input[name="wp_stream_iftt_maker_key"]' ).val();
+		if ( 'ifttt' === alert_type ) {
+			var event_name = $post_row.find( 'input[name="wp_stream_ifttt_event_name"]' ).val();
+			var maker_key = $post_row.find( 'input[name="wp_stream_ifttt_maker_key"]' ).val();
 			if ( typeof event_name !== 'undefined' ) {
-				$edit_row.find( 'input[name="wp_stream_iftt_event_name"]' ).val( event_name );
+				$edit_row.find( 'input[name="wp_stream_ifttt_event_name"]' ).val( event_name );
 			}
 			if ( typeof maker_key !== 'undefined' ) {
-				$edit_row.find( 'input[name="wp_stream_iftt_maker_key"]' ).val( maker_key );
+				$edit_row.find( 'input[name="wp_stream_ifttt_maker_key"]' ).val( maker_key );
 			}
 		}
 		$( '#wp_stream_alert_type_form' ).show();

@@ -1,8 +1,8 @@
 <?php
 /**
- * If This Then That (IFTT) Alert type.
+ * If This Then That (IFTTT) Alert type.
  *
- * A user must create a IFTT Maker account,
+ * A user must create a IFTTT Maker account,
  * and get their Maker Key, found here:
  *
  * @link https://ifttt.com/maker
@@ -18,13 +18,13 @@
  * Finally, the Maker Key and Event Name need to be entered into
  * the Alert metabox.
  *
- * This class uses the above data to send at POST request to IFTT,
+ * This class uses the above data to send at POST request to IFTTT,
  * which then hooks into whichever service the user has determined
  * in their Recipe.
  *
  * Notes:
  *
- * In their IFTT recipe, the Task Content field "quicktags" are
+ * In their IFTTT recipe, the Task Content field "quicktags" are
  * defined as such in the unfiltered state of this Alert Type:
  *
  * {{EventName}} - The name the user assigned to this event.
@@ -32,7 +32,7 @@
  * {{Value2}} - The User that triggered the alert
  * {{Value3}} - The date/time on which the alert was triggered.
  *
- * There are several filters in self::notify_iftt() that
+ * There are several filters in self::notify_ifttt() that
  * allow for complete customization of these values.
  *
  * More info:
@@ -44,24 +44,24 @@
 namespace WP_Stream;
 
 /**
- * Class Alert_Type_IFTT
+ * Class Alert_Type_IFTTT
  *
  * @package WP_Stream
  */
-class Alert_Type_IFTT extends Alert_Type {
+class Alert_Type_IFTTT extends Alert_Type {
 	/**
 	 * Alert type name
 	 *
 	 * @var string
 	 */
-	public $name = 'IFTT';
+	public $name = 'IFTTT';
 
 	/**
 	 * Alert type slug
 	 *
 	 * @var string
 	 */
-	public $slug = 'iftt';
+	public $slug = 'ifttt';
 
 	/**
 	 * Class Constructor
@@ -77,7 +77,7 @@ class Alert_Type_IFTT extends Alert_Type {
 		}
 		add_filter( 'wp_stream_alerts_save_meta', array( $this, 'add_alert_meta' ), 10, 2 );
 	}
-		/**
+	/**
 	 * Record that the Alert was triggered by a Record.
 	 *
 	 * In self::post_class() this value is checked so we can determine
@@ -91,7 +91,7 @@ class Alert_Type_IFTT extends Alert_Type {
 	public function alert( $record_id, $recordarr, $alert ) {
 		$recordarr['ID'] = $record_id;
 		Alert::update_record_triggered_alerts( (object) $recordarr, $this->slug, $alert->ID );
-		$this->notify_iftt( $alert, $recordarr );
+		$this->notify_ifttt( $alert, $recordarr );
 	}
 
 	/**
@@ -108,21 +108,21 @@ class Alert_Type_IFTT extends Alert_Type {
 
 		$form = new Form_Generator;
 
-		echo '<label for="wp_stream_iftt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
+		echo '<label for="wp_stream_ifttt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'text', array( // Xss ok.
-			'name'    => 'wp_stream_iftt_maker_key',
+			'name'    => 'wp_stream_ifttt_maker_key',
 			'title'   => esc_attr( __( 'Maker Key', 'stream' ) ),
 			'value'   => $options['maker_key'],
 		) );
 		echo '<span class="input-text-wrap">';
-		echo '</label><label for="wp_stream_iftt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
+		echo '</label><label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo $form->render_field( 'text', array( // Xss ok.
-			'name'    => 'wp_stream_iftt_event_name',
+			'name'    => 'wp_stream_ifttt_event_name',
 			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
 			'value'   => $options['event_name'],
 		) );
-		echo '</label';
+		echo '</label>';
 	}
 	/**
 	 * Displays a settings form for the alert type
@@ -133,15 +133,15 @@ class Alert_Type_IFTT extends Alert_Type {
 	public function display_new_fields() {
 		$form = new Form_Generator;
 
-		echo '<label for="wp_stream_iftt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
+		echo '<label for="wp_stream_ifttt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
 		echo $form->render_field( 'text', array( // Xss ok.
-			'name'    => 'wp_stream_iftt_maker_key',
+			'name'    => 'wp_stream_ifttt_maker_key',
 			'title'   => esc_attr( __( 'Maker Key', 'stream' ) ),
 			'value'   => '',
 		) );
-		echo '</label><label for="wp_stream_iftt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
+		echo '</label><label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo $form->render_field( 'text', array( // Xss ok.
-			'name'    => 'wp_stream_iftt_event_name',
+			'name'    => 'wp_stream_ifttt_event_name',
 			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
 			'value'   => '',
 		) );
@@ -157,23 +157,23 @@ class Alert_Type_IFTT extends Alert_Type {
 		check_admin_referer( 'save_alert', 'wp_stream_alerts_nonce' );
 		$alert->alert_meta['maker_key'] = '';
 
-		if ( ! empty( $_POST['wp_stream_iftt_maker_key'] ) ) {
-			$alert->alert_meta['maker_key'] = sanitize_text_field( wp_unslash( $_POST['wp_stream_iftt_maker_key'] ) );
+		if ( ! empty( $_POST['wp_stream_ifttt_maker_key'] ) ) {
+			$alert->alert_meta['maker_key'] = sanitize_text_field( wp_unslash( $_POST['wp_stream_ifttt_maker_key'] ) );
 		}
-		if ( ! empty( $_POST['wp_stream_iftt_event_name'] ) ) {
-			$alert->alert_meta['event_name'] = sanitize_text_field( wp_unslash( $_POST['wp_stream_iftt_event_name'] ) );
+		if ( ! empty( $_POST['wp_stream_ifttt_event_name'] ) ) {
+			$alert->alert_meta['event_name'] = sanitize_text_field( wp_unslash( $_POST['wp_stream_ifttt_event_name'] ) );
 		}
 	}
 
 	/**
-	 * Send a POST request to IFTT.
+	 * Send a POST request to IFTTT.
 	 *
-	 * This method sends Record data to IFTT for processing.
+	 * This method sends Record data to IFTTT for processing.
 	 *
 	 * There are several filters here (documented below) that
 	 * allow for customization of the data sent.
 	 *
-	 * Note that IFTT only allows for three specifically-named
+	 * Note that IFTTT only allows for three specifically-named
 	 * array keys of data.  (also documented below)
 	 *
 	 * @param object $alert The Alert object.
@@ -181,7 +181,7 @@ class Alert_Type_IFTT extends Alert_Type {
 	 *
 	 * @return bool
 	 */
-	public function notify_iftt( $alert, $recordarr ) {
+	public function notify_ifttt( $alert, $recordarr ) {
 		if ( empty( $alert->alert_meta['maker_key'] ) || empty( $alert->alert_meta['event_name'] ) || empty( $recordarr ) ) {
 			return false;
 		}
@@ -204,7 +204,7 @@ class Alert_Type_IFTT extends Alert_Type {
 		 * @param array  $recordarray The Record's data.
 		 * @return string
 		 */
-		$user_field = apply_filters( 'wp_stream_alert_iftt_user_data_value', 'user_login', $alert, $recordarr );
+		$user_field = apply_filters( 'wp_stream_alert_ifttt_user_data_value', 'user_login', $alert, $recordarr );
 		$user_value = ! empty( $user->$user_field ) ? $user->$user_field : $user->user_login;
 
 		$created = $recordarr['created'];
@@ -217,23 +217,23 @@ class Alert_Type_IFTT extends Alert_Type {
 		 * @param array  $recordarray The Record's data.
 		 * @return string
 		 */
-		$date_format = apply_filters( 'wp_stream_alert_iftt_date_format', 'Y-m-d H:i:s', $alert, $recordarr );
+		$date_format = apply_filters( 'wp_stream_alert_ifttt_date_format', 'Y-m-d H:i:s', $alert, $recordarr );
 		$date = date( $date_format, strtotime( $created ) );
 
 		$url = 'https://maker.ifttt.com/trigger/' . $alert->alert_meta['event_name'] . '/with/key/' . $alert->alert_meta['maker_key'];
 
 		/*
 		 * The array key labels for the request body are required by
-		 * IFTT; their names cannot be changed.
+		 * IFTTT; their names cannot be changed.
 		 *
 		 * The filter defaults are set up to send:
 		 * value1 = Record Summary
 		 *
 		 * value2 = User login name
-		 * (see the wp_stream_alert_iftt_user_data_value filter above)
+		 * (see the wp_stream_alert_ifttt_user_data_value filter above)
 		 *
 		 * value3 = Record Date
-		 * (see the wp_stream_alert_iftt_date_format filter above)
+		 * (see the wp_stream_alert_ifttt_date_format filter above)
          *
 		 * The filters below allow complete customization of these data values.
 		 */
@@ -251,7 +251,7 @@ class Alert_Type_IFTT extends Alert_Type {
 					 * @param array  $recordarr Array of Record data.
 					 * @return mixed
 					 */
-					'value1' => apply_filters( 'wp_stream_alert_iftt_value_one', $record_data['summary'], $alert, $recordarr ),
+					'value1' => apply_filters( 'wp_stream_alert_ifttt_value_one', $record_data['summary'], $alert, $recordarr ),
 
 					/**
 					 * Filter the second IFTTT alert value
@@ -262,7 +262,7 @@ class Alert_Type_IFTT extends Alert_Type {
 					 * @param array  $recordarr Array of Record data.
 					 * @return mixed
 					 */
-					'value2' => apply_filters( 'wp_stream_alert_iftt_value_two', $user_value, $user_id, $alert, $recordarr ),
+					'value2' => apply_filters( 'wp_stream_alert_ifttt_value_two', $user_value, $user_id, $alert, $recordarr ),
 
 					/**
 					 * Filter the third IFTTT alert value
@@ -272,7 +272,7 @@ class Alert_Type_IFTT extends Alert_Type {
 					 * @param array  $recordarr Array of Record data.
 					 * @return mixed
 					 */
-					'value3' => apply_filters( 'wp_stream_alert_iftt_value_three', $date, $alert, $recordarr ),
+					'value3' => apply_filters( 'wp_stream_alert_ifttt_value_three', $date, $alert, $recordarr ),
 				)
 			),
 		);
@@ -292,11 +292,11 @@ class Alert_Type_IFTT extends Alert_Type {
 	 */
 	public function add_alert_meta( $alert_meta, $alert_type ) {
 		if ( $this->slug === $alert_type ) {
-			$maker_key = wp_stream_filter_input( INPUT_POST, 'wp_stream_iftt_maker_key' );
+			$maker_key = wp_stream_filter_input( INPUT_POST, 'wp_stream_ifttt_maker_key' );
 			if ( ! empty( $maker_key ) ) {
 				$alert_meta['maker_key'] = $maker_key;
 			}
-			$event_name = wp_stream_filter_input( INPUT_POST, 'wp_stream_iftt_event_name' );
+			$event_name = wp_stream_filter_input( INPUT_POST, 'wp_stream_ifttt_event_name' );
 			if ( ! empty( $event_name ) ) {
 				$alert_meta['event_name'] = $event_name;
 			}

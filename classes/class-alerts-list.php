@@ -180,12 +180,12 @@ class Alerts_List {
 				}
 				if ( ! empty( $alert->alert_meta['event_name'] ) ) {
 					?>
-					<input type="hidden" name="wp_stream_iftt_event_name" value="<?php echo esc_attr( $alert->alert_meta['event_name'] ); ?>" />
+					<input type="hidden" name="wp_stream_ifttt_event_name" value="<?php echo esc_attr( $alert->alert_meta['event_name'] ); ?>" />
 					<?php
 				}
 				if ( ! empty( $alert->alert_meta['maker_key'] ) ) {
 					?>
-					<input type="hidden" name="wp_stream_iftt_maker_key" value="<?php echo esc_attr( $alert->alert_meta['maker_key'] ); ?>" />
+					<input type="hidden" name="wp_stream_ifttt_maker_key" value="<?php echo esc_attr( $alert->alert_meta['maker_key'] ); ?>" />
 					<?php
 				}
 				break;
