@@ -147,6 +147,9 @@ jQuery( function( $ ) {
 	$( '#wpbody-content' ).on( 'click', 'a.page-title-action', function( e ) {
 		e.preventDefault();
 		$( '#add-new-alert' ).remove();
+		if ( $( '.inline-edit-wp_stream_alerts' ).length > 0 ) {
+			$( '.inline-edit-wp_stream_alerts .inline-edit-save button.button-secondary.cancel' ).trigger( 'click' );
+		}
 		var alert_form_html = '';
 		var data = {
 			'action':          'get_new_alert_triggers_notifications'
