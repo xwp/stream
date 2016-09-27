@@ -256,22 +256,7 @@ class Alerts_List {
 	public function custom_column_actions( $post_id ) {
 		$post_status = wp_stream_filter_input( INPUT_GET, 'post_status' );
 		ob_start();
-		if ( ! empty( $post_status ) && 'trash' === $post_status ) {
-			$bare_url         = '/wp-admin/post.php?post=' . $post_id . '&amp;action=untrash';
-			$nonce_url        = wp_nonce_url( $bare_url, 'untrash-post_' . $post_id );
-			$delete_url       = '/wp-admin/post.php?post=' . $post_id . '&amp;action=delete';
-			$nonce_delete_url = wp_nonce_url( $delete_url, 'delete-post_' . $post_id );
-			?>
-			<div class="row-actions">
-				<span class="untrash">
-					<a href="<?php echo esc_url( $nonce_url ); ?>" class="untrash"><?php esc_html_e( 'Restore', 'stream' ); ?></a> |
-				</span>
-				<span class="delete">
-					<a href="<?php echo esc_url( $nonce_delete_url ) ?>" class="submitdelete"><?php esc_html_e( 'Delete Permanently', 'stream' ); ?></a>
-				</span>
-			</div>
-			<?php
-		} else {
+		if ( 'trash' !== $post_status ) {
 			$bare_url  = '/wp-admin/post.php?post=' . $post_id . '&amp;action=trash';
 			$nonce_url = wp_nonce_url( $bare_url, 'trash-post_' . $post_id );
 			?>
