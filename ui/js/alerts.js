@@ -1,6 +1,8 @@
 /* globals jQuery, streamAlerts, inlineEditPost */
 jQuery( function( $ ) {
 	'use strict';
+	var $post_row,
+		$edit_row;
 	var setupSelectTwo = function setupSelectTwo( id ) {
 		var $target = $( id );
 		$target.find( '.select2-select.connector_or_context' ).each( function( k, el ) {
@@ -152,7 +154,7 @@ jQuery( function( $ ) {
 		$.post( window.ajaxurl, data, function( response ) {
 			if ( true === response.success ) {
 				alert_form_html = response.data.html;
-				$( 'tbody#the-list' ).prepend( '<tr id="add-new-alert" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor" style=""><td colspan="5" class="colspanchange">' + alert_form_html + '<p class="submit inline-edit-save"> <button type="button" class="button-secondary cancel alignleft">Cancel</button> <input type="hidden" id="_inline_edit" name="_inline_edit" value="3550d271fe"> <button type="button" class="button-primary save alignright">Update</button> <span class="spinner"></span><span class="error" style="display:none"></span> <br class="clear"></p></td></tr>' );
+				$( 'tbody#the-list' ).prepend( '<tr id="add-new-alert" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor" style=""><td colspan="4" class="colspanchange">' + alert_form_html + '<p class="submit inline-edit-save"> <button type="button" class="button-secondary cancel alignleft">Cancel</button> <input type="hidden" id="_inline_edit" name="_inline_edit" value="3550d271fe"> <button type="button" class="button-primary save alignright">Update</button> <span class="spinner"></span><span class="error" style="display:none"></span> <br class="clear"></p></td></tr>' );
 				var add_new_alert = $( '#add-new-alert' );
 				var current_bg_color = add_new_alert.css( 'background-color' );
 
@@ -248,35 +250,35 @@ jQuery( function( $ ) {
 			$( '#wp_stream_alert_type_form' ).hide();
 			var alert_type = $post_row.find( 'input[name="wp_stream_alert_type"]' ).val();
 			$edit_row.find( 'select[name="wp_stream_alert_type"] option[value="' + alert_type + '"]' ).attr( 'selected', 'selected' ).trigger( 'change' );
-			$( document ).one( 'alert-type-settings-updated', function () {
-				if ( 'email' === alert_type ) {
-					var email_recipient = $post_row.find( 'input[name="wp_stream_email_recipient"]' ).val();
-					var email_subject = $post_row.find( 'input[name="wp_stream_email_subject"]' ).val();
-					if ( typeof email_recipient !== 'undefined' ) {
-						$edit_row.find( 'input[name="wp_stream_email_recipient"]' ).val( email_recipient );
-					}
-					if ( typeof email_subject !== 'undefined' ) {
-						$edit_row.find( 'input[name="wp_stream_email_subject"]' ).val( email_subject );
-					}
-				}
-				if ( 'highlight' === alert_type ) {
-					var highlight_color = $post_row.find( 'input[name="wp_stream_highlight_color"]' ).val();
-					if ( typeof highlight_color !== 'undefined' ) {
-						$edit_row.find( 'select[name="wp_stream_highlight_color"] option[value="' + highlight_color + '"]' ).attr( 'selected', 'selected' );
-					}
-				}
-				if ( 'iftt' === alert_type ) {
-					var event_name = $post_row.find( 'input[name="wp_stream_iftt_event_name"]' ).val();
-					var maker_key = $post_row.find( 'input[name="wp_stream_iftt_maker_key"]' ).val();
-					if ( typeof event_name !== 'undefined' ) {
-						$edit_row.find( 'input[name="wp_stream_iftt_event_name"]' ).val( event_name );
-					}
-					if ( typeof maker_key !== 'undefined' ) {
-						$edit_row.find( 'input[name="wp_stream_iftt_maker_key"]' ).val( maker_key );
-					}
-				}
-				$( '#wp_stream_alert_type_form' ).show();
-			});
 		}
 	};
+	$( document ).on( 'alert-type-settings-updated', function () {
+		if ( 'email' === alert_type ) {
+			var email_recipient = $post_row.find( 'input[name="wp_stream_email_recipient"]' ).val();
+			var email_subject = $post_row.find( 'input[name="wp_stream_email_subject"]' ).val();
+			if ( typeof email_recipient !== 'undefined' ) {
+				$edit_row.find( 'input[name="wp_stream_email_recipient"]' ).val( email_recipient );
+			}
+			if ( typeof email_subject !== 'undefined' ) {
+				$edit_row.find( 'input[name="wp_stream_email_subject"]' ).val( email_subject );
+			}
+		}
+		if ( 'highlight' === alert_type ) {
+			var highlight_color = $post_row.find( 'input[name="wp_stream_highlight_color"]' ).val();
+			if ( typeof highlight_color !== 'undefined' ) {
+				$edit_row.find( 'select[name="wp_stream_highlight_color"] option[value="' + highlight_color + '"]' ).attr( 'selected', 'selected' );
+			}
+		}
+		if ( 'iftt' === alert_type ) {
+			var event_name = $post_row.find( 'input[name="wp_stream_iftt_event_name"]' ).val();
+			var maker_key = $post_row.find( 'input[name="wp_stream_iftt_maker_key"]' ).val();
+			if ( typeof event_name !== 'undefined' ) {
+				$edit_row.find( 'input[name="wp_stream_iftt_event_name"]' ).val( event_name );
+			}
+			if ( typeof maker_key !== 'undefined' ) {
+				$edit_row.find( 'input[name="wp_stream_iftt_maker_key"]' ).val( maker_key );
+			}
+		}
+		$( '#wp_stream_alert_type_form' ).show();
+	});
 });
