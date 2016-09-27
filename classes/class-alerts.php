@@ -724,7 +724,7 @@ class Alerts {
 		ob_start();
 		?>
 		<fieldset class="inline-edit-col inline-edit-wp_stream_alerts inline-edit-add-new-triggers">
-			<legend class="inline-edit-legend">Add New Alert</legend>
+			<legend class="inline-edit-legend">Add New</legend>
 			<?php $GLOBALS['wp_stream']->alerts->display_triggers_box(); ?>
 		</fieldset>
 		<fieldset class="inline-edit-col inline-edit-wp_stream_alerts inline-edit-add-new-notifications">
