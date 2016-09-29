@@ -567,7 +567,7 @@ class Alerts {
 				<div id="misc-publishing-actions">
 					<div class="misc-pub-section misc-pub-post-status">
 						<label for="wp_stream_alert_status">
-							<span class="title"><?php esc_html_e( 'Status:', 'stream' ) ?></span>
+							<span class="title"><?php esc_html_e( 'Status', 'stream' ) ?></span>
 							<span class="input-text-wrap">
 							<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
 								<option<?php selected( $post_status, 'wp_stream_enabled' ); ?>
