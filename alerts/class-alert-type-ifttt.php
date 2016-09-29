@@ -115,6 +115,8 @@ class Alert_Type_IFTTT extends Alert_Type {
 			'title'   => esc_attr( __( 'Maker Key', 'stream' ) ),
 			'value'   => $options['maker_key'],
 		) );
+		echo '</span></label>';
+
 		echo '<span class="input-text-wrap">';
 		echo '</label><label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo $form->render_field( 'text', array( // Xss ok.
@@ -122,7 +124,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
 			'value'   => $options['event_name'],
 		) );
-		echo '</label>';
+		echo '</span></label>';
 	}
 	/**
 	 * Displays a settings form for the alert type
@@ -134,18 +136,22 @@ class Alert_Type_IFTTT extends Alert_Type {
 		$form = new Form_Generator;
 
 		echo '<label for="wp_stream_ifttt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
+		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_ifttt_maker_key',
 			'title'   => esc_attr( __( 'Maker Key', 'stream' ) ),
 			'value'   => '',
 		) );
-		echo '</label><label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
+		echo '</span></label>';
+
+		echo '<label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
+		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_ifttt_event_name',
 			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
 			'value'   => '',
 		) );
-		echo '</label>';
+		echo '</span></label>';
 	}
 	/**
 	 * Validates and saves form settings for later use.

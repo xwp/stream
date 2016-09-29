@@ -112,31 +112,32 @@ class Alert_Type_Highlight extends Alert_Type {
 		$form = new Form_Generator;
 
 		echo '<label for="wp_stream_highlight_color"><span class="title">' . esc_html__( 'Color', 'stream' ) . '</span>';
+		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'select', array( // Xss ok.
 			'name'    => 'wp_stream_highlight_color',
 			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
 			'options' => $this->get_highlight_options(),
 			'value'   => $options['color'],
 		) );
-		echo '</label>';
+		echo '</span></label>';
 	}
 	/**
 	 * Displays a settings form for the alert type
 	 *
-	 * @param Alert $alert Alert object for the currently displayed alert.
 	 * @return void
 	 */
 	public function display_new_fields() {
 		$form = new Form_Generator;
 
 		echo '<label for="wp_stream_highlight_color"><span class="title">' . esc_html__( 'Color', 'stream' ) . '</span>';
+		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'select', array( // Xss ok.
 			'name'    => 'wp_stream_highlight_color',
 			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
 			'options' => $this->get_highlight_options(),
 			'value'   => '',
 		) );
-		echo '</label>';
+		echo '</span></label>';
 	}
 	/**
 	 * Lists available color options for alerts.

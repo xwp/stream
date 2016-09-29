@@ -77,7 +77,7 @@ class Alerts {
 		add_action( 'wp_ajax_save_new_alert', array( $this, 'save_new_alert' ) );
 		add_action( 'wp_ajax_get_new_alert_triggers_notifications', array(
 			$this,
-			'get_new_alert_triggers_notifications'
+			'get_new_alert_triggers_notifications',
 		) );
 
 		$this->load_alert_types();
@@ -255,8 +255,6 @@ class Alerts {
 	 *
 	 * @action admin_enqueue_scripts
 	 *
-	 * @param string $page Current file name.
-	 *
 	 * @return void
 	 */
 	function register_scripts() {
@@ -265,7 +263,7 @@ class Alerts {
 			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array(
 				'wp-stream-select2',
 				'jquery',
-				'inline-edit-post'
+				'inline-edit-post',
 			) );
 			wp_localize_script( 'wp-stream-alerts', 'streamAlerts',
 				array(
@@ -455,7 +453,7 @@ class Alerts {
 	/**
 	 * Display Alert Type Meta Box
 	 *
-	 * @param WP_Post $post Post object for current alert.
+	 * @param \WP_Post|array $post Post object for current alert.
 	 *
 	 * @return void
 	 */
@@ -476,10 +474,8 @@ class Alerts {
 			'title'       => 'Alert Type:',
 		) );
 
-		echo '<label><span class="title">' . esc_html__( 'Alert me by', 'stream' ) . '</span></label>';
-		echo '<span class="input-text-wrap">';
+		echo '<label>' . esc_html__( 'Alert me by', 'stream' ) . '</label>';
 		echo $field_html; // Xss ok.
-		echo '</span>';
 
 		echo '<div id="wp_stream_alert_type_form">';
 		if ( isset( $alert ) && is_object( $alert ) ) {
@@ -527,7 +523,7 @@ class Alerts {
 	/**
 	 * Display Trigger Meta Box
 	 *
-	 * @param WP_Post $post Post object for current alert.
+	 * @param \WP_Post|array $post Post object for current alert.
 	 *
 	 * @return void
 	 */
@@ -548,7 +544,7 @@ class Alerts {
 	/**
 	 * Display Submit Box
 	 *
-	 * @param WP_Post $post Post object for current alert.
+	 * @param \WP_Post $post Post object for current alert.
 	 *
 	 * @return void
 	 */
@@ -566,17 +562,13 @@ class Alerts {
 			<div id="minor-publishing">
 				<div id="misc-publishing-actions">
 					<div class="misc-pub-section misc-pub-post-status">
-						<label for="wp_stream_alert_status">
-							<span class="title"><?php esc_html_e( 'Status', 'stream' ) ?></span>
-							<span class="input-text-wrap">
-							<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
-								<option<?php selected( $post_status, 'wp_stream_enabled' ); ?>
-									value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
-								<option<?php selected( $post_status, 'wp_stream_disabled' ); ?>
-									value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
-							</select>
-						</span>
-						</label>
+						<label for="wp_stream_alert_status"><?php esc_html_e( 'Status', 'stream' ) ?></label>
+						<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
+							<option<?php selected( $post_status, 'wp_stream_enabled' ); ?>
+								value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
+							<option<?php selected( $post_status, 'wp_stream_disabled' ); ?>
+								value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
+						</select>
 					</div>
 				</div>
 				<div class="clear"></div>
@@ -612,7 +604,6 @@ class Alerts {
 	 * @return void
 	 */
 	function display_status_box() {
-		$post_status = 'wp_stream_enabled';
 		?>
 		<div id="minor-publishing">
 			<div id="misc-publishing-actions">

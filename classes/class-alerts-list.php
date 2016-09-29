@@ -294,15 +294,11 @@ class Alerts_List {
 		<?php
 		foreach ( $box_type as $type ) : // @todo remove inline styles. ?>
 			<fieldset class="inline-edit-col inline-edit-<?php echo esc_attr( Alerts::POST_TYPE ); ?>">
-				<div class="inline-edit-col">
-					<label class="inline-edit-group">
-						<?php
-						$function_name = 'display_' . $type . '_box';
-						$the_post = get_post();
-						call_user_func( array( $this->plugin->alerts, $function_name ), $the_post );
-						?>
-					</label>
-				</div>
+				<?php
+				$function_name = 'display_' . $type . '_box';
+				$the_post = get_post();
+				call_user_func( array( $this->plugin->alerts, $function_name ), $the_post );
+				?>
 			</fieldset>
 			<?php
 		endforeach;

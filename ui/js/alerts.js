@@ -152,7 +152,7 @@ jQuery( function( $ ) {
 		}
 		var alert_form_html = '';
 		var data = {
-			'action':          'get_new_alert_triggers_notifications'
+			'action': 'get_new_alert_triggers_notifications'
 		};
 		$.post( window.ajaxurl, data, function( response ) {
 			if ( true === response.success ) {
@@ -213,7 +213,6 @@ jQuery( function( $ ) {
 
 	// and then we overwrite the function with our own code
 	inlineEditPost.edit = function( id ) {
-
 		// "call" the original WP edit function
 		// we don't want to leave WordPress hanging
 		$wp_inline_edit.apply( this, arguments );
@@ -228,8 +227,8 @@ jQuery( function( $ ) {
 
 		if ( post_id > 0 ) {
 			// define the edit row
-			var $edit_row = $( '#edit-' + post_id );
-			var $post_row = $( '#post-' + post_id );
+			$edit_row = $( '#edit-' + post_id );
+			$post_row = $( '#post-' + post_id );
 
 			// get the data
 			var alert_trigger_connector = $post_row.find( 'input[name="wp_stream_trigger_connector"]' ).val();
@@ -256,6 +255,14 @@ jQuery( function( $ ) {
 		}
 	};
 	$( document ).on( 'alert-type-settings-updated', function () {
+		var alert_type = $( '#wp_stream_alert_type' ).val();
+		var alert_type_settings = $( '#wp_stream_alert_type_form' );
+
+		if ( 'none' === alert_type ) {
+			alert_type_settings.hide();
+			return;
+		}
+
 		if ( 'email' === alert_type ) {
 			var email_recipient = $post_row.find( 'input[name="wp_stream_email_recipient"]' ).val();
 			var email_subject = $post_row.find( 'input[name="wp_stream_email_subject"]' ).val();
@@ -282,6 +289,7 @@ jQuery( function( $ ) {
 				$edit_row.find( 'input[name="wp_stream_ifttt_maker_key"]' ).val( maker_key );
 			}
 		}
-		$( '#wp_stream_alert_type_form' ).show();
+
+		alert_type_settings.show();
 	});
 });

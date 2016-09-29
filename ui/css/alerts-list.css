@@ -21,6 +21,19 @@
 	display: block;
 }
 
+#wp_stream_alert_type_form {
+	max-height: 8em;
+	border: 1px solid #ddd;
+	overflow-y: scroll;
+	padding: 0.2em 0.5em;
+	margin: 6px 0;
+	background-color: #fff;
+	display: none;
+}
+
+#wp_stream_alert_type_form select {
+	width: 100%;
+}
 
 .edit-php.post-type-wp_stream_alerts .misc-pub-section.misc-pub-post-status,
 .edit-php.post-type-wp_stream_alerts #misc-publishing-actions {
@@ -39,17 +52,19 @@
 }
 
 .edit-php.post-type-wp_stream_alerts .select2 .select2-selection {
-    border-color: #ccc;
-    background: #f7f7f7;
-    -webkit-box-shadow: 0 1px 0 #ccc;
-    box-shadow: 0 1px 0 #ccc;
+	border-color: #ccc;
+	background: #f7f7f7;
+	-webkit-box-shadow: 0 1px 0 #ccc;
+	box-shadow: 0 1px 0 #ccc;
 }
 .edit-php.post-type-wp_stream_alerts label {
-    font-style: italic;
+	font-style: italic;
 }
+
 .edit-php.post-type-wp_stream_alerts select {
-    width: auto;
+	width: auto;
 }
+
 .edit-php.post-type-wp_stream_alerts span.select2-selection__rendered {
     font-style: normal;
 }
