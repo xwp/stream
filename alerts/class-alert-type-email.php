@@ -96,8 +96,12 @@ class Alert_Type_Email extends Alert_Type {
 	 * @param Alert $alert Alert object for the currently displayed alert.
 	 * @return void
 	 */
-	public function display_fields( $alert = array() ) {
-		$options = wp_parse_args( $alert->alert_meta, array(
+	public function display_fields( $alert ) {
+		$alert_meta = array();
+		if ( is_object( $alert ) ) {
+			$alert_meta = $alert->alert_meta;
+		}
+		$options = wp_parse_args( $alert_meta, array(
 			'email_recipient' => '',
 			'email_subject'   => '',
 		) );
@@ -123,33 +127,6 @@ class Alert_Type_Email extends Alert_Type {
 		echo '</span></label>';
 	}
 
-	/**
-	 * Displays a settings form for the alert type
-	 *
-	 * @param Alert $alert Alert object for the currently displayed alert.
-	 * @return void
-	 */
-	public function display_new_fields() {
-		$form = new Form_Generator;
-
-		echo '<label for="wp_stream_email_recipient"><span class="title">' . esc_html__( 'Recipient', 'stream' ) . '</span>';
-		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array( // Xss ok.
-			'name'    => 'wp_stream_email_recipient',
-			'title'   => esc_attr( __( 'Email Recipient', 'stream' ) ),
-			'value'   => '',
-		) );
-		echo '</span></label>';
-
-		echo '<label for="wp_stream_email_subject"><span class="title">' . esc_html__( 'Subject', 'stream' ) . '</span>';
-		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array( // Xss ok.
-			'name'    => 'wp_stream_email_subject',
-			'title'   => esc_attr( __( 'Email Subject', 'stream' ) ),
-			'value'   => '',
-		) );
-		echo '</span></label>';
-	}
 	/**
 	 * Validates and saves form settings for later use.
 	 *

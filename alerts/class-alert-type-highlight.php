@@ -105,7 +105,11 @@ class Alert_Type_Highlight extends Alert_Type {
 	 * @return void
 	 */
 	public function display_fields( $alert ) {
-		$options = wp_parse_args( $alert->alert_meta, array(
+		$alert_meta = array();
+		if ( is_object( $alert ) ) {
+			$alert_meta = $alert->alert_meta;
+		}
+		$options = wp_parse_args( $alert_meta, array(
 			'color' => 'yellow',
 		) );
 
@@ -118,24 +122,6 @@ class Alert_Type_Highlight extends Alert_Type {
 			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
 			'options' => $this->get_highlight_options(),
 			'value'   => $options['color'],
-		) );
-		echo '</span></label>';
-	}
-	/**
-	 * Displays a settings form for the alert type
-	 *
-	 * @return void
-	 */
-	public function display_new_fields() {
-		$form = new Form_Generator;
-
-		echo '<label for="wp_stream_highlight_color"><span class="title">' . esc_html__( 'Color', 'stream' ) . '</span>';
-		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'select', array( // Xss ok.
-			'name'    => 'wp_stream_highlight_color',
-			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
-			'options' => $this->get_highlight_options(),
-			'value'   => '',
 		) );
 		echo '</span></label>';
 	}

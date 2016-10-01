@@ -88,12 +88,18 @@ jQuery( function( $ ) {
 			'alert_type' : alert_type
 		};
 
-		$( '#wp_stream_alerts_triggers' ).find( 'input.wp_stream_ajax_forward' ).each( function() {
-			data[ $( this ).attr( 'name' ) ] = $( this ).val();
-		} );
+		var $edit_row = $( '#wp_stream_alert_type' ).closest( 'tr' );
+		var row_id = $edit_row.attr( 'id' );
+		data.post_id = row_id.split('-')[1];
 		$.post( window.ajaxurl, data, function( response ) {
-			$( '#wp_stream_alert_type_form' ).html( response.data.html );
-			$( document ).trigger( 'alert-type-settings-updated' );
+			var $alert_type_settings = $( '#wp_stream_alert_type_form' );
+			var alert_type = $( '#wp_stream_alert_type' ).val();
+			if ('none' === alert_type) {
+				$alert_type_settings.hide();
+				return;
+			}
+			$alert_type_settings.html( response.data.html );
+			$alert_type_settings.show();
 		});
 	};
 
@@ -254,25 +260,4 @@ jQuery( function( $ ) {
 			$edit_row.find( 'select[name="wp_stream_alert_type"] option[value="' + alert_type + '"]' ).attr( 'selected', 'selected' ).trigger( 'change' );
 		}
 	};
-	$( document ).on( 'alert-type-settings-updated', function () {
-		var alert_type = $( '#wp_stream_alert_type' ).val();
-		var $alert_type_settings = $( '#wp_stream_alert_type_form' );
-        var $edit_row = $alert_type_settings.closest( 'tr.inline-edit-wp_stream_alerts' );
-        var edit_row_id = $edit_row.attr( 'id' );
-        var edit_row_id_split = edit_row_id.split( '-' )[1];
-        var post_row_id = 'post-' + edit_row_id_split;
-
-		if ( 'none' === alert_type ) {
-			$alert_type_settings.hide();
-			return;
-		}
-
-		var all_inputs = $alert_type_settings.find( ':input' );
-        $.each( all_inputs, function( index ) {
-            var input_name = $( this ).attr( 'name' );
-            var post_row_value = $( '#' + post_row_id + ' td.alert_type input[name="' + input_name + '"]' ).val();
-            $edit_row.find( ':input[name="' + input_name + '"]' ).val( post_row_value );
-        });
-		$alert_type_settings.show();
-	});
 });

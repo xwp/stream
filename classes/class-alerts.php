@@ -99,18 +99,19 @@ class Alerts {
 
 		$classes = array();
 		foreach ( $alert_types as $alert_type ) {
-
-			// @todo check if file exists.
-			include_once $this->plugin->locations['dir'] . '/alerts/class-alert-type-' . $alert_type . '.php';
-			$class_name = sprintf( '\WP_Stream\Alert_Type_%s', str_replace( '-', '_', $alert_type ) );
-			if ( ! class_exists( $class_name ) ) {
-				continue;
+			$file_location = $this->plugin->locations['dir'] . '/alerts/class-alert-type-' . $alert_type . '.php';
+			if ( file_exists( $file_location ) ) {
+				include_once $file_location;
+				$class_name = sprintf( '\WP_Stream\Alert_Type_%s', str_replace( '-', '_', $alert_type ) );
+				if ( ! class_exists( $class_name ) ) {
+					continue;
+				}
+				$class = new $class_name( $this->plugin );
+				if ( ! property_exists( $class, 'slug' ) ) {
+					continue;
+				}
+				$classes[ $class->slug ] = $class;
 			}
-			$class = new $class_name( $this->plugin );
-			if ( ! property_exists( $class, 'slug' ) ) {
-				continue;
-			}
-			$classes[ $class->slug ] = $class;
 		}
 
 		/**
@@ -148,17 +149,19 @@ class Alerts {
 
 		$classes = array();
 		foreach ( $alert_triggers as $alert_trigger ) {
-			// @todo check if file exists.
-			include_once $this->plugin->locations['dir'] . '/alerts/class-alert-trigger-' . $alert_trigger . '.php';
-			$class_name = sprintf( '\WP_Stream\Alert_Trigger_%s', str_replace( '-', '_', $alert_trigger ) );
-			if ( ! class_exists( $class_name ) ) {
-				continue;
+			$file_location = $this->plugin->locations['dir'] . '/alerts/class-alert-trigger-' . $alert_trigger . '.php';
+			if ( file_exists( $file_location ) ) {
+				include_once $file_location;
+				$class_name = sprintf( '\WP_Stream\Alert_Trigger_%s', str_replace( '-', '_', $alert_trigger ) );
+				if ( ! class_exists( $class_name ) ) {
+					continue;
+				}
+				$class = new $class_name( $this->plugin );
+				if ( ! property_exists( $class, 'slug' ) ) {
+					continue;
+				}
+				$classes[ $class->slug ] = $class;
 			}
-			$class = new $class_name( $this->plugin );
-			if ( ! property_exists( $class, 'slug' ) ) {
-				continue;
-			}
-			$classes[ $class->slug ] = $class;
 		}
 
 		/**
@@ -354,10 +357,8 @@ class Alerts {
 	 * @return Alert
 	 */
 	public function get_alert( $post_id = '' ) {
-
 		if ( ! $post_id ) {
 			$obj = new Alert( null, $this->plugin );
-
 			return $obj;
 		}
 
@@ -388,7 +389,6 @@ class Alerts {
 	 * @return void
 	 */
 	function register_menu() {
-
 		add_submenu_page(
 			$this->plugin->admin->records_page_slug,
 			__( 'Alerts', 'stream' ),
@@ -423,6 +423,7 @@ class Alerts {
 		}
 
 		// Get the first existing Site in the Network.
+		// @todo: Switch to use wp_stream_get_sites()
 		$sites = wp_get_sites(
 			array(
 				'limit' => 5, // Limit the size of the query.
@@ -478,10 +479,10 @@ class Alerts {
 		echo $field_html; // Xss ok.
 
 		echo '<div id="wp_stream_alert_type_form">';
-		if ( isset( $alert ) && is_object( $alert ) ) {
+		if ( is_object( $alert ) ) {
 			$alert->get_alert_type_obj()->display_fields( $alert );
 		} else {
-			$this->plugin->alerts->alert_types['none']->display_new_fields();
+			$this->plugin->alerts->alert_types['none']->display_fields( array() );
 		}
 
 		echo '</div>';
@@ -495,15 +496,21 @@ class Alerts {
 	 * @return void
 	 */
 	function load_alerts_settings() {
-		/*$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
-		$alert = $this->get_alert( $post_id );
-		if ( ! $alert ) {
-			wp_send_json_error( array(
-				'message' => 'Could not find alert.',
-			) );
-		}*/
+		$alert = array();
+		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
+		if ( ! empty( $post_id ) ) {
+			$alert = $this->get_alert( $post_id );
+			if ( ! $alert ) {
+				wp_send_json_error( array(
+					'message' => 'Could not find alert.',
+				) );
+			}
+		}
 
 		$alert_type = wp_stream_filter_input( INPUT_POST, 'alert_type' );
+		if ( empty( $alert_type ) ) {
+			$alert_type = 'none';
+		}
 		if ( ! array_key_exists( $alert_type, $this->alert_types ) ) {
 			wp_send_json_error( array(
 				'message' => 'Could not find alert type.',
@@ -511,8 +518,7 @@ class Alerts {
 		}
 
 		ob_start();
-		//$this->alert_types[ $alert_type ]->display_fields( $alert );
-		$this->alert_types[ $alert_type ]->display_new_fields();
+		$this->alert_types[ $alert_type ]->display_fields( $alert );
 		$output = ob_get_contents();
 		ob_end_clean();
 

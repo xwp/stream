@@ -58,7 +58,11 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	 * @return void
 	 */
 	public function display_fields( $alert ) {
-		$options = wp_parse_args( $alert->alert_meta, array(
+		$alert_meta = array();
+		if ( is_object( $alert ) ) {
+			$alert_meta = $alert->alert_meta;
+		}
+		$options = wp_parse_args( $alert_meta, array(
 			'clear_immediate' => false,
 		) );
 
@@ -72,23 +76,7 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 
 		echo $form->render_all(); // Xss ok.
 	}
-	/**
-	 * Displays a settings form for the alert type
-	 *
-	 * @param Alert $alert Alert object for the currently displayed alert.
-	 * @return void
-	 */
-	public function display_new_fields() {
-		$form = new Form_Generator;
-		$form->add_field( 'checkbox', array(
-			'name'  => 'wp_stream_menu_alert_clear_immediate',
-			'text'  => esc_attr( __( 'Clear alerts after seen.', 'stream' ) ),
-			'value' => '',
-			'title' => __( 'Menu Bar', 'stream' ),
-		) );
 
-		echo $form->render_all(); // Xss ok.
-	}
 	/**
 	 * Validates and saves form settings for later use.
 	 *

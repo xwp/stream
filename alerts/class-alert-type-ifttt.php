@@ -101,7 +101,11 @@ class Alert_Type_IFTTT extends Alert_Type {
 	 * @return void
 	 */
 	public function display_fields( $alert ) {
-		$options = wp_parse_args( $alert->alert_meta, array(
+		$alert_meta = array();
+		if ( is_object( $alert ) ) {
+			$alert_meta = $alert->alert_meta;
+		}
+		$options = wp_parse_args( $alert_meta, array(
 			'maker_key' => '',
 			'event_name' => '',
 		) );
@@ -117,8 +121,8 @@ class Alert_Type_IFTTT extends Alert_Type {
 		) );
 		echo '</span></label>';
 
+		echo '<label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo '</label><label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo $form->render_field( 'text', array( // Xss ok.
 			'name'    => 'wp_stream_ifttt_event_name',
 			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
@@ -126,33 +130,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 		) );
 		echo '</span></label>';
 	}
-	/**
-	 * Displays a settings form for the alert type
-	 *
-	 * @param Alert $alert Alert object for the currently displayed alert.
-	 * @return void
-	 */
-	public function display_new_fields() {
-		$form = new Form_Generator;
 
-		echo '<label for="wp_stream_ifttt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
-		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array( // Xss ok.
-			'name'    => 'wp_stream_ifttt_maker_key',
-			'title'   => esc_attr( __( 'Maker Key', 'stream' ) ),
-			'value'   => '',
-		) );
-		echo '</span></label>';
-
-		echo '<label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
-		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array( // Xss ok.
-			'name'    => 'wp_stream_ifttt_event_name',
-			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
-			'value'   => '',
-		) );
-		echo '</span></label>';
-	}
 	/**
 	 * Validates and saves form settings for later use.
 	 *

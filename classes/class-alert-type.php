@@ -59,13 +59,6 @@ abstract class Alert_Type {
 	}
 
 	/**
-	 * Display blank settings form for configuration of new individual alerts
-	 */
-	public function display_new_fields() {
-		return;
-	}
-
-	/**
 	 * Process settings form for configuration of individual alerts
 	 *
 	 * @param Alert $alert Alert currently being worked on.
