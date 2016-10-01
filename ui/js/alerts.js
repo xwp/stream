@@ -256,40 +256,23 @@ jQuery( function( $ ) {
 	};
 	$( document ).on( 'alert-type-settings-updated', function () {
 		var alert_type = $( '#wp_stream_alert_type' ).val();
-		var alert_type_settings = $( '#wp_stream_alert_type_form' );
+		var $alert_type_settings = $( '#wp_stream_alert_type_form' );
+        var $edit_row = $alert_type_settings.closest( 'tr.inline-edit-wp_stream_alerts' );
+        var edit_row_id = $edit_row.attr( 'id' );
+        var edit_row_id_split = edit_row_id.split( '-' )[1];
+        var post_row_id = 'post-' + edit_row_id_split;
 
 		if ( 'none' === alert_type ) {
-			alert_type_settings.hide();
+			$alert_type_settings.hide();
 			return;
 		}
 
-		if ( 'email' === alert_type ) {
-			var email_recipient = $post_row.find( 'input[name="wp_stream_email_recipient"]' ).val();
-			var email_subject = $post_row.find( 'input[name="wp_stream_email_subject"]' ).val();
-			if ( typeof email_recipient !== 'undefined' ) {
-				$edit_row.find( 'input[name="wp_stream_email_recipient"]' ).val( email_recipient );
-			}
-			if ( typeof email_subject !== 'undefined' ) {
-				$edit_row.find( 'input[name="wp_stream_email_subject"]' ).val( email_subject );
-			}
-		}
-		if ( 'highlight' === alert_type ) {
-			var highlight_color = $post_row.find( 'input[name="wp_stream_highlight_color"]' ).val();
-			if ( typeof highlight_color !== 'undefined' ) {
-				$edit_row.find( 'select[name="wp_stream_highlight_color"] option[value="' + highlight_color + '"]' ).attr( 'selected', 'selected' );
-			}
-		}
-		if ( 'ifttt' === alert_type ) {
-			var event_name = $post_row.find( 'input[name="wp_stream_ifttt_event_name"]' ).val();
-			var maker_key = $post_row.find( 'input[name="wp_stream_ifttt_maker_key"]' ).val();
-			if ( typeof event_name !== 'undefined' ) {
-				$edit_row.find( 'input[name="wp_stream_ifttt_event_name"]' ).val( event_name );
-			}
-			if ( typeof maker_key !== 'undefined' ) {
-				$edit_row.find( 'input[name="wp_stream_ifttt_maker_key"]' ).val( maker_key );
-			}
-		}
-
-		alert_type_settings.show();
+		var all_inputs = $alert_type_settings.find( ':input' );
+        $.each( all_inputs, function( index ) {
+            var input_name = $( this ).attr( 'name' );
+            var post_row_value = $( '#' + post_row_id + ' td.alert_type input[name="' + input_name + '"]' ).val();
+            $edit_row.find( ':input[name="' + input_name + '"]' ).val( post_row_value );
+        });
+		$alert_type_settings.show();
 	});
 });
