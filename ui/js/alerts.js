@@ -163,7 +163,7 @@ jQuery( function( $ ) {
 		$.post( window.ajaxurl, data, function( response ) {
 			if ( true === response.success ) {
 				alert_form_html = response.data.html;
-				$( 'tbody#the-list' ).prepend( '<tr id="add-new-alert" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor" style=""><td colspan="4" class="colspanchange">' + alert_form_html + '<p class="submit inline-edit-save"> <button type="button" class="button-secondary cancel alignleft">Cancel</button> <input type="hidden" id="_inline_edit" name="_inline_edit" value="3550d271fe"> <button type="button" class="button-primary save alignright">Update</button> <span class="spinner"></span><span class="error" style="display:none"></span> <br class="clear"></p></td></tr>' );
+				$( 'tbody#the-list' ).prepend( '<tr id="add-new-alert" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor" style=""><td colspan="4" class="colspanchange">' + alert_form_html + '<p class="submit inline-edit-save"> <button type="button" class="button-secondary cancel alignleft">Cancel</button> <input type="hidden" id="_inline_edit" name="_inline_edit" value="3550d271fe"> <button type="button" class="button-primary save alignright">Save</button> <span class="spinner"></span><span class="error" style="display:none"></span> <br class="clear"></p></td></tr>' );
 				var add_new_alert = $( '#add-new-alert' );
 				var current_bg_color = add_new_alert.css( 'background-color' );
 
