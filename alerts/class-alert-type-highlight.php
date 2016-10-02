@@ -95,7 +95,9 @@ class Alert_Type_Highlight extends Alert_Type {
 	public function alert( $record_id, $recordarr, $alert ) {
 		$recordarr['ID'] = $record_id;
 		$this->single_alert_id = $alert->ID;
-		Alert::update_record_triggered_alerts( (object) $recordarr, $this->slug, $this->single_alert_id );
+		if ( ! empty( $alert->alert_meta['color'] ) ) {
+			Alert::update_record_triggered_alerts( (object) $recordarr, $this->slug, array( 'highlight_color' => $alert->alert_meta['color'] ) );
+		}
 	}
 
 	/**
@@ -168,9 +170,9 @@ class Alert_Type_Highlight extends Alert_Type {
 	 * @return array New list of classes.
 	 */
 	public function post_class( $classes, $record ) {
-		$alert_item = new \stdClass();
-		$alert = new Alert( $alert_item, $this->plugin );
-		$color = $alert->get_single_alert_setting_from_record( $record, $this->slug, 'color', 'yellow' );
+		if ( ! empty( $record->meta['wp_stream_alerts_triggered']['highlight']['highlight_color'] ) ) {
+			$color = $record->meta['wp_stream_alerts_triggered']['highlight']['highlight_color'];
+		}
 
 		if ( empty( $color ) || ! is_string( $color ) ) {
 			return $classes;

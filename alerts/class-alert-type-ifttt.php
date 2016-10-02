@@ -90,7 +90,6 @@ class Alert_Type_IFTTT extends Alert_Type {
 	 */
 	public function alert( $record_id, $recordarr, $alert ) {
 		$recordarr['ID'] = $record_id;
-		Alert::update_record_triggered_alerts( (object) $recordarr, $this->slug, $alert->ID );
 		$this->notify_ifttt( $alert, $recordarr );
 	}
 

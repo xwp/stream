@@ -252,13 +252,14 @@ class Alert {
 	 *
 	 * @see Alert_Type_Highlight::alert() for an example.
 	 *
-	 * @param object     $record The Record.
-	 * @param string     $alert_slug The Alert Type slug.
-	 * @param int|string $single_alert_id The single Alert ID.
+	 * @param object $record     The Record.
+	 * @param string $alert_slug The Alert Type slug.
+	 * @param array  $alert_meta Alert meta.
+	 *
 	 * @return bool If the meta was updated successfully.
 	 */
-	public static function update_record_triggered_alerts( $record, $alert_slug, $single_alert_id ) {
-		if ( ! is_string( $alert_slug ) || ! is_numeric( $single_alert_id ) ) {
+	public static function update_record_triggered_alerts( $record, $alert_slug, $alert_meta ) {
+		if ( ! is_string( $alert_slug ) ) {
 			return false;
 		}
 
@@ -272,11 +273,9 @@ class Alert {
 		$alerts_triggered = $record->get_meta( Alerts::ALERTS_TRIGGERED_META_KEY, true );
 
 		if ( empty( $alerts_triggered ) || ! is_array( $alerts_triggered ) ) {
-			$alerts_triggered = array( $alert_slug => array( $single_alert_id ) );
+			$alerts_triggered = array( $alert_slug => $alert_meta );
 		} elseif ( ! array_key_exists( $alert_slug, $alerts_triggered ) || ! is_array( $alerts_triggered[ $alert_slug ] ) ) {
-			$alerts_triggered[ $alert_slug ] = array( $single_alert_id );
-		} elseif ( ! in_array( $single_alert_id, $alerts_triggered[ $alert_slug ], true ) ) {
-			$alerts_triggered[ $alert_slug ][] = $single_alert_id;
+			$alerts_triggered[ $alert_slug ] = $alert_meta;
 		}
 		return $record->update_meta( Alerts::ALERTS_TRIGGERED_META_KEY, $alerts_triggered );
 	}
