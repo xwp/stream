@@ -189,17 +189,15 @@ class Alert {
 
 		$output = array();
 		foreach ( array( 'action', 'author', 'context' ) as $trigger_type ) {
-			$output[ $trigger_type ] = $this->plugin->alerts->alert_triggers[ $trigger_type ]->get_display_value( 'post_title', $this );
+			$output[ $trigger_type ] = $this->plugin->alerts->alert_triggers[ $trigger_type ]->get_display_value( 'list_table', $this );
 		}
-
-		$format = __( '%1$s when %2$s %3$s an item in %4$s.', 'stream' );
-		return sprintf(
-			$format,
-			ucfirst( $alert_type ),
-			ucfirst( $output['author'] ),
-			$output['action'],
-			ucfirst( $output['context'] )
-		);
+		$title = '';
+		foreach ( $this->plugin->alerts->alert_triggers as $trigger_type => $trigger_obj ) {
+			$value = $trigger_obj->get_display_value( 'list_table', $this );
+			$title .= $value . ' > ';
+		}
+		$title = rtrim( $title, ' > ' );
+		return $title;
 	}
 
 	/**

@@ -98,21 +98,6 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertEquals( 1, $action->get_call_count() );
 	}
 
-	function test_register_scripts() {
-		$this->plugin->admin->admin_enqueue_scripts( '' ); // Register script details.
-
-		$alerts = new Alerts( $this->plugin );
-
-		$alerts->register_scripts( 'post.php' );
-
-		$this->assertFalse( wp_script_is( 'wp-stream-alerts', 'enqueued' ) );
-
-		global $current_screen;
-		$current_screen->id = 'edit-wp_stream_alerts';
-		$alerts->register_scripts( 'post.php' );
-		$this->assertTrue( wp_script_is( 'wp-stream-alerts', 'enqueued' ) );
-	}
-
 	function test_register_post_type() {
 		global $wp_post_types, $wp_post_statuses;
 		if ( isset( $wp_post_types['wp_stream_alerts'] ) ) {

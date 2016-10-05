@@ -178,7 +178,9 @@ class Alert_Trigger_Context extends Alert_Trigger {
 			if ( ! empty( $term_labels[ $connector ]['children'][ $context ] ) ) {
 				$context = $term_labels[ $connector ]['children'][ $context ];
 			} else {
-				$context = $term_labels[ $connector ]['label'];
+				if ( ! empty( $term_labels[ $connector ]['label'] ) ) {
+					$context = $term_labels[ $connector ]['label'];
+				}
 			}
 		}
 		return ucfirst( $context );

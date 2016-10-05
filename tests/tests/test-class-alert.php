@@ -80,16 +80,16 @@ class Test_Alert extends WP_StreamTestCase {
 		$data		 = $this->dummy_alert_data();
 		$alert		= new Alert( $data, $this->plugin );
 
-		$this->assertEquals( 'Highlight Record when Administrator activated an item in Plugins.', $alert->get_title() );
+		$this->assertEquals( 'Administrator > Plugins > Activated', $alert->get_title() );
 
 		$alert->alert_meta['trigger_action'] = 'updated';
-		$this->assertEquals( 'Highlight Record when Administrator updated an item in Plugins.', $alert->get_title() );
+		$this->assertEquals( 'Administrator > Plugins > Updated', $alert->get_title() );
 
 		$alert->alert_meta['trigger_context'] = 'posts';
-		$this->assertEquals( 'Highlight Record when Administrator updated an item in Posts.', $alert->get_title() );
+		$this->assertEquals( 'Administrator > Posts > Updated', $alert->get_title() );
 
 		$alert->alert_meta['trigger_author'] = '';
-		$this->assertEquals( 'Highlight Record when Any User updated an item in Posts.', $alert->get_title() );
+		$this->assertEquals( 'Any User > Posts > Updated', $alert->get_title() );
 	}
 
 	function test_get_alert_type_obj() {
