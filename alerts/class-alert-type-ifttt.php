@@ -118,7 +118,14 @@ class Alert_Type_IFTTT extends Alert_Type {
 			'title'   => esc_attr( __( 'Maker Key', 'stream' ) ),
 			'value'   => $options['maker_key'],
 		) );
-		echo '</span></label>';
+		echo '</span>';
+		printf(
+			'<span class="input-text-wrap"><a href="%1$s" target="_blank">%2$s %3$s</a></span>',
+			esc_url( 'https://ifttt.com/maker' ),
+			esc_html__( 'Open IFTTT Maker Channel', 'stream' ),
+			'<span class="dashicons dashicons-external"></span>'
+		);
+		echo '</label>';
 
 		echo '<label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
@@ -127,7 +134,14 @@ class Alert_Type_IFTTT extends Alert_Type {
 			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
 			'value'   => $options['event_name'],
 		) );
-		echo '</span></label>';
+		echo '</span>';
+		printf(
+			'<span class="input-text-wrap"><a href="%1$s" target="_blank">%2$s %3$s</a></span>',
+			esc_url( 'https://ifttt.com/myrecipes/personal' ),
+			esc_html__( 'Open IFTTT Recipes', 'stream' ),
+			'<span class="dashicons dashicons-external"></span>'
+		);
+		echo '</label>';
 	}
 
 	/**
