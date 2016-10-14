@@ -694,9 +694,22 @@ class Alerts {
 		$alert_status   = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
 
 		// Insert the post into the database
+		$item = (object) array(
+			'alert_type' => $alert_type,
+			'alert_meta' => array(
+				'trigger_author'    => $trigger_author,
+				'trigger_connector' => $trigger_connector,
+				'trigger_action'    => $trigger_action,
+				'trigger_context'   => $trigger_context,
+			),
+			'alert_status' => $alert_status,
+		);
+		$alert = new Alert( $item, $this->plugin );
+		$title = $alert->get_title();
 		$post_id = wp_insert_post( array(
 			'post_status' => $alert_status,
 			'post_type'   => 'wp_stream_alerts',
+			'post_title'  => $title,
 		) );
 		if ( empty( $post_id ) ) {
 			wp_send_json_error();
