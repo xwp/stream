@@ -22,7 +22,7 @@
 }
 
 #wp_stream_alert_type_form {
-	max-height: 8em;
+	max-height: 12em;
 	border: 1px solid #ddd;
 	overflow-y: scroll;
 	padding: 0.2em 0.5em;
@@ -33,6 +33,13 @@
 
 #wp_stream_alert_type_form select {
 	width: 100%;
+}
+
+#wp_stream_alert_type_form .dashicons {
+	position: relative;
+	top: 7px;
+	left: -2px;
+	font-size: 1em;
 }
 
 .edit-php.post-type-wp_stream_alerts .misc-pub-section.misc-pub-post-status,
