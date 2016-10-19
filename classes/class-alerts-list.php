@@ -194,6 +194,9 @@ class Alerts_List {
 				if ( ! empty( $post_status_object ) ) {
 					echo esc_html( $post_status_object->label );
 				}
+				?>
+				<input type="hidden" name="wp_stream_alert_status" value="<?php echo esc_attr( $post_status_object->name ); ?>" />
+				<?php
 				break;
 		}
 	}

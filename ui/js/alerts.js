@@ -138,7 +138,6 @@ jQuery( function( $ ) {
 					var value = actions[key];
 					var option = $( '<option/>', {value: key, text: value} );
 					trigger_action.append( option );
-					trigger_action.select2( 'data', {id: key, text: value} );
 				}
 			}
 			trigger_action.prop( 'disabled', false );
@@ -240,8 +239,8 @@ jQuery( function( $ ) {
 			var alert_trigger_connector = $post_row.find( 'input[name="wp_stream_trigger_connector"]' ).val();
 			var alert_trigger_context = $post_row.find( 'input[name="wp_stream_trigger_context"]' ).val();
 			var alert_trigger_connector_context = alert_trigger_connector + '-' + alert_trigger_context;
-
 			var alert_trigger_action = $post_row.find( 'input[name="wp_stream_trigger_action"]' ).val();
+			var alert_status = $post_row.find( 'input[name="wp_stream_alert_status"]' ).val();
 
 			// populate the data
 			$edit_row.find( 'input[name="wp_stream_trigger_connector"]' ).attr( 'value', alert_trigger_connector );
@@ -251,7 +250,7 @@ jQuery( function( $ ) {
 				$edit_row.find( 'input[name="wp_stream_trigger_action"]' ).attr( 'value', alert_trigger_action );
 				$edit_row.find( 'select[name="wp_stream_trigger_action"] option[value="' + alert_trigger_action + '"]' ).attr( 'selected', 'selected' ).trigger( 'change' );
 			});
-
+			$edit_row.find( 'select[name="wp_stream_alert_status"] option[value="' + alert_status + '"]' ).attr( 'selected', 'selected' );
 			setupSelectTwo( '#edit-' + post_id );
 
 			// Alert type handling
