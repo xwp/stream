@@ -260,10 +260,13 @@ jQuery( function( $ ) {
 		}
 	};
 	if ( window.location.hash ) {
-		var scroll_to_position = $( window.location.hash ).offset().top - $( '#wpadminbar' ).height();
-		$( 'html' ).animate({
-			scrollTop: scroll_to_position
-		}, 500);
-		$( window.location.hash ).find( '.row-actions a.editinline' ).trigger('click');
+		var $target_post_row = $( window.location.hash );
+		if ( $target_post_row.length ) {
+			var scroll_to_position = $target_post_row.offset().top - $('#wpadminbar').height();
+			$('html, body').animate({
+				scrollTop: scroll_to_position
+			}, 1000);
+			$target_post_row.find('.row-actions a.editinline').trigger('click');
+		}
 	}
 });
