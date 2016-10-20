@@ -116,7 +116,7 @@ class Alert_Type_Highlight extends Alert_Type {
 		) );
 
 		$form = new Form_Generator;
-
+		echo '<span class="wp_stream_alert_type_description"> '. esc_html__( 'Highlight this alert on the Stream records page with a background color.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_highlight_color"><span class="title">' . esc_html__( 'Color', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'select', array( // Xss ok.

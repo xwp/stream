@@ -5,9 +5,12 @@
 	font-size: 12px;
 	display: block;
 	margin: .2em 0;
-	line-height: 2.5
+	line-height: 2.5;
 }
-
+.edit-php.post-type-wp_stream_alerts .inline-edit-col .wp_stream_alert_type_description {
+	line-height: 1.5em;
+	display: inline-block;
+}
 .edit-php.post-type-wp_stream_alerts .inline-edit-col {
 	padding: 0 0.5em !important;
 }

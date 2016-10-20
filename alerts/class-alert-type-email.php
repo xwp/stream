@@ -67,8 +67,12 @@ class Alert_Type_Email extends Alert_Type {
 		}
 
 		$message = __( 'You\'ve received a Stream Alert.', 'stream' ) . "\n\n";
-		$message .= sprintf( __( 'Action: %s', 'stream' ), $alert->alert_meta['trigger_action'] ) . "\n";
-		$message .= sprintf( __( 'Connector: %s', 'stream' ), $alert->alert_meta['trigger_connector'] ) . "\n";
+		if ( ! empty( $alert->alert_meta['trigger_action'] ) ) {
+			$message .= sprintf( __( 'Action: %s', 'stream' ), $alert->alert_meta['trigger_action'] ) . "\n";
+		}
+		if ( ! empty( $alert->alert_meta['trigger_connector'] ) ) {
+			$message .= sprintf( __( 'Connector: %s', 'stream' ), $alert->alert_meta['trigger_connector'] ) . "\n";
+		}
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
 			$message .= sprintf( __( 'Context: %s', 'stream' ), $alert->alert_meta['trigger_context'] ) . "\n";
 		}
@@ -80,13 +84,14 @@ class Alert_Type_Email extends Alert_Type {
 
 		$post_id = $recordarr['object_id'];
 		$post = get_post( $post_id );
-		$post_type = get_post_type_object( $post->post_type );
+		if ( is_object( $post ) && ! empty( $post ) ) {
+			$post_type = get_post_type_object( $post->post_type );
 
-		$message .= sprintf( __( 'The alert is in reference to the following %s:', 'stream' ), strtolower( $post_type->labels->singular_name ) ) . "\n\n";
-		$message .= sprintf( __( 'ID: %s', 'stream' ), $post->ID ) . "\n";
-		$message .= sprintf( __( 'Title: %s', 'stream' ), $post->post_title ) . "\n";
-		$message .= sprintf( __( 'Last Updated: %s', 'stream' ), $post->post_modified ) . "\n";
-
+			$message .= sprintf( __( 'The alert is in reference to the following %s:', 'stream' ), strtolower( $post_type->labels->singular_name ) ) . "\n\n";
+			$message .= sprintf( __( 'ID: %s', 'stream' ), $post->ID ) . "\n";
+			$message .= sprintf( __( 'Title: %s', 'stream' ), $post->post_title ) . "\n";
+			$message .= sprintf( __( 'Last Updated: %s', 'stream' ), $post->post_modified ) . "\n";
+		}
 		$edit_alert_link = get_site_url() . '/wp-admin/edit.php?post_type=wp_stream_alerts#post-' . $alert->ID;
 		$message .= sprintf( __( '<a href="%s">Edit Alert</a>', 'stream' ), $edit_alert_link ) . "\n";
 
@@ -110,7 +115,7 @@ class Alert_Type_Email extends Alert_Type {
 		) );
 
 		$form = new Form_Generator;
-
+		echo '<span class="wp_stream_alert_type_description"> '. esc_html__( 'Send an email to a specific address when an alert is triggered.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_email_recipient"><span class="title">' . esc_html__( 'Recipient', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'text', array( // Xss ok.

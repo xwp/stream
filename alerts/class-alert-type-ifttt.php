@@ -111,6 +111,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 
 		$form = new Form_Generator;
 
+		echo '<span class="wp_stream_alert_type_description"> '. esc_html__( 'Trigger an IFTTT recipe for this alert.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_ifttt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'text', array( // Xss ok.
