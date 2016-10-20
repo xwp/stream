@@ -87,6 +87,9 @@ class Alert_Type_Email extends Alert_Type {
 		$message .= sprintf( __( 'Title: %s', 'stream' ), $post->post_title ) . "\n";
 		$message .= sprintf( __( 'Last Updated: %s', 'stream' ), $post->post_modified ) . "\n";
 
+		$edit_alert_link = get_site_url() . '/wp-admin/edit.php?post_type=wp_stream_alerts#post-' . $alert->ID;
+		$message .= sprintf( __( '<a href="%s">Edit Alert</a>', 'stream' ), $edit_alert_link ) . "\n";
+
 		wp_mail( $options['email_recipient'], $options['email_subject'], $message );
 	}
 
