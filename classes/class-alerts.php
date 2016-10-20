@@ -82,6 +82,9 @@ class Alerts {
 
 		$this->load_alert_types();
 		$this->load_alert_triggers();
+
+		add_filter( 'wp_stream_action_links_posts', array( $this, 'change_alert_action_links' ), 11, 2 );
+
 	}
 
 	/**
@@ -746,5 +749,29 @@ class Alerts {
 		<?php
 		$html = ob_get_clean();
 		wp_send_json_success( array( 'success' => true, 'html' => $html ) );
+	}
+	/**
+	 * Add action links to Stream drop row in admin list screen
+	 *
+	 * @filter wp_stream_action_links_{connector}
+	 *
+	 * @param array $links   Previous links registered
+	 * @param Record $record Stream record
+	 *
+	 * @return array Action links
+	 */
+	function change_alert_action_links( $links, $record ) {
+		$post = get_post( $record->object_id );
+
+		if ( $post && self::POST_TYPE === $post->post_type && $post->post_status === $record->get_meta( 'new_status', true ) ) {
+			if ( 'trash' !== $post->post_status ) {
+				$connector_posts = new \WP_Stream\Connector_Posts;
+				$post_type_name = $connector_posts->get_post_type_name( get_post_type( $post->ID ) );
+
+				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_site_url() . '/wp-admin/edit.php?post_type=wp_stream_alerts#post-' . $post->ID;
+				unset( $links[ esc_html__( 'View', 'stream' ) ] );
+			}
+		}
+		return $links;
 	}
 }
