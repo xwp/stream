@@ -259,4 +259,11 @@ jQuery( function( $ ) {
 			$edit_row.find( 'select[name="wp_stream_alert_type"] option[value="' + alert_type + '"]' ).attr( 'selected', 'selected' ).trigger( 'change' );
 		}
 	};
+	if ( window.location.hash ) {
+		var scroll_to_position = $( window.location.hash ).offset().top - $( '#wpadminbar' ).height();
+		$( 'html' ).animate({
+			scrollTop: scroll_to_position
+		}, 500);
+		$( window.location.hash ).find( '.row-actions a.editinline' ).trigger('click');
+	}
 });
