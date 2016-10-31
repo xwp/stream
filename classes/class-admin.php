@@ -117,8 +117,9 @@ class Admin {
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
+	 * @param DB_Driver $driver The current Driver class.
 	 */
-	public function __construct( $plugin ) {
+	public function __construct( $plugin, $driver ) {
 		$this->plugin = $plugin;
 
 		add_action( 'init', array( $this, 'init' ) );
@@ -162,8 +163,7 @@ class Admin {
 		add_action( 'wp_ajax_wp_stream_reset', array( $this, 'wp_ajax_reset' ) );
 
 		// Uninstall Streams and Deactivate plugin.
-		$uninstall = new Uninstall( $this->plugin );
-		add_action( 'wp_ajax_wp_stream_uninstall', array( $uninstall, 'uninstall' ) );
+		$uninstall = $driver->purge_storage( $this->plugin );
 
 		// Auto purge setup.
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
