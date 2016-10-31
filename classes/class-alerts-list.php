@@ -260,7 +260,7 @@ class Alerts_List {
 		$post_status = wp_stream_filter_input( INPUT_GET, 'post_status' );
 		ob_start();
 		if ( 'trash' !== $post_status ) {
-			$bare_url  = '/wp-admin/post.php?post=' . $post_id . '&amp;action=trash';
+			$bare_url  = admin_url( 'post.php?post=' . $post_id . '&action=trash' );
 			$nonce_url = wp_nonce_url( $bare_url, 'trash-post_' . $post_id );
 			?>
 			<div class="row-actions">

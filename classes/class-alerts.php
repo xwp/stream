@@ -768,7 +768,7 @@ class Alerts {
 				$connector_posts = new \WP_Stream\Connector_Posts;
 				$post_type_name = $connector_posts->get_post_type_name( get_post_type( $post->ID ) );
 
-				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_site_url() . '/wp-admin/edit.php?post_type=wp_stream_alerts#post-' . $post->ID;
+				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = admin_url( 'edit.php?post_type=wp_stream_alerts#post-' . $post->ID );
 				unset( $links[ esc_html__( 'View', 'stream' ) ] );
 			}
 		}
