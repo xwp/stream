@@ -11,8 +11,6 @@ Planes have a black box, WordPress has Stream. When something goes wrong, you ne
 **Stable tag:** 3.1  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
-[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/xwp/stream) 
-
 ## Description ##
 
 With Stream, you're never left in the dark about WordPress Admin activity.
