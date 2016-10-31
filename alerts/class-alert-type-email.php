@@ -50,7 +50,7 @@ class Alert_Type_Email extends Alert_Type {
 	 *
 	 * @param int   $record_id Record that triggered notification.
 	 * @param array $recordarr Record details.
-	 * @param array $alert Alert options.
+	 * @param Alert $alert Alert options.
 	 * @return void
 	 */
 	public function alert( $record_id, $recordarr, $alert ) {
@@ -66,34 +66,39 @@ class Alert_Type_Email extends Alert_Type {
 			return;
 		}
 
-		$message = __( 'You\'ve received a Stream Alert.', 'stream' ) . "\n\n";
-		if ( ! empty( $alert->alert_meta['trigger_action'] ) ) {
-			$message .= sprintf( __( 'Action: %s', 'stream' ), $alert->alert_meta['trigger_action'] ) . "\n";
-		}
-		if ( ! empty( $alert->alert_meta['trigger_connector'] ) ) {
-			$message .= sprintf( __( 'Connector: %s', 'stream' ), $alert->alert_meta['trigger_connector'] ) . "\n";
-		}
-		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
-			$message .= sprintf( __( 'Context: %s', 'stream' ), $alert->alert_meta['trigger_context'] ) . "\n";
-		}
+		$message   = sprintf( __( 'A Stream Alert was triggered on %s.', 'stream' ), get_bloginfo( 'name' ) ) . "\n\n";
 
 		$user_id = $recordarr['user_id'];
 		$user = get_user_by( 'id', $user_id );
-		$message .= sprintf( __( 'Triggered By: %s', 'stream' ), $user->user_login ) . "\n";
-		$message .= "\n";
+		$message .= sprintf( __( "User:\t%s", 'stream' ), $user->user_login ) . "\n";
 
-		$post_id = $recordarr['object_id'];
-		$post = get_post( $post_id );
+		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
+			$context  = $this->plugin->alerts->alert_triggers['context']->get_display_value( 'list_table', $alert );
+			$message .= sprintf( __( "Context:\t%s", 'stream' ),  $context ) . "\n";
+		}
+		if ( ! empty( $alert->alert_meta['trigger_action'] ) ) {
+			$action   = $this->plugin->alerts->alert_triggers['action']->get_display_value( 'list_table', $alert );
+			$message .= sprintf( __( "Action:\t%s", 'stream' ),  $action ) . "\n";
+		}
+
+		$post = null;
+		if ( isset( $recordarr['object_id'] ) ) {
+			$post_id = $recordarr['object_id'];
+			$post = get_post( $post_id );
+		}
 		if ( is_object( $post ) && ! empty( $post ) ) {
 			$post_type = get_post_type_object( $post->post_type );
 
-			$message .= sprintf( __( 'The alert is in reference to the following %s:', 'stream' ), strtolower( $post_type->labels->singular_name ) ) . "\n\n";
-			$message .= sprintf( __( 'ID: %s', 'stream' ), $post->ID ) . "\n";
-			$message .= sprintf( __( 'Title: %s', 'stream' ), $post->post_title ) . "\n";
-			$message .= sprintf( __( 'Last Updated: %s', 'stream' ), $post->post_modified ) . "\n";
+			$message .= $post_type->labels->singular_name . ":\t" . $post->post_title . "\n\n";
+
+			$edit_post_link = get_edit_post_link( $post->ID, 'raw' );
+			$message .= sprintf( __( 'Edit %s', 'stream' ), $post_type->labels->singular_name ) . "\n<$edit_post_link>\n";
 		}
-		$edit_alert_link = get_site_url() . '/wp-admin/edit.php?post_type=wp_stream_alerts#post-' . $alert->ID;
-		$message .= sprintf( __( '<a href="%s">Edit Alert</a>', 'stream' ), $edit_alert_link ) . "\n";
+
+		$message .= "\n";
+
+		$edit_alert_link = admin_url( 'edit.php?post_type=wp_stream_alerts#post-' . $alert->ID );
+		$message .= __( 'Edit Alert', 'stream' ) . "\n<$edit_alert_link>";
 
 		wp_mail( $options['email_recipient'], $options['email_subject'], $message );
 	}
