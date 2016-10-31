@@ -673,7 +673,7 @@ class Connector_BuddyPress extends Connector {
 			'mod'   => esc_html_x( 'Moderator', 'buddypress', 'stream' ),
 		);
 		$message = sprintf(
-			__( 'Promoted "%s" to "%s" in "%s"', 'stream' ),
+			__( 'Promoted "%1$s" to "%2$s" in "%3$s"', 'stream' ),
 			$user->display_name,
 			$roles[ $status ],
 			$group->name
@@ -685,7 +685,7 @@ class Connector_BuddyPress extends Connector {
 		$group = \groups_get_group( array( 'group_id' => $group_id ) );
 		$user = new \WP_User( $user_id );
 		$message = sprintf(
-			__( 'Demoted "%s" to "%s" in "%s"', 'stream' ),
+			__( 'Demoted "%1$s" to "%2$s" in "%3$s"', 'stream' ),
 			$user->display_name,
 			_x( 'Member', 'buddypress', 'stream' ),
 			$group->name

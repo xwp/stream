@@ -300,6 +300,14 @@ class Admin {
 		);
 
 		/**
+		 * Fires before submenu items are added to the Stream menu
+		 * allowing plugins to add menu items before Settings
+		 *
+		 * @return void
+		 */
+		do_action( 'wp_stream_admin_menu' );
+
+		/**
 		 * Filter the Settings admin page title
 		 *
 		 * @return string
@@ -430,6 +438,11 @@ class Admin {
 	 */
 	public function is_stream_screen() {
 		if ( is_admin() && false !== strpos( wp_stream_filter_input( INPUT_GET, 'page' ), $this->records_page_slug ) ) {
+			return true;
+		}
+
+		$screen = get_current_screen();
+		if ( is_admin() && 'post' === $screen->base && Alerts::POST_TYPE === $screen->post_type ) {
 			return true;
 		}
 
@@ -615,7 +628,7 @@ class Admin {
 			$options = (array) get_option( 'wp_stream', array() );
 		}
 
-		if ( isset( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
+		if ( ! empty( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
 			return;
 		}
 

@@ -8,7 +8,7 @@ class Connector_WordPress_SEO extends Connector {
 	 *
 	 * @var string
 	 */
-	public $name = 'wordpress-seo';
+	public $name = 'wordpressseo';
 
 	/**
 	 * Holds tracked plugin minimum version required
@@ -89,6 +89,7 @@ class Connector_WordPress_SEO extends Connector {
 			'wpseo_xml'                     => esc_html_x( 'XML Sitemaps', 'wordpress-seo', 'stream' ),
 			'wpseo_permalinks'              => esc_html_x( 'Permalinks', 'wordpress-seo', 'stream' ),
 			'wpseo_internal-links'          => esc_html_x( 'Internal Links', 'wordpress-seo', 'stream' ),
+			'wpseo_advanced'                => esc_html_x( 'Advanced', 'wordpress-seo', 'stream' ),
 			'wpseo_rss'                     => esc_html_x( 'RSS', 'wordpress-seo', 'stream' ),
 			'wpseo_import'                  => esc_html_x( 'Import & Export', 'wordpress-seo', 'stream' ),
 			'wpseo_bulk-title-editor'       => esc_html_x( 'Bulk Title Editor', 'wordpress-seo', 'stream' ),
@@ -176,6 +177,9 @@ class Connector_WordPress_SEO extends Connector {
 	}
 
 	public function register() {
+		if ( is_network_admin() && ! is_plugin_active_for_network( 'wordpress-seo/wordpress-seo-main.php' ) ) {
+			return;
+		}
 		parent::register();
 
 		foreach ( \WPSEO_Options::$options as $class ) {
@@ -395,7 +399,7 @@ class Connector_WordPress_SEO extends Connector {
 			'pinterestverify'                 => esc_html_x( 'Pinterest', 'wordpress-seo', 'stream' ), # type = textinput
 			'yandexverify'                    => esc_html_x( 'Yandex Webmaster Tools', 'wordpress-seo', 'stream' ), # type = textinput
 
-			// wp-content/plugins/wordpress-seo/admin/pages/internal-links.php:
+			// wp-content/plugins/wordpress-seo/admin/pages/advanced.php:
 			'breadcrumbs-enable'              => esc_html_x( 'Enable Breadcrumbs', 'wordpress-seo', 'stream' ), # type = checkbox
 			'breadcrumbs-sep'                 => esc_html_x( 'Separator between breadcrumbs', 'wordpress-seo', 'stream' ), # type = textinput
 			'breadcrumbs-home'                => esc_html_x( 'Anchor text for the Homepage', 'wordpress-seo', 'stream' ), # type = textinput
@@ -405,6 +409,7 @@ class Connector_WordPress_SEO extends Connector {
 			'breadcrumbs-404crumb'            => esc_html_x( 'Breadcrumb for 404 Page', 'wordpress-seo', 'stream' ), # type = textinput
 			'breadcrumbs-blog-remove'         => esc_html_x( 'Remove Blog page from Breadcrumbs', 'wordpress-seo', 'stream' ), # type = checkbox
 			'breadcrumbs-boldlast'            => esc_html_x( 'Bold the last page in the breadcrumb', 'wordpress-seo', 'stream' ), # type = checkbox
+			'post_types-post-maintax'         => esc_html_x( 'Taxonomy to show in breadcrumbs for post types', 'wordpress-seo', 'stream' ), # type = select
 
 			// wp-content/plugins/wordpress-seo/admin/pages/metas.php:
 			'forcerewritetitle'               => esc_html_x( 'Force rewrite titles', 'wordpress-seo', 'stream' ), # type = checkbox
@@ -439,21 +444,41 @@ class Connector_WordPress_SEO extends Connector {
 			// wp-content/plugins/wordpress-seo/admin/pages/social.php:
 			'opengraph'                       => esc_html_x( 'Add Open Graph meta data', 'wordpress-seo', 'stream' ), # type = checkbox
 			'facebook_site'                   => esc_html_x( 'Facebook Page URL', 'wordpress-seo', 'stream' ), # type = textinput
+			'instagram_url'                   => esc_html_x( 'Instagram URL', 'wordpress-seo', 'stream' ), # type = textinput
+			'linkedin_url'                    => esc_html_x( 'LinkedIn URL', 'wordpress-seo', 'stream' ), # type = textinput
+			'myspace_url'                     => esc_html_x( 'MySpace URL', 'wordpress-seo', 'stream' ), # type = textinput
+			'pinterest_url'                   => esc_html_x( 'Pinterest URL', 'wordpress-seo', 'stream' ), # type = textinput
+			'youtube_url'                     => esc_html_x( 'YouTube URL', 'wordpress-seo', 'stream' ), # type = textinput
+			'google_plus_url'                 => esc_html_x( 'Google+ URL', 'wordpress-seo', 'stream' ), # type = textinput
 			'og_frontpage_image'              => esc_html_x( 'Image URL', 'wordpress-seo', 'stream' ), # type = textinput
 			'og_frontpage_desc'               => esc_html_x( 'Description', 'wordpress-seo', 'stream' ), # type = textinput
+			'og_frontpage_title'              => esc_html_x( 'Title', 'wordpress-seo', 'stream' ), # type = textinput
 			'og_default_image'                => esc_html_x( 'Image URL', 'wordpress-seo', 'stream' ), # type = textinput
 			'twitter'                         => esc_html_x( 'Add Twitter card meta data', 'wordpress-seo', 'stream' ), # type = checkbox
 			'twitter_site'                    => esc_html_x( 'Site Twitter Username', 'wordpress-seo', 'stream' ), # type = textinput
 			'twitter_card_type'               => esc_html_x( 'The default card type to use', 'wordpress-seo', 'stream' ), # type = select
 			'googleplus'                      => esc_html_x( 'Add Google+ specific post meta data (excluding author metadata)', 'wordpress-seo', 'stream' ), # type = checkbox
 			'plus-publisher'                  => esc_html_x( 'Google Publisher Page', 'wordpress-seo', 'stream' ), # type = textinput
+			'fbadminapp'                      => esc_html_x( 'Facebook App ID', 'wordpress-seo', 'stream' ), # type = textinput
 
 			// wp-content/plugins/wordpress-seo/admin/pages/xml-sitemaps.php:
-			'enablexmlsitemap'                => esc_html_x( 'Check this box to enable XML sitemap functionality.', 'wordpress-seo', 'stream' ), # type = checkbox
-			'disable_author_sitemap'          => esc_html_x( 'Disable author/user sitemap', 'wordpress-seo', 'stream' ), # type = checkbox
-			'xml_ping_yahoo'                  => esc_html_x( 'Ping Yahoo!', 'wordpress-seo', 'stream' ), # type = checkbox
-			'xml_ping_ask'                    => esc_html_x( 'Ping Ask.com', 'wordpress-seo', 'stream' ), # type = checkbox
-			'entries-per-page'                => esc_html_x( 'Max entries per sitemap page', 'wordpress-seo', 'stream' ), # type = textinput
+			'enablexmlsitemap'                       => esc_html_x( 'Check this box to enable XML sitemap functionality.', 'wordpress-seo', 'stream' ), # type = checkbox
+			'disable_author_sitemap'                 => esc_html_x( 'Disable author/user sitemap', 'wordpress-seo', 'stream' ), # type = checkbox
+			'disable_author_noposts'                 => esc_html_x( 'Users with zero posts', 'wordpress-seo', 'stream' ), # type = checkbox
+			'user_role-administrator-not_in_sitemap' => esc_html_x( 'Filter specific user roles - Administrator', 'wordpress-seo', 'stream' ), # type = checkbox
+			'user_role-editor-not_in_sitemap'        => esc_html_x( 'Filter specific user roles - Editor', 'wordpress-seo', 'stream' ), # type = checkbox
+			'user_role-author-not_in_sitemap'        => esc_html_x( 'Filter specific user roles - Author', 'wordpress-seo', 'stream' ), # type = checkbox
+			'user_role-contributor-not_in_sitemap'   => esc_html_x( 'Filter specific user roles - Contributor', 'wordpress-seo', 'stream' ), # type = checkbox
+			'user_role-subscriber-not_in_sitemap'    => esc_html_x( 'Filter specific user roles - Subscriber', 'wordpress-seo', 'stream' ), # type = checkbox
+			'xml_ping_yahoo'                         => esc_html_x( 'Ping Yahoo!', 'wordpress-seo', 'stream' ), # type = checkbox
+			'xml_ping_ask'                           => esc_html_x( 'Ping Ask.com', 'wordpress-seo', 'stream' ), # type = checkbox
+			'entries-per-page'                       => esc_html_x( 'Max entries per sitemap page', 'wordpress-seo', 'stream' ), # type = textinput
+			'excluded-posts'                         => esc_html_x( 'Posts to exclude', 'wordpress-seo', 'stream' ), # type = textinput
+			'post_types-post-not_in_sitemap'         => _x( 'Post Types Posts (<code>post</code>)', 'wordpress-seo', 'stream' ), # type = checkbox
+			'post_types-page-not_in_sitemap'         => _x( 'Post Types Pages (<code>page</code>)', 'wordpress-seo', 'stream' ), # type = checkbox
+			'post_types-attachment-not_in_sitemap'   => _x( 'Post Types Media (<code>attachment</code>)', 'wordpress-seo', 'stream' ), # type = checkbox
+			'taxonomies-category-not_in_sitemap'     => _x( 'Taxonomies Categories (<code>category</code>)', 'wordpress-seo', 'stream' ), # type = checkbox
+			'taxonomies-post_tag-not_in_sitemap'     => _x( 'Taxonomies Tags (<code>post_tag</code>)', 'wordpress-seo', 'stream' ), # type = checkbox
 
 			// Added manually
 			'rssbefore'                       => esc_html_x( 'Content to put before each post in the feed', 'wordpress-seo', 'stream' ),
