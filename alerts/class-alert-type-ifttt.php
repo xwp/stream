@@ -113,7 +113,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 
 		echo '<span class="wp_stream_alert_type_description">';
 		echo esc_html__( 'Trigger an IFTTT Maker recipe.', 'stream' );
-		echo sprintf( ' (<a href="%1$s" target="_blank">%2$s</span></a>)', 'https://youtu.be/XFWtkHXv9h0', __( 'Tutorial', 'stream' ) );
+		echo wp_kses_post( sprintf( ' (<a href="%1$s" target="_blank">%2$s</span></a>)', 'https://youtu.be/XFWtkHXv9h0', __( 'Tutorial', 'stream' ) ) );
 		echo '</span>';
 		echo '<label for="wp_stream_ifttt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
