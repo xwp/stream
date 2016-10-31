@@ -4,11 +4,11 @@
 ![Banner](assets/banner-1544x500.png)
 Planes have a black box, WordPress has Stream. When something goes wrong, you need to know how it happened.
 
-**Contributors:** [fjarrett](https://profiles.wordpress.org/fjarrett), [lukecarbis](https://profiles.wordpress.org/lukecarbis), [chacha102](https://profiles.wordpress.org/chacha102), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
+**Contributors:** [fjarrett](https://profiles.wordpress.org/fjarrett), [lukecarbis](https://profiles.wordpress.org/lukecarbis), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
 **Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [activity log](https://wordpress.org/plugins/tags/activity log), [activity logs](https://wordpress.org/plugins/tags/activity logs), [admin actions](https://wordpress.org/plugins/tags/admin actions), [analytics](https://wordpress.org/plugins/tags/analytics), [audit](https://wordpress.org/plugins/tags/audit), [audit log](https://wordpress.org/plugins/tags/audit log), [audit logs](https://wordpress.org/plugins/tags/audit logs), [blackbox](https://wordpress.org/plugins/tags/blackbox), [black box](https://wordpress.org/plugins/tags/black box), [change](https://wordpress.org/plugins/tags/change), [changes](https://wordpress.org/plugins/tags/changes), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [logs](https://wordpress.org/plugins/tags/logs), [stream](https://wordpress.org/plugins/tags/stream), [tracking](https://wordpress.org/plugins/tags/tracking), [troubleshooting](https://wordpress.org/plugins/tags/troubleshooting), [wp stream](https://wordpress.org/plugins/tags/wp stream)  
 **Requires at least:** 3.9  
 **Tested up to:** 4.6  
-**Stable tag:** 3.0.7  
+**Stable tag:** 3.1  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
 [![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/xwp/stream) 
@@ -90,6 +90,17 @@ Thank you for wanting to make Stream better for everyone!
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
 
 ## Changelog ##
+
+### 3.1 - October 31, 2016 ###
+* New: Stream Alerts is here! Get notified when something happens in your WP-Admin, so that you don't miss a thing. ([#844](https://github.com/xwp/stream/pull/844))
+* Tweak: Better support for the latest version of Yoast SEO ([#838](https://github.com/xwp/stream/pull/838))
+* Tweak: Better support for the latest version of WooCommerce ([#851](https://github.com/xwp/stream/pull/851)[#864](https://github.com/xwp/stream/pull/864))
+* Tweak: Better taxonomy labelling ([#859](https://github.com/xwp/stream/pull/859))
+* Fix: Fatal error caused by conflict with Yoast SEO ([#879](https://github.com/xwp/stream/pull/879))
+* Fix: Activating Stream through WP CLI now works ([#880](https://github.com/xwp/stream/pull/880))
+* Fix: Custom roles track properly ([#836](https://github.com/xwp/stream/pull/836))
+
+Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/lukecarbis), [@johnbillion](https://github.com/johnbillion), [@rheinardkorf](https://github.com/rheinardkorf), [@frozzare](https://github.com/frozzare), [@johnregan3](https://github.com/johnregan3), [@jacobschweitzer](https://github.com/jacobschweitzer), [@wrongware](https://github.com/wrongware)
 
 ### 3.0.7 - June 14, 2016 ###
 * Tweak: Use get_sites instead of wp_get_sites when available ([#856](https://github.com/xwp/stream/pull/856))

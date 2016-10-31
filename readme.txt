@@ -1,9 +1,9 @@
 === Stream ===
-Contributors:      fjarrett, lukecarbis, chacha102, stream, xwp
+Contributors:      fjarrett, lukecarbis, stream, xwp
 Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, blackbox, black box, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
 Requires at least: 3.9
 Tested up to:      4.6
-Stable tag:        3.0.7
+Stable tag:        3.1
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -78,6 +78,18 @@ Thank you for wanting to make Stream better for everyone!
 3. Create rules for excluding certain kinds of records from appearing in Stream.
 
 == Changelog ==
+
+= 3.1 - October 31, 2016 =
+
+* New: Stream Alerts is here! Get notified when something happens in your WP-Admin, so that you don't miss a thing. ([#844](https://github.com/xwp/stream/pull/844))
+* Tweak: Better support for the latest version of Yoast SEO ([#838](https://github.com/xwp/stream/pull/838))
+* Tweak: Better support for the latest version of WooCommerce ([#851](https://github.com/xwp/stream/pull/851)[#864](https://github.com/xwp/stream/pull/864))
+* Tweak: Better taxonomy labelling ([#859](https://github.com/xwp/stream/pull/859))
+* Fix: Fatal error caused by conflict with Yoast SEO ([#879](https://github.com/xwp/stream/pull/879))
+* Fix: Activating Stream through WP CLI now works ([#880](https://github.com/xwp/stream/pull/880))
+* Fix: Custom roles track properly ([#836](https://github.com/xwp/stream/pull/836))
+
+Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/lukecarbis), [@johnbillion](https://github.com/johnbillion), [@rheinardkorf](https://github.com/rheinardkorf), [@frozzare](https://github.com/frozzare), [@johnregan3](https://github.com/johnregan3), [@jacobschweitzer](https://github.com/jacobschweitzer), [@wrongware](https://github.com/wrongware)
 
 = 3.0.7 - June 14, 2016 =
 
