@@ -3,7 +3,7 @@ Contributors:      fjarrett, lukecarbis, stream, xwp
 Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, blackbox, black box, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
 Requires at least: 3.9
 Tested up to:      4.6
-Stable tag:        3.1
+Stable tag:        3.1.1
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
