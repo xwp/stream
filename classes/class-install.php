@@ -239,7 +239,7 @@ class Install {
 			$success_op = update_site_option( $this->option_key, $this->plugin->get_version() );
 		}
 
-		if ( ! empty( $this->success_db ) && ! empty( $success_op ) ) {
+		if ( ! empty( $this->success_db ) ) {
 			return;
 		}
 
