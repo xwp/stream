@@ -143,7 +143,7 @@ class Settings {
 
 			$args['tooltip'] = esc_attr(
 				sprintf(
-					__( "ID: %d\nUser: %s\nEmail: %s\nRole: %s", 'stream' ),
+					__( 'ID: %1$d\nUser: %2$s\nEmail: %3$s\nRole: %4$s', 'stream' ),
 					$author->id,
 					$author->user_login,
 					$author->user_email,
@@ -800,7 +800,7 @@ class Settings {
 						$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
 
 						if ( ! empty( $count ) ) {
-							$args['user_count'] = sprintf( _n( '1 user', '%s users', absint( $count ), 'stream' ), absint( $count ) );
+							$args['user_count'] = sprintf( _n( '%d user', '%d users', absint( $count ), 'stream' ), absint( $count ) );
 						}
 
 						if ( $role_id === $author_or_role ) {

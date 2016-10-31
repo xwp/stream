@@ -8,7 +8,7 @@ class Connector_WordPress_SEO extends Connector {
 	 *
 	 * @var string
 	 */
-	public $name = 'wordpress-seo';
+	public $name = 'wordpressseo';
 
 	/**
 	 * Holds tracked plugin minimum version required

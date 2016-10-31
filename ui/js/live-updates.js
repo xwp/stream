@@ -46,7 +46,8 @@ jQuery( function( $ ) {
 				$new_items     = $( data['wp-stream-heartbeat'] );
 
 			// Remove all default classes and add class to highlight new rows
-			$new_items.removeClass().addClass( 'new-row' );
+			$new_items.addClass( 'new-row' );
+
 
 			// Check if first tr has the alternate class
 			var has_class = ( $current_items.first().hasClass( 'alternate' ) );

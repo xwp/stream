@@ -116,7 +116,7 @@ class Form_Generator {
 
 				$multiple = ( $args['multiple'] ) ? 'multiple ' : '';
 				$output = sprintf(
-					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s%4$s/>',
+					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s%4$s>',
 					esc_attr( $args['name'] ),
 					esc_attr( $args['classes'] ),
 					$this->prepare_data_attributes_string( $args['data'] ),
@@ -133,36 +133,38 @@ class Form_Generator {
 						'text'     => '',
 						'children' => array(),
 					) );
+					if ( empty( $parent['id'] ) ) {
+						continue;
+					}
 					if ( is_array( $args['value'] ) ) {
-						$selected = selected( in_array( $parent['value'], $args['value'], true ), true, false );
+						$selected = selected( in_array( $parent['id'], $args['value'], true ), true, false );
 					} else {
-						$selected = selected( $args['value'], $parent['value'], false );
+						$selected = selected( $args['value'], $parent['id'], false );
 					}
 					$output .= sprintf(
 						'<option class="parent" value="%1$s" %3$s>%2$s</option>',
-						$parent['value'],
+						$parent['id'],
 						$parent['text'],
 						$selected
 					);
-					$values[] = $parent['value'];
+					$values[] = $parent['id'];
 					if ( ! empty( $parent['children'] ) ) {
 						foreach ( $parent['children'] as $child ) {
 							$output .= sprintf(
 								'<option class="child" value="%1$s" %3$s>%2$s</option>',
-								$child['value'],
+								$child['id'],
 								$child['text'],
-								selected( $args['value'], $child['value'], false )
+								selected( $args['value'], $child['id'], false )
 							);
-							$values[] = $child['value'];
+							$values[] = $child['id'];
 						}
 						$output .= '</optgroup>';
 					}
 				}
 
 				$selected_values = explode( ',', $args['value'] );
-
 				foreach ( $selected_values as $selected_value ) {
-					if ( ! empty( $selected_value ) && ! in_array( $selected_value, $values, true ) ) {
+					if ( ! empty( $selected_value ) && ! in_array( $selected_value, array_map( 'strval', $values ), true ) ) {
 						$output .= sprintf(
 							'<option value="%1$s" %2$s>%1$s</option>',
 							$selected_value,
@@ -194,7 +196,7 @@ class Form_Generator {
 	/**
 	 * Prepares string with HTML data attributes
 	 *
-	 * @param $data array List of key/value data pairs to prepare.
+	 * @param array $data List of key/value data pairs to prepare.
 	 * @return string
 	 */
 	public function prepare_data_attributes_string( $data ) {

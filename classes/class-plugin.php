@@ -22,6 +22,16 @@ class Plugin {
 	public $admin;
 
 	/**
+	 * @var Alerts
+	 */
+	public $alerts;
+
+	/**
+	 * @var Alerts_List
+	 */
+	public $alerts_list;
+
+	/**
 	 * @var Connectors
 	 */
 	public $connectors;
@@ -150,13 +160,16 @@ class Plugin {
 	}
 
 	/*
-	 * Load Settings and Connectors
+	 * Load Settings, Notifications, and Connectors
 	 *
 	 * @action init
 	 */
 	public function init() {
-		$this->settings   = new Settings( $this );
-		$this->connectors = new Connectors( $this );
+		$this->settings      = new Settings( $this );
+		$this->connectors    = new Connectors( $this );
+		$this->alerts        = new Alerts( $this );
+		$this->alerts_list   = new Alerts_List( $this );
+
 	}
 
 	/**
