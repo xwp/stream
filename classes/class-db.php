@@ -7,7 +7,7 @@ class DB {
 	 *
 	 * @var DB_Driver
 	 */
-	protected $driver;
+	public $driver;
 
 	/**
 	 * Number of records in last request
