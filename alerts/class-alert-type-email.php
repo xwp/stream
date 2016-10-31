@@ -120,7 +120,7 @@ class Alert_Type_Email extends Alert_Type {
 		) );
 
 		$form = new Form_Generator;
-		echo '<span class="wp_stream_alert_type_description">' . esc_html__( 'Send an email to a specific address when an alert is triggered.', 'stream' ) . '</span>';
+		echo '<span class="wp_stream_alert_type_description">' . esc_html__( 'Send a notification email to the recipient.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_email_recipient"><span class="title">' . esc_html__( 'Recipient', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field( 'text', array( // Xss ok.
