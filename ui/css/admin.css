@@ -480,11 +480,13 @@
 	position: relative !important;
 }
 
-.post-type-wp_stream_alerts .select2-results__option .parent {
+.post-type-wp_stream_alerts .select2-results__option .parent,
+.wp_stream_settings .select2-results__option .parent{
 	font-weight: bold;
 }
 
-.post-type-wp_stream_alerts .select2-results__option .child {
+.post-type-wp_stream_alerts .select2-results__option .child,
+.wp_stream_settings .select2-results__option .child{
 	padding-left: 8px;
 }
 
