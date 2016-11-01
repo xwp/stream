@@ -76,38 +76,10 @@ jQuery( function( $ ) {
 						};
 					},
 					processResults: function( response ) {
-						var roles  = [];
-
-						$( 'option', $input_user ).each( function() {
-							if ( $( this ).val() === '' ) {
-								return;
-							}
-							if ( ! $.isNumeric( $( this ).val() ) ) {
-								roles.push({
-									'id' : $( this ).val(),
-									'text' : $( this ).text()
-								});
-							}
-						});
-
-						roles = $.grep(
-							roles,
-							function( role ) {
-								var roleVal = $input_user.data( 'select2' ).dropdown.$search
-								    .val()
-								    .toLowerCase();
-								var rolePos = role
-								    .text
-								    .toLowerCase()
-								    .indexOf( roleVal );
-								return rolePos >= 0;
-							}
-						);
-
 						var answer = {
 							results: [
 								{ text: '', id: '' },
-								{ text: 'Roles', children: roles },
+								{ text: 'Roles', children: [] },
 								{ text: 'Users', children: [] }
 							]
 						};
@@ -116,15 +88,23 @@ jQuery( function( $ ) {
 							return answer;
 						}
 
-						$.each( response.data.users, function( k, user ) {
-							if ( $.contains( roles, user.id ) ) {
-								user.disabled = true;
-							}
+						if ( undefined === response.data.users || undefined === response.data.roles ) {
+							return answer;
+						}
+
+						var roles = [];
+
+						$.each( response.data.roles, function( id, text ) {
+							roles.push({
+								'id' : id,
+								'text' : text
+							});
 						});
 
+						answer.results[ 1 ].children = roles;
 						answer.results[ 2 ].children = response.data.users;
 
-						// Notice we return the value of more so Select2 knows if more results can be loaded
+						// Return the value of more so Select2 knows if more results can be loaded
 						return answer;
 					}
 				},
@@ -263,7 +243,8 @@ jQuery( function( $ ) {
 	initSettingsSelect2();
 
 	$( '.stream-exclude-list tr:not(.hidden) select.select2-select.author_or_role' ).each( function() {
-		$( this ).val( $( this ).data( 'selected-id' ) ).trigger( 'change' );
+		var $option = $('<option selected>' + $( this ).data( 'selected-text' ) + '</option>').val( $( this ).data( 'selected-id' ) );
+		$( this ).append( $option ).trigger( 'change' );
 	});
 
 	$( '.stream-exclude-list tr:not(.hidden) select.select2-select.connector_or_context' ).each( function() {
