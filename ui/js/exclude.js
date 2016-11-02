@@ -48,6 +48,14 @@ jQuery( function( $ ) {
 
 					return null;
 				}
+			}).on( 'change', function() {
+				var row = $( this ).closest( 'tr' ),
+				    connector = $( this ).val();
+				if ( connector && 0 < connector.indexOf( '-' ) ) {
+					var connector_split = connector.split( '-' );
+					connector = connector_split[0];
+				}
+				getActions( row, connector );
 			});
 		});
 
@@ -322,6 +330,40 @@ jQuery( function( $ ) {
 	$( 'table.stream-exclude-list' ).on( 'click', 'input.cb-select', function() {
 		recalculate_rules_selected();
 	});
+
+	function getActions( row, connector ) {
+		var trigger_action = $( '.select2-select.action', row ),
+		    action_value = trigger_action.val();
+
+		trigger_action.empty();
+		trigger_action.prop( 'disabled', true );
+
+		var placeholder = $( '<option/>', {value: '', text: ''} );
+		trigger_action.append( placeholder );
+
+		var data = {
+			'action'    : 'get_actions',
+			'connector' : connector
+		};
+
+		$.post( window.ajaxurl, data, function( response ) {
+			var success = response.success,
+				actions = response.data;
+			if ( ! success ) {
+				return;
+			}
+			for ( var key in actions ) {
+				if ( actions.hasOwnProperty( key ) ) {
+					var value = actions[key];
+					var option = $( '<option/>', {value: key, text: value} );
+					trigger_action.append( option );
+				}
+			}
+			trigger_action.val( action_value );
+			trigger_action.prop( 'disabled', false );
+			$( document ).trigger( 'alert-actions-updated' );
+		});
+	};
 
 	function recalculate_rules_selected() {
 		var $selectedRows = $( 'table.stream-exclude-list tbody tr:not( .hidden ) input.cb-select:checked' ),

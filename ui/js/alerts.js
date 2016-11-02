@@ -56,7 +56,6 @@ jQuery( function( $ ) {
 					var parts = value.split( '-' );
 					$( this ).siblings( '.connector' ).val( parts[0] );
 					$( this ).siblings( '.context' ).val( parts[1] );
-					// $(this).removeAttr('name');
 				}
 			});
 
