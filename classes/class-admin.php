@@ -346,8 +346,8 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_enqueue_scripts( $hook ) {
-		wp_register_script( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/js/select2.js', array( 'jquery' ), '3.5.2', true );
-		wp_register_style( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/css/select2.css', array(), '3.5.2' );
+		wp_register_script( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/js/select2.full.min.js', array( 'jquery' ), '3.5.2', true );
+		wp_register_style( 'wp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/css/select2.min.css', array(), '3.5.2' );
 		wp_register_script( 'wp-stream-timeago', $this->plugin->locations['url'] . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
 
 		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
