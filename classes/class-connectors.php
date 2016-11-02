@@ -89,9 +89,22 @@ class Connectors {
 				continue;
 			}
 			$class = new $class_name( $this->plugin->log );
-			if ( ! method_exists( $class, 'is_dependency_satisfied' ) ) {
+
+			// Check if the Connector extends WP_Stream\Connector
+			if ( ! is_subclass_of( $class, 'WP_Stream\Connector' ) ) {
 				continue;
 			}
+
+			// Check if the Connector is allowed to be registered in the WP Admin
+			if ( is_admin() && ! $class->register_admin ) {
+				continue;
+			}
+
+			// Check if the Connector is allowed to be registered in the WP Frontend
+			if ( ! is_admin() && ! $class->register_frontend ) {
+				continue;
+			}
+
 			if ( $class->is_dependency_satisfied() ) {
 				$classes[ $class->name ] = $class;
 			}

@@ -24,6 +24,13 @@ class Connector_Editor extends Connector {
 	private $edited_file = array();
 
 	/**
+	 * Register connector in the WP Frontend
+	 *
+	 * @var bool
+	 */
+	public $register_frontend = false;
+
+	/**
 	 * Register all context hooks
 	 *
 	 * @return void

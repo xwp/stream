@@ -82,6 +82,13 @@ class Connector_Settings extends Connector {
 	);
 
 	/**
+	 * Register connector in the WP Frontend
+	 *
+	 * @var bool
+	 */
+	public $register_frontend = false;
+
+	/**
 	 * Register all context hooks
 	 *
 	 * @return void
