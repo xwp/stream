@@ -32,6 +32,13 @@ class Connector_Blogs extends Connector {
 	);
 
 	/**
+	 * Register connector in the WP Frontend
+	 *
+	 * @var bool
+	 */
+	public $register_frontend = false;
+
+	/**
 	 * Return translated connector label
 	 *
 	 * @return string
