@@ -363,7 +363,7 @@ jQuery( function( $ ) {
 			trigger_action.prop( 'disabled', false );
 			$( document ).trigger( 'alert-actions-updated' );
 		});
-	};
+	}
 
 	function recalculate_rules_selected() {
 		var $selectedRows = $( 'table.stream-exclude-list tbody tr:not( .hidden ) input.cb-select:checked' ),
