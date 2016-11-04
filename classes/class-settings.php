@@ -84,7 +84,9 @@ class Settings {
 			'message' => esc_html__( 'There was an error in the request', 'stream' ),
 		);
 
-		$search = wp_unslash( trim( wp_stream_filter_input( INPUT_POST, 'find' ) ) );
+		$search = wp_stream_filter_input( INPUT_POST, 'find' );
+		$search = is_string( $search ) ? trim( $search ) : $search;
+		$search = wp_unslash( $search );
 
 		$request = (object) array(
 			'find' => $search,
