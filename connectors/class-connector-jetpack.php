@@ -34,6 +34,13 @@ class Connector_Jetpack extends Connector {
 	);
 
 	/**
+	 * Register connector in the WP Frontend
+	 *
+	 * @var bool
+	 */
+	public $register_frontend = false;
+
+	/**
 	 * Tracked option keys
 	 *
 	 * @var array

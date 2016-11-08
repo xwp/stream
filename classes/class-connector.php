@@ -31,6 +31,20 @@ abstract class Connector {
 	public $prev_stream = null;
 
 	/**
+	 * Register connector in the WP Admin
+	 *
+	 * @var bool
+	 */
+	public $register_admin = true;
+
+	/**
+	 * Register connector in the WP Frontend
+	 *
+	 * @var bool
+	 */
+	public $register_frontend = true;
+
+	/**
 	 * Register all context hooks
 	 */
 	public function register() {
