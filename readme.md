@@ -11,6 +11,10 @@ Planes have a black box, WordPress has Stream. When something goes wrong, you ne
 **Stable tag:** 3.1.1  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
+[![Code Climate](https://codeclimate.com/github/xwp/stream/badges/gpa.svg)](https://codeclimate.com/github/xwp/stream)
+[![Test Coverage](https://codeclimate.com/github/xwp/stream/badges/coverage.svg)](https://codeclimate.com/github/xwp/stream/coverage)
+[![Issue Count](https://codeclimate.com/github/xwp/stream/badges/issue_count.svg)](https://codeclimate.com/github/xwp/stream)
+
 ## Description ##
 
 With Stream, you're never left in the dark about WordPress Admin activity.
