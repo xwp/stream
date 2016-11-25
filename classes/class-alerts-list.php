@@ -334,6 +334,10 @@ class Alerts_List {
 	 * @return array
 	 */
 	function save_alert_inline_edit( $data, $postarr ) {
+		if ( did_action( 'customize_preview_init' ) ) {
+			return $data;
+		}
+
 		$post_id = $postarr['ID'];
 		$post_type = wp_stream_filter_input( INPUT_POST, 'post_type' );
 		if ( Alerts::POST_TYPE !== $post_type ) {
