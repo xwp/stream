@@ -442,7 +442,7 @@ class Admin {
 		}
 
 		$screen = get_current_screen();
-		if ( is_admin() && 'post' === $screen->base && Alerts::POST_TYPE === $screen->post_type ) {
+		if ( is_admin() && Alerts::POST_TYPE === $screen->post_type ) {
 			return true;
 		}
 
