@@ -50,13 +50,12 @@ jQuery( function( $ ) {
 
 					return null;
 				}
-			}).change(function () {
+			}).change( function() {
 				var value = $( this ).val();
-				if (value) {
+				if ( value ) {
 					var parts = value.split( '-' );
 					$( this ).siblings( '.connector' ).val( parts[0] );
 					$( this ).siblings( '.context' ).val( parts[1] );
-					// $(this).removeAttr('name');
 				}
 			});
 
@@ -64,13 +63,13 @@ jQuery( function( $ ) {
 				$( el ).siblings( '.connector' ).val(),
 				$( el ).siblings( '.context' ).val()
 			];
-			if ('' === parts[1]) {
+			if ( '' === parts[1] ) {
 				parts.splice( 1, 1 );
 			}
 			$( el ).val( parts.join( '-' ) ).trigger( 'change' );
 		});
 
-		$target.find( 'select.select2-select:not(.connector_or_context)' ).each(function () {
+		$target.find( 'select.select2-select:not(.connector_or_context)' ).each( function() {
 			var element_id_split = $( this ).attr( 'id' ).split( '_' );
 			var select_name = element_id_split[element_id_split.length - 1].charAt( 0 ).toUpperCase() +
 				element_id_split[element_id_split.length - 1].slice( 1 );
@@ -169,14 +168,14 @@ jQuery( function( $ ) {
 				// Color taken from /wp-admin/css/forms.css
 				// #pass-strength-result.strong
 				add_new_alert.css( 'background-color', '#C1E1B9' );
-				setTimeout(function () {
+				setTimeout( function() {
 					add_new_alert.css( 'background-color', current_bg_color );
 				}, 250);
 
-				$( '#wp_stream_alert_type' ).change( function () {
+				$( '#wp_stream_alert_type' ).change( function() {
 					loadAlertSettings( $( this ).val() );
 				});
-				add_new_alert.on( 'click', '.button-secondary.cancel', function () {
+				add_new_alert.on( 'click', '.button-secondary.cancel', function() {
 					$( '#add-new-alert' ).remove();
 				});
 				add_new_alert.on( 'click', '.button-primary.save', save_new_alert );

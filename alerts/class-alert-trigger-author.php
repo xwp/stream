@@ -107,8 +107,9 @@ class Alert_Trigger_Author extends Alert_Trigger {
 
 		foreach ( $users as $user ) {
 			$all_records[] = array(
-				'id'   => $user->id,
-				'text' => $user->get_display_name(),
+				'id'    => $user->id,
+				'value' => $user->id,
+				'text'  => $user->get_display_name(),
 			);
 		}
 		return $all_records;
