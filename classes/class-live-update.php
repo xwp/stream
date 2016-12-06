@@ -23,6 +23,13 @@ class Live_Update {
 	public $list_table = null;
 
 	/**
+	 * Whether the live update is being called from the network admin
+	 *
+	 * @var bool
+	 */
+	public $network_admin = false;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
@@ -171,6 +178,10 @@ class Live_Update {
 		// Only fire when Stream is requesting a live update
 		if ( ! isset( $data['wp-stream-heartbeat'] ) ) {
 			return $response;
+		}
+
+		if ( ! empty( $data['wp-stream-heartbeat-is-network-admin'] ) ) {
+			$this->network_admin = true;
 		}
 
 		$enable_stream_update = ( 'off' !== $this->plugin->admin->get_user_meta( get_current_user_id(), $this->user_meta_key ) );

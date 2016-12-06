@@ -496,7 +496,7 @@ class Network {
 	 * @return mixed
 	 */
 	public function network_admin_columns( $columns ) {
-		if ( is_network_admin() ) {
+		if ( is_network_admin() || $this->plugin->admin->live_update->network_admin ) {
 			$columns = array_merge(
 				array_slice( $columns, 0, -1 ),
 				array(
