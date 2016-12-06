@@ -29,8 +29,8 @@ jQuery( function( $ ) {
 				last_time = ( '' === last_item.attr( 'datetime' ) ) ? 1 : last_item.attr( 'datetime' );
 			}
 
-			data['wp-stream-heartbeat-last-time']        = last_time;
-			data['wp-stream-heartbeat-query']            = wp_stream_live_updates.current_query;
+			data['wp-stream-heartbeat-last-time'] = last_time;
+			data['wp-stream-heartbeat-query']     = wp_stream_live_updates.current_query;
 		});
 
 		// Listen for "heartbeat-tick" on $(document).
