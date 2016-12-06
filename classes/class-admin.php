@@ -397,7 +397,6 @@ class Admin {
 					'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc', // input var okay
 					'current_query'       => wp_stream_json_encode( $_GET ), // input var okay
 					'current_query_count' => count( $_GET ), // input var okay
-					'is_network_admin'    => is_network_admin(),
 				)
 			);
 		}

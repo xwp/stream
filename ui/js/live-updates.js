@@ -31,7 +31,6 @@ jQuery( function( $ ) {
 
 			data['wp-stream-heartbeat-last-time']        = last_time;
 			data['wp-stream-heartbeat-query']            = wp_stream_live_updates.current_query;
-			data['wp-stream-heartbeat-is-network-admin'] = wp_stream_live_updates.is_network_admin;
 		});
 
 		// Listen for "heartbeat-tick" on $(document).
