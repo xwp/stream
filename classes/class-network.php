@@ -51,6 +51,8 @@ class Network {
 	/**
 	 * Workaround to get admin-ajax.php to know when the request is from the Network Admin
 	 *
+	 * @return bool
+	 *
 	 * @action init
 	 *
 	 * @see https://core.trac.wordpress.org/ticket/22589
@@ -64,7 +66,10 @@ class Network {
 			preg_match( '#^' . network_admin_url() . '#i', $_SERVER['HTTP_REFERER'] )
 		) {
 			define( 'WP_NETWORK_ADMIN', true );
+			return WP_NETWORK_ADMIN;
 		}
+
+		return false;
 	}
 
 	/**
@@ -136,6 +141,7 @@ class Network {
 		}
 
 		remove_submenu_page( $this->plugin->admin->records_page_slug, 'wp_stream_settings' );
+		remove_submenu_page( $this->plugin->admin->records_page_slug, 'edit.php?post_type=wp_stream_alerts' );
 
 		$this->plugin->admin->screen_id['network_settings'] = add_submenu_page(
 			$this->plugin->admin->records_page_slug,
@@ -496,7 +502,7 @@ class Network {
 	 * @return mixed
 	 */
 	public function network_admin_columns( $columns ) {
-		if ( is_network_admin() ) {
+		if ( is_network_admin() || $this->ajax_network_admin() ) {
 			$columns = array_merge(
 				array_slice( $columns, 0, -1 ),
 				array(
