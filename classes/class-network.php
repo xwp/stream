@@ -141,6 +141,7 @@ class Network {
 		}
 
 		remove_submenu_page( $this->plugin->admin->records_page_slug, 'wp_stream_settings' );
+		remove_submenu_page( $this->plugin->admin->records_page_slug, 'edit.php?post_type=wp_stream_alerts' );
 
 		$this->plugin->admin->screen_id['network_settings'] = add_submenu_page(
 			$this->plugin->admin->records_page_slug,
