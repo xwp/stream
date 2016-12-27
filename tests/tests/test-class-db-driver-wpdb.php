@@ -1,19 +1,28 @@
 <?php
 namespace WP_Stream;
 
-class Test_DB extends WP_StreamTestCase {
+class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 	/**
-	 * Holds the db base class
+	 * Holds the DB_Driver_WPDB class
 	 *
-	 * @var DB
+	 * @var DB_Driver_WPDB driver
 	 */
-	protected $db;
+	protected $driver;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->db = $this->plugin->db;
-		$this->assertNotEmpty( $this->db );
+		$this->driver = new DB_Driver_WPDB();
+	}
+
+	public function test_construct() {
+		$this->assertNotEmpty( $this->driver->table );
+		$this->assertNotEmpty( $this->driver->table_meta );
+
+		global $wpdb;
+		$this->assertEquals( $this->driver->table, $wpdb->stream );
+		$this->assertEquals( $this->driver->table_meta, $wpdb->streammeta );
+		$this->assertEquals( $this->driver->table_meta, $wpdb->recordmeta );
 	}
 
 	/*
@@ -23,7 +32,7 @@ class Test_DB extends WP_StreamTestCase {
 		$dummy_data         = $this->dummy_stream_data();
 		$dummy_data['meta'] = $this->dummy_meta_data();
 
-		$stream_id = $this->db->insert( $dummy_data );
+		$stream_id = $this->driver->insert_record( $dummy_data );
 
 		$this->assertNotFalse( $stream_id );
 		$this->assertGreaterThan( 0, $stream_id );
@@ -68,38 +77,46 @@ class Test_DB extends WP_StreamTestCase {
 		$this->assertTrue( $found_all_keys );
 	}
 
-	public function test_existing_records() {
-		$summaries = $this->db->existing_records( 'summary' );
+	public function test_get_column_values() {
+		$summaries = $this->driver->get_column_values( 'summary' );
 		$this->assertNotEmpty( $summaries );
 
 		global $wpdb;
 		$wpdb->suppress_errors( true );
 
-		$bad_column = $this->db->existing_records( 'daisy' );
+		$bad_column = $this->driver->get_column_values( 'daisy' );
 		$this->assertEmpty( $bad_column );
 
 		$wpdb->suppress_errors( false );
 	}
 
+	public function test_table_names() {
+		$table_names = $this->driver->get_table_names();
+
+		$this->assertNotEmpty( $table_names );
+		$this->assertInternalType( 'array', $table_names );
+		$this->assertEquals( array( $this->driver->table, $this->driver->table_meta ), $table_names );
+	}
+
 	private function dummy_stream_data() {
 		return array(
-			'object_id' => 9,
-			'site_id' => '1',
-			'blog_id' => get_current_blog_id(),
-			'user_id' => '1',
-			'user_role' => 'administrator',
-			'created' => date( 'Y-m-d h:i:s' ),
-			'summary' => '"Hello Dave" plugin activated',
-			'ip' => '192.168.0.1',
-			'connector' => 'installer',
-			'context' => 'plugins',
-			'action' => 'activated',
+				'object_id' => 10,
+				'site_id' => '1',
+				'blog_id' => get_current_blog_id(),
+				'user_id' => '1',
+				'user_role' => 'administrator',
+				'created' => date( 'Y-m-d h:i:s' ),
+				'summary' => '"Hello Dave" plugin activated',
+				'ip' => '192.168.0.1',
+				'connector' => 'installer',
+				'context' => 'plugins',
+				'action' => 'activated',
 		);
 	}
 
 	private function dummy_meta_data() {
 		return array(
-			'space_helmet' => 'false',
+				'space_helmet' => 'false',
 		);
 	}
 }
