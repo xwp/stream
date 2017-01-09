@@ -48,6 +48,14 @@ jQuery( function( $ ) {
 
 					return null;
 				}
+			}).on( 'change', function() {
+				var row = $( this ).closest( 'tr' ),
+				    connector = $( this ).val();
+				if ( connector && 0 < connector.indexOf( '-' ) ) {
+					var connector_split = connector.split( '-' );
+					connector = connector_split[0];
+				}
+				getActions( row, connector );
 			});
 		});
 
@@ -76,38 +84,10 @@ jQuery( function( $ ) {
 						};
 					},
 					processResults: function( response ) {
-						var roles  = [];
-
-						$( 'option', $input_user ).each( function() {
-							if ( $( this ).val() === '' ) {
-								return;
-							}
-							if ( ! $.isNumeric( $( this ).val() ) ) {
-								roles.push({
-									'id' : $( this ).val(),
-									'text' : $( this ).text()
-								});
-							}
-						});
-
-						roles = $.grep(
-							roles,
-							function( role ) {
-								var roleVal = $input_user.data( 'select2' ).dropdown.$search
-								    .val()
-								    .toLowerCase();
-								var rolePos = role
-								    .text
-								    .toLowerCase()
-								    .indexOf( roleVal );
-								return rolePos >= 0;
-							}
-						);
-
 						var answer = {
 							results: [
 								{ text: '', id: '' },
-								{ text: 'Roles', children: roles },
+								{ text: 'Roles', children: [] },
 								{ text: 'Users', children: [] }
 							]
 						};
@@ -116,15 +96,23 @@ jQuery( function( $ ) {
 							return answer;
 						}
 
-						$.each( response.data.users, function( k, user ) {
-							if ( $.contains( roles, user.id ) ) {
-								user.disabled = true;
-							}
+						if ( undefined === response.data.users || undefined === response.data.roles ) {
+							return answer;
+						}
+
+						var roles = [];
+
+						$.each( response.data.roles, function( id, text ) {
+							roles.push({
+								'id' : id,
+								'text' : text
+							});
 						});
 
+						answer.results[ 1 ].children = roles;
 						answer.results[ 2 ].children = response.data.users;
 
-						// Notice we return the value of more so Select2 knows if more results can be loaded
+						// Return the value of more so Select2 knows if more results can be loaded
 						return answer;
 					}
 				},
@@ -263,7 +251,8 @@ jQuery( function( $ ) {
 	initSettingsSelect2();
 
 	$( '.stream-exclude-list tr:not(.hidden) select.select2-select.author_or_role' ).each( function() {
-		$( this ).val( $( this ).data( 'selected-id' ) ).trigger( 'change' );
+		var $option = $('<option selected>' + $( this ).data( 'selected-text' ) + '</option>').val( $( this ).data( 'selected-id' ) );
+		$( this ).append( $option ).trigger( 'change' );
 	});
 
 	$( '.stream-exclude-list tr:not(.hidden) select.select2-select.connector_or_context' ).each( function() {
@@ -341,6 +330,40 @@ jQuery( function( $ ) {
 	$( 'table.stream-exclude-list' ).on( 'click', 'input.cb-select', function() {
 		recalculate_rules_selected();
 	});
+
+	function getActions( row, connector ) {
+		var trigger_action = $( '.select2-select.action', row ),
+		    action_value = trigger_action.val();
+
+		trigger_action.empty();
+		trigger_action.prop( 'disabled', true );
+
+		var placeholder = $( '<option/>', {value: '', text: ''} );
+		trigger_action.append( placeholder );
+
+		var data = {
+			'action'    : 'get_actions',
+			'connector' : connector
+		};
+
+		$.post( window.ajaxurl, data, function( response ) {
+			var success = response.success,
+				actions = response.data;
+			if ( ! success ) {
+				return;
+			}
+			for ( var key in actions ) {
+				if ( actions.hasOwnProperty( key ) ) {
+					var value = actions[key];
+					var option = $( '<option/>', {value: key, text: value} );
+					trigger_action.append( option );
+				}
+			}
+			trigger_action.val( action_value );
+			trigger_action.prop( 'disabled', false );
+			$( document ).trigger( 'alert-actions-updated' );
+		});
+	}
 
 	function recalculate_rules_selected() {
 		var $selectedRows = $( 'table.stream-exclude-list tbody tr:not( .hidden ) input.cb-select:checked' ),

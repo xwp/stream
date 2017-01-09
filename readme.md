@@ -8,10 +8,12 @@ Planes have a black box, WordPress has Stream. When something goes wrong, you ne
 **Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [activity log](https://wordpress.org/plugins/tags/activity log), [activity logs](https://wordpress.org/plugins/tags/activity logs), [admin actions](https://wordpress.org/plugins/tags/admin actions), [analytics](https://wordpress.org/plugins/tags/analytics), [audit](https://wordpress.org/plugins/tags/audit), [audit log](https://wordpress.org/plugins/tags/audit log), [audit logs](https://wordpress.org/plugins/tags/audit logs), [blackbox](https://wordpress.org/plugins/tags/blackbox), [black box](https://wordpress.org/plugins/tags/black box), [change](https://wordpress.org/plugins/tags/change), [changes](https://wordpress.org/plugins/tags/changes), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [logs](https://wordpress.org/plugins/tags/logs), [stream](https://wordpress.org/plugins/tags/stream), [tracking](https://wordpress.org/plugins/tags/tracking), [troubleshooting](https://wordpress.org/plugins/tags/troubleshooting), [wp stream](https://wordpress.org/plugins/tags/wp stream)  
 **Requires at least:** 3.9  
 **Tested up to:** 4.6  
-**Stable tag:** 3.1  
+**Stable tag:** 3.1.1  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
-[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/xwp/stream) 
+[![Code Climate](https://codeclimate.com/github/xwp/stream/badges/gpa.svg)](https://codeclimate.com/github/xwp/stream)
+[![Test Coverage](https://codeclimate.com/github/xwp/stream/badges/coverage.svg)](https://codeclimate.com/github/xwp/stream/coverage)
+[![Issue Count](https://codeclimate.com/github/xwp/stream/badges/issue_count.svg)](https://codeclimate.com/github/xwp/stream)
 
 ## Description ##
 
@@ -90,6 +92,9 @@ Thank you for wanting to make Stream better for everyone!
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
 
 ## Changelog ##
+
+### 3.1.1 - October 31, 2016 ###
+* Fix: Hotfix for Error Updating Stream DB.
 
 ### 3.1 - October 31, 2016 ###
 * New: Stream Alerts is here! Get notified when something happens in your WP-Admin, so that you don't miss a thing. ([#844](https://github.com/xwp/stream/pull/844))

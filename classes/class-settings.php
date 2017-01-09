@@ -84,7 +84,12 @@ class Settings {
 			'message' => esc_html__( 'There was an error in the request', 'stream' ),
 		);
 
-		$search = wp_unslash( trim( wp_stream_filter_input( INPUT_POST, 'find' ) ) );
+		$search = '';
+		$input  = wp_stream_filter_input( INPUT_POST, 'find' );
+
+		if ( ! isset( $input['term'] ) ) {
+			$search = wp_unslash( trim( $input['term'] ) );
+		}
 
 		$request = (object) array(
 			'find' => $search,
@@ -123,6 +128,7 @@ class Settings {
 
 		$response->status  = true;
 		$response->message = '';
+		$response->roles   = $this->get_roles();
 		$response->users   = array();
 		$users_added_to_response = array();
 

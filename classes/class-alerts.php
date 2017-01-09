@@ -426,8 +426,7 @@ class Alerts {
 		}
 
 		// Get the first existing Site in the Network.
-		// @todo: Switch to use wp_stream_get_sites()
-		$sites = wp_get_sites(
+		$sites = wp_stream_get_sites(
 			array(
 				'limit' => 5, // Limit the size of the query.
 			)
@@ -436,8 +435,8 @@ class Alerts {
 		$site_id = '1';
 
 		// Function wp_get_sites() can return an empty array if the network is too large.
-		if ( ! empty( $sites ) && ! empty( $sites[0]['blog_id'] ) ) {
-			$site_id = $sites[0]['blog_id'];
+		if ( ! empty( $sites ) && ! empty( $sites[0]->blog_id ) ) {
+			$site_id = $sites[0]->blog_id;
 		}
 
 		$new_url = get_admin_url( $site_id, $page );

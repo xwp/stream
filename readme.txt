@@ -79,6 +79,10 @@ Thank you for wanting to make Stream better for everyone!
 
 == Changelog ==
 
+= 3.1.1 - October 31, 2016 =
+
+* Fix: Hotfix for Error Updating Stream DB.
+
 = 3.1 - October 31, 2016 =
 
 * New: Stream Alerts is here! Get notified when something happens in your WP-Admin, so that you don't miss a thing. ([#844](https://github.com/xwp/stream/pull/844))

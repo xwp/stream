@@ -133,30 +133,30 @@ class Form_Generator {
 						'text'     => '',
 						'children' => array(),
 					) );
-					if ( empty( $parent['id'] ) ) {
+					if ( empty( $parent['value'] ) ) {
 						continue;
 					}
 					if ( is_array( $args['value'] ) ) {
-						$selected = selected( in_array( $parent['id'], $args['value'], true ), true, false );
+						$selected = selected( in_array( $parent['value'], $args['value'], true ), true, false );
 					} else {
-						$selected = selected( $args['value'], $parent['id'], false );
+						$selected = selected( $args['value'], $parent['value'], false );
 					}
 					$output .= sprintf(
 						'<option class="parent" value="%1$s" %3$s>%2$s</option>',
-						$parent['id'],
+						$parent['value'],
 						$parent['text'],
 						$selected
 					);
-					$values[] = $parent['id'];
+					$values[] = $parent['value'];
 					if ( ! empty( $parent['children'] ) ) {
 						foreach ( $parent['children'] as $child ) {
 							$output .= sprintf(
 								'<option class="child" value="%1$s" %3$s>%2$s</option>',
-								$child['id'],
+								$child['value'],
 								$child['text'],
-								selected( $args['value'], $child['id'], false )
+								selected( $args['value'], $child['value'], false )
 							);
-							$values[] = $child['id'];
+							$values[] = $child['value'];
 						}
 						$output .= '</optgroup>';
 					}

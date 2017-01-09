@@ -89,14 +89,16 @@ function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
 /**
  * Return an array of sites for a network in a way that is also backwards compatible
  *
+ * @param string|array $args
+ *
  * @return array
  */
-function wp_stream_get_sites() {
+function wp_stream_get_sites( $args = array() ) {
 	if ( function_exists( 'get_sites' ) ) {
-		$sites = get_sites();
+		$sites = get_sites( $args );
 	} else {
 		$sites = array();
-		foreach ( wp_get_sites() as $site ) {
+		foreach ( wp_get_sites( $args ) as $site ) {
 			$sites[] = WP_Site::get_instance( $site['blog_id'] );
 		}
 	}
