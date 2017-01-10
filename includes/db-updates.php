@@ -63,7 +63,7 @@ function wp_stream_update_auto_300( $db_version, $current_version ) {
 	$starting_row   = 0;
 	$rows_per_round = 5000;
 
-	$prepared_query = $wpdb->prepare("SELECT * FROM {$wpdb->base_prefix}stream_tmp LIMIT %d, %d", $starting_row, $rows_per_round);
+	$prepared_query = $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}stream_tmp LIMIT %d, %d", $starting_row, $rows_per_round );
 	$stream_entries = $wpdb->get_results( $prepared_query );
 
 	while ( ! empty( $stream_entries ) ) {
@@ -95,7 +95,7 @@ function wp_stream_update_auto_300( $db_version, $current_version ) {
 
 		$starting_row += $rows_per_round;
 
-		$prepared_query = $wpdb->prepare("SELECT * FROM {$wpdb->base_prefix}stream_tmp LIMIT %d, %d", $starting_row, $rows_per_round);
+		$prepared_query = $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}stream_tmp LIMIT %d, %d", $starting_row, $rows_per_round );
 		$stream_entries = $wpdb->get_results( $prepared_query );
 	}
 
