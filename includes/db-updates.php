@@ -68,8 +68,7 @@ function wp_stream_update_auto_300( $db_version, $current_version ) {
 	while ( ! empty( $stream_entries ) ) {
 		foreach ( $stream_entries as $entry ) {
 			$context = $wpdb->get_row(
-				$wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}stream_context_tmp WHERE record_id = %s LIMIT 1",
-					$entry->ID )
+				$wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}stream_context_tmp WHERE record_id = %s LIMIT 1", $entry->ID )
 			);
 
 			$new_entry = array(
