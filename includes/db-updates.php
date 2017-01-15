@@ -60,31 +60,40 @@ function wp_stream_update_auto_300( $db_version, $current_version ) {
 	$plugin = wp_stream_get_instance();
 	$plugin->install->install( $current_version );
 
-	$stream_entries = $wpdb->get_results( "SELECT * FROM {$wpdb->base_prefix}stream_tmp" );
+	$starting_row   = 0;
+	$rows_per_round = 5000;
 
-	foreach ( $stream_entries as $entry ) {
-		$context = $wpdb->get_row(
-			$wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}stream_context_tmp WHERE record_id = %s LIMIT 1", $entry->ID )
-		);
+	$stream_entries = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}stream_tmp LIMIT %d, %d", $starting_row, $rows_per_round ) );
 
-		$new_entry = array(
-			'site_id' => $entry->site_id,
-			'blog_id' => $entry->blog_id,
-			'user_id' => $entry->author,
-			'user_role' => $entry->author_role,
-			'summary' => $entry->summary,
-			'created' => $entry->created,
-			'connector' => $context->connector,
-			'context' => $context->context,
-			'action' => $context->action,
-			'ip' => $entry->ip,
-		);
+	while ( ! empty( $stream_entries ) ) {
+		foreach ( $stream_entries as $entry ) {
+			$context = $wpdb->get_row(
+				$wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}stream_context_tmp WHERE record_id = %s LIMIT 1", $entry->ID )
+			);
 
-		if ( $entry->object_id && 0 !== $entry->object_id ) {
-			$new_entry['object_id'] = $entry->object_id;
+			$new_entry = array(
+				'site_id'   => $entry->site_id,
+				'blog_id'   => $entry->blog_id,
+				'user_id'   => $entry->author,
+				'user_role' => $entry->author_role,
+				'summary'   => $entry->summary,
+				'created'   => $entry->created,
+				'connector' => $context->connector,
+				'context'   => $context->context,
+				'action'    => $context->action,
+				'ip'        => $entry->ip,
+			);
+
+			if ( $entry->object_id && 0 !== $entry->object_id ) {
+				$new_entry['object_id'] = $entry->object_id;
+			}
+
+			$wpdb->insert( $wpdb->base_prefix . 'stream', $new_entry );
 		}
 
-		$wpdb->insert( $wpdb->base_prefix . 'stream', $new_entry );
+		$starting_row += $rows_per_round;
+
+		$stream_entries = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}stream_tmp LIMIT %d, %d", $starting_row, $rows_per_round ) );
 	}
 
 	$wpdb->query( "DROP TABLE {$wpdb->base_prefix}stream_tmp, {$wpdb->base_prefix}stream_context_tmp" );
