@@ -3,71 +3,26 @@ namespace WP_Stream;
 
 class DB {
 	/**
-	 * Hold Plugin class
-	 * @var Plugin
-	 */
-	public $plugin;
-
-	/**
-	 * Hold Query class
-	 * @var Query
-	 */
-	public $query;
-
-	/**
-	 * Hold records table name
+	 * Hold the Driver class
 	 *
-	 * @var string
+	 * @var DB_Driver
 	 */
-	public $table;
+	public $driver;
 
 	/**
-	 * Hold meta table name
+	 * Number of records in last request
 	 *
-	 * @var string
+	 * @var int
 	 */
-	public $table_meta;
+	protected $found_records_count = 0;
 
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
+	 * @param DB_Driver $driver Driver we want to use.
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
-		$this->query  = new Query( $this );
-
-		global $wpdb;
-
-		/**
-		 * Allows devs to alter the tables prefix, default to base_prefix
-		 *
-		 * @param string $prefix
-		 *
-		 * @return string
-		 */
-		$prefix = apply_filters( 'wp_stream_db_tables_prefix', $wpdb->base_prefix );
-
-		$this->table         = $prefix . 'stream';
-		$this->table_meta    = $prefix . 'stream_meta';
-
-		$wpdb->stream        = $this->table;
-		$wpdb->streammeta    = $this->table_meta;
-
-		// Hack for get_metadata
-		$wpdb->recordmeta    = $this->table_meta;
-	}
-
-	/**
-	 * Public getter to return table names
-	 *
-	 * @return array
-	 */
-	public function get_table_names() {
-		return array(
-			$this->table,
-			$this->table_meta,
-		);
+	public function __construct( $driver ) {
+		$this->driver = $driver;
 	}
 
 	/**
@@ -101,37 +56,34 @@ class DB {
 			return false;
 		}
 
-		global $wpdb;
-
 		$fields = array( 'object_id', 'site_id', 'blog_id', 'user_id', 'user_role', 'created', 'summary', 'ip', 'connector', 'context', 'action' );
 		$data   = array_intersect_key( $record, array_flip( $fields ) );
 
-		$result = $wpdb->insert( $this->table, $data );
+		$meta = array();
+		foreach ( (array) $record['meta'] as $key => $vals ) {
+			// If associative array, serialize it, otherwise loop on its members
+			$vals = ( is_array( $vals ) && 0 !== key( $vals ) ) ? array( $vals ) : $vals;
 
-		if ( 1 !== $result ) {
+			foreach ( (array) $vals as $num => $val ) {
+				$vals[ $num ] = maybe_serialize( $val );
+			}
+			$meta[ $key ] = $vals;
+		}
+
+		$data['meta'] = $meta;
+
+		$record_id = $this->driver->insert_record( $data );
+
+		if ( ! $record_id ) {
 			/**
 			 * Fires on a record insertion error
 			 *
 			 * @param array $record
 			 * @param mixed $result
 			 */
-			do_action( 'wp_stream_record_insert_error', $record, $result );
+			do_action( 'wp_stream_record_insert_error', $record, false );
 
-			return $result;
-		}
-
-		$record_id = $wpdb->insert_id;
-
-		// Insert record meta
-		foreach ( (array) $record['meta'] as $key => $vals ) {
-			// If associative array, serialize it, otherwise loop on its members
-			$vals = ( is_array( $vals ) && 0 !== key( $vals ) ) ? array( $vals ) : $vals;
-
-			foreach ( (array) $vals as $val ) {
-				$val = maybe_serialize( $val );
-
-				$this->insert_meta( $record_id, $key, $val );
-			}
+			return false;
 		}
 
 		/**
@@ -146,34 +98,10 @@ class DB {
 	}
 
 	/**
-	 * Insert record meta
-	 *
-	 * @param int    $record_id
-	 * @param string $key
-	 * @param string $val
-	 *
-	 * @return array
-	 */
-	public function insert_meta( $record_id, $key, $val ) {
-		global $wpdb;
-
-		$result = $wpdb->insert(
-			$this->table_meta,
-			array(
-				'record_id'  => $record_id,
-				'meta_key'   => $key,
-				'meta_value' => $val,
-			)
-		);
-
-		return $result;
-	}
-
-	/**
 	 * Returns array of existing values for requested column.
 	 * Used to fill search filters with only used items, instead of all items.
 	 *
-	 * GROUP BY allows query to find just the first occurance of each value in the column,
+	 * GROUP BY allows query to find just the first occurrence of each value in the column,
 	 * increasing the efficiency of the query.
 	 *
 	 * @see assemble_records
@@ -183,19 +111,14 @@ class DB {
 	 *
 	 * @return array
 	 */
-	function existing_records( $column ) {
-		global $wpdb;
-
+	public function existing_records( $column ) {
 		// Sanitize column
 		$allowed_columns = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );
 		if ( ! in_array( $column, $allowed_columns, true ) ) {
 			return array();
 		}
 
-		$rows = $wpdb->get_results(
-			"SELECT DISTINCT $column FROM $wpdb->stream", // @codingStandardsIgnoreLine can't prepare column name
-			'ARRAY_A'
-		);
+		$rows = $this->driver->get_column_values( $column );
 
 		if ( is_array( $rows ) && ! empty( $rows ) ) {
 			$output_array = array();
@@ -211,19 +134,114 @@ class DB {
 
 		$column = sprintf( 'stream_%s', $column );
 
-		return isset( $this->plugin->connectors->term_labels[ $column ] ) ? $this->plugin->connectors->term_labels[ $column ] : array();
+		$term_labels = wp_stream_get_instance()->connectors->term_labels;
+		return isset( $term_labels[ $column ] ) ? $term_labels[ $column ] : array();
 	}
 
 	/**
-	 * Helper function for calling $this->query->query()
-	 *
-	 * @see Query->query()
+	 * Get stream records
 	 *
 	 * @param array Query args
 	 *
 	 * @return array Stream Records
 	 */
-	function query( $args ) {
-		return $this->query->query( $args );
+	public function get_records( $args ) {
+		$defaults = array(
+			// Search param
+			'search'           => null,
+			'search_field'     => 'summary',
+			'record_after'     => null, // Deprecated, use date_after instead
+			// Date-based filters
+			'date'             => null, // Ex: 2015-07-01
+			'date_from'        => null, // Ex: 2015-07-01
+			'date_to'          => null, // Ex: 2015-07-01
+			'date_after'       => null, // Ex: 2015-07-01T15:19:21+00:00
+			'date_before'      => null, // Ex: 2015-07-01T15:19:21+00:00
+			// Record ID filters
+			'record'           => null,
+			'record__in'       => array(),
+			'record__not_in'   => array(),
+			// Pagination params
+			'records_per_page' => get_option( 'posts_per_page', 20 ),
+			'paged'            => 1,
+			// Order
+			'order'            => 'desc',
+			'orderby'          => 'date',
+			// Fields selection
+			'fields'           => array(),
+		);
+
+		// Additional property fields
+		$properties = array(
+			'user_id'   => null,
+			'user_role' => null,
+			'ip'        => null,
+			'object_id' => null,
+			'site_id'   => null,
+			'blog_id'   => null,
+			'connector' => null,
+			'context'   => null,
+			'action'    => null,
+		);
+
+		/**
+		 * Filter allows additional query properties to be added
+		 *
+		 * @return array Array of query properties
+		 */
+		$properties = apply_filters( 'wp_stream_query_properties', $properties );
+
+		// Add property fields to defaults, including their __in/__not_in variations
+		foreach ( $properties as $property => $default ) {
+			if ( ! isset( $defaults[ $property ] ) ) {
+				$defaults[ $property ] = $default;
+			}
+
+			$defaults[ "{$property}__in" ]     = array();
+			$defaults[ "{$property}__not_in" ] = array();
+		}
+
+		$args = wp_parse_args( $args, $defaults );
+
+		/**
+		 * Filter allows additional arguments to query $args
+		 *
+		 * @return array  Array of query arguments
+		 */
+		$args = apply_filters( 'wp_stream_query_args', $args );
+
+		$result = (array) $this->driver->get_records( $args );
+		$this->found_records_count = isset( $result['count'] ) ? $result['count'] : 0;
+
+		return empty( $result['items'] ) ? array() : $result['items'];
+	}
+
+	/**
+	 * Helper function, backwards compatibility
+	 *
+	 * @param array $args Query args
+	 *
+	 * @return array Stream Records
+	 */
+	public function query( $args ) {
+		return $this->get_records( $args );
+	}
+
+	/**
+	 * Return the number of records found in last request
+	 *
+	 * return int
+	 */
+	public function get_found_records_count() {
+		return $this->found_records_count;
+	}
+
+	/**
+	 * Public getter to return table names
+	 *
+	 * @return array
+	 */
+	public function get_table_names() {
+		return $this->driver->get_table_names();
 	}
 }
