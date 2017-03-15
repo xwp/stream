@@ -2,8 +2,8 @@
 Contributors:      fjarrett, lukecarbis, stream, xwp
 Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, blackbox, black box, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
 Requires at least: 3.9
-Tested up to:      4.6
-Stable tag:        3.1.1
+Tested up to:      4.8
+Stable tag:        3.2
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -78,6 +78,16 @@ Thank you for wanting to make Stream better for everyone!
 3. Create rules for excluding certain kinds of records from appearing in Stream.
 
 == Changelog ==
+
+= 3.2 - March 15, 2017 =
+
+* New: Stream now support alternate Database Drivers. ([#889](https://github.com/xwp/stream/pull/889))
+* Fix: Exclude dropdown menus ([e5c8677](https://github.com/xwp/stream/commit/e5c8677), [3626ba8](https://github.com/xwp/stream/commit/3626ba8), [e923a92](https://github.com/xwp/stream/commit/e923a92))
+* Fix: Prevent loading of connectors on frontend ([ed3a635](https://github.com/xwp/stream/commit/ed3a635))
+* Fix: Customizer performance issue ([#898](https://github.com/xwp/stream/pull/898))
+* Fix: Various Network Admin bugs ([#899](https://github.com/xwp/stream/pull/899))
+* Tweak: Codeclimate & Editorconfig support ([#896](https://github.com/xwp/stream/pull/896))
+* Tweak: Better DB migration support ([#905](https://github.com/xwp/stream/pull/905))
 
 = 3.1.1 - October 31, 2016 =
 

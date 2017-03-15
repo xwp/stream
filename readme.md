@@ -7,13 +7,9 @@ Planes have a black box, WordPress has Stream. When something goes wrong, you ne
 **Contributors:** [fjarrett](https://profiles.wordpress.org/fjarrett), [lukecarbis](https://profiles.wordpress.org/lukecarbis), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
 **Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [activity log](https://wordpress.org/plugins/tags/activity log), [activity logs](https://wordpress.org/plugins/tags/activity logs), [admin actions](https://wordpress.org/plugins/tags/admin actions), [analytics](https://wordpress.org/plugins/tags/analytics), [audit](https://wordpress.org/plugins/tags/audit), [audit log](https://wordpress.org/plugins/tags/audit log), [audit logs](https://wordpress.org/plugins/tags/audit logs), [blackbox](https://wordpress.org/plugins/tags/blackbox), [black box](https://wordpress.org/plugins/tags/black box), [change](https://wordpress.org/plugins/tags/change), [changes](https://wordpress.org/plugins/tags/changes), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [logs](https://wordpress.org/plugins/tags/logs), [stream](https://wordpress.org/plugins/tags/stream), [tracking](https://wordpress.org/plugins/tags/tracking), [troubleshooting](https://wordpress.org/plugins/tags/troubleshooting), [wp stream](https://wordpress.org/plugins/tags/wp stream)  
 **Requires at least:** 3.9  
-**Tested up to:** 4.6  
-**Stable tag:** 3.1.1  
+**Tested up to:** 4.8  
+**Stable tag:** 3.2  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
-
-[![Code Climate](https://codeclimate.com/github/xwp/stream/badges/gpa.svg)](https://codeclimate.com/github/xwp/stream)
-[![Test Coverage](https://codeclimate.com/github/xwp/stream/badges/coverage.svg)](https://codeclimate.com/github/xwp/stream/coverage)
-[![Issue Count](https://codeclimate.com/github/xwp/stream/badges/issue_count.svg)](https://codeclimate.com/github/xwp/stream)
 
 ## Description ##
 
@@ -92,6 +88,15 @@ Thank you for wanting to make Stream better for everyone!
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
 
 ## Changelog ##
+
+### 3.2 - March 15, 2017 ###
+* New: Stream now support alternate Database Drivers. ([#889](https://github.com/xwp/stream/pull/889))
+* Fix: Exclude dropdown menus ([e5c8677](https://github.com/xwp/stream/commit/e5c8677), [3626ba8](https://github.com/xwp/stream/commit/3626ba8), [e923a92](https://github.com/xwp/stream/commit/e923a92))
+* Fix: Prevent loading of connectors on frontend ([ed3a635](https://github.com/xwp/stream/commit/ed3a635))
+* Fix: Customizer performance issue ([#898](https://github.com/xwp/stream/pull/898))
+* Fix: Various Network Admin bugs ([#899](https://github.com/xwp/stream/pull/899))
+* Tweak: Codeclimate & Editorconfig support ([#896](https://github.com/xwp/stream/pull/896))
+* Tweak: Better DB migration support ([#905](https://github.com/xwp/stream/pull/905))
 
 ### 3.1.1 - October 31, 2016 ###
 * Fix: Hotfix for Error Updating Stream DB.
