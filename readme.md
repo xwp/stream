@@ -11,6 +11,8 @@ Planes have a black box, WordPress has Stream. When something goes wrong, you ne
 **Stable tag:** 3.2  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
+[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/xwp/stream) 
+
 ## Description ##
 
 With Stream, you're never left in the dark about WordPress Admin activity.
@@ -89,7 +91,7 @@ Thank you for wanting to make Stream better for everyone!
 
 ## Changelog ##
 
-### 3.2 - March 15, 2017 ###
+### 3.2.0 - March 15, 2017 ###
 * New: Stream now support alternate Database Drivers. ([#889](https://github.com/xwp/stream/pull/889))
 * Fix: Exclude dropdown menus ([e5c8677](https://github.com/xwp/stream/commit/e5c8677), [3626ba8](https://github.com/xwp/stream/commit/3626ba8), [e923a92](https://github.com/xwp/stream/commit/e923a92))
 * Fix: Prevent loading of connectors on frontend ([ed3a635](https://github.com/xwp/stream/commit/ed3a635))
