@@ -104,6 +104,8 @@
 
 .toplevel_page_wp_stream .column-ip {
 	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .toplevel_page_wp_stream .stream-filter-object-id {
