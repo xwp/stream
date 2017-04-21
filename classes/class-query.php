@@ -74,6 +74,11 @@ class Query {
 		/**
 		 * PARSE DATE PARAM FAMILY
 		 */
+		if ( ! empty( $args['date'] ) ) {
+			$args['date_from'] = $args['date'];
+			$args['date_to']   = $args['date'];
+		}
+
 		if ( ! empty( $args['date_from'] ) ) {
 			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_from'] . ' 00:00:00' ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) >= %s", $date );
@@ -92,11 +97,6 @@ class Query {
 		if ( ! empty( $args['date_before'] ) ) {
 			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_before'] ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) < %s", $date );
-		}
-
-		if ( ! empty( $args['date'] ) ) {
-			$args['date_from'] = date( 'Y-m-d', strtotime( $args['date'] ) ) . ' 00:00:00';
-			$args['date_to']   = date( 'Y-m-d', strtotime( $args['date'] ) ) . ' 23:59:59';
 		}
 
 		/**
