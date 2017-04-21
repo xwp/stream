@@ -196,6 +196,8 @@ class Log {
 			}
 		}
 
+		$exclude_record = false;
+
 		if ( isset( $exclude_settings['exclude_row'] ) && ! empty( $exclude_settings['exclude_row'] ) ) {
 			foreach ( $exclude_settings['exclude_row'] as $key => $value ) {
 				// Prepare values
@@ -217,29 +219,39 @@ class Log {
 				$exclude_rules = array_filter( $exclude, 'strlen' );
 
 				if ( ! empty( $exclude_rules ) ) {
-					$excluded = true;
+					$matches_exclusion_rule = true;
 
 					foreach ( $exclude_rules as $exclude_key => $exclude_value ) {
 						if ( 'ip_address' === $exclude_key ) {
 							$ip_addresses = explode( ',', $exclude_value );
 							if ( ! in_array( $record['ip_address'], $ip_addresses, true ) ) {
-								$excluded = false;
+								$matches_exclusion_rule = false;
 								break;
 							}
 						} elseif ( $record[ $exclude_key ] !== $exclude_value ) {
-							$excluded = false;
+							$matches_exclusion_rule = false;
 							break;
 						}
 					}
 
-					if ( $excluded ) {
-						return true;
+					if ( $matches_exclusion_rule ) {
+						$exclude_record = true;
+						break;
 					}
 				}
 			}
 		}
-
-		return false;
+		/**
+		 * Filters whether or not a record should be excluded from the log
+		 *
+		 * If true, the record is not logged.
+		 *
+		 * @param array $exclude_record Whether the record should excluded
+		 * @param array $recordarr The record to log
+		 *
+		 * @return bool
+		 */
+		return apply_filters( 'wp_stream_is_record_excluded', $exclude_record, $record );
 	}
 
 	/**
