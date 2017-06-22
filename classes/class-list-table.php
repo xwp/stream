@@ -772,7 +772,7 @@ class List_Table extends \WP_List_Table {
 		?>
 		<div class="date-interval">
 
-			<select class="field-predefined hide-if-no-js" name="date_predefined" data-placeholder="<?php esc_attr_e( 'All Time', 'stream' ) ?>">
+			<select class="field-predefined hide-if-no-js chosen-select" name="date_predefined" data-placeholder="<?php esc_attr_e( 'All Time', 'stream' ) ?>">
 				<option></option>
 				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
 				<?php
