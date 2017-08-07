@@ -547,12 +547,12 @@ class Connector_ACF extends Connector {
 		$this->check_meta_values( self::get_saved_option_type( $key ), 'deleted', null, null, $key, null );
 	}
 
-  /**
-   * Determines the type of option that is saved
-   *
-   * @param $key
-   * @return string
-   */
+	/**
+	 * Determines the type of option that is saved
+	 *
+	 * @param $key
+	 * @return string
+	 */
 	private function get_saved_option_type( $key ) {
 		return substr( $key,0, 8 ) === 'options_' ? 'option' : 'taxonomy';
 	}
