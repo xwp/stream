@@ -448,8 +448,8 @@ class Install {
 			meta_value varchar(200) NOT NULL,
 			PRIMARY KEY  (meta_id),
 			KEY record_id (record_id),
-			KEY meta_key (meta_key),
-			KEY meta_value (meta_value)
+			KEY meta_key (meta_key(191)),
+			KEY meta_value (meta_value(191))
 		)";
 
 		if ( ! empty( $wpdb->charset ) ) {

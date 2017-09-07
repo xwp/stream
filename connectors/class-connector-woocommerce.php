@@ -659,9 +659,8 @@ class Connector_Woocommerce extends Connector {
 					'tab'       => $this->settings[ $option ]['tab'],
 					'section'   => $this->settings[ $option ]['section'],
 					'option'    => $option,
-					// Prevent fatal error when saving option as array
-					'old_value' => maybe_serialize( $old_value ),
-					'value'     => maybe_serialize( $value ),
+					'old_value' => $old_value,
+					'value'     => $value,
 				),
 				null,
 				$this->settings[ $option ]['tab'],

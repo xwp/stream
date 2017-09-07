@@ -7,7 +7,7 @@ class Plugin {
 	 *
 	 * @const string
 	 */
-	const VERSION = '3.2.0';
+	const VERSION = '3.2.1';
 
 	/**
 	 * WP-CLI command
@@ -118,7 +118,7 @@ class Plugin {
 		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
 
 		// Change DB driver after plugin loaded if any add-ons want to replace
-		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
+		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ), 20 );
 
 		// Load admin area classes
 		if ( is_admin() || ( defined( 'WP_STREAM_DEV_DEBUG' ) && WP_STREAM_DEV_DEBUG ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) {

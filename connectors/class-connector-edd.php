@@ -294,8 +294,8 @@ class Connector_EDD extends Connector {
 				array(
 					'option_title' => $field['name'],
 					'option'       => $option,
-					'old_value'    => maybe_serialize( $old_value ),
-					'value'        => maybe_serialize( $new_value ),
+					'old_value'    => $old_value,
+					'value'        => $new_value,
 					'tab'          => $tab,
 				),
 				null,

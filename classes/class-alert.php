@@ -162,7 +162,7 @@ class Alert {
 	 * @return mixed Single value if $single is true, array if false.
 	 */
 	public function get_meta( $meta_key = '', $single = false ) {
-		return maybe_unserialize( get_post_meta( $this->ID, $meta_key, $single ) );
+		return get_post_meta( $this->ID, $meta_key, $single );
 	}
 
 	/**

@@ -405,8 +405,8 @@ class Connector_BuddyPress extends Connector {
 				array(
 					'option'     => $option,
 					'option_key' => 'bp-active-components',
-					'old_value'  => maybe_serialize( $old_value ),
-					'value'      => maybe_serialize( $new_value ),
+					'old_value'  => $old_value,
+					'value'      => $new_value,
 				),
 				null,
 				'components',
@@ -450,8 +450,8 @@ class Connector_BuddyPress extends Connector {
 				array(
 					'option'     => $option,
 					'option_key' => 'bp-pages',
-					'old_value'  => maybe_serialize( $old_value ),
-					'value'      => maybe_serialize( $new_value ),
+					'old_value'  => $old_value,
+					'value'      => $new_value,
 					'page_id'    => empty( $new_value[ $option ] ) ? 0 : $new_value[ $option ],
 				),
 				null,

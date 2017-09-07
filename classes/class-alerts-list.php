@@ -334,7 +334,7 @@ class Alerts_List {
 	 * @return array
 	 */
 	function save_alert_inline_edit( $data, $postarr ) {
-		if ( did_action( 'customize_preview_init' ) ) {
+		if ( did_action( 'customize_preview_init' ) || empty( $postarr['ID'] ) ) {
 			return $data;
 		}
 

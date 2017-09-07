@@ -74,6 +74,11 @@ class Query {
 		/**
 		 * PARSE DATE PARAM FAMILY
 		 */
+		if ( ! empty( $args['date'] ) ) {
+			$args['date_from'] = $args['date'];
+			$args['date_to']   = $args['date'];
+		}
+
 		if ( ! empty( $args['date_from'] ) ) {
 			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_from'] . ' 00:00:00' ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) >= %s", $date );
@@ -92,11 +97,6 @@ class Query {
 		if ( ! empty( $args['date_before'] ) ) {
 			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_before'] ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) < %s", $date );
-		}
-
-		if ( ! empty( $args['date'] ) ) {
-			$args['date_from'] = date( 'Y-m-d', strtotime( $args['date'] ) ) . ' 00:00:00';
-			$args['date_to']   = date( 'Y-m-d', strtotime( $args['date'] ) ) . ' 23:59:59';
 		}
 
 		/**
@@ -234,42 +234,6 @@ class Query {
 		$result['items'] = $wpdb->get_results( $query ); // @codingStandardsIgnoreLine $query already prepared
 		$result['count'] = $result['items'] ? absint( $wpdb->get_var( 'SELECT FOUND_ROWS()' ) ) : 0;
 
-		// Add meta to the records, when applicable
-		if ( empty( $fields ) || in_array( 'meta', $fields, true ) ) {
-			$result['items'] = $this->add_record_meta( $result['items'] );
-		}
-
 		return $result;
-	}
-
-	/**
-	 * Add meta to a set of records
-	 *
-	 * @param array $records
-	 *
-	 * @return array
-	 */
-	public function add_record_meta( $records ) {
-		global $wpdb;
-
-		$record_ids = array_map( 'absint', wp_list_pluck( $records, 'ID' ) );
-
-		if ( empty( $record_ids ) ) {
-			return (array) $records;
-		}
-
-		$sql_meta = sprintf(
-			"SELECT * FROM $wpdb->streammeta WHERE record_id IN ( %s )",
-			implode( ',', $record_ids )
-		);
-
-		$meta  = $wpdb->get_results( $sql_meta ); // @codingStandardsIgnoreLine prepare okay
-		$ids_f = array_flip( $record_ids );
-
-		foreach ( $meta as $meta_record ) {
-			$records[ $ids_f[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ] = maybe_unserialize( $meta_record->meta_value );
-		}
-
-		return (array) $records;
 	}
 }
