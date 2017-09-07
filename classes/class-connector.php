@@ -181,7 +181,8 @@ abstract class Connector {
 			$old_value,
 			$new_value,
 			function( $value1, $value2 ) {
-				return json_encode( $value1 ) !== json_encode( $value2 ); // Compare potentially complex nested arrays
+				// Compare potentially complex nested arrays
+				return wp_json_encode( $value1 ) !== wp_json_encode( $value2 );
 			}
 		);
 
