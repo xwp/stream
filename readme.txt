@@ -1,6 +1,6 @@
 === Stream ===
 Contributors:      fjarrett, lukecarbis, stream, xwp
-Tags:              actions, activity, activity log, activity logs, admin actions, analytics, audit, audit log, audit logs, blackbox, black box, change, changes, dashboard, log, logs, stream, tracking, troubleshooting, wp stream
+Tags:              wp stream, stream, activity, logs, track
 Requires at least: 3.9
 Tested up to:      4.8
 Stable tag:        3.2
