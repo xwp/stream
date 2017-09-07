@@ -367,6 +367,9 @@ class Connector_ACF extends Connector {
 			list( , $taxonomy, $term_id, $key ) = $matches; // Skips 0 index
 
 			$object_key = $taxonomy . '_' . $term_id;
+		} elseif ( 'option' === $type ) {
+			$object_key = 'options';
+			$key = preg_replace( '/^options_/', '', $key );
 		}
 
 		if ( isset( $this->cached_field_values_updates[ $object_key ][ $key ] ) ) {
@@ -385,6 +388,9 @@ class Connector_ACF extends Connector {
 				$title     = $term->name;
 				$tax_obj   = get_taxonomy( $taxonomy );
 				$type_name = strtolower( get_taxonomy_labels( $tax_obj )->singular_name );
+			} elseif ( 'option' === $type ) {
+				$title = 'settings page';
+				$type_name = 'option';
 			} else {
 				return false;
 			}
@@ -517,7 +523,7 @@ class Connector_ACF extends Connector {
 	 * @param string $value Option value
 	 */
 	public function callback_added_option( $key, $value ) {
-		$this->check_meta_values( 'taxonomy', 'added', null, null, $key, $value );
+		$this->check_meta_values( self::get_saved_option_type( $key ), 'added', null, null, $key, $value );
 	}
 
 	/**
@@ -529,7 +535,7 @@ class Connector_ACF extends Connector {
 	 */
 	public function callback_updated_option( $key, $old, $value ) {
 		unset( $old );
-		$this->check_meta_values( 'taxonomy', 'updated', null, null, $key, $value );
+		$this->check_meta_values( self::get_saved_option_type( $key ), 'updated', null, null, $key, $value );
 	}
 
 	/**
@@ -538,6 +544,16 @@ class Connector_ACF extends Connector {
 	 * @param $key
 	 */
 	public function callback_deleted_option( $key ) {
-		$this->check_meta_values( 'taxonomy', 'deleted', null, null, $key, null );
+		$this->check_meta_values( self::get_saved_option_type( $key ), 'deleted', null, null, $key, null );
+	}
+
+	/**
+	 * Determines the type of option that is saved
+	 *
+	 * @param $key
+	 * @return string
+	 */
+	private function get_saved_option_type( $key ) {
+		return substr( $key,0, 8 ) === 'options_' ? 'option' : 'taxonomy';
 	}
 }
