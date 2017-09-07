@@ -20,12 +20,12 @@ class Author {
 	/**
 	 * Class constructor.
 	 *
-	 * @param int          $user_id   The user ID.
-	 * @param array|string $user_meta The user meta array, or a serialized string of user meta.
+	 * @param int   $user_id   The user ID.
+	 * @param array $user_meta The user meta array.
 	 */
 	function __construct( $user_id, $user_meta = array() ) {
 		$this->id   = absint( $user_id );
-		$this->meta = maybe_unserialize( $user_meta );
+		$this->meta = $user_meta;
 
 		if ( $this->id ) {
 			$this->user = new \WP_User( $this->id );

@@ -366,18 +366,17 @@ class Alerts {
 		}
 
 		$post = get_post( $post_id );
-		$meta = get_post_custom( $post_id );
+
+		$alert_type     = get_post_meta( $post_id, 'alert_type', true );
+		$alert_meta     = get_post_meta( $post_id, 'alert_meta', true );
 
 		$obj = (object) array(
 			'ID'             => $post->ID,
 			'status'         => $post->post_status,
 			'date'           => $post->post_date,
 			'author'         => $post->post_author,
-			'filter_action'  => isset( $meta['filter_action'] ) ? $meta['filter_action'][0] : null,
-			'filter_author'  => isset( $meta['filter_author'] ) ? $meta['filter_author'][0] : null,
-			'filter_context' => isset( $meta['filter_context'] ) ? $meta['filter_context'][0] : null,
-			'alert_type'     => isset( $meta['alert_type'] ) ? $meta['alert_type'][0] : null,
-			'alert_meta'     => isset( $meta['alert_meta'] ) ? (array) maybe_unserialize( $meta['alert_meta'][0] ) : array(),
+			'alert_type'     => $alert_type,
+			'alert_meta'     => $alert_meta,
 		);
 
 		return new Alert( $obj, $this->plugin );

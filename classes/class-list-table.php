@@ -256,7 +256,7 @@ class List_Table extends \WP_List_Table {
 				break;
 
 			case 'user_id' :
-				$user = new Author( (int) $record->user_id, (array) maybe_unserialize( $record->user_meta ) );
+				$user = new Author( (int) $record->user_id, (array) $record->user_meta );
 
 				$filtered_records_url = add_query_arg(
 					array(

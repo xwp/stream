@@ -67,17 +67,17 @@ class Record {
 	 * @return array
 	 */
 	public function get_meta( $meta_key = '', $single = false ) {
-		return maybe_unserialize( get_metadata( 'record', $this->ID, $meta_key, $single ) );
+		return get_metadata( 'record', $this->ID, $meta_key, $single );
 	}
 
 	/**
 	 * Update record meta
 	 *
 	 * @param string $meta_key
-	 * @param string $meta_value
-	 * @param string $prev_value (optional)
+	 * @param mixed $meta_value
+	 * @param mixed $prev_value (optional)
 	 *
-	 * @return array
+	 * @return bool
 	 */
 	public function update_meta( $meta_key, $meta_value, $prev_value = '' ) {
 		return update_metadata( 'record', $this->ID, $meta_key, $meta_value, $prev_value );

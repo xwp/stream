@@ -56,21 +56,8 @@ class DB {
 			return false;
 		}
 
-		$fields = array( 'object_id', 'site_id', 'blog_id', 'user_id', 'user_role', 'created', 'summary', 'ip', 'connector', 'context', 'action' );
+		$fields = array( 'object_id', 'site_id', 'blog_id', 'user_id', 'user_role', 'created', 'summary', 'ip', 'connector', 'context', 'action', 'meta' );
 		$data   = array_intersect_key( $record, array_flip( $fields ) );
-
-		$meta = array();
-		foreach ( (array) $record['meta'] as $key => $vals ) {
-			// If associative array, serialize it, otherwise loop on its members
-			$vals = ( is_array( $vals ) && 0 !== key( $vals ) ) ? array( $vals ) : $vals;
-
-			foreach ( (array) $vals as $num => $val ) {
-				$vals[ $num ] = maybe_serialize( $val );
-			}
-			$meta[ $key ] = $vals;
-		}
-
-		$data['meta'] = $meta;
 
 		$record_id = $this->driver->insert_record( $data );
 
