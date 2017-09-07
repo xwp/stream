@@ -4,12 +4,14 @@
 ![Banner](assets/banner-1544x500.png)
 Planes have a black box, WordPress has Stream. When something goes wrong, you need to know how it happened.
 
-**Contributors:** [fjarrett](https://profiles.wordpress.org/fjarrett), [lukecarbis](https://profiles.wordpress.org/lukecarbis), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
-**Tags:** [actions](https://wordpress.org/plugins/tags/actions), [activity](https://wordpress.org/plugins/tags/activity), [activity log](https://wordpress.org/plugins/tags/activity log), [activity logs](https://wordpress.org/plugins/tags/activity logs), [admin actions](https://wordpress.org/plugins/tags/admin actions), [analytics](https://wordpress.org/plugins/tags/analytics), [audit](https://wordpress.org/plugins/tags/audit), [audit log](https://wordpress.org/plugins/tags/audit log), [audit logs](https://wordpress.org/plugins/tags/audit logs), [blackbox](https://wordpress.org/plugins/tags/blackbox), [black box](https://wordpress.org/plugins/tags/black box), [change](https://wordpress.org/plugins/tags/change), [changes](https://wordpress.org/plugins/tags/changes), [dashboard](https://wordpress.org/plugins/tags/dashboard), [log](https://wordpress.org/plugins/tags/log), [logs](https://wordpress.org/plugins/tags/logs), [stream](https://wordpress.org/plugins/tags/stream), [tracking](https://wordpress.org/plugins/tags/tracking), [troubleshooting](https://wordpress.org/plugins/tags/troubleshooting), [wp stream](https://wordpress.org/plugins/tags/wp stream)  
+**Contributors:** [lukecarbis](https://profiles.wordpress.org/lukecarbis), [fjarrett](https://profiles.wordpress.org/fjarrett), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
+**Tags:** [wp stream](https://wordpress.org/plugins/tags/wp stream), [stream](https://wordpress.org/plugins/tags/stream), [activity](https://wordpress.org/plugins/tags/activity), [logs](https://wordpress.org/plugins/tags/logs), [track](https://wordpress.org/plugins/tags/track)  
 **Requires at least:** 3.9  
-**Tested up to:** 4.8  
-**Stable tag:** 3.2  
+**Tested up to:** 4.8.2  
+**Stable tag:** 3.2.1  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
+
+[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/xwp/stream) 
 
 ## Description ##
 
@@ -88,6 +90,15 @@ Thank you for wanting to make Stream better for everyone!
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
 
 ## Changelog ##
+
+### 3.2.1 - September 8, 2017 ###
+* New: Support for the ACF Options page. ([#931](https://github.com/xwp/stream/pull/931))
+* New: Added minimal composer file. ([#932](https://github.com/xwp/stream/pull/932)
+* Tweak: Remove dependence on serializing functions. ([#939](https://github.com/xwp/stream/pull/939))
+* Tweak: Add wp_stream_is_record_excluded filter. ([#921](https://github.com/xwp/stream/pull/921))
+* Fix: Readme spelling fixes (localised [sic] for en_US). ([#928](https://github.com/xwp/stream/pull/928))
+* Fix: Undefined index ID issue when trashing post with customize-posts. ([#936](https://github.com/xwp/stream/pull/936))
+* Fix: Stream fails to install properly (sometimes) due to database error. ([#934](https://github.com/xwp/stream/pull/934))
 
 ### 3.2.0 - March 15, 2017 ###
 * New: Stream now support alternate Database Drivers. ([#889](https://github.com/xwp/stream/pull/889))

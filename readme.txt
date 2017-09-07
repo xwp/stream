@@ -1,9 +1,9 @@
 === Stream ===
-Contributors:      fjarrett, lukecarbis, stream, xwp
+Contributors:      lukecarbis, fjarrett, stream, xwp
 Tags:              wp stream, stream, activity, logs, track
 Requires at least: 3.9
-Tested up to:      4.8
-Stable tag:        3.2
+Tested up to:      4.8.1
+Stable tag:        3.2.1
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -78,6 +78,16 @@ Thank you for wanting to make Stream better for everyone!
 3. Create rules for excluding certain kinds of records from appearing in Stream.
 
 == Changelog ==
+
+= 3.2.1 - September 8, 2017 =
+
+* New: Support for the ACF Options page. ([#931](https://github.com/xwp/stream/pull/931))
+* New: Added minimal composer file. ([#932](https://github.com/xwp/stream/pull/932)
+* Tweak: Remove dependence on serializing functions. ([#939](https://github.com/xwp/stream/pull/939))
+* Tweak: Add wp_stream_is_record_excluded filter. ([#921](https://github.com/xwp/stream/pull/921))
+* Fix: Readme spelling fixes (localised [sic] for en_US). ([#928](https://github.com/xwp/stream/pull/928))
+* Fix: Undefined index ID issue when trashing post with customize-posts. ([#936](https://github.com/xwp/stream/pull/936))
+* Fix: Stream fails to install properly (sometimes) due to database error. ([#934](https://github.com/xwp/stream/pull/934))
 
 = 3.2.0 - March 15, 2017 =
 
