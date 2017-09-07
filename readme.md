@@ -15,7 +15,7 @@ Planes have a black box, WordPress has Stream. When something goes wrong, you ne
 
 With Stream, you're never left in the dark about WordPress Admin activity.
 
-Every logged-in user action is displayed in an activity stream and organised for easy filtering by User, Role, Context, Action or IP address.
+Every logged-in user action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action or IP address.
 
 For advanced users, Stream also supports a Multisite view of all activity records on your network, the ability to set exclude rules to ignore certain kinds of user activity, and a WP‑CLI command for querying records.
 
@@ -105,7 +105,7 @@ Thank you for wanting to make Stream better for everyone!
 * New: Stream Alerts is here! Get notified when something happens in your WP-Admin, so that you don't miss a thing. ([#844](https://github.com/xwp/stream/pull/844))
 * Tweak: Better support for the latest version of Yoast SEO ([#838](https://github.com/xwp/stream/pull/838))
 * Tweak: Better support for the latest version of WooCommerce ([#851](https://github.com/xwp/stream/pull/851)[#864](https://github.com/xwp/stream/pull/864))
-* Tweak: Better taxonomy labelling ([#859](https://github.com/xwp/stream/pull/859))
+* Tweak: Better taxonomy labeling ([#859](https://github.com/xwp/stream/pull/859))
 * Fix: Fatal error caused by conflict with Yoast SEO ([#879](https://github.com/xwp/stream/pull/879))
 * Fix: Activating Stream through WP CLI now works ([#880](https://github.com/xwp/stream/pull/880))
 * Fix: Custom roles track properly ([#836](https://github.com/xwp/stream/pull/836))
@@ -139,7 +139,7 @@ Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/luk
 * Tweak: Minor styling updates. It's about attention to detail. ([#826](https://github.com/xwp/stream/pull/826))
 * Fix: Gravity Forms error when adding a note ([#811](https://github.com/xwp/stream/pull/811))
 * Fix: In some instances, custom roles weren't being logged by Stream ([#824](https://github.com/xwp/stream/pull/824))
-* Fix: The Customiser fix you've been waiting for! Stream now properly records changes made from the Customiser. ([#827](https://github.com/xwp/stream/pull/827))
+* Fix: The Customizer fix you've been waiting for! Stream now properly records changes made from the Customizer. ([#827](https://github.com/xwp/stream/pull/827))
 
 Props [@chacha](https://github.com/chacha), [@lukecarbis](https://github.com/lukecarbis), [@Stayallive](https://github.com/Stayallive), [@barryceelen](https://github.com/barryceelen), Jonathan Desrosiers, [@marcin-lawrowski](https://github.com/marcin-lawrowski)
 
@@ -245,7 +245,7 @@ Props [@fjarrett](https://github.com/fjarrett)
 Props [@fjarrett](https://github.com/fjarrett), [@lukecarbis](https://github.com/lukecarbis), [@shadyvb](https://github.com/shadyvb), [@jonathanbardo](https://github.com/jonathanbardo), [@westonruter](https://github.com/westonruter)
 
 ### 2.0.1 - September 30, 2014 ###
-* Tweak: Improved localisation strings throughout the plugin ([#644](https://github.com/wp-stream/stream/pull/644))
+* Tweak: Improved localization strings throughout the plugin ([#644](https://github.com/wp-stream/stream/pull/644))
 * Tweak: Improved tooltip text explaining WP.com sign in
 * Fix: ACF Pro doesn't save custom field values when Stream enabled ([#642](https://github.com/wp-stream/stream/issues/642))
 
@@ -384,7 +384,7 @@ Props [@fjarrett](https://github.com/fjarrett), [@lukecarbis](https://github.com
 * Tweak: Now showing user Gravatars in Exclude Authors & Roles settings field ([#333](https://github.com/x-team/wp-stream/issues/333))
 * Tweak: ID column is now hidden by default in Screen Options ([#348](https://github.com/x-team/wp-stream/issues/348))
 * Tweak: Widget updated summary message improvement ([8818976](https://github.com/x-team/wp-stream/commit/88189761d4a8836038e8d9ec348096a0aab3072d))
-* Fix: Autocomplete not working correctly in Exclude IP Addressees settings field ([#335](https://github.com/x-team/wp-stream/issues/335))
+* Fix: Autocomplete not working correctly in Exclude IP Addresses settings field ([#335](https://github.com/x-team/wp-stream/issues/335))
 * Fix: Reset Stream Database link not clearing everything in all cases ([#347](https://github.com/x-team/wp-stream/issues/347))
 * Fix: PHP 5.3.3 compatibility issue with filter constant ([#351](https://github.com/x-team/wp-stream/issues/351))
 * Fix: Predefined date range intervals not honoring the site timezone setting ([#353](https://github.com/x-team/wp-stream/issues/353))
@@ -433,7 +433,7 @@ Replacement function for filter_input family to avoid PHP bug. Filter added to m
 Prevent records of disabled connectors from appearing in the Stream. Bug fixes. Props [@kucrut](https://github.com/kucrut), [@johnregan3](https://github.com/johnregan3)
 
 ### 1.2.1 - February 17, 2014 ###
-Translation updates. Langage packs for pt_BR and id_ID. Bug fixes. Props [@kucrut](https://github.com/kucrut), [@shadyvb](https://github.com/shadyvb), [@bordoni](https://github.com/bordoni), [@powelski](https://github.com/powelski), [omniwired](https://github.com/omniwired), [@fjarrett](https://github.com/fjarrett)
+Translation updates. Language packs for pt_BR and id_ID. Bug fixes. Props [@kucrut](https://github.com/kucrut), [@shadyvb](https://github.com/shadyvb), [@bordoni](https://github.com/bordoni), [@powelski](https://github.com/powelski), [omniwired](https://github.com/omniwired), [@fjarrett](https://github.com/fjarrett)
 
 ### 1.2.0 - February 12, 2014 ###
 Awesome datepicker styles. Performance optimizations. Bug fixes. Props [@johnregan3](https://github.com/johnregan3), [@shadyvb](https://github.com/shadyvb), [@fjarrett](https://github.com/fjarrett), [@jonathanbardo](https://github.com/jonathanbardo)
