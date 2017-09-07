@@ -114,6 +114,13 @@ class Admin {
 	public $notices = array();
 
 	/**
+	 * Limit settings access via filter.
+	 *
+	 * @var bool
+	 */
+	private $allow_settings_access = true;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
@@ -181,6 +188,9 @@ class Admin {
 		$this->network     = new Network( $this->plugin );
 		$this->live_update = new Live_Update( $this->plugin );
 		$this->export      = new Export( $this->plugin );
+
+		// Maybe limit settings access.
+		$this->allow_settings_access = apply_filters( 'stream_allow_settings_access', $this->allow_settings_access );
 	}
 
 	/**
@@ -313,14 +323,16 @@ class Admin {
 		 */
 		$settings_page_title = apply_filters( 'wp_stream_settings_form_title', esc_html__( 'Stream Settings', 'stream' ) );
 
-		$this->screen_id['settings'] = add_submenu_page(
-			$this->records_page_slug,
-			$settings_page_title,
-			esc_html__( 'Settings', 'stream' ),
-			$this->settings_cap,
-			$this->settings_page_slug,
-			array( $this, 'render_settings_page' )
-		);
+		if ( $this->allow_settings_access ) {
+			$this->screen_id['settings'] = add_submenu_page(
+				$this->records_page_slug,
+				$settings_page_title,
+				esc_html__( 'Settings', 'stream' ),
+				$this->settings_cap,
+				$this->settings_page_slug,
+				array( $this, 'render_settings_page' )
+			);
+		}
 
 		if ( isset( $this->screen_id['main'] ) ) {
 			/**
