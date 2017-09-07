@@ -108,7 +108,7 @@ class Export {
 					break;
 
 				case 'user_id' :
-					$user      = new Author( (int) $record->user_id, (array) maybe_unserialize( $record->user_meta ) );
+					$user      = new Author( (int) $record->user_id, (array) $record->user_meta );
 					$row_out[ $column_name ] = $user->get_display_name();
 					break;
 

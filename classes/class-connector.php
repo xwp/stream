@@ -181,7 +181,7 @@ abstract class Connector {
 			$old_value,
 			$new_value,
 			function( $value1, $value2 ) {
-				return maybe_serialize( $value1 ) !== maybe_serialize( $value2 );
+				return json_encode( $value1 ) !== json_encode( $value2 ); // Compare potentially complex nested arrays
 			}
 		);
 
