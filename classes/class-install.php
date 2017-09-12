@@ -289,13 +289,13 @@ class Install {
 	public function prompt_update() {
 		?>
 		<div class="error">
-			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ) ) ?>">
-				<?php wp_nonce_field( 'wp_stream_update_db' ) ?>
+			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ) ); ?>">
+				<?php wp_nonce_field( 'wp_stream_update_db' ); ?>
 				<input type="hidden" name="wp_stream_update" value="update_and_continue"/>
-				<p><strong><?php esc_html_e( 'Stream Database Update Required', 'stream' ) ?></strong></p>
-				<p><?php esc_html_e( 'Stream has updated! Before we send you on your way, we need to update your database to the newest version.', 'stream' ) ?></p>
-				<p><?php esc_html_e( 'This process could take a little while, so please be patient.', 'stream' ) ?></p>
-				<?php submit_button( esc_html__( 'Update Database', 'stream' ), 'primary', 'stream-update-db-submit' ) ?>
+				<p><strong><?php esc_html_e( 'Stream Database Update Required', 'stream' ); ?></strong></p>
+				<p><?php esc_html_e( 'Stream has updated! Before we send you on your way, we need to update your database to the newest version.', 'stream' ); ?></p>
+				<p><?php esc_html_e( 'This process could take a little while, so please be patient.', 'stream' ); ?></p>
+				<?php submit_button( esc_html__( 'Update Database', 'stream' ), 'primary', 'stream-update-db-submit' ); ?>
 			</form>
 		</div>
 		<?php
@@ -313,10 +313,10 @@ class Install {
 		$this->update_db_option();
 		?>
 		<div class="updated">
-			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ) ) ?>" style="display:inline;">
-				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ) ?></strong></p>
+			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ) ); ?>" style="display:inline;">
+				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ); ?></strong></p>
 				<p><?php printf( esc_html__( 'Your Stream database has been successfully updated from %1$s to %2$s!', 'stream' ), esc_html( $this->db_version ), esc_html( $this->plugin->get_version() ) ); ?></p>
-				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ) ?>
+				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ); ?>
 			</form>
 		</div>
 		<?php

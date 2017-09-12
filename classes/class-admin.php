@@ -698,8 +698,8 @@ class Admin {
 		$this->list_table->prepare_items();
 		?>
 		<div class="wrap">
-			<h1><?php echo esc_html( get_admin_page_title() ) ?></h1>
-			<?php $this->list_table->display() ?>
+			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<?php $this->list_table->display(); ?>
 		</div>
 	<?php
 	}
@@ -719,29 +719,29 @@ class Admin {
 		wp_enqueue_script( 'wp-stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.js', array( 'jquery' ), $this->plugin->get_version(), true );
 		?>
 		<div class="wrap">
-			<h1><?php echo esc_html( get_admin_page_title() ) ?></h1>
+			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
 			<?php if ( ! empty( $page_description ) ) : ?>
-				<p><?php echo esc_html( $page_description ) ?></p>
+				<p><?php echo esc_html( $page_description ); ?></p>
 			<?php endif; ?>
 
-			<?php settings_errors() ?>
+			<?php settings_errors(); ?>
 
 			<?php if ( count( $sections ) > 1 ) : ?>
 				<h2 class="nav-tab-wrapper">
 					<?php $i = 0 ?>
 					<?php foreach ( $sections as $section => $data ) : ?>
 						<?php $i ++ ?>
-						<?php $is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section ) ?>
-						<a href="<?php echo esc_url( add_query_arg( 'tab', $section ) ) ?>" class="nav-tab<?php if ( $is_active ) { echo esc_attr( ' nav-tab-active' ); } ?>">
-							<?php echo esc_html( $data['title'] ) ?>
+						<?php $is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section ); ?>
+						<a href="<?php echo esc_url( add_query_arg( 'tab', $section ) ); ?>" class="nav-tab<?php if ( $is_active ) { echo esc_attr( ' nav-tab-active' ); } ?>">
+							<?php echo esc_html( $data['title'] ); ?>
 						</a>
 					<?php endforeach; ?>
 				</h2>
 			<?php endif; ?>
 
 			<div class="nav-tab-content" id="tab-content-settings">
-				<form method="post" action="<?php echo esc_attr( $form_action ) ?>" enctype="multipart/form-data">
+				<form method="post" action="<?php echo esc_attr( $form_action ); ?>" enctype="multipart/form-data">
 					<div class="settings-sections">
 		<?php
 		$i = 0;
@@ -757,7 +757,7 @@ class Admin {
 		}
 		?>
 					</div>
-					<?php submit_button() ?>
+					<?php submit_button(); ?>
 				</form>
 			</div>
 		</div>

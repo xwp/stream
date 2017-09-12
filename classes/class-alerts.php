@@ -569,12 +569,12 @@ class Alerts {
 			<div id="minor-publishing">
 				<div id="misc-publishing-actions">
 					<div class="misc-pub-section misc-pub-post-status">
-						<label for="wp_stream_alert_status"><?php esc_html_e( 'Status', 'stream' ) ?></label>
+						<label for="wp_stream_alert_status"><?php esc_html_e( 'Status', 'stream' ); ?></label>
 						<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
 							<option<?php selected( $post_status, 'wp_stream_enabled' ); ?>
-								value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
+								value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ); ?></option>
 							<option<?php selected( $post_status, 'wp_stream_disabled' ); ?>
-								value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
+								value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ); ?></option>
 						</select>
 					</div>
 				</div>
@@ -616,11 +616,11 @@ class Alerts {
 			<div id="misc-publishing-actions">
 				<div class="misc-pub-section misc-pub-post-status">
 					<label for="wp_stream_alert_status">
-						<span class="title"><?php esc_html_e( 'Status:', 'stream' ) ?></span>
+						<span class="title"><?php esc_html_e( 'Status:', 'stream' ); ?></span>
 						<span class="input-text-wrap">
 							<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
-								<option selected value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ) ?></option>
-								<option value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ) ?></option>
+								<option selected value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ); ?></option>
+								<option value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ); ?></option>
 							</select>
 						</span>
 					</label>
