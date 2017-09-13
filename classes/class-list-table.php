@@ -62,7 +62,7 @@ class List_Table extends \WP_List_Table {
 	function no_items() {
 		?>
 		<div class="stream-list-table-no-items">
-			<p><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ) ?></p>
+			<p><?php esc_html_e( 'Sorry, no activity records were found.', 'stream' ); ?></p>
 		</div>
 		<?php
 	}
@@ -772,9 +772,9 @@ class List_Table extends \WP_List_Table {
 		?>
 		<div class="date-interval">
 
-			<select class="field-predefined hide-if-no-js chosen-select" name="date_predefined" data-placeholder="<?php esc_attr_e( 'All Time', 'stream' ) ?>">
+			<select class="field-predefined hide-if-no-js chosen-select" name="date_predefined" data-placeholder="<?php esc_attr_e( 'All Time', 'stream' ); ?>">
 				<option></option>
-				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ) ?></option>
+				<option value="custom" <?php selected( 'custom' === $date_predefined ); ?>><?php esc_attr_e( 'Custom', 'stream' ); ?></option>
 				<?php
 				foreach ( $items as $key => $interval ) {
 					$end = isset( $interval['end'] ) ? $interval['end']->format( 'Y/m/d' ) : null;
@@ -794,13 +794,13 @@ class List_Table extends \WP_List_Table {
 			<div class="date-inputs">
 				<div class="box">
 					<i class="date-remove dashicons"></i>
-					<input type="text" name="date_from" class="date-picker field-from" placeholder="<?php esc_attr_e( 'Start Date', 'stream' ) ?>" value="<?php echo esc_attr( $date_from ) ?>" />
+					<input type="text" name="date_from" class="date-picker field-from" placeholder="<?php esc_attr_e( 'Start Date', 'stream' ); ?>" value="<?php echo esc_attr( $date_from ); ?>" />
 				</div>
 				<span class="connector dashicons"></span>
 
 				<div class="box">
 					<i class="date-remove dashicons"></i>
-					<input type="text" name="date_to" class="date-picker field-to" placeholder="<?php esc_attr_e( 'End Date', 'stream' ) ?>" value="<?php echo esc_attr( $date_to ) ?>" />
+					<input type="text" name="date_to" class="date-picker field-to" placeholder="<?php esc_attr_e( 'End Date', 'stream' ); ?>" value="<?php echo esc_attr( $date_to ); ?>" />
 				</div>
 			</div>
 
@@ -952,18 +952,18 @@ class List_Table extends \WP_List_Table {
 		ob_start();
 		?>
 		<fieldset>
-			<h5><?php esc_html_e( 'Live updates', 'stream' ) ?></h5>
+			<h5><?php esc_html_e( 'Live updates', 'stream' ); ?></h5>
 
 			<div>
-				<input type="hidden" name="stream_live_update_nonce" id="stream_live_update_nonce" value="<?php echo esc_attr( $nonce ) ?>" />
+				<input type="hidden" name="stream_live_update_nonce" id="stream_live_update_nonce" value="<?php echo esc_attr( $nonce ); ?>" />
 			</div>
 			<div>
-				<input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ) ?>" />
+				<input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ); ?>" />
 			</div>
 			<div class="metabox-prefs stream-live-update-checkbox">
 				<label for="enable_live_update">
-					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" data-heartbeat="<?php echo esc_attr( $heartbeat ) ?>" <?php checked( $option, 'on' ) ?> />
-					<?php esc_html_e( 'Enabled', 'stream' ) ?><span class="spinner"></span>
+					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" data-heartbeat="<?php echo esc_attr( $heartbeat ); ?>" <?php checked( $option, 'on' ); ?> />
+					<?php esc_html_e( 'Enabled', 'stream' ); ?><span class="spinner"></span>
 				</label>
 			</div>
 		</fieldset>

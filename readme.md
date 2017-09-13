@@ -8,7 +8,7 @@ Planes have a black box, WordPress has Stream. When something goes wrong, you ne
 **Tags:** [wp stream](https://wordpress.org/plugins/tags/wp stream), [stream](https://wordpress.org/plugins/tags/stream), [activity](https://wordpress.org/plugins/tags/activity), [logs](https://wordpress.org/plugins/tags/logs), [track](https://wordpress.org/plugins/tags/track)  
 **Requires at least:** 3.9  
 **Tested up to:** 4.8.1  
-**Stable tag:** 3.2.1  
+**Stable tag:** 3.2.2  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
 [![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/xwp/stream) 
@@ -90,6 +90,9 @@ Thank you for wanting to make Stream better for everyone!
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
 
 ## Changelog ##
+
+### 3.2.2 - September 13, 2017 ###
+* Fix: Prevent fatal error when attempting to store an Object in the database.
 
 ### 3.2.1 - September 8, 2017 ###
 * New: Support for the ACF Options page. ([#931](https://github.com/xwp/stream/pull/931))
