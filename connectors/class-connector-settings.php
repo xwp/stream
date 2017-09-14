@@ -708,9 +708,8 @@ class Connector_Settings extends Connector {
 						'option'     => $option,
 						'option_key' => $field_key,
 						'context'    => ( false !== $key_context ? $key_context : $context ),
-						// Prevent fatal error when saving option as array
-						'old_value'  => isset( $old_value[ $field_key ] ) ? (string) $old_value[ $field_key ] : null,
-						'value'      => isset( $value[ $field_key ] ) ? (string) $value[ $field_key ] : null,
+						'old_value'  => isset( $old_value[ $field_key ] ) ? $this->sanitize_value( $old_value[ $field_key ] ) : null,
+						'value'      => isset( $value[ $field_key ] ) ? $this->sanitize_value( $value[ $field_key ] ) : null,
 					);
 				}
 			}
@@ -719,8 +718,8 @@ class Connector_Settings extends Connector {
 				'label'     => $this->get_field_label( $option ),
 				'option'    => $option,
 				'context'   => $context,
-				'old_value' => (string) $old_value,
-				'value'     => (string) $value,
+				'old_value' => $this->sanitize_value( $old_value ),
+				'value'     => $this->sanitize_value( $value ),
 			);
 		}
 
@@ -746,10 +745,10 @@ class Connector_Settings extends Connector {
 			(function ($) {
 				$(function () {
 					var hashPrefix = <?php echo wp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) // xss ok ?>,
-					    hashFieldName = "",
-					    fieldNames = [],
-					    $select2Choices = {},
-					    $field = {};
+						hashFieldName = "",
+						fieldNames = [],
+						$select2Choices = {},
+						$field = {};
 
 					if (location.hash.substr(1, hashPrefix.length) === hashPrefix) {
 						hashFieldName = location.hash.substr(hashPrefix.length + 1);
@@ -820,5 +819,21 @@ class Connector_Settings extends Connector {
 	public function is_key_option_group( $key, $old_value, $value ) {
 		_deprecated_function( __FUNCTION__, '3.0.6', 'is_option_group' );
 		return $this->is_option_group( $value );
+	}
+
+	/**
+	 * Sanitize values, so that we don't store complex data, such as arrays or objects
+	 *
+	 * @param mixed $value
+	 * @return string
+	 */
+	public function sanitize_value( $value ) {
+		if ( is_array( $value ) ) {
+			return '';
+		} elseif ( is_object( $value ) && ! in_array( '__toString', get_class_methods( $value ) ) ) {
+			return '';
+		}
+
+		return strval( $value );
 	}
 }

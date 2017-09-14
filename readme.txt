@@ -3,7 +3,7 @@ Contributors:      lukecarbis, fjarrett, stream, xwp
 Tags:              wp stream, stream, activity, logs, track
 Requires at least: 3.9
 Tested up to:      4.8.1
-Stable tag:        3.2.1
+Stable tag:        3.2.2
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -78,6 +78,10 @@ Thank you for wanting to make Stream better for everyone!
 3. Create rules for excluding certain kinds of records from appearing in Stream.
 
 == Changelog ==
+
+= 3.2.2 - September 13, 2017 =
+
+* Fix: Prevent fatal error when attempting to store an Object in the database.
 
 = 3.2.1 - September 8, 2017 =
 
