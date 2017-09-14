@@ -197,13 +197,13 @@ class CLI extends \WP_CLI_Command {
 	 * @return string  The CSV output
 	 */
 	private function csv_format( $array ) {
-		$output = fopen( 'php://output', 'w' );
+		$output = fopen( 'php://output', 'w' ); // @codingStandardsIgnoreLine Clever output for WP CLI using php://output
 
 		foreach ( $array as $line ) {
-			fputcsv( $output, $line );
+			fputcsv( $output, $line ); // @codingStandardsIgnoreLine
 		}
 
-		fclose( $output );
+		fclose( $output ); // @codingStandardsIgnoreLine
 	}
 
 	/**
@@ -212,7 +212,12 @@ class CLI extends \WP_CLI_Command {
 	 * @return void
 	 */
 	private function connection() {
-		$query = wp_stream_get_instance()->db->query( array( 'records_per_page' => 1, 'fields' => 'created' ) );
+		$query = wp_stream_get_instance()->db->query(
+			array(
+				'records_per_page' => 1,
+				'fields' => 'created',
+			)
+		);
 
 		if ( ! $query ) {
 			WP_CLI::error( esc_html__( 'SITE IS DISCONNECTED', 'stream' ) );

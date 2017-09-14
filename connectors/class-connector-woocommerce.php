@@ -213,14 +213,17 @@ class Connector_Woocommerce extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		if ( in_array( $record->context, $this->post_types, true ) && get_post( $record->object_id ) ) {
-			if ( $link = get_edit_post_link( $record->object_id ) ) {
+			$edit_post_link = get_edit_post_link( $record->object_id );
+			if ( $edit_post_link ) {
 				$posts_connector = new Connector_Posts();
 				$post_type_name = $posts_connector->get_post_type_name( get_post_type( $record->object_id ) );
-				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $link;
+				// translators: Placeholder refers to a post type singular name (e.g. "Post")
+				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $edit_post_link;
 			}
 
-			if ( post_type_exists( get_post_type( $record->object_id ) ) && $link = get_permalink( $record->object_id ) ) {
-				$links[ esc_html__( 'View', 'stream' ) ] = $link;
+			$permalink = get_permalink( $record->object_id );
+			if ( post_type_exists( get_post_type( $record->object_id ) ) && $permalink ) {
+				$links[ esc_html__( 'View', 'stream' ) ] = $permalink;
 			}
 		}
 
@@ -231,9 +234,14 @@ class Connector_Woocommerce extends Connector {
 		$option_section = $record->get_meta( 'section', true );
 
 		if ( $option_key && $option_tab ) {
+			// translators: Placeholder refers to a context (e.g. "Attribute")
 			$text = sprintf( esc_html__( 'Edit WooCommerce %s', 'stream' ), $context_labels[ $record->context ] );
 			$url  = add_query_arg(
-				array( 'page' => $option_page, 'tab' => $option_tab, 'section' => $option_section ),
+				array(
+					'page' => $option_page,
+					'tab' => $option_tab,
+					'section' => $option_section,
+				),
 				admin_url( 'admin.php' ) // Not self_admin_url here, as WooCommerce doesn't exist in Network Admin
 			);
 
@@ -308,6 +316,7 @@ class Connector_Woocommerce extends Connector {
 		if ( in_array( $new, array( 'auto-draft', 'draft', 'inherit' ), true ) ) {
 			return;
 		} elseif ( 'auto-draft' === $old && 'publish' === $new ) {
+			// translators: Placeholder refers to an order title (e.g. "Order #42")
 			$message = esc_html_x(
 				'%s created',
 				'Order title',
@@ -315,6 +324,7 @@ class Connector_Woocommerce extends Connector {
 			);
 			$action  = 'created';
 		} elseif ( 'trash' === $new ) {
+			// translators: Placeholder refers to an order title (e.g. "Order #42")
 			$message = esc_html_x(
 				'%s trashed',
 				'Order title',
@@ -322,6 +332,7 @@ class Connector_Woocommerce extends Connector {
 			);
 			$action  = 'trashed';
 		} elseif ( 'trash' === $old && 'publish' === $new ) {
+			// translators: Placeholder refers to an order title (e.g. "Order #42")
 			$message = esc_html_x(
 				'%s restored from the trash',
 				'Order title',
@@ -329,6 +340,7 @@ class Connector_Woocommerce extends Connector {
 			);
 			$action  = 'untrashed';
 		} else {
+			// translators: Placeholder refers to an order title (e.g. "Order #42")
 			$message = esc_html_x(
 				'%s updated',
 				'Order title',
@@ -386,6 +398,7 @@ class Connector_Woocommerce extends Connector {
 		$order_type_name = esc_html__( 'order', 'stream' );
 
 		$this->log(
+			// translators: Placeholder refers to an order title (e.g. "Order #42")
 			_x(
 				'"%s" deleted from trash',
 				'Order title',
@@ -431,6 +444,7 @@ class Connector_Woocommerce extends Connector {
 			$old_status_name = $old_status->name;
 		}
 
+		// translators: Placeholders refer to an order title, and order status, and another order status (e.g. "Order #42", "processing", "complete")
 		$message = esc_html_x(
 			'%1$s status changed from %2$s to %3$s',
 			'1. Order title, 2. Old status, 3. New status',
@@ -468,6 +482,7 @@ class Connector_Woocommerce extends Connector {
 	 */
 	public function callback_woocommerce_attribute_added( $attribute_id, $attribute ) {
 		$this->log(
+			// translators: Placeholder refers to a term name (e.g. "color")
 			_x(
 				'"%s" product attribute created',
 				'Term name',
@@ -490,6 +505,7 @@ class Connector_Woocommerce extends Connector {
 	 */
 	public function callback_woocommerce_attribute_updated( $attribute_id, $attribute ) {
 		$this->log(
+			// translators: Placeholder refers to a term name (e.g. "color")
 			_x(
 				'"%s" product attribute updated',
 				'Term name',
@@ -512,6 +528,7 @@ class Connector_Woocommerce extends Connector {
 	 */
 	public function callback_woocommerce_attribute_deleted( $attribute_id, $attribute_name ) {
 		$this->log(
+			// translators: Placeholder refers to a term name (e.g. "color")
 			_x(
 				'"%s" product attribute deleted',
 				'Term name',
@@ -536,6 +553,7 @@ class Connector_Woocommerce extends Connector {
 	 */
 	public function callback_woocommerce_tax_rate_added( $tax_rate_id, $tax_rate ) {
 		$this->log(
+			// translators: Placeholder refers to a tax rate name (e.g. "GST")
 			_x(
 				'"%4$s" tax rate created',
 				'Tax rate name',
@@ -558,6 +576,7 @@ class Connector_Woocommerce extends Connector {
 	 */
 	public function callback_woocommerce_tax_rate_updated( $tax_rate_id, $tax_rate ) {
 		$this->log(
+			// translators: Placeholder refers to a tax rate name (e.g. "GST")
 			_x(
 				'"%4$s" tax rate updated',
 				'Tax rate name',
@@ -590,6 +609,7 @@ class Connector_Woocommerce extends Connector {
 		);
 
 		$this->log(
+			// translators: Placeholder refers to a tax rate name (e.g. "GST")
 			_x(
 				'"%s" tax rate deleted',
 				'Tax rate name',
@@ -651,6 +671,7 @@ class Connector_Woocommerce extends Connector {
 			}
 
 			$this->log(
+				// translators: Placeholders refer to a setting name and a setting type (e.g. "Direct Deposit", "Payment Method")
 				__( '"%1$s" %2$s updated', 'stream' ),
 				array(
 					'label'     => $this->settings[ $option ]['title'],
@@ -679,8 +700,9 @@ class Connector_Woocommerce extends Connector {
 		}
 
 		$settings_cache_key = 'stream_connector_woocommerce_settings_' . sanitize_key( WC_VERSION );
+		$settings_transient = get_transient( $settings_cache_key );
 
-		if ( $settings_transient = get_transient( $settings_cache_key ) ) {
+		if ( $settings_transient ) {
 			$settings       = $settings_transient['settings'];
 			$settings_pages = $settings_transient['settings_pages'];
 		} else {
@@ -731,9 +753,11 @@ class Connector_Woocommerce extends Connector {
 			}
 
 			// Provide additional context for each of the settings pages
-			array_walk( $settings_pages, function( &$value ) {
-				$value .= ' ' . esc_html__( 'Settings', 'stream' );
-			});
+			array_walk(
+				$settings_pages, function( &$value ) {
+					$value .= ' ' . esc_html__( 'Settings', 'stream' );
+				}
+			);
 
 			// Load Payment Gateway Settings
 			$payment_gateway_settings = array();

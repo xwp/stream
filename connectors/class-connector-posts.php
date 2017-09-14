@@ -105,12 +105,16 @@ class Connector_Posts extends Connector {
 					sprintf( 'delete-post_%d', $post->ID )
 				);
 
+				// translators: Placeholder refers to a post type singular name (e.g. "Post")
 				$links[ sprintf( esc_html_x( 'Restore %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $untrash;
+				// translators: Placeholder refers to a post type singular name (e.g. "Post")
 				$links[ sprintf( esc_html_x( 'Delete %s Permenantly', 'Post type singular name', 'stream' ), $post_type_name ) ] = $delete;
 			} else {
+				// translators: Placeholder refers to a post type singular name (e.g. "Post")
 				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_edit_post_link( $post->ID );
 
-				if ( $view_link = get_permalink( $post->ID ) ) {
+				$view_link = get_permalink( $post->ID );
+				if ( $view_link ) {
 					$links[ esc_html__( 'View', 'stream' ) ] = $view_link;
 				}
 
@@ -162,12 +166,14 @@ class Connector_Posts extends Connector {
 		} elseif ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		} elseif ( 'draft' === $new && 'publish' === $old ) {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
 				'"%1$s" %2$s unpublished',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 		} elseif ( 'trash' === $old && 'trash' !== $new ) {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
 				'"%1$s" %2$s restored from trash',
 				'1: Post title, 2: Post type singular name',
@@ -175,48 +181,56 @@ class Connector_Posts extends Connector {
 			);
 			$action  = 'untrashed';
 		} elseif ( 'draft' === $new && 'draft' === $old ) {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
 				'"%1$s" %2$s draft saved',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 		} elseif ( 'publish' === $new && 'draft' === $old ) {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
 				'"%1$s" %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 		} elseif ( 'draft' === $new ) {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
 				'"%1$s" %2$s drafted',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 		} elseif ( 'pending' === $new ) {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
 				'"%1$s" %2$s pending review',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 		} elseif ( 'future' === $new ) {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
 				'"%1$s" %2$s scheduled for %3$s',
 				'1: Post title, 2: Post type singular name, 3: Scheduled post date',
 				'stream'
 			);
 		} elseif ( 'future' === $old && 'publish' === $new ) {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
 				'"%1$s" scheduled %2$s published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 		} elseif ( 'private' === $new ) {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
 				'"%1$s" %2$s privately published',
 				'1: Post title, 2: Post type singular name',
 				'stream'
 			);
 		} elseif ( 'trash' === $new ) {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
 				'"%1$s" %2$s trashed',
 				'1: Post title, 2: Post type singular name',
@@ -224,6 +238,7 @@ class Connector_Posts extends Connector {
 			);
 			$action  = 'trashed';
 		} else {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
 				'"%1$s" %2$s updated',
 				'1: Post title, 2: Post type singular name',
@@ -289,7 +304,7 @@ class Connector_Posts extends Connector {
 		$post = get_post( $post_id );
 
 		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing
-		if ( ! ( $post instanceof \WP_Post ) || in_array( $post->post_type, $this->get_excluded_post_types(), true )  ) {
+		if ( ! ( $post instanceof \WP_Post ) || in_array( $post->post_type, $this->get_excluded_post_types(), true ) ) {
 			return;
 		}
 
@@ -301,6 +316,7 @@ class Connector_Posts extends Connector {
 		$post_type_name = strtolower( $this->get_post_type_name( $post->post_type ) );
 
 		$this->log(
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			_x(
 				'"%1$s" %2$s deleted from trash',
 				'1: Post title, 2: Post type singular name',

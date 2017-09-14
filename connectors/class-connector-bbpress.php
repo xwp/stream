@@ -1,7 +1,7 @@
 <?php
 namespace WP_Stream;
 
-class Connector_bbPress extends Connector {
+class Connector_BbPress extends Connector {
 	/**
 	 * Connector slug
 	 *
@@ -184,10 +184,12 @@ class Connector_bbPress extends Connector {
 		} elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ), true ) ) {
 			if ( 'reply' === $data['context'] ) {
 				if ( 'updated' === $data['action'] ) {
+					// translators: Placeholder refers to a post title (e.g. "Hello World")
 					$data['message'] = esc_html__( 'Replied on "%1$s"', 'stream' );
 					$data['args']['post_title'] = get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title;
 				}
 				$data['args']['post_title'] = sprintf(
+					// translators: Placeholder refers to a post title (e.g. "Hello World")
 					__( 'Reply to: %s', 'stream' ),
 					get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title
 				);
@@ -230,6 +232,7 @@ class Connector_bbPress extends Connector {
 		$topic = get_post( $message['topic_id'] );
 
 		$this->log(
+			// translators: Placeholders refer to an action, and a topic title (e.g. "Created", "Read this first")
 			_x( '%1$s "%2$s" topic', '1: Action, 2: Topic title', 'stream' ),
 			array(
 				'action_title' => $actions[ $action ],
