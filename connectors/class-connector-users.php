@@ -211,7 +211,7 @@ class Connector_Users extends Connector {
 			array(
 				'display_name' => get_user_by( 'id', $user_id )->display_name,
 				'old_role'     => translate_user_role( $wp_roles->role_names[ current( $old_roles ) ] ),
-				'new_role'     => translate_user_role( $wp_roles->role_names[ $new_role ] ),
+				'new_role'     => $new_role ? translate_user_role( $wp_roles->role_names[ $new_role ] ) : __( 'N/A', 'stream' ),
 			),
 			$user_id,
 			'profiles',
