@@ -135,23 +135,23 @@ class CLI extends \WP_CLI_Command {
 
 		if ( isset( $assoc_args['format'] ) && 'table' !== $assoc_args['format'] ) {
 			if ( 'count' === $assoc_args['format'] ) {
-				WP_CLI::line( count( $records ) );
+				\WP_CLI::line( count( $records ) );
 			}
 
 			if ( 'json' === $assoc_args['format'] ) {
-				WP_CLI::line( wp_stream_json_encode( $formatted_records ) );
+				\WP_CLI::line( wp_stream_json_encode( $formatted_records ) );
 			}
 
 			if ( 'json_pretty' === $assoc_args['format'] ) {
 				if ( version_compare( PHP_VERSION, '5.4', '<' ) ) {
-					WP_CLI::line( wp_stream_json_encode( $formatted_records ) ); // xss ok
+					\WP_CLI::line( wp_stream_json_encode( $formatted_records ) ); // xss ok
 				} else {
-					WP_CLI::line( wp_stream_json_encode( $formatted_records, JSON_PRETTY_PRINT ) ); // xss ok
+					\WP_CLI::line( wp_stream_json_encode( $formatted_records, JSON_PRETTY_PRINT ) ); // xss ok
 				}
 			}
 
 			if ( 'csv' === $assoc_args['format'] ) {
-				WP_CLI::line( $this->csv_format( $formatted_records ) );
+				\WP_CLI::line( $this->csv_format( $formatted_records ) );
 			}
 
 			return;
@@ -220,7 +220,7 @@ class CLI extends \WP_CLI_Command {
 		);
 
 		if ( ! $query ) {
-			WP_CLI::error( esc_html__( 'SITE IS DISCONNECTED', 'stream' ) );
+			\WP_CLI::error( esc_html__( 'SITE IS DISCONNECTED', 'stream' ) );
 		}
 	}
 }
