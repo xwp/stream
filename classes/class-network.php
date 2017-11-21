@@ -95,7 +95,9 @@ class Network {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		}
 
-		return is_plugin_active_for_network( $this->plugin->locations['plugin'] );
+		$is_network_activated = apply_filters( 'wp_stream_is_network_activated', is_plugin_active_for_network( $this->plugin->locations['plugin'] ) );
+
+		return $is_network_activated;
 	}
 
 	/**
