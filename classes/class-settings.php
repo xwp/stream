@@ -784,7 +784,7 @@ class Settings {
 				);
 
 				$exclude_rows = array();
-
+				
 				// Prepend an empty row
 				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
 
@@ -799,10 +799,10 @@ class Settings {
 					// Author or Role dropdown menu
 					$author_or_role_values   = array();
 					$author_or_role_selected = array();
+					$users = count_users();
 
 					foreach ( $this->get_roles() as $role_id => $role ) {
 						$args  = array( 'value' => $role_id, 'text' => $role );
-						$users = count_users();
 						$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
 
 						if ( ! empty( $count ) ) {
