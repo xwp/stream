@@ -784,7 +784,7 @@ class Settings {
 				);
 
 				$exclude_rows = array();
-				
+
 				// Prepend an empty row
 				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
 
