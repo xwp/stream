@@ -107,6 +107,10 @@ class Log {
 			$role = '';
 		}
 
+		// Support proxy mode by checking the `X-Forwarded-For` header first
+		$ip_address = wp_stream_filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_VALIDATE_IP );
+		$ip_address = $ip_address ? $ip_address : wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
+
 		$recordarr = array(
 			'object_id'  => (int) $object_id,
 			'site_id'    => (int) is_multisite() ? get_current_site()->id : 1,
@@ -118,7 +122,7 @@ class Log {
 			'connector'  => (string) $connector,
 			'context'    => (string) $context,
 			'action'     => (string) $action,
-			'ip'         => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
+			'ip'         => (string) $ip_address,
 			'meta'       => (array) $stream_meta,
 		);
 
