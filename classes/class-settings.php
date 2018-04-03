@@ -817,13 +817,14 @@ class Settings {
 					// Author or Role dropdown menu
 					$author_or_role_values   = array();
 					$author_or_role_selected = array();
+					$users = count_users();
 
 					foreach ( $this->get_roles() as $role_id => $role ) {
 						$args  = array(
 							'value' => $role_id,
 							'text' => $role,
 						);
-						$users = count_users();
+						
 						$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
 
 						if ( ! empty( $count ) ) {
