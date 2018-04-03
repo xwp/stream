@@ -771,6 +771,7 @@ class Settings {
 
 				break;
 			case 'rule_list':
+				$users = count_users();
 				$form = new Form_Generator();
 				$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
@@ -817,7 +818,6 @@ class Settings {
 					// Author or Role dropdown menu
 					$author_or_role_values   = array();
 					$author_or_role_selected = array();
-					$users = count_users();
 
 					foreach ( $this->get_roles() as $role_id => $role ) {
 						$args  = array(
