@@ -215,6 +215,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to a form title, and a status (e.g. "Contact Form", "created")
 				__( '"%1$s" form %2$s', 'stream' ),
 				$title,
 				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' )
@@ -245,6 +246,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to a confirmation name, a status, and a form title (e.g. "Email", "created", "Contact Form")
 				__( '"%1$s" confirmation %2$s for "%3$s"', 'stream' ),
 				$confirmation['name'],
 				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
@@ -277,6 +279,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to a notification name, a status, and a form title (e.g. "Email", "created", "Contact Form")
 				__( '"%1$s" notification %2$s for "%3$s"', 'stream' ),
 				$notification['name'],
 				$is_new ? esc_html__( 'created', 'stream' ) : esc_html__( 'updated', 'stream' ),
@@ -304,6 +307,7 @@ class Connector_GravityForms extends Connector {
 	public function callback_gform_pre_notification_deleted( $notification, $form ) {
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to a notification name, and a form title (e.g. "Email", "Contact Form")
 				__( '"%1$s" notification deleted from "%2$s"', 'stream' ),
 				$notification['name'],
 				$form['title']
@@ -328,6 +332,7 @@ class Connector_GravityForms extends Connector {
 	public function callback_gform_pre_confirmation_deleted( $confirmation, $form ) {
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to a confirmation name, and a form title (e.g. "Email", "Contact Form")
 				__( '"%1$s" confirmation deleted from "%2$s"', 'stream' ),
 				$confirmation['name'],
 				$form['title']
@@ -353,6 +358,7 @@ class Connector_GravityForms extends Connector {
 	public function callback_gform_confirmation_status( $confirmation, $form, $is_active ) {
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to a confirmation name, a status, and a form title (e.g. "Email", "activated", "Contact Form")
 				__( '"%1$s" confirmation %2$s from "%3$s"', 'stream' ),
 				$confirmation['name'],
 				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
@@ -380,6 +386,7 @@ class Connector_GravityForms extends Connector {
 	public function callback_gform_notification_status( $notification, $form, $is_active ) {
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to a notification name, a status, and a form title (e.g. "Email", "activated", "Contact Form")
 				__( '"%1$s" notification %2$s from "%3$s"', 'stream' ),
 				$notification['name'],
 				$is_active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
@@ -433,6 +440,7 @@ class Connector_GravityForms extends Connector {
 			$context      = isset( $data['context'] ) ? $data['context'] : 'settings';
 
 			$this->log(
+				// translators: Placeholder refers to a setting title (e.g. "Language")
 				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
@@ -448,6 +456,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholder refers to a status (e.g. "updated")
 				__( 'Gravity Forms license key %s', 'stream' ),
 				$is_update ? esc_html__( 'updated', 'stream' ) : esc_html__( 'deleted', 'stream' )
 			),
@@ -461,12 +470,13 @@ class Connector_GravityForms extends Connector {
 	public function callback_gform_post_export_entries( $form, $start_date, $end_date, $fields ) {
 		unset( $fields );
 		$this->log(
+			// translators: Placeholder refers to a form title (e.g. "Contact Form")
 			__( '"%s" form entries exported', 'stream' ),
 			array(
 				'form_title' => $form['title'],
 				'form_id'    => $form['id'],
 				'start_date' => empty( $start_date ) ? null : $start_date,
-				'end_date'   => empty( $end_date )   ? null : $end_date,
+				'end_date'   => empty( $end_date ) ? null : $end_date,
 			),
 			$form['id'],
 			'export',
@@ -476,15 +486,14 @@ class Connector_GravityForms extends Connector {
 
 	public function callback_gform_forms_post_import( $forms ) {
 		$forms_total  = count( $forms );
-		$forms_label  = ( 1 === $forms_total ) ? 'form' : 'forms';
 		$forms_ids    = wp_list_pluck( $forms, 'id' );
 		$forms_titles = wp_list_pluck( $forms, 'title' );
 
 		$this->log(
-			__( '%1$d %2$s imported', 'stream' ),
+			// translators: Placeholder refers to a number of forms (e.g. "42")
+			_n( '%d form imported', '%d forms imported', $forms_total, 'stream' ),
 			array(
 				'count'  => $forms_total,
-				'label'  => $forms_label,
 				'ids'    => $forms_ids,
 				'titles' => $forms_titles,
 			),
@@ -498,6 +507,7 @@ class Connector_GravityForms extends Connector {
 		$form = $this->get_form( $form_id );
 
 		$this->log(
+			// translators: Placeholder refers to a form title (e.g. "Contact Form")
 			__( '"%s" form exported', 'stream' ),
 			array(
 				'form_title' => $form['title'],
@@ -516,7 +526,8 @@ class Connector_GravityForms extends Connector {
 		$titles = wp_list_pluck( $forms, 'title' );
 
 		$this->log(
-			__( 'Export process started for %d forms', 'stream' ),
+			// translators: Placeholder refers to a number of forms (e.g. "42")
+			_n( 'Export process started for %d form', 'Export process started for %d forms', count( $forms ), 'stream' ),
 			array(
 				'count'  => count( $forms ),
 				'ids'    => $ids,
@@ -535,6 +546,7 @@ class Connector_GravityForms extends Connector {
 		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
+			// translators: Placeholders refer to an ID, and a form title (e.g. "42", "Contact Form")
 			__( 'Lead #%1$d from "%2$s" deleted', 'stream' ),
 			array(
 				'lead_id'    => $lead_id,
@@ -557,6 +569,7 @@ class Connector_GravityForms extends Connector {
 		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
+			// translators: Placeholders refer to an ID, another ID, and a form title (e.g. "42", "7", "Contact Form")
 			__( 'Note #%1$d added to lead #%2$d on "%3$s" form', 'stream' ),
 			array(
 				'note_id'    => $note_id,
@@ -575,6 +588,7 @@ class Connector_GravityForms extends Connector {
 		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
+			// translators: Placeholders refer to an ID, another ID, and a form title (e.g. "42", "7", "Contact Form")
 			__( 'Note #%1$d deleted from lead #%2$d on "%3$s" form', 'stream' ),
 			array(
 				'note_id'    => $note_id,
@@ -609,6 +623,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to an ID, a status, and a form title (e.g. "42", "activated", "Contact Form")
 				__( 'Lead #%1$d %2$s on "%3$s" form', 'stream' ),
 				$lead_id,
 				$actions[ $status ],
@@ -641,6 +656,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to an ID, a status, and a form title (e.g. "42", "unread", "Contact Form")
 				__( 'Entry #%1$d marked as %2$s on form #%3$d ("%4$s")', 'stream' ),
 				$lead_id,
 				$status,
@@ -674,6 +690,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to an ID, a status, and a form title (e.g. "42", "starred", "Contact Form")
 				__( 'Entry #%1$d %2$s on form #%3$d ("%4$s")', 'stream' ),
 				$lead_id,
 				$status,
@@ -788,6 +805,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to an ID, a form title, and a status (e.g. "42", "Contact Form", "Activated")
 				__( 'Form #%1$d ("%2$s") %3$s', 'stream' ),
 				$form_id,
 				$form['title'],

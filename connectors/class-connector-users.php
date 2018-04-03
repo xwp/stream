@@ -86,7 +86,8 @@ class Connector_Users extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		if ( $record->object_id ) {
-			if ( $link = get_edit_user_link( $record->object_id ) ) {
+			$link = get_edit_user_link( $record->object_id );
+			if ( $link ) {
 				$links [ esc_html__( 'Edit User', 'stream' ) ] = $link;
 			}
 		}
@@ -139,6 +140,7 @@ class Connector_Users extends Connector {
 			$message     = esc_html__( 'New user registration', 'stream' );
 			$user_to_log = $registered_user->ID;
 		} else { // Current logged-in user created a new user
+			// translators: Placeholders refer to a user display name, and a user role (e.g. "Jane Doe", "subscriber")
 			$message     = _x(
 				'New user account created for %1$s (%2$s)',
 				'1: User display name, 2: User role',
@@ -172,6 +174,7 @@ class Connector_Users extends Connector {
 		unset( $user_id );
 
 		$this->log(
+			// translators: Placeholder refers to a user display name (e.g. "Jane Doe")
 			__( '%s\'s profile was updated', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
@@ -199,6 +202,7 @@ class Connector_Users extends Connector {
 		global $wp_roles;
 
 		$this->log(
+			// translators: Placeholders refer to a user display name, a user role, and another user role (e.g. "Jane Doe", "editor", "subscriber")
 			_x(
 				'%1$s\'s role was changed from %2$s to %3$s',
 				'1: User display name, 2: Old role, 3: New role',
@@ -206,8 +210,8 @@ class Connector_Users extends Connector {
 			),
 			array(
 				'display_name' => get_user_by( 'id', $user_id )->display_name,
-				'old_role'     => translate_user_role( $wp_roles->role_names[ $old_roles[0] ] ),
-				'new_role'     => translate_user_role( $wp_roles->role_names[ $new_role ] ),
+				'old_role'     => translate_user_role( $wp_roles->role_names[ current( $old_roles ) ] ),
+				'new_role'     => $new_role ? translate_user_role( $wp_roles->role_names[ $new_role ] ) : __( 'N/A', 'stream' ),
 			),
 			$user_id,
 			'profiles',
@@ -224,6 +228,7 @@ class Connector_Users extends Connector {
 	 */
 	public function callback_password_reset( $user ) {
 		$this->log(
+			// translators: Placeholder refers to a user display name (e.g. "Jane Doe")
 			__( '%s\'s password was reset', 'stream' ),
 			array(
 				'email' => $user->display_name,
@@ -250,8 +255,11 @@ class Connector_Users extends Connector {
 		}
 
 		$this->log(
+			// translators: Placeholder refers to a user display name (e.g. "Jane Doe")
 			__( '%s\'s password was requested to be reset', 'stream' ),
-			array( 'display_name' => $user->display_name ),
+			array(
+				'display_name' => $user->display_name,
+			),
 			$user->ID,
 			'sessions',
 			'forgot-password',
@@ -276,8 +284,11 @@ class Connector_Users extends Connector {
 		$user = get_user_by( 'id', $user_id );
 
 		$this->log(
+			// translators: Placeholder refers to a user display name (e.g. "Jane Doe")
 			__( '%s logged in', 'stream' ),
-			array( 'display_name' => $user->display_name ),
+			array(
+				'display_name' => $user->display_name,
+			),
 			$user->ID,
 			'sessions',
 			'login',
@@ -299,8 +310,11 @@ class Connector_Users extends Connector {
 		}
 
 		$this->log(
+			// translators: Placeholder refers to a user display name (e.g. "Jane Doe")
 			__( '%s logged out', 'stream' ),
-			array( 'display_name' => $user->display_name ),
+			array(
+				'display_name' => $user->display_name,
+			),
 			$user->ID,
 			'sessions',
 			'logout',
@@ -334,6 +348,7 @@ class Connector_Users extends Connector {
 		$user = wp_get_current_user();
 
 		if ( isset( $this->_users_object_pre_deleted[ $user_id ] ) ) {
+			// translators: Placeholders refer to a user display name, and a user role (e.g. "Jane Doe", "subscriber")
 			$message      = _x(
 				'%1$s\'s account was deleted (%2$s)',
 				'1: User display name, 2: User roles',
@@ -343,6 +358,7 @@ class Connector_Users extends Connector {
 			$deleted_user = $this->_users_object_pre_deleted[ $user_id ];
 			unset( $this->_users_object_pre_deleted[ $user_id ] );
 		} else {
+			// translators: Placeholders refer to a user display name, and a user role (e.g. "Jane Doe", "subscriber")
 			$message      = esc_html__( 'User account #%d was deleted', 'stream' );
 			$display_name = $user_id;
 			$deleted_user = $user_id;

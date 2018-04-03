@@ -89,7 +89,11 @@ class Alert_Trigger_Author extends Alert_Trigger {
 			function( $user_id ) {
 				return new Author( $user_id );
 			},
-			get_users( array( 'fields' => 'ID' ) )
+			get_users(
+				array(
+					'fields' => 'ID',
+				)
+			)
 		);
 
 		if ( is_multisite() && is_super_admin() ) {
@@ -103,7 +107,10 @@ class Alert_Trigger_Author extends Alert_Trigger {
 			$users = array_unique( array_merge( $users, $super_admins ) );
 		}
 
-		$users[] = new Author( 0, array( 'is_wp_cli' => true ) );
+		$user_meta = array(
+			'is_wp_cli' => true,
+		);
+		$users[] = new Author( 0, $user_meta );
 
 		foreach ( $users as $user ) {
 			$all_records[] = array(

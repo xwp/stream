@@ -191,7 +191,11 @@ class Connector_BuddyPress extends Connector {
 			);
 		} elseif ( in_array( $record->context, array( 'groups' ), true ) ) {
 			$group_id = $record->get_meta( 'id', true );
-			$group    = \groups_get_group( array( 'group_id' => $group_id ) );
+			$group    = \groups_get_group(
+				array(
+					'group_id' => $group_id,
+				)
+			);
 
 			if ( $group ) {
 				// Build actions URLs
@@ -206,7 +210,12 @@ class Connector_BuddyPress extends Connector {
 			}
 		} elseif ( in_array( $record->context, array( 'activity' ), true ) ) {
 			$activity_id = $record->get_meta( 'id', true );
-			$activities = \bp_activity_get( array( 'in' => $activity_id, 'spam' => 'all' ) );
+			$activities = \bp_activity_get(
+				array(
+					'in' => $activity_id,
+					'spam' => 'all',
+				)
+			);
 			if ( ! empty( $activities['activities'] ) ) {
 				$activity = reset( $activities['activities'] );
 
@@ -364,6 +373,7 @@ class Connector_BuddyPress extends Connector {
 			$page         = isset( $data['page'] ) ? $data['page'] : null;
 
 			$this->log(
+				// translators: Placeholder refers to setting name (e.g. "Group Creation")
 				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value', 'page' ),
 				null,
@@ -398,6 +408,7 @@ class Connector_BuddyPress extends Connector {
 
 			$this->log(
 				sprintf(
+					// translators: Placeholder refers to component title (e.g. "Members")
 					__( '"%1$s" component %2$s', 'stream' ),
 					$components[ $option ]['title'],
 					$actions[ $option_value ]
@@ -443,6 +454,7 @@ class Connector_BuddyPress extends Connector {
 
 			$this->log(
 				sprintf(
+					// translators: Placeholders refer to a directory page, and a page title (e.g. "Register", "Registration" )
 					__( '"%1$s" page set to "%2$s"', 'stream' ),
 					$pages[ $option ],
 					$page
@@ -477,6 +489,7 @@ class Connector_BuddyPress extends Connector {
 			$activity = $this->_deleted_activity;
 			$this->log(
 				sprintf(
+					// translators: Placeholder refers to an activity title (e.g. "Update")
 					__( '"%s" activity deleted', 'stream' ),
 					strip_tags( $activity->action )
 				),
@@ -499,6 +512,7 @@ class Connector_BuddyPress extends Connector {
 			}
 			$this->log(
 				sprintf(
+					// translators: Placeholder refers to an activity title (e.g. "Update")
 					__( '"%s" activities were deleted', 'stream' ),
 					count( $activities_ids )
 				),
@@ -519,6 +533,7 @@ class Connector_BuddyPress extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholder refers to an activity title (e.g. "Update")
 				__( 'Marked activity "%s" as spam', 'stream' ),
 				strip_tags( $activity->action )
 			),
@@ -539,6 +554,7 @@ class Connector_BuddyPress extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholder refers to an activity title (e.g. "Update")
 				__( 'Unmarked activity "%s" as spam', 'stream' ),
 				strip_tags( $activity->action )
 			),
@@ -559,6 +575,7 @@ class Connector_BuddyPress extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholder refers to an activity title (e.g. "Update")
 				__( '"%s" activity updated', 'stream' ),
 				strip_tags( $activity->action )
 			),
@@ -576,7 +593,11 @@ class Connector_BuddyPress extends Connector {
 
 	public function group_action( $group, $action, $meta = array(), $message = null ) {
 		if ( is_numeric( $group ) ) {
-			$group = \groups_get_group( array( 'group_id' => $group ) );
+			$group = \groups_get_group(
+				array(
+					'group_id' => $group,
+				)
+			);
 		}
 
 		$replacements = array(
@@ -585,22 +606,30 @@ class Connector_BuddyPress extends Connector {
 
 		if ( ! $message ) {
 			if ( 'created' === $action ) {
+				// translators: Placeholder refers to a group name (e.g. "Favourites")
 				$message = esc_html__( '"%s" group created', 'stream' );
 			} elseif ( 'updated' === $action ) {
+				// translators: Placeholder refers to a group name (e.g. "Favourites")
 				$message = esc_html__( '"%s" group updated', 'stream' );
 			} elseif ( 'deleted' === $action ) {
+				// translators: Placeholder refers to a group name (e.g. "Favourites")
 				$message = esc_html__( '"%s" group deleted', 'stream' );
 			} elseif ( 'joined' === $action ) {
+				// translators: Placeholder refers to a group name (e.g. "Favourites")
 				$message = esc_html__( 'Joined group "%s"', 'stream' );
 			} elseif ( 'left' === $action ) {
+				// translators: Placeholder refers to a group name (e.g. "Favourites")
 				$message = esc_html__( 'Left group "%s"', 'stream' );
 			} elseif ( 'banned' === $action ) {
+				// translators: Placeholders refer to a user display name, and a group name (e.g. "Jane Doe", "Favourites")
 				$message = esc_html__( 'Banned "%2$s" from "%1$s"', 'stream' );
 				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 			} elseif ( 'unbanned' === $action ) {
+				// translators: Placeholders refer to a user display name, and a group name (e.g. "Jane Doe", "Favourites")
 				$message = esc_html__( 'Unbanned "%2$s" from "%1$s"', 'stream' );
 				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 			} elseif ( 'removed' === $action ) {
+				// translators: Placeholders refer to a user display name, and a group name (e.g. "Jane Doe", "Favourites")
 				$message = esc_html__( 'Removed "%2$s" from "%1$s"', 'stream' );
 				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 			} else {
@@ -666,13 +695,18 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	public function callback_groups_promote_member( $group_id, $user_id, $status ) {
-		$group = \groups_get_group( array( 'group_id' => $group_id ) );
+		$group = \groups_get_group(
+			array(
+				'group_id' => $group_id,
+			)
+		);
 		$user = new \WP_User( $user_id );
 		$roles = array(
 			'admin' => esc_html_x( 'Administrator', 'buddypress', 'stream' ),
 			'mod'   => esc_html_x( 'Moderator', 'buddypress', 'stream' ),
 		);
 		$message = sprintf(
+			// translators: Placeholders refer to a user's display name, a user role, and a group name (e.g. "Jane Doe", "subscriber", "Favourites")
 			__( 'Promoted "%1$s" to "%2$s" in "%3$s"', 'stream' ),
 			$user->display_name,
 			$roles[ $status ],
@@ -682,9 +716,14 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	public function callback_groups_demote_member( $group_id, $user_id ) {
-		$group = \groups_get_group( array( 'group_id' => $group_id ) );
+		$group = \groups_get_group(
+			array(
+				'group_id' => $group_id,
+			)
+		);
 		$user = new \WP_User( $user_id );
 		$message = sprintf(
+			// translators: Placeholders refer to a user's display name, a user role, and a group name (e.g. "Jane Doe", "Member", "Favourites")
 			__( 'Demoted "%1$s" to "%2$s" in "%3$s"', 'stream' ),
 			$user->display_name,
 			_x( 'Member', 'buddypress', 'stream' ),
@@ -712,10 +751,13 @@ class Connector_BuddyPress extends Connector {
 
 		if ( ! $message ) {
 			if ( 'created' === $action ) {
+				// translators: Placeholder refers to a user profile field (e.g. "Job Title")
 				$message = esc_html__( 'Created profile field "%s"', 'stream' );
 			} elseif ( 'updated' === $action ) {
+				// translators: Placeholder refers to a user profile field (e.g. "Job Title")
 				$message = esc_html__( 'Updated profile field "%s"', 'stream' );
 			} elseif ( 'deleted' === $action ) {
+				// translators: Placeholder refers to a user profile field (e.g. "Job Title")
 				$message = esc_html__( 'Deleted profile field "%s"', 'stream' );
 			} else {
 				return;
@@ -757,10 +799,13 @@ class Connector_BuddyPress extends Connector {
 
 		if ( ! $message ) {
 			if ( 'created' === $action ) {
+				// translators: Placeholder refers to a user profile field group (e.g. "Appearance")
 				$message = esc_html__( 'Created profile field group "%s"', 'stream' );
 			} elseif ( 'updated' === $action ) {
+				// translators: Placeholder refers to a user profile field group (e.g. "Appearance")
 				$message = esc_html__( 'Updated profile field group "%s"', 'stream' );
 			} elseif ( 'deleted' === $action ) {
+				// translators: Placeholder refers to a user profile field group (e.g. "Appearance")
 				$message = esc_html__( 'Deleted profile field group "%s"', 'stream' );
 			} else {
 				return;

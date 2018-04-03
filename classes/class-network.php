@@ -78,7 +78,7 @@ class Network {
 	 * @return object
 	 */
 	public function get_network_blog() {
-		$blog           = new \stdClass;
+		$blog           = new \stdClass();
 		$blog->blog_id  = 0;
 		$blog->blogname = esc_html__( 'Network Admin', 'stream' );
 
@@ -95,7 +95,27 @@ class Network {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		}
 
+		if ( $this->is_mustuse() ) {
+			return true;
+		}
+
 		return is_plugin_active_for_network( $this->plugin->locations['plugin'] );
+	}
+
+	/**
+	 * Returns true if Stream is a must-use plugin, otherwise false
+	 *
+	 * @return bool
+	 */
+	public function is_mustuse() {
+
+		$stream_php = trailingslashit( WPMU_PLUGIN_DIR ) . $this->plugin->locations['plugin'];
+
+		if ( file_exists( $stream_php ) && class_exists( 'WP_Stream\Plugin' ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -178,7 +198,11 @@ class Network {
 	public function settings_form_action( $action ) {
 		if ( is_network_admin() ) {
 			$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
-			$action       = add_query_arg( array( 'action' => $current_page ), 'edit.php' );
+			$action       = add_query_arg(
+				array(
+					'action' => $current_page,
+				), 'edit.php'
+			);
 		}
 
 		return $action;
@@ -199,10 +223,10 @@ class Network {
 		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
 
 		switch ( $current_page ) {
-			case $this->network_settings_page_slug :
+			case $this->network_settings_page_slug:
 				$description = __( 'These settings apply to all sites on the network.', 'stream' );
 				break;
-			case $this->default_settings_page_slug :
+			case $this->default_settings_page_slug:
 				$description = __( 'These default settings will apply to new sites created on the network. These settings do not alter existing sites.', 'stream' );
 				break;
 		}
@@ -327,13 +351,11 @@ class Network {
 			$this->default_settings_page_slug,
 		);
 
-		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers, true ) ) {
+		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers, true ) ) { // CSRF okay
 			return;
 		}
 
-		// @codingStandardsIgnoreStart
-		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null;
-		// @codingStandardsIgnoreEnd
+		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null; // CSRF okay
 
 		if ( $options ) {
 
@@ -487,6 +509,7 @@ class Network {
 	 */
 	public function network_admin_page_title( $page_title ) {
 		if ( is_network_admin() ) {
+			// translators: Placeholder refers to a number of sites on the network (e.g. "42")
 			$site_count = sprintf( _n( '%d site', '%d sites', get_blog_count(), 'stream' ), number_format( get_blog_count() ) );
 			$page_title = sprintf( '%s (%s)', $page_title, $site_count );
 		}

@@ -209,8 +209,9 @@ class Connector_ACF extends Connector {
 	 * @param mixed|null $meta_value
 	 */
 	public function check_meta( $type, $action, $meta_id, $object_id, $meta_key, $meta_value = null ) {
-		if ( 'post' !== $type || ! ( $post = get_post( $object_id ) ) || 'acf' !== $post->post_type ) {
-			$this->check_meta_values( $type, $action, $meta_id, $object_id, $meta_key, $meta_value = null );
+		$post = get_post( $object_id );
+		if ( 'post' !== $type || ! $post || 'acf' !== $post->post_type ) {
+			$this->check_meta_values( $type, $action, $meta_id, $object_id, $meta_key, $meta_value );
 			return;
 		}
 
@@ -223,6 +224,7 @@ class Connector_ACF extends Connector {
 			}
 
 			$this->log(
+				// translators: Placeholders refer to a field label, a form title, and an action (e.g. "Message", "Contact", "Created")
 				esc_html_x( '"%1$s" field in "%2$s" %3$s', 'acf', 'stream' ),
 				array(
 					'label'  => $meta_value['label'],
@@ -253,6 +255,7 @@ class Connector_ACF extends Connector {
 			);
 
 			$this->log(
+				// translators: Placeholders refer to a form title, and a position (e.g. "Contact", "Side")
 				esc_html_x( 'Position of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
 				array(
 					'title'        => $post->post_title,
@@ -275,6 +278,7 @@ class Connector_ACF extends Connector {
 			);
 
 			$this->log(
+				// translators: Placeholders refer to a form title, and a layout (e.g. "Contact", "Seamless")
 				esc_html_x( 'Style of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
 				array(
 					'title'        => $post->post_title,
@@ -317,6 +321,7 @@ class Connector_ACF extends Connector {
 			}
 
 			$this->log(
+				// translators: Placeholders refer to a form title, and a display option (e.g. "Contact", "All screens")
 				esc_html_x( '"%1$s" set to display on "%2$s"', 'acf', 'stream' ),
 				array(
 					'title'        => $post->post_title,
@@ -398,6 +403,7 @@ class Connector_ACF extends Connector {
 			$cache = $this->cached_field_values_updates[ $object_key ][ $key ];
 
 			$this->log(
+				// translators: Placeholders refer to a field label, an object title, and an object type (e.g. "Message", "Hello World", "post")
 				esc_html_x( '"%1$s" of "%2$s" %3$s updated', 'acf', 'stream' ),
 				array(
 					'field_label'   => $cache['field']['label'],
@@ -436,6 +442,7 @@ class Connector_ACF extends Connector {
 			$deleted = array_diff( $old, $new );
 
 			$this->log(
+				// translators: Placeholders refer to a form title, the number of rules added, and the number of rules deleted (e.g. "Contact", "42", "7")
 				esc_html_x( 'Updated rules of "%1$s" (%2$d added, %3$d deleted)', 'acf', 'stream' ),
 				array(
 					'title'      => $post->post_title,
@@ -503,6 +510,7 @@ class Connector_ACF extends Connector {
 		// menu_order, aka Order No.
 		if ( $data['menu_order'] !== $post->menu_order ) {
 			$this->log(
+				// translators: Placeholders refer to a form title, a numeric position, and another numeric position (e.g. "Contact", "42", "7")
 				esc_html_x( '"%1$s" reordered from %2$d to %3$d', 'acf', 'stream' ),
 				array(
 					'title'          => $post->post_title,

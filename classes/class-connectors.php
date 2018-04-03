@@ -133,24 +133,29 @@ class Connectors {
 
 		foreach ( $this->connectors as $connector ) {
 			if ( ! method_exists( $connector, 'get_label' ) ) {
+				// translators: Placeholder refers to a Connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
 				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the get_label method.', 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'register' ) ) {
+				// translators: Placeholder refers to a Connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
 				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the register method.', 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'get_context_labels' ) ) {
+				// translators: Placeholder refers to a Connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
 				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the get_context_labels method.', 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'get_action_labels' ) ) {
+				// translators: Placeholder refers to a Connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
 				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the get_action_labels method.', 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 
 			// Check if the connectors extends the Connector class, if not skip it.
 			if ( ! is_subclass_of( $connector, '\WP_Stream\Connector' ) ) {
+				// translators: Placeholder refers to a Connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
 				$this->plugin->admin->notice( sprintf( __( '%1$s class wasn\'t loaded because it doesn\'t extends the %2$s class.', 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}

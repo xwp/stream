@@ -34,14 +34,13 @@ abstract class Alert_Type {
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Plugin object.
-	 * @return void
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 	}
 
 	/**
-	 *	Alert recipients about the new record
+	 *  Alert recipients about the new record
 	 *
 	 * @param int   $record_id Record ID.
 	 * @param array $recordarr Record details.
@@ -55,7 +54,7 @@ abstract class Alert_Type {
 	 * @param Alert $alert Alert currently being worked on.
 	 */
 	public function display_fields( $alert ) {
-		return;
+		// Implementation optional, but recommended
 	}
 
 	/**
@@ -64,7 +63,7 @@ abstract class Alert_Type {
 	 * @param Alert $alert Alert currently being worked on.
 	 */
 	public function save_fields( $alert ) {
-		return;
+		// Implementation optional, but recommended
 	}
 
 	/**
@@ -73,6 +72,7 @@ abstract class Alert_Type {
 	 * @return bool
 	 */
 	public function is_dependency_satisfied() {
+		// Implementation optional, but recommended
 		return true;
 	}
 }

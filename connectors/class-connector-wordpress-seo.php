@@ -111,7 +111,8 @@ class Connector_WordPress_SEO extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		// Options
-		if ( $option = $record->get_meta( 'option', true ) ) {
+		$option = $record->get_meta( 'option', true );
+		if ( $option ) {
 			$key = $record->get_meta( 'option_key', true );
 
 			$links[ esc_html__( 'Edit', 'stream' ) ] = add_query_arg(
@@ -157,16 +158,21 @@ class Connector_WordPress_SEO extends Connector {
 						sprintf( 'delete-post_%d', $post->ID )
 					);
 
+					// translators: Placeholder refers to a post type singular name (e.g. "Post")
 					$links[ sprintf( esc_html_x( 'Restore %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $untrash;
+					// translators: Placeholder refers to a post type singular name (e.g. "Post")
 					$links[ sprintf( esc_html_x( 'Delete %s Permenantly', 'Post type singular name', 'stream' ), $post_type_name ) ] = $delete;
 				} else {
+					// translators: Placeholder refers to a post type singular name (e.g. "Post")
 					$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = get_edit_post_link( $post->ID );
 
-					if ( $view_link = get_permalink( $post->ID ) ) {
+					$view_link = get_permalink( $post->ID );
+					if ( $view_link ) {
 						$links[ esc_html__( 'View', 'stream' ) ] = $view_link;
 					}
 
-					if ( $revision_id = $record->get_meta( 'revision_id', true ) ) {
+					$revision_id = $record->get_meta( 'revision_id', true );
+					if ( $revision_id ) {
 						$links[ esc_html__( 'Revision', 'stream' ) ] = get_edit_post_link( $revision_id );
 					}
 				}
@@ -222,6 +228,7 @@ class Connector_WordPress_SEO extends Connector {
 			if ( isset( $opts[ $key ] ) ) {
 				$this->log(
 					sprintf(
+						// translators: Placeholders refer to an import method, and an extra string (sometimes blank) (e.g. "HeadSpace2", ", and deleted old data")
 						__( 'Imported settings from %1$s%2$s', 'stream' ),
 						$name,
 						isset( $opts['deleteolddata'] ) ? esc_html__( ', and deleted old data', 'stream' ) : ''
@@ -244,6 +251,7 @@ class Connector_WordPress_SEO extends Connector {
 		if ( wp_stream_filter_input( INPUT_POST, 'wpseo_export' ) ) {
 			$this->log(
 				sprintf(
+					// translators: Placeholder refers to an extra string (sometimes blank) (e.g. ", including taxonomy meta")
 					__( 'Exported settings%s', 'stream' ),
 					isset( $opts['include_taxonomy_meta'] ) ? esc_html__( ', including taxonomy meta', 'stream' ) : ''
 				),
@@ -257,6 +265,7 @@ class Connector_WordPress_SEO extends Connector {
 		} elseif ( isset( $_FILES['settings_import_file']['name'] ) ) { // phpcs: input var okay
 			$this->log(
 				sprintf(
+					// translators: Placeholder refers to a filename (e.g. "test.xml")
 					__( 'Tried importing settings from "%s"', 'stream' ),
 					sanitize_text_field( wp_unslash( $_FILES['settings_import_file']['name'] ) ) // phpcs: input var okay
 				),
@@ -330,16 +339,15 @@ class Connector_WordPress_SEO extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to a meta field title, a post title, and a post type (e.g. "Description", "Hello World", "Post")
 				__( 'Updated "%1$s" of "%2$s" %3$s', 'stream' ),
 				$field['title'],
 				$post->post_title,
 				$post_type_label
 			),
 			array(
-				// @codingStandardsIgnoreStart
 				'meta_key' => $meta_key,
 				'meta_value' => $meta_value,
-				// @codingStandardsIgnoreEnd
 				'post_type' => $post->post_type,
 			),
 			$object_id,
@@ -374,7 +382,9 @@ class Connector_WordPress_SEO extends Connector {
 				return $data;
 			}
 
-			if ( ! ( $label = $this->settings_labels( $data['args']['option_key'] ) ) ) {
+			$label = $this->settings_labels( $data['args']['option_key'] );
+			if ( ! $label ) {
+				// translators: Placeholder refers to a context (e.g. "Dashboard")
 				$data['message'] = esc_html__( '%s settings updated', 'stream' );
 				$label           = $labels[ $page ];
 			}

@@ -92,13 +92,8 @@ class Connector_Taxonomies extends Connector {
 	 * @return array Action links
 	 */
 	public function action_links( $links, $record ) {
-		if (
-			$record->object_id
-			&&
-			'deleted' !== $record->action
-			&&
-			( $term = get_term_by( 'term_taxonomy_id', $record->object_id, $record->context ) ) // wpcom_vip_get_term_by() does not indicate support for `term_taxonomy_id`
-		) {
+		$term = get_term_by( 'term_taxonomy_id', $record->object_id, $record->context ); // wpcom_vip_get_term_by() does not indicate support for `term_taxonomy_id`
+		if ( $record->object_id && 'deleted' !== $record->action && $term ) {
 			if ( ! is_wp_error( $term ) ) {
 				$tax_obj   = get_taxonomy( $term->taxonomy );
 				$tax_label = isset( $tax_obj->labels->singular_name ) ? $tax_obj->labels->singular_name : null;
@@ -109,6 +104,7 @@ class Connector_Taxonomies extends Connector {
 
 				$term_id = empty( $term_id ) ? $term->term_id : $term_id;
 
+				// translators: Placeholder refers to a term singular name (e.g. "Tag")
 				$links[ sprintf( _x( 'Edit %s', 'Term singular name', 'stream' ), $tax_label ) ] = get_edit_term_link( $term_id, $term->taxonomy );
 				$links[ esc_html__( 'View', 'stream' ) ] = wp_stream_is_vip() ? \wpcom_vip_get_term_link( $term_id, $term->taxonomy ) : get_term_link( $term_id, $term->taxonomy );
 			}
@@ -157,6 +153,7 @@ class Connector_Taxonomies extends Connector {
 		$term_parent    = $term->parent;
 
 		$this->log(
+			// translators: Placeholders refer to a term name, and a taxonomy singular label (e.g. "Tags", "Genre")
 			_x(
 				'"%1$s" %2$s created',
 				'1: Term name, 2: Taxonomy singular label',
@@ -189,6 +186,7 @@ class Connector_Taxonomies extends Connector {
 		$taxonomy_label = strtolower( $this->context_labels[ $taxonomy ] );
 
 		$this->log(
+			// translators: Placeholders refer to a term name, and a taxonomy singular label (e.g. "Tags", "Genre")
 			_x(
 				'"%1$s" %2$s deleted',
 				'1: Term name, 2: Taxonomy singular label',
@@ -231,6 +229,7 @@ class Connector_Taxonomies extends Connector {
 		$term_parent    = $term->parent;
 
 		$this->log(
+			// translators: Placeholders refer to a term name, and a taxonomy singular label (e.g. "Tags", "Genre")
 			_x(
 				'"%1$s" %2$s updated',
 				'1: Term name, 2: Taxonomy singular label',

@@ -67,7 +67,6 @@ class Alert_Type_IFTTT extends Alert_Type {
 	 * Class Constructor
 	 *
 	 * @param Plugin $plugin Plugin object.
-	 * @return void
 	 */
 	public function __construct( $plugin ) {
 		parent::__construct( $plugin );
@@ -104,12 +103,14 @@ class Alert_Type_IFTTT extends Alert_Type {
 		if ( is_object( $alert ) ) {
 			$alert_meta = $alert->alert_meta;
 		}
-		$options = wp_parse_args( $alert_meta, array(
-			'maker_key' => '',
-			'event_name' => '',
-		) );
+		$options = wp_parse_args(
+			$alert_meta, array(
+				'maker_key' => '',
+				'event_name' => '',
+			)
+		);
 
-		$form = new Form_Generator;
+		$form = new Form_Generator();
 
 		echo '<span class="wp_stream_alert_type_description">';
 		echo esc_html__( 'Trigger an IFTTT Maker recipe.', 'stream' );
@@ -117,10 +118,12 @@ class Alert_Type_IFTTT extends Alert_Type {
 		echo '</span>';
 		echo '<label for="wp_stream_ifttt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array( // Xss ok.
+		echo wp_kses_post( $form->render_field(
+			'text', array( // Xss ok.
 			'name'    => 'wp_stream_ifttt_maker_key',
 			'title'   => esc_attr( __( 'Maker Key', 'stream' ) ),
 			'value'   => $options['maker_key'],
+			)
 		) );
 		echo '</span>';
 		printf(
@@ -133,10 +136,12 @@ class Alert_Type_IFTTT extends Alert_Type {
 
 		echo '<label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array( // Xss ok.
+		echo wp_kses_post( $form->render_field(
+			'text', array( // Xss ok.
 			'name'    => 'wp_stream_ifttt_event_name',
 			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
 			'value'   => $options['event_name'],
+			)
 		) );
 		echo '</span>';
 		printf(
@@ -187,11 +192,14 @@ class Alert_Type_IFTTT extends Alert_Type {
 			return false;
 		}
 
-		$record_data = wp_parse_args( $recordarr, array(
-			'summary' => sprintf( __( 'The event %s was triggered' ), $alert->alert_meta['event_name'] ),
-			'user_id' => get_current_user_id(),
-			'created' => current_time( 'Y-m-d H:i:s' ),  // Blog's local time.
-		) );
+		$record_data = wp_parse_args(
+			$recordarr, array(
+				// translators: Placeholder refers to the Event Name of the Alert (e.g. "Update a post")
+				'summary' => sprintf( __( 'The event %s was triggered' ), $alert->alert_meta['event_name'] ),
+				'user_id' => get_current_user_id(),
+				'created' => current_time( 'Y-m-d H:i:s' ),  // Blog's local time.
+			)
+		);
 
 		$user_id = $recordarr['user_id'];
 		$user = get_user_by( 'id', $user_id );

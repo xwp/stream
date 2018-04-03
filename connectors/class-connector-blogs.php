@@ -128,6 +128,7 @@ class Connector_Blogs extends Connector {
 		$blog = get_blog_details( $blog_id );
 
 		$this->log(
+			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
 			_x(
 				'"%1$s" site was created',
 				'1. Site name',
@@ -154,6 +155,7 @@ class Connector_Blogs extends Connector {
 		$blog = get_blog_details( $blog_id );
 
 		$this->log(
+			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
 			_x(
 				'"%1$s" site was registered',
 				'1. Site name',
@@ -187,6 +189,7 @@ class Connector_Blogs extends Connector {
 		}
 
 		$this->log(
+			// translators: Placeholders refer to a user's display name, a site name, and a user role (e.g. "Jane Doe", "FooBar Blog", "subscriber")
 			_x(
 				'%1$s was added to the "%2$s" site with %3$s capabilities',
 				'1. User\'s name, 2. Site name, 3. Role',
@@ -220,6 +223,7 @@ class Connector_Blogs extends Connector {
 		}
 
 		$this->log(
+			// translators: Placeholders refer to a user's display name, and a site name (e.g. "Jane Doe", "FooBar Blog")
 			_x(
 				'%1$s was removed from the "%2$s" site',
 				'1. User\'s name, 2. Site name',
@@ -354,6 +358,7 @@ class Connector_Blogs extends Connector {
 		$blog = get_blog_details( $blog_id );
 
 		$this->log(
+			// translators: Placeholders refer to a site name, and a blog status (e.g. "FooBar Blog", "archived")
 			_x(
 				'"%1$s" site was %2$s',
 				'1. Site name, 2. Status',

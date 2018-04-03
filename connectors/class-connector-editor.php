@@ -115,6 +115,7 @@ class Connector_Editor extends Connector {
 	 * @return string Translated string
 	 */
 	public function get_message() {
+		// translators: Placeholders refer to a file name, and a theme / plugin name (e.g. "index.php", "Stream")
 		return _x(
 			'"%1$s" in "%2$s" updated',
 			'1: File name, 2: Theme/plugin name',
@@ -146,15 +147,15 @@ class Connector_Editor extends Connector {
 				if ( $theme_exists ) {
 					$links[ esc_html__( 'Edit File', 'stream' ) ] = add_query_arg(
 						array(
-							'theme' => urlencode( $theme_slug ),
-							'file'  => urlencode( $file_name ),
+							'theme' => rawurlencode( $theme_slug ),
+							'file'  => rawurlencode( $file_name ),
 						),
 						self_admin_url( 'theme-editor.php' )
 					);
 
 					$links[ esc_html__( 'Theme Details', 'stream' ) ] = add_query_arg(
 						array(
-							'theme' => urlencode( $theme_slug ),
+							'theme' => rawurlencode( $theme_slug ),
 						),
 						self_admin_url( 'themes.php' )
 					);
@@ -163,8 +164,8 @@ class Connector_Editor extends Connector {
 				if ( $plugin_exists ) {
 					$links[ esc_html__( 'Edit File', 'stream' ) ] = add_query_arg(
 						array(
-							'plugin' => urlencode( $plugin_slug ),
-							'file'   => urlencode( str_ireplace( trailingslashit( WP_PLUGIN_DIR ), '', $file_path ) ),
+							'plugin' => rawurlencode( $plugin_slug ),
+							'file'   => rawurlencode( str_ireplace( trailingslashit( WP_PLUGIN_DIR ), '', $file_path ) ),
 						),
 						self_admin_url( 'plugin-editor.php' )
 					);
@@ -194,12 +195,14 @@ class Connector_Editor extends Connector {
 			return;
 		}
 
-		if ( $slug = wp_stream_filter_input( INPUT_POST, 'theme' ) ) {
-			$this->edited_file = $this->get_theme_data( $slug );
+		$theme_slug = wp_stream_filter_input( INPUT_POST, 'theme' );
+		if ( $theme_slug ) {
+			$this->edited_file = $this->get_theme_data( $theme_slug );
 		}
 
-		if ( $slug = wp_stream_filter_input( INPUT_POST, 'plugin' ) ) {
-			$this->edited_file = $this->get_plugin_data( $slug );
+		$plugin_slug = wp_stream_filter_input( INPUT_POST, 'plugin' );
+		if ( $plugin_slug ) {
+			$this->edited_file = $this->get_plugin_data( $plugin_slug );
 		}
 	}
 
@@ -231,15 +234,13 @@ class Connector_Editor extends Connector {
 			$file_path = sprintf( '%s/%s', $theme->get_stylesheet_directory(), $file_name );
 		}
 
-		//TODO: phpcs fix
-		$file_contents_before = file_get_contents( $file_path );
-
-		$name = $theme->get( 'Name' );
+		$file_md5 = md5_file( $file_path );
+		$name     = $theme->get( 'Name' );
 
 		$output = compact(
 			'file_name',
 			'file_path',
-			'file_contents_before',
+			'file_md5',
 			'slug',
 			'name'
 		);
@@ -259,11 +260,8 @@ class Connector_Editor extends Connector {
 		$slug      = current( explode( '/', $slug ) );
 		$file_name = wp_stream_filter_input( INPUT_POST, 'file' );
 		$file_path = WP_PLUGIN_DIR . '/' . $file_name;
-
-		//TODO: phpcs fix
-		$file_contents_before = file_get_contents( $file_path );
-
-		$plugins = get_plugins();
+		$file_md5  = md5_file( $file_path );
+		$plugins   = get_plugins();
 
 		foreach ( $plugins as $key => $plugin_data ) {
 			if ( 0 === strpos( $key, $slug ) ) {
@@ -279,7 +277,7 @@ class Connector_Editor extends Connector {
 		$output = compact(
 			'file_name',
 			'file_path',
-			'file_contents_before',
+			'file_md5',
 			'slug',
 			'name'
 		);
@@ -293,7 +291,7 @@ class Connector_Editor extends Connector {
 	public function log_changes( $location ) {
 		if ( ! empty( $this->edited_file ) ) {
 			// TODO: phpcs fix
-			if ( file_get_contents( $this->edited_file['file_path'] ) !== $this->edited_file['file_contents_before'] ) {
+			if ( md5_file( $this->edited_file['file_path'] ) !== $this->edited_file['file_md5'] ) {
 				$context = $this->get_context( $location );
 
 				switch ( $context ) {

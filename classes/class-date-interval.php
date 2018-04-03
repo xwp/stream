@@ -25,7 +25,7 @@ class Date_Interval {
 	}
 
 	/**
-	 * @return mixed|void
+	 * @return mixed
 	 */
 	public function get_predefined_intervals() {
 		$timezone = get_option( 'timezone_string' );
@@ -55,16 +55,19 @@ class Date_Interval {
 					'end'   => Carbon::today( $timezone )->startOfDay()->subSecond(),
 				),
 				'last-7-days' => array(
+					// translators: Placeholder refers to a number of days (e.g. "7")
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 7 ),
 					'start' => Carbon::today( $timezone )->subDays( 7 ),
 					'end'   => Carbon::today( $timezone ),
 				),
 				'last-14-days' => array(
+					// translators: Placeholder refers to a number of days (e.g. "7")
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 14 ),
 					'start' => Carbon::today( $timezone )->subDays( 14 ),
 					'end'   => Carbon::today( $timezone ),
 				),
 				'last-30-days' => array(
+					// translators: Placeholder refers to a number of days (e.g. "7")
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 30 ),
 					'start' => Carbon::today( $timezone )->subDays( 30 ),
 					'end'   => Carbon::today( $timezone ),
@@ -80,16 +83,19 @@ class Date_Interval {
 					'end'   => Carbon::today( $timezone )->startOfMonth()->subSecond(),
 				),
 				'last-3-months' => array(
+					// translators: Placeholder refers to a number of months (e.g. "3")
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 3 ),
 					'start' => Carbon::today( $timezone )->subMonths( 3 ),
 					'end'   => Carbon::today( $timezone ),
 				),
 				'last-6-months' => array(
+					// translators: Placeholder refers to a number of months (e.g. "3")
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 6 ),
 					'start' => Carbon::today( $timezone )->subMonths( 6 ),
 					'end'   => Carbon::today( $timezone ),
 				),
 				'last-12-months' => array(
+					// translators: Placeholder refers to a number of months (e.g. "3")
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 12 ),
 					'start' => Carbon::today( $timezone )->subMonths( 12 ),
 					'end'   => Carbon::today( $timezone ),

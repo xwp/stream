@@ -32,9 +32,21 @@ function wp_stream_update_302( $db_version, $current_version ) {
 		$class = 'Connector_' . $entry->context;
 		if ( class_exists( $class ) ) {
 			$connector = new $class();
-			$wpdb->update( $wpdb->base_prefix . 'stream', array( 'connector' => $connector->name ), array( 'ID' => $entry->ID ) );
+			$wpdb->update(
+				$wpdb->base_prefix . 'stream', array(
+					'connector' => $connector->name,
+				), array(
+					'ID' => $entry->ID,
+				)
+			);
 		} else {
-			$wpdb->update( $wpdb->base_prefix . 'stream', array( 'connector' => strtolower( $entry->connector ) ), array( 'ID' => $entry->ID ) );
+			$wpdb->update(
+				$wpdb->base_prefix . 'stream', array(
+					'connector' => strtolower( $entry->connector ),
+				), array(
+					'ID' => $entry->ID,
+				)
+			);
 		}
 	}
 
