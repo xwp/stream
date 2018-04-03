@@ -372,8 +372,11 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertFalse( $role->has_cap( $this->admin->view_cap ) );
 	}
 
-	/*
+	/**
+	 * Test Ajax Filters
+	 *
 	 * @group ajax
+	 * @requires PHPUnit 5.7
 	 */
 	public function test_ajax_filters() {
 		$user = new \WP_User( get_current_user_id() );

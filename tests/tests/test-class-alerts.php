@@ -356,6 +356,9 @@ class Test_Alerts extends WP_StreamTestCase {
 	$this->assertTrue( $response->success );
 }
 
+	/**
+	 * @requires PHPUnit 5.7
+	 */
 	function test_save_new_alert_no_nonce() {
 		$alerts = new Alerts( $this->plugin );
 		try {
