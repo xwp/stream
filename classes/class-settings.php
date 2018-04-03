@@ -771,8 +771,8 @@ class Settings {
 
 				break;
 			case 'rule_list':
-				$users = count_users();
-				$form = new Form_Generator();
+				$users  = count_users();
+				$form   = new Form_Generator();
 				$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
 				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  esc_html__( 'Add New Rule', 'stream' ) );
