@@ -824,7 +824,6 @@ class Settings {
 							'value' => $role_id,
 							'text' => $role,
 						);
-						
 						$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
 
 						if ( ! empty( $count ) ) {
