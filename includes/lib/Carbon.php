@@ -675,12 +675,13 @@ class Carbon extends DateTime
      * @param integer $hour
      * @param integer $minute
      * @param integer $second
+     * @param integer $microseconds
      *
      * @return static
      */
-    public function setTime($hour, $minute, $second = 0)
+    public function setTime($hour, $minute, $second = 0, $microseconds = 0 )
     {
-        parent::setTime($hour, $minute, $second);
+        parent::setTime($hour, $minute, $second, $microseconds );
 
         return $this;
     }
