@@ -49,6 +49,7 @@ namespace WP_Stream;
  * @package WP_Stream
  */
 class Alert_Type_IFTTT extends Alert_Type {
+
 	/**
 	 * Alert type name
 	 *
@@ -74,8 +75,12 @@ class Alert_Type_IFTTT extends Alert_Type {
 		if ( ! is_admin() ) {
 			return;
 		}
-		add_filter( 'wp_stream_alerts_save_meta', array( $this, 'add_alert_meta' ), 10, 2 );
+		add_filter( 'wp_stream_alerts_save_meta', array(
+			$this,
+			'add_alert_meta',
+		), 10, 2 );
 	}
+
 	/**
 	 * Record that the Alert was triggered by a Record.
 	 *
@@ -105,7 +110,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 		}
 		$options = wp_parse_args(
 			$alert_meta, array(
-				'maker_key' => '',
+				'maker_key'  => '',
 				'event_name' => '',
 			)
 		);
@@ -118,13 +123,11 @@ class Alert_Type_IFTTT extends Alert_Type {
 		echo '</span>';
 		echo '<label for="wp_stream_ifttt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo wp_kses_post( $form->render_field(
-			'text', array( // Xss ok.
-			'name'    => 'wp_stream_ifttt_maker_key',
-			'title'   => esc_attr( __( 'Maker Key', 'stream' ) ),
-			'value'   => $options['maker_key'],
-			)
-		) );
+		echo $form->render_field( 'text', array(
+			'name'  => 'wp_stream_ifttt_maker_key',
+			'title' => esc_attr( __( 'Maker Key', 'stream' ) ),
+			'value' => $options['maker_key'],
+		) ); // Xss ok.
 		echo '</span>';
 		printf(
 			'<span class="input-text-wrap"><a href="%1$s" target="_blank">%2$s %3$s</a></span>',
@@ -136,13 +139,11 @@ class Alert_Type_IFTTT extends Alert_Type {
 
 		echo '<label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo wp_kses_post( $form->render_field(
-			'text', array( // Xss ok.
-			'name'    => 'wp_stream_ifttt_event_name',
-			'title'   => esc_attr( __( 'Event Name', 'stream' ) ),
-			'value'   => $options['event_name'],
-			)
-		) );
+		echo $form->render_field( 'text', array(
+			'name'  => 'wp_stream_ifttt_event_name',
+			'title' => esc_attr( __( 'Event Name', 'stream' ) ),
+			'value' => $options['event_name'],
+		) );  // Xss ok.
 		echo '</span>';
 		printf(
 			'<span class="input-text-wrap"><a href="%1$s" target="_blank">%2$s %3$s</a></span>',
@@ -183,7 +184,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 	 * array keys of data.  (also documented below)
 	 *
 	 * @param object $alert The Alert object.
-	 * @param array  $recordarr  Array of Record data.
+	 * @param array  $recordarr Array of Record data.
 	 *
 	 * @return bool
 	 */
@@ -197,12 +198,13 @@ class Alert_Type_IFTTT extends Alert_Type {
 				// translators: Placeholder refers to the Event Name of the Alert (e.g. "Update a post")
 				'summary' => sprintf( __( 'The event %s was triggered' ), $alert->alert_meta['event_name'] ),
 				'user_id' => get_current_user_id(),
-				'created' => current_time( 'Y-m-d H:i:s' ),  // Blog's local time.
+				'created' => current_time( 'Y-m-d H:i:s' ),
+				// Blog's local time.
 			)
 		);
 
 		$user_id = $recordarr['user_id'];
-		$user = get_user_by( 'id', $user_id );
+		$user    = get_user_by( 'id', $user_id );
 
 		/**
 		 * Filter User data field
@@ -227,7 +229,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 		 * @return string
 		 */
 		$date_format = apply_filters( 'wp_stream_alert_ifttt_date_format', 'Y-m-d H:i:s', $alert, $recordarr );
-		$date = date( $date_format, strtotime( $created ) );
+		$date        = date( $date_format, strtotime( $created ) );
 
 		$url = 'https://maker.ifttt.com/trigger/' . $alert->alert_meta['event_name'] . '/with/key/' . $alert->alert_meta['maker_key'];
 
@@ -246,17 +248,17 @@ class Alert_Type_IFTTT extends Alert_Type {
          *
 		 * The filters below allow complete customization of these data values.
 		 */
-		$args = array(
+		$args     = array(
 			'headers' => array(
 				'Content-Type' => 'application/json',
 			),
-			'body' => wp_json_encode(
+			'body'    => wp_json_encode(
 				array(
 					/**
 					 * Filter the first IFTTT alert value
 					 *
 					 * @param string $summary The Record's summary.
-					 * @param object $alert  The Alert.
+					 * @param object $alert The Alert.
 					 * @param array  $recordarr Array of Record data.
 					 * @return mixed
 					 */
@@ -266,7 +268,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 					 * Filter the second IFTTT alert value
 					 *
 					 * @param string $user_value The user meta value requested above.
-					 * @param int    $user_id  The user ID who fired the Alert.
+					 * @param int    $user_id The user ID who fired the Alert.
 					 * @param object $alert The Alert.
 					 * @param array  $recordarr Array of Record data.
 					 * @return mixed
@@ -277,7 +279,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 					 * Filter the third IFTTT alert value
 					 *
 					 * @param string $date The Record's date.
-					 * @param object $alert  The Alert.
+					 * @param object $alert The Alert.
 					 * @param array  $recordarr Array of Record data.
 					 * @return mixed
 					 */
@@ -289,8 +291,10 @@ class Alert_Type_IFTTT extends Alert_Type {
 		if ( ! is_array( $response ) ) {
 			return false;
 		}
+
 		return true;
 	}
+
 	/**
 	 * Add alert meta if this is a highlight alert
 	 *
@@ -310,6 +314,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 				$alert_meta['event_name'] = $event_name;
 			}
 		}
+
 		return $alert_meta;
 	}
 }
