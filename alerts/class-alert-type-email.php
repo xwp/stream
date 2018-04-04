@@ -71,25 +71,25 @@ class Alert_Type_Email extends Alert_Type {
 			return;
 		}
 
-		// translators: Placeholder refers to the title of a site (e.g. "FooBar Website")
+		// translators: Placeholder refers to the title of a site (e.g. "FooBar Website").
 		$message = sprintf( __( 'A Stream Alert was triggered on %s.', 'stream' ), get_bloginfo( 'name' ) ) . "\n\n";
 
 		$user_id = $recordarr['user_id'];
 		$user    = get_user_by( 'id', $user_id );
 
-		// translators: Placeholder refers to a username  (e.g. "administrator")
+		// translators: Placeholder refers to a username  (e.g. "administrator").
 		$message .= sprintf( __( "User:\t%s", 'stream' ), $user->user_login ) . "\n";
 
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) ) {
 			$context = $this->plugin->alerts->alert_triggers['context']->get_display_value( 'list_table', $alert );
 
-			// translators: Placeholder refers to the context of the record (e.g. "Plugins")
+			// translators: Placeholder refers to the context of the record (e.g. "Plugins").
 			$message .= sprintf( __( "Context:\t%s", 'stream' ), $context ) . "\n";
 		}
 		if ( ! empty( $alert->alert_meta['trigger_action'] ) ) {
 			$action = $this->plugin->alerts->alert_triggers['action']->get_display_value( 'list_table', $alert );
 
-			// translators: Placeholder refers to the action of the record (e.g. "Installed")
+			// translators: Placeholder refers to the action of the record (e.g. "Installed").
 			$message .= sprintf( __( "Action:\t%s", 'stream' ), $action ) . "\n";
 		}
 
