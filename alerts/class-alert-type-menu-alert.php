@@ -77,7 +77,7 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 			)
 		);
 
-		echo $form->render_all(); // Xss ok.
+		echo $form->render_fields(); // Xss ok.
 	}
 
 	/**
