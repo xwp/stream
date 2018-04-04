@@ -34,8 +34,7 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	/**
-	 * @group test
-	 * @expectedException PHPUnit_Framework_Error_Notice
+	 * @requires PHPUnit 5.7
 	 */
 	function test_load_bad_alert_type() {
 		$alerts = new Alerts( $this->plugin );
@@ -65,7 +64,7 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	/**
-	 * @expectedException PHPUnit_Framework_Error_Notice
+	 * Test bad trigger is not added.
 	 */
 	function test_load_bad_alert_trigger() {
 		$alerts = new Alerts( $this->plugin );
@@ -80,7 +79,7 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function callback_load_bad_alert_register( $classes ) {
-		$classes['bad_alert_trigger'] = new \stdClass;
+		$classes['bad_alert_trigger'] = new \stdClass();
 		return $classes;
 	}
 
