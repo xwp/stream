@@ -107,19 +107,23 @@ class Log {
 			$role = '';
 		}
 
+		// Support proxy mode by checking the `X-Forwarded-For` header first
+		$ip_address = wp_stream_filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_VALIDATE_IP );
+		$ip_address = $ip_address ? $ip_address : wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
+
 		$recordarr = array(
-			'object_id'  => (int) $object_id,
-			'site_id'    => (int) is_multisite() ? get_current_site()->id : 1,
-			'blog_id'    => (int) apply_filters( 'wp_stream_blog_id_logged', get_current_blog_id() ),
-			'user_id'    => (int) $user_id,
-			'user_role'  => (string) $role,
-			'created'    => (string) $iso_8601_extended_date,
-			'summary'    => (string) vsprintf( $message, $args ),
-			'connector'  => (string) $connector,
-			'context'    => (string) $context,
-			'action'     => (string) $action,
-			'ip'         => (string) wp_stream_filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP ),
-			'meta'       => (array) $stream_meta,
+			'object_id' => (int) $object_id,
+			'site_id'   => (int) is_multisite() ? get_current_site()->id : 1,
+			'blog_id'   => (int) apply_filters( 'wp_stream_blog_id_logged', get_current_blog_id() ),
+			'user_id'   => (int) $user_id,
+			'user_role' => (string) $role,
+			'created'   => (string) $iso_8601_extended_date,
+			'summary'   => (string) vsprintf( $message, $args ),
+			'connector' => (string) $connector,
+			'context'   => (string) $context,
+			'action'    => (string) $action,
+			'ip'        => (string) $ip_address,
+			'meta'      => (array) $stream_meta,
 		);
 
 		if ( 0 === $recordarr['object_id'] ) {
