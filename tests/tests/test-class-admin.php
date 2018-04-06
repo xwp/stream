@@ -222,7 +222,8 @@ class Test_Admin extends WP_StreamTestCase {
 	 * Also tests private method erase_stream_records
 	 */
 	public function test_wp_ajax_reset() {
-		$_REQUEST['wp_stream_nonce'] = wp_create_nonce( 'stream_nonce' );
+		$_REQUEST['wp_stream_nonce']       = wp_create_nonce( 'stream_nonce' );
+		$_REQUEST['wp_stream_nonce_reset'] = wp_create_nonce( 'stream_nonce_reset' );
 
 		global $wpdb;
 
