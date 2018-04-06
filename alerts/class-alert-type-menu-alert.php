@@ -13,6 +13,7 @@ namespace WP_Stream;
  * @package WP_Stream
  */
 class Alert_Type_Menu_Alert extends Alert_Type {
+
 	/**
 	 * Alert type name
 	 *
@@ -77,7 +78,7 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 			)
 		);
 
-		echo $form->render_all(); // Xss ok.
+		echo $form->render_fields(); // Xss ok.
 	}
 
 	/**
@@ -106,11 +107,11 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 
 		$wp_admin_bar->add_node(
 			array(
-				'id' => 'wp_stream_alert_notify',
+				'id'     => 'wp_stream_alert_notify',
 				'parent' => false,
-				'title' => __( 'New Stream Alert', 'stream' ),
-				'href' => '#',
-				'meta' => array(
+				'title'  => __( 'New Stream Alert', 'stream' ),
+				'href'   => '#',
+				'meta'   => array(
 					'class' => 'opposite',
 				),
 			)
@@ -131,6 +132,7 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 		}
 
 		$this->clear_messages();
+
 		return true;
 	}
 
@@ -143,7 +145,8 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	 */
 	public function get_messages() {
 		$current_user = wp_get_current_user();
-		$messages = get_user_meta( $current_user->ID, $this->get_key(), false );
+		$messages     = get_user_meta( $current_user->ID, $this->get_key(), false );
+
 		return $messages;
 	}
 

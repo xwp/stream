@@ -33,6 +33,9 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertEquals( 1, $action->get_call_count() );
 	}
 
+	/**
+	 * @requires PHPUnit 5.7
+	 */
 	function test_load_bad_alert_type() {
 		$alerts = new Alerts( $this->plugin );
 		$alert_types_before_filter = count( $alerts->alert_types );
@@ -60,6 +63,9 @@ class Test_Alerts extends WP_StreamTestCase {
 		$this->assertEquals( 1, $action->get_call_count() );
 	}
 
+	/**
+	 * Test bad trigger is not added.
+	 */
 	function test_load_bad_alert_trigger() {
 		$alerts = new Alerts( $this->plugin );
 		$alert_triggers_before_filter = count( $alerts->alert_triggers );
@@ -73,7 +79,7 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function callback_load_bad_alert_register( $classes ) {
-		$classes['bad_alert_trigger'] = new \stdClass;
+		$classes['bad_alert_trigger'] = new \stdClass();
 		return $classes;
 	}
 
@@ -358,6 +364,10 @@ class Test_Alerts extends WP_StreamTestCase {
 	$this->assertObjectHasAttribute( 'success', $response );
 	$this->assertTrue( $response->success );
 }
+
+	/**
+	 * @requires PHPUnit 5.7
+	 */
 	function test_save_new_alert_no_nonce() {
 		$alerts = new Alerts( $this->plugin );
 		try {
@@ -365,7 +375,8 @@ class Test_Alerts extends WP_StreamTestCase {
 			$_POST['wp_stream_trigger_context'] = 'posts-post';
 			$_POST['wp_stream_trigger_action'] = 'edit';
 			$_POST['wp_stream_alert_type'] = 'highlight';
-			$this->setExpectedException( 'WPAjaxDieStopException' );
+
+			$this->expectException( 'WPAjaxDieStopException' );
 			$this->_handleAjax( 'save_new_alert' );
 		} catch ( \WPAjaxDieContinueException $e ) {
 			$exception = $e;
