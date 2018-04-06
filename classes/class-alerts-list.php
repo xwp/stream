@@ -189,24 +189,24 @@ class Alerts_List {
 					<?php
 				}
 				if ( ! empty( $alert->alert_meta['slack_webhook'] ) ) {
-				  ?>
-				  <input type="hidden" name="wp_stream_slack_webhook" value="<?php echo esc_attr( $alert->alert_meta['slack_webhook'] ); ?>" />
-				  <?php
+					?>
+					<input type="hidden" name="wp_stream_slack_webhook" value="<?php echo esc_attr( $alert->alert_meta['slack_webhook'] ); ?>" />
+					<?php
 				}
 				if ( ! empty( $alert->alert_meta['slack_channel'] ) ) {
-				  ?>
-				  <input type="hidden" name="wp_stream_slack_channel" value="<?php echo esc_attr( $alert->alert_meta['slack_channel'] ); ?>" />
-				  <?php
+					?>
+					<input type="hidden" name="wp_stream_slack_channel" value="<?php echo esc_attr( $alert->alert_meta['slack_channel'] ); ?>" />
+					<?php
 				}
 				if ( ! empty( $alert->alert_meta['slack_username'] ) ) {
-				  ?>
-				  <input type="hidden" name="wp_stream_slack_username" value="<?php echo esc_attr( $alert->alert_meta['slack_username'] ); ?>" />
-				  <?php
+					?>
+					<input type="hidden" name="wp_stream_slack_username" value="<?php echo esc_attr( $alert->alert_meta['slack_username'] ); ?>" />
+					<?php
 				}
 				if ( ! empty( $alert->alert_meta['slack_icon'] ) ) {
-				  ?>
-				  <input type="hidden" name="wp_stream_slack_icon" value="<?php echo esc_attr( $alert->alert_meta['slack_icon'] ); ?>" />
-				  <?php
+					?>
+					<input type="hidden" name="wp_stream_slack_icon" value="<?php echo esc_attr( $alert->alert_meta['slack_icon'] ); ?>" />
+					<?php
 				}
 				break;
 			case 'alert_status':
