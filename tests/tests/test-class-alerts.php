@@ -34,11 +34,15 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function test_load_bad_alert_type() {
-		$this->setExpectedException( 'PHPUnit_Framework_Error_Notice' );
+		$alerts = new Alerts( $this->plugin );
+		$alert_types_before_filter = count( $alerts->alert_types );
+		unset( $alerts );
 
 		add_filter( 'wp_stream_alert_types', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
 		$alerts = new Alerts( $this->plugin );
-		// Hook removed in tearDown().
+		$alert_types_after_filter = count( $alerts->alert_types );
+
+		$this->assertEquals( $alert_types_before_filter, $alert_types_after_filter );
 	}
 
 	function test_load_alert_triggers() {
@@ -57,11 +61,15 @@ class Test_Alerts extends WP_StreamTestCase {
 	}
 
 	function test_load_bad_alert_trigger() {
-		$this->setExpectedException( 'PHPUnit_Framework_Error_Notice' );
+		$alerts = new Alerts( $this->plugin );
+		$alert_triggers_before_filter = count( $alerts->alert_triggers );
+		unset( $alerts );
 
 		add_filter( 'wp_stream_alert_triggers', array( $this, 'callback_load_bad_alert_register' ), 10, 1 );
 		$alerts = new Alerts( $this->plugin );
-		// Hook removed in tearDown().
+		$alert_triggers_after_filter = count( $alerts->alert_triggers );
+
+		$this->assertEquals( $alert_triggers_before_filter, $alert_triggers_after_filter );
 	}
 
 	function callback_load_bad_alert_register( $classes ) {

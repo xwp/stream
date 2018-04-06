@@ -343,6 +343,7 @@ class Connector_Jetpack extends Connector {
 			$action      = $method . 'd';
 			$meta        = compact( 'module_slug' );
 			$message     = sprintf(
+				// translators: Placeholders refer to a module name, and a status (e.g. "Photon", "activated")
 				__( '%1$s module %2$s', 'stream' ),
 				$module_name,
 				( 'activated' === $action ) ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' )
@@ -361,6 +362,7 @@ class Connector_Jetpack extends Connector {
 			$action     = $method;
 			$meta       = compact( 'user_id', 'user_email', 'user_login' );
 			$message    = sprintf(
+				// translators: Placeholders refer to a user display name, a status, and the connection either "from" or "to" (e.g. "Jane Doe", "unlinked", "from")
 				__( '%1$s\'s account %2$s %3$s Jetpack', 'stream' ),
 				$user->display_name,
 				( 'unlink' === $action ) ? esc_html__( 'unlinked', 'stream' ) : esc_html__( 'linked', 'stream' ),
@@ -370,7 +372,7 @@ class Connector_Jetpack extends Connector {
 			$context      = 'blogs';
 			$action       = str_replace( 'subsite', '', $method );
 			$is_multisite = ( 0 === strpos( $method, 'subsite' ) );
-			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( wp_unslash( $_GET['site_id'] ) ) : null ) : get_current_blog_id(); // phpcs: input var okay
+			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( wp_unslash( $_GET['site_id'] ) ) : null ) : get_current_blog_id(); // phpcs: input var okay, CSRF okay
 
 			if ( empty( $blog_id ) ) {
 				return;
@@ -378,15 +380,21 @@ class Connector_Jetpack extends Connector {
 
 			if ( ! $is_multisite ) {
 				$message = sprintf(
+					// translators: Placeholder refers to a connection status. Either "connected to" or "disconnected from".
 					__( 'Site %s Jetpack', 'stream' ),
 					( 'register' === $action ) ? esc_html__( 'connected to', 'stream' ) : esc_html__( 'disconnected from', 'stream' )
 				);
 			} else {
-				$blog_details = get_blog_details( array( 'blog_id' => $blog_id ) );
+				$blog_details = get_blog_details(
+					array(
+						'blog_id' => $blog_id,
+					)
+				);
 				$blog_name    = $blog_details->blogname;
 				$meta        += compact( 'blog_id', 'blog_name' );
 
 				$message = sprintf(
+					// translators: Placeholder refers to a connection status. Either "connected to" or "disconnected from".
 					__( '"%1$s" blog %2$s Jetpack', 'stream' ),
 					$blog_name,
 					( 'register' === $action ) ? esc_html__( 'connected to', 'stream' ) : esc_html__( 'disconnected from', 'stream' )
@@ -445,6 +453,7 @@ class Connector_Jetpack extends Connector {
 		}
 
 		$this->log(
+			// translators: Placeholder refers to a status (e.g. "activated")
 			__( 'Monitor notifications %s', 'stream' ),
 			array(
 				'status'    => $active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
@@ -482,6 +491,7 @@ class Connector_Jetpack extends Connector {
 		$user = wp_get_current_user();
 
 		$this->log(
+			// translators: Placeholders refer to a user display name, and a status (e.g. "Jane Doe", "enabled")
 			__( '%1$s %2$s Post by Email', 'stream' ),
 			array(
 				'user_displayname' => $user->display_name,
@@ -506,6 +516,7 @@ class Connector_Jetpack extends Connector {
 			$option_title = $data['label'];
 
 			$this->log(
+				// translators: Placeholder refers to a setting name (e.g. "Language")
 				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
@@ -561,6 +572,7 @@ class Connector_Jetpack extends Connector {
 		}
 
 		$this->log(
+			// translators: Placeholder refers to a status (e.g. "enabled")
 			__( 'G+ profile display %s', 'stream' ),
 			array(
 				'action' => $status ? esc_html__( 'enabled', 'stream' ) : esc_html__( 'disabled', 'stream' ),
@@ -578,6 +590,7 @@ class Connector_Jetpack extends Connector {
 		$connected = is_array( $new_value ) && array_key_exists( $user->ID, $new_value );
 
 		$this->log(
+			// translators: Placeholders refer to a user display name, and a status (e.g. "Jane Doe", "connected")
 			__( '%1$s\'s Google+ account %2$s', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
@@ -598,6 +611,7 @@ class Connector_Jetpack extends Connector {
 		$status = ! $new_value ? 'enabled' : 'disabled'; // disabled = 1
 
 		$this->log(
+			// translators: Placeholder refers to a status (e.g. "enabled")
 			__( 'Sharing CSS/JS %s', 'stream' ),
 			compact( 'status', 'old_value', 'new_value' ),
 			null,
@@ -657,6 +671,7 @@ class Connector_Jetpack extends Connector {
 			$name = str_replace( 'publicize_connections::', '', $key );
 
 			return array(
+				// translators: Placeholders refer to a service, and a status (e.g. "Facebook", "added")
 				'message' => esc_html__( '%1$s connection %2$s', 'stream' ),
 				'meta'    => array(
 					'connection' => $publicize_ui->publicize->get_service_label( $name ),
@@ -681,6 +696,7 @@ class Connector_Jetpack extends Connector {
 			}
 
 			return array(
+				// translators: Placeholder refers to a setting name (e.g. "Language")
 				'message' => esc_html__( '"%s" setting updated', 'stream' ),
 				'meta'    => array(
 					'option_name' => $options[ $name ],

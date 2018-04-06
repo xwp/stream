@@ -553,7 +553,9 @@ class Connector_Settings extends Connector {
 				if ( isset( $submenu[ $menu_slug ] ) ) {
 					$found_submenus = wp_list_filter(
 						$submenu[ $menu_slug ],
-						array( 2 => $submenu_slug )
+						array(
+							2 => $submenu_slug,
+						)
 					);
 				}
 
@@ -563,8 +565,10 @@ class Connector_Settings extends Connector {
 
 					if ( current_user_can( $capability ) ) {
 						$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
-						$text       = sprintf( esc_html__( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
 						$field_name = $record->get_meta( 'option_key', true );
+
+						// translators: Placeholder refers to a context (e.g. "Editor")
+						$text = sprintf( esc_html__( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
 
 						if ( '' === $field_name ) {
 							$field_name = $record->get_meta( 'option', true );
@@ -682,8 +686,12 @@ class Connector_Settings extends Connector {
 		$options = array_merge(
 			(array) $whitelist_options,
 			(array) $new_whitelist_options,
-			array( 'permalink' => $this->permalink_options ),
-			array( 'network' => $this->network_options )
+			array(
+				'permalink' => $this->permalink_options,
+			),
+			array(
+				'network' => $this->network_options,
+			)
 		);
 
 		foreach ( $options as $key => $opts ) {
@@ -725,6 +733,7 @@ class Connector_Settings extends Connector {
 
 		foreach ( $changed_options as $properties ) {
 			$this->log(
+				// translators: Placeholder refers to a setting name (e.g. "Language")
 				__( '"%s" setting was updated', 'stream' ),
 				$properties,
 				null,
@@ -744,7 +753,7 @@ class Connector_Settings extends Connector {
 		<script>
 			(function ($) {
 				$(function () {
-					var hashPrefix = <?php echo wp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ) // xss ok ?>,
+					var hashPrefix = <?php echo wp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ); // xss ok ?>,
 						hashFieldName = "",
 						fieldNames = [],
 						$select2Choices = {},
@@ -830,7 +839,7 @@ class Connector_Settings extends Connector {
 	public function sanitize_value( $value ) {
 		if ( is_array( $value ) ) {
 			return '';
-		} elseif ( is_object( $value ) && ! in_array( '__toString', get_class_methods( $value ) ) ) {
+		} elseif ( is_object( $value ) && ! in_array( '__toString', get_class_methods( $value ), true ) ) {
 			return '';
 		}
 

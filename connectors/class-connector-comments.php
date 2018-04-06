@@ -127,7 +127,8 @@ class Connector_Comments extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		if ( $record->object_id ) {
-			if ( $comment = get_comment( $record->object_id ) ) {
+			$comment = get_comment( $record->object_id );
+			if ( $comment ) {
 				$approve_nonce = wp_create_nonce( "approve-comment_$comment->comment_ID" );
 
 				$links[ esc_html__( 'Edit', 'stream' ) ] = admin_url( "comment.php?action=editcomment&c=$comment->comment_ID" );
@@ -226,6 +227,7 @@ class Connector_Comments extends Connector {
 		}
 
 		$this->log(
+			// translators: Placeholder refers to a username (e.g. "administrator")
 			__( 'Comment flooding by %s detected and prevented', 'stream' ),
 			compact( 'user_name', 'user_id', 'time_lastcomment', 'time_newcomment' ),
 			null,
@@ -251,7 +253,8 @@ class Connector_Comments extends Connector {
 		$user_name      = $this->get_comment_author( $comment, 'name' );
 		$post_id        = $comment->comment_post_ID;
 		$post_type      = get_post_type( $post_id );
-		$post_title     = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
+		$post           = get_post( $post_id );
+		$post_title     = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_status = ( 1 === $comment->comment_approved ) ? esc_html__( 'approved automatically', 'stream' ) : esc_html__( 'pending approval', 'stream' );
 		$is_spam        = false;
 
@@ -270,16 +273,16 @@ class Connector_Comments extends Connector {
 		$comment_type   = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		if ( $comment->comment_parent ) {
-			$parent_user_id   = get_comment_author( $comment->comment_parent, 'id' );
-			$parent_user_name = get_comment_author( $comment->comment_parent, 'name' );
+			$parent_user_name = get_comment_author( $comment->comment_parent );
 
 			$this->log(
+				// translators: Placeholders refer to a parent comment's author, a comment author, a post title, a comment status, and a comment type
 				_x(
 					'Reply to %1$s\'s %5$s by %2$s on %3$s %4$s',
 					"1: Parent comment's author, 2: Comment author, 3: Post title, 4: Comment status, 5: Comment type",
 					'stream'
 				),
-				compact( 'parent_user_name', 'user_name', 'post_title', 'comment_status', 'comment_type', 'post_id', 'parent_user_id' ),
+				compact( 'parent_user_name', 'user_name', 'post_title', 'comment_status', 'comment_type', 'post_id' ),
 				$comment_id,
 				$post_type,
 				'replied',
@@ -287,6 +290,7 @@ class Connector_Comments extends Connector {
 			);
 		} else {
 			$this->log(
+				// translators: Placeholders refer to a comment author, a post title, a comment status, and a comment type
 				_x(
 					'New %4$s by %1$s on %2$s %3$s',
 					'1: Comment author, 2: Post title 3: Comment status, 4: Comment type',
@@ -319,10 +323,12 @@ class Connector_Comments extends Connector {
 		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
+		$post         = get_post( $post_id );
+		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
+			// translators: Placeholders refer to a comment author, a post title, and a comment type
 			_x(
 				'%1$s\'s %3$s on %2$s edited',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -383,7 +389,8 @@ class Connector_Comments extends Connector {
 		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = absint( $comment->comment_post_ID );
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
+		$post         = get_post( $post_id );
+		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		if ( $this->delete_post === $post_id ) {
@@ -391,6 +398,7 @@ class Connector_Comments extends Connector {
 		}
 
 		$this->log(
+			// translators: Placeholders refer to a comment author, a post title, and a comment type
 			_x(
 				'%1$s\'s %3$s on %2$s deleted permanently',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -421,10 +429,12 @@ class Connector_Comments extends Connector {
 		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
+		$post         = get_post( $post_id );
+		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
+			// translators: Placeholders refer to a comment author, a post title, and a comment type
 			_x(
 				'%1$s\'s %3$s on %2$s trashed',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -455,10 +465,12 @@ class Connector_Comments extends Connector {
 		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
+		$post         = get_post( $post_id );
+		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
+			// translators: Placeholders refer to a comment author, a post title, and a comment type
 			_x(
 				'%1$s\'s %3$s on %2$s restored',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -489,10 +501,12 @@ class Connector_Comments extends Connector {
 		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
+		$post         = get_post( $post_id );
+		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
+			// translators: Placeholders refer to a comment author, a post title, and a comment type
 			_x(
 				'%1$s\'s %3$s on %2$s marked as spam',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -523,10 +537,12 @@ class Connector_Comments extends Connector {
 		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
+		$post         = get_post( $post_id );
+		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
+			// translators: Placeholders refer to a comment author, a post title, and a comment type
 			_x(
 				'%1$s\'s %3$s on %2$s unmarked as spam',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -561,10 +577,12 @@ class Connector_Comments extends Connector {
 		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
+		$post         = get_post( $post_id );
+		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = get_comment_type( $comment->comment_ID );
 
 		$this->log(
+			// translators: Placeholders refer to a comment author, a post title, and a comment type
 			_x(
 				'%1$s\'s %3$s %2$s',
 				'Comment status transition. 1: Comment author, 2: Post title, 3: Comment type',
@@ -599,10 +617,12 @@ class Connector_Comments extends Connector {
 		$user_name    = $this->get_comment_author( $comment, 'name' );
 		$post_id      = $comment->comment_post_ID;
 		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
+		$post         = get_post( $post_id );
+		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'stream' );
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
+			// translators: Placeholders refer to a comment author, a post title, and a comment type
 			_x(
 				'Duplicate %3$s by %1$s prevented on %2$s',
 				'1: Comment author, 2: Post title, 3: Comment type',

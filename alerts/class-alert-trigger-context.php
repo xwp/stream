@@ -69,26 +69,32 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		// Context dropdown menu.
 		$context_values = array();
 
-		$form->add_field( 'select2', array(
-			'name'        => 'wp_stream_trigger_connector_or_context',
-			'options'     => $this->get_values(),
-			'classes'     => 'wp_stream_ajax_forward connector_or_context',
-			'data'        => array(
-				'placeholder' => __( 'Any Context', 'stream' ),
-			),
-		) );
+		$form->add_field(
+			'select2', array(
+				'name'        => 'wp_stream_trigger_connector_or_context',
+				'options'     => $this->get_values(),
+				'classes'     => 'wp_stream_ajax_forward connector_or_context',
+				'data'        => array(
+					'placeholder' => __( 'Any Context', 'stream' ),
+				),
+			)
+		);
 
-		$form->add_field( 'hidden', array(
-			'name'        => 'wp_stream_trigger_connector',
-			'value'       => $connector,
-			'classes'     => 'connector wp_stream_ajax_forward',
-		) );
+		$form->add_field(
+			'hidden', array(
+				'name'        => 'wp_stream_trigger_connector',
+				'value'       => $connector,
+				'classes'     => 'connector wp_stream_ajax_forward',
+			)
+		);
 
-		$form->add_field( 'hidden', array(
-			'name'        => 'wp_stream_trigger_context',
-			'value'       => $context,
-			'classes'     => 'context wp_stream_ajax_forward',
-		) );
+		$form->add_field(
+			'hidden', array(
+				'name'        => 'wp_stream_trigger_context',
+				'value'       => $context,
+				'classes'     => 'context wp_stream_ajax_forward',
+			)
+		);
 	}
 
 	/**
@@ -109,20 +115,36 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * @return array
 	 */
 	public function get_values() {
+		$context_values = array();
+
 		foreach ( $this->get_terms_labels( 'context' ) as $context_id => $context_data ) {
 			if ( is_array( $context_data ) ) {
 				$child_values = array();
 				if ( isset( $context_data['children'] ) ) {
 					$child_values = array();
 					foreach ( $context_data['children'] as $child_id => $child_value ) {
-						$child_values[] = array( 'value' => $context_id . '-' . $child_id, 'id' => $context_id . '-' . $child_id, 'text' => $child_value, 'parent' => $context_id );
+						$child_values[] = array(
+							'value' => $context_id . '-' . $child_id,
+							'id' => $context_id . '-' . $child_id,
+							'text' => $child_value,
+							'parent' => $context_id,
+						);
 					}
 				}
 				if ( isset( $context_data['label'] ) ) {
-					$context_values[] = array( 'value' => $context_id, 'id' => $context_id, 'text' => $context_data['label'], 'children' => $child_values );
+					$context_values[] = array(
+						'value' => $context_id,
+						'id' => $context_id,
+						'text' => $context_data['label'],
+						'children' => $child_values,
+					);
 				}
 			} else {
-				$context_values[] = array( 'value' => $context_id, 'id' => $context_id, 'text' => $context_data );
+				$context_values[] = array(
+					'value' => $context_id,
+					'id' => $context_id,
+					'text' => $context_data,
+				);
 			}
 		}
 		return $context_values;

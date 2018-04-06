@@ -128,7 +128,8 @@ class Log {
 
 		$result = $this->plugin->db->insert( $recordarr );
 
-		$this->debug_backtrace( $recordarr );
+		// This is helpful in development environments:
+		// error_log( $this->debug_backtrace( $recordarr ) );
 
 		return $result;
 	}
@@ -247,34 +248,15 @@ class Log {
 	}
 
 	/**
-	 * Send a full backtrace of calls to the PHP error log for debugging
+	 * Helper function to send a full backtrace of calls to the PHP error log for debugging
 	 *
 	 * @param array $recordarr
 	 *
-	 * @return void
+	 * @return string
 	 */
 	public function debug_backtrace( $recordarr ) {
-		/**
-		 * Enable debug backtrace on records.
-		 *
-		 * This filter is for developer use only. When enabled, Stream will send
-		 * a full debug backtrace of PHP calls for each record. Optionally, you may
-		 * use the available $recordarr parameter to specify what types of records to
-		 * create backtrace logs for.
-		 *
-		 * @param array $recordarr
-		 *
-		 * @return bool Set to FALSE by default (backtrace disabled)
-		 */
-		$enabled = apply_filters( 'wp_stream_debug_backtrace', false, $recordarr );
-
-		if ( ! $enabled ) {
-			return;
-		}
-
 		if ( version_compare( PHP_VERSION, '5.3.6', '<' ) ) {
-			error_log( 'WP Stream debug backtrace requires at least PHP 5.3.6' );
-			return;
+			return __( 'Debug backtrace requires at least PHP 5.3.6', 'wp_stream' );
 		}
 
 		// Record details
@@ -290,9 +272,11 @@ class Log {
 		unset( $stream_meta['user_meta'] );
 
 		if ( $stream_meta ) {
-			array_walk( $stream_meta, function( &$value, $key ) {
-				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
-			});
+			array_walk(
+				$stream_meta, function( &$value, $key ) {
+					$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
+				}
+			);
 
 			$stream_meta = implode( ', ', $stream_meta );
 		}
@@ -301,9 +285,11 @@ class Log {
 		$user_meta = isset( $recordarr['meta']['user_meta'] ) ? $recordarr['meta']['user_meta'] : null;
 
 		if ( $user_meta ) {
-			array_walk( $user_meta, function( &$value, $key ) {
-				$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
-			});
+			array_walk(
+				$user_meta, function( &$value, $key ) {
+					$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
+				}
+			);
 
 			$user_meta = implode( ', ', $user_meta );
 		}
@@ -330,6 +316,6 @@ class Log {
 			implode( "\n", $backtrace )
 		);
 
-		error_log( $output );
+		return $output;
 	}
 }

@@ -73,7 +73,7 @@ class Alert_Type_Highlight extends Alert_Type {
 		add_action( 'wp_ajax_' . self::REMOVE_ACTION, array( $this, 'ajax_remove_highlight' ) );
 
 		if ( ! empty( $this->plugin->connectors->connectors ) && is_array( $this->plugin->connectors->connectors ) ) {
-			foreach (  $this->plugin->connectors->connectors as $connector ) {
+			foreach ( $this->plugin->connectors->connectors as $connector ) {
 				add_filter( 'wp_stream_action_links_' . $connector->name, array( $this, 'action_link_remove_highlight' ), 10, 2 );
 			}
 		}
@@ -96,7 +96,10 @@ class Alert_Type_Highlight extends Alert_Type {
 		$recordarr['ID'] = $record_id;
 		$this->single_alert_id = $alert->ID;
 		if ( ! empty( $alert->alert_meta['color'] ) ) {
-			Alert::update_record_triggered_alerts( (object) $recordarr, $this->slug, array( 'highlight_color' => $alert->alert_meta['color'] ) );
+			$alert_meta = array(
+				'highlight_color' => $alert->alert_meta['color'],
+			);
+			Alert::update_record_triggered_alerts( (object) $recordarr, $this->slug, $alert_meta );
 		}
 	}
 
@@ -111,19 +114,23 @@ class Alert_Type_Highlight extends Alert_Type {
 		if ( is_object( $alert ) ) {
 			$alert_meta = $alert->alert_meta;
 		}
-		$options = wp_parse_args( $alert_meta, array(
-			'color' => 'yellow',
-		) );
+		$options = wp_parse_args(
+			$alert_meta, array(
+				'color' => 'yellow',
+			)
+		);
 
-		$form = new Form_Generator;
+		$form = new Form_Generator();
 		echo '<span class="wp_stream_alert_type_description">' . esc_html__( 'Highlight this alert on the Stream records page.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_highlight_color"><span class="title">' . esc_html__( 'Color', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'select', array( // Xss ok.
+		echo wp_kses_post( $form->render_field(
+			'select', array( // Xss ok.
 			'name'    => 'wp_stream_highlight_color',
 			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
 			'options' => $this->get_highlight_options(),
 			'value'   => $options['color'],
+			)
 		) );
 		echo '</span></label>';
 	}

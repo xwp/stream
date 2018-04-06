@@ -104,7 +104,10 @@ class Alert_Trigger_Action extends Alert_Trigger {
 		$action_values = array();
 		foreach ( $this->get_terms_labels( 'action' ) as $action_id => $action_data ) {
 			if ( ! $flat ) {
-				$action_values[] = array( 'id' => $action_id, 'text' => $action_data );
+				$action_values[] = array(
+					'id' => $action_id,
+					'text' => $action_data,
+				);
 			} else {
 				$action_values[ $action_id ] = $action_data;
 			}

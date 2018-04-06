@@ -81,7 +81,7 @@ class Connector_Installer extends Connector {
 	 * @return array             Action links
 	 */
 	public function action_links( $links, $record ) {
-		if ( 'wordpress' === $record->context && 'updated' === $record->action ) {
+		if ( 'WordPress' === $record->context && 'updated' === $record->action ) {
 			global $wp_version;
 
 			$version = $record->get_meta( 'new_version', true );
@@ -169,6 +169,7 @@ class Connector_Installer extends Connector {
 			}
 
 			$action  = 'installed';
+			// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2")
 			$message = _x(
 				'Installed %1$s: %2$s %3$s',
 				'Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
@@ -178,6 +179,7 @@ class Connector_Installer extends Connector {
 			$logs[]  = compact( 'slug', 'name', 'version', 'message', 'action' );
 		} elseif ( 'update' === $action ) {
 			$action  = 'updated';
+			// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2")
 			$message = _x(
 				'Updated %1$s: %2$s %3$s',
 				'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
@@ -211,7 +213,11 @@ class Connector_Installer extends Connector {
 				foreach ( $slugs as $slug ) {
 					$theme       = wp_get_theme( $slug );
 					$stylesheet  = $theme['Stylesheet Dir'] . '/style.css';
-					$theme_data  = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
+					$theme_data  = get_file_data(
+						$stylesheet, array(
+							'Version' => 'Version',
+						)
+					);
 					$name        = $theme['Name'];
 					$old_version = $theme['Version'];
 					$version     = $theme_data['Version'];
@@ -251,6 +257,7 @@ class Connector_Installer extends Connector {
 		$network_wide = $network_wide ? esc_html__( 'network wide', 'stream' ) : null;
 
 		$this->log(
+			// translators: Placeholders refer to a plugin name, and whether it is on a single site or network wide (e.g. "Stream", "network wide") (a single site results in a blank string)
 			_x(
 				'"%1$s" plugin activated %2$s',
 				'1: Plugin name, 2: Single site or network wide',
@@ -269,6 +276,7 @@ class Connector_Installer extends Connector {
 		$network_wide = $network_wide ? esc_html__( 'network wide', 'stream' ) : null;
 
 		$this->log(
+			// translators: Placeholders refer to a plugin name, and whether it is on a single site or network wide (e.g. "Stream", "network wide") (a single site results in a blank string)
 			_x(
 				'"%1$s" plugin deactivated %2$s',
 				'1: Plugin name, 2: Single site or network wide',
@@ -284,6 +292,7 @@ class Connector_Installer extends Connector {
 	public function callback_switch_theme( $name, $theme ) {
 		unset( $theme );
 		$this->log(
+			// translators: Placeholder refers to a theme name (e.g. "Twenty Seventeen")
 			__( '"%s" theme activated', 'stream' ),
 			compact( 'name' ),
 			null,
@@ -296,7 +305,7 @@ class Connector_Installer extends Connector {
 	 * @todo Core needs a delete_theme hook
 	 */
 	public function callback_delete_site_transient_update_themes() {
-		$backtrace = debug_backtrace();
+		$backtrace = debug_backtrace(); // @codingStandardsIgnoreLine This is used as a hack to determine a theme was deleted.
 		$delete_theme_call = null;
 
 		foreach ( $backtrace as $call ) {
@@ -314,6 +323,7 @@ class Connector_Installer extends Connector {
 		// @todo Can we get the name of the theme? Or has it already been eliminated
 
 		$this->log(
+			// translators: Placeholder refers to a theme name (e.g. "Twenty Seventeen")
 			__( '"%s" theme deleted', 'stream' ),
 			compact( 'name' ),
 			null,
@@ -361,11 +371,8 @@ class Connector_Installer extends Connector {
 	 * @todo This does not work in WP-CLI
 	 */
 	public function callback_pre_set_site_transient_update_plugins( $value ) {
-		if (
-			! wp_stream_filter_input( INPUT_POST, 'verify-delete' )
-			||
-			! ( $plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' ) )
-		) {
+		$plugins_to_delete = get_option( 'wp_stream_plugins_to_delete' );
+		if ( ! wp_stream_filter_input( INPUT_POST, 'verify-delete' ) || ! $plugins_to_delete ) {
 			return $value;
 		}
 
@@ -374,6 +381,7 @@ class Connector_Installer extends Connector {
 			$network_wide = $data['Network'] ? esc_html__( 'network wide', 'stream' ) : '';
 
 			$this->log(
+				// translators: Placeholder refers to a plugin name (e.g. "Stream")
 				__( '"%s" plugin deleted', 'stream' ),
 				compact( 'name', 'plugin', 'network_wide' ),
 				null,
@@ -394,8 +402,10 @@ class Connector_Installer extends Connector {
 		$auto_updated = ( 'update-core.php' !== $pagenow );
 
 		if ( $auto_updated ) {
+			// translators: Placeholder refers to a version number (e.g. "4.2")
 			$message = esc_html__( 'WordPress auto-updated to %s', 'stream' );
 		} else {
+			// translators: Placeholder refers to a version number (e.g. "4.2")
 			$message = esc_html__( 'WordPress updated to %s', 'stream' );
 		}
 
@@ -403,7 +413,7 @@ class Connector_Installer extends Connector {
 			$message,
 			compact( 'new_version', 'old_version', 'auto_updated' ),
 			null,
-			'wordpress',
+			'WordPress',
 			'updated'
 		);
 	}

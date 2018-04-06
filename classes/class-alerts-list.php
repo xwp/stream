@@ -117,7 +117,7 @@ class Alerts_List {
 		}
 
 		switch ( $column_name ) {
-			case 'alert_trigger' :
+			case 'alert_trigger':
 				$values = array();
 				foreach ( $this->plugin->alerts->alert_triggers as $trigger_type => $trigger_obj ) {
 					$value = $trigger_obj->get_display_value( 'list_table', $alert );
@@ -152,7 +152,7 @@ class Alerts_List {
 				<?php
 				echo wp_kses_post( $this->custom_column_actions( $post_id ) );
 				break;
-			case 'alert_type' :
+			case 'alert_type':
 				$alert_type = $alert->alert_type;
 				if ( ! empty( $this->plugin->alerts->alert_types[ $alert_type ]->name ) ) {
 					$alert_name = $this->plugin->alerts->alert_types[ $alert_type ]->name;
@@ -188,8 +188,28 @@ class Alerts_List {
 					<input type="hidden" name="wp_stream_ifttt_maker_key" value="<?php echo esc_attr( $alert->alert_meta['maker_key'] ); ?>" />
 					<?php
 				}
+				if ( ! empty( $alert->alert_meta['slack_webhook'] ) ) {
+				  ?>
+				  <input type="hidden" name="wp_stream_slack_webhook" value="<?php echo esc_attr( $alert->alert_meta['slack_webhook'] ); ?>" />
+				  <?php
+				}
+				if ( ! empty( $alert->alert_meta['slack_channel'] ) ) {
+				  ?>
+				  <input type="hidden" name="wp_stream_slack_channel" value="<?php echo esc_attr( $alert->alert_meta['slack_channel'] ); ?>" />
+				  <?php
+				}
+				if ( ! empty( $alert->alert_meta['slack_username'] ) ) {
+				  ?>
+				  <input type="hidden" name="wp_stream_slack_username" value="<?php echo esc_attr( $alert->alert_meta['slack_username'] ); ?>" />
+				  <?php
+				}
+				if ( ! empty( $alert->alert_meta['slack_icon'] ) ) {
+				  ?>
+				  <input type="hidden" name="wp_stream_slack_icon" value="<?php echo esc_attr( $alert->alert_meta['slack_icon'] ); ?>" />
+				  <?php
+				}
 				break;
-			case 'alert_status' :
+			case 'alert_status':
 				$post_status_object = get_post_status_object( get_post_status( $post_id ) );
 				if ( ! empty( $post_status_object ) ) {
 					echo esc_html( $post_status_object->label );
@@ -295,7 +315,8 @@ class Alerts_List {
 		?>
 		<legend class="inline-edit-legend"><?php esc_html_e( 'Edit', 'stream' ); ?></legend>
 		<?php
-		foreach ( $box_type as $type ) : // @todo remove inline styles. ?>
+		foreach ( $box_type as $type ) : // @todo remove inline styles.
+		?>
 			<fieldset class="inline-edit-col inline-edit-<?php echo esc_attr( Alerts::POST_TYPE ); ?>">
 				<?php
 				$function_name = 'display_' . $type . '_box';

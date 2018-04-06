@@ -149,6 +149,7 @@ class Settings {
 
 			$args['tooltip'] = esc_attr(
 				sprintf(
+					// translators: Placeholders refers to a user ID, a username, an email address, and a user role (e.g. "42", "administrator", "foo@bar.com", "subscriber")
 					__( 'ID: %1$d\nUser: %2$s\nEmail: %3$s\nRole: %4$s', 'stream' ),
 					$author->id,
 					$author->user_login,
@@ -196,9 +197,11 @@ class Settings {
 		$find = wp_stream_filter_input( INPUT_POST, 'find' );
 
 		if ( isset( $find['term'] ) && '' !== $find['term'] ) {
-			$ips = array_filter( $ips, function ( $ip ) use ( $find ) {
-				return 0 === strpos( $ip, $find['term'] );
-			} );
+			$ips = array_filter(
+				$ips, function ( $ip ) use ( $find ) {
+					return 0 === strpos( $ip, $find['term'] );
+				}
+			);
 		}
 
 		if ( $ips ) {
@@ -505,9 +508,11 @@ class Settings {
 							$output[ $name ] = $input[ $name ];
 
 							// Support all values in multidimentional arrays too
-							array_walk_recursive( $output[ $name ], function( &$v, $k ) {
-								$v = trim( $v );
-							} );
+							array_walk_recursive(
+								$output[ $name ], function( &$v, $k ) {
+									$v = trim( $v );
+								}
+							);
 						} else {
 							$output[ $name ] = trim( $input[ $name ] );
 						}
@@ -702,7 +707,7 @@ class Settings {
 					esc_attr( $title )
 				);
 				break;
-			case 'select2' :
+			case 'select2':
 				if ( ! isset( $current_value ) ) {
 					$current_value = '';
 				}
@@ -721,14 +726,24 @@ class Settings {
 							if ( isset( $value['children'] ) ) {
 								$child_values = array();
 								foreach ( $value['children'] as $child_key => $child_value ) {
-									$child_values[] = array( 'id' => $child_key, 'text' => $child_value );
+									$child_values[] = array(
+										'id' => $child_key,
+										'text' => $child_value,
+									);
 								}
 							}
 							if ( isset( $value['label'] ) ) {
-								$data_values[] = array( 'id' => $key, 'text' => $value['label'], 'children' => $child_values );
+								$data_values[] = array(
+									'id' => $key,
+									'text' => $value['label'],
+									'children' => $child_values,
+								);
 							}
 						} else {
-							$data_values[] = array( 'id' => $key, 'text' => $value );
+							$data_values[] = array(
+								'id' => $key,
+								'text' => $value,
+							);
 						}
 					}
 					$class .= ' with-source';
@@ -742,6 +757,7 @@ class Settings {
 					esc_attr( wp_stream_json_encode( $data_values ) ),
 					esc_attr( $current_value ),
 					esc_attr( $class ),
+					// translators: Placeholder refers to the title of the dropdown menu (e.g. "users")
 					sprintf( esc_html__( 'Any %s', 'stream' ), $title )
 				);
 
@@ -754,8 +770,8 @@ class Settings {
 				);
 
 				break;
-			case 'rule_list' :
-				$form = new Form_Generator;
+			case 'rule_list':
+				$form = new Form_Generator();
 				$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
 				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  esc_html__( 'Add New Rule', 'stream' ) );
@@ -786,7 +802,9 @@ class Settings {
 				$exclude_rows = array();
 
 				// Prepend an empty row
-				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
+				$current_value['exclude_row'] = array(
+					'helper' => '',
+				) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
 
 				foreach ( $current_value['exclude_row'] as $key => $value ) {
 					// Prepare values
@@ -801,11 +819,15 @@ class Settings {
 					$author_or_role_selected = array();
 
 					foreach ( $this->get_roles() as $role_id => $role ) {
-						$args  = array( 'value' => $role_id, 'text' => $role );
+						$args  = array(
+							'value' => $role_id,
+							'text' => $role,
+						);
 						$users = count_users();
 						$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
 
 						if ( ! empty( $count ) ) {
+							// translators: Placeholder refers to a number of users (e.g. "42")
 							$args['user_count'] = sprintf( _n( '%d user', '%d users', absint( $count ), 'stream' ), absint( $count ) );
 						}
 
@@ -820,21 +842,26 @@ class Settings {
 					if ( empty( $author_or_role_selected ) && is_numeric( $author_or_role ) ) {
 						$user                    = new WP_User( $author_or_role );
 						$display_name            = ( 0 === $user->ID ) ? esc_html__( 'N/A', 'stream' ) : $user->display_name;
-						$author_or_role_selected = array( 'value' => $user->ID, 'text' => $display_name );
+						$author_or_role_selected = array(
+							'value' => $user->ID,
+							'text' => $display_name,
+						);
 						$author_or_role_values[] = $author_or_role_selected;
 					}
 
-					$author_or_role_input = $form->render_field( 'select2', array(
-						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'author_or_role' ) ),
-						'options'     => $author_or_role_values,
-						'classes'     => 'author_or_role',
-						'data'        => array(
-							'placeholder'   => esc_html__( 'Any Author or Role', 'stream' ),
-							'nonce'         => esc_attr( wp_create_nonce( 'stream_get_users' ) ),
-							'selected-id'   => isset( $author_or_role_selected['value'] ) ? esc_attr( $author_or_role_selected['value'] ) : '',
-							'selected-text' => isset( $author_or_role_selected['text'] ) ? esc_attr( $author_or_role_selected['text'] ) : '',
-						),
-					) );
+					$author_or_role_input = $form->render_field(
+						'select2', array(
+							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'author_or_role' ) ),
+							'options'     => $author_or_role_values,
+							'classes'     => 'author_or_role',
+							'data'        => array(
+								'placeholder'   => esc_html__( 'Any Author or Role', 'stream' ),
+								'nonce'         => esc_attr( wp_create_nonce( 'stream_get_users' ) ),
+								'selected-id'   => isset( $author_or_role_selected['value'] ) ? esc_attr( $author_or_role_selected['value'] ) : '',
+								'selected-text' => isset( $author_or_role_selected['text'] ) ? esc_attr( $author_or_role_selected['text'] ) : '',
+							),
+						)
+					);
 
 					// Context dropdown menu
 					$context_values = array();
@@ -845,67 +872,91 @@ class Settings {
 							if ( isset( $context_data['children'] ) ) {
 								$child_values = array();
 								foreach ( $context_data['children'] as $child_id => $child_value ) {
-									$child_values[] = array( 'value' => $context_id . '-' . $child_id, 'text' => $child_value, 'parent' => $context_id );
+									$child_values[] = array(
+										'value' => $context_id . '-' . $child_id,
+										'text' => $child_value,
+										'parent' => $context_id,
+									);
 								}
 							}
 							if ( isset( $context_data['label'] ) ) {
-								$context_values[] = array( 'value' => $context_id, 'text' => $context_data['label'], 'children' => $child_values );
+								$context_values[] = array(
+									'value' => $context_id,
+									'text' => $context_data['label'],
+									'children' => $child_values,
+								);
 							}
 						} else {
-							$context_values[] = array( 'value' => $context_id, 'text' => $context_data );
+							$context_values[] = array(
+								'value' => $context_id,
+								'text' => $context_data,
+							);
 						}
 					}
 
-					$connector_or_context_input = $form->render_field( 'select2', array(
-						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'connector_or_context' ) ),
-						'options'     => $context_values,
-						'classes'     => 'connector_or_context',
-						'data'        => array(
-							'group'       => 'connector',
-							'placeholder' => __( 'Any Context', 'stream' ),
-						),
-					) );
+					$connector_or_context_input = $form->render_field(
+						'select2', array(
+							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'connector_or_context' ) ),
+							'options'     => $context_values,
+							'classes'     => 'connector_or_context',
+							'data'        => array(
+								'group'       => 'connector',
+								'placeholder' => __( 'Any Context', 'stream' ),
+							),
+						)
+					);
 
-					$connector_input = $form->render_field( 'hidden', array(
-						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'connector' ) ),
-						'value'       => $connector,
-						'classes'     => 'connector',
-					) );
+					$connector_input = $form->render_field(
+						'hidden', array(
+							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'connector' ) ),
+							'value'       => $connector,
+							'classes'     => 'connector',
+						)
+					);
 
-					$context_input = $form->render_field( 'hidden', array(
-						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'context' ) ),
-						'value'       => $context,
-						'classes'     => 'context',
-					) );
+					$context_input = $form->render_field(
+						'hidden', array(
+							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'context' ) ),
+							'value'       => $context,
+							'classes'     => 'context',
+						)
+					);
 
 					// Action dropdown menu
 					$action_values = array();
 
 					foreach ( $this->get_terms_labels( 'action' ) as $action_id => $action_data ) {
-						$action_values[] = array( 'value' => $action_id, 'text' => $action_data );
+						$action_values[] = array(
+							'value' => $action_id,
+							'text' => $action_data,
+						);
 					}
 
-					$action_input = $form->render_field( 'select2', array(
-						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'action' ) ),
-						'value'       => $action,
-						'options'     => $action_values,
-						'classes'     => 'action',
-						'data'        => array(
-							'placeholder' => __( 'Any Action', 'stream' ),
-						),
-					) );
+					$action_input = $form->render_field(
+						'select2', array(
+							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'action' ) ),
+							'value'       => $action,
+							'options'     => $action_values,
+							'classes'     => 'action',
+							'data'        => array(
+								'placeholder' => __( 'Any Action', 'stream' ),
+							),
+						)
+					);
 
 					// IP Address input
-					$ip_address_input = $form->render_field( 'select2', array(
-						'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'ip_address' ) ),
-						'value'       => $ip_address,
-						'classes'     => 'ip_address',
-						'data'        => array(
-							'placeholder' => esc_attr__( 'Any IP Address', 'stream' ),
-							'nonce'       => esc_attr( wp_create_nonce( 'stream_get_ips' ) ),
-						),
-						'multiple'    => true,
-					) );
+					$ip_address_input = $form->render_field(
+						'select2', array(
+							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'ip_address' ) ),
+							'value'       => $ip_address,
+							'classes'     => 'ip_address',
+							'data'        => array(
+								'placeholder' => esc_attr__( 'Any IP Address', 'stream' ),
+								'nonce'       => esc_attr( wp_create_nonce( 'stream_get_ips' ) ),
+							),
+							'multiple'    => true,
+						)
+					);
 
 					// Hidden helper input
 					$helper_input = sprintf(
