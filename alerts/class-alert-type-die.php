@@ -13,6 +13,7 @@ namespace WP_Stream;
  * @package WP_Stream
  */
 class Alert_Type_Die extends Alert_Type {
+
 	/**
 	 * Alert type name
 	 *
