@@ -64,15 +64,17 @@ class Form_Generator {
 	 * @return string
 	 */
 	public function render_field( $field_type, $args ) {
-		$args = wp_parse_args( $args, array(
-			'name'        => '',
-			'value'       => '',
-			'options'     => array(),
-			'description' => '',
-			'classes'     => '',
-			'data'        => array(),
-			'multiple'    => false,
-		) );
+		$args = wp_parse_args(
+			$args, array(
+				'name'        => '',
+				'value'       => '',
+				'options'     => array(),
+				'description' => '',
+				'classes'     => '',
+				'data'        => array(),
+				'multiple'    => false,
+			)
+		);
 
 		$output = '';
 		switch ( $field_type ) {
@@ -128,11 +130,13 @@ class Form_Generator {
 				}
 
 				foreach ( $args['options'] as $parent ) {
-					$parent = wp_parse_args( $parent, array(
-						'value'    => '',
-						'text'     => '',
-						'children' => array(),
-					) );
+					$parent = wp_parse_args(
+						$parent, array(
+							'value'    => '',
+							'text'     => '',
+							'children' => array(),
+						)
+					);
 					if ( empty( $parent['value'] ) ) {
 						continue;
 					}
@@ -188,7 +192,7 @@ class Form_Generator {
 				break;
 		}
 
-		$output .= ! empty( $args['description'] ) ? wp_kses_post( sprintf( '<p class="description">%s</p>', $args['description'] ) ) : null;
+		$output .= ! empty( $args['description'] ) ? sprintf( '<p class="description">%s</p>', $args['description'] ) : null;
 
 		return $output;
 	}

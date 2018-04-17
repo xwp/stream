@@ -76,11 +76,11 @@
 }
 
 .edit-php.post-type-wp_stream_alerts span.select2-selection__rendered {
-    font-style: normal;
+	font-style: normal;
 }
 
 #add-new-alert.inline-edit-row.inline-edit-row-page .inline-edit-col-right {
-    margin-top: 32px;
+	margin-top: 32px;
 }
 .edit-php.post-type-wp_stream_alerts #add-new-alert .select2.select2-container {
 	display: block;

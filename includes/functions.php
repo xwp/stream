@@ -98,7 +98,7 @@ function wp_stream_get_sites( $args = array() ) {
 		$sites = get_sites( $args );
 	} else {
 		$sites = array();
-		foreach ( wp_get_sites( $args ) as $site ) {
+		foreach ( wp_get_sites( $args ) as $site ) { // @codingStandardsIgnoreLine Specifically for old version of WP first, in order to provide backward compatibility
 			$sites[] = WP_Site::get_instance( $site['blog_id'] );
 		}
 	}

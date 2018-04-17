@@ -36,6 +36,6 @@ class Alert_Type_None extends Alert_Type {
 	 * @return void
 	 */
 	public function alert( $record_id, $recordarr, $options ) {
-		return;
+		// Do nothing.
 	}
 }

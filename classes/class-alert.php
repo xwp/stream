@@ -156,7 +156,7 @@ class Alert {
 	 * Query record meta
 	 *
 	 * @param string $meta_key Meta key to retrieve (optional). Otherwise will
-	 * 	grab all meta data for the ID.
+	 *  grab all meta data for the ID.
 	 * @param bool   $single Whether to only retrieve the first value (optional).
 	 *
 	 * @return mixed Single value if $single is true, array if false.
@@ -271,7 +271,9 @@ class Alert {
 		$alerts_triggered = $record->get_meta( Alerts::ALERTS_TRIGGERED_META_KEY, true );
 
 		if ( empty( $alerts_triggered ) || ! is_array( $alerts_triggered ) ) {
-			$alerts_triggered = array( $alert_slug => $alert_meta );
+			$alerts_triggered = array(
+				$alert_slug => $alert_meta,
+			);
 		} elseif ( ! array_key_exists( $alert_slug, $alerts_triggered ) || ! is_array( $alerts_triggered[ $alert_slug ] ) ) {
 			$alerts_triggered[ $alert_slug ] = $alert_meta;
 		}

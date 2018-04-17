@@ -393,10 +393,10 @@ class Admin {
 				'wp_stream_live_updates',
 				array(
 					'current_screen'      => $hook,
-					'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1', // input var okay
-					'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc', // input var okay
-					'current_query'       => wp_stream_json_encode( $_GET ), // input var okay
-					'current_query_count' => count( $_GET ), // input var okay
+					'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1', // input var okay, CSRF okay
+					'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc', // input var okay, CSRF okay
+					'current_query'       => wp_stream_json_encode( $_GET ), // input var okay, CSRF okay
+					'current_query_count' => count( $_GET ), // input var okay, CSRF okay
 				)
 			);
 		}
@@ -422,6 +422,7 @@ class Admin {
 			array(
 				'bulk_actions' => array(
 					'i18n' => array(
+						// translators: Placeholder refers to a number of items (e.g. "1,742")
 						'confirm_action' => sprintf( esc_html__( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
 					),
 					'threshold' => absint( $bulk_actions_threshold ),
@@ -464,8 +465,8 @@ class Admin {
 		if ( $this->is_stream_screen() ) {
 			$stream_classes[] = $this->admin_body_class;
 
-			if ( isset( $_GET['page'] ) ) {
-				$stream_classes[] = sanitize_key( $_GET['page'] ); // input var okay
+			if ( isset( $_GET['page'] ) ) { // CSRF okay
+				$stream_classes[] = sanitize_key( $_GET['page'] ); // input var okay, CSRF okay
 			}
 		}
 
@@ -633,8 +634,9 @@ class Admin {
 			return;
 		}
 
-		$days = $options['general_records_ttl'];
-		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
+		$days     = $options['general_records_ttl'];
+		$timezone = new DateTimeZone( 'UTC' );
+		$date     = new DateTime( 'now', $timezone );
 
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
@@ -673,9 +675,17 @@ class Admin {
 		}
 
 		if ( is_network_admin() ) {
-			$admin_page_url = add_query_arg( array( 'page' => $this->network->network_settings_page_slug ), network_admin_url( $this->admin_parent_page ) );
+			$admin_page_url = add_query_arg(
+				array(
+					'page' => $this->network->network_settings_page_slug,
+				), network_admin_url( $this->admin_parent_page )
+			);
 		} else {
-			$admin_page_url = add_query_arg( array( 'page' => $this->settings_page_slug ), admin_url( $this->admin_parent_page ) );
+			$admin_page_url = add_query_arg(
+				array(
+					'page' => $this->settings_page_slug,
+				), admin_url( $this->admin_parent_page )
+			);
 		}
 
 		$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
@@ -731,11 +741,16 @@ class Admin {
 
 			<?php if ( count( $sections ) > 1 ) : ?>
 				<h2 class="nav-tab-wrapper">
-					<?php $i = 0 ?>
+					<?php $i = 0; ?>
 					<?php foreach ( $sections as $section => $data ) : ?>
-						<?php $i ++ ?>
+						<?php $i ++; ?>
 						<?php $is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section ); ?>
-						<a href="<?php echo esc_url( add_query_arg( 'tab', $section ) ); ?>" class="nav-tab<?php if ( $is_active ) { echo esc_attr( ' nav-tab-active' ); } ?>">
+						<a href="<?php echo esc_url( add_query_arg( 'tab', $section ) ); ?>" class="nav-tab
+											<?php
+											if ( $is_active ) {
+												echo esc_attr( ' nav-tab-active' ); }
+?>
+">
 							<?php echo esc_html( $data['title'] ); ?>
 						</a>
 					<?php endforeach; ?>
@@ -770,7 +785,11 @@ class Admin {
 	 * Instantiate the list table
 	 */
 	public function register_list_table() {
-		$this->list_table = new List_Table( $this->plugin, array( 'screen' => $this->screen_id['main'] ) );
+		$this->list_table = new List_Table(
+			$this->plugin, array(
+				'screen' => $this->screen_id['main'],
+			)
+		);
 	}
 
 	/**
@@ -870,7 +889,11 @@ class Admin {
 		switch ( wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
 			case 'user_id':
 				$users = array_merge(
-					array( 0 => (object) array( 'display_name' => 'WP-CLI' ) ),
+					array(
+						0 => (object) array(
+							'display_name' => 'WP-CLI',
+						),
+					),
 					get_users()
 				);
 

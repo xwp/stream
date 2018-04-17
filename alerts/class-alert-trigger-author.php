@@ -4,6 +4,7 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 /**
@@ -31,16 +32,19 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 * Checks if a record matches the criteria from the trigger.
 	 *
 	 * @see Alert_Trigger::check_record().
+	 *
 	 * @param bool  $success Status of previous checks.
 	 * @param int   $record_id Record ID.
 	 * @param array $recordarr Record data.
 	 * @param Alert $alert The Alert being worked on.
+	 *
 	 * @return bool False on failure, otherwise should return original value of $success.
 	 */
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
 		if ( ! empty( $alert->alert_meta['trigger_author'] ) && intval( $alert->alert_meta['trigger_author'] ) !== intval( $recordarr['user_id'] ) ) {
 			return false;
 		}
+
 		return $success;
 	}
 
@@ -48,8 +52,10 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 * Adds fields to the trigger form.
 	 *
 	 * @see Alert_Trigger::add_fields().
+	 *
 	 * @param Form_Generator $form The Form Object to add to.
 	 * @param Alert          $alert The Alert being worked on.
+	 *
 	 * @return void
 	 */
 	public function add_fields( $form, $alert = array() ) {
@@ -59,11 +65,11 @@ class Alert_Trigger_Author extends Alert_Trigger {
 		}
 
 		$args = array(
-			'name'        => esc_attr( $this->field_key ),
-			'value'       => esc_attr( $value ),
-			'options'     => $this->get_values(),
-			'classes'     => 'wp_stream_ajax_forward',
-			'data'        => array(
+			'name'    => esc_attr( $this->field_key ),
+			'value'   => esc_attr( $value ),
+			'options' => $this->get_values(),
+			'classes' => 'wp_stream_ajax_forward',
+			'data'    => array(
 				'placeholder' => __( 'Any Author', 'stream' ),
 			),
 		);
@@ -86,24 +92,32 @@ class Alert_Trigger_Author extends Alert_Trigger {
 		}
 
 		$users = array_map(
-			function( $user_id ) {
+			function ( $user_id ) {
 				return new Author( $user_id );
 			},
-			get_users( array( 'fields' => 'ID' ) )
+			get_users(
+				array(
+					'fields' => 'ID',
+				)
+			)
 		);
 
 		if ( is_multisite() && is_super_admin() ) {
 			$super_admins = array_map(
-				function( $login ) {
+				function ( $login ) {
 					$user = get_user_by( 'login', $login );
+
 					return new Author( $user->ID );
 				},
 				get_super_admins()
 			);
-			$users = array_unique( array_merge( $users, $super_admins ) );
+			$users        = array_unique( array_merge( $users, $super_admins ) );
 		}
 
-		$users[] = new Author( 0, array( 'is_wp_cli' => true ) );
+		$user_meta = array(
+			'is_wp_cli' => true,
+		);
+		$users[]   = new Author( 0, $user_meta );
 
 		foreach ( $users as $user ) {
 			$all_records[] = array(
@@ -112,6 +126,7 @@ class Alert_Trigger_Author extends Alert_Trigger {
 				'text'  => $user->get_display_name(),
 			);
 		}
+
 		return $all_records;
 	}
 
@@ -119,7 +134,9 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 * Validate and save Alert object
 	 *
 	 * @see Alert_Trigger::save_fields().
+	 *
 	 * @param Alert $alert The Alert being worked on.
+	 *
 	 * @return void
 	 */
 	public function save_fields( $alert ) {
@@ -135,8 +152,10 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 * Returns the trigger's value for the given alert.
 	 *
 	 * @see Alert_Trigger::get_display_value().
+	 *
 	 * @param string $context The location this data will be displayed in.
 	 * @param Alert  $alert Alert being processed.
+	 *
 	 * @return string
 	 */
 	function get_display_value( $context = 'normal', $alert ) {
@@ -151,6 +170,7 @@ class Alert_Trigger_Author extends Alert_Trigger {
 				$author = __( 'Unknown User', 'stream' );
 			}
 		}
+
 		return ucfirst( $author );
 	}
 }

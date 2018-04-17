@@ -82,7 +82,6 @@ class Install {
 
 		if ( empty( $this->db_version ) ) {
 			$this->install( $this->plugin->get_version() );
-
 			return;
 		}
 
@@ -90,15 +89,26 @@ class Install {
 			return;
 		}
 
-		$update = isset( $_REQUEST['wp_stream_update'] ) ? $_REQUEST['wp_stream_update'] : null;
+		$update = null;
+		if ( isset( $_REQUEST['wp_stream_update'] ) && wp_verify_nonce( 'wp_stream_update_db' ) ) {
+			$update = esc_attr( $_REQUEST['wp_stream_update'] );
+		}
 
 		if ( ! $update ) {
 			$this->update_required = true;
-			$this->success_db      = $this->update( $this->db_version, $this->plugin->get_version(), array( 'type' => 'auto' ) );
+			$this->success_db      = $this->update(
+				$this->db_version, $this->plugin->get_version(), array(
+					'type' => 'auto',
+				)
+			);
 		}
 
 		if ( 'update_and_continue' === $update ) {
-			$this->success_db = $this->update( $this->db_version, $this->plugin->get_version(), array( 'type' => 'user' ) );
+			$this->success_db = $this->update(
+				$this->db_version, $this->plugin->get_version(), array(
+					'type' => 'user',
+				)
+			);
 		}
 
 		$versions = $this->db_update_versions();
@@ -168,9 +178,19 @@ class Install {
 		}
 
 		if ( is_plugin_active_for_network( $this->plugin->locations['plugin'] ) && current_user_can( 'manage_network_plugins' ) ) {
-			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), network_admin_url( 'plugins.php#stream' ) );
+			$uninstall_message = sprintf(
+				// translators: Placeholders refer to HTML Link tags (e.g. "<a href="https://foo.com/wp-admin/">")
+				__( 'Please %1$suninstall%2$s the Stream plugin and activate it again.', 'stream' ),
+				'<a href="' . network_admin_url( 'plugins.php#stream' ) . '">',
+				'</a>'
+			);
 		} elseif ( current_user_can( 'activate_plugins' ) ) {
-			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the Stream plugin and activate it again.', 'stream' ), admin_url( 'plugins.php#stream' ) );
+			$uninstall_message = sprintf(
+				// translators: Placeholders refer to HTML Link tags (e.g. "<a href="https://foo.com/wp-admin/">")
+				__( 'Please %1$suninstall%2$s the Stream plugin and activate it again.', 'stream' ),
+				'<a href="' . admin_url( 'plugins.php#stream' ) . '">',
+				'</a>'
+			);
 		}
 
 		if ( ! empty( $database_message ) ) {
@@ -220,8 +240,6 @@ class Install {
 		} else {
 			update_option( $this->option_key . '_registered_connectors', $current_versions );
 		}
-
-		return;
 	}
 
 	/**
@@ -265,7 +283,10 @@ class Install {
 			return;
 		}
 
-		$update = isset( $_REQUEST['wp_stream_update'] ) ? $_REQUEST['wp_stream_update'] : null;
+		$update = null;
+		if ( isset( $_REQUEST['wp_stream_update'] ) && wp_verify_nonce( 'wp_stream_update_db' ) ) {
+			$update = esc_attr( $_REQUEST['wp_stream_update'] );
+		}
 
 		if ( ! $update ) {
 			$this->prompt_update();
@@ -315,7 +336,16 @@ class Install {
 		<div class="updated">
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'wp_stream_update' ) ); ?>" style="display:inline;">
 				<p><strong><?php esc_html_e( 'Update Complete', 'stream' ); ?></strong></p>
-				<p><?php printf( esc_html__( 'Your Stream database has been successfully updated from %1$s to %2$s!', 'stream' ), esc_html( $this->db_version ), esc_html( $this->plugin->get_version() ) ); ?></p>
+				<p>
+					<?php
+					printf(
+						// translators: Placeholders refer to version numbers (e.g. "4.2")
+						esc_html__( 'Your Stream database has been successfully updated from %1$s to %2$s!', 'stream' ),
+						esc_html( $this->db_version ),
+						esc_html( $this->plugin->get_version() )
+					);
+					?>
+				</p>
 				<?php submit_button( esc_html__( 'Continue', 'stream' ), 'secondary', false ); ?>
 			</form>
 		</div>
@@ -334,9 +364,9 @@ class Install {
 	 */
 	public function db_update_versions() {
 		$db_update_versions = array(
-			'3.0.0' /* @version 3.0.0 Drop the stream_context table, changes to stream table */,
-			'3.0.2' /* @version 3.0.2 Fix uppercase values in stream table, connector column */,
-			'3.0.8' /* @version 3.0.8 Increase size of user role IDs, user_roll column */,
+			'3.0.0', /* @version 3.0.0 Drop the stream_context table, changes to stream table */
+			'3.0.2', /* @version 3.0.2 Fix uppercase values in stream table, connector column */
+			'3.0.8', /* @version 3.0.8 Increase size of user role IDs, user_roll column */
 		);
 
 		/**

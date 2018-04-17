@@ -176,7 +176,11 @@ class Live_Update {
 		$enable_stream_update = ( 'off' !== $this->plugin->admin->get_user_meta( get_current_user_id(), $this->user_meta_key ) );
 
 		// Register list table
-		$this->list_table = new List_Table( $this->plugin, array( 'screen' => 'toplevel_page_' . $this->plugin->admin->records_page_slug ) );
+		$this->list_table = new List_Table(
+			$this->plugin, array(
+				'screen' => 'toplevel_page_' . $this->plugin->admin->records_page_slug,
+			)
+		);
 		$this->list_table->prepare_items();
 
 		$total_items = isset( $this->list_table->_pagination_args['total_items'] ) ? $this->list_table->_pagination_args['total_items'] : null;
@@ -184,6 +188,7 @@ class Live_Update {
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && isset( $total_items ) ) {
 			$response['total_items']      = $total_items;
+			// translators: Placeholder refers to a number of items (e.g. "42")
 			$response['total_items_i18n'] = sprintf( _n( '%d item', '%d items', $total_items ), number_format_i18n( $total_items ) );
 		}
 

@@ -4,9 +4,11 @@
  *
  * @see https://github.com/wp-cli/wp-cli
  */
+
 namespace WP_Stream;
 
 class CLI extends \WP_CLI_Command {
+
 	/**
 	 * Query a set of Stream records.
 	 *
@@ -96,7 +98,13 @@ class CLI extends \WP_CLI_Command {
 		$this->connection();
 
 		if ( empty( $assoc_args['fields'] ) ) {
-			$fields = array( 'created', 'ip', 'user_id', 'user_role', 'summary' );
+			$fields = array(
+				'created',
+				'ip',
+				'user_id',
+				'user_role',
+				'summary',
+			);
 		} else {
 			$fields = explode( ',', $assoc_args['fields'] );
 		}
@@ -135,23 +143,23 @@ class CLI extends \WP_CLI_Command {
 
 		if ( isset( $assoc_args['format'] ) && 'table' !== $assoc_args['format'] ) {
 			if ( 'count' === $assoc_args['format'] ) {
-				WP_CLI::line( count( $records ) );
+				\WP_CLI::line( count( $records ) );
 			}
 
 			if ( 'json' === $assoc_args['format'] ) {
-				WP_CLI::line( wp_stream_json_encode( $formatted_records ) );
+				\WP_CLI::line( wp_stream_json_encode( $formatted_records ) );
 			}
 
 			if ( 'json_pretty' === $assoc_args['format'] ) {
 				if ( version_compare( PHP_VERSION, '5.4', '<' ) ) {
-					WP_CLI::line( wp_stream_json_encode( $formatted_records ) ); // xss ok
+					\WP_CLI::line( wp_stream_json_encode( $formatted_records ) ); // xss ok
 				} else {
-					WP_CLI::line( wp_stream_json_encode( $formatted_records, JSON_PRETTY_PRINT ) ); // xss ok
+					\WP_CLI::line( wp_stream_json_encode( $formatted_records, JSON_PRETTY_PRINT ) ); // xss ok
 				}
 			}
 
 			if ( 'csv' === $assoc_args['format'] ) {
-				WP_CLI::line( $this->csv_format( $formatted_records ) );
+				\WP_CLI::line( $this->csv_format( $formatted_records ) );
 			}
 
 			return;
@@ -168,8 +176,8 @@ class CLI extends \WP_CLI_Command {
 	/**
 	 * Convert any field to a flat array.
 	 *
-	 * @param string $name    The output array element name
-	 * @param mixed  $object  Any value to be converted to an array
+	 * @param string $name The output array element name
+	 * @param mixed  $object Any value to be converted to an array
 	 *
 	 * @return array  The flat array
 	 */
@@ -192,18 +200,18 @@ class CLI extends \WP_CLI_Command {
 	/**
 	 * Convert an array of flat records to CSV
 	 *
-	 * @param array $array  The input array of records
+	 * @param array $array The input array of records
 	 *
 	 * @return string  The CSV output
 	 */
 	private function csv_format( $array ) {
-		$output = fopen( 'php://output', 'w' );
+		$output = fopen( 'php://output', 'w' ); // @codingStandardsIgnoreLine Clever output for WP CLI using php://output
 
 		foreach ( $array as $line ) {
-			fputcsv( $output, $line );
+			fputcsv( $output, $line ); // @codingStandardsIgnoreLine
 		}
 
-		fclose( $output );
+		fclose( $output ); // @codingStandardsIgnoreLine
 	}
 
 	/**
@@ -212,10 +220,15 @@ class CLI extends \WP_CLI_Command {
 	 * @return void
 	 */
 	private function connection() {
-		$query = wp_stream_get_instance()->db->query( array( 'records_per_page' => 1, 'fields' => 'created' ) );
+		$query = wp_stream_get_instance()->db->query(
+			array(
+				'records_per_page' => 1,
+				'fields'           => 'created',
+			)
+		);
 
 		if ( ! $query ) {
-			WP_CLI::error( esc_html__( 'SITE IS DISCONNECTED', 'stream' ) );
+			\WP_CLI::error( esc_html__( 'SITE IS DISCONNECTED', 'stream' ) );
 		}
 	}
 }

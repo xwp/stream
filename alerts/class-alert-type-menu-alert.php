@@ -13,6 +13,7 @@ namespace WP_Stream;
  * @package WP_Stream
  */
 class Alert_Type_Menu_Alert extends Alert_Type {
+
 	/**
 	 * Alert type name
 	 *
@@ -48,7 +49,6 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	 */
 	public function alert( $record_id, $recordarr, $options ) {
 		$this->add_message( $recordarr['summary'] );
-		return;
 	}
 
 	/**
@@ -62,19 +62,23 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 		if ( is_object( $alert ) ) {
 			$alert_meta = $alert->alert_meta;
 		}
-		$options = wp_parse_args( $alert_meta, array(
-			'clear_immediate' => false,
-		) );
+		$options = wp_parse_args(
+			$alert_meta, array(
+				'clear_immediate' => false,
+			)
+		);
 
-		$form = new Form_Generator;
-		$form->add_field( 'checkbox', array(
-			'name'  => 'wp_stream_menu_alert_clear_immediate',
-			'text'  => esc_attr( __( 'Clear alerts after seen.', 'stream' ) ),
-			'value' => $options['clear_immediate'],
-			'title' => __( 'Menu Bar', 'stream' ),
-		) );
+		$form = new Form_Generator();
+		$form->add_field(
+			'checkbox', array(
+				'name'  => 'wp_stream_menu_alert_clear_immediate',
+				'text'  => esc_attr( __( 'Clear alerts after seen.', 'stream' ) ),
+				'value' => $options['clear_immediate'],
+				'title' => __( 'Menu Bar', 'stream' ),
+			)
+		);
 
-		echo $form->render_all(); // Xss ok.
+		echo $form->render_fields(); // Xss ok.
 	}
 
 	/**
@@ -101,25 +105,34 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 			return false;
 		}
 
-		$wp_admin_bar->add_node( array(
-			'id' => 'wp_stream_alert_notify',
-			'parent' => false,
-			'title' => __( 'New Stream Alert', 'stream' ),
-			'href' => '#',
-			'meta' => array( 'class' => 'opposite' ),
-		) );
+		$wp_admin_bar->add_node(
+			array(
+				'id'     => 'wp_stream_alert_notify',
+				'parent' => false,
+				'title'  => __( 'New Stream Alert', 'stream' ),
+				'href'   => '#',
+				'meta'   => array(
+					'class' => 'opposite',
+				),
+			)
+		);
 
 		foreach ( $messages as $key => $message ) {
-			$wp_admin_bar->add_node( array(
-				'id'     => 'wp_stream_alert_notify_' . $key,
-				'parent' => 'wp_stream_alert_notify',
-				'title'  => esc_html( $message ),
-				'href'   => '#',
-				'meta'   => array( 'class' => 'opposite' ),
-			) );
+			$wp_admin_bar->add_node(
+				array(
+					'id'     => 'wp_stream_alert_notify_' . $key,
+					'parent' => 'wp_stream_alert_notify',
+					'title'  => esc_html( $message ),
+					'href'   => '#',
+					'meta'   => array(
+						'class' => 'opposite',
+					),
+				)
+			);
 		}
 
 		$this->clear_messages();
+
 		return true;
 	}
 
@@ -131,8 +144,9 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	 * @return array List of alert messages
 	 */
 	public function get_messages() {
-		$current_user	= wp_get_current_user();
-		$messages = get_user_meta( $current_user->ID, $this->get_key(), false );
+		$current_user = wp_get_current_user();
+		$messages     = get_user_meta( $current_user->ID, $this->get_key(), false );
+
 		return $messages;
 	}
 
@@ -145,7 +159,7 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	 * @return void
 	 */
 	public function add_message( $message ) {
-		$current_user	= wp_get_current_user();
+		$current_user = wp_get_current_user();
 		add_user_meta( $current_user->ID, $this->get_key(), $message, false );
 	}
 
@@ -158,7 +172,7 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	 * @return void
 	 */
 	public function clear_messages( $global = false ) {
-		$current_user	= wp_get_current_user();
+		$current_user = wp_get_current_user();
 		delete_user_meta( $current_user->ID, $this->get_key(), $global );
 	}
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace WP_Stream;
 
 class Preview_List_Table extends List_Table {
@@ -7,6 +8,7 @@ class Preview_List_Table extends List_Table {
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Plugin object.
+	 *
 	 * @return void
 	 */
 	public function __construct( $plugin ) {
@@ -18,15 +20,21 @@ class Preview_List_Table extends List_Table {
 	 * Sets up the records for display.
 	 *
 	 * @param array $items List of items for display.
+	 *
 	 * @return void
 	 */
 	function set_records( $items ) {
-		$columns	= $this->get_columns();
+		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
 		$hidden   = $this->get_hidden_columns();
-		$primary	= $columns['summary'];
+		$primary  = $columns['summary'];
 
-		$this->_column_headers = array( $columns, $hidden, $sortable, $primary );
+		$this->_column_headers = array(
+			$columns,
+			$hidden,
+			$sortable,
+			$primary,
+		);
 
 		$this->items = $items;
 	}
@@ -47,7 +55,7 @@ class Preview_List_Table extends List_Table {
 			</thead>
 
 			<tbody id="the-list">
-				<?php $this->display_rows_or_placeholder(); ?>
+			<?php $this->display_rows_or_placeholder(); ?>
 			</tbody>
 
 			<tfoot>

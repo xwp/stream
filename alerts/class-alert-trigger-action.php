@@ -39,16 +39,19 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 * Checks if a record matches the criteria from the trigger.
 	 *
 	 * @see Alert_Trigger::check_record().
+	 *
 	 * @param bool  $success Status of previous checks.
 	 * @param int   $record_id Record ID.
 	 * @param array $recordarr Record data.
 	 * @param Alert $alert The Alert being worked on.
+	 *
 	 * @return bool False on failure, otherwise should return original value of $success.
 	 */
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
 		if ( ! empty( $alert->alert_meta['trigger_action'] ) && $recordarr['action'] !== $alert->alert_meta['trigger_action'] ) {
 			return false;
 		}
+
 		return $success;
 	}
 
@@ -56,8 +59,10 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 * Adds fields to the trigger form.
 	 *
 	 * @see Alert_Trigger::add_fields().
+	 *
 	 * @param Form_Generator $form The Form Object to add to.
 	 * @param Alert          $alert The Alert being worked on.
+	 *
 	 * @return void
 	 */
 	public function add_fields( $form, $alert = array() ) {
@@ -67,11 +72,11 @@ class Alert_Trigger_Action extends Alert_Trigger {
 		}
 
 		$args = array(
-			'name'        => esc_attr( $this->field_key ),
-			'value'       => esc_attr( $value ),
-			'options'     => $this->get_values(),
-			'classes'     => 'wp_stream_ajax_forward',
-			'data'        => array(
+			'name'    => esc_attr( $this->field_key ),
+			'value'   => esc_attr( $value ),
+			'options' => $this->get_values(),
+			'classes' => 'wp_stream_ajax_forward',
+			'data'    => array(
 				'placeholder' => __( 'Any Action', 'stream' ),
 			),
 		);
@@ -82,7 +87,9 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 * Validate and save Alert object
 	 *
 	 * @see Alert_Trigger::save_fields().
+	 *
 	 * @param Alert $alert The Alert being worked on.
+	 *
 	 * @return void
 	 */
 	public function save_fields( $alert ) {
@@ -98,17 +105,22 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 * Generate array of possible action values
 	 *
 	 * @param bool $flat If the array should be multidimensional.
+	 *
 	 * @return array
 	 */
 	public function get_values( $flat = false ) {
 		$action_values = array();
 		foreach ( $this->get_terms_labels( 'action' ) as $action_id => $action_data ) {
 			if ( ! $flat ) {
-				$action_values[] = array( 'id' => $action_id, 'text' => $action_data );
+				$action_values[] = array(
+					'id'   => $action_id,
+					'text' => $action_data,
+				);
 			} else {
 				$action_values[ $action_id ] = $action_data;
 			}
 		}
+
 		return $action_values;
 	}
 
@@ -116,7 +128,9 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 * Function will return all terms labels of given column
 	 *
 	 * @todo refactor Settings::get_terms_labels into general utility
+	 *
 	 * @param string $column string Name of the column.
+	 *
 	 * @return array
 	 */
 	public function get_terms_labels( $column ) {
@@ -141,6 +155,7 @@ class Alert_Trigger_Action extends Alert_Trigger {
 
 			ksort( $return_labels );
 		}
+
 		return $return_labels;
 	}
 
@@ -148,8 +163,10 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 * Returns the trigger's value for the given alert.
 	 *
 	 * @see Alert_Trigger::get_display_value().
+	 *
 	 * @param string $context The location this data will be displayed in.
 	 * @param Alert  $alert Alert being processed.
+	 *
 	 * @return string
 	 */
 	function get_display_value( $context = 'normal', $alert ) {

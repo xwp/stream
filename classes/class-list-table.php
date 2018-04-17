@@ -1,7 +1,9 @@
 <?php
+
 namespace WP_Stream;
 
 class List_Table extends \WP_List_Table {
+
 	/**
 	 * Hold Plugin class
 	 *
@@ -47,8 +49,14 @@ class List_Table extends \WP_List_Table {
 		// Check for default hidden columns
 		$this->get_hidden_columns();
 
-		add_filter( 'screen_settings', array( $this, 'screen_controls' ), 10, 2 );
-		add_filter( 'set-screen-option', array( $this, 'set_screen_option' ), 10, 3 );
+		add_filter( 'screen_settings', array(
+			$this,
+			'screen_controls',
+		), 10, 2 );
+		add_filter( 'set-screen-option', array(
+			$this,
+			'set_screen_option',
+		), 10, 3 );
 
 		set_screen_options();
 	}
@@ -93,7 +101,8 @@ class List_Table extends \WP_List_Table {
 	}
 
 	function get_hidden_columns() {
-		if ( ! $user = wp_get_current_user() ) {
+		$user = wp_get_current_user();
+		if ( ! $user ) {
 			return array();
 		}
 
@@ -115,7 +124,12 @@ class List_Table extends \WP_List_Table {
 		$hidden   = $this->get_hidden_columns();
 		$primary  = $columns['summary'];
 
-		$this->_column_headers = array( $columns, $hidden, $sortable, $primary );
+		$this->_column_headers = array(
+			$columns,
+			$hidden,
+			$sortable,
+			$primary,
+		);
 
 		$this->items = $this->get_records();
 
@@ -133,11 +147,13 @@ class List_Table extends \WP_List_Table {
 		$args = array();
 
 		// Parse sorting params
-		if ( $order = wp_stream_filter_input( INPUT_GET, 'order' ) ) {
+		$order = wp_stream_filter_input( INPUT_GET, 'order' );
+		if ( $order ) {
 			$args['order'] = $order;
 		}
 
-		if ( $orderby = wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
+		$orderby = wp_stream_filter_input( INPUT_GET, 'orderby' );
+		if ( $orderby ) {
 			$args['orderby'] = $orderby;
 		}
 
@@ -207,6 +223,7 @@ class List_Table extends \WP_List_Table {
 		$args['records_per_page'] = apply_filters( 'stream_records_per_page', $args['records_per_page'] );
 
 		$items = $this->plugin->db->get_records( $args );
+
 		return $items;
 	}
 
@@ -220,25 +237,26 @@ class List_Table extends \WP_List_Table {
 	}
 
 	function column_default( $item, $column_name ) {
-		$out = '';
+		$out    = '';
 		$record = new Record( $item );
 
 		switch ( $column_name ) {
-			case 'date' :
+			case 'date':
 				$created     = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
 				$date_string = sprintf(
 					'<time datetime="%s" class="relative-time record-created">%s</time>',
 					wp_stream_get_iso_8601_extended_date( strtotime( $record->created ) ),
 					get_date_from_gmt( $created, 'Y/m/d' )
 				);
-				$out  = $this->column_link( $date_string, 'date', get_date_from_gmt( $created, 'Y/m/d' ) );
-				$out .= '<br />';
-				$out .= get_date_from_gmt( $created, 'h:i:s A' );
+				$out         = $this->column_link( $date_string, 'date', get_date_from_gmt( $created, 'Y/m/d' ) );
+				$out        .= '<br />';
+				$out        .= get_date_from_gmt( $created, 'h:i:s A' );
 				break;
 
-			case 'summary' :
-				$out           = $record->summary;
-				$object_title  = $record->get_object_title();
+			case 'summary':
+				$out          = $record->summary;
+				$object_title = $record->get_object_title();
+				// translators: Placeholder refers to the title of any object, like a Post (e.g. "Hello World")
 				$view_all_text = $object_title ? sprintf( esc_html__( 'View all activity for "%s"', 'stream' ), esc_attr( $object_title ) ) : esc_html__( 'View all activity for this object', 'stream' );
 
 				if ( $record->object_id ) {
@@ -255,7 +273,7 @@ class List_Table extends \WP_List_Table {
 				$out .= $this->get_action_links( $record );
 				break;
 
-			case 'user_id' :
+			case 'user_id':
 				$user = new Author( (int) $record->user_id, (array) $record->user_meta );
 
 				$filtered_records_url = add_query_arg(
@@ -301,18 +319,19 @@ class List_Table extends \WP_List_Table {
 				$out  = $this->column_link( $blog->blogname, 'blog_id', $blog->blog_id );
 				break;
 
-			case 'ip' :
+			case 'ip':
 				$out = $this->column_link( $record->{$column_name}, 'ip', $record->{$column_name} );
 				break;
 
-			default :
+			default:
 				/**
 				 * Registers new Columns to be inserted into the table. The cell contents of this column is set
 				 * below with 'wp_stream_insert_column_default_'
 				 *
 				 * @return array
 				 */
-				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', $new_columns = array() );
+				$new_columns      = array();
+				$inserted_columns = apply_filters( 'wp_stream_register_column_defaults', $new_columns );
 
 				if ( ! empty( $inserted_columns ) && is_array( $inserted_columns ) ) {
 					foreach ( $inserted_columns as $column_title ) {
@@ -328,7 +347,7 @@ class List_Table extends \WP_List_Table {
 							/**
 							 * Allows for the addition of content under a specified column.
 							 *
-							 * @param object $record  Contents of the row
+							 * @param object $record Contents of the row
 							 *
 							 * @return string
 							 */
@@ -342,8 +361,11 @@ class List_Table extends \WP_List_Table {
 				}
 		}
 
-		$allowed_tags = wp_kses_allowed_html( 'post' );
-		$allowed_tags['time'] = array( 'datetime' => true, 'class' => true );
+		$allowed_tags                  = wp_kses_allowed_html( 'post' );
+		$allowed_tags['time']          = array(
+			'datetime' => true,
+			'class'    => true,
+		);
 		$allowed_tags['img']['srcset'] = true;
 
 		echo wp_kses( $out, $allowed_tags );
@@ -410,7 +432,9 @@ class List_Table extends \WP_List_Table {
 			self_admin_url( $this->plugin->admin->admin_parent_page )
 		);
 
-		$args = ! is_array( $key ) ? array( $key => $value ) : $key;
+		$args = ! is_array( $key ) ? array(
+			$key => $value,
+		) : $key;
 
 		foreach ( $args as $k => $v ) {
 			$url = add_query_arg( $k, $v, $url );
@@ -425,11 +449,11 @@ class List_Table extends \WP_List_Table {
 	}
 
 	public function get_term_title( $term, $type ) {
-		if ( ! isset( $this->plugin->connectors->term_labels[ "stream_$type" ][ $term ] ) ) {
+		if ( ! isset( $this->plugin->connectors->term_labels[ 'stream_' . $type ][ $term ] ) ) {
 			return $term;
 		}
 
-		return $this->plugin->connectors->term_labels[ "stream_$type" ][ $term ];
+		return $this->plugin->connectors->term_labels[ 'stream_' . $type ][ $term ];
 	}
 
 	/**
@@ -456,31 +480,43 @@ class List_Table extends \WP_List_Table {
 				$selected_user = wp_stream_filter_input( INPUT_GET, 'user_id' );
 				if ( $selected_user ) {
 					$user = new Author( $selected_user );
-					return array( $selected_user => $user->get_display_name() );
+
+					return array(
+						$selected_user => $user->get_display_name(),
+					);
 				} else {
 					return array();
 				}
 			}
 
 			$users = array_map(
-				function( $user_id ) {
+				function ( $user_id ) {
 					return new Author( $user_id );
 				},
-				get_users( array( 'fields' => 'ID' ) )
+				get_users(
+					array(
+						'fields' => 'ID',
+					)
+				)
 			);
 
 			if ( is_multisite() && is_super_admin() ) {
 				$super_admins = array_map(
-					function( $login ) {
+					function ( $login ) {
 						$user = get_user_by( 'login', $login );
+
 						return new Author( $user->ID );
 					},
 					get_super_admins()
 				);
-				$users = array_unique( array_merge( $users, $super_admins ) );
+				$users        = array_unique( array_merge( $users, $super_admins ) );
 			}
 
-			$users[] = new Author( 0, array( 'is_wp_cli' => true ) );
+			$users[] = new Author(
+				0, array(
+					'is_wp_cli' => true,
+				)
+			);
 
 			foreach ( $users as $user ) {
 				$all_records[ $user->id ] = $user->get_display_name();
@@ -496,9 +532,15 @@ class List_Table extends \WP_List_Table {
 
 		foreach ( $all_records as $record => $label ) {
 			if ( array_key_exists( $record, $existing_records ) ) {
-				$active_records[ $record ] = array( 'label' => $label, 'disabled' => '' );
+				$active_records[ $record ] = array(
+					'label'    => $label,
+					'disabled' => '',
+				);
 			} else {
-				$disabled_records[ $record ] = array( 'label' => $label, 'disabled' => 'disabled="disabled"' );
+				$disabled_records[ $record ] = array(
+					'label'    => $label,
+					'disabled' => 'disabled="disabled"',
+				);
 			}
 		}
 
@@ -507,7 +549,7 @@ class List_Table extends \WP_List_Table {
 			unset( $disabled_records[0] );
 		}
 
-		$sort = function( $a, $b ) use ( $column ) {
+		$sort = function ( $a, $b ) use ( $column ) {
 			$label_a = (string) $a['label'];
 			$label_b = (string) $b['label'];
 
@@ -515,7 +557,7 @@ class List_Table extends \WP_List_Table {
 				return 0;
 			}
 
-			return ( strtolower( $label_a ) < strtolower( $label_b ) ) ? -1 : 1;
+			return ( strtolower( $label_a ) < strtolower( $label_b ) ) ? - 1 : 1;
 		};
 
 		uasort( $active_records, $sort );
@@ -575,11 +617,13 @@ class List_Table extends \WP_List_Table {
 
 		foreach ( $filters as $name => $data ) {
 
-			$data = wp_parse_args( $data, array(
-				'title' => '',
-				'items' => array(),
-				'ajax'  => false,
-			) );
+			$data = wp_parse_args(
+				$data, array(
+					'title' => '',
+					'items' => array(),
+					'ajax'  => false,
+				)
+			);
 
 			if ( 'date' === $name ) {
 				$filters_string .= $this->filter_date( $data['items'] );
@@ -685,11 +729,11 @@ class List_Table extends \WP_List_Table {
 					'class'    => isset( $item['children'] ) ? 'level-1' : null,
 					'label'    => isset( $item['label'] ) ? $item['label'] : null,
 				);
-				$options[] = $this->filter_option( $option_args );
+				$options[]   = $this->filter_option( $option_args );
 
 				if ( isset( $item['children'] ) ) {
 					foreach ( $item['children'] as $child_value => $child_item ) {
-						$option_args  = array(
+						$option_args = array(
 							'value'    => $child_value,
 							'selected' => selected( $child_value, $selected, false ),
 							'disabled' => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
@@ -699,13 +743,14 @@ class List_Table extends \WP_List_Table {
 							'class'    => 'level-2',
 							'label'    => isset( $child_item['label'] ) ? '- ' . $child_item['label'] : null,
 						);
-						$options[] = $this->filter_option( $option_args );
+						$options[]   = $this->filter_option( $option_args );
 					}
 				}
 			}
 			$out = sprintf(
 				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
 				esc_attr( $name ),
+				// translators: Placeholder refers to the title of the dropdown menu (e.g. "users")
 				sprintf( esc_attr__( 'Show all %s', 'stream' ), $title ),
 				implode( '', $options )
 			);
@@ -742,9 +787,8 @@ class List_Table extends \WP_List_Table {
 
 	function filter_search() {
 		$search = null;
-		if ( isset( $_GET['search'] ) ) {
-			// @TODO: Make this pass phpcs
-			$search = esc_attr( wp_unslash( $_GET['search'] ) ); // input var okay
+		if ( isset( $_GET['search'] ) ) { // CSRF okay
+			$search = esc_attr( wp_unslash( $_GET['search'] ) ); // input var okay, CSRF okay
 		}
 		$out = sprintf(
 			'<p class="search-box">
@@ -794,13 +838,13 @@ class List_Table extends \WP_List_Table {
 			<div class="date-inputs">
 				<div class="box">
 					<i class="date-remove dashicons"></i>
-					<input type="text" name="date_from" class="date-picker field-from" placeholder="<?php esc_attr_e( 'Start Date', 'stream' ); ?>" value="<?php echo esc_attr( $date_from ); ?>" />
+					<input type="text" name="date_from" class="date-picker field-from" placeholder="<?php esc_attr_e( 'Start Date', 'stream' ); ?>" value="<?php echo esc_attr( $date_from ); ?>"/>
 				</div>
 				<span class="connector dashicons"></span>
 
 				<div class="box">
 					<i class="date-remove dashicons"></i>
-					<input type="text" name="date_to" class="date-picker field-to" placeholder="<?php esc_attr_e( 'End Date', 'stream' ); ?>" value="<?php echo esc_attr( $date_to ); ?>" />
+					<input type="text" name="date_to" class="date-picker field-to" placeholder="<?php esc_attr_e( 'End Date', 'stream' ); ?>" value="<?php echo esc_attr( $date_to ); ?>"/>
 				</div>
 			</div>
 
@@ -881,14 +925,15 @@ class List_Table extends \WP_List_Table {
 	}
 
 	function display_tablenav( $which ) {
-		if ( 'top' === $which ) : ?>
+		if ( 'top' === $which ) :
+			?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 				<?php
 				$this->pagination( $which );
 				$this->extra_tablenav( $which );
 				?>
 
-				<br class="clear" />
+				<br class="clear"/>
 			</div>
 		<?php else : ?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
@@ -901,9 +946,9 @@ class List_Table extends \WP_List_Table {
 				$this->extra_tablenav( $which );
 				?>
 
-				<br class="clear" />
+				<br class="clear"/>
 			</div>
-		<?php
+			<?php
 		endif;
 	}
 
@@ -928,6 +973,7 @@ class List_Table extends \WP_List_Table {
 
 			return $value;
 		}
+
 		// @codingStandardsIgnoreEnd
 
 		return $dummy;
@@ -955,15 +1001,16 @@ class List_Table extends \WP_List_Table {
 			<h5><?php esc_html_e( 'Live updates', 'stream' ); ?></h5>
 
 			<div>
-				<input type="hidden" name="stream_live_update_nonce" id="stream_live_update_nonce" value="<?php echo esc_attr( $nonce ); ?>" />
+				<input type="hidden" name="stream_live_update_nonce" id="stream_live_update_nonce" value="<?php echo esc_attr( $nonce ); ?>"/>
 			</div>
 			<div>
-				<input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ); ?>" />
+				<input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ); ?>"/>
 			</div>
 			<div class="metabox-prefs stream-live-update-checkbox">
 				<label for="enable_live_update">
 					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" data-heartbeat="<?php echo esc_attr( $heartbeat ); ?>" <?php checked( $option, 'on' ); ?> />
-					<?php esc_html_e( 'Enabled', 'stream' ); ?><span class="spinner"></span>
+					<?php esc_html_e( 'Enabled', 'stream' ); ?>
+					<span class="spinner"></span>
 				</label>
 			</div>
 		</fieldset>

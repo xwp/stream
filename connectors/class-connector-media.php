@@ -104,11 +104,13 @@ class Connector_Media extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		if ( $record->object_id ) {
-			if ( $link = get_edit_post_link( $record->object_id ) ) {
-				$links[ esc_html__( 'Edit Media', 'stream' ) ] = $link;
+			$edit_post_link = get_edit_post_link( $record->object_id );
+			if ( $edit_post_link ) {
+				$links[ esc_html__( 'Edit Media', 'stream' ) ] = $edit_post_link;
 			}
-			if ( $link = get_permalink( $record->object_id ) ) {
-				$links[ esc_html__( 'View', 'stream' ) ] = $link;
+			$permalink = get_permalink( $record->object_id );
+			if ( $permalink ) {
+				$links[ esc_html__( 'View', 'stream' ) ] = $permalink;
 			}
 		}
 
@@ -125,12 +127,14 @@ class Connector_Media extends Connector {
 	public function callback_add_attachment( $post_id ) {
 		$post = get_post( $post_id );
 		if ( $post->post_parent ) {
+			// translators: Placeholders refer to an attachment title, and a post title (e.g. "PIC001", "Hello World")
 			$message = _x(
 				'Attached "%1$s" to "%2$s"',
 				'1: Attachment title, 2: Parent post title',
 				'stream'
 			);
 		} else {
+			// translators: Placeholder refers to an attachment title (e.g. "PIC001")
 			$message = esc_html__( 'Added "%s" to Media library', 'stream' );
 		}
 
@@ -159,9 +163,11 @@ class Connector_Media extends Connector {
 	 */
 	public function callback_edit_attachment( $post_id ) {
 		$post            = get_post( $post_id );
-		$message         = esc_html__( 'Updated "%s"', 'stream' );
 		$name            = $post->post_title;
 		$attachment_type = $this->get_attachment_type( $post->guid );
+
+		// translators: Placeholder refers to an attachment title (e.g. "PIC001")
+		$message = esc_html__( 'Updated "%s"', 'stream' );
 
 		$this->log(
 			$message,
@@ -183,10 +189,12 @@ class Connector_Media extends Connector {
 		$post            = get_post( $post_id );
 		$parent          = $post->post_parent ? get_post( $post->post_parent ) : null;
 		$parent_id       = $parent ? $parent->ID : null;
-		$message         = esc_html__( 'Deleted "%s"', 'stream' );
 		$name            = $post->post_title;
 		$url             = $post->guid;
 		$attachment_type = $this->get_attachment_type( $post->guid );
+
+		// translators: Placeholder refers to an attachment title (e.g. "PIC001")
+		$message = esc_html__( 'Deleted "%s"', 'stream' );
 
 		$this->log(
 			$message,
@@ -219,6 +227,7 @@ class Connector_Media extends Connector {
 		$attachment_type = $this->get_attachment_type( $post->guid );
 
 		$this->log(
+			// translators: Placeholder refers to an attachment title (e.g. "PIC001")
 			__( 'Edited image "%s"', 'stream' ),
 			compact( 'name', 'filename', 'post_id' ),
 			$post_id,

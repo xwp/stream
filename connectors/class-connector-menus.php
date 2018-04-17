@@ -58,7 +58,11 @@ class Connector_Menus extends Connector {
 	 */
 	public function get_context_labels() {
 		$labels = array();
-		$menus  = get_terms( 'nav_menu', array( 'hide_empty' => false ) );
+		$menus  = get_terms(
+			'nav_menu', array(
+				'hide_empty' => false,
+			)
+		);
 
 		foreach ( $menus as $menu ) {
 			$slug            = sanitize_title( $menu->name );
@@ -109,6 +113,7 @@ class Connector_Menus extends Connector {
 		$name = $menu_data['menu-name'];
 
 		$this->log(
+			// translators: Placeholder refers to a menu name (e.g. "Primary Menu")
 			__( 'Created new menu "%s"', 'stream' ),
 			compact( 'name', 'menu_id' ),
 			$menu_id,
@@ -133,6 +138,7 @@ class Connector_Menus extends Connector {
 		$name = $menu_data['menu-name'];
 
 		$this->log(
+			// translators: Placeholder refers to a menu name (e.g. "Primary Menu")
 			_x( 'Updated menu "%s"', 'Menu name', 'stream' ),
 			compact( 'name', 'menu_id', 'menu_data' ),
 			$menu_id,
@@ -157,6 +163,7 @@ class Connector_Menus extends Connector {
 		$menu_id = $term->term_id;
 
 		$this->log(
+			// translators: Placeholder refers to a menu name (e.g. "Primary Menu")
 			_x( 'Deleted "%s"', 'Menu name', 'stream' ),
 			compact( 'name', 'menu_id' ),
 			$menu_id,
@@ -204,6 +211,7 @@ class Connector_Menus extends Connector {
 			if ( empty( $new[ $key ][ $location_id ] ) ) {
 				$action  = 'unassigned';
 				$menu_id = isset( $old[ $key ][ $location_id ] ) ? $old[ $key ][ $location_id ] : 0;
+				// translators: Placeholders refer to a menu name, and a theme location (e.g. "Primary Menu", "primary_nav")
 				$message = _x(
 					'"%1$s" has been unassigned from "%2$s"',
 					'1: Menu name, 2: Theme location',
@@ -212,6 +220,7 @@ class Connector_Menus extends Connector {
 			} else {
 				$action  = 'assigned';
 				$menu_id = isset( $new[ $key ][ $location_id ] ) ? $new[ $key ][ $location_id ] : 0;
+				// translators: Placeholders refer to a menu name, and a theme location (e.g. "Primary Menu", "primary_nav")
 				$message = _x(
 					'"%1$s" has been assigned to "%2$s"',
 					'1: Menu name, 2: Theme location',

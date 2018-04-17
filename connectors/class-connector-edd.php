@@ -1,4 +1,5 @@
 <?php
+
 namespace WP_Stream;
 
 class Connector_EDD extends Connector {
@@ -141,19 +142,20 @@ class Connector_EDD extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param  array  $links Previous links registered
+	 * @param  object $record Stream record
 	 *
 	 * @return array             Action links
 	 */
 	public function action_links( $links, $record ) {
 		if ( in_array( $record->context, array( 'downloads' ), true ) ) {
 			$posts_connector = new Connector_Posts();
-			$links = $posts_connector->action_links( $links, $record );
+			$links           = $posts_connector->action_links( $links, $record );
 		} elseif ( in_array( $record->context, array( 'discounts' ), true ) ) {
 			$post_type_label = get_post_type_labels( get_post_type_object( 'edd_discount' ) )->singular_name;
 			$base            = admin_url( 'edit.php?post_type=download&page=edd-discounts' );
 
+			// translators: Placeholder refers to a post type (e.g. "Post")
 			$links[ sprintf( esc_html__( 'Edit %s', 'stream' ), $post_type_label ) ] = add_query_arg(
 				array(
 					'edd-action' => 'edit_discount',
@@ -163,6 +165,7 @@ class Connector_EDD extends Connector {
 			);
 
 			if ( 'active' === get_post( $record->object_id )->post_status ) {
+				// translators: Placeholder refers to a post type (e.g. "Post")
 				$links[ sprintf( esc_html__( 'Deactivate %s', 'stream' ), $post_type_label ) ] = add_query_arg(
 					array(
 						'edd-action' => 'deactivate_discount',
@@ -171,6 +174,7 @@ class Connector_EDD extends Connector {
 					$base
 				);
 			} else {
+				// translators: Placeholder refers to a post type (e.g. "Post")
 				$links[ sprintf( esc_html__( 'Activate %s', 'stream' ), $post_type_label ) ] = add_query_arg(
 					array(
 						'edd-action' => 'activate_discount',
@@ -179,18 +183,44 @@ class Connector_EDD extends Connector {
 					$base
 				);
 			}
-		} elseif ( in_array( $record->context, array( 'download_category', 'download_tag' ), true ) ) {
+		} elseif ( in_array( $record->context, array(
+			'download_category',
+			'download_tag',
+		), true ) ) {
 			$tax_label = get_taxonomy_labels( get_taxonomy( $record->context ) )->singular_name;
+			// translators: Placeholder refers to a taxonomy (e.g. "Category")
 			$links[ sprintf( esc_html__( 'Edit %s', 'stream' ), $tax_label ) ] = get_edit_term_link( $record->object_id, $record->get_meta( 'taxonomy', true ) );
 		} elseif ( 'api_keys' === $record->context ) {
 			$user = new \WP_User( $record->object_id );
 
 			if ( apply_filters( 'edd_api_log_requests', true ) ) {
-				$links[ esc_html__( 'View API Log', 'stream' ) ] = add_query_arg( array( 'view' => 'api_requests', 'post_type' => 'download', 'page' => 'edd-reports', 'tab' => 'logs', 's' => $user->user_email ), 'edit.php' );
+				$links[ esc_html__( 'View API Log', 'stream' ) ] = add_query_arg(
+					array(
+						'view'      => 'api_requests',
+						'post_type' => 'download',
+						'page'      => 'edd-reports',
+						'tab'       => 'logs',
+						's'         => $user->user_email,
+					), 'edit.php'
+				);
 			}
 
-			$links[ esc_html__( 'Revoke', 'stream' ) ]  = add_query_arg( array( 'post_type' => 'download', 'user_id' => $record->object_id, 'edd_action' => 'process_api_key', 'edd_api_process' => 'revoke' ), 'edit.php' );
-			$links[ esc_html__( 'Reissue', 'stream' ) ] = add_query_arg( array( 'post_type' => 'download', 'user_id' => $record->object_id, 'edd_action' => 'process_api_key', 'edd_api_process' => 'regenerate' ), 'edit.php' );
+			$links[ esc_html__( 'Revoke', 'stream' ) ]  = add_query_arg(
+				array(
+					'post_type'       => 'download',
+					'user_id'         => $record->object_id,
+					'edd_action'      => 'process_api_key',
+					'edd_api_process' => 'revoke',
+				), 'edit.php'
+			);
+			$links[ esc_html__( 'Reissue', 'stream' ) ] = add_query_arg(
+				array(
+					'post_type'       => 'download',
+					'user_id'         => $record->object_id,
+					'edd_action'      => 'process_api_key',
+					'edd_api_process' => 'regenerate',
+				), 'edit.php'
+			);
 		}
 
 		return $links;
@@ -238,13 +268,17 @@ class Connector_EDD extends Connector {
 		$replacement = str_replace( '-', '_', $option );
 
 		if ( method_exists( $this, 'check_' . $replacement ) ) {
-			call_user_func( array( $this, 'check_' . $replacement ), $old_value, $new_value );
+			call_user_func( array(
+				$this,
+				'check_' . $replacement,
+			), $old_value, $new_value );
 		} else {
 			$data         = $this->options[ $option ];
 			$option_title = $data['label'];
 			$context      = isset( $data['context'] ) ? $data['context'] : 'settings';
 
 			$this->log(
+				// translators: Placeholder refers to a setting title (e.g. "Language")
 				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
@@ -275,7 +309,7 @@ class Connector_EDD extends Connector {
 				$field = array(
 					'name' => esc_html_x( 'Banned emails', 'edd', 'stream' ),
 				);
-				$tab  = 'general';
+				$tab   = 'general';
 			} else {
 				foreach ( $settings as $tab => $fields ) {
 					if ( isset( $fields[ $option ] ) ) {
@@ -290,6 +324,7 @@ class Connector_EDD extends Connector {
 			}
 
 			$this->log(
+				// translators: Placeholder refers to a setting title (e.g. "Language")
 				__( '"%s" setting updated', 'stream' ),
 				array(
 					'option_title' => $field['name'],
@@ -319,7 +354,7 @@ class Connector_EDD extends Connector {
 
 		if ( 'posts' === $data['connector'] && 'download' === $data['context'] ) {
 			// Download posts operations
-			$data['context']  = 'downloads';
+			$data['context']   = 'downloads';
 			$data['connector'] = $this->name;
 		} elseif ( 'posts' === $data['connector'] && 'edd_discount' === $data['context'] ) {
 			// Discount posts operations
@@ -328,10 +363,11 @@ class Connector_EDD extends Connector {
 			}
 
 			if ( 'deleted' === $data['action'] ) {
+				// translators: Placeholder refers to a discount title (e.g. "Mother's Day")
 				$data['message'] = esc_html__( '"%1s" discount deleted', 'stream' );
 			}
 
-			$data['context']  = 'discounts';
+			$data['context']   = 'discounts';
 			$data['connector'] = $this->name;
 		} elseif ( 'posts' === $data['connector'] && 'edd_payment' === $data['context'] ) {
 			// Payment posts operations
@@ -360,6 +396,7 @@ class Connector_EDD extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholders refer to a discount title, and a status (e.g. "Mother's Day", "activated")
 				__( '"%1$s" discount %2$s', 'stream' ),
 				get_post( $code_id )->post_title,
 				'active' === $new_status ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' )
@@ -377,20 +414,26 @@ class Connector_EDD extends Connector {
 	private function callback_edd_generate_pdf() {
 		$this->report_generated( 'pdf' );
 	}
+
 	public function callback_edd_earnings_export() {
 		$this->report_generated( 'earnings' );
 	}
+
 	public function callback_edd_payment_export() {
 		$this->report_generated( 'payments' );
 	}
+
 	public function callback_edd_email_export() {
 		$this->report_generated( 'emails' );
 	}
+
 	public function callback_edd_downloads_history_export() {
 		$this->report_generated( 'download-history' );
 	}
 
 	private function report_generated( $type ) {
+		$label = '';
+
 		if ( 'pdf' === $type ) {
 			$label = esc_html__( 'Sales and Earnings', 'stream' );
 		} elseif ( 'earnings' ) {
@@ -405,6 +448,7 @@ class Connector_EDD extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholder refers to a report title (e.g. "Sales and Earnings")
 				__( 'Generated %s report', 'stream' ),
 				$label
 			),
@@ -461,7 +505,10 @@ class Connector_EDD extends Connector {
 			return false;
 		}
 
-		return call_user_func( array( $this, 'meta_' . $key ), $object_id, $value, $is_add );
+		return call_user_func( array(
+			$this,
+			'meta_' . $key,
+		), $object_id, $value, $is_add );
 	}
 
 	private function meta_edd_user_public_key( $user_id, $value, $is_add = false ) {
@@ -478,6 +525,7 @@ class Connector_EDD extends Connector {
 
 		$this->log(
 			sprintf(
+				// translators: Placeholder refers to a status (e.g. "revoked")
 				__( 'User API Key %s', 'stream' ),
 				$action_title
 			),

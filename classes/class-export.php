@@ -68,7 +68,6 @@ class Export {
 		$exporters = $this->get_exporters();
 		$exporter = $exporters[ $output_type ];
 		$exporter->output_file( $output, $columns );
-		return;
 	}
 
 	/**
@@ -79,6 +78,7 @@ class Export {
 	function actions_menu_export_items( $action_menu_items ) {
 		foreach ( $this->get_exporters() as $exporter ) {
 			$action = 'export-' . $exporter->slug;
+			// translators: Placeholder refers to an export format (e.g. "CSV")
 			$action_menu_items[ $action ] = sprintf( __( 'Export as %s', 'stream' ), $exporter->name );
 		}
 
@@ -98,16 +98,16 @@ class Export {
 		$row_out = array();
 		foreach ( array_keys( $columns ) as $column_name ) {
 			switch ( $column_name ) {
-				case 'date' :
+				case 'date':
 					$created   = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
 					$row_out[ $column_name ] = get_date_from_gmt( $created, 'Y/m/d h:i:s A' );
 					break;
 
-				case 'summary' :
+				case 'summary':
 					$row_out[ $column_name ] = $record->summary;
 					break;
 
-				case 'user_id' :
+				case 'user_id':
 					$user      = new Author( (int) $record->user_id, (array) $record->user_meta );
 					$row_out[ $column_name ] = $user->get_display_name();
 					break;
@@ -128,7 +128,7 @@ class Export {
 					$row_out[ $column_name ] = $record->blog_id;
 					break;
 
-				case 'ip' :
+				case 'ip':
 					$row_out[ $column_name ] = $record->{$column_name};
 					break;
 			}
@@ -141,6 +141,7 @@ class Export {
 	 * Increase pagination limit for CSV Output
 	 *
 	 * @param int $records_per_page Old limit for records_per_page.
+	 * @return int
 	 */
 	public function disable_paginate( $records_per_page ) {
 		return 10000;
@@ -206,12 +207,6 @@ class Export {
 		foreach ( $this->exporters as $key => $exporter ) {
 			if ( ! $this->is_valid_exporter( $exporter ) ) {
 				unset( $this->exporters[ $key ] );
-				trigger_error(
-					sprintf(
-						esc_html__( 'Registered exporter %s does not extend WP_Stream\Exporter.', 'stream' ),
-						esc_html( get_class( $exporter ) )
-					)
-				);
 			}
 		}
 	}
