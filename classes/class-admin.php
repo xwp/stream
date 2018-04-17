@@ -358,7 +358,8 @@ class Admin {
 			wp_register_script( 'wp-stream-timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ), array( 'wp-stream-timeago' ), '1' );
 		}
 
-		wp_enqueue_style( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/css/admin.css', array(), $this->plugin->get_version() );
+		$min = wp_stream_min_suffix();
+		wp_enqueue_style( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/css/admin.' . $min . 'css', array(), $this->plugin->get_version() );
 
 		$script_screens = array( 'plugins.php' );
 
@@ -369,9 +370,9 @@ class Admin {
 			wp_enqueue_script( 'wp-stream-timeago' );
 			wp_enqueue_script( 'wp-stream-timeago-locale' );
 
-			wp_enqueue_script( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.js', array( 'jquery', 'wp-stream-select2' ), $this->plugin->get_version() );
-			wp_enqueue_script( 'wp-stream-admin-exclude', $this->plugin->locations['url'] . 'ui/js/exclude.js', array( 'jquery', 'wp-stream-select2' ), $this->plugin->get_version() );
-			wp_enqueue_script( 'wp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.js', array( 'jquery', 'heartbeat' ), $this->plugin->get_version() );
+			wp_enqueue_script( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.' . $min . 'js', array( 'jquery', 'wp-stream-select2' ), $this->plugin->get_version() );
+			wp_enqueue_script( 'wp-stream-admin-exclude', $this->plugin->locations['url'] . 'ui/js/exclude.' . $min . 'js', array( 'jquery', 'wp-stream-select2' ), $this->plugin->get_version() );
+			wp_enqueue_script( 'wp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.' . $min . 'js', array( 'jquery', 'heartbeat' ), $this->plugin->get_version() );
 
 			wp_localize_script(
 				'wp-stream-admin',
@@ -414,7 +415,7 @@ class Admin {
 		 */
 		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
 
-		wp_enqueue_script( 'wp-stream-global', $this->plugin->locations['url'] . 'ui/js/global.js', array( 'jquery' ), $this->plugin->get_version() );
+		wp_enqueue_script( 'wp-stream-global', $this->plugin->locations['url'] . 'ui/js/global.' . $min . 'js', array( 'jquery' ), $this->plugin->get_version() );
 		wp_localize_script(
 			'wp-stream-global',
 			'wp_stream_global',
@@ -487,7 +488,8 @@ class Admin {
 	 * @action admin_enqueue_scripts
 	 */
 	public function admin_menu_css() {
-		wp_register_style( 'wp-stream-datepicker', $this->plugin->locations['url'] . 'ui/css/datepicker.css', array(), $this->plugin->get_version() );
+		$min = wp_stream_min_suffix();
+		wp_register_style( 'wp-stream-datepicker', $this->plugin->locations['url'] . 'ui/css/datepicker.' . $min . 'css', array(), $this->plugin->get_version() );
 		wp_register_style( 'wp-stream-icons', $this->plugin->locations['url'] . 'ui/stream-icons/style.css', array(), $this->plugin->get_version() );
 
 		// Make sure we're working off a clean version
@@ -715,8 +717,8 @@ class Admin {
 
 		$sections   = $this->plugin->settings->get_fields();
 		$active_tab = wp_stream_filter_input( INPUT_GET, 'tab' );
-
-		wp_enqueue_script( 'wp-stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.js', array( 'jquery' ), $this->plugin->get_version(), true );
+		$min        = wp_stream_min_suffix();
+		wp_enqueue_script( 'wp-stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.' . $min . 'js', array( 'jquery' ), $this->plugin->get_version(), true );
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>

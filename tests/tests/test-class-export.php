@@ -129,7 +129,7 @@ class Test_Export extends WP_StreamTestCase {
 	/**
 	 * Test registering a invalid class type produces an error
 	 *
-	 * @expectedException PHPUnit_Framework_Error
+	 * @expectedException PHPUnit_Framework_Error_Notice
 	 */
 	public function test_register_exporter_invalid_class() {
 		add_filter( 'wp_stream_exporters', function( $exporters ) {

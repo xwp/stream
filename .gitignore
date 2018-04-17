@@ -1,1 +1,9 @@
 .idea
+/node_modules/
+npm-debug.log
+package.lock
+
+# Grunt
+/build/
+/node_modules/
+npm-debug.log

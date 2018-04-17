@@ -266,7 +266,8 @@ class Alerts {
 	function register_scripts() {
 		$screen = get_current_screen();
 		if ( 'edit-wp_stream_alerts' === $screen->id ) {
-			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array(
+			$min = wp_stream_min_suffix();
+			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.' . $min . 'js', array(
 				'wp-stream-select2',
 				'jquery',
 				'inline-edit-post',
