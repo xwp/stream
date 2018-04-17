@@ -976,8 +976,8 @@ class Settings {
 							<td>%10$s</td>
 							<th scope="row" class="actions-column">%11$s</th>
 						</tr>',
-						( 0 !== $key % 2 ) ? 'alternate' : '',
-						( 'helper' === $key ) ? 'hidden helper' : '',
+						( 0 !== (int) $key % 2 ) ? 'alternate' : '',
+						( 'helper' === (string) $key ) ? 'hidden helper' : '',
 						'<input class="cb-select" type="checkbox" />',
 						$helper_input,
 						$author_or_role_input,
