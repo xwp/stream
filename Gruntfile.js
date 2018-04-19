@@ -85,8 +85,8 @@ module.exports = function( grunt ) {
 
     // VVV (Varying Vagrant Vagrants) Paths
     vvv: {
-      'plugin': '/srv/www/wordpress-develop/public_html/src/wp-content/plugins/<%= pkg.name %>',
-      'coverage': '/srv/www/default/coverage/<%= pkg.name %>'
+      'plugin': '/srv/www/wordpress-develop/public_html/src/wp-content/plugins/stream',
+      'coverage': '/srv/www/default/coverage/stream'
     },
 
     // Shell actions
@@ -94,10 +94,6 @@ module.exports = function( grunt ) {
       options: {
         stdout: true,
         stderr: true
-      },
-      readme: {
-        command: 'cd ./dev-lib && ./generate-markdown-readme' // Generate the
-                                                              // readme.md
       },
       phpunit: {
         command: 'vagrant ssh -c "cd <%= vvv.plugin %> && phpunit"'
@@ -135,10 +131,6 @@ module.exports = function( grunt ) {
     'cssmin'
   ] );
 
-  grunt.registerTask( 'readme', [
-    'shell:readme'
-  ] );
-
   grunt.registerTask( 'phpunit', [
     'shell:phpunit'
   ] );
@@ -147,14 +139,8 @@ module.exports = function( grunt ) {
     'shell:phpunit_c'
   ] );
 
-  grunt.registerTask( 'dev', [
-    'default',
-    'readme'
-  ] );
-
   grunt.registerTask( 'build', [
     'default',
-    'readme',
     'copy'
   ] );
 
