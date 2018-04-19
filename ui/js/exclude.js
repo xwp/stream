@@ -438,9 +438,9 @@ jQuery(
 		}
 
 		function recalculate_rules_found() {
-			var $allRows        = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
-				$noRulesFound   = $( 'table.stream-exclude-list tbody tr.no-items' ),
-				$selectAll      = $( '.check-column.manage-column input.cb-select' ),
+			var $allRows    = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
+				$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' ),
+				$selectAll    = $( '.check-column.manage-column input.cb-select' ),
 				$deleteButton = $( '#exclude_rules_remove_rules' );
 
 			if ( 0 === $allRows.length ) {
