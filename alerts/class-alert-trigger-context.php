@@ -71,10 +71,10 @@ class Alert_Trigger_Context extends Alert_Trigger {
 
 		$form->add_field(
 			'select2', array(
-				'name'        => 'wp_stream_trigger_connector_or_context',
-				'options'     => $this->get_values(),
-				'classes'     => 'wp_stream_ajax_forward connector_or_context',
-				'data'        => array(
+				'name'    => 'wp_stream_trigger_connector_or_context',
+				'options' => $this->get_values(),
+				'classes' => 'wp_stream_ajax_forward connector_or_context',
+				'data'    => array(
 					'placeholder' => __( 'Any Context', 'stream' ),
 				),
 			)
@@ -82,17 +82,17 @@ class Alert_Trigger_Context extends Alert_Trigger {
 
 		$form->add_field(
 			'hidden', array(
-				'name'        => 'wp_stream_trigger_connector',
-				'value'       => $connector,
-				'classes'     => 'connector wp_stream_ajax_forward',
+				'name'    => 'wp_stream_trigger_connector',
+				'value'   => $connector,
+				'classes' => 'connector wp_stream_ajax_forward',
 			)
 		);
 
 		$form->add_field(
 			'hidden', array(
-				'name'        => 'wp_stream_trigger_context',
-				'value'       => $context,
-				'classes'     => 'context wp_stream_ajax_forward',
+				'name'    => 'wp_stream_trigger_context',
+				'value'   => $context,
+				'classes' => 'context wp_stream_ajax_forward',
 			)
 		);
 	}
@@ -106,7 +106,7 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 */
 	public function save_fields( $alert ) {
 		$alert->alert_meta['trigger_connector'] = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_connector' );
-		$alert->alert_meta['trigger_context'] = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_context' );
+		$alert->alert_meta['trigger_context']   = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_context' );
 	}
 
 	/**
@@ -124,26 +124,26 @@ class Alert_Trigger_Context extends Alert_Trigger {
 					$child_values = array();
 					foreach ( $context_data['children'] as $child_id => $child_value ) {
 						$child_values[] = array(
-							'value' => $context_id . '-' . $child_id,
-							'id' => $context_id . '-' . $child_id,
-							'text' => $child_value,
+							'value'  => $context_id . '-' . $child_id,
+							'id'     => $context_id . '-' . $child_id,
+							'text'   => $child_value,
 							'parent' => $context_id,
 						);
 					}
 				}
 				if ( isset( $context_data['label'] ) ) {
 					$context_values[] = array(
-						'value' => $context_id,
-						'id' => $context_id,
-						'text' => $context_data['label'],
+						'value'    => $context_id,
+						'id'       => $context_id,
+						'text'     => $context_data['label'],
 						'children' => $child_values,
 					);
 				}
 			} else {
 				$context_values[] = array(
 					'value' => $context_id,
-					'id' => $context_id,
-					'text' => $context_data,
+					'id'    => $context_id,
+					'text'  => $context_data,
 				);
 			}
 		}
@@ -190,8 +190,8 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * @param Alert  $alert Alert being processed.
 	 * @return string
 	 */
-	function get_display_value( $context = 'normal', $alert ) {
-		$context = ( ! empty( $alert->alert_meta['trigger_context'] ) ) ? $alert->alert_meta['trigger_context'] : null;
+	public function get_display_value( $context = 'normal', $alert ) {
+		$context   = ( ! empty( $alert->alert_meta['trigger_context'] ) ) ? $alert->alert_meta['trigger_context'] : null;
 		$connector = ( ! empty( $alert->alert_meta['trigger_connector'] ) ) ? $alert->alert_meta['trigger_connector'] : null;
 		if ( empty( $context ) && empty( $connector ) ) {
 			$context = __( 'Any Context', 'stream' );

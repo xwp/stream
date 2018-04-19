@@ -79,7 +79,7 @@ jQuery(
 				$target.find( 'select.select2-select:not(.connector_or_context)' ).each(
 					function() {
 						var element_id_split = $( this ).attr( 'id' ).split( '_' );
-						var select_name = element_id_split[element_id_split.length - 1].charAt( 0 ).toUpperCase() +
+						var select_name      = element_id_split[element_id_split.length - 1].charAt( 0 ).toUpperCase() +
 						element_id_split[element_id_split.length - 1].slice( 1 );
 						$( this ).select2(
 							{
@@ -99,12 +99,12 @@ jQuery(
 				};
 
 				var $edit_row = $( '#wp_stream_alert_type' ).closest( 'tr' );
-				var row_id = $edit_row.attr( 'id' );
-				data.post_id = row_id.split( '-' )[1];
+				var row_id    = $edit_row.attr( 'id' );
+				data.post_id  = row_id.split( '-' )[1];
 				$.post(
 					window.ajaxurl, data, function( response ) {
 						var $alert_type_settings = $( '#wp_stream_alert_type_form' );
-						var alert_type = $( '#wp_stream_alert_type' ).val();
+						var alert_type           = $( '#wp_stream_alert_type' ).val();
 						if ('none' === alert_type) {
 							$alert_type_settings.hide();
 							return;
@@ -121,7 +121,7 @@ jQuery(
 						var connector = $( this ).val();
 						if ( connector && 0 < connector.indexOf( '-' ) ) {
 							var connector_split = connector.split( '-' );
-							connector = connector_split[0];
+							connector           = connector_split[0];
 						}
 						getActions( connector );
 					}
@@ -144,13 +144,13 @@ jQuery(
 				$.post(
 					window.ajaxurl, data, function( response ) {
 						var success = response.success,
-						actions = response.data;
+						actions     = response.data;
 						if ( ! success ) {
 							return;
 						}
 						for ( var key in actions ) {
 							if ( actions.hasOwnProperty( key ) ) {
-								var value = actions[key];
+								var value  = actions[key];
 								var option = $( '<option/>', {value: key, text: value} );
 								trigger_action.append( option );
 							}
@@ -175,7 +175,7 @@ jQuery(
 						$( '.inline-edit-wp_stream_alerts .inline-edit-save button.button-secondary.cancel' ).trigger( 'click' );
 					}
 					var alert_form_html = '';
-					var data = {
+					var data            = {
 						'action': 'get_new_alert_triggers_notifications'
 					};
 					$.post(
@@ -183,7 +183,7 @@ jQuery(
 							if ( true === response.success ) {
 								alert_form_html = response.data.html;
 								$( 'tbody#the-list' ).prepend( '<tr id="add-new-alert" class="inline-edit-row inline-edit-row-page inline-edit-page quick-edit-row quick-edit-row-page inline-edit-page inline-editor" style=""><td colspan="4" class="colspanchange">' + alert_form_html + '<p class="submit inline-edit-save"> <button type="button" class="button-secondary cancel alignleft">Cancel</button> <input type="hidden" id="_inline_edit" name="_inline_edit" value="3550d271fe"> <button type="button" class="button-primary save alignright">Save</button> <span class="spinner"></span><span class="error" style="display:none"></span> <br class="clear"></p></td></tr>' );
-								var add_new_alert = $( '#add-new-alert' );
+								var add_new_alert    = $( '#add-new-alert' );
 								var current_bg_color = add_new_alert.css( 'background-color' );
 
 								// Color taken from /wp-admin/css/forms.css
@@ -268,11 +268,11 @@ jQuery(
 					$post_row = $( '#post-' + post_id );
 
 					// get the data
-					var alert_trigger_connector = $post_row.find( 'input[name="wp_stream_trigger_connector"]' ).val();
-					var alert_trigger_context = $post_row.find( 'input[name="wp_stream_trigger_context"]' ).val();
+					var alert_trigger_connector         = $post_row.find( 'input[name="wp_stream_trigger_connector"]' ).val();
+					var alert_trigger_context           = $post_row.find( 'input[name="wp_stream_trigger_context"]' ).val();
 					var alert_trigger_connector_context = alert_trigger_connector + '-' + alert_trigger_context;
-					var alert_trigger_action = $post_row.find( 'input[name="wp_stream_trigger_action"]' ).val();
-					var alert_status = $post_row.find( 'input[name="wp_stream_alert_status"]' ).val();
+					var alert_trigger_action            = $post_row.find( 'input[name="wp_stream_trigger_action"]' ).val();
+					var alert_status                    = $post_row.find( 'input[name="wp_stream_alert_status"]' ).val();
 
 					// populate the data
 					$edit_row.find( 'input[name="wp_stream_trigger_connector"]' ).attr( 'value', alert_trigger_connector );

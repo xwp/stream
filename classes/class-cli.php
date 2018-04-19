@@ -215,7 +215,7 @@ class CLI extends \WP_CLI_Command {
 		$query = wp_stream_get_instance()->db->query(
 			array(
 				'records_per_page' => 1,
-				'fields' => 'created',
+				'fields'           => 'created',
 			)
 		);
 

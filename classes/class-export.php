@@ -60,13 +60,13 @@ class Export {
 
 		$records = $list_table->get_records();
 		$columns = $list_table->get_columns();
-		$output = array();
+		$output  = array();
 		foreach ( $records as $item ) {
 			$output[] = $this->build_record( $item, $columns );
 		}
 
 		$exporters = $this->get_exporters();
-		$exporter = $exporters[ $output_type ];
+		$exporter  = $exporters[ $output_type ];
 		$exporter->output_file( $output, $columns );
 	}
 
@@ -75,7 +75,7 @@ class Export {
 	 *
 	 * @return array
 	 */
-	function actions_menu_export_items( $action_menu_items ) {
+	public function actions_menu_export_items( $action_menu_items ) {
 		foreach ( $this->get_exporters() as $exporter ) {
 			$action = 'export-' . $exporter->slug;
 			// translators: Placeholder refers to an export format (e.g. "CSV")
@@ -92,14 +92,14 @@ class Export {
 	 * @param array $columns Columns being extracted.
 	 * @return array Numerically-indexed array with extracted data.
 	 */
-	function build_record( $item, $columns ) {
+	public function build_record( $item, $columns ) {
 		$record = new Record( $item );
 
 		$row_out = array();
 		foreach ( array_keys( $columns ) as $column_name ) {
 			switch ( $column_name ) {
 				case 'date':
-					$created   = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
+					$created                 = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
 					$row_out[ $column_name ] = get_date_from_gmt( $created, 'Y/m/d h:i:s A' );
 					break;
 
@@ -108,7 +108,7 @@ class Export {
 					break;
 
 				case 'user_id':
-					$user      = new Author( (int) $record->user_id, (array) $record->user_meta );
+					$user                    = new Author( (int) $record->user_id, (array) $record->user_meta );
 					$row_out[ $column_name ] = $user->get_display_name();
 					break;
 

@@ -94,7 +94,7 @@ class Alerts {
 	 *
 	 * @return void
 	 */
-	function load_alert_types() {
+	public function load_alert_types() {
 		$alert_types = array(
 			'none',
 			'highlight',
@@ -140,7 +140,7 @@ class Alerts {
 	 *
 	 * @return void
 	 */
-	function load_alert_triggers() {
+	public function load_alert_triggers() {
 		$alert_triggers = array(
 			'author',
 			'context',
@@ -227,7 +227,7 @@ class Alerts {
 	 *
 	 * @return array
 	 */
-	function check_records( $record_id, $recordarr ) {
+	public function check_records( $record_id, $recordarr ) {
 		$args = array(
 			'post_type'   => self::POST_TYPE,
 			'post_status' => 'wp_stream_enabled',
@@ -254,7 +254,7 @@ class Alerts {
 	 *
 	 * @return void
 	 */
-	function register_scripts() {
+	public function register_scripts() {
 		$screen = get_current_screen();
 		if ( 'edit-wp_stream_alerts' === $screen->id ) {
 			wp_register_script(
@@ -363,16 +363,16 @@ class Alerts {
 
 		$post = get_post( $post_id );
 
-		$alert_type     = get_post_meta( $post_id, 'alert_type', true );
-		$alert_meta     = get_post_meta( $post_id, 'alert_meta', true );
+		$alert_type = get_post_meta( $post_id, 'alert_type', true );
+		$alert_meta = get_post_meta( $post_id, 'alert_meta', true );
 
 		$obj = (object) array(
-			'ID'             => $post->ID,
-			'status'         => $post->post_status,
-			'date'           => $post->post_date,
-			'author'         => $post->post_author,
-			'alert_type'     => $alert_type,
-			'alert_meta'     => $alert_meta,
+			'ID'         => $post->ID,
+			'status'     => $post->post_status,
+			'date'       => $post->post_date,
+			'author'     => $post->post_author,
+			'alert_type' => $alert_type,
+			'alert_meta' => $alert_meta,
 		);
 
 		return new Alert( $obj, $this->plugin );
@@ -386,7 +386,7 @@ class Alerts {
 	 *
 	 * @return void
 	 */
-	function register_menu() {
+	public function register_menu() {
 		add_submenu_page(
 			$this->plugin->admin->records_page_slug,
 			__( 'Alerts', 'stream' ),
@@ -409,7 +409,7 @@ class Alerts {
 	 * @action network_admin_menu
 	 * @return bool
 	 */
-	function change_menu_link_url() {
+	public function change_menu_link_url() {
 		global $submenu;
 
 		$parent = 'wp_stream';
@@ -455,7 +455,7 @@ class Alerts {
 	 *
 	 * @return void
 	 */
-	function display_notification_box( $post = array() ) {
+	public function display_notification_box( $post = array() ) {
 		$alert_type = 'none';
 		if ( is_object( $post ) ) {
 			$alert      = $this->get_alert( $post->ID );
@@ -494,8 +494,8 @@ class Alerts {
 	 *
 	 * @return void
 	 */
-	function load_alerts_settings() {
-		$alert = array();
+	public function load_alerts_settings() {
+		$alert   = array();
 		$post_id = wp_stream_filter_input( INPUT_POST, 'post_id' );
 		if ( ! empty( $post_id ) ) {
 			$alert = $this->get_alert( $post_id );
@@ -538,7 +538,7 @@ class Alerts {
 	 *
 	 * @return void
 	 */
-	function display_triggers_box( $post = array() ) {
+	public function display_triggers_box( $post = array() ) {
 		if ( is_object( $post ) ) {
 			$alert = $this->get_alert( $post->ID );
 		} else {
@@ -559,7 +559,7 @@ class Alerts {
 	 *
 	 * @return void
 	 */
-	function display_submit_box( $post ) {
+	public function display_submit_box( $post ) {
 		if ( empty( $post ) ) {
 			return;
 		}
@@ -595,9 +595,10 @@ class Alerts {
 							$delete_text = __( 'Move to Trash', 'stream' );
 						}
 						?>
-						<a class="submitdelete deletion"
-						   href="<?php echo get_delete_post_link( $post->ID ); ?>"><?php esc_html( $delete_text ); ?></a>
-											<?php
+						<a class="submitdelete deletion" href="<?php echo get_delete_post_link( $post->ID ); ?>">
+							<?php esc_html( $delete_text ); ?>
+						</a>
+						<?php
 					}
 					?>
 				</div>
@@ -616,7 +617,7 @@ class Alerts {
 	 *
 	 * @return void
 	 */
-	function display_status_box() {
+	public function display_status_box() {
 		?>
 		<div id="minor-publishing">
 			<div id="misc-publishing-actions">
@@ -642,7 +643,7 @@ class Alerts {
 	 *
 	 * @return array
 	 */
-	function get_notification_values() {
+	public function get_notification_values() {
 		$result = array();
 		$names  = wp_list_pluck( $this->alert_types, 'name', 'slug' );
 		foreach ( $names as $slug => $name ) {
@@ -655,7 +656,7 @@ class Alerts {
 	/**
 	 * Update actions dropdown options based on the connector selected.
 	 */
-	function get_actions() {
+	public function get_actions() {
 		$connector_name    = wp_stream_filter_input( INPUT_POST, 'connector' );
 		$stream_connectors = wp_stream_get_instance()->connectors;
 		if ( ! empty( $connector_name ) ) {
@@ -675,7 +676,7 @@ class Alerts {
 	/**
 	 * Save a new alert
 	 */
-	function save_new_alert() {
+	public function save_new_alert() {
 		check_ajax_referer( 'save_alert', 'wp_stream_alerts_nonce' );
 		$trigger_author                = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
 		$trigger_connector_and_context = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_context' );
@@ -701,9 +702,9 @@ class Alerts {
 		$alert_status   = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
 
 		// Insert the post into the database
-		$item = (object) array(
-			'alert_type' => $alert_type,
-			'alert_meta' => array(
+		$item    = (object) array(
+			'alert_type'   => $alert_type,
+			'alert_meta'   => array(
 				'trigger_author'    => $trigger_author,
 				'trigger_connector' => $trigger_connector,
 				'trigger_action'    => $trigger_action,
@@ -711,8 +712,8 @@ class Alerts {
 			),
 			'alert_status' => $alert_status,
 		);
-		$alert = new Alert( $item, $this->plugin );
-		$title = $alert->get_title();
+		$alert   = new Alert( $item, $this->plugin );
+		$title   = $alert->get_title();
 		$post_id = wp_insert_post(
 			array(
 				'post_status' => $alert_status,
@@ -743,7 +744,7 @@ class Alerts {
 	/**
 	 *
 	 */
-	function get_new_alert_triggers_notifications() {
+	public function get_new_alert_triggers_notifications() {
 		ob_start();
 		?>
 		<fieldset class="inline-edit-col inline-edit-wp_stream_alerts inline-edit-add-new-triggers">
@@ -761,7 +762,7 @@ class Alerts {
 		wp_send_json_success(
 			array(
 				'success' => true,
-				'html' => $html,
+				'html'    => $html,
 			)
 		);
 	}
@@ -775,13 +776,13 @@ class Alerts {
 	 *
 	 * @return array Action links
 	 */
-	function change_alert_action_links( $links, $record ) {
+	public function change_alert_action_links( $links, $record ) {
 		$post = get_post( $record->object_id );
 
 		if ( $post && self::POST_TYPE === $post->post_type && $post->post_status === $record->get_meta( 'new_status', true ) ) {
 			if ( 'trash' !== $post->post_status ) {
 				$connector_posts = new \WP_Stream\Connector_Posts();
-				$post_type_name = $connector_posts->get_post_type_name( get_post_type( $post->ID ) );
+				$post_type_name  = $connector_posts->get_post_type_name( get_post_type( $post->ID ) );
 
 				// translators: Placeholder refers to the post type singular name (e.g. "Post")
 				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = admin_url( 'edit.php?post_type=wp_stream_alerts#post-' . $post->ID );

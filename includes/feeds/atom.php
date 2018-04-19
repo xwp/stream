@@ -19,7 +19,7 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 	do_action( 'atom_head' );
 
 	foreach ( $records as $record ) :
-		$record_link  = add_query_arg(
+		$record_link = add_query_arg(
 			array(
 				'record__in' => $record->ID,
 			),

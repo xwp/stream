@@ -46,7 +46,7 @@ class Query {
 		}
 
 		if ( ! empty( $args['search'] ) ) {
-			$field  = ! empty( $args['search_field'] ) ? $args['search_field'] : 'summary';
+			$field = ! empty( $args['search_field'] ) ? $args['search_field'] : 'summary';
 
 			// Sanitize field
 			$allowed_fields = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );

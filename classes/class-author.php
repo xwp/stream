@@ -23,7 +23,7 @@ class Author {
 	 * @param int   $user_id   The user ID.
 	 * @param array $user_meta The user meta array.
 	 */
-	function __construct( $user_id, $user_meta = array() ) {
+	public function __construct( $user_id, $user_meta = array() ) {
 		$this->id   = absint( $user_id );
 		$this->meta = $user_meta;
 
@@ -41,7 +41,7 @@ class Author {
 	 *
 	 * @return string
 	 */
-	function __get( $name ) {
+	public function __get( $name ) {
 		if ( 'display_name' === $name ) {
 			return $this->get_display_name();
 		} elseif ( 'avatar_img' === $name ) {
@@ -62,7 +62,7 @@ class Author {
 	/**
 	 * @return string
 	 */
-	function __toString() {
+	public function __toString() {
 		return $this->get_display_name();
 	}
 
@@ -71,7 +71,7 @@ class Author {
 	 *
 	 * @return string
 	 */
-	function get_display_name() {
+	public function get_display_name() {
 		if ( 0 === $this->id ) {
 			if ( isset( $this->meta['system_user_name'] ) ) {
 				return esc_html( $this->meta['system_user_name'] );
@@ -101,7 +101,7 @@ class Author {
 	 *
 	 * @return string
 	 */
-	function get_agent() {
+	public function get_agent() {
 		$agent = '';
 
 		if ( ! empty( $this->meta['agent'] ) ) {
@@ -122,7 +122,7 @@ class Author {
 	 *
 	 * @return string|bool  An img HTML element, or false if avatars are disabled
 	 */
-	function get_avatar_img( $size = 80 ) {
+	public function get_avatar_img( $size = 80 ) {
 		if ( ! get_option( 'show_avatars' ) ) {
 			return false;
 		}
@@ -150,7 +150,7 @@ class Author {
 	 *
 	 * @return string|bool  Gravatar image URL, or false on failure
 	 */
-	function get_avatar_src( $size = 80 ) {
+	public function get_avatar_src( $size = 80 ) {
 		$img = $this->get_avatar_img( $size );
 
 		if ( ! $img ) {
@@ -177,7 +177,7 @@ class Author {
 	 *
 	 * @return string
 	 */
-	function get_role() {
+	public function get_role() {
 		global $wp_roles;
 
 		$user_role = '';
@@ -200,7 +200,7 @@ class Author {
 	 *
 	 * @return bool
 	 */
-	function is_deleted() {
+	public function is_deleted() {
 		return ( 0 !== $this->id && 0 === $this->user->ID );
 	}
 
@@ -209,7 +209,7 @@ class Author {
 	 *
 	 * @return bool
 	 */
-	function is_wp_cli() {
+	public function is_wp_cli() {
 		return ( 'wp_cli' === $this->get_agent() );
 	}
 
@@ -222,7 +222,7 @@ class Author {
 	 *
 	 * @return bool
 	 */
-	function is_doing_wp_cron() {
+	public function is_doing_wp_cron() {
 		return (
 			wp_stream_is_cron_enabled()
 			&&
@@ -237,7 +237,7 @@ class Author {
 	 *
 	 * @return string
 	 */
-	function get_current_agent() {
+	public function get_current_agent() {
 		$agent = '';
 
 		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
@@ -263,7 +263,7 @@ class Author {
 	 *
 	 * @return string
 	 */
-	function get_agent_label( $agent ) {
+	public function get_agent_label( $agent ) {
 		if ( 'wp_cli' === $agent ) {
 			$label = esc_html__( 'via WP-CLI', 'stream' );
 		} elseif ( 'wp_cron' === $agent ) {

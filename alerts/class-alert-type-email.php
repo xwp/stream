@@ -42,10 +42,12 @@ class Alert_Type_Email extends Alert_Type {
 		if ( ! is_admin() ) {
 			return;
 		}
-		add_filter( 'wp_stream_alerts_save_meta', array(
-			$this,
-			'add_alert_meta',
-		), 10, 2 );
+		add_filter(
+			'wp_stream_alerts_save_meta', array(
+				$this,
+				'add_alert_meta',
+			), 10, 2
+		);
 	}
 
 	/**
@@ -139,20 +141,24 @@ class Alert_Type_Email extends Alert_Type {
 		echo '<span class="wp_stream_alert_type_description">' . esc_html__( 'Send a notification email to the recipient.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_email_recipient"><span class="title">' . esc_html__( 'Recipient', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array(
-			'name'  => 'wp_stream_email_recipient',
-			'title' => esc_attr( __( 'Email Recipient', 'stream' ) ),
-			'value' => $options['email_recipient'],
-		) ); // Xss ok.
+		echo $form->render_field(
+			'text', array(
+				'name'  => 'wp_stream_email_recipient',
+				'title' => esc_attr( __( 'Email Recipient', 'stream' ) ),
+				'value' => $options['email_recipient'],
+			)
+		); // Xss ok.
 		echo '</span></label>';
 
 		echo '<label for="wp_stream_email_subject"><span class="title">' . esc_html__( 'Subject', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array(
-			'name'  => 'wp_stream_email_subject',
-			'title' => esc_attr( __( 'Email Subject', 'stream' ) ),
-			'value' => $options['email_subject'],
-		) ); // Xss ok.
+		echo $form->render_field(
+			'text', array(
+				'name'  => 'wp_stream_email_subject',
+				'title' => esc_attr( __( 'Email Subject', 'stream' ) ),
+				'value' => $options['email_subject'],
+			)
+		); // Xss ok.
 		echo '</span></label>';
 	}
 

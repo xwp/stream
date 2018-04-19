@@ -74,9 +74,9 @@ class Connector_Taxonomies extends Connector {
 
 		$labels = wp_list_pluck( $wp_taxonomies, 'labels' );
 
-		$this->context_labels  = wp_list_pluck( $labels, 'singular_name' );
+		$this->context_labels = wp_list_pluck( $labels, 'singular_name' );
 
-		add_action( 'registered_taxonomy', array( $this, '_registered_taxonomy' ), 10, 3 );
+		add_action( 'registered_taxonomy', array( $this, 'registered_taxonomy' ), 10, 3 );
 
 		return $this->context_labels;
 	}
@@ -122,7 +122,7 @@ class Connector_Taxonomies extends Connector {
 	 * @param array|string $object_type Object type or array of object types
 	 * @param array|string $args        Array or string of taxonomy registration arguments
 	 */
-	public function _registered_taxonomy( $taxonomy, $object_type, $args ) {
+	public function registered_taxonomy( $taxonomy, $object_type, $args ) {
 		unset( $object_type );
 
 		$taxonomy_obj = (object) $args;

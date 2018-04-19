@@ -127,7 +127,7 @@ class Admin {
 
 		// Ensure function used in various methods is pre-loaded.
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+			require_once ABSPATH . '/wp-admin/includes/plugin.php';
 		}
 
 		// User and role caps.
@@ -154,39 +154,49 @@ class Admin {
 		add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
 
 		// Plugin action links.
-		add_filter( 'plugin_action_links', array(
-			$this,
-			'plugin_action_links',
-		), 10, 2 );
+		add_filter(
+			'plugin_action_links', array(
+				$this,
+				'plugin_action_links',
+			), 10, 2
+		);
 
 		// Load admin scripts and styles.
-		add_action( 'admin_enqueue_scripts', array(
-			$this,
-			'admin_enqueue_scripts',
-		) );
+		add_action(
+			'admin_enqueue_scripts', array(
+				$this,
+				'admin_enqueue_scripts',
+			)
+		);
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_menu_css' ) );
 
 		// Reset Streams database.
-		add_action( 'wp_ajax_wp_stream_reset', array(
-			$this,
-			'wp_ajax_reset',
-		) );
+		add_action(
+			'wp_ajax_wp_stream_reset', array(
+				$this,
+				'wp_ajax_reset',
+			)
+		);
 
 		// Uninstall Streams and Deactivate plugin.
 		$uninstall = $this->plugin->db->driver->purge_storage( $this->plugin );
 
 		// Auto purge setup.
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
-		add_action( 'wp_stream_auto_purge', array(
-			$this,
-			'purge_scheduled_action',
-		) );
+		add_action(
+			'wp_stream_auto_purge', array(
+				$this,
+				'purge_scheduled_action',
+			)
+		);
 
 		// Ajax users list.
-		add_action( 'wp_ajax_wp_stream_filters', array(
-			$this,
-			'ajax_filters',
-		) );
+		add_action(
+			'wp_ajax_wp_stream_filters', array(
+				$this,
+				'ajax_filters',
+			)
+		);
 	}
 
 	/**
@@ -348,10 +358,12 @@ class Admin {
 			do_action( 'wp_stream_admin_menu_screens' );
 
 			// Register the list table early, so it associates the column headers with 'Screen settings'.
-			add_action( 'load-' . $this->screen_id['main'], array(
-				$this,
-				'register_list_table',
-			) );
+			add_action(
+				'load-' . $this->screen_id['main'], array(
+					$this,
+					'register_list_table',
+				)
+			);
 		}
 	}
 
@@ -389,18 +401,24 @@ class Admin {
 			wp_enqueue_script( 'wp-stream-timeago' );
 			wp_enqueue_script( 'wp-stream-timeago-locale' );
 
-			wp_enqueue_script( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.js', array(
-				'jquery',
-				'wp-stream-select2',
-			), $this->plugin->get_version() );
-			wp_enqueue_script( 'wp-stream-admin-exclude', $this->plugin->locations['url'] . 'ui/js/exclude.js', array(
-				'jquery',
-				'wp-stream-select2',
-			), $this->plugin->get_version() );
-			wp_enqueue_script( 'wp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.js', array(
-				'jquery',
-				'heartbeat',
-			), $this->plugin->get_version() );
+			wp_enqueue_script(
+				'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.js', array(
+					'jquery',
+					'wp-stream-select2',
+				), $this->plugin->get_version()
+			);
+			wp_enqueue_script(
+				'wp-stream-admin-exclude', $this->plugin->locations['url'] . 'ui/js/exclude.js', array(
+					'jquery',
+					'wp-stream-select2',
+				), $this->plugin->get_version()
+			);
+			wp_enqueue_script(
+				'wp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.js', array(
+					'jquery',
+					'heartbeat',
+				), $this->plugin->get_version()
+			);
 
 			wp_localize_script(
 				'wp-stream-admin',
@@ -528,7 +546,7 @@ class Admin {
 		if ( ! file_exists( ABSPATH . WPINC . '/version.php' ) ) {
 			return;
 		}
-		include( ABSPATH . WPINC . '/version.php' );
+		include ABSPATH . WPINC . '/version.php';
 
 		if ( ! isset( $wp_version ) ) {
 			return;
@@ -983,7 +1001,7 @@ class Admin {
 	 *
 	 * @return mixed
 	 */
-	function get_user_meta( $user_id, $meta_key, $single = true ) {
+	public function get_user_meta( $user_id, $meta_key, $single = true ) {
 		if ( wp_stream_is_vip() && function_exists( 'get_user_attribute' ) ) {
 			return get_user_attribute( $user_id, $meta_key );
 		}
@@ -1001,7 +1019,7 @@ class Admin {
 	 *
 	 * @return int|bool
 	 */
-	function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
+	public function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
 		if ( wp_stream_is_vip() && function_exists( 'update_user_attribute' ) ) {
 			return update_user_attribute( $user_id, $meta_key, $meta_value );
 		}
@@ -1018,7 +1036,7 @@ class Admin {
 	 *
 	 * @return bool
 	 */
-	function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
+	public function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
 		if ( wp_stream_is_vip() && function_exists( 'delete_user_attribute' ) ) {
 			return delete_user_attribute( $user_id, $meta_key, $meta_value );
 		}

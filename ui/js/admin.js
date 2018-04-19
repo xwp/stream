@@ -16,11 +16,11 @@ jQuery(
 
 			$( '.toplevel_page_wp_stream :input.chosen-select' ).each(
 				function( i, el ) {
-					var args = {},
+					var args       = {},
 					templateResult = function( record ) {
 						var $result = $( '<span>' ),
-						$elem  = $( record.element ),
-						icon   = '';
+						$elem       = $( record.element ),
+						icon        = '';
 
 						if ( '- ' === record.text.substring( 0, 2 ) ) {
 							record.text = record.text.substring( 2 );
@@ -122,7 +122,7 @@ jQuery(
 
 			$( '#record-filter-form' ).submit(
 				function() {
-					var	$context        = $( '.toplevel_page_wp_stream :input.chosen-select[name="context"]' ),
+					var	$context    = $( '.toplevel_page_wp_stream :input.chosen-select[name="context"]' ),
 					$option         = $context.find( 'option:selected' ),
 					$connector      = $context.parent().find( '.record-filter-connector' ),
 					optionConnector = $option.data( 'group' ),
@@ -173,14 +173,14 @@ jQuery(
 			);
 
 			// Admin page tabs
-			var $tabs          = $( '.wp_stream_screen .nav-tab-wrapper' ),
+			var $tabs      = $( '.wp_stream_screen .nav-tab-wrapper' ),
 			$panels        = $( '.wp_stream_screen .nav-tab-content table.form-table' ),
 			$activeTab     = $tabs.find( '.nav-tab-active' ),
 			defaultIndex   = $activeTab.length > 0 ? $tabs.find( 'a' ).index( $activeTab ) : 0,
 			hashIndex      = window.location.hash.match( /^#(\d+)$/ ),
 			currentHash    = ( null !== hashIndex ? hashIndex[ 1 ] : defaultIndex ),
 			syncFormAction = function( index ) {
-				var $optionsForm  = $( 'input[name="option_page"][value^="wp_stream"]' ).closest( 'form' );
+				var $optionsForm = $( 'input[name="option_page"][value^="wp_stream"]' ).closest( 'form' );
 				if ( $optionsForm.length === 0 ) {
 					return;
 				}
@@ -191,7 +191,7 @@ jQuery(
 
 			$tabs.on(
 				'click', 'a', function() {
-					var index     = $tabs.find( 'a' ).index( $( this ) ),
+					var index = $tabs.find( 'a' ).index( $( this ) ),
 					hashIndex = window.location.hash.match( /^#(\d+)$/ );
 
 					$panels.hide().eq( index ).show();
@@ -220,7 +220,7 @@ jQuery(
 					// Enable Live Updates checkbox ajax
 					$( '#enable_live_update' ).click(
 						function() {
-							var nonce     = $( '#stream_live_update_nonce' ).val(),
+							var nonce = $( '#stream_live_update_nonce' ).val(),
 							user      = $( '#enable_live_update_user' ).val(),
 							checked   = 'unchecked',
 							heartbeat = 'true';
@@ -362,25 +362,25 @@ jQuery(
 
 					this.$ = this.wrapper.each(
 						function( i, val ) {
-							var container   = $( val ),
-							dateinputs  = container.find( '.date-inputs' ),
-							from        = container.find( '.field-from' ),
-							to          = container.find( '.field-to' ),
-							to_remove   = to.prev( '.date-remove' ),
-							from_remove = from.prev( '.date-remove' ),
-							predefined  = container.children( '.field-predefined' ),
-							datepickers = $( '' ).add( to ).add( from );
+							var container = $( val ),
+							dateinputs    = container.find( '.date-inputs' ),
+							from          = container.find( '.field-from' ),
+							to            = container.find( '.field-to' ),
+							to_remove     = to.prev( '.date-remove' ),
+							from_remove   = from.prev( '.date-remove' ),
+							predefined    = container.children( '.field-predefined' ),
+							datepickers   = $( '' ).add( to ).add( from );
 
 							if ( jQuery.datepicker ) {
 
 								// Apply a GMT offset due to Date() using the visitor's local time
-								var	siteGMTOffsetHours  = parseFloat( wp_stream.gmt_offset ),
-								localGMTOffsetHours = new Date().getTimezoneOffset() / 60 * -1,
-								totalGMTOffsetHours = siteGMTOffsetHours - localGMTOffsetHours,
-								localTime           = new Date(),
-								siteTime            = new Date( localTime.getTime() + ( totalGMTOffsetHours * 60 * 60 * 1000 ) ),
-								maxOffset           = 0,
-								minOffset           = null;
+								var	siteGMTOffsetHours = parseFloat( wp_stream.gmt_offset ),
+								localGMTOffsetHours    = new Date().getTimezoneOffset() / 60 * -1,
+								totalGMTOffsetHours    = siteGMTOffsetHours - localGMTOffsetHours,
+								localTime              = new Date(),
+								siteTime               = new Date( localTime.getTime() + ( totalGMTOffsetHours * 60 * 60 * 1000 ) ),
+								maxOffset              = 0,
+								minOffset              = null;
 
 								// Check if the site date is different from the local date, and set a day offset
 								if ( localTime.getDate() !== siteTime.getDate() || localTime.getMonth() !== siteTime.getMonth() ) {
@@ -426,10 +426,10 @@ jQuery(
 							predefined.on(
 								{
 									'change': function () {
-										var value    = $( this ).val(),
-										option   = predefined.find( '[value="' + value + '"]' ),
-										to_val   = option.data( 'to' ),
-										from_val = option.data( 'from' );
+										var value = $( this ).val(),
+										option    = predefined.find( '[value="' + value + '"]' ),
+										to_val    = option.data( 'to' ),
+										from_val  = option.data( 'from' );
 
 										if ( 'custom' === value ) {
 											dateinputs.show();

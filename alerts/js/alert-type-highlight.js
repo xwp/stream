@@ -60,7 +60,7 @@ var streamAlertTypeHighlight = ( function( $ ) {
 								*/
 									function ajaxDone() {
 										var row = actionLink.parents( '.alert-highlight' ),
-										   odd = $( '.striped > tbody > :nth-child( odd )' );
+											odd = $( '.striped > tbody > :nth-child( odd )' );
 										if ( row.is( odd ) ) {
 											row.animate(
 												{ backgroundColor: '#f9f9f9' }, 300, function() {

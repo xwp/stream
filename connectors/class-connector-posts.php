@@ -61,7 +61,7 @@ class Connector_Posts extends Connector {
 		$post_types = wp_filter_object_list( $wp_post_types, array(), null, 'label' );
 		$post_types = array_diff_key( $post_types, array_flip( $this->get_excluded_post_types() ) );
 
-		add_action( 'registered_post_type', array( $this, '_registered_post_type' ), 10, 2 );
+		add_action( 'registered_post_type', array( $this, 'registered_post_type' ), 10, 2 );
 
 		return $post_types;
 	}
@@ -131,14 +131,14 @@ class Connector_Posts extends Connector {
 	}
 
 	/**
-	 * Catch registeration of post_types after initial loading, to cache its labels
+	 * Catch registration of post_types after initial loading, to cache its labels
 	 *
 	 * @action registered_post_type
 	 *
 	 * @param string $post_type Post type slug
 	 * @param array  $args      Arguments used to register the post type
 	 */
-	public function _registered_post_type( $post_type, $args ) {
+	public function registered_post_type( $post_type, $args ) {
 		unset( $args );
 
 		$post_type_obj = get_post_type_object( $post_type );

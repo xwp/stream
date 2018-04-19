@@ -287,7 +287,7 @@ class Connector_Settings extends Connector {
 					'background_attachment',
 					'background_color',
 				),
-				'custom_header' => array(
+				'custom_header'     => array(
 					'header_image',
 					'header_textcolor',
 				),
@@ -458,10 +458,10 @@ class Connector_Settings extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		$context_labels = $this->get_context_labels();
-		$plugin = wp_stream_get_instance();
+		$plugin         = wp_stream_get_instance();
 
 		$rules = array(
-			'stream' => array(
+			'stream'            => array(
 				'menu_slug'    => 'wp_stream',
 				'submenu_slug' => $plugin->admin->settings_page_slug,
 				'url'          => function( $rule, $record ) use ( $plugin ) {
@@ -504,7 +504,7 @@ class Connector_Settings extends Connector {
 					return in_array( $record->context, array( 'custom_header', 'custom_background' ), true );
 				},
 			),
-			'general' => array(
+			'general'           => array(
 				'menu_slug'    => 'options-general.php',
 				'submenu_slug' => function( $record ) {
 					return sprintf( 'options-%s.php', $record->context );
@@ -516,7 +516,7 @@ class Connector_Settings extends Connector {
 					return ! empty( $submenu['options-general.php'] );
 				},
 			),
-			'network' => array(
+			'network'           => array(
 				'menu_slug'    => 'settings.php',
 				'submenu_slug' => function( $record ) {
 					return 'settings.php';
@@ -560,7 +560,7 @@ class Connector_Settings extends Connector {
 				}
 
 				if ( ! empty( $found_submenus ) ) {
-					$target_submenu = array_pop( $found_submenus );
+					$target_submenu                  = array_pop( $found_submenus );
 					list( $menu_title, $capability ) = $target_submenu;
 
 					if ( current_user_can( $capability ) ) {
@@ -710,7 +710,7 @@ class Connector_Settings extends Connector {
 		if ( $this->is_option_group( $value ) ) {
 			foreach ( $this->get_changed_keys( $old_value, $value ) as $field_key ) {
 				if ( ! $this->is_key_ignored( $option, $field_key ) ) {
-					$key_context = $this->get_context_by_key( $option, $field_key );
+					$key_context       = $this->get_context_by_key( $option, $field_key );
 					$changed_options[] = array(
 						'label'      => $this->get_serialized_field_label( $option, $field_key ),
 						'option'     => $option,

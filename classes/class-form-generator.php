@@ -97,7 +97,7 @@ class Form_Generator {
 			case 'select':
 				$current_value = $args['value'];
 
-				$output  = sprintf(
+				$output = sprintf(
 					'<select name="%1$s" class="%2$s" id="%1$s">',
 					esc_attr( $args['name'] ),
 					esc_attr( $args['classes'] )
@@ -117,7 +117,7 @@ class Form_Generator {
 				$values = array();
 
 				$multiple = ( $args['multiple'] ) ? 'multiple ' : '';
-				$output = sprintf(
+				$output   = sprintf(
 					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s%4$s>',
 					esc_attr( $args['name'] ),
 					esc_attr( $args['classes'] ),
@@ -145,7 +145,7 @@ class Form_Generator {
 					} else {
 						$selected = selected( $args['value'], $parent['value'], false );
 					}
-					$output .= sprintf(
+					$output  .= sprintf(
 						'<option class="parent" value="%1$s" %3$s>%2$s</option>',
 						$parent['value'],
 						$parent['text'],
@@ -154,7 +154,7 @@ class Form_Generator {
 					$values[] = $parent['value'];
 					if ( ! empty( $parent['children'] ) ) {
 						foreach ( $parent['children'] as $child ) {
-							$output .= sprintf(
+							$output  .= sprintf(
 								'<option class="child" value="%1$s" %3$s>%2$s</option>',
 								$child['value'],
 								$child['text'],
@@ -206,7 +206,7 @@ class Form_Generator {
 	public function prepare_data_attributes_string( $data ) {
 		$output = '';
 		foreach ( $data as $key => $value ) {
-			$key = 'data-' . esc_attr( $key );
+			$key     = 'data-' . esc_attr( $key );
 			$output .= $key . '="' . esc_attr( $value ) . '" ';
 		}
 		return $output;

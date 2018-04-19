@@ -55,7 +55,7 @@ class Alerts_List {
 	 * @param array $query_vars Arguments for query to populate table.
 	 * @return array
 	 */
-	function parse_request( $query_vars ) {
+	public function parse_request( $query_vars ) {
 		$screen = get_current_screen();
 		if ( 'edit-wp_stream_alerts' === $screen->id && Alerts::POST_TYPE === $query_vars['post_type'] && empty( $query_vars['post_status'] ) ) {
 			$query_vars['post_status'] = array( 'wp_stream_enabled', 'wp_stream_disabled' );
@@ -71,7 +71,7 @@ class Alerts_List {
 	 * @param array $views View links HTML.
 	 * @return array
 	 */
-	function manage_views( $views ) {
+	public function manage_views( $views ) {
 
 		if ( array_key_exists( 'trash', $views ) ) {
 			$trash = $views['trash'];
@@ -90,7 +90,7 @@ class Alerts_List {
 	 * @param array $columns Column id -> title array.
 	 * @return array
 	 */
-	function manage_columns( $columns ) {
+	public function manage_columns( $columns ) {
 		$columns = array(
 			'cb'            => $columns['cb'],
 			'alert_trigger' => __( 'Trigger', 'stream' ),
@@ -109,7 +109,7 @@ class Alerts_List {
 	 * @param int    $post_id The post being processed.
 	 * @return mixed
 	 */
-	function column_data( $column_name, $post_id ) {
+	public function column_data( $column_name, $post_id ) {
 
 		$alert = $this->plugin->alerts->get_alert( $post_id );
 		if ( ! $alert ) {
@@ -120,7 +120,7 @@ class Alerts_List {
 			case 'alert_trigger':
 				$values = array();
 				foreach ( $this->plugin->alerts->alert_triggers as $trigger_type => $trigger_obj ) {
-					$value = $trigger_obj->get_display_value( 'list_table', $alert );
+					$value    = $trigger_obj->get_display_value( 'list_table', $alert );
 					$values[] = '<span class="alert_trigger_value alert_trigger_' . esc_attr( $trigger_type ) . '">' . esc_html( $value ) . '</span>';
 				}
 				?>
@@ -242,7 +242,7 @@ class Alerts_List {
 	 * @param array $actions List of inline edit actions available.
 	 * @return array
 	 */
-	function suppress_quick_edit( $actions ) {
+	public function suppress_quick_edit( $actions ) {
 		if ( Alerts::POST_TYPE !== get_post_type() ) {
 			return $actions;
 		}
@@ -320,7 +320,7 @@ class Alerts_List {
 			<fieldset class="inline-edit-col inline-edit-<?php echo esc_attr( Alerts::POST_TYPE ); ?>">
 				<?php
 				$function_name = 'display_' . $type . '_box';
-				$the_post = get_post();
+				$the_post      = get_post();
 				call_user_func( array( $this->plugin->alerts, $function_name ), $the_post );
 				?>
 			</fieldset>
@@ -354,12 +354,12 @@ class Alerts_List {
 	 *
 	 * @return array
 	 */
-	function save_alert_inline_edit( $data, $postarr ) {
+	public function save_alert_inline_edit( $data, $postarr ) {
 		if ( did_action( 'customize_preview_init' ) || empty( $postarr['ID'] ) ) {
 			return $data;
 		}
 
-		$post_id = $postarr['ID'];
+		$post_id   = $postarr['ID'];
 		$post_type = wp_stream_filter_input( INPUT_POST, 'post_type' );
 		if ( Alerts::POST_TYPE !== $post_type ) {
 			return $data;
@@ -373,15 +373,15 @@ class Alerts_List {
 			return $data;
 		}
 
-		$trigger_author = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
-		$trigger_connector_and_context = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_connector_or_context' );
+		$trigger_author                      = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_author' );
+		$trigger_connector_and_context       = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_connector_or_context' );
 		$trigger_connector_and_context_split = explode( '-', $trigger_connector_and_context );
-		$trigger_connector = $trigger_connector_and_context_split[0];
-		$trigger_context = $trigger_connector_and_context_split[1];
+		$trigger_connector                   = $trigger_connector_and_context_split[0];
+		$trigger_context                     = $trigger_connector_and_context_split[1];
 
-		$trigger_action = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_action' );
-		$alert_type = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
-		$alert_status = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
+		$trigger_action      = wp_stream_filter_input( INPUT_POST, 'wp_stream_trigger_action' );
+		$alert_type          = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
+		$alert_status        = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
 		$data['post_status'] = $alert_status;
 
 		update_post_meta( $post_id, 'alert_type', $alert_type );

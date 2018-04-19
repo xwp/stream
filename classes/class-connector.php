@@ -229,7 +229,7 @@ abstract class Connector {
 						$inner[ $parent . '::' . $child ] = $change;
 					}
 					$result[ $key ] = 0; // Changed parent which has a changed children
-					$result = array_merge( $result, $inner );
+					$result         = array_merge( $result, $inner );
 				}
 			}
 		}
