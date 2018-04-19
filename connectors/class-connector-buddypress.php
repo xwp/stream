@@ -204,15 +204,15 @@ class Connector_BuddyPress extends Connector {
 				$edit_url   = $base_url . '&amp;action=edit';
 				$visit_url  = \bp_get_group_permalink( $group );
 
-				$links[ esc_html__( 'Edit group', 'stream' ) ] = $edit_url;
-				$links[ esc_html__( 'View group', 'stream' ) ] = $visit_url;
+				$links[ esc_html__( 'Edit group', 'stream' ) ]   = $edit_url;
+				$links[ esc_html__( 'View group', 'stream' ) ]   = $visit_url;
 				$links[ esc_html__( 'Delete group', 'stream' ) ] = $delete_url;
 			}
 		} elseif ( in_array( $record->context, array( 'activity' ), true ) ) {
 			$activity_id = $record->get_meta( 'id', true );
-			$activities = \bp_activity_get(
+			$activities  = \bp_activity_get(
 				array(
-					'in' => $activity_id,
+					'in'   => $activity_id,
 					'spam' => 'all',
 				)
 			);
@@ -239,18 +239,18 @@ class Connector_BuddyPress extends Connector {
 			$group_id = $record->get_meta( 'group_id', true );
 
 			if ( empty( $field_id ) ) { // is a group action
-				$links[ esc_html__( 'Edit', 'stream' ) ] = add_query_arg(
+				$links[ esc_html__( 'Edit', 'stream' ) ]   = add_query_arg(
 					array(
-						'page' => 'bp-profile-setup',
-						'mode' => 'edit_group',
+						'page'     => 'bp-profile-setup',
+						'mode'     => 'edit_group',
 						'group_id' => $group_id,
 					),
 					admin_url( 'users.php' )
 				);
 				$links[ esc_html__( 'Delete', 'stream' ) ] = add_query_arg(
 					array(
-						'page' => 'bp-profile-setup',
-						'mode' => 'delete_group',
+						'page'     => 'bp-profile-setup',
+						'mode'     => 'delete_group',
 						'group_id' => $group_id,
 					),
 					admin_url( 'users.php' )
@@ -260,10 +260,10 @@ class Connector_BuddyPress extends Connector {
 				if ( empty( $field->type ) ) {
 					return $links;
 				}
-				$links[ esc_html__( 'Edit', 'stream' ) ] = add_query_arg(
+				$links[ esc_html__( 'Edit', 'stream' ) ]   = add_query_arg(
 					array(
-						'page' => 'bp-profile-setup',
-						'mode' => 'edit_field',
+						'page'     => 'bp-profile-setup',
+						'mode'     => 'edit_field',
 						'group_id' => $group_id,
 						'field_id' => $field_id,
 					),
@@ -271,8 +271,8 @@ class Connector_BuddyPress extends Connector {
 				);
 				$links[ esc_html__( 'Delete', 'stream' ) ] = add_query_arg(
 					array(
-						'page' => 'bp-profile-setup',
-						'mode' => 'delete_field',
+						'page'     => 'bp-profile-setup',
+						'mode'     => 'delete_field',
 						'field_id' => $field_id,
 					),
 					admin_url( 'users.php' )
@@ -494,10 +494,10 @@ class Connector_BuddyPress extends Connector {
 					strip_tags( $activity->action )
 				),
 				array(
-					'id' => $activity->id,
+					'id'      => $activity->id,
 					'item_id' => $activity->item_id,
-					'type' => $activity->type,
-					'author' => $activity->user_id,
+					'type'    => $activity->type,
+					'author'  => $activity->user_id,
 				),
 				$activity->id,
 				$activity->component,
@@ -538,10 +538,10 @@ class Connector_BuddyPress extends Connector {
 				strip_tags( $activity->action )
 			),
 			array(
-				'id' => $activity->id,
+				'id'      => $activity->id,
 				'item_id' => $activity->item_id,
-				'type' => $activity->type,
-				'author' => $activity->user_id,
+				'type'    => $activity->type,
+				'author'  => $activity->user_id,
 			),
 			$activity->id,
 			$activity->component,
@@ -559,10 +559,10 @@ class Connector_BuddyPress extends Connector {
 				strip_tags( $activity->action )
 			),
 			array(
-				'id' => $activity->id,
+				'id'      => $activity->id,
 				'item_id' => $activity->item_id,
-				'type' => $activity->type,
-				'author' => $activity->user_id,
+				'type'    => $activity->type,
+				'author'  => $activity->user_id,
 			),
 			$activity->id,
 			$activity->component,
@@ -580,10 +580,10 @@ class Connector_BuddyPress extends Connector {
 				strip_tags( $activity->action )
 			),
 			array(
-				'id' => $activity->id,
+				'id'      => $activity->id,
 				'item_id' => $activity->item_id,
-				'type' => $activity->type,
-				'author' => $activity->user_id,
+				'type'    => $activity->type,
+				'author'  => $activity->user_id,
 			),
 			$activity->id,
 			'activity',
@@ -622,15 +622,15 @@ class Connector_BuddyPress extends Connector {
 				$message = esc_html__( 'Left group "%s"', 'stream' );
 			} elseif ( 'banned' === $action ) {
 				// translators: Placeholders refer to a user display name, and a group name (e.g. "Jane Doe", "Favourites")
-				$message = esc_html__( 'Banned "%2$s" from "%1$s"', 'stream' );
+				$message        = esc_html__( 'Banned "%2$s" from "%1$s"', 'stream' );
 				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 			} elseif ( 'unbanned' === $action ) {
 				// translators: Placeholders refer to a user display name, and a group name (e.g. "Jane Doe", "Favourites")
-				$message = esc_html__( 'Unbanned "%2$s" from "%1$s"', 'stream' );
+				$message        = esc_html__( 'Unbanned "%2$s" from "%1$s"', 'stream' );
 				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 			} elseif ( 'removed' === $action ) {
 				// translators: Placeholders refer to a user display name, and a group name (e.g. "Jane Doe", "Favourites")
-				$message = esc_html__( 'Removed "%2$s" from "%1$s"', 'stream' );
+				$message        = esc_html__( 'Removed "%2$s" from "%1$s"', 'stream' );
 				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 			} else {
 				return;
@@ -644,7 +644,7 @@ class Connector_BuddyPress extends Connector {
 			),
 			array_merge(
 				array(
-					'id' => $group->id,
+					'id'   => $group->id,
 					'name' => $group->name,
 					'slug' => $group->slug,
 				),
@@ -695,13 +695,13 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	public function callback_groups_promote_member( $group_id, $user_id, $status ) {
-		$group = \groups_get_group(
+		$group   = \groups_get_group(
 			array(
 				'group_id' => $group_id,
 			)
 		);
-		$user = new \WP_User( $user_id );
-		$roles = array(
+		$user    = new \WP_User( $user_id );
+		$roles   = array(
 			'admin' => esc_html_x( 'Administrator', 'buddypress', 'stream' ),
 			'mod'   => esc_html_x( 'Moderator', 'buddypress', 'stream' ),
 		);
@@ -716,12 +716,12 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	public function callback_groups_demote_member( $group_id, $user_id ) {
-		$group = \groups_get_group(
+		$group   = \groups_get_group(
 			array(
 				'group_id' => $group_id,
 			)
 		);
-		$user = new \WP_User( $user_id );
+		$user    = new \WP_User( $user_id );
 		$message = sprintf(
 			// translators: Placeholders refer to a user's display name, a user role, and a group name (e.g. "Jane Doe", "Member", "Favourites")
 			__( 'Demoted "%1$s" to "%2$s" in "%3$s"', 'stream' ),

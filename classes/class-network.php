@@ -12,7 +12,7 @@ class Network {
 
 	public $default_settings_page_slug = 'wp_stream_default_settings';
 
-	function __construct( $plugin ) {
+	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
 		// Always add default site_id/blog_id params when multisite
@@ -92,7 +92,7 @@ class Network {
 	 */
 	public function is_network_activated() {
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+			require_once ABSPATH . '/wp-admin/includes/plugin.php';
 		}
 
 		if ( $this->is_mustuse() ) {
@@ -249,7 +249,7 @@ class Network {
 		$stream_hidden_options = apply_filters(
 			'wp_stream_hidden_option_fields',
 			array(
-				'general' => array(
+				'general'  => array(
 					'records_ttl',
 				),
 				'advanced' => array(

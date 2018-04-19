@@ -26,7 +26,7 @@ jQuery(
 							data['wp-stream-heartbeat'] = 'live-update';
 
 							var last_item = $( list_sel + ' tr:first .column-date time' ),
-							last_time = 1;
+							last_time     = 1;
 
 							if ( 0 !== last_item.length ) {
 								last_time = ( '' === last_item.attr( 'datetime' ) ) ? 1 : last_item.attr( 'datetime' );
@@ -47,8 +47,8 @@ jQuery(
 							}
 
 							var show_on_screen = $( '#edit_stream_per_page' ).val(),
-							$current_items = $( list_sel + ' tr' ),
-							$new_items     = $( data['wp-stream-heartbeat'] );
+							$current_items     = $( list_sel + ' tr' ),
+							$new_items         = $( data['wp-stream-heartbeat'] );
 
 							// Remove all default classes and add class to highlight new rows
 							$new_items.addClass( 'new-row' );

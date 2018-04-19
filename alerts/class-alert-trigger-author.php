@@ -59,11 +59,11 @@ class Alert_Trigger_Author extends Alert_Trigger {
 		}
 
 		$args = array(
-			'name'        => esc_attr( $this->field_key ),
-			'value'       => esc_attr( $value ),
-			'options'     => $this->get_values(),
-			'classes'     => 'wp_stream_ajax_forward',
-			'data'        => array(
+			'name'    => esc_attr( $this->field_key ),
+			'value'   => esc_attr( $value ),
+			'options' => $this->get_values(),
+			'classes' => 'wp_stream_ajax_forward',
+			'data'    => array(
 				'placeholder' => __( 'Any Author', 'stream' ),
 			),
 		);
@@ -110,7 +110,7 @@ class Alert_Trigger_Author extends Alert_Trigger {
 		$user_meta = array(
 			'is_wp_cli' => true,
 		);
-		$users[] = new Author( 0, $user_meta );
+		$users[]   = new Author( 0, $user_meta );
 
 		foreach ( $users as $user ) {
 			$all_records[] = array(
@@ -146,7 +146,7 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 * @param Alert  $alert Alert being processed.
 	 * @return string
 	 */
-	function get_display_value( $context = 'normal', $alert ) {
+	public function get_display_value( $context = 'normal', $alert ) {
 		$author = ( ! empty( $alert->alert_meta['trigger_author'] ) ) ? $alert->alert_meta['trigger_author'] : null;
 		if ( empty( $author ) ) {
 			$author = __( 'Any User', 'stream' );

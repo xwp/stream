@@ -71,12 +71,12 @@ class Alert {
 	 * @return void
 	 */
 	public function __construct( $item, $plugin ) {
-		$this->plugin  = $plugin;
+		$this->plugin = $plugin;
 
-		$this->ID      = isset( $item->ID ) ? $item->ID : null;
-		$this->status  = isset( $item->status ) ? $item->status : 'wp_stream_disabled';
-		$this->date    = isset( $item->date ) ? $item->date : null;
-		$this->author  = isset( $item->author ) ? $item->author : null;
+		$this->ID     = isset( $item->ID ) ? $item->ID : null;
+		$this->status = isset( $item->status ) ? $item->status : 'wp_stream_disabled';
+		$this->date   = isset( $item->date ) ? $item->date : null;
+		$this->author = isset( $item->author ) ? $item->author : null;
 
 		$this->alert_type = isset( $item->alert_type ) ? $item->alert_type : null;
 		$this->alert_meta = isset( $item->alert_meta ) ? $item->alert_meta : array();
@@ -109,8 +109,8 @@ class Alert {
 		}
 
 		$meta = array(
-			'alert_type'     => $this->alert_type,
-			'alert_meta'     => $this->alert_meta,
+			'alert_type' => $this->alert_type,
+			'alert_meta' => $this->alert_meta,
 		);
 
 		foreach ( $meta as $key => $value ) {
@@ -129,11 +129,11 @@ class Alert {
 	public function process_settings_form( $data ) {
 
 		$args = array(
-			'post_date'    => $this->date,
-			'post_status'  => $this->status,
-			'post_title'   => $this->get_title(),
-			'post_author'  => $this->author,
-			'post_type'    => Alerts::POST_TYPE,
+			'post_date'   => $this->date,
+			'post_status' => $this->status,
+			'post_title'  => $this->get_title(),
+			'post_author' => $this->author,
+			'post_type'   => Alerts::POST_TYPE,
 		);
 
 		foreach ( $args as $key => $value ) {
@@ -141,8 +141,8 @@ class Alert {
 		}
 
 		$meta_input = array(
-			'alert_type'     => $this->alert_type,
-			'alert_meta'     => $this->alert_meta,
+			'alert_type' => $this->alert_type,
+			'alert_meta' => $this->alert_meta,
 		);
 
 		foreach ( $meta_input as $key => $value ) {
@@ -183,7 +183,7 @@ class Alert {
 	 * @todo enhance human readibility
 	 * @return string The title of the alert
 	 */
-	function get_title() {
+	public function get_title() {
 
 		$alert_type = $this->get_alert_type_obj()->name;
 
@@ -193,7 +193,7 @@ class Alert {
 		}
 		$title = '';
 		foreach ( $this->plugin->alerts->alert_triggers as $trigger_type => $trigger_obj ) {
-			$value = $trigger_obj->get_display_value( 'list_table', $this );
+			$value  = $trigger_obj->get_display_value( 'list_table', $this );
 			$title .= $value . ' > ';
 		}
 		$title = rtrim( $title, ' > ' );
@@ -267,7 +267,7 @@ class Alert {
 		if ( empty( $record->ID ) ) {
 			return false;
 		}
-		$record = new Record( $record );
+		$record           = new Record( $record );
 		$alerts_triggered = $record->get_meta( Alerts::ALERTS_TRIGGERED_META_KEY, true );
 
 		if ( empty( $alerts_triggered ) || ! is_array( $alerts_triggered ) ) {
@@ -306,7 +306,7 @@ class Alert {
 		if ( ! is_object( $record ) || ! is_string( $alert_slug ) || ! is_string( $setting ) ) {
 			return false;
 		}
-		$record = new Record( $record );
+		$record           = new Record( $record );
 		$alerts_triggered = $record->get_meta( Alerts::ALERTS_TRIGGERED_META_KEY, true );
 
 		// Ensure we have a meta array and that this record has triggered a highlight alert.

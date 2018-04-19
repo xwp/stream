@@ -139,7 +139,7 @@ class Plugin {
 	 *
 	 * @param string $class
 	 */
-	function autoload( $class ) {
+	public function autoload( $class ) {
 		if ( ! preg_match( '/^(?P<namespace>.+)\\\\(?P<autoload>[^\\\\]+)$/', $class, $matches ) ) {
 			return;
 		}
@@ -178,10 +178,10 @@ class Plugin {
 	 * @action init
 	 */
 	public function init() {
-		$this->settings      = new Settings( $this );
-		$this->connectors    = new Connectors( $this );
-		$this->alerts        = new Alerts( $this );
-		$this->alerts_list   = new Alerts_List( $this );
+		$this->settings    = new Settings( $this );
+		$this->connectors  = new Connectors( $this );
+		$this->alerts      = new Alerts( $this );
+		$this->alerts_list = new Alerts_List( $this );
 
 	}
 
@@ -218,10 +218,10 @@ class Plugin {
 	 * @return array
 	 */
 	private function locate_plugin() {
-		$dir_url          = trailingslashit( plugins_url( '', dirname( __FILE__ ) ) );
-		$dir_path         = plugin_dir_path( dirname( __FILE__ ) );
-		$dir_basename     = basename( $dir_path );
-		$plugin_basename  = trailingslashit( $dir_basename ) . $dir_basename . '.php';
+		$dir_url         = trailingslashit( plugins_url( '', dirname( __FILE__ ) ) );
+		$dir_path        = plugin_dir_path( dirname( __FILE__ ) );
+		$dir_basename    = basename( $dir_path );
+		$plugin_basename = trailingslashit( $dir_basename ) . $dir_basename . '.php';
 
 		return compact( 'dir_url', 'dir_path', 'dir_basename', 'plugin_basename' );
 	}

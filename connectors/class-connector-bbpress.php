@@ -127,7 +127,7 @@ class Connector_BbPress extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		if ( 'settings' === $record->context ) {
-			$option = $record->get_meta( 'option', true );
+			$option                                  = $record->get_meta( 'option', true );
 			$links[ esc_html__( 'Edit', 'stream' ) ] = esc_url(
 				add_query_arg(
 					array(
@@ -185,7 +185,7 @@ class Connector_BbPress extends Connector {
 			if ( 'reply' === $data['context'] ) {
 				if ( 'updated' === $data['action'] ) {
 					// translators: Placeholder refers to a post title (e.g. "Hello World")
-					$data['message'] = esc_html__( 'Replied on "%1$s"', 'stream' );
+					$data['message']            = esc_html__( 'Replied on "%1$s"', 'stream' );
 					$data['args']['post_title'] = get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title;
 				}
 				$data['args']['post_title'] = sprintf(
@@ -236,8 +236,8 @@ class Connector_BbPress extends Connector {
 			_x( '%1$s "%2$s" topic', '1: Action, 2: Topic title', 'stream' ),
 			array(
 				'action_title' => $actions[ $action ],
-				'topic_title' => $topic->post_title,
-				'action' => $action,
+				'topic_title'  => $topic->post_title,
+				'action'       => $action,
 			),
 			$topic->ID,
 			'topic',

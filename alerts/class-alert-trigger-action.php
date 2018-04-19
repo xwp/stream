@@ -67,11 +67,11 @@ class Alert_Trigger_Action extends Alert_Trigger {
 		}
 
 		$args = array(
-			'name'        => esc_attr( $this->field_key ),
-			'value'       => esc_attr( $value ),
-			'options'     => $this->get_values(),
-			'classes'     => 'wp_stream_ajax_forward',
-			'data'        => array(
+			'name'    => esc_attr( $this->field_key ),
+			'value'   => esc_attr( $value ),
+			'options' => $this->get_values(),
+			'classes' => 'wp_stream_ajax_forward',
+			'data'    => array(
 				'placeholder' => __( 'Any Action', 'stream' ),
 			),
 		);
@@ -105,7 +105,7 @@ class Alert_Trigger_Action extends Alert_Trigger {
 		foreach ( $this->get_terms_labels( 'action' ) as $action_id => $action_data ) {
 			if ( ! $flat ) {
 				$action_values[] = array(
-					'id' => $action_id,
+					'id'   => $action_id,
 					'text' => $action_data,
 				);
 			} else {
@@ -155,7 +155,7 @@ class Alert_Trigger_Action extends Alert_Trigger {
 	 * @param Alert  $alert Alert being processed.
 	 * @return string
 	 */
-	function get_display_value( $context = 'normal', $alert ) {
+	public function get_display_value( $context = 'normal', $alert ) {
 		$action = ( ! empty( $alert->alert_meta['trigger_action'] ) ) ? $alert->alert_meta['trigger_action'] : null;
 
 		if ( 'post_title' === $context ) {

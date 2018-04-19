@@ -193,21 +193,21 @@ class Connector_Jetpack extends Connector {
 		add_filter( 'wp_stream_log_data', array( $this, 'log_override' ) );
 
 		$this->options = array(
-			'jetpack_options' => null,
+			'jetpack_options'                   => null,
 			// Sharing module
-			'hide_gplus'      => null,
-			'gplus_authors'   => null,
-			'sharing-options' => array(
+			'hide_gplus'                        => null,
+			'gplus_authors'                     => null,
+			'sharing-options'                   => array(
 				'label'   => esc_html__( 'Sharing options', 'stream' ),
 				'context' => 'sharedaddy',
 			),
-			'sharedaddy_disable_resources'   => null,
-			'jetpack-twitter-cards-site-tag' => array(
+			'sharedaddy_disable_resources'      => null,
+			'jetpack-twitter-cards-site-tag'    => array(
 				'label'   => esc_html__( 'Twitter site tag', 'stream' ),
 				'context' => 'sharedaddy',
 			),
 			// Stats module
-			'stats_options' => array(
+			'stats_options'                     => array(
 				'label'   => esc_html__( 'WordPress.com Stats', 'stream' ),
 				'context' => 'stats',
 			),
@@ -217,16 +217,16 @@ class Connector_Jetpack extends Connector {
 				'context' => 'jetpack-comments',
 			),
 			// Likes
-			'disabled_likes' => array(
+			'disabled_likes'                    => array(
 				'label'   => esc_html__( 'WP.com Site-wide Likes', 'stream' ),
 				'context' => 'likes',
 			),
 			// Mobile
-			'wp_mobile_excerpt' => array(
+			'wp_mobile_excerpt'                 => array(
 				'label'   => esc_html__( 'Excerpts appearance', 'stream' ),
 				'context' => 'minileven',
 			),
-			'wp_mobile_app_promos' => array(
+			'wp_mobile_app_promos'              => array(
 				'label'   => esc_html__( 'App promos', 'stream' ),
 				'context' => 'minileven',
 			),
@@ -234,25 +234,25 @@ class Connector_Jetpack extends Connector {
 
 		$this->options_override = array(
 			// Carousel Module
-			'carousel_background_color' => array(
+			'carousel_background_color'        => array(
 				'label'   => esc_html__( 'Background color', 'stream' ),
 				'context' => 'carousel',
 			),
-			'carousel_display_exif' => array(
+			'carousel_display_exif'            => array(
 				'label'   => esc_html__( 'Metadata', 'stream' ),
 				'context' => 'carousel',
 			),
 			// Subscriptions
-			'stb_enabled' => array(
+			'stb_enabled'                      => array(
 				'label'   => esc_html__( 'Follow blog comment form button', 'stream' ),
 				'context' => 'subscriptions',
 			),
-			'stc_enabled' => array(
+			'stc_enabled'                      => array(
 				'label'   => esc_html__( 'Follow comments form button', 'stream' ),
 				'context' => 'subscriptions',
 			),
 			// Jetpack comments
-			'highlander_comment_form_prompt' => array(
+			'highlander_comment_form_prompt'   => array(
 				'label'   => esc_html__( 'Greeting Text', 'stream' ),
 				'context' => 'jetpack-comments',
 			),
@@ -267,16 +267,16 @@ class Connector_Jetpack extends Connector {
 				'context' => 'protect',
 			),
 			// SSO
-			'jetpack_sso_require_two_step' => array(
+			'jetpack_sso_require_two_step'     => array(
 				'label'   => esc_html__( 'Require Two-Step Authentication', 'stream' ),
 				'context' => 'sso',
 			),
-			'jetpack_sso_match_by_email' => array(
+			'jetpack_sso_match_by_email'       => array(
 				'label'   => esc_html__( 'Match by Email', 'stream' ),
 				'context' => 'sso',
 			),
 			// Related posts
-			'jetpack_relatedposts' => array(
+			'jetpack_relatedposts'             => array(
 				'show_headline'   => array(
 					'label'   => esc_html__( 'Show Related Posts Headline', 'stream' ),
 					'context' => 'related-posts',
@@ -287,12 +287,12 @@ class Connector_Jetpack extends Connector {
 				),
 			),
 			// Site verification
-			'verification_services_codes' => array(
-				'google' => array(
+			'verification_services_codes'      => array(
+				'google'    => array(
 					'label'   => esc_html__( 'Google Webmaster Tools Token', 'stream' ),
 					'context' => 'verification-tools',
 				),
-				'bing' => array(
+				'bing'      => array(
 					'label'   => esc_html__( 'Bing Webmaster Center Token', 'stream' ),
 					'context' => 'verification-tools',
 				),
@@ -302,7 +302,7 @@ class Connector_Jetpack extends Connector {
 				),
 			),
 			// Tiled galleries
-			'tiled_galleries' => array(
+			'tiled_galleries'                  => array(
 				'label'   => esc_html__( 'Tiled Galleries', 'stream' ),
 				'context' => 'tiled-gallery',
 			),

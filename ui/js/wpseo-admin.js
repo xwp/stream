@@ -12,7 +12,7 @@ jQuery(
 
 			if ( input.length ) {
 				if ( $( '#wpseo-tabs' ).length ) {
-					tab = input.parents( '.wpseotab' ).first().attr( 'id' );
+					tab                  = input.parents( '.wpseotab' ).first().attr( 'id' );
 					window.location.hash = '#top#' + tab;
 				}
 

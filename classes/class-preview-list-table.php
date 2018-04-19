@@ -20,11 +20,11 @@ class Preview_List_Table extends List_Table {
 	 * @param array $items List of items for display.
 	 * @return void
 	 */
-	function set_records( $items ) {
-		$columns    = $this->get_columns();
+	public function set_records( $items ) {
+		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
 		$hidden   = $this->get_hidden_columns();
-		$primary    = $columns['summary'];
+		$primary  = $columns['summary'];
 
 		$this->_column_headers = array( $columns, $hidden, $sortable, $primary );
 

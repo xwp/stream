@@ -270,7 +270,7 @@ class Connector_Comments extends Connector {
 			}
 		}
 
-		$comment_type   = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
+		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		if ( $comment->comment_parent ) {
 			$parent_user_name = get_comment_author( $comment->comment_parent );

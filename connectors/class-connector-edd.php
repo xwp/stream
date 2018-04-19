@@ -149,7 +149,7 @@ class Connector_EDD extends Connector {
 	public function action_links( $links, $record ) {
 		if ( in_array( $record->context, array( 'downloads' ), true ) ) {
 			$posts_connector = new Connector_Posts();
-			$links = $posts_connector->action_links( $links, $record );
+			$links           = $posts_connector->action_links( $links, $record );
 		} elseif ( in_array( $record->context, array( 'discounts' ), true ) ) {
 			$post_type_label = get_post_type_labels( get_post_type_object( 'edd_discount' ) )->singular_name;
 			$base            = admin_url( 'edit.php?post_type=download&page=edd-discounts' );
@@ -192,28 +192,28 @@ class Connector_EDD extends Connector {
 			if ( apply_filters( 'edd_api_log_requests', true ) ) {
 				$links[ esc_html__( 'View API Log', 'stream' ) ] = add_query_arg(
 					array(
-						'view' => 'api_requests',
+						'view'      => 'api_requests',
 						'post_type' => 'download',
-						'page' => 'edd-reports',
-						'tab' => 'logs',
-						's' => $user->user_email,
+						'page'      => 'edd-reports',
+						'tab'       => 'logs',
+						's'         => $user->user_email,
 					), 'edit.php'
 				);
 			}
 
 			$links[ esc_html__( 'Revoke', 'stream' ) ]  = add_query_arg(
 				array(
-					'post_type' => 'download',
-					'user_id' => $record->object_id,
-					'edd_action' => 'process_api_key',
+					'post_type'       => 'download',
+					'user_id'         => $record->object_id,
+					'edd_action'      => 'process_api_key',
 					'edd_api_process' => 'revoke',
 				), 'edit.php'
 			);
 			$links[ esc_html__( 'Reissue', 'stream' ) ] = add_query_arg(
 				array(
-					'post_type' => 'download',
-					'user_id' => $record->object_id,
-					'edd_action' => 'process_api_key',
+					'post_type'       => 'download',
+					'user_id'         => $record->object_id,
+					'edd_action'      => 'process_api_key',
 					'edd_api_process' => 'regenerate',
 				), 'edit.php'
 			);
@@ -302,7 +302,7 @@ class Connector_EDD extends Connector {
 				$field = array(
 					'name' => esc_html_x( 'Banned emails', 'edd', 'stream' ),
 				);
-				$tab  = 'general';
+				$tab   = 'general';
 			} else {
 				foreach ( $settings as $tab => $fields ) {
 					if ( isset( $fields[ $option ] ) ) {
@@ -347,7 +347,7 @@ class Connector_EDD extends Connector {
 
 		if ( 'posts' === $data['connector'] && 'download' === $data['context'] ) {
 			// Download posts operations
-			$data['context']  = 'downloads';
+			$data['context']   = 'downloads';
 			$data['connector'] = $this->name;
 		} elseif ( 'posts' === $data['connector'] && 'edd_discount' === $data['context'] ) {
 			// Discount posts operations
@@ -360,7 +360,7 @@ class Connector_EDD extends Connector {
 				$data['message'] = esc_html__( '"%1s" discount deleted', 'stream' );
 			}
 
-			$data['context']  = 'discounts';
+			$data['context']   = 'discounts';
 			$data['connector'] = $this->name;
 		} elseif ( 'posts' === $data['connector'] && 'edd_payment' === $data['context'] ) {
 			// Payment posts operations

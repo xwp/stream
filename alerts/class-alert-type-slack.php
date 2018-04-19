@@ -39,10 +39,12 @@ class Alert_Type_Slack extends Alert_Type {
 		if ( ! is_admin() ) {
 			return;
 		}
-		add_filter( 'wp_stream_alerts_save_meta', array(
-			$this,
-			'add_alert_meta',
-		), 10, 2 );
+		add_filter(
+			'wp_stream_alerts_save_meta', array(
+				$this,
+				'add_alert_meta',
+			), 10, 2
+		);
 	}
 
 	/**
@@ -112,19 +114,23 @@ class Alert_Type_Slack extends Alert_Type {
 		if ( is_object( $post ) && ! empty( $post ) ) {
 			$post_type      = get_post_type_object( $post->post_type );
 			$edit_post_link = get_edit_post_link( $post->ID, 'raw' );
-			array_push( $fields, array(
-				'title' => 'Edit ' . $post_type->labels->singular_name,
-				'value' => "<$edit_post_link>",
-				'short' => false,
-			) );
+			array_push(
+				$fields, array(
+					'title' => 'Edit ' . $post_type->labels->singular_name,
+					'value' => "<$edit_post_link>",
+					'short' => false,
+				)
+			);
 		}
 
 		$edit_alert_link = admin_url( 'edit.php?post_type=wp_stream_alerts#post-' . $alert->ID );
-		array_push( $fields, array(
-			'title' => 'Edit Alert',
-			'value' => "<$edit_alert_link>",
-			'short' => false,
-		) );
+		array_push(
+			$fields, array(
+				'title' => 'Edit Alert',
+				'value' => "<$edit_alert_link>",
+				'short' => false,
+			)
+		);
 
 		$attachment = array(
 			'author_icon' => get_avatar_url( $user_id, 16 ),
@@ -158,10 +164,12 @@ class Alert_Type_Slack extends Alert_Type {
 				$data['icon_url'] = $options['icon'];
 			}
 		}
-		wp_remote_post( $options['webhook'], array(
-			'body'    => wp_json_encode( $data ),
-			'headers' => array( 'Content-Type' => 'application/json' ),
-		) );
+		wp_remote_post(
+			$options['webhook'], array(
+				'body'    => wp_json_encode( $data ),
+				'headers' => array( 'Content-Type' => 'application/json' ),
+			)
+		);
 	}
 
 	/**
@@ -187,41 +195,49 @@ class Alert_Type_Slack extends Alert_Type {
 		echo '<span class="wp_stream_alert_type_description">' . esc_html__( 'Send a rich message notification to Slack.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_slack_webhook"><span class="title">' . esc_html__( 'Webhook URL', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array(
-			'name'  => 'wp_stream_slack_webhook',
-			'title' => esc_attr( __( 'Webhook URL', 'stream' ) ),
-			'value' => $options['webhook'],
-		) ); // Xss ok.
+		echo $form->render_field(
+			'text', array(
+				'name'  => 'wp_stream_slack_webhook',
+				'title' => esc_attr( __( 'Webhook URL', 'stream' ) ),
+				'value' => $options['webhook'],
+			)
+		); // Xss ok.
 		echo '</span>';
 		echo '<span class="input-text-wrap">' . esc_html__( 'The webhook URL', 'stream' ) . '</span>';
 		echo '</label>';
 		echo '<label for="wp_stream_slack_channel"><span class="title">' . esc_html__( 'Channel', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array(
-			'name'  => 'wp_stream_slack_channel',
-			'title' => esc_attr( __( 'Channel', 'stream' ) ),
-			'value' => $options['channel'],
-		) ); // Xss ok.
+		echo $form->render_field(
+			'text', array(
+				'name'  => 'wp_stream_slack_channel',
+				'title' => esc_attr( __( 'Channel', 'stream' ) ),
+				'value' => $options['channel'],
+			)
+		); // Xss ok.
 		echo '</span>';
 		echo '<span class="input-text-wrap">' . esc_html__( 'The channel to send to (optional)', 'stream' ) . '</span>';
 		echo '</label>';
 		echo '<label for="wp_stream_slack_username"><span class="title">' . esc_html__( 'Username', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array(
-			'name'  => 'wp_stream_slack_username',
-			'title' => esc_attr( __( 'Username', 'stream' ) ),
-			'value' => $options['username'],
-		) ); // Xss ok.
+		echo $form->render_field(
+			'text', array(
+				'name'  => 'wp_stream_slack_username',
+				'title' => esc_attr( __( 'Username', 'stream' ) ),
+				'value' => $options['username'],
+			)
+		); // Xss ok.
 		echo '</span>';
 		echo '<span class="input-text-wrap">' . esc_html__( 'The username to send as (optional)', 'stream' ) . '</span>';
 		echo '</label>';
 		echo '<label for="wp_stream_slack_icon"><span class="title">' . esc_html__( 'Icon', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array(
-			'name'  => 'wp_stream_slack_icon',
-			'title' => esc_attr( __( 'Icon', 'stream' ) ),
-			'value' => $options['icon'],
-		) ); // Xss ok.
+		echo $form->render_field(
+			'text', array(
+				'name'  => 'wp_stream_slack_icon',
+				'title' => esc_attr( __( 'Icon', 'stream' ) ),
+				'value' => $options['icon'],
+			)
+		); // Xss ok.
 		echo '</span>';
 		echo '<span class="input-text-wrap">' . esc_html__( 'The URL or emoji (with colons!) to use as the icon (optional)', 'stream' ) . '</span>';
 		echo '</label>';

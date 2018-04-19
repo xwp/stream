@@ -139,7 +139,7 @@ class Install {
 		}
 
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+			require_once ABSPATH . '/wp-admin/includes/plugin.php';
 		}
 
 		/**
@@ -390,7 +390,7 @@ class Install {
 	 */
 	public function update( $db_version, $current_version, $update_args ) {
 		$versions = $this->db_update_versions();
-		include_once( $this->plugin->locations['inc_dir'] . 'db-updates.php' );
+		include_once $this->plugin->locations['inc_dir'] . 'db-updates.php';
 
 		foreach ( $versions as $version ) {
 			if ( ! isset( $update_args['type'] ) ) {

@@ -187,7 +187,7 @@ class Live_Update {
 		$total_pages = isset( $this->list_table->_pagination_args['total_pages'] ) ? $this->list_table->_pagination_args['total_pages'] : null;
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && isset( $total_items ) ) {
-			$response['total_items']      = $total_items;
+			$response['total_items'] = $total_items;
 			// translators: Placeholder refers to a number of items (e.g. "42")
 			$response['total_items_i18n'] = sprintf( _n( '%d item', '%d items', $total_items ), number_format_i18n( $total_items ) );
 		}

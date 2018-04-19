@@ -22,7 +22,7 @@ class Uninstall {
 	 */
 	public $user_meta;
 
-	function __construct( $plugin ) {
+	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
 		$this->user_meta = array(
@@ -197,7 +197,7 @@ class Uninstall {
 		// Specific user meta
 		foreach ( $this->user_meta as $meta_key ) {
 			$wpdb->query(
-				$wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = '{$wpdb->prefix}%s';", $meta_key )
+				$wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = {$wpdb->prefix}%s;", $meta_key )
 			);
 		}
 	}
