@@ -186,7 +186,7 @@ class Alerts {
 	 *
 	 * @return bool
 	 */
-	public public function is_valid_alert_type( $alert_type ) {
+	public function is_valid_alert_type( $alert_type ) {
 		if ( ! is_a( $alert_type, 'WP_Stream\Alert_Type' ) ) {
 			return false;
 		}
