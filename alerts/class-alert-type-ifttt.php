@@ -293,6 +293,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 				)
 			),
 		);
+
 		$response = wp_remote_post( $url, $args );
 		if ( ! is_array( $response ) ) {
 			return false;
