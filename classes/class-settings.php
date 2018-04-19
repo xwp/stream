@@ -1,4 +1,5 @@
 <?php
+
 namespace WP_Stream;
 
 use \WP_Roles;
@@ -6,6 +7,7 @@ use \WP_User;
 use \WP_User_Query;
 
 class Settings {
+
 	/**
 	 * Hold Plugin class
 	 * @var Plugin
@@ -55,10 +57,16 @@ class Settings {
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 
 		// Remove records when records TTL is shortened
-		add_action( 'update_option_' . $this->option_key, array( $this, 'updated_option_ttl_remove_records' ), 10, 2 );
+		add_action( 'update_option_' . $this->option_key, array(
+			$this,
+			'updated_option_ttl_remove_records',
+		), 10, 2 );
 
 		// Apply label translations for settings
-		add_filter( 'wp_stream_serialized_labels', array( $this, 'get_settings_translations' ) );
+		add_filter( 'wp_stream_serialized_labels', array(
+			$this,
+			'get_settings_translations',
+		) );
 
 		// Ajax callback function to search users
 		add_action( 'wp_ajax_stream_get_users', array( $this, 'get_users' ) );
@@ -95,23 +103,29 @@ class Settings {
 			'find' => $search,
 		);
 
-		add_filter( 'user_search_columns', array( $this, 'add_display_name_search_columns' ), 10, 3 );
+		add_filter( 'user_search_columns', array(
+			$this,
+			'add_display_name_search_columns',
+		), 10, 3 );
 
 		$users = new WP_User_Query(
 			array(
-				'search' => "*{$request->find}*",
+				'search'         => "*{$request->find}*",
 				'search_columns' => array(
 					'user_login',
 					'user_nicename',
 					'user_email',
 					'user_url',
 				),
-				'orderby' => 'display_name',
-				'number'  => $this->plugin->admin->preload_users_max,
+				'orderby'        => 'display_name',
+				'number'         => $this->plugin->admin->preload_users_max,
 			)
 		);
 
-		remove_filter( 'user_search_columns', array( $this, 'add_display_name_search_columns' ), 10 );
+		remove_filter( 'user_search_columns', array(
+			$this,
+			'add_display_name_search_columns',
+		), 10 );
 
 		if ( 0 === $users->get_total() ) {
 			wp_send_json_error( $response );
@@ -121,15 +135,15 @@ class Settings {
 		if ( is_multisite() && is_super_admin() ) {
 			$super_admins = get_super_admins();
 			foreach ( $super_admins as $admin ) {
-				$user = get_user_by( 'login', $admin );
+				$user          = get_user_by( 'login', $admin );
 				$users_array[] = $user;
 			}
 		}
 
-		$response->status  = true;
-		$response->message = '';
-		$response->roles   = $this->get_roles();
-		$response->users   = array();
+		$response->status        = true;
+		$response->message       = '';
+		$response->roles         = $this->get_roles();
+		$response->users         = array();
 		$users_added_to_response = array();
 
 		foreach ( $users_array as $key => $user ) {
@@ -149,7 +163,7 @@ class Settings {
 
 			$args['tooltip'] = esc_attr(
 				sprintf(
-					// translators: Placeholders refers to a user ID, a username, an email address, and a user role (e.g. "42", "administrator", "foo@bar.com", "subscriber")
+					// translators: Placeholders refers to a user ID, a username, an email address, and a user role (e.g. "42", "administrator", "foo@bar.com", "subscriber").
 					__( 'ID: %1$d\nUser: %2$s\nEmail: %3$s\nRole: %4$s', 'stream' ),
 					$author->id,
 					$author->user_login,
@@ -165,13 +179,13 @@ class Settings {
 
 		usort(
 			$response->users,
-			function( $a, $b ) {
+			function ( $a, $b ) {
 				return strcmp( $a['text'], $b['text'] );
 			}
 		);
 
 		if ( empty( $search ) || preg_match( '/wp|cli|system|unknown/i', $search ) ) {
-			$author = new Author( 0 );
+			$author            = new Author( 0 );
 			$response->users[] = array(
 				'id'      => '0',
 				'text'    => $author->get_display_name(),
@@ -184,8 +198,8 @@ class Settings {
 	}
 
 	/**
-	* Ajax callback function to search IP addresses, used on exclude setting page
-	*/
+	 * Ajax callback function to search IP addresses, used on exclude setting page
+	 */
 	public function get_ips() {
 		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( $this->plugin->admin->settings_cap ) ) {
 			return;
@@ -198,7 +212,8 @@ class Settings {
 
 		if ( isset( $find['term'] ) && '' !== $find['term'] ) {
 			$ips = array_filter(
-				$ips, function ( $ip ) use ( $find ) {
+				$ips,
+				function ( $ip ) use ( $find ) {
 					return 0 === strpos( $ip, $find['term'] );
 				}
 			);
@@ -214,9 +229,9 @@ class Settings {
 	/**
 	 * Filter the columns to search in a WP_User_Query search.
 	 *
-	 * @param array $search_columns  Array of column names to be searched.
-	 * @param string $search         Text being searched.
-	 * @param \WP_User_Query $query  current WP_User_Query instance.
+	 * @param array          $search_columns Array of column names to be searched.
+	 * @param string         $search Text being searched.
+	 * @param \WP_User_Query $query current WP_User_Query instance.
 	 *
 	 * @return array
 	 */
@@ -257,16 +272,16 @@ class Settings {
 	 */
 	public function get_fields() {
 		$fields = array(
-			'general' => array(
+			'general'  => array(
 				'title'  => esc_html__( 'General', 'stream' ),
 				'fields' => array(
 					array(
-						'name'        => 'role_access',
-						'title'       => esc_html__( 'Role Access', 'stream' ),
-						'type'        => 'multi_checkbox',
-						'desc'        => esc_html__( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
-						'choices'     => $this->get_roles(),
-						'default'     => array( 'administrator' ),
+						'name'    => 'role_access',
+						'title'   => esc_html__( 'Role Access', 'stream' ),
+						'type'    => 'multi_checkbox',
+						'desc'    => esc_html__( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'stream' ),
+						'choices' => $this->get_roles(),
+						'default' => array( 'administrator' ),
 					),
 					array(
 						'name'        => 'records_ttl',
@@ -290,16 +305,16 @@ class Settings {
 					),
 				),
 			),
-			'exclude' => array(
+			'exclude'  => array(
 				'title'  => esc_html__( 'Exclude', 'stream' ),
 				'fields' => array(
 					array(
-						'name'        => 'rules',
-						'title'       => esc_html__( 'Exclude Rules', 'stream' ),
-						'type'        => 'rule_list',
-						'desc'        => esc_html__( 'Create rules to exclude certain kinds of activity from being recorded by Stream.', 'stream' ),
-						'default'     => array(),
-						'nonce'       => 'stream_get_ips',
+						'name'    => 'rules',
+						'title'   => esc_html__( 'Exclude Rules', 'stream' ),
+						'type'    => 'rule_list',
+						'desc'    => esc_html__( 'Create rules to exclude certain kinds of activity from being recorded by Stream.', 'stream' ),
+						'default' => array(),
+						'nonce'   => 'stream_get_ips',
 					),
 				),
 			),
@@ -315,20 +330,20 @@ class Settings {
 						'default'     => 0,
 					),
 					array(
-						'name'        => 'delete_all_records',
-						'title'       => esc_html__( 'Reset Stream Database', 'stream' ),
-						'type'        => 'link',
-						'href'        => add_query_arg(
+						'name'    => 'delete_all_records',
+						'title'   => esc_html__( 'Reset Stream Database', 'stream' ),
+						'type'    => 'link',
+						'href'    => add_query_arg(
 							array(
-								'action'          => 'wp_stream_reset',
-								'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+								'action'                => 'wp_stream_reset',
+								'wp_stream_nonce_reset' => wp_create_nonce( 'stream_nonce_reset' ),
 							),
 							admin_url( 'admin-ajax.php' )
 						),
-						'class'       => 'warning',
-						'desc'        => esc_html__( 'Warning: This will delete all activity records from the database.', 'stream' ),
-						'default'     => 0,
-						'sticky'      => 'bottom',
+						'class'   => 'warning',
+						'desc'    => esc_html__( 'Warning: This will delete all activity records from the database.', 'stream' ),
+						'default' => 0,
+						'sticky'  => 'bottom',
 					),
 				),
 			),
@@ -441,7 +456,10 @@ class Settings {
 	public function register_settings() {
 		$sections = $this->get_fields();
 
-		register_setting( $this->option_key, $this->option_key, array( $this, 'sanitize_settings' ) );
+		register_setting( $this->option_key, $this->option_key, array(
+			$this,
+			'sanitize_settings',
+		) );
 
 		foreach ( $sections as $section_name => $section ) {
 			add_settings_section(
@@ -459,12 +477,16 @@ class Settings {
 				add_settings_field(
 					$field['name'],
 					$field['title'],
-					( isset( $field['callback'] ) ? $field['callback'] : array( $this, 'output_field' ) ),
+					( isset( $field['callback'] ) ? $field['callback'] : array(
+						$this,
+						'output_field',
+					) ),
 					$this->option_key,
 					$section_name,
 					$field + array(
 						'section'   => $section_name,
-						'label_for' => sprintf( '%s_%s_%s', $this->option_key, $section_name, $field['name'] ), // xss ok
+						'label_for' => sprintf( '%s_%s_%s', $this->option_key, $section_name, $field['name'] ),
+						// xss ok
 					)
 				);
 			}
@@ -495,7 +517,7 @@ class Settings {
 					continue;
 				}
 
-				// Sanitize depending on the type of field
+				// Sanitize depending on the type of field.
 				switch ( $type ) {
 					case 'number':
 						$output[ $name ] = is_numeric( $input[ $name ] ) ? intval( trim( $input[ $name ] ) ) : '';
@@ -507,9 +529,9 @@ class Settings {
 						if ( is_array( $input[ $name ] ) ) {
 							$output[ $name ] = $input[ $name ];
 
-							// Support all values in multidimentional arrays too
+							// Support all values in multidimentional arrays too.
 							array_walk_recursive(
-								$output[ $name ], function( &$v, $k ) {
+								$output[ $name ], function ( &$v, $k ) {
 									$v = trim( $v );
 								}
 							);
@@ -569,9 +591,7 @@ class Settings {
 			return '';
 		}
 
-		if ( 'multi_checkbox' === $type
-			&& ( empty( $field['choices'] ) || ! is_array( $field['choices'] ) )
-		) {
+		if ( 'multi_checkbox' === $type && ( empty( $field['choices'] ) || ! is_array( $field['choices'] ) ) ) {
 			return '';
 		}
 
@@ -632,7 +652,7 @@ class Settings {
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
-				// Fallback if nothing is selected
+				// Fallback if nothing is selected.
 				$output .= sprintf(
 					'<input type="hidden" name="%1$s[%2$s_%3$s][]" value="__placeholder__" />',
 					esc_attr( $option_key ),
@@ -640,7 +660,7 @@ class Settings {
 					esc_attr( $name )
 				);
 				$current_value = (array) $current_value;
-				$choices = $field['choices'];
+				$choices       = $field['choices'];
 				if ( is_callable( $choices ) ) {
 					$choices = call_user_func( $choices );
 				}
@@ -727,21 +747,21 @@ class Settings {
 								$child_values = array();
 								foreach ( $value['children'] as $child_key => $child_value ) {
 									$child_values[] = array(
-										'id' => $child_key,
+										'id'   => $child_key,
 										'text' => $child_value,
 									);
 								}
 							}
 							if ( isset( $value['label'] ) ) {
 								$data_values[] = array(
-									'id' => $key,
-									'text' => $value['label'],
+									'id'       => $key,
+									'text'     => $value['label'],
 									'children' => $child_values,
 								);
 							}
 						} else {
 							$data_values[] = array(
-								'id' => $key,
+								'id'   => $key,
 								'text' => $value,
 							);
 						}
@@ -775,8 +795,8 @@ class Settings {
 				$form   = new Form_Generator();
 				$output = '<p class="description">' . esc_html( $description ) . '</p>';
 
-				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ),  esc_html__( 'Add New Rule', 'stream' ) );
-				$actions_bottom = sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ),  esc_html__( 'Delete Selected Rules', 'stream' ) );
+				$actions_top    = sprintf( '<input type="button" class="button" id="%1$s_new_rule" value="&#43; %2$s" />', esc_attr( $section . '_' . $name ), esc_html__( 'Add New Rule', 'stream' ) );
+				$actions_bottom = sprintf( '<input type="button" class="button" id="%1$s_remove_rules" value="%2$s" />', esc_attr( $section . '_' . $name ), esc_html__( 'Delete Selected Rules', 'stream' ) );
 
 				$output .= sprintf( '<div class="tablenav top">%1$s</div>', $actions_top );
 				$output .= '<table class="wp-list-table widefat fixed stream-exclude-list">';
@@ -802,13 +822,11 @@ class Settings {
 
 				$exclude_rows = array();
 
-				// Prepend an empty row
-				$current_value['exclude_row'] = array(
-					'helper' => '',
-				) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
+				// Prepend an empty row.
+				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
 
 				foreach ( $current_value['exclude_row'] as $key => $value ) {
-					// Prepare values
+					// Prepare values.
 					$author_or_role = isset( $current_value['author_or_role'][ $key ] ) ? $current_value['author_or_role'][ $key ] : '';
 					$connector      = isset( $current_value['connector'][ $key ] ) ? $current_value['connector'][ $key ] : '';
 					$context        = isset( $current_value['context'][ $key ] ) ? $current_value['context'][ $key ] : '';
@@ -822,7 +840,7 @@ class Settings {
 					foreach ( $this->get_roles() as $role_id => $role ) {
 						$args  = array(
 							'value' => $role_id,
-							'text' => $role,
+							'text'  => $role,
 						);
 						$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
 
@@ -844,17 +862,17 @@ class Settings {
 						$display_name            = ( 0 === $user->ID ) ? esc_html__( 'N/A', 'stream' ) : $user->display_name;
 						$author_or_role_selected = array(
 							'value' => $user->ID,
-							'text' => $display_name,
+							'text'  => $display_name,
 						);
 						$author_or_role_values[] = $author_or_role_selected;
 					}
 
 					$author_or_role_input = $form->render_field(
 						'select2', array(
-							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'author_or_role' ) ),
-							'options'     => $author_or_role_values,
-							'classes'     => 'author_or_role',
-							'data'        => array(
+							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'author_or_role' ) ),
+							'options' => $author_or_role_values,
+							'classes' => 'author_or_role',
+							'data'    => array(
 								'placeholder'   => esc_html__( 'Any Author or Role', 'stream' ),
 								'nonce'         => esc_attr( wp_create_nonce( 'stream_get_users' ) ),
 								'selected-id'   => isset( $author_or_role_selected['value'] ) ? esc_attr( $author_or_role_selected['value'] ) : '',
@@ -873,33 +891,33 @@ class Settings {
 								$child_values = array();
 								foreach ( $context_data['children'] as $child_id => $child_value ) {
 									$child_values[] = array(
-										'value' => $context_id . '-' . $child_id,
-										'text' => $child_value,
+										'value'  => $context_id . '-' . $child_id,
+										'text'   => $child_value,
 										'parent' => $context_id,
 									);
 								}
 							}
 							if ( isset( $context_data['label'] ) ) {
 								$context_values[] = array(
-									'value' => $context_id,
-									'text' => $context_data['label'],
+									'value'    => $context_id,
+									'text'     => $context_data['label'],
 									'children' => $child_values,
 								);
 							}
 						} else {
 							$context_values[] = array(
 								'value' => $context_id,
-								'text' => $context_data,
+								'text'  => $context_data,
 							);
 						}
 					}
 
 					$connector_or_context_input = $form->render_field(
 						'select2', array(
-							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'connector_or_context' ) ),
-							'options'     => $context_values,
-							'classes'     => 'connector_or_context',
-							'data'        => array(
+							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'connector_or_context' ) ),
+							'options' => $context_values,
+							'classes' => 'connector_or_context',
+							'data'    => array(
 								'group'       => 'connector',
 								'placeholder' => __( 'Any Context', 'stream' ),
 							),
@@ -908,17 +926,17 @@ class Settings {
 
 					$connector_input = $form->render_field(
 						'hidden', array(
-							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'connector' ) ),
-							'value'       => $connector,
-							'classes'     => 'connector',
+							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'connector' ) ),
+							'value'   => $connector,
+							'classes' => 'connector',
 						)
 					);
 
 					$context_input = $form->render_field(
 						'hidden', array(
-							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'context' ) ),
-							'value'       => $context,
-							'classes'     => 'context',
+							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'context' ) ),
+							'value'   => $context,
+							'classes' => 'context',
 						)
 					);
 
@@ -928,17 +946,17 @@ class Settings {
 					foreach ( $this->get_terms_labels( 'action' ) as $action_id => $action_data ) {
 						$action_values[] = array(
 							'value' => $action_id,
-							'text' => $action_data,
+							'text'  => $action_data,
 						);
 					}
 
 					$action_input = $form->render_field(
 						'select2', array(
-							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'action' ) ),
-							'value'       => $action,
-							'options'     => $action_values,
-							'classes'     => 'action',
-							'data'        => array(
+							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'action' ) ),
+							'value'   => $action,
+							'options' => $action_values,
+							'classes' => 'action',
+							'data'    => array(
 								'placeholder' => __( 'Any Action', 'stream' ),
 							),
 						)
@@ -947,14 +965,14 @@ class Settings {
 					// IP Address input
 					$ip_address_input = $form->render_field(
 						'select2', array(
-							'name'        => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]' , $option_key, $section, $name, 'ip_address' ) ),
-							'value'       => $ip_address,
-							'classes'     => 'ip_address',
-							'data'        => array(
+							'name'     => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'ip_address' ) ),
+							'value'    => $ip_address,
+							'classes'  => 'ip_address',
+							'data'     => array(
 								'placeholder' => esc_attr__( 'Any IP Address', 'stream' ),
 								'nonce'       => esc_attr( wp_create_nonce( 'stream_get_ips' ) ),
 							),
-							'multiple'    => true,
+							'multiple' => true,
 						)
 					);
 
