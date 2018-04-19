@@ -119,6 +119,7 @@ class Alerts {
 			'highlight',
 			'email',
 			'ifttt',
+			'slack',
 		);
 
 		$classes = array();

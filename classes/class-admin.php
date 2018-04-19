@@ -1,4 +1,5 @@
 <?php
+
 namespace WP_Stream;
 
 use DateTime;
@@ -8,6 +9,7 @@ use \WP_CLI;
 use \WP_Roles;
 
 class Admin {
+
 	/**
 	 * Hold Plugin class
 	 *
@@ -152,24 +154,39 @@ class Admin {
 		add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
 
 		// Plugin action links.
-		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
+		add_filter( 'plugin_action_links', array(
+			$this,
+			'plugin_action_links',
+		), 10, 2 );
 
 		// Load admin scripts and styles.
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		add_action( 'admin_enqueue_scripts', array(
+			$this,
+			'admin_enqueue_scripts',
+		) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_menu_css' ) );
 
 		// Reset Streams database.
-		add_action( 'wp_ajax_wp_stream_reset', array( $this, 'wp_ajax_reset' ) );
+		add_action( 'wp_ajax_wp_stream_reset', array(
+			$this,
+			'wp_ajax_reset',
+		) );
 
 		// Uninstall Streams and Deactivate plugin.
 		$uninstall = $this->plugin->db->driver->purge_storage( $this->plugin );
 
 		// Auto purge setup.
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
-		add_action( 'wp_stream_auto_purge', array( $this, 'purge_scheduled_action' ) );
+		add_action( 'wp_stream_auto_purge', array(
+			$this,
+			'purge_scheduled_action',
+		) );
 
 		// Ajax users list.
-		add_action( 'wp_ajax_wp_stream_filters', array( $this, 'ajax_filters' ) );
+		add_action( 'wp_ajax_wp_stream_filters', array(
+			$this,
+			'ajax_filters',
+		) );
 	}
 
 	/**
@@ -331,7 +348,10 @@ class Admin {
 			do_action( 'wp_stream_admin_menu_screens' );
 
 			// Register the list table early, so it associates the column headers with 'Screen settings'.
-			add_action( 'load-' . $this->screen_id['main'], array( $this, 'register_list_table' ) );
+			add_action( 'load-' . $this->screen_id['main'], array(
+				$this,
+				'register_list_table',
+			) );
 		}
 	}
 
@@ -370,9 +390,18 @@ class Admin {
 			wp_enqueue_script( 'wp-stream-timeago' );
 			wp_enqueue_script( 'wp-stream-timeago-locale' );
 
-			wp_enqueue_script( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.' . $min . 'js', array( 'jquery', 'wp-stream-select2' ), $this->plugin->get_version() );
-			wp_enqueue_script( 'wp-stream-admin-exclude', $this->plugin->locations['url'] . 'ui/js/exclude.' . $min . 'js', array( 'jquery', 'wp-stream-select2' ), $this->plugin->get_version() );
-			wp_enqueue_script( 'wp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.' . $min . 'js', array( 'jquery', 'heartbeat' ), $this->plugin->get_version() );
+			wp_enqueue_script( 'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.' . $min . 'js', array(
+				'jquery',
+				'wp-stream-select2',
+			), $this->plugin->get_version() );
+			wp_enqueue_script( 'wp-stream-admin-exclude', $this->plugin->locations['url'] . 'ui/js/exclude.' . $min . 'js', array(
+				'jquery',
+				'wp-stream-select2',
+			), $this->plugin->get_version() );
+			wp_enqueue_script( 'wp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.' . $min . 'js', array(
+				'jquery',
+				'heartbeat',
+			), $this->plugin->get_version() );
 
 			wp_localize_script(
 				'wp-stream-admin',
@@ -393,10 +422,14 @@ class Admin {
 				'wp_stream_live_updates',
 				array(
 					'current_screen'      => $hook,
-					'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1', // input var okay, CSRF okay
-					'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc', // input var okay, CSRF okay
-					'current_query'       => wp_stream_json_encode( $_GET ), // input var okay, CSRF okay
-					'current_query_count' => count( $_GET ), // input var okay, CSRF okay
+					'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1', // WPCS: CSRF ok.
+					// input var okay, CSRF okay
+					'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc', // WPCS: CSRF ok.
+					// input var okay, CSRF okay
+					'current_query'       => wp_stream_json_encode( $_GET ), // WPCS: CSRF ok.
+					// input var okay, CSRF okay
+					'current_query_count' => count( $_GET ), // WPCS: CSRF ok.
+					// input var okay, CSRF okay
 				)
 			);
 		}
@@ -420,8 +453,8 @@ class Admin {
 			'wp-stream-global',
 			'wp_stream_global',
 			array(
-				'bulk_actions' => array(
-					'i18n' => array(
+				'bulk_actions'       => array(
+					'i18n'      => array(
 						// translators: Placeholder refers to a number of items (e.g. "1,742")
 						'confirm_action' => sprintf( esc_html__( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
 					),
@@ -558,8 +591,13 @@ class Admin {
 		\wp_add_inline_style( 'wp-admin', $css );
 	}
 
+	/**
+	 * Handle the reset AJAX request to reset logs.
+	 *
+	 * @return bool
+	 */
 	public function wp_ajax_reset() {
-		check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+		check_ajax_referer( 'stream_nonce_reset', 'wp_stream_nonce_reset' );
 
 		if ( ! current_user_can( $this->settings_cap ) ) {
 			wp_die(
@@ -657,7 +695,7 @@ class Admin {
 	}
 
 	/**
-	 * @param array $links
+	 * @param array  $links
 	 * @param string $file
 	 *
 	 * @filter plugin_action_links
@@ -713,7 +751,7 @@ class Admin {
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<?php $this->list_table->display(); ?>
 		</div>
-	<?php
+		<?php
 	}
 
 	/**
@@ -743,14 +781,9 @@ class Admin {
 				<h2 class="nav-tab-wrapper">
 					<?php $i = 0; ?>
 					<?php foreach ( $sections as $section => $data ) : ?>
-						<?php $i ++; ?>
+						<?php $i++; ?>
 						<?php $is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section ); ?>
-						<a href="<?php echo esc_url( add_query_arg( 'tab', $section ) ); ?>" class="nav-tab
-											<?php
-											if ( $is_active ) {
-												echo esc_attr( ' nav-tab-active' ); }
-?>
-">
+						<a href="<?php echo esc_url( add_query_arg( 'tab', $section ) ); ?>" class="nav-tab <?php echo $is_active ? esc_attr( ' nav-tab-active' ) : ''; ?>">
 							<?php echo esc_html( $data['title'] ); ?>
 						</a>
 					<?php endforeach; ?>
@@ -760,25 +793,25 @@ class Admin {
 			<div class="nav-tab-content" id="tab-content-settings">
 				<form method="post" action="<?php echo esc_attr( $form_action ); ?>" enctype="multipart/form-data">
 					<div class="settings-sections">
-		<?php
-		$i = 0;
-		foreach ( $sections as $section => $data ) {
-			$i++;
+						<?php
+						$i = 0;
+						foreach ( $sections as $section => $data ) {
+							$i++;
 
-			$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
+							$is_active = ( ( 1 === $i && ! $active_tab ) || $active_tab === $section );
 
-			if ( $is_active ) {
-				settings_fields( $option_key );
-				do_settings_sections( $option_key );
-			}
-		}
-		?>
+							if ( $is_active ) {
+								settings_fields( $option_key );
+								do_settings_sections( $option_key );
+							}
+						}
+						?>
 					</div>
 					<?php submit_button(); ?>
 				</form>
 			</div>
 		</div>
-	<?php
+		<?php
 	}
 
 	/**
@@ -902,7 +935,7 @@ class Admin {
 					// `search` arg for get_users() is not enough
 					$users = array_filter(
 						$users,
-						function( $user ) use ( $search ) {
+						function ( $user ) use ( $search ) {
 							return false !== mb_strpos( mb_strtolower( $user->display_name ), mb_strtolower( $search ) );
 						}
 					);
@@ -932,11 +965,11 @@ class Admin {
 			$author = new Author( $args->ID );
 
 			$authors_records[ $user_id ] = array(
-				'text'     => $author->get_display_name(),
-				'id'       => $author->id,
-				'label'    => $author->get_display_name(),
-				'icon'     => $author->get_avatar_src( 32 ),
-				'title'    => '',
+				'text'  => $author->get_display_name(),
+				'id'    => $author->id,
+				'label' => $author->get_display_name(),
+				'icon'  => $author->get_avatar_src( 32 ),
+				'title' => '',
 			);
 		}
 
@@ -946,9 +979,9 @@ class Admin {
 	/**
 	 * Get user meta in a way that is also safe for VIP
 	 *
-	 * @param int $user_id
+	 * @param int    $user_id
 	 * @param string $meta_key
-	 * @param bool $single (optional)
+	 * @param bool   $single (optional)
 	 *
 	 * @return mixed
 	 */
@@ -956,16 +989,17 @@ class Admin {
 		if ( wp_stream_is_vip() && function_exists( 'get_user_attribute' ) ) {
 			return get_user_attribute( $user_id, $meta_key );
 		}
+
 		return get_user_meta( $user_id, $meta_key, $single );
 	}
 
 	/**
 	 * Update user meta in a way that is also safe for VIP
 	 *
-	 * @param int $user_id
+	 * @param int    $user_id
 	 * @param string $meta_key
 	 * @param mixed  $meta_value
-	 * @param mixed $prev_value (optional)
+	 * @param mixed  $prev_value (optional)
 	 *
 	 * @return int|bool
 	 */
@@ -973,15 +1007,16 @@ class Admin {
 		if ( wp_stream_is_vip() && function_exists( 'update_user_attribute' ) ) {
 			return update_user_attribute( $user_id, $meta_key, $meta_value );
 		}
+
 		return update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
 	}
 
 	/**
 	 * Delete user meta in a way that is also safe for VIP
 	 *
-	 * @param int $user_id
+	 * @param int    $user_id
 	 * @param string $meta_key
-	 * @param mixed $meta_value (optional)
+	 * @param mixed  $meta_value (optional)
 	 *
 	 * @return bool
 	 */
@@ -989,6 +1024,7 @@ class Admin {
 		if ( wp_stream_is_vip() && function_exists( 'delete_user_attribute' ) ) {
 			return delete_user_attribute( $user_id, $meta_key, $meta_value );
 		}
+
 		return delete_user_meta( $user_id, $meta_key, $meta_value );
 	}
 }

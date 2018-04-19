@@ -163,7 +163,7 @@ class Settings {
 
 			$args['tooltip'] = esc_attr(
 				sprintf(
-					// translators: Placeholders refers to a user ID, a username, an email address, and a user role (e.g. "42", "administrator", "foo@bar.com", "subscriber")
+					// translators: Placeholders refers to a user ID, a username, an email address, and a user role (e.g. "42", "administrator", "foo@bar.com", "subscriber").
 					__( 'ID: %1$d\nUser: %2$s\nEmail: %3$s\nRole: %4$s', 'stream' ),
 					$author->id,
 					$author->user_login,
@@ -212,7 +212,8 @@ class Settings {
 
 		if ( isset( $find['term'] ) && '' !== $find['term'] ) {
 			$ips = array_filter(
-				$ips, function ( $ip ) use ( $find ) {
+				$ips,
+				function ( $ip ) use ( $find ) {
 					return 0 === strpos( $ip, $find['term'] );
 				}
 			);
@@ -334,8 +335,8 @@ class Settings {
 						'type'    => 'link',
 						'href'    => add_query_arg(
 							array(
-								'action'          => 'wp_stream_reset',
-								'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+								'action'                => 'wp_stream_reset',
+								'wp_stream_nonce_reset' => wp_create_nonce( 'stream_nonce_reset' ),
 							),
 							admin_url( 'admin-ajax.php' )
 						),
@@ -516,7 +517,7 @@ class Settings {
 					continue;
 				}
 
-				// Sanitize depending on the type of field
+				// Sanitize depending on the type of field.
 				switch ( $type ) {
 					case 'number':
 						$output[ $name ] = is_numeric( $input[ $name ] ) ? intval( trim( $input[ $name ] ) ) : '';
@@ -528,7 +529,7 @@ class Settings {
 						if ( is_array( $input[ $name ] ) ) {
 							$output[ $name ] = $input[ $name ];
 
-							// Support all values in multidimentional arrays too
+							// Support all values in multidimentional arrays too.
 							array_walk_recursive(
 								$output[ $name ], function ( &$v, $k ) {
 									$v = trim( $v );
@@ -590,9 +591,7 @@ class Settings {
 			return '';
 		}
 
-		if ( 'multi_checkbox' === $type
-			&& ( empty( $field['choices'] ) || ! is_array( $field['choices'] ) )
-		) {
+		if ( 'multi_checkbox' === $type && ( empty( $field['choices'] ) || ! is_array( $field['choices'] ) ) ) {
 			return '';
 		}
 
@@ -653,8 +652,8 @@ class Settings {
 					esc_attr( $section ),
 					esc_attr( $name )
 				);
-				// Fallback if nothing is selected
-				$output       .= sprintf(
+				// Fallback if nothing is selected.
+				$output .= sprintf(
 					'<input type="hidden" name="%1$s[%2$s_%3$s][]" value="__placeholder__" />',
 					esc_attr( $option_key ),
 					esc_attr( $section ),
@@ -823,13 +822,11 @@ class Settings {
 
 				$exclude_rows = array();
 
-				// Prepend an empty row
-				$current_value['exclude_row'] = array(
-					'helper' => '',
-				) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
+				// Prepend an empty row.
+				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
 
 				foreach ( $current_value['exclude_row'] as $key => $value ) {
-					// Prepare values
+					// Prepare values.
 					$author_or_role = isset( $current_value['author_or_role'][ $key ] ) ? $current_value['author_or_role'][ $key ] : '';
 					$connector      = isset( $current_value['connector'][ $key ] ) ? $current_value['connector'][ $key ] : '';
 					$context        = isset( $current_value['context'][ $key ] ) ? $current_value['context'][ $key ] : '';
@@ -997,8 +994,8 @@ class Settings {
 							<td>%10$s</td>
 							<th scope="row" class="actions-column">%11$s</th>
 						</tr>',
-						( 0 !== $key % 2 ) ? 'alternate' : '',
-						( 'helper' === $key ) ? 'hidden helper' : '',
+						( 0 !== (int) $key % 2 ) ? 'alternate' : '',
+						( 'helper' === (string) $key ) ? 'hidden helper' : '',
 						'<input class="cb-select" type="checkbox" />',
 						$helper_input,
 						$author_or_role_input,
