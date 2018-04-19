@@ -1,4 +1,4 @@
-/* globals confirm, wp_stream, ajaxurl, wp_stream_regenerate_alt_rows */
+/* globals confirm, wp_stream */
 jQuery(
 	function( $ ) {
 			var network_affix;
