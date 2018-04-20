@@ -168,7 +168,7 @@ class Connector_Installer extends Connector {
 				$version = $theme->version;
 			}
 
-			$action  = 'installed';
+			$action = 'installed';
 			// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2")
 			$message = _x(
 				'Installed %1$s: %2$s %3$s',
@@ -176,9 +176,9 @@ class Connector_Installer extends Connector {
 				'stream'
 			);
 
-			$logs[]  = compact( 'slug', 'name', 'version', 'message', 'action' );
+			$logs[] = compact( 'slug', 'name', 'version', 'message', 'action' );
 		} elseif ( 'update' === $action ) {
-			$action  = 'updated';
+			$action = 'updated';
 			// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2")
 			$message = _x(
 				'Updated %1$s: %2$s %3$s',

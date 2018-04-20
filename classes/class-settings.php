@@ -57,16 +57,20 @@ class Settings {
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 
 		// Remove records when records TTL is shortened
-		add_action( 'update_option_' . $this->option_key, array(
-			$this,
-			'updated_option_ttl_remove_records',
-		), 10, 2 );
+		add_action(
+			'update_option_' . $this->option_key, array(
+				$this,
+				'updated_option_ttl_remove_records',
+			), 10, 2
+		);
 
 		// Apply label translations for settings
-		add_filter( 'wp_stream_serialized_labels', array(
-			$this,
-			'get_settings_translations',
-		) );
+		add_filter(
+			'wp_stream_serialized_labels', array(
+				$this,
+				'get_settings_translations',
+			)
+		);
 
 		// Ajax callback function to search users
 		add_action( 'wp_ajax_stream_get_users', array( $this, 'get_users' ) );
@@ -103,10 +107,12 @@ class Settings {
 			'find' => $search,
 		);
 
-		add_filter( 'user_search_columns', array(
-			$this,
-			'add_display_name_search_columns',
-		), 10, 3 );
+		add_filter(
+			'user_search_columns', array(
+				$this,
+				'add_display_name_search_columns',
+			), 10, 3
+		);
 
 		$users = new WP_User_Query(
 			array(
@@ -122,10 +128,12 @@ class Settings {
 			)
 		);
 
-		remove_filter( 'user_search_columns', array(
-			$this,
-			'add_display_name_search_columns',
-		), 10 );
+		remove_filter(
+			'user_search_columns', array(
+				$this,
+				'add_display_name_search_columns',
+			), 10
+		);
 
 		if ( 0 === $users->get_total() ) {
 			wp_send_json_error( $response );
@@ -456,10 +464,12 @@ class Settings {
 	public function register_settings() {
 		$sections = $this->get_fields();
 
-		register_setting( $this->option_key, $this->option_key, array(
-			$this,
-			'sanitize_settings',
-		) );
+		register_setting(
+			$this->option_key, $this->option_key, array(
+				$this,
+				'sanitize_settings',
+			)
+		);
 
 		foreach ( $sections as $section_name => $section ) {
 			add_settings_section(
@@ -653,7 +663,7 @@ class Settings {
 					esc_attr( $name )
 				);
 				// Fallback if nothing is selected.
-				$output .= sprintf(
+				$output       .= sprintf(
 					'<input type="hidden" name="%1$s[%2$s_%3$s][]" value="__placeholder__" />',
 					esc_attr( $option_key ),
 					esc_attr( $section ),

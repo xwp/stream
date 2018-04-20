@@ -75,10 +75,12 @@ class Alert_Type_IFTTT extends Alert_Type {
 		if ( ! is_admin() ) {
 			return;
 		}
-		add_filter( 'wp_stream_alerts_save_meta', array(
-			$this,
-			'add_alert_meta',
-		), 10, 2 );
+		add_filter(
+			'wp_stream_alerts_save_meta', array(
+				$this,
+				'add_alert_meta',
+			), 10, 2
+		);
 	}
 
 	/**
@@ -123,11 +125,13 @@ class Alert_Type_IFTTT extends Alert_Type {
 		echo '</span>';
 		echo '<label for="wp_stream_ifttt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array(
-			'name'  => 'wp_stream_ifttt_maker_key',
-			'title' => esc_attr( __( 'Maker Key', 'stream' ) ),
-			'value' => $options['maker_key'],
-		) ); // Xss ok.
+		echo $form->render_field(
+			'text', array(
+				'name'  => 'wp_stream_ifttt_maker_key',
+				'title' => esc_attr( __( 'Maker Key', 'stream' ) ),
+				'value' => $options['maker_key'],
+			)
+		); // Xss ok.
 		echo '</span>';
 		printf(
 			'<span class="input-text-wrap"><a href="%1$s" target="_blank">%2$s %3$s</a></span>',
@@ -139,11 +143,13 @@ class Alert_Type_IFTTT extends Alert_Type {
 
 		echo '<label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'text', array(
-			'name'  => 'wp_stream_ifttt_event_name',
-			'title' => esc_attr( __( 'Event Name', 'stream' ) ),
-			'value' => $options['event_name'],
-		) );  // Xss ok.
+		echo $form->render_field(
+			'text', array(
+				'name'  => 'wp_stream_ifttt_event_name',
+				'title' => esc_attr( __( 'Event Name', 'stream' ) ),
+				'value' => $options['event_name'],
+			)
+		);  // Xss ok.
 		echo '</span>';
 		printf(
 			'<span class="input-text-wrap"><a href="%1$s" target="_blank">%2$s %3$s</a></span>',
@@ -248,7 +254,7 @@ class Alert_Type_IFTTT extends Alert_Type {
          *
 		 * The filters below allow complete customization of these data values.
 		 */
-		$args     = array(
+		$args = array(
 			'headers' => array(
 				'Content-Type' => 'application/json',
 			),
@@ -287,6 +293,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 				)
 			),
 		);
+
 		$response = wp_remote_post( $url, $args );
 		if ( ! is_array( $response ) ) {
 			return false;

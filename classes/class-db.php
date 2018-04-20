@@ -199,7 +199,7 @@ class DB {
 		 */
 		$args = apply_filters( 'wp_stream_query_args', $args );
 
-		$result = (array) $this->driver->get_records( $args );
+		$result                    = (array) $this->driver->get_records( $args );
 		$this->found_records_count = isset( $result['count'] ) ? $result['count'] : 0;
 
 		return empty( $result['items'] ) ? array() : $result['items'];

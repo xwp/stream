@@ -54,11 +54,11 @@ jQuery(
 							}
 						).on(
 							'change', function() {
-								var row = $( this ).closest( 'tr' ),
+								var row   = $( this ).closest( 'tr' ),
 								connector = $( this ).val();
 								if ( connector && 0 < connector.indexOf( '-' ) ) {
 									var connector_split = connector.split( '-' );
-									connector = connector_split[0];
+									connector           = connector_split[0];
 								}
 								getActions( row, connector );
 							}
@@ -177,8 +177,8 @@ jQuery(
 
 				$( '.stream-exclude-list tr:not(.hidden) select.select2-select.ip_address' ).each(
 					function( k, el ) {
-						var $input_ip  = $( el ),
-						searchTerm = '';
+						var $input_ip = $( el ),
+						searchTerm    = '';
 
 						$input_ip.select2(
 							{
@@ -198,7 +198,7 @@ jQuery(
 									},
 									processResults: function( response ) {
 										var answer = { results: [] },
-										ip_chunks = [];
+										ip_chunks  = [];
 
 										if ( true === response.success && undefined !== response.data ) {
 											$.each(
@@ -263,8 +263,8 @@ jQuery(
 				$( 'ul.select2-choices, ul.select2-choices li, input.select2-input', '.stream-exclude-list tr:not(.hidden) .ip_address' ).on(
 					'mousedown click focus', function() {
 						var $container = $( this ).closest( '.select2-container' ),
-						$input     = $container.find( 'input.select2-input' ),
-						value      = $container.select2( 'data' );
+						$input         = $container.find( 'input.select2-input' ),
+						value          = $container.select2( 'data' );
 
 						if ( value.length >= 1 ) {
 							$input.blur();
@@ -318,7 +318,7 @@ jQuery(
 					);
 
 					var $lastRow = $( 'tr', $excludeList ).last(),
-					$newRow  = $lastRow.clone();
+					$newRow      = $lastRow.clone();
 
 					$newRow.removeAttr( 'class' );
 					$( '.stream-exclude-list tbody :input' ).off();
@@ -336,7 +336,7 @@ jQuery(
 			$( '#exclude_rules_remove_rules' ).on(
 				'click', function() {
 					var $excludeList = $( 'table.stream-exclude-list' ),
-					selectedRows = $( 'tbody input.cb-select:checked', $excludeList ).closest( 'tr' );
+					selectedRows     = $( 'tbody input.cb-select:checked', $excludeList ).closest( 'tr' );
 
 					if ( ( $( 'tbody tr', $excludeList ).length - selectedRows.length ) >= 2 ) {
 						selectedRows.remove();
@@ -392,7 +392,7 @@ jQuery(
 
 		function getActions( row, connector ) {
 			var trigger_action = $( '.select2-select.action', row ),
-				action_value = trigger_action.val();
+				action_value   = trigger_action.val();
 
 			trigger_action.empty();
 			trigger_action.prop( 'disabled', true );
@@ -408,13 +408,13 @@ jQuery(
 			$.post(
 				window.ajaxurl, data, function( response ) {
 					var success = response.success,
-					actions = response.data;
+					actions     = response.data;
 					if ( ! success ) {
 						return;
 					}
 					for ( var key in actions ) {
 						if ( actions.hasOwnProperty( key ) ) {
-							var value = actions[key];
+							var value  = actions[key];
 							var option = $( '<option/>', {value: key, text: value} );
 							trigger_action.append( option );
 						}
@@ -428,7 +428,7 @@ jQuery(
 
 		function recalculate_rules_selected() {
 			var $selectedRows = $( 'table.stream-exclude-list tbody tr:not( .hidden ) input.cb-select:checked' ),
-			 $deleteButton = $( '#exclude_rules_remove_rules' );
+				$deleteButton = $( '#exclude_rules_remove_rules' );
 
 			if ( 0 === $selectedRows.length ) {
 				$deleteButton.prop( 'disabled', true );
@@ -438,10 +438,10 @@ jQuery(
 		}
 
 		function recalculate_rules_found() {
-			var $allRows      = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
-			 $noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' ),
-			 $selectAll    = $( '.check-column.manage-column input.cb-select' ),
-			 $deleteButton = $( '#exclude_rules_remove_rules' );
+			var $allRows    = $( 'table.stream-exclude-list tbody tr:not( .hidden )' ),
+				$noRulesFound = $( 'table.stream-exclude-list tbody tr.no-items' ),
+				$selectAll    = $( '.check-column.manage-column input.cb-select' ),
+				$deleteButton = $( '#exclude_rules_remove_rules' );
 
 			if ( 0 === $allRows.length ) {
 				$noRulesFound.show();

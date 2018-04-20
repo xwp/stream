@@ -158,7 +158,7 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 *
 	 * @return string
 	 */
-	function get_display_value( $context = 'normal', $alert ) {
+	public function get_display_value( $context = 'normal', $alert ) {
 		$author = ( ! empty( $alert->alert_meta['trigger_author'] ) ) ? $alert->alert_meta['trigger_author'] : null;
 		if ( empty( $author ) ) {
 			$author = __( 'Any User', 'stream' );

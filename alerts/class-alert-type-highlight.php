@@ -69,32 +69,42 @@ class Alert_Type_Highlight extends Alert_Type {
 		if ( ! is_admin() ) {
 			return;
 		}
-		add_filter( 'wp_stream_record_classes', array(
-			$this,
-			'post_class',
-		), 10, 2 );
-		add_action( 'admin_enqueue_scripts', array(
-			$this,
-			'enqueue_scripts',
-		) );
-		add_action( 'wp_ajax_' . self::REMOVE_ACTION, array(
-			$this,
-			'ajax_remove_highlight',
-		) );
+		add_filter(
+			'wp_stream_record_classes', array(
+				$this,
+				'post_class',
+			), 10, 2
+		);
+		add_action(
+			'admin_enqueue_scripts', array(
+				$this,
+				'enqueue_scripts',
+			)
+		);
+		add_action(
+			'wp_ajax_' . self::REMOVE_ACTION, array(
+				$this,
+				'ajax_remove_highlight',
+			)
+		);
 
 		if ( ! empty( $this->plugin->connectors->connectors ) && is_array( $this->plugin->connectors->connectors ) ) {
 			foreach ( $this->plugin->connectors->connectors as $connector ) {
-				add_filter( 'wp_stream_action_links_' . $connector->name, array(
-					$this,
-					'action_link_remove_highlight',
-				), 10, 2 );
+				add_filter(
+					'wp_stream_action_links_' . $connector->name, array(
+						$this,
+						'action_link_remove_highlight',
+					), 10, 2
+				);
 			}
 		}
 
-		add_filter( 'wp_stream_alerts_save_meta', array(
-			$this,
-			'add_alert_meta',
-		), 10, 2 );
+		add_filter(
+			'wp_stream_alerts_save_meta', array(
+				$this,
+				'add_alert_meta',
+			), 10, 2
+		);
 	}
 
 	/**
@@ -140,12 +150,14 @@ class Alert_Type_Highlight extends Alert_Type {
 		echo '<span class="wp_stream_alert_type_description">' . esc_html__( 'Highlight this alert on the Stream records page.', 'stream' ) . '</span>';
 		echo '<label for="wp_stream_highlight_color"><span class="title">' . esc_html__( 'Color', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
-		echo $form->render_field( 'select', array(
-			'name'    => 'wp_stream_highlight_color',
-			'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
-			'options' => $this->get_highlight_options(),
-			'value'   => $options['color'],
-		) ); // Xss ok.
+		echo $form->render_field(
+			'select', array(
+				'name'    => 'wp_stream_highlight_color',
+				'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
+				'options' => $this->get_highlight_options(),
+				'value'   => $options['color'],
+			)
+		); // Xss ok.
 		echo '</span></label>';
 	}
 

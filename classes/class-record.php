@@ -18,20 +18,20 @@ class Record {
 	public $meta;
 
 	public function __construct( $item ) {
-		$this->ID = isset( $item->ID ) ? $item->ID : null;
-		$this->created = isset( $item->created ) ? $item->created : null;
-		$this->site_id = isset( $item->site_id ) ? $item->site_id : null;
-		$this->blog_id = isset( $item->blog_id ) ? $item->blog_id : null;
+		$this->ID        = isset( $item->ID ) ? $item->ID : null;
+		$this->created   = isset( $item->created ) ? $item->created : null;
+		$this->site_id   = isset( $item->site_id ) ? $item->site_id : null;
+		$this->blog_id   = isset( $item->blog_id ) ? $item->blog_id : null;
 		$this->object_id = isset( $item->object_id ) ? $item->object_id : null;
-		$this->user_id = isset( $item->user_id ) ? $item->user_id : null;
+		$this->user_id   = isset( $item->user_id ) ? $item->user_id : null;
 		$this->user_role = isset( $item->user_role ) ? $item->user_role : null;
 		$this->user_meta = isset( $item->meta['user_meta'] ) ? $item->meta['user_meta'] : null;
-		$this->summary = isset( $item->summary ) ? $item->summary : null;
+		$this->summary   = isset( $item->summary ) ? $item->summary : null;
 		$this->connector = isset( $item->connector ) ? $item->connector : null;
-		$this->context = isset( $item->context ) ? $item->context : null;
-		$this->action = isset( $item->action ) ? $item->action : null;
-		$this->ip = isset( $item->ip ) ? $item->ip : null;
-		$this->meta = isset( $item->meta ) ? $item->meta : null;
+		$this->context   = isset( $item->context ) ? $item->context : null;
+		$this->action    = isset( $item->action ) ? $item->action : null;
+		$this->ip        = isset( $item->ip ) ? $item->ip : null;
+		$this->meta      = isset( $item->meta ) ? $item->meta : null;
 
 		if ( isset( $this->meta['user_meta'] ) ) {
 			unset( $this->meta['user_meta'] );
@@ -89,7 +89,7 @@ class Record {
 	 * @param  object  Record object
 	 * @return mixed   The title of the object as a string, otherwise false
 	 */
-	function get_object_title() {
+	public function get_object_title() {
 		if ( ! isset( $this->object_id ) || empty( $this->object_id ) ) {
 			return false;
 		}

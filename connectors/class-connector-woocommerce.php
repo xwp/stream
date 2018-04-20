@@ -114,7 +114,7 @@ class Connector_Woocommerce extends Connector {
 
 		if ( class_exists( 'Connector_Posts' ) ) {
 			$posts_connector = new Connector_Posts();
-			$context_labels = array_merge(
+			$context_labels  = array_merge(
 				$context_labels,
 				$posts_connector->get_context_labels()
 			);
@@ -140,21 +140,21 @@ class Connector_Woocommerce extends Connector {
 	 */
 	public function get_custom_settings() {
 		$custom_settings = array(
-			'woocommerce_frontend_css_colors' => array(
+			'woocommerce_frontend_css_colors'     => array(
 				'title'   => esc_html__( 'Frontend Styles', 'stream' ),
 				'page'    => 'wc-settings',
 				'tab'     => 'general',
 				'section' => '',
 				'type'    => esc_html__( 'setting', 'stream' ),
 			),
-			'woocommerce_default_gateway' => array(
+			'woocommerce_default_gateway'         => array(
 				'title'   => esc_html__( 'Gateway Display Default', 'stream' ),
 				'page'    => 'wc-settings',
 				'tab'     => 'checkout',
 				'section' => '',
 				'type'    => esc_html__( 'setting', 'stream' ),
 			),
-			'woocommerce_gateway_order' => array(
+			'woocommerce_gateway_order'           => array(
 				'title'   => esc_html__( 'Gateway Display Order', 'stream' ),
 				'page'    => 'wc-settings',
 				'tab'     => 'checkout',
@@ -168,28 +168,28 @@ class Connector_Woocommerce extends Connector {
 				'section' => '',
 				'type'    => esc_html__( 'setting', 'stream' ),
 			),
-			'woocommerce_shipping_method_order' => array(
+			'woocommerce_shipping_method_order'   => array(
 				'title'   => esc_html__( 'Shipping Methods Order', 'stream' ),
 				'page'    => 'wc-settings',
 				'tab'     => 'shipping',
 				'section' => '',
 				'type'    => esc_html__( 'setting', 'stream' ),
 			),
-			'shipping_debug_mode' => array(
+			'shipping_debug_mode'                 => array(
 				'title'   => esc_html__( 'Shipping Debug Mode', 'stream' ),
 				'page'    => 'wc-status',
 				'tab'     => 'tools',
 				'section' => '',
 				'type'    => esc_html__( 'tool', 'stream' ),
 			),
-			'template_debug_mode' => array(
+			'template_debug_mode'                 => array(
 				'title'   => esc_html__( 'Template Debug Mode', 'stream' ),
 				'page'    => 'wc-status',
 				'tab'     => 'tools',
 				'section' => '',
 				'type'    => esc_html__( 'tool', 'stream' ),
 			),
-			'uninstall_data' => array(
+			'uninstall_data'                      => array(
 				'title'   => esc_html__( 'Remove post types on uninstall', 'stream' ),
 				'page'    => 'wc-status',
 				'tab'     => 'tools',
@@ -216,7 +216,7 @@ class Connector_Woocommerce extends Connector {
 			$edit_post_link = get_edit_post_link( $record->object_id );
 			if ( $edit_post_link ) {
 				$posts_connector = new Connector_Posts();
-				$post_type_name = $posts_connector->get_post_type_name( get_post_type( $record->object_id ) );
+				$post_type_name  = $posts_connector->get_post_type_name( get_post_type( $record->object_id ) );
 				// translators: Placeholder refers to a post type singular name (e.g. "Post")
 				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $edit_post_link;
 			}
@@ -438,8 +438,8 @@ class Connector_Woocommerce extends Connector {
 			$old_status_name = wc_get_order_status_name( $old );
 			$new_status_name = wc_get_order_status_name( $new );
 		} else {
-			$old_status = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $old, 'shop_order_status' ) : get_term_by( 'slug', $old, 'shop_order_status' );
-			$new_status = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' ) : get_term_by( 'slug', $new, 'shop_order_status' );
+			$old_status      = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $old, 'shop_order_status' ) : get_term_by( 'slug', $old, 'shop_order_status' );
+			$new_status      = wp_stream_is_vip() ? wpcom_vip_get_term_by( 'slug', $new, 'shop_order_status' ) : get_term_by( 'slug', $new, 'shop_order_status' );
 			$new_status_name = $new_status->name;
 			$old_status_name = $old_status->name;
 		}
@@ -737,7 +737,7 @@ class Connector_Woocommerce extends Connector {
 					);
 
 					foreach ( $_fields as $field ) {
-						$title = isset( $field['title'] ) ? $field['title'] : ( isset( $field['desc'] ) ? $field['desc'] : 'N/A' );
+						$title                  = isset( $field['title'] ) ? $field['title'] : ( isset( $field['desc'] ) ? $field['desc'] : 'N/A' );
 						$fields[ $field['id'] ] = array(
 							'title'   => $title,
 							'page'    => 'wc-settings',

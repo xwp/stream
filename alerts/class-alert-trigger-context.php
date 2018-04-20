@@ -204,7 +204,7 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 *
 	 * @return string
 	 */
-	function get_display_value( $context = 'normal', $alert ) {
+	public function get_display_value( $context = 'normal', $alert ) {
 		$context   = ( ! empty( $alert->alert_meta['trigger_context'] ) ) ? $alert->alert_meta['trigger_context'] : null;
 		$connector = ( ! empty( $alert->alert_meta['trigger_connector'] ) ) ? $alert->alert_meta['trigger_connector'] : null;
 		if ( empty( $context ) && empty( $connector ) ) {

@@ -129,7 +129,7 @@ class Connector_Widgets extends Connector {
 		if ( did_action( 'customize_save' ) ) {
 			if ( is_null( $this->customizer_initial_sidebars_widgets ) ) {
 				$this->customizer_initial_sidebars_widgets = $old;
-				add_action( 'customize_save_after', array( $this, '_callback_customize_save_after' ) );
+				add_action( 'customize_save_after', array( $this, 'callback_customize_save_after' ) );
 			}
 		} else {
 			$this->handle_sidebars_widgets_changes( $old, $new );
@@ -143,7 +143,7 @@ class Connector_Widgets extends Connector {
 	 *
 	 * @see callback_update_option_sidebars_widgets()
 	 */
-	public function _callback_customize_save_after() {
+	public function callback_customize_save_after() {
 		$old_sidebars_widgets = $this->customizer_initial_sidebars_widgets;
 		$new_sidebars_widgets = get_option( 'sidebars_widgets' );
 
@@ -543,11 +543,11 @@ class Connector_Widgets extends Connector {
 			$created_widget_numbers = array_diff( array_keys( $new_value ), array_keys( $old_value ) );
 
 			foreach ( $created_widget_numbers as $widget_number ) {
-				$instance     = $new_value[ $widget_number ];
-				$widget_id    = sprintf( $widget_id_format, $widget_number );
-				$name         = $this->get_widget_name( $widget_id );
-				$title        = ! empty( $instance['title'] ) ? $instance['title'] : null;
-				$sidebar_id   = $this->get_widget_sidebar_id( $widget_id ); // @todo May not be assigned yet
+				$instance   = $new_value[ $widget_number ];
+				$widget_id  = sprintf( $widget_id_format, $widget_number );
+				$name       = $this->get_widget_name( $widget_id );
+				$title      = ! empty( $instance['title'] ) ? $instance['title'] : null;
+				$sidebar_id = $this->get_widget_sidebar_id( $widget_id ); // @todo May not be assigned yet
 
 				$creates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
 			}
@@ -579,11 +579,11 @@ class Connector_Widgets extends Connector {
 			$deleted_widget_numbers = array_diff( array_keys( $old_value ), array_keys( $new_value ) );
 
 			foreach ( $deleted_widget_numbers as $widget_number ) {
-				$instance     = $old_value[ $widget_number ];
-				$widget_id    = sprintf( $widget_id_format, $widget_number );
-				$name         = $this->get_widget_name( $widget_id );
-				$title        = ! empty( $instance['title'] ) ? $instance['title'] : null;
-				$sidebar_id   = $this->get_widget_sidebar_id( $widget_id ); // @todo May not be assigned anymore
+				$instance   = $old_value[ $widget_number ];
+				$widget_id  = sprintf( $widget_id_format, $widget_number );
+				$name       = $this->get_widget_name( $widget_id );
+				$title      = ! empty( $instance['title'] ) ? $instance['title'] : null;
+				$sidebar_id = $this->get_widget_sidebar_id( $widget_id ); // @todo May not be assigned anymore
 
 				$deletes[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
 			}

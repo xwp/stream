@@ -23,7 +23,7 @@ class Preview_List_Table extends List_Table {
 	 *
 	 * @return void
 	 */
-	function set_records( $items ) {
+	public function set_records( $items ) {
 		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
 		$hidden   = $this->get_hidden_columns();

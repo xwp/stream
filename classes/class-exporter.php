@@ -23,7 +23,7 @@ abstract class Exporter {
 	 * @param array $columns Column names included in data set.
 	 * @return void
 	 */
-	public abstract function output_file( $data, $columns );
+	abstract public function output_file( $data, $columns );
 
 	/**
 	 * Allow connectors to determine if their dependencies is satisfied or not

@@ -58,7 +58,7 @@ class Connector_ACF extends Connector {
 		if ( class_exists( 'acf' ) ) { //TODO: Should this be function_exists?
 			$acf = \acf();
 			if ( version_compare( $acf->settings['version'], self::PLUGIN_MIN_VERSION, '>=' ) ) {
-				 return true;
+				return true;
 			}
 		}
 
@@ -133,7 +133,7 @@ class Connector_ACF extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		$posts_connector = new Connector_Posts();
-		$links = $posts_connector->action_links( $links, $record );
+		$links           = $posts_connector->action_links( $links, $record );
 
 		return $links;
 	}
@@ -374,7 +374,7 @@ class Connector_ACF extends Connector {
 			$object_key = $taxonomy . '_' . $term_id;
 		} elseif ( 'option' === $type ) {
 			$object_key = 'options';
-			$key = preg_replace( '/^options_/', '', $key );
+			$key        = preg_replace( '/^options_/', '', $key );
 		}
 
 		if ( isset( $this->cached_field_values_updates[ $object_key ][ $key ] ) ) {
@@ -394,7 +394,7 @@ class Connector_ACF extends Connector {
 				$tax_obj   = get_taxonomy( $taxonomy );
 				$type_name = strtolower( get_taxonomy_labels( $tax_obj )->singular_name );
 			} elseif ( 'option' === $type ) {
-				$title = 'settings page';
+				$title     = 'settings page';
 				$type_name = 'option';
 			} else {
 				return false;
@@ -562,6 +562,6 @@ class Connector_ACF extends Connector {
 	 * @return string
 	 */
 	private function get_saved_option_type( $key ) {
-		return substr( $key,0, 8 ) === 'options_' ? 'option' : 'taxonomy';
+		return substr( $key, 0, 8 ) === 'options_' ? 'option' : 'taxonomy';
 	}
 }

@@ -142,7 +142,7 @@ class Connector_User_Switching extends Connector {
 		$user     = get_userdata( $user_id );
 		$old_user = get_userdata( $old_user_id );
 		// translators: Placeholders refer to a user display name, and a username (e.g. "Jane Doe", "administrator")
-		$message  = _x(
+		$message = _x(
 			'Switched user to %1$s (%2$s)',
 			'1: User display name, 2: User login',
 			'stream'
@@ -171,9 +171,9 @@ class Connector_User_Switching extends Connector {
 	 */
 	public function callback_switch_back_user( $user_id, $old_user_id ) {
 
-		$user     = get_userdata( $user_id );
+		$user = get_userdata( $user_id );
 		// translators: Placeholders refer to a user display name, and a username (e.g. "Jane Doe", "administrator")
-		$message  = _x(
+		$message = _x(
 			'Switched back to %1$s (%2$s)',
 			'1: User display name, 2: User login',
 			'stream'
