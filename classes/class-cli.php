@@ -4,9 +4,11 @@
  *
  * @see https://github.com/wp-cli/wp-cli
  */
+
 namespace WP_Stream;
 
 class CLI extends \WP_CLI_Command {
+
 	/**
 	 * Query a set of Stream records.
 	 *
@@ -96,7 +98,13 @@ class CLI extends \WP_CLI_Command {
 		$this->connection();
 
 		if ( empty( $assoc_args['fields'] ) ) {
-			$fields = array( 'created', 'ip', 'user_id', 'user_role', 'summary' );
+			$fields = array(
+				'created',
+				'ip',
+				'user_id',
+				'user_role',
+				'summary',
+			);
 		} else {
 			$fields = explode( ',', $assoc_args['fields'] );
 		}
@@ -168,8 +176,8 @@ class CLI extends \WP_CLI_Command {
 	/**
 	 * Convert any field to a flat array.
 	 *
-	 * @param string $name    The output array element name
-	 * @param mixed  $object  Any value to be converted to an array
+	 * @param string $name The output array element name
+	 * @param mixed  $object Any value to be converted to an array
 	 *
 	 * @return array  The flat array
 	 */
@@ -192,7 +200,7 @@ class CLI extends \WP_CLI_Command {
 	/**
 	 * Convert an array of flat records to CSV
 	 *
-	 * @param array $array  The input array of records
+	 * @param array $array The input array of records
 	 *
 	 * @return string  The CSV output
 	 */

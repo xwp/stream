@@ -1,4 +1,5 @@
 <?php
+
 namespace WP_Stream;
 
 class Connector_EDD extends Connector {
@@ -141,8 +142,8 @@ class Connector_EDD extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param  array  $links Previous links registered
+	 * @param  object $record Stream record
 	 *
 	 * @return array             Action links
 	 */
@@ -182,7 +183,10 @@ class Connector_EDD extends Connector {
 					$base
 				);
 			}
-		} elseif ( in_array( $record->context, array( 'download_category', 'download_tag' ), true ) ) {
+		} elseif ( in_array( $record->context, array(
+			'download_category',
+			'download_tag',
+		), true ) ) {
 			$tax_label = get_taxonomy_labels( get_taxonomy( $record->context ) )->singular_name;
 			// translators: Placeholder refers to a taxonomy (e.g. "Category")
 			$links[ sprintf( esc_html__( 'Edit %s', 'stream' ), $tax_label ) ] = get_edit_term_link( $record->object_id, $record->get_meta( 'taxonomy', true ) );
@@ -264,7 +268,10 @@ class Connector_EDD extends Connector {
 		$replacement = str_replace( '-', '_', $option );
 
 		if ( method_exists( $this, 'check_' . $replacement ) ) {
-			call_user_func( array( $this, 'check_' . $replacement ), $old_value, $new_value );
+			call_user_func( array(
+				$this,
+				'check_' . $replacement,
+			), $old_value, $new_value );
 		} else {
 			$data         = $this->options[ $option ];
 			$option_title = $data['label'];
@@ -407,15 +414,19 @@ class Connector_EDD extends Connector {
 	private function callback_edd_generate_pdf() {
 		$this->report_generated( 'pdf' );
 	}
+
 	public function callback_edd_earnings_export() {
 		$this->report_generated( 'earnings' );
 	}
+
 	public function callback_edd_payment_export() {
 		$this->report_generated( 'payments' );
 	}
+
 	public function callback_edd_email_export() {
 		$this->report_generated( 'emails' );
 	}
+
 	public function callback_edd_downloads_history_export() {
 		$this->report_generated( 'download-history' );
 	}
@@ -494,7 +505,10 @@ class Connector_EDD extends Connector {
 			return false;
 		}
 
-		return call_user_func( array( $this, 'meta_' . $key ), $object_id, $value, $is_add );
+		return call_user_func( array(
+			$this,
+			'meta_' . $key,
+		), $object_id, $value, $is_add );
 	}
 
 	private function meta_edd_user_public_key( $user_id, $value, $is_add = false ) {

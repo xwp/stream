@@ -1,7 +1,9 @@
 <?php
+
 namespace WP_Stream;
 
 class List_Table extends \WP_List_Table {
+
 	/**
 	 * Hold Plugin class
 	 *
@@ -47,8 +49,14 @@ class List_Table extends \WP_List_Table {
 		// Check for default hidden columns
 		$this->get_hidden_columns();
 
-		add_filter( 'screen_settings', array( $this, 'screen_controls' ), 10, 2 );
-		add_filter( 'set-screen-option', array( $this, 'set_screen_option' ), 10, 3 );
+		add_filter( 'screen_settings', array(
+			$this,
+			'screen_controls',
+		), 10, 2 );
+		add_filter( 'set-screen-option', array(
+			$this,
+			'set_screen_option',
+		), 10, 3 );
 
 		set_screen_options();
 	}
@@ -116,7 +124,12 @@ class List_Table extends \WP_List_Table {
 		$hidden   = $this->get_hidden_columns();
 		$primary  = $columns['summary'];
 
-		$this->_column_headers = array( $columns, $hidden, $sortable, $primary );
+		$this->_column_headers = array(
+			$columns,
+			$hidden,
+			$sortable,
+			$primary,
+		);
 
 		$this->items = $this->get_records();
 
@@ -210,6 +223,7 @@ class List_Table extends \WP_List_Table {
 		$args['records_per_page'] = apply_filters( 'stream_records_per_page', $args['records_per_page'] );
 
 		$items = $this->plugin->db->get_records( $args );
+
 		return $items;
 	}
 
@@ -333,7 +347,7 @@ class List_Table extends \WP_List_Table {
 							/**
 							 * Allows for the addition of content under a specified column.
 							 *
-							 * @param object $record  Contents of the row
+							 * @param object $record Contents of the row
 							 *
 							 * @return string
 							 */
@@ -435,11 +449,11 @@ class List_Table extends \WP_List_Table {
 	}
 
 	public function get_term_title( $term, $type ) {
-		if ( ! isset( $this->plugin->connectors->term_labels[ "stream_$type" ][ $term ] ) ) {
+		if ( ! isset( $this->plugin->connectors->term_labels[ 'stream_' . $type ][ $term ] ) ) {
 			return $term;
 		}
 
-		return $this->plugin->connectors->term_labels[ "stream_$type" ][ $term ];
+		return $this->plugin->connectors->term_labels[ 'stream_' . $type ][ $term ];
 	}
 
 	/**
@@ -466,6 +480,7 @@ class List_Table extends \WP_List_Table {
 				$selected_user = wp_stream_filter_input( INPUT_GET, 'user_id' );
 				if ( $selected_user ) {
 					$user = new Author( $selected_user );
+
 					return array(
 						$selected_user => $user->get_display_name(),
 					);
@@ -475,7 +490,7 @@ class List_Table extends \WP_List_Table {
 			}
 
 			$users = array_map(
-				function( $user_id ) {
+				function ( $user_id ) {
 					return new Author( $user_id );
 				},
 				get_users(
@@ -487,13 +502,14 @@ class List_Table extends \WP_List_Table {
 
 			if ( is_multisite() && is_super_admin() ) {
 				$super_admins = array_map(
-					function( $login ) {
+					function ( $login ) {
 						$user = get_user_by( 'login', $login );
+
 						return new Author( $user->ID );
 					},
 					get_super_admins()
 				);
-				$users = array_unique( array_merge( $users, $super_admins ) );
+				$users        = array_unique( array_merge( $users, $super_admins ) );
 			}
 
 			$users[] = new Author(
@@ -533,7 +549,7 @@ class List_Table extends \WP_List_Table {
 			unset( $disabled_records[0] );
 		}
 
-		$sort = function( $a, $b ) use ( $column ) {
+		$sort = function ( $a, $b ) use ( $column ) {
 			$label_a = (string) $a['label'];
 			$label_b = (string) $b['label'];
 
@@ -541,7 +557,7 @@ class List_Table extends \WP_List_Table {
 				return 0;
 			}
 
-			return ( strtolower( $label_a ) < strtolower( $label_b ) ) ? -1 : 1;
+			return ( strtolower( $label_a ) < strtolower( $label_b ) ) ? - 1 : 1;
 		};
 
 		uasort( $active_records, $sort );
@@ -822,13 +838,13 @@ class List_Table extends \WP_List_Table {
 			<div class="date-inputs">
 				<div class="box">
 					<i class="date-remove dashicons"></i>
-					<input type="text" name="date_from" class="date-picker field-from" placeholder="<?php esc_attr_e( 'Start Date', 'stream' ); ?>" value="<?php echo esc_attr( $date_from ); ?>" />
+					<input type="text" name="date_from" class="date-picker field-from" placeholder="<?php esc_attr_e( 'Start Date', 'stream' ); ?>" value="<?php echo esc_attr( $date_from ); ?>"/>
 				</div>
 				<span class="connector dashicons"></span>
 
 				<div class="box">
 					<i class="date-remove dashicons"></i>
-					<input type="text" name="date_to" class="date-picker field-to" placeholder="<?php esc_attr_e( 'End Date', 'stream' ); ?>" value="<?php echo esc_attr( $date_to ); ?>" />
+					<input type="text" name="date_to" class="date-picker field-to" placeholder="<?php esc_attr_e( 'End Date', 'stream' ); ?>" value="<?php echo esc_attr( $date_to ); ?>"/>
 				</div>
 			</div>
 
@@ -910,14 +926,14 @@ class List_Table extends \WP_List_Table {
 
 	public function display_tablenav( $which ) {
 		if ( 'top' === $which ) :
-		?>
+			?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 				<?php
 				$this->pagination( $which );
 				$this->extra_tablenav( $which );
 				?>
 
-				<br class="clear" />
+				<br class="clear"/>
 			</div>
 		<?php else : ?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
@@ -930,9 +946,9 @@ class List_Table extends \WP_List_Table {
 				$this->extra_tablenav( $which );
 				?>
 
-				<br class="clear" />
+				<br class="clear"/>
 			</div>
-		<?php
+			<?php
 		endif;
 	}
 
@@ -957,6 +973,7 @@ class List_Table extends \WP_List_Table {
 
 			return $value;
 		}
+
 		// @codingStandardsIgnoreEnd
 
 		return $dummy;
@@ -984,15 +1001,16 @@ class List_Table extends \WP_List_Table {
 			<h5><?php esc_html_e( 'Live updates', 'stream' ); ?></h5>
 
 			<div>
-				<input type="hidden" name="stream_live_update_nonce" id="stream_live_update_nonce" value="<?php echo esc_attr( $nonce ); ?>" />
+				<input type="hidden" name="stream_live_update_nonce" id="stream_live_update_nonce" value="<?php echo esc_attr( $nonce ); ?>"/>
 			</div>
 			<div>
-				<input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ); ?>" />
+				<input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ); ?>"/>
 			</div>
 			<div class="metabox-prefs stream-live-update-checkbox">
 				<label for="enable_live_update">
 					<input type="checkbox" value="on" name="enable_live_update" id="enable_live_update" data-heartbeat="<?php echo esc_attr( $heartbeat ); ?>" <?php checked( $option, 'on' ); ?> />
-					<?php esc_html_e( 'Enabled', 'stream' ); ?><span class="spinner"></span>
+					<?php esc_html_e( 'Enabled', 'stream' ); ?>
+					<span class="spinner"></span>
 				</label>
 			</div>
 		</fieldset>

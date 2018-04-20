@@ -13,6 +13,7 @@ namespace WP_Stream;
  * @package WP_Stream
  */
 class Alerts {
+
 	/**
 	 * Alerts post type slug
 	 */
@@ -66,15 +67,30 @@ class Alerts {
 		add_action( 'wp_stream_admin_menu', array( $this, 'register_menu' ) );
 
 		// Add scripts to post screens.
-		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
+		add_action( 'admin_enqueue_scripts', array(
+			$this,
+			'register_scripts',
+		) );
 
-		add_action( 'network_admin_menu', array( $this, 'change_menu_link_url' ), 99 );
+		add_action( 'network_admin_menu', array(
+			$this,
+			'change_menu_link_url',
+		), 99 );
 
-		add_filter( 'wp_stream_record_inserted', array( $this, 'check_records' ), 10, 2 );
+		add_filter( 'wp_stream_record_inserted', array(
+			$this,
+			'check_records',
+		), 10, 2 );
 
-		add_action( 'wp_ajax_load_alerts_settings', array( $this, 'load_alerts_settings' ) );
+		add_action( 'wp_ajax_load_alerts_settings', array(
+			$this,
+			'load_alerts_settings',
+		) );
 		add_action( 'wp_ajax_get_actions', array( $this, 'get_actions' ) );
-		add_action( 'wp_ajax_save_new_alert', array( $this, 'save_new_alert' ) );
+		add_action( 'wp_ajax_save_new_alert', array(
+			$this,
+			'save_new_alert',
+		) );
 		add_action(
 			'wp_ajax_get_new_alert_triggers_notifications', array(
 				$this,
@@ -85,7 +101,10 @@ class Alerts {
 		$this->load_alert_types();
 		$this->load_alert_triggers();
 
-		add_filter( 'wp_stream_action_links_posts', array( $this, 'change_alert_action_links' ), 11, 2 );
+		add_filter( 'wp_stream_action_links_posts', array(
+			$this,
+			'change_alert_action_links',
+		), 11, 2 );
 
 	}
 
@@ -257,13 +276,14 @@ class Alerts {
 	public function register_scripts() {
 		$screen = get_current_screen();
 		if ( 'edit-wp_stream_alerts' === $screen->id ) {
-			wp_register_script(
-				'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.js', array(
-					'wp-stream-select2',
-					'jquery',
-					'inline-edit-post',
-				)
-			);
+
+			$min = wp_stream_min_suffix();
+			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.' . $min . 'js', array(
+				'wp-stream-select2',
+				'jquery',
+				'inline-edit-post',
+			) );
+
 			wp_localize_script(
 				'wp-stream-alerts', 'streamAlerts',
 				array(
@@ -358,6 +378,7 @@ class Alerts {
 	public function get_alert( $post_id = '' ) {
 		if ( ! $post_id ) {
 			$obj = new Alert( null, $this->plugin );
+
 			return $obj;
 		}
 
@@ -576,9 +597,9 @@ class Alerts {
 						<label for="wp_stream_alert_status"><?php esc_html_e( 'Status', 'stream' ); ?></label>
 						<select name='wp_stream_alert_status' id='wp_stream_alert_status'>
 							<option<?php selected( $post_status, 'wp_stream_enabled' ); ?>
-								value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ); ?></option>
+									value='wp_stream_enabled'><?php esc_html_e( 'Enabled', 'stream' ); ?></option>
 							<option<?php selected( $post_status, 'wp_stream_disabled' ); ?>
-								value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ); ?></option>
+									value='wp_stream_disabled'><?php esc_html_e( 'Disabled', 'stream' ); ?></option>
 						</select>
 					</div>
 				</div>
@@ -766,12 +787,13 @@ class Alerts {
 			)
 		);
 	}
+
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links Previous links registered
 	 * @param Record $record Stream record
 	 *
 	 * @return array Action links
@@ -789,6 +811,7 @@ class Alerts {
 				unset( $links[ esc_html__( 'View', 'stream' ) ] );
 			}
 		}
+
 		return $links;
 	}
 }

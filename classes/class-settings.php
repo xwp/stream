@@ -1115,8 +1115,8 @@ class Settings {
 	 * @param array $new_value
 	 */
 	public function updated_option_ttl_remove_records( $old_value, $new_value ) {
-		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : -1;
-		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : -1;
+		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : - 1;
+		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : - 1;
 
 		if ( $ttl_after < $ttl_before ) {
 			/**

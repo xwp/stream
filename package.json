@@ -1,0 +1,41 @@
+{
+  "name": "wp-stream",
+  "version": "3.2.2",
+  "description": "Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.",
+  "main": "stream.php",
+  "author": "XWP",
+  "license": "GPLv2+",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xwp/stream.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xwp/stream/issues"
+  },
+  "homepage": "https://github.com/xwp/stream#readme",
+  "keywords": [
+    "wp",
+    "stream",
+    "stream",
+    "activity",
+    "logs",
+    "track"
+  ],
+  "devDependencies": {
+    "eslint": "^4.5.0",
+    "grunt": "~1.0.1",
+    "grunt-contrib-clean": "~1.1.0",
+    "grunt-contrib-copy": "~1.0.0",
+    "grunt-contrib-cssmin": "~2.2.1",
+    "grunt-contrib-jshint": "~1.1.0",
+    "grunt-contrib-qunit": "^2.0.0",
+    "grunt-contrib-uglify": "~3.0.1",
+    "grunt-shell": "~2.1.0",
+    "grunt-wp-deploy": "~1.2.1",
+    "qunitjs": "^2.4.0",
+    "sinon": "^3.2.1"
+  },
+  "scripts": {
+    "postinstall": "if php -r 'die( version_compare( PHP_VERSION, \"5.3\", \">=\" ) ? 0 : 1 );'; then grunt; fi"
+  }
+}

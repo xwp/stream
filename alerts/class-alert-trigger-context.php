@@ -4,6 +4,7 @@
  *
  * @package WP_Stream
  */
+
 namespace WP_Stream;
 
 /**
@@ -31,10 +32,12 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * Checks if a record matches the criteria from the trigger.
 	 *
 	 * @see Alert_Trigger::check_record().
+	 *
 	 * @param bool  $success Status of previous checks.
 	 * @param int   $record_id Record ID.
 	 * @param array $recordarr Record data.
 	 * @param Alert $alert The Alert being worked on.
+	 *
 	 * @return bool False on failure, otherwise should return original value of $success.
 	 */
 	public function check_record( $success, $record_id, $recordarr, $alert ) {
@@ -44,6 +47,7 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		if ( ! empty( $alert->alert_meta['trigger_context'] ) && $recordarr['context'] !== $alert->alert_meta['trigger_context'] ) {
 			return false;
 		}
+
 		return $success;
 	}
 
@@ -51,8 +55,10 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * Adds fields to the trigger form.
 	 *
 	 * @see Alert_Trigger::add_fields().
+	 *
 	 * @param Form_Generator $form The Form Object to add to.
 	 * @param Alert          $alert The Alert being worked on.
+	 *
 	 * @return void
 	 */
 	public function add_fields( $form, $alert = array() ) {
@@ -101,7 +107,9 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * Validate and save Alert object
 	 *
 	 * @see Alert_Trigger::save_fields().
+	 *
 	 * @param Alert $alert The Alert being worked on.
+	 *
 	 * @return void
 	 */
 	public function save_fields( $alert ) {
@@ -147,6 +155,7 @@ class Alert_Trigger_Context extends Alert_Trigger {
 				);
 			}
 		}
+
 		return $context_values;
 	}
 
@@ -154,7 +163,9 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * Function will return all terms labels of given column
 	 *
 	 * @todo refactor Settings::get_terms_labels into general utility
+	 *
 	 * @param string $column string Name of the column.
+	 *
 	 * @return array
 	 */
 	public function get_terms_labels( $column ) {
@@ -179,6 +190,7 @@ class Alert_Trigger_Context extends Alert_Trigger {
 
 			ksort( $return_labels );
 		}
+
 		return $return_labels;
 	}
 
@@ -186,8 +198,10 @@ class Alert_Trigger_Context extends Alert_Trigger {
 	 * Returns the trigger's value for the given alert.
 	 *
 	 * @see Alert_Trigger::get_display_value().
+	 *
 	 * @param string $context The location this data will be displayed in.
 	 * @param Alert  $alert Alert being processed.
+	 *
 	 * @return string
 	 */
 	public function get_display_value( $context = 'normal', $alert ) {
@@ -205,6 +219,7 @@ class Alert_Trigger_Context extends Alert_Trigger {
 				}
 			}
 		}
+
 		return ucfirst( $context );
 	}
 }

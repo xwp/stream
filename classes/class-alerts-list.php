@@ -339,9 +339,10 @@ class Alerts_List {
 		if ( 'edit-wp_stream_alerts' !== $screen->id ) {
 			return;
 		}
-		wp_register_script( 'wp-stream-alerts-list-js', $this->plugin->locations['url'] . 'ui/js/alerts-list.js', array( 'wp-stream-alerts', 'jquery' ) );
+		$min = wp_stream_min_suffix();
+		wp_register_script( 'wp-stream-alerts-list-js', $this->plugin->locations['url'] . 'ui/js/alerts-list.' . $min . 'js', array( 'wp-stream-alerts', 'jquery' ) );
 		wp_enqueue_script( 'wp-stream-alerts-list-js' );
-		wp_register_style( 'wp-stream-alerts-list-css', $this->plugin->locations['url'] . 'ui/css/alerts-list.css' );
+		wp_register_style( 'wp-stream-alerts-list-css', $this->plugin->locations['url'] . 'ui/css/alerts-list.' . $min . 'css' );
 		wp_enqueue_style( 'wp-stream-alerts-list-css' );
 		wp_enqueue_style( 'wp-stream-select2' );
 	}

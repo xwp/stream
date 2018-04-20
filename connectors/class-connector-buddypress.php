@@ -1,7 +1,9 @@
 <?php
+
 namespace WP_Stream;
 
 class Connector_BuddyPress extends Connector {
+
 	/**
 	 * Connector slug
 	 *
@@ -151,7 +153,7 @@ class Connector_BuddyPress extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array $links   Previous links registered
+	 * @param  array  $links Previous links registered
 	 * @param  object $record Stream record
 	 *
 	 * @return array Action links
@@ -365,7 +367,10 @@ class Connector_BuddyPress extends Connector {
 		$replacement = str_replace( '-', '_', $option );
 
 		if ( method_exists( $this, 'check_' . $replacement ) ) {
-			call_user_func( array( $this, 'check_' . $replacement ), $old_value, $new_value );
+			call_user_func( array(
+				$this,
+				'check_' . $replacement,
+			), $old_value, $new_value );
 		} else {
 			$data         = $this->options[ $option ];
 			$option_title = $data['label'];
@@ -476,6 +481,7 @@ class Connector_BuddyPress extends Connector {
 	public function callback_bp_before_activity_delete( $args ) {
 		if ( empty( $args['id'] ) ) { // Bail if we're deleting in bulk
 			$this->_delete_activity_args = $args;
+
 			return;
 		}
 
@@ -508,6 +514,7 @@ class Connector_BuddyPress extends Connector {
 			// activities, so we probably don't need to track those
 			if ( $this->ignore_activity_bulk_deletion ) {
 				$this->ignore_activity_bulk_deletion = false;
+
 				return;
 			}
 			$this->log(
@@ -851,7 +858,7 @@ class Connector_BuddyPress extends Connector {
 				// Only components that need directories should be listed here
 				if ( isset( $bp->{$component_id} ) && ! empty( $bp->{$component_id}->has_directory ) ) {
 					// component->name was introduced in BP 1.5, so we must provide a fallback
-					$directory_pages[ $component_id ] = ! empty( $bp->{ $component_id }->name ) ? $bp->{ $component_id }->name : ucwords( $component_id );
+					$directory_pages[ $component_id ] = ! empty( $bp->{$component_id}->name ) ? $bp->{$component_id}->name : ucwords( $component_id );
 				}
 			}
 		}

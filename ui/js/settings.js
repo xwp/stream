@@ -1,15 +1,15 @@
 /* globals confirm, wp_stream */
 jQuery(
 	function( $ ) {
-			var network_affix;
+		var network_affix;
 		if ( 'wp_stream_network' === $( 'input[name="option_page"]' ).val() ) {
 			network_affix = '_network_affix';
 		} else {
 			network_affix = '';
 		}
-			var keepRecordsIndefinitely = $( '#wp_stream' + network_affix + '\\[general_keep_records_indefinitely\\]' ),
-			keepRecordsFor              = $( '#wp_stream' + network_affix + '_general_records_ttl' ),
-			keepRecordsForRow           = keepRecordsFor.closest( 'tr' );
+		var keepRecordsIndefinitely = $( '#wp_stream' + network_affix + '\\[general_keep_records_indefinitely\\]' ),
+			keepRecordsFor          = $( '#wp_stream' + network_affix + '_general_records_ttl' ),
+			keepRecordsForRow       = keepRecordsFor.closest( 'tr' );
 
 		function toggleKeepRecordsFor() {
 			if ( keepRecordsIndefinitely.is( ':checked' ) ) {
@@ -21,24 +21,24 @@ jQuery(
 			}
 		}
 
-			keepRecordsIndefinitely.on(
-				'change', function() {
-					toggleKeepRecordsFor();
-				}
-			);
+		keepRecordsIndefinitely.on(
+			'change', function() {
+				toggleKeepRecordsFor();
+			}
+		);
 
-			toggleKeepRecordsFor();
-			// Confirmation on some important actions
-			$( '#wp_stream_general_reset_site_settings' ).click(
-				function( e ) {
-					if ( ! confirm( wp_stream.i18n.confirm_defaults ) ) {
-						e.preventDefault();
-					}
+		toggleKeepRecordsFor();
+		// Confirmation on some important actions
+		$( '#wp_stream_general_reset_site_settings' ).click(
+			function( e ) {
+				if ( ! confirm( wp_stream.i18n.confirm_defaults ) ) {
+					e.preventDefault();
 				}
-			);
+			}
+		);
 
-			// Settings page tabs
-			var $tabs      = $( '.nav-tab-wrapper' ),
+		// Settings page tabs
+		var $tabs          = $( '.nav-tab-wrapper' ),
 			$panels        = $( '.nav-tab-content table.form-table' ),
 			$activeTab     = $tabs.find( '.nav-tab-active' ),
 			defaultIndex   = $activeTab.length > 0 ? $tabs.find( 'a' ).index( $activeTab ) : 0,
@@ -54,30 +54,29 @@ jQuery(
 				$optionsForm.prop( 'action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ) );
 			};
 
-			$tabs.on(
-				'click', 'a', function() {
-					var index = $tabs.find( 'a' ).index( $( this ) ),
+		$tabs.on(
+			'click', 'a', function() {
+				var index     = $tabs.find( 'a' ).index( $( this ) ),
 					hashIndex = window.location.hash.match( /^#(\d+)$/ );
 
-					$panels.hide().eq( index ).show();
+				$panels.hide().eq( index ).show();
 
-					$tabs
-					.find( 'a' )
-					.removeClass( 'nav-tab-active' )
-					.filter( $( this ) )
-					.addClass( 'nav-tab-active' );
+				$tabs
+				.find( 'a' )
+				.removeClass( 'nav-tab-active' )
+				.filter( $( this ) )
+				.addClass( 'nav-tab-active' );
 
-					if ( '' === window.location.hash || null !== hashIndex ) {
-						window.location.hash = index;
-					}
-
-					syncFormAction( index );
-
-					return false;
+				if ( '' === window.location.hash || null !== hashIndex ) {
+					window.location.hash = index;
 				}
-			);
 
-			$tabs.children().eq( currentHash ).trigger( 'click' );
+				syncFormAction( index );
 
+				return false;
+			}
+		);
+
+		$tabs.children().eq( currentHash ).trigger( 'click' );
 	}
 );

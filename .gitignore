@@ -1,2 +1,14 @@
 .idea
 .DS_Store
+/node_modules/
+npm-debug.log
+package.lock
+
+# Grunt
+/build/
+/node_modules/
+npm-debug.log
+
+# Compiled files
+ui/js/*.min.js
+ui/css/*.min.css

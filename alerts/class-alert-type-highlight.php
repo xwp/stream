@@ -294,7 +294,8 @@ class Alert_Type_Highlight extends Alert_Type {
 	 */
 	public function enqueue_scripts( $page ) {
 		if ( 'toplevel_page_wp_stream' === $page ) {
-			wp_register_script( self::SCRIPT_HANDLE, $this->plugin->locations['url'] . 'alerts/js/alert-type-highlight.js', array( 'jquery' ) );
+			$min = wp_stream_min_suffix();
+			wp_register_script( self::SCRIPT_HANDLE, $this->plugin->locations['url'] . 'alerts/js/alert-type-highlight.' . $min . 'js', array( 'jquery' ) );
 
 			$exports = array(
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
