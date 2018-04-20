@@ -75,18 +75,6 @@ Great! There are several ways you can get involved to help make Stream better:
 
 Thank you for wanting to make Stream better for everyone!
 
-## Development ##
-
-Stream uses `Grunt` to minimize and compile scripts and styles.
-
-If you want to use this development version, you'll need to install `Node.js`. Alternately, you can set `define( 'SCRIPT_DEBUG', true );` in `wp-config.php` to use the uncompressed versions of the scripts and styles.  
- 
-To use the build process, [install Node.js](https://nodejs.org)
-
-Once installed, run `npm install`. This will install `Grunt` and build the scripts and styles.
-
-If you've made changes to any css or javascripts, you'll need to run `grunt` to recompile the files. You won't need to do this if you set `define( 'SCRIPT_DEBUG', true );` as it will use the source files.
-
 ## Screenshots ##
 
 ### Every logged-in user action is displayed in an activity stream and organized for easy filtering and searching.

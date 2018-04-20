@@ -4,6 +4,18 @@ Please take a moment to review this document in order to make the contribution p
 
 Following these guidelines will help us get back to you more quickly, and will show that you care about making Stream better just like we do. In return, we'll do our best to respond to your issue or pull request as soon as possible with the same respect.
 
+## Development
+
+Stream uses `Grunt` to minimize and compile scripts and styles.
+
+If you want to use this development version, you'll need to install `Node.js`. Alternately, you can set `define( 'SCRIPT_DEBUG', true );` in `wp-config.php` to use the uncompressed versions of the scripts and styles.
+
+To use the build process, [install Node.js](https://nodejs.org/)
+
+Once installed, run `npm install`. This will install `Grunt` and build the scripts and styles.
+
+If you've made changes to any css or javascripts, you'll need to run `grunt` to recompile the files. You won't need to do this if you set `define( 'SCRIPT_DEBUG', true );` as it will use the source files.
+
 
 ## Use the issue tracker
 
