@@ -7,11 +7,11 @@ Planes have a black box, WordPress has Stream. When something goes wrong, you ne
 **Contributors:** [lukecarbis](https://profiles.wordpress.org/lukecarbis), [fjarrett](https://profiles.wordpress.org/fjarrett), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
 **Tags:** [wp stream](https://wordpress.org/plugins/tags/wp stream), [stream](https://wordpress.org/plugins/tags/stream), [activity](https://wordpress.org/plugins/tags/activity), [logs](https://wordpress.org/plugins/tags/logs), [track](https://wordpress.org/plugins/tags/track)  
 **Requires at least:** 3.9  
-**Tested up to:** 4.8.1  
-**Stable tag:** 3.2.2  
+**Tested up to:** 4.9.5  
+**Stable tag:** 3.2.3  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
-[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](http://gruntjs.com) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Join_Chat.svg)](https://gitter.im/xwp/stream) 
+[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](http://gruntjs.com) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/xwp/stream) 
 
 ## Description ##
 
@@ -91,6 +91,20 @@ Thank you for wanting to make Stream better for everyone!
 
 ## Changelog ##
 
+### 3.2.3 - April 23, 2018 ###
+* New: Use minimized assets ([#973](https://github.com/xwp/stream/pull/973))
+* New: Alert type – Slack alerts! ([#970](https://github.com/xwp/stream/pull/970) [#962](https://github.com/xwp/stream/pull/962))
+* Fix: PHP 7.1 compatibility fix ([#974](https://github.com/xwp/stream/pull/974))
+* Fix: Make reset nonce unique ([#972](https://github.com/xwp/stream/pull/972))
+* Fix: Stripped settings and alerts inputs ([#968](https://github.com/xwp/stream/pull/968))
+* Fix: Update Datetime extension ([#966](https://github.com/xwp/stream/pull/966))
+* Fix: WP CLI Namespace collision ([#944](https://github.com/xwp/stream/pull/944))
+* Tweak: Coding standards updates ([#975](https://github.com/xwp/stream/pull/975))
+* Tweak: Show real client IP (if available) when in reverse-proxy mode ([#969](https://github.com/xwp/stream/pull/969) [#963](https://github.com/xwp/stream/pull/963))
+* Tweak: Performance improvement when listing roles ([#964](https://github.com/xwp/stream/pull/964))
+
+Props [@DavidCramer](https://github.com/DavidCramer), [@lukecarbis](https://github.com/lukecarbis), [@frozzare](https://github.com/frozzare), [@fjarrett](https://github.com/fjarrett), [@shadyvb](https://github.com/shadyvb), [@valendesigns](https://github.com/valendesigns), [@robbiet480](https://github.com/robbiet480), [@cfoellmann](https://github.com/cfoellmann)
+
 ### 3.2.2 - September 13, 2017 ###
 * Fix: Prevent fatal error when attempting to store an Object in the database.
 
@@ -102,6 +116,7 @@ Thank you for wanting to make Stream better for everyone!
 * Fix: Readme spelling fixes (localised [sic] for en_US). ([#928](https://github.com/xwp/stream/pull/928))
 * Fix: Undefined index ID issue when trashing post with customize-posts. ([#936](https://github.com/xwp/stream/pull/936))
 * Fix: Stream fails to install properly (sometimes) due to database error. ([#934](https://github.com/xwp/stream/pull/934))
+* Fix: Stream is network activated if it's a must-use plugin on a multisite ([#956](https://github.com/xwp/stream/pull/956))
 
 ### 3.2.0 - March 15, 2017 ###
 * New: Stream now support alternate Database Drivers. ([#889](https://github.com/xwp/stream/pull/889))
@@ -501,13 +516,13 @@ Language pack for Polish. Bug fixes. Props [@powelski](https://github.com/powels
 Language pack for Spanish. Bug fixes. Props [omniwired](https://github.com/omniwired), [@shadyvb](https://github.com/shadyvb)
 
 ### 1.0.2 - January 15, 2014 ###
-Ensure the dashboard widget repects the Role Access setting. Props [@fjarrett](https://github.com/fjarrett)
+Ensure the dashboard widget respects the Role Access setting. Props [@fjarrett](https://github.com/fjarrett)
 
 ### 1.0.1 - January 15, 2014 ###
 Require nonce for generating a new user feed key. Props [@johnregan3](https://github.com/johnregan3)
 
 ### 1.0.0 - January 13, 2014 ###
-Allow list table to be exensible. Hook added to prevent tables from being created, if desired. Props [@johnregan3](https://github.com/johnregan3), [@fjarrett](https://github.com/fjarrett), [@jonathanbardo](https://github.com/jonathanbardo)
+Allow list table to be extensible. Hook added to prevent tables from being created, if desired. Props [@johnregan3](https://github.com/johnregan3), [@fjarrett](https://github.com/fjarrett), [@jonathanbardo](https://github.com/jonathanbardo)
 
 ### 0.9.9 - January 8, 2014 ###
 Updated screenshot assets and descriptions. Props [@fjarrett](https://github.com/fjarrett)
