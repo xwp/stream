@@ -114,7 +114,7 @@ class Connector_Mercator extends Connector {
 	 *
 	 * @param $mapping
 	 */
-	function callback_mercator_mapping_made_primary( $mapping ) {
+	public function callback_mercator_mapping_made_primary( $mapping ) {
 		$blog_id = $mapping->get_site_id();
 		$blog    = get_site( $blog_id );
 
@@ -141,7 +141,7 @@ class Connector_Mercator extends Connector {
 	 * @param $mapping
 	 * @param $old_mapping
 	 */
-	function callback_mercator_mapping_updated( $mapping, $old_mapping ) {
+	public function callback_mercator_mapping_updated( $mapping, $old_mapping ) {
 
 		$blog_id = $mapping->get_site_id();
 		$blog    = get_site( $blog_id );
@@ -170,7 +170,7 @@ class Connector_Mercator extends Connector {
 	 *
 	 * @param $mapping
 	 */
-	function callback_mercator_mapping_deleted( $mapping ) {
+	public function callback_mercator_mapping_deleted( $mapping ) {
 
 		$blog_id = $mapping->get_site_id();
 		$blog    = get_site( $blog_id );
@@ -198,7 +198,7 @@ class Connector_Mercator extends Connector {
 	 *
 	 * @param $mapping
 	 */
-	function callback_mercator_mapping_created( $mapping ) {
+	public function callback_mercator_mapping_created( $mapping ) {
 		$blog_id = $mapping->get_site_id();
 		$blog    = get_site( $blog_id );
 
