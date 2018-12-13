@@ -19,7 +19,7 @@ class Connector_Mercator extends Connector {
 		'mercator.mapping.updated',
 		'mercator.mapping.deleted',
 		'mercator.mapping.created',
-		'mercator.mapping.made_primary'
+		'mercator.mapping.made_primary',
 	);
 
 	/**
@@ -119,7 +119,7 @@ class Connector_Mercator extends Connector {
 		$blog    = get_site( $blog_id );
 
 		$this->log(
-		// translators: Placeholder refers to site name (e.g. "FooBar Blog")
+			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
 			_x(
 				'"%1$s" domain alias was make primary for "%2$s"',
 				'1. Domain alias 2. Site name',
@@ -147,7 +147,7 @@ class Connector_Mercator extends Connector {
 		$blog    = get_site( $blog_id );
 
 		$this->log(
-		// translators: Placeholder refers to site name (e.g. "FooBar Blog")
+			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
 			_x(
 				'The domain alias "%1$s" was updated to "%2$s" for site "%3$s"',
 				'1. Old Domain alias 2. Domain alias 2. Site name',
@@ -176,7 +176,7 @@ class Connector_Mercator extends Connector {
 		$blog    = get_site( $blog_id );
 
 		$this->log(
-		// translators: Placeholder refers to site name (e.g. "FooBar Blog")
+			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
 			_x(
 				'"%1$s" domain alias was deleted for "%2$s"',
 				'1. Domain alias 2. Site name',
@@ -203,7 +203,7 @@ class Connector_Mercator extends Connector {
 		$blog    = get_site( $blog_id );
 
 		$this->log(
-		// translators: Placeholder refers to site name (e.g. "FooBar Blog")
+			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
 			_x(
 				'"%1$s" domain alias was created for "%2$s"',
 				'1. Domain alias 2. Site name',
