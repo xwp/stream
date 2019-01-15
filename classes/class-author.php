@@ -186,15 +186,15 @@ class Author {
 			$user_role = $wp_roles->role_names[ $this->meta['user_role'] ];
 		} elseif ( ! empty( $this->meta['user_role_label'] ) ) {
 			$user_role = $this->meta['user_role_label'];
-		} elseif ( ! empty( $this->user->roles ) ){
+		} elseif ( ! empty( $this->user->roles ) ) {
 			$roles = array_map(
-				function( $role ) use ( $wp_roles ){
-					return $wp_roles->role_names[$role];
-				}, $this->user->roles
+				function( $role ) use ( $wp_roles ) {
+					return $wp_roles->role_names[ $role ];
+				},
+				$this->user->roles
 			);
 			$separator = apply_filters( 'wp_stream_get_role_list_separator', '-' );
 			$user_role = implode( ' ' . $separator . ' ', $roles );
-
 		} elseif ( is_multisite() && is_super_admin( $this->id ) ) {
 			$user_role = $wp_roles->role_names['administrator'];
 		}
