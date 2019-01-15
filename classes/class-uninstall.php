@@ -50,7 +50,7 @@ class Uninstall {
 			);
 		}
 
-		if ( ! defined( 'DISALLOW_FILE_MODS' ) || false === DISALLOW_FILE_MODS ) {
+		if ( defined( 'DISALLOW_FILE_MODS' ) && true === DISALLOW_FILE_MODS ) {
 			wp_die(
 				esc_html__( "You don't have sufficient file permissions to do this action.", 'stream' )
 			);
