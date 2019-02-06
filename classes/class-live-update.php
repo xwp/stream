@@ -202,7 +202,7 @@ class Live_Update {
 					$query_args          = json_decode( $data['wp-stream-heartbeat-query'], true );
 					$query_args['paged'] = $total_pages;
 
-					$response['last_page_link'] = add_query_arg( $query_args, admin_url( 'admin.php' ) );
+					$response['last_page_link'] = esc_url( add_query_arg( $query_args, admin_url( 'admin.php' ) ) );
 				} else {
 					$response['total_pages'] = 0;
 				}
