@@ -76,6 +76,7 @@ class Connectors {
 			'edd',
 			'gravityforms',
 			'jetpack',
+			'mercator',
 			'user-switching',
 			'woocommerce',
 			'wordpress-seo',
