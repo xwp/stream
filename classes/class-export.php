@@ -164,7 +164,7 @@ class Export {
 			'ip'        => $columns['ip'],
 		);
 
-		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+		if ( is_multisite() && $this->plugin->is_network_activated() ) {
 			$new_columns['blog_id'] = __( 'Blog ID', 'stream' );
 		}
 

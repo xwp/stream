@@ -134,7 +134,7 @@ class Admin {
 		add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( $this, 'filter_role_caps' ), 10, 3 );
 
-		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) && ! is_network_admin() ) {
+		if ( is_multisite() && $plugin->is_network_activated() && ! is_network_admin() ) {
 			$options = (array) get_site_option( 'wp_stream_network', array() );
 			$option  = isset( $options['general_site_access'] ) ? absint( $options['general_site_access'] ) : 1;
 
@@ -647,7 +647,7 @@ class Admin {
 
 		$where = '';
 
-		if ( is_multisite() && ! is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+		if ( is_multisite() && ! $this->plugin->is_network_activated() ) {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
 
@@ -675,12 +675,12 @@ class Admin {
 			&&
 			is_network_admin()
 			&&
-			! is_plugin_active_for_network( $this->plugin->locations['plugin'] )
+			! $this->plugin->is_network_activated()
 		) {
 			return;
 		}
 
-		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+		if ( is_multisite() && $this->plugin->is_network_activated() ) {
 			$options = (array) get_site_option( 'wp_stream_network', array() );
 		} else {
 			$options = (array) get_option( 'wp_stream', array() );
@@ -699,7 +699,7 @@ class Admin {
 		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
 
 		// Multisite but NOT network activated, only purge the current blog
-		if ( is_multisite() && ! is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+		if ( is_multisite() && ! $this->plugin->is_network_activated() ) {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
 
@@ -726,7 +726,7 @@ class Admin {
 		}
 
 		// Also don't show links in Network Admin if Stream isn't network enabled
-		if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+		if ( is_network_admin() && is_multisite() && ! $this->plugin->is_network_activated() ) {
 			return $links;
 		}
 
