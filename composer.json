@@ -1,5 +1,5 @@
 {
-  "name"       : "humanmade/stream",
+  "name"       : "xwp/stream",
   "type"       : "wordpress-plugin",
   "require"    : {
 	"composer/installers": "~1.0"
