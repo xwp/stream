@@ -187,7 +187,7 @@ class Connector_Editor extends Connector {
 			(
 				isset( $_SERVER['REQUEST_METHOD'] )
 				&&
-				'POST' !== esc_attr( $_SERVER['REQUEST_METHOD'] )
+				'POST' !== sanitize_text_field( $_SERVER['REQUEST_METHOD'] )
 			)
 			||
 			'update' !== wp_stream_filter_input( INPUT_POST, 'action' )
