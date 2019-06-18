@@ -38,10 +38,9 @@
   },
   "scripts": {
     "postinstall": "npm run build",
-    "phpunit": "DEV_LIB_ONLY=phpunit ./node_modules/wp-dev-lib/scripts/pre-commit",
     "build": "grunt default && npm run readme",
     "readme": "./node_modules/wp-dev-lib/scripts/generate-markdown-readme",
-    "deploy": "npm run readme && grunt deploy",
+    "deploy": "npm run build && grunt deploy",
     "lint": "DIFF_BASE=master ./node_modules/wp-dev-lib/scripts/pre-commit"
   }
 }
