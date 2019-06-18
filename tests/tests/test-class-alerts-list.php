@@ -13,7 +13,7 @@ class Test_Alerts_List extends WP_StreamTestCase {
 		$this->assertNotEmpty( $alerts_list->plugin );
 	}
 
-	function test_suppress_bulk_actions( $actions ) {
+	function test_suppress_bulk_actions() {
 		$alerts_list      = new Alerts_List( $this->plugin );
 		$actions          = array(
 			'edit'          => 'edit',
@@ -53,7 +53,7 @@ class Test_Alerts_List extends WP_StreamTestCase {
 		$output = ob_get_clean();
 		$this->assertEmpty( $output );
 	}
-	function test_enqueue_scripts( $page ) {
+	function test_enqueue_scripts() {
 		$alerts_list      = new Alerts_List( $this->plugin );
 		global $current_screen;
 		$current_screen->id = 'edit-wp_stream_alerts';
