@@ -3,7 +3,7 @@ Contributors:      lukecarbis, fjarrett, stream, xwp
 Tags:              wp stream, stream, activity, logs, track
 Requires at least: 3.9
 Tested up to:      5.2
-Stable tag:        3.2.4
+Stable tag:        3.3.0
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,7 +79,7 @@ Thank you for wanting to make Stream better for everyone!
 
 == Changelog ==
 
-= 3.2.4 - June 18, 2019 =
+= 3.3.0 - June 18, 2019 =
 
 * New: Filter for allow WP network-like behaviour ([#1003](https://github.com/xwp/stream/pull/1003)).
 * Fix: Sanitize instead of escape the request method ([#987](https://github.com/xwp/stream/pull/987)).
