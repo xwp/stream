@@ -28,6 +28,7 @@ jQuery(
 		);
 
 		toggleKeepRecordsFor();
+
 		// Confirmation on some important actions
 		$( '#wp_stream_general_reset_site_settings' ).click(
 			function( e ) {
