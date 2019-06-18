@@ -8,6 +8,11 @@ php:
   - 5.6
   - 7.0
 
+addons:
+  apt:
+    packages:
+      # For xmllint.
+      - libxml2-utils
 env:
   - WP_VERSION=latest WP_MULTISITE=0
   - WP_VERSION=latest WP_MULTISITE=1
