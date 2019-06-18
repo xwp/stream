@@ -39,3 +39,7 @@ branches:
 notifications:
   email: false
 
+cache:
+  npm: true
+  directories:
+    - $HOME/.composer/cache
