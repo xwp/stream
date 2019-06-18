@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <ruleset name="WordPress Coding Standards for WP Stream">
+	<config name="installed_paths" value="vendor/wp-coding-standards/wpcs" />
+
 	<rule ref="WordPress-Extra" />
 
 	<exclude-pattern>*.ruleset</exclude-pattern>
