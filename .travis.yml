@@ -36,3 +36,6 @@ branches:
   - master
   - develop
 
+notifications:
+  email: false
+
