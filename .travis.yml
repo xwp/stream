@@ -17,9 +17,8 @@ env:
     - WP_VERSION=trunk WP_MULTISITE=1
 
 install:
-    - export DEV_LIB_PATH=dev-lib
-    - if [ ! -e "$DEV_LIB_PATH" ] && [ -L .travis.yml ]; then export DEV_LIB_PATH=$( dirname $( readlink .travis.yml ) ); fi
-    - if [ ! -e "$DEV_LIB_PATH" ]; then git clone https://github.com/xwp/wp-dev-lib.git $DEV_LIB_PATH; fi
+    - npm install
+    - export DEV_LIB_PATH=node_modules/wp-dev-lib/scripts
     - source $DEV_LIB_PATH/travis.install.sh
 
 script:
