@@ -1,28 +1,28 @@
 sudo: false
 
 language:
-    - php
-    - node_js
+  - php
+  - node_js
 
 php:
-    - 5.4
-    - 5.5
-    - 5.6
-    - 7.0
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
 
 env:
-    - WP_VERSION=latest WP_MULTISITE=0
-    - WP_VERSION=latest WP_MULTISITE=1
-    - WP_VERSION=trunk WP_MULTISITE=0
-    - WP_VERSION=trunk WP_MULTISITE=1
+  - WP_VERSION=latest WP_MULTISITE=0
+  - WP_VERSION=latest WP_MULTISITE=1
+  - WP_VERSION=trunk WP_MULTISITE=0
+  - WP_VERSION=trunk WP_MULTISITE=1
 
 install:
-    - npm install
-    - export DEV_LIB_PATH=node_modules/wp-dev-lib/scripts
-    - source $DEV_LIB_PATH/travis.install.sh
+  - npm install
+  - export DEV_LIB_PATH=node_modules/wp-dev-lib/scripts
+  - source $DEV_LIB_PATH/travis.install.sh
 
 script:
-    - source $DEV_LIB_PATH/travis.script.sh
+  - source $DEV_LIB_PATH/travis.script.sh
 
 after_script:
-    - source $DEV_LIB_PATH/travis.after_script.sh
+  - source $DEV_LIB_PATH/travis.after_script.sh
