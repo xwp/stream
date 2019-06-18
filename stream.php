@@ -41,7 +41,8 @@ if ( ! version_compare( PHP_VERSION, '5.3', '>=' ) ) {
 }
 
 /**
- * Invoked when the PHP version check fails
+ * Invoked when the PHP version check fails.
+ *
  * Load up the translations and add the error message to the admin notices.
  */
 function wp_stream_fail_php_version() {
@@ -54,7 +55,7 @@ function wp_stream_fail_php_version() {
 }
 
 /**
- * Helper for external plugins which wish to use Stream
+ * Helper for external plugins which wish to use Stream.
  *
  * @return WP_Stream\Plugin
  */
