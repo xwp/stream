@@ -79,6 +79,14 @@ Thank you for wanting to make Stream better for everyone!
 
 == Changelog ==
 
+= 3.2.4 - June 18, 2019 =
+
+* New: Filter for allow WP network-like behaviour ([#1003](https://github.com/xwp/stream/pull/1003)).
+* Fix: Sanitize instead of escape the request method ([#987](https://github.com/xwp/stream/pull/987)).
+* Fix: Escape the last page link as an HTML attribute value ([#999](https://github.com/xwp/stream/pull/999)).
+
+Props [@dkotter](https://github.com/dkotter), [@fklein-lu](https://github.com/fklein-lu), [@joehoyle](https://github.com/joehoyle)
+
 = 3.2.3 - April 23, 2018 =
 
 * New: Use minimized assets ([#973](https://github.com/xwp/stream/pull/973))
