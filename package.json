@@ -37,7 +37,7 @@
     "wp-dev-lib": "github:xwp/wp-dev-lib#1.1.2"
   },
   "scripts": {
-    "postinstall": "npm run build",
+    "postinstall": "composer install && npm run build",
     "build": "grunt default && npm run readme",
     "readme": "./node_modules/wp-dev-lib/scripts/generate-markdown-readme",
     "deploy": "npm run build && grunt deploy",
