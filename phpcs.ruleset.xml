@@ -8,5 +8,4 @@
 	<exclude-pattern>*/tests/*</exclude-pattern>
 	<exclude-pattern>*/includes/lib/*</exclude-pattern>
 	<exclude-pattern>*/ui/lib/*</exclude-pattern>
-	<exclude-pattern>*/dev-lib/*</exclude-pattern>
 </ruleset>
