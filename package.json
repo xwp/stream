@@ -31,9 +31,8 @@
     "grunt-contrib-qunit": "^2.0.0",
     "grunt-contrib-uglify": "~3.0.1",
     "grunt-shell": "~2.1.0",
-    "grunt-wp-deploy": "~1.2.1",
+    "grunt-wp-deploy": "^2.0.0",
     "qunitjs": "^2.4.0",
-    "sinon": "^3.2.1",
     "wp-dev-lib": "github:xwp/wp-dev-lib#1.1.2"
   },
   "scripts": {
