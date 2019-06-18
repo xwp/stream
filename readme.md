@@ -5,13 +5,13 @@
 Planes have a black box, WordPress has Stream. When something goes wrong, you need to know how it happened.
 
 **Contributors:** [lukecarbis](https://profiles.wordpress.org/lukecarbis), [fjarrett](https://profiles.wordpress.org/fjarrett), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
-**Tags:** [wp stream](https://wordpress.org/plugins/tags/wp stream), [stream](https://wordpress.org/plugins/tags/stream), [activity](https://wordpress.org/plugins/tags/activity), [logs](https://wordpress.org/plugins/tags/logs), [track](https://wordpress.org/plugins/tags/track)  
+**Tags:** [wp stream](https://wordpress.org/plugins/tags/wp-stream), [stream](https://wordpress.org/plugins/tags/stream), [activity](https://wordpress.org/plugins/tags/activity), [logs](https://wordpress.org/plugins/tags/logs), [track](https://wordpress.org/plugins/tags/track)  
 **Requires at least:** 3.9  
 **Tested up to:** 4.9.5  
 **Stable tag:** 3.2.3  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 
-[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](http://gruntjs.com) [![Join the chat at https://gitter.im/xwp/stream](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/xwp/stream) 
+[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com) 
 
 ## Description ##
 
