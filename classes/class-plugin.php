@@ -247,4 +247,47 @@ class Plugin {
 			$this->db = new DB( $driver );
 		}
 	}
+
+	/**
+	 * Returns true if Stream is network activated, otherwise false
+	 *
+	 * @return bool
+	 */
+	public function is_network_activated() {
+
+		$is_network_activated = false;
+
+		if ( $this->is_mustuse() ) {
+			$is_network_activated = true;
+		} else {
+			if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+				require_once ABSPATH . '/wp-admin/includes/plugin.php';
+			}
+			$is_network_activated = is_plugin_active_for_network( $this->locations['plugin'] );
+		}
+
+		/**
+		 * Filter allows the network activated detection to be overridden.
+		 *
+		 * @param string $is_network_activated Whether the plugin is network activated
+		 * @param WP_Stream\Plugin $plugin The stream plugin object
+		 */
+		return apply_filters( 'wp_stream_is_network_activated', $is_network_activated, $this );
+	}
+
+	/**
+	 * Returns true if Stream is a must-use plugin, otherwise false
+	 *
+	 * @return bool
+	 */
+	public function is_mustuse() {
+
+		$stream_php = trailingslashit( WPMU_PLUGIN_DIR ) . $this->locations['plugin'];
+
+		if ( file_exists( $stream_php ) && class_exists( 'WP_Stream\Plugin' ) ) {
+			return true;
+		}
+
+		return false;
+	}
 }
