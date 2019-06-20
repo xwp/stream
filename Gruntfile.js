@@ -36,6 +36,18 @@ module.exports = function( grunt ) {
           dest: 'ui/js/',
           ext: '.min.js'
         } ]
+      },
+      alerts: {
+        files: [ {
+          expand: true,
+          cwd: 'alerts/js/',
+          src: [
+            '*.js',
+            '!*.min.js'
+          ],
+          dest: 'alerts/js/',
+          ext: '.min.js'
+        } ]
       }
     },
 
