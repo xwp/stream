@@ -2,8 +2,8 @@
 Contributors:      lukecarbis, fjarrett, stream, xwp
 Tags:              wp stream, stream, activity, logs, track
 Requires at least: 3.9
-Tested up to:      4.9.5
-Stable tag:        3.2.3
+Tested up to:      5.2
+Stable tag:        3.3.0
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -78,6 +78,14 @@ Thank you for wanting to make Stream better for everyone!
 3. Create rules for excluding certain kinds of records from appearing in Stream.
 
 == Changelog ==
+
+= 3.3.0 - June 18, 2019 =
+
+* New: Filter for allow WP network-like behaviour ([#1003](https://github.com/xwp/stream/pull/1003)).
+* Fix: Sanitize instead of escape the request method ([#987](https://github.com/xwp/stream/pull/987)).
+* Fix: Escape the last page link as an HTML attribute value ([#999](https://github.com/xwp/stream/pull/999)).
+
+Props [@dkotter](https://github.com/dkotter), [@fklein-lu](https://github.com/fklein-lu), [@joehoyle](https://github.com/joehoyle)
 
 = 3.2.3 - April 23, 2018 =
 
