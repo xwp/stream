@@ -1,7 +1,7 @@
 {
-  "name"       : "xwp/stream",
-  "type"       : "wordpress-plugin",
-  "require"    : {
-	"composer/installers": "~1.0"
+  "name": "xwp/stream",
+  "type": "wordpress-plugin",
+  "require": {
+    "composer/installers": "~1.0"
   }
 }
