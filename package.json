@@ -32,6 +32,8 @@
     "grunt-contrib-uglify": "~3.0.1",
     "grunt-shell": "~2.1.0",
     "grunt-wp-deploy": "^2.0.0",
+    "jscs": "^3.0.7",
+    "jshint": "^2.10.2",
     "qunitjs": "^2.4.0",
     "wp-dev-lib": "github:xwp/wp-dev-lib#1.1.2"
   },
