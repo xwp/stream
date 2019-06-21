@@ -13,3 +13,4 @@ npm-debug.log
 # Compiled files
 ui/js/*.min.js
 ui/css/*.min.css
+alerts/js/*.min.js

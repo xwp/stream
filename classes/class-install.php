@@ -177,7 +177,7 @@ class Install {
 			);
 		}
 
-		if ( is_plugin_active_for_network( $this->plugin->locations['plugin'] ) && current_user_can( 'manage_network_plugins' ) ) {
+		if ( $this->plugin->is_network_activated() && current_user_can( 'manage_network_plugins' ) ) {
 			$uninstall_message = sprintf(
 				// translators: Placeholders refer to HTML Link tags (e.g. "<a href="https://foo.com/wp-admin/">")
 				__( 'Please %1$suninstall%2$s the Stream plugin and activate it again.', 'stream' ),
@@ -219,7 +219,7 @@ class Install {
 
 		$plugin = plugin_basename( $file );
 
-		if ( is_plugin_active_for_network( $plugin ) ) {
+		if ( $this->plugin->is_network_activated() ) {
 			$current_versions = get_site_option( $this->option_key . '_connectors', array() );
 			$network          = true;
 		} elseif ( is_plugin_active( $plugin ) ) {

@@ -4,14 +4,14 @@
 ![Banner](assets/banner-1544x500.png)
 Planes have a black box, WordPress has Stream. When something goes wrong, you need to know how it happened.
 
-**Contributors:** [lukecarbis](https://profiles.wordpress.org/lukecarbis), [fjarrett](https://profiles.wordpress.org/fjarrett), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)  
-**Tags:** [wp stream](https://wordpress.org/plugins/tags/wp-stream), [stream](https://wordpress.org/plugins/tags/stream), [activity](https://wordpress.org/plugins/tags/activity), [logs](https://wordpress.org/plugins/tags/logs), [track](https://wordpress.org/plugins/tags/track)  
-**Requires at least:** 3.9  
-**Tested up to:** 4.9.5  
-**Stable tag:** 3.2.3  
-**License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
+**Contributors:** [lukecarbis](https://profiles.wordpress.org/lukecarbis), [fjarrett](https://profiles.wordpress.org/fjarrett), [stream](https://profiles.wordpress.org/stream), [xwp](https://profiles.wordpress.org/xwp)
+**Tags:** [wp stream](https://wordpress.org/plugins/tags/wp-stream), [stream](https://wordpress.org/plugins/tags/stream), [activity](https://wordpress.org/plugins/tags/activity), [logs](https://wordpress.org/plugins/tags/logs), [track](https://wordpress.org/plugins/tags/track)
+**Requires at least:** 3.9
+**Tested up to:** 5.2
+**Stable tag:** 3.3.0
+**License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)
 
-[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com) 
+[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com)
 
 ## Description ##
 
@@ -90,6 +90,14 @@ Thank you for wanting to make Stream better for everyone!
 ![Create rules for excluding certain kinds of records from appearing in Stream.](assets/screenshot-3.png)
 
 ## Changelog ##
+
+### 3.3.0 - June 18, 2019 ###
+* New: Filter for allow WP network-like behaviour ([#1003](https://github.com/xwp/stream/pull/1003)).
+* Fix: Sanitize instead of escape the request method ([#987](https://github.com/xwp/stream/pull/987)).
+* Fix: Escape the last page link as an HTML attribute value ([#999](https://github.com/xwp/stream/pull/999)).
+* Fix: streamAlertTypeHighlight error on the Stream Records page ([#1007](https://github.com/xwp/stream/issues/1007)).
+
+Props [@dkotter](https://github.com/dkotter), [@fklein-lu](https://github.com/fklein-lu), [@joehoyle](https://github.com/joehoyle)
 
 ### 3.2.3 - April 23, 2018 ###
 * New: Use minimized assets ([#973](https://github.com/xwp/stream/pull/973))

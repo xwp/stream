@@ -91,31 +91,7 @@ class Network {
 	 * @return bool
 	 */
 	public function is_network_activated() {
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once ABSPATH . '/wp-admin/includes/plugin.php';
-		}
-
-		if ( $this->is_mustuse() ) {
-			return true;
-		}
-
-		return is_plugin_active_for_network( $this->plugin->locations['plugin'] );
-	}
-
-	/**
-	 * Returns true if Stream is a must-use plugin, otherwise false
-	 *
-	 * @return bool
-	 */
-	public function is_mustuse() {
-
-		$stream_php = trailingslashit( WPMU_PLUGIN_DIR ) . $this->plugin->locations['plugin'];
-
-		if ( file_exists( $stream_php ) && class_exists( 'WP_Stream\Plugin' ) ) {
-			return true;
-		}
-
-		return false;
+		return $this->plugin->is_network_activated();
 	}
 
 	/**

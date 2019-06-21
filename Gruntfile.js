@@ -36,6 +36,18 @@ module.exports = function( grunt ) {
           dest: 'ui/js/',
           ext: '.min.js'
         } ]
+      },
+      alerts: {
+        files: [ {
+          expand: true,
+          cwd: 'alerts/js/',
+          src: [
+            '*.js',
+            '!*.min.js'
+          ],
+          dest: 'alerts/js/',
+          ext: '.min.js'
+        } ]
       }
     },
 
@@ -107,9 +119,10 @@ module.exports = function( grunt ) {
     wp_deploy: {
       deploy: {
         options: {
-          plugin_slug: '<%= pkg.name %>',
+          plugin_slug: 'stream',
+          plugin_main_file: 'stream.php',
           build_dir: 'build',
-          assets_dir: 'wp-assets'
+          assets_dir: 'assets'
         }
       }
     }
