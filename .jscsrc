@@ -2,7 +2,7 @@
 	"preset": "wordpress",
 	"excludeFiles": [
 		"**/vendor/**",
-		"**.min.js",
+		"**/*.min.js",
 		"**/node_modules/**",
 		"ui/js/**",
 		"ui/lib/**",
