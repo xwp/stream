@@ -122,7 +122,7 @@ module.exports = function( grunt ) {
           plugin_slug: 'stream',
           plugin_main_file: 'stream.php',
           build_dir: 'build',
-          assets_dir: 'wp-assets'
+          assets_dir: 'assets'
         }
       }
     }
