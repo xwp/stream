@@ -3,5 +3,8 @@
   "type": "wordpress-plugin",
   "require": {
     "composer/installers": "~1.0"
+  },
+  "require-dev": {
+    "wp-coding-standards/wpcs": "^2.1"
   }
 }

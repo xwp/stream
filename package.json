@@ -22,20 +22,23 @@
     "track"
   ],
   "devDependencies": {
-    "eslint": "^4.5.0",
     "grunt": "~1.0.1",
     "grunt-contrib-clean": "~1.1.0",
     "grunt-contrib-copy": "~1.0.0",
     "grunt-contrib-cssmin": "~2.2.1",
     "grunt-contrib-jshint": "~1.1.0",
-    "grunt-contrib-qunit": "^2.0.0",
     "grunt-contrib-uglify": "~3.0.1",
     "grunt-shell": "~2.1.0",
-    "grunt-wp-deploy": "~1.2.1",
-    "qunitjs": "^2.4.0",
-    "sinon": "^3.2.1"
+    "grunt-wp-deploy": "^2.0.0",
+    "jscs": "^3.0.7",
+    "jshint": "^2.10.2",
+    "wp-dev-lib": "github:xwp/wp-dev-lib#1.1.2"
   },
   "scripts": {
-    "postinstall": "if php -r 'die( version_compare( PHP_VERSION, \"5.3\", \">=\" ) ? 0 : 1 );'; then grunt; fi"
+    "postinstall": "composer install && npm run build",
+    "build": "grunt default && npm run readme",
+    "readme": "./node_modules/wp-dev-lib/scripts/generate-markdown-readme",
+    "deploy": "npm run build && grunt deploy",
+    "lint": "DIFF_BASE=master ./node_modules/wp-dev-lib/scripts/pre-commit"
   }
 }
