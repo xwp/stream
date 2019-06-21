@@ -1,11 +1,11 @@
 /* eslint-env node */
 /* jshint node:true */
 
-module.exports = function(grunt) {
+module.exports = function( grunt ) {
 	'use strict';
 
-	grunt.initConfig({
-		pkg: grunt.file.readJSON('package.json'),
+	grunt.initConfig( {
+		pkg: grunt.file.readJSON( 'package.json' ),
 
 		// JavaScript linting with JSHint.
 		jshint: {
@@ -119,25 +119,21 @@ module.exports = function(grunt) {
 				}
 			}
 		}
-	});
+	} );
 
 	// Load tasks
-	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-shell');
-	grunt.loadNpmTasks('grunt-wp-deploy');
+	grunt.loadNpmTasks( 'grunt-contrib-clean' );
+	grunt.loadNpmTasks( 'grunt-contrib-copy' );
+	grunt.loadNpmTasks( 'grunt-contrib-cssmin' );
+	grunt.loadNpmTasks( 'grunt-contrib-jshint' );
+	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
+	grunt.loadNpmTasks( 'grunt-shell' );
+	grunt.loadNpmTasks( 'grunt-wp-deploy' );
 
 	// Register tasks
-	grunt.registerTask('default', ['jshint', 'uglify', 'cssmin']);
-
-	grunt.registerTask('phpunit', ['shell:phpunit']);
-
-	grunt.registerTask('phpunit_c', ['shell:phpunit_c']);
-
-	grunt.registerTask('build', ['default', 'copy']);
-
-	grunt.registerTask('deploy', ['build', 'wp_deploy', 'clean']);
+	grunt.registerTask( 'default', ['jshint', 'uglify', 'cssmin'] );
+	grunt.registerTask( 'phpunit', ['shell:phpunit'] );
+	grunt.registerTask( 'phpunit_c', ['shell:phpunit_c'] );
+	grunt.registerTask( 'build', ['default', 'copy'] );
+	grunt.registerTask( 'deploy', ['build', 'wp_deploy', 'clean'] );
 };
