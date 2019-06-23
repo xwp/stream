@@ -41,7 +41,20 @@ class Query {
 		// TODO: Switch all instances of $wpdb to $this->db;
 		$this->db = $wpdb;
 
-		$this->lookup_fields = [];
+		$this->lookup_fields = array(
+			'ID',
+			'site_id',
+			'blog_id',
+			'object_id',
+			'user_id',
+			'user_role',
+			'created',
+			'summary',
+			'connector',
+			'context',
+			'action',
+			'ip',
+		);
 	}
 
 	/**
@@ -82,6 +95,7 @@ class Query {
 
 		if ( ! empty( $args['search'] ) ) {
 			$field = ! empty( $args['search_field'] ) ? $args['search_field'] : 'summary';
+			$field = $this->lookup_field_validated( $field );
 
 			// Sanitize field.
 			$allowed_fields = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );
@@ -291,9 +305,22 @@ class Query {
 		if ( $this->key_is_in_lookup( $key ) || $this->key_is_not_in_lookup( $key ) ) {
 			$field = str_replace( array( 'record_', '__in', '__not_in' ), '', $key );
 
-			if ( in_array( $field, $this->lookup_fields, true ) ) {
-				return $field;
-			}
+			$this->lookup_field( $field );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Check if a known lookup field is requested.
+	 *
+	 * @param string $field Field name.
+	 *
+	 * @return string|null
+	 */
+	protected function lookup_field_validated( $field ) {
+		if ( in_array( $field, $this->lookup_fields, true ) ) {
+			return $field;
 		}
 
 		return null;
