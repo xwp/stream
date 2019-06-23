@@ -19,6 +19,32 @@ class Query {
 	public $found_records = 0;
 
 	/**
+	 * Instance of the WPDB object.
+	 *
+	 * @var \WP_DB
+	 */
+	protected $db;
+
+	/**
+	 * List of IN and NOT IN query field names.
+	 *
+	 * @var array
+	 */
+	protected $lookup_fields;
+
+	/**
+	 * Setup a query.
+	 */
+	public function __construct() {
+		global $wpdb;
+
+		// TODO: Switch all instances of $wpdb to $this->db;
+		$this->db = $wpdb;
+
+		$this->lookup_fields = [];
+	}
+
+	/**
 	 * Query records
 	 *
 	 * @param array $args Arguments to filter the records by.
@@ -244,5 +270,71 @@ class Query {
 		$result['count'] = $result['items'] ? absint( $wpdb->get_var( 'SELECT FOUND_ROWS()' ) ) : 0;
 
 		return $result;
+	}
+
+	/**
+	 * Escape and prepare list values for select IN and NOT IN statements.
+	 *
+	 * @param array|string $list Values to prepare.
+	 *
+	 * @return array
+	 */
+	protected function db_prepare_list( $list ) {
+		// Ensure we're always working with the same data type.
+		if ( ! is_array( $list ) ) {
+			$list = array( $list );
+		}
+
+		return array_map(
+			function( $value ) {
+				if ( is_numeric( $value ) ) {
+					return $this->db->prepare( '%d', $value );
+				}
+
+				return $this->db->prepare( '%s', (string) $value );
+			},
+			$list
+		);
+	}
+
+	/**
+	 * Is key for a IN query.
+	 *
+	 * @param string $key Query key.
+	 *
+	 * @return boolean
+	 */
+	protected function key_is_in_lookup( $key ) {
+		return ( '__in' === substr( $key, -4 ) );
+	}
+
+	/**
+	 * Is key for a NOT IN query.
+	 *
+	 * @param string $key Query key.
+	 *
+	 * @return boolean
+	 */
+	protected function key_is_not_in_lookup( $key ) {
+		return ( '__not_in' === substr( $key, -8 ) );
+	}
+
+	/**
+	 * Map IN and NOT query keys to known database field names.
+	 *
+	 * @param string $key Query key name.
+	 *
+	 * @return string|null
+	 */
+	protected function key_to_field( $key ) {
+		if ( $this->key_is_in_lookup( $key ) || $this->key_is_not_in_lookup( $key ) ) {
+			$field = str_replace( array( 'record_', '__in', '__not_in' ), '', $key );
+
+			if ( in_array( $field, $this->lookup_fields, true ) ) {
+				return $field;
+			}
+		}
+
+		return null;
 	}
 }
