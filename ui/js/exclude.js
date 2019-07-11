@@ -21,7 +21,7 @@ jQuery(
 							matcher: function( params, data ) {
 								var match = $.extend( true, {}, data );
 
-								if ( params.term == null || $.trim( params.term ) === '' ) {
+								if ( null === params.term || $.trim( params.term ) === '' ) {
 									return match;
 								}
 
