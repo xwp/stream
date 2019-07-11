@@ -14,9 +14,10 @@ services:
       MYSQL_ROOT_PASSWORD: password
 
   wordpress:
-    image: wordpress:latest
+    build: ./local/docker/wordpress
+    working_dir: /var/www/html/wp-content/plugins/stream
     links:
-      - mysql:mysql
+      - mysql
     depends_on:
       - mysql
     ports:
@@ -34,14 +35,6 @@ services:
       WORDPRESS_DEBUG: 1
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: password
-
-  wpcli:
-    image: wordpress:cli
-    depends_on:
-      - mysql
-      - wordpress
-    volumes:
-      - wp_data:/var/www/html
 
   db_phpunit:
     image: mysql:5.7
