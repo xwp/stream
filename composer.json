@@ -9,7 +9,9 @@
   },
   "require-dev": {
     "wp-coding-standards/wpcs": "^2.1",
-    "wpsh/local": "^0.2.3"
+    "wpsh/local": "^0.2.3",
+    "php-coveralls/php-coveralls": "^2.1",
+    "phpunit/phpunit": "^5.7"
   },
   "config": {
     "platform": {
@@ -26,6 +28,9 @@
     "lint": [
       "@composer validate",
       "@lint-php"
+    ],
+    "test-report": [
+      "php-coveralls -v"
     ]
   }
 }
