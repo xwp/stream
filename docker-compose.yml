@@ -26,11 +26,11 @@ services:
       - wp_data:/var/www/html
       - .:/var/www/html/wp-content/plugins/stream-src
       - ./build:/var/www/html/wp-content/plugins/stream
-      - ./vendor/wordpress/wordpress/tests/phpunit:/var/www/html/tests/phpunit
-      - ./local/config/wp-tests-config.php:/var/www/html/tests/phpunit/wp-tests-config.php
+      - ./vendor/wordpress/wordpress/tests/phpunit:/var/www/html/tests/wordpress-phpunit
+      - ./local/config/wp-tests-config.php:/var/www/html/tests/wordpress-phpunit/wp-tests-config.php
     restart: always
     environment:
-      WP_TESTS_DIR: /var/www/html/tests/wordpress/phpunit
+      WP_TESTS_DIR: /var/www/html/tests/wordpress-phpunit
       WORDPRESS_DEBUG: 1
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: password
