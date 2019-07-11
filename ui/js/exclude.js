@@ -1,4 +1,4 @@
-/* globals ajaxurl, wp_stream_regenerate_alt_rows */
+/* globals jQuery, ajaxurl, wp_stream_regenerate_alt_rows */
 jQuery(
 	function( $ ) {
 		var initSettingsSelect2 = function() {
