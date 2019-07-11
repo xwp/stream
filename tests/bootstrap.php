@@ -6,11 +6,6 @@ if ( empty( $_tests_dir ) || ! file_exists( $_tests_dir . '/includes' ) ) {
 	trigger_error( 'Unable to locate WP_TESTS_DIR', E_USER_ERROR );
 }
 
-# Include Composer autoloader for dependency resolution.
-if ( file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
-	require_once dirname( __DIR__ ) . '/vendor/autoload.php';
-}
-
 // Use in code to trigger custom actions
 define( 'WP_STREAM_TESTS', true );
 define( 'WP_STREAM_DEV_DEBUG', true );
