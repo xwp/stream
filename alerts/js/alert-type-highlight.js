@@ -13,17 +13,13 @@ var streamAlertTypeHighlight = ( function( $ ) {
 
 	/**
 	 * The primary function for this file.
-	 *
-	 * @return void.
 	 */
 	self.init = function() {
 		$( document ).ready(
 			function() {
 				/**
-			 * Remove highlights on Record list screen.
-			 *
-			 * @returns void.
-			 */
+				 * Remove highlights on Record list screen.
+				 */
 				$( '.alert-highlight .action-link[href="#"]' ).each(
 					function() {
 						var actionLink = $( this );
