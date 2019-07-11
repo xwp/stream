@@ -97,14 +97,14 @@ jQuery(
 				alert_type: alert_type,
 			};
 
-			var $edit_row = $( '#wp_stream_alert_type' ).closest( 'tr' );
-			var row_id = $edit_row.attr( 'id' );
+			var $alert_edit_row = $( '#wp_stream_alert_type' ).closest( 'tr' );
+			var row_id = $alert_edit_row.attr( 'id' );
 			data.post_id = row_id.split( '-' )[1];
 			$.post(
 				window.ajaxurl, data, function( response ) {
 					var $alert_type_settings = $( '#wp_stream_alert_type_form' );
-					var alert_type = $( '#wp_stream_alert_type' ).val();
-					if ( 'none' === alert_type ) {
+					var alert_type_value = $( '#wp_stream_alert_type' ).val();
+					if ( 'none' === alert_type_value ) {
 						$alert_type_settings.hide();
 						return;
 					}
