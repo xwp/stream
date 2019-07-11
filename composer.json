@@ -19,7 +19,8 @@
     "wordpress/wordpress": "^5.2",
     "wp-cli/wp-cli-bundle": "^2.2",
     "wp-coding-standards/wpcs": "^2.1",
-    "wpsh/local": "^0.2.3"
+    "wpsh/local": "^0.2.3",
+    "xwp/wp-dev-lib": "^1.2"
   },
   "config": {
     "sort-packages": true,
