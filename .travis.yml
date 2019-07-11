@@ -24,10 +24,11 @@ env:
 
 install:
   - npm install
+  - docker-compose up -d
 
 script:
   - npm run lint
-  - DEV_LIB_ONLY=phpunit source "$DEV_LIB_PATH/travis.script.sh"
+  - npm run phpunit
 
 after_script:
   - cat "tests/reports/clover.xml"
