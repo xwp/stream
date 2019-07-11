@@ -42,7 +42,7 @@
       "phpunit"
     ],
     "test-report": [
-      "php-coveralls -v"
+      "php-coveralls --verbose"
     ]
   }
 }
