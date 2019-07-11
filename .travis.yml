@@ -21,16 +21,18 @@ env:
 
 install:
   - npm install
-  - export DEV_LIB_PATH=node_modules/wp-dev-lib/scripts
-  - source $DEV_LIB_PATH/travis.install.sh
+  - export DEV_LIB_PATH="node_modules/wp-dev-lib/scripts"
+  - source "$DEV_LIB_PATH/travis.install.sh"
 
 script:
-  - source $DEV_LIB_PATH/travis.script.sh
+  - npm run lint
+  - DEV_LIB_ONLY=phpunit source "$DEV_LIB_PATH/travis.script.sh"
 
 after_script:
-  - source $DEV_LIB_PATH/travis.after_script.sh
+  - source "$DEV_LIB_PATH/travis.after_script.sh"
 
 before_deploy:
+  - composer release
   - npm run build
 
 deploy:
