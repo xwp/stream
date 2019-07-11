@@ -6,7 +6,7 @@
     "plugin:@wordpress/eslint-plugin/es5"
   ],
   "rules": {
-    "camelcase": "warn",
+    "camelcase": "off",
     "no-alert": "off",
     "vars-on-top": "warn"
   }
