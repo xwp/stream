@@ -8,20 +8,20 @@
 	>
 	<testsuites>
 		<testsuite>
-			<directory prefix="test-" suffix=".php">./tests/</directory>
+			<directory prefix="test-" suffix=".php">tests</directory>
 		</testsuite>
 	</testsuites>
 	<filter>
 		<whitelist processUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">alerts</directory>
-			<directory suffix=".php">classes</directory>
-			<directory suffix=".php">connectors</directory>
-			<directory suffix=".php">exporters</directory>
-			<directory suffix=".php">includes</directory>
+			<directory prefix="class-" suffix=".php">.</directory>
+			<directory prefix="class-" suffix=".php">alerts</directory>
+			<directory prefix="class-" suffix=".php">classes</directory>
+			<directory prefix="class-" suffix=".php">connectors</directory>
+			<directory prefix="class-" suffix=".php">exporters</directory>
+			<directory prefix="class-" suffix=".php">includes</directory>
 			<exclude>
 				<file>classes/class-cli.php</file><!-- FIXME: It can't resolve WP_CLI_Command for some reason. -->
 				<directory>includes/lib</directory>
-				<directory>includes/feeds</directory>
 			</exclude>
 		</whitelist>
 	</filter>
