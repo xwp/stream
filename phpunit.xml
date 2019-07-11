@@ -12,8 +12,13 @@
 		</testsuite>
 	</testsuites>
 	<filter>
-		<whitelist processUncoveredFilesFromWhitelist="true">
-			<!-- TODO: Add list -->
+		<whitelist processUncoveredFilesFromWhitelist="false">
+			<directory suffix=".php">.</directory>
+			<exclude>
+				<directory>includes/lib</directory>
+				<directory>vendor</directory>
+				<directory>node_modules</directory>
+			</exclude>
 		</whitelist>
 	</filter>
 	<logging>
