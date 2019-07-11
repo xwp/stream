@@ -6,11 +6,14 @@
 	<arg name="colors" />
 	<arg value="sp" /><!-- Show sniff codes in all reports and progress. -->
 
-	<rule ref="WordPress">
-		<exclude name="Squiz.Commenting.FileComment" />
-		<exclude name="Squiz.Commenting.ClassComment.Missing" />
+	<rule ref="WordPress-Docs">
+		<type>warning</type><!-- Report but ignore for now. -->
+	</rule>
+
+	<rule ref="WordPress-Extra" />
+
+	<rule ref="WordPress-Core">
 		<exclude name="WordPress.Security.EscapeOutput.DeprecatedWhitelistCommentFound" /><!-- TODO: Change these to phpcs:ignore -->
-		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar" /><!-- FIXME -->
 	</rule>
 
 	<exclude-pattern>*.ruleset</exclude-pattern>
@@ -18,5 +21,6 @@
 	<exclude-pattern>*/includes/lib/*</exclude-pattern>
 	<exclude-pattern>*/ui/lib/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/build/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 </ruleset>
