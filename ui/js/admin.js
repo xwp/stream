@@ -1,4 +1,4 @@
-/* globals wp_stream, ajaxurl */
+/* globals wp_stream, ajaxurl, jQuery */
 jQuery(
 	function( $ ) {
 		// Shorter timeago strings for English locale
