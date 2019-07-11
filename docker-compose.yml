@@ -30,6 +30,7 @@ services:
       - ./local/config/wp-tests-config.php:/var/www/html/tests/wordpress-phpunit/wp-tests-config.php
     restart: always
     environment:
+      APACHE_RUN_USER: "#1000" # Ensure Apache can write to the filesystem.
       WP_TESTS_DIR: /var/www/html/tests/wordpress-phpunit
       WORDPRESS_DEBUG: 1
       WORDPRESS_DB_USER: wordpress
