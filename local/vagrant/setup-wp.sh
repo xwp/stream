@@ -6,7 +6,7 @@ set -x
 DOCKER_COMPOSE_FILE=${DOCKER_COMPOSE_FILE:-"docker-compose.yml"}
 
 # Install WP multisite.
-docker-compose --file "$DOCKER_COMPOSE_FILE" run --user 1000 -T wordpress \
+docker-compose --file "$DOCKER_COMPOSE_FILE" exec --user 1000 -T wordpress \
 	wp core multisite-install \
 		--skip-config \
 		--subdomains \
