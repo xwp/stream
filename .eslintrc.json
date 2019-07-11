@@ -3,7 +3,7 @@
     "browser": true
   },
   "extends": [
-    "plugin:@wordpress/eslint-plugin/recommended"
+    "plugin:@wordpress/eslint-plugin/es5"
   ],
   "rules": {
     "camelcase": "warn"
