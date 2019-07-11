@@ -2,15 +2,11 @@
 .DS_Store
 /node_modules/
 /vendor/
+/build/
 /.vagrant/
 /console.log
 npm-debug.log
 package.lock
-
-# Grunt
-/build/
-/node_modules/
-npm-debug.log
 
 # Compiled files
 ui/js/*.min.js
