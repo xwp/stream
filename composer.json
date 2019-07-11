@@ -4,6 +4,12 @@
   "homepage": "https://wordpress.org/plugins/stream/",
   "type": "wordpress-plugin",
   "license": "GPL-2.0-or-later",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/WordPress/wordpress-develop.git"
+    }
+  ],
   "require": {
     "composer/installers": "~1.0"
   },
@@ -12,9 +18,11 @@
     "wpsh/local": "^0.2.3",
     "php-coveralls/php-coveralls": "^2.1",
     "phpunit/phpunit": "^5.7",
-    "wp-cli/wp-cli-bundle": "^2.2"
+    "wp-cli/wp-cli-bundle": "^2.2",
+    "wordpress/wordpress": "^5.2"
   },
   "config": {
+    "sort-packages": true,
     "platform": {
       "php": "5.6"
     }

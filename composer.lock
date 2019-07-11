@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "32db6154c81538e86b15b024f8eda8af",
+    "content-hash": "e5937a5071fab0978ebc33314d249c73",
     "packages": [
         {
             "name": "composer/installers",
@@ -3178,6 +3178,43 @@
                 "validate"
             ],
             "time": "2018-12-25T11:19:39+00:00"
+        },
+        {
+            "name": "wordpress/wordpress",
+            "version": "5.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WordPress/wordpress-develop.git",
+                "reference": "3e591c22ded09aecc5f91bf218176b81b6d7e6f3"
+            },
+            "require-dev": {
+                "dealerdirect/phpcodesniffer-composer-installer": "~0.5.0",
+                "wp-coding-standards/wpcs": "~2.0.0"
+            },
+            "type": "library",
+            "scripts": {
+                "format": [
+                    "phpcbf --standard=phpcs.xml.dist --report-summary --report-source"
+                ],
+                "lint": [
+                    "phpcs --standard=phpcs.xml.dist --report-summary --report-source"
+                ]
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "WordPress is open source software you can use to create a beautiful website, blog, or app.",
+            "homepage": "https://wordpress.org",
+            "keywords": [
+                "blog",
+                "cms",
+                "wordpress",
+                "wp"
+            ],
+            "support": {
+                "issues": "https://core.trac.wordpress.org/"
+            },
+            "time": "2019-06-18T17:47:02+00:00"
         },
         {
             "name": "wp-cli/cache-command",
