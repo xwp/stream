@@ -9,5 +9,14 @@
   },
   "require-dev": {
     "wp-coding-standards/wpcs": "^2.1"
+  },
+  "scripts": {
+    "lint-php": [
+      "phpcs ."
+    ],
+    "lint": [
+      "@composer validate",
+      "@lint-php"
+    ]
   }
 }
