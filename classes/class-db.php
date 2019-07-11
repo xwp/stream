@@ -47,7 +47,8 @@ class DB {
 		$record = apply_filters( 'wp_stream_record_array', $record );
 
 		array_walk(
-			$record, function( &$value, &$key ) {
+			$record,
+			function( &$value, &$key ) {
 				if ( ! is_array( $value ) ) {
 					$value = strip_tags( $value );
 				}

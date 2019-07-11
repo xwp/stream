@@ -4,6 +4,7 @@ namespace WP_Stream;
 class Connector_Woocommerce extends Connector {
 	/**
 	 * Context name
+	 *
 	 * @var string
 	 */
 	public $name = 'woocommerce';
@@ -17,6 +18,7 @@ class Connector_Woocommerce extends Connector {
 
 	/**
 	 * Actions registered for this context
+	 *
 	 * @var array
 	 */
 	public $actions = array(
@@ -206,7 +208,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links   Previous links registered
 	 * @param Record $record Stream record
 	 *
 	 * @return array Action links
@@ -288,8 +290,8 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action transition_post_status
 	 *
-	 * @param string $new
-	 * @param string $old
+	 * @param string   $new
+	 * @param string   $old
 	 * @param \WP_Post $post
 	 */
 	public function callback_transition_post_status( $new, $old, $post ) {
@@ -419,7 +421,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_order_status_changed
 	 *
-	 * @param int $order_id
+	 * @param int    $order_id
 	 * @param string $old
 	 * @param string $new
 	 */
@@ -477,7 +479,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_attribute_added
 	 *
-	 * @param int $attribute_id
+	 * @param int   $attribute_id
 	 * @param array $attribute
 	 */
 	public function callback_woocommerce_attribute_added( $attribute_id, $attribute ) {
@@ -500,7 +502,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_attribute_updated
 	 *
-	 * @param int $attribute_id
+	 * @param int   $attribute_id
 	 * @param array $attribute
 	 */
 	public function callback_woocommerce_attribute_updated( $attribute_id, $attribute ) {
@@ -523,7 +525,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_attribute_updated
 	 *
-	 * @param int $attribute_id
+	 * @param int    $attribute_id
 	 * @param string $attribute_name
 	 */
 	public function callback_woocommerce_attribute_deleted( $attribute_id, $attribute_name ) {
@@ -548,7 +550,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_tax_rate_added
 	 *
-	 * @param int $tax_rate_id
+	 * @param int   $tax_rate_id
 	 * @param array $tax_rate
 	 */
 	public function callback_woocommerce_tax_rate_added( $tax_rate_id, $tax_rate ) {
@@ -571,7 +573,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_tax_rate_updated
 	 *
-	 * @param int $tax_rate_id
+	 * @param int   $tax_rate_id
 	 * @param array $tax_rate
 	 */
 	public function callback_woocommerce_tax_rate_updated( $tax_rate_id, $tax_rate ) {
@@ -754,7 +756,8 @@ class Connector_Woocommerce extends Connector {
 
 			// Provide additional context for each of the settings pages
 			array_walk(
-				$settings_pages, function( &$value ) {
+				$settings_pages,
+				function( &$value ) {
 					$value .= ' ' . esc_html__( 'Settings', 'stream' );
 				}
 			);

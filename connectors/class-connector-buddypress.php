@@ -367,10 +367,14 @@ class Connector_BuddyPress extends Connector {
 		$replacement = str_replace( '-', '_', $option );
 
 		if ( method_exists( $this, 'check_' . $replacement ) ) {
-			call_user_func( array(
-				$this,
-				'check_' . $replacement,
-			), $old_value, $new_value );
+			call_user_func(
+				array(
+					$this,
+					'check_' . $replacement,
+				),
+				$old_value,
+				$new_value
+			);
 		} else {
 			$data         = $this->options[ $option ];
 			$option_title = $data['label'];

@@ -120,7 +120,7 @@ class Connector_Comments extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links   Previous links registered
 	 * @param object $record Stream record
 	 *
 	 * @return array Action links
@@ -164,7 +164,7 @@ class Connector_Comments extends Connector {
 	 * will try to see if the e-mail provided does belong to a registered user.
 	 *
 	 * @param object|int $comment A comment object or comment ID
-	 * @param string $field       What field you want to return
+	 * @param string     $field       What field you want to return
 	 *
 	 * @return int|string $output User ID or user display name
 	 */
@@ -241,7 +241,7 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action wp_insert_comment
 	 *
-	 * @param int $comment_id
+	 * @param int    $comment_id
 	 * @param object $comment
 	 */
 	public function callback_wp_insert_comment( $comment_id, $comment ) {

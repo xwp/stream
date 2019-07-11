@@ -316,7 +316,7 @@ class Alerts_List {
 		<legend class="inline-edit-legend"><?php esc_html_e( 'Edit', 'stream' ); ?></legend>
 		<?php
 		foreach ( $box_type as $type ) : // @todo remove inline styles.
-		?>
+			?>
 			<fieldset class="inline-edit-col inline-edit-<?php echo esc_attr( Alerts::POST_TYPE ); ?>">
 				<?php
 				$function_name = 'display_' . $type . '_box';

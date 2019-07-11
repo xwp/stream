@@ -120,7 +120,7 @@ class Connector_BbPress extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array $links      Previous links registered
+	 * @param  array  $links      Previous links registered
 	 * @param  object $record    Stream record
 	 *
 	 * @return array             Action links
@@ -206,10 +206,10 @@ class Connector_BbPress extends Connector {
 	/**
 	 * Tracks togging the forum topics
 	 *
-	 * @param bool $success
+	 * @param bool     $success
 	 * @param \WP_Post $post_data
-	 * @param string $action
-	 * @param string $message
+	 * @param string   $action
+	 * @param string   $message
 	 *
 	 * @return array|bool
 	 */

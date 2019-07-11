@@ -76,7 +76,8 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		$context_values = array();
 
 		$form->add_field(
-			'select2', array(
+			'select2',
+			array(
 				'name'    => 'wp_stream_trigger_connector_or_context',
 				'options' => $this->get_values(),
 				'classes' => 'wp_stream_ajax_forward connector_or_context',
@@ -87,7 +88,8 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		);
 
 		$form->add_field(
-			'hidden', array(
+			'hidden',
+			array(
 				'name'    => 'wp_stream_trigger_connector',
 				'value'   => $connector,
 				'classes' => 'connector wp_stream_ajax_forward',
@@ -95,7 +97,8 @@ class Alert_Trigger_Context extends Alert_Trigger {
 		);
 
 		$form->add_field(
-			'hidden', array(
+			'hidden',
+			array(
 				'name'    => 'wp_stream_trigger_context',
 				'value'   => $context,
 				'classes' => 'context wp_stream_ajax_forward',

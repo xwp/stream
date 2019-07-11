@@ -79,7 +79,7 @@ class Connector_Users extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links   Previous links registered
 	 * @param Record $record Stream record
 	 *
 	 * @return array Action links
@@ -167,7 +167,7 @@ class Connector_Users extends Connector {
 	 *
 	 * @action profile_update
 	 *
-	 * @param int $user_id   registered user ID
+	 * @param int      $user_id   registered user ID
 	 * @param \WP_User $user registered user object
 	 */
 	public function callback_profile_update( $user_id, $user ) {
@@ -190,9 +190,9 @@ class Connector_Users extends Connector {
 	 *
 	 * @action set_user_role
 	 *
-	 * @param int $user_id
+	 * @param int    $user_id
 	 * @param string $new_role
-	 * @param array $old_roles
+	 * @param array  $old_roles
 	 */
 	public function callback_set_user_role( $user_id, $new_role, $old_roles ) {
 		if ( empty( $old_roles ) ) {
@@ -273,9 +273,9 @@ class Connector_Users extends Connector {
 	 * @action set_logged_in_cookie
 	 *
 	 * @param string $logged_in_cookie
-	 * @param int $expire
-	 * @param int $expiration
-	 * @param int $user_id
+	 * @param int    $expire
+	 * @param int    $expiration
+	 * @param int    $user_id
 	 */
 	public function callback_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
 		unset( $logged_in_cookie );

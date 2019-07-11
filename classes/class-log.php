@@ -291,7 +291,8 @@ class Log {
 
 		if ( $stream_meta ) {
 			array_walk(
-				$stream_meta, function ( &$value, $key ) {
+				$stream_meta,
+				function ( &$value, $key ) {
 					$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
 				}
 			);
@@ -303,7 +304,8 @@ class Log {
 
 		if ( $user_meta ) {
 			array_walk(
-				$user_meta, function ( &$value, $key ) {
+				$user_meta,
+				function ( &$value, $key ) {
 					$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
 				}
 			);

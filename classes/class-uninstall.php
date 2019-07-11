@@ -4,6 +4,7 @@ namespace WP_Stream;
 class Uninstall {
 	/**
 	 * Hold Plugin class
+	 *
 	 * @var Plugin
 	 */
 	public $plugin;
@@ -37,7 +38,7 @@ class Uninstall {
 	 * Uninstall Stream by deleting its data
 	 */
 	public function uninstall() {
-		//check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+		// check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
 
 		$this->options = array(
 			$this->plugin->install->option_key,

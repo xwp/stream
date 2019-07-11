@@ -43,10 +43,13 @@ class Alert_Type_Email extends Alert_Type {
 			return;
 		}
 		add_filter(
-			'wp_stream_alerts_save_meta', array(
+			'wp_stream_alerts_save_meta',
+			array(
 				$this,
 				'add_alert_meta',
-			), 10, 2
+			),
+			10,
+			2
 		);
 	}
 
@@ -60,7 +63,8 @@ class Alert_Type_Email extends Alert_Type {
 	 */
 	public function alert( $record_id, $recordarr, $alert ) {
 		$options = wp_parse_args(
-			$alert->alert_meta, array(
+			$alert->alert_meta,
+			array(
 				'email_recipient'   => '',
 				'email_subject'     => '',
 				'trigger_action'    => '',
@@ -131,7 +135,8 @@ class Alert_Type_Email extends Alert_Type {
 			$alert_meta = $alert->alert_meta;
 		}
 		$options = wp_parse_args(
-			$alert_meta, array(
+			$alert_meta,
+			array(
 				'email_recipient' => '',
 				'email_subject'   => '',
 			)
@@ -142,7 +147,8 @@ class Alert_Type_Email extends Alert_Type {
 		echo '<label for="wp_stream_email_recipient"><span class="title">' . esc_html__( 'Recipient', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field(
-			'text', array(
+			'text',
+			array(
 				'name'  => 'wp_stream_email_recipient',
 				'title' => esc_attr( __( 'Email Recipient', 'stream' ) ),
 				'value' => $options['email_recipient'],
@@ -153,7 +159,8 @@ class Alert_Type_Email extends Alert_Type {
 		echo '<label for="wp_stream_email_subject"><span class="title">' . esc_html__( 'Subject', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field(
-			'text', array(
+			'text',
+			array(
 				'name'  => 'wp_stream_email_subject',
 				'title' => esc_attr( __( 'Email Subject', 'stream' ) ),
 				'value' => $options['email_subject'],

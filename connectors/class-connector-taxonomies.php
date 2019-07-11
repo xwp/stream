@@ -118,7 +118,7 @@ class Connector_Taxonomies extends Connector {
 	 *
 	 * @action registered_taxonomy
 	 *
-	 * @param string $taxonomy          Taxonomy slug
+	 * @param string       $taxonomy          Taxonomy slug
 	 * @param array|string $object_type Object type or array of object types
 	 * @param array|string $args        Array or string of taxonomy registration arguments
 	 */
@@ -140,7 +140,7 @@ class Connector_Taxonomies extends Connector {
 	 *
 	 * @param integer $term_id
 	 * @param integer $tt_id
-	 * @param string $taxonomy
+	 * @param string  $taxonomy
 	 */
 	public function callback_created_term( $term_id, $tt_id, $taxonomy ) {
 		if ( in_array( $taxonomy, $this->get_excluded_taxonomies(), true ) ) {
@@ -173,8 +173,8 @@ class Connector_Taxonomies extends Connector {
 	 *
 	 * @param integer $term_id
 	 * @param integer $tt_id
-	 * @param string $taxonomy
-	 * @param object $deleted_term
+	 * @param string  $taxonomy
+	 * @param object  $deleted_term
 	 */
 	public function callback_delete_term( $term_id, $tt_id, $taxonomy, $deleted_term ) {
 		if ( in_array( $taxonomy, $this->get_excluded_taxonomies(), true ) ) {
@@ -206,7 +206,7 @@ class Connector_Taxonomies extends Connector {
 	 *
 	 * @param integer $term_id
 	 * @param integer $tt_id
-	 * @param string $taxonomy
+	 * @param string  $taxonomy
 	 */
 	public function callback_edit_term( $term_id, $tt_id, $taxonomy ) {
 		unset( $tt_id );

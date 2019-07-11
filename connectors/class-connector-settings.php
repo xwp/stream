@@ -451,7 +451,7 @@ class Connector_Settings extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links   Previous links registered
 	 * @param Record $record Stream record
 	 *
 	 * @return array             Action links
@@ -593,8 +593,8 @@ class Connector_Settings extends Connector {
 	 * @action update_option
 	 *
 	 * @param string $option
-	 * @param mixed $old_value
-	 * @param mixed $value
+	 * @param mixed  $old_value
+	 * @param mixed  $value
 	 */
 	public function callback_update_option( $option, $value, $old_value ) {
 		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && array_key_exists( $option, $this->labels ) ) {
@@ -624,7 +624,6 @@ class Connector_Settings extends Connector {
 	 *
 	 * @param mixed $old_value
 	 * @param mixed $value
-	 *
 	 */
 	public function callback_update_option_permalink_structure( $old_value, $value ) {
 		$this->callback_updated_option( 'permalink_structure', $old_value, $value );
@@ -636,8 +635,8 @@ class Connector_Settings extends Connector {
 	 * @action update_site_option
 	 *
 	 * @param string $option
-	 * @param mixed $old_value
-	 * @param mixed $value
+	 * @param mixed  $old_value
+	 * @param mixed  $value
 	 */
 	public function callback_update_site_option( $option, $value, $old_value ) {
 		$this->callback_updated_option( $option, $value, $old_value );
@@ -673,8 +672,8 @@ class Connector_Settings extends Connector {
 	 * @action updated_option
 	 *
 	 * @param string $option
-	 * @param mixed $old_value
-	 * @param mixed $value
+	 * @param mixed  $old_value
+	 * @param mixed  $value
 	 */
 	public function callback_updated_option( $option, $old_value, $value ) {
 		global $whitelist_options, $new_whitelist_options;
@@ -820,8 +819,8 @@ class Connector_Settings extends Connector {
 	 * @see is_option_group()
 	 *
 	 * @param string $key
-	 * @param mixed $old_value
-	 * @param mixed $value
+	 * @param mixed  $old_value
+	 * @param mixed  $value
 	 *
 	 * @return bool Whether the option should be treated as a group
 	 */

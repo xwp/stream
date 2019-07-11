@@ -4,6 +4,7 @@ namespace WP_Stream;
 class Install {
 	/**
 	 * Hold Plugin class
+	 *
 	 * @var Plugin
 	 */
 	public $plugin;
@@ -97,7 +98,9 @@ class Install {
 		if ( ! $update ) {
 			$this->update_required = true;
 			$this->success_db      = $this->update(
-				$this->db_version, $this->plugin->get_version(), array(
+				$this->db_version,
+				$this->plugin->get_version(),
+				array(
 					'type' => 'auto',
 				)
 			);
@@ -105,7 +108,9 @@ class Install {
 
 		if ( 'update_and_continue' === $update ) {
 			$this->success_db = $this->update(
-				$this->db_version, $this->plugin->get_version(), array(
+				$this->db_version,
+				$this->plugin->get_version(),
+				array(
 					'type' => 'user',
 				)
 			);

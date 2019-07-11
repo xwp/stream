@@ -155,15 +155,19 @@ class Admin {
 
 		// Plugin action links.
 		add_filter(
-			'plugin_action_links', array(
+			'plugin_action_links',
+			array(
 				$this,
 				'plugin_action_links',
-			), 10, 2
+			),
+			10,
+			2
 		);
 
 		// Load admin scripts and styles.
 		add_action(
-			'admin_enqueue_scripts', array(
+			'admin_enqueue_scripts',
+			array(
 				$this,
 				'admin_enqueue_scripts',
 			)
@@ -172,7 +176,8 @@ class Admin {
 
 		// Reset Streams database.
 		add_action(
-			'wp_ajax_wp_stream_reset', array(
+			'wp_ajax_wp_stream_reset',
+			array(
 				$this,
 				'wp_ajax_reset',
 			)
@@ -184,7 +189,8 @@ class Admin {
 		// Auto purge setup.
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
 		add_action(
-			'wp_stream_auto_purge', array(
+			'wp_stream_auto_purge',
+			array(
 				$this,
 				'purge_scheduled_action',
 			)
@@ -192,7 +198,8 @@ class Admin {
 
 		// Ajax users list.
 		add_action(
-			'wp_ajax_wp_stream_filters', array(
+			'wp_ajax_wp_stream_filters',
+			array(
 				$this,
 				'ajax_filters',
 			)
@@ -359,7 +366,8 @@ class Admin {
 
 			// Register the list table early, so it associates the column headers with 'Screen settings'.
 			add_action(
-				'load-' . $this->screen_id['main'], array(
+				'load-' . $this->screen_id['main'],
+				array(
 					$this,
 					'register_list_table',
 				)
@@ -403,22 +411,31 @@ class Admin {
 			wp_enqueue_script( 'wp-stream-timeago-locale' );
 
 			wp_enqueue_script(
-				'wp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.' . $min . 'js', array(
+				'wp-stream-admin',
+				$this->plugin->locations['url'] . 'ui/js/admin.' . $min . 'js',
+				array(
 					'jquery',
 					'wp-stream-select2',
-				), $this->plugin->get_version()
+				),
+				$this->plugin->get_version()
 			);
 			wp_enqueue_script(
-				'wp-stream-admin-exclude', $this->plugin->locations['url'] . 'ui/js/exclude.' . $min . 'js', array(
+				'wp-stream-admin-exclude',
+				$this->plugin->locations['url'] . 'ui/js/exclude.' . $min . 'js',
+				array(
 					'jquery',
 					'wp-stream-select2',
-				), $this->plugin->get_version()
+				),
+				$this->plugin->get_version()
 			);
 			wp_enqueue_script(
-				'wp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.' . $min . 'js', array(
+				'wp-stream-live-updates',
+				$this->plugin->locations['url'] . 'ui/js/live-updates.' . $min . 'js',
+				array(
 					'jquery',
 					'heartbeat',
-				), $this->plugin->get_version()
+				),
+				$this->plugin->get_version()
 			);
 
 			wp_localize_script(
@@ -734,13 +751,15 @@ class Admin {
 			$admin_page_url = add_query_arg(
 				array(
 					'page' => $this->network->network_settings_page_slug,
-				), network_admin_url( $this->admin_parent_page )
+				),
+				network_admin_url( $this->admin_parent_page )
 			);
 		} else {
 			$admin_page_url = add_query_arg(
 				array(
 					'page' => $this->settings_page_slug,
-				), admin_url( $this->admin_parent_page )
+				),
+				admin_url( $this->admin_parent_page )
 			);
 		}
 
@@ -837,7 +856,8 @@ class Admin {
 	 */
 	public function register_list_table() {
 		$this->list_table = new List_Table(
-			$this->plugin, array(
+			$this->plugin,
+			array(
 				'screen' => $this->screen_id['main'],
 			)
 		);

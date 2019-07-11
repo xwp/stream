@@ -40,10 +40,13 @@ class Alert_Type_Slack extends Alert_Type {
 			return;
 		}
 		add_filter(
-			'wp_stream_alerts_save_meta', array(
+			'wp_stream_alerts_save_meta',
+			array(
 				$this,
 				'add_alert_meta',
-			), 10, 2
+			),
+			10,
+			2
 		);
 	}
 
@@ -57,7 +60,8 @@ class Alert_Type_Slack extends Alert_Type {
 	 */
 	public function alert( $record_id, $recordarr, $alert ) {
 		$options = wp_parse_args(
-			$alert->alert_meta, array(
+			$alert->alert_meta,
+			array(
 				'webhook'           => '',
 				'channel'           => '',
 				'username'          => '',
@@ -115,7 +119,8 @@ class Alert_Type_Slack extends Alert_Type {
 			$post_type      = get_post_type_object( $post->post_type );
 			$edit_post_link = get_edit_post_link( $post->ID, 'raw' );
 			array_push(
-				$fields, array(
+				$fields,
+				array(
 					'title' => 'Edit ' . $post_type->labels->singular_name,
 					'value' => "<$edit_post_link>",
 					'short' => false,
@@ -125,7 +130,8 @@ class Alert_Type_Slack extends Alert_Type {
 
 		$edit_alert_link = admin_url( 'edit.php?post_type=wp_stream_alerts#post-' . $alert->ID );
 		array_push(
-			$fields, array(
+			$fields,
+			array(
 				'title' => 'Edit Alert',
 				'value' => "<$edit_alert_link>",
 				'short' => false,
@@ -165,7 +171,8 @@ class Alert_Type_Slack extends Alert_Type {
 			}
 		}
 		wp_remote_post(
-			$options['webhook'], array(
+			$options['webhook'],
+			array(
 				'body'    => wp_json_encode( $data ),
 				'headers' => array( 'Content-Type' => 'application/json' ),
 			)
@@ -184,7 +191,8 @@ class Alert_Type_Slack extends Alert_Type {
 			$alert_meta = $alert->alert_meta;
 		}
 		$options = wp_parse_args(
-			$alert_meta, array(
+			$alert_meta,
+			array(
 				'webhook'  => '',
 				'channel'  => '',
 				'username' => '',
@@ -196,7 +204,8 @@ class Alert_Type_Slack extends Alert_Type {
 		echo '<label for="wp_stream_slack_webhook"><span class="title">' . esc_html__( 'Webhook URL', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field(
-			'text', array(
+			'text',
+			array(
 				'name'  => 'wp_stream_slack_webhook',
 				'title' => esc_attr( __( 'Webhook URL', 'stream' ) ),
 				'value' => $options['webhook'],
@@ -208,7 +217,8 @@ class Alert_Type_Slack extends Alert_Type {
 		echo '<label for="wp_stream_slack_channel"><span class="title">' . esc_html__( 'Channel', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field(
-			'text', array(
+			'text',
+			array(
 				'name'  => 'wp_stream_slack_channel',
 				'title' => esc_attr( __( 'Channel', 'stream' ) ),
 				'value' => $options['channel'],
@@ -220,7 +230,8 @@ class Alert_Type_Slack extends Alert_Type {
 		echo '<label for="wp_stream_slack_username"><span class="title">' . esc_html__( 'Username', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field(
-			'text', array(
+			'text',
+			array(
 				'name'  => 'wp_stream_slack_username',
 				'title' => esc_attr( __( 'Username', 'stream' ) ),
 				'value' => $options['username'],
@@ -232,7 +243,8 @@ class Alert_Type_Slack extends Alert_Type {
 		echo '<label for="wp_stream_slack_icon"><span class="title">' . esc_html__( 'Icon', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field(
-			'text', array(
+			'text',
+			array(
 				'name'  => 'wp_stream_slack_icon',
 				'title' => esc_attr( __( 'Icon', 'stream' ) ),
 				'value' => $options['icon'],
