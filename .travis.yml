@@ -36,7 +36,8 @@ script:
   - source "$DEV_LIB_PATH/travis.script.sh"
 
 after_script:
-  - composer test-report
+  - pwd
+  - source "$DEV_LIB_PATH/travis.after_script.sh"
 
 before_deploy:
   - npm run build
