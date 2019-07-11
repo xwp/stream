@@ -1,6 +1,9 @@
 {
   "name": "xwp/stream",
+  "description": "Logging for WordPress",
+  "homepage": "https://wordpress.org/plugins/stream/",
   "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
   "require": {
     "composer/installers": "~1.0"
   },
