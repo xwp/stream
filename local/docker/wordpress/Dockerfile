@@ -1,7 +1,7 @@
 FROM wordpress:php7.3-apache
 
 # Include our Composer vendor binrary path into global path.
-ENV PATH="/var/www/html/wp-content/plugins/stream/vendor/bin:${PATH}"
+ENV PATH="/var/www/html/wp-content/plugins/stream-src/vendor/bin:${PATH}"
 
 RUN apt-get update; \
 	apt-get install -y --no-install-recommends \
