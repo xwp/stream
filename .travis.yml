@@ -24,8 +24,6 @@ env:
 
 install:
   - npm install
-  - export DEV_LIB_PATH="node_modules/wp-dev-lib/scripts"
-  - source "$DEV_LIB_PATH/travis.install.sh"
 
 script:
   - npm run lint
