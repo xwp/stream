@@ -11,6 +11,9 @@
     "wp-coding-standards/wpcs": "^2.1"
   },
   "scripts": {
+    "release": [
+      "composer install --no-dev --prefer-dist --optimize-autoloader"
+    ],
     "lint-php": [
       "phpcs ."
     ],
