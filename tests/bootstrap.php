@@ -1,5 +1,11 @@
 <?php
+
 namespace WP_Stream;
+
+# Include Composer autoloader for dependency resolution.
+if ( file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
+	require_once dirname( __DIR__ ) . '/vendor/autoload.php';
+}
 
 // Use in code to trigger custom actions
 define( 'WP_STREAM_TESTS', true );
