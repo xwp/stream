@@ -13,11 +13,13 @@
 	</testsuites>
 	<filter>
 		<whitelist processUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">.</directory>
+			<directory suffix=".php">alerts</directory>
+			<directory suffix=".php">classes</directory>
+			<directory suffix=".php">connectors</directory>
+			<directory suffix=".php">exporters</directory>
+			<directory suffix=".php">includes</directory>
 			<exclude>
 				<directory>includes/lib</directory>
-				<directory>vendor</directory>
-				<directory>node_modules</directory>
 			</exclude>
 		</whitelist>
 	</filter>
