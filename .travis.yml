@@ -29,7 +29,7 @@ script:
   - DEV_LIB_ONLY=phpunit source "$DEV_LIB_PATH/travis.script.sh"
 
 after_script:
-  - # composer test-report
+  - composer test-report
 
 before_deploy:
   - npm run build
