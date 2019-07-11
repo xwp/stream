@@ -39,6 +39,6 @@
     "build": "grunt default && npm run readme",
     "readme": "./node_modules/wp-dev-lib/scripts/generate-markdown-readme",
     "deploy": "npm run build && grunt deploy",
-    "lint": "DIFF_BASE=master ./node_modules/wp-dev-lib/scripts/pre-commit"
+    "lint": "composer validate && DIFF_BASE=master ./node_modules/wp-dev-lib/scripts/pre-commit"
   }
 }
