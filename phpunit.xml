@@ -21,6 +21,7 @@
 			<exclude>
 				<file>classes/class-cli.php</file><!-- FIXME: It can't resolve WP_CLI_Command for some reason. -->
 				<directory>includes/lib</directory>
+				<directory>includes/feeds</directory>
 			</exclude>
 		</whitelist>
 	</filter>
