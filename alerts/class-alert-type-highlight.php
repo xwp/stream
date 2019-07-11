@@ -315,7 +315,8 @@ class Alert_Type_Highlight extends Alert_Type {
 				array(
 					'jquery',
 				),
-				$this->plugin->get_version()
+				$this->plugin->get_version(),
+				false
 			);
 
 			$exports = array(

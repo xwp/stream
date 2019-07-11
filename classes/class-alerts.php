@@ -302,6 +302,7 @@ class Alerts {
 		if ( 'edit-wp_stream_alerts' === $screen->id ) {
 
 			$min = wp_stream_min_suffix();
+
 			wp_register_script(
 				'wp-stream-alerts',
 				$this->plugin->locations['url'] . 'ui/js/alerts.' . $min . 'js',
@@ -309,7 +310,9 @@ class Alerts {
 					'wp-stream-select2',
 					'jquery',
 					'inline-edit-post',
-				)
+				),
+				$this->plugin->get_version(),
+				false
 			);
 
 			wp_localize_script(
