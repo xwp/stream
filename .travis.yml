@@ -8,9 +8,6 @@ php:
   #- 7.2
   - 7.3
 
-services:
-  - docker
-
 addons:
   apt:
     packages:
@@ -24,11 +21,13 @@ env:
 
 install:
   - npm install
-  - docker-compose up -d
+  - export DEV_LIB_PATH="node_modules/wp-dev-lib/scripts"
+  - export DEV_LIB_ONLY="phpunit"
+  - source "$DEV_LIB_PATH/travis.install.sh"
 
 script:
   - npm run lint
-  - npm run phpunit
+  - source "$DEV_LIB_PATH/travis.script.sh"
 
 after_script:
   - cat "tests/reports/clover.xml"
