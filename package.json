@@ -29,13 +29,12 @@
     "grunt-contrib-copy": "~1.0.0",
     "grunt-contrib-cssmin": "~2.2.1",
     "grunt-contrib-uglify": "~3.0.1",
-    "grunt-wp-deploy": "^2.0.0",
-    "wp-dev-lib": "github:xwp/wp-dev-lib#1.1.2"
+    "grunt-wp-deploy": "^2.0.0"
   },
   "scripts": {
     "postinstall": "composer install && npm run build",
     "build": "grunt default && npm run readme",
-    "readme": "./node_modules/wp-dev-lib/scripts/generate-markdown-readme",
+    "readme": "php ./vendor/xwp/wp-dev-lib/scripts/generate-markdown-readme",
     "deploy": "npm run build && grunt deploy",
     "lint-js": "eslint .",
     "lint-php": "composer lint",
