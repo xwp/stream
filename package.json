@@ -22,6 +22,8 @@
     "track"
   ],
   "devDependencies": {
+    "@wordpress/eslint-plugin": "^2.3.0",
+    "eslint": "^6.0.1",
     "grunt": "~1.0.1",
     "grunt-contrib-clean": "~1.1.0",
     "grunt-contrib-copy": "~1.0.0",
@@ -30,7 +32,6 @@
     "grunt-contrib-uglify": "~3.0.1",
     "grunt-shell": "~2.1.0",
     "grunt-wp-deploy": "^2.0.0",
-    "jscs": "^3.0.7",
     "jshint": "^2.10.2",
     "wp-dev-lib": "github:xwp/wp-dev-lib#1.1.2"
   },
@@ -39,6 +40,9 @@
     "build": "grunt default && npm run readme",
     "readme": "./node_modules/wp-dev-lib/scripts/generate-markdown-readme",
     "deploy": "npm run build && grunt deploy",
-    "lint": "composer validate && DIFF_BASE=master ./node_modules/wp-dev-lib/scripts/pre-commit"
-  }
+    "lint-js": "eslint .",
+    "lint-php": "composer lint",
+    "lint": "npm run lint-js && npm run lint-php"
+  },
+  "dependencies": {}
 }

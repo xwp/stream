@@ -1,0 +1,11 @@
+{
+  "env": {
+    "browser": true
+  },
+  "extends": [
+    "plugin:@wordpress/eslint-plugin/recommended"
+  ],
+  "rules": {
+    "camelcase": "warn"
+  }
+}
