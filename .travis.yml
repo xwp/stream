@@ -14,7 +14,7 @@ install:
   - npm install
 
 before_script:
-  - composer-docker up -d
+  - docker-compose up -d
   - sleep 10
 
 script:
