@@ -15,7 +15,6 @@ services:
 
   wordpress:
     build: ./local/docker/wordpress
-    working_dir: /var/www/html/wp-content/plugins/stream
     links:
       - mysql
     depends_on:
@@ -27,8 +26,8 @@ services:
       - wp_data:/var/www/html
       - .:/var/www/html/wp-content/plugins/stream-src
       - ./build:/var/www/html/wp-content/plugins/stream
-      - ./local/config/wp-tests-config.php:/var/www/html/tests/wordpress/phpunit/wp-tests-config.php
-      - ./vendor/wordpress/wordpress/tests/phpunit:/var/www/html/tests/wordpress/phpunit
+      - ./vendor/wordpress/wordpress/tests/phpunit:/var/www/html/tests/phpunit
+      - ./local/config/wp-tests-config.php:/var/www/html/tests/phpunit/wp-tests-config.php
     restart: always
     environment:
       WP_TESTS_DIR: /var/www/html/tests/wordpress/phpunit
