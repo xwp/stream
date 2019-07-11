@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# A helper to foward all incoming commands to a docker container.
+#
 
 # Enable verbose output.
 set -x

@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Helper for running docker-compose commands with custom docker-compose.yml file location.
+#
 
 # Enable verbose output.
 set -x
