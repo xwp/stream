@@ -22,7 +22,7 @@ tests_add_filter(
 	'muplugins_loaded',
 	function() {
 		// Manually load the plugin.
-		require __DIR__ . '/stream.php';
+		require dirname( __DIR__ ) . '/stream.php';
 	}
 );
 
