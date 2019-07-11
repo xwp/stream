@@ -1,4 +1,4 @@
-/* globals wp_stream_live_updates, wp_stream_regenerate_alt_rows */
+/* globals jQuery, wp, wp_stream_live_updates, wp_stream_regenerate_alt_rows */
 jQuery(
 	function( $ ) {
 		$( document ).ready(

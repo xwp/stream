@@ -1,4 +1,4 @@
-/* globals confirm, wp_stream */
+/* globals jQuery, wp_stream */
 jQuery(
 	function( $ ) {
 		var network_affix;

@@ -1,4 +1,4 @@
-/* globals wp_stream_global */
+/* globals jQuery, wp_stream_global */
 /* exported wp_stream_regenerate_alt_rows */
 jQuery(
 	function( $ ) {

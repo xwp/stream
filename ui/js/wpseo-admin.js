@@ -1,4 +1,4 @@
-// globals jQuery, $
+/* globals jQuery */
 jQuery(
 	function( $ ) {
 		var highlight, input, tab;
