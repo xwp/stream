@@ -11,6 +11,11 @@
     "wp-coding-standards/wpcs": "^2.1",
     "wpsh/local": "^0.2.3"
   },
+  "config": {
+    "platform": {
+      "php": "5.6"
+    }
+  },
   "scripts": {
     "release": [
       "composer install --no-dev --prefer-dist --optimize-autoloader"
