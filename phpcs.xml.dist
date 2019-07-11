@@ -4,9 +4,12 @@
 
 	<arg name="extensions" value="php" />
 	<arg name="colors" />
-	<arg value="s" /><!-- Show sniff codes in all reports. -->
+	<arg value="sp" /><!-- Show sniff codes in all reports and progress. -->
 
-	<rule ref="WordPress" />
+	<rule ref="WordPress">
+		<exclude name="Squiz.Commenting.FileComment" />
+		<exclude name="Squiz.Commenting.ClassComment.Missing" />
+	</rule>
 
 	<exclude-pattern>*.ruleset</exclude-pattern>
 	<exclude-pattern>*/tests/*</exclude-pattern>
