@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+
+  mysql:
+    image: mysql:5
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+
+  wordpress:
+    image: wordpress:latest
+    links:
+      - mysql:mysql
+    depends_on:
+      - mysql
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - wp_data:/var/www/html
+      - .:/var/www/html/wp-content/plugins/stream-src
+      - ./build:/var/www/html/wp-content/plugins/stream
+    restart: always
+    environment:
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: password
+
+  wpcli:
+    image: wordpress:cli
+    depends_on:
+      - mysql
+      - wordpress
+    volumes:
+      - wp_data:/var/www/html
+
+volumes:
+  db_data: {}
+  wp_data: {}

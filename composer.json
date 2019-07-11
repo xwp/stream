@@ -8,7 +8,8 @@
     "composer/installers": "~1.0"
   },
   "require-dev": {
-    "wp-coding-standards/wpcs": "^2.1"
+    "wp-coding-standards/wpcs": "^2.1",
+    "wpsh/local": "^0.2.3"
   },
   "scripts": {
     "release": [

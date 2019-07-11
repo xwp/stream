@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3bded2cb8fceffe1b9d6ec910ea30ee1",
+    "content-hash": "fbb1353f452b3193ee93229f28df4039",
     "packages": [
         {
             "name": "composer/installers",
@@ -184,12 +184,12 @@
             "version": "2.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git",
+                "url": "https://github.com/WordPress/WordPress-Coding-Standards.git",
                 "reference": "bd9c33152115e6741e3510ff7189605b35167908"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WordPress-Coding-Standards/WordPress-Coding-Standards/zipball/bd9c33152115e6741e3510ff7189605b35167908",
+                "url": "https://api.github.com/repos/WordPress/WordPress-Coding-Standards/zipball/bd9c33152115e6741e3510ff7189605b35167908",
                 "reference": "bd9c33152115e6741e3510ff7189605b35167908",
                 "shasum": ""
             },
@@ -223,6 +223,28 @@
                 "wordpress"
             ],
             "time": "2019-05-21T02:50:00+00:00"
+        },
+        {
+            "name": "wpsh/local",
+            "version": "0.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wpsh/wpsh-local.git",
+                "reference": "17338432ed06386273a1ee4db8c8467aa8feab17"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wpsh/wpsh-local/zipball/17338432ed06386273a1ee4db8c8467aa8feab17",
+                "reference": "17338432ed06386273a1ee4db8c8467aa8feab17",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A Docker Compose development environment for any project.",
+            "time": "2019-06-12T10:54:32+00:00"
         }
     ],
     "aliases": [],
