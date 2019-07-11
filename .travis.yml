@@ -30,7 +30,7 @@ script:
   - source "$DEV_LIB_PATH/travis.script.sh"
 
 after_script:
-  - cat "tests/reports/clover.xml"
+  - ls -lah ./tests/reports
   - composer test-report
 
 before_deploy:
