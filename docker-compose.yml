@@ -37,6 +37,7 @@ services:
 
   db_phpunit:
     image: mysql:5.7
+    restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "wordpress_test"
