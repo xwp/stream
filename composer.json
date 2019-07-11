@@ -1,6 +1,6 @@
 {
   "name": "xwp/stream",
-  "description": "Logging for WordPress",
+  "description": "Track WordPress user and system actions for debugging, logging and compliance purposes",
   "homepage": "https://wordpress.org/plugins/stream/",
   "type": "wordpress-plugin",
   "license": "GPL-2.0-or-later",
