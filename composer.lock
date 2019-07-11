@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "05b4c13ee5d99dd999a226e097ea8217",
+    "content-hash": "5929905bb95c95eaf8e87abacd04c010",
     "packages": [
         {
             "name": "composer/installers",
@@ -5238,44 +5238,6 @@
             ],
             "description": "A Docker Compose development environment for any project.",
             "time": "2019-06-12T10:54:32+00:00"
-        },
-        {
-            "name": "xwp/wp-dev-lib",
-            "version": "1.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/xwp/wp-dev-lib.git",
-                "reference": "a40a29223deb8f44e6d61db7e6c39bd12eb37919"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/xwp/wp-dev-lib/zipball/a40a29223deb8f44e6d61db7e6c39bd12eb37919",
-                "reference": "a40a29223deb8f44e6d61db7e6c39bd12eb37919",
-                "shasum": ""
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Weston Ruter",
-                    "email": "weston@xwp.co",
-                    "homepage": "https://weston.ruter.net"
-                },
-                {
-                    "name": "XWP",
-                    "email": "engage@xwp.co",
-                    "homepage": "https://xwp.co"
-                }
-            ],
-            "description": "Common code used during development of WordPress plugins and themes",
-            "homepage": "https://github.com/xwp/wp-dev-lib",
-            "keywords": [
-                "wordpress"
-            ],
-            "time": "2019-07-04T15:04:40+00:00"
         }
     ],
     "aliases": [],
