@@ -1,19 +1,10 @@
 /* eslint-env node */
-/* jshint node:true */
 
 module.exports = function( grunt ) {
 	'use strict';
 
 	grunt.initConfig( {
 		pkg: grunt.file.readJSON( 'package.json' ),
-
-		// JavaScript linting with JSHint.
-		jshint: {
-			options: {
-				jshintrc: '.jshintrc',
-			},
-			all: [ 'Gruntfile.js', 'ui/js/*.js', '!ui/js/*.min.js' ],
-		},
 
 		// Minify .js files.
 		uglify: {
@@ -125,13 +116,12 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-contrib-clean' );
 	grunt.loadNpmTasks( 'grunt-contrib-copy' );
 	grunt.loadNpmTasks( 'grunt-contrib-cssmin' );
-	grunt.loadNpmTasks( 'grunt-contrib-jshint' );
 	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
 	grunt.loadNpmTasks( 'grunt-shell' );
 	grunt.loadNpmTasks( 'grunt-wp-deploy' );
 
 	// Register tasks
-	grunt.registerTask( 'default', [ 'jshint', 'uglify', 'cssmin' ] );
+	grunt.registerTask( 'default', [ 'uglify', 'cssmin' ] );
 	grunt.registerTask( 'phpunit', [ 'shell:phpunit' ] );
 	grunt.registerTask( 'phpunit_c', [ 'shell:phpunit_c' ] );
 	grunt.registerTask( 'build', [ 'default', 'copy' ] );
