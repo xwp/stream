@@ -14,12 +14,12 @@
     "composer/installers": "~1.0"
   },
   "require-dev": {
-    "wp-coding-standards/wpcs": "^2.1",
-    "wpsh/local": "^0.2.3",
     "php-coveralls/php-coveralls": "^2.1",
     "phpunit/phpunit": "^5.7",
+    "wordpress/wordpress": "^5.2",
     "wp-cli/wp-cli-bundle": "^2.2",
-    "wordpress/wordpress": "^5.2"
+    "wp-coding-standards/wpcs": "^2.1",
+    "wpsh/local": "^0.2.3"
   },
   "config": {
     "sort-packages": true,
