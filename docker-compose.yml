@@ -15,10 +15,9 @@ services:
 
   wordpress:
     build: ./local/docker/wordpress
-    links:
-      - mysql
     depends_on:
       - mysql
+      - db_phpunit
     ports:
       - "80:80"
       - "443:443"
