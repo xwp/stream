@@ -10,6 +10,7 @@
 		<exclude name="Squiz.Commenting.FileComment" />
 		<exclude name="Squiz.Commenting.ClassComment.Missing" />
 		<exclude name="WordPress.Security.EscapeOutput.DeprecatedWhitelistCommentFound" /><!-- TODO: Change these to phpcs:ignore -->
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar" /><!-- FIXME -->
 	</rule>
 
 	<exclude-pattern>*.ruleset</exclude-pattern>
