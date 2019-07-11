@@ -38,6 +38,9 @@
       "@composer validate",
       "@lint-php"
     ],
+    "test": [
+      "phpunit"
+    ],
     "test-report": [
       "php-coveralls -v"
     ]
