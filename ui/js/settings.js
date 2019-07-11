@@ -43,8 +43,8 @@ jQuery(
 			$panels = $( '.nav-tab-content table.form-table' ),
 			$activeTab = $tabs.find( '.nav-tab-active' ),
 			defaultIndex = $activeTab.length > 0 ? $tabs.find( 'a' ).index( $activeTab ) : 0,
-			hashIndex = window.location.hash.match( /^#(\d+)$/ ),
-			currentHash = ( null !== hashIndex ? hashIndex[ 1 ] : defaultIndex ),
+			hashIndexStart = window.location.hash.match( /^#(\d+)$/ ),
+			currentHash = ( null !== hashIndexStart ? hashIndexStart[ 1 ] : defaultIndex ),
 			syncFormAction = function( index ) {
 				var $optionsForm = $( 'input[name="option_page"][value^="wp_stream"]' ).closest( 'form' );
 				if ( $optionsForm.length === 0 ) {
