@@ -3,6 +3,7 @@
 /node_modules/
 /vendor/
 /.vagrant/
+/console.log
 npm-debug.log
 package.lock
 
