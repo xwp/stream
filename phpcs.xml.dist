@@ -9,6 +9,7 @@
 	<rule ref="WordPress">
 		<exclude name="Squiz.Commenting.FileComment" />
 		<exclude name="Squiz.Commenting.ClassComment.Missing" />
+		<exclude name="WordPress.Security.EscapeOutput.DeprecatedWhitelistCommentFound" /><!-- TODO: Change these to phpcs:ignore -->
 	</rule>
 
 	<exclude-pattern>*.ruleset</exclude-pattern>
