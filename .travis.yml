@@ -36,8 +36,6 @@ script:
   - source "$DEV_LIB_PATH/travis.script.sh"
 
 after_script:
-  - vendor/bin/phpunit --verbose --debug
-  - ls -lah ./tests/reports
   - composer test-report
 
 before_deploy:
