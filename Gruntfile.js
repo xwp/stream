@@ -84,21 +84,6 @@ module.exports = function( grunt ) {
 			coverage: '/srv/www/default/coverage/stream',
 		},
 
-		// Shell actions
-		shell: {
-			options: {
-				stdout: true,
-				stderr: true,
-			},
-			phpunit: {
-				command: 'vagrant ssh -c "cd <%= vvv.plugin %> && phpunit"',
-			},
-			phpunit_c: {
-				command:
-					'vagrant ssh -c "cd <%= vvv.plugin %> && phpunit --coverage-html <%= vvv.coverage %>"',
-			},
-		},
-
 		// Deploys a git Repo to the WordPress SVN repo
 		wp_deploy: {
 			deploy: {
@@ -117,13 +102,10 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-contrib-copy' );
 	grunt.loadNpmTasks( 'grunt-contrib-cssmin' );
 	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
-	grunt.loadNpmTasks( 'grunt-shell' );
 	grunt.loadNpmTasks( 'grunt-wp-deploy' );
 
 	// Register tasks
 	grunt.registerTask( 'default', [ 'uglify', 'cssmin' ] );
-	grunt.registerTask( 'phpunit', [ 'shell:phpunit' ] );
-	grunt.registerTask( 'phpunit_c', [ 'shell:phpunit_c' ] );
 	grunt.registerTask( 'build', [ 'default', 'copy' ] );
 	grunt.registerTask( 'deploy', [ 'build', 'wp_deploy', 'clean' ] );
 };
