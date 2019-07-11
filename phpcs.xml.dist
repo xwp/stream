@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <ruleset name="WordPress Coding Standards for WP Stream">
 	<config name="installed_paths" value="vendor/wp-coding-standards/wpcs" />
+	<config name="ignore_warnings_on_exit" value="1" /><!-- FIXME -->
 
 	<arg name="extensions" value="php" />
 	<arg name="colors" />
 	<arg value="sp" /><!-- Show sniff codes in all reports and progress. -->
 
 	<rule ref="WordPress-Docs">
-		<type>warning</type><!-- Report but ignore for now. -->
+		<type>warning</type><!-- FIXME Report but ignore for now. -->
 	</rule>
 
 	<rule ref="WordPress-Extra" />
