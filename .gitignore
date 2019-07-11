@@ -5,6 +5,7 @@
 /build/
 /.vagrant/
 /console.log
+/phpcs.xml
 npm-debug.log
 package.lock
 
