@@ -8,6 +8,9 @@ php:
   - 7.2
   - 7.3
 
+services:
+  - docker
+
 addons:
   apt:
     packages:
