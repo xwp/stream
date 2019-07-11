@@ -26,7 +26,7 @@ install:
 
 script:
   - npm run lint
-  - composer test
+  - DEV_LIB_ONLY=phpunit source "$DEV_LIB_PATH/travis.script.sh"
 
 after_script:
   - composer test-report
