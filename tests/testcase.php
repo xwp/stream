@@ -27,15 +27,6 @@ class WP_StreamTestCase extends \WP_Ajax_UnitTestCase {
 	}
 
 	/**
-	 * Make sure the plugin is initialized with it's global variable
-	 *
-	 * @return void
-	 */
-	public function test_plugin_initialized() {
-		$this->assertFalse( null == $this->plugin );
-	}
-
-	/**
 	 * Helper function to check validity of action
 	 *
 	 * @param array  $tests
