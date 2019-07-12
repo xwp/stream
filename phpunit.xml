@@ -7,8 +7,8 @@
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
 	>
-	<testsuites name="stream">
-		<testsuite>
+	<testsuites>
+		<testsuite name="stream">
 			<directory prefix="test-" suffix=".php">tests</directory>
 		</testsuite>
 	</testsuites>
