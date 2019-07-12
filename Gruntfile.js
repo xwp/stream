@@ -78,12 +78,6 @@ module.exports = function( grunt ) {
 			},
 		},
 
-		// VVV (Varying Vagrant Vagrants) Paths
-		vvv: {
-			plugin: '/srv/www/wordpress-develop/public_html/src/wp-content/plugins/stream',
-			coverage: '/srv/www/default/coverage/stream',
-		},
-
 		// Deploys a git Repo to the WordPress SVN repo
 		wp_deploy: {
 			deploy: {
