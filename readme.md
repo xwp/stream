@@ -8,9 +8,14 @@
 - [Plugin on WordPress.org](https://wordpress.org/plugins/stream/)
 
 
+## Documentation
+
+View the [plugin description on WordPress.org](https://wordpress.org/plugins/stream/) for the list of features and screenshots.
+
+
 ## Contribute
 
-All suggestions and contributions are welcome! See the [contributor documentation](contributing.md) for how to report issues and setup the local development environment.
+All suggestions and contributions are welcome! View the [contributor documentation](contributing.md) for how to report issues and setup the local development environment.
 
 
 ## Credits
