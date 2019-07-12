@@ -1,32 +1,66 @@
-# Contributing to this project
-
-Please take a moment to review this document in order to make the contribution process easy and effective for everyone involved.
-
-Following these guidelines will help us get back to you more quickly, and will show that you care about making Stream better just like we do. In return, we'll do our best to respond to your issue or pull request as soon as possible with the same respect.
-
-## Development
-
-Stream uses `Grunt` to minimize and compile scripts and styles.
-
-If you want to use this development version, you'll need to install `Node.js`. Alternately, you can set `define( 'SCRIPT_DEBUG', true );` in `wp-config.php` to use the uncompressed versions of the scripts and styles.
-
-To use the build process, [install Node.js](https://nodejs.org/)
-
-Once installed, run `npm install`. This will install `Grunt` and build the scripts and styles.
-
-If you've made changes to any css or javascripts, you'll need to run `grunt` to recompile the files. You won't need to do this if you set `define( 'SCRIPT_DEBUG', true );` as it will use the source files.
+# Contribute to Stream
 
 
-## Use the issue tracker
+## Development Environment
 
-The [issue tracker](https://github.com/wp-stream/stream/issues) is the preferred channel for [bug reports](#bugs), [features requests](#features) and [submitting pull requests](#pull-requests), but please respect the following restrictions:
+Stream uses [npm](https://npmjs.com) for javascript dependencies, [Composer](https://getcomposer.org) for PHP dependencies and the [Grunt](https://gruntjs.com) task runner to minimize and compile scripts and styles and to deploy to the WordPress.org plugin repository.
 
-* Support issues or usage questions that are not bugs should be posted on the [Plugin Support Forum](http://wordpress.org/support/plugin/stream).
-* Please **do not** derail or troll issues. Keep the discussion on topic and respect the opinions of others.
+Included is a local development environment built with [Docker](https://www.docker.com) which can be optionally run inside [Vagrant](https://www.vagrantup.com) for network isolation and better performance.
+
+
+### Requirements
+
+- [VirtualBox](https://www.virtualbox.org)
+- [Vagrant](https://www.vagrantup.com)
+- [Node.js](https://nodejs.org)
+- [Composer](https://getcomposer.org)
+
+We suggest using the [Homebrew package manager](https://brew.sh) on macOS to install the dependencies:
+
+	brew install node composer
+	brew cask install virtualbox vagrant
+
+For setups with local Docker environment you don't need Vagrant and VirtualBox.
+
+
+### Setup
+
+1. See the [Git Flow](#git-flow) section below for how to fork the repository.
+2. Run `npm install` to install all project dependencies.
+3. Run `vagrant up` to start the development environment.
+4. Visit [stream.local](https://stream.local) and login using `admin` / `password`.
+5. Activate the Stream plugin.
+
+
+### Scripts and Commands
+
+We use npm as the canonical task runner for the project. The following commands are available:
+
+- `npm run build` to build the plugin JS and CSS files.
+
+- `npm run lint` to check JS and PHP files for syntax and style issues.
+
+- `npm run deploy` to deploy the plugin to the WordPress.org repository.
+
+- `npm run cli -- wp info` where `wp info` is the CLI command to run inside the WordPress container. For example, use `npm run cli -- ls -lah` to list all files in the root of the WordPress installation.
+
+- `npm run compose -- up -d` where `up -d` is the `docker-compose` command for the WordPress container. For example, use `npm run compose -- down` and `npm run compose -- up -d` to restart the WordPres container.
+
+- `npm run phpunit` to run PHPunit tests inside the WordPress container.
+
+All `npm` commands running inside Vagrant are prefixed with `v`, for example, `npm run vcli` and `npm run vcompose`.
+
+
+## Issues Tracker
+
+Support issues or usage questions should be posted on the [Plugin Support Forum](https://wordpress.org/support/plugin/stream).
+
+The [issue tracker on GitHub](https://github.com/xwp/stream/issues) is the preferred channel for [bug reports](#bugs), [features requests](#features) and [submitting pull requests](#pull-requests).
 
 
 <a name="bugs"></a>
-## Bug reports
+
+## Reporting Bugs
 
 A bug is a _demonstrable problem_ that is caused by the code in the repository. Good bug reports with complete error messages, environment details and screenshots are extremely helpful &mdash; thank you!
 
@@ -34,7 +68,7 @@ Guidelines for bug reports:
 
 1. **Check if the bug has already been fixed** &mdash; Someone may already be on top of it, so try to reproduce it using the latest from the `master` branch.
 
-2. **Use the [GitHub issue search](https://github.com/wp-stream/stream/search?type=Issues)** &mdash; Someone might already know about it, so please check if the issue has already been reported.
+2. **Use the [GitHub issue search](https://github.com/xwp/stream/search?type=Issues)** &mdash; Someone might already know about it, so please check if the issue has already been reported.
 
 3. **Isolate the problem** &mdash; The better you can determine exactly what behavior(s) cause the issue, the faster and more effectively it can be resolved. “I’m getting an error message.” is not a good bug report. A good bug report shouldn't leave others needing to contact you for more information.
 
@@ -55,27 +89,33 @@ Example:
 
 **Note:** In an effort to keep open issues to a manageable number, we will close any issues that do not provide enough information for us to be able to work on a solution. You will be encouraged to provide the necessary details, after which we will reopen the issue.
 
+
 <a name="features"></a>
-## Feature requests
+
+## Feature Requests
 
 Feature requests are very welcome! But take a moment to find out whether your idea fits with the scope and aims of the project. It's up to *you* to make a strong case to convince the project's developers of the merits of this feature. Please provide as much detail and context as possible.
 
 Building something great means choosing features carefully especially because it is much, much easier to add features than it is to take them away. Additions to Stream will be evaluated on a combination of scope (how well it fits into the project), maintenance burden and general usefulness to users.
 
+
 <a name="pull-requests"></a>
-## Pull requests
+
+## Pull Requests
 
 Good pull requests &mdash; patches, improvements, new features &mdash; are a fantastic help.
 They should remain focused in scope and avoid containing unrelated commits.
 
-**Please ask first** before embarking on any significant pull request (e.g. implementing features, refactoring code), otherwise you risk spending a lot of time working on something that the project's developers might not want to merge into the project. You can solicit feedback and opinions in an open enhancement issue, or [create a new one](https://github.com/wp-stream/stream/issues/new).
+**Please ask first** before embarking on any significant pull request (e.g. implementing features, refactoring code), otherwise you risk spending a lot of time working on something that the project's developers might not want to merge into the project. You can solicit feedback and opinions in an open enhancement issue, or [create a new one](https://github.com/xwp/stream/issues/new).
 
-Please use the [git flow for pull requests](#git-flow) and follow [WordPress Coding Standards](http://make.wordpress.org/core/handbook/coding-standards/) before submitting your work. Adhering to these guidelines is the best way to get your work included in Stream.
+Please use the [git flow for pull requests](#git-flow) and follow [WordPress Coding Standards](https://make.wordpress.org/core/handbook/coding-standards/) before submitting your work.
+
 
 <a name="git-flow"></a>
-#### Git Flow for pull requests
 
-1. [Fork](http://help.github.com/fork-a-repo/) the project, clone your fork, and configure the remotes:
+### Git Flow for Pull Requests
+
+1. [Fork](https://help.github.com/fork-a-repo/) the project, clone your fork, and configure the remotes:
 
    ```bash
    # Clone your fork of the repo into the current directory
@@ -83,7 +123,7 @@ Please use the [git flow for pull requests](#git-flow) and follow [WordPress Cod
    # Navigate to the newly cloned directory
    cd stream
    # Assign the original repo to a remote called "upstream"
-   git remote add upstream https://github.com/wp-stream/stream
+   git remote add upstream https://github.com/xwp/stream
    ```
 
 2. If you cloned a while ago, get the latest changes from upstream:
@@ -115,4 +155,4 @@ Please use the [git flow for pull requests](#git-flow) and follow [WordPress Cod
 
 7. [Open a Pull Request](https://help.github.com/articles/using-pull-requests/) (with a clear title and description) to the `develop` branch.
 
-**IMPORTANT**: By submitting a patch, you agree to allow the project owner to license your work under the [GPL v2 license](http://www.gnu.org/licenses/gpl-2.0.html).
+**IMPORTANT**: By submitting a patch, you agree to allow the project owner to license your work under the [GPL v2 license](https://www.gnu.org/licenses/gpl-2.0.html).
