@@ -74,8 +74,8 @@ class Record {
 	 * Update record meta
 	 *
 	 * @param string $meta_key
-	 * @param mixed $meta_value
-	 * @param mixed $prev_value (optional)
+	 * @param mixed  $meta_value
+	 * @param mixed  $prev_value (optional)
 	 *
 	 * @return bool
 	 */

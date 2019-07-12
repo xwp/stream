@@ -49,14 +49,24 @@ class List_Table extends \WP_List_Table {
 		// Check for default hidden columns
 		$this->get_hidden_columns();
 
-		add_filter( 'screen_settings', array(
-			$this,
-			'screen_controls',
-		), 10, 2 );
-		add_filter( 'set-screen-option', array(
-			$this,
-			'set_screen_option',
-		), 10, 3 );
+		add_filter(
+			'screen_settings',
+			array(
+				$this,
+				'screen_controls',
+			),
+			10,
+			2
+		);
+		add_filter(
+			'set-screen-option',
+			array(
+				$this,
+				'set_screen_option',
+			),
+			10,
+			3
+		);
 
 		set_screen_options();
 	}
@@ -513,7 +523,8 @@ class List_Table extends \WP_List_Table {
 			}
 
 			$users[] = new Author(
-				0, array(
+				0,
+				array(
 					'is_wp_cli' => true,
 				)
 			);
@@ -618,7 +629,8 @@ class List_Table extends \WP_List_Table {
 		foreach ( $filters as $name => $data ) {
 
 			$data = wp_parse_args(
-				$data, array(
+				$data,
+				array(
 					'title' => '',
 					'items' => array(),
 					'ajax'  => false,

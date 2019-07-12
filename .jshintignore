@@ -1,4 +1,0 @@
-ui/lib/**
-node_modules/**
-vendor/**
-**/*.min.js

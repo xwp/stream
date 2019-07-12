@@ -33,17 +33,21 @@ function wp_stream_update_302( $db_version, $current_version ) {
 		if ( class_exists( $class ) ) {
 			$connector = new $class();
 			$wpdb->update(
-				$wpdb->base_prefix . 'stream', array(
+				$wpdb->base_prefix . 'stream',
+				array(
 					'connector' => $connector->name,
-				), array(
+				),
+				array(
 					'ID' => $entry->ID,
 				)
 			);
 		} else {
 			$wpdb->update(
-				$wpdb->base_prefix . 'stream', array(
+				$wpdb->base_prefix . 'stream',
+				array(
 					'connector' => strtolower( $entry->connector ),
-				), array(
+				),
+				array(
 					'ID' => $entry->ID,
 				)
 			);

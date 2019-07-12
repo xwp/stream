@@ -10,6 +10,7 @@ class Settings {
 
 	/**
 	 * Hold Plugin class
+	 *
 	 * @var Plugin
 	 */
 	public $plugin;
@@ -58,15 +59,19 @@ class Settings {
 
 		// Remove records when records TTL is shortened
 		add_action(
-			'update_option_' . $this->option_key, array(
+			'update_option_' . $this->option_key,
+			array(
 				$this,
 				'updated_option_ttl_remove_records',
-			), 10, 2
+			),
+			10,
+			2
 		);
 
 		// Apply label translations for settings
 		add_filter(
-			'wp_stream_serialized_labels', array(
+			'wp_stream_serialized_labels',
+			array(
 				$this,
 				'get_settings_translations',
 			)
@@ -108,10 +113,13 @@ class Settings {
 		);
 
 		add_filter(
-			'user_search_columns', array(
+			'user_search_columns',
+			array(
 				$this,
 				'add_display_name_search_columns',
-			), 10, 3
+			),
+			10,
+			3
 		);
 
 		$users = new WP_User_Query(
@@ -129,10 +137,12 @@ class Settings {
 		);
 
 		remove_filter(
-			'user_search_columns', array(
+			'user_search_columns',
+			array(
 				$this,
 				'add_display_name_search_columns',
-			), 10
+			),
+			10
 		);
 
 		if ( 0 === $users->get_total() ) {
@@ -465,7 +475,9 @@ class Settings {
 		$sections = $this->get_fields();
 
 		register_setting(
-			$this->option_key, $this->option_key, array(
+			$this->option_key,
+			$this->option_key,
+			array(
 				$this,
 				'sanitize_settings',
 			)
@@ -541,7 +553,8 @@ class Settings {
 
 							// Support all values in multidimentional arrays too.
 							array_walk_recursive(
-								$output[ $name ], function ( &$v, $k ) {
+								$output[ $name ],
+								function ( &$v, $k ) {
 									$v = trim( $v );
 								}
 							);
@@ -878,7 +891,8 @@ class Settings {
 					}
 
 					$author_or_role_input = $form->render_field(
-						'select2', array(
+						'select2',
+						array(
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'author_or_role' ) ),
 							'options' => $author_or_role_values,
 							'classes' => 'author_or_role',
@@ -923,7 +937,8 @@ class Settings {
 					}
 
 					$connector_or_context_input = $form->render_field(
-						'select2', array(
+						'select2',
+						array(
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'connector_or_context' ) ),
 							'options' => $context_values,
 							'classes' => 'connector_or_context',
@@ -935,7 +950,8 @@ class Settings {
 					);
 
 					$connector_input = $form->render_field(
-						'hidden', array(
+						'hidden',
+						array(
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'connector' ) ),
 							'value'   => $connector,
 							'classes' => 'connector',
@@ -943,7 +959,8 @@ class Settings {
 					);
 
 					$context_input = $form->render_field(
-						'hidden', array(
+						'hidden',
+						array(
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'context' ) ),
 							'value'   => $context,
 							'classes' => 'context',
@@ -961,7 +978,8 @@ class Settings {
 					}
 
 					$action_input = $form->render_field(
-						'select2', array(
+						'select2',
+						array(
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'action' ) ),
 							'value'   => $action,
 							'options' => $action_values,
@@ -974,7 +992,8 @@ class Settings {
 
 					// IP Address input
 					$ip_address_input = $form->render_field(
-						'select2', array(
+						'select2',
+						array(
 							'name'     => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'ip_address' ) ),
 							'value'    => $ip_address,
 							'classes'  => 'ip_address',

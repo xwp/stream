@@ -66,7 +66,6 @@ class Connector_User_Switching extends Connector {
 	 * Register this connector.
 	 *
 	 * Overrides the default `Connector::register()` method.
-	 *
 	 */
 	public function register() {
 		parent::register();

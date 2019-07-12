@@ -67,32 +67,51 @@ class Alerts {
 		add_action( 'wp_stream_admin_menu', array( $this, 'register_menu' ) );
 
 		// Add scripts to post screens.
-		add_action( 'admin_enqueue_scripts', array(
-			$this,
-			'register_scripts',
-		) );
-
-		add_action( 'network_admin_menu', array(
-			$this,
-			'change_menu_link_url',
-		), 99 );
-
-		add_filter( 'wp_stream_record_inserted', array(
-			$this,
-			'check_records',
-		), 10, 2 );
-
-		add_action( 'wp_ajax_load_alerts_settings', array(
-			$this,
-			'load_alerts_settings',
-		) );
-		add_action( 'wp_ajax_get_actions', array( $this, 'get_actions' ) );
-		add_action( 'wp_ajax_save_new_alert', array(
-			$this,
-			'save_new_alert',
-		) );
 		add_action(
-			'wp_ajax_get_new_alert_triggers_notifications', array(
+			'admin_enqueue_scripts',
+			array(
+				$this,
+				'register_scripts',
+			)
+		);
+
+		add_action(
+			'network_admin_menu',
+			array(
+				$this,
+				'change_menu_link_url',
+			),
+			99
+		);
+
+		add_filter(
+			'wp_stream_record_inserted',
+			array(
+				$this,
+				'check_records',
+			),
+			10,
+			2
+		);
+
+		add_action(
+			'wp_ajax_load_alerts_settings',
+			array(
+				$this,
+				'load_alerts_settings',
+			)
+		);
+		add_action( 'wp_ajax_get_actions', array( $this, 'get_actions' ) );
+		add_action(
+			'wp_ajax_save_new_alert',
+			array(
+				$this,
+				'save_new_alert',
+			)
+		);
+		add_action(
+			'wp_ajax_get_new_alert_triggers_notifications',
+			array(
 				$this,
 				'get_new_alert_triggers_notifications',
 			)
@@ -101,10 +120,15 @@ class Alerts {
 		$this->load_alert_types();
 		$this->load_alert_triggers();
 
-		add_filter( 'wp_stream_action_links_posts', array(
-			$this,
-			'change_alert_action_links',
-		), 11, 2 );
+		add_filter(
+			'wp_stream_action_links_posts',
+			array(
+				$this,
+				'change_alert_action_links',
+			),
+			11,
+			2
+		);
 
 	}
 
@@ -278,14 +302,22 @@ class Alerts {
 		if ( 'edit-wp_stream_alerts' === $screen->id ) {
 
 			$min = wp_stream_min_suffix();
-			wp_register_script( 'wp-stream-alerts', $this->plugin->locations['url'] . 'ui/js/alerts.' . $min . 'js', array(
-				'wp-stream-select2',
-				'jquery',
-				'inline-edit-post',
-			) );
+
+			wp_register_script(
+				'wp-stream-alerts',
+				$this->plugin->locations['url'] . 'ui/js/alerts.' . $min . 'js',
+				array(
+					'wp-stream-select2',
+					'jquery',
+					'inline-edit-post',
+				),
+				$this->plugin->get_version(),
+				false
+			);
 
 			wp_localize_script(
-				'wp-stream-alerts', 'streamAlerts',
+				'wp-stream-alerts',
+				'streamAlerts',
 				array(
 					'any'        => __( 'Any', 'stream' ),
 					'anyContext' => __( 'Any Context', 'stream' ),
@@ -485,7 +517,8 @@ class Alerts {
 		$form = new Form_Generator();
 
 		$field_html = $form->render_field(
-			'select', array(
+			'select',
+			array(
 				'id'          => 'wp_stream_alert_type',
 				'name'        => 'wp_stream_alert_type',
 				'value'       => $alert_type,

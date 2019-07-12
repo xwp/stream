@@ -2,13 +2,30 @@
 	bootstrap="tests/bootstrap.php"
 	backupGlobals="false"
 	colors="true"
+	verbose="true"
 	convertErrorsToExceptions="true"
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
 	>
 	<testsuites>
-		<testsuite>
-			<directory prefix="test-" suffix=".php">./tests/</directory>
+		<testsuite name="stream">
+			<directory prefix="test-" suffix=".php">tests</directory>
 		</testsuite>
 	</testsuites>
+	<filter>
+		<whitelist processUncoveredFilesFromWhitelist="true">
+			<directory prefix="class-" suffix=".php">alerts</directory>
+			<directory prefix="class-" suffix=".php">classes</directory>
+			<directory prefix="class-" suffix=".php">connectors</directory>
+			<directory prefix="class-" suffix=".php">exporters</directory>
+			<directory prefix="class-" suffix=".php">includes</directory>
+			<exclude>
+				<file>classes/class-cli.php</file><!-- FIXME: It can't resolve WP_CLI_Command for some reason. -->
+				<directory>includes/lib</directory>
+			</exclude>
+		</whitelist>
+	</filter>
+	<logging>
+		<log type="coverage-clover" target="tests/reports/clover.xml" />
+	</logging>
 </phpunit>

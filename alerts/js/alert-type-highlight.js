@@ -4,7 +4,7 @@ var streamAlertTypeHighlight = ( function( $ ) {
 	var self = {
 		ajaxUrl: '',
 		removeAction: '',
-		security: ''
+		security: '',
 	};
 
 	if ( 'undefined' !== typeof _streamAlertTypeHighlightExports ) {
@@ -13,77 +13,71 @@ var streamAlertTypeHighlight = ( function( $ ) {
 
 	/**
 	 * The primary function for this file.
-	 *
-	 * @returns void.
 	 */
 	self.init = function() {
 		$( document ).ready(
 			function() {
+				/**
+				 * Remove highlights on Record list screen.
+				 */
+				$( '.alert-highlight .action-link[href="#"]' ).each(
+					function() {
+						var actionLink = $( this );
 
-					/**
-			 * Remove highlights on Record list screen.
-			 *
-			 * @returns void.
-			 */
-					$( '.alert-highlight .action-link[href="#"]' ).each(
-						function() {
-							var actionLink = $( this );
-
-							/**
+						/**
 						* Ajax call to remove the highlight.
 						*
 						* @returns void.
 						*/
-							actionLink.click(
-								function( e ) {
-									var recordId, data;
-									e.preventDefault();
-									recordId = actionLink.parents( '.alert-highlight' ).attr( 'class' ).match( /record\-id\-[\w-]*\b/ );
-									recordId = recordId[0].replace( 'record-id-', '' );
+						actionLink.click(
+							function( e ) {
+								var recordId, data;
+								e.preventDefault();
+								recordId = actionLink.parents( '.alert-highlight' ).attr( 'class' ).match( /record\-id\-[\w-]*\b/ );
+								recordId = recordId[0].replace( 'record-id-', '' );
 
-									data = {
-										action: self.removeAction,
-										security: self.security,
-										recordId: recordId
-									};
+								data = {
+									action: self.removeAction,
+									security: self.security,
+									recordId: recordId,
+								};
 
-									$.post(
-										self.ajaxUrl, data, function( response ) {
-											if ( true === response.success ) {
-												ajaxDone();
-											}
+								$.post(
+									self.ajaxUrl, data, function( response ) {
+										if ( true === response.success ) {
+											ajaxDone();
 										}
-									);
+									}
+								);
 
-									/**
+								/**
 								* Fires when Ajax complete.
 								*/
-									function ajaxDone() {
-										var row = actionLink.parents( '.alert-highlight' ),
-											odd = $( '.striped > tbody > :nth-child( odd )' );
-										if ( row.is( odd ) ) {
-											row.animate(
-												{ backgroundColor: '#f9f9f9' }, 300, function() {
-													row.removeClass( 'alert-highlight' );
-												}
-											);
-										} else {
-											row.animate(
-												{ backgroundColor: '' }, 300, function() {
-													row.removeClass( 'alert-highlight' );
-												}
-											);
-										}
-										actionLink.remove();
+								function ajaxDone() {
+									var row = actionLink.parents( '.alert-highlight' ),
+										odd = $( '.striped > tbody > :nth-child( odd )' );
+									if ( row.is( odd ) ) {
+										row.animate(
+											{ backgroundColor: '#f9f9f9' }, 300, function() {
+												row.removeClass( 'alert-highlight' );
+											}
+										);
+									} else {
+										row.animate(
+											{ backgroundColor: '' }, 300, function() {
+												row.removeClass( 'alert-highlight' );
+											}
+										);
 									}
+									actionLink.remove();
 								}
-							);
-						}
-					);
+							}
+						);
+					}
+				);
 			}
 		); // End document.ready().
 	};
 
 	return self;
-
-})( jQuery );
+}( jQuery ) );

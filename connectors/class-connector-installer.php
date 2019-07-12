@@ -115,7 +115,7 @@ class Connector_Installer extends Connector {
 	 * @action transition_post_status
 	 *
 	 * @param \WP_Upgrader $upgrader
-	 * @param array $extra
+	 * @param array        $extra
 	 *
 	 * @return bool
 	 */
@@ -214,7 +214,8 @@ class Connector_Installer extends Connector {
 					$theme       = wp_get_theme( $slug );
 					$stylesheet  = $theme['Stylesheet Dir'] . '/style.css';
 					$theme_data  = get_file_data(
-						$stylesheet, array(
+						$stylesheet,
+						array(
 							'Version' => 'Version',
 						)
 					);

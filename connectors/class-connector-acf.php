@@ -55,7 +55,7 @@ class Connector_ACF extends Connector {
 	 * @return bool
 	 */
 	public function is_dependency_satisfied() {
-		if ( class_exists( 'acf' ) ) { //TODO: Should this be function_exists?
+		if ( class_exists( 'acf' ) ) { // TODO: Should this be function_exists?
 			$acf = \acf();
 			if ( version_compare( $acf->settings['version'], self::PLUGIN_MIN_VERSION, '>=' ) ) {
 				return true;
@@ -126,7 +126,7 @@ class Connector_ACF extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links   Previous links registered
 	 * @param object $record Stream record
 	 *
 	 * @return array          Action links
@@ -201,11 +201,11 @@ class Connector_ACF extends Connector {
 	/**
 	 * Track addition of post/user meta
 	 *
-	 * @param string $type       Type of object, post or user
-	 * @param string $action     Added, updated, deleted
-	 * @param integer $meta_id
-	 * @param integer $object_id
-	 * @param string $meta_key
+	 * @param string     $type       Type of object, post or user
+	 * @param string     $action     Added, updated, deleted
+	 * @param integer    $meta_id
+	 * @param integer    $object_id
+	 * @param string     $meta_key
 	 * @param mixed|null $meta_value
 	 */
 	public function check_meta( $type, $action, $meta_id, $object_id, $meta_key, $meta_value = null ) {
@@ -339,11 +339,11 @@ class Connector_ACF extends Connector {
 	/**
 	 * Track changes to ACF values within rendered post meta forms
 	 *
-	 * @param string $type       Type of object, post or user
-	 * @param string $action     Added, updated, deleted
-	 * @param integer $meta_id
-	 * @param integer $object_id
-	 * @param string $key
+	 * @param string     $type       Type of object, post or user
+	 * @param string     $action     Added, updated, deleted
+	 * @param integer    $meta_id
+	 * @param integer    $object_id
+	 * @param string     $key
 	 * @param mixed|null $value
 	 *
 	 * @return bool
@@ -484,7 +484,7 @@ class Connector_ACF extends Connector {
 	 * processed by callback_updated_post_meta
 	 *
 	 * @param string $value
-	 * @param int $post_id
+	 * @param int    $post_id
 	 * @param string $field
 	 *
 	 * @return string
@@ -497,7 +497,7 @@ class Connector_ACF extends Connector {
 	/**
 	 * Track changes to post main attributes, ie: Order No.
 	 *
-	 * @param int $post_id
+	 * @param int   $post_id
 	 * @param array $data  Array with the updated post data
 	 */
 	public function callback_pre_post_update( $post_id, $data ) {

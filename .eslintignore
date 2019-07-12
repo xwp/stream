@@ -1,0 +1,5 @@
+/ui/lib/
+**/*.min.js
+/vendor/
+/node_modules/
+/build/

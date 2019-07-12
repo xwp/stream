@@ -133,7 +133,7 @@ class Connector_Jetpack extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links   Previous links registered
 	 * @param object $record Stream record
 	 *
 	 * @return array Action links

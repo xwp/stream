@@ -4,6 +4,7 @@ namespace WP_Stream;
 class Live_Update {
 	/**
 	 * Hold Plugin class
+	 *
 	 * @var Plugin
 	 */
 	public $plugin;
@@ -128,7 +129,7 @@ class Live_Update {
 	/**
 	 * Sends Updated Actions to the List Table View
 	 *
-	 * @param int $last_time Timestamp of last update
+	 * @param int   $last_time Timestamp of last update
 	 * @param array $args    Query args
 	 *
 	 * @return array Array of recently updated items
@@ -177,7 +178,8 @@ class Live_Update {
 
 		// Register list table
 		$this->list_table = new List_Table(
-			$this->plugin, array(
+			$this->plugin,
+			array(
 				'screen' => 'toplevel_page_' . $this->plugin->admin->records_page_slug,
 			)
 		);
