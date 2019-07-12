@@ -33,8 +33,7 @@
   },
   "scripts": {
     "postinstall": "composer install && npm run build",
-    "build": "grunt default && npm run readme",
-    "readme": "php ./vendor/xwp/wp-dev-lib/scripts/generate-markdown-readme",
+    "build": "grunt default",
     "deploy": "npm run build && grunt deploy",
     "lint-js": "eslint .",
     "lint-php": "composer lint",

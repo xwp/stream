@@ -63,11 +63,15 @@ module.exports = function( grunt ) {
 					'includes/**',
 					'ui/**',
 					'languages/*',
-					'readme.txt',
+					'readme.md',
 				],
 				dest: 'build',
 				expand: true,
 				dot: true,
+			},
+			readme: {
+				src: 'readme.txt.md',
+				dest: 'build/readme.txt',
 			},
 		},
 

@@ -23,7 +23,7 @@ We suggest using the [Homebrew package manager](https://brew.sh) on macOS to ins
 For setups with local Docker environment you don't need Vagrant and VirtualBox.
 
 
-### Setup
+### Environment Setup
 
 1. See the [Git Flow](#git-flow) section below for how to fork the repository.
 2. Run `npm install` to install all project dependencies.
@@ -139,7 +139,7 @@ Please use the [git flow for pull requests](#git-flow) and follow [WordPress Cod
    git checkout -b <topic-branch-name>
    ```
 
-4. Commit your changes in logical chunks. Please adhere to these [git commit message guidelines](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) or your code is unlikely be merged into the main project. Use Git's [interactive rebase](https://help.github.com/articles/interactive-rebase) feature to tidy up your commits before making them public.
+4. Commit your changes in logical chunks. Please adhere to these [git commit message guidelines](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html). Use Git's [interactive rebase](https://help.github.com/articles/interactive-rebase) feature to tidy up your commits before making them public.
 
 5. Locally merge (or rebase) the upstream development branch into your topic branch:
 
@@ -153,6 +153,6 @@ Please use the [git flow for pull requests](#git-flow) and follow [WordPress Cod
    git push origin <topic-branch-name>
    ```
 
-7. [Open a Pull Request](https://help.github.com/articles/using-pull-requests/) (with a clear title and description) to the `develop` branch.
+7. [Open a Pull Request](https://help.github.com/articles/using-pull-requests/) (with a clear title and description) to the `master` branch.
 
 **IMPORTANT**: By submitting a patch, you agree to allow the project owner to license your work under the [GPL v2 license](https://www.gnu.org/licenses/gpl-2.0.html).
