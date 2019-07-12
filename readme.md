@@ -10,7 +10,7 @@
 
 ## Contribute
 
-All suggestions and contributions are welcome! See the [contributor documentation for how to get started](contributing.md).
+All suggestions and contributions are welcome! See the [contributor documentation](contributing.md) for how to report issues and setup the local development environment.
 
 
 ## Credits
