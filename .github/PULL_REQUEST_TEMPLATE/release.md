@@ -1,5 +1,3 @@
-# Version 0.0.0
-
 ## Changelog
 
 - Fix: Describe a bug fix included in this release.
@@ -8,6 +6,7 @@
 
 ## Release Checklist
 
+- [ ] This pull request is to the `master` branch.
 - [ ] Release version follows [semantic versioning](https://semver.org). Does it include breaking changes?
 - [ ] Update changelog in `readme.txt`.
 - [ ] Bump version in `stream.php`.
