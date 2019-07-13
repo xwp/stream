@@ -63,9 +63,9 @@ Stream is perfect for keeping tabs on your clients. When something breaks, Strea
  * WP-CLI command for querying records
 
 
-= See room for improvement? =
+= Contribute =
 
-Great! There are several ways you can get involved to help make Stream better:
+There are several ways you can get involved to help make Stream better:
 
 1. **Report Bugs:** If you find a bug, error or other problem, please report it! You can do this by [creating a new topic](https://wordpress.org/support/plugin/stream) in the plugin forum. Once a developer can verify the bug by reproducing it, they will create an official bug report in GitHub where the bug will be worked on.
 
