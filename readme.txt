@@ -1,11 +1,11 @@
 === Stream ===
-Contributors:      lukecarbis, fjarrett, stream, xwp
-Tags:              wp stream, stream, activity, logs, track
+Contributors: lukecarbis, fjarrett, stream, xwp
+Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
-Tested up to:      5.2
-Stable tag:        3.3.0
-License:           GPLv2 or later
-License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+Tested up to: 5.2
+Stable tag: 3.3.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Planes have a black box, WordPress has Stream. When something goes wrong, you need to know how it happened.
 
