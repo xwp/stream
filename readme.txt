@@ -89,9 +89,9 @@ Thank you for wanting to make Stream better for everyone!
 
 = 3.4.0 - July 13, 2019 =
 
-* New: Add development environment and documentation, update tooling, [#1016](https://github.com/xwp/stream/pull/1016).
+* New: Add development environment and documentation, update tooling [#1016](https://github.com/xwp/stream/pull/1016).
 * New: Add [Mercator](https://github.com/humanmade/Mercator) connector [#993](https://github.com/xwp/stream/pull/993), props [@spacedmonkey](https://github.com/spacedmonkey)).
-* Fix: Respect the DISALLOW_FILE_MODS constant and prevent plugin uninstall, if set. [#997](https://github.com/xwp/stream/pull/997) fixes [#988](https://github.com/xwp/stream/issues/988), props [@lukecarbis](https://github.com/lukecarbis) and [@josephfusco](https://github.com/josephfusco).
+* Fix: Respect the `DISALLOW_FILE_MODS` constant and prevent plugin uninstall, if set. [#997](https://github.com/xwp/stream/pull/997) fixes [#988](https://github.com/xwp/stream/issues/988), props [@lukecarbis](https://github.com/lukecarbis) and [@josephfusco](https://github.com/josephfusco).
 
 = 3.3.0 - June 18, 2019 =
 
