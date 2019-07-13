@@ -38,6 +38,8 @@ class Uninstall {
 	 * Uninstall Stream by deleting its data
 	 */
 	public function uninstall() {
+		// check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
 		$this->options = array(
 			$this->plugin->install->option_key,
 			$this->plugin->settings->option_key,
