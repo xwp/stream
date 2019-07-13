@@ -38,6 +38,8 @@ class Uninstall {
 	 * Uninstall Stream by deleting its data
 	 */
 	public function uninstall() {
+		// check_ajax_referer( 'stream_nonce', 'wp_stream_nonce' );
+
 		$this->options = array(
 			$this->plugin->install->option_key,
 			$this->plugin->settings->option_key,
@@ -48,12 +50,6 @@ class Uninstall {
 		if ( ! current_user_can( $this->plugin->admin->settings_cap ) ) {
 			wp_die(
 				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
-			);
-		}
-
-		if ( defined( 'DISALLOW_FILE_MODS' ) && true === DISALLOW_FILE_MODS ) {
-			wp_die(
-				esc_html__( "You don't have sufficient file permissions to do this action.", 'stream' )
 			);
 		}
 

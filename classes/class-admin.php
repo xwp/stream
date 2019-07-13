@@ -765,17 +765,15 @@ class Admin {
 
 		$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
 
-		if ( ! defined( 'DISALLOW_FILE_MODS' ) || false === DISALLOW_FILE_MODS ) {
-			$url = add_query_arg(
-				array(
-					'action'          => 'wp_stream_uninstall',
-					'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-				),
-				admin_url( 'admin-ajax.php' )
-			);
+		$url = add_query_arg(
+			array(
+				'action'          => 'wp_stream_uninstall',
+				'wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+			),
+			admin_url( 'admin-ajax.php' )
+		);
 
-			$links[] = sprintf( '<span id="wp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall', 'stream' ) );
-		}
+		$links[] = sprintf( '<span id="wp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall', 'stream' ) );
 
 		return $links;
 	}
