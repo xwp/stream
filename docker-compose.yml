@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+
+  mysql:
+    image: mysql:5
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+
+  wordpress:
+    build: ./local/docker/wordpress
+    depends_on:
+      - mysql
+      - db_phpunit
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./local/public:/var/www/html # Use host-mount to ensure correct permissions for all.
+      - .:/var/www/html/wp-content/plugins/stream-src
+      - ./build:/var/www/html/wp-content/plugins/stream
+      - ./vendor/wordpress/wordpress/tests/phpunit:/var/www/html/tests/wordpress-phpunit
+      - ./local/config/wp-tests-config.php:/var/www/html/tests/wordpress-phpunit/wp-tests-config.php
+    restart: always
+    environment:
+      APACHE_RUN_USER: "#1000" # Ensure Apache can write to the filesystem.
+      WP_TESTS_DIR: /var/www/html/tests/wordpress-phpunit
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: password
+
+  db_phpunit:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "wordpress_test"
+      MYSQL_ROOT_PASSWORD: ""
+
+volumes:
+  db_data: {}
+  wp_data: {}

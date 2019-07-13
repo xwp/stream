@@ -4,6 +4,7 @@ namespace WP_Stream;
 class Network {
 	/**
 	 * Hold Plugin class
+	 *
 	 * @var Plugin
 	 */
 	public $plugin;
@@ -177,7 +178,8 @@ class Network {
 			$action       = add_query_arg(
 				array(
 					'action' => $current_page,
-				), 'edit.php'
+				),
+				'edit.php'
 			);
 		}
 

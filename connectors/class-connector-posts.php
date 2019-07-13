@@ -71,7 +71,7 @@ class Connector_Posts extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links   Previous links registered
 	 * @param Record $record Stream record
 	 *
 	 * @return array Action links
@@ -152,8 +152,8 @@ class Connector_Posts extends Connector {
 	 *
 	 * @action transition_post_status
 	 *
-	 * @param mixed $new
-	 * @param mixed $old
+	 * @param mixed    $new
+	 * @param mixed    $old
 	 * @param \WP_Post $post
 	 */
 	public function callback_transition_post_status( $new, $old, $post ) {
@@ -369,7 +369,7 @@ class Connector_Posts extends Connector {
 	/**
 	 * Get an adjacent post revision ID
 	 *
-	 * @param int $revision_id
+	 * @param int  $revision_id
 	 * @param bool $previous
 	 *
 	 * @return int $revision_id

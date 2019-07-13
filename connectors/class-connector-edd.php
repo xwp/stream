@@ -68,12 +68,14 @@ class Connector_EDD extends Connector {
 
 	/**
 	 * Flag status changes to not create duplicate entries
+	 *
 	 * @var bool
 	 */
 	public $is_discount_status_change = false;
 
 	/**
 	 * Flag status changes to not create duplicate entries
+	 *
 	 * @var bool
 	 */
 	public $is_payment_status_change = false;
@@ -133,7 +135,7 @@ class Connector_EDD extends Connector {
 			'discounts'         => esc_html_x( 'Discounts', 'edd', 'stream' ),
 			'reports'           => esc_html_x( 'Reports', 'edd', 'stream' ),
 			'api_keys'          => esc_html_x( 'API Keys', 'edd', 'stream' ),
-			//'payments'        => esc_html_x( 'Payments', 'edd', 'stream' ),
+			// 'payments'        => esc_html_x( 'Payments', 'edd', 'stream' ),
 		);
 	}
 
@@ -183,10 +185,14 @@ class Connector_EDD extends Connector {
 					$base
 				);
 			}
-		} elseif ( in_array( $record->context, array(
-			'download_category',
-			'download_tag',
-		), true ) ) {
+		} elseif ( in_array(
+			$record->context,
+			array(
+				'download_category',
+				'download_tag',
+			),
+			true
+		) ) {
 			$tax_label = get_taxonomy_labels( get_taxonomy( $record->context ) )->singular_name;
 			// translators: Placeholder refers to a taxonomy (e.g. "Category")
 			$links[ sprintf( esc_html__( 'Edit %s', 'stream' ), $tax_label ) ] = get_edit_term_link( $record->object_id, $record->get_meta( 'taxonomy', true ) );
@@ -201,7 +207,8 @@ class Connector_EDD extends Connector {
 						'page'      => 'edd-reports',
 						'tab'       => 'logs',
 						's'         => $user->user_email,
-					), 'edit.php'
+					),
+					'edit.php'
 				);
 			}
 
@@ -211,7 +218,8 @@ class Connector_EDD extends Connector {
 					'user_id'         => $record->object_id,
 					'edd_action'      => 'process_api_key',
 					'edd_api_process' => 'revoke',
-				), 'edit.php'
+				),
+				'edit.php'
 			);
 			$links[ esc_html__( 'Reissue', 'stream' ) ] = add_query_arg(
 				array(
@@ -219,7 +227,8 @@ class Connector_EDD extends Connector {
 					'user_id'         => $record->object_id,
 					'edd_action'      => 'process_api_key',
 					'edd_api_process' => 'regenerate',
-				), 'edit.php'
+				),
+				'edit.php'
 			);
 		}
 
@@ -268,10 +277,14 @@ class Connector_EDD extends Connector {
 		$replacement = str_replace( '-', '_', $option );
 
 		if ( method_exists( $this, 'check_' . $replacement ) ) {
-			call_user_func( array(
-				$this,
-				'check_' . $replacement,
-			), $old_value, $new_value );
+			call_user_func(
+				array(
+					$this,
+					'check_' . $replacement,
+				),
+				$old_value,
+				$new_value
+			);
 		} else {
 			$data         = $this->options[ $option ];
 			$option_title = $data['label'];
@@ -299,7 +312,7 @@ class Connector_EDD extends Connector {
 			$options[ $field_key ] = $field_value;
 		}
 
-		//TODO: Check this exists first
+		// TODO: Check this exists first
 		$settings = \edd_get_registered_settings();
 
 		foreach ( $options as $option => $option_value ) {
@@ -505,10 +518,15 @@ class Connector_EDD extends Connector {
 			return false;
 		}
 
-		return call_user_func( array(
-			$this,
-			'meta_' . $key,
-		), $object_id, $value, $is_add );
+		return call_user_func(
+			array(
+				$this,
+				'meta_' . $key,
+			),
+			$object_id,
+			$value,
+			$is_add
+		);
 	}
 
 	private function meta_edd_user_public_key( $user_id, $value, $is_add = false ) {

@@ -1,13 +1,14 @@
 === Stream ===
-Contributors:      lukecarbis, fjarrett, stream, xwp
-Tags:              wp stream, stream, activity, logs, track
-Requires at least: 3.9
-Tested up to:      5.2
-Stable tag:        3.3.0
-License:           GPLv2 or later
-License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+Contributors: lukecarbis, fjarrett, stream, xwp
+Tags: wp stream, stream, activity, logs, track
+Requires at least: 4.5
+Tested up to: 5.2
+Stable tag: 3.3.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Planes have a black box, WordPress has Stream. When something goes wrong, you need to know how it happened.
+
 
 == Description ==
 
@@ -19,7 +20,7 @@ For advanced users, Stream also supports a Multisite view of all activity record
 
 Stream is perfect for keeping tabs on your clients. When something breaks, Stream is there to help. See what changed and who changed it.
 
-**Built-In Tracking Integrations For Popular Plugins:**
+= Built-In Tracking Integrations For Popular Plugins: =
 
  * Advanced Custom Fields
  * bbPress
@@ -31,7 +32,7 @@ Stream is perfect for keeping tabs on your clients. When something breaks, Strea
  * WooCommerce
  * WordPress SEO by Yoast
 
-**Built-In Tracking For Core Actions:**
+= Built-In Tracking For Core Actions: =
 
  * Posts
  * Pages
@@ -52,7 +53,7 @@ Stream is perfect for keeping tabs on your clients. When something breaks, Strea
  * Theme Editor
  * WordPress Core Updates
 
-**Other Noteworthy Features:**
+= Other Noteworthy Features: =
 
  * Multisite view of all activity records on a network
  * Limit who can view user activity records by user role
@@ -61,21 +62,28 @@ Stream is perfect for keeping tabs on your clients. When something breaks, Strea
  * Export your Activity Stream as a CSV or JSON file
  * WP-CLI command for querying records
 
-**See room for improvement?**
 
-Great! There are several ways you can get involved to help make Stream better:
+= Contribute =
+
+There are several ways you can get involved to help make Stream better:
 
 1. **Report Bugs:** If you find a bug, error or other problem, please report it! You can do this by [creating a new topic](https://wordpress.org/support/plugin/stream) in the plugin forum. Once a developer can verify the bug by reproducing it, they will create an official bug report in GitHub where the bug will be worked on.
-2. **Suggest New Features:** Have an awesome idea? Please share it! Simply [create a new topic](https://wordpress.org/support/plugin/stream) in the plugin forum to express your thoughts on why the feature should be included and get a discussion going around your idea.
-3. **Issue Pull Requests:** If you're a developer, the easiest way to get involved is to help out on [issues already reported](https://github.com/x-team/wp-stream/issues) in GitHub. Be sure to check out the [contributing guide](https://github.com/x-team/wp-stream/blob/master/contributing.md) for developers.
+
+2. **Translate into Your Language:** Use the official plugin translation tool to [translate Stream into your language](https://translate.wordpress.org/projects/wp-plugins/stream/).
+
+3. **Suggest New Features:** Have an awesome idea? Please share it! Simply [create a new topic](https://wordpress.org/support/plugin/stream) in the plugin forum to express your thoughts on why the feature should be included and get a discussion going around your idea.
+
+4. **Issue Pull Requests:** If you're a developer, the easiest way to get involved is to help out on [issues already reported](https://github.com/x-team/wp-stream/issues) in GitHub. Be sure to check out the [contributing guide](https://github.com/x-team/wp-stream/blob/master/contributing.md) for developers.
 
 Thank you for wanting to make Stream better for everyone!
+
 
 == Screenshots ==
 
 1. Every logged-in user action is displayed in an activity stream and organized for easy filtering and searching.
 2. Enable live updates in Screen Options to watch your site activity appear in near real-time.
 3. Create rules for excluding certain kinds of records from appearing in Stream.
+
 
 == Changelog ==
 

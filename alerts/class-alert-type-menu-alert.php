@@ -63,14 +63,16 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 			$alert_meta = $alert->alert_meta;
 		}
 		$options = wp_parse_args(
-			$alert_meta, array(
+			$alert_meta,
+			array(
 				'clear_immediate' => false,
 			)
 		);
 
 		$form = new Form_Generator();
 		$form->add_field(
-			'checkbox', array(
+			'checkbox',
+			array(
 				'name'  => 'wp_stream_menu_alert_clear_immediate',
 				'text'  => esc_attr( __( 'Clear alerts after seen.', 'stream' ) ),
 				'value' => $options['clear_immediate'],

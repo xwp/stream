@@ -87,7 +87,7 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array $links
+	 * @param array  $links
 	 * @param Record $record
 	 *
 	 * @return array

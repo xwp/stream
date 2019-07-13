@@ -316,7 +316,7 @@ class Alerts_List {
 		<legend class="inline-edit-legend"><?php esc_html_e( 'Edit', 'stream' ); ?></legend>
 		<?php
 		foreach ( $box_type as $type ) : // @todo remove inline styles.
-		?>
+			?>
 			<fieldset class="inline-edit-col inline-edit-<?php echo esc_attr( Alerts::POST_TYPE ); ?>">
 				<?php
 				$function_name = 'display_' . $type . '_box';
@@ -339,10 +339,28 @@ class Alerts_List {
 		if ( 'edit-wp_stream_alerts' !== $screen->id ) {
 			return;
 		}
+
 		$min = wp_stream_min_suffix();
-		wp_register_script( 'wp-stream-alerts-list-js', $this->plugin->locations['url'] . 'ui/js/alerts-list.' . $min . 'js', array( 'wp-stream-alerts', 'jquery' ) );
+
+		wp_register_script(
+			'wp-stream-alerts-list-js',
+			$this->plugin->locations['url'] . 'ui/js/alerts-list.' . $min . 'js',
+			array(
+				'wp-stream-alerts',
+				'jquery',
+			),
+			$this->plugin->get_version(),
+			false
+		);
+
+		wp_register_style(
+			'wp-stream-alerts-list-css',
+			$this->plugin->locations['url'] . 'ui/css/alerts-list.' . $min . 'css',
+			[],
+			$this->plugin->get_version()
+		);
+
 		wp_enqueue_script( 'wp-stream-alerts-list-js' );
-		wp_register_style( 'wp-stream-alerts-list-css', $this->plugin->locations['url'] . 'ui/css/alerts-list.' . $min . 'css' );
 		wp_enqueue_style( 'wp-stream-alerts-list-css' );
 		wp_enqueue_style( 'wp-stream-select2' );
 	}

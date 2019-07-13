@@ -76,10 +76,13 @@ class Alert_Type_IFTTT extends Alert_Type {
 			return;
 		}
 		add_filter(
-			'wp_stream_alerts_save_meta', array(
+			'wp_stream_alerts_save_meta',
+			array(
 				$this,
 				'add_alert_meta',
-			), 10, 2
+			),
+			10,
+			2
 		);
 	}
 
@@ -111,7 +114,8 @@ class Alert_Type_IFTTT extends Alert_Type {
 			$alert_meta = $alert->alert_meta;
 		}
 		$options = wp_parse_args(
-			$alert_meta, array(
+			$alert_meta,
+			array(
 				'maker_key'  => '',
 				'event_name' => '',
 			)
@@ -126,7 +130,8 @@ class Alert_Type_IFTTT extends Alert_Type {
 		echo '<label for="wp_stream_ifttt_maker_key"><span class="title">' . esc_html__( 'Maker Key', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field(
-			'text', array(
+			'text',
+			array(
 				'name'  => 'wp_stream_ifttt_maker_key',
 				'title' => esc_attr( __( 'Maker Key', 'stream' ) ),
 				'value' => $options['maker_key'],
@@ -144,7 +149,8 @@ class Alert_Type_IFTTT extends Alert_Type {
 		echo '<label for="wp_stream_ifttt_event_name"><span class="title">' . esc_html__( 'Event Name', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field(
-			'text', array(
+			'text',
+			array(
 				'name'  => 'wp_stream_ifttt_event_name',
 				'title' => esc_attr( __( 'Event Name', 'stream' ) ),
 				'value' => $options['event_name'],
@@ -200,7 +206,8 @@ class Alert_Type_IFTTT extends Alert_Type {
 		}
 
 		$record_data = wp_parse_args(
-			$recordarr, array(
+			$recordarr,
+			array(
 				// translators: Placeholder refers to the Event Name of the Alert (e.g. "Update a post")
 				'summary' => sprintf( __( 'The event %s was triggered' ), $alert->alert_meta['event_name'] ),
 				'user_id' => get_current_user_id(),
@@ -251,7 +258,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 		 *
 		 * value3 = Record Date
 		 * (see the wp_stream_alert_ifttt_date_format filter above)
-         *
+		 *
 		 * The filters below allow complete customization of these data values.
 		 */
 		$args = array(

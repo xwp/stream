@@ -214,7 +214,7 @@ class Connector_Media extends Connector {
 	 * @param string $filename
 	 * @param string $image
 	 * @param string $mime_type
-	 * @param int $post_id
+	 * @param int    $post_id
 	 */
 	public function callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id ) {
 		unset( $dummy );

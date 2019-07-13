@@ -65,7 +65,8 @@ class Form_Generator {
 	 */
 	public function render_field( $field_type, $args ) {
 		$args = wp_parse_args(
-			$args, array(
+			$args,
+			array(
 				'name'        => '',
 				'value'       => '',
 				'options'     => array(),
@@ -131,7 +132,8 @@ class Form_Generator {
 
 				foreach ( $args['options'] as $parent ) {
 					$parent = wp_parse_args(
-						$parent, array(
+						$parent,
+						array(
 							'value'    => '',
 							'text'     => '',
 							'children' => array(),

@@ -2,6 +2,14 @@
 namespace WP_Stream;
 
 class Test_Plugin extends WP_StreamTestCase {
+
+	/**
+	 * Make sure the plugin is initialized with it's global variable.
+	 */
+	public function test_plugin_initialized() {
+		$this->assertFalse( null == $this->plugin );
+	}
+
 	/*
 	 * Also tests private method locate_plugin
 	 */

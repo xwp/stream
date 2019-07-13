@@ -4,6 +4,7 @@ namespace WP_Stream;
 class Connectors {
 	/**
 	 * Hold Plugin class
+	 *
 	 * @var Plugin
 	 */
 	public $plugin;

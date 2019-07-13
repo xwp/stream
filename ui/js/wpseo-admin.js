@@ -1,18 +1,17 @@
-// globals jQuery, $
+/* globals jQuery */
 jQuery(
 	function( $ ) {
-
-			var highlight, input, tab;
+		var highlight, input, tab;
 
 		if ( window.location.hash.substr( 'stream-highlight-' ) ) {
 			highlight = window.location.hash.replace( 'stream-highlight-', '' );
-			input     = $( ':input' + highlight );
+			input = $( ':input' + highlight );
 
 			window.location.hash = '';
 
 			if ( input.length ) {
 				if ( $( '#wpseo-tabs' ).length ) {
-					tab                  = input.parents( '.wpseotab' ).first().attr( 'id' );
+					tab = input.parents( '.wpseotab' ).first().attr( 'id' );
 					window.location.hash = '#top#' + tab;
 				}
 
@@ -33,6 +32,5 @@ jQuery(
 				);
 			}
 		}
-
 	}
 );

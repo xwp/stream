@@ -70,19 +70,24 @@ class Alert_Type_Highlight extends Alert_Type {
 			return;
 		}
 		add_filter(
-			'wp_stream_record_classes', array(
+			'wp_stream_record_classes',
+			array(
 				$this,
 				'post_class',
-			), 10, 2
+			),
+			10,
+			2
 		);
 		add_action(
-			'admin_enqueue_scripts', array(
+			'admin_enqueue_scripts',
+			array(
 				$this,
 				'enqueue_scripts',
 			)
 		);
 		add_action(
-			'wp_ajax_' . self::REMOVE_ACTION, array(
+			'wp_ajax_' . self::REMOVE_ACTION,
+			array(
 				$this,
 				'ajax_remove_highlight',
 			)
@@ -91,19 +96,25 @@ class Alert_Type_Highlight extends Alert_Type {
 		if ( ! empty( $this->plugin->connectors->connectors ) && is_array( $this->plugin->connectors->connectors ) ) {
 			foreach ( $this->plugin->connectors->connectors as $connector ) {
 				add_filter(
-					'wp_stream_action_links_' . $connector->name, array(
+					'wp_stream_action_links_' . $connector->name,
+					array(
 						$this,
 						'action_link_remove_highlight',
-					), 10, 2
+					),
+					10,
+					2
 				);
 			}
 		}
 
 		add_filter(
-			'wp_stream_alerts_save_meta', array(
+			'wp_stream_alerts_save_meta',
+			array(
 				$this,
 				'add_alert_meta',
-			), 10, 2
+			),
+			10,
+			2
 		);
 	}
 
@@ -141,7 +152,8 @@ class Alert_Type_Highlight extends Alert_Type {
 			$alert_meta = $alert->alert_meta;
 		}
 		$options = wp_parse_args(
-			$alert_meta, array(
+			$alert_meta,
+			array(
 				'color' => 'yellow',
 			)
 		);
@@ -151,7 +163,8 @@ class Alert_Type_Highlight extends Alert_Type {
 		echo '<label for="wp_stream_highlight_color"><span class="title">' . esc_html__( 'Color', 'stream' ) . '</span>';
 		echo '<span class="input-text-wrap">';
 		echo $form->render_field(
-			'select', array(
+			'select',
+			array(
 				'name'    => 'wp_stream_highlight_color',
 				'title'   => esc_attr( __( 'Highlight Color', 'stream' ) ),
 				'options' => $this->get_highlight_options(),
@@ -295,7 +308,16 @@ class Alert_Type_Highlight extends Alert_Type {
 	public function enqueue_scripts( $page ) {
 		if ( 'toplevel_page_wp_stream' === $page ) {
 			$min = wp_stream_min_suffix();
-			wp_register_script( self::SCRIPT_HANDLE, $this->plugin->locations['url'] . 'alerts/js/alert-type-highlight.' . $min . 'js', array( 'jquery' ) );
+
+			wp_register_script(
+				self::SCRIPT_HANDLE,
+				$this->plugin->locations['url'] . 'alerts/js/alert-type-highlight.' . $min . 'js',
+				array(
+					'jquery',
+				),
+				$this->plugin->get_version(),
+				false
+			);
 
 			$exports = array(
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),

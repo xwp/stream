@@ -59,7 +59,8 @@ class Connector_Menus extends Connector {
 	public function get_context_labels() {
 		$labels = array();
 		$menus  = get_terms(
-			'nav_menu', array(
+			'nav_menu',
+			array(
 				'hide_empty' => false,
 			)
 		);
@@ -106,7 +107,7 @@ class Connector_Menus extends Connector {
 	 *
 	 * @action wp_create_nav_menu
 	 *
-	 * @param int $menu_id
+	 * @param int   $menu_id
 	 * @param array $menu_data
 	 */
 	public function callback_wp_create_nav_menu( $menu_id, $menu_data ) {
@@ -127,7 +128,7 @@ class Connector_Menus extends Connector {
 	 *
 	 * @action wp_update_nav_menu
 	 *
-	 * @param int $menu_id
+	 * @param int   $menu_id
 	 * @param array $menu_data
 	 */
 	public function callback_wp_update_nav_menu( $menu_id, $menu_data = array() ) {
@@ -153,7 +154,7 @@ class Connector_Menus extends Connector {
 	 * @action delete_nav_menu
 	 *
 	 * @param object $term
-	 * @param int $tt_id
+	 * @param int    $tt_id
 	 * @param object $deleted_term
 	 */
 	public function callback_delete_nav_menu( $term, $tt_id, $deleted_term ) {

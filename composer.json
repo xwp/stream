@@ -1,10 +1,49 @@
 {
   "name": "xwp/stream",
+  "description": "Track WordPress user and system actions for debugging, logging and compliance purposes",
+  "homepage": "https://wordpress.org/plugins/stream/",
   "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/WordPress/wordpress-develop.git"
+    }
+  ],
   "require": {
     "composer/installers": "~1.0"
   },
   "require-dev": {
-    "wp-coding-standards/wpcs": "^2.1"
+    "php-coveralls/php-coveralls": "^2.1",
+    "phpunit/phpunit": "^5.7",
+    "wordpress/wordpress": "^5.2",
+    "wp-cli/wp-cli-bundle": "^2.2",
+    "wp-coding-standards/wpcs": "^2.1",
+    "wpsh/local": "^0.2.3",
+    "xwp/wp-dev-lib": "^1.2"
+  },
+  "config": {
+    "sort-packages": true,
+    "platform": {
+      "php": "5.6"
+    }
+  },
+  "scripts": {
+    "release": [
+      "composer install --no-dev --prefer-dist --optimize-autoloader"
+    ],
+    "lint-php": [
+      "phpcs ."
+    ],
+    "lint": [
+      "@composer validate",
+      "@lint-php"
+    ],
+    "test": [
+      "phpunit"
+    ],
+    "test-report": [
+      "php-coveralls --verbose"
+    ]
   }
 }

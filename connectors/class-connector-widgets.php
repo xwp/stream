@@ -90,7 +90,7 @@ class Connector_Widgets extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links   Previous links registered
 	 * @param Record $record Stream record
 	 *
 	 * @return array Action links
@@ -516,8 +516,8 @@ class Connector_Widgets extends Connector {
 	 * @action updated_option
 	 *
 	 * @param string $option_name
-	 * @param array $old_value
-	 * @param array $new_value
+	 * @param array  $old_value
+	 * @param array  $new_value
 	 */
 	public function callback_updated_option( $option_name, $old_value, $new_value ) {
 		if ( ! preg_match( '/^widget_(.+)$/', $option_name, $matches ) || ! is_array( $new_value ) ) {
@@ -817,6 +817,7 @@ class Connector_Widgets extends Connector {
 	public function get_sidebars_widgets() {
 		/**
 		 * Filter allows for insertion of sidebar widgets
+		 *
 		 * @todo Do we need this filter?
 		 *
 		 * @param  array  Sidebar Widgets in Options table

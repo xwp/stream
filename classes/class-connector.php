@@ -82,7 +82,7 @@ abstract class Connector {
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links   Previous links registered
 	 * @param object $record Stream record
 	 *
 	 * @filter wp_stream_action_links_{connector}
@@ -98,11 +98,11 @@ abstract class Connector {
 	 * Log handler
 	 *
 	 * @param string $message sprintf-ready error message string
-	 * @param array $args     sprintf (and extra) arguments to use
-	 * @param int $object_id  Target object id
+	 * @param array  $args     sprintf (and extra) arguments to use
+	 * @param int    $object_id  Target object id
 	 * @param string $context Context of the event
 	 * @param string $action  Action of the event
-	 * @param int $user_id    User responsible for the event
+	 * @param int    $user_id    User responsible for the event
 	 *
 	 * @return bool
 	 */
@@ -158,8 +158,8 @@ abstract class Connector {
 	/**
 	 * Compare two values and return changed keys if they are arrays
 	 *
-	 * @param  mixed $old_value Value before change
-	 * @param  mixed $new_value Value after change
+	 * @param  mixed    $old_value Value before change
+	 * @param  mixed    $new_value Value after change
 	 * @param  bool|int $deep   Get array children changes keys as well, not just parents
 	 *
 	 * @return array

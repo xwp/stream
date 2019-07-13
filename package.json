@@ -22,23 +22,30 @@
     "track"
   ],
   "devDependencies": {
+    "@wordpress/eslint-plugin": "^2.3.0",
+    "eslint": "^6.0.1",
     "grunt": "~1.0.1",
     "grunt-contrib-clean": "~1.1.0",
     "grunt-contrib-copy": "~1.0.0",
     "grunt-contrib-cssmin": "~2.2.1",
-    "grunt-contrib-jshint": "~1.1.0",
     "grunt-contrib-uglify": "~3.0.1",
-    "grunt-shell": "~2.1.0",
-    "grunt-wp-deploy": "^2.0.0",
-    "jscs": "^3.0.7",
-    "jshint": "^2.10.2",
-    "wp-dev-lib": "github:xwp/wp-dev-lib#1.1.2"
+    "grunt-wp-deploy": "^2.0.0"
   },
   "scripts": {
     "postinstall": "composer install && npm run build",
-    "build": "grunt default && npm run readme",
-    "readme": "./node_modules/wp-dev-lib/scripts/generate-markdown-readme",
+    "build": "grunt default",
     "deploy": "npm run build && grunt deploy",
-    "lint": "DIFF_BASE=master ./node_modules/wp-dev-lib/scripts/pre-commit"
-  }
+    "lint-js": "eslint .",
+    "lint-php": "composer lint",
+    "lint": "npm run lint-js && npm run lint-php",
+    "cli": "./local/vagrant/cli.sh",
+    "compose": "./local/vagrant/docker-compose.sh",
+    "phpunit": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
+    "phpunit-report": "npm run cli -- composer test-report --working-dir=wp-content/plugins/stream-src",
+    "vcli": "vagrant ssh -- DOCKER_COMPOSE_FILE=/vagrant/docker-compose.yml /vagrant/local/vagrant/cli.sh",
+    "vcompose": "vagrant ssh -- DOCKER_COMPOSE_FILE=/vagrant/docker-compose.yml /vagrant/local/vagrant/docker-compose.sh",
+    "vphpunit": "npm run vcli -- composer test --working-dir=wp-content/plugins/stream-src",
+    "vphpunit-report": "npm run vcli -- composer test-report --working-dir=wp-content/plugins/stream-src"
+  },
+  "dependencies": {}
 }

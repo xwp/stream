@@ -206,7 +206,7 @@ class Connector_GravityForms extends Connector {
 	 * Track Create/Update actions on Forms
 	 *
 	 * @param array $form
-	 * @param bool $is_new
+	 * @param bool  $is_new
 	 * @return void
 	 */
 	public function callback_gform_after_save_form( $form, $is_new ) {
@@ -236,7 +236,7 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @param array $confirmation
 	 * @param array $form
-	 * @param bool $is_new
+	 * @param bool  $is_new
 	 * @return array
 	 */
 	public function callback_gform_pre_confirmation_save( $confirmation, $form, $is_new = true ) {
@@ -269,7 +269,7 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @param array $notification
 	 * @param array $form
-	 * @param bool $is_new
+	 * @param bool  $is_new
 	 * @return array
 	 */
 	public function callback_gform_pre_notification_save( $notification, $form, $is_new = true ) {
@@ -352,7 +352,7 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @param array $confirmation
 	 * @param array $form
-	 * @param bool $is_active
+	 * @param bool  $is_active
 	 * @return void
 	 */
 	public function callback_gform_confirmation_status( $confirmation, $form, $is_active ) {
@@ -380,7 +380,7 @@ class Connector_GravityForms extends Connector {
 	 *
 	 * @param array $notification
 	 * @param array $form
-	 * @param bool $is_active
+	 * @param bool  $is_active
 	 * @return void
 	 */
 	public function callback_gform_notification_status( $notification, $form, $is_active ) {
@@ -782,7 +782,7 @@ class Connector_GravityForms extends Connector {
 	/**
 	 * Track status change of forms
 	 *
-	 * @param int $form_id
+	 * @param int    $form_id
 	 * @param string $action
 	 * @return void
 	 */

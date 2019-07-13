@@ -36,7 +36,7 @@ function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
  * Converts a time into an ISO 8601 extended formatted string.
  *
  * @param int|bool $time Seconds since unix epoc
- * @param int $offset Hour offset
+ * @param int      $offset Hour offset
  *
  * @return string an ISO 8601 extended formatted time
  */
@@ -65,8 +65,8 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
  * Encode to JSON in a way that is also backwards compatible
  *
  * @param mixed $data
- * @param int $options (optional)
- * @param int $depth (optional)
+ * @param int   $options (optional)
+ * @param int   $depth (optional)
  *
  * @return string
  */
