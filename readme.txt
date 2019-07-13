@@ -1,7 +1,7 @@
 === Stream ===
 Contributors:      lukecarbis, fjarrett, stream, xwp
 Tags:              wp stream, stream, activity, logs, track
-Requires at least: 3.9
+Requires at least: 4.5
 Tested up to:      5.2
 Stable tag:        3.3.0
 License:           GPLv2 or later
