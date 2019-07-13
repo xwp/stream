@@ -1,6 +1,8 @@
 <?php
 /**
  * Config file used only for phpunit tests inside Docker.
+ *
+ * phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
  */
 
 define( 'ABSPATH', dirname( dirname( __DIR__ ) ) . '/' );
