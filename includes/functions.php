@@ -131,7 +131,9 @@ function wp_stream_is_cron_enabled() {
  */
 function wp_stream_min_suffix() {
 	$min = '';
-	if ( ! defined( 'SCRIPT_DEBUG' ) || false === SCRIPT_DEBUG ) {
+	$is_script_debugging = ! defined( 'SCRIPT_DEBUG' ) || false === SCRIPT_DEBUG;
+
+	if ( apply_filters( 'wp_stream_load_min_assets', $is_script_debugging ) ) {
 		$min = 'min.';
 	}
 
