@@ -3,7 +3,9 @@ namespace WP_Stream;
 
 class Plugin {
 	/**
-	 * Plugin version number
+	 * Plugin version number.
+	 *
+	 * TODO Maybe pass this as a constructor dependency?
 	 *
 	 * @const string
 	 */
