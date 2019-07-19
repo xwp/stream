@@ -7,7 +7,6 @@ Stream uses [npm](https://npmjs.com) for javascript dependencies, [Composer](htt
 
 Included is a local development environment built with [Docker](https://www.docker.com) which can be optionally run inside [Vagrant](https://www.vagrantup.com) for network isolation and better performance.
 
-
 ### Requirements
 
 - [VirtualBox](https://www.virtualbox.org)
@@ -22,7 +21,6 @@ We suggest using the [Homebrew package manager](https://brew.sh) on macOS to ins
 
 For setups with local Docker environment you don't need Vagrant and VirtualBox.
 
-
 ### Environment Setup
 
 1. See the [Git Flow](#git-flow) section below for how to fork the repository.
@@ -31,6 +29,13 @@ For setups with local Docker environment you don't need Vagrant and VirtualBox.
 4. Visit [stream.local](https://stream.local) and login using `admin` / `password`.
 5. Activate the Stream plugin.
 
+### PHP Xdebug
+
+The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured to [autostart](https://xdebug.org/docs/remote#remote_autostart) and to [automatically detect the IP address of the connecting client](https://xdebug.org/docs/remote#remote_connect_back) running in your code editor. See [`.vscode/launch.json`](.vscode/launch.json) for the directory mapping from the WordPress container to the project directory in your code editor.
+
+### Mail Catcher
+
+We use a [MailHog](https://github.com/mailhog/MailHog) container to capture all emails sent by the WordPress container, available at [stream.local:8025](https://stream.local:8025).
 
 ### Scripts and Commands
 
@@ -153,6 +158,6 @@ Please use the [git flow for pull requests](#git-flow) and follow [WordPress Cod
    git push origin <topic-branch-name>
    ```
 
-7. [Open a Pull Request](https://help.github.com/articles/using-pull-requests/) (with a clear title and description) to the `master` branch.
+7. [Open a Pull Request](https://help.github.com/articles/using-pull-requests/) (with a clear title and description) to the `develop` branch.
 
 **IMPORTANT**: By submitting a patch, you agree to allow the project owner to license your work under the [GPL v2 license](https://www.gnu.org/licenses/gpl-2.0.html).
