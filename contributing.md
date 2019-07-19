@@ -7,7 +7,6 @@ Stream uses [npm](https://npmjs.com) for javascript dependencies, [Composer](htt
 
 Included is a local development environment built with [Docker](https://www.docker.com) which can be optionally run inside [Vagrant](https://www.vagrantup.com) for network isolation and better performance.
 
-
 ### Requirements
 
 - [VirtualBox](https://www.virtualbox.org)
@@ -21,7 +20,6 @@ We suggest using the [Homebrew package manager](https://brew.sh) on macOS to ins
 	brew cask install virtualbox vagrant
 
 For setups with local Docker environment you don't need Vagrant and VirtualBox.
-
 
 ### Environment Setup
 
