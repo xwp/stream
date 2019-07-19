@@ -1,4 +1,15 @@
-## Changelog
+Fixes #000.
+
+Describe your approach and how it fixes the issue.
+
+# Checklist
+
+- [ ] Project documentation has been updated to reflect the changes in this pull request, if applicable.
+- [ ] I have tested the changes in the local development environment (see `contributing.md`).
+- [ ] I have added phpunit tests.
+
+
+## Release Changelog
 
 - Fix: Describe a bug fix included in this release.
 - New: Describe a new feature in this release.
@@ -13,5 +24,6 @@
 - [ ] Bump `Stable tag` in `readme.txt`.
 - [ ] Bump version in `classes/class-plugin.php`.
 - [ ] Draft a release [on GitHub](https://github.com/xwp/stream/releases/new).
+
 
 Change `[ ]` to `[x]` to mark the items as done.
