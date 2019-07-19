@@ -8,7 +8,7 @@ RUN apt-get update; \
 	# WP-CLI dependencies.
 	bash less default-mysql-client git \
 	# Mailcatcher dependencies.
-	ssmtp;
+	msmtp;
 
 # Setup xdebug.
 RUN	pecl install xdebug; \
