@@ -33,6 +33,10 @@ For setups with local Docker environment you don't need Vagrant and VirtualBox.
 
 The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured to [autostart](https://xdebug.org/docs/remote#remote_autostart) and to [automatically detect the IP address of the connecting client](https://xdebug.org/docs/remote#remote_connect_back) running in your code editor. See [`.vscode/launch.json`](.vscode/launch.json) for the directory mapping from the WordPress container to the project directory in your code editor.
 
+### Mail Catcher
+
+We use a [MailHog](https://github.com/mailhog/MailHog) container to capture all emails sent by the WordPress container, available at [stream.local:8025](https://stream.local:8025).
+
 ### Scripts and Commands
 
 We use npm as the canonical task runner for the project. The following commands are available:
