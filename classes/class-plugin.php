@@ -3,11 +3,13 @@ namespace WP_Stream;
 
 class Plugin {
 	/**
-	 * Plugin version number
+	 * Plugin version number.
+	 *
+	 * TODO Maybe pass this as a constructor dependency?
 	 *
 	 * @const string
 	 */
-	const VERSION = '3.3.0';
+	const VERSION = '3.4.0';
 
 	/**
 	 * WP-CLI command
