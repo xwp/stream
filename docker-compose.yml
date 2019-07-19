@@ -21,6 +21,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "9000:9000" # Xdebug
     volumes:
       - ./local/public:/var/www/html # Use host-mount to ensure correct permissions for all.
       - .:/var/www/html/wp-content/plugins/stream-src
