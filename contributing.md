@@ -29,6 +29,9 @@ For setups with local Docker environment you don't need Vagrant and VirtualBox.
 4. Visit [stream.local](https://stream.local) and login using `admin` / `password`.
 5. Activate the Stream plugin.
 
+### PHP Xdebug
+
+The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured to [autostart](https://xdebug.org/docs/remote#remote_autostart) and to [automatically detect the IP address of the connecting client](https://xdebug.org/docs/remote#remote_connect_back) running in your code editor. See [`.vscode/launch.json`](.vscode/launch.json) for the directory mapping from the WordPress container to the project directory in your code editor.
 
 ### Scripts and Commands
 
