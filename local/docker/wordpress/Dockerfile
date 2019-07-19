@@ -6,7 +6,7 @@ ENV PATH="/var/www/html/wp-content/plugins/stream-src/vendor/bin:${PATH}"
 RUN apt-get update; \
 	apt-get install -y --no-install-recommends \
 	# WP-CLI dependencies.
-	bash less mysql-client git \
+	bash less default-mysql-client git \
 	# Mailcatcher dependencies.
 	ssmtp;
 
