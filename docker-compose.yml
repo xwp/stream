@@ -27,6 +27,7 @@ services:
       - ./build:/var/www/html/wp-content/plugins/stream
       - ./vendor/wordpress/wordpress/tests/phpunit:/var/www/html/tests/wordpress-phpunit
       - ./local/config/wp-tests-config.php:/var/www/html/tests/wordpress-phpunit/wp-tests-config.php
+      - ./local/docker/wordpress/php.ini:/usr/local/etc/php/php.ini
     restart: always
     environment:
       APACHE_RUN_USER: "#1000" # Ensure Apache can write to the filesystem.
@@ -42,6 +43,13 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "wordpress_test"
       MYSQL_ROOT_PASSWORD: ""
+
+  # Capture and display all email sent by WordPress.
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
 volumes:
   db_data: {}

@@ -7,7 +7,7 @@ RUN apt-get update; \
 	apt-get install -y --no-install-recommends \
 	# WP-CLI dependencies.
 	bash less default-mysql-client git \
-	# Mailcatcher dependencies.
+	# MailHog dependencies.
 	msmtp;
 
 # Setup xdebug.
