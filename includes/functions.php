@@ -121,7 +121,16 @@ function wp_stream_is_vip() {
  * @return bool
  */
 function wp_stream_is_cron_enabled() {
-	return ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
+	$is_cron_enabled = ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
+
+	/**
+	 * Filter cron check
+	 *
+	 * @param bool $is_cron_enabled Whether cron is enabled or not.
+	 */
+	$is_cron_enabled = apply_filters( 'wp_stream_is_cron_enabled', $is_cron_enabled );
+
+	return $is_cron_enabled;
 }
 
 /**
