@@ -116,7 +116,8 @@ function wp_stream_is_vip() {
 }
 
 /**
- * True if native WP Cron is enabled, otherwise false
+ * Check if the default front-end WP Cron is enabled. It doesn't
+ * mean that the Cron is disabled in general.
  *
  * @return bool
  */

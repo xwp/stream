@@ -3,7 +3,7 @@ Contributors: lukecarbis, fjarrett, stream, xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
 Tested up to: 5.2
-Stable tag: 3.4.0
+Stable tag: 3.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,10 @@ Thank you for wanting to make Stream better for everyone!
 
 
 == Changelog ==
+
+= 3.4.1 - July 25, 2019 =
+
+* Fix: Allow tracking cron events even when the default WordPress front-end cron runner is disabled via `DISABLE_WP_CRON`. See [#959], props [@khromov](https://github.com/khromov) and [@tareiking](https://github.com/tareiking).
 
 = 3.4.0 - July 13, 2019 =
 

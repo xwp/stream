@@ -381,19 +381,16 @@ class Settings {
 			array_push( $fields['advanced']['fields'], $akismet_tracking );
 		}
 
-		// If WP Cron is enabled, allow Admins to opt-in to WP Cron tracking
-		if ( wp_stream_is_cron_enabled() ) {
-			$wp_cron_tracking = array(
-				'name'        => 'wp_cron_tracking',
-				'title'       => esc_html__( 'WP Cron Tracking', 'stream' ),
-				'type'        => 'checkbox',
-				'desc'        => esc_html__( 'By default, Stream does not track activity performed by WordPress cron events unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
-				'after_field' => esc_html__( 'Enabled', 'stream' ),
-				'default'     => 0,
-			);
+		$wp_cron_tracking = array(
+			'name'        => 'wp_cron_tracking',
+			'title'       => esc_html__( 'WP Cron Tracking', 'stream' ),
+			'type'        => 'checkbox',
+			'desc'        => esc_html__( 'By default, Stream does not track activity performed by WordPress cron events unless you opt-in here. Enabling this is not necessary or recommended for most sites.', 'stream' ),
+			'after_field' => esc_html__( 'Enabled', 'stream' ),
+			'default'     => 0,
+		);
 
-			array_push( $fields['advanced']['fields'], $wp_cron_tracking );
-		}
+		array_push( $fields['advanced']['fields'], $wp_cron_tracking );
 
 		/**
 		 * Filter allows for modification of options fields
