@@ -227,6 +227,9 @@ class Author {
 	 * Note: This will return true for all manual or custom
 	 * cron runs even if the default front-end cron is disabled.
 	 *
+	 * We're not using `wp_doing_cron()` since it was introduced
+	 * only in WordPress 4.8.0.
+	 *
 	 * @return bool
 	 */
 	public function is_doing_wp_cron() {
