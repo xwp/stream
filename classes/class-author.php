@@ -222,22 +222,15 @@ class Author {
 	}
 
 	/**
-	 * True if doing WP Cron, otherwise false
+	 * Check if the current request is part of a WP cron task.
 	 *
-	 * Note: If native WP Cron has been disabled and you are
-	 * hitting the cron endpoint with a system cron job, this
-	 * method will always return false.
+	 * Note: This will return true for all manual or custom
+	 * cron runs even if the default front-end cron is disabled.
 	 *
 	 * @return bool
 	 */
 	public function is_doing_wp_cron() {
-		return (
-			wp_stream_is_cron_enabled()
-			&&
-			defined( 'DOING_CRON' )
-			&&
-			DOING_CRON
-		);
+		return ( defined( 'DOING_CRON' ) && DOING_CRON );
 	}
 
 	/**
