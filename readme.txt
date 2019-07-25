@@ -87,6 +87,10 @@ Thank you for wanting to make Stream better for everyone!
 
 == Changelog ==
 
+= 3.4.1 - July 25, 2019 =
+
+* Fix: Allow tracking cron events even when the default WordPress front-end cron runner is disabled via `DISABLE_WP_CRON`. See [#959], props [@khromov](https://github.com/khromov) and [@tareiking](https://github.com/tareiking).
+
 = 3.4.0 - July 13, 2019 =
 
 * New: Add development environment and documentation, update tooling [#1016](https://github.com/xwp/stream/pull/1016).
