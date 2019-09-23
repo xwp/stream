@@ -209,26 +209,9 @@ class Log {
 
 			$exclude_rules = array_filter( $exclude, 'strlen' );
 
-			if ( ! empty( $exclude_rules ) ) {
-				$matches_exclusion_rule = true;
-
-				foreach ( $exclude_rules as $exclude_key => $exclude_value ) {
-					if ( 'ip_address' === $exclude_key ) {
-						$ip_addresses = explode( ',', $exclude_value );
-						if ( ! in_array( $record['ip_address'], $ip_addresses, true ) ) {
-							$matches_exclusion_rule = false;
-							break;
-						}
-					} elseif ( $record[ $exclude_key ] !== $exclude_value ) {
-						$matches_exclusion_rule = false;
-						break;
-					}
-				}
-
-				if ( $matches_exclusion_rule ) {
-					$exclude_record = true;
-					break;
-				}
+			if ( $this->record_matches_rules( $record, $exclude_rules ) ) {
+				$exclude_record = true;
+				break;
 			}
 		}
 
@@ -243,6 +226,34 @@ class Log {
 		 * @return bool
 		 */
 		return apply_filters( 'wp_stream_is_record_excluded', $exclude_record, $record );
+	}
+
+	/**
+	 * Check if a record to stored matches certain rules.
+	 *
+	 * @param array $record List of record parameters.
+	 * @param array $exclude_rules List of record exclude rules.
+	 *
+	 * @return boolean
+	 */
+	protected function record_matches_rules( $record, $exclude_rules ) {
+		foreach ( $exclude_rules as $exclude_key => $exclude_value ) {
+			if ( ! isset( $record[ $exclude_key ] ) ) {
+				continue;
+			}
+
+			if ( 'ip_address' === $exclude_key ) {
+				$ip_addresses = explode( ',', $exclude_value );
+
+				if ( in_array( $record['ip_address'], $ip_addresses, true ) ) {
+					return true;
+				}
+			} elseif ( $record[ $exclude_key ] === $exclude_value ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
