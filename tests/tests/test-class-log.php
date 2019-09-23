@@ -93,4 +93,60 @@ class Test_Log extends WP_StreamTestCase {
 			$this->plugin->log->exclude_rules_by_rows( $rules_settings )
 		);
 	}
+
+	public function test_can_match_record_exclude() {
+		$rules = array(
+			'action' => 'mega_action',
+		);
+
+		$this->assertTrue( $this->plugin->log->record_matches_rules(
+			array(
+				'action' => 'mega_action',
+			),
+			$rules,
+			'Record action is the same'
+		) );
+
+		$this->assertFalse( $this->plugin->log->record_matches_rules(
+			array(
+				'action' => 'different_action',
+			),
+			$rules,
+			'Record action is different'
+		) );
+	}
+
+	public function test_can_match_record_id_address() {
+		$this->assertFalse(
+			$this->plugin->log->record_matches_rules(
+				array(
+					'ip_address' => '1.1.1.1',
+				),
+				array(
+					'ip_address' => '8.8.8.8',
+				)
+			),
+			'Record IP address is different'
+		);
+
+		$this->assertTrue( $this->plugin->log->record_matches_rules(
+			array(
+				'ip_address' => '1.1.1.1',
+			),
+			array(
+				'ip_address' => '1.1.1.1',
+			),
+			'Record and rule IP addresses match'
+		) );
+
+		$this->assertTrue( $this->plugin->log->record_matches_rules(
+			array(
+				'ip_address' => '1.1.1.1',
+			),
+			array(
+				'ip_address' => '8.8.8.8,1.1.1.1',
+			),
+			'Record IP address is one of the IP addresses in the rule'
+		) );
+	}
 }
