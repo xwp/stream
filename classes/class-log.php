@@ -266,6 +266,41 @@ class Log {
 	}
 
 	/**
+	 * Get all exclude rules by row because we store them by rule instead.
+	 *
+	 * @param array $rules List of rules indexed by rule ID.
+	 *
+	 * @return array
+	 */
+	protected function exclude_rules_by_rows( $rules ) {
+		$excludes = array();
+
+		// TODO: Move these to where the settings are generated to ensure they're in sync.
+		$rule_keys = array(
+			'exclude_row',
+			'author_or_role',
+			'connector',
+			'context',
+			'action',
+			'ip_address',
+		);
+
+		foreach ( array_keys( $rules['exclude_row'] ) as $row_id ) {
+			$excludes[ $row_id ] = array();
+
+			foreach ( $rule_keys as $rule_key ) {
+				if ( isset( $rules[ $rule_key ][ $row_id ] ) ) {
+					$excludes[ $row_id ][ $rule_key ] = $rules[ $rule_key ][ $row_id ];
+				} else {
+					$excludes[ $row_id ][ $rule_key ] = null;
+				}
+			}
+		}
+
+		return $excludes;
+	}
+
+	/**
 	 * Helper function to send a full backtrace of calls to the PHP error log for debugging
 	 *
 	 * @param array $recordarr Record argument array.
