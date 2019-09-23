@@ -276,6 +276,10 @@ class Log {
 			'ip_address',
 		);
 
+		if ( empty( $rules['exclude_row'] ) ) {
+			return array();
+		}
+
 		foreach ( array_keys( $rules['exclude_row'] ) as $row_id ) {
 			$excludes[ $row_id ] = array();
 
