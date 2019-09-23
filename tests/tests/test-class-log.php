@@ -63,6 +63,34 @@ class Test_Log extends WP_StreamTestCase {
 		// Test action length
 
 		// Test IP length
-		
+
+	}
+
+	public function test_can_map_exclude_rules_settings_to_rows() {
+		$rules_settings = array(
+			'exclude_row' => array(
+				null,
+				null,
+			),
+			'action' => array(
+				'one',
+				null,
+				'three'
+			)
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'exclude_row' => null,
+					'action' => 'one',
+				),
+				array(
+					'exclude_row' => null,
+					'action' => null,
+				)
+			),
+			$this->plugin->log->exclude_rules_by_rows( $rules_settings )
+		);
 	}
 }
