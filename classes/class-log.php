@@ -236,7 +236,7 @@ class Log {
 	 *
 	 * @return boolean
 	 */
-	protected function record_matches_rules( $record, $exclude_rules ) {
+	public function record_matches_rules( $record, $exclude_rules ) {
 		foreach ( $exclude_rules as $exclude_key => $exclude_value ) {
 			if ( ! isset( $record[ $exclude_key ] ) ) {
 				continue;
@@ -263,7 +263,7 @@ class Log {
 	 *
 	 * @return array
 	 */
-	protected function exclude_rules_by_rows( $rules ) {
+	public function exclude_rules_by_rows( $rules ) {
 		$excludes = array();
 
 		// TODO: Move these to where the settings are generated to ensure they're in sync.
