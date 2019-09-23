@@ -84,10 +84,18 @@ class Test_Log extends WP_StreamTestCase {
 				array(
 					'exclude_row' => null,
 					'action' => 'one',
+					'author_or_role' => null,
+					'connector' => null,
+					'context' => null,
+					'ip_address' => null,
 				),
 				array(
 					'exclude_row' => null,
 					'action' => null,
+					'author_or_role' => null,
+					'connector' => null,
+					'context' => null,
+					'ip_address' => null,
 				)
 			),
 			$this->plugin->log->exclude_rules_by_rows( $rules_settings )
