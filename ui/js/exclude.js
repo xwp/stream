@@ -309,7 +309,7 @@ jQuery(
 			'click', function() {
 				var $excludeList = $( 'table.stream-exclude-list' );
 
-				$( 'tr:not(.hidden) select.select2-select', $excludeList ).each(
+				$( 'tr:not(.hidden) tbody select.select2-select', $excludeList ).each(
 					function() {
 						$( this ).select2( 'destroy' );
 					}
