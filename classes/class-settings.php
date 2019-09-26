@@ -843,7 +843,7 @@ class Settings {
 				$exclude_rows = array();
 
 				// Prepend an empty row.
-				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
+				$current_value['exclude_row'] = ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() ) + array( 'helper' => '' );
 
 				foreach ( $current_value['exclude_row'] as $key => $value ) {
 					// Prepare values.
