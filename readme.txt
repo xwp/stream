@@ -87,6 +87,11 @@ Thank you for wanting to make Stream better for everyone!
 
 == Changelog ==
 
+= 3.4.2 - September 26, 2019 =
+
+* Fix: Visiting the plugin settings page no longer produces PHP warnings for undefined variables [#1031](https://github.com/xwp/stream/issues/1031).
+* Fix: The IP address based exclude rules now stay with the same ruleset when saving [#1035](https://github.com/xwp/stream/issues/1035). Previously IP addresses would jump to the previous rule which didn't have an IP address based conditional.
+
 = 3.4.1 - July 25, 2019 =
 
 * Fix: Allow tracking cron events even when the default WordPress front-end cron runner is disabled via `DISABLE_WP_CRON`. See [#959], props [@khromov](https://github.com/khromov) and [@tareiking](https://github.com/tareiking).
