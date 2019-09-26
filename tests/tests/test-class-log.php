@@ -107,21 +107,25 @@ class Test_Log extends WP_StreamTestCase {
 			'action' => 'mega_action',
 		);
 
-		$this->assertTrue( $this->plugin->log->record_matches_rules(
-			array(
-				'action' => 'mega_action',
+		$this->assertTrue(
+			$this->plugin->log->record_matches_rules(
+				array(
+					'action' => 'mega_action',
+				),
+				$rules
 			),
-			$rules,
 			'Record action is the same'
-		) );
+		);
 
-		$this->assertFalse( $this->plugin->log->record_matches_rules(
-			array(
-				'action' => 'different_action',
+		$this->assertFalse(
+			$this->plugin->log->record_matches_rules(
+				array(
+					'action' => 'different_action',
+				),
+				$rules
 			),
-			$rules,
 			'Record action is different'
-		) );
+		);
 	}
 
 	public function test_can_match_record_id_address() {
