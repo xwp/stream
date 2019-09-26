@@ -1,5 +1,5 @@
 === Stream ===
-Contributors: lukecarbis, fjarrett, stream, xwp
+Contributors: lukecarbis, fjarrett, stream, xwp, kasparsd
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
 Tested up to: 5.2
