@@ -359,6 +359,12 @@ jQuery(
 				$( '.stream-exclude-list tbody tr:not(.hidden) select.select2-select.ip_address', this ).each(
 					function() {
 						var firstSelected = $( 'option:selected', this ).first();
+
+						// Ugly hack to ensure we always pass an empty value or the order of rows gets messed up.
+						if ( ! firstSelected.length ) {
+							$( this ).append( '<option selected="selected"></option>' );
+						}
+
 						$( 'option:selected:not(:first)', this ).each(
 							function() {
 								firstSelected.attr( 'value', firstSelected.attr( 'value' ) + ',' + $( this ).attr( 'value' ) );
