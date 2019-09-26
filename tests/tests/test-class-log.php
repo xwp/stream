@@ -111,6 +111,7 @@ class Test_Log extends WP_StreamTestCase {
 			$this->plugin->log->record_matches_rules(
 				array(
 					'action' => 'mega_action',
+					'ip_address' => '1.1.1.1',
 				),
 				$rules
 			),
