@@ -1,10 +1,12 @@
 /* globals jQuery, ajaxurl, wp_stream_regenerate_alt_rows */
 jQuery(
 	function( $ ) {
-		var initSettingsSelect2 = function() {
+		var $excludeRows = $( '.stream-exclude-list tbody tr:not(.hidden)' );
+
+		var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 			var $input_user;
 
-			$( '.stream-exclude-list tr:not(.hidden) select.select2-select.connector_or_context' ).each(
+			$( 'select.select2-select.connector_or_context', $rowsWithSelect2 ).each(
 				function( k, el ) {
 					$( el ).select2(
 						{
@@ -64,7 +66,7 @@ jQuery(
 				}
 			);
 
-			$( '.stream-exclude-list tr:not(.hidden) select.select2-select.action' ).each(
+			$( 'select.select2-select.action', $rowsWithSelect2 ).each(
 				function( k, el ) {
 					$( el ).select2(
 						{
@@ -74,7 +76,7 @@ jQuery(
 				}
 			);
 
-			$( '.stream-exclude-list tr:not(.hidden) select.select2-select.author_or_role' ).each(
+			$( 'select.select2-select.author_or_role', $rowsWithSelect2 ).each(
 				function( k, el ) {
 					$input_user = $( el );
 
@@ -173,7 +175,7 @@ jQuery(
 				}
 			);
 
-			$( '.stream-exclude-list tr:not(.hidden) select.select2-select.ip_address' ).each(
+			$( 'select.select2-select.ip_address', $rowsWithSelect2 ).each(
 				function( k, el ) {
 					var $input_ip = $( el ),
 						searchTerm = '';
@@ -271,7 +273,7 @@ jQuery(
 				}
 			);
 
-			$( '.stream-exclude-list tr:not(.hidden) .exclude_rules_remove_rule_row' ).on(
+			$( '.exclude_rules_remove_rule_row', $rowsWithSelect2 ).on(
 				'click', function() {
 					var $thisRow = $( this ).closest( 'tr' );
 
@@ -283,16 +285,16 @@ jQuery(
 			);
 		};
 
-		initSettingsSelect2();
+		initSettingsSelect2( $excludeRows );
 
-		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.author_or_role' ).each(
+		$( 'select.select2-select.author_or_role', $excludeRows ).each(
 			function() {
 				var $option = $( '<option selected>' + $( this ).data( 'selected-text' ) + '</option>' ).val( $( this ).data( 'selected-id' ) );
 				$( this ).append( $option ).trigger( 'change' );
 			}
 		);
 
-		$( '.stream-exclude-list tr:not(.hidden) select.select2-select.connector_or_context' ).each(
+		$( 'select.select2-select.connector_or_context', $excludeRows ).each(
 			function() {
 				var parts = [
 					$( this ).siblings( '.connector' ).val(),
@@ -308,8 +310,11 @@ jQuery(
 		$( '#exclude_rules_new_rule' ).on(
 			'click', function() {
 				var $excludeList = $( 'table.stream-exclude-list' );
+				var $rowsWithSelect2 = $( 'tr:not(.hidden) tbody select.select2-select', $excludeList );
+				var $lastRow = $( 'tr', $excludeList ).last(),
+					$newRow = $lastRow.clone();
 
-				$( 'tr:not(.hidden) tbody select.select2-select', $excludeList ).each(
+				$( $rowsWithSelect2 ).each(
 					function() {
 						$( this ).select2( 'destroy' );
 					}
@@ -324,7 +329,7 @@ jQuery(
 
 				$lastRow.after( $newRow );
 
-				initSettingsSelect2();
+				initSettingsSelect2( $rowsWithSelect2 );
 
 				recalculate_rules_found();
 				recalculate_rules_selected();
