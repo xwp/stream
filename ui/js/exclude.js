@@ -2,6 +2,7 @@
 jQuery(
 	function( $ ) {
 		var $excludeRows = $( '.stream-exclude-list tbody tr:not(.hidden)' );
+		var $placeholderRow = $( '.stream-exclude-list tr.helper' );
 
 		var initSettingsSelect2 = function( $rowsWithSelect2 ) {
 			var $input_user;
@@ -309,28 +310,12 @@ jQuery(
 
 		$( '#exclude_rules_new_rule' ).on(
 			'click', function() {
-				var $excludeList = $( 'table.stream-exclude-list' );
-				var $rowsWithSelect2 = $( 'tr:not(.hidden) tbody select.select2-select', $excludeList );
-				var $lastRow = $( 'tr', $excludeList ).last(),
-					$newRow = $lastRow.clone();
-
-				$( $rowsWithSelect2 ).each(
-					function() {
-						$( this ).select2( 'destroy' );
-					}
-				);
-
-				var $lastRow = $( 'tr', $excludeList ).last(),
-					$newRow = $lastRow.clone();
+				var $newRow = $placeholderRow.clone();
 
 				$newRow.removeAttr( 'class' );
-				$( '.stream-exclude-list tbody :input' ).off();
-				$( ':input', $newRow ).off().val( '' );
+				$newRow.insertBefore( $placeholderRow );
 
-				$lastRow.after( $newRow );
-
-				initSettingsSelect2( $rowsWithSelect2 );
-
+				initSettingsSelect2( $newRow );
 				recalculate_rules_found();
 				recalculate_rules_selected();
 			}
