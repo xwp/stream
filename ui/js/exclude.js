@@ -275,13 +275,15 @@ jQuery(
 			);
 
 			$( '.exclude_rules_remove_rule_row', $rowsWithSelect2 ).on(
-				'click', function() {
+				'click', function( e ) {
 					var $thisRow = $( this ).closest( 'tr' );
 
 					$thisRow.remove();
 
 					recalculate_rules_found();
 					recalculate_rules_selected();
+
+					e.preventDefault();
 				}
 			);
 		};
