@@ -842,6 +842,11 @@ class Settings {
 
 				$exclude_rows = array();
 
+				// Account for when no rules have been added yet.
+				if ( ! is_array( $current_value ) ) {
+					$current_value = array();
+				}
+
 				// Prepend an empty row.
 				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
 
