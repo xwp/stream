@@ -551,12 +551,12 @@ class Settings {
 							// Support all values in multidimentional arrays too.
 							array_walk_recursive(
 								$output[ $name ],
-								function ( &$v, $k ) {
-									$v = trim( $v );
+								function ( &$v ) {
+									$v = sanitize_text_field( trim( $v ) );
 								}
 							);
 						} else {
-							$output[ $name ] = trim( $input[ $name ] );
+							$output[ $name ] = sanitize_text_field( trim( $input[ $name ] ) );
 						}
 				}
 			}
@@ -842,8 +842,13 @@ class Settings {
 
 				$exclude_rows = array();
 
+				// Account for when no rules have been added yet.
+				if ( ! is_array( $current_value ) ) {
+					$current_value = array();
+				}
+
 				// Prepend an empty row.
-				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
+				$current_value['exclude_row'] = ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() ) + array( 'helper' => '' );
 
 				foreach ( $current_value['exclude_row'] as $key => $value ) {
 					// Prepare values.

@@ -163,6 +163,8 @@ class Log {
 	 * @return bool
 	 */
 	public function is_record_excluded( $connector, $context, $action, $user = null, $ip = null ) {
+		$exclude_record = false;
+
 		if ( is_null( $user ) ) {
 			$user = wp_get_current_user();
 		}
@@ -191,64 +193,25 @@ class Log {
 		$exclude_settings = isset( $this->plugin->settings->options['exclude_rules'] ) ? $this->plugin->settings->options['exclude_rules'] : array();
 
 		if ( is_multisite() && $this->plugin->is_network_activated() && ! is_network_admin() ) {
-			$multisite_options          = (array) get_site_option( 'wp_stream_network', array() );
-			$multisite_exclude_settings = isset( $multisite_options['exclude_rules'] ) ? $multisite_options['exclude_rules'] : array();
-
-			if ( ! empty( $multisite_exclude_settings ) ) {
-				foreach ( $multisite_exclude_settings['exclude_row'] as $key => $rule ) {
-					$exclude_settings['exclude_row'][]    = $multisite_exclude_settings['exclude_row'][ $key ];
-					$exclude_settings['author_or_role'][] = $multisite_exclude_settings['author_or_role'][ $key ];
-					$exclude_settings['connector'][]      = $multisite_exclude_settings['connector'][ $key ];
-					$exclude_settings['context'][]        = $multisite_exclude_settings['context'][ $key ];
-					$exclude_settings['action'][]         = $multisite_exclude_settings['action'][ $key ];
-					$exclude_settings['ip_address'][]     = $multisite_exclude_settings['ip_address'][ $key ];
-				}
-			}
+			$multisite_options = (array) get_site_option( 'wp_stream_network', array() );
+			$exclude_settings  = isset( $multisite_options['exclude_rules'] ) ? $multisite_options['exclude_rules'] : array();
 		}
 
-		$exclude_record = false;
+		foreach ( $this->exclude_rules_by_rows( $exclude_settings ) as $exclude_rule ) {
+			$exclude = array(
+				'connector'  => ! empty( $exclude_rule['connector'] ) ? $exclude_rule['connector'] : null,
+				'context'    => ! empty( $exclude_rule['context'] ) ? $exclude_rule['context'] : null,
+				'action'     => ! empty( $exclude_rule['action'] ) ? $exclude_rule['action'] : null,
+				'ip_address' => ! empty( $exclude_rule['ip_address'] ) ? $exclude_rule['ip_address'] : null,
+				'author'     => is_numeric( $exclude_rule['author_or_role'] ) ? absint( $exclude_rule['author_or_role'] ) : null,
+				'role'       => ( ! empty( $exclude_rule['author_or_role'] ) && ! is_numeric( $exclude_rule['author_or_role'] ) ) ? $exclude_rule['author_or_role'] : null,
+			);
 
-		if ( isset( $exclude_settings['exclude_row'] ) && ! empty( $exclude_settings['exclude_row'] ) ) {
-			foreach ( $exclude_settings['exclude_row'] as $key => $value ) {
-				// Prepare values.
-				$author_or_role = isset( $exclude_settings['author_or_role'][ $key ] ) ? $exclude_settings['author_or_role'][ $key ] : '';
-				$connector      = isset( $exclude_settings['connector'][ $key ] ) ? $exclude_settings['connector'][ $key ] : '';
-				$context        = isset( $exclude_settings['context'][ $key ] ) ? $exclude_settings['context'][ $key ] : '';
-				$action         = isset( $exclude_settings['action'][ $key ] ) ? $exclude_settings['action'][ $key ] : '';
-				$ip_address     = isset( $exclude_settings['ip_address'][ $key ] ) ? $exclude_settings['ip_address'][ $key ] : '';
+			$exclude_rules = array_filter( $exclude, 'strlen' );
 
-				$exclude = array(
-					'connector'  => ! empty( $connector ) ? $connector : null,
-					'context'    => ! empty( $context ) ? $context : null,
-					'action'     => ! empty( $action ) ? $action : null,
-					'ip_address' => ! empty( $ip_address ) ? $ip_address : null,
-					'author'     => is_numeric( $author_or_role ) ? absint( $author_or_role ) : null,
-					'role'       => ( ! empty( $author_or_role ) && ! is_numeric( $author_or_role ) ) ? $author_or_role : null,
-				);
-
-				$exclude_rules = array_filter( $exclude, 'strlen' );
-
-				if ( ! empty( $exclude_rules ) ) {
-					$matches_exclusion_rule = true;
-
-					foreach ( $exclude_rules as $exclude_key => $exclude_value ) {
-						if ( 'ip_address' === $exclude_key ) {
-							$ip_addresses = explode( ',', $exclude_value );
-							if ( ! in_array( $record['ip_address'], $ip_addresses, true ) ) {
-								$matches_exclusion_rule = false;
-								break;
-							}
-						} elseif ( $record[ $exclude_key ] !== $exclude_value ) {
-							$matches_exclusion_rule = false;
-							break;
-						}
-					}
-
-					if ( $matches_exclusion_rule ) {
-						$exclude_record = true;
-						break;
-					}
-				}
+			if ( $this->record_matches_rules( $record, $exclude_rules ) ) {
+				$exclude_record = true;
+				break;
 			}
 		}
 
@@ -263,6 +226,73 @@ class Log {
 		 * @return bool
 		 */
 		return apply_filters( 'wp_stream_is_record_excluded', $exclude_record, $record );
+	}
+
+	/**
+	 * Check if a record to stored matches certain rules.
+	 *
+	 * @param array $record List of record parameters.
+	 * @param array $exclude_rules List of record exclude rules.
+	 *
+	 * @return boolean
+	 */
+	public function record_matches_rules( $record, $exclude_rules ) {
+		foreach ( $exclude_rules as $exclude_key => $exclude_value ) {
+			if ( ! isset( $record[ $exclude_key ] ) ) {
+				continue;
+			}
+
+			if ( 'ip_address' === $exclude_key ) {
+				$ip_addresses = explode( ',', $exclude_value );
+
+				if ( in_array( $record['ip_address'], $ip_addresses, true ) ) {
+					return true;
+				}
+			} elseif ( $record[ $exclude_key ] === $exclude_value ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get all exclude rules by row because we store them by rule instead.
+	 *
+	 * @param array $rules List of rules indexed by rule ID.
+	 *
+	 * @return array
+	 */
+	public function exclude_rules_by_rows( $rules ) {
+		$excludes = array();
+
+		// TODO: Move these to where the settings are generated to ensure they're in sync.
+		$rule_keys = array(
+			'exclude_row',
+			'author_or_role',
+			'connector',
+			'context',
+			'action',
+			'ip_address',
+		);
+
+		if ( empty( $rules['exclude_row'] ) ) {
+			return array();
+		}
+
+		foreach ( array_keys( $rules['exclude_row'] ) as $row_id ) {
+			$excludes[ $row_id ] = array();
+
+			foreach ( $rule_keys as $rule_key ) {
+				if ( isset( $rules[ $rule_key ][ $row_id ] ) ) {
+					$excludes[ $row_id ][ $rule_key ] = $rules[ $rule_key ][ $row_id ];
+				} else {
+					$excludes[ $row_id ][ $rule_key ] = null;
+				}
+			}
+		}
+
+		return $excludes;
 	}
 
 	/**

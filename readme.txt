@@ -1,9 +1,9 @@
 === Stream ===
-Contributors: lukecarbis, fjarrett, stream, xwp
+Contributors: lukecarbis, fjarrett, stream, xwp, kasparsd
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
 Tested up to: 5.2
-Stable tag: 3.4.1
+Stable tag: 3.4.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,11 @@ Thank you for wanting to make Stream better for everyone!
 
 
 == Changelog ==
+
+= 3.4.2 - September 26, 2019 =
+
+* Fix: Visiting the plugin settings page no longer produces PHP warnings for undefined variables [#1031](https://github.com/xwp/stream/issues/1031).
+* Fix: The IP address based exclude rules now stay with the same ruleset when saving [#1035](https://github.com/xwp/stream/issues/1035). Previously IP addresses would jump to the previous rule which didn't have an IP address based conditional.
 
 = 3.4.1 - July 25, 2019 =
 
