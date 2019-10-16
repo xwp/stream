@@ -68,7 +68,7 @@ class DB_Driver_WPDB implements DB_Driver {
 
 		// Insert record meta
 		foreach ( (array) $meta as $key => $vals ) {
-			foreach ( (array) $vals as $meta_key $val ) {
+			foreach ( (array) $vals as $meta_key => $val ) {
 				$this->insert_meta( $record_id, $meta_key, $val );
 			}
 		}
