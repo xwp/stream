@@ -11,16 +11,16 @@
     }
   ],
   "require": {
-    "composer/installers": "~1.0"
+    "composer/installers": "1.6.0"
   },
   "require-dev": {
-    "php-coveralls/php-coveralls": "^2.1",
-    "phpunit/phpunit": "^5.7",
+    "php-coveralls/php-coveralls": "2.2.0",
+    "phpunit/phpunit": "5.7.27",
     "wordpress/wordpress": "^5.2",
-    "wp-cli/wp-cli-bundle": "^2.2",
-    "wp-coding-standards/wpcs": "^2.1",
-    "wpsh/local": "^0.2.3",
-    "xwp/wp-dev-lib": "^1.2"
+    "wp-cli/wp-cli-bundle": "2.4.0",
+    "wp-coding-standards/wpcs": "2.2.0",
+    "wpsh/local": "0.2.3",
+    "xwp/wp-dev-lib": "1.3.0"
   },
   "config": {
     "sort-packages": true,
