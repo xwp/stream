@@ -22,14 +22,14 @@
     "track"
   ],
   "devDependencies": {
-    "@wordpress/eslint-plugin": "^2.4.0",
-    "eslint": "^6.8.0",
-    "grunt": "~1.0.1",
-    "grunt-contrib-clean": "~1.1.0",
-    "grunt-contrib-copy": "~1.0.0",
-    "grunt-contrib-cssmin": "~2.2.1",
-    "grunt-contrib-uglify": "~3.0.1",
-    "grunt-wp-deploy": "^2.0.0"
+    "@wordpress/eslint-plugin": "2.4.0",
+    "eslint": "6.8.0",
+    "grunt": "1.0.4",
+    "grunt-contrib-clean": "1.1.0",
+    "grunt-contrib-copy": "1.0.0",
+    "grunt-contrib-cssmin": "2.2.1",
+    "grunt-contrib-uglify": "3.0.1",
+    "grunt-wp-deploy": "2.0.0"
   },
   "scripts": {
     "postinstall": "composer install && npm run build",
