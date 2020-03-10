@@ -718,12 +718,12 @@ class List_Table extends \WP_List_Table {
 	}
 
 	public function filter_select( $name, $title, $items, $ajax = false ) {
-		$options  = [ '<option value=""></option>' ];
+		$options  = array( '<option value=""></option>' );
 		$selected = wp_stream_filter_input( INPUT_GET, $name );
 
 		foreach ( $items as $key => $item ) {
 			$value       = isset( $item['children'] ) ? 'group-' . $key : $key;
-			$option_args = [
+			$option_args = array(
 				'value'    => $value,
 				'selected' => selected( $value, $selected, false ),
 				'disabled' => isset( $item['disabled'] ) ? $item['disabled'] : null,
@@ -732,12 +732,12 @@ class List_Table extends \WP_List_Table {
 				'tooltip'  => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
 				'class'    => isset( $item['children'] ) ? 'level-1' : null,
 				'label'    => isset( $item['label'] ) ? $item['label'] : null,
-			];
+			);
 			$options[]   = $this->filter_option( $option_args );
 
 			if ( isset( $item['children'] ) ) {
 				foreach ( $item['children'] as $child_value => $child_item ) {
-					$option_args = [
+					$option_args = array(
 						'value'    => $child_value,
 						'selected' => selected( $child_value, $selected, false ),
 						'disabled' => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
@@ -746,7 +746,7 @@ class List_Table extends \WP_List_Table {
 						'tooltip'  => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
 						'class'    => 'level-2',
 						'label'    => isset( $child_item['label'] ) ? '- ' . $child_item['label'] : null,
-					];
+					);
 					$options[]   = $this->filter_option( $option_args );
 				}
 			}
