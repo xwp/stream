@@ -54,6 +54,7 @@ branches:
   only:
   - master
   - develop
+  - /^\d+\.\d+(\.\d+)?(-.*)?$/
 
 notifications:
   email: false
