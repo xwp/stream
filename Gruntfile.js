@@ -76,9 +76,16 @@ module.exports = function( grunt ) {
 		compress: {
 			release: {
 				options: {
-					archive: 'stream.zip',
+					archive: function () {
+						if (process.env.TRAVIS_TAG) {
+							return `stream-${process.env.TRAVIS_TAG}.zip`;
+						}
+
+						return 'stream.zip';
+					},
 				},
 				cwd: 'build',
+				dest: 'stream',
 				src: [
 					'**/*',
 				],
