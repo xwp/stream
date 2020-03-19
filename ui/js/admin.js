@@ -25,7 +25,7 @@ jQuery(
 							record.text = record.text.substring( 2 );
 						}
 
-						if ( 'undefined' !== typeof record.id ) {
+						if ( 'undefined' !== typeof record.id && 'string' === typeof record.id ) {
 							if ( record.id.indexOf( 'group-' ) === 0 ) {
 								$result.addClass( 'parent' );
 							} else if ( $elem.hasClass( 'level-2' ) ) {

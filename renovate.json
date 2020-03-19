@@ -1,0 +1,15 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "rangeStrategy": "bump",
+  "packageRules": [
+    {
+      "updateTypes": [
+        "minor",
+        "patch"
+      ],
+      "automerge": true
+    }
+  ]
+}

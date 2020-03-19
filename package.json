@@ -1,6 +1,6 @@
 {
   "name": "wp-stream",
-  "version": "3.3.0",
+  "private": true,
   "description": "Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.",
   "main": "stream.php",
   "author": "XWP",
@@ -22,10 +22,11 @@
     "track"
   ],
   "devDependencies": {
-    "@wordpress/eslint-plugin": "^2.3.0",
-    "eslint": "^6.0.1",
+    "@wordpress/eslint-plugin": "^2.4.0",
+    "eslint": "^6.8.0",
     "grunt": "~1.0.1",
     "grunt-contrib-clean": "~1.1.0",
+    "grunt-contrib-compress": "^1.6.0",
     "grunt-contrib-copy": "~1.0.0",
     "grunt-contrib-cssmin": "~2.2.1",
     "grunt-contrib-uglify": "~3.0.1",
@@ -34,7 +35,8 @@
   "scripts": {
     "postinstall": "composer install && npm run build",
     "build": "grunt default",
-    "deploy": "npm run build && grunt deploy",
+    "release": "grunt release",
+    "deploy": "grunt deploy",
     "lint-js": "eslint .",
     "lint-php": "composer lint",
     "lint": "npm run lint-js && npm run lint-php",
