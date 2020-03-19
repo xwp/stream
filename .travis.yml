@@ -54,7 +54,7 @@ deploy:
   file:
     - stream*.zip
   on:
-    tag: true
+    tags: true
     condition: "$WP_RELEASE = 1"
 
 notifications:
