@@ -1,6 +1,6 @@
 # Stream for WordPress
 
-[![Build Status](https://travis-ci.org/xwp/stream.svg?branch=master)](https://travis-ci.org/xwp/stream)
+[![Build Status](https://travis-ci.com/xwp/stream.svg?branch=master)](https://travis-ci.com/xwp/stream)
 
 **Track WordPress user and system actions for debugging, logging and compliance purposes.**
 

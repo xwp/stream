@@ -1,8 +1,6 @@
 dist: xenial
 
-language:
-  - php
-  - node_js
+language: php
 
 php:
   - "5.6"
@@ -21,6 +19,13 @@ env:
   - WP_VERSION=trunk WP_MULTISITE=0
   - WP_VERSION=trunk WP_MULTISITE=1
 
+jobs:
+  include:
+    - name: Release Package
+      php: "7.3"
+      env: WP_VERSION=latest WP_MULTISITE=0 WP_RELEASE=1
+      if: tag IS present
+
 services:
   - mysql
 
@@ -38,22 +43,19 @@ after_script:
   - source $DEV_LIB_PATH/travis.after_script.sh
 
 before_deploy:
-  - npm run build
+  - npm run release
 
 deploy:
   provider: releases
+  api_key:
+    secure: HheYiv6c8ipHzMZBTH7xcKrOwCllvJTtfiTffAPK6XubWe3Kudn6IJUv0p1gmRhWXxZ5ciJQ/sgiCRGTRm/bubHs4tS7JOmpmoTdkrXajTxyyDCKpxhtT43nie0vNF+pWqVu2yOjhDR4pwtWjpQdzEKOz0kn0XSMT+vGsKQD50w=
   overwrite: true
   skip_cleanup: true
-  file_glob: true
-  file: build/**/*
+  file:
+    - stream.zip
+    - stream-$TRAVIS_TAG.zip
   on:
-    tags: true
-
-# Pull requests are built by default.
-branches:
-  only:
-  - master
-  - develop
+    condition: $WP_RELEASE=1
 
 notifications:
   email: false
