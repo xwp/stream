@@ -21,6 +21,13 @@ env:
   - WP_VERSION=trunk WP_MULTISITE=0
   - WP_VERSION=trunk WP_MULTISITE=1
 
+jobs:
+  include:
+    - name: Release Package
+      php: "7.3"
+      env: WP_VERSION=latest WP_MULTISITE=0 WP_RELEASE=1
+      if: tag IS present
+
 services:
   - mysql
 
@@ -50,7 +57,7 @@ deploy:
     - stream.zip
     - stream-$TRAVIS_TAG.zip
   on:
-    tags: true
+    condition: $WP_RELEASE=1
 
 notifications:
   email: false
