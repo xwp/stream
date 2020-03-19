@@ -73,6 +73,18 @@ module.exports = function( grunt ) {
 			},
 		},
 
+		compress: {
+			release: {
+				options: {
+					archive: 'stream.zip',
+				},
+				cwd: 'build',
+				src: [
+					'**/*',
+				],
+			},
+		},
+
 		// Clean up the build
 		clean: {
 			build: {
@@ -97,11 +109,13 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-contrib-clean' );
 	grunt.loadNpmTasks( 'grunt-contrib-copy' );
 	grunt.loadNpmTasks( 'grunt-contrib-cssmin' );
+	grunt.loadNpmTasks( 'grunt-contrib-compress' );
 	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
 	grunt.loadNpmTasks( 'grunt-wp-deploy' );
 
 	// Register tasks
 	grunt.registerTask( 'default', [ 'uglify', 'cssmin' ] );
 	grunt.registerTask( 'build', [ 'default', 'copy' ] );
+	grunt.registerTask( 'release', [ 'build', 'compress' ] );
 	grunt.registerTask( 'deploy', [ 'build', 'wp_deploy', 'clean' ] );
 };
