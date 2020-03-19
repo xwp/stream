@@ -38,14 +38,13 @@ after_script:
   - source $DEV_LIB_PATH/travis.after_script.sh
 
 before_deploy:
-  - npm run build
+  - npm run release
 
 deploy:
   provider: releases
   overwrite: true
   skip_cleanup: true
-  file_glob: true
-  file: build/**/*
+  file: stream.zip
   on:
     tags: true
 
