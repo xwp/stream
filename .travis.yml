@@ -42,6 +42,8 @@ before_deploy:
 
 deploy:
   provider: releases
+  api_key:
+    secure: HheYiv6c8ipHzMZBTH7xcKrOwCllvJTtfiTffAPK6XubWe3Kudn6IJUv0p1gmRhWXxZ5ciJQ/sgiCRGTRm/bubHs4tS7JOmpmoTdkrXajTxyyDCKpxhtT43nie0vNF+pWqVu2yOjhDR4pwtWjpQdzEKOz0kn0XSMT+vGsKQD50w=
   overwrite: true
   skip_cleanup: true
   file:
