@@ -718,55 +718,46 @@ class List_Table extends \WP_List_Table {
 	}
 
 	public function filter_select( $name, $title, $items, $ajax = false ) {
-		if ( $ajax ) {
-			$out = sprintf(
-				'<input type="hidden" name="%s" class="chosen-select" value="%s" data-placeholder="%s" />',
-				esc_attr( $name ),
-				esc_attr( wp_stream_filter_input( INPUT_GET, $name ) ),
-				esc_attr( $title )
+		$options  = array( '<option value=""></option>' );
+		$selected = wp_stream_filter_input( INPUT_GET, $name );
+
+		foreach ( $items as $key => $item ) {
+			$value       = isset( $item['children'] ) ? 'group-' . $key : $key;
+			$option_args = array(
+				'value'    => $value,
+				'selected' => selected( $value, $selected, false ),
+				'disabled' => isset( $item['disabled'] ) ? $item['disabled'] : null,
+				'icon'     => isset( $item['icon'] ) ? $item['icon'] : null,
+				'group'    => isset( $item['children'] ) ? $key : null,
+				'tooltip'  => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
+				'class'    => isset( $item['children'] ) ? 'level-1' : null,
+				'label'    => isset( $item['label'] ) ? $item['label'] : null,
 			);
-		} else {
-			$options  = array( '<option value=""></option>' );
-			$selected = wp_stream_filter_input( INPUT_GET, $name );
+			$options[]   = $this->filter_option( $option_args );
 
-			foreach ( $items as $key => $item ) {
-				$value       = isset( $item['children'] ) ? 'group-' . $key : $key;
-				$option_args = array(
-					'value'    => $value,
-					'selected' => selected( $value, $selected, false ),
-					'disabled' => isset( $item['disabled'] ) ? $item['disabled'] : null,
-					'icon'     => isset( $item['icon'] ) ? $item['icon'] : null,
-					'group'    => isset( $item['children'] ) ? $key : null,
-					'tooltip'  => isset( $item['tooltip'] ) ? $item['tooltip'] : null,
-					'class'    => isset( $item['children'] ) ? 'level-1' : null,
-					'label'    => isset( $item['label'] ) ? $item['label'] : null,
-				);
-				$options[]   = $this->filter_option( $option_args );
-
-				if ( isset( $item['children'] ) ) {
-					foreach ( $item['children'] as $child_value => $child_item ) {
-						$option_args = array(
-							'value'    => $child_value,
-							'selected' => selected( $child_value, $selected, false ),
-							'disabled' => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
-							'icon'     => isset( $child_item['icon'] ) ? $child_item['icon'] : null,
-							'group'    => $key,
-							'tooltip'  => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
-							'class'    => 'level-2',
-							'label'    => isset( $child_item['label'] ) ? '- ' . $child_item['label'] : null,
-						);
-						$options[]   = $this->filter_option( $option_args );
-					}
+			if ( isset( $item['children'] ) ) {
+				foreach ( $item['children'] as $child_value => $child_item ) {
+					$option_args = array(
+						'value'    => $child_value,
+						'selected' => selected( $child_value, $selected, false ),
+						'disabled' => isset( $child_item['disabled'] ) ? $child_item['disabled'] : null,
+						'icon'     => isset( $child_item['icon'] ) ? $child_item['icon'] : null,
+						'group'    => $key,
+						'tooltip'  => isset( $child_item['tooltip'] ) ? $child_item['tooltip'] : null,
+						'class'    => 'level-2',
+						'label'    => isset( $child_item['label'] ) ? '- ' . $child_item['label'] : null,
+					);
+					$options[]   = $this->filter_option( $option_args );
 				}
 			}
-			$out = sprintf(
-				'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
-				esc_attr( $name ),
-				// translators: Placeholder refers to the title of the dropdown menu (e.g. "users")
-				sprintf( esc_attr__( 'Show all %s', 'stream' ), $title ),
-				implode( '', $options )
-			);
 		}
+		$out = sprintf(
+			'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
+			esc_attr( $name ),
+			// translators: Placeholder refers to the title of the dropdown menu (e.g. "users")
+			sprintf( esc_attr__( 'Show all %s', 'stream' ), $title ),
+			implode( '', $options )
+		);
 
 		return $out;
 	}
@@ -895,6 +886,7 @@ class List_Table extends \WP_List_Table {
 		}
 		echo '</select></div>';
 		wp_nonce_field( 'stream_record_actions_nonce', 'stream_record_actions_nonce' );
+		wp_nonce_field( 'stream_filters_user_search_nonce', 'stream_filters_user_search_nonce' );
 
 		printf( '<input type="hidden" name="page" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'page' ) ) );
 		printf( '<input type="hidden" name="date_predefined" value="%s">', esc_attr( wp_stream_filter_input( INPUT_GET, 'date_predefined' ) ) );
