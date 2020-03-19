@@ -121,7 +121,7 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-wp-deploy' );
 
 	// Register tasks
-	grunt.registerTask( 'default', [ 'uglify', 'cssmin' ] );
+	grunt.registerTask( 'default', [ 'clean', 'uglify', 'cssmin' ] );
 	grunt.registerTask( 'build', [ 'default', 'copy' ] );
 	grunt.registerTask( 'release', [ 'build', 'compress' ] );
 	grunt.registerTask( 'deploy', [ 'build', 'wp_deploy', 'clean' ] );
