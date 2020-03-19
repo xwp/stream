@@ -6,6 +6,7 @@
 /.vagrant/
 /console.log
 /phpcs.xml
+/stream*.zip
 npm-debug.log
 package.lock
 
