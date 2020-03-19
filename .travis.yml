@@ -48,12 +48,6 @@ deploy:
   on:
     tags: true
 
-# Pull requests are built by default.
-branches:
-  only:
-  - master
-  - develop
-
 notifications:
   email: false
 
