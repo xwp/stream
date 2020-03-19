@@ -87,6 +87,11 @@ Thank you for wanting to make Stream better for everyone!
 
 == Changelog ==
 
+= 3.4.3 - March 19, 2020 =
+
+* Fix: Stream records can be filtered by users again [#929](https://github.com/xwp/stream/issues/929), props [@tareiking](https://github.com/tareiking).
+* New: Composer releases now include the built assets [#1054](https://github.com/xwp/stream/issues/1054).
+
 = 3.4.2 - September 26, 2019 =
 
 * Fix: Visiting the plugin settings page no longer produces PHP warnings for undefined variables [#1031](https://github.com/xwp/stream/issues/1031).
