@@ -23,7 +23,7 @@ jobs:
   include:
     - name: Release Package
       php: "7.3"
-      env: WP_VERSION=latest WP_MULTISITE=0 WP_RELEASE=1
+      env: WP_VERSION=latest WP_MULTISITE=0 WP_RELEASE=yes
       if: tag IS present
 
 services:
@@ -55,7 +55,7 @@ deploy:
     - stream.zip
     - stream-$TRAVIS_TAG.zip
   on:
-    condition: $WP_RELEASE=1
+    condition: "$WP_RELEASE = yes"
 
 notifications:
   email: false
