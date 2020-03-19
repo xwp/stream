@@ -44,7 +44,9 @@ deploy:
   provider: releases
   overwrite: true
   skip_cleanup: true
-  file: stream.zip
+  file:
+    - stream.zip
+    - stream-$TRAVIS_TAG.zip
   on:
     tags: true
 
