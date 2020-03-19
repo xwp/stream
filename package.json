@@ -24,7 +24,7 @@
   "devDependencies": {
     "@wordpress/eslint-plugin": "^2.4.0",
     "eslint": "^6.8.0",
-    "grunt": "~1.0.1",
+    "grunt": "~1.0.4",
     "grunt-contrib-clean": "~1.1.0",
     "grunt-contrib-compress": "^1.6.0",
     "grunt-contrib-copy": "~1.0.0",
