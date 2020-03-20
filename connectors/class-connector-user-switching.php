@@ -104,7 +104,11 @@ class Connector_User_Switching extends Connector {
 	 * @param Connectors $connectors The Connectors object instance
 	 */
 	public function callback_wp_stream_after_connectors_registration( array $labels, Connectors $connectors ) {
-		$action = wp_stream_filter_input( INPUT_GET, 'action' ) ?: wp_stream_filter_input( INPUT_POST, 'action' );
+		$action = wp_stream_filter_input( INPUT_GET, 'action' );
+
+		if ( ! $action ) {
+			$action = wp_stream_filter_input( INPUT_POST, 'action' );
+		}
 
 		if ( ! $action ) {
 			return;
