@@ -18,8 +18,8 @@ export GIT_WORK_TREE="$DIST_DIR"
 # Start with a clean slate.
 rm -rf "$DIST_DIR"
 
-git clone "$DIST_REPO" "$DIST_DIR"
-git checkout -B "$DIST_BRANCH" "origin/$DIST_BRANCH"
+git clone "$DIST_REPO" "$DIST_DIR/.git"
+git checkout -B $DIST_BRANCH
 
 # Copy over the update.
 git rm -r --quiet .
