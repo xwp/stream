@@ -30,7 +30,8 @@ git add --all
 git commit --allow-empty --message "$COMMIT_MESSAGE"
 
 # And maybe tag a release.
-if [ -m "$DIST_TAG" ]; then
+if [ -n "$DIST_TAG" ]; then
+	echo "Tagging a release: $DIST_TAG"
 	git tag "$DIST_TAG"
 fi
 
