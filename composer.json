@@ -20,7 +20,7 @@
     "wp-cli/wp-cli-bundle": "^2.2",
     "wp-coding-standards/wpcs": "^2.2",
     "wpsh/local": "^0.2.3",
-    "xwp/wp-dev-lib": "^1.2"
+    "xwp/wp-dev-lib": "^1.5"
   },
   "config": {
     "sort-packages": true,
