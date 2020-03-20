@@ -8,6 +8,9 @@ php:
   - "7.2"
   - "7.3"
 
+services:
+  - mysql
+
 addons:
   apt:
     packages:
@@ -25,23 +28,25 @@ jobs:
       php: "7.3"
       env: WP_VERSION=latest WP_MULTISITE=0
       deploy:
-        # Publish a release.
-        - provider: script
-          script: bash local/scripts/dist.sh "$TRAVIS_TAG"
-          skip_cleanup: true
-          on:
-            repo: xwp/stream
-            tags: true
-        # Publish a working branch.
+        # Publish a release to the distribution repository.
         - provider: script
           script: bash local/scripts/dist.sh
           skip_cleanup: true
           on:
             repo: xwp/stream
+            tags: true
             all_branches: true
-
-services:
-  - mysql
+        # Upload a release to a tag here as well.
+        - provider: releases
+          api_key:
+            secure: HheYiv6c8ipHzMZBTH7xcKrOwCllvJTtfiTffAPK6XubWe3Kudn6IJUv0p1gmRhWXxZ5ciJQ/sgiCRGTRm/bubHs4tS7JOmpmoTdkrXajTxyyDCKpxhtT43nie0vNF+pWqVu2yOjhDR4pwtWjpQdzEKOz0kn0XSMT+vGsKQD50w=
+          skip_cleanup: true
+          file:
+            - stream.zip
+            - stream-$TRAVIS_TAG.zip
+          on:
+            repo: xwp/stream
+            tags: true
 
 before_install:
   - nvm install
