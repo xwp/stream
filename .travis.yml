@@ -28,11 +28,13 @@ jobs:
         # Publish a release.
         - provider: script
           script: bash local/scripts/dist.sh "$TRAVIS_TAG"
+          skip_cleanup: true
           on:
             tags: true
         # Publish a working branch.
         - provider: script
           script: bash local/scripts/dist.sh
+          skip_cleanup: true
           on:
             all_branches: true
 
