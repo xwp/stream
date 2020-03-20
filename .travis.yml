@@ -23,7 +23,20 @@ jobs:
   include:
     - name: Release Package
       php: "7.3"
-      env: WP_VERSION=latest WP_MULTISITE=0 WP_RELEASE=1
+      env: WP_VERSION=latest WP_MULTISITE=0
+      deploy:
+        # Publish a release.
+        - provider: script
+          script: bash local/scripts/dist.sh "$TRAVIS_TAG"
+          on:
+            tags: true
+        # Publish a working branch.
+        - provider: script
+          script: bash local/scripts/dist.sh
+          on:
+            branch:
+              - master
+              - develop
 
 services:
   - mysql
@@ -47,20 +60,6 @@ after_script:
 
 before_deploy:
   - npm run release
-
-deploy:
-  provider: releases
-  api_key:
-    secure: HheYiv6c8ipHzMZBTH7xcKrOwCllvJTtfiTffAPK6XubWe3Kudn6IJUv0p1gmRhWXxZ5ciJQ/sgiCRGTRm/bubHs4tS7JOmpmoTdkrXajTxyyDCKpxhtT43nie0vNF+pWqVu2yOjhDR4pwtWjpQdzEKOz0kn0XSMT+vGsKQD50w=
-  overwrite: true
-  skip_cleanup: true
-  file_glob: true
-  file:
-    - stream.zip
-    - stream-$TRAVIS_TAG.zip
-  on:
-    tags: true
-    condition: "$WP_RELEASE = 1"
 
 notifications:
   email: false
