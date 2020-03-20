@@ -2,6 +2,9 @@
   "extends": [
     "config:base"
   ],
+  "enabledManagers": [
+    "npm"
+  ],
   "rangeStrategy": "bump",
   "packageRules": [
     {
