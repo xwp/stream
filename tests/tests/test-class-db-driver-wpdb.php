@@ -105,7 +105,7 @@ class Test_DB_Driver_WPDB extends WP_StreamTestCase {
 				'blog_id' => get_current_blog_id(),
 				'user_id' => '1',
 				'user_role' => 'administrator',
-				'created' => date( 'Y-m-d h:i:s' ),
+				'created' => gmdate( 'Y-m-d h:i:s' ),
 				'summary' => '"Hello Dave" plugin activated',
 				'ip' => '192.168.0.1',
 				'connector' => 'installer',

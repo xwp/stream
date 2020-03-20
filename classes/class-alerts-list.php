@@ -356,7 +356,7 @@ class Alerts_List {
 		wp_register_style(
 			'wp-stream-alerts-list-css',
 			$this->plugin->locations['url'] . 'ui/css/alerts-list.' . $min . 'css',
-			[],
+			array(),
 			$this->plugin->get_version()
 		);
 

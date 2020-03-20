@@ -28,6 +28,10 @@ jobs:
 services:
   - mysql
 
+before_install:
+  - nvm install
+  - nvm use
+
 install:
   - npm install
   - export DEV_LIB_PATH="vendor/xwp/wp-dev-lib/scripts"

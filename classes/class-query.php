@@ -80,22 +80,22 @@ class Query {
 		}
 
 		if ( ! empty( $args['date_from'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_from'] . ' 00:00:00' ) ) );
+			$date   = get_gmt_from_date( gmdate( 'Y-m-d H:i:s', strtotime( $args['date_from'] . ' 00:00:00' ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) >= %s", $date );
 		}
 
 		if ( ! empty( $args['date_to'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_to'] . ' 23:59:59' ) ) );
+			$date   = get_gmt_from_date( gmdate( 'Y-m-d H:i:s', strtotime( $args['date_to'] . ' 23:59:59' ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) <= %s", $date );
 		}
 
 		if ( ! empty( $args['date_after'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_after'] ) ) );
+			$date   = get_gmt_from_date( gmdate( 'Y-m-d H:i:s', strtotime( $args['date_after'] ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) > %s", $date );
 		}
 
 		if ( ! empty( $args['date_before'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_before'] ) ) );
+			$date   = get_gmt_from_date( gmdate( 'Y-m-d H:i:s', strtotime( $args['date_before'] ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) < %s", $date );
 		}
 

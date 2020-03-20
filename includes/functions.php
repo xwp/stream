@@ -51,7 +51,7 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 	$offset_string = sprintf( 'Etc/GMT%s%s', $offset < 0 ? '+' : '-', abs( $offset ) );
 
 	$timezone = new DateTimeZone( $offset_string );
-	$date     = new DateTime( date( 'Y-m-d H:i:s.' . $micro_seconds, $microtime ), $timezone );
+	$date     = new DateTime( gmdate( 'Y-m-d H:i:s.' . $micro_seconds, $microtime ), $timezone );
 
 	return sprintf(
 		'%s%03d%s',
@@ -131,7 +131,7 @@ function wp_stream_is_cron_enabled() {
  * @return string
  */
 function wp_stream_min_suffix() {
-	$min = '';
+	$min                 = '';
 	$is_script_debugging = ! defined( 'SCRIPT_DEBUG' ) || false === SCRIPT_DEBUG;
 
 	if ( apply_filters( 'wp_stream_load_min_assets', $is_script_debugging ) ) {

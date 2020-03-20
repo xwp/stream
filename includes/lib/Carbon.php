@@ -312,14 +312,14 @@ class Carbon extends DateTime
      */
     public static function create($year = null, $month = null, $day = null, $hour = null, $minute = null, $second = null, $tz = null)
     {
-        $year = ($year === null) ? date('Y') : $year;
-        $month = ($month === null) ? date('n') : $month;
-        $day = ($day === null) ? date('j') : $day;
+        $year = ($year === null) ? gmdate('Y') : $year;
+        $month = ($month === null) ? gmdate('n') : $month;
+        $day = ($day === null) ? gmdate('j') : $day;
 
         if ($hour === null) {
-            $hour = date('G');
-            $minute = ($minute === null) ? date('i') : $minute;
-            $second = ($second === null) ? date('s') : $second;
+            $hour = gmdate('G');
+            $minute = ($minute === null) ? gmdate('i') : $minute;
+            $second = ($second === null) ? gmdate('s') : $second;
         } else {
             $minute = ($minute === null) ? 0 : $minute;
             $second = ($second === null) ? 0 : $second;
