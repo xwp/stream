@@ -4,13 +4,14 @@
 set -e
 
 ROOT_DIR="$(git rev-parse --show-toplevel)"
+WORKING_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT_MESSAGE="$(git log -1 --oneline)"
 SRC_DIR="$ROOT_DIR/build"
 
 DIST_REPO="git@github.com:xwp/stream-dist.git"
 DIST_DIR="$ROOT_DIR/dist"
-DIST_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-DIST_TAG="$1"
+DIST_BRANCH="${TRAVIS_BRANCH:-$WORKING_BRANCH}"
+DIST_TAG="${1:-$TRAVIS_TAG}"
 
 export GIT_DIR="$DIST_DIR/.git"
 export GIT_WORK_TREE="$DIST_DIR"
