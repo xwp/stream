@@ -34,7 +34,6 @@ jobs:
           skip_cleanup: true
           on:
             repo: xwp/stream
-            tags: true
             all_branches: true
         # Upload a release to a tag here as well.
         - provider: releases
