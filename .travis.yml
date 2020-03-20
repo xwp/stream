@@ -30,12 +30,14 @@ jobs:
           script: bash local/scripts/dist.sh "$TRAVIS_TAG"
           skip_cleanup: true
           on:
+            repo: xwp/stream
             tags: true
         # Publish a working branch.
         - provider: script
           script: bash local/scripts/dist.sh
           skip_cleanup: true
           on:
+            repo: xwp/stream
             all_branches: true
 
 services:
