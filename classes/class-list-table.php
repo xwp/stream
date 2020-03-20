@@ -252,7 +252,7 @@ class List_Table extends \WP_List_Table {
 
 		switch ( $column_name ) {
 			case 'date':
-				$created     = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
+				$created     = gmdate( 'Y-m-d H:i:s', strtotime( $record->created ) );
 				$date_string = sprintf(
 					'<time datetime="%s" class="relative-time record-created">%s</time>',
 					wp_stream_get_iso_8601_extended_date( strtotime( $record->created ) ),

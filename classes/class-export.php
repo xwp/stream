@@ -99,7 +99,7 @@ class Export {
 		foreach ( array_keys( $columns ) as $column_name ) {
 			switch ( $column_name ) {
 				case 'date':
-					$created                 = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
+					$created                 = gmdate( 'Y-m-d H:i:s', strtotime( $record->created ) );
 					$row_out[ $column_name ] = get_date_from_gmt( $created, 'Y/m/d h:i:s A' );
 					break;
 

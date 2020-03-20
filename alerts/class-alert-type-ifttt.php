@@ -242,7 +242,7 @@ class Alert_Type_IFTTT extends Alert_Type {
 		 * @return string
 		 */
 		$date_format = apply_filters( 'wp_stream_alert_ifttt_date_format', 'Y-m-d H:i:s', $alert, $recordarr );
-		$date        = date( $date_format, strtotime( $created ) );
+		$date        = gmdate( $date_format, strtotime( $created ) );
 
 		$url = 'https://maker.ifttt.com/trigger/' . $alert->alert_meta['event_name'] . '/with/key/' . $alert->alert_meta['maker_key'];
 
