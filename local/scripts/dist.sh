@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Set this to -ex for verbose output.
-set -e
+set -ex
 
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 WORKING_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
