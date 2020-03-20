@@ -34,9 +34,7 @@ jobs:
         - provider: script
           script: bash local/scripts/dist.sh
           on:
-            branch:
-              - master
-              - develop
+            all_branches: true
 
 services:
   - mysql
