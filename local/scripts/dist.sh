@@ -23,7 +23,7 @@ git checkout -B $DIST_BRANCH
 
 # Copy over the update.
 git rm -r --quiet .
-cp -r "$SRC_DIR/*" "$DIST_DIR"
+cp -r "$SRC_DIR/" "$DIST_DIR/"
 git add --all
 
 # Always commit the changes to a branch.
