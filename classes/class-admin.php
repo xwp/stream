@@ -693,10 +693,10 @@ class Admin {
 	public function purge_scheduled_action() {
 		global $wpdb;
 
-		$options = $this->plugin->settings->get_options();
+		$days = $this->plugin->settings->records_ttl();
 
 		// Ensure we don't want to keep the records indefinitely.
-		if ( ! empty( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
+		if ( $this->plugin->settings->keep_records_indefinitely() || empty( $days ) ) {
 			return;
 		}
 
