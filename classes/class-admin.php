@@ -688,6 +688,7 @@ class Admin {
 
 		$options = $this->plugin->settings->get_options();
 
+		// Ensure we don't want to keep the records indefinitely.
 		if ( ! empty( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
 			return;
 		}
