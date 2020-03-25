@@ -700,13 +700,8 @@ class Admin {
 			return;
 		}
 
-		$days     = $options['general_records_ttl'];
-		$timezone = new DateTimeZone( 'UTC' );
-		$date     = new DateTime( 'now', $timezone );
-
-		$date->sub( DateInterval::createFromDateString( "$days days" ) );
-
-		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
+		$timestamp = strtotime( sprintf( '%d days ago', $days ) );
+		$where     = $wpdb->prepare( ' AND `stream`.`created` < %s', gmdate( 'Y-m-d H:i:s', $timestamp ) );
 
 		// Multisite but NOT network activated, only purge the current blog
 		if ( is_multisite() && ! $this->plugin->is_network_activated() ) {
