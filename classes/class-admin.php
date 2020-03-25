@@ -686,17 +686,6 @@ class Admin {
 	public function purge_scheduled_action() {
 		global $wpdb;
 
-		// Don't purge when in Network Admin unless Stream is network activated
-		if (
-			is_multisite()
-			&&
-			is_network_admin()
-			&&
-			! $this->plugin->is_network_activated()
-		) {
-			return;
-		}
-
 		if ( is_multisite() && $this->plugin->is_network_activated() ) {
 			$options = (array) get_site_option( 'wp_stream_network', array() );
 		} else {
