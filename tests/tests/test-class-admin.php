@@ -279,29 +279,37 @@ class Test_Admin extends WP_StreamTestCase {
 
 		global $wpdb;
 
-		// Create (two day old) dummy records
+		// Create a fresh stream record that shouldn't be deleted.
+		$stream_data = $this->dummy_stream_data();
+		$stream_data['created'] = date( 'Y-m-d h:i:s' );
+		$wpdb->insert( $wpdb->stream, $stream_data );
+		$fresh_stream_id = $wpdb->insert_id;
+		$this->assertNotFalse( $fresh_stream_id );
+
+		// Create (two day old) dummy records.
 		$stream_data = $this->dummy_stream_data();
 		$stream_data['created'] = date( 'Y-m-d h:i:s', strtotime( '2 days ago' ) );
 		$wpdb->insert( $wpdb->stream, $stream_data );
 		$stream_id = $wpdb->insert_id;
 		$this->assertNotFalse( $stream_id );
 
-		// Create dummy meta
+		// Create dummy meta.
 		$meta_data = $this->dummy_meta_data( $stream_id );
 		$wpdb->insert( $wpdb->streammeta, $meta_data );
 		$meta_id = $wpdb->insert_id;
 		$this->assertNotFalse( $meta_id );
 
-		// Purge old records and meta
+		// Purge old records and meta.
 		$this->admin->purge_scheduled_action();
 
-		// Check if the old records have been cleared
-		$stream_results = $wpdb->get_row( "SELECT * FROM {$wpdb->stream} WHERE ID = $stream_id" );
-		$this->assertEmpty( $stream_results );
+		$fresh_stream_results = $wpdb->get_row( "SELECT * FROM {$wpdb->stream} WHERE ID = $fresh_stream_id" );
+		$this->assertNotEmpty( $fresh_stream_results, 'fresh record from now is still there' );
 
-		// Check if the old meta has been cleared
+		$stream_results = $wpdb->get_row( "SELECT * FROM {$wpdb->stream} WHERE ID = $stream_id" );
+		$this->assertEmpty( $stream_results, 'Old records have been cleared' );
+
 		$meta_results = $wpdb->get_row( "SELECT * FROM {$wpdb->streammeta} WHERE meta_id = $meta_id" );
-		$this->assertEmpty( $meta_results );
+		$this->assertEmpty( $meta_results, 'Old meta has been cleared' );
 	}
 
 	public function test_plugin_action_links() {
