@@ -125,11 +125,6 @@ class Admin {
 
 		add_action( 'init', array( $this, 'init' ) );
 
-		// Ensure function used in various methods is pre-loaded.
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once ABSPATH . '/wp-admin/includes/plugin.php';
-		}
-
 		// User and role caps.
 		add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
 		add_filter( 'role_has_cap', array( $this, 'filter_role_caps' ), 10, 3 );
