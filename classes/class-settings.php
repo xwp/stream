@@ -270,13 +270,7 @@ class Settings {
 	public function get_option_key() {
 		$option_key = $this->option_key;
 
-		$current_page = wp_stream_filter_input( INPUT_GET, 'page' );
-
-		if ( ! $current_page ) {
-			$current_page = wp_stream_filter_input( INPUT_GET, 'action' );
-		}
-
-		if ( 'wp_stream_network_settings' === $current_page ) {
+		if ( $this->plugin->is_network_activated() ) {
 			$option_key = $this->network_options_key;
 		}
 
