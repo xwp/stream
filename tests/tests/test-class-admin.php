@@ -31,9 +31,7 @@ class Test_Admin extends WP_StreamTestCase {
 		$this->assertNotEmpty( $this->admin->plugin );
 		$this->assertInstanceOf( '\WP_Stream\Plugin', $this->admin->plugin );
 
-		$this->assertTrue( function_exists( 'is_plugin_active_for_network' ) );
-
-		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) && ! is_network_admin() ) {
+		if ( is_multisite() && $this->admin->plugin->is_network_activated() && ! is_network_admin() ) {
 			$this->assertTrue( $this->admin->disable_access );
 		} else {
 			$this->assertFalse( $this->admin->disable_access );
