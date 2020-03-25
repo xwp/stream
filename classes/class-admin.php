@@ -693,11 +693,7 @@ class Admin {
 	public function purge_scheduled_action() {
 		global $wpdb;
 
-		if ( is_multisite() && $this->plugin->is_network_activated() ) {
-			$options = (array) get_site_option( 'wp_stream_network', array() );
-		} else {
-			$options = (array) get_option( 'wp_stream', array() );
-		}
+		$options = $this->plugin->settings->get_options();
 
 		if ( ! empty( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
 			return;
