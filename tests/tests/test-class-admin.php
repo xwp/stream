@@ -268,8 +268,8 @@ class Test_Admin extends WP_StreamTestCase {
 	}
 
 	public function test_purge_scheduled_action() {
-		// Set the TTL to one day
-		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
+		// Set the TTL to one day.
+		if ( $this->admin->plugin->is_network_activated() ) {
 			$options = (array) get_site_option( 'wp_stream_network', array() );
 			$options['general_records_ttl'] = '1';
 			update_site_option( 'wp_stream_network', $options );
