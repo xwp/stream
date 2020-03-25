@@ -703,7 +703,7 @@ class Admin {
 		$timestamp = strtotime( sprintf( '%d days ago', $days ) );
 		$where     = $wpdb->prepare( ' AND `stream`.`created` < %s', gmdate( 'Y-m-d H:i:s', $timestamp ) );
 
-		// Multisite but NOT network activated, only purge the current blog
+		// Multisite but NOT network activated, only purge the current blog.
 		if ( is_multisite() && ! $this->plugin->is_network_activated() ) {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
