@@ -2,8 +2,8 @@
 Contributors: lukecarbis, fjarrett, stream, xwp, kasparsd
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
-Tested up to: 5.2
-Stable tag: 3.4.2
+Tested up to: 5.4
+Stable tag: 3.4.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,11 @@ Thank you for wanting to make Stream better for everyone!
 
 == Changelog ==
 
+= 3.4.3 - March 19, 2020 =
+
+* Fix: Stream records can be filtered by users again [#929](https://github.com/xwp/stream/issues/929), props [@tareiking](https://github.com/tareiking).
+* New: Composer releases now include the built assets [#1054](https://github.com/xwp/stream/issues/1054).
+
 = 3.4.2 - September 26, 2019 =
 
 * Fix: Visiting the plugin settings page no longer produces PHP warnings for undefined variables [#1031](https://github.com/xwp/stream/issues/1031).
@@ -99,7 +104,7 @@ Thank you for wanting to make Stream better for everyone!
 = 3.4.0 - July 13, 2019 =
 
 * New: Add development environment and documentation, update tooling [#1016](https://github.com/xwp/stream/pull/1016).
-* New: Add [Mercator](https://github.com/humanmade/Mercator) connector [#993](https://github.com/xwp/stream/pull/993), props [@spacedmonkey](https://github.com/spacedmonkey)).
+* New: Add [Mercator](https://github.com/humanmade/Mercator) connector [#993](https://github.com/xwp/stream/pull/993), props [@spacedmonkey](https://github.com/spacedmonkey).
 * Fix: Respect the `DISALLOW_FILE_MODS` constant and prevent plugin uninstall, if set. [#997](https://github.com/xwp/stream/pull/997) fixes [#988](https://github.com/xwp/stream/issues/988), props [@lukecarbis](https://github.com/lukecarbis) and [@josephfusco](https://github.com/josephfusco).
 
 = 3.3.0 - June 18, 2019 =
