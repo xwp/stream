@@ -1161,4 +1161,38 @@ class Settings {
 
 		return $labels;
 	}
+
+	/**
+	 * Get the record TTL sanitized.
+	 *
+	 * @return integer|null Returns the time-to-live in seconds or null if empty or not set.
+	 */
+	public function records_ttl() {
+		$options = $this->get_options();
+
+		if ( isset( $options['general_records_ttl'] ) ) {
+			$ttl = abs( $options['general_records_ttl'] );
+
+			if ( $ttl > 0 ) {
+				return $ttl;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Should the records be stored indefinitely.
+	 *
+	 * @return boolean
+	 */
+	public function keep_records_indefinitely() {
+		$options = $this->get_options();
+
+		if ( ! empty( $options['general_keep_records_indefinitely'] ) ) {
+			return true;
+		}
+
+		return false;
+	}
 }
