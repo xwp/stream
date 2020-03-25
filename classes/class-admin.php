@@ -186,8 +186,15 @@ class Admin {
 		// Uninstall Streams and Deactivate plugin.
 		$uninstall = $this->plugin->db->driver->purge_storage( $this->plugin );
 
-		// Auto purge setup.
-		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
+		// Setup the cron task to purge old records.
+		add_action(
+			'admin_init',
+			array(
+				$this,
+				'purge_schedule_setup'
+			)
+		);
+
 		add_action(
 			'wp_stream_auto_purge',
 			array(
