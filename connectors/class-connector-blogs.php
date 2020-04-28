@@ -74,7 +74,7 @@ class Connector_Blogs extends Connector {
 
 			foreach ( $blogs as $blog ) {
 				$blog_details   = get_blog_details( $blog->blog_id );
-				$key            = sanitize_key( $blog_details->blogname );
+				$key            = $blog_details->blogname;
 				$labels[ $key ] = $blog_details->blogname;
 			}
 		}
