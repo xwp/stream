@@ -1,6 +1,17 @@
 <?php
+/**
+ * PHP Unit Tests for Connector_Mercator class
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class Test_WP_Stream_Connector_Mercator
+ *
+ * @package WP_Stream
+ * @group connectors
+ */
 class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 
 	/**
