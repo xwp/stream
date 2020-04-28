@@ -22,7 +22,7 @@ class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 	 */
 	public function test_get_context_labels() {
 		//Validate this works for foreign characters as well.
-		$id     = $this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
+		$this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
 		$labels = $this->connector_mercator->get_context_labels();
 		$this->assertArrayHasKey( 'ובזכויותיהם', $labels );
 		$this->assertArrayHasKey( 'Test Blog', $labels );
