@@ -1,21 +1,21 @@
 <?php
 /**
- * PHP Unit Tests for Connector_Blogs class
+ * PHP Unit Tests for Connector_Blogs class.
+ *
  * @package WP_Stream
  */
 
 namespace WP_Stream;
 
 /**
- * Class Test_WP_Stream_Connector_Blogs
+ * Class Test_WP_Stream_Connector_Blogs.
  *
  * @package WP_Stream
- * @group connectors
  */
 class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 
 	/**
-	 * Holds the connector blogs base class
+	 * Holds the connector blogs base class.
 	 *
 	 * @var Connector_Blogs
 	 */
@@ -29,10 +29,10 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 	}
 	
 	/**
-	 * Test for get_context_labels()
+	 * Test for get_context_labels().
 	 */
 	public function test_get_context_labels() {
-		//Validate this works for foreign characters as well.
+		// Validate this works for foreign characters as well.
 		$this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
 		$labels = $this->connector_blogs->get_context_labels();
 		$this->assertArrayHasKey( 'ובזכויותיהם', $labels );

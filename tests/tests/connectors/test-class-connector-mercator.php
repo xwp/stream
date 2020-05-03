@@ -1,6 +1,7 @@
 <?php
 /**
- * PHP Unit Tests for Connector_Mercator class
+ * PHP Unit Tests for Connector_Mercator class.
+ *
  * @package WP_Stream
  */
 
@@ -10,12 +11,11 @@ namespace WP_Stream;
  * Class Test_WP_Stream_Connector_Mercator
  *
  * @package WP_Stream
- * @group connectors
  */
 class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 
 	/**
-	 * Holds the connector mercator base class
+	 * Holds the connector mercator base class.
 	 *
 	 * @var Connector_Mercator
 	 */
@@ -29,10 +29,10 @@ class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 	}
 
 	/**
-	 * Test for get_context_labels()
+	 * Test for get_context_labels().
 	 */
 	public function test_get_context_labels() {
-		//Validate this works for foreign characters as well.
+		// Validate this works for foreign characters as well.
 		$this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
 		$labels = $this->connector_mercator->get_context_labels();
 		$this->assertArrayHasKey( 'ובזכויותיהם', $labels );
