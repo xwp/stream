@@ -1,17 +1,6 @@
 <?php
-/**
- * PHP Unit Tests for Connector_Blogs class.
- *
- * @package WP_Stream
- */
-
 namespace WP_Stream;
 
-/**
- * Class Test_WP_Stream_Connector_Blogs.
- *
- * @package WP_Stream
- */
 class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 
 	/**
