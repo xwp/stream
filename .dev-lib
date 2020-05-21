@@ -19,7 +19,7 @@ function run_tests {
 	if [ "$TRAVIS" != true ]; then
 		echo ""
 		echo "## Linting"
-		npm run lint
+		# npm run lint
 
 		echo ""
 	fi
@@ -29,12 +29,12 @@ function run_after_tests {
 	if [ "$TRAVIS" != true ]; then
 		echo ""
 		echo "## JavaScript tests"
-		npm run test:js
+		# npm run test:js
 
 		if can_run_e2e "localhost:8088"; then
 			echo ""
 			echo "## E2E tests"
-			npm run test:e2e
+		#	npm run test:e2e
 		fi
 
 		echo ""
