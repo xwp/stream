@@ -29,21 +29,41 @@
     }
   },
   "scripts": {
-    "release": [
-      "composer install --no-dev --prefer-dist --optimize-autoloader"
+    "build": [
+      "composer install --no-dev --prefer-dist --optimize-autoloader --no-scripts"
     ],
-    "lint-php": [
-      "phpcs ."
+    "format": [
+      "phpcbf ."
     ],
     "lint": [
-      "@composer validate",
-      "@lint-php"
+      "@composer validate --strict",
+      "phpcs ."
+    ],
+    "post-install-cmd": [
+      "@setup"
+    ],
+    "post-update-cmd": [
+      "@setup"
+    ],
+    "readme": [
+      "vendor/xwp/wp-dev-lib/scripts/generate-markdown-readme"
+    ],
+    "setup": [
+      "SlowProg\\CopyFile\\ScriptHandler::copy",
+      "if [ ! -f .git/hooks/pre-commit ]; then vendor/xwp/wp-dev-lib/scripts/install-pre-commit-hook.sh; fi",
+      "if [ ! -f .env ]; then cp .env.dist .env; fi"
     ],
     "test": [
       "phpunit"
     ],
-    "test-report": [
-      "php-coveralls --verbose"
+    "test-coverage": [
+      "phpunit --coverage-html tests/coverage/phpunit"
     ]
+  },
+  "extra": {
+    "installer-name": "stream",
+    "copy-file": {
+      "tests/wp-tests-config.php": "vendor/xwp/wordpress-tests/phpunit/wp-tests-config.php"
+    }
   }
 }

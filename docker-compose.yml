@@ -5,53 +5,48 @@ services:
   mysql:
     image: mysql:5
     volumes:
-      - db_data:/var/lib/mysql
+    - ./bin/local-dev/mysql:/var/lib/mysql
+    - ./bin/local-dev/wordpress/config/mysql/wptests.sql:/docker-entrypoint-initdb.d/wptests.sql
     restart: always
+    ports:
+    - 3306:3306
     environment:
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
   wordpress:
-    build: ./local/docker/wordpress
+    build:
+      context: ./bin/local-dev/wordpress
+      args:
+        WP_VERSION: ${WP_VERSION}
     depends_on:
       - mysql
-      - db_phpunit
     ports:
-      - "80:80"
-      - "443:443"
-      - "9000:9000" # Xdebug
+      - 8088:80
     volumes:
-      - ./local/public:/var/www/html # Use host-mount to ensure correct permissions for all.
-      - .:/var/www/html/wp-content/plugins/stream-src
-      - ./build:/var/www/html/wp-content/plugins/stream
-      - ./vendor/wordpress/wordpress/tests/phpunit:/var/www/html/tests/wordpress-phpunit
-      - ./local/config/wp-tests-config.php:/var/www/html/tests/wordpress-phpunit/wp-tests-config.php
-      - ./local/docker/wordpress/php.ini:/usr/local/etc/php/php.ini
+      - ./bin/local-dev/wordpress/html:/var/www/html
+      - .:/var/www/html/wp-content/plugins/stream
     restart: always
     environment:
-      APACHE_RUN_USER: "#1000" # Ensure Apache can write to the filesystem.
-      WP_TESTS_DIR: /var/www/html/tests/wordpress-phpunit
       WORDPRESS_DEBUG: 1
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: password
+      WORDPRESS_DB_USER: ${WP_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WP_DB_PASSWORD}
 
-  db_phpunit:
-    image: mysql:5.7
-    restart: always
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_DATABASE: "wordpress_test"
-      MYSQL_ROOT_PASSWORD: ""
+  cli:
+    image: wordpress:cli
+    user: xfs
+    volumes:
+      - ./bin/local-dev/wordpress/html:/var/www/html
+      - .:/var/www/html/wp-content/plugins/stream
+    depends_on:
+      - mysql
+      - wordpress
+    command: tail -f /dev/null
 
-  # Capture and display all email sent by WordPress.
   mailhog:
     image: mailhog/mailhog
     ports:
-      - "1025:1025"
-      - "8025:8025"
-
-volumes:
-  db_data: {}
-  wp_data: {}
+      - 1025:1025
+      - 8025:8025

@@ -1,6 +1,10 @@
+.env
 .idea
 .DS_Store
+bin/local-dev/mysql/
+bin/local-dev/wordpress/html/
 /node_modules/
+tests/coverage
 /vendor/
 /build/
 /.vagrant/

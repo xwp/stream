@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS wptests;
+GRANT ALL ON wptests.* TO 'wptests'@'%' IDENTIFIED BY 'wptests';
+FLUSH PRIVILEGES;

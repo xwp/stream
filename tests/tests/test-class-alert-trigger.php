@@ -1,5 +1,10 @@
 <?php
 namespace WP_Stream;
+
+if ( ! class_exists( 'Test_Alert_Trigger' ) ) {
+	
+
+
 /**
  * Class Test_Alert_Trigger
  * @package WP_Stream
@@ -50,4 +55,6 @@ abstract class Test_Alert_Trigger extends WP_StreamTestCase {
 			'action'    => 'activated',
 		);
 	}
+}
+
 }
