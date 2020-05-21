@@ -26,7 +26,7 @@ For setups with local Docker environment you don't need Vagrant and VirtualBox.
 1. See the [Git Flow](#git-flow) section below for how to fork the repository.
 2. Run `npm install` to install all project dependencies.
 3. Run `vagrant up` to start the development environment.
-4. Visit [stream.local](https://stream.local) and login using `admin` / `password`.
+4. Visit [stream.local](http://stream.local) and login using `admin` / `password`.
 5. Activate the Stream plugin.
 
 ### PHP Xdebug
