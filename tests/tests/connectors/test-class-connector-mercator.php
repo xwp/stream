@@ -19,6 +19,8 @@ class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 
 	/**
 	 * Test for get_context_labels().
+	 *
+	 * @group ms-required 
 	 */
 	public function test_get_context_labels() {
 		// Validate this works for foreign characters as well.
