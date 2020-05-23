@@ -24,7 +24,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 	 */
 	public function test_get_context_labels() {
 		if ( ! is_multisite() ) {
-			$this->skipWithMultisite();
+			$this->markTestSkipped( 'This test requires multisite.' );
 		}
 		// Validate this works for foreign characters as well.
 		$this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
