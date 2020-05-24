@@ -27,9 +27,9 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 			$this->markTestSkipped( 'This test requires multisite.' );
 		}
 		// Validate this works for foreign characters as well.
-		$this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
+		$id = $this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
 		$labels = $this->connector_blogs->get_context_labels();
-		$this->assertArrayHasKey( 'ובזכויותיהם', $labels );
-		$this->assertArrayHasKey( 'Test Blog', $labels );
+		$this->assertArrayHasKey( 'blog-1', $labels );
+		$this->assertArrayHasKey( 'blog-' . $id . $id, $labels );
 	}
 }
