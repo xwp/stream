@@ -65,7 +65,7 @@ class Connector_Mercator extends Connector {
 
 			foreach ( $blogs as $blog ) {
 				$blog_details   = get_site( $blog->blog_id );
-				$key            = sanitize_key( $blog_details->blogname );
+				$key            = sprintf( 'blog-%d', $blog->blog_id );
 				$labels[ $key ] = $blog_details->blogname;
 			}
 		}
