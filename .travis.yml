@@ -43,7 +43,7 @@ script:
   - source "$DEV_LIB_PATH/travis.script.sh"
 
 after_script:
-  - composer test-report
+  - test -f ./tests/reports/clover.xml && composer test-report
 
 before_deploy:
   - npm run release
