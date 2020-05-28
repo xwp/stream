@@ -1,4 +1,5 @@
 <?php
+
 namespace WP_Stream;
 
 class Test_Log extends WP_StreamTestCase {
