@@ -25,10 +25,10 @@ var streamAlertTypeHighlight = ( function( $ ) {
 						var actionLink = $( this );
 
 						/**
-						* Ajax call to remove the highlight.
-						*
-						* @returns void.
-						*/
+						 * Ajax call to remove the highlight.
+						 *
+						 * @return void.
+						 */
 						actionLink.click(
 							function( e ) {
 								var recordId, data;
@@ -51,8 +51,8 @@ var streamAlertTypeHighlight = ( function( $ ) {
 								);
 
 								/**
-								* Fires when Ajax complete.
-								*/
+								 * Fires when Ajax complete.
+								 */
 								function ajaxDone() {
 									var row = actionLink.parents( '.alert-highlight' ),
 										odd = $( '.striped > tbody > :nth-child( odd )' );
