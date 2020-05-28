@@ -40,7 +40,7 @@
       "@lint-php"
     ],
     "test": [
-      "phpunit"
+      "phpunit --coverage-text"
     ],
     "test-report": [
       "php-coveralls --verbose"
