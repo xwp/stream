@@ -1,13 +1,21 @@
 <?php
+/**
+ * Calculate date intervals for a specific timezone.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
-// Load Carbon to Handle dates much easier
+// Load Carbon to Handle dates much easier.
 if ( ! class_exists( 'Carbon\Carbon' ) ) {
 	require_once wp_stream_get_instance()->locations['inc_dir'] . 'lib/Carbon.php';
 }
-
 use Carbon\Carbon;
 
+/**
+ * Class - Date_Interval
+ */
 class Date_Interval {
 	/**
 	 * Contains an array of all available intervals
@@ -20,11 +28,14 @@ class Date_Interval {
 	 * Class constructor
 	 */
 	public function __construct() {
-		// Get all default intervals
+		// Get all default intervals.
 		$this->intervals = $this->get_predefined_intervals();
 	}
 
 	/**
+	 * Returns date interval data based upon "Timezone" site setting.
+	 *
+	 * @todo add better inline comments
 	 * @return mixed
 	 */
 	public function get_predefined_intervals() {
@@ -55,19 +66,19 @@ class Date_Interval {
 					'end'   => Carbon::today( $timezone )->startOfDay()->subSecond(),
 				),
 				'last-7-days'    => array(
-					// translators: Placeholder refers to a number of days (e.g. "7")
+					/* translators: %d: number of days (e.g. "7") */
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 7 ),
 					'start' => Carbon::today( $timezone )->subDays( 7 ),
 					'end'   => Carbon::today( $timezone ),
 				),
 				'last-14-days'   => array(
-					// translators: Placeholder refers to a number of days (e.g. "7")
+					/* translators: %d: number of days (e.g. "7") */
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 14 ),
 					'start' => Carbon::today( $timezone )->subDays( 14 ),
 					'end'   => Carbon::today( $timezone ),
 				),
 				'last-30-days'   => array(
-					// translators: Placeholder refers to a number of days (e.g. "7")
+					/* translators: %d: number of days (e.g. "7") */
 					'label' => sprintf( esc_html__( 'Last %d Days', 'stream' ), 30 ),
 					'start' => Carbon::today( $timezone )->subDays( 30 ),
 					'end'   => Carbon::today( $timezone ),
@@ -83,19 +94,19 @@ class Date_Interval {
 					'end'   => Carbon::today( $timezone )->startOfMonth()->subSecond(),
 				),
 				'last-3-months'  => array(
-					// translators: Placeholder refers to a number of months (e.g. "3")
+					/* translators: %d: number of months (e.g. "3") */
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 3 ),
 					'start' => Carbon::today( $timezone )->subMonths( 3 ),
 					'end'   => Carbon::today( $timezone ),
 				),
 				'last-6-months'  => array(
-					// translators: Placeholder refers to a number of months (e.g. "3")
+					/* translators: %d: number of months (e.g. "3") */
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 6 ),
 					'start' => Carbon::today( $timezone )->subMonths( 6 ),
 					'end'   => Carbon::today( $timezone ),
 				),
 				'last-12-months' => array(
-					// translators: Placeholder refers to a number of months (e.g. "3")
+					/* translators: %d: number of months (e.g. "3") */
 					'label' => sprintf( esc_html__( 'Last %d Months', 'stream' ), 12 ),
 					'start' => Carbon::today( $timezone )->subMonths( 12 ),
 					'end'   => Carbon::today( $timezone ),
