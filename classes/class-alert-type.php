@@ -17,7 +17,7 @@ namespace WP_Stream;
 abstract class Alert_Type {
 
 	/**
-	 * Hold the Plugin class
+	 * Holds instance of plugin object
 	 *
 	 * @var Plugin
 	 */
