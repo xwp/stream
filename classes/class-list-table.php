@@ -5,7 +5,7 @@ namespace WP_Stream;
 class List_Table extends \WP_List_Table {
 
 	/**
-	 * Hold Plugin class
+	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -14,7 +14,7 @@ class List_Table extends \WP_List_Table {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
+	 * @param Plugin $plugin Instance of plugin object.
 	 * @param array  $args
 	 */
 	public function __construct( $plugin, $args = array() ) {

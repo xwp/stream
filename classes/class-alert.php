@@ -1,6 +1,6 @@
 <?php
 /**
- * Single Alert handler.
+ * Manages a single alert, acting as a model.
  *
  * @package WP_Stream
  */
@@ -57,7 +57,7 @@ class Alert {
 	public $alert_meta;
 
 	/**
-	 * Hold Plugin class
+	 * Holds instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -67,7 +67,7 @@ class Alert {
 	 * Class constructor
 	 *
 	 * @param object $item Alert data.
-	 * @param Plugin $plugin Plugin class.
+	 * @param Plugin $plugin Instance of plugin object.
 	 * @return void
 	 */
 	public function __construct( $item, $plugin ) {
@@ -83,8 +83,9 @@ class Alert {
 	}
 
 	/**
-	 * Save state of the Alert to database
+	 * Saves alert state.
 	 *
+	 * @todo Clean up/Remove unnecessary conditional statements.
 	 * @return int The Post ID of the alert.
 	 */
 	public function save() {
@@ -99,15 +100,18 @@ class Alert {
 			'post_type'    => Alerts::POST_TYPE,
 		);
 
+		// Remove empty "ID" field, if new post.
 		if ( empty( $args['ID'] ) ) {
 			unset( $args['ID'] );
 		}
 
+		// Create or update alert and assign the ID.
 		$post_id = wp_insert_post( $args );
 		if ( empty( $args['ID'] ) ) {
 			$this->ID = $post_id;
 		}
 
+		// Save alert type and meta.
 		$meta = array(
 			'alert_type' => $this->alert_type,
 			'alert_meta' => $this->alert_meta,
@@ -123,6 +127,8 @@ class Alert {
 	/**
 	 * Process settings form data
 	 *
+	 * @todo Confirm if the function is necessary, it's currently unreference
+	 * anywhere else in the plugin.
 	 * @param array $data Processed post object data.
 	 * @return array New post object data.
 	 */
@@ -201,7 +207,7 @@ class Alert {
 	}
 
 	/**
-	 * Retrive current alert type object
+	 * Retreive current alert type object
 	 *
 	 * @return Alert_Type
 	 */
@@ -230,7 +236,6 @@ class Alert {
 	 *
 	 * @param int $record_id Record ID.
 	 * @param int $recordarr Record Data.
-	 * @return void
 	 */
 	public function send_alert( $record_id, $recordarr ) {
 		$this->get_alert_type_obj()->alert( $record_id, $recordarr, $this );
@@ -319,8 +324,11 @@ class Alert {
 			return false;
 		}
 
-		// Grab an Alert post ID.
-		// @todo determine which Alert post takes priority.
+		/**
+		 * Grab an Alert post ID.
+		 *
+		 * @todo Determine which Alert post takes priority.
+		 */
 		if ( is_array( $values ) ) {
 			$post_id = $values[0];
 		} else {

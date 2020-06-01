@@ -15,7 +15,7 @@ namespace WP_Stream;
 abstract class Alert_Trigger {
 
 	/**
-	 * Hold the Plugin class
+	 * Holds instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -31,7 +31,7 @@ abstract class Alert_Trigger {
 	/**
 	 * Class constructor
 	 *
-	 * @param Plugin $plugin Plugin class.
+	 * @param Plugin $plugin Instance of plugin object.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
