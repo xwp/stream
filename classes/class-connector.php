@@ -1,6 +1,16 @@
 <?php
+/**
+ * Abstract class serving as the parent for all logger classes AKA "Connectors".
+ * Common functionality for registering log events are defined here.
+ *
+ * @package WP_Stream;
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector
+ */
 abstract class Connector {
 	/**
 	 * Connector slug
@@ -63,7 +73,7 @@ abstract class Connector {
 		$action   = current_filter();
 		$callback = array( $this, 'callback_' . preg_replace( '/[^a-z0-9_\-]/', '_', $action ) );
 
-		// For the sake of testing, trigger an action with the name of the callback
+		// For the sake of testing, trigger an action with the name of the callback.
 		if ( defined( 'WP_STREAM_TESTS' ) && WP_STREAM_TESTS ) {
 			/**
 			 * Action fires during testing to test the current callback
@@ -73,7 +83,7 @@ abstract class Connector {
 			do_action( 'wp_stream_test_' . $callback[1] );
 		}
 
-		// Call the real function
+		// Call the real function.
 		if ( is_callable( $callback ) ) {
 			return call_user_func_array( $callback, func_get_args() );
 		}
@@ -82,8 +92,8 @@ abstract class Connector {
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @param array  $links   Previous links registered
-	 * @param object $record Stream record
+	 * @param array  $links  Previous links registered.
+	 * @param object $record Stream record.
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
@@ -97,12 +107,12 @@ abstract class Connector {
 	/**
 	 * Log handler
 	 *
-	 * @param string $message sprintf-ready error message string
-	 * @param array  $args     sprintf (and extra) arguments to use
-	 * @param int    $object_id  Target object id
-	 * @param string $context Context of the event
-	 * @param string $action  Action of the event
-	 * @param int    $user_id    User responsible for the event
+	 * @param string $message   sprintf-ready error message string.
+	 * @param array  $args      sprintf (and extra) arguments to use.
+	 * @param int    $object_id Target object id.
+	 * @param string $context   Context of the event.
+	 * @param string $action    Action of the event.
+	 * @param int    $user_id   User responsible for the event.
 	 *
 	 * @return bool
 	 */
@@ -132,7 +142,7 @@ abstract class Connector {
 	/**
 	 * Save log data till shutdown, so other callbacks would be able to override
 	 *
-	 * @param string $handle Special slug to be shared with other actions
+	 * @param string $handle Special slug to be shared with other actions.
 	 * @note param mixed $arg1 Extra arguments to sent to log()
 	 * @note param param mixed $arg2, etc..
 	 */
@@ -158,9 +168,9 @@ abstract class Connector {
 	/**
 	 * Compare two values and return changed keys if they are arrays
 	 *
-	 * @param  mixed    $old_value Value before change
-	 * @param  mixed    $new_value Value after change
-	 * @param  bool|int $deep   Get array children changes keys as well, not just parents
+	 * @param  mixed    $old_value Value before change.
+	 * @param  mixed    $new_value Value after change.
+	 * @param  bool|int $deep      Get array children changes keys as well, not just parents.
 	 *
 	 * @return array
 	 */
@@ -181,21 +191,21 @@ abstract class Connector {
 			$old_value,
 			$new_value,
 			function( $value1, $value2 ) {
-				// Compare potentially complex nested arrays
+				// Compare potentially complex nested arrays.
 				return wp_json_encode( $value1 ) !== wp_json_encode( $value2 );
 			}
 		);
 
 		$result = array_keys( $diff );
 
-		// find unexisting keys in old or new value
+		// Find unexisting keys in old or new value.
 		$common_keys     = array_keys( array_intersect_key( $old_value, $new_value ) );
 		$unique_keys_old = array_values( array_diff( array_keys( $old_value ), $common_keys ) );
 		$unique_keys_new = array_values( array_diff( array_keys( $new_value ), $common_keys ) );
 
 		$result = array_merge( $result, $unique_keys_old, $unique_keys_new );
 
-		// remove numeric indexes
+		// Remove numeric indexes.
 		$result = array_filter(
 			$result,
 			function( $value ) {
@@ -209,17 +219,17 @@ abstract class Connector {
 		$result = array_values( array_unique( $result ) );
 
 		if ( false === $deep ) {
-			return $result; // Return an numerical based array with changed TOP PARENT keys only
+			return $result; // Return an numerical based array with changed TOP PARENT keys only.
 		}
 
 		$result = array_fill_keys( $result, null );
 
 		foreach ( $result as $key => $val ) {
 			if ( in_array( $key, $unique_keys_old, true ) ) {
-				$result[ $key ] = false; // Removed
+				$result[ $key ] = false; // Removed.
 			} elseif ( in_array( $key, $unique_keys_new, true ) ) {
-				$result[ $key ] = true; // Added
-			} elseif ( $deep ) { // Changed, find what changed, only if we're allowed to explore a new level
+				$result[ $key ] = true; // Added.
+			} elseif ( $deep ) { // Changed, find what changed, only if we're allowed to explore a new level.
 				if ( is_array( $old_value[ $key ] ) && is_array( $new_value[ $key ] ) ) {
 					$inner  = array();
 					$parent = $key;
@@ -228,7 +238,7 @@ abstract class Connector {
 					foreach ( $changed as $child => $change ) {
 						$inner[ $parent . '::' . $child ] = $change;
 					}
-					$result[ $key ] = 0; // Changed parent which has a changed children
+					$result[ $key ] = 0; // Changed parent which has a changed children.
 					$result         = array_merge( $result, $inner );
 				}
 			}
