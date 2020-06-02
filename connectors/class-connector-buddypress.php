@@ -549,6 +549,8 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
+	 * Logs activity deletions
+	 *
 	 * @action bp_before_activity_delete
 	 *
 	 * @param array $args  Target activity data.
@@ -566,9 +568,11 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
+	 * Logs activity bulk deletions.
+	 *
 	 * @action bp_activity_deleted_activities
 	 *
-	 * @param array $activities_ids  Activity IDs.
+	 * @param array $activities_ids  Activity IDs of deleted activities.
 	 */
 	public function callback_bp_activity_deleted_activities( $activities_ids ) {
 		if ( 1 === count( $activities_ids ) && isset( $this->_deleted_activity ) ) { // Single activity deletion.
@@ -619,6 +623,8 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
+	 * Logs activates marked as spam
+	 *
 	 * @action bp_activity_mark_as_spam
 	 *
 	 * @param array $activity  Activity.
@@ -646,6 +652,8 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
+	 * Log activities marked as ham
+	 *
 	 * @action bp_activity_mark_as_ham
 	 *
 	 * @param array $activity  Activity.
@@ -673,6 +681,8 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
+	 * Log activity changes made in the WP Admin.
+	 *
 	 * @action bp_activity_admin_edit_after
 	 *
 	 * @param array $activity  Activity.
@@ -699,6 +709,14 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
+	/**
+	 * Logs group actions
+	 *
+	 * @param int|object $group   Group object or group ID.
+	 * @param string     $action  Action.
+	 * @param array      $meta    Meta data.
+	 * @param string     $message Message.
+	 */
 	public function group_action( $group, $action, $meta = array(), $message = null ) {
 		if ( is_numeric( $group ) ) {
 			$group = \groups_get_group(
@@ -714,30 +732,30 @@ class Connector_BuddyPress extends Connector {
 
 		if ( ! $message ) {
 			if ( 'created' === $action ) {
-				// translators: Placeholder refers to a group name (e.g. "Favourites")
+				/* translators: %s: a group name (e.g. "Favourites") */
 				$message = esc_html__( '"%s" group created', 'stream' );
 			} elseif ( 'updated' === $action ) {
-				// translators: Placeholder refers to a group name (e.g. "Favourites")
+				/* translators: %s: a group name (e.g. "Favourites") */
 				$message = esc_html__( '"%s" group updated', 'stream' );
 			} elseif ( 'deleted' === $action ) {
-				// translators: Placeholder refers to a group name (e.g. "Favourites")
+				/* translators: %s: a group name (e.g. "Favourites") */
 				$message = esc_html__( '"%s" group deleted', 'stream' );
 			} elseif ( 'joined' === $action ) {
-				// translators: Placeholder refers to a group name (e.g. "Favourites")
+				/* translators: %s: a group name (e.g. "Favourites") */
 				$message = esc_html__( 'Joined group "%s"', 'stream' );
 			} elseif ( 'left' === $action ) {
-				// translators: Placeholder refers to a group name (e.g. "Favourites")
+				/* translators: %s: a group name (e.g. "Favourites") */
 				$message = esc_html__( 'Left group "%s"', 'stream' );
 			} elseif ( 'banned' === $action ) {
-				// translators: Placeholders refer to a user display name, and a group name (e.g. "Jane Doe", "Favourites")
+				/* translators: %1$s: a user display name, %2$s: a group name (e.g. "Jane Doe", "Favourites") */
 				$message        = esc_html__( 'Banned "%2$s" from "%1$s"', 'stream' );
 				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 			} elseif ( 'unbanned' === $action ) {
-				// translators: Placeholders refer to a user display name, and a group name (e.g. "Jane Doe", "Favourites")
+				/* translators: %1$s: a user display name, %2$s: a group name (e.g. "Jane Doe", "Favourites") */
 				$message        = esc_html__( 'Unbanned "%2$s" from "%1$s"', 'stream' );
 				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 			} elseif ( 'removed' === $action ) {
-				// translators: Placeholders refer to a user display name, and a group name (e.g. "Jane Doe", "Favourites")
+				/* translators: %1$s: a user display name, %2$s: a group name (e.g. "Jane Doe", "Favourites") */
 				$message        = esc_html__( 'Removed "%2$s" from "%1$s"', 'stream' );
 				$replacements[] = get_user_by( 'id', $meta['user_id'] )->display_name;
 			} else {
@@ -764,6 +782,15 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
+	/**
+	 * Log creation of new group.
+	 *
+	 * @action groups_create_group
+	 *
+	 * @param int    $group_id  Group ID.
+	 * @param object $member    Group founder user object.
+	 * @param object $group     Group object.
+	 */
 	public function callback_groups_create_group( $group_id, $member, $group ) {
 		unset( $group_id );
 		unset( $member );
@@ -771,22 +798,51 @@ class Connector_BuddyPress extends Connector {
 		$this->group_action( $group, 'created' );
 	}
 
+	/**
+	 * Log update to existing group.
+	 *
+	 * @action groups_update_group
+	 *
+	 * @param int    $group_id Group ID.
+	 * @param object $group    Group object.
+	 */
 	public function callback_groups_update_group( $group_id, $group ) {
 		unset( $group_id );
 
 		$this->group_action( $group, 'updated' );
 	}
 
+	/**
+	 * Log group deletion
+	 *
+	 * @action groups_before_delete_group
+	 *
+	 * @param int $group_id  Group ID.
+	 */
 	public function callback_groups_before_delete_group( $group_id ) {
 		$this->ignore_activity_bulk_deletion = true;
 		$this->group_action( $group_id, 'deleted' );
 	}
 
+	/**
+	 * Log change to group details
+	 *
+	 * @action groups_details_updated
+	 *
+	 * @param int $group_id  Group ID.
+	 */
 	public function callback_groups_details_updated( $group_id ) {
 		$this->is_update = true;
 		$this->group_action( $group_id, 'updated' );
 	}
 
+	/**
+	 * Log change to group settings
+	 *
+	 * @action groups_settings_updated
+	 *
+	 * @param int $group_id  Group ID.
+	 */
 	public function callback_groups_settings_updated( $group_id ) {
 		if ( $this->is_update ) {
 			return;
@@ -794,14 +850,39 @@ class Connector_BuddyPress extends Connector {
 		$this->group_action( $group_id, 'updated' );
 	}
 
+	/**
+	 * Logs user leaving group
+	 *
+	 * @action groups_leave_group
+	 *
+	 * @param int $group_id  Group ID.
+	 * @param int $user_id  User ID of member.
+	 */
 	public function callback_groups_leave_group( $group_id, $user_id ) {
 		$this->group_action( $group_id, 'left', compact( 'user_id' ) );
 	}
 
+	/**
+	 * Logs user joining group
+	 *
+	 * @action groups_join_group
+	 *
+	 * @param int $group_id  Group ID.
+	 * @param int $user_id  User ID of member.
+	 */
 	public function callback_groups_join_group( $group_id, $user_id ) {
 		$this->group_action( $group_id, 'joined', compact( 'user_id' ) );
 	}
 
+	/**
+	 * Logs group member promotion.
+	 *
+	 * @action groups_promote_member
+	 *
+	 * @param int    $group_id  Group ID.
+	 * @param int    $user_id   User ID of member.
+	 * @param string $status    Member's new user role.
+	 */
 	public function callback_groups_promote_member( $group_id, $user_id, $status ) {
 		$group   = \groups_get_group(
 			array(
@@ -814,7 +895,7 @@ class Connector_BuddyPress extends Connector {
 			'mod'   => esc_html_x( 'Moderator', 'buddypress', 'stream' ),
 		);
 		$message = sprintf(
-			// translators: Placeholders refer to a user's display name, a user role, and a group name (e.g. "Jane Doe", "subscriber", "Favourites")
+			/* translators: %1$s: a user's display name, %2$s: a user role, %3$s: a group name (e.g. "Jane Doe", "subscriber", "Favourites") */
 			__( 'Promoted "%1$s" to "%2$s" in "%3$s"', 'stream' ),
 			$user->display_name,
 			$roles[ $status ],
@@ -823,6 +904,14 @@ class Connector_BuddyPress extends Connector {
 		$this->group_action( $group_id, 'promoted', compact( 'user_id', 'status' ), $message );
 	}
 
+	/**
+	 * Log group member demotion
+	 *
+	 * @action groups_demote_member
+	 *
+	 * @param int $group_id  Group ID.
+	 * @param int $user_id   User ID of member.
+	 */
 	public function callback_groups_demote_member( $group_id, $user_id ) {
 		$group   = \groups_get_group(
 			array(
@@ -831,7 +920,7 @@ class Connector_BuddyPress extends Connector {
 		);
 		$user    = new \WP_User( $user_id );
 		$message = sprintf(
-			// translators: Placeholders refer to a user's display name, a user role, and a group name (e.g. "Jane Doe", "Member", "Favourites")
+			/* translators: %1$s: a user's display name, %2$s: a user role, %3$s: a group name (e.g. "Jane Doe", "Member", "Favourites") */
 			__( 'Demoted "%1$s" to "%2$s" in "%3$s"', 'stream' ),
 			$user->display_name,
 			_x( 'Member', 'buddypress', 'stream' ),
@@ -840,18 +929,50 @@ class Connector_BuddyPress extends Connector {
 		$this->group_action( $group_id, 'demoted', compact( 'user_id' ), $message );
 	}
 
+	/**
+	 * Log member banning
+	 *
+	 * @action groups_ban_member
+	 *
+	 * @param int $group_id  Group ID.
+	 * @param int $user_id   User ID of banned member.
+	 */
 	public function callback_groups_ban_member( $group_id, $user_id ) {
 		$this->group_action( $group_id, 'banned', compact( 'user_id' ) );
 	}
 
+	/**
+	 * Log member reinstatement
+	 *
+	 * @action groups_unban_member
+	 *
+	 * @param int $group_id  Group ID.
+	 * @param int $user_id   User ID of reinstated member.
+	 */
 	public function callback_groups_unban_member( $group_id, $user_id ) {
 		$this->group_action( $group_id, 'unbanned', compact( 'user_id' ) );
 	}
 
+	/**
+	 * Log member removal.
+	 *
+	 * @action groups_remove_member
+	 *
+	 * @param int $group_id  Group ID.
+	 * @param int $user_id   User ID of removed member.
+	 */
 	public function callback_groups_remove_member( $group_id, $user_id ) {
 		$this->group_action( $group_id, 'removed', compact( 'user_id' ) );
 	}
 
+	/**
+	 * Logs user profile field actions
+	 *
+	 * @param object $field    Field object.
+	 * @param string $action   Action.
+	 * @param array  $meta     Meta.
+	 * @param string $message  Message.
+	 */
 	public function field_action( $field, $action, $meta = array(), $message = null ) {
 		$replacements = array(
 			$field->name,
@@ -859,13 +980,13 @@ class Connector_BuddyPress extends Connector {
 
 		if ( ! $message ) {
 			if ( 'created' === $action ) {
-				// translators: Placeholder refers to a user profile field (e.g. "Job Title")
+				/* translators: %s: a user profile field (e.g. "Job Title") */
 				$message = esc_html__( 'Created profile field "%s"', 'stream' );
 			} elseif ( 'updated' === $action ) {
-				// translators: Placeholder refers to a user profile field (e.g. "Job Title")
+				/* translators: %s: a user profile field (e.g. "Job Title") */
 				$message = esc_html__( 'Updated profile field "%s"', 'stream' );
 			} elseif ( 'deleted' === $action ) {
-				// translators: Placeholder refers to a user profile field (e.g. "Job Title")
+				/* translators: %s: a user profile field (e.g. "Job Title") */
 				$message = esc_html__( 'Deleted profile field "%s"', 'stream' );
 			} else {
 				return;
@@ -891,15 +1012,37 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
+	/**
+	 * Logs field writes
+	 *
+	 * @action xprofile_field_after_save
+	 *
+	 * @param object $field  Field object.
+	 */
 	public function callback_xprofile_field_after_save( $field ) {
 		$action = isset( $field->id ) ? 'updated' : 'created';
 		$this->field_action( $field, $action );
 	}
 
+	/**
+	 * Logs field deletions
+	 *
+	 * @action xprofile_fields_deleted_field
+	 *
+	 * @param object $field  Field object.
+	 */
 	public function callback_xprofile_fields_deleted_field( $field ) {
 		$this->field_action( $field, 'deleted' );
 	}
 
+	/**
+	 * Logs user profile field group actions
+	 *
+	 * @param int    $group    Field group object.
+	 * @param string $action   Action.
+	 * @param array  $meta     Meta.
+	 * @param string $message  Message.
+	 */
 	public function field_group_action( $group, $action, $meta = array(), $message = null ) {
 		$replacements = array(
 			$group->name,
@@ -907,13 +1050,13 @@ class Connector_BuddyPress extends Connector {
 
 		if ( ! $message ) {
 			if ( 'created' === $action ) {
-				// translators: Placeholder refers to a user profile field group (e.g. "Appearance")
+				/* translators: %s: a user profile field group (e.g. "Appearance") */
 				$message = esc_html__( 'Created profile field group "%s"', 'stream' );
 			} elseif ( 'updated' === $action ) {
-				// translators: Placeholder refers to a user profile field group (e.g. "Appearance")
+				/* translators: %s: a user profile field group (e.g. "Appearance") */
 				$message = esc_html__( 'Updated profile field group "%s"', 'stream' );
 			} elseif ( 'deleted' === $action ) {
-				// translators: Placeholder refers to a user profile field group (e.g. "Appearance")
+				/* translators: %s: a user profile field group (e.g. "Appearance") */
 				$message = esc_html__( 'Deleted profile field group "%s"', 'stream' );
 			} else {
 				return;
@@ -938,27 +1081,49 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
+	/**
+	 * Logs field group writes
+	 *
+	 * @action xprofile_group_after_save
+	 *
+	 * @param object $group  Field group.
+	 */
 	public function callback_xprofile_group_after_save( $group ) {
 		global $wpdb;
-		// a bit hacky, due to inconsistency with BP action scheme, see callback_xprofile_field_after_save for correct behavior
+		/**
+		 * A bit hacky, due to inconsistency with BP action scheme,
+		 * see callback_xprofile_field_after_save for correct behavior.
+		 */
 		$action = ( $group->id === $wpdb->insert_id ) ? 'created' : 'updated';
 		$this->field_group_action( $group, $action );
 	}
 
+	/**
+	 * Logs field group deletions
+	 *
+	 * @action xprofile_groups_deleted_group
+	 *
+	 * @param object $group  Field group object.
+	 */
 	public function callback_xprofile_groups_deleted_group( $group ) {
 		$this->field_group_action( $group, 'deleted' );
 	}
 
+	/**
+	 * Returns the directory pages
+	 *
+	 * @return array
+	 */
 	private function bp_get_directory_pages() {
 		$bp              = \buddypress();
 		$directory_pages = array();
 
-		// Loop through loaded components and collect directories
+		// Loop through loaded components and collect directories.
 		if ( is_array( $bp->loaded_components ) ) {
 			foreach ( $bp->loaded_components as $component_slug => $component_id ) {
-				// Only components that need directories should be listed here
+				// Only components that need directories should be listed here.
 				if ( isset( $bp->{$component_id} ) && ! empty( $bp->{$component_id}->has_directory ) ) {
-					// component->name was introduced in BP 1.5, so we must provide a fallback
+					// component->name was introduced in BP 1.5, so we must provide a fallback.
 					$directory_pages[ $component_id ] = ! empty( $bp->{$component_id}->name ) ? $bp->{$component_id}->name : ucwords( $component_id );
 				}
 			}
