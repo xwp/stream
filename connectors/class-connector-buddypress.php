@@ -1,7 +1,15 @@
 <?php
+/**
+ * Connector for BuddyPress
+ *
+ * @package WP_Stream
+ */
 
 namespace WP_Stream;
 
+/**
+ * Class - Connector_BuddyPress
+ */
 class Connector_BuddyPress extends Connector {
 
 	/**
@@ -153,8 +161,8 @@ class Connector_BuddyPress extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links Previous links registered
-	 * @param  object $record Stream record
+	 * @param  array  $links   Previous links registered.
+	 * @param  object $record  Stream record.
 	 *
 	 * @return array Action links
 	 */
@@ -200,7 +208,7 @@ class Connector_BuddyPress extends Connector {
 			);
 
 			if ( $group ) {
-				// Build actions URLs
+				// Build actions URLs.
 				$base_url   = \bp_get_admin_url( 'admin.php?page=bp-groups&amp;gid=' . $group_id );
 				$delete_url = wp_nonce_url( $base_url . '&amp;action=delete', 'bp-groups-delete' );
 				$edit_url   = $base_url . '&amp;action=edit';
@@ -240,7 +248,7 @@ class Connector_BuddyPress extends Connector {
 			$field_id = $record->get_meta( 'field_id', true );
 			$group_id = $record->get_meta( 'group_id', true );
 
-			if ( empty( $field_id ) ) { // is a group action
+			if ( empty( $field_id ) ) { // is a group action.
 				$links[ esc_html__( 'Edit', 'stream' ) ]   = add_query_arg(
 					array(
 						'page'     => 'bp-profile-setup',
@@ -285,6 +293,9 @@ class Connector_BuddyPress extends Connector {
 		return $links;
 	}
 
+	/**
+	 * Register the connector
+	 */
 	public function register() {
 		parent::register();
 
@@ -335,30 +346,73 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
+	/**
+	 * Track option changes.
+	 *
+	 * @param string $option Option key.
+	 * @param string $old    Old value.
+	 * @param string $new    New value.
+	 */
 	public function callback_update_option( $option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
 
+	/**
+	 * Track option creations.
+	 *
+	 * @param string $option Option key.
+	 * @param string $val    Value.
+	 */
 	public function callback_add_option( $option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
+	/**
+	 * Track option deletions.
+	 *
+	 * @param string $option Option key.
+	 */
 	public function callback_delete_option( $option ) {
 		$this->check( $option, null, null );
 	}
 
+	/**
+	 * Track site option changes
+	 *
+	 * @param string $option Option key.
+	 * @param string $old    Old value.
+	 * @param string $new    New value.
+	 */
 	public function callback_update_site_option( $option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
 
+	/**
+	 * Track site option creations.
+	 *
+	 * @param string $option Option key.
+	 * @param string $val    Value.
+	 */
 	public function callback_add_site_option( $option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
+	/**
+	 * Track site option deletions.
+	 *
+	 * @param string $option Option key.
+	 */
 	public function callback_delete_site_option( $option ) {
 		$this->check( $option, null, null );
 	}
 
+	/**
+	 * Logs (site) option action.
+	 *
+	 * @param string $option     Option key.
+	 * @param string $old_value  Old value.
+	 * @param string $new_value  New value.
+	 */
 	public function check( $option, $old_value, $new_value ) {
 		if ( ! array_key_exists( $option, $this->options ) ) {
 			return;
@@ -382,7 +436,7 @@ class Connector_BuddyPress extends Connector {
 			$page         = isset( $data['page'] ) ? $data['page'] : null;
 
 			$this->log(
-				// translators: Placeholder refers to setting name (e.g. "Group Creation")
+				/* translators: %s: setting name (e.g. "Group Creation") */
 				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value', 'page' ),
 				null,
@@ -392,6 +446,12 @@ class Connector_BuddyPress extends Connector {
 		}
 	}
 
+	/**
+	 * Log buddyPress' components' state.
+	 *
+	 * @param array $old_value  Old value.
+	 * @param array $new_value  New value.
+	 */
 	public function check_bp_active_components( $old_value, $new_value ) {
 		$options = array();
 
@@ -435,6 +495,12 @@ class Connector_BuddyPress extends Connector {
 		}
 	}
 
+	/**
+	 * Log buddyPress' page assignment.
+	 *
+	 * @param array $old_value  Old value.
+	 * @param array $new_value  New value.
+	 */
 	public function check_bp_pages( $old_value, $new_value ) {
 		$options = array();
 
@@ -463,7 +529,7 @@ class Connector_BuddyPress extends Connector {
 
 			$this->log(
 				sprintf(
-					// translators: Placeholders refer to a directory page, and a page title (e.g. "Register", "Registration" )
+					/* translators: %1$s: a directory page, %2$s: a page title (e.g. "Register", "Registration" ) */
 					__( '"%1$s" page set to "%2$s"', 'stream' ),
 					$pages[ $option ],
 					$page
@@ -482,8 +548,13 @@ class Connector_BuddyPress extends Connector {
 		}
 	}
 
+	/**
+	 * @action bp_before_activity_delete
+	 *
+	 * @param array $args  Target activity data.
+	 */
 	public function callback_bp_before_activity_delete( $args ) {
-		if ( empty( $args['id'] ) ) { // Bail if we're deleting in bulk
+		if ( empty( $args['id'] ) ) { // Bail if we're deleting in bulk.
 			$this->_delete_activity_args = $args;
 
 			return;
@@ -494,12 +565,17 @@ class Connector_BuddyPress extends Connector {
 		$this->_deleted_activity = $activity;
 	}
 
+	/**
+	 * @action bp_activity_deleted_activities
+	 *
+	 * @param array $activities_ids  Activity IDs.
+	 */
 	public function callback_bp_activity_deleted_activities( $activities_ids ) {
-		if ( 1 === count( $activities_ids ) && isset( $this->_deleted_activity ) ) { // Single activity deletion
+		if ( 1 === count( $activities_ids ) && isset( $this->_deleted_activity ) ) { // Single activity deletion.
 			$activity = $this->_deleted_activity;
 			$this->log(
 				sprintf(
-					// translators: Placeholder refers to an activity title (e.g. "Update")
+					/* translators: %s: an activity title (e.g. "Update") */
 					__( '"%s" activity deleted', 'stream' ),
 					strip_tags( $activity->action )
 				),
@@ -513,9 +589,12 @@ class Connector_BuddyPress extends Connector {
 				$activity->component,
 				'deleted'
 			);
-		} else { // Bulk deletion
-			// Sometimes some objects removal are followed by deleting relevant
-			// activities, so we probably don't need to track those
+		} else {
+			/**
+			 * Bulk deletion
+			 * Sometimes some objects removal are followed by deleting relevant
+			 * activities, so we probably don't need to track those
+			 */
 			if ( $this->ignore_activity_bulk_deletion ) {
 				$this->ignore_activity_bulk_deletion = false;
 
@@ -523,7 +602,7 @@ class Connector_BuddyPress extends Connector {
 			}
 			$this->log(
 				sprintf(
-					// translators: Placeholder refers to an activity title (e.g. "Update")
+					/* translators: %s: an activity title (e.g. "Update") */
 					__( '"%s" activities were deleted', 'stream' ),
 					count( $activities_ids )
 				),
@@ -539,12 +618,18 @@ class Connector_BuddyPress extends Connector {
 		}
 	}
 
+	/**
+	 * @action bp_activity_mark_as_spam
+	 *
+	 * @param array $activity  Activity.
+	 * @param mixed $by        Marker.
+	 */
 	public function callback_bp_activity_mark_as_spam( $activity, $by ) {
 		unset( $by );
 
 		$this->log(
 			sprintf(
-				// translators: Placeholder refers to an activity title (e.g. "Update")
+				/* translators: %s an activity title (e.g. "Update") */
 				__( 'Marked activity "%s" as spam', 'stream' ),
 				strip_tags( $activity->action )
 			),
@@ -560,12 +645,18 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
+	/**
+	 * @action bp_activity_mark_as_ham
+	 *
+	 * @param array $activity  Activity.
+	 * @param mixed $by        Marker.
+	 */
 	public function callback_bp_activity_mark_as_ham( $activity, $by ) {
 		unset( $by );
 
 		$this->log(
 			sprintf(
-				// translators: Placeholder refers to an activity title (e.g. "Update")
+				/* translators: %s: an activity title (e.g. "Update") */
 				__( 'Unmarked activity "%s" as spam', 'stream' ),
 				strip_tags( $activity->action )
 			),
@@ -581,12 +672,18 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
+	/**
+	 * @action bp_activity_admin_edit_after
+	 *
+	 * @param array $activity  Activity.
+	 * @param mixed $error     Any errors.
+	 */
 	public function callback_bp_activity_admin_edit_after( $activity, $error ) {
 		unset( $error );
 
 		$this->log(
 			sprintf(
-				// translators: Placeholder refers to an activity title (e.g. "Update")
+				/* translators: %s: an activity title (e.g. "Update") */
 				__( '"%s" activity updated', 'stream' ),
 				strip_tags( $activity->action )
 			),

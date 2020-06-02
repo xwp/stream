@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for bbPress
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_BbPress
+ */
 class Connector_BbPress extends Connector {
 	/**
 	 * Connector slug
@@ -120,8 +129,8 @@ class Connector_BbPress extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links      Previous links registered
-	 * @param  object $record    Stream record
+	 * @param  array  $links   Previous links registered.
+	 * @param  object $record  Stream record.
 	 *
 	 * @return array             Action links
 	 */
@@ -140,6 +149,9 @@ class Connector_BbPress extends Connector {
 		return $links;
 	}
 
+	/**
+	 * Register the connector
+	 */
 	public function register() {
 		parent::register();
 
@@ -149,7 +161,7 @@ class Connector_BbPress extends Connector {
 	/**
 	 * Override connector log for our own Settings / Actions
 	 *
-	 * @param array $data
+	 * @param array $data  Record data.
 	 *
 	 * @return array|bool
 	 */
@@ -184,12 +196,12 @@ class Connector_BbPress extends Connector {
 		} elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ), true ) ) {
 			if ( 'reply' === $data['context'] ) {
 				if ( 'updated' === $data['action'] ) {
-					// translators: Placeholder refers to a post title (e.g. "Hello World")
-					$data['message']            = esc_html__( 'Replied on "%1$s"', 'stream' );
+					/* translators: %s a post title (e.g. "Hello World") */
+					$data['message']            = esc_html__( 'Replied on "%s"', 'stream' );
 					$data['args']['post_title'] = get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title;
 				}
 				$data['args']['post_title'] = sprintf(
-					// translators: Placeholder refers to a post title (e.g. "Hello World")
+					/* translators: %s a post title (e.g. "Hello World") */
 					__( 'Reply to: %s', 'stream' ),
 					get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title
 				);
@@ -206,10 +218,10 @@ class Connector_BbPress extends Connector {
 	/**
 	 * Tracks togging the forum topics
 	 *
-	 * @param bool     $success
-	 * @param \WP_Post $post_data
-	 * @param string   $action
-	 * @param string   $message
+	 * @param bool     $success    If action success.
+	 * @param \WP_Post $post_data  Post data.
+	 * @param string   $action     Record action.
+	 * @param string   $message    Message status data.
 	 *
 	 * @return array|bool
 	 */
@@ -232,7 +244,7 @@ class Connector_BbPress extends Connector {
 		$topic = get_post( $message['topic_id'] );
 
 		$this->log(
-			// translators: Placeholders refer to an action, and a topic title (e.g. "Created", "Read this first")
+			/* translators: %1$s: an action, %2$s: a topic title (e.g. "Created", "Read this first") */
 			_x( '%1$s "%2$s" topic', '1: Action, 2: Topic title', 'stream' ),
 			array(
 				'action_title' => $actions[ $action ],
