@@ -347,7 +347,7 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
-	 * Track option changes.
+	 * Track buddyPress-specific option changes.
 	 *
 	 * @param string $option Option key.
 	 * @param string $old    Old value.
@@ -358,7 +358,7 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
-	 * Track option creations.
+	 * Track buddyPress-specific option creations.
 	 *
 	 * @param string $option Option key.
 	 * @param string $val    Value.
@@ -368,7 +368,7 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
-	 * Track option deletions.
+	 * Track buddyPress-specific option deletions.
 	 *
 	 * @param string $option Option key.
 	 */
@@ -377,7 +377,7 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
-	 * Track site option changes
+	 * Track buddyPress-specific site option changes
 	 *
 	 * @param string $option Option key.
 	 * @param string $old    Old value.
@@ -388,7 +388,7 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
-	 * Track site option creations.
+	 * Track buddyPress-specific site option creations.
 	 *
 	 * @param string $option Option key.
 	 * @param string $val    Value.
@@ -398,7 +398,7 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
-	 * Track site option deletions.
+	 * Track buddyPress-specific site option deletions.
 	 *
 	 * @param string $option Option key.
 	 */
@@ -407,7 +407,7 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
-	 * Logs (site) option action.
+	 * Logs buddyPress-specific (site) option action.
 	 *
 	 * @param string $option     Option key.
 	 * @param string $old_value  Old value.
