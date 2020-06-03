@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for Editor
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Editor
+ */
 class Connector_Editor extends Connector {
 	/**
 	 * Connector slug
@@ -85,8 +94,9 @@ class Connector_Editor extends Connector {
 	/**
 	 * Get the context based on wp_redirect location
 	 *
-	 * @param  string $location The URL of the redirect
-	 * @return string           Context slug
+	 * @param  string $location The URL of the redirect.
+	 *
+	 * @return string Context slug
 	 */
 	public function get_context( $location ) {
 		$context = null;
@@ -115,7 +125,7 @@ class Connector_Editor extends Connector {
 	 * @return string Translated string
 	 */
 	public function get_message() {
-		// translators: Placeholders refer to a file name, and a theme / plugin name (e.g. "index.php", "Stream")
+		/* translators: %1$s: a file name, %2$s: a theme / plugin name (e.g. "index.php", "Stream") */
 		return _x(
 			'"%1$s" in "%2$s" updated',
 			'1: File name, 2: Theme/plugin name',
@@ -128,8 +138,8 @@ class Connector_Editor extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links  Previous links registered
-	 * @param object $record Stream record
+	 * @param array  $links   Previous links registered.
+	 * @param object $record  Stream record.
 	 *
 	 * @return array Action links
 	 */
@@ -209,7 +219,7 @@ class Connector_Editor extends Connector {
 	/**
 	 * Retrieve theme data needed for the log message
 	 *
-	 * @param string $slug The theme slug (e.g. twentyfourteen)
+	 * @param string $slug  The theme slug (e.g. twentyfourteen).
 	 *
 	 * @return mixed $output Compacted variables
 	 */
@@ -251,8 +261,8 @@ class Connector_Editor extends Connector {
 	/**
 	 * Retrieve plugin data needed for the log message
 	 *
-	 * @param  string $slug   The plugin file base name (e.g. akismet/akismet.php)
-	 * @return mixed  $output Compacted variables
+	 * @param  string $slug    The plugin file base name (e.g. akismet/akismet.php).
+	 * @return mixed  $output  Compacted variables.
 	 */
 	public function get_plugin_data( $slug ) {
 		$base      = null;
@@ -286,11 +296,15 @@ class Connector_Editor extends Connector {
 	}
 
 	/**
+	 * Logs changes
+	 *
 	 * @filter wp_redirect
+	 *
+	 * @param string $location Location.
 	 */
 	public function log_changes( $location ) {
 		if ( ! empty( $this->edited_file ) ) {
-			// TODO: phpcs fix
+			// TODO: phpcs fix.
 			if ( md5_file( $this->edited_file['file_path'] ) !== $this->edited_file['file_md5'] ) {
 				$context = $this->get_context( $location );
 
