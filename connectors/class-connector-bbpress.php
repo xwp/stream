@@ -196,7 +196,7 @@ class Connector_BbPress extends Connector {
 		} elseif ( 'posts' === $data['connector'] && in_array( $data['context'], array( 'forum', 'topic', 'reply' ), true ) ) {
 			if ( 'reply' === $data['context'] ) {
 				if ( 'updated' === $data['action'] ) {
-					/* translators: %s a post title (e.g. "Hello World") */
+					/* translators: %s: a post title (e.g. "Hello World") */
 					$data['message']            = esc_html__( 'Replied on "%s"', 'stream' );
 					$data['args']['post_title'] = get_post( wp_get_post_parent_id( $data['object_id'] ) )->post_title;
 				}
