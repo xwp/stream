@@ -185,7 +185,7 @@ class Connector_Jetpack extends Connector {
 					);
 				}
 			} elseif ( \Jetpack::is_module_active( str_replace( 'jetpack-', '', $record->context ) ) ) {
-				$slug = str_replace( 'jetpack-', '', $record->context ); // handling jetpack-comment anomaly
+				$slug = str_replace( 'jetpack-', '', $record->context ); // handling jetpack-comment anomaly.
 
 				if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
 					$links[ esc_html__( 'Configure module', 'stream' ) ] = \Jetpack::module_configuration_url( $slug );
@@ -384,7 +384,8 @@ class Connector_Jetpack extends Connector {
 			$context      = 'blogs';
 			$action       = str_replace( 'subsite', '', $method );
 			$is_multisite = ( 0 === strpos( $method, 'subsite' ) );
-			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( wp_unslash( $_GET['site_id'] ) ) : null ) : get_current_blog_id(); // phpcs: input var okay, CSRF okay
+			// @codingStandardsIgnoreLine
+			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( wp_unslash( $_GET['site_id'] ) ) : null ) : get_current_blog_id();
 
 			if ( empty( $blog_id ) ) {
 				return;
