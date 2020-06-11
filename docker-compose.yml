@@ -3,7 +3,8 @@ version: '3'
 services:
 
   mysql:
-    image: mysql:5
+    image: mysql:8
+    command: '--default-authentication-plugin=mysql_native_password'
     volumes:
       - db_data:/var/lib/mysql
     restart: always
@@ -19,7 +20,7 @@ services:
       - mysql
       - db_phpunit
     ports:
-      - "80:80"
+      - "8080:80"
       - "443:443"
       - "9000:9000" # Xdebug
     volumes:
@@ -35,9 +36,14 @@ services:
       APACHE_RUN_USER: "#1000" # Ensure Apache can write to the filesystem.
       WP_TESTS_DIR: /var/www/html/wp-content/plugins/stream-src/vendor/wp-phpunit/wp-phpunit
       WP_PHPUNIT__TESTS_CONFIG: /var/www/html/wp-tests-config.php
+      WORDPRESS_DB_HOST: "mysql:3306"
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: password
 
   db_phpunit:
-    image: mysql:5.7
+    image: mysql:8
+    command: '--default-authentication-plugin=mysql_native_password'
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"

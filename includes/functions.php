@@ -53,12 +53,7 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 	$timezone = new DateTimeZone( $offset_string );
 	$date     = new DateTime( gmdate( 'Y-m-d H:i:s.' . $micro_seconds, $microtime ), $timezone );
 
-	return sprintf(
-		'%s%03d%s',
-		$date->format( 'Y-m-d\TH:i:s.' ),
-		floor( $date->format( 'u' ) / 1000 ),
-		$date->format( 'O' )
-	);
+	return $date->format( DateTime::ATOM );
 }
 
 /**
