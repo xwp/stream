@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for Media files
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Media
+ */
 class Connector_Media extends Connector {
 	/**
 	 * Connector slug
@@ -71,7 +80,7 @@ class Connector_Media extends Connector {
 	/**
 	 * Return the file type for an attachment which corresponds with a context label
 	 *
-	 * @param object $file_uri URI of the attachment
+	 * @param object $file_uri  URI of the attachment.
 	 *
 	 * @return string A file type which corresponds with a context label
 	 */
@@ -97,8 +106,8 @@ class Connector_Media extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links  Previous links registered
-	 * @param object $record Stream record
+	 * @param array  $links   Previous links registered.
+	 * @param object $record  Stream record.
 	 *
 	 * @return array Action links
 	 */
@@ -122,19 +131,19 @@ class Connector_Media extends Connector {
 	 *
 	 * @action add_attachment
 	 *
-	 * @param int $post_id
+	 * @param int $post_id  Post ID.
 	 */
 	public function callback_add_attachment( $post_id ) {
 		$post = get_post( $post_id );
 		if ( $post->post_parent ) {
-			// translators: Placeholders refer to an attachment title, and a post title (e.g. "PIC001", "Hello World")
+			/* translators: %1$s: an attachment title, %2$s: a post title (e.g. "PIC001", "Hello World") */
 			$message = _x(
 				'Attached "%1$s" to "%2$s"',
 				'1: Attachment title, 2: Parent post title',
 				'stream'
 			);
 		} else {
-			// translators: Placeholder refers to an attachment title (e.g. "PIC001")
+			/* translators: %s: an attachment title (e.g. "PIC001") */
 			$message = esc_html__( 'Added "%s" to Media library', 'stream' );
 		}
 
@@ -159,14 +168,14 @@ class Connector_Media extends Connector {
 	 *
 	 * @action edit_attachment
 	 *
-	 * @param int $post_id
+	 * @param int $post_id  Post ID.
 	 */
 	public function callback_edit_attachment( $post_id ) {
 		$post            = get_post( $post_id );
 		$name            = $post->post_title;
 		$attachment_type = $this->get_attachment_type( $post->guid );
 
-		// translators: Placeholder refers to an attachment title (e.g. "PIC001")
+		/* translators: %s: an attachment title (e.g. "PIC001") */
 		$message = esc_html__( 'Updated "%s"', 'stream' );
 
 		$this->log(
@@ -183,7 +192,7 @@ class Connector_Media extends Connector {
 	 *
 	 * @action delete_attachment
 	 *
-	 * @param int $post_id
+	 * @param int $post_id  Post ID.
 	 */
 	public function callback_delete_attachment( $post_id ) {
 		$post            = get_post( $post_id );
@@ -193,7 +202,7 @@ class Connector_Media extends Connector {
 		$url             = $post->guid;
 		$attachment_type = $this->get_attachment_type( $post->guid );
 
-		// translators: Placeholder refers to an attachment title (e.g. "PIC001")
+		/* translators: %s: an attachment title (e.g. "PIC001") */
 		$message = esc_html__( 'Deleted "%s"', 'stream' );
 
 		$this->log(
@@ -210,11 +219,11 @@ class Connector_Media extends Connector {
 	 *
 	 * @action delete_attachment
 	 *
-	 * @param string $dummy
-	 * @param string $filename
-	 * @param string $image
-	 * @param string $mime_type
-	 * @param int    $post_id
+	 * @param string $dummy      Unused.
+	 * @param string $filename   Filename.
+	 * @param string $image      Unused.
+	 * @param string $mime_type  Unused.
+	 * @param int    $post_id    Post ID.
 	 */
 	public function callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id ) {
 		unset( $dummy );
@@ -227,7 +236,7 @@ class Connector_Media extends Connector {
 		$attachment_type = $this->get_attachment_type( $post->guid );
 
 		$this->log(
-			// translators: Placeholder refers to an attachment title (e.g. "PIC001")
+			/* translators: Placeholder refers to an attachment title (e.g. "PIC001") */
 			__( 'Edited image "%s"', 'stream' ),
 			compact( 'name', 'filename', 'post_id' ),
 			$post_id,
@@ -236,6 +245,17 @@ class Connector_Media extends Connector {
 		);
 	}
 
+	/**
+	 * Logs updates made in the image editor upon saving
+	 *
+	 * @action delete_attachment
+	 *
+	 * @param string $dummy      Unused.
+	 * @param string $filename   Filename.
+	 * @param string $image      Unused.
+	 * @param string $mime_type  Unused.
+	 * @param int    $post_id    Post ID.
+	 */
 	public function callback_wp_save_image_file( $dummy, $filename, $image, $mime_type, $post_id ) {
 		return $this->callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id );
 	}

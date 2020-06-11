@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for Jetpack
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Jetpack
+ */
 class Connector_Jetpack extends Connector {
 	/**
 	 * Connector slug
@@ -133,8 +142,8 @@ class Connector_Jetpack extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links   Previous links registered
-	 * @param object $record Stream record
+	 * @param array  $links   Previous links registered.
+	 * @param object $record  Stream record.
 	 *
 	 * @return array Action links
 	 */
@@ -176,7 +185,7 @@ class Connector_Jetpack extends Connector {
 					);
 				}
 			} elseif ( \Jetpack::is_module_active( str_replace( 'jetpack-', '', $record->context ) ) ) {
-				$slug = str_replace( 'jetpack-', '', $record->context ); // handling jetpack-comment anomaly
+				$slug = str_replace( 'jetpack-', '', $record->context ); // handling jetpack-comment anomaly.
 
 				if ( apply_filters( 'jetpack_module_configurable_' . $slug, false ) ) {
 					$links[ esc_html__( 'Configure module', 'stream' ) ] = \Jetpack::module_configuration_url( $slug );
@@ -187,6 +196,9 @@ class Connector_Jetpack extends Connector {
 		return $links;
 	}
 
+	/**
+	 * Register all context hooks
+	 */
 	public function register() {
 		parent::register();
 
@@ -194,7 +206,7 @@ class Connector_Jetpack extends Connector {
 
 		$this->options = array(
 			'jetpack_options'                   => null,
-			// Sharing module
+			// Sharing module.
 			'hide_gplus'                        => null,
 			'gplus_authors'                     => null,
 			'sharing-options'                   => array(
@@ -206,22 +218,22 @@ class Connector_Jetpack extends Connector {
 				'label'   => esc_html__( 'Twitter site tag', 'stream' ),
 				'context' => 'sharedaddy',
 			),
-			// Stats module
+			// Stats module.
 			'stats_options'                     => array(
 				'label'   => esc_html__( 'WordPress.com Stats', 'stream' ),
 				'context' => 'stats',
 			),
-			// Comments
+			// Comments.
 			'jetpack_comment_form_color_scheme' => array(
 				'label'   => esc_html__( 'Color Scheme', 'stream' ),
 				'context' => 'jetpack-comments',
 			),
-			// Likes
+			// Likes.
 			'disabled_likes'                    => array(
 				'label'   => esc_html__( 'WP.com Site-wide Likes', 'stream' ),
 				'context' => 'likes',
 			),
-			// Mobile
+			// Mobile.
 			'wp_mobile_excerpt'                 => array(
 				'label'   => esc_html__( 'Excerpts appearance', 'stream' ),
 				'context' => 'minileven',
@@ -233,7 +245,7 @@ class Connector_Jetpack extends Connector {
 		);
 
 		$this->options_override = array(
-			// Carousel Module
+			// Carousel Module.
 			'carousel_background_color'        => array(
 				'label'   => esc_html__( 'Background color', 'stream' ),
 				'context' => 'carousel',
@@ -242,7 +254,7 @@ class Connector_Jetpack extends Connector {
 				'label'   => esc_html__( 'Metadata', 'stream' ),
 				'context' => 'carousel',
 			),
-			// Subscriptions
+			// Subscriptions.
 			'stb_enabled'                      => array(
 				'label'   => esc_html__( 'Follow blog comment form button', 'stream' ),
 				'context' => 'subscriptions',
@@ -251,22 +263,22 @@ class Connector_Jetpack extends Connector {
 				'label'   => esc_html__( 'Follow comments form button', 'stream' ),
 				'context' => 'subscriptions',
 			),
-			// Jetpack comments
+			// Jetpack comments.
 			'highlander_comment_form_prompt'   => array(
 				'label'   => esc_html__( 'Greeting Text', 'stream' ),
 				'context' => 'jetpack-comments',
 			),
-			// Infinite Scroll
+			// Infinite Scroll.
 			'infinite_scroll_google_analytics' => array(
 				'label'   => esc_html__( 'Infinite Scroll Google Analytics', 'stream' ),
 				'context' => 'infinite-scroll',
 			),
-			// Protect
+			// Protect.
 			'jetpack_protect_blocked_attempts' => array(
 				'label'   => esc_html__( 'Blocked Attempts', 'stream' ),
 				'context' => 'protect',
 			),
-			// SSO
+			// SSO.
 			'jetpack_sso_require_two_step'     => array(
 				'label'   => esc_html__( 'Require Two-Step Authentication', 'stream' ),
 				'context' => 'sso',
@@ -275,7 +287,7 @@ class Connector_Jetpack extends Connector {
 				'label'   => esc_html__( 'Match by Email', 'stream' ),
 				'context' => 'sso',
 			),
-			// Related posts
+			// Related posts.
 			'jetpack_relatedposts'             => array(
 				'show_headline'   => array(
 					'label'   => esc_html__( 'Show Related Posts Headline', 'stream' ),
@@ -286,7 +298,7 @@ class Connector_Jetpack extends Connector {
 					'context' => 'related-posts',
 				),
 			),
-			// Site verification
+			// Site verification.
 			'verification_services_codes'      => array(
 				'google'    => array(
 					'label'   => esc_html__( 'Google Webmaster Tools Token', 'stream' ),
@@ -301,7 +313,7 @@ class Connector_Jetpack extends Connector {
 					'context' => 'verification-tools',
 				),
 			),
-			// Tiled galleries
+			// Tiled galleries.
 			'tiled_galleries'                  => array(
 				'label'   => esc_html__( 'Tiled Galleries', 'stream' ),
 				'context' => 'tiled-gallery',
@@ -316,7 +328,7 @@ class Connector_Jetpack extends Connector {
 	 * - Registration/Disconnection of blogs
 	 * - Authorization/unlinking of users
 	 *
-	 * @param array $entry
+	 * @param array $entry  Entry data.
 	 */
 	public function callback_jetpack_log_entry( array $entry ) {
 		if ( isset( $entry['code'] ) ) {
@@ -343,7 +355,7 @@ class Connector_Jetpack extends Connector {
 			$action      = $method . 'd';
 			$meta        = compact( 'module_slug' );
 			$message     = sprintf(
-				// translators: Placeholders refer to a module name, and a status (e.g. "Photon", "activated")
+				/* translators: %1$s: a module name, %2$s a status (e.g. "Photon", "activated") */
 				__( '%1$s module %2$s', 'stream' ),
 				$module_name,
 				( 'activated' === $action ) ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' )
@@ -362,7 +374,7 @@ class Connector_Jetpack extends Connector {
 			$action     = $method;
 			$meta       = compact( 'user_id', 'user_email', 'user_login' );
 			$message    = sprintf(
-				// translators: Placeholders refer to a user display name, a status, and the connection either "from" or "to" (e.g. "Jane Doe", "unlinked", "from")
+				/* translators: %1$s: a user display name, %2$s: a status, %3$s: the connection either "from" or "to" (e.g. "Jane Doe", "unlinked", "from") */
 				__( '%1$s\'s account %2$s %3$s Jetpack', 'stream' ),
 				$user->display_name,
 				( 'unlink' === $action ) ? esc_html__( 'unlinked', 'stream' ) : esc_html__( 'linked', 'stream' ),
@@ -372,7 +384,8 @@ class Connector_Jetpack extends Connector {
 			$context      = 'blogs';
 			$action       = str_replace( 'subsite', '', $method );
 			$is_multisite = ( 0 === strpos( $method, 'subsite' ) );
-			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( wp_unslash( $_GET['site_id'] ) ) : null ) : get_current_blog_id(); // phpcs: input var okay, CSRF okay
+			// @codingStandardsIgnoreLine
+			$blog_id      = $is_multisite ? ( isset( $_GET['site_id'] ) ? intval( wp_unslash( $_GET['site_id'] ) ) : null ) : get_current_blog_id();
 
 			if ( empty( $blog_id ) ) {
 				return;
@@ -380,7 +393,7 @@ class Connector_Jetpack extends Connector {
 
 			if ( ! $is_multisite ) {
 				$message = sprintf(
-					// translators: Placeholder refers to a connection status. Either "connected to" or "disconnected from".
+					/* translators: %s: a connection status. Either "connected to" or "disconnected from". */
 					__( 'Site %s Jetpack', 'stream' ),
 					( 'register' === $action ) ? esc_html__( 'connected to', 'stream' ) : esc_html__( 'disconnected from', 'stream' )
 				);
@@ -394,7 +407,7 @@ class Connector_Jetpack extends Connector {
 				$meta        += compact( 'blog_id', 'blog_name' );
 
 				$message = sprintf(
-					// translators: Placeholder refers to a connection status. Either "connected to" or "disconnected from".
+					/* translators: %1$s: Blog name, %2$s: a connection status. Either "connected to" or "disconnected from". */
 					__( '"%1$s" blog %2$s Jetpack', 'stream' ),
 					$blog_name,
 					( 'register' === $action ) ? esc_html__( 'connected to', 'stream' ) : esc_html__( 'disconnected from', 'stream' )
@@ -418,7 +431,7 @@ class Connector_Jetpack extends Connector {
 	/**
 	 * Track visible/enabled sharing services ( buttons )
 	 *
-	 * @param string $state
+	 * @param string $state  Service state.
 	 */
 	public function callback_sharing_get_services_state( $state ) {
 		$this->log(
@@ -430,14 +443,32 @@ class Connector_Jetpack extends Connector {
 		);
 	}
 
+	/**
+	 * Track Jetpack-specific option changes.
+	 *
+	 * @param string $option Option key.
+	 * @param string $old    Old value.
+	 * @param string $new    New value.
+	 */
 	public function callback_update_option( $option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
 
+	/**
+	 * Track Jetpack-specific option creations.
+	 *
+	 * @param string $option Option key.
+	 * @param string $val    Value.
+	 */
 	public function callback_add_option( $option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
+	/**
+	 * Track Jetpack-specific option deletions.
+	 *
+	 * @param string $option Option key.
+	 */
 	public function callback_delete_option( $option ) {
 		$this->check( $option, null, null );
 	}
@@ -453,7 +484,7 @@ class Connector_Jetpack extends Connector {
 		}
 
 		$this->log(
-			// translators: Placeholder refers to a status (e.g. "activated")
+			/* translators: %s: a status (e.g. "activated") */
 			__( 'Monitor notifications %s', 'stream' ),
 			array(
 				'status'    => $active ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' ),
@@ -467,18 +498,39 @@ class Connector_Jetpack extends Connector {
 		);
 	}
 
+	/**
+	 * Logs when user enables "post_by_email"
+	 *
+	 * @action wp_ajax_jetpack_post_by_email_enable
+	 */
 	public function callback_wp_ajax_jetpack_post_by_email_enable() {
 		$this->track_post_by_email( true );
 	}
 
+	/**
+	 * Logs when user regenerates "post_by_email"
+	 *
+	 * @action wp_ajax_jetpack_post_by_email_regenerate
+	 */
 	public function callback_wp_ajax_jetpack_post_by_email_regenerate() {
 		$this->track_post_by_email( null );
 	}
 
+	/**
+	 * Logs when user disables "post_by_email"
+	 *
+	 * @action wp_ajax_jetpack_post_by_email_disable
+	 */
 	public function callback_wp_ajax_jetpack_post_by_email_disable() {
 		$this->track_post_by_email( false );
 	}
 
+	/**
+	 * Tracks changes a user post by email status
+	 *
+	 * @param string $status Status.
+	 * @return void
+	 */
 	public function track_post_by_email( $status ) {
 		if ( true === $status ) {
 			$action = esc_html__( 'enabled', 'stream' );
@@ -491,7 +543,7 @@ class Connector_Jetpack extends Connector {
 		$user = wp_get_current_user();
 
 		$this->log(
-			// translators: Placeholders refer to a user display name, and a status (e.g. "Jane Doe", "enabled")
+			/* translators: %1$s: a user display name, %2$s: a status (e.g. "Jane Doe", "enabled") */
 			__( '%1$s %2$s Post by Email', 'stream' ),
 			array(
 				'user_displayname' => $user->display_name,
@@ -504,6 +556,13 @@ class Connector_Jetpack extends Connector {
 		);
 	}
 
+	/**
+	 * Tracks Jetpack-specific option activity.
+	 *
+	 * @param string $option     Option key.
+	 * @param string $old_value  Old value.
+	 * @param string $new_value  New value.
+	 */
 	public function check( $option, $old_value, $new_value ) {
 		if ( ! array_key_exists( $option, $this->options ) ) {
 			return;
@@ -516,7 +575,7 @@ class Connector_Jetpack extends Connector {
 			$option_title = $data['label'];
 
 			$this->log(
-				// translators: Placeholder refers to a setting name (e.g. "Language")
+				/* translators: %s: a setting name (e.g. "Language") */
 				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
@@ -526,6 +585,12 @@ class Connector_Jetpack extends Connector {
 		}
 	}
 
+	/**
+	 * Track Jetpack-specific option activity.
+	 *
+	 * @param string $old_value  Old value.
+	 * @param string $new_value  New value.
+	 */
 	public function check_jetpack_options( $old_value, $new_value ) {
 		$options = array();
 
@@ -544,7 +609,7 @@ class Connector_Jetpack extends Connector {
 				continue;
 			}
 
-			if ( 0 === $option_value ) { // Skip updated array with updated members, we'll be logging those instead
+			if ( 0 === $option_value ) { // Skip updated array with updated members, we'll be logging those instead.
 				continue;
 			}
 
@@ -564,6 +629,13 @@ class Connector_Jetpack extends Connector {
 		}
 	}
 
+	/**
+	 * Logs Google+ profile display status
+	 *
+	 * @param string $old_value  Old status.
+	 * @param string $new_value  New status.
+	 * @return null|bool
+	 */
 	public function check_hide_gplus( $old_value, $new_value ) {
 		$status = ! is_null( $new_value );
 
@@ -572,7 +644,7 @@ class Connector_Jetpack extends Connector {
 		}
 
 		$this->log(
-			// translators: Placeholder refers to a status (e.g. "enabled")
+			/* translators: Placeholder refers to a status (e.g. "enabled") */
 			__( 'G+ profile display %s', 'stream' ),
 			array(
 				'action' => $status ? esc_html__( 'enabled', 'stream' ) : esc_html__( 'disabled', 'stream' ),
@@ -583,6 +655,13 @@ class Connector_Jetpack extends Connector {
 		);
 	}
 
+	/**
+	 * Logs if current user's Google+ account connection status
+	 *
+	 * @param string $old_value  Old status.
+	 * @param string $new_value  New status.
+	 * @return void
+	 */
 	public function check_gplus_authors( $old_value, $new_value ) {
 		unset( $old_value );
 
@@ -590,7 +669,7 @@ class Connector_Jetpack extends Connector {
 		$connected = is_array( $new_value ) && array_key_exists( $user->ID, $new_value );
 
 		$this->log(
-			// translators: Placeholders refer to a user display name, and a status (e.g. "Jane Doe", "connected")
+			/* translators: %1$s: a user display name, %2$s: a status (e.g. "Jane Doe", "connected") */
 			__( '%1$s\'s Google+ account %2$s', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
@@ -603,15 +682,22 @@ class Connector_Jetpack extends Connector {
 		);
 	}
 
+	/**
+	 * Logs sharedaddy resource status.
+	 *
+	 * @param string $old_value  Old status.
+	 * @param string $new_value  New status.
+	 * @return void
+	 */
 	public function check_sharedaddy_disable_resources( $old_value, $new_value ) {
 		if ( $old_value === $new_value ) {
 			return;
 		}
 
-		$status = ! $new_value ? 'enabled' : 'disabled'; // disabled = 1
+		$status = ! $new_value ? 'enabled' : 'disabled'; // disabled = 1.
 
 		$this->log(
-			// translators: Placeholder refers to a status (e.g. "enabled")
+			/* translators: %s: a status (e.g. "enabled") */
 			__( 'Sharing CSS/JS %s', 'stream' ),
 			compact( 'status', 'old_value', 'new_value' ),
 			null,
@@ -623,7 +709,7 @@ class Connector_Jetpack extends Connector {
 	/**
 	 * Override connector log for our own Settings / Actions
 	 *
-	 * @param array $data
+	 * @param array $data  Record data.
 	 *
 	 * @return array|bool
 	 */
@@ -632,7 +718,7 @@ class Connector_Jetpack extends Connector {
 			return $data;
 		}
 
-		// Handling our Settings
+		// Handling our Settings.
 		if ( 'settings' === $data['connector'] && isset( $this->options_override[ $data['args']['option'] ] ) ) {
 			if ( isset( $data['args']['option_key'] ) ) {
 				$overrides = $this->options_override[ $data['args']['option'] ][ $data['args']['option_key'] ];
@@ -663,15 +749,21 @@ class Connector_Jetpack extends Connector {
 		return $data;
 	}
 
+	/**
+	 * Returns an option's status
+	 *
+	 * @param string $key    Option key.
+	 * @param string $value  Option value.
+	 */
 	private function get_settings_def( $key, $value = null ) {
-		// Sharing
+		// Sharing.
 		if ( 0 === strpos( $key, 'publicize_connections::' ) ) {
 			global $publicize_ui;
 
 			$name = str_replace( 'publicize_connections::', '', $key );
 
 			return array(
-				// translators: Placeholders refer to a service, and a status (e.g. "Facebook", "added")
+				/* translators: %1$s: a service, %2$s: a status (e.g. "Facebook", "added") */
 				'message' => esc_html__( '%1$s connection %2$s', 'stream' ),
 				'meta'    => array(
 					'connection' => $publicize_ui->publicize->get_service_label( $name ),
@@ -696,7 +788,7 @@ class Connector_Jetpack extends Connector {
 			}
 
 			return array(
-				// translators: Placeholder refers to a setting name (e.g. "Language")
+				/* translators: %s: a setting name (e.g. "Language") */
 				'message' => esc_html__( '"%s" setting updated', 'stream' ),
 				'meta'    => array(
 					'option_name' => $options[ $name ],
