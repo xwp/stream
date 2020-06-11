@@ -3,7 +3,7 @@ namespace WP_Stream;
 
 class Install {
 	/**
-	 * Hold Plugin class
+	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
 	 */

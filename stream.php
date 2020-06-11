@@ -9,6 +9,8 @@
  * License: GPLv2+
  * Text Domain: stream
  * Domain Path: /languages
+ *
+ * @package WP_Stream
  */
 
 /**

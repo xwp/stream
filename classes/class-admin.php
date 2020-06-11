@@ -1,4 +1,9 @@
 <?php
+/**
+ * Centralized manager for WordPress backend functionality.
+ *
+ * @package WP_Stream
+ */
 
 namespace WP_Stream;
 
@@ -7,11 +12,13 @@ use DateTimeZone;
 use DateInterval;
 use \WP_CLI;
 use \WP_Roles;
-
+/**
+ * Class - Admin
+ */
 class Admin {
 
 	/**
-	 * Hold Plugin class
+	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -118,7 +125,7 @@ class Admin {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
+	 * @param Plugin $plugin Instance of plugin object.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
@@ -183,7 +190,11 @@ class Admin {
 			)
 		);
 
-		// Uninstall Streams and Deactivate plugin.
+		/**
+		 * Uninstall Streams and Deactivate plugin.
+		 *
+		 * @todo Confirm if variable assignment is necessary.
+		 */
 		$uninstall = $this->plugin->db->driver->purge_storage( $this->plugin );
 
 		// Auto purge setup.
@@ -742,7 +753,7 @@ class Admin {
 			return $links;
 		}
 
-		// Also don't show links in Network Admin if Stream isn't network enabled
+		// Also don't show links in Network Admin if Stream isn't network enabled.
 		if ( is_network_admin() && is_multisite() && ! $this->plugin->is_network_activated() ) {
 			return $links;
 		}

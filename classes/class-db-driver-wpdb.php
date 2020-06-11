@@ -1,6 +1,15 @@
 <?php
+/**
+ * Database Driver class for "stream" table responsible for holding records.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - DB_Driver_WPDB
+ */
 class DB_Driver_WPDB implements DB_Driver {
 	/**
 	 * Holds Query class
@@ -38,7 +47,7 @@ class DB_Driver_WPDB implements DB_Driver {
 		$wpdb->stream     = $this->table;
 		$wpdb->streammeta = $this->table_meta;
 
-		// Hack for get_metadata
+		// Hack for get_metadata.
 		$wpdb->recordmeta = $this->table_meta;
 	}
 
@@ -66,7 +75,7 @@ class DB_Driver_WPDB implements DB_Driver {
 
 		$record_id = $wpdb->insert_id;
 
-		// Insert record meta
+		// Insert record meta.
 		foreach ( (array) $meta as $key => $vals ) {
 			foreach ( (array) $vals as $val ) {
 				$this->insert_meta( $record_id, $key, $val );
@@ -79,9 +88,9 @@ class DB_Driver_WPDB implements DB_Driver {
 	/**
 	 * Insert record meta
 	 *
-	 * @param int    $record_id
-	 * @param string $key
-	 * @param string $val
+	 * @param int    $record_id Record ID.
+	 * @param string $key       Meta Key.
+	 * @param string $val       Meta Data.
 	 *
 	 * @return array
 	 */
@@ -103,7 +112,7 @@ class DB_Driver_WPDB implements DB_Driver {
 	/**
 	 * Retrieve records
 	 *
-	 * @param array $args
+	 * @param array $args Query arguments.
 	 *
 	 * @return array
 	 */
@@ -118,7 +127,7 @@ class DB_Driver_WPDB implements DB_Driver {
 	 * GROUP BY allows query to find just the first occurrence of each value in the column,
 	 * increasing the efficiency of the query.
 	 *
-	 * @param string $column
+	 * @param string $column Column being filtered.
 	 *
 	 * @return array
 	 */

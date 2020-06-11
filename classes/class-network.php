@@ -3,7 +3,7 @@ namespace WP_Stream;
 
 class Network {
 	/**
-	 * Hold Plugin class
+	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
 	 */
