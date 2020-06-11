@@ -1,11 +1,21 @@
 <?php
+/**
+ * Interface for a Database Driver.
+ *
+ * @todo Review. Heavy refactor maybe needed.
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Interface - DB_Driver
+ */
 interface DB_Driver {
 	/**
 	 * Insert a record
 	 *
-	 * @param array $data
+	 * @param array $data Data to be insert into the database.
 	 *
 	 * @return int
 	 */
@@ -14,7 +24,7 @@ interface DB_Driver {
 	/**
 	 * Retrieve records
 	 *
-	 * @param array $args
+	 * @param array $args Argument to filter the result by.
 	 *
 	 * @return array
 	 */
@@ -24,14 +34,14 @@ interface DB_Driver {
 	 * Returns array of existing values for requested column.
 	 * Used to fill search filters with only used items, instead of all items.
 	 *
-	 * @param string $column
+	 * @param string $column Column to pull data from.
 	 *
 	 * @return array
 	 */
 	public function get_column_values( $column );
 
 	/**
-	 * Public getter to return table names
+	 * Public getter to return the names of the tables this driver manages.
 	 *
 	 * @return array
 	 */
