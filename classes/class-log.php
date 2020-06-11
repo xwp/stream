@@ -1,7 +1,15 @@
 <?php
+/**
+ * Handles top-level record keeping functionality.
+ *
+ * @package WP_Stream
+ */
 
 namespace WP_Stream;
 
+/**
+ * Class - Log
+ */
 class Log {
 
 	/**
