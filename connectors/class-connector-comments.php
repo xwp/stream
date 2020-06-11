@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for Comments
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Comments
+ */
 class Connector_Comments extends Connector {
 	/**
 	 * Connector slug
@@ -97,7 +106,7 @@ class Connector_Comments extends Connector {
 	/**
 	 * Return the comment type label for a given comment ID
 	 *
-	 * @param int $comment_id  ID of the comment
+	 * @param int $comment_id  ID of the comment.
 	 *
 	 * @return string The comment type label
 	 */
@@ -120,8 +129,8 @@ class Connector_Comments extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links   Previous links registered
-	 * @param object $record Stream record
+	 * @param array  $links   Previous links registered.
+	 * @param object $record  Stream record.
 	 *
 	 * @return array Action links
 	 */
@@ -163,8 +172,8 @@ class Connector_Comments extends Connector {
 	 * name and e-mail or that users be logged in to comment. In either case it
 	 * will try to see if the e-mail provided does belong to a registered user.
 	 *
-	 * @param object|int $comment A comment object or comment ID
-	 * @param string     $field       What field you want to return
+	 * @param object|int $comment  A comment object or comment ID.
+	 * @param string     $field    What field you want to return.
 	 *
 	 * @return int|string $output User ID or user display name
 	 */
@@ -205,8 +214,8 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action comment_flood_trigger
 	 *
-	 * @param string $time_lastcomment
-	 * @param string $time_newcomment
+	 * @param string $time_lastcomment  Time of last comment before block.
+	 * @param string $time_newcomment   Time of first comment after block.
 	 */
 	public function callback_comment_flood_trigger( $time_lastcomment, $time_newcomment ) {
 		$options        = wp_stream_get_instance()->settings->options;
@@ -227,7 +236,7 @@ class Connector_Comments extends Connector {
 		}
 
 		$this->log(
-			// translators: Placeholder refers to a username (e.g. "administrator")
+			/* translators: %s: a username (e.g. "administrator") */
 			__( 'Comment flooding by %s detected and prevented', 'stream' ),
 			compact( 'user_name', 'user_id', 'time_lastcomment', 'time_newcomment' ),
 			null,
@@ -241,8 +250,8 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action wp_insert_comment
 	 *
-	 * @param int    $comment_id
-	 * @param object $comment
+	 * @param int        $comment_id  Comment ID.
+	 * @param WP_Comment $comment     Comment object.
 	 */
 	public function callback_wp_insert_comment( $comment_id, $comment ) {
 		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types(), true ) ) {
@@ -258,7 +267,7 @@ class Connector_Comments extends Connector {
 		$comment_status = ( 1 === $comment->comment_approved ) ? esc_html__( 'approved automatically', 'stream' ) : esc_html__( 'pending approval', 'stream' );
 		$is_spam        = false;
 
-		// Auto-marked spam comments
+		// Auto-marked spam comments.
 		$options     = wp_stream_get_instance()->settings->options;
 		$ak_tracking = isset( $options['advanced_akismet_tracking'] ) ? $options['advanced_akismet_tracking'] : false;
 
@@ -276,7 +285,7 @@ class Connector_Comments extends Connector {
 			$parent_user_name = get_comment_author( $comment->comment_parent );
 
 			$this->log(
-				// translators: Placeholders refer to a parent comment's author, a comment author, a post title, a comment status, and a comment type
+				/* translators: %1$s: a parent comment's author, %2$s: a comment author, %3$s: a post title, %4$s: a comment status, %5$s: a comment type */
 				_x(
 					'Reply to %1$s\'s %5$s by %2$s on %3$s %4$s',
 					"1: Parent comment's author, 2: Comment author, 3: Post title, 4: Comment status, 5: Comment type",
@@ -290,7 +299,7 @@ class Connector_Comments extends Connector {
 			);
 		} else {
 			$this->log(
-				// translators: Placeholders refer to a comment author, a post title, a comment status, and a comment type
+				/* translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment status, %4$s: and a comment type */
 				_x(
 					'New %4$s by %1$s on %2$s %3$s',
 					'1: Comment author, 2: Post title 3: Comment status, 4: Comment type',
@@ -310,7 +319,7 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action edit_comment
 	 *
-	 * @param int $comment_id
+	 * @param int $comment_id  Comment ID.
 	 */
 	public function callback_edit_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
@@ -328,7 +337,7 @@ class Connector_Comments extends Connector {
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
-			// translators: Placeholders refer to a comment author, a post title, and a comment type
+			/* translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type */
 			_x(
 				'%1$s\'s %3$s on %2$s edited',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -346,7 +355,7 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action before_delete_post
 	 *
-	 * @param int $post_id
+	 * @param int $post_id  Post ID.
 	 */
 	public function callback_before_delete_post( $post_id ) {
 		if ( wp_is_post_revision( $post_id ) ) {
@@ -361,7 +370,7 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action deleted_post
 	 *
-	 * @param int $post_id
+	 * @param int $post_id  Post ID.
 	 */
 	public function callback_deleted_post( $post_id ) {
 		if ( wp_is_post_revision( $post_id ) ) {
@@ -376,7 +385,7 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action delete_comment
 	 *
-	 * @param int $comment_id
+	 * @param int $comment_id  Comment ID.
 	 */
 	public function callback_delete_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
@@ -398,7 +407,7 @@ class Connector_Comments extends Connector {
 		}
 
 		$this->log(
-			// translators: Placeholders refer to a comment author, a post title, and a comment type
+			/* translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type */
 			_x(
 				'%1$s\'s %3$s on %2$s deleted permanently',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -416,7 +425,7 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action trash_comment
 	 *
-	 * @param int $comment_id
+	 * @param int $comment_id  Comment ID.
 	 */
 	public function callback_trash_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
@@ -434,7 +443,7 @@ class Connector_Comments extends Connector {
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
-			// translators: Placeholders refer to a comment author, a post title, and a comment type
+			/* translators: %1$s: a comment author, %2$s a post title, %3$s a comment type */
 			_x(
 				'%1$s\'s %3$s on %2$s trashed',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -452,7 +461,7 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action untrash_comment
 	 *
-	 * @param int $comment_id
+	 * @param int $comment_id  Comment ID.
 	 */
 	public function callback_untrash_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
@@ -470,7 +479,7 @@ class Connector_Comments extends Connector {
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
-			// translators: Placeholders refer to a comment author, a post title, and a comment type
+			/* translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type */
 			_x(
 				'%1$s\'s %3$s on %2$s restored',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -488,7 +497,7 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action spam_comment
 	 *
-	 * @param int $comment_id
+	 * @param int $comment_id  Comment ID.
 	 */
 	public function callback_spam_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
@@ -506,7 +515,7 @@ class Connector_Comments extends Connector {
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
-			// translators: Placeholders refer to a comment author, a post title, and a comment type
+			/* translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type */
 			_x(
 				'%1$s\'s %3$s on %2$s marked as spam',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -524,7 +533,7 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action unspam_comment
 	 *
-	 * @param int $comment_id
+	 * @param int $comment_id  Comment ID.
 	 */
 	public function callback_unspam_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
@@ -542,7 +551,7 @@ class Connector_Comments extends Connector {
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
-			// translators: Placeholders refer to a comment author, a post title, and a comment type
+			/* translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type */
 			_x(
 				'%1$s\'s %3$s on %2$s unmarked as spam',
 				'1: Comment author, 2: Post title, 3: Comment type',
@@ -560,9 +569,9 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action transition_comment_status
 	 *
-	 * @param string $new_status
-	 * @param string $old_status
-	 * @param object $comment
+	 * @param string     $new_status  New comment status.
+	 * @param string     $old_status  Old comment status.
+	 * @param WP_Comment $comment     Comment object.
 	 */
 	public function callback_transition_comment_status( $new_status, $old_status, $comment ) {
 		if ( in_array( $comment->comment_type, $this->get_ignored_comment_types(), true ) ) {
@@ -582,7 +591,7 @@ class Connector_Comments extends Connector {
 		$comment_type = get_comment_type( $comment->comment_ID );
 
 		$this->log(
-			// translators: Placeholders refer to a comment author, a post title, and a comment type
+			/* translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type */
 			_x(
 				'%1$s\'s %3$s %2$s',
 				'Comment status transition. 1: Comment author, 2: Post title, 3: Comment type',
@@ -600,7 +609,7 @@ class Connector_Comments extends Connector {
 	 *
 	 * @action comment_duplicate_trigger
 	 *
-	 * @param array $comment_data
+	 * @param array $comment_data  Comment data.
 	 */
 	public function callback_comment_duplicate_trigger( $comment_data ) {
 		global $wpdb;
@@ -622,7 +631,7 @@ class Connector_Comments extends Connector {
 		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
-			// translators: Placeholders refer to a comment author, a post title, and a comment type
+			/* translators: %1$s: a comment author, %2$s: a post title, %3$s: a comment type */
 			_x(
 				'Duplicate %3$s by %1$s prevented on %2$s',
 				'1: Comment author, 2: Post title, 3: Comment type',

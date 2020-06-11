@@ -1,7 +1,15 @@
 <?php
+/**
+ * Generates a filterable list of provided records to be displayed HTML Table.
+ *
+ * @package WP_Stream
+ */
 
 namespace WP_Stream;
 
+/**
+ * Class - List_Table
+ */
 class List_Table extends \WP_List_Table {
 
 	/**
@@ -15,7 +23,7 @@ class List_Table extends \WP_List_Table {
 	 * Class constructor.
 	 *
 	 * @param Plugin $plugin Instance of plugin object.
-	 * @param array  $args
+	 * @param array  $args   Argument to filter rows by.
 	 */
 	public function __construct( $plugin, $args = array() ) {
 		$this->plugin = $plugin;
@@ -46,7 +54,7 @@ class List_Table extends \WP_List_Table {
 			)
 		);
 
-		// Check for default hidden columns
+		// Check for default hidden columns.
 		$this->get_hidden_columns();
 
 		add_filter(

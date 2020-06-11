@@ -1,6 +1,15 @@
 <?php
+/**
+ * CSV Exporter
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Exporter_CSV
+ */
 class Exporter_CSV extends Exporter {
 	/**
 	 * Exporter name

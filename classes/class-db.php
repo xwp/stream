@@ -1,9 +1,18 @@
 <?php
+/**
+ * Manage DB connections using a provided DB driver.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - DB
+ */
 class DB {
 	/**
-	 * Hold the Driver class
+	 * Holds the driver instance
 	 *
 	 * @var DB_Driver
 	 */
@@ -28,7 +37,7 @@ class DB {
 	/**
 	 * Insert a record
 	 *
-	 * @param array $record
+	 * @param array $record  New record.
 	 *
 	 * @return int
 	 */
@@ -102,7 +111,7 @@ class DB {
 	 * @return array
 	 */
 	public function existing_records( $column ) {
-		// Sanitize column
+		// Sanitize column.
 		$allowed_columns = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );
 		if ( ! in_array( $column, $allowed_columns, true ) ) {
 			return array();
@@ -131,37 +140,37 @@ class DB {
 	/**
 	 * Get stream records
 	 *
-	 * @param array Query args
+	 * @param array $args  Arguments to filter result by.
 	 *
 	 * @return array Stream Records
 	 */
 	public function get_records( $args ) {
 		$defaults = array(
-			// Search param
+			// Search param.
 			'search'           => null,
 			'search_field'     => 'summary',
 			'record_after'     => null, // Deprecated, use date_after instead
-			// Date-based filters
+			// Date-based filters.
 			'date'             => null, // Ex: 2015-07-01
 			'date_from'        => null, // Ex: 2015-07-01
 			'date_to'          => null, // Ex: 2015-07-01
 			'date_after'       => null, // Ex: 2015-07-01T15:19:21+00:00
 			'date_before'      => null, // Ex: 2015-07-01T15:19:21+00:00
-			// Record ID filters
+			// Record ID filters.
 			'record'           => null,
 			'record__in'       => array(),
 			'record__not_in'   => array(),
-			// Pagination params
+			// Pagination params.
 			'records_per_page' => get_option( 'posts_per_page', 20 ),
 			'paged'            => 1,
-			// Order
+			// Order.
 			'order'            => 'desc',
 			'orderby'          => 'date',
-			// Fields selection
+			// Fields selection.
 			'fields'           => array(),
 		);
 
-		// Additional property fields
+		// Additional property fields.
 		$properties = array(
 			'user_id'   => null,
 			'user_role' => null,
@@ -209,7 +218,7 @@ class DB {
 	/**
 	 * Helper function, backwards compatibility
 	 *
-	 * @param array $args Query args
+	 * @param array $args  Argument to filter result by.
 	 *
 	 * @return array Stream Records
 	 */
@@ -220,7 +229,7 @@ class DB {
 	/**
 	 * Return the number of records found in last request
 	 *
-	 * return int
+	 * @return int
 	 */
 	public function get_found_records_count() {
 		return $this->found_records_count;
