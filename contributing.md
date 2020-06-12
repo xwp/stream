@@ -29,6 +29,14 @@ For setups with local Docker environment you don't need Vagrant and VirtualBox.
 4. Visit [stream.local](https://stream.local) and login using `admin` / `password`.
 5. Activate the Stream plugin.
 
+#### Composer Timeout
+
+On the first setup of a fresh install, you may experience Composer 300s timeout when cloning WordPress Develop from source in order to cache. WordPress Develop repo is large and will consistently timeout when it is not cached, so it is recommended to temporarily remove the timeout for the first time installing:
+
+	export COMPOSER_PROCESS_TIMEOUT=0; npm install
+
+Remember to reset the timeout back when finished: `export COMPOSER_PROCESS_TIMEOUT=300`.
+
 ### PHP Xdebug
 
 The WordPress container includes the [Xdebug PHP extension](https://xdebug.org). It is configured to [autostart](https://xdebug.org/docs/remote#remote_autostart) and to [automatically detect the IP address of the connecting client](https://xdebug.org/docs/remote#remote_connect_back) running in your code editor. See [`.vscode/launch.json`](.vscode/launch.json) for the directory mapping from the WordPress container to the project directory in your code editor.
