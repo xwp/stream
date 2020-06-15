@@ -69,12 +69,32 @@ class Connector_Woocommerce extends Connector {
 		'shop_coupon',
 	);
 
+	/**
+	 * Is the most recently update order logged yet.
+	 *
+	 * @var boolean
+	 */
 	private $order_update_logged = false;
 
+	/**
+	 * Caches WooCommerce settings page objects.
+	 *
+	 * @var array
+	 */
 	private $settings_pages = array();
 
+	/**
+	 * Caches WooCommerce settings.
+	 *
+	 * @var array
+	 */
 	private $settings = array();
 
+	/**
+	 * Stores the WooCommerce version number.
+	 *
+	 * @var string|null
+	 */
 	private $plugin_version = null;
 
 	/**

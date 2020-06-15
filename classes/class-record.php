@@ -20,66 +20,92 @@ class Record {
 
 	/**
 	 * Date record created
+	 *
+	 * @var string
 	 */
 	public $created;
 
 	/**
 	 * Site ID of the site where the record was created
+	 *
+	 * @var int
 	 */
 	public $site_id;
 
 	/**
 	 * Blog ID of the site where the record was created
+	 *
+	 * @var int
 	 */
 	public $blog_id;
 
 	/**
 	 * Record Object ID
+	 *
+	 * @var int
 	 */
 	public $object_id;
 
 	/**
 	 * User ID of the record creator
+	 *
+	 * @var int
 	 */
 	public $user_id;
 
 	/**
 	 * User role of the record creator
+	 *
+	 * @var string
 	 */
 	public $user_role;
 
 	/**
 	 * Record user meta data.
+	 *
+	 * @var string
 	 */
 	public $user_meta;
 
 	/**
 	 * Record summary
+	 *
+	 * @var string
 	 */
 	public $summary;
 
 	/**
 	 * Record connector
+	 *
+	 * @var string
 	 */
 	public $connector;
 
 	/**
 	 * Context record was made in.
+	 *
+	 * @var string
 	 */
 	public $context;
 
 	/**
 	 * Record action
+	 *
+	 * @var string
 	 */
 	public $action;
 
 	/**
 	 * IP of event requestee
+	 *
+	 * @var string
 	 */
 	public $ip;
 
 	/**
 	 * Record meta data
+	 *
+	 * @var array
 	 */
 	public $meta;
 

@@ -1141,8 +1141,8 @@ class Settings {
 	 *
 	 * @action update_option_wp_stream
 	 *
-	 * @param array $old_value
-	 * @param array $new_value
+	 * @param array $old_value  Old value.
+	 * @param array $new_value  New value.
 	 */
 	public function updated_option_ttl_remove_records( $old_value, $new_value ) {
 		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : - 1;
@@ -1160,6 +1160,8 @@ class Settings {
 	 * Get translations of serialized Stream settings
 	 *
 	 * @filter wp_stream_serialized_labels
+	 *
+	 * @param array $labels  Setting labels.
 	 *
 	 * @return array Multidimensional array of fields
 	 */

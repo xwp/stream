@@ -154,7 +154,7 @@ class Log {
 		$result = $this->plugin->db->insert( $recordarr );
 
 		// This is helpful in development environments:
-		// error_log( $this->debug_backtrace( $recordarr ) );
+		// error_log( $this->debug_backtrace( $recordarr ) );.
 
 		return $result;
 	}
