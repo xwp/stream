@@ -344,13 +344,27 @@ class Connector_Settings extends Connector {
 			return true;
 		}
 
-		$ignored = array(
+		$default_ignored = array(
 			'image_default_link_type',
 			'medium_large_size_w',
 			'medium_large_size_h',
 		);
 
-		return in_array( $option_name, $ignored, true );
+		/**
+		 * Filters the boolean output for is_option_ignored().
+		 *
+		 * @param boolean $is_ignored True if ignored, otherwise false.
+		 * @param string  $option_name Current option name.
+		 * @param array   $default_ignored Default options for Stream to ignore.
+		 *
+		 * @return boolean
+		 */
+		return apply_filters(
+			'wp_stream_is_option_ignored',
+			in_array( $option_name, $default_ignored, true ),
+			$option_name,
+			$default_ignored
+		);
 	}
 
 	/**
