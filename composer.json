@@ -29,6 +29,9 @@
     }
   },
   "scripts": {
+    "pre-install-cmd": [
+      "Composer\\Config::disableProcessTimeout"
+    ],
     "release": [
       "composer install --no-dev --prefer-dist --optimize-autoloader"
     ],
