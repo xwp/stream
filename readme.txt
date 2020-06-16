@@ -7,18 +7,20 @@ Stable tag: 3.4.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Planes have a black box, WordPress has Stream. When something goes wrong, you need to know how it happened.
-
+With Stream, you’re never left in the dark about changes to your WordPress site.
 
 == Description ==
 
-With Stream, you're never left in the dark about WordPress Admin activity.
+With real-time notifications and third-party integrations, Stream can proactively alert you when something goes wrong with your WordPress site. 
 
-Every logged-in user action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action or IP address.
+Designed for debugging and compliance purposes, Stream is useful for keeping tabs on your WordPress users: From activating plugins to deleting posts, to login attempts and new user creation, you can see what’s changed, who changed it and when. 
 
-For advanced users, Stream also supports a Multisite view of all activity records on your network, the ability to set exclude rules to ignore certain kinds of user activity, and a WP‑CLI command for querying records.
+The plugin records WordPress user and system action to the Stream logs.  Every logged-in user action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action or IP address. Admins can highlight entries in the Stream log—such as suspicious user activity—to investigate what’s happening in real time. Stream also allows you to configure email alerts and webhooks for integrations like Slack and IFTTT to notify you and your team when something has gone wrong.
 
-Stream is perfect for keeping tabs on your clients. When something breaks, Stream is there to help. See what changed and who changed it.
+For advanced users, Stream also supports a network view of all activity records on your Multisite, the ability to set exclude rules to ignore certain kinds of user activity, and a WP‑CLI command for querying records. 
+
+With Stream’s powerful logging, you’ll have the valuable information you need to responsibly manage your WordPress sites.
+
 
 = Built-In Tracking Integrations For Popular Plugins: =
 
@@ -30,7 +32,7 @@ Stream is perfect for keeping tabs on your clients. When something breaks, Strea
  * Jetpack
  * User Switching
  * WooCommerce
- * WordPress SEO by Yoast
+ * Yoast SEO
 
 = Built-In Tracking For Core Actions: =
 
