@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "78bfb7a5abf117f3bf0153eb1b58dff6",
+    "content-hash": "74043f691d06bd00f61066eec761aa80",
     "packages": [
         {
             "name": "composer/installers",
@@ -5614,9 +5614,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "automattic/vipwpcs": 0
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

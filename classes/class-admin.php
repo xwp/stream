@@ -479,13 +479,17 @@ class Admin {
 				)
 			);
 
+			$order_types = array( 'asc', 'desc' );
+
 			wp_localize_script(
 				'wp-stream-live-updates',
 				'wp_stream_live_updates',
 				array(
 					'current_screen'      => $hook,
-					'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_page'        => isset( $_GET['paged'] ) ? absint( wp_unslash( $_GET['paged'] ) ) : '1', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_order'       => isset( $_GET['order'] ) && in_array( strtolower( $_GET['order'] ), $order_types, true ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						? esc_js( $_GET['order'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						: 'desc',
 					'current_query'       => wp_stream_json_encode( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					'current_query_count' => count( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				)
