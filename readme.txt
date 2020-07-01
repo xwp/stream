@@ -1,5 +1,5 @@
 === Stream ===
-Contributors: xwp, kasparsd, derekherman, postphotos
+Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
 Tested up to: 5.4
@@ -78,6 +78,8 @@ There are several ways you can get involved to help make Stream better:
 4. **Issue Pull Requests:** If you're a developer, the easiest way to get involved is to help out on [issues already reported](https://github.com/x-team/wp-stream/issues) in GitHub. Be sure to check out the [contributing guide](https://github.com/x-team/wp-stream/blob/master/contributing.md) for developers.
 
 Thank you for wanting to make Stream better for everyone!
+
+Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschweitzer, lukecarbis, kasparsd, bordoni, dero, faishal, rob, desaiuditd, DavidCramer, renovate-bot, marcin-lawrowski, JeffMatson, Powdered-Toast-Man, johnolek, johnbillion, greguly, pascal-klaeres, szepeviktor, rheinardkorf, frozzare, khromov, dkotter, bhubbard, stipsan, stephenharris, omniwired, kopepasah, joehoyle, eugenekireev, barryceelen, valendesigns, tlovett1, tareiking, stayallive, sayedtaqui, robbiet480, oscarssanchez, kidunot89, johnwatkins0, javorszky, jamesgol, desrosj, davelozier, davefx, cfoellmann, JustinSainton, JJJ, postphotos
 
 
 == Screenshots ==
