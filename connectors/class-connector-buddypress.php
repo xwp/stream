@@ -427,6 +427,8 @@ class Connector_BuddyPress extends Connector {
 		$replacement = str_replace( '-', '_', $option );
 
 		if ( method_exists( $this, 'check_' . $replacement ) ) {
+			$method = "check_{$replacement}";
+			$this->{$method}( $old_value, $new_value );
 			call_user_func(
 				array(
 					$this,
