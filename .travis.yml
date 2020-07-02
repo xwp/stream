@@ -29,24 +29,25 @@ services:
   - mysql
 
 before_install:
+  - docker load -i /tmp/docker_images/images.tar || true
   - nvm install
   - nvm use
 
 install:
   - npm install
-  - export DEV_LIB_PATH="vendor/xwp/wp-dev-lib/scripts"
-  - export DEV_LIB_ONLY="phpunit"
-  - source "$DEV_LIB_PATH/travis.install.sh"
 
 script:
   - npm run lint
-  - source "$DEV_LIB_PATH/travis.script.sh"
+  - npm run phpunit
 
 after_script:
   - test -f ./tests/reports/clover.xml && composer test-report || true
 
 before_deploy:
   - npm run release
+
+before_cache:
+  - docker save -o /tmp/docker_images/images.tar $(docker images -a -q)
 
 deploy:
   provider: releases
@@ -69,3 +70,4 @@ cache:
   npm: true
   directories:
     - $HOME/.composer/cache
+    - /tmp/docker_images

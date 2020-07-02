@@ -13,3 +13,5 @@ RUN apt-get update; \
 # Setup xdebug.
 RUN	pecl install xdebug; \
 	docker-php-ext-enable xdebug;
+
+COPY wait.sh /usr/local/bin/xwp_wait
