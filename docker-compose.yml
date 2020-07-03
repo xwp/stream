@@ -23,18 +23,18 @@ services:
       - "443:443"
       - "9000:9000" # Xdebug
     volumes:
-      - ./local/public:/var/www/html # Use host-mount to ensure correct permissions for all.
-      - .:/var/www/html/wp-content/plugins/stream-src
-      - ./build:/var/www/html/wp-content/plugins/stream
-      - ./vendor/wordpress/wordpress/tests/phpunit:/var/www/html/tests/wordpress-phpunit
-      - ./local/config/wp-tests-config.php:/var/www/html/tests/wordpress-phpunit/wp-tests-config.php
+      - .:/var/www/html/wp-content/plugins/stream-src # Working directory.
+      - ./build:/var/www/html/wp-content/plugins/stream # Built version for testing.
+      - ./local/public:/var/www/html # WP core files.
+      - ./local/config/wp-cli.yml:/var/www/html/wp-cli.yml
+      - ./local/config/wp-config.php:/var/www/html/wp-config.php
+      - ./local/config/wp-tests-config.php:/var/www/html/wp-tests-config.php
     restart: always
     environment:
+      COMPOSER_HOME: /tmp/.composer
       APACHE_RUN_USER: "#1000" # Ensure Apache can write to the filesystem.
-      WP_TESTS_DIR: /var/www/html/tests/wordpress-phpunit
-      WORDPRESS_DEBUG: 1
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: password
+      WP_TESTS_DIR: /var/www/html/wp-content/plugins/stream-src/vendor/wp-phpunit/wp-phpunit
+      WP_PHPUNIT__TESTS_CONFIG: /var/www/html/wp-tests-config.php
 
   db_phpunit:
     image: mysql:5.7

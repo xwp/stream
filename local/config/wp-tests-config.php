@@ -5,8 +5,6 @@
  * phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
  */
 
-define( 'ABSPATH', dirname( dirname( __DIR__ ) ) . '/' );
-
 define( 'WP_TESTS_MULTISITE', true );
 define( 'WP_DEBUG', true );
 
@@ -26,3 +24,5 @@ define( 'WP_TESTS_TITLE', 'Test Blog' );
 define( 'WP_PHP_BINARY', 'php' );
 
 define( 'WPLANG', '' );
+
+define( 'ABSPATH', __DIR__ . '/' );
