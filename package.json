@@ -45,7 +45,7 @@
     "lint": "npm run lint-js && npm run lint-php",
     "stop-all": "docker stop $(docker ps -a -q)",
     "cli": "docker-compose run --rm --user $(id -u) wordpress xwp_wait db_phpunit:3306 -t 60 --",
-    "vcli": "vagrant ssh -- docker-compose -f /vagrant/docker-compose.yml run --rm --user $(id -u) wordpress wordpress xwp_wait db_phpunit:3306 -t 60 --",
+    "vcli": "vagrant ssh -- docker-compose -f /vagrant/docker-compose.yml run --rm --user $(id -u) wordpress xwp_wait db_phpunit:3306 -t 60 --",
     "phpunit": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
     "phpunit-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
     "vphpunit": "npm run vcli -- composer test --working-dir=wp-content/plugins/stream-src",
