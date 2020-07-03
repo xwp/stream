@@ -14,12 +14,11 @@ jobs:
     - name: Test with PHP 7.2
       before_script: docker-compose build --build-arg PHP_VERSION=7.2 wordpress
 
-    - name: Test with PHP 7.4
-      before_script: docker-compose build --build-arg PHP_VERSION=7.4 wordpress
+    - name: Default Test
+      before_script: docker-compose build
 
     - stage: deploy
       name: Release Package
-      php: "7.4"
       env: WP_RELEASE=1
 
 services:
