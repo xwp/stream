@@ -5,7 +5,6 @@
  * phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
  */
 
-define( 'WP_TESTS_MULTISITE', true );
 define( 'WP_DEBUG', true );
 
 define( 'DB_NAME', 'wordpress_test' );
