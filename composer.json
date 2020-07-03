@@ -40,6 +40,9 @@
     "test": [
       "phpunit --coverage-text"
     ],
+    "test-multisite": [
+      "WP_MULTISITE=1 phpunit --coverage-text"
+    ],
     "test-report": [
       "php-coveralls --verbose"
     ]

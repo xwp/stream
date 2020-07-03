@@ -47,6 +47,7 @@
     "cli": "docker-compose run --rm --user 1000 wordpress xwp_wait db_phpunit:3306 -t 60 --",
     "vcli": "vagrant ssh -- docker-compose -f /vagrant/docker-compose.yml run --rm --user 1000 wordpress wordpress xwp_wait db_phpunit:3306 -t 60 --",
     "phpunit": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
+    "phpunit-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
     "vphpunit": "npm run vcli -- composer test --working-dir=wp-content/plugins/stream-src",
     "phpunit-report": "npm run cli -- composer test-report --working-dir=wp-content/plugins/stream-src",
     "vphpunit-report": "npm run vcli -- composer test-report --working-dir=wp-content/plugins/stream-src",
