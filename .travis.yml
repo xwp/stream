@@ -9,7 +9,7 @@ jobs:
 
     - stage: test
       name: Test with PHP 5.6
-      before_script: docker-compose build --build-arg PHP_VERSION=5.6 XDEBUG_VERSION=2.5.5 wordpress
+      before_script: docker-compose build --build-arg PHP_VERSION=5.6 --build-arg XDEBUG_VERSION=2.5.5 wordpress
 
     - name: Test with PHP 7.2
       before_script: docker-compose build --build-arg PHP_VERSION=7.2 wordpress
