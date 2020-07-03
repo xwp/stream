@@ -38,6 +38,7 @@ script:
   - npm run phpunit-multisite
 
 after_script:
+  - ls -lah tests/reports
   - test -f ./tests/reports/clover.xml && composer test-report || true
 
 before_deploy:
