@@ -8,6 +8,6 @@ Vagrant.configure(2) do |config|
 
 	# Setup the WP sites.
 	config.vm.provision "shell",
-		inline: "docker-compose -f /vagrant/docker-compose.yml exec --user 1000 wordpress xwp_wait mysql:3306 -t 60 -- wp core multisite-install --url=stream.local",
+		inline: "docker-compose -f /vagrant/docker-compose.yml exec --user 1000 -T wordpress xwp_wait mysql:3306 -t 60 -- wp core multisite-install --url=stream.local",
 		run: "always"
 end
