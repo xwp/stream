@@ -9,14 +9,13 @@ php:
   - "7.4"
 
 env:
-  - WP_VERSION=latest WP_MULTISITE=0
-  - WP_VERSION=latest WP_MULTISITE=1
+  - WP_VERSION=latest
 
 jobs:
   include:
     - name: Release Package
       php: "7.4"
-      env: WP_VERSION=latest WP_MULTISITE=0 WP_RELEASE=1
+      env: WP_VERSION=latest WP_RELEASE=1
 
 services:
   - docker
@@ -32,6 +31,7 @@ install:
 script:
   - npm run lint
   - npm run phpunit
+  - npm run phpunit-multisite
 
 after_script:
   - test -f ./tests/reports/clover.xml && composer test-report || true
