@@ -38,10 +38,12 @@
       "@lint-php"
     ],
     "test": [
-      "phpunit --coverage-text"
+      "phpunit --coverage-text",
+      "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
     ],
     "test-multisite": [
-      "WP_MULTISITE=1 phpunit --coverage-text"
+      "WP_MULTISITE=1 phpunit --coverage-text",
+      "php local/scripts/make-clover-relative.php ./tests/reports/clover.xml"
     ],
     "test-report": [
       "php-coveralls --verbose"
