@@ -8,14 +8,11 @@ php:
   - "7.3"
   - "7.4"
 
-env:
-  - WP_VERSION=latest
-
 jobs:
   include:
     - name: Release Package
       php: "7.4"
-      env: WP_VERSION=latest WP_RELEASE=1
+      env: WP_RELEASE=1
 
 services:
   - docker
