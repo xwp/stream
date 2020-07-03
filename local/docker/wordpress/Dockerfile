@@ -10,6 +10,8 @@ RUN apt-get update; \
 	# MailHog dependencies.
 	msmtp;
 
+COPY php.ini /usr/local/etc/php/php.ini
+
 # Setup xdebug.
 RUN	pecl install xdebug; \
 	docker-php-ext-enable xdebug;
