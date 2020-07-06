@@ -4,7 +4,6 @@ services:
 
   mysql:
     image: mysql:5
-    command: '--default-authentication-plugin=mysql_native_password'
     volumes:
       - db_data:/var/lib/mysql
     restart: always
@@ -38,8 +37,7 @@ services:
       WP_PHPUNIT__TESTS_CONFIG: /var/www/html/wp-tests-config.php
 
   db_phpunit:
-    image: mysql:5
-    command: '--default-authentication-plugin=mysql_native_password'
+    image: mysql:5.7
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
