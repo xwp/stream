@@ -1,0 +1,10 @@
+url: stream.local
+
+# Define the default multisite install config.
+core multisite-install:
+  title: Stream Development
+  admin_user: admin
+  admin_password: password
+  admin_email: admin@example.com
+  skip-config:
+  subdomains:

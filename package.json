@@ -43,14 +43,16 @@
     "lint-js": "eslint .",
     "lint-php": "composer lint",
     "lint": "npm run lint-js && npm run lint-php",
-    "cli": "./local/vagrant/cli.sh",
-    "compose": "./local/vagrant/docker-compose.sh",
+    "stop-all": "docker stop $(docker ps -a -q)",
+    "cli": "docker-compose run --rm --user $(id -u) wordpress xwp_wait db_phpunit:3306 -t 60 --",
+    "vcli": "vagrant ssh -- docker-compose -f /vagrant/docker-compose.yml run --rm --user $(id -u) wordpress xwp_wait db_phpunit:3306 -t 60 --",
     "phpunit": "npm run cli -- composer test --working-dir=wp-content/plugins/stream-src",
-    "phpunit-report": "npm run cli -- composer test-report --working-dir=wp-content/plugins/stream-src",
-    "vcli": "vagrant ssh -- DOCKER_COMPOSE_FILE=/vagrant/docker-compose.yml /vagrant/local/vagrant/cli.sh",
-    "vcompose": "vagrant ssh -- DOCKER_COMPOSE_FILE=/vagrant/docker-compose.yml /vagrant/local/vagrant/docker-compose.sh",
+    "phpunit-multisite": "npm run cli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
     "vphpunit": "npm run vcli -- composer test --working-dir=wp-content/plugins/stream-src",
-    "vphpunit-report": "npm run vcli -- composer test-report --working-dir=wp-content/plugins/stream-src"
+    "vphpunit-multisite": "npm run vcli -- composer test-multisite --working-dir=wp-content/plugins/stream-src",
+    "phpunit-report": "npm run cli -- composer test-report --working-dir=wp-content/plugins/stream-src",
+    "vphpunit-report": "npm run vcli -- composer test-report --working-dir=wp-content/plugins/stream-src",
+    "vcompose": "vagrant ssh -- docker-compose -f /vagrant/docker-compose.yml"
   },
   "dependencies": {}
 }

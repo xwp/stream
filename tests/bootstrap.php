@@ -1,12 +1,13 @@
 <?php
 
+// Defined in docker-compose.yml for the container running the tests.
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
 if ( empty( $_tests_dir ) || ! file_exists( $_tests_dir . '/includes' ) ) {
 	trigger_error( 'Unable to locate WP_TESTS_DIR', E_USER_ERROR );
 }
 
-// Use in code to trigger custom actions
+// Use in code to trigger custom actions.
 define( 'WP_STREAM_TESTS', true );
 define( 'WP_STREAM_DEV_DEBUG', true );
 
