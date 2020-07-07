@@ -143,7 +143,6 @@ class Connector_EDD extends Connector {
 			'discounts'         => esc_html_x( 'Discounts', 'edd', 'stream' ),
 			'reports'           => esc_html_x( 'Reports', 'edd', 'stream' ),
 			'api_keys'          => esc_html_x( 'API Keys', 'edd', 'stream' ),
-			// 'payments'        => esc_html_x( 'Payments', 'edd', 'stream' ),
 		);
 	}
 
@@ -447,7 +446,7 @@ class Connector_EDD extends Connector {
 			return false; // Do not track payments, they're well logged!
 		} elseif ( 'posts' === $data['connector'] && 'edd_log' === $data['context'] ) {
 			// Logging operations.
-			return false; // Do not track notes, because they're basically logs
+			return false; // Do not track notes, because they're basically logs.
 		} elseif ( 'comments' === $data['connector'] && 'edd_payment' === $data['context'] ) {
 			// Payment notes ( comments ) operations.
 			return false; // Do not track notes, because they're basically logs.
@@ -464,12 +463,21 @@ class Connector_EDD extends Connector {
 		return $data;
 	}
 
+	/**
+	 * Undocumented function
+	 *
+	 * @action edd_pre_update_discount_status
+	 *
+	 * @param int    $code_id     Post ID.
+	 * @param string $new_status  Post status.
+	 * @return void
+	 */
 	public function callback_edd_pre_update_discount_status( $code_id, $new_status ) {
 		$this->is_discount_status_change = true;
 
 		$this->log(
 			sprintf(
-				// translators: Placeholders refer to a discount title, and a status (e.g. "Mother's Day", "activated")
+				/* translators: %1$s: a discount title, %2$s: a status (e.g. "Mother's Day", "activated") */
 				__( '"%1$s" discount %2$s', 'stream' ),
 				get_post( $code_id )->post_title,
 				'active' === $new_status ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' )

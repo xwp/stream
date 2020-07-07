@@ -3,10 +3,14 @@
  * Stream command for WP-CLI
  *
  * @see https://github.com/wp-cli/wp-cli
+ * @package WP_Stream
  */
 
 namespace WP_Stream;
 
+/**
+ * Class - CLI
+ */
 class CLI extends \WP_CLI_Command {
 
 	/**
@@ -88,6 +92,9 @@ class CLI extends \WP_CLI_Command {
 	 * @see WP_Stream_Query
 	 * @see https://github.com/wp-stream/stream/wiki/WP-CLI-Command
 	 * @see https://github.com/wp-stream/stream/wiki/Query-Reference
+	 *
+	 * @param array $args        Unused.
+	 * @param array $assoc_args  Fields to return data for.
 	 */
 	public function query( $args, $assoc_args ) {
 		unset( $args );
@@ -121,11 +128,11 @@ class CLI extends \WP_CLI_Command {
 
 		$records = wp_stream_get_instance()->db->query( $query_args );
 
-		// Make structure Formatter compatible
+		// Make structure Formatter compatible.
 		foreach ( (array) $records as $key => $record ) {
 			$formatted_records[ $key ] = array();
 
-			// Catch any fields missing in records
+			// Catch any fields missing in records.
 			foreach ( $fields as $field ) {
 				if ( ! array_key_exists( $field, $record ) ) {
 					$record->$field = null;
@@ -152,9 +159,9 @@ class CLI extends \WP_CLI_Command {
 
 			if ( 'json_pretty' === $assoc_args['format'] ) {
 				if ( version_compare( PHP_VERSION, '5.4', '<' ) ) {
-					\WP_CLI::line( wp_stream_json_encode( $formatted_records ) ); // xss ok
+					\WP_CLI::line( wp_stream_json_encode( $formatted_records ) ); // xss ok.
 				} else {
-					\WP_CLI::line( wp_stream_json_encode( $formatted_records, JSON_PRETTY_PRINT ) ); // xss ok
+					\WP_CLI::line( wp_stream_json_encode( $formatted_records, JSON_PRETTY_PRINT ) ); // xss ok.
 				}
 			}
 
@@ -176,8 +183,8 @@ class CLI extends \WP_CLI_Command {
 	/**
 	 * Convert any field to a flat array.
 	 *
-	 * @param string $name The output array element name
-	 * @param mixed  $object Any value to be converted to an array
+	 * @param string $name   The output array element name.
+	 * @param mixed  $object Any value to be converted to an array.
 	 *
 	 * @return array  The flat array
 	 */
@@ -200,9 +207,7 @@ class CLI extends \WP_CLI_Command {
 	/**
 	 * Convert an array of flat records to CSV
 	 *
-	 * @param array $array The input array of records
-	 *
-	 * @return string  The CSV output
+	 * @param array $array  The input array of records.
 	 */
 	private function csv_format( $array ) {
 		$output = fopen( 'php://output', 'w' ); // @codingStandardsIgnoreLine Clever output for WP CLI using php://output
