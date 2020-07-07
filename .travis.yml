@@ -26,7 +26,6 @@ services:
   - docker
 
 before_install:
-  - docker-compose --file docker-compose.build.yml build
   - nvm install
   - nvm use
 
