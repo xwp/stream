@@ -9,13 +9,14 @@ jobs:
 
     - stage: test
       name: Test with PHP 5.6
-      before_script: WORDPRESS_IMAGE_VERSION=php5.6 docker-compose build --build-arg PHP_VERSION=5.6 --build-arg XDEBUG_VERSION=2.5.5 wordpress
+      env:
+        WORDPRESS_IMAGE_VERSION: php5.6
 
     - name: Test with PHP 7.2
-      before_script: WORDPRESS_IMAGE_VERSION=php7.2 docker-compose build --build-arg PHP_VERSION=7.2 wordpress
+      env:
+        WORDPRESS_IMAGE_VERSION: php7.2
 
     - name: Default Test
-      before_script: docker-compose build
 
     - stage: deploy
       name: Release Package
@@ -25,7 +26,7 @@ services:
   - docker
 
 before_install:
-  - docker load -i /tmp/docker_images/images.tar || true
+  - docker-compose --file docker-compose.build.yml build
   - nvm install
   - nvm use
 
@@ -42,9 +43,6 @@ after_script:
 
 before_deploy:
   - npm run release
-
-before_cache:
-  - docker save -o /tmp/docker_images/images.tar $(docker images --quiet "xwpco/*")
 
 deploy:
   provider: releases
@@ -67,4 +65,3 @@ cache:
   npm: true
   directories:
     - $HOME/.composer/cache
-    - /tmp/docker_images
