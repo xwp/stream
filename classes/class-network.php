@@ -178,9 +178,9 @@ class Network {
 	/**
 	 * Remove records when records TTL is shortened
 	 *
-	 * @param string $option_key
-	 * @param array  $new_value
-	 * @param array  $old_value
+	 * @param string $option_key  Unused.
+	 * @param array  $new_value   New value.
+	 * @param array  $old_value   Old value.
 	 *
 	 * @action update_option_wp_stream
 	 * @return void

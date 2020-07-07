@@ -87,16 +87,22 @@ class Connector_BuddyPress extends Connector {
 	public $is_update = false;
 
 	/**
+	 * Stores an activity to be deleted for use across multiple callbacks.
+	 *
 	 * @var bool
 	 */
-	public $_deleted_activity = false;
+	public $deleted_activity = false;
 
 	/**
+	 * Stores post data of an activity to be deleted for use across multiple callbacks.
+	 *
 	 * @var array
 	 */
-	public $_delete_activity_args = array();
+	public $delete_activity_args = array();
 
 	/**
+	 * Flag for ignoring irrelevant activity deletions.
+	 *
 	 * @var bool
 	 */
 	public $ignore_activity_bulk_deletion = false;
@@ -477,7 +483,7 @@ class Connector_BuddyPress extends Connector {
 
 			$this->log(
 				sprintf(
-					// translators: Placeholder refers to component title (e.g. "Members")
+					/* translators: %1$s: component title, %2$s: component action (e.g. "Members component deactivated") */
 					__( '"%1$s" component %2$s', 'stream' ),
 					$components[ $option ]['title'],
 					$actions[ $option_value ]
@@ -557,14 +563,14 @@ class Connector_BuddyPress extends Connector {
 	 */
 	public function callback_bp_before_activity_delete( $args ) {
 		if ( empty( $args['id'] ) ) { // Bail if we're deleting in bulk.
-			$this->_delete_activity_args = $args;
+			$this->delete_activity_args = $args;
 
 			return;
 		}
 
 		$activity = new \BP_Activity_Activity( $args['id'] );
 
-		$this->_deleted_activity = $activity;
+		$this->deleted_activity = $activity;
 	}
 
 	/**
@@ -575,13 +581,13 @@ class Connector_BuddyPress extends Connector {
 	 * @param array $activities_ids  Activity IDs of deleted activities.
 	 */
 	public function callback_bp_activity_deleted_activities( $activities_ids ) {
-		if ( 1 === count( $activities_ids ) && isset( $this->_deleted_activity ) ) { // Single activity deletion.
-			$activity = $this->_deleted_activity;
+		if ( 1 === count( $activities_ids ) && isset( $this->deleted_activity ) ) { // Single activity deletion.
+			$activity = $this->deleted_activity;
 			$this->log(
 				sprintf(
 					/* translators: %s: an activity title (e.g. "Update") */
 					__( '"%s" activity deleted', 'stream' ),
-					strip_tags( $activity->action )
+					wp_strip_all_tags( $activity->action )
 				),
 				array(
 					'id'      => $activity->id,
@@ -612,7 +618,7 @@ class Connector_BuddyPress extends Connector {
 				),
 				array(
 					'count' => count( $activities_ids ),
-					'args'  => $this->_delete_activity_args,
+					'args'  => $this->delete_activity_args,
 					'ids'   => $activities_ids,
 				),
 				null,
@@ -637,7 +643,7 @@ class Connector_BuddyPress extends Connector {
 			sprintf(
 				/* translators: %s an activity title (e.g. "Update") */
 				__( 'Marked activity "%s" as spam', 'stream' ),
-				strip_tags( $activity->action )
+				wp_strip_all_tags( $activity->action )
 			),
 			array(
 				'id'      => $activity->id,
@@ -666,7 +672,7 @@ class Connector_BuddyPress extends Connector {
 			sprintf(
 				/* translators: %s: an activity title (e.g. "Update") */
 				__( 'Unmarked activity "%s" as spam', 'stream' ),
-				strip_tags( $activity->action )
+				wp_strip_all_tags( $activity->action )
 			),
 			array(
 				'id'      => $activity->id,
@@ -695,7 +701,7 @@ class Connector_BuddyPress extends Connector {
 			sprintf(
 				/* translators: %s: an activity title (e.g. "Update") */
 				__( '"%s" activity updated', 'stream' ),
-				strip_tags( $activity->action )
+				wp_strip_all_tags( $activity->action )
 			),
 			array(
 				'id'      => $activity->id,

@@ -51,16 +51,22 @@ class Connector_BbPress extends Connector {
 	public $is_update = false;
 
 	/**
+	 * Stores an activity to be deleted for use across multiple callbacks.
+	 *
 	 * @var bool
 	 */
-	public $_deleted_activity = false;
+	public $deleted_activity = false;
 
 	/**
+	 * Stores post data of an activity to be deleted for use across multiple callbacks.
+	 *
 	 * @var array
 	 */
-	public $_delete_activity_args = array();
+	public $delete_activity_args = array();
 
 	/**
+	 * Flag for ignoring irrelevant activity deletions.
+	 *
 	 * @var bool
 	 */
 	public $ignore_activity_bulk_deletion = false;

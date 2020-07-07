@@ -3,6 +3,7 @@
  * Config file used only for phpunit tests inside Docker.
  *
  * phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
+ * phpcs:disable Squiz.Commenting.FileComment.MissingPackageTag
  */
 
 define( 'WP_DEBUG', true );

@@ -201,7 +201,11 @@ class Connector_WordPress_SEO extends Connector {
 		parent::register();
 
 		foreach ( \WPSEO_Options::$options as $class ) {
-			/* @var $class WPSEO_Options */
+			/**
+			 * WPSEO Options object.
+			 *
+			 * @var WPSEO_Options $class
+			 */
 			$this->option_groups[ $class::get_instance()->group_name ] = array(
 				'class' => $class,
 				'name'  => $class::get_instance()->option_name,

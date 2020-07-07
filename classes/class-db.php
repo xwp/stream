@@ -59,7 +59,7 @@ class DB {
 			$record,
 			function( &$value, &$key ) {
 				if ( ! is_array( $value ) ) {
-					$value = strip_tags( $value );
+					$value = wp_strip_all_tags( $value );
 				}
 			}
 		);
@@ -106,7 +106,7 @@ class DB {
 	 * @see assemble_records
 	 * @since 1.0.4
 	 *
-	 * @param string $column
+	 * @param string $column  Table column to pull data from.
 	 *
 	 * @return array
 	 */
@@ -151,11 +151,11 @@ class DB {
 			'search_field'     => 'summary',
 			'record_after'     => null, // Deprecated, use date_after instead
 			// Date-based filters.
-			'date'             => null, // Ex: 2015-07-01
-			'date_from'        => null, // Ex: 2015-07-01
-			'date_to'          => null, // Ex: 2015-07-01
-			'date_after'       => null, // Ex: 2015-07-01T15:19:21+00:00
-			'date_before'      => null, // Ex: 2015-07-01T15:19:21+00:00
+			'date'             => null, // Ex: 2015-07-01.
+			'date_from'        => null, // Ex: 2015-07-01.
+			'date_to'          => null, // Ex: 2015-07-01.
+			'date_after'       => null, // Ex: 2015-07-01T15:19:21+00:00.
+			'date_before'      => null, // Ex: 2015-07-01T15:19:21+00:00.
 			// Record ID filters.
 			'record'           => null,
 			'record__in'       => array(),
@@ -190,7 +190,7 @@ class DB {
 		 */
 		$properties = apply_filters( 'wp_stream_query_properties', $properties );
 
-		// Add property fields to defaults, including their __in/__not_in variations
+		// Add property fields to defaults, including their __in/__not_in variations.
 		foreach ( $properties as $property => $default ) {
 			if ( ! isset( $defaults[ $property ] ) ) {
 				$defaults[ $property ] = $default;

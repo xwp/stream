@@ -1,5 +1,11 @@
 <?php
 /**
+ * Defines common functionality used throughout the plugin.
+ *
+ * @package WP_Stream
+ */
+
+/**
  * Gets a specific external variable by name and optionally filters it.
  *
  * This is a polyfill function intended to be used in place of PHP's
@@ -59,9 +65,9 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 /**
  * Encode to JSON in a way that is also backwards compatible
  *
- * @param mixed $data
- * @param int   $options (optional)
- * @param int   $depth (optional)
+ * @param mixed $data     Data to be encoded.
+ * @param int   $options  Compression options (optional).
+ * @param int   $depth    Tree depth limit (optional).
  *
  * @return string
  */
@@ -84,7 +90,7 @@ function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
 /**
  * Return an array of sites for a network in a way that is also backwards compatible
  *
- * @param string|array $args
+ * @param string|array $args  Argument to filter results by.
  *
  * @return array
  */

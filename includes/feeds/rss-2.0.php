@@ -1,4 +1,10 @@
 <?php
+/**
+ * Renders a RSS feed of records.
+ *
+ * @package WP_Stream
+ */
+
 header( 'Content-Type: ' . feed_content_type( 'rss-http' ) . '; charset=' . get_option( 'blog_charset' ), true );
 printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_charset' ) ) );
 ?>
@@ -44,7 +50,7 @@ printf( '<?xml version="1.0" encoding="%s"?>', esc_attr( get_option( 'blog_chars
 			$display_name = isset( $author->display_name ) ? $author->display_name : 'N/A';
 			?>
 			<item>
-				<title><![CDATA[ <?php echo esc_html( $record->summary ); // xss ok ?> ]]></title>
+				<title><![CDATA[ <?php echo esc_html( $record->summary ); // xss ok. ?> ]]></title>
 				<pubDate><?php echo esc_html( mysql2date( 'r', $record->created, false ) ); ?></pubDate>
 				<dc:creator><?php echo esc_html( $display_name ); ?></dc:creator>
 				<category domain="connector"><![CDATA[ <?php echo esc_html( $record->connector ); ?> ]]></category>

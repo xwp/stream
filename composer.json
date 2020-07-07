@@ -9,6 +9,7 @@
   },
   "require-dev": {
     "johnpbloch/wordpress": "^5.4",
+    "automattic/vipwpcs": "^2.0.0",
     "php-coveralls/php-coveralls": "^2.1",
     "phpunit/phpunit": "^5.7",
     "wp-cli/wp-cli-bundle": "^2.2",
