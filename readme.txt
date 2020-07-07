@@ -91,6 +91,10 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 == Changelog ==
 
+= 3.5.0 - July 8, 2020 =
+
+* TODO
+
 = 3.4.3 - March 19, 2020 =
 
 * Fix: Stream records can be filtered by users again [#929](https://github.com/xwp/stream/issues/929), props [@tareiking](https://github.com/tareiking).
