@@ -1,5 +1,6 @@
 {
   "name": "xwp/stream",
+  "version": "3.4.3",
   "description": "Track WordPress user and system actions for debugging, logging and compliance purposes",
   "homepage": "https://wordpress.org/plugins/stream/",
   "type": "wordpress-plugin",
@@ -11,7 +12,8 @@
     }
   ],
   "require": {
-    "composer/installers": "~1.0"
+    "composer/installers": "~1.0",
+    "openeuropa/composer-artifacts": "^0.1.3"
   },
   "require-dev": {
     "php-coveralls/php-coveralls": "^2.1",
@@ -45,5 +47,15 @@
     "test-report": [
       "php-coveralls --verbose"
     ]
+  },
+  "extra": {
+    "artifacts": {
+      "xwp/stream": {
+        "dist": {
+          "url": "https://github.com/{name}/releases/download/{version}/{project-name}-{version}.zip",
+          "type": "zip"
+        }
+      }
+    }
   }
 }
