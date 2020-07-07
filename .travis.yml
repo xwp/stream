@@ -44,7 +44,7 @@ before_deploy:
   - npm run release
 
 before_cache:
-  - docker save -o /tmp/docker_images/images.tar $(docker images -a -q)
+  - docker save -o /tmp/docker_images/images.tar wordpress
 
 deploy:
   provider: releases
