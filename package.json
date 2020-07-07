@@ -43,6 +43,8 @@
     "lint-js": "eslint .",
     "lint-php": "composer lint",
     "lint": "npm run lint-js && npm run lint-php",
+    "build-containers": "docker-compose --file docker-compose.build.yml build",
+    "push-containers": "docker-compose --file docker-compose.build.yml push",
     "stop-all": "docker stop $(docker ps -a -q)",
     "cli": "docker-compose run --rm --user $(id -u) wordpress xwp_wait db_phpunit:3306 -t 60 --",
     "vcli": "vagrant ssh -- docker-compose -f /vagrant/docker-compose.yml run --rm --user $(id -u) wordpress xwp_wait db_phpunit:3306 -t 60 --",

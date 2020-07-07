@@ -8,24 +8,38 @@ jobs:
   include:
 
     - stage: test
-      name: Test with PHP 5.6
-      before_script: docker-compose build --build-arg PHP_VERSION=5.6 --build-arg XDEBUG_VERSION=2.5.5 wordpress
+      name: Default Test
+      after_script:
+        - test -f ./tests/reports/clover.xml && composer test-report || true
+
+    - name: Test with PHP 5.6
+      env:
+        WORDPRESS_IMAGE_VERSION: php5.6
 
     - name: Test with PHP 7.2
-      before_script: docker-compose build --build-arg PHP_VERSION=7.2 wordpress
-
-    - name: Default Test
-      before_script: docker-compose build
+      env:
+        WORDPRESS_IMAGE_VERSION: php7.2
 
     - stage: deploy
-      name: Release Package
-      env: WP_RELEASE=1
+      name: Tag Release
+      if: tag IS present
+      before_deploy:
+        - npm run release
+      deploy:
+        provider: releases
+        api_key:
+          secure: HheYiv6c8ipHzMZBTH7xcKrOwCllvJTtfiTffAPK6XubWe3Kudn6IJUv0p1gmRhWXxZ5ciJQ/sgiCRGTRm/bubHs4tS7JOmpmoTdkrXajTxyyDCKpxhtT43nie0vNF+pWqVu2yOjhDR4pwtWjpQdzEKOz0kn0XSMT+vGsKQD50w=
+        overwrite: true
+        skip_cleanup: true
+        file:
+          - stream.zip
+          - stream-$TRAVIS_TAG.zip
 
 services:
   - docker
 
 before_install:
-  - docker load -i /tmp/docker_images/images.tar || true
+  - docker-compose pull wordpress
   - nvm install
   - nvm use
 
@@ -37,29 +51,6 @@ script:
   - npm run phpunit
   - npm run phpunit-multisite
 
-after_script:
-  - test -f ./tests/reports/clover.xml && composer test-report || true
-
-before_deploy:
-  - npm run release
-
-before_cache:
-  - docker save -o /tmp/docker_images/images.tar $(docker images -a -q)
-
-deploy:
-  provider: releases
-  api_key:
-    secure: HheYiv6c8ipHzMZBTH7xcKrOwCllvJTtfiTffAPK6XubWe3Kudn6IJUv0p1gmRhWXxZ5ciJQ/sgiCRGTRm/bubHs4tS7JOmpmoTdkrXajTxyyDCKpxhtT43nie0vNF+pWqVu2yOjhDR4pwtWjpQdzEKOz0kn0XSMT+vGsKQD50w=
-  overwrite: true
-  skip_cleanup: true
-  file_glob: true
-  file:
-    - stream.zip
-    - stream-$TRAVIS_TAG.zip
-  on:
-    tags: true
-    condition: "$WP_RELEASE = 1"
-
 notifications:
   email: false
 
@@ -67,4 +58,3 @@ cache:
   npm: true
   directories:
     - $HOME/.composer/cache
-    - /tmp/docker_images
