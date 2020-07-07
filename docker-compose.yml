@@ -14,6 +14,7 @@ services:
       MYSQL_ROOT_PASSWORD: password
 
   wordpress:
+    image: xwpco/stream-wordpress:${WORDPRESS_IMAGE_VERSION:-latest}
     build: ./local/docker/wordpress
     depends_on:
       - mysql
