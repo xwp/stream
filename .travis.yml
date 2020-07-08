@@ -45,7 +45,6 @@ jobs:
       script: npm run release
       before_script:
         - ls -lah ~/.ssh
-        - cat ~/.ssh/id_rsa.pub
         - cat ~/.ssh/config
       deploy:
         provider: script
