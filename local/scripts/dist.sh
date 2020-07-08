@@ -35,4 +35,4 @@ if [ -n "$DIST_TAG" ]; then
 	git tag "$DIST_TAG"
 fi
 
-git push --set-upstream origin "$DIST_BRANCH" --tags
+git push --force --set-upstream origin "$DIST_BRANCH" --tags
