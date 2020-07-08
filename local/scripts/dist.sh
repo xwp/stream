@@ -20,15 +20,11 @@ export GIT_WORK_TREE="$DIST_DIR"
 rm -rf "$DIST_DIR"
 
 git clone --progress --verbose "$DIST_REPO" "$DIST_DIR/.git"
-git checkout -B $DIST_BRANCH
+git checkout -B "$DIST_BRANCH"
 
-# Copy over the update.
-git rm -r --quiet .
-cp -r "$SRC_DIR/" "$DIST_DIR/"
-git add --all
-
-# Always commit the changes to a branch.
-git commit --allow-empty --message "$COMMIT_MESSAGE"
+# Commit the latest changes.
+git --work-tree="$SRC_DIR" add --all
+git --work-tree="$SRC_DIR" commit --allow-empty --message "$COMMIT_MESSAGE"
 
 # And maybe tag a release.
 if [ -n "$DIST_TAG" ]; then
