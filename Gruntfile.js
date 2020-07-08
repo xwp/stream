@@ -65,6 +65,7 @@ module.exports = function( grunt ) {
 					'languages/*',
 					'readme.txt',
 					'readme.md',
+					'composer.json',
 					'contributing.md',
 				],
 				dest: 'build',
