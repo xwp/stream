@@ -26,8 +26,7 @@ jobs:
     - stage: deploy
       name: Tag Release
       if: tag IS present
-      before_deploy:
-        - npm run release
+      script: npm run release
       deploy:
         provider: releases
         api_key:
@@ -37,6 +36,18 @@ jobs:
         file:
           - stream.zip
           - stream-$TRAVIS_TAG.zip
+        on:
+          repo: xwp/stream
+
+    - name: Tag Package
+      if: type IS push
+      script: npm run release
+      deploy:
+        provider: script
+        script: ./local/scripts/dist.sh
+        skip_cleanup: true
+        on:
+          repo: xwp/stream
 
 services:
   - docker
