@@ -20,6 +20,7 @@ class Test_WP_Stream_Connector_BuddyPress extends WP_StreamTestCase {
 
 	public function test_bbpress_installed_and_activated() {
 		$this->assertTrue( is_callable( 'buddypress' ) );
+		buddypress();
 	}
 
 	public function test_option_callbacks() {
@@ -113,12 +114,16 @@ class Test_WP_Stream_Connector_BuddyPress extends WP_StreamTestCase {
 	public function test_activity_callbacks() {
 		// Expected log actions.
 		$this->mock->expects( $this->atLeastOnce() )
-			->method( 'log' )
-			->withConsecutive(
-
-			);
+			->method( 'log' );
 
 		// Do stuff.
+		$activity_id = \bp_activity_add(
+			array(
+				'component' => 'testComponent',
+				'content'   => 'Testing testing 123'
+			)
+		);
+		\bp_activity_delete_by_activity_id( $activity_id );
 
 		// Check that all callback test actions were executed.
 		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_' ) );
