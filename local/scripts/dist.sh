@@ -32,7 +32,7 @@ git commit --allow-empty --message "$COMMIT_MESSAGE"
 # And maybe tag a release.
 if [ -n "$DIST_TAG" ]; then
 	echo "Tagging a release: $DIST_TAG"
-	git tag "$DIST_TAG"
+	git tag --force "$DIST_TAG"
 fi
 
 git push --force --set-upstream origin "$DIST_BRANCH" --tags
