@@ -38,7 +38,7 @@ jobs:
           - stream-$TRAVIS_TAG.zip
 
     - name: Tag Package
-      if: branch IS present AND type = push
+      if: branch IS present
       script: npm run release
       deploy:
         provider: script
