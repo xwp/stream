@@ -39,7 +39,8 @@ jobs:
         on:
           repo: xwp/stream
 
-    - name: Tag Package
+    - stage: deploy
+      name: Tag Package
       if: type NOT pull_request AND branch IS present
       script: npm run release
       deploy:
