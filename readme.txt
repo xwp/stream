@@ -93,7 +93,9 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 = 3.5.0 - July 8, 2020 =
 
-* TODO
+* Fix: Stream records now show the correct timestamp instead of dates like `-0001/11/30` [#1091](https://github.com/xwp/stream/issues/1091), props [@kidunot89](https://github.com/kidunot89).
+* Fix: Searching Stream records is now more performant as we throttle the amount of search requests [#1081](https://github.com/xwp/stream/issues/1081), props [@oscarssanchez](https://github.com/oscarssanchez).
+* Tweak: Inline PHP documentation updates and WordPress coding standard fixes, props [@kidunot89](https://github.com/kidunot89).
 
 = 3.4.3 - March 19, 2020 =
 
