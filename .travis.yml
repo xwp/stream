@@ -36,8 +36,6 @@ jobs:
         file:
           - stream.zip
           - stream-$TRAVIS_TAG.zip
-        on:
-          repo: xwp/stream
 
     - name: Tag Package
       if: branch IS present AND type = push
@@ -46,8 +44,6 @@ jobs:
         provider: script
         script: ./local/scripts/dist.sh
         skip_cleanup: true
-        on:
-          repo: xwp/stream
 
 services:
   - docker
