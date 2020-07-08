@@ -39,9 +39,8 @@ jobs:
         on:
           repo: xwp/stream
 
-    - stage: deploy
-      name: Tag Package
-      if: type NOT pull_request AND branch IS present
+    - name: Tag Package
+      if: branch IS present # TODO Don't run on pull request builds again.
       script: npm run release
       deploy:
         provider: script
