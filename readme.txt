@@ -3,7 +3,7 @@ Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
 Tested up to: 5.4
-Stable tag: 3.4.3
+Stable tag: 3.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,13 +11,13 @@ With Stream, you’re never left in the dark about changes to your WordPress sit
 
 == Description ==
 
-With real-time notifications and third-party integrations, Stream can proactively alert you when something goes wrong with your WordPress site. 
+With real-time notifications and third-party integrations, Stream can proactively alert you when something goes wrong with your WordPress site.
 
-Designed for debugging and compliance purposes, Stream is useful for keeping tabs on your WordPress users: From activating plugins to deleting posts, to login attempts and new user creation, you can see what’s changed, who changed it and when. 
+Designed for debugging and compliance purposes, Stream is useful for keeping tabs on your WordPress users: From activating plugins to deleting posts, to login attempts and new user creation, you can see what’s changed, who changed it and when.
 
 The plugin records WordPress user and system action to the Stream logs.  Every logged-in user action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action or IP address. Admins can highlight entries in the Stream log—such as suspicious user activity—to investigate what’s happening in real time. Stream also allows you to configure email alerts and webhooks for integrations like Slack and IFTTT to notify you and your team when something has gone wrong.
 
-For advanced users, Stream also supports a network view of all activity records on your Multisite, the ability to set exclude rules to ignore certain kinds of user activity, and a WP‑CLI command for querying records. 
+For advanced users, Stream also supports a network view of all activity records on your Multisite, the ability to set exclude rules to ignore certain kinds of user activity, and a WP‑CLI command for querying records.
 
 With Stream’s powerful logging, you’ll have the valuable information you need to responsibly manage your WordPress sites.
 
@@ -90,6 +90,12 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 
 == Changelog ==
+
+= 3.5.0 - July 8, 2020 =
+
+* Fix: Stream records now show the correct timestamp instead of dates like `-0001/11/30` [#1091](https://github.com/xwp/stream/issues/1091), props [@kidunot89](https://github.com/kidunot89).
+* Fix: Searching Stream records is now more performant as we throttle the amount of search requests [#1081](https://github.com/xwp/stream/issues/1081), props [@oscarssanchez](https://github.com/oscarssanchez).
+* Tweak: Inline PHP documentation updates and WordPress coding standard fixes, props [@kidunot89](https://github.com/kidunot89).
 
 = 3.4.3 - March 19, 2020 =
 
