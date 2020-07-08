@@ -40,7 +40,7 @@ jobs:
           repo: xwp/stream
 
     - name: Tag Package
-      if: type IS push
+      if: type NOT pull_request AND branch IS present
       script: npm run release
       deploy:
         provider: script
