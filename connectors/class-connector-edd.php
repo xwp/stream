@@ -1,7 +1,15 @@
 <?php
+/**
+ * Connector for Easy Digital Downloads
+ *
+ * @package WP_Stream
+ */
 
 namespace WP_Stream;
 
+/**
+ * Class - Connector_EDD
+ */
 class Connector_EDD extends Connector {
 
 	/**
@@ -135,7 +143,6 @@ class Connector_EDD extends Connector {
 			'discounts'         => esc_html_x( 'Discounts', 'edd', 'stream' ),
 			'reports'           => esc_html_x( 'Reports', 'edd', 'stream' ),
 			'api_keys'          => esc_html_x( 'API Keys', 'edd', 'stream' ),
-			// 'payments'        => esc_html_x( 'Payments', 'edd', 'stream' ),
 		);
 	}
 
@@ -144,8 +151,8 @@ class Connector_EDD extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links Previous links registered
-	 * @param  object $record Stream record
+	 * @param  array  $links   Previous links registered.
+	 * @param  object $record  Stream record.
 	 *
 	 * @return array             Action links
 	 */
@@ -157,7 +164,7 @@ class Connector_EDD extends Connector {
 			$post_type_label = get_post_type_labels( get_post_type_object( 'edd_discount' ) )->singular_name;
 			$base            = admin_url( 'edit.php?post_type=download&page=edd-discounts' );
 
-			// translators: Placeholder refers to a post type (e.g. "Post")
+			/* translators: %s: a post type (e.g. "Post") */
 			$links[ sprintf( esc_html__( 'Edit %s', 'stream' ), $post_type_label ) ] = add_query_arg(
 				array(
 					'edd-action' => 'edit_discount',
@@ -167,7 +174,7 @@ class Connector_EDD extends Connector {
 			);
 
 			if ( 'active' === get_post( $record->object_id )->post_status ) {
-				// translators: Placeholder refers to a post type (e.g. "Post")
+				/* translators: %s: a post type (e.g. "Post") */
 				$links[ sprintf( esc_html__( 'Deactivate %s', 'stream' ), $post_type_label ) ] = add_query_arg(
 					array(
 						'edd-action' => 'deactivate_discount',
@@ -176,7 +183,7 @@ class Connector_EDD extends Connector {
 					$base
 				);
 			} else {
-				// translators: Placeholder refers to a post type (e.g. "Post")
+				/* translators: %s a post type (e.g. "Post") */
 				$links[ sprintf( esc_html__( 'Activate %s', 'stream' ), $post_type_label ) ] = add_query_arg(
 					array(
 						'edd-action' => 'activate_discount',
@@ -194,7 +201,7 @@ class Connector_EDD extends Connector {
 			true
 		) ) {
 			$tax_label = get_taxonomy_labels( get_taxonomy( $record->context ) )->singular_name;
-			// translators: Placeholder refers to a taxonomy (e.g. "Category")
+			/* translators: %s a taxonomy (e.g. "Category") */
 			$links[ sprintf( esc_html__( 'Edit %s', 'stream' ), $tax_label ) ] = get_edit_term_link( $record->object_id, $record->get_meta( 'taxonomy', true ) );
 		} elseif ( 'api_keys' === $record->context ) {
 			$user = new \WP_User( $record->object_id );
@@ -235,6 +242,9 @@ class Connector_EDD extends Connector {
 		return $links;
 	}
 
+	/**
+	 * Register the connector
+	 */
 	public function register() {
 		parent::register();
 
@@ -245,30 +255,73 @@ class Connector_EDD extends Connector {
 		);
 	}
 
+	/**
+	 * Track EDD-specific option changes.
+	 *
+	 * @param string $option Option key.
+	 * @param string $old    Old value.
+	 * @param string $new    New value.
+	 */
 	public function callback_update_option( $option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
 
+	/**
+	 * Track EDD-specific option creations.
+	 *
+	 * @param string $option Option key.
+	 * @param string $val    Value.
+	 */
 	public function callback_add_option( $option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
+	/**
+	 * Track EDD-specific option deletions.
+	 *
+	 * @param string $option Option key.
+	 */
 	public function callback_delete_option( $option ) {
 		$this->check( $option, null, null );
 	}
 
+	/**
+	 * Track EDD-specific site option changes
+	 *
+	 * @param string $option Option key.
+	 * @param string $old    Old value.
+	 * @param string $new    New value.
+	 */
 	public function callback_update_site_option( $option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
 
+	/**
+	 * Track EDD-specific site option creations.
+	 *
+	 * @param string $option Option key.
+	 * @param string $val    Value.
+	 */
 	public function callback_add_site_option( $option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
+	/**
+	 * Track EDD-specific site option deletions.
+	 *
+	 * @param string $option Option key.
+	 */
 	public function callback_delete_site_option( $option ) {
 		$this->check( $option, null, null );
 	}
 
+	/**
+	 * Logs EDD-specific (site) option action.
+	 *
+	 * @param string $option     Option key.
+	 * @param string $old_value  Old value.
+	 * @param string $new_value  New value.
+	 */
 	public function check( $option, $old_value, $new_value ) {
 		if ( ! array_key_exists( $option, $this->options ) ) {
 			return;
@@ -291,7 +344,7 @@ class Connector_EDD extends Connector {
 			$context      = isset( $data['context'] ) ? $data['context'] : 'settings';
 
 			$this->log(
-				// translators: Placeholder refers to a setting title (e.g. "Language")
+				/* translators: %s: a setting title (e.g. "Language") */
 				__( '"%s" setting updated', 'stream' ),
 				compact( 'option_title', 'option', 'old_value', 'new_value' ),
 				null,
@@ -301,6 +354,12 @@ class Connector_EDD extends Connector {
 		}
 	}
 
+	/**
+	 * Logs EDD setting changes.
+	 *
+	 * @param string $old_value  Old value.
+	 * @param string $new_value  New value.
+	 */
 	public function check_edd_settings( $old_value, $new_value ) {
 		$options = array();
 
@@ -312,7 +371,7 @@ class Connector_EDD extends Connector {
 			$options[ $field_key ] = $field_value;
 		}
 
-		// TODO: Check this exists first
+		// TODO: Check this exists first.
 		$settings = \edd_get_registered_settings();
 
 		foreach ( $options as $option => $option_value ) {
@@ -337,7 +396,7 @@ class Connector_EDD extends Connector {
 			}
 
 			$this->log(
-				// translators: Placeholder refers to a setting title (e.g. "Language")
+				/* translators: %s: a setting title (e.g. "Language") */
 				__( '"%s" setting updated', 'stream' ),
 				array(
 					'option_title' => $field['name'],
@@ -356,7 +415,7 @@ class Connector_EDD extends Connector {
 	/**
 	 * Override connector log for our own Settings / Actions
 	 *
-	 * @param array $data
+	 * @param array $data  Record data.
 	 *
 	 * @return array|bool
 	 */
@@ -366,31 +425,31 @@ class Connector_EDD extends Connector {
 		}
 
 		if ( 'posts' === $data['connector'] && 'download' === $data['context'] ) {
-			// Download posts operations
+			// Download posts operations.
 			$data['context']   = 'downloads';
 			$data['connector'] = $this->name;
 		} elseif ( 'posts' === $data['connector'] && 'edd_discount' === $data['context'] ) {
-			// Discount posts operations
+			// Discount posts operations.
 			if ( $this->is_discount_status_change ) {
 				return false;
 			}
 
 			if ( 'deleted' === $data['action'] ) {
-				// translators: Placeholder refers to a discount title (e.g. "Mother's Day")
-				$data['message'] = esc_html__( '"%1s" discount deleted', 'stream' );
+				/* translators: %s: a discount title (e.g. "Mother's Day") */
+				$data['message'] = esc_html__( '"%s" discount deleted', 'stream' );
 			}
 
 			$data['context']   = 'discounts';
 			$data['connector'] = $this->name;
 		} elseif ( 'posts' === $data['connector'] && 'edd_payment' === $data['context'] ) {
-			// Payment posts operations
+			// Payment posts operations.
 			return false; // Do not track payments, they're well logged!
 		} elseif ( 'posts' === $data['connector'] && 'edd_log' === $data['context'] ) {
-			// Logging operations
-			return false; // Do not track notes, because they're basically logs
+			// Logging operations.
+			return false; // Do not track notes, because they're basically logs.
 		} elseif ( 'comments' === $data['connector'] && 'edd_payment' === $data['context'] ) {
-			// Payment notes ( comments ) operations
-			return false; // Do not track notes, because they're basically logs
+			// Payment notes ( comments ) operations.
+			return false; // Do not track notes, because they're basically logs.
 		} elseif ( 'taxonomies' === $data['connector'] && 'download_category' === $data['context'] ) {
 			$data['connector'] = $this->name;
 		} elseif ( 'taxonomies' === $data['connector'] && 'download_tag' === $data['context'] ) {
@@ -404,12 +463,21 @@ class Connector_EDD extends Connector {
 		return $data;
 	}
 
+	/**
+	 * Undocumented function
+	 *
+	 * @action edd_pre_update_discount_status
+	 *
+	 * @param int    $code_id     Post ID.
+	 * @param string $new_status  Post status.
+	 * @return void
+	 */
 	public function callback_edd_pre_update_discount_status( $code_id, $new_status ) {
 		$this->is_discount_status_change = true;
 
 		$this->log(
 			sprintf(
-				// translators: Placeholders refer to a discount title, and a status (e.g. "Mother's Day", "activated")
+				/* translators: %1$s: a discount title, %2$s: a status (e.g. "Mother's Day", "activated") */
 				__( '"%1$s" discount %2$s', 'stream' ),
 				get_post( $code_id )->post_title,
 				'active' === $new_status ? esc_html__( 'activated', 'stream' ) : esc_html__( 'deactivated', 'stream' )
@@ -423,27 +491,56 @@ class Connector_EDD extends Connector {
 			'updated'
 		);
 	}
-
+	/**
+	 * Logs PDFs
+	 *
+	 * @action edd_generate_pdf
+	 */
 	private function callback_edd_generate_pdf() {
 		$this->report_generated( 'pdf' );
 	}
 
+	/**
+	 * Logs earning reports.
+	 *
+	 * @action edd_earnings_export
+	 */
 	public function callback_edd_earnings_export() {
 		$this->report_generated( 'earnings' );
 	}
 
+	/**
+	 * Logs payment reports.
+	 *
+	 * @action edd_payment_export
+	 */
 	public function callback_edd_payment_export() {
 		$this->report_generated( 'payments' );
 	}
 
+	/**
+	 * Logs email reports.
+	 *
+	 * @action edd_email_export
+	 */
 	public function callback_edd_email_export() {
 		$this->report_generated( 'emails' );
 	}
 
+	/**
+	 * Logs download history reports.
+	 *
+	 * @action edd_downloads_history_export
+	 */
 	public function callback_edd_downloads_history_export() {
 		$this->report_generated( 'download-history' );
 	}
 
+	/**
+	 * Logs generated reports.
+	 *
+	 * @param string $type  Report type.
+	 */
 	private function report_generated( $type ) {
 		$label = '';
 
@@ -461,7 +558,7 @@ class Connector_EDD extends Connector {
 
 		$this->log(
 			sprintf(
-				// translators: Placeholder refers to a report title (e.g. "Sales and Earnings")
+				/* translators: %s: a report title (e.g. "Sales and Earnings") */
 				__( 'Generated %s report', 'stream' ),
 				$label
 			),
@@ -474,6 +571,11 @@ class Connector_EDD extends Connector {
 		);
 	}
 
+	/**
+	 * Logs exported settings
+	 *
+	 * @action edd_export_settings
+	 */
 	public function callback_edd_export_settings() {
 		$this->log(
 			__( 'Exported Settings', 'stream' ),
@@ -484,6 +586,11 @@ class Connector_EDD extends Connector {
 		);
 	}
 
+	/**
+	 * Logs imported settings
+	 *
+	 * @action edd_import_settings
+	 */
 	public function callback_edd_import_settings() {
 		$this->log(
 			__( 'Imported Settings', 'stream' ),
@@ -494,19 +601,56 @@ class Connector_EDD extends Connector {
 		);
 	}
 
+	/**
+	 * Logs EDD-specific user meta changes.
+	 *
+	 * @action update_user_meta
+	 *
+	 * @param int    $meta_id      Meta ID.
+	 * @param int    $object_id    Object ID.
+	 * @param string $meta_key     Meta key.
+	 * @param string $_meta_value  Meta value.
+	 */
 	public function callback_update_user_meta( $meta_id, $object_id, $meta_key, $_meta_value ) {
 		unset( $meta_id );
 		$this->meta( $object_id, $meta_key, $_meta_value );
 	}
 
+	/**
+	 * Logs EDD-specific user meta creations.
+	 *
+	 * @action add_user_meta
+	 *
+	 * @param int    $object_id    Object ID.
+	 * @param string $meta_key     Meta key.
+	 * @param string $_meta_value  Meta value.
+	 */
 	public function callback_add_user_meta( $object_id, $meta_key, $_meta_value ) {
 		$this->meta( $object_id, $meta_key, $_meta_value, true );
 	}
 
+	/**
+	 * Logs EDD-specific user meta deletions.
+	 *
+	 * @action delete_user_meta
+	 *
+	 * @param int    $meta_id      Meta ID.
+	 * @param int    $object_id    Object ID.
+	 * @param string $meta_key     Meta key.
+	 * @param string $_meta_value  Meta value.
+	 */
 	public function callback_delete_user_meta( $meta_id, $object_id, $meta_key, $_meta_value ) {
 		$this->meta( $object_id, $meta_key, null );
 	}
 
+	/**
+	 * Logs EDD-specific user meta activity.
+	 *
+	 * @param int    $object_id  Object ID.
+	 * @param string $key        Meta key.
+	 * @param string $value      Meta value.
+	 * @param bool   $is_add     Is this a new meta?.
+	 */
 	public function meta( $object_id, $key, $value, $is_add = false ) {
 		if ( ! in_array( $key, $this->user_meta, true ) ) {
 			return false;
@@ -529,6 +673,13 @@ class Connector_EDD extends Connector {
 		);
 	}
 
+	/**
+	 * Logs change to User API key
+	 *
+	 * @param int    $user_id  User ID.
+	 * @param string $value    API Key.
+	 * @param bool   $is_add   Is this a new API key.
+	 */
 	private function meta_edd_user_public_key( $user_id, $value, $is_add = false ) {
 		if ( is_null( $value ) ) {
 			$action       = 'revoked';
@@ -543,7 +694,7 @@ class Connector_EDD extends Connector {
 
 		$this->log(
 			sprintf(
-				// translators: Placeholder refers to a status (e.g. "revoked")
+				/* translators: %s: a status (e.g. "revoked") */
 				__( 'User API Key %s', 'stream' ),
 				$action_title
 			),

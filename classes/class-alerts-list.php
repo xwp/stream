@@ -14,7 +14,7 @@ namespace WP_Stream;
  */
 class Alerts_List {
 	/**
-	 * Hold the Plugin class
+	 * Holds instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -23,7 +23,7 @@ class Alerts_List {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
+	 * @param Plugin $plugin Instance of plugin object.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;

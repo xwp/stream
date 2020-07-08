@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for Blog actions.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Blogs
+ */
 class Connector_Blogs extends Connector {
 	/**
 	 * Connector slug
@@ -74,7 +83,7 @@ class Connector_Blogs extends Connector {
 
 			foreach ( $blogs as $blog ) {
 				$blog_details   = get_blog_details( $blog->blog_id );
-				$key            = sanitize_key( $blog_details->blogname );
+				$key            = sprintf( 'blog-%d', $blog->blog_id );
 				$labels[ $key ] = $blog_details->blogname;
 			}
 		}
@@ -87,8 +96,8 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links
-	 * @param Record $record
+	 * @param  array  $links   Previous links registered.
+	 * @param  object $record  Stream record.
 	 *
 	 * @return array
 	 */
@@ -122,15 +131,15 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action wpmu_new_blog
 	 *
-	 * @param int $blog_id
+	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_wpmu_new_blog( $blog_id ) {
 		$blog = get_blog_details( $blog_id );
 
 		$this->log(
-			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
+			/* translators: %s: site name (e.g. "FooBar Blog") */
 			_x(
-				'"%1$s" site was created',
+				'"%s" site was created',
 				'1. Site name',
 				'stream'
 			),
@@ -148,16 +157,16 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action wpmu_activate_blog
 	 *
-	 * @param int $blog_id
-	 * @param int $user_id
+	 * @param int $blog_id  Blog ID.
+	 * @param int $user_id  User ID.
 	 */
 	public function callback_wpmu_activate_blog( $blog_id, $user_id ) {
 		$blog = get_blog_details( $blog_id );
 
 		$this->log(
-			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
+			/* translators: %s: site name (e.g. "FooBar Blog") */
 			_x(
-				'"%1$s" site was registered',
+				'"%s" site was registered',
 				'1. Site name',
 				'stream'
 			),
@@ -176,9 +185,9 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action add_user_to_blog
 	 *
-	 * @param int    $user_id
-	 * @param string $role
-	 * @param int    $blog_id
+	 * @param int    $user_id  User ID.
+	 * @param string $role     User role.
+	 * @param int    $blog_id  Blog ID.
 	 */
 	public function callback_add_user_to_blog( $user_id, $role, $blog_id ) {
 		$blog = get_blog_details( $blog_id );
@@ -189,7 +198,7 @@ class Connector_Blogs extends Connector {
 		}
 
 		$this->log(
-			// translators: Placeholders refer to a user's display name, a site name, and a user role (e.g. "Jane Doe", "FooBar Blog", "subscriber")
+			/* translators: %1$s: a user's display name, %2$s: a site name, %3$s: a user role (e.g. "Jane Doe", "FooBar Blog", "subscriber") */
 			_x(
 				'%1$s was added to the "%2$s" site with %3$s capabilities',
 				'1. User\'s name, 2. Site name, 3. Role',
@@ -211,8 +220,8 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action remove_user_from_blog
 	 *
-	 * @param int $user_id
-	 * @param int $blog_id
+	 * @param int $user_id  User ID.
+	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_remove_user_from_blog( $user_id, $blog_id ) {
 		$blog = get_blog_details( $blog_id );
@@ -223,7 +232,7 @@ class Connector_Blogs extends Connector {
 		}
 
 		$this->log(
-			// translators: Placeholders refer to a user's display name, and a site name (e.g. "Jane Doe", "FooBar Blog")
+			/* translators: %1$s: a user's display name, %2$s: a site name (e.g. "Jane Doe", "FooBar Blog") */
 			_x(
 				'%1$s was removed from the "%2$s" site',
 				'1. User\'s name, 2. Site name',
@@ -244,7 +253,7 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action make_spam_blog
 	 *
-	 * @param int $blog_id
+	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_make_spam_blog( $blog_id ) {
 		$this->callback_update_blog_status( $blog_id, esc_html__( 'marked as spam', 'stream' ), 'updated' );
@@ -255,7 +264,7 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action make_ham_blog
 	 *
-	 * @param int $blog_id
+	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_make_ham_blog( $blog_id ) {
 		$this->callback_update_blog_status( $blog_id, esc_html__( 'marked as not spam', 'stream' ), 'updated' );
@@ -266,7 +275,7 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action mature_blog
 	 *
-	 * @param int $blog_id
+	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_mature_blog( $blog_id ) {
 		$this->callback_update_blog_status( $blog_id, esc_html__( 'marked as mature', 'stream' ), 'updated' );
@@ -277,7 +286,7 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action unmature_blog
 	 *
-	 * @param int $blog_id
+	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_unmature_blog( $blog_id ) {
 		$this->callback_update_blog_status( $blog_id, esc_html__( 'marked as not mature', 'stream' ), 'updated' );
@@ -288,7 +297,7 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action archive_blog
 	 *
-	 * @param int $blog_id
+	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_archive_blog( $blog_id ) {
 		$this->callback_update_blog_status( $blog_id, esc_html__( 'archived', 'stream' ), 'archive_blog' );
@@ -299,7 +308,7 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action unarchive_blog
 	 *
-	 * @param int $blog_id
+	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_unarchive_blog( $blog_id ) {
 		$this->callback_update_blog_status( $blog_id, esc_html__( 'restored from archive', 'stream' ), 'updated' );
@@ -310,7 +319,7 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action make_delete_blog
 	 *
-	 * @param int $blog_id
+	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_make_delete_blog( $blog_id ) {
 		$this->callback_update_blog_status( $blog_id, esc_html__( 'deleted', 'stream' ), 'deleted' );
@@ -321,7 +330,7 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action undelete_blog
 	 *
-	 * @param int $blog_id
+	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_make_undelete_blog( $blog_id ) {
 		$this->callback_update_blog_status( $blog_id, esc_html__( 'restored', 'stream' ), 'updated' );
@@ -332,8 +341,8 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action update_blog_public
 	 *
-	 * @param int    $blog_id
-	 * @param string $value
+	 * @param int    $blog_id  Blog ID.
+	 * @param string $value    Status flag.
 	 */
 	public function callback_update_blog_public( $blog_id, $value ) {
 		if ( $value ) {
@@ -350,15 +359,15 @@ class Connector_Blogs extends Connector {
 	 *
 	 * @action update_blog_status
 	 *
-	 * @param int    $blog_id
-	 * @param string $status
-	 * @param string $action
+	 * @param int    $blog_id  Blog ID.
+	 * @param string $status   Blog Status.
+	 * @param string $action   Action.
 	 */
 	public function callback_update_blog_status( $blog_id, $status, $action ) {
 		$blog = get_blog_details( $blog_id );
 
 		$this->log(
-			// translators: Placeholders refer to a site name, and a blog status (e.g. "FooBar Blog", "archived")
+			/* translators: %1$s: a site name, %2$s: a blog status (e.g. "FooBar Blog", "archived") */
 			_x(
 				'"%1$s" site was %2$s',
 				'1. Site name, 2. Status',

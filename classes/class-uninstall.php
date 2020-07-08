@@ -1,9 +1,18 @@
 <?php
+/**
+ * Manages the uninstallation of the plugin.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Uninstall
+ */
 class Uninstall {
 	/**
-	 * Hold Plugin class
+	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -23,14 +32,19 @@ class Uninstall {
 	 */
 	public $user_meta;
 
+	/**
+	 * Class constructor
+	 *
+	 * @param Plugin $plugin  Instance of plugin object.
+	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
 		$this->user_meta = array(
 			'edit_stream_per_page',
-			'stream_last_read', // Deprecated
-			'stream_unread_count', // Deprecated
-			'stream_user_feed_key', // Deprecated
+			'stream_last_read', // Deprecated.
+			'stream_unread_count', // Deprecated.
+			'stream_user_feed_key', // Deprecated.
 		);
 	}
 
@@ -44,7 +58,7 @@ class Uninstall {
 			$this->plugin->settings->network_options_key,
 		);
 
-		// Verify current user's permissions before proceeding
+		// Verify current user's permissions before proceeding.
 		if ( ! current_user_can( $this->plugin->admin->settings_cap ) ) {
 			wp_die(
 				esc_html__( "You don't have sufficient privileges to do this action.", 'stream' )
@@ -57,16 +71,18 @@ class Uninstall {
 			);
 		}
 
-		// Prevent this action from firing
+		// Prevent this action from firing.
 		remove_action( 'deactivate_plugin', array( 'Connector_Installer', 'callback' ), null );
 
-		// Just in case
+		// Just in case.
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
 			require_once ABSPATH . '/wp-admin/includes/plugin.php';
 		}
 
-		// Drop everything on single site installs or when network activated
-		// Otherwise only delete data relative to the current blog
+		/**
+		 * Drop everything on single site installs or when network activated
+		 * Otherwise only delete data relative to the current blog.
+		 */
 		if ( ! is_multisite() || $this->plugin->is_network_activated() ) {
 			$this->delete_all_records();
 			$this->delete_all_options();
@@ -97,7 +113,7 @@ class Uninstall {
 	/**
 	 * Delete records and record meta from a specific blog
 	 *
-	 * @param int $blog_id (optional)
+	 * @param int $blog_id  Blog ID (optional).
 	 */
 	private function delete_blog_records( $blog_id = 1 ) {
 		if ( empty( $blog_id ) || ! is_int( $blog_id ) ) {
@@ -124,23 +140,23 @@ class Uninstall {
 	private function delete_all_options() {
 		global $wpdb;
 
-		// Wildcard matches
+		// Wildcard matches.
 		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%wp_stream%';" );
 
-		// Specific options
+		// Specific options.
 		foreach ( $this->options as $option ) {
-			delete_site_option( $option ); // Supports both multisite and single site installs
+			delete_site_option( $option ); // Supports both multisite and single site installs.
 		}
 
-		// Single site installs can stop here
+		// Single site installs can stop here.
 		if ( ! is_multisite() ) {
 			return;
 		}
 
-		// Wildcard matches on network options
+		// Wildcard matches on network options.
 		$wpdb->query( "DELETE FROM {$wpdb->sitemeta} WHERE meta_key LIKE '%wp_stream%';" );
 
-		// Delete options from each blog on network
+		// Delete options from each blog on network.
 		foreach ( wp_stream_get_sites() as $blog ) {
 			$this->delete_blog_options( absint( $blog->blog_id ) );
 		}
@@ -149,7 +165,7 @@ class Uninstall {
 	/**
 	 * Delete options from a specific blog
 	 *
-	 * @param int $blog_id (optional)
+	 * @param int $blog_id  Blog ID (optional).
 	 */
 	private function delete_blog_options( $blog_id = 1 ) {
 		if ( empty( $blog_id ) || ! is_int( $blog_id ) ) {
@@ -158,10 +174,10 @@ class Uninstall {
 
 		global $wpdb;
 
-		// Wildcard matches
+		// Wildcard matches.
 		$wpdb->query( "DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%wp_stream%';" );
 
-		// Specific options
+		// Specific options.
 		foreach ( $this->options as $option ) {
 			delete_blog_option( $blog_id, $option );
 		}
@@ -173,10 +189,10 @@ class Uninstall {
 	private function delete_all_user_meta() {
 		global $wpdb;
 
-		// Wildcard matches
+		// Wildcard matches.
 		$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE '%wp_stream%';" );
 
-		// Specific user meta
+		// Specific user meta.
 		foreach ( $this->user_meta as $meta_key ) {
 			$wpdb->query(
 				$wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = %s;", $meta_key )
@@ -187,7 +203,7 @@ class Uninstall {
 	/**
 	 * Delete user meta from a specific blog
 	 *
-	 * @param int $blog_id (optional)
+	 * @param int $blog_id Blog ID (optional).
 	 */
 	private function delete_blog_user_meta( $blog_id = 1 ) {
 		if ( empty( $blog_id ) || ! is_int( $blog_id ) ) {
@@ -196,10 +212,10 @@ class Uninstall {
 
 		global $wpdb;
 
-		// Wildcard matches
+		// Wildcard matches.
 		$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE '{$wpdb->prefix}%wp_stream%';" );
 
-		// Specific user meta
+		// Specific user meta.
 		foreach ( $this->user_meta as $meta_key ) {
 			$wpdb->query(
 				$wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = {$wpdb->prefix}%s;", $meta_key )

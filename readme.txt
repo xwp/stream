@@ -1,24 +1,26 @@
 === Stream ===
-Contributors: lukecarbis, fjarrett, stream, xwp, kasparsd
+Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
-Tested up to: 5.2
-Stable tag: 3.4.2
+Tested up to: 5.4
+Stable tag: 3.4.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Planes have a black box, WordPress has Stream. When something goes wrong, you need to know how it happened.
-
+With Stream, you’re never left in the dark about changes to your WordPress site.
 
 == Description ==
 
-With Stream, you're never left in the dark about WordPress Admin activity.
+With real-time notifications and third-party integrations, Stream can proactively alert you when something goes wrong with your WordPress site. 
 
-Every logged-in user action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action or IP address.
+Designed for debugging and compliance purposes, Stream is useful for keeping tabs on your WordPress users: From activating plugins to deleting posts, to login attempts and new user creation, you can see what’s changed, who changed it and when. 
 
-For advanced users, Stream also supports a Multisite view of all activity records on your network, the ability to set exclude rules to ignore certain kinds of user activity, and a WP‑CLI command for querying records.
+The plugin records WordPress user and system action to the Stream logs.  Every logged-in user action is displayed in an activity stream and organized for easy filtering by User, Role, Context, Action or IP address. Admins can highlight entries in the Stream log—such as suspicious user activity—to investigate what’s happening in real time. Stream also allows you to configure email alerts and webhooks for integrations like Slack and IFTTT to notify you and your team when something has gone wrong.
 
-Stream is perfect for keeping tabs on your clients. When something breaks, Stream is there to help. See what changed and who changed it.
+For advanced users, Stream also supports a network view of all activity records on your Multisite, the ability to set exclude rules to ignore certain kinds of user activity, and a WP‑CLI command for querying records. 
+
+With Stream’s powerful logging, you’ll have the valuable information you need to responsibly manage your WordPress sites.
+
 
 = Built-In Tracking Integrations For Popular Plugins: =
 
@@ -30,7 +32,7 @@ Stream is perfect for keeping tabs on your clients. When something breaks, Strea
  * Jetpack
  * User Switching
  * WooCommerce
- * WordPress SEO by Yoast
+ * Yoast SEO
 
 = Built-In Tracking For Core Actions: =
 
@@ -77,6 +79,8 @@ There are several ways you can get involved to help make Stream better:
 
 Thank you for wanting to make Stream better for everyone!
 
+Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschweitzer, lukecarbis, kasparsd, bordoni, dero, faishal, rob, desaiuditd, DavidCramer, renovate-bot, marcin-lawrowski, JeffMatson, Powdered-Toast-Man, johnolek, johnbillion, greguly, pascal-klaeres, szepeviktor, rheinardkorf, frozzare, khromov, dkotter, bhubbard, stipsan, stephenharris, omniwired, kopepasah, joehoyle, eugenekireev, barryceelen, valendesigns, tlovett1, tareiking, stayallive, sayedtaqui, robbiet480, oscarssanchez, kidunot89, johnwatkins0, javorszky, jamesgol, desrosj, davelozier, davefx, cfoellmann, JustinSainton, JJJ, postphotos
+
 
 == Screenshots ==
 
@@ -86,6 +90,11 @@ Thank you for wanting to make Stream better for everyone!
 
 
 == Changelog ==
+
+= 3.4.3 - March 19, 2020 =
+
+* Fix: Stream records can be filtered by users again [#929](https://github.com/xwp/stream/issues/929), props [@tareiking](https://github.com/tareiking).
+* New: Composer releases now include the built assets [#1054](https://github.com/xwp/stream/issues/1054).
 
 = 3.4.2 - September 26, 2019 =
 
@@ -99,7 +108,7 @@ Thank you for wanting to make Stream better for everyone!
 = 3.4.0 - July 13, 2019 =
 
 * New: Add development environment and documentation, update tooling [#1016](https://github.com/xwp/stream/pull/1016).
-* New: Add [Mercator](https://github.com/humanmade/Mercator) connector [#993](https://github.com/xwp/stream/pull/993), props [@spacedmonkey](https://github.com/spacedmonkey)).
+* New: Add [Mercator](https://github.com/humanmade/Mercator) connector [#993](https://github.com/xwp/stream/pull/993), props [@spacedmonkey](https://github.com/spacedmonkey).
 * Fix: Respect the `DISALLOW_FILE_MODS` constant and prevent plugin uninstall, if set. [#997](https://github.com/xwp/stream/pull/997) fixes [#988](https://github.com/xwp/stream/issues/988), props [@lukecarbis](https://github.com/lukecarbis) and [@josephfusco](https://github.com/josephfusco).
 
 = 3.3.0 - June 18, 2019 =

@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for Taxonomies
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Taxonomies
+ */
 class Connector_Taxonomies extends Connector {
 	/**
 	 * Connector slug
@@ -86,13 +95,14 @@ class Connector_Taxonomies extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links  Previous links registered
-	 * @param Record $record Stream record
+	 * @param array  $links   Previous links registered.
+	 * @param Record $record  Stream record.
 	 *
 	 * @return array Action links
 	 */
 	public function action_links( $links, $record ) {
-		$term = get_term_by( 'term_taxonomy_id', $record->object_id, $record->context ); // wpcom_vip_get_term_by() does not indicate support for `term_taxonomy_id`
+		// wpcom_vip_get_term_by() does not indicate support for `term_taxonomy_id`.
+		$term = get_term_by( 'term_taxonomy_id', $record->object_id, $record->context );
 		if ( $record->object_id && 'deleted' !== $record->action && $term ) {
 			if ( ! is_wp_error( $term ) ) {
 				$tax_obj   = get_taxonomy( $term->taxonomy );
@@ -104,7 +114,7 @@ class Connector_Taxonomies extends Connector {
 
 				$term_id = empty( $term_id ) ? $term->term_id : $term_id;
 
-				// translators: Placeholder refers to a term singular name (e.g. "Tag")
+				/* translators: %s a term singular name (e.g. "Tag") */
 				$links[ sprintf( _x( 'Edit %s', 'Term singular name', 'stream' ), $tax_label ) ] = get_edit_term_link( $term_id, $term->taxonomy );
 				$links[ esc_html__( 'View', 'stream' ) ] = wp_stream_is_vip() ? \wpcom_vip_get_term_link( $term_id, $term->taxonomy ) : get_term_link( $term_id, $term->taxonomy );
 			}
@@ -118,9 +128,9 @@ class Connector_Taxonomies extends Connector {
 	 *
 	 * @action registered_taxonomy
 	 *
-	 * @param string       $taxonomy          Taxonomy slug
-	 * @param array|string $object_type Object type or array of object types
-	 * @param array|string $args        Array or string of taxonomy registration arguments
+	 * @param string       $taxonomy     Taxonomy slug.
+	 * @param array|string $object_type  Object type or array of object types.
+	 * @param array|string $args         Array or string of taxonomy registration arguments.
 	 */
 	public function registered_taxonomy( $taxonomy, $object_type, $args ) {
 		unset( $object_type );
@@ -138,9 +148,9 @@ class Connector_Taxonomies extends Connector {
 	 *
 	 * @action created_term
 	 *
-	 * @param integer $term_id
-	 * @param integer $tt_id
-	 * @param string  $taxonomy
+	 * @param integer $term_id   Term ID.
+	 * @param integer $tt_id     Taxonomy term ID.
+	 * @param string  $taxonomy  Taxonomy name.
 	 */
 	public function callback_created_term( $term_id, $tt_id, $taxonomy ) {
 		if ( in_array( $taxonomy, $this->get_excluded_taxonomies(), true ) ) {
@@ -153,7 +163,7 @@ class Connector_Taxonomies extends Connector {
 		$term_parent    = $term->parent;
 
 		$this->log(
-			// translators: Placeholders refer to a term name, and a taxonomy singular label (e.g. "Tags", "Genre")
+			/* translators: %1$s: a term name, %2$s: a taxonomy singular label (e.g. "Tags", "Genre") */
 			_x(
 				'"%1$s" %2$s created',
 				'1: Term name, 2: Taxonomy singular label',
@@ -171,10 +181,10 @@ class Connector_Taxonomies extends Connector {
 	 *
 	 * @action delete_term
 	 *
-	 * @param integer $term_id
-	 * @param integer $tt_id
-	 * @param string  $taxonomy
-	 * @param object  $deleted_term
+	 * @param integer $term_id       Term ID.
+	 * @param integer $tt_id         Taxonomy term ID.
+	 * @param string  $taxonomy      Taxonomy name.
+	 * @param object  $deleted_term  Deleted term object.
 	 */
 	public function callback_delete_term( $term_id, $tt_id, $taxonomy, $deleted_term ) {
 		if ( in_array( $taxonomy, $this->get_excluded_taxonomies(), true ) ) {
@@ -186,7 +196,7 @@ class Connector_Taxonomies extends Connector {
 		$taxonomy_label = strtolower( $this->context_labels[ $taxonomy ] );
 
 		$this->log(
-			// translators: Placeholders refer to a term name, and a taxonomy singular label (e.g. "Tags", "Genre")
+			/* translators: %1$s: a term name, %2$s: a taxonomy singular label (e.g. "Tags", "Genre") */
 			_x(
 				'"%1$s" %2$s deleted',
 				'1: Term name, 2: Taxonomy singular label',
@@ -204,15 +214,24 @@ class Connector_Taxonomies extends Connector {
 	 *
 	 * @action edit_term
 	 *
-	 * @param integer $term_id
-	 * @param integer $tt_id
-	 * @param string  $taxonomy
+	 * @param integer $term_id   Term ID.
+	 * @param integer $tt_id     Taxonomy term ID.
+	 * @param string  $taxonomy  Taxonomy name.
 	 */
 	public function callback_edit_term( $term_id, $tt_id, $taxonomy ) {
 		unset( $tt_id );
 		$this->cached_term_before_update = get_term( $term_id, $taxonomy );
 	}
 
+	/**
+	 * Tracks updated of taxonomy terms
+	 *
+	 * @action edited_term
+	 *
+	 * @param integer $term_id   Term ID.
+	 * @param integer $tt_id     Taxonomy term ID.
+	 * @param string  $taxonomy  Taxonomy name.
+	 */
 	public function callback_edited_term( $term_id, $tt_id, $taxonomy ) {
 		if ( in_array( $taxonomy, $this->get_excluded_taxonomies(), true ) ) {
 			return;
@@ -229,7 +248,7 @@ class Connector_Taxonomies extends Connector {
 		$term_parent    = $term->parent;
 
 		$this->log(
-			// translators: Placeholders refer to a term name, and a taxonomy singular label (e.g. "Tags", "Genre")
+			/* translators: %1$s: a term name, %2$s: a taxonomy singular label (e.g. "Tags", "Genre") */
 			_x(
 				'"%1$s" %2$s updated',
 				'1: Term name, 2: Taxonomy singular label',

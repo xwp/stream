@@ -25,7 +25,7 @@ class Alerts {
 	const ALERTS_TRIGGERED_META_KEY = 'wp_stream_alerts_triggered';
 
 	/**
-	 * Hold Plugin class
+	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -55,7 +55,7 @@ class Alerts {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
+	 * @param Plugin $plugin Instance of plugin object.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
@@ -381,7 +381,7 @@ class Alerts {
 			'public'                    => false,
 			'show_in_admin_all_list'    => true,
 			'show_in_admin_status_list' => true,
-			// translators: Placeholder refers to a number of items (e.g. "42")
+			/* translators: %s: a number of items (e.g. "42") */
 			'label_count'               => _n_noop( 'Enabled <span class="count">(%s)</span>', 'Enabled <span class="count">(%s)</span>', 'stream' ),
 		);
 
@@ -393,7 +393,7 @@ class Alerts {
 			'internal'                  => false,
 			'show_in_admin_all_list'    => true,
 			'show_in_admin_status_list' => true,
-			// translators: Placeholder refers to a number of items (e.g. "42")
+			/* translators: %s: a number of items (e.g. "42") */
 			'label_count'               => _n_noop( 'Disabled <span class="count">(%s)</span>', 'Disabled <span class="count">(%s)</span>', 'stream' ),
 		);
 
@@ -493,7 +493,7 @@ class Alerts {
 			// Set correct URL for the menu item.
 			if ( $page === $value[2] ) {
 				// This hack is not kosher, see the docblock for an explanation.
-				$submenu[ $parent ][ $key ][2] = $new_url; // override okay
+				$submenu[ $parent ][ $key ][2] = $new_url; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 				break;
 			}
 		}
@@ -755,7 +755,7 @@ class Alerts {
 		$alert_type     = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_type' );
 		$alert_status   = wp_stream_filter_input( INPUT_POST, 'wp_stream_alert_status' );
 
-		// Insert the post into the database
+		// Insert the post into the database.
 		$item    = (object) array(
 			'alert_type'   => $alert_type,
 			'alert_meta'   => array(
@@ -796,7 +796,7 @@ class Alerts {
 	}
 
 	/**
-	 *
+	 * Return HTML string of the Alert page controls.
 	 */
 	public function get_new_alert_triggers_notifications() {
 		ob_start();
@@ -826,8 +826,8 @@ class Alerts {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links Previous links registered
-	 * @param Record $record Stream record
+	 * @param array  $links   Previous links registered.
+	 * @param Record $record  Stream record.
 	 *
 	 * @return array Action links
 	 */
@@ -839,7 +839,7 @@ class Alerts {
 				$connector_posts = new \WP_Stream\Connector_Posts();
 				$post_type_name  = $connector_posts->get_post_type_name( get_post_type( $post->ID ) );
 
-				// translators: Placeholder refers to the post type singular name (e.g. "Post")
+				/* translators: %s: the post type singular name (e.g. "Post") */
 				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = admin_url( 'edit.php?post_type=wp_stream_alerts#post-' . $post->ID );
 				unset( $links[ esc_html__( 'View', 'stream' ) ] );
 			}

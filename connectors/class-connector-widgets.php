@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for Widgets
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Widgets
+ */
 class Connector_Widgets extends Connector {
 
 	/**
@@ -90,8 +99,8 @@ class Connector_Widgets extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links   Previous links registered
-	 * @param Record $record Stream record
+	 * @param array  $links   Previous links registered.
+	 * @param Record $record  Stream record.
 	 *
 	 * @return array Action links
 	 */
@@ -101,10 +110,10 @@ class Connector_Widgets extends Connector {
 			global $wp_registered_sidebars;
 
 			if ( array_key_exists( $sidebar, $wp_registered_sidebars ) ) {
-				$links[ esc_html__( 'Edit Widget Area', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar ); // xss ok (@todo fix WPCS rule)
+				$links[ esc_html__( 'Edit Widget Area', 'stream' ) ] = admin_url( 'widgets.php#' . $sidebar ); // xss ok (@todo fix WPCS rule).
 			}
-			// @todo Also old_sidebar_id and new_sidebar_id
-			// @todo Add Edit Widget link
+			// @todo Also old_sidebar_id and new_sidebar_id.
+			// @todo Add Edit Widget link.
 		}
 
 		return $links;
@@ -115,13 +124,13 @@ class Connector_Widgets extends Connector {
 	 *
 	 * @action update_option_sidebars_widgets
 	 *
-	 * @param array $old Old sidebars widgets
-	 * @param array $new New sidebars widgets
+	 * @param array $old  Old sidebars widgets.
+	 * @param array $new  New sidebars widgets.
 	 *
 	 * @return void
 	 */
 	public function callback_update_option_sidebars_widgets( $old, $new ) {
-		// Disable listener if we're switching themes
+		// Disable listener if we're switching themes.
 		if ( did_action( 'after_switch_theme' ) ) {
 			return;
 		}
@@ -151,8 +160,10 @@ class Connector_Widgets extends Connector {
 	}
 
 	/**
-	 * @param array $old
-	 * @param array $new
+	 * Processes tracked widget actions
+	 *
+	 * @param array $old  Old sidebar widgets.
+	 * @param array $new  New sidebar widgets.
 	 */
 	protected function handle_sidebars_widgets_changes( $old, $new ) {
 		unset( $old['array_version'] );
@@ -173,8 +184,8 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Track deactivation of widgets from sidebars
 	 *
-	 * @param array $old Old sidebars widgets
-	 * @param array $new New sidebars widgets
+	 * @param array $old  Old sidebars widgets.
+	 * @param array $new  New sidebars widgets.
 	 * @return void
 	 */
 	protected function handle_deactivated_widgets( $old, $new ) {
@@ -197,19 +208,19 @@ class Connector_Widgets extends Connector {
 			$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
 			if ( $name && $title ) {
-				// translators: Placeholders refer to a widget name, a widget title, and a sidebar name (e.g. "Archives", "Browse", "Footer Area 1")
+				/* translators: %1$s: a widget name, %2$s: a widget title, %3$s: a sidebar name (e.g. "Archives", "Browse", "Footer Area 1") */
 				$message = _x( '%1$s widget named "%2$s" from "%3$s" deactivated', '1: Name, 2: Title, 3: Sidebar Name', 'stream' );
 			} elseif ( $name ) {
-				// Empty title, but we have the name
-				// translators: Placeholders refer to a widget name, and a sidebar name (e.g. "Archives", "Footer Area 1")
+				// Empty title, but we have the name.
+				/* translators: %1$s: a widget name, %3$s: a sidebar name (e.g. "Archives", "Footer Area 1") */
 				$message = _x( '%1$s widget from "%3$s" deactivated', '1: Name, 3: Sidebar Name', 'stream' );
 			} elseif ( $title ) {
-				// Likely a single widget since no name is available
-				// translators: Placeholders refer to a widget title, and a sidebar name (e.g. "Browse", "Footer Area 1")
+				// Likely a single widget since no name is available.
+				/* translators: %1$s: a widget title, %2$s: a sidebar name (e.g. "Browse", "Footer Area 1") */
 				$message = _x( 'Unknown widget type named "%2$s" from "%3$s" deactivated', '2: Title, 3: Sidebar Name', 'stream' );
 			} else {
-				// Neither a name nor a title are available, so use the widget ID
-				// translators: Placeholders refer to a widget ID, and a sidebar name (e.g. "42", "Footer Area 1")
+				// Neither a name nor a title are available, so use the widget ID.
+				/* translators: %4$s: a widget ID, %3$s: a sidebar name (e.g. "42", "Footer Area 1") */
 				$message = _x( '%4$s widget from "%3$s" deactivated', '4: Widget ID, 3: Sidebar Name', 'stream' );
 			}
 
@@ -228,8 +239,8 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Track reactivation of widgets from sidebars
 	 *
-	 * @param array $old Old sidebars widgets
-	 * @param array $new New sidebars widgets
+	 * @param array $old  Old sidebars widgets.
+	 * @param array $new  New sidebars widgets.
 	 * @return void
 	 */
 	protected function handle_reactivated_widgets( $old, $new ) {
@@ -250,19 +261,19 @@ class Connector_Widgets extends Connector {
 			$title  = $this->get_widget_title( $widget_id );
 
 			if ( $name && $title ) {
-				// translators: Placeholders refer to a widget name, and a widget title (e.g. "Archives", "Browse")
+				/* translators: %1$s: a widget name, %2$s: a widget title (e.g. "Archives", "Browse") */
 				$message = _x( '%1$s widget named "%2$s" reactivated', '1: Name, 2: Title', 'stream' );
 			} elseif ( $name ) {
-				// Empty title, but we have the name
-				// translators: Placeholder refers to a widget name (e.g. "Archives")
+				// Empty title, but we have the name.
+				/* translators: %1$s: a widget name (e.g. "Archives") */
 				$message = _x( '%1$s widget reactivated', '1: Name', 'stream' );
 			} elseif ( $title ) {
-				// Likely a single widget since no name is available
-				// translators: Placeholder refers to a widget title (e.g. "Browse")
+				// Likely a single widget since no name is available.
+				/* translators: %2$s: a widget title (e.g. "Browse") */
 				$message = _x( 'Unknown widget type named "%2$s" reactivated', '2: Title', 'stream' );
 			} else {
-				// Neither a name nor a title are available, so use the widget ID
-				// translators: Placeholder refers to a widget ID (e.g. "42")
+				// Neither a name nor a title are available, so use the widget ID.
+				/* translators: %3$s: a widget ID (e.g. "42") */
 				$message = _x( '%3$s widget reactivated', '3: Widget ID', 'stream' );
 			}
 
@@ -281,8 +292,8 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Track deletion of widgets from sidebars
 	 *
-	 * @param array $old Old sidebars widgets
-	 * @param array $new New sidebars widgets
+	 * @param array $old  Old sidebars widgets.
+	 * @param array $new  New sidebars widgets.
 	 * @return void
 	 */
 	protected function handle_widget_removal( $old, $new ) {
@@ -310,19 +321,19 @@ class Connector_Widgets extends Connector {
 			$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
 			if ( $name && $title ) {
-				// translators: Placeholders refer to a widget name, a widget title, and a sidebar name (e.g. "Archives", "Browse", "Footer Area 1")
+				/* translators: %1$s: a widget name, %2$s: a widget title, %3$s: a sidebar name (e.g. "Archives", "Browse", "Footer Area 1") */
 				$message = _x( '%1$s widget named "%2$s" removed from "%3$s"', '1: Name, 2: Title, 3: Sidebar Name', 'stream' );
 			} elseif ( $name ) {
-				// Empty title, but we have the name
-				// translators: Placeholders refer to a widget name, and a sidebar name (e.g. "Archives", "Footer Area 1")
+				// Empty title, but we have the name.
+				/* translators: %1$s: a widget name, %3$s: a sidebar name (e.g. "Archives", "Footer Area 1") */
 				$message = _x( '%1$s widget removed from "%3$s"', '1: Name, 3: Sidebar Name', 'stream' );
 			} elseif ( $title ) {
-				// Likely a single widget since no name is available
-				// translators: Placeholders refer to a widget title, and a sidebar name (e.g. "Browse", "Footer Area 1")
+				// Likely a single widget since no name is available.
+				/* translators: %2$s: a widget title, %3$s: a sidebar name (e.g. "Browse", "Footer Area 1") */
 				$message = _x( 'Unknown widget type named "%2$s" removed from "%3$s"', '2: Title, 3: Sidebar Name', 'stream' );
 			} else {
-				// Neither a name nor a title are available, so use the widget ID
-				// translators: Placeholders refer to a widget ID, and a sidebar name (e.g. "42", "Footer Area 1")
+				// Neither a name nor a title are available, so use the widget ID.
+				/* translators: %4$s: a widget ID, %3$s: a sidebar name (e.g. "42", "Footer Area 1") */
 				$message = _x( '%4$s widget removed from "%3$s"', '4: Widget ID, 3: Sidebar Name', 'stream' );
 			}
 
@@ -341,8 +352,8 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Track reactivation of widgets from sidebars
 	 *
-	 * @param array $old Old sidebars widgets
-	 * @param array $new New sidebars widgets
+	 * @param array $old  Old sidebars widgets.
+	 * @param array $new  New sidebars widgets.
 	 * @return void
 	 */
 	protected function handle_widget_addition( $old, $new ) {
@@ -367,19 +378,19 @@ class Connector_Widgets extends Connector {
 			$sidebar_name = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 
 			if ( $name && $title ) {
-				// translators: Placeholders refer to a widget name, a widget title, and a sidebar name (e.g. "Archives", "Browse", "Footer Area 1")
+				/* translators: %1$s: a widget name, %2$s: a widget title, %3$s: a sidebar name (e.g. "Archives", "Browse", "Footer Area 1") */
 				$message = _x( '%1$s widget named "%2$s" added to "%3$s"', '1: Name, 2: Title, 3: Sidebar Name', 'stream' );
 			} elseif ( $name ) {
-				// Empty title, but we have the name
-				// translators: Placeholders refer to a widget name, and a sidebar name (e.g. "Archives", "Footer Area 1")
+				// Empty title, but we have the name.
+				/* translators: %1$s: a widget name, %3$s: a sidebar name (e.g. "Archives", "Footer Area 1") */
 				$message = _x( '%1$s widget added to "%3$s"', '1: Name, 3: Sidebar Name', 'stream' );
 			} elseif ( $title ) {
-				// Likely a single widget since no name is available
-				// translators: Placeholders refer to a widget title, and a sidebar name (e.g. "Browse", "Footer Area 1")
+				// Likely a single widget since no name is available.
+				/* translators: %2$s: a widget title, %3$s: a sidebar name (e.g. "Browse", "Footer Area 1") */
 				$message = _x( 'Unknown widget type named "%2$s" added to "%3$s"', '2: Title, 3: Sidebar Name', 'stream' );
 			} else {
-				// Neither a name nor a title are available, so use the widget ID
-				// translators: Placeholders refer to a widget ID, and a sidebar name (e.g. "42", "Footer Area 1")
+				// Neither a name nor a title are available, so use the widget ID.
+				/* translators: %4$s: a widget ID, %3$s: a sidebar name (e.g. "42", "Footer Area 1") */
 				$message = _x( '%4$s widget added to "%3$s"', '4: Widget ID, 3: Sidebar Name', 'stream' );
 			}
 
@@ -398,8 +409,8 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Track reordering of widgets
 	 *
-	 * @param array $old Old sidebars widgets
-	 * @param array $new New sidebars widgets
+	 * @param array $old  Old sidebars widgets.
+	 * @param array $new  New sidebars widgets.
 	 * @return void
 	 */
 	protected function handle_widget_reordering( $old, $new ) {
@@ -410,7 +421,7 @@ class Connector_Widgets extends Connector {
 				continue;
 			}
 
-			// Use intersect to ignore widget additions and removals
+			// Use intersect to ignore widget additions and removals.
 			$all_widget_ids       = array_unique( array_merge( $old[ $sidebar_id ], $new[ $sidebar_id ] ) );
 			$common_widget_ids    = array_intersect( $old[ $sidebar_id ], $new[ $sidebar_id ] );
 			$uncommon_widget_ids  = array_diff( $all_widget_ids, $common_widget_ids );
@@ -423,7 +434,7 @@ class Connector_Widgets extends Connector {
 				$sidebar_name   = isset( $labels[ $sidebar_id ] ) ? $labels[ $sidebar_id ] : $sidebar_id;
 				$old_widget_ids = $old[ $sidebar_id ];
 
-				// translators: Placeholder refers to a sidebar name (e.g. "Footer Area 1")
+				/* translators: %s: a sidebar name (e.g. "Footer Area 1") */
 				$message = _x( 'Widgets reordered in "%s"', 'Sidebar name', 'stream' );
 				$message = sprintf( $message, $sidebar_name );
 
@@ -442,8 +453,8 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Track movement of widgets to other sidebars
 	 *
-	 * @param array $old Old sidebars widgets
-	 * @param array $new New sidebars widgets
+	 * @param array $old  Old sidebars widgets.
+	 * @param array $new  New sidebars widgets.
 	 * @return void
 	 */
 	protected function handle_widget_moved( $old, $new ) {
@@ -457,7 +468,7 @@ class Connector_Widgets extends Connector {
 			$new_widget_ids = array_diff( $new[ $new_sidebar_id ], $old[ $new_sidebar_id ] );
 
 			foreach ( $new_widget_ids as $widget_id ) {
-				// Now find the sidebar that the widget was originally located in, as long it is not wp_inactive_widgets
+				// Now find the sidebar that the widget was originally located in, as long it is not wp_inactive_widgets.
 				$old_sidebar_id = null;
 				foreach ( $old as $sidebar_id => $old_widget_ids ) {
 					if ( in_array( $widget_id, $old_widget_ids, true ) ) {
@@ -479,19 +490,19 @@ class Connector_Widgets extends Connector {
 				$new_sidebar_name = isset( $labels[ $new_sidebar_id ] ) ? $labels[ $new_sidebar_id ] : $new_sidebar_id;
 
 				if ( $name && $title ) {
-					// translators: Placeholders refer to a widget name, a widget title, a sidebar name, and another sidebar name (e.g. "Archives", "Browse", "Footer Area 1", "Footer Area 2")
+					/* translators: %1$s: a widget name, %2$s: a widget title, %4$s: a sidebar name, %5$s: another sidebar name (e.g. "Archives", "Browse", "Footer Area 1", "Footer Area 2") */
 					$message = _x( '%1$s widget named "%2$s" moved from "%4$s" to "%5$s"', '1: Name, 2: Title, 4: Old Sidebar Name, 5: New Sidebar Name', 'stream' );
 				} elseif ( $name ) {
-					// Empty title, but we have the name
-					// translators: Placeholders refer to a widget name, a sidebar name, and another sidebar name (e.g. "Archives", "Footer Area 1", "Footer Area 2")
+					// Empty title, but we have the name.
+					/* translators: %1$s: a widget name, %4$s: a sidebar name, %5$s: another sidebar name (e.g. "Archives", "Footer Area 1", "Footer Area 2") */
 					$message = _x( '%1$s widget moved from "%4$s" to "%5$s"', '1: Name, 4: Old Sidebar Name, 5: New Sidebar Name', 'stream' );
 				} elseif ( $title ) {
-					// Likely a single widget since no name is available
-					// translators: Placeholders refer to a widget title, a sidebar name, and another sidebar name (e.g. "Browse", "Footer Area 1", "Footer Area 2")
+					// Likely a single widget since no name is available.
+					/* translators: %2$s: a widget title, %4$s: a sidebar name, %5$s: another sidebar name (e.g. "Browse", "Footer Area 1", "Footer Area 2") */
 					$message = _x( 'Unknown widget type named "%2$s" moved from "%4$s" to "%5$s"', '2: Title, 4: Old Sidebar Name, 5: New Sidebar Name', 'stream' );
 				} else {
-					// Neither a name nor a title are available, so use the widget ID
-					// translators: Placeholders refer to a widget ID, a sidebar name, and another sidebar name (e.g. "42", "Footer Area 1", "Footer Area 2")
+					// Neither a name nor a title are available, so use the widget ID.
+					/* translators: %3$s: a widget ID, %4$s: a sidebar name, %5$s: another sidebar name (e.g. "42", "Footer Area 1", "Footer Area 2") */
 					$message = _x( '%3$s widget moved from "%4$s" to "%5$s"', '3: Widget ID, 4: Old Sidebar Name, 5: New Sidebar Name', 'stream' );
 				}
 
@@ -515,9 +526,9 @@ class Connector_Widgets extends Connector {
 	 *
 	 * @action updated_option
 	 *
-	 * @param string $option_name
-	 * @param array  $old_value
-	 * @param array  $new_value
+	 * @param string $option_name  Option key.
+	 * @param array  $old_value    Old value.
+	 * @param array  $new_value    New value.
 	 */
 	public function callback_updated_option( $option_name, $old_value, $new_value ) {
 		if ( ! preg_match( '/^widget_(.+)$/', $option_name, $matches ) || ! is_array( $new_value ) ) {
@@ -588,9 +599,9 @@ class Connector_Widgets extends Connector {
 				$deletes[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
 			}
 		} else {
-			// Doing our best guess for tracking changes to old single widgets, assuming their options start with 'widget_'
+			// Doing our best guess for tracking changes to old single widgets, assuming their options start with 'widget_'.
 			$widget_id    = $widget_id_base;
-			$name         = $widget_id; // There aren't names available for single widgets
+			$name         = $widget_id; // There aren't names available for single widgets.
 			$title        = ! empty( $new_value['title'] ) ? $new_value['title'] : null;
 			$sidebar_id   = $this->get_widget_sidebar_id( $widget_id );
 			$old_instance = $old_value;
@@ -605,19 +616,19 @@ class Connector_Widgets extends Connector {
 		 */
 		foreach ( $updates as $update ) {
 			if ( $update['name'] && $update['title'] ) {
-				// translators: Placeholders refer to a widget name, a widget title, and a sidebar name (e.g. "Archives", "Browse", "Footer Area 1")
+				/* translators: %1$s: a widget name, %2$s: a widget title, %3$s: a sidebar name (e.g. "Archives", "Browse", "Footer Area 1") */
 				$message = _x( '%1$s widget named "%2$s" in "%3$s" updated', '1: Name, 2: Title, 3: Sidebar Name', 'stream' );
 			} elseif ( $update['name'] ) {
-				// Empty title, but we have the name
-				// translators: Placeholders refer to a widget name, and a sidebar name (e.g. "Archives", "Footer Area 1")
+				// Empty title, but we have the name.
+				/* translators: %1$s: a widget name, %3$s: a sidebar name (e.g. "Archives", "Footer Area 1") */
 				$message = _x( '%1$s widget in "%3$s" updated', '1: Name, 3: Sidebar Name', 'stream' );
 			} elseif ( $update['title'] ) {
-				// Likely a single widget since no name is available
-				// translators: Placeholders refer to a widget title, and a sidebar name (e.g. "Browse", "Footer Area 1")
+				// Likely a single widget since no name is available.
+				/* translators: %2$s: a widget title, %3$s: a sidebar name (e.g. "Browse", "Footer Area 1") */
 				$message = _x( 'Unknown widget type named "%2$s" in "%3$s" updated', '2: Title, 3: Sidebar Name', 'stream' );
 			} else {
-				// Neither a name nor a title are available, so use the widget ID
-				// translators: Placeholders refer to a widget ID, and a sidebar name (e.g. "42", "Footer Area 1")
+				// Neither a name nor a title are available, so use the widget ID.
+				/* translators: %4$s: a widget ID, %3$s: a sidebar name (e.g. "42", "Footer Area 1") */
 				$message = _x( '%4$s widget in "%3$s" updated', '4: Widget ID, 3: Sidebar Name', 'stream' );
 			}
 
@@ -643,25 +654,25 @@ class Connector_Widgets extends Connector {
 		 * actions would be useful to log.
 		 */
 		if ( $this->verbose_widget_created_deleted_actions ) {
-			// We should only do these if not captured by an update to the sidebars_widgets option
+			// We should only do these if not captured by an update to the sidebars_widgets option.
 			/**
 			 * Log created actions
 			 */
 			foreach ( $creates as $create ) {
 				if ( $create['name'] && $create['title'] ) {
-					// translators: Placeholders refer to a widget name, and a widget title (e.g. "Archives", "Browse")
+					/* translators: %1$s: a widget name, %2$s: a widget title (e.g. "Archives", "Browse") */
 					$message = _x( '%1$s widget named "%2$s" created', '1: Name, 2: Title', 'stream' );
 				} elseif ( $create['name'] ) {
-					// Empty title, but we have the name
-					// translators: Placeholder refers to a widget name (e.g. "Archives")
+					// Empty title, but we have the name.
+					/* translators: %1$s: a widget name (e.g. "Archives") */
 					$message = _x( '%1$s widget created', '1: Name', 'stream' );
 				} elseif ( $create['title'] ) {
-					// Likely a single widget since no name is available
-					// translators: Placeholder refers to a widget title (e.g. "Browse")
+					// Likely a single widget since no name is available.
+					/* translators: %2$s: a widget title (e.g. "Browse") */
 					$message = _x( 'Unknown widget type named "%2$s" created', '2: Title', 'stream' );
 				} else {
-					// Neither a name nor a title are available, so use the widget ID
-					// translators: Placeholder refers to a widget ID (e.g. "42")
+					// Neither a name nor a title are available, so use the widget ID.
+					/* translators: %3$s: a widget ID (e.g. "42") */
 					$message = _x( '%3$s widget created', '3: Widget ID', 'stream' );
 				}
 
@@ -683,19 +694,19 @@ class Connector_Widgets extends Connector {
 			 */
 			foreach ( $deletes as $delete ) {
 				if ( $delete['name'] && $delete['title'] ) {
-					// translators: Placeholders refer to a widget name, and a widget title (e.g. "Archives", "Browse")
+					/* translators: %1$s: a widget name, %2$s: a widget title (e.g. "Archives", "Browse") */
 					$message = _x( '%1$s widget named "%2$s" deleted', '1: Name, 2: Title', 'stream' );
 				} elseif ( $delete['name'] ) {
-					// Empty title, but we have the name
-					// translators: Placeholder refers to a widget name (e.g. "Archives")
+					// Empty title, but we have the name.
+					/* translators: %1$s: a widget name (e.g. "Archives") */
 					$message = _x( '%1$s widget deleted', '1: Name', 'stream' );
 				} elseif ( $delete['title'] ) {
-					// Likely a single widget since no name is available
-					// translators: Placeholder refers to a widget title (e.g. "Browse")
+					// Likely a single widget since no name is available.
+					/* translators: %2$s: a widget title (e.g. "Browse") */
 					$message = _x( 'Unknown widget type named "%2$s" deleted', '2: Title', 'stream' );
 				} else {
-					// Neither a name nor a title are available, so use the widget ID
-					// translators: Placeholder refers to a widget ID (e.g. "42")
+					// Neither a name nor a title are available, so use the widget ID.
+					/* translators: %3$s: a widget ID (e.g. "42") */
 					$message = _x( '%3$s widget deleted', '3: Widget ID', 'stream' );
 				}
 
@@ -715,7 +726,9 @@ class Connector_Widgets extends Connector {
 	}
 
 	/**
-	 * @param string $widget_id
+	 * Returns widget title.
+	 *
+	 * @param string $widget_id  Widget instance ID.
 	 *
 	 * @return string
 	 */
@@ -725,7 +738,9 @@ class Connector_Widgets extends Connector {
 	}
 
 	/**
-	 * @param string $widget_id
+	 * Returns widget name.
+	 *
+	 * @param string $widget_id  Widget instance ID.
 	 *
 	 * @return string|null
 	 */
@@ -735,7 +750,9 @@ class Connector_Widgets extends Connector {
 	}
 
 	/**
-	 * @param $widget_id
+	 * Parses widget instance ID and widget type data.
+	 *
+	 * @param string $widget_id  Widget instance ID.
 	 *
 	 * @return array|null
 	 */
@@ -751,7 +768,9 @@ class Connector_Widgets extends Connector {
 	}
 
 	/**
-	 * @param string $widget_id
+	 * Returns widget object.
+	 *
+	 * @param string $widget_id  Widget instance ID.
 	 *
 	 * @return \WP_Widget|null
 	 */
@@ -781,7 +800,7 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Returns widget instance settings
 	 *
-	 * @param string $widget_id Widget ID, ex: pages-1
+	 * @param string $widget_id  Widget ID, ex: pages-1.
 	 *
 	 * @return array|null Widget instance
 	 */
@@ -798,7 +817,7 @@ class Connector_Widgets extends Connector {
 				$instance = $settings[ $multi_number ];
 			}
 		} else {
-			// Single widgets, try our best guess at the option used
+			// Single widgets, try our best guess at the option used.
 			$potential_instance = get_option( "widget_{$widget_id}" );
 
 			if ( ! empty( $potential_instance ) && ! empty( $potential_instance['title'] ) ) {
@@ -830,7 +849,7 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Return the sidebar of a certain widget, based on widget_id
 	 *
-	 * @param string $widget_id Widget id, ex: pages-1
+	 * @param string $widget_id  Widget id, ex: pages-1.
 	 *
 	 * @return string Sidebar id
 	 */

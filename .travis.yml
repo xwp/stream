@@ -2,70 +2,54 @@ dist: xenial
 
 language: php
 
-php:
-  - "5.6"
-  - "7.0"
-  - "7.2"
-  - "7.3"
-
-services:
-  - mysql
-
-addons:
-  apt:
-    packages:
-      # For xmllint.
-      - libxml2-utils
-env:
-  - WP_VERSION=latest WP_MULTISITE=0
-  - WP_VERSION=latest WP_MULTISITE=1
-  - WP_VERSION=trunk WP_MULTISITE=0
-  - WP_VERSION=trunk WP_MULTISITE=1
+php: "7.4"
 
 jobs:
   include:
-    - name: Release Package
-      php: "7.3"
-      env: WP_VERSION=latest WP_MULTISITE=0
+
+    - stage: test
+      name: Default Test
+      after_script:
+        - test -f ./tests/reports/clover.xml && composer test-report || true
+
+    - name: Test with PHP 5.6
+      env:
+        WORDPRESS_IMAGE_VERSION: php5.6
+
+    - name: Test with PHP 7.2
+      env:
+        WORDPRESS_IMAGE_VERSION: php7.2
+
+    - stage: deploy
+      name: Tag Release
+      if: tag IS present
+      before_deploy:
+        - npm run release
       deploy:
-        # Publish a release to the distribution repository.
-        - provider: script
-          script: bash local/scripts/dist.sh
-          skip_cleanup: true
-          on:
-            repo: xwp/stream
-            all_branches: true
-        # Upload a release to a tag here as well.
-        - provider: releases
-          api_key:
-            secure: HheYiv6c8ipHzMZBTH7xcKrOwCllvJTtfiTffAPK6XubWe3Kudn6IJUv0p1gmRhWXxZ5ciJQ/sgiCRGTRm/bubHs4tS7JOmpmoTdkrXajTxyyDCKpxhtT43nie0vNF+pWqVu2yOjhDR4pwtWjpQdzEKOz0kn0XSMT+vGsKQD50w=
-          skip_cleanup: true
-          file:
-            - stream.zip
-            - stream-$TRAVIS_TAG.zip
-          on:
-            repo: xwp/stream
-            tags: true
+        provider: releases
+        api_key:
+          secure: HheYiv6c8ipHzMZBTH7xcKrOwCllvJTtfiTffAPK6XubWe3Kudn6IJUv0p1gmRhWXxZ5ciJQ/sgiCRGTRm/bubHs4tS7JOmpmoTdkrXajTxyyDCKpxhtT43nie0vNF+pWqVu2yOjhDR4pwtWjpQdzEKOz0kn0XSMT+vGsKQD50w=
+        overwrite: true
+        skip_cleanup: true
+        file:
+          - stream.zip
+          - stream-$TRAVIS_TAG.zip
+
+services:
+  - docker
 
 before_install:
+  - docker-compose pull wordpress
   - nvm install
   - nvm use
 
 install:
   - npm install
-  - export DEV_LIB_PATH="vendor/xwp/wp-dev-lib/scripts"
-  - export DEV_LIB_ONLY="phpunit"
-  - source "$DEV_LIB_PATH/travis.install.sh"
 
 script:
   - npm run lint
-  - source "$DEV_LIB_PATH/travis.script.sh"
-
-after_script:
-  - source $DEV_LIB_PATH/travis.after_script.sh
-
-before_deploy:
-  - npm run release
+  - npm run phpunit
+  - npm run phpunit-multisite
 
 notifications:
   email: false

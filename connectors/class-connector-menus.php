@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for Menus
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Menus
+ */
 class Connector_Menus extends Connector {
 	/**
 	 * Connector slug
@@ -73,6 +82,9 @@ class Connector_Menus extends Connector {
 		return $labels;
 	}
 
+	/**
+	 * Registers connection.
+	 */
 	public function register() {
 		parent::register();
 
@@ -84,8 +96,8 @@ class Connector_Menus extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param  array  $links   Previous links registered.
+	 * @param  object $record  Stream record.
 	 *
 	 * @return array             Action links
 	 */
@@ -107,14 +119,14 @@ class Connector_Menus extends Connector {
 	 *
 	 * @action wp_create_nav_menu
 	 *
-	 * @param int   $menu_id
-	 * @param array $menu_data
+	 * @param int   $menu_id    Menu ID.
+	 * @param array $menu_data  Menu data.
 	 */
 	public function callback_wp_create_nav_menu( $menu_id, $menu_data ) {
 		$name = $menu_data['menu-name'];
 
 		$this->log(
-			// translators: Placeholder refers to a menu name (e.g. "Primary Menu")
+			/* translators: %s: a menu name (e.g. "Primary Menu") */
 			__( 'Created new menu "%s"', 'stream' ),
 			compact( 'name', 'menu_id' ),
 			$menu_id,
@@ -128,8 +140,8 @@ class Connector_Menus extends Connector {
 	 *
 	 * @action wp_update_nav_menu
 	 *
-	 * @param int   $menu_id
-	 * @param array $menu_data
+	 * @param int   $menu_id    Menu ID.
+	 * @param array $menu_data  Menu data.
 	 */
 	public function callback_wp_update_nav_menu( $menu_id, $menu_data = array() ) {
 		if ( empty( $menu_data ) ) {
@@ -139,7 +151,7 @@ class Connector_Menus extends Connector {
 		$name = $menu_data['menu-name'];
 
 		$this->log(
-			// translators: Placeholder refers to a menu name (e.g. "Primary Menu")
+			/* translators: %s: a menu name (e.g. "Primary Menu") */
 			_x( 'Updated menu "%s"', 'Menu name', 'stream' ),
 			compact( 'name', 'menu_id', 'menu_data' ),
 			$menu_id,
@@ -153,9 +165,9 @@ class Connector_Menus extends Connector {
 	 *
 	 * @action delete_nav_menu
 	 *
-	 * @param object $term
-	 * @param int    $tt_id
-	 * @param object $deleted_term
+	 * @param object $term          Term.
+	 * @param int    $tt_id         Term ID.
+	 * @param object $deleted_term  Deleted term.
 	 */
 	public function callback_delete_nav_menu( $term, $tt_id, $deleted_term ) {
 		unset( $tt_id );
@@ -164,7 +176,7 @@ class Connector_Menus extends Connector {
 		$menu_id = $term->term_id;
 
 		$this->log(
-			// translators: Placeholder refers to a menu name (e.g. "Primary Menu")
+			/* translators: %s: a menu name (e.g. "Primary Menu") */
 			_x( 'Deleted "%s"', 'Menu name', 'stream' ),
 			compact( 'name', 'menu_id' ),
 			$menu_id,
@@ -178,11 +190,11 @@ class Connector_Menus extends Connector {
 	 *
 	 * @action update_option_theme_mods_{$stylesheet}
 	 *
-	 * @param array $old
-	 * @param array $new
+	 * @param array $old  Old theme data.
+	 * @param array $new  New theme data.
 	 */
 	public function callback_update_option_theme_mods( $old, $new ) {
-		// Disable if we're switching themes
+		// Disable if we're switching themes.
 		if ( did_action( 'after_switch_theme' ) ) {
 			return;
 		}
@@ -190,7 +202,7 @@ class Connector_Menus extends Connector {
 		$key = 'nav_menu_locations';
 
 		if ( ! isset( $new[ $key ] ) ) {
-			return; // Switching themes ?
+			return; // Switching themes ?.
 		}
 
 		if ( $old[ $key ] === $new[ $key ] ) {
@@ -212,7 +224,7 @@ class Connector_Menus extends Connector {
 			if ( empty( $new[ $key ][ $location_id ] ) ) {
 				$action  = 'unassigned';
 				$menu_id = isset( $old[ $key ][ $location_id ] ) ? $old[ $key ][ $location_id ] : 0;
-				// translators: Placeholders refer to a menu name, and a theme location (e.g. "Primary Menu", "primary_nav")
+				/* translators: %1$s: a menu name, %2$s: a theme location (e.g. "Primary Menu", "primary_nav") */
 				$message = _x(
 					'"%1$s" has been unassigned from "%2$s"',
 					'1: Menu name, 2: Theme location',
@@ -221,7 +233,7 @@ class Connector_Menus extends Connector {
 			} else {
 				$action  = 'assigned';
 				$menu_id = isset( $new[ $key ][ $location_id ] ) ? $new[ $key ][ $location_id ] : 0;
-				// translators: Placeholders refer to a menu name, and a theme location (e.g. "Primary Menu", "primary_nav")
+				/* translators: %1$s: a menu name, %2$s a theme location (e.g. "Primary Menu", "primary_nav") */
 				$message = _x(
 					'"%1$s" has been assigned to "%2$s"',
 					'1: Menu name, 2: Theme location',
@@ -232,7 +244,7 @@ class Connector_Menus extends Connector {
 			$menu = get_term( $menu_id, 'nav_menu' );
 
 			if ( ! $menu || is_wp_error( $menu ) ) {
-				continue; // This is a deleted menu
+				continue; // This is a deleted menu.
 			}
 
 			$name = $menu->name;

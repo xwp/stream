@@ -17,7 +17,7 @@ namespace WP_Stream;
 abstract class Alert_Type {
 
 	/**
-	 * Hold the Plugin class
+	 * Holds instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -54,7 +54,7 @@ abstract class Alert_Type {
 	 * @param Alert $alert Alert currently being worked on.
 	 */
 	public function display_fields( $alert ) {
-		// Implementation optional, but recommended
+		// Implementation optional, but recommended.
 	}
 
 	/**
@@ -63,7 +63,7 @@ abstract class Alert_Type {
 	 * @param Alert $alert Alert currently being worked on.
 	 */
 	public function save_fields( $alert ) {
-		// Implementation optional, but recommended
+		// Implementation optional, but recommended.
 	}
 
 	/**
@@ -72,7 +72,7 @@ abstract class Alert_Type {
 	 * @return bool
 	 */
 	public function is_dependency_satisfied() {
-		// Implementation optional, but recommended
+		// Implementation optional, but recommended.
 		return true;
 	}
 }

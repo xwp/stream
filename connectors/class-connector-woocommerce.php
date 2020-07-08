@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for WooCommerce
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_WooCommerce
+ */
 class Connector_Woocommerce extends Connector {
 	/**
 	 * Context name
@@ -35,6 +44,11 @@ class Connector_Woocommerce extends Connector {
 		'woocommerce_tax_rate_deleted',
 	);
 
+	/**
+	 * Taxonomies tracked by this connector.
+	 *
+	 * @var array
+	 */
 	public $taxonomies = array(
 		'product_type',
 		'product_cat',
@@ -43,6 +57,11 @@ class Connector_Woocommerce extends Connector {
 		'shop_order_status',
 	);
 
+	/**
+	 * Post-types tracked by this connector.
+	 *
+	 * @var array
+	 */
 	public $post_types = array(
 		'product',
 		'product_variation',
@@ -50,14 +69,37 @@ class Connector_Woocommerce extends Connector {
 		'shop_coupon',
 	);
 
+	/**
+	 * Is the most recently update order logged yet.
+	 *
+	 * @var boolean
+	 */
 	private $order_update_logged = false;
 
+	/**
+	 * Caches WooCommerce settings page objects.
+	 *
+	 * @var array
+	 */
 	private $settings_pages = array();
 
+	/**
+	 * Caches WooCommerce settings.
+	 *
+	 * @var array
+	 */
 	private $settings = array();
 
+	/**
+	 * Stores the WooCommerce version number.
+	 *
+	 * @var string|null
+	 */
 	private $plugin_version = null;
 
+	/**
+	 * Register connection
+	 */
 	public function register() {
 		parent::register();
 
@@ -208,8 +250,8 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links   Previous links registered
-	 * @param Record $record Stream record
+	 * @param array  $links   Previous links registered.
+	 * @param Record $record  Stream record.
 	 *
 	 * @return array Action links
 	 */
@@ -219,7 +261,7 @@ class Connector_Woocommerce extends Connector {
 			if ( $edit_post_link ) {
 				$posts_connector = new Connector_Posts();
 				$post_type_name  = $posts_connector->get_post_type_name( get_post_type( $record->object_id ) );
-				// translators: Placeholder refers to a post type singular name (e.g. "Post")
+				/* translators: %s: a post type singular name (e.g. "Post") */
 				$links[ sprintf( esc_html_x( 'Edit %s', 'Post type singular name', 'stream' ), $post_type_name ) ] = $edit_post_link;
 			}
 
@@ -236,7 +278,7 @@ class Connector_Woocommerce extends Connector {
 		$option_section = $record->get_meta( 'section', true );
 
 		if ( $option_key && $option_tab ) {
-			// translators: Placeholder refers to a context (e.g. "Attribute")
+			/* translators: %s a context (e.g. "Attribute") */
 			$text = sprintf( esc_html__( 'Edit WooCommerce %s', 'stream' ), $context_labels[ $record->context ] );
 			$url  = add_query_arg(
 				array(
@@ -244,7 +286,7 @@ class Connector_Woocommerce extends Connector {
 					'tab'     => $option_tab,
 					'section' => $option_section,
 				),
-				admin_url( 'admin.php' ) // Not self_admin_url here, as WooCommerce doesn't exist in Network Admin
+				admin_url( 'admin.php' ) // Not self_admin_url here, as WooCommerce doesn't exist in Network Admin.
 			);
 
 			$links[ $text ] = $url . '#wp-stream-highlight:' . $option_key;
@@ -259,7 +301,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @filter wp_stream_posts_exclude_post_types
 	 *
-	 * @param array $post_types Ignored post types
+	 * @param array $post_types  Ignored post types.
 	 *
 	 * @return array Filtered post types
 	 */
@@ -275,7 +317,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @filter wp_stream_commnent_exclude_comment_types
 	 *
-	 * @param array $comment_types Ignored post types
+	 * @param array $comment_types  Ignored post types.
 	 *
 	 * @return array Filtered post types
 	 */
@@ -290,27 +332,27 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action transition_post_status
 	 *
-	 * @param string   $new
-	 * @param string   $old
-	 * @param \WP_Post $post
+	 * @param string   $new   New status.
+	 * @param string   $old   Old status.
+	 * @param \WP_Post $post  Post object.
 	 */
 	public function callback_transition_post_status( $new, $old, $post ) {
-		// Only track orders
+		// Only track orders.
 		if ( 'shop_order' !== $post->post_type ) {
 			return;
 		}
 
-		// Don't track customer actions
+		// Don't track customer actions.
 		if ( ! is_admin() ) {
 			return;
 		}
 
-		// Don't track minor status change actions
+		// Don't track minor status change actions.
 		if ( in_array( wp_stream_filter_input( INPUT_GET, 'action' ), array( 'mark_processing', 'mark_on-hold', 'mark_completed' ), true ) || defined( 'DOING_AJAX' ) ) {
 			return;
 		}
 
-		// Don't log updates when more than one happens at the same time
+		// Don't log updates when more than one happens at the same time.
 		if ( $post->ID === $this->order_update_logged ) {
 			return;
 		}
@@ -318,7 +360,7 @@ class Connector_Woocommerce extends Connector {
 		if ( in_array( $new, array( 'auto-draft', 'draft', 'inherit' ), true ) ) {
 			return;
 		} elseif ( 'auto-draft' === $old && 'publish' === $new ) {
-			// translators: Placeholder refers to an order title (e.g. "Order #42")
+			/* translators: %s: an order title (e.g. "Order #42") */
 			$message = esc_html_x(
 				'%s created',
 				'Order title',
@@ -326,7 +368,7 @@ class Connector_Woocommerce extends Connector {
 			);
 			$action  = 'created';
 		} elseif ( 'trash' === $new ) {
-			// translators: Placeholder refers to an order title (e.g. "Order #42")
+			/* translators: %s: an order title (e.g. "Order #42") */
 			$message = esc_html_x(
 				'%s trashed',
 				'Order title',
@@ -334,7 +376,7 @@ class Connector_Woocommerce extends Connector {
 			);
 			$action  = 'trashed';
 		} elseif ( 'trash' === $old && 'publish' === $new ) {
-			// translators: Placeholder refers to an order title (e.g. "Order #42")
+			/* translators: %s: an order title (e.g. "Order #42") */
 			$message = esc_html_x(
 				'%s restored from the trash',
 				'Order title',
@@ -342,7 +384,7 @@ class Connector_Woocommerce extends Connector {
 			);
 			$action  = 'untrashed';
 		} else {
-			// translators: Placeholder refers to an order title (e.g. "Order #42")
+			/* translators: %s: an order title (e.g. "Order #42") */
 			$message = esc_html_x(
 				'%s updated',
 				'Order title',
@@ -380,17 +422,17 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action deleted_post
 	 *
-	 * @param int $post_id
+	 * @param int $post_id  Post ID.
 	 */
 	public function callback_deleted_post( $post_id ) {
 		$post = get_post( $post_id );
 
-		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing
+		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing.
 		if ( ! ( $post instanceof \WP_Post ) || 'shop_order' !== $post->post_type ) {
 			return;
 		}
 
-		// Ignore auto-drafts that are deleted by the system, see issue-293
+		// Ignore auto-drafts that are deleted by the system, see issue-293.
 		if ( 'auto-draft' === $post->post_status ) {
 			return;
 		}
@@ -400,7 +442,7 @@ class Connector_Woocommerce extends Connector {
 		$order_type_name = esc_html__( 'order', 'stream' );
 
 		$this->log(
-			// translators: Placeholder refers to an order title (e.g. "Order #42")
+			/* translators: %s: an order title (e.g. "Order #42") */
 			_x(
 				'"%s" deleted from trash',
 				'Order title',
@@ -421,17 +463,17 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_order_status_changed
 	 *
-	 * @param int    $order_id
-	 * @param string $old
-	 * @param string $new
+	 * @param int    $order_id  Order ID.
+	 * @param string $old       Old status.
+	 * @param string $new       New status.
 	 */
 	public function callback_woocommerce_order_status_changed( $order_id, $old, $new ) {
-		// Don't track customer actions
+		// Don't track customer actions.
 		if ( ! is_admin() ) {
 			return;
 		}
 
-		// Don't track new statuses
+		// Don't track new statuses.
 		if ( empty( $old ) ) {
 			return;
 		}
@@ -446,7 +488,7 @@ class Connector_Woocommerce extends Connector {
 			$old_status_name = $old_status->name;
 		}
 
-		// translators: Placeholders refer to an order title, and order status, and another order status (e.g. "Order #42", "processing", "complete")
+		/* translators: %1$s: an order title, %2$s: order status, %3$s: another order status (e.g. "Order #42", "processing", "complete") */
 		$message = esc_html_x(
 			'%1$s status changed from %2$s to %3$s',
 			'1. Order title, 2. Old status, 3. New status',
@@ -479,12 +521,12 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_attribute_added
 	 *
-	 * @param int   $attribute_id
-	 * @param array $attribute
+	 * @param int   $attribute_id  Attribute ID.
+	 * @param array $attribute     Attribute data.
 	 */
 	public function callback_woocommerce_attribute_added( $attribute_id, $attribute ) {
 		$this->log(
-			// translators: Placeholder refers to a term name (e.g. "color")
+			/* translators: %s: a term name (e.g. "color") */
 			_x(
 				'"%s" product attribute created',
 				'Term name',
@@ -502,12 +544,12 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_attribute_updated
 	 *
-	 * @param int   $attribute_id
-	 * @param array $attribute
+	 * @param int   $attribute_id  Attribute ID.
+	 * @param array $attribute     Attribute data.
 	 */
 	public function callback_woocommerce_attribute_updated( $attribute_id, $attribute ) {
 		$this->log(
-			// translators: Placeholder refers to a term name (e.g. "color")
+			/* translators: %s a term name (e.g. "color") */
 			_x(
 				'"%s" product attribute updated',
 				'Term name',
@@ -525,12 +567,12 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_attribute_updated
 	 *
-	 * @param int    $attribute_id
-	 * @param string $attribute_name
+	 * @param int    $attribute_id    Attribute ID.
+	 * @param string $attribute_name  Attribute name.
 	 */
 	public function callback_woocommerce_attribute_deleted( $attribute_id, $attribute_name ) {
 		$this->log(
-			// translators: Placeholder refers to a term name (e.g. "color")
+			/* translators: %s: a term name (e.g. "color") */
 			_x(
 				'"%s" product attribute deleted',
 				'Term name',
@@ -550,12 +592,12 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_tax_rate_added
 	 *
-	 * @param int   $tax_rate_id
-	 * @param array $tax_rate
+	 * @param int   $tax_rate_id  Tax Rate ID.
+	 * @param array $tax_rate     Tax Rate data.
 	 */
 	public function callback_woocommerce_tax_rate_added( $tax_rate_id, $tax_rate ) {
 		$this->log(
-			// translators: Placeholder refers to a tax rate name (e.g. "GST")
+			/* translators: %4$s: a tax rate name (e.g. "GST") */
 			_x(
 				'"%4$s" tax rate created',
 				'Tax rate name',
@@ -573,12 +615,12 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_tax_rate_updated
 	 *
-	 * @param int   $tax_rate_id
-	 * @param array $tax_rate
+	 * @param int   $tax_rate_id  Tax Rate ID.
+	 * @param array $tax_rate     Tax Rate data.
 	 */
 	public function callback_woocommerce_tax_rate_updated( $tax_rate_id, $tax_rate ) {
 		$this->log(
-			// translators: Placeholder refers to a tax rate name (e.g. "GST")
+			/* translators: %4$s: a tax rate name (e.g. "GST") */
 			_x(
 				'"%4$s" tax rate updated',
 				'Tax rate name',
@@ -596,7 +638,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_tax_rate_updated
 	 *
-	 * @param int $tax_rate_id
+	 * @param int $tax_rate_id  Tax Rate ID.
 	 */
 	public function callback_woocommerce_tax_rate_deleted( $tax_rate_id ) {
 		global $wpdb;
@@ -611,7 +653,7 @@ class Connector_Woocommerce extends Connector {
 		);
 
 		$this->log(
-			// translators: Placeholder refers to a tax rate name (e.g. "GST")
+			/* translators: %4$s: a tax rate name (e.g. "GST") */
 			_x(
 				'"%s" tax rate deleted',
 				'Tax rate name',
@@ -631,7 +673,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @filter wp_stream_record_array
 	 *
-	 * @param array $recordarr Record data to be inserted
+	 * @param array $recordarr  Record data to be inserted.
 	 *
 	 * @return array Filtered record data
 	 */
@@ -641,7 +683,7 @@ class Connector_Woocommerce extends Connector {
 				continue;
 			}
 
-			// Change connector::posts records
+			// Change connector::posts records.
 			if ( 'posts' === $record['connector'] && in_array( $record['context'], $this->post_types, true ) ) {
 				$recordarr[ $key ]['connector'] = $this->name;
 			} elseif ( 'taxonomies' === $record['connector'] && in_array( $record['context'], $this->taxonomies, true ) ) {
@@ -658,6 +700,13 @@ class Connector_Woocommerce extends Connector {
 		return $recordarr;
 	}
 
+	/**
+	 * Track WooCommerce-specific option changes.
+	 *
+	 * @param string $option_key   Option key.
+	 * @param string $old_value    Old value.
+	 * @param string $value        New value.
+	 */
 	public function callback_updated_option( $option_key, $old_value, $value ) {
 		$options = array( $option_key );
 
@@ -673,7 +722,7 @@ class Connector_Woocommerce extends Connector {
 			}
 
 			$this->log(
-				// translators: Placeholders refer to a setting name and a setting type (e.g. "Direct Deposit", "Payment Method")
+				/* translators: %1$s: a setting name, %2$s: a setting type (e.g. "Direct Deposit", "Payment Method") */
 				__( '"%1$s" %2$s updated', 'stream' ),
 				array(
 					'label'     => $this->settings[ $option ]['title'],
@@ -692,6 +741,9 @@ class Connector_Woocommerce extends Connector {
 		}
 	}
 
+	/**
+	 * Loads the WooCommerce admin settings.
+	 */
 	public function get_woocommerce_settings_fields() {
 		if ( ! defined( 'WC_VERSION' ) || ! class_exists( 'WC_Admin_Settings' ) ) {
 			return false;
@@ -714,8 +766,10 @@ class Connector_Woocommerce extends Connector {
 			$settings_pages = array();
 
 			foreach ( \WC_Admin_Settings::get_settings_pages() as $page ) {
-				// Get ID / Label of the page, since they're protected, by hacking into
-				// the callback filter for 'woocommerce_settings_tabs_array'
+				/**
+				 * Get ID / Label of the page, since they're protected, by hacking into
+				 * the callback filter for 'woocommerce_settings_tabs_array'.
+				 */
 				$info       = $page->add_settings_page( array() );
 				$page_id    = key( $info );
 				$page_label = current( $info );
@@ -727,7 +781,7 @@ class Connector_Woocommerce extends Connector {
 
 				$settings_pages[ $page_id ] = $page_label;
 
-				// Remove non-fields ( sections, titles and whatever )
+				// Remove non-fields ( sections, titles and whatever ).
 				$fields = array();
 
 				foreach ( $sections as $section_key => $section_label ) {
@@ -750,11 +804,11 @@ class Connector_Woocommerce extends Connector {
 					}
 				}
 
-				// Store fields in the global array to be searched later
+				// Store fields in the global array to be searched later.
 				$settings = array_merge( $settings, $fields );
 			}
 
-			// Provide additional context for each of the settings pages
+			// Provide additional context for each of the settings pages.
 			array_walk(
 				$settings_pages,
 				function( &$value ) {
@@ -762,7 +816,7 @@ class Connector_Woocommerce extends Connector {
 				}
 			);
 
-			// Load Payment Gateway Settings
+			// Load Payment Gateway Settings.
 			$payment_gateway_settings = array();
 			$payment_gateways         = $woocommerce->payment_gateways();
 
@@ -781,7 +835,7 @@ class Connector_Woocommerce extends Connector {
 
 			$settings = array_merge( $settings, $payment_gateway_settings );
 
-			// Load Shipping Method Settings
+			// Load Shipping Method Settings.
 			$shipping_method_settings = array();
 			$shipping_methods         = $woocommerce->shipping();
 
@@ -800,7 +854,7 @@ class Connector_Woocommerce extends Connector {
 
 			$settings = array_merge( $settings, $shipping_method_settings );
 
-			// Load Email Settings
+			// Load Email Settings.
 			$email_settings = array();
 			$emails         = $woocommerce->mailer();
 
@@ -819,14 +873,14 @@ class Connector_Woocommerce extends Connector {
 
 			$settings = array_merge( $settings, $email_settings );
 
-			// Tools page
+			// Tools page.
 			$tools_page = array(
 				'tools' => esc_html__( 'Tools', 'stream' ),
 			);
 
 			$settings_pages = array_merge( $settings_pages, $tools_page );
 
-			// Cache the results
+			// Cache the results.
 			$settings_cache = array(
 				'settings'       => $settings,
 				'settings_pages' => $settings_pages,

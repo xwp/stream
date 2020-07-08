@@ -1,32 +1,57 @@
 <?php
+/**
+ * Manages functionality for the Stream Admin pages on both
+ * single and multi-sites.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Network
+ */
 class Network {
 	/**
-	 * Hold Plugin class
+	 * Holds instance of plugin object
 	 *
 	 * @var Plugin
 	 */
 	public $plugin;
 
+	/**
+	 * Network page slug
+	 *
+	 * @var string
+	 */
 	public $network_settings_page_slug = 'wp_stream_network_settings';
 
+	/**
+	 * Default setting page slug
+	 *
+	 * @var string
+	 */
 	public $default_settings_page_slug = 'wp_stream_default_settings';
 
+	/**
+	 * Class constructor
+	 *
+	 * @param Plugin $plugin  Instance of plugin object.
+	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
-		// Always add default site_id/blog_id params when multisite
+		// Always add default site_id/blog_id params when multisite.
 		if ( is_multisite() ) {
 			add_filter( 'wp_stream_query_args', array( $this, 'network_query_args' ) );
 		}
 
-		// Bail early if not network-activated
+		// Bail early if not network-activated.
 		if ( ! $this->is_network_activated() ) {
 			return;
 		}
 
-		// Actions
+		// Actions.
 		add_action( 'init', array( $this, 'ajax_network_admin' ) );
 		add_action( 'network_admin_menu', array( $this->plugin->admin, 'register_menu' ) );
 		add_action( 'network_admin_menu', array( $this, 'admin_menu_screens' ) );
@@ -36,7 +61,7 @@ class Network {
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
 		add_action( 'update_site_option_' . $this->plugin->settings->network_options_key, array( $this, 'updated_option_ttl_remove_records' ), 10, 3 );
 
-		// Filters
+		// Filters.
 		add_filter( 'wp_stream_blog_id_logged', array( $this, 'blog_id_logged' ) );
 		add_filter( 'wp_stream_admin_page_title', array( $this, 'network_admin_page_title' ) );
 		add_filter( 'wp_stream_list_table_screen_id', array( $this, 'list_table_screen_id' ) );
@@ -101,7 +126,7 @@ class Network {
 	 *
 	 * @action admin_bar_menu
 	 *
-	 * @param object $admin_bar
+	 * @param object $admin_bar Admin bar object.
 	 *
 	 * @return void
 	 */
@@ -128,7 +153,7 @@ class Network {
 	}
 
 	/**
-	 * Add Network Settings and Default Settings menu items
+	 * Add Network Settings and Default Settings menu pages
 	 *
 	 * @return array
 	 */
@@ -153,9 +178,9 @@ class Network {
 	/**
 	 * Remove records when records TTL is shortened
 	 *
-	 * @param string $option_key
-	 * @param array  $old_value
-	 * @param array  $new_value
+	 * @param string $option_key  Unused.
+	 * @param array  $new_value   New value.
+	 * @param array  $old_value   Old value.
 	 *
 	 * @action update_option_wp_stream
 	 * @return void
@@ -168,7 +193,7 @@ class Network {
 	/**
 	 * Adjust the action of the settings form when in the Network Admin
 	 *
-	 * @param $action
+	 * @param string $action Query string.
 	 *
 	 * @return string
 	 */
@@ -189,7 +214,7 @@ class Network {
 	/**
 	 * Add a description to each of the Settings pages in the Network Admin
 	 *
-	 * @param $description
+	 * @param string $description  Description of the current page.
 	 *
 	 * @return string
 	 */
@@ -215,7 +240,7 @@ class Network {
 	/**
 	 * Adjusts the settings fields displayed in various network admin screens
 	 *
-	 * @param $fields
+	 * @param array $fields  Page settings fields.
 	 *
 	 * @return mixed
 	 */
@@ -254,7 +279,7 @@ class Network {
 			)
 		);
 
-		// Remove settings based on context
+		// Remove settings based on context.
 		if ( $this->plugin->settings->network_options_key === $this->plugin->settings->option_key ) {
 			$hidden_options = $network_hidden_options;
 		} else {
@@ -273,7 +298,7 @@ class Network {
 			}
 		}
 
-		// Add settings based on context
+		// Add settings based on context.
 		if ( $this->plugin->settings->network_options_key === $this->plugin->settings->option_key ) {
 			$new_fields['general']['fields'][] = array(
 				'name'        => 'site_access',
@@ -287,7 +312,7 @@ class Network {
 			$fields = array_merge_recursive( $new_fields, $fields );
 		}
 
-		// Remove empty settings sections
+		// Remove empty settings sections.
 		foreach ( $fields as $section_key => $section ) {
 			if ( empty( $section['fields'] ) ) {
 				unset( $fields[ $section_key ] );
@@ -301,6 +326,8 @@ class Network {
 	 * Get translations of serialized Stream Network settings
 	 *
 	 * @filter wp_stream_serialized_labels
+	 *
+	 * @param array $labels  Setting labels.
 	 *
 	 * @return array Multidimensional array of fields
 	 */
@@ -329,11 +356,13 @@ class Network {
 			$this->default_settings_page_slug,
 		);
 
-		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers, true ) ) { // CSRF okay
+		// @codingStandardsIgnoreLine
+		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers, true ) ) {
 			return;
 		}
 
-		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null; // CSRF okay
+		// @codingStandardsIgnoreLine
+		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null;
 
 		if ( $options ) {
 
@@ -372,7 +401,7 @@ class Network {
 
 		$go_back = add_query_arg( 'settings-updated', 'true', wp_get_referer() );
 
-		wp_redirect( $go_back );
+		wp_safe_redirect( $go_back );
 
 		exit;
 	}
@@ -382,7 +411,7 @@ class Network {
 	 *
 	 * @filter wp_stream_list_table_filters
 	 *
-	 * @param $filters
+	 * @param array $filters  Filters.
 	 *
 	 * @return array
 	 */
@@ -393,7 +422,7 @@ class Network {
 
 		$blogs = array();
 
-		// Display network blog as the first option
+		// Display network blog as the first option.
 		$network_blog = $this->get_network_blog();
 
 		$blogs[ $network_blog->blog_id ] = array(
@@ -401,7 +430,7 @@ class Network {
 			'disabled' => '',
 		);
 
-		// add all sites
+		// Add all sites.
 		foreach ( wp_stream_get_sites() as $blog ) {
 			$blog_data = get_blog_details( $blog->blog_id );
 
@@ -422,7 +451,7 @@ class Network {
 	/**
 	 * Add the Site toggle to screen options in network admin
 	 *
-	 * @param $filters
+	 * @param array $filters Filters.
 	 *
 	 * @return array
 	 */
@@ -437,7 +466,7 @@ class Network {
 	/**
 	 * Add the network suffix to the $screen_id when in the network admin
 	 *
-	 * @param $screen_id
+	 * @param int $screen_id Screen ID.
 	 *
 	 * @return string
 	 */
@@ -454,6 +483,8 @@ class Network {
 	/**
 	 * Set blog_id for network admin activity
 	 *
+	 * @param int $blog_id  Blog ID.
+	 *
 	 * @return int
 	 */
 	public function blog_id_logged( $blog_id ) {
@@ -465,7 +496,7 @@ class Network {
 	 *
 	 * @filter wp_stream_query_args
 	 *
-	 * @param array $args
+	 * @param array $args  Site arguments.
 	 *
 	 * @return array
 	 */
@@ -481,13 +512,13 @@ class Network {
 	 *
 	 * @filter wp_stream_admin_page_title
 	 *
-	 * @param string $page_title
+	 * @param string $page_title  Page title.
 	 *
 	 * @return string
 	 */
 	public function network_admin_page_title( $page_title ) {
 		if ( is_network_admin() ) {
-			// translators: Placeholder refers to a number of sites on the network (e.g. "42")
+			/* translators: %d: number of sites on the network (e.g. "42") */
 			$site_count = sprintf( _n( '%d site', '%d sites', get_blog_count(), 'stream' ), number_format( get_blog_count() ) );
 			$page_title = sprintf( '%s (%s)', $page_title, $site_count );
 		}
@@ -498,7 +529,7 @@ class Network {
 	/**
 	 * Add the Site column to the network stream records
 	 *
-	 * @param $columns
+	 * @param array $columns  Columns data.
 	 *
 	 * @return mixed
 	 */
@@ -519,7 +550,7 @@ class Network {
 	/**
 	 * Prevent the Blogs connector from loading when not in Network Admin
 	 *
-	 * @param $connectors
+	 * @param array $connectors  Connectors.
 	 *
 	 * @return mixed
 	 */

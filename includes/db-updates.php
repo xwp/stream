@@ -1,11 +1,17 @@
 <?php
 /**
+ * Defines DB migrations.
+ *
+ * @package WP_Stream
+ */
+
+/**
  * Version 3.0.8
  *
  * Force update for older versions to call \dbdelta in install() method to fix column widths.
  *
- * @param string $db_version
- * @param string $current_version
+ * @param string $db_version       New database version.
+ * @param string $current_version  Current database version.
  *
  * @return string
  */
@@ -19,8 +25,8 @@ function wp_stream_update_auto_308( $db_version, $current_version ) {
 /**
  * Version 3.0.2
  *
- * @param string $db_version
- * @param string $current_version
+ * @param string $db_version       New database version.
+ * @param string $current_version  Current database version.
  *
  * @return string
  */
@@ -62,15 +68,15 @@ function wp_stream_update_302( $db_version, $current_version ) {
  *
  * Update from 1.4.9
  *
- * @param string $db_version
- * @param string $current_version
+ * @param string $db_version       New database version.
+ * @param string $current_version  Current database version.
  *
  * @return string
  */
 function wp_stream_update_auto_300( $db_version, $current_version ) {
 	global $wpdb;
 
-	// Get only the author_meta values that are double-serialized
+	// Get only the author_meta values that are double-serialized.
 	$wpdb->query( "RENAME TABLE {$wpdb->base_prefix}stream TO {$wpdb->base_prefix}stream_tmp, {$wpdb->base_prefix}stream_context TO {$wpdb->base_prefix}stream_context_tmp" );
 
 	$plugin = wp_stream_get_instance();

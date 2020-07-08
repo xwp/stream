@@ -1,16 +1,26 @@
 <?php
+/**
+ * Validates and loads core connectors, integrated connectors, and
+ * connectors registered using the "wp_stream_connectors" hook.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connectors
+ */
 class Connectors {
 	/**
-	 * Hold Plugin class
+	 * Holds instance of plugin object
 	 *
 	 * @var Plugin
 	 */
 	public $plugin;
 
 	/**
-	 * Connectors registered
+	 * Registered connectors.
 	 *
 	 * @var array
 	 */
@@ -25,6 +35,7 @@ class Connectors {
 
 	/**
 	 * Action taxonomy terms
+	 *
 	 * Holds slug to localized label association
 	 *
 	 * @var array
@@ -45,7 +56,7 @@ class Connectors {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
+	 * @param Plugin $plugin Instance of plugin object.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
@@ -57,7 +68,9 @@ class Connectors {
 	 */
 	public function load_connectors() {
 		$connectors = array(
-			// Core
+			/**
+			 * Core Connectors
+			 */
 			'blogs',
 			'comments',
 			'editor',
@@ -70,7 +83,9 @@ class Connectors {
 			'users',
 			'widgets',
 
-			// Extras
+			/**
+			 * Integrated Connectors
+			 */
 			'acf',
 			'bbpress',
 			'buddypress',
@@ -85,28 +100,36 @@ class Connectors {
 
 		$classes = array();
 		foreach ( $connectors as $connector ) {
+			// Load connector class file.
 			include_once $this->plugin->locations['dir'] . '/connectors/class-connector-' . $connector . '.php';
+
+			// Set fully qualified class name.
 			$class_name = sprintf( '\WP_Stream\Connector_%s', str_replace( '-', '_', $connector ) );
+
+			// Bail if no class loaded.
 			if ( ! class_exists( $class_name ) ) {
 				continue;
 			}
+
+			// Initialize connector.
 			$class = new $class_name( $this->plugin->log );
 
-			// Check if the Connector extends WP_Stream\Connector
+			// Check if the connector class extends WP_Stream\Connector.
 			if ( ! is_subclass_of( $class, 'WP_Stream\Connector' ) ) {
 				continue;
 			}
 
-			// Check if the Connector is allowed to be registered in the WP Admin
+			// Check if the connector events are allowed to be registered in the WP Admin.
 			if ( is_admin() && ! $class->register_admin ) {
 				continue;
 			}
 
-			// Check if the Connector is allowed to be registered in the WP Frontend
+			// Check if the connector events are allowed to be registered in the WP Frontend.
 			if ( ! is_admin() && ! $class->register_frontend ) {
 				continue;
 			}
 
+			// Run any final validations the connector may have before used.
 			if ( $class->is_dependency_satisfied() ) {
 				$classes[ $class->name ] = $class;
 			}
@@ -130,39 +153,41 @@ class Connectors {
 			$this->term_labels['stream_connector'][ $connector->name ] = $connector->get_label();
 		}
 
-		// Get excluded connectors
+		// Get excluded connectors.
 		$excluded_connectors = array();
 
 		foreach ( $this->connectors as $connector ) {
+
+			// Register error for invalid any connector class.
 			if ( ! method_exists( $connector, 'get_label' ) ) {
-				// translators: Placeholder refers to a Connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
+				/* translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress") */
 				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the get_label method.', 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'register' ) ) {
-				// translators: Placeholder refers to a Connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
+				/* translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress") */
 				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the register method.', 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'get_context_labels' ) ) {
-				// translators: Placeholder refers to a Connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
+				/* translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress") */
 				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the get_context_labels method.', 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 			if ( ! method_exists( $connector, 'get_action_labels' ) ) {
-				// translators: Placeholder refers to a Connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
+				/* translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress") */
 				$this->plugin->admin->notice( sprintf( __( '%s class wasn\'t loaded because it doesn\'t implement the get_action_labels method.', 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 
 			// Check if the connectors extends the Connector class, if not skip it.
 			if ( ! is_subclass_of( $connector, '\WP_Stream\Connector' ) ) {
-				// translators: Placeholder refers to a Connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress")
+				/* translators: %s: connector class name, intended to provide help to developers (e.g. "Connector_BuddyPress") */
 				$this->plugin->admin->notice( sprintf( __( '%1$s class wasn\'t loaded because it doesn\'t extends the %2$s class.', 'stream' ), $connector->name, 'Connector' ), true );
 				continue;
 			}
 
-			// Store connector label
+			// Store connector label.
 			if ( ! in_array( $connector->name, $this->term_labels['stream_connector'], true ) ) {
 				$this->term_labels['stream_connector'][ $connector->name ] = $connector->get_label();
 			}
@@ -185,10 +210,10 @@ class Connectors {
 
 			$connector->register();
 
-			// Link context labels to their connector
+			// Link context labels to their connector.
 			$this->contexts[ $connector->name ] = $connector->get_context_labels();
 
-			// Add new terms to our label lookup array
+			// Add new terms to our label lookup array.
 			$this->term_labels['stream_action']  = array_merge(
 				$this->term_labels['stream_action'],
 				$connector->get_action_labels()

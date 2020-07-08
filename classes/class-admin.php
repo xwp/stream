@@ -1,4 +1,9 @@
 <?php
+/**
+ * Centralized manager for WordPress backend functionality.
+ *
+ * @package WP_Stream
+ */
 
 namespace WP_Stream;
 
@@ -8,10 +13,13 @@ use DateInterval;
 use \WP_CLI;
 use \WP_Roles;
 
+/**
+ * Class - Admin
+ */
 class Admin {
 
 	/**
-	 * Hold Plugin class
+	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -118,7 +126,7 @@ class Admin {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
+	 * @param Plugin $plugin Instance of plugin object.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
@@ -183,7 +191,11 @@ class Admin {
 			)
 		);
 
-		// Uninstall Streams and Deactivate plugin.
+		/**
+		 * Uninstall Streams and Deactivate plugin.
+		 *
+		 * @todo Confirm if variable assignment is necessary.
+		 */
 		$uninstall = $this->plugin->db->driver->purge_storage( $this->plugin );
 
 		// Auto purge setup.
@@ -242,7 +254,7 @@ class Admin {
 	 */
 	public function notice( $message, $is_error = true ) {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			$message = strip_tags( $message );
+			$message = wp_strip_all_tags( $message );
 
 			if ( $is_error ) {
 				WP_CLI::warning( $message );
@@ -380,7 +392,7 @@ class Admin {
 	 *
 	 * @action admin_enqueue_scripts
 	 *
-	 * @param string $hook
+	 * @param string $hook  Current hook.
 	 *
 	 * @return void
 	 */
@@ -393,9 +405,21 @@ class Admin {
 		$file_tmpl = 'ui/lib/timeago/locales/jquery.timeago.%s.js';
 
 		if ( file_exists( $this->plugin->locations['dir'] . sprintf( $file_tmpl, $locale ) ) ) {
-			wp_register_script( 'wp-stream-timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, $locale ), array( 'wp-stream-timeago' ), '1' );
+			wp_register_script(
+				'wp-stream-timeago-locale',
+				$this->plugin->locations['url'] . sprintf( $file_tmpl, $locale ),
+				array( 'wp-stream-timeago' ),
+				'1',
+				false
+			);
 		} else {
-			wp_register_script( 'wp-stream-timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ), array( 'wp-stream-timeago' ), '1' );
+			wp_register_script(
+				'wp-stream-timeago-locale',
+				$this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ),
+				array( 'wp-stream-timeago' ),
+				'1',
+				false
+			);
 		}
 
 		$min = wp_stream_min_suffix();
@@ -417,7 +441,8 @@ class Admin {
 					'jquery',
 					'wp-stream-select2',
 				),
-				$this->plugin->get_version()
+				$this->plugin->get_version(),
+				false
 			);
 			wp_enqueue_script(
 				'wp-stream-admin-exclude',
@@ -426,7 +451,8 @@ class Admin {
 					'jquery',
 					'wp-stream-select2',
 				),
-				$this->plugin->get_version()
+				$this->plugin->get_version(),
+				false
 			);
 			wp_enqueue_script(
 				'wp-stream-live-updates',
@@ -435,7 +461,8 @@ class Admin {
 					'jquery',
 					'heartbeat',
 				),
-				$this->plugin->get_version()
+				$this->plugin->get_version(),
+				false
 			);
 
 			wp_localize_script(
@@ -452,19 +479,19 @@ class Admin {
 				)
 			);
 
+			$order_types = array( 'asc', 'desc' );
+
 			wp_localize_script(
 				'wp-stream-live-updates',
 				'wp_stream_live_updates',
 				array(
 					'current_screen'      => $hook,
-					'current_page'        => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1', // WPCS: CSRF ok.
-					// input var okay, CSRF okay
-					'current_order'       => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc', // WPCS: CSRF ok.
-					// input var okay, CSRF okay
-					'current_query'       => wp_stream_json_encode( $_GET ), // WPCS: CSRF ok.
-					// input var okay, CSRF okay
-					'current_query_count' => count( $_GET ), // WPCS: CSRF ok.
-					// input var okay, CSRF okay
+					'current_page'        => isset( $_GET['paged'] ) ? absint( wp_unslash( $_GET['paged'] ) ) : '1', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_order'       => isset( $_GET['order'] ) && in_array( strtolower( $_GET['order'] ), $order_types, true ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						? esc_js( $_GET['order'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						: 'desc',
+					'current_query'       => wp_stream_json_encode( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'current_query_count' => count( $_GET ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				)
 			);
 		}
@@ -483,14 +510,21 @@ class Admin {
 		 */
 		$bulk_actions_threshold = apply_filters( 'wp_stream_bulk_actions_threshold', 100 );
 
-		wp_enqueue_script( 'wp-stream-global', $this->plugin->locations['url'] . 'ui/js/global.' . $min . 'js', array( 'jquery' ), $this->plugin->get_version() );
+		wp_enqueue_script(
+			'wp-stream-global',
+			$this->plugin->locations['url'] . 'ui/js/global.' . $min . 'js',
+			array( 'jquery' ),
+			$this->plugin->get_version(),
+			false
+		);
+
 		wp_localize_script(
 			'wp-stream-global',
 			'wp_stream_global',
 			array(
 				'bulk_actions'       => array(
 					'i18n'      => array(
-						// translators: Placeholder refers to a number of items (e.g. "1,742")
+						/* translators: %s: a number of items (e.g. "1,742") */
 						'confirm_action' => sprintf( esc_html__( 'Are you sure you want to perform bulk actions on over %s items? This process could take a while to complete.', 'stream' ), number_format( absint( $bulk_actions_threshold ) ) ),
 					),
 					'threshold' => absint( $bulk_actions_threshold ),
@@ -521,7 +555,7 @@ class Admin {
 	/**
 	 * Add a specific body class to all Stream admin screens
 	 *
-	 * @param string $classes CSS classes to output to body
+	 * @param string $classes  CSS classes to output to body.
 	 *
 	 * @filter admin_body_class
 	 *
@@ -533,8 +567,8 @@ class Admin {
 		if ( $this->is_stream_screen() ) {
 			$stream_classes[] = $this->admin_body_class;
 
-			if ( isset( $_GET['page'] ) ) { // CSRF okay
-				$stream_classes[] = sanitize_key( $_GET['page'] ); // input var okay, CSRF okay
+			if ( isset( $_GET['page'] ) ) { // // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$stream_classes[] = sanitize_key( $_GET['page'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 		}
 
@@ -561,7 +595,7 @@ class Admin {
 		wp_register_style( 'wp-stream-datepicker', $this->plugin->locations['url'] . 'ui/css/datepicker.' . $min . 'css', array(), $this->plugin->get_version() );
 		wp_register_style( 'wp-stream-icons', $this->plugin->locations['url'] . 'ui/stream-icons/style.css', array(), $this->plugin->get_version() );
 
-		// Make sure we're working off a clean version
+		// Make sure we're working off a clean version.
 		if ( ! file_exists( ABSPATH . WPINC . '/version.php' ) ) {
 			return;
 		}
@@ -646,7 +680,7 @@ class Admin {
 			return true;
 		}
 
-		wp_redirect(
+		wp_safe_redirect(
 			add_query_arg(
 				array(
 					'page'    => is_network_admin() ? $this->network->network_settings_page_slug : $this->settings_page_slug,
@@ -659,6 +693,11 @@ class Admin {
 		exit;
 	}
 
+	/**
+	 * Clears stream records from the database.
+	 *
+	 * @return void
+	 */
 	private function erase_stream_records() {
 		global $wpdb;
 
@@ -677,16 +716,26 @@ class Admin {
 		);
 	}
 
+	/**
+	 * Schedules a purge of records.
+	 *
+	 * @return void
+	 */
 	public function purge_schedule_setup() {
 		if ( ! wp_next_scheduled( 'wp_stream_auto_purge' ) ) {
 			wp_schedule_event( time(), 'twicedaily', 'wp_stream_auto_purge' );
 		}
 	}
 
+	/**
+	 * Executes a scheduled purge
+	 *
+	 * @return void
+	 */
 	public function purge_scheduled_action() {
 		global $wpdb;
 
-		// Don't purge when in Network Admin unless Stream is network activated
+		// Don't purge when in Network Admin unless Stream is network activated.
 		if (
 			is_multisite()
 			&&
@@ -715,7 +764,7 @@ class Admin {
 
 		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
 
-		// Multisite but NOT network activated, only purge the current blog
+		// Multisite but NOT network activated, only purge the current blog.
 		if ( is_multisite() && ! $this->plugin->is_network_activated() ) {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
@@ -730,10 +779,12 @@ class Admin {
 	}
 
 	/**
-	 * @param array  $links
-	 * @param string $file
+	 * Returns the admin action links.
 	 *
 	 * @filter plugin_action_links
+	 *
+	 * @param array  $links Action links.
+	 * @param string $file  Plugin file.
 	 *
 	 * @return array
 	 */
@@ -742,7 +793,7 @@ class Admin {
 			return $links;
 		}
 
-		// Also don't show links in Network Admin if Stream isn't network enabled
+		// Also don't show links in Network Admin if Stream isn't network enabled.
 		if ( is_network_admin() && is_multisite() && ! $this->plugin->is_network_activated() ) {
 			return $links;
 		}
@@ -868,7 +919,7 @@ class Admin {
 	/**
 	 * Check if a particular role has access
 	 *
-	 * @param string $role
+	 * @param string $role  User role.
 	 *
 	 * @return bool
 	 */
@@ -883,10 +934,10 @@ class Admin {
 	/**
 	 * Filter user caps to dynamically grant our view cap based on allowed roles
 	 *
-	 * @param $allcaps
-	 * @param $caps
-	 * @param $args
-	 * @param $user
+	 * @param array   $allcaps  All capabilities.
+	 * @param array   $caps     Required caps.
+	 * @param array   $args     Unused.
+	 * @param WP_User $user     User.
 	 *
 	 * @filter user_has_cap
 	 *
@@ -933,9 +984,9 @@ class Admin {
 	 *
 	 * @filter role_has_cap
 	 *
-	 * @param $allcaps
-	 * @param $cap
-	 * @param $role
+	 * @param array  $allcaps  All capabilities.
+	 * @param string $cap      Require cap.
+	 * @param string $role     User role.
 	 *
 	 * @return array
 	 */
@@ -950,6 +1001,8 @@ class Admin {
 	}
 
 	/**
+	 * Ajax callback for return a user list.
+	 *
 	 * @action wp_ajax_wp_stream_filters
 	 */
 	public function ajax_filters() {
@@ -985,19 +1038,25 @@ class Admin {
 					$users = array_slice( $users, 0, $this->preload_users_max );
 				}
 
-				// Get gravatar / roles for final result set
+				// Get gravatar / roles for final result set.
 				$results = $this->get_users_record_meta( $users );
 
 				break;
 		}
 
 		if ( isset( $results ) ) {
-			echo wp_stream_json_encode( $results ); // xss ok
+			echo wp_stream_json_encode( $results ); // xss ok.
 		}
 
 		die();
 	}
 
+	/**
+	 * Return relevant user meta data.
+	 *
+	 * @param array $authors  Author data.
+	 * @return array
+	 */
 	public function get_users_record_meta( $authors ) {
 		$authors_records = array();
 
@@ -1019,9 +1078,9 @@ class Admin {
 	/**
 	 * Get user meta in a way that is also safe for VIP
 	 *
-	 * @param int    $user_id
-	 * @param string $meta_key
-	 * @param bool   $single (optional)
+	 * @param int    $user_id   User ID.
+	 * @param string $meta_key  Meta key.
+	 * @param bool   $single    Return first found meta value connected to the meta key (optional).
 	 *
 	 * @return mixed
 	 */
@@ -1036,10 +1095,10 @@ class Admin {
 	/**
 	 * Update user meta in a way that is also safe for VIP
 	 *
-	 * @param int    $user_id
-	 * @param string $meta_key
-	 * @param mixed  $meta_value
-	 * @param mixed  $prev_value (optional)
+	 * @param int    $user_id      User ID.
+	 * @param string $meta_key     Meta key.
+	 * @param mixed  $meta_value   Meta value.
+	 * @param mixed  $prev_value   Previous meta value being overwritten (optional).
 	 *
 	 * @return int|bool
 	 */
@@ -1054,9 +1113,9 @@ class Admin {
 	/**
 	 * Delete user meta in a way that is also safe for VIP
 	 *
-	 * @param int    $user_id
-	 * @param string $meta_key
-	 * @param mixed  $meta_value (optional)
+	 * @param int    $user_id     User ID.
+	 * @param string $meta_key    Meta key.
+	 * @param mixed  $meta_value  Meta value (optional).
 	 *
 	 * @return bool
 	 */

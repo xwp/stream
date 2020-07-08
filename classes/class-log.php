@@ -1,11 +1,19 @@
 <?php
+/**
+ * Handles top-level record keeping functionality.
+ *
+ * @package WP_Stream
+ */
 
 namespace WP_Stream;
 
+/**
+ * Class - Log
+ */
 class Log {
 
 	/**
-	 * Hold Plugin class
+	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -29,7 +37,7 @@ class Log {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
+	 * @param Plugin $plugin Instance of plugin object.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
@@ -146,7 +154,7 @@ class Log {
 		$result = $this->plugin->db->insert( $recordarr );
 
 		// This is helpful in development environments:
-		// error_log( $this->debug_backtrace( $recordarr ) );
+		// error_log( $this->debug_backtrace( $recordarr ) );.
 
 		return $result;
 	}

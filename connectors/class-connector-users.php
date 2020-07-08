@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for users
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Users
+ */
 class Connector_Users extends Connector {
 
 	/**
@@ -12,8 +21,10 @@ class Connector_Users extends Connector {
 
 	/**
 	 * Stores users object before the user being deleted.
+	 *
+	 * @var WP_User
 	 */
-	protected $_users_object_pre_deleted = array();
+	protected $_users_object_pre_deleted = array(); // @codingStandardsIgnoreLine
 
 	/**
 	 * Actions registered for this connector
@@ -79,8 +90,8 @@ class Connector_Users extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links   Previous links registered
-	 * @param Record $record Stream record
+	 * @param array  $links   Previous links registered.
+	 * @param Record $record  Stream record.
 	 *
 	 * @return array Action links
 	 */
@@ -98,7 +109,7 @@ class Connector_Users extends Connector {
 	/**
 	 * Get an array of role lables assigned to a specific user.
 	 *
-	 * @param  object|int $user User object or user ID to get roles for
+	 * @param  object|int $user User object or user ID to get roles for.
 	 *
 	 * @return array $labels    An array of role labels
 	 */
@@ -130,17 +141,17 @@ class Connector_Users extends Connector {
 	 *
 	 * @action user_register
 	 *
-	 * @param int $user_id Newly registered user ID
+	 * @param int $user_id  Newly registered user ID.
 	 */
 	public function callback_user_register( $user_id ) {
 		$current_user    = wp_get_current_user();
 		$registered_user = get_user_by( 'id', $user_id );
 
-		if ( ! $current_user->ID ) { // Non logged-in user registered themselves
+		if ( ! $current_user->ID ) { // Non logged-in user registered themselves.
 			$message     = esc_html__( 'New user registration', 'stream' );
 			$user_to_log = $registered_user->ID;
-		} else { // Current logged-in user created a new user
-			// translators: Placeholders refer to a user display name, and a user role (e.g. "Jane Doe", "subscriber")
+		} else { // Current logged-in user created a new user.
+			/* translators: %1$s: a user display name, %2$s: a user role (e.g. "Jane Doe", "subscriber") */
 			$message     = _x(
 				'New user account created for %1$s (%2$s)',
 				'1: User display name, 2: User role',
@@ -167,14 +178,14 @@ class Connector_Users extends Connector {
 	 *
 	 * @action profile_update
 	 *
-	 * @param int      $user_id   registered user ID
-	 * @param \WP_User $user registered user object
+	 * @param int      $user_id   Registered user ID.
+	 * @param \WP_User $user      Registered user object.
 	 */
 	public function callback_profile_update( $user_id, $user ) {
 		unset( $user_id );
 
 		$this->log(
-			// translators: Placeholder refers to a user display name (e.g. "Jane Doe")
+			/* translators: %s: a user display name (e.g. "Jane Doe") */
 			__( '%s\'s profile was updated', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
@@ -190,9 +201,9 @@ class Connector_Users extends Connector {
 	 *
 	 * @action set_user_role
 	 *
-	 * @param int    $user_id
-	 * @param string $new_role
-	 * @param array  $old_roles
+	 * @param int    $user_id    User ID.
+	 * @param string $new_role   User role.
+	 * @param array  $old_roles  Old user roles.
 	 */
 	public function callback_set_user_role( $user_id, $new_role, $old_roles ) {
 		if ( empty( $old_roles ) ) {
@@ -202,7 +213,7 @@ class Connector_Users extends Connector {
 		global $wp_roles;
 
 		$this->log(
-			// translators: Placeholders refer to a user display name, a user role, and another user role (e.g. "Jane Doe", "editor", "subscriber")
+			/* translators: %1$s: a user display name, %2$s: a user role, %3$s: another user role (e.g. "Jane Doe", "editor", "subscriber") */
 			_x(
 				'%1$s\'s role was changed from %2$s to %3$s',
 				'1: User display name, 2: Old role, 3: New role',
@@ -224,11 +235,11 @@ class Connector_Users extends Connector {
 	 *
 	 * @action password_reset
 	 *
-	 * @param \WP_User $user
+	 * @param \WP_User $user  User.
 	 */
 	public function callback_password_reset( $user ) {
 		$this->log(
-			// translators: Placeholder refers to a user display name (e.g. "Jane Doe")
+			/* translators: %s: a user display name (e.g. "Jane Doe") */
 			__( '%s\'s password was reset', 'stream' ),
 			array(
 				'email' => $user->display_name,
@@ -245,7 +256,7 @@ class Connector_Users extends Connector {
 	 *
 	 * @action retrieve_password
 	 *
-	 * @param string $user_login
+	 * @param string $user_login  User login.
 	 */
 	public function callback_retrieve_password( $user_login ) {
 		if ( wp_stream_filter_var( $user_login, FILTER_VALIDATE_EMAIL ) ) {
@@ -255,7 +266,7 @@ class Connector_Users extends Connector {
 		}
 
 		$this->log(
-			// translators: Placeholder refers to a user display name (e.g. "Jane Doe")
+			/* translators: %s: a user display name (e.g. "Jane Doe") */
 			__( '%s\'s password was requested to be reset', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
@@ -272,10 +283,10 @@ class Connector_Users extends Connector {
 	 *
 	 * @action set_logged_in_cookie
 	 *
-	 * @param string $logged_in_cookie
-	 * @param int    $expire
-	 * @param int    $expiration
-	 * @param int    $user_id
+	 * @param string $logged_in_cookie  Authenticated cookie.
+	 * @param int    $expire            Unused.
+	 * @param int    $expiration        Unused.
+	 * @param int    $user_id           Unused.
 	 */
 	public function callback_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
 		unset( $logged_in_cookie );
@@ -284,7 +295,7 @@ class Connector_Users extends Connector {
 		$user = get_user_by( 'id', $user_id );
 
 		$this->log(
-			// translators: Placeholder refers to a user display name (e.g. "Jane Doe")
+			/* translators: %s: a user display name (e.g. "Jane Doe") */
 			__( '%s logged in', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
@@ -304,13 +315,13 @@ class Connector_Users extends Connector {
 	public function callback_clear_auth_cookie() {
 		$user = wp_get_current_user();
 
-		// For some reason, incognito mode calls clear_auth_cookie on failed login attempts
+		// For some reason, incognito mode calls clear_auth_cookie on failed login attempts.
 		if ( empty( $user ) || ! $user->exists() ) {
 			return;
 		}
 
 		$this->log(
-			// translators: Placeholder refers to a user display name (e.g. "Jane Doe")
+			/* translators: %s: a user display name (e.g. "Jane Doe") */
 			__( '%s logged out', 'stream' ),
 			array(
 				'display_name' => $user->display_name,
@@ -330,7 +341,7 @@ class Connector_Users extends Connector {
 	 * was already removed from DB.
 	 *
 	 * @action delete_user
-	 * @param int $user_id User ID that maybe deleted
+	 * @param int $user_id  User ID that maybe deleted.
 	 */
 	public function callback_delete_user( $user_id ) {
 		if ( ! isset( $this->_users_object_pre_deleted[ $user_id ] ) ) {
@@ -342,13 +353,13 @@ class Connector_Users extends Connector {
 	 * Log deleted user.
 	 *
 	 * @action deleted_user
-	 * @param int $user_id Deleted user ID
+	 * @param int $user_id  Deleted user ID.
 	 */
 	public function callback_deleted_user( $user_id ) {
 		$user = wp_get_current_user();
 
 		if ( isset( $this->_users_object_pre_deleted[ $user_id ] ) ) {
-			// translators: Placeholders refer to a user display name, and a user role (e.g. "Jane Doe", "subscriber")
+			/* translators: %1$s: a user display name, %2$s: a user role (e.g. "Jane Doe", "subscriber") */
 			$message      = _x(
 				'%1$s\'s account was deleted (%2$s)',
 				'1: User display name, 2: User roles',
@@ -358,7 +369,7 @@ class Connector_Users extends Connector {
 			$deleted_user = $this->_users_object_pre_deleted[ $user_id ];
 			unset( $this->_users_object_pre_deleted[ $user_id ] );
 		} else {
-			// translators: Placeholders refer to a user display name, and a user role (e.g. "Jane Doe", "subscriber")
+			/* translators: %d: a user display name, and a user role (e.g. "Jane Doe", "subscriber") */
 			$message      = esc_html__( 'User account #%d was deleted', 'stream' );
 			$display_name = $user_id;
 			$deleted_user = $user_id;

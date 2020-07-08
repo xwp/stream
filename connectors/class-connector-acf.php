@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector - Advanced Custom Fields
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_ACF
+ */
 class Connector_ACF extends Connector {
 	/**
 	 * Connector slug
@@ -126,8 +135,8 @@ class Connector_ACF extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links   Previous links registered
-	 * @param object $record Stream record
+	 * @param array  $links  Previous links registered.
+	 * @param object $record Stream record.
 	 *
 	 * @return array          Action links
 	 */
@@ -201,12 +210,12 @@ class Connector_ACF extends Connector {
 	/**
 	 * Track addition of post/user meta
 	 *
-	 * @param string     $type       Type of object, post or user
-	 * @param string     $action     Added, updated, deleted
-	 * @param integer    $meta_id
-	 * @param integer    $object_id
-	 * @param string     $meta_key
-	 * @param mixed|null $meta_value
+	 * @param string     $type       Type of object, post or user.
+	 * @param string     $action     Added, updated, deleted.
+	 * @param integer    $meta_id    Meta ID.
+	 * @param integer    $object_id  Object ID.
+	 * @param string     $meta_key   Meta Key.
+	 * @param mixed|null $meta_value Value being stored in meta.
 	 */
 	public function check_meta( $type, $action, $meta_id, $object_id, $meta_key, $meta_value = null ) {
 		$post = get_post( $object_id );
@@ -217,14 +226,14 @@ class Connector_ACF extends Connector {
 
 		$action_labels = $this->get_action_labels();
 
-		// Fields
+		// Fields.
 		if ( 0 === strpos( $meta_key, 'field_' ) ) {
 			if ( 'deleted' === $action ) {
 				$meta_value = get_post_meta( $object_id, $meta_key, true );
 			}
 
 			$this->log(
-				// translators: Placeholders refer to a field label, a form title, and an action (e.g. "Message", "Contact", "Created")
+				/* translators: %1$s: field label, %2$s: form title, %3$s: action (e.g. "Message", "Contact", "Created") */
 				esc_html_x( '"%1$s" field in "%2$s" %3$s', 'acf', 'stream' ),
 				array(
 					'label'  => $meta_value['label'],
@@ -255,7 +264,7 @@ class Connector_ACF extends Connector {
 			);
 
 			$this->log(
-				// translators: Placeholders refer to a form title, and a position (e.g. "Contact", "Side")
+				/* translators: %1$s: form title, %2$s a position (e.g. "Contact", "Side") */
 				esc_html_x( 'Position of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
 				array(
 					'title'        => $post->post_title,
@@ -278,7 +287,7 @@ class Connector_ACF extends Connector {
 			);
 
 			$this->log(
-				// translators: Placeholders refer to a form title, and a layout (e.g. "Contact", "Seamless")
+				/* translators: %1$s: form title, %2$s a layout (e.g. "Contact", "Seamless") */
 				esc_html_x( 'Style of "%1$s" updated to "%2$s"', 'acf', 'stream' ),
 				array(
 					'title'        => $post->post_title,
@@ -321,7 +330,7 @@ class Connector_ACF extends Connector {
 			}
 
 			$this->log(
-				// translators: Placeholders refer to a form title, and a display option (e.g. "Contact", "All screens")
+				/* translators: %1$s: a form title, %2$s: a display option (e.g. "Contact", "All screens") */
 				esc_html_x( '"%1$s" set to display on "%2$s"', 'acf', 'stream' ),
 				array(
 					'title'        => $post->post_title,
@@ -339,12 +348,12 @@ class Connector_ACF extends Connector {
 	/**
 	 * Track changes to ACF values within rendered post meta forms
 	 *
-	 * @param string     $type       Type of object, post or user
-	 * @param string     $action     Added, updated, deleted
-	 * @param integer    $meta_id
-	 * @param integer    $object_id
-	 * @param string     $key
-	 * @param mixed|null $value
+	 * @param string     $type       Type of object, post or user.
+	 * @param string     $action     Added, updated, deleted.
+	 * @param integer    $meta_id    Meta ID.
+	 * @param integer    $object_id  Object ID.
+	 * @param string     $key        Meta Key.
+	 * @param mixed|null $value      Value being stored in meta.
 	 *
 	 * @return bool
 	 */
@@ -361,7 +370,7 @@ class Connector_ACF extends Connector {
 		if ( 'user' === $type ) {
 			$object_key = 'user_' . $object_id;
 		} elseif ( 'taxonomy' === $type ) {
-			if ( 0 === strpos( $key, '_' ) ) { // Ignore the 'revision' stuff!
+			if ( 0 === strpos( $key, '_' ) ) { // Ignore the 'revision' stuff!.
 				return false;
 			}
 
@@ -369,7 +378,7 @@ class Connector_ACF extends Connector {
 				return false;
 			}
 
-			list( , $taxonomy, $term_id, $key ) = $matches; // Skips 0 index
+			list( , $taxonomy, $term_id, $key ) = $matches; // Skips 0 index.
 
 			$object_key = $taxonomy . '_' . $term_id;
 		} elseif ( 'option' === $type ) {
@@ -403,7 +412,7 @@ class Connector_ACF extends Connector {
 			$cache = $this->cached_field_values_updates[ $object_key ][ $key ];
 
 			$this->log(
-				// translators: Placeholders refer to a field label, an object title, and an object type (e.g. "Message", "Hello World", "post")
+				/* translators: %1$s: a field label, %2$s: an object title, %3$s: an object type (e.g. "Message", "Hello World", "post") */
 				esc_html_x( '"%1$s" of "%2$s" %3$s updated', 'acf', 'stream' ),
 				array(
 					'field_label'   => $cache['field']['label'],
@@ -442,7 +451,7 @@ class Connector_ACF extends Connector {
 			$deleted = array_diff( $old, $new );
 
 			$this->log(
-				// translators: Placeholders refer to a form title, the number of rules added, and the number of rules deleted (e.g. "Contact", "42", "7")
+				/* translators: %1$s: a form title, %2$d: the number of rules added, %3$d: the number of rules deleted (e.g. "Contact", "42", "7") */
 				esc_html_x( 'Updated rules of "%1$s" (%2$d added, %3$d deleted)', 'acf', 'stream' ),
 				array(
 					'title'      => $post->post_title,
@@ -461,7 +470,7 @@ class Connector_ACF extends Connector {
 	/**
 	 * Override connector log for our own Settings / Actions
 	 *
-	 * @param array $data
+	 * @param array $data  Record data.
 	 *
 	 * @return array|bool
 	 */
@@ -483,9 +492,9 @@ class Connector_ACF extends Connector {
 	 * Track changes to custom field values updates, saves filtered values to be
 	 * processed by callback_updated_post_meta
 	 *
-	 * @param string $value
-	 * @param int    $post_id
-	 * @param string $field
+	 * @param string $value    Field value.
+	 * @param int    $post_id  Field post ID.
+	 * @param string $field    Field name.
 	 *
 	 * @return string
 	 */
@@ -497,8 +506,8 @@ class Connector_ACF extends Connector {
 	/**
 	 * Track changes to post main attributes, ie: Order No.
 	 *
-	 * @param int   $post_id
-	 * @param array $data  Array with the updated post data
+	 * @param int   $post_id Field post ID.
+	 * @param array $data    Array with the updated post data.
 	 */
 	public function callback_pre_post_update( $post_id, $data ) {
 		$post = get_post( $post_id );
@@ -510,7 +519,7 @@ class Connector_ACF extends Connector {
 		// menu_order, aka Order No.
 		if ( $data['menu_order'] !== $post->menu_order ) {
 			$this->log(
-				// translators: Placeholders refer to a form title, a numeric position, and another numeric position (e.g. "Contact", "42", "7")
+				/* translators: %1$s: a form title, %2$d: a numeric position, %3$d: numeric position (e.g. "Contact", "42", "7") */
 				esc_html_x( '"%1$s" reordered from %2$d to %3$d', 'acf', 'stream' ),
 				array(
 					'title'          => $post->post_title,
@@ -527,8 +536,8 @@ class Connector_ACF extends Connector {
 	/**
 	 * Track addition of new options
 	 *
-	 * @param string $key   Option name
-	 * @param string $value Option value
+	 * @param string $key   Option name.
+	 * @param string $value Option value.
 	 */
 	public function callback_added_option( $key, $value ) {
 		$this->check_meta_values( self::get_saved_option_type( $key ), 'added', null, null, $key, $value );
@@ -537,9 +546,9 @@ class Connector_ACF extends Connector {
 	/**
 	 * Track addition of new options
 	 *
-	 * @param $key
-	 * @param $old
-	 * @param $value
+	 * @param string $key   Option key.
+	 * @param string $old   Old value.
+	 * @param string $value New value.
 	 */
 	public function callback_updated_option( $key, $old, $value ) {
 		unset( $old );
@@ -549,7 +558,7 @@ class Connector_ACF extends Connector {
 	/**
 	 * Track addition of new options
 	 *
-	 * @param $key
+	 * @param string $key Option key.
 	 */
 	public function callback_deleted_option( $key ) {
 		$this->check_meta_values( self::get_saved_option_type( $key ), 'deleted', null, null, $key, null );
@@ -558,7 +567,7 @@ class Connector_ACF extends Connector {
 	/**
 	 * Determines the type of option that is saved
 	 *
-	 * @param $key
+	 * @param string $key Option key.
 	 * @return string
 	 */
 	private function get_saved_option_type( $key ) {
