@@ -1,7 +1,15 @@
 <?php
+/**
+ * Displays a list of provided records in a HTML Table
+ *
+ * @package WP_Stream
+ */
 
 namespace WP_Stream;
 
+/**
+ * Class - Preview_List_Table
+ */
 class Preview_List_Table extends List_Table {
 
 	/**

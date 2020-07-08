@@ -1,7 +1,15 @@
 <?php
+/**
+ * Connector for Mercator
+ *
+ * @package WP_Stream
+ */
 
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Mercator
+ */
 class Connector_Mercator extends Connector {
 	/**
 	 * Connector slug
@@ -65,7 +73,7 @@ class Connector_Mercator extends Connector {
 
 			foreach ( $blogs as $blog ) {
 				$blog_details   = get_site( $blog->blog_id );
-				$key            = sanitize_key( $blog_details->blogname );
+				$key            = sprintf( 'blog-%d', $blog->blog_id );
 				$labels[ $key ] = $blog_details->blogname;
 			}
 		}
@@ -78,8 +86,8 @@ class Connector_Mercator extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array $links
-	 * @param Record $record
+	 * @param  array  $links   Previous links registered.
+	 * @param  object $record  Stream record.
 	 *
 	 * @return array
 	 */
@@ -112,14 +120,14 @@ class Connector_Mercator extends Connector {
 	/**
 	 * Log if domain is made primary.
 	 *
-	 * @param $mapping
+	 * @param object $mapping  Mapping object.
 	 */
 	public function callback_mercator_mapping_made_primary( $mapping ) {
 		$blog_id = $mapping->get_site_id();
 		$blog    = get_site( $blog_id );
 
 		$this->log(
-			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
+			/* translators: %1$s: domain alias, %2$s: site name (e.g. "FooBar Blog") */
 			_x(
 				'"%1$s" domain alias was make primary for "%2$s"',
 				'1. Domain alias 2. Site name',
@@ -138,8 +146,8 @@ class Connector_Mercator extends Connector {
 	/**
 	 * Log if domain alias is updated.
 	 *
-	 * @param $mapping
-	 * @param $old_mapping
+	 * @param object $mapping      Mapping object.
+	 * @param object $old_mapping  Old mapping object from before update.
 	 */
 	public function callback_mercator_mapping_updated( $mapping, $old_mapping ) {
 
@@ -147,7 +155,7 @@ class Connector_Mercator extends Connector {
 		$blog    = get_site( $blog_id );
 
 		$this->log(
-			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
+			/* translators: %1$s: domain alias, %2$s: site name (e.g. "FooBar Blog") */
 			_x(
 				'The domain alias "%1$s" was updated to "%2$s" for site "%3$s"',
 				'1. Old Domain alias 2. Domain alias 2. Site name',
@@ -168,7 +176,7 @@ class Connector_Mercator extends Connector {
 	/**
 	 * Log if domain alias is deleted.
 	 *
-	 * @param $mapping
+	 * @param object $mapping  Mapping of deleted alias.
 	 */
 	public function callback_mercator_mapping_deleted( $mapping ) {
 
@@ -176,7 +184,7 @@ class Connector_Mercator extends Connector {
 		$blog    = get_site( $blog_id );
 
 		$this->log(
-			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
+			/* translators: %1$s: domain alias, %2$s: site name (e.g. "FooBar Blog") */
 			_x(
 				'"%1$s" domain alias was deleted for "%2$s"',
 				'1. Domain alias 2. Site name',
@@ -196,14 +204,14 @@ class Connector_Mercator extends Connector {
 	/**
 	 * Log if domain alias is created.
 	 *
-	 * @param $mapping
+	 * @param object $mapping  Mapping object.
 	 */
 	public function callback_mercator_mapping_created( $mapping ) {
 		$blog_id = $mapping->get_site_id();
 		$blog    = get_site( $blog_id );
 
 		$this->log(
-			// translators: Placeholder refers to site name (e.g. "FooBar Blog")
+			/* translators: %1$s: domain alias, %2$s: site name (e.g. "FooBar Blog") */
 			_x(
 				'"%1$s" domain alias was created for "%2$s"',
 				'1. Domain alias 2. Site name',

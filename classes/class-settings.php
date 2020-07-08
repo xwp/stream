@@ -1,4 +1,9 @@
 <?php
+/**
+ * Renders and manages the plugin Settings page.
+ *
+ * @package WP_Stream
+ */
 
 namespace WP_Stream;
 
@@ -6,10 +11,13 @@ use \WP_Roles;
 use \WP_User;
 use \WP_User_Query;
 
+/**
+ * Class - Settings
+ */
 class Settings {
 
 	/**
-	 * Hold Plugin class
+	 * Holds instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -46,7 +54,7 @@ class Settings {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
+	 * @param Plugin $plugin Instance of plugin object.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
@@ -54,10 +62,10 @@ class Settings {
 		$this->option_key = $this->get_option_key();
 		$this->options    = $this->get_options();
 
-		// Register settings, and fields
+		// Register settings, and fields.
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 
-		// Remove records when records TTL is shortened
+		// Remove records when records TTL is shortened.
 		add_action(
 			'update_option_' . $this->option_key,
 			array(
@@ -68,7 +76,7 @@ class Settings {
 			2
 		);
 
-		// Apply label translations for settings
+		// Apply label translations for settings.
 		add_filter(
 			'wp_stream_serialized_labels',
 			array(
@@ -77,10 +85,10 @@ class Settings {
 			)
 		);
 
-		// Ajax callback function to search users
+		// Ajax callback function to search users.
 		add_action( 'wp_ajax_stream_get_users', array( $this, 'get_users' ) );
 
-		// Ajax callback function to search IPs
+		// Ajax callback function to search IPs.
 		add_action( 'wp_ajax_stream_get_ips', array( $this, 'get_ips' ) );
 	}
 
@@ -165,7 +173,7 @@ class Settings {
 		$users_added_to_response = array();
 
 		foreach ( $users_array as $key => $user ) {
-			// exclude duplications:
+			// exclude duplications.
 			if ( array_key_exists( $user->ID, $users_added_to_response ) ) {
 				continue;
 			} else {
@@ -181,7 +189,7 @@ class Settings {
 
 			$args['tooltip'] = esc_attr(
 				sprintf(
-					// translators: Placeholders refers to a user ID, a username, an email address, and a user role (e.g. "42", "administrator", "foo@bar.com", "subscriber").
+					/* translators: %1$d: user ID, %2$s: username, %3$s: email, %4$s: user role (e.g. "42", "administrator", "foo@bar.com", "subscriber") */
 					__( 'ID: %1$d\nUser: %2$s\nEmail: %3$s\nRole: %4$s', 'stream' ),
 					$author->id,
 					$author->user_login,
@@ -367,7 +375,7 @@ class Settings {
 			),
 		);
 
-		// If Akismet is active, allow Admins to opt-in to Akismet tracking
+		// If Akismet is active, allow Admins to opt-in to Akismet tracking.
 		if ( class_exists( 'Akismet' ) ) {
 			$akismet_tracking = array(
 				'name'        => 'akismet_tracking',
@@ -399,7 +407,7 @@ class Settings {
 		 */
 		$this->fields = apply_filters( 'wp_stream_settings_option_fields', $fields );
 
-		// Sort option fields in each tab by title ASC
+		// Sort option fields in each tab by title ASC.
 		foreach ( $this->fields as $tab => $options ) {
 			$titles = array();
 
@@ -489,7 +497,8 @@ class Settings {
 			);
 
 			foreach ( $section['fields'] as $field_idx => $field ) {
-				if ( ! isset( $field['type'] ) ) { // No field type associated, skip, no GUI
+				// No field type associated, skip, no GUI.
+				if ( ! isset( $field['type'] ) ) {
 					continue;
 				}
 
@@ -505,7 +514,7 @@ class Settings {
 					$field + array(
 						'section'   => $section_name,
 						'label_for' => sprintf( '%s_%s_%s', $this->option_key, $section_name, $field['name'] ),
-						// xss ok
+						// xss ok.
 					)
 				);
 			}
@@ -515,7 +524,7 @@ class Settings {
 	/**
 	 * Sanitization callback for settings field values before save
 	 *
-	 * @param array $input
+	 * @param array $input  Raw input.
 	 *
 	 * @return array
 	 */
@@ -568,7 +577,7 @@ class Settings {
 	/**
 	 * Compile HTML needed for displaying the field
 	 *
-	 * @param array $field Field settings
+	 * @param array $field Field settings.
 	 *
 	 * @return string HTML to be displayed
 	 */
@@ -797,7 +806,7 @@ class Settings {
 					esc_attr( wp_stream_json_encode( $data_values ) ),
 					esc_attr( $current_value ),
 					esc_attr( $class ),
-					// translators: Placeholder refers to the title of the dropdown menu (e.g. "users")
+					/* translators: %s: the title of the dropdown menu (e.g. "users") */
 					sprintf( esc_html__( 'Any %s', 'stream' ), $title )
 				);
 
@@ -858,7 +867,7 @@ class Settings {
 					$action         = isset( $current_value['action'][ $key ] ) ? $current_value['action'][ $key ] : '';
 					$ip_address     = isset( $current_value['ip_address'][ $key ] ) ? $current_value['ip_address'][ $key ] : '';
 
-					// Author or Role dropdown menu
+					// Author or Role dropdown menu.
 					$author_or_role_values   = array();
 					$author_or_role_selected = array();
 
@@ -870,7 +879,7 @@ class Settings {
 						$count = isset( $users['avail_roles'][ $role_id ] ) ? $users['avail_roles'][ $role_id ] : 0;
 
 						if ( ! empty( $count ) ) {
-							// translators: Placeholder refers to a number of users (e.g. "42")
+							/* translators: %d: a number of users (e.g. "42") */
 							$args['user_count'] = sprintf( _n( '%d user', '%d users', absint( $count ), 'stream' ), absint( $count ) );
 						}
 
@@ -907,7 +916,7 @@ class Settings {
 						)
 					);
 
-					// Context dropdown menu
+					// Context dropdown menu.
 					$context_values = array();
 
 					foreach ( $this->get_terms_labels( 'context' ) as $context_id => $context_data ) {
@@ -969,7 +978,7 @@ class Settings {
 						)
 					);
 
-					// Action dropdown menu
+					// Action dropdown menu.
 					$action_values = array();
 
 					foreach ( $this->get_terms_labels( 'action' ) as $action_id => $action_data ) {
@@ -992,7 +1001,7 @@ class Settings {
 						)
 					);
 
-					// IP Address input
+					// IP Address input.
 					$ip_address_input = $form->render_field(
 						'select2',
 						array(
@@ -1007,7 +1016,7 @@ class Settings {
 						)
 					);
 
-					// Hidden helper input
+					// Hidden helper input.
 					$helper_input = sprintf(
 						'<input type="hidden" name="%1$s[%2$s_%3$s][%4$s][]" value="" />',
 						esc_attr( $option_key ),
@@ -1062,7 +1071,7 @@ class Settings {
 	/**
 	 * Render Callback for post_types field
 	 *
-	 * @param array $field
+	 * @param array $field  Field to be rendered.
 	 *
 	 * @return string
 	 */
@@ -1075,7 +1084,7 @@ class Settings {
 
 		$output = $this->render_field( $field );
 
-		echo $output; // xss ok
+		echo $output; // xss ok.
 	}
 
 	/**
@@ -1097,7 +1106,7 @@ class Settings {
 	/**
 	 * Function will return all terms labels of given column
 	 *
-	 * @param string $column string Name of the column
+	 * @param string $column Name of the column.
 	 *
 	 * @return array
 	 */
@@ -1132,8 +1141,8 @@ class Settings {
 	 *
 	 * @action update_option_wp_stream
 	 *
-	 * @param array $old_value
-	 * @param array $new_value
+	 * @param array $old_value  Old value.
+	 * @param array $new_value  New value.
 	 */
 	public function updated_option_ttl_remove_records( $old_value, $new_value ) {
 		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : - 1;
@@ -1151,6 +1160,8 @@ class Settings {
 	 * Get translations of serialized Stream settings
 	 *
 	 * @filter wp_stream_serialized_labels
+	 *
+	 * @param array $labels  Setting labels.
 	 *
 	 * @return array Multidimensional array of fields
 	 */

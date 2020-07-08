@@ -1,6 +1,15 @@
 <?php
+/**
+ * Queries the database for stream records.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Query
+ */
 class Query {
 	/**
 	 * Hold the number of records found
@@ -12,7 +21,7 @@ class Query {
 	/**
 	 * Query records
 	 *
-	 * @param array Query args
+	 * @param array $args Arguments to filter the records by.
 	 *
 	 * @return array Stream Records
 	 */
@@ -48,7 +57,7 @@ class Query {
 		if ( ! empty( $args['search'] ) ) {
 			$field = ! empty( $args['search_field'] ) ? $args['search_field'] : 'summary';
 
-			// Sanitize field
+			// Sanitize field.
 			$allowed_fields = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );
 			if ( in_array( $field, $allowed_fields, true ) ) {
 				$where .= $wpdb->prepare( " AND $wpdb->stream.{$field} LIKE %s", "%{$args['search']}%" ); // @codingStandardsIgnoreLine can't prepare column name
@@ -80,22 +89,22 @@ class Query {
 		}
 
 		if ( ! empty( $args['date_from'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_from'] . ' 00:00:00' ) ) );
+			$date   = get_gmt_from_date( gmdate( 'Y-m-d H:i:s', strtotime( $args['date_from'] . ' 00:00:00' ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) >= %s", $date );
 		}
 
 		if ( ! empty( $args['date_to'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_to'] . ' 23:59:59' ) ) );
+			$date   = get_gmt_from_date( gmdate( 'Y-m-d H:i:s', strtotime( $args['date_to'] . ' 23:59:59' ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) <= %s", $date );
 		}
 
 		if ( ! empty( $args['date_after'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_after'] ) ) );
+			$date   = get_gmt_from_date( gmdate( 'Y-m-d H:i:s', strtotime( $args['date_after'] ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) > %s", $date );
 		}
 
 		if ( ! empty( $args['date_before'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_before'] ) ) );
+			$date   = get_gmt_from_date( gmdate( 'Y-m-d H:i:s', strtotime( $args['date_before'] ) ) );
 			$where .= $wpdb->prepare( " AND DATE($wpdb->stream.created) < %s", $date );
 		}
 
@@ -194,7 +203,7 @@ class Query {
 
 		if ( ! empty( $fields ) ) {
 			foreach ( $fields as $field ) {
-				// We'll query the meta table later
+				// We'll query the meta table later.
 				if ( 'meta' === $field ) {
 					continue;
 				}

@@ -1,11 +1,19 @@
 <?php
+/**
+ * Generates a filterable list of provided records to be displayed HTML Table.
+ *
+ * @package WP_Stream
+ */
 
 namespace WP_Stream;
 
+/**
+ * Class - List_Table
+ */
 class List_Table extends \WP_List_Table {
 
 	/**
-	 * Hold Plugin class
+	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -14,8 +22,8 @@ class List_Table extends \WP_List_Table {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
-	 * @param array  $args
+	 * @param Plugin $plugin Instance of plugin object.
+	 * @param array  $args   Argument to filter rows by.
 	 */
 	public function __construct( $plugin, $args = array() ) {
 		$this->plugin = $plugin;
@@ -46,7 +54,7 @@ class List_Table extends \WP_List_Table {
 			)
 		);
 
-		// Check for default hidden columns
+		// Check for default hidden columns.
 		$this->get_hidden_columns();
 
 		add_filter(
@@ -71,12 +79,23 @@ class List_Table extends \WP_List_Table {
 		set_screen_options();
 	}
 
+	/**
+	 * Renders extra from navigation options.
+	 *
+	 * @param string $which  Page location.
+	 * @return void
+	 */
 	public function extra_tablenav( $which ) {
 		if ( 'top' === $which ) {
-			echo $this->filters_form(); // xss ok
+			echo $this->filters_form(); // xss ok.
 		}
 	}
 
+	/**
+	 * Renders "No items found" message.
+	 *
+	 * @return void
+	 */
 	public function no_items() {
 		?>
 		<div class="stream-list-table-no-items">
@@ -85,6 +104,11 @@ class List_Table extends \WP_List_Table {
 		<?php
 	}
 
+	/**
+	 * Returns the table columns to be rendered.
+	 *
+	 * @return array
+	 */
 	public function get_columns() {
 		/**
 		 * Allows devs to add new columns to table
@@ -104,22 +128,32 @@ class List_Table extends \WP_List_Table {
 		);
 	}
 
+	/**
+	 * Returns the columns the items can be sort by.
+	 *
+	 * @return array
+	 */
 	public function get_sortable_columns() {
 		return array(
 			'date' => array( 'date', false ),
 		);
 	}
 
+	/**
+	 * Returns columns hidden from all except specific users.
+	 *
+	 * @return array|bool
+	 */
 	public function get_hidden_columns() {
 		$user = wp_get_current_user();
 		if ( ! $user ) {
 			return array();
 		}
 
-		// Directly checking the user meta; to check whether user has changed screen option or not
+		// Directly checking the user meta; to check whether user has changed screen option or not.
 		$hidden = $this->plugin->admin->get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
 
-		// If user meta is not found; add the default hidden column 'id'
+		// If user meta is not found; add the default hidden column 'id'.
 		if ( ! $hidden ) {
 			$hidden = array( 'id' );
 			$this->plugin->admin->update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
@@ -128,6 +162,11 @@ class List_Table extends \WP_List_Table {
 		return $hidden;
 	}
 
+	/**
+	 * Prepares table columns and data for render
+	 *
+	 * @return void
+	 */
 	public function prepare_items() {
 		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
@@ -153,10 +192,15 @@ class List_Table extends \WP_List_Table {
 		);
 	}
 
+	/**
+	 * Returns records to be displayed
+	 *
+	 * @return array
+	 */
 	public function get_records() {
 		$args = array();
 
-		// Parse sorting params
+		// Parse sorting params.
 		$order = wp_stream_filter_input( INPUT_GET, 'order' );
 		if ( $order ) {
 			$args['order'] = $order;
@@ -184,7 +228,7 @@ class List_Table extends \WP_List_Table {
 			}
 		}
 
-		// Additional filter properties
+		// Additional filter properties.
 		$properties = array(
 			'record',
 			'site_id',
@@ -198,11 +242,11 @@ class List_Table extends \WP_List_Table {
 			'action',
 		);
 
-		// Add property fields to defaults, including their __in/__not_in variations
+		// Add property fields to defaults, including their __in/__not_in variations.
 		foreach ( $properties as $property ) {
 			$value = wp_stream_filter_input( INPUT_GET, $property );
 
-			// Allow 0 values
+			// Allow 0 values.
 			if ( isset( $value ) && '' !== $value && false !== $value ) {
 				$args[ $property ] = $value;
 			}
@@ -246,13 +290,20 @@ class List_Table extends \WP_List_Table {
 		return $this->plugin->db->get_found_records_count();
 	}
 
+	/**
+	 * Returns the column content for the provided item and column.
+	 *
+	 * @param array  $item         Record data.
+	 * @param string $column_name  Column name.
+	 * @return void
+	 */
 	public function column_default( $item, $column_name ) {
 		$out    = '';
 		$record = new Record( $item );
 
 		switch ( $column_name ) {
 			case 'date':
-				$created     = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
+				$created     = gmdate( 'Y-m-d H:i:s', strtotime( $record->created ) );
 				$date_string = sprintf(
 					'<time datetime="%s" class="relative-time record-created">%s</time>',
 					wp_stream_get_iso_8601_extended_date( strtotime( $record->created ) ),
@@ -266,7 +317,7 @@ class List_Table extends \WP_List_Table {
 			case 'summary':
 				$out          = $record->summary;
 				$object_title = $record->get_object_title();
-				// translators: Placeholder refers to the title of any object, like a Post (e.g. "Hello World")
+				/* translators: %s: the title of any object, like a Post (e.g. "Hello World") */
 				$view_all_text = $object_title ? sprintf( esc_html__( 'View all activity for "%s"', 'stream' ), esc_attr( $object_title ) ) : esc_html__( 'View all activity for this object', 'stream' );
 
 				if ( $record->object_id ) {
@@ -381,6 +432,12 @@ class List_Table extends \WP_List_Table {
 		echo wp_kses( $out, $allowed_tags );
 	}
 
+	/**
+	 * Returns the actions links for the provided record. (Eg. Edit, View)
+	 *
+	 * @param Record $record  Record.
+	 * @return string
+	 */
 	public function get_action_links( $record ) {
 		$out = '';
 
@@ -434,6 +491,15 @@ class List_Table extends \WP_List_Table {
 		return $out;
 	}
 
+	/**
+	 * Returns a link to be display in the table.
+	 *
+	 * @param string       $display  Text to be displayed in link.
+	 * @param string|array $key      Query string variable(s).
+	 * @param string       $value    Single query string value.
+	 * @param string       $title    Tooltip value.
+	 * @return string
+	 */
 	public function column_link( $display, $key, $value = null, $title = null ) {
 		$url = add_query_arg(
 			array(
@@ -458,6 +524,13 @@ class List_Table extends \WP_List_Table {
 		);
 	}
 
+	/**
+	 * Returns the label for a connector term.
+	 *
+	 * @param string $term  Connector label type.
+	 * @param string $type  Connector term.
+	 * @return string
+	 */
 	public function get_term_title( $term, $type ) {
 		if ( ! isset( $this->plugin->connectors->term_labels[ 'stream_' . $type ][ $term ] ) ) {
 			return $term;
@@ -473,7 +546,7 @@ class List_Table extends \WP_List_Table {
 	 * results of existing records.  All items that do not exist in records
 	 * get assigned a disabled value of "true".
 	 *
-	 * @param string $column List table column name
+	 * @param string $column  List table column name.
 	 *
 	 * @return array Options to be displayed in search filters
 	 */
@@ -482,7 +555,7 @@ class List_Table extends \WP_List_Table {
 		if ( 'user_id' === $column ) {
 			$all_records = array();
 
-			// If the number of users exceeds the max users constant value then return an empty array and use AJAX instead
+			// If the number of users exceeds the max users constant value then return an empty array and use AJAX instead.
 			$user_count  = count_users();
 			$total_users = $user_count['total_users'];
 
@@ -555,7 +628,7 @@ class List_Table extends \WP_List_Table {
 			}
 		}
 
-		// Remove WP-CLI pseudo user if no records with user=0 exist
+		// Remove WP-CLI pseudo user if no records with user=0 exist.
 		if ( isset( $disabled_records[0] ) ) {
 			unset( $disabled_records[0] );
 		}
@@ -574,12 +647,17 @@ class List_Table extends \WP_List_Table {
 		uasort( $active_records, $sort );
 		uasort( $disabled_records, $sort );
 
-		// Not using array_merge() in order to preserve the array index for the users dropdown which uses the user_id as the key
+		// Not using array_merge() in order to preserve the array index for the users dropdown which uses the user_id as the key.
 		$all_records = $active_records + $disabled_records;
 
 		return $all_records;
 	}
 
+	/**
+	 * Returns list filters.
+	 *
+	 * @return array
+	 */
 	public function get_filters() {
 		$filters = array();
 
@@ -620,6 +698,11 @@ class List_Table extends \WP_List_Table {
 		return apply_filters( 'wp_stream_list_table_filters', $filters );
 	}
 
+	/**
+	 * Returns table filters form.
+	 *
+	 * @return string
+	 */
 	public function filters_form() {
 		$filters = $this->get_filters();
 
@@ -641,7 +724,7 @@ class List_Table extends \WP_List_Table {
 				$filters_string .= $this->filter_date( $data['items'] );
 			} else {
 				if ( 'context' === $name ) {
-					// Add Connectors as parents, and apply the Contexts as children
+					// Add Connectors as parents, and apply the Contexts as children.
 					$connectors    = $this->assemble_records( 'connector' );
 					$context_items = array();
 
@@ -657,7 +740,7 @@ class List_Table extends \WP_List_Table {
 						if ( isset( $context_items[ $connector ]['children'] ) ) {
 							$labels = wp_list_pluck( $context_items[ $connector ]['children'], 'label' );
 
-							// Sort child items by label
+							// Sort child items by label.
 							array_multisort( $labels, SORT_ASC, $context_items[ $connector ]['children'] );
 						}
 					}
@@ -672,10 +755,10 @@ class List_Table extends \WP_List_Table {
 
 					$labels = wp_list_pluck( $data['items'], 'label' );
 
-					// Sort top-level items by label
+					// Sort top-level items by label.
 					array_multisort( $labels, SORT_ASC, $data['items'] );
 
-					// Output a hidden input to handle the connector value
+					// Output a hidden input to handle the connector value.
 					$filters_string .= sprintf(
 						'<input type="hidden" name="connector" class="record-filter-connector" value="%s" />',
 						esc_attr( wp_stream_filter_input( INPUT_GET, 'connector' ) )
@@ -688,14 +771,14 @@ class List_Table extends \WP_List_Table {
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s" />', __( 'Filter', 'stream' ) );
 
-		// Parse all query vars into an array
+		// Parse all query vars into an array.
 		$query_vars = array();
 
 		if ( isset( $_SERVER['QUERY_STRING'] ) ) {
 			parse_str( urldecode( $_SERVER['QUERY_STRING'] ), $query_vars );
 		}
 
-		// Ignore certain query vars and query vars that are empty
+		// Ignore certain query vars and query vars that are empty.
 		foreach ( $query_vars as $query_var => $value ) {
 			if ( '' === $value || 'page' === $query_var || 'paged' === $query_var ) {
 				unset( $query_vars[ $query_var ] );
@@ -709,14 +792,23 @@ class List_Table extends \WP_List_Table {
 			self_admin_url( $this->plugin->admin->admin_parent_page )
 		);
 
-		// Display reset action if records are being filtered
+		// Display reset action if records are being filtered.
 		if ( ! empty( $query_vars ) ) {
 			$filters_string .= sprintf( '<a href="%s" id="record-query-reset"><span class="dashicons dashicons-dismiss"></span> <span class="record-query-reset-text">%s</span></a>', esc_url( $url ), __( 'Reset filters', 'stream' ) );
 		}
 
-		return sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
+		return sprintf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok.
 	}
 
+	/**
+	 * Returns HTML string of filterable select control with filtered items.
+	 *
+	 * @param string  $name   Search input.
+	 * @param string  $title  Name of the control.
+	 * @param array   $items  Items to be filtered.
+	 * @param boolean $ajax   Whether is an ajax request or not.
+	 * @return string
+	 */
 	public function filter_select( $name, $title, $items, $ajax = false ) {
 		$options  = array( '<option value=""></option>' );
 		$selected = wp_stream_filter_input( INPUT_GET, $name );
@@ -754,7 +846,7 @@ class List_Table extends \WP_List_Table {
 		$out = sprintf(
 			'<select name="%s" class="chosen-select" data-placeholder="%s">%s</select>',
 			esc_attr( $name ),
-			// translators: Placeholder refers to the title of the dropdown menu (e.g. "users")
+			/* translators: %s: the title of the dropdown menu (e.g. "users") */
 			sprintf( esc_attr__( 'Show all %s', 'stream' ), $title ),
 			implode( '', $options )
 		);
@@ -762,6 +854,12 @@ class List_Table extends \WP_List_Table {
 		return $out;
 	}
 
+	/**
+	 * Return HTML string of a filterable select option.
+	 *
+	 * @param array $args  Option attributes.
+	 * @return string
+	 */
 	public function filter_option( $args ) {
 		$defaults = array(
 			'value'    => null,
@@ -788,10 +886,15 @@ class List_Table extends \WP_List_Table {
 		);
 	}
 
+	/**
+	 * Return HTML string of a filter search box.
+	 *
+	 * @return string
+	 */
 	public function filter_search() {
 		$search = null;
-		if ( isset( $_GET['search'] ) ) { // CSRF okay
-			$search = esc_attr( wp_unslash( $_GET['search'] ) ); // input var okay, CSRF okay
+		if ( isset( $_GET['search'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$search = sanitize_key( wp_unslash( $_GET['search'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 		$out = sprintf(
 			'<p class="search-box">
@@ -806,6 +909,12 @@ class List_Table extends \WP_List_Table {
 		return $out;
 	}
 
+	/**
+	 * Return HTML string of a filter select box based upon date.
+	 *
+	 * @param array $items  Records.
+	 * @return string
+	 */
 	public function filter_date( $items ) {
 		wp_enqueue_style( 'jquery-ui' );
 		wp_enqueue_style( 'wp-stream-datepicker' );
@@ -903,19 +1012,27 @@ class List_Table extends \WP_List_Table {
 		return ob_get_clean();
 	}
 
+	/**
+	 * Renders record filter forms.
+	 */
 	public function display() {
 		$url = self_admin_url( $this->plugin->admin->admin_parent_page );
 
 		echo '<form method="get" action="' . esc_url( $url ) . '" id="record-filter-form">';
-		echo $this->filter_search(); // xss ok
+		echo $this->filter_search(); // xss ok.
 		parent::display();
 		echo '</form>';
 
 		echo '<form method="get" action="' . esc_url( $url ) . '" id="record-actions-form">';
-		echo $this->record_actions_form(); // xss ok
+		echo $this->record_actions_form(); // xss ok.
 		echo '</form>';
 	}
 
+	/**
+	 * Renders a single record
+	 *
+	 * @param array $item  Record data.
+	 */
 	public function single_row( $item ) {
 		$classes      = apply_filters( 'wp_stream_record_classes', array(), $item );
 		$class_string = '';
@@ -923,11 +1040,16 @@ class List_Table extends \WP_List_Table {
 			$class_string = ' class="' . esc_attr( join( ' ', $classes ) ) . '"';
 		}
 
-		echo sprintf( '<tr%s>', $class_string ); // xss ok
+		echo sprintf( '<tr%s>', $class_string ); // xss ok.
 		$this->single_row_columns( $item );
 		echo '</tr>';
 	}
 
+	/**
+	 * Renders table navigation controls
+	 *
+	 * @param string $which  Location controls.
+	 */
 	public function display_tablenav( $which ) {
 		if ( 'top' === $which ) :
 			?>
@@ -956,6 +1078,14 @@ class List_Table extends \WP_List_Table {
 		endif;
 	}
 
+	/**
+	 * Sets the screen options.
+	 *
+	 * @param string $dummy   Unused.
+	 * @param string $option  Screen option name.
+	 * @param string $value   Screen option value.
+	 * @return string
+	 */
 	public function set_screen_option( $dummy, $option, $value ) {
 		if ( 'edit_stream_per_page' === $option ) {
 			return $value;
@@ -964,6 +1094,14 @@ class List_Table extends \WP_List_Table {
 		}
 	}
 
+	/**
+	 * Sets the live update options.
+	 *
+	 * @param string $dummy   Unused.
+	 * @param string $option  Screen option name.
+	 * @param string $value   Screen option value.
+	 * @return string
+	 */
 	public function set_live_update_option( $dummy, $option, $value ) {
 		unset( $value );
 
@@ -983,6 +1121,13 @@ class List_Table extends \WP_List_Table {
 		return $dummy;
 	}
 
+	/**
+	 * Return HTML string of the "Live updates" screen option.
+	 *
+	 * @param string $status  Unused.
+	 * @param array  $args    Unused.
+	 * @return string
+	 */
 	public function screen_controls( $status, $args ) {
 		unset( $status );
 		unset( $args );
@@ -1025,7 +1170,7 @@ class List_Table extends \WP_List_Table {
 	/**
 	 * This function is use to map List table column name with excluded setting keys
 	 *
-	 * @param string $column List table column name
+	 * @param string $column  List table column name.
 	 *
 	 * @return string setting name for that column
 	 */
@@ -1056,7 +1201,7 @@ class List_Table extends \WP_List_Table {
 	/**
 	 * Get users as dropdown items
 	 *
-	 * @param array $users
+	 * @param array $users  Users.
 	 *
 	 * @return array
 	 */

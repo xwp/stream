@@ -1,6 +1,7 @@
 # Stream for WordPress
 
 [![Build Status](https://travis-ci.com/xwp/stream.svg?branch=master)](https://travis-ci.com/xwp/stream)
+[![Coverage Status](https://coveralls.io/repos/github/xwp/stream/badge.svg?branch=develop)](https://coveralls.io/github/xwp/stream?branch=develop)
 
 **Track WordPress user and system actions for debugging, logging and compliance purposes.**
 

@@ -6,16 +6,8 @@ load File.join(
 Vagrant.configure(2) do |config|
 	config.vm.hostname = "stream"
 
-	# Wait 10 seconds before the docker containers are up.
-	config.vm.provision "shell",
-		inline: "sleep 10",
-		run: "always"
-
 	# Setup the WP sites.
 	config.vm.provision "shell",
-		path: "local/vagrant/setup-wp.sh",
-		run: "always",
-		env: {
-			"DOCKER_COMPOSE_FILE" => "/vagrant/docker-compose.yml"
-		}
+		inline: "docker-compose -f /vagrant/docker-compose.yml exec -T --user 1000 wordpress xwp_wait mysql:3306 -t 60 -- wp core multisite-install --url=stream.local",
+		run: "always"
 end

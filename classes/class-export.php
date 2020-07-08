@@ -1,9 +1,18 @@
 <?php
+/**
+ * Loads & Manages exporter classes.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Export
+ */
 class Export {
 	/**
-	 * Hold Plugin class
+	 * Holds instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -73,12 +82,14 @@ class Export {
 	/**
 	 * Add Export options to record actions menu
 	 *
+	 * @param array $action_menu_items  Export types.
+	 *
 	 * @return array
 	 */
 	public function actions_menu_export_items( $action_menu_items ) {
 		foreach ( $this->get_exporters() as $exporter ) {
 			$action = 'export-' . $exporter->slug;
-			// translators: Placeholder refers to an export format (e.g. "CSV")
+			/* translators: %s: an export format (e.g. "CSV") */
 			$action_menu_items[ $action ] = sprintf( __( 'Export as %s', 'stream' ), $exporter->name );
 		}
 
@@ -99,7 +110,7 @@ class Export {
 		foreach ( array_keys( $columns ) as $column_name ) {
 			switch ( $column_name ) {
 				case 'date':
-					$created                 = date( 'Y-m-d H:i:s', strtotime( $record->created ) );
+					$created                 = gmdate( 'Y-m-d H:i:s', strtotime( $record->created ) );
 					$row_out[ $column_name ] = get_date_from_gmt( $created, 'Y/m/d h:i:s A' );
 					break;
 
@@ -203,7 +214,7 @@ class Export {
 		 */
 		$this->exporters = apply_filters( 'wp_stream_exporters', $classes );
 
-		// Ensure that all exporters extend Exporter
+		// Ensure that all exporters extend Exporter.
 		foreach ( $this->exporters as $key => $exporter ) {
 			if ( ! $this->is_valid_exporter( $exporter ) ) {
 				unset( $this->exporters[ $key ] );

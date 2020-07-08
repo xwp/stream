@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for installer
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Installer
+ */
 class Connector_Installer extends Connector {
 
 	/**
@@ -16,12 +25,12 @@ class Connector_Installer extends Connector {
 	 * @var array
 	 */
 	public $actions = array(
-		'upgrader_process_complete', // plugins::installed | themes::installed
-		'activate_plugin', // plugins::activated
-		'deactivate_plugin', // plugins::deactivated
-		'switch_theme', // themes::activated
-		'delete_site_transient_update_themes', // themes::deleted
-		'pre_option_uninstall_plugins', // plugins::deleted
+		'upgrader_process_complete', // plugins::installed | themes::installed.
+		'activate_plugin', // plugins::activated.
+		'deactivate_plugin', // plugins::deactivated.
+		'switch_theme', // themes::activated.
+		'delete_site_transient_update_themes', // themes::deleted.
+		'pre_option_uninstall_plugins', // plugins::deleted.
 		'pre_set_site_transient_update_plugins',
 		'_core_updated_successfully',
 	);
@@ -75,8 +84,8 @@ class Connector_Installer extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param  array  $links   Previous links registered.
+	 * @param  object $record  Stream record.
 	 *
 	 * @return array             Action links
 	 */
@@ -112,10 +121,10 @@ class Connector_Installer extends Connector {
 	/**
 	 * Log plugin installations
 	 *
-	 * @action transition_post_status
+	 * @action upgrader_process_complete
 	 *
-	 * @param \WP_Upgrader $upgrader
-	 * @param array        $extra
+	 * @param \WP_Upgrader $upgrader  Upgrader object.
+	 * @param array        $extra     Extra plugin data.
 	 *
 	 * @return bool
 	 */
@@ -130,7 +139,7 @@ class Connector_Installer extends Connector {
 			list( $error ) = reset( $errors );
 		}
 
-		// This would have failed down the road anyway
+		// This would have failed down the road anyway.
 		if ( ! isset( $extra['type'] ) ) {
 			return false;
 		}
@@ -154,7 +163,7 @@ class Connector_Installer extends Connector {
 				$slug    = $upgrader->result['destination_name'];
 				$name    = $data['Name'];
 				$version = $data['Version'];
-			} else { // theme
+			} else { // theme.
 				$slug = $upgrader->theme_info();
 
 				if ( ! $slug ) {
@@ -169,7 +178,7 @@ class Connector_Installer extends Connector {
 			}
 
 			$action = 'installed';
-			// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2")
+			/* translators: %1$s: a plugin/theme type, %2$s: a plugin/theme name, %3$s: a plugin/theme version (e.g. "plugin", "Stream", "4.2") */
 			$message = _x(
 				'Installed %1$s: %2$s %3$s',
 				'Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
@@ -179,7 +188,7 @@ class Connector_Installer extends Connector {
 			$logs[] = compact( 'slug', 'name', 'version', 'message', 'action' );
 		} elseif ( 'update' === $action ) {
 			$action = 'updated';
-			// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2")
+			/* translators: %1$s: a plugin/theme type, %2$s: a plugin/theme name, %3$s: a plugin/theme version (e.g. "plugin", "Stream", "4.2") */
 			$message = _x(
 				'Updated %1$s: %2$s %3$s',
 				'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
@@ -203,7 +212,7 @@ class Connector_Installer extends Connector {
 
 					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
 				}
-			} else { // theme
+			} else { // theme.
 				if ( isset( $extra['bulk'] ) && true === $extra['bulk'] ) {
 					$slugs = $extra['themes'];
 				} else {
@@ -252,13 +261,21 @@ class Connector_Installer extends Connector {
 		return true;
 	}
 
+	/**
+	 * Logs plugin activations
+	 *
+	 * @action activate_plugin
+	 *
+	 * @param string $slug          Plugin slug name.
+	 * @param bool   $network_wide  Activated across the multi-site?.
+	 */
 	public function callback_activate_plugin( $slug, $network_wide ) {
 		$_plugins     = $this->get_plugins();
 		$name         = $_plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? esc_html__( 'network wide', 'stream' ) : null;
 
 		$this->log(
-			// translators: Placeholders refer to a plugin name, and whether it is on a single site or network wide (e.g. "Stream", "network wide") (a single site results in a blank string)
+			/* translators: %1$s: a plugin name, %2$s: whether it is on a single site or network wide (e.g. "Stream", "network wide") (a single site results in a blank string) */
 			_x(
 				'"%1$s" plugin activated %2$s',
 				'1: Plugin name, 2: Single site or network wide',
@@ -271,13 +288,21 @@ class Connector_Installer extends Connector {
 		);
 	}
 
+	/**
+	 * Logs plugin deactivations
+	 *
+	 * @action deactivate_plugin
+	 *
+	 * @param string $slug          Plugin slug name.
+	 * @param bool   $network_wide  Deactivated across the multi-site?.
+	 */
 	public function callback_deactivate_plugin( $slug, $network_wide ) {
 		$_plugins     = $this->get_plugins();
 		$name         = $_plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? esc_html__( 'network wide', 'stream' ) : null;
 
 		$this->log(
-			// translators: Placeholders refer to a plugin name, and whether it is on a single site or network wide (e.g. "Stream", "network wide") (a single site results in a blank string)
+			/* translators: %1$s: a plugin name, %2$s: whether it is on a single site or network wide (e.g. "Stream", "network wide") (a single site results in a blank string) */
 			_x(
 				'"%1$s" plugin deactivated %2$s',
 				'1: Plugin name, 2: Single site or network wide',
@@ -290,10 +315,16 @@ class Connector_Installer extends Connector {
 		);
 	}
 
+	/**
+	 * Logs theme activations.
+	 *
+	 * @param string $name   Theme name.
+	 * @param string $theme  Unused.
+	 */
 	public function callback_switch_theme( $name, $theme ) {
 		unset( $theme );
 		$this->log(
-			// translators: Placeholder refers to a theme name (e.g. "Twenty Seventeen")
+			/* translators: %s: a theme name (e.g. "Twenty Seventeen") */
 			__( '"%s" theme activated', 'stream' ),
 			compact( 'name' ),
 			null,
@@ -303,10 +334,17 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
+	 * Logs theme deletion.
+	 *
+	 * @action delete_site_transient_update_themes
+	 *
 	 * @todo Core needs a delete_theme hook
 	 */
 	public function callback_delete_site_transient_update_themes() {
-		$backtrace = debug_backtrace(); // @codingStandardsIgnoreLine This is used as a hack to determine a theme was deleted.
+		/**
+		 * This is used as a hack to determine a theme was deleted.
+		 */
+		$backtrace = debug_backtrace(); // @codingStandardsIgnoreLine
 		$delete_theme_call = null;
 
 		foreach ( $backtrace as $call ) {
@@ -321,10 +359,10 @@ class Connector_Installer extends Connector {
 		}
 
 		$name = $delete_theme_call['args'][0];
-		// @todo Can we get the name of the theme? Or has it already been eliminated
+		// @todo Can we get the name of the theme? Or has it already been eliminated.
 
 		$this->log(
-			// translators: Placeholder refers to a theme name (e.g. "Twenty Seventeen")
+			/* translators: Placeholder refers to a theme name (e.g. "Twenty Seventeen") */
 			__( '"%s" theme deleted', 'stream' ),
 			compact( 'name' ),
 			null,
@@ -334,6 +372,10 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
+	 * Logs plugins uninstallations.
+	 *
+	 * @action pre_option_uninstall_plugins
+	 *
 	 * @todo Core needs an uninstall_plugin hook
 	 * @todo This does not work in WP-CLI
 	 */
@@ -365,7 +407,11 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
-	 * @param mixed $value
+	 * Logs bulk plugin deletions.
+	 *
+	 * @filter pre_set_site_transient_update_plugins
+	 *
+	 * @param mixed $value  Unused.
 	 *
 	 * @return mixed
 	 * @todo Core needs a delete_plugin hook
@@ -382,7 +428,7 @@ class Connector_Installer extends Connector {
 			$network_wide = $data['Network'] ? esc_html__( 'network wide', 'stream' ) : '';
 
 			$this->log(
-				// translators: Placeholder refers to a plugin name (e.g. "Stream")
+				/* translators: %s a plugin name (e.g. "Stream") */
 				__( '"%s" plugin deleted', 'stream' ),
 				compact( 'name', 'plugin', 'network_wide' ),
 				null,
@@ -396,6 +442,14 @@ class Connector_Installer extends Connector {
 		return $value;
 	}
 
+	/**
+	 * Logs WordPress core upgrades
+	 *
+	 * @action _core_updated_successfully
+	 *
+	 * @param string $new_version  Version WordPress core has be upgraded to.
+	 * @return void
+	 */
 	public function callback__core_updated_successfully( $new_version ) {
 		global $pagenow, $wp_version;
 
@@ -403,10 +457,10 @@ class Connector_Installer extends Connector {
 		$auto_updated = ( 'update-core.php' !== $pagenow );
 
 		if ( $auto_updated ) {
-			// translators: Placeholder refers to a version number (e.g. "4.2")
+			/* translators: %s: a version number (e.g. "4.2") */
 			$message = esc_html__( 'WordPress auto-updated to %s', 'stream' );
 		} else {
-			// translators: Placeholder refers to a version number (e.g. "4.2")
+			/* translators: %s: a version number (e.g. "4.2") */
 			$message = esc_html__( 'WordPress updated to %s', 'stream' );
 		}
 

@@ -1,4 +1,8 @@
-FROM wordpress:php7.3-apache
+ARG PHP_VERSION=7.4
+
+FROM wordpress:php${PHP_VERSION}-apache
+
+ARG XDEBUG_VERSION=2.9.6
 
 # Include our Composer vendor binrary path into global path.
 ENV PATH="/var/www/html/wp-content/plugins/stream-src/vendor/bin:${PATH}"
@@ -10,6 +14,10 @@ RUN apt-get update; \
 	# MailHog dependencies.
 	msmtp;
 
-# Setup xdebug.
-RUN	pecl install xdebug; \
-	docker-php-ext-enable xdebug;
+COPY php.ini /usr/local/etc/php/php.ini
+
+# Setup xdebug. The latest version supported by PHP 5.6 is 2.5.5.
+RUN	pecl install "xdebug-${XDEBUG_VERSION}"; \
+	docker-php-ext-enable xdebug
+
+COPY wait.sh /usr/local/bin/xwp_wait

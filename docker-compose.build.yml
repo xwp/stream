@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+
+  wordpress_latest:
+    image: xwpco/stream-wordpress:latest
+    build:
+      context: ./local/docker/wordpress
+
+  wordpress_php5.6:
+    image: xwpco/stream-wordpress:php5.6
+    build:
+      context: ./local/docker/wordpress
+      args:
+        PHP_VERSION: "5.6"
+        XDEBUG_VERSION: "2.5.5"
+
+  wordpress_php7.2:
+    image: xwpco/stream-wordpress:php7.2
+    build:
+      context: ./local/docker/wordpress
+      args:
+        PHP_VERSION: "7.2"

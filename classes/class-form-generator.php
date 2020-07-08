@@ -1,6 +1,15 @@
 <?php
+/**
+ * Generates an WP Admin form.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Form_Generator
+ */
 class Form_Generator {
 
 	/**

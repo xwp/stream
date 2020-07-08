@@ -17,6 +17,10 @@
 		<exclude name="WordPress.Security.EscapeOutput.DeprecatedWhitelistCommentFound" /><!-- TODO: Change these to phpcs:ignore -->
 	</rule>
 
+	<rule ref="Squiz.Commenting.FileComment">
+		<exclude-pattern>*/local/*</exclude-pattern>
+	</rule>
+
 	<exclude-pattern>*.ruleset</exclude-pattern>
 	<exclude-pattern>*/tests/*</exclude-pattern>
 	<exclude-pattern>*/includes/lib/*</exclude-pattern>

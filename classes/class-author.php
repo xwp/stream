@@ -1,18 +1,33 @@
 <?php
+/**
+ * Manages a single user, acting as a model.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Author
+ */
 class Author {
 	/**
+	 * Holds User ID.
+	 *
 	 * @var int
 	 */
 	public $id;
 
 	/**
+	 * Holds User meta data.
+	 *
 	 * @var array
 	 */
 	public $meta = array();
 
 	/**
+	 * Holds WP user object connected to "$this" instance.
+	 *
 	 * @var \WP_User
 	 */
 	protected $user;
@@ -35,31 +50,38 @@ class Author {
 	/**
 	 * Get various user meta data
 	 *
-	 * @param string $name
+	 * @todo Make sure this is being covered in the unit tests.
 	 *
-	 * @throws \Exception
+	 * @param string $name User meta key.
+	 *
+	 * @throws \Exception Meta not found | User not found.
 	 *
 	 * @return string
 	 */
 	public function __get( $name ) {
-		if ( 'display_name' === $name ) {
-			return $this->get_display_name();
-		} elseif ( 'avatar_img' === $name ) {
-			return $this->get_avatar_img();
-		} elseif ( 'avatar_src' === $name ) {
-			return $this->get_avatar_src();
-		} elseif ( 'role' === $name ) {
-			return $this->get_role();
-		} elseif ( 'agent' === $name ) {
-			return $this->get_agent();
-		} elseif ( ! empty( $this->user ) && 0 !== $this->user->ID ) {
-			return $this->user->$name;
-		} else {
-			throw new \Exception( "Unrecognized magic '$name'" );
+		switch ( $name ) {
+			case 'display_name':
+			case 'avatar_img':
+			case 'avatar_src':
+			case 'role':
+			case 'agent':
+				$getter = "get_{$name}";
+				return $this->$getter();
+			default:
+				if ( ! empty( $this->user ) && 0 !== $this->user->ID ) {
+					if ( is_null( $this->user->$name ) ) {
+						throw new \Exception( "Unrecognized magic '$name'" );
+					}
+					return $this->user->$name;
+				}
+
+				throw new \Exception( 'User not found.' );
 		}
 	}
 
 	/**
+	 * Returns string representation of this object
+	 *
 	 * @return string
 	 */
 	public function __toString() {
@@ -76,7 +98,7 @@ class Author {
 			if ( isset( $this->meta['system_user_name'] ) ) {
 				return esc_html( $this->meta['system_user_name'] );
 			} elseif ( 'wp_cli' === $this->get_current_agent() ) {
-				return 'WP-CLI'; // No translation needed
+				return 'WP-CLI'; // No translation needed.
 			}
 			return esc_html__( 'N/A', 'stream' );
 		} else {
@@ -107,7 +129,7 @@ class Author {
 		if ( ! empty( $this->meta['agent'] ) ) {
 			$agent = $this->meta['agent'];
 		} elseif ( ! empty( $this->meta['is_wp_cli'] ) ) {
-			$agent = 'wp_cli'; // legacy
+			$agent = 'wp_cli'; // legacy.
 		}
 
 		return $agent;
@@ -118,7 +140,7 @@ class Author {
 	 *
 	 * This function will not return an avatar if "Show Avatars" is unchecked in Settings > Discussion.
 	 *
-	 * @param int $size (optional) Size of Gravatar to return (in pixels), max is 512, default is 80
+	 * @param int $size (optional) Size of Gravatar to return (in pixels), max is 512, default is 80.
 	 *
 	 * @return string|bool  An img HTML element, or false if avatars are disabled
 	 */
@@ -146,7 +168,7 @@ class Author {
 	/**
 	 * Return the URL of a Gravatar image.
 	 *
-	 * @param int $size (optional)  Size of Gravatar to return (in pixels), max is 512, default is 80
+	 * @param int $size (optional)  Size of Gravatar to return (in pixels), max is 512, default is 80.
 	 *
 	 * @return string|bool  Gravatar image URL, or false on failure
 	 */
@@ -263,7 +285,7 @@ class Author {
 	/**
 	 * Get the agent label
 	 *
-	 * @param string $agent
+	 * @param string $agent Key representing agent.
 	 *
 	 * @return string
 	 */
@@ -279,7 +301,7 @@ class Author {
 		/**
 		 * Filter agent labels
 		 *
-		 * @param string $agent
+		 * @param string $agent Key representing agent.
 		 *
 		 * @return string
 		 */

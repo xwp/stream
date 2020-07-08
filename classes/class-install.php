@@ -1,9 +1,18 @@
 <?php
+/**
+ * Handles database migrations
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Install
+ */
 class Install {
 	/**
-	 * Hold Plugin class
+	 * Holds Instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -53,6 +62,8 @@ class Install {
 
 	/**
 	 * Class constructor
+	 *
+	 * @param Plugin $plugin  Instance of plugin object.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
@@ -60,10 +71,10 @@ class Install {
 		$this->db_version = $this->get_db_version();
 		$this->stream_url = self_admin_url( $this->plugin->admin->admin_parent_page . '&page=' . $this->plugin->admin->settings_page_slug );
 
-		// Check DB and display an admin notice if there are tables missing
+		// Check DB and display an admin notice if there are tables missing.
 		add_action( 'init', array( $this, 'verify_db' ) );
 
-		// Install the plugin
+		// Install the plugin.
 		add_action( 'wp_stream_before_db_notices', array( $this, 'check' ) );
 
 		register_activation_hook( $this->plugin->locations['plugin'], array( $this, 'check' ) );
@@ -157,7 +168,7 @@ class Install {
 		$database_message  = '';
 		$uninstall_message = '';
 
-		// Check if all needed DB is present
+		// Check if all needed DB is present.
 		$missing_tables = array();
 
 		foreach ( $this->plugin->db->get_table_names() as $table_name ) {
@@ -184,14 +195,14 @@ class Install {
 
 		if ( $this->plugin->is_network_activated() && current_user_can( 'manage_network_plugins' ) ) {
 			$uninstall_message = sprintf(
-				// translators: Placeholders refer to HTML Link tags (e.g. "<a href="https://foo.com/wp-admin/">")
+				/* translators: %#$s: HTML Link tags (e.g. "<a href="https://foo.com/wp-admin/">") */
 				__( 'Please %1$suninstall%2$s the Stream plugin and activate it again.', 'stream' ),
 				'<a href="' . network_admin_url( 'plugins.php#stream' ) . '">',
 				'</a>'
 			);
 		} elseif ( current_user_can( 'activate_plugins' ) ) {
 			$uninstall_message = sprintf(
-				// translators: Placeholders refer to HTML Link tags (e.g. "<a href="https://foo.com/wp-admin/">")
+				/* translators: %#$s: HTML Link tags (e.g. "<a href="https://foo.com/wp-admin/">") */
 				__( 'Please %1$suninstall%2$s the Stream plugin and activate it again.', 'stream' ),
 				'<a href="' . admin_url( 'plugins.php#stream' ) . '">',
 				'</a>'
@@ -211,7 +222,7 @@ class Install {
 	 * Register a routine to be called when stream or a stream connector has been updated
 	 * It works by comparing the current version with the version previously stored in the database.
 	 *
-	 * @param string $file     A reference to the main plugin file
+	 * @param string $file     A reference to the main plugin file.
 	 * @param string $callback The function to run when the hook is called.
 	 * @param string $version  The version to which the plugin is updating.
 	 *
@@ -248,6 +259,8 @@ class Install {
 	}
 
 	/**
+	 * Returns the database version.
+	 *
 	 * @return string
 	 */
 	public function get_db_version() {
@@ -255,7 +268,7 @@ class Install {
 	}
 
 	/**
-	 * @return void
+	 * Checks if migration was successful.
 	 */
 	public function update_db_option() {
 		if ( $this->success_db ) {
@@ -344,7 +357,7 @@ class Install {
 				<p>
 					<?php
 					printf(
-						// translators: Placeholders refer to version numbers (e.g. "4.2")
+						/* translators: %1$s: old version, %2$s: new version (e.g. "4.2") */
 						esc_html__( 'Your Stream database has been successfully updated from %1$s to %2$s!', 'stream' ),
 						esc_html( $this->db_version ),
 						esc_html( $this->plugin->get_version() )
@@ -387,9 +400,9 @@ class Install {
 	/**
 	 * Database user controlled update routine
 	 *
-	 * @param int   $db_version
-	 * @param int   $current_version
-	 * @param array $update_args
+	 * @param int   $db_version      Next database version.
+	 * @param int   $current_version Current database version.
+	 * @param array $update_args     Update options.
 	 *
 	 * @return mixed Version number on success, true on no update needed, mysql error message on error
 	 */
@@ -419,7 +432,7 @@ class Install {
 	/**
 	 * Initial database install routine
 	 *
-	 * @param string $current_version
+	 * @param string $current_version  Current database version.
 	 *
 	 * @return string
 	 */

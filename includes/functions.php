@@ -1,5 +1,11 @@
 <?php
 /**
+ * Defines common functionality used throughout the plugin.
+ *
+ * @package WP_Stream
+ */
+
+/**
  * Gets a specific external variable by name and optionally filters it.
  *
  * This is a polyfill function intended to be used in place of PHP's
@@ -35,8 +41,8 @@ function wp_stream_filter_var( $var, $filter = null, $options = array() ) {
 /**
  * Converts a time into an ISO 8601 extended formatted string.
  *
- * @param int|bool $time Seconds since unix epoc
- * @param int      $offset Hour offset
+ * @param int|bool $time   Seconds since unix epoch.
+ * @param int      $offset Timezone offset.
  *
  * @return string an ISO 8601 extended formatted time
  */
@@ -48,25 +54,20 @@ function wp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
 	}
 
 	$micro_seconds = sprintf( '%06d', ( $microtime - floor( $microtime ) ) * 1000000 );
-	$offset_string = sprintf( 'Etc/GMT%s%s', $offset < 0 ? '+' : '-', abs( $offset ) );
+	$offset_string = sprintf( 'Etc/GMT%s%d', $offset < 0 ? '+' : '-', abs( $offset ) );
 
 	$timezone = new DateTimeZone( $offset_string );
-	$date     = new DateTime( date( 'Y-m-d H:i:s.' . $micro_seconds, $microtime ), $timezone );
+	$date     = new DateTime( gmdate( 'Y-m-d H:i:s.' . $micro_seconds, $microtime ), $timezone );
 
-	return sprintf(
-		'%s%03d%s',
-		$date->format( 'Y-m-d\TH:i:s.' ),
-		floor( $date->format( 'u' ) / 1000 ),
-		$date->format( 'O' )
-	);
+	return $date->format( 'Y-m-d\TH:i:sO' );
 }
 
 /**
  * Encode to JSON in a way that is also backwards compatible
  *
- * @param mixed $data
- * @param int   $options (optional)
- * @param int   $depth (optional)
+ * @param mixed $data     Data to be encoded.
+ * @param int   $options  Compression options (optional).
+ * @param int   $depth    Tree depth limit (optional).
  *
  * @return string
  */
@@ -89,7 +90,7 @@ function wp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
 /**
  * Return an array of sites for a network in a way that is also backwards compatible
  *
- * @param string|array $args
+ * @param string|array $args  Argument to filter results by.
  *
  * @return array
  */
@@ -131,7 +132,7 @@ function wp_stream_is_cron_enabled() {
  * @return string
  */
 function wp_stream_min_suffix() {
-	$min = '';
+	$min                 = '';
 	$is_script_debugging = ! defined( 'SCRIPT_DEBUG' ) || false === SCRIPT_DEBUG;
 
 	if ( apply_filters( 'wp_stream_load_min_assets', $is_script_debugging ) ) {

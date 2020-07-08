@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for Settings
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_Settings
+ */
 class Connector_Settings extends Connector {
 	/**
 	 * Prefix for the highlight URL hash
@@ -97,7 +106,7 @@ class Connector_Settings extends Connector {
 		parent::register();
 
 		$this->labels = array(
-			// General
+			// General.
 			'blogname'                      => esc_html__( 'Site Title', 'stream' ),
 			'blogdescription'               => esc_html__( 'Tagline', 'stream' ),
 			'gmt_offset'                    => esc_html__( 'Timezone', 'stream' ),
@@ -111,7 +120,7 @@ class Connector_Settings extends Connector {
 			'date_format'                   => esc_html__( 'Date Format', 'stream' ),
 			'time_format'                   => esc_html__( 'Time Format', 'stream' ),
 			'start_of_week'                 => esc_html__( 'Week Starts On', 'stream' ),
-			// Writing
+			// Writing.
 			'use_smilies'                   => esc_html__( 'Formatting', 'stream' ),
 			'use_balanceTags'               => esc_html__( 'Formatting', 'stream' ),
 			'default_category'              => esc_html__( 'Default Post Category', 'stream' ),
@@ -122,7 +131,7 @@ class Connector_Settings extends Connector {
 			'default_email_category'        => esc_html__( 'Default Mail Category', 'stream' ),
 			'default_link_category'         => esc_html__( 'Default Link Category', 'stream' ),
 			'ping_sites'                    => esc_html__( 'Update Services', 'stream' ),
-			// Reading
+			// Reading.
 			'show_on_front'                 => esc_html__( 'Front page displays', 'stream' ),
 			'page_on_front'                 => esc_html__( 'Front page displays', 'stream' ),
 			'page_for_posts'                => esc_html__( 'Front page displays', 'stream' ),
@@ -130,7 +139,7 @@ class Connector_Settings extends Connector {
 			'posts_per_rss'                 => esc_html__( 'Syndication feeds show the most recent', 'stream' ),
 			'rss_use_excerpt'               => esc_html__( 'For each article in a feed, show', 'stream' ),
 			'blog_public'                   => esc_html__( 'Search Engine Visibility', 'stream' ),
-			// Discussion
+			// Discussion.
 			'default_pingback_flag'         => esc_html__( 'Default article settings', 'stream' ),
 			'default_ping_status'           => esc_html__( 'Default article settings', 'stream' ),
 			'default_comment_status'        => esc_html__( 'Default article settings', 'stream' ),
@@ -154,7 +163,7 @@ class Connector_Settings extends Connector {
 			'show_avatars'                  => esc_html__( 'Show Avatars', 'stream' ),
 			'avatar_rating'                 => esc_html__( 'Maximum Rating', 'stream' ),
 			'avatar_default'                => esc_html__( 'Default Avatar', 'stream' ),
-			// Media
+			// Media.
 			'thumbnail_size_w'              => esc_html__( 'Thumbnail size', 'stream' ),
 			'thumbnail_size_h'              => esc_html__( 'Thumbnail size', 'stream' ),
 			'thumbnail_crop'                => esc_html__( 'Thumbnail size', 'stream' ),
@@ -163,11 +172,11 @@ class Connector_Settings extends Connector {
 			'large_size_w'                  => esc_html__( 'Large size', 'stream' ),
 			'large_size_h'                  => esc_html__( 'Large size', 'stream' ),
 			'uploads_use_yearmonth_folders' => esc_html__( 'Uploading Files', 'stream' ),
-			// Permalinks
+			// Permalinks.
 			'permalink_structure'           => esc_html__( 'Permalink Settings', 'stream' ),
 			'category_base'                 => esc_html__( 'Category base', 'stream' ),
 			'tag_base'                      => esc_html__( 'Tag base', 'stream' ),
-			// Network
+			// Network.
 			'registrationnotification'      => esc_html__( 'Registration notification', 'stream' ),
 			'registration'                  => esc_html__( 'Allow new registrations', 'stream' ),
 			'add_new_users'                 => esc_html__( 'Add New Users', 'stream' ),
@@ -191,11 +200,11 @@ class Connector_Settings extends Connector {
 			'WPLANG'                        => esc_html__( 'Network Language', 'stream' ),
 			'blog_count'                    => esc_html__( 'Blog Count', 'stream' ),
 			'user_count'                    => esc_html__( 'User Count', 'stream' ),
-			// Other
+			// Other.
 			'wp_stream_db'                  => esc_html__( 'Stream Database Version', 'stream' ),
 		);
 
-		// These option labels are special and need to change based on multisite context
+		// These option labels are special and need to change based on multisite context.
 		if ( is_network_admin() ) {
 			$this->labels['admin_email']     = esc_html__( 'Network Admin Email', 'stream' );
 			$this->labels['new_admin_email'] = esc_html__( 'Network Admin Email', 'stream' );
@@ -207,10 +216,12 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
+	 * Logs changes to the theme modifications.
+	 *
 	 * @action update_option_theme_mods_{name}
 	 *
-	 * @param mixed $old_value
-	 * @param mixed $new_value
+	 * @param mixed $old_value  Old setting value.
+	 * @param mixed $new_value  New setting value.
 	 */
 	public function log_theme_modification( $old_value, $new_value ) {
 		$this->callback_updated_option( 'theme_mods', $old_value, $new_value );
@@ -272,8 +283,8 @@ class Connector_Settings extends Connector {
 	/**
 	 * Return context by option name and key
 	 *
-	 * @param string $option_name
-	 * @param string $key
+	 * @param string $option_name  Option name.
+	 * @param string $key          Option key.
 	 *
 	 * @return string Context slug
 	 */
@@ -308,8 +319,8 @@ class Connector_Settings extends Connector {
 	/**
 	 * Find out if the option key should be ignored and not logged
 	 *
-	 * @param string $option_name
-	 * @param string $key
+	 * @param string $option_name  Option name.
+	 * @param string $key          Option key.
 	 *
 	 * @return bool Whether option key is ignored or not
 	 */
@@ -331,7 +342,7 @@ class Connector_Settings extends Connector {
 	/**
 	 * Find out if the option should be ignored and not logged
 	 *
-	 * @param string $option_name
+	 * @param string $option_name  Option name.
 	 *
 	 * @return bool Whether the option is ignored or not
 	 */
@@ -344,19 +355,33 @@ class Connector_Settings extends Connector {
 			return true;
 		}
 
-		$ignored = array(
+		$default_ignored = array(
 			'image_default_link_type',
 			'medium_large_size_w',
 			'medium_large_size_h',
 		);
 
-		return in_array( $option_name, $ignored, true );
+		/**
+		 * Filters the boolean output for is_option_ignored().
+		 *
+		 * @param boolean $is_ignored True if ignored, otherwise false.
+		 * @param string  $option_name Current option name.
+		 * @param array   $default_ignored Default options for Stream to ignore.
+		 *
+		 * @return boolean
+		 */
+		return apply_filters(
+			'wp_stream_is_option_ignored',
+			in_array( $option_name, $default_ignored, true ),
+			$option_name,
+			$default_ignored
+		);
 	}
 
 	/**
 	 * Find out if array keys in the option should be logged separately
 	 *
-	 * @param mixed $value
+	 * @param mixed $value  Option value.
 	 *
 	 * @return bool Whether the option should be treated as a group
 	 */
@@ -375,7 +400,7 @@ class Connector_Settings extends Connector {
 	/**
 	 * Return translated labels for all default Settings fields found in WordPress.
 	 *
-	 * @param string $field_key
+	 * @param string $field_key  Field key.
 	 *
 	 * @return array Field label translations
 	 */
@@ -400,29 +425,29 @@ class Connector_Settings extends Connector {
 	/**
 	 * Return translated labels for all serialized Settings found in WordPress.
 	 *
-	 * @param string $option_name
-	 * @param string $field_key
+	 * @param string $option_name  Option name.
+	 * @param string $field_key    Field key.
 	 *
 	 * @return string Field key translation or key itself if not found
 	 */
 	public function get_serialized_field_label( $option_name, $field_key ) {
 		$labels = array(
 			'theme_mods' => array(
-				// Custom Background
+				// Custom Background.
 				'background_image'        => esc_html__( 'Background Image', 'stream' ),
 				'background_position_x'   => esc_html__( 'Background Position', 'stream' ),
 				'background_repeat'       => esc_html__( 'Background Repeat', 'stream' ),
 				'background_attachment'   => esc_html__( 'Background Attachment', 'stream' ),
 				'background_color'        => esc_html__( 'Background Color', 'stream' ),
-				// Custom Header
+				// Custom Header.
 				'header_image'            => esc_html__( 'Header Image', 'stream' ),
 				'header_textcolor'        => esc_html__( 'Text Color', 'stream' ),
 				'header_background_color' => esc_html__( 'Header and Sidebar Background Color', 'stream' ),
-				// Featured Content
+				// Featured Content.
 				'featured_content_layout' => esc_html__( 'Layout', 'stream' ),
-				// Custom Sidebar
+				// Custom Sidebar.
 				'sidebar_textcolor'       => esc_html__( 'Header and Sidebar Text Color', 'stream' ),
-				// Custom Colors
+				// Custom Colors.
 				'color_scheme'            => esc_html__( 'Color Scheme', 'stream' ),
 				'main_text_color'         => esc_html__( 'Main Text Color', 'stream' ),
 				'secondary_text_color'    => esc_html__( 'Secondary Text Color', 'stream' ),
@@ -451,8 +476,8 @@ class Connector_Settings extends Connector {
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param array  $links   Previous links registered
-	 * @param Record $record Stream record
+	 * @param array  $links   Previous links registered.
+	 * @param Record $record  Stream record.
 	 *
 	 * @return array             Action links
 	 */
@@ -544,7 +569,7 @@ class Connector_Settings extends Connector {
 			);
 
 			if ( ! empty( $applicable_rules ) ) {
-				// The first applicable rule wins
+				// The first applicable rule wins.
 				$rule         = array_shift( $applicable_rules );
 				$menu_slug    = $rule['menu_slug'];
 				$submenu_slug = ( is_object( $rule['submenu_slug'] ) && $rule['submenu_slug'] instanceof Closure ? $rule['submenu_slug']( $record ) : $rule['submenu_slug'] );
@@ -567,7 +592,7 @@ class Connector_Settings extends Connector {
 						$url        = apply_filters( 'wp_stream_action_link_url', $url, $record );
 						$field_name = $record->get_meta( 'option_key', true );
 
-						// translators: Placeholder refers to a context (e.g. "Editor")
+						/* translators: %s: a context (e.g. "Editor") */
 						$text = sprintf( esc_html__( 'Edit %s Settings', 'stream' ), $context_labels[ $record->context ] );
 
 						if ( '' === $field_name ) {
@@ -592,9 +617,9 @@ class Connector_Settings extends Connector {
 	 *
 	 * @action update_option
 	 *
-	 * @param string $option
-	 * @param mixed  $old_value
-	 * @param mixed  $value
+	 * @param string $option     Option name.
+	 * @param mixed  $value      Option new value.
+	 * @param mixed  $old_value  Option old value.
 	 */
 	public function callback_update_option( $option, $value, $old_value ) {
 		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && array_key_exists( $option, $this->labels ) ) {
@@ -607,7 +632,7 @@ class Connector_Settings extends Connector {
 	 *
 	 * @action whitelist_options
 	 *
-	 * @param array $options
+	 * @param array $options  Options.
 	 *
 	 * @return array
 	 */
@@ -622,8 +647,8 @@ class Connector_Settings extends Connector {
 	 *
 	 * @action update_option_permalink_structure
 	 *
-	 * @param mixed $old_value
-	 * @param mixed $value
+	 * @param mixed $old_value  Option old value.
+	 * @param mixed $value      Option new value.
 	 */
 	public function callback_update_option_permalink_structure( $old_value, $value ) {
 		$this->callback_updated_option( 'permalink_structure', $old_value, $value );
@@ -634,9 +659,9 @@ class Connector_Settings extends Connector {
 	 *
 	 * @action update_site_option
 	 *
-	 * @param string $option
-	 * @param mixed  $old_value
-	 * @param mixed  $value
+	 * @param string $option     Option name.
+	 * @param mixed  $value      Option new value.
+	 * @param mixed  $old_value  Option old value.
 	 */
 	public function callback_update_site_option( $option, $value, $old_value ) {
 		$this->callback_updated_option( $option, $value, $old_value );
@@ -647,8 +672,8 @@ class Connector_Settings extends Connector {
 	 *
 	 * @action update_option_category_base
 	 *
-	 * @param mixed $old_value
-	 * @param mixed $value
+	 * @param mixed $old_value  Option old value.
+	 * @param mixed $value      Option new value.
 	 */
 	public function callback_update_option_category_base( $old_value, $value ) {
 		$this->callback_updated_option( 'category_base', $old_value, $value );
@@ -659,8 +684,8 @@ class Connector_Settings extends Connector {
 	 *
 	 * @action update_option_tag_base
 	 *
-	 * @param mixed $old_value
-	 * @param mixed $value
+	 * @param mixed $old_value  Option old value.
+	 * @param mixed $value      Option new value.
 	 */
 	public function callback_update_option_tag_base( $old_value, $value ) {
 		$this->callback_updated_option( 'tag_base', $old_value, $value );
@@ -671,9 +696,9 @@ class Connector_Settings extends Connector {
 	 *
 	 * @action updated_option
 	 *
-	 * @param string $option
-	 * @param mixed  $old_value
-	 * @param mixed  $value
+	 * @param string $option     Option name.
+	 * @param mixed  $old_value  Option old value.
+	 * @param mixed  $value      Option new value.
 	 */
 	public function callback_updated_option( $option, $old_value, $value ) {
 		global $whitelist_options, $new_whitelist_options;
@@ -732,7 +757,7 @@ class Connector_Settings extends Connector {
 
 		foreach ( $changed_options as $properties ) {
 			$this->log(
-				// translators: Placeholder refers to a setting name (e.g. "Language")
+				/* translators: %s: a setting name (e.g. "Language") */
 				__( '"%s" setting was updated', 'stream' ),
 				$properties,
 				null,
@@ -752,7 +777,7 @@ class Connector_Settings extends Connector {
 		<script>
 			(function ($) {
 				$(function () {
-					var hashPrefix = <?php echo wp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ); // xss ok ?>,
+					var hashPrefix = <?php echo wp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ); // xss ok. ?>,
 						hashFieldName = "",
 						fieldNames = [],
 						$select2Choices = {},
@@ -818,9 +843,9 @@ class Connector_Settings extends Connector {
 	 * @deprecated Use is_option_group()
 	 * @see is_option_group()
 	 *
-	 * @param string $key
-	 * @param mixed  $old_value
-	 * @param mixed  $value
+	 * @param string $key        Key.
+	 * @param mixed  $old_value  Old value.
+	 * @param mixed  $value      New value.
 	 *
 	 * @return bool Whether the option should be treated as a group
 	 */
@@ -832,7 +857,7 @@ class Connector_Settings extends Connector {
 	/**
 	 * Sanitize values, so that we don't store complex data, such as arrays or objects
 	 *
-	 * @param mixed $value
+	 * @param mixed $value  Raw input value.
 	 * @return string
 	 */
 	public function sanitize_value( $value ) {

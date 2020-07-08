@@ -1,6 +1,15 @@
 <?php
+/**
+ * Connector for User-Switching
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Connector_User_Switching
+ */
 class Connector_User_Switching extends Connector {
 
 	/**
@@ -100,11 +109,15 @@ class Connector_User_Switching extends Connector {
 	 * This unhooks the Users connector's login and logout actions so they don't appear when a user switches
 	 * user with the User Switching plugin.
 	 *
-	 * @param array      $labels     All registered connector labels
-	 * @param Connectors $connectors The Connectors object instance
+	 * @param array      $labels     All registered connector labels.
+	 * @param Connectors $connectors The Connectors object instance.
 	 */
 	public function callback_wp_stream_after_connectors_registration( array $labels, Connectors $connectors ) {
-		$action = wp_stream_filter_input( INPUT_GET, 'action' ) ?: wp_stream_filter_input( INPUT_POST, 'action' );
+		$action = wp_stream_filter_input( INPUT_GET, 'action' );
+
+		if ( ! $action ) {
+			$action = wp_stream_filter_input( INPUT_POST, 'action' );
+		}
 
 		if ( ! $action ) {
 			return;
@@ -140,7 +153,7 @@ class Connector_User_Switching extends Connector {
 
 		$user     = get_userdata( $user_id );
 		$old_user = get_userdata( $old_user_id );
-		// translators: Placeholders refer to a user display name, and a username (e.g. "Jane Doe", "administrator")
+		/* translators: %1$s: a user display name, %2$s: a username (e.g. "Jane Doe", "administrator") */
 		$message = _x(
 			'Switched user to %1$s (%2$s)',
 			'1: User display name, 2: User login',
@@ -171,7 +184,7 @@ class Connector_User_Switching extends Connector {
 	public function callback_switch_back_user( $user_id, $old_user_id ) {
 
 		$user = get_userdata( $user_id );
-		// translators: Placeholders refer to a user display name, and a username (e.g. "Jane Doe", "administrator")
+		/* translators: Placeholders refer to a user display name, and a username (e.g. "Jane Doe", "administrator") */
 		$message = _x(
 			'Switched back to %1$s (%2$s)',
 			'1: User display name, 2: User login',
@@ -225,8 +238,8 @@ class Connector_User_Switching extends Connector {
 	/**
 	 * Unhook the requested action from the Users connector.
 	 *
-	 * @param Connectors $connectors The Connectors instance
-	 * @param string     $action     The name of the action to unhook
+	 * @param Connectors $connectors The Connectors instance.
+	 * @param string     $action     The name of the action to unhook.
 	 */
 	protected function unhook_user_action( Connectors $connectors, $action ) {
 		foreach ( $connectors->connectors as $connector ) {

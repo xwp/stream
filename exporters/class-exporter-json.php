@@ -1,6 +1,15 @@
 <?php
+/**
+ * JSON Exporter
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Exporter_JSON
+ */
 class Exporter_JSON extends Exporter {
 	/**
 	 * Exporter name

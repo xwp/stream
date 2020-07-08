@@ -1,6 +1,15 @@
 <?php
+/**
+ * Abstract class for record exporters
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Exporter
+ */
 abstract class Exporter {
 	/**
 	 * Exporter name

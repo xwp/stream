@@ -3,11 +3,9 @@
  * Config file used only for phpunit tests inside Docker.
  *
  * phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
+ * phpcs:disable Squiz.Commenting.FileComment.MissingPackageTag
  */
 
-define( 'ABSPATH', dirname( dirname( __DIR__ ) ) . '/' );
-
-define( 'WP_TESTS_MULTISITE', true );
 define( 'WP_DEBUG', true );
 
 define( 'DB_NAME', 'wordpress_test' );
@@ -26,3 +24,5 @@ define( 'WP_TESTS_TITLE', 'Test Blog' );
 define( 'WP_PHP_BINARY', 'php' );
 
 define( 'WPLANG', '' );
+
+define( 'ABSPATH', __DIR__ . '/' );

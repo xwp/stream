@@ -283,7 +283,7 @@ class Test_Admin extends WP_StreamTestCase {
 
 		// Create (two day old) dummy records
 		$stream_data = $this->dummy_stream_data();
-		$stream_data['created'] = date( 'Y-m-d h:i:s', strtotime( '2 days ago' ) );
+		$stream_data['created'] = gmdate( 'Y-m-d h:i:s', strtotime( '2 days ago' ) );
 		$wpdb->insert( $wpdb->stream, $stream_data );
 		$stream_id = $wpdb->insert_id;
 		$this->assertNotFalse( $stream_id );
@@ -459,7 +459,7 @@ class Test_Admin extends WP_StreamTestCase {
 			'blog_id' => get_current_blog_id(),
 			'user_id' => '1',
 			'user_role' => 'administrator',
-			'created' => date( 'Y-m-d H:i:s' ),
+			'created' => gmdate( 'Y-m-d H:i:s' ),
 			'summary' => '"Hello Dave" plugin activated',
 			'ip' => '192.168.0.1',
 			'connector' => 'installer',

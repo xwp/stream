@@ -1,9 +1,18 @@
 <?php
+/**
+ * Processes update calls from the Stream Records page.
+ *
+ * @package WP_Stream
+ */
+
 namespace WP_Stream;
 
+/**
+ * Class - Live_Update
+ */
 class Live_Update {
 	/**
-	 * Hold Plugin class
+	 * Holds instance of plugin object
 	 *
 	 * @var Plugin
 	 */
@@ -26,15 +35,15 @@ class Live_Update {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Plugin $plugin The main Plugin class.
+	 * @param Plugin $plugin Instance of plugin object.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
-		// Heartbeat live update
+		// Heartbeat live update.
 		add_filter( 'heartbeat_received', array( $this, 'heartbeat_received' ), 10, 2 );
 
-		// Enable / Disable live update per user
+		// Enable / Disable live update per user.
 		add_action( 'wp_ajax_stream_enable_live_update', array( $this, 'enable_live_update' ) );
 	}
 
@@ -87,8 +96,8 @@ class Live_Update {
 	 * @uses gather_updated_items
 	 * @uses generate_row
 	 *
-	 * @param array $response Response to heartbeat
-	 * @param array $data     Data from heartbeat
+	 * @param array $response Response to heartbeat.
+	 * @param array $data     Data from heartbeat.
 	 *
 	 * @return array Data sent to heartbeat
 	 */
@@ -106,7 +115,7 @@ class Live_Update {
 			$query = array();
 		}
 
-		// Decode the query
+		// Decode the query.
 		$query = json_decode( wp_kses_stripslashes( $query ) );
 
 		$updated_items = $this->gather_updated_items( $last_time, (array) $query );
@@ -129,8 +138,8 @@ class Live_Update {
 	/**
 	 * Sends Updated Actions to the List Table View
 	 *
-	 * @param int   $last_time Timestamp of last update
-	 * @param array $args    Query args
+	 * @param int   $last_time Timestamp of last update.
+	 * @param array $args      Query args.
 	 *
 	 * @return array Array of recently updated items
 	 */
@@ -163,20 +172,20 @@ class Live_Update {
 	 *
 	 * @action heartbeat_recieved
 	 *
-	 * @param array $response Response to be sent to heartbeat tick
-	 * @param array $data     Data from heartbeat send
+	 * @param array $response Response to be sent to heartbeat tick.
+	 * @param array $data     Data from heartbeat send.
 	 *
 	 * @return array Data sent to heartbeat tick
 	 */
 	public function heartbeat_received( $response, $data ) {
-		// Only fire when Stream is requesting a live update
+		// Only fire when Stream is requesting a live update.
 		if ( ! isset( $data['wp-stream-heartbeat'] ) ) {
 			return $response;
 		}
 
 		$enable_stream_update = ( 'off' !== $this->plugin->admin->get_user_meta( get_current_user_id(), $this->user_meta_key ) );
 
-		// Register list table
+		// Register list table.
 		$this->list_table = new List_Table(
 			$this->plugin,
 			array(
@@ -190,7 +199,7 @@ class Live_Update {
 
 		if ( isset( $data['wp-stream-heartbeat'] ) && isset( $total_items ) ) {
 			$response['total_items'] = $total_items;
-			// translators: Placeholder refers to a number of items (e.g. "42")
+			/* translators: %d: number of items (e.g. "42") */
 			$response['total_items_i18n'] = sprintf( _n( '%d item', '%d items', $total_items ), number_format_i18n( $total_items ) );
 		}
 
