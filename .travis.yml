@@ -36,14 +36,20 @@ jobs:
         file:
           - stream.zip
           - stream-$TRAVIS_TAG.zip
+        on:
+          all_branches: true
+          repo: xwp/stream
 
     - name: Tag Package
-      if: branch IS present
+      if: branch IS present AND type = push
       script: npm run release
       deploy:
         provider: script
         script: ./local/scripts/dist.sh
         skip_cleanup: true
+        on:
+          all_branches: true
+          repo: xwp/stream
 
 services:
   - docker
