@@ -22,9 +22,12 @@ rm -rf "$DIST_DIR"
 git clone --progress --verbose "$DIST_REPO" "$DIST_DIR/.git"
 git checkout -B "$DIST_BRANCH"
 
+# Use the release bundle as the work tree.
+export GIT_WORK_TREE="$SRC_DIR"
+
 # Commit the latest changes.
-git --work-tree="$SRC_DIR" add --all
-git --work-tree="$SRC_DIR" commit --allow-empty --message "$COMMIT_MESSAGE"
+git add --all
+git commit --allow-empty --message "$COMMIT_MESSAGE"
 
 # And maybe tag a release.
 if [ -n "$DIST_TAG" ]; then
