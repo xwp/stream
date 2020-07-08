@@ -20,6 +20,9 @@ jobs:
       env:
         WORDPRESS_IMAGE_VERSION: php7.2
 
+    - name: Test Release Bundle
+      script: npm run release
+
     - stage: deploy
       name: Tag Release
       if: tag IS present
