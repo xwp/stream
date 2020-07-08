@@ -37,7 +37,7 @@
   },
   "scripts": {
     "postinstall": "composer install && npm run build",
-    "build": "grunt default",
+    "build": "grunt build",
     "release": "grunt release",
     "deploy": "grunt deploy",
     "lint-js": "eslint .",
