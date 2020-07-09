@@ -27,6 +27,7 @@ services:
       - .:/var/www/html/wp-content/plugins/stream-src # Working directory.
       - ./build:/var/www/html/wp-content/plugins/stream # Built version for testing.
       - ./local/public:/var/www/html # WP core files.
+      - ./local/config/.htaccess:/var/www/html/.htaccess
       - ./local/config/wp-cli.yml:/var/www/html/wp-cli.yml
       - ./local/config/wp-config.php:/var/www/html/wp-config.php
       - ./local/config/wp-tests-config.php:/var/www/html/wp-tests-config.php
