@@ -72,7 +72,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 					$this->equalTo( 'post' ),
 					$this->equalTo( 'replied' ),
 					$this->equalTo( 0 )
-				],
+				]
 			);
 
 		// Do stuff.
