@@ -275,7 +275,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 						'%1$s\'s %3$s on %2$s restored',
 						'1: Comment author, 2: Post title, 3: Comment type',
 						'stream'
-					),
+					)
 				),
 				$this->equalTo(
 					[
