@@ -33,7 +33,7 @@
     "grunt-contrib-copy": "~1.0.0",
     "grunt-contrib-cssmin": "~3.0.0",
     "grunt-contrib-uglify": "~4.0.1",
-    "grunt-wp-deploy": "^2.1.0"
+    "grunt-wp-deploy": "^2.1.2"
   },
   "scripts": {
     "postinstall": "composer install && npm run build",
