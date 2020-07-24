@@ -457,6 +457,7 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 				'comment_content'      => 'Lorem ipsum dolor...',
 				'comment_author'       => 'Jim Bean',
 				'comment_author_email' => 'jim_bean@example.com',
+				'comment_author_url'   => '',
 				'comment_author_IP'    => '::1',
 				'comment_post_ID'      => $post_id,
 			]
@@ -498,6 +499,22 @@ class Test_WP_Stream_Connector_Comments extends WP_StreamTestCase {
 			],
 			true
 		);
+		$comment_id = wp_new_comment( $commentdata );
+
+		// Manually execute SQL query for duplicate comment ID. "$wpdb->last_result[0]" Undefined index error.
+		$dupe = $wpdb->prepare(
+			"SELECT comment_ID FROM $wpdb->comments WHERE comment_post_ID = %d AND comment_parent = %s AND comment_approved != 'trash' AND ( comment_author = %s AND comment_author_email = %s ) AND comment_content = %s LIMIT 1",
+			wp_unslash( $commentdata['comment_post_ID'] ),
+			wp_unslash( $commentdata['comment_parent'] ),
+			wp_unslash( $commentdata['comment_author'] ),
+			wp_unslash( $commentdata['comment_author_email'] ),
+			wp_unslash( $commentdata['comment_content'] )
+		);
+		$dupe_id = $wpdb->get_var( $dupe );
+		$this->assertSame( $comment_id, absint( $dupe_id ) );
+
+		// Run trigger action.
+		do_action( 'comment_duplicate_trigger', $commentdata );
 
 		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_comment_duplicate_trigger' ) );
 	}
