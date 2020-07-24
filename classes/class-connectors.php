@@ -245,6 +245,15 @@ class Connectors {
 	}
 
 	/**
+	 * Reregisters the context hooks for all connectors.
+	 */
+	public function reload_connectors() {
+		foreach ( $this->connectors as $connector ) {
+			$connector->register();
+		}
+	}
+
+	/**
 	 * Unregisters the context hooks for a connectors.
 	 *
 	 * @param string $name  Name of the connector.

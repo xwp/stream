@@ -28,6 +28,20 @@ class Test_Connector extends WP_StreamTestCase {
 		}
 	}
 
+	public function test_unregister() {
+		$this->connector->register();
+
+		foreach ( $this->connector->actions as $tag ) {
+			$this->assertGreaterThan( 0, has_action( $tag ) );
+		}
+
+		$this->connector->unregister();
+
+		foreach ( $this->connector->actions as $tag ) {
+			$this->assertFalse( has_action( $tag ) );
+		}
+	}
+
 	public function test_callback() {
 		global $wp_current_filter;
 		$action = $this->connector->actions[0];
