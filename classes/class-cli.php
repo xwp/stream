@@ -90,8 +90,8 @@ class CLI extends \WP_CLI_Command {
 	 *     wp stream query --user_id=1 --action=login --records_per_page=50 --fields=created
 	 *
 	 * @see WP_Stream_Query
-	 * @see https://github.com/wp-stream/stream/wiki/WP-CLI-Command
-	 * @see https://github.com/wp-stream/stream/wiki/Query-Reference
+	 * @see https://github.com/xwp/stream/wiki/WP-CLI-Command
+	 * @see https://github.com/xwp/stream/wiki/Query-Reference
 	 *
 	 * @param array $args        Unused.
 	 * @param array $assoc_args  Fields to return data for.
