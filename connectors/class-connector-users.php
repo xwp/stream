@@ -41,6 +41,7 @@ class Connector_Users extends Connector {
 		'delete_user',
 		'deleted_user',
 		'set_user_role',
+		'set_current_user',
 	);
 
 	/**
@@ -242,7 +243,7 @@ class Connector_Users extends Connector {
 			/* translators: %s: a user display name (e.g. "Jane Doe") */
 			__( '%s\'s password was reset', 'stream' ),
 			array(
-				'email' => $user->display_name,
+				'display_name' => $user->display_name,
 			),
 			$user->ID,
 			'profiles',
@@ -384,6 +385,31 @@ class Connector_Users extends Connector {
 			$user_id,
 			'users',
 			'deleted',
+			$user->ID
+		);
+	}
+
+	/**
+	 * Logs password-less user login
+	 *
+	 * @action set_current_user
+	 */
+	public function callback_set_current_user() {
+		$user_id = get_current_user_id();
+
+		if ( 0 === $user_id ) {
+			return;
+		}
+
+		$user = get_user_by( 'id', $user_id );
+
+		$this->log(
+			/* translators: %s: a user display name (e.g. "Jane Doe") */
+			__( '%s logged in', 'stream' ),
+			array( 'display_name' => $user->display_name ),
+			$user->ID,
+			'sessions',
+			'login',
 			$user->ID
 		);
 	}
