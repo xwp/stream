@@ -318,6 +318,11 @@ class Connector_Jetpack extends Connector {
 				'label'   => esc_html__( 'Tiled Galleries', 'stream' ),
 				'context' => 'tiled-gallery',
 			),
+			// Monitor.
+			'monitor_receive_notification'     => array(
+				'label'   => esc_html__( 'Monitor notifications', 'stream' ),
+				'context' => 'monitor',
+			),
 		);
 	}
 
