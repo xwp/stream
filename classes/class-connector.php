@@ -55,14 +55,53 @@ abstract class Connector {
 	public $register_frontend = true;
 
 	/**
+	 * Holds connector registration status flag.
+	 *
+	 * @var bool
+	 */
+	private $is_registered = false;
+
+	/**
+	 * Is the connector currently registered?
+	 *
+	 * @return boolean
+	 */
+	public function is_registered() {
+		return $this->is_registered;
+	}
+
+	/**
 	 * Register all context hooks
 	 */
 	public function register() {
+		if ( $this->is_registered ) {
+			return;
+		}
+
 		foreach ( $this->actions as $action ) {
 			add_action( $action, array( $this, 'callback' ), 10, 99 );
 		}
 
 		add_filter( 'wp_stream_action_links_' . $this->name, array( $this, 'action_links' ), 10, 2 );
+
+		$this->is_registered = true;
+	}
+
+	/**
+	 * Unregister all context hooks
+	 */
+	public function unregister() {
+		if ( ! $this->is_registered ) {
+			return;
+		}
+
+		foreach ( $this->actions as $action ) {
+			remove_action( $action, array( $this, 'callback' ), 10, 99 );
+		}
+
+		remove_filter( 'wp_stream_action_links_' . $this->name, array( $this, 'action_links' ), 10, 2 );
+
+		$this->is_registered = false;
 	}
 
 	/**
