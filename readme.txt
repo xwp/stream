@@ -91,6 +91,13 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 == Changelog ==
 
+= 3.5.1 - August 14, 2020 =
+
+* Fix: Use the correct timestamp format when saving Stream records to ensure correct dates on newer versions of MySQL [#1149](https://github.com/xwp/stream/issues/1149), props [@kidunot89](https://github.com/kidunot89).
+* Development: Include `composer.json` file in the release bundles to ensure they can be pulled using Composer from the [Stream distribution repository](https://github.com/xwp/stream-dist).
+* Development: Automatically store plugin release bundles when tagging a new release on GitHub [#1074](https://github.com/xwp/stream/pull/1074).
+* Development: Update the local development environment to support multisite installs for testing [#1136](https://github.com/xwp/stream/pull/1136).
+
 = 3.5.0 - July 8, 2020 =
 
 * Fix: Stream records now show the correct timestamp instead of dates like `-0001/11/30` [#1091](https://github.com/xwp/stream/issues/1091), props [@kidunot89](https://github.com/kidunot89).
