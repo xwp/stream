@@ -22,7 +22,8 @@
     "wp-coding-standards/wpcs": "^2.2",
     "wp-phpunit/wp-phpunit": "^5.4",
     "wpsh/local": "^0.2.3",
-    "wpackagist-plugin/advanced-custom-fields": "5.8.12"
+    "wpackagist-plugin/advanced-custom-fields": "5.8.12",
+    "wpackagist-plugin/easy-digital-downloads": "^2.9.23"
   },
   "config": {
     "process-timeout": 600,
