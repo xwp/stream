@@ -2,8 +2,8 @@
 Contributors: xwp
 Tags: wp stream, stream, activity, logs, track
 Requires at least: 4.5
-Tested up to: 5.4
-Stable tag: 3.5.0
+Tested up to: 5.5
+Stable tag: 3.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,13 @@ Past Contributors: fjarrett, shadyvb, chacha, westonruter, johnregan3, jacobschw
 
 
 == Changelog ==
+
+= 3.5.1 - August 14, 2020 =
+
+* Fix: Use the correct timestamp format when saving Stream records to ensure correct dates on newer versions of MySQL [#1149](https://github.com/xwp/stream/issues/1149), props [@kidunot89](https://github.com/kidunot89).
+* Development: Include `composer.json` file in the release bundles to ensure they can be pulled using Composer from the [Stream distribution repository](https://github.com/xwp/stream-dist).
+* Development: Automatically store plugin release bundles when tagging a new release on GitHub [#1074](https://github.com/xwp/stream/pull/1074).
+* Development: Update the local development environment to support multisite installs for testing [#1136](https://github.com/xwp/stream/pull/1136).
 
 = 3.5.0 - July 8, 2020 =
 
@@ -274,62 +281,62 @@ Props [@fjarrett](https://github.com/fjarrett), [@lukecarbis](https://github.com
 
 = 2.0.5 - April 23, 2015 =
 
-* Tweak: Compatibility with split terms introduced in WordPress 4.2 ([#702](https://github.com/wp-stream/stream/issues/702))
-* Tweak: Add support for future and pending post transitions ([#716](https://github.com/wp-stream/stream/pull/716))
-* Tweak: Match new default admin colors introduced in WordPress 4.2 ([#718](https://github.com/wp-stream/stream/pull/718))
-* Fix: Compatibility issues with WP-Cron Control plugin and system crons ([#715](https://github.com/wp-stream/stream/issues/715))
-* Fix: Broken date range filter on Reports screen ([#717](https://github.com/wp-stream/stream/pull/717))
+* Tweak: Compatibility with split terms introduced in WordPress 4.2 ([#702](https://github.com/xwp/stream/issues/702))
+* Tweak: Add support for future and pending post transitions ([#716](https://github.com/xwp/stream/pull/716))
+* Tweak: Match new default admin colors introduced in WordPress 4.2 ([#718](https://github.com/xwp/stream/pull/718))
+* Fix: Compatibility issues with WP-Cron Control plugin and system crons ([#715](https://github.com/xwp/stream/issues/715))
+* Fix: Broken date range filter on Reports screen ([#717](https://github.com/xwp/stream/pull/717))
 
 Props [@fjarrett](https://github.com/fjarrett)
 
 = 2.0.4 - April 16, 2015 =
 
-* New: Add reset button to reset search filters ([#144](https://github.com/wp-stream/stream/issues/144))
-* Tweak: WP-CLI command output improvements via `--format` option for table view, JSON and CSV ([#705](https://github.com/wp-stream/stream/pull/705))
-* Tweak: Add link to https://wp-stream.com in README ([#709](https://github.com/wp-stream/stream/issues/709))
+* New: Add reset button to reset search filters ([#144](https://github.com/xwp/stream/issues/144))
+* Tweak: WP-CLI command output improvements via `--format` option for table view, JSON and CSV ([#705](https://github.com/xwp/stream/pull/705))
+* Tweak: Add link to https://wp-stream.com in README ([#709](https://github.com/xwp/stream/issues/709))
 * Tweak: Better highlighting on multiple live update rows
 * Tweak: Limit custom range datepickers based on the Stream plan type
 * Tweak: Limit legacy record migrations based on the Stream plan type
-* Fix: Allow properties with values of zero to be included in queries ([#698](https://github.com/wp-stream/stream/issues/698))
-* Fix: Properly return record success/failure in log and store methods ([#711](https://github.com/wp-stream/stream/issues/711))
+* Fix: Allow properties with values of zero to be included in queries ([#698](https://github.com/xwp/stream/issues/698))
+* Fix: Properly return record success/failure in log and store methods ([#711](https://github.com/xwp/stream/issues/711))
 
 Props [@fjarrett](https://github.com/fjarrett), [@szepeviktor](https://github.com/szepeviktor)
 
 = 2.0.3 - January 23, 2015 =
 
-* New: WP-CLI command now available for querying records via the command line ([#499](https://github.com/wp-stream/stream/issues/499))
-* Tweak: Silently disable Stream during content import ([#672](https://github.com/wp-stream/stream/issues/672))
-* Tweak: Search results now ordered by date instead of relevance ([#689](https://github.com/wp-stream/stream/issues/689))
-* Fix: Handle boolean values appropriately during wp_stream_log_data filter ([#680](https://github.com/wp-stream/stream/issues/680))
-* Fix: Hook into external class load methods on init rather than plugins_loaded ([#686](https://github.com/wp-stream/stream/issues/686))
-* Fix: N/A user not working in exclude rules ([#688](https://github.com/wp-stream/stream/issues/688))
-* Fix: Prevent Notification Rule meta from being saved to all post types ([#693](https://github.com/wp-stream/stream/issues/693))
-* Fix: PHP warning shown for some users when deleting plugins ([#695](https://github.com/wp-stream/stream/issues/695))
+* New: WP-CLI command now available for querying records via the command line ([#499](https://github.com/xwp/stream/issues/499))
+* Tweak: Silently disable Stream during content import ([#672](https://github.com/xwp/stream/issues/672))
+* Tweak: Search results now ordered by date instead of relevance ([#689](https://github.com/xwp/stream/issues/689))
+* Fix: Handle boolean values appropriately during wp_stream_log_data filter ([#680](https://github.com/xwp/stream/issues/680))
+* Fix: Hook into external class load methods on init rather than plugins_loaded ([#686](https://github.com/xwp/stream/issues/686))
+* Fix: N/A user not working in exclude rules ([#688](https://github.com/xwp/stream/issues/688))
+* Fix: Prevent Notification Rule meta from being saved to all post types ([#693](https://github.com/xwp/stream/issues/693))
+* Fix: PHP warning shown for some users when deleting plugins ([#695](https://github.com/xwp/stream/issues/695))
 
 Props [@fjarrett](https://github.com/fjarrett)
 
 = 2.0.2 - January 15, 2015 =
 
-* New: Full record backtrace now available to developers for debugging ([#467](https://github.com/wp-stream/stream/issues/467))
-* New: Unread count badge added to Stream menu, opt-out available in User Profile ([#588](https://github.com/wp-stream/stream/issues/588))
-* New: Stream connector to track Stream-specific contexts and actions ([#622](https://github.com/wp-stream/stream/issues/622))
-* Tweak: Inherit role access from Stream Settings for Notifications and Reports ([#641](https://github.com/wp-stream/stream/issues/641))
-* Tweak: Opt-in required for Akismet tracking ([#649](https://github.com/wp-stream/stream/issues/649))
-* Tweak: Ignore comments deleted when deleting parent post ([#652](https://github.com/wp-stream/stream/issues/652))
-* Tweak: Opt-in required for comment flood tracking ([#656](https://github.com/wp-stream/stream/issues/656))
-* Tweak: Opt-in required for WP Cron tracking ([#673](https://github.com/wp-stream/stream/issues/673))
-* Fix: Post revision action link pointing to wrong revision ID ([#585](https://github.com/wp-stream/stream/issues/585))
-* Fix: PHP warnings caused by Menu connector ([#663](https://github.com/wp-stream/stream/issues/663))
-* Fix: Non-static method called statically in WPSEO connector ([#668](https://github.com/wp-stream/stream/issues/668))
-* Fix: Prevent live updates from tampering with filtered results ([#675](https://github.com/wp-stream/stream/issues/675))
+* New: Full record backtrace now available to developers for debugging ([#467](https://github.com/xwp/stream/issues/467))
+* New: Unread count badge added to Stream menu, opt-out available in User Profile ([#588](https://github.com/xwp/stream/issues/588))
+* New: Stream connector to track Stream-specific contexts and actions ([#622](https://github.com/xwp/stream/issues/622))
+* Tweak: Inherit role access from Stream Settings for Notifications and Reports ([#641](https://github.com/xwp/stream/issues/641))
+* Tweak: Opt-in required for Akismet tracking ([#649](https://github.com/xwp/stream/issues/649))
+* Tweak: Ignore comments deleted when deleting parent post ([#652](https://github.com/xwp/stream/issues/652))
+* Tweak: Opt-in required for comment flood tracking ([#656](https://github.com/xwp/stream/issues/656))
+* Tweak: Opt-in required for WP Cron tracking ([#673](https://github.com/xwp/stream/issues/673))
+* Fix: Post revision action link pointing to wrong revision ID ([#585](https://github.com/xwp/stream/issues/585))
+* Fix: PHP warnings caused by Menu connector ([#663](https://github.com/xwp/stream/issues/663))
+* Fix: Non-static method called statically in WPSEO connector ([#668](https://github.com/xwp/stream/issues/668))
+* Fix: Prevent live updates from tampering with filtered results ([#675](https://github.com/xwp/stream/issues/675))
 
 Props [@fjarrett](https://github.com/fjarrett), [@lukecarbis](https://github.com/lukecarbis), [@shadyvb](https://github.com/shadyvb), [@jonathanbardo](https://github.com/jonathanbardo), [@westonruter](https://github.com/westonruter)
 
 = 2.0.1 - September 30, 2014 =
 
-* Tweak: Improved localization strings throughout the plugin ([#644](https://github.com/wp-stream/stream/pull/644))
+* Tweak: Improved localization strings throughout the plugin ([#644](https://github.com/xwp/stream/pull/644))
 * Tweak: Improved tooltip text explaining WP.com sign in
-* Fix: ACF Pro doesn't save custom field values when Stream enabled ([#642](https://github.com/wp-stream/stream/issues/642))
+* Fix: ACF Pro doesn't save custom field values when Stream enabled ([#642](https://github.com/xwp/stream/issues/642))
 
 Props [@lukecarbis](https://github.com/lukecarbis), [@fjarrett](https://github.com/fjarrett)
 

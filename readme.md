@@ -5,7 +5,7 @@
 
 **Track WordPress user and system actions for debugging, logging and compliance purposes.**
 
-- [Product Website](http://wp-stream.com)
+- [Product Website](https://xwp.co/work/stream/)
 - [Plugin on WordPress.org](https://wordpress.org/plugins/stream/)
 
 

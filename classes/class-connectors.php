@@ -234,4 +234,44 @@ class Connectors {
 		 */
 		do_action( 'wp_stream_after_connectors_registration', $labels, $this );
 	}
+
+	/**
+	 * Unregisters the context hooks for all connectors.
+	 */
+	public function unload_connectors() {
+		foreach ( $this->connectors as $connector ) {
+			$connector->unregister();
+		}
+	}
+
+	/**
+	 * Reregisters the context hooks for all connectors.
+	 */
+	public function reload_connectors() {
+		foreach ( $this->connectors as $connector ) {
+			$connector->register();
+		}
+	}
+
+	/**
+	 * Unregisters the context hooks for a connectors.
+	 *
+	 * @param string $name  Name of the connector.
+	 */
+	public function unload_connector( $name ) {
+		if ( ! empty( $this->connectors[ $name ] ) ) {
+			$this->connectors[ $name ]->unregister();
+		}
+	}
+
+	/**
+	 * Reregisters the context hooks for a connector.
+	 *
+	 * @param string $name  Name of the connector.
+	 */
+	public function reload_connector( $name ) {
+		if ( ! empty( $this->connectors[ $name ] ) ) {
+			$this->connectors[ $name ]->register();
+		}
+	}
 }

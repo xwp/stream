@@ -120,9 +120,6 @@ class Log {
 		// Add user meta to Stream meta.
 		$stream_meta['user_meta'] = $user_meta;
 
-		// Get the current time in milliseconds.
-		$iso_8601_extended_date = wp_stream_get_iso_8601_extended_date();
-
 		if ( ! empty( $user->roles ) ) {
 			$roles = array_values( $user->roles );
 			$role  = $roles[0];
@@ -138,7 +135,7 @@ class Log {
 			'blog_id'   => (int) apply_filters( 'wp_stream_blog_id_logged', get_current_blog_id() ),
 			'user_id'   => (int) $user_id,
 			'user_role' => (string) $role,
-			'created'   => (string) $iso_8601_extended_date,
+			'created'   => (string) current_time( 'mysql', true ),
 			'summary'   => (string) vsprintf( $message, $args ),
 			'connector' => (string) $connector,
 			'context'   => (string) $context,

@@ -35,4 +35,51 @@ class Test_Connectors extends WP_StreamTestCase {
 
 		$this->assertEmpty( $notices );
 	}
+
+	public function test_unload_connectors() {
+		$this->connectors->load_connectors();
+		$this->assertNotEmpty( $this->connectors->connectors );
+
+		foreach( $this->connectors->connectors as $connector ) {
+			$this->assertTrue( $connector->is_registered() );
+		}
+
+		$this->connectors->unload_connectors();
+		foreach( $this->connectors->connectors as $connector ) {
+			$this->assertFalse( $connector->is_registered() );
+		}
+	}
+
+	public function test_reload_connectors() {
+		$this->connectors->load_connectors();
+		$this->assertNotEmpty( $this->connectors->connectors );
+		$this->connectors->unload_connectors();
+		foreach( $this->connectors->connectors as $connector ) {
+			$this->assertFalse( $connector->is_registered() );
+		}
+
+		$this->connectors->reload_connectors();
+		foreach( $this->connectors->connectors as $connector ) {
+			$this->assertTrue( $connector->is_registered() );
+		}
+	}
+
+	public function test_unload_connector() {
+		$this->connectors->load_connectors();
+		$this->assertNotEmpty( $this->connectors->connectors['posts'] );
+		$this->assertTrue( $this->connectors->connectors['posts']->is_registered() );
+
+		$this->connectors->unload_connector( 'posts' );
+		$this->assertFalse( $this->connectors->connectors['posts']->is_registered() );
+	}
+
+	public function test_reload_connector() {
+		$this->connectors->load_connectors();
+		$this->assertNotEmpty( $this->connectors->connectors['posts'] );
+		$this->connectors->unload_connector( 'posts' );
+		$this->assertFalse( $this->connectors->connectors['posts']->is_registered() );
+
+		$this->connectors->reload_connector( 'posts' );
+		$this->assertTrue( $this->connectors->connectors['posts']->is_registered() );
+	}
 }

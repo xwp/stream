@@ -20,11 +20,13 @@ jobs:
       env:
         WORDPRESS_IMAGE_VERSION: php7.2
 
+    - name: Test Release Bundle
+      script: npm run release
+
     - stage: deploy
       name: Tag Release
       if: tag IS present
-      before_deploy:
-        - npm run release
+      script: npm run release
       deploy:
         provider: releases
         api_key:
@@ -34,6 +36,23 @@ jobs:
         file:
           - stream.zip
           - stream-$TRAVIS_TAG.zip
+        on:
+          all_branches: true
+          repo: xwp/stream
+
+    - name: Tag Package
+      if: branch IS present AND type = push
+      script: npm run release
+      before_deploy:
+        - openssl aes-256-cbc -K $encrypted_49634e5b1863_key -iv $encrypted_49634e5b1863_iv -in ./local/travis/travis_deploy_key.enc -out ~/.ssh/id_rsa -d
+        - chmod 600 ~/.ssh/id_rsa
+      deploy:
+        provider: script
+        script: ./local/scripts/dist.sh
+        skip_cleanup: true
+        on:
+          all_branches: true
+          repo: xwp/stream
 
 services:
   - docker
