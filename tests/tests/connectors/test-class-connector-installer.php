@@ -85,7 +85,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 						'"%1$s" plugin activated %2$s',
 						'1: Plugin name, 2: Single site or network wide',
 						'stream'
-					),
+					)
 				),
 				$this->equalTo(
 					array(
