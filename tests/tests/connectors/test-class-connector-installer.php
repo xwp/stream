@@ -23,15 +23,53 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 
 	public function test_callback_upgrader_process_complete() {
 		// Prepare scenario
+		$this->markTestSkipped( 'This test skipped until the needed scenario can be properly simulated.' );
 
 		// Expected log calls.
 		$this->mock->expects( $this->once() )
 			->method( 'log' )
-			->with(
-
+			->withConsecutive(
+				array(
+					_x(
+						'Installed %1$s: %2$s %3$s',
+						'Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
+						'stream'
+					),
+					array(
+						'type'        => 'plugin',
+						'name'        => 'Hello Dolly',
+						'version'     => '',
+						'slug'        => 'hello_dolly.php',
+						'success'     => true,
+						'error'       => null,
+						'old_version' => '',
+					),
+					null,
+					'plugins',
+					'installed'
+				),
+				array(
+					_x(
+						'Updated %1$s: %2$s %3$s',
+						'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
+						'stream'
+					),
+					array(
+						'type'        => 'theme',
+						'name'        => 'Twenty Twenty',
+						'version'     => '',
+						'slug'        => 'twentytwenty',
+						'success'     => true,
+						'error'       => null,
+						'old_version' => '',
+					),
+					null,
+					'themes',
+					'updated'
+				)
 			);
 
-		// Do stuff.
+		// Simulate installing plugin and updating theme to trigger callback.
 
 		// Check callback test action.
 		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_upgrader_process_complete' ) );
@@ -47,7 +85,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 						'"%1$s" plugin activated %2$s',
 						'1: Plugin name, 2: Single site or network wide',
 						'stream'
-					)
+					),
 				),
 				$this->equalTo(
 					array(
@@ -140,6 +178,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 
 	public function test_callback_pre_set_site_transient_update_plugins() {
 		// Prepare scenario
+		$this->markTestSkipped( 'This test skipped until the needed scenario can be properly simulated.' );
 
 		// Expected log calls.
 		$this->mock->expects( $this->once() )
@@ -167,6 +206,7 @@ class Test_WP_Stream_Connector_Installer extends WP_StreamTestCase {
 
 	public function test_callback__core_updated_successfully() {
 		// Prepare scenario
+		$this->markTestSkipped( 'This test skipped until the needed scenario can be properly simulated.' );
 
 		// Expected log calls.
 		$this->mock->expects( $this->exactly( 2 ) )
