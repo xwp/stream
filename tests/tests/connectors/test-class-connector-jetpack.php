@@ -38,16 +38,45 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 	}
 
 	public function test_callback_jetpack_log_entry() {
-		// Prepare scenario
+		// Get blog details and create user for later use.
+		$user_id   = self::factory()->user->create( array( 'display_name' => 'testuser' ) );
+		$user      = new \WP_User( $user_id );
 
 		// Expected log calls.
-		$this->mock->expects( $this->once() )
+		$this->mock->expects( $this->exactly( 3 ) )
 			->method( 'log' )
-			->with(
-
+			->withConsecutive(
+				array(
+					'Comments module activated',
+					array( 'module_slug' => 'comments'),
+					null,
+					'modules',
+					'activated',
+				),
+				array(
+					'testuser\'s account linked to Jetpack',
+					array(
+						'user_id'    => $user_id,
+						'user_email' => $user->user_email,
+						'user_login' => $user->user_login,
+					),
+					null,
+					'users',
+					'authorize',
+				),
+				array(
+					'Site connected to Jetpack',
+					array(),
+					null,
+					'blogs',
+					'register'
+				)
 			);
 
-		// Do stuff.
+		// Run Jetpack log function to trigger callback.
+		\Jetpack::log( 'activate', 'comments' );
+		\Jetpack::log( 'authorize', $user_id );
+		\Jetpack::log( 'register' );
 
 		// Check callback test action.
 		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_jetpack_log_entry' ) );
