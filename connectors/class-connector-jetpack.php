@@ -379,10 +379,10 @@ class Connector_Jetpack extends Connector {
 			$action     = $method;
 			$meta       = compact( 'user_id', 'user_email', 'user_login' );
 			$message    = sprintf(
-				/* translators: %1$s: a user display name, %2$s: a status, %3$s: the connection either "from" or "to" (e.g. "Jane Doe", "unlinked", "from") */
+				/* translators: %1$s: a user display name, %2$s: a status and the connection either "from" or "to" (e.g. "Jane Doe", "unlinked from") */
 				__( '%1$s\'s account %2$s Jetpack', 'stream' ),
 				$user->display_name,
-				( 'unlink' === $action ) ? esc_html__( 'unlinked from', 'stream' ) : esc_html__( 'linked to', 'stream' ),
+				( 'unlink' === $action ) ? esc_html__( 'unlinked from', 'stream' ) : esc_html__( 'linked to', 'stream' )
 			);
 		} elseif ( in_array( $method, array( 'register', 'disconnect', 'subsiteregister', 'subsitedisconnect' ), true ) ) {
 			$context      = 'blogs';

@@ -79,7 +79,7 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 		\Jetpack::log( 'register' );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_jetpack_log_entry' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_jetpack_log_entry' ) );
 	}
 
 	public function test_callback_sharing_get_services_state() {
@@ -116,7 +116,7 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 		);
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_sharing_get_services_state' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_sharing_get_services_state' ) );
 	}
 
 	public function test_callback_jetpack_module_configuration_load_monitor() {
@@ -145,7 +145,7 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 		do_action( 'jetpack_module_configuration_load_monitor' );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_jetpack_module_configuration_load_monitor' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_jetpack_module_configuration_load_monitor' ) );
 	}
 
 	public function test_check() {
@@ -229,8 +229,8 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 		$this->assertEquals( 200, $response->get_status() );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_add_option' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_update_option' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_add_option' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_update_option' ) );
 	}
 
 	public function test_track_post_by_email() {
@@ -298,8 +298,8 @@ class Test_WP_Stream_Connector_Jetpack extends WP_StreamTestCase {
 		do_action( 'wp_ajax_jetpack_post_by_email_regenerate' );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_wp_ajax_jetpack_post_by_email_enable' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_wp_ajax_jetpack_post_by_email_regenerate' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_wp_ajax_jetpack_post_by_email_disable' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_wp_ajax_jetpack_post_by_email_enable' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_wp_ajax_jetpack_post_by_email_regenerate' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_wp_ajax_jetpack_post_by_email_disable' ) );
 	}
 }
