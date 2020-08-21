@@ -91,10 +91,6 @@ abstract class Connector {
 	 * Unregister all context hooks
 	 */
 	public function unregister() {
-		if ( ! $this->is_registered ) {
-			return;
-		}
-
 		foreach ( $this->actions as $action ) {
 			remove_action( $action, array( $this, 'callback' ), 10, 99 );
 		}
