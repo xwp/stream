@@ -1,4 +1,9 @@
 <?php
+/**
+ * Tests for Users connector class callbacks.
+ *
+ * @package WP_Stream
+ */
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
@@ -36,14 +41,6 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 					$this->greaterThan( 0 )
 				),
 				array(
-					$this->equalTo( __( '%s logged in', 'stream' ) ),
-					$this->equalTo( array( 'display_name' => 'TestGuy' ) ),
-					$this->greaterThan( 0 ),
-					$this->equalTo( 'sessions' ),
-					$this->equalTo( 'login' ),
-					$this->greaterThan( 0 )
-				),
-				array(
 					$this->equalTo(
 						_x(
 							'New user account created for %1$s (%2$s)',
@@ -70,7 +67,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 		self::factory()->user->create( array( 'display_name' => 'TestGuy2' ) );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_user_register' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_user_register' ) );
 	}
 
 	public function test_callback_password_reset() {
@@ -98,7 +95,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 		reset_password( $user, $new_pass );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_password_reset' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_password_reset' ) );
 	}
 
 	public function test_callback_retrieve_password_and_profile_update() {
@@ -131,8 +128,8 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 		get_password_reset_key( $user );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_profile_update' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_retrieve_password' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_profile_update' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_retrieve_password' ) );
 	}
 
 	public function test_callback_set_logged_in_cookie() {
@@ -155,7 +152,7 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 		wp_set_auth_cookie( $user_id );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_set_logged_in_cookie' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_set_logged_in_cookie' ) );
 	}
 
 	public function test_callback_clear_auth_cookie() {
@@ -181,12 +178,13 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 		do_action( 'clear_auth_cookie' );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_clear_auth_cookie' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_clear_auth_cookie' ) );
 	}
 
 	public function test_callback_deleted_user() {
 		// Create Users.
 		$user_id = self::factory()->user->create( array( 'display_name' => 'TestGuy' ));
+		$user    = get_user_by( 'ID', $user_id );
 
 		// Expected log calls.
 		$this->mock->expects( $this->exactly( 2 ) )
@@ -226,13 +224,13 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 				)
 			);
 
-		// Do stuff.
+		// Delete user and run action to simulate event and trigger callback.
 		wp_delete_user( $user_id );
-		do_action( 'deleted_user', $user_id );
+		do_action( 'deleted_user', $user_id, null, $user );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_delete_user' ) );
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_deleted_user' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_delete_user' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_deleted_user' ) );
 	}
 
 	public function test_callback_set_user_role() {
@@ -267,41 +265,6 @@ class Test_WP_Stream_Connector_Users extends WP_StreamTestCase {
 		$user->set_role( 'editor' );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_set_user_role' ) );
-	}
-
-	public function test_callback_set_current_user() {
-		// Create user.
-		$user_id = self::factory()->user->create( array( 'display_name' => 'TestGuy' ));
-
-		// Expected log calls.
-		$this->mock->expects( $this->exactly( 2 ) )
-			->method( 'log' )
-			->withConsecutive(
-				array(
-					$this->equalTo( __( '%s logged in', 'stream' ) ),
-					$this->equalTo( array( 'display_name' => 'TestGuy' ) ),
-					$this->equalTo( $user_id ),
-					$this->equalTo( 'sessions' ),
-					$this->equalTo( 'login' ),
-					$this->equalTo( $user_id )
-				),
-				array(
-					$this->equalTo( __( '%s logged in', 'stream' ) ),
-					$this->equalTo( array( 'display_name' => 'TestGuy' ) ),
-					$this->equalTo( $user_id ),
-					$this->equalTo( 'sessions' ),
-					$this->equalTo( 'login' ),
-					$this->equalTo( $user_id )
-				)
-			);
-
-		// Do stuff.
-		wp_set_current_user( $user_id );
-		wp_set_current_user( 0 );
-		wp_set_current_user( $user_id );
-
-		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_set_current_user' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_set_user_role' ) );
 	}
 }
