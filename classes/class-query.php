@@ -337,8 +337,8 @@ class Query {
 				return '>';
 			case 'date_before':
 				return '<';
+			default:
+				return null;
 		}
-
-		return null;
 	}
 }
