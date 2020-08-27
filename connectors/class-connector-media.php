@@ -151,7 +151,7 @@ class Connector_Media extends Connector {
 		$url             = $post->guid;
 		$parent_id       = $post->post_parent;
 		$parent          = get_post( $parent_id );
-		$parent_title    = $parent_id ? $parent->post_title : null;
+		$parent_title    = $parent instanceof \WP_Post ? $parent->post_title : 'Unidentifiable post';
 		$attachment_type = $this->get_attachment_type( $post->guid );
 
 		$this->log(

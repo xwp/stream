@@ -32,7 +32,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 		$post_id = self::factory()->post->create( array( 'post_title' => 'Test post' ) );
 
 		// Expected log calls.
-		$this->mock->expects( $this->exactly( 2 ) )
+		$this->mock->expects( $this->exactly( 3 ) )
 			->method( 'log' )
 			->withConsecutive(
 				array(
@@ -72,6 +72,28 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'document' ),
 					$this->equalTo( 'attached' ),
+				),
+				array(
+					$this->equalTo(
+						_x(
+							'Attached "%1$s" to "%2$s"',
+							'1: Attachment title, 2: Parent post title',
+							'stream'
+						)
+					),
+					$this->callback(
+						function( $subject ) {
+							$expected = array(
+								'name'         => 'Document one',
+								'parent_title' => 'Unidentifiable post',
+								'parent_id'    => 42,
+							);
+							return $expected === array_intersect_key( $expected, $subject );
+						}
+					),
+					$this->greaterThan( 0 ),
+					$this->equalTo( 'document' ),
+					$this->equalTo( 'attached' ),
 				)
 			);
 
@@ -92,8 +114,18 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 			)
 		);
 
+		// Create attachment with invalid post parent.
+		self::factory()->post->create(
+			array(
+				'post_title'   => 'Document one',
+				'post_type'    => 'attachment',
+				'post_content' => 'some description',
+				'post_parent'  => 42
+			)
+		);
+
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_add_attachment' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_add_attachment' ) );
 	}
 
 	public function test_callback_edit_attachment() {
@@ -124,7 +156,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_edit_attachment' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_edit_attachment' ) );
 	}
 
 	public function test_callback_delete_attachment() {
@@ -159,7 +191,7 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 		wp_delete_attachment( $attachment_id, true );
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_delete_attachment' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_delete_attachment' ) );
 	}
 
 	public function test_callback_wp_save_image_editor_file() {
@@ -197,6 +229,6 @@ class Test_WP_Stream_Connector_Media extends WP_StreamTestCase {
 		);
 
 		// Check callback test action.
-		$this->assertFalse( 0 === did_action( 'wp_stream_test_callback_wp_save_image_editor_file' ) );
+		$this->assertFalse( 0 === did_action( $this->action_prefix . 'callback_wp_save_image_editor_file' ) );
 	}
 }
