@@ -33,6 +33,7 @@ git commit --allow-empty --message "$COMMIT_MESSAGE"
 if [ -n "$DIST_TAG" ]; then
 	echo "Tagging a release: $DIST_TAG"
 	git tag --force "$DIST_TAG"
+	git push --delete origin "$DIST_TAG"
 fi
 
 git push --force --set-upstream origin "$DIST_BRANCH" --tags
