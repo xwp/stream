@@ -1,4 +1,9 @@
 <?php
+/**
+ * Tests for Mercator connector class callbacks.
+ *
+ * @package WP_Stream
+ */
 namespace WP_Stream;
 
 class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
@@ -20,7 +25,7 @@ class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 	/**
 	 * Test for get_context_labels().
 	 *
-	 * @group ms-required 
+	 * @group ms-required
 	 */
 	public function test_get_context_labels() {
 		if ( ! is_multisite() ) {

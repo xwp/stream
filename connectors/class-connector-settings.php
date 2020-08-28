@@ -31,7 +31,7 @@ class Connector_Settings extends Connector {
 	 * @var array
 	 */
 	public $actions = array(
-		'whitelist_options',
+		'allowed_options',
 		'update_option',
 		'update_site_option',
 		'update_option_permalink_structure',
@@ -636,7 +636,7 @@ class Connector_Settings extends Connector {
 	 *
 	 * @return array
 	 */
-	public function callback_whitelist_options( $options ) {
+	public function callback_allowed_options( $options ) {
 		add_action( 'updated_option', array( $this, 'callback' ), 10, 3 );
 
 		return $options;

@@ -2,7 +2,9 @@
 /**
  * WP Integration Test w/ Advanced Custom Fields
  *
- * Tests for ACF Connector class callbacks.
+ * Tests for ACF connector class callbacks.
+ *
+ * @package WP_Stream
  */
 namespace WP_Stream;
 
