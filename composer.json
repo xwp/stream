@@ -23,7 +23,8 @@
     "wp-phpunit/wp-phpunit": "^5.4",
     "wpsh/local": "^0.2.3",
     "wpackagist-plugin/advanced-custom-fields": "5.8.12",
-    "wpackagist-plugin/easy-digital-downloads": "^2.9.23"
+    "wpackagist-plugin/easy-digital-downloads": "^2.9.23",
+    "wpackagist-plugin/user-switching": "^1.5.5"
   },
   "config": {
     "process-timeout": 600,
