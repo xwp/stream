@@ -5999,16 +5999,16 @@
         },
         {
             "name": "wp-phpunit/wp-phpunit",
-            "version": "5.5.0",
+            "version": "5.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-phpunit/wp-phpunit.git",
-                "reference": "5cf5a40954b8c47941afdc08b0000ce42efe5993"
+                "reference": "763121e752594664c150643e05c991a0acf3800a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-phpunit/wp-phpunit/zipball/5cf5a40954b8c47941afdc08b0000ce42efe5993",
-                "reference": "5cf5a40954b8c47941afdc08b0000ce42efe5993",
+                "url": "https://api.github.com/repos/wp-phpunit/wp-phpunit/zipball/763121e752594664c150643e05c991a0acf3800a",
+                "reference": "763121e752594664c150643e05c991a0acf3800a",
                 "shasum": ""
             },
             "type": "library",
@@ -6038,7 +6038,7 @@
                 "test",
                 "wordpress"
             ],
-            "time": "2020-08-12T15:43:21+00:00"
+            "time": "2020-09-02T15:53:50+00:00"
         },
         {
             "name": "wpackagist-plugin/advanced-custom-fields",
@@ -6060,15 +6060,15 @@
         },
         {
             "name": "wpackagist-plugin/easy-digital-downloads",
-            "version": "2.9.24",
+            "version": "2.9.25",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/easy-digital-downloads/",
-                "reference": "tags/2.9.24"
+                "reference": "tags/2.9.25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/easy-digital-downloads.2.9.24.zip"
+                "url": "https://downloads.wordpress.org/plugin/easy-digital-downloads.2.9.25.zip"
             },
             "require": {
                 "composer/installers": "~1.0"
