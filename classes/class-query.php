@@ -224,7 +224,7 @@ class Query {
 		 *
 		 * @return string
 		 */
-		$where = apply_filters( 'wp_stream_db_query', $where );
+		$where = apply_filters( 'wp_stream_db_query_where', $where );
 
 		/**
 		 * BUILD THE FINAL QUERY
