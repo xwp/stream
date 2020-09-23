@@ -24,7 +24,7 @@ class Connector_Blogs extends Connector {
 	 * @var array
 	 */
 	public $actions = array(
-		'wpmu_new_blog',
+		'wp_insert_site',
 		'wpmu_activate_blog',
 		'wpmu_new_user',
 		'add_user_to_blog',
@@ -129,13 +129,11 @@ class Connector_Blogs extends Connector {
 	/**
 	 * Blog created
 	 *
-	 * @action wpmu_new_blog
+	 * @action wp_insert_site
 	 *
-	 * @param int $blog_id  Blog ID.
+	 * @param WP_Site $blog  New site.
 	 */
-	public function callback_wpmu_new_blog( $blog_id ) {
-		$blog = get_blog_details( $blog_id );
-
+	public function callback_wp_insert_site( $blog ) {
 		$this->log(
 			/* translators: %s: site name (e.g. "FooBar Blog") */
 			_x(
@@ -146,7 +144,7 @@ class Connector_Blogs extends Connector {
 			array(
 				'site_name' => $blog->blogname,
 			),
-			$blog_id,
+			$blog->blog_id,
 			sanitize_key( $blog->blogname ),
 			'created'
 		);
@@ -161,7 +159,7 @@ class Connector_Blogs extends Connector {
 	 * @param int $user_id  User ID.
 	 */
 	public function callback_wpmu_activate_blog( $blog_id, $user_id ) {
-		$blog = get_blog_details( $blog_id );
+		$blog = get_site( $blog_id );
 
 		$this->log(
 			/* translators: %s: site name (e.g. "FooBar Blog") */
@@ -190,7 +188,7 @@ class Connector_Blogs extends Connector {
 	 * @param int    $blog_id  Blog ID.
 	 */
 	public function callback_add_user_to_blog( $user_id, $role, $blog_id ) {
-		$blog = get_blog_details( $blog_id );
+		$blog = get_site( $blog_id );
 		$user = get_user_by( 'id', $user_id );
 
 		if ( ! is_a( $user, 'WP_User' ) ) {
@@ -224,7 +222,7 @@ class Connector_Blogs extends Connector {
 	 * @param int $blog_id  Blog ID.
 	 */
 	public function callback_remove_user_from_blog( $user_id, $blog_id ) {
-		$blog = get_blog_details( $blog_id );
+		$blog = get_site( $blog_id );
 		$user = get_user_by( 'id', $user_id );
 
 		if ( ! is_a( $user, 'WP_User' ) ) {
@@ -345,7 +343,7 @@ class Connector_Blogs extends Connector {
 	 * @param string $value    Status flag.
 	 */
 	public function callback_update_blog_public( $blog_id, $value ) {
-		if ( $value ) {
+		if ( absint( $value ) ) {
 			$status = esc_html__( 'marked as public', 'stream' );
 		} else {
 			$status = esc_html__( 'marked as private', 'stream' );
@@ -364,7 +362,7 @@ class Connector_Blogs extends Connector {
 	 * @param string $action   Action.
 	 */
 	public function callback_update_blog_status( $blog_id, $status, $action ) {
-		$blog = get_blog_details( $blog_id );
+		$blog = get_site( $blog_id );
 
 		$this->log(
 			/* translators: %1$s: a site name, %2$s: a blog status (e.g. "FooBar Blog", "archived") */

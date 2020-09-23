@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for Blogs connector class callbacks.
+ * Tests for Blogs(multisite) connector class callbacks.
  *
  * @package WP_Stream
  */
@@ -15,11 +15,40 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 	 */
 	protected $connector_blogs;
 
+	/**
+	 * Run before each test.
+	 */
 	public function setUp() {
 		parent::setUp();
 
-		$this->connector_blogs = new Connector_Blogs;
-		$this->assertNotEmpty( $this->connector_blogs );
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test requires multisite.' );
+		}
+
+		$this->plugin->connectors->unload_connectors();
+
+		// Add hook to provide mock blog details because sub-sites aren't
+		// created with an options table to use.
+		add_filter( 'site_details', array( $this, 'get_testsite_details' ) );
+
+		// Make partial of Connector_Blogs class, with mocked "log" function.
+		$this->mock = $this->getMockBuilder( Connector_Blogs::class )
+			->setMethods( array( 'log' ) )
+			->getMock();
+
+		// Register connector.
+		$this->mock->register();
+	}
+
+	public function get_testsite_details( $details ) {
+		global $base;
+
+		$details->blogname   = 'testsite';
+		$details->siteurl    = $base . '/testsite';
+		$details->post_count = 0;
+		$details->home       = $base . '/testsite';
+
+		return $details;
 	}
 
 	/**
@@ -28,13 +57,356 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 	 * @group ms-required
 	 */
 	public function test_get_context_labels() {
-		if ( ! is_multisite() ) {
-			$this->markTestSkipped( 'This test requires multisite.' );
-		}
 		// Validate this works for foreign characters as well.
-		$id = $this->factory->blog->create( array( 'title' => 'ובזכויותיהם' ) );
-		$labels = $this->connector_blogs->get_context_labels();
+		$id = self::factory()->blog->create( array( 'title'  => 'ובזכויותיהם' ) );
+		$labels = $this->mock->get_context_labels();
 		$this->assertArrayHasKey( 'blog-1', $labels );
 		$this->assertArrayHasKey( 'blog-' . $id, $labels );
+	}
+
+	public function test_callback_wp_insert_site() {
+		// Expected log calls.
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo(
+					_x(
+						'"%s" site was created',
+						'1. Site name',
+						'stream'
+					)
+				),
+				$this->equalTo( array( 'site_name' => 'testsite' ) ),
+				$this->greaterThan( 0 ),
+				$this->equalTo( 'testsite' ),
+				$this->equalTo( 'created' )
+			);
+
+		// Create new blog to trigger callback.
+		self::factory()->blog->create( array( 'title'  => 'testsite' ) );
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_wp_insert_site' ) );
+	}
+
+	public function test_callback_wpmu_activate_blog() {
+		// Create site for later use.
+		$blog_id = self::factory()->blog->create( array( 'title'  => 'testsite' ) );
+
+		// Expected log calls.
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo(
+					_x(
+						'"%s" site was registered',
+						'1. Site name',
+						'stream'
+					)
+				),
+				$this->equalTo( array( 'site_name' => 'testsite' ) ),
+				$this->equalTo( $blog_id ),
+				$this->equalTo( 'testsite' ),
+				$this->equalTo( 'created' ),
+				1,
+			);
+
+		// Activate blog to trigger callback.
+		do_action( 'wpmu_activate_blog', $blog_id, 1, 'password', 'testsite', array() );
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_wpmu_activate_blog' ) );
+	}
+
+	public function test_callback_add_user_to_blog() {
+		// Create site and user for later use.
+		$blog_id = self::factory()->blog->create( array( 'title' => 'testsite' ) );
+		$user_id = self::factory()->user->create( array( 'display_name' => 'testuser' ) );
+
+		// Expected log calls.
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo(
+					_x(
+						'%1$s was added to the "%2$s" site with %3$s capabilities',
+						'1. User\'s name, 2. Site name, 3. Role',
+						'stream'
+					)
+				),
+				$this->equalTo(
+					array(
+						'user_name' => 'testuser',
+						'site_name' => 'testsite',
+						'role_name' => 'subscriber',
+					)
+				),
+				$this->equalTo( $blog_id ),
+				$this->equalTo( 'testsite' ),
+				$this->equalTo( 'updated' )
+			);
+
+		// Add user to site to trigger callback.
+		add_user_to_blog( $blog_id, $user_id, 'subscriber' );
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_add_user_to_blog' ) );
+	}
+
+	public function test_callback_remove_user_from_blog() {
+		// Create site and add user to site for later use.
+		$blog_id = self::factory()->blog->create( array( 'title' => 'testsite' ) );
+		$user_id = self::factory()->user->create( array( 'display_name' => 'testuser' ) );
+		add_user_to_blog( $blog_id, $user_id, 'subscriber' );
+
+		// Expected log calls.
+		$this->mock->expects( $this->once() )
+			->method( 'log' )
+			->with(
+				$this->equalTo(
+					_x(
+						'%1$s was removed from the "%2$s" site',
+						'1. User\'s name, 2. Site name',
+						'stream'
+					)
+				),
+				$this->equalTo(
+					array(
+						'user_name' => 'testuser',
+						'site_name' => 'testsite',
+					)
+				),
+				$this->equalTo( $blog_id ),
+				$this->equalTo( 'testsite' ),
+				$this->equalTo( 'updated' )
+			);
+
+		// Remove user from site to trigger callback.
+		remove_user_from_blog( $user_id, $blog_id );
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_remove_user_from_blog' ) );
+	}
+
+	public function test_callback_update_blog_status() {
+		// Create site and add user to site for later use.
+		$blog_id = self::factory()->blog->create( array( 'title' => 'testsite' ) );
+		$site    = get_site( $blog_id );
+
+		// Expected log calls.
+		$this->mock->expects( $this->exactly( 10 ) )
+			->method( 'log' )
+			->withConsecutive(
+				array(
+					$this->equalTo(
+						_x(
+							'"%1$s" site was %2$s',
+							'1. Site name, 2. Status',
+							'stream'
+						)
+					),
+					$this->equalTo(
+						array(
+							'site_name' => 'testsite',
+							'status'    => esc_html__( 'marked as spam', 'stream' ),
+						)
+					),
+					$this->equalTo( $blog_id ),
+					$this->equalTo( 'testsite' ),
+					$this->equalTo( 'updated' )
+				),
+				array(
+					$this->equalTo(
+						_x(
+							'"%1$s" site was %2$s',
+							'1. Site name, 2. Status',
+							'stream'
+						)
+					),
+					$this->equalTo(
+						array(
+							'site_name' => 'testsite',
+							'status'    => esc_html__( 'marked as not spam', 'stream' ),
+						)
+					),
+					$this->equalTo( $blog_id ),
+					$this->equalTo( 'testsite' ),
+					$this->equalTo( 'updated' )
+				),
+				array(
+					$this->equalTo(
+						_x(
+							'"%1$s" site was %2$s',
+							'1. Site name, 2. Status',
+							'stream'
+						)
+					),
+					$this->equalTo(
+						array(
+							'site_name' => 'testsite',
+							'status'    => esc_html__( 'marked as mature', 'stream' ),
+						)
+					),
+					$this->equalTo( $blog_id ),
+					$this->equalTo( 'testsite' ),
+					$this->equalTo( 'updated' )
+				),
+				array(
+					$this->equalTo(
+						_x(
+							'"%1$s" site was %2$s',
+							'1. Site name, 2. Status',
+							'stream'
+						)
+					),
+					$this->equalTo(
+						array(
+							'site_name' => 'testsite',
+							'status'    => esc_html__( 'marked as not mature', 'stream' ),
+						)
+					),
+					$this->equalTo( $blog_id ),
+					$this->equalTo( 'testsite' ),
+					$this->equalTo( 'updated' )
+				),
+				array(
+					$this->equalTo(
+						_x(
+							'"%1$s" site was %2$s',
+							'1. Site name, 2. Status',
+							'stream'
+						)
+					),
+					$this->equalTo(
+						array(
+							'site_name' => 'testsite',
+							'status'    => esc_html__( 'archived', 'stream' ),
+						)
+					),
+					$this->equalTo( $blog_id ),
+					$this->equalTo( 'testsite' ),
+					$this->equalTo( 'archive_blog' )
+				),
+				array(
+					$this->equalTo(
+						_x(
+							'"%1$s" site was %2$s',
+							'1. Site name, 2. Status',
+							'stream'
+						)
+					),
+					$this->equalTo(
+						array(
+							'site_name' => 'testsite',
+							'status'    => esc_html__( 'restored from archive', 'stream' ),
+						)
+					),
+					$this->equalTo( $blog_id ),
+					$this->equalTo( 'testsite' ),
+					$this->equalTo( 'updated' )
+				),
+				array(
+					$this->equalTo(
+						_x(
+							'"%1$s" site was %2$s',
+							'1. Site name, 2. Status',
+							'stream'
+						)
+					),
+					$this->equalTo(
+						array(
+							'site_name' => 'testsite',
+							'status'    => esc_html__( 'deleted', 'stream' ),
+						)
+					),
+					$this->equalTo( $blog_id ),
+					$this->equalTo( 'testsite' ),
+					$this->equalTo( 'deleted' )
+				),
+				array(
+					$this->equalTo(
+						_x(
+							'"%1$s" site was %2$s',
+							'1. Site name, 2. Status',
+							'stream'
+						)
+					),
+					$this->equalTo(
+						array(
+							'site_name' => 'testsite',
+							'status'    => esc_html__( 'restored', 'stream' ),
+						)
+					),
+					$this->equalTo( $blog_id ),
+					$this->equalTo( 'testsite' ),
+					$this->equalTo( 'updated' )
+				),
+				array(
+					$this->equalTo(
+						_x(
+							'"%1$s" site was %2$s',
+							'1. Site name, 2. Status',
+							'stream'
+						)
+					),
+					$this->equalTo(
+						array(
+							'site_name' => 'testsite',
+							'status'    => esc_html__( 'marked as private', 'stream' ),
+						)
+					),
+					$this->equalTo( $blog_id ),
+					$this->equalTo( 'testsite' ),
+					$this->equalTo( 'updated' )
+				),
+				array(
+					$this->equalTo(
+						_x(
+							'"%1$s" site was %2$s',
+							'1. Site name, 2. Status',
+							'stream'
+						)
+					),
+					$this->equalTo(
+						array(
+							'site_name' => 'testsite',
+							'status'    => esc_html__( 'marked as public', 'stream' ),
+						)
+					),
+					$this->equalTo( $blog_id ),
+					$this->equalTo( 'testsite' ),
+					$this->equalTo( 'updated' )
+				),
+			);
+
+		// Update blog status blog to trigger callback.
+		$fields = array(
+			'spam'     => '1',
+			'mature'   => '1',
+			'archived' => '1',
+			'deleted'  => '1',
+			'public'   => '1',
+		);
+		foreach( $fields as $field => $value ) {
+			$old_site = clone $site;
+			$site->$field = $value;
+			wp_maybe_transition_site_statuses_on_update( $site, $old_site );
+
+			$old_site = clone $site;
+			$site->$field = ! absint( $value ) ? '1' : '0';
+			error_log( $site->$field );
+			wp_maybe_transition_site_statuses_on_update( $site, $old_site );
+		}
+
+		// Check callback test action.
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_make_spam_blog' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_make_ham_blog' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_mature_blog' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_unmature_blog' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_archive_blog' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_unarchive_blog' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_make_delete_blog' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_make_undelete_blog' ) );
+		$this->assertGreaterThan( 0, did_action( $this->action_prefix . 'callback_update_blog_public' ) );
 	}
 }
