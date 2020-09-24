@@ -363,7 +363,6 @@ class Connector_Blogs extends Connector {
 	 */
 	public function callback_update_blog_status( $blog_id, $status, $action ) {
 		$blog = get_site( $blog_id );
-
 		$this->log(
 			/* translators: %1$s: a site name, %2$s: a blog status (e.g. "FooBar Blog", "archived") */
 			_x(

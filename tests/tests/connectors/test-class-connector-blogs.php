@@ -25,7 +25,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 			$this->markTestSkipped( 'This test requires multisite.' );
 		}
 
-		$this->plugin->connectors->unload_connectors();
+		$this->plugin->connectors->unload_connector( 'blogs' );
 
 		// Add hook to provide mock blog details because sub-sites aren't
 		// created with an options table to use.
@@ -190,7 +190,12 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 
 	public function test_callback_update_blog_status() {
 		// Create site and add user to site for later use.
-		$blog_id = self::factory()->blog->create( array( 'title' => 'testsite' ) );
+		$blog_id = self::factory()->blog->create(
+			array(
+				'title' => 'testsite',
+				'meta'  => array( 'public' => '0' ),
+			)
+		);
 		$site    = get_site( $blog_id );
 
 		// Expected log calls.
@@ -352,7 +357,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					$this->equalTo(
 						array(
 							'site_name' => 'testsite',
-							'status'    => esc_html__( 'marked as private', 'stream' ),
+							'status'    => esc_html__( 'marked as public', 'stream' ),
 						)
 					),
 					$this->equalTo( $blog_id ),
@@ -370,7 +375,7 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 					$this->equalTo(
 						array(
 							'site_name' => 'testsite',
-							'status'    => esc_html__( 'marked as public', 'stream' ),
+							'status'    => esc_html__( 'marked as private', 'stream' ),
 						)
 					),
 					$this->equalTo( $blog_id ),
@@ -388,13 +393,12 @@ class Test_WP_Stream_Connector_Blogs extends WP_StreamTestCase {
 			'public'   => '1',
 		);
 		foreach( $fields as $field => $value ) {
-			$old_site = clone $site;
+			$old_site     = (object) $site->to_array();
 			$site->$field = $value;
 			wp_maybe_transition_site_statuses_on_update( $site, $old_site );
 
-			$old_site = clone $site;
-			$site->$field = ! absint( $value ) ? '1' : '0';
-			error_log( $site->$field );
+			$old_site     = (object) $site->to_array();
+			$site->$field = absint( $value ) ? '0' : '1';
 			wp_maybe_transition_site_statuses_on_update( $site, $old_site );
 		}
 
