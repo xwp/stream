@@ -56,7 +56,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 		);
 
 		// Set expected calls for the Mock.
-		$this->mock->expects( $this->exactly( 11 ) )
+		$this->mock->expects( $this->exactly( 12 ) )
 			->method( 'log' )
 			->withConsecutive(
 				array(
@@ -80,7 +80,7 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 					),
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'post' ),
-					$this->equalTo( 'updated' ),
+					$this->equalTo( 'created' ),
 				),
 				array(
 					$this->equalTo(
@@ -311,7 +311,30 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 					$this->greaterThan( 0 ),
 					$this->equalTo( 'post' ),
 					$this->equalTo( 'updated' ),
-				)
+				),
+				array(
+					$this->equalTo(
+						_x(
+							'"%1$s" %2$s published',
+							'1: Post title, 2: Post type singular name',
+							'stream'
+						)
+					),
+					$this->callback(
+						function( $subject ) {
+							$expected = array(
+								'post_title'    => 'Test post',
+								'singular_name' => 'post',
+								'new_status'    => 'publish',
+								'old_status'    => 'new',
+							);
+							return $expected === array_intersect_key( $expected, $subject );
+						}
+					),
+					$this->greaterThan( 0 ),
+					$this->equalTo( 'post' ),
+					$this->equalTo( 'created' ),
+				),
 			);
 
 		// Create post/update post status trigger callbacks.
@@ -380,6 +403,15 @@ class Test_WP_Stream_Connector_Posts extends WP_StreamTestCase {
 			array(
 				'ID'          => $post_id,
 				'post_status' => 'publish',
+			)
+		);
+
+		// Expected log to be made with "created" action.
+		wp_insert_post(
+			array(
+				'post_title'    => 'Test post',
+				'post_content'  => 'Lorem ipsum dolor...',
+				'post_status'   => 'publish',
 			)
 		);
 
