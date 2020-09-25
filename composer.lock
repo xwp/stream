@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9ea430268ec38a2b87542c340bc6f5fe",
+    "content-hash": "c025a44ff83e162076363f15803df9da",
     "packages": [
         {
             "name": "composer/installers",
@@ -1035,6 +1035,46 @@
                 "source": "https://github.com/guzzle/psr7/tree/1.7.0"
             },
             "time": "2020-09-30T07:37:11+00:00"
+        },
+        {
+            "name": "humanmade/mercator",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/humanmade/Mercator.git",
+                "reference": "21b0e838ff23d24bf023a74d1da42e063553d934"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/humanmade/Mercator/zipball/21b0e838ff23d24bf023a74d1da42e063553d934",
+                "reference": "21b0e838ff23d24bf023a74d1da42e063553d934",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-muplugin",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Human Made Limited",
+                    "email": "support@humanmade.co.uk",
+                    "homepage": "http://hmn.md/"
+                }
+            ],
+            "description": "WordPress multisite domain mapping for the modern era.",
+            "homepage": "https://github.com/humanmade/Mercator",
+            "keywords": [
+                "wordpress"
+            ],
+            "support": {
+                "issues": "https://github.com/humanmade/Mercator/issues",
+                "source": "https://github.com/humanmade/Mercator/tree/master"
+            },
+            "time": "2018-10-30T18:53:20+00:00"
         },
         {
             "name": "johnpbloch/wordpress",
