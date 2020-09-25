@@ -1,5 +1,7 @@
 <?php
 /**
+ * WP Integration Test w/ Mercator
+ *
  * Tests for Mercator connector class callbacks.
  *
  * @package WP_Stream
@@ -28,6 +30,13 @@ class Test_WP_Stream_Connector_Mercator extends WP_StreamTestCase {
 		$this->mock->register();
 	}
 
+	/**
+	 * Mock function that define stub blog details that would be store in the blog options table
+	 * which isn't created during tests.
+	 *
+	 * @param object $details
+	 * @return object
+	 */
 	public function get_testsite_details( $details ) {
 		global $base;
 
